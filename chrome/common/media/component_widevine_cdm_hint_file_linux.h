@@ -15,8 +15,8 @@
 
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if !(BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
-#error "This file only applies to desktop Linux."
+#if !(BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
+#error "This file only applies to desktop Linux and ChromeOS."
 #endif
 
 namespace base {

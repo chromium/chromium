@@ -7227,6 +7227,7 @@ static_library("browser") {
         ]
         deps += [
           "//components/cdm/common",
+          "//media/cdm:cdm_paths",
           "//third_party/widevine/cdm:headers",
         ]
       }

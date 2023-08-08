@@ -38,12 +38,10 @@ enable_library_widevine_cdm =
     enable_widevine && enable_library_cdms && library_widevine_cdm_available
 
 # Widevine CDM can be deployed as a component. Currently only supported on
-# Mac, Windows, and desktop Linux. The CDM can be bundled regardless whether
+# desktop platforms. The CDM can be bundled regardless whether
 # it's a component. See below.
-# Note: Not enabled on ChromeOS. See https://crbug.com/971433
 enable_widevine_cdm_component =
-    enable_library_widevine_cdm &&
-    (is_win || is_mac || is_linux || is_chromeos_lacros)
+    enable_library_widevine_cdm && (is_win || is_mac || is_linux || is_chromeos)
 
 # Enable (Windows) Media Foundation Widevine CDM component.
 declare_args() {
