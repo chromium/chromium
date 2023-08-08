@@ -1572,6 +1572,16 @@ MediaSessionServiceImpl* MediaSessionImpl::ComputeServiceForRouting() {
     min_depth = depth;
   }
 
+  // If we don't have a suitable frame and the topmost frame has a
+  // MediaSessionService, then use that.
+  if (!best_frame && base::FeatureList::IsEnabled(
+                         blink::features::kMediaSessionEnterPictureInPicture)) {
+    RenderFrameHost* main_rfh = web_contents()->GetPrimaryMainFrame();
+    if (IsServiceActiveForRenderFrameHost(main_rfh)) {
+      best_frame = main_rfh;
+    }
+  }
+
   return best_frame ? services_[best_frame->GetGlobalId()] : nullptr;
 }
 

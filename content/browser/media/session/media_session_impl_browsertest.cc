@@ -137,7 +137,10 @@ class MediaSessionImplBrowserTest : public ContentBrowserTest {
       delete;
 
  protected:
-  MediaSessionImplBrowserTest() = default;
+  MediaSessionImplBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        blink::features::kMediaSessionEnterPictureInPicture);
+  }
 
   void SetUpOnMainThread() override {
     ContentBrowserTest::SetUpOnMainThread();
@@ -314,6 +317,7 @@ class MediaSessionImplBrowserTest : public ContentBrowserTest {
   std::unique_ptr<MockMediaSessionServiceImpl> mock_media_session_service_;
   net::EmbeddedTestServer favicon_server_;
   base::AtomicSequenceNumber favicon_calls_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 class MediaSessionImplParamBrowserTest
@@ -2022,7 +2026,7 @@ IN_PROC_BROWSER_TEST_P(MediaSessionImplParamBrowserTest,
   {
     media_session::test::MockMediaSessionMojoObserver observer(*media_session_);
     observer.WaitForState(MediaSessionInfo::SessionState::kInactive);
-    EXPECT_EQ(MediaPlaybackState::kPaused,
+    EXPECT_EQ(MediaPlaybackState::kPlaying,
               observer.session_info()->playback_state);
   }
 
