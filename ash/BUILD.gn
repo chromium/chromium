@@ -2495,6 +2495,8 @@ component("ash") {
     "wm/overview/overview_highlightable_view.h",
     "wm/overview/overview_item.cc",
     "wm/overview/overview_item.h",
+    "wm/overview/overview_item_base.cc",
+    "wm/overview/overview_item_base.h",
     "wm/overview/overview_item_view.cc",
     "wm/overview/overview_item_view.h",
     "wm/overview/overview_metrics.cc",
