@@ -294,7 +294,16 @@ CameraDeviceDelegate::CameraDeviceDelegate(
       camera_hal_delegate_(camera_hal_delegate),
       ipc_task_runner_(std::move(ipc_task_runner)) {}
 
-CameraDeviceDelegate::~CameraDeviceDelegate() = default;
+CameraDeviceDelegate::~CameraDeviceDelegate() {
+  if (camera_effect_observer_added_) {
+    // TODO(1446850): CameraDeviceDelegate should be removed from the
+    // CameraEffectObserver list when CameraDeviceDelegate::StopAndDeAllocate
+    // was called. Check the cases where StopAndDeallocate is not called before
+    // destructor.
+    CameraHalDispatcherImpl::GetInstance()->RemoveCameraEffectObserver(this);
+    camera_effect_observer_added_ = false;
+  }
+}
 
 void CameraDeviceDelegate::AllocateAndStart(
     const base::flat_map<ClientType, VideoCaptureParams>& params,
