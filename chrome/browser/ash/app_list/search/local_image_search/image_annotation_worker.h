@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ASH_APP_LIST_SEARCH_LOCAL_IMAGE_SEARCH_IMAGE_ANNOTATION_WORKER_H_
 
 #include <memory>
-#include <set>
 #include <vector>
 
 #include "base/containers/flat_set.h"
@@ -46,9 +45,11 @@ struct ImageInfo;
 //  if needed. (It may hit the folder limit.)
 class ImageAnnotationWorker {
  public:
-  explicit ImageAnnotationWorker(const base::FilePath& root_path,
-                                 bool use_ocr,
-                                 bool use_ica);
+  explicit ImageAnnotationWorker(
+      const base::FilePath& root_path,
+      const std::vector<base::FilePath>& excluded_paths,
+      bool use_ocr,
+      bool use_ica);
   ~ImageAnnotationWorker();
   ImageAnnotationWorker(const ImageAnnotationWorker&) = delete;
   ImageAnnotationWorker& operator=(const ImageAnnotationWorker&) = delete;
@@ -94,6 +95,8 @@ class ImageAnnotationWorker {
 
   std::unique_ptr<base::FilePathWatcher> file_watcher_;
   base::FilePath root_path_;
+  // Excludes any path matching the prefixes.
+  std::vector<base::FilePath> excluded_paths_;
 
   mojo::Remote<chromeos::machine_learning::mojom::MachineLearningService>
       ml_service_;

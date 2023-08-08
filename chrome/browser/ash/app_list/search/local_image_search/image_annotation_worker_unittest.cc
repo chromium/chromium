@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/app_list/search/local_image_search/image_annotation_worker.h"
 
 #include <memory>
+#include <vector>
 
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -27,8 +28,11 @@ class ImageAnnotationWorkerTest : public testing::Test {
     ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
 
     test_directory_ = temp_dir.GetPath();
+    std::vector<base::FilePath> excluded_paths = {
+        test_directory_.AppendASCII("TrashBin")};
     annotation_worker_ = std::make_unique<ImageAnnotationWorker>(
-        test_directory_, /*use_ocr=*/false, /*use_ica=*/false);
+        test_directory_, std::move(excluded_paths), /*use_ocr=*/false,
+        /*use_ica=*/false);
     bar_image_path_ = test_directory_.AppendASCII("bar.jpg");
     const base::FilePath test_db = test_directory_.AppendASCII("test.db");
     storage_ = std::make_unique<AnnotationStorage>(
@@ -48,18 +52,24 @@ TEST_F(ImageAnnotationWorkerTest, MustProcessTheFolderAtInitTest) {
   storage_->Initialize();
   task_environment_.RunUntilIdle();
 
+  base::CreateDirectory(test_directory_.AppendASCII("Images"));
+  base::CreateDirectory(test_directory_.AppendASCII("TrashBin"));
+
   auto jpg_path = test_directory_.AppendASCII("bar.jpg");
-  auto jpeg_path = test_directory_.AppendASCII("bar1.jpeg");
+  auto jpeg_path =
+      test_directory_.AppendASCII("Images").AppendASCII("bar1.jpeg");
   auto png_path = test_directory_.AppendASCII("bar2.png");
   auto jng_path = test_directory_.AppendASCII("bar3.jng");
   auto tjng_path = test_directory_.AppendASCII("bar4.tjng");
   auto JPG_path = test_directory_.AppendASCII("bar5.JPG");
   auto webp_path = test_directory_.AppendASCII("bar6.webp");
   auto WEBP_path = test_directory_.AppendASCII("bar7.WEBP");
+  auto bin_path =
+      test_directory_.AppendASCII("TrashBin").AppendASCII("bar8.jpg");
 
   auto image_time = base::Time::Now();
   for (const auto& path : {jpg_path, jpeg_path, png_path, jng_path, tjng_path,
-                           JPG_path, webp_path, WEBP_path}) {
+                           JPG_path, webp_path, WEBP_path, bin_path}) {
     base::WriteFile(path, "test");
     base::TouchFile(path, image_time, image_time);
   }

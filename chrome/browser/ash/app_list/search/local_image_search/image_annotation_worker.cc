@@ -16,6 +16,7 @@
 #include "base/files/file_util.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/logging.h"
+#include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/platform_thread.h"
@@ -46,6 +47,15 @@ bool IsImage(const base::FilePath& path) {
          extension == ".PNG" || extension == ".WEBP";
 }
 
+bool IsPathExcluded(const base::FilePath& path,
+                    const std::vector<base::FilePath>& excluded_paths) {
+  return std::any_of(excluded_paths.begin(), excluded_paths.end(),
+                     [&path](const base::FilePath& prefix) {
+                       return base::StartsWith(path.value(), prefix.value(),
+                                               base::CompareCase::SENSITIVE);
+                     });
+}
+
 // Returns deleted files. Needs to be done in background.
 std::set<base::FilePath> GetDeletedPaths(const std::vector<ImageInfo>& images) {
   std::set<base::FilePath> deleted_paths;
@@ -65,10 +75,13 @@ bool IsOcrServiceReady() {
 
 }  // namespace
 
-ImageAnnotationWorker::ImageAnnotationWorker(const base::FilePath& root_path,
-                                             bool use_ocr,
-                                             bool use_ica)
+ImageAnnotationWorker::ImageAnnotationWorker(
+    const base::FilePath& root_path,
+    const std::vector<base::FilePath>& excluded_paths,
+    bool use_ocr,
+    bool use_ica)
     : root_path_(root_path),
+      excluded_paths_(excluded_paths),
       use_ica_(use_ica),
       use_ocr_(use_ocr),
       task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
@@ -234,7 +247,8 @@ void ImageAnnotationWorker::OnFileChange(const base::FilePath& path,
                                          bool error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOG(1) << "OnFileChange: " << path;
-  if (DirectoryExists(path) || !IsImage(path) || error) {
+  if (error || DirectoryExists(path) || !IsImage(path) ||
+      IsPathExcluded(path, excluded_paths_)) {
     return;
   }
 
