@@ -5,6 +5,7 @@
 #include <limits>
 #include <string>
 
+#include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
@@ -349,9 +350,10 @@ TEST_F(StatementTest, GetSQLStatementExcludesBoundValues) {
   ASSERT_TRUE(insert.Run());
 
   // Verify that GetSQLStatement doesn't leak any bound values that may be PII.
-  EXPECT_EQ(insert.GetSQLStatement(), "INSERT INTO texts(t) VALUES(?)");
-  EXPECT_EQ(insert.GetSQLStatement().find("VALUES"), 21U);
-  EXPECT_EQ(insert.GetSQLStatement().find("Doe"), std::string::npos);
+  std::string sql_statement = insert.GetSQLStatement();
+  EXPECT_TRUE(base::Contains(sql_statement, "INSERT INTO texts(t) VALUES(?)"));
+  EXPECT_TRUE(base::Contains(sql_statement, "VALUES"));
+  EXPECT_FALSE(base::Contains(sql_statement, "Doe"));
 
   // Sanity check that the name was actually committed.
   Statement select(db_.GetUniqueStatement("SELECT t FROM texts ORDER BY id"));

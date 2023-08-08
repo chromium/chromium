@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "base/dcheck_is_on.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
@@ -677,18 +678,18 @@ bool Recovery::AutoRecoverTable(const char* table_name,
     // somehow use data which would allow detecting the various type
     // coercions which happen.  If STRICT could be enabled, type
     // mismatches could be detected by which rows are filtered.
-    if (column_type.find("INT") != std::string::npos) {
+    if (base::Contains(column_type, "INT")) {
       if (pk_column == 1) {
         rowid_ofs = create_column_decls.size();
         rowid_decl = column_name + " ROWID";
       }
       column_decl += " INTEGER";
-    } else if (column_type.find("CHAR") != std::string::npos ||
-               column_type.find("TEXT") != std::string::npos) {
+    } else if (base::Contains(column_type, "CHAR") ||
+               base::Contains(column_type, "TEXT")) {
       column_decl += " TEXT";
     } else if (column_type == "BLOB") {
       column_decl += " BLOB";
-    } else if (column_type.find("DOUB") != std::string::npos) {
+    } else if (base::Contains(column_type, "DOUB")) {
       column_decl += " FLOAT";
     } else {
       // TODO(shess): AFAICT, there remain:

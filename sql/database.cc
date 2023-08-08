@@ -14,6 +14,7 @@
 #include <tuple>
 
 #include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/dcheck_is_on.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
@@ -1831,7 +1832,7 @@ bool Database::OpenInternal(const std::string& db_file_path,
 #if BUILDFLAG(IS_WIN)
     if (mode == OpenMode::kNone || mode == OpenMode::kRetryOnPoision) {
       // Do not allow query injection.
-      if (db_file_path.find('?') != std::string::npos) {
+      if (base::Contains(db_file_path, '?')) {
         return false;
       }
       open_flags |= SQLITE_OPEN_URI;
