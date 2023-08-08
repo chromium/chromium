@@ -376,7 +376,9 @@ bool WmGestureHandler::EndScroll() {
     // `vertical_continuous_gesture_started` is false.
     if (features::IsContinuousOverviewScrollAnimationEnabled()) {
       return vertical_continuous_gesture_started
-                 ? Handle3FingerContinuousVerticalScroll(scroll_y, false)
+                 ? Handle3FingerContinuousVerticalScroll(
+                       std::clamp(scroll_y, 0.f, kVerticalThresholdDp),
+                       /*scroll_in_progress=*/false)
                  : false;
     }
 
