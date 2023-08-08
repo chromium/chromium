@@ -77,10 +77,13 @@ export class ThemeColorPickerElement extends ThemeColorPickerElementBase {
       },
       customColor_: {
         type: Object,
-        value: {
-          background: {value: 0xffffffff},
-          foreground: {value: 0xfff1f3f4},
-        },
+        value: () =>
+            document.documentElement.hasAttribute('chrome-refresh-2023') ?
+            {} :
+            {
+              background: {value: 0xffffffff},
+              foreground: {value: 0xfff1f3f4},
+            },
       },
       showManagedDialog_: Boolean,
       showBackgroundColor_: {
@@ -118,7 +121,7 @@ export class ThemeColorPickerElement extends ThemeColorPickerElementBase {
   private theme_: Theme;
   private selectedColor_: SelectedColor;
   private isCustomColorSelected_: boolean;
-  private customColor_: Color;
+  private customColor_: Color|undefined;
   private setThemeListenerId_: number|null = null;
   private showManagedDialog_: boolean;
   private isChromeRefresh2023_: boolean;

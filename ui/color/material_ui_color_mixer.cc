@@ -149,6 +149,8 @@ void AddMaterialUiColorMixer(ColorProvider* provider,
   mixer[kColorThemeColorPickerCheckmarkBackground] = {kColorSysOnSurface};
   mixer[kColorThemeColorPickerCheckmarkForeground] = {
       kColorSysInverseOnSurface};
+  mixer[kColorThemeColorPickerCustomColorIconBackground] = {
+      kColorSysOnSurfaceSubtle};
   mixer[kColorThemeColorPickerOptionBackground] = {kColorSysNeutralContainer};
   mixer[kColorToastBackground] = {kColorSysInverseSurface};
   mixer[kColorToastButton] = {kColorSysInversePrimary};

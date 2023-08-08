@@ -53,6 +53,12 @@
     width: 20px;
   }
 
+  :host-context([chrome-refresh-2023]) #colorPickerIcon {
+    background-color: var(
+        --color-theme-color-picker-custom-color-icon-background,
+        var(--cr-fallback-color-on-surface-subtle));
+  }
+
   managed-dialog {
     --cr-dialog-width: min(calc(100% - 32px), 512px);
   }

@@ -454,6 +454,7 @@
   E_CPONLY(kColorTextfieldOutlineInvalid) \
   E_CPONLY(kColorThemeColorPickerCheckmarkBackground) \
   E_CPONLY(kColorThemeColorPickerCheckmarkForeground) \
+  E_CPONLY(kColorThemeColorPickerCustomColorIconBackground) \
   E_CPONLY(kColorThemeColorPickerOptionBackground) \
   E_CPONLY(kColorThrobber) \
   E_CPONLY(kColorThrobberPreconnect) \
