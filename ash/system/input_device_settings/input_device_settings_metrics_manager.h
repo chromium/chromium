@@ -46,6 +46,8 @@ class ASH_EXPORT InputDeviceSettingsMetricsManager {
   void RecordTouchpadChangedMetrics(
       const mojom::Touchpad& touchpad,
       const mojom::TouchpadSettings& old_settings);
+  void RecordKeyboardMouseComboDeviceMetric(const mojom::Keyboard& keyboard,
+                                            const mojom::Mouse& mouse);
 
  private:
   void RecordKeyboardNumberOfKeysRemapped(const mojom::Keyboard& keyboard);

@@ -12,9 +12,12 @@
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/threading/thread_restrictions.h"
 #include "ui/events/devices/device_util_linux.h"
+#include "ui/events/ozone/evdev/keyboard_mouse_combo_device_metrics.h"
 #include "ui/events/ozone/features.h"
 
 #if !defined(EVIOCGMTSLOTS)
@@ -743,9 +746,25 @@ bool EventDeviceInfo::UseLibinput() const {
   return useLibinput;
 }
 
+void RecordBlocklistedKeyboardMetric(input_id input_id_) {
+  static base::NoDestructor<base::flat_set<DeviceId>> logged_devices;
+  auto [_, inserted] =
+      logged_devices->insert({input_id_.vendor, input_id_.product});
+  if (inserted) {
+    base::UmaHistogramEnumeration(
+        "ChromeOS.Inputs.ComboDeviceClassification",
+        ComboDeviceClassification::kKnownKeyboardImposter);
+  }
+}
+
 bool IsInKeyboardBlockList(input_id input_id_) {
   DeviceId id = {input_id_.vendor, input_id_.product};
-  return kKeyboardBlocklist.contains(id);
+  if (kKeyboardBlocklist.contains(id)) {
+    RecordBlocklistedKeyboardMetric(input_id_);
+    return true;
+  }
+
+  return false;
 }
 
 bool EventDeviceInfo::HasKeyboard() const {

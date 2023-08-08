@@ -96,6 +96,9 @@ class ASH_EXPORT InputDeviceSettingsControllerImpl
   void ScheduleDeviceSettingsRefresh();
   void RefreshAllDeviceSettings();
 
+  void RecordComboDeviceMetric(const mojom::Keyboard& keyboard);
+  void RecordComboDeviceMetric(const mojom::Mouse& keyboard);
+
   void DispatchKeyboardConnected(DeviceId id);
   void DispatchKeyboardDisconnectedAndEraseFromList(DeviceId id);
   void DispatchKeyboardSettingsChanged(DeviceId id);

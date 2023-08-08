@@ -18177,6 +18177,13 @@ Called by update_net_error_codes.py.-->
   <int value="505" label="505: HTTP Version Not Supported"/>
 </enum>
 
+<enum name="ComboDeviceClassification">
+  <int value="0" label="KnownKeyboardImposter"/>
+  <int value="1" label="KnownMouseImposter"/>
+  <int value="2" label="KnownComboDevice"/>
+  <int value="3" label="UnknownClassification"/>
+</enum>
+
 <enum name="CommerceHeuristicsDataSource">
   <summary>Sources of commerce heuristics data.</summary>
   <int value="0" label="FromComponent"/>

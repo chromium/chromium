@@ -1504,6 +1504,19 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.Inputs.ComboDeviceClassification"
+    enum="ComboDeviceClassification" expires_after="2023-10-24">
+  <owner>dpad@google.com</owner>
+  <owner>chromeos-tango@google.com</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the classification given by ChromeOS to a given keyboard/mouse combo
+    device. These devices could either be keyboards, mice, or devices that
+    actually are &quot;combo&quot; devices that have keyboards and mice on the
+    same physical device.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.Inputs.EventRewriter.KeyRewriteLatency"
     units="microseconds" expires_after="2024-01-05">
   <owner>wangdanny@chromium.org</owner>

@@ -7,15 +7,22 @@
 #include <cstdint>
 
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/input_device_settings_controller.h"
 #include "ash/public/mojom/input_device_settings.mojom-forward.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/system/input_device_settings/input_device_settings_controller_impl.h"
+#include "ash/system/input_device_settings/input_device_settings_utils.h"
 #include "base/containers/fixed_flat_map.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_piece_forward.h"
+#include "base/strings/stringprintf.h"
 #include "ui/events/ash/keyboard_capability.h"
 #include "ui/events/ash/mojom/six_pack_shortcut_modifier.mojom-shared.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
+#include "ui/events/ozone/evdev/keyboard_mouse_combo_device_metrics.h"
 
 namespace ash {
 
@@ -671,6 +678,35 @@ void InputDeviceSettingsMetricsManager::RecordSixPackKeyInfo(
       GetSixPackKeyMetricName(GetKeyboardMetricsPrefix(keyboard), key_code,
                               is_initial_value),
       GetSixPackKeyModifier(keyboard, key_code));
+}
+
+void InputDeviceSettingsMetricsManager::RecordKeyboardMouseComboDeviceMetric(
+    const mojom::Keyboard& keyboard,
+    const mojom::Mouse& mouse) {
+  static base::NoDestructor<base::flat_set<std::string>> logged_devices;
+  static constexpr auto kKnownKeyboardMouseComboDevices =
+      base::MakeFixedFlatSet<base::StringPiece>({
+          "046d:404d",  // Logitech K400+
+          "046d:c548",  // Logitech BOLT Receiver
+      });
+
+  auto [_, inserted] = logged_devices->insert(keyboard.device_key);
+  if (!inserted) {
+    return;
+  }
+
+  if (kKnownKeyboardMouseComboDevices.contains(keyboard.device_key)) {
+    base::UmaHistogramEnumeration(
+        "ChromeOS.Inputs.ComboDeviceClassification",
+        ui::ComboDeviceClassification::kKnownComboDevice);
+  } else {
+    LOG(WARNING) << base::StringPrintf(
+        "Classification for combo device '%s' with identifier '%s' is "
+        "unknown.",
+        keyboard.name.c_str(), keyboard.device_key.c_str());
+    base::UmaHistogramEnumeration("ChromeOS.Inputs.ComboDeviceClassification",
+                                  ui::ComboDeviceClassification::kUnknown);
+  }
 }
 
 }  // namespace ash

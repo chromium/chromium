@@ -7,7 +7,10 @@
 #include "ash/public/mojom/input_device_settings.mojom.h"
 #include "ash/system/input_device_settings/input_device_settings_pref_names.h"
 #include "base/containers/fixed_flat_set.h"
+#include "base/containers/flat_set.h"
 #include "base/export_template.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -15,6 +18,7 @@
 #include "components/account_id/account_id.h"
 #include "components/user_manager/known_user.h"
 #include "ui/events/ash/mojom/modifier_key.mojom.h"
+#include "ui/events/ozone/evdev/keyboard_mouse_combo_device_metrics.h"
 
 namespace ash {
 
@@ -122,6 +126,7 @@ const base::Value::Dict* GetLoginScreenSettingsDict(
 }
 
 bool IsKeyboardPretendingToBeMouse(const ui::InputDevice& device) {
+  static base::NoDestructor<base::flat_set<VendorProductId>> logged_devices;
   static constexpr auto kKeyboardsPretendingToBeMice =
       base::MakeFixedFlatSet<VendorProductId>({
           {0x29ea, 0x0102},  // Kinesis Freestyle Edge RGB
@@ -135,8 +140,20 @@ bool IsKeyboardPretendingToBeMouse(const ui::InputDevice& device) {
           {0x05ac, 0x024f},  // EGA MGK2 (Bluetooth)
       });
 
-  return kKeyboardsPretendingToBeMice.contains(
-      {device.vendor_id, device.product_id});
+  if (kKeyboardsPretendingToBeMice.contains(
+          {device.vendor_id, device.product_id})) {
+    auto [iter, inserted] =
+        logged_devices->insert({device.vendor_id, device.product_id});
+    if (inserted) {
+      logged_devices->insert({device.vendor_id, device.product_id});
+      base::UmaHistogramEnumeration(
+          "ChromeOS.Inputs.ComboDeviceClassification",
+          ui::ComboDeviceClassification::kKnownMouseImposter);
+    }
+    return true;
+  }
+
+  return false;
 }
 
 base::Value::Dict ConvertButtonRemappingToDict(

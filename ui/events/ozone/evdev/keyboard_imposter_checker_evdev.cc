@@ -62,11 +62,14 @@ bool KeyboardImposterCheckerEvdev::FlagIfImposter(
   }
 
   converter->SetSuspectedImposter(true);
-  VLOG(1) << "Device Name: " << converter->input_device().name << " Vendor ID: "
-          << base::StringPrintf("%#06x", converter->input_device().vendor_id)
-          << " Product ID: "
-          << base::StringPrintf("%#06x", converter->input_device().product_id)
-          << " has been flagged as a suspected imposter keyboard";
+  LOG(WARNING) << "Device Name: " << converter->input_device().name
+               << " Vendor ID: "
+               << base::StringPrintf("%#06x",
+                                     converter->input_device().vendor_id)
+               << " Product ID: "
+               << base::StringPrintf("%#06x",
+                                     converter->input_device().product_id)
+               << " has been flagged as a suspected imposter keyboard";
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   fake_keyboard_heuristic_metrics_.RecordUsage(true);
 #endif
