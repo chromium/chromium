@@ -257,7 +257,6 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/keyboard/keyboard_switches.h"
-#include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/android_sms/android_sms_switches.h"
 #include "chrome/browser/ash/app_list/search/search_features.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_util.h"
@@ -11039,31 +11038,9 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
             channel != version_info::Channel::UNKNOWN);
   }
 
+  // Disable and prevent users from enabling Floss on boards that were
+  // explicitly built without it (b/228902194 for more info).
   if (!strcmp(kBluetoothUseFlossInternalName, entry.internal_name)) {
-    // TODO(b/283331754): until Floss is able to properly support Braille
-    // devices we will disable it. To ensure we haven't missed any A11Y related
-    // issues (and because IsBrailleDisplayConnected isn't necessarily accurate
-    // at this point) we disable if any have been enabled.
-    if (ash::AccessibilityManager::Get()->IsLargeCursorEnabled() ||
-        ash::AccessibilityManager::Get()->IsLiveCaptionEnabled() ||
-        ash::AccessibilityManager::Get()->IsStickyKeysEnabled() ||
-        ash::AccessibilityManager::Get()->IsSpokenFeedbackEnabled() ||
-        ash::AccessibilityManager::Get()->IsHighContrastEnabled() ||
-        ash::AccessibilityManager::Get()->IsAutoclickEnabled() ||
-        ash::AccessibilityManager::Get()->IsVirtualKeyboardEnabled() ||
-        ash::AccessibilityManager::Get()->IsMonoAudioEnabled() ||
-        ash::AccessibilityManager::Get()->IsCaretHighlightEnabled() ||
-        ash::AccessibilityManager::Get()->IsCursorHighlightEnabled() ||
-        ash::AccessibilityManager::Get()->IsDictationEnabled() ||
-        ash::AccessibilityManager::Get()->IsFocusHighlightEnabled() ||
-        ash::AccessibilityManager::Get()->IsSelectToSpeakEnabled() ||
-        ash::AccessibilityManager::Get()->IsSwitchAccessEnabled() ||
-        ash::AccessibilityManager::Get()->IsBrailleDisplayConnected()) {
-      return true;
-    }
-
-    // Disable and prevent users from enabling Floss on boards that were
-    // explicitly built without it (b/228902194 for more info).
     return base::FeatureList::GetInstance()->IsFeatureOverriddenFromCommandLine(
         floss::features::kFlossIsAvailable.name,
         base::FeatureList::OVERRIDE_DISABLE_FEATURE);
