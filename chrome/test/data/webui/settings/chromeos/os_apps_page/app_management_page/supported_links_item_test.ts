@@ -6,7 +6,7 @@ import 'chrome://os-settings/lazy_load.js';
 
 import {AppManagementSupportedLinksItemElement, AppManagementSupportedLinksOverlappingAppsDialogElement} from 'chrome://os-settings/lazy_load.js';
 import {AppManagementStore, updateSelectedAppId} from 'chrome://os-settings/os_settings.js';
-import {AppType, WindowMode} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import {App, AppType, WindowMode} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {CrRadioButtonElement} from 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.js';
 import {CrRadioGroupElement} from 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.js';
 import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -31,6 +31,11 @@ suite('<app-management-supported-links-item>', () => {
     supportedLinksItem.remove();
   });
 
+  function createSupportedLinksItemForApp(app: App): void {
+    supportedLinksItem.app = app;
+    supportedLinksItem.apps = AppManagementStore.getInstance().data.apps;
+  }
+
   test('PWA - preferred -> browser', async () => {
     const pwaOptions = {
       type: AppType.kWeb,
@@ -47,7 +52,7 @@ suite('<app-management-supported-links-item>', () => {
 
     assertTrue(!!AppManagementStore.getInstance().data.apps[app.id]);
 
-    supportedLinksItem.app = app;
+    createSupportedLinksItemForApp(app);
 
     replaceBody(supportedLinksItem);
     await fakeHandler.flushPipesForTesting();
@@ -91,7 +96,7 @@ suite('<app-management-supported-links-item>', () => {
 
     assertTrue(!!AppManagementStore.getInstance().data.apps[app.id]);
 
-    supportedLinksItem.app = app;
+    createSupportedLinksItemForApp(app);
 
     replaceBody(supportedLinksItem);
     await fakeHandler.flushPipesForTesting();
@@ -135,7 +140,7 @@ suite('<app-management-supported-links-item>', () => {
 
     assertTrue(!!AppManagementStore.getInstance().data.apps[app.id]);
 
-    supportedLinksItem.app = app;
+    createSupportedLinksItemForApp(app);
 
     replaceBody(supportedLinksItem);
     await fakeHandler.flushPipesForTesting();
@@ -161,7 +166,7 @@ suite('<app-management-supported-links-item>', () => {
 
     assertTrue(!!AppManagementStore.getInstance().data.apps[app.id]);
 
-    supportedLinksItem.app = app;
+    createSupportedLinksItemForApp(app);
 
     replaceBody(supportedLinksItem);
     await fakeHandler.flushPipesForTesting();
@@ -194,7 +199,7 @@ suite('<app-management-supported-links-item>', () => {
 
     assertTrue(!!AppManagementStore.getInstance().data.apps[app.id]);
 
-    supportedLinksItem.app = app;
+    createSupportedLinksItemForApp(app);
 
     replaceBody(supportedLinksItem);
     await fakeHandler.flushPipesForTesting();
@@ -254,16 +259,16 @@ suite('<app-management-supported-links-item>', () => {
     };
 
     // Add PWA app, and make it the currently selected app.
-    const app = await fakeHandler.addApp('app1', pwaOptions);
+    const app1 = await fakeHandler.addApp('app1', pwaOptions);
     await fakeHandler.addApp('app2', pwaOptions);
     fakeHandler.overlappingAppIds = ['app2'];
 
-    AppManagementStore.getInstance().dispatch(updateSelectedAppId(app.id));
+    AppManagementStore.getInstance().dispatch(updateSelectedAppId(app1.id));
 
     await fakeHandler.flushPipesForTesting();
 
-    assertTrue(!!AppManagementStore.getInstance().data.apps[app.id]);
-    supportedLinksItem.app = app;
+    assertTrue(!!AppManagementStore.getInstance().data.apps[app1.id]);
+    createSupportedLinksItemForApp(app1);
     replaceBody(supportedLinksItem);
     await fakeHandler.flushPipesForTesting();
     await flushTasks();
@@ -305,7 +310,7 @@ suite('<app-management-supported-links-item>', () => {
         supportedLinksItem.shadowRoot!.querySelector('#overlapDialog');
     assertNull(overlapDialog);
 
-    const selectedApp = AppManagementStore.getInstance().data.apps[app.id];
+    const selectedApp = AppManagementStore.getInstance().data.apps[app1.id];
     assertTrue(!!selectedApp);
     assertFalse(selectedApp.isPreferredApp);
     const radioGroup =
@@ -322,16 +327,16 @@ suite('<app-management-supported-links-item>', () => {
     };
 
     // Add PWA app, and make it the currently selected app.
-    const app = await fakeHandler.addApp('app1', pwaOptions);
+    const app1 = await fakeHandler.addApp('app1', pwaOptions);
     await fakeHandler.addApp('app2', pwaOptions);
     fakeHandler.overlappingAppIds = ['app2'];
 
-    AppManagementStore.getInstance().dispatch(updateSelectedAppId(app.id));
+    AppManagementStore.getInstance().dispatch(updateSelectedAppId(app1.id));
 
     await fakeHandler.flushPipesForTesting();
 
-    assertTrue(!!AppManagementStore.getInstance().data.apps[app.id]);
-    supportedLinksItem.app = app;
+    assertTrue(!!AppManagementStore.getInstance().data.apps[app1.id]);
+    createSupportedLinksItemForApp(app1);
     replaceBody(supportedLinksItem);
     await fakeHandler.flushPipesForTesting();
     await flushTasks();
@@ -370,7 +375,7 @@ suite('<app-management-supported-links-item>', () => {
 
     assertNull(supportedLinksItem.shadowRoot!.querySelector('#overlapDialog'));
 
-    const selectedApp = AppManagementStore.getInstance().data.apps[app.id];
+    const selectedApp = AppManagementStore.getInstance().data.apps[app1.id];
     assertTrue(!!selectedApp);
     assertTrue(selectedApp.isPreferredApp);
     const radioGroup =
@@ -401,7 +406,7 @@ suite('<app-management-supported-links-item>', () => {
     await fakeHandler.flushPipesForTesting();
 
     assertTrue(!!AppManagementStore.getInstance().data.apps[app1.id]);
-    supportedLinksItem.app = app1;
+    createSupportedLinksItemForApp(app1);
     replaceBody(supportedLinksItem);
     await fakeHandler.flushPipesForTesting();
     await flushTasks();
@@ -433,7 +438,7 @@ suite('<app-management-supported-links-item>', () => {
 
     assertTrue(!!AppManagementStore.getInstance().data.apps[app1.id]);
     assertTrue(!!AppManagementStore.getInstance().data.apps[app2.id]);
-    supportedLinksItem.app = app1;
+    createSupportedLinksItemForApp(app1);
     replaceBody(supportedLinksItem);
     await fakeHandler.flushPipesForTesting();
     await flushTasks();

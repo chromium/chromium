@@ -1,4 +1,4 @@
-<style include="app-management-cros-shared-style settings-shared">
+<style include="app-management-shared-style settings-shared">
   #disabledExplanationText {
     align-items: center;
     display: flex;
@@ -24,7 +24,7 @@
 <div class="permission-section-header">
   <localized-link id="heading" class="header-text"
       on-link-clicked="launchDialog_"
-      localized-string="$i18n{appManagementIntentSettingsTitle}">
+      localized-string="[[i18nAdvanced('appManagementIntentSettingsTitle')]]">
   </localized-link>
 </div>
 <template is="dom-if" if="[[disabled_]]">
@@ -48,7 +48,7 @@
     <cr-radio-button
         id="browserRadioButton"
         name="browser"
-        label="$i18n{appManagementIntentSharingOpenBrowserLabel}">
+        label="[[i18n('appManagementIntentSharingOpenBrowserLabel')]]">
     </cr-radio-button>
     <template is="dom-if" if="[[showOverlappingAppsWarning_]]">
       <div id="overlapWarning">
@@ -66,6 +66,7 @@
   <app-management-supported-links-overlapping-apps-dialog
       id="overlapDialog"
       app="[[app]]"
+      apps="[[apps]]"
       on-close="onOverlappingDialogClosed_"
       overlapping-app-ids="[[overlappingAppIds_]]">
   </app-management-supported-links-overlapping-apps-dialog>

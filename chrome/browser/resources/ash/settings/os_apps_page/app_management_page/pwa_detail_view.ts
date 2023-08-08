@@ -4,16 +4,17 @@
 import './app_details_item.js';
 import './permission_heading.js';
 import './pin_to_shelf_item.js';
-import './supported_links_item.js';
 import './sub_apps_item.js';
 import './app_management_cros_shared_style.css.js';
 import 'chrome://resources/cr_components/app_management/file_handling_item.js';
 import 'chrome://resources/cr_components/app_management/icons.html.js';
 import 'chrome://resources/cr_components/app_management/more_permissions_item.js';
 import 'chrome://resources/cr_components/app_management/permission_item.js';
+import 'chrome://resources/cr_components/app_management/supported_links_item.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 
 import {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import {AppMap} from 'chrome://resources/cr_components/app_management/constants.js';
 import {getSelectedApp} from 'chrome://resources/cr_components/app_management/util.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -36,15 +37,18 @@ export class AppManagementPwaDetailViewElement extends
   static get properties() {
     return {
       app_: Object,
+      apps_: Object,
     };
   }
 
   private app_: App;
+  private apps_: AppMap;
 
   override connectedCallback(): void {
     super.connectedCallback();
 
     this.watch('app_', state => getSelectedApp(state));
+    this.watch('apps_', state => state.apps);
     this.updateFromStore();
   }
 }

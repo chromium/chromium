@@ -174,3 +174,23 @@ export function recordAppManagementUserAction(
   BrowserProxy.getInstance().recordEnumerationValue(
       histogram, userAction, enumLength);
 }
+
+/**
+ * @param arg An argument to check for existence.
+ * @throws If |arg| is undefined or null.
+ */
+export function assertExists<T>(
+    arg: T, message: string = `Expected ${arg} to be defined.`):
+    asserts arg is NonNullable<T> {
+  assert(arg !== undefined && arg !== null, message);
+}
+
+/**
+ * @param arg A argument to check for existence.
+ * @return |arg| with the type narrowed as non-nullable.
+ * @throws If |arg| is undefined or null.
+ */
+export function castExists<T>(arg: T, message?: string): NonNullable<T> {
+  assertExists(arg, message);
+  return arg;
+}

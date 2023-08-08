@@ -1,20 +1,17 @@
-// Copyright 2021 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import '../../settings_shared.css.js';
 
-import {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {castExists} from '../../assert_extras.js';
-
-import {AppMap} from './store.js';
-import {AppManagementStoreMixin} from './store_mixin.js';
+import {App} from './app_management.mojom-webui.js';
+import {AppMap} from './constants.js';
 import {getTemplate} from './supported_links_overlapping_apps_dialog.html.js';
+import {castExists} from './util.js';
 
 export interface AppManagementSupportedLinksOverlappingAppsDialogElement {
   $: {
@@ -23,7 +20,7 @@ export interface AppManagementSupportedLinksOverlappingAppsDialogElement {
 }
 
 const AppManagementSupportedLinksOverlappingAppsDialogElementBase =
-    AppManagementStoreMixin(I18nMixin(PolymerElement));
+    I18nMixin(PolymerElement);
 
 export class AppManagementSupportedLinksOverlappingAppsDialogElement extends
     AppManagementSupportedLinksOverlappingAppsDialogElementBase {
@@ -39,7 +36,7 @@ export class AppManagementSupportedLinksOverlappingAppsDialogElement extends
     return {
       app: Object,
 
-      apps_: {
+      apps: {
         type: Object,
       },
 
@@ -51,14 +48,7 @@ export class AppManagementSupportedLinksOverlappingAppsDialogElement extends
 
   app: App;
   overlappingAppIds: string[];
-  private apps_: AppMap;
-
-  override connectedCallback(): void {
-    super.connectedCallback();
-
-    this.watch('apps_', state => state.apps);
-    this.updateFromStore();
-  }
+  apps: AppMap;
 
   private getBodyText_(apps: AppMap): string {
     const appNames: string[] = this.overlappingAppIds.map(appId => {
