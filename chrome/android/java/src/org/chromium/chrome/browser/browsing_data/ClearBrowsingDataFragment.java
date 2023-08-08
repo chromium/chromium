@@ -60,7 +60,6 @@ import org.chromium.ui.widget.ButtonCompat;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -375,8 +374,7 @@ public abstract class ClearBrowsingDataFragment extends PreferenceFragmentCompat
                 ((SpinnerPreference) findPreference(PREF_TIME_RANGE)).getSelectedOption();
         @TimePeriod
         int timePeriod = ((TimePeriodSpinnerOption) spinnerSelection).getTimePeriod();
-        // TODO(bsazonov): Change integerListToIntArray to handle Collection<Integer>.
-        int[] dataTypesArray = CollectionUtil.integerListToIntArray(new ArrayList<>(dataTypes));
+        int[] dataTypesArray = CollectionUtil.integerCollectionToIntArray(dataTypes);
         if (excludedDomains != null && excludedDomains.length != 0) {
             BrowsingDataBridge.getInstance().clearBrowsingDataExcludingDomains(this, dataTypesArray,
                     timePeriod, excludedDomains, excludedDomainReasons, ignoredDomains,

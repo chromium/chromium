@@ -914,7 +914,7 @@ public class MediaNotificationController {
             }
         }
 
-        return CollectionUtil.integerListToIntArray(compactActions);
+        return CollectionUtil.integerCollectionToIntArray(compactActions);
     }
 
     private static Context getContext() {
