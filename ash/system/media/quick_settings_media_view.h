@@ -49,6 +49,10 @@ class ASH_EXPORT QuickSettingsMediaView : public views::View {
   // Updates the media item order given the id order in the list.
   void UpdateItemOrder(std::list<std::string> ids);
 
+  // Returns the current desired height of the media view. If there are multiple
+  // media items, the height needs to be larger to display the pagination view.
+  int GetMediaViewHeight() const;
+
   // Helper functions for testing.
   PaginationModel* pagination_model_for_testing() { return &pagination_model_; }
   std::map<const std::string, global_media_controls::MediaItemUIView*>

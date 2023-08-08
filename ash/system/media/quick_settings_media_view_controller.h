@@ -69,6 +69,9 @@ class ASH_EXPORT QuickSettingsMediaViewController
   // Updates the order of media items in the quick settings media view.
   void UpdateMediaItemOrder();
 
+  // Returns the current desired height of the media view.
+  int GetMediaViewHeight();
+
   // Helper functions for testing.
   QuickSettingsMediaView* media_view_for_testing() { return media_view_; }
 

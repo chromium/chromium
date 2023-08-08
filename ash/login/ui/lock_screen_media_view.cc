@@ -33,9 +33,6 @@ namespace {
 constexpr gfx::Size kDismissButtonSize = gfx::Size(20, 20);
 constexpr int kDismissButtonIconSize = 15;
 
-// Preferred size for the media view.
-constexpr gfx::Size kMediaViewSize = gfx::Size(400, 150);
-
 // The time to delay before considering a new media session has started to
 // replace the current one.
 constexpr base::TimeDelta kSwitchMediaDelay = base::Seconds(2);
@@ -113,7 +110,6 @@ LockScreenMediaView::LockScreenMediaView(
       global_media_controls::kMediaItemArtworkDesiredSize,
       artwork_observer_receiver_.BindNewPipeAndPassRemote());
 
-  SetPreferredSize(kMediaViewSize);
   SetLayoutManager(std::make_unique<views::FillLayout>());
   const auto media_color_theme = GetCrosMediaColorTheme();
 
@@ -139,8 +135,7 @@ LockScreenMediaView::~LockScreenMediaView() {
 // views::View implementations:
 
 gfx::Size LockScreenMediaView::CalculatePreferredSize() const {
-  // Set a size in case there is no artwork and the calculated size is reduced.
-  return kMediaViewSize;
+  return global_media_controls::kCrOSMediaItemUpdatedUISize;
 }
 
 void LockScreenMediaView::GetAccessibleNodeData(ui::AXNodeData* node_data) {

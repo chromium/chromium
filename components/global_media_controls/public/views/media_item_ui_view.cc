@@ -93,9 +93,6 @@ MediaItemUIView::MediaItemUIView(
       id_(id),
       has_notification_theme_(notification_theme.has_value()) {
   CHECK(item);
-  SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical));
-  SetPreferredSize(kNormalSize);
   SetNotifyEnterExitOnChild(true);
   SetTooltipText(
       l10n_util::GetStringUTF16(IDS_GLOBAL_MEDIA_CONTROLS_BACK_TO_TAB));
@@ -136,6 +133,9 @@ MediaItemUIView::MediaItemUIView(
     // Focus behavior will be set inside MediaNotificationViewAshImpl.
     SetFocusBehavior(views::View::FocusBehavior::NEVER);
 
+    SetPreferredSize(kCrOSMediaItemUpdatedUISize);
+    SetLayoutManager(std::make_unique<views::FillLayout>());
+
     view_ = swipeable_container_->AddChildView(
         std::make_unique<MediaNotificationViewAshImpl>(
             this, std::move(item), std::move(footer_view),
@@ -143,6 +143,8 @@ MediaItemUIView::MediaItemUIView(
             media_color_theme.value(), media_display_page.value()));
   } else {
     SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
+    SetLayoutManager(std::make_unique<views::BoxLayout>(
+        views::BoxLayout::Orientation::kVertical));
 
     gfx::Size dismiss_button_size =
         has_notification_theme_ ? kCrOSDismissButtonSize : kDismissButtonSize;

@@ -135,4 +135,8 @@ void QuickSettingsMediaViewController::UpdateMediaItemOrder() {
   media_view_->UpdateItemOrder(media_item_manager_->GetActiveItemIds());
 }
 
+int QuickSettingsMediaViewController::GetMediaViewHeight() {
+  return media_view_->GetMediaViewHeight();
+}
+
 }  // namespace ash

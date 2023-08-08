@@ -6,6 +6,7 @@
 #define COMPONENTS_GLOBAL_MEDIA_CONTROLS_PUBLIC_CONSTANTS_H_
 
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace global_media_controls {
 
@@ -46,6 +47,9 @@ constexpr int kMediaItemArtworkMinSize = 114;
 // The desired size in px for the media artwork to be displayed in the item. The
 // media session service will try and select artwork closest to this size.
 constexpr int kMediaItemArtworkDesiredSize = 512;
+
+// The preferred size of the media item updated UI in Chrome OS.
+constexpr gfx::Size kCrOSMediaItemUpdatedUISize = gfx::Size(400, 150);
 
 }  // namespace global_media_controls
 

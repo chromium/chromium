@@ -32,7 +32,7 @@ using media_session::mojom::MediaSessionAction;
 namespace {
 
 constexpr auto kBorderInsets = gfx::Insets::TLBR(16, 8, 8, 8);
-constexpr auto kMainRowInsets = gfx::Insets::TLBR(0, 8, 12, 8);
+constexpr auto kMainRowInsets = gfx::Insets::TLBR(0, 8, 8, 8);
 constexpr auto kInfoColumnInsets = gfx::Insets::TLBR(0, 8, 0, 0);
 constexpr auto kPlayPauseContainerInsets = gfx::Insets::TLBR(0, 0, 8, 0);
 constexpr auto kSourceLabelInsets = gfx::Insets::TLBR(0, 0, 10, 0);
