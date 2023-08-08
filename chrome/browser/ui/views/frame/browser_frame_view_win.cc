@@ -473,7 +473,7 @@ int BrowserFrameViewWin::FrameTopBorderThickness(bool restored) const {
     // value.
     constexpr int kTopResizeFrameArea = 5;
     if (browser_view()->GetTabStripVisible()) {
-      return kTopResizeFrameArea;
+      return features::IsChromeRefresh2023() ? 0 : kTopResizeFrameArea;
     }
 
     // There is no top border in tablet mode when the window is "restored"
