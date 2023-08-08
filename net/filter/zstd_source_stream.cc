@@ -49,7 +49,7 @@ class ZstdSourceStream : public FilterSourceStream {
 
     UMA_HISTOGRAM_ENUMERATION("Net.ZstdFilter.Status", decoding_status_);
 
-    if (decoding_status_ == DecodingStatus::kEndOfFrame) {
+    if (decoding_status_ == ZstdDecodingStatus::kEndOfFrame) {
       // CompressionRatio is undefined when there is no output produced.
       if (produced_bytes_ != 0) {
         UMA_HISTOGRAM_PERCENTAGE(
@@ -60,15 +60,6 @@ class ZstdSourceStream : public FilterSourceStream {
   }
 
  private:
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  enum class DecodingStatus {
-    kDecodingInProgress = 0,
-    kEndOfFrame = 1,
-    kDecodingError = 2,
-    kMaxValue = kDecodingError,
-  };
-
   // SourceStream implementation
   std::string GetTypeAsString() const override { return kZstd; }
 
@@ -92,7 +83,7 @@ class ZstdSourceStream : public FilterSourceStream {
     *consumed_bytes = input.pos;
 
     if (ZSTD_isError(result)) {
-      decoding_status_ = DecodingStatus::kDecodingError;
+      decoding_status_ = ZstdDecodingStatus::kDecodingError;
       return base::unexpected(ERR_CONTENT_DECODING_FAILED);
     } else if (input.pos < input.size) {
       // Given a valid frame, zstd won't consume the last byte of the frame
@@ -107,13 +98,13 @@ class ZstdSourceStream : public FilterSourceStream {
         // but we reached the end of the file. We assume this is an error, and
         // the input was truncated.
         if (upstream_end_reached) {
-          decoding_status_ = DecodingStatus::kDecodingError;
+          decoding_status_ = ZstdDecodingStatus::kDecodingError;
         }
       } else {
         CHECK_EQ(result, 0u);
         CHECK_LE(output.pos, output.size);
         // Finished decoding a frame.
-        decoding_status_ = DecodingStatus::kEndOfFrame;
+        decoding_status_ = ZstdDecodingStatus::kEndOfFrame;
       }
       return output.pos;
     }
@@ -121,7 +112,7 @@ class ZstdSourceStream : public FilterSourceStream {
 
   std::unique_ptr<ZSTD_DCtx, FreeContextDeleter> dctx_;
 
-  DecodingStatus decoding_status_ = DecodingStatus::kDecodingInProgress;
+  ZstdDecodingStatus decoding_status_ = ZstdDecodingStatus::kDecodingInProgress;
 
   size_t decoding_result_ = 0;
   size_t consumed_bytes_ = 0;

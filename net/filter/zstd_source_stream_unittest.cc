@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "net/base/io_buffer.h"
 #include "net/base/test_completion_callback.h"
 #include "net/filter/mock_source_stream.h"
@@ -95,6 +96,11 @@ class ZstdSourceStreamTest : public PlatformTest {
   MockSourceStream* source() { return source_; }
   SourceStream* zstd_stream() { return zstd_stream_.get(); }
 
+  void ResetStream() {
+    source_ = nullptr;
+    zstd_stream_ = nullptr;
+  }
+
  private:
   std::unique_ptr<SourceStream> zstd_stream_;
   raw_ptr<MockSourceStream> source_;
@@ -114,12 +120,24 @@ TEST_F(ZstdSourceStreamTest, EmptyStream) {
 
 // Basic scenario: decoding zstd data with big enough buffer
 TEST_F(ZstdSourceStreamTest, DecodeZstdOneBlockSync) {
+  base::HistogramTester histograms;
+
   source()->AddReadResult(encoded_buffer(), encoded_buffer_len(), OK,
                           MockSourceStream::SYNC);
+
   TestCompletionCallback callback;
   int bytes_read = ReadStream(callback.callback());
   EXPECT_EQ(static_cast<int>(source_data_len()), bytes_read);
   EXPECT_EQ(0, memcmp(out_data(), source_data().c_str(), source_data_len()));
+
+  // Resetting streams is needed to call the destructor of ZstdSourceStream,
+  // where the histograms are recorded.
+  ResetStream();
+
+  histograms.ExpectTotalCount("Net.ZstdFilter.Status", 1);
+  histograms.ExpectUniqueSample(
+      "Net.ZstdFilter.Status",
+      static_cast<int>(ZstdDecodingStatus::kEndOfFrame), 1);
 }
 
 TEST_F(ZstdSourceStreamTest, IgnoreExtraDataInOneRead) {

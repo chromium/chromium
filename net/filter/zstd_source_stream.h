@@ -16,6 +16,15 @@ namespace net {
 NET_EXPORT_PRIVATE std::unique_ptr<FilterSourceStream> CreateZstdSourceStream(
     std::unique_ptr<SourceStream> previous);
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class ZstdDecodingStatus {
+  kDecodingInProgress = 0,
+  kEndOfFrame = 1,
+  kDecodingError = 2,
+  kMaxValue = kDecodingError,
+};
+
 }  // namespace net
 
 #endif  // NET_FILTER_ZSTD_SOURCE_STREAM_H_
