@@ -21,6 +21,7 @@
 #include "components/signin/public/base/test_signin_client.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/unexportable_keys/fake_unexportable_key_service.h"
+#include "google_apis/gaia/gaia_urls.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -36,12 +37,15 @@ constexpr char kWrappedKey[] = "wrapped_key";
 class FakeBoundSessionCookieController : public BoundSessionCookieController {
  public:
   explicit FakeBoundSessionCookieController(
-      const GURL& url,
+      bound_session_credentials::RegistrationParams registration_params,
       const base::flat_set<std::string>& cookie_names,
-      base::span<const uint8_t> wrapped_key,
       Delegate* delegate)
-      : BoundSessionCookieController(url, cookie_names, delegate),
-        wrapped_key_(wrapped_key.begin(), wrapped_key.end()) {}
+      : BoundSessionCookieController(registration_params,
+                                     cookie_names,
+                                     delegate) {
+    std::string wrapped_key_str = registration_params.wrapped_key();
+    wrapped_key_.assign(wrapped_key_str.begin(), wrapped_key_str.end());
+  }
 
   ~FakeBoundSessionCookieController() override {
     DCHECK(on_destroy_callback_);
@@ -96,7 +100,7 @@ class FakeBoundSessionCookieController : public BoundSessionCookieController {
 
 bound_session_credentials::RegistrationParams CreateTestRegistrationParams() {
   bound_session_credentials::RegistrationParams params;
-  params.set_site("google.com");
+  params.set_site(GaiaUrls::GetInstance()->secure_google_url().spec());
   params.set_session_id("test_session_id");
   params.set_wrapped_key(kWrappedKey);
   return params;
@@ -107,7 +111,6 @@ bound_session_credentials::RegistrationParams CreateTestRegistrationParams() {
 class BoundSessionCookieRefreshServiceImplTest : public testing::Test {
  public:
   const GURL kTestGaiaURL = GURL("https://google.com");
-
   BoundSessionCookieRefreshServiceImplTest() : signin_client_(&prefs_) {
     BoundSessionCookieRefreshServiceImpl::RegisterProfilePrefs(
         prefs_.registry());
@@ -116,13 +119,12 @@ class BoundSessionCookieRefreshServiceImplTest : public testing::Test {
   ~BoundSessionCookieRefreshServiceImplTest() override = default;
 
   std::unique_ptr<BoundSessionCookieController> GetBoundSessionCookieController(
-      const GURL& url,
+      bound_session_credentials::RegistrationParams registration_params,
       const base::flat_set<std::string>& cookie_names,
-      base::span<const uint8_t> wrapped_key,
       BoundSessionCookieController::Delegate* delegate) {
     std::unique_ptr<FakeBoundSessionCookieController> controller =
         std::make_unique<FakeBoundSessionCookieController>(
-            url, cookie_names, wrapped_key, delegate);
+            registration_params, cookie_names, delegate);
     controller->set_on_destroy_callback(base::BindOnce(
         &BoundSessionCookieRefreshServiceImplTest::OnCookieControllerDestroy,
         base::Unretained(this)));

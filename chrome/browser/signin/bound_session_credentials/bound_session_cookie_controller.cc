@@ -8,11 +8,11 @@
 #include "url/gurl.h"
 
 BoundSessionCookieController::BoundSessionCookieController(
-    const GURL& url,
+    bound_session_credentials::RegistrationParams registration_params,
     const base::flat_set<std::string>& cookie_names,
     Delegate* delegate)
-    : url_(url), delegate_(delegate) {
-  CHECK(!url.is_empty());
+    : url_(registration_params.site()), delegate_(delegate) {
+  CHECK(!url_.is_empty());
   CHECK(!cookie_names.empty());
   for (const std::string& cookie_name : cookie_names) {
     bound_cookies_info_.insert({cookie_name, base::Time()});

@@ -58,13 +58,20 @@ class BoundSessionCookieControllerImplTest
     signin_client_.set_cookie_manager(
         std::make_unique<BoundSessionTestCookieManager>());
 
+    std::vector<uint8_t> wrapped_key = GetWrappedKey(key_id_);
+    bound_session_credentials::RegistrationParams registration_params;
+    registration_params.set_site(
+        GaiaUrls::GetInstance()->secure_google_url().spec());
+    registration_params.set_session_id("test_session_id");
+    registration_params.set_wrapped_key(
+        std::string(wrapped_key.begin(), wrapped_key.end()));
+
     bound_session_cookie_controller_ =
         std::make_unique<BoundSessionCookieControllerImpl>(
-            unexportable_key_service_, &signin_client_,
-            GaiaUrls::GetInstance()->secure_google_url(),
+            unexportable_key_service_, &signin_client_, registration_params,
             base::flat_set<std::string>(
                 {k1PSIDTSCookieName, k3PSIDTSCookieName}),
-            GetWrappedKey(key_id_), this);
+            this);
 
     bound_session_cookie_controller_
         ->set_refresh_cookie_fetcher_factory_for_testing(

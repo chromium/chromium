@@ -23,11 +23,10 @@ using Result = BoundSessionRefreshCookieFetcher::Result;
 BoundSessionCookieControllerImpl::BoundSessionCookieControllerImpl(
     unexportable_keys::UnexportableKeyService& key_service,
     SigninClient* client,
-    const GURL& url,
+    bound_session_credentials::RegistrationParams registration_params,
     const base::flat_set<std::string>& cookie_names,
-    base::span<const uint8_t> wrapped_key,
     Delegate* delegate)
-    : BoundSessionCookieController(url, cookie_names, delegate),
+    : BoundSessionCookieController(registration_params, cookie_names, delegate),
       key_service_(key_service),
       client_(client),
       wait_for_network_callback_helper_(
@@ -35,6 +34,8 @@ BoundSessionCookieControllerImpl::BoundSessionCookieControllerImpl(
   // TODO(b/273920907): Mark `wrapped_key` as non-optional when
   // `BoundSessionCookieRefreshServiceImpl` uses only
   // explicitly registered sessions.
+  base::span<const uint8_t> wrapped_key =
+      base::as_bytes(base::make_span(registration_params.wrapped_key()));
   if (!wrapped_key.empty()) {
     session_binding_helper_ = std::make_unique<SessionBindingHelper>(
         key_service_.get(), wrapped_key, /*session_id=*/"");

@@ -31,9 +31,8 @@ class BoundSessionCookieControllerImpl : public BoundSessionCookieController {
   BoundSessionCookieControllerImpl(
       unexportable_keys::UnexportableKeyService& key_service,
       SigninClient* client,
-      const GURL& url,
+      bound_session_credentials::RegistrationParams registration_params,
       const base::flat_set<std::string>& cookie_names,
-      base::span<const uint8_t> wrapped_key,
       Delegate* delegate);
 
   void Initialize() override;

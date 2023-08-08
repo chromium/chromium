@@ -72,9 +72,8 @@ class BoundSessionCookieRefreshServiceImpl
   // `BoundSessionCookieController`.
   using BoundSessionCookieControllerFactoryForTesting =
       base::RepeatingCallback<std::unique_ptr<BoundSessionCookieController>(
-          const GURL& url,
+          bound_session_credentials::RegistrationParams registration_params,
           const base::flat_set<std::string>& cookie_names,
-          base::span<const uint8_t> wrapped_key,
           Delegate* delegate)>;
 
   // BoundSessionCookieRefreshService:
@@ -103,9 +102,8 @@ class BoundSessionCookieRefreshServiceImpl
 
   std::unique_ptr<BoundSessionCookieController>
   CreateBoundSessionCookieController(
-      const GURL& url,
-      const base::flat_set<std::string>& cookie_names,
-      base::span<const uint8_t> wrapped_key);
+      bound_session_credentials::RegistrationParams registration_params,
+      const base::flat_set<std::string>& cookie_names);
   void InitializeBoundSession();
   void ResetBoundSession();
   void OnBoundSessionUpdated();

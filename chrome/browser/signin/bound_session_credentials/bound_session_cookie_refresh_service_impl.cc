@@ -199,15 +199,14 @@ void BoundSessionCookieRefreshServiceImpl::TerminateSession() {
 
 std::unique_ptr<BoundSessionCookieController>
 BoundSessionCookieRefreshServiceImpl::CreateBoundSessionCookieController(
-    const GURL& url,
-    const base::flat_set<std::string>& cookie_names,
-    base::span<const uint8_t> wrapped_key) {
+    bound_session_credentials::RegistrationParams registration_params,
+    const base::flat_set<std::string>& cookie_names) {
   return controller_factory_for_testing_.is_null()
              ? std::make_unique<BoundSessionCookieControllerImpl>(
-                   key_service_.get(), client_, url, cookie_names, wrapped_key,
-                   this)
-             : controller_factory_for_testing_.Run(url, cookie_names,
-                                                   wrapped_key, this);
+                   key_service_.get(), client_, registration_params,
+                   cookie_names, this)
+             : controller_factory_for_testing_.Run(registration_params,
+                                                   cookie_names, this);
 }
 
 void BoundSessionCookieRefreshServiceImpl::InitializeBoundSession() {
@@ -215,19 +214,15 @@ void BoundSessionCookieRefreshServiceImpl::InitializeBoundSession() {
   constexpr char k1PSIDTSCookieName[] = "__Secure-1PSIDTS";
   constexpr char k3PSIDTSCookieName[] = "__Secure-3PSIDTS";
 
-  // TODO(http://b/286222327): pass registration params to controller.
-  absl::optional<bound_session_credentials::RegistrationParams> params =
-      GetRegistrationParams();
-  if (!params) {
+  absl::optional<bound_session_credentials::RegistrationParams>
+      registration_params = GetRegistrationParams();
+  if (!registration_params) {
     TerminateSession();
     return;
   }
 
-  base::span<const uint8_t> wrapped_key =
-      base::as_bytes(base::make_span(params->wrapped_key()));
   cookie_controller_ = CreateBoundSessionCookieController(
-      GaiaUrls::GetInstance()->secure_google_url(),
-      {k1PSIDTSCookieName, k3PSIDTSCookieName}, wrapped_key);
+      registration_params.value(), {k1PSIDTSCookieName, k3PSIDTSCookieName});
   cookie_controller_->Initialize();
 }
 
