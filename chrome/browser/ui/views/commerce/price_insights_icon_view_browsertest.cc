@@ -15,6 +15,7 @@
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/test_utils.h"
 #include "components/feature_engagement/public/feature_constants.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/user_education/test/feature_promo_test_util.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -55,6 +56,9 @@ class PriceInsightsIconViewBrowserTest : public UiBrowserTest {
     if (!price_insights_chip) {
       return false;
     }
+    EXPECT_EQ(base::ToLowerASCII(price_insights_chip->GetAccessibleName()),
+              base::ToLowerASCII(l10n_util::GetStringUTF16(
+                  IDS_SHOPPING_INSIGHTS_ICON_TOOLTIP_TEXT)));
 
     // TODO(meiliang): call VerifyPixelUi here after PriceInsightsIconView is
     // finished implementing.
@@ -151,6 +155,9 @@ class PriceInsightsIconViewWithLabelBrowserTest
 
       // TODO(meiliang): Add pixel test.
     }
+    EXPECT_EQ(base::ToLowerASCII(price_insights_chip->GetAccessibleName()),
+              base::ToLowerASCII(l10n_util::GetStringUTF16(
+                  IDS_SHOPPING_INSIGHTS_ICON_TOOLTIP_TEXT)));
     return true;
   }
 
