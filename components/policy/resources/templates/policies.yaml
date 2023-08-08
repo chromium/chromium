@@ -1139,6 +1139,7 @@ policies:
   1138: ReportWebsiteActivity
   1139: ReportWebsiteUsage
   1140: ReportWebsiteUsageCollectionRateMs
+  1141: SafeBrowsingSurveysEnabled
 atomic_groups:
   1: Homepage
   2: RemoteAccess

@@ -61,6 +61,8 @@ SafeBrowsingBlockingPage::SafeBrowsingBlockingPage(
     SafeBrowsingNavigationObserverManager* navigation_observer_manager,
     SafeBrowsingMetricsCollector* metrics_collector,
     TriggerManager* trigger_manager,
+    bool is_proceed_anyway_disabled,
+    bool is_safe_browsing_surveys_enabled,
     network::SharedURLLoaderFactory* url_loader_for_testing)
     : BaseBlockingPage(ui_manager,
                        web_contents,
@@ -75,7 +77,9 @@ SafeBrowsingBlockingPage::SafeBrowsingBlockingPage(
       history_service_(history_service),
       navigation_observer_manager_(navigation_observer_manager),
       metrics_collector_(metrics_collector),
-      trigger_manager_(trigger_manager) {
+      trigger_manager_(trigger_manager),
+      is_proceed_anyway_disabled_(is_proceed_anyway_disabled),
+      is_safe_browsing_surveys_enabled_(is_safe_browsing_surveys_enabled) {
   if (unsafe_resources.size() == 1) {
     UMA_HISTOGRAM_ENUMERATION("SafeBrowsing.BlockingPage.RequestDestination",
                               unsafe_resources[0].request_destination);
@@ -219,9 +223,11 @@ void SafeBrowsingBlockingPage::FinishThreatDetails(const base::TimeDelta& delay,
   }
   bool is_hats_candidate = false;
   if (base::FeatureList::IsEnabled(kRedWarningSurvey)) {
-    is_hats_candidate = SafeBrowsingHatsDelegate::IsSurveyCandidate(
-        threat_type_, kRedWarningSurveyReportTypeFilter.Get(), proceeded(),
-        kRedWarningSurveyDidProceedFilter.Get());
+    is_hats_candidate =
+        SafeBrowsingHatsDelegate::IsSurveyCandidate(
+            threat_type_, kRedWarningSurveyReportTypeFilter.Get(), proceeded(),
+            kRedWarningSurveyDidProceedFilter.Get()) &&
+        !is_proceed_anyway_disabled_ && is_safe_browsing_surveys_enabled_;
   }
   auto report_sent_result = trigger_manager_->FinishCollectingThreatDetails(
       TriggerType::SECURITY_INTERSTITIAL, GetWebContentsKey(web_contents()),

@@ -114,6 +114,8 @@ class SafeBrowsingBlockingPage : public BaseBlockingPage {
       SafeBrowsingNavigationObserverManager* navigation_observer_manager,
       SafeBrowsingMetricsCollector* metrics_collector,
       TriggerManager* trigger_manager,
+      bool is_proceed_anyway_disabled,
+      bool is_safe_browsing_surveys_enabled,
       network::SharedURLLoaderFactory* url_loader_for_testing = nullptr);
 
   // Called when an interstitial is closed, either due to a click through or a
@@ -159,6 +161,10 @@ class SafeBrowsingBlockingPage : public BaseBlockingPage {
   raw_ptr<TriggerManager> trigger_manager_ = nullptr;
   std::unique_ptr<security_interstitials::InterstitialInteractionMap>
       interstitial_interactions_;
+  // Whether the user has SafeBrowsingProceedAnywayDisabled enabled.
+  bool is_proceed_anyway_disabled_;
+  // Whether the user has SafeBrowsingSurveysEnabled enabled.
+  bool is_safe_browsing_surveys_enabled_;
 };
 
 }  // namespace safe_browsing

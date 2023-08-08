@@ -60,14 +60,8 @@ KeyedService* ChromePingManagerFactory::BuildServiceInstanceFor(
   Profile* profile = Profile::FromBrowserContext(context);
   std::unique_ptr<ChromeSafeBrowsingHatsDelegate> hats_delegate = nullptr;
 #if BUILDFLAG(FULL_SAFE_BROWSING)
-  // Do not serve HaTS surveys to users that have no choice in whether they
-  // bypass warnings.
-  hats_delegate =
-      profile->GetPrefs()->GetBoolean(prefs::kSafeBrowsingProceedAnywayDisabled)
-          ? nullptr
-          : std::make_unique<ChromeSafeBrowsingHatsDelegate>(
-                HatsServiceFactory::GetForProfile(
-                    profile, /*create_if_necessary=*/true));
+  hats_delegate = std::make_unique<ChromeSafeBrowsingHatsDelegate>(
+      HatsServiceFactory::GetForProfile(profile, /*create_if_necessary=*/true));
 #endif
   return PingManager::Create(
       GetV4ProtocolConfig(),

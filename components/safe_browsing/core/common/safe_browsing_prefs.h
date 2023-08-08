@@ -137,6 +137,9 @@ extern const char kSafeBrowsingHashRealTimeOhttpExpirationTime[];
 // The Oblivious HTTP key used by hash prefix real time URL check.
 extern const char kSafeBrowsingHashRealTimeOhttpKey[];
 
+// Boolean indicating whether users can receive surveys.
+extern const char kSafeBrowsingSurveysEnabled[];
+
 // A timestamp indicating the last time the account tailored security boolean
 // was updated.
 extern const char kAccountTailoredSecurityUpdateTimestamp[];
@@ -343,6 +346,12 @@ bool IsCsdPhishingProtectionAllowed(const PrefService& prefs);
 // Returns whether Safe Browsing extension protection is allowed for
 // the user.
 bool IsSafeBrowsingExtensionProtectionAllowed(const PrefService& prefs);
+
+// Returns whether a user can receive HaTS surveys.
+bool IsSafeBrowsingSurveysEnabled(const PrefService& prefs);
+
+// Returns whether a user can bypass a warning.
+bool IsSafeBrowsingProceedAnywayDisabled(const PrefService& prefs);
 
 // Returns whether hash-prefix real-time lookups are allowed for the user based
 // on enterprise policy.

@@ -250,6 +250,10 @@ PingManager::ReportThreatDetailsResult PingManager::ReportThreatDetails(
 
 void PingManager::AttachThreatDetailsAndLaunchSurvey(
     std::unique_ptr<ClientSafeBrowsingReportRequest> report) {
+  // Return early if HaTS survey is disabled by policy.
+  if (!hats_delegate_) {
+    return;
+  }
   static constexpr auto valid_report_types =
       base::MakeFixedFlatSet<ClientSafeBrowsingReportRequest::ReportType>(
           {ClientSafeBrowsingReportRequest::URL_CLIENT_SIDE_PHISHING,

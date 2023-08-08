@@ -41,8 +41,7 @@ ChromeSafeBrowsingBlockingPageFactory::CreateSafeBrowsingPage(
   PrefService* prefs = profile->GetPrefs();
   bool is_extended_reporting_opt_in_allowed =
       IsExtendedReportingOptInAllowed(*prefs);
-  bool is_proceed_anyway_disabled =
-      prefs->GetBoolean(prefs::kSafeBrowsingProceedAnywayDisabled);
+  bool is_proceed_anyway_disabled = IsSafeBrowsingProceedAnywayDisabled(*prefs);
 
   // Determine if any prefs need to be updated prior to showing the security
   // interstitial. This must happen before querying IsScout to populate the
@@ -75,7 +74,8 @@ ChromeSafeBrowsingBlockingPageFactory::CreateSafeBrowsingPage(
       SafeBrowsingNavigationObserverManagerFactory::GetForBrowserContext(
           web_contents->GetBrowserContext()),
       SafeBrowsingMetricsCollectorFactory::GetForProfile(profile),
-      trigger_manager);
+      trigger_manager, is_proceed_anyway_disabled,
+      IsSafeBrowsingSurveysEnabled(*prefs), /*url_loader_for_testing=*/nullptr);
 }
 
 #if !BUILDFLAG(IS_ANDROID)

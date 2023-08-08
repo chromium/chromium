@@ -36,7 +36,6 @@ WebLayerSafeBrowsingBlockingPageFactory::CreateSafeBrowsingPage(
   display_options.is_extended_reporting_enabled =
       safe_browsing::IsExtendedReportingEnabled(
           *(browser_context->pref_service()));
-
   // TODO(crbug.com/1080748): Set settings_page_helper once enhanced protection
   // is supported on weblayer.
   return new safe_browsing::SafeBrowsingBlockingPage(
@@ -54,7 +53,12 @@ WebLayerSafeBrowsingBlockingPageFactory::CreateSafeBrowsingPage(
           browser_context),
       BrowserProcess::GetInstance()
           ->GetSafeBrowsingService()
-          ->GetTriggerManager());
+          ->GetTriggerManager(),
+      safe_browsing::IsSafeBrowsingProceedAnywayDisabled(
+          *(browser_context->pref_service())),
+      // HaTS surveys are not supported for Weblayer.
+      /*is_safe_browsing_surveys_enabled=*/false,
+      /*url_loader_for_testing=*/nullptr);
 }
 
 }  // namespace weblayer

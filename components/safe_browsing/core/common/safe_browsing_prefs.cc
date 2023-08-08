@@ -91,6 +91,7 @@ const char kSafeBrowsingSawInterstitialScoutReporting[] =
     "safebrowsing.saw_interstitial_sber2";
 const char kSafeBrowsingScoutReportingEnabled[] =
     "safebrowsing.scout_reporting_enabled";
+const char kSafeBrowsingSurveysEnabled[] = "safebrowsing.surveys_enabled";
 const char kSafeBrowsingTriggerEventTimestamps[] =
     "safebrowsing.trigger_event_timestamps";
 const char kSafeBrowsingUnhandledGaiaPasswordReuses[] =
@@ -230,6 +231,14 @@ bool AreHashPrefixRealTimeLookupsAllowedByPolicy(const PrefService& prefs) {
   return prefs.GetBoolean(prefs::kHashPrefixRealTimeChecksAllowedByPolicy);
 }
 
+bool IsSafeBrowsingSurveysEnabled(const PrefService& prefs) {
+  return prefs.GetBoolean(prefs::kSafeBrowsingSurveysEnabled);
+}
+
+bool IsSafeBrowsingProceedAnywayDisabled(const PrefService& prefs) {
+  return prefs.GetBoolean(prefs::kSafeBrowsingProceedAnywayDisabled);
+}
+
 void RecordExtendedReportingMetrics(const PrefService& prefs) {
   // This metric tracks the extended browsing opt-in based on whichever setting
   // the user is currently seeing. It tells us whether extended reporting is
@@ -310,6 +319,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
       prefs::kSafeBrowsingExtensionProtectionAllowedByPolicy, true);
   registry->RegisterBooleanPref(prefs::kHashPrefixRealTimeChecksAllowedByPolicy,
                                 true);
+  registry->RegisterBooleanPref(prefs::kSafeBrowsingSurveysEnabled, true);
 }
 
 const base::Value::Dict& GetExtensionTelemetryConfig(const PrefService& prefs) {
@@ -432,6 +442,9 @@ base::Value::List GetSafeBrowsingPoliciesList(PrefService* prefs) {
   preferences_list.Append(
       prefs->GetBoolean(prefs::kHashPrefixRealTimeChecksAllowedByPolicy));
   preferences_list.Append(prefs::kHashPrefixRealTimeChecksAllowedByPolicy);
+  preferences_list.Append(
+      prefs->GetBoolean(prefs::kSafeBrowsingSurveysEnabled));
+  preferences_list.Append(prefs::kSafeBrowsingSurveysEnabled);
   return preferences_list;
 }
 
