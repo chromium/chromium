@@ -5,6 +5,7 @@ import os
 import platform
 import signal
 import subprocess
+import sys
 import tempfile
 import time
 from abc import ABCMeta, abstractmethod
@@ -245,10 +246,21 @@ def log_gecko_crashes(logger, process, test, profile_dir, symbols_path, stackwal
 
 
 def get_environ(logger, binary, debug_info, headless, chaos_mode_flags=None):
-    env = test_environment(xrePath=os.path.abspath(os.path.dirname(binary)),
-                           debugger=debug_info is not None,
-                           useLSan=True,
-                           log=logger)
+    # Hack: test_environment expects a bin_suffix key in mozinfo that in gecko infrastructure
+    # is set in the build system. Set it manually here.
+    if "bin_suffix" not in mozinfo.info:
+        mozinfo.info["bin_suffix"] = (".exe" if sys.platform in ["win32", "msys", "cygwin"]
+                                      else "")
+
+    # test_environment has started returning None values for some environment variables
+    # that are only set in a gecko checkout
+    env = {key: value for key, value in
+           test_environment(xrePath=os.path.abspath(os.path.dirname(binary)),
+                            debugger=debug_info is not None,
+                            useLSan=True,
+                            log=logger).items()
+           if value is not None}
+
     # Disable window occlusion. Bug 1733955
     env["MOZ_WINDOW_OCCLUSION"] = "0"
     if chaos_mode_flags is not None:
