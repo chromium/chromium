@@ -215,8 +215,7 @@ public class StartSurfaceTest {
 
         StartSurfaceTestUtils.clickMoreTabs(cta);
         StartSurfaceTestUtils.waitForTabSwitcherVisible(cta);
-        // TODO(crbug.com/1469988): This is a no-op, replace with ViewUtils.waitForVisibleView().
-        ViewUtils.isEventuallyVisible(
+        ViewUtils.waitForVisibleView(
                 allOf(withParent(withId(TabUiTestHelper.getTabSwitcherParentId(cta))),
                         withId(R.id.tab_list_view)));
 
@@ -771,8 +770,7 @@ public class StartSurfaceTest {
         Tab tab = cta.getActivityTab();
         StartSurfaceTestUtils.pressHomePageButton(cta);
 
-        // TODO(crbug.com/1469988): This is a no-op, replace with ViewUtils.waitForVisibleView().
-        ViewUtils.isEventuallyVisible(withId(R.id.primary_tasks_surface_view));
+        ViewUtils.waitForVisibleView(withId(R.id.primary_tasks_surface_view));
         StartSurfaceTestUtils.waitForStartSurfaceVisible(cta);
         Assert.assertEquals(TabLaunchType.FROM_START_SURFACE, tab.getLaunchType());
         TestThreadUtils.runOnUiThreadBlocking(

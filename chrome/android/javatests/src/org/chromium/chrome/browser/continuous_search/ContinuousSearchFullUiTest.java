@@ -109,13 +109,12 @@ public class ContinuousSearchFullUiTest {
                 () -> { ContinuousNavigationUserData.getForTab(tab).updateData(metadata, mUrl); });
 
         // Ensure all the view information is shown. This automatically checks for visible.
-        // TODO(crbug.com/1469988): These are no-ops, replace with ViewUtils.waitForVisibleView().
-        ViewUtils.isEventuallyVisible(
+        ViewUtils.waitForVisibleView(
                 allOf(withParent(withId(R.id.continuous_search_container_stub)),
                         withId(org.chromium.chrome.browser.continuous_search.R.id.container_view)));
-        ViewUtils.isEventuallyVisible(withId(org.chromium.chrome.browser.continuous_search.R.id
-                                                     .continuous_search_provider_label));
-        ViewUtils.isEventuallyVisible(
+        ViewUtils.waitForVisibleView(withId(org.chromium.chrome.browser.continuous_search.R.id
+                                                    .continuous_search_provider_label));
+        ViewUtils.waitForVisibleView(
                 withId(org.chromium.chrome.browser.continuous_search.R.id.button_dismiss));
 
         // Check the items in the carousel exist.

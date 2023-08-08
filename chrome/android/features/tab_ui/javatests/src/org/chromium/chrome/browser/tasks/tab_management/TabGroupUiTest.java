@@ -236,8 +236,7 @@ public class TabGroupUiTest {
         sActivityTestRule.startMainActivityFromLauncher();
         ChromeTabbedActivity cta = sActivityTestRule.getActivity();
         CriteriaHelper.pollUiThread(cta.getTabModelSelector()::isTabStateInitialized);
-        // TODO(crbug.com/1469988): This is a no-op, replace with ViewUtils.waitForVisibleView().
-        ViewUtils.isEventuallyVisible(allOf(withId(R.id.tab_list_view),
+        ViewUtils.waitForVisibleView(allOf(withId(R.id.tab_list_view),
                 isDescendantOfA(withId(R.id.bottom_controls)), isCompletelyDisplayed()));
 
         // The strip should be hidden when omnibox is focused.
@@ -276,8 +275,7 @@ public class TabGroupUiTest {
         sActivityTestRule.startMainActivityFromLauncher();
         ChromeTabbedActivity cta = sActivityTestRule.getActivity();
         CriteriaHelper.pollUiThread(cta.getTabModelSelector()::isTabStateInitialized);
-        // TODO(crbug.com/1469988): This is a no-op, replace with ViewUtils.waitForVisibleView().
-        ViewUtils.isEventuallyVisible(allOf(withId(R.id.tab_list_view),
+        ViewUtils.waitForVisibleView(allOf(withId(R.id.tab_list_view),
                 isDescendantOfA(withId(R.id.bottom_controls)), isCompletelyDisplayed()));
         assertTrue(isTabStripIphShowing(cta));
 

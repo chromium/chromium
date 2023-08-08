@@ -204,8 +204,7 @@ public class ClearBrowsingDataFragmentBasicTest {
         View view = mSettingsActivityTestRule.getActivity()
                             .findViewById(android.R.id.content)
                             .getRootView();
-        // TODO(crbug.com/1469988): This is a no-op, replace with ViewUtils.waitForVisibleView().
-        ViewUtils.isEventuallyVisible(withText("Frees up"));
+        ViewUtils.waitForVisibleView(withText("Frees up"));
         mRenderTestRule.render(view, "clear_browsing_data_basic_shl_unknown_signed_in");
     }
 

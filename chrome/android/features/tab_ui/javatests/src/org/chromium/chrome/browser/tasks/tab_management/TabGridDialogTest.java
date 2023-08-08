@@ -605,8 +605,7 @@ public class TabGridDialogTest {
                                                        .getBrowserControlsManager()
                                                        .getBottomControlOffset()
                         == 0);
-        // TODO(crbug.com/1469988): This is a no-op, replace with ViewUtils.waitForVisibleView().
-        ViewUtils.isEventuallyVisible(
+        ViewUtils.waitForVisibleView(
                 allOf(withId(R.id.toolbar_left_button), isCompletelyDisplayed()));
     }
 
@@ -1408,8 +1407,7 @@ public class TabGridDialogTest {
                                                        .getBrowserControlsManager()
                                                        .getBottomControlOffset()
                         == 0);
-        // TODO(crbug.com/1469988): This is a no-op, replace with ViewUtils.waitForVisibleView().
-        ViewUtils.isEventuallyVisible(
+        ViewUtils.waitForVisibleView(
                 allOf(withId(R.id.toolbar_left_button), isCompletelyDisplayed()));
 
         // Test opening dialog from strip and from tab switcher.
@@ -1455,8 +1453,7 @@ public class TabGridDialogTest {
                                                        .getBrowserControlsManager()
                                                        .getBottomControlOffset()
                         == 0);
-        // TODO(crbug.com/1469988): This is a no-op, replace with ViewUtils.waitForVisibleView().
-        ViewUtils.isEventuallyVisible(
+        ViewUtils.waitForVisibleView(
                 allOf(withId(R.id.toolbar_left_button), isCompletelyDisplayed()));
 
         // Test opening dialog from strip and from tab switcher.
@@ -1494,8 +1491,7 @@ public class TabGridDialogTest {
                                                        .getBrowserControlsManager()
                                                        .getBottomControlOffset()
                         == 0);
-        // TODO(crbug.com/1469988): This is a no-op, replace with ViewUtils.waitForVisibleView().
-        ViewUtils.isEventuallyVisible(
+        ViewUtils.waitForVisibleView(
                 allOf(withId(R.id.toolbar_left_button), isCompletelyDisplayed()));
 
         // Test opening dialog from strip and from tab switcher.

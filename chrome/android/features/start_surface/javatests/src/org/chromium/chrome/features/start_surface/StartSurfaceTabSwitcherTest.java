@@ -298,8 +298,7 @@ public class StartSurfaceTabSwitcherTest {
         // Returns to the Start surface.
         StartSurfaceTestUtils.pressHomePageButton(cta);
         StartSurfaceTestUtils.waitForStartSurfaceVisible(cta);
-        // TODO(crbug.com/1469988): This is a no-op, replace with ViewUtils.waitForVisibleView().
-        ViewUtils.isEventuallyVisible(allOf(withParent(withId(R.id.tab_switcher_module_container)),
+        ViewUtils.waitForVisibleView(allOf(withParent(withId(R.id.tab_switcher_module_container)),
                 withId(R.id.tab_list_view)));
 
         RecyclerView recyclerView =
