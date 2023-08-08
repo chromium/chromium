@@ -559,6 +559,11 @@
 // Resets the desktop content setting to its default value.
 + (void)resetDesktopContentSetting;
 
+// Sets the preference value of a content settings type for the original browser
+// state.
++ (void)setContentSetting:(ContentSetting)setting
+    forContentSettingsType:(ContentSettingsType)type;
+
 #pragma mark - Default Utilities (EG2)
 
 // Stores a value for the provided key in NSUserDefaults.

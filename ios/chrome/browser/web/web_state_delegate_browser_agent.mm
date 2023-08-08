@@ -5,6 +5,10 @@
 #import "ios/chrome/browser/web/web_state_delegate_browser_agent.h"
 
 #import "base/strings/sys_string_conversions.h"
+#import "components/content_settings/core/browser/host_content_settings_map.h"
+#import "components/content_settings/core/common/content_settings.h"
+#import "components/supervised_user/core/common/supervised_user_utils.h"
+#import "ios/chrome/browser/content_settings/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/overlays/public/overlay_callback_manager.h"
 #import "ios/chrome/browser/overlays/public/overlay_modality.h"
 #import "ios/chrome/browser/overlays/public/overlay_request.h"
@@ -12,6 +16,7 @@
 #import "ios/chrome/browser/overlays/public/overlay_response.h"
 #import "ios/chrome/browser/overlays/public/web_content_area/http_auth_overlay.h"
 #import "ios/chrome/browser/permissions/permissions_tab_helper.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
 #import "ios/chrome/browser/ui/context_menu/context_menu_configuration_provider.h"
 #import "ios/chrome/browser/ui/dialogs/nsurl_protection_space_util.h"
@@ -22,6 +27,7 @@
 #import "ios/chrome/browser/web/web_state_container_view_provider.h"
 #import "ios/chrome/browser/web_state_list/tab_insertion_browser_agent.h"
 #import "ios/components/security_interstitials/ios_blocking_page_tab_helper.h"
+#import "ios/web/public/permissions/permissions.h"
 #import "ios/web/public/ui/context_menu_params.h"
 
 BROWSER_USER_DATA_KEY_IMPL(WebStateDelegateBrowserAgent)
@@ -43,6 +49,35 @@ void OnHTTPAuthOverlayFinished(web::WebStateDelegate::AuthCallback callback,
   }
   std::move(callback).Run(nil, nil);
 }
+
+// Returns true if a supervised user attempts to access the microphone or camera
+// content setting when a parent has explicitly set site settings controls to
+// block permissions.
+bool IsMicOrCameraAccessSubjectToParentalControls(
+    ChromeBrowserState* browser_state,
+    NSArray<NSNumber*>* permissions) {
+  if (!supervised_user::IsSubjectToParentalControls(
+          browser_state->GetPrefs())) {
+    return false;
+  }
+
+  HostContentSettingsMap* host_content_settings_map =
+      ios::HostContentSettingsMapFactory::GetForBrowserState(browser_state);
+  CHECK(host_content_settings_map);
+
+  ContentSetting default_mic_setting =
+      host_content_settings_map->GetDefaultContentSetting(
+          ContentSettingsType::MEDIASTREAM_MIC, /*provider_id=*/nullptr);
+  ContentSetting default_camera_setting =
+      host_content_settings_map->GetDefaultContentSetting(
+          ContentSettingsType::MEDIASTREAM_CAMERA, /*provider_id=*/nullptr);
+
+  return ([permissions containsObject:@(web::PermissionMicrophone)] &&
+          default_mic_setting == ContentSetting::CONTENT_SETTING_BLOCK) ||
+         ([permissions containsObject:@(web::PermissionCamera)] &&
+          default_camera_setting == ContentSetting::CONTENT_SETTING_BLOCK);
+}
+
 }  // namespace
 
 WebStateDelegateBrowserAgent::WebStateDelegateBrowserAgent(
@@ -244,6 +279,16 @@ void WebStateDelegateBrowserAgent::HandlePermissionsDecisionRequest(
     web::WebState* source,
     NSArray<NSNumber*>* permissions,
     web::WebStatePermissionDecisionHandler handler) API_AVAILABLE(ios(15.0)) {
+  ChromeBrowserState* chrome_browser_state =
+      ChromeBrowserState::FromBrowserState(source->GetBrowserState());
+  // For supervised users, sites can be denied permission to access camera or
+  // mic by default. In this case, we do not show the dialog.
+  if (IsMicOrCameraAccessSubjectToParentalControls(chrome_browser_state,
+                                                   permissions)) {
+    handler(web::PermissionDecisionDeny);
+    return;
+  }
+
   PermissionsTabHelper::FromWebState(source)
       ->PresentPermissionsDecisionDialogWithCompletionHandler(permissions,
                                                               handler);

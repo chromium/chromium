@@ -14,6 +14,7 @@
 #import "base/task/sequenced_task_runner.h"
 #import "base/threading/thread_restrictions.h"
 #import "components/bookmarks/browser/bookmark_model.h"
+#import "components/content_settings/core/browser/host_content_settings_map.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #import "components/policy/core/common/configuration_policy_provider.h"
@@ -24,6 +25,7 @@
 #import "components/profile_metrics/browser_profile_type.h"
 #import "components/proxy_config/ios/proxy_service_factory.h"
 #import "components/proxy_config/pref_proxy_config_tracker.h"
+#import "components/supervised_user/core/browser/supervised_user_content_settings_provider.h"
 #import "components/supervised_user/core/browser/supervised_user_pref_store.h"
 #import "components/supervised_user/core/browser/supervised_user_settings_service.h"
 #import "components/supervised_user/core/common/features.h"
@@ -33,6 +35,7 @@
 #import "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/browser_state/constants.h"
 #import "ios/chrome/browser/browser_state/off_the_record_chrome_browser_state_impl.h"
+#import "ios/chrome/browser/content_settings/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/net/ios_chrome_url_request_context_getter.h"
 #import "ios/chrome/browser/policy/browser_policy_connector_ios.h"
 #import "ios/chrome/browser/policy/browser_state_policy_connector.h"
@@ -161,6 +164,14 @@ ChromeBrowserStateImpl::ChromeBrowserStateImpl(
 
   if (supervised_user::IsChildAccountSupervisionEnabled()) {
     supervised_user_prefs->Init(supervised_user_settings);
+
+    auto supervised_provider = std::make_unique<
+        supervised_user::SupervisedUserContentSettingsProvider>(
+        supervised_user_settings);
+
+    ios::HostContentSettingsMapFactory::GetForBrowserState(this)
+        ->RegisterProvider(HostContentSettingsMap::SUPERVISED_PROVIDER,
+                           std::move(supervised_provider));
   }
 
   base::FilePath cookie_path = state_path.Append(kIOSChromeCookieFilename);

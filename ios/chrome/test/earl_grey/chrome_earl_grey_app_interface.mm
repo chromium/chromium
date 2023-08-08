@@ -1209,6 +1209,13 @@ NSString* SerializedValue(const base::Value* value) {
                                  CONTENT_SETTING_BLOCK);
 }
 
++ (void)setContentSetting:(ContentSetting)setting
+    forContentSettingsType:(ContentSettingsType)type {
+  ios::HostContentSettingsMapFactory::GetForBrowserState(
+      chrome_test_util::GetOriginalBrowserState())
+      ->SetDefaultContentSetting(type, setting);
+}
+
 #pragma mark - Default Utilities (EG2)
 
 + (void)setUserDefaultObject:(id)value forKey:(NSString*)defaultName {
