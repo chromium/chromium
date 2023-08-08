@@ -12,6 +12,7 @@ found in the LICENSE file.
   <title>$i18n{titleText}</title>
 
   <link rel="stylesheet" href="chrome://resources/css/text_defaults.css">
+  <link rel="stylesheet" href="chrome://resources/chromeos/colors/cros_styles.css">
   <script type="module" src="chrome://lock-network/lock_screen_network.js">
   </script>
 
@@ -33,7 +34,6 @@ found in the LICENSE file.
         }
 
         [slot='header'] {
-          background: white;
           flex: 1;
           padding-bottom: 0;
           padding-inline-end: 64px;
@@ -42,8 +42,7 @@ found in the LICENSE file.
         }
 
         #title {
-          /* #202124 */
-          color: rgb(32, 33, 36);
+          color: var(--cros-text-color-primary);
           font-size: 28px;
           font-weight: 400;
           margin: 0;
@@ -51,8 +50,7 @@ found in the LICENSE file.
         }
 
         #subtitle {
-          /* #5f6368 */
-          color: rgb(95, 99, 104);
+          color: var(--cros-text-color-secondary);
           font-size: 13px;
           font-weight: 400;
           margin: 0;

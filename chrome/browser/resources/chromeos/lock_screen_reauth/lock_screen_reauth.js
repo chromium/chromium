@@ -16,6 +16,7 @@ import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import './components/buttons/oobe_text_button.js';
 import './components/oobe_icons.html.js';
+import './components/oobe_illo_icons.html.js';
 import './gaia_action_buttons/gaia_action_buttons.js';
 import '//resources/cr_elements/policy/cr_tooltip_icon.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
