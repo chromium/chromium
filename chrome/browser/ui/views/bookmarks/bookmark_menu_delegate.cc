@@ -92,7 +92,7 @@ class BookmarkModelDropObserver : public bookmarks::BaseBookmarkModelObserver {
     DCHECK(drop_parent_);
 
     DCHECK(bookmark_model_);
-    bookmark_model_->AddObserver(this);
+    bookmark_model_observation_.Observe(bookmark_model_);
   }
 
   BookmarkModelDropObserver(const BookmarkModelDropObserver&) = delete;
@@ -116,8 +116,7 @@ class BookmarkModelDropObserver : public bookmarks::BaseBookmarkModelObserver {
   void BookmarkModelBeingDeleted(BookmarkModel* model) override { CleanUp(); }
 
   void CleanUp() {
-    if (bookmark_model_)
-      bookmark_model_->RemoveObserver(this);
+    bookmark_model_observation_.Reset();
     bookmark_model_ = nullptr;
   }
 
@@ -126,6 +125,8 @@ class BookmarkModelDropObserver : public bookmarks::BaseBookmarkModelObserver {
   raw_ptr<const bookmarks::BookmarkNode> drop_parent_;
   const size_t index_to_drop_at_;
   raw_ptr<bookmarks::BookmarkModel> bookmark_model_;
+  base::ScopedObservation<BookmarkModel, BaseBookmarkModelObserver>
+      bookmark_model_observation_{this};
 };
 
 }  // namespace
@@ -143,7 +144,7 @@ BookmarkMenuDelegate::BookmarkMenuDelegate(Browser* browser,
       location_(BookmarkLaunchLocation::kNone) {}
 
 BookmarkMenuDelegate::~BookmarkMenuDelegate() {
-  GetBookmarkModel()->RemoveObserver(this);
+  bookmark_model_observation_.Reset();
 }
 
 void BookmarkMenuDelegate::Init(views::MenuDelegate* real_delegate,
@@ -152,7 +153,7 @@ void BookmarkMenuDelegate::Init(views::MenuDelegate* real_delegate,
                                 size_t start_child_index,
                                 ShowOptions show_options,
                                 BookmarkLaunchLocation location) {
-  GetBookmarkModel()->AddObserver(this);
+  bookmark_model_observation_.Observe(GetBookmarkModel());
   real_delegate_ = real_delegate;
   location_ = location;
   // Assume that the menu will only use mnemonics if there's already a parent
@@ -486,7 +487,7 @@ void BookmarkMenuDelegate::WillRemoveBookmarks(
 
   // Remove the observer so that when the remove happens we don't prematurely
   // cancel the menu. The observer is added back in DidRemoveBookmarks().
-  GetBookmarkModel()->RemoveObserver(this);
+  bookmark_model_observation_.Reset();
 
   // Remove the menu items.
   std::set<MenuItemView*> changed_parent_menus;
@@ -535,7 +536,7 @@ void BookmarkMenuDelegate::WillRemoveBookmarks(
 
 void BookmarkMenuDelegate::DidRemoveBookmarks() {
   // Balances remove in WillRemoveBookmarksImpl.
-  GetBookmarkModel()->AddObserver(this);
+  bookmark_model_observation_.Observe(GetBookmarkModel());
   DCHECK(is_mutating_model_);
   is_mutating_model_ = false;
 }
