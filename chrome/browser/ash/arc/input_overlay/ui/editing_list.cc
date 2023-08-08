@@ -170,12 +170,7 @@ void EditingList::AddZeroStateContent() {
       content_container->AddChildView(std::make_unique<views::ImageView>());
   zero_banner->SetImage(
       ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
-          // TODO(b/270969479): Replace the image once the lottie json is
-          // ready.
-          IDS_ARC_INPUT_OVERLAY_ONBOARDING_ILLUSTRATION_DARK_JSON));
-  // TODO(b/270969479): The size will be removed once the right lottie json is
-  // added.
-  zero_banner->SetImageSize(gfx::Size(92, 92));
+          IDS_ARC_INPUT_OVERLAY_ZERO_STATE_ILLUSTRATION_JSON));
   zero_banner->SetProperty(views::kMarginsKey, gfx::Insets::TLBR(0, 0, 32, 0));
   content_container->AddChildView(ash::bubble_utils::CreateLabel(
       ash::TypographyToken::kCrosBody2,
