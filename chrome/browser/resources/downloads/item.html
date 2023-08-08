@@ -175,8 +175,12 @@
   }
 
   @media (prefers-color-scheme: light) {
-    .is-active :-webkit-any(#name, #file-link, #show) {
+    .is-active :-webkit-any(#file-link, #show) {
       color: var(--google-blue-600);
+    }
+
+    .is-active #name {
+      color: var(--cr-primary-text-color);
     }
   }
 
