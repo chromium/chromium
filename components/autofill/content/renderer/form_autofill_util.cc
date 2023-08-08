@@ -2385,9 +2385,9 @@ std::vector<WebFormControlElement> FillOrPreviewForm(
   WebFormControlElement* initially_focused_element = nullptr;
 
   // This container stores the pairs of autofillable WebFormControlElement* and
-  // the corresponding indexes of |data.fields| that are used to fill this
-  // element.
-  std::vector<std::pair<WebFormControlElement*, size_t>>
+  // the corresponding FormFieldData* of `form.fields` that are used to fill
+  // this element.
+  std::vector<std::pair<WebFormControlElement*, const FormFieldData*>>
       autofillable_elements_index_pairs;
 
   std::vector<WebFormControlElement> matching_fields;
@@ -2416,24 +2416,16 @@ std::vector<WebFormControlElement> FillOrPreviewForm(
   // * Send the blur event.
   // * For each other element, focus -> autofill -> blur.
   // * Send the focus event for the initially focused element.
-  for (size_t i = 0; i < form.fields.size(); ++i) {
-    auto it = SearchInSortedVector(form.fields[i], control_elements);
+  for (const FormFieldData& field : form.fields) {
+    auto it = SearchInSortedVector(field, control_elements);
     if (it == control_elements.end()) {
       continue;
     }
-
     WebFormControlElement& element = *it;
-
-    element.SetAutofillSection(
-        WebString::FromUTF8(form.fields[i].section.ToString()));
-
-    // Only autofill empty fields (or those with the field's default value
-    // attribute) and the field that initiated the filling, i.e. the field the
-    // user is currently editing and interacting with.
-    const WebInputElement input_element = element.DynamicTo<WebInputElement>();
+    element.SetAutofillSection(WebString::FromUTF8(field.section.ToString()));
 
     if (ShouldSkipFillField(
-            form.fields[i], element,
+            field, element,
             initiating_element.DynamicTo<WebFormControlElement>())) {
       continue;
     }
@@ -2451,17 +2443,17 @@ std::vector<WebFormControlElement> FillOrPreviewForm(
       // With this, the WebAutofillState is not changed from kAutofilled to
       // kPreviewed. This prevents the highlighting to change.
       if (action_persistence == mojom::AutofillActionPersistence::kFill ||
-          form.fields[i].value != element.Value().Utf16() ||
+          field.value != element.Value().Utf16() ||
           !base::FeatureList::IsEnabled(
               features::kAutofillHighlightOnlyChangedValuesInPreviewMode)) {
-        fill_or_preview(form.fields[i], is_initiating_element, &element);
+        fill_or_preview(field, is_initiating_element, &element);
       }
       continue;
     }
     CHECK(element != initiating_element);
     // Storing the indexes of non-initiating elements to be autofilled after
     // triggering the blur event for the initiating element.
-    autofillable_elements_index_pairs.emplace_back(&element, i);
+    autofillable_elements_index_pairs.emplace_back(&element, &field);
   }
 
   // If there is no other field to be autofilled, sending the blur event and
@@ -2477,10 +2469,10 @@ std::vector<WebFormControlElement> FillOrPreviewForm(
   }
 
   // Autofill the non-initiating elements.
-  for (const auto& [filled_element, index] :
+  for (const auto& [filled_element, field_data] :
        autofillable_elements_index_pairs) {
     matching_fields.push_back(*filled_element);
-    fill_or_preview(form.fields[index], false, filled_element);
+    fill_or_preview(*field_data, false, filled_element);
   }
 
   // A focus event is emitted for the initiating element after autofilling is
