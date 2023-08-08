@@ -133,6 +133,7 @@ void CookieControlsController::Update(content::WebContents* web_contents) {
   DCHECK(web_contents);
   if (!tab_observer_ || GetWebContents() != web_contents) {
     tab_observer_ = std::make_unique<TabObserver>(this, web_contents);
+    ResetInitialCookieControlsStatus();
   }
   auto status = GetStatus(web_contents);
   if (base::FeatureList::IsEnabled(content_settings::features::kUserBypassUI)) {
@@ -430,11 +431,7 @@ void CookieControlsController::OnPageReloadDetected(int recent_reloads_count) {
     waiting_for_page_load_finish_ = true;
   }
 
-  auto status = GetStatus(GetWebContents());
-  initial_page_cookie_controls_status_ = status.status;
-  CHECK(initial_page_cookie_controls_status_ !=
-        CookieControlsStatus::kUninitialized);
-
+  ResetInitialCookieControlsStatus();
   if (!base::FeatureList::IsEnabled(
           content_settings::features::kUserBypassUI)) {
     return;
@@ -449,6 +446,7 @@ void CookieControlsController::OnPageReloadDetected(int recent_reloads_count) {
   // We only care about visits with active expirations, if there is an active
   // exception, update the last visited time, otherwise clear it.
   base::Value::Dict metadata = GetMetadata(settings_map_, url);
+  auto status = GetStatus(GetWebContents());
   if (status.status == CookieControlsStatus::kDisabledForSite) {
     metadata.Set(kLastVisitedActiveException,
                  base::TimeToValue(base::Time::Now()));
@@ -569,13 +567,23 @@ void CookieControlsController::RecordActivationMetrics() {
   // TODO(crbug.com/1446230): Add metrics, related to repeated activations.
 }
 
+void CookieControlsController::ResetInitialCookieControlsStatus() {
+  auto status = GetStatus(GetWebContents());
+  initial_page_cookie_controls_status_ = status.status;
+  CHECK(initial_page_cookie_controls_status_ !=
+        CookieControlsStatus::kUninitialized);
+}
+
 CookieControlsController::TabObserver::TabObserver(
     CookieControlsController* cookie_controls,
     content::WebContents* web_contents)
     : content_settings::PageSpecificContentSettings::SiteDataObserver(
           web_contents),
       content::WebContentsObserver(web_contents),
-      cookie_controls_(cookie_controls) {}
+      cookie_controls_(cookie_controls) {
+  last_visited_url_ =
+      content::WebContentsObserver::web_contents()->GetVisibleURL();
+}
 
 void CookieControlsController::TabObserver::OnSiteDataAccessed(
     const AccessDetails& access_details) {

@@ -30,6 +30,7 @@
 
 namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsElementId);
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondWebContentsElementId);
 
 const char kUMABubbleAllowThirdPartyCookies[] =
     "CookieControls.Bubble.AllowThirdPartyCookies";
@@ -271,6 +272,145 @@ IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiTest, ReloadView) {
       WaitForHide(CookieControlsBubbleView::kCookieControlsBubble));
   EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleAllowThirdPartyCookies), 1);
   EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleBlockThirdPartyCookies), 0);
+}
+
+IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiTest,
+                       ReloadView_TabChanged_NoReload) {
+  // Test that opening the bubble making a change, then changing tabs while
+  // the bubble is open, then re-opening the bubble on the new tab and closing
+  // _doesn't_ reload the page. Regression test for crbug.com/1470275.
+  browser()->profile()->GetPrefs()->SetInteger(
+      prefs::kCookieControlsMode,
+      static_cast<int>(content_settings::CookieControlsMode::kBlockThirdParty));
+  const GURL third_party_cookie_page_url_one =
+      https_server()->GetURL("a.test", "/third_party_partitioned_cookies.html");
+  const GURL third_party_cookie_page_url_two =
+      https_server()->GetURL("b.test", "/third_party_partitioned_cookies.html");
+
+  RunTestSequenceInContext(
+      // Setup 2 tabs, second tab becomes active.
+      context(), InstrumentTab(kWebContentsElementId),
+      NavigateWebContents(kWebContentsElementId,
+                          third_party_cookie_page_url_one),
+      AddInstrumentedTab(kSecondWebContentsElementId,
+                         third_party_cookie_page_url_two),
+
+      // Open the bubble on the second tab.
+      PressButton(kCookieControlsIconElementId),
+      InAnyContext(
+          WaitForShow(CookieControlsBubbleView::kCookieControlsBubble)),
+
+      // Allow cookies for second tab
+      PressButton(CookieControlsContentView::kToggleButton),
+
+      // Select the first tab. Bubble should be hidden by tab swap.
+      SelectTab(kTabStripElementId, 0),
+      WaitForHide(CookieControlsBubbleView::kCookieControlsBubble),
+      FlushEvents(),
+
+      // Re-open then cookie bubble on the first tab.
+      PressButton(kCookieControlsIconElementId),
+      InAnyContext(
+          WaitForShow(CookieControlsBubbleView::kCookieControlsBubble)),
+
+      // Close the bubble without making a change, the reload view should not
+      // be shown.
+      PressButton(kLocationIconElementId),
+      EnsureNotPresent(CookieControlsBubbleView::kReloadingView),
+      WaitForHide(CookieControlsBubbleView::kCookieControlsBubble));
+}
+
+IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiTest,
+                       ReloadView_TabChanged_Reload) {
+  // Test that opening the bubble, _not_ making a change, then changing tabs
+  // while the bubble is open, then re-opening the bubble on the new tab and
+  // making a change _does_ reload the page, and that on page reload the
+  // reload view should be closed.
+  // Regression test for crbug.com/1470275.
+  browser()->profile()->GetPrefs()->SetInteger(
+      prefs::kCookieControlsMode,
+      static_cast<int>(content_settings::CookieControlsMode::kBlockThirdParty));
+  const GURL third_party_cookie_page_url_one =
+      https_server()->GetURL("a.test", "/third_party_partitioned_cookies.html");
+  const GURL third_party_cookie_page_url_two =
+      https_server()->GetURL("b.test", "/third_party_partitioned_cookies.html");
+
+  RunTestSequenceInContext(
+      // Setup 2 tabs, focus moves to the second tab.
+      context(), InstrumentTab(kWebContentsElementId),
+      NavigateWebContents(kWebContentsElementId,
+                          third_party_cookie_page_url_one),
+      AddInstrumentedTab(kSecondWebContentsElementId,
+                         third_party_cookie_page_url_two),
+
+      // Open the bubble on the second tab. Don't make any changes to the
+      // setting.
+      PressButton(kCookieControlsIconElementId),
+      InAnyContext(WaitForShow(CookieControlsBubbleView::kContentView)),
+
+      // Select the first tab. Bubble should be hidden by tab swap.
+      SelectTab(kTabStripElementId, 0),
+      WaitForHide(CookieControlsBubbleView::kCookieControlsBubble),
+      FlushEvents(),
+
+      // Re-open then cookie bubble on the first tab.
+      PressButton(kCookieControlsIconElementId),
+      InAnyContext(WaitForShow(CookieControlsBubbleView::kContentView)),
+
+      // Change the setting and close the bubble. The reloading view should
+      // be shown, and the view should close automatically.
+      PressButton(CookieControlsContentView::kToggleButton),
+
+      PressButton(kLocationIconElementId),
+      InAnyContext(WaitForShow(CookieControlsBubbleView::kReloadingView)),
+      WaitForHide(CookieControlsBubbleView::kCookieControlsBubble));
+}
+
+IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiTest,
+                       ReloadView_TabChangedDifferentSetting_NoReload) {
+  // Test that loading a page with cookies allowed, then swapping to a tab
+  // where cookies are disabled, then opening and closing the bubble without
+  // making a change _does not_ reload the page.
+  // Regression test for crbug.com/1470275.
+  browser()->profile()->GetPrefs()->SetInteger(
+      prefs::kCookieControlsMode,
+      static_cast<int>(content_settings::CookieControlsMode::kBlockThirdParty));
+  const GURL third_party_cookie_page_url_one =
+      https_server()->GetURL("a.test", "/third_party_partitioned_cookies.html");
+  const GURL third_party_cookie_page_url_two =
+      https_server()->GetURL("b.test", "/third_party_partitioned_cookies.html");
+  cookie_settings()->SetCookieSettingForUserBypass(
+      third_party_cookie_page_url_two);
+
+  RunTestSequenceInContext(
+      // Setup 2 tabs, focus moves to the second tab.
+      context(), InstrumentTab(kWebContentsElementId),
+      NavigateWebContents(kWebContentsElementId,
+                          third_party_cookie_page_url_one),
+      AddInstrumentedTab(kSecondWebContentsElementId,
+                         third_party_cookie_page_url_two),
+
+      // Open the bubble on the second tab, where cookies are allowed.
+      PressButton(kCookieControlsIconElementId),
+      InAnyContext(
+          WaitForShow(CookieControlsBubbleView::kCookieControlsBubble)),
+
+      // Select the first tab. Bubble should be hidden by tab swap.
+      SelectTab(kTabStripElementId, 0),
+      WaitForHide(CookieControlsBubbleView::kCookieControlsBubble),
+      FlushEvents(),
+
+      // Re-open then cookie bubble on the first tab, where cookies are
+      // disallowed.
+      PressButton(kCookieControlsIconElementId),
+      InAnyContext(
+          WaitForShow(CookieControlsBubbleView::kCookieControlsBubble)),
+
+      // Close the bubble without making a change, the reload view should not
+      // be shown.
+      PressButton(kLocationIconElementId),
+      EnsureNotPresent(CookieControlsBubbleView::kReloadingView),
+      WaitForHide(CookieControlsBubbleView::kCookieControlsBubble));
 }
 
 IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiTest, NoReloadView) {

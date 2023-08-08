@@ -164,6 +164,8 @@ class CookieControlsController
   // Record metrics when third-party cookies are allowed.
   void RecordActivationMetrics();
 
+  void ResetInitialCookieControlsStatus();
+
   content::WebContents* GetWebContents() const;
 
   std::unique_ptr<TabObserver> tab_observer_;
