@@ -144,6 +144,10 @@ extern const char kSafeBrowsingSurveysEnabled[];
 // was updated.
 extern const char kAccountTailoredSecurityUpdateTimestamp[];
 
+// Timestamp indicating when the next time the sync flow retry can happen is.
+// This value is managed by the ChromeTailoredSecurityService.
+extern const char kTailoredSecurityNextSyncFlowTimestamp[];
+
 // Timestamp indicating the last time the tailored security sync flow ran.
 extern const char kTailoredSecuritySyncFlowLastRunTime[];
 

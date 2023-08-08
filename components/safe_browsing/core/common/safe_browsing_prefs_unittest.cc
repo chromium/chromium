@@ -80,6 +80,14 @@ TEST_F(SafeBrowsingPrefsTest,
       TailoredSecurityRetryState::UNSET);
 }
 
+TEST_F(SafeBrowsingPrefsTest,
+       TailoredSecurityNextSyncFlowTimestampIsInitialized) {
+  TestingPrefServiceSimple prefs;
+  RegisterProfilePrefs(prefs.registry());
+  EXPECT_EQ(prefs.GetTime(prefs::kTailoredSecurityNextSyncFlowTimestamp),
+            base::Time());
+}
+
 TEST_F(SafeBrowsingPrefsTest, TailoredSecuritySyncFlowRetryStateIsInitialized) {
   TestingPrefServiceSimple prefs;
   RegisterProfilePrefs(prefs.registry());

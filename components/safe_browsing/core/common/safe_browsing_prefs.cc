@@ -119,6 +119,8 @@ const char kSafeBrowsingHashRealTimeOhttpKey[] =
     "safebrowsing.hash_real_time_ohttp_key";
 const char kAccountTailoredSecurityUpdateTimestamp[] =
     "safebrowsing.aesb_update_time_windows_epoch_micros";
+const char kTailoredSecurityNextSyncFlowTimestamp[] =
+    "safebrowsing.aesb_next_sync_flow_timestamp";
 const char kAccountTailoredSecurityShownNotification[] =
     "safebrowsing.aesb_shown_notification";
 const char kTailoredSecuritySyncFlowLastRunTime[] =
@@ -298,6 +300,8 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(
       prefs::kEnhancedProtectionEnabledViaTailoredSecurity, false);
   registry->RegisterTimePref(prefs::kTailoredSecuritySyncFlowLastRunTime,
+                             base::Time());
+  registry->RegisterTimePref(prefs::kTailoredSecurityNextSyncFlowTimestamp,
                              base::Time());
   // TODO(crbug.com/1469133): remove sync flow last user interaction pref.
   registry->RegisterIntegerPref(
