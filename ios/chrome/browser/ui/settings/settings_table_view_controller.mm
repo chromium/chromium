@@ -266,8 +266,6 @@ UIImage* GetBrandedGoogleServicesSymbol() {
   AddressBarPreferenceCoordinator* _addressBarPreferenceCoordinator;
 }
 
-// The item related to the switch for the bottom omnibox settings.
-@property(nonatomic, strong, readonly) TableViewSwitchItem* bottomOmniboxItem;
 // The item related to the switch for the show feed settings.
 @property(nonatomic, strong, readonly) TableViewSwitchItem* feedSettingsItem;
 // The item related to the enterprise managed show feed settings.
@@ -296,7 +294,6 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 @end
 
 @implementation SettingsTableViewController
-@synthesize bottomOmniboxItem = _bottomOmniboxItem;
 @synthesize dispatcher = _dispatcher;
 @synthesize managedFeedSettingsItem = _managedFeedSettingsItem;
 @synthesize feedSettingsItem = _feedSettingsItem;
