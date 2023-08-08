@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/uninstall/remove_install_url_job.h"
+#include "chrome/browser/web_applications/jobs/uninstall/remove_install_url_job.h"
 
 #include "base/containers/contains.h"
 #include "base/strings/to_string.h"
 #include "base/values.h"
+#include "chrome/browser/web_applications/jobs/uninstall/remove_install_source_job.h"
 #include "chrome/browser/web_applications/locks/all_apps_lock.h"
-#include "chrome/browser/web_applications/uninstall/remove_install_source_job.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"

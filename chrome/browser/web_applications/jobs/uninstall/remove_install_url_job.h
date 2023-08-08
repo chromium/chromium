@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_WEB_APPLICATIONS_UNINSTALL_REMOVE_INSTALL_URL_JOB_H_
-#define CHROME_BROWSER_WEB_APPLICATIONS_UNINSTALL_REMOVE_INSTALL_URL_JOB_H_
+#ifndef CHROME_BROWSER_WEB_APPLICATIONS_JOBS_UNINSTALL_REMOVE_INSTALL_URL_JOB_H_
+#define CHROME_BROWSER_WEB_APPLICATIONS_JOBS_UNINSTALL_REMOVE_INSTALL_URL_JOB_H_
 
 #include <memory>
 
@@ -12,7 +12,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
-#include "chrome/browser/web_applications/uninstall/uninstall_job.h"
+#include "chrome/browser/web_applications/jobs/uninstall/uninstall_job.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
@@ -64,4 +64,4 @@ class RemoveInstallUrlJob : public UninstallJob {
 
 }  // namespace web_app
 
-#endif  // CHROME_BROWSER_WEB_APPLICATIONS_UNINSTALL_REMOVE_INSTALL_URL_JOB_H_
+#endif  // CHROME_BROWSER_WEB_APPLICATIONS_JOBS_UNINSTALL_REMOVE_INSTALL_URL_JOB_H_

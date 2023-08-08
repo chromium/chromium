@@ -22,7 +22,7 @@
 #include "chrome/browser/web_applications/commands/uninstall_all_user_installed_web_apps_command.h"
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/isolated_web_apps/install_isolated_web_app_command.h"
-#include "chrome/browser/web_applications/uninstall/uninstall_job.h"
+#include "chrome/browser/web_applications/jobs/uninstall/uninstall_job.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "components/webapps/browser/installable/installable_metrics.h"

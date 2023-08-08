@@ -11,8 +11,8 @@
 #include "base/values.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/external_install_options.h"
+#include "chrome/browser/web_applications/jobs/uninstall/web_app_uninstall_and_replace_job.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
-#include "chrome/browser/web_applications/web_app_uninstall_and_replace_job.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;

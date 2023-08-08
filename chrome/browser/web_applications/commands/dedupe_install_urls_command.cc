@@ -12,7 +12,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/to_string.h"
 #include "chrome/browser/web_applications/callback_utils.h"
-#include "chrome/browser/web_applications/uninstall/remove_install_url_job.h"
+#include "chrome/browser/web_applications/jobs/uninstall/remove_install_url_job.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"

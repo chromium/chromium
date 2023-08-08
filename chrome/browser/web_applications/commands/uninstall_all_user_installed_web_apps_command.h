@@ -9,7 +9,7 @@
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
-#include "chrome/browser/web_applications/uninstall/remove_install_source_job.h"
+#include "chrome/browser/web_applications/jobs/uninstall/remove_install_source_job.h"
 
 namespace webapps {
 enum class UninstallResultCode;
