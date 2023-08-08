@@ -15,6 +15,7 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
@@ -203,36 +204,33 @@ TEST_F(MockQuotaManagerTest, GetOrCreateBucket) {
   EXPECT_EQ(manager()->BucketDataCount(kClientFile), 0);
   EXPECT_EQ(manager()->BucketDataCount(kClientDB), 0);
 
-  QuotaErrorOr<BucketInfo> bucket1 =
-      GetOrCreateBucket(kStorageKey1, kBucketName);
-  ASSERT_TRUE(bucket1.has_value());
-  EXPECT_EQ(bucket1->storage_key, kStorageKey1);
-  EXPECT_EQ(bucket1->name, kBucketName);
-  EXPECT_EQ(bucket1->type, kTemporary);
+  ASSERT_OK_AND_ASSIGN(BucketInfo bucket1,
+                       GetOrCreateBucket(kStorageKey1, kBucketName));
+  EXPECT_EQ(bucket1.storage_key, kStorageKey1);
+  EXPECT_EQ(bucket1.name, kBucketName);
+  EXPECT_EQ(bucket1.type, kTemporary);
   EXPECT_EQ(manager()->BucketDataCount(kClientFile), 1);
-  EXPECT_TRUE(manager()->BucketHasData(bucket1.value(), kClientFile));
+  EXPECT_TRUE(manager()->BucketHasData(bucket1, kClientFile));
 
-  QuotaErrorOr<BucketInfo> bucket2 =
-      GetOrCreateBucket(kStorageKey2, kBucketName);
-  ASSERT_TRUE(bucket2.has_value());
-  EXPECT_EQ(bucket2->storage_key, kStorageKey2);
-  EXPECT_EQ(bucket2->name, kBucketName);
-  EXPECT_EQ(bucket2->type, kTemporary);
+  ASSERT_OK_AND_ASSIGN(BucketInfo bucket2,
+                       GetOrCreateBucket(kStorageKey2, kBucketName));
+  EXPECT_EQ(bucket2.storage_key, kStorageKey2);
+  EXPECT_EQ(bucket2.name, kBucketName);
+  EXPECT_EQ(bucket2.type, kTemporary);
   EXPECT_EQ(manager()->BucketDataCount(kClientFile), 2);
-  EXPECT_TRUE(manager()->BucketHasData(bucket2.value(), kClientFile));
+  EXPECT_TRUE(manager()->BucketHasData(bucket2, kClientFile));
 
-  QuotaErrorOr<BucketInfo> dupe_bucket =
-      GetOrCreateBucket(kStorageKey1, kBucketName);
-  ASSERT_TRUE(dupe_bucket.has_value());
-  EXPECT_EQ(dupe_bucket.value(), bucket1.value());
+  ASSERT_OK_AND_ASSIGN(BucketInfo dupe_bucket,
+                       GetOrCreateBucket(kStorageKey1, kBucketName));
+  EXPECT_EQ(dupe_bucket, bucket1);
   EXPECT_EQ(manager()->BucketDataCount(kClientFile), 2);
 
   // GetOrCreateBucket actually creates buckets associated with all quota client
   // types, so check them all.
   for (auto client_type : AllQuotaClientTypes()) {
     EXPECT_EQ(manager()->BucketDataCount(client_type), 2);
-    EXPECT_TRUE(manager()->BucketHasData(bucket1.value(), client_type));
-    EXPECT_TRUE(manager()->BucketHasData(bucket2.value(), client_type));
+    EXPECT_TRUE(manager()->BucketHasData(bucket1, client_type));
+    EXPECT_TRUE(manager()->BucketHasData(bucket2, client_type));
   }
 }
 
@@ -247,36 +245,35 @@ TEST_F(MockQuotaManagerTest, GetOrCreateBucketSync) {
   EXPECT_EQ(manager()->BucketDataCount(kClientDB), 0);
 
   BucketInitParams params(kStorageKey1, kBucketName);
-  QuotaErrorOr<BucketInfo> bucket1 = manager()->GetOrCreateBucketSync(params);
-  ASSERT_TRUE(bucket1.has_value());
-  EXPECT_EQ(bucket1->storage_key, kStorageKey1);
-  EXPECT_EQ(bucket1->name, kBucketName);
-  EXPECT_EQ(bucket1->type, kTemporary);
+  ASSERT_OK_AND_ASSIGN(BucketInfo bucket1,
+                       manager()->GetOrCreateBucketSync(params));
+  EXPECT_EQ(bucket1.storage_key, kStorageKey1);
+  EXPECT_EQ(bucket1.name, kBucketName);
+  EXPECT_EQ(bucket1.type, kTemporary);
   EXPECT_EQ(manager()->BucketDataCount(kClientFile), 1);
-  EXPECT_TRUE(manager()->BucketHasData(bucket1.value(), kClientFile));
+  EXPECT_TRUE(manager()->BucketHasData(bucket1, kClientFile));
 
   params = BucketInitParams(kStorageKey2, kBucketName);
-  QuotaErrorOr<BucketInfo> bucket2 = manager()->GetOrCreateBucketSync(params);
-  ASSERT_TRUE(bucket2.has_value());
-  EXPECT_EQ(bucket2->storage_key, kStorageKey2);
-  EXPECT_EQ(bucket2->name, kBucketName);
-  EXPECT_EQ(bucket2->type, kTemporary);
+  ASSERT_OK_AND_ASSIGN(BucketInfo bucket2,
+                       manager()->GetOrCreateBucketSync(params));
+  EXPECT_EQ(bucket2.storage_key, kStorageKey2);
+  EXPECT_EQ(bucket2.name, kBucketName);
+  EXPECT_EQ(bucket2.type, kTemporary);
   EXPECT_EQ(manager()->BucketDataCount(kClientFile), 2);
-  EXPECT_TRUE(manager()->BucketHasData(bucket2.value(), kClientFile));
+  EXPECT_TRUE(manager()->BucketHasData(bucket2, kClientFile));
 
   params = BucketInitParams(kStorageKey1, kBucketName);
-  QuotaErrorOr<BucketInfo> dupe_bucket =
-      manager()->GetOrCreateBucketSync(params);
-  ASSERT_TRUE(dupe_bucket.has_value());
-  EXPECT_EQ(dupe_bucket.value(), bucket1.value());
+  ASSERT_OK_AND_ASSIGN(BucketInfo dupe_bucket,
+                       manager()->GetOrCreateBucketSync(params));
+  EXPECT_EQ(dupe_bucket, bucket1);
   EXPECT_EQ(manager()->BucketDataCount(kClientFile), 2);
 
   // GetOrCreateBucket actually creates buckets associated with all quota client
   // types, so check them all.
   for (auto client_type : AllQuotaClientTypes()) {
     EXPECT_EQ(manager()->BucketDataCount(client_type), 2);
-    EXPECT_TRUE(manager()->BucketHasData(bucket1.value(), client_type));
-    EXPECT_TRUE(manager()->BucketHasData(bucket2.value(), client_type));
+    EXPECT_TRUE(manager()->BucketHasData(bucket1, client_type));
+    EXPECT_TRUE(manager()->BucketHasData(bucket2, client_type));
   }
 }
 
@@ -290,28 +287,27 @@ TEST_F(MockQuotaManagerTest, CreateBucketForTesting) {
   EXPECT_EQ(manager()->BucketDataCount(kClientFile), 0);
   EXPECT_EQ(manager()->BucketDataCount(kClientDB), 0);
 
-  QuotaErrorOr<BucketInfo> bucket1 =
-      CreateBucketForTesting(kStorageKey1, kBucketName, kTemporary);
-  ASSERT_TRUE(bucket1.has_value());
-  EXPECT_EQ(bucket1->storage_key, kStorageKey1);
-  EXPECT_EQ(bucket1->name, kBucketName);
-  EXPECT_EQ(bucket1->type, kTemporary);
+  ASSERT_OK_AND_ASSIGN(
+      BucketInfo bucket1,
+      CreateBucketForTesting(kStorageKey1, kBucketName, kTemporary));
+  EXPECT_EQ(bucket1.storage_key, kStorageKey1);
+  EXPECT_EQ(bucket1.name, kBucketName);
+  EXPECT_EQ(bucket1.type, kTemporary);
   EXPECT_EQ(manager()->BucketDataCount(kClientFile), 1);
-  EXPECT_TRUE(manager()->BucketHasData(bucket1.value(), kClientFile));
+  EXPECT_TRUE(manager()->BucketHasData(bucket1, kClientFile));
 
-  QuotaErrorOr<BucketInfo> bucket2 =
-      CreateBucketForTesting(kStorageKey2, kBucketName, kTemporary);
-  ASSERT_TRUE(bucket2.has_value());
-  EXPECT_EQ(bucket2->storage_key, kStorageKey2);
-  EXPECT_EQ(bucket2->name, kBucketName);
-  EXPECT_EQ(bucket2->type, kTemporary);
+  ASSERT_OK_AND_ASSIGN(
+      BucketInfo bucket2,
+      CreateBucketForTesting(kStorageKey2, kBucketName, kTemporary));
+  EXPECT_EQ(bucket2.storage_key, kStorageKey2);
+  EXPECT_EQ(bucket2.name, kBucketName);
+  EXPECT_EQ(bucket2.type, kTemporary);
   EXPECT_EQ(manager()->BucketDataCount(kClientFile), 2);
-  EXPECT_TRUE(manager()->BucketHasData(bucket2.value(), kClientFile));
+  EXPECT_TRUE(manager()->BucketHasData(bucket2, kClientFile));
 
-  QuotaErrorOr<BucketInfo> dupe_bucket =
-      GetOrCreateBucket(kStorageKey1, kBucketName);
-  ASSERT_TRUE(dupe_bucket.has_value());
-  EXPECT_EQ(dupe_bucket.value(), bucket1.value());
+  ASSERT_OK_AND_ASSIGN(BucketInfo dupe_bucket,
+                       GetOrCreateBucket(kStorageKey1, kBucketName));
+  EXPECT_EQ(dupe_bucket, bucket1);
   EXPECT_EQ(manager()->BucketDataCount(kClientFile), 2);
 }
 
@@ -322,29 +318,27 @@ TEST_F(MockQuotaManagerTest, GetBucket) {
       StorageKey::CreateFromStringForTesting("http://host2:1/");
 
   {
-    QuotaErrorOr<BucketInfo> created =
-        GetOrCreateBucket(kStorageKey1, kDefaultBucketName);
-    ASSERT_TRUE(created.has_value());
-    QuotaErrorOr<BucketInfo> fetched =
-        GetBucket(kStorageKey1, kDefaultBucketName, kTemporary);
-    ASSERT_TRUE(fetched.has_value());
-    EXPECT_EQ(fetched.value(), created.value());
-    EXPECT_EQ(fetched->storage_key, kStorageKey1);
-    EXPECT_EQ(fetched->name, kDefaultBucketName);
-    EXPECT_EQ(fetched->type, kTemporary);
+    ASSERT_OK_AND_ASSIGN(BucketInfo created,
+                         GetOrCreateBucket(kStorageKey1, kDefaultBucketName));
+    ASSERT_OK_AND_ASSIGN(
+        BucketInfo fetched,
+        GetBucket(kStorageKey1, kDefaultBucketName, kTemporary));
+    EXPECT_EQ(fetched, created);
+    EXPECT_EQ(fetched.storage_key, kStorageKey1);
+    EXPECT_EQ(fetched.name, kDefaultBucketName);
+    EXPECT_EQ(fetched.type, kTemporary);
   }
 
   {
-    QuotaErrorOr<BucketInfo> created =
-        GetOrCreateBucket(kStorageKey2, kDefaultBucketName);
-    ASSERT_TRUE(created.has_value());
-    QuotaErrorOr<BucketInfo> fetched =
-        GetBucket(kStorageKey2, kDefaultBucketName, kTemporary);
-    ASSERT_TRUE(fetched.has_value());
-    EXPECT_EQ(fetched.value(), created.value());
-    EXPECT_EQ(fetched->storage_key, kStorageKey2);
-    EXPECT_EQ(fetched->name, kDefaultBucketName);
-    EXPECT_EQ(fetched->type, kTemporary);
+    ASSERT_OK_AND_ASSIGN(BucketInfo created,
+                         GetOrCreateBucket(kStorageKey2, kDefaultBucketName));
+    ASSERT_OK_AND_ASSIGN(
+        BucketInfo fetched,
+        GetBucket(kStorageKey2, kDefaultBucketName, kTemporary));
+    EXPECT_EQ(fetched, created);
+    EXPECT_EQ(fetched.storage_key, kStorageKey2);
+    EXPECT_EQ(fetched.name, kDefaultBucketName);
+    EXPECT_EQ(fetched.type, kTemporary);
   }
 
   EXPECT_FALSE(
@@ -490,28 +484,27 @@ TEST_F(MockQuotaManagerTest, QuotaAndUsage) {
   const blink::StorageKey storage_key2 =
       StorageKey::CreateFromStringForTesting("http://host2:1/");
 
-  QuotaErrorOr<BucketInfo> result =
-      GetOrCreateBucketDeprecated(storage_key1, kTemporary, kDefaultBucketName);
-  ASSERT_TRUE(result.has_value());
+  ASSERT_OK_AND_ASSIGN(BucketInfo result,
+                       GetOrCreateBucketDeprecated(storage_key1, kTemporary,
+                                                   kDefaultBucketName));
   const BucketLocator storage_key1_temp_default_bucket =
-      result->ToBucketLocator();
+      result.ToBucketLocator();
 
-  result = GetOrCreateBucketDeprecated(storage_key1, kTemporary, "non-default");
-  ASSERT_TRUE(result.has_value());
-  const BucketLocator storage_key1_temp_named_bucket =
-      result->ToBucketLocator();
+  ASSERT_OK_AND_ASSIGN(result, GetOrCreateBucketDeprecated(
+                                   storage_key1, kTemporary, "non-default"));
+  const BucketLocator storage_key1_temp_named_bucket = result.ToBucketLocator();
 
-  result =
-      GetOrCreateBucketDeprecated(storage_key1, kSyncable, kDefaultBucketName);
-  ASSERT_TRUE(result.has_value());
+  ASSERT_OK_AND_ASSIGN(
+      result,
+      GetOrCreateBucketDeprecated(storage_key1, kSyncable, kDefaultBucketName));
   const BucketLocator storage_key1_sync_default_bucket =
-      result->ToBucketLocator();
+      result.ToBucketLocator();
 
-  result =
-      GetOrCreateBucketDeprecated(storage_key2, kTemporary, kDefaultBucketName);
-  ASSERT_TRUE(result.has_value());
+  ASSERT_OK_AND_ASSIGN(result,
+                       GetOrCreateBucketDeprecated(storage_key2, kTemporary,
+                                                   kDefaultBucketName));
   const BucketLocator storage_key2_temp_default_bucket =
-      result->ToBucketLocator();
+      result.ToBucketLocator();
 
   SCOPED_TRACE(
       "Checking default usage and quota for storage_key1 (kTemporary)");
