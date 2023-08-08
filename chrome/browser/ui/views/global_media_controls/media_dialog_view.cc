@@ -89,22 +89,6 @@ std::u16string GetLiveCaptionTitle(PrefService* profile_prefs) {
   return l10n_util::GetStringUTF16(IDS_GLOBAL_MEDIA_CONTROLS_LIVE_CAPTION);
 }
 
-void UpdateMediaSessionItemReceiverName(
-    base::WeakPtr<media_message_center::MediaNotificationItem> item,
-    const absl::optional<media_router::MediaRoute>& route) {
-  if (item->SourceType() ==
-      media_message_center::SourceType::kLocalMediaSession) {
-    auto* media_session_item =
-        static_cast<global_media_controls::MediaSessionNotificationItem*>(
-            item.get());
-    if (route.has_value()) {
-      media_session_item->UpdateDeviceName(route->media_sink_name());
-    } else {
-      media_session_item->UpdateDeviceName(absl::nullopt);
-    }
-  }
-}
-
 }  // namespace
 
 // static
@@ -220,13 +204,14 @@ void MediaDialogView::HideMediaItem(const std::string& id) {
 void MediaDialogView::RefreshMediaItem(
     const std::string& id,
     base::WeakPtr<media_message_center::MediaNotificationItem> item) {
-  DCHECK(observed_items_[id]);
+  if (!observed_items_[id]) {
+    return;
+  }
 
-  auto device_selector_view =
-      BuildDeviceSelector(id, item, service_, service_, profile_, entry_point_);
   observed_items_[id]->UpdateFooterView(
-      BuildFooterView(id, item, device_selector_view.get()));
-  observed_items_[id]->UpdateDeviceSelector(std::move(device_selector_view));
+      BuildFooter(id, item, profile_, entry_point_));
+  observed_items_[id]->UpdateDeviceSelector(BuildDeviceSelector(
+      id, item, service_, service_, profile_, entry_point_));
 
   UpdateBubbleSize();
 }
@@ -670,77 +655,15 @@ void MediaDialogView::SetLiveCaptionTitle(const std::u16string& new_text) {
   UpdateBubbleSize();
 }
 
-std::unique_ptr<global_media_controls::MediaItemUIFooter>
-MediaDialogView::BuildFooterView(
-    const std::string& id,
-    base::WeakPtr<media_message_center::MediaNotificationItem> item,
-    MediaItemUIDeviceSelectorView* device_selector_view) {
-  // Show a footer view when media::kGlobalMediaControlsModernUI is enabled.
-  std::unique_ptr<global_media_controls::MediaItemUIFooter> footer_view;
-  if (base::FeatureList::IsEnabled(media::kGlobalMediaControlsModernUI)) {
-    footer_view = std::make_unique<MediaItemUIFooterView>(base::NullCallback());
-    if (device_selector_view) {
-      auto* modern_footer =
-          static_cast<MediaItemUIFooterView*>(footer_view.get());
-      modern_footer->SetDelegate(device_selector_view);
-      device_selector_view->AddObserver(modern_footer);
-    }
-    return footer_view;
-  }
-
-  // Show a footer view for a Cast item.
-  if (item->SourceType() == media_message_center::SourceType::kCast &&
-      media_router::GlobalMediaControlsCastStartStopEnabled(profile_)) {
-    return std::make_unique<MediaItemUILegacyCastFooterView>(
-        base::BindRepeating(
-            &CastMediaNotificationItem::StopCasting,
-            static_cast<CastMediaNotificationItem*>(item.get())->GetWeakPtr(),
-            entry_point_));
-  }
-
-  // Show a footer view for a local media item when it has an associated Remote
-  // Playback session or a Tab Mirroring Session.
-  if (item->SourceType() !=
-      media_message_center::SourceType::kLocalMediaSession) {
-    return nullptr;
-  }
-
-  auto route = GetSessionRoute(id, item, profile_);
-  UpdateMediaSessionItemReceiverName(item, route);
-  if (!route.has_value()) {
-    return nullptr;
-  }
-  const auto& route_id = route->media_route_id();
-  auto cast_mode = HasRemotePlaybackRoute(item)
-                       ? media_router::MediaCastMode::REMOTE_PLAYBACK
-                       : media_router::MediaCastMode::TAB_MIRROR;
-  auto stop_casting_cb = base::BindRepeating(
-      [](const std::string& route_id, media_router::MediaRouter* router,
-         global_media_controls::GlobalMediaControlsEntryPoint entry_point,
-         media_router::MediaCastMode cast_mode) {
-        router->TerminateRoute(route_id);
-        MediaItemUIMetrics::RecordStopCastingMetrics(cast_mode, entry_point);
-        if (cast_mode == media_router::MediaCastMode::TAB_MIRROR) {
-          MediaDialogView::HideDialog();
-        }
-      },
-      route_id,
-      media_router::MediaRouterFactory::GetApiForBrowserContext(profile_),
-      entry_point_, cast_mode);
-  return std::make_unique<MediaItemUILegacyCastFooterView>(
-      std::move(stop_casting_cb));
-}
 
 std::unique_ptr<global_media_controls::MediaItemUIView>
 MediaDialogView::BuildMediaItemUIView(
     const std::string& id,
     base::WeakPtr<media_message_center::MediaNotificationItem> item) {
-  auto device_selector_view =
-      BuildDeviceSelector(id, item, service_, service_, profile_, entry_point_);
-  auto footer_view = BuildFooterView(id, item, device_selector_view.get());
-
   return std::make_unique<global_media_controls::MediaItemUIView>(
-      id, item, std::move(footer_view), std::move(device_selector_view));
+      id, item, BuildFooter(id, item, profile_, entry_point_),
+      BuildDeviceSelector(id, item, service_, service_, profile_,
+                          entry_point_));
 }
 
 BEGIN_METADATA(MediaDialogView, views::BubbleDialogDelegateView)

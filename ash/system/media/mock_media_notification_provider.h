@@ -44,6 +44,7 @@ class MockMediaNotificationProvider : public MediaNotificationProvider {
       global_media_controls::GlobalMediaControlsEntryPoint entry_point,
       bool show_devices) override;
   std::unique_ptr<global_media_controls::MediaItemUIFooter> BuildFooterView(
+      const std::string& id,
       base::WeakPtr<media_message_center::MediaNotificationItem> item,
       global_media_controls::GlobalMediaControlsEntryPoint entry_point)
       override;

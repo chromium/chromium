@@ -99,6 +99,7 @@ class ASH_EXPORT MediaNotificationProvider {
   // given media notification item.
   virtual std::unique_ptr<global_media_controls::MediaItemUIFooter>
   BuildFooterView(
+      const std::string& id,
       base::WeakPtr<media_message_center::MediaNotificationItem> item,
       global_media_controls::GlobalMediaControlsEntryPoint entry_point) = 0;
 };

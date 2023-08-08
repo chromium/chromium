@@ -62,7 +62,10 @@ std::unique_ptr<MediaItemUIDeviceSelectorView> BuildDeviceSelector(
     absl::optional<media_message_center::MediaColorTheme> media_color_theme =
         absl::nullopt);
 
+// Returns the MediaItemUIFooter for Cast items or Media Session items with
+// associated Media Routes.
 std::unique_ptr<global_media_controls::MediaItemUIFooter> BuildFooter(
+    const std::string& id,
     base::WeakPtr<media_message_center::MediaNotificationItem> item,
     Profile* profile,
     global_media_controls::GlobalMediaControlsEntryPoint entry_point,

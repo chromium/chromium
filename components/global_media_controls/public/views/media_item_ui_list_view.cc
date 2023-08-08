@@ -108,6 +108,10 @@ void MediaItemUIListView::HideItem(const std::string& id) {
   PreferredSizeChanged();
 }
 
+MediaItemUIView* MediaItemUIListView::GetItem(const std::string& id) {
+  return items_[id];
+}
+
 base::WeakPtr<MediaItemUIListView> MediaItemUIListView::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }

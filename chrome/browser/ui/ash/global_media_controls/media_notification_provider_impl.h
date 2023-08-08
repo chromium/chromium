@@ -76,6 +76,7 @@ class ASH_EXPORT MediaNotificationProviderImpl
       global_media_controls::GlobalMediaControlsEntryPoint entry_point,
       bool show_devices) override;
   std::unique_ptr<global_media_controls::MediaItemUIFooter> BuildFooterView(
+      const std::string& id,
       base::WeakPtr<media_message_center::MediaNotificationItem> item,
       global_media_controls::GlobalMediaControlsEntryPoint entry_point)
       override;
@@ -87,8 +88,7 @@ class ASH_EXPORT MediaNotificationProviderImpl
   void HideMediaItem(const std::string& id) override;
   void RefreshMediaItem(
       const std::string& id,
-      base::WeakPtr<media_message_center::MediaNotificationItem> item)
-      override {}
+      base::WeakPtr<media_message_center::MediaNotificationItem> item) override;
   void HideMediaDialog() override;
   void Focus() override {}
 

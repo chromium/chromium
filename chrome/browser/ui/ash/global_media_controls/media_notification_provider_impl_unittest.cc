@@ -142,6 +142,7 @@ class MediaNotificationProviderImplTest : public ChromeAshTestBase {
     crosapi_environment_.SetUp();
     provider_ = static_cast<MediaNotificationProviderImpl*>(
         MediaNotificationProvider::Get());
+    provider_->SetColorTheme(media_message_center::NotificationTheme());
     observer_ = std::make_unique<MockMediaNotificationProviderObserver>();
     provider_->AddObserver(observer_.get());
     layout_provider_ = std::make_unique<ChromeLayoutProvider>();
@@ -172,6 +173,21 @@ class MediaNotificationProviderImplTest : public ChromeAshTestBase {
         id.ToString());
   }
 
+  void SimulateRefreshNotification(base::UnguessableToken id) {
+    provider_->media_session_item_producer_for_testing()->RefreshItem(
+        id.ToString());
+  }
+
+  std::unique_ptr<global_media_controls::MediaItemUIListView>
+  CreateNotificationListView() {
+    auto view = provider_->GetMediaNotificationListView(
+        1, /*should_clip_height=*/true, /*item_id=*/"",
+        /*show_devices_for_item_id=*/"");
+    return base::WrapUnique(
+        static_cast<global_media_controls::MediaItemUIListView*>(
+            view.release()));
+  }
+
   std::unique_ptr<ChromeLayoutProvider> layout_provider_;
   std::unique_ptr<MockMediaNotificationProviderObserver> observer_;
   raw_ptr<MediaNotificationProviderImpl, ExperimentalAsh> provider_ = nullptr;
@@ -186,13 +202,7 @@ TEST_F(MediaNotificationProviderImplTest, NotificationListTest) {
   EXPECT_CALL(*observer_, OnNotificationListViewSizeChanged).Times(2);
   SimulateShowNotification(id_1);
   SimulateShowNotification(id_2);
-  provider_->SetColorTheme(media_message_center::NotificationTheme());
-  std::unique_ptr<views::View> view = provider_->GetMediaNotificationListView(
-      1, /*should_clip_height=*/true, /*item_id=*/"",
-      /*show_devices_for_item_id=*/"");
-
-  auto* notification_list_view =
-      static_cast<global_media_controls::MediaItemUIListView*>(view.get());
+  auto notification_list_view = CreateNotificationListView();
   EXPECT_EQ(notification_list_view->items_for_testing().size(), 2u);
 
   EXPECT_CALL(*observer_, OnNotificationListViewSizeChanged);
@@ -222,18 +232,27 @@ TEST_F(MediaNotificationProviderImplTest, DontUseDeletedListView) {
   // Simulate a media session item.
   auto id = base::UnguessableToken::Create();
   SimulateShowNotification(id);
-  provider_->SetColorTheme(media_message_center::NotificationTheme());
 
   // Create a list view with that item.
-  std::unique_ptr<views::View> view = provider_->GetMediaNotificationListView(
-      1, /*should_clip_height=*/true, /*item_id=*/"",
-      /*show_devices_for_item_id=*/"");
+  auto notification_list_view = CreateNotificationListView();
 
   // Delete the list view.
-  view.reset();
+  notification_list_view.reset();
 
   // Hide the item. This should not call into the deleted view.
   SimulateHideNotification(id);
+}
+
+TEST_F(MediaNotificationProviderImplTest, RefreshMediaItem) {
+  auto id = base::UnguessableToken::Create();
+  SimulateShowNotification(id);
+  auto notification_list_view = CreateNotificationListView();
+
+  EXPECT_EQ(notification_list_view->items_for_testing().size(), 1u);
+
+  EXPECT_CALL(*observer_, OnNotificationListViewSizeChanged);
+  SimulateRefreshNotification(id);
+  EXPECT_EQ(notification_list_view->items_for_testing().size(), 1u);
 }
 
 // Tests the `kGlobalMediaControlsCastStartStop` feature.
@@ -267,7 +286,6 @@ class CastStartStopMediaNotificationProviderImplTest
  protected:
   void InitProvider() {
     provider_->set_profile_for_testing(profile_);
-    provider_->SetColorTheme(media_message_center::NotificationTheme());
     // We must initialize the list view before we can show individual media
     // items.
     list_view_ = provider_->GetMediaNotificationListView(
