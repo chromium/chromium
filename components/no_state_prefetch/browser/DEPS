@@ -3,6 +3,7 @@ include_rules = [
   "+components/google/core/common",
   "+components/guest_view/browser",
   "+components/keyed_service/core",
+  "+components/paint_preview/browser",
   "+content/public/browser",
   "+content/public/common",
   "+content/public/test",

@@ -21,6 +21,7 @@
 #include "components/no_state_prefetch/common/no_state_prefetch_final_status.h"
 #include "components/no_state_prefetch/common/no_state_prefetch_utils.h"
 #include "components/no_state_prefetch/common/render_frame_prerender_messages.mojom.h"
+#include "components/paint_preview/browser/paint_preview_client.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -134,6 +135,17 @@ class NoStatePrefetchContents::WebContentsDelegateImpl
     // Have to set the size of the RenderView on initialization to be sure it is
     // set before the RenderView is hidden on all platforms (esp. Android).
     return no_state_prefetch_contents_->bounds_.size();
+  }
+
+  void CapturePaintPreviewOfSubframe(
+      WebContents* web_contents,
+      const gfx::Rect& rect,
+      const base::UnguessableToken& guid,
+      RenderFrameHost* render_frame_host) override {
+    auto* client =
+        paint_preview::PaintPreviewClient::FromWebContents(web_contents);
+    if (client)
+      client->CaptureSubframePaintPreview(guid, rect, render_frame_host);
   }
 
  private:
