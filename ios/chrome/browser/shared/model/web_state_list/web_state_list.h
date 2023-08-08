@@ -24,8 +24,6 @@ namespace web {
 class WebState;
 }
 
-enum class ActiveWebStateChangeReason;
-
 // Manages a list of WebStates.
 //
 // This class supports mutating the list and to observe the mutations via the

@@ -314,7 +314,7 @@ TEST_F(NewTabPageCoordinatorTest, StartIsStartShowing) {
       NewTabPageTabHelper::FromWebState(web_state_)->ShouldShowStartSurface());
   [coordinator_ stop];
 
-  // Test `-didChangeActiveWebState:` updates NTP Start state to false if it
+  // Test the active WebState updates NTP Start state to false if it
   // began as true.
   // NewTabPageTabHelper::FromWebState(web_state_)->SetShowStartSurface(true);
   OCMExpect([coordinator_mock alloc]).andReturn(coordinator_mock);
@@ -328,7 +328,7 @@ TEST_F(NewTabPageCoordinatorTest, StartIsStartShowing) {
   EXPECT_OCMOCK_VERIFY(coordinator_mock);
   // Save reference before `web_state_` is set to new active WebState.
   web::WebState* start_web_state = web_state_;
-  // Simulate didChangeActiveWebState: callback.
+  // Simulate the active WebState change callback.
   InsertWebState(CreateWebStateWithURL(GURL("chrome://version")));
   [coordinator_ didNavigateAwayFromNTP];
   // Moved away from Start surface to a different WebState, Start config for

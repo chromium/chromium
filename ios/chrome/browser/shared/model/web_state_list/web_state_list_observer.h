@@ -226,24 +226,6 @@ struct WebStateListStatus {
   }
 };
 
-// Constants used when notifying about changes to active WebState.
-enum class ActiveWebStateChangeReason {
-  // Used to indicate the active WebState changed because active WebState was
-  // replaced (e.g. a pre-rendered WebState is promoted to a real tab).
-  Replaced,
-
-  // Used to indicate the active WebState changed because it was activated.
-  Activated,
-
-  // Used to indicate the active WebState changed because active WebState was
-  // closed (or detached in case of multi-window).
-  Closed,
-
-  // Used to indicate the active WebState changed because a new active
-  // WebState was inserted (e.g. the first WebState is created).
-  Inserted,
-};
-
 // Interface for listening to events occurring to WebStateLists.
 class WebStateListObserver : public base::CheckedObserver {
  public:
@@ -266,15 +248,6 @@ class WebStateListObserver : public base::CheckedObserver {
   virtual void WebStateListDidChange(WebStateList* web_state_list,
                                      const WebStateListChange& change,
                                      const WebStateListStatus& status);
-
-  // Invoked after `new_web_state` was activated at the specified index. Both
-  // WebState are either valid or null (if there was no selection or there is
-  // no selection). See ChangeReason enum for possible values for `reason`.
-  virtual void WebStateActivatedAt(WebStateList* web_state_list,
-                                   web::WebState* old_web_state,
-                                   web::WebState* new_web_state,
-                                   int active_index,
-                                   ActiveWebStateChangeReason reason);
 
   // Invoked before a batched operations begins. The observer can use this
   // notification if it is interested in considering all those individual

@@ -26,15 +26,6 @@
                        change:(const WebStateListChange&)change
                        status:(const WebStateListStatus&)status;
 
-// Invoked after `newWebState` was activated at the specified index. Both
-// WebState are either valid or null (if there was no selection or there is
-// no selection). See ChangeReason enum for possible values for `reason`.
-- (void)webStateList:(WebStateList*)webStateList
-    didChangeActiveWebState:(web::WebState*)newWebState
-                oldWebState:(web::WebState*)oldWebState
-                    atIndex:(int)atIndex
-                     reason:(ActiveWebStateChangeReason)reason;
-
 // Invoked before a batched operations begins. The observer can use this
 // notification if it is interested in considering all those individual
 // operations as a single mutation of the WebStateList (e.g. considering
@@ -73,11 +64,6 @@ class WebStateListObserverBridge final : public WebStateListObserver {
   void WebStateListDidChange(WebStateList* web_state_list,
                              const WebStateListChange& change,
                              const WebStateListStatus& status) override;
-  void WebStateActivatedAt(WebStateList* web_state_list,
-                           web::WebState* old_web_state,
-                           web::WebState* new_web_state,
-                           int active_index,
-                           ActiveWebStateChangeReason reason) final;
   void WillBeginBatchOperation(WebStateList* web_state_list) final;
   void BatchOperationEnded(WebStateList* web_state_list) final;
   void WebStateListDestroyed(WebStateList* web_state_list) final;

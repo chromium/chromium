@@ -382,17 +382,6 @@ int WebStateList::InsertWebStateImpl(int index,
     observer.WebStateListDidChange(this, insert_change, status);
   }
 
-  if (activating) {
-    // TODO(crbug.com/1442546): Remove `WebStateActivatedAt()` after observers
-    // are updated to handle the activation and the insertion in
-    // `WebStateListDidChange()`.
-    for (auto& observer : observers_) {
-      observer.WebStateActivatedAt(this, old_active_web_state,
-                                   GetActiveWebState(), active_index_,
-                                   ActiveWebStateChangeReason::Inserted);
-    }
-  }
-
   return index;
 }
 
@@ -489,17 +478,6 @@ std::unique_ptr<web::WebState> WebStateList::ReplaceWebStateAtImpl(
     observer.WebStateListDidChange(this, replace_change, status);
   }
 
-  // TODO(crbug.com/1442546): Remove `WebStateActivatedAt()` after observers
-  // are updated to handle the activation and the replacement in
-  // `WebStateListDidChange()`.
-  if (index == active_index_) {
-    for (auto& observer : observers_) {
-      observer.WebStateActivatedAt(this, replaced_web_state.get(),
-                                   GetActiveWebState(), active_index_,
-                                   ActiveWebStateChangeReason::Replaced);
-    }
-  }
-
   return replaced_web_state;
 }
 
@@ -575,17 +553,6 @@ std::unique_ptr<web::WebState> WebStateList::DetachWebStateAtImpl(
     observer.WebStateListDidChange(this, detach_change, status);
   }
 
-  // TODO(crbug.com/1442546): Remove `WebStateActivatedAt()` after observers
-  // are updated to handle the activation and the detachment in
-  // `WebStateListDidChange()`.
-  if (is_active_web_state_detached) {
-    for (auto& observer : observers_) {
-      observer.WebStateActivatedAt(this, web_state, GetActiveWebState(),
-                                   active_index_,
-                                   ActiveWebStateChangeReason::Closed);
-    }
-  }
-
   return detached_web_state;
 }
 
@@ -641,15 +608,6 @@ void WebStateList::CloseAllWebStatesAfterIndexImpl(int start_index,
     web::WebState* old_active_web_state = GetActiveWebState();
     SetActiveIndex(new_active_index);
 
-    // TODO(crbug.com/1442546): Remove `WebStateActivatedAt()` after observers
-    // are updated to handle the activation and another operation (e.g. the
-    // insertion) in `WebStateListDidChange()`.
-    for (auto& observer : observers_) {
-      observer.WebStateActivatedAt(this, old_active_web_state,
-                                   GetActiveWebState(), active_index_,
-                                   ActiveWebStateChangeReason::Closed);
-    }
-
     // Notify the event to the observers that a WebState is detached and an
     // active WebState is updated as well.
     CloseWebStateAtImpl(count() - 1, close_flags,
@@ -676,15 +634,6 @@ void WebStateList::ActivateWebStateAtImpl(int index) {
 
   web::WebState* old_active_web_state = GetActiveWebState();
   SetActiveIndex(index);
-
-  // TODO(crbug.com/1442546): Remove `WebStateActivatedAt()` after observers are
-  // updated to handle the activation and another operation (e.g. the insertion)
-  // in `WebStateListDidChange()`.
-  for (auto& observer : observers_) {
-    observer.WebStateActivatedAt(this, old_active_web_state,
-                                 GetActiveWebState(), active_index_,
-                                 ActiveWebStateChangeReason::Activated);
-  }
 
   const WebStateListChangeStatusOnly status_only_change(old_active_web_state);
   const WebStateListStatus status = {

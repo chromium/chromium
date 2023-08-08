@@ -166,7 +166,7 @@ TEST_F(SideSwipeMediatorTest, ObserversTriggerStateUpdate) {
   // The NTP and chrome://crash should use native swipe.
   item->SetURL(GURL(kChromeUINewTabURL));
   // Insert the WebState and make sure it's active. This should trigger
-  // didChangeActiveWebState and update edge navigation state.
+  // the activation WebState change and update edge navigation state.
   browser_->GetWebStateList()->InsertWebState(1, std::move(fake_web_state),
                                               WebStateList::INSERT_ACTIVATE,
                                               WebStateOpener());
