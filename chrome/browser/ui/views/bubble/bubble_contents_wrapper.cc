@@ -133,6 +133,15 @@ void BubbleContentsWrapper::RequestMediaAccessPermission(
   }
 }
 
+void BubbleContentsWrapper::RunFileChooser(
+    content::RenderFrameHost* render_frame_host,
+    scoped_refptr<content::FileSelectListener> listener,
+    const blink::mojom::FileChooserParams& params) {
+  if (host_) {
+    host_->RunFileChooser(render_frame_host, listener, params);
+  }
+}
+
 void BubbleContentsWrapper::PrimaryPageChanged(content::Page& page) {
   content::RenderWidgetHostView* render_widget_host_view =
       web_contents_->GetRenderWidgetHostView();
