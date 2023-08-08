@@ -333,6 +333,79 @@ void WvrManager::OnSubmitClientMojoConnectionError() {
   ExitWebXRPresentation(base::NullCallback());
 }
 
+// See
+// https://github.com/immersive-web/webxr-input-profiles/blob/main/packages/registry/profiles/
+// for reference
+static void PopulateProfiles(
+    device::mojom::XRInputSourceStatePtr& input_source,
+    const mozilla::gfx::VRControllerState& controller) {
+  switch (controller.type) {
+    case mozilla::gfx::VRControllerType::HTCVive:
+      input_source->description->profiles = {
+          "htc-vive", "generic-trigger-squeeze-touchpad"};
+      break;
+    case mozilla::gfx::VRControllerType::HTCViveCosmos:
+      input_source->description->profiles = {
+          "htc-vive-cosmos", "generic-trigger-squeeze-thumbstick"};
+      break;
+    case mozilla::gfx::VRControllerType::HTCViveFocus:
+      input_source->description->profiles = {"htc-vive-focus",
+                                             "generic-trigger-touchpad"};
+      break;
+    case mozilla::gfx::VRControllerType::HTCViveFocusPlus:
+      input_source->description->profiles = {
+          "htc-vive-focus-plus", "generic-trigger-squeeze-touchpad"};
+      break;
+    case mozilla::gfx::VRControllerType::MSMR:
+      input_source->description->profiles = {
+          "microsoft-mixed-reality",
+          "generic-trigger-squeeze-touchpad-thumbstick"};
+      break;
+    case mozilla::gfx::VRControllerType::ValveIndex:
+      input_source->description->profiles = {
+          "valve-index", "generic-trigger-squeeze-thumbstick"};
+      break;
+    case mozilla::gfx::VRControllerType::OculusGo:
+      input_source->description->profiles = {"oculus-go", "oculus-touch",
+                                             "generic-trigger-touchpad"};
+      break;
+    case mozilla::gfx::VRControllerType::OculusTouch:
+      input_source->description->profiles = {
+          "oculus-touch-v2", "oculus-touch",
+          "generic-trigger-squeeze-thumbstick"};
+      break;
+    case mozilla::gfx::VRControllerType::OculusTouch2:
+      input_source->description->profiles = {
+          "oculus-touch-v2", "oculus-touch",
+          "generic-trigger-squeeze-thumbstick"};
+      break;
+    case mozilla::gfx::VRControllerType::OculusTouch3:
+      input_source->description->profiles = {
+          "oculus-touch-v3", "oculus-touch-v2", "oculus-touch",
+          "generic-trigger-squeeze-thumbstick"};
+      break;
+    case mozilla::gfx::VRControllerType::PicoG2:
+      input_source->description->profiles = {
+          "pico-g2", "generic-trigger-squeeze-thumbstick"};
+      break;
+    case mozilla::gfx::VRControllerType::PicoNeo2:
+      input_source->description->profiles = {
+          "pico-neo2", "generic-trigger-squeeze-thumbstick"};
+      break;
+    case mozilla::gfx::VRControllerType::Pico4:
+      input_source->description->profiles = {
+          "pico-4", "generic-trigger-squeeze-thumbstick"};
+      break;
+    case mozilla::gfx::VRControllerType::PicoGaze:
+    case mozilla::gfx::VRControllerType::_empty:
+      input_source->description->profiles = {"generic-button"};
+      break;
+    case mozilla::gfx::VRControllerType::_end:
+      NOTREACHED();
+      break;
+  };
+}
+
 std::vector<device::mojom::XRInputSourceStatePtr>
 WvrManager::GetInputSourceState() {
   std::vector<device::mojom::XRInputSourceStatePtr> input_sources;
@@ -372,10 +445,7 @@ WvrManager::GetInputSourceState() {
             ? device::mojom::XRHandedness::LEFT
             : device::mojom::XRHandedness::RIGHT;
 
-    // TODO: Get from external
-    input_source->description->profiles = {
-        "oculus-touch-v3", "oculus-touch-v2", "oculus-touch",
-        "generic-trigger-squeeze-thumbstick"};
+    PopulateProfiles(input_source, controller);
 
     input_source->gamepad = ToGamepad(controller);
 
