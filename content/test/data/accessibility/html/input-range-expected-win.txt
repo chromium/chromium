@@ -3,6 +3,6 @@ ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE ia2_hypertext='<obj0>'
 ++++ROLE_SYSTEM_SLIDER value='5' FOCUSABLE IA2_STATE_HORIZONTAL valuetext:5 currentValue=5 minimumValue=1 maximumValue=10
 ++++ROLE_SYSTEM_SLIDER value='3' FOCUSABLE IA2_STATE_HORIZONTAL valuetext:3 currentValue=3 minimumValue=1 maximumValue=10
 ++++ROLE_SYSTEM_SLIDER value='Medium' FOCUSABLE IA2_STATE_HORIZONTAL valuetext:Medium currentValue=5 minimumValue=1 maximumValue=10
-++++ROLE_SYSTEM_SLIDER value='Friday' FOCUSABLE IA2_STATE_HORIZONTAL valuetext:Friday currentValue=6 minimumValue=0 maximumValue=5
+++++ROLE_SYSTEM_SLIDER value='Friday' FOCUSABLE IA2_STATE_HORIZONTAL valuetext:Friday currentValue=5 minimumValue=0 maximumValue=5
 ++++ROLE_SYSTEM_SLIDER value='0.2' FOCUSABLE IA2_STATE_HORIZONTAL valuetext:0.2 currentValue=0.20000000298023224 minimumValue=-1 maximumValue=1
 ++++ROLE_SYSTEM_SLIDER value='50' FOCUSABLE IA2_STATE_HORIZONTAL valuetext:50 currentValue=50 minimumValue=0 maximumValue=100

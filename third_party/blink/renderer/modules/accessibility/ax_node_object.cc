@@ -3153,6 +3153,23 @@ int AXNodeObject::SetSize() const {
 bool AXNodeObject::ValueForRange(float* out_value) const {
   float value_now;
   if (HasAOMPropertyOrARIAAttribute(AOMFloatProperty::kValueNow, value_now)) {
+    // Adjustment when the aria-valuenow is less than aria-valuemin or greater
+    // than the aria-valuemax value.
+    // See https://w3c.github.io/aria/#authorErrorDefaultValuesTable.
+    float min_value, max_value;
+    if (MinValueForRange(&min_value)) {
+      if (value_now < min_value) {
+        *out_value = min_value;
+        return true;
+      }
+    }
+    if (MaxValueForRange(&max_value)) {
+      if (value_now > max_value) {
+        *out_value = max_value;
+        return true;
+      }
+    }
+
     *out_value = value_now;
     return true;
   }
