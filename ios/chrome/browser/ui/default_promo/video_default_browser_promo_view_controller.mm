@@ -20,6 +20,10 @@ constexpr CGFloat kSpacingBeforeImageIfNoNavigationBar = 24;
 constexpr CGFloat kpacingAfterImageWithAnimation = 24;
 NSString* const kDarkModeAnimationSuffix = @"_darkmode";
 NSString* const kDefaultBrowserAnimation = @"default_browser_animation";
+NSString* const kDefaultBrowserAppKeypath = @"IDS_DEFAULT_BROWSER_APP";
+NSString* const kDefaultBrowserApp2Keypath = @"IDS_DEFAULT_BROWSER_APP_2";
+NSString* const kChromeKeypath = @"IDS_CHROME";
+NSString* const kChromeSettingsKeypath = @"IDS_CHROME_SETTINGS";
 }  // namespace
 
 @interface VideoDefaultBrowserPromoViewController ()
@@ -50,6 +54,19 @@ NSString* const kDefaultBrowserAnimation = @"default_browser_animation";
     _animationViewWrapperDarkMode = [self
         createAnimation:[kDefaultBrowserAnimation
                             stringByAppendingString:kDarkModeAnimationSuffix]];
+
+    // Set the text localization.
+    NSDictionary* textProvider = @{
+      kDefaultBrowserAppKeypath : l10n_util::GetNSString(
+          IDS_IOS_DEFAULT_BROWSER_VIDEO_PROMO_DEFAULT_BROWSER_APP),
+      kDefaultBrowserApp2Keypath : l10n_util::GetNSString(
+          IDS_IOS_DEFAULT_BROWSER_VIDEO_PROMO_DEFAULT_BROWSER_APP),
+      kChromeKeypath : l10n_util::GetNSString(IDS_IOS_SHORT_PRODUCT_NAME),
+      kChromeSettingsKeypath : l10n_util::GetNSString(
+          IDS_IOS_DEFAULT_BROWSER_VIDEO_PROMO_APP_SETTINGS)
+    };
+    [_animationViewWrapper setDictionaryTextProvider:textProvider];
+    [_animationViewWrapperDarkMode setDictionaryTextProvider:textProvider];
   }
   return self;
 }

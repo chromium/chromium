@@ -661,6 +661,9 @@ Things to consider:
       <message name="IDS_IOS_WHATS_NEW_APP_SETTINGS" desc="Text of the row indicating the step of opening the app settings. [iOS only]">
         Go to Chrome Settings.
       </message>
+      <message name="IDS_IOS_DEFAULT_BROWSER_VIDEO_PROMO_APP_SETTINGS" desc="Text in the default browser video the app settings. [iOS only]">
+        Chrome Settings
+      </message>
       <message name="IDS_IOS_WHATS_NEW_INCOGNITO_LOCK_STEP_3" desc="Text of the row indicating the third step to turn on Incognito Lock. [iOS only]">
         Turn on “Lock Incognito Tabs When You Close Chrome.”
       </message>
