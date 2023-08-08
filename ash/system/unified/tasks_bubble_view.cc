@@ -180,11 +180,6 @@ void TasksBubbleView::ActionButtonPressed() {
 }
 
 void TasksBubbleView::SelectedTasksListChanged() {
-  task_items_container_view_->RemoveAllChildViews();
-  task_items_container_view_->SetVisible(false);
-  list_footer_view_->SetVisible(false);
-  add_new_task_button_->SetVisible(true);
-
   weak_ptr_factory_.InvalidateWeakPtrs();
 
   ScheduleUpdateTasksList();
@@ -210,9 +205,11 @@ void TasksBubbleView::ScheduleUpdateTasksList() {
 void TasksBubbleView::UpdateTasksList(const std::string& task_list_id,
                                       const std::string& task_list_title,
                                       ui::ListModel<GlanceablesTask>* tasks) {
+  const gfx::Size old_preferred_size = GetPreferredSize();
   progress_bar_->UpdateProgressBarVisibility(/*visible=*/false);
 
-  const int old_tasks_shown = num_tasks_shown_;
+  task_items_container_view_->RemoveAllChildViews();
+
   num_tasks_shown_ = 0;
   num_tasks_ = 0;
   for (const auto& task : *tasks) {
@@ -246,7 +243,7 @@ void TasksBubbleView::UpdateTasksList(const std::string& task_list_id,
 
   AnnounceListStateOnComboBoxAccessibility();
 
-  if (old_tasks_shown != num_tasks_shown_) {
+  if (old_preferred_size != GetPreferredSize()) {
     PreferredSizeChanged();
   }
 }

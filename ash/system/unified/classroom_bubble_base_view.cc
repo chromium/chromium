@@ -138,9 +138,10 @@ void ClassroomBubbleBaseView::OnGetAssignments(
     const std::u16string& list_name,
     bool success,
     std::vector<std::unique_ptr<GlanceablesClassroomAssignment>> assignments) {
+  const gfx::Size old_preferred_size = GetPreferredSize();
+
   progress_bar_->UpdateProgressBarVisibility(/*visible=*/false);
 
-  const size_t old_item_count = list_container_view_->children().size();
   list_container_view_->RemoveAllChildViews();
   total_assignments_ = assignments.size();
 
@@ -174,7 +175,7 @@ void ClassroomBubbleBaseView::OnGetAssignments(
   // combobox, notify the user of the list state id the combox is still focused.
   AnnounceListStateOnComboBoxAccessibility();
 
-  if (shown_assignments != old_item_count) {
+  if (old_preferred_size != GetPreferredSize()) {
     PreferredSizeChanged();
   }
 }
