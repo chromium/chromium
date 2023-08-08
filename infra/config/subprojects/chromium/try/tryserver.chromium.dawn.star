@@ -355,10 +355,27 @@ try_.builder(
 )
 
 try_.builder(
-    name = "dawn-try-win10-x64-asan-rel",
+    name = "dawn-try-win10-x64-intel-asan",
     mirrors = [
-        "ci/Dawn Win10 x64 ASAN Release",
+        "ci/Dawn Win10 x64 ASAN Builder",
+        "ci/Dawn Win10 x64 ASAN Release (Intel)",
     ],
+    pool = "luci.chromium.gpu.win10.intel.try",
+    builderless = True,
+    os = os.WINDOWS_ANY,
+    test_presentation = resultdb.test_presentation(
+        grouping_keys = ["status", "v.test_suite", "v.gpu"],
+    ),
+)
+
+try_.builder(
+    name = "dawn-try-win10-x64-nvidia-asan",
+    mirrors = [
+        "ci/Dawn Win10 x64 ASAN Builder",
+        "ci/Dawn Win10 x64 ASAN Release (NVIDIA)",
+    ],
+    pool = "luci.chromium.gpu.win10.nvidia.try",
+    builderless = True,
     os = os.WINDOWS_ANY,
     test_presentation = resultdb.test_presentation(
         grouping_keys = ["status", "v.test_suite", "v.gpu"],

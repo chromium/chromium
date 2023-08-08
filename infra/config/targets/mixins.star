@@ -1484,23 +1484,6 @@ targets.mixin(
 )
 
 targets.mixin(
-    name = "win10_intel_uhd_630_stable_dimension_set",
-    # We use explicit 'dimension_sets' instead of 'dimensions' since this is
-    # used in conjunction with 'win10_nvidia_gtx_1660_stable_dimension_set'
-    # to trigger tests on multiple configurations.
-    swarming = targets.swarming(
-        dimension_sets = [
-            {
-                "display_attached": "1",
-                "gpu": "8086:9bc5-31.0.101.2111",
-                "os": "Windows-10",
-                "pool": "chromium.tests.gpu",
-            },
-        ],
-    ),
-)
-
-targets.mixin(
     name = "win10_nvidia_gtx_1660_experimental",
     swarming = targets.swarming(
         dimensions = {
@@ -1525,23 +1508,6 @@ targets.mixin(
             "os": "Windows-10-18363",
             "pool": "chromium.tests.gpu",
         },
-    ),
-)
-
-# Version of win10_nvidia_gtx_1660_stable that uses 'dimension_sets'
-# instead of 'dimensions' so it can be used to trigger tests on multiple
-# configurations.
-targets.mixin(
-    name = "win10_nvidia_gtx_1660_stable_dimension_set",
-    swarming = targets.swarming(
-        dimension_sets = [
-            {
-                "display_attached": "1",
-                "gpu": "10de:2184-27.21.14.5638",
-                "os": "Windows-10-18363",
-                "pool": "chromium.tests.gpu",
-            },
-        ],
     ),
 )
 

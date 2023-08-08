@@ -126,7 +126,7 @@
       "use_remoteexec": true
     }
   },
-  "Dawn Win10 x64 ASAN Release": {
+  "Dawn Win10 x64 ASAN Builder": {
     "gn_args": {
       "dawn_enable_opengles": true,
       "dcheck_always_on": true,

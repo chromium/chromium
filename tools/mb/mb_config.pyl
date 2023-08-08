@@ -272,7 +272,7 @@
       'Dawn Mac x64 Builder': 'dawn_tests_release_bot_reclient',
       'Dawn Mac x64 DEPS Builder': 'dawn_tests_release_bot_reclient',
 
-      'Dawn Win10 x64 ASAN Release': 'dawn_tests_asan_release_bot_reclient',
+      'Dawn Win10 x64 ASAN Builder': 'dawn_tests_asan_release_bot_reclient',
       'Dawn Win10 x64 Builder': 'dawn_tests_release_bot_reclient',
       'Dawn Win10 x64 DEPS Builder': 'dawn_tests_release_bot_reclient',
       'Dawn Win10 x86 Builder': 'dawn_tests_x86_release_bot_reclient',
@@ -1147,7 +1147,8 @@
       'dawn-try-mac-intel-exp': 'dawn_tests_release_bot_reclient',
       'dawn-try-win-x64-intel-exp': 'dawn_tests_release_bot_reclient',
       'dawn-try-win-x86-intel-exp': 'dawn_tests_x86_release_bot_reclient',
-      'dawn-try-win10-x64-asan-rel': 'dawn_tests_asan_release_bot_reclient',
+      'dawn-try-win10-x64-intel-asan': 'dawn_tests_asan_release_bot_reclient',
+      'dawn-try-win10-x64-nvidia-asan': 'dawn_tests_asan_release_bot_reclient',
       'dawn-try-win10-x86-rel': 'dawn_tests_x86_release_bot_reclient',
       'dawn-win10-x64-deps-rel': 'dawn_tests_release_bot_reclient',
       'dawn-win10-x86-deps-rel': 'dawn_tests_x86_release_bot_reclient',

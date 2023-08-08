@@ -2529,12 +2529,24 @@
           'isolated_scripts': 'gpu_dawn_isolated_scripts',
         },
       },
-      'Dawn Win10 x64 ASAN Release': {
+      'Dawn Win10 x64 ASAN Builder': {},
+      'Dawn Win10 x64 ASAN Release (Intel)': {
         'os_type': 'win',
         'browser_config': 'release_x64',
         'mixins': [
-          'win10_nvidia_gtx_1660_stable_dimension_set',
-          'win10_intel_uhd_630_stable_dimension_set',
+          'win10_intel_uhd_630_stable',
+        ],
+        'test_suites': {
+          'gpu_telemetry_tests': 'gpu_dawn_webgpu_cts_asan',
+          'gtest_tests': 'gpu_dawn_integration_asan_gtests_passthrough',
+          'isolated_scripts': 'gpu_dawn_asan_isolated_scripts',
+        },
+      },
+      'Dawn Win10 x64 ASAN Release (NVIDIA)': {
+        'os_type': 'win',
+        'browser_config': 'release_x64',
+        'mixins': [
+          'win10_nvidia_gtx_1660_stable',
         ],
         'test_suites': {
           'gpu_telemetry_tests': 'gpu_dawn_webgpu_cts_asan',
