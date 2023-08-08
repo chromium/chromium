@@ -35,7 +35,7 @@ using bookmarks::BookmarkNode;
 
 @implementation BookmarkMediator {
   // Profile bookmark model for this mediator.
-  base::WeakPtr<bookmarks::BookmarkModel> _profileBookmarkModel;
+  base::WeakPtr<bookmarks::BookmarkModel> _localOrSyncableBookmarkModel;
   // Account bookmark model for this mediator.
   base::WeakPtr<bookmarks::BookmarkModel> _accountBookmarkModel;
 
@@ -62,18 +62,19 @@ using bookmarks::BookmarkNode;
 }
 
 - (instancetype)
-    initWithWithProfileBookmarkModel:
-        (bookmarks::BookmarkModel*)profileBookmarkModel
-                accountBookmarkModel:
-                    (bookmarks::BookmarkModel*)accountBookmarkModel
-                               prefs:(PrefService*)prefs
-               authenticationService:
-                   (AuthenticationService*)authenticationService
-                         syncService:(syncer::SyncService*)syncService
-                    syncSetupService:(SyncSetupService*)syncSetupService {
+    initWithWithLocalOrSyncableBookmarkModel:
+        (bookmarks::BookmarkModel*)localOrSyncableBookmarkModel
+                        accountBookmarkModel:
+                            (bookmarks::BookmarkModel*)accountBookmarkModel
+                                       prefs:(PrefService*)prefs
+                       authenticationService:
+                           (AuthenticationService*)authenticationService
+                                 syncService:(syncer::SyncService*)syncService
+                            syncSetupService:
+                                (SyncSetupService*)syncSetupService {
   self = [super init];
   if (self) {
-    _profileBookmarkModel = profileBookmarkModel->AsWeakPtr();
+    _localOrSyncableBookmarkModel = localOrSyncableBookmarkModel->AsWeakPtr();
     if (accountBookmarkModel) {
       _accountBookmarkModel = accountBookmarkModel->AsWeakPtr();
     }
@@ -86,7 +87,7 @@ using bookmarks::BookmarkNode;
 }
 
 - (void)disconnect {
-  _profileBookmarkModel = nullptr;
+  _localOrSyncableBookmarkModel = nullptr;
   _accountBookmarkModel = nullptr;
   _prefs = nullptr;
   _authenticationService = nullptr;
@@ -102,11 +103,11 @@ using bookmarks::BookmarkNode;
 
   const BookmarkNode* defaultFolder = GetDefaultBookmarkFolder(
       _prefs, bookmark_utils_ios::IsAccountBookmarkStorageOptedIn(_syncService),
-      _profileBookmarkModel.get(), _accountBookmarkModel.get());
+      _localOrSyncableBookmarkModel.get(), _accountBookmarkModel.get());
   BookmarkModel* modelForDefaultFolder =
-      bookmark_utils_ios::GetBookmarkModelForNode(defaultFolder,
-                                                  _profileBookmarkModel.get(),
-                                                  _accountBookmarkModel.get());
+      bookmark_utils_ios::GetBookmarkModelForNode(
+          defaultFolder, _localOrSyncableBookmarkModel.get(),
+          _accountBookmarkModel.get());
   modelForDefaultFolder->AddNewURL(defaultFolder,
                                    defaultFolder->children().size(),
                                    base::SysNSStringToUTF16(title), URL);
@@ -120,7 +121,8 @@ using bookmarks::BookmarkNode;
   NSString* folderTitle =
       bookmark_utils_ios::TitleForBookmarkNode(defaultFolder);
   bookmarks::StorageType storageType = bookmark_utils_ios::GetBookmarkModelType(
-      defaultFolder, _profileBookmarkModel.get(), _accountBookmarkModel.get());
+      defaultFolder, _localOrSyncableBookmarkModel.get(),
+      _accountBookmarkModel.get());
   NSString* text = [self
       messageForAddingBookmarksInFolder:!IsLastUsedBookmarkFolderSet(_prefs)
                       folderStorageType:storageType
@@ -138,7 +140,7 @@ using bookmarks::BookmarkNode;
   LogBookmarkUseForDefaultBrowserPromo();
 
   BookmarkModel* modelForFolder = bookmark_utils_ios::GetBookmarkModelForNode(
-      folder, _profileBookmarkModel.get(), _accountBookmarkModel.get());
+      folder, _localOrSyncableBookmarkModel.get(), _accountBookmarkModel.get());
   for (URLWithTitle* urlWithTitle in URLs) {
     base::RecordAction(base::UserMetricsAction("BookmarkAdded"));
     modelForFolder->AddNewURL(folder, folder->children().size(),
@@ -148,7 +150,7 @@ using bookmarks::BookmarkNode;
 
   NSString* folderTitle = bookmark_utils_ios::TitleForBookmarkNode(folder);
   bookmarks::StorageType storageType = bookmark_utils_ios::GetBookmarkModelType(
-      folder, _profileBookmarkModel.get(), _accountBookmarkModel.get());
+      folder, _localOrSyncableBookmarkModel.get(), _accountBookmarkModel.get());
   NSString* text = [self messageForAddingBookmarksInFolder:(folderTitle.length)
                                          folderStorageType:storageType
                                                      title:folderTitle

@@ -29,8 +29,8 @@ typedef NS_ENUM(NSInteger, BookmarksHomeSectionIdentifier) {
   BookmarksHomeSectionIdentifierBookmarks,
   // Section to display the root folders of the account. See go/b4b-ios.
   BookmarksHomeSectionIdentifierRootAccount,
-  // Section to display the root folders of the profile. See go/b4b-ios.
-  BookmarksHomeSectionIdentifierRootProfile,
+  // Section to display the root folders of the localOrSyncable. See go/b4b-ios.
+  BookmarksHomeSectionIdentifierRootLocalOrSyncable,
   // Section to display a message, such as "no result" for a search.
   BookmarksHomeSectionIdentifierMessages,
 };
@@ -82,21 +82,23 @@ class BookmarkModel;
 @property(nonatomic, assign) const bookmarks::BookmarkNode* editingFolderNode;
 
 // Bookmark model of the current displayed folder node. If the view is at
-// the root level, `displayedBookmarkModel` returns the profile storage.
+// the root level, `displayedBookmarkModel` returns the localOrSyncable storage.
 @property(nonatomic, assign, readonly)
     bookmarks::BookmarkModel* displayedBookmarkModel;
 
 // Designated initializer.
 // `baseViewController` view controller used to present sign-in UI.
-// `profileBookmarkModel` must not be `nullptr`. It should also be loaded.
+// `localOrSyncableBookmarkModel` must not be `nullptr`. It should also be
+// loaded.
 // TODO(crbug.com/1402758): `browser` and `baseViewController` need to be
 // removed from `BookmarksHomeMediator`. A mediator should not be aware of
 // those classes.
 - (instancetype)initWithBrowser:(Browser*)browser
-             baseViewController:(UIViewController*)baseViewController
-           profileBookmarkModel:(bookmarks::BookmarkModel*)profileBookmarkModel
-           accountBookmarkModel:(bookmarks::BookmarkModel*)accountBookmarkModel
-                  displayedNode:(const bookmarks::BookmarkNode*)displayedNode
+              baseViewController:(UIViewController*)baseViewController
+    localOrSyncableBookmarkModel:
+        (bookmarks::BookmarkModel*)localOrSyncableBookmarkModel
+            accountBookmarkModel:(bookmarks::BookmarkModel*)accountBookmarkModel
+                   displayedNode:(const bookmarks::BookmarkNode*)displayedNode
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 

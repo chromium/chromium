@@ -68,20 +68,24 @@ class SyncService;
 // Snackbar commands handler for this ViewController.
 @property(nonatomic, weak) id<SnackbarCommands> snackbarCommandsHandler;
 
-// `profileBookmarkModel` must not be `nullptr` and must be loaded.
+// `localOrSyncableBookmarkModel` must not be `nullptr` and must be loaded.
 // `parentFolder` must not be `nullptr`.
 // If `folder` is not `nullptr` than it means we're editing an existing folder
 // and `folder` must also be editable (`folder` can't be the root node or any
 // of the permanent nodes).
 // `browser` must not be `nullptr`.
 - (instancetype)
-    initWithProfileBookmarkModel:(bookmarks::BookmarkModel*)profileBookmarkModel
-            accountBookmarkModel:(bookmarks::BookmarkModel*)accountBookmarkModel
-                      folderNode:(const bookmarks::BookmarkNode*)folder
-                parentFolderNode:(const bookmarks::BookmarkNode*)parentFolder
-           authenticationService:(AuthenticationService*)authService
-                     syncService:(syncer::SyncService*)syncService
-                         browser:(Browser*)browser NS_DESIGNATED_INITIALIZER;
+    initWithLocalOrSyncableBookmarkModel:
+        (bookmarks::BookmarkModel*)localOrSyncableBookmarkModel
+                    accountBookmarkModel:
+                        (bookmarks::BookmarkModel*)accountBookmarkModel
+                              folderNode:(const bookmarks::BookmarkNode*)folder
+                        parentFolderNode:
+                            (const bookmarks::BookmarkNode*)parentFolder
+                   authenticationService:(AuthenticationService*)authService
+                             syncService:(syncer::SyncService*)syncService
+                                 browser:(Browser*)browser
+    NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;
 
 // Called when the user attempt to swipe down the view controller.

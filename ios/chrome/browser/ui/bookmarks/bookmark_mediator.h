@@ -32,15 +32,15 @@ class PrefRegistrySyncable;
 
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)
-    initWithWithProfileBookmarkModel:
-        (bookmarks::BookmarkModel*)profileBookmarkModel
-                accountBookmarkModel:
-                    (bookmarks::BookmarkModel*)accountBookmarkModel
-                               prefs:(PrefService*)prefs
-               authenticationService:
-                   (AuthenticationService*)authenticationService
-                         syncService:(syncer::SyncService*)syncService
-                    syncSetupService:(SyncSetupService*)syncSetupService
+    initWithWithLocalOrSyncableBookmarkModel:
+        (bookmarks::BookmarkModel*)localOrSyncableBookmarkModel
+                        accountBookmarkModel:
+                            (bookmarks::BookmarkModel*)accountBookmarkModel
+                                       prefs:(PrefService*)prefs
+                       authenticationService:
+                           (AuthenticationService*)authenticationService
+                                 syncService:(syncer::SyncService*)syncService
+                            syncSetupService:(SyncSetupService*)syncSetupService
     NS_DESIGNATED_INITIALIZER;
 
 // Registers the feature preferences.

@@ -84,7 +84,7 @@
   _viewController.delegate = self;
   ChromeBrowserState* browserState =
       self.browser->GetBrowserState()->GetOriginalChromeBrowserState();
-  bookmarks::BookmarkModel* profileBookmarkModel =
+  bookmarks::BookmarkModel* localOrSyncableBookmarkModel =
       ios::LocalOrSyncableBookmarkModelFactory::GetForBrowserState(
           browserState);
   bookmarks::BookmarkModel* accountBookmarkModel =
@@ -93,12 +93,12 @@
       SyncServiceFactory::GetForBrowserState(browserState);
 
   _mediator = [[BookmarksEditorMediator alloc]
-      initWithProfileBookmarkModel:profileBookmarkModel
-              accountBookmarkModel:accountBookmarkModel
-                      bookmarkNode:_node
-                             prefs:browserState->GetPrefs()
-                       syncService:syncService
-                      browserState:browserState];
+      initWithLocalOrSyncableBookmarkModel:localOrSyncableBookmarkModel
+                      accountBookmarkModel:accountBookmarkModel
+                              bookmarkNode:_node
+                                     prefs:browserState->GetPrefs()
+                               syncService:syncService
+                              browserState:browserState];
   _mediator.consumer = _viewController;
   _mediator.delegate = self;
   _viewController.mutator = _mediator;

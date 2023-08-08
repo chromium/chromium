@@ -83,7 +83,7 @@
   // TODO(crbug.com/1402758): Create a mediator.
   ChromeBrowserState* browserState =
       self.browser->GetBrowserState()->GetOriginalChromeBrowserState();
-  bookmarks::BookmarkModel* profileBookmarkModel =
+  bookmarks::BookmarkModel* localOrSyncableBookmarkModel =
       ios::LocalOrSyncableBookmarkModelFactory::GetForBrowserState(
           browserState);
   bookmarks::BookmarkModel* accountBookmarkModel =
@@ -93,13 +93,13 @@
   syncer::SyncService* syncService =
       SyncServiceFactory::GetForBrowserState(browserState);
   _viewController = [[BookmarksFolderEditorViewController alloc]
-      initWithProfileBookmarkModel:profileBookmarkModel
-              accountBookmarkModel:accountBookmarkModel
-                        folderNode:_folderNode
-                  parentFolderNode:_parentFolderNode
-             authenticationService:authService
-                       syncService:syncService
-                           browser:self.browser];
+      initWithLocalOrSyncableBookmarkModel:localOrSyncableBookmarkModel
+                      accountBookmarkModel:accountBookmarkModel
+                                folderNode:_folderNode
+                          parentFolderNode:_parentFolderNode
+                     authenticationService:authService
+                               syncService:syncService
+                                   browser:self.browser];
   _viewController.delegate = self;
   _viewController.snackbarCommandsHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), SnackbarCommands);

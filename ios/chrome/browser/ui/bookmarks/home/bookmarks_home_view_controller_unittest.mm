@@ -74,11 +74,12 @@ TEST_P(BookmarksHomeViewControllerTest,
                          [controller.tableViewModel
                              sectionForSectionIdentifier:
                                  BookmarksHomeSectionIdentifierBookmarks]]);
-    EXPECT_EQ(0, [controller tableView:controller.tableView
-                     numberOfRowsInSection:
-                         [controller.tableViewModel
-                             sectionForSectionIdentifier:
-                                 BookmarksHomeSectionIdentifierRootProfile]]);
+    EXPECT_EQ(
+        0, [controller tableView:controller.tableView
+               numberOfRowsInSection:
+                   [controller.tableViewModel
+                       sectionForSectionIdentifier:
+                           BookmarksHomeSectionIdentifierRootLocalOrSyncable]]);
     EXPECT_EQ(0, [controller tableView:controller.tableView
                      numberOfRowsInSection:
                          [controller.tableViewModel
@@ -139,11 +140,12 @@ TEST_P(BookmarksHomeViewControllerTest,
                          [controller.tableViewModel
                              sectionForSectionIdentifier:
                                  BookmarksHomeSectionIdentifierBookmarks]]);
-    EXPECT_EQ(1, [controller tableView:controller.tableView
-                     numberOfRowsInSection:
-                         [controller.tableViewModel
-                             sectionForSectionIdentifier:
-                                 BookmarksHomeSectionIdentifierRootProfile]]);
+    EXPECT_EQ(
+        1, [controller tableView:controller.tableView
+               numberOfRowsInSection:
+                   [controller.tableViewModel
+                       sectionForSectionIdentifier:
+                           BookmarksHomeSectionIdentifierRootLocalOrSyncable]]);
     EXPECT_EQ(0, [controller tableView:controller.tableView
                      numberOfRowsInSection:
                          [controller.tableViewModel
