@@ -272,6 +272,16 @@ void ExpectInstallSequence(UpdaterScope scope,
                            const base::Version& from_version,
                            const base::Version& to_version);
 
+#if BUILDFLAG(IS_WIN)
+void ExpectAppRollbackUpdateSequence(UpdaterScope scope,
+                                     ScopedServer* test_server,
+                                     const std::string& app_id,
+                                     bool allow_rollback,
+                                     const std::string& target_version_prefix,
+                                     const base::Version& from_version,
+                                     const base::Version& to_version);
+#endif  // BUILDFLAG(IS_WIN)
+
 void StressUpdateService(UpdaterScope scope);
 
 void CallServiceUpdate(UpdaterScope updater_scope,
