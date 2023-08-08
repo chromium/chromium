@@ -78,9 +78,8 @@ void OfferNotificationBubbleViews::Init() {
 }
 
 void OfferNotificationBubbleViews::AddedToWidget() {
-  GetBubbleFrameView()->SetTitleView(
-      std::make_unique<TitleWithIconAndSeparatorView>(
-          GetWindowTitle(), TitleWithIconAndSeparatorView::Icon::GOOGLE_G));
+  GetBubbleFrameView()->SetTitleView(CreateTitleView(
+      GetWindowTitle(), TitleWithIconAndSeparatorView::Icon::GOOGLE_G));
 
   // Set the header image for free listing coupon notification bubble.
   // If the promo code field autofill feature is off, we also need to add this

@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/views/autofill/payments/dialog_view_ids.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -38,6 +39,7 @@
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/style/typography.h"
+#include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
 namespace autofill {
@@ -203,6 +205,18 @@ gfx::Size TitleWithIconAfterLabelView::GetMinimumSize() const {
 
 BEGIN_METADATA(TitleWithIconAfterLabelView, views::View)
 END_METADATA
+
+std::unique_ptr<views::View> CreateTitleView(
+    const std::u16string& window_title,
+    TitleWithIconAndSeparatorView::Icon icon_to_show) {
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableMovingGPayLogoToTheRightOnDesktop)) {
+    return std::make_unique<TitleWithIconAfterLabelView>(window_title,
+                                                         icon_to_show);
+  }
+  return std::make_unique<TitleWithIconAndSeparatorView>(window_title,
+                                                         icon_to_show);
+}
 
 LegalMessageView::LegalMessageView(
     const LegalMessageLines& legal_message_lines,

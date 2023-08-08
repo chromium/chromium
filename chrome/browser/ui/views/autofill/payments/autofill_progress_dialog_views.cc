@@ -100,9 +100,8 @@ void AutofillProgressDialogViews::AddedToWidget() {
   DCHECK(progress_throbber_);
   progress_throbber_->Start();
 
-  GetBubbleFrameView()->SetTitleView(
-      std::make_unique<TitleWithIconAndSeparatorView>(
-          GetWindowTitle(), TitleWithIconAndSeparatorView::Icon::GOOGLE_PAY));
+  GetBubbleFrameView()->SetTitleView(CreateTitleView(
+      GetWindowTitle(), TitleWithIconAndSeparatorView::Icon::GOOGLE_PAY));
 }
 
 void AutofillProgressDialogViews::InvalidateControllerForCallbacks() {

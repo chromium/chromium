@@ -83,9 +83,8 @@ void SaveCardBubbleViews::AddedToWidget() {
   if (!controller_->IsUploadSave())
     return;
 
-  GetBubbleFrameView()->SetTitleView(
-      std::make_unique<TitleWithIconAndSeparatorView>(
-          GetWindowTitle(), TitleWithIconAndSeparatorView::Icon::GOOGLE_PAY));
+  GetBubbleFrameView()->SetTitleView(CreateTitleView(
+      GetWindowTitle(), TitleWithIconAndSeparatorView::Icon::GOOGLE_PAY));
 }
 
 std::u16string SaveCardBubbleViews::GetWindowTitle() const {
