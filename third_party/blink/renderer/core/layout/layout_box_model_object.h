@@ -141,6 +141,7 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
   void SetStickyConstraints(StickyPositionScrollingConstraints* constraints) {
     NOT_DESTROYED();
     GetMutableForPainting().FirstFragment().SetStickyConstraints(constraints);
+    SetNeedsPaintPropertyUpdate();
   }
 
   // IE extensions. Used to calculate offsetWidth/Height. Overridden by inlines

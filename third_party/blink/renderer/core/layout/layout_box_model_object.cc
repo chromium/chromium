@@ -486,7 +486,6 @@ bool LayoutBoxModelObject::UpdateStickyPositionConstraints() {
   if (!StyleRef().HasStickyConstrainedPosition()) {
     if (StickyConstraints()) {
       SetStickyConstraints(nullptr);
-      SetNeedsPaintPropertyUpdate();
       return true;
     }
     return false;
@@ -665,7 +664,6 @@ bool LayoutBoxModelObject::UpdateStickyPositionConstraints() {
   scrollable_area->AddStickyLayer(Layer());
   constraints->ComputeStickyOffset(scrollable_area->ScrollPosition());
   SetStickyConstraints(constraints);
-  SetNeedsPaintPropertyUpdate();
   return true;
 }
 
