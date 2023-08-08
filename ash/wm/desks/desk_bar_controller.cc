@@ -38,13 +38,22 @@
 namespace ash {
 
 namespace {
-bool IsOnScreenKeyboardEvent(const ui::LocatedEvent& event) {
+bool ShouldProcessLocatedEvent(const ui::LocatedEvent& event) {
+  if (event.type() != ui::ET_MOUSE_PRESSED &&
+      event.type() != ui::ET_TOUCH_PRESSED) {
+    return false;
+  }
+
   if (aura::Window* target = static_cast<aura::Window*>(event.target())) {
     if (aura::Window* container = GetContainerForWindow(target)) {
-      return container->GetId() == kShellWindowId_VirtualKeyboardContainer;
+      if (container->GetId() == kShellWindowId_VirtualKeyboardContainer ||
+          container->GetId() == kShellWindowId_MenuContainer) {
+        return false;
+      }
     }
   }
-  return false;
+
+  return true;
 }
 }  // namespace
 
@@ -86,15 +95,13 @@ void DeskBarController::OnDeskSwitchAnimationLaunching() {
 }
 
 void DeskBarController::OnMouseEvent(ui::MouseEvent* event) {
-  if (!IsOnScreenKeyboardEvent(*event) &&
-      event->type() == ui::ET_MOUSE_PRESSED) {
+  if (ShouldProcessLocatedEvent(*event)) {
     OnMaybePressOffBar(*event);
   }
 }
 
 void DeskBarController::OnTouchEvent(ui::TouchEvent* event) {
-  if (!IsOnScreenKeyboardEvent(*event) &&
-      event->type() == ui::ET_TOUCH_PRESSED) {
+  if (ShouldProcessLocatedEvent(*event)) {
     OnMaybePressOffBar(*event);
   }
 }
