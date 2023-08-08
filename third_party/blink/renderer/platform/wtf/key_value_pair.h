@@ -63,6 +63,14 @@ struct KeyValuePairHashTraits
   using TraitType = P;
   using KeyTraits = KeyTraitsArg;
   using ValueTraits = ValueTraitsArg;
+
+  // Even non-traceable keys need to have their trait set. This is because
+  // non-traceable keys still need to be processed concurrently for checking
+  // empty/deleted state.
+  static constexpr bool kCanTraceConcurrently =
+      KeyTraits::kCanTraceConcurrently &&
+      (ValueTraits::kCanTraceConcurrently ||
+       !IsTraceable<typename ValueTraits::TraitType>::value);
 };
 
 template <typename Key, typename Value>
