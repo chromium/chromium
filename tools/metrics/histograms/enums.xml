@@ -61857,6 +61857,7 @@ from previous Chrome versions.
   <int value="-1146814438" label="TabbedAppOverflowMenuIcons:enabled"/>
   <int value="-1146521164" label="EcheNetworkConnectionState:disabled"/>
   <int value="-1146310028" label="HardwareSecureDecryptionFallback:enabled"/>
+  <int value="-1146126821" label="DeprecateUnload:enabled"/>
   <int value="-1145909380" label="EnableGamepadMultitouch:disabled"/>
   <int value="-1145905507" label="SendTabToSelfWhenSignedIn:disabled"/>
   <int value="-1145702446" label="ChromeHomeInactivitySheetExpansion:enabled"/>
@@ -64608,6 +64609,7 @@ from previous Chrome versions.
   <int value="272631627" label="BookmarkAppsMac:enabled"/>
   <int value="273489120" label="CrostiniDiskResizing:disabled"/>
   <int value="274103741" label="enable-ntp-popular-sites"/>
+  <int value="275314794" label="DeprecateUnload:disabled"/>
   <int value="275616740" label="ForceInitialSyncWhenDecryptionFails:disabled"/>
   <int value="275690549" label="AppManagementAppDetails:enabled"/>
   <int value="277483398" label="ClipboardHistory:disabled"/>

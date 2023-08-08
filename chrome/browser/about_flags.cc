@@ -10795,6 +10795,10 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAll,
      STRING_VALUE_TYPE(switches::kProtectedAudiencesConsentedDebugToken, "")},
 
+    {"deprecate-unload", flag_descriptions::kDeprecateUnloadName,
+     flag_descriptions::kDeprecateUnloadDescription, kOsAll,
+     FEATURE_VALUE_TYPE(blink::features::kDeprecateUnload)},
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

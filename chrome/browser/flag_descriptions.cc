@@ -174,6 +174,15 @@ const char KCustomizeChromeSidePanelDescription[] =
     "Enables the ability to use Customize Chrome functionality from the "
     "unified side panel on the New Tab Page.";
 
+const char kDeprecateUnloadName[] = "Deprecate the unload event";
+const char kDeprecateUnloadDescription[] =
+    "Controls the default for Permissions-Policy unload. If enabled, unload "
+    "handlers are deprecated and will not receive the unload event unless a "
+    "Permissions-Policy to enable them has been explicitly set. If  disabled, "
+    "unload handlers will continue to receive the unload event unless "
+    "explicity disabled by Permissions-Policy, even during the gradual "
+    "rollout of their deprecation.";
+
 const char kForceStartupSigninPromoName[] = "Force Start-up Signin Promo";
 const char kForceStartupSigninPromoDescription[] =
     "If enabled, the full screen signin promo will be forced to show up at "
