@@ -501,6 +501,23 @@ size_t GetNumOriginalAccelerators(
   return num_original_accelerators;
 }
 
+// Update key_state for special trigger_on_release case.
+ui::Accelerator ModifyKeyStateConditionally(
+    const ui::Accelerator& accelerator) {
+  // From kAcceleratorData(ash/public/cpp/accelerators.cc), kToggleAppList is
+  // triggered on release so it needs to be special cased.
+  if (accelerator.key_code() == ui::VKEY_LWIN &&
+      accelerator.modifiers() == ui::EF_NONE) {
+    // Create a new accelerator with key state set to RELEASED.
+    ui::Accelerator updated_accelerator(accelerator.key_code(),
+                                        accelerator.modifiers());
+    updated_accelerator.set_key_state(ui::Accelerator::KeyState::RELEASED);
+    return updated_accelerator;
+  }
+
+  return accelerator;
+}
+
 void LogReplaceAccelerator(mojom::AcceleratorSource source,
                            const ui::Accelerator& old_accelerator,
                            const ui::Accelerator& new_accelerator,
@@ -860,6 +877,8 @@ void AcceleratorConfigurationProvider::RemoveAccelerator(
     const ui::Accelerator& accelerator,
     RemoveAcceleratorCallback callback) {
   DCHECK(::features::IsShortcutCustomizationEnabled());
+  ui::Accelerator accelerator_to_remove =
+      ModifyKeyStateConditionally(accelerator);
   AcceleratorResultDataPtr result_data = AcceleratorResultData::New();
 
   absl::optional<AcceleratorConfigResult> validated_source_action_result =
@@ -867,15 +886,16 @@ void AcceleratorConfigurationProvider::RemoveAccelerator(
                               ash_accelerator_configuration_);
   if (validated_source_action_result.has_value()) {
     result_data->result = *validated_source_action_result;
-    LogRemoveAccelerator(source, accelerator, result_data->result);
+    LogRemoveAccelerator(source, accelerator_to_remove, result_data->result);
     std::move(callback).Run(std::move(result_data));
     return;
   }
 
   AcceleratorConfigResult result =
-      ash_accelerator_configuration_->RemoveAccelerator(action_id, accelerator);
+      ash_accelerator_configuration_->RemoveAccelerator(action_id,
+                                                        accelerator_to_remove);
   result_data->result = result;
-  LogRemoveAccelerator(source, accelerator, result_data->result);
+  LogRemoveAccelerator(source, accelerator_to_remove, result_data->result);
   std::move(callback).Run(std::move(result_data));
 }
 
@@ -886,6 +906,9 @@ void AcceleratorConfigurationProvider::ReplaceAccelerator(
     const ui::Accelerator& new_accelerator,
     ReplaceAcceleratorCallback callback) {
   CHECK(::features::IsShortcutCustomizationEnabled());
+
+  ui::Accelerator accelerator_to_replace =
+      ModifyKeyStateConditionally(old_accelerator);
 
   AcceleratorResultDataPtr result_data = AcceleratorResultData::New();
 
@@ -898,7 +921,7 @@ void AcceleratorConfigurationProvider::ReplaceAccelerator(
 
   if (error_result.has_value()) {
     result_data->result = *error_result;
-    LogReplaceAccelerator(source, old_accelerator, new_accelerator,
+    LogReplaceAccelerator(source, accelerator_to_replace, new_accelerator,
                           result_data->result);
     std::move(callback).Run(std::move(result_data));
     return;
@@ -906,10 +929,11 @@ void AcceleratorConfigurationProvider::ReplaceAccelerator(
 
   // Verify old accelerator exists.
   const AcceleratorAction* old_accelerator_id =
-      ash_accelerator_configuration_->FindAcceleratorAction(old_accelerator);
+      ash_accelerator_configuration_->FindAcceleratorAction(
+          accelerator_to_replace);
   if (!old_accelerator_id || *old_accelerator_id != action_id) {
     result_data->result = AcceleratorConfigResult::kNotFound;
-    LogReplaceAccelerator(source, old_accelerator, new_accelerator,
+    LogReplaceAccelerator(source, accelerator_to_replace, new_accelerator,
                           result_data->result);
     std::move(callback).Run(std::move(result_data));
     return;
@@ -920,7 +944,7 @@ void AcceleratorConfigurationProvider::ReplaceAccelerator(
   absl::optional<AcceleratorResultDataPtr> result_data_ptr =
       PreprocessAddAccelerator(source, action_id, new_accelerator);
   if (result_data_ptr.has_value()) {
-    LogReplaceAccelerator(source, old_accelerator, new_accelerator,
+    LogReplaceAccelerator(source, accelerator_to_replace, new_accelerator,
                           (*result_data_ptr)->result);
     std::move(callback).Run(std::move(*result_data_ptr));
     return;
@@ -929,8 +953,8 @@ void AcceleratorConfigurationProvider::ReplaceAccelerator(
   // Continue with replacing the accelerator.
   pending_accelerator_.reset();
   result_data->result = ash_accelerator_configuration_->ReplaceAccelerator(
-      action_id, old_accelerator, new_accelerator);
-  LogReplaceAccelerator(source, old_accelerator, new_accelerator,
+      action_id, accelerator_to_replace, new_accelerator);
+  LogReplaceAccelerator(source, accelerator_to_replace, new_accelerator,
                         result_data->result);
   std::move(callback).Run(std::move(result_data));
 }

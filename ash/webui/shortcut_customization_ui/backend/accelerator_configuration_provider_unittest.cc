@@ -1387,6 +1387,43 @@ TEST_F(AcceleratorConfigurationProviderTest, RemoveAndResoreDefault) {
   EXPECT_EQ(mojom::AcceleratorType::kDefault, actual_infos[0]->type);
 }
 
+TEST_F(AcceleratorConfigurationProviderTest,
+       RemoveTriggerOnReleaseAccelerator) {
+  // Initialize with custom accelerators with key_state set to RELEASED.
+  const AcceleratorData test_data[] = {
+      {/*trigger_on_press=*/false, ui::VKEY_LWIN, ui::EF_NONE,
+       AcceleratorAction::kToggleAppList},
+      {/*trigger_on_press=*/false, ui::VKEY_LWIN, ui::EF_ALT_DOWN,
+       AcceleratorAction::kToggleCapsLock},
+  };
+
+  AshAcceleratorConfiguration* config =
+      Shell::Get()->ash_accelerator_configuration();
+  config->Initialize(test_data);
+  base::RunLoop().RunUntilIdle();
+
+  // Remove kToggleAppList, expect success.
+  provider_->RemoveAccelerator(
+      mojom::AcceleratorSource::kAsh, AcceleratorAction::kToggleAppList,
+      // The accelerator does not specify key_state will be default to PRESSED.
+      ui::Accelerator(ui::VKEY_LWIN, ui::EF_NONE),
+      base::BindLambdaForTesting([&](AcceleratorResultDataPtr result) {
+        // Expect the accelerator state to be updated to RELEASED and removed
+        // successfully.
+        EXPECT_EQ(AcceleratorConfigResult::kSuccess, result->result);
+      }));
+  base::RunLoop().RunUntilIdle();
+
+  // Remove kToggleCapsLock, expect failure.
+  provider_->RemoveAccelerator(
+      mojom::AcceleratorSource::kAsh, AcceleratorAction::kToggleCapsLock,
+      ui::Accelerator(ui::VKEY_LWIN, ui::EF_ALT_DOWN),
+      base::BindLambdaForTesting([&](AcceleratorResultDataPtr result) {
+        EXPECT_EQ(AcceleratorConfigResult::kNotFound, result->result);
+      }));
+  base::RunLoop().RunUntilIdle();
+}
+
 TEST_F(AcceleratorConfigurationProviderTest, RestoreDefaultNonAsh) {
   // Initialize with all custom accelerators.
   const AcceleratorData test_data[] = {
@@ -2105,6 +2142,47 @@ TEST_F(AcceleratorConfigurationProviderTest, PreventProcessingAccelerators) {
   EXPECT_FALSE(Shell::Get()
                    ->accelerator_controller()
                    ->ShouldPreventProcessingAccelerators());
+}
+
+TEST_F(AcceleratorConfigurationProviderTest,
+       ReplaceTriggerOnReleaseAccelerator) {
+  // Initialize with custom accelerators with key_state set to RELEASED.
+  const AcceleratorData test_data[] = {
+      {/*trigger_on_press=*/false, ui::VKEY_LWIN, ui::EF_NONE,
+       AcceleratorAction::kToggleAppList},
+      {/*trigger_on_press=*/false, ui::VKEY_LWIN, ui::EF_ALT_DOWN,
+       AcceleratorAction::kToggleCapsLock},
+  };
+
+  AshAcceleratorConfiguration* config =
+      Shell::Get()->ash_accelerator_configuration();
+  config->Initialize(test_data);
+  base::RunLoop().RunUntilIdle();
+
+  // Replace kToggleAppList, expect success.
+  AcceleratorResultDataPtr result;
+  // The accelerator does not specify key_state will be default to PRESSED.
+  const ui::Accelerator old_accelerator(ui::VKEY_LWIN, ui::EF_NONE);
+  const ui::Accelerator new_accelerator(ui::VKEY_M, ui::EF_ALT_DOWN);
+  ash::shortcut_customization::mojom::
+      AcceleratorConfigurationProviderAsyncWaiter(provider_.get())
+          .ReplaceAccelerator(mojom::AcceleratorSource::kAsh,
+                              AcceleratorAction::kToggleAppList,
+                              old_accelerator, new_accelerator, &result);
+  EXPECT_EQ(mojom::AcceleratorConfigResult::kSuccess, result->result);
+  base::RunLoop().RunUntilIdle();
+
+  // Replace kToggleCapsLock, expect failure.
+  AcceleratorResultDataPtr result_2;
+  const ui::Accelerator old_accelerator_2(ui::VKEY_LWIN, ui::EF_ALT_DOWN);
+  const ui::Accelerator new_accelerator_2(ui::VKEY_M, ui::EF_ALT_DOWN);
+  ash::shortcut_customization::mojom::
+      AcceleratorConfigurationProviderAsyncWaiter(provider_.get())
+          .ReplaceAccelerator(mojom::AcceleratorSource::kAsh,
+                              AcceleratorAction::kToggleCapsLock,
+                              old_accelerator_2, new_accelerator_2, &result_2);
+  EXPECT_EQ(mojom::AcceleratorConfigResult::kNotFound, result_2->result);
+  base::RunLoop().RunUntilIdle();
 }
 
 TEST_F(AcceleratorConfigurationProviderTest, ReplaceDefaultAccelerator) {
