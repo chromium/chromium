@@ -16,6 +16,7 @@
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
+#include "chrome/browser/ash/login/test/oobe_screens_utils.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/ownership/fake_owner_settings_service.h"
@@ -116,7 +117,11 @@ IN_PROC_BROWSER_TEST_F(KioskBaseTest, KioskEnableAfter2ndSigninScreen) {
 
   // Navigate to gaia info screen.
   OobeScreenWaiter(UserCreationView::kScreenId).Wait();
+  test::OobeJS().TapOnPath({"user-creation", "selfButton"});
   test::OobeJS().TapOnPath({"user-creation", "nextButton"});
+
+  ash::test::WaitForConsumerUpdateScreen();
+  ash::test::ExitConsumerUpdateScreenNoUpdate();
 
   if (features::IsOobeGaiaInfoScreenEnabled()) {
     // Navigate to gaia sign in screen.

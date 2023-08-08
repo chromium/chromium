@@ -52,8 +52,8 @@ const test::UIPath kCellularPermissionBack = {"oobe-update",
 const test::UIPath kLowBatteryWarningMessage = {"oobe-update",
                                                 "battery-warning"};
 const test::UIPath kErrorMessage = {"error-message"};
-const test::UIPath kBetterUpdateCheckingForUpdatesDialog = {
-    "oobe-update", "checking-for-updates-dialog"};
+const test::UIPath kBetterUpdateCheckingForUpdatesDialog = {"oobe-update",
+                                                            "checking-update"};
 const test::UIPath kUpdateInProgressDialog = {"oobe-update",
                                               "update-in-progress-dialog"};
 const test::UIPath kRestartingDialog = {"oobe-update", "restarting-dialog"};

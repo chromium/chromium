@@ -20,6 +20,8 @@ void WaitForNetworkSelectionScreen();
 void TapNetworkSelectionNext();
 void WaitForUpdateScreen();
 void ExitUpdateScreenNoUpdate();
+void WaitForConsumerUpdateScreen();
+void ExitConsumerUpdateScreenNoUpdate();
 void WaitForFingerprintScreen();
 void ExitFingerprintPinSetupScreen();
 void WaitForPinSetupScreen();
@@ -27,6 +29,7 @@ void ExitPinSetupScreen();
 void SkipToEnrollmentOnRecovery();
 void WaitForEnrollmentScreen();
 void WaitForUserCreationScreen();
+void TapForPersonalUseCrRadioButton();
 void TapUserCreationNext();
 // Wait for OobeUI to finish loading.
 void WaitForOobeJSReady();

@@ -1756,7 +1756,7 @@ BASE_FEATURE(kOobeDrivePinning,
 // If enabled, Consumer Software Screen will be shown during OOBE.
 BASE_FEATURE(kOobeSoftwareUpdate,
              "OobeSoftwareUpdate",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables the Gaia info screen in OOBE.
 BASE_FEATURE(kOobeGaiaInfoScreen,
