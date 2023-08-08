@@ -173,6 +173,9 @@ struct VIEWS_EXPORT MenuConfig {
   int touchable_corner_radius = LayoutProvider::Get()->GetCornerRadiusMetric(
       ShapeContextTokens::kMenuTouchRadius);
 
+  // Radius of selection background on menu items.
+  int item_corner_radius = 0;
+
   // Anchor offset for touchable menus created by a touch event.
   int touchable_anchor_offset = 8;
 

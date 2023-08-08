@@ -1014,6 +1014,7 @@ void MenuItemView::PaintBackground(gfx::Canvas* canvas,
         GetColorProvider()->GetColor(background_info.background_color_id));
     canvas->DrawRoundRect(bounds, background_info.corner_radius, flags);
   }
+  const auto& config = MenuConfig::instance();
   if (type_ == Type::kHighlighted || is_alerted_ ||
       (paint_as_selected && selected_color_id_.has_value())) {
     SkColor color = gfx::kPlaceholderColor;
@@ -1053,16 +1054,19 @@ void MenuItemView::PaintBackground(gfx::Canvas* canvas,
         item_bounds = GetSubmenuAreaOfActionableSubmenu();
       } else {
         item_bounds.set_width(item_bounds.width() -
-                              MenuConfig::instance().actionable_submenu_width -
-                              1);
+                              config.actionable_submenu_width - 1);
       }
     }
     AdjustBoundsForRTLUI(&item_bounds);
 
+    ui::NativeTheme::MenuItemExtraParams menu_item_extra_params;
+    menu_item_extra_params.corner_radius = config.item_corner_radius;
+    ui::NativeTheme::ExtraParams extra_params;
+    extra_params.menu_item = menu_item_extra_params;
     GetNativeTheme()->Paint(canvas->sk_canvas(), GetColorProvider(),
                             ui::NativeTheme::kMenuItemBackground,
                             ui::NativeTheme::kHovered, item_bounds,
-                            ui::NativeTheme::ExtraParams());
+                            extra_params);
   }
 }
 
