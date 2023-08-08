@@ -127,8 +127,7 @@ class CORE_EXPORT CanvasAsyncBlobCreator
 
   // PNG, JPEG
   bool InitializeEncoder(double quality);
-  void ForceEncodeRowsOnCurrentThread();  // Similar to IdleEncodeRows
-                                          // without deadline
+  void ForceEncodeRows();  // Similar to IdleEncodeRows without deadline.
 
   // WEBP
   void EncodeImageOnEncoderThread(double quality);

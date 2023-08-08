@@ -371,7 +371,8 @@ void CanvasAsyncBlobCreator::IdleEncodeRows(base::TimeTicks deadline) {
   }
 }
 
-void CanvasAsyncBlobCreator::ForceEncodeRowsOnCurrentThread() {
+void CanvasAsyncBlobCreator::ForceEncodeRows() {
+  DCHECK(context_->IsContextThread());
   DCHECK(idle_task_status_ == kIdleTaskSwitchedToImmediateTask);
 
   // Continue encoding from the last completed row
@@ -384,15 +385,7 @@ void CanvasAsyncBlobCreator::ForceEncodeRowsOnCurrentThread() {
   }
   num_rows_completed_ = src_data_.height();
 
-  if (IsMainThread()) {
-    CreateBlobAndReturnResult();
-  } else {
-    PostCrossThreadTask(
-        *context_->GetTaskRunner(TaskType::kCanvasBlobSerialization), FROM_HERE,
-        CrossThreadBindOnce(&CanvasAsyncBlobCreator::CreateBlobAndReturnResult,
-                            WrapCrossThreadPersistent(this)));
-  }
-
+  CreateBlobAndReturnResult();
   SignalAlternativeCodePathFinishedForTesting();
 }
 
@@ -545,11 +538,9 @@ void CanvasAsyncBlobCreator::IdleTaskStartTimeoutEvent(double quality) {
     DCHECK(mime_type_ == kMimeTypePng || mime_type_ == kMimeTypeJpeg);
     if (InitializeEncoder(quality)) {
       context_->GetTaskRunner(TaskType::kCanvasBlobSerialization)
-          ->PostTask(
-              FROM_HERE,
-              WTF::BindOnce(
-                  &CanvasAsyncBlobCreator::ForceEncodeRowsOnCurrentThread,
-                  WrapPersistent(this)));
+          ->PostTask(FROM_HERE,
+                     WTF::BindOnce(&CanvasAsyncBlobCreator::ForceEncodeRows,
+                                   WrapPersistent(this)));
     } else {
       // Failing in initialization of encoder
       SignalAlternativeCodePathFinishedForTesting();
@@ -572,9 +563,8 @@ void CanvasAsyncBlobCreator::IdleTaskCompleteTimeoutEvent() {
     DCHECK(mime_type_ == kMimeTypePng || mime_type_ == kMimeTypeJpeg);
     context_->GetTaskRunner(TaskType::kCanvasBlobSerialization)
         ->PostTask(FROM_HERE,
-                   WTF::BindOnce(
-                       &CanvasAsyncBlobCreator::ForceEncodeRowsOnCurrentThread,
-                       WrapPersistent(this)));
+                   WTF::BindOnce(&CanvasAsyncBlobCreator::ForceEncodeRows,
+                                 WrapPersistent(this)));
   } else {
     DCHECK(idle_task_status_ == kIdleTaskFailed ||
            idle_task_status_ == kIdleTaskCompleted);
