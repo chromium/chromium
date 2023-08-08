@@ -640,6 +640,17 @@ class CORE_EXPORT NGPhysicalFragment
     return IsScrollContainer() ? nullptr : sticky_descendants_.Get();
   }
 
+  const ScrollStartTargetCandidates* ScrollStartTargets() const {
+    return scroll_start_targets_;
+  }
+  const ScrollStartTargetCandidates* PropagatedScrollStartTargets() const {
+    return IsScrollContainer() ? nullptr : scroll_start_targets_.Get();
+  }
+
+  bool HasPropagatedLayoutObjects() const {
+    return PropagatedStickyDescendants() || PropagatedScrollStartTargets();
+  }
+
   struct OutOfFlowData : public GarbageCollected<OutOfFlowData> {
    public:
     virtual ~OutOfFlowData() = default;
@@ -690,13 +701,6 @@ class CORE_EXPORT NGPhysicalFragment
   // Figure out if the child has any out-of-flow positioned descendants, in
   // which case we'll need to propagate this to the fragment builder.
   bool NeedsOOFPositionedInfoPropagation() const;
-
-  const ScrollStartTargetCandidates* ScrollStartTargets() const {
-    return scroll_start_targets_;
-  }
-  const ScrollStartTargetCandidates* PropagatedScrollStartTargets() const {
-    return IsScrollContainer() ? nullptr : scroll_start_targets_.Get();
-  }
 
  protected:
   const ComputedStyle& SlowEffectiveStyle() const;

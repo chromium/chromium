@@ -1299,8 +1299,8 @@ static inline bool ObjectIsRelayoutBoundary(const LayoutObject* object) {
       return false;
     }
 
-    // Any propagated sticky descendants need their constraints regenerated.
-    if (fragment.PropagatedStickyDescendants()) {
+    // Any propagated layout-objects will affect the our container chain.
+    if (fragment.HasPropagatedLayoutObjects()) {
       return false;
     }
 
@@ -1313,10 +1313,6 @@ static inline bool ObjectIsRelayoutBoundary(const LayoutObject* object) {
     // Anchor queries should be propagated across the layout boundaries, even
     // when `contain: strict` is explicitly set.
     if (fragment.HasAnchorQuery()) {
-      return false;
-    }
-
-    if (fragment.PropagatedScrollStartTargets()) {
       return false;
     }
 
@@ -1425,6 +1421,21 @@ void LayoutObject::SetChildNeedsCollectInlines() {
   } while (object);
 }
 
+namespace {
+
+bool HasPropagatedLayoutObjects(const LayoutObject* object) {
+  if (auto* box = DynamicTo<LayoutBox>(object)) {
+    for (const auto& fragment : box->PhysicalFragments()) {
+      if (fragment.HasPropagatedLayoutObjects()) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+}  // namespace
+
 void LayoutObject::MarkContainerChainForLayout(bool schedule_relayout) {
   NOT_DESTROYED();
 #if DCHECK_IS_ON()
@@ -1455,7 +1466,8 @@ void LayoutObject::MarkContainerChainForLayout(bool schedule_relayout) {
     // it's not enough to check |object|, since the element that is actually
     // locked needs its child bits set properly, we need to go one more
     // iteration after that.
-    if (!last->SelfNeedsLayout() && last->ChildLayoutBlockedByDisplayLock()) {
+    if (!last->SelfNeedsLayout() && last->ChildLayoutBlockedByDisplayLock() &&
+        !HasPropagatedLayoutObjects(last)) {
       return;
     }
 
