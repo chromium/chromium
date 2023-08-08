@@ -4,6 +4,9 @@
 
 #include "ash/ash_element_identifiers.h"
 #include "ash/constants/ash_features.h"
+#include "ash/shell.h"
+#include "ash/system/model/enterprise_domain_model.h"
+#include "ash/system/model/system_tray_model.h"
 #include "base/test/gtest_tags.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/common/webui_url_constants.h"
@@ -12,6 +15,10 @@
 
 namespace ash {
 namespace {
+
+EnterpriseDomainModel* GetEnterpriseDomainModel() {
+  return Shell::Get()->system_tray_model()->enterprise_domain();
+}
 
 class QuickSettingsIntegrationTest : public InteractiveAshTest {
  public:
@@ -52,6 +59,34 @@ IN_PROC_BROWSER_TEST_F(QuickSettingsIntegrationTest, OpenOsSettings) {
       Log("Verifying that OS Settings loads"),
       WaitForWebContentsReady(kOsSettingsElementId,
                               GURL(chrome::kChromeUIOSSettingsURL)));
+}
+
+IN_PROC_BROWSER_TEST_F(QuickSettingsIntegrationTest, ManagedDeviceInfo) {
+  base::AddFeatureIdTagToTestResult(
+      "screenplay-3d8236e6-8c42-428c-87e6-9c9e3bac7ddb");
+
+  SetupContextWidget();
+
+  // Simulate enterprise information being available.
+  GetEnterpriseDomainModel()->SetDeviceEnterpriseInfo(
+      DeviceEnterpriseInfo{"example.com", /*active_directory_managed=*/false,
+                           ManagementDeviceMode::kChromeEnterprise});
+
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kManagementElementId);
+
+  RunTestSequence(Log("Opening quick settings bubble"),
+                  PressButton(kUnifiedSystemTrayElementId),
+                  WaitForShow(kQuickSettingsViewElementId),
+
+                  Log("Pressing enterprise managed view"),
+                  InstrumentNextTab(kManagementElementId, AnyBrowser()),
+                  PressButton(kEnterpriseManagedView),
+
+                  Log("Waiting for chrome://management to load"),
+                  WaitForWebContentsReady(kManagementElementId,
+                                          GURL("chrome://management")),
+
+                  Log("Test complete"));
 }
 
 }  // namespace

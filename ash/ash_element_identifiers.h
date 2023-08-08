@@ -20,6 +20,8 @@ DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT,
 DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT,
                                           kBluetoothFeatureTileToggleElementId);
 
+DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT, kEnterpriseManagedView);
+
 // Uniquely identifies an element corresponding to the Explore app. Note that
 // this may be used in multiple contexts (e.g. app window, launcher, shelf,
 // etc.), so care must be taken to use the desired context when looking up the
