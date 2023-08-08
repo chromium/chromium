@@ -63,11 +63,18 @@ class AutocompleteActionPredictor
       public history::HistoryServiceObserver,
       public base::SupportsWeakPtr<AutocompleteActionPredictor> {
  public:
+  // An `Action` is a recommendation on what pre* technology to invoke on a
+  // given `AutocompleteMatch`.
   enum Action {
+    // Trigger Prerender2 (or NoStatePrefetch if that's disabled).
     ACTION_PRERENDER = 0,
+
+    // Invoke `LoadingPredictor::PrepareForPageLoad` to
+    // prefetch, preconnect, and preresolve.
     ACTION_PRECONNECT,
+
+    // The recommendation is to not perform any action.
     ACTION_NONE,
-    LAST_PREDICT_ACTION = ACTION_NONE
   };
 
   explicit AutocompleteActionPredictor(Profile* profile);
