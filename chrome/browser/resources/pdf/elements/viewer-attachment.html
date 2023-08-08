@@ -1,0 +1,45 @@
+<style include="cr-hidden-style">
+  #item {
+    align-items: flex-start;
+    display: flex;
+    padding: 5px 28px;
+    position: relative;
+    transition: background-color 100ms ease-out;
+  }
+
+  #item:hover {
+    background-color: rgba(255, 255, 255, 0.25);
+  }
+
+  #title {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  :host(:not([save-allowed_])) #title {
+    opacity: var(--cr-disabled-opacity);
+  }
+
+  #download {
+    --cr-icon-button-fill-color: var(--primary-text-color);
+    --cr-icon-button-icon-size: 16px;
+    --cr-icon-button-size: 28px;
+    margin: 0;
+    position: absolute;
+    right: 0;
+    /* Vertically aligns the expand icon with the first line of #title. */
+    top: calc((100% - var(--cr-icon-button-size)) / 2);
+  }
+
+  #download:focus-visible {
+    outline: auto -webkit-focus-ring-color;
+  }
+</style>
+<div id="item">
+  <span id="title">[[attachment.name]]</span>
+  <cr-icon-button id="download" tabindex="0" hidden$="[[!saveAllowed_]]"
+      title="$i18n{tooltipDownloadAttachment}" iron-icon="cr:file-download"
+      on-click="onDownloadClick_">
+  </cr-icon-button>
+</div>

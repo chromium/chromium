@@ -5,6 +5,7 @@
 import './shared-vars.css.js';
 import '../pdf_viewer_shared_style.css.js';
 import './icons.html.js';
+import './viewer-attachment-bar.js';
 import './viewer-document-outline.js';
 import './viewer-thumbnail-bar.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';

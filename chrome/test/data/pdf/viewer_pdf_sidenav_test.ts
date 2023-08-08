@@ -44,9 +44,7 @@ const tests = [
 
     const thumbnailBar = content.querySelector('viewer-thumbnail-bar')!;
     const outline = content.querySelector('viewer-document-outline')!;
-    // TODO(crbug.com/177188): `viewer-attachment-bar` will be added for
-    // displaying attachment item(s). Add tests for `viewer-attachment-bar` once
-    // it's available.
+    const attachmentBar = content.querySelector('viewer-attachment-bar')!;
 
     // Verify the button types.
     chrome.test.assertEq(
@@ -73,6 +71,7 @@ const tests = [
 
       chrome.test.assertFalse(thumbnailBar.hidden);
       chrome.test.assertTrue(outline.hidden);
+      chrome.test.assertTrue(attachmentBar.hidden);
     }
 
     function assertOutlineView() {
@@ -91,6 +90,7 @@ const tests = [
 
       chrome.test.assertTrue(thumbnailBar.hidden);
       chrome.test.assertFalse(outline.hidden);
+      chrome.test.assertTrue(attachmentBar.hidden);
     }
 
     function assertAttachmentView() {
@@ -110,6 +110,7 @@ const tests = [
 
       chrome.test.assertTrue(thumbnailBar.hidden);
       chrome.test.assertTrue(outline.hidden);
+      chrome.test.assertFalse(attachmentBar.hidden);
     }
 
     // Sidebar starts on thumbnail view.
@@ -271,9 +272,7 @@ const tests = [
     const attachmentButton = buttons[1]!;
 
     const thumbnailBar = content.querySelector('viewer-thumbnail-bar')!;
-    // TODO(crbug.com/177188): `viewer-attachment-bar` will be added for
-    // displaying attachment item(s). Add tests for `viewer-attachment-bar` once
-    // it's available.
+    const attachmentBar = content.querySelector('viewer-attachment-bar')!;
 
     // Verify the button types.
     chrome.test.assertEq(
@@ -293,6 +292,7 @@ const tests = [
           'false', attachmentButton.getAttribute('aria-selected'));
 
       chrome.test.assertFalse(thumbnailBar.hidden);
+      chrome.test.assertTrue(attachmentBar.hidden);
     }
 
     function assertAttachmentView() {
@@ -307,6 +307,7 @@ const tests = [
           'true', attachmentButton.getAttribute('aria-selected'));
 
       chrome.test.assertTrue(thumbnailBar.hidden);
+      chrome.test.assertFalse(attachmentBar.hidden);
     }
 
     // Sidebar starts on thumbnail view.

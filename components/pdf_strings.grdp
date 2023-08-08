@@ -164,8 +164,14 @@
     <message name="IDS_PDF_TOOLTIP_ATTACHMENTS" desc="Button tooltip for the button which selects the PDF document attachment view in the sidenav">
       Attachments
     </message>
+    <message name="IDS_PDF_TOOLTIP_DOWNLOAD_ATTACHMENT" desc="Button tooltip for the button which downloads the PDF attachment">
+      Download the attachment
+    </message>
     <message name="IDS_PDF_LABEL_PAGE_NUMBER" desc="Label for the input field containing the current page number">
       Page number
+    </message>
+    <message name="IDS_PDF_OVERSIZE_ATTACHMENT_WARNING" desc="Disclaimer for why download buttons are not available for oversize attachments">
+      Files over 100MB are not available for download
     </message>
     <message name="IDS_PDF_PAGE_INDEX" desc="Accessible label for each page, describing the page number">
       {COUNT, plural,
