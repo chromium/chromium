@@ -24,7 +24,16 @@ void FailingLocalTimeConverter::LocalExplode(
     base::Time time,
     base::Time::Exploded* exploded) const {
   CHECK(exploded);
+  // Initialize all values here to prevent msan errors. This matches what
+  // `base::Time::LocalExplode()` does when it fails.
+  exploded->year = -1;
+  exploded->month = -1;
+  exploded->day_of_week = -1;
+  exploded->day_of_month = -1;
   exploded->hour = -1;
+  exploded->minute = -1;
+  exploded->second = -1;
+  exploded->millisecond = -1;
 }
 
 }  // namespace ash
