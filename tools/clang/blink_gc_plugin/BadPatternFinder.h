@@ -4,7 +4,6 @@
 
 struct BlinkGCPluginOptions;
 class DiagnosticsReporter;
-class RecordCache;
 
 namespace clang {
 class ASTContext;
@@ -14,5 +13,4 @@ class ASTContext;
 // std::make_unique to a garbage-collected type.
 void FindBadPatterns(clang::ASTContext& ast_context,
                      DiagnosticsReporter&,
-                     RecordCache& record_cache,
                      const BlinkGCPluginOptions&);

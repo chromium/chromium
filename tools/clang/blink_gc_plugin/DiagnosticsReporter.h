@@ -96,18 +96,6 @@ class DiagnosticsReporter {
   void VariantUsedWithGC(const clang::Expr* expr,
                          const clang::CXXRecordDecl* variant,
                          const clang::CXXRecordDecl* gc_type);
-  void CollectionOfGCed(const clang::Decl* decl,
-                        const clang::CXXRecordDecl* collection,
-                        const clang::CXXRecordDecl* gc_type);
-  void CollectionOfGCed(const clang::Expr* expr,
-                        const clang::CXXRecordDecl* collection,
-                        const clang::CXXRecordDecl* gc_type);
-  void CollectionOfMembers(const clang::Decl* decl,
-                           const clang::CXXRecordDecl* collection,
-                           const clang::CXXRecordDecl* gc_type);
-  void CollectionOfMembers(const clang::Expr* expr,
-                           const clang::CXXRecordDecl* collection,
-                           const clang::CXXRecordDecl* gc_type);
   void MemberOnStack(const clang::VarDecl* var);
   void AdditionalPadding(const clang::RecordDecl* var, size_t padding);
 
@@ -181,8 +169,6 @@ class DiagnosticsReporter {
   unsigned diag_optional_field_used_with_gc_;
   unsigned diag_optional_new_expr_used_with_gc_;
   unsigned diag_variant_used_with_gc_;
-  unsigned diag_collection_of_gced_;
-  unsigned diag_collection_of_members_;
 };
 
 #endif // TOOLS_BLINK_GC_PLUGIN_DIAGNOSTICS_REPORTER_H_
