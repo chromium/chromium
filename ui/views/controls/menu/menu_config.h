@@ -5,6 +5,7 @@
 #ifndef UI_VIEWS_CONTROLS_MENU_MENU_CONFIG_H_
 #define UI_VIEWS_CONTROLS_MENU_MENU_CONFIG_H_
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/font_list.h"
@@ -50,10 +51,11 @@ struct VIEWS_EXPORT MenuConfig {
   gfx::FontList font_list;
   gfx::FontList context_menu_font_list;
 
-  // Menu border sizes. The vertical border size does not apply to menus with
-  // rounded corners - those menus always use the corner radius as the vertical
-  // border size.
-  int menu_vertical_border_size = 4;
+  // Menu border sizes. Menus with rounded corners use
+  // `rounded_menu_vertical_border_size` if set and fall back to the corner
+  // radius otherwise.
+  int nonrounded_menu_vertical_border_size = 4;
+  absl::optional<int> rounded_menu_vertical_border_size;
   int menu_horizontal_border_size = views::RoundRectPainter::kBorderWidth;
 
   // The horizontal overlap between the submenu and its parent menu item.

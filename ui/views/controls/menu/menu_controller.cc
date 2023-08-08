@@ -2791,8 +2791,10 @@ gfx::Rect MenuController::CalculateBubbleMenuBounds(
     menu_size.set_height(std::min(
         menu_size.height(), monitor_bounds.height() + border_insets.height()));
     y = item_bounds.y() - border_insets.top() -
-        (is_bubble_menu ? corner_radius
-                        : menu_config.vertical_touchable_menu_item_padding);
+        (use_ash_system_ui_layout_
+             ? menu_config.vertical_touchable_menu_item_padding
+             : menu_config.rounded_menu_vertical_border_size.value_or(
+                   corner_radius));
     auto y_min = monitor_bounds.y() - border_insets.top();
     auto y_max = is_bubble_menu
                      ? monitor_bounds.bottom() + border_insets.bottom() -

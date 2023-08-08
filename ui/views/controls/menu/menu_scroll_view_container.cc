@@ -14,6 +14,7 @@
 #include "build/chromeos_buildflags.h"
 #include "cc/paint/paint_flags.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -45,7 +46,6 @@ namespace views {
 
 namespace {
 
-static constexpr int kBorderPaddingDueToRoundedCorners = 1;
 static constexpr float kBackgroundBlurSigma = 30.f;
 static constexpr float kBackgroundBlurQuality = 0.33f;
 
@@ -395,16 +395,12 @@ void MenuScrollViewContainer::CreateDefaultBorder() {
   DCHECK_EQ(arrow_, BubbleBorder::NONE);
   const MenuConfig& menu_config = MenuConfig::instance();
   corner_radius_ = GetCornerRadius();
-  int padding = menu_config.use_outer_border && corner_radius_ > 0
-                    ? kBorderPaddingDueToRoundedCorners
-                    : 0;
 
   const int vertical_inset =
-      (corner_radius_ ? corner_radius_
-                      : menu_config.menu_vertical_border_size) +
-      padding;
-  const int horizontal_inset =
-      menu_config.menu_horizontal_border_size + padding;
+      corner_radius_ ? menu_config.rounded_menu_vertical_border_size.value_or(
+                           corner_radius_)
+                     : menu_config.nonrounded_menu_vertical_border_size;
+  const int horizontal_inset = menu_config.menu_horizontal_border_size;
 
   int bottom_inset = GetFootnote() ? 0 : vertical_inset;
 
@@ -467,8 +463,12 @@ void MenuScrollViewContainer::CreateBubbleBorder() {
         is_top_menu ? menu_config.touchable_menu_shadow_elevation
                     : menu_config.touchable_submenu_shadow_elevation);
 
-    auto insets =
-        gfx::Insets::VH(menu_config.vertical_touchable_menu_item_padding, 0);
+    auto insets = gfx::Insets::VH(
+        use_ash_system_ui_layout_
+            ? menu_config.vertical_touchable_menu_item_padding
+            : menu_config.rounded_menu_vertical_border_size.value_or(
+                  border_radius),
+        0);
     if (GetFootnote())
       insets.set_bottom(0);
     scroll_view_->GetContents()->SetBorder(CreateEmptyBorder(insets));
