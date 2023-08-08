@@ -493,12 +493,6 @@ BASE_FEATURE(kAutofillServerBehaviors,
 const base::FeatureParam<int> kAutofillServerBehaviorsParam{
     &kAutofillServerBehaviors, "server_prediction_source", 0};
 
-// Controls whether Autofill may fill across origins.
-// TODO(crbug.com/1304721): Clean up when launched.
-BASE_FEATURE(kAutofillSharedAutofill,
-             "AutofillSharedAutofill",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Controls whether to offer a delete button for Autocomplete entries in the
 // Autofill popup.
 BASE_FEATURE(kAutofillShowAutocompleteDeleteButton,

@@ -107,6 +107,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "autofill_internals_log_router_unittest.cc",
+    "autofill_metrics_unittest.cc",
     "content_autofill_driver_factory_unittest.cc",
     "content_autofill_driver_unittest.cc",
     "form_forest_unittest.cc",
@@ -126,6 +127,7 @@ source_set("unit_tests") {
     "//content/test:test_support",
     "//mojo/public/cpp/system",
     "//net:test_support",
+    "//services/metrics/public/cpp:ukm_builders",
     "//services/service_manager/public/cpp",
     "//testing/gmock",
     "//testing/gtest",

@@ -28,6 +28,7 @@
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -411,7 +412,7 @@ class FormForestTest : public content::RenderViewHostTestHarness {
   }
 
   base::test::ScopedFeatureList feature_list_{
-      features::kAutofillSharedAutofill};
+      ::features::kAutofillSharedAutofill};
   test::AutofillUnitTestEnvironment autofill_test_environment_;
   TestAutofillClientInjector<TestContentAutofillClient>
       autofill_client_injector_;

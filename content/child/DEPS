@@ -1,7 +1,6 @@
 include_rules = [
   # Allow inclusion of specific components that we depend on.
   # See comment in content/DEPS for which components are allowed.
-  "+components/autofill/core/common",
   "+components/tracing",
   "+components/webcrypto",
   "+components/services/font/public",
