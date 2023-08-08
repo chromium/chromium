@@ -1108,7 +1108,7 @@
     {
       // crbug.com/1463890: CSS `text-autospace` property
       name: "CSSTextAutoSpace",
-      status: "test",
+      // The status is not set yet, as this feature flag changes the default behavior, which affects some web tests.
     },
     {
       // TODO(https://crbug.com/1411581):

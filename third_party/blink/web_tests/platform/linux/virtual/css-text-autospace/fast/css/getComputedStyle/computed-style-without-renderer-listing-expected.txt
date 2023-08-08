@@ -1,4 +1,4 @@
-This test documents all computed styles on a div element.
+This test documents all computed styles on a display: none element.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
@@ -80,7 +80,7 @@ background-repeat: repeat
 background-size: auto
 baseline-shift: 0px
 baseline-source: auto
-block-size: 0px
+block-size: auto
 border-block-end-color: rgb(0, 0, 0)
 border-block-end-style: none
 border-block-end-width: 0px
@@ -157,7 +157,7 @@ cx: 0px
 cy: 0px
 d: none
 direction: ltr
-display: block
+display: none
 dominant-baseline: auto
 empty-cells: show
 fill: rgb(0, 0, 0)
@@ -200,14 +200,14 @@ grid-row-start: auto
 grid-template-areas: none
 grid-template-columns: none
 grid-template-rows: none
-height: 0px
+height: auto
 hyphenate-character: auto
 hyphenate-limit-chars: auto
 hyphens: manual
 image-orientation: from-image
 image-rendering: auto
 initial-letter: normal
-inline-size: 769px
+inline-size: auto
 inset-block-end: auto
 inset-block-start: auto
 inset-inline-end: auto
@@ -284,7 +284,7 @@ padding-right: 0px
 padding-top: 0px
 paint-order: normal
 perspective: none
-perspective-origin: 384.5px 0px
+perspective-origin: 50% 50%
 pointer-events: auto
 popover-hide-delay: infinity * 1s
 popover-show-delay: 0.5s
@@ -342,6 +342,7 @@ table-layout: auto
 text-align: start
 text-align-last: auto
 text-anchor: start
+text-autospace: normal
 text-box-trim: none
 text-decoration: none solid rgb(0, 0, 0)
 text-decoration-color: rgb(0, 0, 0)
@@ -367,7 +368,7 @@ toggle-visibility: normal
 top: auto
 touch-action: auto
 transform: none
-transform-origin: 384.5px 0px
+transform-origin: 50% 50%
 transform-style: flat
 transition-behavior: normal
 transition-delay: 0s
@@ -386,7 +387,7 @@ view-transition-name: none
 visibility: visible
 white-space-collapse: collapse
 widows: 2
-width: 769px
+width: auto
 will-change: auto
 word-break: normal
 word-spacing: 0px
