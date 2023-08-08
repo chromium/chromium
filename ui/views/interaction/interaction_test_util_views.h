@@ -16,7 +16,6 @@ class TrackedElement;
 namespace views {
 class Button;
 class View;
-class Widget;
 }
 
 namespace views::test {
@@ -49,9 +48,6 @@ class InteractionTestUtilSimulatorViews
   ui::test::ActionResult SendAccelerator(ui::TrackedElement* element,
                                          ui::Accelerator accelerator) override;
   ui::test::ActionResult Confirm(ui::TrackedElement* element) override;
-
-  // Common functionality for activating a widget.
-  static ui::test::ActionResult ActivateWidget(Widget* widget);
 
   // Convenience method for tests that need to simulate a button press and have
   // direct access to the button.
