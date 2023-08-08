@@ -73,11 +73,6 @@ class CORE_EXPORT CanvasAsyncBlobCreator
 
   virtual void Trace(Visitor*) const;
 
-  bool EncodeImageForConvertToBlobTest();
-  Vector<unsigned char> GetEncodedImageForConvertToBlobTest() {
-    return encoded_image_;
-  }
-
  protected:
   static ImageEncodeOptions* GetImageEncodeOptionsForMimeType(
       ImageEncodingMimeType);
@@ -111,9 +106,7 @@ class CORE_EXPORT CanvasAsyncBlobCreator
 
   SkPixmap src_data_;
   ImageEncodingMimeType mime_type_;
-  Member<const ImageEncodeOptions> encode_options_;
   ToBlobFunctionType function_type_;
-  sk_sp<SkData> png_data_helper_;
 
   // Chrome metrics use
   base::TimeTicks start_time_;

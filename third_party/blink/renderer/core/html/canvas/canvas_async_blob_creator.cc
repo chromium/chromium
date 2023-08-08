@@ -164,7 +164,6 @@ CanvasAsyncBlobCreator::CanvasAsyncBlobCreator(
     : fail_encoder_initialization_for_test_(false),
       enforce_idle_encoding_for_test_(false),
       context_(context),
-      encode_options_(options),
       function_type_(function_type),
       start_time_(start_time),
       static_bitmap_image_loaded_(false),
@@ -175,8 +174,7 @@ CanvasAsyncBlobCreator::CanvasAsyncBlobCreator(
   CHECK(image);
 
   mime_type_ = ImageEncoderUtils::ToEncodingMimeType(
-      encode_options_->type(),
-      ImageEncoderUtils::kEncodeReasonConvertToBlobPromise);
+      options->type(), ImageEncoderUtils::kEncodeReasonConvertToBlobPromise);
 
   // We use pixmap to access the image pixels. Make the image unaccelerated if
   // necessary. May return nullptr if GPU context lost or readback buffer
@@ -595,19 +593,8 @@ void CanvasAsyncBlobCreator::PostDelayedTaskToCurrentThread(
 
 void CanvasAsyncBlobCreator::Trace(Visitor* visitor) const {
   visitor->Trace(context_);
-  visitor->Trace(encode_options_);
   visitor->Trace(callback_);
   visitor->Trace(script_promise_resolver_);
-}
-
-bool CanvasAsyncBlobCreator::EncodeImageForConvertToBlobTest() {
-  if (!static_bitmap_image_loaded_)
-    return false;
-  std::unique_ptr<ImageDataBuffer> buffer = ImageDataBuffer::Create(src_data_);
-  if (!buffer)
-    return false;
-  return buffer->EncodeImage(mime_type_, encode_options_->quality(),
-                             &encoded_image_);
 }
 
 }  // namespace blink
