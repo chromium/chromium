@@ -114,7 +114,7 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorAvatarButtonHighlightNormalForeground] = {
       ui::kColorSysOnTonalContainer};
   mixer[kColorAvatarButtonHighlightDefaultForeground] = {
-      ui::kColorSysOnSecondaryContainer};
+      ui::kColorSysOnSurfaceSecondary};
   mixer[kColorAvatarButtonHighlightSyncErrorForeground] = {
       ui::kColorSysOnErrorContainer};
   mixer[kColorAvatarButtonHighlightIncognitoForeground] = {
