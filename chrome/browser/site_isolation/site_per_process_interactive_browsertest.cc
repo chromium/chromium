@@ -1153,8 +1153,8 @@ class SitePerProcessInteractivePDFTest
 
 // This test loads a PDF inside an OOPIF and then verifies that context menu
 // shows up at the correct position.
-// Flaky on win-asan. See https://crbug.com/1423184
-#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
+// Flaky on win and linux asan. See https://crbug.com/1423184
+#if (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)) && defined(ADDRESS_SANITIZER)
 #define MAYBE_ContextMenuPositionForEmbeddedPDFInCrossOriginFrame \
   DISABLED_ContextMenuPositionForEmbeddedPDFInCrossOriginFrame
 #else
