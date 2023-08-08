@@ -13,7 +13,6 @@ import optparse
 import re
 import signal
 import sys
-import traceback
 from collections import defaultdict
 from datetime import datetime
 from typing import List, Optional
@@ -405,8 +404,9 @@ class WPTAdapter:
         tests_by_subsuite = defaultdict(list)
         include_tests = []
         for test in tests_to_run:
-            if test.startswith('virtual/'):
-                _, subsuite_name, base_test = test.split('/', 2)
+            (subsuite_name,
+             base_test) = self.port.get_suite_name_and_base_test(test)
+            if subsuite_name:
                 base_test = self.finder.strip_wpt_path(base_test)
                 tests_by_subsuite[subsuite_name].append(base_test)
             else:
@@ -670,7 +670,6 @@ def main(argv) -> int:
         logger.critical('Harness exited after signal interrupt')
         exit_code = exit_codes.INTERRUPTED_EXIT_STATUS
     except Exception as error:
-        traceback.print_exc()
-        logger.error(error)
+        logger.exception(error)
     logger.info(f'Testing completed. Exit status: {exit_code}')
     return exit_code

@@ -2568,6 +2568,16 @@ class Port(object):
                 return suite
         return None
 
+    def get_suite_name_and_base_test(self, test_name):
+        # This assumes test_name is a valid test, and returns suite name
+        # and base test. For non virtual tests, returns empty string for
+        # suite name
+        if test_name.startswith('virtual/'):
+            _, name, base_test = test_name.split('/', 2)
+            return name, base_test
+
+        return '', test_name
+
     def lookup_virtual_test_base(self, test_name):
         suite = self._lookup_virtual_suite(test_name)
         if not suite:

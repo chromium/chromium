@@ -462,9 +462,6 @@ class WPTResultsProcessor:
             file_path=self._file_path_for_test(test),
             pid=event.pid)
 
-    def is_virtual_test(self, test: str) -> bool:
-        return test.startswith('virtual/')
-
     def get_path_from_test_root(self, test: str) -> str:
         if self.path_finder.is_wpt_internal_path(test):
             path_from_test_root = self.internal_manifest.file_path_for_test_url(
@@ -476,8 +473,7 @@ class WPTResultsProcessor:
 
     @memoized
     def _file_path_for_test(self, test: str) -> str:
-        if self.is_virtual_test(test):
-            _, _, test = test.split('/', 2)
+        _, test = self.port.get_suite_name_and_base_test(test)
         path_from_test_root = self.get_path_from_test_root(test)
         if not path_from_test_root:
             raise EventProcessingError(
@@ -490,8 +486,7 @@ class WPTResultsProcessor:
                                                     path_from_test_root)
 
     def get_test_type(self, test: str) -> str:
-        if self.is_virtual_test(test):
-            _, _, test = test.split('/', 2)
+        _, test = self.port.get_suite_name_and_base_test(test)
         test_path = self.get_path_from_test_root(test)
         if self.path_finder.is_wpt_internal_path(test_path):
             return self.internal_manifest.get_test_type(test_path)
@@ -750,10 +745,7 @@ class WPTResultsProcessor:
             The diff stats if the screenshots are different.
         """
         # Remember the two images so we can diff them later.
-        if self.is_virtual_test(test_name):
-            _, _, test_url = test_name.split('/', 2)
-        else:
-            test_url = test_name
+        _, test_url = self.port.get_suite_name_and_base_test(test_name)
         test_url = self.path_finder.strip_wpt_path(test_url)
         actual_image_bytes = b''
         expected_image_bytes = b''
