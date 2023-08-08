@@ -3497,7 +3497,13 @@ TEST_P(OverviewSessionTest, WindowClippingAfterCombiningDesks) {
   EXPECT_TRUE(normal_window->layer()->clip_rect().IsEmpty());
 }
 
-INSTANTIATE_TEST_SUITE_P(All, OverviewSessionTest, testing::Bool());
+INSTANTIATE_TEST_SUITE_P(/*no prefix*/,
+                         OverviewSessionTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "DesksTemplatesOn"
+                                             : "DesksTemplatesOff";
+                         });
 
 class FloatOverviewSessionTest : public OverviewTestBase {
  public:
@@ -4275,9 +4281,13 @@ TEST_P(ContinuousOverviewAnimationTest, ReverseGesturesTest) {
   ASSERT_TRUE(InOverviewSession());
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
+INSTANTIATE_TEST_SUITE_P(/*no prefix*/,
                          ContinuousOverviewAnimationTest,
-                         ::testing::Bool());
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "NaturalScrollOn"
+                                             : "NaturalScrollOff";
+                         });
 
 class ClamshellScrollOverviewSessionTest : public OverviewTestBase {
  public:

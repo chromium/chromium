@@ -11422,30 +11422,114 @@ constexpr DesksTestParams kDeskCountOnly[] = {
     {.use_16_desks = true},
 };
 
+std::string GetDeskCountSuffix(bool use_16_desks) {
+  return use_16_desks ? "16DesksOn" : "16DesksOff";
+}
+
+std::string GetTestSuffix(bool use_touch_gestures,
+                          bool use_16_desks,
+                          bool enable_jellyroll) {
+  std::string use_touch_str = use_touch_gestures ? "Touch" : "Mouse";
+  std::string use_16_str = GetDeskCountSuffix(use_16_desks);
+  std::string jelly_str = enable_jellyroll ? "JellyOn" : "JellyOff";
+  return base::StringPrintf("%s_%s_%s", use_touch_str.c_str(),
+                            use_16_str.c_str(), jelly_str.c_str());
+}
+
+std::string GetDeskCountOnlyTestSuffix(
+    const testing::TestParamInfo<DesksTestParams>& info) {
+  return GetDeskCountSuffix(info.param.use_16_desks);
+}
+
 constexpr DeskButtonTestParams kDeskButtonTestParamCombinations[] = {
     {.alignment = ShelfAlignment::kBottom},
     {.alignment = ShelfAlignment::kLeft},
     {.alignment = ShelfAlignment::kRight}};
 
-INSTANTIATE_TEST_SUITE_P(All, DesksTest, ValuesIn(kAllCombinations));
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    DesksTest,
+    ValuesIn(kAllCombinations),
+    [](const testing::TestParamInfo<DesksTestParams>& info) {
+      return GetTestSuffix(info.param.use_touch_gestures,
+                           info.param.use_16_desks,
+                           info.param.enable_jellyroll);
+    });
 
-INSTANTIATE_TEST_SUITE_P(All, DesksEditableNamesTest, ValuesIn(kDeskCountOnly));
-INSTANTIATE_TEST_SUITE_P(All, TabletModeDesksTest, ValuesIn(kDeskCountOnly));
-INSTANTIATE_TEST_SUITE_P(All, DesksAcceleratorsTest, ValuesIn(kDeskCountOnly));
-INSTANTIATE_TEST_SUITE_P(All, DesksMockTimeTest, ValuesIn(kDeskCountOnly));
-INSTANTIATE_TEST_SUITE_P(All, DesksCloseAllTest, ValuesIn(kDeskCountOnly));
-INSTANTIATE_TEST_SUITE_P(All, PerDeskShelfTest, ::testing::Bool());
+INSTANTIATE_TEST_SUITE_P(All,
+                         DesksEditableNamesTest,
+                         ValuesIn(kDeskCountOnly),
+                         GetDeskCountOnlyTestSuffix);
+INSTANTIATE_TEST_SUITE_P(All,
+                         TabletModeDesksTest,
+                         ValuesIn(kDeskCountOnly),
+                         GetDeskCountOnlyTestSuffix);
+INSTANTIATE_TEST_SUITE_P(All,
+                         DesksAcceleratorsTest,
+                         ValuesIn(kDeskCountOnly),
+                         GetDeskCountOnlyTestSuffix);
+INSTANTIATE_TEST_SUITE_P(All,
+                         DesksMockTimeTest,
+                         ValuesIn(kDeskCountOnly),
+                         GetDeskCountOnlyTestSuffix);
+INSTANTIATE_TEST_SUITE_P(All,
+                         DesksCloseAllTest,
+                         ValuesIn(kDeskCountOnly),
+                         GetDeskCountOnlyTestSuffix);
+INSTANTIATE_TEST_SUITE_P(All,
+                         PerDeskShelfTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "PerDeskShelfOn"
+                                             : "PerDeskShelfOff";
+                         });
 INSTANTIATE_TEST_SUITE_P(
     All,
     DeskBarTest,
-    testing::Combine(testing::Bool(),
-                     testing::Bool(),
-                     testing::Bool(),
+    testing::Combine(testing::Bool(),  // use touch gestures
+                     testing::Bool(),  // use 16 desks
+                     testing::Bool(),  // enable jelly
                      testing::Values(DeskBarViewBase::Type::kDeskButton,
-                                     DeskBarViewBase::Type::kOverview)));
-INSTANTIATE_TEST_SUITE_P(All,
-                         DeskButtonTest,
-                         ValuesIn(kDeskButtonTestParamCombinations));
+                                     DeskBarViewBase::Type::kOverview)),
+    [](const testing::TestParamInfo<DeskBarTest::ParamType>& info) {
+      bool use_touch_gestures;
+      bool use_16_desks;
+      bool enable_jellyroll;
+      DeskBarViewBase::Type bar_type;
+      std::tie(use_touch_gestures, use_16_desks, enable_jellyroll, bar_type) =
+          info.param;
+      std::string result =
+          GetTestSuffix(use_touch_gestures, use_16_desks, enable_jellyroll);
+      std::string bar_type_str;
+      switch (bar_type) {
+        case DeskBarViewBase::Type::kDeskButton:
+          bar_type_str = "DeskButtonBar";
+          break;
+        case DeskBarViewBase::Type::kOverview:
+          bar_type_str = "OverviewBar";
+          break;
+      }
+
+      return base::StringPrintf("%s_%s", result.c_str(), bar_type_str.c_str());
+    });
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    DeskButtonTest,
+    ValuesIn(kDeskButtonTestParamCombinations),
+    [](const testing::TestParamInfo<DeskButtonTestParams>& info) {
+      switch (info.param.alignment) {
+        case ShelfAlignment::kBottom:
+          return "ShelfBottom";
+        case ShelfAlignment::kLeft:
+          return "ShelfLeft";
+        case ShelfAlignment::kRight:
+          return "ShelfRight";
+        case ShelfAlignment::kBottomLocked:
+          NOTREACHED_NORETURN();
+          return "ShelfBottomLocked";
+      }
+    });
 
 }  // namespace
 
