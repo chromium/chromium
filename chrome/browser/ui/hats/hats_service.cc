@@ -133,19 +133,7 @@ void HatsService::DelayedSurveyTask::WebContentsDestroyed() {
 }
 
 HatsService::HatsService(Profile* profile) : profile_(profile) {
-  auto surveys = hats::GetSurveyConfigs();
-
-  // Filter down to active surveys configs and store them in a map for faster
-  // access. Triggers within the browser may attempt to show surveys regardless
-  // of whether the feature is enabled, so checking whether a particular survey
-  // is enabled should be fast.
-  for (const hats::SurveyConfig& survey : surveys) {
-    if (!survey.enabled || survey.trigger_id.empty()) {
-      continue;
-    }
-
-    survey_configs_by_triggers_.emplace(survey.trigger, survey);
-  }
+  hats::GetActiveSurveyConfigs(survey_configs_by_triggers_);
 }
 
 HatsService::~HatsService() = default;

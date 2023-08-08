@@ -16,14 +16,6 @@
 #include "components/safe_browsing/core/common/safebrowsing_constants.h"  // nogncheck
 #endif  // #if !BUILDFLAG(IS_ANDROID)
 
-namespace {
-
-constexpr char kHatsSurveyProbability[] = "probability";
-constexpr char kHatsSurveyEnSiteID[] = "en_site_id";
-constexpr double kHatsSurveyProbabilityDefault = 0;
-
-}  // namespace
-
 #if !BUILDFLAG(IS_ANDROID)
 constexpr char kHatsSurveyTriggerAutofillAddress[] = "autofill-address";
 constexpr char kHatsSurveyTriggerAutofillCard[] = "autofill-card";
@@ -105,16 +97,20 @@ constexpr char kHatsSurveyTriggerTesting[] = "testing";
 constexpr char kHatsNextSurveyTriggerIDTesting[] =
     "HLpeYy5Av0ugnJ3q1cK0XzzA8UHv";
 
-namespace hats {
+namespace {
+
+constexpr char kHatsSurveyProbability[] = "probability";
+constexpr char kHatsSurveyEnSiteID[] = "en_site_id";
+constexpr double kHatsSurveyProbabilityDefault = 0;
 
 // Survey configs must always be hardcoded here, so that they require review
 // from HaTS owners. Do not move this method out of the anonymous namespace or
 // change its signature to work around this.
-std::vector<SurveyConfig> GetSurveyConfigs() {
-  std::vector<SurveyConfig> survey_configs;
+std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
+  std::vector<hats::SurveyConfig> survey_configs;
 
   // Always add the default survey.
-  SurveyConfig default_survey;
+  hats::SurveyConfig default_survey;
   default_survey.enabled = true;
   default_survey.probability = 1.0f;
   default_survey.trigger = kHatsSurveyTriggerTesting;
@@ -405,6 +401,10 @@ std::vector<SurveyConfig> GetSurveyConfigs() {
   return survey_configs;
 }
 
+}  // namespace
+
+namespace hats {
+
 SurveyConfig::SurveyConfig() = default;
 SurveyConfig::SurveyConfig(const SurveyConfig&) = default;
 SurveyConfig::~SurveyConfig() = default;
@@ -440,6 +440,22 @@ SurveyConfig::SurveyConfig(
 
   user_prompted =
       base::FeatureParam<bool>(feature, "user_prompted", false).Get();
+}
+
+void GetActiveSurveyConfigs(SurveyConfigs& survey_configs_by_triggers_) {
+  auto surveys = GetAllSurveyConfigs();
+
+  // Filter down to active surveys configs and store them in a map for faster
+  // access. Triggers within the browser may attempt to show surveys regardless
+  // of whether the feature is enabled, so checking whether a particular survey
+  // is enabled should be fast.
+  for (const SurveyConfig& survey : surveys) {
+    if (!survey.enabled || survey.trigger_id.empty()) {
+      continue;
+    }
+
+    survey_configs_by_triggers_.emplace(survey.trigger, survey);
+  }
 }
 
 }  // namespace hats

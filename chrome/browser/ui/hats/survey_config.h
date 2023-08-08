@@ -112,8 +112,10 @@ struct SurveyConfig {
   std::vector<std::string> product_specific_string_data_fields;
 };
 
-// Get the list of ongoing surveys.
-std::vector<SurveyConfig> GetSurveyConfigs();
+using SurveyConfigs = base::flat_map<std::string, SurveyConfig>;
+// Get the list of active ongoing surveys and store into
+// |survey_configs_by_triggers_|.
+void GetActiveSurveyConfigs(SurveyConfigs& survey_configs_by_triggers_);
 
 }  // namespace hats
 
