@@ -58,7 +58,9 @@
 #pragma mark - InfobarOverlayRequestMediator
 
 - (void)bannerInfobarButtonWasPressed:(UIButton*)sender {
-  if (!self.request) {
+  // Check if request was cancelled, to avoid crash below.
+  if (!self.config) {
+    DUMP_WILL_BE_CHECK(self.config);
     return;
   }
 
