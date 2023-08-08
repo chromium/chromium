@@ -99,7 +99,11 @@ async function waitForObservedRequests(uuid, expectedRequests) {
     // all expected requests and exit.
     let trackedRequests = trackerData.trackedRequests;
     if (trackedRequests.length == expectedRequests.length) {
-      assert_array_equals(trackedRequests.sort(), expectedRequests);
+      // Hide the uuid content in order to have a static expected file.
+      assert_array_equals(trackedRequests.sort().map((url) =>
+                            url.replace(uuid, '<uuid>')),
+                            expectedRequests.map((url) =>
+                            url.replace(uuid, '<uuid>')));
       break;
     }
 
@@ -107,7 +111,9 @@ async function waitForObservedRequests(uuid, expectedRequests) {
     // compare what's been received so far, to have a greater chance to fail
     // rather than hang on error.
     for (const trackedRequest of trackedRequests) {
-      assert_in_array(trackedRequest, expectedRequests);
+      assert_in_array(trackedRequest.replace(uuid, '<uuid>'),
+                      expectedRequests.sort().map((url) =>
+                      url.replace(uuid, '<uuid>')));
     }
   }
 }
