@@ -114,8 +114,10 @@ bool CanHistorySyncOptInBePresented(
   }
   syncer::SyncUserSettings* sync_user_settings =
       sync_service->GetUserSettings();
-  if (sync_user_settings->GetSelectedTypes().Has(
-          syncer::UserSelectableType::kHistory)) {
+
+  if (sync_user_settings->GetSelectedTypes().HasAll(
+          {syncer::UserSelectableType::kHistory,
+           syncer::UserSelectableType::kTabs})) {
     // History opt-in is already set. This value is kept between signout/signin.
     // In this case the UI can be skipped.
     return false;
