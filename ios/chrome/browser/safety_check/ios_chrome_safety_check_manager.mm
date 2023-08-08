@@ -232,6 +232,18 @@ IOSChromeSafetyCheckManager::GetUpdateChromeCheckState() const {
   return update_chrome_check_state_;
 }
 
+// Returns the Chrome app upgrade URL for the App Store.
+const GURL& IOSChromeSafetyCheckManager::GetChromeAppUpgradeUrl() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return upgrade_url_;
+}
+
+// Returns the Chrome app next version.
+std::string IOSChromeSafetyCheckManager::GetChromeAppNextVersion() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return next_version_;
+}
+
 // TODO(crbug.com/1462786): Add UMA logs related to the Safe Browsing check.
 void IOSChromeSafetyCheckManager::SetSafeBrowsingCheckState(
     SafeBrowsingSafetyCheckState state) {

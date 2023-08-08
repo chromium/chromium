@@ -112,6 +112,12 @@ class IOSChromeSafetyCheckManager
   // Returns the current state of the Update Chrome check.
   UpdateChromeSafetyCheckState GetUpdateChromeCheckState() const;
 
+  // Returns the App Store Chrome upgrade URL.
+  const GURL& GetChromeAppUpgradeUrl() const;
+
+  // Returns the next Chrome app version.
+  std::string GetChromeAppNextVersion() const;
+
   // For unit-testing only.
   void StartOmahaCheckForTesting();
   void HandleOmahaResponseForTesting(UpgradeRecommendedDetails details);
