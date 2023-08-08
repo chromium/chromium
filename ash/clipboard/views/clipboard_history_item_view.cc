@@ -58,6 +58,11 @@ const ClipboardHistoryItem* GetClipboardHistoryItemImpl(
 
 const gfx::Insets GetDeleteButtonMargins(
     crosapi::mojom::ClipboardHistoryDisplayFormat display_format) {
+  // When the refresh is enabled, delete buttons are fully top-right aligned.
+  if (chromeos::features::IsClipboardHistoryRefreshEnabled()) {
+    return gfx::Insets();
+  }
+
   switch (display_format) {
     case crosapi::mojom::ClipboardHistoryDisplayFormat::kUnknown:
       NOTREACHED_NORETURN();
