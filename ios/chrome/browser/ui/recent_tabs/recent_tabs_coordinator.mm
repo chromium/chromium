@@ -206,13 +206,14 @@
   [self.delegate recentTabsCoordinatorWantsToBeDismissed:self];
 }
 
-- (void)showHistorySyncOptIn {
+- (void)showHistorySyncOptInAfterDedicatedSignIn:(BOOL)dedicatedSignInDone {
   // Show the History Sync Opt-In screen. The coordinator will dismiss itself
   // if there is no signed-in account (eg. if sign-in unsuccessful) or if sync
   // is disabled by policies.
   _historySyncPopupCoordinator = [[HistorySyncPopupCoordinator alloc]
       initWithBaseViewController:self.recentTabsTableViewController
-                         browser:self.browser];
+                         browser:self.browser
+             dedicatedSignInDone:dedicatedSignInDone];
   _historySyncPopupCoordinator.delegate = self;
   [_historySyncPopupCoordinator start];
 }
@@ -252,8 +253,6 @@
   _historySyncPopupCoordinator.delegate = nil;
   [_historySyncPopupCoordinator stop];
   _historySyncPopupCoordinator = nil;
-  // TODO(crbug.com/1447014): Sign-out the user if a sign-in has been done, but
-  // the user declined History sync.
   [self.mediator refreshSessionsView];
 }
 

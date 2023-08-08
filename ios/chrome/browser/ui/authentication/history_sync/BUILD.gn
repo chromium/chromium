@@ -20,6 +20,7 @@ source_set("history_sync") {
     "//components/signin/public/identity_manager/objc",
     "//components/sync/service",
     "//components/unified_consent",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/signin",

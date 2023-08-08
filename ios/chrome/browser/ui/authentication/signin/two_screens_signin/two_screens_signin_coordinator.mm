@@ -161,7 +161,8 @@ using base::UserMetricsAction;
           initWithBaseNavigationController:_navigationController
                                    browser:self.browser
                                   delegate:self
-                                  firstRun:NO];
+                                  firstRun:NO
+                             showUserEmail:NO];
     case kDefaultBrowserPromo:
     case kChoice:
     case kStepsCompleted:

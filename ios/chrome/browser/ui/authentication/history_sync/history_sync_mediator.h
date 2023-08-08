@@ -44,7 +44,7 @@ class SyncService;
           (ChromeAccountManagerService*)chromeAccountManagerService
                   identityManager:(signin::IdentityManager*)identityManager
                       syncService:(syncer::SyncService*)syncService
-    NS_DESIGNATED_INITIALIZER;
+                    showUserEmail:(BOOL)showUserEmail NS_DESIGNATED_INITIALIZER;
 
 // Disconnect the mediator.
 - (void)disconnect;

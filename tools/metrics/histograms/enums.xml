@@ -98658,6 +98658,11 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
     User tapped on the 'Undo' button in a snackbar shown right after signin
     through promo in bookmarks and reading list page (iOS only).
   </int>
+  <int value="27" label="User declined history sync after dedicated sign-in">
+    User has signed-in previously for the sole purpose of enabling history sync
+    (eg. using history sync promo in recent tabs), but declined history sync
+    eventually.
+  </int>
 </enum>
 
 <enum name="SigninSSOAuthGetIdentitiesErrorCode">

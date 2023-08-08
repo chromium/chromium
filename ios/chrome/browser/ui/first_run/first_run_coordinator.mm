@@ -135,7 +135,8 @@
           initWithBaseNavigationController:self.navigationController
                                    browser:self.browser
                                   delegate:self
-                                  firstRun:YES];
+                                  firstRun:YES
+                             showUserEmail:NO];
     case kTangibleSync:
       return [[TangibleSyncScreenCoordinator alloc]
           initWithBaseNavigationController:self.navigationController

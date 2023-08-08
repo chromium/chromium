@@ -6,6 +6,7 @@
 
 #import "base/check.h"
 #import "base/check_op.h"
+#import "base/strings/sys_string_conversions.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
@@ -13,6 +14,8 @@
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service.h"
 #import "ios/chrome/browser/ui/authentication/history_sync/history_sync_consumer.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util.h"
 
 @interface HistorySyncMediator () <IdentityManagerObserverBridgeDelegate>
 @end
@@ -25,6 +28,8 @@
       _identityManagerObserver;
   // Sync service.
   syncer::SyncService* _syncService;
+  // `YES` if the user's email should be shown in the footer text.
+  BOOL _showUserEmail;
 }
 
 - (instancetype)
@@ -32,7 +37,8 @@
       chromeAccountManagerService:
           (ChromeAccountManagerService*)chromeAccountManagerService
                   identityManager:(signin::IdentityManager*)identityManager
-                      syncService:(syncer::SyncService*)syncService {
+                      syncService:(syncer::SyncService*)syncService
+                    showUserEmail:(BOOL)showUserEmail {
   self = [super init];
   if (self) {
     _authenticationService = authenticationService;
@@ -41,6 +47,7 @@
         std::make_unique<signin::IdentityManagerObserverBridge>(identityManager,
                                                                 self);
     _syncService = syncService;
+    _showUserEmail = showUserEmail;
   }
   return self;
 }
@@ -78,7 +85,15 @@
     // dialog will be automatically closed.
     return;
   }
+
   [self updateAvatarImageWithIdentity:identity];
+  NSString* footerText =
+      _showUserEmail
+          ? l10n_util::GetNSStringF(
+                IDS_IOS_HISTORY_SYNC_FOOTER_WITH_EMAIL,
+                base::SysNSStringToUTF16(identity.userEmail))
+          : l10n_util::GetNSString(IDS_IOS_HISTORY_SYNC_FOOTER_WITHOUT_EMAIL);
+  [_consumer setFooterText:footerText];
 }
 
 #pragma mark - IdentityManagerObserverBridgeDelegate

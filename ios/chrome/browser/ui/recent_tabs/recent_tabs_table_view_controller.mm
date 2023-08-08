@@ -1772,7 +1772,7 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 - (void)signinDidFinish {
   if (base::FeatureList::IsEnabled(
           syncer::kReplaceSyncPromosWithSignInPromos)) {
-    [self.presentationDelegate showHistorySyncOptIn];
+    [self.presentationDelegate showHistorySyncOptInAfterDedicatedSignIn:YES];
   } else {
     [self.delegate refreshSessionsView];
   }
@@ -1896,7 +1896,7 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
   if (!isSyncUIDisabled || hasSyncingAccount) {
     [self.handler showSyncSettingsFromViewController:self];
   } else {
-    [self.presentationDelegate showHistorySyncOptIn];
+    [self.presentationDelegate showHistorySyncOptInAfterDedicatedSignIn:NO];
   }
 }
 

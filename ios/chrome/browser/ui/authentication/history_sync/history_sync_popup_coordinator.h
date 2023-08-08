@@ -26,6 +26,14 @@
 // delegate for HistorySyncCoordinator.
 @property(nonatomic, weak) id<HistorySyncPopupCoordinatorDelegate> delegate;
 
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser NS_UNAVAILABLE;
+
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser
+                       dedicatedSignInDone:(BOOL)dedicatedSignInDone
+    NS_DESIGNATED_INITIALIZER;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_AUTHENTICATION_HISTORY_SYNC_HISTORY_SYNC_POPUP_COORDINATOR_H_

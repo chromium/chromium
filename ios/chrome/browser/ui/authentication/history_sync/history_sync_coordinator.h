@@ -29,13 +29,15 @@
 
 // Initiates a HistorySyncCoordinator with `navigationController`,
 // `browser` and `delegate`.
-- (instancetype)
-    initWithBaseNavigationController:
-        (UINavigationController*)navigationController
-                             browser:(Browser*)browser
-                            delegate:
-                                (id<HistorySyncCoordinatorDelegate>)delegate
-                            firstRun:(BOOL)firstRun NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithBaseNavigationController:
+                    (UINavigationController*)navigationController
+                                         browser:(Browser*)browser
+                                        delegate:
+                                            (id<HistorySyncCoordinatorDelegate>)
+                                                delegate
+                                        firstRun:(BOOL)firstRun
+                                   showUserEmail:(BOOL)showUserEmail
+    NS_DESIGNATED_INITIALIZER;
 
 @end
 

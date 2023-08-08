@@ -6,8 +6,10 @@
 
 #import <UIKit/UIKit.h>
 
+#import "components/signin/public/base/signin_metrics.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/authentication_ui_util.h"
@@ -19,21 +21,36 @@
 @end
 
 @implementation HistorySyncPopupCoordinator {
+  // Authentication service.
+  AuthenticationService* _authenticationService;
   // Coordinator to display the tangible sync view.
   HistorySyncCoordinator* _historySyncCoordinator;
   // Navigation controller created for the popup.
   UINavigationController* _navigationController;
+  // `YES` if the user has selected an account to sign-in especifically to be
+  // able to enabled history sync (eg. using recent tabs history sync promo).
+  BOOL _dedicatedSignInDone;
+}
+
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser
+                       dedicatedSignInDone:(BOOL)dedicatedSignInDone {
+  self = [super initWithBaseViewController:viewController browser:browser];
+  if (self) {
+    _dedicatedSignInDone = dedicatedSignInDone;
+  }
+  return self;
 }
 
 - (void)start {
   [super start];
   ChromeBrowserState* browserState = self.browser->GetBrowserState();
   CHECK_EQ(browserState, browserState->GetOriginalChromeBrowserState());
-  AuthenticationService* authenticationService =
+  _authenticationService =
       AuthenticationServiceFactory::GetForBrowserState(browserState);
   syncer::SyncService* syncService =
       SyncServiceFactory::GetForBrowserState(browserState);
-  if (!CanHistorySyncOptInBePresented(authenticationService, syncService)) {
+  if (!CanHistorySyncOptInBePresented(_authenticationService, syncService)) {
     [self.delegate historySyncPopupCoordinator:self
                     didCloseWithDeclinedByUser:NO];
     return;
@@ -47,7 +64,8 @@
       initWithBaseNavigationController:_navigationController
                                browser:self.browser
                               delegate:self
-                              firstRun:NO];
+                              firstRun:NO
+                         showUserEmail:!_dedicatedSignInDone];
   [_historySyncCoordinator start];
   [_navigationController setNavigationBarHidden:YES animated:NO];
   [self.baseViewController presentViewController:_navigationController
@@ -74,6 +92,13 @@
 - (void)viewWasDismissedWithDeclinedByUser:(BOOL)declined {
   _navigationController.presentationController.delegate = nil;
   _navigationController = nil;
+
+  if (declined && _dedicatedSignInDone) {
+    _authenticationService->SignOut(
+        signin_metrics::ProfileSignout::
+            kUserDeclinedHistorySyncAfterDedicatedSignIn,
+        /*force_clear_browsing_data=*/false, nil);
+  }
   [self.delegate historySyncPopupCoordinator:self
                   didCloseWithDeclinedByUser:declined];
 }

@@ -29,6 +29,8 @@
   HistorySyncViewController* _viewController;
   // `YES` if coordinator used during the first run.
   BOOL _firstRun;
+  // `YES` if the user's email should be shown in the footer text.
+  BOOL _showUserEmail;
   // Delegate for the history sync coordinator.
   __weak id<HistorySyncCoordinatorDelegate> _delegate;
 }
@@ -41,12 +43,14 @@
                                         delegate:
                                             (id<HistorySyncCoordinatorDelegate>)
                                                 delegate
-                                        firstRun:(BOOL)firstRun {
+                                        firstRun:(BOOL)firstRun
+                                   showUserEmail:(BOOL)showUserEmail {
   self = [super initWithBaseViewController:navigationController
                                    browser:browser];
   if (self) {
     _baseNavigationController = navigationController;
     _firstRun = firstRun;
+    _showUserEmail = showUserEmail;
     _delegate = delegate;
   }
   return self;
@@ -75,7 +79,8 @@
       initWithAuthenticationService:authenticationService
         chromeAccountManagerService:chromeAccountManagerService
                     identityManager:identityManager
-                        syncService:syncService];
+                        syncService:syncService
+                      showUserEmail:_showUserEmail];
   _mediator.consumer = _viewController;
   _mediator.delegate = self;
   if (_firstRun) {

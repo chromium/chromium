@@ -39,4 +39,8 @@
   self.headerAccessibilityLabel = primaryIdentityAvatarAccessibilityLabel;
 }
 
+- (void)setFooterText:(NSString*)text {
+  self.disclaimerText = text;
+}
+
 @end

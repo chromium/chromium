@@ -17,6 +17,9 @@
 - (void)setPrimaryIdentityAvatarAccessibilityLabel:
     (NSString*)primaryIdentityAvatarAccessibilityLabel;
 
+// Set the text for the disclaimer footer.
+- (void)setFooterText:(NSString*)footerText;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_AUTHENTICATION_HISTORY_SYNC_HISTORY_SYNC_CONSUMER_H_
