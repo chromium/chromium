@@ -177,7 +177,6 @@ protocol::Response InspectorAuditsAgent::getEncodedResponse(
 void InspectorAuditsAgent::CheckContrastForDocument(Document* document,
                                                     bool report_aaa) {
   InspectorContrast contrast(document);
-  Vector<std::pair<Element*, mojom::blink::InspectorIssueInfoPtr>> issues;
   unsigned max_elements = 100;
   for (ContrastInfo info :
        contrast.GetElementsWithContrastIssues(report_aaa, max_elements)) {
