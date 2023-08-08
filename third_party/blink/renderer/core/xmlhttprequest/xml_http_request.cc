@@ -301,6 +301,7 @@ XMLHttpRequest::XMLHttpRequest(ExecutionContext* context,
 XMLHttpRequest::~XMLHttpRequest() {
   binary_response_builder_ = nullptr;
   length_downloaded_to_blob_ = 0;
+  response_text_.Clear();
   ReportMemoryUsageToV8();
 }
 
@@ -2097,6 +2098,14 @@ void XMLHttpRequest::ReportMemoryUsageToV8() {
   diff += static_cast<int64_t>(length_downloaded_to_blob_) -
           static_cast<int64_t>(length_downloaded_to_blob_last_reported_);
   length_downloaded_to_blob_last_reported_ = length_downloaded_to_blob_;
+
+  // Text
+  const size_t response_text_size =
+      response_text_.Capacity() *
+      (response_text_.Is8Bit() ? sizeof(LChar) : sizeof(UChar));
+  diff += static_cast<int64_t>(response_text_size) -
+          static_cast<int64_t>(response_text_last_reported_size_);
+  response_text_last_reported_size_ = response_text_size;
 
   if (diff) {
     GetExecutionContext()->GetIsolate()->AdjustAmountOfExternalAllocatedMemory(

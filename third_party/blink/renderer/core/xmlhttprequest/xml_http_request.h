@@ -322,6 +322,7 @@ class CORE_EXPORT XMLHttpRequest final
   std::unique_ptr<TextResourceDecoder> decoder_;
 
   StringBuilder response_text_;
+  size_t response_text_last_reported_size_ = 0;
   Member<Document> response_document_;
   Member<DocumentParser> response_document_parser_;
 
