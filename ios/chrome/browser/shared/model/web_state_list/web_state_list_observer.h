@@ -202,13 +202,6 @@ struct WebStateListStatus {
   // The index to be changed. A WebState is no longer in WebStateList at the
   // `index` position when a WebState is detached.
   const int index;
-  // The active index. It can be different from `WebStateList::active_index()`
-  // because `active_index_` is updated after calling WebStateListDidChange API
-  // when a WebState is inserted.
-  // TODO(crbug.com/1465845): Remove this field after the timing to update
-  // `active_index_` is aligned. Observers can access the active index via
-  // `WebStateList::active_index()`.
-  const int active_index;
   // True when the pinned state of the WebState at `index` in WebStateList is
   // updated.
   const bool pinned_state_change;
@@ -216,9 +209,6 @@ struct WebStateListStatus {
   // finished.
   const raw_ptr<web::WebState> old_active_web_state;
   // WebState that will be active after the change in WebStateList is finished.
-  // TODO(crbug.com/1465845): Remove this field after the timing to update
-  // `active_index_` is aligned. Observers can access the active WebState via
-  // `WebStateList::GetActiveWebState()`.
   const raw_ptr<web::WebState> new_active_web_state;
   // True when the active WebState is updated.
   bool active_web_state_change() const {

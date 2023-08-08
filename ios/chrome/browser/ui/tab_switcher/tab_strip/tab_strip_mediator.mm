@@ -132,7 +132,7 @@ NSString* GetActiveTabId(WebStateList* web_state_list) {
   if (status.active_web_state_change()) {
     // If the selected index changes as a result of the last webstate being
     // detached, the active index will be -1.
-    if (status.active_index == WebStateList::kInvalidIndex) {
+    if (webStateList->active_index() == WebStateList::kInvalidIndex) {
       [self.consumer selectItemWithID:nil];
       return;
     }

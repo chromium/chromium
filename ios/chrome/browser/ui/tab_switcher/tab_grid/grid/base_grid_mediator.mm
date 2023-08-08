@@ -322,7 +322,7 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
   if (status.active_web_state_change()) {
     // If the selected index changes as a result of the last webstate being
     // detached, the active index will be kInvalidIndex.
-    if (status.active_index == WebStateList::kInvalidIndex) {
+    if (webStateList->active_index() == WebStateList::kInvalidIndex) {
       [self.consumer selectItemWithID:nil];
       return;
     }

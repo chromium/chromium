@@ -31,15 +31,15 @@ void SnapshotCacheWebStateListObserver::WebStateListDidChange(
   }
 
   NSMutableSet<NSString*>* set = [NSMutableSet set];
-  if (status.active_index > 0) {
+  if (web_state_list->active_index() > 0) {
     web::WebState* web_state =
-        web_state_list->GetWebStateAt(status.active_index - 1);
+        web_state_list->GetWebStateAt(web_state_list->active_index() - 1);
     [set addObject:SnapshotTabHelper::FromWebState(web_state)->GetSnapshotID()];
   }
 
-  if (status.active_index + 1 < web_state_list->count()) {
+  if (web_state_list->active_index() + 1 < web_state_list->count()) {
     web::WebState* web_state =
-        web_state_list->GetWebStateAt(status.active_index + 1);
+        web_state_list->GetWebStateAt(web_state_list->active_index() + 1);
     [set addObject:SnapshotTabHelper::FromWebState(web_state)->GetSnapshotID()];
   }
 

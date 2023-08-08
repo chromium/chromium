@@ -374,7 +374,6 @@ int WebStateList::InsertWebStateImpl(int index,
   const WebStateListChangeInsert insert_change(web_state_ptr);
   const WebStateListStatus status = {
       .index = index,
-      .active_index = activating ? index : active_index_,
       .pinned_state_change = false,
       .old_active_web_state = old_active_web_state,
       .new_active_web_state = GetActiveWebState()};
@@ -401,7 +400,6 @@ void WebStateList::MoveWebStateAtImpl(int from_index,
           web_state_wrappers_[to_index]->web_state());
       const WebStateListStatus status = {
           .index = to_index,
-          .active_index = active_index_,
           .pinned_state_change = true,
           // An active WebState doesn't change when a pinned state is updated.
           .old_active_web_state = GetActiveWebState(),
@@ -434,7 +432,6 @@ void WebStateList::MoveWebStateAtImpl(int from_index,
   const WebStateListChangeMove move_change(web_state, from_index);
   const WebStateListStatus status = {
       .index = to_index,
-      .active_index = active_index_,
       .pinned_state_change = pinned_state_change,
       // The move operation doesn't insert/delete a WebState and doesn't change
       // an active WebState.
@@ -468,7 +465,6 @@ std::unique_ptr<web::WebState> WebStateList::ReplaceWebStateAtImpl(
                                                  web_state_ptr);
   const WebStateListStatus status = {
       .index = index,
-      .active_index = active_index_,
       .pinned_state_change = false,
       .old_active_web_state = (index == active_index_)
                                   ? replaced_web_state.get()
@@ -507,7 +503,6 @@ std::unique_ptr<web::WebState> WebStateList::DetachWebStateAtImpl(
     // point and the new active WebState is not determined yet.
     const WebStateListStatus status = {
         .index = index,
-        .active_index = active_index_,
         .pinned_state_change = false,
         .old_active_web_state = use_old_active_web_state ? old_active_web_state
                                 : is_active_web_state_detached ? web_state
@@ -542,7 +537,6 @@ std::unique_ptr<web::WebState> WebStateList::DetachWebStateAtImpl(
 
   const WebStateListStatus status = {
       .index = index,
-      .active_index = active_index_,
       .pinned_state_change = false,
       .old_active_web_state = use_old_active_web_state ? old_active_web_state
                               : is_active_web_state_detached
@@ -638,7 +632,6 @@ void WebStateList::ActivateWebStateAtImpl(int index) {
   const WebStateListChangeStatusOnly status_only_change(old_active_web_state);
   const WebStateListStatus status = {
       .index = index,
-      .active_index = active_index_,
       .pinned_state_change = false,
       .old_active_web_state = old_active_web_state,
       .new_active_web_state = GetActiveWebState()};

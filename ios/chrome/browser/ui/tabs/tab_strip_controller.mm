@@ -1278,7 +1278,8 @@ const CGFloat kSymbolSize = 18;
       [view setSelected:NO];
     }
 
-    NSUInteger index = [self indexForWebStateListIndex:status.active_index];
+    NSUInteger index =
+        [self indexForWebStateListIndex:webStateList->active_index()];
     TabView* activeView = [_tabArray objectAtIndex:index];
     [activeView setSelected:YES];
 
