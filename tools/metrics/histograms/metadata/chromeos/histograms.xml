@@ -2736,53 +2736,6 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
   </token>
 </histogram>
 
-<histogram name="ChromeOS.Settings.Device.{Peripheral}.Sensitivity.Changed"
-    enum="PointerSensitivity" expires_after="2024-03-22">
-  <owner>dpad@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
-  <summary>
-    Records the value of the sensitivity setting when the {Peripheral} device
-    settings are updated. The value ranges from 1 to 5.
-  </summary>
-  <token key="Peripheral">
-    <variant name="Mouse"/>
-    <variant name="PointingStick"/>
-  </token>
-</histogram>
-
-<histogram name="ChromeOS.Settings.Device.{Peripheral}.Sensitivity.Initial"
-    enum="PointerSensitivity" expires_after="2024-03-22">
-  <owner>dpad@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
-  <summary>
-    Records the value of the sensitivity setting when the {Peripheral} device is
-    is first initialized. The value ranges from 1 to 5.
-  </summary>
-  <token key="Peripheral">
-    <variant name="Mouse"/>
-    <variant name="PointingStick"/>
-  </token>
-</histogram>
-
-<histogram
-    name="ChromeOS.Settings.Device.{Peripheral}.Sensitivity.{Difference}"
-    enum="PointerSensitivity" expires_after="2024-03-22">
-  <owner>dpad@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
-  <summary>
-    Records the value {Difference} when sensitivity setting on {Peripheral}
-    device is updated.
-  </summary>
-  <token key="Peripheral">
-    <variant name="Mouse"/>
-    <variant name="PointingStick"/>
-  </token>
-  <token key="Difference">
-    <variant name="Decrease"/>
-    <variant name="Increase"/>
-  </token>
-</histogram>
-
 <histogram
     name="ChromeOS.Settings.Device.{Peripheral}.{PeripheralSetting}.Changed"
     enum="Boolean" expires_after="2024-03-22">
@@ -2822,6 +2775,67 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
     <variant name="ReverseScrolling"/>
     <variant name="ScrollAcceleration"/>
     <variant name="SwapPrimaryButtons"/>
+  </token>
+</histogram>
+
+<histogram
+    name="ChromeOS.Settings.Device.{Peripheral}.{SensitivityType}.Changed"
+    enum="PointerSensitivity" expires_after="2024-03-22">
+  <owner>dpad@google.com</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the value of the {SensitivityType} setting when the {Peripheral}
+    device settings are updated. The value ranges from 1 to 5.
+  </summary>
+  <token key="Peripheral">
+    <variant name="Mouse"/>
+    <variant name="PointingStick"/>
+  </token>
+  <token key="SensitivityType">
+    <variant name="ScrollSensitivity"/>
+    <variant name="Sensitivity"/>
+  </token>
+</histogram>
+
+<histogram
+    name="ChromeOS.Settings.Device.{Peripheral}.{SensitivityType}.Initial"
+    enum="PointerSensitivity" expires_after="2024-03-22">
+  <owner>dpad@google.com</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the value of the {SensitivityType} setting when the {Peripheral}
+    device is is first initialized. The value ranges from 1 to 5.
+  </summary>
+  <token key="Peripheral">
+    <variant name="Mouse"/>
+    <variant name="PointingStick"/>
+  </token>
+  <token key="SensitivityType">
+    <variant name="ScrollSensitivity"/>
+    <variant name="Sensitivity"/>
+  </token>
+</histogram>
+
+<histogram
+    name="ChromeOS.Settings.Device.{Peripheral}.{SensitivityType}.{Difference}"
+    enum="PointerSensitivity" expires_after="2024-03-22">
+  <owner>dpad@google.com</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the value {Difference} when {SensitivityType} setting on
+    {Peripheral} device is updated.
+  </summary>
+  <token key="Peripheral">
+    <variant name="Mouse"/>
+    <variant name="PointingStick"/>
+  </token>
+  <token key="SensitivityType">
+    <variant name="ScrollSensitivity"/>
+    <variant name="Sensitivity"/>
+  </token>
+  <token key="Difference">
+    <variant name="Decrease"/>
+    <variant name="Increase"/>
   </token>
 </histogram>
 

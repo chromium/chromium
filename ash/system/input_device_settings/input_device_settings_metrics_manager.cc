@@ -374,6 +374,8 @@ void InputDeviceSettingsMetricsManager::RecordMouseInitialMetrics(
 
   PointerSensitivity sensitivity =
       static_cast<PointerSensitivity>(mouse.settings->sensitivity);
+  PointerSensitivity scroll_sensitivity =
+      static_cast<PointerSensitivity>(mouse.settings->scroll_sensitivity);
 
   base::UmaHistogramBoolean(
       "ChromeOS.Settings.Device.Mouse.AccelerationEnabled.Initial",
@@ -386,10 +388,12 @@ void InputDeviceSettingsMetricsManager::RecordMouseInitialMetrics(
       mouse.settings->reverse_scrolling);
   base::UmaHistogramEnumeration(
       "ChromeOS.Settings.Device.Mouse.Sensitivity.Initial", sensitivity);
+  base::UmaHistogramEnumeration(
+      "ChromeOS.Settings.Device.Mouse.ScrollSensitivity.Initial",
+      scroll_sensitivity);
   base::UmaHistogramBoolean(
       "ChromeOS.Settings.Device.Mouse.SwapPrimaryButtons.Initial",
       mouse.settings->swap_right);
-  // TODO(yyhyyh@): Add scroll settings metrics.
 }
 
 void InputDeviceSettingsMetricsManager::RecordMouseChangedMetrics(
@@ -426,12 +430,27 @@ void InputDeviceSettingsMetricsManager::RecordMouseChangedMetrics(
         delta_sensitivity_metric,
         static_cast<PointerSensitivity>(abs(speed_difference)));
   }
+  if (mouse.settings->scroll_sensitivity != old_settings.scroll_sensitivity) {
+    PointerSensitivity scroll_sensitivity =
+        static_cast<PointerSensitivity>(mouse.settings->scroll_sensitivity);
+    base::UmaHistogramEnumeration(
+        "ChromeOS.Settings.Device.Mouse.ScrollSensitivity.Changed",
+        scroll_sensitivity);
+    const int speed_difference =
+        mouse.settings->scroll_sensitivity - old_settings.scroll_sensitivity;
+    const std::string delta_scroll_sensitivity_metric =
+        speed_difference > 0
+            ? "ChromeOS.Settings.Device.Mouse.ScrollSensitivity.Increase"
+            : "ChromeOS.Settings.Device.Mouse.ScrollSensitivity.Decrease";
+    base::UmaHistogramEnumeration(
+        delta_scroll_sensitivity_metric,
+        static_cast<PointerSensitivity>(abs(speed_difference)));
+  }
   if (mouse.settings->swap_right != old_settings.swap_right) {
     base::UmaHistogramBoolean(
         "ChromeOS.Settings.Device.Mouse.SwapPrimaryButtons.Changed",
         mouse.settings->swap_right);
   }
-  // TODO(yyhyyh@): Add scroll settings metrics.
 }
 
 void InputDeviceSettingsMetricsManager::RecordPointingStickInitialMetrics(

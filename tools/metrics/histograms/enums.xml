@@ -85144,11 +85144,11 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
 </enum>
 
 <enum name="PointerSensitivity">
-  <int value="1" label="1"/>
-  <int value="2" label="2"/>
-  <int value="3" label="3"/>
-  <int value="4" label="4"/>
-  <int value="5" label="5"/>
+  <int value="1" label="Lowest"/>
+  <int value="2" label="Low"/>
+  <int value="3" label="Medium"/>
+  <int value="4" label="High"/>
+  <int value="5" label="Highest"/>
 </enum>
 
 <enum name="PolicyAtomicGroups">
