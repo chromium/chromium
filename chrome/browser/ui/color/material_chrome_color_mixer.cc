@@ -57,9 +57,11 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorDownloadBubbleRowHover] = {ui::kColorSysStateHoverOnSubtle};
   mixer[kColorDownloadBubbleShowAllDownloadsIcon] = {
       ui::kColorSysOnSurfaceSubtle};
-  mixer[kColorDownloadToolbarButtonActive] =
-      ui::PickGoogleColor(ui::kColorSysPrimary, kColorDownloadShelfBackground,
-                          color_utils::kMinimumVisibleContrastRatio);
+  mixer[kColorDownloadToolbarButtonActive] = ui::PickGoogleColor(
+      ui::kColorSysPrimary, kColorDownloadToolbarButtonRingBackground,
+      color_utils::kMinimumVisibleContrastRatio);
+  mixer[kColorDownloadToolbarButtonRingBackground] = {
+      ui::kColorSysNeutralOutline};
   mixer[kColorDownloadToolbarButtonAnimationForeground] =
       AdjustHighlightColorForContrast(ui::kColorSysPrimary,
                                       kColorDownloadShelfBackground);
