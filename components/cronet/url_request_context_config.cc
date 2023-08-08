@@ -181,9 +181,9 @@ const char kBidiStreamDetectBrokenConnection[] =
 const char kUseDnsHttpsSvcbFieldTrialName[] = "UseDnsHttpsSvcb";
 const char kUseDnsHttpsSvcbUseAlpn[] = "use_alpn";
 
-// Runtime flag to enable Cronet Telemetry, defaults to false. To enable Cronet
+// Runtime flag to enable Cronet Telemetry, defaults to true. To enable Cronet
 // Telemetry, this must be set to true alongside the manifest file flag
-// specified by CronetManifest.TELEMETRY_OPT_IN_META_DATA_STR.
+// specified by CronetManifest's documentation.
 const char kEnableTelemetry[] = "enable_telemetry";
 
 // "goaway_sessions_on_ip_change" is default on for iOS unless overridden via
@@ -306,7 +306,7 @@ URLRequestContextConfig::URLRequestContextConfig(
       network_thread_priority(network_thread_priority),
       bidi_stream_detect_broken_connection(false),
       heartbeat_interval(base::Seconds(0)),
-      enable_telemetry(false) {
+      enable_telemetry(true) {
   SetContextConfigExperimentalOptions();
 }
 

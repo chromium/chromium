@@ -327,7 +327,7 @@ TEST(URLRequestContextConfigTest, TestExperimentalOptionParsing) {
   EXPECT_EQ(base::FeatureList::IsEnabled(net::features::kUseDnsHttpsSvcbAlpn),
             params->use_dns_https_svcb_alpn);
 
-  EXPECT_FALSE(config->enable_telemetry);
+  EXPECT_TRUE(config->enable_telemetry);
 }
 
 TEST(URLRequestContextConfigTest, SetSupportedQuicVersionByAlpn) {
@@ -1594,7 +1594,7 @@ TEST(URLRequestContextConfigTest, HttpsSvcbOptions) {
   EXPECT_TRUE(params->use_dns_https_svcb_alpn);
 }
 
-TEST(URLRequestContextConfigTest, SkipLogging) {
+TEST(URLRequestContextConfigTest, DisableTelemetry) {
   base::test::TaskEnvironment task_environment_(
       base::test::TaskEnvironment::MainThreadType::IO);
 
@@ -1620,7 +1620,7 @@ TEST(URLRequestContextConfigTest, SkipLogging) {
           // User-Agent request header field.
           "fake agent",
           // JSON encoded experimental options.
-          "{\"enable_telemetry\":true}",
+          "{\"enable_telemetry\":false}",
           // MockCertVerifier to use for testing purposes.
           std::unique_ptr<net::CertVerifier>(),
           // Enable network quality estimator.
@@ -1633,10 +1633,10 @@ TEST(URLRequestContextConfigTest, SkipLogging) {
   config->ConfigureURLRequestContextBuilder(&builder);
   EXPECT_TRUE(
       config->effective_experimental_options.contains("enable_telemetry"));
-  EXPECT_TRUE(config->enable_telemetry);
+  EXPECT_FALSE(config->enable_telemetry);
 }
 
-TEST(URLRequestContextConfigTest, WrongSkipLoggingValue) {
+TEST(URLRequestContextConfigTest, WrongEnableTelemetryValue) {
   base::test::TaskEnvironment task_environment_(
       base::test::TaskEnvironment::MainThreadType::IO);
 
@@ -1676,7 +1676,7 @@ TEST(URLRequestContextConfigTest, WrongSkipLoggingValue) {
   config->ConfigureURLRequestContextBuilder(&builder);
   EXPECT_FALSE(
       config->effective_experimental_options.contains("enable_telemetry"));
-  EXPECT_FALSE(config->enable_telemetry);
+  EXPECT_TRUE(config->enable_telemetry);
 }
 
 // See stale_host_resolver_unittest.cc for test of StaleDNS options.

@@ -108,15 +108,15 @@ public class ExperimentalOptionsTest {
     @Test
     @MediumTest
     @OnlyRunNativeCronet
-    public void testEnableTelemetryTrue() throws Exception {
+    public void testEnableTelemetryFalse() throws Exception {
         mTestRule.getTestFramework().applyEngineBuilderPatch((builder) -> {
-            JSONObject experimentalOptions = new JSONObject().put("enable_telemetry", true);
+            JSONObject experimentalOptions = new JSONObject().put("enable_telemetry", false);
             builder.setExperimentalOptions(experimentalOptions.toString());
         });
 
         CronetUrlRequestContext context =
                 (CronetUrlRequestContext) mTestRule.getTestFramework().startEngine();
-        assertThat(context.getEnableTelemetryForTesting()).isTrue();
+        assertThat(context.getEnableTelemetryForTesting()).isFalse();
     }
 
     @Test
@@ -125,7 +125,7 @@ public class ExperimentalOptionsTest {
     public void testEnableTelemetryDefault() throws Exception {
         CronetUrlRequestContext context =
                 (CronetUrlRequestContext) mTestRule.getTestFramework().startEngine();
-        assertThat(context.getEnableTelemetryForTesting()).isFalse();
+        assertThat(context.getEnableTelemetryForTesting()).isTrue();
     }
 
     @Test
