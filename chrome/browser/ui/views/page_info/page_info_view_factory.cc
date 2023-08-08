@@ -391,6 +391,10 @@ const ui::ImageModel PageInfoViewFactory::GetPermissionIcon(
         icon = show_blocked_badge ? &vector_icons::kDevicesOffChromeRefreshIcon
                                   : &vector_icons::kDevicesChromeRefreshIcon;
         break;
+      case ContentSettingsType::STORAGE_ACCESS:
+        icon = show_blocked_badge ? &vector_icons::kStorageAccessOffIcon
+                                  : &vector_icons::kStorageAccessIcon;
+        break;
       default:
         break;
     }
