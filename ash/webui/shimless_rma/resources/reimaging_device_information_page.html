@@ -120,7 +120,9 @@
 
   #complianceWarning {
     align-items: center;
-    color: var(--cros-color-warning);
+    /* We're using this hex color, which corresponds to google_orange_900 in
+     * cros_palette.json5, because there is no shared variable for the color. */
+    color: #b06000;
     display: flex;
     margin-top: 2px;
   }
