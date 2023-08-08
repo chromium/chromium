@@ -90,6 +90,7 @@ public class TabUtilsUnitTest {
 
     private boolean mRdsDefault;
     private @ContentSettingValues int mRdsException;
+    private boolean mIsGlobal;
     private boolean mUseDesktopUserAgent;
     private @TabUserAgent int mTabUserAgent;
 
@@ -116,6 +117,10 @@ public class TabUtilsUnitTest {
         doAnswer(invocation -> mRdsException)
                 .when(mWebsitePreferenceBridgeJniMock)
                 .getContentSetting(
+                        any(), eq(ContentSettingsType.REQUEST_DESKTOP_SITE), any(), any());
+        doAnswer(invocation -> mIsGlobal)
+                .when(mWebsitePreferenceBridgeJniMock)
+                .isContentSettingGlobal(
                         any(), eq(ContentSettingsType.REQUEST_DESKTOP_SITE), any(), any());
         doAnswer(invocation -> mUseDesktopUserAgent)
                 .when(mNavigationController)
@@ -286,5 +291,24 @@ public class TabUtilsUnitTest {
                 TabUtils.readRequestDesktopSiteContentSettings(mProfile, null));
         Assert.assertTrue("The result should match RDS site level setting.",
                 TabUtils.readRequestDesktopSiteContentSettings(mProfile, gurl));
+    }
+
+    @Test
+    public void testIsRequestDesktopSiteContentSettingsGlobal() {
+        GURL gurl = new GURL(JUnitTestGURLs.EXAMPLE_URL);
+
+        // Content setting is global setting.
+        mIsGlobal = true;
+        Assert.assertTrue("The result should be true when there is no url",
+                TabUtils.isRequestDesktopSiteContentSettingsGlobal(mProfile, null));
+        Assert.assertTrue("Content setting is global setting.",
+                TabUtils.isRequestDesktopSiteContentSettingsGlobal(mProfile, gurl));
+
+        // Content setting is NOT global setting.
+        mIsGlobal = false;
+        Assert.assertTrue("The result should be true when there is no url",
+                TabUtils.isRequestDesktopSiteContentSettingsGlobal(mProfile, null));
+        Assert.assertFalse("Content setting is domain setting.",
+                TabUtils.isRequestDesktopSiteContentSettingsGlobal(mProfile, gurl));
     }
 }

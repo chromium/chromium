@@ -962,6 +962,23 @@ static int JNI_WebsitePreferenceBridge_GetContentSetting(
           static_cast<ContentSettingsType>(content_settings_type));
 }
 
+static jboolean JNI_WebsitePreferenceBridge_IsContentSettingGlobal(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& jbrowser_context_handle,
+    int content_settings_type,
+    const JavaParamRef<jobject>& jprimary_url,
+    const JavaParamRef<jobject>& jsecondary_url) {
+  content_settings::SettingInfo setting_info;
+  GetHostContentSettingsMap(jbrowser_context_handle)
+      ->GetContentSetting(
+          *url::GURLAndroid::ToNativeGURL(env, jprimary_url),
+          *url::GURLAndroid::ToNativeGURL(env, jsecondary_url),
+          static_cast<ContentSettingsType>(content_settings_type),
+          &setting_info);
+  return setting_info.primary_pattern == ContentSettingsPattern::Wildcard() &&
+         setting_info.secondary_pattern == ContentSettingsPattern::Wildcard();
+}
+
 static void JNI_WebsitePreferenceBridge_GetContentSettingsExceptions(
     JNIEnv* env,
     const JavaParamRef<jobject>& jbrowser_context_handle,

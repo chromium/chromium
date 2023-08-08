@@ -351,6 +351,15 @@ public class WebsitePreferenceBridge {
     }
 
     /**
+     * @return Whether the ContentSettings is global setting.
+     */
+    public static boolean isContentSettingGlobal(BrowserContextHandle browserContextHandle,
+            @ContentSettingsType int contentSettingType, GURL primaryUrl, GURL secondaryUrl) {
+        return WebsitePreferenceBridgeJni.get().isContentSettingGlobal(
+                browserContextHandle, contentSettingType, primaryUrl, secondaryUrl);
+    }
+
+    /**
      * Sets the content setting for the default scope of the url that is appropriate for the
      * given contentSettingType.
      * See HostContentSettingsMap::SetContentSettingDefaultScope() for more details.
@@ -450,6 +459,8 @@ public class WebsitePreferenceBridge {
                 @ContentSettingsType int contentSettingsType, List<ContentSettingException> list);
         @ContentSettingValues
         int getContentSetting(BrowserContextHandle browserContextHandle,
+                @ContentSettingsType int contentSettingType, GURL primaryUrl, GURL secondaryUrl);
+        boolean isContentSettingGlobal(BrowserContextHandle browserContextHandle,
                 @ContentSettingsType int contentSettingType, GURL primaryUrl, GURL secondaryUrl);
         void setContentSettingDefaultScope(BrowserContextHandle browserContextHandle,
                 @ContentSettingsType int contentSettingType, GURL primaryUrl, GURL secondaryUrl,

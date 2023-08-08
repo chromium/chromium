@@ -217,6 +217,21 @@ public class TabUtils {
     }
 
     /**
+     * Check if Request Desktop Site ContentSettings is global setting.
+     * @param profile The profile used to retrieve ContentSettings.
+     * @param url The Url used to retrieve ContentSettings.
+     * @return Whether Request Desktop Site ContentSettings is global setting.
+     */
+    public static boolean isRequestDesktopSiteContentSettingsGlobal(
+            Profile profile, @Nullable GURL url) {
+        if (url == null) {
+            return true;
+        }
+        return WebsitePreferenceBridge.isContentSettingGlobal(
+                profile, ContentSettingsType.REQUEST_DESKTOP_SITE, url, url);
+    }
+
+    /**
      * Check if Request Desktop Site global setting is enabled.
      * @param profile The profile of the tab.
      *        Content settings have separate storage for incognito profiles.
