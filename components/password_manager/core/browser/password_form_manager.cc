@@ -378,11 +378,13 @@ void PasswordFormManager::OnUpdatePasswordFromPrompt(
   DCHECK(parsed_submitted_form_);
   parsed_submitted_form_->password_value = new_password;
   parsed_submitted_form_->password_element.clear();
+  parsed_submitted_form_->password_element_renderer_id = FieldRendererId();
 
   // The user updated a password from the prompt. It means that heuristics were
   // wrong. So clear new password, since it is likely wrong.
   parsed_submitted_form_->new_password_value.clear();
   parsed_submitted_form_->new_password_element.clear();
+  parsed_submitted_form_->new_password_element_renderer_id = FieldRendererId();
 
   const AlternativeElementVector& alternative_passwords =
       parsed_submitted_form_->all_alternative_passwords;

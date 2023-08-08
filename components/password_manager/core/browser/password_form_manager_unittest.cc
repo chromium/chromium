@@ -1341,6 +1341,32 @@ TEST_P(PasswordFormManagerTest, UpdatePasswordValueToAlreadyExisting) {
   EXPECT_FALSE(form_manager_->IsPasswordUpdate());
 }
 
+TEST_P(PasswordFormManagerTest, UpdatePasswordValueToUnknownValueFromPrompt) {
+  SetNonFederatedAndNotifyFetchCompleted({&saved_match_});
+
+  // Emulate submitting form that updates the password for a known username.
+  submitted_form_.fields[kUsernameFieldIndex].value =
+      saved_match_.username_value;
+  submitted_form_.fields[kPasswordFieldIndex].autocomplete_attribute =
+      "new-password";
+  submitted_form_.fields[kPasswordFieldIndex].value =
+      u"new_password_field_value";
+  form_manager_->ProvisionallySave(submitted_form_, &driver_, nullptr);
+
+  // The user changes password to a prevuiously unseen one.
+  form_manager_->OnUpdatePasswordFromPrompt(u"totally_unexpected_value");
+  EXPECT_TRUE(form_manager_->IsPasswordUpdate());
+
+  // Since the user has modified the password value, the password field was
+  // likely picked wrong. Make sure votes for password field and password
+  // generation attributes are not uploaded.
+  ServerFieldTypeSet expected_types = {autofill::USERNAME};
+  EXPECT_CALL(mock_autofill_download_manager_,
+              StartUploadRequest(HasPasswordAttributesVote(false), _,
+                                 expected_types, _, _, _, _));
+  form_manager_->Save();
+}
+
 TEST_P(PasswordFormManagerTest, UpdatePasswordValueMultiplePasswordFields) {
   FormData form = observed_form_only_password_fields_;
 
