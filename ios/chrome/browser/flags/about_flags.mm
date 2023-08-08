@@ -54,6 +54,7 @@
 #import "components/policy/policy_constants.h"
 #import "components/reading_list/features/reading_list_switches.h"
 #import "components/safe_browsing/core/common/features.h"
+#import "components/segmentation_platform/public/constants.h"
 #import "components/segmentation_platform/public/features.h"
 #import "components/send_tab_to_self/features.h"
 #import "components/shared_highlighting/core/common/shared_highlighting_features.h"
@@ -375,6 +376,15 @@ const FeatureEntry::FeatureVariation kMagicStackVariations[]{
     {"Magic Stack with Reduced NTP Top Space", kMagicStackReducedNTPTopSpace,
      std::size(kMagicStackReducedNTPTopSpace), nullptr},
 };
+
+const FeatureEntry::FeatureParam kEnableDefaultModel[] = {
+    {segmentation_platform::kDefaultModelEnabledParam, "true"}};
+
+const FeatureEntry::FeatureVariation
+    kSegmentationPlatformIosModuleRankerVariations[]{
+        {"Enabled With Default Model Parameter (Must Set this!)",
+         kEnableDefaultModel, std::size(kEnableDefaultModel), nullptr},
+    };
 
 const FeatureEntry::FeatureParam kHideAllContentSuggestionsTilesAll[] = {
     {kHideContentSuggestionsTilesParamMostVisited, "true"},
@@ -1131,8 +1141,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSegmentationPlatformIosModuleRankerName,
      flag_descriptions::kSegmentationPlatformIosModuleRankerDescription,
      flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(segmentation_platform::features::
-                            kSegmentationPlatformIosModuleRanker)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         segmentation_platform::features::kSegmentationPlatformIosModuleRanker,
+         kSegmentationPlatformIosModuleRankerVariations,
+         flag_descriptions::kSegmentationPlatformIosModuleRankerName)},
     {"default-browser-intents-show-settings",
      flag_descriptions::kDefaultBrowserIntentsShowSettingsName,
      flag_descriptions::kDefaultBrowserIntentsShowSettingsDescription,
