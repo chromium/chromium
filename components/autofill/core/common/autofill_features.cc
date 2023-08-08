@@ -452,6 +452,13 @@ BASE_FEATURE(kAutofillAlwaysParsePlaceholders,
              "AutofillAlwaysParsePlaceholders",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If the feature is enabled, browser forms for which Autofill has received
+// predictions, are split into renderer forms before passing them on to password
+// manager.
+BASE_FEATURE(kAutofillPassRendererFormsToPasswordManager,
+             "AutofillPassRendererFormsToPasswordManager",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // If the feature is enabled, FormTracker's probable-form-submission detection
 // is disabled and replaced with browser-side detection.
 // TODO(crbug/1117451): Remove once it works.

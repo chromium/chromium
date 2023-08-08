@@ -1079,24 +1079,71 @@ bool ChromeAutofillClient::IsPasswordManagerEnabled() {
 void ChromeAutofillClient::PropagateAutofillPredictionsDeprecated(
     AutofillDriver* autofill_driver,
     const std::vector<FormStructure*>& forms) {
-  // This cast is safe because all non-iOS clients use ContentAutofillDriver as
-  // AutofillDriver implementation.
+  FormDataAndServerPredictions forms_and_predictions =
+      GetFormDataAndServerPredictions(forms);
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillPassRendererFormsToPasswordManager)) {
+    const ContentAutofillRouter& router =
+        GetAutofillDriverFactory()->autofill_router();
+    std::vector<FormData> renderer_forms;
+    // There are at least as many renderer forms as there are browser forms.
+    renderer_forms.reserve(forms_and_predictions.form_datas.size());
+    for (const FormData& browser_form : forms_and_predictions.form_datas) {
+      base::ranges::move(router.GetRendererForms(browser_form),
+                         std::back_inserter(renderer_forms));
+    }
+
+    std::map<LocalFrameToken, std::vector<const FormData*>>
+        renderer_forms_by_frame;
+    for (const FormData& renderer_form : renderer_forms) {
+      renderer_forms_by_frame[renderer_form.host_frame].push_back(
+          &renderer_form);
+    }
+
+    for (const auto& [frame_token, frame_forms] : renderer_forms_by_frame) {
+      // Attempt to find the RFH with this `frame_token`.
+      content::RenderFrameHost* rfh = nullptr;
+      GetWebContents().ForEachRenderFrameHost(
+          [&rfh, frame_token](content::RenderFrameHost* host) {
+            if (LocalFrameToken(host->GetFrameToken().value()) == frame_token) {
+              rfh = host;
+            }
+          });
+      if (!rfh) {
+        continue;
+      }
+
+      password_manager::ContentPasswordManagerDriver* pwm_driver =
+          password_manager::ContentPasswordManagerDriver::GetForRenderFrameHost(
+              rfh);
+      if (!pwm_driver) {
+        continue;
+      }
+      pwm_driver->GetPasswordManager()->ProcessAutofillPredictions(
+          pwm_driver, frame_forms, forms_and_predictions.predictions);
+    }
+    return;
+  }
+
+  // This cast is safe because all non-iOS clients use ContentAutofillDriver
+  // as AutofillDriver implementation.
   content::RenderFrameHost* rfh =
       static_cast<ContentAutofillDriver*>(autofill_driver)->render_frame_host();
   password_manager::ContentPasswordManagerDriver* password_manager_driver =
       password_manager::ContentPasswordManagerDriver::GetForRenderFrameHost(
           rfh);
   if (password_manager_driver) {
-    // TODO(crbug.com/1466435): Remove this interim mapping once AutofillManager
-    // transitions to events that will already have this signature.
-    FormDataAndServerPredictions args = GetFormDataAndServerPredictions(forms);
+    // TODO(crbug.com/1466435): Remove this interim mapping once
+    // AutofillManager transitions to events that will already have this
+    // signature.
     std::vector<const FormData*> form_pointers;
-    form_pointers.reserve(args.form_datas.size());
-    for (const FormData& form : args.form_datas) {
+    form_pointers.reserve(forms_and_predictions.form_datas.size());
+    for (const FormData& form : forms_and_predictions.form_datas) {
       form_pointers.push_back(&form);
     }
     password_manager_driver->GetPasswordManager()->ProcessAutofillPredictions(
-        password_manager_driver, form_pointers, args.predictions);
+        password_manager_driver, form_pointers,
+        forms_and_predictions.predictions);
   }
 }
 
