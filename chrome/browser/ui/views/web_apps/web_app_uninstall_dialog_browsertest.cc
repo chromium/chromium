@@ -67,24 +67,6 @@ class WebAppUninstallDialogViewBrowserTest
 };
 
 IN_PROC_BROWSER_TEST_F(WebAppUninstallDialogViewBrowserTest,
-                       TrackParentWindowDestructionBeforeViewCreation) {
-  AppId app_id = InstallTestWebApp(browser()->profile());
-
-  web_app::WebAppUiManagerImpl* ui_manager_impl =
-      web_app::WebAppUiManagerImpl::Get(provider());
-  base::test::TestFuture<webapps::UninstallResultCode> test_future;
-
-  browser()->window()->Close();
-  ui_manager_impl->PresentUserUninstallDialog(
-      app_id, webapps::WebappUninstallSource::kAppMenu,
-      browser()->window()->GetNativeWindow(), test_future.GetCallback());
-
-  EXPECT_TRUE(test_future.Wait());
-  EXPECT_EQ(test_future.Get<webapps::UninstallResultCode>(),
-            webapps::UninstallResultCode::kCancelled);
-}
-
-IN_PROC_BROWSER_TEST_F(WebAppUninstallDialogViewBrowserTest,
                        TrackParentWindowDestructionAfterViewCreation) {
   AppId app_id = InstallTestWebApp(browser()->profile());
 
@@ -113,7 +95,7 @@ IN_PROC_BROWSER_TEST_F(WebAppUninstallDialogViewBrowserTest,
 // Also tests that we don't crash when uninstalling a web app from a web app
 // window in Ash. See https://crbug.com/825554.
 IN_PROC_BROWSER_TEST_F(WebAppUninstallDialogViewBrowserTest,
-                       UninstallWithNoBrowserWindow) {
+                       TrackParentWindowDestructionBeforeViewCreation) {
   extensions::ScopedTestDialogAutoConfirm auto_confirm(
       extensions::ScopedTestDialogAutoConfirm::ACCEPT);
   AppId app_id = InstallTestWebApp(browser()->profile());
