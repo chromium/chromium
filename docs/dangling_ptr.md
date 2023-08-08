@@ -39,7 +39,10 @@ is meant to be either refactored to avoid dangling, or turned into
 
 # How to check for dangling pointers?
 
-It is gated behind both build and runtime flags:
+On **Linux**, it is **enabled by default** on most configurations.
+To be precise: (`is_debug` or `dcheck_always_on`) and non `is_official` builds.
+
+For the other operating systems, this is gated by both build and runtime flags:
 
 ## Build flags
 
