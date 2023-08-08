@@ -1242,12 +1242,15 @@ bool CompositorFrameSinkSupport::ShouldThrottleBeginFrameAsRequested(
   if (!begin_frame_interval_.is_positive() || !vsync_interval.is_positive()) {
     return false;
   }
+
+  // Check the remainder in nanoseconds to ensure we don't accidentally
+  // truncate either begin_frame_interval_ or vsync_interval.
   uint64_t remainder =
-      begin_frame_interval_.InMilliseconds() % vsync_interval.InMilliseconds();
-  if (remainder > 1) {
-    // We test against a remainder more than 1 because when we have 16.X ms
-    // + 16.X ms we can easily end up with 33.X which means added an extra unit
-    // in a perfect cadence so avoid that from being misflagged.
+      begin_frame_interval_.InNanoseconds() % vsync_interval.InNanoseconds();
+  if (remainder > 1000000) {
+    // We test against a remainder more than 100000ns (or 1 ms) because when we
+    // have 16.X ms + 16.X ms we can easily end up with 33.X which means added
+    // an extra unit in a perfect cadence so avoid that from being misflagged.
 
     // This is a perfect cadence so we can throttle.
     // Example: a 120 hz vsync / 60 fps is a perfect cadence of [2,2,2,2]
