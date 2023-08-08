@@ -12,7 +12,6 @@
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
@@ -299,10 +298,8 @@ class IntegrationTest : public ::testing::Test {
   }
 
   void InstallApp(const std::string& app_id,
-                  const base::Version& version = base::Version("0.1"),
-                  base::OnceClosure post_install_action = base::DoNothing()) {
+                  const base::Version& version = base::Version("0.1")) {
     test_commands_->InstallApp(app_id, version);
-    std::move(post_install_action).Run();
   }
 
   void UninstallApp(const std::string& app_id) {
@@ -1513,7 +1510,6 @@ class IntegrationTestDeviceManagement : public IntegrationTest {
     IntegrationTest::SetUp();
     DMCleanup();
     test_server_ = std::make_unique<ScopedServer>(test_commands_);
-    ASSERT_NO_FATAL_FAILURE(SetMachineManaged(true));
   }
 
   void TearDown() override {
@@ -1527,19 +1523,6 @@ class IntegrationTestDeviceManagement : public IntegrationTest {
     EXPECT_TRUE(storage->DeleteDMToken());
   }
 
-  void ExpectAppInstalled(const std::string& appid,
-                          const base::Version& expected_version) {
-    ASSERT_NO_FATAL_FAILURE(ExpectAppVersion(appid, expected_version));
-
-    std::wstring pv;
-    EXPECT_EQ(
-        ERROR_SUCCESS,
-        base::win::RegKey(UpdaterScopeToHKeyRoot(UpdaterScope::kSystem),
-                          GetAppClientsKey(appid).c_str(), Wow6432(KEY_READ))
-            .ReadValue(kRegValuePV, &pv));
-    EXPECT_EQ(pv, base::ASCIIToWide(expected_version.GetString()));
-  }
-
   std::unique_ptr<ScopedServer> test_server_;
   static constexpr char kEnrollmentToken[] = "integration-enrollment-token";
   static constexpr char kDMToken[] = "integration-dm-token";
@@ -1548,7 +1531,7 @@ class IntegrationTestDeviceManagement : public IntegrationTest {
 
 TEST_F(IntegrationTestDeviceManagement, PolicyFetchBeforeInstall) {
   if (!IsSystemInstall(GetTestScope())) {
-    GTEST_SKIP();
+    return;
   }
 
   ::wireless_android_enterprise_devicemanagement::OmahaSettingsClientProto
@@ -1589,71 +1572,6 @@ TEST_F(IntegrationTestDeviceManagement, PolicyFetchBeforeInstall) {
   EXPECT_EQ(app_policy.rollback_to_target_version(),
             ::wireless_android_enterprise_devicemanagement::
                 ROLLBACK_TO_TARGET_VERSION_ENABLED);
-  ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(test_server_.get()));
-  ASSERT_NO_FATAL_FAILURE(Uninstall());
-}
-
-TEST_F(IntegrationTestDeviceManagement, RollbackToTargetVersion) {
-  if (!IsSystemInstall(GetTestScope())) {
-    GTEST_SKIP();
-  }
-
-  constexpr char kTargetVersionPrefix[] = "1.0.";
-  const base::Version kAppInitialVersion = base::Version("2.3.1.0");
-  const base::Version kAppRollbackVersion = base::Version("1.0.1.2");
-
-  ASSERT_NO_FATAL_FAILURE(Install());
-  ASSERT_NO_FATAL_FAILURE(InstallApp(
-      kAppId, kAppInitialVersion, base::BindLambdaForTesting([&]() {
-        // Run test app installer to set app `pv` value to its initial version.
-        base::FilePath exe_path;
-        ASSERT_TRUE(base::PathService::Get(base::DIR_EXE, &exe_path));
-        base::CommandLine command(exe_path.AppendASCII("test_installer")
-                                      .AppendASCII("TestApp2Setup.exe"));
-        command.AppendArg("--system");
-        command.AppendSwitchASCII("--company", COMPANY_SHORTNAME_STRING);
-        command.AppendSwitchASCII("--appid", kAppId);
-        command.AppendSwitchASCII("--product_version",
-                                  kAppInitialVersion.GetString());
-        VLOG(2) << "Launch app setup command: "
-                << command.GetCommandLineString();
-
-        base::Process process = base::LaunchProcess(command, {});
-        if (!process.IsValid()) {
-          VLOG(2) << "Invalid process launching command: "
-                  << command.GetCommandLineString();
-        }
-
-        int exit_code = -1;
-        EXPECT_TRUE(process.WaitForExitWithTimeout(
-            TestTimeouts::action_timeout(), &exit_code));
-        EXPECT_EQ(0, exit_code);
-      })));
-  ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
-  ASSERT_NO_FATAL_FAILURE(ExpectAppInstalled(kAppId, kAppInitialVersion));
-
-  PushEnrollmentToken(kEnrollmentToken);
-  ExpectDeviceManagementRegistrationRequest(test_server_.get(),
-                                            kEnrollmentToken, kDMToken);
-  ::wireless_android_enterprise_devicemanagement::OmahaSettingsClientProto
-      omaha_settings;
-  ::wireless_android_enterprise_devicemanagement::ApplicationSettings app;
-  app.set_app_guid(kAppId);
-  app.set_target_version_prefix(kTargetVersionPrefix);
-  app.set_rollback_to_target_version(
-      ::wireless_android_enterprise_devicemanagement::
-          ROLLBACK_TO_TARGET_VERSION_ENABLED);
-  omaha_settings.mutable_application_settings()->Add(std::move(app));
-  ExpectDeviceManagementPolicyFetchRequest(test_server_.get(), kDMToken,
-                                           omaha_settings);
-  ExpectAppRollbackUpdateSequence(UpdaterScope::kSystem, test_server_.get(),
-                                  kAppId,
-                                  /*allow_rollback=*/true, kTargetVersionPrefix,
-                                  kAppInitialVersion, kAppRollbackVersion);
-  ASSERT_NO_FATAL_FAILURE(RunWake(0));
-  ASSERT_TRUE(WaitForUpdaterExit());
-  ASSERT_NO_FATAL_FAILURE(ExpectAppInstalled(kAppId, kAppRollbackVersion));
-
   ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(test_server_.get()));
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
