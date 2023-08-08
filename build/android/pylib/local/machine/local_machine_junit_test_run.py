@@ -315,7 +315,8 @@ class LocalMachineJunitTestRun(test_run.TestRun):
 
       print(
           f'To re-run the {len(failed_jobs)} failed shard(s), use: '
-          f'--shard-filter', ','.join(str(j.shard_id) for j in failed_jobs))
+          f'--shards {num_workers} --shard-filter',
+          ','.join(str(j.shard_id) for j in failed_jobs))
 
     test_run_results = base_test_result.TestRunResults()
     test_run_results.AddResults(results_list)
