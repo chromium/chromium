@@ -139,7 +139,9 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromDrawQuad(
     return CandidateStatus::kFailBlending;
   }
 
-  if (!sqs->mask_filter_info.IsEmpty() && !context_.supports_mask_filter) {
+  if (!sqs->mask_filter_info.IsEmpty() &&
+      (!context_.supports_mask_filter ||
+       sqs->mask_filter_info.HasGradientMask())) {
     return CandidateStatus::kFailMaskFilterNotSupported;
   }
 
