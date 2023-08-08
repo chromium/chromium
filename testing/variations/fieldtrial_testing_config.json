@@ -10208,6 +10208,7 @@
                         "use_stronger_prompt_language": "false"
                     },
                     "enable_features": [
+                        "ActiveContentSettingExpiry",
                         "OneTimePermission"
                     ]
                 },
@@ -10217,6 +10218,7 @@
                         "use_stronger_prompt_language": "true"
                     },
                     "enable_features": [
+                        "ActiveContentSettingExpiry",
                         "OneTimePermission"
                     ]
                 }
