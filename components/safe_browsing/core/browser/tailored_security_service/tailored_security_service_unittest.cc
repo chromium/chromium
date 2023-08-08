@@ -522,7 +522,7 @@ TEST_F(TailoredSecurityServiceTest, NotifiesSyncForDisabled) {
 }
 
 TEST_F(TailoredSecurityServiceTest,
-       RetryEnabledTimestampUpdateCallbackSetsStateToUnknown) {
+       RetryEnabledTimestampUpdateCallbackSetsStateToRetryNeeded) {
   scoped_feature_list_.Reset();
   scoped_feature_list_.InitWithFeatures(
       {safe_browsing::kTailoredSecurityRetryForSyncUsers}, {});
@@ -532,12 +532,12 @@ TEST_F(TailoredSecurityServiceTest,
     tailored_security_service()->SetExpectedTailoredSecurityServiceValue(true);
 
     EXPECT_NE(prefs()->GetInteger(prefs::kTailoredSecuritySyncFlowRetryState),
-              TailoredSecurityRetryState::UNKNOWN);
+              TailoredSecurityRetryState::RETRY_NEEDED);
 
     tailored_security_service()->TailoredSecurityTimestampUpdateCallback();
 
     EXPECT_EQ(prefs()->GetInteger(prefs::kTailoredSecuritySyncFlowRetryState),
-              TailoredSecurityRetryState::UNKNOWN);
+              TailoredSecurityRetryState::RETRY_NEEDED);
   }
 }
 

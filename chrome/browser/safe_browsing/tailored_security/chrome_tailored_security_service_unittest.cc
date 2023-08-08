@@ -7,6 +7,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
@@ -203,6 +204,8 @@ class ChromeTailoredSecurityServiceTest : public testing::Test {
     profile_manager_.DeleteTestingProfile("primary_account");
   }
 
+  base::test::ScopedFeatureList scoped_feature_list_;
+
  private:
   // Must be declared before anything that may make use of the
   // directory so as to ensure files are closed before cleanup.
@@ -370,6 +373,33 @@ TEST_F(ChromeTailoredSecurityServiceTest,
   tailored_security_service()->MaybeNotifySyncUser(kTailoredSecurityDisabled,
                                                    base::Time::Now());
   EXPECT_TRUE(IsEnhancedProtectionEnabled(*prefs()));
+}
+
+TEST_F(ChromeTailoredSecurityServiceTest,
+       WhenRetryDisabledOnSuccessDoesNotUpdateRetryStatePref) {
+  scoped_feature_list_.InitAndDisableFeature(
+      kTailoredSecurityRetryForSyncUsers);
+  {
+    SetSafeBrowsingState(prefs(), SafeBrowsingState::STANDARD_PROTECTION);
+    auto original_value =
+        prefs()->GetInteger(prefs::kTailoredSecuritySyncFlowRetryState);
+    tailored_security_service()->MaybeNotifySyncUser(kTailoredSecurityEnabled,
+                                                     base::Time::Now());
+    EXPECT_EQ(prefs()->GetInteger(prefs::kTailoredSecuritySyncFlowRetryState),
+              original_value);
+  }
+}
+
+TEST_F(ChromeTailoredSecurityServiceTest,
+       WhenRetryEnabledOnSuccessStoresNoRetryNeeded) {
+  scoped_feature_list_.InitAndEnableFeature(kTailoredSecurityRetryForSyncUsers);
+  {
+    SetSafeBrowsingState(prefs(), SafeBrowsingState::STANDARD_PROTECTION);
+    tailored_security_service()->MaybeNotifySyncUser(kTailoredSecurityEnabled,
+                                                     base::Time::Now());
+    EXPECT_EQ(prefs()->GetInteger(prefs::kTailoredSecuritySyncFlowRetryState),
+              TailoredSecurityRetryState::NO_RETRY_NEEDED);
+  }
 }
 
 }  // namespace safe_browsing

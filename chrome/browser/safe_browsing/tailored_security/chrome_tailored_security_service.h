@@ -9,6 +9,7 @@
 #include "build/build_config.h"
 #include "components/safe_browsing/core/browser/tailored_security_service/tailored_security_service.h"
 #include "components/safe_browsing/core/browser/tailored_security_service/tailored_security_service_observer.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/safe_browsing/tailored_security/consented_message_android.h"
@@ -76,6 +77,9 @@ class ChromeTailoredSecurityService : public TailoredSecurityService,
 #else
   TailoredSecurityDesktopDialogManager dialog_manager_;
 #endif
+
+  void SaveRetryState(TailoredSecurityRetryState result);
+
   raw_ptr<Profile> profile_;
 };
 

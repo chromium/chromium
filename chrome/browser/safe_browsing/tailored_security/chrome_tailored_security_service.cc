@@ -128,6 +128,7 @@ void ChromeTailoredSecurityService::OnSyncNotificationMessageRequest(
       RecordEnabledNotificationResult(
           TailoredSecurityNotificationResult::kNoBrowserWindowAvailable);
     }
+    return;
   }
   SetSafeBrowsingState(profile_->GetPrefs(),
                        is_enabled ? SafeBrowsingState::ENHANCED_PROTECTION
@@ -135,6 +136,7 @@ void ChromeTailoredSecurityService::OnSyncNotificationMessageRequest(
                        /*is_esb_enabled_in_sync=*/is_enabled);
   DisplayDesktopDialog(browser, is_enabled);
 #endif
+  SaveRetryState(TailoredSecurityRetryState::NO_RETRY_NEEDED);
   if (is_enabled) {
     RecordEnabledNotificationResult(TailoredSecurityNotificationResult::kShown);
   }
@@ -237,6 +239,15 @@ scoped_refptr<network::SharedURLLoaderFactory>
 ChromeTailoredSecurityService::GetURLLoaderFactory() {
   return profile_->GetDefaultStoragePartition()
       ->GetURLLoaderFactoryForBrowserProcess();
+}
+
+void ChromeTailoredSecurityService::SaveRetryState(
+    TailoredSecurityRetryState state) {
+  if (base::FeatureList::IsEnabled(
+          safe_browsing::kTailoredSecurityRetryForSyncUsers)) {
+    profile_->GetPrefs()->SetInteger(prefs::kTailoredSecuritySyncFlowRetryState,
+                                     state);
+  }
 }
 
 }  // namespace safe_browsing

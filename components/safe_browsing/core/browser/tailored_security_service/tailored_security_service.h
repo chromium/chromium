@@ -169,7 +169,7 @@ class TailoredSecurityService : public KeyedService {
  private:
   FRIEND_TEST_ALL_PREFIXES(
       TailoredSecurityServiceTest,
-      RetryEnabledTimestampUpdateCallbackSetsStateToUnknown);
+      RetryEnabledTimestampUpdateCallbackSetsStateToRetryNeeded);
   FRIEND_TEST_ALL_PREFIXES(TailoredSecurityServiceTest,
                            RetryEnabledTimestampUpdateCallbackRecordsStartTime);
   FRIEND_TEST_ALL_PREFIXES(
