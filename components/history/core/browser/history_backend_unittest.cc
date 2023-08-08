@@ -108,6 +108,8 @@ void SimulateNotificationURLVisited(HistoryServiceObserver* observer,
 
   for (const URLRow& row : rows) {
     observer->OnURLVisited(nullptr, row, VisitRow());
+    observer->OnURLVisitedWithNavigationId(nullptr, row, VisitRow(),
+                                           absl::nullopt);
   }
 }
 
@@ -188,7 +190,8 @@ class HistoryBackendTestDelegate : public HistoryBackend::Delegate {
   void NotifyFaviconsChanged(const std::set<GURL>& page_urls,
                              const GURL& icon_url) override;
   void NotifyURLVisited(const URLRow& url_row,
-                        const VisitRow& visit_row) override;
+                        const VisitRow& visit_row,
+                        absl::optional<int64_t> local_navigation_id) override;
   void NotifyURLsModified(const URLRows& changed_urls) override;
   void NotifyURLsDeleted(DeletionInfo deletion_info) override;
   void NotifyKeywordSearchTermUpdated(const URLRow& row,
@@ -372,8 +375,10 @@ void HistoryBackendTestDelegate::NotifyFaviconsChanged(
   test_->NotifyFaviconsChanged(page_urls, icon_url);
 }
 
-void HistoryBackendTestDelegate::NotifyURLVisited(const URLRow& url_row,
-                                                  const VisitRow& new_visit) {
+void HistoryBackendTestDelegate::NotifyURLVisited(
+    const URLRow& url_row,
+    const VisitRow& new_visit,
+    absl::optional<int64_t> local_navigation_id) {
   test_->NotifyURLVisited(url_row, new_visit);
 }
 
@@ -429,8 +434,9 @@ class HistoryBackendTest : public HistoryBackendTestBase {
 
     ContextID context_id = 1;
     HistoryAddPageArgs request(redirects.back(), time, context_id, nav_entry_id,
-                               GURL(), redirects, transition, false,
-                               SOURCE_BROWSED, true, true);
+                               /*local_navigation_id=*/absl::nullopt, GURL(),
+                               redirects, transition, false, SOURCE_BROWSED,
+                               true, true);
     backend_->AddPage(request);
   }
 
@@ -453,7 +459,8 @@ class HistoryBackendTest : public HistoryBackendTestBase {
       redirects.push_back(url1);
     if (url2.is_valid())
       redirects.push_back(url2);
-    HistoryAddPageArgs request(url2, time, dummy_context_id, 0, url1, redirects,
+    HistoryAddPageArgs request(url2, time, dummy_context_id, 0, absl::nullopt,
+                               url1, redirects,
                                ui::PAGE_TRANSITION_CLIENT_REDIRECT, false,
                                SOURCE_BROWSED, did_replace, true);
     backend_->AddPage(request);
@@ -485,9 +492,9 @@ class HistoryBackendTest : public HistoryBackendTestBase {
     redirects.push_back(url2);
     ui::PageTransition redirect_transition = ui::PageTransitionFromInt(
         ui::PAGE_TRANSITION_FORM_SUBMIT | ui::PAGE_TRANSITION_SERVER_REDIRECT);
-    HistoryAddPageArgs request(url2, time, dummy_context_id, 0, url1, redirects,
-                               redirect_transition, false, SOURCE_BROWSED,
-                               did_replace, true,
+    HistoryAddPageArgs request(url2, time, dummy_context_id, 0, absl::nullopt,
+                               url1, redirects, redirect_transition, false,
+                               SOURCE_BROWSED, did_replace, true,
                                absl::optional<std::u16string>(page2_title));
     backend_->AddPage(request);
 
@@ -933,7 +940,8 @@ TEST_F(HistoryBackendTest, DeleteAllThenAddData) {
 
   base::Time visit_time = base::Time::Now();
   GURL url("http://www.google.com/");
-  HistoryAddPageArgs request(url, visit_time, 0, 0, GURL(), RedirectList(),
+  HistoryAddPageArgs request(url, visit_time, 0, 0, absl::nullopt, GURL(),
+                             RedirectList(),
                              ui::PAGE_TRANSITION_KEYWORD_GENERATED, false,
                              SOURCE_BROWSED, false, true);
   backend_->AddPage(request);
@@ -1070,7 +1078,8 @@ TEST_F(HistoryBackendTest, KeywordGenerated) {
   GURL url("http://google.com");
 
   base::Time visit_time = base::Time::Now() - base::Days(1);
-  HistoryAddPageArgs request(url, visit_time, 0, 0, GURL(), RedirectList(),
+  HistoryAddPageArgs request(url, visit_time, 0, 0, absl::nullopt, GURL(),
+                             RedirectList(),
                              ui::PAGE_TRANSITION_KEYWORD_GENERATED, false,
                              SOURCE_BROWSED, false, true);
   backend_->AddPage(request);
@@ -1102,9 +1111,9 @@ TEST_F(HistoryBackendTest, KeywordGenerated) {
   // Going back to the same entry should not increment the typed count.
   ui::PageTransition back_transition = ui::PageTransitionFromInt(
       ui::PAGE_TRANSITION_TYPED | ui::PAGE_TRANSITION_FORWARD_BACK);
-  HistoryAddPageArgs back_request(url, visit_time, 0, 0, GURL(), RedirectList(),
-                                  back_transition, false, SOURCE_BROWSED, false,
-                                  true);
+  HistoryAddPageArgs back_request(url, visit_time, 0, 0, absl::nullopt, GURL(),
+                                  RedirectList(), back_transition, false,
+                                  SOURCE_BROWSED, false, true);
   backend_->AddPage(back_request);
   url_id = backend_->db()->GetRowForURL(url, &row);
   ASSERT_NE(0, url_id);
@@ -1137,10 +1146,10 @@ TEST_F(HistoryBackendTest, OpenerWithRedirect) {
 
   // Add an initial page.
   int nav_entry_id = 2;
-  HistoryAddPageArgs initial_request(initial_url, visit_time, context_id1,
-                                     nav_entry_id, GURL(), RedirectList(),
-                                     ui::PAGE_TRANSITION_TYPED, false,
-                                     SOURCE_BROWSED, false, true);
+  HistoryAddPageArgs initial_request(
+      initial_url, visit_time, context_id1, nav_entry_id,
+      /*local_navigation_id=*/absl::nullopt, GURL(), RedirectList(),
+      ui::PAGE_TRANSITION_TYPED, false, SOURCE_BROWSED, false, true);
   backend_->AddPage(initial_request);
 
   VisitVector visits;
@@ -1153,7 +1162,8 @@ TEST_F(HistoryBackendTest, OpenerWithRedirect) {
   // Simulate the initial URL opening a page that then redirects.
   HistoryAddPageArgs request(
       client_redirect_url, base::Time::Now() - base::Seconds(1), context_id2, 0,
-      GURL(), /*redirects=*/{server_redirect_url, client_redirect_url},
+      absl::nullopt, GURL(),
+      /*redirects=*/{server_redirect_url, client_redirect_url},
       ui::PAGE_TRANSITION_TYPED, false, SOURCE_BROWSED, false, true,
       absl::nullopt, Opener(context_id1, nav_entry_id, initial_url));
   backend_->AddPage(request);
@@ -1204,9 +1214,9 @@ TEST_F(HistoryBackendTest, FormSubmitRedirect) {
 
   // User goes to form page.
   GURL url_a("http://www.google.com/a");
-  HistoryAddPageArgs request(url_a, base::Time::Now(), 0, 0, GURL(),
-                             RedirectList(), ui::PAGE_TRANSITION_TYPED, false,
-                             SOURCE_BROWSED, false, true,
+  HistoryAddPageArgs request(url_a, base::Time::Now(), 0, 0, absl::nullopt,
+                             GURL(), RedirectList(), ui::PAGE_TRANSITION_TYPED,
+                             false, SOURCE_BROWSED, false, true,
                              absl::optional<std::u16string>(page1_title));
   backend_->AddPage(request);
 
@@ -1723,20 +1733,20 @@ TEST_F(HistoryBackendTest, AddPageArgsSource) {
   GURL url("http://testpageargs.com");
 
   // Assume this page is browsed by user.
-  HistoryAddPageArgs request1(url, base::Time::Now(), 0, 0, GURL(),
-                              RedirectList(),
+  HistoryAddPageArgs request1(url, base::Time::Now(), 0, 0, absl::nullopt,
+                              GURL(), RedirectList(),
                               ui::PAGE_TRANSITION_KEYWORD_GENERATED, false,
                               SOURCE_BROWSED, false, true);
   backend_->AddPage(request1);
   // Assume this page is synced.
-  HistoryAddPageArgs request2(url, base::Time::Now(), 0, 0, GURL(),
-                              RedirectList(), ui::PAGE_TRANSITION_LINK, false,
-                              SOURCE_SYNCED, false, true);
+  HistoryAddPageArgs request2(url, base::Time::Now(), 0, 0, absl::nullopt,
+                              GURL(), RedirectList(), ui::PAGE_TRANSITION_LINK,
+                              false, SOURCE_SYNCED, false, true);
   backend_->AddPage(request2);
   // Assume this page is browsed again.
-  HistoryAddPageArgs request3(url, base::Time::Now(), 0, 0, GURL(),
-                              RedirectList(), ui::PAGE_TRANSITION_TYPED, false,
-                              SOURCE_BROWSED, false, true);
+  HistoryAddPageArgs request3(url, base::Time::Now(), 0, 0, absl::nullopt,
+                              GURL(), RedirectList(), ui::PAGE_TRANSITION_TYPED,
+                              false, SOURCE_BROWSED, false, true);
   backend_->AddPage(request3);
 
   // Three visits should be added with proper sources.
@@ -1757,23 +1767,24 @@ TEST_F(HistoryBackendTest, AddPageArgsConsiderForNewTabPageMostVisited) {
   GURL url("http://testpageargs.com");
 
   // Request with `consider_for_ntp_most_visited` as true.
-  HistoryAddPageArgs request1(
-      url, base::Time::Now() - base::Days(2), 0, 0, GURL(), RedirectList(),
-      ui::PAGE_TRANSITION_KEYWORD_GENERATED, false, SOURCE_BROWSED, false,
-      /* consider_for_ntp_most_visited */ true);
+  HistoryAddPageArgs request1(url, base::Time::Now() - base::Days(2), 0, 0,
+                              absl::nullopt, GURL(), RedirectList(),
+                              ui::PAGE_TRANSITION_KEYWORD_GENERATED, false,
+                              SOURCE_BROWSED, false,
+                              /* consider_for_ntp_most_visited */ true);
   backend_->AddPage(request1);
 
   // Request with `consider_for_ntp_most_visited` as false.
-  HistoryAddPageArgs request2(url, base::Time::Now() - base::Days(1), 0, 0,
-                              GURL(), RedirectList(), ui::PAGE_TRANSITION_LINK,
-                              false, SOURCE_SYNCED, false,
-                              /* consider_for_ntp_most_visited */ false);
+  HistoryAddPageArgs request2(
+      url, base::Time::Now() - base::Days(1), 0, 0, absl::nullopt, GURL(),
+      RedirectList(), ui::PAGE_TRANSITION_LINK, false, SOURCE_SYNCED, false,
+      /* consider_for_ntp_most_visited */ false);
   backend_->AddPage(request2);
 
   // Request with `consider_for_ntp_most_visited` as true.
-  HistoryAddPageArgs request3(url, base::Time::Now(), 0, 0, GURL(),
-                              RedirectList(), ui::PAGE_TRANSITION_TYPED, false,
-                              SOURCE_BROWSED, false,
+  HistoryAddPageArgs request3(url, base::Time::Now(), 0, 0, absl::nullopt,
+                              GURL(), RedirectList(), ui::PAGE_TRANSITION_TYPED,
+                              false, SOURCE_BROWSED, false,
                               /* consider_for_ntp_most_visited */ true);
   backend_->AddPage(request3);
 
@@ -1799,8 +1810,9 @@ TEST_F(HistoryBackendTest, AddContentModelAnnotationsWithNoEntryInVisitTable) {
   int nav_entry_id = 1;
 
   HistoryAddPageArgs request(url, base::Time::Now(), context_id, nav_entry_id,
-                             GURL(), RedirectList(), ui::PAGE_TRANSITION_TYPED,
-                             false, SOURCE_BROWSED, false, true);
+                             /*local_navigation_id=*/absl::nullopt, GURL(),
+                             RedirectList(), ui::PAGE_TRANSITION_TYPED, false,
+                             SOURCE_BROWSED, false, true);
   backend_->AddPage(request);
 
   VisitVector visits;
@@ -1836,8 +1848,9 @@ TEST_F(HistoryBackendTest, AddRelatedSearchesWithNoEntryInVisitTable) {
   int nav_entry_id = 1;
 
   HistoryAddPageArgs request(url, base::Time::Now(), context_id, nav_entry_id,
-                             GURL(), RedirectList(), ui::PAGE_TRANSITION_TYPED,
-                             false, SOURCE_BROWSED, false, true);
+                             /*local_navigation_id=*/absl::nullopt, GURL(),
+                             RedirectList(), ui::PAGE_TRANSITION_TYPED, false,
+                             SOURCE_BROWSED, false, true);
   backend_->AddPage(request);
 
   VisitVector visits;
@@ -1869,8 +1882,9 @@ TEST_F(HistoryBackendTest, AddSearchMetadataWithNoEntryInVisitTable) {
   int nav_entry_id = 1;
 
   HistoryAddPageArgs request(url, base::Time::Now(), context_id, nav_entry_id,
-                             GURL(), RedirectList(), ui::PAGE_TRANSITION_TYPED,
-                             false, SOURCE_BROWSED, false, true);
+                             /*local_navigation_id=*/absl::nullopt, GURL(),
+                             RedirectList(), ui::PAGE_TRANSITION_TYPED, false,
+                             SOURCE_BROWSED, false, true);
   backend_->AddPage(request);
 
   VisitVector visits;
@@ -1902,8 +1916,9 @@ TEST_F(HistoryBackendTest, SetBrowsingTopicsAllowed) {
   int nav_entry_id = 1;
 
   HistoryAddPageArgs request(url, base::Time::Now(), context_id, nav_entry_id,
-                             GURL(), RedirectList(), ui::PAGE_TRANSITION_TYPED,
-                             false, SOURCE_BROWSED, false, true);
+                             /*local_navigation_id=*/absl::nullopt, GURL(),
+                             RedirectList(), ui::PAGE_TRANSITION_TYPED, false,
+                             SOURCE_BROWSED, false, true);
   backend_->AddPage(request);
 
   VisitVector visits;
@@ -1950,8 +1965,9 @@ TEST_F(HistoryBackendTest, AddContentModelAnnotations) {
   int nav_entry_id = 1;
 
   HistoryAddPageArgs request(url, base::Time::Now(), context_id, nav_entry_id,
-                             GURL(), RedirectList(), ui::PAGE_TRANSITION_TYPED,
-                             false, SOURCE_BROWSED, false, true);
+                             /*local_navigation_id=*/absl::nullopt, GURL(),
+                             RedirectList(), ui::PAGE_TRANSITION_TYPED, false,
+                             SOURCE_BROWSED, false, true);
   backend_->AddPage(request);
 
   VisitVector visits;
@@ -2032,8 +2048,9 @@ TEST_F(HistoryBackendTest, AddRelatedSearches) {
   int nav_entry_id = 1;
 
   HistoryAddPageArgs request(url, base::Time::Now(), context_id, nav_entry_id,
-                             GURL(), RedirectList(), ui::PAGE_TRANSITION_TYPED,
-                             false, SOURCE_BROWSED, false, true);
+                             /*local_navigation_id=*/absl::nullopt, GURL(),
+                             RedirectList(), ui::PAGE_TRANSITION_TYPED, false,
+                             SOURCE_BROWSED, false, true);
   backend_->AddPage(request);
 
   VisitVector visits;
@@ -2091,8 +2108,9 @@ TEST_F(HistoryBackendTest, AddSearchMetadata) {
   int nav_entry_id = 1;
 
   HistoryAddPageArgs request(url, base::Time::Now(), context_id, nav_entry_id,
-                             GURL(), RedirectList(), ui::PAGE_TRANSITION_TYPED,
-                             false, SOURCE_BROWSED, false, true);
+                             /*local_navigation_id=*/absl::nullopt, GURL(),
+                             RedirectList(), ui::PAGE_TRANSITION_TYPED, false,
+                             SOURCE_BROWSED, false, true);
   backend_->AddPage(request);
 
   VisitVector visits;
@@ -2154,8 +2172,9 @@ TEST_F(HistoryBackendTest, AddPageMetadata) {
   int nav_entry_id = 1;
 
   HistoryAddPageArgs request(url, base::Time::Now(), context_id, nav_entry_id,
-                             GURL(), RedirectList(), ui::PAGE_TRANSITION_TYPED,
-                             false, SOURCE_BROWSED, false, true);
+                             /*local_navigation_id=*/absl::nullopt, GURL(),
+                             RedirectList(), ui::PAGE_TRANSITION_TYPED, false,
+                             SOURCE_BROWSED, false, true);
   backend_->AddPage(request);
 
   VisitVector visits;
@@ -2214,8 +2233,9 @@ TEST_F(HistoryBackendTest, SetHasUrlKeyedImage) {
   int nav_entry_id = 1;
 
   HistoryAddPageArgs request(url, base::Time::Now(), context_id, nav_entry_id,
-                             GURL(), RedirectList(), ui::PAGE_TRANSITION_TYPED,
-                             false, SOURCE_BROWSED, false, true);
+                             /*local_navigation_id=*/absl::nullopt, GURL(),
+                             RedirectList(), ui::PAGE_TRANSITION_TYPED, false,
+                             SOURCE_BROWSED, false, true);
   backend_->AddPage(request);
 
   VisitVector visits;
@@ -2258,8 +2278,9 @@ TEST_F(HistoryBackendTest, MixedContentAnnotationsRequestTypes) {
   int nav_entry_id = 1;
 
   HistoryAddPageArgs request(url, base::Time::Now(), context_id, nav_entry_id,
-                             GURL(), RedirectList(), ui::PAGE_TRANSITION_TYPED,
-                             false, SOURCE_BROWSED, false, true);
+                             /*local_navigation_id=*/absl::nullopt, GURL(),
+                             RedirectList(), ui::PAGE_TRANSITION_TYPED, false,
+                             SOURCE_BROWSED, false, true);
   backend_->AddPage(request);
 
   VisitVector visits;
@@ -2558,7 +2579,7 @@ TEST_F(HistoryBackendTest, RecentRedirectsForClientRedirects) {
 
   // Page A is browsed by user and server redirects to B.
   HistoryAddPageArgs request(
-      client_redirect_url, base::Time::Now(), 0, 0, GURL(),
+      client_redirect_url, base::Time::Now(), 0, 0, absl::nullopt, GURL(),
       /*redirects=*/{server_redirect_url, client_redirect_url},
       ui::PAGE_TRANSITION_TYPED, false, SOURCE_BROWSED, false, true);
   backend_->AddPage(request);
@@ -3533,9 +3554,9 @@ TEST_F(HistoryBackendTest, ClientRedirectScoring) {
   const GURL redirected_url("https://foo.com");
 
   // Initial typed page visit, with no server redirects.
-  HistoryAddPageArgs request(typed_url, base::Time::Now(), 0, 0, GURL(), {},
-                             ui::PAGE_TRANSITION_TYPED, false, SOURCE_BROWSED,
-                             false, true);
+  HistoryAddPageArgs request(typed_url, base::Time::Now(), 0, 0, absl::nullopt,
+                             GURL(), {}, ui::PAGE_TRANSITION_TYPED, false,
+                             SOURCE_BROWSED, false, true);
   backend_->AddPage(request);
 
   // Client redirect to HTTPS (non-user initiated).
@@ -3919,7 +3940,8 @@ TEST_F(HistoryBackendTest, ExpireVisitDeletes) {
   const ContextID context_id = 0x1;
   const int navigation_entry_id = 2;
   HistoryAddPageArgs request(
-      url, base::Time::Now(), context_id, navigation_entry_id, GURL(), {},
+      url, base::Time::Now(), context_id, navigation_entry_id,
+      /*local_navigation_id=*/absl::nullopt, GURL(), {},
       ui::PAGE_TRANSITION_TYPED, false, SOURCE_BROWSED, false, true);
   backend_->AddPage(request);
   URLRow url_row;
@@ -3959,8 +3981,9 @@ TEST_F(HistoryBackendTest, AddPageWithContextAnnotations) {
   context_annotations.response_code = 200;
   HistoryAddPageArgs request(
       url, visit_time, /*context_id=*/0,
-      /*nav_entry_id=*/0, /*referrer=*/GURL(), RedirectList(),
-      ui::PAGE_TRANSITION_TYPED, /*hidden=*/false, SOURCE_BROWSED,
+      /*nav_entry_id=*/0, /*local_navigation_id=*/absl::nullopt,
+      /*referrer=*/GURL(), RedirectList(), ui::PAGE_TRANSITION_TYPED,
+      /*hidden=*/false, SOURCE_BROWSED,
       /*did_replace_entry=*/false, /*consider_for_ntp_most_visited=*/true,
       /*title=*/absl::nullopt, /*opener=*/absl::nullopt,
       /*bookmark_id=*/absl::nullopt, context_annotations);
@@ -5401,12 +5424,14 @@ TEST_F(HistoryBackendTest, InternalAndExternalReferrer) {
   // There's a regular visit to `internal_referrer`.
   backend_->AddPage(HistoryAddPageArgs(
       internal_referrer, base::Time::Now(), context_id, nav_entry_id,
+      /*local_navigation_id=*/absl::nullopt,
       /*referrer=*/GURL(), RedirectList(), ui::PAGE_TRANSITION_LINK, false,
       SOURCE_BROWSED, false, true));
   // There's another visit (in the same context) to `url_with_internal_referrer`
   // which has `internal_referrer` as its referrer URL.
   backend_->AddPage(HistoryAddPageArgs(
       url_with_internal_referrer, base::Time::Now(), context_id, nav_entry_id,
+      /*local_navigation_id=*/absl::nullopt,
       /*referrer=*/internal_referrer, RedirectList(), ui::PAGE_TRANSITION_LINK,
       false, SOURCE_BROWSED, false, true));
 
@@ -5415,6 +5440,7 @@ TEST_F(HistoryBackendTest, InternalAndExternalReferrer) {
   // not correspond to any actual visit.
   backend_->AddPage(HistoryAddPageArgs(
       url_with_external_referrer, base::Time::Now(), context_id, nav_entry_id,
+      /*local_navigation_id=*/absl::nullopt,
       /*referrer=*/external_referrer, RedirectList(), ui::PAGE_TRANSITION_LINK,
       false, SOURCE_BROWSED, false, true));
 

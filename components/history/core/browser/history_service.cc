@@ -119,10 +119,12 @@ class HistoryService::BackendDelegate : public HistoryBackend::Delegate {
   }
 
   void NotifyURLVisited(const URLRow& url_row,
-                        const VisitRow& visit_row) override {
+                        const VisitRow& visit_row,
+                        absl::optional<int64_t> local_navigation_id) override {
     service_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&HistoryService::NotifyURLVisited,
-                                  history_service_, url_row, visit_row));
+        FROM_HERE,
+        base::BindOnce(&HistoryService::NotifyURLVisited, history_service_,
+                       url_row, visit_row, local_navigation_id));
   }
 
   void NotifyURLsModified(const URLRows& changed_urls) override {
@@ -568,7 +570,8 @@ void HistoryService::AddPage(const GURL& url,
                              bool did_replace_entry) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   AddPage(HistoryAddPageArgs(
-      url, time, context_id, nav_entry_id, referrer, redirects, transition,
+      url, time, context_id, nav_entry_id,
+      /*local_navigation_id=*/absl::nullopt, referrer, redirects, transition,
       !ui::PageTransitionIsMainFrame(transition), visit_source,
       did_replace_entry, /*consider_for_ntp_most_visited=*/true));
 }
@@ -579,6 +582,7 @@ void HistoryService::AddPage(const GURL& url,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   AddPage(HistoryAddPageArgs(
       url, time, /*context_id=*/0, /*nav_entry_id=*/0,
+      /*local_navigation_id=*/absl::nullopt,
       /*referrer=*/GURL(), RedirectList(), ui::PAGE_TRANSITION_LINK,
       /*hidden=*/false, visit_source,
       /*did_replace_entry=*/false, /*consider_for_ntp_most_visited=*/true));
@@ -1653,11 +1657,16 @@ void HistoryService::OnDBLoaded() {
   NotifyHistoryServiceLoaded();
 }
 
-void HistoryService::NotifyURLVisited(const URLRow& url_row,
-                                      const VisitRow& new_visit) {
+void HistoryService::NotifyURLVisited(
+    const URLRow& url_row,
+    const VisitRow& new_visit,
+    absl::optional<int64_t> local_navigation_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  for (HistoryServiceObserver& observer : observers_)
+  for (HistoryServiceObserver& observer : observers_) {
     observer.OnURLVisited(this, url_row, new_visit);
+    observer.OnURLVisitedWithNavigationId(this, url_row, new_visit,
+                                          local_navigation_id);
+  }
 }
 
 void HistoryService::NotifyURLsModified(const URLRows& changed_urls) {

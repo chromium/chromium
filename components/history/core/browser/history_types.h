@@ -1143,7 +1143,7 @@ struct HistoryAddPageArgs {
   // The default constructor is equivalent to:
   //
   //   HistoryAddPageArgs(
-  //       GURL(), base::Time(), nullptr, 0, GURL(),
+  //       GURL(), base::Time(), nullptr, 0, absl::nullopt, GURL(),
   //       RedirectList(), ui::PAGE_TRANSITION_LINK,
   //       false, SOURCE_BROWSED, false, true,
   //       absl::nullopt, absl::nullopt, absl::nullopt)
@@ -1152,6 +1152,7 @@ struct HistoryAddPageArgs {
                      base::Time time,
                      ContextID context_id,
                      int nav_entry_id,
+                     absl::optional<int64_t> local_navigation_id,
                      const GURL& referrer,
                      const RedirectList& redirects,
                      ui::PageTransition transition,
@@ -1171,6 +1172,7 @@ struct HistoryAddPageArgs {
   base::Time time;
   ContextID context_id;
   int nav_entry_id;
+  absl::optional<int64_t> local_navigation_id;
   GURL referrer;
   RedirectList redirects;
   ui::PageTransition transition;

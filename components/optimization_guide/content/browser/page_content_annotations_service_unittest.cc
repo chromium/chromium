@@ -168,13 +168,15 @@ class PageContentAnnotationsServiceTest : public testing::Test {
   void VisitURL(const GURL& url,
                 const std::u16string& title,
                 history::VisitID visit_id,
+                absl::optional<int64_t> local_navigation_id,
                 bool is_synced_visit = false) {
     history::URLRow url_row(url);
     url_row.set_title(title);
     history::VisitRow new_visit;
     new_visit.visit_id = visit_id;
     new_visit.originator_cache_guid = is_synced_visit ? "otherdevice" : "";
-    service_->OnURLVisited(history_service_.get(), url_row, new_visit);
+    service_->OnURLVisitedWithNavigationId(history_service_.get(), url_row,
+                                           new_visit, local_navigation_id);
   }
 
   FakeOptimizationGuideDecider* optimization_guide_decider() {
@@ -203,6 +205,7 @@ TEST_F(PageContentAnnotationsServiceTest, ObserveLocalVisitNonSearch) {
   // Should not call history service at all.
 
   VisitURL(GURL("https://example.com"), u"test", visit_id,
+           /*local_navigation_id=*/1,
            /*is_synced_visit=*/false);
 }
 
@@ -215,6 +218,7 @@ TEST_F(PageContentAnnotationsServiceTest, ObserveSyncedVisitsNonSearch) {
 #endif
 
   VisitURL(GURL("https://example.com"), u"test", visit_id,
+           /*local_navigation_id=*/1,
            /*is_synced_visit=*/true);
 }
 
@@ -226,7 +230,7 @@ TEST_F(PageContentAnnotationsServiceTest, ObserveLocalVisitsSearch) {
   // Should not send for annotation.
 
   VisitURL(GURL("https://default-engine.com/search?q=test#frag"), u"Test Page",
-           visit_id,
+           visit_id, /*local_navigation_id=*/1,
            /*is_synced_visit=*/false);
 }
 
@@ -241,7 +245,7 @@ TEST_F(PageContentAnnotationsServiceTest, ObserveSyncedVisitsSearch) {
 #endif
 
   VisitURL(GURL("https://default-engine.com/search?q=test#frag"), u"Test Page",
-           visit_id,
+           visit_id, /*local_navigation_id=*/1,
            /*is_synced_visit=*/true);
 }
 
@@ -266,13 +270,15 @@ TEST_F(PageContentAnnotationsServiceRemotePageMetadataTest,
 
 TEST_F(PageContentAnnotationsServiceRemotePageMetadataTest,
        DoesNotPersistIfServerHasNoData) {
-  VisitURL(GURL("http://www.nohints.com"), u"sometitle", 13);
+  VisitURL(GURL("http://www.nohints.com"), u"sometitle", 13,
+           /*local_navigation_id=*/1);
 }
 
 TEST_F(PageContentAnnotationsServiceRemotePageMetadataTest,
        DoesNotPersistIfServerReturnsWrongMetadata) {
   // Navigate.
-  VisitURL(GURL("http://wrongmetadata.com"), u"sometitle", 13);
+  VisitURL(GURL("http://wrongmetadata.com"), u"sometitle", 13,
+           /*local_navigation_id=*/1);
 }
 
 TEST_F(PageContentAnnotationsServiceRemotePageMetadataTest,
@@ -281,7 +287,8 @@ TEST_F(PageContentAnnotationsServiceRemotePageMetadataTest,
               AddPageMetadataForVisit("alternative title", 13));
 
   // Navigate.
-  VisitURL(GURL("http://hasmetadata.com"), u"sometitle", 13);
+  VisitURL(GURL("http://hasmetadata.com"), u"sometitle", 13,
+           /*local_navigation_id=*/1);
 }
 
 class PageContentAnnotationsServiceSalientImageMetadataTest
@@ -307,13 +314,15 @@ TEST_F(PageContentAnnotationsServiceSalientImageMetadataTest,
 TEST_F(PageContentAnnotationsServiceSalientImageMetadataTest,
        DoesNotPersistIfServerHasNoData) {
   // Navigate.
-  VisitURL(GURL("http://www.nohints.com"), u"sometitle", 13);
+  VisitURL(GURL("http://www.nohints.com"), u"sometitle", 13,
+           /*local_navigation_id=*/1);
 }
 
 TEST_F(PageContentAnnotationsServiceSalientImageMetadataTest,
        DoesNotPersistIfServerReturnsWrongMetadata) {
   // Navigate.
-  VisitURL(GURL("http://wrongmetadata.com"), u"sometitle", 13);
+  VisitURL(GURL("http://wrongmetadata.com"), u"sometitle", 13,
+           /*local_navigation_id=*/1);
 }
 
 TEST_F(PageContentAnnotationsServiceSalientImageMetadataTest,
@@ -321,7 +330,8 @@ TEST_F(PageContentAnnotationsServiceSalientImageMetadataTest,
   EXPECT_CALL(*history_service_, SetHasUrlKeyedImageForVisit(true, 13));
 
   // Navigate.
-  VisitURL(GURL("http://hasimageurl.com"), u"sometitle", 13);
+  VisitURL(GURL("http://hasimageurl.com"), u"sometitle", 13,
+           /*local_navigation_id=*/1);
 }
 
 }  // namespace optimization_guide

@@ -169,9 +169,11 @@ class PageContentAnnotationsService : public KeyedService,
       EntityMetadataRetrievedCallback callback) override;
 
   // history::HistoryServiceObserver:
-  void OnURLVisited(history::HistoryService* history_service,
-                    const history::URLRow& url_row,
-                    const history::VisitRow& visit_row) override;
+  void OnURLVisitedWithNavigationId(
+      history::HistoryService* history_service,
+      const history::URLRow& url_row,
+      const history::VisitRow& visit_row,
+      absl::optional<int64_t> local_navigation_id) override;
 
   // Overrides the PageContentAnnotator for testing. See
   // test_page_content_annotator.h for an implementation designed for testing.

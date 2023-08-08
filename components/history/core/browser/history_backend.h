@@ -162,8 +162,10 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
 
     // Notify HistoryService that the user is visiting a URL. The event will
     // be forwarded to the HistoryServiceObservers in the correct thread.
-    virtual void NotifyURLVisited(const URLRow& url_row,
-                                  const VisitRow& visit_row) = 0;
+    virtual void NotifyURLVisited(
+        const URLRow& url_row,
+        const VisitRow& visit_row,
+        absl::optional<int64_t> local_navigation_id) = 0;
 
     // Notify HistoryService that some URLs have been modified. The event will
     // be forwarded to the HistoryServiceObservers in the correct thread.
@@ -846,6 +848,7 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
       bool should_increment_typed_count,
       VisitID opener_visit,
       bool consider_for_ntp_most_visited,
+      absl::optional<int64_t> local_navigation_id = absl::nullopt,
       absl::optional<std::u16string> title = absl::nullopt,
       absl::optional<base::TimeDelta> visit_duration = absl::nullopt,
       absl::optional<std::string> originator_cache_guid = absl::nullopt,
@@ -975,7 +978,8 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   void NotifyFaviconsChanged(const std::set<GURL>& page_urls,
                              const GURL& icon_url) override;
   void NotifyURLVisited(const URLRow& url_row,
-                        const VisitRow& visit_row) override;
+                        const VisitRow& visit_row,
+                        absl::optional<int64_t> local_navigation_id) override;
   void NotifyURLsModified(const URLRows& changed_urls,
                           bool is_from_expiration) override;
   void NotifyURLsDeleted(DeletionInfo deletion_info) override;

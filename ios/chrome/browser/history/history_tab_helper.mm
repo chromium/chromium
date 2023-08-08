@@ -150,8 +150,8 @@ history::HistoryAddPageArgs HistoryTabHelper::CreateHistoryAddPageArgs(
 
   return history::HistoryAddPageArgs(
       url, last_committed_item->GetTimestamp(), GetContextID(),
-      last_committed_item->GetUniqueID(), referrer_url, redirects, transition,
-      hidden, history::SOURCE_BROWSED,
+      last_committed_item->GetUniqueID(), navigation_context->GetNavigationId(),
+      referrer_url, redirects, transition, hidden, history::SOURCE_BROWSED,
       /*did_replace_entry=*/false, consider_for_ntp_most_visited,
       navigation_context->IsSameDocument() ? GetPageTitle(*last_committed_item)
                                            : absl::nullopt,

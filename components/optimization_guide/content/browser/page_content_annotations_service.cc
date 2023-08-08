@@ -665,15 +665,19 @@ void PageContentAnnotationsService::GetMetadataForEntityId(
 #endif
 }
 
-void PageContentAnnotationsService::OnURLVisited(
+void PageContentAnnotationsService::OnURLVisitedWithNavigationId(
     history::HistoryService* history_service,
     const history::URLRow& url_row,
-    const history::VisitRow& visit_row) {
+    const history::VisitRow& visit_row,
+    absl::optional<int64_t> local_navigation_id) {
   DCHECK_EQ(history_service, history_service_);
 
   // By default, annotate the title.
   HistoryVisit history_visit(visit_row.visit_id);
   history_visit.text_to_annotate = base::UTF16ToUTF8(url_row.title());
+  if (local_navigation_id) {
+    history_visit.navigation_id = local_navigation_id.value();
+  }
 
   if (template_url_service_) {
     auto search_metadata =
