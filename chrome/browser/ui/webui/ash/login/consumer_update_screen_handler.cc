@@ -38,6 +38,8 @@ void ConsumerUpdateScreenHandler::DeclareLocalizedValues(
                IDS_CONSUMER_UPDATE_SKIP_BUTTON);
   builder->Add("consumerUpdateScreenCellularTitle",
                IDS_CONSUMER_UPDATE_CELLULAR_TITLE);
+  builder->Add("consumerUpdateScreenCellularSubtitle",
+               IDS_CONSUMER_UPDATE_OVER_CELLULAR_PROMPT_MESSAGE);
   builder->Add("consumerUpdateScreenInProgressTitle",
                IDS_CONSUMER_UPDATE_PROGRESS_TITLE);
   builder->Add("consumerUpdateScreenInProgressSubtitle",
