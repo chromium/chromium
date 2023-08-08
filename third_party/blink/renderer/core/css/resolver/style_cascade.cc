@@ -1071,7 +1071,20 @@ const CSSValue* StyleCascade::ResolvePendingSubstitution(
     }
   }
 
-  NOTREACHED();
+  // Useful for debugging crashes.
+  StringBuilder builder;
+  builder.Append(property.GetPropertyName());
+  builder.Append(":");
+  for (unsigned i = 0; i < parsed_properties_count; ++i) {
+    const CSSProperty& longhand = CSSProperty::Get(parsed_properties[i].Id());
+    builder.Append(" ");
+    builder.Append(longhand.GetPropertyName());
+  }
+  builder.Append(" (from ");
+  builder.Append(value.CustomCSSText());
+  builder.Append(")");
+
+  NOTREACHED() << builder.ToString();
   return cssvalue::CSSUnsetValue::Create();
 }
 
