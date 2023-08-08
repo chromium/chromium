@@ -91,6 +91,13 @@ class AlertIndicatorButton : public views::ImageButton,
   friend class TabTest;
   class FadeAnimationDelegate;
 
+  // Returns a non-continuous Animation that performs a fade-in or fade-out
+  // appropriate for the given |alert_state|.  This is used by the tab alert
+  // indicator to alert the user that recording, tab capture, or audio playback
+  // has started/stopped.
+  std::unique_ptr<gfx::Animation> CreateTabAlertIndicatorFadeAnimation(
+      absl::optional<TabAlertState> alert_state);
+
   // Returns the tab (parent view) of this AlertIndicatorButton.
   Tab* GetTab();
 
@@ -107,6 +114,14 @@ class AlertIndicatorButton : public views::ImageButton,
   std::unique_ptr<gfx::AnimationDelegate> fade_animation_delegate_;
   std::unique_ptr<gfx::Animation> fade_animation_;
   absl::optional<TabAlertState> showing_alert_state_;
+
+  // The time when the alert indicator is displayed when a camera and/or a
+  // microphone are captured.
+  base::Time camera_mic_indicator_start_time_;
+  // Duration of the fade-out animation to verify it in unit tests. Despite
+  // `fade_animation_` being properly initialized, in tests, it does not show
+  // the correct duration.
+  base::TimeDelta fadeout_animation_duration_for_testing_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_ALERT_INDICATOR_BUTTON_H_

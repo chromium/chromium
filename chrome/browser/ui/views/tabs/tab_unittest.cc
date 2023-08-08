@@ -11,6 +11,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
@@ -28,6 +29,7 @@
 #include "chrome/browser/ui/views/tabs/tab_style_views.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/views/chrome_views_test_base.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -267,6 +269,15 @@ class AlertIndicatorButtonTest : public ChromeViewsTestBase {
   bool showing_icon(Tab* tab) const { return tab->showing_icon_; }
   bool showing_alert_indicator(Tab* tab) const {
     return tab->showing_alert_indicator_;
+  }
+
+  base::Time get_camera_mic_indicator_start_time(Tab* tab) {
+    return tab->alert_indicator_button_->camera_mic_indicator_start_time_;
+  }
+
+  base::TimeDelta get_fadeout_animation_duration_for_testing_(Tab* tab) {
+    return tab->alert_indicator_button_
+        ->fadeout_animation_duration_for_testing_;
   }
 
   void StopAnimation(Tab* tab) {
@@ -696,4 +707,75 @@ TEST_F(AlertIndicatorButtonTest, ShowsAndHidesAlertIndicator) {
   EXPECT_TRUE(showing_icon(media_tab));
   EXPECT_FALSE(showing_alert_indicator(media_tab));
   EXPECT_FALSE(showing_close_button(media_tab));
+}
+
+// This test verifies that the alert indicator for a camera and/or mic is
+// visible at least for 5 seconds even if a camera/mic stopped being used.
+TEST_F(AlertIndicatorButtonTest, MinHoldDurationTest) {
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitAndEnableFeature(
+      content_settings::features::kImprovedSemanticsActivityIndicators);
+
+  controller_->AddTab(0, TabActive::kActive);
+  Tab* media_tab = tab_strip_->tab_at(0);
+
+  EXPECT_FALSE(showing_alert_indicator(media_tab));
+
+  EXPECT_EQ(base::Time(), get_camera_mic_indicator_start_time(media_tab));
+
+  TabRendererData start_media;
+  start_media.alert_state = {TabAlertState::MEDIA_RECORDING};
+  start_media.pinned = media_tab->data().pinned;
+  media_tab->SetData(std::move(start_media));
+
+  // When audio starts, pinned inactive tab shows indicator.
+  EXPECT_TRUE(showing_alert_indicator(media_tab));
+  EXPECT_NE(base::Time(), get_camera_mic_indicator_start_time(media_tab));
+
+  TabRendererData stop_media;
+  stop_media.pinned = media_tab->data().pinned;
+  media_tab->SetData(std::move(stop_media));
+
+  // The indicator's start time should be reset.
+  EXPECT_EQ(base::Time(), get_camera_mic_indicator_start_time(media_tab));
+  EXPECT_EQ(base::Seconds(5),
+            get_fadeout_animation_duration_for_testing_(media_tab));
+}
+
+// This test verifies that the alert indicator for a camera and/or mic has
+// 1-second fadeout animation after it was visible for longer than 5 seconds.
+TEST_F(AlertIndicatorButtonTest, 1SecondFadeoutAnimationTest) {
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitAndEnableFeature(
+      content_settings::features::kImprovedSemanticsActivityIndicators);
+
+  controller_->AddTab(0, TabActive::kActive);
+  Tab* media_tab = tab_strip_->tab_at(0);
+
+  EXPECT_FALSE(showing_alert_indicator(media_tab));
+
+  EXPECT_EQ(base::Time(), get_camera_mic_indicator_start_time(media_tab));
+
+  TabRendererData start_media;
+  start_media.alert_state = {TabAlertState::MEDIA_RECORDING};
+  start_media.pinned = media_tab->data().pinned;
+  media_tab->SetData(std::move(start_media));
+
+  // When audio starts, pinned inactive tab shows indicator.
+  EXPECT_TRUE(showing_alert_indicator(media_tab));
+  EXPECT_NE(base::Time(), get_camera_mic_indicator_start_time(media_tab));
+
+  // After the indicator was displayed for 6 seconds, it should have 1-second
+  // fadeout animation.
+  task_environment()->AdvanceClock(base::Seconds(6));
+  base::RunLoop().RunUntilIdle();
+
+  TabRendererData stop_media;
+  stop_media.pinned = media_tab->data().pinned;
+  media_tab->SetData(std::move(stop_media));
+
+  // The indicator's start time should be reset.
+  EXPECT_EQ(base::Time(), get_camera_mic_indicator_start_time(media_tab));
+  EXPECT_EQ(base::Seconds(1),
+            get_fadeout_animation_duration_for_testing_(media_tab));
 }
