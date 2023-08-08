@@ -578,24 +578,12 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_hyperlink(
     // DumpWithoutCrashing() was removed to reduced crash report noise.
     // Interestingly, the top url reported was always called "empty".
     // Sample report for iframe issue: go/crash/93d7fce137a15ef0
-#if defined(AX_FAIL_FAST_BUILD)  // Fail in debug/sanitizers/clusterfuzz.
-    bool do_report = true;
-#else
-    std::srand(std::time(nullptr));             // Use current time as seed.
-    bool do_report = (std::rand() % 100 == 0);  // Roughly 1% of the time.
-#endif
-    if (do_report) {
-      LONG num_hyperlinks = -1;
-      get_nHyperlinks(&num_hyperlinks);
-      std::ostringstream error;
-      ui::AXTreeManager* manager = GetDelegate()->GetTreeManager();
-      LOG(FATAL) << "Hyperlink error:\n index=" << index
-                 << " nHyperLinks=" << hypertext_.hyperlinks.size()
-                 << " hyperlink_id=" << id
-                 << "\nparent=" << GetDelegate()->node()
-                 << "\nframe=" << manager->GetRoot()
-                 << "\nroot=" << manager->GetRootManager()->GetRoot();
-    }
+    ui::AXTreeManager* manager = GetDelegate()->GetTreeManager();
+    LOG(FATAL) << "Hyperlink error:\n index=" << index
+               << " nHyperLinks=" << hypertext_.hyperlinks.size()
+               << " hyperlink_id=" << id << "\nparent=" << GetDelegate()->node()
+               << "\nframe=" << manager->GetRoot()
+               << "\nroot=" << manager->GetRootManager()->GetRoot();
     return E_FAIL;
   }
   auto* link = static_cast<BrowserAccessibilityComWin*>(node);

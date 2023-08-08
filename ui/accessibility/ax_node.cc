@@ -1247,6 +1247,12 @@ std::ostream& operator<<(std::ostream& stream, const AXNode& node) {
       stream << it.get()->data().id;
     }
   }
+  if (node.IsLeaf()) {
+    stream << " is_leaf";
+  }
+  if (node.IsChildOfLeaf()) {
+    stream << " is_child_of_leaf";
+  }
   return stream;
 }
 
@@ -1964,8 +1970,9 @@ bool AXNode::IsChildOfLeaf() const {
   // TODO(nektar): Cache this state in `AXComputedNodeData`.
   for (const AXNode* ancestor = GetUnignoredParent(); ancestor;
        ancestor = ancestor->GetUnignoredParent()) {
-    if (ancestor->IsLeaf())
+    if (ancestor->IsLeaf()) {
       return true;
+    }
   }
   return false;
 }

@@ -230,9 +230,7 @@ AXNode* AXTreeManager::GetLastFocusedNode() {
 }
 
 AXTreeManager::~AXTreeManager() {
-  AXNode* parent = nullptr;
-  if (connected_to_parent_tree_node_)
-    parent = GetParentNodeFromParentTree();
+  AXNode* parent = GetParentNodeFromParentTree();
 
   // Fire any events that need to be fired when tree nodes get deleted. For
   // example, events that fire every time "OnSubtreeWillBeDeleted" is called.
@@ -251,6 +249,7 @@ AXTreeManager::~AXTreeManager() {
     }
   }
 
+  // TODO(accessibility) Consider using AXTreeManagerBase::DetachChildTree().
   ParentConnectionChanged(parent);
 }
 
@@ -371,7 +370,19 @@ void AXTreeManager::ParentConnectionChanged(AXNode* parent) {
   }
   connected_to_parent_tree_node_ = true;
 
+  // Ensure all the correct callbacks are used for a tree update --
+  // OnAtomicUpdateFinished() is particularly important for updating the
+  // parent's hypertext.
+  // ScopedTreeUpdateInProgressStateSetter is not necessary here because there
+  // is no point where the tree structure is incomplete such that calling AXNode
+  // parent/child navigation methods is dangerous.
   parent->tree()->NotifyChildTreeConnectionChanged(parent, ax_tree_.get());
+  for (AXTreeObserver& observer : parent->tree()->observers()) {
+    observer.OnAtomicUpdateFinished(
+        parent->tree(), /* root_changed= */ false,
+        {{parent, AXTreeObserver::ChangeType::NODE_CHANGED}});
+  }
+
   UpdateAttributesOnParent(parent);
   AXTreeManager* parent_manager = parent->GetManager();
   parent = parent_manager->RetargetForEvents(

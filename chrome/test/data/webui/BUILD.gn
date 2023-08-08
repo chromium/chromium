@@ -38,6 +38,7 @@ source_set("browser_tests") {
     "history/history_ui_browsertest.cc",
     "js/js_browsertest.cc",
     "metrics_internals/metrics_internals_browsertest.cc",
+    "new_tab_page/new_tab_page_a11y_browsertest.cc",
     "new_tab_page/new_tab_page_browsertest.cc",
     "password_manager/password_manager_browsertest.cc",
     "privacy_sandbox/privacy_sandbox_dialog_browsertest.cc",

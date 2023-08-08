@@ -3470,6 +3470,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, DisplayLockingAllCommitted) {
   RunDisplayLockingTest(FILE_PATH_LITERAL("all-committed.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityDisplayLockedSelectMenu) {
+  RunDisplayLockingTest(FILE_PATH_LITERAL("selectmenu.html"));
+}
+
 //
 // Regression tests. These don't test a specific web platform feature,
 // they test a specific web page that crashed or had some bad behavior

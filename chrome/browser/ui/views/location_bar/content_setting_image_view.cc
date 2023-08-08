@@ -148,17 +148,13 @@ void ContentSettingImageView::Update() {
   UpdateImage();
   SetVisible(true);
   GetViewAccessibility().OverrideIsIgnored(false);
+  // An alert role is required in order to fire the alert event.
+  SetAccessibleRole(ax::mojom::Role::kAlert);
 
   if (content_setting_image_model_->ShouldNotifyAccessibility(web_contents)) {
     auto name = l10n_util::GetStringUTF16(
         content_setting_image_model_->AccessibilityAnnouncementStringId());
     SetAccessibleName(name);
-#if BUILDFLAG(IS_MAC)
-    NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
-#else
-    GetViewAccessibility().AnnounceText(l10n_util::GetStringFUTF16(
-        IDS_CONCAT_TWO_STRINGS_WITH_COMMA, name, GetAccessibleDescription()));
-#endif
     NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
     content_setting_image_model_->AccessibilityWasNotified(web_contents);
   }
