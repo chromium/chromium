@@ -126,6 +126,7 @@ class AudioListener final : public ScriptWrappable,
   void SetUpVector(const gfx::Vector3dF&, ExceptionState&);
 
   scoped_refptr<AudioListenerHandler> handler_;
+  scoped_refptr<DeferredTaskHandler> deferred_task_handler_;
 
   Member<AudioParam> position_x_;
   Member<AudioParam> position_y_;

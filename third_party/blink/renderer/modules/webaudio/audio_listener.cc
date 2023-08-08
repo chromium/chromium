@@ -53,6 +53,7 @@ constexpr double kDefaultUpZValue = 0.0;
 
 AudioListener::AudioListener(BaseAudioContext& context)
     : InspectorHelperMixin(context.GraphTracer(), context.Uuid()),
+      deferred_task_handler_(&context.GetDeferredTaskHandler()),
       position_x_(AudioParam::Create(
           context,
           Uuid(),
@@ -114,11 +115,17 @@ AudioListener::AudioListener(BaseAudioContext& context)
       position_x_->Handler(), position_y_->Handler(), position_z_->Handler(),
       forward_x_->Handler(), forward_y_->Handler(), forward_z_->Handler(),
       up_x_->Handler(), up_y_->Handler(), up_z_->Handler(),
-      context.GetDeferredTaskHandler().RenderQuantumFrames()));
+      deferred_task_handler_->RenderQuantumFrames()));
 }
 
 AudioListener::~AudioListener() {
-  handler_ = nullptr;
+  // The graph lock is required to destroy the handler because the
+  // AudioParamHandlers in `handler_` assumes the lock in its destruction.
+  {
+    DeferredTaskHandler::GraphAutoLocker locker(*deferred_task_handler_);
+    handler_ = nullptr;
+  }
+
   hrtf_database_loader_ = nullptr;
 }
 
