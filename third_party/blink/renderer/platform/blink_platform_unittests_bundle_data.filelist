@@ -7,6 +7,8 @@
 ../../web_tests/external/wpt/css/css-fonts/resources/COLR-palettes-test-font.ttf
 ../../web_tests/external/wpt/fonts/AD.woff
 ../../web_tests/external/wpt/fonts/Ahem.ttf
+../../web_tests/external/wpt/fonts/CanvasTest-ascent256.ttf
+../../web_tests/external/wpt/fonts/CanvasTest-descent0.ttf
 ../../web_tests/external/wpt/fonts/CanvasTest.ttf
 ../../web_tests/external/wpt/fonts/GentiumPlus-R.woff
 ../../web_tests/external/wpt/fonts/Revalia.woff
