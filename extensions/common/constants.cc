@@ -4,6 +4,8 @@
 
 #include "extensions/common/constants.h"
 
+#include "base/containers/contains.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
@@ -125,64 +127,16 @@ const int kUnknownWindowId = -1;
 const int kCurrentWindowId = -2;
 
 #if BUILDFLAG(IS_CHROMEOS)
-// The extension id for the built-in component extension.
-const char kChromeVoxExtensionId[] = "mndnfokpggljbaajbnioimlmbfngpief";
-
-#else
-// The extension id for the web store extension.
-const char kChromeVoxExtensionId[] = "kgejglhpjiefppelpmljglcjbhoiplfn";
-#endif
-
-const char kPdfExtensionId[] = "mhjfbmdgcfjbbpaeojofohoefgiehjai";
-const char kQuickOfficeComponentExtensionId[] =
-    "bpmcpldpdmajfigpchkicefoigmkfalc";
-const char kQuickOfficeInternalExtensionId[] =
-    "ehibbfinohgbchlgdbfpikodjaojhccn";
-const char kQuickOfficeExtensionId[] = "gbkeegbaiigmenfmjfclcdgdpimamgkj";
-const char kMimeHandlerPrivateTestExtensionId[] =
-    "oickdpebdnfbgkcaoklfcdhjniefkcji";
-const char kFilesManagerAppId[] = "hhaomjibdihmijegdhdafkllkbggdgoj";
-const char kCalculatorAppId[] = "joodangkbfjnajiiifokapkpmhfnpleo";
-const char kCalendarDemoAppId[] = "fpgfohogebplgnamlafljlcidjedbdeb";
-const char kGmailAppId[] = "pjkljhegncpnkpknbcohdijeoejaedia";
-const char kGoogleDocsDemoAppId[] = "chdaoodbokekbiiphekbfjdmiodccljl";
-const char kGoogleDocsPwaAppId[] = "cepkndkdlbllfhpfhledabdcdbidehkd";
-const char kGoogleDriveAppId[] = "apdfllckaahabafndbhieahigkjlhalf";
-const char kGoogleMeetPwaAppId[] = "dkainijpcknoofiakgccliajhbmlbhji";
-const char kGoogleSheetsDemoAppId[] = "nifkmgcdokhkjghdlgflonppnefddien";
-const char kGoogleSheetsPwaAppId[] = "hcgjdbbnhkmopplfiibmdgghhdhbiidh";
-const char kGoogleSlidesDemoAppId[] = "hdmobeajeoanbanmdlabnbnlopepchip";
-const char kGoogleKeepAppId[] = "hmjkmjkepdijhoojdojkdfohbdgmmhki";
-const char kYoutubeAppId[] = "blpcfgokakmgnkcojhhkbfbldkacnbeo";
-const char kYoutubePwaAppId[] = "agimnkijcaahngcdmfeangaknmldooml";
-const char kSpotifyAppId[] = "pjibgclleladliembfgfagdaldikeohf";
-const char kBeFunkyAppId[] = "fjoomcalbeohjbnlcneddljemclcekeg";
-const char kClipchampAppId[] = "pfepfhbcedkbjdkanpimmmdjfgoddhkg";
-const char kGeForceNowAppId[] = "egmafekfmcnknbdlbfbhafbllplmjlhn";
-const char kZoomAppId[] = "jldpdkiafafcejhceeincjmlkmibemgj";
-const char kSumoAppId[] = "mfknjekfflbfdchhohffdpkokgfbfmdc";
-const char kAdobeSparkAppId[] = "magefboookdoiehjohjmbjmkepngibhm";
-const char kGoogleDocsAppId[] = "aohghmighlieiainnegkcijnfilokake";
-const char kGoogleSheetsAppId[] = "felcaaldnbdncclmgdcncolpebgiejap";
-const char kGoogleSlidesAppId[] = "aapocclcgogkmnckokdopfmhonfmgoek";
-
-#if BUILDFLAG(IS_CHROMEOS)
 // TODO(michaelpg): Deprecate old app IDs before adding new ones to avoid bloat.
-const char kHighlightsAppId[] = "lpmakjfjcconjeehbidjclhdlpjmfjjj";
-const char kScreensaverAppId[] = "mnoijifedipmbjaoekhadjcijipaijjc";
+constexpr char kStagingAttractLoopAppId[] = "aefaeciooibphdopnjjmgjdlckdcfbae";
+constexpr char kStagingHighlightsAppId[] = "glochkamldfopmdlegmcnjmgkopfiplb";
 
-const char kStagingAttractLoopAppId[] = "aefaeciooibphdopnjjmgjdlckdcfbae";
-const char kStagingHighlightsAppId[] = "glochkamldfopmdlegmcnjmgkopfiplb";
-// 2022 Attract Loop App ID
-const char kNewAttractLoopAppId[] = "igilkdghcdehjdcpndaodgnjgdggiemm";
-// 2022 Highlights App ID
-const char kNewHighlightsAppId[] = "enchmnkoajljphdmahljlebfmpkkbnkj";
 // Specialized demo apps for blazey devices
-const char kBlazeyAttractLoopAppId[] = "lceekekmpiieklnpocjfahfakahjkhha";
-const char kBlazeyHighlightsAppId[] = "jbpnmbcpgemgfblnjfhnmlffhkofekmf";
+constexpr char kBlazeyAttractLoopAppId[] = "lceekekmpiieklnpocjfahfakahjkhha";
+constexpr char kBlazeyHighlightsAppId[] = "jbpnmbcpgemgfblnjfhnmlffhkofekmf";
 
 bool IsDemoModeChromeApp(base::StringPiece extension_id) {
-  static const char* const kDemoModeApps[] = {
+  constexpr auto kDemoModeApps = base::MakeFixedFlatSet<base::StringPiece>({
       // clang-format off
       kHighlightsAppId,
       kScreensaverAppId,
@@ -193,60 +147,52 @@ bool IsDemoModeChromeApp(base::StringPiece extension_id) {
       kBlazeyAttractLoopAppId,
       kBlazeyHighlightsAppId
       // clang-format on
-  };
-  for (const char* id : kDemoModeApps) {
-    if (extension_id == id)
-      return true;
-  }
-  return false;
+  });
+  return base::Contains(kDemoModeApps, extension_id);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-const char kSigninProfileTestExtensionId[] = "mecfefiddjlmabpeilblgegnbioikfmp";
-const char kGuestModeTestExtensionId[] = "behllobkkfkfnphdnhnkndlbkcpglgmj";
-const char kChromeOSXKB[] = "jkghodnilhceideoidjikpgommlajknk";
 
 bool IsSystemUIApp(base::StringPiece extension_id) {
-  static const char* const kApps[] = {
+  constexpr auto kApps = base::MakeFixedFlatSet<base::StringPiece>({
       // clang-format off
       kChromeVoxExtensionId,
       kFilesManagerAppId,
       kHighlightsAppId,
       kScreensaverAppId,
       // clang-format on
-  };
-  for (const char* id : kApps) {
-    if (extension_id == id)
-      return true;
-  }
-  return false;
+  });
+  return base::Contains(kApps, extension_id);
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-bool IsQuickOfficeExtension(const std::string& id) {
-  return id == kQuickOfficeComponentExtensionId ||
-         id == kQuickOfficeInternalExtensionId || id == kQuickOfficeExtensionId;
+bool IsQuickOfficeExtension(base::StringPiece extension_id) {
+  constexpr auto kQuickOfficeIds = base::MakeFixedFlatSet<base::StringPiece>({
+      // clang-format off
+      kQuickOfficeComponentExtensionId,
+      kQuickOfficeInternalExtensionId,
+      kQuickOfficeExtensionId,
+      // clang-format on
+  });
+  return base::Contains(kQuickOfficeIds, extension_id);
 }
 
 // TODO(https://crbug.com/1257275): remove after default app migration is done.
-bool IsPreinstalledAppId(const std::string& app_id) {
-  return app_id == kGmailAppId || app_id == kGoogleDocsAppId ||
-         app_id == kGoogleDriveAppId || app_id == kGoogleSheetsAppId ||
-         app_id == kGoogleSlidesAppId || app_id == kYoutubeAppId;
+bool IsPreinstalledAppId(base::StringPiece app_id) {
+  constexpr auto kPreinstalledApps = base::MakeFixedFlatSet<base::StringPiece>({
+      // clang-format off
+      kGmailAppId,
+      kGoogleDocsAppId,
+      kGoogleDriveAppId,
+      kGoogleSheetsAppId,
+      kGoogleSlidesAppId,
+      kYoutubeAppId,
+      // clang-format on
+  });
+  return base::Contains(kPreinstalledApps, app_id);
 }
-
-const char kProdHangoutsExtensionId[] = "nckgahadagoaajjgafhacjanaoiihapd";
-const char* const kHangoutsExtensionIds[6] = {
-    kProdHangoutsExtensionId,
-    "ljclpkphhpbpinifbeabbhlfddcpfdde",  // Debug.
-    "ppleadejekpmccmnpjdimmlfljlkdfej",  // Alpha.
-    "eggnbpckecmjlblplehfpjjdhhidfdoj",  // Beta.
-    "jfjjdfefebklmdbmenmlehlopoocnoeh",  // Packaged App Debug.
-    "knipolnnllmklapflnccelgolnpehhpl"   // Packaged App Prod.
-    // Keep in sync with _api_features.json and _manifest_features.json.
-};
 
 // Error returned when scripting of a page is denied due to enterprise policy.
 const char kPolicyBlockedScripting[] =

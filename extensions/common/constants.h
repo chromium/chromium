@@ -245,104 +245,112 @@ constexpr ExtensionIcons EXTENSION_ICON_BITTY = 16;
 constexpr ExtensionIcons EXTENSION_ICON_INVALID = 0;
 
 // The extension id of the ChromeVox extension.
-EXTENSIONS_EXPORT extern const char kChromeVoxExtensionId[];
+constexpr char kChromeVoxExtensionId[] =
+#if BUILDFLAG(IS_CHROMEOS)
+    // The extension id for the built-in component extension.
+    "mndnfokpggljbaajbnioimlmbfngpief";
+#else
+    // The extension id for the web store extension.
+    "kgejglhpjiefppelpmljglcjbhoiplfn";
+#endif
 
 // The extension id of the PDF extension.
-EXTENSIONS_EXPORT extern const char kPdfExtensionId[];
+constexpr char kPdfExtensionId[] = "mhjfbmdgcfjbbpaeojofohoefgiehjai";
 
 // The extension id of the Office Viewer component extension.
-EXTENSIONS_EXPORT extern const char kQuickOfficeComponentExtensionId[];
+constexpr char kQuickOfficeComponentExtensionId[] =
+    "bpmcpldpdmajfigpchkicefoigmkfalc";
 
 // The extension id of the Office Viewer extension on the internal webstore.
-EXTENSIONS_EXPORT extern const char kQuickOfficeInternalExtensionId[];
+constexpr char kQuickOfficeInternalExtensionId[] =
+    "ehibbfinohgbchlgdbfpikodjaojhccn";
 
 // The extension id of the Office Viewer extension.
-EXTENSIONS_EXPORT extern const char kQuickOfficeExtensionId[];
+constexpr char kQuickOfficeExtensionId[] = "gbkeegbaiigmenfmjfclcdgdpimamgkj";
 
 // The extension id used for testing mimeHandlerPrivate.
-EXTENSIONS_EXPORT extern const char kMimeHandlerPrivateTestExtensionId[];
+constexpr char kMimeHandlerPrivateTestExtensionId[] =
+    "oickdpebdnfbgkcaoklfcdhjniefkcji";
 
 // The extension id of the Files Manager application.
-EXTENSIONS_EXPORT extern const char kFilesManagerAppId[];
+constexpr char kFilesManagerAppId[] = "hhaomjibdihmijegdhdafkllkbggdgoj";
 
 // The extension id of the Calculator application.
-EXTENSIONS_EXPORT extern const char kCalculatorAppId[];
+constexpr char kCalculatorAppId[] = "joodangkbfjnajiiifokapkpmhfnpleo";
 
 // The extension id of the demo Calendar application.
-EXTENSIONS_EXPORT extern const char kCalendarDemoAppId[];
+constexpr char kCalendarDemoAppId[] = "fpgfohogebplgnamlafljlcidjedbdeb";
 
 // The extension id of the GMail application.
-EXTENSIONS_EXPORT extern const char kGmailAppId[];
+constexpr char kGmailAppId[] = "pjkljhegncpnkpknbcohdijeoejaedia";
 
 // The extension id of the demo Google Docs application.
-EXTENSIONS_EXPORT extern const char kGoogleDocsDemoAppId[];
+constexpr char kGoogleDocsDemoAppId[] = "chdaoodbokekbiiphekbfjdmiodccljl";
 
 // The extension id of the Google Docs PWA.
-EXTENSIONS_EXPORT extern const char kGoogleDocsPwaAppId[];
+constexpr char kGoogleDocsPwaAppId[] = "cepkndkdlbllfhpfhledabdcdbidehkd";
 
 // The extension id of the Google Drive application.
-EXTENSIONS_EXPORT extern const char kGoogleDriveAppId[];
+constexpr char kGoogleDriveAppId[] = "apdfllckaahabafndbhieahigkjlhalf";
 
 // The extension id of the Google Meet PWA.
-EXTENSIONS_EXPORT extern const char kGoogleMeetPwaAppId[];
+constexpr char kGoogleMeetPwaAppId[] = "dkainijpcknoofiakgccliajhbmlbhji";
 
 // The extension id of the demo Google Sheets application.
-EXTENSIONS_EXPORT extern const char kGoogleSheetsDemoAppId[];
+constexpr char kGoogleSheetsDemoAppId[] = "nifkmgcdokhkjghdlgflonppnefddien";
 
 // The extension id of the Google Sheets PWA.
-EXTENSIONS_EXPORT extern const char kGoogleSheetsPwaAppId[];
+constexpr char kGoogleSheetsPwaAppId[] = "hcgjdbbnhkmopplfiibmdgghhdhbiidh";
 
 // The extension id of the demo Google Slides application.
-EXTENSIONS_EXPORT extern const char kGoogleSlidesDemoAppId[];
+constexpr char kGoogleSlidesDemoAppId[] = "hdmobeajeoanbanmdlabnbnlopepchip";
 
 // The extension id of the Google Keep application.
-EXTENSIONS_EXPORT extern const char kGoogleKeepAppId[];
+constexpr char kGoogleKeepAppId[] = "hmjkmjkepdijhoojdojkdfohbdgmmhki";
 
 // The extension id of the Youtube application.
-EXTENSIONS_EXPORT extern const char kYoutubeAppId[];
+constexpr char kYoutubeAppId[] = "blpcfgokakmgnkcojhhkbfbldkacnbeo";
 
 // The extension id of the Youtube PWA.
-EXTENSIONS_EXPORT extern const char kYoutubePwaAppId[];
+constexpr char kYoutubePwaAppId[] = "agimnkijcaahngcdmfeangaknmldooml";
 
 // The extension id of the Spotify PWA.
-EXTENSIONS_EXPORT extern const char kSpotifyAppId[];
+constexpr char kSpotifyAppId[] = "pjibgclleladliembfgfagdaldikeohf";
 
 // The extension id of the BeFunky PWA.
-EXTENSIONS_EXPORT extern const char kBeFunkyAppId[];
+constexpr char kBeFunkyAppId[] = "fjoomcalbeohjbnlcneddljemclcekeg";
 
 // The extension id of the Clipchamp PWA.
-EXTENSIONS_EXPORT extern const char kClipchampAppId[];
+constexpr char kClipchampAppId[] = "pfepfhbcedkbjdkanpimmmdjfgoddhkg";
 
 // The extension id of the GeForce NOW PWA.
-EXTENSIONS_EXPORT extern const char kGeForceNowAppId[];
+constexpr char kGeForceNowAppId[] = "egmafekfmcnknbdlbfbhafbllplmjlhn";
 
 // The extension id of the Zoom PWA.
-EXTENSIONS_EXPORT extern const char kZoomAppId[];
+constexpr char kZoomAppId[] = "jldpdkiafafcejhceeincjmlkmibemgj";
 
 // The extension id of the Sumo PWA.
-EXTENSIONS_EXPORT extern const char kSumoAppId[];
+constexpr char kSumoAppId[] = "mfknjekfflbfdchhohffdpkokgfbfmdc";
 
 // The extension id of the Sumo PWA.
-EXTENSIONS_EXPORT extern const char kAdobeSparkAppId[];
+constexpr char kAdobeSparkAppId[] = "magefboookdoiehjohjmbjmkepngibhm";
 
 // The extension id of the Google Docs application.
-EXTENSIONS_EXPORT extern const char kGoogleDocsAppId[];
+constexpr char kGoogleDocsAppId[] = "aohghmighlieiainnegkcijnfilokake";
 
 // The extension id of the Google Sheets application.
-EXTENSIONS_EXPORT extern const char kGoogleSheetsAppId[];
+constexpr char kGoogleSheetsAppId[] = "felcaaldnbdncclmgdcncolpebgiejap";
 
 // The extension id of the Google Slides application.
-EXTENSIONS_EXPORT extern const char kGoogleSlidesAppId[];
+constexpr char kGoogleSlidesAppId[] = "aapocclcgogkmnckokdopfmhonfmgoek";
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // The id of the testing extension allowed in the signin profile.
-EXTENSIONS_EXPORT extern const char kSigninProfileTestExtensionId[];
+constexpr char kSigninProfileTestExtensionId[] =
+    "mecfefiddjlmabpeilblgegnbioikfmp";
 
 // The id of the testing extension allowed in guest mode.
-EXTENSIONS_EXPORT extern const char kGuestModeTestExtensionId[];
-
-// The id of the Chrome OS XKB extension.
-EXTENSIONS_EXPORT extern const char kChromeOSXKB[];
+constexpr char kGuestModeTestExtensionId[] = "behllobkkfkfnphdnhnkndlbkcpglgmj";
 
 // Returns true if this app is part of the "system UI". Generally this is UI
 // that that on other operating systems would be considered part of the OS,
@@ -352,16 +360,16 @@ EXTENSIONS_EXPORT bool IsSystemUIApp(base::StringPiece extension_id);
 
 #if BUILDFLAG(IS_CHROMEOS)
 // The extension id of the default Demo Mode Highlights app.
-EXTENSIONS_EXPORT extern const char kHighlightsAppId[];
+constexpr char kHighlightsAppId[] = "lpmakjfjcconjeehbidjclhdlpjmfjjj";
 
 // The extension id of the default Demo Mode screensaver app.
-EXTENSIONS_EXPORT extern const char kScreensaverAppId[];
+constexpr char kScreensaverAppId[] = "mnoijifedipmbjaoekhadjcijipaijjc";
 
 // The extension id of 2022 Demo Mode Highlights app.
-EXTENSIONS_EXPORT extern const char kNewAttractLoopAppId[];
+constexpr char kNewAttractLoopAppId[] = "igilkdghcdehjdcpndaodgnjgdggiemm";
 
 // The extension id of 2022 Demo Mode screensaver app.
-EXTENSIONS_EXPORT extern const char kNewHighlightsAppId[];
+constexpr char kNewHighlightsAppId[] = "enchmnkoajljphdmahljlebfmpkkbnkj";
 
 // Returns true if this app is one of Demo Mode Chrome Apps, including
 // attract loop and highlights apps.
@@ -369,7 +377,7 @@ EXTENSIONS_EXPORT bool IsDemoModeChromeApp(base::StringPiece extension_id);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 // True if the id matches any of the QuickOffice extension ids.
-EXTENSIONS_EXPORT bool IsQuickOfficeExtension(const std::string& id);
+EXTENSIONS_EXPORT bool IsQuickOfficeExtension(base::StringPiece extension_id);
 
 // Returns if the app is managed by extension default apps. This is a hardcoded
 // list of default apps for Windows/Linux/MacOS platforms that should be
@@ -377,13 +385,7 @@ EXTENSIONS_EXPORT bool IsQuickOfficeExtension(const std::string& id);
 // TODO(https://crbug.com/1257275): remove after deault app migration is done.
 // This function is copied from
 // chrome/browser/web_applications/extension_status_utils.h.
-EXTENSIONS_EXPORT bool IsPreinstalledAppId(const std::string& app_id);
-
-// The extension id for the production version of Hangouts.
-EXTENSIONS_EXPORT extern const char kProdHangoutsExtensionId[];
-
-// Extension ids used by Hangouts.
-EXTENSIONS_EXPORT extern const char* const kHangoutsExtensionIds[6];
+EXTENSIONS_EXPORT bool IsPreinstalledAppId(base::StringPiece app_id);
 
 // Error message when enterprise policy blocks scripting of webpage.
 EXTENSIONS_EXPORT extern const char kPolicyBlockedScripting[];
