@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "base/gtest_prod_util.h"
+#include "base/types/pass_key.h"
 #include "base/unguessable_token.h"
 #include "net/base/net_export.h"
 #include "net/base/schemeful_site.h"
@@ -32,29 +32,6 @@ namespace net {
 // the context on which they were made.
 class NET_EXPORT NetworkIsolationKey {
  public:
-  class SerializationPasskey {
-   private:
-    friend struct mojo::StructTraits<
-        network::mojom::NonEmptyNetworkIsolationKeyDataView,
-        NetworkIsolationKey>;
-    SerializationPasskey() = default;
-    ~SerializationPasskey() = default;
-  };
-
-  class CookiePartitionKeyPasskey {
-   private:
-    friend class CookiePartitionKey;
-    CookiePartitionKeyPasskey() = default;
-    ~CookiePartitionKeyPasskey() = default;
-  };
-
-  class NetworkAnonymizationKeyPasskey {
-   private:
-    friend class NetworkAnonymizationKey;
-    NetworkAnonymizationKeyPasskey() = default;
-    ~NetworkAnonymizationKeyPasskey() = default;
-  };
-
   // Full constructor.  When a request is initiated by the top frame, it must
   // also populate the |frame_site| parameter when calling this constructor.
   NetworkIsolationKey(
@@ -212,23 +189,28 @@ class NET_EXPORT NetworkIsolationKey {
   // When serializing a NIK for sending via mojo we want to access the frame
   // site directly. We don't want to expose this broadly, though, hence the
   // passkey.
+  using SerializationPassKey = base::PassKey<struct mojo::StructTraits<
+      network::mojom::NonEmptyNetworkIsolationKeyDataView,
+      NetworkIsolationKey>>;
   const absl::optional<SchemefulSite>& GetFrameSiteForSerialization(
-      SerializationPasskey) const {
+      SerializationPassKey) const {
     CHECK(!IsEmpty());
     return frame_site_;
   }
   // We also need to access the frame site directly when constructing
   // CookiePartitionKey for nonced partitions. We also use a passkey for this
   // case.
+  using CookiePartitionKeyPassKey = base::PassKey<CookiePartitionKey>;
   const absl::optional<SchemefulSite>& GetFrameSiteForCookiePartitionKey(
-      CookiePartitionKeyPasskey) const {
+      CookiePartitionKeyPassKey) const {
     CHECK(!IsEmpty());
     return frame_site_;
   }
   // Same as above but for constructing a `NetworkAnonymizationKey()` from this
   // NIK.
+  using NetworkAnonymizationKeyPassKey = base::PassKey<NetworkAnonymizationKey>;
   const absl::optional<SchemefulSite>& GetFrameSiteForNetworkAnonymizationKey(
-      NetworkAnonymizationKeyPasskey) const {
+      NetworkAnonymizationKeyPassKey) const {
     CHECK(!IsEmpty());
     return frame_site_;
   }

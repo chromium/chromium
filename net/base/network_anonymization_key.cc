@@ -57,7 +57,7 @@ NetworkAnonymizationKey NetworkAnonymizationKey::CreateFromNetworkIsolationKey(
       network_isolation_key.GetTopFrameSite().value(),
       network_isolation_key
           .GetFrameSiteForNetworkAnonymizationKey(
-              NetworkIsolationKey::NetworkAnonymizationKeyPasskey())
+              NetworkIsolationKey::NetworkAnonymizationKeyPassKey())
           .value(),
       network_isolation_key.GetNonce());
 }
