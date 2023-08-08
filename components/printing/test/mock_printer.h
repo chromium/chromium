@@ -25,24 +25,18 @@
 // a smart pointer of this object (i.e. scoped_refptr<>).
 class MockPrinterPage : public base::RefCounted<MockPrinterPage> {
  public:
-  MockPrinterPage(const void* source_data,
-                  uint32_t source_size,
-                  const printing::Image& image);
+  explicit MockPrinterPage(const printing::Image& image);
   MockPrinterPage(const MockPrinterPage&) = delete;
   MockPrinterPage& operator=(const MockPrinterPage&) = delete;
 
   int width() const { return image_.size().width(); }
   int height() const { return image_.size().height(); }
-  const uint8_t* source_data() const { return source_data_.get(); }
-  uint32_t source_size() const { return source_size_; }
   const printing::Image& image() const { return image_; }
 
  private:
   friend class base::RefCounted<MockPrinterPage>;
   virtual ~MockPrinterPage();
 
-  uint32_t source_size_;
-  std::unique_ptr<uint8_t[]> source_data_;
   printing::Image image_;
 };
 
@@ -98,8 +92,6 @@ class MockPrinter {
   int GetWidth(unsigned int page) const;
   int GetHeight(unsigned int page) const;
   bool GetBitmapChecksum(unsigned int page, std::string* checksum) const;
-  bool SaveSource(unsigned int page, const base::FilePath& filepath) const;
-  bool SaveBitmap(unsigned int page, const base::FilePath& filepath) const;
 
  private:
   // Sets `document_cookie_` based on `use_invalid_settings_`.

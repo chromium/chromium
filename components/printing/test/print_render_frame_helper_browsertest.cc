@@ -996,8 +996,6 @@ const TestPageData kTestPages[] = {
 // Same for printing via PDF on Windows.
 #if BUILDFLAG(IS_APPLE)
 TEST_F(MAYBE_PrintRenderFrameHelperTest, PrintLayoutTest) {
-  bool baseline = false;
-
   EXPECT_TRUE(printer());
   for (size_t i = 0; i < std::size(kTestPages); ++i) {
     // Load an HTML page and print it.
@@ -1032,18 +1030,6 @@ TEST_F(MAYBE_PrintRenderFrameHelperTest, PrintLayoutTest) {
     EXPECT_TRUE(printer()->GetBitmapChecksum(0, &bitmap_actual));
     if (kTestPages[i].checksum)
       EXPECT_EQ(kTestPages[i].checksum, bitmap_actual);
-
-    if (baseline) {
-      // Save the source data and the bitmap data into temporary files to
-      // create base-line results.
-      base::FilePath source_path;
-      base::CreateTemporaryFile(&source_path);
-      printer()->SaveSource(0, source_path);
-
-      base::FilePath bitmap_path;
-      base::CreateTemporaryFile(&bitmap_path);
-      printer()->SaveBitmap(0, bitmap_path);
-    }
   }
 }
 #endif  // BUILDFLAG(IS_APPLE)
