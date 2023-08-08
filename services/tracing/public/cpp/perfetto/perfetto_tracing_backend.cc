@@ -32,6 +32,8 @@
 #include "third_party/perfetto/include/perfetto/ext/tracing/core/tracing_service.h"
 #include "third_party/perfetto/include/perfetto/tracing/core/trace_config.h"
 
+using ShmemMode = perfetto::SharedMemoryArbiter::ShmemMode;
+
 namespace tracing {
 namespace {
 
@@ -264,8 +266,8 @@ class ProducerEndpoint : public perfetto::ProducerEndpoint,
       shared_memory_ =
           std::make_unique<ChromeBaseSharedMemory>(shmem_size_bytes_);
       shared_memory_arbiter_ = perfetto::SharedMemoryArbiter::CreateInstance(
-          shared_memory_.get(), shmem_page_size_bytes_, this,
-          producer_task_runner);
+          shared_memory_.get(), shmem_page_size_bytes_, ShmemMode::kDefault,
+          this, producer_task_runner);
     }
 
     mojo::PendingRemote<mojom::ProducerClient> client_remote;
@@ -653,7 +655,7 @@ PerfettoTracingBackend::ConnectProducer(const ConnectProducerArgs& args) {
   if (args.use_producer_provided_smb) {
     shm = std::make_unique<ChromeBaseSharedMemory>(shmem_size_hint);
     arbiter = perfetto::SharedMemoryArbiter::CreateUnboundInstance(
-        shm.get(), shmem_page_size_hint);
+        shm.get(), shmem_page_size_hint, ShmemMode::kDefault);
   }
 #endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
