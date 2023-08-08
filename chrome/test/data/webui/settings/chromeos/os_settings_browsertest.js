@@ -201,18 +201,30 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
  ['DevicePageCustomizeButtonRow', 'device_page/customize_button_row_test.js'],
  [
    'DevicePageCustomizeMouseButtonsSubpage',
-   'device_page/customize_mouse_buttons_subpage_test.js',
-   {enabled: ['ash::features::kPeripheralCustomization']}
+   'device_page/customize_mouse_buttons_subpage_test.js', {
+     enabled: [
+       'ash::features::kPeripheralCustomization',
+       'ash::features::kInputDeviceSettingsSplit'
+     ]
+   }
  ],
  [
    'DevicePageCustomizePenButtonsSubpage',
-   'device_page/customize_pen_buttons_subpage_test.js',
-   {enabled: ['ash::features::kPeripheralCustomization']}
+   'device_page/customize_pen_buttons_subpage_test.js', {
+     enabled: [
+       'ash::features::kPeripheralCustomization',
+       'ash::features::kInputDeviceSettingsSplit'
+     ]
+   }
  ],
  [
    'DevicePageCustomizeTabletButtonsSubpage',
-   'device_page/customize_tablet_buttons_subpage_test.js',
-   {enabled: ['ash::features::kPeripheralCustomization']}
+   'device_page/customize_tablet_buttons_subpage_test.js', {
+     enabled: [
+       'ash::features::kPeripheralCustomization',
+       'ash::features::kInputDeviceSettingsSplit'
+     ]
+   }
  ],
  [
    'DevicePageFakeCrosAudioConfig', 'device_page/fake_cros_audio_config_test.js'

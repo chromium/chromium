@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/ash/system_tray_client_impl.h"
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "base/strings/strcat.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "chrome/browser/ui/chrome_pages.h"
@@ -65,6 +66,8 @@ TEST_F(SystemTrayClientImplTest, ShowAccountSettings) {
 }
 
 TEST_F(SystemTrayClientImplTest, ShowTouchpadSettings) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(ash::features::kInputDeviceSettingsSplit);
   base::UserActionTester user_action_tester;
   client_impl_->ShowTouchpadSettings();
   EXPECT_EQ(settings_window_manager_->last_url(),
@@ -74,6 +77,8 @@ TEST_F(SystemTrayClientImplTest, ShowTouchpadSettings) {
 }
 
 TEST_F(SystemTrayClientImplTest, ShowRemapKeysSettings) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(ash::features::kInputDeviceSettingsSplit);
   base::UserActionTester user_action_tester;
   client_impl_->ShowRemapKeysSubpage(/*device_id=*/1);
   EXPECT_EQ(settings_window_manager_->last_url(),
