@@ -3,7 +3,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# THIS MUST BE KEPT IN SYNC WITH ../../android_toolchain_canary/3pp/install.sh.
+# THIS MUST BE KEPT IN SYNC WITH ../../android_toolchain/3pp/install.sh.
 
 set -e
 set -x
