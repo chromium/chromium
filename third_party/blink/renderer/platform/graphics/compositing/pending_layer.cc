@@ -179,17 +179,23 @@ bool PendingLayer::Matches(const PendingLayer& old_pending_layer) const {
 // merged_area - (home_area + guest_area) <= kMergeSparsityAreaTolerance
 static constexpr float kMergeSparsityAreaTolerance = 10000;
 
-bool PendingLayer::Merge(const PendingLayer& guest,
-                         LCDTextPreference lcd_text_preference,
-                         IsCompositedScrollFunction is_composited_scroll) {
-  absl::optional<PropertyTreeState> merged_state =
+bool PendingLayer::CanMerge(
+    const PendingLayer& guest,
+    LCDTextPreference lcd_text_preference,
+    IsCompositedScrollFunction is_composited_scroll,
+    gfx::RectF& merged_bounds,
+    PropertyTreeState& merged_state,
+    gfx::RectF& merged_rect_known_to_be_opaque,
+    bool& merged_text_known_to_be_on_opaque_background) const {
+  absl::optional<PropertyTreeState> optional_merged_state =
       CanUpcastWith(guest, guest.GetPropertyTreeState(), is_composited_scroll);
-  if (!merged_state) {
+  if (!optional_merged_state) {
     return false;
   }
 
+  merged_state = *optional_merged_state;
   const absl::optional<gfx::RectF>& merged_visibility_limit =
-      GeometryMapper::VisibilityLimit(*merged_state);
+      GeometryMapper::VisibilityLimit(merged_state);
 
   // If the current bounds and known-to-be-opaque area already cover the entire
   // visible area of the merged state, and the current state is already equal
@@ -200,31 +206,25 @@ bool PendingLayer::Merge(const PendingLayer& guest,
       *merged_visibility_limit == bounds_ &&
       merged_state == property_tree_state_ &&
       rect_known_to_be_opaque_ == bounds_) {
-    chunks_.Merge(guest.Chunks());
-    draws_content_ |= guest.draws_content_;
-    text_known_to_be_on_opaque_background_ = true;
-    has_text_ |= guest.has_text_;
-    is_solid_color_ = false;
-    change_of_decomposited_transforms_ =
-        std::max(ChangeOfDecompositedTransforms(),
-                 guest.ChangeOfDecompositedTransforms());
+    merged_bounds = merged_rect_known_to_be_opaque = bounds_;
+    merged_text_known_to_be_on_opaque_background = true;
     return true;
   }
 
   FloatClipRect new_home_bounds(bounds_);
   GeometryMapper::LocalToAncestorVisualRect(GetPropertyTreeState(),
-                                            *merged_state, new_home_bounds);
+                                            merged_state, new_home_bounds);
   if (merged_visibility_limit) {
     new_home_bounds.Rect().Intersect(*merged_visibility_limit);
   }
   FloatClipRect new_guest_bounds(guest.bounds_);
   GeometryMapper::LocalToAncestorVisualRect(guest.GetPropertyTreeState(),
-                                            *merged_state, new_guest_bounds);
+                                            merged_state, new_guest_bounds);
   if (merged_visibility_limit) {
     new_guest_bounds.Rect().Intersect(*merged_visibility_limit);
   }
 
-  gfx::RectF merged_bounds =
+  merged_bounds =
       gfx::UnionRects(new_home_bounds.Rect(), new_guest_bounds.Rect());
 
   // If guest.has_decomposited_blend_mode_ is true, this function must merge
@@ -235,8 +235,6 @@ bool PendingLayer::Merge(const PendingLayer& guest,
   // - the src and dest layers are unlikely to be far away (sparse),
   // - the blend mode may make the merged layer not opaque,
   // - LCD text will be disabled with exotic blend mode.
-  gfx::RectF merged_rect_known_to_be_opaque;
-  bool merged_text_known_to_be_on_opaque_background = false;
   if (!guest.has_decomposited_blend_mode_) {
     float sum_area = new_home_bounds.Rect().size().GetArea() +
                      new_guest_bounds.Rect().size().GetArea();
@@ -246,9 +244,9 @@ bool PendingLayer::Merge(const PendingLayer& guest,
     }
 
     gfx::RectF home_rect_known_to_be_opaque =
-        MapRectKnownToBeOpaque(*merged_state, new_home_bounds);
+        MapRectKnownToBeOpaque(merged_state, new_home_bounds);
     gfx::RectF guest_rect_known_to_be_opaque =
-        guest.MapRectKnownToBeOpaque(*merged_state, new_guest_bounds);
+        guest.MapRectKnownToBeOpaque(merged_state, new_guest_bounds);
     merged_rect_known_to_be_opaque = gfx::MaximumCoveredRect(
         home_rect_known_to_be_opaque, guest_rect_known_to_be_opaque);
     merged_text_known_to_be_on_opaque_background =
@@ -276,9 +274,31 @@ bool PendingLayer::Merge(const PendingLayer& guest,
     }
   }
 
+  // GeometryMapper::LocalToAncestorVisualRect can introduce floating-point
+  // error to the bounds. Integral bounds are important for reducing
+  // blurriness (see: PendingLayer::LayerOffset) so preserve that here.
+  PreserveNearIntegralBounds(merged_bounds);
+  PreserveNearIntegralBounds(merged_rect_known_to_be_opaque);
+  return true;
+}
+
+bool PendingLayer::Merge(const PendingLayer& guest,
+                         LCDTextPreference lcd_text_preference,
+                         IsCompositedScrollFunction is_composited_scroll) {
+  gfx::RectF merged_bounds;
+  PropertyTreeState merged_state = PropertyTreeState::Uninitialized();
+  gfx::RectF merged_rect_known_to_be_opaque;
+  bool merged_text_known_to_be_on_opaque_background = false;
+
+  if (!CanMerge(guest, lcd_text_preference, is_composited_scroll, merged_bounds,
+                merged_state, merged_rect_known_to_be_opaque,
+                merged_text_known_to_be_on_opaque_background)) {
+    return false;
+  }
+
   chunks_.Merge(guest.Chunks());
   bounds_ = merged_bounds;
-  property_tree_state_ = *merged_state;
+  property_tree_state_ = merged_state;
   draws_content_ |= guest.draws_content_;
   rect_known_to_be_opaque_ = merged_rect_known_to_be_opaque;
   text_known_to_be_on_opaque_background_ =
@@ -287,11 +307,6 @@ bool PendingLayer::Merge(const PendingLayer& guest,
   is_solid_color_ = false;
   change_of_decomposited_transforms_ = std::max(
       ChangeOfDecompositedTransforms(), guest.ChangeOfDecompositedTransforms());
-  // GeometryMapper::LocalToAncestorVisualRect can introduce floating-point
-  // error to the bounds. Integral bounds are important for reducing
-  // blurriness (see: PendingLayer::LayerOffset) so preserve that here.
-  PreserveNearIntegralBounds(bounds_);
-  PreserveNearIntegralBounds(rect_known_to_be_opaque_);
   return true;
 }
 

@@ -167,6 +167,14 @@ class PLATFORM_EXPORT PendingLayer {
       const PropertyTreeState& guest_state,
       IsCompositedScrollFunction is_comosited_scroll) const;
 
+  bool CanMerge(const PendingLayer& guest,
+                LCDTextPreference lcd_text_preference,
+                IsCompositedScrollFunction,
+                gfx::RectF& merged_bounds,
+                PropertyTreeState& merged_state,
+                gfx::RectF& merged_rect_known_to_be_opaque,
+                bool& merged_text_known_to_be_on_opaque_background) const;
+
   gfx::RectF MapRectKnownToBeOpaque(
       const PropertyTreeState& new_state,
       const FloatClipRect& mapped_layer_bounds) const;
