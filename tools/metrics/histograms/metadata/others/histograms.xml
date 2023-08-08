@@ -100,8 +100,7 @@ chromium-metrics-reviews@google.com.
       summary="Highlights app Mobile Gaming detail page"/>
   <variant name="MS365AppsPage"
       summary="Highlights app MS365 Apps detail page"/>
-  <variant name="MSOneDrivePage"
-      summary="Highlights app MSOneDrive detail page"/>
+  <variant name="MSOfficePage" summary="Highlights app MSOffice detail page"/>
   <variant name="NearbySharePage"
       summary="Highlights app Nearby Share detail page"/>
   <variant name="OfflineModePage"

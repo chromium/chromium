@@ -38,7 +38,7 @@ export const DetailsPage = {
   MESSAGING: 'Messaging',
   MOBILE_GAMING: 'MobileGaming',
   MS_365_APPS: 'MS365Apps',
-  MS_ONEDRIVE: 'MSOneDrive',
+  MS_OFFICE: 'MSOffice',
   NEARBY_SHARE: 'NearbyShare',
   OFFLINE_MODE: 'OfflineMode',
   PC_CONSOLE_GAMING: 'PCConsoleGaming',

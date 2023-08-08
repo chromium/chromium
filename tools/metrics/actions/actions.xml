@@ -39481,7 +39481,8 @@ should be able to be added at any place in this file.
   <suffix name="MessagingButton" label="Messaging details page button"/>
   <suffix name="MobileGamingButton" label="Mobile Gaming details page button"/>
   <suffix name="MS365AppsButton" label="MS365 Apps details page button"/>
-  <suffix name="MSOneDrive" label="MSOneDrive details page button"/>
+  <suffix name="MSOfficeButton" label="MSOffice details page button"/>
+  <suffix name="MSOneDrive" label="MSOneDrive details page button (obsolete)"/>
   <suffix name="NearbyShareButton" label="Nearby Share details page button"/>
   <suffix name="OfflineModeButton" label="Offline Mode details page button"/>
   <suffix name="PCConsoleGamingButton"
