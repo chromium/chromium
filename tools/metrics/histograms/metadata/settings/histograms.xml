@@ -499,7 +499,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.PrivacySandbox.PromptHelperEvent"
-    enum="SettingsPrivacySandboxPromptHelperEvent" expires_after="2023-12-01">
+    enum="SettingsPrivacySandboxPromptHelperEvent" expires_after="2024-02-04">
   <owner>sauski@google.com</owner>
   <owner>olesiamarukhno@google.com</owner>
   <owner>kartoffel-core-eng@google.com</owner>

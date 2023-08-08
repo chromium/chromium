@@ -318,7 +318,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cras.HfpBatteryIndicatorSupported"
-    enum="CrasHfpBatteryIndicator" expires_after="2023-12-01">
+    enum="CrasHfpBatteryIndicator" expires_after="2024-02-04">
   <owner>enshuo@chromium.org</owner>
   <owner>chromeos-audio@google.com</owner>
   <summary>
@@ -327,7 +327,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cras.HfpBatteryReport" enum="CrasHfpBatteryIndicator"
-    expires_after="2023-12-01">
+    expires_after="2024-02-04">
   <owner>enshuo@chromium.org</owner>
   <owner>chromeos-audio@google.com</owner>
   <summary>

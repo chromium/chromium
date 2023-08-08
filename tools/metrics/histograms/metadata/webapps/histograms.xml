@@ -62,7 +62,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AppBanners.InstallableStatusCode" enum="InstallableStatusCode"
-    expires_after="2023-12-04">
+    expires_after="2024-02-04">
   <owner>dominickn@chromium.org</owner>
   <owner>pjmclachlan@google.com</owner>
   <summary>
@@ -75,7 +75,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AppBanners.InstallEvent" enum="AppBannersInstallEvent"
-    expires_after="2023-12-04">
+    expires_after="2024-02-04">
   <owner>dominickn@chromium.org</owner>
   <owner>pjmclachlan@google.com</owner>
   <owner>pcovell@google.com</owner>
@@ -223,7 +223,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Webapp.AmbientBadge.Click" enum="InstallAmbientBadgeAppType"
-    expires_after="2023-12-01">
+    expires_after="2024-02-04">
   <owner>eirage@chromium.org</owner>
   <owner>src/chrome/android/webapk/OWNERS</owner>
   <summary>
@@ -235,7 +235,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Webapp.AmbientBadge.Dismiss" enum="InstallAmbientBadgeAppType"
-    expires_after="2023-12-01">
+    expires_after="2024-02-04">
   <owner>eirage@chromium.org</owner>
   <owner>src/chrome/android/webapk/OWNERS</owner>
   <summary>
@@ -247,7 +247,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Webapp.AmbientBadge.Display" enum="InstallAmbientBadgeAppType"
-    expires_after="2023-12-01">
+    expires_after="2024-02-04">
   <owner>eirage@chromium.org</owner>
   <owner>src/chrome/android/webapk/OWNERS</owner>
   <summary>
@@ -259,7 +259,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Webapp.AmbientBadge.Terminate"
-    enum="InstallableAmbientBadgeState" expires_after="2023-12-01">
+    enum="InstallableAmbientBadgeState" expires_after="2024-02-04">
   <owner>eirage@chromium.org</owner>
   <owner>src/chrome/android/webapk/OWNERS</owner>
   <summary>
@@ -492,7 +492,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.Icon.AppsWithEmptyDownloadedIconSizes" units="web apps"
-    expires_after="2023-12-04">
+    expires_after="2024-02-04">
   <owner>alancutter@chromium.org</owner>
   <owner>desktop-pwas-team@google.com</owner>
   <summary>
@@ -514,7 +514,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.Icon.AppsWithEmptyIconFile" units="web apps"
-    expires_after="2023-12-04">
+    expires_after="2024-02-04">
   <owner>alancutter@chromium.org</owner>
   <owner>desktop-pwas-team@google.com</owner>
   <summary>
@@ -535,7 +535,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.Icon.AppsWithGeneratedIconFlag" units="web apps"
-    expires_after="2023-12-04">
+    expires_after="2024-02-04">
   <owner>alancutter@chromium.org</owner>
   <owner>desktop-pwas-team@google.com</owner>
   <summary>
@@ -561,7 +561,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.Icon.AppsWithMissingIconFile" units="web apps"
-    expires_after="2023-12-04">
+    expires_after="2024-02-04">
   <owner>alancutter@chromium.org</owner>
   <owner>desktop-pwas-team@google.com</owner>
   <summary>
@@ -910,7 +910,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.Launcher.LaunchResult"
-    enum="WebAppLauncherLaunchResult" expires_after="2023-12-04">
+    enum="WebAppLauncherLaunchResult" expires_after="2024-02-04">
   <owner>davidbienvenu@chromium.org</owner>
   <owner>jessemckenna@google.com</owner>
   <summary>
@@ -1072,7 +1072,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.Preinstalled.AppToReplaceStillInstalledCount"
-    units="apps" expires_after="2023-12-01">
+    units="apps" expires_after="2024-02-04">
   <owner>alancutter@chromium.org</owner>
   <owner>desktop-pwas-team@google.com</owner>
   <summary>
@@ -1160,7 +1160,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.Preinstalled.ExternalConfigMapAbsentDuringUninstall"
-    units="bool" expires_after="2023-12-01">
+    units="bool" expires_after="2024-02-04">
   <owner>phillis@chromium.org</owner>
   <owner>desktop-pwas-team@google.com</owner>
   <summary>

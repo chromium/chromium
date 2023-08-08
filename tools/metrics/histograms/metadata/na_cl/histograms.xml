@@ -180,7 +180,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NaCl.ModuleUptime.Normal" units="ms"
-    expires_after="2023-12-04">
+    expires_after="2024-02-04">
   <owner>dschuff@chromium.org</owner>
   <owner>fabiansommer@chromium.org</owner>
   <summary>The time a NaCl module ran without crashing, at shutdown.</summary>

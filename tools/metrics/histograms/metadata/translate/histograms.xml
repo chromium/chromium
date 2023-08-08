@@ -130,14 +130,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Translate.CompactInfobar.Event" enum="TranslateCompactUIEvent"
-    expires_after="2023-12-04">
+    expires_after="2024-02-04">
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>Various user actions performed in the translate infobar.</summary>
 </histogram>
 
 <histogram name="Translate.HrefHint.Status" enum="HrefTranslateStatus"
-    expires_after="2023-12-04">
+    expires_after="2024-02-04">
   <owner>sclittle@google.com</owner>
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
@@ -171,7 +171,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Translate.LanguageDetection.LanguageVerification"
-    enum="TranslateLanguageVerification" expires_after="2023-12-04">
+    enum="TranslateLanguageVerification" expires_after="2024-02-04">
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -472,7 +472,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Translate.PartialTranslation.ResponseTime" units="ms"
-    expires_after="2023-12-04">
+    expires_after="2024-02-04">
   <owner>cuianthony@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -483,7 +483,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Translate.PartialTranslation.Selection.CharacterCount"
-    units="characters" expires_after="2023-12-04">
+    units="characters" expires_after="2024-02-04">
   <owner>cuianthony@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -493,7 +493,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Translate.PartialTranslation.SourceLanguage"
-    enum="LocaleCodeISO639" expires_after="2023-12-04">
+    enum="LocaleCodeISO639" expires_after="2024-02-04">
   <owner>cuianthony@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -503,7 +503,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Translate.PartialTranslation.TargetLanguage"
-    enum="LocaleCodeISO639" expires_after="2023-12-04">
+    enum="LocaleCodeISO639" expires_after="2024-02-04">
   <owner>cuianthony@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -524,7 +524,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Translate.PartialTranslation.TranslationStatus"
-    enum="PartialTranslateTranslationStatus" expires_after="2023-12-04">
+    enum="PartialTranslateTranslationStatus" expires_after="2024-02-04">
   <owner>cuianthony@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -582,7 +582,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Translate.Translation.Status" enum="TranslationStatus"
-    expires_after="2023-12-04">
+    expires_after="2024-02-04">
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>

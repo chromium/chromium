@@ -504,7 +504,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.DefaultBrowserFullscreenTailoredPromoAllTabs"
-    enum="IOSDefaultBrowserFullscreenPromoAction" expires_after="2023-12-01">
+    enum="IOSDefaultBrowserFullscreenPromoAction" expires_after="2024-02-04">
   <owner>sebsg@chromium.org</owner>
   <owner>bling-get-set-up@google.com</owner>
   <summary>
@@ -514,7 +514,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.DefaultBrowserFullscreenTailoredPromoMadeForIOS"
-    enum="IOSDefaultBrowserFullscreenPromoAction" expires_after="2023-12-01">
+    enum="IOSDefaultBrowserFullscreenPromoAction" expires_after="2024-02-04">
   <owner>sebsg@chromium.org</owner>
   <owner>bling-get-set-up@google.com</owner>
   <summary>
@@ -524,7 +524,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.DefaultBrowserFullscreenTailoredPromoStaySafe"
-    enum="IOSDefaultBrowserFullscreenPromoAction" expires_after="2023-12-01">
+    enum="IOSDefaultBrowserFullscreenPromoAction" expires_after="2024-02-04">
   <owner>sebsg@chromium.org</owner>
   <owner>bling-get-set-up@google.com</owner>
   <summary>
@@ -534,7 +534,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.DefaultBrowserPromo.NonModal.OnScreenTime" units="ms"
-    expires_after="2023-12-01">
+    expires_after="2024-02-04">
   <owner>sebsg@chromium.org</owner>
   <owner>bling-get-set-up@google.com</owner>
   <summary>
@@ -581,7 +581,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.DefaultBrowserPromo.SetUpList.Action"
-    enum="IOSDefaultBrowserFullscreenPromoAction" expires_after="2023-12-01">
+    enum="IOSDefaultBrowserFullscreenPromoAction" expires_after="2024-02-04">
   <owner>sebsg@chromium.org</owner>
   <owner>scottyoder@google.com</owner>
   <owner>bling-get-set-up@google.com</owner>
@@ -592,7 +592,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.DefaultBrowserPromo.Shown"
-    enum="IOSDefaultBrowserPromoType" expires_after="2023-12-01">
+    enum="IOSDefaultBrowserPromoType" expires_after="2024-02-04">
   <owner>gayane@chromium.org</owner>
   <owner>bling-get-set-up@google.com</owner>
   <summary>The default browser promo type shown to the user.</summary>
@@ -2324,7 +2324,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.SetUpList.Displayed" enum="Boolean"
-    expires_after="2023-12-01">
+    expires_after="2024-02-04">
   <owner>scottyoder@google.com</owner>
   <owner>bling-get-set-up@google.com</owner>
   <summary>
@@ -2334,7 +2334,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.SetUpList.ItemCompleted" enum="IOSSetUpListItemType"
-    expires_after="2023-12-01">
+    expires_after="2024-02-04">
   <owner>scottyoder@google.com</owner>
   <owner>bling-get-set-up@google.com</owner>
   <summary>
@@ -2346,7 +2346,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.SetUpList.ItemDisplayed" enum="IOSSetUpListItemType"
-    expires_after="2023-12-01">
+    expires_after="2024-02-04">
   <owner>scottyoder@google.com</owner>
   <owner>bling-get-set-up@google.com</owner>
   <summary>
@@ -2355,7 +2355,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.SetUpList.ItemSelected" enum="IOSSetUpListItemType"
-    expires_after="2023-12-01">
+    expires_after="2024-02-04">
   <owner>scottyoder@google.com</owner>
   <owner>bling-get-set-up@google.com</owner>
   <summary>
@@ -2980,7 +2980,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.WhatsNew.Shown" enum="WhatsNewType"
-    expires_after="2023-12-01">
+    expires_after="2024-02-04">
   <owner>cheickcisse@google.com</owner>
   <owner>sebsg@google.com</owner>
   <summary>

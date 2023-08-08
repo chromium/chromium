@@ -68,7 +68,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Startup.Android.Cold.FirstPaintOccurredPreForeground"
-    enum="Boolean" expires_after="2023-12-04">
+    enum="Boolean" expires_after="2024-02-04">
   <owner>blundell@chromium.org</owner>
   <owner>yfriedman@chromium.org</owner>
   <summary>
@@ -198,7 +198,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Startup.Android.Cold.TimeToFirstVisibleContent2" units="ms"
-    expires_after="2023-12-04">
+    expires_after="2024-02-04">
   <owner>yfriedman@chromium.org</owner>
   <owner>pasko@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
@@ -212,7 +212,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Startup.Android.Cold.TimeToForegroundSessionStart" units="ms"
-    expires_after="2023-12-04">
+    expires_after="2024-02-04">
   <owner>pasko@chromium.org</owner>
   <owner>mthiesse@chromium.org</owner>
   <summary>

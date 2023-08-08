@@ -125,7 +125,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAudio.AudioContext.Operation"
-    enum="WebAudioContextOperation" expires_after="2023-12-04">
+    enum="WebAudioContextOperation" expires_after="2024-02-04">
   <owner>fdoray@chromium.org</owner>
   <owner>hongchan@chromium.org</owner>
   <summary>

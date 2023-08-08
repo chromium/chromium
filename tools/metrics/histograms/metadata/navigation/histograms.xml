@@ -1753,7 +1753,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Prerender.Experimental.BookmarkBar.PredictionResult"
-    enum="PrerenderPredictionResult" expires_after="2023-12-04">
+    enum="PrerenderPredictionResult" expires_after="2024-02-04">
   <owner>robertlin@chromium.org</owner>
   <owner>toyoshim@chromium.org</owner>
   <owner>chrome-prerendering@google.com</owner>
@@ -1765,7 +1765,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Prerender.Experimental.BookmarkUrlButtonEvent"
-    enum="PreloadBookmarkMetricsEvent" expires_after="2023-12-04">
+    enum="PreloadBookmarkMetricsEvent" expires_after="2024-02-04">
   <owner>robertlin@chromium.org</owner>
   <owner>toyoshim@chromium.org</owner>
   <owner>chrome-prerendering@google.com</owner>

@@ -50,7 +50,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientDownload.CheckDownloadStats"
-    enum="SBClientDownloadCheckDownloadStats" expires_after="2023-12-04">
+    enum="SBClientDownloadCheckDownloadStats" expires_after="2024-02-04">
   <owner>vakh@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <owner>mattm@chromium.org</owner>
@@ -159,7 +159,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientDownload.DownloadRequestDuration" units="ms"
-    expires_after="2023-12-04">
+    expires_after="2024-02-04">
   <owner>vakh@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <owner>mattm@chromium.org</owner>
@@ -702,7 +702,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientPhishing.LocalModelDetectsPhishing"
-    enum="BooleanIsPhishing" expires_after="2023-12-04">
+    enum="BooleanIsPhishing" expires_after="2024-02-04">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -790,7 +790,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientPhishing.PhishingDetectorResult"
-    enum="ClientSidePhishingResult" expires_after="2023-12-04">
+    enum="ClientSidePhishingResult" expires_after="2024-02-04">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -855,7 +855,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientPhishing.ServerModelDetectsPhishing"
-    enum="BooleanIsPhishing" expires_after="2023-12-04">
+    enum="BooleanIsPhishing" expires_after="2024-02-04">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>

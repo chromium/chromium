@@ -488,7 +488,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.DirectComposition.CompositionMode2.VideoOrCanvas"
-    enum="DxgiFramePresentationMode" expires_after="2023-12-04">
+    enum="DxgiFramePresentationMode" expires_after="2024-02-04">
   <owner>sunnyps@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
@@ -1243,7 +1243,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Gpu.Rasterization.Raster.MSAASampleCountLog2" units="count"
-    expires_after="2023-12-04">
+    expires_after="2024-02-04">
   <owner>penghuang@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
@@ -1337,7 +1337,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.SharedImage.FormatPixmapSupport"
-    enum="FormatPixmapSupport" expires_after="2023-12-01">
+    enum="FormatPixmapSupport" expires_after="2024-02-04">
   <owner>vasilyt@chromium.org</owner>
   <owner>hitawala@chromium.org</owner>
   <summary>
@@ -1350,7 +1350,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.SharedImage.IsNewMultiplanarFormat" units="Boolean"
-    expires_after="2023-12-01">
+    expires_after="2024-02-04">
   <owner>hitawala@chromium.org</owner>
   <owner>vasilyt@chromium.org</owner>
   <summary>
@@ -1477,7 +1477,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.Vulkan.ExtMemoryBudgetSupported" units="BooleanSupported"
-    expires_after="2023-11-11">
+    expires_after="2024-02-04">
   <owner>vikassoni@chromium.org</owner>
   <owner>penghuang@chromium.org</owner>
   <owner>vasilyt@chromium.org</owner>
@@ -1637,7 +1637,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.WebGPU.Support" enum="WebGPUSupport"
-    expires_after="2023-12-01">
+    expires_after="2024-02-04">
   <owner>cwallez@google.com</owner>
   <owner>enga@google.com</owner>
   <owner>kainino@google.com</owner>
@@ -1791,7 +1791,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Viz.DelegatedCompositing.Status" enum="DelegatedStatus"
-    expires_after="2023-10-01">
+    expires_after="2024-02-04">
   <owner>petermcneeley@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>

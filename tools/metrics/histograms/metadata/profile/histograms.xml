@@ -210,7 +210,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Profile.Incognito.MovedToBackgroundAfterDuration"
-    units="minutes" expires_after="2023-12-04">
+    units="minutes" expires_after="2024-02-04">
   <owner>rhalavati@chromium.org</owner>
   <owner>chrome-incognito@google.com</owner>
   <summary>
@@ -312,7 +312,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Profile.LacrosPrimaryProfileFirstRunOutcome"
-    enum="ProfileSignedInFlowOutcome" expires_after="M120">
+    enum="ProfileSignedInFlowOutcome" expires_after="2024-02-04">
   <owner>dgn@chromium.org</owner>
   <owner>droger@chromium.org</owner>
   <summary>
@@ -357,7 +357,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Profile.NukeFromDisk.Result" enum="NukeProfileResult"
-    expires_after="2023-12-04">
+    expires_after="2024-02-04">
   <owner>nicolaso@chromium.org</owner>
   <owner>cbe-eng@google.com</owner>
   <summary>
@@ -898,7 +898,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ProfilePicker.UiVisited" enum="ProfilePickerPages"
-    expires_after="2023-11-19">
+    expires_after="2024-02-04">
   <owner>msalama@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>

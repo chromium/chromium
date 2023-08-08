@@ -426,7 +426,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.DlcService.InstallResult"
-    enum="DlcService.InstallResult" expires_after="2023-12-04">
+    enum="DlcService.InstallResult" expires_after="2024-02-04">
   <owner>kimjae@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>
@@ -436,7 +436,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.DlcService.UninstallResult"
-    enum="DlcService.UninstallResult" expires_after="2023-12-04">
+    enum="DlcService.UninstallResult" expires_after="2024-02-04">
   <owner>kimjae@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>
@@ -458,7 +458,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.ExternalMetrics.SamplesRead" units="count"
-    expires_after="2023-12-04">
+    expires_after="2024-02-04">
   <owner>iby@google.com</owner>
   <owner>mutexlox@google.com</owner>
   <owner>cros-telemetry@google.com</owner>
@@ -514,7 +514,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Firmware.Mismatch" enum="BooleanDetected"
-    expires_after="2023-12-04">
+    expires_after="2024-02-04">
   <owner>yuanpengni@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>
@@ -1135,7 +1135,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Platform.Memory.ARC" units="MiB" expires_after="2023-12-04">
+<histogram name="Platform.Memory.ARC" units="MiB" expires_after="2024-02-04">
 <!-- Name completed by histogram_suffixes name="ProcessMemoryType" -->
 
   <owner>bgeffon@chromium.org</owner>
@@ -1315,7 +1315,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Missive.ClientEnqueueResult"
-    enum="EnterpriseCloudReportingStatusCode" expires_after="2023-11-30">
+    enum="EnterpriseCloudReportingStatusCode" expires_after="2024-02-04">
   <owner>lbaraz@chromium.org</owner>
   <owner>xuhong@chromium.org</owner>
   <owner>cros-reporting-team@google.com</owner>
@@ -1659,7 +1659,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.StatefulFormat" enum="StatefulFormat"
-    expires_after="2023-12-04">
+    expires_after="2024-02-04">
   <owner>sarthakkukreti@chromium.org</owner>
   <owner>gwendal@chromium.org</owner>
   <owner>chromeos-storage@google.com</owner>
@@ -1721,7 +1721,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.StatefulUsedSpace" units="GB"
-    expires_after="2023-12-04">
+    expires_after="2024-02-04">
   <owner>asavery@chromium.org</owner>
   <owner>gwendal@chromium.org</owner>
   <owner>chromeos-storage@google.com</owner>
@@ -1904,7 +1904,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.TPM.FirmwareUpdate.Result"
-    enum="TPMFirmwareUpdateResult" expires_after="2023-12-04">
+    enum="TPMFirmwareUpdateResult" expires_after="2024-02-04">
   <owner>mnissler@chromium.org</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>
   <summary>Status of a complete TPM firmware update attempt.</summary>
@@ -1938,7 +1938,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.TPM.TakeOwnershipResult"
-    enum="TPMTakeOwnershipResult" expires_after="2023-12-04">
+    enum="TPMTakeOwnershipResult" expires_after="2024-02-04">
   <owner>yich@google.com</owner>
   <owner>cros-hwsec-userland-eng+uma@google.com</owner>
   <summary>
@@ -2048,7 +2048,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Trunks.RecoverableWriteErrorNo" enum="PopularOSErrno"
-    expires_after="2023-12-04">
+    expires_after="2024-02-04">
   <owner>chingkang@chromium.org</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>
   <summary>
@@ -2078,7 +2078,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Trunks.UnrecoverableWriteErrorNo"
-    enum="PopularOSErrno" expires_after="2023-12-04">
+    enum="PopularOSErrno" expires_after="2024-02-04">
   <owner>chingkang@chromium.org</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>
   <summary>

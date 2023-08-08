@@ -516,7 +516,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.PriceTracking.EmailNotificationsEnabled"
-    enum="PriceNotificationEmailState" expires_after="2023-12-04">
+    enum="PriceNotificationEmailState" expires_after="2024-02-04">
   <owner>ayman@chromium.org</owner>
   <owner>mdjones@chromium.org</owner>
   <owner>chrome-shopping@google.org</owner>
@@ -572,7 +572,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.PriceTracking.SidePanelImageLoad"
-    enum="BooleanSuccess" expires_after="2023-12-04">
+    enum="BooleanSuccess" expires_after="2024-02-04">
   <owner>yuezhanggg@chromium.org</owner>
   <owner>mdjones@chromium.org</owner>
   <owner>chrome-shopping@google.org</owner>
@@ -607,7 +607,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.ShoppingService.ProductInfo.FallbackDataContent"
-    enum="ShoppingDataProviderFallback" expires_after="2023-11-01">
+    enum="ShoppingDataProviderFallback" expires_after="2024-02-04">
   <owner>ayman@chromium.org</owner>
   <owner>mdjones@chromium.org</owner>
   <summary>

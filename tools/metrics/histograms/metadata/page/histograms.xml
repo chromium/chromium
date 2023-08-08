@@ -132,7 +132,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageActionController.Icon.NumberActionsShownWhenClicked"
-    units="actions" expires_after="2023-12-04">
+    units="actions" expires_after="2024-02-04">
   <owner>emshack@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <summary>
@@ -749,7 +749,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.FromGoogleSearch.FromSidePanel.PaintTiming.NavigationToFirstImagePaint"
-    units="ms" expires_after="2023-12-04">
+    units="ms" expires_after="2024-02-04">
   <owner>sullivan@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
@@ -2444,7 +2444,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageLoad.Internal.Prerender2.ObserverEvent"
-    enum="PageLoadPrerenderObserverEvent" expires_after="2023-12-04">
+    enum="PageLoadPrerenderObserverEvent" expires_after="2024-02-04">
   <owner>nhiroki@chromium.org</owner>
   <owner>src/content/browser/preloading/prerender/OWNERS</owner>
   <summary>
@@ -2455,7 +2455,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageLoad.Internal.Prerender2.VisibilityAtActivation"
-    enum="PageLoadPrerenderVisibilityAtActivation" expires_after="2023-12-04">
+    enum="PageLoadPrerenderVisibilityAtActivation" expires_after="2024-02-04">
   <owner>nhiroki@chromium.org</owner>
   <owner>src/content/browser/preloading/prerender/OWNERS</owner>
   <summary>

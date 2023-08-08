@@ -554,7 +554,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.BiometricAuth.AuthRequester"
-    enum="DeviceAuthRequester" expires_after="2023-12-04">
+    enum="DeviceAuthRequester" expires_after="2024-02-04">
   <owner>ioanap@chromium.org</owner>
   <owner>fhorschig@chromium.org</owner>
   <summary>
@@ -1107,7 +1107,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.DragDrop.FromWebContent.DropInWebContent.Duration"
-    units="ms" expires_after="2023-12-04">
+    units="ms" expires_after="2024-02-04">
   <owner>wenyufu@chromium.org</owner>
   <owner>clank-large-form-factors@google.com</owner>
   <summary>
@@ -1582,7 +1582,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.IncognitoReauth.AuthResult"
-    enum="DeviceAuthFinalResult" expires_after="2023-12-04">
+    enum="DeviceAuthFinalResult" expires_after="2024-02-04">
   <owner>roagarwal@chromium.org</owner>
   <owner>chrome-incognito@google.com</owner>
   <summary>
@@ -3492,7 +3492,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.SeccompStatus.RendererSandbox"
-    enum="AndroidSeccompSandboxStatus" expires_after="2023-12-04">
+    enum="AndroidSeccompSandboxStatus" expires_after="2024-02-04">
   <owner>rsesek@chromium.org</owner>
   <summary>
     Reports the status of the seccomp-bpf sandbox in renderer processes.
@@ -3918,7 +3918,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.ThumbnailCache.InMemoryApproximationCacheEntries"
-    units="thumbnails" expires_after="2023-12-04">
+    units="thumbnails" expires_after="2024-02-04">
   <owner>ckitagawa@chromium.org</owner>
   <owner>dtrainor@chromium.com</owner>
   <summary>
@@ -3929,7 +3929,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.ThumbnailCache.InMemoryApproximationCacheSize"
-    units="KiB" expires_after="2023-12-04">
+    units="KiB" expires_after="2024-02-04">
   <owner>ckitagawa@chromium.org</owner>
   <owner>dtrainor@chromium.com</owner>
   <summary>
@@ -3941,7 +3941,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.ThumbnailCache.InMemoryCacheEntries"
-    units="thumbnails" expires_after="2023-12-04">
+    units="thumbnails" expires_after="2024-02-04">
   <owner>ckitagawa@chromium.org</owner>
   <owner>dtrainor@chromium.com</owner>
   <summary>
@@ -3952,7 +3952,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.ThumbnailCache.InMemoryCacheSize" units="KiB"
-    expires_after="2023-12-04">
+    expires_after="2024-02-04">
   <owner>ckitagawa@chromium.org</owner>
   <owner>dtrainor@chromium.com</owner>
   <summary>

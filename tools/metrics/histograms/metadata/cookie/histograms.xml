@@ -173,7 +173,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.CookieSourceScheme" enum="CookieSourceScheme"
-    expires_after="2023-12-04">
+    expires_after="2024-02-04">
   <owner>estark@chromium.org</owner>
   <summary>
     For each cookie added to the store, record whether its source URL has a
@@ -903,7 +903,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.SameSiteNoneSizeBytes" units="bytes"
-    expires_after="2024-01-28">
+    expires_after="2024-02-04">
   <owner>dylancutler@google.com</owner>
   <owner>src/net/cookies/OWNERS</owner>
   <summary>

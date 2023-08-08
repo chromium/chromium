@@ -81,7 +81,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Backend.TransactionCommitError"
-    enum="SqliteLoggedResultCode" expires_after="2023-12-04">
+    enum="SqliteLoggedResultCode" expires_after="2024-02-04">
   <owner>tommycli@chromium.org</owner>
   <owner>asully@chromium.org</owner>
   <component>UI&gt;Browser&gt;History</component>
@@ -92,7 +92,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Backend.TransactionCommitSuccess"
-    enum="BooleanSuccess" expires_after="2023-12-04">
+    enum="BooleanSuccess" expires_after="2024-02-04">
   <owner>tommycli@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
   <component>UI&gt;Browser&gt;History</component>
@@ -103,7 +103,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.BrowsingDataLifetime.Duration.BrowserShutdownDeletion"
-    units="ms" expires_after="2023-12-04">
+    units="ms" expires_after="2024-02-04">
   <owner>ydago@chromium.org</owner>
   <owner>dullweber@chromium.org</owner>
   <component>UI&gt;Browser&gt;History</component>
@@ -1388,7 +1388,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="History.Clusters.Backend.UpdateClusterTriggerability.HadUnclusteredVisitsToCluster"
-    enum="Boolean" expires_after="2023-12-04">
+    enum="Boolean" expires_after="2024-02-04">
   <owner>sophiechang@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
   <component>UI&gt;Browser&gt;Journeys</component>
@@ -1499,7 +1499,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="History.Clusters.ContextClusterer.ClusterCleanedUpBeforePersistence"
-    enum="Boolean" expires_after="2023-12-04">
+    enum="Boolean" expires_after="2024-02-04">
   <owner>sophiechang@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
   <component>UI&gt;Browser&gt;Journeys</component>
@@ -1573,7 +1573,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="History.Clusters.ContextClusterer.NumUnpersistedVisitsBeforeClusterPersisted"
-    units="num unpersisted visits" expires_after="2023-12-04">
+    units="num unpersisted visits" expires_after="2024-02-04">
   <owner>sophiechang@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
   <component>UI&gt;Browser&gt;Journeys</component>
@@ -1630,7 +1630,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Clusters.KeywordCache.Latency" units="ms"
-    expires_after="2023-12-04">
+    expires_after="2024-02-04">
   <owner>tommycli@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
   <component>UI&gt;Browser&gt;Journeys</component>
@@ -1889,7 +1889,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Clusters.UpdateClusters.TimeBetweenTasks" units="ms"
-    expires_after="2023-12-04">
+    expires_after="2024-02-04">
   <owner>manukh@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
   <component>UI&gt;Browser&gt;Journeys</component>
@@ -2100,7 +2100,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.DomainCount28Day_V3" units="domains"
-    expires_after="2023-12-04">
+    expires_after="2024-02-04">
   <owner>mpearson@chromium.org</owner>
   <owner>mjzhang@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
@@ -2241,7 +2241,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.ForeignVisitsLegacy" units="visits"
-    expires_after="2023-12-01">
+    expires_after="2024-02-04">
   <owner>tommycli@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <component>UI&gt;Browser&gt;History</component>
@@ -2255,7 +2255,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.ForeignVisitsNotRemapped" units="visits"
-    expires_after="2023-12-01">
+    expires_after="2024-02-04">
   <owner>tommycli@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <component>UI&gt;Browser&gt;History</component>
@@ -2269,7 +2269,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.ForeignVisitsRemappableFrom" units="visits"
-    expires_after="2023-12-01">
+    expires_after="2024-02-04">
   <owner>tommycli@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <component>UI&gt;Browser&gt;History</component>
@@ -2283,7 +2283,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.ForeignVisitsRemappableOpener" units="visits"
-    expires_after="2023-12-01">
+    expires_after="2024-02-04">
   <owner>tommycli@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <component>UI&gt;Browser&gt;History</component>
@@ -2297,7 +2297,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.ForeignVisitsTotal" units="visits"
-    expires_after="2023-12-01">
+    expires_after="2024-02-04">
   <owner>tommycli@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <component>UI&gt;Browser&gt;History</component>
@@ -2425,7 +2425,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.MigrateFailureFromVersion" units="units"
-    expires_after="2023-12-04">
+    expires_after="2024-02-04">
   <owner>sky@chromium.org</owner>
   <owner>sdefresne@chromium.org</owner>
   <component>UI&gt;Browser&gt;History</component>

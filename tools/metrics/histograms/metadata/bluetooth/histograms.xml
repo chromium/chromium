@@ -373,7 +373,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Bluetooth.ChromeOS.FastPair.DeviceMetadataFetcher.Get.NetError"
-    enum="NetErrorCodes" expires_after="2023-10-22">
+    enum="NetErrorCodes" expires_after="2024-02-04">
   <owner>jackshira@google.com</owner>
   <owner>dclasson@google.com</owner>
   <owner>brandosocarras@google.com</owner>

@@ -214,7 +214,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.CrosPerUser.IdReset" enum="PerUserIdType"
-    expires_after="2023-12-04">
+    expires_after="2024-02-04">
   <owner>jongahn@chromium.org</owner>
   <owner>asvitkine@chromium.org</owner>
   <summary>
@@ -376,7 +376,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="UMA.LogSize.OnSuccess" units="KB" expires_after="2023-12-04">
+<histogram name="UMA.LogSize.OnSuccess" units="KB" expires_after="2024-02-04">
   <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -400,7 +400,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.LogUpload.ResponseOrErrorCode"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2023-12-04">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2024-02-04">
   <owner>holte@chromium.org</owner>
   <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
@@ -485,7 +485,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.MetricsService.OnBackgroundedScopedTerminationChecker"
-    enum="ScopedTerminationCheckerStatus" expires_after="2023-12-01">
+    enum="ScopedTerminationCheckerStatus" expires_after="2024-02-04">
   <owner>lucnguyen@google.com</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -944,7 +944,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.TruncatedEvents.UserAction" units="events"
-    expires_after="2024-01-28">
+    expires_after="2024-02-04">
   <owner>rkaplow@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -954,7 +954,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.UnsentLogs.Dropped" units="logs"
-    expires_after="2023-12-04">
+    expires_after="2024-02-04">
   <owner>holte@chromium.org</owner>
   <owner>asvitkine@chromium.org</owner>
   <owner>lucnguyen@google.com</owner>
@@ -968,7 +968,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.UnsentLogs.DroppedSize" units="bytes"
-    expires_after="2023-12-04">
+    expires_after="2024-02-04">
   <owner>akirabaruah@chromium.org</owner>
   <owner>rkaplow@chromium.org</owner>
   <owner>asvitkine@chromium.org</owner>
@@ -1052,7 +1052,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.UserDemographics.IsNoisedAgeOver21Under85"
-    enum="BooleanNoisedAgeOver21Under85" expires_after="2023-12-04">
+    enum="BooleanNoisedAgeOver21Under85" expires_after="2024-02-04">
   <owner>tobyhuang@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
   <summary>

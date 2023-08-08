@@ -648,7 +648,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.RecommendApps.Fetcher.DownloadTime" units="ms"
-    expires_after="2023-12-01">
+    expires_after="2024-02-04">
   <owner>dkuzmin@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <owner>chromesky-eng@google.com</owner>
@@ -656,7 +656,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.RecommendApps.Fetcher.ResponseCode"
-    enum="HttpResponseCode" expires_after="2023-12-01">
+    enum="HttpResponseCode" expires_after="2024-02-04">
   <owner>dkuzmin@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <owner>chromesky-eng@google.com</owner>
