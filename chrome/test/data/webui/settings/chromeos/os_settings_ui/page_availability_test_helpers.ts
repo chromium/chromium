@@ -127,7 +127,7 @@ export const SECTION_EXPECTATIONS: SectionData[] = [
   {
     name: 'kReset',
     availableBeforeRevamp: true,
-    availableAfterRevamp: true,
+    availableAfterRevamp: false,
     availableForGuest: false,
   },
   {

@@ -592,12 +592,6 @@ export function createRoutes(): OsSettingsRoutes {
       r.OS_PRINTING, routesMojom.PRINTING_DETAILS_SUBPAGE_PATH,
       Subpage.kPrintingDetails);
 
-  // Reset section.
-  if (isPowerwashAllowed()) {
-    r.OS_RESET = createSection(
-        r.ADVANCED, routesMojom.RESET_SECTION_PATH, Section.kReset);
-  }
-
   // About section.
   r.ABOUT = createSection(
       /*parent=*/ null, routesMojom.ABOUT_CHROME_OS_SECTION_PATH,
@@ -607,9 +601,16 @@ export function createRoutes(): OsSettingsRoutes {
       Subpage.kDetailedBuildInfo);
 
   if (isRevampWayfindingEnabled()) {
+    // System Preferences section.
     r.SYSTEM_PREFERENCES = createSection(
         r.BASIC, routesMojom.SYSTEM_PREFERENCES_SECTION_PATH,
         Section.kSystemPreferences);
+  } else {
+    // Reset section.
+    if (isPowerwashAllowed()) {
+      r.OS_RESET = createSection(
+          r.ADVANCED, routesMojom.RESET_SECTION_PATH, Section.kReset);
+    }
   }
 
   return r as OsSettingsRoutes;
