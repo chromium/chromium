@@ -43,7 +43,7 @@ import time
 import uuid
 
 import psutil
-import xdg
+import xdg.BaseDirectory
 from packaging import version
 
 # If this env var is defined, extra host params will be loaded from this env var
