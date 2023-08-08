@@ -1677,7 +1677,6 @@ _ANDROID_SPECIFIC_PYDEPS_FILES = [
 _GENERIC_PYDEPS_FILES = [
     'android_webview/test/components/run_webview_component_smoketest.pydeps',
     'android_webview/tools/run_cts.pydeps',
-    'base/android/jni_generator/jni_zero.pydeps',
     'build/android/apk_operations.pydeps',
     'build/android/devil_chromium.pydeps',
     'build/android/gyp/aar.pydeps',
@@ -1760,6 +1759,7 @@ _GENERIC_PYDEPS_FILES = [
     'third_party/blink/renderer/bindings/scripts/validate_web_idl.pydeps',
     'third_party/blink/tools/blinkpy/web_tests/merge_results.pydeps',
     'third_party/blink/tools/merge_web_test_results.pydeps',
+    'third_party/jni_zero/jni_zero.pydeps',
     'tools/binary_size/sizes.pydeps',
     'tools/binary_size/supersize.pydeps',
     'tools/perf/process_perf_results.pydeps',
@@ -6087,7 +6087,7 @@ def CheckStrings(input_api, output_api):
         if sha1_path not in new_or_added_paths:
             missing_sha1.append(sha1_path)
         elif not _CheckValidSha1(sha1_path):
-          invalid_sha1.append(sha1_path)
+            invalid_sha1.append(sha1_path)
 
     def _CheckScreenshotModified(screenshots_dir, message_id):
         sha1_path = input_api.os_path.join(screenshots_dir,
@@ -6095,16 +6095,12 @@ def CheckStrings(input_api, output_api):
         if sha1_path not in new_or_added_paths:
             missing_sha1_modified.append(sha1_path)
         elif not _CheckValidSha1(sha1_path):
-          invalid_sha1.append(sha1_path)
+            invalid_sha1.append(sha1_path)
 
     def _CheckValidSha1(sha1_path):
-      return sha1_pattern.search(
-          next(
-                "\n".join(f.NewContents())
-                for f in input_api.AffectedFiles()
-                if f.LocalPath() == sha1_path
-          )
-      )
+        return sha1_pattern.search(
+            next("\n".join(f.NewContents()) for f in input_api.AffectedFiles()
+                 if f.LocalPath() == sha1_path))
 
     def _CheckScreenshotRemoved(screenshots_dir, message_id):
         sha1_path = input_api.os_path.join(screenshots_dir,
@@ -6948,7 +6944,7 @@ def CheckLibcxxRevisionsMatch(input_api, output_api):
     """Check to make sure the libc++ version matches across deps files."""
     # Disable check for changes to sub-repositories.
     if input_api.PresubmitLocalPath() != input_api.change.RepositoryRoot():
-      return []
+        return []
 
     DEPS_FILES = [ 'DEPS', 'buildtools/deps_revisions.gni' ]
 

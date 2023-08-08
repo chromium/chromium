@@ -165,7 +165,7 @@ if (enable_java_templates) {
 
         # The sources aren't compiled so don't check their dependencies.
         check_includes = false
-        script = "//base/android/jni_generator/jni_zero.py"
+        script = "//third_party/jni_zero/jni_zero.py"
         forward_variables_from(invoker,
                                [
                                  "deps",
@@ -277,7 +277,7 @@ if (enable_java_templates) {
   #
   # This target generates the native jni bindings for a set of .java files.
   #
-  # See base/android/jni_generator/jni_generator.py for more info about the
+  # See third_party/jni_zero/jni_generator.py for more info about the
   # format of generating JNI bindings.
   #
   # Variables
@@ -309,7 +309,7 @@ if (enable_java_templates) {
   #
   # This target generates the native jni bindings for a set of classes in a .jar.
   #
-  # See base/android/jni_generator/jni_generator.py for more info about the
+  # See third_party/jni_zero/jni_generator.py for more info about the
   # format of generating JNI bindings.
   #
   # Variables

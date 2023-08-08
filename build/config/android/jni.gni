@@ -52,7 +52,7 @@ template("jni_sources_list") {
 # within root_build_dir). This could be fixed by adding deps & logic to scan
 # .srcjars, but isn't currently needed.
 #
-# See base/android/jni_generator/jni_registration_generator.py for more info
+# See third_party/jni_zero/jni_registration_generator.py for more info
 # about the format of the header file.
 #
 # Variables
@@ -94,7 +94,7 @@ template("generate_jni_registration") {
   }
 
   action_with_pydeps(target_name) {
-    script = "//base/android/jni_generator/jni_zero.py"
+    script = "//third_party/jni_zero/jni_zero.py"
     inputs = []
 
     # Cannot depend on jni_sources_list targets since they likely depend on
