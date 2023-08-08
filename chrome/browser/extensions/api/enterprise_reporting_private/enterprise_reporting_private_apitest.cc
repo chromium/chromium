@@ -590,7 +590,7 @@ IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest,
 
   kOptions = base::StringPrintf(
       R"(
-    const test_hive = 'HKEY_LOCAL_MACHINE';
+    const test_hive = 'HKEY_CURRENT_USER';
     const registry_path = '%s';
     const invalid_path = 'SOFTWARE\\Chromium\\DeviceTrust\\Invalid';
     const valid_key = '%s';
@@ -624,9 +624,9 @@ IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest,
       registry_path.c_str(), valid_key.c_str());
 
   registry_util::RegistryOverrideManager registry_override_manager_;
-  registry_override_manager_.OverrideRegistry(HKEY_LOCAL_MACHINE);
+  registry_override_manager_.OverrideRegistry(HKEY_CURRENT_USER);
 
-  base::win::RegKey key(HKEY_LOCAL_MACHINE,
+  base::win::RegKey key(HKEY_CURRENT_USER,
                         base::SysUTF8ToWide(registry_path).c_str(),
                         KEY_ALL_ACCESS);
   ASSERT_TRUE(key.WriteValue(base::SysUTF8ToWide(valid_key).c_str(), 37) ==
