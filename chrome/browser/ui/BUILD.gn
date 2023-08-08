@@ -807,6 +807,8 @@ static_library("ui") {
       "android/fast_checkout/fast_checkout_view_impl.h",
       "android/fast_checkout/ui_view_android_utils.cc",
       "android/fast_checkout/ui_view_android_utils.h",
+      "android/hats/survey_config_android.cc",
+      "android/hats/survey_config_android.h",
       "android/infobars/autofill_credit_card_filling_infobar.cc",
       "android/infobars/autofill_credit_card_filling_infobar.h",
       "android/infobars/autofill_offer_notification_infobar.cc",
