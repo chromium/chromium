@@ -2261,9 +2261,6 @@ void WizardController::PerformPostNetworkScreenActions() {
   DelayNetworkCall(ServicesCustomizationDocument::GetInstance()
                        ->EnsureCustomizationAppliedClosure());
   GetAutoEnrollmentController()->Start();
-
-  // Triggers DLC installation here to ensure network availability
-  cros_healthd::internal::TriggerDlcInstall();
 }
 
 void WizardController::PerformOOBECompletedActions() {
@@ -2275,6 +2272,9 @@ void WizardController::PerformOOBECompletedActions() {
 
   StartupUtils::MarkOobeCompleted();
   oobe_marked_completed_ = true;
+
+  // Triggers DLC installation once OOBE is complete.
+  cros_healthd::internal::TriggerDlcInstall();
 }
 
 void WizardController::SetCurrentScreen(BaseScreen* new_current) {
