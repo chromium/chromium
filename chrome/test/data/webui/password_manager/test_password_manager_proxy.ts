@@ -326,8 +326,9 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
     return Promise.resolve(this.data.familyFetchResults);
   }
 
-  sharePassword() {
-    this.methodCalled('sharePassword');
+  sharePassword(
+      id: number, recipients: chrome.passwordsPrivate.RecipientInfo[]) {
+    this.methodCalled('sharePassword', id, recipients);
   }
 
   /**

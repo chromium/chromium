@@ -10,6 +10,7 @@ import './share_password_family_picker_dialog.js';
 import './share_password_loading_dialog.js';
 import './share_password_error_dialog.js';
 import './share_password_no_members_dialog.js';
+import './share_password_confirmation_dialog.js';
 
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
@@ -25,6 +26,7 @@ export enum ShareFlowState {
   ERROR,
   NO_MEMBERS,
   FAMILY_PICKER,
+  CONFIRMATION,
 }
 
 const SharePasswordFlowElementBase = I18nMixin(PolymerElement);
@@ -109,8 +111,7 @@ export class SharePasswordFlowElement extends SharePasswordFlowElementBase {
   }
 
   private onStartShare_() {
-    // TODO(crbug/1445526): Show loading state.
-    this.passwordManager_.sharePassword(this.passwordId, this.recipients_);
+    this.flowState = ShareFlowState.CONFIRMATION;
   }
 }
 

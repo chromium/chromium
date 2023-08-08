@@ -35,6 +35,7 @@ export {PrefToggleButtonElement} from './prefs/pref_toggle_button.js';
 export {PromoCard, PromoCardsProxy, PromoCardsProxyImpl} from './promo_cards/promo_cards_browser_proxy.js';
 export {CheckupSubpage, Page, Route, RouteObserverMixin, RouteObserverMixinInterface, Router, UrlParam} from './router.js';
 export {SettingsSectionElement} from './settings_section.js';
+export {SharePasswordConfirmationDialogElement} from './sharing/share_password_confirmation_dialog.js';
 export {ShareFlowState, SharePasswordFlowElement} from './sharing/share_password_flow.js';
 export {SharePasswordLoadingDialogElement} from './sharing/share_password_loading_dialog.js';
 export {SharePasswordRecipientElement} from './sharing/share_password_recipient.js';

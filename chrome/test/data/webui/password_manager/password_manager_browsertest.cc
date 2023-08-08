@@ -101,6 +101,11 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerUITest, SharePasswordLoadingDialog) {
           "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(PasswordManagerUITest, SharePasswordConfirmationDialog) {
+  RunTest("password_manager/share_password_confirmation_dialog_test.js",
+          "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(PasswordManagerUITest, SharePasswordRecipient) {
   RunTest("password_manager/share_password_recipient_test.js", "mocha.run()");
 }
