@@ -208,7 +208,7 @@ public abstract class ToolbarLayout
     /**
      * @param toolbarColorObserver The observer that observes toolbar color change.
      */
-    void setToolbarColorObserver(@NonNull ToolbarColorObserver toolbarColorObserver) {
+    public void setToolbarColorObserver(@NonNull ToolbarColorObserver toolbarColorObserver) {
         mToolbarColorObserver = toolbarColorObserver;
     }
 

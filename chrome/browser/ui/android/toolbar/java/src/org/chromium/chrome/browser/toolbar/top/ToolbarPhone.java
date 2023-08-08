@@ -75,6 +75,7 @@ import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.optional_button.OptionalButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.optional_button.OptionalButtonCoordinator.TransitionType;
 import org.chromium.chrome.browser.toolbar.top.CaptureReadinessResult.TopToolbarBlockCaptureReason;
+import org.chromium.chrome.browser.toolbar.top.TopToolbarCoordinator.ToolbarColorObserver;
 import org.chromium.chrome.browser.toolbar.top.TopToolbarCoordinator.UrlExpansionObserver;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
@@ -2762,10 +2763,12 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
     }
 
     /**
-     * Returns the toolbar's background color.
+     * @param toolbarColorObserver The observer that observes toolbar color change.
      */
-    public int getToolbarBackgroundColor() {
-        return mToolbarBackground.getColor();
+    @Override
+    public void setToolbarColorObserver(@NonNull ToolbarColorObserver toolbarColorObserver) {
+        super.setToolbarColorObserver(toolbarColorObserver);
+        notifyToolbarColorChanged(mToolbarBackground.getColor());
     }
 
     @Override
