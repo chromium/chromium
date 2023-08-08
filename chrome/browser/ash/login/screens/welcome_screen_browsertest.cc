@@ -102,10 +102,6 @@ const char kSetAvailableVoices[] = R"(
         ]);
       };)";
 
-const char kChromeVoxHintLaptopSpokenString[] =
-    "Do you want to activate ChromeVox, the built-in screen reader for "
-    "ChromeOS? If so, press the space bar.";
-
 const char kChromeVoxHintLaptopSpokenStringImproved[] =
     "The screen reader on ChromeOS, ChromeVox, is primarily used by "
     "people with blindness or low vision to read text displayed on the screen "
@@ -794,7 +790,7 @@ IN_PROC_BROWSER_TEST_F(WelcomeScreenChromeVoxHintTest, DISABLED_LaptopClick) {
   // A consistency check to ensure we stop idle detection after the hint is
   // given.
   ASSERT_TRUE(IdleDetectionCancelledForTesting());
-  monitor.ExpectSpeech(kChromeVoxHintLaptopSpokenString);
+  monitor.ExpectSpeech(kChromeVoxHintLaptopSpokenStringImproved);
   monitor.Call([this]() {
     ASSERT_FALSE(AccessibilityManager::Get()->IsSpokenFeedbackEnabled());
     WaitForChromeVoxHintDialogToOpen();
@@ -822,7 +818,7 @@ IN_PROC_BROWSER_TEST_F(WelcomeScreenChromeVoxHintTest, LaptopSpaceBar) {
   test::SpeechMonitor monitor;
   test::OobeJS().ExpectAttributeEQ("open", kChromeVoxHintDialog, false);
   GiveChromeVoxHintForTesting();
-  monitor.ExpectSpeech(kChromeVoxHintLaptopSpokenString);
+  monitor.ExpectSpeech(kChromeVoxHintLaptopSpokenStringImproved);
   monitor.Call([this]() {
     ASSERT_FALSE(AccessibilityManager::Get()->IsSpokenFeedbackEnabled());
     WaitForChromeVoxHintDialogToOpen();
@@ -851,9 +847,7 @@ IN_PROC_BROWSER_TEST_F(WelcomeScreenChromeVoxHintTest, Tablet) {
   ShellTestApi().SetTabletModeEnabledForTest(true);
   test::SpeechMonitor monitor;
   GiveChromeVoxHintForTesting();
-  monitor.ExpectSpeech(
-      "Do you want to activate ChromeVox, the built-in screen reader for "
-      "ChromeOS? If so, press and hold both volume keys for five seconds.");
+  monitor.ExpectSpeech(kChromeVoxHintTabletSpokenStringImproved);
   monitor.Replay();
   WaitForSpokenSuccessMetric();
 }
@@ -890,7 +884,7 @@ IN_PROC_BROWSER_TEST_F(WelcomeScreenChromeVoxHintTest, DISABLED_VoicesChanged) {
     window.speechSynthesis.dispatchEvent(new Event('voiceschanged'));
     )";
   test::ExecuteOobeJS(load_english_voice);
-  monitor.ExpectSpeech(kChromeVoxHintLaptopSpokenString);
+  monitor.ExpectSpeech(kChromeVoxHintLaptopSpokenStringImproved);
   monitor.Replay();
   WaitForSpokenSuccessMetric();
 }

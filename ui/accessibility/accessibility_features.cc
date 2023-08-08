@@ -138,7 +138,7 @@ bool IsDictationOfflineAvailable() {
 
 BASE_FEATURE(kExperimentalAccessibilityChromeVoxOobeDialogImprovements,
              "ExperimentalAccessibilityChromeVoxOobeDialogImprovements",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsExperimentalAccessibilityChromeVoxOobeDialogImprovementsEnabled() {
   return base::FeatureList::IsEnabled(
