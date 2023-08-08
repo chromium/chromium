@@ -43462,6 +43462,9 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4612" label="V8Navigator_CreateAuctionNonce_Method"/>
   <int value="4613" label="CrossOriginWindowFrameElement"/>
   <int value="4614" label="QuirksModeAboutBlankDocument"/>
+  <int value="4615" label="V8WasmMemory64"/>
+  <int value="4616" label="V8WasmMultiMemory"/>
+  <int value="4617" label="V8WasmGC"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

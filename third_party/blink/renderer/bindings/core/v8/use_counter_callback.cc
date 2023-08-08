@@ -397,6 +397,15 @@ void UseCounterCallback(v8::Isolate* isolate,
     case v8::Isolate::kCompileHintsMagicAll:
       blink_feature = WebFeature::kV8CompileHintsMagicAll;
       break;
+    case v8::Isolate::kWasmMemory64:
+      blink_feature = WebFeature::kV8WasmMemory64;
+      break;
+    case v8::Isolate::kWasmMultiMemory:
+      blink_feature = WebFeature::kV8WasmMultiMemory;
+      break;
+    case v8::Isolate::kWasmGC:
+      blink_feature = WebFeature::kV8WasmGC;
+      break;
     default:
       // This can happen if V8 has added counters that this version of Blink
       // does not know about. It's harmless.

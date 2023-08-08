@@ -3952,6 +3952,9 @@ enum WebFeature {
   kV8Navigator_CreateAuctionNonce_Method = 4612,
   kCrossOriginWindowFrameElement = 4613,
   kQuirksModeAboutBlankDocument = 4614,
+  kV8WasmMemory64 = 4615,
+  kV8WasmMultiMemory = 4616,
+  kV8WasmGC = 4617,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
