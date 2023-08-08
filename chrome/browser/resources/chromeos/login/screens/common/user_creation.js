@@ -227,8 +227,10 @@ class UserCreation extends UserCreationScreenElementBase {
   // clicking back will display user creation screen with child setup step
   // and we need to restore the oobe ui state.
   restoreOobeUIState() {
-    if (this.uiStep === UserCreationUIState.ENROLL_TRIAGE ||
-        this.uiStep === UserCreationUIState.CREATE) {
+    if (this.uiStep === UserCreationUIState.ENROLL_TRIAGE) {
+      Oobe.getInstance().setOobeUIState(OOBE_UI_STATE.ENROLL_TRIAGE);
+    }
+    if (this.uiStep === UserCreationUIState.CREATE) {
       Oobe.getInstance().setOobeUIState(OOBE_UI_STATE.USER_CREATION);
     }
     if (this.uiStep === UserCreationUIState.CHILD_SETUP) {
@@ -281,6 +283,7 @@ class UserCreation extends UserCreationScreenElementBase {
   }
 
   setTriageStep() {
+    Oobe.getInstance().setOobeUIState(OOBE_UI_STATE.ENROLL_TRIAGE);
     this.setUIStep(UserCreationUIState.ENROLL_TRIAGE);
   }
 

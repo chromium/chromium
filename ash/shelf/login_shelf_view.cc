@@ -718,6 +718,7 @@ bool LoginShelfView::ShouldShowGuestAndAppsButtons() const {
   if (dialog_state_ == OobeDialogState::USER_CREATION ||
       dialog_state_ == OobeDialogState::GAIA_SIGNIN ||
       dialog_state_ == OobeDialogState::SETUP_CHILD ||
+      dialog_state_ == OobeDialogState::ENROLL_TRIAGE ||
       dialog_state_ == OobeDialogState::GAIA_INFO) {
     dialog_state_allowed = !login_screen_has_users_ && is_first_signin_step_;
   } else if (dialog_state_ == OobeDialogState::ERROR ||

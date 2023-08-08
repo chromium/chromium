@@ -95,6 +95,9 @@ enum class OobeDialogState {
 
   // CHILD SETUP step for user creation screen.
   SETUP_CHILD = 23,
+
+  // ENROLL TIAGE step for user creation screen.
+  ENROLL_TRIAGE = 24,
 };
 
 // Modes of the managed device, which is used to update the visibility of
