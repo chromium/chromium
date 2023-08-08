@@ -169,6 +169,12 @@ gfx::ImageSkia SearchResultImageView::CreateDragImage() {
 }
 
 void SearchResultImageView::OnMetadataChanged() {
+  UpdateAccessibleName();
+  // By default, the description will be set to the tooltip text, but the title
+  // is already announced in the accessible name.
+  SetAccessibleDescription(
+      u"", ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty);
+
   if (!result() || result()->icon().icon.IsEmpty()) {
     result_image_->SetVisible(false);
     if (result() && !pulsing_block_view_) {
@@ -192,11 +198,6 @@ void SearchResultImageView::OnMetadataChanged() {
 
   result_image_->SetImage(views::Button::STATE_NORMAL, image);
   SetTooltipText(result()->title());
-  UpdateAccessibleName();
-  // By default, the description will be set to the tooltip text, but the title
-  // is already announced in the accessible name.
-  SetAccessibleDescription(
-      u"", ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty);
 }
 
 SearchResultImageView::~SearchResultImageView() = default;
