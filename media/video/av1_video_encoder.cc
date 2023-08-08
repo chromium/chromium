@@ -255,8 +255,34 @@ void Av1VideoEncoder::Initialize(VideoCodecProfile profile,
   if (config_.rc_end_usage == AOM_CBR)
     CALL_AOM_CONTROL(AV1E_SET_AQ_MODE, 3);
 
-  CALL_AOM_CONTROL(AV1E_SET_TILE_COLUMNS,
-                   static_cast<int>(std::log2(config_.g_threads)));
+  // Keep in mind that AV1E_SET_TILE_[COLUMNS|ROWS] uses log2 units.
+  int log2_threads = std::log2(config_.g_threads);
+  int tile_columns_log2 = 0;
+  int tile_rows_log2 = 0;
+  switch (log2_threads) {
+    case 4:
+      // For 16 threads we split the frame into 16 tiles 4x4
+      // We never really use more that 16 threads.
+      tile_columns_log2 = 2;
+      tile_rows_log2 = 2;
+      break;
+    case 3:
+      // For 8-15 threads we split the frame into 8 tiles 4x2
+      tile_columns_log2 = 2;
+      tile_rows_log2 = 1;
+      break;
+    case 2:
+      // For 4-7 threads we split the frame into 4 tiles 2x2
+      tile_columns_log2 = 1;
+      tile_rows_log2 = 1;
+      break;
+    default:
+      // Default: horizontal tiles for the number of threads rounded down
+      // to the power of 2.
+      tile_columns_log2 = log2_threads;
+  }
+  CALL_AOM_CONTROL(AV1E_SET_TILE_COLUMNS, tile_columns_log2);
+  CALL_AOM_CONTROL(AV1E_SET_TILE_ROWS, tile_rows_log2);
 
   // AOME_SET_CPUUSED determines tradeoff between video quality and compression
   // time. Valid range: 0..10. 0 runs the slowest, and 10 runs the fastest.
