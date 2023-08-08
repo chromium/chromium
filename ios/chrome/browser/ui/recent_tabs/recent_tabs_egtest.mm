@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller_constants.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
+#import "ios/chrome/browser/signin/test_constants.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
@@ -129,7 +130,9 @@ GURL TestPageURL() {
         syncer::kReplaceSyncPromosWithSignInPromos);
   }
   if ([self isRunningTest:@selector
-            (testShowPromoIfSignedOut_SyncToSigninEnabled)] ||
+            (testShowPromoIfSignedOutAndHasAccounts_SyncToSigninEnabled)] ||
+      [self isRunningTest:@selector
+            (testShowPromoIfSignedOutAndNoAccounts_SyncToSigninEnabled)] ||
       [self isRunningTest:@selector
             (testShowPromoIfSignedInAndTabsDisabled_SyncToSigninEnabled)] ||
       [self isRunningTest:@selector
@@ -247,9 +250,34 @@ GURL TestPageURL() {
   [SigninEarlGreyUI verifySigninPromoNotVisible];
 }
 
-// Tests that a promo to sign in is shown to a signed out user.
+// Tests that a promo to sign in is shown to a signed out user without device
+// accounts. Tapping the promo shows the auth activity then the history opt-in.
 // kReplaceSyncPromosWithSignInPromos is enabled.
-- (void)testShowPromoIfSignedOut_SyncToSigninEnabled {
+- (void)testShowPromoIfSignedOutAndNoAccounts_SyncToSigninEnabled {
+  OpenRecentTabsPanel();
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(RecentTabsTable(),
+                                          grey_sufficientlyVisible(), nil)]
+      performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
+
+  [SigninEarlGreyUI
+      verifySigninPromoVisibleWithMode:SigninPromoViewModeNoAccounts
+                           closeButton:NO];
+
+  [[EarlGrey selectElementWithMatcher:PrimarySignInButton()]
+      performAction:grey_tap()];
+
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kFakeAuthCancelButtonIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // TODO(crbug.com/1447014): Test signing in shows the history opt-in screen.
+}
+
+// Tests that a promo to sign in is shown to a signed out user who has device
+// accounts. Tapping the promo shows the sign-in sheet then the history opt-in.
+// kReplaceSyncPromosWithSignInPromos is enabled.
+- (void)testShowPromoIfSignedOutAndHasAccounts_SyncToSigninEnabled {
   [SigninEarlGrey addFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
 
   OpenRecentTabsPanel();
