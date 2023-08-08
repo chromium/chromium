@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/ash/services/cros_healthd/public/cpp/fake_routine_controller.h"
+#include "chromeos/ash/services/cros_healthd/public/cpp/fake_routine_control.h"
 
 #include <utility>
 
@@ -13,37 +13,43 @@
 
 namespace ash::cros_healthd {
 
-FakeRoutineController::FakeRoutineController(
+FakeRoutineControl::FakeRoutineControl(
     mojo::PendingReceiver<mojom::RoutineControl> pending_receiver,
     mojo::PendingRemote<mojom::RoutineObserver> observer)
     : receiver_(this, std::move(pending_receiver)) {
   if (observer.is_valid()) {
     routine_observer_.Bind(std::move(observer));
+
+    auto init_state = mojom::RoutineState::New();
+    init_state->percentage = 0;
+    init_state->state_union = mojom::RoutineStateUnion::NewInitialized(
+        mojom::RoutineStateInitialized::New());
+    routine_observer_->OnRoutineStateChange(std::move(init_state));
   }
 }
 
-FakeRoutineController::~FakeRoutineController() = default;
+FakeRoutineControl::~FakeRoutineControl() = default;
 
-void FakeRoutineController::GetState(GetStateCallback callback) {
+void FakeRoutineControl::GetState(GetStateCallback callback) {
   std::move(callback).Run(get_state_response_->Clone());
 }
 
-void FakeRoutineController::Start() {
+void FakeRoutineControl::Start() {
   start_called_ = true;
 }
 
-void FakeRoutineController::SetGetStateResponse(mojom::RoutineStatePtr& state) {
+void FakeRoutineControl::SetGetStateResponse(mojom::RoutineStatePtr& state) {
   get_state_response_.Swap(&state);
 }
 
-mojo::Remote<mojom::RoutineObserver>* FakeRoutineController::GetObserver() {
+mojo::Remote<mojom::RoutineObserver>* FakeRoutineControl::GetObserver() {
   if (routine_observer_.is_bound()) {
     return &routine_observer_;
   }
   return nullptr;
 }
 
-mojo::Receiver<mojom::RoutineControl>* FakeRoutineController::GetReceiver() {
+mojo::Receiver<mojom::RoutineControl>* FakeRoutineControl::GetReceiver() {
   return &receiver_;
 }
 

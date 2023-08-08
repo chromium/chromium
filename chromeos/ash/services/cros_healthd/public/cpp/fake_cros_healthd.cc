@@ -14,7 +14,7 @@
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chromeos/ash/components/mojo_service_manager/connection.h"
-#include "chromeos/ash/services/cros_healthd/public/cpp/fake_routine_controller.h"
+#include "chromeos/ash/services/cros_healthd/public/cpp/fake_routine_control.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/service_connection.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_events.mojom.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_routines.mojom.h"
@@ -146,7 +146,7 @@ void FakeCrosHealthd::FlushRoutineServiceForTesting() {
   routines_provider_.FlushForTesting();
 }
 
-FakeRoutineController* FakeCrosHealthd::GetRoutineControllerForArgumentTag(
+FakeRoutineControl* FakeCrosHealthd::GetRoutineControlForArgumentTag(
     mojom::RoutineArgument::Tag tag) {
   auto it = routine_controllers_.find(tag);
   if (it == routine_controllers_.end()) {

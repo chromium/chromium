@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_ASH_SERVICES_CROS_HEALTHD_PUBLIC_CPP_FAKE_ROUTINE_CONTROLLER_H_
-#define CHROMEOS_ASH_SERVICES_CROS_HEALTHD_PUBLIC_CPP_FAKE_ROUTINE_CONTROLLER_H_
+#ifndef CHROMEOS_ASH_SERVICES_CROS_HEALTHD_PUBLIC_CPP_FAKE_ROUTINE_CONTROL_H_
+#define CHROMEOS_ASH_SERVICES_CROS_HEALTHD_PUBLIC_CPP_FAKE_ROUTINE_CONTROL_H_
 
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_routines.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -13,15 +13,15 @@
 
 namespace ash::cros_healthd {
 
-class FakeRoutineController : public mojom::RoutineControl {
+class FakeRoutineControl : public mojom::RoutineControl {
  public:
-  explicit FakeRoutineController(
+  explicit FakeRoutineControl(
       mojo::PendingReceiver<mojom::RoutineControl> pending_receiver,
       mojo::PendingRemote<mojom::RoutineObserver> observer);
-  ~FakeRoutineController() override;
+  ~FakeRoutineControl() override;
 
-  FakeRoutineController(const FakeRoutineController&) = delete;
-  FakeRoutineController& operator=(const FakeRoutineController&) = delete;
+  FakeRoutineControl(const FakeRoutineControl&) = delete;
+  FakeRoutineControl& operator=(const FakeRoutineControl&) = delete;
 
   // `RoutineControl`:
   void GetState(GetStateCallback callback) override;
@@ -45,4 +45,4 @@ class FakeRoutineController : public mojom::RoutineControl {
 
 }  // namespace ash::cros_healthd
 
-#endif  // CHROMEOS_ASH_SERVICES_CROS_HEALTHD_PUBLIC_CPP_FAKE_ROUTINE_CONTROLLER_H_
+#endif  // CHROMEOS_ASH_SERVICES_CROS_HEALTHD_PUBLIC_CPP_FAKE_ROUTINE_CONTROL_H_

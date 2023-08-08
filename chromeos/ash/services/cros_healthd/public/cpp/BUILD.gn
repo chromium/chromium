@@ -38,8 +38,8 @@ source_set("cpp") {
       "fake_ash_event_reporter.h",
       "fake_cros_healthd.cc",
       "fake_cros_healthd.h",
-      "fake_routine_controller.cc",
-      "fake_routine_controller.h",
+      "fake_routine_control.cc",
+      "fake_routine_control.h",
     ]
     public_deps += [
       "//ash/system/diagnostics/mojom",

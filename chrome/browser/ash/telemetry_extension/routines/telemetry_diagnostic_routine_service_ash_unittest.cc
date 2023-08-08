@@ -110,7 +110,7 @@ TEST_F(TelemetryDiagnosticsRoutineServiceAshTest, CreateRoutine) {
   FlushForTesting();
 
   EXPECT_TRUE(
-      cros_healthd::FakeCrosHealthd::Get()->GetRoutineControllerForArgumentTag(
+      cros_healthd::FakeCrosHealthd::Get()->GetRoutineControlForArgumentTag(
           healthd::RoutineArgument::Tag::kUnrecognizedArgument));
 }
 
@@ -127,7 +127,7 @@ TEST_F(TelemetryDiagnosticsRoutineServiceAshTest, StartRoutine) {
   FlushForTesting();
 
   auto* fake_controller =
-      cros_healthd::FakeCrosHealthd::Get()->GetRoutineControllerForArgumentTag(
+      cros_healthd::FakeCrosHealthd::Get()->GetRoutineControlForArgumentTag(
           healthd::RoutineArgument::Tag::kUnrecognizedArgument);
   ASSERT_TRUE(fake_controller);
 
@@ -153,7 +153,7 @@ TEST_F(TelemetryDiagnosticsRoutineServiceAshTest, GetState) {
   FlushForTesting();
 
   auto* fake_controller =
-      cros_healthd::FakeCrosHealthd::Get()->GetRoutineControllerForArgumentTag(
+      cros_healthd::FakeCrosHealthd::Get()->GetRoutineControlForArgumentTag(
           healthd::RoutineArgument::Tag::kUnrecognizedArgument);
   ASSERT_TRUE(fake_controller);
 
@@ -180,6 +180,7 @@ TEST_F(TelemetryDiagnosticsRoutineServiceAshTest, GetState) {
 }
 
 TEST_F(TelemetryDiagnosticsRoutineServiceAshTest, CreateAndStartRoutine) {
+  TestRoutineObserver observer;
   mojo::Remote<crosapi::TelemetryDiagnosticRoutineControl> control_remote;
 
   auto arg =
@@ -187,17 +188,22 @@ TEST_F(TelemetryDiagnosticsRoutineServiceAshTest, CreateAndStartRoutine) {
           true);
   routines_service()->CreateRoutine(std::move(arg),
                                     control_remote.BindNewPipeAndPassReceiver(),
-                                    GetEmptyObserver());
+                                    observer.GetPendingRemote());
 
   control_remote->Start();
 
   FlushForTesting();
 
   auto* fake_controller =
-      cros_healthd::FakeCrosHealthd::Get()->GetRoutineControllerForArgumentTag(
+      cros_healthd::FakeCrosHealthd::Get()->GetRoutineControlForArgumentTag(
           healthd::RoutineArgument::Tag::kUnrecognizedArgument);
   ASSERT_TRUE(fake_controller);
 
+  EXPECT_EQ(
+      observer.WaitForNextValue(),
+      crosapi::TelemetryDiagnosticRoutineState::New(
+          0, crosapi::TelemetryDiagnosticRoutineStateUnion::NewInitialized(
+                 crosapi::TelemetryDiagnosticRoutineStateInitialized::New())));
   EXPECT_TRUE(fake_controller->has_start_been_called());
 }
 
@@ -216,7 +222,7 @@ TEST_F(TelemetryDiagnosticsRoutineServiceAshTest, RoutineObserver) {
   FlushForTesting();
 
   auto* fake_controller =
-      cros_healthd::FakeCrosHealthd::Get()->GetRoutineControllerForArgumentTag(
+      cros_healthd::FakeCrosHealthd::Get()->GetRoutineControlForArgumentTag(
           healthd::RoutineArgument::Tag::kUnrecognizedArgument);
   ASSERT_TRUE(fake_controller);
   auto* observer_remote = fake_controller->GetObserver();
@@ -231,6 +237,12 @@ TEST_F(TelemetryDiagnosticsRoutineServiceAshTest, RoutineObserver) {
 
   FlushForTesting();
 
+  // The first event we observe is always the init event.
+  EXPECT_EQ(
+      observer.WaitForNextValue(),
+      crosapi::TelemetryDiagnosticRoutineState::New(
+          0, crosapi::TelemetryDiagnosticRoutineStateUnion::NewInitialized(
+                 crosapi::TelemetryDiagnosticRoutineStateInitialized::New())));
   EXPECT_EQ(observer.WaitForNextValue(),
             crosapi::TelemetryDiagnosticRoutineState::New(
                 kPercentage, crosapi::TelemetryDiagnosticRoutineStateUnion::
@@ -250,7 +262,7 @@ TEST_F(TelemetryDiagnosticsRoutineServiceAshTest, OnCrosapiDisconnectControl) {
   FlushForTesting();
 
   auto* fake_controller =
-      cros_healthd::FakeCrosHealthd::Get()->GetRoutineControllerForArgumentTag(
+      cros_healthd::FakeCrosHealthd::Get()->GetRoutineControlForArgumentTag(
           healthd::RoutineArgument::Tag::kUnrecognizedArgument);
   ASSERT_TRUE(fake_controller);
 
@@ -279,7 +291,7 @@ TEST_F(TelemetryDiagnosticsRoutineServiceAshTest,
   FlushForTesting();
 
   auto* fake_controller =
-      cros_healthd::FakeCrosHealthd::Get()->GetRoutineControllerForArgumentTag(
+      cros_healthd::FakeCrosHealthd::Get()->GetRoutineControlForArgumentTag(
           healthd::RoutineArgument::Tag::kUnrecognizedArgument);
   ASSERT_TRUE(fake_controller);
 
@@ -310,7 +322,7 @@ TEST_F(TelemetryDiagnosticsRoutineServiceAshTest, OnCrosapiDisconnectObserver) {
   FlushForTesting();
 
   auto* fake_controller =
-      cros_healthd::FakeCrosHealthd::Get()->GetRoutineControllerForArgumentTag(
+      cros_healthd::FakeCrosHealthd::Get()->GetRoutineControlForArgumentTag(
           healthd::RoutineArgument::Tag::kUnrecognizedArgument);
   ASSERT_TRUE(fake_controller);
   ASSERT_TRUE(fake_controller->GetObserver());
@@ -339,7 +351,7 @@ TEST_F(TelemetryDiagnosticsRoutineServiceAshTest,
   FlushForTesting();
 
   auto* fake_controller =
-      cros_healthd::FakeCrosHealthd::Get()->GetRoutineControllerForArgumentTag(
+      cros_healthd::FakeCrosHealthd::Get()->GetRoutineControlForArgumentTag(
           healthd::RoutineArgument::Tag::kUnrecognizedArgument);
   ASSERT_TRUE(fake_controller);
   ASSERT_TRUE(fake_controller->GetObserver());
@@ -368,7 +380,7 @@ TEST_F(TelemetryDiagnosticsRoutineServiceAshTest,
   FlushForTesting();
 
   auto* fake_controller =
-      cros_healthd::FakeCrosHealthd::Get()->GetRoutineControllerForArgumentTag(
+      cros_healthd::FakeCrosHealthd::Get()->GetRoutineControlForArgumentTag(
           healthd::RoutineArgument::Tag::kUnrecognizedArgument);
   ASSERT_TRUE(fake_controller);
   ASSERT_TRUE(fake_controller->GetObserver());

@@ -13,7 +13,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chromeos/ash/components/mojo_service_manager/mojom/mojo_service_manager.mojom.h"
-#include "chromeos/ash/services/cros_healthd/public/cpp/fake_routine_controller.h"
+#include "chromeos/ash/services/cros_healthd/public/cpp/fake_routine_control.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_events.mojom.h"
@@ -153,7 +153,7 @@ class FakeCrosHealthd final : public mojom::CrosHealthdDiagnosticsService,
   // certain properties that might change during tests. If there is no
   // `FakeRoutineController` registered for a certain type of routine, this
   // returns `nullptr`.
-  FakeRoutineController* GetRoutineControllerForArgumentTag(
+  FakeRoutineControl* GetRoutineControlForArgumentTag(
       mojom::RoutineArgument::Tag tag);
 
   // Set expectation about the parameter that is passed to a call of
@@ -395,7 +395,7 @@ class FakeCrosHealthd final : public mojom::CrosHealthdDiagnosticsService,
   // Collection of registered general observers grouped by category.
   std::map<mojom::EventCategoryEnum, mojo::RemoteSet<mojom::EventObserver>>
       event_observers_;
-  std::map<mojom::RoutineArgument::Tag, FakeRoutineController>
+  std::map<mojom::RoutineArgument::Tag, FakeRoutineControl>
       routine_controllers_;
 
   // Contains the most recent params passed to `GetRoutineUpdate`, if it has
