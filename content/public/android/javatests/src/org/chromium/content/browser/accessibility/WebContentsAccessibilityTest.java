@@ -161,6 +161,8 @@ public class WebContentsAccessibilityTest {
     private static final Map<String, Boolean> ON_DEMAND_ON_AXMODES_ON =
             Map.of(ContentFeatureList.ON_DEMAND_ACCESSIBILITY_EVENTS, true,
                     ContentFeatureList.ACCESSIBILITY_PERFORMANCE_FILTERING, true);
+    private static final Map<String, Boolean> AUTO_DISABLE_V2_ON =
+            Map.of(ContentFeatureList.AUTO_DISABLE_ACCESSIBILITY_V2, true);
 
     // Constant values for unit tests
     private static final int UNSUPPRESSED_EXPECTED_COUNT = 15;
@@ -743,6 +745,27 @@ public class WebContentsAccessibilityTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> mActivityTestRule.mWcax.restoreFocus());
         CriteriaHelper.pollUiThread(
                 () -> createAccessibilityNodeInfo(vvid2).isAccessibilityFocused());
+    }
+
+    /**
+     * Tests that Auto-disable Accessibility timers are not set for instances that are not
+     * candidates for the feature (e.g. WebView, CCT).
+     */
+    @Test
+    @SmallTest
+    public void testAutoDisableAccessibility_candidatesCheck() throws Throwable {
+        setupTestWithHTML("<p>This is a test</p>");
+        waitForNodeMatching(sTextMatcher, "This is a test");
+
+        // Enable feature, but set this instance as not a candidate.
+        FeatureList.setTestFeatures(AUTO_DISABLE_V2_ON);
+        mActivityTestRule.mWcax.setIsAutoDisableAccessibilityCandidateForTesting(false);
+
+        // Changing the accessibility state will refresh the native state.
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { AccessibilityState.setIsTextShowPasswordEnabledForTesting(true); });
+
+        Assert.assertFalse(mActivityTestRule.mWcax.hasAnyPendingTimersForTesting());
     }
 
     // ------------------ Tests of AccessibilityNodeInfo caching mechanism ------------------ //

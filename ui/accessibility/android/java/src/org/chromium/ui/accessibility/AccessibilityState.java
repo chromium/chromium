@@ -25,6 +25,7 @@ import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityManager;
 import android.view.autofill.AutofillManager;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.ActivityState;
@@ -127,6 +128,20 @@ public class AccessibilityState {
             this.isSpokenFeedbackServicePresent = isSpokenFeedbackServicePresent;
             this.isTextShowPasswordEnabled = isTextShowPasswordEnabled;
             this.isOnlyPasswordManagersEnabled = isOnlyPasswordManagersEnabled;
+        }
+
+        @NonNull
+        @Override
+        public String toString() {
+            return "State{"
+                    + "isScreenReaderEnabled=" + isScreenReaderEnabled
+                    + ", isTouchExplorationEnabled=" + isTouchExplorationEnabled
+                    + ", isPerformGesturesEnabled=" + isPerformGesturesEnabled
+                    + ", isAnyAccessibilityServiceEnabled=" + isAnyAccessibilityServiceEnabled
+                    + ", isAccessibilityToolPresent=" + isAccessibilityToolPresent
+                    + ", isSpokenFeedbackServicePresent=" + isSpokenFeedbackServicePresent
+                    + ", isTextShowPasswordEnabled=" + isTextShowPasswordEnabled
+                    + ", isOnlyPasswordManagersEnabled=" + isOnlyPasswordManagersEnabled + '}';
         }
     }
 
@@ -543,6 +558,7 @@ public class AccessibilityState {
         State oldState = sState;
         sState = newState;
 
+        Log.v(TAG, "New AccessibilityState: " + sState.toString());
         for (Listener listener : sListeners) {
             listener.onAccessibilityStateChanged(oldState, newState);
         }

@@ -222,6 +222,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
     private final AutoDisableAccessibilityHandler mAutoDisableAccessibilityHandler;
     private boolean mIsCurrentlyAutoDisabled;
     private int mAutoDisableUsageCounter;
+    private boolean mIsAutoDisableAccessibilityCandidate;
 
     /**
      * Create a WebContentsAccessibilityImpl object.
@@ -509,6 +510,15 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         ResettersForTesting.register(() -> mTracker = oldValue);
     }
 
+    public void setIsAutoDisableAccessibilityCandidateForTesting(
+            boolean isAutoDisableAccessibilityCandidate) {
+        mIsAutoDisableAccessibilityCandidate = isAutoDisableAccessibilityCandidate;
+    }
+
+    public boolean hasAnyPendingTimersForTesting() {
+        return mAutoDisableAccessibilityHandler.hasPendingTimer();
+    }
+
     public void signalEndOfTestForTesting() {
         WebContentsAccessibilityImplJni.get().signalEndOfTestForTesting(mNativeObj);
     }
@@ -705,7 +715,8 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
             // disabled then re-enabled the renderer multiple times for this instance, then we
             // will return early and keep accessibility enabled to prevent further churn.
             if (ContentFeatureMap.isEnabled(ContentFeatureList.AUTO_DISABLE_ACCESSIBILITY_V2)) {
-                if (mAutoDisableUsageCounter >= AUTO_DISABLE_SINGLE_INSTANCE_TOGGLE_LIMIT) {
+                if (mAutoDisableUsageCounter >= AUTO_DISABLE_SINGLE_INSTANCE_TOGGLE_LIMIT
+                        || !mIsAutoDisableAccessibilityCandidate) {
                     mAutoDisableAccessibilityHandler.cancelDisableTimer();
                     return;
                 }
@@ -953,6 +964,12 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
     @Override
     public void setIsImageDescriptionsCandidate(boolean isImageDescriptionsCandidate) {
         mIsImageDescriptionsCandidate = isImageDescriptionsCandidate;
+    }
+
+    @Override
+    public void setIsAutoDisableAccessibilityCandidate(
+            boolean isAutoDisableAccessibilityCandidate) {
+        mIsAutoDisableAccessibilityCandidate = isAutoDisableAccessibilityCandidate;
     }
 
     @Override

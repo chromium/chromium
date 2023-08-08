@@ -86,6 +86,12 @@ public interface WebContentsAccessibility {
     void setIsImageDescriptionsCandidate(boolean isImageDescriptionsCandidate);
 
     /**
+     * Sets whether or not this instance is a candidate for the auto-disable accessibility feature,
+     * if it is enabled. This feature is dependent on embedder behavior and accessibility state.
+     */
+    void setIsAutoDisableAccessibilityCandidate(boolean isAutoDisableAccessibilityCandidate);
+
+    /**
      * Called when autofill popup is displayed. Used to upport navigation through the view.
      * @param autofillPopupView The displayed autofill popup view.
      */
