@@ -23,6 +23,8 @@
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/libavif/src/include/avif/avif.h"
+#include "ui/gfx/color_space.h"
+#include "ui/gfx/color_transform.h"
 
 #define FIXME_SUPPORT_ICC_PROFILE_NO_TRANSFORM 0
 #define FIXME_SUPPORT_ICC_PROFILE_TRANSFORM 0
@@ -417,7 +419,7 @@ StaticColorCheckParam kTestParams[] = {
      ImageDecoder::kAlphaNotPremultiplied,
      ColorBehavior::kTag,
      ImageOrientationEnum::kOriginTopLeft,
-     1,
+     2,
      {
          {gfx::Point(0, 0), SkColorSetARGB(0, 255, 0, 0)},
          {gfx::Point(1, 1), SkColorSetARGB(128, 255, 0, 0)},
@@ -430,7 +432,7 @@ StaticColorCheckParam kTestParams[] = {
      ImageDecoder::kAlphaPremultiplied,
      ColorBehavior::kTransformToSRGB,
      ImageOrientationEnum::kOriginTopLeft,
-     1,
+     2,
      {
          {gfx::Point(0, 0), SkColorSetARGB(0, 0, 0, 0)},
          {gfx::Point(1, 1), SkColorSetARGB(128, 255, 0, 0)},
@@ -732,8 +734,13 @@ void ReadYUV(const char* file_name,
 
   // Convert our YUV pixel to RGB to avoid an excessive amounts of test
   // expectations. We otherwise need bit_depth * yuv_sampling * color_type.
-  auto* transform = reinterpret_cast<AVIFImageDecoder*>(decoder.get())
-                        ->GetColorTransformForTesting();
+  gfx::ColorTransform::Options options;
+  options.src_bit_depth = bit_depth;
+  options.dst_bit_depth = bit_depth;
+  auto transform = gfx::ColorTransform::NewColorTransform(
+      reinterpret_cast<AVIFImageDecoder*>(decoder.get())
+          ->GetColorSpaceForTesting(),
+      gfx::ColorSpace(), options);
   transform->Transform(rgb_pixel, 1);
 }
 
