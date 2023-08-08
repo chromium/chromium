@@ -123,7 +123,7 @@ class DeviceSettingsProvider
   std::vector<base::OnceClosure> callbacks_;
 
   raw_ptr<DeviceSettingsService, ExperimentalAsh> device_settings_service_;
-  raw_ptr<PrefService, DanglingUntriaged | ExperimentalAsh> local_state_;
+  raw_ptr<PrefService, ExperimentalAsh> local_state_;
 
   mutable PrefValueMap migration_values_;
 

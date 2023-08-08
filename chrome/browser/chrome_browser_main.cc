@@ -987,9 +987,9 @@ int ChromeBrowserMainParts::PreCreateThreadsImpl() {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::CrosSettings::Initialize(local_state);
-  ash::HWDataUsageController::Initialize(local_state);
   ash::StatsReportingController::Initialize(local_state);
   arc::StabilityMetricsManager::Initialize(local_state);
+  ash::HWDataUsageController::Initialize(local_state);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   {
@@ -2006,9 +2006,11 @@ void ChromeBrowserMainParts::PostDestroyThreads() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // These controllers make use of `browser_process_->local_state()`, so they
   // must be destroyed before `browser_process_`.
+  // Shutting down in the reverse order of Initialize().
   ash::HWDataUsageController::Shutdown();
   arc::StabilityMetricsManager::Shutdown();
   ash::StatsReportingController::Shutdown();
+  ash::CrosSettings::Shutdown();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // The below call to browser_shutdown::ShutdownPostThreadsStop() deletes
@@ -2040,14 +2042,6 @@ void ChromeBrowserMainParts::PostDestroyThreads() {
 #endif  // BUILDFLAG(ENABLE_PROCESS_SINGLETON)
 
   device_event_log::Shutdown();
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // CrosSettings must out-live `browser_process_->browser_policy_connector()`.
-  // TODO(elkurin): CrosSettings should be shutdown before
-  // `browser_process_->local_state()` but there is a circular dependency here.
-  // Resolve this after browser policy connector dependency is resolved.
-  ash::CrosSettings::Shutdown();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 

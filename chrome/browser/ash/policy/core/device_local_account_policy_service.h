@@ -138,7 +138,7 @@ class DeviceLocalAccountPolicyService {
 
   base::ObserverList<Observer, true>::Unchecked observers_;
 
-  raw_ptr<ash::SessionManagerClient, DanglingUntriaged> session_manager_client_;
+  raw_ptr<ash::SessionManagerClient> session_manager_client_;
   raw_ptr<ash::DeviceSettingsService> device_settings_service_;
   raw_ptr<ash::CrosSettings> cros_settings_;
   raw_ptr<AffiliatedInvalidationServiceProvider> invalidation_service_provider_;

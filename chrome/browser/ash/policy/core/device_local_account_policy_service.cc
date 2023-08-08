@@ -121,7 +121,11 @@ DeviceLocalAccountPolicyService::~DeviceLocalAccountPolicyService() {
 }
 
 void DeviceLocalAccountPolicyService::Shutdown() {
+  session_manager_client_ = nullptr;
+  device_settings_service_ = nullptr;
+  cros_settings_ = nullptr;
   device_management_service_ = nullptr;
+
   DeleteBrokers(&policy_brokers_);
 }
 
