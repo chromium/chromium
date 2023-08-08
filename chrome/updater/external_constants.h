@@ -76,10 +76,6 @@ class ExternalConstants : public base::RefCountedThreadSafe<ExternalConstants> {
 // Sets up an external constants chain of responsibility. May block.
 scoped_refptr<ExternalConstants> CreateExternalConstants();
 
-// Sets up an external constants provider yielding only default values.
-// Intended only for testing of other constants providers.
-scoped_refptr<ExternalConstants> CreateDefaultExternalConstantsForTesting();
-
 }  // namespace updater
 
 #endif  // CHROME_UPDATER_EXTERNAL_CONSTANTS_H_
