@@ -236,15 +236,17 @@ void TouchSelectionMenuViews::WindowClosing() {
 
 void TouchSelectionMenuViews::ButtonPressed(int command,
                                             const ui::Event& event) {
-  DCHECK(client_);
   CloseMenu();
-  client_->ExecuteCommand(command, event.flags());
+  if (client_) {
+    client_->ExecuteCommand(command, event.flags());
+  }
 }
 
 void TouchSelectionMenuViews::EllipsisPressed(const ui::Event& event) {
-  DCHECK(client_);
   CloseMenu();
-  client_->RunContextMenu();
+  if (client_) {
+    client_->RunContextMenu();
+  }
 }
 
 BEGIN_METADATA(TouchSelectionMenuViews, BubbleDialogDelegateView)
