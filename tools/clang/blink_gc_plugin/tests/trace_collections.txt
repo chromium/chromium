@@ -38,9 +38,9 @@ void HeapObject::Trace(Visitor* visitor) const {}
     HeapHashMap<Member<HeapObject>, int > m_heapMapVal;
     ^
 ./trace_collections.h:34:5: note: [blink-gc] Untraced field 'm_wtfMapKey' declared here:
-    HashMap<int, Member<HeapObject>, void, void, void, HeapAllocator>
+    HashMap<int, Member<HeapObject>, void, void, HeapAllocator> m_wtfMapKey;
     ^
-./trace_collections.h:36:5: note: [blink-gc] Untraced field 'm_wtfMapVal' declared here:
-    HashMap<Member<HeapObject>, int, void, void, void, HeapAllocator>
+./trace_collections.h:35:5: note: [blink-gc] Untraced field 'm_wtfMapVal' declared here:
+    HashMap<Member<HeapObject>, int, void, void, HeapAllocator> m_wtfMapVal;
     ^
 1 warning generated.
