@@ -502,7 +502,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.CaptionSettingsLoadedFromPrefs"
-    enum="BooleanEnabled" expires_after="2023-09-06">
+    enum="BooleanEnabled" expires_after="2024-08-07">
   <owner>evliu@google.com</owner>
   <owner>chrome-media-ux@google.com</owner>
   <summary>
@@ -512,7 +512,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.CaptionSettingsLoadedFromSystemSettings"
-    enum="BooleanEnabled" expires_after="2023-09-06">
+    enum="BooleanEnabled" expires_after="2024-08-07">
   <owner>evliu@google.com</owner>
   <owner>chrome-media-ux@google.com</owner>
   <summary>
@@ -2200,7 +2200,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.VTTContainsStyleBlock" enum="BooleanEnabled"
-    expires_after="2023-09-06">
+    expires_after="2024-08-07">
   <owner>evliu@google.com</owner>
   <owner>chrome-media-ux@google.com</owner>
   <summary>
