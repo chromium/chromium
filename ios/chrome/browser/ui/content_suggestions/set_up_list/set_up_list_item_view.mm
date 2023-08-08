@@ -98,10 +98,15 @@ struct ViewConfig {
           kCompactTextSpacing,
       };
     } else if (data.heroCellMagicStackLayout) {
+      int syncString =
+          base::FeatureList::IsEnabled(
+              syncer::kReplaceSyncPromosWithSignInPromos)
+              ? IDS_IOS_IDENTITY_DISC_SIGN_IN_PROMO_LABEL
+              : IDS_IOS_SET_UP_LIST_SIGN_IN_SYNC_MAGIC_STACK_DESCRIPTION;
       _config = {
           NO,
           YES,
-          IDS_IOS_SET_UP_LIST_SIGN_IN_SYNC_MAGIC_STACK_DESCRIPTION,
+          syncString,
           IDS_IOS_SET_UP_LIST_DEFAULT_BROWSER_MAGIC_STACK_DESCRIPTION,
           IDS_IOS_SET_UP_LIST_AUTOFILL_MAGIC_STACK_DESCRIPTION,
           UIFontTextStyleSubheadline,
