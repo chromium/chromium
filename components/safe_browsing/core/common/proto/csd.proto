@@ -2296,4 +2296,20 @@ message ExtensionTelemetryReportResponse {
     repeated ExtensionParameters extension_parameters = 4;
   }
   optional Configuration configuration = 1;
+
+  // Verdict returned by the telemetry server for any unsafe off-store
+  // extensions installed.
+  message OffstoreExtensionVerdict {
+    enum OffstoreExtensionVerdictType {
+      UNSPECIFIED = 0;
+      NONE = 1;  // Used to unblocklisted an extension.
+      MALWARE = 2;
+    }
+
+    optional string extension_id = 1;
+    optional OffstoreExtensionVerdictType verdict_type = 2;
+  }
+
+  // Verdicts for unsafe off-store extensions.
+  repeated OffstoreExtensionVerdict offstore_extension_verdicts = 2;
 }
