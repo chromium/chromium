@@ -232,7 +232,12 @@ void DeleteProfileHelper::CleanUpDeletedProfiles() {
     } else {
       LOG(ERROR) << "Found invalid profile path in deleted_profiles: "
                  << profile_path->AsUTF8Unsafe();
-      NOTREACHED();
+      SCOPED_CRASH_KEY_STRING256("DeleteProfileHelper", "profile_path",
+                                 profile_path->AsUTF8Unsafe());
+      SCOPED_CRASH_KEY_BOOL(
+          "DeleteProfileHelper", "allowed_path",
+          profile_manager_->IsAllowedProfilePath(*profile_path));
+      base::debug::DumpWithoutCrashing();
     }
   }
 }
