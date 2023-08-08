@@ -195,6 +195,7 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1153636665119721804">Avancerat skydd från Google</translation>
 <translation id="1155545602507378023">Nej, bara på den här enheten</translation>
 <translation id="1155816283571436363">Ansluter till telefonen</translation>
+<translation id="1157952955648710254">Stäng sidopanelen för Google Sök</translation>
 <translation id="1158080958325422608">Ändra till versaler</translation>
 <translation id="1158238185437008462">Se minnen</translation>
 <translation id="1159879754517035595">Hantera inställningar för tillägg</translation>
@@ -6519,6 +6520,7 @@ Du kan skicka den till Google för att kontrollera om den är säker. Genomsökn
 <translation id="6547854317475115430"><ph name="BEGIN_PARAGRAPH1" />Med Googles platstjänst används källor som wifi, mobila nätverk och sensorer för att avgöra enhetens plats.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Du kan inaktivera plats för Android-enheten när du vill via Inställningar &gt; Appar &gt; Google Play Butik &gt; Hantera Android-inställningar &gt; Säkerhet och plats &gt; Plats. Du kan även inaktivera användningen av wifi, mobilnätverk och sensorer för platstjänsten genom att inaktivera Platsangivelsens exakthet i samma meny.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="654871471440386944">Vill du aktivera textmarkörläge?</translation>
+<translation id="6548945820758901244">Öppna sidopanelen i Google Sök</translation>
 <translation id="6549038875972762904">Gör om konfigurationen</translation>
 <translation id="6550675742724504774">Alternativ</translation>
 <translation id="65513682072153627">Denna ikon visas när en inställning eller funktion hanteras av administratören.</translation>

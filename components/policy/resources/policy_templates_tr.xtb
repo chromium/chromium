@@ -1413,15 +1413,6 @@ Bu politikanın ayarlanması için <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_POLI
 <translation id="2223393221350938149">Hiçbir sitenin JavaScript JIT çalıştırmasına izin verme</translation>
 <translation id="2223598546285729819">Varsayılan bildirim ayarı</translation>
 <translation id="222673035924187991">TLS Encrypted ClientHello'yu etkinleştir</translation>
-<translation id="222944823539535006">Bu politikanın desteği sonlandırıldığı için sürüm 130'da kaldırılacaktır. Bunun yerine lütfen <ph name="URL_KEYED_METRICS_ALLOWED_POLICY_NAME" /> politikasını kullanın.
-
-Politika, Etkin değerine ayarlanırsa kullanıcının ziyaret ettiği sayfaların URL'lerini, arama ve göz atmayı iyileştirmek için Google'a gönderen, URL içeren veya URL'lerle ilişkili anonim veri toplama her zaman etkin olur.
-
-Politika, Devre Dışı değerine ayarlanırsa URL içeren veya URL'lerle ilişkili anonim veriler toplanmaz.
-
-Bu politika ayarlanmadan bırakılırsa kullanıcı bu ayarı manuel olarak değiştirebilir.
-
-<ph name="PRODUCT_OS_NAME" /> Kiosk'ta bu politika, "Kullanıcının karar vermesine izin ver" seçeneğini sunmaz. Bu politika <ph name="PRODUCT_OS_NAME" /> Kiosk için ayarlanmazsa URL içeren veya URL'lerle ilişkili anonim veri toplama her zaman etkin olur.</translation>
 <translation id="2231817271680715693">İlk çalıştırmada tarama geçmişini varsayılan tarayıcıdan içe aktar</translation>
 <translation id="2231962946025538735">Bu politika kullanımdan kaldırılmıştır. Lütfen Flash eklentisinin kullanılabilirliğini kontrol etmek için <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" /> politikasını, PDF dosyaları açılırken entegre PDF görüntüleyicisinin kullanılıp kullanılmayacağını kontrol etmek için de <ph name="ALWAYS_OPEN_PDF_EXTERNALLY_POLICY_NAME" /> politikasını kullanın.
 

@@ -191,6 +191,7 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="1153636665119721804">Google Qabaqcıl Qoruma Proqramı</translation>
 <translation id="1155545602507378023">Xeyr, yalnız bu cihaz</translation>
 <translation id="1155816283571436363">Telefonunuza qoşulur</translation>
+<translation id="1157952955648710254">Google Axtarış yan panelini bağlayın</translation>
 <translation id="1158080958325422608">Böyük hərflərə çevirin</translation>
 <translation id="1158238185437008462">Xatirələrə baxın</translation>
 <translation id="1159879754517035595">Artırma ayarlarını idarə edin</translation>
@@ -6498,6 +6499,7 @@ Təhlükəli olub-olmadığını yoxlamaq üçün onu Google-a göndərə bilər
 <translation id="6547854317475115430"><ph name="BEGIN_PARAGRAPH1" />Google'un məkan xidməti cihazınızın məkanını təxmin etməkdə kömək üçün Wi-Fi, mobil şəbəkələr və sensorlar kimi mənbələrdən istifadə edir.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />İstənilən vaxt cihazınızda Ayarlar &gt; Tətbiqlər &gt; Google Play Market &gt; Android tərcihlərini idarə edin &gt; Güvənlik və məkan &gt; Məkan bölməsinə keçərək Android məkanını deaktiv edə bilərsiniz. Həmçinin eyni menyuda "Google Məkan Dəqiqliyini" deaktiv edərək Android məkanı üçün Wi-Fi, mobil şəbəkələr və sensorlardan istifadəni də deaktiv edə bilərsiniz.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="654871471440386944">Klaviatura ilə baxış aktiv edilsin?</translation>
+<translation id="6548945820758901244">Google Axtarış yan panelini açın</translation>
 <translation id="6549038875972762904">Ayarlamanı təkrarlayın</translation>
 <translation id="6550675742724504774">Seçimlər</translation>
 <translation id="65513682072153627">Ayar və ya funksiya administratorunuz tərəfindən idarə edildikdə bu "İdarə olunur" ikonasını görəcəksiniz.</translation>

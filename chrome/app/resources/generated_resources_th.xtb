@@ -193,6 +193,7 @@
 <translation id="1153636665119721804">โปรแกรมการปกป้องขั้นสูงของ Google</translation>
 <translation id="1155545602507378023">ไม่ อุปกรณ์นี้เท่านั้น</translation>
 <translation id="1155816283571436363">กำลังเชื่อมต่อกับโทรศัพท์ของคุณ</translation>
+<translation id="1157952955648710254">ปิดแผงด้านข้างของ Google Search</translation>
 <translation id="1158080958325422608">Make Uppercase</translation>
 <translation id="1158238185437008462">ดูความทรงจำ</translation>
 <translation id="1159879754517035595">จัดการการตั้งค่าส่วนขยาย</translation>
@@ -6500,6 +6501,7 @@
 <translation id="6547854317475115430"><ph name="BEGIN_PARAGRAPH1" />บริการตำแหน่งของ Google จะใช้แหล่งที่มาอย่าง Wi-Fi, เครือข่ายมือถือ และเซ็นเซอร์เพื่อช่วยประมาณตำแหน่งของอุปกรณ์<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />คุณปิดการใช้ตำแหน่งของ Android ในอุปกรณ์ได้ทุกเมื่อโดยไปที่การตั้งค่า &gt; แอป &gt; Google Play Store &gt; จัดการค่ากำหนด Android &gt; ความปลอดภัยและตำแหน่ง &gt; ตำแหน่ง และยังปิดการใช้ Wi-Fi, เครือข่ายมือถือ และเซ็นเซอร์สำหรับตำแหน่งของ Android ได้ด้วย โดยการปิด "ความแม่นยำของตำแหน่งของ Google" ในเมนูเดียวกัน<ph name="END_PARAGRAPH2" /></translation>
 <translation id="654871471440386944">เปิดการเรียกดูด้วยแป้นพิมพ์ใช่ไหม</translation>
+<translation id="6548945820758901244">เปิดแผงด้านข้างของ Google Search</translation>
 <translation id="6549038875972762904">ตั้งค่าใหม่</translation>
 <translation id="6550675742724504774">ตัวเลือก</translation>
 <translation id="65513682072153627">คุณจะเห็นไอคอน "มีการจัดการ" เมื่อการตั้งค่าหรือฟีเจอร์นั้นจัดการโดยผู้ดูแลระบบ</translation>

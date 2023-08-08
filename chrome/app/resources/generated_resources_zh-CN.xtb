@@ -193,6 +193,7 @@
 <translation id="1153636665119721804">Google 高级保护计划</translation>
 <translation id="1155545602507378023">否，仅限此设备</translation>
 <translation id="1155816283571436363">正在连接到您的手机</translation>
+<translation id="1157952955648710254">关闭 Google 搜索侧边栏</translation>
 <translation id="1158080958325422608">转换为大写</translation>
 <translation id="1158238185437008462">查看回忆</translation>
 <translation id="1159879754517035595">管理扩展程序设置</translation>
@@ -6489,6 +6490,7 @@
 <translation id="6547854317475115430"><ph name="BEGIN_PARAGRAPH1" />Google 的位置信息服务会使用 WLAN、移动网络和传感器等来源协助估测您设备所在的位置。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />您随时可在此设备上关闭 Android 位置信息，方法是依次转到“设置”&gt;“应用”&gt;“Google Play 商店”&gt;“管理 Android 偏好设置”&gt;“安全性和位置信息”&gt;“位置信息”。您还可在同一菜单中关闭“Google 位置信息精确度”，以禁止使用 WLAN、移动网络和传感器获取 Android 位置信息。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="654871471440386944">要开启光标浏览模式吗？</translation>
+<translation id="6548945820758901244">打开 Google 搜索侧边栏</translation>
 <translation id="6549038875972762904">重新设置</translation>
 <translation id="6550675742724504774">选项</translation>
 <translation id="65513682072153627">如果某项设置或功能由您的管理员管理，您将会看到此“受管”图标。</translation>

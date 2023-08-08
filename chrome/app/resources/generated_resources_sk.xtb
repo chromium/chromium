@@ -193,6 +193,7 @@ Heslá si môžete kedykoľvek skontrolovať v službe <ph name="GOOGLE_PASSWOR
 <translation id="1153636665119721804">Program rozšírenej ochrany Google</translation>
 <translation id="1155545602507378023">Nie, iba v tomto zariadení</translation>
 <translation id="1155816283571436363">Pripája sa k vášmu telefónu</translation>
+<translation id="1157952955648710254">Zavrite bočný panel Vyhľadávania Google</translation>
 <translation id="1158080958325422608">Zmeniť na veľké písmená</translation>
 <translation id="1158238185437008462">Zobraziť spomienky</translation>
 <translation id="1159879754517035595">Spravovať nastavenia rozšírení</translation>
@@ -6505,6 +6506,7 @@ Môžete ho odoslať Googlu, ktorý skontroluje, či je bezpečný. Kontrola zvy
 <translation id="6547854317475115430"><ph name="BEGIN_PARAGRAPH1" />Služba určovania polohy od Googlu odhaduje polohu vášho zariadenia pomocou zdrojov, ako sú Wi-Fi, mobilné siete a senzory.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Polohu Androidu vo svojom zariadení môžete kedykoľvek vypnúť v sekcii Nastavenia &gt; Aplikácie &gt; Obchod Google Play &gt; Spravovať predvoľby Androidu &gt; Zabezpečenie a poloha &gt; Poloha. Môžete vypnúť aj určovanie polohy Androidu pomocou Wi‑Fi, mobilných sietí a senzorov tak, že v rovnakej ponuke vypnete Presnosť určovania polohy Google.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="654871471440386944">Chcete zapnúť prehliadanie Caret?</translation>
+<translation id="6548945820758901244">Otvorte bočný panel Vyhľadávania Google</translation>
 <translation id="6549038875972762904">Znova nastaviť</translation>
 <translation id="6550675742724504774">Možnosti</translation>
 <translation id="65513682072153627">Túto ikonu Spravované uvidíte pri nastavení alebo funkcií ovládanej vaším správcom.</translation>

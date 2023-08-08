@@ -195,6 +195,7 @@ Jelszavait bármikor ellenőrizheti itt: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1153636665119721804">A Google Speciális védelem programja</translation>
 <translation id="1155545602507378023">Nem, csak ez az eszköz</translation>
 <translation id="1155816283571436363">Kapcsolódás a telefonhoz…</translation>
+<translation id="1157952955648710254">A Google Kereső oldalsó paneljének bezárása</translation>
 <translation id="1158080958325422608">Átalakítás nagybetűssé</translation>
 <translation id="1158238185437008462">Emlékek megtekintése</translation>
 <translation id="1159879754517035595">Bővítménybeállítások kezelése</translation>
@@ -6519,6 +6520,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="6547854317475115430"><ph name="BEGIN_PARAGRAPH1" />A Google helyszolgáltatásai olyan forrásokat használnak eszköze helyének becsléséhez, mint a Wi-Fi- vagy mobilhálózatok és az érzékelők.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Az Android-helyadatokat bármikor kikapcsolhatja az eszközén a következő menüpontban: &gt; Alkalmazások &gt; Google Play Áruház &gt; Android-beállítások kezelése &gt; Biztonság és hely &gt; Hely. Ha pedig ugyanebben a menüben kikapcsolja a „Google-helymeghatározás pontossága” beállítást, ezzel letilthatja a Wi-Fi- és mobilhálózatoknak, valamint az érzékelőknek az Android-helyadatok meghatározására való felhasználását.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="654871471440386944">Bekapcsolja a billentyűzettel böngészést?</translation>
+<translation id="6548945820758901244">A Google Kereső oldalsó paneljének megnyitása</translation>
 <translation id="6549038875972762904">Újbóli beállítás</translation>
 <translation id="6550675742724504774">Beállítások</translation>
 <translation id="65513682072153627">Ezt a Kezelt ikont akkor láthatja, ha egy beállítást vagy funkciót a rendszergazdája kezel.</translation>

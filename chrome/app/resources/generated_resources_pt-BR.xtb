@@ -195,6 +195,7 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1153636665119721804">Programa Proteção Avançada do Google</translation>
 <translation id="1155545602507378023">Não, apenas neste dispositivo</translation>
 <translation id="1155816283571436363">Conectando ao seu smartphone</translation>
+<translation id="1157952955648710254">Fechar painel lateral da Pesquisa Google</translation>
 <translation id="1158080958325422608">Letra maiúscula</translation>
 <translation id="1158238185437008462">Ver recordações</translation>
 <translation id="1159879754517035595">Gerenciar configurações de extensões</translation>
@@ -6521,6 +6522,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6547854317475115430"><ph name="BEGIN_PARAGRAPH1" />Os Serviços de localização do Google usam fontes como Wi-Fi, redes móveis e sensores para estimar o local do dispositivo.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Você pode desativar a localização do Android no dispositivo a qualquer momento em "Configurações" &gt; "Apps" &gt; "Google Play Store" &gt; "Gerenciar preferências do Android" &gt; "Localização". Você também pode desativar o uso do Wi-Fi, redes móveis e sensores de localização do Android desativando a configuração "Precisão de local do Google" no mesmo menu.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="654871471440386944">Ativar Caret Browsing?</translation>
+<translation id="6548945820758901244">Abrir painel lateral da Pesquisa Google</translation>
 <translation id="6549038875972762904">Reconfigurar</translation>
 <translation id="6550675742724504774">Opções</translation>
 <translation id="65513682072153627">Este ícone de gerenciado vai ser mostrado quando uma configuração ou recurso for gerenciado pelo administrador.</translation>

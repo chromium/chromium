@@ -195,6 +195,7 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1153636665119721804">Áætlun Google um ítarlega vernd</translation>
 <translation id="1155545602507378023">Nei, aðeins í þessu tæki</translation>
 <translation id="1155816283571436363">Tengist símanum þínum</translation>
+<translation id="1157952955648710254">Loka hliðarglugga Google-leitar</translation>
 <translation id="1158080958325422608">Breyta í hástafi</translation>
 <translation id="1158238185437008462">Skoða minningar</translation>
 <translation id="1159879754517035595">Stjórna stillingum viðbóta</translation>
@@ -6520,6 +6521,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="6547854317475115430"><ph name="BEGIN_PARAGRAPH1" />Staðsetningarþjónusta Google notar heimildir eins og Wi-Fi, farsímakerfi og skynjara til að ákvarða staðsetningu tækisins.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Þú getur hvenær sem er slökkt á staðsetningu Android í þessu tæki með því að opna „Stillingar &gt; Forrit &gt; Google Play Store &gt; Hafa umsjón með stillingum Android &gt; Öryggi og staðsetning &gt; Staðsetning“. Einnig er hægt að slökkva á notkun Wi-Fi, farsímakerfa og skynjara fyrir staðsetningu Android með því að slökkva á „Staðsetningarnákvæmni Google“ á sömu valmynd.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="654871471440386944">Viltu kveikja á skoðun með textabendli?</translation>
+<translation id="6548945820758901244">Opna hliðarglugga Google-leitar</translation>
 <translation id="6549038875972762904">Keyra aftur uppsetningu</translation>
 <translation id="6550675742724504774">Valkostir</translation>
 <translation id="65513682072153627">Þegar stilling eða eiginleiki er í umsjón stjórnanda sérðu þetta stjórnunartákn.</translation>

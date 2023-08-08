@@ -1346,7 +1346,6 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="3987940399970879459">Chini ya MB 1</translation>
 <translation id="3990250421422698716">Kunja kuwa katika muundo wa Z</translation>
 <translation id="3992684624889376114">Kuhusu ukurasa huu</translation>
-<translation id="399952081411886534">Vipengele vingine vinavyofanya matangazo yawe ya binafsi zaidi</translation>
 <translation id="4000598935132966791">Pata maelezo zaidi kuhusu vizuizi vya tovuti katika vivinjari vinavyodhibitiwa</translation>
 <translation id="4006465311664329701">Njia za Kulipa, Ofa na Anwani Zinazotumia Google Pay</translation>
 <translation id="4010758435855888356">Ungependa kuruhusu nafasi ya hifadhi ifikiwe?</translation>
@@ -1492,7 +1491,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="4282346679996504092">Arifa za bidhaa hii zimezimwa na alamisho imeondolewa</translation>
 <translation id="4285498937028063278">Banua</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Kadi hii imehifadhiwa kwenye Akaunti yako ya Google}other{Kadi hizi zimehifadhiwa kwenye Akaunti yako ya Google}}</translation>
-<translation id="4287495839370498922">Faragha iliyoboreshwa ya matangazo kwenye Chrome</translation>
+<translation id="4287495839370498922">Faragha iliyoboreshwa kwa ajili ya matangazo kwenye Chrome</translation>
 <translation id="4287885627794386150">Umetimiza masharti ya kutumia jaribio lakini hujaanza kulitumia</translation>
 <translation id="4290920330097335010">Usiruhusu kamwe</translation>
 <translation id="4296207570293932800">Kipengele kipya cha faragha ya matangazo sasa kinapatikana</translation>
@@ -3300,6 +3299,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="827820107214076967">Onyesha upya Kumbukumbu</translation>
 <translation id="8279611986089885641">Ni lazima uwashe arifa za Chrome. Unaweza kuwasha arifa kwenye <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="8280630997017109758">Trei ya 11</translation>
+<translation id="8281730697546299650">Vipengele vingine vya faragha ya matangazo sasa vinapatikana</translation>
 <translation id="8281886186245836920">Ruka</translation>
 <translation id="8282409409360764263">Ukarabati wa Yadi</translation>
 <translation id="8282947398454257691">Jua kitambulisho chako cha kipekee cha kifaa</translation>

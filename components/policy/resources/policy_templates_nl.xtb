@@ -1412,15 +1412,6 @@ Als je dit beleid instelt, moet je het beleid <ph name="PRIVACY_SANDBOX_PROMPT_E
 <translation id="2223393221350938149">Niet toestaan dat sites JavaScript JIT uitvoeren</translation>
 <translation id="2223598546285729819">Standaardinstelling voor meldingen</translation>
 <translation id="222673035924187991">ClientHallo met TLS-versleuteling aanzetten</translation>
-<translation id="222944823539535006">Dit beleid is beëindigd en wordt verwijderd in de mijlpaal 130. Gebruik in plaats daarvan <ph name="URL_KEYED_METRICS_ALLOWED_POLICY_NAME" />.
-
-Als je het beleid toepast, is de geanonimiseerde gegevensverzameling met URL-sleutel altijd actief. Hiermee worden de URL's van pagina's die de gebruiker bezoekt naar Google gestuurd om zoekopdrachten en browsefunctionaliteit te verbeteren.
-
-Als je het beleid niet toepast, wordt de geanonimiseerde gegevensverzameling met URL-sleutel niet aangezet.
-
-Als je dit beleid niet instelt, kunnen gebruikers deze instelling handmatig wijzigen.
-
-In de <ph name="PRODUCT_OS_NAME" />-kiosk biedt dit beleid niet de optie Gebruiker laten bepalen. Als dit beleid niet is ingesteld voor de <ph name="PRODUCT_OS_NAME" />-kiosk, is de geanonimiseerde gegevensverzameling met URL-sleutel altijd actief.</translation>
 <translation id="2231817271680715693">Browsegeschiedenis importeren uit standaardbrowser bij eerste uitvoering</translation>
 <translation id="2231962946025538735">Dit beleid is beëindigd. Gebruik het beleid <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" /> om de beschikbaarheid van de Flash-plug-in te beheren en het beleid <ph name="ALWAYS_OPEN_PDF_EXTERNALLY_POLICY_NAME" /> om aan te geven of de geïntegreerde pdf-viewer moet worden gebruikt om pdf-bestanden te openen.
 

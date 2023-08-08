@@ -193,6 +193,7 @@ Zaporke uvijek možete provjeriti u odjeljku <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1153636665119721804">Googleov program Napredne zaštite</translation>
 <translation id="1155545602507378023">Ne, samo na ovom uređaju</translation>
 <translation id="1155816283571436363">Povezivanje s vašim telefonom</translation>
+<translation id="1157952955648710254">Zatvorite bočnu ploču Google pretraživanja</translation>
 <translation id="1158080958325422608">Promijeni u velika slova</translation>
 <translation id="1158238185437008462">Gledajte uspomene</translation>
 <translation id="1159879754517035595">Upravljanje postavkama proširenja</translation>
@@ -6503,6 +6504,7 @@ Možete je poslati Googleu da biste provjerili je li nesigurna. Pregled obično 
 <translation id="6547854317475115430"><ph name="BEGIN_PARAGRAPH1" />Za procjenu lokacije vašeg uređaja Googleova usluga lokacije upotrebljava izvore kao što su Wi-Fi, mobilne mreže i senzori.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Lokaciju Androida na svojem uređaju možete isključiti kad god želite u odjeljku Postavke &gt; Aplikacije &gt; Trgovina Google Play &gt; Upravljanje postavkama Androida &gt; Sigurnost i lokacija &gt; Lokacija. Možete isključiti i upotrebu Wi-Fija, mobilnih mreža i senzora za lokaciju Androida tako što ćete na istom izborniku isključiti opciju Googleovo točno lociranje.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="654871471440386944">Uključiti pregledavanje kursorom?</translation>
+<translation id="6548945820758901244">Otvorite bočnu ploču Google pretraživanja</translation>
 <translation id="6549038875972762904">Ponovi postavljanje</translation>
 <translation id="6550675742724504774">Opcije</translation>
 <translation id="65513682072153627">Prikazat će se ikona upravljanja kada postavkom ili značajkom upravlja vaš administrator.</translation>

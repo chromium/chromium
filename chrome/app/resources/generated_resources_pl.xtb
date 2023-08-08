@@ -193,6 +193,7 @@ Twoje hasła przechowuje <ph name="GOOGLE_PASSWORD_MANAGER" />. Możesz je spraw
 <translation id="1153636665119721804">Program Ochrony zaawansowanej Google</translation>
 <translation id="1155545602507378023">Nie, zapisz tylko na urządzeniu</translation>
 <translation id="1155816283571436363">Łączę z Twoim telefonem</translation>
+<translation id="1157952955648710254">Zamknij panel boczny wyszukiwarki Google</translation>
 <translation id="1158080958325422608">Wielkimi literami</translation>
 <translation id="1158238185437008462">Zobacz wspomnienia</translation>
 <translation id="1159879754517035595">Zarządzaj ustawieniami rozszerzenia</translation>
@@ -6489,6 +6490,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="6547854317475115430"><ph name="BEGIN_PARAGRAPH1" />Usługa lokalizacyjna Google określa lokalizację urządzenia z użyciem Wi-Fi, sieci komórkowych i czujników.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Usługę lokalizacyjną Androida możesz wyłączyć w dowolnym momencie. Aby to zrobić, kliknij na urządzeniu Ustawienia &gt; Aplikacje &gt; Sklep Google Play &gt; Zarządzaj ustawieniami Androida &gt; Lokalizacja i blokady &gt; Lokalizacja. Możesz też wyłączyć używanie Wi-Fi, sieci komórkowych i czujników do określania lokalizacji przez Androida. W tym celu wyłącz w tym samym menu „Dokładność lokalizacji Google”.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="654871471440386944">Włączyć przeglądanie przy użyciu kursora?</translation>
+<translation id="6548945820758901244">Otwórz panel boczny wyszukiwarki Google</translation>
 <translation id="6549038875972762904">Ponów konfigurację</translation>
 <translation id="6550675742724504774">Opcje</translation>
 <translation id="65513682072153627">Zobaczysz tę ikonę zarządzania, jeśli ustawienie lub funkcja są zarządzane przez Twojego administratora.</translation>

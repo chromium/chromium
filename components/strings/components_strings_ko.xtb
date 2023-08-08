@@ -1346,7 +1346,6 @@
 <translation id="3987940399970879459">1MB 미만</translation>
 <translation id="3990250421422698716">조그 오프셋</translation>
 <translation id="3992684624889376114">이 페이지에 관한 정보</translation>
-<translation id="399952081411886534">광고 개인 정보 보호를 위한 기타 기능</translation>
 <translation id="4000598935132966791">관리 브라우저의 사이트 제한에 관해 자세히 알아보기</translation>
 <translation id="4006465311664329701">Google Pay에 사용되는 결제 수단, 쿠폰, 주소</translation>
 <translation id="4010758435855888356">저장소 액세스 권한을 허용하시겠습니까?</translation>
@@ -3301,6 +3300,7 @@
 <translation id="827820107214076967">로그 새로고침</translation>
 <translation id="8279611986089885641">Chrome 알림이 사용 설정되어 있어야 합니다. <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />에서 사용 설정할 수 있습니다.</translation>
 <translation id="8280630997017109758">트레이 11</translation>
+<translation id="8281730697546299650">기타 광고 개인 정보 보호 기능 사용 가능</translation>
 <translation id="8281886186245836920">건너뛰기</translation>
 <translation id="8282409409360764263">마당 관리</translation>
 <translation id="8282947398454257691">고유 기기 식별자 조회</translation>

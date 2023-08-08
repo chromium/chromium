@@ -195,6 +195,7 @@ Svoja gesla lahko kadar koli preverite v storitvi <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1153636665119721804">Googlov program dodatne zaščite</translation>
 <translation id="1155545602507378023">Ne, samo ta naprava</translation>
 <translation id="1155816283571436363">Vzpostavljanje povezave s telefonom</translation>
+<translation id="1157952955648710254">Zapiranje stranskega podokna Iskanja Google</translation>
 <translation id="1158080958325422608">Nastavi na velike črke</translation>
 <translation id="1158238185437008462">Ogled spominov</translation>
 <translation id="1159879754517035595">Upravljanje nastavitev razširitev</translation>
@@ -6524,6 +6525,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="6547854317475115430"><ph name="BEGIN_PARAGRAPH1" />Googlova lokacijska storitev si pri določanju lokacije vaše naprave pomaga z viri, kot so omrežja Wi-Fi, mobilna omrežja in tipala.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Lokacijo naprave Android lahko kadar koli izklopite tako, da odprete Nastavitve &gt; Aplikacije &gt; Trgovina Google Play &gt; Upravljanje nastavitev Androida &gt; Varnost in lokacija &gt; Lokacija. Izklopite lahko tudi uporabo omrežij Wi-Fi, mobilnih omrežij in tipal za zaznavanje lokacije naprave Android, tako da v istem meniju izklopite »Natančnost Googlovega zaznavanja lokacije«.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="654871471440386944">Želite vklopiti brskanje s kazalko?</translation>
+<translation id="6548945820758901244">Odpiranje stranskega podokna Iskanja Google</translation>
 <translation id="6549038875972762904">Znova opravi nastavitev</translation>
 <translation id="6550675742724504774">Možnosti</translation>
 <translation id="65513682072153627">Če nastavitev ali funkcijo upravlja skrbnik, bo prikazana ta ikona za upravljano.</translation>

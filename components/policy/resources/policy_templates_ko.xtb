@@ -1413,15 +1413,6 @@ URL로 입력된 측정항목 수집이 허용되거나 사용자가 이를 사�
 <translation id="2223393221350938149">모든 사이트에서 자바스크립트 JIT를 실행하도록 허용 안함</translation>
 <translation id="2223598546285729819">기본 알림 설정</translation>
 <translation id="222673035924187991">TLS Encrypted ClientHello 사용</translation>
-<translation id="222944823539535006">이 정책은 지원 중단되었으며 주요 일정 130에서 삭제될 예정입니다. 대신 <ph name="URL_KEYED_METRICS_ALLOWED_POLICY_NAME" /> 정책을 사용하세요.
-
-정책을 사용 설정하면 검색 결과와 탐색을 개선하기 위해 사용자가 방문하는 페이지 URL을 Google로 전송하는 URL로 입력되며 익명으로 처리되는 데이터 수집이 항상 활성화됩니다.
-
-정책을 사용 중지하면 URL로 입력되며 익명으로 처리되는 데이터 수집을 사용하지 않습니다.
-
-정책을 설정하지 않으면 사용자가 이 설정을 수동으로 변경할 수 있습니다.
-
-<ph name="PRODUCT_OS_NAME" /> 키오스크에서는 이 정책에 '사용자가 결정하도록 허용'하는 옵션이 제공되지 않습니다. <ph name="PRODUCT_OS_NAME" /> 키오스크에 대해 이 정책을 설정하지 않으면 URL로 입력되며 익명으로 처리되는 데이터 수집이 항상 활성화됩니다.</translation>
 <translation id="2231817271680715693">처음 실행 시 기본 브라우저에서 인터넷 사용기록 가져오기</translation>
 <translation id="2231962946025538735">지원 중단된 정책입니다. <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" />을 사용하여 Flash 플러그인의 사용 가능 여부를 제어하고 <ph name="ALWAYS_OPEN_PDF_EXTERNALLY_POLICY_NAME" />를 사용하여 PDF 파일을 열 때 통합 PDF 뷰어를 사용할지 선택하세요.
 

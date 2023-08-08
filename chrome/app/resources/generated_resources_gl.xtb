@@ -193,6 +193,7 @@ Comproba os teus contrasinais cando queiras no <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1153636665119721804">Programa Protección avanzada de Google</translation>
 <translation id="1155545602507378023">Non, só este dispositivo</translation>
 <translation id="1155816283571436363">Conectando co teu teléfono</translation>
+<translation id="1157952955648710254">Pechar o panel lateral da Busca de Google</translation>
 <translation id="1158080958325422608">Escribir en maiúsculas</translation>
 <translation id="1158238185437008462">Ver lembranzas</translation>
 <translation id="1159879754517035595">Xestionar a configuración de extensións</translation>
@@ -6502,6 +6503,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="6547854317475115430"><ph name="BEGIN_PARAGRAPH1" />O servizo de localización de Google utiliza fontes como a wifi, as redes de telefonía móbil e os sensores para calcular a localización do dispositivo.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Podes desactivar a localización de Android no teu dispositivo cando queiras en Configuración &gt; Aplicacións &gt; Google Play Store &gt; Xestionar preferencias de Android &gt; Seguranza e localización &gt; Localización. Tamén podes desactivar a opción Precisión da localización de Google, nese mesmo menú, para que non se utilicen a wifi, as redes móbiles nin os sensores a fin de calcular a localización de Android.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="654871471440386944">Queres activar a navegación por cursor de texto?</translation>
+<translation id="6548945820758901244">Abrir o panel lateral da Busca de Google</translation>
 <translation id="6549038875972762904">Volver iniciar configuración</translation>
 <translation id="6550675742724504774">Opcións</translation>
 <translation id="65513682072153627">Verás esta icona (Xestionada) cando haxa unha opción de configuración ou unha función xestionada polo teu administrador.</translation>

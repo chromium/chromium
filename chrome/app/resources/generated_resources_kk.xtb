@@ -193,6 +193,7 @@
 <translation id="1153636665119721804">Google Күшейтілген қорғаныс бағдарламасы</translation>
 <translation id="1155545602507378023">Жоқ, тек осы құрылғы</translation>
 <translation id="1155816283571436363">Телефоныңызбен байланыс орнатылып жатыр</translation>
+<translation id="1157952955648710254">Google Search бүйірлік панелін жабу</translation>
 <translation id="1158080958325422608">Бас әріппен жазу</translation>
 <translation id="1158238185437008462">Естеліктерді қарау</translation>
 <translation id="1159879754517035595">Кеңейтім параметрлерін басқару</translation>
@@ -6497,6 +6498,7 @@
 <translation id="6547854317475115430"><ph name="BEGIN_PARAGRAPH1" />Осы құрылғының орнын анықтау үшін Google локация қызметі Wi-Fi, мобильдік желілер және сенсорлар сияқты дереккөздерді пайдаланады.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Құрылғыда кез келген уақытта Android локациясын өшіруге болады. Ол үшін "Параметрлер &gt; Қолданбалар &gt; Google Play Store &gt; Android параметрлерін басқару &gt; Қауіпсіздік және локация &gt; Локация" тармағына өтіңіз. Оған қоса сол мәзірде "Google Локация дәлдігі" параметрін өшіру арқылы Android локация қызметінің Wi-Fi, мобильдік желілер мен сенсорларды пайдалануын тоқтата аласыз.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="654871471440386944">Белсенді курсор режимі қосылсын ба?</translation>
+<translation id="6548945820758901244">Google Search бүйірлік панелін ашу</translation>
 <translation id="6549038875972762904">Қайта реттеу</translation>
 <translation id="6550675742724504774">Опциялар</translation>
 <translation id="65513682072153627">Әкімші параметрді немесе функцияны басқарған кезде, тиісті белгіше көрсетіледі.</translation>

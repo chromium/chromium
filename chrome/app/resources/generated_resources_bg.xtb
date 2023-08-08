@@ -195,6 +195,7 @@
 <translation id="1153636665119721804">Програма на Google за разширена защита</translation>
 <translation id="1155545602507378023">Не, само на това устройство</translation>
 <translation id="1155816283571436363">Установява се връзка с телефона ви</translation>
+<translation id="1157952955648710254">Затваряне на страничния панел на Google Търсене</translation>
 <translation id="1158080958325422608">Изписване с главни букви</translation>
 <translation id="1158238185437008462">Преглед на спомените</translation>
 <translation id="1159879754517035595">Управление на настройките на разширението</translation>
@@ -6517,6 +6518,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6547854317475115430"><ph name="BEGIN_PARAGRAPH1" />Услугата на Google за местоположение използва източници като Wi-Fi, мобилни мрежи и сензори, за да помага за определянето на местоположението на устройството ви.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />По всяко време можете да изключите настройката за местоположението за Android на устройството си, като отворите „Настройки &gt; Приложения &gt; Google Play Магазин &gt; Управление на предпочитанията за Android &gt; Сигурност и местоположение &gt; Местоположение“. Също така от това меню имате възможност да изключите функцията за определяне на местоположението за Android чрез Wi-Fi, мобилни мрежи и сензори, като деактивирате настройката „Google: Точност на местоположението“.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="654871471440386944">Да се включи ли Caret Browsing?</translation>
+<translation id="6548945820758901244">Отваряне на страничния панел на Google Търсене</translation>
 <translation id="6549038875972762904">Възстановяване на настройката</translation>
 <translation id="6550675742724504774">Опции</translation>
 <translation id="65513682072153627">Ще виждате тази икона, когато дадена настройка или функция се управлява от администратора ви.</translation>

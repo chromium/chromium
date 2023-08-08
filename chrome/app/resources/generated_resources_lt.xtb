@@ -195,6 +195,7 @@ Bet kuriuo metu patikrinkite slaptažodžius skiltyje „<ph name="GOOGLE_PASSWO
 <translation id="1153636665119721804">„Google“ papildomos apsaugos programa</translation>
 <translation id="1155545602507378023">Ne, tik šis įrenginys</translation>
 <translation id="1155816283571436363">Prisijungiama prie telefono</translation>
+<translation id="1157952955648710254">Uždaryti „Google“ paieškos šoninį skydelį</translation>
 <translation id="1158080958325422608">Rašyti didžiosiomis raidėmis</translation>
 <translation id="1158238185437008462">Peržiūrėti prisiminimus</translation>
 <translation id="1159879754517035595">Tvarkyti plėtinių nustatymus</translation>
@@ -6523,6 +6524,7 @@ Galite išsiųsti jį „Google“, kad patikrintumėte, ar jis nesaugus. Nuskai
 <translation id="6547854317475115430"><ph name="BEGIN_PARAGRAPH1" />„Google“ vietovės paslauga naudoja įvairius šaltinius, pvz., „Wi-Fi“, mobiliojo ryšio tinklus ir jutiklius, kad padėtų nustatyti jūsų įrenginio vietovę.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Galite bet kada išjungti „Android“ vietovės nustatymą įrenginyje, apsilankę skiltyje „Nustatymai“ &gt; „Programos“ &gt; „Google Play“ parduotuvė“ &gt; „Tvarkyti „Android“ nuostatas“ &gt; „Sauga ir vietovė“ &gt; „Vietovė“. Taip pat galite išjungti „Wi‑Fi“, mobiliojo ryšio tinklų ir jutiklių naudojimą „Android“ vietovei nustatyti išjungę nustatymą „Google“ vietovės nustatymo tikslumas“ tame pačiame meniu.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="654871471440386944">Įjungti „Caret Browsing“?</translation>
+<translation id="6548945820758901244">Atidaryti „Google“ paieškos šoninį skydelį</translation>
 <translation id="6549038875972762904">Grąžinti sąranką</translation>
 <translation id="6550675742724504774">Parinktys</translation>
 <translation id="65513682072153627">Piktogramą „Tvarkoma“ matysite, kai nustatymą ar funkciją tvarkys administratorius.</translation>

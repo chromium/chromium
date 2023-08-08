@@ -193,6 +193,7 @@
 <translation id="1153636665119721804">Google програм напредне заштите</translation>
 <translation id="1155545602507378023">Не, само овај уређај</translation>
 <translation id="1155816283571436363">Повезивање са телефоном</translation>
+<translation id="1157952955648710254">Затворите бочну таблу Google претраге</translation>
 <translation id="1158080958325422608">Пребаци на велика слова</translation>
 <translation id="1158238185437008462">Прикажи успомене</translation>
 <translation id="1159879754517035595">Управљајте подешавањима додатака</translation>
@@ -6502,6 +6503,7 @@
 <translation id="6547854317475115430"><ph name="BEGIN_PARAGRAPH1" />Google услуга локације користи изворе као што су WiFi мреже, мобилне мреже и сензори да би одредила приближну локацију уређаја.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Можете да искључите Android локацију на уређају у било ком тренутку ако одете у Подешавања &gt; Апликације &gt; Google Play продавница &gt; Управљајте Android подешавањима &gt; Безбедност и локација &gt; Локација. Ако искључите Google прецизност локације у истом менију, можете и да искључите коришћење WiFi мрежа, мобилних мрежа и сензора за Android локацију.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="654871471440386944">Желите да укључите навигацију курсором?</translation>
+<translation id="6548945820758901244">Отворите бочну таблу Google претраге</translation>
 <translation id="6549038875972762904">Понови подешавање</translation>
 <translation id="6550675742724504774">Опције</translation>
 <translation id="65513682072153627">Видећете ову икону Управљано када подешавањем или функцијом управља администратор.</translation>

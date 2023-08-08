@@ -195,6 +195,7 @@
 <translation id="1153636665119721804">Google 고급 보호 프로그램</translation>
 <translation id="1155545602507378023">아니요, 이 기기에만 저장</translation>
 <translation id="1155816283571436363">휴대전화에 연결하는 중</translation>
+<translation id="1157952955648710254">Google 검색 측면 패널 닫기</translation>
 <translation id="1158080958325422608">Make Uppercase(대문자로 표시)</translation>
 <translation id="1158238185437008462">추억 보기</translation>
 <translation id="1159879754517035595">확장 프로그램 설정 관리</translation>
@@ -6519,6 +6520,7 @@ Google에 전송하여 안전한 파일인지 확인할 수 있습니다. 스캔
 <translation id="6547854317475115430"><ph name="BEGIN_PARAGRAPH1" />Google 위치 서비스는 기기 위치를 파악하는 데 Wi-Fi, 모바일 네트워크, 센서와 같은 소스를 사용합니다.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />언제든지 기기에서 Android 위치를 사용 중지할 수 있습니다. 설정 &gt; 앱 &gt; Google Play 스토어 &gt; Android 환경설정 관리 &gt; 보안 및 위치 &gt; 위치로 이동하세요. 동일한 메뉴에서 'Google 위치 정확도'를 사용 중지하여 Android 위치에 Wi-Fi, 모바일 네트워크, 센서를 사용하지 않도록 할 수도 있습니다.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="654871471440386944">캐럿 브라우징을 사용 설정하시겠습니까?</translation>
+<translation id="6548945820758901244">Google 검색 측면 패널 열기</translation>
 <translation id="6549038875972762904">다시 설정</translation>
 <translation id="6550675742724504774">옵션</translation>
 <translation id="65513682072153627">관리자가 관리하는 설정이나 기능의 경우 관리됨 아이콘이 표시됩니다</translation>

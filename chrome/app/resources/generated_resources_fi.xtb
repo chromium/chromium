@@ -195,6 +195,7 @@
 <translation id="1153636665119721804">Googlen Lisäsuojaus-ohjelma</translation>
 <translation id="1155545602507378023">Ei, vain tämä laite</translation>
 <translation id="1155816283571436363">Yhdistetään puhelimeen</translation>
+<translation id="1157952955648710254">Sulje Google Haun sivupaneeli</translation>
 <translation id="1158080958325422608">Muuta isoiksi kirjaimiksi</translation>
 <translation id="1158238185437008462">Katso muistoja</translation>
 <translation id="1159879754517035595">Muokkaa laajennusasetuksia</translation>
@@ -6515,6 +6516,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6547854317475115430"><ph name="BEGIN_PARAGRAPH1" />Googlen sijaintipalvelut pyrkivät arvioimaan laitteen sijainnin esim. Wi-Fi- ja mobiiliverkkojen sekä anturien avulla.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Voit milloin tahansa laittaa Androidin sijainnin pois päältä laitteellasi: avaa Asetukset &gt; Sovellukset &gt; Google Play Kauppa &gt; Hallitse Android-asetuksia &gt; Suojaus ja sijainti &gt; Sijainti. Voit myös laittaa pois päältä Wi-Fi- ja mobiiliverkkojen sekä antureiden käytön Androidin sijainnin määrityksessä: laita samasta valikosta "Googlen sijaintitietojen tarkkuus" pois päältä.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="654871471440386944">Laitetaanko näppäimistöselaaminen päälle?</translation>
+<translation id="6548945820758901244">Avaa Google Haun sivupaneeli</translation>
 <translation id="6549038875972762904">Valitse asetukset uudelleen</translation>
 <translation id="6550675742724504774">Asetukset</translation>
 <translation id="65513682072153627">Näet Ylläpidetty-kuvakkeen, kun järjestelmänvalvoja ylläpitää asetusta tai ominaisuutta.</translation>

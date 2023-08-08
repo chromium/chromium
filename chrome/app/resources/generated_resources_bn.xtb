@@ -195,6 +195,7 @@
 <translation id="1153636665119721804">Google উন্নত সুরক্ষা প্রোগ্রাম</translation>
 <translation id="1155545602507378023">না, শুধুমাত্র এই ডিভাইস</translation>
 <translation id="1155816283571436363">আপনার ফোনের সাথে কানেক্ট করা হচ্ছে</translation>
+<translation id="1157952955648710254">Google Search সাইড প্যানেল বন্ধ করুন</translation>
 <translation id="1158080958325422608">বড় হাতের অক্ষরে লিখুন</translation>
 <translation id="1158238185437008462">স্মৃতি দেখো</translation>
 <translation id="1159879754517035595">এক্সটেনশন সেটিংস ম্যানেজ করুন</translation>
@@ -6523,6 +6524,7 @@
 <translation id="6547854317475115430"><ph name="BEGIN_PARAGRAPH1" />আপনার ডিভাইসের লোকেশন নির্ধারণ করার জন্য Google-এর লোকেশন পরিষেবা ওয়াই-ফাই, মোবাইল নেটওয়ার্ক এবং সেন্সরের মতো সোর্স ব্যবহার করে।<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />আপনি Android ডিভাইসের লোকেশন যেকোনও সময় বন্ধ করে দিতে পারেন। সেটি করতে 'সেটিংস' &gt; 'অ্যাপ' &gt; Google Play Store &gt; 'Android অভিরুচি ম্যানেজ করুন' &gt; 'নিরাপত্তা ও লোকেশন' &gt; 'লোকেশন' বিকল্পে যান। একই মেনু থেকে "Google লোকেশন অ্যাকুরেসি" বিকল্প বন্ধ করে এই Android ডিভাইসের লোকেশন নির্ধারণের জন্য ওয়াই-ফাই, মোবাইল নেটওয়ার্ক এবং সেন্সরের ব্যবহার বন্ধ করে দিতে পারেন।<ph name="END_PARAGRAPH2" /></translation>
 <translation id="654871471440386944">ক্যারেট ব্রাউজিং চালু করতে চান?</translation>
+<translation id="6548945820758901244">Google Search সাইড প্যানেল খুলুন</translation>
 <translation id="6549038875972762904">আবার সেটআপ করুন</translation>
 <translation id="6550675742724504774">বিকল্পসমূহ</translation>
 <translation id="65513682072153627">আপনি 'ম্যানেজ করা হচ্ছে' আইকন তখন দেখতে পাবেন যখন আপনার অ্যাডমিনিস্ট্রেটর কোনও সেটিং বা ফিচার ম্যানেজ করবে।</translation>

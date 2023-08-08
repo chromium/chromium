@@ -193,6 +193,7 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="1153636665119721804">Programme de protection avancée de Google</translation>
 <translation id="1155545602507378023">Non, cet appareil uniquement</translation>
 <translation id="1155816283571436363">Connexion à votre téléphone en cours…</translation>
+<translation id="1157952955648710254">Fermer le panneau latéral de la recherche Google</translation>
 <translation id="1158080958325422608">Mettre en majuscules</translation>
 <translation id="1158238185437008462">Afficher les souvenirs</translation>
 <translation id="1159879754517035595">Gérer les paramètres des extensions</translation>
@@ -6504,6 +6505,7 @@ Vous pouvez l'envoyer à Google pour vérifier s'il est dangereux. Les analyses 
 <translation id="6547854317475115430"><ph name="BEGIN_PARAGRAPH1" />Le service de localisation de Google utilise des sources, comme le Wi-Fi, les réseaux cellulaires et les capteurs de l'appareil, pour vous aider à estimer la position de votre appareil.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Vous pouvez désactiver les données de localisation d'Android sur votre appareil en tout temps en accédant à Paramètres &gt; Applications &gt; Google Play Store &gt; Gérer les préférences Android &gt; Sécurité et localisation &gt; Localisation. Vous pouvez également désactiver l'utilisation des réseaux Wi‑Fi, des réseaux cellulaires et des capteurs pour la localisation d'Android en désactivant « Précision de la localisation Google » dans le même menu.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="654871471440386944">Activer la navigation au clavier?</translation>
+<translation id="6548945820758901244">Ouvrir le panneau latéral de la recherche Google</translation>
 <translation id="6549038875972762904">Rétablir la configuration</translation>
 <translation id="6550675742724504774">Options</translation>
 <translation id="65513682072153627">Vous verrez cette icône Géré lorsque la gestion d'un paramètre ou d'une fonctionnalité est assurée par votre administrateur.</translation>

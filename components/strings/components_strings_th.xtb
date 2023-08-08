@@ -1345,7 +1345,6 @@
 <translation id="3987940399970879459">ไม่ถึง 1 MB</translation>
 <translation id="3990250421422698716">การชดเชยพื้นผิวที่ไม่สม่ำเสมอ</translation>
 <translation id="3992684624889376114">เกี่ยวกับหน้านี้</translation>
-<translation id="399952081411886534">ฟีเจอร์อื่นๆ ที่ทำให้โฆษณาเป็นส่วนตัวมากขึ้น</translation>
 <translation id="4000598935132966791">ดูข้อมูลเพิ่มเติมเกี่ยวกับการจำกัดเว็บไซต์ในเบราว์เซอร์ที่มีการจัดการ</translation>
 <translation id="4006465311664329701">วิธีการชำระเงิน ข้อเสนอ และที่อยู่จาก Google Pay</translation>
 <translation id="4010758435855888356">อนุญาตให้เข้าถึงพื้นที่เก็บข้อมูลไหม</translation>
@@ -3301,6 +3300,7 @@
 <translation id="827820107214076967">รีเฟรชบันทึก</translation>
 <translation id="8279611986089885641">ต้องเปิดการแจ้งเตือนของ Chrome ซึ่งทำได้ใน<ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" /></translation>
 <translation id="8280630997017109758">ถาด 11</translation>
+<translation id="8281730697546299650">ฟีเจอร์อื่นๆ ด้านความเป็นส่วนตัวเกี่ยวกับโฆษณาพร้อมใช้งานแล้ว</translation>
 <translation id="8281886186245836920">ข้าม</translation>
 <translation id="8282409409360764263">การบำรุงรักษาสนาม</translation>
 <translation id="8282947398454257691">ทราบตัวระบุอุปกรณ์ที่ไม่ซ้ำกัน</translation>

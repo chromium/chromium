@@ -1427,15 +1427,6 @@ Para establecer esta política, se debe inhabilitar la política <ph name="PRIVA
 <translation id="2223393221350938149">No permitir que cualquier sitio ejecute JavaScript con JIT</translation>
 <translation id="2223598546285729819">Configuración de notificación predeterminada</translation>
 <translation id="222673035924187991">Habilitar TLS Encrypted ClientHello</translation>
-<translation id="222944823539535006">Esta política dejó de estar disponible y se quitará en la versión principal 130. En su lugar, usa <ph name="URL_KEYED_METRICS_ALLOWED_POLICY_NAME" />.
-
-Si habilitas la política, la recopilación de datos anónimos con URL estará siempre activa. Esta recopilación envía a Google las URLs de las páginas que visita el usuario para mejorar la búsqueda y la exploración.
-
-Si inhabilitas la política, no se recopilarán datos anónimos con URL.
-
-Si no la estableces, el usuario podrá cambiar esta configuración de forma manual.
-
-En el Kiosco de <ph name="PRODUCT_OS_NAME" />, esta política no ofrece la opción "Permitir que el usuario decida". Si no estableces esta política para el Kiosco de <ph name="PRODUCT_OS_NAME" />, la recopilación de datos anónimos con URL estará siempre activa.</translation>
 <translation id="2231817271680715693">Importar historial de navegación del navegador predeterminado en la primera ejecución</translation>
 <translation id="2231962946025538735">Esta política dejó de estar disponible. Usa <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" /> para controlar la disponibilidad del complemento de Flash y <ph name="ALWAYS_OPEN_PDF_EXTERNALLY_POLICY_NAME" /> para controlar si debe usarse el visor de PDF integrado para abrir este tipo de archivos.
 

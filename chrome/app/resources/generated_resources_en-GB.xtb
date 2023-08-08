@@ -195,6 +195,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1153636665119721804">Google Advanced Protection programme</translation>
 <translation id="1155545602507378023">No, this device only</translation>
 <translation id="1155816283571436363">Connecting to your phone</translation>
+<translation id="1157952955648710254">Close Google Search side panel</translation>
 <translation id="1158080958325422608">Make Upper Case</translation>
 <translation id="1158238185437008462">See memories</translation>
 <translation id="1159879754517035595">Manage extension settings</translation>
@@ -6519,6 +6520,7 @@ You can send it to Google to check if it's unsafe. Scans usually take a few seco
 <translation id="6547854317475115430"><ph name="BEGIN_PARAGRAPH1" />Google's location service uses sources like Wi-Fi, mobile networks and sensors to help estimate your device's location.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />You can turn off Android location on your device at any time by going to Settings &gt; Apps &gt; Google Play Store &gt; Manage Android preferences &gt; Security and location &gt; Location. You can also turn off the use of Wi-Fi, mobile networks and sensors for Android location by turning off 'Google Location Accuracy' in the same menu.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="654871471440386944">Turn on caret browsing?</translation>
+<translation id="6548945820758901244">Open Google Search side panel</translation>
 <translation id="6549038875972762904">Redo setup</translation>
 <translation id="6550675742724504774">Options</translation>
 <translation id="65513682072153627">You will see this managed icon when a setting or feature is managed by your administrator.</translation>

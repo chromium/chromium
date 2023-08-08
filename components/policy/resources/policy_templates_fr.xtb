@@ -1414,15 +1414,6 @@ Si vous définissez cette règle, vous devez désactiver la règle <ph name="PRI
 <translation id="2223393221350938149">Interdire à tous les sites d'exécuter le JIT pour JavaScript</translation>
 <translation id="2223598546285729819">Paramètre de notification par défaut</translation>
 <translation id="222673035924187991">Activer TLS Encrypted ClientHello</translation>
-<translation id="222944823539535006">Cette règle est obsolète et sera supprimée dans le jalon 130. Veuillez utiliser <ph name="URL_KEYED_METRICS_ALLOWED_POLICY_NAME" /> à la place.
-
-Si vous activez cette règle, la collecte de données anonymes incluant les URL, qui envoie à Google les URL des pages que l'utilisateur visite afin d'améliorer la recherche et la navigation, est toujours active.
-
-Si vous la désactivez, les données anonymes incluant les URL ne sont pas collectées.
-
-Si cette règle n'est pas configurée, l'utilisateur peut modifier ce paramètre manuellement.
-
-Dans <ph name="PRODUCT_OS_NAME" /> Kiosk, cette règle ne propose pas l'option "Laisser l'utilisateur décider". Si cette règle n'est pas configurée pour <ph name="PRODUCT_OS_NAME" /> Kiosk, la collecte de données anonymes incluant les URL est toujours active.</translation>
 <translation id="2231817271680715693">Importer l'historique de navigation du navigateur par défaut à la première exécution</translation>
 <translation id="2231962946025538735">Cette règle est obsolète. Veuillez utiliser la règle <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" /> pour contrôler la disponibilité du plug-in Flash et la règle <ph name="ALWAYS_OPEN_PDF_EXTERNALLY_POLICY_NAME" /> pour définir si la visionneuse de documents PDF intégrée doit être utilisée pour ouvrir les fichiers PDF.
 

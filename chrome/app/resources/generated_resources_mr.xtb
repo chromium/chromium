@@ -195,6 +195,7 @@
 <translation id="1153636665119721804">Google प्रगत संरक्षण प्रोग्राम</translation>
 <translation id="1155545602507378023">नाही, फक्त या डिव्हाइसवर</translation>
 <translation id="1155816283571436363">तुमच्या फोनशी कनेक्ट करत आहे</translation>
+<translation id="1157952955648710254">Google Search साइड पॅनल बंद करा</translation>
 <translation id="1158080958325422608">अप्परकेस करा</translation>
 <translation id="1158238185437008462">मेमरी पहा</translation>
 <translation id="1159879754517035595">एक्स्टेंशन सेटिंग्ज व्यवस्थापित करा</translation>
@@ -6517,6 +6518,7 @@
 <translation id="6547854317475115430"><ph name="BEGIN_PARAGRAPH1" />तुमच्या डिव्हाइसच्या स्थानाचा अंदाज घेण्यात मदत होण्यासाठी Google ची स्थान सेवा वाय-फाय, मोबाइल नेटवर्क आणि सेन्सर वापरते.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />तुम्ही सेटिंग्ज &gt; अ‍ॅप्स &gt; Google Play Store &gt; Android प्राधान्ये व्यवस्थापित करा &gt; सुरक्षा आणि स्थान &gt; स्थान वर जाऊन कधीही तुमच्या डिव्हाइसवरील Android स्थान बंद करू शकता. तुम्ही त्याच मेनूमध्ये “Google स्थान अचूकता” बंद करून Android स्थानासाठी वाय-फाय, मोबाइल नेटवर्क आणि सेन्सरचा वापरदेखील बंद करू शकता.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="654871471440386944">कॅरेट ब्राउझिंग सुरू करायचे आहे का?</translation>
+<translation id="6548945820758901244">Google Search साइड पॅनल उघडा</translation>
 <translation id="6549038875972762904">सेटअप पुन्हा करा</translation>
 <translation id="6550675742724504774">पर्याय</translation>
 <translation id="65513682072153627">तुमच्या अ‍ॅडमिनिस्ट्रेटरद्वारे सेटिंग किंवा वैशिष्ट्य व्यवस्थापित केले जात असल्यास, तुम्हाला हे व्यवस्थापित केलेले असे आयकन दिसेल.</translation>

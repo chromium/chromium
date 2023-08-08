@@ -193,6 +193,7 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1153636665119721804">Programa de Proteção avançada da Google</translation>
 <translation id="1155545602507378023">Não, apenas neste dispositivo</translation>
 <translation id="1155816283571436363">A ligar ao seu telemóvel…</translation>
+<translation id="1157952955648710254">Fechar o painel lateral da Pesquisa Google</translation>
 <translation id="1158080958325422608">Colocar em maiúsculas</translation>
 <translation id="1158238185437008462">Ver memórias</translation>
 <translation id="1159879754517035595">Gerir definições das extensões</translation>
@@ -6505,6 +6506,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6547854317475115430"><ph name="BEGIN_PARAGRAPH1" />O serviço de localização da Google utiliza fontes como redes Wi-Fi, redes móveis e sensores para ajudar a obter uma estimativa da localização do dispositivo.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Pode desativar a localização do Android no seu dispositivo em qualquer altura ao aceder a Definições &gt; Apps &gt; Google Play Store &gt; Gerir preferências do Android &gt; Segurança e localização &gt; Localização. Também pode desativar a utilização das redes Wi-Fi, redes móveis e sensores para fins de localização do Android ao desativar a opção "Precisão da localização da Google" no mesmo menu.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="654871471440386944">Ativar a navegação por cursor?</translation>
+<translation id="6548945820758901244">Abrir painel lateral da Pesquisa Google</translation>
 <translation id="6549038875972762904">Refazer configuração</translation>
 <translation id="6550675742724504774">Opções</translation>
 <translation id="65513682072153627">Verá este ícone Gerido quando uma definição ou uma funcionalidade for gerida pelo seu administrador.</translation>

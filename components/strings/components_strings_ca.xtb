@@ -1346,7 +1346,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3987940399970879459">Menys d'1 MB</translation>
 <translation id="3990250421422698716">Jog offset</translation>
 <translation id="3992684624889376114">Sobre aquesta pàgina</translation>
-<translation id="399952081411886534">Altres funcions que augmenten la privadesa dels anuncis</translation>
 <translation id="4000598935132966791">Més informació sobre les restriccions aplicades als llocs web en navegadors gestionats</translation>
 <translation id="4006465311664329701">Formes de pagament, ofertes i adreces que fan servir Google Pay</translation>
 <translation id="4010758435855888356">Vols permetre l'accés a l'emmagatzematge?</translation>
@@ -3302,6 +3301,7 @@ Detalls addicionals:
 <translation id="827820107214076967">Actualitza els registres</translation>
 <translation id="8279611986089885641">Les notificacions de Chrome han d'estar activades. Pots activar-les a la <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="8280630997017109758">Safata 11</translation>
+<translation id="8281730697546299650">Ara hi ha altres funcions de privadesa d'anuncis disponibles</translation>
 <translation id="8281886186245836920">Omet</translation>
 <translation id="8282409409360764263">Manteniment de jardins</translation>
 <translation id="8282947398454257691">Saber l'identificador únic del dispositiu</translation>

@@ -195,6 +195,7 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1153636665119721804">Google-programmet Avanceret beskyttelse</translation>
 <translation id="1155545602507378023">Nej, kun denne enhed</translation>
 <translation id="1155816283571436363">Opretter forbindelse til din telefon</translation>
+<translation id="1157952955648710254">Luk Google Søgning-sidepanelet</translation>
 <translation id="1158080958325422608">Anvend store bogstaver</translation>
 <translation id="1158238185437008462">Se minder</translation>
 <translation id="1159879754517035595">Administrer indstillinger for udvidelser</translation>
@@ -6520,6 +6521,7 @@ Du kan sende den til Google for at tjekke, om den er usikker. Det tager normalt 
 <translation id="6547854317475115430"><ph name="BEGIN_PARAGRAPH1" />Googles lokationstjeneste bruger kilder som f.eks. Wi-Fi, mobilnetværk og sensorer for at hjælpe med at estimere din enheds lokation.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Du kan til enhver tid deaktivere Android-lokation på din enhed ved at gå til Indstillinger &gt; Apps &gt; Google Play Butik &gt; Administrer Android-præferencer &gt; Sikkerhed og lokation &gt; Lokation. Du kan også deaktivere brugen af Wi-Fi, mobilnetværk og sensorer i forbindelse med Android-lokation ved at slå "Google Lokationsnøjagtighed" fra i den samme menu.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="654871471440386944">Vil du aktivere tastenavigation?</translation>
+<translation id="6548945820758901244">Åbn Google Søgning-sidepanelet</translation>
 <translation id="6549038875972762904">Fortryd konfiguration</translation>
 <translation id="6550675742724504774">Valgmuligheder</translation>
 <translation id="65513682072153627">Du vil se dette ikon for Administreret, når en indstilling eller funktion er administreret af din administrator.</translation>

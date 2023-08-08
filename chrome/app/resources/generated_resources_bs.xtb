@@ -195,6 +195,7 @@ Otvorite <ph name="GOOGLE_PASSWORD_MANAGER" /> da bilo kada provjerite lozinke.<
 <translation id="1153636665119721804">Googleov program Napredne zaštite</translation>
 <translation id="1155545602507378023">Ne, samo ovaj uređaj</translation>
 <translation id="1155816283571436363">Povezivanje s telefonom</translation>
+<translation id="1157952955648710254">Zatvorite bočnu ploču Google Pretraživanja</translation>
 <translation id="1158080958325422608">Promijeni u velika slova</translation>
 <translation id="1158238185437008462">Prikaži uspomene</translation>
 <translation id="1159879754517035595">Upravljajte postavkama ekstenzije</translation>
@@ -6518,6 +6519,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="6547854317475115430"><ph name="BEGIN_PARAGRAPH1" />Googleova usluga lokacije koristi izvore poput WiFi mreže, mobilnih mreža i senzora radi lakše procjene lokacije vašeg uređaja.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Možete isključiti lokaciju Androida na uređaju bilo kada u Postavkama &gt; Aplikacije &gt; Google Play trgovina &gt; Upravljajte postavkama Androida &gt; Sigurnost i lokacija &gt; Lokacija. Također možete isključiti korištenje WiFi-ja, mobilnih mreža i senzora za lokaciju Androida isključivanjem "Googleove preciznosti lokacije" u istom meniju.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="654871471440386944">Uključiti navigaciju kursorom?</translation>
+<translation id="6548945820758901244">Otvorite bočnu ploču Google Pretraživanja</translation>
 <translation id="6549038875972762904">Ponovi postavljanje</translation>
 <translation id="6550675742724504774">Opcije</translation>
 <translation id="65513682072153627">Ova ikona upravljanja će se prikazati kada postavkom ili funkcijom upravlja vaš administrator.</translation>

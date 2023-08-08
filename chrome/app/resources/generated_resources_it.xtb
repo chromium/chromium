@@ -193,6 +193,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1153636665119721804">Programma di protezione avanzata di Google</translation>
 <translation id="1155545602507378023">No, solo questo dispositivo</translation>
 <translation id="1155816283571436363">Connessione al telefono in corso</translation>
+<translation id="1157952955648710254">Chiudi il riquadro laterale della Ricerca Google</translation>
 <translation id="1158080958325422608">Usa lettere maiuscole</translation>
 <translation id="1158238185437008462">Visualizza ricordi</translation>
 <translation id="1159879754517035595">Gestisci le impostazioni delle estensioni</translation>
@@ -6500,6 +6501,7 @@ Puoi inviarlo a Google per verificare se non è sicuro. In genere l'analisi rich
 <translation id="6547854317475115430"><ph name="BEGIN_PARAGRAPH1" />Il servizio di geolocalizzazione di Google utilizza fonti quali le reti Wi-Fi e mobili o i sensori per stabilire la posizione approssimativa del dispositivo.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Puoi disattivare la posizione del dispositivo in qualsiasi momento tramite Impostazioni &gt; App &gt; Google Play Store &gt; Gestisci le preferenze Android &gt; Sicurezza e posizione &gt; Posizione. Puoi anche disattivare l'uso delle reti Wi-Fi e mobili e dei sensori per la posizione del dispositivo Android disabilitando "Precisione della geolocalizzazione di Google" nello stesso menu.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="654871471440386944">Attivare navigazione con cursore?</translation>
+<translation id="6548945820758901244">Apri il riquadro laterale della Ricerca Google</translation>
 <translation id="6549038875972762904">Ripeti configurazione</translation>
 <translation id="6550675742724504774">Opzioni</translation>
 <translation id="65513682072153627">Vedrai questa icona Gestita se un'impostazione o una funzionalità è gestita dall'amministratore.</translation>

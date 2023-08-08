@@ -1423,15 +1423,6 @@ Nếu đặt chính sách này, thì bạn cần đặt chính sách <ph name="P
 <translation id="2223393221350938149">Không chấp nhận mọi trang web chạy JavaScript JIT</translation>
 <translation id="2223598546285729819">Cài đặt thông báo mặc định</translation>
 <translation id="222673035924187991">Bật ClientHello được mã hoá của TLS (Bảo mật tầng truyền tải)</translation>
-<translation id="222944823539535006">Chính sách này không còn được dùng nữa và sẽ bị xoá kể từ mốc quan trọng 130, vui lòng dùng chính sách <ph name="URL_KEYED_METRICS_ALLOWED_POLICY_NAME" />.
-
-Khi bạn đặt chính sách này thành Bật, tính năng thu thập dữ liệu ẩn danh nhập dưới dạng URL sẽ luôn hoạt động. Tính năng này gửi URL của các trang mà người dùng truy cập đến Google nhằm giúp cải thiện tính năng tìm kiếm và duyệt web.
-
-Khi bạn đặt chính sách này thành Tắt, tính năng thu thập dữ liệu ẩn danh nhập dưới dạng URL sẽ không hoạt động.
-
-Nếu bạn không đặt chính sách này, thì người dùng sẽ có thể thay đổi chế độ cài đặt này theo cách thủ công.
-
-Trong Kiosk <ph name="PRODUCT_OS_NAME" />, chính sách này không cung cấp tuỳ chọn "Để người dùng quyết định". Nếu bạn không đặt chính sách này cho Kiosk <ph name="PRODUCT_OS_NAME" />, thì tính năng thu thập dữ liệu ẩn danh nhập dưới dạng URL sẽ luôn hoạt động.</translation>
 <translation id="2231817271680715693">Nhập lịch sử duyệt từ trình duyệt mặc định trong lần chạy đầu tiên</translation>
 <translation id="2231962946025538735">Chính sách này không còn dùng nữa. Vui lòng dùng <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" /> để kiểm soát tính sẵn có của trình bổ trợ Flash và <ph name="ALWAYS_OPEN_PDF_EXTERNALLY_POLICY_NAME" /> để kiểm soát xem có phải dùng trình xem PDF tích hợp để mở tệp PDF hay không.
 

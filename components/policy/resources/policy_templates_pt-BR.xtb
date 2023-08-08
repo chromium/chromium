@@ -1424,15 +1424,6 @@ A definição desta política requer que a <ph name="PRIVACY_SANDBOX_PROMPT_ENAB
 <translation id="2223393221350938149">Não permitir que sites executem o JIT do JavaScript</translation>
 <translation id="2223598546285729819">Configuração padrão de notificações</translation>
 <translation id="222673035924187991">Ativar Encrypted ClientHello do TLS</translation>
-<translation id="222944823539535006">Esta política foi descontinuada e será removida na versão 130. Use a <ph name="URL_KEYED_METRICS_ALLOWED_POLICY_NAME" />.
-
-Se a política for ativada, a coleta de dados anônimos inseridos no URL, que envia os URLs das páginas acessadas pelo usuário ao Google para melhorar a pesquisa e navegação, sempre vai ficar ativa.
-
-Se a política for desativada, não haverá coleta de dados anônimos inseridos no URL.
-
-Se ela for deixada sem definição, o usuário poderá mudar a configuração manualmente.
-
-No quiosque do <ph name="PRODUCT_OS_NAME" />, essa política não oferece a opção de "Permitir que o usuário decida". Se ela não for definida para o quiosque do <ph name="PRODUCT_OS_NAME" />, a coleta de dados anônimos inseridos no URL sempre vai ficar ativa.</translation>
 <translation id="2231817271680715693">Importar histórico de navegação do navegador padrão na primeira execução</translation>
 <translation id="2231962946025538735">O uso desta política foi suspenso. Use <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" /> para controlar a disponibilidade do plug-in Flash e <ph name="ALWAYS_OPEN_PDF_EXTERNALLY_POLICY_NAME" /> para controlar se o visualizador de PDF integrado será usado para abrir arquivos PDF.
 

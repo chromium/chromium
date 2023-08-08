@@ -1346,7 +1346,6 @@
 <translation id="3987940399970879459">По-малко от 1 МБ</translation>
 <translation id="3990250421422698716">Разделно офсетово отпечатване</translation>
 <translation id="3992684624889376114">Всичко за тази страница</translation>
-<translation id="399952081411886534">Други функции, които повишават поверителността на рекламите</translation>
 <translation id="4000598935132966791">Научете повече за ограниченията за сайтовете в управляваните браузъри</translation>
 <translation id="4006465311664329701">Начини на плащане, оферти и адреси посредством Google Pay</translation>
 <translation id="4010758435855888356">Да се разреши ли достъпът до хранилището?</translation>
@@ -3302,6 +3301,7 @@
 <translation id="827820107214076967">Опресняване на регистрационните файлове</translation>
 <translation id="8279611986089885641">Известията за Chrome трябва да са включени. Можете да ги включите от <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="8280630997017109758">Тава 11</translation>
+<translation id="8281730697546299650">Вече са налице други функции за поверителността при рекламите</translation>
 <translation id="8281886186245836920">Пропускане</translation>
 <translation id="8282409409360764263">Поддръжка на двора</translation>
 <translation id="8282947398454257691">Достъп до уникалния идентификатор на устройството ви</translation>

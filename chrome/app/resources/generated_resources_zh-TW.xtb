@@ -193,6 +193,7 @@
 <translation id="1153636665119721804">Google 進階保護計畫</translation>
 <translation id="1155545602507378023">否，僅限這部裝置</translation>
 <translation id="1155816283571436363">正在連線到你的手機</translation>
+<translation id="1157952955648710254">關閉 Google 搜尋側邊面板</translation>
 <translation id="1158080958325422608">使用大寫字母</translation>
 <translation id="1158238185437008462">查看回憶集錦</translation>
 <translation id="1159879754517035595">管理擴充功能設定</translation>
@@ -6494,6 +6495,7 @@
 <translation id="6547854317475115430"><ph name="BEGIN_PARAGRAPH1" />Google 的定位服務會使用 Wi‑Fi、行動網路和感應器等來源，推測出這部裝置的所在位置。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />您隨時可在裝置上關閉 Android 定位服務，只要依序前往「設定」&gt;「應用程式」&gt;「Google Play 商店」&gt;「管理 Android 偏好設定」&gt;「安全性與位置資訊」&gt;「位置」即可。您也可以在相同選單中關閉「Google 定位精確度」，禁止 Android 定位服務使用 Wi-Fi、行動網路和感應器。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="654871471440386944">要開啟鍵盤瀏覽功能嗎？</translation>
+<translation id="6548945820758901244">開啟 Google 搜尋側邊面板</translation>
 <translation id="6549038875972762904">重做設定</translation>
 <translation id="6550675742724504774">選項</translation>
 <translation id="65513682072153627">當某項設定或功能是由系統管理員管理時，系統會顯示這個受管理的圖示。</translation>

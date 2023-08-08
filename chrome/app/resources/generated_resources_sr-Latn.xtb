@@ -193,6 +193,7 @@ Proverite lozinke u bilo kom trenutku u: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1153636665119721804">Google program napredne zaštite</translation>
 <translation id="1155545602507378023">Ne, samo ovaj uređaj</translation>
 <translation id="1155816283571436363">Povezivanje sa telefonom</translation>
+<translation id="1157952955648710254">Zatvorite bočnu tablu Google pretrage</translation>
 <translation id="1158080958325422608">Prebaci na velika slova</translation>
 <translation id="1158238185437008462">Prikaži uspomene</translation>
 <translation id="1159879754517035595">Upravljajte podešavanjima dodataka</translation>
@@ -6502,6 +6503,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6547854317475115430"><ph name="BEGIN_PARAGRAPH1" />Google usluga lokacije koristi izvore kao što su WiFi mreže, mobilne mreže i senzori da bi odredila približnu lokaciju uređaja.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Možete da isključite Android lokaciju na uređaju u bilo kom trenutku ako odete u Podešavanja &gt; Aplikacije &gt; Google Play prodavnica &gt; Upravljajte Android podešavanjima &gt; Bezbednost i lokacija &gt; Lokacija. Ako isključite Google preciznost lokacije u istom meniju, možete i da isključite korišćenje WiFi mreža, mobilnih mreža i senzora za Android lokaciju.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="654871471440386944">Želite da uključite navigaciju kursorom?</translation>
+<translation id="6548945820758901244">Otvorite bočnu tablu Google pretrage</translation>
 <translation id="6549038875972762904">Ponovi podešavanje</translation>
 <translation id="6550675742724504774">Opcije</translation>
 <translation id="65513682072153627">Videćete ovu ikonu Upravljano kada podešavanjem ili funkcijom upravlja administrator.</translation>

@@ -193,6 +193,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1153636665119721804">Programa Protecció avançada de Google</translation>
 <translation id="1155545602507378023">No, només aquest dispositiu</translation>
 <translation id="1155816283571436363">S'està connectant al telèfon</translation>
+<translation id="1157952955648710254">Tanca el tauler lateral de la Cerca de Google</translation>
 <translation id="1158080958325422608">Canvia a majúscules</translation>
 <translation id="1158238185437008462">Consulta els records</translation>
 <translation id="1159879754517035595">Gestiona la configuració de l'extensió</translation>
@@ -6501,6 +6502,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6547854317475115430"><ph name="BEGIN_PARAGRAPH1" />El servei d'ubicació de Google utilitza fonts com ara sensors, xarxes mòbils i Wi-Fi per estimar la ubicació del dispositiu.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Pots desactivar la ubicació d'Android del teu dispositiu en qualsevol moment anant a Configuració &gt; Aplicacions &gt; Google Play Store &gt; Gestiona les preferències d'Android &gt; Seguretat i ubicació &gt; Ubicació. També pots desactivar l'ús de sensors, xarxes mòbils i Wi-Fi per a la ubicació d'Android desactivant "Precisió d'ubicació de Google" al mateix menú.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="654871471440386944">Vols activar la navegació amb cursor de text?</translation>
+<translation id="6548945820758901244">Obre el tauler lateral de la Cerca de Google</translation>
 <translation id="6549038875972762904">Refés la configuració</translation>
 <translation id="6550675742724504774">Opcions</translation>
 <translation id="65513682072153627">Veuràs aquesta icona de dispositiu gestionat quan una opció de configuració o una funció estigui gestionada pel teu administrador.</translation>

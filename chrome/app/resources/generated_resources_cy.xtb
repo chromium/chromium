@@ -195,6 +195,7 @@ Gwiriwch eich cyfrineiriau unrhyw bryd yn y <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1153636665119721804">Google Advanced Protection Program</translation>
 <translation id="1155545602507378023">Na, y ddyfais hon yn unig</translation>
 <translation id="1155816283571436363">Wrthi'n cysylltu â'ch ffôn</translation>
+<translation id="1157952955648710254">Cau panel ochr Google Search</translation>
 <translation id="1158080958325422608">Gwneud yn Briflythrennau</translation>
 <translation id="1158238185437008462">Gweld atgofion</translation>
 <translation id="1159879754517035595">Rheoli gosodiadau estyniad</translation>
@@ -6522,6 +6523,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="6547854317475115430"><ph name="BEGIN_PARAGRAPH1" />Mae gwasanaeth lleoliad Google yn defnyddio ffynonellau megis Wi-Fi, rhwydweithiau symudol a synwyryddion i helpu i amcangyfrif lleoliad eich dyfais.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Gallwch ddiffodd lleoliad Android ar eich dyfais unrhyw bryd drwy fynd i Gosodiadau &gt; Apiau &gt; Google Play Store &gt; Rheoli dewisiadau Android &gt; Diogelwch a lleoliad &gt; Lleoliad. Gallwch hefyd ddiffodd y defnydd o Wi-Fi, rhwydweithiau symudol, a synwyryddion ar gyfer lleoliad Android drwy ddiffodd “Cywirdeb Lleoliad Google” yn yr un ddewislen.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="654871471440386944">Troi pori caret ymlaen?</translation>
+<translation id="6548945820758901244">Agor panel ochr Google Search</translation>
 <translation id="6549038875972762904">Ailwneud gosod</translation>
 <translation id="6550675742724504774">Dewisiadau</translation>
 <translation id="65513682072153627">Byddwch yn gweld yr eicon Rheolir pan fydd gosodiad neu nodwedd yn cael eu rheoli gan eich gweinyddwr.</translation>

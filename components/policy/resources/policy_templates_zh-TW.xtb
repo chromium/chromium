@@ -1395,15 +1395,6 @@
 <translation id="2223393221350938149">禁止任何網站執行 JavaScript JIT</translation>
 <translation id="2223598546285729819">預設通知設定</translation>
 <translation id="222673035924187991">啟用經過 TLS 加密的 ClientHello</translation>
-<translation id="222944823539535006">這項政策已淘汰，將在主要版本 130 中移除，請改用 <ph name="URL_KEYED_METRICS_ALLOWED_POLICY_NAME" />。
-
-如果這項政策設為啟用，系統一律會開啟輸入網址匿名資料收集功能，將使用者造訪的網頁網址傳送給 Google，協助改善搜尋與瀏覽服務。
-
-如果設為停用，輸入網址匿名資料收集功能就會關閉。
-
-如果不設定這項政策，則使用者可手動變更這項設定。
-
-在 <ph name="PRODUCT_OS_NAME" /> 資訊站中，這項政策不提供「允許使用者決定」選項。如果不設定 <ph name="PRODUCT_OS_NAME" /> 資訊站的這項政策，系統一律會開啟輸入網址匿名資料收集功能。</translation>
 <translation id="2231817271680715693">第一次執行時從預設瀏覽器匯入瀏覽記錄</translation>
 <translation id="2231962946025538735">這項政策已淘汰，請使用 <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" /> 控管是否要提供 Flash 外掛程式，並使用 <ph name="ALWAYS_OPEN_PDF_EXTERNALLY_POLICY_NAME" /> 指定是否要使用整合式 PDF 檢視器開啟 PDF 檔案。
 

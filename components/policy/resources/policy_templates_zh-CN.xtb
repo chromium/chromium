@@ -1403,15 +1403,6 @@
 <translation id="2223393221350938149">不允许任何网站运行 JavaScript JIT</translation>
 <translation id="2223598546285729819">默认通知设置</translation>
 <translation id="222673035924187991">启用经过 TLS 加密的 ClientHello</translation>
-<translation id="222944823539535006">此政策已被弃用，并将在里程碑 130 中移除，请改用 <ph name="URL_KEYED_METRICS_ALLOWED_POLICY_NAME" />。
-
-如果此政策已启用，系统会始终启用以网址为键的匿名化数据收集功能，从而将用户访问的网页网址发送给 Google，用于改善搜索和浏览体验。
-
-如果此政策已停用，系统将不会启用以网址为键的匿名化数据收集功能。
-
-如果此政策未设置，用户将能手动更改此设置。
-
-在 <ph name="PRODUCT_OS_NAME" /> 自助服务终端中，此政策不提供“允许用户决定”选项。如果不为 <ph name="PRODUCT_OS_NAME" /> 自助服务终端设置此政策，系统会始终启用以网址为键的匿名化数据收集功能。</translation>
 <translation id="2231817271680715693">首次运行时，从默认浏览器导入浏览记录</translation>
 <translation id="2231962946025538735">此政策已被弃用。请使用 <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" /> 控制 Flash 插件的可用性，并使用 <ph name="ALWAYS_OPEN_PDF_EXTERNALLY_POLICY_NAME" /> 控制是否应使用集成式 PDF 查看器打开 PDF 文件。
 

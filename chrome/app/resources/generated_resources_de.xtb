@@ -193,6 +193,7 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1153636665119721804">Erweitertes Sicherheitsprogramm von Google</translation>
 <translation id="1155545602507378023">Nein, nur auf diesem Gerät</translation>
 <translation id="1155816283571436363">Verbindung zu deinem Smartphone wird hergestellt</translation>
+<translation id="1157952955648710254">Seitenleiste der Google Suche schließen</translation>
 <translation id="1158080958325422608">Großschreibung verwenden</translation>
 <translation id="1158238185437008462">Erinnerungen ansehen</translation>
 <translation id="1159879754517035595">Erweiterungseinstellungen verwalten</translation>
@@ -6497,6 +6498,7 @@ Du kannst sie an Google senden, um zu überprüfen, ob sie unsicher ist. Der Sca
 <translation id="6547854317475115430"><ph name="BEGIN_PARAGRAPH1" />Der Standortdienst von Google greift auf Quellen wie WLANs, Mobilfunknetze und Sensoren zurück, um den Gerätestandort besser einschätzen zu können.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Du kannst die Standortermittlung dieses Android-Geräts jederzeit deaktivieren. Wähle dazu „Einstellungen“ &gt; „Apps“ &gt; „Google Play Store“ &gt; „Android-Einstellungen verwalten“ &gt; „Sicherheit &amp; Standort“ &gt; „Standort“ aus. Außerdem hast du die Möglichkeit, die Nutzung von WLANs, Mobilfunknetzen und Sensoren zur Android-Standortermittlung zu deaktivieren, indem du „Google-Standortgenauigkeit“ im selben Menü abwählst.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="654871471440386944">Tastaturnavigation aktivieren?</translation>
+<translation id="6548945820758901244">Seitenleiste der Google Suche öffnen</translation>
 <translation id="6549038875972762904">Einrichtung wiederholen</translation>
 <translation id="6550675742724504774">Optionen</translation>
 <translation id="65513682072153627">Das Symbol „Verwaltet“ wird angezeigt, wenn eine Einstellung oder Funktion von deinem Administrator verwaltet wird.</translation>

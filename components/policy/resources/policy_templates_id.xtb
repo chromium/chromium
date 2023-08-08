@@ -1427,15 +1427,6 @@ Jika kebijakan ini disetel, kebijakan <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_P
 <translation id="2223393221350938149">Jangan izinkan situs apa pun menjalankan JIT JavaScript</translation>
 <translation id="2223598546285729819">Setelan pemberitahuan default</translation>
 <translation id="222673035924187991">Mengaktifkan Encrypted ClientHello TLS</translation>
-<translation id="222944823539535006">Kebijakan ini tidak digunakan lagi dan akan dihapus di versi 130. Sebagai gantinya, gunakan <ph name="URL_KEYED_METRICS_ALLOWED_POLICY_NAME" />.
-
-Jika kebijakan disetel ke Aktif berarti pengumpulan data anonim yang menyertakan URL, yang mengirimkan informasi URL halaman yang dikunjungi oleh pengguna kepada Google untuk meningkatkan kualitas penelusuran dan penjelajahan, akan selalu aktif.
-
-Jika kebijakan disetel ke Nonaktif, pengumpulan data anonim yang menyertakan URL tidak akan diaktifkan.
-
-Jika kebijakan ini tidak disetel, pengguna akan dapat mengubah setelan ini secara manual.
-
-Di <ph name="PRODUCT_OS_NAME" /> Kiosk, kebijakan ini tidak menawarkan opsi "Izinkan pengguna untuk memutuskan". Jika kebijakan ini tidak disetel untuk <ph name="PRODUCT_OS_NAME" />Kiosk, pengumpulan data anonim yang menyertakan URL akan selalu aktif.</translation>
 <translation id="2231817271680715693">Impor histori browseran dari browser default saat pertama kali dijalankan</translation>
 <translation id="2231962946025538735">Kebijakan ini tidak digunakan lagi. Gunakan kebijakan <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" /> untuk mengontrol ketersediaan plugin Flash dan <ph name="ALWAYS_OPEN_PDF_EXTERNALLY_POLICY_NAME" /> untuk mengontrol apakah penampil PDF yang terintegrasi akan digunakan untuk membuka file PDF atau tidak.
 

@@ -1346,7 +1346,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3987940399970879459">Menos de 1 MB</translation>
 <translation id="3990250421422698716">Compensación mediante empurro</translation>
 <translation id="3992684624889376114">Acerca desta páxina</translation>
-<translation id="399952081411886534">Outras funcións que melloran a privacidade nos anuncios</translation>
 <translation id="4000598935132966791">Máis información sobre as restricións de acceso a sitios nos navegadores xestionados</translation>
 <translation id="4006465311664329701">Métodos de pago, ofertas e enderezos que usan Google Pay</translation>
 <translation id="4010758435855888356">Queres permitir o acceso ao almacenamento?</translation>
@@ -3302,6 +3301,7 @@ Detalles adicionais:
 <translation id="827820107214076967">Actualizar rexistros</translation>
 <translation id="8279611986089885641">As notificacións de Chrome deben estar activadas. Podes activalas en <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="8280630997017109758">Bandexa 11</translation>
+<translation id="8281730697546299650">Xa están dispoñibles outras funcións de privacidade nos anuncios</translation>
 <translation id="8281886186245836920">Omitir</translation>
 <translation id="8282409409360764263">Mantemento de xardíns</translation>
 <translation id="8282947398454257691">Coñece o teu identificador de dispositivo único</translation>

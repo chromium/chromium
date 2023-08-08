@@ -195,6 +195,7 @@
 <translation id="1153636665119721804">Google 進階保護計劃</translation>
 <translation id="1155545602507378023">否，只限此裝置</translation>
 <translation id="1155816283571436363">正在連接您的手機</translation>
+<translation id="1157952955648710254">閂 Google 搜尋側面板</translation>
 <translation id="1158080958325422608">設為大寫</translation>
 <translation id="1158238185437008462">查看回憶</translation>
 <translation id="1159879754517035595">管理擴充程式設定</translation>
@@ -6517,6 +6518,7 @@
 <translation id="6547854317475115430"><ph name="BEGIN_PARAGRAPH1" />Google 的定位服務會透過 Wi-Fi、流動網絡及感應器等來源協助估計裝置位置。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />您可隨時前往 [設定] &gt; [應用程式] &gt; [Google Play 商店] &gt; [管理 Android 偏好設定] &gt; [安全性和位置] &gt; [位置]，以便在您的裝置上關閉 Android 定位服務。您亦可在同一選單中關閉「Google 定位精確度」，禁止 Android 定位服務使用 Wi-Fi、流動網絡和感應器。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="654871471440386944">要開啟「鍵盤瀏覽」功能嗎？</translation>
+<translation id="6548945820758901244">開 Google 搜尋側面板</translation>
 <translation id="6549038875972762904">重做設定</translation>
 <translation id="6550675742724504774">選項</translation>
 <translation id="65513682072153627">當某項設定或功能是由管理員管理時，系統會顯示這個「受管理」圖示。</translation>

@@ -195,6 +195,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1153636665119721804">Google Avansert beskyttelse-programmet</translation>
 <translation id="1155545602507378023">Nei, kun denne enheten</translation>
 <translation id="1155816283571436363">Kobler til telefonen</translation>
+<translation id="1157952955648710254">Lukk sidepanelet for Google Søk</translation>
 <translation id="1158080958325422608">Gjør om til store bokstaver</translation>
 <translation id="1158238185437008462">Se minner</translation>
 <translation id="1159879754517035595">Administrer innstillinger for utvidelser</translation>
@@ -6510,6 +6511,7 @@ Du kan sende den til Google for å sjekke om den er utrygg. Skanninger tar vanli
 <translation id="6547854317475115430"><ph name="BEGIN_PARAGRAPH1" />Googles posisjonstjeneste bruker kilder som wifi, mobilnettverk og sensorer til å estimere enhetens posisjon.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Du kan når som helst slå av posisjonen på Android-enheten din ved å gå til Innstillinger &gt; Apper &gt; Google Play Butikk &gt; Administrer Android-innstillinger &gt; Sikkerhet og posisjon &gt; Posisjon. Du kan også slå av bruken av wifi, mobilnettverk og sensorer for Android-posisjonen ved å slå av «Google Posisjonsnøyaktighet» på den samme menyen.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="654871471440386944">Vil du slå på markørsurfing?</translation>
+<translation id="6548945820758901244">Åpne sidepanelet for Google Søk</translation>
 <translation id="6549038875972762904">Gjør om konfigurering</translation>
 <translation id="6550675742724504774">Alternativer</translation>
 <translation id="65513682072153627">Du ser dette Administrert-ikonet når innstillinger og funksjoner administreres av administratoren din.</translation>

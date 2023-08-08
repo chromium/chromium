@@ -193,6 +193,7 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="1153636665119721804">Programul Protecție avansată Google</translation>
 <translation id="1155545602507378023">Nu, numai pe acest dispozitiv</translation>
 <translation id="1155816283571436363">Se conectează la telefon</translation>
+<translation id="1157952955648710254">Închide panoul lateral Căutare Google</translation>
 <translation id="1158080958325422608">Schimbă în majuscule</translation>
 <translation id="1158238185437008462">Vezi amintirile</translation>
 <translation id="1159879754517035595">Gestionează setările pentru extensii</translation>
@@ -6504,6 +6505,7 @@ Poți să îl trimiți la Google pentru a verifica dacă este nesigur. De obicei
 <translation id="6547854317475115430"><ph name="BEGIN_PARAGRAPH1" />Serviciul de localizare Google folosește surse precum rețelele Wi-Fi, rețelele mobile și senzorii pentru a estima locația dispozitivului.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Poți dezactiva oricând locația Android pe acest dispozitiv accesând Setări &gt; Aplicații &gt; Magazin Google Play &gt; Gestionează preferințele Android &gt; Securitate și locație &gt; Locație. În plus, poți dezactiva folosirea conexiunii Wi-Fi, a rețelelor mobile și a senzorilor pentru locația Android dezactivând „Precizia locației în Google” în același meniu.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="654871471440386944">Activezi navigarea cu tastatura?</translation>
+<translation id="6548945820758901244">Deschide panoul lateral Căutare Google</translation>
 <translation id="6549038875972762904">Repetă configurarea</translation>
 <translation id="6550675742724504774">Opțiuni</translation>
 <translation id="65513682072153627">Vei vedea această pictogramă Gestionată când o setare sau o funcție este gestionată de administrator.</translation>

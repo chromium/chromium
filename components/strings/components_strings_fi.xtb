@@ -1347,7 +1347,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="3987940399970879459">Alle 1 Mt</translation>
 <translation id="3990250421422698716">Jog offset</translation>
 <translation id="3992684624889376114">Tietoja sivusta</translation>
-<translation id="399952081411886534">Muut mainosten yksityisyyttä parantavat ominaisuudet</translation>
 <translation id="4000598935132966791">Lue lisää hallinnoitujen selainten sivustorajoituksista</translation>
 <translation id="4006465311664329701">Maksutavat, tarjoukset ja osoitteet Google Playta käyttäen</translation>
 <translation id="4010758435855888356">Sallitaanko tallennustilan pääsyoikeudet?</translation>
@@ -3303,6 +3302,7 @@ Lisätietoja:
 <translation id="827820107214076967">Päivitä lokit</translation>
 <translation id="8279611986089885641">Chrome-ilmoitusten on oltava päällä. Voit laittaa ne päälle valitsemalla <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="8280630997017109758">Lokero 11</translation>
+<translation id="8281730697546299650">Muita yksityisyyteen liittyviä mainosominaisuuksia on nyt saatavilla</translation>
 <translation id="8281886186245836920">Ohita</translation>
 <translation id="8282409409360764263">Pihanhoito</translation>
 <translation id="8282947398454257691">Saada selville laitetunnuksesi.</translation>
