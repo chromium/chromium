@@ -137,7 +137,7 @@ android_library("java") {
 generate_jni("core_jni") {
   sources = [
     "java/src/org/chromium/components/permissions/PermissionUtil.java",
-    "java/src/org/chromium/components/permissions/PermissionsAndroidFeatureList.java",
+    "java/src/org/chromium/components/permissions/PermissionsAndroidFeatureMap.java",
   ]
 }
 
@@ -147,6 +147,7 @@ android_library("core_java") {
   sources = [
     "java/src/org/chromium/components/permissions/PermissionUtil.java",
     "java/src/org/chromium/components/permissions/PermissionsAndroidFeatureList.java",
+    "java/src/org/chromium/components/permissions/PermissionsAndroidFeatureMap.java",
   ]
   deps = [
     "//base:base_java",

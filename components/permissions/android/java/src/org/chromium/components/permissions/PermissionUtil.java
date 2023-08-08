@@ -58,7 +58,7 @@ public class PermissionUtil {
         // software's SDK version as opposed to Chrome's targetSdkVersion. See:
         // https://developer.android.com/about/versions/12/approximate-location
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
-                && PermissionsAndroidFeatureList.isEnabled(
+                && PermissionsAndroidFeatureMap.isEnabled(
                         PermissionsAndroidFeatureList
                                 .ANDROID_APPROXIMATE_LOCATION_PERMISSION_SUPPORT);
     }
