@@ -22,7 +22,6 @@
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_track.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component_impl.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
-#include "third_party/blink/renderer/platform/peerconnection/webrtc_util.h"
 
 using testing::AnyNumber;
 using testing::Return;
@@ -218,12 +217,11 @@ class TransceiverStateSurfacerTest : public ::testing::Test {
                 receiver_state->webrtc_dtls_transport_information().state());
     }
     // Inspect transceiver states.
-    EXPECT_TRUE(blink::OptionalEquals(transceiver_state.mid(),
-                                      webrtc_transceiver->mid()));
+    EXPECT_EQ(transceiver_state.mid(), webrtc_transceiver->mid());
     EXPECT_TRUE(transceiver_state.direction() ==
                 webrtc_transceiver->direction());
-    EXPECT_TRUE(blink::OptionalEquals(transceiver_state.current_direction(),
-                                      webrtc_transceiver->current_direction()));
+    EXPECT_EQ(transceiver_state.current_direction(),
+              webrtc_transceiver->current_direction());
   }
 
  private:

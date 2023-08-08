@@ -13,7 +13,6 @@
 #include "third_party/blink/renderer/platform/peerconnection/rtc_rtp_sender_platform.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_rtp_source.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_stats.h"
-#include "third_party/blink/renderer/platform/peerconnection/webrtc_util.h"
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 #include "third_party/webrtc/api/scoped_refptr.h"
 
@@ -204,8 +203,7 @@ class RTCRtpReceiverImpl::RTCRtpReceiverInternal
   }
 
   void SetJitterBufferMinimumDelay(absl::optional<double> delay_seconds) {
-    webrtc_receiver_->SetJitterBufferMinimumDelay(
-        blink::ToAbslOptional(delay_seconds));
+    webrtc_receiver_->SetJitterBufferMinimumDelay(delay_seconds);
   }
 
   RTCEncodedAudioStreamTransformer* GetEncodedAudioStreamTransformer() const {

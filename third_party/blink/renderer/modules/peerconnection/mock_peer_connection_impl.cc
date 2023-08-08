@@ -17,7 +17,6 @@
 #include "third_party/blink/renderer/modules/peerconnection/mock_peer_connection_dependency_factory.h"
 #include "third_party/blink/renderer/modules/peerconnection/mock_rtc_peer_connection_handler_platform.h"
 #include "third_party/blink/renderer/platform/allow_discouraged_type.h"
-#include "third_party/blink/renderer/platform/peerconnection/webrtc_util.h"
 #include "third_party/webrtc/api/rtp_receiver_interface.h"
 #include "third_party/webrtc/rtc_base/ref_counted_object.h"
 
@@ -259,10 +258,10 @@ FakeRtpTransceiver::FakeRtpTransceiver(
     : media_type_(media_type),
       sender_(std::move(sender)),
       receiver_(std::move(receiver)),
-      mid_(blink::ToAbslOptional(std::move(mid))),
+      mid_(std::move(mid)),
       stopped_(stopped),
       direction_(direction),
-      current_direction_(blink::ToAbslOptional(current_direction)) {}
+      current_direction_(current_direction) {}
 
 FakeRtpTransceiver::~FakeRtpTransceiver() = default;
 

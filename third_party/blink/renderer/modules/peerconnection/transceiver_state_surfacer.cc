@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/modules/peerconnection/transceiver_state_surfacer.h"
 
 #include "base/task/single_thread_task_runner.h"
-#include "third_party/blink/renderer/platform/peerconnection/webrtc_util.h"
 #include "third_party/webrtc/api/rtp_transceiver_interface.h"
 #include "third_party/webrtc/api/sctp_transport_interface.h"
 
@@ -130,10 +129,9 @@ void TransceiverStateSurfacer::Initialize(
     transceiver_states_.emplace_back(
         main_task_runner_, signaling_task_runner_, webrtc_transceiver.get(),
         std::move(sender_state), std::move(receiver_state),
-        blink::ToAbslOptional(webrtc_transceiver->mid()),
-        webrtc_transceiver->direction(),
-        blink::ToAbslOptional(webrtc_transceiver->current_direction()),
-        blink::ToAbslOptional(webrtc_transceiver->fired_direction()),
+        webrtc_transceiver->mid(), webrtc_transceiver->direction(),
+        webrtc_transceiver->current_direction(),
+        webrtc_transceiver->fired_direction(),
         GetNegotiatedHeaderExtensions(webrtc_transceiver.get()));
   }
   is_initialized_ = true;
