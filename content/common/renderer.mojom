@@ -47,9 +47,8 @@ struct UpdateSystemColorInfoParams {
 };
 
 // The background state for the render process.  When backgrounded the process's
-// priority will be lower (via base::Process::SetProcessBackgrounded()) if
-// allowed on the current platform (as determined by
-// base::Process::CanBackgroundProcesses()).
+// priority will be lower (via base::Process::SetPriority()) if allowed on the
+// current platform (as determined by base::Process::CanSetPriority()).
 enum RenderProcessBackgroundState {
   // The renderer process has not been backgrounded, a hidden renderer may still
   // be foregrounded, e.g. when it is playing audio.
