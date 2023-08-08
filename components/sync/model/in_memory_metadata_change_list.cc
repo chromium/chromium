@@ -37,6 +37,11 @@ void InMemoryMetadataChangeList::TransferChangesTo(MetadataChangeList* other) {
   }
 }
 
+void InMemoryMetadataChangeList::DropMetadataChangeForStorageKey(
+    const std::string& storage_key) {
+  metadata_changes_.erase(storage_key);
+}
+
 void InMemoryMetadataChangeList::UpdateModelTypeState(
     const sync_pb::ModelTypeState& model_type_state) {
   state_change_ = std::make_unique<ModelTypeStateChange>(
