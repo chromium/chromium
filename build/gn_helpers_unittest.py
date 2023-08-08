@@ -328,7 +328,7 @@ class UnitTest(unittest.TestCase):
 
       with mock.patch('shutil.which', lambda x: None):
         cmd = gn_helpers.CreateBuildCommand(temp_dir)
-        self.assertIn('depot_tools', cmd[0])
+        self.assertIn('third_party', cmd[0])
         self.assertIn(f'{os.sep}siso', cmd[0])
         self.assertEqual(['ninja', '-C', temp_dir], cmd[1:])
 
@@ -344,7 +344,7 @@ class UnitTest(unittest.TestCase):
 
       with mock.patch('shutil.which', lambda x: None):
         cmd = gn_helpers.CreateBuildCommand(temp_dir)
-        self.assertIn('depot_tools', cmd[0])
+        self.assertIn('third_party', cmd[0])
         self.assertIn(f'{os.sep}ninja', cmd[0])
         self.assertEqual(['-C', temp_dir], cmd[1:])
 

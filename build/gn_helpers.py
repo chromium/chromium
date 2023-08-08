@@ -551,11 +551,13 @@ def CreateBuildCommand(output_directory):
   # Prefer the version on PATH, but fallback to known version if PATH doesn't
   # have one (e.g. on bots).
   if not shutil.which(f'autoninja{suffix}'):
-    prefix = os.path.join(_CHROMIUM_ROOT, 'third_party', 'depot_tools', '')
+    third_party_prefix = os.path.join(_CHROMIUM_ROOT, 'third_party')
+    ninja_prefix = os.path.join(third_party_prefix, 'ninja', '')
+    siso_prefix = os.path.join(third_party_prefix, 'siso', '')
     # Also - bots configure reclient manually, and so do not use the "auto"
     # wrappers.
-    ninja_cmd = [f'{prefix}ninja{suffix}']
-    siso_cmd = [f'{prefix}siso{suffix}', 'ninja']
+    ninja_cmd = [f'{ninja_prefix}ninja{suffix}']
+    siso_cmd = [f'{siso_prefix}siso{suffix}', 'ninja']
   else:
     ninja_cmd = [f'autoninja{suffix}']
     siso_cmd = [f'autosiso{suffix}']
