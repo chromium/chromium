@@ -2,4 +2,4 @@
 ++[menu]
 ++++[radio menu item] name='Menu item 1' checkable:true
 ++++[radio menu item] name='Menu item 2' checked checkable:true
-++++[radio menu item] name='Menu item 3' indeterminate checkable:true
+++++[radio menu item] name='Menu item 3' checkable:true

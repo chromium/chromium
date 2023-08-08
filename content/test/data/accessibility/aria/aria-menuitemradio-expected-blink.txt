@@ -8,6 +8,6 @@ rootWebArea
 ++++++++menuItemRadio name='Menu item 2' checkedState=true
 ++++++++++staticText name='Menu item 2'
 ++++++++++++inlineTextBox name='Menu item 2'
-++++++++menuItemRadio name='Menu item 3' checkedState=mixed
+++++++++menuItemRadio name='Menu item 3' checkedState=false
 ++++++++++staticText name='Menu item 3'
 ++++++++++++inlineTextBox name='Menu item 3'

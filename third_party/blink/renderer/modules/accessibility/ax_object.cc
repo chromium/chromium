@@ -2795,10 +2795,19 @@ ax::mojom::blink::CheckedState AXObject::CheckedState() const {
   const AtomicString& checked_attribute = GetAOMPropertyOrARIAAttribute(prop);
   if (checked_attribute) {
     if (EqualIgnoringASCIICase(checked_attribute, "mixed")) {
-      // Mixed value is invalid for switch role. Treat as false.
-      return role == ax::mojom::blink::Role::kSwitch
-                 ? ax::mojom::blink::CheckedState::kFalse
-                 : ax::mojom::blink::CheckedState::kMixed;
+      if (role == ax::mojom::blink::Role::kCheckBox ||
+          role == ax::mojom::blink::Role::kMenuItemCheckBox ||
+          role == ax::mojom::blink::Role::kListBoxOption ||
+          role == ax::mojom::blink::Role::kToggleButton ||
+          role == ax::mojom::blink::Role::kTreeItem) {
+        // Mixed value is supported in these roles: checkbox, menuitemcheckbox,
+        // option, togglebutton, and treeitem.
+        return ax::mojom::blink::CheckedState::kMixed;
+      } else {
+        // Mixed value is not supported in these roles: radio, menuitemradio,
+        // and switch.
+        return ax::mojom::blink::CheckedState::kFalse;
+      }
     }
 
     // Anything other than "false" should be treated as "true".

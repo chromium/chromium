@@ -2,4 +2,4 @@ android.webkit.WebView focusable focused scrollable
 ++android.view.View role_description='menu'
 ++++android.view.MenuItem role_description='radio button' checkable clickable name='Menu item 1'
 ++++android.view.MenuItem role_description='radio button' checkable checked clickable name='Menu item 2' item_index=1 row_index=1
-++++android.view.MenuItem role_description='radio button' checkable clickable name='Menu item 3' state_description='Partially Checked' item_index=2 row_index=2
+++++android.view.MenuItem role_description='radio button' checkable clickable name='Menu item 3' item_index=2 row_index=2
