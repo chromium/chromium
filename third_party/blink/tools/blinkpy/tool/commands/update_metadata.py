@@ -4,7 +4,6 @@
 
 """Update WPT metadata from builder results."""
 
-from concurrent.futures import ThreadPoolExecutor
 import collections
 import contextlib
 import functools
@@ -14,6 +13,7 @@ import logging
 import pathlib
 import optparse
 import re
+from concurrent.futures import Executor
 from typing import (
     Any,
     ClassVar,
@@ -85,8 +85,8 @@ class UpdateMetadata(Command):
 
     def __init__(self,
                  tool: Host,
-                 git_cl: Optional[GitCL] = None,
-                 max_io_workers: int = 4):
+                 io_pool: Optional[Executor] = None,
+                 git_cl: Optional[GitCL] = None):
         super().__init__(options=[
             optparse.make_option(
                 '--build',
@@ -160,7 +160,7 @@ class UpdateMetadata(Command):
         # Using `ProcessPoolExecutor` here would allow for physical parallelism
         # (i.e., avoid Python's Global Interpreter Lock) but incur the cost of
         # IPC.
-        self._io_pool = ThreadPoolExecutor(max_workers=max_io_workers)
+        self._io_pool = io_pool
         self._path_finder = path_finder.PathFinder(self._tool.filesystem)
         self.git = self._tool.git(path=self._path_finder.web_tests_dir())
         self.git_cl = git_cl or GitCL(self._tool)
@@ -168,6 +168,10 @@ class UpdateMetadata(Command):
     @property
     def _fs(self):
         return self._tool.filesystem
+
+    @property
+    def _map_for_io(self):
+        return self._io_pool.map if self._io_pool else map
 
     def execute(self, options: optparse.Values, args: List[str],
                 _tool: Host) -> Optional[int]:
@@ -197,7 +201,8 @@ class UpdateMetadata(Command):
                 self._select_builds(options), options.patchset)
             with contextlib.ExitStack() as stack:
                 stack.enter_context(self._trace('Updated metadata'))
-                stack.enter_context(self._io_pool)
+                if self._io_pool:
+                    stack.enter_context(self._io_pool)
                 tests_from_builders = updater.collect_results(
                     self.gather_reports(build_statuses, options.reports or []))
                 if not options.only_changed_tests:
@@ -264,7 +269,7 @@ class UpdateMetadata(Command):
         modified_test_files = []
         write = functools.partial(self._log_update_write, updater)
         for test_file, modified in zip(test_files,
-                                       self._io_pool.map(write, test_files)):
+                                       self._map_for_io(write, test_files)):
             if modified:
                 modified_test_files.append(test_file)
         return modified_test_files
@@ -446,7 +451,7 @@ class UpdateMetadata(Command):
             with self._fs.open_text_file_for_reading(path) as file_handle:
                 yield file_handle
             _log.debug('Read report from %r', path)
-        responses = self._io_pool.map(self._tool.web.get_binary, urls)
+        responses = self._map_for_io(self._tool.web.get_binary, urls)
         for url, response in zip(urls, responses):
             _log.debug('Fetched report from %r (size: %d bytes)', url,
                        len(response))

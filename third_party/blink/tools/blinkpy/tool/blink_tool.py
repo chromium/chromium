@@ -84,7 +84,7 @@ class BlinkTool(Host):
             PrintExpectations(),
             Rebaseline(),
             RebaselineCL(self, io_pool),
-            UpdateMetadata(self),
+            UpdateMetadata(self, io_pool),
             LintWPT(self),
         ]
         self.help_command = HelpCommand(tool=self)

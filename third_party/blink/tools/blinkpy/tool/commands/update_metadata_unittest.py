@@ -137,7 +137,6 @@ class BaseUpdateMetadataTest(LoggingTestCase):
 # Do not re-request try build information to check for interrupted steps.
 @patch(
     'blinkpy.common.net.rpc.BuildbucketClient.execute_batch', lambda self: [])
-@patch('concurrent.futures.ThreadPoolExecutor.map', new=map)
 class UpdateMetadataExecuteTest(BaseUpdateMetadataTest):
     """Verify the tool's frontend and build infrastructure interactions."""
 
@@ -175,7 +174,7 @@ class UpdateMetadataExecuteTest(BaseUpdateMetadataTest):
             TryJobStatus.from_bb_status('SUCCESS'),
         }
         self.git_cl = MockGitCL(self.tool, self.builds)
-        self.command = UpdateMetadata(self.tool, self.git_cl)
+        self.command = UpdateMetadata(self.tool, git_cl=self.git_cl)
 
         self.tool.web.append_prpc_response({
             'artifacts': [{
