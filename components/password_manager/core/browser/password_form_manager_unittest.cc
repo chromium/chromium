@@ -2311,11 +2311,10 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlowProvisionalSave) {
 
   // Create possible username data.
   constexpr autofill::FieldRendererId kUsernameFieldRendererId(101);
-  const std::u16string username_field_name = u"username_field";
   const std::u16string possible_username = u"test@example.com";
   PossibleUsernameData possible_username_data(
-      saved_match_.signon_realm, kUsernameFieldRendererId, username_field_name,
-      possible_username, base::Time::Now(), /*driver_id=*/0,
+      saved_match_.signon_realm, kUsernameFieldRendererId, possible_username,
+      base::Time::Now(), /*driver_id=*/0,
       /*autocomplete_attribute_has_username=*/false, /*is_likely_otp=*/false);
 
   FormData submitted_form = observed_form_only_password_fields_;
@@ -2348,11 +2347,10 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlowDifferentDomains) {
 
   // Create possible username data.
   constexpr autofill::FieldRendererId kUsernameFieldRendererId(101);
-  const std::u16string username_field_name = u"username_field";
   std::u16string possible_username = u"possible_username";
   PossibleUsernameData possible_username_data(
-      "https://another.domain.com", kUsernameFieldRendererId,
-      username_field_name, possible_username, base::Time::Now(),
+      "https://another.domain.com", kUsernameFieldRendererId, possible_username,
+      base::Time::Now(),
       /*driver_id=*/0, /*autocomplete_attribute_has_username=*/false,
       /*is_likely_otp=*/false);
   possible_username_data.form_predictions = MakeSingleUsernamePredictions();
@@ -2375,11 +2373,10 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlowSignupForm) {
   fetcher_->NotifyFetchCompleted();
 
   // Create possible username data.
-  const std::u16string username_field_name = u"username_field";
   std::u16string possible_username = u"possible_username";
   PossibleUsernameData possible_username_data(
       "https://another.domain.com", kSingleUsernameFieldRendererId,
-      username_field_name, possible_username, base::Time::Now(),
+      possible_username, base::Time::Now(),
       /*driver_id=*/0, /*autocomplete_attribute_has_username=*/false,
       /*is_likely_otp=*/false);
   possible_username_data.form_predictions = MakeSingleUsernamePredictions();
@@ -2415,9 +2412,8 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlow) {
     // Create possible username data.
     const std::u16string possible_username =
         is_password_update ? saved_match_.username_value : u"possible_username";
-    const std::u16string field_name = u"username_field";
     PossibleUsernameData possible_username_data(
-        saved_match_.signon_realm, kSingleUsernameFieldRendererId, field_name,
+        saved_match_.signon_realm, kSingleUsernameFieldRendererId,
         possible_username, base::Time::Now(),
         /*driver_id=*/0,
         /*autocomplete_attribute_has_username=*/false, /*is_likely_otp=*/false);
@@ -2514,8 +2510,7 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlowWithPrefilledUsername) {
   // Create possible username data.
   PossibleUsernameData possible_username_data(
       saved_match_.signon_realm, kSingleUsernameFieldRendererId,
-      u"username_field", submitted_form_.fields[kUsernameFieldIndex].value,
-      base::Time::Now(),
+      submitted_form_.fields[kUsernameFieldIndex].value, base::Time::Now(),
       /*driver_id=*/0,
       /*autocomplete_attribute_has_username=*/false, /*is_likely_otp=*/false);
   possible_username_data.form_predictions = MakeSingleUsernamePredictions();
@@ -2587,7 +2582,6 @@ TEST_P(PasswordFormManagerTest, NegativeUsernameFirstFlowVotes) {
   constexpr char16_t kPossibleUsername[] = u"possible_username";
 
   constexpr autofill::FieldRendererId kUsernameFieldRendererId(100);
-  constexpr char16_t kUsernameFieldName[] = u"username_field";
   constexpr autofill::FormSignature kUsernameFormSignature(1000);
   constexpr autofill::FieldSignature kUsernameFieldSignature(123);
 
@@ -2596,8 +2590,8 @@ TEST_P(PasswordFormManagerTest, NegativeUsernameFirstFlowVotes) {
 
   // Create possible username data.
   PossibleUsernameData possible_username_data(
-      saved_match_.signon_realm, kUsernameFieldRendererId, kUsernameFieldName,
-      kPossibleUsername, base::Time::Now(), /*driver_id=*/0,
+      saved_match_.signon_realm, kUsernameFieldRendererId, kPossibleUsername,
+      base::Time::Now(), /*driver_id=*/0,
       /*autocomplete_attribute_has_username=*/false, /*is_likely_otp=*/false);
   FormPredictions predictions;
   predictions.form_signature = kUsernameFormSignature;
@@ -2675,59 +2669,6 @@ TEST_P(PasswordFormManagerTest, NegativeUsernameFirstFlowVotes) {
 #endif
 }
 
-// Tests that username is taken during username first flow, but no votes are
-// sent for a nameless field.
-TEST_P(PasswordFormManagerTest, UsernameFirstFlowVotesNamelessField) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kUsernameFirstFlowFallbackCrowdsourcing},
-      /*disabled_features=*/{});
-
-  CreateFormManager(observed_form_only_password_fields_);
-  fetcher_->NotifyFetchCompleted();
-
-  // Create possible username data.
-  const std::u16string possible_username = u"possible_username";
-  const std::u16string field_name = u"";
-  PossibleUsernameData possible_username_data(
-      saved_match_.signon_realm, kSingleUsernameFieldRendererId, field_name,
-      possible_username, base::Time::Now(), /*driver_id=*/0,
-      /*autocomplete_attribute_has_username=*/false,
-      /*is_likely_otp=*/false);
-  possible_username_data.form_predictions = MakeSingleUsernamePredictions();
-
-  // Simulate submission a form without username. Data from
-  // |possible_username_data| will be taken for setting username.
-  FormData submitted_form = observed_form_only_password_fields_;
-  submitted_form.fields[0].value = u"strongpassword";
-
-  ASSERT_TRUE(form_manager_->ProvisionallySave(submitted_form, &driver_,
-                                               &possible_username_data));
-
-  // Check vote uploads.
-  testing::InSequence in_sequence;
-
-  // No single username upload for the username form with a nameless field.
-  EXPECT_CALL(mock_autofill_download_manager_,
-              StartUploadRequest(SignatureIs(kSingleUsernameFormSignature), _,
-                                 _, _, _, _, /*observer=*/IsNull()))
-      .Times(0);
-
-  // Upload single username data for the password form.
-  autofill::AutofillUploadContents::SingleUsernameData
-      expected_single_username_data;
-  expected_single_username_data.set_value_type(
-      autofill::AutofillUploadContents::NO_VALUE_TYPE);
-  EXPECT_CALL(
-      mock_autofill_download_manager_,
-      StartUploadRequest(
-          AllOf(SignatureIs(CalculateFormSignature(submitted_form)),
-                UploadedSingleUsernameDataIs(expected_single_username_data)),
-          _, _, _, _, _, /*observer=*/IsNull()));
-
-  form_manager_->Save();
-}
-
 // Tests that no votes are sent for an OTP field.
 TEST_P(PasswordFormManagerTest, PossibleUsernameLikelyOTP) {
   base::test::ScopedFeatureList feature_list;
@@ -2746,7 +2687,7 @@ TEST_P(PasswordFormManagerTest, PossibleUsernameLikelyOTP) {
   const std::u16string single_username_value = u"single_username_value";
   PossibleUsernameData possible_username_data(
       saved_match_.signon_realm, kSingleUsernameFieldRendererId,
-      u"username_field_name", single_username_value, base::Time::Now(),
+      single_username_value, base::Time::Now(),
       /*driver_id=*/0, /*autocomplete_attribute_has_username=*/false,
       /*is_likely_otp=*/true);
 
@@ -2781,11 +2722,10 @@ TEST_P(PasswordFormManagerTest, PossibleUsernameLikelyOTP) {
 // Tests that server prediction are taken into consideration for offering
 // username on username first flow.
 TEST_P(PasswordFormManagerTest, PossibleUsernameServerPredictions) {
-  const std::u16string username_field_name = u"username_field";
   const std::u16string possible_username = u"possible_username";
   PossibleUsernameData possible_username_data(
       saved_match_.signon_realm, autofill::FieldRendererId(102u),
-      username_field_name, possible_username, base::Time::Now(),
+      possible_username, base::Time::Now(),
       /*driver_id=*/0, /*autocomplete_attribute_has_username=*/false,
       /*is_likely_otp=*/false);
 
@@ -2839,7 +2779,7 @@ TEST_P(PasswordFormManagerTest, PossibleUsernameFromAutocomplete) {
   const std::u16string single_username_value = u"single_username_value";
   PossibleUsernameData possible_username_data(
       saved_match_.signon_realm, autofill::FieldRendererId(102u),
-      u"username_field_name", single_username_value, base::Time::Now(),
+      single_username_value, base::Time::Now(),
       /*driver_id=*/0, /*autocomplete_attribute_has_username=*/true,
       /*is_likely_otp=*/false);
 
@@ -2867,7 +2807,7 @@ TEST_P(PasswordFormManagerTest, PossibleUsernameLikelyOTPWithServerOverride) {
   const std::u16string possible_username = u"test@example.org";
   PossibleUsernameData possible_username_data(
       saved_match_.signon_realm, kSingleUsernameFieldRendererId,
-      u"username_field_name", possible_username, base::Time::Now(),
+      possible_username, base::Time::Now(),
       /*driver_id=*/0, /*autocomplete_attribute_has_username=*/false,
       /*is_likely_otp=*/false);
   // Create form predictions and set them to |possible_username_data|.
@@ -3645,11 +3585,10 @@ TEST_F(PasswordFormManagerTestWithMockedSaver, UsernameFirstFlow) {
   SetNonFederatedAndNotifyFetchCompleted({&saved_match_});
 
   // Create possible username data.
-  const std::u16string username_field_name = u"username_field";
   const std::u16string possible_username = u"test@example.org";
   PossibleUsernameData possible_username_data(
       saved_match_.signon_realm, kSingleUsernameFieldRendererId,
-      username_field_name, possible_username, base::Time::Now(),
+      possible_username, base::Time::Now(),
       /*driver_id=*/0, /*autocomplete_attribute_has_username=*/false,
       /*is_likely_otp=*/false);
   possible_username_data.form_predictions = MakeSingleUsernamePredictions();
@@ -3671,11 +3610,10 @@ TEST_F(PasswordFormManagerTestWithMockedSaver,
   fetcher_->NotifyFetchCompleted();
 
   // Create possible username data.
-  std::u16string username_field_name = u"username_field";
   std::u16string possible_username = u"possible_username";
   PossibleUsernameData possible_username_data(
       "https://another.domain.com", kSingleUsernameFieldRendererId,
-      username_field_name, possible_username, base::Time::Now(),
+      possible_username, base::Time::Now(),
       /*driver_id=*/0, /*autocomplete_attribute_has_username=*/false,
       /*is_likely_otp=*/false);
   possible_username_data.form_predictions = MakeSingleUsernamePredictions();

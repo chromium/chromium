@@ -65,7 +65,6 @@ class PasswordManagerDriverFactory::PasswordManagerDriver
   void RecordSavePasswordProgress(const std::string& log) override {}
   void UserModifiedPasswordField() override {}
   void UserModifiedNonPasswordField(autofill::FieldRendererId renderer_id,
-                                    const std::u16string& field_name,
                                     const std::u16string& value,
                                     bool autocomplete_attribute_has_username,
                                     bool is_likely_otp) override {}

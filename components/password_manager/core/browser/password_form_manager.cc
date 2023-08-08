@@ -1157,16 +1157,6 @@ bool PasswordFormManager::IsPossibleSingleUsernameAvailable(
     return false;
   }
 
-  // PasswordManager does not upload votes for fields that have no names or
-  // ids to avoid aggregation of multiple unrelated fields during single
-  // username detection. (crbug.com/1209143)
-  // TODO(crbug.com/1260336): Delete after fields are not distinguished by
-  // |field_name|.
-  if (possible_username->field_name.empty()) {
-    LogUsingPossibleUsername(client_, /*is_used*/ false, "Empty field name");
-    return false;
-  }
-
   if (possible_username->IsStale()) {
     LogUsingPossibleUsername(client_, /*is_used*/ false,
                              "Possible username data expired");

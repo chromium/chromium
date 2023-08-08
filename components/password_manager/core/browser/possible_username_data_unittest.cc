@@ -25,7 +25,6 @@ class IsPossibleUsernameValidTest : public testing::Test {
   PossibleUsernameData possible_username_data_{
       "https://example.com/" /* submitted_signon_realm */,
       autofill::FieldRendererId(1u),
-      u"username_field" /* field name */,
       kUser /* value */,
       base::Time::Now() /* last_change */,
       /*driver_id=*/10,

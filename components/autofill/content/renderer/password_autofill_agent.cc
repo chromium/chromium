@@ -603,13 +603,12 @@ class PasswordAutofillAgent::DeferringPasswordManagerDriver
     DeferMsg(&mojom::PasswordManagerDriver::UserModifiedPasswordField);
   }
   void UserModifiedNonPasswordField(FieldRendererId renderer_id,
-                                    const std::u16string& field_name,
                                     const std::u16string& value,
                                     bool autocomplete_attribute_has_username,
                                     bool is_likely_otp) override {
     DeferMsg(&mojom::PasswordManagerDriver::UserModifiedNonPasswordField,
-             renderer_id, field_name, value,
-             autocomplete_attribute_has_username, is_likely_otp);
+             renderer_id, value, autocomplete_attribute_has_username,
+             is_likely_otp);
   }
   void ShowPasswordSuggestions(FieldRendererId element_id,
                                const FormData& form,
@@ -789,6 +788,12 @@ void PasswordAutofillAgent::UpdateStateForTextChange(
   }
 
   // Notify PasswordManager about potential username fields for UFF.
+  // Do not consider fields that have no names or ids to avoid aggregation
+  // of multiple unrelated fields. (crbug.com/1209143)
+  if (element.NameForAutofill().IsEmpty()) {
+    return;
+  }
+
   // Exclude 1-symbol inputs, as they are unlikely to be usernames and likely
   // to be characters/digits of OTPs.
   if (element_value.size() == 1) {
@@ -809,8 +814,7 @@ void PasswordAutofillAgent::UpdateStateForTextChange(
                      password_manager::constants::kAutocompleteOneTimePassword);
 
   GetPasswordManagerDriver().UserModifiedNonPasswordField(
-      GetFieldRendererId(element), element.NameForAutofill().Utf16(),
-      element_value,
+      GetFieldRendererId(element), element_value,
       base::Contains(autocomplete_attribute,
                      password_manager::constants::kAutocompleteUsername),
       is_likely_otp);

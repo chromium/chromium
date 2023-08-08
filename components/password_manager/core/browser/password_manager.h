@@ -145,7 +145,6 @@ class PasswordManager : public PasswordManagerInterface {
   // |value| is the current value of the field.
   void OnUserModifiedNonPasswordField(PasswordManagerDriver* driver,
                                       autofill::FieldRendererId renderer_id,
-                                      const std::u16string& field_name,
                                       const std::u16string& value,
                                       bool autocomplete_attribute_has_username,
                                       bool is_likely_otp);

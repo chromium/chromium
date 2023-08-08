@@ -462,6 +462,17 @@ class PasswordAutofillAgentTest : public ChromeRenderViewTest {
     GetMainFrame()->AutofillClient()->DidCompleteFocusChangeInFrame();
   }
 
+  // A workaround to focus an element that doesn't have an id attribute.
+  void FocusFirstInputElement() {
+    ExecuteJavaScriptForTests("document.forms[0].elements[0].focus();");
+    GetMainFrame()->NotifyUserActivation(
+        blink::mojom::UserActivationNotificationType::kTest);
+    auto first_form_element = GetMainFrame()->GetDocument().Forms()[0];
+    GetMainFrame()->Client()->FocusedElementChanged(
+        first_form_element.GetFormControlElements()[0]);
+    GetMainFrame()->AutofillClient()->DidCompleteFocusChangeInFrame();
+  }
+
   void EnableOverwritingPlaceholderUsernames() {
     scoped_feature_list_.InitAndEnableFeature(
         password_manager::features::kEnableOverwritingPlaceholderUsernames);
@@ -4342,7 +4353,6 @@ TEST_F(PasswordAutofillAgentTest, ModifyNonPasswordField) {
       fake_driver_,
       UserModifiedNonPasswordField(
           FieldRendererId(username_element_.UniqueRendererFormControlId()),
-          username_element_.NameForAutofill().Utf16(),
           std::u16string(kAliceUsername16),
           /*autocomplete_attribute_has_username=*/true,
           /*is_likely_otp=*/false));
@@ -4372,7 +4382,6 @@ TEST_F(PasswordAutofillAgentTest, ModifyNonPasswordFieldOTPAutocomplete) {
       fake_driver_,
       UserModifiedNonPasswordField(
           FieldRendererId(username_element_.UniqueRendererFormControlId()),
-          username_element_.NameForAutofill().Utf16(),
           std::u16string(kAliceUsername16),
           /*autocomplete_attribute_has_username=*/false,
           /*is_likely_otp=*/true));
@@ -4390,11 +4399,27 @@ TEST_F(PasswordAutofillAgentTest, ModifyNonPasswordFieldOTPName) {
       fake_driver_,
       UserModifiedNonPasswordField(
           FieldRendererId(username_element_.UniqueRendererFormControlId()),
-          username_element_.NameForAutofill().Utf16(),
           std::u16string(kAliceUsername16),
           /*autocomplete_attribute_has_username=*/true,
           /*is_likely_otp=*/true));
   SimulateUsernameTyping(kAliceUsername);
+}
+
+// Tests that user modifying the text field value does not notify the browser if
+// the field has no name or id.
+TEST_F(PasswordAutofillAgentTest, ModifyNamelessNonPasswordField) {
+  LoadHTML(kSingleUsernameFormHTML);
+  UpdateOnlyUsernameElement();
+  username_element_.SetAttribute("name", "");
+  username_element_.SetAttribute("id", "");
+  ASSERT_TRUE(username_element_.NameForAutofill().IsEmpty());
+
+#if BUILDFLAG(IS_ANDROID)
+  // TODO(crbug.com/1293802): User typing doesn't send focus events properly.
+  FocusFirstInputElement();
+#endif
+  EXPECT_CALL(fake_driver_, UserModifiedNonPasswordField).Times(0);
+  SimulateUserInputChangeForElement(&username_element_, kAliceUsername);
 }
 
 #if BUILDFLAG(IS_ANDROID)

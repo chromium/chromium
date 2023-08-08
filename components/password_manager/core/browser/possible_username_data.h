@@ -24,7 +24,6 @@ constexpr auto kPossibleUsernameExpirationTimeout = base::Minutes(1);
 struct PossibleUsernameData {
   PossibleUsernameData(std::string signon_realm,
                        autofill::FieldRendererId renderer_id,
-                       const std::u16string& field_name,
                        const std::u16string& value,
                        base::Time last_change,
                        int driver_id,
@@ -35,10 +34,6 @@ struct PossibleUsernameData {
 
   std::string signon_realm;
   autofill::FieldRendererId renderer_id;
-
-  // TODO(crbug.com/1260336): Delete after fields are not distinguished by
-  // |field_name|.
-  std::u16string field_name;
 
   std::u16string value;
   base::Time last_change;
