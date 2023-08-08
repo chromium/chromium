@@ -24,6 +24,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "base/test/thread_test_helper.h"
@@ -422,12 +423,12 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, NegativeDBSchemaVersion) {
   std::string value = "\xF6\xFF\xFF\xFF\xFF\xFF\xFF\xFF";
 
   // Find the bucket that was created.
-  const auto maybe_bucket_info =
+  ASSERT_OK_AND_ASSIGN(
+      const auto bucket_info,
       GetOrCreateBucket(storage::BucketInitParams::ForDefaultBucket(
           blink::StorageKey::CreateFirstParty(
-              url::Origin::Create(database_open_url))));
-  ASSERT_TRUE(maybe_bucket_info.has_value());
-  const auto bucket_locator = maybe_bucket_info->ToBucketLocator();
+              url::Origin::Create(database_open_url)))));
+  const auto bucket_locator = bucket_info.ToBucketLocator();
 
   auto control_test = GetControlTest();
   base::RunLoop loop;
@@ -455,12 +456,12 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, NegativeDBDataVersion) {
   std::string value = "\xF6\xFF\xFF\xFF\xFF\xFF\xFF\xFF";
 
   // Find the bucket that was created.
-  const auto maybe_bucket_info =
+  ASSERT_OK_AND_ASSIGN(
+      const auto bucket_info,
       GetOrCreateBucket(storage::BucketInitParams::ForDefaultBucket(
           blink::StorageKey::CreateFirstParty(
-              url::Origin::Create(database_open_url))));
-  ASSERT_TRUE(maybe_bucket_info.has_value());
-  const auto bucket_locator = maybe_bucket_info->ToBucketLocator();
+              url::Origin::Create(database_open_url)))));
+  const auto bucket_locator = bucket_info.ToBucketLocator();
 
   auto control_test = GetControlTest();
   base::RunLoop loop;
@@ -784,10 +785,11 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, EmptyBlob) {
   const blink::StorageKey kTestStorageKey =
       blink::StorageKey::CreateFirstParty(url::Origin::Create(kTestUrl));
   DeleteForStorageKey(kTestStorageKey);
-  const auto maybe_bucket_info = GetOrCreateBucket(
-      storage::BucketInitParams::ForDefaultBucket(kTestStorageKey));
-  ASSERT_TRUE(maybe_bucket_info.has_value());
-  const auto bucket_locator = maybe_bucket_info->ToBucketLocator();
+  ASSERT_OK_AND_ASSIGN(
+      const auto bucket_info,
+      GetOrCreateBucket(
+          storage::BucketInitParams::ForDefaultBucket(kTestStorageKey)));
+  const auto bucket_locator = bucket_info.ToBucketLocator();
   EXPECT_EQ(0,
             RequestBlobFileCount(bucket_locator));  // Start with no blob files.
   // For some reason Android's futimes fails (EPERM) in this test. Do not assert
@@ -1241,12 +1243,12 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTestV2SchemaCorruption, LifecycleTest) {
   SimpleTest(embedded_test_server()->GetURL(test_file));
 
   // Find the bucket that was created.
-  const auto maybe_bucket_info =
+  ASSERT_OK_AND_ASSIGN(
+      const auto bucket_info,
       GetOrCreateBucket(storage::BucketInitParams::ForDefaultBucket(
           blink::StorageKey::CreateFirstParty(
-              url::Origin::Create(embedded_test_server()->base_url()))));
-  ASSERT_TRUE(maybe_bucket_info.has_value());
-  const auto bucket_locator = maybe_bucket_info->ToBucketLocator();
+              url::Origin::Create(embedded_test_server()->base_url())))));
+  const auto bucket_locator = bucket_info.ToBucketLocator();
 
   // Verify the backing store does not have corruption.
   storage::mojom::V2SchemaCorruptionStatus has_corruption =
@@ -1331,12 +1333,12 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTestBlobKeyCorruption, LifecycleTest) {
   SimpleTest(embedded_test_server()->GetURL(test_file));
 
   // Find the bucket that was created.
-  const auto maybe_bucket_info =
+  ASSERT_OK_AND_ASSIGN(
+      const auto bucket_info,
       GetOrCreateBucket(storage::BucketInitParams::ForDefaultBucket(
           blink::StorageKey::CreateFirstParty(
-              url::Origin::Create(embedded_test_server()->base_url()))));
-  ASSERT_TRUE(maybe_bucket_info.has_value());
-  const auto bucket_locator = maybe_bucket_info->ToBucketLocator();
+              url::Origin::Create(embedded_test_server()->base_url())))));
+  const auto bucket_locator = bucket_info.ToBucketLocator();
   int64_t next_blob_number = GetNextBlobNumber(bucket_locator, 1);
 
   base::FilePath first_blob =

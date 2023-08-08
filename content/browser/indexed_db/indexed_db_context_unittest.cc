@@ -11,6 +11,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread.h"
@@ -141,23 +142,22 @@ TEST_F(IndexedDBContextTest, DefaultBucketCreatedOnBindIndexedDB) {
   ASSERT_TRUE(info_future2.Wait());
 
   // Check default bucket exists for https://example.com.
-  storage::QuotaErrorOr<storage::BucketInfo> result =
-      quota_manager_proxy_sync.GetBucket(example_storage_key_,
-                                         storage::kDefaultBucketName,
-                                         blink::mojom::StorageType::kTemporary);
-  ASSERT_TRUE(result.has_value());
-  EXPECT_EQ(result->name, storage::kDefaultBucketName);
-  EXPECT_EQ(result->storage_key, example_storage_key_);
-  EXPECT_GT(result->id.value(), 0);
+  ASSERT_OK_AND_ASSIGN(storage::BucketInfo result,
+                       quota_manager_proxy_sync.GetBucket(
+                           example_storage_key_, storage::kDefaultBucketName,
+                           blink::mojom::StorageType::kTemporary));
+  EXPECT_EQ(result.name, storage::kDefaultBucketName);
+  EXPECT_EQ(result.storage_key, example_storage_key_);
+  EXPECT_GT(result.id.value(), 0);
 
   // Check default bucket exists for https://google.com.
-  result = quota_manager_proxy_sync.GetBucket(
-      google_storage_key_, storage::kDefaultBucketName,
-      blink::mojom::StorageType::kTemporary);
-  ASSERT_TRUE(result.has_value());
-  EXPECT_EQ(result->name, storage::kDefaultBucketName);
-  EXPECT_EQ(result->storage_key, google_storage_key_);
-  EXPECT_GT(result->id.value(), 0);
+  ASSERT_OK_AND_ASSIGN(result,
+                       quota_manager_proxy_sync.GetBucket(
+                           google_storage_key_, storage::kDefaultBucketName,
+                           blink::mojom::StorageType::kTemporary));
+  EXPECT_EQ(result.name, storage::kDefaultBucketName);
+  EXPECT_EQ(result.storage_key, google_storage_key_);
+  EXPECT_GT(result.id.value(), 0);
 }
 
 TEST_F(IndexedDBContextTest, GetDefaultBucketError) {
