@@ -1638,10 +1638,9 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
 
     Run(scope, script, "test", error_msgs,
         gin::ConvertToV8(helper_->isolate(), dict));
-    EXPECT_THAT(
-        error_msgs,
-        ElementsAre("https://example.org/script.js:8 Uncaught TypeError: "
-                    "bucket must be a BigInt."));
+    EXPECT_THAT(error_msgs,
+                ElementsAre("https://example.org/script.js:8 Uncaught "
+                            "TypeError: Cannot convert 123 to a BigInt."));
 
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
                     ->TakePrivateAggregationRequests()
@@ -1702,9 +1701,9 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
         gin::ConvertToV8(helper_->isolate(), dict));
     EXPECT_THAT(
         error_msgs,
-        ElementsAre(
-            "https://example.org/script.js:8 Uncaught TypeError: "
-            "Invalid or missing bucket in contributeToHistogram argument."));
+        ElementsAre("https://example.org/script.js:8 Uncaught TypeError: "
+                    "privateAggregation.contributeToHistogram() 'contribution' "
+                    "argument: Required field 'bucket' is undefined."));
 
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
                     ->TakePrivateAggregationRequests()
@@ -1723,9 +1722,9 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
         gin::ConvertToV8(helper_->isolate(), dict));
     EXPECT_THAT(
         error_msgs,
-        ElementsAre(
-            "https://example.org/script.js:8 Uncaught TypeError: "
-            "Invalid or missing value in contributeToHistogram argument."));
+        ElementsAre("https://example.org/script.js:8 Uncaught TypeError: "
+                    "privateAggregation.contributeToHistogram() 'contribution' "
+                    "argument: Required field 'value' is undefined."));
 
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
                     ->TakePrivateAggregationRequests()
@@ -1899,10 +1898,9 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
     std::vector<std::string> error_msgs;
 
     Run(scope, script, "enableDebugMode", error_msgs, WrapDebugKey(1234));
-    EXPECT_THAT(
-        error_msgs,
-        ElementsAre("https://example.org/script.js:21 Uncaught TypeError: "
-                    "debugKey must be a BigInt."));
+    EXPECT_THAT(error_msgs,
+                ElementsAre("https://example.org/script.js:21 Uncaught "
+                            "TypeError: Cannot convert 1234 to a BigInt."));
 
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
                     ->TakePrivateAggregationRequests()
@@ -1919,8 +1917,10 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
         gin::ConvertToV8(helper_->isolate(), 1234));
     EXPECT_THAT(
         error_msgs,
-        ElementsAre("https://example.org/script.js:21 Uncaught TypeError: "
-                    "Invalid argument in enableDebugMode."));
+        ElementsAre(
+            "https://example.org/script.js:21 Uncaught TypeError: "
+            "privateAggregation.enableDebugMode() 'options' argument: Value "
+            "passed as dictionary is neither object, null, nor undefined."));
 
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
                     ->TakePrivateAggregationRequests()
@@ -2215,10 +2215,9 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
         gin::ConvertToV8(helper_->isolate(), dict));
     EXPECT_THAT(
         error_msgs,
-        ElementsAre(
-            "https://example.org/script.js:37 Uncaught TypeError: "
-            "contributeToHistogramOnEvent requires 2 parameters, with first "
-            "parameter being a string and second parameter being an object."));
+        ElementsAre("https://example.org/script.js:37 Uncaught TypeError: "
+                    "privateAggregation.contributeToHistogramOnEvent(): at "
+                    "least 2 argument(s) are required."));
 
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
                     ->TakePrivateAggregationRequests()
@@ -2237,10 +2236,9 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
         gin::ConvertToV8(helper_->isolate(), dict));
     EXPECT_THAT(
         error_msgs,
-        ElementsAre(
-            "https://example.org/script.js:41 Uncaught TypeError: "
-            "contributeToHistogramOnEvent requires 2 parameters, with first "
-            "parameter being a string and second parameter being an object."));
+        ElementsAre("https://example.org/script.js:41 Uncaught TypeError: "
+                    "privateAggregation.contributeToHistogramOnEvent(): at "
+                    "least 2 argument(s) are required."));
 
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
                     ->TakePrivateAggregationRequests()
@@ -2260,10 +2258,10 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
         gin::ConvertToV8(helper_->isolate(), dict));
     EXPECT_THAT(
         error_msgs,
-        ElementsAre(
-            "https://example.org/script.js:48 Uncaught TypeError: "
-            "contributeToHistogramOnEvent requires 2 parameters, with first "
-            "parameter being a string and second parameter being an object."));
+        ElementsAre("https://example.org/script.js:48 Uncaught TypeError: "
+                    "privateAggregation.contributeToHistogramOnEvent() "
+                    "'contribution' argument: Value passed as dictionary is "
+                    "neither object, null, nor undefined."));
 
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
                     ->TakePrivateAggregationRequests()
@@ -2573,9 +2571,12 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
 
     Run(scope, script, "test", error_msgs,
         gin::ConvertToV8(helper_->isolate(), dict));
-    EXPECT_THAT(error_msgs,
-                ElementsAre("https://example.org/script.js:12 Uncaught "
-                            "TypeError: Invalid bucket dictionary."));
+    EXPECT_THAT(
+        error_msgs,
+        ElementsAre(
+            "https://example.org/script.js:12 Uncaught TypeError: "
+            "privateAggregation.contributeToHistogramOnEvent() 'contribution' "
+            "argument: Required field 'baseValue' is undefined."));
 
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
                     ->TakePrivateAggregationRequests()
@@ -2606,7 +2607,8 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
                     .empty());
   }
 
-  // Invalid bucket dictionary, whose scale is not a Number.
+  // Invalid bucket dictionary, whose scale is not a Number. That's fine since
+  // A string can get turned into a number.
   {
     ContextRecyclerScope scope(context_recycler);
     std::vector<std::string> error_msgs;
@@ -2622,9 +2624,35 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
 
     Run(scope, script, "test", error_msgs,
         gin::ConvertToV8(helper_->isolate(), dict));
-    EXPECT_THAT(error_msgs,
-                ElementsAre("https://example.org/script.js:12 Uncaught "
-                            "TypeError: Invalid bucket dictionary."));
+    EXPECT_THAT(error_msgs, ElementsAre());
+
+    EXPECT_FALSE(context_recycler.private_aggregation_bindings()
+                     ->TakePrivateAggregationRequests()
+                     .empty());
+  }
+
+  // Invalid bucket dictionary, whose scale is a BigInt. That fails since
+  // A BigInt isn't going to turn into a Number.
+  {
+    ContextRecyclerScope scope(context_recycler);
+    std::vector<std::string> error_msgs;
+
+    gin::Dictionary bucket_dict =
+        gin::Dictionary::CreateEmpty(helper_->isolate());
+    bucket_dict.Set("baseValue", std::string("winning-bid"));
+    v8::Local<v8::Value> big_int_val = v8::BigInt::New(helper_->isolate(), 255);
+    bucket_dict.Set("scale", big_int_val);
+
+    gin::Dictionary dict = gin::Dictionary::CreateEmpty(helper_->isolate());
+    dict.Set("bucket", bucket_dict);
+    dict.Set("value", 1);
+
+    Run(scope, script, "test", error_msgs,
+        gin::ConvertToV8(helper_->isolate(), dict));
+    EXPECT_THAT(
+        error_msgs,
+        ElementsAre("https://example.org/script.js:12 Uncaught TypeError: "
+                    "Cannot convert a BigInt value to a number."));
 
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
                     ->TakePrivateAggregationRequests()
@@ -2647,9 +2675,12 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
 
     Run(scope, script, "test", error_msgs,
         gin::ConvertToV8(helper_->isolate(), dict));
-    EXPECT_THAT(error_msgs,
-                ElementsAre("https://example.org/script.js:12 Uncaught "
-                            "TypeError: Invalid bucket dictionary."));
+    EXPECT_THAT(
+        error_msgs,
+        ElementsAre("https://example.org/script.js:12 Uncaught TypeError: "
+                    "privateAggregation.contributeToHistogramOnEvent() "
+                    "'contribution' argument: Converting field 'scale' to a "
+                    "Number did not produce a finite double."));
 
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
                     ->TakePrivateAggregationRequests()
@@ -2672,9 +2703,12 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
 
     Run(scope, script, "test", error_msgs,
         gin::ConvertToV8(helper_->isolate(), dict));
-    EXPECT_THAT(error_msgs,
-                ElementsAre("https://example.org/script.js:12 Uncaught "
-                            "TypeError: Invalid bucket dictionary."));
+    EXPECT_THAT(
+        error_msgs,
+        ElementsAre("https://example.org/script.js:12 Uncaught TypeError: "
+                    "privateAggregation.contributeToHistogramOnEvent() "
+                    "'contribution' argument: Converting field 'scale' to a "
+                    "Number did not produce a finite double."));
 
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
                     ->TakePrivateAggregationRequests()
@@ -2760,9 +2794,12 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
 
     Run(scope, script, "test", error_msgs,
         gin::ConvertToV8(helper_->isolate(), dict));
-    EXPECT_THAT(error_msgs,
-                ElementsAre("https://example.org/script.js:12 Uncaught "
-                            "TypeError: Invalid value dictionary."));
+    EXPECT_THAT(
+        error_msgs,
+        ElementsAre(
+            "https://example.org/script.js:12 Uncaught TypeError: "
+            "privateAggregation.contributeToHistogramOnEvent() 'contribution' "
+            "argument: Required field 'baseValue' is undefined."));
 
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
                     ->TakePrivateAggregationRequests()
@@ -2783,14 +2820,14 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
     EXPECT_THAT(
         error_msgs,
         ElementsAre("https://example.org/script.js:12 Uncaught TypeError: "
-                    "Bucket must be a BigInt or a dictionary."));
+                    "Cannot convert 12.3 to a BigInt."));
 
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
                     ->TakePrivateAggregationRequests()
                     .empty());
   }
 
-  // Non Number or dictionary value
+  // Non Number or dictionary value. That's fine, because JavaScript.
   {
     ContextRecyclerScope scope(context_recycler);
     std::vector<std::string> error_msgs;
@@ -2801,10 +2838,29 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
 
     Run(scope, script, "test", error_msgs,
         gin::ConvertToV8(helper_->isolate(), dict));
+    EXPECT_THAT(error_msgs, ElementsAre());
+
+    EXPECT_FALSE(context_recycler.private_aggregation_bindings()
+                     ->TakePrivateAggregationRequests()
+                     .empty());
+  }
+
+  // A BigInt value however will not get turned into a number.
+  {
+    ContextRecyclerScope scope(context_recycler);
+    std::vector<std::string> error_msgs;
+
+    gin::Dictionary dict = gin::Dictionary::CreateEmpty(helper_->isolate());
+    dict.Set("bucket", std::string("123"));
+    v8::Local<v8::Value> big_int_val = v8::BigInt::New(helper_->isolate(), 1);
+    dict.Set("value", big_int_val);
+
+    Run(scope, script, "test", error_msgs,
+        gin::ConvertToV8(helper_->isolate(), dict));
     EXPECT_THAT(
         error_msgs,
         ElementsAre("https://example.org/script.js:12 Uncaught TypeError: "
-                    "Value must be a Number or a dictionary."));
+                    "Cannot convert a BigInt value to a number."));
 
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
                     ->TakePrivateAggregationRequests()
@@ -2867,8 +2923,27 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
         error_msgs,
         ElementsAre(
             "https://example.org/script.js:12 Uncaught TypeError: "
-            "Invalid or missing bucket in contributeToHistogramOnEvent's "
-            "argument."));
+            "privateAggregation.contributeToHistogramOnEvent() 'contribution' "
+            "argument: Required field 'bucket' is undefined."));
+
+    EXPECT_TRUE(context_recycler.private_aggregation_bindings()
+                    ->TakePrivateAggregationRequests()
+                    .empty());
+  }
+
+  // Missing value, but bucket being wrong type is noticed first.
+  {
+    ContextRecyclerScope scope(context_recycler);
+    std::vector<std::string> error_msgs;
+
+    gin::Dictionary dict = gin::Dictionary::CreateEmpty(helper_->isolate());
+    dict.Set("bucket", 123);
+
+    Run(scope, script, "test", error_msgs,
+        gin::ConvertToV8(helper_->isolate(), dict));
+    EXPECT_THAT(error_msgs,
+                ElementsAre("https://example.org/script.js:12 Uncaught "
+                            "TypeError: Cannot convert 123 to a BigInt."));
 
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
                     ->TakePrivateAggregationRequests()
@@ -2881,7 +2956,7 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
     std::vector<std::string> error_msgs;
 
     gin::Dictionary dict = gin::Dictionary::CreateEmpty(helper_->isolate());
-    dict.Set("bucket", 123);
+    dict.Set("bucket", std::string("123"));
 
     Run(scope, script, "test", error_msgs,
         gin::ConvertToV8(helper_->isolate(), dict));
@@ -2889,8 +2964,8 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
         error_msgs,
         ElementsAre(
             "https://example.org/script.js:12 Uncaught TypeError: "
-            "Invalid or missing value in contributeToHistogramOnEvent's "
-            "argument."));
+            "privateAggregation.contributeToHistogramOnEvent() 'contribution' "
+            "argument: Required field 'value' is undefined."));
 
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
                     ->TakePrivateAggregationRequests()

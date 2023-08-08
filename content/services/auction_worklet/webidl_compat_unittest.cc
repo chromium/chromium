@@ -475,6 +475,215 @@ TEST_F(WebIDLCompatTest, StandaloneString16) {
   }
 }
 
+TEST_F(WebIDLCompatTest, StandaloneBigInt) {
+  v8::Local<v8::Context> context = v8_helper_->CreateContext();
+  v8::Context::Scope ctx(context);
+
+  {
+    auto in_value = MakeValueFromScript(context, "make = () => BigInt(123)");
+    v8::Local<v8::BigInt> out;
+    auto res =
+        IdlConvert::Convert(v8_helper_->isolate(), "test1", {}, in_value, out);
+    EXPECT_EQ(res.type(), IdlConvert::Status::Type::kSuccess);
+    ASSERT_FALSE(out.IsEmpty());
+    bool lossless = false;
+    EXPECT_EQ(123, out->Int64Value(&lossless));
+    EXPECT_TRUE(lossless);
+  }
+
+  {
+    auto in_value = MakeValueFromScript(context, "make = () => '123'");
+    v8::Local<v8::BigInt> out;
+    auto res =
+        IdlConvert::Convert(v8_helper_->isolate(), "test2", {}, in_value, out);
+    EXPECT_EQ(res.type(), IdlConvert::Status::Type::kSuccess);
+    ASSERT_FALSE(out.IsEmpty());
+    bool lossless = false;
+    EXPECT_EQ(123, out->Int64Value(&lossless));
+    EXPECT_TRUE(lossless);
+  }
+
+  {
+    auto in_value = MakeValueFromScript(context, "make = () => 123");
+    v8::Local<v8::BigInt> out;
+    auto res =
+        IdlConvert::Convert(v8_helper_->isolate(), "test3", {}, in_value, out);
+    EXPECT_FALSE(res.is_success());
+    EXPECT_EQ("undefined:0 Uncaught TypeError: Cannot convert 123 to a BigInt.",
+              res.ConvertToErrorString(v8_helper_->isolate()));
+  }
+}
+
+TEST_F(WebIDLCompatTest, StandaloneLong) {
+  v8::Local<v8::Context> context = v8_helper_->CreateContext();
+  v8::Context::Scope ctx(context);
+
+  {
+    auto in_value = MakeValueFromScript(context, "make = () => -123");
+    int32_t out;
+    auto res =
+        IdlConvert::Convert(v8_helper_->isolate(), "test1", {}, in_value, out);
+    EXPECT_EQ(res.type(), IdlConvert::Status::Type::kSuccess);
+    EXPECT_EQ(-123, out);
+  }
+
+  {
+    // Rules for handling signs.
+    auto in_value = MakeValueFromScript(context, "make = () => 3e9");
+    int32_t out;
+    auto res =
+        IdlConvert::Convert(v8_helper_->isolate(), "test2", {}, in_value, out);
+    EXPECT_EQ(res.type(), IdlConvert::Status::Type::kSuccess);
+    EXPECT_EQ(-1294967296, out);
+  }
+
+  {
+    // Rules for taking modulo.
+    auto in_value = MakeValueFromScript(context, "make = () => 5e9");
+    int32_t out;
+    auto res =
+        IdlConvert::Convert(v8_helper_->isolate(), "test3", {}, in_value, out);
+    EXPECT_EQ(res.type(), IdlConvert::Status::Type::kSuccess);
+    EXPECT_EQ(705032704, out);
+  }
+
+  {
+    // Can round.
+    auto in_value = MakeValueFromScript(context, "make = () => 3.14");
+    int32_t out;
+    auto res =
+        IdlConvert::Convert(v8_helper_->isolate(), "test4", {}, in_value, out);
+    EXPECT_EQ(res.type(), IdlConvert::Status::Type::kSuccess);
+    EXPECT_EQ(3, out);
+  }
+
+  {
+    // Rounding is towards zero.
+    auto in_value = MakeValueFromScript(context, "make = () => -3.14");
+    int32_t out;
+    auto res =
+        IdlConvert::Convert(v8_helper_->isolate(), "test5", {}, in_value, out);
+    EXPECT_EQ(res.type(), IdlConvert::Status::Type::kSuccess);
+    EXPECT_EQ(-3, out);
+  }
+
+  {
+    // This can fail.
+    auto in_value = MakeValueFromScript(context, "make = () => BigInt(123)");
+    int32_t out;
+    auto res =
+        IdlConvert::Convert(v8_helper_->isolate(), "test6", {}, in_value, out);
+    EXPECT_FALSE(res.is_success());
+    EXPECT_EQ(
+        "undefined:0 Uncaught TypeError: Cannot convert a BigInt value to a "
+        "number.",
+        res.ConvertToErrorString(v8_helper_->isolate()));
+  }
+}
+
+TEST_F(WebIDLCompatTest, BigIntOrLong) {
+  v8::Local<v8::Context> context = v8_helper_->CreateContext();
+  v8::Context::Scope ctx(context);
+
+  {
+    // Number goes towards long.
+    absl::variant<int32_t, v8::Local<v8::BigInt>> out;
+    auto in_value = MakeValueFromScript(context, "make = () => -123");
+    auto res =
+        IdlConvert::Convert(v8_helper_->isolate(), "test1", {}, in_value, out);
+    EXPECT_TRUE(res.is_success());
+    ASSERT_TRUE(absl::holds_alternative<int32_t>(out));
+    EXPECT_EQ(-123, absl::get<int32_t>(out));
+  }
+
+  {
+    // BigInt goes towards bigint.
+    absl::variant<int32_t, v8::Local<v8::BigInt>> out;
+    auto in_value = MakeValueFromScript(context, "make = () => BigInt(-123)");
+    auto res =
+        IdlConvert::Convert(v8_helper_->isolate(), "test2", {}, in_value, out);
+    EXPECT_TRUE(res.is_success());
+    ASSERT_TRUE(absl::holds_alternative<v8::Local<v8::BigInt>>(out));
+    v8::Local<v8::BigInt> bigint_out = absl::get<v8::Local<v8::BigInt>>(out);
+    bool lossless = false;
+    ASSERT_FALSE(bigint_out.IsEmpty());
+    EXPECT_EQ(-123, bigint_out->Int64Value(&lossless));
+    EXPECT_TRUE(lossless);
+  }
+
+  {
+    // Other things may need conversions.
+    absl::variant<int32_t, v8::Local<v8::BigInt>> out;
+    auto in_value = MakeValueFromScript(context, R"(
+      make = () => {
+        return {
+          valueOf: () => { throw "Surprise!" }
+        }
+      }
+    )");
+    auto res =
+        IdlConvert::Convert(v8_helper_->isolate(), "test3", {}, in_value, out);
+    EXPECT_FALSE(res.is_success());
+    EXPECT_EQ("https://example.org/:4 Uncaught Surprise!.",
+              res.ConvertToErrorString(v8_helper_->isolate()));
+  }
+
+  {
+    // Conversion produces BigInt.
+    absl::variant<int32_t, v8::Local<v8::BigInt>> out;
+    auto in_value = MakeValueFromScript(context, R"(
+      make = () => {
+        return {
+          valueOf: () => BigInt(456)
+        }
+      }
+    )");
+    auto res =
+        IdlConvert::Convert(v8_helper_->isolate(), "test4", {}, in_value, out);
+    EXPECT_TRUE(res.is_success());
+    ASSERT_TRUE(absl::holds_alternative<v8::Local<v8::BigInt>>(out));
+    v8::Local<v8::BigInt> bigint_out = absl::get<v8::Local<v8::BigInt>>(out);
+    bool lossless = false;
+    ASSERT_FALSE(bigint_out.IsEmpty());
+    EXPECT_EQ(456, bigint_out->Int64Value(&lossless));
+    EXPECT_TRUE(lossless);
+  }
+
+  {
+    // Conversion produces a bool --- that goes towards the number branch.
+    absl::variant<int32_t, v8::Local<v8::BigInt>> out;
+    auto in_value = MakeValueFromScript(context, R"(
+      make = () => {
+        return {
+          valueOf: () => true
+        }
+      }
+    )");
+    auto res =
+        IdlConvert::Convert(v8_helper_->isolate(), "test5", {}, in_value, out);
+    EXPECT_TRUE(res.is_success());
+    ASSERT_TRUE(absl::holds_alternative<int32_t>(out));
+    EXPECT_EQ(1, absl::get<int32_t>(out));
+  }
+
+  {
+    // Conversion produces a string that converts to a number.
+    absl::variant<int32_t, v8::Local<v8::BigInt>> out;
+    auto in_value = MakeValueFromScript(context, R"(
+      make = () => {
+        return {
+          valueOf: () => "789"
+        }
+      }
+    )");
+    auto res =
+        IdlConvert::Convert(v8_helper_->isolate(), "test6", {}, in_value, out);
+    EXPECT_TRUE(res.is_success());
+    ASSERT_TRUE(absl::holds_alternative<int32_t>(out));
+    EXPECT_EQ(789, absl::get<int32_t>(out));
+  }
+}
+
 TEST_F(WebIDLCompatTest, StandaloneAny) {
   // 'any' handling is just passthrough; it's there to help the dictionary
   // code out.

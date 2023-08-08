@@ -180,6 +180,76 @@ IdlConvert::Status IdlConvert::Convert(
     std::string_view error_prefix,
     std::initializer_list<std::string_view> error_subject,
     v8::Local<v8::Value> value,
+    v8::Local<v8::BigInt>& out) {
+  v8::TryCatch try_catch(isolate);
+  if (!value->ToBigInt(isolate->GetCurrentContext()).ToLocal(&out)) {
+    return MakeConversionFailure(try_catch, error_prefix, error_subject,
+                                 "BigInt");
+  }
+  return Status::MakeSuccess();
+}
+
+// static
+IdlConvert::Status IdlConvert::Convert(
+    v8::Isolate* isolate,
+    std::string_view error_prefix,
+    std::initializer_list<std::string_view> error_subject,
+    v8::Local<v8::Value> value,
+    int32_t& out) {
+  v8::TryCatch try_catch(isolate);
+  v8::Local<v8::Int32> int32_value;
+  if (!value->ToInt32(isolate->GetCurrentContext()).ToLocal(&int32_value)) {
+    return MakeConversionFailure(try_catch, error_prefix, error_subject,
+                                 "ToInt32");
+  }
+
+  out = int32_value->Value();
+  return Status::MakeSuccess();
+}
+
+// static
+IdlConvert::Status IdlConvert::Convert(
+    v8::Isolate* isolate,
+    std::string_view error_prefix,
+    std::initializer_list<std::string_view> error_subject,
+    v8::Local<v8::Value> value,
+    absl::variant<int32_t, v8::Local<v8::BigInt>>& out) {
+  // A union that has both a BigInt and a normal number follows special rules
+  // to disambiguate.
+  //
+  // https://webidl.spec.whatwg.org/#converted-to-a-numeric-type-or-bigint
+  if (value->IsBigInt()) {
+    out.emplace<v8::Local<v8::BigInt>>();
+    return IdlConvert::Convert(isolate, error_prefix, error_subject, value,
+                               absl::get<v8::Local<v8::BigInt>>(out));
+  } else if (value->IsNumber()) {
+    out.emplace<int32_t>();
+    return IdlConvert::Convert(isolate, error_prefix, error_subject, value,
+                               absl::get<int32_t>(out));
+  } else {
+    v8::TryCatch try_catch(isolate);
+    v8::Local<v8::Numeric> num_value;
+    if (!value->ToNumeric(isolate->GetCurrentContext()).ToLocal(&num_value)) {
+      return MakeConversionFailure(try_catch, error_prefix, error_subject,
+                                   "(bigint or long)");
+    }
+    if (num_value->IsBigInt()) {
+      out = num_value.As<v8::BigInt>();
+      return Status::MakeSuccess();
+    } else {
+      out.emplace<int32_t>();
+      return IdlConvert::Convert(isolate, error_prefix, error_subject,
+                                 num_value, absl::get<int32_t>(out));
+    }
+  }
+}
+
+// static
+IdlConvert::Status IdlConvert::Convert(
+    v8::Isolate* isolate,
+    std::string_view error_prefix,
+    std::initializer_list<std::string_view> error_subject,
+    v8::Local<v8::Value> value,
     v8::Local<v8::Value>& out) {
   out = value;
   return Status::MakeSuccess();

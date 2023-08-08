@@ -19,11 +19,10 @@
 #include "base/strings/string_util.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
-#include "gin/arguments.h"
-#include "gin/converter.h"
-#include "gin/dictionary.h"
+#include "content/services/auction_worklet/webidl_compat.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/private_aggregation/aggregatable_report.mojom.h"
 #include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom.h"
@@ -40,6 +39,62 @@
 namespace auction_worklet {
 
 namespace {
+// https://patcg-individual-drafts.github.io/private-aggregation-api/#dictdef-pasignalvalue
+//
+// dictionary PASignalValue {
+//   required DOMString baseValue;
+//   double scale;
+//   (bigint or long) offset;
+// };
+struct PASignalValue {
+  std::string base_value;
+  absl::optional<double> scale;
+  absl::optional<absl::variant<int32_t, v8::Local<v8::BigInt>>> offset;
+};
+
+bool ConvertToPASignalValue(AuctionV8Helper* v8_helper,
+                            AuctionV8Helper::TimeLimitScope& time_limit_scope,
+                            std::string error_prefix,
+                            v8::Local<v8::Value> value,
+                            DictConverter& report_errors_to,
+                            PASignalValue& out) {
+  DictConverter converter(v8_helper, time_limit_scope, std::move(error_prefix),
+                          value);
+  // Note: alphabetical to match WebIDL.
+  converter.GetRequired("baseValue", out.base_value);
+  converter.GetOptional("offset", out.offset);
+  converter.GetOptional("scale", out.scale);
+
+  report_errors_to.SetStatus(converter.TakeStatus());
+  return report_errors_to.is_success();
+}
+
+// If T is `int32_t`, tries to converts `value` to
+//    WebIDL type (PASignalValue or long)
+// If T is v8::Local<v8::BigInt>>, tries to converts `value` to
+//    WebIDL type (PASignalValue or bigint)
+template <typename T>
+bool ConvertToPASignalValueOr(AuctionV8Helper* v8_helper,
+                              AuctionV8Helper::TimeLimitScope& time_limit_scope,
+                              std::string error_prefix,
+                              std::string_view field_name,
+                              v8::Local<v8::Value> value,
+                              DictConverter& report_errors_to,
+                              absl::variant<PASignalValue, T>& out) {
+  if (value->IsObject() || value->IsNullOrUndefined()) {
+    out.template emplace<PASignalValue>();
+    return ConvertToPASignalValue(
+        v8_helper, time_limit_scope, std::move(error_prefix), value,
+        report_errors_to, absl::get<PASignalValue>(out));
+  } else {
+    out.template emplace<T>();
+    IdlConvert::Status status = IdlConvert::Convert(
+        v8_helper->isolate(), error_prefix, {"field '", field_name, "'"}, value,
+        absl::get<T>(out));
+    report_errors_to.SetStatus(std::move(status));
+    return report_errors_to.is_success();
+  }
+}
 
 // Converts base value string to corresponding mojom enum.
 absl::optional<auction_worklet::mojom::BaseValue> BaseValueStringToEnum(
@@ -63,10 +118,6 @@ absl::optional<auction_worklet::mojom::BaseValue> BaseValueStringToEnum(
 absl::optional<absl::uint128> ConvertBigIntToUint128(
     v8::Local<v8::BigInt> bigint,
     std::string* error_out) {
-  if (bigint.IsEmpty()) {
-    *error_out = "Failed to interpret as BigInt";
-    return absl::nullopt;
-  }
   if (bigint->WordCount() > 2) {
     *error_out = "BigInt is too large";
     return absl::nullopt;
@@ -90,10 +141,6 @@ absl::optional<absl::uint128> ConvertBigIntToUint128(
 absl::optional<auction_worklet::mojom::BucketOffsetPtr>
 ConvertBigIntToBucketOffset(v8::Local<v8::BigInt> bigint,
                             std::string* error_out) {
-  if (bigint.IsEmpty()) {
-    *error_out = "Failed to interpret as BigInt";
-    return absl::nullopt;
-  }
   if (bigint->WordCount() > 2) {
     *error_out = "BigInt is too large";
     return absl::nullopt;
@@ -111,60 +158,26 @@ ConvertBigIntToBucketOffset(v8::Local<v8::BigInt> bigint,
       /*is_negative=*/sign_bit);
 }
 
-absl::optional<auction_worklet::mojom::BaseValue> GetBaseValue(
-    gin::Dictionary& dictionary) {
-  std::string base_value_string;
-  if (!dictionary.Get("baseValue", &base_value_string)) {
-    return absl::nullopt;
-  }
-  return BaseValueStringToEnum(base_value_string);
-}
-
-// Returns scale field in `dictionary` if it exists and is valid. Returns 1.0
-// if it does not exist. Returns absl::nullopt if it exists but is invalid.
-absl::optional<double> GetScale(gin::Dictionary& dictionary) {
-  double scale = 1.0;
-  v8::Local<v8::Value> js_scale;
-  if (dictionary.Get("scale", &js_scale) && !js_scale.IsEmpty() &&
-      !js_scale->IsNullOrUndefined()) {
-    if (!js_scale->IsNumber()) {
-      return absl::nullopt;
-    }
-    scale = js_scale.As<v8::Number>()->Value();
-    if (!std::isfinite(scale)) {
-      return absl::nullopt;
-    }
-  }
-  return scale;
-}
-
 absl::optional<auction_worklet::mojom::SignalBucketPtr> GetSignalBucket(
     v8::Isolate* isolate,
-    v8::Local<v8::Value> input) {
-  CHECK(input->IsObject());
-  gin::Dictionary result_dict(isolate, input.As<v8::Object>());
-
+    const PASignalValue& input) {
   absl::optional<auction_worklet::mojom::BaseValue> base_value_opt =
-      GetBaseValue(result_dict);
+      BaseValueStringToEnum(input.base_value);
   if (!base_value_opt.has_value()) {
     return absl::nullopt;
   }
 
-  absl::optional<double> scale_opt = GetScale(result_dict);
-  if (!scale_opt.has_value()) {
-    return absl::nullopt;
-  }
+  double scale = input.scale.value_or(1.0);
 
-  v8::Local<v8::Value> js_offset;
-  if (!result_dict.Get("offset", &js_offset) || js_offset.IsEmpty() ||
-      js_offset->IsNullOrUndefined()) {
-    return auction_worklet::mojom::SignalBucket::New(*base_value_opt,
-                                                     *scale_opt,
+  if (!input.offset.has_value()) {
+    return auction_worklet::mojom::SignalBucket::New(*base_value_opt, scale,
                                                      /*offset=*/nullptr);
   }
 
   // Offset must be BigInt for bucket.
-  if (!js_offset->IsBigInt()) {
+  const v8::Local<v8::BigInt>* maybe_bigint =
+      absl::get_if<v8::Local<v8::BigInt>>(&input.offset.value());
+  if (!maybe_bigint) {
     return absl::nullopt;
   }
 
@@ -172,149 +185,111 @@ absl::optional<auction_worklet::mojom::SignalBucketPtr> GetSignalBucket(
   // surfacing more informative errors like "offset must be BigInt for bucket".
   std::string error;
   absl::optional<auction_worklet::mojom::BucketOffsetPtr> offset_opt =
-      ConvertBigIntToBucketOffset(js_offset.As<v8::BigInt>(), &error);
+      ConvertBigIntToBucketOffset(*maybe_bigint, &error);
   if (!offset_opt.has_value()) {
     return nullptr;
   }
-  return auction_worklet::mojom::SignalBucket::New(*base_value_opt, *scale_opt,
+  return auction_worklet::mojom::SignalBucket::New(*base_value_opt, scale,
                                                    std::move(*offset_opt));
 }
 
 absl::optional<auction_worklet::mojom::SignalValuePtr> GetSignalValue(
     v8::Isolate* isolate,
-    v8::Local<v8::Value> input) {
-  CHECK(input->IsObject());
-  gin::Dictionary result_dict(isolate, input.As<v8::Object>());
-
+    const PASignalValue& input) {
   absl::optional<auction_worklet::mojom::BaseValue> base_value_opt =
-      GetBaseValue(result_dict);
+      BaseValueStringToEnum(input.base_value);
   if (!base_value_opt.has_value()) {
     return absl::nullopt;
   }
 
-  absl::optional<double> scale_opt = GetScale(result_dict);
-  if (!scale_opt.has_value()) {
-    return absl::nullopt;
-  }
+  double scale = input.scale.value_or(1.0);
 
-  v8::Local<v8::Value> js_offset;
-  if (!result_dict.Get("offset", &js_offset) || js_offset.IsEmpty() ||
-      js_offset->IsNullOrUndefined()) {
-    return auction_worklet::mojom::SignalValue::New(*base_value_opt, *scale_opt,
+  if (!input.offset.has_value()) {
+    return auction_worklet::mojom::SignalValue::New(*base_value_opt, scale,
                                                     /*offset=*/0);
   }
 
   // Offset must be int32 for value.
-  if (!js_offset->IsInt32()) {
+  const int32_t* maybe_long = absl::get_if<int32_t>(&input.offset.value());
+  if (!maybe_long) {
     return absl::nullopt;
   }
-  int32_t offset = js_offset.As<v8::Int32>()->Value();
-  return auction_worklet::mojom::SignalValue::New(*base_value_opt, *scale_opt,
-                                                  offset);
+  return auction_worklet::mojom::SignalValue::New(*base_value_opt, scale,
+                                                  *maybe_long);
 }
 
-// Returns contribution's bucket from `js_value`. Returns nullptr if there is an
-// error.
+// Returns contribution's bucket from `idl_bucket`. Returns nullptr if there is
+// an error.
 auction_worklet::mojom::ForEventSignalBucketPtr GetBucket(
     v8::Isolate* isolate,
-    v8::Local<v8::Value> js_bucket,
+    const absl::variant<PASignalValue, v8::Local<v8::BigInt>>& idl_bucket,
     std::string* error) {
-  auction_worklet::mojom::ForEventSignalBucketPtr bucket;
-  if (js_bucket->IsBigInt()) {
+  const v8::Local<v8::BigInt>* big_int =
+      absl::get_if<v8::Local<v8::BigInt>>(&idl_bucket);
+  if (big_int) {
     std::string bucket_error;
     absl::optional<absl::uint128> maybe_bucket =
-        ConvertBigIntToUint128(js_bucket.As<v8::BigInt>(), &bucket_error);
+        ConvertBigIntToUint128(*big_int, &bucket_error);
     if (!maybe_bucket.has_value()) {
       CHECK(base::IsStringUTF8(bucket_error));
       *error = bucket_error;
       return nullptr;
     }
-    bucket = auction_worklet::mojom::ForEventSignalBucket::NewIdBucket(
+    return auction_worklet::mojom::ForEventSignalBucket::NewIdBucket(
         *maybe_bucket);
-  } else if (js_bucket->IsObject()) {
+  } else {
     absl::optional<auction_worklet::mojom::SignalBucketPtr>
-        maybe_signal_bucket_ptr = GetSignalBucket(isolate, js_bucket);
+        maybe_signal_bucket_ptr =
+            GetSignalBucket(isolate, absl::get<PASignalValue>(idl_bucket));
     if (!maybe_signal_bucket_ptr.has_value()) {
       *error = "Invalid bucket dictionary";
       return nullptr;
     }
-    bucket = auction_worklet::mojom::ForEventSignalBucket::NewSignalBucket(
+    return auction_worklet::mojom::ForEventSignalBucket::NewSignalBucket(
         std::move(*maybe_signal_bucket_ptr));
-  } else {
-    *error = "Bucket must be a BigInt or a dictionary";
-    return nullptr;
   }
-  return bucket;
 }
 
-// Returns contribution's value from `js_value`. Returns nullptr if there is an
+// Returns contribution's value from `idl_value`. Returns nullptr if there is an
 // error.
 auction_worklet::mojom::ForEventSignalValuePtr GetValue(
     v8::Isolate* isolate,
-    v8::Local<v8::Value> js_value,
+    const absl::variant<PASignalValue, int32_t>& idl_value,
     std::string* error) {
-  auction_worklet::mojom::ForEventSignalValuePtr value;
-  if (js_value->IsNumber()) {
-    v8::Maybe<int32_t> converted_value =
-        js_value->Int32Value(isolate->GetCurrentContext());
-    CHECK(converted_value.IsJust());
-    int int_value = converted_value.ToChecked();
-    value = auction_worklet::mojom::ForEventSignalValue::NewIntValue(int_value);
-    if (int_value < 0) {
+  const int32_t* int_value = absl::get_if<int32_t>(&idl_value);
+  if (int_value) {
+    if (*int_value < 0) {
       *error = "Value must be non-negative";
       return nullptr;
     }
-  } else if (js_value->IsObject()) {
+    return auction_worklet::mojom::ForEventSignalValue::NewIntValue(*int_value);
+  } else {
     absl::optional<auction_worklet::mojom::SignalValuePtr>
-        maybe_signal_value_ptr = GetSignalValue(isolate, js_value);
+        maybe_signal_value_ptr =
+            GetSignalValue(isolate, absl::get<PASignalValue>(idl_value));
     if (!maybe_signal_value_ptr.has_value()) {
       *error = "Invalid value dictionary";
       return nullptr;
     }
-    value = auction_worklet::mojom::ForEventSignalValue::NewSignalValue(
+    return auction_worklet::mojom::ForEventSignalValue::NewSignalValue(
         std::move(*maybe_signal_value_ptr));
-  } else if (js_value->IsBigInt()) {
-    *error = "Value cannot be a BigInt";
-    return nullptr;
-  } else {
-    *error = "Value must be a Number or a dictionary";
-    return nullptr;
   }
-  return value;
 }
 
 auction_worklet::mojom::AggregatableReportForEventContributionPtr
-ParseForEventContribution(v8::Isolate* isolate,
-                          const std::string& event_type,
-                          v8::Local<v8::Value> arg_contribution,
-                          std::string* error) {
-  gin::Dictionary dict(isolate);
-  bool success = gin::ConvertFromV8(isolate, arg_contribution, &dict);
-  CHECK(success);
-
-  v8::Local<v8::Value> js_bucket;
-  if (!dict.Get("bucket", &js_bucket) || js_bucket.IsEmpty() ||
-      js_bucket->IsNullOrUndefined()) {
-    *error =
-        "Invalid or missing bucket in contributeToHistogramOnEvent's argument";
-    return nullptr;
-  }
-
-  v8::Local<v8::Value> js_value;
-  if (!dict.Get("value", &js_value) || js_value.IsEmpty() ||
-      js_value->IsNullOrUndefined()) {
-    *error =
-        "Invalid or missing value in contributeToHistogramOnEvent's argument";
-    return nullptr;
-  }
-
+ParseForEventContribution(
+    v8::Isolate* isolate,
+    const std::string& event_type,
+    absl::variant<PASignalValue, v8::Local<v8::BigInt>> idl_bucket,
+    absl::variant<PASignalValue, int32_t> idl_value,
+    std::string* error) {
   auction_worklet::mojom::ForEventSignalBucketPtr bucket =
-      GetBucket(isolate, std::move(js_bucket), error);
+      GetBucket(isolate, std::move(idl_bucket), error);
   if (!bucket) {
     return nullptr;
   }
   auction_worklet::mojom::ForEventSignalValuePtr value =
-      GetValue(isolate, std::move(js_value), error);
+      GetValue(isolate, std::move(idl_value), error);
   if (!value) {
     return nullptr;
   }
@@ -323,49 +298,20 @@ ParseForEventContribution(v8::Isolate* isolate,
       std::move(bucket), std::move(value), std::move(event_type));
 }
 
-v8::Local<v8::String> CreateStringFromLiteral(v8::Isolate* isolate,
-                                              const char* ascii_string) {
-  DCHECK(base::IsStringASCII(ascii_string));
-  return v8::String::NewFromUtf8(isolate, ascii_string,
-                                 v8::NewStringType::kNormal,
-                                 strlen(ascii_string))
-      .ToLocalChecked();
-}
-
-v8::MaybeLocal<v8::String> CreateUtf8String(v8::Isolate* isolate,
-                                            base::StringPiece utf8_string) {
-  if (!base::IsStringUTF8(utf8_string)) {
-    return v8::MaybeLocal<v8::String>();
-  }
-  return v8::String::NewFromUtf8(isolate, utf8_string.data(),
-                                 v8::NewStringType::kNormal,
-                                 utf8_string.length());
-}
-
 // In case of failure, will return `absl::nullopt` and output an error to
 // `error_out`.
-absl::optional<uint64_t> ParseDebugKey(v8::Local<v8::Value> js_debug_key,
-                                       v8::Local<v8::Context>& context,
+absl::optional<uint64_t> ParseDebugKey(v8::Local<v8::BigInt> js_debug_key,
                                        std::string* error_out) {
-  if (js_debug_key.IsEmpty() || js_debug_key->IsNullOrUndefined()) {
+  absl::optional<absl::uint128> maybe_debug_key =
+      ConvertBigIntToUint128(js_debug_key.As<v8::BigInt>(), error_out);
+  if (!maybe_debug_key.has_value()) {
     return absl::nullopt;
   }
-
-  if (js_debug_key->IsBigInt()) {
-    absl::optional<absl::uint128> maybe_debug_key =
-        ConvertBigIntToUint128(js_debug_key.As<v8::BigInt>(), error_out);
-    if (!maybe_debug_key.has_value()) {
-      return absl::nullopt;
-    }
-    if (absl::Uint128High64(maybe_debug_key.value()) != 0) {
-      *error_out = "BigInt is too large";
-      return absl::nullopt;
-    }
-    return absl::Uint128Low64(maybe_debug_key.value());
+  if (absl::Uint128High64(maybe_debug_key.value()) != 0) {
+    *error_out = "BigInt is too large";
+    return absl::nullopt;
   }
-
-  *error_out = "debugKey must be a BigInt";
-  return absl::nullopt;
+  return absl::Uint128Low64(maybe_debug_key.value());
 }
 
 }  // namespace
@@ -468,96 +414,64 @@ void PrivateAggregationBindings::ContributeToHistogram(
   PrivateAggregationBindings* bindings =
       static_cast<PrivateAggregationBindings*>(
           v8::External::Cast(*args.Data())->Value());
-
-  gin::Arguments gin_args(args);
-  v8::Isolate* isolate = gin_args.isolate();
+  AuctionV8Helper* v8_helper = bindings->v8_helper_;
+  v8::Isolate* isolate = v8_helper->isolate();
 
   if (!bindings->private_aggregation_permissions_policy_allowed_) {
-    isolate->ThrowException(v8::Exception::TypeError(CreateStringFromLiteral(
-        isolate,
-        "The \"private-aggregation\" Permissions Policy denied the method on "
-        "privateAggregation")));
+    isolate->ThrowException(
+        v8::Exception::TypeError(v8_helper->CreateStringFromLiteral(
+            "The \"private-aggregation\" Permissions Policy denied the method "
+            "on "
+            "privateAggregation")));
     return;
   }
 
-  std::vector<v8::Local<v8::Value>> argument_list = gin_args.GetAll();
+  AuctionV8Helper::TimeLimitScope time_limit_scope(v8_helper->GetTimeLimit());
+  ArgsConverter args_converter(
+      v8_helper, time_limit_scope,
+      "privateAggregation.contributeToHistogram(): ", &args,
+      /*min_required_args=*/1);
 
-  // Any additional arguments are ignored.
-  if (argument_list.size() == 0 || argument_list[0].IsEmpty() ||
-      !argument_list[0]->IsObject()) {
-    isolate->ThrowException(v8::Exception::TypeError(CreateStringFromLiteral(
-        isolate, "contributeToHistogram requires 1 object parameter")));
+  v8::Local<v8::Value> contribution_val;
+  args_converter.ConvertArg(0, "contribution", contribution_val);
+  v8::Local<v8::BigInt> idl_bucket;
+  int32_t idl_value;
+  if (args_converter.is_success()) {
+    // https://patcg-individual-drafts.github.io/private-aggregation-api/#dictdef-pahistogramcontribution
+    //
+    // arg 0 is:
+    // dictionary PAHistogramContribution {
+    //   required bigint bucket;
+    //   required long value;
+    // };
+    DictConverter contribution_converter(
+        v8_helper, time_limit_scope,
+        "privateAggregation.contributeToHistogram() 'contribution' argument: ",
+        contribution_val);
+    contribution_converter.GetRequired("bucket", idl_bucket);
+    contribution_converter.GetRequired("value", idl_value);
+    args_converter.SetStatus(contribution_converter.TakeStatus());
+  }
+
+  if (args_converter.is_failed()) {
+    args_converter.TakeStatus().PropagateErrorsToV8(v8_helper);
     return;
   }
 
-  gin::Dictionary dict(isolate);
-
-  bool success = gin::ConvertFromV8(isolate, argument_list[0], &dict);
-  DCHECK(success);
-
-  v8::Local<v8::Value> js_bucket;
-  v8::Local<v8::Value> js_value;
-
-  if (!dict.Get("bucket", &js_bucket)) {
-    // Propagate any exception
-    return;
-  }
-  if (js_bucket.IsEmpty() || js_bucket->IsNullOrUndefined()) {
-    isolate->ThrowException(v8::Exception::TypeError(CreateStringFromLiteral(
-        isolate,
-        "Invalid or missing bucket in contributeToHistogram argument")));
-    return;
-  }
-
-  if (!dict.Get("value", &js_value)) {
-    // Propagate any exception
-    return;
-  }
-  if (js_value.IsEmpty() || js_value->IsNullOrUndefined()) {
-    isolate->ThrowException(v8::Exception::TypeError(CreateStringFromLiteral(
-        isolate,
-        "Invalid or missing value in contributeToHistogram argument")));
-    return;
-  }
-
-  absl::uint128 bucket;
-  int value;
-
-  if (js_bucket->IsBigInt()) {
-    std::string error;
-    absl::optional<absl::uint128> maybe_bucket =
-        ConvertBigIntToUint128(js_bucket.As<v8::BigInt>(), &error);
-    if (!maybe_bucket.has_value()) {
-      DCHECK(base::IsStringUTF8(error));
-      isolate->ThrowException(v8::Exception::TypeError(
-          CreateUtf8String(isolate, error).ToLocalChecked()));
-      return;
-    }
-    bucket = maybe_bucket.value();
-  } else {
+  std::string error;
+  absl::optional<absl::uint128> maybe_bucket =
+      ConvertBigIntToUint128(idl_bucket, &error);
+  if (!maybe_bucket.has_value()) {
+    DCHECK(base::IsStringUTF8(error));
     isolate->ThrowException(v8::Exception::TypeError(
-        CreateStringFromLiteral(isolate, "bucket must be a BigInt")));
+        v8_helper->CreateUtf8String(error).ToLocalChecked()));
     return;
   }
+  absl::uint128 bucket = maybe_bucket.value();
 
-  if (js_value->IsNumber()) {
-    v8::Maybe<int32_t> converted_value =
-        js_value->Int32Value(isolate->GetCurrentContext());
-    CHECK(converted_value.IsJust());
-    value = converted_value.ToChecked();
-  } else if (js_value->IsBigInt()) {
+  if (idl_value < 0) {
     isolate->ThrowException(v8::Exception::TypeError(
-        CreateStringFromLiteral(isolate, "Value cannot be a BigInt")));
-    return;
-  } else {
-    isolate->ThrowException(v8::Exception::TypeError(
-        CreateStringFromLiteral(isolate, "Value must be a Number")));
-    return;
-  }
-
-  if (value < 0) {
-    isolate->ThrowException(v8::Exception::TypeError(
-        CreateStringFromLiteral(isolate, "Value must be non-negative")));
+        v8_helper->CreateStringFromLiteral("Value must be non-negative")));
     return;
   }
 
@@ -565,7 +479,7 @@ void PrivateAggregationBindings::ContributeToHistogram(
       auction_worklet::mojom::AggregatableReportContribution::
           NewHistogramContribution(
               blink::mojom::AggregatableReportHistogramContribution::New(
-                  bucket, value)));
+                  bucket, idl_value)));
 }
 
 void PrivateAggregationBindings::ContributeToHistogramOnEvent(
@@ -576,15 +490,49 @@ void PrivateAggregationBindings::ContributeToHistogramOnEvent(
   AuctionV8Helper* v8_helper = bindings->v8_helper_;
   v8::Isolate* isolate = v8_helper->isolate();
 
-  // Any additional arguments are ignored.
+  AuctionV8Helper::TimeLimitScope time_limit_scope(v8_helper->GetTimeLimit());
+  ArgsConverter args_converter(
+      v8_helper, time_limit_scope,
+      "privateAggregation.contributeToHistogramOnEvent(): ", &args,
+      /*min_required_args=*/2);
   std::string event_type;
-  if (args.Length() < 2 || args[0].IsEmpty() || args[1].IsEmpty() ||
-      !gin::ConvertFromV8(isolate, args[0], &event_type) ||
-      !args[1]->IsObject()) {
-    isolate->ThrowException(
-        v8::Exception::TypeError(v8_helper->CreateStringFromLiteral(
-            "contributeToHistogramOnEvent requires 2 parameters, with first "
-            "parameter being a string and second parameter being an object")));
+  args_converter.ConvertArg(0, "event", event_type);
+
+  // Arg 1 is:
+  // https://patcg-individual-drafts.github.io/private-aggregation-api/#dictdef-paextendedhistogramcontribution
+  //
+  // dictionary PAExtendedHistogramContribution {
+  //   required (PASignalValue or bigint) bucket;
+  //   required (PASignalValue or long) value;
+  // };
+
+  absl::variant<PASignalValue, v8::Local<v8::BigInt>> bucket;
+  absl::variant<PASignalValue, int32_t> value;
+  if (args_converter.is_success()) {
+    DictConverter contribution_converter(
+        v8_helper, time_limit_scope,
+        "privateAggregation.contributeToHistogramOnEvent() 'contribution' "
+        "argument: ",
+        args[1]);
+
+    v8::Local<v8::Value> bucket_val, value_val;
+    contribution_converter.GetRequired("bucket", bucket_val) &&
+        ConvertToPASignalValueOr<v8::Local<v8::BigInt>>(
+            v8_helper, time_limit_scope,
+            "privateAggregation.contributeToHistogramOnEvent() 'contribution' "
+            "argument: ",
+            "bucket", bucket_val, contribution_converter, bucket) &&
+        contribution_converter.GetRequired("value", value_val) &&
+        ConvertToPASignalValueOr<int32_t>(
+            v8_helper, time_limit_scope,
+            "privateAggregation.contributeToHistogramOnEvent() 'contribution' "
+            "argument: ",
+            "value", value_val, contribution_converter, value);
+    args_converter.SetStatus(contribution_converter.TakeStatus());
+  }
+
+  if (args_converter.is_failed()) {
+    args_converter.TakeStatus().PropagateErrorsToV8(v8_helper);
     return;
   }
 
@@ -597,8 +545,8 @@ void PrivateAggregationBindings::ContributeToHistogramOnEvent(
 
   std::string error;
   auction_worklet::mojom::AggregatableReportForEventContributionPtr
-      contribution =
-          ParseForEventContribution(isolate, event_type, args[1], &error);
+      contribution = ParseForEventContribution(
+          isolate, event_type, std::move(bucket), std::move(value), &error);
 
   if (contribution.is_null()) {
     CHECK(base::IsStringUTF8(error));
@@ -618,50 +566,47 @@ void PrivateAggregationBindings::EnableDebugMode(
       static_cast<PrivateAggregationBindings*>(
           v8::External::Cast(*args.Data())->Value());
 
-  gin::Arguments gin_args(args);
-  v8::Isolate* isolate = gin_args.isolate();
-  v8::Local<v8::Context> context = isolate->GetCurrentContext();
+  AuctionV8Helper* v8_helper = bindings->v8_helper_;
+  v8::Isolate* isolate = v8_helper->isolate();
 
   if (!bindings->private_aggregation_permissions_policy_allowed_) {
-    isolate->ThrowException(v8::Exception::TypeError(CreateStringFromLiteral(
-        isolate,
-        "The \"private-aggregation\" Permissions Policy denied the method on "
-        "privateAggregation")));
+    isolate->ThrowException(
+        v8::Exception::TypeError(v8_helper->CreateStringFromLiteral(
+            "The \"private-aggregation\" Permissions Policy denied the method "
+            "on "
+            "privateAggregation")));
     return;
   }
 
-  std::vector<v8::Local<v8::Value>> argument_list = gin_args.GetAll();
+  // Do IDL typechecking first.
+  v8::Local<v8::BigInt> js_debug_key;
+  if (args.Length() >= 1) {
+    AuctionV8Helper::TimeLimitScope time_limit_scope(v8_helper->GetTimeLimit());
+    DictConverter debug_options_converter(
+        v8_helper, time_limit_scope,
+        "privateAggregation.enableDebugMode() 'options' argument: ", args[0]);
+    if (!debug_options_converter.GetRequired("debugKey", js_debug_key)) {
+      debug_options_converter.TakeStatus().PropagateErrorsToV8(v8_helper);
+      return;
+    }
+  }
 
+  // Now do the rest of the checks.
   if (bindings->debug_mode_details_.is_enabled) {
-    isolate->ThrowException(v8::Exception::TypeError(CreateStringFromLiteral(
-        isolate, "enableDebugMode may be called at most once")));
+    isolate->ThrowException(
+        v8::Exception::TypeError(v8_helper->CreateStringFromLiteral(
+            "enableDebugMode may be called at most once")));
     return;
   }
 
-  // If no arguments are provided, no debug key is set.
-  if (argument_list.size() >= 1 && !argument_list[0].IsEmpty()) {
-    gin::Dictionary dict(isolate);
-
-    if (!gin::ConvertFromV8(isolate, argument_list[0], &dict)) {
-      isolate->ThrowException(v8::Exception::TypeError(CreateStringFromLiteral(
-          isolate, "Invalid argument in enableDebugMode")));
-      return;
-    }
-
-    v8::Local<v8::Value> js_debug_key;
-
-    if (!dict.Get("debugKey", &js_debug_key)) {
-      // Propagate any exception
-      return;
-    }
-
+  if (!js_debug_key.IsEmpty()) {
     std::string error;
     absl::optional<uint64_t> maybe_debug_key =
-        ParseDebugKey(js_debug_key, context, &error);
+        ParseDebugKey(js_debug_key, &error);
     if (!maybe_debug_key.has_value()) {
       DCHECK(base::IsStringUTF8(error));
       isolate->ThrowException(v8::Exception::TypeError(
-          CreateUtf8String(isolate, error).ToLocalChecked()));
+          v8_helper->CreateUtf8String(error).ToLocalChecked()));
       return;
     }
 
