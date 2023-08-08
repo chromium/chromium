@@ -298,6 +298,10 @@ class ResourcePrefetchPredictor : public history::HistoryServiceObserver {
   // predictor database and caches.
   void DeleteUrls(const history::URLRows& urls);
 
+  // Try to ensure that DataMaps are available, and returns true iff they are
+  // available now.
+  bool TryEnsureRecordingPrecondition();
+
   // Updates information about final redirect destination for the |key| in
   // |redirect_data| and correspondingly updates the predictor database.
   void LearnRedirect(const std::string& key,

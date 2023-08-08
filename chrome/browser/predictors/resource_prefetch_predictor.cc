@@ -309,18 +309,30 @@ void ResourcePrefetchPredictor::Shutdown() {
   history_service_observation_.Reset();
 }
 
-void ResourcePrefetchPredictor::RecordPageRequestSummary(
-    std::unique_ptr<PageRequestSummary> summary) {
+bool ResourcePrefetchPredictor::TryEnsureRecordingPrecondition() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
   // Make sure initialization is done or start initialization if necessary.
   if (initialization_state_ == NOT_INITIALIZED) {
     StartInitialization();
-    return;
+    return false;
   } else if (initialization_state_ == INITIALIZING) {
-    return;
+    return false;
   } else if (initialization_state_ != INITIALIZED) {
     NOTREACHED() << "Unexpected initialization_state_: "
                  << initialization_state_;
+    return false;
+  }
+
+  CHECK(host_redirect_data_);
+  CHECK(origin_data_);
+  CHECK(lcpp_data_);
+  return true;
+}
+
+void ResourcePrefetchPredictor::RecordPageRequestSummary(
+    std::unique_ptr<PageRequestSummary> summary) {
+  if (!TryEnsureRecordingPrecondition()) {
     return;
   }
 
@@ -661,7 +673,10 @@ void ResourcePrefetchPredictor::LearnOrigins(
 void ResourcePrefetchPredictor::LearnLcpp(
     const std::string& host,
     const std::string& lcp_element_locator) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (!TryEnsureRecordingPrecondition()) {
+    return;
+  }
+
   if (host.size() > ResourcePrefetchPredictorTables::kMaxStringLength ||
       lcp_element_locator.size() >
           ResourcePrefetchPredictorTables::kMaxStringLength ||
