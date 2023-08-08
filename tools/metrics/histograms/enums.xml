@@ -59884,6 +59884,8 @@ from previous Chrome versions.
   <int value="-2124685253" label="USBGuard:enabled"/>
   <int value="-2124353830" label="FastPairDevicesBluetoothSettings:enabled"/>
   <int value="-2123795624" label="ArcSmartTextSelection:enabled"/>
+  <int value="-2123684408"
+      label="AutofillEnableFpanRiskBasedAuthentication:enabled"/>
   <int value="-2123630746" label="VisualSearchSuggestions:disabled"/>
   <int value="-2123097607" label="NtpModulesRedesigned:disabled"/>
   <int value="-2122206114"
@@ -67076,6 +67078,8 @@ from previous Chrome versions.
   <int value="1511161758" label="BackgroundLoader:enabled"/>
   <int value="1511961044" label="ArcFilePickerExperiment:disabled"/>
   <int value="1512608246" label="AccessibilityChromeVoxPageMigration:enabled"/>
+  <int value="1512979030"
+      label="AutofillEnableFpanRiskBasedAuthentication:disabled"/>
   <int value="1514036945"
       label="OmniboxUIExperimentElideSuggestionUrlAfterHost:disabled"/>
   <int value="1514066770" label="DisplayCutoutAPI:enabled"/>

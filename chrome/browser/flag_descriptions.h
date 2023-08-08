@@ -252,6 +252,9 @@ extern const char kAutofillEnableCvcStorageAndFillingDescription[];
 extern const char kAutofillEnableFIDOProgressDialogName[];
 extern const char kAutofillEnableFIDOProgressDialogDescription[];
 
+extern const char kAutofillEnableFpanRiskBasedAuthenticationName[];
+extern const char kAutofillEnableFpanRiskBasedAuthenticationDescription[];
+
 extern const char kAutofillEnableIbanClientSideUrlFilteringName[];
 extern const char kAutofillEnableIbanClientSideUrlFilteringDescription[];
 

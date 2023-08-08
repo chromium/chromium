@@ -419,6 +419,12 @@ const char kAutofillEnableFIDOProgressDialogDescription[] =
     "When enabled, a progress dialog is displayed while authenticating with "
     "FIDO on Android.";
 
+const char kAutofillEnableFpanRiskBasedAuthenticationName[] =
+    "Enable risk-based authentication for FPAN retrieval";
+const char kAutofillEnableFpanRiskBasedAuthenticationDescription[] =
+    "When enabled, server card retrieval will begin with a risk-based check "
+    "instead of jumping straight to CVC or biometric auth.";
+
 const char kAutofillEnableIbanClientSideUrlFilteringName[] =
     "Enable Autofill IBAN client side URL filtering";
 const char kAutofillEnableIbanClientSideUrlFilteringDescription[] =

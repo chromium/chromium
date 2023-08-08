@@ -74,6 +74,12 @@ BASE_FEATURE(kAutofillEnableFIDOProgressDialog,
              "AutofillEnableFIDOProgressDialog",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, server card retrieval will begin with a risk-based check
+// instead of jumping straight to CVC or biometric auth.
+BASE_FEATURE(kAutofillEnableFpanRiskBasedAuthentication,
+             "AutofillEnableFpanRiskBasedAuthentication",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, client side URL filtering will be triggered for the IBAN
 // use-case, so that IBAN autofill is not offered on websites that are blocked.
 BASE_FEATURE(kAutofillEnableIbanClientSideUrlFiltering,
