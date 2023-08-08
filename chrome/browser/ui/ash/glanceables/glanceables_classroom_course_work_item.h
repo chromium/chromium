@@ -131,6 +131,7 @@ class GlanceablesClassroomCourseWorkItem {
   const std::string& title() const { return title_; }
   const GURL& link() const { return link_; }
   const absl::optional<base::Time>& due() const { return due_; }
+  const base::Time& creation_time() const { return creation_time_; }
   const base::Time& last_update() const { return last_update_; }
 
   int total_submissions() const {
@@ -166,6 +167,9 @@ class GlanceablesClassroomCourseWorkItem {
 
   // Due date and time in UTC of this course work item.
   absl::optional<base::Time> due_;
+
+  // The timestamp when this course work was created.
+  base::Time creation_time_;
 
   // The timestamp of the last course work item update.
   base::Time last_update_;

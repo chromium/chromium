@@ -350,8 +350,8 @@ void GlanceablesClassroomClientImpl::GetStudentAssignmentsWithoutDueDate(
   auto sort_comparator =
       base::BindRepeating([](const GlanceablesClassroomCourseWorkItem* lhs,
                              const GlanceablesClassroomCourseWorkItem* rhs) {
-        // TODO(b/291609743): Order by publish date in descending order.
-        return true;
+        // Order by course work item creation time in descending order.
+        return lhs->creation_time() > rhs->creation_time();
       });
   InvokeOnceStudentDataFetched(base::BindOnce(
       &GlanceablesClassroomClientImpl::GetFilteredStudentAssignments,

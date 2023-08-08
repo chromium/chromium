@@ -1684,7 +1684,8 @@ TEST_F(GlanceablesClassroomClientImplTest,
                   "id": "course-work-item-1",
                   "title": "Math assignment",
                   "state": "PUBLISHED",
-                  "alternateLink": "https://classroom.google.com/test-link-1"
+                  "alternateLink": "https://classroom.google.com/test-link-1",
+                  "creationTime": "2023-03-10T15:09:25.250Z"
                 },
                 {
                   "id": "course-work-item-2",
@@ -1704,6 +1705,20 @@ TEST_F(GlanceablesClassroomClientImplTest,
                   "title": "Math assignment - submission graded",
                   "state": "PUBLISHED",
                   "alternateLink": "https://classroom.google.com/test-link-3"
+                },
+                {
+                  "id": "course-work-item-4",
+                  "title": "Math assignment one",
+                  "state": "PUBLISHED",
+                  "alternateLink": "https://classroom.google.com/test-link-4",
+                  "creationTime": "2023-03-20T15:09:25.250Z"
+                },
+                {
+                  "id": "course-work-item-5",
+                  "title": "Math assignment two",
+                  "state": "PUBLISHED",
+                  "alternateLink": "https://classroom.google.com/test-link-5",
+                  "creationTime": "2023-03-15T15:09:25.250Z"
                 }
               ]
             })"))));
@@ -1728,6 +1743,16 @@ TEST_F(GlanceablesClassroomClientImplTest,
                   "courseWorkId": "course-work-item-3",
                   "state": "RETURNED",
                   "assignedGrade": 50.0
+                },
+                {
+                  "id": "student-submission-4",
+                  "courseWorkId": "course-work-item-4",
+                  "state": "NEW"
+                },
+                {
+                  "id": "student-submission-5",
+                  "courseWorkId": "course-work-item-5",
+                  "state": "NEW"
                 }
               ]
             })"))));
@@ -1737,14 +1762,28 @@ TEST_F(GlanceablesClassroomClientImplTest,
 
   const auto [success, assignments] = future.Take();
   EXPECT_TRUE(success);
-  ASSERT_EQ(assignments.size(), 1u);
+  ASSERT_EQ(assignments.size(), 3u);
 
   EXPECT_EQ(assignments.at(0)->course_title, "Active Course 1");
-  EXPECT_EQ(assignments.at(0)->course_work_title, "Math assignment");
+  EXPECT_EQ(assignments.at(0)->course_work_title, "Math assignment one");
   EXPECT_EQ(assignments.at(0)->link,
-            "https://classroom.google.com/test-link-1");
+            "https://classroom.google.com/test-link-4");
   EXPECT_FALSE(assignments.at(0)->due);
   EXPECT_FALSE(assignments.at(0)->submissions_state);
+
+  EXPECT_EQ(assignments.at(1)->course_title, "Active Course 1");
+  EXPECT_EQ(assignments.at(1)->course_work_title, "Math assignment two");
+  EXPECT_EQ(assignments.at(1)->link,
+            "https://classroom.google.com/test-link-5");
+  EXPECT_FALSE(assignments.at(1)->due);
+  EXPECT_FALSE(assignments.at(1)->submissions_state);
+
+  EXPECT_EQ(assignments.at(2)->course_title, "Active Course 1");
+  EXPECT_EQ(assignments.at(2)->course_work_title, "Math assignment");
+  EXPECT_EQ(assignments.at(2)->link,
+            "https://classroom.google.com/test-link-1");
+  EXPECT_FALSE(assignments.at(2)->due);
+  EXPECT_FALSE(assignments.at(2)->submissions_state);
 
   histogram_tester()->ExpectTotalCount(
       "Ash.Glanceables.Api.Classroom.StudentDataFetchTime",

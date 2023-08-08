@@ -86,6 +86,7 @@ void GlanceablesClassroomCourseWorkItem::SetCourseWorkItem(
   title_ = course_work->title();
   link_ = course_work->alternate_link();
   due_ = ConvertCourseWorkItemDue(course_work->due_date_time());
+  creation_time_ = course_work->creation_time();
   last_update_ = course_work->last_update();
 }
 
