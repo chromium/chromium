@@ -61,6 +61,13 @@
                       accessPoint:(signin_metrics::AccessPoint)accessPoint {
   self = [super init];
   if (self) {
+    CHECK(authenticationService);
+    CHECK(chromeAccountManagerService);
+    CHECK(consentAuditor);
+    CHECK(identityManager);
+    CHECK(syncService);
+    CHECK(syncSetupService);
+    CHECK(unifiedConsentService);
     _authenticationService = authenticationService;
     _accountManagerService = chromeAccountManagerService;
     _accountManagerServiceObserver =
