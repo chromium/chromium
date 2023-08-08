@@ -56,7 +56,7 @@ class UpdaterObserver : public DYNAMICIIDSIMPL(IUpdaterObserver) {
   // Overrides for IUpdaterObserver. These functions are called on the STA
   // thread directly by the COM RPC runtime.
   IFACEMETHODIMP OnStateChange(IUpdateState* update_state) override {
-    CHECK_EQ(base::PlatformThreadRef(), com_thread_ref_);
+    CHECK_EQ(base::PlatformThread::CurrentRef(), com_thread_ref_);
     CHECK(update_state);
 
     if (!state_update_callback_) {
@@ -69,7 +69,7 @@ class UpdaterObserver : public DYNAMICIIDSIMPL(IUpdaterObserver) {
   }
 
   IFACEMETHODIMP OnComplete(ICompleteStatus* complete_status) override {
-    CHECK_EQ(base::PlatformThreadRef(), com_thread_ref_);
+    CHECK_EQ(base::PlatformThread::CurrentRef(), com_thread_ref_);
     CHECK(complete_status);
     result_ = QueryResult(complete_status);
     return S_OK;
@@ -79,7 +79,7 @@ class UpdaterObserver : public DYNAMICIIDSIMPL(IUpdaterObserver) {
   // not posted after this function is called. Returns the completion callback
   // so that the owner of this object can take back the callback ownership.
   UpdateService::Callback Disconnect() {
-    CHECK_EQ(base::PlatformThreadRef(), com_thread_ref_);
+    CHECK_EQ(base::PlatformThread::CurrentRef(), com_thread_ref_);
     VLOG(2) << __func__;
     state_update_callback_.Reset();
     return std::move(callback_);
@@ -87,13 +87,13 @@ class UpdaterObserver : public DYNAMICIIDSIMPL(IUpdaterObserver) {
 
  private:
   ~UpdaterObserver() override {
-    CHECK_EQ(base::PlatformThreadRef(), com_thread_ref_);
+    CHECK_EQ(base::PlatformThread::CurrentRef(), com_thread_ref_);
     if (callback_)
       std::move(callback_).Run(result_);
   }
 
   UpdateService::UpdateState QueryUpdateState(IUpdateState* update_state) {
-    CHECK_EQ(base::PlatformThreadRef(), com_thread_ref_);
+    CHECK_EQ(base::PlatformThread::CurrentRef(), com_thread_ref_);
     CHECK(update_state);
 
     UpdateService::UpdateState update_service_state;
@@ -185,7 +185,7 @@ class UpdaterObserver : public DYNAMICIIDSIMPL(IUpdaterObserver) {
   }
 
   UpdateService::Result QueryResult(ICompleteStatus* complete_status) {
-    CHECK_EQ(base::PlatformThreadRef(), com_thread_ref_);
+    CHECK_EQ(base::PlatformThread::CurrentRef(), com_thread_ref_);
     CHECK(complete_status);
 
     LONG code = 0;
@@ -197,7 +197,8 @@ class UpdaterObserver : public DYNAMICIIDSIMPL(IUpdaterObserver) {
   }
 
   // The reference of the thread this object is bound to.
-  base::PlatformThreadRef com_thread_ref_;
+  const base::PlatformThreadRef com_thread_ref_ =
+      base::PlatformThread::CurrentRef();
 
   // Called by IUpdaterObserver::OnStateChange when update state changes occur.
   UpdateService::StateChangeCallback state_update_callback_;
@@ -221,7 +222,7 @@ class UpdaterCallback : public DYNAMICIIDSIMPL(IUpdaterCallback) {
   // thread directly by the COM RPC runtime, and must be sequenced through
   // the task runner.
   IFACEMETHODIMP Run(LONG status_code) override {
-    CHECK_EQ(base::PlatformThreadRef(), com_thread_ref_);
+    CHECK_EQ(base::PlatformThread::CurrentRef(), com_thread_ref_);
     VLOG(2) << __func__;
     status_code_ = status_code;
     return S_OK;
@@ -231,20 +232,21 @@ class UpdaterCallback : public DYNAMICIIDSIMPL(IUpdaterCallback) {
   // not posted after this function is called. Returns the completion callback
   // so that the owner of this object can take back the callback ownership.
   base::OnceCallback<void(LONG)> Disconnect() {
-    CHECK_EQ(base::PlatformThreadRef(), com_thread_ref_);
+    CHECK_EQ(base::PlatformThread::CurrentRef(), com_thread_ref_);
     VLOG(2) << __func__;
     return std::move(callback_);
   }
 
  private:
   ~UpdaterCallback() override {
-    CHECK_EQ(base::PlatformThreadRef(), com_thread_ref_);
+    CHECK_EQ(base::PlatformThread::CurrentRef(), com_thread_ref_);
     if (callback_)
       std::move(callback_).Run(status_code_);
   }
 
   // The reference of the thread this object is bound to.
-  base::PlatformThreadRef com_thread_ref_;
+  const base::PlatformThreadRef com_thread_ref_ =
+      base::PlatformThread::CurrentRef();
 
   base::OnceCallback<void(LONG)> callback_;
 
@@ -267,7 +269,7 @@ class UpdaterAppStatesCallback
   // thread directly by the COM RPC runtime, and must be sequenced through
   // the task runner.
   IFACEMETHODIMP Run(VARIANT updater_app_states) override {
-    CHECK_EQ(base::PlatformThreadRef(), com_thread_ref_);
+    CHECK_EQ(base::PlatformThread::CurrentRef(), com_thread_ref_);
     VLOG(2) << __func__;
 
     if (V_VT(&updater_app_states) != (VT_ARRAY | VT_DISPATCH)) {
@@ -309,14 +311,14 @@ class UpdaterAppStatesCallback
   // so that the owner of this object can take back the callback ownership.
   base::OnceCallback<void(const std::vector<UpdateService::AppState>&)>
   Disconnect() {
-    CHECK_EQ(base::PlatformThreadRef(), com_thread_ref_);
+    CHECK_EQ(base::PlatformThread::CurrentRef(), com_thread_ref_);
     VLOG(2) << __func__;
     return std::move(callback_);
   }
 
  private:
   ~UpdaterAppStatesCallback() override {
-    CHECK_EQ(base::PlatformThreadRef(), com_thread_ref_);
+    CHECK_EQ(base::PlatformThread::CurrentRef(), com_thread_ref_);
     if (callback_) {
       std::move(callback_).Run(app_states_);
     }
@@ -374,7 +376,8 @@ class UpdaterAppStatesCallback
   }
 
   // The reference of the thread this object is bound to.
-  base::PlatformThreadRef com_thread_ref_;
+  const base::PlatformThreadRef com_thread_ref_ =
+      base::PlatformThread::CurrentRef();
 
   base::OnceCallback<void(const std::vector<UpdateService::AppState>&)>
       callback_;
