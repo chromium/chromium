@@ -294,7 +294,7 @@ type URL
           Your most visited sites will show up here.
       </message>
       <message name="IDS_IOS_WIDGET_KIT_EXTENSION_SEARCH_PASSWORDS_DISPLAY_NAME" desc="Name for the Search Passwords widget. [CHAR_LIMIT=30][iOS only]" meaning="String that appears as title in the installation window for the Search Passwords widget. Title-cased.">
-        Search Passwords
+        Password Manager
       </message>
       <message name="IDS_IOS_WIDGET_KIT_EXTENSION_SEARCH_PASSWORDS_DESCRIPTION" desc="Description for the Search Passwords widget. [CHAR_LIMIT=150][iOS only]">
         Safely search for your saved passwords on Google Password Manager
