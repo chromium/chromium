@@ -56,10 +56,8 @@ struct VIEWS_EXPORT MenuConfig {
   int menu_vertical_border_size = 4;
   int menu_horizontal_border_size = views::RoundRectPainter::kBorderWidth;
 
-  // Submenu horizontal inset with parent menu. This is the horizontal overlap
-  // between the submenu and its parent menu, not including the borders of
-  // submenu and parent menu.
-  int submenu_horizontal_inset = 3;
+  // The horizontal overlap between the submenu and its parent menu item.
+  int submenu_horizontal_overlap = 3;
 
   // Margins between the item top/bottom and its contents.
   int item_vertical_margin = 4;

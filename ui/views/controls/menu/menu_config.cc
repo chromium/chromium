@@ -57,6 +57,7 @@ void MenuConfig::InitCR2023() {
   font_list = LayoutProvider::Get()->GetTypographyProvider().GetFont(
       style::CONTEXT_MENU, style::STYLE_BODY_3_EMPHASIS);
   reserve_dedicated_arrow_column = false;
+  submenu_horizontal_overlap = 0;
   separator_height = 17;
   separator_spacing_height = 4;
   item_vertical_margin = 6;

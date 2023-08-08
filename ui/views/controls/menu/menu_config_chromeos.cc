@@ -17,7 +17,7 @@ void MenuConfig::Init() {
     separator_lower_height = 8;              // Unused in CR2023.
     separator_spacing_height = 7;            // Overridden in CR2023.
     separator_upper_height = 8;              // Unused in CR2023.
-    submenu_horizontal_inset = 1;            // Unused in CR2023.
+    submenu_horizontal_overlap = 1;          // Overridden in CR2023.
     use_outer_border = false;                // Undesirable in CR2023.
   }
 }

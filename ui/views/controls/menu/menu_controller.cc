@@ -2412,12 +2412,11 @@ gfx::Rect MenuController::CalculateMenuBounds(
     const bool create_on_right =
         layout_is_rtl ? preferred_open_direction == MenuOpenDirection::kTrailing
                       : preferred_open_direction == MenuOpenDirection::kLeading;
-    const int submenu_horizontal_inset = menu_config.submenu_horizontal_inset;
 
-    const int left_of_parent =
-        item_loc.x() - menu_bounds.width() + submenu_horizontal_inset;
+    const int left_of_parent = item_loc.x() - menu_bounds.width() +
+                               menu_config.submenu_horizontal_overlap;
     const int right_of_parent =
-        item_loc.x() + item->width() - submenu_horizontal_inset;
+        item_loc.x() + item->width() - menu_config.submenu_horizontal_overlap;
 
     MenuScrollViewContainer* container =
         item->GetParentMenuItem()->GetSubmenu()->GetScrollViewContainer();
@@ -2753,8 +2752,10 @@ gfx::Rect MenuController::CalculateBubbleMenuBounds(
             ? (menu_size.width() - border_insets.right())
             : (menu_config.touchable_menu_min_width + border_insets.right());
     const int x_max = monitor_bounds.right() - width_with_right_inset;
-    const int x_left = item_bounds.x() - width_with_right_inset;
-    const int x_right = item_bounds.right() - border_insets.left();
+    const int x_left = item_bounds.x() - width_with_right_inset +
+                       menu_config.submenu_horizontal_overlap;
+    const int x_right = item_bounds.right() - border_insets.left() -
+                        menu_config.submenu_horizontal_overlap;
     if (create_on_right) {
       x = x_right;
       if (monitor_bounds.width() == 0 || x_right <= x_max) {

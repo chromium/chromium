@@ -15,7 +15,7 @@ namespace {
 void InitMaterialMenuConfig(views::MenuConfig* config) {
   // These config parameters are from https://crbug.com/829347 and the spec
   // images linked from that bug.
-  config->submenu_horizontal_inset = 0;
+  config->submenu_horizontal_overlap = 0;
   config->minimum_text_item_height = 28;
   config->minimum_container_item_height = 40;
   config->arrow_to_edge_padding = 16;
