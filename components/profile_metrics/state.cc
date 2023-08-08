@@ -47,11 +47,6 @@ void LogProfileAvatar(AvatarState avatar_state, StateSuffix suffix) {
                                 avatar_state);
 }
 
-void LogProfileName(NameState name_state, StateSuffix suffix) {
-  base::UmaHistogramEnumeration("Profile.State.Name" + GetStateSuffix(suffix),
-                                name_state);
-}
-
 void LogProfileAccountType(UnconsentedPrimaryAccountType account_type,
                            StateSuffix suffix) {
   base::UmaHistogramEnumeration(

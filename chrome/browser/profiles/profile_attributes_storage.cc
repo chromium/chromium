@@ -218,20 +218,6 @@ profile_metrics::AvatarState GetAvatarState(ProfileAttributesEntry* entry) {
                    : profile_metrics::AvatarState::kSignedInOld;
 }
 
-profile_metrics::NameState GetNameState(ProfileAttributesEntry* entry) {
-  bool has_default_name = entry->IsUsingDefaultName();
-  switch (entry->GetNameForm()) {
-    case NameForm::kGaiaName:
-      return profile_metrics::NameState::kGaiaName;
-    case NameForm::kLocalName:
-      return has_default_name ? profile_metrics::NameState::kDefaultName
-                              : profile_metrics::NameState::kCustomName;
-    case NameForm::kGaiaAndLocalName:
-      return has_default_name ? profile_metrics::NameState::kGaiaAndDefaultName
-                              : profile_metrics::NameState::kGaiaAndCustomName;
-  }
-}
-
 profile_metrics::UnconsentedPrimaryAccountType GetUnconsentedPrimaryAccountType(
     ProfileAttributesEntry* entry) {
   if (entry->GetSigninState() == SigninState::kNotSignedIn)
@@ -255,7 +241,6 @@ profile_metrics::UnconsentedPrimaryAccountType GetUnconsentedPrimaryAccountType(
 void RecordProfileState(ProfileAttributesEntry* entry,
                         profile_metrics::StateSuffix suffix) {
   profile_metrics::LogProfileAvatar(GetAvatarState(entry), suffix);
-  profile_metrics::LogProfileName(GetNameState(entry), suffix);
   profile_metrics::LogProfileAccountType(
       GetUnconsentedPrimaryAccountType(entry), suffix);
   profile_metrics::LogProfileSyncEnabled(

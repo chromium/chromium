@@ -4353,7 +4353,6 @@ chromium-metrics-reviews@google.com.
   <suffix name="UponDeletion" label="Recorded for a profile upon its deletion"/>
   <affected-histogram name="Profile.State.Avatar"/>
   <affected-histogram name="Profile.State.LastUsed"/>
-  <affected-histogram name="Profile.State.Name"/>
   <affected-histogram name="Profile.State.SyncEnabled"/>
   <affected-histogram name="Profile.State.UnconsentedPrimaryAccountType"/>
 </histogram_suffixes>

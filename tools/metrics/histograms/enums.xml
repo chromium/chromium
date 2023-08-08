@@ -89291,14 +89291,6 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="18" label="Create incognito shortcut button (deprecated)"/>
 </enum>
 
-<enum name="ProfileNameState">
-  <int value="0" label="Gaia name"/>
-  <int value="1" label="Gaia name and custom name"/>
-  <int value="2" label="Gaia name and default name (for unambiguity)"/>
-  <int value="3" label="Custom name only (signed-out)"/>
-  <int value="4" label="Default name only (signed-out)"/>
-</enum>
-
 <enum name="ProfileNetUserCount">
   <int value="0" label="Added new user"/>
   <int value="1" label="Deleted a profile"/>
