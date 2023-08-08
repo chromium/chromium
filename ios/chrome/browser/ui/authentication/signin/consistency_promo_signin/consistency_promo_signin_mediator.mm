@@ -272,10 +272,13 @@ constexpr NSInteger kSigninTimeoutDurationSeconds = 10;
 - (void)onAccountsInCookieUpdated:
             (const signin::AccountsInCookieJarInfo&)accountsInCookieJarInfo
                             error:(const GoogleServiceAuthError&)error {
-  if (_authenticationFlow) {
+  if (_authenticationFlow ||
+      _accessPoint != signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN) {
     // Ignore if `_authenticationFlow` is in progress since
     // `onAccountsInCookieUpdated` may be called when data is cleared on
     // sign-in.
+    // Ignore if the access point is different than WebSignin. Only the web
+    // sign-in needs to wait for the cookies.
     return;
   }
   id<SystemIdentity> signingIdentity = self.signingIdentity;
