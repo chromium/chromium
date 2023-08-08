@@ -340,6 +340,7 @@ public class StartSurfaceTabSwitcherTest {
         tabSwitcher_AlwaysShowTabsInGridTabSwitcherInCreationOrderImpl();
     }
 
+    @SuppressWarnings("CheckReturnValue")
     private void tabSwitcher_AlwaysShowTabsInGridTabSwitcherInCreationOrderImpl() {
         if (!mImmediateReturn) {
             StartSurfaceTestUtils.pressHomePageButton(mActivityTestRule.getActivity());

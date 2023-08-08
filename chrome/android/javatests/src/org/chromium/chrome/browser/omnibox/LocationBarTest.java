@@ -345,6 +345,7 @@ public class LocationBarTest {
     @Test
     @MediumTest
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @SuppressWarnings("CheckReturnValue")
     public void testFocusLogic_buttonVisibilityPhone() {
         startActivityNormally();
         doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
@@ -387,6 +388,7 @@ public class LocationBarTest {
     @Test
     @MediumTest
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @SuppressWarnings("CheckReturnValue")
     public void testFocusLogic_cameraAssistedSearchLenButtonVisibilityPhone_lensDisabled() {
         startActivityNormally();
         doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
@@ -422,6 +424,7 @@ public class LocationBarTest {
     @Test
     @MediumTest
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @SuppressWarnings("CheckReturnValue")
     public void testFocusLogic_cameraAssistedSearchLenButtonVisibilityPhone_lensEnabled() {
         startActivityNormally();
         doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
@@ -457,6 +460,7 @@ public class LocationBarTest {
     @Test
     @MediumTest
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @SuppressWarnings("CheckReturnValue")
     public void testFocusLogic_lenButtonVisibilityOnStartNtpPhone() {
         startActivityNormally();
         doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
@@ -473,6 +477,7 @@ public class LocationBarTest {
     @Test
     @MediumTest
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @SuppressWarnings("CheckReturnValue")
     public void testFocusLogic_lenButtonVisibilityOnStartNtpPhone_updatedOnceWhenNtpScrolled() {
         startActivityNormally();
         doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
@@ -500,6 +505,7 @@ public class LocationBarTest {
     @Test
     @MediumTest
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @SuppressWarnings("CheckReturnValue")
     public void testFocusLogic_lenButtonVisibilityOnLocationBarOnIncognitoStateChange() {
         startActivityNormally();
         doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
@@ -531,6 +537,7 @@ public class LocationBarTest {
     @Test
     @MediumTest
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @SuppressWarnings("CheckReturnValue")
     public void testFocusLogic_lenButtonVisibilityOnLocationBarOnDefaultSearchEngineChange() {
         startActivityNormally();
         doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();

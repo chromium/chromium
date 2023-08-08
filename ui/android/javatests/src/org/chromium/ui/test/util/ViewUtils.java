@@ -44,6 +44,8 @@ import java.lang.annotation.Retention;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.CheckReturnValue;
+
 /**
  * Collection of utilities helping to clarify expectations on views in tests.
  */
@@ -175,6 +177,7 @@ public class ViewUtils {
      * @param viewState State that the matching view should be in. If multiple states are passed,
      *                  the waiting will stop if at least one applies.
      */
+    @CheckReturnValue
     public static ViewAssertion withEventualExpectedViewState(
             Matcher<View> viewMatcher, @ExpectedViewState int viewState) {
         return (View view, NoMatchingViewException noMatchException) -> {
@@ -203,6 +206,7 @@ public class ViewUtils {
      *
      * @param viewMatcher The matcher matching the view that should be waited for.
      */
+    @CheckReturnValue
     public static ViewAssertion isEventuallyVisible(Matcher<View> viewMatcher) {
         return withEventualExpectedViewState(viewMatcher, VIEW_VISIBLE);
     }

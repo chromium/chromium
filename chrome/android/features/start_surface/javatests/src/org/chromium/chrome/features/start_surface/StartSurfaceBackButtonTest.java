@@ -242,6 +242,7 @@ public class StartSurfaceBackButtonTest {
         singleAsHomepage_BackButtonWithTabSwitcher();
     }
 
+    @SuppressWarnings("CheckReturnValue")
     private void singleAsHomepage_BackButtonWithTabSwitcher() {
         if (!mImmediateReturn) {
             StartSurfaceTestUtils.pressHomePageButton(mActivityTestRule.getActivity());

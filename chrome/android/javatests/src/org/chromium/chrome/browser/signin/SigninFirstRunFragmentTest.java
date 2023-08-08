@@ -325,6 +325,7 @@ public class SigninFirstRunFragmentTest {
 
     @Test
     @MediumTest
+    @SuppressWarnings("CheckReturnValue")
     public void testFragmentWhenCannotUseGooglePlayService() {
         when(mExternalAuthUtilsMock.canUseGooglePlayServices()).thenReturn(false);
 
@@ -1290,6 +1291,7 @@ public class SigninFirstRunFragmentTest {
         verify(mSigninManagerMock, never()).signinAndEnableSync(any(), anyInt(), any());
     }
 
+    @SuppressWarnings("CheckReturnValue")
     private void checkFragmentWhenSigninIsDisabledByPolicy() {
         CriteriaHelper.pollUiThread(() -> {
             return !mFragment.getView().findViewById(R.id.signin_fre_selected_account).isShown();
@@ -1302,6 +1304,7 @@ public class SigninFirstRunFragmentTest {
         onView(withId(R.id.signin_fre_dismiss_button)).check(matches(not(isDisplayed())));
     }
 
+    @SuppressWarnings("CheckReturnValue")
     private void launchActivityWithFragment() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             ((BlankUiTestActivity) mActivityTestRule.getActivity())

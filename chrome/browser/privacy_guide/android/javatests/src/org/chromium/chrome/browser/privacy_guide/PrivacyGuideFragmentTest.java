@@ -387,6 +387,7 @@ public class PrivacyGuideFragmentTest {
     @LargeTest
     @Feature({"PrivacyGuide"})
     @Features.EnableFeatures(ChromeFeatureList.PRIVACY_GUIDE_POST_MVP)
+    @SuppressWarnings("CheckReturnValue")
     public void testBackwardNavAllActions() {
         setMSBBState(false);
         setHistorySyncState(false);

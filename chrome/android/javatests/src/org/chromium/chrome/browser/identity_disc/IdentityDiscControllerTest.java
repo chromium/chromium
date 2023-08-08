@@ -153,6 +153,7 @@ public class IdentityDiscControllerTest {
     @Test
     @MediumTest
     @DisableFeatures({ChromeFeatureList.IDENTITY_STATUS_CONSISTENCY})
+    @SuppressWarnings("CheckReturnValue")
     public void testIdentityDiscWithSignin() {
         // When user is signed out and IdentityStatusConsistency is disabled, Identity Disc should
         // not be visible on the NTP.
@@ -265,6 +266,7 @@ public class IdentityDiscControllerTest {
     @Test
     @MediumTest
     @DisableFeatures({ChromeFeatureList.IDENTITY_STATUS_CONSISTENCY})
+    @SuppressWarnings("CheckReturnValue")
     public void testIdentityDiscWithSigninAndEnableSync() {
         // When user is signed out and IdentityStatusConsistency is disabled, Identity Disc should
         // not be visible on the NTP.
@@ -291,6 +293,7 @@ public class IdentityDiscControllerTest {
     @Test
     @MediumTest
     @EnableFeatures({ChromeFeatureList.IDENTITY_STATUS_CONSISTENCY})
+    @SuppressWarnings("CheckReturnValue")
     public void testIdentityDiscWithSigninAndEnableSync_identityStatusConsistencyEnabled() {
         // Identity Disc should be shown on sign-in state change without NTP refresh.
         mSigninTestRule.addAccountThenSigninAndEnableSync(EMAIL, NAME);
@@ -330,6 +333,7 @@ public class IdentityDiscControllerTest {
 
     @Test
     @MediumTest
+    @SuppressWarnings("CheckReturnValue")
     public void testIdentityDiscWithSwitchToIncognito() {
         mSigninTestRule.addTestAccountThenSigninAndEnableSync();
         // TODO(crbug.com/1469988): This is a no-op, replace with ViewUtils.waitForVisibleView().

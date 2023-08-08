@@ -592,6 +592,7 @@ public class AccountPickerBottomSheetTest {
 
     @Test
     @MediumTest
+    @SuppressWarnings("CheckReturnValue")
     public void testSigninWithAddedAccount() {
         var accountConsistencyHistogram =
                 HistogramWatcher.newBuilder()
@@ -728,6 +729,7 @@ public class AccountPickerBottomSheetTest {
 
     @Test
     @MediumTest
+    @SuppressWarnings("CheckReturnValue")
     public void testAddAccountOnExpandedSheet() {
         var accountConsistencyHistogram =
                 HistogramWatcher.newBuilder()
