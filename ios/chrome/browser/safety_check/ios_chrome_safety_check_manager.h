@@ -118,6 +118,11 @@ class IOSChromeSafetyCheckManager
   // Returns the next Chrome app version.
   std::string GetChromeAppNextVersion() const;
 
+  // Returns all insecure credentials that are present, provided by the Password
+  // Check Manager.
+  std::vector<password_manager::CredentialUIEntry> GetInsecureCredentials()
+      const;
+
   // For unit-testing only.
   void StartOmahaCheckForTesting();
   void HandleOmahaResponseForTesting(UpgradeRecommendedDetails details);

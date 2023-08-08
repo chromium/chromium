@@ -238,6 +238,12 @@ const GURL& IOSChromeSafetyCheckManager::GetChromeAppUpgradeUrl() const {
   return upgrade_url_;
 }
 
+std::vector<password_manager::CredentialUIEntry>
+IOSChromeSafetyCheckManager::GetInsecureCredentials() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return password_check_manager_->GetInsecureCredentials();
+}
+
 // Returns the Chrome app next version.
 std::string IOSChromeSafetyCheckManager::GetChromeAppNextVersion() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
