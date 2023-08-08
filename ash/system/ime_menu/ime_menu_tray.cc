@@ -469,9 +469,6 @@ void ImeMenuTray::ShowImeMenuBubbleInternal() {
   bubble_ = std::make_unique<TrayBubbleWrapper>(this);
   bubble_->ShowBubble(std::move(bubble_view));
   SetIsActive(true);
-  GetBubbleView()->SetCanActivate(true);
-
-  Shell::Get()->system_tray_notifier()->NotifyImeMenuTrayBubbleShown();
 }
 
 void ImeMenuTray::ShowKeyboardWithKeyset(input_method::ImeKeyset keyset) {
