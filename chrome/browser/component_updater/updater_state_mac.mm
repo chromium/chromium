@@ -110,13 +110,10 @@ int UpdaterState::StateReaderKeystone::GetUpdatePolicy() const {
 bool UpdaterState::IsAutoupdateCheckEnabled() {
   // Auto-update check period override (in seconds).
   // Applies only to older versions of Keystone.
-  NSNumber* timeInterval = GetUpdaterSettingsValue<NSNumber>(@"checkInterval");
-  if (!timeInterval) {
-    return true;
-  }
-  int value = [timeInterval intValue];
-
-  return 0 < value && value < (24 * 60 * 60);
+  Boolean foundValue = false;
+  long value = CFPreferencesGetAppIntegerValue(
+      CFSTR("checkInterval"), CFSTR("com.google.Keystone.Agent"), &foundValue);
+  return !foundValue || (0 < value && value < (24 * 60 * 60));
 }
 
 int UpdaterState::GetUpdatePolicy() {
