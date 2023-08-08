@@ -282,6 +282,8 @@ bool ShouldNotifyAboutCookie(net::CookieInclusionStatus status) {
       net::CookieInclusionStatus::
           WARN_TENTATIVELY_ALLOWING_SECURE_SOURCE_SCHEME);
 
+  // TODO(crbug.com/1469135): We may want to notify about cookies blocked due to
+  // 3PCD enabled via local switch.
   return status.IsInclude() || status.ShouldWarn() ||
          status.HasExclusionReason(
              net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES) ||

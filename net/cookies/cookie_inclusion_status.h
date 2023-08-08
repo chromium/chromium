@@ -105,6 +105,8 @@ class NET_EXPORT CookieInclusionStatus {
     // when it appears in the middle of the cookie name, value, an attribute
     // name, or an attribute value).
     EXCLUDE_DISALLOWED_CHARACTER = 24,
+    // Cookie is blocked for third-party cookie phaseout.
+    EXCLUDE_THIRD_PARTY_PHASEOUT = 25,
 
     // This should be kept last.
     NUM_EXCLUSION_REASONS
@@ -379,6 +381,11 @@ class NET_EXPORT CookieInclusionStatus {
   // which takes the entire ancestor chain into account). See
   // https://crbug.com/1366868.
   bool ExcludedByUserPreferences() const;
+
+  void ResetForTesting() {
+    exclusion_reasons_.reset();
+    warning_reasons_.reset();
+  }
 
  private:
   // Returns the `exclusion_reasons_` with the given `reasons` unset.

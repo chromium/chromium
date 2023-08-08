@@ -269,7 +269,9 @@ class NET_EXPORT NetworkDelegate {
   // Called when a cookie is set to allow the network delegate to block access
   // to the cookie. If the cookie is allowed, `inclusion_status` may be updated
   // to include reason to warn about the given cookie according to the user
-  // cookie-blocking settings. This method will never be invoked when
+  // cookie-blocking settings; Otherwise, `inclusion_status` may be updated with
+  // the proper exclusion reasons, if not then proper reasons need to be
+  // manually added in the caller. This method will never be invoked when
   // LOAD_DO_NOT_SAVE_COOKIES is specified.
   virtual bool OnCanSetCookie(const URLRequest& request,
                               const CanonicalCookie& cookie,

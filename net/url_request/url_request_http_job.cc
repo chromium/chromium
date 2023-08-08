@@ -701,14 +701,23 @@ void URLRequestHttpJob::SetCookieHeaderAndStart(
           CookieInclusionStatus::EXCLUDE_USER_PREFERENCES);
     }
   }
+  // TODO(https://crbug.com/1469135): Consolidate the following `if` blocks so
+  // that all the cookies should be passed into
+  // `AnnotateAndMoveUserBlockedCookies` to be associated with the correct
+  // inclusion status.
   if (ShouldBlockUnpartitionedCookiesOnly(request_info_.privacy_mode)) {
     auto partition_it = base::ranges::stable_partition(
         maybe_included_cookies, [](const CookieWithAccessResult& el) {
           return el.cookie.IsPartitioned();
         });
     for (auto it = partition_it; it < maybe_included_cookies.end(); ++it) {
-      it->access_result.status.AddExclusionReason(
-          CookieInclusionStatus::EXCLUDE_USER_PREFERENCES);
+      if (!cookie_util::IsForceThirdPartyCookieBlockingEnabled()) {
+        it->access_result.status.AddExclusionReason(
+            CookieInclusionStatus::EXCLUDE_USER_PREFERENCES);
+      } else {
+        it->access_result.status.AddExclusionReason(
+            CookieInclusionStatus::EXCLUDE_THIRD_PARTY_PHASEOUT);
+      }
       if (first_party_set_metadata_.AreSitesInSameFirstPartySet()) {
         it->access_result.status.AddExclusionReason(
             CookieInclusionStatus::
@@ -919,9 +928,16 @@ void URLRequestHttpJob::SaveCookiesAndNotifyHeadersComplete(int result) {
       // Make a copy of the cookie if we successfully made one.
       cookie_to_return = *cookie;
     }
+
+    // Check cookie accessibility with cookie_settings.
     if (cookie && !CanSetCookie(*cookie, &options, &returned_status)) {
-      returned_status.AddExclusionReason(
-          CookieInclusionStatus::EXCLUDE_USER_PREFERENCES);
+      // Cookie allowed by cookie_settings checks could be blocked explicitly,
+      // e.g. via Android Webview APIs, we need to manually add exclusion reason
+      // in this case.
+      if (returned_status.IsInclude()) {
+        returned_status.AddExclusionReason(
+            net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES);
+      }
     }
     if (clear_site_data_prevents_cookies_from_being_stored) {
       returned_status.AddExclusionReason(
