@@ -272,7 +272,6 @@ class Linker {
         loadLinkerJniLibraryLocked();
         switch (preference) {
             case PreferAddress.FIND_RESERVED:
-                UptimeMillisTimer timer = new UptimeMillisTimer();
                 boolean reservationFound =
                         getLinkerJni().findRegionReservedByWebViewZygote(mLocalLibInfo);
                 if (reservationFound) {
@@ -476,7 +475,7 @@ class Linker {
     private void loadWithoutProducingRelro(String libFilePath) {
         assert mRemoteLibInfo == null || libFilePath.equals(mRemoteLibInfo.mLibFilePath);
         if (!getLinkerJni().loadLibrary(libFilePath, mLocalLibInfo, false /* spawnRelroRegion */)) {
-            resetAndThrow(String.format("Unable to load library: %s", libFilePath));
+            resetAndThrow(String.format("Unable to load library: %s", libFilePath), null);
         }
         assert mLocalLibInfo.mRelroFd == -1;
     }
@@ -578,7 +577,7 @@ class Linker {
         try {
             System.loadLibrary(library);
         } catch (UnsatisfiedLinkError e) {
-            resetAndThrow("Failed at System.loadLibrary()");
+            resetAndThrow("Failed at System.loadLibrary()", e);
         }
         recordDetailedLoadTimeSince(
                 timer, performedModernLoad ? "Second" : "NoSharing", backgroundStateBeforeLoad);
@@ -694,10 +693,14 @@ class Linker {
     }
 
     @GuardedBy("mLock")
-    private void resetAndThrow(String message) {
+    private void resetAndThrow(String message, UnsatisfiedLinkError cause) {
         mState = State.INITIALIZED;
         Log.e(TAG, message);
-        throw new UnsatisfiedLinkError(message);
+        var e = new UnsatisfiedLinkError(message);
+        if (cause != null) {
+            e.initCause(cause);
+        }
+        throw e;
     }
 
     /**
