@@ -50,6 +50,10 @@ enum class SSLKeyLogFileAction {
 // process one, allowing it to shut down.
 CONTENT_EXPORT void ShutDownNetworkService();
 
+// `on_restart` will be called at the end of every RestartNetworkService().
+CONTENT_EXPORT void OnRestartNetworkServiceForTesting(
+    base::RepeatingClosure on_restart);
+
 #if BUILDFLAG(IS_ANDROID)
 CONTENT_EXPORT network::mojom::EmptyNetworkService*
 GetEmptyNetworkServiceForTesting();

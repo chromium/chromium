@@ -5,7 +5,6 @@
 #ifndef CONTENT_PUBLIC_BROWSER_NETWORK_SERVICE_INSTANCE_H_
 #define CONTENT_PUBLIC_BROWSER_NETWORK_SERVICE_INSTANCE_H_
 
-#include "base/callback_list.h"
 #include "base/functional/callback.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -118,6 +117,10 @@ GetCertVerifierServiceFactoryRemoteForTesting();
 CONTENT_EXPORT void CreateNetworkContextInNetworkService(
     mojo::PendingReceiver<network::mojom::NetworkContext> context,
     network::mojom::NetworkContextParamsPtr params);
+
+// Shuts down the in-process network service or disconnects from the out-of-
+// process one, allowing it to shut down. Then, restarts it.
+CONTENT_EXPORT void RestartNetworkService();
 
 }  // namespace content
 
