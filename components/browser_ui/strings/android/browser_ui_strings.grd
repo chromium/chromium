@@ -612,12 +612,14 @@
           =1 {1 site blocked}
           other {# sites blocked}}
       </message>
-      <!-- TODO(crbug.com/1446230): Add descriptions and make the strings translateable. -->
-      <message name="IDS_PAGE_INFO_COOKIES_SUBTITLE_ALLOWED" desc="Description test in the Page Info dialog to indicate that third-party cookies are allowed on this site.">
+      <message name="IDS_PAGE_INFO_COOKIES_SUBTITLE_ALLOWED" desc="Description text in the Page Info dialog to indicate that third-party cookies are allowed on this site.">
         Third-party cookies allowed
       </message>
-      <message name="IDS_PAGE_INFO_COOKIES_SUBTITLE_BLOCKED" desc="Description test in the Page Info dialog to indicate that third-party cookies are blocked on this site.">
+      <message name="IDS_PAGE_INFO_COOKIES_SUBTITLE_BLOCKED" desc="Description text in the Page Info dialog to indicate that third-party cookies are blocked on this site.">
         Third-party cookies blocked
+      </message>
+      <message name="IDS_PAGE_INFO_COOKIES_SUBTITLE_BLOCKED_HIGH_CONFIDENCE" desc="Description text in the Page Info dialog to indicate that third-party cookies are blocked on a site that has a high breakage confidence level.">
+        Site not working? Third-party cookies blocked
       </message>
       <message name="IDS_PAGE_INFO_COOKIES_THIRD_PARTY_COOKIES_LABEL" desc="The label used in the Page Info dialog to label a toggle button that when enabled allows third-party cookies and when disabled blocks third-party cookies.">
         Third-party cookies

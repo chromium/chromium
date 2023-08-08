@@ -18,6 +18,7 @@ import org.chromium.components.browser_ui.site_settings.WebsiteAddress;
 import org.chromium.components.browser_ui.site_settings.WebsitePermissionsFetcher;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browsing_data.DeleteBrowsingDataAction;
+import org.chromium.components.content_settings.CookieControlsBreakageConfidenceLevel;
 import org.chromium.components.content_settings.CookieControlsBridge;
 import org.chromium.components.content_settings.CookieControlsEnforcement;
 import org.chromium.components.content_settings.CookieControlsObserver;
@@ -46,6 +47,7 @@ public class PageInfoCookiesController
     private int mStatus;
     private boolean mIsEnforced;
     private long mExpiration;
+    private int mConfidenceLevel;
     private Website mWebsite;
 
     public PageInfoCookiesController(PageInfoMainController mainController, PageInfoRowView rowView,
@@ -65,7 +67,11 @@ public class PageInfoCookiesController
         rowParams.clickCallback = this::launchSubpage;
         mRowView.setParams(rowParams);
         if (PageInfoFeatures.USER_BYPASS_UI.isEnabled()) {
-            updateRowViewSubtitle(CookieControlsStatus.UNINITIALIZED);
+            // Need to get the status and confidence level synchronously since the callbacks are
+            // only invoked when those change.
+            mStatus = mBridge.getCookieControlsStatus();
+            mConfidenceLevel = mBridge.getBreakageConfidenceLevel();
+            updateRowViewSubtitle();
         }
     }
 
@@ -200,7 +206,7 @@ public class PageInfoCookiesController
         mIsEnforced = enforcement != CookieControlsEnforcement.NO_ENFORCEMENT;
         mExpiration = expiration;
 
-        updateRowViewSubtitle(status);
+        updateRowViewSubtitle();
 
         if (mSubPage != null) {
             mSubPage.setCookieStatus(mStatus, mIsEnforced, expiration);
@@ -216,16 +222,27 @@ public class PageInfoCookiesController
         }
     }
 
+    @Override
+    public void onBreakageConfidenceLevelChanged(@CookieControlsBreakageConfidenceLevel int level) {
+        mConfidenceLevel = level;
+        updateRowViewSubtitle();
+    }
+
     private boolean isDeletionDisabled() {
         return WebsitePreferenceBridge.isCookieDeletionDisabled(mMainController.getBrowserContext(), mFullUrl);
     }
 
-    private void updateRowViewSubtitle(int status) {
-        boolean blockingEnabled = status == CookieControlsStatus.ENABLED;
-        // TODO(crbug.com/1446230): Incorporate the breakage confidence level here.
-        mRowView.updateSubtitle(mRowView.getContext().getString(blockingEnabled
-                        ? R.string.page_info_cookies_subtitle_blocked
-                        : R.string.page_info_cookies_subtitle_allowed));
+    private void updateRowViewSubtitle() {
+        boolean blockingEnabled = mStatus == CookieControlsStatus.ENABLED;
+        if (!blockingEnabled) {
+            mRowView.updateSubtitle(
+                    mRowView.getContext().getString(R.string.page_info_cookies_subtitle_allowed));
+            return;
+        }
+        mRowView.updateSubtitle(mRowView.getContext().getString(
+                mConfidenceLevel == CookieControlsBreakageConfidenceLevel.HIGH
+                        ? R.string.page_info_cookies_subtitle_blocked_high_confidence
+                        : R.string.page_info_cookies_subtitle_blocked));
     }
 
     void destroy() {

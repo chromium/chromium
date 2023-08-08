@@ -74,6 +74,22 @@ public class CookieControlsBridge {
         return CookieControlsBridgeJni.get().isCookieControlsEnabled(handle);
     }
 
+    public @CookieControlsStatus int getCookieControlsStatus() {
+        if (mNativeCookieControlsBridge != 0) {
+            return CookieControlsBridgeJni.get().getCookieControlsStatus(
+                    mNativeCookieControlsBridge);
+        }
+        return CookieControlsStatus.UNINITIALIZED;
+    }
+
+    public @CookieControlsBreakageConfidenceLevel int getBreakageConfidenceLevel() {
+        if (mNativeCookieControlsBridge != 0) {
+            return CookieControlsBridgeJni.get().getBreakageConfidenceLevel(
+                    mNativeCookieControlsBridge);
+        }
+        return CookieControlsBreakageConfidenceLevel.UNINITIALIZED;
+    }
+
     @CalledByNative
     private void onCookieBlockingStatusChanged(
             @CookieControlsStatus int status, @CookieControlsEnforcement int enforcement) {
@@ -114,5 +130,7 @@ public class CookieControlsBridge {
         void onUiClosing(long nativeCookieControlsBridge);
         void onEntryPointAnimated(long nativeCookieControlsBridge);
         boolean isCookieControlsEnabled(BrowserContextHandle browserContextHandle);
+        int getCookieControlsStatus(long nativeCookieControlsBridge);
+        int getBreakageConfidenceLevel(long nativeCookieControlsBridge);
     }
 }

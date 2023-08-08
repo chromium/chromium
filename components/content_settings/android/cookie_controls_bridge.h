@@ -49,6 +49,10 @@ class CookieControlsBridge : public OldCookieControlsObserver,
 
   void OnEntryPointAnimated(JNIEnv* env);
 
+  int GetCookieControlsStatus(JNIEnv* env);
+
+  int GetBreakageConfidenceLevel(JNIEnv* env);
+
   // OldCookieControlsObserver:
   void OnStatusChanged(CookieControlsStatus status,
                        CookieControlsEnforcement enforcement,

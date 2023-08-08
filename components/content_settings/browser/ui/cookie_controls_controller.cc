@@ -328,6 +328,23 @@ bool CookieControlsController::HasCookieBlockingChangedForSite() {
   return current_status.status != initial_page_cookie_controls_status_;
 }
 
+CookieControlsBreakageConfidenceLevel
+CookieControlsController::GetBreakageConfidenceLevel() {
+  if (base::FeatureList::IsEnabled(content_settings::features::kUserBypassUI)) {
+    auto status = GetStatus(GetWebContents());
+    int allowed_sites = GetAllowedSitesCount();
+    int blocked_sites = GetBlockedSitesCount();
+    return GetConfidenceLevel(status.status, allowed_sites, blocked_sites);
+  } else {
+    return CookieControlsBreakageConfidenceLevel::kUninitialized;
+  }
+}
+
+CookieControlsStatus CookieControlsController::GetCookieControlsStatus() {
+  auto status = GetStatus(GetWebContents());
+  return status.status;
+}
+
 int CookieControlsController::GetAllowedCookieCount() const {
   auto* pscs = content_settings::PageSpecificContentSettings::GetForPage(
       GetWebContents()->GetPrimaryPage());

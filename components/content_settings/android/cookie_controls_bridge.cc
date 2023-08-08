@@ -153,6 +153,14 @@ void CookieControlsBridge::OnEntryPointAnimated(JNIEnv* env) {
   controller_->OnEntryPointAnimated();
 }
 
+int CookieControlsBridge::GetCookieControlsStatus(JNIEnv* env) {
+  return static_cast<int>(controller_->GetCookieControlsStatus());
+}
+
+int CookieControlsBridge::GetBreakageConfidenceLevel(JNIEnv* env) {
+  return static_cast<int>(controller_->GetBreakageConfidenceLevel());
+}
+
 CookieControlsBridge::~CookieControlsBridge() = default;
 
 void CookieControlsBridge::Destroy(JNIEnv* env,

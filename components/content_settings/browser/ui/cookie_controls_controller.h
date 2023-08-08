@@ -64,6 +64,12 @@ class CookieControlsController
   // the page was loaded.
   bool HasCookieBlockingChangedForSite();
 
+  // Returns the current breakage confidence level.
+  CookieControlsBreakageConfidenceLevel GetBreakageConfidenceLevel();
+
+  // Returns the current cookie controls status.
+  CookieControlsStatus GetCookieControlsStatus();
+
   void AddObserver(OldCookieControlsObserver* obs);
   void RemoveObserver(OldCookieControlsObserver* obs);
 
