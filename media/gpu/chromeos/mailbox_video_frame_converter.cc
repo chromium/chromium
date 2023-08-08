@@ -12,15 +12,66 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/scheduler.h"
 #include "gpu/ipc/service/gpu_channel.h"
 #include "media/base/format_utils.h"
+#include "media/base/media_switches.h"
 #include "media/base/video_util.h"
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
 #include "media/gpu/macros.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 #include "ui/gl/gl_bindings.h"
+
+namespace {
+
+// Based on `buffer_format` support by VideoPixelFormatToGfxBufferFormat.
+viz::SharedImageFormat GetSharedImageFormat(gfx::BufferFormat buffer_format) {
+  viz::SharedImageFormat format;
+  switch (buffer_format) {
+    case gfx::BufferFormat::RGBA_8888:
+      format = viz::SinglePlaneFormat::kRGBA_8888;
+      break;
+    case gfx::BufferFormat::RGBX_8888:
+      format = viz::SinglePlaneFormat::kRGBX_8888;
+      break;
+    case gfx::BufferFormat::BGRA_8888:
+      format = viz::SinglePlaneFormat::kBGRA_8888;
+      break;
+    case gfx::BufferFormat::BGRX_8888:
+      format = viz::SinglePlaneFormat::kBGRX_8888;
+      break;
+    case gfx::BufferFormat::YVU_420:
+      format = viz::MultiPlaneFormat::kYV12;
+      break;
+    case gfx::BufferFormat::YUV_420_BIPLANAR:
+      format = viz::MultiPlaneFormat::kNV12;
+      break;
+    case gfx::BufferFormat::YUVA_420_TRIPLANAR:
+      format = viz::MultiPlaneFormat::kNV12A;
+      break;
+    case gfx::BufferFormat::P010:
+      format = viz::MultiPlaneFormat::kP010;
+      break;
+    default:
+      DLOG(WARNING) << "Unsupported buffer_format: "
+                    << static_cast<int>(buffer_format);
+      NOTREACHED_NORETURN();
+  }
+#if BUILDFLAG(IS_CHROMEOS)
+  // If format is true multiplanar format, we prefer external sampler on
+  // ChromeOS.
+  // TODO(crbug.com/1471111): Add external sampler support for Linux with
+  // Vulkan.
+  if (format.is_multi_plane()) {
+    format.SetPrefersExternalSampler();
+  }
+#endif
+  return format;
+}
+
+}  // namespace
 
 namespace media {
 
@@ -68,6 +119,33 @@ class GpuDelegateImpl : public MailboxVideoFrameConverter::GpuDelegate {
 
     if (!shared_image_stub->CreateSharedImage(
             mailbox, std::move(handle), format, plane, size, color_space,
+            surface_origin, alpha_type, usage, "MailboxVideoFrameConverter")) {
+      return base::NullCallback();
+    }
+
+    return shared_image_stub->GetSharedImageDestructionCallback(mailbox);
+  }
+
+  gpu::SharedImageStub::SharedImageDestructionCallback CreateSharedImage(
+      const gpu::Mailbox& mailbox,
+      gfx::GpuMemoryBufferHandle handle,
+      viz::SharedImageFormat format,
+      const gfx::Size& size,
+      const gfx::ColorSpace& color_space,
+      GrSurfaceOrigin surface_origin,
+      SkAlphaType alpha_type,
+      uint32_t usage) override {
+    DCHECK(gpu_task_runner_->BelongsToCurrentThread());
+
+    if (!gpu_channel_) {
+      return base::NullCallback();
+    }
+
+    gpu::SharedImageStub* shared_image_stub = gpu_channel_->shared_image_stub();
+    DCHECK(shared_image_stub);
+
+    if (!shared_image_stub->CreateSharedImage(
+            mailbox, std::move(handle), format, size, color_space,
             surface_origin, alpha_type, usage, "MailboxVideoFrameConverter")) {
       return base::NullCallback();
     }
@@ -351,6 +429,15 @@ void MailboxVideoFrameConverter::WrapMailboxAndVideoFrameAndOutput(
   mailbox_frame->set_hdr_metadata(frame->hdr_metadata());
   mailbox_frame->set_metadata(frame->metadata());
   mailbox_frame->set_ycbcr_info(frame->ycbcr_info());
+  if (IsMultiPlaneFormatForHardwareVideoEnabled()) {
+    auto si_format = GetSharedImageFormat(*buffer_format);
+    mailbox_frame->set_shared_image_format_type(
+        media::SharedImageFormatType::kSharedImageFormat);
+    if (si_format.PrefersExternalSampler()) {
+      mailbox_frame->set_shared_image_format_type(
+          media::SharedImageFormatType::kSharedImageFormatExternalSampler);
+    }
+  }
   mailbox_frame->metadata().read_lock_fences_enabled = true;
   mailbox_frame->metadata().is_webgpu_compatible =
       enable_unsafe_webgpu_ && frame->metadata().is_webgpu_compatible;
@@ -466,11 +553,19 @@ bool MailboxVideoFrameConverter::GenerateSharedImageOnGPUThread(
   if (enable_unsafe_webgpu_ && video_frame->metadata().is_webgpu_compatible)
     shared_image_usage |= gpu::SHARED_IMAGE_USAGE_WEBGPU;
 
-  gpu::SharedImageStub::SharedImageDestructionCallback destroy_shared_image_cb =
-      gpu_delegate_->CreateSharedImage(
-          mailbox, std::move(gpu_memory_buffer_handle), *buffer_format,
-          gfx::BufferPlane::DEFAULT, shared_image_size, src_color_space,
-          kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, shared_image_usage);
+  gpu::SharedImageStub::SharedImageDestructionCallback destroy_shared_image_cb;
+  if (IsMultiPlaneFormatForHardwareVideoEnabled()) {
+    destroy_shared_image_cb = gpu_delegate_->CreateSharedImage(
+        mailbox, std::move(gpu_memory_buffer_handle),
+        GetSharedImageFormat(*buffer_format), shared_image_size,
+        src_color_space, kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
+        shared_image_usage);
+  } else {
+    destroy_shared_image_cb = gpu_delegate_->CreateSharedImage(
+        mailbox, std::move(gpu_memory_buffer_handle), *buffer_format,
+        gfx::BufferPlane::DEFAULT, shared_image_size, src_color_space,
+        kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, shared_image_usage);
+  }
   if (destroy_shared_image_cb.is_null()) {
     OnError(FROM_HERE, "Failed to create shared image.");
     return false;

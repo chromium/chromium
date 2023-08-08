@@ -11,6 +11,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "gpu/command_buffer/common/sync_token.h"
+#include "media/base/media_switches.h"
 #include "media/base/simple_sync_token_client.h"
 #include "media/video/fake_gpu_memory_buffer.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -43,6 +44,16 @@ class MockGpuDelegate : public MailboxVideoFrameConverter::GpuDelegate {
                    gfx::GpuMemoryBufferHandle handle,
                    gfx::BufferFormat format,
                    gfx::BufferPlane plane,
+                   const gfx::Size& size,
+                   const gfx::ColorSpace& color_space,
+                   GrSurfaceOrigin surface_origin,
+                   SkAlphaType alpha_type,
+                   uint32_t usage));
+  MOCK_METHOD8(CreateSharedImage,
+               gpu::SharedImageStub::SharedImageDestructionCallback(
+                   const gpu::Mailbox& mailbox,
+                   gfx::GpuMemoryBufferHandle handle,
+                   viz::SharedImageFormat format,
                    const gfx::Size& size,
                    const gfx::ColorSpace& color_space,
                    GrSurfaceOrigin surface_origin,
@@ -209,16 +220,31 @@ TEST_F(MailboxVideoFrameConverterWithUnwrappedFramesTest,
     {
       InSequence sequence;
       EXPECT_CALL(*mock_gpu_delegate_, Initialize()).WillOnce(Return(true));
-      EXPECT_CALL(
-          *mock_gpu_delegate_,
-          CreateSharedImage(
-              /*mailbox=*/_, /*handle=*/_, kBufferFormat,
-              gfx::BufferPlane::DEFAULT,
-              /*size=*/kVisibleRect.size(), /*color_space=*/_,
-              kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, /*usage=*/_))
-          .WillOnce(
-              DoAll(SaveArg<0>(&mailboxes_seen_by_gpu_delegate[i]),
-                    Return(ByMove(mock_destroy_shared_image_cbs_[i]->Get()))));
+      if (IsMultiPlaneFormatForHardwareVideoEnabled()) {
+        viz::SharedImageFormat shared_image_format =
+            viz::MultiPlaneFormat::kNV12;
+        shared_image_format.SetPrefersExternalSampler();
+        EXPECT_CALL(
+            *mock_gpu_delegate_,
+            CreateSharedImage(
+                /*mailbox=*/_, /*handle=*/_, shared_image_format,
+                /*size=*/kVisibleRect.size(), /*color_space=*/_,
+                kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, /*usage=*/_))
+            .WillOnce(DoAll(
+                SaveArg<0>(&mailboxes_seen_by_gpu_delegate[i]),
+                Return(ByMove(mock_destroy_shared_image_cbs_[i]->Get()))));
+      } else {
+        EXPECT_CALL(
+            *mock_gpu_delegate_,
+            CreateSharedImage(
+                /*mailbox=*/_, /*handle=*/_, kBufferFormat,
+                gfx::BufferPlane::DEFAULT,
+                /*size=*/kVisibleRect.size(), /*color_space=*/_,
+                kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, /*usage=*/_))
+            .WillOnce(DoAll(
+                SaveArg<0>(&mailboxes_seen_by_gpu_delegate[i]),
+                Return(ByMove(mock_destroy_shared_image_cbs_[i]->Get()))));
+      }
       EXPECT_CALL(mock_output_cb_, Run(_))
           .WillOnce(SaveArg<0>(&converted_frames[i]));
     }

@@ -64,6 +64,15 @@ class MEDIA_GPU_EXPORT MailboxVideoFrameConverter {
                       GrSurfaceOrigin surface_origin,
                       SkAlphaType alpha_type,
                       uint32_t usage) = 0;
+    virtual gpu::SharedImageStub::SharedImageDestructionCallback
+    CreateSharedImage(const gpu::Mailbox& mailbox,
+                      gfx::GpuMemoryBufferHandle handle,
+                      viz::SharedImageFormat format,
+                      const gfx::Size& size,
+                      const gfx::ColorSpace& color_space,
+                      GrSurfaceOrigin surface_origin,
+                      SkAlphaType alpha_type,
+                      uint32_t usage) = 0;
     virtual bool UpdateSharedImage(const gpu::Mailbox& mailbox,
                                    gfx::GpuFenceHandle in_fence_handle) = 0;
     virtual bool WaitOnSyncTokenAndReleaseFrame(
