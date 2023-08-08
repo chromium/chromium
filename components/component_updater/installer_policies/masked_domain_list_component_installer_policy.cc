@@ -4,14 +4,11 @@
 
 #include "components/component_updater/installer_policies/masked_domain_list_component_installer_policy.h"
 
-#include <utility>
-
 #include "base/feature_list.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/task/thread_pool.h"
 #include "base/version.h"
@@ -36,6 +33,9 @@ constexpr uint8_t kMaskedDomainListPublicKeySHA256[32] = {
     0xba, 0x61, 0x1d, 0x2e, 0xe0, 0x0e, 0x26, 0x76, 0x03, 0xf9};
 
 constexpr char kMaskedDomainListManifestName[] = "Masked Domain List";
+
+constexpr char kExperimentalVersionAttributeName[] =
+    "_experimental_mdl_version";
 
 constexpr base::FilePath::CharType kMaskedDomainListRelativeInstallDir[] =
     FILE_PATH_LITERAL("MaskedDomainListPreloaded");
@@ -135,7 +135,12 @@ std::string MaskedDomainListComponentInstallerPolicy::GetName() const {
 
 update_client::InstallerAttributes
 MaskedDomainListComponentInstallerPolicy::GetInstallerAttributes() const {
-  return update_client::InstallerAttributes();
+  return {
+      {
+          kExperimentalVersionAttributeName,
+          network::features::kMaskedDomainListExperimentalVersion.Get(),
+      },
+  };
 }
 
 }  // namespace component_updater

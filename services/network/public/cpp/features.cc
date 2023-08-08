@@ -110,6 +110,10 @@ BASE_FEATURE(kMaskedDomainList,
              "MaskedDomainList",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+const base::FeatureParam<std::string> kMaskedDomainListExperimentalVersion{
+    &kMaskedDomainList, /*name=*/"MaskedDomainListExperimentalVersion",
+    /*default_value=*/""};
+
 // If this feature is enabled, the mDNS responder service responds to queries
 // for TXT records associated with
 // "Generated-Names._mdns_name_generator._udp.local" with a list of generated
