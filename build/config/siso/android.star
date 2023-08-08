@@ -54,6 +54,7 @@ def __step_config(ctx, step_config):
             },
             # TODO(b/284252142): Run turbine actions locally by default because it slows down developer builds.
             "remote": config.get(ctx, "remote_all"),
+            "platform_ref": "large",
             "canonicalize_dir": True,
             "timeout": "2m",
         },
@@ -93,6 +94,7 @@ def __step_config(ctx, step_config):
             "ignore_extra_input_pattern": ".*srcjars.*\\.java",
             "ignore_extra_output_pattern": ".*srcjars.*\\.java",
             "remote": remote_run,
+            "platform_ref": "large",
             "canonicalize_dir": True,
             "timeout": "2m",
         },
@@ -117,6 +119,7 @@ def __step_config(ctx, step_config):
             "ignore_extra_output_pattern": ".*\\.dex",
             # TODO(b/284252142): Run dex actions locally by default because it slows down developer builds.
             "remote": config.get(ctx, "remote_all"),
+            "platform_ref": "large",
             "canonicalize_dir": True,
             "timeout": "2m",
         },
