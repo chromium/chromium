@@ -185,14 +185,23 @@ void AnchorElementObserverForServiceWorker::SendPendingWarmUpRequests(
 
   const uint32_t kMaxBatchSize =
       features::kSpeculativeServiceWorkerWarmUpBatchSize.Get();
+  // TODO(crbug.com/1431792): Move `kFifo` to the caller.
+  const bool kFifo =
+      features::kSpeculativeServiceWorkerWarmUpOnInsertedIntoDom.Get();
 
   const KURL& document_url = GetDocument().Url();
   HashSet<KURL> url_set;
   Vector<KURL> urls;
   urls.reserve(std::min(pending_warm_up_links_.size(), kMaxBatchSize));
   while (!pending_warm_up_links_.empty()) {
-    KURL url = pending_warm_up_links_.back()->Url();
-    pending_warm_up_links_.pop_back();
+    KURL url;
+    if (kFifo) {
+      url = pending_warm_up_links_.front()->Url();
+      pending_warm_up_links_.pop_front();
+    } else {
+      url = pending_warm_up_links_.back()->Url();
+      pending_warm_up_links_.pop_back();
+    }
 
     if (!url.IsValid() || !url.ProtocolIsInHTTPFamily() ||
         EqualIgnoringFragmentIdentifier(document_url, url)) {
@@ -202,6 +211,7 @@ void AnchorElementObserverForServiceWorker::SendPendingWarmUpRequests(
     url.RemoveFragmentIdentifier();
     url.SetUser(String());
     url.SetPass(String());
+    url.SetQuery(String());
 
     if (url_set.Contains(url)) {
       continue;
@@ -212,7 +222,9 @@ void AnchorElementObserverForServiceWorker::SendPendingWarmUpRequests(
       break;
     }
   }
-  urls.Reverse();
+  if (!kFifo) {
+    urls.Reverse();
+  }
   local_frame->MaybeStartOutermostMainFrameNavigation(std::move(urls));
 
   // Send remaining requests later.

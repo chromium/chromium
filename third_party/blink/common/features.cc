@@ -1700,6 +1700,10 @@ const base::FeatureParam<int>
 const base::FeatureParam<bool> kSpeculativeServiceWorkerWarmUpOnVisible{
     &kSpeculativeServiceWorkerWarmUp, "sw_warm_up_on_visible", true};
 
+// Warms up service workers when the anchor is inserted into DOM.
+const base::FeatureParam<bool> kSpeculativeServiceWorkerWarmUpOnInsertedIntoDom{
+    &kSpeculativeServiceWorkerWarmUp, "sw_warm_up_on_inserted_into_dom", false};
+
 // Warms up service workers when a pointerover event is triggered on an anchor.
 const base::FeatureParam<bool> kSpeculativeServiceWorkerWarmUpOnPointerover{
     &kSpeculativeServiceWorkerWarmUp, "sw_warm_up_on_pointerover", true};

@@ -677,11 +677,15 @@ Node::InsertionNotificationRequest HTMLAnchorElement::InsertedInto(
   }
 
   if (isConnected() && IsLink() &&
-      base::FeatureList::IsEnabled(features::kSpeculativeServiceWorkerWarmUp) &&
-      features::kSpeculativeServiceWorkerWarmUpOnVisible.Get()) {
+      base::FeatureList::IsEnabled(features::kSpeculativeServiceWorkerWarmUp)) {
     if (auto* observer =
             AnchorElementObserverForServiceWorker::From(top_document)) {
-      observer->ObserveAnchorElementVisibility(*this);
+      if (features::kSpeculativeServiceWorkerWarmUpOnVisible.Get()) {
+        observer->ObserveAnchorElementVisibility(*this);
+      }
+      if (features::kSpeculativeServiceWorkerWarmUpOnInsertedIntoDom.Get()) {
+        observer->MaybeSendNavigationTargetLinks({this});
+      }
     }
   }
 

@@ -5,9 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_ANCHOR_ELEMENT_OBSERVER_FOR_SERVICE_WORKER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_ANCHOR_ELEMENT_OBSERVER_FOR_SERVICE_WORKER_H_
 
-#include "base/time/time.h"
 #include "base/types/pass_key.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_deque.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -59,9 +59,9 @@ class CORE_EXPORT AnchorElementObserverForServiceWorker
   // warm-up requests.
   HeapHashSet<WeakMember<HTMLAnchorElement>> already_handled_links_;
 
-  // The following Links keeps the pending warm-up requests until the document
-  // is loaded to prioritize loading the document.
-  Links pending_warm_up_links_;
+  // The following `pending_warm_up_links_` keeps the pending warm-up requests
+  // until the document is loaded to prioritize loading the document.
+  HeapDeque<Member<HTMLAnchorElement>> pending_warm_up_links_;
 
   // Sent URL count to browser process.
   int total_request_count_ = 0;
