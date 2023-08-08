@@ -844,7 +844,7 @@ DocumentMarkerController::CustomHighlightMarkersNotOverlapping(
       text, DocumentMarker::MarkerTypes(DocumentMarker::kCustomHighlight));
   DocumentMarkerVector result{};
   using NameToCustomHighlightMarkerMap =
-      HashMap<String, Member<CustomHighlightMarker>>;
+      HeapHashMap<String, Member<CustomHighlightMarker>>;
   NameToCustomHighlightMarkerMap name_to_last_custom_highlight_marker_seen;
 
   for (const auto& current_marker : custom_highlight_markers) {
