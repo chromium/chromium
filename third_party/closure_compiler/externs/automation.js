@@ -803,17 +803,6 @@ chrome.automation.CustomAction;
 
 /**
  * @typedef {{
- *   startIndex: number,
- *   endIndex: number,
- *   language: string,
- *   probability: number
- * }}
- * @see https://developer.chrome.com/extensions/automation#type-LanguageSpan
- */
-chrome.automation.LanguageSpan;
-
-/**
- * @typedef {{
  *   startOffset: number,
  *   endOffset: number,
  *   flags: Object
@@ -2557,19 +2546,6 @@ chrome.automation.AutomationNode.prototype.matches = function(params) {};
  * @see https://developer.chrome.com/extensions/automation#method-getNextTextMatch
  */
 chrome.automation.AutomationNode.prototype.getNextTextMatch = function(searchStr, backward) {};
-
-/**
- * Returns the detected languages for the provided string attribute as an array
- * of LanguageSpan objects. There are several guarantees about the format of the
- * LanguageSpan array: 1. Is either empty or contains LanguageSpans that cover
- * all indices in the associated string attribute value. 2. Is sorted by
- * increasing startIndex (those with smaller startIndex appear first). 3.
- * LanguageSpans are non-overlapping and contain exactly one language.
- * @param {string} attribute
- * @return {!Array<!chrome.automation.LanguageSpan>}
- * @see https://developer.chrome.com/extensions/automation#method-languageAnnotationForStringAttribute
- */
-chrome.automation.AutomationNode.prototype.languageAnnotationForStringAttribute = function(attribute) {};
 
 /**
  * Creates a position object backed by Chrome's accessibility position support.

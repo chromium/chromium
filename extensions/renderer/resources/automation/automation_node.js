@@ -545,16 +545,6 @@ const GetTableRowCount = natives.GetTableRowCount;
 const GetDetectedLanguage = natives.GetDetectedLanguage;
 
 /**
- * @param {string} axTreeId The id of the accessibility tree.
- * @param {number} nodeID The id of a node.
- * @param {string} attr The name of the string attribute.
- * @return {!Array<{startIndex: number, endIndex: number, language: string,
- * probability: number}>}
- */
-const GetLanguageAnnotationForStringAttribute =
-    natives.GetLanguageAnnotationForStringAttribute;
-
-/**
  * @param {string} axTreeID The id of the accessibility tree.
  * @param {number} nodeID The id of a node.
  * @return {!Array<number>}
@@ -924,11 +914,6 @@ AutomationNodeImpl.prototype = {
 
   get detectedLanguage() {
     return GetDetectedLanguage(this.treeID, this.id);
-  },
-
-  languageAnnotationForStringAttribute: function(attributeName) {
-    return GetLanguageAnnotationForStringAttribute(this.treeID,
-        this.id, attributeName);
   },
 
   get customActions() {

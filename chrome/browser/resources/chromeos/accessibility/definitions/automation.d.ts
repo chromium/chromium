@@ -645,13 +645,6 @@ declare namespace chrome {
       id: number;
     }
 
-    export interface LanguageSpan {
-      endIndex: number;
-      language: string;
-      probability: number;
-      startIndex: number;
-    }
-
     export interface Marker {
       endOffset: number;
       flags: {[key in MarkerType]: boolean;};
@@ -894,7 +887,6 @@ declare namespace chrome {
       hitTest(x: number, y: number, eventToFire: EventType): void;
       hitTestWithReply(
           x: number, y: number, callback: PerformActionCallbackWithNode): void;
-      languageAnnotationForStringAttribute(attribute: string): LanguageSpan[];
       longClick(): void;
       makeVisible(): void;
       matches(params: FindParams): boolean;
