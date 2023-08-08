@@ -22,13 +22,10 @@
 
 namespace {
 
-constexpr int kDefaultIconSize = 16;
-constexpr int kDefaultIconSizeChromeRefresh = 20;
 constexpr int kMaxBubbleWidth = 1000;
 
 int GetDefaultIconSize() {
-  return features::IsChromeRefresh2023() ? kDefaultIconSizeChromeRefresh
-                                         : kDefaultIconSize;
+  return GetLayoutConstant(PAGE_INFO_ICON_SIZE);
 }
 
 std::unique_ptr<views::View> CreateSeparator() {
