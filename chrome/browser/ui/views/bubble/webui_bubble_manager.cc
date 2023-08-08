@@ -35,13 +35,14 @@ WebUIBubbleManager::~WebUIBubbleManager() {
 }
 
 bool WebUIBubbleManager::ShowBubble(const absl::optional<gfx::Rect>& anchor,
+                                    views::BubbleBorder::Arrow arrow,
                                     ui::ElementIdentifier identifier) {
   if (bubble_view_)
     return false;
 
   cache_timer_->Stop();
 
-  bubble_view_ = CreateWebUIBubbleDialog(anchor);
+  bubble_view_ = CreateWebUIBubbleDialog(anchor, arrow);
 
   bubble_widget_observation_.Observe(bubble_view_->GetWidget());
   // Some bubbles can be triggered when there is no active browser (e.g. emoji

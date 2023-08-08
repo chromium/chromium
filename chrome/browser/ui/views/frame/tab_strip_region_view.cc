@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/views/tab_search_bubble_host.h"
 #include "chrome/browser/ui/views/tabs/new_tab_button.h"
 #include "chrome/browser/ui/views/tabs/tab_drag_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_search_button.h"
@@ -64,22 +65,11 @@ class FrameGrabHandle : public views::View {
 BEGIN_METADATA(FrameGrabHandle, views::View)
 END_METADATA
 
-bool ShouldTabSearchRenderBeforeTabStrip() {
-// Mac should have tabsearch on the right side. Windows >= Win10 has the
-// Tab Search button as a FrameCaptionButton, but it still needs to be on the
-// left if it exists.
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
-  return features::IsChromeRefresh2023();
-#else
-  return false;
-#endif
-}
-
 }  // namespace
 
 TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip)
     : render_tab_search_before_tab_strip_(
-          ShouldTabSearchRenderBeforeTabStrip()),
+          TabSearchBubbleHost::ShouldTabSearchRenderBeforeTabStrip()),
       render_new_tab_button_over_tab_strip_(features::IsChromeRefresh2023()) {
   views::SetCascadingColorProviderColor(
       this, views::kCascadingBackgroundColor,
