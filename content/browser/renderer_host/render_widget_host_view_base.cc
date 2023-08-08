@@ -274,6 +274,14 @@ void RenderWidgetHostViewBase::CopyFromSurface(
   std::move(callback).Run(SkBitmap());
 }
 
+void RenderWidgetHostViewBase::CopyFromExactSurface(
+    const gfx::Rect& src_rect,
+    const gfx::Size& output_size,
+    base::OnceCallback<void(const SkBitmap&)> callback) {
+  NOTIMPLEMENTED_LOG_ONCE();
+  std::move(callback).Run(SkBitmap());
+}
+
 std::unique_ptr<viz::ClientFrameSinkVideoCapturer>
 RenderWidgetHostViewBase::CreateVideoCapturer() {
   std::unique_ptr<viz::ClientFrameSinkVideoCapturer> video_capturer =

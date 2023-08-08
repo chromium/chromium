@@ -119,7 +119,8 @@ const viz::FrameSinkId& DelegatedFrameHostAndroid::GetFrameSinkId() const {
 void DelegatedFrameHostAndroid::CopyFromCompositingSurface(
     const gfx::Rect& src_subrect,
     const gfx::Size& output_size,
-    base::OnceCallback<void(const SkBitmap&)> callback) {
+    base::OnceCallback<void(const SkBitmap&)> callback,
+    bool capture_exact_surface_id) {
   DCHECK(CanCopyFromCompositingSurface());
 
   const viz::SurfaceId surface_id(frame_sink_id_, local_surface_id_);
@@ -162,8 +163,8 @@ void DelegatedFrameHostAndroid::CopyFromCompositingSurface(
         gfx::Vector2d(output_size.width(), output_size.height()));
   }
 
-  // TODO(liuwilliam): Enable the `capture_exact_surface_id`.
-  host_frame_sink_manager_->RequestCopyOfOutput(surface_id, std::move(request));
+  host_frame_sink_manager_->RequestCopyOfOutput(surface_id, std::move(request),
+                                                capture_exact_surface_id);
 }
 
 bool DelegatedFrameHostAndroid::CanCopyFromCompositingSurface() const {

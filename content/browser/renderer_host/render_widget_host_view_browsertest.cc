@@ -54,6 +54,7 @@
 #include "content/test/did_commit_navigation_interceptor.h"
 #include "net/base/filename_util.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/test/embedded_test_server/default_handlers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/page/content_to_visible_time_reporter.h"
@@ -1719,6 +1720,16 @@ class RenderWidgetHostViewCopyFromSurfaceBrowserTest
       scoped_feature_list_.InitAndDisableFeature(features::kSlimCompositor);
     }
   }
+
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+    embedded_test_server()->ServeFilesFromSourceDirectory(
+        GetTestDataFilePath());
+    net::test_server::RegisterDefaultHandlers(embedded_test_server());
+    ASSERT_TRUE(embedded_test_server()->Start());
+    RenderWidgetHostViewBrowserTest::SetUpOnMainThread();
+  }
+
   ~RenderWidgetHostViewCopyFromSurfaceBrowserTest() override = default;
 
   bool SetUpSourceSurface(const char* wait_message) override { return false; }
@@ -1729,7 +1740,6 @@ class RenderWidgetHostViewCopyFromSurfaceBrowserTest
 
 IN_PROC_BROWSER_TEST_P(RenderWidgetHostViewCopyFromSurfaceBrowserTest,
                        AsyncCopyFromSurface) {
-  ASSERT_TRUE(embedded_test_server()->Start());
   EXPECT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/empty.html")));
 
@@ -1752,6 +1762,101 @@ IN_PROC_BROWSER_TEST_P(RenderWidgetHostViewCopyFromSurfaceBrowserTest,
       testing::UnorderedElementsAre(std::make_pair(range_for_copy, 1),
                                     std::make_pair(range_for_mainframe, 1)));
   run_loop.Run(FROM_HERE);
+}
+
+namespace {
+
+void AssertSnapshotIsPureWhite(base::RepeatingClosure resume_test,
+                               const SkBitmap& snapshot) {
+  for (int r = 0; r < snapshot.height(); ++r) {
+    for (int c = 0; c < snapshot.width(); ++c) {
+      ASSERT_EQ(snapshot.getColor(c, r), SK_ColorWHITE);
+    }
+  }
+  std::move(resume_test).Run();
+}
+
+void WaitForSurfaceAvailableForCopy(WebContents* web_contents) {
+  {
+    MainThreadFrameObserver obs(
+        web_contents->GetRenderWidgetHostView()->GetRenderWidgetHost());
+    obs.Wait();
+  }
+  // `InsertVisualStateCallback` replies when a CompositorFrame is submitted.
+  // However, we want to wait until the Viz process has received the new
+  // `CompositorFrame` so that the new frame is available for copy. Waiting for
+  // a second frame to be submitted guarantees this, since the second frame
+  // cannot be sent until the first frame was ACKed by Viz.
+  {
+    MainThreadFrameObserver obs(
+        web_contents->GetRenderWidgetHostView()->GetRenderWidgetHost());
+    obs.Wait();
+  }
+  ASSERT_TRUE(
+      web_contents->GetRenderWidgetHostView()->IsSurfaceAvailableForCopy());
+}
+
+class ScopedSnapshotWaiter : public WebContentsObserver {
+ public:
+  ScopedSnapshotWaiter(WebContents* wc, const GURL& destination)
+      : WebContentsObserver(wc), destination_(destination) {}
+
+  ScopedSnapshotWaiter(const ScopedSnapshotWaiter&) = delete;
+  ScopedSnapshotWaiter& operator=(const ScopedSnapshotWaiter&) = delete;
+  ~ScopedSnapshotWaiter() override = default;
+
+  void Wait() { run_loop_.Run(); }
+
+ private:
+  void DidStartNavigation(NavigationHandle* handle) override {
+    if (handle->GetURL() != destination_) {
+      return;
+    }
+
+    auto* request = NavigationRequest::From(handle);
+    request->set_ready_to_commit_callback_for_testing(base::BindOnce(
+        [](RenderWidgetHostView* old_view,
+           base::OnceCallback<bool()> is_same_proc_nav,
+           base::RepeatingClosure resume) {
+          ASSERT_FALSE(std::move(is_same_proc_nav).Run());
+          ASSERT_TRUE(old_view);
+          static_cast<RenderWidgetHostViewBase*>(old_view)
+              ->CopyFromExactSurface(gfx::Rect(), gfx::Size(),
+                                     base::BindOnce(&AssertSnapshotIsPureWhite,
+                                                    std::move(resume)));
+        },
+        request->frame_tree_node()->current_frame_host()->GetView(),
+        // The request must outlive its own callback.
+        base::BindOnce(&NavigationRequest::IsSameProcess,
+                       base::Unretained(request)),
+        run_loop_.QuitClosure()));
+  }
+
+  const GURL destination_;
+  base::RunLoop run_loop_;
+};
+}  // namespace
+
+// A "best effort" browser test: issue an exact `CopyOutputRequest` during a
+// cross-renderer navigation, when the navigation is about to commit in the
+// browser. We should always be able to get a desired snapshot back.
+IN_PROC_BROWSER_TEST_P(RenderWidgetHostViewCopyFromSurfaceBrowserTest,
+                       CopyExactSurfaceDuringCrossRendererNavigations) {
+  ASSERT_TRUE(
+      NavigateToURL(shell()->web_contents(),
+                    embedded_test_server()->GetURL("a.com", "/empty.html")));
+  // Makes sure "empty.html" is in a steady state and ready to be copied.
+  WaitForSurfaceAvailableForCopy(shell()->web_contents());
+
+  const auto cross_renderer_url =
+      embedded_test_server()->GetURL("b.com", "/title1.html");
+  ScopedSnapshotWaiter waiter(shell()->web_contents(), cross_renderer_url);
+  ASSERT_TRUE(NavigateToURL(shell()->web_contents(), cross_renderer_url));
+  // Force the new renderer for "title1.html" to submit a new compositor frame
+  // and ack by viz, such that our `CopyOutputRequest` is fulfilled.
+  WaitForSurfaceAvailableForCopy(shell()->web_contents());
+  // Blocks until we get the desired snapshot of "empty.html".
+  waiter.Wait();
 }
 
 INSTANTIATE_TEST_SUITE_P(EnableDisableSlim,

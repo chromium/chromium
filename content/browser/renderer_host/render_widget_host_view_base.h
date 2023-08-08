@@ -125,6 +125,21 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView {
   display::ScreenInfo GetScreenInfo() const override;
   display::ScreenInfos GetScreenInfos() const override;
 
+  // Identical to `CopyFromSurface()`, except that this method issues the
+  // `viz::CopyOutputRequest` against the exact `viz::Surface` currently
+  // embedded by this View, while `CopyFromSurface()` may return a copy of any
+  // Surface associated with this View, generated after the current Surface. The
+  // caller is responsible for making sure that the target Surface is embedded
+  // and available for copy when this API is called. This Surface can be removed
+  // from the UI after this call.
+  //
+  // TODO(https://crbug.com/1467314): merge this API into `CopyFromSurface()`,
+  // and enable it fully on Android.
+  virtual void CopyFromExactSurface(
+      const gfx::Rect& src_rect,
+      const gfx::Size& output_size,
+      base::OnceCallback<void(const SkBitmap&)> callback);
+
   // For HiDPI capture mode, allow applying a render scale multiplier
   // which modifies the effective device scale factor. Use a scale
   // of 1.0f (exactly) to disable the feature after it was used.

@@ -1617,7 +1617,27 @@ void RenderWidgetHostViewAndroid::CopyFromSurface(
                 "cc", "RenderWidgetHostViewAndroid::CopyFromSurface finished");
             std::move(callback).Run(bitmap);
           },
-          std::move(callback)));
+          std::move(callback)),
+      /*capture_exact_surface_id=*/false);
+}
+
+void RenderWidgetHostViewAndroid::CopyFromExactSurface(
+    const gfx::Rect& src_rect,
+    const gfx::Size& output_size,
+    base::OnceCallback<void(const SkBitmap&)> callback) {
+  CHECK(IsSurfaceAvailableForCopy())
+      << "To copy the exact surface, it must be available for copy (embedded "
+         "via the browser).";
+  CHECK(using_browser_compositor_);
+  CHECK(delegated_frame_host_);
+
+  delegated_frame_host_->CopyFromCompositingSurface(
+      src_rect, output_size,
+      base::BindOnce(
+          [](base::OnceCallback<void(const SkBitmap&)> callback,
+             const SkBitmap& bitmap) { std::move(callback).Run(bitmap); },
+          std::move(callback)),
+      /*capture_exact_surface_id=*/true);
 }
 
 void RenderWidgetHostViewAndroid::EnsureSurfaceSynchronizedForWebTest() {

@@ -106,10 +106,13 @@ class UI_ANDROID_EXPORT DelegatedFrameHostAndroid
   // Should only be called when the host has a content layer. Use this for one-
   // off screen capture, not for video. Always provides ResultFormat::RGBA,
   // ResultDestination::kSystemMemory CopyOutputResults.
+  // `capture_exact_surface_id` indicates if the `CopyOutputRequest` will be
+  // issued against a specific surface or not.
   void CopyFromCompositingSurface(
       const gfx::Rect& src_subrect,
       const gfx::Size& output_size,
-      base::OnceCallback<void(const SkBitmap&)> callback);
+      base::OnceCallback<void(const SkBitmap&)> callback,
+      bool capture_exact_surface_id);
   bool CanCopyFromCompositingSurface() const;
 
   void CompositorFrameSinkChanged();
