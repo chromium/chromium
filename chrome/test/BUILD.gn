@@ -11519,22 +11519,6 @@ if (is_win) {
   }
 }
 
-if (is_win) {
-  test("pixel_browser_tests") {
-    sources = [ "pixel/demo/skia_gold_demo_pixeltest.cc" ]
-    configs += [ "//build/config:precompiled_headers" ]
-    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-    deps = [
-      ":browser_tests_runner",
-      ":test_support",
-      "//ui/base:pixel_diff_test_support",
-    ]
-    if (!is_mac) {
-      data_deps = [ "//chrome:packed_resources" ]
-    }
-  }
-}
-
 # Test binary for the ChromeOS usage time limit processor tests.
 if (is_chromeos_ash) {
   test("usage_time_limit_unittests") {
