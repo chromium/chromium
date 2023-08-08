@@ -34,15 +34,16 @@ PossibleUsernameData::PossibleUsernameData(
     const std::u16string& value,
     base::Time last_change,
     int driver_id,
-    bool autocomplete_attribute_has_username)
+    bool autocomplete_attribute_has_username,
+    bool is_likely_otp)
     : signon_realm(std::move(signon_realm)),
       renderer_id(renderer_id),
       field_name(field_name),
       value(value),
       last_change(last_change),
       driver_id(driver_id),
-      autocomplete_attribute_has_username(autocomplete_attribute_has_username) {
-}
+      autocomplete_attribute_has_username(autocomplete_attribute_has_username),
+      is_likely_otp(is_likely_otp) {}
 PossibleUsernameData::PossibleUsernameData(const PossibleUsernameData&) =
     default;
 PossibleUsernameData::~PossibleUsernameData() = default;

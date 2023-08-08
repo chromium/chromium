@@ -1173,6 +1173,13 @@ bool PasswordFormManager::IsPossibleSingleUsernameAvailable(
     return false;
   }
 
+  if (possible_username->is_likely_otp &&
+      !possible_username->HasSingleUsernameServerPrediction()) {
+    LogUsingPossibleUsername(client_, /*is_used*/ false,
+                             "Possible username field is an OTP field");
+    return false;
+  }
+
   // The username candidate field should not be in |observed_form()|, otherwise
   // that is a task of FormParser to choose it from |observed_form()|.
   if (FormHasPossibleUsername(possible_username)) {

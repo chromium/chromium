@@ -3737,7 +3737,8 @@ TEST_F(PasswordManagerTest, UsernameFirstFlowSavingWithServerPredictions) {
   manager()->OnUserModifiedNonPasswordField(
       &driver_, username_form.form_data.fields[0].unique_renderer_id,
       u"username", /*value=*/username,
-      /*autocomplete_attribute_has_username=*/false);
+      /*autocomplete_attribute_has_username=*/false,
+      /*is_likely_otp=*/false);
   task_environment_.RunUntilIdle();
 
   // Set up a server prediction for the single username field.
@@ -3797,7 +3798,8 @@ TEST_F(PasswordManagerTest, UsernameFirstFlowSavingWithoutServerPredictions) {
   manager()->OnUserModifiedNonPasswordField(
       &driver_, username_form.form_data.fields[0].unique_renderer_id,
       u"username", /*value=*/username,
-      /*autocomplete_attribute_has_username=*/false);
+      /*autocomplete_attribute_has_username=*/false,
+      /*is_likely_otp=*/false);
 
   // Simulate that a form which contains only 1 field which is password is added
   // to the page.
@@ -3845,7 +3847,7 @@ TEST_F(PasswordManagerTest, UsernameFirstFlowWithNavigationInTheMiddle) {
   manager()->OnUserModifiedNonPasswordField(
       &driver_, username_form.form_data.fields[0].unique_renderer_id,
       u"username", /*value=*/u"newusername@gmail.com",
-      /*autocomplete_attribute_has_username=*/false);
+      /*autocomplete_attribute_has_username=*/false, /*is_likely_otp=*/false);
 
   // Setup a server prediction for the single username field to
   // allow using possible username value for pending credentials.

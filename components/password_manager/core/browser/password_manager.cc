@@ -599,12 +599,14 @@ void PasswordManager::OnUserModifiedNonPasswordField(
     autofill::FieldRendererId renderer_id,
     const std::u16string& field_name,
     const std::u16string& value,
-    bool autocomplete_attribute_has_username) {
+    bool autocomplete_attribute_has_username,
+    bool is_likely_otp) {
   // |driver| might be empty on iOS or in tests.
   int driver_id = driver ? driver->GetId() : 0;
   possible_username_.emplace(GetSignonRealm(driver->GetLastCommittedURL()),
                              renderer_id, field_name, value, base::Time::Now(),
-                             driver_id, autocomplete_attribute_has_username);
+                             driver_id, autocomplete_attribute_has_username,
+                             is_likely_otp);
 }
 
 void PasswordManager::OnInformAboutUserInput(PasswordManagerDriver* driver,

@@ -34,6 +34,8 @@
 #include "components/autofill/content/renderer/renderer_save_password_progress_logger.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/autofill_regex_constants.h"
+#include "components/autofill/core/common/autofill_regexes.h"
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
@@ -600,14 +602,14 @@ class PasswordAutofillAgent::DeferringPasswordManagerDriver
   void UserModifiedPasswordField() override {
     DeferMsg(&mojom::PasswordManagerDriver::UserModifiedPasswordField);
   }
-  void UserModifiedNonPasswordField(
-      FieldRendererId renderer_id,
-      const std::u16string& field_name,
-      const std::u16string& value,
-      bool autocomplete_attribute_has_username) override {
+  void UserModifiedNonPasswordField(FieldRendererId renderer_id,
+                                    const std::u16string& field_name,
+                                    const std::u16string& value,
+                                    bool autocomplete_attribute_has_username,
+                                    bool is_likely_otp) override {
     DeferMsg(&mojom::PasswordManagerDriver::UserModifiedNonPasswordField,
              renderer_id, field_name, value,
-             autocomplete_attribute_has_username);
+             autocomplete_attribute_has_username, is_likely_otp);
   }
   void ShowPasswordSuggestions(FieldRendererId element_id,
                                const FormData& form,
@@ -783,14 +785,35 @@ void PasswordAutofillAgent::UpdateStateForTextChange(
       mutable_element.SetAutofillState(WebAutofillState::kNotFilled);
     }
     GetPasswordManagerDriver().UserModifiedPasswordField();
-  } else {
-    static base::NoDestructor<WebString> kAutocomplete("autocomplete");
-    std::string autocomplete_attribute =
-        element.GetAttribute(*kAutocomplete).Utf8();
-    GetPasswordManagerDriver().UserModifiedNonPasswordField(
-        GetFieldRendererId(element), element.NameForAutofill().Utf16(),
-        element_value, base::Contains(autocomplete_attribute, "username"));
+    return;
   }
+
+  // Notify PasswordManager about potential username fields for UFF.
+  // Exclude 1-symbol inputs, as they are unlikely to be usernames and likely
+  // to be characters/digits of OTPs.
+  if (element_value.size() == 1) {
+    return;
+  }
+
+  static base::NoDestructor<WebString> kAutocomplete("autocomplete");
+  std::string autocomplete_attribute =
+      element.GetAttribute(*kAutocomplete).Utf8();
+  static base::NoDestructor<WebString> kName("name");
+  std::u16string name_attribute = element.GetAttribute(*kName).Utf16();
+  std::u16string id_attribute = element.GetIdAttribute().Utf16();
+
+  bool is_likely_otp =
+      autofill::MatchesRegex<autofill::kOneTimePwdRe>(name_attribute) ||
+      autofill::MatchesRegex<autofill::kOneTimePwdRe>(id_attribute) ||
+      base::Contains(autocomplete_attribute,
+                     password_manager::constants::kAutocompleteOneTimePassword);
+
+  GetPasswordManagerDriver().UserModifiedNonPasswordField(
+      GetFieldRendererId(element), element.NameForAutofill().Utf16(),
+      element_value,
+      base::Contains(autocomplete_attribute,
+                     password_manager::constants::kAutocompleteUsername),
+      is_likely_otp);
 }
 
 void PasswordAutofillAgent::TrackAutofilledElement(

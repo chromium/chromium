@@ -33,6 +33,7 @@
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
 #include "components/autofill/core/common/password_form_fill_data.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "components/password_manager/core/common/password_manager_constants.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/safe_browsing/buildflags.h"
 #include "content/public/renderer/render_frame.h"
@@ -4329,6 +4330,71 @@ TEST_F(PasswordAutofillAgentTest, NoXhrSubmissionAfterFillingOnPageload) {
   ExecuteJavaScriptForTests(kJavaScriptRemoveForm);
   base::RunLoop().RunUntilIdle();
   ASSERT_FALSE(fake_driver_.called_dynamic_form_submission());
+}
+
+// Tests that user modifying the text field value results in notifying the
+// browser.
+TEST_F(PasswordAutofillAgentTest, ModifyNonPasswordField) {
+  LoadHTML(kSingleUsernameFormHTML);
+  UpdateOnlyUsernameElement();
+
+  EXPECT_CALL(
+      fake_driver_,
+      UserModifiedNonPasswordField(
+          FieldRendererId(username_element_.UniqueRendererFormControlId()),
+          username_element_.NameForAutofill().Utf16(),
+          std::u16string(kAliceUsername16),
+          /*autocomplete_attribute_has_username=*/true,
+          /*is_likely_otp=*/false));
+  SimulateUsernameTyping(kAliceUsername);
+}
+
+// Tests that inputting 1 symbol value into a non-password field does not notify
+// the browser.
+TEST_F(PasswordAutofillAgentTest, ModifyNonPasswordFieldOneSymbol) {
+  LoadHTML(kSingleUsernameFormHTML);
+  UpdateOnlyUsernameElement();
+
+  EXPECT_CALL(fake_driver_, UserModifiedNonPasswordField).Times(0);
+  SimulateUsernameTyping("1");
+}
+
+// Tests that user modifying a text field with an OTP autocomplete attribute
+// results in notifying the browser correspondingly.
+TEST_F(PasswordAutofillAgentTest, ModifyNonPasswordFieldOTPAutocomplete) {
+  LoadHTML(kSingleUsernameFormHTML);
+  UpdateOnlyUsernameElement();
+  username_element_.SetAttribute(
+      "autocomplete",
+      password_manager::constants::kAutocompleteOneTimePassword);
+
+  EXPECT_CALL(
+      fake_driver_,
+      UserModifiedNonPasswordField(
+          FieldRendererId(username_element_.UniqueRendererFormControlId()),
+          username_element_.NameForAutofill().Utf16(),
+          std::u16string(kAliceUsername16),
+          /*autocomplete_attribute_has_username=*/false,
+          /*is_likely_otp=*/true));
+  SimulateUsernameTyping(kAliceUsername);
+}
+
+// Tests that user modifying a text field with a name suggesting it's an OTP
+// field results in notifying the browser correspondingly.
+TEST_F(PasswordAutofillAgentTest, ModifyNonPasswordFieldOTPName) {
+  LoadHTML(kSingleUsernameFormHTML);
+  UpdateOnlyUsernameElement();
+  username_element_.SetAttribute("name", "test-one-time-pass");
+
+  EXPECT_CALL(
+      fake_driver_,
+      UserModifiedNonPasswordField(
+          FieldRendererId(username_element_.UniqueRendererFormControlId()),
+          username_element_.NameForAutofill().Utf16(),
+          std::u16string(kAliceUsername16),
+          /*autocomplete_attribute_has_username=*/true,
+          /*is_likely_otp=*/true));
+  SimulateUsernameTyping(kAliceUsername);
 }
 
 #if BUILDFLAG(IS_ANDROID)

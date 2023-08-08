@@ -28,7 +28,8 @@ struct PossibleUsernameData {
                        const std::u16string& value,
                        base::Time last_change,
                        int driver_id,
-                       bool autocomplete_attribute_has_username);
+                       bool autocomplete_attribute_has_username,
+                       bool is_likely_otp);
   PossibleUsernameData(const PossibleUsernameData&);
   ~PossibleUsernameData();
 
@@ -49,6 +50,10 @@ struct PossibleUsernameData {
   // Whether the autocomplete attribute is present and equals to
   // username.
   bool autocomplete_attribute_has_username;
+
+  // Whether the field is likely to be an OTP field, based on its HTML
+  // attributes.
+  bool is_likely_otp;
 
   // Predictions for the form which contains a field with |renderer_id|.
   absl::optional<FormPredictions> form_predictions;

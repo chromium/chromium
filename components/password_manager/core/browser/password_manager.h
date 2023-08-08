@@ -147,7 +147,8 @@ class PasswordManager : public PasswordManagerInterface {
                                       autofill::FieldRendererId renderer_id,
                                       const std::u16string& field_name,
                                       const std::u16string& value,
-                                      bool autocomplete_attribute_has_username);
+                                      bool autocomplete_attribute_has_username,
+                                      bool is_likely_otp);
 
   // Handles user input and decides whether to show manual fallback for password
   // saving, i.e. the omnibox icon with the anchored hidden prompt.
