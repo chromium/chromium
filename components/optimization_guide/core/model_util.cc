@@ -115,6 +115,8 @@ std::string GetStringNameForOptimizationTarget(
       return "SegmentationIosModuleRanker";
     case proto::OPTIMIZATION_TARGET_SEGMENTATION_DESKTOP_NTP_MODULE:
       return "SegmentationDesktopNtpModule";
+    case proto::OPTIMIZATION_TARGET_PRELOADING_HEURISTICS:
+      return "PreloadingHeuristics";
       // Whenever a new value is added, make sure to add it to the OptTarget
       // variant list in
       // //tools/metrics/histograms/metadata/optimization/histograms.xml.
