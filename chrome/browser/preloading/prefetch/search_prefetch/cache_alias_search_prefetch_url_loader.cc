@@ -37,17 +37,12 @@ CacheAliasSearchPrefetchURLLoader::CacheAliasSearchPrefetchURLLoader(
 CacheAliasSearchPrefetchURLLoader::~CacheAliasSearchPrefetchURLLoader() =
     default;
 
-// static
 SearchPrefetchURLLoader::RequestHandler
-CacheAliasSearchPrefetchURLLoader::GetServingResponseHandlerFromLoader(
-    std::unique_ptr<CacheAliasSearchPrefetchURLLoader> loader) {
-  DCHECK(loader);
-  loader->RecordInterceptionTime();
-  base::WeakPtr<CacheAliasSearchPrefetchURLLoader> weak_ptr_loader =
-      loader->weak_factory_.GetWeakPtr();
+CacheAliasSearchPrefetchURLLoader::ServingResponseHandlerImpl(
+    std::unique_ptr<SearchPrefetchURLLoader> loader) {
   return base::BindOnce(
       &CacheAliasSearchPrefetchURLLoader::SetUpForwardingClient,
-      std::move(weak_ptr_loader), std::move(loader));
+      weak_factory_.GetWeakPtr(), std::move(loader));
 }
 
 void CacheAliasSearchPrefetchURLLoader::SetUpForwardingClient(

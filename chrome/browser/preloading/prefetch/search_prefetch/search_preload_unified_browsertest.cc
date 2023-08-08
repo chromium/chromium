@@ -1891,19 +1891,11 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedFallbackBrowserTest,
   prerender_observer.WaitForDestroyed();
   WaitUntilStatusChangesTo(GetCanonicalSearchURL(expected_prefetch_url),
                            {SearchPrefetchStatus::kRequestFailed});
-  while (true) {
-    int num_count = histogram_tester.GetBucketCount(
-        "Omnibox.SearchPreload.ResponseDataReaderFinalStatus.Prerender",
-        StreamingSearchPrefetchURLLoader::ResponseReader::
-            ResponseDataReaderStatus::kNetworkError);
-
-    if (num_count) {
-      EXPECT_EQ(num_count, 1);
-      break;
-    }
-    base::RunLoop run_loop;
-    run_loop.RunUntilIdle();
-  }
+  histogram_tester.ExpectUniqueSample(
+      "Omnibox.SearchPreload.ResponseDataReaderFinalStatus.Prerender",
+      StreamingSearchPrefetchURLLoader::ResponseReader::
+          ResponseDataReaderStatus::kNetworkError,
+      1);
 }
 
 // Tests that if prerender is canceled by itself before the loader receives
