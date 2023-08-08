@@ -38,6 +38,7 @@
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -74,6 +75,7 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
 #include "ash/constants/notifier_catalogs.h"
+#include "chrome/browser/apps/app_service/policy_util.h"
 #include "chrome/browser/ash/file_manager/file_tasks.h"
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/startup/browser_params_proxy.h"
@@ -788,10 +790,22 @@ bool DownloadItemNotification::IsGalleryAppPdfEditNotificationEligible() const {
   if (!download_commands.IsDownloadPdf())
     return false;
 
+  auto* prefs = profile_->GetPrefs();
+  if (auto* policy_default_handler =
+          prefs->GetDict(prefs::kDefaultHandlersForFileExtensions)
+              .FindString(".pdf")) {
+    std::vector<std::string> app_ids =
+        apps_util::GetAppIdsFromPolicyId(profile_, *policy_default_handler);
+    // Sometimes the default handler policy might be misconfigured and not match
+    // any real apps; ignore it in this case.
+    if (!app_ids.empty()) {
+      return base::Contains(app_ids, web_app::kMediaAppId);
+    }
+  }
+
   file_manager::file_tasks::TaskDescriptor task_descriptor;
   if (!file_manager::file_tasks::GetDefaultTaskFromPrefs(
-          *(profile_->GetPrefs()), "application/pdf", ".pdf",
-          &task_descriptor)) {
+          *prefs, "application/pdf", ".pdf", &task_descriptor)) {
     // GetDefaultTaskFromPrefs returns false if no default app is specified. If
     // no default app is specified, a pdf will be opened with Gallery app.
     return true;

@@ -45,7 +45,10 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/common/pref_names.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #endif
 
@@ -170,6 +173,22 @@ class DownloadItemNotificationTest : public testing::Test {
   std::u16string GetCommandLabel(DownloadCommands::Command command) const {
     return download_item_notification_->GetCommandLabel(command);
   }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  void InstallChromeApp(const std::string& app_id) {
+    std::vector<apps::AppPtr> apps;
+    apps::AppPtr app =
+        std::make_unique<apps::App>(apps::AppType::kChromeApp, app_id);
+    app->readiness = apps::Readiness::kReady;
+    app->policy_ids = {app_id};
+    apps.push_back(std::move(app));
+
+    apps::AppServiceProxyFactory::GetForProfile(profile_)
+        ->AppRegistryCache()
+        .OnApps(std::move(apps), apps::AppType::kChromeApp,
+                /*should_notify_initialized=*/false);
+  }
+#endif
 
   base::test::ScopedFeatureList scoped_feature_list_;
   content::BrowserTaskEnvironment task_environment_;
@@ -460,4 +479,36 @@ TEST_F(DownloadItemNotificationTest,
   EXPECT_FALSE(base::Contains(*actions, DownloadCommands::PLATFORM_OPEN));
 }
 #endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Test that PLATFORM_OPEN is not added if a policy-set default app for pdf file
+// is not the Gallery app.
+TEST_F(DownloadItemNotificationTest,
+       GalleryAppPdfEditNotificationPolicyDefaultNonGallery) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      ash::features::kGalleryAppPdfEditNotification,
+      {{kGalleryAppPdfEditNotificationTextParamName,
+        kGalleryAppPdfEditNotificationTextParamValue}});
+
+  constexpr char kChromeAppId[] = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+
+  InstallChromeApp(kChromeAppId);
+
+  profile_->GetTestingPrefService()->SetDict(
+      prefs::kDefaultHandlersForFileExtensions,
+      base::Value::Dict().Set(".pdf", kChromeAppId));
+
+  ON_CALL(*download_item_, GetState)
+      .WillByDefault(Return(download::DownloadItem::COMPLETE));
+  ON_CALL(*download_item_, IsDone).WillByDefault(Return(true));
+  ON_CALL(*download_item_, GetTargetFilePath)
+      .WillByDefault(testing::ReturnRef(kTestPdfFilePath));
+
+  CreateDownloadItemNotification();
+  auto actions = GetExtraActions();
+  EXPECT_FALSE(base::Contains(*actions, DownloadCommands::PLATFORM_OPEN));
+}
+#endif
+
 }  // namespace test
