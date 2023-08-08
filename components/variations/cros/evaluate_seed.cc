@@ -10,9 +10,9 @@
 #include "base/logging.h"
 #include "base/system/sys_info.h"
 #include "build/branding_buildflags.h"
+#include "chromeos/ash/components/dbus/featured/featured.pb.h"
 #include "chromeos/crosapi/cpp/channel_to_enum.h"
 #include "chromeos/crosapi/cpp/crosapi_constants.h"
-#include "components/variations/cros/featured.pb.h"
 #include "components/variations/proto/study.pb.h"
 #include "components/variations/service/variations_field_trial_creator.h"
 

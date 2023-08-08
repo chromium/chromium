@@ -8,8 +8,8 @@
 #include "base/test/scoped_chromeos_version_info.h"
 #include "build/branding_buildflags.h"
 #include "build/config/chromebox_for_meetings/buildflags.h"
+#include "chromeos/ash/components/dbus/featured/featured.pb.h"
 #include "components/variations/client_filterable_state.h"
-#include "components/variations/cros/featured.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

@@ -11,8 +11,8 @@
 #include <stdio.h>
 
 #include "base/command_line.h"
+#include "chromeos/ash/components/dbus/featured/featured.pb.h"
 #include "components/variations/client_filterable_state.h"
-#include "components/variations/cros/featured.pb.h"
 #include "components/variations/service/variations_service_client.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

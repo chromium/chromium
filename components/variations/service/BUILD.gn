@@ -79,7 +79,7 @@ static_library("service") {
   if (is_chromeos_ash) {
     deps += [
       "//chromeos/ash/components/dbus/featured",
-      "//components/variations/cros:proto",
+      "//chromeos/ash/components/dbus/featured:proto",
     ]
   }
 }
@@ -121,7 +121,7 @@ source_set("unit_tests") {
   if (is_chromeos_ash) {
     deps += [
       "//chromeos/ash/components/dbus/featured",
-      "//components/variations/cros:proto",
+      "//chromeos/ash/components/dbus/featured:proto",
     ]
   }
 }

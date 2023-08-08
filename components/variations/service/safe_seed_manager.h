@@ -16,7 +16,7 @@
 #include "components/variations/service/safe_seed_manager_interface.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "components/variations/cros/featured.pb.h"
+#include "chromeos/ash/components/dbus/featured/featured.pb.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 class PrefRegistrySimple;

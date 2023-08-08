@@ -23,9 +23,9 @@ source_set("evaluate_seed_lib") {
     "evaluate_seed.h",
   ]
   deps = [
-    ":proto",
     "//base",
     "//build:branding_buildflags",
+    "//chromeos/ash/components/dbus/featured:proto",
     "//chromeos/crosapi/cpp",
     "//chromeos/crosapi/cpp:crosapi_constants",
     "//components/variations",
@@ -45,11 +45,11 @@ source_set("unit_tests") {
   ]
   deps = [
     ":evaluate_seed_lib",
-    ":proto",
     "//base",
     "//base/test:test_support",
     "//build:branding_buildflags",
     "//build/config/chromebox_for_meetings:buildflags",
+    "//chromeos/ash/components/dbus/featured:proto",
     "//components/test:test_support",
     "//components/variations",
     "//components/variations/service:service",
@@ -64,10 +64,4 @@ test("variations_cros_unittests") {
     ":unit_tests",
     "//components/test:test_support",
   ]
-}
-
-proto_library("proto") {
-  sources = [ "//third_party/cros_system_api/dbus/featured/featured.proto" ]
-
-  proto_out_dir = "components/variations/cros"
 }

@@ -24,7 +24,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/ash/components/dbus/featured/fake_featured_client.h"
-#include "components/variations/cros/featured.pb.h"
+#include "chromeos/ash/components/dbus/featured/featured.pb.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace variations {
