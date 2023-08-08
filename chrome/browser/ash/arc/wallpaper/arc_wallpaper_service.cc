@@ -160,8 +160,7 @@ void ArcWallpaperService::SetDefaultWallpaper() {
 
 void ArcWallpaperService::GetWallpaper(GetWallpaperCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  gfx::ImageSkia image =
-      WallpaperControllerClientImpl::Get()->GetWallpaperImage();
+  gfx::ImageSkia image = ash::WallpaperController::Get()->GetWallpaperImage();
   if (!image.isNull())
     image.SetReadOnly();
   base::ThreadPool::PostTaskAndReplyWithResult(

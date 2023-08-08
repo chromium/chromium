@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "ash/constants/ash_switches.h"
+#include "ash/public/cpp/wallpaper/wallpaper_controller.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller_observer.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
@@ -17,7 +18,6 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/customization/customization_document.h"
 #include "chrome/browser/ash/customization/customization_wallpaper_downloader.h"
-#include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "content/public/test/browser_test.h"
@@ -122,14 +122,14 @@ bool CreateJPEGImage(int width,
 class TestWallpaperObserver : public WallpaperControllerObserver {
  public:
   TestWallpaperObserver() {
-    WallpaperControllerClientImpl::Get()->AddObserver(this);
+    ash::WallpaperController::Get()->AddObserver(this);
   }
 
   TestWallpaperObserver(const TestWallpaperObserver&) = delete;
   TestWallpaperObserver& operator=(const TestWallpaperObserver&) = delete;
 
   ~TestWallpaperObserver() override {
-    WallpaperControllerClientImpl::Get()->RemoveObserver(this);
+    ash::WallpaperController::Get()->RemoveObserver(this);
   }
 
   // WallpaperControllerObserver:
@@ -239,7 +239,7 @@ IN_PROC_BROWSER_TEST_F(CustomizationWallpaperDownloaderBrowserTest,
                        OEMWallpaperIsPresent) {
   TestWallpaperObserver observer;
   // Show a built-in default wallpaper first.
-  WallpaperControllerClientImpl::Get()->ShowSigninWallpaper();
+  ash::WallpaperController::Get()->ShowSigninWallpaper();
   observer.WaitForWallpaperChanged();
   observer.Reset();
 
@@ -257,8 +257,7 @@ IN_PROC_BROWSER_TEST_F(CustomizationWallpaperDownloaderBrowserTest,
 
   // Verify the customized default wallpaper has replaced the built-in default
   // wallpaper.
-  gfx::ImageSkia image =
-      WallpaperControllerClientImpl::Get()->GetWallpaperImage();
+  gfx::ImageSkia image = ash::WallpaperController::Get()->GetWallpaperImage();
   EXPECT_TRUE(ImageIsNearColor(image, kCustomizedDefaultWallpaperColor));
   EXPECT_EQ(1U, num_attempts());
 }
@@ -267,7 +266,7 @@ IN_PROC_BROWSER_TEST_F(CustomizationWallpaperDownloaderBrowserTest,
                        OEMWallpaperRetryFetch) {
   TestWallpaperObserver observer;
   // Show a built-in default wallpaper.
-  WallpaperControllerClientImpl::Get()->ShowSigninWallpaper();
+  ash::WallpaperController::Get()->ShowSigninWallpaper();
   observer.WaitForWallpaperChanged();
   observer.Reset();
 
@@ -285,8 +284,7 @@ IN_PROC_BROWSER_TEST_F(CustomizationWallpaperDownloaderBrowserTest,
 
   // Verify the customized default wallpaper has replaced the built-in default
   // wallpaper.
-  gfx::ImageSkia image =
-      WallpaperControllerClientImpl::Get()->GetWallpaperImage();
+  gfx::ImageSkia image = ash::WallpaperController::Get()->GetWallpaperImage();
   EXPECT_TRUE(ImageIsNearColor(image, kCustomizedDefaultWallpaperColor));
   EXPECT_EQ(2U, num_attempts());
 }

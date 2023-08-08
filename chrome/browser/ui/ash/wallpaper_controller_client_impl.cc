@@ -260,13 +260,6 @@ WallpaperControllerClientImpl* WallpaperControllerClientImpl::Get() {
   return g_wallpaper_controller_client_instance;
 }
 
-void WallpaperControllerClientImpl::SetCustomizedDefaultWallpaperPaths(
-    const base::FilePath& customized_default_small_path,
-    const base::FilePath& customized_default_large_path) {
-  wallpaper_controller_->SetCustomizedDefaultWallpaperPaths(
-      customized_default_small_path, customized_default_large_path);
-}
-
 void WallpaperControllerClientImpl::SetPolicyWallpaper(
     const AccountId& account_id,
     std::unique_ptr<std::string> data) {
@@ -296,20 +289,6 @@ void WallpaperControllerClientImpl::ShowUserWallpaper(
   }
 }
 
-void WallpaperControllerClientImpl::ShowSigninWallpaper() {
-  wallpaper_controller_->ShowSigninWallpaper();
-}
-
-void WallpaperControllerClientImpl::ShowOverrideWallpaper(
-    const base::FilePath& image_path,
-    bool always_on_top) {
-  wallpaper_controller_->ShowOverrideWallpaper(image_path, always_on_top);
-}
-
-void WallpaperControllerClientImpl::RemoveOverrideWallpaper() {
-  wallpaper_controller_->RemoveOverrideWallpaper();
-}
-
 void WallpaperControllerClientImpl::RemoveUserWallpaper(
     const AccountId& account_id,
     base::OnceClosure on_removed) {
@@ -327,25 +306,6 @@ void WallpaperControllerClientImpl::RemovePolicyWallpaper(
     return;
 
   wallpaper_controller_->RemovePolicyWallpaper(account_id);
-}
-
-void WallpaperControllerClientImpl::AddObserver(
-    ash::WallpaperControllerObserver* observer) {
-  wallpaper_controller_->AddObserver(observer);
-}
-
-void WallpaperControllerClientImpl::RemoveObserver(
-    ash::WallpaperControllerObserver* observer) {
-  wallpaper_controller_->RemoveObserver(observer);
-}
-
-gfx::ImageSkia WallpaperControllerClientImpl::GetWallpaperImage() {
-  return wallpaper_controller_->GetWallpaperImage();
-}
-
-absl::optional<ash::WallpaperInfo>
-WallpaperControllerClientImpl::GetActiveUserWallpaperInfo() {
-  return wallpaper_controller_->GetActiveUserWallpaperInfo();
 }
 
 void WallpaperControllerClientImpl::GetFilesId(
@@ -432,7 +392,7 @@ void WallpaperControllerClientImpl::ShowWallpaperOnLoginScreen() {
   // Show the default signin wallpaper if there's no user to display.
   if ((!ShouldShowUserNamesOnLogin() && !public_session) ||
       !HasNonDeviceLocalAccounts(users)) {
-    ShowSigninWallpaper();
+    wallpaper_controller_->ShowSigninWallpaper();
     return;
   }
 

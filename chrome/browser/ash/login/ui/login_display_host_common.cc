@@ -8,6 +8,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/login_accelerators.h"
+#include "ash/public/cpp/wallpaper/wallpaper_controller.h"
 #include "base/check_deref.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
@@ -47,7 +48,6 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/chrome_device_id_helper.h"
 #include "chrome/browser/ui/ash/auth/cryptohome_pin_engine.h"
-#include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/webui/ash/diagnostics_dialog.h"
 #include "chrome/browser/ui/webui/ash/login/family_link_notice_screen_handler.h"
@@ -435,7 +435,7 @@ void LoginDisplayHostCommon::ShowAllowlistCheckFailedError() {
 
 void LoginDisplayHostCommon::UpdateWallpaper(
     const AccountId& prefilled_account) {
-  auto* wallpaper_controller = WallpaperControllerClientImpl::Get();
+  auto* wallpaper_controller = ash::WallpaperController::Get();
   if (prefilled_account.is_valid()) {
     wallpaper_controller->ShowUserWallpaper(prefilled_account);
     return;

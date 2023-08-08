@@ -369,10 +369,8 @@ void PersonalizationAppWallpaperProviderImpl::OnWallpaperResized() {
   wallpaper_attribution_info_fetcher_.reset();
   attribution_weak_ptr_factory_.InvalidateWeakPtrs();
 
-  auto* client = WallpaperControllerClientImpl::Get();
-
   absl::optional<ash::WallpaperInfo> info =
-      client->GetActiveUserWallpaperInfo();
+      WallpaperController::Get()->GetActiveUserWallpaperInfo();
   if (!info) {
     DVLOG(1) << "No wallpaper info for active user. This should only happen in "
                 "tests.";
@@ -423,7 +421,7 @@ void PersonalizationAppWallpaperProviderImpl::OnWallpaperResized() {
     }
     case ash::WallpaperType::kDailyGooglePhotos:
     case ash::WallpaperType::kOnceGooglePhotos:
-      client->FetchGooglePhotosPhoto(
+      WallpaperControllerClientImpl::Get()->FetchGooglePhotosPhoto(
           GetAccountId(profile_), info->location,
           base::BindOnce(&PersonalizationAppWallpaperProviderImpl::
                              SendGooglePhotosAttribution,
@@ -653,7 +651,7 @@ void PersonalizationAppWallpaperProviderImpl::SelectGooglePhotosAlbum(
     // image.
     const auto& it = album_id_dedup_key_map_.find(album_id);
     absl::optional<ash::WallpaperInfo> info =
-        client->GetActiveUserWallpaperInfo();
+        wallpaper_controller->GetActiveUserWallpaperInfo();
     if (info.has_value() && info->dedup_key.has_value()) {
       force_refresh =
           it == album_id_dedup_key_map_.end() ||
@@ -762,15 +760,16 @@ void PersonalizationAppWallpaperProviderImpl::UpdateDailyRefreshWallpaper(
 
   pending_update_daily_refresh_wallpaper_callback_ = std::move(callback);
 
-  auto* client = WallpaperControllerClientImpl::Get();
+  auto* wallpaper_controller = WallpaperController::Get();
   absl::optional<ash::WallpaperInfo> info =
-      client->GetActiveUserWallpaperInfo();
+      wallpaper_controller->GetActiveUserWallpaperInfo();
   DCHECK(info);
   DCHECK(info->type == WallpaperType::kDaily ||
          info->type == WallpaperType::kDailyGooglePhotos);
+  auto* client = WallpaperControllerClientImpl::Get();
   client->RecordWallpaperSourceUMA(info->type);
 
-  WallpaperController::Get()->UpdateDailyRefreshWallpaper(base::BindOnce(
+  wallpaper_controller->UpdateDailyRefreshWallpaper(base::BindOnce(
       &PersonalizationAppWallpaperProviderImpl::OnDailyRefreshWallpaperUpdated,
       backend_weak_ptr_factory_.GetWeakPtr()));
 }

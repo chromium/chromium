@@ -9,6 +9,7 @@
 
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/locale_update_controller.h"
+#include "ash/public/cpp/wallpaper/wallpaper_controller.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
@@ -42,7 +43,6 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/system_tray_client_impl.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
-#include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
@@ -637,7 +637,7 @@ base::FilePath GetSplashScreenImagePath(base::FilePath localized_image_path,
 }
 
 void DemoSession::ShowSplashScreen(base::FilePath image_path) {
-  WallpaperControllerClientImpl::Get()->ShowOverrideWallpaper(
+  ash::WallpaperController::Get()->ShowOverrideWallpaper(
       image_path, /*always_on_top=*/true);
   remove_splash_screen_fallback_timer_->Start(
       FROM_HERE, kRemoveSplashScreenTimeout,
@@ -664,7 +664,7 @@ void DemoSession::ConfigureAndStartSplashScreen() {
 void DemoSession::RemoveSplashScreen() {
   if (splash_screen_removed_)
     return;
-  WallpaperControllerClientImpl::Get()->RemoveOverrideWallpaper();
+  ash::WallpaperController::Get()->RemoveOverrideWallpaper();
   remove_splash_screen_fallback_timer_.reset();
   app_window_registry_observations_.RemoveAllObservations();
   splash_screen_removed_ = true;
