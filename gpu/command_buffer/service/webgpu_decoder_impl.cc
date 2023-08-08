@@ -369,11 +369,7 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
                           const WGPURequestAdapterOptions* options,
                           WGPURequestAdapterCallback callback,
                           void* userdata);
-#ifdef WGPU_BREAKING_CHANGE_BOOL
   WGPUBool AdapterHasFeatureImpl(WGPUAdapter adapter, WGPUFeatureName feature);
-#else
-  bool AdapterHasFeatureImpl(WGPUAdapter adapter, WGPUFeatureName feature);
-#endif
   size_t AdapterEnumerateFeaturesImpl(WGPUAdapter adapter,
                                       WGPUFeatureName* features);
   void RequestDeviceImpl(WGPUAdapter adapter,
@@ -1221,13 +1217,8 @@ void WebGPUDecoderImpl::RequestAdapterImpl(
            userdata);
 }
 
-#ifdef WGPU_BREAKING_CHANGE_BOOL
 WGPUBool WebGPUDecoderImpl::AdapterHasFeatureImpl(WGPUAdapter adapter,
                                                   WGPUFeatureName feature) {
-#else
-bool WebGPUDecoderImpl::AdapterHasFeatureImpl(WGPUAdapter adapter,
-                                              WGPUFeatureName feature) {
-#endif
   if (!IsFeatureExposed(static_cast<wgpu::FeatureName>(feature))) {
     return false;
   }
