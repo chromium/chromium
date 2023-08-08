@@ -328,15 +328,11 @@ public class PageInfoCookiesPreference extends SiteSettingsPreferenceFragment {
             : "This should only be invoked when UserBypassUI is enabled.";
         // TODO(crbug.com/1446230): Update the strings for when FPS are on.
         if (!mCookieSwitch.isChecked()) {
-            mCookieSwitch.setSummary(mBlockedSites > 0
-                            ? getContext().getResources().getQuantityString(
-                                    R.plurals.page_info_sites_blocked, mBlockedSites, mBlockedSites)
-                            : null);
+            mCookieSwitch.setSummary(getContext().getResources().getQuantityString(
+                    R.plurals.page_info_sites_blocked, mBlockedSites, mBlockedSites));
         } else {
-            mCookieSwitch.setSummary(mAllowedSites > 0
-                            ? getContext().getResources().getQuantityString(
-                                    R.plurals.page_info_sites_allowed, mAllowedSites, mAllowedSites)
-                            : null);
+            mCookieSwitch.setSummary(getContext().getResources().getQuantityString(
+                    R.plurals.page_info_sites_allowed, mAllowedSites, mAllowedSites));
         }
     }
 
