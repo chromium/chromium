@@ -1106,160 +1106,6 @@ bool ShouldSkipFillField(const FormFieldData& field,
   return false;
 }
 
-// The callback type used by |ForEachMatchingFormField()|.
-typedef void (*Callback)(const FormFieldData&,
-                         bool, /* is_initiating_element */
-                         blink::WebFormControlElement*);
-
-// Note that the order of elements in |control_elements| may be changed by this
-// function. Also the returned WebFormControlElements won't appear in DOM
-// traversal order.
-std::vector<WebFormControlElement> ForEachMatchingFormFieldCommon(
-    std::vector<WebFormControlElement>& control_elements,
-    const WebElement& initiating_element,
-    const FormData& data,
-    mojom::AutofillActionPersistence action_persistence,
-    const Callback& callback) {
-  const bool num_elements_matches_num_fields =
-      control_elements.size() == data.fields.size();
-  UMA_HISTOGRAM_BOOLEAN("Autofill.NumElementsMatchesNumFields",
-                        num_elements_matches_num_fields);
-
-  // The intended behaviour is:
-  // * Autofill the currently focused element.
-  // * Send the blur event.
-  // * For each other element, focus -> autofill -> blur.
-  // * Send the focus event for the initially focused element.
-  WebFormControlElement* initially_focused_element = nullptr;
-
-  // This container stores the pairs of autofillable WebFormControlElement* and
-  // the corresponding indexes of |data.fields| that are used to fill this
-  // element.
-  std::vector<std::pair<WebFormControlElement*, size_t>>
-      autofillable_elements_index_pairs;
-
-  std::vector<WebFormControlElement> matching_fields;
-  matching_fields.reserve(control_elements.size());
-
-  // Prepare for binary search.
-  SortByFieldRendererIds(control_elements);
-
-  // If this is a preview filling, prevent already autofilled fields from being
-  // highlighted.
-  if (action_persistence == mojom::AutofillActionPersistence::kPreview &&
-      base::FeatureList::IsEnabled(
-          features::kAutofillHighlightOnlyChangedValuesInPreviewMode)) {
-    for (auto& element : control_elements) {
-      element.SetPreventHighlightingOfAutofilledFields(true);
-    }
-  }
-
-  for (size_t i = 0; i < data.fields.size(); ++i) {
-    auto it = SearchInSortedVector(data.fields[i], control_elements);
-    if (it == control_elements.end())
-      continue;
-
-    WebFormControlElement& element = *it;
-
-    element.SetAutofillSection(
-        WebString::FromUTF8(data.fields[i].section.ToString()));
-
-    // Only autofill empty fields (or those with the field's default value
-    // attribute) and the field that initiated the filling, i.e. the field the
-    // user is currently editing and interacting with.
-    const WebInputElement input_element = element.DynamicTo<WebInputElement>();
-
-    if (ShouldSkipFillField(
-            data.fields[i], element,
-            initiating_element.DynamicTo<WebFormControlElement>())) {
-      continue;
-    }
-
-    // Autofill the initiating element.
-    bool is_initiating_element = (element == initiating_element);
-    if (is_initiating_element) {
-      if (action_persistence == mojom::AutofillActionPersistence::kFill &&
-          element.Focused()) {
-        initially_focused_element = &element;
-      }
-
-      matching_fields.push_back(element);
-      // In preview mode, only fill the field if it changes the fields value.
-      // With this, the WebAutofillState is not changed from kAutofilled to
-      // kPreviewed. This prevents the highlighting to change.
-      if (action_persistence == mojom::AutofillActionPersistence::kFill ||
-          data.fields[i].value != element.Value().Utf16() ||
-          !base::FeatureList::IsEnabled(
-              features::kAutofillHighlightOnlyChangedValuesInPreviewMode)) {
-        callback(data.fields[i], is_initiating_element, &element);
-      }
-      continue;
-    }
-    CHECK(element != initiating_element);
-    // Storing the indexes of non-initiating elements to be autofilled after
-    // triggering the blur event for the initiating element.
-    autofillable_elements_index_pairs.emplace_back(&element, i);
-  }
-
-  // If there is no other field to be autofilled, sending the blur event and
-  // then the focus event for the initiating element does not make sense.
-  if (autofillable_elements_index_pairs.empty())
-    return matching_fields;
-
-  // A blur event is emitted for the focused element if it is the initiating
-  // element before all other elements are autofilled.
-  if (initially_focused_element)
-    initially_focused_element->DispatchBlurEvent();
-
-  // Autofill the non-initiating elements.
-  for (const auto& [filled_element, index] :
-       autofillable_elements_index_pairs) {
-    matching_fields.push_back(*filled_element);
-    callback(data.fields[index], false, filled_element);
-  }
-
-  // A focus event is emitted for the initiating element after autofilling is
-  // completed. It is not intended to work for the preview filling.
-  if (initially_focused_element)
-    initially_focused_element->DispatchFocusEvent();
-
-  return matching_fields;
-}
-
-// For each autofillable field in |data| that matches a field in the |form|,
-// the |callback| is invoked with the corresponding |form| field data.
-std::vector<WebFormControlElement> ForEachMatchingFormField(
-    const WebFormElement& form_element,
-    const WebElement& initiating_element,
-    const FormData& data,
-    mojom::AutofillActionPersistence action_persistence,
-    const Callback& callback) {
-  std::vector<WebFormControlElement> control_elements =
-      ExtractAutofillableElementsInForm(form_element);
-  return ForEachMatchingFormFieldCommon(control_elements, initiating_element,
-                                        data, action_persistence, callback);
-}
-
-// For each autofillable field in |data| that matches a field in the set of
-// unowned autofillable form fields, the |callback| is invoked with the
-// corresponding |data| field.
-std::vector<WebFormControlElement> ForEachMatchingUnownedFormField(
-    const WebElement& initiating_element,
-    const FormData& data,
-    mojom::AutofillActionPersistence action_persistence,
-    const Callback& callback) {
-  if (initiating_element.IsNull())
-    return {};
-
-  std::vector<WebFormControlElement> control_elements =
-      GetUnownedAutofillableFormFieldElements(initiating_element.GetDocument());
-  if (!IsElementInControlElementSet(initiating_element, control_elements))
-    return {};
-
-  return ForEachMatchingFormFieldCommon(control_elements, initiating_element,
-                                        data, action_persistence, callback);
-}
-
 // Sets the |field|'s value to the value in |data|, and specifies the section
 // for filled fields.  Also sets the "autofilled" attribute,
 // causing the background to be blue.
@@ -2515,20 +2361,135 @@ bool FindFormAndFieldForFormControlElement(
 
 std::vector<WebFormControlElement> FillOrPreviewForm(
     const FormData& form,
-    const WebFormControlElement& element,
+    const WebFormControlElement& initiating_element,
     mojom::AutofillActionPersistence action_persistence) {
-  WebFormElement form_element = GetOwningForm(element);
+  DCHECK(!initiating_element.IsNull());
 
-  Callback callback =
+  WebFormElement form_element = GetOwningForm(initiating_element);
+  std::vector<WebFormControlElement> control_elements =
+      form_element.IsNull() ? GetUnownedAutofillableFormFieldElements(
+                                  initiating_element.GetDocument())
+                            : ExtractAutofillableElementsInForm(form_element);
+
+  if (!IsElementInControlElementSet(initiating_element, control_elements)) {
+    return {};
+  }
+  const bool num_elements_matches_num_fields =
+      control_elements.size() == form.fields.size();
+  UMA_HISTOGRAM_BOOLEAN("Autofill.NumElementsMatchesNumFields",
+                        num_elements_matches_num_fields);
+
+  // This is the focused element that led to the filling. It might not exist in
+  // scenarios like refills where no element is focused, but if it is then it
+  // needs special treatment. See intended behavior comment below.
+  WebFormControlElement* initially_focused_element = nullptr;
+
+  // This container stores the pairs of autofillable WebFormControlElement* and
+  // the corresponding indexes of |data.fields| that are used to fill this
+  // element.
+  std::vector<std::pair<WebFormControlElement*, size_t>>
+      autofillable_elements_index_pairs;
+
+  std::vector<WebFormControlElement> matching_fields;
+  matching_fields.reserve(control_elements.size());
+
+  // Prepare for binary search.
+  SortByFieldRendererIds(control_elements);
+
+  // If this is a preview, prevent already autofilled fields from being
+  // highlighted.
+  if (action_persistence == mojom::AutofillActionPersistence::kPreview &&
+      base::FeatureList::IsEnabled(
+          features::kAutofillHighlightOnlyChangedValuesInPreviewMode)) {
+    for (auto& element : control_elements) {
+      element.SetPreventHighlightingOfAutofilledFields(true);
+    }
+  }
+
+  auto fill_or_preview =
       action_persistence == mojom::AutofillActionPersistence::kPreview
           ? &PreviewFormField
           : &FillFormField;
-  if (form_element.IsNull()) {
-    return ForEachMatchingUnownedFormField(element, form, action_persistence,
-                                           callback);
+
+  // The intended behaviour is:
+  // * Autofill the currently focused element.
+  // * Send the blur event.
+  // * For each other element, focus -> autofill -> blur.
+  // * Send the focus event for the initially focused element.
+  for (size_t i = 0; i < form.fields.size(); ++i) {
+    auto it = SearchInSortedVector(form.fields[i], control_elements);
+    if (it == control_elements.end()) {
+      continue;
+    }
+
+    WebFormControlElement& element = *it;
+
+    element.SetAutofillSection(
+        WebString::FromUTF8(form.fields[i].section.ToString()));
+
+    // Only autofill empty fields (or those with the field's default value
+    // attribute) and the field that initiated the filling, i.e. the field the
+    // user is currently editing and interacting with.
+    const WebInputElement input_element = element.DynamicTo<WebInputElement>();
+
+    if (ShouldSkipFillField(
+            form.fields[i], element,
+            initiating_element.DynamicTo<WebFormControlElement>())) {
+      continue;
+    }
+
+    // Autofill the initiating element.
+    bool is_initiating_element = (element == initiating_element);
+    if (is_initiating_element) {
+      if (action_persistence == mojom::AutofillActionPersistence::kFill &&
+          element.Focused()) {
+        initially_focused_element = &element;
+      }
+
+      matching_fields.push_back(element);
+      // In preview mode, only fill the field if it changes the fields value.
+      // With this, the WebAutofillState is not changed from kAutofilled to
+      // kPreviewed. This prevents the highlighting to change.
+      if (action_persistence == mojom::AutofillActionPersistence::kFill ||
+          form.fields[i].value != element.Value().Utf16() ||
+          !base::FeatureList::IsEnabled(
+              features::kAutofillHighlightOnlyChangedValuesInPreviewMode)) {
+        fill_or_preview(form.fields[i], is_initiating_element, &element);
+      }
+      continue;
+    }
+    CHECK(element != initiating_element);
+    // Storing the indexes of non-initiating elements to be autofilled after
+    // triggering the blur event for the initiating element.
+    autofillable_elements_index_pairs.emplace_back(&element, i);
   }
-  return ForEachMatchingFormField(form_element, element, form,
-                                  action_persistence, callback);
+
+  // If there is no other field to be autofilled, sending the blur event and
+  // then the focus event for the initiating element does not make sense.
+  if (autofillable_elements_index_pairs.empty()) {
+    return matching_fields;
+  }
+
+  // A blur event is emitted for the focused element if it is the initiating
+  // element before all other elements are autofilled.
+  if (initially_focused_element) {
+    initially_focused_element->DispatchBlurEvent();
+  }
+
+  // Autofill the non-initiating elements.
+  for (const auto& [filled_element, index] :
+       autofillable_elements_index_pairs) {
+    matching_fields.push_back(*filled_element);
+    fill_or_preview(form.fields[index], false, filled_element);
+  }
+
+  // A focus event is emitted for the initiating element after autofilling is
+  // completed. It is not intended to work for the preview filling.
+  if (initially_focused_element) {
+    initially_focused_element->DispatchFocusEvent();
+  }
+
+  return matching_fields;
 }
 
 void UndoForm(const FormData& form,
