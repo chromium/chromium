@@ -332,9 +332,8 @@ void SearchTabHelper::CloseNTPCustomizeChromeFeaturePromo() {
       features::IsChromeRefresh2023()
           ? feature_engagement::kIPHDesktopCustomizeChromeRefreshFeature
           : feature_engagement::kIPHDesktopCustomizeChromeFeature;
-  if (!base::FeatureList::IsEnabled(customize_chrome_feature) ||
-      web_contents()->GetController().GetVisibleEntry()->GetURL() ==
-          GURL(chrome::kChromeUINewTabPageURL)) {
+  if (web_contents()->GetController().GetVisibleEntry()->GetURL() ==
+      GURL(chrome::kChromeUINewTabPageURL)) {
     return;
   }
   auto* browser_window =

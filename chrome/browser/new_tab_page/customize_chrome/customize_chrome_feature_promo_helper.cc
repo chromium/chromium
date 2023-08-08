@@ -42,18 +42,12 @@ void CustomizeChromeFeaturePromoHelper::MaybeShowCustomizeChromeFeaturePromo(
       features::IsChromeRefresh2023()
           ? feature_engagement::kIPHDesktopCustomizeChromeRefreshFeature
           : feature_engagement::kIPHDesktopCustomizeChromeFeature;
-  if (base::FeatureList::IsEnabled(customize_chrome_feature)) {
-    Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
-    if (!browser) {
-      return;
-    }
-    if (!DefaultSearchProviderIsGoogle(browser->profile())) {
-      return;
-    }
-    auto* browser_window = browser->window();
-    if (browser_window) {
-      browser_window->MaybeShowFeaturePromo(customize_chrome_feature);
-    }
+  Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
+  if (!browser || !DefaultSearchProviderIsGoogle(browser->profile())) {
+    return;
+  }
+  if (auto* const browser_window = browser->window()) {
+    browser_window->MaybeShowFeaturePromo(customize_chrome_feature);
   }
 }
 
@@ -63,12 +57,9 @@ void CustomizeChromeFeaturePromoHelper::CloseCustomizeChromeFeaturePromo(
       features::IsChromeRefresh2023()
           ? feature_engagement::kIPHDesktopCustomizeChromeRefreshFeature
           : feature_engagement::kIPHDesktopCustomizeChromeFeature;
-  if (base::FeatureList::IsEnabled(customize_chrome_feature)) {
-    auto* browser_window =
-        BrowserWindow::FindBrowserWindowWithWebContents(web_contents);
-    if (browser_window) {
-      browser_window->CloseFeaturePromo(customize_chrome_feature);
-    }
+  if (auto* const browser_window =
+          BrowserWindow::FindBrowserWindowWithWebContents(web_contents)) {
+    browser_window->CloseFeaturePromo(customize_chrome_feature);
   }
 }
 
