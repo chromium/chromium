@@ -858,7 +858,7 @@ const char kOmniboxZeroSuggestPrefetchingOnWebDescription[] =
 const char kOnlyAccessClipboardAsyncName[] =
     "Only access the clipboard asynchronously";
 const char kOnlyAccessClipboardAsyncDescription[] =
-    "Only accesses the clipboard asnchronously.";
+    "Only accesses the clipboard asynchronously.";
 
 const char kOptimizationGuideDebugLogsName[] =
     "Enable optimization guide debug logs";
