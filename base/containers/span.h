@@ -248,9 +248,6 @@ class GSL_POINTER span : public internal::ExtentStorage<Extent> {
   using reference = T&;
   using const_reference = const T&;
   using iterator = CheckedContiguousIterator<T>;
-  // TODO(https://crbug.com/828324): Drop the const_iterator typedef once gMock
-  // supports containers without this nested type.
-  using const_iterator = iterator;
   using reverse_iterator = std::reverse_iterator<iterator>;
   static constexpr size_t extent = Extent;
 
