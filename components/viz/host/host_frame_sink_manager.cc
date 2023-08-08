@@ -278,8 +278,10 @@ void HostFrameSinkManager::EvictSurfaces(
 
 void HostFrameSinkManager::RequestCopyOfOutput(
     const SurfaceId& surface_id,
-    std::unique_ptr<CopyOutputRequest> request) {
-  frame_sink_manager_->RequestCopyOfOutput(surface_id, std::move(request));
+    std::unique_ptr<CopyOutputRequest> request,
+    bool capture_exact_surface_id) {
+  frame_sink_manager_->RequestCopyOfOutput(surface_id, std::move(request),
+                                           capture_exact_surface_id);
 }
 
 void HostFrameSinkManager::Throttle(const std::vector<FrameSinkId>& ids,

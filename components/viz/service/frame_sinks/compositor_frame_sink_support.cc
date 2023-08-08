@@ -13,6 +13,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
+#include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/typed_macros.h"
@@ -97,6 +98,15 @@ CompositorFrameSinkSupport::~CompositorFrameSinkSupport() {
   if (last_created_surface_id_.is_valid())
     surface_manager_->MarkSurfaceForDestruction(last_created_surface_id_);
   frame_sink_manager_->UnregisterCompositorFrameSinkSupport(frame_sink_id_);
+  // When we unregister `this` from `frame_sink_manager_` from above,
+  // `FrameSinkManagerImpl::DiscardPendingCopyOfOutputRequests` clears out all
+  // the outstanding requests.
+  // However there are other destruction code paths that don't exercise
+  // `DiscardPendingCopyOfOutputRequests` (e.g, in unittests we might not have a
+  // `RootCompositorFrameSinkImpl`, such that no `ExternalBeginFrameSourceMojo`
+  // is added as an observer of `frame_sink_manager_`). Therefore we explicitly
+  // clear the requests here regardless.
+  ClearAllPendingCopyOutputRequests();
 
   // The display compositor has ownership of shared memory for each
   // SharedBitmapId that has been reported from the client. Since the client is
@@ -377,10 +387,23 @@ CompositorFrameSinkSupport::TakeCopyOutputRequests(
   std::vector<PendingCopyOutputRequest> results;
   for (auto it = copy_output_requests_.begin();
        it != copy_output_requests_.end();) {
+    // Pick up the requests that require an exact `LocalSurfaceId` match.
+    if (it->capture_exact_surface_id) {
+      // `ui::DelegatedFrameHostAndroid` won't send a `CopyOutputRequest`
+      // without a valid `LocalSurfaceId`. This is guaranteed as we can't
+      // serialize/deserialize an empty `LocalSurfaceId`.
+      CHECK(it->local_surface_id.is_valid());
+      if (it->local_surface_id == latest_local_id) {
+        results.push_back(std::move(*it));
+        it = copy_output_requests_.erase(it);
+      } else {
+        ++it;
+      }
+    }
     // Requests with a non-valid local id should be satisfied as soon as
     // possible.
-    if (!it->local_surface_id.is_valid() ||
-        it->local_surface_id <= latest_local_id) {
+    else if (!it->local_surface_id.is_valid() ||  // NOLINT
+             it->local_surface_id <= latest_local_id) {
       results.push_back(std::move(*it));
       it = copy_output_requests_.erase(it);
     } else {
@@ -1367,6 +1390,46 @@ bool CompositorFrameSinkSupport::IsEvicted(
              last_evicted_local_surface_id_.embed_token() &&
          local_surface_id.parent_sequence_number() <=
              last_evicted_local_surface_id_.parent_sequence_number();
+}
+
+void CompositorFrameSinkSupport::ClearAllPendingCopyOutputRequests() {
+  CHECK(surface_manager_);
+  for (auto& request : copy_output_requests_) {
+    // If the frame sink is getting destroyed while there are still
+    // outstanding `CopyOutputRequest`s to capture an associated surface,
+    // transfer these requests to the corresponding `Surface`s.
+    //
+    // Resources reclamation: once frame sink is destroyed, the `Surface`s
+    // won't be able to notify the client code (the renderer's
+    // `cc::LayerTreeHostImpl`) to reclaim the resources. This is fine,
+    // because the destruction of the renderer and its CC (as part of a
+    // cross-RenderFrame navigation) will implicitly reclaim all the
+    // resources. The `Surface` kept alive will still have a reference to
+    // the underlying GPU resources. The GPU resources will finally be
+    // released when the `Surface` is destroyed (in this case, after the
+    // CopyOutputRequest is fulfilled).
+    if (request.capture_exact_surface_id) {
+      const SurfaceId target_id(frame_sink_id_, request.local_surface_id);
+      auto* target_surface = surface_manager_->GetSurfaceForId(target_id);
+      if (target_surface) {
+        target_surface->RequestCopyOfOutput(std::move(request));
+      } else {
+        // We might not have a `Surface` if the renderer is crashed, or too busy
+        // to even submit a CompositorFrame (e.g., low end Android devices). In
+        // either cases we don't want to crash the GPU in production. The
+        // WARNING logs will show up in "chrome://gpu".
+        LOG(WARNING) << "Surface " << target_id
+                     << " is destroyed while there is an outstanding "
+                        "CopyOutputRequest specificc for it.";
+      }
+    } else {
+      // TODO(https://crbug.com/1467314): We should probably transfer all
+      // the requests to their corresponding `Surface`s or `RenderPass`es.
+    }
+  }
+  // Upon destruction, the `PendingOutputRequest` will invoke the callback to
+  // return an empty bitmap, signalling that the request is never satisfied.
+  copy_output_requests_.clear();
 }
 
 SurfaceAnimationManager*

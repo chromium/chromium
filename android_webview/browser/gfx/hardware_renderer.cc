@@ -292,7 +292,8 @@ void HardwareRenderer::OnViz::DrawAndSwapOnViz(
     CopyOutputRequestQueue requests;
     requests.swap(child_frame->copy_requests);
     for (auto& copy_request : requests) {
-      manager->RequestCopyOfOutput(child_id, std::move(copy_request));
+      manager->RequestCopyOfOutput(child_id, std::move(copy_request),
+                                   /*capture_exact_surface_id=*/false);
     }
   }
 

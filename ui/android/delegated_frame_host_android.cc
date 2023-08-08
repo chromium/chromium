@@ -162,6 +162,7 @@ void DelegatedFrameHostAndroid::CopyFromCompositingSurface(
         gfx::Vector2d(output_size.width(), output_size.height()));
   }
 
+  // TODO(liuwilliam): Enable the `capture_exact_surface_id`.
   host_frame_sink_manager_->RequestCopyOfOutput(surface_id, std::move(request));
 }
 

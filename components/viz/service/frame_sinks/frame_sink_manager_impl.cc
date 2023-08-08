@@ -359,15 +359,18 @@ void FrameSinkManagerImpl::EvictSurfaces(
 
 void FrameSinkManagerImpl::RequestCopyOfOutput(
     const SurfaceId& surface_id,
-    std::unique_ptr<CopyOutputRequest> request) {
+    std::unique_ptr<CopyOutputRequest> request,
+    bool capture_exact_surface_id) {
   TRACE_EVENT0("viz", "FrameSinkManagerImpl::RequestCopyOfOutput");
   auto it = support_map_.find(surface_id.frame_sink_id());
   if (it == support_map_.end()) {
     // |request| will send an empty result when it goes out of scope.
     return;
   }
-  it->second->RequestCopyOfOutput(PendingCopyOutputRequest{
-      surface_id.local_surface_id(), SubtreeCaptureId(), std::move(request)});
+
+  it->second->RequestCopyOfOutput({surface_id.local_surface_id(),
+                                   SubtreeCaptureId(), std::move(request),
+                                   capture_exact_surface_id});
 }
 
 void FrameSinkManagerImpl::DestroyFrameSinkBundle(const FrameSinkBundleId& id) {
@@ -690,10 +693,9 @@ void FrameSinkManagerImpl::DiscardPendingCopyOfOutputRequests(
   for (queue.push(root_sink); !queue.empty(); queue.pop()) {
     auto& frame_sink_id = queue.front();
     auto support = support_map_.find(frame_sink_id);
-    // The returned copy requests are destroyed upon going out of scope, which
-    // invokes the pending callbacks.
-    if (support != support_map_.end())
-      support->second->TakeCopyOutputRequests(LocalSurfaceId::MaxSequenceId());
+    if (support != support_map_.end()) {
+      support->second->ClearAllPendingCopyOutputRequests();
+    }
     for (auto child : GetChildrenByParent(frame_sink_id))
       queue.push(child);
   }

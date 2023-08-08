@@ -19,7 +19,8 @@ namespace viz {
 struct VIZ_SERVICE_EXPORT PendingCopyOutputRequest {
   PendingCopyOutputRequest(LocalSurfaceId surface_id,
                            SubtreeCaptureId subtree_id,
-                           std::unique_ptr<CopyOutputRequest> request);
+                           std::unique_ptr<CopyOutputRequest> request,
+                           bool capture_exact_id = false);
   PendingCopyOutputRequest(PendingCopyOutputRequest&&);
   PendingCopyOutputRequest& operator=(PendingCopyOutputRequest&&);
   ~PendingCopyOutputRequest();
@@ -36,6 +37,16 @@ struct VIZ_SERVICE_EXPORT PendingCopyOutputRequest {
 
   // The actual copy-of-output request.
   std::unique_ptr<CopyOutputRequest> copy_output_request;
+
+  // Indicates if this request is used to capture the old page for a navigation.
+  // Such requests should only be picked up by the `Surfaces` with exact
+  // matching `local_surface_id` (as opposed to being picked up by the surfaces
+  // whose `LocalSurfaceId` is >= `local_surface_id`).
+  //
+  // Notice that setting this flag to true does not guarantee the successful
+  // copy. The request issuer is also responsible for making sure the `Surface`s
+  // are preserved in order to be captured.
+  bool capture_exact_surface_id = false;
 };
 
 }  // namespace viz

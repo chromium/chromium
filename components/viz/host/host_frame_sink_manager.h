@@ -195,8 +195,13 @@ class VIZ_HOST_EXPORT HostFrameSinkManager
   // least the given LocalSurfaceId (|surface_id.local_frame_id()|). If the
   // LocalSurfaceId is lower than the given id, then the request is queued up to
   // be executed later.
+  //
+  // When `capture_exact_surface_id` is true, the snapshot will only be
+  // taken for the surface whose ID is an exact match to `surface_id`. This is
+  // useful to take a snapshot of an old `Surface` post-navigation.
   void RequestCopyOfOutput(const SurfaceId& surface_id,
-                           std::unique_ptr<CopyOutputRequest> request);
+                           std::unique_ptr<CopyOutputRequest> request,
+                           bool capture_exact_surface_id = false);
 
   void Throttle(const std::vector<FrameSinkId>& ids, base::TimeDelta interval);
   void StartThrottlingAllFrameSinks(base::TimeDelta interval);

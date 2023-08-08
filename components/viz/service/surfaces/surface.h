@@ -179,6 +179,12 @@ class VIZ_SERVICE_EXPORT Surface final {
   // it's marked as respecting deadlines.
   void ActivatePendingFrameForDeadline();
 
+  // Places the copy-of-output request on the render pass defined by
+  // |PendingCopyOutputRequest::subtree_capture_id| if such a render pass
+  // exists, otherwise the request will be ignored.
+  void RequestCopyOfOutput(
+      PendingCopyOutputRequest pending_copy_output_request);
+
   using CopyRequestsMap =
       std::multimap<CompositorRenderPassId, std::unique_ptr<CopyOutputRequest>>;
 
@@ -343,12 +349,6 @@ class VIZ_SERVICE_EXPORT Surface final {
     // for a callback that will supply presentation feedback to the client.
     bool will_be_notified_of_presentation = false;
   };
-
-  // Places the copy-of-output request on the render pass defined by
-  // |PendingCopyOutputRequest::subtree_capture_id| if such a render pass
-  // exists, otherwise the request will be ignored.
-  void RequestCopyOfOutput(
-      PendingCopyOutputRequest pending_copy_output_request);
 
   // Updates surface references of the surface using the referenced
   // surfaces from the most recent CompositorFrame.

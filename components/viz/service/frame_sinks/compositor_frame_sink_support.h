@@ -239,6 +239,11 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
 
   bool IsEvicted(const LocalSurfaceId& local_surface_id) const;
 
+  // Clears `copy_output_requests_`. Should be called when the client or service
+  // is shutting down. The requests demanding an exact `LocalSurfaceid` match
+  // will be transferred to the corresponding `Surface`s
+  void ClearAllPendingCopyOutputRequests();
+
   SurfaceAnimationManager* GetSurfaceAnimationManagerForTesting();
 
   const RegionCaptureBounds& current_capture_bounds() const {

@@ -15,6 +15,7 @@
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
 #include "components/viz/service/display_embedder/server_shared_bitmap_manager.h"
 #include "components/viz/service/frame_sinks/compositor_frame_sink_support.h"
+#include "components/viz/service/surfaces/surface.h"
 #include "components/viz/service/surfaces/surface_manager.h"
 #include "components/viz/test/begin_frame_source_test.h"
 #include "components/viz/test/compositor_frame_helpers.h"
@@ -733,6 +734,55 @@ TEST_F(FrameSinkManagerTest, SubmitCompositorFrameWithEvictedSurfaceId) {
   EXPECT_NE(surface_id2, GetRootCompositorFrameSinkImpl()->CurrentSurfaceId());
 
   manager_.InvalidateFrameSinkId(kFrameSinkIdRoot);
+}
+
+// Test that `FrameSinkManagerImpl::DiscardPendingCopyOfOutputRequests`
+// relocates the exact `PendingCopyOutputRequest`s to the target surfaces.
+TEST_F(FrameSinkManagerTest,
+       CopyOutputRequestPreservedAfterDiscardPendingCopyOfOutputRequests) {
+  StubBeginFrameSource source;
+  manager_.RegisterBeginFrameSource(&source, kFrameSinkIdA);
+
+  // Create a CompositorFrameSinkImpl.
+  MockCompositorFrameSinkClient compositor_frame_sink_client;
+  mojo::Remote<mojom::CompositorFrameSink> compositor_frame_sink;
+  manager_.CreateCompositorFrameSink(
+      kFrameSinkIdA, /*bundle_id=*/absl::nullopt,
+      compositor_frame_sink.BindNewPipeAndPassReceiver(),
+      compositor_frame_sink_client.BindInterfaceRemote());
+  EXPECT_TRUE(CompositorFrameSinkExists(kFrameSinkIdA));
+
+  ParentLocalSurfaceIdAllocator allocator;
+  allocator.GenerateId();
+  const auto id1 = allocator.GetCurrentLocalSurfaceId();
+  const auto surface_id1 = SurfaceId(kFrameSinkIdA, id1);
+
+  manager_.GetFrameSinkForId(kFrameSinkIdA)
+      ->SubmitCompositorFrame(id1, MakeDefaultCompositorFrame());
+  auto* surface1 = manager_.surface_manager()->GetSurfaceForId(surface_id1);
+  ASSERT_TRUE(surface1);
+
+  auto request = std::make_unique<CopyOutputRequest>(
+      CopyOutputRequest::ResultFormat::RGBA,
+      CopyOutputRequest::ResultDestination::kSystemMemory,
+      base::BindOnce([](std::unique_ptr<CopyOutputResult> result) {}));
+  auto* request_ptr = request.get();
+  manager_.RequestCopyOfOutput(surface_id1, std::move(request),
+                               /*capture_exact_surface_id=*/true);
+
+  manager_.DiscardPendingCopyOfOutputRequests(&source);
+
+  // `request` is emplaced at the end of the root RenderPass.
+  const auto& preserved_request = *(surface1->GetActiveOrInterpolatedFrame()
+                                        .render_pass_list.back()
+                                        ->copy_requests.back());
+  // Expect the identical `CopyOutputRequest`.
+  ASSERT_EQ(&preserved_request, request_ptr);
+
+  // For `manager_.CreateCompositorFrameSink`.
+  manager_.InvalidateFrameSinkId(kFrameSinkIdA);
+  // For `manager_.RegisterBeginFrameSource`.
+  manager_.UnregisterBeginFrameSource(&source);
 }
 
 namespace {
