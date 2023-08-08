@@ -147,6 +147,7 @@ export class SettingsPaymentsSectionElement extends
       showLocalIbanRemoveConfirmationDialog_: Boolean,
       showVirtualCardUnenrollDialog_: Boolean,
       migratableCreditCardsInfo_: String,
+      showBulkRemoveCvcConfirmationDialog_: Boolean,
 
       /**
        * Whether migration local card on settings page is enabled.
@@ -192,6 +193,16 @@ export class SettingsPaymentsSectionElement extends
               'autofillEnablePaymentsMandatoryReauth');
         },
       },
+
+      /**
+       * Checks if CVC storage is available based on the feature flag.
+       */
+      cvcStorageAvailable_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('cvcStorageAvailable');
+        },
+      },
     };
   }
 
@@ -212,6 +223,8 @@ export class SettingsPaymentsSectionElement extends
   private migrationEnabled_: boolean;
   private virtualCardEnrollmentEnabled_: boolean;
   private deviceAuthAvailable_: boolean;
+  private cvcStorageAvailable_: boolean;
+  private showBulkRemoveCvcConfirmationDialog_: boolean;
   private paymentsManager_: PaymentsManagerProxy =
       PaymentsManagerImpl.getInstance();
   private mandatoryReauthFeatureEnabled_: boolean;
@@ -624,6 +637,23 @@ export class SettingsPaymentsSectionElement extends
     // It will be flipped afterwards if the user auth is successful.
     mandatoryAuthToggle.checked = !mandatoryAuthToggle.checked;
     this.paymentsManager_.authenticateUserAndFlipMandatoryAuthToggle();
+  }
+
+  /**
+   * Method to handle the clicking of bulk delete all the CVCs.
+   */
+  private onBulkRemoveCvcClick_() {
+    assert(this.cvcStorageAvailable_);
+    this.showBulkRemoveCvcConfirmationDialog_ = true;
+  }
+
+  /**
+   * Method to bulk delete all the CVCs present on the local DB.
+   * TODO(crbug/1464441): Add the code to delete all the CVCs from the local DB.
+   */
+  private onShowBulkRemoveCvcConfirmationDialogClose_() {
+    assert(this.cvcStorageAvailable_);
+    this.showBulkRemoveCvcConfirmationDialog_ = false;
   }
 }
 

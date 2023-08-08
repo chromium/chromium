@@ -926,6 +926,11 @@ bool CheckDeviceAuthAvailability(content::WebContents* web_contents) {
   return autofill::IsDeviceAuthAvailable(client->GetDeviceAuthenticator());
 }
 
+bool CheckCvcStorageAvailability() {
+  return base::FeatureList::IsEnabled(
+      autofill::features::kAutofillEnableCvcStorageAndFilling);
+}
+
 void AddAutofillStrings(content::WebUIDataSource* html_source,
                         Profile* profile,
                         content::WebContents* web_contents) {
@@ -992,10 +997,20 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
     {"enableCreditCardFIDOAuthLabel", IDS_ENABLE_CREDIT_CARD_FIDO_AUTH_LABEL},
     {"enableCreditCardFIDOAuthSublabel",
      IDS_ENABLE_CREDIT_CARD_FIDO_AUTH_SUBLABEL},
+    {"enableCvcStorageLabel",
+     IDS_AUTOFILL_SETTINGS_PAGE_ENABLE_CVC_STORAGE_LABEL},
+    {"enableCvcStorageSublabel",
+     IDS_AUTOFILL_SETTINGS_PAGE_ENABLE_CVC_STORAGE_SUBLABEL},
+    {"enableCvcStorageDeleteDataSublabel",
+     IDS_AUTOFILL_SETTINGS_PAGE_ENABLE_CVC_STORAGE_WITH_DELETE_LINK_SUBLABEL},
     {"enableMandatoryAuthToggleLabel",
      IDS_AUTOFILL_SETTINGS_PAGE_ENABLE_PAYMENT_METHOD_MANDATORY_REAUTH_LABEL},
     {"enableMandatoryAuthToggleSublabel",
      IDS_AUTOFILL_SETTINGS_PAGE_ENABLE_PAYMENT_METHOD_MANDATORY_REAUTH_SUBLABEL},
+    {"bulkRemoveCvcConfirmationTitle",
+     IDS_AUTOFILL_SETTINGS_PAGE_BULK_REMOVE_CVC_TITLE},
+    {"bulkRemoveCvcConfirmationDescription",
+     IDS_AUTOFILL_SETTINGS_PAGE_BULK_REMOVE_CVC_DESCRIPTION},
     {"addresses", IDS_AUTOFILL_ADDRESSES},
     {"addressesTableAriaLabel", IDS_AUTOFILL_ADDRESSES_TABLE_ARIA_LABEL},
     {"addressesTitle", IDS_AUTOFILL_ADDRESSES_SETTINGS_TITLE},
@@ -1387,6 +1402,8 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
 
   html_source->AddBoolean("deviceAuthAvailable",
                           CheckDeviceAuthAvailability(web_contents));
+
+  html_source->AddBoolean("cvcStorageAvailable", CheckCvcStorageAvailability());
 
   html_source->AddBoolean(
       "autofillEnablePaymentsMandatoryReauth",

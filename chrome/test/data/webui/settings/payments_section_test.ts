@@ -549,4 +549,23 @@ suite('PaymentsSection', function() {
   });
 
   // --------- End of Reauth Tests ---------
+
+  test('verifyCvvStorageToggleIsShown', async function() {
+    loadTimeData.overrideValues({
+      cvcStorageAvailable: true,
+    });
+
+    const section = await createPaymentsSection(
+        /*creditCards=*/[], /*ibans=*/[], /*upiIds=*/[], {
+          credit_card_enabled: {value: true},
+        });
+    const cvcStorageToggle =
+        section.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#cvcStorageToggle');
+
+    assertTrue(!!cvcStorageToggle);
+    assertEquals(
+        cvcStorageToggle.subLabelWithLink,
+        loadTimeData.getString('enableCvcStorageDeleteDataSublabel'));
+  });
 });
