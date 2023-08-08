@@ -371,6 +371,7 @@ export class PowerBookmarksListElement extends PolymerElement {
       bookmark: chrome.bookmarks.BookmarkTreeNode,
       parent: chrome.bookmarks.BookmarkTreeNode) {
     if (this.bookmarkShouldShow_(bookmark)) {
+      const scrollTop = this.$.bookmarks.scrollTop;
       this.updateDisplayLists_();
       if (bookmark.url) {
         getAnnouncerInstance().announce(loadTimeData.getStringF(
@@ -383,8 +384,14 @@ export class PowerBookmarksListElement extends PolymerElement {
         const indexInList = this.displayLists_[i].indexOf(bookmark);
         if (indexInList > -1) {
           const listElement = this.getDisplayListElement_(i);
-          if (listElement) {
+          if (listElement &&
+              (indexInList < listElement.firstVisibleIndex ||
+               indexInList > listElement.lastVisibleIndex)) {
             listElement.scrollToIndex(indexInList);
+          } else {
+            afterNextRender(this, () => {
+              this.$.bookmarks.scrollTop = scrollTop;
+            });
           }
           break;
         }
