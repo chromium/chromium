@@ -6,7 +6,7 @@
 
 #include "base/no_destructor.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/policy/management_utils.h"
+#include "chrome/browser/ui/webui/settings/ash/os_settings_features_util.h"
 #include "chrome/browser/ui/webui/settings/ash/search/search_tag_registry.h"
 #include "chrome/browser/ui/webui/settings/reset_settings_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
@@ -46,12 +46,6 @@ const std::vector<SearchConcept>& GetResetSearchConcepts() {
        {IDS_OS_SETTINGS_TAG_RESET_POWERWASH_ALT1, SearchConcept::kAltTagEnd}},
   });
   return *tags;
-}
-
-bool IsPowerwashAllowed() {
-  return !policy::IsDeviceEnterpriseManaged() &&
-         !user_manager::UserManager::Get()->IsLoggedInAsGuest() &&
-         !user_manager::UserManager::Get()->IsLoggedInAsChildUser();
 }
 
 }  // namespace

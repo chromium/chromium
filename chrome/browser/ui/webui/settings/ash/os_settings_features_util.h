@@ -11,6 +11,14 @@ namespace ash::settings {
 
 bool IsGuestModeActive();
 
+bool IsChildSession();
+
+bool IsDeviceEnterpriseManaged();
+
+// Determines whether powerwash is allowed for this user. Powerwash is disabled
+// for guest users, child users, and managed users.
+bool IsPowerwashAllowed();
+
 // Determines whether the Parental Controls section of People settings should be
 // shown for |profile|.
 bool ShouldShowParentalControlSettings(const Profile* profile);
