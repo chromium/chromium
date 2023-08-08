@@ -306,8 +306,12 @@ DesktopMediaTabList::~DesktopMediaTabList() {
 
 gfx::Size DesktopMediaTabList::CalculatePreferredSize() const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  // The picker should have a fixed height of 10 rows.
-  return gfx::Size(0, table_->GetRowHeight() * 10);
+  // If the DisplayMediaPickerRedesign flag is active, height should be 9 rows
+  // to allow space for the audio-toggle controller, otherwise default to 10
+  // rows.
+  const int preferred_item_count =
+      base::FeatureList::IsEnabled(kDisplayMediaPickerRedesign) ? 9 : 10;
+  return gfx::Size(0, table_->GetRowHeight() * preferred_item_count);
 }
 
 int DesktopMediaTabList::GetHeightForWidth(int width) const {

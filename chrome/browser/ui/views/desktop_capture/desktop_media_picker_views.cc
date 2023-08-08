@@ -466,9 +466,13 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
             list_controller->SupportsReselectButton();
         screen_scroll_view->SetContents(list_controller->CreateView(
             kGenericScreenStyle, kSingleScreenStyle, screen_title_text));
+        // If the DisplayMediaPickerRedesign flag is active, clip max height to
+        // 1.5 item heights to allow space for the audio-toggle controller.
         screen_scroll_view->ClipHeightTo(
             kGenericScreenStyle.item_size.height(),
-            kGenericScreenStyle.item_size.height() * 2);
+            base::FeatureList::IsEnabled(kDisplayMediaPickerRedesign)
+                ? kGenericScreenStyle.item_size.height() * 3 / 2
+                : kGenericScreenStyle.item_size.height() * 2);
         screen_scroll_view->SetHorizontalScrollBarMode(
             views::ScrollView::ScrollBarMode::kDisabled);
 
