@@ -20,6 +20,7 @@
 #include "ui/views/background.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/focus_ring.h"
+#include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/corewm/tooltip_view_aura.h"
 
 namespace ash {
@@ -70,6 +71,29 @@ class ThemedFullyRoundedRectBackground : public views::Background {
  private:
   // Color Id of the background.
   const ui::ColorId color_id_;
+};
+
+// A `HighlightPathGenerator` that uses caller-supplied rounded rect corners.
+class RoundedCornerHighlightPathGenerator
+    : public views::HighlightPathGenerator {
+ public:
+  explicit RoundedCornerHighlightPathGenerator(
+      const gfx::RoundedCornersF& corners)
+      : corners_(corners) {}
+
+  RoundedCornerHighlightPathGenerator(
+      const RoundedCornerHighlightPathGenerator&) = delete;
+  RoundedCornerHighlightPathGenerator& operator=(
+      const RoundedCornerHighlightPathGenerator&) = delete;
+
+  // views::HighlightPathGenerator:
+  absl::optional<gfx::RRectF> GetRoundRect(const gfx::RectF& rect) override {
+    return gfx::RRectF(rect, corners_);
+  }
+
+ private:
+  // The user-supplied rounded rect corners.
+  const gfx::RoundedCornersF corners_;
 };
 
 }  // namespace
@@ -170,6 +194,14 @@ views::FocusRing* StyleUtil::SetUpFocusRingForView(
   if (halo_inset)
     focus_ring->SetHaloInset(*halo_inset);
   return focus_ring;
+}
+
+// static
+void StyleUtil::InstallRoundedCornerHighlightPathGenerator(
+    views::View* view,
+    const gfx::RoundedCornersF& corners) {
+  views::HighlightPathGenerator::Install(
+      view, std::make_unique<RoundedCornerHighlightPathGenerator>(corners));
 }
 
 // static

@@ -160,36 +160,6 @@ const gfx::RoundedCornersF& GetSubmitFeedbackButtonInkDropCorners() {
                              : kSubmitFeedbackButtonInkDropCornersLToR;
 }
 
-// A `HighlightPathGenerator` that uses caller-supplied rounded rect corners.
-class VIEWS_EXPORT RoundedCornerHighlightPathGenerator
-    : public views::HighlightPathGenerator {
- public:
-  explicit RoundedCornerHighlightPathGenerator(
-      const gfx::RoundedCornersF& corners)
-      : corners_(corners) {}
-
-  RoundedCornerHighlightPathGenerator(
-      const RoundedCornerHighlightPathGenerator&) = delete;
-  RoundedCornerHighlightPathGenerator& operator=(
-      const RoundedCornerHighlightPathGenerator&) = delete;
-
-  // views::HighlightPathGenerator:
-  absl::optional<gfx::RRectF> GetRoundRect(const gfx::RectF& rect) override {
-    return gfx::RRectF(rect, corners_);
-  }
-
- private:
-  // The user-supplied rounded rect corners.
-  const gfx::RoundedCornersF corners_;
-};
-
-void InstallRoundedCornerHighlightPathGenerator(
-    views::View* view,
-    const gfx::RoundedCornersF& corners) {
-  views::HighlightPathGenerator::Install(
-      view, std::make_unique<RoundedCornerHighlightPathGenerator>(corners));
-}
-
 // VersionButton is a base class that provides a styled button, for devices on a
 // non-stable release track, that has a label for the channel and ChromeOS
 // version.
@@ -223,7 +193,7 @@ class VersionButton : public views::LabelButton {
       SetMinSize(gfx::Size(0, kVersionButtonHeight));
     }
     views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
-    InstallRoundedCornerHighlightPathGenerator(
+    StyleUtil::InstallRoundedCornerHighlightPathGenerator(
         this, GetVersionButtonInkDropCorners(allow_user_feedback));
     views::FocusRing::Get(this)->SetColorId(
         features::IsQsRevampEnabled()
@@ -341,7 +311,8 @@ class SubmitFeedbackButton : public IconButton {
     }
     // Icon colors are set in OnThemeChanged().
     views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
-    InstallRoundedCornerHighlightPathGenerator(this, highlight_corners);
+    StyleUtil::InstallRoundedCornerHighlightPathGenerator(this,
+                                                          highlight_corners);
   }
   SubmitFeedbackButton(const SubmitFeedbackButton&) = delete;
   SubmitFeedbackButton& operator=(const SubmitFeedbackButton&) = delete;

@@ -99,6 +99,10 @@ class ASH_EXPORT StyleUtil {
       views::View* view,
       absl::optional<int> halo_inset = absl::nullopt);
 
+  static void InstallRoundedCornerHighlightPathGenerator(
+      views::View* view,
+      const gfx::RoundedCornersF& corners);
+
   // Creates a background that fills the canvas with a fully rounded rect whose
   // rounded corner radius is set to the half of the minimum dimension of view's
   // local bounds. The background is painted in the color specified by the
