@@ -98,9 +98,11 @@ std::u16string ExtractText(ui::ClipboardBuffer clipboard_buffer,
 
 // The amount of time that the result of a content allow request is cached
 // and reused for the same clipboard `seqno`.
+// TODO(b/294844565): Update this once multi-format pastes are handled
+// correctly.
 constexpr base::TimeDelta
     ClipboardHostImpl::kIsPasteContentAllowedRequestTooOld =
-        base::Milliseconds(500);
+        base::Milliseconds(5000);
 
 ClipboardHostImpl::IsPasteContentAllowedRequest::
     IsPasteContentAllowedRequest() = default;
