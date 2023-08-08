@@ -3,11 +3,23 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/settings/password/password_sharing/password_sharing_coordinator.h"
+
+#import "components/password_manager/core/browser/sharing/recipients_fetcher.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
+#import "ios/chrome/browser/signin/identity_manager_factory.h"
+#import "ios/chrome/browser/ui/settings/password/password_sharing/family_picker_coordinator.h"
+#import "ios/chrome/browser/ui/settings/password/password_sharing/password_sharing_mediator.h"
+#import "ios/chrome/browser/ui/settings/password/password_sharing/password_sharing_mediator_delegate.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/password_sharing_view_controller.h"
+#import "ios/chrome/browser/ui/settings/password/password_sharing/recipient_info.h"
+#import "services/network/public/cpp/shared_url_loader_factory.h"
 
-@interface PasswordSharingCoordinator ()
+using password_manager::FetchFamilyMembersRequestStatus;
+
+@interface PasswordSharingCoordinator () <PasswordSharingMediatorDelegate>
 
 // The navigation controller displaying the view controller.
 @property(nonatomic, strong)
@@ -15,6 +27,12 @@
 
 // Main view controller for this coordinator.
 @property(nonatomic, strong) PasswordSharingViewController* viewController;
+
+// Main mediator for this coordinator.
+@property(nonatomic, strong) PasswordSharingMediator* mediator;
+
+// Coordinator for family picker.
+@property(nonatomic, strong) FamilyPickerCoordinator* familyPickerCoordinator;
 
 @end
 
@@ -47,8 +65,13 @@
   [self.baseViewController presentViewController:self.navigationController
                                         animated:YES
                                       completion:nil];
-  // TODO(crbug.com/1463882): Introduce the mediator and implement initializing
-  // appropriate child coordinator based on the family query response.
+
+  ChromeBrowserState* browserState = self.browser->GetBrowserState();
+  self.mediator = [[PasswordSharingMediator alloc]
+            initWithDelegate:self
+      SharedURLLoaderFactory:browserState->GetSharedURLLoaderFactory()
+             identityManager:IdentityManagerFactory::GetForBrowserState(
+                                 browserState)];
 }
 
 - (void)stop {
@@ -57,6 +80,31 @@
                          completion:nil];
   self.viewController = nil;
   self.navigationController = nil;
+  self.mediator = nil;
+}
+
+#pragma mark - PasswordSharingMediatorDelegate
+
+- (void)onFetchFamilyMembers:(NSArray<RecipientInfo*>*)familyMembers
+                  withStatus:(const FetchFamilyMembersRequestStatus&)status {
+  // TODO(crbug.com/1463882): Add handling multiple credential groups.
+  switch (status) {
+    case FetchFamilyMembersRequestStatus::kSuccess:
+      [self.familyPickerCoordinator stop];
+      self.familyPickerCoordinator = [[FamilyPickerCoordinator alloc]
+          initWithBaseViewController:self.viewController
+                             browser:self.browser];
+      [self.familyPickerCoordinator start];
+      break;
+    case FetchFamilyMembersRequestStatus::kNoFamily:
+      // TODO(crbug.com/1463882): Implement family promo view.
+      break;
+    case FetchFamilyMembersRequestStatus::kUnknown:
+    case FetchFamilyMembersRequestStatus::kNetworkError:
+    case FetchFamilyMembersRequestStatus::kPendingRequest:
+      // TODO(crbug.com/1463882): Implement error view.
+      break;
+  }
 }
 
 @end

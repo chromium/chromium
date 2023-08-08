@@ -10,12 +10,21 @@ source_set("password_sharing") {
     "password_picker_coordinator.mm",
     "password_sharing_coordinator.h",
     "password_sharing_coordinator.mm",
+    "password_sharing_mediator.h",
+    "password_sharing_mediator.mm",
+    "password_sharing_mediator_delegate.h",
   ]
   deps = [
     ":password_sharing_ui",
+    "//components/password_manager/core/browser",
+    "//components/version_info:channel",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/ui/table_view",
     "//ios/chrome/browser/shared/ui/table_view:utils",
+    "//ios/chrome/browser/signin",
+    "//ios/chrome/common:common",
   ]
 }
 
@@ -31,6 +40,7 @@ source_set("password_sharing_ui") {
     "recipient_info.mm",
   ]
   deps = [
+    "//components/password_manager/core/browser",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/ui/bottom_sheet",
     "//ios/chrome/browser/shared/ui/symbols",

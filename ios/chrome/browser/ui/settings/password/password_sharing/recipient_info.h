@@ -7,6 +7,10 @@
 
 #import <Foundation/Foundation.h>
 
+namespace password_manager {
+struct RecipientInfo;
+}  // namespace password_manager
+
 // Object which is used by `FamilyPickerViewController` to show information
 // about the potential password sharing recipient of the user.
 @interface RecipientInfo : NSObject
@@ -20,9 +24,10 @@
 // Whether the recipient is eligible to receive a shared password.
 @property(nonatomic, assign) BOOL isEligible;
 
-// TODO(crbug.com/1463882): Replace with constructor taking
-// password_manager::RecipientInfo struct once its implementation is finalized.
-- (instancetype)init;
+- (instancetype)initWithRecipientInfo:
+    (const password_manager::RecipientInfo&)recipient NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)init NS_UNAVAILABLE;
 
 @end
 
