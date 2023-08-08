@@ -204,25 +204,6 @@ class FakeDeviceManager {
   std::vector<ui::KeyboardDevice> fake_keyboard_devices_;
 };
 
-class TestObserver : public ui::KeyboardCapability::Observer {
- public:
-  TestObserver() = default;
-  TestObserver(const TestObserver&) = delete;
-  TestObserver& operator=(const TestObserver&) = delete;
-  ~TestObserver() override = default;
-
-  void OnTopRowKeysAreFKeysChanged() override {
-    ++top_row_keys_are_f_keys_changed_count_;
-  }
-
-  int top_row_keys_are_f_keys_changed_count() {
-    return top_row_keys_are_f_keys_changed_count_;
-  }
-
- private:
-  int top_row_keys_are_f_keys_changed_count_ = 0;
-};
-
 }  // namespace
 
 class KeyboardCapabilityTest : public NoSessionAshTestBase {
@@ -236,13 +217,10 @@ class KeyboardCapabilityTest : public NoSessionAshTestBase {
         base::BindRepeating(&GetEvdevKeyCodeForScanCode),
         std::make_unique<KeyboardCapabilityDelegateImpl>());
     SimulateUserLogin(/*user_email=*/"email@google.com");
-    test_observer_ = std::make_unique<TestObserver>();
     fake_keyboard_manager_ = std::make_unique<FakeDeviceManager>();
-    keyboard_capability_->AddObserver(test_observer_.get());
   }
 
   void TearDown() override {
-    keyboard_capability_->RemoveObserver(test_observer_.get());
     keyboard_capability_.reset();
     AshTestBase::TearDown();
   }
@@ -264,27 +242,8 @@ class KeyboardCapabilityTest : public NoSessionAshTestBase {
 
  protected:
   std::unique_ptr<ui::KeyboardCapability> keyboard_capability_;
-  std::unique_ptr<TestObserver> test_observer_;
   std::unique_ptr<FakeDeviceManager> fake_keyboard_manager_;
 };
-
-TEST_F(KeyboardCapabilityTest, TestObserver) {
-  EXPECT_EQ(0, test_observer_->top_row_keys_are_f_keys_changed_count());
-  EXPECT_FALSE(keyboard_capability_->TopRowKeysAreFKeys());
-  PrefService* prefs =
-      Shell::Get()->session_controller()->GetActivePrefService();
-  prefs->SetBoolean(prefs::kSendFunctionKeys, true);
-  prefs->CommitPendingWrite();
-
-  EXPECT_TRUE(keyboard_capability_->TopRowKeysAreFKeys());
-  EXPECT_EQ(1, test_observer_->top_row_keys_are_f_keys_changed_count());
-
-  prefs->SetBoolean(prefs::kSendFunctionKeys, false);
-  prefs->CommitPendingWrite();
-
-  EXPECT_FALSE(keyboard_capability_->TopRowKeysAreFKeys());
-  EXPECT_EQ(2, test_observer_->top_row_keys_are_f_keys_changed_count());
-}
 
 TEST_F(KeyboardCapabilityTest, TestTopRowKeysAreFKeys) {
   // Top row keys are F-Keys pref is false in default.

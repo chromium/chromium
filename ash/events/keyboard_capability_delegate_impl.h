@@ -7,7 +7,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/session/session_observer.h"
-#include "base/observer_list.h"
 #include "components/prefs/pref_member.h"
 #include "ui/events/ash/keyboard_capability.h"
 
@@ -30,8 +29,6 @@ class ASH_EXPORT KeyboardCapabilityDelegateImpl
   ~KeyboardCapabilityDelegateImpl() override;
 
   // ui::KeyboardCapability::Delegate:
-  void AddObserver(ui::KeyboardCapability::Observer* observer) override;
-  void RemoveObserver(ui::KeyboardCapability::Observer* observer) override;
   bool TopRowKeysAreFKeys() const override;
   void SetTopRowKeysAsFKeysEnabledForTesting(bool enabled) override;
 
@@ -42,13 +39,8 @@ class ASH_EXPORT KeyboardCapabilityDelegateImpl
   // Initiate user preferences with given pref service.
   void InitUserPrefs(PrefService* prefs);
 
-  void NotifyTopRowKeysAreFKeysChanged();
-
   // An observer to listen for changes to prefs::kSendFunctionKeys.
   std::unique_ptr<BooleanPrefMember> top_row_are_f_keys_pref_;
-
-  // A list of KeyboardCapability Observers.
-  base::ObserverList<ui::KeyboardCapability::Observer>::Unchecked observers_;
 };
 
 }  // namespace ash

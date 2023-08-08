@@ -201,24 +201,12 @@ class KeyboardCapability : public InputDeviceEventObserver {
     kKbdTopRowLayoutMax = kKbdTopRowLayoutCustom
   };
 
-  class Observer {
-   public:
-    virtual ~Observer() = default;
-
-    // Called when the top_row_keys_are_fKeys prefs has changed.
-    virtual void OnTopRowKeysAreFKeysChanged() = 0;
-  };
-
   class Delegate {
    public:
     Delegate() = default;
     Delegate(const Delegate&) = delete;
     Delegate& operator=(const Delegate&) = delete;
     virtual ~Delegate() = default;
-
-    virtual void AddObserver(Observer* observer) = 0;
-
-    virtual void RemoveObserver(Observer* observer) = 0;
 
     virtual bool TopRowKeysAreFKeys() const = 0;
 
@@ -260,10 +248,6 @@ class KeyboardCapability : public InputDeviceEventObserver {
   // Converts the given `action_key` to the corresponding `KeyboardCode` VKEY.
   static absl::optional<KeyboardCode> ConvertToKeyboardCode(
       TopRowActionKey action_key);
-
-  void AddObserver(Observer* observer);
-
-  void RemoveObserver(Observer* observer);
 
   // Returns true if the target would prefer to receive raw
   // function keys instead of having them rewritten into back, forward,

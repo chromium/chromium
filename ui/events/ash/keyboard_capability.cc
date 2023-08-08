@@ -121,8 +121,6 @@ class StubKeyboardCapabilityDelegate : public KeyboardCapability::Delegate {
       const StubKeyboardCapabilityDelegate&) = delete;
   ~StubKeyboardCapabilityDelegate() override = default;
 
-  void AddObserver(KeyboardCapability::Observer* observer) override {}
-  void RemoveObserver(KeyboardCapability::Observer* observer) override {}
   bool TopRowKeysAreFKeys() const override { return false; }
   void SetTopRowKeysAsFKeysEnabledForTesting(bool enabled) override {}
 };
@@ -549,14 +547,6 @@ absl::optional<KeyboardCode> KeyboardCapability::ConvertToKeyboardCode(
     }
   }
   return absl::nullopt;
-}
-
-void KeyboardCapability::AddObserver(Observer* observer) {
-  delegate_->AddObserver(observer);
-}
-
-void KeyboardCapability::RemoveObserver(Observer* observer) {
-  delegate_->RemoveObserver(observer);
 }
 
 bool KeyboardCapability::TopRowKeysAreFKeys() const {
