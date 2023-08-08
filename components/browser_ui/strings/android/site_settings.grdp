@@ -239,10 +239,10 @@
   <message name="IDS_WEBSITE_SETTINGS_DOMAIN_EXCEPTION_LABEL" desc="The label for site exceptions that apply to the entire domain.">
     All sites under <ph name="DOMAIN">%1$s<ex>google.com</ex></ph>
   </message>
-  <message name="IDS_SITE_SETTINGS_EXPIRES_TODAY_LABEL" translateable="false" desc="">
+  <message name="IDS_SITE_SETTINGS_EXPIRES_TODAY_LABEL" desc="Third party cookies exception label, shown in the Third-Party cookies site settings exceptions list. Shown when an exceptions expires today.">
     Expires today
   </message>
-  <message name="IDS_SITE_SETTINGS_EXPIRES_LABEL" translateable="false" desc="">
+  <message name="IDS_SITE_SETTINGS_EXPIRES_LABEL" desc="Third party cookies exception label, shown in the Third-Party cookies site settings exception list.">
     {COUNT, plural, 
       =1 {Expires in 1 day} 
       other {Expires in # days}

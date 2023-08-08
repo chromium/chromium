@@ -205,8 +205,8 @@ CHAR_LIMIT guidelines:
       <!-- NOTE: Generic strings used across multiple features belong in //components/browser_ui/strings/android. -->
 
        <!-- Cookie Controls -->
-      <message name="IDS_COOKIE_CONTROLS_IPH_MESSAGE" desc="" translateable="false">
-        Site not working? Allow third-party cookies
+      <message name="IDS_COOKIE_CONTROLS_IPH_MESSAGE" desc="In-context Product Help - Appears right under the page info icon to highlight the Cookie Controls entrypoint.">
+        Site not working? Third-party cookies are blocked
       </message>
 
       <!-- Main Preferences -->
