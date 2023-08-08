@@ -433,7 +433,7 @@ class CupsPrintersManagerImpl
 
     // Behavior for querying a non-IPP uri is undefined and disallowed.
     if (!IsIppUri(printer->uri())) {
-      PRINTER_LOG(ERROR) << "Unable to complete printer status request. "
+      PRINTER_LOG(DEBUG) << "Unable to complete printer status request. "
                          << "Printer uri is invalid. Printer id: "
                          << printer_id;
       CupsPrinterStatus printer_status(printer_id);
