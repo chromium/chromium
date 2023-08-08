@@ -195,6 +195,8 @@ def __step_config(ctx, step_config):
                     "third_party/depot_tools/win_toolchain/vs_files/27370823e7/Windows Kits/10/Include/10.0.22621.0/um/urlhist.h",
                     # chrome/updater/win/installer includes "msiquery.h"
                     "third_party/depot_tools/win_toolchain/vs_files/27370823e7/Windows Kits/10/Include/10.0.22621.0/um/msiquery.h",
+                    # third_party/win_virtual_display/controller includes "Devpropdef.h"
+                    "third_party/depot_tools/win_toolchain/vs_files/27370823e7/Windows Kits/10/Include/10.0.22621.0/shared/Devpropdef.h",
                 ],
             })
         step_config["rules"].extend([
