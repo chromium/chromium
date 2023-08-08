@@ -16,9 +16,10 @@ namespace remote_cocoa {
 class REMOTE_COCOA_APP_SHIM_EXPORT ImmersiveModeTabbedController
     : public ImmersiveModeController {
  public:
-  explicit ImmersiveModeTabbedController(NSWindow* browser_window,
-                                         NSWindow* overlay_window,
-                                         NSWindow* tab_window);
+  explicit ImmersiveModeTabbedController(
+      NativeWidgetMacNSWindow* browser_window,
+      NativeWidgetMacNSWindow* overlay_window,
+      NativeWidgetMacNSWindow* tab_window);
   ImmersiveModeTabbedController(const ImmersiveModeTabbedController&) = delete;
   ImmersiveModeTabbedController& operator=(
       const ImmersiveModeTabbedController&) = delete;

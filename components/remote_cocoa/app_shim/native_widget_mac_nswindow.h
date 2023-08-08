@@ -90,6 +90,13 @@ REMOTE_COCOA_APP_SHIM_EXPORT
 
 // Called whenever a child window is removed to the receiver.
 @property(nonatomic, copy) void (^childWindowRemovedHandler)(NSWindow* child);
+
+// Window to dispatch commands to. Needed for situations where the window that
+// needs to handle events is not the target's immediate parent; for example
+// alerts in immersive fullscreen.
+@property(nonatomic, weak)
+    NSWindow<CommandDispatchingWindow>* commandDispatchParentOverride;
+
 @end
 
 #endif  // COMPONENTS_REMOTE_COCOA_APP_SHIM_NATIVE_WIDGET_MAC_NSWINDOW_H_

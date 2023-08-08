@@ -9,7 +9,6 @@
 #include "base/containers/contains.h"
 #include "base/mac/foundation_util.h"
 #import "components/remote_cocoa/app_shim/immersive_mode_delegate_mac.h"
-#import "components/remote_cocoa/app_shim/native_widget_mac_nswindow.h"
 #import "components/remote_cocoa/app_shim/native_widget_ns_window_bridge.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -161,12 +160,13 @@ bool IsNSToolbarFullScreenWindow(NSWindow* window) {
   return [window isKindOfClass:NSClassFromString(@"NSToolbarFullScreenWindow")];
 }
 
-ImmersiveModeController::ImmersiveModeController(NSWindow* browser_window,
-                                                 NSWindow* overlay_window)
+ImmersiveModeController::ImmersiveModeController(
+    NativeWidgetMacNSWindow* browser_window,
+    NativeWidgetMacNSWindow* overlay_window)
     : weak_ptr_factory_(this) {
   browser_window_ = browser_window;
   overlay_window_ = overlay_window;
-
+  overlay_window_.commandDispatchParentOverride = browser_window_;
   // A style of NSTitlebarSeparatorStyleAutomatic (default) will show a black
   // line separator when removing the NSWindowStyleMaskFullSizeContentView style
   // bit. We do not want a separator. Pre-macOS 11 there is no titlebar
@@ -222,6 +222,7 @@ ImmersiveModeController::~ImmersiveModeController() {
   // Remove the titlebar observer before moving the view.
   immersive_mode_titlebar_observer_ = nil;
 
+  overlay_window_.commandDispatchParentOverride = nil;
   StopObservingChildWindows(overlay_window_);
 
   // Rollback the view shuffling from enablement.

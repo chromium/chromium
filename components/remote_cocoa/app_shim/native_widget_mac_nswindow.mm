@@ -182,6 +182,7 @@ void OrderChildWindow(NSWindow* child_window,
 @synthesize isHeadless = _isHeadless;
 @synthesize childWindowAddedHandler = _childWindowAddedHandler;
 @synthesize childWindowRemovedHandler = _childWindowRemovedHandler;
+@synthesize commandDispatchParentOverride = _commandDispatchParentOverride;
 
 - (instancetype)initWithContentRect:(NSRect)contentRect
                           styleMask:(NSUInteger)windowStyle
@@ -651,7 +652,7 @@ void OrderChildWindow(NSWindow* child_window,
       aSelector == @selector(commandDispatch:) ||
       aSelector == @selector(commandDispatchUsingKeyModifiers:);
   if (isCommandDispatch && _commandHandler == nil &&
-      [_commandDispatcher bubbleParent] == nil) {
+      self.commandDispatchParent == nil) {
     return NO;
   }
 
@@ -726,6 +727,18 @@ void OrderChildWindow(NSWindow* child_window,
   // from NSWindow's behavior can easily break VoiceOver integration.
   NSString* viewsValue = self.rootAccessibilityObject.accessibilityTitle;
   return viewsValue ? viewsValue : [super accessibilityTitle];
+}
+
+- (NSWindow<CommandDispatchingWindow>*)commandDispatchParent {
+  if (_commandDispatchParentOverride) {
+    return _commandDispatchParentOverride;
+  }
+  NSWindow* parent = self.parentWindow;
+  if (parent && [parent hasKeyAppearance] &&
+      [parent conformsToProtocol:@protocol(CommandDispatchingWindow)]) {
+    return static_cast<NSWindow<CommandDispatchingWindow>*>(parent);
+  }
+  return nil;
 }
 
 @end

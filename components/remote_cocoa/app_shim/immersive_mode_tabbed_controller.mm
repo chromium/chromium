@@ -12,9 +12,9 @@
 namespace remote_cocoa {
 
 ImmersiveModeTabbedController::ImmersiveModeTabbedController(
-    NSWindow* browser_window,
-    NSWindow* overlay_window,
-    NSWindow* tab_window)
+    NativeWidgetMacNSWindow* browser_window,
+    NativeWidgetMacNSWindow* overlay_window,
+    NativeWidgetMacNSWindow* tab_window)
     : ImmersiveModeController(browser_window, overlay_window) {
   tab_window_ = tab_window;
 

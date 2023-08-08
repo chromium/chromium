@@ -50,9 +50,6 @@ COMPONENT_EXPORT(UI_BASE)
 // reposted infinitely. Returns YES if the event is handled.
 - (BOOL)preSendEvent:(NSEvent*)event;
 
-// The parent to bubble events to, or nil.
-- (NSWindow<CommandDispatchingWindow>*)bubbleParent;
-
 // Dispatch a -commandDispatch: action either to |handler| or a parent window's
 // handler.
 - (void)dispatch:(id)sender
@@ -122,6 +119,9 @@ enum class PerformKeyEquivalentResult {
 // The set of methods an NSWindow subclass needs to implement to use
 // CommandDispatcher.
 @protocol CommandDispatchingWindow
+
+// Parent window to defer command dispatching to.
+- (NSWindow<CommandDispatchingWindow>*)commandDispatchParent;
 
 // If set, NSUserInterfaceItemValidations for -commandDispatch: and
 // -commandDispatchUsingKeyModifiers: will be redirected to the command handler.
