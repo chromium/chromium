@@ -51,23 +51,22 @@ bool AppServicePromiseAppIconLoader::CanLoadImage(Profile* profile,
 }
 
 void AppServicePromiseAppIconLoader::FetchImage(const std::string& id) {
-  const apps::PackageId package_id = apps::PackageId::FromString(id).value();
-  apps::PromiseStatus status = base::Contains(status_map_, package_id)
-                                   ? status_map_[package_id]
-                                   : apps::PromiseStatus::kPending;
+  const apps::PromiseApp* promise_app =
+      apps::AppServiceProxyFactory::GetForProfile(profile())
+          ->PromiseAppRegistryCache()
+          ->GetPromiseAppForStringPackageId(id);
+  if (!promise_app) {
+    return;
+  }
+  apps::PromiseStatus status =
+      promise_app ? promise_app->status : apps::PromiseStatus::kPending;
   CallLoadIcon(apps::PackageId::FromString(id).value(),
                GetIconEffectsForPromiseStatus(status));
 }
 
 void AppServicePromiseAppIconLoader::ClearImage(const std::string& id) {
-  absl::optional<apps::PackageId> package_id = apps::PackageId::FromString(id);
-  if (!package_id.has_value()) {
-    return;
-  }
-  if (!base::Contains(status_map_, package_id.value())) {
-    return;
-  }
-  status_map_.erase(package_id.value());
+  // The image isn't saved in the icon loader, so we don't need to clear
+  // anything.
 }
 
 void AppServicePromiseAppIconLoader::UpdateImage(const std::string& id) {
@@ -82,11 +81,8 @@ void AppServicePromiseAppIconLoader::OnPromiseAppUpdate(
     return;
   }
   if (update.Status() == apps::PromiseStatus::kRemove) {
-    ClearImage(update.PackageId().ToString());
     return;
   }
-  status_map_[update.PackageId()] = update.Status();
-
   CallLoadIcon(update.PackageId(),
                GetIconEffectsForPromiseStatus(update.Status()));
 }

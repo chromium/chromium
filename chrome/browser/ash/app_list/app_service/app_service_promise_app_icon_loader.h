@@ -59,8 +59,6 @@ class AppServicePromiseAppIconLoader
   void OnLoadIcon(const apps::PackageId& package_id,
                   apps::IconValuePtr icon_value);
 
-  std::map<apps::PackageId, apps::PromiseStatus> status_map_;
-
   base::WeakPtrFactory<AppServicePromiseAppIconLoader> weak_ptr_factory_{this};
 };
 
