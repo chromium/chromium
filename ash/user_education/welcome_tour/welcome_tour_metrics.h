@@ -40,9 +40,10 @@ enum class PreventedReason {
   kManagedAccount = 3,
   kTabletModeEnabled = 4,
   kUserNewnessNotAvailable = 5,
-  kUserNotNew = 6,
+  kUserNotNewCrossDevice = 6,
   kUserTypeNotRegular = 7,
-  kMaxValue = kUserTypeNotRegular,
+  kUserNotNewLocally = 8,
+  kMaxValue = kUserNotNewLocally,
 };
 
 // Enumeration of steps in the Welcome Tour. These values are persisted to logs.

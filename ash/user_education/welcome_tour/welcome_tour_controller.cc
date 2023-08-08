@@ -336,10 +336,9 @@ void WelcomeTourController::MaybeStartWelcomeTour() {
     const absl::optional<bool>& is_new_user =
         UserEducationController::Get()->IsNewUser(UserEducationPrivateApiKey());
 
-    // If it is not known whether the user is "new" or "existing" when
-    // this code is reached, the user is treated as "existing" since the Welcome
-    // Tour cannot be delayed and we want to err on the side of being
-    // conservative.
+    // If it is not known whether the user is "new" or "existing" when this code
+    // is reached, the user is treated as "existing" since the Welcome Tour
+    // cannot be delayed and we want to err on the side of being conservative.
     if (!is_new_user.has_value()) {
       welcome_tour_metrics::RecordTourPrevented(
           welcome_tour_metrics::PreventedReason::kUserNewnessNotAvailable);
@@ -349,12 +348,21 @@ void WelcomeTourController::MaybeStartWelcomeTour() {
     // Welcome Tour is not supported for "existing" users.
     if (!is_new_user.value()) {
       welcome_tour_metrics::RecordTourPrevented(
-          welcome_tour_metrics::PreventedReason::kUserNotNew);
+          welcome_tour_metrics::PreventedReason::kUserNotNewCrossDevice);
+      return;
+    }
+
+    // The cross-device proxy for whether the user is "new" or "existing" is
+    // untested out in the wild. For sanity, confirm that the user is also
+    // considered "new" locally in case the proxy check proves to be erroneous.
+    const auto* const session_controller = Shell::Get()->session_controller();
+    if (session_controller && !session_controller->IsUserFirstLogin()) {
+      welcome_tour_metrics::RecordTourPrevented(
+          welcome_tour_metrics::PreventedReason::kUserNotNewLocally);
       return;
     }
 
     // Welcome Tour is not supported for managed accounts.
-    const auto* const session_controller = Shell::Get()->session_controller();
     if (session_controller && session_controller->IsActiveAccountManaged()) {
       welcome_tour_metrics::RecordTourPrevented(
           welcome_tour_metrics::PreventedReason::kManagedAccount);

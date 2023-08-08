@@ -346,12 +346,15 @@ TEST_F(WelcomeTourControllerTest, StartsTourAndPropagatesEvents) {
       observation{&observer};
   observation.Observe(welcome_tour_controller);
 
-  // Add a primary and secondary user session. This should *not* trigger the
-  // Welcome Tour to start.
+  // Add a primary and secondary user session for the first time. This should
+  // *not* trigger the Welcome Tour to start.
   auto* const session_controller_client = GetSessionControllerClient();
-  session_controller_client->AddUserSession(primary_account_id.GetUserEmail());
   session_controller_client->AddUserSession(
-      secondary_account_id.GetUserEmail());
+      primary_account_id.GetUserEmail(), user_manager::USER_TYPE_REGULAR,
+      /*provide_pref_service=*/true, /*is_new_profile=*/true);
+  session_controller_client->AddUserSession(
+      secondary_account_id.GetUserEmail(), user_manager::USER_TYPE_REGULAR,
+      /*provide_pref_service=*/true, /*is_new_profile=*/true);
 
   // Activate the primary user session. This *should* trigger the Welcome Tour
   // to start as well as notify observers. Note that completed/aborted
@@ -421,8 +424,8 @@ TEST_F(WelcomeTourControllerTest, AbortsTourAndPropagatesEvents) {
               StartTutorial(_, Eq(TutorialId::kWelcomeTourPrototype1), _, _, _))
       .WillOnce(MoveArg<4>(&aborted_callback));
 
-  // Start the Welcome Tour by logging in the primary user.
-  SimulateUserLogin("primary@test");
+  // Start the Welcome Tour by logging in the primary user for the first time.
+  SimulateNewUserFirstLogin("primary@test");
 
   // Observe the `WelcomeTourController` for end events.
   StrictMock<MockWelcomeTourControllerObserver> observer;
@@ -450,8 +453,8 @@ TEST_F(WelcomeTourControllerTest, AbortsTourAndPropagatesEvents) {
 
 // Verifies the Welcome Tour to be aborted if ChromeVox is enabled during tour.
 TEST_F(WelcomeTourControllerTest, AbortTourIfChromeVoxEnabledDuringTour) {
-  // Start the Welcome Tour by logging in the primary user.
-  SimulateUserLogin("primary@test");
+  // Start the Welcome Tour by logging in the primary user for the first time.
+  SimulateNewUserFirstLogin("primary@test");
 
   // Observe the `WelcomeTourController` for end events.
   StrictMock<MockWelcomeTourControllerObserver> observer;
@@ -540,8 +543,8 @@ TEST_P(WelcomeTourControllerCounterfactualTest,
               StartTutorial(_, Eq(TutorialId::kWelcomeTourPrototype1), _, _, _))
       .Times(IsCounterfactual().value_or(false) ? 0u : 1u);
 
-  // Login the primary user and verify expectations.
-  SimulateUserLogin("primary@test");
+  // Login the primary user for the first time and verify expectations.
+  SimulateNewUserFirstLogin("primary@test");
   Mock::VerifyAndClearExpectations(user_education_delegate());
 }
 
@@ -550,14 +553,16 @@ TEST_P(WelcomeTourControllerCounterfactualTest,
 // Base class for tests of the `WelcomeTourController` which are concerned with
 // user eligibility, parameterized by:
 // (a) whether to force user eligibility via feature flag
-// (b) whether the user should be considered "new", "existing" or "unknown"
-// (c) whether the user is managed
-// (d) the user type.
+// (b) whether the user should be considered "new" cross-device
+// (c) whether the user should be considered "new" locally
+// (d) whether the user is managed
+// (e) the user type.
 class WelcomeTourControllerUserEligibilityTest
     : public WelcomeTourControllerTest,
       public ::testing::WithParamInterface<std::tuple<
           /*force_user_eligibility=*/bool,
-          /*is_new_user=*/absl::optional<bool>,
+          /*is_new_user_cross_device=*/absl::optional<bool>,
+          /*is_new_user_locally=*/bool,
           /*is_managed_user=*/bool,
           user_manager::UserType>> {
  public:
@@ -571,16 +576,20 @@ class WelcomeTourControllerUserEligibilityTest
   bool ForceUserEligibility() const { return std::get<0>(GetParam()); }
 
   // Returns the user type based on test parameterization.
-  user_manager::UserType GetUserType() const { return std::get<3>(GetParam()); }
+  user_manager::UserType GetUserType() const { return std::get<4>(GetParam()); }
 
   // Returns whether the user is managed based on test parameterization.
-  bool IsManagedUser() const { return std::get<2>(GetParam()); }
+  bool IsManagedUser() const { return std::get<3>(GetParam()); }
 
-  // Returns whether the user should be considered "new" based on test
-  // parameterization.
-  const absl::optional<bool>& IsNewUser() const {
+  // Returns whether the user should be considered "new" cross-device based on
+  // test parameterization.
+  const absl::optional<bool>& IsNewUserCrossDevice() const {
     return std::get<1>(GetParam());
   }
+
+  // Returns whether the user should be considered "new" locally based on test
+  // parameterization.
+  bool IsNewUserLocally() const { return std::get<2>(GetParam()); }
 
  private:
   // WelcomeTourControllerTest:
@@ -588,17 +597,17 @@ class WelcomeTourControllerUserEligibilityTest
     WelcomeTourControllerTest::SetUp();
 
     // Provide an implementation of `IsNewUser()` which returns whether a given
-    // user should be considered "new" based on test parameterization.
+    // user should be considered "new" cross-device based on test
+    // parameterization.
     ON_CALL(*user_education_delegate(), IsNewUser)
-        .WillByDefault(ReturnRefOfCopy(IsNewUser()));
+        .WillByDefault(ReturnRefOfCopy(IsNewUserCrossDevice()));
 
-    // Add a user with the specified type and management state, as defined by
-    // test parameterization.
+    // Add a user based on test parameterization.
     TestSessionControllerClient* const session = GetSessionControllerClient();
     constexpr char kUserEmail[] = "primary@test";
     session->AddUserSession(kUserEmail, GetUserType(),
                             /*provide_pref_service=*/true,
-                            /*is_new_profile=*/false,
+                            /*is_new_profile=*/IsNewUserLocally(),
                             /*given_name=*/std::string(), IsManagedUser());
     session->SwitchActiveUser(AccountId::FromUserEmail(kUserEmail));
   }
@@ -613,10 +622,11 @@ INSTANTIATE_TEST_SUITE_P(
     WelcomeTourControllerUserEligibilityTest,
     ::testing::Combine(
         /*force_user_eligibility=*/::testing::Bool(),
-        /*is_new_user=*/
+        /*is_new_user_cross_device=*/
         ::testing::Values(absl::make_optional(true),
                           absl::make_optional(false),
                           absl::nullopt),
+        /*is_new_user_locally=*/::testing::Bool(),
         /*is_managed_user=*/::testing::Bool(),
         ::testing::Values(user_manager::UserType::USER_TYPE_ACTIVE_DIRECTORY,
                           user_manager::UserType::USER_TYPE_ARC_KIOSK_APP,
@@ -634,13 +644,14 @@ TEST_P(WelcomeTourControllerUserEligibilityTest, EnforcesUserEligibility) {
   // A user is eligible for the Welcome Tour if and only if:
   // (a) user eligibility is being explicitly forced, or
   // (b) the user satisfies the following conditions:
-  //     (1) known to be "new" on session activation, and
-  //     (2) not a managed user, and
-  //     (3) a regular user.
+  //     (1) known to be "new" cross-device on session activation, and
+  //     (2) known to be "new" locally, and
+  //     (3) not a managed user, and
+  //     (4) a regular user.
   const bool is_user_eligibility_expected =
       ForceUserEligibility() ||
-      (IsNewUser().value_or(false) && !IsManagedUser() &&
-       GetUserType() == user_manager::USER_TYPE_REGULAR);
+      (IsNewUserCrossDevice().value_or(false) && IsNewUserLocally() &&
+       !IsManagedUser() && GetUserType() == user_manager::USER_TYPE_REGULAR);
 
   // Set expectations for whether the Welcome Tour will run.
   EXPECT_CALL(*user_education_delegate(),
@@ -693,10 +704,10 @@ class WelcomeTourControllerRunTest : public WelcomeTourControllerTest {
         StartTutorial(_, Eq(TutorialId::kWelcomeTourPrototype1), _, _, _))
         .WillOnce(MoveArg<3>(&completed_callback));
 
-    // Simulate login of the primary user. Note that this should trigger the
-    // Welcome Tour to start automatically.
+    // Simulate login of the primary user for the first time. Note that this
+    // should trigger the Welcome Tour to start automatically.
     const auto primary_account_id = AccountId::FromUserEmail("primary@test");
-    SimulateUserLogin(primary_account_id);
+    SimulateNewUserFirstLogin(primary_account_id.GetUserEmail());
     EXPECT_TRUE(started_future.Wait());
 
     // Invoke the `in_progress_callback` so that tests can assert expectations
@@ -1090,11 +1101,11 @@ TEST_F(WelcomeTourControllerTabletTest, DoesNotStart) {
   // Force tablet mode on.
   TabletMode::Get()->SetEnabledForTest(true);
 
-  // Activate the primary user session. Since tablet mode is enabled, the
-  // Welcome Tour should not start, the dialog should not show, and no start or
-  // end calls should be made.
+  // Activate the primary user session for the first time. Since tablet mode is
+  // enabled, the Welcome Tour should not start, the dialog should not show, and
+  // no start or end calls should be made.
   EXPECT_CALL(*user_education_delegate(), StartTutorial).Times(0);
-  SimulateUserLogin("user@test");
+  SimulateNewUserFirstLogin("user@test");
   EXPECT_FALSE(WelcomeTourDialog::Get());
   Mock::VerifyAndClearExpectations(user_education_delegate());
   Mock::VerifyAndClearExpectations(observer());
@@ -1102,9 +1113,9 @@ TEST_F(WelcomeTourControllerTabletTest, DoesNotStart) {
 
 // Verifies that the tour will abort if we enter tablet mode.
 TEST_F(WelcomeTourControllerTabletTest, TriggersAbort) {
-  // Activate the user session to trigger the Welcome Tour to start, as well as
-  // notify observers. Note that the aborted callback is cached for later
-  // verification.
+  // Activate the user session for the first time to trigger the Welcome Tour to
+  // start, as well as notify observers. Note that the aborted callback is
+  // cached for later verification.
   base::OnceClosure aborted_callback;
   EXPECT_CALL(
       *user_education_delegate(),
@@ -1114,7 +1125,7 @@ TEST_F(WelcomeTourControllerTabletTest, TriggersAbort) {
                     /*aborted_callback=*/_))
       .WillOnce(MoveArgs<4>(&aborted_callback));
   EXPECT_CALL(*observer(), OnWelcomeTourStarted);
-  SimulateUserLogin("user@test");
+  SimulateNewUserFirstLogin("user@test");
   Mock::VerifyAndClearExpectations(user_education_delegate());
   Mock::VerifyAndClearExpectations(observer());
   ASSERT_FALSE(aborted_callback.is_null());
