@@ -451,7 +451,10 @@ IN_PROC_BROWSER_TEST_F(SettingsAllSitesTest, DisableFirstPartySets) {
           "runMochaSuite('DisableFirstPartySets')");
 }
 
-using SettingsBasicPageTest = SettingsBrowserTest;
+class SettingsBasicPageTest : public SettingsBrowserTest {
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{features::kSafetyHub};
+};
 
 // TODO(crbug.com/1298753): Flaky on all platforms.
 IN_PROC_BROWSER_TEST_F(SettingsBasicPageTest, DISABLED_BasicPage) {
@@ -469,6 +472,10 @@ IN_PROC_BROWSER_TEST_F(SettingsBasicPageTest, MAYBE_PrivacyGuidePromo) {
 
 IN_PROC_BROWSER_TEST_F(SettingsBasicPageTest, Performance) {
   RunTest("settings/basic_page_test.js", "runMochaSuite('Performance')");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsBasicPageTest, SafetyHubDisabled) {
+  RunTest("settings/basic_page_test.js", "runMochaSuite('SafetyHubDisabled')");
 }
 
 using SettingsClearBrowsingDataTest = SettingsBrowserTest;
@@ -981,12 +988,16 @@ IN_PROC_BROWSER_TEST_F(SettingsSafetyCheckPermissionsTest, All) {
   RunTest("settings/safety_check_permissions_test.js", "mocha.run()");
 }
 
-class SettingsSafetyHubUnusedSitePermissionsTest : public SettingsBrowserTest {
+class SettingsSafetyHubTest : public SettingsBrowserTest {
  private:
   base::test::ScopedFeatureList scoped_feature_list_{features::kSafetyHub};
 };
 
-IN_PROC_BROWSER_TEST_F(SettingsSafetyHubUnusedSitePermissionsTest, All) {
+IN_PROC_BROWSER_TEST_F(SettingsSafetyHubTest, SafetyHubEntryPoint) {
+  RunTest("settings/safety_hub_entry_point_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsSafetyHubTest, All) {
   RunTest("settings/safety_hub_unused_site_permissions_module_test.js",
           "mocha.run()");
 }

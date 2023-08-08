@@ -4649,6 +4649,12 @@
   </message>
 
   <!-- Safety Hub -->
+  <message name="IDS_SETTINGS_SAFETY_HUB" desc="Name of a page in settings that gives users an overview over their safety status and where users can take action to improve their safety.">
+    Safety Hub
+  </message>
+  <message name="IDS_SETTINGS_SAFETY_HUB_ENTRY_POINT_BUTTON" desc="This is the label of a button that takes users to the Safety Hub page in Chrome settings. This button appears in a section in privacy settings next to a text that gives more details on Safety Hub.">
+    Go to Safety Hub
+  </message>
   <message name="IDS_SETTINGS_SAFETY_HUB_PAGE_CARD_SECTION_HEADER" desc="The title of the first section in the Safety Hub page. The 'Safety at a glance' section gives an overview about the current state of passwords, browser version and safe browsing setting of the browser. ">
     Safety at a glance
   </message>

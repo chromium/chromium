@@ -17,10 +17,10 @@ function addPrivacyChildRoutes(r: Partial<SettingsRoutes>) {
   r.CLEAR_BROWSER_DATA = r.PRIVACY.createChild('/clearBrowserData');
   r.CLEAR_BROWSER_DATA.isNavigableDialog = true;
 
-  r.SAFETY_CHECK = r.PRIVACY.createSection('/safetyCheck', 'safetyCheck');
-
   if (loadTimeData.getBoolean('enableSafetyHub')) {
     r.SAFETY_HUB = r.PRIVACY.createChild('/safetyHub');
+  } else {
+    r.SAFETY_CHECK = r.PRIVACY.createSection('/safetyCheck', 'safetyCheck');
   }
 
   if (loadTimeData.getBoolean('showPrivacyGuide')) {

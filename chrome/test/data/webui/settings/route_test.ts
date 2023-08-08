@@ -386,6 +386,11 @@ suite('SafetyHubReachable', function() {
     path = Router.getInstance().getCurrentRoute().path;
     assertEquals('/safetyHub', path);
   });
+
+  test('SafetyCheckRouteNotReachable', async function() {
+    // When Safety Hub is enabled, SafetyCheck is not reachable.
+    assertEquals(routes.SAFETY_CHECK, undefined);
+  });
 });
 
 suite('SafetyHubNotReachable', function() {
@@ -399,7 +404,19 @@ suite('SafetyHubNotReachable', function() {
   });
 
   test('SafetyHubRouteNotReachable', async function() {
-    // Assert that safety hub route is not reachable.
+    // Safety Hub should not be reachable.
     assertEquals(routes.SAFETY_HUB, undefined);
+  });
+
+  test('SafetyCheckRouteReachable', async function() {
+    let path = Router.getInstance().getCurrentRoute().path;
+    assertEquals('/', path);
+
+    Router.getInstance().navigateTo(routes.SAFETY_CHECK);
+    await flushTasks();
+
+    // Assert that the route is changed to SafetyCheck.
+    path = Router.getInstance().getCurrentRoute().path;
+    assertEquals('/safetyCheck', path);
   });
 });

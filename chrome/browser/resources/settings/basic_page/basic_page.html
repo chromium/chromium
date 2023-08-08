@@ -38,13 +38,23 @@
               prefs="{{prefs}}">
           </settings-privacy-guide-promo>
         </settings-section>
-        <template is="dom-if" if="[[showPage_(pageVisibility.safetyCheck)]]"
-            restamp>
+        <!-- TODO(crbug/1469277): Remove after SafetyHub launched. -->
+        <template is="dom-if"
+              if="[[showSafetyCheckPage_(pageVisibility.safetyCheck)]]" restamp>
           <settings-section page-title="$i18n{safetyCheckSectionTitle}"
               section="safetyCheck" nest-under-section="privacy"
               id="safetyCheckSettingsSection">
             <settings-safety-check-page prefs="{{prefs}}">
             </settings-safety-check-page>
+          </settings-section>
+        </template>
+        <template is="dom-if"
+            if="[[showSafetyHubEntryPointPage_(pageVisibility.privacy)]]"
+            restamp>
+          <settings-section page-title="$i18n{safetyHub}"
+              section="safetyHubEntryPoint" nest-under-section="privacy"
+              id="safetyHubEntryPointSection">
+            <settings-safety-hub-entry-point></settings-safety-hub-entry-point>
           </settings-section>
         </template>
         <template is="dom-if" if="[[showPage_(pageVisibility.privacy)]]"

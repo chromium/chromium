@@ -2511,18 +2511,16 @@ void AddSafetyCheckStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_SAFETY_CHECK_UNUSED_SITE_PERMISSIONS_SETTING_LABEL},
       {"safetyCheckUnusedSitePermissionsSettingSublabel",
        IDS_SETTINGS_SAFETY_CHECK_UNUSED_SITE_PERMISSIONS_SETTING_SUBLABEL},
-      {"safetyHubPageCardSectionHeader",
-       IDS_SETTINGS_SAFETY_HUB_PAGE_CARD_SECTION_HEADER},
-      {"safetyHubPageModuleSectionHeader",
-       IDS_SETTINGS_SAFETY_HUB_PAGE_MODULE_SECTION_HEADER},
-      {"safetyHubPageUserEduSectionHeader",
-       IDS_SETTINGS_SAFETY_HUB_PAGE_USER_EDU_SECTION_HEADER},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 }
 
 void AddSafetyHubStrings(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
+      {"safetyHub", IDS_SETTINGS_SAFETY_HUB},
+      {"safetyHubEntryPointNothingToDo",
+       IDS_SETTINGS_SAFETY_HUB_ENTRY_POINT_NOTHING_TO_DO},
+      {"safetyHubEntryPointButton", IDS_SETTINGS_SAFETY_HUB_ENTRY_POINT_BUTTON},
       {"safetyHubPageCardSectionHeader",
        IDS_SETTINGS_SAFETY_HUB_PAGE_CARD_SECTION_HEADER},
       {"safetyHubPageModuleSectionHeader",

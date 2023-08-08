@@ -1,0 +1,11 @@
+<style include="cr-shared-style">
+</style>
+
+<!-- TODO(crbug/1443466): Add header and subtitle for the case where there are
+                          actions for the user to take. -->
+<settings-safety-hub-module class="cr-row first" id="module"
+    subheader="$i18n{safetyHubEntryPointNothingToDo}">
+  <cr-button id="button" on-click="onClick_" slot="button-container">
+    $i18n{safetyHubEntryPointButton}
+  </cr-button>
+</settings-safety-hub-module>
