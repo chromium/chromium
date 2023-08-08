@@ -19,6 +19,8 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/browser_resources.h"
+#include "chrome/grit/gaia_action_buttons_resources.h"
+#include "chrome/grit/gaia_action_buttons_resources_map.h"
 #include "chrome/grit/gaia_auth_host_resources_map.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/lock_screen_reauth_resources.h"
@@ -138,6 +140,8 @@ LockScreenStartReauthUI::LockScreenStartReauthUI(content::WebUI* web_ui)
 
   source->AddResourcePaths(base::make_span(kLockScreenReauthResources,
                                            kLockScreenReauthResourcesSize));
+  source->AddResourcePaths(base::make_span(kGaiaActionButtonsResources,
+                                           kGaiaActionButtonsResourcesSize));
   source->SetDefaultResource(
       IDR_LOCK_SCREEN_REAUTH_LOCK_SCREEN_REAUTH_APP_HTML);
 

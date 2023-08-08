@@ -347,6 +347,15 @@
         on-click="onChangeSigninProviderClicked_">
     </oobe-text-button>
   </div>
+  <div class="flex layout horizontal button-container"
+      hidden="[[isDefaultSsoProvider]]">
+    <div class="action-buttons">
+      <gaia-action-buttons authenticator="[[authenticator_]]"
+          rounded-button="True"
+          on-set-focus-to-webview="setFocusToWebview_">
+      </gaia-action-buttons>
+    </div>
+  </div>
 </div>
 
 <div id="samlConfirmPasswordScreen" class="content-wrapper"
