@@ -379,6 +379,7 @@ export class App {
         {hasError: !cameraStartSuccessful});
 
     window.appWindow?.onAppLaunched();
+    metrics.sendOpenCameraEvent(this.cameraManager.getVidPid());
   }
 
   /**

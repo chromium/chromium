@@ -10,6 +10,7 @@ import {
 import * as error from '../error.js';
 import * as expert from '../expert.js';
 import {Point} from '../geometry.js';
+import * as metrics from '../metrics.js';
 import {isLocalDev} from '../models/load_time_data.js';
 import {ChromeHelper} from '../mojo/chrome_helper.js';
 import {ScreenState} from '../mojo/type.js';
@@ -333,6 +334,7 @@ export class CameraManager implements EventListener {
     }
     return promise.then((succeed) => {
       state.set(PerfEvent.CAMERA_SWITCHING, false, {hasError: !succeed});
+      metrics.sendOpenCameraEvent(this.getVidPid());
     });
   }
 

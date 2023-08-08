@@ -44,7 +44,7 @@ const GA4_API_SECRET =
 const ready = new WaitableEvent();
 
 /**
- * Send the event to GA backend.
+ * Sends the event to GA backend.
  *
  * @param event The event to send.
  * @param dimensions Optional object contains dimension information.
@@ -99,7 +99,7 @@ async function sendGa4Event(
 }
 
 /**
- * Set if the metrics is enabled. Note that the metrics will only be sent if it
+ * Sets if the metrics is enabled. Note that the metrics will only be sent if it
  * is enabled AND the logging consent option is enabled in OS settings.
  *
  * @param enabled True if the metrics is enabled.
@@ -589,4 +589,68 @@ function boolToIntString(b: boolean) {
 async function checkCanSendMetrics(): Promise<boolean> {
   return !PRODUCTION ||
       await ChromeHelper.getInstance().isMetricsAndCrashReportingEnabled();
+}
+
+/**
+ * Set of Top 20 Popular Camera Peripherals' Module ID from
+ * go/usb-popularity-study. Since 4 cameras of Sonix have the same module ids,
+ * they are aggregated to `Cam_Sonix`.
+ */
+export class PopularCamPeripheralSet {
+  private readonly moduleIDSet: Set<string>;
+
+  constructor() {
+    this.moduleIDSet = new Set<string>([
+      '046d:085b',  // C925e_Logitech
+      '046d:0825',  // C270_Logitech
+      '0c45:636b',  // Cam_Sonix
+      '0c45:6366',  // VitadeAF_Microdia
+      '046d:0843',  // C930e_Logitech
+      '046d:082d',  // HDProC920_Logitech
+      '046d:0892',  // C920HDPro_Logitech
+      '046d:08e5',  // C920PROHD_Logitech
+      '05a3:9331',  // Cam_ARC
+      '046d:085e',  // BRIOUltraHD_Logitech
+      '046d:085c',  // C922ProStream_Logitech
+      '1b3f:2002',  // 808Camera9_Generalplus
+      '1d6c:0103',  // NexiGoN60FHD_2MUVC
+      '046d:082c',  // HDC615_Logitech
+      '1778:d021',  // VZR_IPEVO
+      '07ca:313a',  // LiveStreamer313_Sunplus
+      '045e:0810',  // LifeCamHD3000_Microsoft
+    ]);
+  }
+
+  /**
+   * Returns the original `moduleId` if it exists in `moduleIDSet`. If not,
+   * returns 'others'.
+   */
+  getMaskedId(moduleId: string): string {
+    if (this.moduleIDSet.has(moduleId)) {
+      return moduleId;
+    }
+    return 'others';
+  }
+}
+
+const moduleIDSet = new PopularCamPeripheralSet();
+
+/**
+ * Sends camera opening event.
+ *
+ * @param moduleId Camera Module ID in the format of 8 digits hex string, such
+ *     as abcd:1234.
+ */
+export function sendOpenCameraEvent(moduleId: string|null): void {
+  const newModuleId =
+      moduleId === null ? 'MIPI' : moduleIDSet.getMaskedId(moduleId);
+
+  sendEvent(
+      {
+        eventCategory: 'open-camera',
+        eventAction: 'open-camera',
+      },
+      new Map([
+        [GaMetricDimension.CAMERA_MODULE_ID, newModuleId],
+      ]));
 }

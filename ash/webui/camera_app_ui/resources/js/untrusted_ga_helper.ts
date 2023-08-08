@@ -88,12 +88,14 @@ export enum GaMetricDimension {
   TIME_LAPSE_SPEED = 37,
   IS_TEST_IMAGE = 38,
   DEVICE_PIXEL_RATIO = 39,
+  CAMERA_MODULE_ID = 40,
 }
 
 export enum Ga4MetricDimension {
   ASPECT_RATIO_SET = 'aspect_ratio_set',
   BOARD = 'board',
   BROWSER_VERSION = 'browser_version',
+  CAMERA_MODULE_ID = 'camera_module_id',
   COL_NO = 'col_no',
   DEVICE_PIXEL_RATIO = 'device_pixel_ratio',
   DOC_FIX_TYPE = 'doc_fix_type',
