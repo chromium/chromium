@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 #include "net/base/network_anonymization_key.h"
+
 #include "base/feature_list.h"
 #include "base/unguessable_token.h"
 #include "base/values.h"
@@ -52,18 +53,13 @@ NetworkAnonymizationKey NetworkAnonymizationKey::CreateFromNetworkIsolationKey(
     return NetworkAnonymizationKey();
   }
 
-  switch (NetworkIsolationKey::GetMode()) {
-    case NetworkIsolationKey::Mode::kFrameSiteEnabled:
-      return CreateFromFrameSite(
-          network_isolation_key.GetTopFrameSite().value(),
-          network_isolation_key.GetFrameSite().value(),
-          network_isolation_key.GetNonce());
-    case NetworkIsolationKey::Mode::kCrossSiteFlagEnabled:
-      return NetworkAnonymizationKey(
-          network_isolation_key.GetTopFrameSite().value(),
-          network_isolation_key.GetIsCrossSite().value(),
-          network_isolation_key.GetNonce());
-  }
+  return CreateFromFrameSite(
+      network_isolation_key.GetTopFrameSite().value(),
+      network_isolation_key
+          .GetFrameSiteForNetworkAnonymizationKey(
+              NetworkIsolationKey::NetworkAnonymizationKeyPasskey())
+          .value(),
+      network_isolation_key.GetNonce());
 }
 
 NetworkAnonymizationKey::NetworkAnonymizationKey()

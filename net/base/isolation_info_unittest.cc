@@ -31,13 +31,25 @@ class IsolationInfoTest
  public:
   void SetUp() override {
     switch (GetParam()) {
-      case NetworkIsolationKey::Mode::kFrameSiteEnabled:
-        scoped_feature_list_.InitAndDisableFeature(
-            net::features::kEnableCrossSiteFlagNetworkIsolationKey);
+      case net::NetworkIsolationKey::Mode::kFrameSiteEnabled:
+        scoped_feature_list_.InitWithFeatures(
+            {},
+            {net::features::kEnableCrossSiteFlagNetworkIsolationKey,
+             net::features::kEnableFrameSiteSharedOpaqueNetworkIsolationKey});
         break;
-      case NetworkIsolationKey::Mode::kCrossSiteFlagEnabled:
-        scoped_feature_list_.InitAndEnableFeature(
-            net::features::kEnableCrossSiteFlagNetworkIsolationKey);
+
+      case net::NetworkIsolationKey::Mode::kFrameSiteWithSharedOpaqueEnabled:
+        scoped_feature_list_.InitWithFeatures(
+            {net::features::kEnableFrameSiteSharedOpaqueNetworkIsolationKey},
+            {
+                net::features::kEnableCrossSiteFlagNetworkIsolationKey,
+            });
+        break;
+
+      case net::NetworkIsolationKey::Mode::kCrossSiteFlagEnabled:
+        scoped_feature_list_.InitWithFeatures(
+            {net::features::kEnableCrossSiteFlagNetworkIsolationKey},
+            {net::features::kEnableFrameSiteSharedOpaqueNetworkIsolationKey});
         break;
     }
   }
@@ -73,12 +85,19 @@ class IsolationInfoTest
 INSTANTIATE_TEST_SUITE_P(
     Tests,
     IsolationInfoTest,
-    testing::ValuesIn({NetworkIsolationKey::Mode::kFrameSiteEnabled,
-                       NetworkIsolationKey::Mode::kCrossSiteFlagEnabled}),
+    testing::ValuesIn(
+        {NetworkIsolationKey::Mode::kFrameSiteEnabled,
+         NetworkIsolationKey::Mode::kCrossSiteFlagEnabled,
+         NetworkIsolationKey::Mode::kFrameSiteWithSharedOpaqueEnabled}),
     [](const testing::TestParamInfo<NetworkIsolationKey::Mode>& info) {
-      return info.param == NetworkIsolationKey::Mode::kFrameSiteEnabled
-                 ? "FrameSiteEnabled"
-                 : "CrossSiteFlagEnabled";
+      switch (info.param) {
+        case NetworkIsolationKey::Mode::kFrameSiteEnabled:
+          return "FrameSiteEnabled";
+        case NetworkIsolationKey::Mode::kCrossSiteFlagEnabled:
+          return "CrossSiteFlagEnabled";
+        case NetworkIsolationKey::Mode::kFrameSiteWithSharedOpaqueEnabled:
+          return "FrameSiteSharedOpaqueEnabled";
+      }
     });
 
 void DuplicateAndCompare(const IsolationInfo& isolation_info) {
@@ -175,6 +194,7 @@ TEST_P(IsolationInfoTest, RequestTypeMainFrame) {
   EXPECT_EQ(kOrigin1, isolation_info.frame_origin());
   switch (NetworkIsolationKey::GetMode()) {
     case NetworkIsolationKey::Mode::kFrameSiteEnabled:
+    case NetworkIsolationKey::Mode::kFrameSiteWithSharedOpaqueEnabled:
       EXPECT_EQ("https://foo.test https://foo.test",
                 isolation_info.network_isolation_key().ToCacheKeyString());
       break;
@@ -203,6 +223,7 @@ TEST_P(IsolationInfoTest, RequestTypeMainFrame) {
   EXPECT_FALSE(redirected_isolation_info.network_isolation_key().IsTransient());
   switch (NetworkIsolationKey::GetMode()) {
     case NetworkIsolationKey::Mode::kFrameSiteEnabled:
+    case NetworkIsolationKey::Mode::kFrameSiteWithSharedOpaqueEnabled:
       EXPECT_EQ(
           "https://baz.test https://baz.test",
           redirected_isolation_info.network_isolation_key().ToCacheKeyString());
@@ -230,6 +251,7 @@ TEST_P(IsolationInfoTest, RequestTypeSubFrame) {
   EXPECT_EQ(kOrigin2, isolation_info.frame_origin());
   switch (NetworkIsolationKey::GetMode()) {
     case NetworkIsolationKey::Mode::kFrameSiteEnabled:
+    case NetworkIsolationKey::Mode::kFrameSiteWithSharedOpaqueEnabled:
       EXPECT_EQ("https://foo.test https://bar.test",
                 isolation_info.network_isolation_key().ToCacheKeyString());
       break;
@@ -256,6 +278,7 @@ TEST_P(IsolationInfoTest, RequestTypeSubFrame) {
   EXPECT_EQ(kOrigin3, redirected_isolation_info.frame_origin());
   switch (NetworkIsolationKey::GetMode()) {
     case NetworkIsolationKey::Mode::kFrameSiteEnabled:
+    case NetworkIsolationKey::Mode::kFrameSiteWithSharedOpaqueEnabled:
       EXPECT_EQ(
           "https://foo.test https://baz.test",
           redirected_isolation_info.network_isolation_key().ToCacheKeyString());
@@ -376,6 +399,7 @@ TEST_P(IsolationInfoTest, RequestTypeOtherWithSiteForCookies) {
   EXPECT_EQ(kOrigin1, isolation_info.frame_origin());
   switch (NetworkIsolationKey::GetMode()) {
     case NetworkIsolationKey::Mode::kFrameSiteEnabled:
+    case NetworkIsolationKey::Mode::kFrameSiteWithSharedOpaqueEnabled:
       EXPECT_EQ("https://foo.test https://foo.test",
                 isolation_info.network_isolation_key().ToCacheKeyString());
       break;
@@ -409,6 +433,7 @@ TEST_P(IsolationInfoTest, RequestTypeOtherWithEmptySiteForCookies) {
   EXPECT_EQ(kOrigin2, isolation_info.frame_origin());
   switch (NetworkIsolationKey::GetMode()) {
     case NetworkIsolationKey::Mode::kFrameSiteEnabled:
+    case NetworkIsolationKey::Mode::kFrameSiteWithSharedOpaqueEnabled:
       EXPECT_EQ("https://foo.test https://bar.test",
                 isolation_info.network_isolation_key().ToCacheKeyString());
       break;
@@ -457,6 +482,7 @@ TEST_P(IsolationInfoTest, CreateForInternalRequest) {
   EXPECT_EQ(kOrigin1, isolation_info.frame_origin());
   switch (NetworkIsolationKey::GetMode()) {
     case NetworkIsolationKey::Mode::kFrameSiteEnabled:
+    case NetworkIsolationKey::Mode::kFrameSiteWithSharedOpaqueEnabled:
       EXPECT_EQ("https://foo.test https://foo.test",
                 isolation_info.network_isolation_key().ToCacheKeyString());
       break;
@@ -499,6 +525,7 @@ TEST_P(IsolationInfoTest, CustomSchemeRequestTypeOther) {
   EXPECT_EQ(kOrigin1, isolation_info.frame_origin());
   switch (NetworkIsolationKey::GetMode()) {
     case NetworkIsolationKey::Mode::kFrameSiteEnabled:
+    case NetworkIsolationKey::Mode::kFrameSiteWithSharedOpaqueEnabled:
       EXPECT_EQ("foo://a.foo.com https://foo.test",
                 isolation_info.network_isolation_key().ToCacheKeyString());
       break;
@@ -691,6 +718,7 @@ TEST_P(IsolationInfoTest, Serialization) {
         EXPECT_TRUE(info.Serialize().empty());
         break;
       case NetworkIsolationKey::Mode::kCrossSiteFlagEnabled:
+      case NetworkIsolationKey::Mode::kFrameSiteWithSharedOpaqueEnabled:
         auto rt = IsolationInfo::Deserialize(info.Serialize());
         ASSERT_TRUE(rt);
         // See comment above for why this check fails.

@@ -737,6 +737,23 @@ bool GetHttpCacheBackendResetParam(PrefService* local_state) {
   current_field_trial_status +=
       (field_trial ? field_trial->group_name() : "None");
 
+  // For the ongoing HTTP Cache keying experiments, if a flag indicates that the
+  // user is in an experiment group, modify `current_field_trial_status` to
+  // ensure that the cache gets cleared. If the user is not a part of the
+  // experiment, don't make any changes so as not to invalidate the existing
+  // cache.
+  if (base::FeatureList::IsEnabled(
+          net::features::kEnableCrossSiteFlagNetworkIsolationKey)) {
+    current_field_trial_status += " CrossSiteFlagNIK";
+  } else if (base::FeatureList::IsEnabled(
+                 net::features::
+                     kEnableFrameSiteSharedOpaqueNetworkIsolationKey)) {
+    current_field_trial_status += " FrameSiteSharedOpaqueNIK";
+  } else if (base::FeatureList::IsEnabled(
+                 net::features::kHttpCacheKeyingExperimentControlGroup)) {
+    current_field_trial_status += " 2023ExperimentControlGroup";
+  }
+
   std::string previous_field_trial_status =
       local_state->GetString(kHttpCacheFinchExperimentGroups);
   local_state->SetString(kHttpCacheFinchExperimentGroups,

@@ -176,6 +176,9 @@ NET_EXPORT BASE_DECLARE_FEATURE(kPartitionNelAndReportingByNetworkIsolationKey);
 // `is_cross_site_` -> a boolean indicating whether the frame site is
 // schemefully cross-site from the top-level site.
 NET_EXPORT BASE_DECLARE_FEATURE(kEnableCrossSiteFlagNetworkIsolationKey);
+NET_EXPORT BASE_DECLARE_FEATURE(
+    kEnableFrameSiteSharedOpaqueNetworkIsolationKey);
+NET_EXPORT BASE_DECLARE_FEATURE(kHttpCacheKeyingExperimentControlGroup);
 
 // Enables sending TLS 1.3 Key Update messages on TLS 1.3 connections in order
 // to ensure that this corner of the spec is exercised. This is currently

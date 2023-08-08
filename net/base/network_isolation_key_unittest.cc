@@ -26,12 +26,24 @@ class NetworkIsolationKeyTest
   NetworkIsolationKeyTest() {
     switch (GetParam()) {
       case net::NetworkIsolationKey::Mode::kFrameSiteEnabled:
-        scoped_feature_list_.InitAndDisableFeature(
-            net::features::kEnableCrossSiteFlagNetworkIsolationKey);
+        scoped_feature_list_.InitWithFeatures(
+            {},
+            {net::features::kEnableCrossSiteFlagNetworkIsolationKey,
+             net::features::kEnableFrameSiteSharedOpaqueNetworkIsolationKey});
         break;
+
+      case net::NetworkIsolationKey::Mode::kFrameSiteWithSharedOpaqueEnabled:
+        scoped_feature_list_.InitWithFeatures(
+            {net::features::kEnableFrameSiteSharedOpaqueNetworkIsolationKey},
+            {
+                net::features::kEnableCrossSiteFlagNetworkIsolationKey,
+            });
+        break;
+
       case net::NetworkIsolationKey::Mode::kCrossSiteFlagEnabled:
-        scoped_feature_list_.InitAndEnableFeature(
-            net::features::kEnableCrossSiteFlagNetworkIsolationKey);
+        scoped_feature_list_.InitWithFeatures(
+            {net::features::kEnableCrossSiteFlagNetworkIsolationKey},
+            {net::features::kEnableFrameSiteSharedOpaqueNetworkIsolationKey});
         break;
     }
   }
@@ -42,12 +54,19 @@ class NetworkIsolationKeyTest
 INSTANTIATE_TEST_SUITE_P(
     Tests,
     NetworkIsolationKeyTest,
-    testing::ValuesIn({NetworkIsolationKey::Mode::kFrameSiteEnabled,
-                       NetworkIsolationKey::Mode::kCrossSiteFlagEnabled}),
+    testing::ValuesIn(
+        {NetworkIsolationKey::Mode::kFrameSiteEnabled,
+         NetworkIsolationKey::Mode::kCrossSiteFlagEnabled,
+         NetworkIsolationKey::Mode::kFrameSiteWithSharedOpaqueEnabled}),
     [](const testing::TestParamInfo<NetworkIsolationKey::Mode>& info) {
-      return info.param == NetworkIsolationKey::Mode::kFrameSiteEnabled
-                 ? "FrameSiteEnabled"
-                 : "CrossSiteFlagEnabled";
+      switch (info.param) {
+        case NetworkIsolationKey::Mode::kFrameSiteEnabled:
+          return "FrameSiteEnabled";
+        case NetworkIsolationKey::Mode::kCrossSiteFlagEnabled:
+          return "CrossSiteFlagEnabled";
+        case NetworkIsolationKey::Mode::kFrameSiteWithSharedOpaqueEnabled:
+          return "FrameSiteSharedOpaqueEnabled";
+      }
     });
 
 TEST_P(NetworkIsolationKeyTest, EmptyKey) {
@@ -57,6 +76,7 @@ TEST_P(NetworkIsolationKeyTest, EmptyKey) {
   EXPECT_TRUE(key.IsTransient());
   switch (NetworkIsolationKey::GetMode()) {
     case NetworkIsolationKey::Mode::kFrameSiteEnabled:
+    case NetworkIsolationKey::Mode::kFrameSiteWithSharedOpaqueEnabled:
       EXPECT_EQ("null null", key.ToDebugString());
       break;
     case NetworkIsolationKey::Mode::kCrossSiteFlagEnabled:
@@ -71,6 +91,7 @@ TEST_P(NetworkIsolationKeyTest, NonEmptySameSiteKey) {
   EXPECT_TRUE(key.IsFullyPopulated());
   switch (NetworkIsolationKey::GetMode()) {
     case NetworkIsolationKey::Mode::kFrameSiteEnabled:
+    case NetworkIsolationKey::Mode::kFrameSiteWithSharedOpaqueEnabled:
       EXPECT_EQ(site1.Serialize() + " " + site1.Serialize(),
                 key.ToCacheKeyString());
       EXPECT_EQ(site1.GetDebugString() + " " + site1.GetDebugString(),
@@ -79,7 +100,7 @@ TEST_P(NetworkIsolationKeyTest, NonEmptySameSiteKey) {
     case NetworkIsolationKey::Mode::kCrossSiteFlagEnabled:
       EXPECT_EQ(site1.Serialize() + " _0", key.ToCacheKeyString());
       EXPECT_EQ(site1.GetDebugString() + " same-site", key.ToDebugString());
-      EXPECT_FALSE(*key.GetIsCrossSite());
+      EXPECT_FALSE(*key.GetIsCrossSiteForTesting());
       break;
   }
   EXPECT_FALSE(key.IsTransient());
@@ -92,6 +113,7 @@ TEST_P(NetworkIsolationKeyTest, NonEmptyCrossSiteKey) {
   EXPECT_TRUE(key.IsFullyPopulated());
   switch (NetworkIsolationKey::GetMode()) {
     case NetworkIsolationKey::Mode::kFrameSiteEnabled:
+    case NetworkIsolationKey::Mode::kFrameSiteWithSharedOpaqueEnabled:
       EXPECT_EQ(site1.Serialize() + " " + site2.Serialize(),
                 key.ToCacheKeyString());
       EXPECT_EQ(site1.GetDebugString() + " " + site2.GetDebugString(),
@@ -100,7 +122,7 @@ TEST_P(NetworkIsolationKeyTest, NonEmptyCrossSiteKey) {
     case NetworkIsolationKey::Mode::kCrossSiteFlagEnabled:
       EXPECT_EQ(site1.Serialize() + " _1", key.ToCacheKeyString());
       EXPECT_EQ(site1.GetDebugString() + " cross-site", key.ToDebugString());
-      EXPECT_TRUE(*key.GetIsCrossSite());
+      EXPECT_TRUE(*key.GetIsCrossSiteForTesting());
       break;
   }
   EXPECT_FALSE(key.IsTransient());
@@ -116,6 +138,7 @@ TEST_P(NetworkIsolationKeyTest, KeyWithNonce) {
   EXPECT_TRUE(key.IsTransient());
   switch (NetworkIsolationKey::GetMode()) {
     case NetworkIsolationKey::Mode::kFrameSiteEnabled:
+    case NetworkIsolationKey::Mode::kFrameSiteWithSharedOpaqueEnabled:
       EXPECT_EQ(site1.GetDebugString() + " " + site2.GetDebugString() +
                     " (with nonce " + nonce.ToString() + ")",
                 key.ToDebugString());
@@ -151,6 +174,10 @@ TEST_P(NetworkIsolationKeyTest, OpaqueOriginKey) {
       EXPECT_EQ(site_data.GetDebugString() + " " + site_data.GetDebugString(),
                 key.ToDebugString());
       break;
+    case NetworkIsolationKey::Mode::kFrameSiteWithSharedOpaqueEnabled:
+      EXPECT_EQ(site_data.GetDebugString() + " opaque-origin",
+                key.ToDebugString());
+      break;
     case NetworkIsolationKey::Mode::kCrossSiteFlagEnabled:
       // Even though the site is opaque, it won't be considered cross-site since
       // the top-level site and frame site have the same opaque origin.
@@ -169,6 +196,10 @@ TEST_P(NetworkIsolationKeyTest, OpaqueOriginKey) {
       EXPECT_EQ(other_site.GetDebugString() + " " + other_site.GetDebugString(),
                 other_key.ToDebugString());
       break;
+    case NetworkIsolationKey::Mode::kFrameSiteWithSharedOpaqueEnabled:
+      EXPECT_EQ(other_site.GetDebugString() + " opaque-origin",
+                other_key.ToDebugString());
+      break;
     case NetworkIsolationKey::Mode::kCrossSiteFlagEnabled:
       EXPECT_EQ(other_site.GetDebugString() + " same-site",
                 other_key.ToDebugString());
@@ -185,6 +216,7 @@ TEST_P(NetworkIsolationKeyTest, OpaqueOriginTopLevelSiteKey) {
   EXPECT_TRUE(key.IsTransient());
   switch (NetworkIsolationKey::GetMode()) {
     case NetworkIsolationKey::Mode::kFrameSiteEnabled:
+    case NetworkIsolationKey::Mode::kFrameSiteWithSharedOpaqueEnabled:
       EXPECT_EQ(site_data.GetDebugString() + " " + site1.GetDebugString(),
                 key.ToDebugString());
       break;
@@ -202,6 +234,7 @@ TEST_P(NetworkIsolationKeyTest, OpaqueOriginTopLevelSiteKey) {
   EXPECT_NE(key.ToDebugString(), other_key.ToDebugString());
   switch (NetworkIsolationKey::GetMode()) {
     case NetworkIsolationKey::Mode::kFrameSiteEnabled:
+    case NetworkIsolationKey::Mode::kFrameSiteWithSharedOpaqueEnabled:
       EXPECT_EQ(other_site.GetDebugString() + " " + site1.GetDebugString(),
                 other_key.ToDebugString());
       break;
@@ -224,6 +257,12 @@ TEST_P(NetworkIsolationKeyTest, OpaqueOriginIframeKey) {
       EXPECT_EQ(site1.GetDebugString() + " " + site_data.GetDebugString(),
                 key.ToDebugString());
       break;
+    case NetworkIsolationKey::Mode::kFrameSiteWithSharedOpaqueEnabled:
+      EXPECT_EQ(site1.Serialize() + " _opaque", key.ToCacheKeyString());
+      EXPECT_EQ(site1.GetDebugString() + " opaque-origin", key.ToDebugString());
+      EXPECT_FALSE(key.IsTransient());
+      break;
+
     case NetworkIsolationKey::Mode::kCrossSiteFlagEnabled:
       EXPECT_EQ(site1.Serialize() + " _1", key.ToCacheKeyString());
       EXPECT_EQ(site1.GetDebugString() + " cross-site", key.ToDebugString());
@@ -242,6 +281,7 @@ TEST_P(NetworkIsolationKeyTest, OpaqueOriginIframeKey) {
       EXPECT_EQ(site1.GetDebugString() + " " + other_site.GetDebugString(),
                 other_key.ToDebugString());
       break;
+    case NetworkIsolationKey::Mode::kFrameSiteWithSharedOpaqueEnabled:
     case NetworkIsolationKey::Mode::kCrossSiteFlagEnabled:
       EXPECT_EQ(key, other_key);
       EXPECT_EQ(key.ToDebugString(), other_key.ToDebugString());
@@ -350,6 +390,7 @@ TEST_P(NetworkIsolationKeyTest, OpaqueSiteKeyBoth) {
       EXPECT_TRUE(key1 < key3 || key3 < key1);
       EXPECT_NE(key1.ToDebugString(), key3.ToDebugString());
       break;
+    case NetworkIsolationKey::Mode::kFrameSiteWithSharedOpaqueEnabled:
     case NetworkIsolationKey::Mode::kCrossSiteFlagEnabled:
       EXPECT_TRUE(key1 == key3);
       EXPECT_FALSE(key1 < key3 || key3 < key1);
@@ -377,6 +418,7 @@ TEST_P(NetworkIsolationKeyTest, NonStandardScheme) {
   EXPECT_FALSE(key.GetTopFrameSite()->opaque());
   switch (NetworkIsolationKey::GetMode()) {
     case NetworkIsolationKey::Mode::kFrameSiteEnabled:
+    case NetworkIsolationKey::Mode::kFrameSiteWithSharedOpaqueEnabled:
       EXPECT_EQ("foo://a.foo.com foo://a.foo.com", key.ToCacheKeyString());
       break;
     case NetworkIsolationKey::Mode::kCrossSiteFlagEnabled:
@@ -394,7 +436,8 @@ TEST_P(NetworkIsolationKeyTest, CreateWithNewFrameSite) {
   NetworkIsolationKey key_c = key.CreateWithNewFrameSite(site_c);
   switch (NetworkIsolationKey::GetMode()) {
     case NetworkIsolationKey::Mode::kFrameSiteEnabled:
-      EXPECT_EQ(site_c, key_c.GetFrameSite());
+    case NetworkIsolationKey::Mode::kFrameSiteWithSharedOpaqueEnabled:
+      EXPECT_EQ(site_c, key_c.GetFrameSiteForTesting());
       EXPECT_NE(key_c, key);
       break;
     case NetworkIsolationKey::Mode::kCrossSiteFlagEnabled:

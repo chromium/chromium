@@ -478,6 +478,7 @@ enum SplitCacheTestCase {
   kSplitCacheDisabled,
   kSplitCacheEnabledDoublePlusBitKeyed,
   kSplitCacheEnabledTripleKeyed,
+  kSplitCacheEnabledTripleKeyedSharedOpaque,
 };
 
 class NoStatePrefetchBrowserTestHttpCache
@@ -498,23 +499,27 @@ class NoStatePrefetchBrowserTestHttpCache
           net::features::kSplitCacheByNetworkIsolationKey);
     }
 
-    if (IsCrossSiteFlagSchemeEnabled()) {
+    if (GetParam() == kSplitCacheEnabledDoublePlusBitKeyed) {
       enabled_features.push_back(
           net::features::kEnableCrossSiteFlagNetworkIsolationKey);
     } else {
       disabled_features.push_back(
           net::features::kEnableCrossSiteFlagNetworkIsolationKey);
     }
+
+    if (GetParam() == kSplitCacheEnabledTripleKeyedSharedOpaque) {
+      enabled_features.push_back(
+          net::features::kEnableFrameSiteSharedOpaqueNetworkIsolationKey);
+    } else {
+      disabled_features.push_back(
+          net::features::kEnableFrameSiteSharedOpaqueNetworkIsolationKey);
+    }
+
     feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
   bool IsSplitCacheEnabled() const {
     return GetParam() != SplitCacheTestCase::kSplitCacheDisabled;
-  }
-
-  bool IsCrossSiteFlagSchemeEnabled() const {
-    return GetParam() ==
-           SplitCacheTestCase::kSplitCacheEnabledDoublePlusBitKeyed;
   }
 
  private:
@@ -549,12 +554,18 @@ IN_PROC_BROWSER_TEST_P(
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       current_browser(), src_server()->GetURL(prerender_path)));
 
-  if (IsCrossSiteFlagSchemeEnabled()) {
-    // If the NIK only uses an is-cross-site bit instead of the full frame site
-    // in the cache key, then the two iframes will share a cache partition.
-    WaitForRequestCount(image_src, 1);
-  } else {
-    WaitForRequestCount(image_src, 2);
+  switch (GetParam()) {
+    case SplitCacheTestCase::kSplitCacheEnabledDoublePlusBitKeyed:
+      // If the NIK only uses an is-cross-site bit instead of the full frame
+      // site in the cache key, then the two iframes will share a cache
+      // partition.
+      WaitForRequestCount(image_src, 1);
+      break;
+    case SplitCacheTestCase::kSplitCacheEnabledTripleKeyed:
+    case SplitCacheTestCase::kSplitCacheEnabledTripleKeyedSharedOpaque:
+    case SplitCacheTestCase::kSplitCacheDisabled:
+      WaitForRequestCount(image_src, 2);
+      break;
   }
 }
 
@@ -563,7 +574,8 @@ INSTANTIATE_TEST_SUITE_P(
     NoStatePrefetchBrowserTestHttpCache_DefaultAndAppendFrameOrigin,
     testing::ValuesIn(
         {SplitCacheTestCase::kSplitCacheEnabledTripleKeyed,
-         SplitCacheTestCase::kSplitCacheEnabledDoublePlusBitKeyed}),
+         SplitCacheTestCase::kSplitCacheEnabledDoublePlusBitKeyed,
+         SplitCacheTestCase::kSplitCacheEnabledTripleKeyedSharedOpaque}),
     [](const testing::TestParamInfo<SplitCacheTestCase>& info) {
       switch (info.param) {
         case (SplitCacheTestCase::kSplitCacheDisabled):
@@ -572,6 +584,8 @@ INSTANTIATE_TEST_SUITE_P(
           return "TripleKeyed";
         case (SplitCacheTestCase::kSplitCacheEnabledDoublePlusBitKeyed):
           return "DoublePlusBitKeyed";
+        case (SplitCacheTestCase::kSplitCacheEnabledTripleKeyedSharedOpaque):
+          return "TripleKeyedSharedOpaque";
       }
     });
 
@@ -685,7 +699,8 @@ INSTANTIATE_TEST_SUITE_P(
     testing::ValuesIn(
         {SplitCacheTestCase::kSplitCacheDisabled,
          SplitCacheTestCase::kSplitCacheEnabledTripleKeyed,
-         SplitCacheTestCase::kSplitCacheEnabledDoublePlusBitKeyed}),
+         SplitCacheTestCase::kSplitCacheEnabledDoublePlusBitKeyed,
+         SplitCacheTestCase::kSplitCacheEnabledTripleKeyedSharedOpaque}),
     [](const testing::TestParamInfo<SplitCacheTestCase>& info) {
       switch (info.param) {
         case (SplitCacheTestCase::kSplitCacheDisabled):
@@ -694,6 +709,8 @@ INSTANTIATE_TEST_SUITE_P(
           return "TripleKeyed";
         case (SplitCacheTestCase::kSplitCacheEnabledDoublePlusBitKeyed):
           return "DoublePlusBitKeyed";
+        case (SplitCacheTestCase::kSplitCacheEnabledTripleKeyedSharedOpaque):
+          return "DoublePlusBitKeyedSharedOpaque";
       }
     });
 

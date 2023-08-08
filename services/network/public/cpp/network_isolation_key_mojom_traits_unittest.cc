@@ -8,6 +8,7 @@
 #include "base/unguessable_token.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "net/base/features.h"
+#include "net/base/network_isolation_key.h"
 #include "services/network/public/mojom/network_isolation_key.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -22,12 +23,24 @@ class NetworkIsolationKeyMojomTraitsTestWithNikMode
   NetworkIsolationKeyMojomTraitsTestWithNikMode() {
     switch (GetParam()) {
       case net::NetworkIsolationKey::Mode::kFrameSiteEnabled:
-        scoped_feature_list_.InitAndDisableFeature(
-            net::features::kEnableCrossSiteFlagNetworkIsolationKey);
+        scoped_feature_list_.InitWithFeatures(
+            {},
+            {net::features::kEnableCrossSiteFlagNetworkIsolationKey,
+             net::features::kEnableFrameSiteSharedOpaqueNetworkIsolationKey});
         break;
+
+      case net::NetworkIsolationKey::Mode::kFrameSiteWithSharedOpaqueEnabled:
+        scoped_feature_list_.InitWithFeatures(
+            {net::features::kEnableFrameSiteSharedOpaqueNetworkIsolationKey},
+            {
+                net::features::kEnableCrossSiteFlagNetworkIsolationKey,
+            });
+        break;
+
       case net::NetworkIsolationKey::Mode::kCrossSiteFlagEnabled:
-        scoped_feature_list_.InitAndEnableFeature(
-            net::features::kEnableCrossSiteFlagNetworkIsolationKey);
+        scoped_feature_list_.InitWithFeatures(
+            {net::features::kEnableCrossSiteFlagNetworkIsolationKey},
+            {net::features::kEnableFrameSiteSharedOpaqueNetworkIsolationKey});
         break;
     }
   }
@@ -39,12 +52,19 @@ class NetworkIsolationKeyMojomTraitsTestWithNikMode
 INSTANTIATE_TEST_SUITE_P(
     Tests,
     NetworkIsolationKeyMojomTraitsTestWithNikMode,
-    testing::ValuesIn({net::NetworkIsolationKey::Mode::kFrameSiteEnabled,
-                       net::NetworkIsolationKey::Mode::kCrossSiteFlagEnabled}),
+    testing::ValuesIn(
+        {net::NetworkIsolationKey::Mode::kFrameSiteEnabled,
+         net::NetworkIsolationKey::Mode::kCrossSiteFlagEnabled,
+         net::NetworkIsolationKey::Mode::kFrameSiteWithSharedOpaqueEnabled}),
     [](const testing::TestParamInfo<net::NetworkIsolationKey::Mode>& info) {
-      return info.param == net::NetworkIsolationKey::Mode::kFrameSiteEnabled
-                 ? "FrameSiteEnabled"
-                 : "CrossSiteFlagEnabled";
+      switch (info.param) {
+        case net::NetworkIsolationKey::Mode::kFrameSiteEnabled:
+          return "FrameSiteEnabled";
+        case net::NetworkIsolationKey::Mode::kCrossSiteFlagEnabled:
+          return "CrossSiteFlagEnabled";
+        case net::NetworkIsolationKey::Mode::kFrameSiteWithSharedOpaqueEnabled:
+          return "FrameSiteSharedOpaqueEnabled";
+      }
     });
 
 TEST_P(NetworkIsolationKeyMojomTraitsTestWithNikMode, SerializeAndDeserialize) {
@@ -52,6 +72,8 @@ TEST_P(NetworkIsolationKeyMojomTraitsTestWithNikMode, SerializeAndDeserialize) {
   std::vector<net::NetworkIsolationKey> keys = {
       net::NetworkIsolationKey(),
       net::NetworkIsolationKey::CreateTransient(),
+      net::NetworkIsolationKey(url::Origin::Create(GURL("http://a.test/")),
+                               url::Origin()),
       net::NetworkIsolationKey(url::Origin::Create(GURL("http://a.test/")),
                                url::Origin::Create(GURL("http://b.test/"))),
       net::NetworkIsolationKey(url::Origin::Create(GURL("http://foo.a.test/")),
@@ -74,10 +96,13 @@ TEST_P(NetworkIsolationKeyMojomTraitsTestWithNikMode, SerializeAndDeserialize) {
     EXPECT_EQ(original.GetTopFrameSite(), copied.GetTopFrameSite());
     switch (net::NetworkIsolationKey::GetMode()) {
       case net::NetworkIsolationKey::Mode::kFrameSiteEnabled:
-        EXPECT_EQ(original.GetFrameSite(), copied.GetFrameSite());
+      case net::NetworkIsolationKey::Mode::kFrameSiteWithSharedOpaqueEnabled:
+        EXPECT_EQ(original.GetFrameSiteForTesting(),
+                  copied.GetFrameSiteForTesting());
         break;
       case net::NetworkIsolationKey::Mode::kCrossSiteFlagEnabled:
-        EXPECT_EQ(original.GetIsCrossSite(), copied.GetIsCrossSite());
+        EXPECT_EQ(original.GetIsCrossSiteForTesting(),
+                  copied.GetIsCrossSiteForTesting());
         break;
     }
     EXPECT_EQ(original.IsTransient(), copied.IsTransient());

@@ -23,6 +23,7 @@ class NonEmptyNetworkIsolationKeyDataView;
 
 namespace net {
 class CookiePartitionKey;
+class NetworkAnonymizationKey;
 }
 
 namespace net {
@@ -45,6 +46,13 @@ class NET_EXPORT NetworkIsolationKey {
     friend class CookiePartitionKey;
     CookiePartitionKeyPasskey() = default;
     ~CookiePartitionKeyPasskey() = default;
+  };
+
+  class NetworkAnonymizationKeyPasskey {
+   private:
+    friend class NetworkAnonymizationKey;
+    NetworkAnonymizationKeyPasskey() = default;
+    ~NetworkAnonymizationKeyPasskey() = default;
   };
 
   // Full constructor.  When a request is initiated by the top frame, it must
@@ -90,14 +98,22 @@ class NET_EXPORT NetworkIsolationKey {
 
   // Compare keys for equality, true if all enabled fields are equal.
   bool operator==(const NetworkIsolationKey& other) const {
-    if (GetMode() != Mode::kFrameSiteEnabled) {
-      return std::tie(top_frame_site_, is_cross_site_, nonce_) ==
-             std::tie(other.top_frame_site_, other.is_cross_site_,
-                      other.nonce_);
+    switch (GetMode()) {
+      case Mode::kFrameSiteWithSharedOpaqueEnabled:
+        if ((frame_site_ && frame_site_->opaque()) &&
+            (other.frame_site_ && other.frame_site_->opaque())) {
+          return std::tie(top_frame_site_, nonce_) ==
+                 std::tie(other.top_frame_site_, other.nonce_);
+        }
+        [[fallthrough]];
+      case Mode::kFrameSiteEnabled:
+        return std::tie(top_frame_site_, frame_site_, nonce_) ==
+               std::tie(other.top_frame_site_, other.frame_site_, other.nonce_);
+      case Mode::kCrossSiteFlagEnabled:
+        return std::tie(top_frame_site_, is_cross_site_, nonce_) ==
+               std::tie(other.top_frame_site_, other.is_cross_site_,
+                        other.nonce_);
     }
-    return std::tie(top_frame_site_, frame_site_, is_cross_site_, nonce_) ==
-           std::tie(other.top_frame_site_, other.frame_site_,
-                    other.is_cross_site_, other.nonce_);
   }
 
   // Compare keys for inequality, true if any enabled field varies.
@@ -107,14 +123,22 @@ class NET_EXPORT NetworkIsolationKey {
 
   // Provide an ordering for keys based on all enabled fields.
   bool operator<(const NetworkIsolationKey& other) const {
-    if (GetMode() != Mode::kFrameSiteEnabled) {
-      return std::tie(top_frame_site_, is_cross_site_, nonce_) <
-             std::tie(other.top_frame_site_, other.is_cross_site_,
-                      other.nonce_);
+    switch (GetMode()) {
+      case Mode::kFrameSiteWithSharedOpaqueEnabled:
+        if ((frame_site_ && frame_site_->opaque()) &&
+            (other.frame_site_ && other.frame_site_->opaque())) {
+          return std::tie(top_frame_site_, nonce_) <
+                 std::tie(other.top_frame_site_, other.nonce_);
+        }
+        [[fallthrough]];
+      case Mode::kFrameSiteEnabled:
+        return std::tie(top_frame_site_, frame_site_, nonce_) <
+               std::tie(other.top_frame_site_, other.frame_site_, other.nonce_);
+      case Mode::kCrossSiteFlagEnabled:
+        return std::tie(top_frame_site_, is_cross_site_, nonce_) <
+               std::tie(other.top_frame_site_, other.is_cross_site_,
+                        other.nonce_);
     }
-    return std::tie(top_frame_site_, frame_site_, is_cross_site_, nonce_) <
-           std::tie(other.top_frame_site_, other.frame_site_,
-                    other.is_cross_site_, other.nonce_);
   }
 
   // Returns the string representation of the key for use in string-keyed disk
@@ -157,30 +181,33 @@ class NET_EXPORT NetworkIsolationKey {
     // `is_cross_site_` -> a boolean indicating whether the frame site is
     // schemefully cross-site from the top-level site.
     kCrossSiteFlagEnabled,
+    // This scheme indicates that "triple-key" NetworkIsolationKeys are used to
+    // partition the HTTP cache except when the frame site has an opaque origin.
+    // In that case, a fixed value will be used instead of the frame site such
+    // that all opaque origin frames under a given top-level site share a cache
+    // partition (unless the NIK is explicitly provided a nonce).
+    kFrameSiteWithSharedOpaqueEnabled,
   };
 
   // Returns the cache key scheme currently in use.
   static Mode GetMode();
 
-  // Getter for `frame_site_`. Will return absl::nullopt if the
-  // `NetworkIsolationKey` is empty.
-  // Note: This will CHECK if `GetMode()` does not return `kFrameSiteEnabled`.
-  const absl::optional<SchemefulSite>& GetFrameSite() const;
-
   // Do not use outside of testing. Returns the `frame_site_`.
   const absl::optional<SchemefulSite> GetFrameSiteForTesting() const {
-    if (GetMode() == Mode::kCrossSiteFlagEnabled) {
-      return absl::nullopt;
+    if (GetMode() == Mode::kFrameSiteEnabled ||
+        GetMode() == Mode::kFrameSiteWithSharedOpaqueEnabled) {
+      return frame_site_;
     }
-    return frame_site_;
+    return absl::nullopt;
   }
 
-  // Getter for the boolean indicating that `frame_site_` is cross-site from
-  // `top_frame_site_`. If the `NetworkIsolationKey` is empty, this will return
-  // absl::nullopt.
-  // Note: This will CHECK if `GetMode()` does not return
-  // `kCrossSiteFlagEnabled`.
-  absl::optional<bool> GetIsCrossSite() const;
+  // Do not use outside of testing. Returns `is_cross_site_`.
+  const absl::optional<bool> GetIsCrossSiteForTesting() const {
+    if (GetMode() == Mode::kCrossSiteFlagEnabled) {
+      return is_cross_site_;
+    }
+    return absl::nullopt;
+  }
 
   // When serializing a NIK for sending via mojo we want to access the frame
   // site directly. We don't want to expose this broadly, though, hence the
@@ -195,6 +222,13 @@ class NET_EXPORT NetworkIsolationKey {
   // case.
   const absl::optional<SchemefulSite>& GetFrameSiteForCookiePartitionKey(
       CookiePartitionKeyPasskey) const {
+    CHECK(!IsEmpty());
+    return frame_site_;
+  }
+  // Same as above but for constructing a `NetworkAnonymizationKey()` from this
+  // NIK.
+  const absl::optional<SchemefulSite>& GetFrameSiteForNetworkAnonymizationKey(
+      NetworkAnonymizationKeyPasskey) const {
     CHECK(!IsEmpty());
     return frame_site_;
   }
@@ -223,8 +257,9 @@ class NET_EXPORT NetworkIsolationKey {
   // top-level origin and frame origin ("triple-keying") vs. the top-level
   // origin and an is-cross-site bit ("2.5-keying") like the
   // `NetworkAnonymizationKey` uses for network state partitioning. This will be
-  // absl::nullopt when `GetMode()` returns `Mode::kFrameSiteEnabled`, or for an
-  // empty `NetworkIsolationKey`.
+  // absl::nullopt when `GetMode()` returns `Mode::kFrameSiteEnabled` or
+  // `Mode::kFrameSiteWithSharedOpaqueEnabled`, or for an empty
+  // `NetworkIsolationKey`.
   absl::optional<bool> is_cross_site_;
 
   // Having a nonce is a way to force a transient opaque `NetworkIsolationKey`

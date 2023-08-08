@@ -1285,6 +1285,7 @@ enum class SplitCacheTestCase {
   kSplitCacheDisabled,
   kSplitCacheNikFrameSiteEnabled,
   kSplitCacheNikCrossSiteFlagEnabled,
+  kSplitCacheNikFrameSiteSharedOpaqueEnabled,
 };
 
 void InitializeSplitCacheScopedFeatureList(
@@ -1307,6 +1308,15 @@ void InitializeSplitCacheScopedFeatureList(
     disabled_features.push_back(
         net::features::kEnableCrossSiteFlagNetworkIsolationKey);
   }
+
+  if (test_case ==
+      SplitCacheTestCase::kSplitCacheNikFrameSiteSharedOpaqueEnabled) {
+    enabled_features.push_back(
+        net::features::kEnableFrameSiteSharedOpaqueNetworkIsolationKey);
+  } else {
+    disabled_features.push_back(
+        net::features::kEnableFrameSiteSharedOpaqueNetworkIsolationKey);
+  }
   scoped_feature_list.InitWithFeatures(enabled_features, disabled_features);
 }
 
@@ -1320,10 +1330,6 @@ class HttpCacheTest_SplitCacheFeature
 
   bool IsSplitCacheEnabled() const {
     return GetParam() != SplitCacheTestCase::kSplitCacheDisabled;
-  }
-
-  bool IsNikFrameSiteEnabled() const {
-    return GetParam() == SplitCacheTestCase::kSplitCacheNikFrameSiteEnabled;
   }
 
  private:
@@ -1354,9 +1360,11 @@ TEST_P(HttpCacheTest_SplitCacheFeature, SimpleGETVerifyGoogleFontMetrics) {
 INSTANTIATE_TEST_SUITE_P(
     All,
     HttpCacheTest_SplitCacheFeature,
-    testing::ValuesIn({SplitCacheTestCase::kSplitCacheDisabled,
-                       SplitCacheTestCase::kSplitCacheNikFrameSiteEnabled,
-                       SplitCacheTestCase::kSplitCacheNikCrossSiteFlagEnabled}),
+    testing::ValuesIn(
+        {SplitCacheTestCase::kSplitCacheDisabled,
+         SplitCacheTestCase::kSplitCacheNikFrameSiteEnabled,
+         SplitCacheTestCase::kSplitCacheNikCrossSiteFlagEnabled,
+         SplitCacheTestCase::kSplitCacheNikFrameSiteSharedOpaqueEnabled}),
     [](const testing::TestParamInfo<SplitCacheTestCase>& info) {
       switch (info.param) {
         case (SplitCacheTestCase::kSplitCacheDisabled):
@@ -1365,6 +1373,8 @@ INSTANTIATE_TEST_SUITE_P(
           return "SplitCacheNikFrameSiteEnabled";
         case (SplitCacheTestCase::kSplitCacheNikCrossSiteFlagEnabled):
           return "SplitCacheNikCrossSiteFlagEnabled";
+        case (SplitCacheTestCase::kSplitCacheNikFrameSiteSharedOpaqueEnabled):
+          return "SplitCacheNikFrameSiteSharedOpaqueEnabled";
       }
     });
 
@@ -1380,8 +1390,10 @@ class HttpCacheTest_SplitCacheFeatureEnabled
 INSTANTIATE_TEST_SUITE_P(
     All,
     HttpCacheTest_SplitCacheFeatureEnabled,
-    testing::ValuesIn({SplitCacheTestCase::kSplitCacheNikFrameSiteEnabled,
-                       SplitCacheTestCase::kSplitCacheNikCrossSiteFlagEnabled}),
+    testing::ValuesIn(
+        {SplitCacheTestCase::kSplitCacheNikFrameSiteEnabled,
+         SplitCacheTestCase::kSplitCacheNikCrossSiteFlagEnabled,
+         SplitCacheTestCase::kSplitCacheNikFrameSiteSharedOpaqueEnabled}),
     [](const testing::TestParamInfo<SplitCacheTestCase>& info) {
       switch (info.param) {
         case (SplitCacheTestCase::kSplitCacheDisabled):
@@ -1390,6 +1402,8 @@ INSTANTIATE_TEST_SUITE_P(
           return "SplitCacheNikFrameSiteEnabled";
         case (SplitCacheTestCase::kSplitCacheNikCrossSiteFlagEnabled):
           return "SplitCacheNikCrossSiteFlagEnabled";
+        case (SplitCacheTestCase::kSplitCacheNikFrameSiteSharedOpaqueEnabled):
+          return "SplitCacheNikFrameSiteSharedOpaqueEnabled";
       }
     });
 
@@ -11451,13 +11465,23 @@ TEST_P(HttpCacheTest_SplitCacheFeatureEnabled,
   trans_info.network_isolation_key = NetworkIsolationKey(site_b, site_data);
   trans_info.network_anonymization_key =
       net::NetworkAnonymizationKey::CreateCrossSite(site_b);
-  if (IsNikFrameSiteEnabled()) {
-    EXPECT_EQ(absl::nullopt,
-              trans_info.network_isolation_key.ToCacheKeyString());
-  } else {
-    EXPECT_EQ("http://b.com _1",
-              trans_info.network_isolation_key.ToCacheKeyString().value());
+  switch (GetParam()) {
+    case SplitCacheTestCase::kSplitCacheNikFrameSiteEnabled:
+      EXPECT_EQ(absl::nullopt,
+                trans_info.network_isolation_key.ToCacheKeyString());
+      break;
+    case SplitCacheTestCase::kSplitCacheNikCrossSiteFlagEnabled:
+      EXPECT_EQ("http://b.com _1",
+                trans_info.network_isolation_key.ToCacheKeyString().value());
+      break;
+    case SplitCacheTestCase::kSplitCacheNikFrameSiteSharedOpaqueEnabled:
+      EXPECT_EQ("http://b.com _opaque",
+                trans_info.network_isolation_key.ToCacheKeyString().value());
+      break;
+    case SplitCacheTestCase::kSplitCacheDisabled:
+      NOTREACHED_NORETURN();
   }
+
   RunTransactionTestWithRequest(cache.http_cache(), kSimpleGET_Transaction,
                                 trans_info, &response);
   EXPECT_FALSE(response.was_cached);
@@ -11465,10 +11489,16 @@ TEST_P(HttpCacheTest_SplitCacheFeatureEnabled,
   // On the second request, expect a cache miss if the NIK uses the frame site.
   RunTransactionTestWithRequest(cache.http_cache(), kSimpleGET_Transaction,
                                 trans_info, &response);
-  if (IsNikFrameSiteEnabled()) {
-    EXPECT_FALSE(response.was_cached);
-  } else {
-    EXPECT_TRUE(response.was_cached);
+  switch (GetParam()) {
+    case SplitCacheTestCase::kSplitCacheNikFrameSiteEnabled:
+      EXPECT_FALSE(response.was_cached);
+      break;
+    case SplitCacheTestCase::kSplitCacheNikCrossSiteFlagEnabled:
+    case SplitCacheTestCase::kSplitCacheNikFrameSiteSharedOpaqueEnabled:
+      EXPECT_TRUE(response.was_cached);
+      break;
+    case SplitCacheTestCase::kSplitCacheDisabled:
+      NOTREACHED_NORETURN();
   }
 
   // Verify that a post transaction with a data stream uses a separate key.
