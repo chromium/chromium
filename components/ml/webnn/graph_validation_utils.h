@@ -54,6 +54,11 @@ struct Operand {
 // the width of the tensor.
 enum InputOperandLayout { kNchw, kNhwc };
 
+// Represents the `MLConv2dFilterOperandLayout` that specifies the layout format
+// of the filter tensor. O is output channels, I is input channels, H is height
+// and W is the width of filter.
+enum Conv2dFilterOperandLayout { kOihw, kHwio, kOhwi, kIhwo };
+
 // Represents the `MLAutoPad`. `Explicit` means that the values in the padding
 // array should be used for calculating input padding, the `SameUpper` and
 // `SameLower` options mean the padding values are automatically computed.
@@ -75,6 +80,38 @@ struct Padding2d {
   Size2d beginning;
   // The height and width padding at the ending of input tensor.
   Size2d ending;
+};
+
+// Contains the attributes of conv2d operator.
+struct Conv2dAttributes {
+  Conv2dAttributes();
+  ~Conv2dAttributes();
+
+  Conv2dAttributes(Conv2dAttributes&& other);
+  Conv2dAttributes& operator=(Conv2dAttributes&& other);
+
+  Conv2dAttributes(const Conv2dAttributes&) = delete;
+  Conv2dAttributes& operator=(const Conv2dAttributes&) = delete;
+
+  // The additional rows and columns added to the beginning and ending of each
+  // spatial dimension of input.
+  Padding2d padding;
+  // The stride of the sliding window for each spatial dimension of input.
+  Size2d strides;
+  // The dilation factor for each spatial dimension of input.
+  Size2d dilations;
+  // The automatic input padding options.
+  AutoPad auto_pad = AutoPad::kExplicit;
+  // The number of groups that input channels and output channels are divided
+  // into.
+  uint32_t groups = 1;
+  // The layout format of the input.
+  InputOperandLayout input_layout = InputOperandLayout::kNchw;
+  // The layout format of the filter.
+  Conv2dFilterOperandLayout filter_layout = Conv2dFilterOperandLayout::kOihw;
+  // The additional 1-D tensor with the shape of [output_channels] whose values
+  // are to be added to the convolution result.
+  absl::optional<Operand> bias_operand;
 };
 
 // Contains the attributes of pool2d operator.
@@ -127,6 +164,13 @@ struct GemmAttributes {
 base::expected<Operand, std::string> ValidateSoftmaxAndInferOutput(
     Operand input);
 
+// Validate and infer output information of 2-D convolution operator defined in
+// WebIDL here https://www.w3.org/TR/webnn/#api-mlgraphbuilder-conv2d
+base::expected<Operand, std::string> ValidateConv2dAndInferOutput(
+    const Operand& input,
+    const Operand& filter,
+    const Conv2dAttributes& attributes);
+
 // Validate a mean, L2 norm, or max reduction operator defined in WebIDL here
 // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-pool2d
 base::expected<Operand, std::string> ValidatePool2dAndInferOutput(
@@ -156,31 +200,12 @@ absl::optional<std::vector<uint32_t>> BroadcastShapes(
     base::span<const uint32_t> dims_rhs,
     bool bidirectional = true);
 
-// TODO(crbug.com/1273291): Don't export FloatSize2D when moving the validation
-// of Conv2d to the shared library.
-struct FloatSize2D {
-  double height;
-  double width;
-};
-
 // TODO(crbug.com/1273291): Don't export PaddingSizes when moving the validation
 // of ConvTransposed2d to the shared library.
 struct PaddingSizes {
   uint32_t begin;
   uint32_t end;
 };
-
-// TODO(crbug.com/1273291): Don't export this heler function when moving the
-// validation of Conv2d to the shared library.
-base::expected<FloatSize2D, std::string> ValidateAndCalculateConv2dOutputSizes(
-    const uint32_t input_height,
-    const uint32_t input_width,
-    const uint32_t filter_height,
-    const uint32_t filter_width,
-    const Padding2d& padding,
-    const Size2d& strides,
-    const Size2d& dilations,
-    const AutoPad auto_pad);
 
 // Calculate the effective padding for conv2d based on WebNN auto padding
 // rules.
