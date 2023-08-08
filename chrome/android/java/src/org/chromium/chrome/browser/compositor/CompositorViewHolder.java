@@ -289,16 +289,6 @@ public class CompositorViewHolder extends FrameLayout
 
     private PrefService mPrefService;
 
-    /**
-     * Creates a {@link CompositorView}.
-     * @param c The Context to create this {@link CompositorView} in.
-     */
-    public CompositorViewHolder(Context c) {
-        super(c);
-
-        internalInit();
-    }
-
     @Override
     public PointerIcon onResolvePointerIcon(MotionEvent event, int pointerIndex) {
         View activeView = getContentView();
@@ -313,7 +303,6 @@ public class CompositorViewHolder extends FrameLayout
      */
     public CompositorViewHolder(Context c, AttributeSet attrs) {
         super(c, attrs);
-
         internalInit();
     }
 

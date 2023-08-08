@@ -166,7 +166,7 @@ public class CompositorViewHolderUnitTest {
 
         when(mCompositorView.getResourceManager()).thenReturn(mResourceManager);
 
-        mCompositorViewHolder = spy(new CompositorViewHolder(mContext));
+        mCompositorViewHolder = spy(new CompositorViewHolder(mContext, null));
         mCompositorViewHolder.setLayoutManager(mLayoutManager);
         mCompositorViewHolder.setControlContainer(mControlContainer);
         mCompositorViewHolder.setCompositorViewForTesting(mCompositorView);
