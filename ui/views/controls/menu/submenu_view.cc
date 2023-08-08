@@ -123,7 +123,10 @@ void SubmenuView::UpdateMenuPartSizes() {
            type == MenuItemView::Type::kRadio;
   };
   icon_area_width_ = min_icon_height_ =
-      base::ranges::any_of(menu_items, is_check_or_radio) ? kMenuCheckSize : 0;
+      (config.always_reserve_check_region ||
+       base::ranges::any_of(menu_items, is_check_or_radio))
+          ? kMenuCheckSize
+          : 0;
   int max_icon_width = 0;
   if (!menu_items.empty()) {
     std::vector<int> widths(menu_items.size());

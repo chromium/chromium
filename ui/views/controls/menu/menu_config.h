@@ -156,6 +156,9 @@ struct VIEWS_EXPORT MenuConfig {
   // True if the icon is part of the label rather than in its own column.
   bool icons_in_label = false;
 
+  // Menus lay out as if some items have checkmarks, even if none do.
+  bool always_reserve_check_region = false;
+
   // True if a combobox menu should put a checkmark next to the selected item.
   bool check_selected_combobox_item = false;
 

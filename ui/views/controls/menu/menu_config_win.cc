@@ -32,10 +32,14 @@ void MenuConfig::Init() {
   separator_upper_height = 5;
   separator_lower_height = 7;
 
-  if (!is_refresh && is_win11) {
-    corner_radius = 8;
-    between_item_vertical_padding = 2;
-    item_corner_radius = 4;
+  if (!is_refresh) {
+    if (is_win11) {
+      corner_radius = 8;
+      between_item_vertical_padding = 2;
+      item_corner_radius = 4;
+    } else {
+      always_reserve_check_region = true;
+    }
   }
 
   use_bubble_border = corner_radius > 0;
