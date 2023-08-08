@@ -58,6 +58,7 @@
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/rect_based_targeting_utils.h"
+#include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/window/caption_button_layout_constants.h"
@@ -1025,8 +1026,11 @@ void BrowserNonClientFrameViewChromeOS::UpdateWindowRoundedCorners() {
   CHECK_NE(devtools_placement, DevToolsDockedPlacement::kUnknown);
 
   // Rounded the contents webview.
+  ContentsWebView* contents_webview = browser_view()->contents_web_view();
+  const views::View* contents_container = browser_view()->contents_container();
+
   const bool devtools_showing =
-      devtools_placement != DevToolsDockedPlacement::kNone;
+      contents_webview->bounds() != contents_container->GetLocalBounds();
 
   const gfx::RoundedCornersF contents_webview_radii(
       0, 0,
@@ -1041,7 +1045,6 @@ void BrowserNonClientFrameViewChromeOS::UpdateWindowRoundedCorners() {
           ? 0
           : corner_radius);
 
-  ContentsWebView* contents_webview = browser_view()->contents_web_view();
   CHECK(contents_webview);
   CHECK(contents_webview->holder());
 

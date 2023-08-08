@@ -110,6 +110,7 @@
 #include "chrome/browser/ui/views/eye_dropper/eye_dropper.h"
 #include "chrome/browser/ui/views/find_bar_host.h"
 #include "chrome/browser/ui/views/frame/app_menu_button.h"
+#include "chrome/browser/ui/views/frame/browser_frame.h"
 #include "chrome/browser/ui/views/frame/browser_view_layout.h"
 #include "chrome/browser/ui/views/frame/browser_view_layout_delegate.h"
 #include "chrome/browser/ui/views/frame/contents_layout_manager.h"
@@ -262,6 +263,7 @@
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/focus/external_focus_tracker.h"
 #include "ui/views/interaction/element_tracker_views.h"
+#include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/views_features.h"
 #include "ui/views/widget/native_widget.h"
@@ -962,11 +964,8 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
   left_aligned_side_panel_separator_ =
       AddChildView(std::make_unique<ContentsSeparator>());
 
-  auto side_panel_coordinator = std::make_unique<SidePanelCoordinator>(this);
-  side_panel_state_observation_.Observe(side_panel_coordinator.get());
-
-  SidePanelUI::SetSidePanelUIForBrowser(browser_.get(),
-                                        std::move(side_panel_coordinator));
+  SidePanelUI::SetSidePanelUIForBrowser(
+      browser_.get(), std::make_unique<SidePanelCoordinator>(this));
 
   // InfoBarContainer needs to be added as a child here for drop-shadow, but
   // needs to come after toolbar in focus order (see EnsureFocusOrder()).
@@ -1038,10 +1037,7 @@ BrowserView::~BrowserView() {
   RemoveAllChildViews();
 
   // `SidePanelUI::RemoveSidePanelUIForBrowser()` deletes the
-  // SidePanelCoordinator. Since SidePanelCoordinator unregisters its
-  // SidePanelViewStateObservers in its d'tor, BrowserView's side panel
-  // observation needs resetting.
-  side_panel_state_observation_.Reset();
+  // SidePanelCoordinator.
   SidePanelUI::RemoveSidePanelUIForBrowser(browser());
 }
 
@@ -2327,7 +2323,6 @@ void BrowserView::UpdateSidePanelHorizontalAlignment() {
   unified_side_panel_->SetHorizontalAlignment(
       is_right_aligned ? SidePanel::kAlignRight : SidePanel::kAlignLeft);
   GetBrowserViewLayout()->Layout(this);
-  UpdateFrameRoundedCorners();
 }
 
 void BrowserView::FocusBookmarksToolbar() {
@@ -4002,6 +3997,18 @@ void BrowserView::Layout() {
       IsToolbarVisible() ? FocusBehavior::ALWAYS : FocusBehavior::NEVER);
   frame()->GetFrameView()->UpdateMinimumSize();
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // In chromeOS ash we round the bottom two corners of the browser frame by
+  // rounding the respective corners of visible client contents i.e main web
+  // contents, devtools web contents and side panel. When ever there is change
+  // in the layout or visibility of these contents (devtools opened, devtools
+  // docked placement change, side panel open etc), we might need to update
+  // which corners are currently rounded. See
+  // `BrowserNonClientFrameViewChromeOS::UpdateWindowRoundedCorners()` for more
+  // details.
+  frame()->GetFrameView()->UpdateWindowRoundedCorners();
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
   // Some of the situations when the BrowserView is laid out are:
   // - Enter/exit immersive fullscreen mode.
   // - Enter/exit tablet mode.
@@ -4399,14 +4406,12 @@ void BrowserView::UpdateDevToolsForContents(WebContents* web_contents,
 
   // When browser window is resizing, the contents_container and web_contents
   // bounds can be out of sync, resulting in a state, where it is impossible to
-  // infer docked placment based on contents webview bounds. In this case, use
+  // infer docked placement based on contents webview bounds. In this case, use
   // the last known docked placement, since resizing a window does not change
-  // the devtools dock placment.
+  // the devtools dock placement.
   if (new_placement != DevToolsDockedPlacement::kUnknown) {
     current_devtools_docked_placement_ = new_placement;
   }
-
-  UpdateFrameRoundedCorners();
 }
 
 void BrowserView::UpdateUIForContents(WebContents* contents) {
@@ -5037,17 +5042,6 @@ void BrowserView::OnInstallableWebAppStatusUpdated() {
   UpdatePageActionIcon(PageActionIconType::kPwaInstall);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-// BrowserView, SidePanelViewStateObserver implementation:
-
-void BrowserView::OnSidePanelDidOpen() {
-  UpdateFrameRoundedCorners();
-}
-
-void BrowserView::OnSidePanelDidClose() {
-  UpdateFrameRoundedCorners();
-}
-
 WebAppFrameToolbarView* BrowserView::web_app_frame_toolbar() {
   return web_app_frame_toolbar_;
 }
@@ -5072,12 +5066,6 @@ void BrowserView::FrameColorsChanged() {
     web_app_window_title_->SetBackgroundColor(frame_color);
     web_app_window_title_->SetEnabledColor(caption_color);
   }
-}
-
-void BrowserView::UpdateFrameRoundedCorners() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  frame()->GetFrameView()->UpdateWindowRoundedCorners();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 BEGIN_METADATA(BrowserView, views::ClientView)
