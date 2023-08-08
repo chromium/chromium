@@ -946,9 +946,6 @@
    <message name="IDS_CONSUMER_UPDATE_PROGRESS_ADDITIONAL_SUBTITLE" desc="Additional subtitle of the dialog shown to the user  consumer update screen when update in progress.">
     Your Chromebook will restart once the download is complete and you can continue setup.
   </message>
-  <message name="IDS_CONSUMER_UPDATE_OVER_CELLULAR_PROMPT_MESSAGE" desc="Contens of the dialog shown to the user in ChromeOS OOBE before software update is attempted if the ChromeOS device is connected to a cellular/metered network. The dialog warns the user that procceeding with OOBE on a mobile network can cause overage charges. The dialog title states that the Chromebook needs an update.">
-    If you download the update over your mobile network, data charges may apply.
-  </message>
 
    <!-- Strings for the OOBE demo setup flow -->
   <message name="IDS_OOBE_DEMO_SETUP_PREFERENCES_SCREEN_TITLE" desc="The title of the dialog that allows to choose demo setup preferences.">
