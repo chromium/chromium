@@ -131,7 +131,6 @@ class Server : public display::DisplayObserver {
   std::unique_ptr<WaylandTextInputExtension> zcr_text_input_extension_data_;
   std::unique_ptr<WaylandXdgShell> xdg_shell_data_;
   std::unique_ptr<WaylandRemoteShellData> remote_shell_data_;
-  std::unique_ptr<WestonTest> weston_test_holder_;
   std::unique_ptr<UiControls> ui_controls_holder_;
 };
 
