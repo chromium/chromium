@@ -415,7 +415,9 @@ void PrintViewManager::ShowScriptedPrintPreview(bool source_is_modifiable) {
   DCHECK(print_preview_rfh_);
   if (GetCurrentTargetFrame() != print_preview_rfh_)
     return;
-
+#if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
+  set_analyzing_content(/*analyzing=*/true);
+#endif
   RejectPrintPreviewRequestIfRestricted(
       print_preview_rfh_->GetGlobalId(),
       base::BindOnce(&PrintViewManager::OnScriptedPrintPreviewCallback,
@@ -427,6 +429,9 @@ void PrintViewManager::OnScriptedPrintPreviewCallback(
     bool source_is_modifiable,
     content::GlobalRenderFrameHostId rfh_id,
     bool should_proceed) {
+#if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
+  set_analyzing_content(/*analyzing=*/false);
+#endif
   if (!should_proceed) {
     OnPrintPreviewRequestRejected(rfh_id);
     return;

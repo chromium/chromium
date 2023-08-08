@@ -2798,27 +2798,32 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisBeforePrintPreviewBrowserTest,
 
   if (ContentAnalysisAllowsPrint()) {
     if (UseService()) {
-      // TODO(crbug.com/1464566):  Update expectations once test is not
-      // skipped.
+      // The expected events for this are:
+      // 1.  The document is composited for content analysis.
+      // 2.  The print job used for scanning is destroyed.
+      // 3.  Update print settings.
+      // 4.  A print job is started.
+      // 5.  Rendering for 1 page of document of content.
+      // 6.  Completes with document done.
+      // 7.  Wait for the one print job to be destroyed, to ensure printing
+      //     finished cleanly before completing the test.
+      SetNumExpectedMessages(/*num=*/7);
     } else {
       // The expected events for this are:
-      // 1.  Use default settings.
-      // 2.  The document is composited for content analysis.
-      // 3.  The print job used for scanning is destroyed.
-      // 4.  Wait for the actual printing job to be destroyed, to ensure
+      // 1.  The document is composited for content analysis.
+      // 2.  The print job used for scanning is destroyed.
+      // 3.  Wait for the actual printing job to be destroyed, to ensure
       //     printing finished cleanly before completing the test.
-      SetNumExpectedMessages(/*num=*/4);
+      SetNumExpectedMessages(/*num=*/3);
     }
     const PrintParams kParams{.invoke_method =
                                   InvokePrintMethod::kWindowDotPrint};
     PrintAfterPreviewIsReadyAndLoaded(kParams);
   } else {
     // The expected events for this are:
-    // 1.  Use default settings.
-    // 2.  The document is composited for content analysis.
-    // 3.  The print job used for scanning is destroyed.
-    SetNumExpectedMessages(/*num=*/3);
-
+    // 1.  The document is composited for content analysis.
+    // 2.  The print job used for scanning is destroyed.
+    SetNumExpectedMessages(/*num=*/2);
     content::ExecuteScriptAsync(web_contents->GetPrimaryMainFrame(),
                                 "window.print();");
     WaitUntilCallbackReceived();
@@ -2833,9 +2838,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisBeforePrintPreviewBrowserTest,
   // part of content analysis, since that can needlessly prompt the user.
   // When printing OOP, an extra call for a new document will occur since it
   // gets called in both the browser process and in the Print Backend service.
-  // TODO(crbug.com/1464566):  Update expectation once the extra start of
-  // a print job before analysis completes is avoided.
-  EXPECT_EQ(new_document_called_count(), ContentAnalysisAllowsPrint() ? 2 : 1);
+  EXPECT_EQ(new_document_called_count(), GetExpectedNewDocumentCalledCount());
 }
 
 IN_PROC_BROWSER_TEST_P(ContentAnalysisBeforePrintPreviewBrowserTest,
