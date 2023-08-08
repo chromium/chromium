@@ -217,6 +217,15 @@ bool IsAccessibilityAcceleratorNotificationsTimeoutEnabled() {
       ::features::kAccessibilityAcceleratorNotificationsTimeout);
 }
 
+BASE_FEATURE(kAccessibilityGameFaceIntegration,
+             "AccessibilityGameFaceIntegration",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsAccessibilityGameFaceIntegrationEnabled() {
+  return base::FeatureList::IsEnabled(
+      ::features::kAccessibilityGameFaceIntegration);
+}
+
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 BASE_FEATURE(kAugmentExistingImageLabels,

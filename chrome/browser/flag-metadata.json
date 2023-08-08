@@ -1972,6 +1972,11 @@
     "expiry_milestone": 125
   },
   {
+    "name": "enable-accessibility-gameface-integration",
+    "owners": [ "bkersting", "eariassoto", "//ui/accessibility/OWNERS" ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "enable-accessibility-live-caption",
     "owners": [ "abigailbklein@google.com", "evliu@google.com", "//ui/accessibility/OWNERS" ],
     "expiry_milestone": 120

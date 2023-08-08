@@ -1124,6 +1124,11 @@ const char kAccessibilityDictationKeyboardImprovementsDescription[] =
     "seemless experience when pressing Search + D or the Dictation key on "
     "supported keyboards.";
 
+const char kAccessibilityGameFaceIntegrationName[] =
+    "Experimental GameFace integration";
+const char kAccessibilityGameFaceIntegrationDescription[] =
+    "This option enables the experimental GameFace ChromeOS integration";
+
 const char kAccessibilitySelectToSpeakHoverTextImprovementsName[] =
     "Select-to-Speak Hover Text Improvements";
 const char kAccessibilitySelectToSpeakHoverTextImprovementsDescription[] =
