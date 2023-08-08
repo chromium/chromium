@@ -78861,6 +78861,13 @@ Called by update_net_trust_anchors.py.-->
   <int value="36" label="WorkerScriptLoader (Proxy)"/>
 </enum>
 
+<enum name="OobeConsumerUpdateScreenSkippedReason">
+  <int value="0" label="Critical update was already completed"/>
+  <int value="1" label="Update is not required"/>
+  <int value="2" label="Update error"/>
+  <int value="3" label="User declined update over cellular"/>
+</enum>
+
 <enum name="OobeMultideviceScreenSkippedReason">
   <int value="0" label="Public session or ephermeral login"/>
   <int value="1" label="Host phone already set"/>

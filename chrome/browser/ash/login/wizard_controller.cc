@@ -437,6 +437,15 @@ void WizardController::Init(OobeScreenId first_screen) {
     }
   }
 
+  if (!oobe_complete) {
+    bool updated =
+        GetLocalState()->GetBoolean(prefs::kOobeConsumerUpdateCompleted) ||
+        GetLocalState()->GetBoolean(prefs::kOobeCriticalUpdateCompleted);
+    if (!updated) {
+      oobe_metrics_helper_.RecordChromeVersion();
+    }
+  }
+
   const bool device_is_owned =
       is_enterprise_managed ||
       !user_manager::UserManager::Get()->GetUsers().empty();
@@ -973,6 +982,7 @@ void WizardController::ShowConsumerUpdateScreen() {
 
 void WizardController::ShowEnrollmentScreen() {
   // Update the enrollment configuration and start the screen.
+  oobe_metrics_helper_.OnEnrollmentScreenShown();
   prescribed_enrollment_config_ =
       policy::EnrollmentConfig::GetPrescribedEnrollmentConfig();
   StartEnrollmentScreen(false);
@@ -1232,7 +1242,8 @@ void WizardController::OnUserCreationScreenExit(
         ShowAddChildScreen();
       }
       break;
-    case UserCreationScreen::Result::ENTERPRISE_ENROLL:
+    case UserCreationScreen::Result::ENTERPRISE_ENROLL_TRIAGE:
+    case UserCreationScreen::Result::ENTERPRISE_ENROLL_SHORTCUT:
       ShowEnrollmentScreenIfEligible();
       break;
     case UserCreationScreen::Result::KIOSK_ENTERPRISE_ENROLL:

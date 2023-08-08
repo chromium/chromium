@@ -151,7 +151,7 @@ IN_PROC_BROWSER_TEST_F(UserCreationScreenTest, EnterpriseEnroll) {
   ASSERT_TRUE(LoginScreenTestApi::ClickEnterpriseEnrollmentButton());
   WaitForScreenExit();
   EXPECT_EQ(screen_result_.value(),
-            UserCreationScreen::Result::ENTERPRISE_ENROLL);
+            UserCreationScreen::Result::ENTERPRISE_ENROLL_SHORTCUT);
   OobeScreenWaiter(EnrollmentScreenView::kScreenId).Wait();
 }
 
@@ -297,7 +297,7 @@ IN_PROC_BROWSER_TEST_F(UserCreationScreenSoftwareUpdateTest, EnrollDevice) {
   test::OobeJS().TapOnPath(kEnrollTriageNextButton);
   WaitForScreenExit();
   EXPECT_EQ(screen_result_.value(),
-            UserCreationScreen::Result::ENTERPRISE_ENROLL);
+            UserCreationScreen::Result::ENTERPRISE_ENROLL_TRIAGE);
 }
 
 // Verify that back button display create step in the child setup step

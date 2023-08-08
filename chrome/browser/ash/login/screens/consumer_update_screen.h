@@ -19,6 +19,7 @@
 #include "chrome/browser/ash/login/screens/error_screen.h"
 #include "chrome/browser/ash/login/version_updater/version_updater.h"
 #include "chromeos/dbus/power/power_manager_client.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -40,6 +41,18 @@ class ConsumerUpdateScreen : public BaseScreen,
     UPDATE_NOT_REQUIRED,
     UPDATE_ERROR,
     NOT_APPLICABLE,
+  };
+
+  // This enum is tied directly to the OobeConsumerUpdateScreenSkippedReason UMA
+  // enum defined in //tools/metrics/histograms/enums.xml, and should always
+  // reflect it (do not change one without changing the other).  Entries should
+  // be never modified or deleted.  Only additions possible.
+  enum class OobeConsumerUpdateScreenSkippedReason {
+    kCriticalUpdateCompleted = 0,
+    kUpdateNotRequired = 1,
+    kUpdateError = 2,
+    kDeclineCellular = 3,
+    kMaxValue = kDeclineCellular,
   };
 
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
@@ -128,9 +141,12 @@ class ConsumerUpdateScreen : public BaseScreen,
   void DelaySkipButton();
   void SetSkipButton();
 
+  void RecordOobeConsumerUpdateScreenSkippedReasonHistogram(
+      OobeConsumerUpdateScreenSkippedReason reason);
+
   bool update_available = false;
 
-  bool checked_update_mandatory = false;
+  absl::optional<bool> is_mandatory_update_;
 
   // True if there was no notification about captive portal state for
   // the default network.
@@ -171,6 +187,8 @@ class ConsumerUpdateScreen : public BaseScreen,
 
   // Maximum time estimate to force update
   base::TimeDelta maximum_time_force_update_ = base::Minutes(5);
+
+  base::TimeTicks screen_shown_time_;
 
   // PowerManagerClient::Observer is used only when screen is shown.
   base::ScopedObservation<chromeos::PowerManagerClient,

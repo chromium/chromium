@@ -10,11 +10,15 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/webui/ash/login/enrollment_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/terms_of_service_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/welcome_screen_handler.h"
+#include "components/prefs/pref_service.h"
 #include "components/startup_metric_utils/common/startup_metric_utils.h"
+#include "components/version_info/version_info.h"
 
 namespace ash {
 
@@ -117,6 +121,18 @@ void OobeMetricsHelper::OnPreLoginOobeCompleted(
   std::string histogram_name = kUmaBootToOobeCompleted + type_string;
   base::UmaHistogramCustomTimes(histogram_name, delta, base::Milliseconds(10),
                                 base::Minutes(10), 100);
+}
+
+void OobeMetricsHelper::OnEnrollmentScreenShown() {
+  bool is_consumer = g_browser_process->local_state()->GetBoolean(
+      prefs::kOobeIsConsumerSegment);
+  base::UmaHistogramBoolean("OOBE.Enrollment.IsUserEnrollingAConsumer",
+                            is_consumer);
+}
+
+void OobeMetricsHelper::RecordChromeVersion() {
+  base::UmaHistogramSparse("OOBE.ChromeVersionBeforeUpdate",
+                           version_info::GetMajorVersionNumberAsInt());
 }
 
 }  // namespace ash

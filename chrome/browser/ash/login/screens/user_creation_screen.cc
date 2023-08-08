@@ -46,8 +46,10 @@ std::string UserCreationScreen::GetResultString(Result result) {
       return "SignInTriage";
     case Result::ADD_CHILD:
       return "AddChild";
-    case Result::ENTERPRISE_ENROLL:
-      return "EnterpriseEnroll";
+    case Result::ENTERPRISE_ENROLL_TRIAGE:
+      return "EnterpriseEnrollTriage";
+    case Result::ENTERPRISE_ENROLL_SHORTCUT:
+      return "EnterpriseEnrollShortcut";
     case Result::KIOSK_ENTERPRISE_ENROLL:
       return "KioskEnterpriseEnroll";
     case Result::CONTINUE_QUICK_START_FLOW:
@@ -151,7 +153,7 @@ void UserCreationScreen::OnUserAction(const base::Value::List& args) {
     context()->is_user_creation_enabled = false;
     RunExitCallback(Result::CANCEL);
   } else if (action_id == kUserActionEnroll) {
-    RunExitCallback(Result::ENTERPRISE_ENROLL);
+    RunExitCallback(Result::ENTERPRISE_ENROLL_TRIAGE);
   } else if (action_id == kUserActionTriage) {
     if (context()->is_add_person_flow) {
       RunExitCallback(Result::SIGNIN);
@@ -171,7 +173,7 @@ void UserCreationScreen::OnUserAction(const base::Value::List& args) {
 
 bool UserCreationScreen::HandleAccelerator(LoginAcceleratorAction action) {
   if (action == LoginAcceleratorAction::kStartEnrollment) {
-    RunExitCallback(Result::ENTERPRISE_ENROLL);
+    RunExitCallback(Result::ENTERPRISE_ENROLL_SHORTCUT);
     return true;
   }
   if (action == LoginAcceleratorAction::kStartKioskEnrollment) {

@@ -45,6 +45,11 @@ class OobeMetricsHelper {
   // Called upon marking pre-login OOBE as completed.
   void OnPreLoginOobeCompleted(CompletedPreLoginOobeFlowType screen);
 
+  // Called when `ShowEnrollmentScreen()` is called.
+  void OnEnrollmentScreenShown();
+
+  void RecordChromeVersion();
+
  private:
   // Maps screen names to last time of their shows.
   std::map<OobeScreenId, base::TimeTicks> screen_show_times_;

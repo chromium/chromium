@@ -22,6 +22,11 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="ConsumerUpdateType">
+  <variant name="Mandatory"/>
+  <variant name="Optional"/>
+</variants>
+
 <variants name="OOBEGestureNavigationPage">
   <variant name="Back" summary="Gesture Navigation Back Page"/>
   <variant name="Home" summary="Gesture Navigation Home Page"/>
@@ -235,7 +240,15 @@ chromium-metrics-reviews@google.com.
       this one.
     </obsolete>
   </variant>
-  <variant name="User-creation.EnterpriseEnroll"/>
+  <variant name="User-creation.EnterpriseEnroll">
+    <obsolete>
+      This histogram was available before introducing software update sreen.
+      This is replaced by `User-creation.EnterpriseEnrollTriage` and
+      `User-creation.EnterpriseEnrollShortcut` starting from M-117.
+    </obsolete>
+  </variant>
+  <variant name="User-creation.EnterpriseEnrollShortcut"/>
+  <variant name="User-creation.EnterpriseEnrollTriage"/>
   <variant name="User-creation.KioskEnterpriseEnroll"/>
   <variant name="User-creation.SignIn"/>
   <variant name="User-creation.SignInAsChild">
@@ -363,6 +376,15 @@ chromium-metrics-reviews@google.com.
   <token key="OOBEOptionalScreens" variants="OOBEOptionalScreens"/>
 </histogram>
 
+<histogram name="OOBE.ChromeVersionBeforeUpdate" units="custom"
+    expires_after="2023-12-31">
+  <owner>osamafathy@google.com</owner>
+  <owner>cros-oobe@google.com</owner>
+  <summary>
+    Chrome major version recorded in OOBE before any updates are applied.
+  </summary>
+</histogram>
+
 <histogram name="OOBE.ConsolidatedConsentScreen.RecoveryOptInResult"
     enum="RecoveryOptInResult" expires_after="2023-12-31">
   <owner>anastasiian@chromium.org</owner>
@@ -384,6 +406,49 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="OOBE.ConsumerUpdateScreen.IsMandatory" enum="Boolean"
+    expires_after="2023-12-31">
+  <owner>osamafathy@google.com</owner>
+  <owner>cros-oobe@google.com</owner>
+  <summary>
+    Whether the consumer update was mandatory or optional. This is decided based
+    on the estimate of time needed for the update to be applied. This is
+    recorded when the skip button in the consumer update is decided to be shown
+    or stay hidden.
+  </summary>
+</histogram>
+
+<histogram name="OOBE.ConsumerUpdateScreen.IsOptionalUpdateSkipped"
+    enum="Boolean" expires_after="2023-12-31">
+  <owner>osamafathy@google.com</owner>
+  <owner>cros-oobe@google.com</owner>
+  <summary>
+    Whether the optional consumer update was skipped. This is recorded when the
+    skip button is clicked or when the update is completed. or stay hidden.
+  </summary>
+</histogram>
+
+<histogram name="OOBE.ConsumerUpdateScreen.SkipReason"
+    enum="OobeConsumerUpdateScreenSkippedReason" expires_after="2023-12-31">
+  <owner>osamafathy@google.com</owner>
+  <owner>cros-oobe@google.com</owner>
+  <summary>
+    The reason for skipping the update. These reasons do not include when the
+    user skips the update screen but the update continues in the background.
+  </summary>
+</histogram>
+
+<histogram name="OOBE.ConsumerUpdateScreen.UpdateTime.{ConsumerUpdateType}"
+    units="ms" expires_after="2023-12-31">
+  <owner>osamafathy@google.com</owner>
+  <owner>cros-oobe@google.com</owner>
+  <summary>
+    Time spent starting from the update screen is shown until the
+    {ConsumerUpdateType} update is completed before rebooting the device.
+  </summary>
+  <token key="ConsumerUpdateType" variants="ConsumerUpdateType"/>
+</histogram>
+
 <histogram name="OOBE.DrivePinning.Enabled" enum="BooleanEnabled"
     expires_after="2023-12-31">
   <owner>osamafathy@google.com</owner>
@@ -392,6 +457,16 @@ chromium-metrics-reviews@google.com.
     Whether the user has enabled or disabled Drive Pinning. Recorded once with
     the final decision made by the user. The recording is done after onboarding
     is completed and before starting the drive pinning feature.
+  </summary>
+</histogram>
+
+<histogram name="OOBE.Enrollment.IsUserEnrollingAConsumer" enum="Boolean"
+    expires_after="2023-12-31">
+  <owner>osamafathy@google.com</owner>
+  <owner>cros-oobe@google.com</owner>
+  <summary>
+    Whether the enrollment screen is shown for a user that was already
+    determined to be a consumer during the consumer update.
   </summary>
 </histogram>
 
