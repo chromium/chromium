@@ -123,7 +123,9 @@ RuleData::RuleData(StyleRule* rule,
           false),  // Will be computed in ComputeEntirelyCoveredByBucketing().
       is_easy_(false),  // Ditto.
       is_starting_style_((add_rule_flags & kRuleIsStartingStyle) != 0),
-      descendant_selector_identifier_hashes_() {}
+      descendant_selector_identifier_hashes_() {
+  ComputeBloomFilterHashes();
+}
 
 void RuleData::ComputeEntirelyCoveredByBucketing() {
   is_easy_ = EasySelectorChecker::IsEasy(&Selector());
@@ -149,9 +151,6 @@ void RuleData::ResetEntirelyCoveredByBucketing() {
 }
 
 void RuleData::ComputeBloomFilterHashes() {
-#if DCHECK_IS_ON()
-  marker_ = 0;
-#endif
   SelectorFilter::CollectIdentifierHashes(
       Selector(), descendant_selector_identifier_hashes_,
       kMaximumIdentifierCount);
@@ -175,7 +174,6 @@ void RuleSet::AddToRuleSet(const AtomicString& key,
 void RuleSet::AddToRuleSet(HeapVector<RuleData>& rules,
                            const RuleData& rule_data) {
   rules.push_back(rule_data);
-  rules.back().ComputeBloomFilterHashes();
   rules.back().ComputeEntirelyCoveredByBucketing();
   need_compaction_ = true;
 }
@@ -892,8 +890,8 @@ void RuleMap::Add(const AtomicString& key, const RuleData& rule_data) {
   if (RuntimeEnabledFeatures::CSSEasySelectorsEnabled()) {
     rule_data_copy.ComputeEntirelyCoveredByBucketing();
   }
-  rule_data_copy.SetBucketInformation(rules.bucket_number,
-                                      /*order_in_bucket=*/rules.length++);
+  bucket_data_.push_back(BucketData{.bucket_number = rules.bucket_number,
+                                    .order_in_bucket = rules.length++});
   backing.push_back(std::move(rule_data_copy));
 }
 
@@ -902,6 +900,7 @@ void RuleMap::Compact() {
     return;
   }
   if (backing.empty()) {
+    DCHECK(bucket_data_.empty());
     // Nothing to do.
     compacted = true;
     return;
@@ -915,8 +914,8 @@ void RuleMap::Compact() {
   // First, we make an array that contains the number of elements in each
   // bucket, indexed by the bucket number.
   std::unique_ptr<unsigned[]> counts(new unsigned[num_buckets]());
-  for (const RuleData& rule_data : backing) {
-    ++counts[rule_data.GetBucketNumber()];
+  for (const BucketData& bucket_data : bucket_data_) {
+    ++counts[bucket_data.bucket_number];
   }
 
   // Do the prefix sum. After this, counts[i] is the desired start index
@@ -940,33 +939,35 @@ void RuleMap::Compact() {
   // because we put it there earlier), skip to the next array slot.
   // These will happen exactly n times each, giving us our O(n) runtime.
   for (wtf_size_t i = 0; i < backing.size();) {
-    const RuleData& rule_data = backing[i];
+    const BucketData& bucket_data = bucket_data_[i];
     wtf_size_t correct_pos =
-        counts[rule_data.GetBucketNumber()] + rule_data.GetOrderInBucket();
+        counts[bucket_data.bucket_number] + bucket_data.order_in_bucket;
     if (i == correct_pos) {
       ++i;
     } else {
       using std::swap;
       swap(backing[i], backing[correct_pos]);
+      swap(bucket_data_[i], bucket_data_[correct_pos]);
     }
   }
 
-  // Now that we don't need the grouping information anymore, we can compute
-  // the Bloom filter hashes that want to stay in the same memory area.
-  for (RuleData& rule_data : backing) {
-    rule_data.ComputeBloomFilterHashes();
-  }
+  // We're done with the bucket data, so we can release the memory.
+  // If we need the bucket data again, it will be reconstructed by
+  // RuleMap::Uncompact.
+  bucket_data_.clear();
 
   compacted = true;
 }
 
 void RuleMap::Uncompact() {
+  bucket_data_.resize(backing.size());
+
   num_buckets = 0;
   for (auto& [key, value] : buckets) {
     unsigned i = 0;
-    for (RuleData& rule_data : GetRulesFromExtent(value)) {
-      rule_data.SetBucketInformation(/*bucket_number=*/num_buckets,
-                                     /*order_in_bucket=*/i++);
+    for (BucketData& bucket_data : GetBucketDataFromExtent(value)) {
+      bucket_data =
+          BucketData{.bucket_number = num_buckets, .order_in_bucket = i++};
     }
     value.bucket_number = num_buckets++;
     value.length = i;
@@ -993,8 +994,8 @@ void RuleMap::Merge(const RuleMap& other, int offset) {
       for (const RuleData& rule_data : other.GetRulesFromExtent(extent)) {
         backing.push_back(rule_data);
         backing.back().AdjustPosition(offset);
-        backing.back().SetBucketInformation(rules.bucket_number,
-                                            /*order_in_bucket=*/rules.length++);
+        bucket_data_.push_back(BucketData{.bucket_number = rules.bucket_number,
+                                          .order_in_bucket = rules.length++});
       }
     }
   } else {
@@ -1019,12 +1020,15 @@ void RuleMap::Merge(const RuleMap& other, int offset) {
 
     // Now that we have the mapping, we can just copy over all the RuleData
     // and adjust the buckets/positions as we go.
-    for (const RuleData& rule_data : other.backing) {
-      const RuleMap::Extent& extent = extents[rule_data.GetBucketNumber()];
+    for (wtf_size_t i = 0; i < other.backing.size(); ++i) {
+      const BucketData& bucket_data = other.bucket_data_[i];
+      const RuleData& rule_data = other.backing[i];
+      const RuleMap::Extent& extent = extents[bucket_data.bucket_number];
       backing.push_back(rule_data);
       backing.back().AdjustPosition(offset);
-      backing.back().AdjustBucketPosition(extent.bucket_number,
-                                          /*offset=*/extent.length);
+      bucket_data_.push_back(BucketData{
+          .bucket_number = extent.bucket_number,
+          .order_in_bucket = bucket_data.order_in_bucket + extent.length});
     }
   }
 }

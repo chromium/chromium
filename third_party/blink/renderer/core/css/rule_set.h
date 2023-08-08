@@ -90,6 +90,12 @@ class CSSSelector;
 class MediaQueryEvaluator;
 class StyleSheetContents;
 
+// See `RuleSet::bucket_data_`.
+struct BucketData {
+  unsigned bucket_number;
+  unsigned order_in_bucket;
+};
+
 // This is a wrapper around a StyleRule, pointing to one of the N complex
 // selectors in the StyleRule. This allows us to treat each selector
 // independently but still tie them back to the original StyleRule. If multiple
@@ -100,10 +106,6 @@ class CORE_EXPORT RuleData {
   DISALLOW_NEW();
 
  public:
-  // NOTE: You will want to call ComputeBloomFilterHashes() before actually
-  // using this RuleData for matching. However, the constructor cannot do it
-  // right away, since RuleMap wants to use the space normally used for hashes
-  // for its grouping (before compaction), so it needs to delay the call.
   RuleData(StyleRule*,
            unsigned selector_index,
            unsigned position,
@@ -143,36 +145,12 @@ class CORE_EXPORT RuleData {
   const unsigned* DescendantSelectorIdentifierHashes() const {
     return descendant_selector_identifier_hashes_;
   }
-
-  // Used when the RuleData lives in a RuleMap, to store information about
-  // which bucket (group) in the RuleMap this RuleData lives in. The information
-  // is gone after ComputeBloomFilterHashes() is called.
-  void SetBucketInformation(unsigned bucket_number, unsigned order_in_bucket) {
-    bucket_number_ = bucket_number;
-    order_in_bucket_ = order_in_bucket;
-#if DCHECK_IS_ON()
-    marker_ = 0x12345678;
-#endif
-  }
-  unsigned GetBucketNumber() const {
-    DCHECK_EQ(marker_, 0x12345678U);
-    return bucket_number_;
-  }
-  unsigned GetOrderInBucket() const {
-    DCHECK_EQ(marker_, 0x12345678U);
-    return order_in_bucket_;
-  }
-
   void ComputeBloomFilterHashes();
 
   void Trace(Visitor*) const;
 
   // Used during merging.
   void AdjustPosition(int offset) { position_ += offset; }
-  void AdjustBucketPosition(int new_bucket_number, int offset) {
-    bucket_number_ = new_bucket_number;
-    order_in_bucket_ += offset;
-  }
 
   // This number is picked fairly arbitrary. If lowered, be aware that there
   // might be sites and extensions using style rules with selector lists
@@ -196,25 +174,10 @@ class CORE_EXPORT RuleData {
   unsigned is_entirely_covered_by_bucketing_ : 1;
   unsigned is_easy_ : 1;            // See EasySelectorChecker.
   unsigned is_starting_style_ : 1;  // Inside @starting-style {}.
-  // 32 bits above
-  union {
-    // Used by RuleMap before compaction, to hold what bucket this RuleData
-    // is to be sorted into. (If the RuleData lives in a RuleMap, the hashes
-    // for the Bloom filter are computed after compaction, not right away.)
-    struct {
-      unsigned bucket_number_;
-      unsigned order_in_bucket_;
-
-      // Used only for DCHECKs, to verify that we don't access
-      // these members after compaction.
-      unsigned marker_;
-    };
-
-    // Hashes used for the Bloom filter.
-    // Use plain array instead of a Vector to minimize memory overhead.
-    // Zero-terminated if we do not use all elements.
-    unsigned descendant_selector_identifier_hashes_[kMaximumIdentifierCount];
-  };
+  // Hashes used for the Bloom filter.
+  // Use plain array instead of a Vector to minimize memory overhead.
+  // Zero-terminated if we do not use all elements.
+  unsigned descendant_selector_identifier_hashes_[kMaximumIdentifierCount];
 };
 
 }  // namespace blink
@@ -325,6 +288,12 @@ class RuleMap {
   base::span<const RuleData> GetRulesFromExtent(Extent extent) const {
     return {backing.begin() + extent.start_index, extent.length};
   }
+  base::span<BucketData> GetBucketDataFromExtent(Extent extent) {
+    return {bucket_data_.begin() + extent.start_index, extent.length};
+  }
+  base::span<const BucketData> GetBucketDataFromExtent(Extent extent) const {
+    return {bucket_data_.begin() + extent.start_index, extent.length};
+  }
 
   HashMap<AtomicString, Extent> buckets;
 
@@ -347,6 +316,11 @@ class RuleMap {
   // that are tiny. Most RuleMaps are either ~1–2 entries or in
   // the hundreds/thousands.
   HeapVector<RuleData, 4> backing;
+
+  // Used by RuleMap before compaction, to hold what bucket the corresponding
+  // RuleData (by index) is to be sorted into. After compaction, the vector is
+  // emptied to save memory.
+  Vector<BucketData> bucket_data_;
 
   wtf_size_t num_buckets = 0;
   bool compacted = false;
