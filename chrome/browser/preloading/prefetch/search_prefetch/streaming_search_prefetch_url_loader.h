@@ -30,10 +30,47 @@
 // finishes from the network. The class drains the network request URL Loader,
 // and creates a data pipe to handoff, so it may close the network URL Loader
 // after the read from the network is done.
-class StreamingSearchPrefetchURLLoader : public network::mojom::URLLoader,
-                                         public network::mojom::URLLoaderClient,
-                                         public SearchPrefetchURLLoader,
-                                         public mojo::DataPipeDrainer::Client {
+// The ownership of this instance is quite complicated. Its owners can be:
+// - `SearchPrefetchRequest::streaming_url_loader_`: the request uses this
+//   instance for fetching, and keeps an reference to the
+//   `StreamingSearchPrefetchURLLoader` so as to allow SearchPrefetchService to
+//   take the fetched responses.
+// - `StreamingSearchPrefetchURLLoader::self_pointer_`: This instance is serving
+//   to a real navigation, so it is owned by itself, and the Mojo connection
+//   would manage its lifetime.
+// - `StreamingSearchPrefetchURLLoader::ResponseReader::loader_`: This instance
+//   is serving to a prerender navigation, so it  is owned by the ResponseReader
+//   that is reading its response, and the Mojo connection would manage its
+//   lifetime.
+// To summarize, it can be:
+// | Case            | owned by Request | Owned by self | Owned by Reader |
+// | --------------- | ---------------- | ------------- | --------------- |
+// | Not serving     | YES              | NO            | NO              |
+// | ----------------|------------------|---------------|-----------------|
+// | Serving to      |                  |               |                 |
+// | real navigation | NO               | YES           | NO              |
+// | ----------------|------------------|---------------|-----------------|
+// | Serving to      |                  |               |                 |
+// | prerender navi  | NO/YES *1        | NO            | YES             |
+// | ----------------|------------------|---------------|-----------------|
+// | Serving to      |                  |               |                 |
+// | both navi *2    | NO               | YES           | YES             |
+// *0: During serving, the references may be owned by callbacks in the
+//     navigation stack. The pointer would be destroyed (once the callback is
+//     destroyed) or transited to this instance/a reader soon.
+// *1: It depends on whether the response has been deleted or not.
+//     This is because, for example, if the response is about to expire, it
+//     should still serve all content to the prerender navigation, as the
+//     prerender navigation might be used by a real navigation.
+// *2: Though it is also possible that the prerender navigation is used by a
+//     real navigation, this case only consider the condition that
+//     SearchPrefetchURLLoaderInterceptor directly intercepts a real navigation.
+class StreamingSearchPrefetchURLLoader
+    : public network::mojom::URLLoader,
+      public network::mojom::URLLoaderClient,
+      public SearchPrefetchURLLoader,
+      public mojo::DataPipeDrainer::Client,
+      public base::RefCounted<StreamingSearchPrefetchURLLoader> {
  public:
   // This enum is mainly for checking the correctness of reader serving.
   // These values are persisted to logs as SearchPreloadForwardingResult.
@@ -83,7 +120,7 @@ class StreamingSearchPrefetchURLLoader : public network::mojom::URLLoader,
         base::OnceCallback<void(ResponseReader*)>
             forwarding_disconnection_callback,
         absl::optional<network::URLLoaderCompletionStatus>,
-        base::WeakPtr<StreamingSearchPrefetchURLLoader> loader);
+        scoped_refptr<StreamingSearchPrefetchURLLoader> loader);
     ~ResponseReader() override;
 
     // Not copyable nor movable.
@@ -126,7 +163,12 @@ class StreamingSearchPrefetchURLLoader : public network::mojom::URLLoader,
     // loader has completed fetching. If so, inform the forwarding client.
     void MaybeSendCompletionSignal();
 
+    // Called upon the forwarding Mojo pipeline disconnection. After this point,
+    // `this` no longer needs to keep a reference to
+    // `StreamingSearchPrefetchURLLoader`.
     void OnForwardingDisconnection();
+
+    void ReleaseSelfReference();
 
     // Set to true once it writes all bytes into the data pipe.
     bool complete_writing_ = false;
@@ -153,12 +195,18 @@ class StreamingSearchPrefetchURLLoader : public network::mojom::URLLoader,
     // loader to delete itself.
     base::OnceCallback<void(ResponseReader*)> disconnection_callback_;
 
-    // 'loader_' owns `this`. Note that `this` would be deleted asynchronously
-    // and `loader_` can be deleted synchronously, their destruction order is
-    // not guaranteed so here is a weakptr.
-    // TODO(crbug.com/1400881): This breaks the hierarchy. Will be replaced soon
-    // after refactoring.
-    base::WeakPtr<StreamingSearchPrefetchURLLoader> loader_;
+    // Refer to the corresponding loader that is fetching cache for this reader.
+    // Release on `forwarding_receiver_` losing connection.
+    // Note that there can be a reference cycle, where `loader_` owns `this` and
+    // `this` owns `loader_`. But it should be safe, as the destruction order
+    // should be:
+    // 1. `this` asks `loader_` to post a task A to delete `this`.
+    // 2. `this` posts a task B to release the reference pointer to
+    //    `StreamingSearchPrefetchURLLoader`.
+    // After this point `this` no longer owns
+    // `StreamingSearchPrefetchURLLoader`. So, `loader_` should always be
+    // deleted asynchronously.
+    scoped_refptr<StreamingSearchPrefetchURLLoader> loader_;
 
     // Records the completion status for the corresponding network loader.
     absl::optional<network::URLLoaderCompletionStatus>
@@ -178,7 +226,16 @@ class StreamingSearchPrefetchURLLoader : public network::mojom::URLLoader,
       const net::NetworkTrafficAnnotationTag& network_traffic_annotation,
       base::OnceCallback<void(bool)> report_error_callback);
 
-  ~StreamingSearchPrefetchURLLoader() override;
+  // Returns a callback which can connect a navigation request with this
+  // instance, and the request can read `this`'s received response.
+  static RequestHandler GetCallbackForReadingViaResponseReader(
+      scoped_refptr<StreamingSearchPrefetchURLLoader> loader);
+
+  // Similar to `GetCallbackForReadingViaResponseReader`, but support direct
+  // forwarding.
+  // TODO(crbug.com/1400881): Unify the logic and delete this entry.
+  static RequestHandler GetServingResponseHandler(
+      scoped_refptr<StreamingSearchPrefetchURLLoader> loader);
 
   // Clears |streaming_prefetch_request_|, which initially owns |this|. Once
   // this is cleared, the class is self managed and needs to delete itself based
@@ -189,24 +246,15 @@ class StreamingSearchPrefetchURLLoader : public network::mojom::URLLoader,
   // recorded when |navigation_prefetch_| is true.
   void RecordNavigationURLHistogram(const GURL& navigation_url);
 
-  // Returns a callback which can connect a navigation request with this
-  // instance, and the request can read `this`'s received response.
-  SearchPrefetchURLLoader::RequestHandler
-  GetCallbackForReadingViaResponseReader();
-
-  // Returns a nullptr if it decides to own itself, else returns the
-  // `self_loader` to avoid burning the stack.
-  std::unique_ptr<StreamingSearchPrefetchURLLoader> OwnItselfIfServing(
-      std::unique_ptr<StreamingSearchPrefetchURLLoader> self_loader);
-
  private:
+  friend class base::RefCounted<StreamingSearchPrefetchURLLoader>;
+
+  // Hide its destructor.
+  ~StreamingSearchPrefetchURLLoader() override;
+
   // mojo::DataPipeDrainer::Client:
   void OnDataAvailable(const void* data, size_t num_bytes) override;
   void OnDataComplete() override;
-
-  // SearchPrefetchURLLoader:
-  SearchPrefetchURLLoader::RequestHandler ServingResponseHandlerImpl(
-      std::unique_ptr<SearchPrefetchURLLoader> loader) override;
 
   // network::mojom::URLLoader:
   void FollowRedirect(
@@ -273,12 +321,10 @@ class StreamingSearchPrefetchURLLoader : public network::mojom::URLLoader,
   // Clears |producer_handle_| and |handle_watcher_|.
   void Finish();
 
-  // Each forwarding code should call this method upon disconnection. And the
-  // final call will delete this instance.
-  void MaybeDeleteItself();
-
-  // Post a task to delete this object at a later point.
-  void PostTaskToDeleteSelf();
+  // Post a task to release the self ownership at a later point.
+  // Note that it cannot guarantee this instance will be destroyed, as
+  // ResponseReader can own this instance.
+  void PostTaskToReleaseOwnership();
 
   // Creates a default network URL loader for the original request.
   void Fallback();
@@ -286,24 +332,17 @@ class StreamingSearchPrefetchURLLoader : public network::mojom::URLLoader,
   // Sets up mojo forwarding to the navigation path. Resumes
   // |network_url_loader_| calls. Serves the start of the response to the
   // navigation path. After this method is called, |this| manages its own
-  // lifetime; |loader| points to |this| and can be released once the mojo
-  // connection is set up.
+  // lifetime by owning `self_pointer_`, which is a scoped_refptr to `this`,
+  // and the reference will be released once the mojo connection is
+  // disconnected.
   void SetUpForwardingClient(
-      std::unique_ptr<StreamingSearchPrefetchURLLoader> loader,
       const network::ResourceRequest&,
       mojo::PendingReceiver<network::mojom::URLLoader> receiver,
       mojo::PendingRemote<network::mojom::URLLoaderClient> forwarding_client);
 
   // Similar to `SetUpForwardingClient`, but sets up mojo forwarding to
-  // the prerender navigation path. This method does not require `this` to own
-  // itself; its owner should continue owning this instance.
+  // the prerender navigation path.
   void CreateResponseReaderForPrerender(
-      const network::ResourceRequest& resource_request,
-      mojo::PendingReceiver<network::mojom::URLLoader> receiver,
-      mojo::PendingRemote<network::mojom::URLLoaderClient> forwarding_client);
-  // Helper function for investigating crbug.com/1463000.
-  static void CheckedCreateResponseReaderForPrerender(
-      base::WeakPtr<StreamingSearchPrefetchURLLoader> self,
       const network::ResourceRequest& resource_request,
       mojo::PendingReceiver<network::mojom::URLLoader> receiver,
       mojo::PendingRemote<network::mojom::URLLoaderClient> forwarding_client);
@@ -363,7 +402,9 @@ class StreamingSearchPrefetchURLLoader : public network::mojom::URLLoader,
   // URL Loader Events that occur before serving to the navigation stack should
   // be queued internally until the request is being served.
   std::vector<base::OnceClosure> event_queue_;
-
+  // TODO(https://crbug.com/1400881): Migrate `receiver_`, `forwarding_client_`,
+  // `producer_handle_`, `handle_watcher_` and `write_position_` into
+  // ResponseReader.
   // Forwarding client receiver.
   mojo::Receiver<network::mojom::URLLoader> receiver_{this};
   mojo::Remote<network::mojom::URLLoaderClient> forwarding_client_;
@@ -373,12 +414,9 @@ class StreamingSearchPrefetchURLLoader : public network::mojom::URLLoader,
   mojo::ScopedDataPipeProducerHandle producer_handle_;
   std::unique_ptr<mojo::SimpleWatcher> handle_watcher_;
 
-  // TODO(https://crbug.com/1400881): Migrate `receiver_`, `forwarding_client_`,
-  // `producer_handle_`, `handle_watcher_` and `write_position_` into
-  // ResponseReader.
-
-  // Set when this manages it's own lifetime.
-  std::unique_ptr<StreamingSearchPrefetchURLLoader> self_pointer_;
+  // Set when it is managing its own lifetime. Should be released when
+  // `receiver_` is disconnected or encountered a failure.
+  scoped_refptr<StreamingSearchPrefetchURLLoader> self_pointer_;
 
   // TODO(https://crbug.com/1400881): Make it a generic reader.
   std::unique_ptr<ResponseReader> response_reader_for_prerender_;
