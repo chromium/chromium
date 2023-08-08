@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_TELEMETRY_EXTENSION_ROUTINES_ROUTINE_CONVERTERS_H_
 #define CHROME_BROWSER_ASH_TELEMETRY_EXTENSION_ROUTINES_ROUTINE_CONVERTERS_H_
 
+#include <type_traits>
 #include <utility>
 
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_routines.mojom.h"
@@ -19,6 +20,12 @@ namespace ash::converters {
 // Contains conversion functions that skip checking the `mojo::InlinedStructPtr`
 // for null.
 namespace unchecked {
+
+crosapi::mojom::TelemetryDiagnosticMemtesterResultPtr UncheckedConvertPtr(
+    cros_healthd::mojom::MemtesterResultPtr input);
+
+crosapi::mojom::TelemetryDiagnosticMemoryRoutineDetailPtr UncheckedConvertPtr(
+    cros_healthd::mojom::MemoryRoutineDetailPtr input);
 
 crosapi::mojom::TelemetryDiagnosticRoutineStateInitializedPtr
 UncheckedConvertPtr(cros_healthd::mojom::RoutineStateInitializedPtr input);
@@ -44,10 +51,27 @@ crosapi::mojom::TelemetryDiagnosticRoutineStatePtr UncheckedConvertPtr(
 cros_healthd::mojom::RoutineArgumentPtr UncheckedConvertPtr(
     crosapi::mojom::TelemetryDiagnosticRoutineArgumentPtr input);
 
+cros_healthd::mojom::MemoryRoutineArgumentPtr UncheckedConvertPtr(
+    crosapi::mojom::TelemetryDiagnosticMemoryRoutineArgumentPtr input);
+
 }  // namespace unchecked
+
+crosapi::mojom::TelemetryDiagnosticMemtesterTestItemEnum Convert(
+    cros_healthd::mojom::MemtesterTestItemEnum input);
 
 crosapi::mojom::TelemetryDiagnosticRoutineStateWaiting::Reason Convert(
     cros_healthd::mojom::RoutineStateWaiting::Reason input);
+
+template <class InputT,
+          class OutputT = decltype(Convert(std::declval<InputT>())),
+          class = std::enable_if_t<std::is_enum_v<InputT>, bool>>
+std::vector<OutputT> ConvertVector(std::vector<InputT> input) {
+  std::vector<OutputT> result;
+  for (auto elem : input) {
+    result.push_back(Convert(elem));
+  }
+  return result;
+}
 
 template <class InputT>
 auto ConvertRoutinePtr(InputT input) {

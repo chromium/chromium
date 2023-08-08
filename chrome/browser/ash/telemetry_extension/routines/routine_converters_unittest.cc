@@ -4,10 +4,12 @@
 
 #include "chrome/browser/ash/telemetry_extension/routines/routine_converters.h"
 
+#include <iterator>
 #include <utility>
 
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_routines.mojom.h"
 #include "chromeos/crosapi/mojom/telemetry_diagnostic_routine_service.mojom.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash::converters {
@@ -41,6 +43,20 @@ TEST(TelemetryDiagnosticRoutineConvertersTest, ConvertRoutineArgumentPtr) {
 }
 
 TEST(TelemetryDiagnosticRoutineConvertersTest,
+     ConvertMemoryRoutineArgumentPtr) {
+  constexpr uint32_t kMaxTestingMemKib = 42;
+
+  auto input =
+      crosapi::TelemetryDiagnosticMemoryRoutineArgument::New(kMaxTestingMemKib);
+
+  auto result = ConvertRoutinePtr(std::move(input));
+
+  ASSERT_TRUE(result);
+  ASSERT_TRUE(result->max_testing_mem_kib);
+  EXPECT_EQ(*result->max_testing_mem_kib, kMaxTestingMemKib);
+}
+
+TEST(TelemetryDiagnosticRoutineConvertersTest,
      ConvertTelemetryDiagnosticRoutineStateInitializedPtr) {
   EXPECT_EQ(ConvertRoutinePtr(healthd::RoutineStateInitialized::New()),
             crosapi::TelemetryDiagnosticRoutineStateInitialized::New());
@@ -68,10 +84,127 @@ TEST(TelemetryDiagnosticRoutineConvertersTest,
 }
 
 TEST(TelemetryDiagnosticRoutineConvertersTest,
+     ConvertTelemetryDiagnosticMemtesterTestItemEnum) {
+  constexpr struct MemtesterEnums {
+    healthd::MemtesterTestItemEnum healthd;
+    crosapi::TelemetryDiagnosticMemtesterTestItemEnum crosapi;
+  } enums[] = {
+      {healthd::MemtesterTestItemEnum::kUnmappedEnumField,
+       crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kUnmappedEnumField},
+      {healthd::MemtesterTestItemEnum::kUnknown,
+       crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kUnknown},
+      {healthd::MemtesterTestItemEnum::kStuckAddress,
+       crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kStuckAddress},
+      {healthd::MemtesterTestItemEnum::kCompareAND,
+       crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kCompareAND},
+      {healthd::MemtesterTestItemEnum::kCompareDIV,
+       crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kCompareDIV},
+      {healthd::MemtesterTestItemEnum::kCompareMUL,
+       crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kCompareMUL},
+      {healthd::MemtesterTestItemEnum::kCompareOR,
+       crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kCompareOR},
+      {healthd::MemtesterTestItemEnum::kCompareSUB,
+       crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kCompareSUB},
+      {healthd::MemtesterTestItemEnum::kCompareXOR,
+       crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kCompareXOR},
+      {healthd::MemtesterTestItemEnum::kSequentialIncrement,
+       crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kSequentialIncrement},
+      {healthd::MemtesterTestItemEnum::kBitFlip,
+       crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kBitFlip},
+      {healthd::MemtesterTestItemEnum::kBitSpread,
+       crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kBitSpread},
+      {healthd::MemtesterTestItemEnum::kBlockSequential,
+       crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kBlockSequential},
+      {healthd::MemtesterTestItemEnum::kCheckerboard,
+       crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kCheckerboard},
+      {healthd::MemtesterTestItemEnum::kRandomValue,
+       crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kRandomValue},
+      {healthd::MemtesterTestItemEnum::kSolidBits,
+       crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kSolidBits},
+      {healthd::MemtesterTestItemEnum::kWalkingOnes,
+       crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kWalkingOnes},
+      {healthd::MemtesterTestItemEnum::kWalkingZeroes,
+       crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kWalkingZeroes},
+      {healthd::MemtesterTestItemEnum::k8BitWrites,
+       crosapi::TelemetryDiagnosticMemtesterTestItemEnum::k8BitWrites},
+      {healthd::MemtesterTestItemEnum::k16BitWrites,
+       crosapi::TelemetryDiagnosticMemtesterTestItemEnum::k16BitWrites},
+  };
+
+  EXPECT_EQ(
+      static_cast<uint32_t>(healthd::MemtesterTestItemEnum::kMaxValue) + 1,
+      std::size(enums));
+
+  for (const auto& enum_pair : enums) {
+    EXPECT_EQ(Convert(enum_pair.healthd), enum_pair.crosapi);
+  }
+}
+
+TEST(TelemetryDiagnosticRoutineConvertersTest,
+     ConvertTelemetryDiagnosticMemtesterResultPtr) {
+  auto input = healthd::MemtesterResult::New();
+  input->passed_items = {healthd::MemtesterTestItemEnum::k8BitWrites,
+                         healthd::MemtesterTestItemEnum::k16BitWrites};
+  input->failed_items = {healthd::MemtesterTestItemEnum::kBitFlip,
+                         healthd::MemtesterTestItemEnum::kBitSpread};
+
+  auto result = ConvertRoutinePtr(std::move(input));
+
+  EXPECT_THAT(
+      result->passed_items,
+      testing::ElementsAre(
+          crosapi::TelemetryDiagnosticMemtesterTestItemEnum::k8BitWrites,
+          crosapi::TelemetryDiagnosticMemtesterTestItemEnum::k16BitWrites));
+
+  EXPECT_THAT(
+      result->failed_items,
+      testing::ElementsAre(
+          crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kBitFlip,
+          crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kBitSpread));
+}
+
+TEST(TelemetryDiagnosticRoutineConvertersTest,
+     ConvertTelemetryDiagnosticMemoryRoutineDetailPtr) {
+  constexpr uint64_t kBytesTested = 42;
+
+  auto mem_result = healthd::MemtesterResult::New();
+  mem_result->passed_items = {healthd::MemtesterTestItemEnum::k8BitWrites,
+                              healthd::MemtesterTestItemEnum::k16BitWrites};
+  mem_result->failed_items = {healthd::MemtesterTestItemEnum::kBitFlip,
+                              healthd::MemtesterTestItemEnum::kBitSpread};
+
+  auto input = healthd::MemoryRoutineDetail::New();
+  input->bytes_tested = kBytesTested;
+  input->result = std::move(mem_result);
+
+  auto result = ConvertRoutinePtr(std::move(input));
+
+  ASSERT_TRUE(result);
+  EXPECT_EQ(result->bytes_tested, kBytesTested);
+  ASSERT_TRUE(result->result);
+  EXPECT_THAT(
+      result->result->passed_items,
+      testing::ElementsAre(
+          crosapi::TelemetryDiagnosticMemtesterTestItemEnum::k8BitWrites,
+          crosapi::TelemetryDiagnosticMemtesterTestItemEnum::k16BitWrites));
+
+  EXPECT_THAT(
+      result->result->failed_items,
+      testing::ElementsAre(
+          crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kBitFlip,
+          crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kBitSpread));
+}
+
+TEST(TelemetryDiagnosticRoutineConvertersTest,
      ConvertTelemetryDiagnosticRoutineDetailPtr) {
   EXPECT_EQ(
       ConvertRoutinePtr(healthd::RoutineDetail::NewUnrecognizedArgument(true)),
       crosapi::TelemetryDiagnosticRoutineDetail::NewUnrecognizedArgument(true));
+
+  EXPECT_EQ(ConvertRoutinePtr(healthd::RoutineDetail::NewMemory(
+                healthd::MemoryRoutineDetail::New())),
+            crosapi::TelemetryDiagnosticRoutineDetail::NewMemory(
+                crosapi::TelemetryDiagnosticMemoryRoutineDetail::New()));
 }
 
 TEST(TelemetryDiagnosticRoutineConvertersTest,

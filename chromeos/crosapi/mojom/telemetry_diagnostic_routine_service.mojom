@@ -30,6 +30,17 @@ module crosapi.mojom;
 
 import "chromeos/crosapi/mojom/telemetry_extension_exception.mojom";
 
+// This routine checks whether there is any memory problem by
+// reading/writing different patterns.
+//
+// NextMinVersion: 1, NextIndex: 1
+[Stable]
+struct TelemetryDiagnosticMemoryRoutineArgument {
+  // An optional field to indicate how much memory should be tested. If the
+  // value is null, memory test will run with as much memory as possible.
+  uint32? max_testing_mem_kib@0;
+};
+
 // Argument types for the possible routines the routine control API can create.
 //
 // NextMinVersion: 1, NextIndex: 1
@@ -38,6 +49,8 @@ union TelemetryDiagnosticRoutineArgument {
   // Default field is required by extensible unions for backward compatibility.
   // Any unrecognized Mojo field will deserialize to this field. Don't use this.
   [Default] bool unrecognizedArgument @0;
+  // Arguments to create a memory routine.
+  [MinVersion=1] TelemetryDiagnosticMemoryRoutineArgument memory@1;
 };
 
 // Routine has been initialized but not yet started.
@@ -74,14 +87,95 @@ struct TelemetryDiagnosticRoutineStateWaiting {
   string message@1;
 };
 
+// Enumeration of each possible memtester test item.
+//
+// NextMinVersion: 1, NextIndex: 20
+[Stable, Extensible]
+enum TelemetryDiagnosticMemtesterTestItemEnum {
+  [Default] kUnmappedEnumField = 0,
+  // The memtester test is not recognized.
+  kUnknown = 1,
+
+  // Test that all memory addresses to be tested can be set to itself and its
+  // complement.
+  kStuckAddress = 2,
+
+  // These tests test different operation of a random int64 with buffer
+  // initialized as 0xFFFFFFFF, repeating over 64 bit blocks.
+  // Perform AND operation.
+  kCompareAND = 3,
+  // Perform DIV operation.
+  kCompareDIV = 4,
+  // Perform MUL operation.
+  kCompareMUL = 5,
+  // Perform OR operation.
+  kCompareOR = 6,
+  // Perform SUB operation.
+  kCompareSUB = 7,
+  // Perform XOR operation.
+  kCompareXOR = 8,
+  // Perform ADD operation.
+  kSequentialIncrement = 9,
+
+  // These tests test setting memory regions in a certain pattern, repeating
+  // over each 64 bit blocks.
+  // Test Pattern: |0*10*| and |1*01*|.
+  kBitFlip = 10,
+  // Test Pattern:|0*1010*| and |1*0101*|.
+  kBitSpread = 11,
+  // Test Pattern: all 256 possible combinations of a 8 bit block, repeated 8
+  // times.
+  kBlockSequential = 12,
+  // Test Pattern: Alternating 0 and 1.
+  kCheckerboard = 13,
+  // Test Pattern: Random 64 bits.
+  kRandomValue = 14,
+  // Test Pattern: all 0s and all 1s.
+  kSolidBits = 15,
+  // Test Pattern: |0*10*|.
+  kWalkingOnes = 16,
+  // Test Pattern: |1*01*|.
+  kWalkingZeroes = 17,
+
+  // These tests test writing random n bit words across the memory regions.
+  // Test Pattern: 8 bit random words.
+  k8BitWrites = 18,
+  // Test Pattern: 16 bit random words.
+  k16BitWrites = 19,
+};
+
+// Result from running memtester.
+//
+// NextMinVersion: 1, NextIndex: 2
+[Stable]
+struct TelemetryDiagnosticMemtesterResult {
+  // Tests that have passed.
+  array<TelemetryDiagnosticMemtesterTestItemEnum> passed_items@0;
+  // Tests that have failed.
+  array<TelemetryDiagnosticMemtesterTestItemEnum> failed_items@1;
+};
+
+// Details regarding memory routine.
+//
+// NextMinVersion: 1, NextIndex: 2
+[Stable]
+struct TelemetryDiagnosticMemoryRoutineDetail {
+  // Number of bytes tested in the memory routine.
+  uint64 bytes_tested@0;
+  // Contains the memtester test results.
+  TelemetryDiagnosticMemtesterResult result@1;
+};
+
 // Details about a finished routine.
 //
-// NextMinVersion: 1, NextIndex: 1
+// NextMinVersion: 2, NextIndex: 2
 [Stable]
 union TelemetryDiagnosticRoutineDetail {
   // Default field is required by extensible unions for backward compatibility.
   // Any unrecognized Mojo field will deserialize to this field. Don't use this.
   [Default] bool unrecognizedArgument@0;
+  // Details of a completed memory routine.
+  [MinVersion=1] TelemetryDiagnosticMemoryRoutineDetail memory@1;
 };
 
 // Information about a finished routine.

@@ -21,6 +21,18 @@ namespace healthd = cros_healthd::mojom;
 
 namespace unchecked {
 
+crosapi::TelemetryDiagnosticMemtesterResultPtr UncheckedConvertPtr(
+    healthd::MemtesterResultPtr input) {
+  return crosapi::TelemetryDiagnosticMemtesterResult::New(
+      ConvertVector(input->passed_items), ConvertVector(input->failed_items));
+}
+
+crosapi::TelemetryDiagnosticMemoryRoutineDetailPtr UncheckedConvertPtr(
+    healthd::MemoryRoutineDetailPtr input) {
+  return crosapi::TelemetryDiagnosticMemoryRoutineDetail::New(
+      input->bytes_tested, ConvertRoutinePtr(std::move(input->result)));
+}
+
 crosapi::TelemetryDiagnosticRoutineStateInitializedPtr UncheckedConvertPtr(
     healthd::RoutineStateInitializedPtr input) {
   return crosapi::TelemetryDiagnosticRoutineStateInitialized::New();
@@ -44,6 +56,9 @@ crosapi::TelemetryDiagnosticRoutineDetailPtr UncheckedConvertPtr(
         kUnrecognizedArgument:
       return crosapi::TelemetryDiagnosticRoutineDetail::NewUnrecognizedArgument(
           input->get_unrecognizedArgument());
+    case healthd::internal::RoutineDetail_Data::RoutineDetail_Tag::kMemory:
+      return crosapi::TelemetryDiagnosticRoutineDetail::NewMemory(
+          ConvertRoutinePtr(std::move(input->get_memory())));
   }
   NOTREACHED_NORETURN();
 }
@@ -94,10 +109,70 @@ healthd::RoutineArgumentPtr UncheckedConvertPtr(
         TelemetryDiagnosticRoutineArgument_Tag::kUnrecognizedArgument:
       return healthd::RoutineArgument::NewUnrecognizedArgument(
           std::move(input->get_unrecognizedArgument()));
+    case crosapi::internal::TelemetryDiagnosticRoutineArgument_Data::
+        TelemetryDiagnosticRoutineArgument_Tag::kMemory:
+      return healthd::RoutineArgument::NewMemory(
+          ConvertRoutinePtr(std::move(input->get_memory())));
   }
 }
 
+healthd::MemoryRoutineArgumentPtr UncheckedConvertPtr(
+    crosapi::TelemetryDiagnosticMemoryRoutineArgumentPtr input) {
+  return healthd::MemoryRoutineArgument::New(
+      std::move(input->max_testing_mem_kib));
+}
+
 }  // namespace unchecked
+
+crosapi::TelemetryDiagnosticMemtesterTestItemEnum Convert(
+    healthd::MemtesterTestItemEnum input) {
+  switch (input) {
+    case healthd::MemtesterTestItemEnum::kUnmappedEnumField:
+      return crosapi::TelemetryDiagnosticMemtesterTestItemEnum::
+          kUnmappedEnumField;
+    case healthd::MemtesterTestItemEnum::kUnknown:
+      return crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kUnknown;
+    case healthd::MemtesterTestItemEnum::kStuckAddress:
+      return crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kStuckAddress;
+    case healthd::MemtesterTestItemEnum::kCompareAND:
+      return crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kCompareAND;
+    case healthd::MemtesterTestItemEnum::kCompareDIV:
+      return crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kCompareDIV;
+    case healthd::MemtesterTestItemEnum::kCompareMUL:
+      return crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kCompareMUL;
+    case healthd::MemtesterTestItemEnum::kCompareOR:
+      return crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kCompareOR;
+    case healthd::MemtesterTestItemEnum::kCompareSUB:
+      return crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kCompareSUB;
+    case healthd::MemtesterTestItemEnum::kCompareXOR:
+      return crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kCompareXOR;
+    case healthd::MemtesterTestItemEnum::kSequentialIncrement:
+      return crosapi::TelemetryDiagnosticMemtesterTestItemEnum::
+          kSequentialIncrement;
+    case healthd::MemtesterTestItemEnum::kBitFlip:
+      return crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kBitFlip;
+    case healthd::MemtesterTestItemEnum::kBitSpread:
+      return crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kBitSpread;
+    case healthd::MemtesterTestItemEnum::kBlockSequential:
+      return crosapi::TelemetryDiagnosticMemtesterTestItemEnum::
+          kBlockSequential;
+    case healthd::MemtesterTestItemEnum::kCheckerboard:
+      return crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kCheckerboard;
+    case healthd::MemtesterTestItemEnum::kRandomValue:
+      return crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kRandomValue;
+    case healthd::MemtesterTestItemEnum::kSolidBits:
+      return crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kSolidBits;
+    case healthd::MemtesterTestItemEnum::kWalkingOnes:
+      return crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kWalkingOnes;
+    case healthd::MemtesterTestItemEnum::kWalkingZeroes:
+      return crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kWalkingZeroes;
+    case healthd::MemtesterTestItemEnum::k8BitWrites:
+      return crosapi::TelemetryDiagnosticMemtesterTestItemEnum::k8BitWrites;
+    case healthd::MemtesterTestItemEnum::k16BitWrites:
+      return crosapi::TelemetryDiagnosticMemtesterTestItemEnum::k16BitWrites;
+  }
+  NOTREACHED_NORETURN();
+}
 
 crosapi::TelemetryDiagnosticRoutineStateWaiting::Reason Convert(
     healthd::RoutineStateWaiting::Reason input) {
