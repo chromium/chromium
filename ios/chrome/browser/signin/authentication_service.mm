@@ -639,11 +639,14 @@ void AuthenticationService::HandleForgottenIdentity(
 
   // Reauth prompt should only be set when the user is syncing, since reauth
   // turns on sync by default.
-  // TODO(crbug.com/1463438): Requires additional investigation regarding
-  // whether to remove kSync or replace it with kSignin. See
-  // ConsentLevel::kSync for details.
-  should_prompt = should_prompt && identity_manager_->HasPrimaryAccount(
-                                       signin::ConsentLevel::kSync);
+  if (base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos)) {
+    should_prompt = should_prompt && identity_manager_->HasPrimaryAccount(
+                                         signin::ConsentLevel::kSignin);
+  } else {
+    should_prompt = should_prompt && identity_manager_->HasPrimaryAccount(
+                                         signin::ConsentLevel::kSync);
+  }
 
   // Metrics.
   signin_metrics::ProfileSignout signout_source;
