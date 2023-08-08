@@ -307,25 +307,25 @@ TEST(CommandLineTest, AppendSwitches) {
 }
 
 TEST(CommandLineTest, AppendSwitchesDashDash) {
- const CommandLine::CharType* raw_argv[] = { FILE_PATH_LITERAL("prog"),
-                                             FILE_PATH_LITERAL("--"),
-                                             FILE_PATH_LITERAL("--arg1") };
- CommandLine cl(std::size(raw_argv), raw_argv);
+  const CommandLine::CharType* const raw_argv[] = {FILE_PATH_LITERAL("prog"),
+                                                   FILE_PATH_LITERAL("--"),
+                                                   FILE_PATH_LITERAL("--arg1")};
+  CommandLine cl(std::size(raw_argv), raw_argv);
 
- cl.AppendSwitch("switch1");
- cl.AppendSwitchASCII("switch2", "foo");
+  cl.AppendSwitch("switch1");
+  cl.AppendSwitchASCII("switch2", "foo");
 
- cl.AppendArg("--arg2");
+  cl.AppendArg("--arg2");
 
- EXPECT_EQ(FILE_PATH_LITERAL("prog --switch1 --switch2=foo -- --arg1 --arg2"),
-           cl.GetCommandLineString());
- CommandLine::StringVector cl_argv = cl.argv();
- EXPECT_EQ(FILE_PATH_LITERAL("prog"), cl_argv[0]);
- EXPECT_EQ(FILE_PATH_LITERAL("--switch1"), cl_argv[1]);
- EXPECT_EQ(FILE_PATH_LITERAL("--switch2=foo"), cl_argv[2]);
- EXPECT_EQ(FILE_PATH_LITERAL("--"), cl_argv[3]);
- EXPECT_EQ(FILE_PATH_LITERAL("--arg1"), cl_argv[4]);
- EXPECT_EQ(FILE_PATH_LITERAL("--arg2"), cl_argv[5]);
+  EXPECT_EQ(FILE_PATH_LITERAL("prog --switch1 --switch2=foo -- --arg1 --arg2"),
+            cl.GetCommandLineString());
+  CommandLine::StringVector cl_argv = cl.argv();
+  EXPECT_EQ(FILE_PATH_LITERAL("prog"), cl_argv[0]);
+  EXPECT_EQ(FILE_PATH_LITERAL("--switch1"), cl_argv[1]);
+  EXPECT_EQ(FILE_PATH_LITERAL("--switch2=foo"), cl_argv[2]);
+  EXPECT_EQ(FILE_PATH_LITERAL("--"), cl_argv[3]);
+  EXPECT_EQ(FILE_PATH_LITERAL("--arg1"), cl_argv[4]);
+  EXPECT_EQ(FILE_PATH_LITERAL("--arg2"), cl_argv[5]);
 }
 
 #if BUILDFLAG(IS_WIN)
