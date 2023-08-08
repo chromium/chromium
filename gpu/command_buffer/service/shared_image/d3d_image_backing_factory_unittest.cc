@@ -151,7 +151,10 @@ class D3DImageBackingFactoryTestBase : public testing::Test {
     shared_image_factory_ = std::make_unique<D3DImageBackingFactory>(
         gl::QueryD3D11DeviceObjectFromANGLE(),
         shared_image_manager_.dxgi_shared_handle_manager());
+    dawnProcSetProcs(&dawn::native::GetProcs());
   }
+
+  void TearDown() override { dawnProcSetProcs(nullptr); }
 
  protected:
   scoped_refptr<gl::GLSurface> surface_;
@@ -645,8 +648,6 @@ TEST_F(D3DImageBackingFactoryTest, Dawn_SkiaGL) {
 
   wgpu::Device device =
       wgpu::Device::Acquire(adapter_it->CreateDevice(&device_descriptor));
-  DawnProcTable procs = dawn::native::GetProcs();
-  dawnProcSetProcs(&procs);
 
   // Create a backing using mailbox.
   const auto mailbox = Mailbox::GenerateForSharedImage();
@@ -703,11 +704,6 @@ TEST_F(D3DImageBackingFactoryTest, Dawn_SkiaGL) {
   }
 
   CheckSkiaPixels(mailbox, size, {0, 255, 0, 255});
-
-  // Shut down Dawn
-  device = wgpu::Device();
-  dawnProcSetProcs(nullptr);
-
   factory_ref.reset();
 }
 
@@ -841,8 +837,6 @@ TEST_F(D3DImageBackingFactoryTest, Dawn_ConcurrentReads) {
 
   wgpu::Device device =
       wgpu::Device::Acquire(adapter_it->CreateDevice(&device_descriptor));
-  DawnProcTable procs = dawn::native::GetProcs();
-  dawnProcSetProcs(&procs);
 
   // Create a backing using mailbox.
   const auto mailbox = Mailbox::GenerateForSharedImage();
@@ -1004,8 +998,7 @@ TEST_F(D3DImageBackingFactoryTest, GL_Dawn_Skia_UnclearTexture) {
 
   wgpu::Device device =
       wgpu::Device::Acquire(adapter_it->CreateDevice(&device_descriptor));
-  DawnProcTable procs = dawn::native::GetProcs();
-  dawnProcSetProcs(&procs);
+
   {
     auto dawn_representation =
         shared_image_representation_factory_->ProduceDawn(
@@ -1041,11 +1034,6 @@ TEST_F(D3DImageBackingFactoryTest, GL_Dawn_Skia_UnclearTexture) {
   // Check skia pixels returns black since texture was lazy cleared in Dawn
   EXPECT_TRUE(factory_ref->IsCleared());
   CheckSkiaPixels(mailbox, size, {0, 0, 0, 0});
-
-  // Shut down Dawn
-  device = wgpu::Device();
-  dawnProcSetProcs(nullptr);
-
   factory_ref.reset();
 }
 
@@ -1096,8 +1084,6 @@ TEST_F(D3DImageBackingFactoryTest, UnclearDawn_SkiaFails) {
 
   wgpu::Device device =
       wgpu::Device::Acquire(adapter_it->CreateDevice(&device_descriptor));
-  DawnProcTable procs = dawn::native::GetProcs();
-  dawnProcSetProcs(&procs);
   {
     auto dawn_representation =
         shared_image_representation_factory_->ProduceDawn(
@@ -1130,10 +1116,6 @@ TEST_F(D3DImageBackingFactoryTest, UnclearDawn_SkiaFails) {
     wgpu::Queue queue = device.GetQueue();
     queue.Submit(1, &commands);
   }
-
-  // Shut down Dawn
-  device = wgpu::Device();
-  dawnProcSetProcs(nullptr);
 
   EXPECT_FALSE(factory_ref->IsCleared());
 
@@ -1363,8 +1345,6 @@ TEST_F(D3DImageBackingFactoryTest, Dawn_ReuseExternalImage) {
 
   wgpu::Device device =
       wgpu::Device::Acquire(adapter_it->CreateDevice(&device_descriptor));
-  DawnProcTable procs = dawn::native::GetProcs();
-  dawnProcSetProcs(&procs);
 
   const wgpu::TextureUsage texture_usage = wgpu::TextureUsage::RenderAttachment;
 
@@ -1443,10 +1423,6 @@ TEST_F(D3DImageBackingFactoryTest, Dawn_ReuseExternalImage) {
 
   CheckSkiaPixels(mailbox, size, {255, 0, 0, 255});
 
-  // Shut down Dawn
-  device = wgpu::Device();
-  dawnProcSetProcs(nullptr);
-
   factory_ref.reset();
 }
 
@@ -1493,9 +1469,6 @@ TEST_F(D3DImageBackingFactoryTest, Dawn_HasLastRef) {
 
   wgpu::Device device =
       wgpu::Device::Acquire(adapter_it->CreateDevice(&device_descriptor));
-  DawnProcTable procs = dawn::native::GetProcs();
-  dawnProcSetProcs(&procs);
-
   auto dawn_representation = shared_image_representation_factory_->ProduceDawn(
       mailbox, device, wgpu::BackendType::D3D12, {});
   ASSERT_NE(dawn_representation, nullptr);
@@ -1515,10 +1488,6 @@ TEST_F(D3DImageBackingFactoryTest, Dawn_HasLastRef) {
 
   // This shouldn't crash due to no GL context being current.
   dawn_representation.reset();
-
-  // Shut down Dawn
-  device = wgpu::Device();
-  dawnProcSetProcs(nullptr);
 
   // Make context current so that it can be destroyed.
   context_->MakeCurrent(surface_.get());
