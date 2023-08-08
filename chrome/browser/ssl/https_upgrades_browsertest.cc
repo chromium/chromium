@@ -854,6 +854,10 @@ IN_PROC_BROWSER_TEST_P(
       browser()->tab_strip_model()->GetActiveWebContents();
   Profile* profile = Profile::FromBrowserContext(contents->GetBrowserContext());
 
+  // Typically Secure User heuristic requires a minimum total site engagement
+  // score.
+  SetSiteEngagementScore(GURL("https://google.com"), 90);
+
   // Set test clock.
   base::SimpleTestClock clock;
 

@@ -58,6 +58,13 @@ const size_t kMaxRecentFallbackEntryCount = 2;
 // prevents auto-enabling HFM immediately upon first launch.
 const base::TimeDelta kMinProfileAge = base::Days(7);
 
+// Minimum total score for a user to be considered typically secure. If the user
+// doesn't have at least this much engagement score over all sites, they might
+// not have used Chrome sufficiently for us to auto-enable HFM.
+const base::FeatureParam<int> kMinTotalEngagementPointsForTypicallySecureUser{
+    &features::kHttpsFirstModeV2ForTypicallySecureUsers,
+    "min-total-site-engagement-score", 25};
+
 namespace {
 
 using security_interstitials::https_only_mode::SiteEngagementHeuristicState;
@@ -258,9 +265,13 @@ bool HttpsFirstModeService::MaybeEnableHttpsFirstModeForUser(
   }
 
   size_t recent_warning_count = new_entries.size();
+
+  auto* engagement_svc = site_engagement::SiteEngagementService::Get(profile_);
   bool enable_https_first_mode =
-      (now - profile_->GetCreationTime()) > kMinProfileAge &&
-      recent_warning_count <= kMaxRecentFallbackEntryCount;
+      ((now - profile_->GetCreationTime()) > kMinProfileAge) &&
+      (recent_warning_count <= kMaxRecentFallbackEntryCount) &&
+      (engagement_svc->GetTotalEngagementPoints() >=
+       kMinTotalEngagementPointsForTypicallySecureUser.Get());
 
   // Update the pref with the new fallback events.
   base::Value::Dict new_base_pref;

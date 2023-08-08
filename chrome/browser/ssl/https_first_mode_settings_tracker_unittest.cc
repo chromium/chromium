@@ -299,6 +299,13 @@ TEST_F(HttpsFirstModeSettingsTrackerTest, TypicallySecureUserPref) {
       HttpsFirstModeServiceFactory::GetForProfile(profile());
   ASSERT_TRUE(service);
 
+  // Typically Secure User heuristic requires a minimum total site engagement
+  // score.
+  site_engagement::SiteEngagementService* engagement_service =
+      site_engagement::SiteEngagementService::Get(profile());
+  ASSERT_TRUE(engagement_service);
+  engagement_service->ResetBaseScoreForURL(GURL("https://google.com"), 90);
+
   base::SimpleTestClock clock;
   base::Time now = base::Time::NowFromSystemTime();
   clock.SetNow(now);
