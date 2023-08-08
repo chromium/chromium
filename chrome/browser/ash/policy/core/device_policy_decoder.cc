@@ -70,10 +70,11 @@ void SetJsonDevicePolicy(
   policies->Set(policy_name, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
                 POLICY_SOURCE_CLOUD, std::move(value_to_set),
                 std::move(external_data_fetcher));
-  if (!error.empty())
+  if (!error.empty()) {
     policies->AddMessage(policy_name, PolicyMap::MessageType::kError,
                          IDS_POLICY_PROTO_PARSING_ERROR,
                          {base::UTF8ToUTF16(error)});
+  }
 }
 
 // Returns true and sets |level| to a PolicyLevel if the policy has been set
@@ -113,9 +114,10 @@ void SetPolicyWithValidatingRegex(const std::string& policy_name,
                                   PolicyMap* policies) {
   policies->Set(policy_name, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
                 POLICY_SOURCE_CLOUD, base::Value(policy_value), nullptr);
-  if (!RE2::FullMatch(policy_value, pattern))
+  if (!RE2::FullMatch(policy_value, pattern)) {
     policies->AddMessage(policy_name, PolicyMap::MessageType::kError,
                          IDS_POLICY_INVALID_VALUE);
+  }
 }
 
 void SetExternalDataDevicePolicy(
@@ -151,8 +153,9 @@ std::unique_ptr<base::Value> DecodeConnectionType(int value) {
        shill::kTypeCellular},
   };
   const auto iter = kConnectionTypes.find(value);
-  if (iter == kConnectionTypes.end())
+  if (iter == kConnectionTypes.end()) {
     return nullptr;
+  }
   return std::make_unique<base::Value>(iter->second);
 }
 
@@ -224,8 +227,9 @@ void DecodeLoginPolicies(const em::ChromeDeviceSettingsProto& policy,
   if (policy.has_user_allowlist()) {
     const em::UserAllowlistProto& container(policy.user_allowlist());
     base::Value::List allowlist;
-    for (const auto& entry : container.user_allowlist())
+    for (const auto& entry : container.user_allowlist()) {
       allowlist.Append(entry);
+    }
     policies->Set(key::kDeviceUserAllowlist, POLICY_LEVEL_MANDATORY,
                   POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
                   base::Value(std::move(allowlist)), nullptr);
@@ -456,8 +460,9 @@ void DecodeLoginPolicies(const em::ChromeDeviceSettingsProto& policy,
     base::Value::List locales;
     const em::LoginScreenLocalesProto& login_screen_locales(
         policy.login_screen_locales());
-    for (const auto& locale : login_screen_locales.login_screen_locales())
+    for (const auto& locale : login_screen_locales.login_screen_locales()) {
       locales.Append(locale);
+    }
     policies->Set(key::kDeviceLoginScreenLocales, POLICY_LEVEL_MANDATORY,
                   POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
                   base::Value(std::move(locales)), nullptr);
@@ -755,7 +760,6 @@ void DecodeNetworkPolicies(const em::ChromeDeviceSettingsProto& policy,
   if (policy.has_network_throttling()) {
     const em::NetworkThrottlingEnabledProto& container(
         policy.network_throttling());
-    base::Value::Dict throttling_status;
     bool enabled = (container.has_enabled()) ? container.enabled() : false;
     uint32_t upload_rate_kbits =
         (container.has_upload_rate_kbits()) ? container.upload_rate_kbits() : 0;
@@ -763,11 +767,11 @@ void DecodeNetworkPolicies(const em::ChromeDeviceSettingsProto& policy,
                                        ? container.download_rate_kbits()
                                        : 0;
 
-    throttling_status.Set("enabled", enabled);
-    throttling_status.Set("upload_rate_kbits",
-                          static_cast<int>(upload_rate_kbits));
-    throttling_status.Set("download_rate_kbits",
-                          static_cast<int>(download_rate_kbits));
+    auto throttling_status =
+        base::Value::Dict()
+            .Set("enabled", enabled)
+            .Set("upload_rate_kbits", static_cast<int>(upload_rate_kbits))
+            .Set("download_rate_kbits", static_cast<int>(download_rate_kbits));
     policies->Set(key::kNetworkThrottlingEnabled, POLICY_LEVEL_MANDATORY,
                   POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
                   base::Value(std::move(throttling_status)), nullptr);
@@ -857,17 +861,15 @@ void DecodeReportingPolicies(const em::ChromeDeviceSettingsProto& policy,
                     base::Value(container.report_boot_mode()), nullptr);
     }
     if (container.has_report_network_configuration()) {
-      policies->Set(key::kReportDeviceNetworkConfiguration,
-                    POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
-                    POLICY_SOURCE_CLOUD,
-                    base::Value(container.report_network_configuration()),
-                    nullptr);
+      policies->Set(
+          key::kReportDeviceNetworkConfiguration, POLICY_LEVEL_MANDATORY,
+          POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
+          base::Value(container.report_network_configuration()), nullptr);
     }
     if (container.has_report_network_status()) {
       policies->Set(key::kReportDeviceNetworkStatus, POLICY_LEVEL_MANDATORY,
                     POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
-                    base::Value(container.report_network_status()),
-                    nullptr);
+                    base::Value(container.report_network_status()), nullptr);
     }
     if (container.has_report_users()) {
       policies->Set(key::kReportDeviceUsers, POLICY_LEVEL_MANDATORY,
@@ -1132,8 +1134,9 @@ void DecodeAutoUpdatePolicies(const em::ChromeDeviceSettingsProto& policy,
       base::Value::List allowed_connection_types;
       for (const auto& entry : container.allowed_connection_types()) {
         std::unique_ptr<base::Value> value = DecodeConnectionType(entry);
-        if (value)
+        if (value) {
           allowed_connection_types.Append(std::move(*value));
+        }
       }
       policies->Set(key::kDeviceUpdateAllowedConnectionTypes,
                     POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
@@ -1750,18 +1753,20 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
   if (policy.has_device_off_hours()) {
     auto off_hours_policy =
         off_hours::ConvertOffHoursProtoToValue(policy.device_off_hours());
-    if (off_hours_policy)
+    if (off_hours_policy) {
       policies->Set(key::kDeviceOffHours, POLICY_LEVEL_MANDATORY,
                     POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
                     base::Value(std::move(*off_hours_policy)), nullptr);
+    }
   }
 
   if (policy.has_cast_receiver_name()) {
     const em::CastReceiverNameProto& container(policy.cast_receiver_name());
-    if (container.has_name())
+    if (container.has_name()) {
       policies->Set(key::kCastReceiverName, POLICY_LEVEL_MANDATORY,
                     POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
                     base::Value(container.name()), nullptr);
+    }
   }
 
   if (policy.has_device_printers_access_mode()) {
@@ -1782,8 +1787,9 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
     const em::DevicePrintersBlocklistProto& container(
         policy.device_printers_blocklist());
     base::Value::List blocklist;
-    for (const auto& entry : container.blocklist())
+    for (const auto& entry : container.blocklist()) {
       blocklist.Append(entry);
+    }
 
     policies->Set(key::kDevicePrintersBlocklist, POLICY_LEVEL_MANDATORY,
                   POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
@@ -1794,8 +1800,9 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
     const em::DevicePrintersAllowlistProto& container(
         policy.device_printers_allowlist());
     base::Value::List allowlist;
-    for (const auto& entry : container.allowlist())
+    for (const auto& entry : container.allowlist()) {
       allowlist.Append(entry);
+    }
 
     policies->Set(key::kDevicePrintersAllowlist, POLICY_LEVEL_MANDATORY,
                   POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
@@ -1806,8 +1813,9 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
     const em::DeviceExternalPrintServersAllowlistProto& container(
         policy.external_print_servers_allowlist());
     base::Value::List allowlist;
-    for (const auto& entry : container.allowlist())
+    for (const auto& entry : container.allowlist()) {
       allowlist.Append(entry);
+    }
 
     policies->Set(key::kDeviceExternalPrintServersAllowlist,
                   POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
@@ -2149,8 +2157,9 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
     const em::DeviceAllowedBluetoothServicesProto& container(
         policy.device_allowed_bluetooth_services());
     base::Value::List allowlist;
-    for (const auto& entry : container.allowlist())
+    for (const auto& entry : container.allowlist()) {
       allowlist.Append(entry);
+    }
     policies->Set(key::kDeviceAllowedBluetoothServices, POLICY_LEVEL_MANDATORY,
                   POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
                   base::Value(std::move(allowlist)), nullptr);

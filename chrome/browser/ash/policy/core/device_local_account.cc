@@ -30,8 +30,9 @@ bool GetString(const base::Value::Dict& dict,
                const char* key,
                std::string* result) {
   const std::string* value = dict.FindString(key);
-  if (!value)
+  if (!value) {
     return false;
+  }
   *result = *value;
   return true;
 }
@@ -140,11 +141,12 @@ void SetDeviceLocalAccounts(ash::OwnerSettingsServiceAsh* service,
   base::Value::List list;
   for (std::vector<DeviceLocalAccount>::const_iterator it = accounts.begin();
        it != accounts.end(); ++it) {
-    base::Value::Dict entry;
-    entry.Set(ash::kAccountsPrefDeviceLocalAccountsKeyId, it->account_id);
-    entry.Set(ash::kAccountsPrefDeviceLocalAccountsKeyType, it->type);
-    entry.Set(ash::kAccountsPrefDeviceLocalAccountsKeyEphemeralMode,
-              static_cast<int>(it->ephemeral_mode));
+    auto entry =
+        base::Value::Dict()
+            .Set(ash::kAccountsPrefDeviceLocalAccountsKeyId, it->account_id)
+            .Set(ash::kAccountsPrefDeviceLocalAccountsKeyType, it->type)
+            .Set(ash::kAccountsPrefDeviceLocalAccountsKeyEphemeralMode,
+                 static_cast<int>(it->ephemeral_mode));
     if (it->type == DeviceLocalAccount::TYPE_KIOSK_APP) {
       entry.Set(ash::kAccountsPrefDeviceLocalAccountsKeyKioskAppId,
                 it->kiosk_app_id);
@@ -192,8 +194,9 @@ std::vector<DeviceLocalAccount> GetDeviceLocalAccounts(
   std::vector<DeviceLocalAccount> accounts;
 
   const base::Value::List* list = nullptr;
-  if (!cros_settings->GetList(ash::kAccountsPrefDeviceLocalAccounts, &list))
+  if (!cros_settings->GetList(ash::kAccountsPrefDeviceLocalAccounts, &list)) {
     return accounts;
+  }
 
   std::set<std::string> account_ids;
   for (size_t i = 0; i < list->size(); ++i) {

@@ -84,18 +84,17 @@ class DevicePolicyDecoderTest : public testing::Test {
 };
 
 base::Value DevicePolicyDecoderTest::GetWallpaperDict() const {
-  base::Value::Dict dict;
-  dict.Set(kWallpaperUrlPropertyName, kWallpaperUrlPropertyValue);
-  dict.Set(kWallpaperHashPropertyName, kWallpaperHashPropertyValue);
-  return base::Value(std::move(dict));
+  return base::Value(
+      base::Value::Dict()
+          .Set(kWallpaperUrlPropertyName, kWallpaperUrlPropertyValue)
+          .Set(kWallpaperHashPropertyName, kWallpaperHashPropertyValue));
 }
 
 base::Value DevicePolicyDecoderTest::GetBluetoothServiceAllowedList() const {
-  base::Value::List list;
-  list.Append(kValidBluetoothServiceUUID4);
-  list.Append(kValidBluetoothServiceUUID8);
-  list.Append(kValidBluetoothServiceUUID32);
-  return base::Value(std::move(list));
+  return base::Value(base::Value::List()
+                         .Append(kValidBluetoothServiceUUID4)
+                         .Append(kValidBluetoothServiceUUID8)
+                         .Append(kValidBluetoothServiceUUID32));
 }
 
 void DevicePolicyDecoderTest::DecodeDevicePolicyTestHelper(
@@ -415,9 +414,8 @@ TEST_F(DevicePolicyDecoderTest,
   DecodeUnsetDevicePolicyTestHelper(
       device_policy, key::kReportDeviceSignalStrengthEventDrivenTelemetry);
 
-  base::Value::List signal_strength_telemetry_list;
-  signal_strength_telemetry_list.Append("network_telemetry");
-  signal_strength_telemetry_list.Append("https_latency");
+  auto signal_strength_telemetry_list =
+      base::Value::List().Append("network_telemetry").Append("https_latency");
   device_policy.mutable_device_reporting()
       ->mutable_report_signal_strength_event_driven_telemetry()
       ->add_entries("network_telemetry");
@@ -646,7 +644,7 @@ TEST_F(DevicePolicyDecoderTest, DecodeDeviceAuthenticationURLBlocklist) {
       device_policy.mutable_device_authentication_url_blocklist()
           ->mutable_value();
 
-  base::Value::List blocklist_items =
+  auto blocklist_items =
       base::Value::List().Append("example.com").Append("*.example.com");
 
   for (auto& item : blocklist_items) {
@@ -668,9 +666,9 @@ TEST_F(DevicePolicyDecoderTest, DecodeDeviceAuthenticationURLAllowlist) {
       device_policy.mutable_device_authentication_url_allowlist()
           ->mutable_value();
 
-  base::Value::List allowlist_items = base::Value::List()
-                                          .Append("allow.example.com")
-                                          .Append("*.allow.example.com");
+  auto allowlist_items = base::Value::List()
+                             .Append("allow.example.com")
+                             .Append("*.allow.example.com");
 
   for (auto& item : allowlist_items) {
     allowlist->add_entries(item.GetString());
