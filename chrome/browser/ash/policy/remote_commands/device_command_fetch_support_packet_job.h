@@ -28,6 +28,10 @@ namespace policy {
 // not enabled for user's type.
 extern const char kCommandNotEnabledForUserMessage[];
 
+// DeviceCommandFetchSupportPacketJob will emit
+// EnterpriseFetchSupportPacketFailure enums to this UMA histogram.
+extern const char kFetchSupportPacketFailureHistogramName[];
+
 // SupportPacketDetails will contain the details of the data collection that's
 // requested by the remote command's payload. Command payload contains the
 // JSON-encoded version of SupportPacketDetails proto message in
@@ -45,6 +49,19 @@ struct SupportPacketDetails {
 
   SupportPacketDetails();
   ~SupportPacketDetails();
+};
+
+// This enum is emitted to UMA
+// `Enterprise.DeviceRemoteCommand.FetchSupportPacket.Failure` and can't be
+// renumerated. Please update `EnterpriseFetchSupportPacketFailureType` values
+// in tools/metrics/histograms/enums.xml when you add a new value to here.
+enum class EnterpriseFetchSupportPacketFailureType {
+  kNoFailure = 0,
+  kFailedOnWrongCommandPayload = 1,
+  kFailedOnCommandEnabledForUserCheck = 2,
+  kFailedOnExportingSupportPacket = 3,
+  kFailedOnEnqueueingEvent = 4,
+  kMaxValue = kFailedOnEnqueueingEvent,
 };
 
 class DeviceCommandFetchSupportPacketJob : public RemoteCommandJob {

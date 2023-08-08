@@ -32561,6 +32561,14 @@ Called by update_document_policy_enum.py.-->
   <int value="1" label="Reused lock"/>
 </enum>
 
+<enum name="EnterpriseFetchSupportPacketFailureType">
+  <int value="0" label="kNoFailure"/>
+  <int value="1" label="kFailedOnWrongCommandPayload"/>
+  <int value="2" label="kFailedOnCommandEnabledForUserCheck"/>
+  <int value="3" label="kFailedOnExportingSupportPacket"/>
+  <int value="4" label="kFailedOnEnqueueingEvent"/>
+</enum>
+
 <enum name="EnterpriseFileSystemDownloadsRoutingDestination">
   <int value="0" label="Download not routed"/>
   <int value="1" label="Download routed to Box"/>

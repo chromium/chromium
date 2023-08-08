@@ -673,6 +673,20 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Enterprise.DeviceRemoteCommand.FetchSupportPacket.Failure"
+    enum="EnterpriseFetchSupportPacketFailureType" expires_after="2024-08-08">
+  <owner>iremuguz@google.com</owner>
+  <owner>chromeos-commercial-supportability@google.com</owner>
+  <summary>
+    Reports the failure reason of the FETCH_SUPPORT_PACKET remote command. It
+    will be recorded by DeviceCommandFetchSupportPacketJob class when the
+    command execution has completed with failure. It will indicate in which
+    stage of execution had the failure (e.g. wrong command payload, error when
+    exporting the generated support packet or enqueueing the LogUploadEvent to
+    ReportQueue).
+  </summary>
+</histogram>
+
 <histogram name="Enterprise.DeviceRemoteCommand.Received"
     enum="RemoteCommandReceivedStatus" expires_after="2024-02-04">
   <owner>asumaneev@google.com</owner>
