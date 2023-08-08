@@ -32,6 +32,7 @@
 
 #include "third_party/blink/renderer/core/css/css_selector.h"
 #include "third_party/blink/renderer/core/css/style_rule.h"
+#include "third_party/blink/renderer/core/css/style_scope.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 
@@ -81,11 +82,13 @@ inline void CollectElementIdentifierHashes(
 void CollectDescendantCompoundSelectorIdentifierHashes(
     const CSSSelector* selector,
     CSSSelector::RelationType relation,
+    const StyleScope* style_scope,
     unsigned*& hash,
     unsigned* end);
 
 inline void CollectDescendantSelectorIdentifierHashes(
     const CSSSelector& selector,
+    const StyleScope* style_scope,
     unsigned*& hash,
     unsigned* end) {
   switch (selector.Match()) {
@@ -132,10 +135,22 @@ inline void CollectDescendantSelectorIdentifierHashes(
           if (selector_list &&
               CSSSelectorList::Next(*selector_list) == nullptr) {
             CollectDescendantCompoundSelectorIdentifierHashes(
-                selector_list, CSSSelector::kDescendant, hash, end);
+                selector_list, CSSSelector::kDescendant, style_scope, hash,
+                end);
           }
           break;
         }
+        case CSSSelector::kPseudoScope:
+          if (style_scope) {
+            const CSSSelector* selector_list = style_scope->From();
+            if (selector_list &&
+                CSSSelectorList::Next(*selector_list) == nullptr) {
+              CollectDescendantCompoundSelectorIdentifierHashes(
+                  selector_list, CSSSelector::kDescendant,
+                  style_scope->Parent(), hash, end);
+            }
+          }
+          break;
         default:
           break;
       }
@@ -148,6 +163,7 @@ inline void CollectDescendantSelectorIdentifierHashes(
 void CollectDescendantCompoundSelectorIdentifierHashes(
     const CSSSelector* selector,
     CSSSelector::RelationType relation,
+    const StyleScope* style_scope,
     unsigned*& hash,
     unsigned* end) {
   // Skip the rightmost compound. It is handled quickly by the rule hashes.
@@ -159,7 +175,8 @@ void CollectDescendantCompoundSelectorIdentifierHashes(
       case CSSSelector::kSubSelector:
       case CSSSelector::kScopeActivation:
         if (!skip_over_subselectors) {
-          CollectDescendantSelectorIdentifierHashes(*current, hash, end);
+          CollectDescendantSelectorIdentifierHashes(*current, style_scope, hash,
+                                                    end);
         }
         break;
       case CSSSelector::kDirectAdjacent:
@@ -172,7 +189,8 @@ void CollectDescendantCompoundSelectorIdentifierHashes(
       case CSSSelector::kUAShadow:
       case CSSSelector::kShadowPart:
         skip_over_subselectors = false;
-        CollectDescendantSelectorIdentifierHashes(*current, hash, end);
+        CollectDescendantSelectorIdentifierHashes(*current, style_scope, hash,
+                                                  end);
         break;
       case CSSSelector::kRelativeDescendant:
       case CSSSelector::kRelativeChild:
@@ -256,13 +274,15 @@ void SelectorFilter::PopParent(Element& parent) {
 
 void SelectorFilter::CollectIdentifierHashes(
     const CSSSelector& selector,
+    const StyleScope* style_scope,
     unsigned* identifier_hashes,
     unsigned maximum_identifier_count) {
   unsigned* hash = identifier_hashes;
   unsigned* end = identifier_hashes + maximum_identifier_count;
 
   CollectDescendantCompoundSelectorIdentifierHashes(
-      selector.NextSimpleSelector(), selector.Relation(), hash, end);
+      selector.NextSimpleSelector(), selector.Relation(), style_scope, hash,
+      end);
   if (hash != end) {
     *hash = 0;
   }

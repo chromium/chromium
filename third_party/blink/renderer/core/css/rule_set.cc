@@ -110,6 +110,7 @@ static unsigned DetermineLinkMatchType(const AddRuleFlags add_rule_flags,
 RuleData::RuleData(StyleRule* rule,
                    unsigned selector_index,
                    unsigned position,
+                   const StyleScope* style_scope,
                    AddRuleFlags add_rule_flags)
     : rule_(rule),
       selector_index_(selector_index),
@@ -124,7 +125,7 @@ RuleData::RuleData(StyleRule* rule,
       is_easy_(false),  // Ditto.
       is_starting_style_((add_rule_flags & kRuleIsStartingStyle) != 0),
       descendant_selector_identifier_hashes_() {
-  ComputeBloomFilterHashes();
+  ComputeBloomFilterHashes(style_scope);
 }
 
 void RuleData::ComputeEntirelyCoveredByBucketing() {
@@ -150,9 +151,9 @@ void RuleData::ResetEntirelyCoveredByBucketing() {
   is_entirely_covered_by_bucketing_ = false;
 }
 
-void RuleData::ComputeBloomFilterHashes() {
+void RuleData::ComputeBloomFilterHashes(const StyleScope* style_scope) {
   SelectorFilter::CollectIdentifierHashes(
-      Selector(), descendant_selector_identifier_hashes_,
+      Selector(), style_scope, descendant_selector_identifier_hashes_,
       kMaximumIdentifierCount);
 }
 
@@ -518,7 +519,8 @@ void RuleSet::AddRule(StyleRule* rule,
   if (rule_count_ >= (1 << RuleData::kPositionBits)) {
     return;
   }
-  RuleData rule_data(rule, selector_index, rule_count_, add_rule_flags);
+  RuleData rule_data(rule, selector_index, rule_count_, style_scope,
+                     add_rule_flags);
   ++rule_count_;
   if (features_.CollectFeaturesFromSelector(rule_data.Selector(),
                                             style_scope) ==
@@ -539,7 +541,7 @@ void RuleSet::AddRule(StyleRule* rule,
     rule_data.ResetEntirelyCoveredByBucketing();
 
     RuleData visited_dependent(rule, rule_data.SelectorIndex(),
-                               rule_data.GetPosition(),
+                               rule_data.GetPosition(), style_scope,
                                add_rule_flags | kRuleIsVisitedDependent);
     // Since the selector now is in two buckets, we use BucketCoverage::kIgnore
     // to prevent CSSSelector::is_covered_by_bucketing_ from being set.

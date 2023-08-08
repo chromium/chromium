@@ -109,6 +109,7 @@ class CORE_EXPORT RuleData {
   RuleData(StyleRule*,
            unsigned selector_index,
            unsigned position,
+           const StyleScope*,
            AddRuleFlags);
 
   unsigned GetPosition() const { return position_; }
@@ -145,7 +146,7 @@ class CORE_EXPORT RuleData {
   const unsigned* DescendantSelectorIdentifierHashes() const {
     return descendant_selector_identifier_hashes_;
   }
-  void ComputeBloomFilterHashes();
+  void ComputeBloomFilterHashes(const StyleScope*);
 
   void Trace(Visitor*) const;
 

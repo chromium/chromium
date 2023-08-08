@@ -30,8 +30,13 @@ Vector<unsigned> CollectIdentifierHashesFromInnerRule(Document& document,
   CHECK(inner_style_rule);
   CHECK(inner_style_rule->FirstSelector());
 
+  const auto* scope_rule = DynamicTo<StyleRuleScope>(outer_rule);
+  const StyleScope* style_scope =
+      scope_rule ? &scope_rule->GetStyleScope() : nullptr;
+
   SelectorFilter::CollectIdentifierHashes(*inner_style_rule->FirstSelector(),
-                                          result.data(), result.size());
+                                          style_scope, result.data(),
+                                          result.size());
   return result;
 }
 
@@ -67,7 +72,7 @@ TEST_F(SelectorFilterTest, CollectHashesScopeNonSubject) {
   ASSERT_EQ(4u, hashes.size());
   EXPECT_NE(0u, hashes[0]);  // .b
   EXPECT_NE(0u, hashes[1]);  // .c
-  EXPECT_EQ(0u, hashes[2]);
+  EXPECT_NE(0u, hashes[2]);  // .a
   EXPECT_EQ(0u, hashes[3]);
 }
 
@@ -85,7 +90,7 @@ TEST_F(SelectorFilterTest, CollectHashesScopeImplied) {
   ASSERT_EQ(4u, hashes.size());
   EXPECT_NE(0u, hashes[0]);  // .b
   EXPECT_NE(0u, hashes[1]);  // .c
-  EXPECT_EQ(0u, hashes[2]);
+  EXPECT_NE(0u, hashes[2]);  // .a
   EXPECT_EQ(0u, hashes[3]);
 }
 
