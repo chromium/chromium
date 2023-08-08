@@ -16,6 +16,7 @@
 #include "chrome/browser/performance_manager/metrics/page_timeline_cpu_monitor.h"
 #include "components/performance_manager/embedder/graph_features.h"
 #include "components/performance_manager/public/decorators/page_live_state_decorator.h"
+#include "components/performance_manager/public/decorators/tab_page_decorator.h"
 #include "components/performance_manager/public/mojom/lifecycle.mojom-shared.h"
 #include "components/performance_manager/public/user_tuning/prefs.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
@@ -72,6 +73,9 @@ class PageTimelineMonitorUnitTest : public GraphTestHarness {
     GetGraphFeatures().EnableExecutionContextRegistry();
 
     GraphTestHarness::SetUp();
+
+    graph()->PassToGraph(
+        std::make_unique<performance_manager::TabPageDecorator>());
 
     std::unique_ptr<PageTimelineMonitor> monitor =
         std::make_unique<PageTimelineMonitor>();
@@ -259,9 +263,11 @@ TEST_F(PageTimelineMonitorUnitTest, TestUpdateLifecycleState) {
   mock_graph.page->SetLifecycleStateForTesting(mojom::LifecycleState::kFrozen);
   mock_graph.page->SetIsVisible(false);
 
-  EXPECT_EQ(
-      monitor()->page_node_info_map_[mock_graph.page.get()]->current_lifecycle,
-      mojom::LifecycleState::kFrozen);
+  EXPECT_EQ(monitor()
+                ->page_node_info_map_[TabPageDecorator::FromPageNode(
+                    mock_graph.page.get())]
+                ->current_lifecycle,
+            mojom::LifecycleState::kFrozen);
 }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -491,12 +497,13 @@ TEST_F(PageTimelineMonitorUnitTest, TestUpdatePageNodeBeforeTypeChange) {
   mock_graph.page->SetLifecycleStateForTesting(mojom::LifecycleState::kFrozen);
   mock_graph.page->SetType(performance_manager::PageType::kTab);
 
-  EXPECT_EQ(
-      monitor()->page_node_info_map_[mock_graph.page.get()]->current_lifecycle,
-      mojom::LifecycleState::kFrozen);
-  EXPECT_EQ(
-      monitor()->page_node_info_map_[mock_graph.page.get()]->currently_visible,
-      false);
+  TabPageDecorator::TabHandle* tab_handle =
+      TabPageDecorator::FromPageNode(mock_graph.page.get());
+
+  EXPECT_EQ(monitor()->page_node_info_map_[tab_handle]->current_lifecycle,
+            mojom::LifecycleState::kFrozen);
+  EXPECT_EQ(monitor()->page_node_info_map_[tab_handle]->currently_visible,
+            false);
 
   // making sure no DCHECKs are hit
   TriggerCollectSlice();

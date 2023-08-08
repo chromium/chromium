@@ -109,7 +109,8 @@ void PageTimelineMonitor::CollectPageResourceUsage() {
   double total_cpu_usage = 0;
   std::vector<std::pair<const PageNode*, double>> page_cpu_usage;
   page_cpu_usage.reserve(page_node_info_map_.size());
-  for (const auto& [page_node, info_ptr] : page_node_info_map_) {
+  for (const auto& [tab_handle, info_ptr] : page_node_info_map_) {
+    const PageNode* page_node = tab_handle->page_node();
     CheckPageState(page_node, *info_ptr);
     double cpu_usage =
         PageTimelineCPUMonitor::EstimatePageCPUUsage(page_node, cpu_usage_map);
@@ -152,7 +153,7 @@ void PageTimelineMonitor::CollectSlice() {
   time_of_last_slice_ = now;
 
   for (auto const& pair : page_node_info_map_) {
-    const PageNode* page_node = pair.first;
+    const PageNode* page_node = pair.first->page_node();
     const std::unique_ptr<PageNodeInfo>& curr_info = pair.second;
     CheckPageState(page_node, *curr_info);
 
@@ -255,26 +256,44 @@ void PageTimelineMonitor::OnPassedToGraph(Graph* graph) {
   graph_ = graph;
   graph_->AddPageNodeObserver(this);
   graph_->RegisterObject(this);
+  graph->GetRegisteredObjectAs<TabPageDecorator>()->AddObserver(this);
   cpu_monitor_.StartMonitoring(graph_);
 }
 
 void PageTimelineMonitor::OnTakenFromGraph(Graph* graph) {
   cpu_monitor_.StopMonitoring(graph_);
+
+  // GraphOwned object destruction order is undefined, so only remove ourselves
+  // as observers if the decorator still exists.
+  TabPageDecorator* tab_page_decorator =
+      graph->GetRegisteredObjectAs<TabPageDecorator>();
+  if (tab_page_decorator) {
+    tab_page_decorator->RemoveObserver(this);
+  }
+
   graph_->UnregisterObject(this);
   graph_->RemovePageNodeObserver(this);
   graph_ = nullptr;
 }
 
-void PageTimelineMonitor::OnPageNodeAdded(const PageNode* page_node) {
-  // Page nodes are currently added with type kUnknown and updated to their
-  // final type in OnTypeChanged(). Check that this behaviour doesn't change. If
-  // it does, OnTypeChanged() and CheckPageState() can be simplified.
-  CHECK_EQ(page_node->GetType(), performance_manager::PageType::kUnknown);
+void PageTimelineMonitor::OnTabAdded(TabPageDecorator::TabHandle* tab_handle) {
+  page_node_info_map_[tab_handle] = std::make_unique<PageNodeInfo>(
+      base::TimeTicks::Now(), tab_handle->page_node(), slice_id_counter_++);
 }
 
-void PageTimelineMonitor::OnBeforePageNodeRemoved(const PageNode* page_node) {
-  // This is a no-op if the pointer is not in the map, so no conditional erase.
-  page_node_info_map_.erase(page_node);
+void PageTimelineMonitor::OnTabAboutToBeDiscarded(
+    const PageNode* old_page_node,
+    TabPageDecorator::TabHandle* tab_handle) {
+  auto it = page_node_info_map_.find(tab_handle);
+  CHECK(it != page_node_info_map_.end());
+
+  it->second->current_lifecycle = mojom::LifecycleState::kDiscarded;
+  CheckPageState(tab_handle->page_node(), *it->second);
+}
+
+void PageTimelineMonitor::OnBeforeTabRemoved(
+    TabPageDecorator::TabHandle* tab_handle) {
+  page_node_info_map_.erase(tab_handle);
 }
 
 void PageTimelineMonitor::OnIsVisibleChanged(const PageNode* page_node) {
@@ -282,6 +301,8 @@ void PageTimelineMonitor::OnIsVisibleChanged(const PageNode* page_node) {
     return;
   }
 
+  TabPageDecorator::TabHandle* tab_handle =
+      TabPageDecorator::FromPageNode(page_node);
   // It's possible for this to happen when a tab is discarded. The sequence of
   // events is:
   // 1. New web contents (and page node) created
@@ -291,11 +312,14 @@ void PageTimelineMonitor::OnIsVisibleChanged(const PageNode* page_node) {
   // 4. The old web contents (and page node) are deleted
   // In the case of PageTimelineMonitor, the page_node is removed from the map
   // on step 2, so the notification from step 3 has to be ignored.
-  if (!base::Contains(page_node_info_map_, page_node)) {
+  if (!tab_handle) {
     return;
   }
 
-  std::unique_ptr<PageNodeInfo>& info = page_node_info_map_[page_node];
+  auto it = page_node_info_map_.find(tab_handle);
+  CHECK(it != page_node_info_map_.end());
+
+  std::unique_ptr<PageNodeInfo>& info = it->second;
   base::TimeTicks now = base::TimeTicks::Now();
   if (info->currently_visible && !page_node->IsVisible()) {
     // Increase total foreground seconds by the time since we entered the
@@ -320,65 +344,22 @@ void PageTimelineMonitor::OnPageLifecycleStateChanged(
     return;
   }
 
-  auto it = page_node_info_map_.find(page_node);
-  if (it == page_node_info_map_.end()) {
+  TabPageDecorator::TabHandle* tab_handle =
+      TabPageDecorator::FromPageNode(page_node);
+  if (!tab_handle) {
     // This function is called by the tab freezing apparatus between the time a
     // page is discarded and when its PageNode is removed from the graph. In
-    // that situation, it's not in the map anymore, and another PageNode is
-    // being tracked in its place. It's safe to return early.
+    // that situation, it's not in the map anymore, it doesn't have a tab
+    // handle, and another PageNode is being tracked in its place. It's safe to
+    // return early.
     return;
   }
+
+  auto it = page_node_info_map_.find(tab_handle);
+  CHECK(it != page_node_info_map_.end());
 
   it->second->current_lifecycle = page_node->GetLifecycleState();
   it->second->time_of_most_recent_state_change = base::TimeTicks::Now();
-}
-
-void PageTimelineMonitor::OnTypeChanged(const PageNode* page_node,
-                                        PageType previous_type) {
-  // If a PageNode already has a PageNodeInfo, its only valid state is
-  // `kDiscarded` and a new PageNodeInfo shouldn't be created for it.
-  const auto it = page_node_info_map_.find(page_node);
-  if (it != page_node_info_map_.end()) {
-    CHECK_EQ(page_node->GetType(), PageType::kTab);
-    CHECK_EQ(it->second->current_lifecycle, mojom::LifecycleState::kDiscarded);
-    return;
-  }
-
-  // When PageNodes are added, they have type kUnknown, and so it is when new
-  // nodes get changed to being of type kTab that we can start using them.
-  switch (page_node->GetType()) {
-    case performance_manager::PageType::kTab:
-      page_node_info_map_[page_node] = std::make_unique<PageNodeInfo>(
-          base::TimeTicks::Now(), page_node, slice_id_counter_++);
-      break;
-    case performance_manager::PageType::kExtension:
-      // We won't be dealing with these because we're not recording this UKM
-      // for extensions.
-      break;
-    case performance_manager::PageType::kUnknown:
-      NOTREACHED_NORETURN();
-  }
-}
-
-void PageTimelineMonitor::OnAboutToBeDiscarded(const PageNode* page_node,
-                                               const PageNode* new_page_node) {
-  // Page nodes are currently added with type kUnknown and updated to their
-  // final type in OnTypeChanged(). Check that this behaviour doesn't change. If
-  // it does, OnTypeChanged() and CheckPageState() can be simplified.
-  CHECK_EQ(new_page_node->GetType(), performance_manager::PageType::kUnknown);
-
-  // Swap `page_node` and `new_page_node` as keys in the map.
-  auto page_node_handle = page_node_info_map_.extract(page_node);
-  CHECK(page_node_handle);
-  CheckPageState(page_node_handle.key(), *page_node_handle.mapped());
-  page_node_handle.key() = new_page_node;
-  page_node_handle.mapped()->current_lifecycle =
-      mojom::LifecycleState::kDiscarded;
-  CheckPageState(page_node_handle.key(), *page_node_handle.mapped());
-
-  const auto insert_result =
-      page_node_info_map_.insert(std::move(page_node_handle));
-  CHECK(insert_result.inserted);
 }
 
 void PageTimelineMonitor::SetBatterySaverEnabled(bool enabled) {

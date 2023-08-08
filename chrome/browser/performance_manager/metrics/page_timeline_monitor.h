@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/performance_manager/metrics/page_timeline_cpu_monitor.h"
+#include "components/performance_manager/public/decorators/tab_page_decorator.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/graph_registered.h"
 #include "components/performance_manager/public/graph/page_node.h"
@@ -26,7 +27,8 @@ class PageTimelineMonitorUnitTest;
 // over time.
 class PageTimelineMonitor : public PageNode::ObserverDefaultImpl,
                             public GraphOwned,
-                            public GraphRegisteredImpl<PageTimelineMonitor> {
+                            public GraphRegisteredImpl<PageTimelineMonitor>,
+                            public TabPageObserver {
  public:
   // These values are logged to UKM. Entries should not be renumbered and
   // numeric values should never be reused. Please keep in sync with PageState
@@ -62,15 +64,16 @@ class PageTimelineMonitor : public PageNode::ObserverDefaultImpl,
   void OnPassedToGraph(Graph* graph) override;
   void OnTakenFromGraph(Graph* graph) override;
 
+  // TabPageObserver:
+  void OnTabAdded(TabPageDecorator::TabHandle* tab_handle) override;
+  void OnTabAboutToBeDiscarded(
+      const PageNode* old_page_node,
+      TabPageDecorator::TabHandle* tab_handle) override;
+  void OnBeforeTabRemoved(TabPageDecorator::TabHandle* tab_handle) override;
+
   // PageNode::Observer:
-  void OnPageNodeAdded(const PageNode* page_node) override;
-  void OnBeforePageNodeRemoved(const PageNode* page_node) override;
   void OnIsVisibleChanged(const PageNode* page_node) override;
   void OnPageLifecycleStateChanged(const PageNode* page_node) override;
-  void OnTypeChanged(const PageNode* page_node,
-                     PageType previous_state) override;
-  void OnAboutToBeDiscarded(const PageNode* page_node,
-                            const PageNode* new_page_node) override;
 
   void SetBatterySaverEnabled(bool enabled);
 
@@ -132,7 +135,8 @@ class PageTimelineMonitor : public PageNode::ObserverDefaultImpl,
 
   // A map in which we store info about PageNodes to keep track of their state,
   // as well as the timing of their state transitions.
-  std::map<const PageNode*, std::unique_ptr<PageNodeInfo>> page_node_info_map_;
+  std::map<const TabPageDecorator::TabHandle*, std::unique_ptr<PageNodeInfo>>
+      page_node_info_map_;
 
   // Timer which is used to trigger CollectSlice(), which records the UKM.
   base::RepeatingTimer collect_slice_timer_;
