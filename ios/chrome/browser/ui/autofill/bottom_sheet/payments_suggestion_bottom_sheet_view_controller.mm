@@ -29,6 +29,9 @@ CGFloat const kCreditCardIconCornerRadius = 5;
 // Default spacing use for the views in the bottom sheet.
 CGFloat const kSpacing = 10;
 
+// Height of the logo used as the title of the bottom sheet.
+CGFloat const kTitleLogoHeight = 24;
+
 // Custom detent identifier for when the bottom sheet is minimized.
 NSString* const kCustomMinimizedDetentIdentifier = @"customMinimizedDetent";
 
@@ -223,24 +226,36 @@ NSString* const kCustomDetentIdentifier = @"customDetent";
 
 #pragma mark - Private
 
-// Returns the logo to display as title. It should return the Google Pay badge
+// Returns the title logo image that is resized to the correct size for the
+// bottom sheet. It should return the Google Pay badge
 // image corresponding to the current UIUserInterfaceStyle (light/dark mode) if
 // `showGooglePayLogo` value is YES otherwise the Chrome logo is shown.
 - (UIImage*)titleImage {
-  // IDR_AUTOFILL_GOOGLE_PAY_DARK only exists in official builds.
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  if (self.showGooglePayLogo) {
-    return self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark
-               ? NativeImage(IDR_AUTOFILL_GOOGLE_PAY_DARK)
-               : NativeImage(IDR_AUTOFILL_GOOGLE_PAY);
-  }
-#endif
+  UIImage* image;
 #if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
-  return MakeSymbolMulticolor(
-      CustomSymbolWithPointSize(kChromeSymbol, kInfobarSymbolPointSize));
+  image = MakeSymbolMulticolor(
+      CustomSymbolWithPointSize(kChromeSymbol, kTitleLogoHeight));
 #else
-  return NativeImage(IDR_AUTOFILL_GOOGLE_PAY);
+  image = DefaultSymbolTemplateWithPointSize(kDefaultBrowserSymbol,
+                                             kTitleLogoHeight);
 #endif  // BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+
+  if (self.showGooglePayLogo) {
+    image = self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark
+                ? NativeImage(IDR_AUTOFILL_GOOGLE_PAY_DARK)
+                : NativeImage(IDR_AUTOFILL_GOOGLE_PAY);
+
+    CGFloat ratio = kTitleLogoHeight / image.size.height;
+    CGSize imageSize = CGSizeMake(image.size.width * ratio, kTitleLogoHeight);
+    UIGraphicsImageRenderer* renderer =
+        [[UIGraphicsImageRenderer alloc] initWithSize:imageSize];
+    image =
+        [renderer imageWithActions:^(UIGraphicsImageRendererContext* context) {
+          [image drawInRect:(CGRect){.origin = CGPointZero, .size = imageSize}];
+        }];
+  }
+
+  return image;
 }
 
 // Returns the string to display at a given row in the table view.
