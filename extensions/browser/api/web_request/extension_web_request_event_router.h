@@ -423,6 +423,10 @@ class ExtensionWebRequestEventRouter {
     // events. Modified through `IncrementExtraHeadersListenerCount()` and
     // `DecrementExtraHeadersListenerCount()`.
     int extra_headers_count = 0;
+    // Maps each BrowserContext using the webview key to its respective rules
+    // registry. For non-webview contexts, the default value defined by
+    // `RulesRegistryService::kDefaultRulesRegistryID` is used.
+    std::map<int, scoped_refptr<WebRequestRulesRegistry>> rules_registries;
   };
 
   using DataMap = std::map<BrowserContextID, BrowserContextData>;
@@ -590,12 +594,6 @@ class ExtensionWebRequestEventRouter {
   // A map of network requests that are waiting for at least one event handler
   // to respond.
   BlockedRequestMap blocked_requests_;
-
-  typedef std::pair<BrowserContextID, int> RulesRegistryKey;
-  // Maps each browser_context (and OTRBrowserContext) and a webview key to its
-  // respective rules registry.
-  std::map<RulesRegistryKey, scoped_refptr<extensions::WebRequestRulesRegistry>>
-      rules_registries_;
 };
 
 }  // namespace extensions

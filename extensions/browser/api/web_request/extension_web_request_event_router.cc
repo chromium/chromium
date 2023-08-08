@@ -841,11 +841,11 @@ void ExtensionWebRequestEventRouter::RegisterRulesRegistry(
     content::BrowserContext* browser_context,
     int rules_registry_id,
     scoped_refptr<WebRequestRulesRegistry> rules_registry) {
-  RulesRegistryKey key(BrowserContextID(browser_context), rules_registry_id);
+  BrowserContextData& data = data_[GetBrowserContextID(browser_context)];
   if (rules_registry.get()) {
-    rules_registries_[key] = rules_registry;
+    data.rules_registries[rules_registry_id] = rules_registry;
   } else {
-    rules_registries_.erase(key);
+    data.rules_registries.erase(rules_registry_id);
   }
 }
 
@@ -2322,38 +2322,40 @@ bool ExtensionWebRequestEventRouter::ProcessDeclarativeRules(
     const WebRequestInfo* request,
     RequestStage request_stage,
     const net::HttpResponseHeaders* original_response_headers) {
-  int rules_registry_id = request->is_web_view
-                              ? request->web_view_rules_registry_id
-                              : RulesRegistryService::kDefaultRulesRegistryID;
-
-  RulesRegistryKey rules_key(BrowserContextID(browser_context),
-                             rules_registry_id);
   // If this check fails, check that the active stages are up to date in
   // extensions/browser/api/declarative_webrequest/request_stage.h.
   DCHECK(request_stage & kActiveStages);
 
-  // Rules of the current |browser_context| may apply but we need to check also
-  // whether there are applicable rules from extensions whose background page
-  // spans from regular to incognito mode.
+  int rules_registry_id = request->is_web_view
+                              ? request->web_view_rules_registry_id
+                              : RulesRegistryService::kDefaultRulesRegistryID;
 
   // First parameter identifies the registry, the second indicates whether the
   // registry belongs to the cross browser_context.
   using RelevantRegistry = std::pair<WebRequestRulesRegistry*, bool>;
   std::vector<RelevantRegistry> relevant_registries;
 
-  auto rules_key_it = rules_registries_.find(rules_key);
-  if (rules_key_it != rules_registries_.end()) {
-    relevant_registries.emplace_back(rules_key_it->second.get(), false);
+  // Get the WebRequestRulesRegistry for the current BrowserContext, if any.
+  {
+    BrowserContextData& data = data_[GetBrowserContextID(browser_context)];
+    auto rules_key_it = data.rules_registries.find(rules_registry_id);
+    if (rules_key_it != data.rules_registries.end()) {
+      relevant_registries.emplace_back(rules_key_it->second.get(), false);
+    }
   }
 
+  // Rules of the current `browser_context` may apply but we need to check also
+  // whether there are applicable rules from extensions whose background page
+  // spans from regular to incognito mode.
   content::BrowserContext* cross_browser_context =
       GetCrossBrowserContext(browser_context);
-  RulesRegistryKey cross_browser_context_rules_key(
-      BrowserContextID(cross_browser_context), rules_registry_id);
   if (cross_browser_context) {
-    auto it = rules_registries_.find(cross_browser_context_rules_key);
-    if (it != rules_registries_.end()) {
-      relevant_registries.emplace_back(it->second.get(), true);
+    BrowserContextData& cross_context_data =
+        data_[GetBrowserContextID(cross_browser_context)];
+    auto cross_rules_key_it =
+        cross_context_data.rules_registries.find(rules_registry_id);
+    if (cross_rules_key_it != cross_context_data.rules_registries.end()) {
+      relevant_registries.emplace_back(cross_rules_key_it->second.get(), true);
     }
   }
 
