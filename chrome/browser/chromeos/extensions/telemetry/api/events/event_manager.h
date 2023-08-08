@@ -20,7 +20,7 @@
 
 namespace chromeos {
 
-class EventManagerAppUiObserver;
+class AppUiObserver;
 
 class EventManager : public extensions::BrowserContextKeyedAPI {
  public:
@@ -75,11 +75,10 @@ class EventManager : public extensions::BrowserContextKeyedAPI {
 
   void OnAppUiClosed(extensions::ExtensionId extension_id);
 
-  std::unique_ptr<EventManagerAppUiObserver> CreateAppUiObserver(
+  std::unique_ptr<AppUiObserver> CreateAppUiObserver(
       extensions::ExtensionId extension_id);
 
-  base::flat_map<extensions::ExtensionId,
-                 std::unique_ptr<EventManagerAppUiObserver>>
+  base::flat_map<extensions::ExtensionId, std::unique_ptr<AppUiObserver>>
       app_ui_observers_;
   EventRouter event_router_;
   std::unique_ptr<RemoteEventServiceStrategy> remote_event_service_strategy_;

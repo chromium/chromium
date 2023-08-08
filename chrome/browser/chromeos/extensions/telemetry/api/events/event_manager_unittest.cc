@@ -106,8 +106,7 @@ class TelemetryExtensionEventManagerTest : public BrowserWithTestWindowTest {
 
   EventManager* event_manager() { return EventManager::Get(profile()); }
 
-  base::flat_map<extensions::ExtensionId,
-                 std::unique_ptr<EventManagerAppUiObserver>>&
+  base::flat_map<extensions::ExtensionId, std::unique_ptr<AppUiObserver>>&
   app_ui_observers() {
     return event_manager()->app_ui_observers_;
   }

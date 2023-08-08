@@ -11,6 +11,8 @@ source_set("common") {
   sources = [
     "api_guard_delegate.cc",
     "api_guard_delegate.h",
+    "app_ui_observer.cc",
+    "app_ui_observer.h",
     "base_telemetry_extension_api_guard_function.cc",
     "base_telemetry_extension_api_guard_function.h",
   ]

@@ -9,8 +9,8 @@
 
 #include "base/check.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback.h"
 #include "base/no_destructor.h"
+#include "chrome/browser/chromeos/extensions/telemetry/api/common/app_ui_observer.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/common/util.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/events/event_router.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/events/remote_event_service_strategy.h"
@@ -18,13 +18,11 @@
 #include "chromeos/crosapi/mojom/telemetry_extension_exception.mojom.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/browser/web_contents_observer.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/manifest_handlers/externally_connectable.h"
-#include "extensions/common/url_pattern_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace chromeos {
@@ -34,54 +32,6 @@ namespace {
 namespace crosapi = ::crosapi::mojom;
 
 }  // namespace
-
-// Tracks the status of a WebContents of an app UI.
-// * `contents`: the WebContents to track.
-// * `pattern_set`: for matching the app UI.
-// * `on_app_ui_closed_callback`: Will be called when the app UI is closed. The
-//    callback is responsible to delete the observer.
-class EventManagerAppUiObserver : public content::WebContentsObserver {
- public:
-  EventManagerAppUiObserver(content::WebContents* contents,
-                            extensions::URLPatternSet pattern_set,
-                            base::OnceClosure on_app_ui_closed_callback);
-  EventManagerAppUiObserver(EventManagerAppUiObserver&) = delete;
-  EventManagerAppUiObserver& operator=(EventManagerAppUiObserver&) = delete;
-  ~EventManagerAppUiObserver() override;
-
-  // content::WebContentsObserver overrides:
-  void PrimaryPageChanged(content::Page& page) override;
-  void WebContentsDestroyed() override;
-
- private:
-  extensions::URLPatternSet pattern_set_;
-  base::OnceClosure on_app_ui_closed_callback_;
-};
-
-EventManagerAppUiObserver::EventManagerAppUiObserver(
-    content::WebContents* contents,
-    extensions::URLPatternSet pattern_set,
-    base::OnceClosure on_app_ui_closed_callback)
-    : content::WebContentsObserver(contents),
-      pattern_set_(std::move(pattern_set)),
-      on_app_ui_closed_callback_(std::move(on_app_ui_closed_callback)) {}
-
-EventManagerAppUiObserver::~EventManagerAppUiObserver() = default;
-
-void EventManagerAppUiObserver::PrimaryPageChanged(content::Page& page) {
-  if (pattern_set_.MatchesURL(web_contents()->GetLastCommittedURL())) {
-    // Do nothing if the URL still matches.
-    return;
-  }
-
-  // Results in the destruction of `this`, nothing should be called afterwards.
-  std::move(on_app_ui_closed_callback_).Run();
-}
-
-void EventManagerAppUiObserver::WebContentsDestroyed() {
-  // Results in the destruction of `this`, nothing should be called afterwards.
-  std::move(on_app_ui_closed_callback_).Run();
-}
 
 // static
 extensions::BrowserContextKeyedAPIFactory<EventManager>*
@@ -161,7 +111,7 @@ void EventManager::OnAppUiClosed(extensions::ExtensionId extension_id) {
   event_router_.ResetReceiversForExtension(extension_id);
 }
 
-std::unique_ptr<EventManagerAppUiObserver> EventManager::CreateAppUiObserver(
+std::unique_ptr<AppUiObserver> EventManager::CreateAppUiObserver(
     extensions::ExtensionId extension_id) {
   const extensions::Extension* extension =
       extensions::ExtensionRegistry::Get(browser_context_)
@@ -178,7 +128,7 @@ std::unique_ptr<EventManagerAppUiObserver> EventManager::CreateAppUiObserver(
     return nullptr;
   }
 
-  return std::make_unique<EventManagerAppUiObserver>(
+  return std::make_unique<AppUiObserver>(
       contents,
       extensions::ExternallyConnectableInfo::Get(extension)->matches.Clone(),
       // Unretained is safe here because `this` will own the observer.

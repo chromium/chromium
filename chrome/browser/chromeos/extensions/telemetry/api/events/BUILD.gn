@@ -80,6 +80,7 @@ source_set("event_manager") {
   deps = [
     ":event_router",
     "//base",
+    "//chrome/browser/chromeos/extensions/telemetry/api/common",
     "//chrome/browser/chromeos/extensions/telemetry/api/common:util",
     "//chrome/common/chromeos/extensions",
     "//chromeos/crosapi/mojom",
