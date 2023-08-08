@@ -887,8 +887,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   shutdown_C.Wait();
 }
 
-#if defined(ADDRESS_SANITIZER) || defined(THREAD_SANITIZER)
-// Too slow under sanitizers, even with increased timeout:
+#if defined(ADDRESS_SANITIZER) || defined(THREAD_SANITIZER) || !defined(NDEBUG)
+// Too slow under sanitizers and debug builds, even with increased timeout:
 // https://crbug.com/1096612
 #define MAYBE_DetachedIframeUnloadHandlerABCB \
   DISABLED_DetachedIframeUnloadHandlerABCB
