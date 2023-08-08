@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/autofill/update_address_profile_view.h"
 
+#include <algorithm>
+
 #include "base/ranges/algorithm.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/browser_process.h"
@@ -171,9 +173,6 @@ UpdateAddressProfileView::UpdateAddressProfileView(
 
   auto* layout_provider = views::LayoutProvider::Get();
 
-  set_fixed_width(layout_provider->GetDistanceMetric(
-      views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
-
   SetAcceptCallback(base::BindOnce(
       &SaveUpdateAddressProfileBubbleController::OnUserDecision,
       base::Unretained(controller_),
@@ -276,6 +275,10 @@ UpdateAddressProfileView::UpdateAddressProfileView(
             .SetMultiLine(true)
             .Build());
   }
+
+  set_fixed_width(std::max(main_content_view->GetPreferredSize().width(),
+                           layout_provider->GetDistanceMetric(
+                               views::DISTANCE_BUBBLE_PREFERRED_WIDTH)));
 }
 
 bool UpdateAddressProfileView::ShouldShowCloseButton() const {
