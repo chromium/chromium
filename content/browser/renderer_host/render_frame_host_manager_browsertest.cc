@@ -5903,8 +5903,9 @@ class AssertForegroundHelper {
   // check again shortly. |renderer_process| must outlive this
   // AssertForegroundHelper instance.
   void AssertForegroundAndRepost(const base::Process& renderer_process) {
-    ASSERT_FALSE(renderer_process.IsProcessBackgrounded(
-        BrowserChildProcessHost::GetPortProvider()));
+    ASSERT_EQ(renderer_process.GetPriority(
+                  BrowserChildProcessHost::GetPortProvider()),
+              base::Process::Priority::kUserBlocking);
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&AssertForegroundHelper::AssertForegroundAndRepost,
@@ -5915,7 +5916,8 @@ class AssertForegroundHelper {
 #else   // BUILDFLAG(IS_APPLE)
   // Same as above without the Mac specific base::PortProvider.
   void AssertForegroundAndRepost(const base::Process& renderer_process) {
-    ASSERT_FALSE(renderer_process.IsProcessBackgrounded());
+    ASSERT_EQ(renderer_process.GetPriority(),
+              base::Process::Priority::kUserBlocking);
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&AssertForegroundHelper::AssertForegroundAndRepost,
