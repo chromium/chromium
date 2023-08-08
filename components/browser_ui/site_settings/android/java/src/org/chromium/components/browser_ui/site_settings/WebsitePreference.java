@@ -136,8 +136,11 @@ class WebsitePreference extends ChromeImageViewPreference {
             var exception = mSite.getContentSettingException(ContentSettingsType.COOKIES);
             if (exception != null && exception.hasExpiration()) {
                 var expirationInDays = exception.getExpirationInDays();
-                setSummary(getContext().getResources().getQuantityString(
-                        R.plurals.site_settings_expires_label, expirationInDays, expirationInDays));
+                setSummary(expirationInDays == 0
+                                ? getContext().getString(R.string.site_settings_expires_today_label)
+                                : getContext().getResources().getQuantityString(
+                                        R.plurals.site_settings_expires_label, expirationInDays,
+                                        expirationInDays));
             }
         }
     }

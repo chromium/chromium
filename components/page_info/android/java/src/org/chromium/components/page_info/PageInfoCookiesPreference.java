@@ -219,8 +219,12 @@ public class PageInfoCookiesPreference extends SiteSettingsPreferenceFragment {
                     new SpanApplier.SpanInfo("<link>", "</link>", feedbackSpan)));
         } else { // Not blocking and temporary exception.
             int days = calculateDaysUntilExpiration(TimeUtils.currentTimeMillis(), expiration);
-            mThirdPartyCookiesTitle.setTitle(getContext().getResources().getQuantityString(
-                    R.plurals.page_info_cookies_blocking_restart_title, days, days));
+            mThirdPartyCookiesTitle.setTitle(days == 0
+                            ? getContext().getString(
+                                    R.string.page_info_cookies_blocking_restart_today_title)
+                            : getContext().getResources().getQuantityString(
+                                    R.plurals.page_info_cookies_blocking_restart_title, days,
+                                    days));
             mThirdPartyCookiesSummary.setSummary(SpanApplier.applySpans(
                     getContext().getString(R.string.page_info_cookies_send_feedback_description),
                     new SpanApplier.SpanInfo("<link>", "</link>", feedbackSpan)));
