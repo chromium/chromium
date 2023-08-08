@@ -370,12 +370,6 @@ class OzonePlatformWayland : public OzonePlatform,
         properties.supports_native_pixmaps =
             surface_factory_->SupportsNativePixmaps();
       }
-
-      if (connection_->surface_augmenter()) {
-        properties.supports_out_of_window_clip_rect =
-            connection_->surface_augmenter()
-                ->SupportsClipRectOnAugmentedSurface();
-      }
     } else if (buffer_manager_) {
       DCHECK(has_initialized_gpu());
       // These properties are set when the GetPlatformRuntimeProperties is
