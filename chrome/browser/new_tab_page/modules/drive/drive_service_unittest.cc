@@ -6,12 +6,15 @@
 #include "base/barrier_closure.h"
 #include "base/hash/hash.h"
 #include "base/json/json_reader.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/search/ntp_features.h"
+#include "components/segmentation_platform/public/result.h"
+#include "components/segmentation_platform/public/testing/mock_segmentation_platform_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/test/browser_task_environment.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -31,7 +34,8 @@ class DriveServiceTest : public testing::Test {
     service_ = std::make_unique<DriveService>(
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_),
-        identity_test_env.identity_manager(), "en-US", &prefs_);
+        identity_test_env.identity_manager(),
+        &mock_segmentation_platform_service_, "en-US", &prefs_);
     identity_test_env.MakePrimaryAccountAvailable("example@google.com",
                                                   signin::ConsentLevel::kSync);
     service_->RegisterProfilePrefs(prefs_.registry());
@@ -48,6 +52,8 @@ class DriveServiceTest : public testing::Test {
   std::unique_ptr<DriveService> service_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
   signin::IdentityTestEnvironment identity_test_env;
+  segmentation_platform::MockSegmentationPlatformService
+      mock_segmentation_platform_service_;
   TestingPrefServiceSimple prefs_;
   base::HistogramTester histogram_tester_;
 };
@@ -385,6 +391,80 @@ TEST_F(DriveServiceTest, PassesCachedDataIfRequested) {
   EXPECT_EQ(3,
             histogram_tester_.GetBucketCount("NewTabPage.Modules.DataRequest",
                                              base::PersistentHash("drive")));
+}
+
+TEST_F(DriveServiceTest, PassesDataIfSegmentationIsEnabled) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(ntp_features::kNtpDriveModuleSegmentation);
+
+  segmentation_platform::ClassificationResult result(
+      segmentation_platform::PredictionStatus::kSucceeded);
+
+  EXPECT_CALL(
+      mock_segmentation_platform_service_,
+      GetClassificationResult(testing::_, testing::_, testing::_, testing::_))
+      .WillOnce(base::test::RunOnceCallback<3>(result));
+
+  std::vector<drive::mojom::FilePtr> actual_documents;
+  auto quit_closure = task_environment_.QuitClosure();
+  base::MockCallback<DriveService::GetFilesCallback> callback;
+
+  EXPECT_CALL(callback, Run(testing::_))
+      .Times(1)
+      .WillOnce(
+          testing::Invoke([&](std::vector<drive::mojom::FilePtr> documents) {
+            actual_documents = std::move(documents);
+            quit_closure.Run();
+          }));
+
+  // Make sure we are not in the dismissed time window.
+  prefs_.SetTime(DriveService::kLastDismissedTimePrefName, base::Time::Now());
+  task_environment_.AdvanceClock(DriveService::kDismissDuration);
+
+  service_->GetDriveFiles(callback.Get());
+
+  identity_test_env.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      "foo", base::Time());
+  EXPECT_EQ(1, test_url_loader_factory_.NumPending());
+  std::string request_body(test_url_loader_factory_.pending_requests()
+                               ->at(0)
+                               .request.request_body->elements()
+                               ->at(0)
+                               .As<network::DataElementBytes>()
+                               .AsStringPiece());
+  auto body_value = base::JSONReader::Read(request_body);
+  EXPECT_EQ("en-US", *body_value->GetDict().FindStringByDottedPath(
+                         "client_info.language_code"));
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
+      "https://appsitemsuggest-pa.googleapis.com/v1/items",
+      R"(
+        {
+          "item": [
+            {
+              "itemId":"234",
+              "url": "https://google.com/foo",
+              "driveItem": {
+                "title": "Foo foo",
+                "mimeType": "application/vnd.google-apps.spreadsheet"
+              },
+              "justification": {
+                "unstructuredJustificationDescription": {
+                  "textSegment": [
+                    {
+                      "text": "Foo foo"
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      )",
+      net::HTTP_OK,
+      network::TestURLLoaderFactory::ResponseMatchFlags::kUrlMatchPrefix);
+  task_environment_.RunUntilQuit();
+
+  EXPECT_EQ(1u, actual_documents.size());
 }
 
 TEST_F(DriveServiceTest, AddsClientTagIfRequested) {

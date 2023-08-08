@@ -19,6 +19,10 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/search/ntp_features.h"
+#include "components/segmentation_platform/public/constants.h"
+#include "components/segmentation_platform/public/prediction_options.h"
+#include "components/segmentation_platform/public/result.h"
+#include "components/segmentation_platform/public/segmentation_platform_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "components/signin/public/identity_manager/scope_set.h"
@@ -151,10 +155,13 @@ DriveService::~DriveService() = default;
 DriveService::DriveService(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     signin::IdentityManager* identity_manager,
+    segmentation_platform::SegmentationPlatformService*
+        segmentation_platform_service,
     const std::string& application_locale,
     PrefService* pref_service)
     : url_loader_factory_(std::move(url_loader_factory)),
       identity_manager_(identity_manager),
+      segmentation_platform_service_(segmentation_platform_service),
       application_locale_(application_locale),
       pref_service_(pref_service) {}
 
@@ -170,6 +177,25 @@ void DriveService::GetDriveFiles(GetFilesCallback get_files_callback) {
     return;
   }
 
+  if (base::FeatureList::IsEnabled(ntp_features::kNtpDriveModuleSegmentation)) {
+    GetDriveModuleSegmentationData();
+  } else {
+    GetDriveFilesInternal();
+  }
+}
+
+bool DriveService::GetDriveModuleSegmentationData() {
+  segmentation_platform::PredictionOptions options;
+  options.on_demand_execution = true;
+  segmentation_platform_service_->GetClassificationResult(
+      segmentation_platform::kDesktopNtpModuleKey, options, nullptr,
+      base::IgnoreArgs<const segmentation_platform::ClassificationResult&>(
+          base::BindOnce(&DriveService::GetDriveFilesInternal,
+                         base::Unretained(this))));
+  return true;
+}
+
+void DriveService::GetDriveFilesInternal() {
   // Bail if module is still dismissed.
   if (!base::FeatureList::IsEnabled(ntp_features::kNtpModulesRedesigned) &&
       !pref_service_->GetTime(kLastDismissedTimePrefName).is_null() &&

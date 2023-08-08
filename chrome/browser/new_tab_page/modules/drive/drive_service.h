@@ -12,7 +12,10 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "chrome/browser/new_tab_page/modules/drive/drive.mojom.h"
+#include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/segmentation_platform/public/result.h"
+#include "components/segmentation_platform/public/segmentation_platform_service.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
@@ -47,6 +50,8 @@ class DriveService : public KeyedService {
   DriveService(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       signin::IdentityManager* identity_manager,
+      segmentation_platform::SegmentationPlatformService*
+          segmentation_platform_service,
       const std::string& application_locale,
       PrefService* pref_service);
   ~DriveService() override;
@@ -56,6 +61,12 @@ class DriveService : public KeyedService {
   using GetFilesCallback = drive::mojom::DriveHandler::GetFilesCallback;
   // Retrieves Google Drive document suggestions from ItemSuggest API.
   void GetDriveFiles(GetFilesCallback get_files_callback);
+  // Retrieves classification result from segmentation platform before
+  // retrieving document suggestions.
+  // TODO(crbug.com/1470762): Use the classification result to decide when to
+  // show the Drive module, instead of ignoring it.
+  bool GetDriveModuleSegmentationData();
+  void GetDriveFilesInternal();
   // Makes the service not return data for a specified amount of time.
   void DismissModule();
   // Makes the service return data again even if dimiss time is not yet over.
@@ -75,6 +86,8 @@ class DriveService : public KeyedService {
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   std::vector<GetFilesCallback> callbacks_;
   raw_ptr<signin::IdentityManager> identity_manager_;
+  raw_ptr<segmentation_platform::SegmentationPlatformService>
+      segmentation_platform_service_;
   std::string application_locale_;
   raw_ptr<PrefService> pref_service_;
   std::unique_ptr<std::string> cached_json_;
