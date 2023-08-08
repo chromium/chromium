@@ -153,11 +153,12 @@ class VideoEncoderTest : public ::testing::Test {
 
   std::unique_ptr<VideoEncoder> CreateVideoEncoder(
       const RawVideo* video,
-      const VideoEncoderClientConfig& config) {
+      const VideoEncoderClientConfig& config,
+      double validator_threshold = g_psnr_threshold) {
     LOG_ASSERT(video);
 
-    auto video_encoder =
-        VideoEncoder::Create(config, CreateBitstreamProcessors(video, config));
+    auto video_encoder = VideoEncoder::Create(
+        config, CreateBitstreamProcessors(video, config, validator_threshold));
     LOG_ASSERT(video_encoder);
 
     if (!video_encoder->Initialize(video))
@@ -171,6 +172,7 @@ class VideoEncoderTest : public ::testing::Test {
       const RawVideo* video,
       const VideoDecoderConfig& decoder_config,
       const size_t last_frame_index,
+      const double validator_threshold,
       VideoFrameValidator::GetModelFrameCB get_model_frame_cb,
       absl::optional<size_t> spatial_layer_index_to_decode,
       absl::optional<size_t> temporal_layer_index_to_decode,
@@ -206,7 +208,7 @@ class VideoEncoderTest : public ::testing::Test {
 
     auto psnr_validator = PSNRVideoFrameValidator::Create(
         get_model_frame_cb, std::move(image_writer),
-        VideoFrameValidator::ValidationMode::kAverage, g_psnr_threshold);
+        VideoFrameValidator::ValidationMode::kAverage, validator_threshold);
     LOG_ASSERT(psnr_validator);
     video_frame_processors.push_back(std::move(psnr_validator));
     return BitstreamValidator::Create(
@@ -217,7 +219,8 @@ class VideoEncoderTest : public ::testing::Test {
 
   std::vector<std::unique_ptr<BitstreamProcessor>> CreateBitstreamProcessors(
       const RawVideo* video,
-      const VideoEncoderClientConfig& config) {
+      const VideoEncoderClientConfig& config,
+      double validator_threshold) {
     std::vector<std::unique_ptr<BitstreamProcessor>> bitstream_processors;
     const gfx::Rect visible_rect(config.output_resolution);
     std::vector<gfx::Size> spatial_layer_resolutions;
@@ -287,8 +290,9 @@ class VideoEncoderTest : public ::testing::Test {
              ++temporal_layer_index_to_decode) {
           bitstream_processors.emplace_back(CreateBitstreamValidator(
               video, decoder_config, config.num_frames_to_encode - 1,
-              get_model_frame_cb, spatial_layer_index_to_decode,
-              temporal_layer_index_to_decode, spatial_layer_resolutions));
+              validator_threshold, get_model_frame_cb,
+              spatial_layer_index_to_decode, temporal_layer_index_to_decode,
+              spatial_layer_resolutions));
           LOG_ASSERT(bitstream_processors.back());
         }
       }
@@ -308,7 +312,7 @@ class VideoEncoderTest : public ::testing::Test {
                               base::Unretained(this), visible_rect);
       bitstream_processors.emplace_back(CreateBitstreamValidator(
           video, decoder_config, config.num_frames_to_encode - 1,
-          get_model_frame_cb, absl::nullopt, absl::nullopt,
+          validator_threshold, get_model_frame_cb, absl::nullopt, absl::nullopt,
           /*spatial_layer_resolutions=*/{}));
       LOG_ASSERT(bitstream_processors.back());
     }
@@ -590,7 +594,12 @@ TEST_F(VideoEncoderTest, FlushAtEndOfStream_NV12DmabufScaling) {
   config.input_storage_type =
       VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer;
 
-  auto encoder = CreateVideoEncoder(nv12_video, config);
+  // The encoded resolution is 1/4 of the input resolution and thus the
+  // compression quality is reduced. Since the appropriate threshold for the
+  // small resolution is unknown, so we use the default tolerance in this
+  // scaling test case.
+  auto encoder = CreateVideoEncoder(nv12_video, config,
+                                    PSNRVideoFrameValidator::kDefaultTolerance);
   encoder->Encode();
   EXPECT_TRUE(encoder->WaitForFlushDone());
   EXPECT_EQ(encoder->GetFlushDoneCount(), 1u);
