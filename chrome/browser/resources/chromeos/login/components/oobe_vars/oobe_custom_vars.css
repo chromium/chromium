@@ -306,6 +306,15 @@
       --oobe-apps-list-secondary-text-line-height:
           var(--cros-annotation-1-line-height);
 
+      --oobe-network-select-login-font-family:
+          var(--cros-button-2-font-family);
+      --oobe-network-select-login-font-size:
+          var(--cros-button-2-font-size);
+      --oobe-network-select-login-font-weight:
+          var(--cros-button-2-font-weight);
+      --oobe-network-select-login-line-height:
+          var(--cros-button-2-line-height);
+
       /* Dialog */
       --oobe-adaptive-dialog-icon-size: 48px;
       --oobe-adaptive-dialog-icon-fill-color: var(--cros-sys-primary);

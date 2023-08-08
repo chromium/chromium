@@ -12,6 +12,13 @@ found in the LICENSE file.
   #networkSelect {
     flex: 1;
   }
+
+  :host-context(.jelly-enabled) #networkSelect {
+    font-family: var(--oobe-network-select-login-font-family);
+    font-size: var(--oobe-network-select-login-font-size);
+    font-weight: var(--oobe-network-select-login-font-weight);
+    line-height: var(--oobe-network-select-login-line-height);
+  }
 </style>
 <network-select id="networkSelect" class="focus-on-show"
     show-scan-progress
@@ -25,4 +32,3 @@ found in the LICENSE file.
     no-bottom-scroll-border="[[noBottomScrollBorder]]"
     show-technology-badge="[[showTechnologyBadge_]]">
 </network-select>
-
