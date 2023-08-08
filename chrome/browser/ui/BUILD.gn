@@ -2575,6 +2575,8 @@ static_library("ui") {
       "ash/shelf/app_service/app_service_app_window_shelf_item_controller.h",
       "ash/shelf/app_service/app_service_instance_registry_helper.cc",
       "ash/shelf/app_service/app_service_instance_registry_helper.h",
+      "ash/shelf/app_service/app_service_promise_app_shelf_context_menu.cc",
+      "ash/shelf/app_service/app_service_promise_app_shelf_context_menu.h",
       "ash/shelf/app_service/app_service_shelf_context_menu.cc",
       "ash/shelf/app_service/app_service_shelf_context_menu.h",
       "ash/shelf/app_service/exo_app_type_resolver.cc",
