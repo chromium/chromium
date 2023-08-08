@@ -4,26 +4,21 @@
 
 #include "components/autofill/content/browser/form_forest.h"
 
-#include <functional>
+#include <limits>
 #include <memory>
 #include <utility>
 #include <vector>
 
 #include "base/check.h"
-#include "base/check_deref.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase_vector.h"
 #include "base/containers/stack.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
-#include "base/stl_util.h"
-#include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/form_forest_util_inl.h"
-#include "components/autofill/core/common/autofill_features.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
@@ -500,6 +495,22 @@ const FormData& FormForest::GetBrowserForm(FormGlobalId renderer_form) const {
   return *mutable_this.GetRoot(renderer_form).form;
 }
 
+FormForest::SecurityOptions::SecurityOptions(
+    const url::Origin* triggered_origin,
+    const base::flat_map<FieldGlobalId, ServerFieldType>* field_type_map)
+    : triggered_origin_(triggered_origin), field_type_map_(field_type_map) {
+  CHECK(triggered_origin);
+}
+
+ServerFieldType FormForest::SecurityOptions::GetFieldType(
+    const FieldGlobalId& field) const {
+  if (!field_type_map_) {
+    return UNKNOWN_TYPE;
+  }
+  auto it = field_type_map_->find(field);
+  return it != field_type_map_->end() ? it->second : UNKNOWN_TYPE;
+}
+
 FormForest::RendererForms::RendererForms() = default;
 FormForest::RendererForms::RendererForms(RendererForms&&) = default;
 FormForest::RendererForms& FormForest::RendererForms::operator=(
@@ -508,10 +519,7 @@ FormForest::RendererForms::~RendererForms() = default;
 
 FormForest::RendererForms FormForest::GetRendererFormsOfBrowserForm(
     const FormData& browser_form,
-    absl::variant<std::reference_wrapper<const url::Origin>, AllOriginsAreSafe>
-        triggered_origin,
-    const base::flat_map<FieldGlobalId, ServerFieldType>& field_type_map)
-    const {
+    const SecurityOptions& security_options) const {
   SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
       "Autofill.FormForest.GetRendererFormsOfBrowserForm.Duration");
   CHECK(browser_form.host_frame);
@@ -543,11 +551,7 @@ FormForest::RendererForms FormForest::GetRendererFormsOfBrowserForm(
     DCHECK(renderer_form != result.renderer_forms.rend());
 
     auto IsSafeToFill = [&mutable_this, &browser_form, &renderer_form,
-                         &triggered_origin,
-                         &field_type_map](const FormFieldData& field) {
-      if (absl::holds_alternative<AllOriginsAreSafe>(triggered_origin)) {
-        return true;
-      }
+                         &security_options](const FormFieldData& field) {
       // Non-sensitive values may be filled into fields that belong to the
       // main frame's origin. This is independent of the origin of the
       // field that triggered the autofill, |triggered_origin|.
@@ -575,19 +579,14 @@ FormForest::RendererForms FormForest::GetRendererFormsOfBrowserForm(
             return frame && frame->driver &&
                    frame->driver->HasSharedAutofillPermission();
           };
-
       const url::Origin& main_origin = browser_form.main_frame_origin;
-      const url::Origin& triggered_origin_unwrapped =
-          absl::get<std::reference_wrapper<const url::Origin>>(triggered_origin)
-              .get();
-      auto it = field_type_map.find(field.global_id());
-      ServerFieldType field_type =
-          it != field_type_map.end() ? it->second : UNKNOWN_TYPE;
-      return field.origin == triggered_origin_unwrapped ||
+      return security_options.all_origins_are_trusted() ||
+             field.origin == security_options.triggered_origin() ||
              (field.origin == main_origin &&
-              !IsSensitiveFieldType(field_type) &&
+              !IsSensitiveFieldType(
+                  security_options.GetFieldType(field.global_id())) &&
               HasSharedAutofillPermission(renderer_form->host_frame)) ||
-             (triggered_origin_unwrapped == main_origin &&
+             (security_options.triggered_origin() == main_origin &&
               HasSharedAutofillPermission(renderer_form->host_frame));
     };
 

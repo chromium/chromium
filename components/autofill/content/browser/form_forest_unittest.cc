@@ -1438,23 +1438,21 @@ class FormForestTestUnflatten : public FormForestTestWithMockedTree {
   // The subject of this test fixture.
   std::vector<FormData> GetRendererFormsOfBrowserForm(
       base::StringPiece form_name,
-      absl::variant<url::Origin, FormForest::AllOriginsAreSafe>
-          triggered_origin,
-      const base::flat_map<FieldGlobalId, ServerFieldType>& field_type_map) {
-    // The slightly different signature allows passing prvalues for
-    // `triggered_origin`, e.g. `Origin("...")`.
-    using OriginOrAllOriginsAreSafe =
-        absl::variant<std::reference_wrapper<const url::Origin>,
-                      FormForest::AllOriginsAreSafe>;
-    OriginOrAllOriginsAreSafe origin(
-        absl::holds_alternative<FormForest::AllOriginsAreSafe>(triggered_origin)
-            ? OriginOrAllOriginsAreSafe(FormForest::AllOriginsAreSafe{})
-            : OriginOrAllOriginsAreSafe(
-                  absl::get<url::Origin>(triggered_origin)));
+      const FormForest::SecurityOptions& security) {
     return flattened_forms_
         .GetRendererFormsOfBrowserForm(WithValues(GetFlattenedForm(form_name)),
-                                       origin, field_type_map)
+                                       security)
         .renderer_forms;
+  }
+
+  // This shorthand for GetRendererFormsOfBrowserForm() allows passing prvalues
+  // for `triggered_origin`, e.g. `Origin("...")`.
+  std::vector<FormData> GetRendererFormsOfBrowserForm(
+      base::StringPiece form_name,
+      const url::Origin& triggered_origin,
+      const base::flat_map<FieldGlobalId, ServerFieldType>& field_type_map) {
+    return GetRendererFormsOfBrowserForm(form_name,
+                                         {&triggered_origin, &field_type_map});
   }
 
   auto FieldTypeMap(base::StringPiece form_name) {
@@ -1563,7 +1561,7 @@ TEST_F(FormForestTestUnflatten, SameOriginPolicyNoValuesErased) {
       WithValues(GetMockedForm("child1"), Profile(1)),
       WithValues(GetMockedForm("child2"), Profile(2))};
   EXPECT_THAT(GetRendererFormsOfBrowserForm(
-                  "main", FormForest::AllOriginsAreSafe{}, {}),
+                  "main", FormForest::SecurityOptions::TrustAllOrigins()),
               UnorderedArrayEquals(expectation));
 }
 

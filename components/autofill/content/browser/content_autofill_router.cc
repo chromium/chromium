@@ -495,8 +495,8 @@ std::vector<FieldGlobalId> ContentAutofillRouter::FillOrPreviewForm(
                      mojom::AutofillActionPersistence action_persistence,
                      const FormData& form)) {
   internal::FormForest::RendererForms renderer_forms =
-      form_forest_.GetRendererFormsOfBrowserForm(data, triggered_origin,
-                                                 field_type_map);
+      form_forest_.GetRendererFormsOfBrowserForm(
+          data, {&triggered_origin, &field_type_map});
   for (const FormData& renderer_form : renderer_forms.renderer_forms) {
     // Sending empty fill data to the renderer is semantically a no-op but
     // causes some further mojo calls.
@@ -520,8 +520,8 @@ void ContentAutofillRouter::UndoAutofill(
                      const FormData& form,
                      mojom::AutofillActionPersistence action_persistence)) {
   internal::FormForest::RendererForms renderer_forms =
-      form_forest_.GetRendererFormsOfBrowserForm(data, triggered_origin,
-                                                 field_type_map);
+      form_forest_.GetRendererFormsOfBrowserForm(
+          data, {&triggered_origin, &field_type_map});
   for (const FormData& renderer_form : renderer_forms.renderer_forms) {
     if (auto* target = DriverOfFrame(renderer_form.host_frame)) {
       callback(target, renderer_form, action_persistence);
@@ -553,7 +553,8 @@ void ContentAutofillRouter::SendAutofillTypePredictionsToRenderer(
     // the renderer form's frame in |renderer_fdps|.
     internal::FormForest::RendererForms renderer_forms =
         form_forest_.GetRendererFormsOfBrowserForm(
-            browser_fdp.data, browser_fdp.data.main_frame_origin, {});
+            browser_fdp.data,
+            {&browser_fdp.data.main_frame_origin, /*field_type_map=*/nullptr});
     for (FormData& renderer_form : renderer_forms.renderer_forms) {
       LocalFrameToken frame = renderer_form.host_frame;
       FormDataPredictions renderer_fdp;
@@ -669,9 +670,9 @@ void ContentAutofillRouter::RendererShouldSetSuggestionAvailability(
 std::vector<FormData> ContentAutofillRouter::GetRendererForms(
     const FormData& browser_form) const {
   return form_forest_
-      .GetRendererFormsOfBrowserForm(browser_form,
-                                     internal::FormForest::AllOriginsAreSafe{},
-                                     /*field_type_map=*/{})
+      .GetRendererFormsOfBrowserForm(
+          browser_form,
+          internal::FormForest::SecurityOptions::TrustAllOrigins())
       .renderer_forms;
 }
 

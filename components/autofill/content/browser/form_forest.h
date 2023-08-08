@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_AUTOFILL_CONTENT_BROWSER_FORM_FOREST_H_
 #define COMPONENTS_AUTOFILL_CONTENT_BROWSER_FORM_FOREST_H_
 
-#include <functional>
 #include <memory>
 #include <vector>
 
@@ -237,6 +236,32 @@ class FormForest {
   // Returns the browser form of a known |renderer_form|.
   const FormData& GetBrowserForm(FormGlobalId renderer_form) const;
 
+  // Parameter type of GetRendererFormsOfBrowserForm().
+  class SecurityOptions {
+   public:
+    // Dangerous: only use this if you know what you're doing. See
+    // GetRendererFormsOfBrowserForm() to understand the consequences.
+    static constexpr SecurityOptions TrustAllOrigins() { return {}; }
+
+    SecurityOptions(
+        const url::Origin* triggered_origin,
+        const base::flat_map<FieldGlobalId, ServerFieldType>* field_type_map);
+
+    bool all_origins_are_trusted() const { return !triggered_origin_; }
+    const url::Origin& triggered_origin() const { return *triggered_origin_; }
+    ServerFieldType GetFieldType(const FieldGlobalId& field) const;
+
+   private:
+    constexpr SecurityOptions() = default;
+
+    // The origin of the field from which Autofill was queried.
+    const raw_ptr<const url::Origin> triggered_origin_ = nullptr;
+    // Contains the field types of the fields in the browser form.
+    const raw_ptr<const base::flat_map<FieldGlobalId, ServerFieldType>>
+        field_type_map_ = nullptr;
+  };
+
+  // Return type of GetRendererFormsOfBrowserForm().
   struct RendererForms {
     RendererForms();
     RendererForms(RendererForms&&);
@@ -248,8 +273,8 @@ class FormForest {
 
   // Returns the renderer forms of |browser_form| and the fields that are safe
   // to be filled according to the security policy for cross-frame previewing
-  // and filling. The security policy depends on |triggered_origin| and
-  // |field_type_map|.
+  // and filling. The security policy depends on the origin Autofill was
+  // triggered on and the types of |browser_form|'s fields.
   //
   // The function reinstates each field from |browser_form| in the renderer form
   // it originates from. These reinstated fields hold the (possibly autofilled)
@@ -257,40 +282,39 @@ class FormForest {
   // according to the security policy defined below. The FormFieldData::value of
   // unsafe fields is reset to the empty string.
   //
-  // The |triggered_origin| should be the origin of the field from which
-  // Autofill was queried.
-  // The |field_type_map| should contain the field types of the fields in
-  // |browser_form|.
-  //
   // A field is *safe to fill* iff at least one of the conditions (1–4) and
   // additionally condition (5) hold:
   //
-  // (1) `AllOriginsAreSafe{}` is passed as the `triggered_origin`.
-  // (2) The field's origin is the |triggered_origin|.
-  // (3) The field's origin is the main origin, the field's type in
-  //     |field_type_map| is not sensitive (see IsSensitiveFieldType()), and the
-  //     policy-controlled feature shared-autofill is enabled in the field's
-  //     frame.
-  // (4) The |triggered_origin| is the main origin and the policy-controlled
+  // (1) All origins are trusted (that's dangerous!).
+  // (2) The field's origin is the triggered origin.
+  // (3) The field's origin is the main origin, the field's type is
+  //     non-sensitive, and the policy-controlled feature shared-autofill is
+  //     enabled in the field's frame.
+  // (4) The triggered origin is the main origin and the policy-controlled
   //     feature shared-autofill is enabled in the field's frame.
   // (5) The field is in the same frame tree as the field on which Autofill was
   //     triggered.
   //
+  // All origins are trusted iff `security_options.all_origins_are_trusted()`.
+  //
   // The *origin of a field* is the origin of the frame that contains the
   // corresponding form-control element.
   //
+  // The *triggered origin* is the origin of the field from which Autofill was
+  // queried, `security_options.triggered_origin()`.
+  //
   // The *main origin* is `browser_form.main_frame_origin`.
+  //
+  // A *type of a field* is determined by `security_options.GetFieldType()`. The
+  // non-sensitive field types are credit card types, cardholder names, and
+  // expiration dates.
   //
   // The "allow" attribute of the <iframe> element controls whether the
   // *policy-controlled feature shared-autofill* is enabled in a document
   // (see https://www.w3.org/TR/permissions-policy-1/).
-  struct AllOriginsAreSafe {};
   RendererForms GetRendererFormsOfBrowserForm(
       const FormData& browser_form,
-      absl::variant<std::reference_wrapper<const url::Origin>,
-                    AllOriginsAreSafe> triggered_origin,
-      const base::flat_map<FieldGlobalId, ServerFieldType>& field_type_map)
-      const;
+      const SecurityOptions& security_options) const;
 
   // Deletes all forms and fields that originate from the |renderer_forms| and
   // unsets the FrameData::parent_form pointers of all child forms.
