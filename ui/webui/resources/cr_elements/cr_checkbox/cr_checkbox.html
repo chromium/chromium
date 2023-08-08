@@ -61,11 +61,13 @@
 
       :host-context([chrome-refresh-2023]):host([disabled]) {
         opacity: 1;
-        --cr-checkbox-checked-box-color: var(--color-checkbox-background-disabled,
+        --cr-checkbox-checked-box-color: var(
+            --color-checkbox-container-disabled,
             var(--cr-fallback-color-disabled-background));
-        --cr-checkbox-unchecked-box-color: var(--color-checkbox-background-disabled,
+        --cr-checkbox-unchecked-box-color: var(
+            --color-checkbox-outline-disabled,
             var(--cr-fallback-color-disabled-background));
-        --cr-checkbox-mark-color: var(--color-checkbox-foreground-disabled,
+        --cr-checkbox-mark-color: var(--color-checkbox-check-disabled,
             var(--cr-fallback-color-disabled-foreground));
       }
 
