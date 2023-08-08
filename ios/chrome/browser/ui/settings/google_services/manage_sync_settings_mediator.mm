@@ -392,6 +392,10 @@ constexpr CGFloat kErrorSymbolPointSize = 22.;
   if (self.syncAccountState == SyncSettingsAccountState::kSignedOut) {
     return;
   }
+  if (self.syncAccountState == SyncSettingsAccountState::kSignedIn &&
+      self.isSyncDisabledByAdministrator) {
+    return;
+  }
   TableViewModel* model = self.consumer.tableViewModel;
   [model addSectionWithIdentifier:AdvancedSettingsSectionIdentifier];
   // EncryptionItemType.
@@ -481,6 +485,16 @@ constexpr CGFloat kErrorSymbolPointSize = 22.;
 // Updates encryption item, and notifies the consumer if `notifyConsumer` is set
 // to YES.
 - (void)updateEncryptionItem:(BOOL)notifyConsumer {
+  if (![self.consumer.tableViewModel
+          hasSectionForSectionIdentifier:AdvancedSettingsSectionIdentifier]) {
+    return;
+  }
+  if (self.syncAccountState == SyncSettingsAccountState::kSignedIn &&
+      self.isSyncDisabledByAdministrator) {
+    [self.consumer.tableViewModel
+        removeSectionWithIdentifier:AdvancedSettingsSectionIdentifier];
+    return;
+  }
   BOOL needsUpdate =
       self.shouldEncryptionItemBeEnabled &&
       (self.encryptionItem.enabled != self.shouldEncryptionItemBeEnabled);
@@ -596,11 +610,16 @@ constexpr CGFloat kErrorSymbolPointSize = 22.;
 
   // Creates the manage accounts and sign-out section.
   TableViewModel* model = self.consumer.tableViewModel;
-  NSInteger advancedSettingsSectionIndex =
-      [model sectionForSectionIdentifier:AdvancedSettingsSectionIdentifier];
-  DCHECK_NE(NSNotFound, advancedSettingsSectionIndex);
+  // The AdvancedSettingsSectionIdentifier does not exist when sync is disabled
+  // by administrator for a signed-in not syncing account.
+  NSInteger previousSection =
+      [model hasSectionForSectionIdentifier:AdvancedSettingsSectionIdentifier]
+          ? [model
+                sectionForSectionIdentifier:AdvancedSettingsSectionIdentifier]
+          : [model sectionForSectionIdentifier:SyncDataTypeSectionIdentifier];
+  DCHECK_NE(NSNotFound, previousSection);
   [model insertSectionWithIdentifier:SignOutSectionIdentifier
-                             atIndex:advancedSettingsSectionIndex + 1];
+                             atIndex:previousSection + 1];
 
   // Creates items in the manage accounts and sign-out section.
   // Manage Google Account item.
@@ -1173,9 +1192,12 @@ constexpr CGFloat kErrorSymbolPointSize = 22.;
                                                           _syncService)
                                                           .messageID]
           toSectionWithIdentifier:SyncErrorsSectionIdentifier];
+      [model addItem:self.syncErrorItem
+          toSectionWithIdentifier:SyncErrorsSectionIdentifier];
+    } else if (self.syncAccountState != SyncSettingsAccountState::kSignedIn) {
+      [model addItem:self.syncErrorItem
+          toSectionWithIdentifier:SyncErrorsSectionIdentifier];
     }
-    [model addItem:self.syncErrorItem
-        toSectionWithIdentifier:SyncErrorsSectionIdentifier];
   }
 
   if (notifyConsumer) {
@@ -1246,7 +1268,9 @@ constexpr CGFloat kErrorSymbolPointSize = 22.;
 
 // Returns YES if the given type is managed by policies (i.e. is not syncable)
 - (BOOL)isManagedSyncSettingsDataType:(syncer::UserSelectableType)type {
-  return IsManagedSyncDataType(_syncService, type);
+  return IsManagedSyncDataType(_syncService, type) ||
+         (self.syncAccountState == SyncSettingsAccountState::kSignedIn &&
+          self.isSyncDisabledByAdministrator);
 }
 
 #pragma mark - Properties
