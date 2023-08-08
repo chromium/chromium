@@ -61,7 +61,6 @@ constexpr policy::PolicySource kNonCloudSources[] = {
     policy::PolicySource::POLICY_SOURCE_COMMAND_LINE,
     policy::PolicySource::POLICY_SOURCE_ACTIVE_DIRECTORY,
     policy::PolicySource::POLICY_SOURCE_PLATFORM,
-    policy::PolicySource::POLICY_SOURCE_MERGED,
     policy::PolicySource::
         POLICY_SOURCE_RESTRICTED_MANAGED_GUEST_SESSION_OVERRIDE,
 };
