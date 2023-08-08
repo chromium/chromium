@@ -26,7 +26,7 @@ class TestEulaAcceptedNotifier : public EulaAcceptedNotifier {
   TestEulaAcceptedNotifier(const TestEulaAcceptedNotifier&) = delete;
   TestEulaAcceptedNotifier& operator=(const TestEulaAcceptedNotifier&) = delete;
 
-  ~TestEulaAcceptedNotifier() override {}
+  ~TestEulaAcceptedNotifier() override = default;
 
   bool IsEulaAccepted() override { return eula_accepted_; }
 
@@ -50,32 +50,27 @@ enum class ConnectionTrackerResponseMode {
 // A test fixture class for ResourceRequestAllowedNotifier tests that require
 // network state simulations. This also acts as the service implementing the
 // ResourceRequestAllowedNotifier::Observer interface.
-class ResourceRequestAllowedNotifierTest
+class ResourceRequestAllowedNotifierBaseTest
     : public testing::Test,
       public ResourceRequestAllowedNotifier::Observer,
       public testing::WithParamInterface<ConnectionTrackerResponseMode> {
  public:
-  ResourceRequestAllowedNotifierTest()
+  ResourceRequestAllowedNotifierBaseTest()
       : resource_request_allowed_notifier_(
             &prefs_,
-            network::TestNetworkConnectionTracker::GetInstance()),
-        eula_notifier_(new TestEulaAcceptedNotifier),
-        was_notified_(false) {
+            network::TestNetworkConnectionTracker::GetInstance()) {
     auto* tracker = network::TestNetworkConnectionTracker::GetInstance();
     tracker->SetRespondSynchronously(
         GetParam() == ConnectionTrackerResponseMode::kSynchronous);
     tracker->SetConnectionType(network::mojom::ConnectionType::CONNECTION_WIFI);
-
-    resource_request_allowed_notifier_.InitWithEulaAcceptNotifier(
-        this, base::WrapUnique(eula_notifier_.get()));
   }
 
-  ResourceRequestAllowedNotifierTest(
-      const ResourceRequestAllowedNotifierTest&) = delete;
-  ResourceRequestAllowedNotifierTest& operator=(
-      const ResourceRequestAllowedNotifierTest&) = delete;
+  ResourceRequestAllowedNotifierBaseTest(
+      const ResourceRequestAllowedNotifierBaseTest&) = delete;
+  ResourceRequestAllowedNotifierBaseTest& operator=(
+      const ResourceRequestAllowedNotifierBaseTest&) = delete;
 
-  ~ResourceRequestAllowedNotifierTest() override {}
+  ~ResourceRequestAllowedNotifierBaseTest() override = default;
 
   bool was_notified() const { return was_notified_; }
 
@@ -94,6 +89,32 @@ class ResourceRequestAllowedNotifierTest
   bool SimulateResourceRequest() {
     return resource_request_allowed_notifier_.ResourceRequestsAllowed();
   }
+
+ protected:
+  TestRequestAllowedNotifier resource_request_allowed_notifier_;
+
+ private:
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::SingleThreadTaskEnvironment::MainThreadType::UI};
+  TestingPrefServiceSimple prefs_;
+  bool was_notified_ = false;
+};
+
+class ResourceRequestAllowedNotifierTest
+    : public ResourceRequestAllowedNotifierBaseTest {
+ public:
+  ResourceRequestAllowedNotifierTest()
+      : eula_notifier_(new TestEulaAcceptedNotifier) {
+    resource_request_allowed_notifier_.InitWithEulaAcceptNotifier(
+        this, base::WrapUnique(eula_notifier_.get()));
+  }
+
+  ResourceRequestAllowedNotifierTest(
+      const ResourceRequestAllowedNotifierTest&) = delete;
+  ResourceRequestAllowedNotifierTest& operator=(
+      const ResourceRequestAllowedNotifierTest&) = delete;
+
+  ~ResourceRequestAllowedNotifierTest() override = default;
 
   void SimulateEulaAccepted() {
     eula_notifier_->SimulateEulaAccepted();
@@ -127,12 +148,16 @@ class ResourceRequestAllowedNotifierTest
   }
 
  private:
-  base::test::SingleThreadTaskEnvironment task_environment_{
-      base::test::SingleThreadTaskEnvironment::MainThreadType::UI};
-  TestRequestAllowedNotifier resource_request_allowed_notifier_;
-  TestingPrefServiceSimple prefs_;
   raw_ptr<TestEulaAcceptedNotifier> eula_notifier_;  // Weak, owned by RRAN.
-  bool was_notified_;
+};
+
+class ResourceRequestAllowedNotifierNoEulaTest
+    : public ResourceRequestAllowedNotifierBaseTest {
+ public:
+  ResourceRequestAllowedNotifierNoEulaTest() {
+    resource_request_allowed_notifier_.Init(this, /*leaky=*/false,
+                                            /*wait_for_eula=*/false);
+  }
 };
 
 TEST_P(ResourceRequestAllowedNotifierTest, NotifyOnInitialNetworkState) {
@@ -305,6 +330,22 @@ TEST_P(ResourceRequestAllowedNotifierTest, NoRequestNoNotifyEula) {
 INSTANTIATE_TEST_SUITE_P(
     All,
     ResourceRequestAllowedNotifierTest,
+    testing::Values(ConnectionTrackerResponseMode::kSynchronous,
+                    ConnectionTrackerResponseMode::kAsynchronous));
+
+TEST_P(ResourceRequestAllowedNotifierNoEulaTest, NetworkNotification) {
+  SimulateNetworkConnectionChange(
+      network::mojom::ConnectionType::CONNECTION_NONE);
+  EXPECT_FALSE(SimulateResourceRequest());
+
+  SimulateNetworkConnectionChange(
+      network::mojom::ConnectionType::CONNECTION_WIFI);
+  EXPECT_TRUE(was_notified());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ResourceRequestAllowedNotifierNoEulaTest,
     testing::Values(ConnectionTrackerResponseMode::kSynchronous,
                     ConnectionTrackerResponseMode::kAsynchronous));
 

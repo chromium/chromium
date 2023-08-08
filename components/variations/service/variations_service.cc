@@ -703,7 +703,8 @@ void VariationsService::InitResourceRequestedAllowedNotifier() {
   // ResourceRequestAllowedNotifier does not install an observer if there is no
   // NetworkChangeNotifier, which results in never being notified of changes to
   // network status.
-  resource_request_allowed_notifier_->Init(this, false /* leaky */);
+  resource_request_allowed_notifier_->Init(this, /*leaky=*/false,
+                                           /*wait_for_eula=*/false);
 }
 
 void VariationsService::StartRepeatedVariationsSeedFetch() {

@@ -21,7 +21,7 @@ namespace web_resource {
 //
 // Currently, the criteria for allowing resource requests are:
 //  1. The network is currently available,
-//  2. The EULA was accepted by the user (ChromeOS only), and
+//  2. The EULA was accepted by the user (can be disabled), and
 //  3. The --disable-background-networking command line switch is not set.
 //
 // Interested services should add themselves as an observer of
@@ -82,6 +82,10 @@ class ResourceRequestAllowedNotifier
   // ResourceRequestAllowedNotifier to pass it the interested service. Set
   // |leaky| to true if this class will not be destructed before shutdown.
   void Init(Observer* observer, bool leaky);
+
+  // Performs the same initialization as above, except that it allows for
+  // disabling waiting for acceptance of EULA (by default it's enabled)
+  void Init(Observer* observer, bool leaky, bool wait_for_eula);
 
   // Returns whether resource requests are allowed, per the various criteria.
   // If not, this call will set some flags so it knows to notify the observer
