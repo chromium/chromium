@@ -42,7 +42,7 @@ class MEDIA_EXPORT HlsDataSource {
   using ReadStatus = TypedStatus<ReadStatusTraits>;
   using ReadCb = base::OnceCallback<void(ReadStatus::Or<size_t>)>;
 
-  explicit HlsDataSource(absl::optional<uint64_t> size) : size_(size) {}
+  explicit HlsDataSource(absl::optional<size_t> size) : size_(size) {}
   virtual ~HlsDataSource();
 
   // Issues a read to the underlying data source, writing the results to

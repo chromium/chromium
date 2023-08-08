@@ -90,7 +90,7 @@ class HlsDataSourceImpl final : public media::HlsDataSource {
   }
 
  private:
-  static absl::optional<uint64_t> DetermineSize(
+  static absl::optional<size_t> DetermineSize(
       MultiBufferDataSource& source,
       absl::optional<media::hls::types::ByteRange> range) {
     // If we have a byterange from the manifest, go with that over
@@ -101,7 +101,7 @@ class HlsDataSourceImpl final : public media::HlsDataSource {
 
     int64_t size = 0;
     if (source.GetSize(&size)) {
-      return static_cast<uint64_t>(size);
+      return base::checked_cast<size_t>(size);
     }
 
     return absl::nullopt;
