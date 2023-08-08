@@ -4,20 +4,18 @@
 
 #include "chrome/browser/ui/views/permissions/permission_prompt_bubble_two_origins_view.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "components/favicon/core/favicon_service.h"
 #include "components/favicon_base/favicon_callback.h"
 #include "components/permissions/permission_util.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/elide_url.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/resources/grit/ui_resources.h"
 #include "ui/views/controls/image_view.h"
-#include "ui/views/layout/flex_layout.h"
-#include "ui/views/vector_icons.h"
+#include "ui/views/layout/layout_provider.h"
 
 namespace {
 
@@ -172,6 +170,8 @@ void PermissionPromptBubbleTwoOriginsView::CreateFaviconRow() {
 void PermissionPromptBubbleTwoOriginsView::OnEmbeddingOriginFaviconLoaded(
     const favicon_base::FaviconRawBitmapResult& favicon_result) {
   favicon_right_received_ = true;
+  base::UmaHistogramBoolean("Permissions.Prompt.HasEmbeddingFavicon",
+                            favicon_result.is_valid());
 
   if (favicon_result.is_valid()) {
     favicon_right_->SetImage(ui::ImageModel::FromImage(
@@ -184,6 +184,8 @@ void PermissionPromptBubbleTwoOriginsView::OnEmbeddingOriginFaviconLoaded(
 void PermissionPromptBubbleTwoOriginsView::OnRequestingOriginFaviconLoaded(
     const favicon_base::FaviconRawBitmapResult& favicon_result) {
   favicon_left_received_ = true;
+  base::UmaHistogramBoolean("Permissions.Prompt.HasRequestingFavicon",
+                            favicon_result.is_valid());
 
   if (favicon_result.is_valid()) {
     favicon_left_->SetImage(ui::ImageModel::FromImage(

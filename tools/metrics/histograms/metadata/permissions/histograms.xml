@@ -965,6 +965,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Permissions.Prompt.Has{FaviconType}Favicon" enum="Boolean"
+    expires_after="2024-08-30">
+  <owner>dullweber@chromium.org</owner>
+  <owner>fsenra@chromium.org</owner>
+  <summary>
+    Records whether a permission prompt for a two origin scoped permission (e.g.
+    StorageAccess) has successfully loaded a favicon. Recorded when a permission
+    prompt with favicons is shown.
+  </summary>
+  <token key="FaviconType">
+    <variant name="Embedding"/>
+    <variant name="Requesting"/>
+  </token>
+</histogram>
+
 <histogram name="Permissions.Prompt.Ignored.PriorDismissCount2" units="units"
     expires_after="2023-10-31">
   <owner>engedy@chromium.org</owner>
