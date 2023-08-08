@@ -162,7 +162,7 @@ const gfx::VectorIcon& GetBlockedIconIdDesktop(RequestType type) {
       return cr23 ? vector_icons::kMidiOffChromeRefreshIcon
                   : vector_icons::kMidiOffIcon;
     case RequestType::kStorageAccess:
-      return vector_icons::kCookieOffChromeRefreshIcon;
+      return vector_icons::kStorageAccessOffIcon;
     default:
       NOTREACHED();
   }
