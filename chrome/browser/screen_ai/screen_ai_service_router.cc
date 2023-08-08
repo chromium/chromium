@@ -175,8 +175,6 @@ void ScreenAIServiceRouter::InitializeMainContentExtraction(
 }
 
 void ScreenAIServiceRouter::SetLibraryLoadState(bool successful) {
-  // TODO(crbug.com/1278249): Update so that "Ready" state would be kept
-  // separately for OCR and MainContentExtraction services.
   screen_ai::ScreenAIInstallState::GetInstance()->SetState(
       successful ? screen_ai::ScreenAIInstallState::State::kReady
                  : screen_ai::ScreenAIInstallState::State::kFailed);

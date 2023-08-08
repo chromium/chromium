@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/debug/dump_without_crashing.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -143,6 +144,13 @@ void ScreenAIInstallState::SetState(State state) {
     DCHECK(state == State::kReady || state == State::kFailed ||
            state == State::kDownloading);
     return;
+  }
+
+  // Switching state from `Ready` to `Fail` is unexpected and requires
+  // investigation.
+  // TODO(crbug.com/1443345): Remove after verifying this case does not happen.
+  if (state == State::kFailed && state_ == State::kReady) {
+    base::debug::DumpWithoutCrashing();
   }
 
   state_ = state;
