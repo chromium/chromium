@@ -2912,10 +2912,17 @@ const blink::web_pref::WebPreferences WebContentsImpl::ComputeWebPreferences() {
       !command_line.HasSwitch(blink::switches::kDisableThreadedScrolling);
 
 #if BUILDFLAG(IS_ANDROID)
+  constexpr int kTabletWidthThreshold = 600;
+  // TODO(crbug.com/1469720): GetPrimaryDisplay() won't be correct for
+  // externally connected displays. Get the display where Chrome is opened
+  // instead.
+  display::Display display = display::Screen::GetScreen()->GetPrimaryDisplay();
+  float screen_width_in_dp =
+      display.GetSizeInPixel().width() / display.device_scale_factor();
   if (prefs.viewport_enabled &&
       base::FeatureList::IsEnabled(
           blink::features::kDefaultViewportIsDeviceWidth) &&
-      ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+      screen_width_in_dp >= kTabletWidthThreshold) {
     prefs.viewport_style = blink::mojom::ViewportStyle::kDefault;
   }
 #endif
@@ -2977,7 +2984,6 @@ const blink::web_pref::WebPreferences WebContentsImpl::ComputeWebPreferences() {
     prefs.media_controls_enabled = false;
 
 #if BUILDFLAG(IS_ANDROID)
-  display::Display display = display::Screen::GetScreen()->GetPrimaryDisplay();
   gfx::Size size = display.GetSizeInPixel();
   int min_width = size.width() < size.height() ? size.width() : size.height();
   prefs.device_scale_adjustment = GetDeviceScaleAdjustment(
