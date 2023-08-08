@@ -1090,6 +1090,27 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
       assertWithMatcher:grey_nil()];
 }
 
+// Test to press back button while editing a folder name in the bookmark table
+// view.
+// Related to http://crbug.com/1466119.
+- (void)testPressBackbuttonWhileEditingBookmarkName {
+  // Open the bookmark view.
+  [BookmarkEarlGrey setupStandardBookmarks];
+  [BookmarkEarlGreyUI openBookmarks];
+  [BookmarkEarlGreyUI openMobileBookmarks];
+  [ChromeEarlGreyUI waitForAppToIdle];
+  // Click on "New Folder".
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kBookmarksHomeLeadingButtonIdentifier)]
+      performAction:grey_tap()];
+  // Press the back button.
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(BookmarksNavigationBarBackButton(),
+                                          grey_sufficientlyVisible(), nil)]
+      performAction:grey_tap()];
+}
+
 // TODO(crbug.com/695749): Add egtests for:
 // 1. Spinner background.
 // 2. Reorder bookmarks. (make sure it won't clear the row selection on table)
