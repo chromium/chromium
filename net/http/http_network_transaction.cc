@@ -1291,9 +1291,9 @@ int HttpNetworkTransaction::DoReadHeadersComplete(int result) {
   // Check for an intermediate 100 Continue response.  An origin server is
   // allowed to send this response even if we didn't ask for it, so we just
   // need to skip over it.
-  // We treat any other 1xx in this same way (although in practice getting
-  // a 1xx that isn't a 100 is rare).
-  // Unless this is a WebSocket request, in which case we pass it on up.
+  // We treat any other 1xx in this same way unless:
+  //  * The response is 103, which is already handled above
+  //  * This is a WebSocket request, in which case we pass it on up.
   if (response_.headers->response_code() / 100 == 1 &&
       !ForWebSocketHandshake()) {
     response_.headers =
