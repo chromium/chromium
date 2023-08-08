@@ -227,10 +227,9 @@ void Checkbox::OnThemeChanged() {
 SkPath Checkbox::GetFocusRingPath() const {
   SkPath path;
   gfx::Rect bounds = image()->GetMirroredContentsBounds();
-  // Correct for slight discrepancy between visual image bounds and view bounds.
-  if (features::IsChromeRefresh2023()) {
-    bounds.Inset(2);
-  } else {
+  // Don't add extra insets in the ChromeRefresh case so that the focus ring can
+  // be drawn in the ChromeRefresh style.
+  if (!features::IsChromeRefresh2023()) {
     bounds.Inset(1);
   }
   path.addRect(RectToSkRect(bounds));
