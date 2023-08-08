@@ -1375,8 +1375,7 @@ ci.builder(
     execution_timeout = 4 * time.hour,
 )
 
-# TODO(crbug.com/1459433): Enable the branch, sheriff and tree_closing
-# once the builder is stable.
+# TODO(crbug.com/1459433): Enable the branch once the builder is ready.
 ci.builder(
     name = "android-oreo-x86-rel",
     builder_spec = builder_config.builder_spec(
@@ -1395,12 +1394,13 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-android-archive",
     ),
-    sheriff_rotations = args.ignore_default(None),
+    tree_closing = True,
     # TODO(crbug.com/1459433): Update the console view config once on CQ
     console_view_entry = consoles.console_view_entry(
         category = "builder_tester|x86",
         short_name = "O",
     ),
+    execution_timeout = 4 * time.hour,
 )
 
 ci.thin_tester(
