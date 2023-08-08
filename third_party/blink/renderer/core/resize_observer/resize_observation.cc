@@ -44,7 +44,7 @@ gfx::SizeF ComputeZoomAdjustedSVGBox(ResizeObserverBoxOptions box_option,
 
 // Set the initial observation size to something impossible so that the first
 // gather observation step always will pick up a new observation.
-constexpr DeprecatedLayoutSize kInitialObservationSize(-1, -1);
+constexpr LogicalSize kInitialObservationSize(kIndefiniteSize, kIndefiniteSize);
 
 }  // namespace
 
@@ -83,7 +83,7 @@ bool ResizeObservation::ObservationSizeOutOfSync() {
 }
 
 void ResizeObservation::SetObservationSize(
-    const DeprecatedLayoutSize& observation_size) {
+    const LogicalSize& observation_size) {
   observation_size_ = observation_size;
 }
 
@@ -99,19 +99,20 @@ size_t ResizeObservation::TargetDepth() {
   return depth;
 }
 
-DeprecatedLayoutSize ResizeObservation::ComputeTargetSize() const {
+LogicalSize ResizeObservation::ComputeTargetSize() const {
   if (!target_ || !target_->GetLayoutObject())
-    return DeprecatedLayoutSize();
+    return LogicalSize();
   const LayoutObject& layout_object = *target_->GetLayoutObject();
   if (layout_object.IsSVGChild()) {
-    return DeprecatedLayoutSize(
-        ComputeZoomAdjustedSVGBox(observed_box_, layout_object));
+    gfx::SizeF size = ComputeZoomAdjustedSVGBox(observed_box_, layout_object);
+    return LogicalSize(LayoutUnit(size.width()), LayoutUnit(size.height()));
   }
   if (const auto* layout_box = DynamicTo<LayoutBox>(layout_object)) {
-    return DeprecatedLayoutSize(ResizeObserverUtilities::ComputeZoomAdjustedBox(
-        observed_box_, *layout_box, layout_box->StyleRef()));
+    gfx::SizeF size = ResizeObserverUtilities::ComputeZoomAdjustedBox(
+        observed_box_, *layout_box, layout_box->StyleRef());
+    return LogicalSize(LayoutUnit(size.width()), LayoutUnit(size.height()));
   }
-  return DeprecatedLayoutSize();
+  return LogicalSize();
 }
 
 void ResizeObservation::Trace(Visitor* visitor) const {
