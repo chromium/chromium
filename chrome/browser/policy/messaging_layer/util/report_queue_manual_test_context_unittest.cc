@@ -90,7 +90,32 @@ TEST_F(ReportQueueManualTestContextTest,
   test::TestEvent<Status> completion_event;
   Start<ReportQueueManualTestContext>(
       kMessagePeriod, kNumberOfMessagesToEnqueue, kDestination, kPriority,
-      completion_event.cb(), task_runner_, GetQueueBuilder());
+      EventType::kDevice, completion_event.cb(), task_runner_,
+      GetQueueBuilder());
+
+  const Status status = completion_event.result();
+  EXPECT_OK(status) << status;
+  EXPECT_THAT(dm_token_, IsEmpty());
+}
+
+#if BUILDFLAG(IS_MAC)
+TEST_F(ReportQueueManualTestContextTest,
+       DISABLED_BuildsReportQueueManualTestContextAndUploadsUserEventMessages) {
+#else
+TEST_F(ReportQueueManualTestContextTest,
+       BuildsReportQueueManualTestContextAndUploadsUserEventMessages) {
+#endif
+  EXPECT_CALL(*mock_report_queue_, AddRecord(_, _, _))
+      .Times(kNumberOfMessagesToEnqueue)
+      .WillRepeatedly(
+          WithArgs<2>(Invoke([](ReportQueue::EnqueueCallback enqueue_callback) {
+            std::move(enqueue_callback).Run(Status::StatusOK());
+          })));
+
+  test::TestEvent<Status> completion_event;
+  Start<ReportQueueManualTestContext>(
+      kMessagePeriod, kNumberOfMessagesToEnqueue, kDestination, kPriority,
+      EventType::kUser, completion_event.cb(), task_runner_, GetQueueBuilder());
 
   const Status status = completion_event.result();
   EXPECT_OK(status) << status;
