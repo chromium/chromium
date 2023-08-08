@@ -65,11 +65,11 @@ using metrics::SystemProfileProto;
 
 namespace {
 
-void IncrementPrefValue(const char* path) {
+void IncrementPrefValue(const char* path, int num_samples) {
   PrefService* pref = g_browser_process->local_state();
   DCHECK(pref);
   int value = pref->GetInteger(path);
-  pref->SetInteger(path, value + 1);
+  pref->SetInteger(path, value + num_samples);
 }
 
 }  // namespace
@@ -93,15 +93,18 @@ void ChromeOSMetricsProvider::RegisterPrefs(PrefRegistrySimple* registry) {
 }
 
 // static
-void ChromeOSMetricsProvider::LogCrash(const std::string& crash_type) {
-  if (crash_type == "user")
-    IncrementPrefValue(prefs::kStabilityOtherUserCrashCount);
-  else if (crash_type == "kernel")
-    IncrementPrefValue(prefs::kStabilityKernelCrashCount);
-  else if (crash_type == "uncleanshutdown")
-    IncrementPrefValue(prefs::kStabilitySystemUncleanShutdownCount);
-  else
+void ChromeOSMetricsProvider::LogCrash(const std::string& crash_type,
+                                       int num_samples) {
+  if (crash_type == "user") {
+    IncrementPrefValue(prefs::kStabilityOtherUserCrashCount, num_samples);
+  } else if (crash_type == "kernel") {
+    IncrementPrefValue(prefs::kStabilityKernelCrashCount, num_samples);
+  } else if (crash_type == "uncleanshutdown") {
+    IncrementPrefValue(prefs::kStabilitySystemUncleanShutdownCount,
+                       num_samples);
+  } else {
     NOTREACHED() << "Unexpected Chrome OS crash type " << crash_type;
+  }
 
   // Wake up metrics logs sending if necessary now that new
   // log data is available.

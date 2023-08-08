@@ -37,7 +37,7 @@ class ChromeOSMetricsProvider : public metrics::MetricsProvider {
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
   // Records a crash.
-  static void LogCrash(const std::string& crash_type);
+  static void LogCrash(const std::string& crash_type, int num_samples);
 
   // Returns Enterprise Enrollment status.
   static EnrollmentStatus GetEnrollmentStatus();
