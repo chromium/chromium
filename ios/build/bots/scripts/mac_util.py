@@ -38,6 +38,17 @@ def is_macos_13_or_higher():
       '13.0') <= distutils.version.LooseVersion(version())
 
 
+def stop_usbmuxd():
+  """stops the current usbmuxd process"""
+  cmd = [
+      'sudo',
+      '/bin/launchctl',
+      'stop',
+      'com.apple.usbmuxd',
+  ]
+  subprocess.check_call(cmd)
+
+
 def run_codesign_check(dir_path):
   """Runs codesign check on a directory
 

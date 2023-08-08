@@ -427,3 +427,10 @@ def using_xcode_13_or_higher():
   LOGGER.debug('Checking if Xcode version is 13 or higher')
   return distutils.version.LooseVersion(
       '13.0') <= distutils.version.LooseVersion(version()[0])
+
+
+def using_xcode_15_or_higher():
+  """Returns true if using Xcode version 15 or higher."""
+  LOGGER.debug('Checking if Xcode version is 15 or higher')
+  return distutils.version.LooseVersion(
+      '15.0') <= distutils.version.LooseVersion(version()[0])

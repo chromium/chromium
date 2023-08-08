@@ -446,6 +446,7 @@ class DeviceXcodeTestRunner(SimulatorParallelTestRunner,
     """Performs setup actions which must occur prior to every test launch."""
     self.uninstall_apps()
     self.wipe_derived_data()
+    self.restart_usbmuxd()
 
   def tear_down(self):
     """Performs cleanup actions which must occur after every test launch."""

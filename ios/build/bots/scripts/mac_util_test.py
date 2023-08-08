@@ -50,6 +50,16 @@ class TestRunCodesignCheck(test_runner_test.TestCase):
     self.assertEqual(return_error, error)
 
 
+class TestStopUsbMuxd(test_runner_test.TestCase):
+
+  @patch('subprocess.check_call')
+  def test_run_stop_usbmuxd_succeeds(self, mock_check_call):
+    mock_check_call.return_value = MagicMock()
+    mac_util.stop_usbmuxd()
+    mock_check_call.assert_called_with(
+        ['sudo', '/bin/launchctl', 'stop', 'com.apple.usbmuxd'])
+
+
 class TestPlistAsDict(test_runner_test.TestCase):
 
   @patch('subprocess.check_output')

@@ -21,6 +21,9 @@ Build version 12D4e
 _XCODEBUILD_VERSION_OUTPUT_13 = b"""Xcode 13.0
 Build version 13A5155e
 """
+_XCODEBUILD_VERSION_OUTPUT_15 = b"""Xcode 15.0
+Build version 15A5209g
+"""
 
 
 class XcodeUtilTest(test_runner_test.TestCase):
@@ -43,6 +46,7 @@ class XcodeUtilTest(test_runner_test.TestCase):
     """Tests xcode_util.using_xcode_11_or_higher"""
     self.assertTrue(xcode_util.using_xcode_11_or_higher())
     self.assertFalse(xcode_util.using_xcode_13_or_higher())
+    self.assertFalse(xcode_util.using_xcode_15_or_higher())
 
   @mock.patch(
       'subprocess.check_output', return_value=_XCODEBUILD_VERSION_OUTPUT_13)
@@ -50,6 +54,15 @@ class XcodeUtilTest(test_runner_test.TestCase):
     """Tests xcode_util.using_xcode_13_or_higher"""
     self.assertTrue(xcode_util.using_xcode_11_or_higher())
     self.assertTrue(xcode_util.using_xcode_13_or_higher())
+    self.assertFalse(xcode_util.using_xcode_15_or_higher())
+
+  @mock.patch(
+      'subprocess.check_output', return_value=_XCODEBUILD_VERSION_OUTPUT_15)
+  def test_using_xcode_15(self, _):
+    """Tests xcode_util.using_xcode_13_or_higher"""
+    self.assertTrue(xcode_util.using_xcode_11_or_higher())
+    self.assertTrue(xcode_util.using_xcode_13_or_higher())
+    self.assertTrue(xcode_util.using_xcode_15_or_higher())
 
 
 class InstallTest(XcodeUtilTest):

@@ -20,6 +20,7 @@ import time
 import constants
 import file_util
 import gtest_utils
+import mac_util
 import iossim_util
 import test_apps
 from test_result_util import ResultCollection, TestResult, TestStatus
@@ -1043,6 +1044,7 @@ class DeviceTestRunner(TestRunner):
     self.uninstall_apps()
     self.wipe_derived_data()
     self.install_app()
+    self.restart_usbmuxd()
 
   def extract_test_data(self):
     """Extracts data emitted by the test."""
@@ -1170,3 +1172,14 @@ class DeviceTestRunner(TestRunner):
         env_vars=self.env_vars,
         repeat_count=self.repeat_count,
         test_args=self.test_args)
+
+  # TODO(crbug.com/1469697): there's a bug in Xcode 15 such that the devices
+  # will get disconnected from Xcode after a reboot. We should revisit this
+  # later to see if Apple will resolve this issue. Moreover, if the issue is
+  # not resolved, we should aim to add some restrictions to this call such
+  # that stop_usbmuxd is not called every single time.
+  def restart_usbmuxd(self):
+    if xcode_util.using_xcode_15_or_higher():
+      LOGGER.warning(
+          "Restarting usbmuxd to ensure device is re-paired to Xcode...")
+      mac_util.stop_usbmuxd()
