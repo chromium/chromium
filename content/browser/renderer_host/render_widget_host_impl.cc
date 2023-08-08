@@ -2966,9 +2966,10 @@ void RenderWidgetHostImpl::TextInputStateChanged(
 
 void RenderWidgetHostImpl::OnImeCompositionRangeChanged(
     const gfx::Range& range,
-    const std::vector<gfx::Rect>& character_bounds) {
+    const absl::optional<std::vector<gfx::Rect>>& character_bounds,
+    const absl::optional<std::vector<gfx::Rect>>& line_bounds) {
   if (view_) {
-    view_->ImeCompositionRangeChanged(range, character_bounds);
+    view_->ImeCompositionRangeChanged(range, character_bounds, line_bounds);
   }
 }
 

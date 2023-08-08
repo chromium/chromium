@@ -1241,19 +1241,24 @@ void RenderWidgetHostViewAndroid::OnUpdateTextInputStateCalled(
 
 void RenderWidgetHostViewAndroid::OnImeCompositionRangeChanged(
     TextInputManager* text_input_manager,
-    RenderWidgetHostViewBase* updated_view) {
+    RenderWidgetHostViewBase* updated_view,
+    bool character_bounds_changed,
+    const absl::optional<std::vector<gfx::Rect>>& line_bounds) {
   DCHECK_EQ(text_input_manager_, text_input_manager);
-  const TextInputManager::CompositionRangeInfo* info =
-      text_input_manager_->GetCompositionRangeInfo();
-  if (!info)
+  if (!ime_adapter_android_) {
     return;
+  }
 
-  std::vector<gfx::RectF> character_bounds;
-  for (const gfx::Rect& rect : info->character_bounds)
-    character_bounds.emplace_back(rect);
+  if (character_bounds_changed) {
+    const TextInputManager::CompositionRangeInfo* info =
+        text_input_manager_->GetCompositionRangeInfo();
+    ime_adapter_android_->SetBounds(
+        info ? info->character_bounds : std::vector<gfx::Rect>(),
+        character_bounds_changed, line_bounds);
+    return;
+  }
 
-  if (ime_adapter_android_)
-    ime_adapter_android_->SetCharacterBounds(character_bounds);
+  ime_adapter_android_->SetBounds(std::vector<gfx::Rect>(), false, line_bounds);
 }
 
 void RenderWidgetHostViewAndroid::OnImeCancelComposition(

@@ -1219,10 +1219,17 @@ void WidgetBase::UpdateCompositionInfo(bool immediate_request) {
   composition_character_bounds_ = character_bounds;
   composition_range_ = range;
 
+  absl::optional<Vector<gfx::Rect>> line_bounds;
+  FrameWidget* frame_widget = client_->FrameWidget();
+  if (base::FeatureList::IsEnabled(features::kReportVisibleLineBounds) &&
+      frame_widget) {
+    line_bounds = frame_widget->GetVisibleLineBoundsOnScreen();
+  }
+
   if (mojom::blink::WidgetInputHandlerHost* host =
           widget_input_handler_manager_->GetWidgetInputHandlerHost()) {
-    host->ImeCompositionRangeChanged(composition_range_,
-                                     composition_character_bounds_);
+    host->ImeCompositionRangeChanged(
+        composition_range_, composition_character_bounds_, line_bounds);
   }
 }
 

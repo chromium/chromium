@@ -250,6 +250,9 @@ class CORE_EXPORT WebFrameWidgetImpl
   void DidChangeCursor(const ui::Cursor&) override;
   void GetCompositionCharacterBoundsInWindow(
       Vector<gfx::Rect>* bounds_in_dips) override;
+  // Return the last calculated line bounds.
+  Vector<gfx::Rect>& GetVisibleLineBoundsOnScreen() override;
+  void UpdateLineBounds() override;
   gfx::Range CompositionRange() override;
   WebTextInputInfo TextInputInfo() override;
   ui::mojom::VirtualKeyboardVisibilityRequest
@@ -659,6 +662,10 @@ class CORE_EXPORT WebFrameWidgetImpl
   // Ask compositor to create the shared memory for smoothness ukm region.
   base::ReadOnlySharedMemoryRegion CreateSharedMemoryForSmoothnessUkm();
 
+  // Calculate and cache the most up to date line bounding boxes in the document
+  // coordinate space.
+  Vector<gfx::Rect> CalculateVisibleLineBoundsOnScreen();
+
  protected:
   // WidgetBaseClient overrides:
   void WillBeginMainFrame() override;
@@ -945,6 +952,11 @@ class CORE_EXPORT WebFrameWidgetImpl
 
   // Satisfy the render blocking condition for cross-document view transitions.
   void NotifyViewTransitionRenderingHasBegun();
+
+  // Stores the current composition line bounds. These bounds are rectangles
+  // which surround each line of text in a currently focused input or textarea
+  // element.
+  Vector<gfx::Rect> input_visible_line_bounds_;
 
   // A copy of the web drop data object we received from the browser.
   Member<DataObject> current_drag_data_;

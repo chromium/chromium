@@ -6375,8 +6375,8 @@ TEST_F(InputMethodStateAuraTest, GetCompositionCharacterBounds) {
   for (auto index : active_view_sequence_) {
     ActivateViewForTextInputManager(views_[index], ui::TEXT_INPUT_TYPE_TEXT);
     // Simulate an IPC to set character bounds for the view.
-    views_[index]->ImeCompositionRangeChanged(gfx::Range(),
-                                              {gfx::Rect(1, 2, 3, 4 + index)});
+    views_[index]->ImeCompositionRangeChanged(
+        gfx::Range(), {{gfx::Rect(1, 2, 3, 4 + index)}}, absl::nullopt);
 
     // No bounds at index 1.
     EXPECT_FALSE(text_input_client()->GetCompositionCharacterBounds(1, &bound));

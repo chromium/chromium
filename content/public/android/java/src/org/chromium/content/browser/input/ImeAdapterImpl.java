@@ -42,6 +42,7 @@ import android.view.inputmethod.RemoveSpaceGesture;
 import android.view.inputmethod.SelectGesture;
 import android.view.inputmethod.SelectRangeGesture;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.view.inputmethod.EditorInfoCompat;
 
@@ -1343,9 +1344,8 @@ public class ImeAdapterImpl
     }
 
     @CalledByNative
-    private void setCharacterBounds(float[] characterBounds) {
-        mCursorAnchorInfoController.setCompositionCharacterBounds(
-                characterBounds, getContainerView());
+    private void setBounds(@Nullable float[] characterBounds, @Nullable float[] lineBounds) {
+        mCursorAnchorInfoController.setBounds(characterBounds, lineBounds, getContainerView());
     }
 
     @CalledByNative

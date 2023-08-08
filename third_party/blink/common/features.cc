@@ -1453,6 +1453,10 @@ const base::FeatureParam<int> kMaxFCPDelayMsForRenderBlockingFonts(
     "max-fcp-delay",
     100);
 
+BASE_FEATURE(kReportVisibleLineBounds,
+             "ReportVisibleLineBounds",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kResamplingInputEvents,
              "ResamplingInputEvents",
              base::FEATURE_DISABLED_BY_DEFAULT);

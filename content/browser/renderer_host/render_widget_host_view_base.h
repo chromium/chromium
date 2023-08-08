@@ -408,10 +408,12 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView {
                                       const gfx::Rect& bounding_box,
                                       bool is_anchor_first);
 
-  // Updates the range of the marked text in an IME composition.
+  // Updates the range of the marked text in an IME composition, the visible
+  // line bounds, or both.
   virtual void ImeCompositionRangeChanged(
       const gfx::Range& range,
-      const std::vector<gfx::Rect>& character_bounds);
+      const absl::optional<std::vector<gfx::Rect>>& character_bounds,
+      const absl::optional<std::vector<gfx::Rect>>& line_bounds);
 
   //----------------------------------------------------------------------------
   // The following pure virtual methods are implemented by derived classes.

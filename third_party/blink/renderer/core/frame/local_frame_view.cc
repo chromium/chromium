@@ -2234,6 +2234,10 @@ bool LocalFrameView::UpdateLifecyclePhases(
       for (auto& observer : lifecycle_observers)
         observer->DidFinishLifecycleUpdate(frame_view);
     });
+    if (frame_->GetWidgetForLocalRoot() &&
+        base::FeatureList::IsEnabled(features::kReportVisibleLineBounds)) {
+      frame_->GetWidgetForLocalRoot()->UpdateLineBounds();
+    }
   }
 
   // Hit testing metrics include the entire time processing a document update
