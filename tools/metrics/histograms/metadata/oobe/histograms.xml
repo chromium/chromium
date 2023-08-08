@@ -332,7 +332,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="OOBE.CHOOBE.ScreenSelected.{OOBEOptionalScreens}"
+<histogram name="OOBE.CHOOBE.ScreenCompleted.{OOBEOptionalScreens}"
     enum="BooleanSelected" expires_after="2024-01-20">
   <owner>osamafathy@google.com</owner>
   <owner>cros-oobe@google.com</owner>
