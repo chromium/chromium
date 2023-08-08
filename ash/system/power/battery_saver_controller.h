@@ -72,9 +72,7 @@ class ASH_EXPORT BatterySaverController : public PowerStatus::Observer {
 
   bool always_on_ = false;
 
-  double previous_battery_percent_ = 0;
-
-  double previous_battery_remaining_minutes_ = 0;
+  bool previously_plugged_in_ = false;
 
   bool threshold_crossed_ = false;
 

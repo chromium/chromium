@@ -25,9 +25,7 @@ const double BatterySaverController::kActivationChargePercent = 20.0;
 BatterySaverController::BatterySaverController(PrefService* local_state)
     : local_state_(local_state),
       always_on_(features::IsBatterySaverAlwaysOn()),
-      previous_battery_percent_(PowerStatus::Get()->GetBatteryPercent()),
-      previous_battery_remaining_minutes_(
-          GetRemainingMinutes(PowerStatus::Get()).value_or(0.0)) {
+      previously_plugged_in_(PowerStatus::Get()->IsMainsChargerConnected()) {
   power_status_observation_.Observe(PowerStatus::Get());
 
   pref_change_registrar_.Init(local_state);
@@ -87,9 +85,7 @@ void BatterySaverController::OnPowerStatusChanged() {
   const int battery_remaining_minutes = remaining_minutes.value();
   const double battery_percent = power_status->GetBatteryPercent();
 
-  const bool is_minute_or_percent_change =
-      previous_battery_percent_ != battery_percent ||
-      previous_battery_remaining_minutes_ != battery_remaining_minutes;
+  const bool charger_unplugged = previously_plugged_in_ && !on_AC_power;
 
   const bool percent_breached_threshold =
       battery_percent <= kActivationChargePercent;
@@ -110,31 +106,41 @@ void BatterySaverController::OnPowerStatusChanged() {
     return;
   }
 
+  const bool threshold_conditions_met =
+      !on_AC_power && percent_breached_threshold &&
+      !minutes_breached_threshold && (!threshold_crossed_ || charger_unplugged);
+
+  const bool low_power_conditions_met =
+      !on_AC_power && minutes_breached_threshold &&
+      (!low_power_crossed_ || charger_unplugged);
+
   switch (experiment) {
     case features::kFullyAutoEnable:
       // Auto Enable when either the battery percentage is at or below
       // 20%/15mins.
-      if (!active && !on_AC_power && is_minute_or_percent_change &&
-          percent_breached_threshold && !minutes_breached_threshold &&
-          !threshold_crossed_) {
+      if (threshold_conditions_met) {
         threshold_crossed_ = true;
-        SetBatterySaverState(true);
+        if (!active) {
+          SetBatterySaverState(true);
+        }
       }
 
-      if (!active && !on_AC_power && is_minute_or_percent_change &&
-          minutes_breached_threshold && !low_power_crossed_) {
+      if (low_power_conditions_met) {
         low_power_crossed_ = true;
-        SetBatterySaverState(true);
+        if (!active) {
+          SetBatterySaverState(true);
+        }
       }
       break;
     case features::kOptInThenAutoEnable:
       // In this case, we don't do anything when we get to
       // kActivationChargePercent. However, when we get to 15 minutes
       // remaining, we auto enable.
-      if (!active && !on_AC_power && is_minute_or_percent_change &&
-          minutes_breached_threshold && !low_power_crossed_) {
+      if (low_power_conditions_met) {
         low_power_crossed_ = true;
-        SetBatterySaverState(true);
+        if (!active) {
+          SetBatterySaverState(true);
+        }
       }
       break;
     case features::kFullyOptIn:
@@ -145,8 +151,7 @@ void BatterySaverController::OnPowerStatusChanged() {
       break;
   }
 
-  previous_battery_percent_ = battery_percent;
-  previous_battery_remaining_minutes_ = battery_remaining_minutes;
+  previously_plugged_in_ = on_AC_power;
 }
 
 void BatterySaverController::OnSettingsPrefChanged() {
