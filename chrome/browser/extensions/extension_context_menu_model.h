@@ -133,13 +133,6 @@ class ExtensionContextMenuModel : public ui::SimpleMenuModel,
   void CreatePageAccessItems(const Extension* extension,
                              content::WebContents* web_contents);
 
-  // Returns true if the given page access command is enabled in the menu.
-  bool IsPageAccessCommandEnabled(const Extension& extension,
-                                  int command_id) const;
-
-  void HandlePageAccessCommand(int command_id,
-                               const Extension* extension) const;
-
   // Gets the extension we are displaying the menu for. Returns NULL if the
   // extension has been uninstalled and no longer exists.
   const Extension* GetExtension() const;

@@ -29,6 +29,7 @@
 #include "chrome/browser/extensions/permissions_test_util.h"
 #include "chrome/browser/extensions/permissions_updater.h"
 #include "chrome/browser/extensions/scripting_permissions_modifier.h"
+#include "chrome/browser/extensions/site_permissions_helper.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/common/extensions/api/context_menus.h"
@@ -895,6 +896,8 @@ TEST_F(ExtensionContextMenuModelTest, PageAccess_CustomizeByExtension_Submenu) {
   ExtensionActionRunner* action_runner =
       ExtensionActionRunner::GetForWebContents(web_contents);
   ASSERT_TRUE(action_runner);
+  PermissionsManager* permissions_manager = PermissionsManager::Get(profile());
+  const PermissionsData* permissions = extension->permissions_data();
 
   // Pretend the extension wants to run.
   int run_count = 0;
@@ -903,153 +906,174 @@ TEST_F(ExtensionContextMenuModelTest, PageAccess_CustomizeByExtension_Submenu) {
       extension, mojom::RunLocation::kDocumentIdle,
       std::move(increment_run_count_1));
 
-  ExtensionContextMenuModel menu(extension, GetBrowser(),
-                                 /*is_pinned=*/true, nullptr, true,
-                                 ContextMenuSource::kToolbarAction);
+  {
+    ExtensionContextMenuModel menu(extension, GetBrowser(),
+                                   /*is_pinned=*/true, nullptr, true,
+                                   ContextMenuSource::kToolbarAction);
 
-  // Since we want to test the page access submenu, verify the site permission
-  // is set to "customize by extension"  by default and the page access submenu
-  // is visible.
-  PermissionsManager* permissions_manager = PermissionsManager::Get(profile());
-  EXPECT_EQ(
-      permissions_manager->GetUserSiteSetting(url::Origin::Create(kActiveUrl)),
-      PermissionsManager::UserSiteSetting::kCustomizeByExtension);
-  EXPECT_EQ(GetCommandState(menu, kPageAccessSubmenu), CommandState::kEnabled);
+    // Since we want to test the page access submenu, verify the site permission
+    // is set to "customize by extension"  by default and the page access
+    // submenu is visible.
+    EXPECT_EQ(permissions_manager->GetUserSiteSetting(
+                  url::Origin::Create(kActiveUrl)),
+              PermissionsManager::UserSiteSetting::kCustomizeByExtension);
+    EXPECT_EQ(GetCommandState(menu, kPageAccessSubmenu),
+              CommandState::kEnabled);
 
-  // Initial state: The extension should be in "run on click" mode.
-  EXPECT_TRUE(menu.IsCommandIdChecked(kOnClick));
-  EXPECT_FALSE(menu.IsCommandIdChecked(kOnSite));
-  EXPECT_FALSE(menu.IsCommandIdChecked(kOnAllSites));
+    // Initial state: The extension should be in "run on click" mode.
+    EXPECT_TRUE(menu.IsCommandIdChecked(kOnClick));
+    EXPECT_FALSE(menu.IsCommandIdChecked(kOnSite));
+    EXPECT_FALSE(menu.IsCommandIdChecked(kOnAllSites));
 
-  // Initial state: The extension should have all permissions withheld, so
-  // shouldn't be allowed to run on the active url or another arbitrary url, and
-  // should have withheld permissions.
+    // Initial state: The extension should have all permissions withheld, so
+    // shouldn't be allowed to run on the active url or another arbitrary url,
+    // and should have withheld permissions.
 
-  EXPECT_FALSE(
-      permissions_manager->HasGrantedHostPermission(*extension, kActiveUrl));
-  EXPECT_FALSE(
-      permissions_manager->HasGrantedHostPermission(*extension, kOtherUrl));
-  const PermissionsData* permissions = extension->permissions_data();
-  EXPECT_FALSE(permissions->withheld_permissions().IsEmpty());
+    EXPECT_FALSE(
+        permissions_manager->HasGrantedHostPermission(*extension, kActiveUrl));
+    EXPECT_FALSE(
+        permissions_manager->HasGrantedHostPermission(*extension, kOtherUrl));
+    EXPECT_FALSE(permissions->withheld_permissions().IsEmpty());
 
-  EXPECT_EQ(0, user_action_tester.GetActionCount(kOnClickAction));
-  EXPECT_EQ(0, user_action_tester.GetActionCount(kOnSiteAction));
-  EXPECT_EQ(0, user_action_tester.GetActionCount(kOnAllSitesAction));
+    EXPECT_EQ(0, user_action_tester.GetActionCount(kOnClickAction));
+    EXPECT_EQ(0, user_action_tester.GetActionCount(kOnSiteAction));
+    EXPECT_EQ(0, user_action_tester.GetActionCount(kOnAllSitesAction));
 
-  // Change the mode to be "Run on site".
-  menu.ExecuteCommand(kOnSite, 0);
-  EXPECT_FALSE(menu.IsCommandIdChecked(kOnClick));
-  EXPECT_TRUE(menu.IsCommandIdChecked(kOnSite));
-  EXPECT_FALSE(menu.IsCommandIdChecked(kOnAllSites));
-  EXPECT_EQ(0, user_action_tester.GetActionCount(kOnClickAction));
-  EXPECT_EQ(1, user_action_tester.GetActionCount(kOnSiteAction));
-  EXPECT_EQ(0, user_action_tester.GetActionCount(kOnAllSitesAction));
+    // Change the mode to be "Run on site".
+    menu.ExecuteCommand(kOnSite, 0);
+    EXPECT_FALSE(menu.IsCommandIdChecked(kOnClick));
+    EXPECT_TRUE(menu.IsCommandIdChecked(kOnSite));
+    EXPECT_FALSE(menu.IsCommandIdChecked(kOnAllSites));
+    EXPECT_EQ(0, user_action_tester.GetActionCount(kOnClickAction));
+    EXPECT_EQ(1, user_action_tester.GetActionCount(kOnSiteAction));
+    EXPECT_EQ(0, user_action_tester.GetActionCount(kOnAllSitesAction));
 
-  // The extension should have access to the active url, but not to another
-  // arbitrary url, and the extension should still have withheld permissions.
-  EXPECT_TRUE(
-      permissions_manager->HasGrantedHostPermission(*extension, kActiveUrl));
-  EXPECT_FALSE(
-      permissions_manager->HasGrantedHostPermission(*extension, kOtherUrl));
-  EXPECT_FALSE(permissions->withheld_permissions().IsEmpty());
+    // The extension should have access to the active url, but not to another
+    // arbitrary url, and the extension should still have withheld permissions.
+    EXPECT_TRUE(
+        permissions_manager->HasGrantedHostPermission(*extension, kActiveUrl));
+    EXPECT_FALSE(
+        permissions_manager->HasGrantedHostPermission(*extension, kOtherUrl));
+    EXPECT_FALSE(permissions->withheld_permissions().IsEmpty());
 
-  // Since the extension has permission, it should have ran.
-  EXPECT_EQ(1, run_count);
-  EXPECT_FALSE(action_runner->WantsToRun(extension));
+    // Since the extension has permission, it should have ran.
+    EXPECT_EQ(1, run_count);
+    EXPECT_FALSE(action_runner->WantsToRun(extension));
+  }
 
-  // On another url, the mode should still be run on click.
-  content::WebContentsTester* web_contents_tester =
-      content::WebContentsTester::For(web_contents);
-  web_contents_tester->NavigateAndCommit(kOtherUrl);
-  EXPECT_TRUE(menu.IsCommandIdChecked(kOnClick));
-  EXPECT_FALSE(menu.IsCommandIdChecked(kOnSite));
-  EXPECT_FALSE(menu.IsCommandIdChecked(kOnAllSites));
+  {
+    // On another url, the mode should still be run on click. Context menu
+    // usually closes on page navigations. There are some cases where
+    // it doesn't, but we don't support dynamic updates. Thus, here we reopen
+    // the context menu (there is another test that deals with page navigations
+    // specifically).
+    content::WebContentsTester* web_contents_tester =
+        content::WebContentsTester::For(web_contents);
+    web_contents_tester->NavigateAndCommit(kOtherUrl);
 
-  // And returning to the first url should return the mode to run on site.
-  web_contents_tester->NavigateAndCommit(kActiveUrl);
-  EXPECT_FALSE(menu.IsCommandIdChecked(kOnClick));
-  EXPECT_TRUE(menu.IsCommandIdChecked(kOnSite));
-  EXPECT_FALSE(menu.IsCommandIdChecked(kOnAllSites));
+    ExtensionContextMenuModel menu(extension, GetBrowser(),
+                                   /*is_pinned=*/true, nullptr, true,
+                                   ContextMenuSource::kToolbarAction);
+    EXPECT_TRUE(menu.IsCommandIdChecked(kOnClick));
+    EXPECT_FALSE(menu.IsCommandIdChecked(kOnSite));
+    EXPECT_FALSE(menu.IsCommandIdChecked(kOnAllSites));
+  }
 
-  // Request another run.
-  auto increment_run_count_2 = base::BindOnce(&Increment, &run_count);
-  action_runner->RequestScriptInjectionForTesting(
-      extension, mojom::RunLocation::kDocumentIdle,
-      std::move(increment_run_count_2));
+  {
+    // And returning to the first url should return the mode to run on site.
+    content::WebContentsTester* web_contents_tester =
+        content::WebContentsTester::For(web_contents);
+    web_contents_tester->NavigateAndCommit(kActiveUrl);
 
-  // Change the mode to be "Run on all sites".
-  menu.ExecuteCommand(kOnAllSites, 0);
-  EXPECT_FALSE(menu.IsCommandIdChecked(kOnClick));
-  EXPECT_FALSE(menu.IsCommandIdChecked(kOnSite));
-  EXPECT_TRUE(menu.IsCommandIdChecked(kOnAllSites));
-  EXPECT_EQ(0, user_action_tester.GetActionCount(kOnClickAction));
-  EXPECT_EQ(1, user_action_tester.GetActionCount(kOnSiteAction));
-  EXPECT_EQ(1, user_action_tester.GetActionCount(kOnAllSitesAction));
+    ExtensionContextMenuModel menu(extension, GetBrowser(),
+                                   /*is_pinned=*/true, nullptr, true,
+                                   ContextMenuSource::kToolbarAction);
+    EXPECT_FALSE(menu.IsCommandIdChecked(kOnClick));
+    EXPECT_TRUE(menu.IsCommandIdChecked(kOnSite));
+    EXPECT_FALSE(menu.IsCommandIdChecked(kOnAllSites));
 
-  // The extension should be able to run on any url, and shouldn't have any
-  // withheld permissions.
-  EXPECT_TRUE(
-      permissions_manager->HasGrantedHostPermission(*extension, kActiveUrl));
-  EXPECT_TRUE(
-      permissions_manager->HasGrantedHostPermission(*extension, kOtherUrl));
-  EXPECT_TRUE(permissions->withheld_permissions().IsEmpty());
+    // Request another run.
+    auto increment_run_count_2 = base::BindOnce(&Increment, &run_count);
+    action_runner->RequestScriptInjectionForTesting(
+        extension, mojom::RunLocation::kDocumentIdle,
+        std::move(increment_run_count_2));
 
-  // It should have ran again.
-  EXPECT_EQ(2, run_count);
-  EXPECT_FALSE(action_runner->WantsToRun(extension));
+    // Change the mode to be "Run on all sites".
+    menu.ExecuteCommand(kOnAllSites, 0);
+    EXPECT_FALSE(menu.IsCommandIdChecked(kOnClick));
+    EXPECT_FALSE(menu.IsCommandIdChecked(kOnSite));
+    EXPECT_TRUE(menu.IsCommandIdChecked(kOnAllSites));
+    EXPECT_EQ(0, user_action_tester.GetActionCount(kOnClickAction));
+    EXPECT_EQ(1, user_action_tester.GetActionCount(kOnSiteAction));
+    EXPECT_EQ(1, user_action_tester.GetActionCount(kOnAllSitesAction));
 
-  // On another url, the mode should also be run on all sites.
-  web_contents_tester->NavigateAndCommit(kOtherUrl);
-  EXPECT_FALSE(menu.IsCommandIdChecked(kOnClick));
-  EXPECT_FALSE(menu.IsCommandIdChecked(kOnSite));
-  EXPECT_TRUE(menu.IsCommandIdChecked(kOnAllSites));
+    // The extension should be able to run on any url, and shouldn't have any
+    // withheld permissions.
+    EXPECT_TRUE(
+        permissions_manager->HasGrantedHostPermission(*extension, kActiveUrl));
+    EXPECT_TRUE(
+        permissions_manager->HasGrantedHostPermission(*extension, kOtherUrl));
+    EXPECT_TRUE(permissions->withheld_permissions().IsEmpty());
 
-  web_contents_tester->NavigateAndCommit(kActiveUrl);
-  EXPECT_FALSE(menu.IsCommandIdChecked(kOnClick));
-  EXPECT_FALSE(menu.IsCommandIdChecked(kOnSite));
-  EXPECT_TRUE(menu.IsCommandIdChecked(kOnAllSites));
+    // It should have ran again.
+    EXPECT_EQ(2, run_count);
+    EXPECT_FALSE(action_runner->WantsToRun(extension));
 
-  auto increment_run_count_3 = base::BindOnce(&Increment, &run_count);
-  action_runner->RequestScriptInjectionForTesting(
-      extension, mojom::RunLocation::kDocumentIdle,
-      std::move(increment_run_count_3));
+    // On another url, the mode should also be run on all sites.
+    web_contents_tester->NavigateAndCommit(kOtherUrl);
+    EXPECT_FALSE(menu.IsCommandIdChecked(kOnClick));
+    EXPECT_FALSE(menu.IsCommandIdChecked(kOnSite));
+    EXPECT_TRUE(menu.IsCommandIdChecked(kOnAllSites));
 
-  // Change extension to run "on click". Since we are revoking permissions, we
-  // need to automatically accept the reload page bubble.
-  action_runner->accept_bubble_for_testing(true);
-  extensions::PermissionsManagerWaiter waiter(permissions_manager);
-  menu.ExecuteCommand(kOnClick, 0);
-  waiter.WaitForExtensionPermissionsUpdate();
-  EXPECT_TRUE(menu.IsCommandIdChecked(kOnClick));
-  EXPECT_FALSE(menu.IsCommandIdChecked(kOnSite));
-  EXPECT_FALSE(menu.IsCommandIdChecked(kOnAllSites));
-  EXPECT_EQ(1, user_action_tester.GetActionCount(kOnClickAction));
-  EXPECT_EQ(1, user_action_tester.GetActionCount(kOnSiteAction));
-  EXPECT_EQ(1, user_action_tester.GetActionCount(kOnAllSitesAction));
+    web_contents_tester->NavigateAndCommit(kActiveUrl);
+    EXPECT_FALSE(menu.IsCommandIdChecked(kOnClick));
+    EXPECT_FALSE(menu.IsCommandIdChecked(kOnSite));
+    EXPECT_TRUE(menu.IsCommandIdChecked(kOnAllSites));
 
-  // We should return to the initial state - no access.
-  EXPECT_FALSE(
-      permissions_manager->HasGrantedHostPermission(*extension, kActiveUrl));
-  EXPECT_FALSE(
-      permissions_manager->HasGrantedHostPermission(*extension, kOtherUrl));
-  EXPECT_FALSE(permissions->withheld_permissions().IsEmpty());
+    auto increment_run_count_3 = base::BindOnce(&Increment, &run_count);
+    action_runner->RequestScriptInjectionForTesting(
+        extension, mojom::RunLocation::kDocumentIdle,
+        std::move(increment_run_count_3));
 
-  // And the extension shouldn't have ran.
-  EXPECT_EQ(2, run_count);
-  EXPECT_TRUE(action_runner->WantsToRun(extension));
+    // Change extension to run "on click". Since we are revoking permissions, we
+    // need to automatically accept the reload page bubble.
+    action_runner->accept_bubble_for_testing(true);
+    extensions::PermissionsManagerWaiter waiter(permissions_manager);
+    menu.ExecuteCommand(kOnClick, 0);
+    waiter.WaitForExtensionPermissionsUpdate();
+    EXPECT_TRUE(menu.IsCommandIdChecked(kOnClick));
+    EXPECT_FALSE(menu.IsCommandIdChecked(kOnSite));
+    EXPECT_FALSE(menu.IsCommandIdChecked(kOnAllSites));
+    EXPECT_EQ(1, user_action_tester.GetActionCount(kOnClickAction));
+    EXPECT_EQ(1, user_action_tester.GetActionCount(kOnSiteAction));
+    EXPECT_EQ(1, user_action_tester.GetActionCount(kOnAllSitesAction));
 
-  // Install an extension requesting a single host. The page access submenu
-  // should still be present.
-  const Extension* single_host_extension = AddExtensionWithHostPermission(
-      "single_host_extension", manifest_keys::kBrowserAction,
-      ManifestLocation::kInternal, "http://www.example.com/*");
-  ExtensionContextMenuModel single_host_menu(
-      single_host_extension, GetBrowser(), /*is_pinned=*/true, nullptr, true,
-      ContextMenuSource::kToolbarAction);
-  EXPECT_TRUE(
-      single_host_menu
-          .GetIndexOfCommandId(ExtensionContextMenuModel::PAGE_ACCESS_SUBMENU)
-          .has_value());
+    // We should return to the initial state - no access.
+    EXPECT_FALSE(
+        permissions_manager->HasGrantedHostPermission(*extension, kActiveUrl));
+    EXPECT_FALSE(
+        permissions_manager->HasGrantedHostPermission(*extension, kOtherUrl));
+    EXPECT_FALSE(permissions->withheld_permissions().IsEmpty());
+
+    // And the extension shouldn't have ran.
+    EXPECT_EQ(2, run_count);
+    EXPECT_TRUE(action_runner->WantsToRun(extension));
+  }
+
+  {
+    // Install an extension requesting a single host. The page access submenu
+    // should still be present.
+    const Extension* single_host_extension = AddExtensionWithHostPermission(
+        "single_host_extension", manifest_keys::kBrowserAction,
+        ManifestLocation::kInternal, "http://www.example.com/*");
+    ExtensionContextMenuModel single_host_menu(
+        single_host_extension, GetBrowser(), /*is_pinned=*/true, nullptr, true,
+        ContextMenuSource::kToolbarAction);
+    EXPECT_TRUE(
+        single_host_menu
+            .GetIndexOfCommandId(ExtensionContextMenuModel::PAGE_ACCESS_SUBMENU)
+            .has_value());
+  }
 }
 
 // Tests different permission patterns when the site setting is set to
@@ -1474,8 +1498,9 @@ TEST_F(ExtensionContextMenuModelTest,
             GetPageAccessCommandState(menu, kLearnMore));
 }
 
-// Test that we don't update site access when there is a page navigation with
-// the menu open.
+// Test that when there is a page navigation with the menu open the page access
+// commands stay the same but we don't update site access when executing their
+// actions.
 TEST_F(ExtensionContextMenuModelTest,
        PageAccess_CustomizeByExtension_PageNavigation) {
   InitializeEmptyExtensionService();
@@ -1488,29 +1513,53 @@ TEST_F(ExtensionContextMenuModelTest,
                                      ManifestLocation::kInternal, "<all_urls>");
 
   content::WebContents* web_contents = AddTab(kOriginalUrl);
+
+  // Update kOriginalUrl to have "on site" site access. This will make all other
+  // non-restricted urls to have "on click" site access.
+  SitePermissionsHelper permissions(profile());
+  permissions.UpdateSiteAccess(*extension, web_contents,
+                               PermissionsManager::UserSiteAccess::kOnSite);
+
+  PermissionsManager* permissions_manager = PermissionsManager::Get(profile());
+  EXPECT_EQ(permissions_manager->GetUserSiteAccess(*extension, kOriginalUrl),
+            PermissionsManager::UserSiteAccess::kOnSite);
+  EXPECT_EQ(permissions_manager->GetUserSiteAccess(*extension, kNewUrl),
+            PermissionsManager::UserSiteAccess::kOnClick);
+
   ExtensionContextMenuModel menu(extension, GetBrowser(),
                                  /*is_pinned=*/true, nullptr, true,
                                  ContextMenuSource::kToolbarAction);
 
-  // By default, extension is granted access to all sites.
-  PermissionsManager* permissions_manager = PermissionsManager::Get(profile());
-  EXPECT_EQ(permissions_manager->GetUserSiteAccess(*extension, kOriginalUrl),
-            PermissionsManager::UserSiteAccess::kOnAllSites);
-  EXPECT_EQ(permissions_manager->GetUserSiteAccess(*extension, kNewUrl),
-            PermissionsManager::UserSiteAccess::kOnAllSites);
+  // All page access commands are enabled, and "on site" is selected.
+  EXPECT_TRUE(menu.IsCommandIdEnabled(kOnClick));
+  EXPECT_TRUE(menu.IsCommandIdEnabled(kOnSite));
+  EXPECT_TRUE(menu.IsCommandIdEnabled(kOnAllSites));
+  EXPECT_FALSE(menu.IsCommandIdChecked(kOnClick));
+  EXPECT_TRUE(menu.IsCommandIdChecked(kOnSite));
+  EXPECT_FALSE(menu.IsCommandIdChecked(kOnAllSites));
 
-  // Navigate to another page with the menu open, and execute "on site" command.
+  // Navigate to another page with the menu open.
   content::WebContentsTester* web_contents_tester =
       content::WebContentsTester::For(web_contents);
   web_contents_tester->NavigateAndCommit(kNewUrl);
-  menu.ExecuteCommand(kOnClick, 0);
 
-  // Since we navigated to a different page, we should not update the site of
-  // either page.
+  // Since we don't dynamically update the context menu, we are still showing
+  // the content for kOriginalUrl. Thus, all the page access commands are still
+  // enabled and "on site" is selected.
+  EXPECT_TRUE(menu.IsCommandIdEnabled(kOnClick));
+  EXPECT_TRUE(menu.IsCommandIdEnabled(kOnSite));
+  EXPECT_TRUE(menu.IsCommandIdEnabled(kOnAllSites));
+  EXPECT_FALSE(menu.IsCommandIdChecked(kOnClick));
+  EXPECT_TRUE(menu.IsCommandIdChecked(kOnSite));
+  EXPECT_FALSE(menu.IsCommandIdChecked(kOnAllSites));
+
+  // Since we navigated to a different page, executing the command should not
+  // update the site of either page.
+  menu.ExecuteCommand(kOnAllSites, 0);
   EXPECT_EQ(permissions_manager->GetUserSiteAccess(*extension, kOriginalUrl),
-            PermissionsManager::UserSiteAccess::kOnAllSites);
+            PermissionsManager::UserSiteAccess::kOnSite);
   EXPECT_EQ(permissions_manager->GetUserSiteAccess(*extension, kNewUrl),
-            PermissionsManager::UserSiteAccess::kOnAllSites);
+            PermissionsManager::UserSiteAccess::kOnClick);
 }
 
 TEST_F(ExtensionContextMenuModelTest,
