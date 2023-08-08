@@ -165,7 +165,6 @@ CSSAnimationProxy::CSSAnimationProxy(
       timeline ? timeline->CalculateIntrinsicIterationDuration(
                      adjusted_range_start, adjusted_range_end, timing)
                : AnimationTimeDelta();
-
   inherited_time_ = CalculateInheritedTime(
       timeline, animation, adjusted_range_start, adjusted_range_end, timing);
 
@@ -186,9 +185,11 @@ absl::optional<AnimationTimeDelta> CSSAnimationProxy::CalculateInheritedTime(
     const absl::optional<TimelineOffset>& range_end,
     const Timing& timing) {
   absl::optional<AnimationTimeDelta> inherited_time;
-
+  // Even in cases where current time is "preserved" the internal value may
+  // change if using a scroll-driven animation since preserving the progress and
+  // not the actual underlying time.
+  absl::optional<double> previous_progress;
   AnimationTimeline* previous_timeline = nullptr;
-  bool resets_current_time_on_resume = false;
 
   if (animation) {
     // A cancelled CSS animation does not become active again due to an
@@ -199,19 +200,32 @@ absl::optional<AnimationTimeDelta> CSSAnimationProxy::CalculateInheritedTime(
 
     // In most cases, current time is preserved on an animation update.
     inherited_time = animation->UnlimitedCurrentTime();
+    if (inherited_time) {
+      previous_progress =
+          animation->TimeAsAnimationProgress(inherited_time.value());
+    }
     previous_timeline = animation->TimelineInternal();
-    resets_current_time_on_resume = animation->ResetsCurrentTimeOnResume();
   }
 
   bool range_changed =
       !animation || ((range_start != animation->GetRangeStartInternal() ||
                       range_end != animation->GetRangeEndInternal()) &&
                      !animation->StartTimeInternal());
-
   if (timeline && timeline->IsProgressBased()) {
-    if (is_paused_ || ((timeline == previous_timeline) &&
-                       !resets_current_time_on_resume && !range_changed)) {
-      // Current time is unaffected by the update.
+    if (is_paused_ && timeline != previous_timeline) {
+      if (!previous_progress) {
+        return absl::nullopt;
+      }
+      // Preserve current animation progress.
+      AnimationTimeDelta iteration_duration =
+          timeline->CalculateIntrinsicIterationDuration(animation, timing);
+      AnimationTimeDelta active_duration =
+          iteration_duration * timing.iteration_count;
+      // TODO(kevers): Revisit once % delays are supported.
+      return previous_progress.value() * active_duration;
+    }
+
+    if ((timeline == previous_timeline) && !range_changed) {
       return inherited_time;
     }
 
@@ -229,6 +243,7 @@ absl::optional<AnimationTimeDelta> CSSAnimationProxy::CalculateInheritedTime(
           range_end ? timeline_range.ToFractionalOffset(range_end.value()) : 1;
     }
     if (timeline->CurrentTime()) {
+      // This might not be correct for an animation with a sticky start time.
       AnimationTimeDelta pending_start_time =
           timeline->GetDuration().value() * relative_offset;
       return (timeline->CurrentTime().value() - pending_start_time) *
@@ -238,12 +253,10 @@ absl::optional<AnimationTimeDelta> CSSAnimationProxy::CalculateInheritedTime(
   }
 
   if (previous_timeline && previous_timeline->IsProgressBased() &&
-      previous_timeline->CurrentTime()) {
+      previous_progress) {
     // Going from a progress-based timeline to a document or null timeline.
-    // In this case, we preserve the current time.
-    double progress = previous_timeline->CurrentTime().value() /
-                      previous_timeline->GetDuration().value();
-
+    // In this case, we preserve the animation progress to avoid a
+    // discontinuity.
     AnimationTimeDelta end_time = std::max(
         timing.start_delay.AsTimeValue() +
             MultiplyZeroAlwaysGivesZero(
@@ -252,7 +265,7 @@ absl::optional<AnimationTimeDelta> CSSAnimationProxy::CalculateInheritedTime(
             timing.end_delay.AsTimeValue(),
         AnimationTimeDelta());
 
-    return progress * end_time;
+    return previous_progress.value() * end_time;
   }
 
   if (!timeline) {

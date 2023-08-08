@@ -841,8 +841,9 @@ ActiveInterpolationsMap KeyframeEffect::InterpolationsForCommitStyles() {
       /*suppressed_animations=*/nullptr, kDefaultPriority, property_pass_filter,
       this);
 
-  if (removed)
+  if (removed) {
     ClearEffects();
+  }
 
   return results;
 }

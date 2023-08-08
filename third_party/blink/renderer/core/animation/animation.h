@@ -211,6 +211,14 @@ class CORE_EXPORT Animation : public EventTarget,
   // See AnimationTimeline::ExposedTimeline.
   AnimationTimeline* timeline();
 
+  // Converts time to a progress measured as relative completion of the
+  // animation (effect end time). This value is used to preserve progress when
+  // changing timelines to prevent a discontinuity of the timeline changes while
+  // in a paused state. Note that this progress measure is not the same as the
+  // percentages used in the web-platform API for scroll-linked animations,
+  // which are relative to the timeline duration and not the effect end time.
+  absl::optional<double> TimeAsAnimationProgress(AnimationTimeDelta time) const;
+
   virtual void setTimeline(AnimationTimeline* timeline);
 
   // Animation options for ScrollTimelines.
@@ -499,6 +507,9 @@ class CORE_EXPORT Animation : public EventTarget,
   absl::optional<AnimationTimeDelta> start_time_;
   absl::optional<AnimationTimeDelta> hold_time_;
   absl::optional<AnimationTimeDelta> previous_current_time_;
+  // Timeline duration is non-null when using a scroll timeline. The value is
+  // tracked in order to update a hold time if the timeline duration changes.
+  absl::optional<AnimationTimeDelta> timeline_duration_;
   bool reset_current_time_on_resume_ = false;
 
   // Indicates if the animation should auto-align it's start time to the

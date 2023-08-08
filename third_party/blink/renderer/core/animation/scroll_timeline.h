@@ -39,6 +39,9 @@ class CORE_EXPORT ScrollTimeline : public ScrollSnapshotTimeline {
  public:
   using ReferenceType = ScrollTimelineAttachment::ReferenceType;
 
+  static constexpr double kScrollTimelineMicrosecondsPerPixel =
+      cc::ScrollTimeline::kScrollTimelineMicrosecondsPerPixel;
+
   static ScrollTimeline* Create(Document&,
                                 ScrollTimelineOptions*,
                                 ExceptionState&);
@@ -71,13 +74,6 @@ class CORE_EXPORT ScrollTimeline : public ScrollSnapshotTimeline {
   void AnimationDetached(Animation*) override;
 
   void Trace(Visitor*) const override;
-
-  // Duration is the maximum value a timeline may generate for current time.
-  // Used to convert time values to proportional values.
-  absl::optional<AnimationTimeDelta> GetDuration() const override {
-    // Any arbitrary value should be able to be used here.
-    return absl::make_optional(ANIMATION_TIME_DELTA_FROM_SECONDS(100));
-  }
 
   ScrollTimelineAttachment* CurrentAttachment() {
     return (attachments_.size() == 1u) ? attachments_.back().Get() : nullptr;

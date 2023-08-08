@@ -74,9 +74,15 @@ class CORE_EXPORT ScrollSnapshotTimeline : public AnimationTimeline,
 
   // Duration is the maximum value a timeline may generate for current time.
   // Used to convert time values to proportional values.
-  absl::optional<AnimationTimeDelta> GetDuration() const override {
-    // Any arbitrary value should be able to be used here.
-    return absl::make_optional(ANIMATION_TIME_DELTA_FROM_SECONDS(100));
+  absl::optional<AnimationTimeDelta> GetDuration() const final {
+    // A fallback value is used for the duration since getAnimations must pick
+    // up a scroll driven animation even it is inactive, and uses the presence
+    // of a duration to flag as an SDA. Furthermore timing conversion methods
+    // must work even if the timeline has not ticked. A proper duration is
+    // calculated on the first tick.
+    return timeline_state_snapshotted_.duration.has_value()
+               ? timeline_state_snapshotted_.duration
+               : absl::make_optional(ANIMATION_TIME_DELTA_FROM_SECONDS(100));
   }
 
   void ResolveTimelineOffsets() const;
@@ -110,6 +116,10 @@ class CORE_EXPORT ScrollSnapshotTimeline : public AnimationTimeline,
     absl::optional<ViewOffsets> view_offsets;
     // Zoom factor applied to the scroll offsets.
     float zoom = 1.0f;
+    // Duration to use for time scaling. The duration is set so that LayoutUnit
+    // precision (1/64th of a pixel) aligns with the time precision requirement
+    // of 1 microsecond.
+    absl::optional<AnimationTimeDelta> duration;
     // The scroller driving the timeline.
     Member<Node> resolved_source;
 

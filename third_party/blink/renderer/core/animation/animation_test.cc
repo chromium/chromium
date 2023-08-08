@@ -1842,8 +1842,13 @@ TEST_P(AnimationAnimationTestCompositing,
           ->GetCompositorAnimation()
           ->CcAnimation()
           ->GetKeyframeModel(cc::TargetProperty::OPACITY);
-  EXPECT_EQ(keyframe_model->start_time() - base::TimeTicks(),
-            base::Seconds(TEST_START_PERCENT));
+
+  double timeline_duration_ms =
+      scroll_timeline->GetDuration()->InMillisecondsF();
+  double start_time_ms =
+      (keyframe_model->start_time() - base::TimeTicks()).InMillisecondsF();
+  double progress_percent = (start_time_ms / timeline_duration_ms) * 100;
+  EXPECT_NEAR(progress_percent, TEST_START_PERCENT, 1e-3);
   EXPECT_EQ(keyframe_model->time_offset(), base::TimeDelta());
 }
 

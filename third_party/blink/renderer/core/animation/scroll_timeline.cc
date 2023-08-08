@@ -146,12 +146,14 @@ ScrollTimeline::TimelineState ScrollTimeline::ComputeTimelineState() const {
   // github.com/w3c/csswg-drafts/issues/7401
   if (std::abs(state.scroll_offsets->end - state.scroll_offsets->start) > 0) {
     state.phase = TimelinePhase::kActive;
-    double progress = (current_offset - state.scroll_offsets->start) /
-                      (state.scroll_offsets->end - state.scroll_offsets->start);
-
-    base::TimeDelta duration = base::Seconds(GetDuration()->InSecondsF());
+    double offset = current_offset - state.scroll_offsets->start;
+    double range = state.scroll_offsets->end - state.scroll_offsets->start;
+    double duration_in_microseconds =
+        range * kScrollTimelineMicrosecondsPerPixel;
+    state.duration = absl::make_optional(ANIMATION_TIME_DELTA_FROM_MILLISECONDS(
+        duration_in_microseconds / 1000));
     state.current_time =
-        base::Milliseconds(progress * duration.InMillisecondsF());
+        base::Microseconds(offset * kScrollTimelineMicrosecondsPerPixel);
   }
   return state;
 }

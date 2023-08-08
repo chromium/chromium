@@ -31,13 +31,14 @@ namespace blink {
 
 namespace {
 
-// Only expect precision up to 1 microsecond with an additional epsilon to
-// account for float conversion error (mainly due to timeline time getting
-// converted between float and base::TimeDelta).
-static constexpr double time_error_ms = 0.001 + 1e-13;
+static constexpr double percent_precision = 0.01;
 
-#define EXPECT_TIME_NEAR(expected, value) \
-  EXPECT_NEAR(expected, value, time_error_ms)
+#define EXPECT_CURRENT_TIME_AS_PERCENT_NEAR(expected, animation)          \
+  EXPECT_NEAR(expected,                                                   \
+              (animation->CurrentTimeInternal()->InMillisecondsF() /      \
+               animation->timeline()->GetDuration()->InMillisecondsF()) * \
+                  100,                                                    \
+              percent_precision);
 
 Animation* CreateTestAnimation(AnimationTimeline* timeline) {
   Timing timing;
@@ -332,9 +333,7 @@ TEST_F(ScrollTimelineTest, AnimationPersistsWhenFinished) {
                                    mojom::blink::ScrollType::kProgrammatic);
   SimulateFrame();
   EXPECT_EQ("running", animation->playState());
-  EXPECT_TIME_NEAR(50.0, animation->CurrentTimeInternal()
-                             .value_or(AnimationTimeDelta())
-                             .InSecondsF());
+  EXPECT_CURRENT_TIME_AS_PERCENT_NEAR(50.0, animation);
 }
 
 TEST_F(ScrollTimelineTest, AnimationPersistsWhenSourceBecomesNonScrollable) {
@@ -365,9 +364,7 @@ TEST_F(ScrollTimelineTest, AnimationPersistsWhenSourceBecomesNonScrollable) {
   scroller->GetScrollableArea()->SetScrollOffset(
       offset_50, mojom::blink::ScrollType::kProgrammatic);
   SimulateFrame();
-  EXPECT_TIME_NEAR(50.0, animation->CurrentTimeInternal()
-                             .value_or(AnimationTimeDelta())
-                             .InSecondsF());
+  EXPECT_CURRENT_TIME_AS_PERCENT_NEAR(50.0, animation);
 
   // Make #scroller non-scrollable.
   GetElementById("scroller")->classList().Remove(AtomicString("scroll"));
@@ -398,9 +395,7 @@ TEST_F(ScrollTimelineTest, AnimationPersistsWhenSourceBecomesNonScrollable) {
   scroller->GetScrollableArea()->SetScrollOffset(
       offset_40, mojom::blink::ScrollType::kProgrammatic);
   SimulateFrame();
-  EXPECT_TIME_NEAR(40.0, animation->CurrentTimeInternal()
-                             .value_or(AnimationTimeDelta())
-                             .InSecondsF());
+  EXPECT_CURRENT_TIME_AS_PERCENT_NEAR(40.0, animation);
 }
 
 TEST_F(ScrollTimelineTest, ScheduleFrameOnlyWhenScrollOffsetChanges) {

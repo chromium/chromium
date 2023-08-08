@@ -52,9 +52,35 @@ class CC_ANIMATION_EXPORT ScrollTimeline : public AnimationTimeline {
     double end = 0;
   };
 
-  // 100% is represented as 100s or 100000ms. We store it here in Milliseconds
-  // because that is the time unit returned by functions like CurrentTime.
-  static constexpr double kScrollTimelineDurationMs = 100000;
+  // Fixed time scale converting from pixels to microseconds.
+  // The value is derived from error analysis of the quantization of pixels in
+  // LayoutUnits.  The quantization is 1/64 of a pixel, and maximum possible
+  // error in current time calculations is 4 times that amount as shown below.
+  //
+  // progress = (scroll - start) / (end - start)
+  // Positions are subject to imprecision based on quantization.
+  // For worst case analysis, we compute the difference between the maximum
+  // and minimum progress based on the allowable error:
+  // progress = ((current offset +/- delta) - (start +/- delta) /
+  //            ((end +/- delta) - (start +/- delta))
+  // where delta = kLengthPrecision = 1 / kFixedPointDenominator = 1 / 64
+  //
+  // To minimum, we take the smallest possible numerator and largest possible
+  // denominator, which means minimizing current offset and maximizing cover
+  // end time.  The cover start time appears in both the numerator and
+  // denominator, but has a large impact on the numerator. Thus,
+  //
+  // min = ((current offset - delta) - (start + delta)) /
+  //       ((end + delta) - (start + delta))
+  //     = (current offset - start - 2 * delta) / range
+  // max = ((current offset + delta) - (start + delta)) /
+  //       ((end - delta) - (start + delta))
+  //     = (current offset - start + 2 * delta) / range;
+  // max error = max - min = 4 * delta / range
+  // duration = 1 [microsecond] / error
+  //          = range / (4 / 64)
+  //          = 16 range
+  static constexpr double kScrollTimelineMicrosecondsPerPixel = 16;
 
   ScrollTimeline(absl::optional<ElementId> scroller_id,
                  ScrollDirection direction,
@@ -80,6 +106,10 @@ class CC_ANIMATION_EXPORT ScrollTimeline : public AnimationTimeline {
   // The internal calculations are performed using doubles and the result is
   // converted to base::TimeTicks. This limits the precision to 1us.
   virtual absl::optional<base::TimeTicks> CurrentTime(
+      const ScrollTree& scroll_tree,
+      bool is_active_tree) const;
+
+  virtual absl::optional<base::TimeTicks> Duration(
       const ScrollTree& scroll_tree,
       bool is_active_tree) const;
 

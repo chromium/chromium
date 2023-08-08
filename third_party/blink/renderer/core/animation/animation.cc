@@ -310,16 +310,15 @@ Animation::Animation(ExecutionContext* execution_context,
     content_->Attach(this);
   }
 
-  if (timeline_) {
-    document_ = timeline_->GetDocument();
-    DCHECK(document_);
-    timeline_->AnimationAttached(this);
-  } else {
-    document_ = To<LocalDOMWindow>(execution_context)->document();
-    DCHECK(document_);
-    document_->Timeline().AnimationAttached(this);
+  AnimationTimeline* attached_timeline = timeline_;
+  if (!attached_timeline) {
+    attached_timeline =
+        &To<LocalDOMWindow>(execution_context)->document()->Timeline();
   }
-
+  document_ = attached_timeline->GetDocument();
+  DCHECK(document_);
+  attached_timeline->AnimationAttached(this);
+  timeline_duration_ = attached_timeline->GetDuration();
   probe::DidCreateAnimation(document_, sequence_number_);
 }
 
@@ -391,8 +390,9 @@ bool Animation::ConvertCSSNumberishToTime(
                 "progress based animations.");
         return false;
       }
-      time = (numberish_as_percentage->value() / 100) *
-             timeline_->GetDuration().value();
+      timeline_duration_ = timeline_->GetDuration();
+      time =
+          (numberish_as_percentage->value() / 100) * timeline_duration_.value();
       return true;
     } else {
       exception_state.ThrowDOMException(
@@ -530,6 +530,12 @@ V8CSSNumberish* Animation::ConvertTimeToCSSNumberish(
     return MakeGarbageCollected<V8CSSNumberish>(time.value().InMillisecondsF());
   }
   return nullptr;
+}
+
+absl::optional<double> Animation::TimeAsAnimationProgress(
+    AnimationTimeDelta time) const {
+  return !EffectEnd().is_zero() ? absl::make_optional(time / EffectEnd())
+                                : absl::nullopt;
 }
 
 // https://www.w3.org/TR/web-animations-1/#the-current-time-of-an-animation
@@ -950,6 +956,7 @@ void Animation::setTimeline(AnimationTimeline* timeline) {
   else
     document_->Timeline().AnimationDetached(this);
   timeline_ = timeline;
+  timeline_duration_ = timeline ? timeline->GetDuration() : absl::nullopt;
   if (timeline)
     timeline->AnimationAttached(this);
   else
@@ -2400,6 +2407,27 @@ void Animation::UpdateAutoAlignedStartTime() {
 
 bool Animation::OnValidateSnapshot(bool snapshot_changed) {
   bool needs_update = snapshot_changed;
+
+  // Track a change in duration and update hold time if required.
+  absl::optional<AnimationTimeDelta> duration = timeline_->GetDuration();
+  if (duration != timeline_duration_) {
+    if (hold_time_) {
+      DCHECK(timeline_duration_);
+      double progress =
+          hold_time_->InMillisecondsF() / timeline_duration_->InMillisecondsF();
+      hold_time_ = progress * duration.value();
+    }
+    if (start_time_ && !auto_align_start_time_) {
+      DCHECK(timeline_duration_);
+      absl::optional<AnimationTimeDelta> current_time = UnlimitedCurrentTime();
+      if (current_time) {
+        double progress = current_time->InMillisecondsF() /
+                          timeline_duration_->InMillisecondsF();
+        start_time_ = CalculateStartTime(progress * duration.value());
+      }
+    }
+    timeline_duration_ = duration;
+  }
 
   // Update style-dependent range offsets.
   bool range_changed = false;
