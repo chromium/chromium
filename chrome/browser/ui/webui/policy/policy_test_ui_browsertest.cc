@@ -56,20 +56,21 @@ using testing::_;
 using testing::Return;
 
 namespace {
-class PolicyTestPageUITest
+class PolicyTestPageVisibilityTest
     : public PlatformBrowserTest,
       public ::testing::WithParamInterface<std::tuple<bool, bool, bool>> {
  public:
-  PolicyTestPageUITest() {
+  PolicyTestPageVisibilityTest() {
     // Enable or disable feature as needed
     scoped_feature_list_.InitWithFeatureState(
         policy::features::kEnablePolicyTestPage,
         IsPolicyTestPageEnabledByFeature());
   }
-  PolicyTestPageUITest(const PolicyTestPageUITest&) = delete;
-  PolicyTestPageUITest& operator=(const PolicyTestPageUITest&) = delete;
+  PolicyTestPageVisibilityTest(const PolicyTestPageVisibilityTest&) = delete;
+  PolicyTestPageVisibilityTest& operator=(const PolicyTestPageVisibilityTest&) =
+      delete;
 
-  ~PolicyTestPageUITest() override = default;
+  ~PolicyTestPageVisibilityTest() override = default;
 
   void SetUpOnMainThread() override {
     PlatformBrowserTest::SetUpOnMainThread();
@@ -154,11 +155,11 @@ class PolicyTestPageUITest
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
-}  // namespace
 
 // Verify that the chrome://policy/test page is visible only when both the flag
 // and policy are enabled, and invisible otherwise.
-IN_PROC_BROWSER_TEST_P(PolicyTestPageUITest, TestPageVisibleWhenEnabled) {
+IN_PROC_BROWSER_TEST_P(PolicyTestPageVisibilityTest,
+                       TestPageVisibleWhenEnabled) {
   // Enable or disable managed profile as needed.
   policy::ScopedManagementServiceOverrideForTesting browser_management(
       policy::ManagementServiceFactory::GetForProfile(GetProfile()),
@@ -169,7 +170,7 @@ IN_PROC_BROWSER_TEST_P(PolicyTestPageUITest, TestPageVisibleWhenEnabled) {
 }
 
 INSTANTIATE_TEST_SUITE_P(PolicyTestPageUITestInstance,
-                         PolicyTestPageUITest,
+                         PolicyTestPageVisibilityTest,
                          testing::Combine(testing::Bool(),
                                           testing::Bool(),
                                           testing::Bool()));
@@ -417,3 +418,356 @@ IN_PROC_BROWSER_TEST_F(PolicyTestHandlerTest, ApplyTestPoliciesAfterRestart) {
   EXPECT_FALSE(entry);
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+
+namespace {
+class PolicyTestUITest : public PlatformBrowserTest {
+ public:
+  PolicyTestUITest() {
+    // Enable kEnablePolicyTestPage feature.
+    scoped_feature_list_.InitWithFeatureState(
+        policy::features::kEnablePolicyTestPage, true);
+  }
+  PolicyTestUITest(const PolicyTestUITest&) = delete;
+  PolicyTestUITest& operator=(const PolicyTestUITest&) = delete;
+
+  ~PolicyTestUITest() override = default;
+
+  void SetUpOnMainThread() override {
+    PlatformBrowserTest::SetUpOnMainThread();
+    // Enable kPolicyTestPageEnabled policy.
+    policy::PolicyMap policy_map;
+    base::Value::List policy_list;
+    policy_list.Append(policy::key::kPolicyTestPageEnabled);
+    policy_map.Set(policy::key::kEnableExperimentalPolicies,
+                   policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_MACHINE,
+                   policy::POLICY_SOURCE_PLATFORM,
+                   base::Value(std::move(policy_list)), nullptr);
+    policy_map.Set(policy::key::kPolicyTestPageEnabled,
+                   policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_MACHINE,
+                   policy::POLICY_SOURCE_PLATFORM, base::Value(true), nullptr);
+
+    provider_.UpdateChromePolicy(policy_map);
+
+    // Set profile to unmanaged so chrome://policy/test is accessible.
+    policy::ScopedManagementServiceOverrideForTesting browser_management(
+        policy::ManagementServiceFactory::GetForProfile(GetProfile()),
+        policy::EnterpriseManagementAuthority::NONE);
+  }
+
+  void SetUpInProcessBrowserTestFixture() override {
+    provider_.SetDefaultReturns(/*is_initialization_complete_return=*/true,
+                                /*is_first_policy_load_complete_return=*/true);
+    policy::BrowserPolicyConnector::SetPolicyProviderForTesting(&provider_);
+    policy::PushProfilePolicyConnectorProviderForTesting(&provider_);
+  }
+
+  void UpdateProviderPolicyForNamespace(
+      const policy::PolicyNamespace& policy_namespace,
+      const policy::PolicyMap& policy) {
+    policy::PolicyBundle bundle;
+    bundle.Get(policy_namespace) = policy.Clone();
+    provider_.UpdatePolicy(std::move(bundle));
+  }
+
+  Profile* GetProfile() { return chrome_test_utils::GetProfile(this); }
+
+  content::WebContents* web_contents() {
+    return chrome_test_utils::GetActiveWebContents(this);
+  }
+
+  /* Helper methods for executing JS strings. */
+  content::EvalJsResult GetNumberOfRows() {
+    const std::string getNumRowsJs =
+        R"(
+          document
+            .querySelector('policy-test-table')
+            .shadowRoot
+            .querySelectorAll('policy-test-row')
+            .length;
+        )";
+    return content::EvalJs(web_contents(), getNumRowsJs);
+  }
+
+  bool ClickAddPolicy() {
+    const std::string clickAddPolicyJs =
+        R"(
+          document
+            .querySelector('policy-test-table')
+            .shadowRoot
+            .querySelector('#add-policy-btn')
+            .click()
+        )";
+    return content::ExecJs(web_contents(), clickAddPolicyJs);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
+};
+}  // namespace
+
+IN_PROC_BROWSER_TEST_F(PolicyTestUITest, TestRowAddedWhenAddPolicyClicked) {
+  ASSERT_TRUE(content::NavigateToURL(web_contents(),
+                                     GURL(chrome::kChromeUIPolicyTestURL)));
+  EXPECT_EQ(GetNumberOfRows(), 1);
+  EXPECT_TRUE(ClickAddPolicy());
+  EXPECT_EQ(GetNumberOfRows(), 2);
+}
+
+IN_PROC_BROWSER_TEST_F(PolicyTestUITest, TestRowDeletedWhenRemoveClicked) {
+  ASSERT_TRUE(content::NavigateToURL(web_contents(),
+                                     GURL(chrome::kChromeUIPolicyTestURL)));
+  EXPECT_EQ(GetNumberOfRows(), 1);
+  const std::string clickRemoveJs =
+      R"(
+        document
+          .querySelector('policy-test-table')
+          .shadowRoot
+          .querySelector('policy-test-row')
+          .shadowRoot
+          .querySelector('.remove-btn')
+          .click();
+      )";
+  EXPECT_TRUE(content::ExecJs(web_contents(), clickRemoveJs));
+  EXPECT_EQ(GetNumberOfRows(), 0);
+}
+
+IN_PROC_BROWSER_TEST_F(PolicyTestUITest, TestPresetAutofill) {
+  ASSERT_TRUE(content::NavigateToURL(web_contents(),
+                                     GURL(chrome::kChromeUIPolicyTestURL)));
+  const std::string getSelectedPresetId =
+      R"(
+        const presetDropdown =
+          document
+            .querySelector('policy-test-table')
+            .shadowRoot
+            .querySelector('policy-test-row')
+            .shadowRoot
+            .querySelector('.preset');
+        presetDropdown
+          .options[presetDropdown.selectedIndex]
+          .id;
+      )";
+  EXPECT_EQ(content::EvalJs(web_contents(), getSelectedPresetId), "custom");
+  const std::string getSourceValueJs =
+      R"(
+        const sourceDropdown =
+          document
+            .querySelector('policy-test-table')
+            .shadowRoot
+            .querySelector('policy-test-row')
+            .shadowRoot
+            .querySelector('.source');
+        sourceDropdown
+          .options[sourceDropdown.selectedIndex]
+          .id;
+      )";
+  EXPECT_EQ(content::EvalJs(web_contents(), getSourceValueJs),
+            "sourceEnterpriseDefault");
+  const std::string changePresetToCbcmJs =
+      R"(
+        const presetDropdown =
+          document
+          .querySelector('policy-test-table')
+          .shadowRoot
+          .querySelector('policy-test-row')
+          .shadowRoot
+          .querySelector('.preset');
+        presetDropdown.selectedIndex = 1;
+        presetDropdown
+          .dispatchEvent(new Event('change'));
+      )";
+  EXPECT_TRUE(content::ExecJs(web_contents(), changePresetToCbcmJs));
+  EXPECT_EQ(content::EvalJs(web_contents(), getSelectedPresetId), "cbcm");
+  EXPECT_EQ(content::EvalJs(web_contents(), getSourceValueJs), "sourceCloud");
+}
+
+IN_PROC_BROWSER_TEST_F(PolicyTestUITest, TestPolicyNameChangesInputType) {
+  ASSERT_TRUE(content::NavigateToURL(web_contents(),
+                                     GURL(chrome::kChromeUIPolicyTestURL)));
+  const std::string getValueInputType =
+      R"(
+        document
+          .querySelector('policy-test-table')
+          .shadowRoot
+          .querySelector('policy-test-row')
+          .shadowRoot
+          .querySelector('.value')
+          .type
+      )";
+  EXPECT_EQ(content::EvalJs(web_contents(), getValueInputType), "text");
+
+  // Select an integer-valued policy name and assert that the type has changed
+  // to number.
+  const std::string selectIntegerPolicyNameJs =
+      R"(
+        const nameDropdown =
+          document
+            .querySelector('policy-test-table')
+            .shadowRoot
+            .querySelector('policy-test-row')
+            .shadowRoot
+            .querySelector('.name');
+        nameDropdown.value = 'CloudReportingUploadFrequency';
+        nameDropdown.dispatchEvent(new Event('change'));
+      )";
+  EXPECT_TRUE(content::ExecJs(web_contents(), selectIntegerPolicyNameJs));
+  EXPECT_EQ(content::EvalJs(web_contents(), getValueInputType), "number");
+}
+
+IN_PROC_BROWSER_TEST_F(PolicyTestUITest, TestErrorStateWhenNameNotSelected) {
+  ASSERT_TRUE(content::NavigateToURL(web_contents(),
+                                     GURL(chrome::kChromeUIPolicyTestURL)));
+  const std::string getNameDropdownInErrorStateJs =
+      R"(
+        document.querySelector('policy-test-table')
+          .shadowRoot
+          .querySelector('policy-test-row')
+          .shadowRoot
+          .querySelector('.name')
+          .classList
+          .contains('error');
+      )";
+  EXPECT_EQ(content::EvalJs(web_contents(), getNameDropdownInErrorStateJs),
+            false);
+  const std::string clickApplyPoliciesJs =
+      R"(document.querySelector('#apply-policies').click())";
+  EXPECT_TRUE(content::ExecJs(web_contents(), clickApplyPoliciesJs));
+  EXPECT_EQ(content::EvalJs(web_contents(), getNameDropdownInErrorStateJs),
+            true);
+
+  // Select a policy name and assert that the name dropdown is not in the error
+  // class, both before and after applying.
+  const std::string selectPolicyNameJs =
+      R"(
+        const nameDropdown =
+          document
+            .querySelector('policy-test-table')
+            .shadowRoot
+            .querySelector('policy-test-row')
+            .shadowRoot
+            .querySelector('.name');
+        nameDropdown.value = 'CloudReportingUploadFrequency';
+        nameDropdown.dispatchEvent(new Event('focus'));
+      )";
+  EXPECT_TRUE(content::ExecJs(web_contents(), selectPolicyNameJs));
+  EXPECT_EQ(content::EvalJs(web_contents(), getNameDropdownInErrorStateJs),
+            false);
+  EXPECT_TRUE(content::ExecJs(web_contents(), clickApplyPoliciesJs));
+  EXPECT_EQ(content::EvalJs(web_contents(), getNameDropdownInErrorStateJs),
+            false);
+}
+
+IN_PROC_BROWSER_TEST_F(PolicyTestUITest, TestIncorrectValueTypeRaisesError) {
+  ASSERT_TRUE(content::NavigateToURL(web_contents(),
+                                     GURL(chrome::kChromeUIPolicyTestURL)));
+  const std::string getValueCellInErrorStateJs =
+      R"(
+        document
+          .querySelector('policy-test-table')
+          .shadowRoot
+          .querySelector('policy-test-row')
+          .shadowRoot
+          .querySelector('.value')
+          .classList
+          .contains('error');
+      )";
+  EXPECT_EQ(content::EvalJs(web_contents(), getValueCellInErrorStateJs), false);
+
+  // Select a policy name that expects an array value input, attempt to apply
+  // policies with an integer value and assert that the value cell is added to
+  // the error class.
+  const std::string selectNameAndIncorrectValueAndApplyJs =
+      R"(
+        const nameDropdown =
+          document
+            .querySelector('policy-test-table')
+            .shadowRoot
+            .querySelector('policy-test-row')
+            .shadowRoot
+            .querySelector('.name');
+        nameDropdown.value = 'CookiesAllowedForUrls';
+        nameDropdown.dispatchEvent(new Event('change'));
+        document
+          .querySelector('policy-test-table')
+          .shadowRoot
+          .querySelector('policy-test-row')
+          .shadowRoot
+          .querySelector('.value')
+          .value = '123';
+        document.querySelector('#apply-policies').click();
+      )";
+  EXPECT_TRUE(
+      content::ExecJs(web_contents(), selectNameAndIncorrectValueAndApplyJs));
+  EXPECT_EQ(content::EvalJs(web_contents(), getValueCellInErrorStateJs), true);
+
+  // Try applying with an array value and assert that the value cell is not in
+  // the error class before or after applying.
+  const std::string focusOnValueCellJs =
+      R"(
+        const valueCell =
+          document
+            .querySelector('policy-test-table')
+            .shadowRoot
+            .querySelector('policy-test-row')
+            .shadowRoot
+            .querySelector('.value');
+        valueCell.dispatchEvent(new Event('focus'));
+      )";
+  EXPECT_TRUE(content::ExecJs(web_contents(), focusOnValueCellJs));
+  EXPECT_EQ(content::EvalJs(web_contents(), getValueCellInErrorStateJs), false);
+  const std::string applyWithValidValueJs =
+      R"(
+        document
+          .querySelector('policy-test-table')
+          .shadowRoot
+          .querySelector('policy-test-row')
+          .shadowRoot
+          .querySelector('.value')
+          .value = '[]';
+        document.querySelector('#apply-policies').click();
+      )";
+  EXPECT_TRUE(content::ExecJs(web_contents(), applyWithValidValueJs));
+  EXPECT_EQ(content::EvalJs(web_contents(), getValueCellInErrorStateJs), false);
+}
+
+IN_PROC_BROWSER_TEST_F(PolicyTestUITest, TestClearPoliciesButton) {
+  ASSERT_TRUE(content::NavigateToURL(web_contents(),
+                                     GURL(chrome::kChromeUIPolicyTestURL)));
+  for (int i = 0; i < 4; i++) {
+    EXPECT_TRUE(ClickAddPolicy());
+  }
+  EXPECT_EQ(GetNumberOfRows(), 5);
+  const std::string selectPolicyNameJs =
+      R"(
+        const nameDropdown =
+          document
+            .querySelector('policy-test-table')
+            .shadowRoot
+            .querySelector('policy-test-row')
+            .shadowRoot
+            .querySelector('.name');
+        nameDropdown.value = 'CloudReportingUploadFrequency';
+      )";
+  EXPECT_TRUE(content::ExecJs(web_contents(), selectPolicyNameJs));
+  const std::string getSelectedPolicyNameHiddenJs =
+      R"(
+        const nameDropdown =
+          document
+            .querySelector('policy-test-table')
+            .shadowRoot
+            .querySelector('policy-test-row')
+            .shadowRoot
+            .querySelector('.name');
+        nameDropdown.options[nameDropdown.selectedIndex].hidden;
+      )";
+  EXPECT_EQ(content::EvalJs(web_contents(), getSelectedPolicyNameHiddenJs),
+            false);
+  const std::string clickClearJs =
+      R"(document.querySelector('#clear-policies').click())";
+  EXPECT_TRUE(content::ExecJs(web_contents(), clickClearJs));
+  EXPECT_EQ(GetNumberOfRows(), 1);
+  EXPECT_EQ(content::EvalJs(web_contents(), getSelectedPolicyNameHiddenJs),
+            true);
+}
+}  // namespace
