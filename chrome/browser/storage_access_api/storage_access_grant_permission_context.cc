@@ -323,6 +323,14 @@ void StorageAccessGrantPermissionContext::UseImplicitGrantOrPrompt(
   // implementation, and if a denial has been persisted, respect that decision.
   content::RenderFrameHost* const rfh =
       content::RenderFrameHost::FromID(id.global_render_frame_host_id());
+
+  if (!rfh) {
+    // After async steps, the RenderFrameHost is not guaranteed to still be
+    // alive.
+    std::move(callback).Run(CONTENT_SETTING_BLOCK);
+    return;
+  }
+
   ContentSetting existing_setting =
       PermissionContextBase::GetPermissionStatusInternal(rfh, requesting_origin,
                                                          embedding_origin);
@@ -391,10 +399,17 @@ void StorageAccessGrantPermissionContext::OnCheckedUserInteractionHeuristic(
     bool user_gesture,
     permissions::BrowserPermissionCallback callback,
     bool had_top_level_user_interaction) {
+  content::RenderFrameHost* rfh =
+      content::RenderFrameHost::FromID(id.global_render_frame_host_id());
+
+  if (!rfh) {
+    // After async steps, the RenderFrameHost is not guaranteed to still be
+    // alive.
+    std::move(callback).Run(CONTENT_SETTING_BLOCK);
+    return;
+  }
+
   if (!had_top_level_user_interaction) {
-    content::RenderFrameHost* rfh =
-        content::RenderFrameHost::FromID(id.global_render_frame_host_id());
-    CHECK(rfh);
     rfh->AddMessageToConsole(
         blink::mojom::ConsoleMessageLevel::kError,
         "requestStorageAccess: Request denied because the embedded site has "
@@ -406,6 +421,9 @@ void StorageAccessGrantPermissionContext::OnCheckedUserInteractionHeuristic(
     return;
   }
 
+  // PermissionContextBase::DecidePermission requires that the RenderFrameHost
+  // is still alive.
+  CHECK(rfh);
   // Show prompt.
   PermissionContextBase::DecidePermission(id, requesting_origin,
                                           embedding_origin, user_gesture,
