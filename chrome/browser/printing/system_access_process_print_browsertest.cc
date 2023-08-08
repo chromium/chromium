@@ -519,9 +519,13 @@ class SystemAccessProcessPrintBrowserTestBase
   }
 
   void PrintAfterPreviewIsReadyAndLoaded() {
-    // First invoke the Print Preview dialog with `StartPrint()`.
+    PrintAfterPreviewIsReadyAndLoaded(PrintParams());
+  }
+
+  void PrintAfterPreviewIsReadyAndLoaded(const PrintParams& params) {
+    // First invoke the Print Preview dialog with requested method.
     content::WebContents* preview_dialog =
-        PrintAndWaitUntilPreviewIsReadyAndLoaded();
+        PrintAndWaitUntilPreviewIsReadyAndLoaded(params);
     ASSERT_TRUE(preview_dialog);
 
     // Print Preview is completely ready, can now initiate printing.
@@ -2581,7 +2585,7 @@ class ContentAnalysisScriptedPreviewlessPrintBeforeDialogBrowserTest
     EXPECT_EQ(composited_for_content_analysis_count(), 1);
     EXPECT_EQ(scanning_responses_count(), 1);
 
-    // Validate that `NewDocument` is only called for actual printing, not as
+    // Validate that `NewDocument()` is only called for actual printing, not as
     // part of content analysis, since that can needlessly prompt the user.
     // When printing OOP, an extra call for a new document will occur since it
     // gets called in both the browser process and in the Print Backend service.
@@ -2689,7 +2693,7 @@ class ContentAnalysisScriptedPreviewlessPrintAfterDialogBrowserTest
     EXPECT_EQ(composited_for_content_analysis_count(), 0);
     EXPECT_EQ(scanning_responses_count(), 1);
 
-    // Validate that `NewDocument` is only called for actual printing, not as
+    // Validate that `NewDocument()` is only called for actual printing, not as
     // part of content analysis, since that can needlessly prompt the user.
     // When printing OOP, an extra call for a new document will occur since it
     // gets called in both the browser process and in the Print Backend service.
@@ -2753,11 +2757,85 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisBeforePrintPreviewBrowserTest,
   EXPECT_EQ(composited_for_content_analysis_count(), 1);
   EXPECT_EQ(print_view_manager->got_snapshot_count(), 1);
   EXPECT_EQ(scanning_responses_count(), 1);
-  // Validate that `NewDocument` is only called for actual printing, not as
+  // Validate that `NewDocument()` is only called for actual printing, not as
   // part of content analysis, since that can needlessly prompt the user.
   // When printing OOP, an extra call for a new document will occur since it
   // gets called in both the browser process and in the Print Backend service.
   EXPECT_EQ(new_document_called_count(), GetExpectedNewDocumentCalledCount());
+}
+
+// TODO(crbug.com/1469456):  Suspect this bug to be the cause of flakes for
+// linux-rel bot, try re-enabling this test once that issue is resolved.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_WindowDotPrint DISABLED_WindowDotPrint
+#else
+#define MAYBE_WindowDotPrint WindowDotPrint
+#endif
+IN_PROC_BROWSER_TEST_P(ContentAnalysisBeforePrintPreviewBrowserTest,
+                       MAYBE_WindowDotPrint) {
+  if (UseService()) {
+    // TODO(crbug.com/1464566):  Enable this test variant once an extra system
+    // dialog is not being displayed before analysis completes.
+    GTEST_SKIP();
+  }
+
+  AddPrinter("printer_name");
+
+  if (UseService()) {
+    // Test does not do extra cleanup beyond the check for analysis permission.
+    SkipPersistentContextsCheckOnShutdown();
+  }
+
+  ASSERT_TRUE(embedded_test_server()->Started());
+  GURL url(embedded_test_server()->GetURL("/printing/test1.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(web_contents);
+  auto* print_view_manager =
+      SetUpAndReturnPrintViewManagerForContentAnalysis(web_contents);
+
+  if (ContentAnalysisAllowsPrint()) {
+    if (UseService()) {
+      // TODO(crbug.com/1464566):  Update expectations once test is not
+      // skipped.
+    } else {
+      // The expected events for this are:
+      // 1.  Use default settings.
+      // 2.  The document is composited for content analysis.
+      // 3.  The print job used for scanning is destroyed.
+      // 4.  Wait for the actual printing job to be destroyed, to ensure
+      //     printing finished cleanly before completing the test.
+      SetNumExpectedMessages(/*num=*/4);
+    }
+    const PrintParams kParams{.invoke_method =
+                                  InvokePrintMethod::kWindowDotPrint};
+    PrintAfterPreviewIsReadyAndLoaded(kParams);
+  } else {
+    // The expected events for this are:
+    // 1.  Use default settings.
+    // 2.  The document is composited for content analysis.
+    // 3.  The print job used for scanning is destroyed.
+    SetNumExpectedMessages(/*num=*/3);
+
+    content::ExecuteScriptAsync(web_contents->GetPrimaryMainFrame(),
+                                "window.print();");
+    WaitUntilCallbackReceived();
+  }
+
+  ASSERT_EQ(print_view_manager->preview_allowed(),
+            ContentAnalysisAllowsPrint());
+  EXPECT_EQ(composited_for_content_analysis_count(), 1);
+  EXPECT_EQ(print_view_manager->got_snapshot_count(), 1);
+  EXPECT_EQ(scanning_responses_count(), 1);
+  // Validate that `NewDocument()` is only called for actual printing, not as
+  // part of content analysis, since that can needlessly prompt the user.
+  // When printing OOP, an extra call for a new document will occur since it
+  // gets called in both the browser process and in the Print Backend service.
+  // TODO(crbug.com/1464566):  Update expectation once the extra start of
+  // a print job before analysis completes is avoided.
+  EXPECT_EQ(new_document_called_count(), ContentAnalysisAllowsPrint() ? 2 : 1);
 }
 
 IN_PROC_BROWSER_TEST_P(ContentAnalysisBeforePrintPreviewBrowserTest,
@@ -2881,7 +2959,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisBeforePrintPreviewBrowserTest,
             ContentAnalysisAllowsPrint() ? 2 : 1);
 #endif
 
-  // Validate that `NewDocument` is only called for actual printing, not as
+  // Validate that `NewDocument()` is only called for actual printing, not as
   // part of content analysis, since that can needlessly prompt the user.
   // When printing OOP, an extra call for a new document will occur since it
   // gets called in both the browser process and in the Print Backend service.
@@ -2936,7 +3014,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisAfterPrintPreviewBrowserTest,
   EXPECT_EQ(print_view_manager->got_snapshot_count(), 0);
   EXPECT_EQ(scanning_responses_count(), 1);
 
-  // Validate that `NewDocument` is only called for actual printing, not as
+  // Validate that `NewDocument()` is only called for actual printing, not as
   // part of content analysis, since that can needlessly prompt the user.
   // When printing OOP, an extra call for a new document will occur since it
   // gets called in both the browser process and in the Print Backend service.
@@ -3050,7 +3128,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisAfterPrintPreviewBrowserTest,
   EXPECT_EQ(print_view_manager->got_snapshot_count(), 0);
   EXPECT_EQ(scanning_responses_count(), 1);
 
-  // Validate that `NewDocument` is only called for actual printing, not as
+  // Validate that `NewDocument()` is only called for actual printing, not as
   // part of content analysis, since that can needlessly prompt the user.
   // When printing OOP, an extra call for a new document will occur since it
   // gets called in both the browser process and in the Print Backend service.
@@ -3152,7 +3230,7 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_EQ(composited_for_content_analysis_count(), 0);
   EXPECT_EQ(scanning_responses_count(), 1);
 
-  // Validate that `NewDocument` is only called for actual printing, not as
+  // Validate that `NewDocument()` is only called for actual printing, not as
   // part of content analysis, since that can needlessly prompt the user.
   // When printing OOP, an extra call for a new document will occur since it
   // gets called in both the browser process and in the Print Backend service.
@@ -3277,7 +3355,7 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_EQ(composited_for_content_analysis_count(), 1);
   EXPECT_EQ(scanning_responses_count(), 1);
 
-  // Validate that `NewDocument` is only called for actual printing, not as
+  // Validate that `NewDocument()` is only called for actual printing, not as
   // part of content analysis, since that can needlessly prompt the user.
   // When printing OOP, an extra call for a new document will occur since it
   // gets called in both the browser process and in the Print Backend service.

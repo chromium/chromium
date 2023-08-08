@@ -29,9 +29,17 @@ class TestPrintRenderFrame;
 
 class PrintBrowserTest : public InProcessBrowserTest {
  public:
+  enum class InvokePrintMethod {
+    // Browser starts print (e.g., like CTRL+P keyboard shortcut).
+    kStartPrint,
+    // Initiate printing for from JavaScript.
+    kWindowDotPrint,
+  };
+
   struct PrintParams {
     bool print_only_selection = false;
     int pages_per_sheet = 1;
+    InvokePrintMethod invoke_method = InvokePrintMethod::kStartPrint;
   };
 
   PrintBrowserTest();

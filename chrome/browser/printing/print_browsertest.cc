@@ -550,12 +550,22 @@ PrintBrowserTest::PrintAndWaitUntilPreviewIsReadyAndMaybeLoaded(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   TestPrintPreviewObserver print_preview_observer(wait_for_loaded,
                                                   params.pages_per_sheet);
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
 
-  StartPrint(browser()->tab_strip_model()->GetActiveWebContents(),
+  switch (params.invoke_method) {
+    case InvokePrintMethod::kStartPrint:
+      StartPrint(web_contents,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-             /*print_renderer=*/mojo::NullAssociatedRemote(),
+                 /*print_renderer=*/mojo::NullAssociatedRemote(),
 #endif
-             /*print_preview_disabled=*/false, params.print_only_selection);
+                 /*print_preview_disabled=*/false, params.print_only_selection);
+      break;
+    case InvokePrintMethod::kWindowDotPrint:
+      content::ExecuteScriptAsync(web_contents->GetPrimaryMainFrame(),
+                                  "window.print();");
+      break;
+  }
 
   content::WebContents* preview_dialog =
       print_preview_observer.WaitUntilPreviewIsReadyAndReturnPreviewDialog();
