@@ -687,6 +687,13 @@ void ThemeService::InitFromPrefs() {
 
   std::string current_id = GetThemeID();
   if (current_id == ThemeHelper::kDefaultThemeID) {
+    if (const auto user_color = GetUserColor(); user_color.has_value()) {
+      chrome_colors::ChromeColorsService::RecordDynamicColorOnLoadHistogram(
+          *user_color, GetBrowserColorVariant());
+    } else if (GetIsGrayscale()) {
+      chrome_colors::ChromeColorsService::
+          RecordDynamicColorOnLoadHistogramForGrayscale();
+    }
     UseTheme(GetDefaultSystemTheme());
     set_ready();
     return;

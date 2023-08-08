@@ -329,11 +329,44 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="ChromeColors.ColorOnLoad" enum="ChromeColorsInfo"
     expires_after="2023-12-24">
-  <owner>gayane@chromium.org</owner>
-  <owner>yyushkina@chromium.org</owner>
+  <owner>tiborg@chromium.org</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
   <summary>
     Records installed color id every time theme service is initialized from
-    prefs. Happens once per profile load.
+    prefs. Happens once per profile load if the user has a GM2 color installed.
+
+    This histogram records only GM2 colors. For tracking the installed GM3 color
+    see the ChromeColors.DynamicColorOnLoad histogram. Or see the
+    ChromeColors.ColorType histogram for the type of installed Chrome color.
+  </summary>
+</histogram>
+
+<histogram name="ChromeColors.ColorType" enum="ChromeColorType"
+    expires_after="2023-12-24">
+  <owner>tiborg@chromium.org</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Records installed color type every time theme service is initialized from
+    prefs. Happens once per profile load if the user has a Chrome color
+    installed.
+
+    To track, which color is installed see the ChromeColors.ColorOnLoad
+    histogram for GM2 colors and the ChromeColors.DynamicColorOnLoad histogram
+    for GM3 colors.
+  </summary>
+</histogram>
+
+<histogram name="ChromeColors.DynamicColorOnLoad"
+    enum="DynamicChromeColorsInfo" expires_after="2023-12-24">
+  <owner>tiborg@chromium.org</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Records installed color id every time theme service is initialized from
+    prefs. Happens once per profile load if the user has a GM3 color installed.
+
+    This histogram records only GM3 colors. For tracking the installed GM2 color
+    see the ChromeColors.ColorOnLoad histogram. Or see the
+    ChromeColors.ColorType histogram for the type of installed Chrome color.
   </summary>
 </histogram>
 

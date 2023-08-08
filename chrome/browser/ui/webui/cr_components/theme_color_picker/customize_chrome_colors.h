@@ -36,10 +36,12 @@ extern const std::array<chrome_colors::ColorInfo,
     kCustomizeChromeColors;
 
 struct DynamicColorInfo {
-  constexpr DynamicColorInfo(SkColor color,
+  constexpr DynamicColorInfo(int id,
+                             SkColor color,
                              int label_id,
                              ui::mojom::BrowserColorVariant variant)
-      : color(color), label_id(label_id), variant(variant) {}
+      : id(id), color(color), label_id(label_id), variant(variant) {}
+  int id;
   SkColor color;
   int label_id;
   ui::mojom::BrowserColorVariant variant;

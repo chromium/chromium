@@ -15845,6 +15845,11 @@ Called by update_protocol_commands_enum.py.-->
   <int value="4" label="Shutdown"/>
 </enum>
 
+<enum name="ChromeColorType">
+  <int value="0" label="Chrome Color (GM2)"/>
+  <int value="1" label="Dynamic Chrome Color (GM3)"/>
+</enum>
+
 <enum name="ChromeDownloadSource">
   <int value="0" label="Initiated by Navigation"/>
   <int value="1" label="Initiated by Context Menu"/>
@@ -31086,6 +31091,24 @@ Called by update_document_policy_enum.py.-->
   <int value="8" label="kDX9PlaybackSucceeded">
     A decoder has finished playing with DX9.
   </int>
+</enum>
+
+<enum name="DynamicChromeColorsInfo">
+  <int value="0" label="Other"/>
+  <int value="1" label="Grayscale"/>
+  <int value="2" label="Blue"/>
+  <int value="3" label="Cool grey"/>
+  <int value="4" label="Grey"/>
+  <int value="5" label="Aqua"/>
+  <int value="6" label="Green"/>
+  <int value="7" label="Viridian"/>
+  <int value="8" label="Citron"/>
+  <int value="9" label="Orange"/>
+  <int value="10" label="Apricot"/>
+  <int value="11" label="Rose"/>
+  <int value="12" label="Pink"/>
+  <int value="13" label="Fuchsia"/>
+  <int value="14" label="Violet"/>
 </enum>
 
 <enum name="EAPInnerProtocol">
