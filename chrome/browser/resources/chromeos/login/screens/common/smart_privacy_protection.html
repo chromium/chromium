@@ -34,10 +34,6 @@ found in the LICENSE file.
   .content-footer {
     padding-top: 16px;
   }
-
-  .subtitle-illustration {
-    max-height: 250px;
-  }
 </style>
   <oobe-adaptive-dialog role="dialog"
       aria-label$="[[i18nDynamic(locale,
@@ -46,7 +42,7 @@ found in the LICENSE file.
     <h1 slot="title">
       [[i18nDynamic(locale, 'smartPrivacyProtectionScreenTitle')]]
     </h1>
-    <iron-icon slot="subtitle" class="illustration-jelly"
+    <iron-icon slot="subtitle-illustration" class="illustration-jelly"
         icon="oobe-illos:kids-turn-illo" >
     </iron-icon>
     <div slot="content" class="landscape-header-aligned">

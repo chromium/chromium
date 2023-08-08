@@ -121,6 +121,8 @@ found in the LICENSE file.
   }
 
   #header-container {
+    max-height: 100%;
+    overflow-y: auto;
     padding-bottom: 0;
     padding-inline-end: var(--oobe-adaptive-dialog-content-padding);
     padding-inline-start: var(--oobe-adaptive-dialog-content-padding);
@@ -165,18 +167,23 @@ found in the LICENSE file.
     padding-top: var(--oobe-adaptive-dialog-item-vertical-padding);
   }
 
+  #oobe-progress ::slotted(*) {
+    margin-top: 32px;
+  }
+  :host-context(.jelly-enabled) #oobe-progress ::slotted(*) {
+    margin-top: var(--oobe-adaptive-dialog-item-vertical-padding);
+  }
+
   #oobe-progress ::slotted(paper-progress) {
     /* TODO(https://crbug.com/1320715) Revise the colors */
     --paper-progress-active-color: var(--cros-slider-color-active);
     --paper-progress-container-color: var(--cros-slider-track-color-active);
     height: 4px;
-    margin-top: 32px;
     width: 100%;
   }
   :host-context(.jelly-enabled) #oobe-progress ::slotted(paper-progress) {
     --paper-progress-active-color: var(--cros-sys-primary);
     --paper-progress-container-color: var(--cros-sys-primary_container);
-    margin-top: var(--oobe-adaptive-dialog-item-vertical-padding);
   }
 
   #oobe-subtitle {
@@ -187,6 +194,13 @@ found in the LICENSE file.
     padding-top: 0;
   }
   :host-context(.jelly-enabled) #oobe-subtitle ::slotted(*) {
+    padding-top: var(--oobe-adaptive-dialog-item-vertical-padding);
+  }
+
+  #oobe-subtitle-illustration ::slotted(*) {
+    padding-top: 16px;
+  }
+  :host-context(.jelly-enabled) #oobe-subtitle-illustration ::slotted(*) {
     padding-top: var(--oobe-adaptive-dialog-item-vertical-padding);
   }
 
@@ -254,6 +268,9 @@ found in the LICENSE file.
         </div>
         <div id="oobe-subtitle" class="vertical-mode-centering">
           <slot name="subtitle"></slot>
+        </div>
+        <div id="oobe-subtitle-illustration" class="vertical-mode-centering">
+          <slot name="subtitle-illustration"></slot>
         </div>
       </div>
       <div id="scrollContainer" class="layout vertical flex scrollable"
