@@ -313,7 +313,6 @@ class WPTAdapter:
             # success. Add '--no-restart-on-unexpected' to speed up the test. On
             # Android side, we are always running with one emulator or worker,
             # so do not add '--run-by-dir=0'
-            runner_options.retry_unexpected = 0
             runner_options.fail_on_unexpected = False
             runner_options.restart_on_unexpected = False
         else:
@@ -321,10 +320,6 @@ class WPTAdapter:
             # disable that to be consistent with Chromium CI. Add
             # '--run-by-dir=0' so that tests can be more evenly distributed
             # among workers.
-            if self.options.num_retries is None:
-                runner_options.retry_unexpected = 3
-            else:
-                runner_options.retry_unexpected = self.options.num_retries
             runner_options.fail_on_unexpected_pass = False
             runner_options.restart_on_unexpected = False
             runner_options.restart_on_new_group = False
@@ -377,6 +372,15 @@ class WPTAdapter:
                 filters=self.options.isolated_script_test_filter)
         except IOError:
             logger.exception('Failed to find tests.')
+
+        if self.options.num_retries is None:
+            # If --test-list is passed, or if no test narrowing is specified,
+            # default to 3 retries. Otherwise [e.g. if tests are being passed by
+            # name], default to 0 retries.
+            if self.options.test_list or len(self.paths) < len(all_test_names):
+                self.options.num_retries = 3
+            else:
+                self.options.num_retries = 0
 
         # sharding the tests the same way as in RWT
         test_names = finder.split_into_chunks(all_test_names)
@@ -437,6 +441,7 @@ class WPTAdapter:
 
             runner_options.include.extend(include_tests)
             runner_options.test_types = self.options.test_types
+            runner_options.retry_unexpected = self.options.num_retries
 
             # sharding is done inside wrapper
             runner_options.total_chunks = 1
@@ -444,6 +449,7 @@ class WPTAdapter:
             runner_options.default_exclude = True
         else:
             self._set_up_runner_sharding_options(runner_options)
+            runner_options.retry_unexpected = 0
 
     @contextlib.contextmanager
     def test_env(self):

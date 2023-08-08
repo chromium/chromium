@@ -282,12 +282,11 @@ class WPTAdapterTest(unittest.TestCase):
         with adapter.test_env() as options:
             self.assertEqual(options.retry_unexpected, 3)
 
-        # TODO We should not retry the failure in this case
         adapter = WPTAdapter.from_args(
             self.host,
             ['--no-manifest-update', 'external/wpt/dir/reftest.html'])
         with adapter.test_env() as options:
-            self.assertEqual(options.retry_unexpected, 3)
+            self.assertEqual(options.retry_unexpected, 0)
 
     def test_env_var(self):
         adapter = WPTAdapter.from_args(self.host, [
