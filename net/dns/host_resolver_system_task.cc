@@ -164,8 +164,6 @@ SystemDnsResolverOverrideCallback& GetSystemDnsResolverOverride() {
 
 void SetSystemDnsResolverOverride(
     SystemDnsResolverOverrideCallback dns_override) {
-  // TODO(crbug.com/1312224): for now, only allow this override to be set once.
-  DCHECK(!GetSystemDnsResolverOverride());
   GetSystemDnsResolverOverride() = std::move(dns_override);
 }
 

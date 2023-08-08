@@ -55,10 +55,12 @@
 #include "services/network/network_context.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/network_switches.h"
+#include "services/network/public/mojom/host_resolver.mojom.h"
 #include "services/network/public/mojom/net_log.mojom.h"
 #include "services/network/public/mojom/network_change_manager.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
+#include "services/network/public/mojom/system_dns_resolution.mojom.h"
 #include "services/network/test/fake_test_cert_verifier_params_factory.h"
 #include "services/network/test/test_network_context_client.h"
 #include "services/network/test/test_url_loader_client.h"
@@ -991,11 +993,17 @@ class NetworkServiceTestWithService : public testing::Test {
 
   ~NetworkServiceTestWithService() override {}
 
+  virtual mojom::NetworkServiceParamsPtr GetParams() {
+    return mojom::NetworkServiceParams::New();
+  }
+
   void SetUp() override {
     test_server_.AddDefaultHandlers(base::FilePath(kServicesTestData));
     ASSERT_TRUE(test_server_.Start());
-    service_ = NetworkService::CreateForTesting();
-    service_->Bind(network_service_.BindNewPipeAndPassReceiver());
+    service_ = std::make_unique<NetworkService>(
+        nullptr, network_service_.BindNewPipeAndPassReceiver(),
+        /*delay_initialization_until_set_client=*/true);
+    service_->Initialize(GetParams());
   }
 
   void CreateNetworkContext() {
@@ -1575,6 +1583,96 @@ TEST_F(NetworkServiceNetworkDelegateTest, HandleClearSiteDataHeaders) {
     }
     clear_site_observer.ClearOnClearSiteDataCounter();
   }
+}
+
+class NetworkServiceTestWithSystemDnsResolver
+    : public NetworkServiceTestWithService {
+ public:
+  NetworkServiceTestWithSystemDnsResolver() = default;
+  NetworkServiceTestWithSystemDnsResolver(
+      const NetworkServiceTestWithSystemDnsResolver&) = delete;
+  NetworkServiceTestWithSystemDnsResolver& operator=(
+      const NetworkServiceTestWithSystemDnsResolver&) = delete;
+  ~NetworkServiceTestWithSystemDnsResolver() override = default;
+
+  mojom::NetworkServiceParamsPtr GetParams() override {
+    auto params = mojom::NetworkServiceParams::New();
+    params->system_dns_resolver =
+        system_dns_resolver_pending_receiver_.InitWithNewPipeAndPassRemote();
+    return params;
+  }
+
+ protected:
+  mojo::PendingReceiver<mojom::SystemDnsResolver>
+      system_dns_resolver_pending_receiver_;
+};
+
+class StubHostResolverClient : public mojom::ResolveHostClient {
+ public:
+  using ResolveHostCallback = base::OnceCallback<void(net::AddressList)>;
+
+  explicit StubHostResolverClient(
+      mojo::PendingReceiver<mojom::ResolveHostClient> receiver,
+      ResolveHostCallback resolve_host_callback)
+      : receiver_(this, std::move(receiver)),
+        resolve_host_callback_(std::move(resolve_host_callback)) {}
+
+  StubHostResolverClient(const StubHostResolverClient&) = delete;
+  StubHostResolverClient& operator=(const StubHostResolverClient&) = delete;
+  ~StubHostResolverClient() override = default;
+
+  void OnTextResults(const std::vector<std::string>& text_results) override {}
+  void OnHostnameResults(const std::vector<net::HostPortPair>& hosts) override {
+  }
+  void OnComplete(int result,
+                  const net::ResolveErrorInfo& resolve_error_info,
+                  const absl::optional<net::AddressList>& resolved_addresses,
+                  const absl::optional<net::HostResolverEndpointResults>&
+                      endpoint_results_with_metadata) override {
+    std::move(resolve_host_callback_)
+        .Run(resolved_addresses.value_or(net::AddressList()));
+  }
+
+ private:
+  mojo::Receiver<network::mojom::ResolveHostClient> receiver_;
+  ResolveHostCallback resolve_host_callback_;
+};
+
+TEST_F(NetworkServiceTestWithSystemDnsResolver,
+       HandlesDeadSystemDnsResolverService) {
+  CreateNetworkContext();
+
+  // Kill the SystemDnsResolver pipe.
+  system_dns_resolver_pending_receiver_.reset();
+
+  // Call ResolveHost() and force it to use the SYSTEM dns resolver without
+  // cache or DoH. This will attempt to call back into the SystemDnsResolver,
+  // whose pipe is dead.
+  network::mojom::ResolveHostParametersPtr parameters =
+      network::mojom::ResolveHostParameters::New();
+  parameters->initial_priority = net::RequestPriority::HIGHEST;
+  // Use the SYSTEM resolver, and don't allow the cache or attempt DoH.
+  parameters->source = net::HostResolverSource::SYSTEM;
+  parameters->cache_usage =
+      network::mojom::ResolveHostParameters::CacheUsage::DISALLOWED;
+  parameters->secure_dns_policy = network::mojom::SecureDnsPolicy::DISABLE;
+  mojo::PendingReceiver<network::mojom::ResolveHostClient> receiver;
+  network_context_->ResolveHost(
+      network::mojom::HostResolverHost::NewHostPortPair(
+          net::HostPortPair("hostname1", 80)),
+      net::NetworkAnonymizationKey::CreateTransient(), std::move(parameters),
+      receiver.InitWithNewPipeAndPassRemote());
+
+  // Wait until the ResolveHost() call is done and make sure it returns an empty
+  // AddressList.
+  base::RunLoop run_loop;
+  auto stub_host_resolver_client = std::make_unique<StubHostResolverClient>(
+      std::move(receiver),
+      base::BindLambdaForTesting([&run_loop](net::AddressList address_list) {
+        ASSERT_TRUE(address_list.empty());
+        run_loop.Quit();
+      }));
+  run_loop.Run();
 }
 
 }  // namespace
