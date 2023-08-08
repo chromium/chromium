@@ -10294,8 +10294,6 @@ void WillChange::ApplyInitial(StyleResolverState& state) const {
   builder.SetWillChangeContents(false);
   builder.SetWillChangeScrollPosition(false);
   builder.SetWillChangeProperties(Vector<CSSPropertyID>());
-  builder.SetSubtreeWillChangeContents(
-      state.ParentStyle()->SubtreeWillChangeContents());
 }
 
 void WillChange::ApplyInherit(StyleResolverState& state) const {
@@ -10304,8 +10302,6 @@ void WillChange::ApplyInherit(StyleResolverState& state) const {
   builder.SetWillChangeScrollPosition(
       state.ParentStyle()->WillChangeScrollPosition());
   builder.SetWillChangeProperties(state.ParentStyle()->WillChangeProperties());
-  builder.SetSubtreeWillChangeContents(
-      state.ParentStyle()->SubtreeWillChangeContents());
 }
 
 void WillChange::ApplyValue(StyleResolverState& state,
@@ -10504,7 +10500,8 @@ const CSSValue* BackgroundRepeatX::CSSValueFromComputedStyleInternal(
     const LayoutObject*,
     bool allow_visited_style) const {
   CSSValueList* list = CSSValueList::CreateCommaSeparated();
-  for (const FillLayer* curr_layer = &style.BackgroundLayers(); curr_layer; curr_layer = curr_layer->Next()) {
+  for (const FillLayer* curr_layer = &style.BackgroundLayers(); curr_layer;
+       curr_layer = curr_layer->Next()) {
     list->Append(*CSSIdentifierValue::Create(curr_layer->RepeatX()));
   }
   return list;
@@ -10515,7 +10512,8 @@ const CSSValue* BackgroundRepeatY::CSSValueFromComputedStyleInternal(
     const LayoutObject*,
     bool allow_visited_style) const {
   CSSValueList* list = CSSValueList::CreateCommaSeparated();
-  for (const FillLayer* curr_layer = &style.BackgroundLayers(); curr_layer; curr_layer = curr_layer->Next()) {
+  for (const FillLayer* curr_layer = &style.BackgroundLayers(); curr_layer;
+       curr_layer = curr_layer->Next()) {
     list->Append(*CSSIdentifierValue::Create(curr_layer->RepeatY()));
   }
   return list;

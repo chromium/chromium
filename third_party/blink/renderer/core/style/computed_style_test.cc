@@ -581,7 +581,7 @@ TEST_F(ComputedStyleTest, AnimationFlags) {
   TEST_ANIMATION_FLAG(HasCurrentOpacityAnimation, kNonInherited);
   TEST_ANIMATION_FLAG(HasCurrentFilterAnimation, kNonInherited);
   TEST_ANIMATION_FLAG(HasCurrentBackdropFilterAnimation, kNonInherited);
-  TEST_ANIMATION_FLAG(SubtreeWillChangeContents, kInherited);
+  TEST_ANIMATION_FLAG(SubtreeWillChangeContents, kNonInherited);
   TEST_ANIMATION_FLAG_NO_DIFF(IsRunningTransformAnimationOnCompositor);
   TEST_ANIMATION_FLAG_NO_DIFF(IsRunningScaleAnimationOnCompositor);
   TEST_ANIMATION_FLAG_NO_DIFF(IsRunningRotateAnimationOnCompositor);

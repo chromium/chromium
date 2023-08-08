@@ -928,6 +928,15 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
     builder.SetForcesStackingContext(true);
   }
 
+  // Though will-change is not itself an inherited property, the intent
+  // expressed by 'will-change: contents' includes descendants.
+  // (We can't mark will-change as inherited and copy this in
+  // WillChange::ApplyInherit(), as Apply() for noninherited
+  // properties, like will-change, gets skipped on partial MPC hits.)
+  if (state.ParentStyle()->SubtreeWillChangeContents()) {
+    builder.SetSubtreeWillChangeContents(true);
+  }
+
   if (builder.OverflowX() != EOverflow::kVisible ||
       builder.OverflowY() != EOverflow::kVisible) {
     AdjustOverflow(builder, element ? element : state.GetPseudoElement());

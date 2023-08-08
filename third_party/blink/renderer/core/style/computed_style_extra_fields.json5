@@ -409,11 +409,8 @@
       field_group: "*",
       computed_style_custom_functions: ["getter"],
     },
-    // Though will-change is not itself an inherited property, the intent
-    // expressed by 'will-change: contents' includes descendants.
     {
       name: "SubtreeWillChangeContents",
-      inherited: true,
       field_template: "primitive",
       type_name: "bool",
       default_value: "false",
