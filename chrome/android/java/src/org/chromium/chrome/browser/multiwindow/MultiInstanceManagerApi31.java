@@ -40,6 +40,8 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
+import org.chromium.chrome.browser.tabmodel.TabList;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
@@ -68,6 +70,8 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     protected final int mMaxInstances;
     private ObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
+
+    private TabModelSelectorTabModelObserverForTabMove mTabModelObserverForTabMove;
 
     // Instance ID for the activity associated with this manager.
     private int mInstanceId = INVALID_INSTANCE_ID;
@@ -732,15 +736,21 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
      * Move the specified tab to the current instance of the ChromeTabbedActivity window.
      * @param activity Activity of the Chrome Window in which the tab is to be moved.
      * @param tab Tab that is to be moved to the current instance.
+     * @param atIndex Tab position index in the destination window instance.
      */
     @Override
-    public void moveTabToWindow(Activity activity, Tab tab) {
+    public void moveTabToWindow(Activity activity, Tab tab, int atIndex) {
         if (!ChromeFeatureList.sTabDragDropAndroid.isEnabled()) return;
 
         // Get the current instance and move tab there.
         InstanceInfo info = getInstanceInfoFor(activity);
         if (info != null) {
+            // Set the observer to monitor when the tab is added to the list so that it can be
+            // positioned at the dropped location.
+            setTabModelObserverForTabMove(
+                    tab.getId(), info.instanceId, info.isIncognitoSelected, atIndex);
             moveTabAction(info, tab);
+            clearTabModelObserverForTabMove();
         } else {
             Log.w(TAG, "DnD: InstanceInfo of Chrome Window not found.");
         }
@@ -771,5 +781,59 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
             }
         }
         return null;
+    }
+
+    private void setTabModelObserverForTabMove(
+            int tabId, int destinationInstanceId, boolean incognito, int destinationTabIndex) {
+        TabModelSelector selector = TabWindowManagerSingleton.getInstance().getTabModelSelectorById(
+                destinationInstanceId);
+        TabModel destinationTabModel = selector.getModel(incognito);
+        mTabModelObserverForTabMove = new TabModelSelectorTabModelObserverForTabMove(
+                selector, tabId, destinationTabIndex, destinationTabModel);
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    void clearTabModelObserverForTabMove() {
+        mTabModelObserverForTabMove.destroy();
+        mTabModelObserverForTabMove = null;
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+    TabModelSelectorTabModelObserverForTabMove getTabModelObserverForTabMove() {
+        return mTabModelObserverForTabMove;
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    class TabModelSelectorTabModelObserverForTabMove extends TabModelSelectorTabModelObserver {
+        private int mTabId;
+        private int mDestinationTabIndex;
+        private TabModel mDestinationTabModel;
+
+        TabModelSelectorTabModelObserverForTabMove(TabModelSelector selector, int tabId,
+                int destinationTabIndex, TabModel destinationTabModel) {
+            super(selector);
+            mTabId = tabId;
+            mDestinationTabIndex = destinationTabIndex;
+            mDestinationTabModel = destinationTabModel;
+        }
+
+        @Override
+        public void didAddTab(Tab tab, int type, int creationState, boolean markedForSelection) {
+            // Check if the tab is added because of the tab move action to other Chrome instances.
+            if (mTabId == tab.getId() && mDestinationTabModel != null) {
+                // TODO (b/295037141): Use the launch intent to pass the tab index while reparenting
+                // to position it tabs toolbar.
+                mDestinationTabModel.moveTab(mTabId, mDestinationTabIndex);
+                // Clear the data as the Tab should be moved only once per move action.
+                clearDestinationInfo();
+            }
+        }
+
+        @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+        void clearDestinationInfo() {
+            mTabId = Tab.INVALID_TAB_ID;
+            mDestinationTabIndex = TabList.INVALID_TAB_INDEX;
+            mDestinationTabModel = null;
+        }
     }
 }

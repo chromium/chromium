@@ -466,7 +466,8 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         return mStripTabsToRender;
     }
 
-    public int getTabCountForTesting() {
+    @VisibleForTesting
+    public int getTabCount() {
         return mStripTabs.length;
     }
 
@@ -1877,7 +1878,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         return null;
     }
 
-    private int findIndexForTab(int id) {
+    int findIndexForTab(int id) {
         if (mStripTabs == null) return TabModel.INVALID_TAB_INDEX;
         for (int i = 0; i < mStripTabs.length; i++) {
             if (mStripTabs[i].getId() == id) return i;
@@ -2108,7 +2109,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         mTabAtPositionForTesting = tab;
     }
 
-    private StripLayoutTab getTabAtPosition(float x) {
+    StripLayoutTab getTabAtPosition(float x) {
         if (mTabAtPositionForTesting != null) {
             return mTabAtPositionForTesting;
         }
@@ -3200,7 +3201,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         if (!MultiWindowUtils.isMultiInstanceApi31Enabled()) return;
         if (!ChromeFeatureList.sTabDragDropAndroid.isEnabled()) return;
 
-        mTabDropTarget = new TabDropTarget();
+        mTabDropTarget = new TabDropTarget(this);
         TabDragSource.getInstance().prepareForDragDrop(
                 mToolbarContainerView, mMultiInstanceManager, mTabDropTarget);
     }
@@ -3228,5 +3229,16 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
 
     View getToolbarContainerView() {
         return mToolbarContainerView;
+    }
+
+    void selectTabAtIndex(int atIndex) {
+        if (!MultiWindowUtils.isMultiInstanceApi31Enabled()) return;
+        if (!ChromeFeatureList.sTabDragDropAndroid.isEnabled()) return;
+
+        TabModelUtils.setIndex(mModel, atIndex, true);
+    }
+
+    int getCurrentTabIndexForTesting() {
+        return findIndexForTab(TabModelUtils.getCurrentTabId(mModel));
     }
 }

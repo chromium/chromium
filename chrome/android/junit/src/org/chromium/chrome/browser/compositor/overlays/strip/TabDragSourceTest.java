@@ -92,14 +92,15 @@ public class TabDragSourceTest {
     private StripLayoutTab mClickedTab;
     private View mTabsToolbarView;
     private static final String[] TEST_TAB_TITLES = {"Tab 1", "Tab 2", "Tab 3", "Tab 4", "Tab 5"};
-    private static final float TAB_STRIP_WIDTH = 600.f;
-    private static final float TAB_STRIP_HEIGHT = 50.f;
+    private static final float TOOLBAR_CONTAINER_WIDTH = 600.f;
+    private static final float TOOLBAR_CONTAINER_HEIGHT = 50.f;
+    private static final float TAB_STRIP_HEIGHT = 22.f;
     private static final float TAB_STRIP_X_START = 80.f;
     private static final float TAB_STRIP_Y_START = 7.f;
     private static final float TAB_STRIP_Y_STEP = 10.f;
     private static final float TAB_X_OFFSET = 80.f;
-    private static final float TAB_Y_OFFSET_WITHIN = TAB_STRIP_HEIGHT / 2.f - 1.f;
-    private static final float TAB_Y_OFFSET_OUTSIDE = TAB_STRIP_HEIGHT / 2.f + 1.f;
+    private static final float TAB_Y_OFFSET_WITHIN = TAB_STRIP_HEIGHT - 1.f;
+    private static final float TAB_Y_OFFSET_OUTSIDE = TAB_STRIP_HEIGHT + 1.f;
     private static final float TAB_WIDTH = 150.f;
     private static final long TIMESTAMP = 5000;
     private static final float DROP_X_SCREEN_POS = 1000.f;
@@ -119,7 +120,7 @@ public class TabDragSourceTest {
         // Get and spy on the singleton TabDragSource.
         mTabDragSource = Mockito.spy(TabDragSource.getInstance());
 
-        mTabDropTarget = Mockito.spy(new TabDropTarget());
+        mTabDropTarget = Mockito.spy(new TabDropTarget(mStripLayoutHelper));
 
         // Create and spy on a simulated tab view.
         mTabsToolbarView = Mockito.spy(new View(mActivity));
@@ -153,7 +154,8 @@ public class TabDragSourceTest {
         mStripLayoutHelper.setTabModel(mModel, null, false);
         mStripLayoutHelper.setTabGroupModelFilter(mTabGroupModelFilter);
         mStripLayoutHelper.tabSelected(0, tabIndex, 0, false);
-        mStripLayoutHelper.onSizeChanged(TAB_STRIP_WIDTH, TAB_STRIP_HEIGHT, false, TIMESTAMP);
+        mStripLayoutHelper.onSizeChanged(
+                TOOLBAR_CONTAINER_WIDTH, TOOLBAR_CONTAINER_HEIGHT, false, TIMESTAMP);
         mStripLayoutHelper.updateLayout(TIMESTAMP);
         StripLayoutTab[] tabs = new StripLayoutTab[mModel.getCount()];
         for (int i = 0; i < numTabs; i++) {
@@ -282,6 +284,7 @@ public class TabDragSourceTest {
         // Prepare
         initializeTest(false, false, 1, 5);
         mTabDragSource.prepareForDragDrop(mTabsToolbarView, mMultiInstanceManager, mTabDropTarget);
+        mTabDragSource.setTabsToolbarHeightInDp(TAB_STRIP_HEIGHT);
         mTabDragSource.startTabDragAction(mTabsToolbarView, mStripLayoutHelper,
                 mStripLayoutHelper.getTabById(mClickedTab.getId()), DRAG_START_POINT);
 
@@ -307,6 +310,7 @@ public class TabDragSourceTest {
         // Prepare
         initializeTest(false, false, 1, 5);
         mTabDragSource.prepareForDragDrop(mTabsToolbarView, mMultiInstanceManager, mTabDropTarget);
+        mTabDragSource.setTabsToolbarHeightInDp(TAB_STRIP_HEIGHT);
         mTabDragSource.startTabDragAction(mTabsToolbarView, mStripLayoutHelper,
                 mStripLayoutHelper.getTabById(mClickedTab.getId()), DRAG_START_POINT);
 
@@ -333,6 +337,7 @@ public class TabDragSourceTest {
         // Prepare
         initializeTest(false, false, 1, 5);
         mTabDragSource.prepareForDragDrop(mTabsToolbarView, mMultiInstanceManager, mTabDropTarget);
+        mTabDragSource.setTabsToolbarHeightInDp(TAB_STRIP_HEIGHT);
         mTabDragSource.startTabDragAction(mTabsToolbarView, mStripLayoutHelper,
                 mStripLayoutHelper.getTabById(mClickedTab.getId()), DRAG_START_POINT);
 
@@ -355,6 +360,7 @@ public class TabDragSourceTest {
         // Prepare
         initializeTest(false, false, 1, 5);
         mTabDragSource.prepareForDragDrop(mTabsToolbarView, mMultiInstanceManager, mTabDropTarget);
+        mTabDragSource.setTabsToolbarHeightInDp(TAB_STRIP_HEIGHT);
         mTabDragSource.startTabDragAction(mTabsToolbarView, mStripLayoutHelper,
                 mStripLayoutHelper.getTabById(mClickedTab.getId()), DRAG_START_POINT);
 
@@ -377,6 +383,7 @@ public class TabDragSourceTest {
         // Prepare
         initializeTest(false, false, 1, 5);
         mTabDragSource.prepareForDragDrop(mTabsToolbarView, mMultiInstanceManager, mTabDropTarget);
+        mTabDragSource.setTabsToolbarHeightInDp(TAB_STRIP_HEIGHT);
         mTabDragSource.startTabDragAction(mTabsToolbarView, mStripLayoutHelper,
                 mStripLayoutHelper.getTabById(mClickedTab.getId()), DRAG_START_POINT);
 
@@ -495,6 +502,7 @@ public class TabDragSourceTest {
         // Prepare
         initializeTest(false, false, 1, 5);
         mTabDragSource.prepareForDragDrop(mTabsToolbarView, mMultiInstanceManager, mTabDropTarget);
+        mTabDragSource.setTabsToolbarHeightInDp(TAB_STRIP_HEIGHT);
         mTabDragSource.startTabDragAction(mTabsToolbarView, mStripLayoutHelper,
                 mStripLayoutHelper.getTabById(mClickedTab.getId()), DRAG_START_POINT);
         View tabsToolbarViewForDrop = getAnotherToolbarView();
@@ -547,6 +555,7 @@ public class TabDragSourceTest {
         // Prepare
         initializeTest(false, false, 1, 5);
         mTabDragSource.prepareForDragDrop(mTabsToolbarView, mMultiInstanceManager, mTabDropTarget);
+        mTabDragSource.setTabsToolbarHeightInDp(TAB_STRIP_HEIGHT);
         mTabDragSource.startTabDragAction(mTabsToolbarView, mStripLayoutHelper,
                 mStripLayoutHelper.getTabById(mClickedTab.getId()), DRAG_START_POINT);
 
@@ -573,6 +582,7 @@ public class TabDragSourceTest {
         final float dragStartYPosition = 45f;
         initializeTest(false, false, 1, 5);
         mTabDragSource.prepareForDragDrop(mTabsToolbarView, mMultiInstanceManager, mTabDropTarget);
+        mTabDragSource.setTabsToolbarHeightInDp(TAB_STRIP_HEIGHT);
         mTabDragSource.startTabDragAction(mTabsToolbarView, mStripLayoutHelper,
                 mStripLayoutHelper.getTabById(mClickedTab.getId()),
                 new PointF(dragStartXPosition, dragStartYPosition));

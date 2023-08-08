@@ -21,6 +21,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.core.view.ViewCompat;
 
 import org.chromium.base.Log;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
@@ -49,6 +50,8 @@ public class TabDragSource {
     private OnDragListenerImpl mOnDragListenerImpl;
     private View.DragShadowBuilder mTabDragShadowBuilder;
     private PointF mStartPointOnScreen;
+    private PointF mDropLocation;
+    private float mTabsToolbarHeightInDp;
 
     private float mPxToDp;
 
@@ -112,6 +115,20 @@ public class TabDragSource {
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     View.DragShadowBuilder getTabDragShadowBuilder() {
         return mTabDragShadowBuilder;
+    }
+
+    PointF getTabDropPosition() {
+        return mDropLocation;
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+    void setTabDropPosition(PointF dropLocation) {
+        mDropLocation = dropLocation;
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+    void setTabsToolbarHeightInDp(float tabsToolbarHeightInDp) {
+        mTabsToolbarHeightInDp = tabsToolbarHeightInDp;
     }
 
     @VisibleForTesting
@@ -217,10 +234,8 @@ public class TabDragSource {
                 // The container has two toolbars strips stacked on each other. The top one is the
                 // tabs strip layout and lower is for omnibox and navigation buttons. The tab drop
                 // is accepted only in the top tabs toolbar area only.
-                if ((dragEvent.getAction() == DragEvent.ACTION_DROP)
-                        // TODO(b/288959915): Exactly determine the tabs toolbar area rather than
-                        // using the approximate top half height of the toolbar container.
-                        && (dragEvent.getY() < view.getHeight() / 2.0f)) {
+                if (dragEvent.getAction() == DragEvent.ACTION_DROP
+                        && inTabsToolbarArea(view, dragEvent)) {
                     mAcceptNextDrop = true;
                 }
                 return true;
@@ -241,7 +256,7 @@ public class TabDragSource {
         private void setDragShadow(View view, DragEvent dragEvent) {
             switch (dragEvent.getAction()) {
                 case DragEvent.ACTION_DRAG_LOCATION:
-                    boolean inTabsStripArea = dragEvent.getY() <= view.getHeight() / 2.0f;
+                    boolean inTabsStripArea = inTabsToolbarArea(view, dragEvent);
                     if (inTabsStripArea && mDragShadowVisible) {
                         showDragShadow(false);
                     }
@@ -251,6 +266,8 @@ public class TabDragSource {
                     break;
                 case DragEvent.ACTION_DROP:
                     showDragShadow(false);
+                    mDropLocation =
+                            new PointF(dragEvent.getX() * mPxToDp, dragEvent.getY() * mPxToDp);
                     break;
                 case DragEvent.ACTION_DRAG_ENDED:
                     showDragShadow(false);
@@ -330,7 +347,6 @@ public class TabDragSource {
             Drawable icon =
                     context.getPackageManager().getApplicationIcon(context.getApplicationInfo());
             imageView.setImageDrawable(icon);
-            imageView.setVisibility(View.VISIBLE);
             imageView.setBackgroundDrawable(new ColorDrawable(Color.LTGRAY));
 
             // Get Chrome window dimensions.
@@ -431,6 +447,10 @@ public class TabDragSource {
                 tabsToolbarView, SUPPORTED_MIMETYPES, tabDropTarget.getDropContentReceiver());
         mOnDragListenerImpl = new OnDragListenerImpl();
         tabsToolbarView.setOnDragListener(mOnDragListenerImpl);
+
+        // Save the tabs toolbar height as it occupies the top half of the toolbar container.
+        mTabsToolbarHeightInDp =
+                tabsToolbarView.getContext().getResources().getDimension(R.dimen.tab_strip_height);
     }
 
     @VisibleForTesting
@@ -470,7 +490,8 @@ public class TabDragSource {
 
     int getTabIdFromClipData(ClipData.Item item) {
         String[] itemTexts = item.getText().toString().split(";");
-        return Integer.parseInt(itemTexts[0].replaceAll("[^0-9]", ""));
+        String numberText = itemTexts[0].replaceAll("[^0-9]", "");
+        return numberText.isEmpty() ? Tab.INVALID_TAB_ID : Integer.parseInt(numberText);
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
@@ -538,5 +559,9 @@ public class TabDragSource {
         float positionYOnScreen = (topLeftLocationOfToolbarView[1] - topLeftLocationOfDecorView[1])
                 + positionInView.y / mPxToDp;
         return new PointF(positionXOnScreen, positionYOnScreen);
+    }
+
+    private boolean inTabsToolbarArea(View view, DragEvent dragEvent) {
+        return (dragEvent.getY() <= mTabsToolbarHeightInDp);
     }
 }
