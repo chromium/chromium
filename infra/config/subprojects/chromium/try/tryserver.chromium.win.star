@@ -83,7 +83,10 @@ try_.orchestrator_builder(
             condition = builder_config.rts_condition.QUICK_RUN_ONLY,
         ),
     ),
-    check_for_flakiness = True,
+    # TODO(crbug.com/1456545) - _with_resultdb should be deprecated in favor for
+    # the original property once all builders have migrated.
+    # check_for_flakiness = True,
+    check_for_flakiness_with_resultdb = True,
     compilator = "win-rel-compilator",
     coverage_test_types = ["unit", "overall"],
     experiments = {
@@ -102,7 +105,10 @@ try_.orchestrator_builder(
 try_.compilator_builder(
     name = "win-rel-compilator",
     branch_selector = branches.selector.WINDOWS_BRANCHES,
-    check_for_flakiness = True,
+    # TODO(crbug.com/1456545) - _with_resultdb should be deprecated in favor for
+    # the original property once all builders have migrated.
+    # check_for_flakiness = True,
+    check_for_flakiness_with_resultdb = True,
     # TODO (crbug.com/1245171): Revert when root issue is fixed
     grace_period = 4 * time.minute,
     main_list_view = "try",
@@ -125,7 +131,10 @@ try_.orchestrator_builder(
             condition = builder_config.rts_condition.QUICK_RUN_ONLY,
         ),
     ),
-    check_for_flakiness = True,
+    # TODO(crbug.com/1456545) - _with_resultdb should be deprecated in favor for
+    # the original property once all builders have migrated.
+    # check_for_flakiness = True,
+    check_for_flakiness_with_resultdb = True,
     compilator = "win-siso-rel-compilator",
     coverage_test_types = ["unit", "overall"],
     experiments = {
@@ -143,7 +152,10 @@ try_.orchestrator_builder(
 
 try_.compilator_builder(
     name = "win-siso-rel-compilator",
-    check_for_flakiness = True,
+    # TODO(crbug.com/1456545) - _with_resultdb should be deprecated in favor for
+    # the original property once all builders have migrated.
+    # check_for_flakiness = True,
+    check_for_flakiness_with_resultdb = True,
     # TODO (crbug.com/1245171): Revert when root issue is fixed
     grace_period = 4 * time.minute,
     main_list_view = "try",
