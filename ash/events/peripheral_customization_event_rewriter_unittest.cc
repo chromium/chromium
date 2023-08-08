@@ -15,8 +15,15 @@
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
+#include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
+#include "ui/events/keycodes/dom/dom_code.h"
+#include "ui/events/keycodes/dom/dom_key.h"
+#include "ui/events/keycodes/keyboard_codes_posix.h"
+#include "ui/events/ozone/layout/scoped_keyboard_layout_engine.h"
+#include "ui/events/ozone/layout/stub/stub_keyboard_layout_engine.h"
 #include "ui/events/test/test_event_rewriter_continuation.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -93,27 +100,28 @@ class TestObserver : public PeripheralCustomizationEventRewriter::Observer {
       pressed_graphics_tablet_buttons_;
 };
 
+using EventTypeVariant = absl::variant<ui::MouseEvent, ui::KeyEvent>;
 struct EventRewriterTestData {
-  ui::MouseEvent incoming_event;
-  absl::optional<ui::MouseEvent> rewritten_event;
+  EventTypeVariant incoming_event;
+  absl::optional<EventTypeVariant> rewritten_event;
   absl::optional<mojom::Button> pressed_button;
 
-  EventRewriterTestData(ui::MouseEvent incoming_event,
-                        absl::optional<ui::MouseEvent> rewritten_event)
+  EventRewriterTestData(EventTypeVariant incoming_event,
+                        absl::optional<EventTypeVariant> rewritten_event)
       : incoming_event(incoming_event),
         rewritten_event(rewritten_event),
         pressed_button(absl::nullopt) {}
 
-  EventRewriterTestData(ui::MouseEvent incoming_event,
-                        absl::optional<ui::MouseEvent> rewritten_event,
+  EventRewriterTestData(EventTypeVariant incoming_event,
+                        absl::optional<EventTypeVariant> rewritten_event,
                         mojom::CustomizableButton button)
       : incoming_event(incoming_event), rewritten_event(rewritten_event) {
     pressed_button = mojom::Button();
     pressed_button->set_customizable_button(button);
   }
 
-  EventRewriterTestData(ui::MouseEvent incoming_event,
-                        absl::optional<ui::MouseEvent> rewritten_event,
+  EventRewriterTestData(EventTypeVariant incoming_event,
+                        absl::optional<EventTypeVariant> rewritten_event,
                         ui::KeyboardCode key_code)
       : incoming_event(incoming_event), rewritten_event(rewritten_event) {
     pressed_button = mojom::Button();
@@ -122,6 +130,36 @@ struct EventRewriterTestData {
 
   EventRewriterTestData(const EventRewriterTestData& data) = default;
 };
+
+// Before test suites are initialized, paraterized data gets generated.
+// `ui::KeyEvent` structs rely on the keyboard layout engine being setup.
+// Therefore, before any suites are initialized, the keyboard layout engine must
+// be configured before using/creating any `ui::KeyEvent` structs. Once a suite
+// is setup, this function will be disabled which will stop any further layout
+// engines from being created.
+std::unique_ptr<ui::ScopedKeyboardLayoutEngine> CreateLayoutEngine(
+    bool disable_permanently = false) {
+  static bool disabled = false;
+  if (disable_permanently || disabled) {
+    disabled = true;
+    return nullptr;
+  }
+
+  return std::make_unique<ui::ScopedKeyboardLayoutEngine>(
+      std::make_unique<ui::StubKeyboardLayoutEngine>());
+}
+
+ui::KeyEvent CreateKeyButtonEvent(ui::EventType type,
+                                  ui::KeyboardCode key_code,
+                                  int flags = ui::EF_NONE,
+                                  ui::DomCode code = ui::DomCode::NONE,
+                                  ui::DomKey key = ui::DomKey::NONE,
+                                  int device_id = kDeviceId) {
+  auto engine = CreateLayoutEngine();
+  ui::KeyEvent key_event(type, key_code, code, flags, key, /*time_stamp=*/{});
+  key_event.set_source_device_id(device_id);
+  return key_event;
+}
 
 ui::MouseEvent CreateMouseButtonEvent(ui::EventType type,
                                       int flags,
@@ -134,22 +172,53 @@ ui::MouseEvent CreateMouseButtonEvent(ui::EventType type,
   return mouse_event;
 }
 
+std::string ConvertToString(const ui::MouseEvent& mouse_event) {
+  return base::StringPrintf(
+      "MouseEvent type=%d flags=0x%X changed_button_flags=0x%X",
+      mouse_event.type(), mouse_event.flags(),
+      mouse_event.changed_button_flags());
+}
+
+std::string ConvertToString(const ui::KeyEvent& key_event) {
+  auto engine = CreateLayoutEngine();
+  return base::StringPrintf(
+      "KeyboardEvent type=%d code=0x%06X flags=0x%X vk=0x%02X key=0x%08X "
+      "scan=0x%08X",
+      key_event.type(), key_event.key_code(),
+      static_cast<uint32_t>(key_event.code()), key_event.flags(),
+      static_cast<uint32_t>(key_event.GetDomKey()), key_event.scan_code());
+}
+
+std::string ConvertToString(const EventTypeVariant& event) {
+  return absl::visit([](auto&& event) { return ConvertToString(event); },
+                     event);
+}
+
 std::string ConvertToString(const ui::Event& event) {
   if (event.IsMouseEvent()) {
-    const auto& mouse_event = *event.AsMouseEvent();
-    return base::StringPrintf(
-        "MouseEvent type=%d flags=0x%X changed_button_flags=0x%X",
-        mouse_event.type(), mouse_event.flags(),
-        mouse_event.changed_button_flags());
+    return ConvertToString(*event.AsMouseEvent());
+  }
+  if (event.IsKeyEvent()) {
+    return ConvertToString(*event.AsKeyEvent());
   }
   NOTREACHED_NORETURN();
 }
 
+const ui::Event& GetEventFromVariant(const EventTypeVariant& event) {
+  if (absl::holds_alternative<ui::MouseEvent>(event)) {
+    return absl::get<ui::MouseEvent>(event);
+  } else {
+    return absl::get<ui::KeyEvent>(event);
+  }
+}
+
 }  // namespace
 
-class PeripheralCustomizationEventRewriterTest : public AshTestBase {
+class PeripheralCustomizationEventRewriterTest : public testing::Test {
  public:
-  PeripheralCustomizationEventRewriterTest() = default;
+  PeripheralCustomizationEventRewriterTest() {
+    CreateLayoutEngine(/*disable_permanently=*/true);
+  }
   PeripheralCustomizationEventRewriterTest(
       const PeripheralCustomizationEventRewriterTest&) = delete;
   PeripheralCustomizationEventRewriterTest& operator=(
@@ -162,7 +231,6 @@ class PeripheralCustomizationEventRewriterTest : public AshTestBase {
                                            features::kInputDeviceSettingsSplit},
                                           {});
 
-    AshTestBase::SetUp();
     rewriter_ = std::make_unique<PeripheralCustomizationEventRewriter>();
     observer_ = std::make_unique<TestObserver>();
     rewriter_->AddObserver(observer_.get());
@@ -172,7 +240,6 @@ class PeripheralCustomizationEventRewriterTest : public AshTestBase {
     rewriter_->RemoveObserver(observer_.get());
     observer_.reset();
     rewriter_.reset();
-    AshTestBase::TearDown();
     scoped_feature_list_.Reset();
   }
 
@@ -220,6 +287,7 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     MouseButtonObserverTest,
     testing::ValuesIn(std::vector<EventRewriterTestData>{
+        // MouseEvent tests:
         {
             CreateMouseButtonEvent(ui::ET_MOUSE_PRESSED,
                                    ui::EF_BACK_MOUSE_BUTTON,
@@ -298,6 +366,26 @@ INSTANTIATE_TEST_SUITE_P(
                                    ui::EF_RIGHT_MOUSE_BUTTON,
                                    ui::EF_NONE),
         },
+
+        // KeyEvent tests:
+        {
+            CreateKeyButtonEvent(ui::ET_KEY_PRESSED,
+                                 ui::VKEY_A,
+                                 ui::EF_COMMAND_DOWN),
+            absl::nullopt,
+            ui::VKEY_A,
+        },
+        {
+            CreateKeyButtonEvent(ui::ET_KEY_PRESSED, ui::VKEY_B, ui::EF_NONE),
+            absl::nullopt,
+            ui::VKEY_B,
+        },
+
+        // Test that key releases are consumed, but not sent to observers.
+        {
+            CreateKeyButtonEvent(ui::ET_KEY_RELEASED, ui::VKEY_A),
+            absl::nullopt,
+        },
     }),
     [](const testing::TestParamInfo<EventRewriterTestData>& info) {
       std::string name = ConvertToString(info.param.incoming_event);
@@ -312,7 +400,7 @@ TEST_P(MouseButtonObserverTest, EventRewriting) {
   rewriter_->StartObservingMouse(kDeviceId);
 
   TestEventRewriterContinuation continuation;
-  rewriter_->RewriteEvent(data.incoming_event,
+  rewriter_->RewriteEvent(GetEventFromVariant(data.incoming_event),
                           continuation.weak_ptr_factory_.GetWeakPtr());
   if (!data.rewritten_event) {
     ASSERT_TRUE(continuation.discarded());
@@ -324,7 +412,6 @@ TEST_P(MouseButtonObserverTest, EventRewriting) {
     }
   } else {
     ASSERT_TRUE(continuation.passthrough_event);
-    ASSERT_TRUE(continuation.passthrough_event->IsMouseEvent());
     EXPECT_EQ(ConvertToString(*data.rewritten_event),
               ConvertToString(*continuation.passthrough_event));
   }
@@ -334,10 +421,9 @@ TEST_P(MouseButtonObserverTest, EventRewriting) {
 
   // After we stop observing, the passthrough event should be an identity of the
   // original.
-  rewriter_->RewriteEvent(data.incoming_event,
+  rewriter_->RewriteEvent(GetEventFromVariant(data.incoming_event),
                           continuation.weak_ptr_factory_.GetWeakPtr());
   ASSERT_TRUE(continuation.passthrough_event);
-  ASSERT_TRUE(continuation.passthrough_event->IsMouseEvent());
   EXPECT_EQ(ConvertToString(data.incoming_event),
             ConvertToString(*continuation.passthrough_event));
 }
@@ -425,6 +511,26 @@ INSTANTIATE_TEST_SUITE_P(
                                    ui::EF_LEFT_MOUSE_BUTTON,
                                    ui::EF_NONE),
         },
+
+        // KeyEvent tests:
+        {
+            CreateKeyButtonEvent(ui::ET_KEY_PRESSED,
+                                 ui::VKEY_A,
+                                 ui::EF_COMMAND_DOWN),
+            absl::nullopt,
+            ui::VKEY_A,
+        },
+        {
+            CreateKeyButtonEvent(ui::ET_KEY_PRESSED, ui::VKEY_B, ui::EF_NONE),
+            absl::nullopt,
+            ui::VKEY_B,
+        },
+
+        // Test that key releases are consumed, but not sent to observers.
+        {
+            CreateKeyButtonEvent(ui::ET_KEY_RELEASED, ui::VKEY_A),
+            absl::nullopt,
+        },
     }),
     [](const testing::TestParamInfo<EventRewriterTestData>& info) {
       std::string name = ConvertToString(info.param.incoming_event);
@@ -439,7 +545,7 @@ TEST_P(GraphicsTabletButtonObserverTest, RewriteEvent) {
   rewriter_->StartObservingGraphicsTablet(kDeviceId);
 
   TestEventRewriterContinuation continuation;
-  rewriter_->RewriteEvent(data.incoming_event,
+  rewriter_->RewriteEvent(GetEventFromVariant(data.incoming_event),
                           continuation.weak_ptr_factory_.GetWeakPtr());
   if (!data.rewritten_event) {
     ASSERT_TRUE(continuation.discarded());
@@ -451,7 +557,6 @@ TEST_P(GraphicsTabletButtonObserverTest, RewriteEvent) {
     }
   } else {
     ASSERT_TRUE(continuation.passthrough_event);
-    ASSERT_TRUE(continuation.passthrough_event->IsMouseEvent());
     EXPECT_EQ(ConvertToString(*data.rewritten_event),
               ConvertToString(*continuation.passthrough_event));
   }
@@ -461,10 +566,9 @@ TEST_P(GraphicsTabletButtonObserverTest, RewriteEvent) {
 
   // After we stop observing, the passthrough event should be an identity of the
   // original.
-  rewriter_->RewriteEvent(data.incoming_event,
+  rewriter_->RewriteEvent(GetEventFromVariant(data.incoming_event),
                           continuation.weak_ptr_factory_.GetWeakPtr());
   ASSERT_TRUE(continuation.passthrough_event);
-  ASSERT_TRUE(continuation.passthrough_event->IsMouseEvent());
   EXPECT_EQ(ConvertToString(data.incoming_event),
             ConvertToString(*continuation.passthrough_event));
 }

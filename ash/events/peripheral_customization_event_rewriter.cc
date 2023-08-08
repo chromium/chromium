@@ -78,6 +78,17 @@ PeripheralCustomizationEventRewriter::PeripheralCustomizationEventRewriter() =
 PeripheralCustomizationEventRewriter::~PeripheralCustomizationEventRewriter() =
     default;
 
+absl::optional<PeripheralCustomizationEventRewriter::DeviceType>
+PeripheralCustomizationEventRewriter::GetDeviceTypeToObserve(int device_id) {
+  if (mice_to_observe_.contains(device_id)) {
+    return DeviceType::kMouse;
+  }
+  if (graphics_tablets_to_observe_.contains(device_id)) {
+    return DeviceType::kGraphicsTablet;
+  }
+  return absl::nullopt;
+}
+
 void PeripheralCustomizationEventRewriter::StartObservingMouse(int device_id) {
   mice_to_observe_.insert(device_id);
 }
@@ -135,25 +146,60 @@ bool PeripheralCustomizationEventRewriter::NotifyMouseEventObserving(
   return true;
 }
 
+bool PeripheralCustomizationEventRewriter::NotifyKeyEventObserving(
+    const ui::KeyEvent& key_event,
+    DeviceType device_type) {
+  // Observers should only be notified on key presses.
+  if (key_event.type() != ui::ET_KEY_PRESSED) {
+    return true;
+  }
+
+  const auto button = mojom::Button::NewVkey(key_event.key_code());
+  for (auto& observer : observers_) {
+    switch (device_type) {
+      case DeviceType::kMouse:
+        observer.OnMouseButtonPressed(key_event.source_device_id(), *button);
+        break;
+      case DeviceType::kGraphicsTablet:
+        observer.OnGraphicsTabletButtonPressed(key_event.source_device_id(),
+                                               *button);
+        break;
+    }
+  }
+
+  return true;
+}
+
+ui::EventDispatchDetails PeripheralCustomizationEventRewriter::RewriteKeyEvent(
+    const ui::KeyEvent& key_event,
+    const Continuation continuation) {
+  auto device_type_to_observe =
+      GetDeviceTypeToObserve(key_event.source_device_id());
+  if (device_type_to_observe) {
+    if (NotifyKeyEventObserving(key_event, *device_type_to_observe)) {
+      return DiscardEvent(continuation);
+    }
+  }
+
+  return SendEvent(continuation, &key_event);
+}
+
 ui::EventDispatchDetails
 PeripheralCustomizationEventRewriter::RewriteMouseEvent(
     const ui::MouseEvent& mouse_event,
     const Continuation continuation) {
-  const bool is_mouse_to_observe =
-      mice_to_observe_.contains(mouse_event.source_device_id());
-  const bool is_graphics_tablet_to_observe =
-      graphics_tablets_to_observe_.contains(mouse_event.source_device_id());
-  if (is_mouse_to_observe || is_graphics_tablet_to_observe) {
-    const DeviceType device_type =
-        is_mouse_to_observe ? DeviceType::kMouse : DeviceType::kGraphicsTablet;
-    if (NotifyMouseEventObserving(mouse_event, device_type)) {
+  auto device_type_to_observe =
+      GetDeviceTypeToObserve(mouse_event.source_device_id());
+  if (device_type_to_observe) {
+    if (NotifyMouseEventObserving(mouse_event, *device_type_to_observe)) {
       return DiscardEvent(continuation);
     }
 
     // Otherwise, the flags must be cleared for the remappable buttons so they
     // do not affect the application while the mouse is meant to be observed.
     ui::MouseEvent rewritten_event = mouse_event;
-    const int remappable_flags = GetRemappableMouseEventFlags(device_type);
+    const int remappable_flags =
+        GetRemappableMouseEventFlags(*device_type_to_observe);
     rewritten_event.set_flags(rewritten_event.flags() & ~remappable_flags);
     rewritten_event.set_changed_button_flags(
         rewritten_event.changed_button_flags() & ~remappable_flags);
@@ -170,6 +216,10 @@ ui::EventDispatchDetails PeripheralCustomizationEventRewriter::RewriteEvent(
 
   if (event.IsMouseEvent()) {
     return RewriteMouseEvent(*event.AsMouseEvent(), continuation);
+  }
+
+  if (event.IsKeyEvent()) {
+    return RewriteKeyEvent(*event.AsKeyEvent(), continuation);
   }
 
   return SendEvent(continuation, &event);
