@@ -931,6 +931,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   // according to the spec.
   bool acam_preflight_spec_conformant_ = true;
 
+  // True once the destructor has been called. Used to guard against re-entrant
+  // calls to DestroyURLLoaderFactory().
+  bool is_destructing_ = false;
+
   // Indicating whether
   // https://fetch.spec.whatwg.org/#cors-non-wildcard-request-header-name is
   // supported.
@@ -939,13 +943,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
 
   // CorsURLLoaderFactory assumes that fields owned by the NetworkContext always
   // live longer than the factory.  Therefore we want the factories to be
-  // destroyed before other fields above.  In particular:
-  // - This must be below |url_request_context_| so that the URLRequestContext
-  //   outlives all the URLLoaderFactories and URLLoaders that depend on it;
-  //   for the same reason, it must also be below |network_context_|.
-  // - This must be below |loader_count_per_process_| that is touched by
-  //   CorsURLLoaderFactory::DestroyURLLoader (see also
-  //   https://crbug.com/1174943).
+  // destroyed before other fields above.  This is accomplished by explicitly
+  // clearing `url_loader_factories_` in the destructor.
   std::set<std::unique_ptr<cors::CorsURLLoaderFactory>,
            base::UniquePtrComparator>
       url_loader_factories_;
