@@ -98,6 +98,7 @@
 #include "components/page_load_metrics/renderer/metrics_render_frame_observer.h"
 #include "components/paint_preview/buildflags/buildflags.h"
 #include "components/password_manager/core/common/password_manager_features.h"
+#include "components/permissions/features.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/renderer/threat_dom_details.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
@@ -549,6 +550,11 @@ void ChromeContentRendererClient::RenderThreadStarted() {
     // This is superfluous in single-process mode and triggers a DCHECK
     blink::IdentifiabilityStudySettings::SetGlobalProvider(
         std::make_unique<PrivacyBudgetSettingsProvider>());
+  }
+
+  if (base::FeatureList::IsEnabled(
+          permissions::features::kPermissionStorageAccessAPI)) {
+    blink::WebRuntimeFeatures::EnableStorageAccessAPI(true);
   }
 }
 

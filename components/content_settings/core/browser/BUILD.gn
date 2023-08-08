@@ -76,6 +76,7 @@ static_library("browser") {
 
   if (use_blink) {
     deps += [
+      "//components/permissions:permissions_common",
       "//components/policy:generated",
       "//components/policy/core/browser",
       "//components/privacy_sandbox:privacy_sandbox_prefs",

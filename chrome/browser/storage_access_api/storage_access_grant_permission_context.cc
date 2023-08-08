@@ -25,6 +25,7 @@
 #include "components/content_settings/core/common/content_settings_constraints.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
+#include "components/permissions/features.h"
 #include "components/permissions/permission_request_id.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
@@ -44,6 +45,31 @@
 using content_settings::URLToSchemefulSitePattern;
 
 namespace {
+
+// `kPermissionStorageAccessAPI` enables StorageAccessAPIwithPrompts
+// (https://chromestatus.com/feature/5085655327047680). StorageAccessAPI is
+// considered enabled when either feature is enabled (by different field trial
+// studies).
+bool StorageAccessAPIEnabled() {
+  return base::FeatureList::IsEnabled(blink::features::kStorageAccessAPI) ||
+         base::FeatureList::IsEnabled(
+             permissions::features::kPermissionStorageAccessAPI);
+}
+
+// `kPermissionStorageAccessAPI` enables StorageAccessAPIwithPrompts
+// (https://chromestatus.com/feature/5085655327047680), which should not
+// auto-deny if FPS is irrelevant.
+bool ShouldAutoDenyOutsideFPS() {
+  return blink::features::kStorageAccessAPIAutoDenyOutsideFPS.Get() &&
+         !base::FeatureList::IsEnabled(
+             permissions::features::kPermissionStorageAccessAPI);
+}
+
+bool NeedsFirstPartySetMetadata() {
+  return base::FeatureList::IsEnabled(features::kFirstPartySets) &&
+         (blink::features::kStorageAccessAPIAutoGrantInFPS.Get() ||
+          ShouldAutoDenyOutsideFPS());
+}
 
 // Returns true if the request wasn't answered by the user explicitly.
 bool IsImplicitOutcome(RequestOutcome outcome) {
@@ -227,8 +253,7 @@ void StorageAccessGrantPermissionContext::DecidePermission(
     return;
   }
 
-  if (!user_gesture ||
-      !base::FeatureList::IsEnabled(blink::features::kStorageAccessAPI)) {
+  if (!user_gesture || !StorageAccessAPIEnabled()) {
     if (!user_gesture) {
       rfh->AddMessageToConsole(
           blink::mojom::ConsoleMessageLevel::kError,
@@ -239,9 +264,7 @@ void StorageAccessGrantPermissionContext::DecidePermission(
     return;
   }
 
-  if (!base::FeatureList::IsEnabled(features::kFirstPartySets) ||
-      (!blink::features::kStorageAccessAPIAutoGrantInFPS.Get() &&
-       !blink::features::kStorageAccessAPIAutoDenyOutsideFPS.Get())) {
+  if (!NeedsFirstPartySetMetadata()) {
     // First-Party Sets is disabled, or Auto-grants and auto-denials are both
     // disabled, so don't bother getting First-Party Sets data.
     UseImplicitGrantOrPrompt(id, requesting_origin, embedding_origin,
@@ -270,7 +293,7 @@ void StorageAccessGrantPermissionContext::CheckForAutoGrantOrAutoDenial(
     net::FirstPartySetMetadata metadata) {
   // We should only run this method if something might need the FPS metadata.
   CHECK(blink::features::kStorageAccessAPIAutoGrantInFPS.Get() ||
-        blink::features::kStorageAccessAPIAutoDenyOutsideFPS.Get());
+        ShouldAutoDenyOutsideFPS());
 
   if (metadata.AreSitesInSameFirstPartySet()) {
     if (blink::features::kStorageAccessAPIAutoGrantInFPS.Get()) {
@@ -293,7 +316,7 @@ void StorageAccessGrantPermissionContext::CheckForAutoGrantOrAutoDenial(
     }
     // Not autogranting; fall back to implicit grants or prompt.
   } else {
-    if (blink::features::kStorageAccessAPIAutoDenyOutsideFPS.Get()) {
+    if (ShouldAutoDenyOutsideFPS()) {
       NotifyPermissionSetInternal(id, requesting_origin, embedding_origin,
                                   std::move(callback),
                                   /*persist=*/true, CONTENT_SETTING_BLOCK,
@@ -434,7 +457,7 @@ ContentSetting StorageAccessGrantPermissionContext::GetPermissionStatusInternal(
     content::RenderFrameHost* render_frame_host,
     const GURL& requesting_origin,
     const GURL& embedding_origin) const {
-  if (!base::FeatureList::IsEnabled(blink::features::kStorageAccessAPI)) {
+  if (!StorageAccessAPIEnabled()) {
     return CONTENT_SETTING_BLOCK;
   }
 
@@ -500,7 +523,7 @@ void StorageAccessGrantPermissionContext::NotifyPermissionSetInternal(
     RequestOutcome outcome) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (!base::FeatureList::IsEnabled(blink::features::kStorageAccessAPI)) {
+  if (!StorageAccessAPIEnabled()) {
     return;
   }
 

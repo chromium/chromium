@@ -2,6 +2,7 @@ include_rules = [
   "+components/content_settings/core/common",
   "+components/content_settings/core/test",
   "+components/keyed_service/core",
+  "+components/permissions/features.h",
   "+components/pref_registry",
   "+components/privacy_sandbox",
   "+components/policy",

@@ -18,6 +18,7 @@
 #include "components/content_settings/core/common/cookie_settings_base.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/pref_names.h"
+#include "components/permissions/features.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "extensions/buildflags/buildflags.h"
@@ -256,7 +257,9 @@ bool CookieSettings::IsStorageAccessApiEnabled() const {
   // the feature here, we should rely on CookieSettingsFactory to plumb in this
   // boolean instead.
 #if BUILDFLAG(USE_BLINK)
-  return base::FeatureList::IsEnabled(blink::features::kStorageAccessAPI);
+  return base::FeatureList::IsEnabled(blink::features::kStorageAccessAPI) ||
+         base::FeatureList::IsEnabled(
+             permissions::features::kPermissionStorageAccessAPI);
 #else
   return false;
 #endif

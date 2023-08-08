@@ -49,6 +49,7 @@
 #include "components/language/core/browser/language_prefs.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/metrics/metrics_pref_names.h"
+#include "components/permissions/features.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -246,8 +247,25 @@ void Update3pcdSettings(Profile* profile) {
       settings));
 }
 
+// `kPermissionStorageAccessAPI` enables feature: Storage Access API with
+// Prompts (https://chromestatus.com/feature/5085655327047680). StorageAccessAPI
+// is considered enabled when either feature is enabled (by different field
+// trial studies).
+bool StorageAccessAPIEnabled() {
+  return base::FeatureList::IsEnabled(blink::features::kStorageAccessAPI) ||
+         base::FeatureList::IsEnabled(
+             permissions::features::kPermissionStorageAccessAPI);
+}
+
+// TODO(crbug.com/1385156): Separate the two flags entirely.
+bool TopLevelStorageAccessAPIEnabled() {
+  return base::FeatureList::IsEnabled(blink::features::kStorageAccessAPI) &&
+         base::FeatureList::IsEnabled(
+             blink::features::kStorageAccessAPIForOriginExtension);
+}
+
 void UpdateStorageAccessSettings(Profile* profile) {
-  if (base::FeatureList::IsEnabled(blink::features::kStorageAccessAPI)) {
+  if (StorageAccessAPIEnabled()) {
     ContentSettingsForOneType settings =
         HostContentSettingsMapFactory::GetForProfile(profile)
             ->GetSettingsForOneType(ContentSettingsType::STORAGE_ACCESS);
@@ -263,10 +281,7 @@ void UpdateStorageAccessSettings(Profile* profile) {
 }
 
 void UpdateAllStorageAccessSettings(Profile* profile) {
-  // TODO(crbug.com/1385156): Switch to an independent feature flag.
-  if (base::FeatureList::IsEnabled(blink::features::kStorageAccessAPI) &&
-      base::FeatureList::IsEnabled(
-          blink::features::kStorageAccessAPIForOriginExtension)) {
+  if (TopLevelStorageAccessAPIEnabled()) {
     ContentSettingsForOneType top_level_settings =
         HostContentSettingsMapFactory::GetForProfile(profile)
             ->GetSettingsForOneType(
@@ -600,16 +615,14 @@ ProfileNetworkContextService::CreateCookieManagerParams(
   out->settings_for_3pcd = host_content_settings_map->GetSettingsForOneType(
       ContentSettingsType::TPCD_SUPPORT);
 
-  if (base::FeatureList::IsEnabled(blink::features::kStorageAccessAPI)) {
+  if (StorageAccessAPIEnabled()) {
     out->settings_for_storage_access =
         host_content_settings_map->GetSettingsForOneType(
             ContentSettingsType::STORAGE_ACCESS);
   }
 
   // TODO(crbug.com/1385156): Separate the two flags entirely.
-  if (base::FeatureList::IsEnabled(blink::features::kStorageAccessAPI) &&
-      base::FeatureList::IsEnabled(
-          blink::features::kStorageAccessAPIForOriginExtension)) {
+  if (TopLevelStorageAccessAPIEnabled()) {
     out->settings_for_top_level_storage_access =
         host_content_settings_map->GetSettingsForOneType(
             ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS);

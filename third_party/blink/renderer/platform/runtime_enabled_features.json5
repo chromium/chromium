@@ -3420,8 +3420,10 @@
       base_feature: "none",
     },
     {
-      // Enabled when blink::features::kStorageAccessAPI is enabled.
+      // Enabled when blink::features::kStorageAccessAPI or
+      // permissions::features::kPermissionStorageAccessAPI is enabled.
       name: "StorageAccessAPI",
+      public: true,
       status: "experimental",
     },
     {
