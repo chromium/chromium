@@ -544,13 +544,13 @@ as required builders.
 
 ### chromium
 * [android-12-x64-siso-rel](https://ci.chromium.org/p/chromium/builders/try/android-12-x64-siso-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android-12-x64-siso-rel""))
-  * Experiment percentage: 10.0
+  * Experiment percentage: 20.0
 
 * [android-arm64-siso-rel](https://ci.chromium.org/p/chromium/builders/try/android-arm64-siso-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android-arm64-siso-rel""))
-  * Experiment percentage: 10.0
+  * Experiment percentage: 20.0
 
 * [android-nougat-x86-siso-rel](https://ci.chromium.org/p/chromium/builders/try/android-nougat-x86-siso-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android-nougat-x86-siso-rel""))
-  * Experiment percentage: 10.0
+  * Experiment percentage: 20.0
 
 * [chromeos-amd64-generic-siso-rel](https://ci.chromium.org/p/chromium/builders/try/chromeos-amd64-generic-siso-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""chromeos-amd64-generic-siso-rel""))
   * Experiment percentage: 0.01
@@ -578,10 +578,10 @@ as required builders.
   * [`//ui/gl/features.gni`](https://cs.chromium.org/search?q=+file:ui/gl/features.gni)
 
 * [fuchsia-x64-cast-receiver-siso-rel](https://ci.chromium.org/p/chromium/builders/try/fuchsia-x64-cast-receiver-siso-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""fuchsia-x64-cast-receiver-siso-rel""))
-  * Experiment percentage: 10.0
+  * Experiment percentage: 20.0
 
 * [linux-chromeos-siso-rel](https://ci.chromium.org/p/chromium/builders/try/linux-chromeos-siso-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-chromeos-siso-rel""))
-  * Experiment percentage: 10.0
+  * Experiment percentage: 20.0
 
 * [linux-js-coverage-rel](https://ci.chromium.org/p/chromium/builders/try/linux-js-coverage-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-js-coverage-rel""))
   * Experiment percentage: 50.0
@@ -590,22 +590,22 @@ as required builders.
   * [`//.*\.(js|ts)`](https://cs.chromium.org/search?q=+file:.*\.(js|ts))
 
 * [linux-lacros-siso-rel](https://ci.chromium.org/p/chromium/builders/try/linux-lacros-siso-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-lacros-siso-rel""))
-  * Experiment percentage: 10.0
+  * Experiment percentage: 20.0
 
 * [linux-siso-rel](https://ci.chromium.org/p/chromium/builders/try/linux-siso-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-siso-rel""))
-  * Experiment percentage: 10.0
+  * Experiment percentage: 20.0
 
 * [linux-wayland-siso-rel](https://ci.chromium.org/p/chromium/builders/try/linux-wayland-siso-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-wayland-siso-rel""))
-  * Experiment percentage: 10.0
+  * Experiment percentage: 20.0
 
 * [linux_chromium_asan_siso_rel_ng](https://ci.chromium.org/p/chromium/builders/try/linux_chromium_asan_siso_rel_ng) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux_chromium_asan_siso_rel_ng""))
-  * Experiment percentage: 10.0
+  * Experiment percentage: 20.0
 
 * [mac13-arm64-rel](https://ci.chromium.org/p/chromium/builders/try/mac13-arm64-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""mac13-arm64-rel""))
   * Experiment percentage: 100.0
 
 * [win-siso-rel](https://ci.chromium.org/p/chromium/builders/try/win-siso-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""win-siso-rel""))
-  * Experiment percentage: 10.0
+  * Experiment percentage: 20.0
 
 * [win11-x64-fyi-rel](https://ci.chromium.org/p/chromium/builders/try/win11-x64-fyi-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""win11-x64-fyi-rel""))
   * Experiment percentage: 10.0

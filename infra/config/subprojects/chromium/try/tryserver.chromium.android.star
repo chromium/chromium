@@ -116,7 +116,7 @@ try_.orchestrator_builder(
     main_list_view = "try",
     tryjob = try_.job(
         # TODO(b/277863839): increase percentage.
-        experiment_percentage = 10,
+        experiment_percentage = 20,
     ),
     use_java_coverage = True,
 )
@@ -210,7 +210,7 @@ try_.orchestrator_builder(
     main_list_view = "try",
     tryjob = try_.job(
         # TODO(b/277863839): increase percentage.
-        experiment_percentage = 10,
+        experiment_percentage = 20,
     ),
     use_clang_coverage = True,
 )
@@ -469,7 +469,7 @@ try_.orchestrator_builder(
     main_list_view = "try",
     tryjob = try_.job(
         # TODO(b/277863839): increase percentage.
-        experiment_percentage = 10,
+        experiment_percentage = 20,
     ),
     use_java_coverage = True,
 )
