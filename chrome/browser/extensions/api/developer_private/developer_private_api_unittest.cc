@@ -82,6 +82,7 @@ namespace extensions {
 namespace {
 
 const char kGoodCrx[] = "ldnnhddmnhbkjipkidpdiheffobcpfmf";
+const char kGoogleOnlyCrx[] = "jjlcocfpfbknlbgijblaapbcpbdglkhf";
 constexpr char kInvalidHost[] = "invalid host";
 constexpr char kInvalidHostError[] = "Invalid host.";
 
@@ -2489,6 +2490,50 @@ TEST_F(DeveloperPrivateApiUnitTest,
   }])");
 }
 
+// Test that host permissions from policy installed extensions are included in
+// `getUserAndExtensionSitesByEtld` calls.
+TEST_F(
+    DeveloperPrivateApiUnitTest,
+    DeveloperPrivateGetUserAndExtensionSitesByEtld_PolicyControlledExtensions) {
+  std::string extension_id(kGoogleOnlyCrx);
+
+  // Set up a mock provider with a policy extension.
+  std::unique_ptr<MockExternalProvider> mock_provider =
+      std::make_unique<MockExternalProvider>(
+          service(), mojom::ManifestLocation::kExternalPolicyDownload);
+  MockExternalProvider* mock_provider_ptr = mock_provider.get();
+  AddMockExternalProvider(std::move(mock_provider));
+
+  // google_only.crx contains only a manifest.json file that requests
+  // *://www.google.com/* as a permission.
+  mock_provider_ptr->UpdateOrAddExtension(
+      extension_id, "1", data_dir().AppendASCII("google_only.crx"));
+  // Reloading extensions should find our externally registered extension
+  // and install it.
+  {
+    TestExtensionRegistryObserver observer(registry());
+    service()->CheckForExternalUpdates();
+    EXPECT_EQ(extension_id, observer.WaitForExtensionLoaded()->id());
+  }
+
+  auto function = base::MakeRefCounted<
+      api::DeveloperPrivateGetUserAndExtensionSitesByEtldFunction>();
+  EXPECT_TRUE(RunFunction(function, base::Value::List()))
+      << function->GetError();
+  const base::Value::List* results = function->GetResultListForTest();
+  ASSERT_EQ(1u, results->size());
+
+  EXPECT_THAT((*results)[0], base::test::IsJson(R"([{
+    "etldPlusOne": "google.com",
+    "numExtensions": 1,
+    "sites": [{
+      "siteSet": "EXTENSION_SPECIFIED",
+      "numExtensions": 1,
+      "site": "www.google.com",
+    }]
+  }])"));
+}
+
 TEST_F(DeveloperPrivateApiUnitTest,
        DeveloperPrivateGetMatchingExtensionsForSite) {
   namespace developer = api::developer_private;
@@ -2518,15 +2563,11 @@ TEST_F(DeveloperPrivateApiUnitTest,
                               disable_reason::DISABLE_USER_ACTION);
   GetMatchingExtensionsForSite(profile(), "*://*.google.com/", &infos);
 
-  // "*://*.google.com/" should only match with both `extension_1` and
-  // `extension_2`.
-  EXPECT_THAT(infos, testing::UnorderedElementsAre(
-                         MatchMatchingExtensionInfo(
-                             extension_1->id(),
-                             developer::HostAccess::HOST_ACCESS_ON_ALL_SITES),
-                         MatchMatchingExtensionInfo(
-                             extension_2->id(),
-                             developer::HostAccess::HOST_ACCESS_ON_ALL_SITES)));
+  // "*://*.google.com/" should match with `extension_1` but not `extension_2`
+  // since it is disabled.
+  EXPECT_THAT(infos, testing::UnorderedElementsAre(MatchMatchingExtensionInfo(
+                         extension_1->id(),
+                         developer::HostAccess::HOST_ACCESS_ON_ALL_SITES)));
 }
 
 // Test that the host access returned by GetMatchingExtensionsForSite reflects

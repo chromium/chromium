@@ -257,6 +257,11 @@ class PermissionsManager : public KeyedService {
   std::unique_ptr<const PermissionSet> GetRevokablePermissions(
       const Extension& extension) const;
 
+  // Returns the current set of granted permissions for the extension. Note that
+  // permissions that are specified but withheld will not be returned.
+  std::unique_ptr<const PermissionSet> GetExtensionGrantedPermissions(
+      const Extension& extension) const;
+
   // Notifies `observers_` that the permissions have been updated for an
   // extension.
   void NotifyExtensionPermissionsUpdated(const Extension& extension,

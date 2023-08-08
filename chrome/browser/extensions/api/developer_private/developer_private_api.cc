@@ -369,18 +369,6 @@ void ProcessSitesForRuntimeHostPermissions(
   }
 }
 
-// Returns the current set of granted host permissions for the extension. Note
-// that permissions that are specified but withheld will not be returned.
-std::unique_ptr<const PermissionSet> GetExtensionGrantedPermissions(
-    content::BrowserContext* context,
-    const scoped_refptr<const Extension>& extension) {
-  ExtensionPrefs* prefs = ExtensionPrefs::Get(context);
-  const PermissionsManager* manager = PermissionsManager::Get(context);
-  return manager->HasWithheldHostPermissions(*extension)
-             ? prefs->GetRuntimeGrantedPermissions(extension->id())
-             : prefs->GetGrantedPermissions(extension->id());
-}
-
 // Updates num_extensions counts in `site_groups` for `granted_hosts` from one
 // extension.
 void UpdateSiteGroupCountsForExtensionHosts(
@@ -2432,23 +2420,19 @@ DeveloperPrivateGetUserAndExtensionSitesByEtldFunction::Run() {
 
   std::vector<scoped_refptr<const Extension>> extensions_to_check;
   ExtensionRegistry* registry = ExtensionRegistry::Get(browser_context());
+  PermissionsManager* permissions_manager =
+      PermissionsManager::Get(browser_context());
 
   // Note: we are only counting enabled extensions as the returned extension
   // counts will reflect how many extensions can actually run on each site at
   // the current moment.
   for (const auto& extension : registry->enabled_extensions()) {
-    // TODO(crbug.com/1331137): Some extensions can access certain sites even if
-    // the user cannot modify their permissions. These also need to be added to
-    // another list so the frontend knows that their site access cannot be
-    // modified.
-    PermissionsManager* manager = PermissionsManager::Get(browser_context());
-    if (!ui_util::ShouldDisplayInExtensionSettings(*extension) ||
-        !manager->CanAffectExtension(*extension)) {
+    if (!ui_util::ShouldDisplayInExtensionSettings(*extension)) {
       continue;
     }
 
     std::unique_ptr<const PermissionSet> granted_permissions =
-        GetExtensionGrantedPermissions(browser_context(), extension);
+        permissions_manager->GetExtensionGrantedPermissions(*extension);
     std::vector<URLPattern> distinct_hosts =
         ExtensionInfoGenerator::GetDistinctHosts(
             granted_permissions->effective_hosts());
@@ -2467,7 +2451,7 @@ DeveloperPrivateGetUserAndExtensionSitesByEtldFunction::Run() {
   // counts are accurate.
   for (const auto& extension : extensions_to_check) {
     std::unique_ptr<const PermissionSet> granted_permissions =
-        GetExtensionGrantedPermissions(browser_context(), extension);
+        permissions_manager->GetExtensionGrantedPermissions(*extension);
     UpdateSiteGroupCountsForExtensionHosts(
         &site_groups, &match_subdomains_count,
         granted_permissions->effective_hosts());
@@ -2516,18 +2500,18 @@ DeveloperPrivateGetMatchingExtensionsForSiteFunction::Run() {
 
   std::vector<developer::MatchingExtensionInfo> matching_extensions;
   URLPatternSet site_pattern({parsed_site});
-  const ExtensionSet all_extensions =
-      ExtensionRegistry::Get(browser_context())
-          ->GenerateInstalledExtensionsSet(
-              ExtensionRegistry::ENABLED | ExtensionRegistry::DISABLED |
-              ExtensionRegistry::TERMINATED | ExtensionRegistry::BLOCKLISTED);
-  for (const auto& extension : all_extensions) {
+  const ExtensionSet& enabled_extensions =
+      ExtensionRegistry::Get(browser_context())->enabled_extensions();
+  PermissionsManager* permissions_manager =
+      PermissionsManager::Get(browser_context());
+  for (const auto& extension : enabled_extensions) {
+    std::unique_ptr<const PermissionSet> granted_permissions =
+        permissions_manager->GetExtensionGrantedPermissions(*extension);
     const URLPatternSet& extension_withheld_sites =
         extension->permissions_data()->withheld_permissions().effective_hosts();
     const URLPatternSet granted_intersection =
         URLPatternSet::CreateIntersection(
-            site_pattern,
-            extension->permissions_data()->GetEffectiveHostPermissions(),
+            site_pattern, granted_permissions->effective_hosts(),
             URLPatternSet::IntersectionBehavior::kDetailed);
     const URLPatternSet withheld_intersection =
         URLPatternSet::CreateIntersection(
@@ -2544,6 +2528,8 @@ DeveloperPrivateGetMatchingExtensionsForSiteFunction::Run() {
     // If the extension has access to at least one site that matches
     // `site_pattern`, return ON_ALL_SITES or ON_SPECIFIC_SITES depending on
     // if the extension has any withheld sites.
+    // TODO(crbug.com/1459291): Return HOST_ACCESS_ON_ALL_SITES only if the
+    // extension has been granted access to all sites.
     if (!granted_intersection.is_empty()) {
       host_access = extension_withheld_sites.is_empty()
                         ? developer::HOST_ACCESS_ON_ALL_SITES
