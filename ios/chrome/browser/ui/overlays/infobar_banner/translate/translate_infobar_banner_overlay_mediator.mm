@@ -55,6 +55,10 @@
 #pragma mark - InfobarOverlayRequestMediator
 
 - (void)bannerInfobarButtonWasPressed:(UIButton*)sender {
+  // Check if request was cancelled, to avoid crash below.
+  if (!self.config) {
+    return;
+  }
   translate::TranslateInfoBarDelegate* delegate = self.translateDelegate;
   translate::TranslateStep step = delegate->translate_step();
   switch (step) {
