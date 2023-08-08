@@ -176,7 +176,12 @@ void StandaloneBrowserApps::OnLoadComplete(bool success,
   auto app = std::make_unique<App>(AppType::kStandaloneBrowser,
                                    app_constants::kLacrosAppId);
   app->icon_key = std::move(*CreateIconKey(success));
-  AppPublisher::Publish(std::move(app));
+  std::vector<AppPtr> standalone_browser_app_vector;
+  standalone_browser_app_vector.push_back(std::move(app));
+
+  AppPublisher::Publish(std::move(standalone_browser_app_vector),
+                        AppType::kStandaloneBrowser,
+                        /*should_notify_initialized=*/true);
 }
 
 }  // namespace apps
