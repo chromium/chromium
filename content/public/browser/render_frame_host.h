@@ -1041,6 +1041,14 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // frame. Can only be called on a frame with a committed navigation.
   virtual net::CookieSettingOverrides GetCookieSettingOverrides() = 0;
 
+  // Whether a same-site navigation that happens when this RenderFrameHost is
+  // the current RenderFrameHost should initiate a RenderFrameHost change, due
+  // to RenderDocument. the result may differ depending on whether the
+  // RenderFrameHost is a main/local root/non-local-root frame, whether it has
+  // committed any navigations or not, and whether it's a crashed frame that
+  // must be replaced or not.
+  virtual bool ShouldChangeRenderFrameHostOnSameSiteNavigation() const = 0;
+
  private:
   // This interface should only be implemented inside content.
   friend class RenderFrameHostImpl;

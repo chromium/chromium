@@ -527,6 +527,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   WeakDocumentPtr GetWeakDocumentPtr() override;
   void EnableMojoJsBindings(
       content::mojom::ExtraMojoJsFeaturesPtr features) override;
+  bool ShouldChangeRenderFrameHostOnSameSiteNavigation() const override;
 
   // Additional non-override const version of GetMainFrame.
   const RenderFrameHostImpl* GetMainFrame() const;

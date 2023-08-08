@@ -6817,6 +6817,8 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   RenderFrameHostImpl* child_frame =
       static_cast<RenderFrameHostImpl*>(ChildFrameAt(shell(), 0));
   ASSERT_TRUE(child_frame);
+  bool should_change_rfh =
+      child_frame->ShouldChangeRenderFrameHostOnSameSiteNavigation();
 
   bool document_service_was_destroyed = false;
   mojo::Remote<blink::mojom::BrowserInterfaceBroker> remote;
@@ -6838,7 +6840,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
 
   // The navigation should reuse the same RenderFrameHost, except when
   // RenderDocument is enabled.
-  if (ShouldCreateNewHostForSameSiteSubframe()) {
+  if (should_change_rfh) {
     EXPECT_TRUE(child_frame_wrapper.WaitUntilRenderFrameDeleted());
   } else {
     EXPECT_EQ(ChildFrameAt(shell(), 0), child_frame_wrapper.get());
@@ -7800,19 +7802,21 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
 // navigation where the RFH stays the same.
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
                        DevToolsNavigationToken_SameRFHCrossDocumentNavigation) {
-  // This test requires that a same site main frame navigation reuses the
-  // current RFH, which will not happen if RenderDocument is enabled.
-  if (WillSameSiteNavigationsChangeRenderFrameHosts()) {
-    LOG(ERROR) << "This test case is supposed to test behaviour when a "
-                  "same-site navigation reuses the current RFH, which will not "
-                  "happen if RenderDocument is enabled.";
-    return;
-  }
   GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
   GURL url_b(embedded_test_server()->GetURL("a.com", "/title2.html"));
 
   ASSERT_TRUE(NavigateToURL(shell(), url_a));
   RenderFrameHostImplWrapper rfh_a(web_contents()->GetPrimaryMainFrame());
+
+  // This test requires that a same site main frame navigation reuses the
+  // current RFH, which will not happen if RenderDocument is enabled.
+  if (rfh_a->ShouldChangeRenderFrameHostOnSameSiteNavigation()) {
+    LOG(ERROR) << "This test case is supposed to test behaviour when a "
+                  "same-site navigation reuses the current RFH, which will not "
+                  "happen if RenderDocument is enabled.";
+    return;
+  }
+
   auto dnt_a = rfh_a->GetDevToolsNavigationToken();
   EXPECT_TRUE(dnt_a.has_value());
 

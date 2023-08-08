@@ -6604,7 +6604,7 @@ IN_PROC_BROWSER_TEST_F(WebViewWithDefaultSiteInstanceTest, SimpleNavigations) {
   // Expect that we stayed in the same (default) SiteInstance.
   main_frame = GetGuestRenderFrameHost();
   ASSERT_TRUE(main_frame);
-  if (!content::WillSameSiteNavigationsChangeRenderFrameHosts()) {
+  if (!main_frame->ShouldChangeRenderFrameHostOnSameSiteNavigation()) {
     // The RenderFrameHost will stay the same when we don't change
     // RenderFrameHosts on same-SiteInstance navigations.
     EXPECT_EQ(main_frame->GetGlobalId(), original_id);

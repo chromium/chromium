@@ -5119,7 +5119,7 @@ void RenderFrameHostImpl::Unload(RenderFrameProxyHost* proxy, bool is_loading) {
   } else {
     // RenderDocument: After a local<->local swap, this function is called with
     // a null |proxy|.
-    CHECK(ShouldCreateNewHostForSameSiteSubframe());
+    CHECK(ShouldChangeRenderFrameHostOnSameSiteNavigation());
 
     // The unload handlers already ran for this document during the
     // local<->local swap. Hence, there is no need to send
@@ -15667,6 +15667,13 @@ void RenderFrameHostImpl::BindFileBackedBlobFactory(
         receiver) {
   FileBackedBlobFactoryImpl::CreateForCurrentDocument(this,
                                                       std::move(receiver));
+}
+
+bool RenderFrameHostImpl::ShouldChangeRenderFrameHostOnSameSiteNavigation()
+    const {
+  return ShouldCreateNewRenderFrameHostOnSameSiteNavigation(
+      is_main_frame(), is_local_root(), has_committed_any_navigation(),
+      must_be_replaced());
 }
 
 }  // namespace content

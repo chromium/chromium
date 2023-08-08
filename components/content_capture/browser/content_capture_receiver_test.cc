@@ -406,6 +406,10 @@ TEST_P(ContentCaptureReceiverTest, MAYBE_ChildFrameCaptureContentFirst) {
                     &removed_child_session);
   ContentCaptureSession removed_main_session = expected;
   // When main frame navigates to same url, the parent session will not change.
+  bool rfh_should_change =
+      web_contents()
+          ->GetPrimaryMainFrame()
+          ->ShouldChangeRenderFrameHostOnSameSiteNavigation();
   NavigateMainFrame(GURL(kMainFrameUrl));
   SetupChildFrame();
   child_frame_sender()->DidCaptureContent(helper()->test_data2(),
@@ -416,7 +420,7 @@ TEST_P(ContentCaptureReceiverTest, MAYBE_ChildFrameCaptureContentFirst) {
   // VerifySession(), otherwise, we can't test the code to handle the navigation
   // in ContentCaptureReceiver - except when RenderDocument is enabled, where we
   // will get new RenderFrameHosts after the navigation to |kMainFrameUrl|.
-  if (content::WillSameSiteNavigationsChangeRenderFrameHosts()) {
+  if (rfh_should_change) {
     data = GetExpectedTestData(helper()->test_data(),
                                GetFrameId(true /* main_frame */));
   }

@@ -1522,10 +1522,7 @@ RenderFrameHostManager::GetFrameHostForNavigation(
 
   // Force using a different RenderFrameHost when RenderDocument is enabled.
   if (use_current_rfh &&
-      ((ShouldCreateNewHostForSameSiteSubframe() &&
-        !frame_tree_node_->IsMainFrame()) ||
-       ShouldCreateNewHostForAllFrames()) &&
-      render_frame_host_->has_committed_any_navigation()) {
+      render_frame_host_->ShouldChangeRenderFrameHostOnSameSiteNavigation()) {
     use_current_rfh = false;
     AppendReason(reason,
                  "GetFrameHostForNavigation / RenderDocument-enforcement");
@@ -3593,8 +3590,7 @@ bool RenderFrameHostManager::CreateSpeculativeRenderFrameHost(
   //
   // [1] http://crbug.com/936696
   DCHECK(old_instance != new_instance ||
-         render_frame_host_->must_be_replaced() ||
-         ShouldCreateNewHostForSameSiteSubframe());
+         render_frame_host_->ShouldChangeRenderFrameHostOnSameSiteNavigation());
 
   // The process for the new SiteInstance may (if we're sharing a process with
   // another host that already initialized it) or may not (we have our own
@@ -3706,8 +3702,7 @@ RenderFrameHostManager::CreateSpeculativeRenderFrame(
   //
   // [1] http://crbug.com/936696
   DCHECK(render_frame_host_->GetSiteInstance() != instance ||
-         render_frame_host_->must_be_replaced() ||
-         ShouldCreateNewHostForSameSiteSubframe());
+         render_frame_host_->ShouldChangeRenderFrameHostOnSameSiteNavigation());
 
   std::unique_ptr<RenderFrameHostImpl> new_render_frame_host =
       CreateRenderFrameHost(CreateFrameCase::kCreateSpeculative, instance,
@@ -4213,7 +4208,8 @@ RenderFrameHostManager::GetReplacementFrameToken(
                current_frame_host()->GetSiteInstance());
       // The new frame will replace an existing frame in the renderer. For now
       // this can only be when RenderDocument-subframe is enabled.
-      DCHECK(ShouldCreateNewHostForSameSiteSubframe());
+      DCHECK(render_frame_host_
+                 ->ShouldChangeRenderFrameHostOnSameSiteNavigation());
       DCHECK_NE(render_frame_host, current_frame_host());
       return current_frame_host()->GetFrameToken();
     } else {

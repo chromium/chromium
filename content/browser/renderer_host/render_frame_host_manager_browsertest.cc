@@ -6500,13 +6500,15 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerNoSiteIsolationTest,
 IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
                        RemoveSubframeInUnload_SameSite) {
   // TODO(https://crbug.com/1148793): Remove this early return. This doesn't
-  // work for RenderDocumentLevel::kSubframe or greater because cancelling the
-  // navigation when detaching the subtree tries to restore the replaced
-  // `blink::RemoteFrame` (which doesn't exist in the same-site RenderDocument
-  // case because the replaced object wasn't a `blink::RemoteFrame`, but instead
-  // a RenderFrame).
-  if (ShouldCreateNewHostForSameSiteSubframe())
+  // work for RenderDocumentLevel::kNonLocalRootSubframe or greater because
+  // cancelling the navigation when detaching the subtree tries to restore the
+  // replaced `blink::RemoteFrame` (which doesn't exist in the same-site
+  // RenderDocument case because the replaced object wasn't a
+  // `blink::RemoteFrame`, but instead a RenderFrame).
+  if (ShouldCreateNewRenderFrameHostOnSameSiteNavigation(
+          /*is_main_frame=*/false, /*is_local_root=*/false)) {
     return;
+  }
   AssertCanRemoveSubframeInUnload(/*same_site=*/true);
 }
 
@@ -6514,9 +6516,11 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
 IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
                        RemoveSubframeInUnload_CrossSite) {
   // TODO(https://crbug.com/1148793): Remove this early return.
-  if (ShouldCreateNewHostForSameSiteSubframe() &&
-      !AreAllSitesIsolatedForTesting())
+  if (ShouldCreateNewRenderFrameHostOnSameSiteNavigation(
+          /*is_main_frame=*/false, /*is_local_root=*/false) &&
+      !AreAllSitesIsolatedForTesting()) {
     return;
+  }
   AssertCanRemoveSubframeInUnload(/*same_site=*/false);
 }
 

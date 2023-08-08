@@ -1395,14 +1395,16 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   UnloadPrint(C4, "C4");
 
   // Navigate the iframe same-process.
+  bool will_delete_b2 = B2->ShouldChangeRenderFrameHostOnSameSiteNavigation();
   ExecuteScriptAsync(B2, JsReplace("location.href = $1", iframe_new_url));
 
   DOMMessageQueue dom_message_queue(
       WebContents::FromRenderFrameHost(web_contents()->GetPrimaryMainFrame()));
 
   // All the documents must be properly deleted:
-  if (ShouldCreateNewHostForSameSiteSubframe())
+  if (will_delete_b2) {
     delete_B2.WaitUntilDeleted();
+  }
   delete_B3.WaitUntilDeleted();
   delete_C4.WaitUntilDeleted();
 

@@ -323,6 +323,9 @@ IN_PROC_BROWSER_TEST_F(WebUISecurityTest, WebUIReuseInSubframe) {
       child->current_frame_host()->GetGlobalId();
 
   GURL subframe_same_site_url(GetWebUIURL("web-ui/title2.html"));
+  bool rfh_should_change =
+      child->current_frame_host()
+          ->ShouldChangeRenderFrameHostOnSameSiteNavigation();
   {
     TestFrameNavigationObserver observer(child);
     NavigateFrameToURL(child, subframe_same_site_url);
@@ -332,11 +335,22 @@ IN_PROC_BROWSER_TEST_F(WebUISecurityTest, WebUIReuseInSubframe) {
   }
   EXPECT_EQ(initial_site_instance,
             child->current_frame_host()->GetSiteInstance());
-  if (ShouldCreateNewHostForSameSiteSubframe()) {
-    EXPECT_NE(initial_web_ui, child->current_frame_host()->web_ui());
+  if (rfh_should_change) {
+    // We can't check for WebUI inequality as the same address might be reused
+    // for the new WebUI object, but we can check that the new WebUI points to
+    // the new RFH.
+    EXPECT_EQ(child->current_frame_host(),
+              child->current_frame_host()->web_ui()->GetRenderFrameHost());
+    EXPECT_NE(initial_rfh_id, child->current_frame_host()->GetGlobalId());
+    EXPECT_NE(initial_rfh_id, child->current_frame_host()
+                                  ->web_ui()
+                                  ->GetRenderFrameHost()
+                                  ->GetGlobalId());
   } else {
     EXPECT_EQ(initial_web_ui, child->current_frame_host()->web_ui());
   }
+  GlobalRenderFrameHostId second_rfh_id =
+      child->current_frame_host()->GetGlobalId();
 
   // Navigate the child frame cross-site.
   GURL subframe_cross_site_url(GetWebUIURL("web-ui-subframe/title1.html"));
@@ -351,15 +365,28 @@ IN_PROC_BROWSER_TEST_F(WebUISecurityTest, WebUIReuseInSubframe) {
             child->current_frame_host()->GetSiteInstance());
   EXPECT_NE(root->current_frame_host()->web_ui(),
             child->current_frame_host()->web_ui());
-  EXPECT_NE(initial_web_ui, child->current_frame_host()->web_ui());
+  // We can't check for WebUI inequality as the same address might be reused
+  // for the new WebUI object, but we can check that the new WebUI points to
+  // the new RFH.
+  EXPECT_EQ(child->current_frame_host(),
+            child->current_frame_host()->web_ui()->GetRenderFrameHost());
+  EXPECT_NE(second_rfh_id, child->current_frame_host()->GetGlobalId());
+  EXPECT_NE(second_rfh_id, child->current_frame_host()
+                               ->web_ui()
+                               ->GetRenderFrameHost()
+                               ->GetGlobalId());
 
-  // Capture the new SiteInstance and WebUI of the subframe and navigate it to
-  // another document on the same site.
-  scoped_refptr<SiteInstance> second_site_instance =
+  // Capture the new SiteInstance, WebUI and RFH ID of the subframe and navigate
+  // it to another document on the same site.
+  scoped_refptr<SiteInstance> third_site_instance =
       child->current_frame_host()->GetSiteInstance();
-  WebUI* second_web_ui = child->current_frame_host()->web_ui();
+  WebUI* third_web_ui = child->current_frame_host()->web_ui();
+  GlobalRenderFrameHostId third_rfh_id =
+      child->current_frame_host()->GetGlobalId();
 
   GURL subframe_cross_site_url2(GetWebUIURL("web-ui-subframe/title2.html"));
+  rfh_should_change = child->current_frame_host()
+                          ->ShouldChangeRenderFrameHostOnSameSiteNavigation();
   {
     TestFrameNavigationObserver observer(child);
     NavigateFrameToURL(child, subframe_cross_site_url2);
@@ -367,12 +394,21 @@ IN_PROC_BROWSER_TEST_F(WebUISecurityTest, WebUIReuseInSubframe) {
     EXPECT_TRUE(observer.last_navigation_succeeded());
     EXPECT_EQ(subframe_cross_site_url2, observer.last_committed_url());
   }
-  EXPECT_EQ(second_site_instance,
+  EXPECT_EQ(third_site_instance,
             child->current_frame_host()->GetSiteInstance());
-  if (ShouldCreateNewHostForSameSiteSubframe()) {
-    EXPECT_NE(second_web_ui, child->current_frame_host()->web_ui());
+  if (rfh_should_change) {
+    // We can't check for WebUI inequality as the same address might be reused
+    // for the new WebUI object, but we can check that the new WebUI points to
+    // the new RFH.
+    EXPECT_EQ(child->current_frame_host(),
+              child->current_frame_host()->web_ui()->GetRenderFrameHost());
+    EXPECT_NE(third_rfh_id, child->current_frame_host()->GetGlobalId());
+    EXPECT_NE(third_rfh_id, child->current_frame_host()
+                                ->web_ui()
+                                ->GetRenderFrameHost()
+                                ->GetGlobalId());
   } else {
-    EXPECT_EQ(second_web_ui, child->current_frame_host()->web_ui());
+    EXPECT_EQ(third_web_ui, child->current_frame_host()->web_ui());
   }
 
   // Navigate back to the first document in the subframe, which should bring

@@ -154,10 +154,8 @@ IN_PROC_BROWSER_TEST_F(EmbeddingTokenBrowserTest,
 
   // Navigate child 0 (b) to another site (cross-process) the token should swap.
   {
-    if (ShouldCreateNewHostForSameSiteSubframe()) {
-      // The RenderFrameHost was been replaced when the frame navigated.
-      target = top_frame_host()->child_at(0)->current_frame_host();
-    }
+    // The RenderFrameHost might have been replaced when the frame navigated.
+    target = top_frame_host()->child_at(0)->current_frame_host();
     RenderFrameDeletedObserver deleted_observer(target);
     NavigateIframeToURL(shell()->web_contents(), "child-0",
                         embedded_test_server()

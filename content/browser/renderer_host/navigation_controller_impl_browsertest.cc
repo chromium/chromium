@@ -13017,11 +13017,6 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest, NavigateTo304) {
 // navigations compete in different frames.  See https://crbug.com/623319.
 IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
                        PageStateAfterForwardInCompetingFrames) {
-  // This test might trigger the "undo commit" path in the renderer, that does
-  // not work with RenderDocument, causing flakiness.
-  // TODO(https://crbug.com/1220337): Fix this.
-  if (ShouldCreateNewHostForSameSiteSubframe())
-    return;
   // Navigate to a page with an iframe.
   GURL url_a(embedded_test_server()->GetURL(
       "/navigation_controller/page_with_data_iframe.html"));
@@ -13070,6 +13065,14 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   // Go back to the original page.
   controller.GoBack();
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+
+  // This test might trigger the "undo commit" path in the renderer, that does
+  // not work with RenderDocument, causing flakiness.
+  // TODO(https://crbug.com/1220337): Fix this.
+  if (root->current_frame_host()
+          ->ShouldChangeRenderFrameHostOnSameSiteNavigation()) {
+    return;
+  }
 
   // Navigate forward twice using script.  In https://crbug.com/623319, this
   // caused a mismatch between the NavigationEntry's URL and PageState.
@@ -21237,7 +21240,8 @@ IN_PROC_BROWSER_TEST_P(
   FrameTreeNode* root = contents()->GetPrimaryFrameTree().root();
   FrameTreeNode* child = root->child_at(0);
 
-  if (ShouldCreateNewHostForSameSiteSubframe()) {
+  if (child->current_frame_host()
+          ->ShouldChangeRenderFrameHostOnSameSiteNavigation()) {
     SCOPED_TRACE(testing::Message()
                  << " Testing subframe same-site navigation.");
     // Subframe same-site navigation creates a speculative RenderFrameHost.
@@ -21252,7 +21256,8 @@ IN_PROC_BROWSER_TEST_P(
   }
 
   if (AreAllSitesIsolatedForTesting() ||
-      ShouldCreateNewHostForSameSiteSubframe()) {
+      child->current_frame_host()
+          ->ShouldChangeRenderFrameHostOnSameSiteNavigation()) {
     SCOPED_TRACE(testing::Message()
                  << " Testing subframe same-site navigation.");
     // Subframe cross-site navigation creates a speculative RenderFrameHost.
@@ -21353,18 +21358,18 @@ IN_PROC_BROWSER_TEST_P(
   // Navigate to the original page.
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
   FrameTreeNode* root = contents()->GetPrimaryFrameTree().root();
+  {
+    // Create a new iframe.
+    LoadCommittedCapturer capturer(contents());
+    EXPECT_TRUE(ExecJs(root, JsReplace(kAddFrameWithSrcScript, main_url)));
+    capturer.Wait();
+  }
 
-  if (ShouldCreateNewHostForSameSiteSubframe()) {
+  if (root->child_at(0)
+          ->current_frame_host()
+          ->ShouldChangeRenderFrameHostOnSameSiteNavigation()) {
     SCOPED_TRACE(testing::Message()
                  << " Testing subframe same-site navigation.");
-
-    {
-      // Create a new iframe.
-      LoadCommittedCapturer capturer(contents());
-      EXPECT_TRUE(ExecJs(root, JsReplace(kAddFrameWithSrcScript, main_url)));
-      capturer.Wait();
-    }
-
     // Subframe same-site navigation in the new iframe creates a speculative
     // RenderFrameHost.
     TestNavigationManager navigation_manager(contents(), url_a);
@@ -21381,18 +21386,19 @@ IN_PROC_BROWSER_TEST_P(
     EXPECT_FALSE(navigation_manager.was_committed());
   }
 
+  {
+    // Create a new iframe.
+    LoadCommittedCapturer capturer(contents());
+    EXPECT_TRUE(ExecJs(root, JsReplace(kAddFrameWithSrcScript, main_url)));
+    capturer.Wait();
+  }
+
   if (AreAllSitesIsolatedForTesting() ||
-      ShouldCreateNewHostForSameSiteSubframe()) {
+      root->child_at(0)
+          ->current_frame_host()
+          ->ShouldChangeRenderFrameHostOnSameSiteNavigation()) {
     SCOPED_TRACE(testing::Message()
                  << " Testing subframe cross-site navigation.");
-
-    {
-      // Create a new iframe.
-      LoadCommittedCapturer capturer(contents());
-      EXPECT_TRUE(ExecJs(root, JsReplace(kAddFrameWithSrcScript, main_url)));
-      capturer.Wait();
-    }
-
     // Subframe cross-site navigation in the new iframe creates a speculative
     // RenderFrameHost.
     TestNavigationManager navigation_manager(contents(), url_b);
