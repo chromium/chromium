@@ -74,9 +74,10 @@ void ObjectPainter::AddURLRectIfNeeded(const PaintInfo& paint_info,
 
   auto outline_rects = layout_object_.OutlineRects(
       nullptr, paint_offset, NGOutlineType::kIncludeBlockVisualOverflow);
-  gfx::Rect rect = ToPixelSnappedRect(UnionRect(outline_rects));
-  if (rect.IsEmpty())
+  gfx::Rect bounding_rect = ToPixelSnappedRect(UnionRect(outline_rects));
+  if (bounding_rect.IsEmpty()) {
     return;
+  }
 
   if (DrawingRecorder::UseCachedDrawingIfPossible(
           paint_info.context, layout_object_,
@@ -84,16 +85,27 @@ void ObjectPainter::AddURLRectIfNeeded(const PaintInfo& paint_info,
     return;
 
   DrawingRecorder recorder(paint_info.context, layout_object_,
-                           DisplayItem::kPrintedContentPDFURLRect, rect);
+                           DisplayItem::kPrintedContentPDFURLRect,
+                           bounding_rect);
+
+  Document& document = layout_object_.GetDocument();
+  String fragment_name;
   if (url.HasFragmentIdentifier() &&
-      EqualIgnoringFragmentIdentifier(url,
-                                      layout_object_.GetDocument().BaseURL())) {
-    String fragment_name = url.FragmentIdentifier();
-    if (layout_object_.GetDocument().FindAnchor(fragment_name))
-      paint_info.context.SetURLFragmentForRect(fragment_name, rect);
-    return;
+      EqualIgnoringFragmentIdentifier(url, document.BaseURL())) {
+    fragment_name = url.FragmentIdentifier();
+    if (!document.FindAnchor(fragment_name)) {
+      return;
+    }
   }
-  paint_info.context.SetURLForRect(url, rect);
+
+  for (auto physical_rect : outline_rects) {
+    gfx::Rect rect = ToPixelSnappedRect(physical_rect);
+    if (fragment_name) {
+      paint_info.context.SetURLFragmentForRect(fragment_name, rect);
+    } else {
+      paint_info.context.SetURLForRect(url, rect);
+    }
+  }
 }
 
 void ObjectPainter::PaintAllPhasesAtomically(const PaintInfo& paint_info) {
