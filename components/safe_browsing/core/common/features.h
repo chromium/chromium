@@ -18,9 +18,6 @@ namespace safe_browsing {
 // for example to control how often collection should occur.
 BASE_DECLARE_FEATURE(kAdSamplerTriggerFeature);
 
-// Adds page load token to client safe browsing report.
-BASE_DECLARE_FEATURE(kAddPageLoadTokenToClientSafeBrowsingReport);
-
 // Enables logging new phishing prevention data.
 BASE_DECLARE_FEATURE(kAntiPhishingTelemetry);
 
