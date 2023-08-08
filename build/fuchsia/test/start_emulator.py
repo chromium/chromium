@@ -63,12 +63,20 @@ def main():
     parser = argparse.ArgumentParser()
     register_emulator_args(parser, True)
     register_log_args(parser)
+    parser.add_argument('--target-id-only',
+                        action='store_true',
+                        help='Write only the target emulator id to the ' \
+                             'stdout. It is usually useful in the unattended ' \
+                             'environment.')
     args = parser.parse_args()
     with create_emulator_from_args(args) as target_id:
-        logging.info(
-            'Emulator successfully started. You can now run Chrome '
-            'Fuchsia tests with --target-id=%s to target this emulator.',
-            target_id)
+        if args.target_id_only:
+            print(target_id, flush=True)
+        else:
+            logging.info(
+                'Emulator successfully started. You can now run Chrome '
+                'Fuchsia tests with --target-id=%s to target this emulator.',
+                target_id)
         wait_for_sigterm('shutting down the emulator.')
 
 
