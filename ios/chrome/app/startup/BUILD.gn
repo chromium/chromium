@@ -9,6 +9,7 @@ import("//ios/public/provider/chrome/browser/build_config.gni")
 # Target for sources that don't depend on //ios/chrome/browser:browser
 source_set("startup_basic") {
   sources = [
+    "app_launch_metrics.h",
     "chrome_main_starter.h",
     "chrome_main_starter.mm",
     "ios_chrome_main.h",

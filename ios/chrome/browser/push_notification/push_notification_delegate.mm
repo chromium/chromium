@@ -12,6 +12,7 @@
 #import "base/timer/timer.h"
 #import "base/values.h"
 #import "components/prefs/pref_service.h"
+#import "ios/chrome/app/startup/app_launch_metrics.h"
 #import "ios/chrome/browser/push_notification/push_notification_client_manager.h"
 #import "ios/chrome/browser/push_notification/push_notification_configuration.h"
 #import "ios/chrome/browser/push_notification/push_notification_delegate.h"
@@ -108,6 +109,8 @@ GaiaIdToPushNotificationPreferenceMapFromCache(
   if (completionHandler) {
     completionHandler();
   }
+  base::UmaHistogramEnumeration(kAppLaunchSource,
+                                AppLaunchSource::NOTIFICATION);
 }
 
 - (void)userNotificationCenter:(UNUserNotificationCenter*)center
@@ -129,6 +132,8 @@ GaiaIdToPushNotificationPreferenceMapFromCache(
   if (completionHandler) {
     completionHandler(UNNotificationPresentationOptionBanner);
   }
+  base::UmaHistogramEnumeration(kAppLaunchSource,
+                                AppLaunchSource::NOTIFICATION);
 }
 
 #pragma mark - PushNotificationDelegate

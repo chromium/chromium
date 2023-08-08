@@ -12,6 +12,7 @@
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/app/startup/app_launch_metrics.h"
 #import "ios/chrome/browser/default_browser/utils.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
@@ -217,6 +218,8 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
                               START_ACTION_WIDGET_KIT_COMMAND,
                               MOBILE_SESSION_START_ACTION_COUNT);
 
+    base::UmaHistogramEnumeration(kAppLaunchSource, AppLaunchSource::WIDGET);
+
     const char* command = "";
     NSString* sourceWidget = completeURL.host;
 
@@ -267,6 +270,8 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
                        fromSecureSourceApplication:sourceWidget];
 
   } else if (IsXCallbackURL(gurl)) {
+    base::UmaHistogramEnumeration(kAppLaunchSource,
+                                  AppLaunchSource::X_CALLBACK);
     // TODO(crbug.com/228098): Temporary fix.
     NSString* action = [completeURL path];
     // Currently only "open" and "extension-command" are supported.
@@ -354,6 +359,8 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
       // `url` scheme ends with an 's'.
       BOOL useHttps = gurl.scheme()[gurl.scheme().length() - 1] == 's';
       action = useHttps ? START_ACTION_OPEN_HTTPS : START_ACTION_OPEN_HTTP;
+      base::UmaHistogramEnumeration(kAppLaunchSource,
+                                    AppLaunchSource::LINK_OPENED_FROM_APP);
       base::RecordAction(base::UserMetricsAction("MobileFirstPartyViewIntent"));
 
       GURL::Replacements replace_scheme;
@@ -374,6 +381,8 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
 
     if (action == START_ACTION_OPEN_HTTP_FROM_OS ||
         action == START_ACTION_OPEN_HTTPS_FROM_OS) {
+      base::UmaHistogramEnumeration(kAppLaunchSource,
+                                    AppLaunchSource::LINK_OPENED_FROM_OS);
       LogOpenHTTPURLFromExternalURL();
     }
 

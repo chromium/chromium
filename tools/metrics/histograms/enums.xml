@@ -55330,6 +55330,20 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   </int>
 </enum>
 
+<enum name="IOSLaunchSource">
+  <summary>The way the app was launched on iOS.</summary>
+  <int value="0" label="App Icon"/>
+  <int value="1" label="Long Press on App Icon"/>
+  <int value="2" label="Widget"/>
+  <int value="3" label="Spotlight Chrome (e.g. bookmark)"/>
+  <int value="4" label="Link Opened by OS - Default Intent"/>
+  <int value="5" label="Link Opened Specifically in Chrome from App"/>
+  <int value="6" label="Siri Shortcut"/>
+  <int value="7" label="X-Callback (incl. link shared to Chrome)"/>
+  <int value="8" label="Handoff"/>
+  <int value="9" label="Notification"/>
+</enum>
+
 <enum name="IOSLensEntrypoint">
   <summary>The entrypoint that the user entered Lens by.</summary>
   <int value="0" label="Context Menu"/>

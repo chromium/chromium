@@ -24,6 +24,7 @@
 #import "ios/chrome/app/chrome_overlay_window.h"
 #import "ios/chrome/app/main_application_delegate_testing.h"
 #import "ios/chrome/app/main_controller.h"
+#import "ios/chrome/app/startup/app_launch_metrics.h"
 #import "ios/chrome/browser/commerce/push_notification/push_notification_feature.h"
 #import "ios/chrome/browser/crash_report/crash_keys_helper.h"
 #import "ios/chrome/browser/download/background_service/background_download_service_factory.h"
@@ -344,6 +345,8 @@ const int kMainIntentCheckDelay = 1;
           }
         }
         if (!appStartupFromExternalIntent) {
+          base::UmaHistogramEnumeration(kAppLaunchSource,
+                                        AppLaunchSource::APP_ICON);
           base::RecordAction(base::UserMetricsAction("IOSOpenByMainIntent"));
         } else {
           [self notifyFETAppStartupFromExternalIntent];

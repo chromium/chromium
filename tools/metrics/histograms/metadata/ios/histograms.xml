@@ -1220,6 +1220,14 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.LaunchSource" enum="IOSLaunchSource" expires_after="never">
+<!-- expires-never: Core metric to track how Chrome is launched -->
+
+  <owner>sebsg@chromium.org</owner>
+  <owner>bling-get-set-up@google.com</owner>
+  <summary>Records the way the app was launched on iOS.</summary>
+</histogram>
+
 <histogram name="IOS.LinkToText.ShouldOfferResult"
     enum="LinkToTextShouldOfferResult" expires_after="2023-09-03">
   <owner>tmartino@chromium.org</owner>
