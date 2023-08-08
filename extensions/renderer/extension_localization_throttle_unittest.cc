@@ -382,8 +382,12 @@ TEST_F(ExtensionLocalizationThrottleTest, CreateDataPipeError) {
   response_head->mime_type = "text/css";
   bool defer = false;
   throttle->WillProcessResponse(url, response_head.get(), &defer);
-  EXPECT_FALSE(defer);
+  EXPECT_TRUE(defer);
   EXPECT_FALSE(delegate->is_intercepted());
+  EXPECT_FALSE(delegate->cancel_error_code());
+
+  // Run loop to call DeferredCancelWithError().
+  base::RunLoop().RunUntilIdle();
 
   ASSERT_TRUE(delegate->cancel_error_code());
   EXPECT_EQ(net::ERR_INSUFFICIENT_RESOURCES, *delegate->cancel_error_code());
