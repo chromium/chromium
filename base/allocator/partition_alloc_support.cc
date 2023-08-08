@@ -235,8 +235,12 @@ void RunMemoryReclaimer(scoped_refptr<SequencedTaskRunner> task_runner) {
     instance->ReclaimNormal();
   }
 
-  TimeDelta delay =
-      Microseconds(instance->GetRecommendedReclaimIntervalInMicroseconds());
+  TimeDelta delay = features::kPartitionAllocMemoryReclaimerInterval.Get();
+  if (!delay.is_positive()) {
+    delay =
+        Microseconds(instance->GetRecommendedReclaimIntervalInMicroseconds());
+  }
+
   task_runner->PostDelayedTask(
       FROM_HERE, BindOnce(RunMemoryReclaimer, task_runner), delay);
 }
@@ -284,9 +288,11 @@ void StartMemoryReclaimer(scoped_refptr<SequencedTaskRunner> task_runner) {
   // seconds is useful. Since this is meant to run during idle time only, it is
   // a reasonable starting point balancing effectivenes vs cost. See
   // crbug.com/942512 for details and experimental results.
-  auto* instance = ::partition_alloc::MemoryReclaimer::Instance();
-  TimeDelta delay =
-      Microseconds(instance->GetRecommendedReclaimIntervalInMicroseconds());
+  TimeDelta delay = features::kPartitionAllocMemoryReclaimerInterval.Get();
+  if (!delay.is_positive()) {
+    delay = Microseconds(::partition_alloc::MemoryReclaimer::Instance()
+                             ->GetRecommendedReclaimIntervalInMicroseconds());
+  }
 
   if (base::FeatureList::IsEnabled(kDelayFirstPeriodicPAPurgeOrReclaim)) {
     delay = std::max(delay, kFirstPAPurgeOrReclaimDelay);

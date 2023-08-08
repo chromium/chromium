@@ -233,6 +233,10 @@ const base::FeatureParam<BucketDistributionMode>
 BASE_FEATURE(kPartitionAllocMemoryReclaimer,
              "PartitionAllocMemoryReclaimer",
              FEATURE_ENABLED_BY_DEFAULT);
+const base::FeatureParam<TimeDelta> kPartitionAllocMemoryReclaimerInterval = {
+    &kPartitionAllocMemoryReclaimer, "interval",
+    TimeDelta(),  // Defaults to zero.
+};
 
 // Configures whether we set a lower limit for renderers that do not have a main
 // frame, similar to the limit that is already done for backgrounded renderers.
