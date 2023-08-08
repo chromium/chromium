@@ -19,6 +19,7 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/ime/input_method.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/menu_separator_types.h"
 #include "ui/base/owned_window_anchor.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/color/color_id.h"
@@ -33,6 +34,7 @@
 #include "ui/views/controls/menu/menu_host.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/menu_scroll_view_container.h"
+#include "ui/views/controls/menu/menu_separator.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/root_view.h"
 #include "ui/views/widget/widget.h"
@@ -199,11 +201,21 @@ void SubmenuView::Layout() {
   int x = insets.left();
   int y = insets.top();
   int menu_item_width = width() - insets.width();
+  const int between_item_vertical_padding =
+      MenuConfig::instance().between_item_vertical_padding;
+  bool previous_child_was_lower_separator = false;
   for (View* child : children()) {
     if (child->GetVisible()) {
-      int child_height = child->GetHeightForWidth(menu_item_width);
-      child->SetBounds(x, y, menu_item_width, child_height);
-      y += child_height;
+      const auto* separator = AsViewClass<MenuSeparator>(child);
+      if (y != insets.top() && !previous_child_was_lower_separator &&
+          (!separator || separator->GetType() != ui::UPPER_SEPARATOR)) {
+        y += between_item_vertical_padding;
+      }
+      child->SetBounds(x, y, menu_item_width,
+                       child->GetHeightForWidth(menu_item_width));
+      y = child->bounds().bottom();
+      previous_child_was_lower_separator =
+          separator && separator->GetType() == ui::LOWER_SEPARATOR;
     }
   }
 }
@@ -242,8 +254,10 @@ gfx::Size SubmenuView::CalculatePreferredSize() const {
           std::max(max_complex_width, child->GetPreferredSize().width());
     }
   }
-  if (max_minor_text_width_ > 0)
-    max_minor_text_width_ += MenuConfig::instance().item_horizontal_padding;
+  const auto& config = MenuConfig::instance();
+  if (max_minor_text_width_ > 0) {
+    max_minor_text_width_ += config.item_horizontal_padding;
+  }
 
   // Finish calculating our optimum width.
   gfx::Insets insets = GetInsets();
@@ -259,10 +273,19 @@ gfx::Size SubmenuView::CalculatePreferredSize() const {
 
   // Then, the height for that width.
   const int menu_item_width = width - insets.width();
-  const auto get_height = [menu_item_width](int height, const View* child) {
-    return height + (child->GetVisible()
-                         ? child->GetHeightForWidth(menu_item_width)
-                         : 0);
+  bool previous_child_was_lower_separator = false;
+  const auto get_height = [&](int height, const View* child) {
+    if (!child->GetVisible()) {
+      return height;
+    }
+    const auto* separator = AsViewClass<MenuSeparator>(child);
+    if (height && !previous_child_was_lower_separator &&
+        (!separator || separator->GetType() != ui::UPPER_SEPARATOR)) {
+      height += config.between_item_vertical_padding;
+    }
+    previous_child_was_lower_separator =
+        separator && separator->GetType() == ui::LOWER_SEPARATOR;
+    return height + child->GetHeightForWidth(menu_item_width);
   };
   const int height =
       std::accumulate(children().cbegin(), children().cend(), 0, get_height);

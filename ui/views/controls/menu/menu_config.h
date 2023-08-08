@@ -114,6 +114,11 @@ struct VIEWS_EXPORT MenuConfig {
   // Horizontal border padding of a separator.
   int separator_horizontal_border_padding = 0;
 
+  // Padding, if any, between successive menu items. This is not applied below
+  // LOWER_SEPARATORs or above UPPER_SEPARATORs, since these are meant to be
+  // flush with the respective adjacent items.
+  int between_item_vertical_padding = 0;
+
   // Are mnemonics shown?
   bool show_mnemonics = false;
 

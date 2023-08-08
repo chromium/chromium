@@ -34,6 +34,7 @@ void MenuConfig::Init() {
 
   if (!is_refresh && is_win11) {
     corner_radius = 8;
+    between_item_vertical_padding = 2;
     item_corner_radius = 4;
   }
 
