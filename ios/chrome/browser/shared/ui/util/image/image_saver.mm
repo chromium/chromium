@@ -139,8 +139,11 @@
                            title:title
                          message:message];
 
+  __weak ImageSaver* weakSelf = self;
   [self.alertCoordinator addItemWithTitle:l10n_util::GetNSString(IDS_CANCEL)
-                                   action:nil
+                                   action:^{
+                                     [weakSelf stopAlertCoordinator];
+                                   }
                                     style:UIAlertActionStyleCancel];
 
   [_alertCoordinator
@@ -150,6 +153,7 @@
                   [[UIApplication sharedApplication] openURL:settingURL
                                                      options:@{}
                                            completionHandler:nil];
+                  [weakSelf stopAlertCoordinator];
                 }
                  style:UIAlertActionStyleDefault];
 
@@ -179,8 +183,11 @@
                          browser:_browser
                            title:title
                          message:errorContent];
+  __weak ImageSaver* weakSelf = self;
   [self.alertCoordinator addItemWithTitle:l10n_util::GetNSString(IDS_OK)
-                                   action:nil
+                                   action:^{
+                                     [weakSelf stopAlertCoordinator];
+                                   }
                                     style:UIAlertActionStyleDefault];
   [self.alertCoordinator start];
 }
@@ -200,6 +207,13 @@
     // TODO(crbug.com/797277): Provide a way for the user to easily reach the
     // photos app.
   }
+}
+
+// Stops the alert coordinator.
+- (void)stopAlertCoordinator {
+  CHECK(self.alertCoordinator);
+  [self.alertCoordinator stop];
+  self.alertCoordinator = nil;
 }
 
 @end
