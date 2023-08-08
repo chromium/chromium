@@ -97,9 +97,6 @@ class BASE_EXPORT Process {
   // is possible.
   static bool CanSetPriority();
 
-  // TODO(1466479): Migrate callers and remove.
-  static bool CanBackgroundProcesses() { return CanSetPriority(); }
-
   // Terminates the current process immediately with |exit_code|.
   [[noreturn]] static void TerminateCurrentProcessImmediately(int exit_code);
 
@@ -226,15 +223,6 @@ class BASE_EXPORT Process {
   // changed, false otherwise. If `port_provider` is null, this is a no-op and
   // it returns false.
   bool SetPriority(PortProvider* port_provider, Priority priority);
-
-  // TODO(1466479): Migrate callers and remove.
-  bool IsProcessBackgrounded(PortProvider* port_provider) const {
-    return GetPriority(port_provider) == Priority::kBestEffort;
-  }
-  bool SetProcessBackgrounded(PortProvider* port_provider, bool background) {
-    return SetPriority(port_provider, background ? Priority::kBestEffort
-                                                 : Priority::kUserBlocking);
-  }
 #else
   // Retrieves the priority of the process. Defaults to Priority::kUserBlocking
   // if the priority could not be retrieved.
@@ -243,15 +231,6 @@ class BASE_EXPORT Process {
   // Sets the priority of the process process. Returns true if the priority was
   // changed, false otherwise.
   bool SetPriority(Priority priority);
-
-  // TODO(1466479): Migrate callers and remove.
-  bool IsProcessBackgrounded() const {
-    return GetPriority() == Priority::kBestEffort;
-  }
-  bool SetProcessBackgrounded(bool background) {
-    return SetPriority(background ? Priority::kBestEffort
-                                  : Priority::kUserBlocking);
-  }
 #endif  // BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_IOS) && BUILDFLAG(USE_BLINK))
 
   // Returns an integer representing the priority of a process. The meaning
