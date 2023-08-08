@@ -236,11 +236,15 @@ ImageEncodeOptions* CanvasAsyncBlobCreator::GetImageEncodeOptionsForMimeType(
   return encode_options;
 }
 
-bool CanvasAsyncBlobCreator::EncodeImage(const double& quality) {
-  std::unique_ptr<ImageDataBuffer> buffer = ImageDataBuffer::Create(src_data_);
+bool CanvasAsyncBlobCreator::EncodeImage(const SkPixmap& src_data,
+                                         ImageEncodingMimeType mime_type,
+                                         const double& quality,
+                                         Vector<unsigned char>* encoded_image) {
+  CHECK(encoded_image);
+  std::unique_ptr<ImageDataBuffer> buffer = ImageDataBuffer::Create(src_data);
   if (!buffer)
     return false;
-  return buffer->EncodeImage(mime_type_, quality, &encoded_image_);
+  return buffer->EncodeImage(mime_type, quality, encoded_image);
 }
 
 void CanvasAsyncBlobCreator::ScheduleAsyncBlobCreation(const double& quality) {
@@ -271,7 +275,8 @@ void CanvasAsyncBlobCreator::ScheduleAsyncBlobCreation(const double& quality) {
       // When OffscreenCanvas.convertToBlob() occurs on worker thread,
       // we do not need to use background task runner to reduce load on main.
       // So we just directly encode images on the worker thread.
-      if (!EncodeImage(quality)) {
+      Vector<unsigned char> encoded_image;
+      if (!EncodeImage(src_data_, mime_type_, quality, &encoded_image)) {
         context_->GetTaskRunner(TaskType::kCanvasBlobSerialization)
             ->PostTask(FROM_HERE,
                        WTF::BindOnce(
@@ -284,7 +289,7 @@ void CanvasAsyncBlobCreator::ScheduleAsyncBlobCreation(const double& quality) {
           ->PostTask(
               FROM_HERE,
               WTF::BindOnce(&CanvasAsyncBlobCreator::CreateBlobAndReturnResult,
-                            WrapPersistent(this)));
+                            WrapPersistent(this), std::move(encoded_image)));
 
     } else {
       worker_pool::PostTask(
@@ -362,12 +367,14 @@ void CanvasAsyncBlobCreator::IdleEncodeRows(base::TimeTicks deadline) {
   RecordCompleteEncodingTimeHistogram(mime_type_, elapsed_time);
   if (IsCreateBlobDeadlineNearOrPassed(deadline)) {
     context_->GetTaskRunner(TaskType::kCanvasBlobSerialization)
-        ->PostTask(
-            FROM_HERE,
-            WTF::BindOnce(&CanvasAsyncBlobCreator::CreateBlobAndReturnResult,
-                          WrapPersistent(this)));
+        ->PostTask(FROM_HERE,
+                   WTF::BindOnce(
+                       &CanvasAsyncBlobCreator::CreateBlobAndReturnResult,
+                       WrapPersistent(this),
+                       std::exchange(encoded_image_, Vector<unsigned char>())));
   } else {
-    CreateBlobAndReturnResult();
+    CreateBlobAndReturnResult(
+        std::exchange(encoded_image_, Vector<unsigned char>()));
   }
 }
 
@@ -385,14 +392,16 @@ void CanvasAsyncBlobCreator::ForceEncodeRows() {
   }
   num_rows_completed_ = src_data_.height();
 
-  CreateBlobAndReturnResult();
+  CreateBlobAndReturnResult(
+      std::exchange(encoded_image_, Vector<unsigned char>()));
   SignalAlternativeCodePathFinishedForTesting();
 }
 
-void CanvasAsyncBlobCreator::CreateBlobAndReturnResult() {
+void CanvasAsyncBlobCreator::CreateBlobAndReturnResult(
+    Vector<unsigned char> encoded_image) {
   RecordIdleTaskStatusHistogram(idle_task_status_);
 
-  Blob* result_blob = Blob::Create(encoded_image_.data(), encoded_image_.size(),
+  Blob* result_blob = Blob::Create(encoded_image.data(), encoded_image.size(),
                                    ImageEncodingMimeTypeName(mime_type_));
   if (function_type_ == kHTMLCanvasToBlobCallback) {
     context_->GetTaskRunner(TaskType::kCanvasBlobSerialization)
@@ -478,7 +487,9 @@ void CanvasAsyncBlobCreator::CreateNullAndReturnResult() {
 
 void CanvasAsyncBlobCreator::EncodeImageOnEncoderThread(double quality) {
   DCHECK(!IsMainThread());
-  if (!EncodeImage(quality)) {
+  // TODO(crbug.com/1370013): Do not access |this| here.
+  Vector<unsigned char> encoded_image;
+  if (!EncodeImage(src_data_, mime_type_, quality, &encoded_image)) {
     PostCrossThreadTask(
         *parent_frame_task_runner_, FROM_HERE,
         CrossThreadBindOnce(&CanvasAsyncBlobCreator::CreateNullAndReturnResult,
@@ -489,7 +500,8 @@ void CanvasAsyncBlobCreator::EncodeImageOnEncoderThread(double quality) {
   PostCrossThreadTask(
       *parent_frame_task_runner_, FROM_HERE,
       CrossThreadBindOnce(&CanvasAsyncBlobCreator::CreateBlobAndReturnResult,
-                          WrapCrossThreadPersistent(this)));
+                          WrapCrossThreadPersistent(this),
+                          std::move(encoded_image)));
 }
 
 bool CanvasAsyncBlobCreator::InitializeEncoder(double quality) {
