@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import <CoreGraphics/CoreGraphics.h>
 #import <XCTest/XCTest.h>
 
 #import "base/test/ios/wait_util.h"
@@ -27,7 +28,12 @@ using base::test::ios::kWaitForUIElementTimeout;
 - (void)testNetworkConnection {
   XCUIApplication* app = [[XCUIApplication alloc] init];
 
-  [app.buttons[ntp_home::FakeOmniboxAccessibilityID()].firstMatch tap];
+  struct CGVector offset;
+  offset.dx = 0.5;
+  offset.dy = 0.5;
+
+  [[app.buttons[ntp_home::FakeOmniboxAccessibilityID()].firstMatch
+      coordinateWithNormalizedOffset:offset] tap];
 
   XCTAssert(
       [app.keyboards.firstMatch
