@@ -11,6 +11,7 @@
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "components/crash/core/common/crash_key.h"
+#include "components/variations/active_field_trials.h"
 #include "components/variations/hashing.h"
 #include "components/variations/synthetic_trial_registry.h"
 #include "components/variations/synthetic_trials_active_group_id_provider.h"
@@ -26,6 +27,10 @@ std::string GetVariationsCrashKey() {
 
 std::string GetNumExperimentsCrashKey() {
   return crash_reporter::GetCrashKeyValue("num-experiments");
+}
+
+std::string GetVariationsSeedVersionCrashKey() {
+  return crash_reporter::GetCrashKeyValue("variations-seed-version");
 }
 
 class VariationsCrashKeysTest : public ::testing::Test {
@@ -125,6 +130,12 @@ TEST_F(VariationsCrashKeysTest, BasicFunctionality) {
       "8e7abfb0-c16397b7,277f2a3d-d77354d0,21710f4c-99b90b01,"
       "9f339c9d-3250dddc,21710f4c-99b90b01,",
       info.experiment_list);
+}
+
+TEST_F(VariationsCrashKeysTest, SeedVersionKey) {
+  SetSeedVersion("version-123");
+  InitCrashKeys();
+  EXPECT_EQ("version-123", GetVariationsSeedVersionCrashKey());
 }
 
 }  // namespace variations

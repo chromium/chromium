@@ -138,6 +138,7 @@ const char* const kWebViewCrashKeyAllowList[] = {
     // crash keys needed for recording finch trials
     "variations",
     "num-experiments",
+    "variations-seed-version",
 
     // sandbox/linux
     "seccomp-sigsys",
