@@ -365,6 +365,20 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest, TitleHover) {
 #endif
 }
 
+IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest,
+                       MenuButtonAccessibleName) {
+  const GURL app_url("https://test.org");
+  helper()->InstallAndLaunchWebApp(browser(), app_url);
+
+  views::View* const menu_button =
+      helper()->browser_view()->toolbar_button_provider()->GetAppMenuButton();
+
+  EXPECT_EQ(menu_button->GetAccessibleName(),
+            u"Customize and control A minimal-ui app");
+  EXPECT_EQ(menu_button->GetTooltipText(gfx::Point()),
+            u"Customize and control A minimal-ui app");
+}
+
 class WebAppFrameToolbarBrowserTest_ElidedExtensionsMenu
     : public WebAppFrameToolbarBrowserTest {
  public:
