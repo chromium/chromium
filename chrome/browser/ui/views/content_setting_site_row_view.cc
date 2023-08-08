@@ -6,7 +6,9 @@
 
 #include <memory>
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/accessibility/non_accessible_image_view.h"
+#include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "components/favicon/core/favicon_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/elide_url.h"
@@ -21,10 +23,6 @@
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/layout_provider.h"
 
-namespace {
-constexpr int kDesiredFaviconSize = 16;
-}
-
 ContentSettingSiteRowView::~ContentSettingSiteRowView() = default;
 
 ContentSettingSiteRowView::ContentSettingSiteRowView(
@@ -33,20 +31,22 @@ ContentSettingSiteRowView::ContentSettingSiteRowView(
     bool allowed,
     ToggleCallback toggle_callback)
     : site_(site), toggle_callback_(toggle_callback) {
-  SetLayoutManager(std::make_unique<views::FlexLayout>());
+  auto* layout = SetLayoutManager(std::make_unique<views::FlexLayout>());
 
   const int favicon_margin = views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_RELATED_LABEL_HORIZONTAL);
 
+  const int icon_size = GetLayoutConstant(PAGE_INFO_ICON_SIZE);
+
   if (favicon_service) {
     favicon_ = AddChildView(std::make_unique<NonAccessibleImageView>());
-    favicon_->SetImageSize({kDesiredFaviconSize, kDesiredFaviconSize});
+    favicon_->SetImageSize({icon_size, icon_size});
     favicon_->SetProperty(views::kMarginsKey,
                           gfx::Insets().set_right(favicon_margin));
     // Fetch raw favicon to set |fallback_to_host| since we otherwise might
     // not get a result if the user never visited the root URL of |site|.
     favicon_service->GetRawFaviconForPageURL(
-        site.GetURL(), {favicon_base::IconType::kFavicon}, kDesiredFaviconSize,
+        site.GetURL(), {favicon_base::IconType::kFavicon}, icon_size,
         /*fallback_to_host=*/true,
         base::BindOnce(&ContentSettingSiteRowView::OnFaviconLoaded,
                        base::Unretained(this)),
@@ -72,6 +72,9 @@ ContentSettingSiteRowView::ContentSettingSiteRowView(
   toggle_button_->SetIsOn(allowed);
   toggle_button_->SetAccessibleName(
       l10n_util::GetStringFUTF16(IDS_PAGE_INFO_SELECTOR_TOOLTIP, title));
+
+  layout->SetInteriorMargin(ChromeLayoutProvider::Get()->GetInsetsMetric(
+      ChromeInsetsMetric::INSETS_PAGE_INFO_HOVER_BUTTON));
 }
 
 void ContentSettingSiteRowView::OnToggleButtonPressed() {
@@ -86,7 +89,7 @@ void ContentSettingSiteRowView::OnFaviconLoaded(
                                          favicon_result.bitmap_data->size())));
   } else {
     favicon_->SetImage(ui::ImageModel::FromVectorIcon(
-        kGlobeIcon, ui::kColorIcon, kDesiredFaviconSize));
+        kGlobeIcon, ui::kColorIcon, GetLayoutConstant(PAGE_INFO_ICON_SIZE)));
   }
 }
 

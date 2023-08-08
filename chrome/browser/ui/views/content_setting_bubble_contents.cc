@@ -70,14 +70,16 @@ ui::ImageModel GetSiteSettingsIcon() {
   return ui::ImageModel::FromVectorIcon(
       features::IsChromeRefresh2023() ? vector_icons::kSettingsChromeRefreshIcon
                                       : vector_icons::kSettingsIcon,
-      ui::kColorIcon);
+      ui::kColorIcon, GetLayoutConstant(PAGE_INFO_ICON_SIZE));
 }
 
 ui::ImageModel GetLaunchIcon() {
   return ui::ImageModel::FromVectorIcon(
       features::IsChromeRefresh2023() ? vector_icons::kLaunchChromeRefreshIcon
                                       : vector_icons::kLaunchIcon,
-      ui::kColorIconSecondary);
+      features::IsChromeRefresh2023() ? ui::kColorIcon
+                                      : ui::kColorIconSecondary,
+      GetLayoutConstant(PAGE_INFO_ICON_SIZE));
 }
 
 bool ShouldShowMediaDeviceMenus(ContentSettingBubbleModel* model) {
@@ -502,7 +504,7 @@ void ContentSettingBubbleContents::Init() {
   if (!bubble_content.subtitle.empty()) {
     SetSubtitle(bubble_content.subtitle);
     auto separator = std::make_unique<views::Separator>();
-    rows.push_back({std::move(separator), LayoutRowType::FULL_WIDTH});
+    rows.push_back({std::move(separator), LayoutRowType::INDENTED});
   }
 
   if (!bubble_content.message.empty()) {
@@ -560,13 +562,21 @@ void ContentSettingBubbleContents::Init() {
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
   auto* favicon_service = FaviconServiceFactory::GetForProfile(
       profile, ServiceAccessType::EXPLICIT_ACCESS);
-  for (const auto& entry : bubble_content.site_list) {
-    auto domain_row = std::make_unique<ContentSettingSiteRowView>(
-        favicon_service, entry.first, entry.second,
-        base::BindRepeating(
-            &ContentSettingBubbleModel::OnSiteRowClicked,
-            base::Unretained(content_setting_bubble_model_.get())));
-    rows.push_back({std::move(domain_row), LayoutRowType::DEFAULT});
+  if (!bubble_content.site_list.empty()) {
+    // Put site rows into a separate container to avoid additional space between
+    // these rows.
+    auto sites_container = std::make_unique<views::View>();
+    sites_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
+        views::BoxLayout::Orientation::kVertical));
+    for (const auto& entry : bubble_content.site_list) {
+      auto site_row = std::make_unique<ContentSettingSiteRowView>(
+          favicon_service, entry.first, entry.second,
+          base::BindRepeating(
+              &ContentSettingBubbleModel::OnSiteRowClicked,
+              base::Unretained(content_setting_bubble_model_.get())));
+      sites_container->AddChildView(std::move(site_row));
+    }
+    rows.push_back({std::move(sites_container), LayoutRowType::FULL_WIDTH});
   }
 
   if (!bubble_content.custom_link.empty()) {
