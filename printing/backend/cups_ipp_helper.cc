@@ -7,6 +7,7 @@
 #include <cups/cups.h>
 
 #include <algorithm>
+#include <map>
 #include <string>
 #include <vector>
 
@@ -314,7 +315,7 @@ bool PaperIsBorderless(const PrinterSemanticCapsAndDefaults::Paper& paper) {
 
 PrinterSemanticCapsAndDefaults::Papers SupportedPapers(
     const CupsPrinter& printer) {
-  auto size_compare = [](const gfx::Size& a, const gfx::Size& b) {
+  auto size_comparer = [](const gfx::Size& a, const gfx::Size& b) {
     auto result = a.width() - b.width();
     if (result == 0) {
       result = a.height() - b.height();
@@ -322,17 +323,15 @@ PrinterSemanticCapsAndDefaults::Papers SupportedPapers(
     return result < 0;
   };
   std::map<gfx::Size, PrinterSemanticCapsAndDefaults::Paper,
-           decltype(size_compare)>
+           decltype(size_comparer)>
       paper_map;
 
   ipp_attribute_t* attr = printer.GetMediaColDatabase();
   int count = ippGetCount(attr);
 
   for (int i = 0; i < count; i++) {
-    ipp_t* db_entry = ippGetCollection(attr, i);
-
     absl::optional<PrinterSemanticCapsAndDefaults::Paper> paper_opt =
-        PaperFromMediaColDatabaseEntry(db_entry);
+        PaperFromMediaColDatabaseEntry(ippGetCollection(attr, i));
     if (!paper_opt.has_value()) {
       continue;
     }
@@ -350,6 +349,7 @@ PrinterSemanticCapsAndDefaults::Papers SupportedPapers(
   }
 
   PrinterSemanticCapsAndDefaults::Papers parsed_papers;
+  parsed_papers.reserve(paper_map.size());
   for (const auto& entry : paper_map) {
     parsed_papers.push_back(entry.second);
   }
