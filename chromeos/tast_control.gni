@@ -51,10 +51,6 @@ tast_disabled_tests_from_chrome_all = [
   "inputs.VirtualKeyboardGlideTyping.tablet_floating",
   "inputs.VirtualKeyboardHandwriting.floating",
 
-  # TODO(b/287529864): Re-enable these tast tests once they work well with
-  # GIF picker flag default on.
-  "inputs.PhysicalKeyboardEmoji*",
-
   # b/251833060
   "peripherals.LaunchAppFromGuestSession.diagnostics",
 

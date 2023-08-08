@@ -47,12 +47,6 @@ var EmojiPickerExtensionBrowserTest = class extends PolymerTest {
     return 'chrome://emoji-picker/test_loader.html?module=' +
         'chromeos/emoji_picker/emoji_picker_extension_test.js';
   }
-
-  // TODO(b/287529864): Bring GIF support back in this test suite.
-  /** @override */
-  get featureList() {
-    return {disabled: ['ash::features::kImeSystemEmojiPickerGIFSupport']};
-  }
 };
 
 TEST_F('EmojiPickerExtensionBrowserTest', 'All', function() {
@@ -100,12 +94,6 @@ var EmojiPickerExtensionSearchTest = class extends PolymerTest {
   get browsePreload() {
     return 'chrome://emoji-picker/test_loader.html?module=' +
         'chromeos/emoji_picker/emoji_picker_search_test.js';
-  }
-
-  // TODO(b/287529864): Bring GIF support back in this test suite.
-  /** @override */
-  get featureList() {
-    return {disabled: ['ash::features::kImeSystemEmojiPickerGIFSupport']};
   }
 };
 
