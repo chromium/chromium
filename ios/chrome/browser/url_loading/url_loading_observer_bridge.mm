@@ -7,6 +7,12 @@
 UrlLoadingObserverBridge::UrlLoadingObserverBridge(id<URLLoadingObserver> owner)
     : owner_(owner) {}
 
+UrlLoadingObserverBridge::~UrlLoadingObserverBridge() {
+  CHECK(!IsInObserverList())
+      << "UrlLoadingObserverBridge needs to be removed from "
+         "observer list before their destruction.";
+}
+
 void UrlLoadingObserverBridge::TabWillLoadUrl(
     const GURL& url,
     ui::PageTransition transition_type) {
