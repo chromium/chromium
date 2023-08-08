@@ -29,7 +29,6 @@ run_jsbundler("switch_access_copied_files") {
     "action_manager.js",
     "auto_scan_manager.js",
     "background.html",
-    "background.js",
     "cache.js",
     "commands.js",
     "focus_ring_manager.js",
@@ -81,6 +80,7 @@ run_jsbundler("switch_access_copied_files") {
     "preference_manager.js",
     "switch_access.js",
     "switch_access_constants.js",
+    "switch_access_loader.js",
     "switch_access_predicate.js",
     "text_navigation_manager.js",
   ]
@@ -148,7 +148,6 @@ js_type_check("closure_compile") {
     ":action_manager",
     ":auto_scan_manager",
     ":back_button_node",
-    ":background",
     ":basic_node",
     ":cache",
     ":combo_box_node",
@@ -170,6 +169,7 @@ js_type_check("closure_compile") {
     ":slider_node",
     ":switch_access",
     ":switch_access_constants",
+    ":switch_access_loader",
     ":switch_access_node",
     ":switch_access_predicate",
     ":tab_node",
@@ -200,7 +200,7 @@ js_library("auto_scan_manager") {
   deps = [ ":switch_access_constants" ]
 }
 
-js_library("background") {
+js_library("switch_access_loader") {
   deps = [
     ":switch_access",
     "../common:instance_checker",
