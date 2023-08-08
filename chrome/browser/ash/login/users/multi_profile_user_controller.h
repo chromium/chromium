@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -63,16 +64,13 @@ class MultiProfileUserController {
   void Shutdown();
 
   // Returns the cached policy value for `user_email`.
-  std::string GetCachedValue(const std::string& user_email) const;
+  user_manager::MultiUserSignInPolicy GetCachedValue(
+      std::string_view user_email) const;
 
   // Returns primary user policy (only ALLOW,
   // NOT_ALLOWED_PRIMARY_POLICY_CERT_TAINTED,
   // NOT_ALLOWED_PRIMARY_USER_POLICY_FORBIDS)
   UserAllowedInSessionReason GetPrimaryUserPolicy() const;
-
-  // Returns the user behavior in MultiUserSignInPolicy enum.
-  static user_manager::MultiUserSignInPolicy UserBehaviorStringToEnum(
-      const std::string& behavior);
 
   // Returns true if user allowed to be in the current session. If `reason` not
   // null stores UserAllowedInSessionReason enum that describes actual reason.
@@ -83,19 +81,14 @@ class MultiProfileUserController {
   void StartObserving(Profile* user_profile);
 
   // Removes the cached values for the given user.
-  void RemoveCachedValues(const std::string& user_email);
-
-  // Possible behavior values.
-  static const char kBehaviorUnrestricted[];
-  static const char kBehaviorPrimaryOnly[];
-  static const char kBehaviorNotAllowed[];
+  void RemoveCachedValues(std::string_view user_email);
 
  private:
   friend class MultiProfileUserControllerTest;
 
   // Sets the cached policy value.
-  void SetCachedValue(const std::string& user_email,
-                      const std::string& behavior);
+  void SetCachedValue(std::string_view user_email,
+                      user_manager::MultiUserSignInPolicy policy);
 
   // Checks if all users are allowed in the current session.
   void CheckSessionUsers();

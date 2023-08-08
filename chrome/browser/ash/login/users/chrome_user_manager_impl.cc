@@ -120,6 +120,11 @@
 namespace ash {
 namespace {
 
+// TODO(b/278643115) Remove the using when moved.
+using user_manager::kMultiProfileUserBehaviorPref;
+using user_manager::MultiUserSignInPolicy;
+using user_manager::ParseMultiUserSignInPolicyPref;
+
 using ::content::BrowserThread;
 
 // A string pref that gets set when a device local account is removed but a
@@ -153,7 +158,7 @@ void ResolveLocale(const std::string& raw_locale,
 
 bool GetUserLockAttributes(const user_manager::User* user,
                            bool* can_lock,
-                           std::string* multi_profile_behavior) {
+                           MultiUserSignInPolicy* policy) {
   Profile* const profile = ProfileHelper::Get()->GetProfileByUser(user);
   if (!profile) {
     return false;
@@ -162,9 +167,10 @@ bool GetUserLockAttributes(const user_manager::User* user,
   if (can_lock) {
     *can_lock = user->can_lock() && prefs->GetBoolean(prefs::kAllowScreenLock);
   }
-  if (multi_profile_behavior) {
-    *multi_profile_behavior =
-        prefs->GetString(::prefs::kMultiProfileUserBehavior);
+  if (policy) {
+    *policy = ParseMultiUserSignInPolicyPref(
+                  prefs->GetString(kMultiProfileUserBehaviorPref))
+                  .value_or(MultiUserSignInPolicy::kUnrestricted);
   }
   return true;
 }
@@ -485,9 +491,9 @@ user_manager::UserList ChromeUserManagerImpl::GetUnlockUsers() const {
   }
 
   bool can_primary_lock = false;
-  std::string primary_behavior;
+  MultiUserSignInPolicy primary_policy;
   if (!GetUserLockAttributes(GetPrimaryUser(), &can_primary_lock,
-                             &primary_behavior)) {
+                             &primary_policy)) {
     // Locking is not allowed until the primary user profile is created.
     return user_manager::UserList();
   }
@@ -497,7 +503,7 @@ user_manager::UserList ChromeUserManagerImpl::GetUnlockUsers() const {
   // Specific case: only one logged in user or
   // primary user has primary-only multi-profile policy.
   if (logged_in_users.size() == 1 ||
-      primary_behavior == MultiProfileUserController::kBehaviorPrimaryOnly) {
+      primary_policy == MultiUserSignInPolicy::kPrimaryOnly) {
     if (can_primary_lock) {
       unlock_users.push_back(primary_user_);
     }
@@ -505,14 +511,13 @@ user_manager::UserList ChromeUserManagerImpl::GetUnlockUsers() const {
     // Fill list of potential unlock users based on multi-profile policy state.
     for (user_manager::User* user : logged_in_users) {
       bool can_lock = false;
-      std::string behavior;
-      if (!GetUserLockAttributes(user, &can_lock, &behavior)) {
+      MultiUserSignInPolicy policy;
+      if (!GetUserLockAttributes(user, &can_lock, &policy)) {
         continue;
       }
-      if (behavior == MultiProfileUserController::kBehaviorUnrestricted &&
-          can_lock) {
+      if (policy == MultiUserSignInPolicy::kUnrestricted && can_lock) {
         unlock_users.push_back(user);
-      } else if (behavior == MultiProfileUserController::kBehaviorPrimaryOnly) {
+      } else if (policy == MultiUserSignInPolicy::kPrimaryOnly) {
         NOTREACHED()
             << "Spotted primary-only multi-profile policy for non-primary user";
       }

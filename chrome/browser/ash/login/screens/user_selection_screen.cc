@@ -195,9 +195,7 @@ void GetMultiUserSignInPolicy(const user_manager::User* user,
       ChromeUserManager::Get()->GetMultiProfileUserController();
   *out_is_allowed =
       multi_profile_user_controller->IsUserAllowedInSession(user_id, nullptr);
-
-  *out_policy = MultiProfileUserController::UserBehaviorStringToEnum(
-      multi_profile_user_controller->GetCachedValue(user_id));
+  *out_policy = multi_profile_user_controller->GetCachedValue(user_id);
 }
 
 // Determines if user auth status requires online sign in.

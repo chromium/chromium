@@ -217,12 +217,15 @@ IN_PROC_BROWSER_TEST_F(UserAddingScreenTest, AddingSeveralUsers) {
   // One of the users has the primary-only policy.
   // List of unlock users doesn't depend on kEnableLockScreen preference.
   prefs1->SetBoolean(prefs::kEnableAutoScreenLock, true);
-  prefs1->SetString(::prefs::kMultiProfileUserBehavior,
-                    MultiProfileUserController::kBehaviorPrimaryOnly);
-  prefs2->SetString(::prefs::kMultiProfileUserBehavior,
-                    MultiProfileUserController::kBehaviorUnrestricted);
-  prefs3->SetString(::prefs::kMultiProfileUserBehavior,
-                    MultiProfileUserController::kBehaviorUnrestricted);
+  prefs1->SetString(user_manager::kMultiProfileUserBehaviorPref,
+                    user_manager::MultiUserSignInPolicyToPrefValue(
+                        user_manager::MultiUserSignInPolicy::kPrimaryOnly));
+  prefs2->SetString(user_manager::kMultiProfileUserBehaviorPref,
+                    user_manager::MultiUserSignInPolicyToPrefValue(
+                        user_manager::MultiUserSignInPolicy::kUnrestricted));
+  prefs3->SetString(user_manager::kMultiProfileUserBehaviorPref,
+                    user_manager::MultiUserSignInPolicyToPrefValue(
+                        user_manager::MultiUserSignInPolicy::kUnrestricted));
   user_manager::UserList unlock_users = user_manager->GetUnlockUsers();
   ASSERT_EQ(unlock_users.size(), 1u);
   EXPECT_EQ(users[0].account_id, unlock_users[0]->GetAccountId());
@@ -233,8 +236,9 @@ IN_PROC_BROWSER_TEST_F(UserAddingScreenTest, AddingSeveralUsers) {
   EXPECT_EQ(users[0].account_id, unlock_users[0]->GetAccountId());
 
   // If all users have unrestricted policy then anyone can perform unlock.
-  prefs1->SetString(::prefs::kMultiProfileUserBehavior,
-                    MultiProfileUserController::kBehaviorUnrestricted);
+  prefs1->SetString(user_manager::kMultiProfileUserBehaviorPref,
+                    user_manager::MultiUserSignInPolicyToPrefValue(
+                        user_manager::MultiUserSignInPolicy::kUnrestricted));
   unlock_users = user_manager->GetUnlockUsers();
   ASSERT_EQ(unlock_users.size(), 3u);
   for (int i = 0; i < 3; ++i)
@@ -259,8 +263,9 @@ IN_PROC_BROWSER_TEST_F(UserAddingScreenTest, AddingSeveralUsers) {
   // In this scenario this user is not allowed in multi-profile session but
   // if that user happened to still be part of multi-profile session it should
   // not be listed on screen lock.
-  prefs3->SetString(::prefs::kMultiProfileUserBehavior,
-                    MultiProfileUserController::kBehaviorNotAllowed);
+  prefs3->SetString(user_manager::kMultiProfileUserBehaviorPref,
+                    user_manager::MultiUserSignInPolicyToPrefValue(
+                        user_manager::MultiUserSignInPolicy::kNotAllowed));
   unlock_users = user_manager->GetUnlockUsers();
   ASSERT_EQ(unlock_users.size(), 2u);
   for (int i = 0; i < 2; ++i)
