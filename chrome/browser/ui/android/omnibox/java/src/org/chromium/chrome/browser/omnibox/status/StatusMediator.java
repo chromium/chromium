@@ -677,6 +677,8 @@ public class StatusMediator
                 new PermissionIconResource(eyeCrossedIcon, isIncognito, COOKIE_CONTROLS_ICON);
         permissionIconResource.setTransitionType(IconTransitionType.ROTATE);
         permissionIconResource.setAnimationFinishedCallback(() -> {
+            mPageInfoIPHController.showCookieControlsIPH(
+                    getIPHTimeout(), R.string.cookie_controls_iph_message);
             if (mCookieControlsBridge != null) {
                 mCookieControlsBridge.onEntryPointAnimated();
             }

@@ -29,7 +29,8 @@ import java.lang.annotation.RetentionPolicy;
         FeatureConstants.CHROME_HOME_PULL_TO_REFRESH_FEATURE,
         FeatureConstants.CONTEXTUAL_PAGE_ACTIONS_QUIET_VARIANT,
         FeatureConstants.CONTEXTUAL_PAGE_ACTIONS_ACTION_CHIP,
-        FeatureConstants.DATA_SAVER_PREVIEW_FEATURE, FeatureConstants.DATA_SAVER_DETAIL_FEATURE,
+        FeatureConstants.COOKIE_CONTROLS_FEATURE, FeatureConstants.DATA_SAVER_PREVIEW_FEATURE,
+        FeatureConstants.DATA_SAVER_DETAIL_FEATURE,
         FeatureConstants.DATA_SAVER_MILESTONE_PROMO_FEATURE, FeatureConstants.EPHEMERAL_TAB_FEATURE,
         FeatureConstants.PREVIEWS_OMNIBOX_UI_FEATURE,
         FeatureConstants.TRANSLATE_MENU_BUTTON_FEATURE, FeatureConstants.INSTANCE_SWITCHER,
@@ -108,6 +109,8 @@ public @interface FeatureConstants {
             "IPH_AutoDarkUserEducationMessageOptIn";
     String CONTEXTUAL_PAGE_ACTIONS_QUIET_VARIANT = "IPH_ContextualPageActions_QuietVariant";
     String CONTEXTUAL_PAGE_ACTIONS_ACTION_CHIP = "IPH_ContextualPageActions_ActionChip";
+
+    String COOKIE_CONTROLS_FEATURE = "IPH_CookieControls";
     String DOWNLOAD_PAGE_FEATURE = "IPH_DownloadPage";
     String DOWNLOAD_PAGE_SCREENSHOT_FEATURE = "IPH_DownloadPageScreenshot";
     String DOWNLOAD_HOME_FEATURE = "IPH_DownloadHome";

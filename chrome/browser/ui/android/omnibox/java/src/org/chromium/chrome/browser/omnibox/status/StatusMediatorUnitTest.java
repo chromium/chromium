@@ -553,6 +553,7 @@ public final class StatusMediatorUnitTest {
         Assert.assertEquals(COOKIE_CONTROLS_ICON, getIconIdentifierForTesting());
 
         mModel.get(StatusProperties.STATUS_ICON_RESOURCE).getAnimationFinishedCallback().run();
+        verify(mPageInfoIPHController, times(1)).showCookieControlsIPH(anyInt(), anyInt());
         verify(mCookieControlsBridge, times(1)).onEntryPointAnimated();
 
         mMediator.updateLocationBarIcon(IconTransitionType.CROSSFADE);

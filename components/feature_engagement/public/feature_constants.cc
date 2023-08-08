@@ -148,10 +148,6 @@ BASE_FEATURE(kIPHPriceTrackingInSidePanelFeature,
 BASE_FEATURE(kIPHBackNavigationMenuFeature,
              "IPH_BackNavigationMenu",
              base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kIPHCookieControlsFeature,
-             "IPH_CookieControls",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
 
@@ -530,6 +526,9 @@ BASE_FEATURE(kIPHAutofillVirtualCardCVCSuggestionFeature,
 BASE_FEATURE(kIPHAutofillVirtualCardSuggestionFeature,
              "IPH_AutofillVirtualCardSuggestion",
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHCookieControlsFeature,
+             "IPH_CookieControls",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) ||
         // BUILDFLAG(IS_FUCHSIA)
