@@ -155,7 +155,7 @@ class TestCompoundNameCustomFormatAddressComponent : public AddressComponent {
                          MergeMode::kDefault) {}
 
   // Introduces a custom format with a leading last name.
-  std::u16string GetBestFormatString() const override {
+  std::u16string GetFormatString() const override {
     return u"${NAME_LAST}, ${NAME_FIRST}";
   }
 
@@ -178,7 +178,7 @@ class TestCompoundNameCustomAffixedFormatAddressComponent
                          MergeMode::kDefault) {}
 
   // Introduces a custom format with a leading last name.
-  std::u16string GetBestFormatString() const override {
+  std::u16string GetFormatString() const override {
     return u"${NAME_LAST;Dr. ; MD}, ${NAME_FIRST}";
   }
 
@@ -651,8 +651,7 @@ TEST(AutofillStructuredAddressAddressComponent, GetSubcomponentTypes) {
 // Tests getting the best format string for an atom.
 TEST(AutofillStructuredAddressAddressComponent, GetBestFormatString_ForAtom) {
   TestAtomicFirstNameAddressComponent first_name_component;
-  EXPECT_EQ(first_name_component.GetBestFormatStringForTesting(),
-            u"${NAME_FIRST}");
+  EXPECT_EQ(first_name_component.GetFormatStringForTesting(), u"${NAME_FIRST}");
 }
 
 // Tests getting the best format string using the fallback mechanism.
@@ -663,8 +662,7 @@ TEST(AutofillStructuredAddressAddressComponent,
 
   // Verify the retrieved default format string against the expectation.
   std::u16string expected_result = u"${NAME_FIRST} ${NAME_MIDDLE} ${NAME_LAST}";
-  std::u16string actual_result =
-      compound_component.GetBestFormatStringForTesting();
+  std::u16string actual_result = compound_component.GetFormatStringForTesting();
   EXPECT_EQ(expected_result, actual_result);
 }
 
@@ -676,8 +674,7 @@ TEST(AutofillStructuredAddressAddressComponent,
 
   // Verify the retrieved custom format string against the expectation.
   std::u16string expected_result = u"${NAME_LAST}, ${NAME_FIRST}";
-  std::u16string actual_result =
-      compound_component.GetBestFormatStringForTesting();
+  std::u16string actual_result = compound_component.GetFormatStringForTesting();
   EXPECT_EQ(expected_result, actual_result);
 }
 

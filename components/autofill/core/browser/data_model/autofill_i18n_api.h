@@ -8,7 +8,7 @@
 #include "components/autofill/core/browser/data_model/autofill_i18n_address_component.h"
 #include "components/autofill/core/browser/data_model/autofill_i18n_hierarchies.h"
 
-namespace autofill {
+namespace autofill::i18n_model_definition {
 
 enum class AutofillModelType {
   kAddressModel = 0,
@@ -27,6 +27,6 @@ std::unique_ptr<AddressComponent> CreateAddressComponentModel(
 std::u16string_view GetFormattingExpression(ServerFieldType field_type,
                                             std::string_view country_code);
 
-}  // namespace autofill
+}  // namespace autofill::i18n_model_definition
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_AUTOFILL_I18N_API_H_

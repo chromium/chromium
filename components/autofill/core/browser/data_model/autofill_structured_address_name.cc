@@ -217,7 +217,7 @@ std::vector<const re2::RE2*> NameFull::GetParseRegularExpressionsByRelevance()
           pattern_provider->GetRegEx(RegEx::kParseFirstMiddleLastName)};
 }
 
-std::u16string NameFull::GetBestFormatString() const {
+std::u16string NameFull::GetFormatString() const {
   StructuredAddressesFormatProvider::ContextInfo info;
   info.name_has_cjk_characteristics =
       HasCjkNameCharacteristics(base::UTF16ToUTF8(name_first_.GetValue())) &&
@@ -225,6 +225,7 @@ std::u16string NameFull::GetBestFormatString() const {
 
   auto* pattern_provider = StructuredAddressesFormatProvider::GetInstance();
   CHECK(pattern_provider);
+  // TODO(crbug/1464568): Add i18n support for name format strings.
   return pattern_provider->GetPattern(GetStorageType(), /*country_code=*/"",
                                       info);
 }

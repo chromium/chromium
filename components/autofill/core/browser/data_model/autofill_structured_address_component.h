@@ -340,9 +340,7 @@ class AddressComponent {
   }
 
   // Returns the best format string for testing.
-  std::u16string GetBestFormatStringForTesting() {
-    return GetBestFormatString();
-  }
+  std::u16string GetFormatStringForTesting() const { return GetFormatString(); }
 
   // Returns the parse expressions by relevance for testing.
   std::vector<const re2::RE2*>
@@ -388,12 +386,11 @@ class AddressComponent {
   // Setter for the component's parent.
   void SetParent(AddressComponent* parent) { parent_ = parent; }
 
-  // Heuristic method to get the best suited format string.
-  // This method is virtual and can be reimplemented for each type.
-  virtual std::u16string GetBestFormatString() const;
+  // Heuristic method to get the format string suited for the node's type and
+  // country.
+  virtual std::u16string GetFormatString() const;
 
   // Returns pointers to regular expressions sorted by their relevance.
-  // This method is virtual and can be reimplemented for each type.
   virtual std::vector<const re2::RE2*> GetParseRegularExpressionsByRelevance()
       const;
 

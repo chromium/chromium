@@ -15,7 +15,7 @@
 #include "components/autofill/core/browser/data_model/autofill_structured_address_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 
-namespace autofill {
+namespace autofill::i18n_model_definition {
 
 namespace {
 using i18n_model_definition::kAutofillFormattingRulesMap;
@@ -100,4 +100,4 @@ std::u16string_view GetFormattingExpression(ServerFieldType field_type,
   return it != kAutofillFormattingRulesMap.end() ? it->second : u"";
 }
 
-}  // namespace autofill
+}  // namespace autofill::i18n_model_definition

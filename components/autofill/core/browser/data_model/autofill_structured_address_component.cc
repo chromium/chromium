@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
@@ -16,9 +17,11 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_type.h"
+#include "components/autofill/core/browser/data_model/autofill_i18n_api.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_format_provider.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_utils.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/common/autofill_features.h"
 
 namespace autofill {
 
@@ -246,7 +249,7 @@ std::u16string AddressComponent::GetValueForOtherSupportedType(
   return {};
 }
 
-std::u16string AddressComponent::GetBestFormatString() const {
+std::u16string AddressComponent::GetFormatString() const {
   auto* pattern_provider = StructuredAddressesFormatProvider::GetInstance();
   CHECK(pattern_provider);
 
@@ -254,14 +257,18 @@ std::u16string AddressComponent::GetBestFormatString() const {
       base::UTF16ToUTF8(GetRootNode().GetValueForType(ADDRESS_HOME_COUNTRY));
 
   std::u16string result =
-      pattern_provider->GetPattern(GetStorageType(), country_code);
+      base::FeatureList::IsEnabled(features::kAutofillUseI18nAddressModel)
+          ? std::u16string(i18n_model_definition::GetFormattingExpression(
+                GetStorageType(), country_code))
+          : pattern_provider->GetPattern(GetStorageType(), country_code);
   if (!result.empty()) {
     return result;
   }
 
   // If the component is atomic, the format string is just the value.
-  if (IsAtomic())
+  if (IsAtomic()) {
     return base::ASCIIToUTF16(GetPlaceholderToken(GetStorageTypeName()));
+  }
 
   // Otherwise, the canonical format string is the concatenation of all
   // subcomponents by their natural order.
@@ -615,18 +622,13 @@ bool AddressComponent::WipeInvalidStructure() {
 }
 
 std::u16string AddressComponent::GetFormattedValueFromSubcomponents() {
-  // Get the most suited format string.
-  std::u16string format_string = GetBestFormatString();
-
-  // Perform the following steps on a copy of the format string.
   // * Replace all the placeholders of the form ${TYPE_NAME} with the
   // corresponding value.
   // * Strip away double spaces as they may occur after replacing a placeholder
   // with an empty value.
-
-  std::u16string result = ReplacePlaceholderTypesWithValues(format_string);
-  return base::CollapseWhitespace(result,
-                                  /*trim_sequences_with_line_breaks=*/false);
+  return base::CollapseWhitespace(
+      ReplacePlaceholderTypesWithValues(GetFormatString()),
+      /*trim_sequences_with_line_breaks=*/false);
 }
 
 void AddressComponent::FormatValueFromSubcomponents() {

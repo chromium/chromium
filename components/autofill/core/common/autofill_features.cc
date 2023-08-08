@@ -298,6 +298,13 @@ BASE_FEATURE(kAutofillFeedback,
              "AutofillFeedback",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables using the newer i18n address model, overriding the legacy one.
+// This includes:
+// - Using newer i18n address format strings.
+BASE_FEATURE(kAutofillUseI18nAddressModel,
+             "AutofillUseI18nAddressModel",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Changes Autofill Clear Form into Undo Autofill.
 BASE_FEATURE(kAutofillUndo, "AutofillUndo", base::FEATURE_DISABLED_BY_DEFAULT);
 

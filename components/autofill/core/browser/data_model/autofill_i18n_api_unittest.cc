@@ -18,6 +18,7 @@
 namespace autofill {
 
 namespace {
+using i18n_model_definition::AutofillModelType;
 using i18n_model_definition::kAutofillFormattingRulesMap;
 using i18n_model_definition::kAutofillModelRules;
 
@@ -129,7 +130,7 @@ TEST(AutofillI18nApi, GetLegacy_AddressNode) {
           ->SameAs(AddressNode()));
 }
 
-TEST(Autofilli18nApi, GetFormattingExpressions) {
+TEST(AutofillI18nApi, GetFormattingExpressions) {
   CountryDataMap* country_data_map = CountryDataMap::GetInstance();
   for (const std::string& country_code : country_data_map->country_codes()) {
     for (int i = 0; i < MAX_VALID_FIELD_TYPE; ++i) {
@@ -141,7 +142,9 @@ TEST(Autofilli18nApi, GetFormattingExpressions) {
         std::u16string_view expected =
             it != kAutofillFormattingRulesMap.end() ? it->second : u"";
 
-        EXPECT_EQ(GetFormattingExpression(raw_value, country_code), expected);
+        EXPECT_EQ(i18n_model_definition::GetFormattingExpression(raw_value,
+                                                                 country_code),
+                  expected);
       }
     }
   }
