@@ -13495,7 +13495,7 @@ Please help our engineers fix this problem. Tell us what happened right before y
           Linux apps
         </message>
         <message name="IDS_APP_LIST_BRUSCHETTA_DEFAULT_FOLDER_NAME" desc="The default name for the Bruschetta apps folder in the App Launcher">
-          Bruschetta apps
+          <ph name="VM_NAME">$1<ex>ManagedVM</ex></ph> apps
         </message>
       </if>
 

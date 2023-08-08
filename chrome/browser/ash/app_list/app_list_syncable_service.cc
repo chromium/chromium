@@ -39,6 +39,7 @@
 #include "chrome/browser/ash/app_list/reorder/app_list_reorder_core.h"
 #include "chrome/browser/ash/app_list/reorder/app_list_reorder_util.h"
 #include "chrome/browser/ash/arc/arc_util.h"
+#include "chrome/browser/ash/bruschetta/bruschetta_util.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
@@ -1827,16 +1828,19 @@ void AppListSyncableService::MaybeAddOrUpdateGuestOsFolderSyncData(
     return;
   }
 
-  int folder_name_resource = 0;
+  std::string folder_name;
   if (folder_id == ash::kCrostiniFolderId) {
-    folder_name_resource = IDS_APP_LIST_CROSTINI_DEFAULT_FOLDER_NAME;
+    folder_name =
+        l10n_util::GetStringUTF8(IDS_APP_LIST_CROSTINI_DEFAULT_FOLDER_NAME);
   } else if (folder_id == ash::kBruschettaFolderId) {
-    folder_name_resource = IDS_APP_LIST_BRUSCHETTA_DEFAULT_FOLDER_NAME;
+    folder_name =
+        l10n_util::GetStringFUTF8(IDS_APP_LIST_BRUSCHETTA_DEFAULT_FOLDER_NAME,
+                                  bruschetta::GetOverallVmName(profile_));
   } else {
     return;
   }
   ChromeAppListItem folder(profile_, folder_id, model_updater_.get());
-  folder.SetChromeName(l10n_util::GetStringUTF8(folder_name_resource));
+  folder.SetChromeName(folder_name);
   folder.SetIsSystemFolder(true);
   folder.SetChromeIsFolder(true);
 
