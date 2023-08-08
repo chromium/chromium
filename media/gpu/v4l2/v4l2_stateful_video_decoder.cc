@@ -732,39 +732,44 @@ void V4L2StatefulVideoDecoder::TryAndEnqueueCAPTUREQueueBuffers() {
   // V4L2Queue is funny because even though it might have "free" buffers, the
   // user (i.e. this code) needs to "enqueue" then for the actual v4l2 queue
   // to use them.
-  while (auto v4l2_buffer = CAPTURE_queue_->GetFreeBuffer()) {
-    if (queue_type == V4L2_MEMORY_MMAP) {
+  if (queue_type == V4L2_MEMORY_MMAP) {
+    while (auto v4l2_buffer = CAPTURE_queue_->GetFreeBuffer()) {
       if (!std::move(*v4l2_buffer).QueueMMap()) {
         LOG(ERROR) << "CAPTURE queue failed to enqueue an MMAP buffer.";
         return;
       }
-    } else {
+    }
+  } else {
+    while (true) {
       // When using a V4L2_MEMORY_DMABUF queue, resource ownership is in our
       // |client_|s frame pool, and usually has less resources than what we
       // have allocated here (because ours are just empty queue slots and we
       // allocate conservatively). So, it's common that said frame pool gets
       // exhausted before we run out of |CAPTURE_queue_|s free "buffers" here.
       if (client_->GetVideoFramePool()->IsExhausted()) {
-        // This is a special case: |client_|s frame pool is empty but there
-        // aren't any buffers enqueued in |CAPTURE_queue_|. This means they are
-        // all elsewhere (maybe in flight). We request a callback when some of
-        // them are back.
-        if (CAPTURE_queue_->QueuedBuffersCount() == 0) {
-          // This weird jump is because the video frame pool cannot be called
-          // back (e.g. to query whether IsExhausted()) from the
-          // NotifyWhenFrameAvailable() callback because it would deadlock.
-          client_->GetVideoFramePool()->NotifyWhenFrameAvailable(base::BindOnce(
-              base::IgnoreResult(&base::SequencedTaskRunner::PostTask),
-              base::SequencedTaskRunner::GetCurrentDefault(), FROM_HERE,
-              base::BindOnce(
-                  &V4L2StatefulVideoDecoder::TryAndEnqueueCAPTUREQueueBuffers,
-                  weak_this_)));
-        }
+        // All VideoFrames are elsewhere (maybe in flight). Request a callback
+        // when some of them are back.
+        // This weird jump is because the video frame pool cannot be called
+        // back (e.g. to query whether IsExhausted()) from the
+        // NotifyWhenFrameAvailable() callback because it would deadlock.
+        client_->GetVideoFramePool()->NotifyWhenFrameAvailable(base::BindOnce(
+            base::IgnoreResult(&base::SequencedTaskRunner::PostTask),
+            base::SequencedTaskRunner::GetCurrentDefault(), FROM_HERE,
+            base::BindOnce(
+                &V4L2StatefulVideoDecoder::TryAndEnqueueCAPTUREQueueBuffers,
+                weak_this_)));
+        return;
+      }
+      auto video_frame = client_->GetVideoFramePool()->GetFrame();
+      CHECK(video_frame);
+
+      // TODO(mcasas): Consider using GetFreeBufferForFrame().
+      auto v4l2_buffer = CAPTURE_queue_->GetFreeBuffer();
+      if (!v4l2_buffer) {
+        VLOGF(1) << "|CAPTURE_queue_| has no buffers";
         return;
       }
 
-      auto video_frame = client_->GetVideoFramePool()->GetFrame();
-      CHECK(video_frame);
       if (!std::move(*v4l2_buffer).QueueDMABuf(std::move(video_frame))) {
         LOG(ERROR) << "CAPTURE queue failed to enqueue a DmaBuf buffer.";
         return;
