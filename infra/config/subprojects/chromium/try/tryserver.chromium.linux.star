@@ -245,7 +245,10 @@ try_.orchestrator_builder(
             condition = builder_config.rts_condition.QUICK_RUN_ONLY,
         ),
     ),
-    check_for_flakiness = True,
+    # TODO(crbug.com/1456545) - _with_resultdb should be deprecated in favor for
+    # the original property once all builders have migrated.
+    # check_for_flakiness = True,
+    check_for_flakiness_with_resultdb = True,
     compilator = "linux-rel-compilator",
     coverage_test_types = ["unit", "overall"],
     experiments = {
@@ -264,7 +267,10 @@ try_.orchestrator_builder(
 try_.compilator_builder(
     name = "linux-rel-compilator",
     branch_selector = branches.selector.LINUX_BRANCHES,
-    check_for_flakiness = True,
+    # TODO(crbug.com/1456545) - _with_resultdb should be deprecated in favor for
+    # the original property once all builders have migrated.
+    # check_for_flakiness = True,
+    check_for_flakiness_with_resultdb = True,
     main_list_view = "try",
 )
 
@@ -285,7 +291,10 @@ try_.orchestrator_builder(
             condition = builder_config.rts_condition.QUICK_RUN_ONLY,
         ),
     ),
-    check_for_flakiness = True,
+    # TODO(crbug.com/1456545) - _with_resultdb should be deprecated in favor for
+    # the original property once all builders have migrated.
+    # check_for_flakiness = True,
+    check_for_flakiness_with_resultdb = True,
     compilator = "linux-siso-rel-compilator",
     coverage_test_types = ["unit", "overall"],
     experiments = {
@@ -303,7 +312,10 @@ try_.orchestrator_builder(
 
 try_.compilator_builder(
     name = "linux-siso-rel-compilator",
-    check_for_flakiness = True,
+    # TODO(crbug.com/1456545) - _with_resultdb should be deprecated in favor for
+    # the original property once all builders have migrated.
+    # check_for_flakiness = True,
+    check_for_flakiness_with_resultdb = True,
     main_list_view = "try",
     siso_enabled = True,
 )
