@@ -289,9 +289,9 @@ bool VariationsFieldTrialCreatorBase::SetUpFieldTrials(
                            switches::kEnableFieldTrialTestingConfig));
   }
 #endif  // BUILDFLAG(FIELDTRIAL_TESTING_ENABLED)
-  if (command_line->HasSwitch(switches::kVariationsTestSeedPath)) {
-    LoadSeedFromFile(
-        command_line->GetSwitchValuePath(switches::kVariationsTestSeedPath));
+  if (command_line->HasSwitch(switches::kVariationsTestSeedJsonPath)) {
+    LoadSeedFromJsonFile(
+        command_line->GetSwitchValuePath(switches::kVariationsTestSeedJsonPath));
   }
 
   auto entropy_providers = metrics_state_manager->CreateEntropyProviders();
@@ -676,10 +676,10 @@ bool VariationsFieldTrialCreatorBase::CreateTrialsFromSeed(
   return true;
 }
 
-void VariationsFieldTrialCreatorBase::LoadSeedFromFile(
-    const base::FilePath& seed_path) {
-  VLOG(1) << "Loading seed from file:" << seed_path;
-  JSONFileValueDeserializer file_deserializer(seed_path);
+void VariationsFieldTrialCreatorBase::LoadSeedFromJsonFile(
+    const base::FilePath& json_seed_path) {
+  VLOG(1) << "Loading seed from JSON file:" << json_seed_path;
+  JSONFileValueDeserializer file_deserializer(json_seed_path);
   int error_code;
   std::string error_message;
   std::unique_ptr<base::Value> json_contents =
@@ -687,7 +687,7 @@ void VariationsFieldTrialCreatorBase::LoadSeedFromFile(
 
   if (!json_contents) {
     ExitWithMessage(base::StringPrintf("Failed to load \"%s\" %s (%i)",
-                                       seed_path.AsUTF8Unsafe().c_str(),
+                                       json_seed_path.AsUTF8Unsafe().c_str(),
                                        error_message.c_str(), error_code));
   }
 
@@ -699,13 +699,13 @@ void VariationsFieldTrialCreatorBase::LoadSeedFromFile(
   if (!seed_data || !seed_data->is_string()) {
     ExitWithMessage(
         base::StringPrintf("Missing or invalid seed data in contents of \"%s\"",
-                           seed_path.AsUTF8Unsafe().c_str()));
+                           json_seed_path.AsUTF8Unsafe().c_str()));
   }
 
   if (!seed_signature || !seed_signature->is_string()) {
     ExitWithMessage(base::StringPrintf(
         "Missing or invalid seed signature in contents of \"%s\"",
-        seed_path.AsUTF8Unsafe().c_str()));
+        json_seed_path.AsUTF8Unsafe().c_str()));
   }
 
   // Set fail counters to 0 to make sure Chrome doesn't run in variations safe

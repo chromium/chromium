@@ -769,7 +769,7 @@ TEST_F(FieldTrialCreatorTest, SetUpFieldTrials_NullSeed) {
                                       SeedUsage::kNullSeedUsed, 1);
 }
 
-TEST_F(FieldTrialCreatorTest, LoadSeedFromTestSeedPath) {
+TEST_F(FieldTrialCreatorTest, LoadSeedFromTestSeedJsonPath) {
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
   const base::FilePath test_seed_file =
@@ -783,7 +783,7 @@ TEST_F(FieldTrialCreatorTest, LoadSeedFromTestSeedPath) {
                                      kTestSeedData.base64_signature));
 
   base::CommandLine::ForCurrentProcess()->AppendSwitchPath(
-      variations::switches::kVariationsTestSeedPath, test_seed_file);
+      variations::switches::kVariationsTestSeedJsonPath, test_seed_file);
 
   // Use a real VariationsFieldTrialCreator and VariationsSeedStore to exercise
   // the VariationsSeedStore::LoadSeed() logic.
