@@ -81,7 +81,9 @@ void Fence::reportEvent(ScriptState* script_state,
     return;
   }
 
-  if (event->hasDestinationURL()) {
+  if (event->hasDestinationURL() &&
+      base::FeatureList::IsEnabled(
+          blink::features::kAdAuctionReportingWithMacroApi)) {
     reportEventToDestinationURL(script_state, event, exception_state);
   } else {
     reportEventToDestinationEnum(script_state, event, exception_state);
