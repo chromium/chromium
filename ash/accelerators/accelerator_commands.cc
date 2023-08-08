@@ -654,6 +654,7 @@ bool CanToggleOverview() {
 }
 
 bool CanTogglePrivacyScreen() {
+  CHECK(Shell::HasInstance());
   return Shell::Get()->privacy_screen_controller()->IsSupported();
 }
 

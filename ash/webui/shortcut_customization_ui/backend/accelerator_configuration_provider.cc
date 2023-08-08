@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "ash/accelerators/accelerator_alias_converter.h"
+#include "ash/accelerators/accelerator_commands.h"
 #include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/accelerators/ash_accelerator_configuration.h"
 #include "ash/constants/ash_features.h"
@@ -477,6 +478,8 @@ bool ShouldExcludeItem(const AcceleratorLayoutDetails& details) {
     case kSwitchToPreviousUser:
       return crosapi::lacros_startup_state::IsLacrosEnabled() ||
              crosapi::lacros_startup_state::IsLacrosPrimaryEnabled();
+    case kPrivacyScreenToggle:
+      return accelerators::CanTogglePrivacyScreen();
   }
 
   return false;
