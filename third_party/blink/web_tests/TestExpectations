@@ -3573,7 +3573,6 @@ crbug.com/985520 virtual/focusless-spat-nav/fast/spatial-navigation/focusless/sn
 crbug.com/571722 external/wpt/xhr/preserve-ua-header-on-redirect.htm [ Failure ]
 
 # Sheriff failures 2017-03-21
-crbug.com/703518 http/tests/devtools/tracing/worker-js-frames.js [ Failure Pass ]
 crbug.com/674720 http/tests/loading/preload-img-test.html [ Failure Pass ]
 
 # Sheriff failures 2017-05-11
