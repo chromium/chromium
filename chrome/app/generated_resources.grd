@@ -3036,10 +3036,6 @@ are declared in tools/grit/grit_rule.gni.
                desc="Subpage summary text for a download item when the downloaded file is not commonly downloaded.">
         This file isn't commonly downloaded and it may be dangerous
       </message>
-      <message name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_MALWARE"
-               desc="Subpage summary text for a download item when the downloaded file may hide malware.">
-        This file may hide malware
-      </message>
       <message name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_NO_SAFE_BROWSING"
                desc="Subpage summary text for a download item when the download could not be verified due to Safe Browsing being off.">
         This file can't be verified because Safe Browsing is off
@@ -3286,14 +3282,6 @@ are declared in tools/grit/grit_rule.gni.
       </message>
 
       <!-- Tailored Warning in Download Bubble -->
-      <message name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_COOKIE_THEFT"
-               desc="Subpage summary for cookie theft warning.">
-        This file contains malware that can compromise your personal or social network accounts
-      </message>
-      <message name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_COOKIE_THEFT_AND_ACCOUNT"
-               desc="Subpage summary for cookie theft warning with account info.">
-        This file contains malware that can compromise your personal or social network accounts, including <ph name="USER_EMAIL">$1<ex>john@google.com</ex></ph>
-      </message>
       <message name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_COOKIE_THEFT"
                desc="Subpage summary for cookie theft warning.">
         This file can harm your personal and social network accounts
@@ -3301,6 +3289,10 @@ are declared in tools/grit/grit_rule.gni.
       <message name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_COOKIE_THEFT_AND_ACCOUNT"
                desc="Subpage summary for cookie theft warning with account info.">
         This file can harm your personal and social network accounts, including <ph name="USER_EMAIL">$1<ex>john@google.com</ex></ph>
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_MALWARE"
+               desc="Subpage summary text for a download item when the downloaded file may hide malware.">
+        This file may hide malware
       </message>
 
       <!-- Desktop omnibox PWA install icon -->

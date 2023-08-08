@@ -8,6 +8,7 @@ def CheckTailoredWarningVersionUpdate(input_api, output_api):
 
     tailored_version_file_name = 'download_request_maker.cc'
     version_variable_name = 'kTailoredWarningVersion'
+    version_variable_name_with_feature = 'kTailoredWarningVersionWithImprovedDownloadBubbleWarnings'
     proto_path = 'components/safe_browsing/core/common/proto/csd.proto'
 
     has_changed_proto = proto_path in input_api.change.LocalPaths()
@@ -23,7 +24,8 @@ def CheckTailoredWarningVersionUpdate(input_api, output_api):
 
     has_changed_version = False
     for _, line in tailored_version_files[0].ChangedContents():
-        if version_variable_name in line.strip():
+        if version_variable_name in line.strip(
+        ) or version_variable_name_with_feature in line.strip():
             has_changed_version = True
             break
 

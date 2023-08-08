@@ -971,29 +971,11 @@ DownloadItemModel::GetBubbleUIInfoForTailoredWarning() const {
   if (danger_type == download::DOWNLOAD_DANGER_TYPE_UNCOMMON_CONTENT &&
       tailored_verdict.tailored_verdict_type() ==
           TailoredVerdict::SUSPICIOUS_ARCHIVE) {
-    if (base::FeatureList::IsEnabled(
-            safe_browsing::kImprovedDownloadBubbleWarnings)) {
-      return DownloadUIModel::BubbleUIInfo::SuspiciousUiPattern(
-          l10n_util::GetStringUTF16(
-              IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_MALWARE),
-          l10n_util::GetStringUTF16(
-              IDS_DOWNLOAD_BUBBLE_CONTINUE_SUSPICIOUS_FILE));
-    }
-    return DownloadUIModel::BubbleUIInfo()
-        .AddSubpageSummary(l10n_util::GetStringUTF16(
-            IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_SUSPICIOUS_ARCHIVE))
-        .AddIconAndColor(features::IsChromeRefresh2023()
-                             ? kDownloadWarningIcon
-                             : vector_icons::kNotSecureWarningIcon,
-                         ui::kColorAlertMediumSeverityIcon)
-        .AddSecondaryTextColor(ui::kColorAlertMediumSeverityText)
-        .AddPrimaryButton(DownloadCommands::Command::DISCARD)
-        .AddPrimarySubpageButton(
-            l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_DELETE),
-            DownloadCommands::Command::DISCARD)
-        .AddSecondarySubpageButton(
-            l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_CONTINUE),
-            DownloadCommands::Command::KEEP, ui::kColorAlertMediumSeverityText);
+    return DownloadUIModel::BubbleUIInfo::SuspiciousUiPattern(
+        l10n_util::GetStringUTF16(
+            IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_MALWARE),
+        l10n_util::GetStringUTF16(
+            IDS_DOWNLOAD_BUBBLE_CONTINUE_SUSPICIOUS_FILE));
   }
 
   // Cookie theft
@@ -1014,44 +996,15 @@ DownloadItemModel::GetBubbleUIInfoForTailoredWarning() const {
           "SBClientDownload.TailoredWarning.HasVaidEmailForAccountInfo",
           !email.empty());
       if (!email.empty()) {
-        if (base::FeatureList::IsEnabled(
-                safe_browsing::kImprovedDownloadBubbleWarnings)) {
-          return DownloadUIModel::BubbleUIInfo::DangerousUiPattern(
-              l10n_util::GetStringFUTF16(
-                  IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_COOKIE_THEFT_AND_ACCOUNT,
-                  base::ASCIIToUTF16(email)));
-        }
-        return DownloadUIModel::BubbleUIInfo()
-            .AddSubpageSummary(l10n_util::GetStringFUTF16(
-                IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_COOKIE_THEFT_AND_ACCOUNT,
-                base::ASCIIToUTF16(email)))
-            .AddIconAndColor(features::IsChromeRefresh2023()
-                                 ? vector_icons::kDangerousChromeRefreshIcon
-                                 : vector_icons::kDangerousIcon,
-                             ui::kColorAlertHighSeverity)
-            .AddPrimaryButton(DownloadCommands::Command::DISCARD)
-            .AddPrimarySubpageButton(
-                l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_DELETE),
-                DownloadCommands::Command::DISCARD);
+        return DownloadUIModel::BubbleUIInfo::DangerousUiPattern(
+            l10n_util::GetStringFUTF16(
+                IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_COOKIE_THEFT_AND_ACCOUNT,
+                base::ASCIIToUTF16(email)));
       }
     }
-    if (base::FeatureList::IsEnabled(
-            safe_browsing::kImprovedDownloadBubbleWarnings)) {
-      return DownloadUIModel::BubbleUIInfo::DangerousUiPattern(
-          l10n_util::GetStringUTF16(
-              IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_COOKIE_THEFT));
-    }
-    return DownloadUIModel::BubbleUIInfo()
-        .AddSubpageSummary(l10n_util::GetStringUTF16(
-            IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_COOKIE_THEFT))
-        .AddIconAndColor(features::IsChromeRefresh2023()
-                             ? vector_icons::kDangerousChromeRefreshIcon
-                             : vector_icons::kDangerousIcon,
-                         ui::kColorAlertHighSeverity)
-        .AddPrimaryButton(DownloadCommands::Command::DISCARD)
-        .AddPrimarySubpageButton(
-            l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_DELETE),
-            DownloadCommands::Command::DISCARD);
+    return DownloadUIModel::BubbleUIInfo::DangerousUiPattern(
+        l10n_util::GetStringUTF16(
+            IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_COOKIE_THEFT));
   }
 
   NOTREACHED();

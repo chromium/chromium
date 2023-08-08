@@ -990,6 +990,9 @@ message ClientDownloadRequest {
     // TailoredVerdict is ignored.
     // Version 1: Client supports CT warnings and suspicious archives. Supported
     // in M107. See go/tailored-download-v1.
+    // Note: Version 1 can have inconsistent behavior because it uses
+    // indeterminate UI strings (can be changed by a client-side feature flag).
+    // Version 2: Client-side UI string/icon updates. Supported in M117.
     optional int32 version = 1;
   }
   optional TailoredInfo tailored_info = 86;

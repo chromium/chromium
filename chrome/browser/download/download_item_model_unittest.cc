@@ -1307,16 +1307,14 @@ TEST_F(DownloadItemModelTailoredWarningTest,
 
   DownloadUIModel::BubbleUIInfo bubble_ui_info =
       model().GetBubbleUIInfo(/*is_download_bubble_v2=*/true);
-  EXPECT_EQ(DownloadCommands::Command::DISCARD,
-            bubble_ui_info.primary_button_command);
+  // No primary button on download row view. Button only appears on subpage.
+  EXPECT_FALSE(bubble_ui_info.primary_button_command.has_value());
   EXPECT_EQ(1u, bubble_ui_info.subpage_buttons.size());
   EXPECT_EQ(DownloadCommands::Command::DISCARD,
             bubble_ui_info.subpage_buttons[0].command);
   EXPECT_TRUE(bubble_ui_info.subpage_buttons[0].is_prominent);
-  EXPECT_EQ(
-      u"This file contains malware that can compromise your personal or social "
-      u"network accounts",
-      bubble_ui_info.warning_summary);
+  EXPECT_EQ(u"This file can harm your personal and social network accounts",
+            bubble_ui_info.warning_summary);
 }
 
 TEST_F(DownloadItemModelTailoredWarningTest,
@@ -1328,8 +1326,8 @@ TEST_F(DownloadItemModelTailoredWarningTest,
 
   DownloadUIModel::BubbleUIInfo bubble_ui_info =
       model().GetBubbleUIInfo(/*is_download_bubble_v2=*/true);
-  EXPECT_EQ(DownloadCommands::Command::DISCARD,
-            bubble_ui_info.primary_button_command);
+  // No primary button on download row view. Button only appears on subpage.
+  EXPECT_FALSE(bubble_ui_info.primary_button_command.has_value());
   EXPECT_EQ(2u, bubble_ui_info.subpage_buttons.size());
   EXPECT_EQ(DownloadCommands::Command::DISCARD,
             bubble_ui_info.subpage_buttons[0].command);
@@ -1337,13 +1335,7 @@ TEST_F(DownloadItemModelTailoredWarningTest,
   EXPECT_EQ(DownloadCommands::Command::KEEP,
             bubble_ui_info.subpage_buttons[1].command);
   EXPECT_FALSE(bubble_ui_info.subpage_buttons[1].is_prominent);
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  EXPECT_EQ(u"Chrome blocked this archive file because it may hide malware",
-            bubble_ui_info.warning_summary);
-#else
-  EXPECT_EQ(u"Chromium blocked this archive file because it may hide malware",
-            bubble_ui_info.warning_summary);
-#endif
+  EXPECT_EQ(u"This file may hide malware", bubble_ui_info.warning_summary);
 }
 
 TEST_F(DownloadItemModelTailoredWarningTest,
@@ -1359,15 +1351,15 @@ TEST_F(DownloadItemModelTailoredWarningTest,
 
   DownloadUIModel::BubbleUIInfo bubble_ui_info =
       model().GetBubbleUIInfo(/*is_download_bubble_v2=*/true);
-  EXPECT_EQ(DownloadCommands::Command::DISCARD,
-            bubble_ui_info.primary_button_command);
+  // No primary button on download row view. Button only appears on subpage.
+  EXPECT_FALSE(bubble_ui_info.primary_button_command.has_value());
   EXPECT_EQ(1u, bubble_ui_info.subpage_buttons.size());
   EXPECT_EQ(DownloadCommands::Command::DISCARD,
             bubble_ui_info.subpage_buttons[0].command);
   EXPECT_TRUE(bubble_ui_info.subpage_buttons[0].is_prominent);
   EXPECT_EQ(
-      u"This file contains malware that can compromise your personal or social "
-      u"network accounts, including test@example.com",
+      u"This file can harm your personal and social network accounts, "
+      u"including test@example.com",
       bubble_ui_info.warning_summary);
 }
 
@@ -1380,16 +1372,14 @@ TEST_F(DownloadItemModelTailoredWarningTest,
 
   DownloadUIModel::BubbleUIInfo bubble_ui_info =
       model().GetBubbleUIInfo(/*is_download_bubble_v2=*/true);
-  EXPECT_EQ(DownloadCommands::Command::DISCARD,
-            bubble_ui_info.primary_button_command);
+  // No primary button on download row view. Button only appears on subpage.
+  EXPECT_FALSE(bubble_ui_info.primary_button_command.has_value());
   EXPECT_EQ(1u, bubble_ui_info.subpage_buttons.size());
   EXPECT_EQ(DownloadCommands::Command::DISCARD,
             bubble_ui_info.subpage_buttons[0].command);
   EXPECT_TRUE(bubble_ui_info.subpage_buttons[0].is_prominent);
-  EXPECT_EQ(
-      u"This file contains malware that can compromise your personal or social "
-      u"network accounts",
-      bubble_ui_info.warning_summary);
+  EXPECT_EQ(u"This file can harm your personal and social network accounts",
+            bubble_ui_info.warning_summary);
 }
 
 class DownloadItemModelTailoredWarningDisabledTest
