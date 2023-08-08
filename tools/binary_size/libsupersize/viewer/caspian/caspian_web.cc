@@ -8,7 +8,6 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-#include <cctype>  // std::isupper()
 #include <iostream>
 #include <memory>
 #include <sstream>
@@ -76,7 +75,7 @@ std::string JsonSerialize(const Json::Value& value) {
 
 bool ContainsUpper(const char* str) {
   while (*str) {
-    if (std::isupper(*str)) {
+    if (*str >= 'A' && *str <= 'Z') {
       return true;
     }
     ++str;
