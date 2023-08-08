@@ -57,8 +57,9 @@
 // The image. May be updated after the view is loaded.
 @property(nonatomic, strong) UIImage* image;
 
-// Sets the custom spacing between the top and the image, if there is no
-// navigation bar. Must be set before the view is loaded.
+// Sets the custom spacing at the top if there is no navigation bar. If image is
+// set, the spacing is before the image. Otherwise, the spacing is before the
+// title label. Must be set before the view is loaded.
 @property(nonatomic, assign) CGFloat customSpacingBeforeImageIfNoNavigationBar;
 
 // Sets the custom spacing between the image and the title / subtitle. Must be
