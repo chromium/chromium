@@ -1,0 +1,7 @@
+# Defines the configuration of siso (next-gen build system)
+
+declare_args() {
+  # Placeholder to allow having use_siso in args.gn files and to disable
+  # precompiled headers in siso builds.
+  use_siso = false
+}

@@ -4,12 +4,14 @@
 
 import("//build/toolchain/goma.gni")
 import("//build/toolchain/rbe.gni")
+import("//build/toolchain/siso.gni")
 
 declare_args() {
   # Precompiled header file support is by default available,
-  # but for distributed build system uses (like goma or rbe) or when
-  # doing official builds.
+  # but for distributed build system uses (like goma, rbe, or siso) or when
+  # doing official builds it is off by default.
   # On Linux it slows down the build, so don't enable it by default.
   enable_precompiled_headers =
-      !is_official_build && !(use_goma || use_remoteexec) && !is_linux
+      !is_official_build && !(use_goma || use_remoteexec || use_siso) &&
+      !is_linux
 }
