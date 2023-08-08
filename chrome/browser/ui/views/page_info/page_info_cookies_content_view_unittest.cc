@@ -70,7 +70,8 @@ class PageInfoCookiesContentViewTest
     presenter_ = std::make_unique<PageInfo>(
         std::make_unique<ChromePageInfoDelegate>(web_contents), web_contents,
         url);
-    content_view_ = PageInfoCookiesContentView::Create(presenter_.get());
+    content_view_ =
+        std::make_unique<PageInfoCookiesContentView>(presenter_.get());
   }
 
   PageInfoCookiesContentView* content_view() { return content_view_.get(); }

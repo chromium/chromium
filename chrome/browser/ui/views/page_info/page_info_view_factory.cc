@@ -25,7 +25,6 @@
 #include "chrome/browser/ui/views/page_info/page_info_navigation_handler.h"
 #include "chrome/browser/ui/views/page_info/page_info_permission_content_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_security_content_view.h"
-#include "components/content_settings/core/common/features.h"
 #include "components/page_info/core/features.h"
 #include "components/page_info/core/proto/about_this_site_metadata.pb.h"
 #include "components/page_info/page_info.h"
@@ -168,17 +167,11 @@ PageInfoViewFactory::CreateAdPersonalizationPageView() {
 
 // TODO(crbug.com/1346305): Use translatable strings instead of hardcoded one.
 std::unique_ptr<views::View> PageInfoViewFactory::CreateCookiesPageView() {
-  std::unique_ptr<views::View> content;
-  if (base::FeatureList::IsEnabled(content_settings::features::kUserBypassUI)) {
-    content = PageInfoCookiesContentView::Create(presenter_);
-  } else {
-    content = OldPageInfoCookiesContentView::Create(presenter_);
-  }
   return std::make_unique<PageInfoSubpageView>(
       CreateSubpageHeader(
           l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_HEADER),
           presenter_->GetSubjectNameForDisplay()),
-      std::move(content));
+      std::make_unique<PageInfoCookiesContentView>(presenter_));
 }
 
 std::unique_ptr<views::View> PageInfoViewFactory::CreateSubpageHeader(
