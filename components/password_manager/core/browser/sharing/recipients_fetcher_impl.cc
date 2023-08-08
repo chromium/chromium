@@ -33,9 +33,10 @@ RecipientInfo ToRecipientInfo(const sync_pb::UserInfo& user_info) {
   recipient_info.email = user_info.user_display_info().email();
   recipient_info.profile_image_url =
       user_info.user_display_info().profile_image_url();
-
-  // TODO(crbug.com/1456309) Add the Encryption Key once a decision has been
-  // made which type to use.
+  recipient_info.public_key =
+      user_info.cross_user_sharing_public_key().x25519_public_key();
+  recipient_info.public_key_version =
+      user_info.cross_user_sharing_public_key().version();
   return recipient_info;
 }
 

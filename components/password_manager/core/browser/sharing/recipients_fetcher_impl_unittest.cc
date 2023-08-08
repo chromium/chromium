@@ -75,6 +75,8 @@ TEST_F(RecipientsFetcherImplTest, ShouldFetchRecpientInfoWhenRequestSucceeds) {
   const std::string kTestEmail = "theo@example.com";
   const std::string kTestProfileImageUrl =
       "https://3837fjsdjaka.image.example.com";
+  const std::string kTestPublicKey = "01234567890123456789012345678912";
+  const uint32_t kTestPublicKeyVersion = 0;
 
   // Create set the server response.
   sync_pb::PasswordSharingRecipientsResponse response;
@@ -86,6 +88,10 @@ TEST_F(RecipientsFetcherImplTest, ShouldFetchRecpientInfoWhenRequestSucceeds) {
   user_info->mutable_user_display_info()->set_email(kTestEmail);
   user_info->mutable_user_display_info()->set_profile_image_url(
       kTestProfileImageUrl);
+  user_info->mutable_cross_user_sharing_public_key()->set_x25519_public_key(
+      kTestPublicKey);
+  user_info->mutable_cross_user_sharing_public_key()->set_version(
+      kTestPublicKeyVersion);
 
   SetServerResponse(response);
 
@@ -95,6 +101,8 @@ TEST_F(RecipientsFetcherImplTest, ShouldFetchRecpientInfoWhenRequestSucceeds) {
   expected_recipient_info.user_name = kTestUserName;
   expected_recipient_info.email = kTestEmail;
   expected_recipient_info.profile_image_url = kTestProfileImageUrl;
+  expected_recipient_info.public_key = kTestPublicKey;
+  expected_recipient_info.public_key_version = kTestPublicKeyVersion;
   StrictMock<base::MockCallback<RecipientsFetcher::FetchFamilyMembersCallback>>
       callback;
   EXPECT_CALL(callback, Run(ElementsAre(expected_recipient_info),

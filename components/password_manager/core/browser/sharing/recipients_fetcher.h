@@ -43,9 +43,10 @@ struct RecipientInfo {
   std::string email;
   // URL to the profile picture of the recipient for display in the UI.
   std::string profile_image_url;
-
-  // TODO(crbug.com/1456309): Add a field for the public certificate after the
-  // decision was made which type to use.
+  // Recipient's Public key.
+  std::string public_key;
+  // Recipient's Public key version.
+  uint32_t public_key_version;
 };
 
 // The RecipientsFetcher class defines the interface for fetching a list of
