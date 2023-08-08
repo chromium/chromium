@@ -43,6 +43,11 @@ constexpr char kPointingStickDeviceSettingsDictPref[] =
     "settings.pointing_stick.devices";
 constexpr char kTouchpadDeviceSettingsDictPref[] = "settings.touchpad.devices";
 
+// Pref which contains a list of previously seen imposter keyboards that we know
+// to be valid (ie false positives).
+constexpr char kKeyboardDeviceImpostersListPref[] =
+    "settings.keyboard.imposter_false_positives";
+
 // Keyboard settings dictionary keys.
 constexpr char kKeyboardSettingAutoRepeatDelay[] = "auto_repeat_delay";
 constexpr char kKeyboardSettingAutoRepeatEnabled[] = "auto_repeat_enabled";

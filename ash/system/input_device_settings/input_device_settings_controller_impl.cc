@@ -266,6 +266,7 @@ void InputDeviceSettingsControllerImpl::RegisterProfilePrefs(
   pref_registry->RegisterDictionaryPref(
       prefs::kPointingStickDeviceSettingsDictPref);
   pref_registry->RegisterDictionaryPref(prefs::kTouchpadDeviceSettingsDictPref);
+  pref_registry->RegisterListPref(prefs::kKeyboardDeviceImpostersListPref);
 }
 
 void InputDeviceSettingsControllerImpl::OnActiveUserPrefServiceChanged(
@@ -277,6 +278,7 @@ void InputDeviceSettingsControllerImpl::OnActiveUserPrefServiceChanged(
     pref_service->SetDict(prefs::kMouseDeviceSettingsDictPref, {});
     pref_service->SetDict(prefs::kPointingStickDeviceSettingsDictPref, {});
     pref_service->SetDict(prefs::kTouchpadDeviceSettingsDictPref, {});
+    pref_service->SetList(prefs::kKeyboardDeviceImpostersListPref, {});
     return;
   }
 
