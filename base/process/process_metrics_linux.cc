@@ -43,13 +43,6 @@ class ScopedAllowBlockingForProcessMetrics : public ScopedAllowBlocking {};
 
 namespace {
 
-void TrimKeyValuePairs(StringPairs* pairs) {
-  for (auto& pair : *pairs) {
-    TrimWhitespaceASCII(pair.first, TRIM_ALL, &pair.first);
-    TrimWhitespaceASCII(pair.second, TRIM_ALL, &pair.second);
-  }
-}
-
 #if BUILDFLAG(IS_CHROMEOS)
 // Read a file with a single number string and return the number as a uint64_t.
 uint64_t ReadFileToUint64(const FilePath& file) {
@@ -63,79 +56,6 @@ uint64_t ReadFileToUint64(const FilePath& file) {
   return file_contents_uint64;
 }
 #endif
-
-// Read |filename| in /proc/<pid>/, split the entries into key/value pairs, and
-// trim the key and value. On success, return true and write the trimmed
-// key/value pairs into |key_value_pairs|.
-bool ReadProcFileToTrimmedStringPairs(pid_t pid,
-                                      StringPiece filename,
-                                      StringPairs* key_value_pairs) {
-  std::string status_data;
-  FilePath status_file = internal::GetProcPidDir(pid).Append(filename);
-  if (!internal::ReadProcFile(status_file, &status_data))
-    return false;
-  SplitStringIntoKeyValuePairs(status_data, ':', '\n', key_value_pairs);
-  TrimKeyValuePairs(key_value_pairs);
-  return true;
-}
-
-// Read /proc/<pid>/status and return the value for |field|, or 0 on failure.
-// Only works for fields in the form of "Field: value kB".
-size_t ReadProcStatusAndGetFieldAsSizeT(pid_t pid, StringPiece field) {
-  StringPairs pairs;
-  if (!ReadProcFileToTrimmedStringPairs(pid, "status", &pairs))
-    return 0;
-
-  for (const auto& pair : pairs) {
-    const std::string& key = pair.first;
-    const std::string& value_str = pair.second;
-    if (key != field)
-      continue;
-
-    std::vector<StringPiece> split_value_str =
-        SplitStringPiece(value_str, " ", TRIM_WHITESPACE, SPLIT_WANT_ALL);
-    if (split_value_str.size() != 2 || split_value_str[1] != "kB") {
-      NOTREACHED();
-      return 0;
-    }
-    size_t value;
-    if (!StringToSizeT(split_value_str[0], &value)) {
-      NOTREACHED();
-      return 0;
-    }
-    return value;
-  }
-  // This can be reached if the process dies when proc is read -- in that case,
-  // the kernel can return missing fields.
-  return 0;
-}
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_AIX)
-// Read /proc/<pid>/status and look for |field|. On success, return true and
-// write the value for |field| into |result|.
-// Only works for fields in the form of "field    :     uint_value"
-bool ReadProcStatusAndGetFieldAsUint64(pid_t pid,
-                                       StringPiece field,
-                                       uint64_t* result) {
-  StringPairs pairs;
-  if (!ReadProcFileToTrimmedStringPairs(pid, "status", &pairs))
-    return false;
-
-  for (const auto& pair : pairs) {
-    const std::string& key = pair.first;
-    const std::string& value_str = pair.second;
-    if (key != field)
-      continue;
-
-    uint64_t value;
-    if (!StringToUint64(value_str, &value))
-      return false;
-    *result = value;
-    return true;
-  }
-  return false;
-}
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_AIX)
 
 // Get the total CPU from a proc stat buffer.  Return value is number of jiffies
 // on success or 0 if parsing failed.
@@ -202,8 +122,9 @@ bool ProcessMetrics::GetCumulativeCPUUsagePerThread(
 // CONFIG_TASK_IO_ACCOUNTING enabled.
 bool ProcessMetrics::GetIOCounters(IoCounters* io_counters) const {
   StringPairs pairs;
-  if (!ReadProcFileToTrimmedStringPairs(process_, "io", &pairs))
+  if (!internal::ReadProcFileToTrimmedStringPairs(process_, "io", &pairs)) {
     return false;
+  }
 
   io_counters->OtherOperationCount = 0;
   io_counters->OtherTransferCount = 0;
@@ -230,7 +151,8 @@ bool ProcessMetrics::GetIOCounters(IoCounters* io_counters) const {
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 uint64_t ProcessMetrics::GetVmSwapBytes() const {
-  return ReadProcStatusAndGetFieldAsSizeT(process_, "VmSwap") * 1024;
+  return internal::ReadProcStatusAndGetKbFieldAsSizeT(process_, "VmSwap") *
+         1024;
 }
 
 bool ProcessMetrics::GetPageFaultCounts(PageFaultCounts* counts) const {
@@ -968,7 +890,8 @@ bool GetGraphicsMemoryInfo(GraphicsMemoryInfoKB* gpu_meminfo) {
 int ProcessMetrics::GetIdleWakeupsPerSecond() {
   uint64_t num_switches;
   static const char kSwitchStat[] = "voluntary_ctxt_switches";
-  return ReadProcStatusAndGetFieldAsUint64(process_, kSwitchStat, &num_switches)
+  return internal::ReadProcStatusAndGetFieldAsUint64(process_, kSwitchStat,
+                                                     &num_switches)
              ? CalculateIdleWakeupsPerSecond(num_switches)
              : 0;
 }

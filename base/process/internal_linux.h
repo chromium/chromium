@@ -18,6 +18,7 @@
 #include "base/files/file_path.h"
 #include "base/process/process_handle.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
 #include "base/threading/platform_thread.h"
 
 namespace base {
@@ -46,6 +47,24 @@ bool ReadProcFile(const FilePath& file, std::string* buffer);
 // Returns 0 on failure.
 // e.g. /proc/self/ will return 0, whereas /proc/1234 will return 1234.
 pid_t ProcDirSlotToPid(const char* d_name);
+
+// Read |filename| in /proc/<pid>/, split the entries into key/value pairs, and
+// trim the key and value. On success, return true and write the trimmed
+// key/value pairs into |key_value_pairs|.
+bool ReadProcFileToTrimmedStringPairs(pid_t pid,
+                                      StringPiece filename,
+                                      StringPairs* key_value_pairs);
+
+// Read /proc/<pid>/status and return the value for |field|, or 0 on failure.
+// Only works for fields in the form of "Field: value kB".
+size_t ReadProcStatusAndGetKbFieldAsSizeT(pid_t pid, StringPiece field);
+
+// Read /proc/<pid>/status and look for |field|. On success, return true and
+// write the value for |field| into |result|.
+// Only works for fields in the form of "field    :     uint_value"
+bool ReadProcStatusAndGetFieldAsUint64(pid_t pid,
+                                       StringPiece field,
+                                       uint64_t* result);
 
 // Reads /proc/<pid>/stat into |buffer|. Returns true if the file can be read
 // and is non-empty.

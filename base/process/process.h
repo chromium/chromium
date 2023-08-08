@@ -265,6 +265,11 @@ class BASE_EXPORT Process {
   ProcessId GetPidInNamespace() const;
 #endif
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  // Returns true if the process has any seccomp policy applied.
+  bool IsSeccompSandboxed();
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+
 #if BUILDFLAG(IS_CHROMEOS)
   // Exposes OneGroupPerRendererEnabled() to unit tests.
   static bool OneGroupPerRendererEnabledForTesting();

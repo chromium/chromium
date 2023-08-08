@@ -265,19 +265,10 @@ Process::Priority GetProcessPriorityCGroup(const StringPiece& cgroup_contents) {
 // If the process is not in a PID namespace or /proc/<pid>/status does not
 // report NSpid, kNullProcessId is returned.
 ProcessId Process::GetPidInNamespace() const {
-  std::string status;
-  {
-    // Synchronously reading files in /proc does not hit the disk.
-    ScopedAllowBlocking scoped_allow_blocking;
-    FilePath status_file =
-        FilePath("/proc").Append(NumberToString(process_)).Append("status");
-    if (!ReadFileToString(status_file, &status)) {
-      return kNullProcessId;
-    }
-  }
-
   StringPairs pairs;
-  SplitStringIntoKeyValuePairs(status, ':', '\n', &pairs);
+  if (!internal::ReadProcFileToTrimmedStringPairs(process_, "status", &pairs)) {
+    return kNullProcessId;
+  }
   for (const auto& pair : pairs) {
     const std::string& key = pair.first;
     const std::string& value_str = pair.second;
@@ -299,6 +290,17 @@ ProcessId Process::GetPidInNamespace() const {
   return kNullProcessId;
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+bool Process::IsSeccompSandboxed() {
+  uint64_t seccomp_value = 0;
+  if (!internal::ReadProcStatusAndGetFieldAsUint64(process_, "Seccomp",
+                                                   &seccomp_value)) {
+    return false;
+  }
+  return seccomp_value > 0;
+}
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS)
 // static
