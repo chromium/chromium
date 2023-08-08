@@ -4,6 +4,12 @@
 
 #include "media/capture/video/chromeos/camera_hal_dispatcher_impl.h"
 
+#include <fcntl.h>
+#include <grp.h>
+#include <poll.h>
+#include <sys/uio.h>
+
+#include <utility>
 #include <vector>
 
 #include "ash/constants/ash_features.h"
@@ -12,11 +18,16 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/location.h"
 #include "base/notreached.h"
+#include "base/posix/eintr_wrapper.h"
 #include "base/rand_util.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/synchronization/waitable_event.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/trace_event/trace_event.h"
 #include "chromeos/ash/components/mojo_service_manager/connection.h"
 #include "chromeos/components/sensors/sensor_util.h"
 #include "components/device_event_log/device_event_log.h"
@@ -26,12 +37,19 @@
 #include "media/capture/video/chromeos/mojom/effects_pipeline.mojom.h"
 #include "media/capture/video/chromeos/video_capture_features_chromeos.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/platform/named_platform_channel.h"
+#include "mojo/public/cpp/platform/platform_channel.h"
+#include "mojo/public/cpp/platform/socket_utils_posix.h"
+#include "mojo/public/cpp/system/invitation.h"
 #include "third_party/cros_system_api/mojo/service_constants.h"
 
 namespace media {
 
 namespace {
 
+const base::FilePath::CharType kArcCamera3SocketPath[] =
+    "/run/camera/camera3.sock";
+const char kArcCameraGroup[] = "arc-camera";
 const base::FilePath::CharType kForceEnableAePath[] =
     "/run/camera/force_enable_face_ae";
 const base::FilePath::CharType kForceDisableAePath[] =
@@ -79,6 +97,36 @@ void CreateEnableDisableFile(const std::string& enable_path,
                     base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
     file.Close();
   }
+}
+
+std::string GenerateRandomToken() {
+  char random_bytes[16];
+  base::RandBytes(random_bytes, 16);
+  return base::HexEncode(random_bytes, 16);
+}
+
+// Waits until |raw_socket_fd| is readable.  We signal |raw_cancel_fd| when we
+// want to cancel the blocking wait and stop serving connections on
+// |raw_socket_fd|.  To notify such a situation, |raw_cancel_fd| is also passed
+// to here, and the write side will be closed in such a case.
+bool WaitForSocketReadable(int raw_socket_fd, int raw_cancel_fd) {
+  struct pollfd fds[2] = {
+      {raw_socket_fd, POLLIN, 0},
+      {raw_cancel_fd, POLLIN, 0},
+  };
+
+  if (HANDLE_EINTR(poll(fds, std::size(fds), -1)) <= 0) {
+    PLOG(ERROR) << "poll()";
+    return false;
+  }
+
+  if (fds[1].revents) {
+    VLOG(1) << "Stop() was called";
+    return false;
+  }
+
+  DCHECK(fds[0].revents);
+  return true;
 }
 
 bool HasCrosCameraTest() {
@@ -179,13 +227,7 @@ bool CameraHalDispatcherImpl::StartThreads() {
 bool CameraHalDispatcherImpl::Start(
     MojoMjpegDecodeAcceleratorFactoryCB jda_factory,
     MojoJpegEncodeAcceleratorFactoryCB jea_factory) {
-  // If Start() has been called before, it will not initialize again and
-  // return the result of the previous initialization.
-  if (is_initialized_) {
-    return IsStarted();
-  }
-  is_initialized_ = true;
-
+  DCHECK(!IsStarted());
   if (!StartThreads()) {
     return false;
   }
@@ -216,7 +258,7 @@ bool CameraHalDispatcherImpl::Start(
 
   jda_factory_ = std::move(jda_factory);
   jea_factory_ = std::move(jea_factory);
-
+  base::WaitableEvent started;
   // It's important we generate tokens before creating the socket, because
   // once it is available, everyone connecting to socket would start fetching
   // tokens.
@@ -234,18 +276,19 @@ bool CameraHalDispatcherImpl::Start(
   }
   // CameraHalDispatcher registers itself to Mojo Service Manager.
   // TODO(b/258095854): Survey what we can do if mojo_service_manager is down.
-  // TODO(b/277860974): After CrosCamera Service is available from Mojo Service
-  // Manager, we should establish the connection between Mojo Service Manager
-  // process and VCD Unittests process to enable real cameras in VCD Unittests.
   if (ash::mojo_service_manager::IsServiceManagerBound()) {
     auto* proxy = ash::mojo_service_manager::GetServiceManagerProxy();
     proxy->Register(
         /*service_name=*/chromeos::mojo_services::kCrosCameraHalDispatcher,
         provider_receiver_.BindNewPipeAndPassRemote());
-    is_service_bound_ = true;
   } else {
     LOG(ERROR) << "Mojo Service Manager is not bound.";
   }
+  blocking_io_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&CameraHalDispatcherImpl::CreateSocket,
+                     base::Unretained(this), base::Unretained(&started)));
+  started.Wait();
   return IsStarted();
 }
 
@@ -266,7 +309,7 @@ void CameraHalDispatcherImpl::AddClientObserver(
 
 bool CameraHalDispatcherImpl::IsStarted() {
   return proxy_thread_.IsRunning() && blocking_io_thread_.IsRunning() &&
-         is_service_bound_;
+         proxy_fd_.is_valid();
 }
 
 void CameraHalDispatcherImpl::AddActiveClientObserver(
@@ -620,6 +663,127 @@ base::UnguessableToken CameraHalDispatcherImpl::GetTokenForTrustedClient(
   return token_manager_.GetTokenForTrustedClient(type);
 }
 
+void CameraHalDispatcherImpl::CreateSocket(base::WaitableEvent* started) {
+  DCHECK(blocking_io_task_runner_->BelongsToCurrentThread());
+
+  base::FilePath socket_path(kArcCamera3SocketPath);
+  mojo::NamedPlatformChannel::Options options;
+  options.server_name = socket_path.value();
+  mojo::NamedPlatformChannel channel(options);
+  if (!channel.server_endpoint().is_valid()) {
+    LOG(ERROR) << "Failed to create the socket file: " << kArcCamera3SocketPath;
+    started->Signal();
+    return;
+  }
+
+  // TODO(crbug.com/1053569): Remove these lines once the issue is solved.
+  base::File::Info info;
+  if (!base::GetFileInfo(socket_path, &info)) {
+    LOG(WARNING) << "Failed to get the socket info after building Mojo channel";
+  } else {
+    LOG(WARNING) << "Building Mojo channel. Socket info:"
+                 << " creation_time: " << info.creation_time
+                 << " last_accessed: " << info.last_accessed
+                 << " last_modified: " << info.last_modified;
+  }
+
+  // Change permissions on the socket.
+  struct group arc_camera_group;
+  struct group* result = nullptr;
+  char buf[1024];
+  if (HANDLE_EINTR(getgrnam_r(kArcCameraGroup, &arc_camera_group, buf,
+                              sizeof(buf), &result)) < 0) {
+    PLOG(ERROR) << "getgrnam_r()";
+    started->Signal();
+    return;
+  }
+
+  if (!result) {
+    LOG(ERROR) << "Group '" << kArcCameraGroup << "' not found";
+    started->Signal();
+    return;
+  }
+
+  if (HANDLE_EINTR(chown(kArcCamera3SocketPath, -1, arc_camera_group.gr_gid)) <
+      0) {
+    PLOG(ERROR) << "chown()";
+    started->Signal();
+    return;
+  }
+
+  if (!base::SetPosixFilePermissions(socket_path, 0660)) {
+    PLOG(ERROR) << "Could not set permissions: " << socket_path.value();
+    started->Signal();
+    return;
+  }
+
+  blocking_io_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&CameraHalDispatcherImpl::StartServiceLoop,
+                     base::Unretained(this),
+                     channel.TakeServerEndpoint().TakePlatformHandle().TakeFD(),
+                     base::Unretained(started)));
+}
+
+void CameraHalDispatcherImpl::StartServiceLoop(base::ScopedFD socket_fd,
+                                               base::WaitableEvent* started) {
+  DCHECK(blocking_io_task_runner_->BelongsToCurrentThread());
+  DCHECK(!proxy_fd_.is_valid());
+  DCHECK(!cancel_pipe_.is_valid());
+  DCHECK(socket_fd.is_valid());
+
+  base::ScopedFD cancel_fd;
+  if (!base::CreatePipe(&cancel_fd, &cancel_pipe_, true)) {
+    PLOG(ERROR) << "Failed to create cancel pipe";
+    started->Signal();
+    return;
+  }
+
+  proxy_fd_ = std::move(socket_fd);
+  started->Signal();
+  VLOG(1) << "CameraHalDispatcherImpl started; waiting for incoming connection";
+
+  while (true) {
+    if (!WaitForSocketReadable(proxy_fd_.get(), cancel_fd.get())) {
+      VLOG(1) << "Quit CameraHalDispatcherImpl IO thread";
+      return;
+    }
+
+    base::ScopedFD accepted_fd;
+    if (mojo::AcceptSocketConnection(proxy_fd_.get(), &accepted_fd, false) &&
+        accepted_fd.is_valid()) {
+      VLOG(1) << "Accepted a connection";
+      // Hardcode pid 0 since it is unused in mojo.
+      const base::ProcessHandle kUnusedChildProcessHandle = 0;
+      mojo::PlatformChannel channel;
+      mojo::OutgoingInvitation invitation;
+
+      // Generate an arbitrary 32-byte string, as we use this length as a
+      // protocol version identifier.
+      std::string token = GenerateRandomToken();
+      mojo::ScopedMessagePipeHandle pipe = invitation.AttachMessagePipe(token);
+      mojo::OutgoingInvitation::Send(std::move(invitation),
+                                     kUnusedChildProcessHandle,
+                                     channel.TakeLocalEndpoint());
+
+      auto remote_endpoint = channel.TakeRemoteEndpoint();
+      std::vector<base::ScopedFD> fds;
+      fds.emplace_back(remote_endpoint.TakePlatformHandle().TakeFD());
+
+      struct iovec iov = {const_cast<char*>(token.c_str()), token.length()};
+      ssize_t result =
+          mojo::SendmsgWithHandles(accepted_fd.get(), &iov, 1, fds);
+      if (result == -1) {
+        PLOG(ERROR) << "sendmsg()";
+      } else {
+        proxy_task_runner_->PostTask(
+            FROM_HERE, base::BindOnce(&CameraHalDispatcherImpl::OnPeerConnected,
+                                      base::Unretained(this), std::move(pipe)));
+      }
+    }
+  }
+}
+
 void CameraHalDispatcherImpl::GetCameraSWPrivacySwitchStateOnProxyThread(
     cros::mojom::CameraHalServer::GetCameraSWPrivacySwitchStateCallback
         callback) {
@@ -813,6 +977,22 @@ void CameraHalDispatcherImpl::RegisterSensorClientWithTokenOnUIThread(
 void CameraHalDispatcherImpl::StopOnProxyThread() {
   DCHECK(proxy_task_runner_->BelongsToCurrentThread());
 
+  // TODO(crbug.com/1053569): Remove these lines once the issue is solved.
+  base::File::Info info;
+  if (!base::GetFileInfo(base::FilePath(kArcCamera3SocketPath), &info)) {
+    LOG(WARNING) << "Failed to get socket info before deleting";
+  } else {
+    LOG(WARNING) << "Delete socket. Socket info:"
+                 << " creation_time: " << info.creation_time
+                 << " last_accessed: " << info.last_accessed
+                 << " last_modified: " << info.last_modified;
+  }
+
+  if (!base::DeleteFile(base::FilePath(kArcCamera3SocketPath))) {
+    LOG(ERROR) << "Failed to delete " << kArcCamera3SocketPath;
+  }
+  // Close |cancel_pipe_| to quit the loop in WaitForIncomingConnection.
+  cancel_pipe_.reset();
   mojo_client_observers_.clear();
   client_observers_.clear();
   camera_hal_server_callbacks_.reset();

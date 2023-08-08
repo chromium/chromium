@@ -35,6 +35,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/platform/platform_channel_server_endpoint.h"
 
 namespace base {
 
@@ -316,6 +317,14 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
 
   bool StartThreads();
 
+  // Creates the unix domain socket for the camera client processes and the
+  // camera HALv3 adapter process to connect.
+  void CreateSocket(base::WaitableEvent* started);
+
+  // Waits for incoming connections (from HAL process or from client processes).
+  // Runs on |blocking_io_thread_|.
+  void StartServiceLoop(base::ScopedFD socket_fd, base::WaitableEvent* started);
+
   void GetCameraSWPrivacySwitchStateOnProxyThread(
       cros::mojom::CameraHalServer::GetCameraSWPrivacySwitchStateCallback
           callback);
@@ -400,6 +409,9 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
 
   TokenManager* GetTokenManagerForTesting();
 
+  base::ScopedFD proxy_fd_;
+  base::ScopedFD cancel_pipe_;
+
   base::Thread proxy_thread_;
   base::Thread blocking_io_thread_;
   scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
@@ -466,14 +478,6 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
   base::flat_map<int32_t, std::string> camera_id_to_device_id_
       GUARDED_BY(camera_id_to_device_id_lock_);
 
-  // A flag to indicate if CameraHalDispatcherImpl::Start has been called
-  // before. In capture_unittests, if CameraHalDispatcherImpl starts failed,
-  // Start() will be called again and cause some errors without it.
-  bool is_initialized_ = false;
-
-  // A flag to indicate if CameraHalDispatcher is connected to the mojo service
-  // manager.
-  bool is_service_bound_ = false;
   // Receiver for mojo service manager service provider.
   mojo::Receiver<chromeos::mojo_service_manager::mojom::ServiceProvider>
       provider_receiver_{this};
