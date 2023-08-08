@@ -111,14 +111,6 @@ bool ShouldByPassCacheForFirstPartySets(
          (!written_at_run_id.has_value() ||
           written_at_run_id.value() < clear_at_run_id.value());
 }
-}  // namespace
-
-#define CACHE_STATUS_HISTOGRAMS(type)                                      \
-  UMA_HISTOGRAM_ENUMERATION("HttpCache.Pattern" type, cache_entry_status_, \
-                            CacheEntryStatus::ENTRY_MAX)
-
-#define IS_NO_STORE_HISTOGRAMS(type, is_no_store) \
-  base::UmaHistogramBoolean("HttpCache.IsNoStore" type, is_no_store)
 
 struct HeaderNameAndValue {
   const char* name;
@@ -127,7 +119,7 @@ struct HeaderNameAndValue {
 
 // If the request includes one of these request headers, then avoid caching
 // to avoid getting confused.
-static const HeaderNameAndValue kPassThroughHeaders[] = {
+constexpr HeaderNameAndValue kPassThroughHeaders[] = {
     {"if-unmodified-since", nullptr},  // causes unexpected 412s
     {"if-match", nullptr},             // causes unexpected 412s
     {"if-range", nullptr},
@@ -138,42 +130,125 @@ struct ValidationHeaderInfo {
   const char* related_response_header_name;
 };
 
-static const ValidationHeaderInfo kValidationHeaders[] = {
-  { "if-modified-since", "last-modified" },
-  { "if-none-match", "etag" },
+constexpr ValidationHeaderInfo kValidationHeaders[] = {
+    {"if-modified-since", "last-modified"},
+    {"if-none-match", "etag"},
 };
 
 // If the request includes one of these request headers, then avoid reusing
 // our cached copy if any.
-static const HeaderNameAndValue kForceFetchHeaders[] = {
+constexpr HeaderNameAndValue kForceFetchHeaders[] = {
     {"cache-control", "no-cache"},
     {"pragma", "no-cache"},
     {nullptr, nullptr}};
 
 // If the request includes one of these request headers, then force our
 // cached copy (if any) to be revalidated before reusing it.
-static const HeaderNameAndValue kForceValidateHeaders[] = {
+constexpr HeaderNameAndValue kForceValidateHeaders[] = {
     {"cache-control", "max-age=0"},
     {nullptr, nullptr}};
 
-static bool HeaderMatches(const HttpRequestHeaders& headers,
-                          const HeaderNameAndValue* search) {
+bool HeaderMatches(const HttpRequestHeaders& headers,
+                   const HeaderNameAndValue* search) {
   for (; search->name; ++search) {
     std::string header_value;
     if (!headers.GetHeader(search->name, &header_value))
       continue;
 
-    if (!search->value)
+    if (!search->value) {
       return true;
+    }
 
     HttpUtil::ValuesIterator v(header_value.begin(), header_value.end(), ',');
     while (v.GetNext()) {
-      if (base::EqualsCaseInsensitiveASCII(v.value_piece(), search->value))
+      if (base::EqualsCaseInsensitiveASCII(v.value_piece(), search->value)) {
         return true;
+      }
     }
   }
   return false;
 }
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class PrefetchReuseState : uint8_t {
+  kNone = 0,
+
+  // Bit 0 represents if it's reused first time
+  kFirstReuse = 1 << 0,
+
+  // Bit 1 represents if it's reused within the time window
+  kReusedWithinTimeWindow = 1 << 1,
+
+  // Bit 2-3 represents the freshness based on cache headers
+  kFresh = 0 << 2,
+  kAlwaysValidate = 1 << 2,
+  kExpired = 2 << 2,
+  kStale = 3 << 2,
+
+  // histograms require a named max value
+  kBitMaskForAllAttributes = kStale | kReusedWithinTimeWindow | kFirstReuse,
+  kMaxValue = kBitMaskForAllAttributes
+};
+
+using PrefetchReuseStateUnderlyingType =
+    std::underlying_type_t<PrefetchReuseState>;
+
+PrefetchReuseStateUnderlyingType ToUnderlying(PrefetchReuseState state) {
+  DCHECK_LE(PrefetchReuseState::kNone, state);
+  DCHECK_LE(state, PrefetchReuseState::kMaxValue);
+
+  return static_cast<PrefetchReuseStateUnderlyingType>(state);
+}
+
+PrefetchReuseState ToReuseState(PrefetchReuseStateUnderlyingType value) {
+  PrefetchReuseState state = static_cast<PrefetchReuseState>(value);
+  DCHECK_LE(PrefetchReuseState::kNone, state);
+  DCHECK_LE(state, PrefetchReuseState::kMaxValue);
+  return state;
+}
+
+PrefetchReuseState ComputePrefetchReuseState(ValidationType type,
+                                             bool first_reuse,
+                                             bool reused_within_time_window,
+                                             bool validate_flag) {
+  PrefetchReuseStateUnderlyingType reuse_state =
+      ToUnderlying(PrefetchReuseState::kNone);
+
+  if (first_reuse) {
+    reuse_state |= ToUnderlying(PrefetchReuseState::kFirstReuse);
+  }
+
+  if (reused_within_time_window) {
+    reuse_state |= ToUnderlying(PrefetchReuseState::kReusedWithinTimeWindow);
+  }
+
+  if (validate_flag) {
+    reuse_state |= ToUnderlying(PrefetchReuseState::kAlwaysValidate);
+  } else {
+    switch (type) {
+      case VALIDATION_SYNCHRONOUS:
+        reuse_state |= ToUnderlying(PrefetchReuseState::kExpired);
+        break;
+      case VALIDATION_ASYNCHRONOUS:
+        reuse_state |= ToUnderlying(PrefetchReuseState::kStale);
+        break;
+      case VALIDATION_NONE:
+        reuse_state |= ToUnderlying(PrefetchReuseState::kFresh);
+        break;
+    }
+  }
+  return ToReuseState(reuse_state);
+}
+
+}  // namespace
+
+#define CACHE_STATUS_HISTOGRAMS(type)                                      \
+  UMA_HISTOGRAM_ENUMERATION("HttpCache.Pattern" type, cache_entry_status_, \
+                            CacheEntryStatus::ENTRY_MAX)
+
+#define IS_NO_STORE_HISTOGRAMS(type, is_no_store) \
+  base::UmaHistogramBoolean("HttpCache.IsNoStore" type, is_no_store)
 
 //-----------------------------------------------------------------------------
 
@@ -2865,77 +2940,6 @@ int HttpCache::Transaction::RestartNetworkRequestWithAuth(
   if (rv != ERR_IO_PENDING)
     return DoLoop(rv);
   return rv;
-}
-
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class PrefetchReuseState : uint8_t {
-  kNone = 0,
-
-  // Bit 0 represents if it's reused first time
-  kFirstReuse = 1 << 0,
-
-  // Bit 1 represents if it's reused within the time window
-  kReusedWithinTimeWindow = 1 << 1,
-
-  // Bit 2-3 represents the freshness based on cache headers
-  kFresh = 0 << 2,
-  kAlwaysValidate = 1 << 2,
-  kExpired = 2 << 2,
-  kStale = 3 << 2,
-
-  // histograms require a named max value
-  kBitMaskForAllAttributes = kStale | kReusedWithinTimeWindow | kFirstReuse,
-  kMaxValue = kBitMaskForAllAttributes
-};
-
-namespace {
-std::underlying_type<PrefetchReuseState>::type to_underlying(
-    PrefetchReuseState state) {
-  DCHECK_LE(PrefetchReuseState::kNone, state);
-  DCHECK_LE(state, PrefetchReuseState::kMaxValue);
-
-  return static_cast<std::underlying_type<PrefetchReuseState>::type>(state);
-}
-
-PrefetchReuseState to_reuse_state(
-    std::underlying_type<PrefetchReuseState>::type value) {
-  PrefetchReuseState state = static_cast<PrefetchReuseState>(value);
-  DCHECK_LE(PrefetchReuseState::kNone, state);
-  DCHECK_LE(state, PrefetchReuseState::kMaxValue);
-  return state;
-}
-}  // namespace
-
-PrefetchReuseState ComputePrefetchReuseState(ValidationType type,
-                                             bool first_reuse,
-                                             bool reused_within_time_window,
-                                             bool validate_flag) {
-  std::underlying_type<PrefetchReuseState>::type reuse_state =
-      to_underlying(PrefetchReuseState::kNone);
-
-  if (first_reuse)
-    reuse_state |= to_underlying(PrefetchReuseState::kFirstReuse);
-
-  if (reused_within_time_window)
-    reuse_state |= to_underlying(PrefetchReuseState::kReusedWithinTimeWindow);
-
-  if (validate_flag)
-    reuse_state |= to_underlying(PrefetchReuseState::kAlwaysValidate);
-  else {
-    switch (type) {
-      case VALIDATION_SYNCHRONOUS:
-        reuse_state |= to_underlying(PrefetchReuseState::kExpired);
-        break;
-      case VALIDATION_ASYNCHRONOUS:
-        reuse_state |= to_underlying(PrefetchReuseState::kStale);
-        break;
-      case VALIDATION_NONE:
-        reuse_state |= to_underlying(PrefetchReuseState::kFresh);
-        break;
-    }
-  }
-  return to_reuse_state(reuse_state);
 }
 
 ValidationType HttpCache::Transaction::RequiresValidation() {
