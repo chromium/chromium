@@ -6,6 +6,8 @@
 
 #include "base/memory/values_equivalent.h"
 
+#include <iostream>
+
 namespace blink {
 
 bool StyleInheritedVariables::operator==(
@@ -57,6 +59,14 @@ void StyleInheritedVariables::CollectNames(HashSet<AtomicString>& names) const {
   for (const auto& pair : Data()) {
     names.insert(pair.key);
   }
+}
+
+std::ostream& operator<<(std::ostream& stream,
+                         const StyleInheritedVariables& variables) {
+  if (variables.root_) {
+    stream << "root: <" << *variables.root_ << "> ";
+  }
+  return stream << variables.variables_;
 }
 
 }  // namespace blink

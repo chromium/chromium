@@ -119,4 +119,17 @@ void StyleVariables::CollectNames(HashSet<AtomicString>& names) const {
   }
 }
 
+std::ostream& operator<<(std::ostream& stream,
+                         const StyleVariables& variables) {
+  stream << "[";
+  for (const auto& [key, value] : variables.data_) {
+    stream << key << ": " << value << ", ";
+  }
+  stream << "][";
+  for (const auto& [key, value] : *variables.values_) {
+    stream << key << ": " << value->CssText() << ", ";
+  }
+  return stream << "]";
+}
+
 }  // namespace blink

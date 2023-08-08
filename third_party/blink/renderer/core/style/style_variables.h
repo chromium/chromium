@@ -16,6 +16,8 @@
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string_hash.h"
 
+#include <iosfwd>
+
 namespace blink {
 
 // Contains values for custom properties.
@@ -91,7 +93,13 @@ class CORE_EXPORT StyleVariables {
   // with a nullptr partner.
   mutable const StyleVariables* equality_cache_partner_ = nullptr;
   mutable bool equality_cached_result_;
+
+  friend CORE_EXPORT std::ostream& operator<<(std::ostream& stream,
+                                              const StyleVariables& variables);
 };
+
+CORE_EXPORT std::ostream& operator<<(std::ostream& stream,
+                                     const StyleVariables& variables);
 
 }  // namespace blink
 
