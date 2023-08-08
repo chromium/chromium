@@ -28,6 +28,10 @@ struct SubsampleEntry {
   SubsampleEntry() : clear_bytes(0), cypher_bytes(0) {}
   SubsampleEntry(uint32_t clear_bytes, uint32_t cypher_bytes)
       : clear_bytes(clear_bytes), cypher_bytes(cypher_bytes) {}
+  bool operator==(const SubsampleEntry& right) const {
+    return clear_bytes == right.clear_bytes &&
+           cypher_bytes == right.cypher_bytes;
+  }
   uint32_t clear_bytes;
   uint32_t cypher_bytes;
 };

@@ -555,14 +555,26 @@ bool StructTraits<media::stable::mojom::DecryptConfigDataView,
   media::EncryptionScheme encryption_scheme;
   if (!input.ReadEncryptionScheme(&encryption_scheme))
     return false;
+  if (encryption_scheme == media::EncryptionScheme::kUnencrypted) {
+    // The DecryptConfig constructor has a DCHECK() that rejects
+    // EncryptionScheme::kUnencrypted.
+    return false;
+  }
 
   std::string key_id;
   if (!input.ReadKeyId(&key_id))
     return false;
+  if (key_id.empty()) {
+    return false;
+  }
 
   std::string iv;
   if (!input.ReadIv(&iv))
     return false;
+  if (iv.size() !=
+      static_cast<size_t>(media::DecryptConfig::kDecryptionKeySize)) {
+    return false;
+  }
 
   std::vector<media::SubsampleEntry> subsamples;
   if (!input.ReadSubsamples(&subsamples))
@@ -571,6 +583,10 @@ bool StructTraits<media::stable::mojom::DecryptConfigDataView,
   absl::optional<media::EncryptionPattern> encryption_pattern;
   if (!input.ReadEncryptionPattern(&encryption_pattern))
     return false;
+  if (encryption_scheme != media::EncryptionScheme::kCbcs &&
+      encryption_pattern.has_value()) {
+    return false;
+  }
 
   *output = std::make_unique<media::DecryptConfig>(
       encryption_scheme, key_id, iv, subsamples, encryption_pattern);

@@ -349,4 +349,144 @@ TEST(StableVideoDecoderTypesMojomTraitsTest, ValidOkStatus) {
   EXPECT_TRUE(deserialized_status.is_ok());
 }
 
+TEST(StableVideoDecoderTypesMojomTraitsTest, ValidCENCDecryptConfig) {
+  stable::mojom::DecryptConfigPtr mojom_decrypt_config =
+      stable::mojom::DecryptConfig::New();
+  mojom_decrypt_config->encryption_scheme = EncryptionScheme::kCenc;
+  mojom_decrypt_config->key_id = "ABC";
+  mojom_decrypt_config->iv = "0123456789ABCDEF";
+  mojom_decrypt_config->subsamples = {
+      SubsampleEntry(/*clear_bytes=*/4u, /*cypher_bytes=*/10u),
+      SubsampleEntry(/*clear_bytes=*/90u, /*cypher_bytes=*/2u)};
+  mojom_decrypt_config->encryption_pattern = absl::nullopt;
+
+  std::vector<uint8_t> serialized_decrypt_config =
+      stable::mojom::DecryptConfig::Serialize(&mojom_decrypt_config);
+
+  std::unique_ptr<DecryptConfig> deserialized_decrypt_config;
+  ASSERT_TRUE(stable::mojom::DecryptConfig::Deserialize(
+      serialized_decrypt_config, &deserialized_decrypt_config));
+  ASSERT_TRUE(deserialized_decrypt_config);
+
+  EXPECT_EQ(deserialized_decrypt_config->encryption_scheme(),
+            mojom_decrypt_config->encryption_scheme);
+  EXPECT_EQ(deserialized_decrypt_config->key_id(),
+            mojom_decrypt_config->key_id);
+  EXPECT_EQ(deserialized_decrypt_config->subsamples(),
+            mojom_decrypt_config->subsamples);
+  EXPECT_EQ(deserialized_decrypt_config->encryption_pattern(),
+            mojom_decrypt_config->encryption_pattern);
+}
+
+TEST(StableVideoDecoderTypesMojomTraitsTest, ValidCBCSDecryptConfig) {
+  stable::mojom::DecryptConfigPtr mojom_decrypt_config =
+      stable::mojom::DecryptConfig::New();
+  mojom_decrypt_config->encryption_scheme = EncryptionScheme::kCbcs;
+  mojom_decrypt_config->key_id = "ABC";
+  mojom_decrypt_config->iv = "0123456789ABCDEF";
+  mojom_decrypt_config->subsamples = {
+      SubsampleEntry(/*clear_bytes=*/4u, /*cypher_bytes=*/10u),
+      SubsampleEntry(/*clear_bytes=*/90u, /*cypher_bytes=*/2u)};
+  mojom_decrypt_config->encryption_pattern =
+      EncryptionPattern(/*crypt_byte_block=*/2u, /*skip_byte_block=*/5u);
+
+  std::vector<uint8_t> serialized_decrypt_config =
+      stable::mojom::DecryptConfig::Serialize(&mojom_decrypt_config);
+
+  std::unique_ptr<DecryptConfig> deserialized_decrypt_config;
+  ASSERT_TRUE(stable::mojom::DecryptConfig::Deserialize(
+      serialized_decrypt_config, &deserialized_decrypt_config));
+  ASSERT_TRUE(deserialized_decrypt_config);
+
+  EXPECT_EQ(deserialized_decrypt_config->encryption_scheme(),
+            mojom_decrypt_config->encryption_scheme);
+  EXPECT_EQ(deserialized_decrypt_config->key_id(),
+            mojom_decrypt_config->key_id);
+  EXPECT_EQ(deserialized_decrypt_config->subsamples(),
+            mojom_decrypt_config->subsamples);
+  EXPECT_EQ(deserialized_decrypt_config->encryption_pattern(),
+            mojom_decrypt_config->encryption_pattern);
+}
+
+TEST(StableVideoDecoderTypesMojomTraitsTest,
+     DecryptConfigWithUnencryptedScheme) {
+  stable::mojom::DecryptConfigPtr mojom_decrypt_config =
+      stable::mojom::DecryptConfig::New();
+  mojom_decrypt_config->encryption_scheme = EncryptionScheme::kUnencrypted;
+  mojom_decrypt_config->key_id = "ABC";
+  mojom_decrypt_config->iv = "0123456789ABCDEF";
+  mojom_decrypt_config->subsamples = {
+      SubsampleEntry(/*clear_bytes=*/4u, /*cypher_bytes=*/10u),
+      SubsampleEntry(/*clear_bytes=*/90u, /*cypher_bytes=*/2u)};
+  mojom_decrypt_config->encryption_pattern =
+      EncryptionPattern(/*crypt_byte_block=*/2u, /*skip_byte_block=*/5u);
+
+  std::vector<uint8_t> serialized_decrypt_config =
+      stable::mojom::DecryptConfig::Serialize(&mojom_decrypt_config);
+
+  std::unique_ptr<DecryptConfig> deserialized_decrypt_config;
+  ASSERT_FALSE(stable::mojom::DecryptConfig::Deserialize(
+      serialized_decrypt_config, &deserialized_decrypt_config));
+}
+
+TEST(StableVideoDecoderTypesMojomTraitsTest, DecryptConfigWithEmptyKeyID) {
+  stable::mojom::DecryptConfigPtr mojom_decrypt_config =
+      stable::mojom::DecryptConfig::New();
+  mojom_decrypt_config->encryption_scheme = EncryptionScheme::kCbcs;
+  mojom_decrypt_config->key_id = "";
+  mojom_decrypt_config->iv = "0123456789ABCDEF";
+  mojom_decrypt_config->subsamples = {
+      SubsampleEntry(/*clear_bytes=*/4u, /*cypher_bytes=*/10u),
+      SubsampleEntry(/*clear_bytes=*/90u, /*cypher_bytes=*/2u)};
+  mojom_decrypt_config->encryption_pattern =
+      EncryptionPattern(/*crypt_byte_block=*/2u, /*skip_byte_block=*/5u);
+
+  std::vector<uint8_t> serialized_decrypt_config =
+      stable::mojom::DecryptConfig::Serialize(&mojom_decrypt_config);
+
+  std::unique_ptr<DecryptConfig> deserialized_decrypt_config;
+  ASSERT_FALSE(stable::mojom::DecryptConfig::Deserialize(
+      serialized_decrypt_config, &deserialized_decrypt_config));
+}
+
+TEST(StableVideoDecoderTypesMojomTraitsTest,
+     DecryptConfigWithIVOfIncorrectSize) {
+  stable::mojom::DecryptConfigPtr mojom_decrypt_config =
+      stable::mojom::DecryptConfig::New();
+  mojom_decrypt_config->encryption_scheme = EncryptionScheme::kCbcs;
+  mojom_decrypt_config->key_id = "ABC";
+  mojom_decrypt_config->iv = "0123456789ABCDEFG";
+  mojom_decrypt_config->subsamples = {
+      SubsampleEntry(/*clear_bytes=*/4u, /*cypher_bytes=*/10u),
+      SubsampleEntry(/*clear_bytes=*/90u, /*cypher_bytes=*/2u)};
+  mojom_decrypt_config->encryption_pattern =
+      EncryptionPattern(/*crypt_byte_block=*/2u, /*skip_byte_block=*/5u);
+
+  std::vector<uint8_t> serialized_decrypt_config =
+      stable::mojom::DecryptConfig::Serialize(&mojom_decrypt_config);
+
+  std::unique_ptr<DecryptConfig> deserialized_decrypt_config;
+  ASSERT_FALSE(stable::mojom::DecryptConfig::Deserialize(
+      serialized_decrypt_config, &deserialized_decrypt_config));
+}
+
+TEST(StableVideoDecoderTypesMojomTraitsTest, CENCDecryptConfigWithPattern) {
+  stable::mojom::DecryptConfigPtr mojom_decrypt_config =
+      stable::mojom::DecryptConfig::New();
+  mojom_decrypt_config->encryption_scheme = EncryptionScheme::kCenc;
+  mojom_decrypt_config->key_id = "ABC";
+  mojom_decrypt_config->iv = "0123456789ABCDEF";
+  mojom_decrypt_config->subsamples = {
+      SubsampleEntry(/*clear_bytes=*/4u, /*cypher_bytes=*/10u),
+      SubsampleEntry(/*clear_bytes=*/90u, /*cypher_bytes=*/2u)};
+  mojom_decrypt_config->encryption_pattern =
+      EncryptionPattern(/*crypt_byte_block=*/2u, /*skip_byte_block=*/5u);
+
+  std::vector<uint8_t> serialized_decrypt_config =
+      stable::mojom::DecryptConfig::Serialize(&mojom_decrypt_config);
+
+  std::unique_ptr<DecryptConfig> deserialized_decrypt_config;
+  ASSERT_FALSE(stable::mojom::DecryptConfig::Deserialize(
+      serialized_decrypt_config, &deserialized_decrypt_config));
+}
 }  // namespace media
