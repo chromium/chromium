@@ -521,7 +521,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, OpenDirectory_DenyAccess) {
 
   EXPECT_CALL(permission_context,
               GetWellKnownDirectoryPath(
-                  blink::mojom::WellKnownDirectory::kDefault, origin))
+                  blink::mojom::WellKnownDirectory::kDirDocuments, origin))
       .WillOnce(testing::Return(base::FilePath()));
   EXPECT_CALL(permission_context, GetLastPickedDirectory(origin, std::string()))
       .WillOnce(testing::Return(PathInfo()));
@@ -603,7 +603,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
 
   EXPECT_CALL(permission_context,
               GetWellKnownDirectoryPath(
-                  blink::mojom::WellKnownDirectory::kDefault, origin))
+                  blink::mojom::WellKnownDirectory::kDirDocuments, origin))
       .WillOnce(testing::Return(base::FilePath()));
   EXPECT_CALL(permission_context, GetLastPickedDirectory(origin, std::string()))
       .WillOnce(testing::Return(PathInfo()));
@@ -692,7 +692,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
 
   EXPECT_CALL(permission_context,
               GetWellKnownDirectoryPath(
-                  blink::mojom::WellKnownDirectory::kDefault, origin))
+                  blink::mojom::WellKnownDirectory::kDirDocuments, origin))
       .WillOnce(testing::Return(base::FilePath()));
   EXPECT_CALL(permission_context, GetLastPickedDirectory(origin, std::string()))
       .WillOnce(testing::Return(PathInfo()));
@@ -789,7 +789,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
 
   EXPECT_CALL(permission_context,
               GetWellKnownDirectoryPath(
-                  blink::mojom::WellKnownDirectory::kDefault, origin))
+                  blink::mojom::WellKnownDirectory::kDirDocuments, origin))
       .WillOnce(testing::Return(base::FilePath()));
   EXPECT_CALL(permission_context, GetLastPickedDirectory(origin, std::string()))
       .WillOnce(testing::Return(PathInfo()));
@@ -856,7 +856,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
 
   EXPECT_CALL(permission_context,
               GetWellKnownDirectoryPath(
-                  blink::mojom::WellKnownDirectory::kDefault, origin))
+                  blink::mojom::WellKnownDirectory::kDirDocuments, origin))
       .WillOnce(testing::Return(base::FilePath()));
   EXPECT_CALL(permission_context, GetLastPickedDirectory(origin, std::string()))
       .WillOnce(testing::Return(PathInfo()));
@@ -1065,7 +1065,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
 
   EXPECT_CALL(permission_context,
               GetWellKnownDirectoryPath(
-                  blink::mojom::WellKnownDirectory::kDefault, origin))
+                  blink::mojom::WellKnownDirectory::kDirDocuments, origin))
       .WillOnce(testing::Return(default_dir));
   EXPECT_CALL(permission_context, GetLastPickedDirectory(origin, std::string()))
       .WillOnce(testing::Return(bad_dir_info));
@@ -1249,7 +1249,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
 
   EXPECT_CALL(permission_context,
               GetWellKnownDirectoryPath(
-                  blink::mojom::WellKnownDirectory::kDefault, origin))
+                  blink::mojom::WellKnownDirectory::kDirDocuments, origin))
       .WillOnce(testing::Return(default_dir));
   EXPECT_CALL(permission_context, GetLastPickedDirectory(origin, std::string()))
       .WillOnce(testing::Return(bad_dir_info));

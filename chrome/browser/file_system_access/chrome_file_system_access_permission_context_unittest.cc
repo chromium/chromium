@@ -857,15 +857,6 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
 }
 
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
-       GetWellKnownDirectoryPath_Default) {
-  base::ScopedPathOverride user_documents_override(
-      chrome::DIR_USER_DOCUMENTS, temp_dir_.GetPath(), true, true);
-  EXPECT_EQ(permission_context()->GetWellKnownDirectoryPath(
-                blink::mojom::WellKnownDirectory::kDefault, kTestOrigin),
-            temp_dir_.GetPath());
-}
-
-TEST_F(ChromeFileSystemAccessPermissionContextTest,
        GetWellKnownDirectoryPath_Pdf_Downloads) {
   DownloadPrefs::FromBrowserContext(browser_context())
       ->SkipSanitizeDownloadTargetPathForTesting();

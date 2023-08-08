@@ -1442,7 +1442,7 @@ TEST_F(FileSystemAccessManagerImplTest, ChooseEntries_OpenFile) {
 
   EXPECT_CALL(
       permission_context_,
-      GetWellKnownDirectoryPath(blink::mojom::WellKnownDirectory::kDefault,
+      GetWellKnownDirectoryPath(blink::mojom::WellKnownDirectory::kDirDocuments,
                                 kTestStorageKey.origin()))
       .WillOnce(testing::Return(base::FilePath()));
   EXPECT_CALL(permission_context_,
@@ -1483,16 +1483,15 @@ TEST_F(FileSystemAccessManagerImplTest, ChooseEntries_OpenFile) {
           std::vector<blink::mojom::ChooseFileSystemEntryAcceptsOptionPtr>(),
           /*include_accepts_all=*/true),
       /*can_select_multiple_files=*/false);
-  auto common_file_picker_options = blink::mojom::CommonFilePickerOptions::New(
+  auto picker_options = blink::mojom::FilePickerOptions::New(
+      blink::mojom::TypeSpecificFilePickerOptionsUnion::
+          NewOpenFilePickerOptions(std::move(open_file_picker_options)),
       /*starting_directory_id=*/std::string(),
-      blink::mojom::WellKnownDirectory::kDefault,
-      /*starting_directory_token=*/mojo::NullRemote());
+      blink::mojom::FilePickerStartInOptionsUnionPtr());
 
   base::RunLoop loop;
   manager_remote->ChooseEntries(
-      blink::mojom::FilePickerOptions::NewOpenFilePickerOptions(
-          std::move(open_file_picker_options)),
-      std::move(common_file_picker_options),
+      std::move(picker_options),
       base::BindLambdaForTesting(
           [&](blink::mojom::FileSystemAccessErrorPtr result,
               std::vector<blink::mojom::FileSystemAccessEntryPtr> entries) {
@@ -1529,7 +1528,7 @@ TEST_F(FileSystemAccessManagerImplTest, ChooseEntries_SaveFile) {
 
   EXPECT_CALL(
       permission_context_,
-      GetWellKnownDirectoryPath(blink::mojom::WellKnownDirectory::kDefault,
+      GetWellKnownDirectoryPath(blink::mojom::WellKnownDirectory::kDirDocuments,
                                 kTestStorageKey.origin()))
       .WillOnce(testing::Return(base::FilePath()));
   EXPECT_CALL(permission_context_,
@@ -1570,16 +1569,15 @@ TEST_F(FileSystemAccessManagerImplTest, ChooseEntries_SaveFile) {
           std::vector<blink::mojom::ChooseFileSystemEntryAcceptsOptionPtr>(),
           /*include_accepts_all=*/true),
       /*suggested_name=*/std::string());
-  auto common_file_picker_options = blink::mojom::CommonFilePickerOptions::New(
+  auto picker_options = blink::mojom::FilePickerOptions::New(
+      blink::mojom::TypeSpecificFilePickerOptionsUnion::
+          NewSaveFilePickerOptions(std::move(save_file_picker_options)),
       /*starting_directory_id=*/std::string(),
-      blink::mojom::WellKnownDirectory::kDefault,
-      /*starting_directory_token=*/mojo::NullRemote());
+      blink::mojom::FilePickerStartInOptionsUnionPtr());
 
   base::RunLoop loop;
   manager_remote->ChooseEntries(
-      blink::mojom::FilePickerOptions::NewSaveFilePickerOptions(
-          std::move(save_file_picker_options)),
-      std::move(common_file_picker_options),
+      std::move(picker_options),
       base::BindLambdaForTesting(
           [&](blink::mojom::FileSystemAccessErrorPtr result,
               std::vector<blink::mojom::FileSystemAccessEntryPtr> entries) {
@@ -1612,7 +1610,7 @@ TEST_F(FileSystemAccessManagerImplTest, ChooseEntries_OpenDirectory) {
 
   EXPECT_CALL(
       permission_context_,
-      GetWellKnownDirectoryPath(blink::mojom::WellKnownDirectory::kDefault,
+      GetWellKnownDirectoryPath(blink::mojom::WellKnownDirectory::kDirDocuments,
                                 kTestStorageKey.origin()))
       .WillOnce(testing::Return(base::FilePath()));
   EXPECT_CALL(permission_context_,
@@ -1648,17 +1646,16 @@ TEST_F(FileSystemAccessManagerImplTest, ChooseEntries_OpenDirectory) {
                   FileSystemAccessPermissionContext::UserAction::kOpen))
       .WillOnce(testing::Return(allow_grant_));
 
-  auto directory_picker_options = blink::mojom::DirectoryPickerOptions::New();
-  auto common_file_picker_options = blink::mojom::CommonFilePickerOptions::New(
+  auto picker_options = blink::mojom::FilePickerOptions::New(
+      blink::mojom::TypeSpecificFilePickerOptionsUnion::
+          NewDirectoryPickerOptions(
+              blink::mojom::DirectoryPickerOptions::New()),
       /*starting_directory_id=*/std::string(),
-      blink::mojom::WellKnownDirectory::kDefault,
-      /*starting_directory_token=*/mojo::NullRemote());
+      blink::mojom::FilePickerStartInOptionsUnionPtr());
 
   base::RunLoop loop;
   manager_remote->ChooseEntries(
-      blink::mojom::FilePickerOptions::NewDirectoryPickerOptions(
-          std::move(directory_picker_options)),
-      std::move(common_file_picker_options),
+      std::move(picker_options),
       base::BindLambdaForTesting(
           [&](blink::mojom::FileSystemAccessErrorPtr result,
               std::vector<blink::mojom::FileSystemAccessEntryPtr> entries) {
@@ -1685,19 +1682,17 @@ TEST_F(FileSystemAccessManagerImplTest, ChooseEntries_InvalidStartInID) {
   manager_->BindReceiver(binding_context,
                          manager_remote.BindNewPipeAndPassReceiver());
 
-  // Specifying a `starting_directory_id` with invalid characters should trigger
+  // Specifying a `id` with invalid characters should trigger
   // a bad message callback.
-  auto directory_picker_options = blink::mojom::DirectoryPickerOptions::New();
-  auto common_file_picker_options = blink::mojom::CommonFilePickerOptions::New(
+  auto picker_options = blink::mojom::FilePickerOptions::New(
+      blink::mojom::TypeSpecificFilePickerOptionsUnion::
+          NewDirectoryPickerOptions(
+              blink::mojom::DirectoryPickerOptions::New()),
       /*starting_directory_id=*/"inv*l!d <hars",
-      blink::mojom::WellKnownDirectory::kDefault,
-      /*starting_directory_token=*/mojo::NullRemote());
+      blink::mojom::FilePickerStartInOptionsUnionPtr());
 
   mojo::test::BadMessageObserver bad_message_observer;
-  manager_remote->ChooseEntries(
-      blink::mojom::FilePickerOptions::NewDirectoryPickerOptions(
-          std::move(directory_picker_options)),
-      std::move(common_file_picker_options), base::DoNothing());
+  manager_remote->ChooseEntries(std::move(picker_options), base::DoNothing());
   EXPECT_EQ("Invalid starting directory ID in browser",
             bad_message_observer.WaitForBadMessage());
 }

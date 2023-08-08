@@ -128,7 +128,6 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
   // blink::mojom::FileSystemAccessManager:
   void GetSandboxedFileSystem(GetSandboxedFileSystemCallback callback) override;
   void ChooseEntries(blink::mojom::FilePickerOptionsPtr options,
-                     blink::mojom::CommonFilePickerOptionsPtr common_options,
                      ChooseEntriesCallback callback) override;
   void GetFileHandleFromToken(
       mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken> token,
@@ -425,16 +424,13 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
   void ResolveDefaultDirectory(
       const BindingContext& context,
       blink::mojom::FilePickerOptionsPtr options,
-      blink::mojom::CommonFilePickerOptionsPtr common_options,
       ChooseEntriesCallback callback,
-      FileSystemAccessTransferTokenImpl* resolved_starting_directory_token);
-  void SetDefaultPathAndShowPicker(
-      const BindingContext& context,
-      blink::mojom::FilePickerOptionsPtr options,
-      blink::mojom::CommonFilePickerOptionsPtr common_options,
-      base::FilePath default_directory,
-      ChooseEntriesCallback callback,
-      bool default_directory_exists);
+      FileSystemAccessTransferTokenImpl* resolved_directory_token);
+  void SetDefaultPathAndShowPicker(const BindingContext& context,
+                                   blink::mojom::FilePickerOptionsPtr options,
+                                   base::FilePath default_directory,
+                                   ChooseEntriesCallback callback,
+                                   bool default_directory_exists);
   void DidOpenSandboxedFileSystem(const BindingContext& binding_context,
                                   GetSandboxedFileSystemCallback callback,
                                   const storage::FileSystemURL& root,

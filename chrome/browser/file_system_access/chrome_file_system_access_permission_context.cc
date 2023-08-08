@@ -1585,9 +1585,6 @@ ChromeFileSystemAccessPermissionContext::GetWellKnownDirectoryPath(
 
   int key = base::PATH_START;
   switch (directory) {
-    case blink::mojom::WellKnownDirectory::kDefault:
-      key = chrome::DIR_USER_DOCUMENTS;
-      break;
     case blink::mojom::WellKnownDirectory::kDirDesktop:
       key = base::DIR_USER_DESKTOP;
       break;
@@ -1620,9 +1617,10 @@ std::u16string ChromeFileSystemAccessPermissionContext::GetPickerTitle(
   // picker, as well. Returning the empty string will fall back to the platform
   // default for the given picker type.
   std::u16string title;
-  if (options->is_directory_picker_options()) {
+  if (options->type_specific_options->is_directory_picker_options()) {
     title = l10n_util::GetStringUTF16(
-        options->get_directory_picker_options()->request_writable
+        options->type_specific_options->get_directory_picker_options()
+                ->request_writable
             ? IDS_FILE_SYSTEM_ACCESS_CHOOSER_OPEN_WRITABLE_DIRECTORY_TITLE
             : IDS_FILE_SYSTEM_ACCESS_CHOOSER_OPEN_READABLE_DIRECTORY_TITLE);
   }

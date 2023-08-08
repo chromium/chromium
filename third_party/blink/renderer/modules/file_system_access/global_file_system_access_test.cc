@@ -62,7 +62,6 @@ class MockFileSystemAccessManager
       GetSandboxedFileSystemCallback callback) override {}
 
   void ChooseEntries(mojom::blink::FilePickerOptionsPtr options,
-                     mojom::blink::CommonFilePickerOptionsPtr common_options,
                      ChooseEntriesCallback callback) override {
     if (choose_entries_response_callback_) {
       std::move(choose_entries_response_callback_).Run(std::move(callback));
