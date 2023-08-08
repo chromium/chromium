@@ -13,6 +13,7 @@
 #include "base/format_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "base/uuid.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/autofill_type.h"
@@ -1633,6 +1634,28 @@ TEST(AutofillProfileTest, SetMetadata_NotMatchingId) {
   EXPECT_NE(server_metadata.has_converted, server_profile.has_converted());
   EXPECT_NE(server_metadata.use_count, server_profile.use_count());
   EXPECT_NE(server_metadata.use_date, server_profile.use_date());
+}
+
+// Tests that `RecordUseAndLog()` only increments the use count if at least 60
+// seconds have passed.
+TEST(AutofillProfileTest, RecordUseAndLog_Delay) {
+  TestAutofillClock clock;
+  AutofillProfile profile;
+  // AutofillProfile is initialized with a `use_count()` of 1 and a last used
+  // date of `AutofillClock::Now()`.
+  ASSERT_EQ(profile.use_count(), 1u);
+  // 60 seconds pass. `RecordAndLogUse()` increments the use count.
+  clock.Advance(base::Seconds(60));
+  profile.RecordAndLogUse();
+  EXPECT_EQ(profile.use_count(), 2u);
+  // Not enough time passes.
+  clock.Advance(base::Seconds(5));
+  profile.RecordAndLogUse();
+  EXPECT_EQ(profile.use_count(), 2u);
+  // Test that waiting times are not added up. 5 + 55 seconds don't suffice.
+  clock.Advance(base::Seconds(55));
+  profile.RecordAndLogUse();
+  EXPECT_EQ(profile.use_count(), 2u);
 }
 
 // Tests that the |HasStructuredData| returns whether the profile has structured

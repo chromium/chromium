@@ -888,10 +888,20 @@ void AutofillProfile::GenerateServerProfileIdentifier() {
 }
 
 void AutofillProfile::RecordAndLogUse() {
+  const base::Time now = AutofillClock::Now();
+  const base::TimeDelta time_since_last_used = now - use_date();
   set_previous_use_date(use_date());
-  UMA_HISTOGRAM_COUNTS_1000("Autofill.DaysSinceLastUse.Profile",
-                            (AutofillClock::Now() - use_date()).InDays());
-  RecordUse();
+  set_use_date(now);
+  // Ensure that use counts are not skewed by multiple filling operations of the
+  // form. This is especially important for forms fully annotated with
+  // autocomplete=unrecognized. For such forms, keyboard accessory chips only
+  // fill a single field at a time as per
+  // `AutofillSuggestionsForAutocompleteUnrecognizedFieldsOnMobile`.
+  if (time_since_last_used.InSeconds() >= 60) {
+    set_use_count(use_count() + 1);
+    UMA_HISTOGRAM_COUNTS_1000("Autofill.DaysSinceLastUse.Profile",
+                              time_since_last_used.InDays());
+  }
   LogVerificationStatuses();
 }
 

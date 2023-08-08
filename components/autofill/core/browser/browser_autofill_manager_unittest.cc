@@ -3702,7 +3702,8 @@ TEST_F(BrowserAutofillManagerTest, FillAddressForm) {
   AutofillProfile* profile = personal_data().GetProfileByGUID(MakeGuid(1));
   ASSERT_TRUE(profile);
   EXPECT_EQ(1U, profile->use_count());
-  EXPECT_NE(base::Time(), profile->use_date());
+  const base::Time last_used_date = AutofillClock::Now() - base::Hours(1);
+  profile->set_use_date(last_used_date);
 
   FormData response_data;
   FillAutofillFormDataAndSaveResults(form, form.fields[0], MakeGuid(1),
@@ -3710,7 +3711,7 @@ TEST_F(BrowserAutofillManagerTest, FillAddressForm) {
   ExpectFilledAddressFormElvis(response_data, false);
 
   EXPECT_EQ(2U, profile->use_count());
-  EXPECT_NE(base::Time(), profile->use_date());
+  EXPECT_LT(last_used_date, profile->use_date());
 }
 
 // Tests that `ProfileTokenQuality` is correctly integrated into
