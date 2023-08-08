@@ -14,25 +14,25 @@ const char kValidUrl[] = "http://www.example.com";
 const char kInvalidUrl[] = "invalid.url";
 
 TEST(SessionSyncServiceFactoryTest, ShouldSyncURL) {
-  EXPECT_TRUE(
-      SessionSyncServiceFactory::ShouldSyncURLForTesting(GURL(kValidUrl)));
-  EXPECT_TRUE(SessionSyncServiceFactory::ShouldSyncURLForTesting(
+  EXPECT_TRUE(SessionSyncServiceFactory::ShouldSyncURLForTestingAndMetrics(
+      GURL(kValidUrl)));
+  EXPECT_TRUE(SessionSyncServiceFactory::ShouldSyncURLForTestingAndMetrics(
       GURL("other://anything")));
-  EXPECT_TRUE(SessionSyncServiceFactory::ShouldSyncURLForTesting(
+  EXPECT_TRUE(SessionSyncServiceFactory::ShouldSyncURLForTestingAndMetrics(
       GURL("chrome-other://anything")));
 
-  EXPECT_FALSE(
-      SessionSyncServiceFactory::ShouldSyncURLForTesting(GURL(kInvalidUrl)));
-  EXPECT_FALSE(SessionSyncServiceFactory::ShouldSyncURLForTesting(
+  EXPECT_FALSE(SessionSyncServiceFactory::ShouldSyncURLForTestingAndMetrics(
+      GURL(kInvalidUrl)));
+  EXPECT_FALSE(SessionSyncServiceFactory::ShouldSyncURLForTestingAndMetrics(
       GURL("file://anything")));
-  EXPECT_FALSE(SessionSyncServiceFactory::ShouldSyncURLForTesting(
+  EXPECT_FALSE(SessionSyncServiceFactory::ShouldSyncURLForTestingAndMetrics(
       GURL(chrome::kChromeUIVersionURL)));
-  EXPECT_FALSE(SessionSyncServiceFactory::ShouldSyncURLForTesting(
+  EXPECT_FALSE(SessionSyncServiceFactory::ShouldSyncURLForTestingAndMetrics(
       GURL("chrome-native://anything")));
-  EXPECT_FALSE(SessionSyncServiceFactory::ShouldSyncURLForTesting(
+  EXPECT_FALSE(SessionSyncServiceFactory::ShouldSyncURLForTestingAndMetrics(
       GURL("chrome-distiller://anything")));
 
-  EXPECT_FALSE(SessionSyncServiceFactory::ShouldSyncURLForTesting(
+  EXPECT_FALSE(SessionSyncServiceFactory::ShouldSyncURLForTestingAndMetrics(
       GURL("chrome-untrusted://anything")));
 }
 

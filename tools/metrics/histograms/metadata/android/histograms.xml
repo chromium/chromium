@@ -3661,6 +3661,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.Sync.ActualSyncedTabCountPercentage"
+    units="% of tab count" expires_after="2024-01-30">
+  <owner>bjfong@google.com</owner>
+  <owner>ckitagawa@chromium.org</owner>
+  <summary>
+    Records the percentage of sync-eligible tabs that are in local sync storage.
+    This is recorded after session restore is completed and local data is
+    reconciled.
+  </summary>
+</histogram>
+
 <histogram name="Android.Tab.CreateNewTabDuration.{TabLaunchType}" units="ms"
     expires_after="2023-12-10">
   <owner>sreejakshetty@chromium.org</owner>

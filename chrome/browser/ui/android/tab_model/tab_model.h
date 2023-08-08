@@ -227,6 +227,10 @@ class TabModel {
   // unique within the current session, and is not guaranteed to be unique
   // across sessions.
   SessionID session_id_;
+
+  // Records metrics about which percentage of syncable tabs are actually
+  // synced.
+  void RecordActualSyncedTabsHistogram();
 };
 
 #endif  // CHROME_BROWSER_UI_ANDROID_TAB_MODEL_TAB_MODEL_H_
