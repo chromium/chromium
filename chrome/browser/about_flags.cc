@@ -9198,11 +9198,14 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kHttpsUpgradesDescription, kOsDesktop | kOsAndroid,
      FEATURE_VALUE_TYPE(features::kHttpsUpgrades)},
 
-    {"omnibox-updated-connection-security-indicators",
-     flag_descriptions::kOmniboxUpdatedConnectionSecurityIndicatorsName,
-     flag_descriptions::kOmniboxUpdatedConnectionSecurityIndicatorsDescription,
-     kOsDesktop | kOsAndroid,
+#if BUILDFLAG(IS_ANDROID)
+    {"omnibox-2023-refresh-connection-security-indicators",
+     flag_descriptions::kOmnibox2023RefreshConnectionSecurityIndicatorsName,
+     flag_descriptions::
+         kOmnibox2023RefreshConnectionSecurityIndicatorsDescription,
+     kOsAndroid,
      FEATURE_VALUE_TYPE(omnibox::kUpdatedConnectionSecurityIndicators)},
+#endif  // BUILDFLAG(IS_ANDROID)
 
     {"enable-drdc", flag_descriptions::kEnableDrDcName,
      flag_descriptions::kEnableDrDcDescription, kOsAll,

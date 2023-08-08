@@ -466,7 +466,9 @@ BASE_FEATURE(kOmniboxModernizeVisualUpdate,
              "OmniboxModernizeVisualUpdate",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Experiment to introduce new security indicators for HTTPS.
+// Android only flag that controls whether the new security indicator should be
+// used, on non-Android platforms this is controlled through the
+// ChromeRefresh2023 flag.
 BASE_FEATURE(kUpdatedConnectionSecurityIndicators,
              "OmniboxUpdatedConnectionSecurityIndicators",
              base::FEATURE_DISABLED_BY_DEFAULT);

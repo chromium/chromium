@@ -121,7 +121,9 @@ BASE_DECLARE_FEATURE(kUseExistingAutocompleteClient);
 // popup.
 BASE_DECLARE_FEATURE(kOmniboxModernizeVisualUpdate);
 
-// Experiment to introduce new security indicators for HTTPS.
+// Android only flag that controls whether the new security indicator should be
+// used, on non-Android platforms this is controlled through the
+// ChromeRefresh2023 flag.
 BASE_DECLARE_FEATURE(kUpdatedConnectionSecurityIndicators);
 
 // Navigation experiments.

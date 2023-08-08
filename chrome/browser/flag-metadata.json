@@ -5814,6 +5814,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "omnibox-2023-refresh-connection-security-indicators",
+    "owners": [ "carlosil", "chrome-trusty-transport@google.com" ],
+    "expiry_milestone": 125
+  },
+  {
     "name": "omnibox-actions-in-suggest",
     "owners": [ "ender", "chrome-mobile-search@google.com" ],
     "expiry_milestone": 130

@@ -2520,10 +2520,14 @@ const char kOmniboxUIMaxAutocompleteMatchesDescription[] =
     "Changes the maximum number of autocomplete matches displayed in the "
     "Omnibox UI.";
 
-const char kOmniboxUpdatedConnectionSecurityIndicatorsName[] =
-    "Omnibox Updated connection security indicators";
-const char kOmniboxUpdatedConnectionSecurityIndicatorsDescription[] =
-    "Use new connection security indicators for https pages in the omnibox.";
+#if BUILDFLAG(IS_ANDROID)
+const char kOmnibox2023RefreshConnectionSecurityIndicatorsName[] =
+    "Omnibox 2023 refresh connection security indicators";
+const char kOmnibox2023RefreshConnectionSecurityIndicatorsDescription[] =
+    "Use new connection security indicators for https pages in the omnibox. "
+    "When enabled, the icon shown in the onmibox for secure pages is the same "
+    "as shown on desktop when the Chrome 2023 refresh flag is active.";
+#endif  // BUILDFLAG(IS_ANDROID)
 
 const char kWebUIOmniboxPopupName[] = "WebUI Omnibox Popup";
 const char kWebUIOmniboxPopupDescription[] =
