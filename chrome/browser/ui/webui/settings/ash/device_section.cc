@@ -1878,6 +1878,8 @@ void DeviceSection::AddCustomizeButtonsPageStrings(
   static constexpr webui::LocalizedString kCustomizeButtonsPageStrings[] = {
       {"customizeMouseButtonsTitle",
        IDS_SETTINGS_CUSTOMIZE_MOUSE_BUTTONS_TITLE},
+      {"keyCombinationOptionLabel", IDS_SETTINGS_KEY_COMBINATION_OPTION_LABEL},
+      {"noRemappingOptionLabel", IDS_SETTINGS_NO_REMAPPING_OPTION_LABEL},
   };
   html_source->AddLocalizedStrings(kCustomizeButtonsPageStrings);
 }

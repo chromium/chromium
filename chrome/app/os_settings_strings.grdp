@@ -2712,6 +2712,12 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_CUSTOMIZE_MOUSE_BUTTONS_TITLE" translateable="false" desc="Title of Customize mouse buttons page">
     Customize mouse buttons
   </message>
+  <message name="IDS_SETTINGS_KEY_COMBINATION_OPTION_LABEL" translateable="false" desc="Label of key combination option in the button remapping action dropdown menu.">
+    Key combination
+  </message>
+  <message name="IDS_SETTINGS_NO_REMAPPING_OPTION_LABEL" translateable="false" desc="Label of no remapping option in the button remapping action dropdown menu.">
+    None
+  </message>
 
   <!-- Bluetooth page (OS settings) -->
   <message name="IDS_SETTINGS_BLUETOOTH_CONNECTED" desc="In Bluetooth device list, this label is shown below a device which is already connected.">

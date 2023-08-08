@@ -1,9 +1,10 @@
-<style include="settings-shared input-device-settings-shared">
+<style include="md-select settings-shared input-device-settings-shared">
   #header {
     display: flex;
   }
 
   .settings-box {
+    height: 64px;
     justify-content: space-between;
     padding-inline-start: 0;
   }
@@ -11,15 +12,31 @@
   :host([remove-top-border]) .settings-box {
     border-top: none;
   }
+
+  select {
+    padding-inline-end: 12px;
+    padding-inline-start: 16px;
+  }
 </style>
 <div class="settings-box">
   <div id="buttonLabelContainer" class="start button-container">
     <div id="buttonLabel"
         aria-hidden="true">[[buttonRemapping_.name]]</div>
   </div>
-  <settings-dropdown-menu id="buttonDropdown"
-      label="[[buttonLabel]]"
-      pref="{{fakePref_}}"
-      menu-options="[[buttonMapTargets_]]">
-  </settings-dropdown-menu>
+  <div id="dropdownContainer" class="text-field-container">
+    <select id="remappingActionDropdown" class="md-select">
+      <option id="noRemappingOption" value="[[noRemappingOptionValue_]]">
+        $i18n{noRemappingOptionLabel}
+      </option>
+      <template is="dom-repeat" items="[[buttonMapTargets_]]"
+          as="buttonMapping">
+        <option value$="[[buttonMapping.value]]">
+          [[buttonMapping.name]]
+        </option>
+      </template>
+      <option id="keyCombination" value="[[keyCombinationOptionValue_]]">
+        $i18n{keyCombinationOptionLabel}
+      </option>
+    </select>
+    </div>
 </div>

@@ -6,7 +6,7 @@ import 'chrome://os-settings/lazy_load.js';
 import 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 
 import {CustomizeButtonRowElement} from 'chrome://os-settings/lazy_load.js';
-import {fakeGraphicsTablets, SettingsDropdownMenuElement} from 'chrome://os-settings/os_settings.js';
+import {fakeGraphicsTablets} from 'chrome://os-settings/os_settings.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -34,12 +34,11 @@ suite('<customize-button-row>', () => {
   }
 
   function getSelectedValue(): string {
-    const dropdown: SettingsDropdownMenuElement|null =
-        customizeButtonRow.shadowRoot!.querySelector('#buttonDropdown');
-    const dropdownMenu: HTMLSelectElement|null =
-        dropdown!.shadowRoot!.querySelector('#dropdownMenu');
-    assertTrue(!!dropdownMenu);
-    return dropdownMenu!.value;
+    const dropdown: HTMLSelectElement|null =
+        customizeButtonRow.shadowRoot!.querySelector(
+            '#remappingActionDropdown');
+    assertTrue(!!dropdown);
+    return dropdown!.value;
   }
 
   test('Initialize customize button row', async () => {

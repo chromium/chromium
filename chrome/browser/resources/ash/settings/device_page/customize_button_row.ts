@@ -10,6 +10,7 @@
 
 import 'chrome://resources/cr_components/settings_prefs/prefs.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
+import 'chrome://resources/cr_elements/md_select.css.js';
 import '../settings_shared.css.js';
 import '/shared/settings/controls/settings_dropdown_menu.js';
 import '../os_settings_icons.html.js';
@@ -17,10 +18,15 @@ import '../os_settings_icons.html.js';
 import {DropdownMenuOptionList} from '/shared/settings/controls/settings_dropdown_menu.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {cast} from '../assert_extras.js';
 
 import {getTemplate} from './customize_button_row.html.js';
 import {ButtonRemapping} from './input_device_settings_types.js';
+
+const NO_REMAPPING_OPTION_LABEL = 'none';
+const KEY_COMBINATION_OPTION_LABEL = 'key combination';
 
 const CustomizeButtonRowElementBase = I18nMixin(PolymerElement);
 
@@ -66,6 +72,24 @@ export class CustomizeButtonRowElement extends CustomizeButtonRowElementBase {
         type: Boolean,
         reflectToAttribute: true,
       },
+
+      /**
+       * The value of the "None" item.
+       */
+      noRemappingOptionValue_: {
+        type: String,
+        value: NO_REMAPPING_OPTION_LABEL,
+        readOnly: true,
+      },
+
+      /**
+       * The value of the "Key combination" item.
+       */
+      keyCombinationOptionValue_: {
+        type: String,
+        value: KEY_COMBINATION_OPTION_LABEL,
+        readOnly: true,
+      },
     };
   }
 
@@ -81,12 +105,8 @@ export class CustomizeButtonRowElement extends CustomizeButtonRowElementBase {
   private buttonRemapping_: ButtonRemapping;
   private buttonMapTargets_: DropdownMenuOptionList;
   private fakePref_: chrome.settingsPrivate.PrefObject;
-
-  override ready() {
-    super.ready();
-
-    this.setUpButtonMapTargets_();
-  }
+  private noRemappingOptionValue_: string;
+  private keyCombinationOptionValue_: string;
 
   /**
    * Populate dropdown menu choices.
@@ -95,10 +115,6 @@ export class CustomizeButtonRowElement extends CustomizeButtonRowElementBase {
     // TODO(yyhyyh@): Get buttonMapTargets_ from provider in customization
     // pages, and pass it as a value instead of creating fake data here.
     this.buttonMapTargets_ = [
-      {
-        value: 'None',
-        name: 'None',
-      },
       {
         value: '0',
         name: 'Brightness Down',
@@ -127,15 +143,30 @@ export class CustomizeButtonRowElement extends CustomizeButtonRowElementBase {
       return;
     }
     this.buttonRemapping_ = this.buttonRemappingList[this.remappingIndex];
+    this.setUpButtonMapTargets_();
 
     // For accelerator actions, the remappingAction.action value is number.
     // TODO(yyhyyh@): Add the case when remappingAction is none or Keyboard
     // events.
     const action = this.buttonRemapping_.remappingAction!.action;
     if (action !== undefined && !isNaN(action)) {
-      this.set(
-          'fakePref_.value',
-          this.buttonRemapping_.remappingAction!.action!.toString());
+      const originalAction =
+          this.buttonRemapping_.remappingAction!.action!.toString();
+      const dropdown = cast(
+          this.shadowRoot!.querySelector('#remappingActionDropdown'),
+          HTMLSelectElement);
+
+      // Initialize fakePref with the tablet settings mapping.
+      this.set('fakePref_.value', originalAction);
+
+      // Initialize dropdown menu selection to match the tablet settings.
+      const option = this.buttonMapTargets_.find((dropdownItem) => {
+        return dropdownItem.value === originalAction;
+      });
+
+      microTask.run(() => {
+        dropdown.value = option === undefined ? 'None' : originalAction;
+      });
     }
   }
 
