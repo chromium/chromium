@@ -46,9 +46,7 @@ class CommonMenuModel : public ui::MenuModel {
   ~CommonMenuModel() override {}
 
  protected:
-  // ui::MenuModel implementation.
-  bool HasIcons() const override { return false; }
-
+  // ui::MenuModel:
   bool IsItemDynamicAt(size_t index) const override { return false; }
 
   bool GetAcceleratorAt(size_t index,

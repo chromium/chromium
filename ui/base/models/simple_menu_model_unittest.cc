@@ -231,30 +231,30 @@ TEST(SimpleMenuModelTest, HasIconsViaDelegate) {
   DelegateBase delegate;
   SimpleMenuModel simple_menu_model(&delegate);
   simple_menu_model.AddItem(/*command_id*/ 10, u"menu item");
-  EXPECT_FALSE(simple_menu_model.HasIcons());
+  EXPECT_TRUE(simple_menu_model.GetIconAt(0).IsEmpty());
 
   simple_menu_model.AddItem(/*command_id*/ 11, u"menu item");
   delegate.set_icon_on_item(11);
-  EXPECT_TRUE(simple_menu_model.HasIcons());
+  EXPECT_FALSE(simple_menu_model.GetIconAt(1).IsEmpty());
 }
 
 TEST(SimpleMenuModelTest, HasIconsViaAddItem) {
   DelegateBase delegate;
   SimpleMenuModel simple_menu_model(&delegate);
   simple_menu_model.AddItem(/*command_id*/ 10, u"menu item");
-  EXPECT_FALSE(simple_menu_model.HasIcons());
+  EXPECT_TRUE(simple_menu_model.GetIconAt(0).IsEmpty());
 
   simple_menu_model.AddItemWithIcon(
       /*command_id*/ 11, u"menu item",
       ui::ImageModel::FromImage(gfx::test::CreateImage(16, 16)));
-  EXPECT_TRUE(simple_menu_model.HasIcons());
+  EXPECT_FALSE(simple_menu_model.GetIconAt(1).IsEmpty());
 }
 
 TEST(SimpleMenuModelTest, HasIconsViaVectorIcon) {
   DelegateBase delegate;
   SimpleMenuModel simple_menu_model(&delegate);
   simple_menu_model.AddItem(/*command_id*/ 10, u"menu item");
-  EXPECT_FALSE(simple_menu_model.HasIcons());
+  EXPECT_TRUE(simple_menu_model.GetIconAt(0).IsEmpty());
 
   gfx::PathElement path[] = {gfx::CommandType::CIRCLE, 24, 18, 5};
   gfx::VectorIconRep rep[] = {{path, 4}};
@@ -263,7 +263,7 @@ TEST(SimpleMenuModelTest, HasIconsViaVectorIcon) {
   simple_menu_model.AddItemWithIcon(
       /*command_id*/ 11, u"menu item",
       ui::ImageModel::FromVectorIcon(circle_icon, ui::kColorMenuIcon, 16));
-  EXPECT_TRUE(simple_menu_model.HasIcons());
+  EXPECT_FALSE(simple_menu_model.GetIconAt(1).IsEmpty());
 }
 
 TEST(SimpleMenuModelTest, InheritsSubMenuAlert) {

@@ -117,26 +117,27 @@ void SubmenuView::UpdateMenuPartSizes() {
              : config.arrow_to_edge_padding);
   }
 
-  const bool has_checks_or_radios = base::ranges::any_of(
-      menu_items,
-      [](MenuItemView::Type type) {
-        return type == MenuItemView::Type::kCheckbox ||
-               type == MenuItemView::Type::kRadio;
-      },
-      &MenuItemView::GetType);
-  icon_area_width_ = has_checks_or_radios ? kMenuCheckSize : 0;
+  const auto is_check_or_radio = [](const auto* item) {
+    const auto type = item->GetType();
+    return type == MenuItemView::Type::kCheckbox ||
+           type == MenuItemView::Type::kRadio;
+  };
+  icon_area_width_ = min_icon_height_ =
+      base::ranges::any_of(menu_items, is_check_or_radio) ? kMenuCheckSize : 0;
   int max_icon_width = 0;
-  if (parent_menu_item_->GetRootMenuItem()->has_icons() &&
-      !menu_items.empty()) {
+  if (!menu_items.empty()) {
     std::vector<int> widths(menu_items.size());
     base::ranges::transform(
         menu_items, widths.begin(), [&](const MenuItemView* item) {
-          // If this item has a radio or checkbox, the icon will not
-          // affect alignment of other items.
-          return (config.icons_in_label ||
-                  (item->GetType() != MenuItemView::Type::kCheckbox &&
-                   item->GetType() != MenuItemView::Type::kRadio))
-                     ? item->GetIconPreferredWidth()
+          const auto icon_size = item->GetIconPreferredSize();
+          if (icon_size.IsEmpty()) {
+            return 0;
+          }
+          min_icon_height_ = std::max(min_icon_height_, kMenuCheckSize);
+          // If this item has a radio or checkbox, an additional icon will not
+          // affect horizontal alignment of other items.
+          return (config.icons_in_label || !is_check_or_radio(item))
+                     ? icon_size.width()
                      : 0;
         });
     max_icon_width = base::ranges::max(widths);

@@ -395,15 +395,6 @@ absl::optional<size_t> SimpleMenuModel::GetIndexOfCommandId(
 ////////////////////////////////////////////////////////////////////////////////
 // SimpleMenuModel, MenuModel implementation:
 
-bool SimpleMenuModel::HasIcons() const {
-  for (size_t i = 0; i < GetItemCount(); ++i) {
-    if (!GetIconAt(i).IsEmpty())
-      return true;
-  }
-
-  return false;
-}
-
 size_t SimpleMenuModel::GetItemCount() const {
   return items_.size();
 }

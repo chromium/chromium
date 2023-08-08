@@ -66,10 +66,6 @@ BackForwardMenuModel::BackForwardMenuModel(Browser* browser,
 
 BackForwardMenuModel::~BackForwardMenuModel() = default;
 
-bool BackForwardMenuModel::HasIcons() const {
-  return true;
-}
-
 size_t BackForwardMenuModel::GetItemCount() const {
   size_t items = GetHistoryItemCount();
   if (items == 0)

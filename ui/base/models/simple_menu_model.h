@@ -202,7 +202,6 @@ class COMPONENT_EXPORT(UI_BASE) SimpleMenuModel : public MenuModel {
   absl::optional<size_t> GetIndexOfCommandId(int command_id) const;
 
   // Overridden from MenuModel:
-  bool HasIcons() const override;
   size_t GetItemCount() const override;
   ItemType GetTypeAt(size_t index) const override;
   ui::MenuSeparatorType GetSeparatorTypeAt(size_t index) const override;

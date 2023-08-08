@@ -111,7 +111,6 @@
 #include "ui/base/ui_base_switches.h"
 #include "ui/base/win/hidden_window.h"
 #include "ui/base/win/message_box_win.h"
-#include "ui/display/win/dpi.h"
 #include "ui/gfx/switches.h"
 #include "ui/gfx/system_fonts_win.h"
 #include "ui/gfx/win/crash_id_helper.h"
@@ -137,13 +136,6 @@ void InitializeWindowProcExceptions() {
 void DumpHungRendererProcessImpl(const base::Process& renderer) {
   // Use a distinguishing process type for these reports.
   crash_reporter::DumpHungProcessWithPtype(renderer, "hung-renderer");
-}
-
-// gfx::Font callbacks
-void AdjustUIFont(gfx::win::FontAdjustment* font_adjustment) {
-  l10n_util::NeedOverrideDefaultUIFont(&font_adjustment->font_family_override,
-                                       &font_adjustment->font_scale);
-  font_adjustment->font_scale *= display::win::GetAccessibilityFontScale();
 }
 
 int GetMinimumFontSize() {
@@ -451,7 +443,7 @@ void ChromeBrowserMainPartsWin::ToolkitInitialized() {
   DCHECK_NE(base::PlatformThread::CurrentId(), base::kInvalidThreadId);
   gfx::CrashIdHelper::RegisterMainThread(base::PlatformThread::CurrentId());
   ChromeBrowserMainParts::ToolkitInitialized();
-  gfx::win::SetAdjustFontCallback(&AdjustUIFont);
+  gfx::win::SetAdjustFontCallback(&l10n_util::AdjustUiFont);
   gfx::win::SetGetMinimumFontSizeCallback(&GetMinimumFontSize);
 }
 

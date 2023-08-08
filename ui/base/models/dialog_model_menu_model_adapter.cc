@@ -28,18 +28,6 @@ void DialogModelMenuModelAdapter::OnFieldChanged(DialogModelField* field) {
   NOTREACHED_NORETURN();
 }
 
-bool DialogModelMenuModelAdapter::HasIcons() const {
-  const auto& fields = model_->fields(GetPassKey());
-  for (const auto& field : fields) {
-    if (field->type(GetPassKey()) != DialogModelField::kMenuItem)
-      continue;
-    if (!field->AsMenuItem(GetPassKey())->icon(GetPassKey()).IsEmpty())
-      return true;
-  }
-
-  return false;
-}
-
 size_t DialogModelMenuModelAdapter::GetItemCount() const {
   return model_->fields(GetPassKey()).size();
 }

@@ -570,7 +570,6 @@ MenuItemView* BookmarkMenuDelegate::CreateMenu(const BookmarkNode* parent,
   MenuItemView* menu = new MenuItemView(real_delegate_);
   menu->SetCommand(GetAndIncrementNextMenuID());
   AddMenuToMaps(menu, parent);
-  menu->set_has_icons(true);
   bool show_permanent = show_options == SHOW_PERMANENT_FOLDERS;
   if (show_permanent && parent == GetBookmarkModel()->bookmark_bar_node())
     BuildMenuForManagedNode(menu);

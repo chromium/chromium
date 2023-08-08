@@ -543,8 +543,8 @@ void MenuItemView::SetIconView(std::unique_ptr<ImageView> icon_view) {
   SchedulePaint();
 }
 
-int MenuItemView::GetIconPreferredWidth() const {
-  return icon_view_ ? icon_view_->GetPreferredSize().width() : 0;
+gfx::Size MenuItemView::GetIconPreferredSize() const {
+  return icon_view_ ? icon_view_->GetPreferredSize() : gfx::Size();
 }
 
 void MenuItemView::OnDropOrSelectionStatusMayHaveChanged() {
@@ -563,18 +563,14 @@ gfx::Size MenuItemView::CalculatePreferredSize() const {
 
 int MenuItemView::GetHeightForWidth(int width) const {
   // If this isn't a container, we can just use the preferred size's height.
-  if (!IsContainer())
+  if (!IsContainer()) {
     return GetPreferredSize().height();
-
-  const gfx::Insets margins = GetContainerMargins();
-  int height = children().front()->GetHeightForWidth(width - margins.width());
-  if (!icon_view_ && GetRootMenuItem()->has_icons_) {
-    height = std::max(height, kMenuCheckSize);
   }
 
-  height += margins.height();
-
-  return height;
+  const gfx::Insets margins = GetContainerMargins();
+  return margins.height() +
+         ApplyMinIconHeight(
+             children().front()->GetHeightForWidth(width - margins.width()));
 }
 
 gfx::Rect MenuItemView::GetSubmenuAreaOfActionableSubmenu() const {
@@ -1228,7 +1224,8 @@ MenuItemView::MenuItemDimensions MenuItemView::CalculateDimensions() const {
   // considered.
   if (IsContainer()) {
     const gfx::Insets margins = GetContainerMargins();
-    dimensions.height += margins.height();
+    dimensions.height =
+        ApplyMinIconHeight(dimensions.height) + margins.height();
     dimensions.children_width += margins.width();
     ApplyMinimumDimensions(&dimensions);
     return dimensions;
@@ -1266,13 +1263,8 @@ MenuItemView::MenuItemDimensions MenuItemView::CalculateDimensions() const {
     return dimensions;
   }
 
-  // Adjust item content height if menu has both items with and without icons.
-  // This way all menu items will have the same height.
-  if (!icon_view_ && GetRootMenuItem()->has_icons_) {
-    dimensions.height = std::max(dimensions.height, kMenuCheckSize);
-  }
-  const int vertical_margin = GetVerticalMargin();
-  dimensions.height += vertical_margin * 2;
+  const int vertical_margins = GetVerticalMargin() * 2;
+  dimensions.height = ApplyMinIconHeight(dimensions.height) + vertical_margins;
 
   // Determine the length of the right-side text.
   std::u16string minor_text = GetMinorText();
@@ -1299,7 +1291,7 @@ MenuItemView::MenuItemDimensions MenuItemView::CalculateDimensions() const {
   int label_text_height = secondary_title().empty() ? font_list.GetHeight()
                                                     : font_list.GetHeight() * 2;
   dimensions.height =
-      std::max({dimensions.height, label_text_height + vertical_margin * 2,
+      std::max({dimensions.height, label_text_height + vertical_margins,
                 config.item_min_height});
 
   ApplyMinimumDimensions(&dimensions);
@@ -1321,6 +1313,14 @@ void MenuItemView::ApplyMinimumDimensions(MenuItemDimensions* dims) const {
   dims->height = std::max(dims->height,
                           IsContainer() ? config.minimum_container_item_height
                                         : config.minimum_text_item_height);
+}
+
+int MenuItemView::ApplyMinIconHeight(int height) const {
+  // Separators have their own config values for minimum height, and don't look
+  // odd if they happen to be "shorter" than normal items, so exclude them.
+  return type_ == Type::kSeparator
+             ? height
+             : std::max(height, GetContainingSubmenu()->min_icon_height());
 }
 
 int MenuItemView::GetLabelStartForThisItem() const {

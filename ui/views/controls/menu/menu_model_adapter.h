@@ -8,6 +8,7 @@
 #include <map>
 
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/models/menu_model_delegate.h"
 #include "ui/views/controls/menu/menu_delegate.h"
@@ -28,9 +29,9 @@ class VIEWS_EXPORT MenuModelAdapter : public MenuDelegate,
   // it exists for the lifetime of the adapter. |this| will become the new
   // MenuModelDelegate of |menu_model| so that subsequent changes to it get
   // reflected in the created MenuItemView.
-  explicit MenuModelAdapter(ui::MenuModel* menu_model);
-  MenuModelAdapter(ui::MenuModel* menu_model,
-                   base::RepeatingClosure on_menu_closed_callback);
+  explicit MenuModelAdapter(
+      ui::MenuModel* menu_model,
+      base::RepeatingClosure on_menu_closed_callback = base::NullCallback());
 
   MenuModelAdapter(const MenuModelAdapter&) = delete;
   MenuModelAdapter& operator=(const MenuModelAdapter&) = delete;

@@ -20,6 +20,7 @@
 #include "ui/base/themed_vector_icon.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/controls/menu/menu_config.h"
@@ -295,8 +296,8 @@ class VIEWS_EXPORT MenuItemView : public View {
   // SetIcon(). MenuItemView takes ownership of |icon_view|.
   void SetIconView(std::unique_ptr<ImageView> icon_view);
 
-  // Returns the preferred width of the icon view if any, or 0 if none.
-  int GetIconPreferredWidth() const;
+  // Returns the preferred size of the icon view if any, or gfx::Size() if none.
+  gfx::Size GetIconPreferredSize() const;
 
   // Sets the command id of this menu item.
   void SetCommand(int command) { command_ = command; }
@@ -358,11 +359,6 @@ class VIEWS_EXPORT MenuItemView : public View {
   // Returns the mnemonic for this MenuItemView, or 0 if this MenuItemView
   // doesn't have a mnemonic.
   char16_t GetMnemonic();
-
-  // Do we have icons? This only has effect on the top menu. Turning this on
-  // makes the menus slightly wider and taller.
-  void set_has_icons(bool has_icons) { has_icons_ = has_icons; }
-  bool has_icons() const { return has_icons_; }
 
   // Returns the descendant with the specified command.
   MenuItemView* GetMenuItemByID(int id);
@@ -530,6 +526,10 @@ class VIEWS_EXPORT MenuItemView : public View {
   //    ApplyMinimumDimensions(x).height >= x.height
   void ApplyMinimumDimensions(MenuItemDimensions* dims) const;
 
+  // Given a proposed `height` for this item, returns the height after ensuring
+  // it reserves sufficient icon height.
+  int ApplyMinIconHeight(int height) const;
+
   // Get the horizontal position at which to draw the menu item's label.
   int GetLabelStartForThisItem() const;
 
@@ -630,9 +630,6 @@ class VIEWS_EXPORT MenuItemView : public View {
   // Should we show the mnemonic? Mnemonics are shown if this is true or
   // MenuConfig says mnemonics should be shown. Only used on the root menu item.
   bool show_mnemonics_ = false;
-
-  // Set if menu has icons or icon_views (applies to root menu item only).
-  bool has_icons_ = false;
 
   // Pointer to a view with a menu icon.
   raw_ptr<ImageView, DanglingUntriaged> icon_view_ = nullptr;

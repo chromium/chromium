@@ -169,6 +169,7 @@ class VIEWS_EXPORT SubmenuView : public View,
   void MenuHostDestroyed();
 
   int icon_area_width() const { return icon_area_width_; }
+  int min_icon_height() const { return min_icon_height_; }
   int label_start() const { return label_start_; }
   int trailing_padding() const { return trailing_padding_; }
 
@@ -230,6 +231,17 @@ class VIEWS_EXPORT SubmenuView : public View,
 
   // Width of a menu icon area.
   int icon_area_width_ = 0;
+
+  // The minimum height items should reserve for icons. If any item has icons,
+  // checks, or radios, this is set to kMenuCheckSize, which is also the
+  // common-case size for icons. This ensures that
+  //   * When no items have icons etc., we don't add unnecessary padding.
+  //   * When some items have icons, we make ~all items "the same size"; but --
+  //   * If any items have especially large icons, we don't add _too_ much
+  //     padding to every item.
+  // In other words, this tries to "have roughly consistent height" without
+  // incurring a lot of extra padding that makes the menu look spaced-out.
+  int min_icon_height_ = 0;
 
   // X-coordinate of where the label starts.
   int label_start_ = 0;

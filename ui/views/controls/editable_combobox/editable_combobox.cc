@@ -227,14 +227,6 @@ class EditableCombobox::EditableComboboxMenuModel
     size_t index;
     bool enabled;
   };
-  bool HasIcons() const override {
-    for (size_t i = 0; i < GetItemCount(); ++i) {
-      if (!GetIconAt(i).IsEmpty()) {
-        return true;
-      }
-    }
-    return false;
-  }
 
   ItemType GetTypeAt(size_t index) const override {
     return UseCheckmarks() ? TYPE_CHECK : TYPE_COMMAND;

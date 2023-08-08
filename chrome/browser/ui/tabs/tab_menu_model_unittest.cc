@@ -69,13 +69,13 @@ TEST_F(TabMenuModelTest, AddToExistingGroupSubmenu) {
           .value();
   ui::MenuModel* submenu = menu.GetSubmenuModelAt(submenu_index);
 
-  EXPECT_TRUE(submenu->HasIcons());
   EXPECT_EQ(submenu->GetItemCount(), 5u);
   EXPECT_EQ(submenu->GetCommandIdAt(0),
             ExistingBaseSubMenuModel::kMinExistingTabGroupCommandId);
   EXPECT_EQ(submenu->GetTypeAt(1), ui::MenuModel::TYPE_SEPARATOR);
   EXPECT_EQ(submenu->GetCommandIdAt(2),
             ExistingBaseSubMenuModel::kMinExistingTabGroupCommandId + 1);
+  EXPECT_FALSE(submenu->GetIconAt(2).IsEmpty());
   EXPECT_EQ(submenu->GetCommandIdAt(3),
             ExistingBaseSubMenuModel::kMinExistingTabGroupCommandId + 2);
   EXPECT_EQ(submenu->GetCommandIdAt(4),
@@ -102,13 +102,13 @@ TEST_F(TabMenuModelTest, AddToExistingGroupSubmenu_DoesNotIncludeCurrentGroup) {
           .value();
   ui::MenuModel* submenu = menu.GetSubmenuModelAt(submenu_index);
 
-  EXPECT_TRUE(submenu->HasIcons());
   EXPECT_EQ(submenu->GetItemCount(), 4u);
   EXPECT_EQ(submenu->GetCommandIdAt(0),
             ExistingBaseSubMenuModel::kMinExistingTabGroupCommandId);
   EXPECT_EQ(submenu->GetTypeAt(1), ui::MenuModel::TYPE_SEPARATOR);
   EXPECT_EQ(submenu->GetCommandIdAt(2),
             ExistingBaseSubMenuModel::kMinExistingTabGroupCommandId + 1);
+  EXPECT_FALSE(submenu->GetIconAt(2).IsEmpty());
   EXPECT_EQ(submenu->GetCommandIdAt(3),
             ExistingBaseSubMenuModel::kMinExistingTabGroupCommandId + 2);
 }

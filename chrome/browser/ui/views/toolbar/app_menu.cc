@@ -965,8 +965,6 @@ AppMenu::AppMenu(Browser* browser, ui::MenuModel* model, int run_types)
 
   DCHECK(!root_);
   root_ = new MenuItemView(this);
-  root_->set_has_icons(true);  // We have checks, radios and icons, set this
-                               // so we get the taller menu style.
   PopulateMenu(root_, model);
 
   int32_t types = views::MenuRunner::HAS_MNEMONICS;
@@ -1462,7 +1460,7 @@ MenuItemView* AppMenu::AddMenuItem(MenuItemView* parent,
   if (menu_item) {
     menu_item->SetVisible(model->IsVisibleAt(model_index));
 
-    if (menu_type == MenuModel::TYPE_COMMAND && model->HasIcons()) {
+    if (menu_type == MenuModel::TYPE_COMMAND) {
       menu_item->SetIcon(model->GetIconAt(model_index));
     }
   }
