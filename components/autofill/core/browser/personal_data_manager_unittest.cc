@@ -1377,7 +1377,7 @@ TEST_F(PersonalDataManagerTest, GetCreditCardByServerId) {
 
 #if !BUILDFLAG(IS_IOS)
 TEST_F(PersonalDataManagerTest, AddAndGetCreditCardArtImage) {
-  gfx::Image expected_image = gfx::test::CreateImage(32, 20);
+  gfx::Image expected_image = gfx::test::CreateImage(40, 24);
   std::unique_ptr<CreditCardArtImage> credit_card_art_image =
       std::make_unique<CreditCardArtImage>(GURL("https://www.example.com"),
                                            expected_image);

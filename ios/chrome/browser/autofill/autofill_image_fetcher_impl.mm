@@ -39,11 +39,11 @@ GURL AutofillImageFetcherImpl::ResolveCardArtURL(const GURL& card_art_url) {
   }
 
   // A FIFE image fetching param suffix is appended to the URL. The image
-  // should be center cropped and of Size(32, 20). For better image quality
+  // should be center cropped and of Size(40, 24). For better image quality
   // we fetch an image based on the screen pixel density, and scale it in
   // ResolveCardArtImage.
-  const int width = 32 * screen_scale_;
-  const int height = 20 * screen_scale_;
+  const int width = 40 * screen_scale_;
+  const int height = 24 * screen_scale_;
   return GURL(card_art_url.spec() +
               base::StringPrintf("=w%d-h%d-s", width, height));
 }
@@ -62,15 +62,15 @@ gfx::Image AutofillImageFetcherImpl::ResolveCardArtImage(
                                                      card_art_image);
   }
 
-  // The image has been fetched at Size(32, 20) * the screen pixel density,
+  // The image has been fetched at Size(40, 24) * the screen pixel density,
   // however image_fetcher::IOSImageDecoderImpl creates a UIImage with scale=1
   // (irregardless of pixel density). We re-scale the UIImage so that it is
-  // 32x20 when rendered, and also apply rounded corners and a border.
+  // 40x24 when rendered, and also apply rounded corners and a border.
   UIImage* image = card_art_image.ToUIImage();
   UIGraphicsImageRendererFormat* format =
       [UIGraphicsImageRendererFormat preferredFormat];
   format.scale = screen_scale_;
-  CGRect targetRect = CGRectMake(0, 0, 32, 20);
+  CGRect targetRect = CGRectMake(0, 0, 40, 24);
 
   UIGraphicsImageRenderer* renderer =
       [[UIGraphicsImageRenderer alloc] initWithSize:targetRect.size

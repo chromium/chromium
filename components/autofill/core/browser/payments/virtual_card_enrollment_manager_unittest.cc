@@ -88,7 +88,7 @@ class VirtualCardEnrollmentManagerTest : public testing::Test {
   void SetValidCardArtImageForCard(const CreditCard& card) {
     std::unique_ptr<CreditCardArtImage> credit_card_art_image =
         std::make_unique<CreditCardArtImage>(card.card_art_url(),
-                                             gfx::test::CreateImage(32, 20));
+                                             gfx::test::CreateImage(40, 24));
     std::vector<std::unique_ptr<CreditCardArtImage>> images;
     images.push_back(std::move(credit_card_art_image));
     personal_data_manager().OnCardArtImagesFetched(std::move(images));

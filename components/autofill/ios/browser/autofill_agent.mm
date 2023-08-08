@@ -664,6 +664,19 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
         // which case we do not set an icon at all.
         if (!popup_suggestion.custom_icon.IsEmpty()) {
           icon = popup_suggestion.custom_icon.ToUIImage();
+
+          // On iOS, the keyboard accessory wants smaller icons than the default
+          // 40x24 size, so we resize them to 32x20, if the provided icon is
+          // larger than that.
+          constexpr CGSize kSuggestionIconSize(32, 20);
+          if (icon && (icon.size.width > kSuggestionIconSize.width)) {
+            UIGraphicsBeginImageContextWithOptions(kSuggestionIconSize, NO,
+                                                   0.0);
+            [icon drawInRect:CGRectMake(0, 0, kSuggestionIconSize.width,
+                                        kSuggestionIconSize.height)];
+            icon = UIGraphicsGetImageFromCurrentImageContext();
+            UIGraphicsEndImageContext();
+          }
         } else if (!popup_suggestion.icon.empty()) {
           const int resourceID =
               autofill::CreditCard::IconResourceId(popup_suggestion.icon);

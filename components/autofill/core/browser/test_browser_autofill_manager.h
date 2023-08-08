@@ -131,7 +131,7 @@ class TestBrowserAutofillManager : public BrowserAutofillManager {
   bool autofill_profile_enabled_ = true;
   bool autofill_credit_card_enabled_ = true;
   absl::optional<bool> expected_observed_submission_;
-  const gfx::Image card_image_ = gfx::test::CreateImage(32, 20);
+  const gfx::Image card_image_ = gfx::test::CreateImage(40, 24);
 
   std::unique_ptr<base::RunLoop> run_loop_;
 
