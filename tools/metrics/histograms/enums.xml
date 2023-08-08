@@ -27308,6 +27308,28 @@ located in chromeos/ash/components/device_activity/device_activity_client.h -->
   <int value="96" label="Override Content Context Menu Save New File"/>
   <int value="97" label="Show All Overrides From Sources Context Menu"/>
   <int value="98" label="Show All Overrides From Network Context Menu"/>
+  <int value="99" label="Animations panel - Animation groups are cleared"/>
+  <int value="100" label="Animations panel - Animations are paused"/>
+  <int value="101" label="Animations panel - Animations are resumed"/>
+  <int value="102"
+      label="Animations panel - Animated node description is clicked"/>
+  <int value="103" label="Animations panel - Animation group is scrubbed"/>
+  <int value="104" label="Animations panel - Animation group is replayed"/>
+</enum>
+
+<enum name="DevToolsAnimationPlaybackRateChanged">
+  <int value="0" label="100%"/>
+  <int value="1" label="25%"/>
+  <int value="2" label="10%"/>
+  <int value="3" label="Other"/>
+</enum>
+
+<enum name="DevToolsAnimationPointDragged">
+  <int value="0" label="Animation is dragged as a whole"/>
+  <int value="1" label="Keyframe is moved"/>
+  <int value="2" label="Animation start point is moved"/>
+  <int value="3" label="Animation finish point is moved"/>
+  <int value="4" label="Other"/>
 </enum>
 
 <enum name="DevToolsBackgroundService">

@@ -30,6 +30,25 @@ chromium-metrics-reviews@google.com.
   <summary>Specified DevTools action has been taken.</summary>
 </histogram>
 
+<histogram name="DevTools.AnimationPlaybackRateChanged"
+    enum="DevToolsAnimationPlaybackRateChanged" expires_after="2024-08-08">
+  <owner>yangguo@chromium.org</owner>
+  <owner>changhaohan@chromium.org</owner>
+  <owner>ergunsh@chromium.org</owner>
+  <summary>Playback rate is changed in Animations panel in DevTools.</summary>
+</histogram>
+
+<histogram name="DevTools.AnimationPointDragged"
+    enum="DevToolsAnimationPointDragged" expires_after="2024-08-08">
+  <owner>yangguo@chromium.org</owner>
+  <owner>changhaohan@chromium.org</owner>
+  <owner>ergunsh@chromium.org</owner>
+  <summary>
+    An animation's duration or delay updated visually by dragging the animation
+    point in Animations panel in DevTools.
+  </summary>
+</histogram>
+
 <histogram name="DevTools.BadgeActivated" enum="DevToolsBadgeActivated"
     expires_after="2023-12-31">
   <owner>ergunsh@chromium.org</owner>
