@@ -75,10 +75,12 @@ class VIEWS_EXPORT MenuScrollViewContainer : public View {
   // Returns the last item in the menu if it is of type HIGHLIGHTED.
   MenuItemView* GetFootnote() const;
 
-  // Calcultes the rounded corners of the view based on: either the
-  // `rounded_corners()` if it's set in `MenuController`, or the
-  // `CornerRadiusForMenu` in the `MenuConfig` if `rounded_corners()` is not
-  // set.
+  // Returns the corner radius according to the `MenuConfig`.
+  int GetCornerRadius() const;
+
+  // Calculates the rounded corners of the view based on either
+  // `rounded_corners()` if it's set in `MenuController`, or else
+  // `GetCornerRadius()`.
   gfx::RoundedCornersF GetRoundedCorners() const;
 
   class MenuScrollView;

@@ -2193,14 +2193,9 @@ void MenuController::OpenMenuImpl(MenuItemView* item, bool show) {
   // Anchor for calculated bounds. Can be alternatively used by a system
   // compositor for better positioning.
   ui::OwnedWindowAnchor anchor;
-  // While the Windows 11 style menus uses the same bubble border as "touch-
-  // style" menus, some positioning calculations are different. Testing for that
-  // condition separately will allow those subtle positioning differences to be
-  // taken into account within CalculateBubbleMenuBounds() and elsewhere.
   bool calculate_as_bubble_menu =
       MenuItemView::IsBubble(state_.anchor) ||
-      (!IsCombobox() && menu_config.use_bubble_border &&
-       menu_config.CornerRadiusForMenu(this));
+      (menu_config.use_bubble_border && menu_config.CornerRadiusForMenu(this));
   gfx::Rect bounds =
       calculate_as_bubble_menu
           ? CalculateBubbleMenuBounds(item, preferred_open_direction,
@@ -2564,7 +2559,14 @@ gfx::Rect MenuController::CalculateBubbleMenuBounds(
 
   const auto* const scroll_view_container = submenu->GetScrollViewContainer();
   gfx::Size menu_size = scroll_view_container->GetPreferredSize();
+
+  // For comboboxes, ensure the menu is at least as wide as the anchor.
+  const gfx::Rect& anchor_bounds = state_.initial_bounds;
   const gfx::Insets border_insets = scroll_view_container->GetInsets();
+  if (IsCombobox()) {
+    menu_size.SetToMax({anchor_bounds.width() + border_insets.width(), 0});
+  }
+
   int x = 0;
   int y = 0;
 
@@ -2576,8 +2578,6 @@ gfx::Rect MenuController::CalculateBubbleMenuBounds(
 
   if (!item->GetParentMenuItem()) {
     // This is a top-level menu, position it relative to the anchor bounds.
-    const gfx::Rect& anchor_bounds = state_.initial_bounds;
-
     using MenuPosition = MenuItemView::MenuPosition;
 
     // First the size gets reduced to the possible space.
