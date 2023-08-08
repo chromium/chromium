@@ -244,7 +244,9 @@ void ArcVmmManager::SendSwapRequest(
       base::BindOnce(
           [](vm_tools::concierge::SwapOperation op, base::OnceClosure cb,
              absl::optional<vm_tools::concierge::SwapVmResponse> response) {
-            if (!response->success()) {
+            if (!response.has_value()) {
+              LOG(ERROR) << "Failed to receive SwapVm response.";
+            } else if (!response->success()) {
               LOG(ERROR) << "Failed to send request: "
                          << vm_tools::concierge::SwapOperation_Name(op)
                          << ". Reason: " << response->failure_reason();
@@ -292,7 +294,9 @@ void ArcVmmManager::SendAggressiveBalloonRequest(
           [](bool enabled, base::OnceClosure cb,
              absl::optional<vm_tools::concierge::AggressiveBalloonResponse>
                  response) {
-            if (!response->success()) {
+            if (!response.has_value()) {
+              LOG(ERROR) << "Failed to receive aggressive ballon response.";
+            } else if (!response->success()) {
               LOG(ERROR) << "Failed to send aggressive balloon request: "
                          << enabled
                          << ". Reason: " << response->failure_reason();

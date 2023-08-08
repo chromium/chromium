@@ -73,7 +73,7 @@ class TestConciergeClient : public ash::FakeConciergeClient {
 
   void SetAggressiveBalloonLatencyAndResponse(
       absl::optional<base::TimeDelta> latency,
-      vm_tools::concierge::AggressiveBalloonResponse response) {
+      absl::optional<vm_tools::concierge::AggressiveBalloonResponse> response) {
     aggressive_balloon_latency_ = latency;
     aggressive_balloon_response_ = response;
   }
@@ -106,7 +106,8 @@ class TestConciergeClient : public ash::FakeConciergeClient {
       : ash::FakeConciergeClient(fake_cicerone_client) {}
 
   absl::optional<base::TimeDelta> aggressive_balloon_latency_;
-  vm_tools::concierge::AggressiveBalloonResponse aggressive_balloon_response_;
+  absl::optional<vm_tools::concierge::AggressiveBalloonResponse>
+      aggressive_balloon_response_;
 
   int enable_count_ = 0;
   int swap_out_count_ = 0;
@@ -169,6 +170,11 @@ class ArcVmmManagerTest : public testing::Test {
     }
   }
 
+  void InitEmptyAggressiveBallonResponse() {
+    client()->SetAggressiveBalloonLatencyAndResponse(absl::nullopt,
+                                                     absl::nullopt);
+  }
+
   void SetTrimCall(bool trim_result) {
     manager()->trim_call_ = base::BindLambdaForTesting(
         [trim_result, this](
@@ -219,6 +225,18 @@ class ArcVmmManagerTest : public testing::Test {
 
   std::unique_ptr<ArcServiceManager> arc_service_manager_;
 };
+
+TEST_F(ArcVmmManagerTest, DBusFailedNoCrash) {
+  InitVmmManager();
+  EnableAndConnectArcVm();
+  SetTrimCall(true);
+  InitEmptyAggressiveBallonResponse();
+
+  manager()->SetSwapState(SwapState::ENABLE);
+  base::RunLoop().RunUntilIdle();
+
+  // No crash when aggressive ballon failed.
+}
 
 TEST_F(ArcVmmManagerTest, EnableSwapWhenTrimSuccess) {
   InitVmmManager();
