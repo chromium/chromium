@@ -8,7 +8,6 @@
 
 #include "ui/base/x/x11_util.h"
 
-#include <ctype.h>
 #include <sys/ipc.h>
 #include <sys/shm.h>
 

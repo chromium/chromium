@@ -12,6 +12,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -214,9 +215,7 @@ class InputMethodDelegateForTesting : public ImeKeyEventDispatcher {
       default:
         break;
     }
-    std::stringstream ss;
-    ss << key_event->key_code();
-    action += std::string(ss.str());
+    action += base::NumberToString(key_event->key_code());
     TestResult::GetInstance()->RecordAction(base::ASCIIToUTF16(action));
     return ui::EventDispatchDetails();
   }
@@ -280,10 +279,9 @@ class TextInputClientForTesting : public DummyTextInputClient {
   }
 
   void InsertChar(const ui::KeyEvent& event) override {
-    std::stringstream ss;
-    ss << static_cast<uint16_t>(event.GetCharacter());
-    TestResult::GetInstance()->RecordAction(u"keypress:" +
-                                            base::ASCIIToUTF16(ss.str()));
+    TestResult::GetInstance()->RecordAction(
+        u"keypress:" + base::ASCIIToUTF16(base::NumberToString(
+                           static_cast<uint16_t>(event.GetCharacter()))));
   }
 
   bool GetTextRange(gfx::Range* range) const override {

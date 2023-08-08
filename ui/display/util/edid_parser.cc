@@ -17,6 +17,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/sys_byteorder.h"
+#include "third_party/abseil-cpp/absl/strings/ascii.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "ui/display/util/display_util.h"
 #include "ui/gfx/geometry/size.h"
@@ -523,7 +524,10 @@ void EdidParser::ParseEdid(const std::vector<uint8_t>& edid) {
   // Replace unprintable chars with white space.
   std::replace_if(
       display_name_.begin(), display_name_.end(),
-      [](char c) { return !isascii(c) || !isprint(c); }, ' ');
+      [](unsigned char c) {
+        return !absl::ascii_isascii(c) || !absl::ascii_isprint(c);
+      },
+      ' ');
 
   // See http://en.wikipedia.org/wiki/Extended_display_identification_data
   // for the extension format of EDID.  Also see EIA/CEA-861 spec for

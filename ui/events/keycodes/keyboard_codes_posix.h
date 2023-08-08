@@ -35,7 +35,7 @@ namespace ui {
 
 // When adding a new KeyboardCode, be sure to also update the associated mojom
 // file at ash/public/mojom/accelerator_keys.mojom.
-enum KeyboardCode {
+enum KeyboardCode : unsigned char {
   VKEY_CANCEL = 0x03,
   VKEY_BACK = 0x08,
   VKEY_TAB = 0x09,
