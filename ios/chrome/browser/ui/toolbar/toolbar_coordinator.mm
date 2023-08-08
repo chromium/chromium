@@ -166,13 +166,28 @@
     return;
   }
   [super stop];
+  _prerenderService = nullptr;
+  self.orchestrator.editViewAnimatee = nil;
+  self.orchestrator.locationBarAnimatee = nil;
+  self.orchestrator = nil;
+
+  [self.primaryToolbarCoordinator stop];
+  self.primaryToolbarCoordinator.viewControllerDelegate = nil;
+  self.primaryToolbarCoordinator = nil;
+
+  [self.secondaryToolbarCoordinator stop];
+  self.secondaryToolbarCoordinator = nil;
+
+  [self.locationBarCoordinator stop];
+  self.locationBarCoordinator.popupPresenterDelegate = nil;
+  self.locationBarCoordinator = nil;
 
   [self.toolbarMediator disconnect];
+  self.toolbarMediator.omniboxConsumer = nil;
+  self.toolbarMediator.delegate = nil;
+  self.toolbarMediator.prefService = nullptr;
+  self.toolbarMediator.deviceSwitcherResultDispatcher = nullptr;
   self.toolbarMediator = nil;
-  [self.locationBarCoordinator stop];
-  self.locationBarCoordinator = nil;
-  [self.primaryToolbarCoordinator stop];
-  [self.secondaryToolbarCoordinator stop];
 
   [self.browser->GetCommandDispatcher() stopDispatchingToTarget:self];
   _prerenderService = nullptr;
