@@ -345,6 +345,10 @@ public class StripLayoutTab implements VirtualView {
         mFolioAttached = folioAttached;
     }
 
+    boolean getFolioAttachedForTesting() {
+        return mFolioAttached;
+    }
+
     /**
      * Sets the id of the {@link Tab} this {@link StripLayoutTab} represents.
      */
@@ -389,30 +393,48 @@ public class StripLayoutTab implements VirtualView {
 
     /**
      * @param foreground Whether or not this tab is a foreground tab.
-     * @return The tint color resource that represents the tab background.
+     * @param hovered Whether or not this tab is hovered on.
+     * @return The tint color resource that represents the tab background. A foreground tab will
+     *         have the same tint irrespective of its hover state.
      */
-    public int getTint(boolean foreground) {
+    public int getTint(boolean foreground, boolean hovered) {
+        hovered = ChromeFeatureList.isEnabled(
+                          ChromeFeatureList.ADVANCED_PERIPHERALS_SUPPORT_TAB_STRIP)
+                && hovered;
         // TODO(https://crbug.com/1408276): Avoid calculating every time. Instead, store the tab's
         //  color and only re-determine when the color could have changed (i.e. on selection).
         if (ChromeFeatureList.sTabStripRedesign.isEnabled()) {
             return TabUiThemeUtil.getTabStripContainerColor(
-                    mContext, mIncognito, foreground, mIsReordering, mIsPlaceholder);
+                    mContext, mIncognito, foreground, mIsReordering, mIsPlaceholder, hovered);
         }
 
         if (foreground) {
             return ChromeColors.getDefaultThemeColor(mContext, mIncognito);
         }
 
+        // |defaultColor| represents the color of a background/inactive tab.
+        int defaultColor;
+        int overlayColor;
         if (mIncognito) {
-            return mContext.getResources().getColor(
+            defaultColor = mContext.getResources().getColor(
                     R.color.baseline_neutral_10_with_neutral_0_alpha_30);
+            overlayColor = mContext.getColor(R.color.baseline_neutral_90);
+        } else {
+            final int baseColor = ChromeColors.getSurfaceColor(
+                    mContext, R.dimen.compositor_background_tab_elevation);
+            final float overlayAlpha = ResourcesCompat.getFloat(
+                    mContext.getResources(), R.dimen.compositor_background_tab_overlay_alpha);
+            defaultColor = ColorUtils.getColorWithOverlay(baseColor, Color.BLACK, overlayAlpha);
+            overlayColor = MaterialColors.getColor(mContext, R.attr.colorOnSurface, TAG);
         }
 
-        final int baseColor =
-                ChromeColors.getSurfaceColor(mContext, R.dimen.compositor_background_tab_elevation);
-        final float overlayAlpha = ResourcesCompat.getFloat(
-                mContext.getResources(), R.dimen.compositor_background_tab_overlay_alpha);
-        return ColorUtils.getColorWithOverlay(baseColor, Color.BLACK, overlayAlpha);
+        if (hovered) {
+            return ColorUtils.getColorWithOverlay(defaultColor, overlayColor,
+                    ResourcesCompat.getFloat(
+                            mContext.getResources(), R.dimen.gm2_tab_inactive_hover_alpha));
+        }
+
+        return defaultColor;
     }
 
     /**
@@ -426,7 +448,7 @@ public class StripLayoutTab implements VirtualView {
         }
 
         if (foreground) {
-            return getTint(true);
+            return getTint(true, false);
         }
 
         if (mIncognito) {
@@ -434,7 +456,7 @@ public class StripLayoutTab implements VirtualView {
                     R.color.baseline_neutral_10_with_neutral_0_alpha_30_with_neutral_variant_60_alpha_15);
         }
 
-        final int baseColor = getTint(false);
+        final int baseColor = getTint(false, false);
         final int overlayColor = MaterialColors.getColor(mContext, R.attr.colorOutline, TAG);
         final float overlayAlpha = ResourcesCompat.getFloat(
                 mContext.getResources(), R.dimen.compositor_background_tab_outline_alpha);

@@ -33,6 +33,7 @@ android_library("java") {
   deps = [
     ":ui_java_resources",
     "//chrome/browser/flags:java",
+    "//chrome/browser/ui/android/theme:java",
     "//components/browser_ui/styles/android:java",
     "//components/browser_ui/styles/android:java_resources",
     "//third_party/androidx:androidx_annotation_annotation_java",

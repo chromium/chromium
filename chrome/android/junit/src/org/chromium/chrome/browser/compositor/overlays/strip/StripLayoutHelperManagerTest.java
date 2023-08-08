@@ -5,9 +5,11 @@
 package org.chromium.chrome.browser.compositor.overlays.strip;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
+import android.graphics.RectF;
 import android.view.ContextThemeWrapper;
 import android.view.View;
 
@@ -44,6 +46,7 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementFieldTrial;
@@ -64,6 +67,8 @@ public class StripLayoutHelperManagerTest {
     @Mock
     private TabStripSceneLayer.Natives mTabStripSceneMock;
     @Mock
+    private TabStripSceneLayer mTabStripTreeProvider;
+    @Mock
     private LayoutManagerHost mManagerHost;
     @Mock
     private LayoutUpdateHost mUpdateHost;
@@ -83,6 +88,12 @@ public class StripLayoutHelperManagerTest {
     private TabCreatorManager mTabCreatorManager;
     @Mock
     private TabModelFilterProvider mTabModelFilterProvider;
+    @Mock
+    private TabModel mTabModel;
+    @Mock
+    private Tab mSelectedTab;
+    @Mock
+    private StripLayoutTab mHoveredStripTab;
 
     private StripLayoutHelperManager mStripLayoutHelperManager;
     private Context mContext;
@@ -375,5 +386,33 @@ public class StripLayoutHelperManagerTest {
                 incognitoHelper.getTabCountOnStartupForTesting());
         assertEquals("Unexpected incognito active tab index", expectedIncognitoActiveTabIndex,
                 incognitoHelper.getActiveTabIndexOnStartupForTesting());
+    }
+
+    @Test
+    public void testGetUpdatedSceneOverlayTree() {
+        // Setup and stub required mocks.
+        int hoveredTabId = 1;
+        int selectedTabId = 2;
+        mStripLayoutHelperManager.setTabStripTreeProviderForTesting(mTabStripTreeProvider);
+
+        when(mTabModelSelector.getCurrentModel()).thenReturn(mTabModel);
+        when(mTabModel.index()).thenReturn(selectedTabId);
+        when(mTabModel.getTabAt(selectedTabId)).thenReturn(mSelectedTab);
+        when(mSelectedTab.getId()).thenReturn(selectedTabId);
+
+        when(mHoveredStripTab.getId()).thenReturn(hoveredTabId);
+        var activeLayoutHelper = mStripLayoutHelperManager.getActiveStripLayoutHelper();
+        activeLayoutHelper.setLastHoveredTabForTesting(mHoveredStripTab);
+
+        // Invoke the method.
+        mStripLayoutHelperManager.getUpdatedSceneOverlayTree(
+                new RectF(), new RectF(), mRenderHost.getResourceManager(), 0f);
+
+        // Verify the call to #pushAndUpdateStrip.
+        verify(mTabStripTreeProvider)
+                .pushAndUpdateStrip(mStripLayoutHelperManager, mLayerTitleCacheSupplier.get(),
+                        mRenderHost.getResourceManager(),
+                        activeLayoutHelper.getStripLayoutTabsToRender(), 0f, selectedTabId,
+                        hoveredTabId);
     }
 }

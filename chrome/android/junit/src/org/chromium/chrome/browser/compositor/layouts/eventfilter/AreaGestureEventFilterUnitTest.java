@@ -111,7 +111,7 @@ public class AreaGestureEventFilterUnitTest {
 
         // Handle the hover exit event.
         mEventFilter.onHoverEvent(mHoverExitEvent);
-        verify(mHandler).onHoverExit(mHoverExitEvent.getX(), mHoverExitEvent.getY());
+        verify(mHandler).onHoverExit();
     }
 
     @Test
@@ -128,6 +128,6 @@ public class AreaGestureEventFilterUnitTest {
         mEventFilter.onHoverEvent(mHoverMoveEvent);
         // Moving outside the filter area will be considered an ACTION_HOVER_EXIT for further
         // handling.
-        verify(mHandler).onHoverExit(mHoverMoveEvent.getX(), mHoverMoveEvent.getY());
+        verify(mHandler).onHoverExit();
     }
 }

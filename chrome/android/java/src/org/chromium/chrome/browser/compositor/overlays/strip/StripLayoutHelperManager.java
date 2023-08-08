@@ -221,8 +221,8 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
         }
 
         @Override
-        public void onHoverExit(float x, float y) {
-            getActiveStripLayoutHelper().onHoverExit(x, y);
+        public void onHoverExit() {
+            getActiveStripLayoutHelper().onHoverExit();
         }
 
         private long time() {
@@ -472,9 +472,12 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
         Tab selectedTab = mTabModelSelector.getCurrentModel().getTabAt(
                 mTabModelSelector.getCurrentModel().index());
         int selectedTabId = selectedTab == null ? TabModel.INVALID_TAB_INDEX : selectedTab.getId();
+        int hoveredTabId = getActiveStripLayoutHelper().getLastHoveredTab() == null
+                ? TabModel.INVALID_TAB_INDEX
+                : getActiveStripLayoutHelper().getLastHoveredTab().getId();
         mTabStripTreeProvider.pushAndUpdateStrip(this, mLayerTitleCacheSupplier.get(),
                 resourceManager, getActiveStripLayoutHelper().getStripLayoutTabsToRender(), yOffset,
-                selectedTabId);
+                selectedTabId, hoveredTabId);
         return mTabStripTreeProvider;
     }
 
@@ -917,7 +920,11 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
         } else if (event == MotionEvent.ACTION_HOVER_MOVE) {
             mTabStripEventHandler.onHoverMove(x, y);
         } else if (event == MotionEvent.ACTION_HOVER_EXIT) {
-            mTabStripEventHandler.onHoverExit(x, y);
+            mTabStripEventHandler.onHoverExit();
         }
+    }
+
+    void setTabStripTreeProviderForTesting(TabStripSceneLayer tabStripTreeProvider) {
+        mTabStripTreeProvider = tabStripTreeProvider;
     }
 }

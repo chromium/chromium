@@ -142,9 +142,11 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     private static final float NEW_TAB_BUTTON_BACKGROUND_HEIGHT_DP_TSR = 32.f;
     private static final float NEW_TAB_BUTTON_PADDING_DP = 24.f;
     private static final float NEW_TAB_BUTTON_TOUCH_TARGET_OFFSET = 12.f;
-    private static final float FOLIO_ATTACHED_BOTTOM_MARGIN_DP = 0.f;
+    @VisibleForTesting
+    static final float FOLIO_ATTACHED_BOTTOM_MARGIN_DP = 0.f;
     private static final float FOLIO_ANIM_INTERMEDIATE_MARGIN_DP = -12.f;
-    private static final float FOLIO_DETACHED_BOTTOM_MARGIN_DP = 4.f;
+    @VisibleForTesting
+    static final float FOLIO_DETACHED_BOTTOM_MARGIN_DP = 4.f;
     private static final float BUTTON_DESIRED_TOUCH_TARGET_SIZE = 48.f;
     private static final float NEW_TAB_BUTTON_DEFAULT_PRESSED_OPACITY = 0.2f;
     private static final float NEW_TAB_BUTTON_DARK_DETACHED_OPACITY = 0.15f;
@@ -258,6 +260,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     private MultiInstanceManager mMultiInstanceManager;
     private View mToolbarContainerView;
     private StripLayoutTab mActiveClickedTab;
+    private StripLayoutTab mLastHoveredTab;
     private TabDropTarget mTabDropTarget;
 
     /**
@@ -1038,10 +1041,12 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         }
     }
 
-    private void setForegroundTabContainerVisible(StripLayoutTab tab, boolean selected) {
+    private void setTabContainerVisible(StripLayoutTab tab, boolean selected, boolean hovered) {
         // Don't interrupt tab group background tab visibility.
         if (tab.getContainerOpacity() != TAB_OPACITY_VISIBLE_BACKGROUND) {
-            float containerOpacity = selected || tab.getIsPlaceholder()
+            // The container will be visible if the tab is selected/hovered on or is a placeholder
+            // tab.
+            float containerOpacity = selected || tab.getIsPlaceholder() || hovered
                     ? TAB_OPACITY_VISIBLE_FOREGROUND
                     : TAB_OPACITY_HIDDEN;
             tab.setContainerOpacity(containerOpacity);
@@ -1049,10 +1054,11 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     }
 
     /**
-     * Called to show/hide dividers and the foreground tab container. Dividers are only necessary
-     * between tabs that both do not have a visible tab container (foreground or background).
+     * Called to show/hide dividers and the foreground/hovered tab container. Dividers are only
+     * necessary between tabs that both do not have a visible tab container (foreground or
+     * background).
      */
-    private void updateForegroundTabContainersAndDividers() {
+    private void updateTabContainersAndDividers() {
         if (!ChromeFeatureList.sTabStripRedesign.isEnabled()) return;
 
         // Validate the index. For example, the index can be {@link TabList.INVALID_TAB_INDEX} when
@@ -1060,9 +1066,12 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         int selectedIndex = mTabStateInitialized ? mModel.index() : mActiveTabIndexOnStartup;
         if (selectedIndex < 0 || selectedIndex >= mStripTabs.length) return;
 
+        int hoveredIndex = mLastHoveredTab != null ? findIndexForTab(mLastHoveredTab.getId())
+                                                   : TabModel.INVALID_TAB_INDEX;
+
         // Divider is never shown for the first tab.
         mStripTabs[0].setStartDividerVisible(false);
-        setForegroundTabContainerVisible(mStripTabs[0], selectedIndex == 0);
+        setTabContainerVisible(mStripTabs[0], selectedIndex == 0, hoveredIndex == 0);
         // End divider for first tab is only shown in reorder mode when tab has trailing margin and
         // container is not visible.
         boolean endDividerVisible = mInReorderMode
@@ -1074,9 +1083,10 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
             final StripLayoutTab prevTab = mStripTabs[i - 1];
             final StripLayoutTab currTab = mStripTabs[i];
             boolean currTabSelected = selectedIndex == i;
+            boolean currTabHovered = hoveredIndex == i;
 
             // Set container opacity.
-            setForegroundTabContainerVisible(currTab, currTabSelected);
+            setTabContainerVisible(currTab, currTabSelected, currTabHovered);
 
             /**
              * Start divider should be visible when:
@@ -1387,7 +1397,11 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
      */
     public void onHoverEnter(float x, float y) {
         if (!isPeripheralsSupportForTabStripEnabled()) return;
-        // TODO (crbug.com/1451925): Handle tab strip hover enter event.
+        StripLayoutTab hoveredTab = getTabAtPosition(x);
+        // Hovered into a non-tab region on the strip.
+        if (hoveredTab == null) return;
+        updateLastHoveredTab(hoveredTab);
+        mUpdateHost.requestUpdate();
     }
 
     /**
@@ -1397,17 +1411,66 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
      */
     public void onHoverMove(float x, float y) {
         if (!isPeripheralsSupportForTabStripEnabled()) return;
-        // TODO (crbug.com/1451925): Handle tab strip hover move event.
+        StripLayoutTab hoveredTab = getTabAtPosition(x);
+        // Hovered into a non-tab region within the strip.
+        if (hoveredTab == null) {
+            clearLastHoveredTab();
+            mUpdateHost.requestUpdate();
+            return;
+        }
+
+        // Hovered within the same tab that was last hovered into.
+        if (hoveredTab == mLastHoveredTab) return;
+
+        // Hovered from one tab to another tab on the strip, clear the former tab's hover state.
+        clearLastHoveredTab();
+
+        updateLastHoveredTab(hoveredTab);
+        mUpdateHost.requestUpdate();
     }
 
     /**
      * Called on hover exit event.
-     * @param x The x coordinate of the position of the hover exit event.
-     * @param y The y coordinate of the position of the hover exit event.
      */
-    public void onHoverExit(float x, float y) {
+    public void onHoverExit() {
         if (!isPeripheralsSupportForTabStripEnabled()) return;
-        // TODO (crbug.com/1451925): Handle tab strip hover exit event.
+        clearLastHoveredTab();
+        mUpdateHost.requestUpdate();
+    }
+
+    void setLastHoveredTabForTesting(StripLayoutTab tab) {
+        mLastHoveredTab = tab;
+    }
+
+    StripLayoutTab getLastHoveredTab() {
+        return mLastHoveredTab;
+    }
+
+    private void clearLastHoveredTab() {
+        if (mLastHoveredTab == null) return;
+        // Remove the highlight from the last hovered tab.
+        updateHoveredFolioTabState(mLastHoveredTab, false);
+        mLastHoveredTab = null;
+    }
+
+    private void updateLastHoveredTab(StripLayoutTab hoveredTab) {
+        if (hoveredTab == null) return;
+        mLastHoveredTab = hoveredTab;
+        updateHoveredFolioTabState(mLastHoveredTab, true);
+    }
+
+    private void updateHoveredFolioTabState(StripLayoutTab tab, boolean hovered) {
+        if (tab == null || !TabManagementFieldTrial.isTabStripFolioEnabled()) return;
+        // Do not update the attached state of a selected folio tab that is hovered on.
+        int selectedTabIndex = mModel != null ? mModel.index() : mActiveTabIndexOnStartup;
+        if (selectedTabIndex >= 0 && mStripTabs[selectedTabIndex] == findTabById(tab.getId())) {
+            return;
+        }
+
+        // If a folio tab is hovered on, detach its container.
+        tab.setFolioAttached(!hovered);
+        tab.setBottomMargin(
+                hovered ? FOLIO_DETACHED_BOTTOM_MARGIN_DP : FOLIO_ATTACHED_BOTTOM_MARGIN_DP);
     }
 
     private boolean isPeripheralsSupportForTabStripEnabled() {
@@ -1904,7 +1967,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         updateCloseButtons();
 
         // 9. Show dividers between inactive tabs.
-        updateForegroundTabContainersAndDividers();
+        updateTabContainersAndDividers();
     }
 
     private void computeTabInitialPositions() {

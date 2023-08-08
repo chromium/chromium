@@ -262,7 +262,7 @@ public class GestureEventFilter extends EventFilter {
         } else if (action == MotionEvent.ACTION_HOVER_MOVE) {
             mHandler.onHoverMove(e.getX() * mPxToDp, e.getY() * mPxToDp);
         } else if (action == MotionEvent.ACTION_HOVER_EXIT) {
-            mHandler.onHoverExit(e.getX() * mPxToDp, e.getY() * mPxToDp);
+            mHandler.onHoverExit();
         }
         return true;
     }

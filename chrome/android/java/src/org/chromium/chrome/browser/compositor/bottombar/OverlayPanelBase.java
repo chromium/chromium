@@ -18,9 +18,9 @@ import org.chromium.base.MathUtils;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ChromeSemanticColorUtils;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.PanelState;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.StateChangeReason;
+import org.chromium.chrome.browser.ui.theme.ChromeSemanticColorUtils;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
@@ -984,7 +984,6 @@ abstract class OverlayPanelBase {
         // Determine fading element opacities. The arrow icon needs to finish fading out before
         // the close icon starts fading in. Any other elements fading in or fading out should use
         // the same percentage.
-        float fadingOutPercentage = Math.min(percentage, .5f) / .5f;
         float fadingInPercentage = Math.max(percentage - .5f, 0.f) / .5f;
 
         // Close Icon.

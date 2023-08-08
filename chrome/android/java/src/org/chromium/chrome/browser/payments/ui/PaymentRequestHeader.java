@@ -16,9 +16,9 @@ import android.widget.TextView;
 import androidx.annotation.ColorInt;
 
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ChromeSemanticColorUtils;
 import org.chromium.chrome.browser.omnibox.ChromeAutocompleteSchemeClassifier;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.ui.theme.ChromeSemanticColorUtils;
 import org.chromium.components.browser_ui.widget.TintedDrawable;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.omnibox.OmniboxUrlEmphasizer;

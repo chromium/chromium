@@ -8,8 +8,10 @@ import android.content.Context;
 import android.graphics.Color;
 
 import androidx.annotation.ColorInt;
+import androidx.core.content.res.ResourcesCompat;
 
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.ui.theme.ChromeSemanticColorUtils;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.util.ColorUtils;
@@ -54,23 +56,27 @@ public class TabUiThemeUtil {
 
     /**
      * Returns the color for the tab container based on experiment arm, incognito mode, foreground,
-     * reordering, and placeholder state.
+     * reordering, placeholder, and hover state.
      *
      * @param context {@link Context} used to retrieve color.
      * @param isIncognito Whether the color is used for incognito mode.
      * @param foreground Whether the tab is in the foreground.
      * @param isReordering Whether the tab is being reordered.
-     * @param isPlaceholder Whether the tab is a placeholder "ghost" tab
+     * @param isPlaceholder Whether the tab is a placeholder "ghost" tab.
+     * @param isHovered Whether the tab is hovered on.
      * @return The color for the tab container.
      */
-    public static @ColorInt int getTabStripContainerColor(Context context, boolean isIncognito,
-            boolean foreground, boolean isReordering, boolean isPlaceholder) {
+    // TODO (crbug.com/1469465): Encapsulate tab properties in a state object.
+    public static int getTabStripContainerColor(Context context, boolean isIncognito,
+            boolean foreground, boolean isReordering, boolean isPlaceholder, boolean isHovered) {
         if (foreground) {
             if (TabManagementFieldTrial.isTabStripFolioEnabled()) {
                 return ChromeColors.getDefaultThemeColor(context, isIncognito);
             } else if (TabManagementFieldTrial.isTabStripDetachedEnabled()) {
                 return getTabStripDetachedTabColor(context, isIncognito, isReordering);
             }
+        } else if (isHovered) {
+            return getHoveredTabContainerColor(context, isIncognito);
         } else if (isPlaceholder) {
             return getTabStripStartupContainerColor(context);
         } else {
@@ -83,6 +89,24 @@ public class TabUiThemeUtil {
 
         // Should be unreachable as TSR should never be enabled without the folio or detached arm.
         return Color.TRANSPARENT;
+    }
+
+    /** Returns the color for the hovered tab container. */
+    private static @ColorInt int getHoveredTabContainerColor(Context context, boolean isIncognito) {
+        int baseColor = isIncognito ? context.getColor(R.color.baseline_primary_80)
+                                    : ChromeSemanticColorUtils.getTabInactiveHoverColor(context);
+        float alpha;
+        if (TabManagementFieldTrial.isTabStripFolioEnabled()) {
+            alpha = ResourcesCompat.getFloat(
+                    context.getResources(), R.dimen.tsr_folio_tab_inactive_hover_alpha);
+        } else {
+            alpha = ColorUtils.inNightMode(context) || isIncognito
+                    ? ResourcesCompat.getFloat(context.getResources(),
+                            R.dimen.tsr_detached_tab_inactive_hover_alpha_dark)
+                    : ResourcesCompat.getFloat(context.getResources(),
+                            R.dimen.tsr_detached_tab_inactive_hover_alpha_light);
+        }
+        return ColorUtils.setAlphaComponent(baseColor, (int) (alpha * 255));
     }
 
     /**

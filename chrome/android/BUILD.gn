@@ -293,6 +293,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/android/features/start_surface:public_java",
       "//chrome/android/features/tab_ui:tab_suggestions_java",
       "//chrome/android/features/tab_ui/public:java",
+      "//chrome/android/features/tab_ui/public:ui_java_resources",
       "//chrome/android/modules/cablev2_authenticator/public:java",
       "//chrome/android/modules/image_editor/provider:java",
       "//chrome/android/modules/stack_unwinder/provider:java",

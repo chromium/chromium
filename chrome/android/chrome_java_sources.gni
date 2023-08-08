@@ -22,7 +22,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/ChromeInactivityTracker.java",
   "java/src/org/chromium/chrome/browser/ChromeKeyboardVisibilityDelegate.java",
   "java/src/org/chromium/chrome/browser/ChromeLocalizationUtils.java",
-  "java/src/org/chromium/chrome/browser/ChromeSemanticColorUtils.java",
   "java/src/org/chromium/chrome/browser/ChromeStrictMode.java",
   "java/src/org/chromium/chrome/browser/ChromeStringConstants.java",
   "java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java",

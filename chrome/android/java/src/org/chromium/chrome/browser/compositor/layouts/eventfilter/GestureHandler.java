@@ -93,9 +93,6 @@ public interface GestureHandler {
 
     /**
      * Called on hover exit event.
-     *
-     * @param x The X position at the end of the event in the host view space in dp.
-     * @param y The Y position at the end of the event in the host view space in dp.
      */
-    void onHoverExit(float x, float y);
+    void onHoverExit();
 }

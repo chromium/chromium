@@ -24,7 +24,6 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -33,11 +32,13 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
+import org.chromium.chrome.browser.tasks.tab_management.TabManagementFieldTrial;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.TabStripUtils;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.base.LocalizationUtils;
@@ -858,45 +859,69 @@ public class TabStripTest {
     }
 
     /**
-     * Tests hover events associated with a strip tab.
+     * Tests hover events associated with a strip tab (with the tab strip redesign folio treatment
+     * enabled, for maximum coverage).
      */
     @Test
     @LargeTest
-    @EnableFeatures({ChromeFeatureList.ADVANCED_PERIPHERALS_SUPPORT_TAB_STRIP})
+    @Feature({"TabStrip"})
+    @EnableFeatures({ChromeFeatureList.ADVANCED_PERIPHERALS_SUPPORT_TAB_STRIP,
+            ChromeFeatureList.TAB_STRIP_REDESIGN})
     @Restriction(UiRestriction.RESTRICTION_TYPE_TABLET)
-    public void testHoverOnTab() throws Exception {
+    public void
+    testHoverOnTab() throws Exception {
+        TabManagementFieldTrial.TAB_STRIP_REDESIGN_ENABLE_FOLIO.setForTesting(true);
         // Open a few regular tabs.
         ChromeTabUtils.newTabsFromMenu(
                 InstrumentationRegistry.getInstrumentation(), sActivityTestRule.getActivity(), 4);
 
-        // Select a tab to hover on.
+        // Select tabs to hover on.
         TabModel model = sActivityTestRule.getActivity().getTabModelSelector().getModel(false);
-        StripLayoutTab tab = TabStripUtils.findStripLayoutTab(
+        StripLayoutTab tab1 = TabStripUtils.findStripLayoutTab(
+                sActivityTestRule.getActivity(), false, model.getTabAt(1).getId());
+        StripLayoutTab tab2 = TabStripUtils.findStripLayoutTab(
                 sActivityTestRule.getActivity(), false, model.getTabAt(2).getId());
-        assertTabVisibility(true, tab);
+        assertTabVisibility(true, tab1);
+        assertTabVisibility(true, tab2);
 
-        // Simulate a hover into this tab.
+        // Simulate a hover into tab1.
         StripLayoutHelperManager stripLayoutHelperManager =
                 TabStripUtils.getStripLayoutHelperManager(sActivityTestRule.getActivity());
-        float xEnter = tab.getDrawX() + tab.getWidth() / 2;
-        float yEnter = tab.getDrawY() + tab.getHeight() / 2;
+        float xEnter = tab1.getDrawX() + tab1.getWidth() / 2;
+        float yEnter = tab1.getDrawY() + tab1.getHeight() / 2;
         stripLayoutHelperManager.simulateHoverEventForTesting(
                 MotionEvent.ACTION_HOVER_ENTER, xEnter, yEnter);
+        StripLayoutTab lastHoveredTab =
+                stripLayoutHelperManager.getActiveStripLayoutHelper().getLastHoveredTab();
+        Assert.assertEquals("The last hovered tab is not set correctly.", tab1, lastHoveredTab);
+        Assert.assertFalse(
+                "|mFolioAttached| for tab1 should be false.", tab1.getFolioAttachedForTesting());
+        Assert.assertEquals("tab1 container bottom margin should match.",
+                StripLayoutHelper.FOLIO_DETACHED_BOTTOM_MARGIN_DP, tab1.getBottomMargin(), 0.f);
 
-        // Simulate a subsequent hover within the tab.
-        float xMove = tab.getDrawX() + tab.getWidth() / 3;
-        float yMove = tab.getDrawY() + tab.getHeight() / 3;
+        // Simulate a subsequent hover into the adjacent tab (tab2).
+        float xMove = tab2.getDrawX() + tab2.getWidth() / 3;
+        float yMove = tab2.getDrawY() + tab2.getHeight() / 3;
         stripLayoutHelperManager.simulateHoverEventForTesting(
                 MotionEvent.ACTION_HOVER_MOVE, xMove, yMove);
+        lastHoveredTab = stripLayoutHelperManager.getActiveStripLayoutHelper().getLastHoveredTab();
+        Assert.assertEquals("The last hovered tab is not set correctly.", tab2, lastHoveredTab);
+        Assert.assertFalse(
+                "|mFolioAttached| for tab2 should be false.", tab2.getFolioAttachedForTesting());
+        Assert.assertTrue(
+                "|mFolioAttached| for tab1 should be true.", tab1.getFolioAttachedForTesting());
+        Assert.assertEquals("tab1 container bottom margin should match.",
+                StripLayoutHelper.FOLIO_ATTACHED_BOTTOM_MARGIN_DP, tab1.getBottomMargin(), 0.f);
 
-        // Simulate a subsequent hover outside the tab.
-        float xExit = tab.getDrawX() + 2 * tab.getWidth();
-        float yExit = tab.getDrawY() + 2 * tab.getHeight();
+        // Simulate a subsequent hover outside tab2.
+        float xExit = tab2.getDrawX() + 2 * tab2.getWidth();
+        float yExit = tab2.getDrawY() + 2 * tab2.getHeight();
         stripLayoutHelperManager.simulateHoverEventForTesting(
                 MotionEvent.ACTION_HOVER_EXIT, xExit, yExit);
-
-        // TODO (crbug.com/1451925): Update verification in test(s) after hover handling is added in
-        // StripLayoutHelper.
+        lastHoveredTab = stripLayoutHelperManager.getActiveStripLayoutHelper().getLastHoveredTab();
+        Assert.assertNull("The last hovered tab is not set correctly.", lastHoveredTab);
+        Assert.assertTrue(
+                "|mFolioAttached| for tab2 should be true.", tab2.getFolioAttachedForTesting());
     }
 
     /**

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser;
+package org.chromium.chrome.browser.ui.theme;
 
 import android.content.Context;
 
@@ -32,6 +32,11 @@ public class ChromeSemanticColorUtils {
 
     /** Returns the semantic color value that corresponds to offline_indicator_back_online_color. */
     public static @ColorInt int getOfflineIndicatorBackOnlineColor(Context context) {
+        return SemanticColorUtils.getDefaultControlColorActive(context);
+    }
+
+    /** Returns the semantic color value that corresponds to tab_inactive_hover_color. */
+    public static @ColorInt int getTabInactiveHoverColor(Context context) {
         return SemanticColorUtils.getDefaultControlColorActive(context);
     }
 }
