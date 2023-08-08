@@ -1368,10 +1368,6 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
       ],
     },
     {
-      id: 'password-selection',
-      kind: ScreenKind.NORMAL,
-    },
-    {
       id: 'arc-vm-data-migration',
       kind: ScreenKind.NORMAL,
     },

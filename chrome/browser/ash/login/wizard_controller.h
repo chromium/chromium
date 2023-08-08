@@ -57,7 +57,6 @@
 #include "chrome/browser/ash/login/screens/os_trial_screen.h"
 #include "chrome/browser/ash/login/screens/packaged_license_screen.h"
 #include "chrome/browser/ash/login/screens/parental_handoff_screen.h"
-#include "chrome/browser/ash/login/screens/password_selection_screen.h"
 #include "chrome/browser/ash/login/screens/pin_setup_screen.h"
 #include "chrome/browser/ash/login/screens/quick_start_screen.h"
 #include "chrome/browser/ash/login/screens/recommend_apps_screen.h"
@@ -329,7 +328,6 @@ class WizardController : public OobeUI::Observer {
   void ShowGaiaInfoScreen();
   void ShowAddChildScreen();
   void ShowConsumerUpdateScreen();
-  void ShowPasswordSelectionScreen();
 
   // Shows images login screen.
   void ShowLoginScreen();
@@ -422,7 +420,6 @@ class WizardController : public OobeUI::Observer {
   void OnGaiaInfoScreenExit(GaiaInfoScreen::Result result);
   void OnAddChildScreenExit(AddChildScreen::Result result);
   void OnConsumerUpdateScreenExit(ConsumerUpdateScreen::Result result);
-  void OnPasswordSelectionScreenExit(PasswordSelectionScreen::Result result);
 
   // Callback invoked once it has been determined whether the device is disabled
   // or not.

@@ -2994,8 +2994,6 @@ static_library("ui") {
       "webui/ash/login/packaged_license_screen_handler.h",
       "webui/ash/login/parental_handoff_screen_handler.cc",
       "webui/ash/login/parental_handoff_screen_handler.h",
-      "webui/ash/login/password_selection_screen_handler.cc",
-      "webui/ash/login/password_selection_screen_handler.h",
       "webui/ash/login/pin_setup_screen_handler.cc",
       "webui/ash/login/pin_setup_screen_handler.h",
 

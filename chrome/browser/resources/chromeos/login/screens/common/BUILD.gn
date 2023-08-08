@@ -56,7 +56,6 @@ js_type_check("closure_compile_local") {
     ":os_install",
     ":os_trial",
     ":parental_handoff",
-    ":password_selection",
     ":pin_setup",
     ":placeholder",
     ":recommend_apps",
@@ -550,19 +549,6 @@ js_library("pin_setup") {
   extra_sources = [ "$interfaces_path/quick_unlock_private_interface.js" ]
 }
 
-js_library("password_selection") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/password_selection.js" ]
-  deps = [
-    "../../components/behaviors:login_screen_behavior",
-    "../../components/behaviors:oobe_dialog_host_behavior",
-    "../../components/behaviors:oobe_i18n_behavior",
-    "../../components/buttons:oobe_back_button",
-    "../../components/buttons:oobe_next_button",
-    "../../components/dialogs:oobe_adaptive_dialog",
-  ]
-  extra_deps = [ ":web_components" ]
-}
-
 js_library("gaia_info") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/gaia_info.js" ]
   deps = [
@@ -751,7 +737,6 @@ html_to_js("web_components") {
   js_files = [
     "adb_sideloading.js",
     "add_child.js",
-    "password_selection.js",
     "cryptohome_recovery_setup.js",
     "app_downloading.js",
     "app_launch_splash.js",

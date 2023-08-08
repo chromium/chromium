@@ -93,7 +93,6 @@
 #include "chrome/browser/ash/login/screens/network_screen.h"
 #include "chrome/browser/ash/login/screens/offline_login_screen.h"
 #include "chrome/browser/ash/login/screens/packaged_license_screen.h"
-#include "chrome/browser/ash/login/screens/password_selection_screen.h"
 #include "chrome/browser/ash/login/screens/pin_setup_screen.h"
 #include "chrome/browser/ash/login/screens/quick_start_screen.h"
 #include "chrome/browser/ash/login/screens/recommend_apps_screen.h"
@@ -180,7 +179,6 @@
 #include "chrome/browser/ui/webui/ash/login/os_trial_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/packaged_license_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/parental_handoff_screen_handler.h"
-#include "chrome/browser/ui/webui/ash/login/password_selection_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/pin_setup_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/quick_start_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/recommend_apps_screen_handler.h"
@@ -886,13 +884,6 @@ WizardController::CreateScreens() {
                             weak_factory_.GetWeakPtr())));
   }
 
-  if (features::IsPasswordSelectionEnabledInOobe()) {
-    append(std::make_unique<PasswordSelectionScreen>(
-        oobe_ui->GetView<PasswordSelectionScreenHandler>()->AsWeakPtr(),
-        base::BindRepeating(&WizardController::OnPasswordSelectionScreenExit,
-                            weak_factory_.GetWeakPtr())));
-  }
-
   return result;
 }
 
@@ -987,10 +978,6 @@ void WizardController::ShowAddChildScreen() {
 
 void WizardController::ShowConsumerUpdateScreen() {
   SetCurrentScreen(GetScreen(ConsumerUpdateScreenView::kScreenId));
-}
-
-void WizardController::ShowPasswordSelectionScreen() {
-  SetCurrentScreen(GetScreen(PasswordSelectionScreenView::kScreenId));
 }
 
 void WizardController::ShowEnrollmentScreen() {
@@ -1286,28 +1273,6 @@ void WizardController::OnConsumerUpdateScreenExit(
     AdvanceToSigninScreen();
   } else {
     AdvanceToScreen(PrefToScreenId(screen_name));
-  }
-}
-
-void WizardController::OnPasswordSelectionScreenExit(
-    PasswordSelectionScreen::Result result) {
-  OnScreenExit(PasswordSelectionScreenView::kScreenId,
-               PasswordSelectionScreen::GetResultString(result));
-  switch (result) {
-    case PasswordSelectionScreen::Result::NOT_APPLICABLE:
-      ShowAuthenticationSetupScreen();
-      return;
-    case PasswordSelectionScreen::Result::BACK: {
-      const bool did_go_back = MaybeSetToPreviousScreen();
-      DCHECK(did_go_back);
-      return;
-    }
-    case PasswordSelectionScreen::Result::LOCAL_PASSWORD:
-      // TODO(b/293295420): Go to the new local password screen.
-      return;
-    case PasswordSelectionScreen::Result::GAIA_PASSWORD:
-      AdvanceToSigninScreen();
-      return;
   }
 }
 
@@ -2657,8 +2622,6 @@ void WizardController::AdvanceToScreen(OobeScreenId screen_id) {
     ShowAddChildScreen();
   } else if (screen_id == ConsumerUpdateScreenView::kScreenId) {
     ShowConsumerUpdateScreen();
-  } else if (screen_id == PasswordSelectionScreenView::kScreenId) {
-    ShowPasswordSelectionScreen();
   } else if (screen_id == TpmErrorView::kScreenId ||
              screen_id == GaiaPasswordChangedView::kScreenId ||
              screen_id == FamilyLinkNoticeView::kScreenId ||
