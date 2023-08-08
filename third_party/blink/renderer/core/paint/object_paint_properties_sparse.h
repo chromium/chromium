@@ -84,9 +84,9 @@ class CORE_EXPORT ObjectPaintPropertiesSparse : public ObjectPaintProperties {
 
   // Identifier used for indexing into the sparse vector of nodes. NOTE: when
   // adding a new node to this list, make sure to do the following. Update
-  // the kMax<NodeType> value to reflect the value you added, and renumber all
+  // the kLast<NodeType> value to reflect the value you added, and renumber all
   // higher value enums. The HasNodeTypeInRange() method assumes that  all nodes
-  // of NodeType are bounded between kMin<NodeType>() and kMax<NodeType>, and
+  // of NodeType are bounded between kFirst<NodeType>() and kLast<NodeType>, and
   // there are no other types of nodes in that range.
   enum class NodeId : unsigned {
     // Transforms
@@ -101,43 +101,41 @@ class CORE_EXPORT ObjectPaintPropertiesSparse : public ObjectPaintProperties {
     kPerspective = 8,
     kReplacedContentTransform = 9,
     kScrollTranslation = 10,
+    kTransformAlias = 11,
     kFirstTransform = kPaintOffsetTranslation,
-    kLastTransform = kScrollTranslation,
+    kLastTransform = kTransformAlias,
 
     // NOTE: the Scroll node is NOT a transform.
-    kScroll = 11,
+    kScroll = 12,
 
     // Effects
-    kEffect = 12,
-    kFilter = 13,
-    kMask = 14,
-    kClipPathMask = 15,
-    kVerticalScrollbarEffect = 16,
-    kHorizontalScrollbarEffect = 17,
-    kScrollCorner = 18,
+    kEffect = 13,
+    kFilter = 14,
+    kMask = 15,
+    kClipPathMask = 16,
+    kVerticalScrollbarEffect = 17,
+    kHorizontalScrollbarEffect = 18,
+    kScrollCorner = 19,
+    kEffectAlias = 20,
     kFirstEffect = kEffect,
-    kLastEffect = kScrollCorner,
+    kLastEffect = kEffectAlias,
 
     // Clips
-    kPixelMovingFilterClipExpander = 19,
-    kClipPathClip = 20,
-    kMaskClip = 21,
-    kCssClip = 22,
-    kCssClipFixedPosition = 23,
-    kOverflowControlsClip = 24,
-    kBackgroundClip = 25,
-    kInnerBorderRadiusClip = 26,
-    kOverflowClip = 27,
-    kFirstClip = kPixelMovingFilterClipExpander,
-    kLastClip = kOverflowClip,
-
-    // Aliases
-    kTransformAlias = 28,
-    kEffectAlias = 29,
+    kPixelMovingFilterClipExpander = 21,
+    kClipPathClip = 22,
+    kMaskClip = 23,
+    kCssClip = 24,
+    kCssClipFixedPosition = 25,
+    kOverflowControlsClip = 26,
+    kBackgroundClip = 27,
+    kInnerBorderRadiusClip = 28,
+    kOverflowClip = 29,
     kClipAlias = 30,
+    kFirstClip = kPixelMovingFilterClipExpander,
+    kLastClip = kClipAlias,
 
     // Should be updated whenever a higher value NodeType is added.
-    kNumFields = kClipAlias + 1
+    kNumFields = kLastClip + 1
   };
 
   // Transform implementations.
