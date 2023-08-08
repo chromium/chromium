@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/sessions/session_restoration_web_state_observer.h"
 
 #import "base/functional/bind.h"
+#import "base/functional/callback_helpers.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_frame.h"
@@ -78,7 +79,8 @@ class SessionRestorationWebStateObserverTest : public PlatformTest {
   }
 
   void TearDown() override {
-    web_state_.reset();
+    // The observer needs to be destroyed before the WebState.
+    SessionRestorationWebStateObserver::RemoveFromWebState(web_state_.get());
 
     // The observer needs to be unregistered on destruction.
     ASSERT_FALSE(wrapper_.value);

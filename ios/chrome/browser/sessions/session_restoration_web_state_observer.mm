@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/sessions/session_restoration_web_state_observer.h"
 
+#import "base/check.h"
+#import "base/notreached.h"
 #import "ios/chrome/browser/sessions/session_restoration_scroll_observer.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/navigation/navigation_context.h"
@@ -11,7 +13,16 @@
 #import "ios/web/public/ui/crw_web_view_proxy.h"
 
 SessionRestorationWebStateObserver::~SessionRestorationWebStateObserver() {
-  Shutdown();
+  if (web_state_->IsRealized()) {
+    web_state_->GetPageWorldWebFramesManager()->RemoveObserver(this);
+    [web_state_->GetWebViewProxy().scrollViewProxy
+        removeObserver:scroll_observer_];
+
+    [scroll_observer_ shutdown];
+    scroll_observer_ = nil;
+  }
+
+  web_state_->RemoveObserver(this);
 }
 
 #pragma mark - web::WebStateObserver
@@ -46,8 +57,7 @@ void SessionRestorationWebStateObserver::WebStateRealized(
 
 void SessionRestorationWebStateObserver::WebStateDestroyed(
     web::WebState* web_state) {
-  DCHECK_EQ(web_state, web_state_);
-  Shutdown();
+  NOTREACHED_NORETURN();
 }
 
 #pragma mark - web::WebFramesManager::Observer
@@ -79,8 +89,7 @@ void SessionRestorationWebStateObserver::WebFrameBecameAvailable(
 SessionRestorationWebStateObserver::SessionRestorationWebStateObserver(
     web::WebState* web_state,
     WebStateDirtyCallback callback)
-    : callback_(callback), web_state_(web_state) {
-  DCHECK(web_state_);
+    : web_state_(web_state), callback_(callback) {
   web_state_->AddObserver(this);
   if (web_state_->IsRealized()) {
     WebStateRealized(web_state_);
@@ -104,26 +113,6 @@ void SessionRestorationWebStateObserver::MarkDirty() {
   last_committed_item_index_ = navigation_manager->GetLastCommittedItemIndex();
 
   callback_.Run(web_state_);
-}
-
-void SessionRestorationWebStateObserver::Shutdown() {
-  // It is possible for Shutdown() to be called multiple time. In that
-  // case `web_state_` will be null the second time. Early return then.
-  if (!web_state_) {
-    return;
-  }
-
-  if (web_state_->IsRealized()) {
-    web_state_->GetPageWorldWebFramesManager()->RemoveObserver(this);
-    [web_state_->GetWebViewProxy().scrollViewProxy
-        removeObserver:scroll_observer_];
-
-    [scroll_observer_ shutdown];
-    scroll_observer_ = nil;
-  }
-
-  web_state_->RemoveObserver(this);
-  web_state_ = nullptr;
 }
 
 WEB_STATE_USER_DATA_KEY_IMPL(SessionRestorationWebStateObserver)

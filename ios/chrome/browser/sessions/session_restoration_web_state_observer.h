@@ -60,12 +60,9 @@ class SessionRestorationWebStateObserver final
   // was not yet marked as dirty, will invoke `callback_`.
   void MarkDirty();
 
-  // Cleanup the observations.
-  void Shutdown();
-
+  web::WebState* const web_state_;
   WebStateDirtyCallback callback_;
 
-  web::WebState* web_state_ = nullptr;
   bool is_dirty_ = false;
 
   int item_count_ = -1;
