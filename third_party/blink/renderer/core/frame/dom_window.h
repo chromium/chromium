@@ -118,7 +118,8 @@ class CORE_EXPORT DOMWindow : public EventTarget {
   DOMWindow* AnonymousIndexedGetter(uint32_t index);
 
   // Returns the opener and collects cross-origin access metrics.
-  DOMWindow* OpenerWithMetrics() const;
+  ScriptValue openerForBindings(v8::Isolate*) const;
+  void setOpenerForBindings(v8::Isolate*, ScriptValue, ExceptionState&);
 
   String SanitizedCrossDomainAccessErrorMessage(
       const LocalDOMWindow* accessing_window,

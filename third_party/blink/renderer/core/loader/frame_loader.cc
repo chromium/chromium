@@ -476,15 +476,6 @@ void FrameLoader::DidFinishNavigation(NavigationFinishState state) {
     parent->CheckCompleted();
 }
 
-Frame* FrameLoader::Opener() {
-  return frame_->Opener();
-}
-
-void FrameLoader::SetOpener(LocalFrame* opener) {
-  // If the frame is already detached, the opener has already been cleared.
-  frame_->SetOpener(opener);
-}
-
 bool FrameLoader::AllowPlugins() {
   // With Oilpan, a FrameLoader might be accessed after the Page has been
   // detached. FrameClient will not be accessible, so bail early.

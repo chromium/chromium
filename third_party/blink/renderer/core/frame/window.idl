@@ -63,7 +63,7 @@
     [Replaceable, CrossOrigin] readonly attribute unsigned long length;
     [LegacyUnforgeable, CrossOrigin] readonly attribute Window? top;
     // FIXME: opener should be of type any.
-    [CrossOrigin, Custom=Setter, ImplementedAs=OpenerWithMetrics] attribute Window opener;
+    [CrossOrigin, ImplementedAs=openerForBindings, CallWith=Isolate, RaisesException=Setter] attribute any opener;
     [Replaceable, CrossOrigin] readonly attribute Window? parent;
     [CheckSecurity=ReturnValue] readonly attribute Element? frameElement;
 

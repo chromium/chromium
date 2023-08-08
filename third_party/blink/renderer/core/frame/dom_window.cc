@@ -11,6 +11,7 @@
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/capture_source_location.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/post_message_helper.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_window.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_window_post_message_options.h"
@@ -162,11 +163,13 @@ DOMWindow* DOMWindow::frames() const {
   return GetFrame()->DomWindow();
 }
 
-DOMWindow* DOMWindow::OpenerWithMetrics() const {
+ScriptValue DOMWindow::openerForBindings(v8::Isolate* isolate) const {
   RecordWindowProxyAccessMetrics(
       WebFeature::kWindowProxyCrossOriginAccessOpener,
       WebFeature::kWindowProxyCrossOriginAccessFromOtherPageOpener);
-  return opener();
+  ScriptState* script_state = ScriptState::From(isolate->GetCurrentContext());
+  return ScriptValue(isolate, ToV8Traits<IDLNullable<DOMWindow>>::ToV8(
+                                  script_state, opener()));
 }
 
 DOMWindow* DOMWindow::opener() const {
@@ -176,6 +179,51 @@ DOMWindow* DOMWindow::opener() const {
 
   Frame* opener = GetFrame()->Opener();
   return opener ? opener->DomWindow() : nullptr;
+}
+
+void DOMWindow::setOpenerForBindings(v8::Isolate* isolate,
+                                     ScriptValue opener,
+                                     ExceptionState& exception_state) {
+  ReportCoopAccess("opener");
+  if (!GetFrame()) {
+    return;
+  }
+
+  // https://html.spec.whatwg.org/C/#dom-opener
+  // 7.1.2.1. Navigating related browsing contexts in the DOM
+  // The opener attribute's setter must run these steps:
+  // step 1. If the given value is null and this Window object's browsing
+  //     context is non-null, then set this Window object's browsing context's
+  //     disowned to true.
+  //
+  // Opener can be shadowed if it is in the same domain.
+  // Have a special handling of null value to behave
+  // like Firefox. See bug http://b/1224887 & http://b/791706.
+  if (opener.IsNull()) {
+    To<LocalFrame>(GetFrame())->SetOpener(nullptr);
+  }
+
+  // step 2. If the given value is non-null, then return
+  //     ? OrdinaryDefineOwnProperty(this Window object, "opener",
+  //     { [[Value]]: the given value, [[Writable]]: true,
+  //       [[Enumerable]]: true, [[Configurable]]: true }).
+  v8::Local<v8::Context> context = isolate->GetCurrentContext();
+  v8::Local<v8::Object> this_wrapper =
+      ToV8Traits<DOMWindow>::ToV8(ScriptState::From(context), this)
+          .ToLocalChecked()
+          .As<v8::Object>();
+  v8::PropertyDescriptor desc(opener.V8Value(), /*writable=*/true);
+  desc.set_enumerable(true);
+  desc.set_configurable(true);
+  bool result = false;
+  if (!this_wrapper
+           ->DefineProperty(context, V8AtomicString(isolate, "opener"), desc)
+           .To(&result)) {
+    return;
+  }
+  if (!result) {
+    exception_state.ThrowTypeError("Cannot redefine the property.");
+  }
 }
 
 DOMWindow* DOMWindow::parent() const {

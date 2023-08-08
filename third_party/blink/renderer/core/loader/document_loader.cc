@@ -1986,7 +1986,7 @@ Frame* DocumentLoader::CalculateOwnerFrame() {
   DCHECK(url_.ProtocolIsAbout() || url_.IsEmpty()) << "url_ = " << url_;
   Frame* owner_frame = frame_->Tree().Parent();
   if (!owner_frame)
-    owner_frame = frame_->Loader().Opener();
+    owner_frame = frame_->Opener();
 
   // No other checks are needed for the initial empty document.
   if (url_.IsEmpty())
@@ -2585,8 +2585,7 @@ void DocumentLoader::CommitNavigation() {
   }
 
   bool should_clear_window_name =
-      previous_window && frame_->IsOutermostMainFrame() &&
-      !frame_->Loader().Opener() &&
+      previous_window && frame_->IsOutermostMainFrame() && !frame_->Opener() &&
       !frame_->DomWindow()->GetSecurityOrigin()->IsSameOriginWith(
           previous_window->GetSecurityOrigin());
   if (should_clear_window_name) {

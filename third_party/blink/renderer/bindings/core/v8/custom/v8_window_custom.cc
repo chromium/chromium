@@ -62,54 +62,6 @@
 
 namespace blink {
 
-void V8Window::OpenerAttributeSetterCustom(
-    v8::Local<v8::Value> value,
-    const v8::FunctionCallbackInfo<v8::Value>& info) {
-  DOMWindow* impl = V8Window::ToWrappableUnsafe(info.This());
-  impl->ReportCoopAccess("opener");
-  if (!impl->GetFrame())
-    return;
-
-  // https://html.spec.whatwg.org/C/#dom-opener
-  // 7.1.2.1. Navigating related browsing contexts in the DOM
-  // The opener attribute's setter must run these steps:
-  // step 1. If the given value is null and this Window object's browsing
-  //     context is non-null, then set this Window object's browsing context's
-  //     disowned to true.
-  //
-  // Opener can be shadowed if it is in the same domain.
-  // Have a special handling of null value to behave
-  // like Firefox. See bug http://b/1224887 & http://b/791706.
-  if (value->IsNull()) {
-    // impl->frame() has to be a non-null LocalFrame.  Otherwise, the
-    // same-origin check would have failed.
-    DCHECK(impl->GetFrame());
-    To<LocalFrame>(impl->GetFrame())->Loader().SetOpener(nullptr);
-  }
-
-  // step 2. If the given value is non-null, then return
-  //     ? OrdinaryDefineOwnProperty(this Window object, "opener",
-  //     { [[Value]]: the given value, [[Writable]]: true,
-  //       [[Enumerable]]: true, [[Configurable]]: true }).
-  v8::Isolate* isolate = info.GetIsolate();
-  v8::PropertyDescriptor desc(value, /*writable=*/true);
-  desc.set_enumerable(true);
-  desc.set_configurable(true);
-  bool result = false;
-  if (!info.This()
-           ->DefineProperty(isolate->GetCurrentContext(),
-                            V8AtomicString(isolate, "opener"), desc)
-           .To(&result)) {
-    return;
-  }
-  if (!result) {
-    ExceptionState exception_state(
-        isolate, ExceptionContext::Context::kAttributeSet, "Window", "opener");
-    exception_state.ThrowTypeError("Cannot redefine the property.");
-    return;
-  }
-}
-
 void V8Window::NamedPropertyGetterCustom(
     const AtomicString& name,
     const v8::PropertyCallbackInfo<v8::Value>& info) {
