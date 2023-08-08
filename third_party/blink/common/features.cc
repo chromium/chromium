@@ -1038,6 +1038,10 @@ const base::FeatureParam<bool> kLCPCriticalPathPredictorDryRun{
 const base::FeatureParam<int> kLCPCriticalPathPredictorMaxElementLocatorLength{
     &kLCPCriticalPathPredictor, "lcpp_max_element_locator_length", 1024};
 
+BASE_FEATURE(kLCPScriptObserver,
+             "LCPScriptObserver",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables reporting as LCP of the time the first frame of a video was painted.
 BASE_FEATURE(kLCPVideoFirstFrame,
              "LCPVideoFirstFrame",

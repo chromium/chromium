@@ -58,6 +58,7 @@
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/layout_image.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_block_flow.h"
+#include "third_party/blink/renderer/core/lcp_critical_path_predictor/lcp_critical_path_predictor.h"
 #include "third_party/blink/renderer/core/loader/resource/image_resource_content.h"
 #include "third_party/blink/renderer/core/media_type_names.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
@@ -115,7 +116,18 @@ HTMLImageElement::HTMLImageElement(Document& document, bool created_by_parser)
       is_ad_related_(false),
       is_lcp_element_(false),
       is_changed_shortly_after_mouseover_(false),
-      has_sizes_attribute_in_img_or_sibling_(false) {}
+      has_sizes_attribute_in_img_or_sibling_(false) {
+  if (base::FeatureList::IsEnabled(features::kLCPScriptObserver)) {
+    if (LocalFrame* frame = document.GetFrame()) {
+      if (LCPCriticalPathPredictor* lcpp = frame->GetLCPP()) {
+        if (LCPScriptObserver* script_observer = lcpp->lcp_script_observer()) {
+          // Record scripts that created this HTMLImageElement.
+          creator_scripts_ = script_observer->GetExecutingScriptUrls();
+        }
+      }
+    }
+  }
+}
 
 HTMLImageElement::~HTMLImageElement() = default;
 
@@ -522,6 +534,20 @@ Node::InsertionNotificationRequest HTMLImageElement::InsertedInto(
       GetImageLoader().NoImageResourceToLoad();
     }
   }
+
+  if (base::FeatureList::IsEnabled(features::kLCPScriptObserver)) {
+    if (LocalFrame* frame = GetDocument().GetFrame()) {
+      if (LCPCriticalPathPredictor* lcpp = frame->GetLCPP()) {
+        if (LCPScriptObserver* script_observer = lcpp->lcp_script_observer()) {
+          // Record scripts that inserted this HTMLImageElement.
+          for (auto& url : script_observer->GetExecutingScriptUrls()) {
+            creator_scripts_.insert(url);
+          }
+        }
+      }
+    }
+  }
+
   return HTMLElement::InsertedInto(insertion_point);
 }
 

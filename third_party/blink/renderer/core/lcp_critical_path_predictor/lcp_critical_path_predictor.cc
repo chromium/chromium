@@ -18,6 +18,9 @@ LCPCriticalPathPredictor::LCPCriticalPathPredictor(LocalFrame& frame)
       host_(frame.DomWindow()),
       task_runner_(frame.GetTaskRunner(TaskType::kInternalLoading)) {
   CHECK(base::FeatureList::IsEnabled(features::kLCPCriticalPathPredictor));
+  if (base::FeatureList::IsEnabled(features::kLCPScriptObserver)) {
+    lcp_script_observer_ = MakeGarbageCollected<LCPScriptObserver>(frame_);
+  }
 }
 
 LCPCriticalPathPredictor::~LCPCriticalPathPredictor() = default;
@@ -46,6 +49,11 @@ void LCPCriticalPathPredictor::OnLargestContentfulPaintUpdated(
             features::kLCPCriticalPathPredictorMaxElementLocatorLength.Get())) {
       GetHost().SetLcpElementLocator(lcp_element_locator_string);
     }
+
+    if (HTMLImageElement* image_element =
+            DynamicTo<HTMLImageElement>(lcp_element)) {
+      // TODO(crbug.com/1419756): Record LCP element's `creator_scripts`.
+    }
   }
 }
 
@@ -62,6 +70,7 @@ LCPCriticalPathPredictor::GetHost() {
 void LCPCriticalPathPredictor::Trace(Visitor* visitor) const {
   visitor->Trace(frame_);
   visitor->Trace(host_);
+  visitor->Trace(lcp_script_observer_);
 }
 
 }  // namespace blink

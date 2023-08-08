@@ -7,6 +7,8 @@ blink_core_sources_lcp_critical_path_predictor = [
   "element_locator.h",
   "lcp_critical_path_predictor.cc",
   "lcp_critical_path_predictor.h",
+  "lcp_script_observer.cc",
+  "lcp_script_observer.h",
 ]
 
 blink_core_tests_lcp_critical_path_predictor = [ "element_locator_test.cc" ]

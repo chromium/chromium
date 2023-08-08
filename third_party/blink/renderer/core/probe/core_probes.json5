@@ -25,6 +25,13 @@
         "ExecuteScript",
       ]
     },
+    LCPScriptObserver: {
+      include_path: "third_party/blink/renderer/core/lcp_critical_path_predictor",
+      probes: [
+        "CallFunction",
+        "ExecuteScript",
+      ]
+    },
     AnimationFrameTimingMonitor: {
       include_path: "third_party/blink/renderer/core/frame",
       probes: [

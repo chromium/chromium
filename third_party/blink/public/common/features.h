@@ -552,6 +552,10 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
     kLCPCriticalPathPredictorMaxElementLocatorLength;
 
+// If enabled, script execution is observed to determine script dependencies of
+// the LCP element.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLCPScriptObserver);
+
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLCPVideoFirstFrame);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLightweightNoStatePrefetch);
