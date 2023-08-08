@@ -96,6 +96,14 @@ class TestGLES2Interface : public gpu::gles2::GLES2InterfaceStub {
   void LoseContextCHROMIUM(GLenum current, GLenum other) override;
   GLenum GetGraphicsResetStatusKHR() override;
 
+  void ReadPixels(GLint x,
+                  GLint y,
+                  GLsizei width,
+                  GLsizei height,
+                  GLenum format,
+                  GLenum type,
+                  void* pixels) override;
+
   // Overridden from gpu::InterfaceBase
   void GenSyncTokenCHROMIUM(GLbyte* sync_token) override;
   void GenUnverifiedSyncTokenCHROMIUM(GLbyte* sync_token) override;

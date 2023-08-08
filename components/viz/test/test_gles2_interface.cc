@@ -12,6 +12,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "components/viz/test/test_context_support.h"
 #include "gpu/GLES2/gl2extchromium.h"
+#include "gpu/command_buffer/common/gles2_cmd_utils.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -424,6 +425,23 @@ GLenum TestGLES2Interface::GetGraphicsResetStatusKHR() {
   if (IsContextLost())
     return GL_UNKNOWN_CONTEXT_RESET_KHR;
   return GL_NO_ERROR;
+}
+
+void TestGLES2Interface::ReadPixels(GLint x,
+                                    GLint y,
+                                    GLsizei width,
+                                    GLsizei height,
+                                    GLenum format,
+                                    GLenum type,
+                                    void* pixels) {
+  // Zero-initialize the destination buffer to appease MSAN. Note that we don't
+  // support non-default alignment or ES3 pixel store parameters, but that's ok
+  // since this is test-only code and MSAN will catch any uninitialized access.
+  uint32_t pixels_size = 0;
+  gpu::gles2::GLES2Util::ComputeImageDataSizes(
+      width, height, /*depth=*/1, format, type, /*alignment=*/4, &pixels_size,
+      /*opt_unpadded_row_size=*/nullptr, /*opt_padded_row_size=*/nullptr);
+  memset(pixels, 0, pixels_size);
 }
 
 void TestGLES2Interface::set_support_texture_format_bgra8888(bool support) {

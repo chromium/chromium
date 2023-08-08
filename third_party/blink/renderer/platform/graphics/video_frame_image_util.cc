@@ -337,17 +337,18 @@ scoped_refptr<viz::RasterContextProvider> GetRasterContextProvider() {
 std::unique_ptr<CanvasResourceProvider> CreateResourceProviderForVideoFrame(
     const SkImageInfo& info,
     viz::RasterContextProvider* raster_context_provider) {
+  constexpr auto kFilterQuality = cc::PaintFlags::FilterQuality::kLow;
+  constexpr auto kShouldInitialize =
+      CanvasResourceProvider::ShouldInitialize::kNo;
   if (!ShouldCreateAcceleratedImages(raster_context_provider)) {
-    return CanvasResourceProvider::CreateBitmapProvider(
-        info, cc::PaintFlags::FilterQuality::kLow,
-        CanvasResourceProvider::ShouldInitialize::kNo);
+    return CanvasResourceProvider::CreateBitmapProvider(info, kFilterQuality,
+                                                        kShouldInitialize);
   }
+  constexpr bool kIsOriginTopLeft = true;
   return CanvasResourceProvider::CreateSharedImageProvider(
-      info, cc::PaintFlags::FilterQuality::kLow,
-      CanvasResourceProvider::ShouldInitialize::kNo,
+      info, kFilterQuality, kShouldInitialize,
       SharedGpuContext::ContextProviderWrapper(), RasterMode::kGPU,
-      false,  // Origin of GL texture is bottom left on screen
-      gpu::SHARED_IMAGE_USAGE_DISPLAY_READ);
+      kIsOriginTopLeft, gpu::SHARED_IMAGE_USAGE_DISPLAY_READ);
 }
 
 }  // namespace blink
