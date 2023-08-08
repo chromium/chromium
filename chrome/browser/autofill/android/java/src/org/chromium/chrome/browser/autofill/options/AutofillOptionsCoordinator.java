@@ -18,6 +18,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /**
  * Coordinator for the autofill options settings screen. Connects the settings fragment with ...
@@ -85,6 +86,7 @@ public class AutofillOptionsCoordinator {
                         .build();
         mMediator.initialize(model);
 
+        PropertyModelChangeProcessor.create(model, mFragment, AutofillOptionsViewBinder::bind);
         return model;
     }
 

@@ -39,6 +39,8 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/autofill/options/AutofillOptionsFragment.java",
     "java/src/org/chromium/chrome/browser/autofill/options/AutofillOptionsMediator.java",
     "java/src/org/chromium/chrome/browser/autofill/options/AutofillOptionsProperties.java",
+    "java/src/org/chromium/chrome/browser/autofill/options/AutofillOptionsViewBinder.java",
+    "java/src/org/chromium/chrome/browser/autofill/options/RadioButtonGroupThirdPartyPreference.java",
   ]
 
   resources_package = "org.chromium.chrome.browser.autofill"
@@ -135,8 +137,10 @@ android_resources("java_resources") {
     "java/res/layout/payment_request_editor.xml",
     "java/res/layout/payment_request_editor_dropdown.xml",
     "java/res/layout/payments_request_editor_textview.xml",
+    "java/res/layout/radio_button_group_third_party_preference.xml",
     "java/res/menu/prefeditor_editor_menu.xml",
     "java/res/values/dimens.xml",
+    "java/res/xml/autofill_options_preferences.xml",
   ]
 }
 
@@ -200,6 +204,7 @@ robolectric_library("junit") {
     "//chrome/test/android:chrome_java_unit_test_support",
     "//components/autofill/android:main_autofill_java",
     "//components/browser_ui/settings/android:java",
+    "//components/browser_ui/widget/android:java",
     "//components/prefs/android:java",
     "//components/signin/public/android:java",
     "//components/sync/android:sync_java",

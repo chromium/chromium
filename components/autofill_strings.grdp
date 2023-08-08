@@ -359,6 +359,24 @@
       </message>
     </else>
   </if>
+  <if expr="is_android">
+    <!-- TODO(crbug.com/1469795): Use finalized string.-->
+    <message translateable="false" name="IDS_AUTOFILL_THIRD_PARTY_FILLING_DEFAULT" desc="Title of the option to use the default Chrome autofill experience." formatter_data="android_java">
+      Default
+    </message>
+    <!-- TODO(crbug.com/1469795): Use finalized string.-->
+    <message translateable="false" name="IDS_AUTOFILL_THIRD_PARTY_FILLING_OPT_IN" desc="Title of the option to use third-party autofill in Chrome." formatter_data="android_java">
+      Use other providers
+    </message>
+    <!-- TODO(crbug.com/1469795): Use finalized string.-->
+    <message translateable="false" name="IDS_AUTOFILL_THIRD_PARTY_FILLING_DEFAULT_DESCRIPTION" desc="Description shown on the option to use the default Chrome autofill experience." formatter_data="android_java">
+      Use Google Password Manager and Chrome Autofill to save and fill passwords, passkeys, payment methods, and addresses
+    </message>
+    <!-- TODO(crbug.com/1469795): Use finalized string.-->
+    <message translateable="false" name="IDS_AUTOFILL_THIRD_PARTY_FILLING_OPT_IN_DESCRIPTION" desc="Description shown on the option enabling the use of third-party autofill in Chrome." formatter_data="android_java">
+      Use password managers and autofill services that are turned on in Android Settings
+    </message>
+  </if>
 
   <!-- Autofill/Wallet integration preferences -->
   <if expr="not is_ios">

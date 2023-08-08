@@ -6,11 +6,19 @@ package org.chromium.chrome.browser.autofill.options;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 import static org.chromium.chrome.browser.autofill.options.AutofillOptionsProperties.ON_THIRD_PARTY_TOGGLE_CHANGED;
 import static org.chromium.chrome.browser.autofill.options.AutofillOptionsProperties.THIRD_PARTY_AUTOFILL_ENABLED;
+
+import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 
 import androidx.annotation.StringRes;
 import androidx.fragment.app.testing.FragmentScenario;
@@ -32,6 +40,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -46,6 +55,12 @@ import org.chromium.ui.modelutil.PropertyModel;
 @Config(manifest = Config.NONE)
 @EnableFeatures({ChromeFeatureList.AUTOFILL_VIRTUAL_VIEW_STRUCTURE_ANDROID})
 public class AutofillOptionsTest {
+    // Shorthand for frequent enums that can't be static imports.
+    private static final @RadioButtonGroupThirdPartyPreference.ThirdPartyOption int DEFAULT =
+            RadioButtonGroupThirdPartyPreference.ThirdPartyOption.DEFAULT;
+    private static final @RadioButtonGroupThirdPartyPreference.ThirdPartyOption int USE_3P =
+            RadioButtonGroupThirdPartyPreference.ThirdPartyOption.USE_OTHER_PROVIDER;
+
     @Rule
     public TestRule mProcessor = new Features.JUnitProcessor();
     @Rule
@@ -57,6 +72,8 @@ public class AutofillOptionsTest {
     private PrefService mPrefs;
     @Mock
     private Profile mProfile;
+    @Mock
+    private HelpAndFeedbackLauncher mHelpAndFeedbackLauncher;
 
     private AutofillOptionsFragment mFragment;
     private AutoCloseable mCloseableMocks;
@@ -69,10 +86,12 @@ public class AutofillOptionsTest {
         mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mMockUserPrefsJni);
         doReturn(mPrefs).when(mMockUserPrefsJni).get(mProfile);
 
-        mScenario = FragmentScenario.launchInContainer(AutofillOptionsFragment.class);
+        mScenario = FragmentScenario.launchInContainer(
+                AutofillOptionsFragment.class, Bundle.EMPTY, R.style.Theme_MaterialComponents);
         mScenario.onFragment(fragment -> {
             mFragment = (AutofillOptionsFragment) fragment; // Valid until scenario is recreated.
             mFragment.setProfile(mProfile);
+            mFragment.setHelpAndFeedbackLauncher(mHelpAndFeedbackLauncher);
         });
     }
 
@@ -103,7 +122,7 @@ public class AutofillOptionsTest {
         PropertyModel model = autofillOptions.initializeNow();
 
         // Enabling the option should be recorded once.
-        model.get(ON_THIRD_PARTY_TOGGLE_CHANGED).onResult(true);
+        getRadioButtonComponent().getOptInButton().performClick();
         histogramWatcher.assertExpected();
 
         // Enabling the option again should be ignored.
@@ -113,8 +132,33 @@ public class AutofillOptionsTest {
         // Disabling the option should be recorded again.
         histogramWatcher = HistogramWatcher.newSingleRecordWatcher(
                 AutofillOptionsMediator.HISTOGRAM_USE_THIRD_PARTY_FILLING, false);
-        model.get(ON_THIRD_PARTY_TOGGLE_CHANGED).onResult(false);
+        getRadioButtonComponent().getDefaultButton().performClick();
         histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @SmallTest
+    public void updateSettingsFromPrefOnViewCreated() {
+        doReturn(true).when(mPrefs).getBoolean(Pref.AUTOFILL_USING_VIRTUAL_VIEW_STRUCTURE);
+        assertEquals(getRadioButtonComponent().getSelectedOption(), DEFAULT); // Not updated!
+
+        AutofillOptionsCoordinator.createFor(mFragment); // Initial binding updates the pref.
+
+        verifyOptionReflectedInView(USE_3P);
+    }
+
+    @Test
+    @SmallTest
+    public void toggledOptionSetsPref() {
+        doReturn(false).when(mPrefs).getBoolean(Pref.AUTOFILL_USING_VIRTUAL_VIEW_STRUCTURE);
+        PropertyModel model = new AutofillOptionsCoordinator(mFragment).initializeNow();
+        assertFalse(model.get(THIRD_PARTY_AUTOFILL_ENABLED)); // Not updated yet!
+
+        getRadioButtonComponent().getOptInButton().performClick();
+
+        verify(mPrefs).setBoolean(Pref.AUTOFILL_USING_VIRTUAL_VIEW_STRUCTURE, true);
+        assertTrue(model.get(THIRD_PARTY_AUTOFILL_ENABLED));
+        verifyOptionReflectedInView(USE_3P);
     }
 
     @Test
@@ -131,6 +175,7 @@ public class AutofillOptionsTest {
         lifecycleRegistry.handleLifecycleEvent(Event.ON_RESUME);
 
         assertTrue(model.get(THIRD_PARTY_AUTOFILL_ENABLED));
+        verifyOptionReflectedInView(USE_3P);
     }
 
     @Test
@@ -140,10 +185,54 @@ public class AutofillOptionsTest {
 
         assertEquals(
                 mFragment.getActivity().getTitle(), getString(R.string.autofill_options_title));
-        // TODO(crbug/1469795): Implement and assert that the toggle is present.
+        assertEquals(getRadioButtonComponent().getKey(),
+                AutofillOptionsFragment.PREF_AUTOFILL_THIRD_PARTY_FILLING);
+        assertEquals(getRadioButtonComponent().getDefaultButton().getPrimaryText(),
+                getString(R.string.autofill_third_party_filling_default));
+        assertEquals(getRadioButtonComponent().getDefaultButton().getDescriptionText(),
+                getString(R.string.autofill_third_party_filling_default_description));
+        assertEquals(getRadioButtonComponent().getOptInButton().getPrimaryText(),
+                getString(R.string.autofill_third_party_filling_opt_in));
+        assertEquals(getRadioButtonComponent().getOptInButton().getDescriptionText(),
+                getString(R.string.autofill_third_party_filling_opt_in_description));
+    }
+
+    @Test
+    @SmallTest
+    public void injectedHelpTriggersAutofillHelp() {
+        Menu helpMenu = mock(Menu.class);
+        MenuItem helpItem = mock(MenuItem.class);
+        doReturn(helpItem).when(helpMenu).add(
+                Menu.NONE, R.id.menu_id_targeted_help, Menu.NONE, R.string.menu_help);
+        doReturn(R.id.menu_id_targeted_help).when(helpItem).getItemId();
+
+        // Create completely replaces the menu with only the help icon.
+        mFragment.onCreateOptionsMenu(helpMenu, mock(MenuInflater.class));
+        verify(helpMenu).clear();
+        verify(helpItem).setIcon(R.drawable.ic_help_and_feedback);
+
+        // Trigger the help as it would happen on tap.
+        mFragment.onOptionsItemSelected(helpItem);
+        verify(mHelpAndFeedbackLauncher)
+                .show(mFragment.getActivity(), getString(R.string.help_context_autofill), null);
     }
 
     private String getString(@StringRes int stringId) {
         return mFragment.getResources().getString(stringId);
+    }
+
+    private void verifyOptionReflectedInView(
+            @RadioButtonGroupThirdPartyPreference.ThirdPartyOption int selectedOption) {
+        assert selectedOption == DEFAULT || selectedOption == USE_3P;
+        assertNotNull(getRadioButtonComponent());
+        boolean uses_third_party = selectedOption == USE_3P;
+        assertEquals(getRadioButtonComponent().getSelectedOption(), selectedOption);
+        assertEquals(getRadioButtonComponent().getDefaultButton().isChecked(), !uses_third_party);
+        assertEquals(getRadioButtonComponent().getOptInButton().isChecked(), uses_third_party);
+    }
+
+    private RadioButtonGroupThirdPartyPreference getRadioButtonComponent() {
+        assertNotNull(mFragment);
+        return mFragment.getThirdPartyFillingOption();
     }
 }
