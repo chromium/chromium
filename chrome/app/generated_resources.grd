@@ -3812,15 +3812,14 @@ are declared in tools/grit/grit_rule.gni.
       <message name="IDS_GEOLOCATION_QUIET_PERMISSION_BUBBLE_ALLOW_BUTTON" desc="Text displayed on the button that enables geolocation for a site. This button is part of the geolocation status bubble, which is triggered when a user clicks on the blocked geolocation icon in the omnibox.">
         Allow for this site
       </message>
-      <!-- TODO(crbug.com/1433644): Add final string. -->
-      <message name="IDS_STORAGE_ACCESS_PERMISSION_BUBBLE_MESSAGE" desc="Text displayed in the omnibox bubble for the StorageAccess permission." translateable="false">
-        These sites can use info they’ve saved about you as you browse <ph name="HOST">$1<ex>example.com</ex></ph>.
+      <message name="IDS_STORAGE_ACCESS_PERMISSION_BUBBLE_MESSAGE" desc="The body content of a omnibox box that's shows the user the websites that have or not have storage access permission.">
+        These sites can use info they've saved about you as you browse <ph name="HOST">$1<ex>parent.com</ex></ph>
       </message>
-      <message name="IDS_STORAGE_ACCESS_PERMISSION_ALLOWED_TOOLTIP" desc="Tooltip text when storage access for a page is allowed." translateable="false">
-        An embedded service on this site can use info they’ve saved about you
+      <message name="IDS_STORAGE_ACCESS_PERMISSION_ALLOWED_TOOLTIP" desc="Tooltip text for the omnibox icon when all websites are allowed to “use their info“ while on the opened website.">
+        Embedded content on this site can use info they've saved about you
       </message>
-      <message name="IDS_STORAGE_ACCESS_PERMISSION_BLOCKED_TOOLTIP" desc="Tooltip text when storage access for a page is not allowed." translateable="false">
-        An embedded service on this site can not use info they’ve saved about you
+      <message name="IDS_STORAGE_ACCESS_PERMISSION_BLOCKED_TOOLTIP" desc="Tooltip text for the omnibox icon when all websites are not allowed to “use their info“ while on the opened website.">
+        Embedded content on this site can't use info they've saved about you
       </message>
 
       <!-- Cookie controls strings. -->
@@ -9722,11 +9721,10 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         (Chrome error pages)
       </message>
 
-      <!-- TODO(crbug.com/1433644): Add final string. -->
-      <message name="IDS_STORAGE_ACCESS_MANAGE_TEXT" translateable="false" desc="The text on the button to manage the StorageAcccess permission. The StorageAccess API is called 'Embedded content' in user visible UIs">
-        Embedded content settings
+      <message name="IDS_STORAGE_ACCESS_MANAGE_TEXT" desc="The text on the button to manage the StorageAcccess settings.">
+        Embedded content
       </message>
-      <message name="IDS_STORAGE_ACCESS_MANAGE_TOOLTIP"  translateable="false" desc="The tooltip on the button to manage the StorageAcccess permission. The StorageAccess API is called 'Embedded content' in user visible UIs">
+      <message name="IDS_STORAGE_ACCESS_MANAGE_TOOLTIP" desc="The tooltip on the button to manage the StorageAcccess settings.">
         Go to embedded content settings
       </message>
 

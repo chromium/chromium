@@ -136,7 +136,8 @@ TEST_F(PermissionPromptBubbleTwoOriginsViewTest,
   auto bubble = CreateBubble(&delegate);
 
   const auto title = base::UTF16ToUTF8(bubble->GetWindowTitle());
-  EXPECT_PRED_FORMAT2(::testing::IsSubstring, "display content", title);
+  EXPECT_PRED_FORMAT2(::testing::IsSubstring, "info they've saved about you",
+                      title);
   // The scheme is not included.
   EXPECT_PRED_FORMAT2(::testing::IsSubstring, "test.requesting.origin", title);
 }
