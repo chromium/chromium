@@ -162,10 +162,19 @@
 
   #placeholder {
     align-self: center;
+    margin-inline-end: var(--nearby-page-space-large-inline);
+  }
+
+  /* TODO(b/279623883): Remove once Jelly is launched. */
+  :host-context(body:not(.jelly-enabled)) #placeholder {
     color: var(--cros-text-color-secondary);
     font-size: 13px;
     line-height: 20px;
-    margin-inline-end: var(--nearby-page-space-large-inline);
+  }
+
+  :host-context(body.jelly-enabled) #placeholder {
+    color: var(--cros-sys-on_surface);
+    font: var(--cros-body-2-font);
   }
 
   nearby-device {
