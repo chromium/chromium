@@ -42,15 +42,16 @@ void CookieControlsBridge::UpdateWebContents(
   content::BrowserContext* context = web_contents->GetBrowserContext();
   auto* permissions_client = permissions::PermissionsClient::Get();
 
+  old_observation_.Reset();
+  observation_.Reset();
+
   controller_ = std::make_unique<CookieControlsController>(
       permissions_client->GetCookieSettings(context),
       original_context ? permissions_client->GetCookieSettings(original_context)
                        : nullptr,
       permissions_client->GetSettingsMap(context));
 
-  old_observation_.Reset();
   old_observation_.Observe(controller_.get());
-  observation_.Reset();
   observation_.Observe(controller_.get());
   controller_->Update(web_contents);
 }
