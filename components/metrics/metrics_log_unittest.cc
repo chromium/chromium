@@ -94,9 +94,6 @@ std::string GetExpectedHardwareClass() {
   // result should match with the result by calling
   // base::SysInfo::HardwareModelName().
   std::string board = base::SysInfo::GetLsbReleaseBoard();
-  if (board == "unknown") {
-    return "";
-  }
   const size_t index = board.find("-signed-");
   if (index != std::string::npos)
     board.resize(index);
