@@ -872,8 +872,67 @@ TEST_F(WebStateListTest, CloseAllNonPinnedWebStates_PinnedWebStatesNotPresent) {
   EXPECT_TRUE(observer_.batch_operation_ended());
 }
 
-// Tests closing all webstates (non-pinned).
-TEST_F(WebStateListTest, CloseAllWebStates_NonPinned) {
+// Tests closing all non-pinned webstates (pinned active WebState present).
+TEST_F(WebStateListTest,
+       CloseAllNonPinnedWebStates_PinnedActiveWebStatePresent) {
+  AppendNewWebState(kURL0);
+  AppendNewWebState(kURL1);
+  AppendNewWebState(kURL2);
+
+  web_state_list_.SetWebStatePinnedAt(0, true);
+  web_state_list_.ActivateWebStateAt(0);
+
+  // Sanity checks before closing WebStates.
+  EXPECT_EQ(3, web_state_list_.count());
+  EXPECT_EQ(0, web_state_list_.active_index());
+  EXPECT_TRUE(web_state_list_.IsWebStatePinnedAt(0));
+  EXPECT_TRUE(observer_.pinned_state_changed());
+
+  observer_.ResetStatistics();
+  web_state_list_.CloseAllNonPinnedWebStates(WebStateList::CLOSE_USER_ACTION);
+
+  EXPECT_EQ(1, web_state_list_.count());
+  EXPECT_EQ(0, web_state_list_.active_index());
+  EXPECT_TRUE(web_state_list_.IsWebStatePinnedAt(0));
+
+  EXPECT_TRUE(observer_.web_state_detached());
+  EXPECT_FALSE(observer_.web_state_activated());
+  EXPECT_TRUE(observer_.batch_operation_started());
+  EXPECT_TRUE(observer_.batch_operation_ended());
+}
+
+// Tests closing all non-pinned webstates (pinned WebState and active non-pinned
+// WebState present independently).
+TEST_F(WebStateListTest,
+       CloseAllNonPinnedWebStates_PinnedWebStateAndActiveWebStatePresent) {
+  AppendNewWebState(kURL0);
+  AppendNewWebState(kURL1);
+  AppendNewWebState(kURL2);
+
+  web_state_list_.SetWebStatePinnedAt(0, true);
+  web_state_list_.ActivateWebStateAt(1);
+
+  // Sanity checks before closing WebStates.
+  EXPECT_EQ(3, web_state_list_.count());
+  EXPECT_EQ(1, web_state_list_.active_index());
+  EXPECT_TRUE(web_state_list_.IsWebStatePinnedAt(0));
+  EXPECT_TRUE(observer_.pinned_state_changed());
+
+  observer_.ResetStatistics();
+  web_state_list_.CloseAllNonPinnedWebStates(WebStateList::CLOSE_USER_ACTION);
+
+  EXPECT_EQ(1, web_state_list_.count());
+  EXPECT_EQ(0, web_state_list_.active_index());
+  EXPECT_TRUE(web_state_list_.IsWebStatePinnedAt(0));
+
+  EXPECT_TRUE(observer_.web_state_detached());
+  EXPECT_TRUE(observer_.web_state_activated());
+  EXPECT_TRUE(observer_.batch_operation_started());
+  EXPECT_TRUE(observer_.batch_operation_ended());
+}
+
+// Tests closing all webstates (pinned and non-pinned).
+TEST_F(WebStateListTest, CloseAllWebStates_PinnedNonPinned) {
   AppendNewWebState(kURL0);
   AppendNewWebState(kURL1);
   AppendNewWebState(kURL2);
@@ -897,8 +956,8 @@ TEST_F(WebStateListTest, CloseAllWebStates_NonPinned) {
   EXPECT_TRUE(observer_.batch_operation_ended());
 }
 
-// Tests closing all webstates (pinned and non-pinned).
-TEST_F(WebStateListTest, CloseAllWebStates_PinnedNonPinned) {
+// Tests closing all webstates (non-pinned).
+TEST_F(WebStateListTest, CloseAllWebStates_NonPinned) {
   AppendNewWebState(kURL0);
   AppendNewWebState(kURL1);
   AppendNewWebState(kURL2);
@@ -912,6 +971,33 @@ TEST_F(WebStateListTest, CloseAllWebStates_PinnedNonPinned) {
   EXPECT_EQ(0, web_state_list_.count());
 
   EXPECT_TRUE(observer_.web_state_detached());
+  EXPECT_TRUE(observer_.batch_operation_started());
+  EXPECT_TRUE(observer_.batch_operation_ended());
+}
+
+// Tests closing all webstates (pinned, non-pinned and active WebStates).
+TEST_F(WebStateListTest, CloseAllWebStates_PinnedNonPinnedWithActiveWebState) {
+  AppendNewWebState(kURL0);
+  AppendNewWebState(kURL1);
+  AppendNewWebState(kURL2);
+
+  web_state_list_.SetWebStatePinnedAt(0, true);
+  web_state_list_.ActivateWebStateAt(1);
+
+  // Sanity checks before closing WebStates.
+  EXPECT_EQ(3, web_state_list_.count());
+  EXPECT_EQ(1, web_state_list_.active_index());
+  EXPECT_TRUE(web_state_list_.IsWebStatePinnedAt(0));
+  EXPECT_TRUE(observer_.pinned_state_changed());
+
+  observer_.ResetStatistics();
+  web_state_list_.CloseAllWebStates(WebStateList::CLOSE_USER_ACTION);
+
+  EXPECT_EQ(0, web_state_list_.count());
+  EXPECT_EQ(WebStateList::kInvalidIndex, web_state_list_.active_index());
+
+  EXPECT_TRUE(observer_.web_state_detached());
+  EXPECT_TRUE(observer_.web_state_activated());
   EXPECT_TRUE(observer_.batch_operation_started());
   EXPECT_TRUE(observer_.batch_operation_ended());
 }

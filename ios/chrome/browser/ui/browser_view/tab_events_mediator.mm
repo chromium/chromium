@@ -131,6 +131,7 @@
 - (void)didChangeWebStateList:(WebStateList*)webStateList
                        change:(const WebStateListChange&)change
                        status:(const WebStateListStatus&)status {
+  BOOL isActivationHandled = NO;
   switch (change.type()) {
     case WebStateListChange::Type::kStatusOnly:
       // The activation is handled after this switch statement.
@@ -143,6 +144,16 @@
       if (detachChange.is_closing()) {
         NewTabPageTabHelper* NTPTabHelper = NewTabPageTabHelper::FromWebState(
             detachChange.detached_web_state());
+        if (status.active_web_state_change()) {
+          // The active WebState can be updated when multiple WebStates are
+          // closed by `CloseAllWebStates()` or `CloseAllNonPinnedWebStates()`.
+          // Call `-didNavigateAwayFromNTP:` to update NTP and record metrics
+          // before stopping NTP.
+          [self didChangeActiveWebState:status.new_active_web_state
+                      oldActiveWebState:status.old_active_web_state
+                             isInserted:NO];
+          isActivationHandled = YES;
+        }
         if (NTPTabHelper->IsActive()) {
           [self stopNTPIfNeeded];
         }
@@ -183,7 +194,7 @@
     }
   }
 
-  if (status.active_web_state_change()) {
+  if (!isActivationHandled && status.active_web_state_change()) {
     [self didChangeActiveWebState:status.new_active_web_state
                 oldActiveWebState:status.old_active_web_state
                        isInserted:change.type() ==

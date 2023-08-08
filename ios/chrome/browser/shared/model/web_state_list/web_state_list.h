@@ -250,15 +250,23 @@ class WebStateList {
   // to the caller (abandon ownership of the returned WebState).
   //
   // Assumes that the WebStateList is locked.
-  std::unique_ptr<web::WebState> DetachWebStateAtImpl(int index,
-                                                      bool is_closing,
-                                                      bool is_user_action);
+  std::unique_ptr<web::WebState> DetachWebStateAtImpl(
+      int index,
+      bool is_closing,
+      bool is_user_action,
+      bool use_old_active_web_state,
+      web::WebState* old_active_web_state);
 
   // Closes and destroys the WebState at the specified index. The `close_flags`
-  // is a bitwise combination of ClosingFlags values.
+  // is a bitwise combination of ClosingFlags values. Use `old_active_web_state`
+  // as a value in WebStateListStatus if the `use_old_active_web_state` flag is
+  // true.
   //
   // Assumes that the WebStateList is locked.
-  void CloseWebStateAtImpl(int index, int close_flags);
+  void CloseWebStateAtImpl(int index,
+                           int close_flags,
+                           bool use_old_active_web_state,
+                           web::WebState* old_active_web_state);
 
   // Closes and destroys all WebStates after `start_index`. The `close_flags`
   // is a bitwise combination of ClosingFlags values. WebStateList is locked
@@ -274,7 +282,7 @@ class WebStateList {
   // Makes the WebState at the specified index the active WebState.
   //
   // Assumes that the WebStateList is locked.
-  void ActivateWebStateAtImpl(int index, ActiveWebStateChangeReason reason);
+  void ActivateWebStateAtImpl(int index);
 
   // Sets the opener of any WebState that reference the WebState at the
   // specified index to null.
@@ -316,6 +324,11 @@ class WebStateList {
   // Returns the wrapper of the WebState at the specified index. It is invalid
   // to call this with an index such that `ContainsIndex(index)` returns false.
   WebStateWrapper* GetWebStateWrapperAt(int index) const;
+
+  // Updates the active index, updates the WebState opener for the old active
+  // WebState if exists and brings the new active WebState to the "realized"
+  // state.
+  void SetActiveIndex(int active_index);
 
   // Takes action when the active WebState changes. Does nothing it
   // there is no active WebState.
