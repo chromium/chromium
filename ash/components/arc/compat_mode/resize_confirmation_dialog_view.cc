@@ -167,7 +167,7 @@ std::unique_ptr<views::View> ResizeConfirmationDialogView::MakeContentsView() {
     const raw_ptr<ash::CheckboxGroup> checkbox_group =
         contents_view->AddChildView(std::make_unique<ash::CheckboxGroup>(
             bounds().width() - 32 * 2, gfx::Insets::TLBR(0, 0, 8, 0), 0,
-            gfx::Insets()));
+            gfx::Insets(), ash::Checkbox::kImageLabelSpacingDP));
     do_not_ask_checkbox_jelly_ = checkbox_group->AddButton(
         ash::OptionButtonBase::PressedCallback(),
         l10n_util::GetStringUTF16(

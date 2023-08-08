@@ -20,8 +20,13 @@ namespace {}  // namespace
 Checkbox::Checkbox(int button_width,
                    PressedCallback callback,
                    const std::u16string& label,
-                   const gfx::Insets& insets)
-    : OptionButtonBase(button_width, callback, label, insets) {}
+                   const gfx::Insets& insets,
+                   int image_label_spacing)
+    : OptionButtonBase(button_width,
+                       callback,
+                       label,
+                       insets,
+                       image_label_spacing) {}
 
 Checkbox::~Checkbox() = default;
 

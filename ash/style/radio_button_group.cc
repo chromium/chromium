@@ -21,11 +21,13 @@ RadioButtonGroup::RadioButtonGroup(int group_width,
                                    int between_child_spacing,
                                    RadioButton::IconDirection icon_direction,
                                    RadioButton::IconType icon_type,
-                                   const gfx::Insets& radio_button_padding)
+                                   const gfx::Insets& radio_button_padding,
+                                   int image_label_spacing)
     : OptionButtonGroup(group_width,
                         inside_border_insets,
                         between_child_spacing,
-                        radio_button_padding),
+                        radio_button_padding,
+                        image_label_spacing),
       icon_direction_(icon_direction),
       icon_type_(icon_type) {}
 
@@ -35,7 +37,7 @@ RadioButton* RadioButtonGroup::AddButton(RadioButton::PressedCallback callback,
                                          const std::u16string& label) {
   auto* button = AddChildView(std::make_unique<RadioButton>(
       group_width_ - inside_border_insets_.width(), callback, label,
-      icon_direction_, icon_type_, button_padding_));
+      icon_direction_, icon_type_, button_padding_, image_label_spacing_));
   button->set_delegate(this);
   buttons_.push_back(button);
   return button;

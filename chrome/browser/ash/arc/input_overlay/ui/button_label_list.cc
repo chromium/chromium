@@ -87,7 +87,9 @@ void ButtonLabelList::AddActionLabels() {
           /*between_child_spacing=*/0,
           /*icon_direction=*/ash::RadioButton::IconDirection::kFollowing,
           /*icon_type=*/ash::RadioButton::IconType::kCheck,
-          /*radio_button_padding=*/gfx::Insets::VH(10, 10)));
+          /*radio_button_padding=*/gfx::Insets::VH(10, 10),
+          /*radio_button_image_label_padding=*/
+          ash::RadioButton::kImageLabelSpacingDP));
 
   // TODO(b/274690042): Replace placeholder text with localized strings.
   const std::vector<std::u16string> action_name_list = {

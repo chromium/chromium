@@ -18,16 +18,17 @@ namespace ash {
 namespace {
 
 constexpr int kButtonHeight = 36;
-constexpr int kImageLabelSpacingDP = 12;
 
 }  // namespace
 
 OptionButtonBase::OptionButtonBase(int button_width,
                                    PressedCallback callback,
                                    const std::u16string& label,
-                                   const gfx::Insets& insets)
-    : views::LabelButton(std::move(callback), label) {
-  SetPreferredSize(gfx::Size(button_width, kButtonHeight));
+                                   const gfx::Insets& insets,
+                                   int image_label_spacing)
+    : views::LabelButton(std::move(callback), label),
+      min_width_(button_width),
+      image_label_spacing_(image_label_spacing) {
   SetBorder(views::CreateEmptyBorder(insets));
   StyleUtil::SetUpInkDropForButton(this, gfx::Insets(),
                                    /*highlight_on_hover=*/false,
@@ -54,6 +55,17 @@ void OptionButtonBase::SetLabelStyle(TypographyToken token) {
   TypographyProvider::Get()->StyleLabel(token, *label());
 }
 
+gfx::Size OptionButtonBase::CalculatePreferredSize() const {
+  int preferred_width = kIconSize + image_label_spacing_ +
+                        label()->GetPreferredSize().width() +
+                        GetInsets().width();
+  return gfx::Size(std::max(preferred_width, min_width_), kButtonHeight);
+}
+
+gfx::Size OptionButtonBase::GetMinimumSize() const {
+  return gfx::Size(min_width_, kButtonHeight);
+}
+
 void OptionButtonBase::SetLabelColorId(ui::ColorId color_id) {
   label()->SetEnabledColorId(color_id);
 }
@@ -67,7 +79,7 @@ void OptionButtonBase::Layout() {
 
   views::Label* label = this->label();
   gfx::Size label_size(
-      local_content_bounds.width() - kImageLabelSpacingDP - kIconSize,
+      local_content_bounds.width() - image_label_spacing_ - kIconSize,
       label->GetPreferredSize().height());
 
   gfx::Point image_origin = local_content_bounds.origin();

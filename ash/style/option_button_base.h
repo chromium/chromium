@@ -27,6 +27,8 @@ class ASH_EXPORT OptionButtonBase : public views::LabelButton {
 
   static constexpr int kIconSize = 20;
 
+  static constexpr int kImageLabelSpacingDP = 12;
+
   // Delegate performs further actions when the button selection states change.
   class Delegate {
    public:
@@ -42,7 +44,8 @@ class ASH_EXPORT OptionButtonBase : public views::LabelButton {
   explicit OptionButtonBase(int button_width,
                             PressedCallback callback,
                             const std::u16string& label = std::u16string(),
-                            const gfx::Insets& insets = kDefaultPadding);
+                            const gfx::Insets& insets = kDefaultPadding,
+                            int image_label_spacing = kImageLabelSpacingDP);
   OptionButtonBase(const OptionButtonBase&) = delete;
   OptionButtonBase& operator=(const OptionButtonBase&) = delete;
   ~OptionButtonBase() override;
@@ -59,6 +62,8 @@ class ASH_EXPORT OptionButtonBase : public views::LabelButton {
   void SetLabelColorId(ui::ColorId color_id);
 
   // views::LabelButton:
+  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size GetMinimumSize() const override;
   void Layout() override;
   void OnThemeChanged() override;
   void NotifyClick(const ui::Event& event) override;
@@ -77,6 +82,10 @@ class ASH_EXPORT OptionButtonBase : public views::LabelButton {
  private:
   // Update the label's color based on the enable state.
   void UpdateTextColor();
+
+  const int min_width_;
+
+  const int image_label_spacing_;
 
   // True if the button is currently selected.
   bool selected_ = false;
