@@ -14,7 +14,6 @@
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/svg/svg_graphics_element.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect.h"
-#include "third_party/blink/renderer/platform/geometry/layout_size.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "ui/gfx/geometry/size_f.h"
 
@@ -82,7 +81,7 @@ void ResizeObserverEntry::PopulateFromSVGChild(
   content_box_size_.push_back(size);
   border_box_size_.push_back(size);
   const ComputedStyle& style = layout_object.StyleRef();
-  const DeprecatedLayoutSize scaled_bounding_box_size(
+  const gfx::SizeF scaled_bounding_box_size(
       gfx::ScaleSize(bounding_box_size, style.EffectiveZoom()));
   gfx::SizeF snapped_device_pixel_content_box =
       ResizeObserverUtilities::ComputeSnappedDevicePixelContentBox(

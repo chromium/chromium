@@ -15,9 +15,9 @@ namespace blink {
 
 class ComputedStyle;
 class DOMRectReadOnly;
-class DeprecatedLayoutSize;
 class LayoutBox;
 class LayoutObject;
+struct LogicalSize;
 struct PhysicalRect;
 
 // Helper functions for ResizeObserverEntry and ResizeObservation.
@@ -34,7 +34,11 @@ class ResizeObserverUtilities {
   // Compute a scaled and pixel snapped device pixel content box for svg
   // bounding boxes.
   static gfx::SizeF ComputeSnappedDevicePixelContentBox(
-      DeprecatedLayoutSize box_size,
+      LogicalSize box_size,
+      const LayoutObject& layout_object,
+      const ComputedStyle& style);
+  static gfx::SizeF ComputeSnappedDevicePixelContentBox(
+      const gfx::SizeF& box_size,
       const LayoutObject& layout_object,
       const ComputedStyle& style);
 
