@@ -41,9 +41,7 @@ void AddressFormEventLogger::OnDidFillSuggestion(
   AutofillProfile::RecordType record_type = profile.record_type();
   sync_state_ = sync_state;
 
-  form_interactions_ukm_logger_->LogDidFillSuggestion(
-      record_type,
-      /*is_for_credit_card=*/false, form, field);
+  form_interactions_ukm_logger_->LogDidFillSuggestion(record_type, form, field);
 
   if (record_type == AutofillProfile::SERVER_PROFILE) {
     Log(FORM_EVENT_SERVER_SUGGESTION_FILLED, form);

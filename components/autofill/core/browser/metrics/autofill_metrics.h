@@ -35,6 +35,7 @@
 #include "components/security_state/core/security_state.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 class GURL;
 
@@ -740,8 +741,8 @@ class AutofillMetrics {
                              const AutofillField& field,
                              const base::TimeTicks& form_parsed_timestamp,
                              bool off_the_record);
-    void LogDidFillSuggestion(int record_type,
-                              bool is_for_credit_card,
+    void LogDidFillSuggestion(absl::variant<AutofillProfile::RecordType,
+                                            CreditCard::RecordType> record_type,
                               const FormStructure& form,
                               const AutofillField& field);
     void LogTextFieldDidChange(const FormStructure& form,

@@ -2314,16 +2314,18 @@ void AutofillMetrics::FormInteractionsUkmLogger::LogSuggestionsShown(
 }
 
 void AutofillMetrics::FormInteractionsUkmLogger::LogDidFillSuggestion(
-    int record_type,
-    bool is_for_credit_card,
+    absl::variant<AutofillProfile::RecordType, CreditCard::RecordType>
+        record_type,
     const FormStructure& form,
     const AutofillField& field) {
   if (!CanLog())
     return;
 
   ukm::builders::Autofill_SuggestionFilled(source_id_)
-      .SetRecordType(record_type)
-      .SetIsForCreditCard(is_for_credit_card)
+      .SetRecordType(absl::visit(
+          [](auto value) { return base::to_underlying(value); }, record_type))
+      .SetIsForCreditCard(
+          absl::holds_alternative<CreditCard::RecordType>(record_type))
       .SetMillisecondsSinceFormParsed(
           MillisecondsSinceFormParsed(form.form_parsed_timestamp()))
       .SetFormSignature(HashFormSignature(form.form_signature()))
