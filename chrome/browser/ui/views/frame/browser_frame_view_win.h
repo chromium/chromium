@@ -129,6 +129,9 @@ class BrowserFrameViewWin : public BrowserNonClientFrameView,
   // don't have tabs.
   int TitlebarHeight(bool restored) const;
 
+  // Returns the height of the frame, whether that is a tabstrip or a titlebar.
+  int GetFrameHeight() const;
+
   // Returns the width of the caption buttons region, including visible
   // system-drawn and custom-drawn caption buttons.
   int CaptionButtonsRegionWidth() const;

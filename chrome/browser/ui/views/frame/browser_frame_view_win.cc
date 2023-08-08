@@ -583,6 +583,14 @@ int BrowserFrameViewWin::TitlebarHeight(bool restored) const {
          FrameTopBorderThickness(false);
 }
 
+int BrowserFrameViewWin::GetFrameHeight() const {
+  if (browser_view()->GetTabStripVisible()) {
+    return browser_view()->tab_strip_region_view()->GetMinimumSize().height();
+  }
+  return IsMaximized() ? TitlebarMaximizedVisualHeight()
+                       : TitlebarHeight(false);
+}
+
 int BrowserFrameViewWin::WindowTopY() const {
   // The window top is SM_CYSIZEFRAME pixels when maximized (see the comment in
   // FrameTopBorderThickness()) and floor(system dsf) pixels when restored.
@@ -809,7 +817,7 @@ void BrowserFrameViewWin::LayoutCaptionButtons() {
       CaptionButtonsOnLeadingEdge()
           ? system_caption_buttons_width
           : width() - system_caption_buttons_width - preferred_size.width(),
-      WindowTopY(), preferred_size.width(), height);
+      WindowTopY(), preferred_size.width(), std::min(GetFrameHeight(), height));
 }
 
 void BrowserFrameViewWin::LayoutClientView() {
