@@ -126,7 +126,10 @@ async def test_consoleLog_textAndArgs(websocket, context_id):
             "type": "console",
             "method": "log",
             "args": [{
-                'type': 'window'
+                'type': 'window',
+                'value': {
+                    'context': ANY_STR
+                }
             }, {
                 'type': 'undefined'
             }, {

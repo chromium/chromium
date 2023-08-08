@@ -332,6 +332,9 @@ async def test_serialization_deserialization(websocket, context_id,
         }),
         ("this.window", {
             "type": "window",
+            "value": {
+                "context": ANY_STR
+            },
             "handle": ANY_STR
         }),
         ("new Error('Woops!')", {

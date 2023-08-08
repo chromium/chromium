@@ -308,6 +308,9 @@ async def test_script_evaluate_windowOpen_windowOpened(websocket, context_id):
         "type": "success",
         "result": {
             "type": "window",
+            "value": {
+                "context": ANY_STR
+            },
             "handle": ANY_STR
         }
     } == result
