@@ -10582,6 +10582,7 @@ if (!is_android) {
         "//chromeos/ash/components/login/auth",
         "//chromeos/ui/frame:test_support",
         "//components/exo/wayland:ui_controls_protocol_stub",
+        "//components/exo/wayland:weston_test_stub",
         "//ui/display:display_manager_test_api",
         "//ui/display/manager",
       ]
@@ -11556,6 +11557,7 @@ if (is_chromeos_ash) {
       "//chrome/browser/ash:test_support",
       "//chromeos/ash/components/settings",
       "//components/exo/wayland:ui_controls_protocol_stub",
+      "//components/exo/wayland:weston_test_stub",
       "//testing/gmock",
       "//testing/gtest",
       "//third_party/icu",
@@ -11739,6 +11741,7 @@ if (is_chromeos_ash) {
       "//base/test:test_support",
       "//chromeos/services/machine_learning/public/cpp:stub",
       "//components/exo/wayland:ui_controls_protocol",
+      "//components/exo/wayland:weston_test",
       "//ui/base:test_support",
 
       # For crosapi specific test support.

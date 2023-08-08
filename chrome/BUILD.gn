@@ -180,7 +180,10 @@ if (!is_android && !is_mac) {
           "//components/variations/cros:evaluate_seed",
           "//sandbox/linux:chrome_sandbox",
         ]
-        deps += [ "//components/exo/wayland:ui_controls_protocol_stub" ]
+        deps += [
+          "//components/exo/wayland:ui_controls_protocol_stub",
+          "//components/exo/wayland:weston_test_stub",
+        ]
       }
 
       if (also_build_lacros_chrome_for_architecture != "") {
