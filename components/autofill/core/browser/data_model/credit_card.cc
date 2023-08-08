@@ -1262,7 +1262,8 @@ void CreditCard::SetNumber(const std::u16string& number) {
 void CreditCard::RecordAndLogUse() {
   UMA_HISTOGRAM_COUNTS_1000("Autofill.DaysSinceLastUse.CreditCard",
                             (AutofillClock::Now() - use_date()).InDays());
-  RecordUse();
+  set_use_date(AutofillClock::Now());
+  set_use_count(use_count() + 1);
 }
 
 bool CreditCard::IsExpired(const base::Time& current_time) const {

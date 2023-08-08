@@ -34,12 +34,6 @@ double AutofillDataModel::GetRankingScore(base::Time current_time) const {
          log(use_count_ + 1);
 }
 
-// TODO(crbug.com/629507): Add support for injected mock clock for testing.
-void AutofillDataModel::RecordUse() {
-  ++use_count_;
-  set_use_date(AutofillClock::Now());
-}
-
 bool AutofillDataModel::UseDateEqualsInSeconds(
     const AutofillDataModel* other) const {
   return !((other->use_date() - use_date()).InSeconds());
