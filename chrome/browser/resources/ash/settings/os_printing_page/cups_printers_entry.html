@@ -98,12 +98,12 @@
         if="[[isDiscoveredPrinter_(printerEntry.printerType)]]">
       <cr-button id="setupPrinterButton" class="row-button"
           on-click="onAddDiscoveredPrinterClick_"
-          aria-label$="$i18n{setupPrinter}"
+          aria-label$="[[getSetupButtonLabel_()]]"
           focus-row-control
           focus-type="setupPrinterButton"
           disabled="[[isConfigureDisabled_(userPrintersAllowed,
               savingPrinter)]]">
-        $i18n{setupPrinter}
+        [[getSetupButtonLabel_()]]
       </cr-button>
     </template>
     <template is="dom-if"

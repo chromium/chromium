@@ -93,6 +93,19 @@ export class SettingsCupsPrintersEntryElement extends
         reflectToAttribute: true,
       },
 
+      /**
+       * True when the "print-preview-discovered-printers" feature flag is
+       * enabled.
+       */
+      isPrintPreviewDiscoveredPrintersEnabled_: {
+        type: Boolean,
+        value: () => {
+          return loadTimeData.getBoolean(
+              'isPrintPreviewDiscoveredPrintersEnabled');
+        },
+        readOnly: true,
+      },
+
       /** @protected {boolean} */
       isJellyEnabled_: {
         type: Boolean,
@@ -112,6 +125,7 @@ export class SettingsCupsPrintersEntryElement extends
   private hasHighSeverityError_: boolean;
   private isPrinterSettingsRevampEnabled_: boolean;
   private isPrinterSettingsPrinterStatusEnabled_: boolean;
+  private isPrintPreviewDiscoveredPrintersEnabled_: boolean;
   private isJellyEnabled_: boolean;
 
   /**
@@ -293,6 +307,15 @@ export class SettingsCupsPrintersEntryElement extends
         'printerEntryAriaLabel', this.printerEntry.printerInfo.printerName,
         this.getStatusReasonString_().toString(), this.focusRowIndex + 1,
         this.numPrinters);
+  }
+
+  // When the "print-preview-discovered-printers" flag is enabled, discovered
+  // printers should be treated like automatic printers. So show "Save" button
+  // instead of "Setup".
+  private getSetupButtonLabel_(): string {
+    return this.i18n(
+        this.isPrintPreviewDiscoveredPrintersEnabled_ ? 'savePrinter' :
+                                                        'setupPrinter');
   }
 }
 
