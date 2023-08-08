@@ -129,8 +129,14 @@ class SettingsBluetoothDeviceDetailSubpageElement extends
     this.addEventListener(
         'forget-bluetooth-device', this.forgetDeviceConfirmed_);
 
-    this.addFocusConfig(routes.POINTERS, '#changeMouseSettings');
-    this.addFocusConfig(routes.KEYBOARD, '#changeKeyboardSettings');
+    if (loadTimeData.getBoolean('enableInputDeviceSettingsSplit')) {
+      this.addFocusConfig(routes.PER_DEVICE_MOUSE, '#changeMouseSettings');
+      this.addFocusConfig(
+          routes.PER_DEVICE_KEYBOARD, '#changeKeyboardSettings');
+    } else {
+      this.addFocusConfig(routes.POINTERS, '#changeMouseSettings');
+      this.addFocusConfig(routes.KEYBOARD, '#changeKeyboardSettings');
+    }
   }
 
   override currentRouteChanged(route: Route, oldRoute?: Route): void {
@@ -507,11 +513,19 @@ class SettingsBluetoothDeviceDetailSubpageElement extends
   }
 
   private onMouseRowClick_(): void {
-    Router.getInstance().navigateTo(routes.POINTERS);
+    if (loadTimeData.getBoolean('enableInputDeviceSettingsSplit')) {
+      Router.getInstance().navigateTo(routes.PER_DEVICE_MOUSE);
+    } else {
+      Router.getInstance().navigateTo(routes.POINTERS);
+    }
   }
 
   private onKeyboardRowClick_(): void {
-    Router.getInstance().navigateTo(routes.KEYBOARD);
+    if (loadTimeData.getBoolean('enableInputDeviceSettingsSplit')) {
+      Router.getInstance().navigateTo(routes.PER_DEVICE_KEYBOARD);
+    } else {
+      Router.getInstance().navigateTo(routes.KEYBOARD);
+    }
   }
 
   private getForgetA11yLabel_(): string {
