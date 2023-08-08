@@ -1174,216 +1174,226 @@ TEST(ExeTagTest, TaggedExeEncodeUtf8) {
       "TestTag123");
 }
 
-TEST(ExeTagTest, ExeWriteTag) {
-  const struct {
-    const char* const exe_file_name;
-    const char* const tag_string;
-    const bool expected_success;
-  } test_cases[] = {
-      // single tag parameter.
-      {"signed.exe", "brand=QAQA", true},
-
-      // single tag parameter ending in an ampersand.
-      {"signed.exe", "brand=QAQA&", true},
-
-      // multiple tag parameters.
-      {"signed.exe",
-       "appguid={8A69D345-D564-463C-AFF1-A69D9E530F96}&iid={2D8C18E9-8D3A-4EFC-"
-       "6D61-AE23E3530EA2}&lang=en&browser=4&usagestats=0&appname=Google%"
-       "20Chrome&needsadmin=prefers&brand=CHMB&installdataindex=defaultbrowser",
-       true},
-
-      // already tagged.
-      {"tagged_encode_utf8.exe", "brand=QAQA", true},
-
-      // empty tag string.
-      {"signed.exe", "", true},
-
-      // unknown tag argument `unknowntagarg`.
-      {"signed.exe",
-       "appguid={8A69D345-D564-463C-AFF1-A69D9E530F96}&iid={2D8C18E9-8D3A-4EFC-"
-       "6D61-AE23E3530EA2}&unknowntagarg=foo",
-       false},
-  };
-
-  for (const auto& test_case : test_cases) {
-    base::ScopedTempDir temp_dir;
-    ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
-    base::FilePath out_file;
-    ASSERT_TRUE(CreateTemporaryFileInDir(temp_dir.GetPath(), &out_file));
-
-    ASSERT_EQ(
-        tagging::ExeWriteTag(test::GetTestFilePath(test_case.exe_file_name),
-                             test_case.tag_string, 8206, out_file),
-        test_case.expected_success)
-        << test_case.exe_file_name << ": " << test_case.tag_string;
-    if (test_case.expected_success) {
-      EXPECT_EQ(tagging::ExeReadTag(out_file), test_case.tag_string);
-    }
-  }
-}
-
-class MsiTagTest : public testing::Test {
- protected:
-  void SetUp() override {
-    tagged_msi_path_ = test::GetTestFilePath("tagged_msi");
-    ASSERT_TRUE(base::DirectoryExists(tagged_msi_path_));
-  }
-
-  base::FilePath GetMsiFilePath(const std::string& file_name) const {
-    return tagged_msi_path_.AppendASCII(file_name);
-  }
-
- private:
-  base::FilePath tagged_msi_path_;
+struct ExeTagTestExeWriteTagTestCase {
+  const std::string exe_file_name;
+  const std::string tag_string;
+  const bool expected_success;
 };
 
-TEST_F(MsiTagTest, MsiReadTag) {
-  const struct {
-    const char* const msi_file_name;
-    const absl::optional<tagging::TagArgs> expected_tag_args;
-  } test_cases[] = {
-      // tag:BRAND=QAQA.
-      {"GUH-brand-only.msi",
-       []() {
-         tagging::TagArgs tag_args;
-         tag_args.brand_code = "QAQA";
-         return tag_args;
-       }()},
+class ExeTagTestExeWriteTagTest
+    : public ::testing::TestWithParam<ExeTagTestExeWriteTagTestCase> {};
 
-      // tag:BRAND=QAQA&.
-      {"GUH-ampersand-ending.msi",
-       []() {
-         tagging::TagArgs tag_args;
-         tag_args.brand_code = "QAQA";
-         return tag_args;
-       }()},
+INSTANTIATE_TEST_SUITE_P(
+    ExeTagTestExeWriteTagTestCases,
+    ExeTagTestExeWriteTagTest,
+    ::testing::ValuesIn(std::vector<ExeTagTestExeWriteTagTestCase>{
+        // single tag parameter.
+        {"signed.exe", "brand=QAQA", true},
 
-      // tag:
-      //   appguid={8A69D345-D564-463C-AFF1-A69D9E530F96}&
-      //   iid={2D8C18E9-8D3A-4EFC-6D61-AE23E3530EA2}&
-      //   lang=en&browser=4&usagestats=0&appname=Google%20Chrome&
-      //   needsadmin=prefers&brand=CHMB&
-      //   installdataindex=defaultbrowser.
-      {"GUH-multiple.msi",
-       []() {
-         tagging::TagArgs tag_args;
-         tag_args.bundle_name = "Google Chrome";
-         tag_args.installation_id = "{2D8C18E9-8D3A-4EFC-6D61-AE23E3530EA2}";
-         tag_args.brand_code = "CHMB";
-         tag_args.language = "en";
-         tag_args.browser_type = tagging::TagArgs::BrowserType::kChrome;
-         tag_args.usage_stats_enable = false;
+        // single tag parameter ending in an ampersand.
+        {"signed.exe", "brand=QAQA&", true},
 
-         tagging::AppArgs app_args("{8A69D345-D564-463C-AFF1-A69D9E530F96}");
-         app_args.app_name = "Google Chrome";
-         app_args.install_data_index = "defaultbrowser";
-         app_args.needs_admin = tagging::AppArgs::NeedsAdmin::kPrefers;
-         tag_args.apps = {app_args};
+        // multiple tag parameters.
+        {"signed.exe",
+         "appguid={8A69D345-D564-463C-AFF1-A69D9E530F96}&iid={2D8C18E9-8D3A-"
+         "4EFC-"
+         "6D61-AE23E3530EA2}&lang=en&browser=4&usagestats=0&appname=Google%"
+         "20Chrome&needsadmin=prefers&brand=CHMB&installdataindex="
+         "defaultbrowser",
+         true},
 
-         return tag_args;
-       }()},
+        // already tagged.
+        {"tagged_encode_utf8.exe", "brand=QAQA", true},
 
-      // special character in the tag value.
-      {"GUH-special-value.msi",
-       []() {
-         tagging::TagArgs tag_args;
-         tag_args.brand_code = "QA*A";
-         return tag_args;
-       }()},
+        // empty tag string.
+        {"signed.exe", "", true},
 
-      // tag: =value&BRAND=QAQA.
-      {"GUH-empty-key.msi", {}},
+        // unknown tag argument `unknowntagarg`.
+        {"signed.exe",
+         "appguid={8A69D345-D564-463C-AFF1-A69D9E530F96}&iid={2D8C18E9-8D3A-"
+         "4EFC-"
+         "6D61-AE23E3530EA2}&unknowntagarg=foo",
+         false},
+    }));
 
-      // tag: BRAND=.
-      {"GUH-empty-value.msi", {}},
+TEST_P(ExeTagTestExeWriteTagTest, TestCases) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath out_file;
+  ASSERT_TRUE(CreateTemporaryFileInDir(temp_dir.GetPath(), &out_file));
 
-      // tag:(empty string).
-      {"GUH-empty-tag.msi", {}},
-
-      // invalid magic signature "Gact2.0Foo".
-      {"GUH-invalid-marker.msi", {}},
-
-      // invalid characters in the tag key.
-      {"GUH-invalid-key.msi", {}},
-
-      // invalid tag format.
-      {"GUH-bad-format.msi", {}},
-
-      // invalid tag format.
-      {"GUH-bad-format2.msi", {}},
-
-      // untagged.
-      {"GUH-untagged.msi", {}},
-  };
-
-  for (const auto& test_case : test_cases) {
-    const auto tag_args =
-        tagging::MsiReadTag(GetMsiFilePath(test_case.msi_file_name));
-    EXPECT_EQ(tag_args.has_value(), test_case.expected_tag_args.has_value());
-    if (test_case.expected_tag_args) {
-      test::ExpectTagArgsEqual(*tag_args, *test_case.expected_tag_args);
-    }
+  ASSERT_EQ(tagging::ExeWriteTag(
+                test::GetTestFilePath(GetParam().exe_file_name.c_str()),
+                GetParam().tag_string, 8206, out_file),
+            GetParam().expected_success)
+      << GetParam().exe_file_name << ": " << GetParam().tag_string;
+  if (GetParam().expected_success) {
+    EXPECT_EQ(tagging::ExeReadTag(out_file), GetParam().tag_string);
   }
 }
 
-TEST_F(MsiTagTest, MsiWriteTag) {
-  const struct {
-    const char* const msi_file_name;
-    const char* const tag_string;
-    const bool expected_success;
-  } test_cases[] = {
-      // single tag parameter.
-      {"GUH-untagged.msi", "brand=QAQA", true},
+struct MsiTagTestMsiReadTagTestCase {
+  const std::string msi_file_name;
+  const absl::optional<tagging::TagArgs> expected_tag_args;
+};
 
-      // single tag parameter ending in an ampersand.
-      {"GUH-untagged.msi", "brand=QAQA&", true},
+class MsiTagTestMsiReadTagTest
+    : public ::testing::TestWithParam<MsiTagTestMsiReadTagTestCase> {};
 
-      // multiple tag parameters.
-      {"GUH-untagged.msi",
-       "appguid={8A69D345-D564-463C-AFF1-A69D9E530F96}&iid={2D8C18E9-8D3A-4EFC-"
-       "6D61-AE23E3530EA2}&lang=en&browser=4&usagestats=0&appname=Google%"
-       "20Chrome&needsadmin=prefers&brand=CHMB&installdataindex=defaultbrowser",
-       true},
+INSTANTIATE_TEST_SUITE_P(
+    MsiTagTestMsiReadTagTestCases,
+    MsiTagTestMsiReadTagTest,
+    ::testing::ValuesIn(std::vector<MsiTagTestMsiReadTagTestCase>{
+        // tag:BRAND=QAQA.
+        {"GUH-brand-only.msi",
+         []() {
+           tagging::TagArgs tag_args;
+           tag_args.brand_code = "QAQA";
+           return tag_args;
+         }()},
 
-      // unknown tag argument `unknowntagarg`.
-      {"GUH-untagged.msi",
-       "appguid={8A69D345-D564-463C-AFF1-A69D9E530F96}&iid={2D8C18E9-8D3A-4EFC-"
-       "6D61-AE23E3530EA2}&unknowntagarg=foo",
-       false},
+        // tag:BRAND=QAQA&.
+        {"GUH-ampersand-ending.msi",
+         []() {
+           tagging::TagArgs tag_args;
+           tag_args.brand_code = "QAQA";
+           return tag_args;
+         }()},
 
-      // empty tag string.
-      {"GUH-untagged.msi", "", false},
+        // tag:
+        //   appguid={8A69D345-D564-463C-AFF1-A69D9E530F96}&
+        //   iid={2D8C18E9-8D3A-4EFC-6D61-AE23E3530EA2}&
+        //   lang=en&browser=4&usagestats=0&appname=Google%20Chrome&
+        //   needsadmin=prefers&brand=CHMB&
+        //   installdataindex=defaultbrowser.
+        {"GUH-multiple.msi",
+         []() {
+           tagging::TagArgs tag_args;
+           tag_args.bundle_name = "Google Chrome";
+           tag_args.installation_id = "{2D8C18E9-8D3A-4EFC-6D61-AE23E3530EA2}";
+           tag_args.brand_code = "CHMB";
+           tag_args.language = "en";
+           tag_args.browser_type = tagging::TagArgs::BrowserType::kChrome;
+           tag_args.usage_stats_enable = false;
 
-      // already tagged.
-      {"GUH-brand-only.msi", "brand=QAQA", false},
-  };
+           tagging::AppArgs app_args("{8A69D345-D564-463C-AFF1-A69D9E530F96}");
+           app_args.app_name = "Google Chrome";
+           app_args.install_data_index = "defaultbrowser";
+           app_args.needs_admin = tagging::AppArgs::NeedsAdmin::kPrefers;
+           tag_args.apps = {app_args};
 
-  for (const auto& test_case : test_cases) {
-    base::ScopedTempDir temp_dir;
-    ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
-    base::FilePath out_file;
-    ASSERT_TRUE(CreateTemporaryFileInDir(temp_dir.GetPath(), &out_file));
-    const base::FilePath in_out_file = out_file.AddExtensionASCII(".msi");
-    const base::FilePath msi_file_path =
-        GetMsiFilePath(test_case.msi_file_name);
-    ASSERT_TRUE(base::CopyFile(msi_file_path, in_out_file));
+           return tag_args;
+         }()},
 
-    for (const auto& [msi_file, out_msi_file] :
-         {std::make_pair(msi_file_path, out_file),
-          std::make_pair(in_out_file, base::FilePath())}) {
-      ASSERT_EQ(
-          tagging::MsiWriteTag(msi_file, test_case.tag_string, out_msi_file),
-          test_case.expected_success);
-      if (test_case.expected_success) {
-        tagging::TagArgs tag_args;
-        ASSERT_EQ(tagging::Parse(test_case.tag_string, {}, &tag_args),
-                  tagging::ErrorCode::kSuccess);
-        test::ExpectTagArgsEqual(
-            tagging::MsiReadTag(!out_msi_file.empty() ? out_msi_file : msi_file)
-                .value(),
-            tag_args);
-      }
+        // special character in the tag value.
+        {"GUH-special-value.msi",
+         []() {
+           tagging::TagArgs tag_args;
+           tag_args.brand_code = "QA*A";
+           return tag_args;
+         }()},
+
+        // tag: =value&BRAND=QAQA.
+        {"GUH-empty-key.msi", {}},
+
+        // tag: BRAND=.
+        {"GUH-empty-value.msi", {}},
+
+        // tag:(empty string).
+        {"GUH-empty-tag.msi", {}},
+
+        // invalid magic signature "Gact2.0Foo".
+        {"GUH-invalid-marker.msi", {}},
+
+        // invalid characters in the tag key.
+        {"GUH-invalid-key.msi", {}},
+
+        // invalid tag format.
+        {"GUH-bad-format.msi", {}},
+
+        // invalid tag format.
+        {"GUH-bad-format2.msi", {}},
+
+        // untagged.
+        {"GUH-untagged.msi", {}},
+    }));
+
+TEST_P(MsiTagTestMsiReadTagTest, TestCases) {
+  const auto tag_args =
+      tagging::MsiReadTag(test::GetTestFilePath("tagged_msi")
+                              .AppendASCII(GetParam().msi_file_name));
+  EXPECT_EQ(tag_args.has_value(), GetParam().expected_tag_args.has_value());
+  if (GetParam().expected_tag_args) {
+    test::ExpectTagArgsEqual(*tag_args, *GetParam().expected_tag_args);
+  }
+}
+
+struct MsiTagTestMsiWriteTagTestCase {
+  const std::string msi_file_name;
+  const std::string tag_string;
+  const bool expected_success;
+};
+
+class MsiTagTestMsiWriteTagTest
+    : public ::testing::TestWithParam<MsiTagTestMsiWriteTagTestCase> {};
+
+INSTANTIATE_TEST_SUITE_P(
+    MsiTagTestMsiWriteTagTestCases,
+    MsiTagTestMsiWriteTagTest,
+    ::testing::ValuesIn(std::vector<MsiTagTestMsiWriteTagTestCase>{
+        // single tag parameter.
+        {"GUH-untagged.msi", "brand=QAQA", true},
+
+        // single tag parameter ending in an ampersand.
+        {"GUH-untagged.msi", "brand=QAQA&", true},
+
+        // multiple tag parameters.
+        {"GUH-untagged.msi",
+         "appguid={8A69D345-D564-463C-AFF1-A69D9E530F96}&iid={2D8C18E9-8D3A-"
+         "4EFC-"
+         "6D61-AE23E3530EA2}&lang=en&browser=4&usagestats=0&appname=Google%"
+         "20Chrome&needsadmin=prefers&brand=CHMB&installdataindex="
+         "defaultbrowser",
+         true},
+
+        // unknown tag argument `unknowntagarg`.
+        {"GUH-untagged.msi",
+         "appguid={8A69D345-D564-463C-AFF1-A69D9E530F96}&iid={2D8C18E9-8D3A-"
+         "4EFC-"
+         "6D61-AE23E3530EA2}&unknowntagarg=foo",
+         false},
+
+        // empty tag string.
+        {"GUH-untagged.msi", "", false},
+
+        // already tagged.
+        {"GUH-brand-only.msi", "brand=QAQA", false},
+    }));
+
+TEST_P(MsiTagTestMsiWriteTagTest, TestCases) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath out_file;
+  ASSERT_TRUE(CreateTemporaryFileInDir(temp_dir.GetPath(), &out_file));
+  const base::FilePath in_out_file = out_file.AddExtensionASCII(".msi");
+  const base::FilePath msi_file_path =
+      test::GetTestFilePath("tagged_msi").AppendASCII(GetParam().msi_file_name);
+  ASSERT_TRUE(base::CopyFile(msi_file_path, in_out_file));
+
+  for (const auto& [msi_file, out_msi_file] :
+       {std::make_pair(msi_file_path, out_file),
+        std::make_pair(in_out_file, base::FilePath())}) {
+    ASSERT_EQ(
+        tagging::MsiWriteTag(msi_file, GetParam().tag_string, out_msi_file),
+        GetParam().expected_success);
+    if (GetParam().expected_success) {
+      tagging::TagArgs tag_args;
+      ASSERT_EQ(tagging::Parse(GetParam().tag_string, {}, &tag_args),
+                tagging::ErrorCode::kSuccess);
+      test::ExpectTagArgsEqual(
+          tagging::MsiReadTag(!out_msi_file.empty() ? out_msi_file : msi_file)
+              .value(),
+          tag_args);
     }
   }
 }
