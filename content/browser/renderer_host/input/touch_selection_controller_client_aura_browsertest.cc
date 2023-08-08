@@ -139,17 +139,17 @@ class TestTouchSelectionControllerClientAura
   }
 
   void InitWaitForHandleContextMenu() {
-    DCHECK(!run_loop_);
+    DCHECK(!menu_run_loop_);
     waiting_for_handle_context_menu_ = true;
-    run_loop_ = std::make_unique<base::RunLoop>();
+    menu_run_loop_ = std::make_unique<base::RunLoop>();
   }
 
   bool HandleContextMenu(const ContextMenuParams& params) override {
     bool handled =
         TouchSelectionControllerClientAura::HandleContextMenu(params);
-    if (run_loop_ && waiting_for_handle_context_menu_) {
+    if (menu_run_loop_ && waiting_for_handle_context_menu_) {
       waiting_for_handle_context_menu_ = false;
-      run_loop_->Quit();
+      menu_run_loop_->Quit();
     }
     return handled;
   }
@@ -196,6 +196,12 @@ class TestTouchSelectionControllerClientAura
     run_loop_.reset();
   }
 
+  void WaitForHandleContextMenu() {
+    DCHECK(menu_run_loop_);
+    menu_run_loop_->Run();
+    menu_run_loop_.reset();
+  }
+
   ui::TouchSelectionMenuClient* GetActiveMenuClient() {
     return active_menu_client_;
   }
@@ -226,6 +232,7 @@ class TestTouchSelectionControllerClientAura
   bool waiting_for_selection_bounds_update_ = false;
   ui::SelectionEventType expected_event_;
   std::unique_ptr<base::RunLoop> run_loop_;
+  std::unique_ptr<base::RunLoop> menu_run_loop_;
 
   // When set to true, the TouchSelectionControllerClientAura criteria for
   // enabling menu commands is overridden and we instead enable all menu
@@ -1238,16 +1245,27 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraCAPFeatureTest,
   ui::test::EventGenerator generator(native_view->GetRootWindow());
 
   // Mouse click inside the textfield to make a caret appear.
+  selection_controller_client()->InitWaitForSelectionUpdate();
   gfx::Point point = gfx::ToRoundedPoint(GetPointInsideTextfield());
   generator.delegate()->ConvertPointFromTarget(native_view, &point);
   generator.MoveMouseTo(point);
   generator.PressLeftButton();
+  selection_controller_client()->Wait();
+  EXPECT_EQ(rwhva->selection_controller()->active_status(),
+            ui::TouchSelectionController::INACTIVE);
   EXPECT_FALSE(ui::TouchSelectionMenuRunner::GetInstance()->IsRunning());
 
-  // Tap the caret to show the quick menu.
+  // Tap the caret to show an insertion handle and quick menu.
+  selection_controller_client()->InitWaitForSelectionEvent(
+      ui::INSERTION_HANDLE_SHOWN);
   selection_controller_client()->InitWaitForHandleContextMenu();
   generator.GestureTapAt(point);
+  // Wait for both the insertion handle to be shown and for the context menu
+  // event to be handled, since these might not occur in a fixed order.
   selection_controller_client()->Wait();
+  selection_controller_client()->WaitForHandleContextMenu();
+  EXPECT_EQ(rwhva->selection_controller()->active_status(),
+            ui::TouchSelectionController::INSERTION_ACTIVE);
   EXPECT_TRUE(ui::TouchSelectionMenuRunner::GetInstance()->IsRunning());
 
   // Tap the caret again to hide the quick menu. We advance the clock before
@@ -1255,7 +1273,10 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraCAPFeatureTest,
   generator.AdvanceClock(base::Milliseconds(1000));
   selection_controller_client()->InitWaitForHandleContextMenu();
   generator.GestureTapAt(point);
-  selection_controller_client()->Wait();
+  selection_controller_client()->WaitForHandleContextMenu();
+  // The insertion handle should still be shown but menu should be hidden.
+  EXPECT_EQ(rwhva->selection_controller()->active_status(),
+            ui::TouchSelectionController::INSERTION_ACTIVE);
   EXPECT_FALSE(ui::TouchSelectionMenuRunner::GetInstance()->IsRunning());
 }
 

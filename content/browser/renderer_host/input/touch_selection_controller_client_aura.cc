@@ -290,6 +290,14 @@ void TouchSelectionControllerClientAura::ShowQuickMenu() {
   if (!ui::TouchSelectionMenuRunner::GetInstance())
     return;
 
+  // Don't show the menu if the selection bounds are zero, since this usually
+  // means that touch selection is not active or that there is no cursor or
+  // selection.
+  if (::features::IsTouchTextEditingRedesignEnabled() &&
+      rwhva_->selection_controller()->GetRectBetweenBounds() == gfx::RectF()) {
+    return;
+  }
+
   gfx::RectF rect =
       rwhva_->selection_controller()->GetVisibleRectBetweenBounds();
 
