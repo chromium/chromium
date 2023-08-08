@@ -365,12 +365,12 @@ BubbleDialogModelHost::BubbleDialogModelHost(
   // Dialog callbacks can safely refer to |model_|, they can't be called after
   // Widget::Close() calls WidgetWillClose() synchronously so there shouldn't
   // be any dangling references after model removal.
-  SetAcceptCallback(base::BindOnce(&ui::DialogModel::OnDialogAcceptAction,
-                                   base::Unretained(model_.get()),
-                                   GetPassKey()));
-  SetCancelCallback(base::BindOnce(&ui::DialogModel::OnDialogCancelAction,
-                                   base::Unretained(model_.get()),
-                                   GetPassKey()));
+  SetAcceptCallbackWithClose(
+      base::BindRepeating(&ui::DialogModel::OnDialogAcceptAction,
+                          base::Unretained(model_.get()), GetPassKey()));
+  SetCancelCallbackWithClose(
+      base::BindRepeating(&ui::DialogModel::OnDialogCancelAction,
+                          base::Unretained(model_.get()), GetPassKey()));
   SetCloseCallback(base::BindOnce(&ui::DialogModel::OnDialogCloseAction,
                                   base::Unretained(model_.get()),
                                   GetPassKey()));

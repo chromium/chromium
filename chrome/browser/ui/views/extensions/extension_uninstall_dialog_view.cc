@@ -87,7 +87,7 @@ void ExtensionUninstallDialogViews::Show() {
           ui::DialogModelButton::Params().SetLabel(
               l10n_util::GetStringUTF16(IDS_EXTENSION_PROMPT_UNINSTALL_BUTTON)))
       .AddCancelButton(
-          base::OnceClosure() /* Cancel is covered by WindowClosingCallback */);
+          base::DoNothing() /* Cancel is covered by WindowClosingCallback */);
 
   if (triggering_extension()) {
     dialog_builder.AddParagraph(
