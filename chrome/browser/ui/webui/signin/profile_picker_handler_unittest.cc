@@ -340,7 +340,7 @@ TEST_F(ProfilePickerHandlerTest, MarkProfileAsOmitted) {
 
   profile_b->SetIsEphemeral(true);
   profile_b->SetIsOmitted(true);
-  VerifyProfileListWasPushed({profile_a, profile_c, profile_d});
+  VerifyProfileWasRemoved(profile_b->GetPath());
   web_ui()->ClearTrackedCalls();
 
   // Omitted profile is appended to the end of the profile list.

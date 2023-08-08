@@ -1143,8 +1143,9 @@ void ProfilePickerHandler::OnProfileIsOmittedChanged(
           .GetProfileAttributesWithPath(profile_path);
   CHECK(entry);
   if (entry->IsOmitted()) {
-    if (RemoveProfileFromList(profile_path))
-      PushProfilesList();
+    if (RemoveProfileFromList(profile_path)) {
+      FireWebUIListener("profile-removed", base::FilePathToValue(profile_path));
+    }
   } else {
     AddProfileToList(profile_path);
     PushProfilesList();
