@@ -25,6 +25,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
+#include "base/types/expected_macros.h"
 #include "base/values.h"
 #include "components/attribution_reporting/os_registration.h"
 #include "components/attribution_reporting/registration_eligibility.mojom.h"
@@ -902,13 +903,11 @@ void AttributionDataHostManagerImpl::OnWebSourceParsed(
       if (!result->is_dict()) {
         return base::unexpected(SourceRegistrationError::kRootWrongType);
       }
-      auto registration = attribution_reporting::SourceRegistration::Parse(
-          std::move(*result).TakeDict());
-      if (!registration.has_value()) {
-        return base::unexpected(registration.error());
-      }
+      ASSIGN_OR_RETURN(auto registration,
+                       attribution_reporting::SourceRegistration::Parse(
+                           std::move(*result).TakeDict()));
       return StorableSource(pending_decode.reporting_origin,
-                            std::move(*registration),
+                            std::move(registration),
                             registrations->source_origin(), source_type,
                             registrations->is_within_fenced_frame());
     }();

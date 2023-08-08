@@ -18,9 +18,9 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/values_test_util.h"
 #include "base/time/time.h"
-#include "base/types/expected.h"
 #include "components/attribution_reporting/source_registration_time_config.mojom.h"
 #include "content/browser/aggregation_service/aggregation_service.h"
 #include "content/browser/aggregation_service/aggregation_service_features.h"
@@ -71,15 +71,15 @@ class AttributionAggregatableReportGoldenLatestVersionTest
     input_dir_ = input_dir_.AppendASCII(
         "attribution_reporting/aggregatable_report_goldens/latest");
 
-    base::expected<PublicKeyset, std::string> keyset =
+    ASSERT_OK_AND_ASSIGN(
+        PublicKeyset keyset,
         aggregation_service::ReadAndParsePublicKeys(
-            input_dir_.AppendASCII("public_key.json"), base::Time::Now());
-    ASSERT_TRUE(keyset.has_value());
-    ASSERT_EQ(keyset->keys.size(), 1u);
+            input_dir_.AppendASCII("public_key.json"), base::Time::Now()));
+    ASSERT_EQ(keyset.keys.size(), 1u);
 
     aggregation_service().SetPublicKeysForTesting(
         GURL(kPrivacySandboxAggregationServiceTrustedServerUrlAwsParam.Get()),
-        std::move(*keyset));
+        std::move(keyset));
 
     absl::optional<std::vector<uint8_t>> private_key =
         base::Base64Decode(ReadStringFromFile(

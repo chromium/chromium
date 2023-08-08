@@ -30,6 +30,7 @@
 #include "base/task/updateable_sequenced_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "base/types/expected_macros.h"
 #include "base/values.h"
 #include "components/attribution_reporting/parsing_utils.h"
 #include "content/browser/aggregation_service/aggregation_service_features.h"
@@ -377,22 +378,20 @@ base::expected<base::Value::Dict, std::string> RunAttributionInteropSimulation(
   TestBrowserContext browser_context;
   const base::Time time_origin = base::Time::Now();
 
-  auto events = ParseAttributionInteropInput(std::move(input), time_origin);
-  if (!events.has_value()) {
-    return base::unexpected(events.error());
-  }
+  ASSIGN_OR_RETURN(AttributionSimulationEvents events,
+                   ParseAttributionInteropInput(std::move(input), time_origin));
 
-  if (events->empty()) {
+  if (events.empty()) {
     return base::Value::Dict();
   }
 
-  DCHECK(base::ranges::is_sorted(*events));
+  DCHECK(base::ranges::is_sorted(events));
   DCHECK(base::ranges::adjacent_find(
-             *events, /*pred=*/{},
-             [](const auto& event) { return event.time; }) == events->end());
+             events, /*pred=*/{},
+             [](const auto& event) { return event.time; }) == events.end());
 
-  const base::Time min_event_time = events->front().time;
-  const base::Time max_event_time = events->back().time;
+  const base::Time min_event_time = events.front().time;
+  const base::Time max_event_time = events.back().time;
 
   task_environment.FastForwardBy(min_event_time - time_origin);
 
@@ -427,7 +426,7 @@ base::expected<base::Value::Dict, std::string> RunAttributionInteropSimulation(
                        /*fetch_time=*/base::Time::Now(),
                        /*expiry_time=*/base::Time::Max()));
 
-  for (auto& event : *events) {
+  for (auto& event : events) {
     base::Time event_time = event.time;
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
