@@ -123,10 +123,12 @@ WindowCycleView::WindowCycleView(aura::Window* root_window,
   // and clip animations.
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
-  layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
-  layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
   layer()->SetName("WindowCycleView");
   layer()->SetMasksToBounds(true);
+  if (features::IsBackgroundBlurEnabled()) {
+    layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
+    layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
+  }
 
   const bool is_jellyroll_enabled = chromeos::features::IsJellyrollEnabled();
   SetBackground(views::CreateThemedRoundedRectBackground(
