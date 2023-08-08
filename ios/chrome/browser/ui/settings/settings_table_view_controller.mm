@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/settings/settings_table_view_controller.h"
 
+#import <MaterialComponents/MaterialSnackbar.h>
 #import <memory>
 
 #import "base/feature_list.h"
@@ -2405,13 +2406,11 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 }
 
 - (void)showSignOutToast {
-  [self.snackbarCommandsHandler
-      showSnackbarWithMessage:
+  MDCSnackbarMessage* message = [MDCSnackbarMessage
+      messageWithText:
           l10n_util::GetNSString(
-              IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_SIGN_OUT_SNACKBAR_MESSAGE)
-                   buttonText:nil
-                messageAction:nil
-             completionAction:nil];
+              IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_SIGN_OUT_SNACKBAR_MESSAGE)];
+  [self.snackbarCommandsHandler showSnackbarMessage:message bottomOffset:0];
 }
 
 #pragma mark - NotificationsSettingsObserverDelegate

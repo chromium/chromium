@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
 
+#import <MaterialComponents/MaterialSnackbar.h>
+
 #import "base/ios/ios_util.h"
 #import "base/mac/foundation_util.h"
 #import "base/metrics/user_metrics.h"
@@ -932,13 +934,11 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 }
 
 - (void)showSignOutToast {
-  [self.snackbarCommandsHandler
-      showSnackbarWithMessage:
+  MDCSnackbarMessage* message = [MDCSnackbarMessage
+      messageWithText:
           l10n_util::GetNSString(
-              IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_SIGN_OUT_SNACKBAR_MESSAGE)
-                   buttonText:nil
-                messageAction:nil
-             completionAction:nil];
+              IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_SIGN_OUT_SNACKBAR_MESSAGE)];
+  [self.snackbarCommandsHandler showSnackbarMessage:message bottomOffset:0];
 }
 
 #pragma mark - PasswordsCoordinatorDelegate
