@@ -318,6 +318,7 @@ void AddSysColorMixer(ColorProvider* provider, const ColorProviderKey& key) {
                                                   : kColorRefPrimary20};
   mixer[kColorSysStateHeaderHover] = {dark_mode ? kColorRefSecondary30
                                                 : kColorRefPrimary80};
+  mixer[kColorSysStateHeaderHoverInactive] = {kColorSysStateHoverOnSubtle};
   mixer[kColorSysStateHeaderSelect] = {SetAlpha({kColorSysBase}, 0x9A)};
 
   // Effects.

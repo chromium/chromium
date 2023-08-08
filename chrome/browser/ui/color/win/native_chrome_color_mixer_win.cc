@@ -137,6 +137,10 @@ void FrameColorHelper::AddNativeChromeColors(
         GetColorWithMaxContrast(ui::kColorSysHeader);
     mixer[ui::kColorSysOnHeaderPrimary] =
         GetColorWithMaxContrast(ui::kColorSysHeader);
+    mixer[ui::kColorSysStateHeaderHover] =
+        ui::AlphaBlend(ui::kColorSysBase, ui::kColorSysHeader,
+                       /* 40% opacity */ 0.4 * SK_AlphaOPAQUE);
+    mixer[ui::kColorSysHeaderContainer] = {ui::kColorSysBase};
   }
   if (inactive_frame_transform) {
     mixer[ui::kColorFrameInactive] = inactive_frame_transform.value();
@@ -145,6 +149,10 @@ void FrameColorHelper::AddNativeChromeColors(
         GetColorWithMaxContrast(ui::kColorSysHeaderInactive);
     mixer[ui::kColorSysOnHeaderPrimaryInactive] =
         GetColorWithMaxContrast(ui::kColorSysHeaderInactive);
+    mixer[ui::kColorSysStateHeaderHoverInactive] =
+        ui::AlphaBlend(ui::kColorSysBase, ui::kColorSysHeaderInactive,
+                       /* 40% opacity */ 0.4 * SK_AlphaOPAQUE);
+    mixer[ui::kColorSysHeaderContainerInactive] = {ui::kColorSysBase};
   }
 
   if (ShouldDefaultThemeUseMicaTitlebar() && !key.app_controller) {

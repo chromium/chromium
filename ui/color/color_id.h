@@ -189,6 +189,7 @@
   E_CPONLY(kColorSysStateHoverBrightBlendProtection) \
   E_CPONLY(kColorSysStateOnHeaderHover) \
   E_CPONLY(kColorSysStateHeaderHover) \
+  E_CPONLY(kColorSysStateHeaderHoverInactive) \
   E_CPONLY(kColorSysStateHeaderSelect) \
   /* Effects. */ \
   E_CPONLY(kColorSysShadow) \
