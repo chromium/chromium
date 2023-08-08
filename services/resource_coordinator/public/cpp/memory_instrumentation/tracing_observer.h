@@ -10,27 +10,45 @@
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/trace_event.h"
 #include "services/resource_coordinator/public/mojom/memory_instrumentation/memory_instrumentation.mojom.h"
+#include "services/tracing/public/cpp/perfetto/perfetto_traced_process.h"
 #include "third_party/perfetto/include/perfetto/ext/tracing/core/trace_writer.h"
 
 namespace memory_instrumentation {
 
-// Observes TraceLog for Enable/Disable events and when they occur Enables and
-// Disables the MemoryDumpManager with the correct state based on reading the
-// trace log. Also provides a method for adding a dump to the trace.
+// [Non-SDK build] Observes TraceLog for Enable/Disable events and when they
+// occur enables and disables the MemoryDumpManager with the correct state
+// based on reading the trace log.
+// [SDK build] Acts as a Perfetto datasource, implementing StartTracingImpl and
+// StopTracingImpl. Enables MemoryDumpManager based on the config passed by
+// the tracing service.
+// Also provides a method for adding a dump to the trace.
 class COMPONENT_EXPORT(RESOURCE_COORDINATOR_PUBLIC_MEMORY_INSTRUMENTATION)
-    TracingObserver : public base::trace_event::TraceLog::EnabledStateObserver {
+    TracingObserver :
+#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+    public base::trace_event::TraceLog::EnabledStateObserver,
+#endif
+    public tracing::PerfettoTracedProcess::DataSourceBase {
  public:
-  TracingObserver(base::trace_event::TraceLog*,
-                  base::trace_event::MemoryDumpManager*);
+  TracingObserver();
 
   TracingObserver(const TracingObserver&) = delete;
   TracingObserver& operator=(const TracingObserver&) = delete;
 
   ~TracingObserver() override;
 
+  // PerfettoTracedProcess::DataSourceBase implementation
+  void StartTracingImpl(
+      tracing::PerfettoProducer* producer,
+      const perfetto::DataSourceConfig& data_source_config) override;
+  void StopTracingImpl(
+      base::OnceClosure stop_complete_callback = base::OnceClosure()) override;
+  void Flush(base::RepeatingClosure flush_complete_callback) override;
+
+#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   // TraceLog::EnabledStateObserver implementation.
   void OnTraceLogEnabled() override;
   void OnTraceLogDisabled() override;
+#endif
 
   virtual bool AddChromeDumpToTraceIfEnabled(
       const base::trace_event::MemoryDumpRequestArgs&,
@@ -53,13 +71,20 @@ class COMPONENT_EXPORT(RESOURCE_COORDINATOR_PUBLIC_MEMORY_INSTRUMENTATION)
   static std::string ApplyPathFiltering(const std::string& file,
                                         bool is_argument_filtering_enabled);
 
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+  using DataSourceProxy =
+      tracing::PerfettoTracedProcess::DataSourceProxy<TracingObserver>;
+  friend class perfetto::DataSource<TracingObserver>;
+#else   // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+  base::Lock writer_lock_;
+  std::unique_ptr<perfetto::TraceWriter> trace_writer_ GUARDED_BY(writer_lock_);
+#endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+
  private:
   // Returns true if the dump mode is allowed for current tracing session.
   bool IsDumpModeAllowed(base::trace_event::MemoryDumpLevelOfDetail) const;
+  bool IsMemoryInfraTracingEnabled() const;
 
-  const raw_ptr<base::trace_event::MemoryDumpManager, DanglingUntriaged>
-      memory_dump_manager_;
-  const raw_ptr<base::trace_event::TraceLog> trace_log_;
   std::unique_ptr<base::trace_event::TraceConfig::MemoryDumpConfig>
       memory_dump_config_;
 };

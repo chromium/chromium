@@ -10,7 +10,6 @@
 #include "base/trace_event/traced_value.h"
 #include "base/tracing/trace_time.h"
 #include "build/build_config.h"
-#include "services/tracing/public/cpp/perfetto/perfetto_producer.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_traced_process.h"
 #include "third_party/perfetto/protos/perfetto/trace/memory_graph.pbzero.h"
 #include "third_party/perfetto/protos/perfetto/trace/profiling/smaps.pbzero.h"
@@ -48,39 +47,18 @@ MemoryDumpLevelOfDetailToProto(
 }  // namespace
 
 // static
-tracing::PerfettoTracedProcess::DataSourceBase*
-    TracingObserverProto::instance_for_testing_;
-
-TracingObserverProto::TracingObserverProto(
-    base::trace_event::TraceLog* trace_log,
-    base::trace_event::MemoryDumpManager* memory_dump_manager)
-    : TracingObserver(trace_log, memory_dump_manager),
-      tracing::PerfettoTracedProcess::DataSourceBase(
-          tracing::mojom::kMemoryInstrumentationDataSourceName) {
-  DCHECK(!instance_for_testing_);
-  instance_for_testing_ = this;
-  tracing::PerfettoTracedProcess::Get()->AddDataSource(this);
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-  perfetto::DataSourceDescriptor dsd;
-  dsd.set_name(name());
-  DataSourceProxy::Register(dsd, this);
-#endif
+TracingObserverProto* TracingObserverProto::GetInstance() {
+  static base::NoDestructor<TracingObserverProto> instance;
+  return instance.get();
 }
 
-TracingObserverProto::~TracingObserverProto() {
-  instance_for_testing_ = nullptr;
-}
+TracingObserverProto::TracingObserverProto() = default;
 
-// static
-void TracingObserverProto::RegisterForTesting() {
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-  perfetto::DataSourceDescriptor dsd;
-  dsd.set_name(tracing::mojom::kMemoryInstrumentationDataSourceName);
-  // Since the data source can only be registered once per process but there are
-  // multiple instances of TracingObserverProto in tests, use an indirect
-  // instance pointer here which always points to the most recent instance.
-  DataSourceProxy::Register(dsd, &instance_for_testing_);
-#endif
+TracingObserverProto::~TracingObserverProto() = default;
+
+void TracingObserverProto::ResetForTesting() {
+  GetInstance()->~TracingObserverProto();
+  new (GetInstance()) TracingObserverProto;
 }
 
 bool TracingObserverProto::AddChromeDumpToTraceIfEnabled(
@@ -102,9 +80,17 @@ bool TracingObserverProto::AddChromeDumpToTraceIfEnabled(
   };
 
 #if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-  base::TrackEvent::Trace([&](base::TrackEvent::TraceContext ctx) {
+  DataSourceProxy::Trace([&](DataSourceProxy::TraceContext ctx) {
     write_packet(ctx.NewTracePacket());
   });
+  Flush({});
+
+  {
+    base::AutoLock lock(on_chrome_dump_callback_lock_);
+    if (on_chrome_dump_callback_for_testing_) {
+      std::move(on_chrome_dump_callback_for_testing_).Run();
+    }
+  }
 #else   // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   base::AutoLock lock(writer_lock_);
   if (!trace_writer_)
@@ -156,11 +142,12 @@ bool TracingObserverProto::AddOsDumpToTraceIfEnabled(
       };
 
 #if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-  base::TrackEvent::Trace([&](base::TrackEvent::TraceContext ctx) {
+  DataSourceProxy::Trace([&](DataSourceProxy::TraceContext ctx) {
     write_process_stats_packet(ctx.NewTracePacket());
     if (memory_maps.size())
       write_memory_maps_packet(ctx.NewTracePacket());
   });
+  Flush({});
 #else   // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   base::AutoLock lock(writer_lock_);
   if (!trace_writer_)
@@ -173,39 +160,6 @@ bool TracingObserverProto::AddOsDumpToTraceIfEnabled(
 
   return true;
 }
-
-#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-void TracingObserverProto::StartTracingImpl(
-    tracing::PerfettoProducer* producer,
-    const perfetto::DataSourceConfig& data_source_config) {
-  base::AutoLock lock(writer_lock_);
-  // We rely on concurrent setup of TraceLog categories by the
-  // TraceEventDataSource so don't look at the trace config ourselves.
-  trace_writer_ =
-      producer->CreateTraceWriter(data_source_config.target_buffer());
-}
-
-void TracingObserverProto::StopTracingImpl(
-    base::OnceClosure stop_complete_callback) {
-  // Scope to avoid reentrancy in case from the stop callback.
-  {
-    base::AutoLock lock(writer_lock_);
-    trace_writer_.reset();
-  }
-  if (stop_complete_callback) {
-    std::move(stop_complete_callback).Run();
-  }
-}
-
-void TracingObserverProto::Flush(
-    base::RepeatingClosure flush_complete_callback) {
-  base::AutoLock lock(writer_lock_);
-  if (trace_writer_)
-    trace_writer_->Flush();
-  if (flush_complete_callback)
-    std::move(flush_complete_callback).Run();
-}
-#endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
 void TracingObserverProto::MemoryMapsAsProtoInto(
     const std::vector<mojom::VmRegionPtr>& memory_maps,
@@ -245,6 +199,12 @@ void TracingObserverProto::MemoryMapsAsProtoInto(
     entry->set_swap_kb(region->byte_stats_swapped / 1024);
 #endif
   }
+}
+
+void TracingObserverProto::SetOnChromeDumpCallbackForTesting(
+    OnChromeDumpCallback callback) {
+  base::AutoLock lock(on_chrome_dump_callback_lock_);
+  on_chrome_dump_callback_for_testing_ = std::move(callback);
 }
 
 }  // namespace memory_instrumentation

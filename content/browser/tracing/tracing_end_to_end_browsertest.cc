@@ -11,12 +11,16 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "services/resource_coordinator/public/cpp/memory_instrumentation/tracing_observer_proto.h"
 #include "third_party/perfetto/protos/perfetto/config/chrome/chrome_config.gen.h"
 
 #if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 namespace content {
 
 namespace {
+
+const char kDetailedDumpMode[] = "detailed";
+const char kBackgroundDumpMode[] = "background";
 
 perfetto::protos::gen::TraceConfig TraceConfigWithHistograms(
     const std::string& category_filter_string,
@@ -34,6 +38,26 @@ perfetto::protos::gen::TraceConfig TraceConfigWithHistograms(
           trace_event_config.ToString());
     }
   }
+  return perfetto_config;
+}
+
+perfetto::protos::gen::TraceConfig TraceConfigWithMemoryDumps(
+    const char* mode) {
+  const std::string trace_event_config_str = base::StringPrintf(
+      "{\"record_mode\":\"record-until-full\","
+      "\"included_categories\":[\"disabled-by-default-memory-infra\"],"
+      "\"excluded_categories\":[\"*\"],\"memory_dump_config\":{"
+      "\"allowed_dump_modes\":[\"%s\"],"
+      "\"triggers\":[{\"min_time_between_dumps_ms\":10000,"
+      "\"mode\":\"%s\",\"type\":\"periodic_interval\"}]}}",
+      mode, mode);
+
+  auto perfetto_config = base::test::DefaultTraceConfig(
+      "-*,disabled-by-default-memory-infra", false);
+  auto* ds = perfetto_config.add_data_sources();
+  ds->mutable_config()->set_name("org.chromium.memory_instrumentation");
+  ds->mutable_config()->mutable_chrome_config()->set_trace_config(
+      trace_event_config_str);
   return perfetto_config;
 }
 
@@ -61,6 +85,75 @@ IN_PROC_BROWSER_TEST_F(TracingEndToEndBrowserTest, SimpleTraceEvent) {
   EXPECT_THAT(result.value(),
               ::testing::ElementsAre(std::vector<std::string>{"name"},
                                      std::vector<std::string>{"test_event"}));
+}
+
+IN_PROC_BROWSER_TEST_F(TracingEndToEndBrowserTest,
+                       MemoryInstrumentationBackground) {
+  base::WaitableEvent dump_completed;
+  memory_instrumentation::TracingObserverProto::GetInstance()
+      ->SetOnChromeDumpCallbackForTesting(
+          base::BindOnce([](base::WaitableEvent* event) { event->Signal(); },
+                         &dump_completed));
+
+  base::test::TestTraceProcessor ttp;
+  ttp.StartTrace(TraceConfigWithMemoryDumps(kBackgroundDumpMode));
+
+  while (!dump_completed.IsSignaled()) {
+    base::RunLoop().RunUntilIdle();
+  }
+
+  absl::Status status = ttp.StopAndParseTrace();
+  ASSERT_TRUE(status.ok()) << status.message();
+
+  auto result = ttp.RunQuery("SELECT detail_level FROM memory_snapshot");
+  ASSERT_TRUE(result.has_value()) << result.error();
+  EXPECT_THAT(
+      result.value(),
+      ::testing::ElementsAre(std::vector<std::string>{"detail_level"},
+                             std::vector<std::string>{kBackgroundDumpMode}));
+
+  result = ttp.RunQuery(
+      "SELECT COUNT(DISTINCT process_snapshot_id) > 1 AS has_other_processes "
+      "FROM memory_snapshot_node");
+  ASSERT_TRUE(result.has_value()) << result.error();
+  EXPECT_THAT(
+      result.value(),
+      ::testing::ElementsAre(std::vector<std::string>{"has_other_processes"},
+                             std::vector<std::string>{"1"}));
+}
+
+IN_PROC_BROWSER_TEST_F(TracingEndToEndBrowserTest,
+                       MemoryInstrumentationDetailed) {
+  base::WaitableEvent dump_completed;
+  memory_instrumentation::TracingObserverProto::GetInstance()
+      ->SetOnChromeDumpCallbackForTesting(
+          base::BindOnce([](base::WaitableEvent* event) { event->Signal(); },
+                         &dump_completed));
+
+  base::test::TestTraceProcessor ttp;
+  ttp.StartTrace(TraceConfigWithMemoryDumps(kDetailedDumpMode));
+
+  while (!dump_completed.IsSignaled()) {
+    base::RunLoop().RunUntilIdle();
+  }
+
+  absl::Status status = ttp.StopAndParseTrace();
+  ASSERT_TRUE(status.ok()) << status.message();
+
+  auto result = ttp.RunQuery("SELECT detail_level FROM memory_snapshot");
+  ASSERT_TRUE(result.has_value()) << result.error();
+  EXPECT_THAT(result.value(), ::testing::ElementsAre(
+                                  std::vector<std::string>{"detail_level"},
+                                  std::vector<std::string>{kDetailedDumpMode}));
+
+  result = ttp.RunQuery(
+      "SELECT COUNT(DISTINCT process_snapshot_id) > 1 AS has_other_processes "
+      "FROM memory_snapshot_node");
+  ASSERT_TRUE(result.has_value()) << result.error();
+  EXPECT_THAT(
+      result.value(),
+      ::testing::ElementsAre(std::vector<std::string>{"has_other_processes"},
+                             std::vector<std::string>{"1"}));
 }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -249,6 +342,45 @@ IN_PROC_BROWSER_TEST_F(TracingEndToEndBrowserTest, TwoSessionsProcessNames) {
   EXPECT_THAT(result2.value(),
               ::testing::ElementsAre(std::vector<std::string>{"cnt"},
                                      std::vector<std::string>{"1"}));
+}
+
+IN_PROC_BROWSER_TEST_F(TracingEndToEndBrowserTest,
+                       TwoSessionsMemoryInstrumentation) {
+  base::WaitableEvent dump_completed;
+  memory_instrumentation::TracingObserverProto::GetInstance()
+      ->SetOnChromeDumpCallbackForTesting(
+          base::BindOnce([](base::WaitableEvent* event) { event->Signal(); },
+                         &dump_completed));
+
+  base::test::TestTraceProcessor ttp1, ttp2;
+  ttp1.StartTrace(TraceConfigWithMemoryDumps(kDetailedDumpMode));
+  ttp2.StartTrace("foo");
+
+  {
+    TRACE_EVENT("foo", "foo_event");
+    while (!dump_completed.IsSignaled()) {
+      base::RunLoop().RunUntilIdle();
+    }
+  }
+
+  absl::Status status = ttp1.StopAndParseTrace();
+  ASSERT_TRUE(status.ok()) << status.message();
+
+  std::string query = "SELECT detail_level FROM memory_snapshot";
+  auto result1 = ttp1.RunQuery(query);
+  ASSERT_TRUE(result1.has_value()) << result1.error();
+  EXPECT_THAT(
+      result1.value(),
+      ::testing::ElementsAre(std::vector<std::string>{"detail_level"},
+                             std::vector<std::string>{kDetailedDumpMode}));
+
+  status = ttp2.StopAndParseTrace();
+  ASSERT_TRUE(status.ok()) << status.message();
+
+  auto result2 = ttp2.RunQuery(query);
+  ASSERT_TRUE(result2.has_value()) << result2.error();
+  EXPECT_THAT(result2.value(),
+              ::testing::ElementsAre(std::vector<std::string>{"detail_level"}));
 }
 
 }  // namespace content

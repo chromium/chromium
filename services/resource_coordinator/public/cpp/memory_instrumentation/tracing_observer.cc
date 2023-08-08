@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/tracing_observer.h"
+#include "services/tracing/public/cpp/perfetto/perfetto_producer.h"
 
 #include "base/files/file_path.h"
 #include "base/format_macros.h"
@@ -17,31 +18,103 @@ using base::trace_event::ProcessMemoryDump;
 
 namespace {
 
-bool IsMemoryInfraTracingEnabled() {
-  bool enabled;
-  TRACE_EVENT_CATEGORY_GROUP_ENABLED(
-      base::trace_event::MemoryDumpManager::kTraceCategory, &enabled);
-  return enabled;
-}
-
 }  // namespace
 
-TracingObserver::TracingObserver(
-    base::trace_event::TraceLog* trace_log,
-    base::trace_event::MemoryDumpManager* memory_dump_manager)
-    : memory_dump_manager_(memory_dump_manager), trace_log_(trace_log) {
+TracingObserver::TracingObserver()
+    : tracing::PerfettoTracedProcess::DataSourceBase(
+          tracing::mojom::kMemoryInstrumentationDataSourceName) {
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+  perfetto::DataSourceDescriptor dsd;
+  dsd.set_name(name());
+  DataSourceProxy::Register(dsd, this);
+#else
   // If tracing was enabled before initializing MemoryDumpManager, we missed the
   // OnTraceLogEnabled() event. Synthesize it so we can late-join the party.
   // IsEnabled is called before adding observer to avoid calling
   // OnTraceLogEnabled twice.
-  bool is_tracing_already_enabled = trace_log_->IsEnabled();
-  trace_log_->AddEnabledStateObserver(this);
+  bool is_tracing_already_enabled =
+      base::trace_event::TraceLog::GetInstance()->IsEnabled();
+  base::trace_event::TraceLog::GetInstance()->AddEnabledStateObserver(this);
   if (is_tracing_already_enabled)
     OnTraceLogEnabled();
+#endif
+  tracing::PerfettoTracedProcess::Get()->AddDataSource(this);
 }
 
 TracingObserver::~TracingObserver() {
-  trace_log_->RemoveEnabledStateObserver(this);
+#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+  base::trace_event::TraceLog::GetInstance()->RemoveEnabledStateObserver(this);
+#endif
+}
+
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+void TracingObserver::StartTracingImpl(
+    tracing::PerfettoProducer* producer,
+    const perfetto::DataSourceConfig& data_source_config) {
+  const base::trace_event::TraceConfig trace_config{
+      data_source_config.chrome_config().trace_config()};
+  const base::trace_event::TraceConfig::MemoryDumpConfig& memory_dump_config =
+      trace_config.memory_dump_config();
+
+  memory_dump_config_ =
+      std::make_unique<base::trace_event::TraceConfig::MemoryDumpConfig>(
+          memory_dump_config);
+
+  auto* mdm = base::trace_event::MemoryDumpManager::GetInstance();
+  if (mdm->IsInitialized()) {
+    mdm->SetupForTracing(memory_dump_config);
+  }
+}
+
+void TracingObserver::StopTracingImpl(
+    base::OnceClosure stop_complete_callback) {
+  base::trace_event::MemoryDumpManager::GetInstance()->TeardownForTracing();
+  memory_dump_config_.reset();
+
+  if (stop_complete_callback) {
+    std::move(stop_complete_callback).Run();
+  }
+}
+
+void TracingObserver::Flush(base::RepeatingClosure flush_complete_callback) {
+  DataSourceProxy::Trace(
+      [&](DataSourceProxy::TraceContext ctx) { ctx.Flush(); });
+
+  if (flush_complete_callback) {
+    std::move(flush_complete_callback).Run();
+  }
+}
+#else   // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+void TracingObserver::StartTracingImpl(
+    tracing::PerfettoProducer* producer,
+    const perfetto::DataSourceConfig& data_source_config) {
+  base::AutoLock lock(writer_lock_);
+  // We rely on concurrent setup of TraceLog categories by the
+  // TraceEventDataSource so don't look at the trace config ourselves.
+  trace_writer_ =
+      producer->CreateTraceWriter(data_source_config.target_buffer());
+}
+
+void TracingObserver::StopTracingImpl(
+    base::OnceClosure stop_complete_callback) {
+  // Scope to avoid reentrancy in case from the stop callback.
+  {
+    base::AutoLock lock(writer_lock_);
+    trace_writer_.reset();
+  }
+  if (stop_complete_callback) {
+    std::move(stop_complete_callback).Run();
+  }
+}
+
+void TracingObserver::Flush(base::RepeatingClosure flush_complete_callback) {
+  base::AutoLock lock(writer_lock_);
+  if (trace_writer_) {
+    trace_writer_->Flush();
+  }
+  if (flush_complete_callback) {
+    std::move(flush_complete_callback).Run();
+  }
 }
 
 void TracingObserver::OnTraceLogEnabled() {
@@ -63,15 +136,17 @@ void TracingObserver::OnTraceLogEnabled() {
       std::make_unique<base::trace_event::TraceConfig::MemoryDumpConfig>(
           memory_dump_config);
 
-  if (memory_dump_manager_)
-    memory_dump_manager_->SetupForTracing(memory_dump_config);
+  auto* mdm = base::trace_event::MemoryDumpManager::GetInstance();
+  if (mdm->IsInitialized()) {
+    mdm->SetupForTracing(memory_dump_config);
+  }
 }
 
 void TracingObserver::OnTraceLogDisabled() {
-  if (memory_dump_manager_)
-    memory_dump_manager_->TeardownForTracing();
+  base::trace_event::MemoryDumpManager::GetInstance()->TeardownForTracing();
   memory_dump_config_.reset();
 }
+#endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
 bool TracingObserver::AddChromeDumpToTraceIfEnabled(
     const base::trace_event::MemoryDumpRequestArgs&,
@@ -119,6 +194,18 @@ bool TracingObserver::IsDumpModeAllowed(
   if (!memory_dump_config_)
     return false;
   return memory_dump_config_->allowed_dump_modes.count(dump_mode) != 0;
+}
+
+bool TracingObserver::IsMemoryInfraTracingEnabled() const {
+  bool enabled = false;
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+  DataSourceProxy::Trace(
+      [&](DataSourceProxy::TraceContext) { enabled = true; });
+#else
+  TRACE_EVENT_CATEGORY_GROUP_ENABLED(
+      base::trace_event::MemoryDumpManager::kTraceCategory, &enabled);
+#endif
+  return enabled;
 }
 
 }  // namespace memory_instrumentation

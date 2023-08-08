@@ -70,8 +70,6 @@ CoordinatorImpl::CoordinatorImpl()
   g_coordinator_impl = this;
   base::trace_event::MemoryDumpManager::GetInstance()->set_tracing_process_id(
       mojom::kServiceTracingProcessId);
-  tracing_observer_ = std::make_unique<TracingObserverProto>(
-      base::trace_event::TraceLog::GetInstance(), nullptr);
 }
 
 CoordinatorImpl::~CoordinatorImpl() {
@@ -568,7 +566,8 @@ void CoordinatorImpl::FinalizeGlobalMemoryDumpIfAllManagersReplied() {
     return;
   }
 
-  QueuedRequestDispatcher::Finalize(request, tracing_observer_.get());
+  QueuedRequestDispatcher::Finalize(request,
+                                    TracingObserverProto::GetInstance());
 
   queued_memory_dump_requests_.pop_front();
   request = nullptr;

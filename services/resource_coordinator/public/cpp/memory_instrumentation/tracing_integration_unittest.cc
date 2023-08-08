@@ -25,6 +25,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "services/resource_coordinator/public/cpp/memory_instrumentation/tracing_observer_proto.h"
 #include "services/resource_coordinator/public/mojom/memory_instrumentation/memory_instrumentation.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -142,6 +143,14 @@ class MemoryTracingIntegrationTest : public testing::Test {
     task_environment_ =
         std::make_unique<base::test::SingleThreadTaskEnvironment>();
     coordinator_ = std::make_unique<MockCoordinator>(this);
+
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+    TraceLog::GetInstance()->InitializePerfettoIfNeeded();
+    tracing::PerfettoTracedProcess::GetTaskRunner()->ResetTaskRunnerForTesting(
+        base::SingleThreadTaskRunner::GetCurrentDefault());
+#endif
+
+    TracingObserverProto::GetInstance()->ResetForTesting();
   }
 
   void InitializeClientProcess(mojom::ProcessType process_type) {
@@ -357,6 +366,8 @@ TEST_F(MemoryTracingIntegrationTest, TraceConfigExpectations) {
   // Enabling memory-infra in a non-coordinator process should not trigger any
   // periodic dumps.
   EnableMemoryInfraTracing();
+  base::RunLoop().RunUntilIdle();
+
   EXPECT_FALSE(IsPeriodicDumpingEnabled());
   DisableTracing();
 
@@ -366,6 +377,8 @@ TEST_F(MemoryTracingIntegrationTest, TraceConfigExpectations) {
   EnableMemoryInfraTracingWithTraceConfig(
       base::trace_event::TraceConfigMemoryTestUtil::
           GetTraceConfig_PeriodicTriggers(1, 5));
+  base::RunLoop().RunUntilIdle();
+
   EXPECT_FALSE(IsPeriodicDumpingEnabled());
   DisableTracing();
 }
@@ -376,6 +389,8 @@ TEST_F(MemoryTracingIntegrationTest, TraceConfigExpectationsWhenIsCoordinator) {
   // Enabling memory-infra with the legacy TraceConfig (category filter) in
   // a coordinator process should not enable periodic dumps.
   EnableMemoryInfraTracing();
+  base::RunLoop().RunUntilIdle();
+
   EXPECT_FALSE(IsPeriodicDumpingEnabled());
   DisableTracing();
 
@@ -386,6 +401,7 @@ TEST_F(MemoryTracingIntegrationTest, TraceConfigExpectationsWhenIsCoordinator) {
   EnableMemoryInfraTracingWithTraceConfig(
       base::trace_event::TraceConfigMemoryTestUtil::
           GetTraceConfig_PeriodicTriggers(100, 5));
+  base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(IsPeriodicDumpingEnabled());
   DisableTracing();

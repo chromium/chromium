@@ -36,8 +36,7 @@ void OsDumpAsValueInto(TracedValue* value, const mojom::OSMemDump& os_dump) {
 
 TracingObserverTracedValue::TracingObserverTracedValue(
     base::trace_event::TraceLog* trace_log,
-    base::trace_event::MemoryDumpManager* memory_dump_manager)
-    : TracingObserver(trace_log, memory_dump_manager) {}
+    base::trace_event::MemoryDumpManager* memory_dump_manager) {}
 
 TracingObserverTracedValue::~TracingObserverTracedValue() = default;
 
