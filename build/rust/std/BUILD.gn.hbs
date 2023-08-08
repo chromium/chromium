@@ -39,12 +39,15 @@ cargo_crate("{{this.0}}") {
     {{#each remove_library_configs}}
     "{{this}}",
     {{/each}}
+    {{#unless extra_kv.include_coverage}}
+    "//build/config/coverage:default_coverage",
+    {{/unless}}
   ]
   library_configs += [
     "//build/config/compiler:no_chromium_code",
-    {{#each add_library_configs}}
-    "{{this}}",
-    {{/each}}
+    {{#if extra_kv.immediate_abort}}
+    "//build/rust:panic_immediate_abort",
+    {{/if}}
   ]
   executable_configs -= [
     "//build/config/compiler:chromium_code",
@@ -58,9 +61,16 @@ cargo_crate("{{this.0}}") {
     "{{this}}",
     {{/each}}
   ]
+  deps = [
+    "//build/rust/std:std_build_deps",
+    {{#if extra_kv.include_coverage}}
+    "//build/rust/std:profiler_builtins_group",
+    {{/if}}
+  {{#unless deps}}
+  ]
+  {{/unless}}
   {{#each deps}}
   {{#if @first}}
-  deps = [
     {{#each this.rules}}
     "{{this}}",
     {{/each}}
@@ -89,25 +99,24 @@ cargo_crate("{{this.0}}") {
     {{/each}}
   ]
   {{/if}}
+  {{#unless extra_kv.skip_build_rs}}
   {{#if build_root}}
   build_root = "{{build_root}}"
   build_sources = [ "{{build_root}}" ]
   {{/if}}
-  {{#if rustenv}}
+  {{/unless}}
   rustenv = [
-    {{#each rustenv}}
-    "{{this}}",
-    {{/each}}
+    "CFG_DISABLE_UNSTABLE_FEATURES=0",
+    "STD_ENV_ARCH=$rust_target_arch",
   ]
-  {{/if}}
-  {{#if rustflags}}
   rustflags = [
-    {{#each rustflags}}
-    "{{this}}",
-    {{/each}}
+    "--cfg=backtrace_in_libstd",
+    "-Zforce-unstable-if-unmarked",
+    {{#if extra_kv.no_link_directives}}
+    "-Zlink-directives=false",
+    {{/if}}
   ]
-  {{/if}}
-  output_dir = "{{output_dir}}"
+  output_dir = "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
   {{/with}}
 }
 {{/each}}

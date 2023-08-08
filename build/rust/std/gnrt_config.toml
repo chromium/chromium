@@ -31,33 +31,15 @@ build_file_template = "BUILD.gn.hbs"
 #
 # rustc_metadata = "libstd"
 
-# force-unstable-if-unmarked prevents normal crates from inadvertently using
-# symbols from std-internal dependencies in the sysroot. This is normally passed
-# during an x.py build, but we have to do it manually.
-rustflags = ['-Zforce-unstable-if-unmarked']
-
-# Override the GN output dir. We direct std targets to output directly to the
-# sysroot we'll use later. This must stay in sync with `local_rustc_sysroot` in
-# //build/rust/std/BUILD.gn
-output_dir = '$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/'
-
-# This target provides setup needed for building std.
-extra_gn_deps = [
-    '//build/rust/std:std_build_deps',
-    '//build/rust/std:profiler_builtins_group',
-]
+extra_kv = { include_coverage = true }
 
 [crate.compiler_builtins]
-features = ['weak-intrinsics']
 # Dependencies of profiler_builtins must have instrumentation disabled
-remove_library_configs = ['//build/config/coverage:default_coverage']
-extra_gn_deps_to_ignore = ['//build/rust/std:profiler_builtins_group']
+extra_kv = { include_coverage = false }
 
 [crate.core]
 # Dependencies of profiler_builtins must have instrumentation disabled
-remove_library_configs = ['//build/config/coverage:default_coverage']
-extra_gn_deps_to_ignore = ['//build/rust/std:profiler_builtins_group']
-add_library_configs = ['//build/rust:panic_immediate_abort']
+extra_kv = { include_coverage = false, immediate_abort = true }
 extra_src_roots = ['../../portable-simd/crates/core_simd', '../../stdarch/crates/core_arch']
 extra_input_roots = ['../primitive_docs']
 
@@ -70,60 +52,38 @@ extra_input_roots = ['../primitive_docs']
 remove_deps = ['allocator-api2']
 
 [crate.libc]
-# The libc crate tries to link in the Windows CRT, but we specify the CRT
-# library ourselves in //build/config/win:dynamic_crt and
-# //build/config/win:static_crt because Rustc does not allow us to specify
-# using the debug CRT: https://github.com/rust-lang/rust/issues/39016
-rustflags = ['-Zlink-directives=false']
-
 # This target is #[no_core] when included by std, which is incompatible with
 # profiling.
-remove_library_configs = ['//build/config/coverage:default_coverage']
-extra_gn_deps_to_ignore = ['//build/rust/std:profiler_builtins_group']
+#
+# Suppress link directives since we specify the deps in GN configs.
+extra_kv = { include_coverage = false, no_link_directives = true }
 
 [crate.profiler_builtins]
 # The build script is used to compile a profiler-rt library, but we get
 # the profiler rt library from clang, so we skip this.
-skip_build_rs = true
+#
 # profiler_builtins cannot depend on itself, which it would if build with
 # instrumentation.
-remove_library_configs = ['//build/config/coverage:default_coverage']
-extra_gn_deps_to_ignore = ['//build/rust/std:profiler_builtins_group']
+extra_kv = { include_coverage = false, skip_build_rs = true }
 
 [crate.rustc-std-workspace-alloc]
 # This target is #[no_core] which is incompatible with profiling.
-remove_library_configs = ['//build/config/coverage:default_coverage']
-extra_gn_deps_to_ignore = ['//build/rust/std:profiler_builtins_group']
+extra_kv = { include_coverage = false }
 
 [crate.rustc-std-workspace-core]
 # Dependencies of profiler_builtins must have instrumentation disabled
-remove_library_configs = ['//build/config/coverage:default_coverage']
-extra_gn_deps_to_ignore = ['//build/rust/std:profiler_builtins_group']
+extra_kv = { include_coverage = false }
 
 [crate.std]
-# Requires:
-# * STD_ENV_ARCH is referenced in architecture-dependent code. Note this is the
-#   target arch, and as such `$rust_target_arch` is passed literally to GN. This
-#   variable is set at build time in build/config/rust.gni
-#
-# See https://github.com/rust-lang/rust/blob/master/library/std/build.rs
-#
-# TODO(crbug.com/1448880): Our cargo emulation should use `cargo:rustc-env`
-# to set the environment for the crate, then this goes away.
-cfg = ['backtrace_in_libstd']
-env = ['STD_ENV_ARCH=$rust_target_arch']
-add_library_configs = ['//build/rust:panic_immediate_abort']
 extra_src_roots = ['../../backtrace/src', '../../portable-simd/crates/std_float/src']
 extra_input_roots = ['../primitive_docs', '../../core/src', '../../portable-simd/crates/core_simd/src', '../../stdarch/crates/core_arch/src']
 
 # Remove this from std. It will be depended on directly when needed.
 exclude_deps_in_gn = ['profiler_builtins']
 
-[crate.test]
-# Requires:
-# * CFG_DISABLE_UNSTABLE_FEATURES=0 to match how it's built by x.py.
-env = ['CFG_DISABLE_UNSTABLE_FEATURES=0']
+extra_kv = { immediate_abort = true }
 
+[crate.test]
 # test only depends on proc_macro as an internal detail of the Rust build, so
 # it's implicitly included with std/test. However, we list the std crates and
 # construct the sysroot explicitly. We don't need this, and we don't even want
@@ -134,9 +94,6 @@ exclude_deps_in_gn = ['proc_macro']
 # The build script is used to set up the link directives which we skip below.
 # It uses `cc` to run a compiler to do so, which we don't support in build
 # scripts.
-skip_build_rs = true
-# The unwind crate has #[link] directives to the native unwind library, but we
-# either get that automatically by linking with clang++, or build and link the
-# lib from //buildtools/third_party/libunsind explicitly. Disable -lfoo linker
-# flags from this crate.
-rustflags = ['-Zlink-directives=false']
+#
+# Suppress link directives since we specify the deps in GN configs.
+extra_kv = { skip_build_rs = true, no_link_directives = true }

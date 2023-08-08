@@ -4,15 +4,15 @@
 
 //! GN build file generation.
 
-use crate::config::{config_field, BuildConfig};
+use crate::config::BuildConfig;
 use crate::crates::CrateFiles;
 use crate::crates::*;
 use crate::deps::{self, DepOfDep};
 use crate::paths;
 use crate::platforms;
 
-use std::collections::{HashMap, HashSet};
-use std::fmt::{self, Display, Write};
+use std::collections::HashMap;
+use std::fmt::Write;
 use std::path::Path;
 
 use serde::Serialize;
@@ -46,16 +46,11 @@ pub struct RuleConcrete {
     pub crate_root: String,
     pub sources: Vec<String>,
     pub inputs: Vec<String>,
-    pub no_std: bool,
     pub edition: String,
     pub cargo_pkg_version: String,
     pub cargo_pkg_authors: Option<String>,
     pub cargo_pkg_name: String,
     pub cargo_pkg_description: Option<String>,
-    pub add_library_configs: Vec<String>,
-    pub remove_library_configs: Vec<String>,
-    pub add_executable_configs: Vec<String>,
-    pub remove_executable_configs: Vec<String>,
     pub deps: Vec<DepGroup>,
     pub dev_deps: Vec<DepGroup>,
     pub build_deps: Vec<DepGroup>,
@@ -63,11 +58,7 @@ pub struct RuleConcrete {
     pub features: Vec<String>,
     pub build_root: Option<String>,
     pub build_script_outputs: Vec<String>,
-    pub rustc_metadata: Option<String>,
-    pub rustflags: Vec<String>,
-    pub rustenv: Vec<String>,
-    pub output_dir: Option<String>,
-    pub gn_variables_lib: Option<String>,
+    pub extra_kv: HashMap<String, serde_json::Value>,
 }
 
 /// Describes a single GN build rule for a crate configuration. Each field
@@ -168,60 +159,28 @@ pub fn build_rule_from_std_dep(
     details: &CrateFiles,
     extra_config: &BuildConfig,
 ) -> (String, Rule) {
-    // Used by reference if the provided crate config is empty.
-    let default_crate_config = Default::default();
-    let crate_config =
-        extra_config.per_crate_config.get(&*dep.package_name).unwrap_or(&default_crate_config);
-
     let lib_target = dep.lib_target.as_ref().expect("dependency had no lib target");
     let crate_root_from_src = paths.to_gn_abs_path(&lib_target.root).unwrap();
-    let build_script_from_src = dep
-        .build_script
-        .as_ref()
-        .filter(|_| !crate_config.skip_build_rs)
-        .map(|p| paths.to_gn_abs_path(p).unwrap());
+    let build_script_from_src = dep.build_script.as_ref().map(|p| paths.to_gn_abs_path(p).unwrap());
     let cargo_pkg_authors =
         if dep.authors.is_empty() { None } else { Some(dep.authors.join(", ")) };
 
-    // Helper macro to use the config macro with less repetition.
-    macro_rules! config_field {
-        ($field:ident) => {
-            crate::config::config_field!(
-                &extra_config,
-                &*dep.package_name,
-                $field,
-                &default_crate_config
-            )
-        };
-    }
-
-    // Collect the set of rustflags for this crate. This is a combination of
-    // those for the crate specifically, and any overall ones set. Additionally,
-    // the `cfg` options become flags but we have to format them here.
-    //
-    // This expression is complicated to avoid creating unnecessary clones. We
-    // only need to clone each String once, and create one new Vec with
-    // collect() at the end.
-    let rustflags = config_field!(cfg)
-        .map(|cfg| format!("--cfg={cfg}"))
-        .chain(config_field!(rustflags).cloned())
-        .collect();
-
-    let rustenv = config_field!(env).cloned().collect();
-    let exclude_deps: Vec<String> = config_field!(exclude_deps_in_gn).cloned().collect();
-
-    let extra_deps_to_ignore: HashSet<&str> =
-        config_field!(extra_gn_deps_to_ignore).map(|s| s.as_ref()).collect();
-    let extra_deps: Vec<String> = config_field!(extra_gn_deps)
-        .filter(|d| !extra_deps_to_ignore.contains(d.as_str()))
+    // Get deps to exclude from resolved deps.
+    let exclude_deps: Vec<String> = extra_config
+        .per_crate_config
+        .get(&*dep.package_name)
+        .iter()
+        .flat_map(|c| &c.exclude_deps_in_gn)
+        .chain(&extra_config.all_config.exclude_deps_in_gn)
         .cloned()
         .collect();
 
-    let rustc_metadata = config_field!(rustc_metadata).next().cloned();
-
-    let add_library_configs: Vec<String> = config_field!(add_library_configs).cloned().collect();
-    let remove_library_configs: Vec<String> =
-        config_field!(remove_library_configs).cloned().collect();
+    // Get the config's extra (key, value) pairs, which are passed as-is to the
+    // build file template engine.
+    let mut extra_kv = extra_config.all_config.extra_kv.clone();
+    if let Some(per_crate) = extra_config.per_crate_config.get(&*dep.package_name) {
+        extra_kv.extend(per_crate.extra_kv.iter().map(|(k, v)| (k.clone(), v.clone())));
+    }
 
     let mut rule = RuleConcrete {
         crate_type: "rlib".to_string(),
@@ -236,36 +195,21 @@ pub fn build_rule_from_std_dep(
             .iter()
             .map(|p| format!("//{}", paths.to_gn_abs_path(p).unwrap().to_string()))
             .collect(),
-        no_std: true,
         edition: dep.edition.clone(),
         cargo_pkg_version: dep.version.to_string(),
         cargo_pkg_authors,
         cargo_pkg_name: dep.package_name.to_string(),
         cargo_pkg_description: dep.description.as_ref().map(|s| s.trim_end().to_string()),
         build_root: build_script_from_src.as_ref().map(|p| format!("//{p}")),
-        add_library_configs: Vec::new(),
-        remove_library_configs: Vec::new(),
-        add_executable_configs: Vec::new(),
-        remove_executable_configs: Vec::new(),
-        rustc_metadata,
-        rustflags,
-        rustenv,
-        output_dir: crate_config
-            .output_dir
-            .clone()
-            .or_else(|| extra_config.all_config.output_dir.clone()),
+        extra_kv,
         ..Default::default()
     };
-
-    rule.add_library_configs.extend(add_library_configs);
-    rule.remove_library_configs.extend(remove_library_configs);
 
     rule.features = dep
         .dependency_kinds
         .get(&deps::DependencyKind::Normal)
         .map(|pki| pki.features.clone())
         .unwrap_or(vec![]);
-    rule.features.append(&mut config_field!(features).cloned().collect());
     rule.features.sort_unstable();
     rule.features.dedup();
 
@@ -288,8 +232,6 @@ pub fn build_rule_from_std_dep(
             rule.aliased_deps.push((dep.use_name.clone(), format!(":{target_name}__rlib")));
         }
     }
-
-    rule.deps[0].rules.extend(extra_deps);
 
     // If there are still no deps after `extra_deps`, simply clear the list.
     if rule.deps.len() == 1 && rule.deps[0].rules.len() == 0 {
@@ -444,7 +386,6 @@ fn make_build_file_for_chromium_dep(
             lib_details.inputs =
                 details.inputs.iter().map(|p| format!("//{}", p.display().to_string())).collect();
             lib_details.features = per_kind_info.features.clone();
-            lib_details.gn_variables_lib = metadata.gn_variables.clone();
 
             let testonly = dep_kind == deps::DependencyKind::Development;
             let visibility = metadata.visibility;
@@ -511,54 +452,21 @@ fn normalize_target_name(package_name: &str) -> String {
 }
 
 pub fn escape_for_handlebars(x: &str) -> String {
-    escaped(x).to_string()
-}
-
-/// Wraps a `Display`-able type with another `Display` implementation that
-/// escapes all characters according to GN string rules.
-///
-/// Note that it does not escape '$', since we want to use GN "$var" syntax in
-/// some cases. Also due to an apparent bug in GN's output to Ninja files, we
-/// replace newlines with spaces.
-///
-/// See https://gn.googlesource.com/gn/+/refs/heads/main/docs/language.md#Strings
-fn escaped<T: Display>(x: T) -> impl Display {
-    Escaped(x)
-}
-
-#[cfg(test)]
-pub fn escaped_for_testing<T: Display>(x: T) -> impl Display {
-    escaped(x)
-}
-
-struct Escaped<T>(T);
-
-impl<T: Display> Display for Escaped<T> {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(EscapedWriter(f), "{}", self.0)
-    }
-}
-
-struct EscapedWriter<W>(W);
-
-impl<W: Write> Write for EscapedWriter<W> {
-    fn write_str(&mut self, s: &str) -> fmt::Result {
-        s.chars().try_for_each(|c| self.write_char(c))
-    }
-
-    fn write_char(&mut self, c: char) -> fmt::Result {
+    let mut out = String::new();
+    for c in x.chars() {
         match c {
             // Note: we don't escape '$' here because we sometimes want to use
             // $var syntax.
-            c @ ('"' | '\\') => write!(self.0, "\\{c}"),
+            c @ ('"' | '\\') => write!(out, "\\{c}").unwrap(),
             // GN strings can encode literal ASCII with "$0x<hex_code>" syntax,
             // so we could embed newlines with "$0x0A". However, GN seems to
             // escape these incorrectly in its Ninja output so we just replace
             // it with a space.
-            '\n' => self.0.write_char(' '),
-            c => self.0.write_char(c),
+            '\n' => out.push(' '),
+            c => out.push(c),
         }
     }
+    out
 }
 
 /// Describes a condition for some GN declaration.
@@ -720,9 +628,9 @@ mod tests {
 
     #[test]
     fn string_excaping() {
-        assert_eq!("foo bar", format!("{}", escaped_for_testing("foo bar")));
-        assert_eq!("foo bar ", format!("{}", escaped_for_testing("foo\nbar\n")));
-        assert_eq!(r#"foo \"bar\""#, format!("{}", escaped_for_testing(r#"foo "bar""#)));
-        assert_eq!("foo 'bar'", format!("{}", escaped_for_testing("foo 'bar'")));
+        assert_eq!("foo bar", format!("{}", escape_for_handlebars("foo bar")));
+        assert_eq!("foo bar ", format!("{}", escape_for_handlebars("foo\nbar\n")));
+        assert_eq!(r#"foo \"bar\""#, format!("{}", escape_for_handlebars(r#"foo "bar""#)));
+        assert_eq!("foo 'bar'", format!("{}", escape_for_handlebars("foo 'bar'")));
     }
 }

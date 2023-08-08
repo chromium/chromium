@@ -16,6 +16,9 @@ features = [
     "std_detect_file_io"
 ]
 
+[dependencies.compiler_builtins]
+features = ["weak-intrinsics"]
+
 [patch.crates-io]
 rustc-std-workspace-core = { path = '../../../../RUST_SRC_ROOT/library/rustc-std-workspace-core' }
 rustc-std-workspace-alloc = { path = '../../../../RUST_SRC_ROOT/library/rustc-std-workspace-alloc' }
