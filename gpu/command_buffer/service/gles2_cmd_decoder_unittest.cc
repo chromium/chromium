@@ -733,7 +733,6 @@ struct QueryType {
 const QueryType kQueryTypes[] = {
     {GL_COMMANDS_ISSUED_CHROMIUM, false},
     {GL_COMMANDS_ISSUED_TIMESTAMP_CHROMIUM, true},
-    {GL_LATENCY_QUERY_CHROMIUM, false},
     {GL_ASYNC_PIXEL_PACK_COMPLETED_CHROMIUM, false},
     {GL_GET_ERROR_QUERY_CHROMIUM, false},
     {GL_COMMANDS_COMPLETED_CHROMIUM, false},

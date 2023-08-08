@@ -52,9 +52,6 @@ _NAMED_TYPE_INFO = {
       'GL_COMMANDS_ISSUED_TIMESTAMP_CHROMIUM',
       'GL_COMMANDS_COMPLETED_CHROMIUM',
     ],
-    'invalid': [
-      'GL_LATENCY_QUERY_CHROMIUM',
-    ],
   },
   'TextureParameter': {
     'type': 'GLenum',

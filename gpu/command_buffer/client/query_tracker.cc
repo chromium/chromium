@@ -157,11 +157,6 @@ void QueryTracker::Query::Begin(QueryTrackerClient* client) {
     case GL_GET_ERROR_QUERY_CHROMIUM:
       // To nothing on begin for error queries.
       break;
-    case GL_LATENCY_QUERY_CHROMIUM:
-      client_begin_time_us_ = MicrosecondsSinceOriginOfTime();
-      // tell service about id, shared memory and count
-      client->IssueBeginQuery(target(), id(), shm_id(), shm_offset());
-      break;
     case GL_ASYNC_PIXEL_PACK_COMPLETED_CHROMIUM:
     default:
       // tell service about id, shared memory and count
@@ -219,11 +214,6 @@ bool QueryTracker::Query::CheckResultsAvailable(CommandBufferHelper* helper,
     // this method from CommandBufferHelper.
     if (processed_all || helper->IsContextLost()) {
       switch (target()) {
-        case GL_LATENCY_QUERY_CHROMIUM:
-          // Disabled DCHECK because of http://crbug.com/419236.
-          //DCHECK(info_.sync->result >= client_begin_time_us_);
-          result_ = info_.sync->result - client_begin_time_us_;
-          break;
         case GL_COMMANDS_ISSUED_CHROMIUM:
         case GL_COMMANDS_ISSUED_TIMESTAMP_CHROMIUM:
         case GL_ASYNC_PIXEL_PACK_COMPLETED_CHROMIUM:

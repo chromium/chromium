@@ -174,65 +174,6 @@ void SummedIntegerQuery::Process(bool did_finish) {
   MarkAsCompleted(summed_result);
 }
 
-class CommandLatencyQuery : public QueryManager::Query {
- public:
-  CommandLatencyQuery(QueryManager* manager,
-                      GLenum target,
-                      scoped_refptr<gpu::Buffer> buffer,
-                      QuerySync* sync);
-
-  void Begin() override;
-  void End(base::subtle::Atomic32 submit_count) override;
-  void QueryCounter(base::subtle::Atomic32 submit_count) override;
-  void Pause() override;
-  void Resume() override;
-  void Process(bool did_finish) override;
-  void Destroy(bool have_context) override;
-
- protected:
-  ~CommandLatencyQuery() override;
-};
-
-CommandLatencyQuery::CommandLatencyQuery(QueryManager* manager,
-                                         GLenum target,
-                                         scoped_refptr<gpu::Buffer> buffer,
-                                         QuerySync* sync)
-    : Query(manager, target, std::move(buffer), sync) {}
-
-void CommandLatencyQuery::Begin() {
-  MarkAsActive();
-}
-
-void CommandLatencyQuery::Pause() {
-  MarkAsPaused();
-}
-
-void CommandLatencyQuery::Resume() {
-  MarkAsActive();
-}
-
-void CommandLatencyQuery::End(base::subtle::Atomic32 submit_count) {
-  base::TimeDelta now = base::TimeTicks::Now() - base::TimeTicks();
-  MarkAsPending(submit_count);
-  MarkAsCompleted(now.InMicroseconds());
-}
-
-void CommandLatencyQuery::QueryCounter(base::subtle::Atomic32 submit_count) {
-  NOTREACHED();
-}
-
-void CommandLatencyQuery::Process(bool did_finish) {
-  NOTREACHED();
-}
-
-void CommandLatencyQuery::Destroy(bool /* have_context */) {
-  if (!IsDeleted()) {
-    MarkAsDeleted();
-  }
-}
-
-CommandLatencyQuery::~CommandLatencyQuery() = default;
-
 class AsyncReadPixelsCompletedQuery
     : public GLES2QueryManager::GLES2Query,
       public base::SupportsWeakPtr<AsyncReadPixelsCompletedQuery> {
@@ -565,9 +506,6 @@ QueryManager::Query* GLES2QueryManager::CreateQuery(
     QuerySync* sync) {
   scoped_refptr<Query> query;
   switch (target) {
-    case GL_LATENCY_QUERY_CHROMIUM:
-      query = new CommandLatencyQuery(this, target, std::move(buffer), sync);
-      break;
     case GL_ASYNC_PIXEL_PACK_COMPLETED_CHROMIUM:
       query = new AsyncReadPixelsCompletedQuery(this, target, std::move(buffer),
                                                 sync);
