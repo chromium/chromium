@@ -30,7 +30,7 @@ class UrlAllowlistTest(ChromeEnterpriseTestCase):
 
     # Blocklist all sites and add an exception with URLAllowlist.
     self.SetPolicy(dc, r'URLBlocklist\1', '*', 'String')
-    self.SetPolicy(dc, r'URLAllowlist\1', 'https://youtube.com', 'String')
+    self.SetPolicy(dc, r'URLAllowlist\1', 'https://google.com', 'String')
     self.RunCommand(client, 'gpupdate /force')
 
   def openPage(self, url, incognito=False):
@@ -46,20 +46,20 @@ class UrlAllowlistTest(ChromeEnterpriseTestCase):
 
   @test
   def test_AllowedUrlCanVisit(self):
-    output = self.openPage('https://youtube.com')
+    output = self.openPage('https://google.com')
     self.assertNotIn(_ERR_BLOCKED_BY_ADMINISTRATOR, output)
 
   @test
   def test_NotAllowedUrlCantVisit(self):
-    output = self.openPage('https://google.com')
+    output = self.openPage('https://youtube.com')
     self.assertIn(_ERR_BLOCKED_BY_ADMINISTRATOR, output)
 
   @test
   def test_AllowedUrlCanVisitIncognito(self):
-    output = self.openPage('https://youtube.com', incognito=True)
+    output = self.openPage('https://google.com', incognito=True)
     self.assertNotIn(_ERR_BLOCKED_BY_ADMINISTRATOR, output)
 
   @test
   def test_NotAllowedUrlCantVisitIncognito(self):
-    output = self.openPage('https://google.com', incognito=True)
+    output = self.openPage('https://youtube.com', incognito=True)
     self.assertIn(_ERR_BLOCKED_BY_ADMINISTRATOR, output)
