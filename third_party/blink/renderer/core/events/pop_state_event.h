@@ -59,6 +59,7 @@ class CORE_EXPORT PopStateEvent final : public Event {
   ~PopStateEvent() override = default;
 
   ScriptValue state(ScriptState* script_state, ExceptionState& exception_state);
+  bool hasUAVisualTransition() const { return has_ua_visual_transition_; }
   bool IsStateDirty() const { return false; }
 
   const AtomicString& InterfaceName() const override;
@@ -69,6 +70,7 @@ class CORE_EXPORT PopStateEvent final : public Event {
   WorldSafeV8Reference<v8::Value> state_;
   scoped_refptr<SerializedScriptValue> serialized_state_;
   Member<History> history_;
+  const bool has_ua_visual_transition_ = false;
 };
 
 }  // namespace blink

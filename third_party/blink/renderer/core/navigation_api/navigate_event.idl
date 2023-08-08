@@ -18,6 +18,7 @@
   readonly attribute FormData? formData;
   readonly attribute DOMString? downloadRequest;
   readonly attribute any info;
+  [RuntimeEnabled=HasUAVisualTransition] readonly attribute boolean hasUAVisualTransition;
 
   [RaisesException] void intercept(optional NavigationInterceptOptions options = {});
   [RaisesException, RuntimeEnabled=NavigateEventCommitBehavior] void commit();

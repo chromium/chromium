@@ -1897,6 +1897,11 @@
       },
       base_feature: "none",
     },
+    {
+      name: "HasUAVisualTransition",
+      status: "test",
+      base_feature: "none",
+    },
     // HighlightAPI's custom highlights use HighlightInheritance's behavior even
     // if the HighlightInheritance feature is not enabled.
     {
