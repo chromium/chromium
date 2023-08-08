@@ -961,11 +961,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
   LayoutUnit ContainingBlockLogicalWidthForContent() const override;
 
-  virtual PhysicalSize IntrinsicSize() const {
-    NOT_DESTROYED();
-    return PhysicalSize();
-  }
-
   bool AutoWidthShouldFitContent() const;
 
   // Block flows subclass availableWidth/Height to handle multi column layout

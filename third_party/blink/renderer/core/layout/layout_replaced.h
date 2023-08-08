@@ -148,7 +148,7 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
 
   void UpdateLayout() override;
 
-  PhysicalSize IntrinsicSize() const final {
+  PhysicalSize IntrinsicSize() const {
     NOT_DESTROYED();
     auto width_override = IntrinsicWidthOverride();
     auto height_override = IntrinsicHeightOverride();
