@@ -171,11 +171,13 @@ AccountPasswordStoreFactory::BuildServiceInstanceFor(
 #if BUILDFLAG(IS_ANDROID)
       new password_manager::PasswordStore(
           std::make_unique<password_manager::PasswordStoreBuiltInBackend>(
-              std::move(login_db)));
+              std::move(login_db),
+              syncer::WipeModelUponSyncDisabledBehavior::kAlways));
 #else
       new password_manager::PasswordStore(
           std::make_unique<password_manager::PasswordStoreBuiltInBackend>(
               std::move(login_db),
+              syncer::WipeModelUponSyncDisabledBehavior::kAlways,
               std::make_unique<UnsyncedCredentialsDeletionNotifierImpl>(
                   profile)));
 #endif

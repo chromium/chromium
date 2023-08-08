@@ -78,7 +78,8 @@ WebViewAccountPasswordStoreFactory::BuildServiceInstanceFor(
   scoped_refptr<password_manager::PasswordStore> ps =
       new password_manager::PasswordStore(
           std::make_unique<password_manager::PasswordStoreBuiltInBackend>(
-              std::move(login_db)));
+              std::move(login_db),
+              syncer::WipeModelUponSyncDisabledBehavior::kAlways));
 
   password_manager::AffiliationService* affiliation_service =
       WebViewAffiliationServiceFactory::GetForBrowserState(context);

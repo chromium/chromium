@@ -204,8 +204,8 @@ class PasswordStoreTest : public testing::Test {
   scoped_refptr<PasswordStore> CreatePasswordStore() {
     return new PasswordStore(std::make_unique<PasswordStoreBuiltInBackend>(
         std::make_unique<LoginDatabase>(
-            test_login_db_file_path(),
-            password_manager::IsAccountStore(false))));
+            test_login_db_file_path(), password_manager::IsAccountStore(false)),
+        syncer::WipeModelUponSyncDisabledBehavior::kNever));
   }
 
   TestingPrefServiceSimple* pref_service() { return &pref_service_; }

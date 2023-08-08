@@ -50,6 +50,8 @@ base::OnceCallback<Result(Result)> ReportMetricsForResultCallback(
 
 PasswordStoreBuiltInBackend::PasswordStoreBuiltInBackend(
     std::unique_ptr<LoginDatabase> login_db,
+    syncer::WipeModelUponSyncDisabledBehavior
+        wipe_model_upon_sync_disabled_behavior,
     std::unique_ptr<UnsyncedCredentialsDeletionNotifier> notifier) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   background_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
@@ -57,7 +59,8 @@ PasswordStoreBuiltInBackend::PasswordStoreBuiltInBackend(
   DCHECK(background_task_runner_);
   helper_ = std::make_unique<LoginDatabaseAsyncHelper>(
       std::move(login_db), std::move(notifier),
-      base::SequencedTaskRunner::GetCurrentDefault());
+      base::SequencedTaskRunner::GetCurrentDefault(),
+      wipe_model_upon_sync_disabled_behavior);
 }
 
 PasswordStoreBuiltInBackend::~PasswordStoreBuiltInBackend() {

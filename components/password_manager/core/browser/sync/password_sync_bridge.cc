@@ -10,9 +10,7 @@
 
 #include "base/auto_reset.h"
 #include "base/check_op.h"
-#include "base/containers/flat_map.h"
 #include "base/feature_list.h"
-#include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -314,9 +312,13 @@ class ScopedStoreTransaction {
 PasswordSyncBridge::PasswordSyncBridge(
     std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
     PasswordStoreSync* password_store_sync,
+    syncer::WipeModelUponSyncDisabledBehavior
+        wipe_model_upon_sync_disabled_behavior,
     const base::RepeatingClosure& sync_enabled_or_disabled_cb)
     : ModelTypeSyncBridge(std::move(change_processor)),
       password_store_sync_(password_store_sync),
+      wipe_model_upon_sync_disabled_behavior_(
+          wipe_model_upon_sync_disabled_behavior),
       sync_enabled_or_disabled_cb_(sync_enabled_or_disabled_cb) {
   DCHECK(password_store_sync_);
   DCHECK(sync_enabled_or_disabled_cb_);
@@ -399,6 +401,22 @@ PasswordSyncBridge::PasswordSyncBridge(
   }
   base::UmaHistogramEnumeration("PasswordManager.SyncMetadataReadError2",
                                 sync_metadata_read_error);
+
+  if (wipe_model_upon_sync_disabled_behavior_ ==
+          syncer::WipeModelUponSyncDisabledBehavior::kOnceIfTrackingMetadata &&
+      (!batch || !syncer::IsInitialSyncDone(
+                     batch->GetModelTypeState().initial_sync_state()))) {
+    // Since the model isn't initially tracking metadata, move away from
+    // kOnceIfTrackingMetadata so the behavior doesn't kick in, in case sync
+    // is turned on later and back to off.
+    //
+    // Note that implementing this using IsInitialSyncDone(), instead of
+    // invoking IsTrackingMetadata() later, is more reliable, because the
+    // function cannot be trusted in ApplyDisableSyncChanges(), as it can
+    // return false negatives.
+    wipe_model_upon_sync_disabled_behavior_ =
+        syncer::WipeModelUponSyncDisabledBehavior::kNever;
+  }
 
   if (batch) {
     this->change_processor()->ModelReadyToSync(std::move(batch));
@@ -981,13 +999,27 @@ bool PasswordSyncBridge::SupportsGetStorageKey() const {
 
 void PasswordSyncBridge::ApplyDisableSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> delete_metadata_change_list) {
-  if (!password_store_sync_->IsAccountStore()) {
-    password_store_sync_->GetMetadataStore()->DeleteAllSyncMetadata(
-        syncer::PASSWORDS);
-    sync_enabled_or_disabled_cb_.Run();
-    return;
+  switch (wipe_model_upon_sync_disabled_behavior_) {
+    case syncer::WipeModelUponSyncDisabledBehavior::kNever:
+      CHECK(!password_store_sync_->IsAccountStore());
+      // The actual model data should NOT be wiped. Only wipe the metadata.
+      password_store_sync_->GetMetadataStore()->DeleteAllSyncMetadata(
+          syncer::PASSWORDS);
+      sync_enabled_or_disabled_cb_.Run();
+      return;
+    case syncer::WipeModelUponSyncDisabledBehavior::kOnceIfTrackingMetadata:
+      CHECK(!password_store_sync_->IsAccountStore());
+      // Wipe the model data this once, and flip the behavior to kNever so it
+      // doesn't get wiped again.
+      wipe_model_upon_sync_disabled_behavior_ =
+          syncer::WipeModelUponSyncDisabledBehavior::kNever;
+      break;
+    case syncer::WipeModelUponSyncDisabledBehavior::kAlways:
+      CHECK(password_store_sync_->IsAccountStore());
+      break;
   }
-  // For the account store, the data should be deleted too. So do the following:
+
+  // The data should be deleted too. So do the following:
   // 1. Collect the credentials that will be deleted.
   // 2. Collect which credentials out of those to be deleted are unsynced.
   // 3. Delete the metadata and the data.
@@ -1022,13 +1054,15 @@ void PasswordSyncBridge::ApplyDisableSyncChanges(
   password_store_sync_->DeleteAndRecreateDatabaseFile();
   password_store_sync_->NotifyCredentialsChanged(password_store_changes);
 
-  base::UmaHistogramCounts100(
-      "PasswordManager.AccountStorage.UnsyncedPasswordsFoundDuringSignOut",
-      unsynced_credentials_being_deleted.size());
+  if (password_store_sync_->IsAccountStore()) {
+    base::UmaHistogramCounts100(
+        "PasswordManager.AccountStorage.UnsyncedPasswordsFoundDuringSignOut",
+        unsynced_credentials_being_deleted.size());
 
-  if (!unsynced_credentials_being_deleted.empty()) {
-    password_store_sync_->NotifyUnsyncedCredentialsWillBeDeleted(
-        std::move(unsynced_credentials_being_deleted));
+    if (!unsynced_credentials_being_deleted.empty()) {
+      password_store_sync_->NotifyUnsyncedCredentialsWillBeDeleted(
+          std::move(unsynced_credentials_being_deleted));
+    }
   }
 
   sync_enabled_or_disabled_cb_.Run();

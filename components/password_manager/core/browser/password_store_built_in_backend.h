@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "components/password_manager/core/browser/password_store_backend.h"
 #include "components/password_manager/core/browser/smart_bubble_stats_store.h"
+#include "components/sync/model/wipe_model_upon_sync_disabled_behavior.h"
 
 namespace base {
 class SequencedTaskRunner;
@@ -37,6 +38,8 @@ class PasswordStoreBuiltInBackend : public PasswordStoreBackend,
   // a deferred manner on the background sequence.
   PasswordStoreBuiltInBackend(
       std::unique_ptr<LoginDatabase> login_db,
+      syncer::WipeModelUponSyncDisabledBehavior
+          wipe_model_upon_sync_disabled_behavior,
       std::unique_ptr<UnsyncedCredentialsDeletionNotifier> notifier = nullptr);
 
   ~PasswordStoreBuiltInBackend() override;
