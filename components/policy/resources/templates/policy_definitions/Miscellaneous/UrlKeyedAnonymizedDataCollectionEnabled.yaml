@@ -1,9 +1,6 @@
 caption: Enable URL-keyed anonymized data collection
 default: null
-deprecated: true
 desc: |-
-  This policy is deprecated and will be removed in the milestone 130, please use <ph name="URL_KEYED_METRICS_ALLOWED_POLICY_NAME">UrlKeyedMetricsAllowed</ph> instead.
-
   Setting the policy to Enabled means URL-keyed anonymized data collection, which sends URLs of pages the user visits to Google to make searches and browsing better, is always active.
 
   Setting the policy to Disabled results in no URL-keyed anonymized data collection.
@@ -28,7 +25,6 @@ owners:
 - file://base/metrics/OWNERS
 schema:
   type: boolean
-# TODO (crbug/1423902): Remove support in M130
 supported_on:
 - chrome.*:69-
 - chrome_os:69-
