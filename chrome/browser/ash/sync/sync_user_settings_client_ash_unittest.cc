@@ -5,7 +5,7 @@
 #include "chrome/browser/ash/sync/sync_user_settings_client_ash.h"
 
 #include "base/test/task_environment.h"
-#include "chromeos/crosapi/mojom/sync.mojom-test-utils.h"
+#include "base/test/test_future.h"
 #include "chromeos/crosapi/mojom/sync.mojom.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/test/mock_sync_service.h"
@@ -66,9 +66,6 @@ class SyncUserSettingsClientAshTest : public testing::Test {
   void SetupClient() {
     client_ = std::make_unique<SyncUserSettingsClientAsh>(&sync_service_);
     client_->BindReceiver(client_remote_.BindNewPipeAndPassReceiver());
-    client_async_waiter_ =
-        std::make_unique<crosapi::mojom::SyncUserSettingsClientAsyncWaiter>(
-            client_remote_.get());
   }
 
   SyncUserSettingsClientAsh* client() {
@@ -76,19 +73,20 @@ class SyncUserSettingsClientAshTest : public testing::Test {
     return client_.get();
   }
 
-  mojo::Remote<crosapi::mojom::SyncUserSettingsClient>* client_remote() {
-    return &client_remote_;
-  }
-
-  crosapi::mojom::SyncUserSettingsClientAsyncWaiter* client_async_waiter() {
-    DCHECK(client_async_waiter_);
-    return client_async_waiter_.get();
-  }
-
   syncer::MockSyncService* sync_service() { return &sync_service_; }
 
   syncer::SyncUserSettingsMock* sync_user_settings() {
     return sync_service_.GetMockUserSettings();
+  }
+
+  bool IsAppsSyncEnabled() const {
+    return IsAppsSyncEnabled(client_remote_.get());
+  }
+
+  bool IsAppsSyncEnabled(crosapi::mojom::SyncUserSettingsClient* client) const {
+    base::test::TestFuture<bool> future;
+    client->IsAppsSyncEnabled(future.GetCallback());
+    return future.Take();
   }
 
  private:
@@ -98,8 +96,6 @@ class SyncUserSettingsClientAshTest : public testing::Test {
 
   std::unique_ptr<SyncUserSettingsClientAsh> client_;
   mojo::Remote<crosapi::mojom::SyncUserSettingsClient> client_remote_;
-  std::unique_ptr<crosapi::mojom::SyncUserSettingsClientAsyncWaiter>
-      client_async_waiter_;
 };
 
 TEST_F(SyncUserSettingsClientAshTest, ShouldExposeAppsSyncEnabled) {
@@ -108,9 +104,7 @@ TEST_F(SyncUserSettingsClientAshTest, ShouldExposeAppsSyncEnabled) {
           {syncer::UserSelectableOsType::kOsApps})));
   SetupClient();
 
-  bool is_apps_sync_enabled = false;
-  client_async_waiter()->IsAppsSyncEnabled(&is_apps_sync_enabled);
-  EXPECT_TRUE(is_apps_sync_enabled);
+  EXPECT_TRUE(IsAppsSyncEnabled());
 }
 
 TEST_F(SyncUserSettingsClientAshTest, ShouldExposeAppsSyncDisabled) {
@@ -118,9 +112,7 @@ TEST_F(SyncUserSettingsClientAshTest, ShouldExposeAppsSyncDisabled) {
       .WillByDefault(Return(syncer::UserSelectableOsTypeSet()));
   SetupClient();
 
-  bool is_apps_sync_enabled = false;
-  client_async_waiter()->IsAppsSyncEnabled(&is_apps_sync_enabled);
-  EXPECT_FALSE(is_apps_sync_enabled);
+  EXPECT_FALSE(IsAppsSyncEnabled());
 }
 
 TEST_F(SyncUserSettingsClientAshTest, ShouldSupportMultipleReceivers) {
@@ -131,16 +123,9 @@ TEST_F(SyncUserSettingsClientAshTest, ShouldSupportMultipleReceivers) {
 
   mojo::Remote<crosapi::mojom::SyncUserSettingsClient> other_remote;
   client()->BindReceiver(other_remote.BindNewPipeAndPassReceiver());
-  crosapi::mojom::SyncUserSettingsClientAsyncWaiter other_async_waiter(
-      other_remote.get());
 
-  bool is_apps_sync_enabled1 = false;
-  client_async_waiter()->IsAppsSyncEnabled(&is_apps_sync_enabled1);
-  EXPECT_TRUE(is_apps_sync_enabled1);
-
-  bool is_apps_sync_enabled2 = false;
-  other_async_waiter.IsAppsSyncEnabled(&is_apps_sync_enabled2);
-  EXPECT_TRUE(is_apps_sync_enabled2);
+  EXPECT_TRUE(IsAppsSyncEnabled());
+  EXPECT_TRUE(IsAppsSyncEnabled(other_remote.get()));
 }
 
 TEST_F(SyncUserSettingsClientAshTest, ShouldNotifyObserver) {

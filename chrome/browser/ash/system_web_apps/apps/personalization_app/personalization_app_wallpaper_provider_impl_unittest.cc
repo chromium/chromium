@@ -14,7 +14,6 @@
 #include "ash/public/cpp/wallpaper/wallpaper_controller_client.h"
 #include "ash/public/cpp/wallpaper/wallpaper_info.h"
 #include "ash/wallpaper/wallpaper_pref_manager.h"
-#include "ash/webui/personalization_app/mojom/personalization_app.mojom-test-utils.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -23,6 +22,7 @@
 #include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/policy/external_data/handlers/device_wallpaper_image_external_data_handler.h"
 #include "chrome/browser/ash/settings/device_settings_cache.h"
@@ -188,10 +188,6 @@ class PersonalizationAppWallpaperProviderImplTest : public testing::Test {
 
     wallpaper_provider_->BindInterface(
         wallpaper_provider_remote_.BindNewPipeAndPassReceiver());
-
-    wallpaper_provider_async_waiter_ =
-        std::make_unique<mojom::WallpaperProviderAsyncWaiter>(
-            wallpaper_provider_remote_.get());
   }
 
   PersonalizationAppWallpaperProviderImpl::ImageInfo GetDefaultImageInfo() {
@@ -216,13 +212,9 @@ class PersonalizationAppWallpaperProviderImplTest : public testing::Test {
 
   TestingProfile* profile() { return profile_; }
 
-  mojo::Remote<ash::personalization_app::mojom::WallpaperProvider>*
+  mojo::Remote<ash::personalization_app::mojom::WallpaperProvider>&
   wallpaper_provider_remote() {
-    return &wallpaper_provider_remote_;
-  }
-
-  mojom::WallpaperProviderAsyncWaiter* wallpaper_provider_async_waiter() {
-    return wallpaper_provider_async_waiter_.get();
+    return wallpaper_provider_remote_;
   }
 
   PersonalizationAppWallpaperProviderImpl* delegate() {
@@ -275,8 +267,6 @@ class PersonalizationAppWallpaperProviderImplTest : public testing::Test {
       wallpaper_provider_remote_;
   TestWallpaperObserver test_wallpaper_observer_;
   std::unique_ptr<PersonalizationAppWallpaperProviderImpl> wallpaper_provider_;
-  std::unique_ptr<mojom::WallpaperProviderAsyncWaiter>
-      wallpaper_provider_async_waiter_;
 };
 
 TEST_F(PersonalizationAppWallpaperProviderImplTest, SelectWallpaper) {
@@ -289,10 +279,11 @@ TEST_F(PersonalizationAppWallpaperProviderImplTest, SelectWallpaper) {
 
   AddWallpaperImage(image_info);
 
-  bool success = false;
-  wallpaper_provider_async_waiter()->SelectWallpaper(
-      image_info.asset_id, /*preview_mode=*/false, &success);
-  EXPECT_TRUE(success);
+  base::test::TestFuture<bool> success_future;
+  wallpaper_provider_remote()->SelectWallpaper(image_info.asset_id,
+                                               /*preview_mode=*/false,
+                                               success_future.GetCallback());
+  EXPECT_TRUE(success_future.Take());
 
   EXPECT_EQ(1, test_wallpaper_controller()->set_online_wallpaper_count());
   EXPECT_TRUE(
@@ -317,7 +308,7 @@ TEST_F(PersonalizationAppWallpaperProviderImplTest, SelectWallpaperWhenBanned) {
 
   mojo::test::BadMessageObserver bad_message_observer;
 
-  wallpaper_provider_remote()->get()->SelectWallpaper(
+  wallpaper_provider_remote()->SelectWallpaper(
       image_info.asset_id, /*preview_mode=*/false,
       base::BindLambdaForTesting([](bool success) { NOTREACHED(); }));
 
@@ -335,10 +326,11 @@ TEST_F(PersonalizationAppWallpaperProviderImplTest, PreviewWallpaper) {
 
   AddWallpaperImage(image_info);
 
-  bool success = false;
-  wallpaper_provider_async_waiter()->SelectWallpaper(
-      image_info.asset_id, /*preview_mode=*/true, &success);
-  EXPECT_TRUE(success);
+  base::test::TestFuture<bool> success_future;
+  wallpaper_provider_remote()->SelectWallpaper(image_info.asset_id,
+                                               /*preview_mode=*/true,
+                                               success_future.GetCallback());
+  EXPECT_TRUE(success_future.Take());
 
   EXPECT_EQ(1, test_wallpaper_controller()->set_online_wallpaper_count());
   EXPECT_TRUE(
@@ -391,8 +383,8 @@ TEST_F(PersonalizationAppWallpaperProviderImplTest, SetCurrentWallpaperLayout) {
   EXPECT_EQ(ctrl->update_current_wallpaper_layout_layout(), absl::nullopt);
 
   auto layout = ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER;
-  wallpaper_provider_remote()->get()->SetCurrentWallpaperLayout(layout);
-  wallpaper_provider_remote()->FlushForTesting();
+  wallpaper_provider_remote()->SetCurrentWallpaperLayout(layout);
+  wallpaper_provider_remote().FlushForTesting();
 
   EXPECT_EQ(ctrl->update_current_wallpaper_layout_count(), 1);
   EXPECT_EQ(ctrl->update_current_wallpaper_layout_layout(), layout);
@@ -445,7 +437,7 @@ TEST_F(PersonalizationAppWallpaperProviderImplTest, SetDailyRefreshBanned) {
   const std::string collection_id = "collection_id";
   test_wallpaper_controller()->set_can_set_user_wallpaper(false);
   mojo::test::BadMessageObserver bad_message_observer;
-  wallpaper_provider_remote()->get()->SetDailyRefreshCollectionId(
+  wallpaper_provider_remote()->SetDailyRefreshCollectionId(
       collection_id,
       base::BindLambdaForTesting([](bool success) { NOTREACHED(); }));
   EXPECT_EQ("Invalid request to set wallpaper",
@@ -471,9 +463,10 @@ class PersonalizationAppWallpaperProviderImplGooglePhotosTest
         .Times(num_fetches);
 
     for (size_t i = 0; i < num_fetches; ++i) {
-      auto state = GooglePhotosEnablementState::kError;
-      wallpaper_provider_async_waiter()->FetchGooglePhotosEnabled(&state);
-      EXPECT_EQ(GooglePhotosEnablementState::kEnabled, state);
+      base::test::TestFuture<GooglePhotosEnablementState> future;
+      wallpaper_provider_remote()->FetchGooglePhotosEnabled(
+          future.GetCallback());
+      EXPECT_EQ(GooglePhotosEnablementState::kEnabled, future.Take());
     }
   }
 
@@ -518,17 +511,19 @@ TEST_F(PersonalizationAppWallpaperProviderImplGooglePhotosTest, FetchAlbums) {
   // integration is enabled.
   FetchGooglePhotosEnabled();
   for (size_t i = 0; i < kNumFetches; ++i) {
-    ash::personalization_app::mojom::FetchGooglePhotosAlbumsResponsePtr
+    base::test::TestFuture<
+        ash::personalization_app::mojom::FetchGooglePhotosAlbumsResponsePtr>
         albums_response;
-    wallpaper_provider_async_waiter()->FetchGooglePhotosAlbums(
-        kResumeToken, &albums_response);
-    EXPECT_TRUE(albums_response->albums.has_value());
+    wallpaper_provider_remote()->FetchGooglePhotosAlbums(
+        kResumeToken, albums_response.GetCallback());
+    EXPECT_TRUE(albums_response.Take()->albums.has_value());
 
-    ash::personalization_app::mojom::FetchGooglePhotosAlbumsResponsePtr
+    base::test::TestFuture<
+        ash::personalization_app::mojom::FetchGooglePhotosAlbumsResponsePtr>
         shared_albums_response;
-    wallpaper_provider_async_waiter()->FetchGooglePhotosSharedAlbums(
-        kResumeToken, &shared_albums_response);
-    EXPECT_TRUE(shared_albums_response->albums.has_value());
+    wallpaper_provider_remote()->FetchGooglePhotosSharedAlbums(
+        kResumeToken, shared_albums_response.GetCallback());
+    EXPECT_TRUE(shared_albums_response.Take()->albums.has_value());
   }
 }
 
@@ -546,7 +541,7 @@ TEST_F(PersonalizationAppWallpaperProviderImplGooglePhotosTest,
   mojo::test::BadMessageObserver bad_message_observer;
   // Test fetching Google Photos albums before fetching the enterprise enabled
   // setting. No requests should be made.
-  wallpaper_provider_remote()->get()->FetchGooglePhotosAlbums(
+  wallpaper_provider_remote()->FetchGooglePhotosAlbums(
       kResumeToken, base::BindLambdaForTesting(
                         [](mojom::FetchGooglePhotosAlbumsResponsePtr response) {
                           NOTREACHED();
@@ -584,11 +579,12 @@ TEST_F(PersonalizationAppWallpaperProviderImplGooglePhotosTest, FetchPhotos) {
   // integration is enabled.
   FetchGooglePhotosEnabled();
   for (size_t i = 0; i < kNumFetches; ++i) {
-    ash::personalization_app::mojom::FetchGooglePhotosPhotosResponsePtr
-        response;
-    wallpaper_provider_async_waiter()->FetchGooglePhotosPhotos(
-        item_id, album_id, kResumeToken, &response);
-    EXPECT_TRUE(response->photos.has_value());
+    base::test::TestFuture<
+        ash::personalization_app::mojom::FetchGooglePhotosPhotosResponsePtr>
+        photos_response;
+    wallpaper_provider_remote()->FetchGooglePhotosPhotos(
+        item_id, album_id, kResumeToken, photos_response.GetCallback());
+    EXPECT_TRUE(photos_response.Take()->photos.has_value());
   }
 }
 
@@ -607,7 +603,7 @@ TEST_F(PersonalizationAppWallpaperProviderImplGooglePhotosTest,
   mojo::test::BadMessageObserver bad_message_observer;
   // Test fetching Google Photos photos before fetching the enterprise setting.
   // No requests should be made.
-  wallpaper_provider_remote()->get()->FetchGooglePhotosPhotos(
+  wallpaper_provider_remote()->FetchGooglePhotosPhotos(
       item_id, album_id, kResumeToken,
       base::BindLambdaForTesting(
           [](mojom::FetchGooglePhotosPhotosResponsePtr response) {
@@ -626,11 +622,11 @@ TEST_F(PersonalizationAppWallpaperProviderImplGooglePhotosTest,
 
   // Test selecting a wallpaper after fetching the enterprise setting.
   FetchGooglePhotosEnabled();
-  bool success = false;
-  wallpaper_provider_async_waiter()->SelectGooglePhotosPhoto(
+  base::test::TestFuture<bool> success_future;
+  wallpaper_provider_remote()->SelectGooglePhotosPhoto(
       photo_id, ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED,
-      /*preview_mode=*/false, &success);
-  EXPECT_TRUE(success);
+      /*preview_mode=*/false, success_future.GetCallback());
+  EXPECT_TRUE(success_future.Take());
 
   EXPECT_EQ(1,
             test_wallpaper_controller()->set_google_photos_wallpaper_count());
@@ -650,7 +646,7 @@ TEST_F(PersonalizationAppWallpaperProviderImplGooglePhotosTest,
 
   mojo::test::BadMessageObserver bad_message_observer;
   // Test selecting a wallpaper before fetching the enterprise setting.
-  wallpaper_provider_remote()->get()->SelectGooglePhotosPhoto(
+  wallpaper_provider_remote()->SelectGooglePhotosPhoto(
       "OmnisVirLupus", ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED,
       /*preview_mode=*/false,
       base::BindLambdaForTesting([](bool success) { NOTREACHED(); }));
@@ -668,7 +664,7 @@ TEST_F(PersonalizationAppWallpaperProviderImplGooglePhotosTest,
        SelectGooglePhotosPhotoBanned) {
   test_wallpaper_controller()->set_can_set_user_wallpaper(false);
   mojo::test::BadMessageObserver bad_message_observer;
-  wallpaper_provider_remote()->get()->SelectGooglePhotosPhoto(
+  wallpaper_provider_remote()->SelectGooglePhotosPhoto(
       "OmnisVirLupus", ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED,
       /*preview_mode=*/false,
       base::BindLambdaForTesting([](bool success) { NOTREACHED(); }));
@@ -682,7 +678,7 @@ TEST_F(PersonalizationAppWallpaperProviderImplGooglePhotosTest,
        SelectGooglePhotosAlbumWithoutEnterprise) {
   // Test selecting an album before fetching the enterprise setting.
   mojo::test::BadMessageObserver bad_message_observer;
-  wallpaper_provider_remote()->get()->SelectGooglePhotosAlbum(
+  wallpaper_provider_remote()->SelectGooglePhotosAlbum(
       "OmnisVirLupus",
       base::BindLambdaForTesting([](bool success) { NOTREACHED(); }));
   EXPECT_EQ(
@@ -701,10 +697,10 @@ TEST_F(PersonalizationAppWallpaperProviderImplGooglePhotosTest,
 
   // Test selecting an album after fetching the enterprise setting.
   FetchGooglePhotosEnabled();
-  bool success = false;
-  wallpaper_provider_async_waiter()->SelectGooglePhotosAlbum(album_id,
-                                                             &success);
-  EXPECT_TRUE(success);
+  base::test::TestFuture<bool> success_future;
+  wallpaper_provider_remote()->SelectGooglePhotosAlbum(
+      album_id, success_future.GetCallback());
+  EXPECT_TRUE(success_future.Take());
   EXPECT_EQ(test_wallpaper_controller()->GetGooglePhotosDailyRefreshAlbumId(
                 GetTestAccountId()),
             album_id);
@@ -718,7 +714,7 @@ TEST_F(PersonalizationAppWallpaperProviderImplGooglePhotosTest,
   test_wallpaper_controller()->set_can_set_user_wallpaper(false);
   FetchGooglePhotosEnabled();
   mojo::test::BadMessageObserver bad_message_observer;
-  wallpaper_provider_remote()->get()->SelectGooglePhotosAlbum(
+  wallpaper_provider_remote()->SelectGooglePhotosAlbum(
       "OmnisVirLupus",
       base::BindLambdaForTesting([](bool success) { NOTREACHED(); }));
   EXPECT_EQ("Invalid request to select google photos album",
@@ -734,22 +730,22 @@ TEST_F(PersonalizationAppWallpaperProviderImplGooglePhotosTest,
 
   // Test selecting a photo.
   {
-    bool success = false;
-    wallpaper_provider_async_waiter()->SelectGooglePhotosPhoto(
+    base::test::TestFuture<bool> success_future;
+    wallpaper_provider_remote()->SelectGooglePhotosPhoto(
         photo_id, ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED,
-        /*preview_mode=*/false, &success);
-    EXPECT_TRUE(success);
+        /*preview_mode=*/false, success_future.GetCallback());
+    EXPECT_TRUE(success_future.Take());
   }
 
   // Add the same photo to a google photos album, and select that album as daily
   // refresh source.
   {
-    bool success = false;
     AddToAlbumIdMap(album_id, photo_id);
     test_wallpaper_controller()->add_dedup_key_to_wallpaper_info(photo_id);
-    wallpaper_provider_async_waiter()->SelectGooglePhotosAlbum(album_id,
-                                                               &success);
-    EXPECT_TRUE(success);
+    base::test::TestFuture<bool> success_future;
+    wallpaper_provider_remote()->SelectGooglePhotosAlbum(
+        album_id, success_future.GetCallback());
+    EXPECT_TRUE(success_future.Take());
     // Still equal to 0 since no need to update - already selected an image from
     // the album.
     EXPECT_EQ(
@@ -770,10 +766,10 @@ TEST_F(PersonalizationAppWallpaperProviderImplGooglePhotosTest,
   FetchGooglePhotosEnabled();
   {
     // Select the album.
-    bool success = false;
-    wallpaper_provider_async_waiter()->SelectGooglePhotosAlbum(album_id,
-                                                               &success);
-    EXPECT_TRUE(success);
+    base::test::TestFuture<bool> success_future;
+    wallpaper_provider_remote()->SelectGooglePhotosAlbum(
+        album_id, success_future.GetCallback());
+    EXPECT_TRUE(success_future.Take());
     EXPECT_EQ(1, test_wallpaper_controller()
                      ->get_update_daily_refresh_wallpaper_count());
   }
@@ -781,10 +777,10 @@ TEST_F(PersonalizationAppWallpaperProviderImplGooglePhotosTest,
   test_wallpaper_controller()->ClearCounts();
   {
     // Unselect the album.
-    bool success = false;
-    wallpaper_provider_async_waiter()->SelectGooglePhotosAlbum(std::string(),
-                                                               &success);
-    EXPECT_TRUE(success);
+    base::test::TestFuture<bool> success_future;
+    wallpaper_provider_remote()->SelectGooglePhotosAlbum(
+        std::string(), success_future.GetCallback());
+    EXPECT_TRUE(success_future.Take());
     EXPECT_EQ(0, test_wallpaper_controller()
                      ->get_update_daily_refresh_wallpaper_count());
   }
@@ -801,19 +797,20 @@ TEST_F(PersonalizationAppWallpaperProviderImplGooglePhotosTest,
 
   FetchGooglePhotosEnabled();
   {
-    bool success = false;
-    wallpaper_provider_async_waiter()->SelectGooglePhotosAlbum(album_id,
-                                                               &success);
-    EXPECT_TRUE(success);
+    base::test::TestFuture<bool> success_future;
+    wallpaper_provider_remote()->SelectGooglePhotosAlbum(
+        album_id, success_future.GetCallback());
+    EXPECT_TRUE(success_future.Take());
 
     EXPECT_EQ(1, test_wallpaper_controller()
                      ->get_update_daily_refresh_wallpaper_count());
   }
 
   {
-    bool success = false;
-    wallpaper_provider_async_waiter()->UpdateDailyRefreshWallpaper(&success);
-    EXPECT_TRUE(success);
+    base::test::TestFuture<bool> success_future;
+    wallpaper_provider_remote()->UpdateDailyRefreshWallpaper(
+        success_future.GetCallback());
+    EXPECT_TRUE(success_future.Take());
     EXPECT_EQ(2, test_wallpaper_controller()
                      ->get_update_daily_refresh_wallpaper_count());
   }

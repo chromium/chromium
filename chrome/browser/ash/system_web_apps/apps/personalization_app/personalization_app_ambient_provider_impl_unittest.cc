@@ -19,13 +19,13 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/wallpaper/test_wallpaper_controller_client.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
-#include "ash/webui/personalization_app/mojom/personalization_app.mojom-test-utils.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/ambient_video_albums.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_metrics.h"
@@ -202,10 +202,6 @@ class PersonalizationAppAmbientProviderImplTest : public ash::AshTestBase {
     ambient_provider_->BindInterface(
         ambient_provider_remote_.BindNewPipeAndPassReceiver());
 
-    ambient_provider_async_waiter_ =
-        std::make_unique<mojom::AmbientProviderAsyncWaiter>(
-            ambient_provider_remote_.get());
-
     SetEnabledPref(true);
     GetAmbientAshTestHelper()->ambient_client().SetAutomaticalyIssueToken(true);
 
@@ -229,10 +225,6 @@ class PersonalizationAppAmbientProviderImplTest : public ash::AshTestBase {
   mojo::Remote<ash::personalization_app::mojom::AmbientProvider>&
   ambient_provider_remote() {
     return ambient_provider_remote_;
-  }
-
-  mojom::AmbientProviderAsyncWaiter* ambient_provider_async_waiter() {
-    return ambient_provider_async_waiter_.get();
   }
 
   content::TestWebUI* web_ui() { return &web_ui_; }
@@ -402,6 +394,12 @@ class PersonalizationAppAmbientProviderImplTest : public ash::AshTestBase {
     return fake_backend_controller_->current_temperature_unit();
   }
 
+  bool ShouldShowTimeOfDayBanner() const {
+    base::test::TestFuture<bool> future;
+    ambient_provider_remote_->ShouldShowTimeOfDayBanner(future.GetCallback());
+    return future.Take();
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   TestingProfileManager profile_manager_;
@@ -411,8 +409,6 @@ class PersonalizationAppAmbientProviderImplTest : public ash::AshTestBase {
   mojo::Remote<ash::personalization_app::mojom::AmbientProvider>
       ambient_provider_remote_;
   std::unique_ptr<PersonalizationAppAmbientProviderImpl> ambient_provider_;
-  std::unique_ptr<mojom::AmbientProviderAsyncWaiter>
-      ambient_provider_async_waiter_;
   TestAmbientObserver test_ambient_observer_;
 
   std::unique_ptr<ash::FakeAmbientBackendControllerImpl>
@@ -1128,10 +1124,7 @@ TEST_F(PersonalizationAppAmbientProviderImplTest,
   wallpaper_controller->ShowDefaultWallpaperForTesting();
   ASSERT_FALSE(
       wallpaper_controller->IsWallpaperControlledByPolicy(kFakeTestAccountId));
-  bool should_show_banner = false;
-  ambient_provider_async_waiter()->ShouldShowTimeOfDayBanner(
-      &should_show_banner);
-  EXPECT_TRUE(should_show_banner);
+  EXPECT_TRUE(ShouldShowTimeOfDayBanner());
 
   // Set policy managed wallpaper for the user. Banner should be hidden.
   wallpaper_controller->SetPolicyWallpaper(kFakeTestAccountId,
@@ -1139,10 +1132,7 @@ TEST_F(PersonalizationAppAmbientProviderImplTest,
                                            std::string() /*data=*/);
   ASSERT_TRUE(
       wallpaper_controller->IsWallpaperControlledByPolicy(kFakeTestAccountId));
-  should_show_banner = true;
-  ambient_provider_async_waiter()->ShouldShowTimeOfDayBanner(
-      &should_show_banner);
-  EXPECT_FALSE(should_show_banner);
+  EXPECT_FALSE(ShouldShowTimeOfDayBanner());
 }
 
 TEST_F(PersonalizationAppAmbientProviderImplTest,
@@ -1153,17 +1143,11 @@ TEST_F(PersonalizationAppAmbientProviderImplTest,
   wallpaper_controller->ShowDefaultWallpaperForTesting();
   ASSERT_FALSE(
       wallpaper_controller->IsWallpaperControlledByPolicy(kFakeTestAccountId));
-  bool should_show_banner = false;
-  ambient_provider_async_waiter()->ShouldShowTimeOfDayBanner(
-      &should_show_banner);
-  EXPECT_TRUE(should_show_banner);
+  EXPECT_TRUE(ShouldShowTimeOfDayBanner());
 
   ambient_provider_remote()->HandleTimeOfDayBannerDismissed();
 
-  should_show_banner = true;
-  ambient_provider_async_waiter()->ShouldShowTimeOfDayBanner(
-      &should_show_banner);
-  EXPECT_FALSE(should_show_banner);
+  EXPECT_FALSE(ShouldShowTimeOfDayBanner());
 }
 
 }  // namespace ash::personalization_app

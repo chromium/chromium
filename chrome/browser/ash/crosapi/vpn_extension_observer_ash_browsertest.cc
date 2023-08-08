@@ -8,7 +8,6 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/crosapi/ash_requires_lacros_browsertestbase.h"
 #include "chromeos/ash/services/network_config/public/cpp/cros_network_config_test_observer.h"
-#include "chromeos/crosapi/mojom/test_controller.mojom-test-utils.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "content/public/test/browser_test.h"
 
@@ -24,12 +23,10 @@ class VpnExtensionObserverBrowserTest
     : public crosapi::AshRequiresLacrosBrowserTestBase {
  public:
   std::string LoadVpnExtension(const std::string& extension_name) {
-    crosapi::mojom::StandaloneBrowserTestControllerAsyncWaiter waiter(
-        GetStandaloneBrowserTestController());
-
-    std::string extension_id;
-    waiter.LoadVpnExtension(extension_name, &extension_id);
-    return extension_id;
+    base::test::TestFuture<const std::string&> future;
+    GetStandaloneBrowserTestController()->LoadVpnExtension(
+        extension_name, future.GetCallback());
+    return future.Take();
   }
 };
 

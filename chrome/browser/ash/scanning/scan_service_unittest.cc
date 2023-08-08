@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "ash/webui/scanning/mojom/scanning.mojom-test-utils.h"
 #include "ash/webui/scanning/mojom/scanning.mojom.h"
 #include "ash/webui/scanning/scanning_uma.h"
 #include "base/containers/flat_set.h"
@@ -22,6 +21,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
@@ -301,31 +301,30 @@ class ScanServiceTest : public testing::Test {
 
   // Gets scanners by calling ScanService::GetScanners() via the mojo::Remote.
   std::vector<mojo_ipc::ScannerPtr> GetScanners() {
-    std::vector<mojo_ipc::ScannerPtr> scanners;
-    mojo_ipc::ScanServiceAsyncWaiter(scan_service_remote_.get())
-        .GetScanners(&scanners);
-    return scanners;
+    base::test::TestFuture<std::vector<mojo_ipc::ScannerPtr>> future;
+    scan_service_remote_->GetScanners(future.GetCallback());
+    return future.Take();
   }
 
   // Gets scanner capabilities for the scanner identified by |scanner_id| by
   // calling ScanService::GetScannerCapabilities() via the mojo::Remote.
   mojo_ipc::ScannerCapabilitiesPtr GetScannerCapabilities(
       const base::UnguessableToken& scanner_id) {
-    mojo_ipc::ScannerCapabilitiesPtr caps =
-        mojo_ipc::ScannerCapabilities::New();
-    mojo_ipc::ScanServiceAsyncWaiter(scan_service_remote_.get())
-        .GetScannerCapabilities(scanner_id, &caps);
-    return caps;
+    base::test::TestFuture<mojo_ipc::ScannerCapabilitiesPtr> future;
+    scan_service_remote_->GetScannerCapabilities(scanner_id,
+                                                 future.GetCallback());
+    return future.Take();
   }
 
   // Starts a scan with the scanner identified by |scanner_id| with the given
   // |settings| by calling ScanService::StartScan() via the mojo::Remote.
   bool StartScan(const base::UnguessableToken& scanner_id,
                  mojo_ipc::ScanSettingsPtr settings) {
-    bool success;
-    mojo_ipc::ScanServiceAsyncWaiter(scan_service_remote_.get())
-        .StartScan(scanner_id, std::move(settings),
-                   fake_scan_job_observer_.GenerateRemote(), &success);
+    base::test::TestFuture<bool> future;
+    scan_service_remote_->StartScan(scanner_id, std::move(settings),
+                                    fake_scan_job_observer_.GenerateRemote(),
+                                    future.GetCallback());
+    bool success = future.Take();
     task_environment_.RunUntilIdle();
     return success;
   }
@@ -336,11 +335,13 @@ class ScanServiceTest : public testing::Test {
   // mojo::PendingRemote.
   bool StartMultiPageScan(const base::UnguessableToken& scanner_id,
                           mojo_ipc::ScanSettingsPtr settings) {
-    mojo::PendingRemote<mojo_ipc::MultiPageScanController> pending_remote;
-    mojo_ipc::ScanServiceAsyncWaiter(scan_service_remote_.get())
-        .StartMultiPageScan(scanner_id, std::move(settings),
-                            fake_scan_job_observer_.GenerateRemote(),
-                            &pending_remote);
+    base::test::TestFuture<
+        mojo::PendingRemote<mojo_ipc::MultiPageScanController>>
+        future;
+    scan_service_remote_->StartMultiPageScan(
+        scanner_id, std::move(settings),
+        fake_scan_job_observer_.GenerateRemote(), future.GetCallback());
+    auto pending_remote = future.Take();
     if (!pending_remote.is_valid())
       return false;
 
@@ -355,10 +356,10 @@ class ScanServiceTest : public testing::Test {
 
   bool ScanNextPage(const base::UnguessableToken& scanner_id,
                     mojo_ipc::ScanSettingsPtr settings) {
-    bool success;
-    mojo_ipc::MultiPageScanControllerAsyncWaiter(
-        multi_page_scan_controller_remote_.get())
-        .ScanNextPage(scanner_id, std::move(settings), &success);
+    base::test::TestFuture<bool> future;
+    multi_page_scan_controller_remote_->ScanNextPage(
+        scanner_id, std::move(settings), future.GetCallback());
+    bool success = future.Take();
     task_environment_.RunUntilIdle();
     return success;
   }
@@ -382,10 +383,10 @@ class ScanServiceTest : public testing::Test {
   bool RescanPage(const base::UnguessableToken& scanner_id,
                   mojo_ipc::ScanSettingsPtr settings,
                   const uint32_t page_index) {
-    bool success;
-    mojo_ipc::MultiPageScanControllerAsyncWaiter(
-        multi_page_scan_controller_remote_.get())
-        .RescanPage(scanner_id, std::move(settings), page_index, &success);
+    base::test::TestFuture<bool> future;
+    multi_page_scan_controller_remote_->RescanPage(
+        scanner_id, std::move(settings), page_index, future.GetCallback());
+    bool success = future.Take();
     task_environment_.RunUntilIdle();
     return success;
   }
