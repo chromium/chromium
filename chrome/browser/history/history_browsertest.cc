@@ -927,8 +927,16 @@ IN_PROC_BROWSER_TEST_F(HistoryBrowserTest, VisitAnnotations) {
             base::Seconds(0));
 }
 
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ObserversCallBothOnURLVisitedForLocalVisits \
+  DISABLED_ObserversCallBothOnURLVisitedForLocalVisits
+#else
+#define MAYBE_ObserversCallBothOnURLVisitedForLocalVisits \
+  ObserversCallBothOnURLVisitedForLocalVisits
+#endif
+// TODO(crbug.com/1471260): The test is flaky on Mac.
 IN_PROC_BROWSER_TEST_F(HistoryBrowserTest,
-                       ObserversCallBothOnURLVisitedForLocalVisits) {
+                       MAYBE_ObserversCallBothOnURLVisitedForLocalVisits) {
   history::HistoryService* history_service =
       HistoryServiceFactory::GetForProfile(browser()->profile(),
                                            ServiceAccessType::EXPLICIT_ACCESS);
