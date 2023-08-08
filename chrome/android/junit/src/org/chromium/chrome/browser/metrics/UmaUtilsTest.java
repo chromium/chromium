@@ -37,8 +37,6 @@ public class UmaUtilsTest {
             "Android.BackgroundRestrictions.StandbyBucket.WithoutUserRestriction";
     private static final String HISTOGRAM_MINIDUMP_UPLOADING_TIME =
             "Stability.Android.MinidumpUploadingTime";
-    private static final String HISTOGRAM_MINIDUMP_UPLOADING_TIME_ACTIVE =
-            "Stability.Android.MinidumpUploadingTime.Active";
 
     private ShadowActivityManager mShadowActivityManager;
     private ShadowUsageStatsManager mShadowUsageStatsManager;
@@ -201,117 +199,6 @@ public class UmaUtilsTest {
 
         // Act
         UmaUtils.recordBackgroundRestrictions();
-
-        // Assert
-        histogramWatcher.assertExpected();
-    }
-
-    private static final int UPLOAD_TIME_MS = 5678;
-
-    @Test
-    @Config(sdk = Build.VERSION_CODES.O_MR1)
-    public void testRecordMinidumpUploadingTime_unsupported() {
-        String specificHistogram = "Stability.Android.MinidumpUploadingTime.Unsupported";
-
-        // Arrange
-        var histogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecord(HISTOGRAM_MINIDUMP_UPLOADING_TIME, UPLOAD_TIME_MS)
-                        .expectNoRecords(specificHistogram)
-                        .expectNoRecords(HISTOGRAM_MINIDUMP_UPLOADING_TIME_ACTIVE)
-                        .build();
-
-        // Act
-        UmaUtils.recordMinidumpUploadingTime(UPLOAD_TIME_MS);
-
-        // Assert
-        histogramWatcher.assertExpected();
-    }
-
-    @Test
-    @Config(sdk = Build.VERSION_CODES.P)
-    public void testRecordMinidumpUploadingTime_active() {
-        int androidStandbyBucketStatus = UsageStatsManager.STANDBY_BUCKET_ACTIVE;
-        String specificHistogram = "Stability.Android.MinidumpUploadingTime.Active";
-        doTestRecordMinidumpUploadingTime(androidStandbyBucketStatus, specificHistogram);
-    }
-
-    @Test
-    @Config(sdk = Build.VERSION_CODES.P)
-    public void testRecordMinidumpUploadingTime_workingSet() {
-        int androidStandbyBucketStatus = UsageStatsManager.STANDBY_BUCKET_WORKING_SET;
-        String specificHistogram = "Stability.Android.MinidumpUploadingTime.WorkingSet";
-        doTestRecordMinidumpUploadingTime(androidStandbyBucketStatus, specificHistogram);
-    }
-
-    @Test
-    @Config(sdk = Build.VERSION_CODES.P)
-    public void testRecordMinidumpUploadingTime_frequent() {
-        int androidStandbyBucketStatus = UsageStatsManager.STANDBY_BUCKET_FREQUENT;
-        String specificHistogram = "Stability.Android.MinidumpUploadingTime.Frequent";
-        doTestRecordMinidumpUploadingTime(androidStandbyBucketStatus, specificHistogram);
-    }
-
-    @Test
-    @Config(sdk = Build.VERSION_CODES.P)
-    public void testRecordMinidumpUploadingTime_rare() {
-        int androidStandbyBucketStatus = UsageStatsManager.STANDBY_BUCKET_RARE;
-        String specificHistogram = "Stability.Android.MinidumpUploadingTime.Rare";
-        doTestRecordMinidumpUploadingTime(androidStandbyBucketStatus, specificHistogram);
-    }
-
-    @Test
-    @Config(sdk = Build.VERSION_CODES.P)
-    public void testRecordMinidumpUploadingTime_restricted() {
-        int androidStandbyBucketStatus = UsageStatsManager.STANDBY_BUCKET_RESTRICTED;
-        String specificHistogram = "Stability.Android.MinidumpUploadingTime.Restricted";
-        doTestRecordMinidumpUploadingTime(androidStandbyBucketStatus, specificHistogram);
-    }
-
-    @Test
-    @Config(sdk = Build.VERSION_CODES.P)
-    public void testRecordMinidumpUploadingTime_exempted() {
-        int androidStandbyBucketStatus = 5; // UsageStatsManager.STANDBY_BUCKET_EXEMPTED
-        String specificHistogram = "Stability.Android.MinidumpUploadingTime.Exempted";
-        doTestRecordMinidumpUploadingTime(androidStandbyBucketStatus, specificHistogram);
-    }
-
-    @Test
-    @Config(sdk = Build.VERSION_CODES.P)
-    public void testRecordMinidumpUploadingTime_never() {
-        int androidStandbyBucketStatus = 50; // UsageStatsManager.STANDBY_BUCKET_NEVER
-        String specificHistogram = "Stability.Android.MinidumpUploadingTime.Never";
-        doTestRecordMinidumpUploadingTime(androidStandbyBucketStatus, specificHistogram);
-    }
-
-    @Test
-    @Config(sdk = Build.VERSION_CODES.P)
-    public void testRecordMinidumpUploadingTime_other() {
-        int androidStandbyBucketStatus = 42;
-        String specificHistogram = "Stability.Android.MinidumpUploadingTime.Other";
-        doTestRecordMinidumpUploadingTime(androidStandbyBucketStatus, specificHistogram);
-    }
-
-    private void doTestRecordMinidumpUploadingTime(
-            int androidStandbyBucketStatus, String specificHistogram) {
-        // Arrange
-        mShadowUsageStatsManager.setCurrentAppStandbyBucket(androidStandbyBucketStatus);
-
-        var histogramWatcherBuilder =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecord(HISTOGRAM_MINIDUMP_UPLOADING_TIME, UPLOAD_TIME_MS)
-                        .expectIntRecord(specificHistogram, UPLOAD_TIME_MS);
-
-        // Check .Active as evidence that other histograms weren't recorded, unless we are testing
-        // the Active status itself.
-        if (androidStandbyBucketStatus != UsageStatsManager.STANDBY_BUCKET_ACTIVE) {
-            histogramWatcherBuilder.expectNoRecords(HISTOGRAM_MINIDUMP_UPLOADING_TIME_ACTIVE);
-        }
-
-        HistogramWatcher histogramWatcher = histogramWatcherBuilder.build();
-
-        // Act
-        UmaUtils.recordMinidumpUploadingTime(UPLOAD_TIME_MS);
 
         // Assert
         histogramWatcher.assertExpected();
