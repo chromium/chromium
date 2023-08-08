@@ -2352,6 +2352,18 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
   </token>
 </histogram>
 
+<histogram name="ChromeOS.Secagentd.Redaction" units="position"
+    expires_after="2023-12-31">
+  <owner>rborzello@google.com</owner>
+  <owner>cros-enterprise-security@google.com</owner>
+  <summary>
+    Records what position the redacted username was found in the list of
+    usernames for the CrOS secagentd daemon. Emits the position up to 5 (but
+    should always be less than or equal to 2). It is recorded everytime a
+    username is found in the commandline which should be very rare.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.Secagentd.SendMessageResult"
     enum="SecagentdSendMessageResult" expires_after="2024-02-04">
   <owner>rborzello@google.com</owner>
