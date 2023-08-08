@@ -43,6 +43,7 @@ ts_library("build_ts") {
     "test_util.ts",
     "title_test.ts",
     "touch_handling_test.ts",
+    "viewer_attachment_bar_test.ts",
     "viewer_password_dialog_test.ts",
     "viewer_pdf_sidenav_test.ts",
     "viewer_properties_dialog_test.ts",

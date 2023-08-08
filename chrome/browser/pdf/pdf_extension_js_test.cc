@@ -229,6 +229,12 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionJSTest, ViewerThumbnail) {
   RunTestsInJsModule("viewer_thumbnail_test.js", "test.pdf");
 }
 
+IN_PROC_BROWSER_TEST_F(PDFExtensionJSTest, ViewerAttachmentBar) {
+  // Although this test file does not require a PDF to be loaded, loading the
+  // elements without loading a PDF is difficult.
+  RunTestsInJsModule("viewer_attachment_bar_test.js", "test.pdf");
+}
+
 IN_PROC_BROWSER_TEST_F(PDFExtensionJSTest, Fullscreen) {
   // Use a PDF document with multiple pages, to exercise navigating between
   // pages.
