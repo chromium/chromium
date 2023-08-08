@@ -88,16 +88,35 @@ std::u16string GetRightClickRewriteNotificationMessage(
         IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_RIGHT_CLICK_DISABLED);
   }
 
+  const int launcher_key_name_id =
+      Shell::Get()->keyboard_capability()->HasLauncherButtonOnAnyKeyboard()
+          ? IDS_ASH_SHORTCUT_MODIFIER_LAUNCHER
+          : IDS_ASH_SHORTCUT_MODIFIER_SEARCH;
+  const std::u16string launcher_key_name =
+      l10n_util::GetStringUTF16(launcher_key_name_id);
+
   switch (blocked_modifier) {
     case SimulateRightClickModifier::kAlt:
-      return l10n_util::GetStringUTF16(
-          IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_ALT_RIGHT_CLICK);
+      return l10n_util::GetStringFUTF16(
+          IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_ALT_RIGHT_CLICK,
+          launcher_key_name);
     case SimulateRightClickModifier::kSearch:
-      return l10n_util::GetStringUTF16(
-          IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_LAUNCHER_RIGHT_CLICK);
+      return l10n_util::GetStringFUTF16(
+          IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_LAUNCHER_RIGHT_CLICK,
+          launcher_key_name);
     case SimulateRightClickModifier::kNone:
       NOTREACHED_NORETURN();
   }
+}
+
+std::u16string GetRightClickRewriteNotificationTitle(
+    SimulateRightClickModifier active_modifier) {
+  if (IsRightClickRewriteDisabled(active_modifier)) {
+    return l10n_util::GetStringUTF16(
+        IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_RIGHT_CLICK_DISABLED_TITLE);
+  }
+  return l10n_util::GetStringUTF16(
+      IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_RIGHT_CLICK_TITLE);
 }
 
 std::string GetRightClickNotificationId(
@@ -267,7 +286,7 @@ void InputDeviceSettingsNotificationController::
   auto notification = CreateSystemNotificationPtr(
       message_center::NOTIFICATION_TYPE_SIMPLE,
       GetRightClickNotificationId(blocked_modifier, active_modifier),
-      l10n_util::GetStringUTF16(IDS_DEPRECATED_SHORTCUT_TITLE),
+      GetRightClickRewriteNotificationTitle(active_modifier),
       GetRightClickRewriteNotificationMessage(blocked_modifier,
                                               active_modifier),
       std::u16string(), GURL(),

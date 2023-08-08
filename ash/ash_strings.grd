@@ -6972,14 +6972,14 @@ To shut down the device, press and hold the power button on the device again.
 
       <!-- TODO(b/286937607): Finalize and translate these strings -->
       <!-- Input device settings notifications -->
-      <message name="IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_ALT_RIGHT_CLICK" translateable="false" desc="">
-        The Alt + click keyboard shortcut has changed. To use your keyboard to right-click, press the Launcher key + click.
+      <message name="IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_ALT_RIGHT_CLICK" desc="The message shown to notify a user that the shortcut used to simulate a right-click using touchpad and keyboard has changed.">
+        The right-click shortcut is updated to <ph name="LAUNCHER_KEY_NAME">$1<ex>Launcher</ex></ph> key + click from Alt + click
       </message>
-      <message name="IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_LAUNCHER_RIGHT_CLICK" translateable="false" desc="">
-        The Launcher + click keyboard shortcut has changed. To use your keyboard to right-click, press the Alt key + click.
+      <message name="IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_LAUNCHER_RIGHT_CLICK" desc="The message shown to notify a user that the shortcut used to simulate a right-click using touchpad and keyboard has changed.">
+        The right-click shortcut is updated to Alt + click from <ph name="LAUNCHER_KEY_NAME">$1<ex>Launcher</ex></ph> key + click
       </message>
-      <message name="IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_RIGHT_CLICK_DISABLED" translateable="false" desc="">
-        Simulating a right-click using touchpad and keyboard is disabled, visit device settings to configure.
+      <message name="IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_RIGHT_CLICK_DISABLED" desc="The message shown to notify a user that the shortcut used to simulate a right-click using touchpad and keyboard is disabled.">
+        The right-click shortcut is currently off
       </message>
       <message name="IDS_ASH_DEVICE_SETTINGS_SIX_PACK_KEY_INSERT" translateable="false" desc="Label for the Insert 6-pack key.">
         insert
@@ -7001,6 +7001,12 @@ To shut down the device, press and hold the power button on the device again.
       </message>
       <message name="IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_SIX_PACK_KEY" translateable="false" desc="">
         The keyboard shortcut to use the <ph name="SIX_PACK_KEY_NAME">$1<ex>Delete</ex></ph> key has changed, visit device settings to configure the shortcut.
+      </message>
+      <message name="IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_RIGHT_CLICK_TITLE" desc="Title for the right-click shortcut changed notification.">
+        Keyboard shortcut has changed
+      </message>
+      <message name="IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_RIGHT_CLICK_DISABLED_TITLE" desc="Title for the notification shown when the right-click shortcut is disabled.">
+        Keyboard shortcut is off
       </message>
      </messages>
     </release>
