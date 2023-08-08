@@ -199,7 +199,8 @@ bool RemoteSafeBrowsingDatabaseManager::CheckBrowseUrl(
     const GURL& url,
     const SBThreatTypeSet& threat_types,
     Client* client,
-    MechanismExperimentHashDatabaseCache experiment_cache_selection) {
+    MechanismExperimentHashDatabaseCache experiment_cache_selection,
+    CheckBrowseUrlType check_type) {
   DCHECK(sb_task_runner()->RunsTasksInCurrentSequence());
   DCHECK(!threat_types.empty());
   DCHECK(SBThreatTypeSetIsValidForCheckBrowseUrl(threat_types));
@@ -208,6 +209,7 @@ bool RemoteSafeBrowsingDatabaseManager::CheckBrowseUrl(
   }
 
   bool can_check_url = CanCheckUrl(url);
+  // TODO(crbug.com/1444511): Break this histogram down by check_type.
   UMA_HISTOGRAM_BOOLEAN("SB2.RemoteCall.CanCheckUrl", can_check_url);
   if (!can_check_url) {
     return true;  // Safe, continue right away.
@@ -219,9 +221,15 @@ bool RemoteSafeBrowsingDatabaseManager::CheckBrowseUrl(
   auto callback =
       std::make_unique<SafeBrowsingApiHandlerBridge::ResponseCallback>(
           base::BindOnce(&ClientRequest::OnRequestDoneWeak, req->GetWeakPtr()));
-  SafeBrowsingApiHandlerBridge::GetInstance().StartHashDatabaseUrlCheck(
-      std::move(callback), url, threat_types);
-
+  switch (check_type) {
+    case CheckBrowseUrlType::kHashDatabase:
+      SafeBrowsingApiHandlerBridge::GetInstance().StartHashDatabaseUrlCheck(
+          std::move(callback), url, threat_types);
+      break;
+    case CheckBrowseUrlType::kHashRealTime:
+      SafeBrowsingApiHandlerBridge::GetInstance().StartHashRealTimeUrlCheck(
+          std::move(callback), url, threat_types);
+  }
   current_requests_.push_back(req.release());
 
   // Defer the resource load.

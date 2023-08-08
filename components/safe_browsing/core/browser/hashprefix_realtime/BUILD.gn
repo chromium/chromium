@@ -24,7 +24,7 @@ static_library("hash_realtime_service") {
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/safe_browsing/core/common/proto:safebrowsingv5_alpha1_proto",
     "//google_apis:google_apis",
-    "//services/network/public/cpp:cpp",
+    "//services/network/public/cpp",
     "//url:url",
   ]
 }
@@ -59,6 +59,7 @@ static_library("hash_realtime_utils") {
     "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/safe_browsing/core/common/proto:safebrowsingv5_alpha1_proto",
+    "//services/network/public/cpp",
   ]
 }
 

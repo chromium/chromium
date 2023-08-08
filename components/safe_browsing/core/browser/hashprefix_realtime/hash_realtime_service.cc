@@ -150,8 +150,7 @@ bool HashRealTimeService::CanCheckUrl(
   if (VerdictCacheManager::has_artificial_cached_url()) {
     return true;
   }
-  return request_destination == network::mojom::RequestDestination::kDocument &&
-         CanGetReputationOfUrl(url);
+  return hash_realtime_utils::CanCheckUrl(url, request_destination);
 }
 
 // static

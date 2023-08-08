@@ -16,7 +16,6 @@
 #include "components/safe_browsing/core/browser/utils/backoff_operator.h"
 #include "components/safe_browsing/core/common/proto/safebrowsingv5_alpha1.pb.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
-#include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/oblivious_http_request.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

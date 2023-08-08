@@ -288,7 +288,8 @@ void UrlRealTimeMechanism::PerformHashBasedCheck(
   bool is_safe_synchronously = false;
   if (can_check_db_) {
     hash_database_mechanism_ = std::make_unique<DatabaseManagerMechanism>(
-        url, threat_types_, database_manager_, experiment_cache_selection_);
+        url, threat_types_, database_manager_, experiment_cache_selection_,
+        CheckBrowseUrlType::kHashDatabase);
     is_safe_synchronously =
         hash_database_mechanism_
             ->StartCheck(base::BindOnce(

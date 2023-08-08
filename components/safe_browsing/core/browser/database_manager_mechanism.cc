@@ -15,11 +15,13 @@ DatabaseManagerMechanism::DatabaseManagerMechanism(
     const GURL& url,
     const SBThreatTypeSet& threat_types,
     scoped_refptr<SafeBrowsingDatabaseManager> database_manager,
-    MechanismExperimentHashDatabaseCache experiment_cache_selection)
+    MechanismExperimentHashDatabaseCache experiment_cache_selection,
+    CheckBrowseUrlType check_type)
     : SafeBrowsingLookupMechanism(url,
                                   threat_types,
                                   database_manager,
-                                  experiment_cache_selection) {}
+                                  experiment_cache_selection),
+      check_type_(check_type) {}
 
 DatabaseManagerMechanism::~DatabaseManagerMechanism() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -33,7 +35,7 @@ SafeBrowsingLookupMechanism::StartCheckResult
 DatabaseManagerMechanism::StartCheckInternal() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   bool is_safe_synchronously = database_manager_->CheckBrowseUrl(
-      url_, threat_types_, this, experiment_cache_selection_);
+      url_, threat_types_, this, experiment_cache_selection_, check_type_);
   if (!is_safe_synchronously) {
     is_async_database_manager_check_in_progress_ = true;
   }
@@ -47,6 +49,8 @@ void DatabaseManagerMechanism::OnCheckBrowseUrlResult(
     const ThreatMetadata& metadata) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   is_async_database_manager_check_in_progress_ = false;
+  // TODO(crbug.com/1444511): Return a different threat_source if the check_type
+  // is HashRealTime.
   CompleteCheck(std::make_unique<CompleteCheckResult>(
       url, threat_type, metadata,
       /*threat_source=*/database_manager_->GetThreatSource(),

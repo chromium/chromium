@@ -152,12 +152,15 @@ class SafeBrowsingDatabaseManager
   // result when it is ready. The URL will only be checked for the threat types
   // in |threat_types|. |experiment_cache_selection| specifies which cache to
   // use. See comments above MechanismExperimentHashDatabaseCache's definition
-  // for more details.
+  // for more details. |check_type| specifies the type of check the url will be
+  // checked against. See comments above CheckBrowseUrlType's definition for
+  // more details.
   virtual bool CheckBrowseUrl(
       const GURL& url,
       const SBThreatTypeSet& threat_types,
       Client* client,
-      MechanismExperimentHashDatabaseCache experiment_cache_selection) = 0;
+      MechanismExperimentHashDatabaseCache experiment_cache_selection,
+      CheckBrowseUrlType check_type) = 0;
 
   // Check if the prefix for |url| is in safebrowsing download add lists.
   // Result will be passed to callback in |client|.

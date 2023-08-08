@@ -11,6 +11,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "components/safe_browsing/core/common/utils.h"
 
 namespace safe_browsing::hash_realtime_utils {
 // Used by tests so that more than just GOOGLE_CHROME_BRANDING bots are capable
@@ -26,6 +27,14 @@ bool HasGoogleChromeBranding() {
 #endif
 }
 }  // namespace
+
+bool CanCheckUrl(const GURL& url,
+                 network::mojom::RequestDestination request_destination) {
+  // TODO(crbug.com/1444511): Add a histogram to see how many urls are filtered
+  // by CanGetReputationOfUrl.
+  return request_destination == network::mojom::RequestDestination::kDocument &&
+         CanGetReputationOfUrl(url);
+}
 
 bool IsThreatTypeRelevant(const V5::ThreatType& threat_type) {
   switch (threat_type) {
@@ -58,9 +67,6 @@ HashRealTimeSelection DetermineHashRealTimeSelection(
   // All prefs used in this method must match the ones returned by
   // |GetHashRealTimeSelectionConfiguringPrefs| so that consumers listening for
   // changes can receive them correctly.
-#if BUILDFLAG(IS_ANDROID)
-  return HashRealTimeSelection::kNone;
-#else
   struct Requirement {
     std::string failed_requirement_histogram_suffix;
     bool passes_requirement;
@@ -84,9 +90,13 @@ HashRealTimeSelection DetermineHashRealTimeSelection(
           !requirement.passes_requirement);
     }
   }
-  return can_do_lookup ? HashRealTimeSelection::kHashRealTimeService
-                       : HashRealTimeSelection::kNone;
+  return can_do_lookup ?
+#if BUILDFLAG(IS_ANDROID)
+                       HashRealTimeSelection::kDatabaseManager
+#else
+                       HashRealTimeSelection::kHashRealTimeService
 #endif
+                       : HashRealTimeSelection::kNone;
 }
 
 std::vector<const char*> GetHashRealTimeSelectionConfiguringPrefs() {

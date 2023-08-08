@@ -166,6 +166,7 @@ source_set("unit_tests_mobile") {
     "//base",
     "//components/resources:components_resources_grit",
     "//components/safe_browsing/android:realtimeallowlist_proto",
+    "//components/safe_browsing/core/browser/db:database_manager",
     "//components/safe_browsing/core/browser/db:metadata_proto",
     "//components/safe_browsing/core/browser/db:unit_tests_shared",
     "//components/safe_browsing/core/browser/db:util",

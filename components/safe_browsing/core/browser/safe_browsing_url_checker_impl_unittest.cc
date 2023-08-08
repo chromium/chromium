@@ -54,16 +54,18 @@ class MockSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {
   // SafeBrowsingDatabaseManager implementation.
   // Checks the threat type of |gurl| previously set by |SetThreatTypeForUrl|.
   // It crashes if the threat type of |gurl| is not set in advance.
-  bool CheckBrowseUrl(const GURL& gurl,
-                      const safe_browsing::SBThreatTypeSet& threat_types,
-                      Client* client,
-                      MechanismExperimentHashDatabaseCache
-                          experiment_cache_selection) override {
+  bool CheckBrowseUrl(
+      const GURL& gurl,
+      const safe_browsing::SBThreatTypeSet& threat_types,
+      Client* client,
+      MechanismExperimentHashDatabaseCache experiment_cache_selection,
+      CheckBrowseUrlType check_type) override {
     std::string url = gurl.spec();
     DCHECK(base::Contains(urls_threat_type_, url));
     DCHECK(base::Contains(urls_delayed_callback_, url));
     EXPECT_TRUE(base::Contains(acceptable_cache_selections_,
                                experiment_cache_selection));
+    EXPECT_EQ(check_type, expected_check_type_);
     if (urls_threat_type_[url] == SB_THREAT_TYPE_SAFE) {
       return true;
     }
@@ -148,6 +150,10 @@ class MockSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {
     acceptable_cache_selections_ = acceptable_cache_selections;
   }
 
+  void SetExpectedCheckBrowseUrlType(CheckBrowseUrlType check_type) {
+    expected_check_type_ = check_type;
+  }
+
   void CancelCheck(Client* client) override { called_cancel_check_ = true; }
 
   bool HasCalledCancelCheck() { return called_cancel_check_; }
@@ -174,6 +180,7 @@ class MockSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {
       urls_allowlist_metric_variation_;
   std::set<MechanismExperimentHashDatabaseCache> acceptable_cache_selections_ =
       {MechanismExperimentHashDatabaseCache::kNoExperiment};
+  CheckBrowseUrlType expected_check_type_ = CheckBrowseUrlType::kHashDatabase;
 
   bool called_cancel_check_ = false;
 };
@@ -1727,6 +1734,34 @@ TEST_F(SafeBrowsingUrlCheckerTest,
       *url_checker_delegate_,
       StartDisplayingBlockingPageHelper(
           IsSameThreatSource(ThreatSource::URL_REAL_TIME_CHECK), _, _, _, _))
+      .Times(1);
+  safe_browsing_url_checker->CheckUrl(url, "GET", callback.Get());
+
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(SafeBrowsingUrlCheckerTest,
+       CheckUrl_HashRealTimeEnabledThroughDatabaseManager) {
+  auto safe_browsing_url_checker = CreateSafeBrowsingUrlChecker(
+      /*url_real_time_lookup_enabled=*/false,
+      /*can_check_safe_browsing_db=*/true,
+      /*hash_real_time_selection=*/
+      hash_realtime_utils::HashRealTimeSelection::kDatabaseManager);
+
+  GURL url("https://example.test/");
+  database_manager_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_URL_PHISHING,
+                                         /*delayed_callback=*/false);
+  database_manager_->SetExpectedCheckBrowseUrlType(
+      CheckBrowseUrlType::kHashRealTime);
+
+  base::MockCallback<SafeBrowsingUrlCheckerImpl::NativeCheckUrlCallback>
+      callback;
+  // Note that the callback is not called, because resource fetch is not blocked
+  // while we perform a real-time check.
+  EXPECT_CALL(callback, Run(_, _, _, _, _)).Times(0);
+  EXPECT_CALL(*url_checker_delegate_,
+              StartDisplayingBlockingPageHelper(
+                  IsSameThreatSource(ThreatSource::UNKNOWN), _, _, _, _))
       .Times(1);
   safe_browsing_url_checker->CheckUrl(url, "GET", callback.Get());
 

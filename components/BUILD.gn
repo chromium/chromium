@@ -658,7 +658,10 @@ test("components_unittests") {
   }
 
   if (safe_browsing_mode != 0) {
-    deps += [ "//components/safe_browsing/content/common:unit_tests" ]
+    deps += [
+      "//components/safe_browsing/content/common:unit_tests",
+      "//components/safe_browsing/core/browser:safe_browsing_url_checker_unittest",
+    ]
   }
 
   # TODO(crbug / 1056278): Enable this on Fuchsia and merge with the above
@@ -679,7 +682,6 @@ test("components_unittests") {
       "//components/safe_browsing/content/renderer:throttles_unittest",
       "//components/safe_browsing/core/browser:ping_manager_unittest",
       "//components/safe_browsing/core/browser:safe_browsing_lookup_mechanism_experimenter_unittest",
-      "//components/safe_browsing/core/browser:safe_browsing_url_checker_unittest",
       "//components/safe_browsing/core/browser:user_population_unittest",
       "//components/safe_browsing/core/browser:verdict_cache_manager_unittest",
       "//components/safe_browsing/core/browser/db:unit_tests_local_db",

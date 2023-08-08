@@ -423,10 +423,13 @@ bool V4LocalDatabaseManager::CheckBrowseUrl(
     const GURL& url,
     const SBThreatTypeSet& threat_types,
     Client* client,
-    MechanismExperimentHashDatabaseCache experiment_cache_selection) {
+    MechanismExperimentHashDatabaseCache experiment_cache_selection,
+    CheckBrowseUrlType check_type) {
   DCHECK(sb_task_runner()->RunsTasksInCurrentSequence());
   DCHECK(!threat_types.empty());
   DCHECK(SBThreatTypeSetIsValidForCheckBrowseUrl(threat_types));
+  DCHECK(check_type == CheckBrowseUrlType::kHashDatabase)
+      << "V4 Local database only support hash database check.";
 
   // We use `enabled_` here because `HandleCheck` queues checks that come in
   // before the database is ready.

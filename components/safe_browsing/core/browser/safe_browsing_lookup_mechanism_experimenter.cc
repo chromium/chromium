@@ -49,7 +49,8 @@ SafeBrowsingLookupMechanismExperimenter::RunChecks(
       MechanismExperimentHashDatabaseCache::kUrlRealTimeOnly);
   auto hash_database_mechanism = std::make_unique<DatabaseManagerMechanism>(
       url, threat_types, database_manager,
-      MechanismExperimentHashDatabaseCache::kHashDatabaseOnly);
+      MechanismExperimentHashDatabaseCache::kHashDatabaseOnly,
+      CheckBrowseUrlType::kHashDatabase);
   auto hash_real_time_mechanism = std::make_unique<HashRealTimeMechanism>(
       url, threat_types, database_manager, ui_task_runner_,
       hash_real_time_service_on_ui,

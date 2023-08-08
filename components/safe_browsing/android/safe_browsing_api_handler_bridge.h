@@ -45,7 +45,6 @@ class SafeBrowsingApiHandlerBridge {
 
   // Makes Native-to-Java call to perform the privacy-preserving hash real-time
   // check.
-  // TODO(crbug.com/1444511): Connect this function with production code.
   void StartHashRealTimeUrlCheck(std::unique_ptr<ResponseCallback> callback,
                                  const GURL& url,
                                  const SBThreatTypeSet& threat_types);
@@ -84,10 +83,13 @@ class SafeBrowsingApiHandlerBridge {
 // SafeBrowsingApiHandlerBridge. Intended for use only in tests.
 class UrlCheckInterceptor {
  public:
-  virtual ~UrlCheckInterceptor() {}
-  virtual void Check(
+  virtual ~UrlCheckInterceptor() = default;
+  virtual void CheckBySafetyNet(
       std::unique_ptr<SafeBrowsingApiHandlerBridge::ResponseCallback> callback,
-      const GURL& url) const = 0;
+      const GURL& url) = 0;
+  virtual void CheckBySafeBrowsing(
+      std::unique_ptr<SafeBrowsingApiHandlerBridge::ResponseCallback> callback,
+      const GURL& url) = 0;
 };
 
 }  // namespace safe_browsing

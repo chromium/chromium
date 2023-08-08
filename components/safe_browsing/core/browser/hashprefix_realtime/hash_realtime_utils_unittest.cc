@@ -25,6 +25,35 @@ TEST(HashRealTimeUtilsTest, TestGetHashPrefix) {
       "dcba");
 }
 
+TEST(HashRealTimeUtilsTest, TestCanCheckUrl) {
+  auto can_check_url =
+      [](std::string url,
+         network::mojom::RequestDestination request_destination =
+             network::mojom::RequestDestination::kDocument) {
+        EXPECT_TRUE(GURL(url).is_valid());
+        return hash_realtime_utils::CanCheckUrl(GURL(url), request_destination);
+      };
+  // Yes: HTTPS and main-frame URL.
+  EXPECT_TRUE(can_check_url("https://example.test/path"));
+  // Yes: HTTP and main-frame URL.
+  EXPECT_TRUE(can_check_url("http://example.test/path"));
+  // No: It's not a mainframe URL.
+  EXPECT_FALSE(can_check_url("https://example.test/path",
+                             network::mojom::RequestDestination::kFrame));
+  // No: The URL scheme is not HTTP/HTTPS.
+  EXPECT_FALSE(can_check_url("ftp://example.test/path"));
+  // No: It's localhost.
+  EXPECT_FALSE(can_check_url("http://localhost/path"));
+  // No: The host is an IP address, but is not publicly routable.
+  EXPECT_FALSE(can_check_url("http://0.0.0.0"));
+  // Yes: The host is an IP address and is publicly routable.
+  EXPECT_TRUE(can_check_url("http://1.0.0.0"));
+  // No: Hostname does not have at least 1 dot.
+  EXPECT_FALSE(can_check_url("https://example/path"));
+  // No: Hostname does not have at least 3 characters.
+  EXPECT_FALSE(can_check_url("https://e./path"));
+}
+
 TEST(HashRealTimeUtilsTest, TestIsThreatTypeRelevant) {
   EXPECT_TRUE(
       hash_realtime_utils::IsThreatTypeRelevant(V5::ThreatType::MALWARE));
@@ -75,6 +104,12 @@ TEST(HashRealTimeUtilsTest,
 }
 #endif
 TEST(HashRealTimeUtilsTest, TestDetermineHashRealTimeSelection) {
+  hash_realtime_utils::HashRealTimeSelection enabled_selection =
+#if BUILDFLAG(IS_ANDROID)
+      hash_realtime_utils::HashRealTimeSelection::kDatabaseManager;
+#else
+      hash_realtime_utils::HashRealTimeSelection::kHashRealTimeService;
+#endif
   struct TestCase {
     SafeBrowsingState safe_browsing_state =
         SafeBrowsingState::STANDARD_PROTECTION;
@@ -89,14 +124,7 @@ TEST(HashRealTimeUtilsTest, TestDetermineHashRealTimeSelection) {
     bool expected_not_standard_protection_log = false;
     bool expected_not_allowed_by_policy_log = false;
   } test_cases[] = {
-#if BUILDFLAG(IS_ANDROID)
-    // Lookups disabled for Android.
-    {.expected_selection = hash_realtime_utils::HashRealTimeSelection::kNone,
-     .expected_log_usage_histograms = false},
-#else
-    // HashRealTimeService lookups selected.
-    {.expected_selection =
-         hash_realtime_utils::HashRealTimeSelection::kHashRealTimeService},
+    {.expected_selection = enabled_selection},
     // Lookups disabled for ESB.
     {.safe_browsing_state = SafeBrowsingState::ENHANCED_PROTECTION,
      .expected_selection = hash_realtime_utils::HashRealTimeSelection::kNone,
@@ -118,13 +146,11 @@ TEST(HashRealTimeUtilsTest, TestDetermineHashRealTimeSelection) {
     // Lookups allowed because policy allows them and nothing else prevents
     // them.
     {.lookups_allowed_by_policy = true,
-     .expected_selection =
-         hash_realtime_utils::HashRealTimeSelection::kHashRealTimeService},
+     .expected_selection = enabled_selection},
     // Lookups disabled because policy prevents them.
     {.lookups_allowed_by_policy = false,
      .expected_selection = hash_realtime_utils::HashRealTimeSelection::kNone,
      .expected_not_allowed_by_policy_log = true},
-#endif
   };
 
   auto check_usage_histograms =

@@ -35,7 +35,8 @@ class FakeSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {
       const GURL& url,
       const SBThreatTypeSet& threat_types,
       Client* client,
-      MechanismExperimentHashDatabaseCache experiment_cache_selection) override;
+      MechanismExperimentHashDatabaseCache experiment_cache_selection,
+      CheckBrowseUrlType check_type) override;
   bool CheckDownloadUrl(const std::vector<GURL>& url_chain,
                         Client* client) override;
   bool CheckExtensionIDs(const std::set<std::string>& extension_ids,

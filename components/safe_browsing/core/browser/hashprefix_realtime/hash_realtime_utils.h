@@ -6,6 +6,8 @@
 #define COMPONENTS_SAFE_BROWSING_CORE_BROWSER_HASHPREFIX_REALTIME_HASH_REALTIME_UTILS_H_
 
 #include "components/safe_browsing/core/common/proto/safebrowsingv5_alpha1.pb.h"
+#include "services/network/public/mojom/fetch_api.mojom.h"
+#include "url/gurl.h"
 
 class PrefService;
 
@@ -21,6 +23,9 @@ enum class HashRealTimeSelection {
   // The lookup performed should use the native HashRealTimeService. This is
   // relevant to Desktop and iOS.
   kHashRealTimeService = 1,
+  // The lookup performed should use the database manager. This is relevant to
+  // Android (Chrome and WebView).
+  kDatabaseManager = 2,
 };
 
 // Used only for tests. This is useful so that more than just
@@ -44,6 +49,11 @@ class GoogleChromeBrandingPretenderForTesting {
   // method.
   void StopApplyingBranding();
 };
+
+// Returns whether the |url| is eligible for hash-prefix real-time checks.
+// It's never eligible if the |request_destination| is not mainframe.
+bool CanCheckUrl(const GURL& url,
+                 network::mojom::RequestDestination request_destination);
 
 // Returns whether the threat type is relevant for hash-prefix real-time
 // lookups.

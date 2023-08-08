@@ -389,7 +389,7 @@ void SafeBrowsingApiHandlerBridge::StartUrlCheckBySafetyNet(
     const SBThreatTypeSet& threat_types) {
   if (interceptor_for_testing_) {
     // For testing, only check the interceptor.
-    interceptor_for_testing_->Check(std::move(callback), url);
+    interceptor_for_testing_->CheckBySafetyNet(std::move(callback), url);
     return;
   }
   DCHECK_CURRENTLY_ON(base::FeatureList::IsEnabled(kSafeBrowsingOnUIThread)
@@ -424,6 +424,11 @@ void SafeBrowsingApiHandlerBridge::StartUrlCheckBySafeBrowsing(
     const GURL& url,
     const SBThreatTypeSet& threat_types,
     const SafeBrowsingJavaProtocol& protocol) {
+  if (interceptor_for_testing_) {
+    // For testing, only check the interceptor.
+    interceptor_for_testing_->CheckBySafeBrowsing(std::move(callback), url);
+    return;
+  }
   DCHECK_CURRENTLY_ON(base::FeatureList::IsEnabled(kSafeBrowsingOnUIThread)
                           ? content::BrowserThread::UI
                           : content::BrowserThread::IO);

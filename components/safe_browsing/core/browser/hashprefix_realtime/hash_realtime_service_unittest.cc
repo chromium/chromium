@@ -1702,35 +1702,6 @@ TEST_F(HashRealTimeServiceTest, TestIsThreatTypeMoreSevere) {
   }
 }
 
-TEST_F(HashRealTimeServiceTest, TestCanCheckUrl) {
-  auto can_check_url =
-      [](std::string url,
-         network::mojom::RequestDestination request_destination =
-             network::mojom::RequestDestination::kDocument) {
-        EXPECT_TRUE(GURL(url).is_valid());
-        return HashRealTimeService::CanCheckUrl(GURL(url), request_destination);
-      };
-  // Yes: HTTPS and main-frame URL.
-  EXPECT_TRUE(can_check_url("https://example.test/path"));
-  // Yes: HTTP and main-frame URL.
-  EXPECT_TRUE(can_check_url("http://example.test/path"));
-  // No: It's not a mainframe URL.
-  EXPECT_FALSE(can_check_url("https://example.test/path",
-                             network::mojom::RequestDestination::kFrame));
-  // No: The URL scheme is not HTTP/HTTPS.
-  EXPECT_FALSE(can_check_url("ftp://example.test/path"));
-  // No: It's localhost.
-  EXPECT_FALSE(can_check_url("http://localhost/path"));
-  // No: The host is an IP address, but is not publicly routable.
-  EXPECT_FALSE(can_check_url("http://0.0.0.0"));
-  // Yes: The host is an IP address and is publicly routable.
-  EXPECT_TRUE(can_check_url("http://1.0.0.0"));
-  // No: Hostname does not have at least 1 dot.
-  EXPECT_FALSE(can_check_url("https://example/path"));
-  // No: Hostname does not have at least 3 characters.
-  EXPECT_FALSE(can_check_url("https://e./path"));
-}
-
 class HashRealTimeServiceWithinExperimentTest : public HashRealTimeServiceTest {
  public:
   HashRealTimeServiceWithinExperimentTest() {

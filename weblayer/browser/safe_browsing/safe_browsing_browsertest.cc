@@ -137,12 +137,16 @@ class TestUrlCheckInterceptor : public safe_browsing::UrlCheckInterceptor {
   void Clear() { map_.clear(); }
 
   // safe_browsing::UrlCheckInterceptor
-  void Check(std::unique_ptr<SbBridge::ResponseCallback> callback,
-             const GURL& url) const override {
+  void CheckBySafetyNet(std::unique_ptr<SbBridge::ResponseCallback> callback,
+                        const GURL& url) override {
     RunCallbackOnIOThread(std::move(callback), Find(url),
                           safe_browsing::ThreatMetadata());
   }
-  ~TestUrlCheckInterceptor() override {}
+  void CheckBySafeBrowsing(std::unique_ptr<SbBridge::ResponseCallback> callback,
+                           const GURL& url) override {
+    NOTREACHED();
+  }
+  ~TestUrlCheckInterceptor() override = default;
 
  private:
   safe_browsing::SBThreatType Find(const GURL& url) const {

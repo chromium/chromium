@@ -7,6 +7,7 @@
 
 #include "base/sequence_checker.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
+#include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/browser/safe_browsing_lookup_mechanism.h"
 #include "url/gurl.h"
 
@@ -20,7 +21,8 @@ class DatabaseManagerMechanism : public SafeBrowsingLookupMechanism,
       const GURL& url,
       const SBThreatTypeSet& threat_types,
       scoped_refptr<SafeBrowsingDatabaseManager> database_manager,
-      MechanismExperimentHashDatabaseCache experiment_cache_selection);
+      MechanismExperimentHashDatabaseCache experiment_cache_selection,
+      CheckBrowseUrlType check_type);
 
   DatabaseManagerMechanism(const DatabaseManagerMechanism&) = delete;
   DatabaseManagerMechanism& operator=(const DatabaseManagerMechanism&) = delete;
@@ -43,6 +45,10 @@ class DatabaseManagerMechanism : public SafeBrowsingLookupMechanism,
   // that the checker is waiting to hear back on. This is used in order to
   // decide whether to ask the database manager to cancel the check on destruct.
   bool is_async_database_manager_check_in_progress_ = false;
+
+  // The type of check that is passed into |CheckBrowseUrl| on the
+  // database manager.
+  CheckBrowseUrlType check_type_;
 };
 
 }  // namespace safe_browsing

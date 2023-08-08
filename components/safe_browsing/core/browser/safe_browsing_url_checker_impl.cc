@@ -602,11 +602,20 @@ SafeBrowsingUrlCheckerImpl::KickOffLookupMechanism(const GURL& url) {
         ui_task_runner_, hash_realtime_service_on_ui_,
         MechanismExperimentHashDatabaseCache::kNoExperiment,
         /*is_source_lookup_mechanism_experiment=*/false);
+  } else if (hash_realtime_selection_ ==
+                 HashRealTimeSelection::kDatabaseManager &&
+             hash_realtime_utils::CanCheckUrl(url, request_destination_)) {
+    performed_check = PerformedCheck::kHashRealTimeCheck;
+    lookup_mechanism = std::make_unique<DatabaseManagerMechanism>(
+        url, url_checker_delegate_->GetThreatTypes(), database_manager_,
+        MechanismExperimentHashDatabaseCache::kNoExperiment,
+        CheckBrowseUrlType::kHashRealTime);
   } else {
     performed_check = PerformedCheck::kHashDatabaseCheck;
     lookup_mechanism = std::make_unique<DatabaseManagerMechanism>(
         url, url_checker_delegate_->GetThreatTypes(), database_manager_,
-        MechanismExperimentHashDatabaseCache::kNoExperiment);
+        MechanismExperimentHashDatabaseCache::kNoExperiment,
+        CheckBrowseUrlType::kHashDatabase);
   }
   DCHECK(performed_check != PerformedCheck::kUnknown);
   lookup_mechanism_runner_ =
