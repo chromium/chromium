@@ -10062,7 +10062,10 @@ if (!is_android) {
   }
 }
 
-if (!is_android) {
+# Interactive UI test target can't run on ChromeOS device. See
+# //docs/testing/chromeos_integration for how to create an integration
+# test that works on ChromeOS VM/Device.
+if (!is_android && !is_chromeos_device) {
   test("interactive_ui_tests") {
     use_xvfb = use_xvfb_in_this_config
 

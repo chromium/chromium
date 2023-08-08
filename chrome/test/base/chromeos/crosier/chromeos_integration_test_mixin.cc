@@ -4,10 +4,12 @@
 
 #include "chrome/test/base/chromeos/crosier/chromeos_integration_test_mixin.h"
 
+#include "base/command_line.h"
 #include "build/chromeos_buildflags.h"
+#include "ui/compositor/compositor_switches.h"
+#include "ui/gl/gl_switches.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "base/command_line.h"
 #include "base/path_service.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
@@ -18,6 +20,16 @@ ChromeOSIntegrationTestMixin::ChromeOSIntegrationTestMixin(
     : InProcessBrowserTestMixin(host) {}
 
 ChromeOSIntegrationTestMixin::~ChromeOSIntegrationTestMixin() = default;
+
+void ChromeOSIntegrationTestMixin::SetUpCommandLine(
+    base::CommandLine* command_line) {
+  // One of the main reason for using ChromeOS integration test is it can
+  // verify graphics stack code path on DUT. So we want to enable GPU and pixel
+  // outputs by default. This would also be required for pixel testing
+  // and generating screenshots during test failures.
+  command_line->AppendSwitch(switches::kEnablePixelOutputInTests);
+  command_line->AppendSwitch(switches::kUseGpuInTests);
+}
 
 bool ChromeOSIntegrationTestMixin::SetUpUserDataDirectory() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)

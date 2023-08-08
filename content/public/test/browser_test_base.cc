@@ -410,13 +410,6 @@ void BrowserTestBase::SetUp() {
   use_software_gl = false;
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // If the test is running on the chromeos envrionment (such as
-  // device or vm bots), we use hardware GL.
-  if (base::SysInfo::IsRunningOnChromeOS())
-    use_software_gl = false;
-#endif
-
 #if BUILDFLAG(IS_FUCHSIA)
   // GPU support is not available to tests.
   // TODO(crbug.com/1259462): Enable GPU support.

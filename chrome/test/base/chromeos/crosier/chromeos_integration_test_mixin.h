@@ -7,6 +7,10 @@
 
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 
+namespace base {
+class CommandLine;
+}
+
 // Mixin for all tests that run in chromeos_integration_tests. Handles setup for
 // running on hardware (DUT) and running in VM.
 class ChromeOSIntegrationTestMixin : public InProcessBrowserTestMixin {
@@ -18,6 +22,7 @@ class ChromeOSIntegrationTestMixin : public InProcessBrowserTestMixin {
   ~ChromeOSIntegrationTestMixin() override;
 
   // InProcessBrowserTestMixin:
+  void SetUpCommandLine(base::CommandLine* command_line) override;
   bool SetUpUserDataDirectory() override;
 };
 
