@@ -41,10 +41,6 @@ class VideoEncoderTestEnvironment : public VideoTestEnvironment {
     // Measure the speed performance.
     // video_encode_accelerator_perf_tests --speed
     kSpeedPerformance,
-    // TODO(b/282878066): Remove this once video_encode_accelerator_perf_tests
-    // forces a user to specify --quality or --speed.
-    // video_encode_accelerator_perf_tests
-    kGeneralPerformance,
   };
 
   // |read_all_frames_in_video| is weather we read all the frames in

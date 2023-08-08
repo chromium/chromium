@@ -795,8 +795,8 @@ class VideoEncoderTest : public ::testing::Test {
 // possible, and gives an idea about the maximum output of the
 // encoder.
 TEST_F(VideoEncoderTest, MeasureUncappedPerformance) {
-  if (g_env->RunTestType() ==
-      media::test::VideoEncoderTestEnvironment::TestType::kQualityPerformance) {
+  if (g_env->RunTestType() !=
+      media::test::VideoEncoderTestEnvironment::TestType::kSpeedPerformance) {
     GTEST_SKIP()
         << "Skip because this test case is to measure speed performance";
   }
@@ -822,8 +822,8 @@ TEST_F(VideoEncoderTest, MeasureUncappedPerformance) {
 // then decide how to aggregate/report those metrics.
 TEST_F(VideoEncoderTest,
        MeasureUncappedPerformance_MultipleConcurrentEncoders) {
-  if (g_env->RunTestType() ==
-      media::test::VideoEncoderTestEnvironment::TestType::kQualityPerformance) {
+  if (g_env->RunTestType() !=
+      media::test::VideoEncoderTestEnvironment::TestType::kSpeedPerformance) {
     GTEST_SKIP()
         << "Skip because this test case is to measure speed performance";
   }
@@ -864,8 +864,8 @@ TEST_F(VideoEncoderTest,
 // 30fps. This test can be used to measure the cpu metrics during
 // encoding.
 TEST_F(VideoEncoderTest, DISABLED_MeasureCappedPerformance) {
-  if (g_env->RunTestType() ==
-      media::test::VideoEncoderTestEnvironment::TestType::kQualityPerformance) {
+  if (g_env->RunTestType() !=
+      media::test::VideoEncoderTestEnvironment::TestType::kSpeedPerformance) {
     GTEST_SKIP()
         << "Skip because this test case is to measure speed performance";
   }
@@ -888,17 +888,12 @@ TEST_F(VideoEncoderTest, DISABLED_MeasureCappedPerformance) {
 }
 
 TEST_F(VideoEncoderTest, MeasureProducedBitstreamQuality) {
-  if (g_env->RunTestType() ==
-      media::test::VideoEncoderTestEnvironment::TestType::kSpeedPerformance) {
+  if (g_env->RunTestType() !=
+      media::test::VideoEncoderTestEnvironment::TestType::kQualityPerformance) {
     GTEST_SKIP()
         << "Skip because this test case is to measure quality performance";
   }
-  const size_t num_frames = g_env->RunTestType() ==
-                                    media::test::VideoEncoderTestEnvironment::
-                                        TestType::kQualityPerformance
-                                ? g_env->Video()->NumFrames()
-                                : kNumEncodeFramesForSpeedPerformance;
-
+  const size_t num_frames = g_env->Video()->NumFrames();
   auto encoder = CreateVideoEncoder(/*encode_rate=*/absl::nullopt,
                                     /*measure_quality=*/true,
                                     /*num_encode_frames=*/num_frames);
@@ -953,7 +948,7 @@ int main(int argc, char** argv) {
   // Check if a video was specified on the command line.
   base::CommandLine::StringVector args = cmd_line->GetArgs();
   media::test::VideoEncoderTestEnvironment::TestType test_type =
-      media::test::VideoEncoderTestEnvironment::TestType::kGeneralPerformance;
+      media::test::VideoEncoderTestEnvironment::TestType::kValidation;
   base::FilePath video_path =
       (args.size() >= 1) ? base::FilePath(args[0])
                          : base::FilePath(media::test::kDefaultTestVideoPath);
@@ -1023,6 +1018,13 @@ int main(int argc, char** argv) {
                 << media::test::usage_msg;
       return EXIT_FAILURE;
     }
+  }
+
+  if (test_type ==
+      media::test::VideoEncoderTestEnvironment::TestType::kValidation) {
+    std::cout << "--speed or --quality must be specified\n"
+              << media::test::usage_msg;
+    return EXIT_FAILURE;
   }
 
   testing::InitGoogleTest(&argc, argv);
