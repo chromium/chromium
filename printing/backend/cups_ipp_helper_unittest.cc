@@ -404,10 +404,42 @@ TEST_F(PrintBackendCupsIppHelperTest, A4PaperSupported) {
   PrinterSemanticCapsAndDefaults caps;
   CapsAndDefaultsFromPrinter(*printer_, &caps);
 
+  ASSERT_EQ(1U, caps.papers.size());
+
   PrinterSemanticCapsAndDefaults::Paper paper = caps.papers[0];
   EXPECT_EQ(210000, paper.size_um().width());
   EXPECT_EQ(297000, paper.size_um().height());
 }
+
+#if BUILDFLAG(IS_MAC)
+TEST_F(PrintBackendCupsIppHelperTest, NearA4PaperDetected) {
+  printer_->SetMediaColDatabase(
+      MakeMediaColDatabase(ipp_, {{20990, 29704, 10, 10, 10, 10, {}}}));
+
+  PrinterSemanticCapsAndDefaults caps;
+  CapsAndDefaultsFromPrinter(*printer_, &caps);
+
+  ASSERT_EQ(1U, caps.papers.size());
+
+  PrinterSemanticCapsAndDefaults::Paper paper = caps.papers[0];
+  EXPECT_EQ(210000, paper.size_um().width());
+  EXPECT_EQ(297000, paper.size_um().height());
+}
+
+TEST_F(PrintBackendCupsIppHelperTest, NonStandardPaperUnchanged) {
+  printer_->SetMediaColDatabase(
+      MakeMediaColDatabase(ipp_, {{20800, 29500, 10, 10, 10, 10, {}}}));
+
+  PrinterSemanticCapsAndDefaults caps;
+  CapsAndDefaultsFromPrinter(*printer_, &caps);
+
+  ASSERT_EQ(1U, caps.papers.size());
+
+  PrinterSemanticCapsAndDefaults::Paper paper = caps.papers[0];
+  EXPECT_EQ(208000, paper.size_um().width());
+  EXPECT_EQ(295000, paper.size_um().height());
+}
+#endif  // BUILDFLAG(IS_MAC)
 
 TEST_F(PrintBackendCupsIppHelperTest, CustomPaperSupported) {
   printer_->SetMediaColDatabase(MakeMediaColDatabase(

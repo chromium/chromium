@@ -599,6 +599,23 @@ absl::optional<MediaColData> ExtractMediaColData(ipp_t* db_entry) {
     return absl::nullopt;
   }
 
+#if BUILDFLAG(IS_MAC)
+  pwg_media_t* media = pwgMediaForSize(max_width, max_height);
+  if (media && (media->width != max_width || media->length != max_height)) {
+    // Paper size detected to be close to a standard size.  While the maximum
+    // size will be based on this media, must also do checks to adjust the
+    // minimum dimensions, as they must not end up exceeding the new maximum.
+    if (min_width == max_width || min_width > media->width) {
+      min_width = media->width;
+    }
+    if (min_height == max_height || min_height > media->length) {
+      min_height = media->length;
+    }
+    max_width = media->width;
+    max_height = media->length;
+  }
+#endif
+
   return MediaColData{min_width,     min_height,  max_width,    max_height,
                       bottom_margin, left_margin, right_margin, top_margin};
 }
