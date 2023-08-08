@@ -255,7 +255,6 @@ AutofillProfile& AutofillProfile::operator=(const AutofillProfile& profile) {
 
   set_use_count(profile.use_count());
   set_use_date(profile.use_date());
-  set_previous_use_date(profile.previous_use_date());
   set_modification_date(profile.modification_date());
 
   set_guid(profile.guid());
@@ -890,7 +889,6 @@ void AutofillProfile::GenerateServerProfileIdentifier() {
 void AutofillProfile::RecordAndLogUse() {
   const base::Time now = AutofillClock::Now();
   const base::TimeDelta time_since_last_used = now - use_date();
-  set_previous_use_date(use_date());
   set_use_date(now);
   // Ensure that use counts are not skewed by multiple filling operations of the
   // form. This is especially important for forms fully annotated with

@@ -221,19 +221,14 @@ class AutofillProfile : public AutofillDataModel {
   // creates its own. The ID is a hash of the data contained in the profile.
   void GenerateServerProfileIdentifier();
 
-  // Logs the number of days since the profile was last used, records its
-  // use and updates |previous_use_date_| to the last value of |use_date_|.
+  // Logs the number of days since the profile was last used and records its
+  // use.
   // Also initiates the logging of the structured token verification statuses.
   void RecordAndLogUse();
 
   // Logs the verification status of non-empty structured name and address
   // tokens. Should be called when a profile is used to fill a form.
   void LogVerificationStatuses();
-
-  const base::Time& previous_use_date() const { return previous_use_date_; }
-  void set_previous_use_date(const base::Time& time) {
-    previous_use_date_ = time;
-  }
 
   // Valid only when |record_type()| == |SERVER_PROFILE|.
   bool has_converted() const { return has_converted_; }
@@ -364,9 +359,6 @@ class AutofillProfile : public AutofillDataModel {
   // ID used for identifying this profile. Only set for SERVER_PROFILEs. This is
   // a hash of the contents.
   std::string server_id_;
-
-  // Penultimate time model was used, not persisted to database.
-  base::Time previous_use_date_;
 
   RecordType record_type_;
 
