@@ -26,12 +26,12 @@ message Step {
 
   // Handles DragMouseTo events whenever it generates an empty source
   message DragFromTo {
-    Target source = 1;
-    Target dest = 2;
+    uint32 source = 1;
+    uint32 dest = 2;
   }
 
   message ClickAt {
-    Target target = 1;
+    uint32 target = 1;
     bool right_click = 2;
   }
 
@@ -50,62 +50,6 @@ message Step {
 enum Parallelism {
   IN_PARALLEL = 0;
   ANY_OF = 1;
-}
-
-enum Target {
-  kAddCurrentTabToReadingListElementId = 0;
-  kAppMenuButtonElementId = 1;
-  kAppUninstallDialogOkButtonId = 2;
-  kAutofillCreditCardSuggestionEntryElementId = 3;
-  kAutofillSuggestionElementId = 4;
-  kAvatarButtonElementId = 5;
-  kBatterySaverButtonElementId = 6;
-  kBackButtonElementId = 7;
-  kBookmarkBarElementId = 8;
-  kBookmarkSidePanelWebViewElementId = 9;
-  kBookmarkStarViewElementId = 10;
-  kBrowserViewElementId = 11;
-  kDownloadToolbarButtonElementId = 12;
-  kEnhancedProtectionSettingElementId = 13;
-  kExclusiveAccessBubbleViewElementId = 14;
-  kForwardButtonElementId = 15;
-  kHighEfficiencyChipElementId = 16;
-  kInstallPwaElementId = 17;
-  kIntentChipElementId = 18;
-  kLocationIconElementId = 19;
-  kMediaButtonElementId = 20;
-  kNewTabButtonElementId = 21;
-  kOmniboxElementId = 22;
-  kPasswordsOmniboxKeyIconElementId = 23;
-  kPriceTrackingChipElementId = 24;
-  kPriceTrackingBookmarkViewElementId = 25;
-  kReadLaterSidePanelWebViewElementId = 26;
-  kSavedTabGroupBarElementId = 27;
-  kSavedTabGroupButtonElementId = 28;
-  kSidePanelButtonElementId = 29;
-  kSidePanelElementId = 30;
-  kSidePanelCloseButtonElementId = 31;
-  kSidePanelComboboxElementId = 32;
-  kSidePanelCompanionToolbarButtonElementId = 33;
-  kSidePanelOpenInNewTabButtonElementId = 34;
-  kSidePanelPinButtonElementId = 35;
-  kSidePanelReadingListUnreadElementId = 36;
-  kSavePasswordComboboxElementId = 37;
-  kSideSearchButtonElementId = 38;
-  kSideSearchWebViewElementId = 39;
-  kTabAlertIndicatorButtonElementId = 40;
-  kTabCounterButtonElementId = 41;
-  kTabGroupEditorBubbleId = 42;
-  kTabGroupEditorBubbleSaveToggleId = 43;
-  kTabGroupHeaderElementId = 44;
-  kTabSearchBubbleElementId = 45;
-  kTabSearchButtonElementId = 46;
-  kTabElementId = 47;
-  kTabStripElementId = 48;
-  kTabStripRegionElementId = 49;
-  kTopContainerElementId = 50;
-  kUserNotesSidePanelWebViewElementId = 51;
-  kWebUIIPHDemoElementIdentifier = 52;
 }
 
 enum Accelerator {
@@ -150,5 +94,13 @@ enum Accelerator {
   IDC_WINDOW_PIN_TAB_ = 35013;
   IDC_BOOKMARK_THIS_TAB_ = 35000;
   IDC_BOOKMARK_ALL_TABS_ = 35001;
+  IDC_BOOKMARK_BAR_OPEN_ALL_ = 51000;
   IDC_BOOKMARK_BAR_OPEN_ALL_NEW_TAB_GROUP_ = 51004;
+  IDC_BOOKMARK_BAR_UNDO_ = 51008;
+  IDC_BOOKMARK_BAR_REDO_ = 51009;
+  IDC_BOOKMARK_BAR_ADD_NEW_BOOKMARK_ = 51010;
+  IDC_BOOKMARK_BAR_ADD_TO_BOOKMARKS_BAR_ = 51019;
+  IDC_BOOKMARK_BAR_REMOVE_FROM_BOOKMARKS_BAR_ = 51020;
+  IDC_DEBUG_PRINT_VIEW_TREE_ = 51511;
+  IDC_DEBUG_PRINT_VIEW_TREE_DETAILS_ = 52512;
 }
