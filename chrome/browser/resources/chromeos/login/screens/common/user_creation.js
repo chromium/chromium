@@ -252,6 +252,7 @@ class UserCreation extends UserCreationScreenElementBase {
     if (this.uiStep === UserCreationUIState.ENROLL_TRIAGE ||
         this.uiStep === UserCreationUIState.CHILD_SETUP) {
       this.setUIStep(UserCreationUIState.CREATE);
+      this.selectedUserType = '';
       Oobe.getInstance().setOobeUIState(OOBE_UI_STATE.USER_CREATION);
     } else {
       this.userActed(UserAction.CANCEL);
