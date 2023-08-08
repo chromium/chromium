@@ -6,12 +6,18 @@
 
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/barrier_callback.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/i18n/message_formatter.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
+#include "chrome/browser/notifications/notification_display_service.h"
+#include "chrome/browser/notifications/notification_display_service_factory.h"
+#include "chrome/browser/notifications/notification_handler.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/web_applications/sub_apps_install_dialog_controller.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -23,13 +29,19 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
-#include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/uninstall_result_code.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/message_center/public/cpp/notification.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/notifier_catalogs.h"
+#endif
 
 using blink::mojom::SubAppsService;
 using blink::mojom::SubAppsServiceAddParametersPtr;
@@ -45,6 +57,8 @@ using blink::mojom::SubAppsServiceResultCode;
 namespace web_app {
 
 namespace {
+
+constexpr char kSubAppsUninstallNotifierId[] = "sub_apps_service";
 
 // Resolve string `path` with `origin`, and if the resulting GURL isn't same
 // origin with `origin` then return an error (for which the caller needs to
@@ -86,6 +100,10 @@ AddOptionsFromMojo(
     sub_apps.emplace_back(std::move(manifest_id), std::move(install_url));
   }
   return sub_apps;
+}
+
+Profile* GetProfile(content::RenderFrameHost& render_frame_host) {
+  return Profile::FromBrowserContext(render_frame_host.GetBrowserContext());
 }
 
 WebAppProvider* GetWebAppProvider(content::RenderFrameHost& render_frame_host) {
@@ -408,7 +426,10 @@ void SubAppsServiceImpl::Remove(
 
   auto remove_barrier_callback =
       base::BarrierCallback<SubAppsServiceRemoveResultPtr>(
-          manifest_id_paths.size(), std::move(result_callback));
+          manifest_id_paths.size(),
+          base::BindOnce(&SubAppsServiceImpl::NotifyUninstall,
+                         weak_ptr_factory_.GetWeakPtr(),
+                         std::move(result_callback)));
 
   for (const std::string& manifest_id_path : manifest_id_paths) {
     RemoveSubApp(manifest_id_path, remove_barrier_callback, calling_app_id);
@@ -454,6 +475,61 @@ void SubAppsServiceImpl::RemoveSubApp(
           },
           manifest_id_path)
           .Then(std::move(callback)));
+}
+
+void SubAppsServiceImpl::NotifyUninstall(
+    RemoveCallback result_callback,
+    std::vector<SubAppsServiceRemoveResultPtr> remove_results) {
+  int num_successful_uninstalls = base::ranges::count(
+      remove_results, SubAppsServiceResultCode::kSuccess,
+      [](const auto& result) { return result->result_code; });
+
+  // If any apps were uninstalled, notify the user.
+  if (num_successful_uninstalls > 0) {
+    WebAppRegistrar& registrar =
+        GetWebAppProvider(render_frame_host())->registrar_unsafe();
+    const AppId* parent_app_id = GetAppId(render_frame_host());
+    const std::u16string parent_app_name =
+        base::ASCIIToUTF16(registrar.GetAppShortName(*parent_app_id));
+    const GURL start_url = registrar.GetAppStartUrl(*parent_app_id);
+    const std::u16string title =
+        base::i18n::MessageFormatter::FormatWithNamedArgs(
+            l10n_util::GetStringUTF16(
+                IDS_SUB_APPS_UNINSTALL_NOTIFICATION_TITLE),
+            /*name0=*/"NUM_SUB_APPS", num_successful_uninstalls,
+            /*name1=*/"APP_NAME", parent_app_name);
+    const std::u16string message =
+        base::i18n::MessageFormatter::FormatWithNamedArgs(
+            l10n_util::GetStringUTF16(
+                IDS_SUB_APPS_UNINSTALL_NOTIFICATION_DESCRIPTION),
+            /*name0=*/"APP_NAME", parent_app_name);
+
+    message_center::Notification notification(
+        message_center::NOTIFICATION_TYPE_SIMPLE,
+        kSubAppsUninstallNotificationId, title, message, ui::ImageModel(),
+        /*display_source=*/std::u16string(),
+        /*origin_url=*/start_url,
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+        message_center::NotifierId(
+            message_center::NotifierType::SYSTEM_COMPONENT,
+            kSubAppsUninstallNotifierId,
+            ash::NotificationCatalogName::kSubAppsUninstall),
+#else
+        message_center::NotifierId(
+            message_center::NotifierType::SYSTEM_COMPONENT,
+            kSubAppsUninstallNotifierId),
+#endif
+        message_center::RichNotificationData(),
+        /*delegate=*/nullptr);
+    notification.SetSystemPriority();
+
+    NotificationDisplayServiceFactory::GetForProfile(
+        GetProfile(render_frame_host()))
+        ->Display(NotificationHandler::Type::WEB_PERSISTENT, notification,
+                  /*metadata=*/nullptr);
+  }
+
+  std::move(result_callback).Run(std::move(remove_results));
 }
 
 }  // namespace web_app

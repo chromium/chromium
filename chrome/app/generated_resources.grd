@@ -15272,6 +15272,16 @@ Please help our engineers fix this problem. Tell us what happened right before y
         other {Uninstalling "<ph name="APP_NAME">{APP_NAME}<ex>Citrix</ex></ph>" will also uninstall these apps:}}
     </message>
 
+    <message name="IDS_SUB_APPS_UNINSTALL_NOTIFICATION_TITLE" desc="Title of a notification letting a user know that one or more apps were uninstalled from the user's device by the app that originally installed the app(s). [ICU Syntax]">
+      {NUM_SUB_APPS, plural,
+        =1 {<ph name="APP_NAME">{APP_NAME}<ex>Citrix</ex></ph> uninstalled an app}
+        other {<ph name="APP_NAME">{APP_NAME}<ex>Citrix</ex></ph> uninstalled # apps}}
+    </message>
+
+    <message name="IDS_SUB_APPS_UNINSTALL_NOTIFICATION_DESCRIPTION" desc="Part of a notification letting a user know that one or more apps were uninstalled from the user's device by the app that originally installed the app(s). The description directs the user to that app.">
+      Go to the "<ph name="APP_NAME">{APP_NAME}<ex>Citrix</ex></ph>" app to manage installed and streamed apps
+    </message>
+
     <!-- Speech Recognition -->
     <message name="IDS_UTILITY_PROCESS_SPEECH_RECOGNITION_SERVICE_NAME" desc="The name of the service process used to interface with the Speech On-Demand API.">
       Speech recognition service

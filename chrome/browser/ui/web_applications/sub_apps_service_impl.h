@@ -30,6 +30,9 @@ class SubAppsServiceImpl
  public:
   using AddResultsMojo = std::vector<blink::mojom::SubAppsServiceAddResultPtr>;
 
+  static constexpr char kSubAppsUninstallNotificationId[] =
+      "sub_apps_uninstall_notification";
+
   SubAppsServiceImpl(const SubAppsServiceImpl&) = delete;
   SubAppsServiceImpl& operator=(const SubAppsServiceImpl&) = delete;
   ~SubAppsServiceImpl() override;
@@ -79,6 +82,10 @@ class SubAppsServiceImpl
       base::OnceCallback<void(blink::mojom::SubAppsServiceRemoveResultPtr)>
           remove_barrier_callback,
       const AppId* calling_app_id);
+  void NotifyUninstall(
+      RemoveCallback result_callback,
+      std::vector<blink::mojom::SubAppsServiceRemoveResultPtr> remove_results);
+
   SubAppsServiceImpl(
       content::RenderFrameHost& render_frame_host,
       mojo::PendingReceiver<blink::mojom::SubAppsService> receiver);
