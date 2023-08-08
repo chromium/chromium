@@ -178,6 +178,7 @@
 #else
 #include "chrome/browser/banners/app_banner_manager_desktop.h"
 #include "chrome/browser/companion/core/features.h"
+#include "chrome/browser/picture_in_picture/auto_picture_in_picture_tab_helper.h"
 #include "chrome/browser/preloading/prefetch/zero_suggest_prefetch/zero_suggest_prefetch_tab_helper.h"
 #include "chrome/browser/tab_contents/form_interaction_tab_helper.h"
 #include "chrome/browser/ui/bookmarks/bookmark_tab_helper.h"
@@ -198,6 +199,7 @@
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "components/zoom/zoom_controller.h"
+#include "third_party/blink/public/common/features.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if defined(TOOLKIT_VIEWS)
@@ -516,6 +518,10 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   if (web_app::AreWebAppsUserInstallable(profile)) {
     webapps::MLInstallabilityPromoter::CreateForWebContents(web_contents);
     webapps::AppBannerManagerDesktop::CreateForWebContents(web_contents);
+  }
+  if (base::FeatureList::IsEnabled(
+          blink::features::kMediaSessionEnterPictureInPicture)) {
+    AutoPictureInPictureTabHelper::CreateForWebContents(web_contents);
   }
   BookmarkTabHelper::CreateForWebContents(web_contents);
   BrowserSyncedTabDelegate::CreateForWebContents(web_contents);
