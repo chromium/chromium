@@ -63,31 +63,39 @@ PolicyService::PolicyManagerVector CreatePolicyManagerVector(
     bool should_take_policy_critical_section,
     scoped_refptr<ExternalConstants> external_constants,
     scoped_refptr<PolicyManagerInterface> dm_policy_manager) {
+  // The order of the policy managers:
+  //   1) External constants policy manager (if present).
+  //   2) Group policy manager (Windows only). **
+  //   3) DM policy manager (if present). **
+  //   4) Managed preferences policy manager(macOS only).
+  //   5) The default value policy manager.
+  // ** If `CloudPolicyOverridesPlatformPolicy`, then the DM policy manager
+  //    has a higher priority than the group policy manger.
   PolicyService::PolicyManagerVector managers;
-  if (external_constants) {
-    managers.push_back(base::MakeRefCounted<PolicyManager>(
-        external_constants->GroupPolicies()));
-  }
-
-#if BUILDFLAG(IS_WIN)
-  managers.push_back(base::MakeRefCounted<GroupPolicyManager>(
-      should_take_policy_critical_section,
-      external_constants->IsMachineManaged()));
-#endif
-
   if (dm_policy_manager) {
     managers.push_back(std::move(dm_policy_manager));
   }
-
+#if BUILDFLAG(IS_WIN)
+  auto group_policy_manager = base::MakeRefCounted<GroupPolicyManager>(
+      should_take_policy_critical_section,
+      external_constants->IsMachineManaged());
+  if (group_policy_manager->CloudPolicyOverridesPlatformPolicy()) {
+    managers.push_back(std::move(group_policy_manager));
+  } else {
+    managers.insert(managers.begin(), std::move(group_policy_manager));
+  }
+#endif
+  if (external_constants) {
+    managers.insert(managers.begin(), base::MakeRefCounted<PolicyManager>(
+                                          external_constants->GroupPolicies()));
+  }
 #if BUILDFLAG(IS_MAC)
   // Managed preference policy manager is being deprecated and thus has a lower
   // priority than DM policy manager.
   managers.push_back(CreateManagedPreferencePolicyManager(
       external_constants->IsMachineManaged()));
 #endif
-
   managers.push_back(GetDefaultValuesPolicyManager());
-
   return managers;
 }
 

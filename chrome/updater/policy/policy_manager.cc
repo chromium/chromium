@@ -12,6 +12,7 @@
 #include "base/values.h"
 #include "chrome/updater/policy/manager.h"
 #include "chrome/updater/updater_scope.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 
@@ -204,10 +205,14 @@ absl::optional<std::vector<std::string>> PolicyManager::GetAppsWithPolicy()
   return apps_with_policy;
 }
 
+absl::optional<int> PolicyManager::GetIntegerPolicy(
+    const std::string& key) const {
+  return policies_.FindInt(key);
+}
+
 absl::optional<std::string> PolicyManager::GetStringPolicy(
     const std::string& key) const {
   const std::string* policy = policies_.FindString(key);
-  return policy ? absl::optional<std::string>(*policy) : absl::nullopt;
+  return policy ? absl::make_optional(*policy) : absl::nullopt;
 }
-
 }  // namespace updater

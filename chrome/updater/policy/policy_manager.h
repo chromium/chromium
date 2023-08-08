@@ -10,6 +10,7 @@
 
 #include "base/values.h"
 #include "chrome/updater/policy/manager.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 
@@ -23,6 +24,9 @@ class PolicyManager : public PolicyManagerInterface {
   explicit PolicyManager(base::Value::Dict policies);
   PolicyManager(const PolicyManager&) = delete;
   PolicyManager& operator=(const PolicyManager&) = delete;
+
+  absl::optional<int> GetIntegerPolicy(const std::string& key) const;
+  absl::optional<std::string> GetStringPolicy(const std::string& key) const;
 
   // Overrides for PolicyManagerInterface.
   std::string source() const override;
@@ -55,8 +59,6 @@ class PolicyManager : public PolicyManagerInterface {
   ~PolicyManager() override;
 
  private:
-  absl::optional<std::string> GetStringPolicy(const std::string& key) const;
-
   const base::Value::Dict policies_;
   std::vector<std::string> force_install_apps_;
 };
