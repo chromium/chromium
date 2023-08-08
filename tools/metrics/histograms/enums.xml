@@ -52519,6 +52519,23 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="14" label="CLEAR_SERVER_NETWORK_STATS"/>
 </enum>
 
+<enum name="HttpsFirstModeInterstitialReason">
+  <int value="0" label="kUnknown">Unknown reason</int>
+  <int value="1" label="kPref">
+    The interstitial was shown because the user enabled the UI pref.
+  </int>
+  <int value="2" label="kAdvancedProtection">
+    The interstitial was shown because the user is enrolled in Advanced
+    Protection, which enables HTTPS-First Mode.
+  </int>
+  <int value="3" label="kSiteEngagementHeuristic">
+    The interstitial was shown because of the Site Engagement heuristic.
+  </int>
+  <int value="4" label="kTypicallySecureUserHeuristic">
+    The interstitial was shown because of the Typically Secure User heuristic.
+  </int>
+</enum>
+
 <enum name="HttpsFirstModeNavigationEvent">
   <int value="0" label="kUpgradeAttempted">Upgrade attempted</int>
   <int value="1" label="kUpgradeSucceeded">Upgrade succeeded</int>

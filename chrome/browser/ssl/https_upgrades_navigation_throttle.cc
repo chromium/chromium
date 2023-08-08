@@ -154,6 +154,9 @@ HttpsUpgradesNavigationThrottle::WillStartRequest() {
        tab_helper->has_failed_upgrade(handle->GetURL())) &&
       !handle->GetURL().SchemeIsCryptographic()) {
     if (IsInterstitialEnabled(interstitial_state_)) {
+      security_interstitials::https_only_mode::RecordInterstitialReason(
+          interstitial_state_);
+
       // Mark this as a fallback HTTP navigation and trigger the interstitial.
       tab_helper->set_is_navigation_fallback(true);
       std::unique_ptr<security_interstitials::HttpsOnlyModeBlockingPage>
@@ -207,6 +210,9 @@ HttpsUpgradesNavigationThrottle::WillRedirectRequest() {
   if (tab_helper->is_navigation_fallback() &&
       !handle->GetURL().SchemeIsCryptographic()) {
     if (IsInterstitialEnabled(interstitial_state_)) {
+      security_interstitials::https_only_mode::RecordInterstitialReason(
+          interstitial_state_);
+
       std::unique_ptr<security_interstitials::HttpsOnlyModeBlockingPage>
           blocking_page =
               blocking_page_factory_->CreateHttpsOnlyModeBlockingPage(

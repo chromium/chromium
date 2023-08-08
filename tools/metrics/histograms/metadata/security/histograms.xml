@@ -161,6 +161,16 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Security.HttpsFirstMode.InterstitialReason"
+    enum="HttpsFirstModeInterstitialReason" expires_after="2024-01-14">
+  <owner>meacer@chromium.org</owner>
+  <owner>trusty-transport@chromium.org</owner>
+  <summary>
+    Records the reason why the HTTPS-First Mode interstitial was shown. Only one
+    reason is recorded per interstitial.
+  </summary>
+</histogram>
+
 <histogram name="Security.HttpsFirstMode.NavigationEvent"
     enum="HttpsFirstModeNavigationEvent" expires_after="2024-01-14">
   <owner>cthomp@chromium.org</owner>

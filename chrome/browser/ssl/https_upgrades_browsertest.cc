@@ -56,9 +56,11 @@
 #include "url/url_constants.h"
 
 using security_interstitials::https_only_mode::Event;
+using security_interstitials::https_only_mode::InterstitialReason;
 using security_interstitials::https_only_mode::kEventHistogram;
 using security_interstitials::https_only_mode::
     kEventHistogramWithEngagementHeuristic;
+using security_interstitials::https_only_mode::kInterstitialReasonHistogram;
 using security_interstitials::https_only_mode::
     kNavigationRequestSecurityLevelHistogram;
 using security_interstitials::https_only_mode::
@@ -118,6 +120,17 @@ enum class HttpsUpgradesTestType {
   // Disables HFM pref, HFM with Site Engagement heuristic, HFM for typically
   // secure users and HTTPS Upgrades feature.
   kNeither,
+};
+
+// Stores the number of times the HTTPS-First Mode interstitial is shown for the
+// given reason.
+struct ExpectedInterstitialReasons {
+  // The number of times the interstitial was shown because the HFM pref was
+  // enabled.
+  size_t pref = 0;
+  // The number of times the interstitial was shown because of the Typically
+  // Secure User heuristic.
+  size_t typically_secure_user = 0;
 };
 
 // A very low site engagement score.
@@ -356,6 +369,22 @@ class HttpsUpgradesBrowserTest
         site_engagement::SiteEngagementService::Get(browser()->profile());
     service->ResetBaseScoreForURL(url, score);
     ASSERT_EQ(score, service->GetScore(url));
+  }
+
+  // Checks that the HTTPS-First Mode interstitial has been shown for the
+  // correct reasons.
+  void CheckInterstitialReasonHistogram(
+      const ExpectedInterstitialReasons& expected_reasons) {
+    histograms()->ExpectTotalCount(
+        kInterstitialReasonHistogram,
+        expected_reasons.pref + expected_reasons.typically_secure_user);
+    histograms()->ExpectBucketCount(kInterstitialReasonHistogram,
+                                    static_cast<int>(InterstitialReason::kPref),
+                                    expected_reasons.pref);
+    histograms()->ExpectBucketCount(
+        kInterstitialReasonHistogram,
+        static_cast<int>(InterstitialReason::kTypicallySecureUserHeuristic),
+        expected_reasons.typically_secure_user);
   }
 
   net::EmbeddedTestServer* http_server() { return &http_server_; }
@@ -877,6 +906,7 @@ IN_PROC_BROWSER_TEST_P(
   // Users feature won't show an interstitial here.
   NavigateAndWaitForFallback(contents, http_url);
   EXPECT_EQ(http_url, contents->GetLastCommittedURL());
+  ExpectedInterstitialReasons expected_reasons;
 
   if (IsHttpsFirstModePrefEnabled()) {
     EXPECT_TRUE(
@@ -886,11 +916,14 @@ IN_PROC_BROWSER_TEST_P(
         contents->GetPrimaryMainFrame(),
         "You are seeing this warning because this site does not support "
         "HTTPS."));
+
+    expected_reasons.pref++;
   } else {
     EXPECT_FALSE(
         chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
             contents));
   }
+  CheckInterstitialReasonHistogram(expected_reasons);
 
   // Move the clock forward and revisit HTTP. Profile is old enough now, so
   // Typically Secure Users feature will auto-enable HFM and show an
@@ -919,11 +952,18 @@ IN_PROC_BROWSER_TEST_P(
             ? "You usually connect to sites securely"
             : "You are seeing this warning because this site does not support "
               "HTTPS."));
+
+    if (expect_typically_secure_user_interstitial_text) {
+      expected_reasons.typically_secure_user++;
+    } else {
+      expected_reasons.pref++;
+    }
   } else {
     EXPECT_FALSE(
         chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
             contents));
   }
+  CheckInterstitialReasonHistogram(expected_reasons);
 
   // Move the clock forward a day and revisit HTTP. Should still show HFM
   // interstitial.
@@ -941,11 +981,19 @@ IN_PROC_BROWSER_TEST_P(
             ? "You usually connect to sites securely"
             : "You are seeing this warning because this site does not support "
               "HTTPS."));
+
+    if (expect_typically_secure_user_interstitial_text) {
+      expected_reasons.typically_secure_user++;
+    } else {
+      expected_reasons.pref++;
+    }
+
   } else {
     EXPECT_FALSE(
         chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
             contents));
   }
+  CheckInterstitialReasonHistogram(expected_reasons);
 
   // Disable HFM. Should no longer auto-enable it.
   SetPref(false);
@@ -967,6 +1015,9 @@ IN_PROC_BROWSER_TEST_P(
       contents->GetPrimaryMainFrame(),
       "You are seeing this warning because this site does not support "
       "HTTPS."));
+  expected_reasons.pref++;
+
+  CheckInterstitialReasonHistogram(expected_reasons);
 }
 
 // Regression test for crbug.com/1441276. Sequence of events:
