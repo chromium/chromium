@@ -124,11 +124,13 @@ class ChromeFileSystemAccessPermissionContext
     max_ids_per_origin_ = max_ids;
   }
 
-  // This method is only used in tests when an origin has the
-  // `kFileSystemAccessPersistentPermissions` feature flag enabled.
+  // This method may only be called when the Persistent Permissions feature
+  // flag is enabled.
   void SetOriginHasExtendedPermissionForTesting() {
     // TODO(https://crbug.com/1011533): Make this per-origin when relevant test
     // cases are added.
+    CHECK(base::FeatureList::IsEnabled(
+        features::kFileSystemAccessPersistentPermissions));
     origin_has_extended_permission_for_testing_ = true;
   }
   bool RevokeActiveGrantsForTesting(
@@ -136,9 +138,13 @@ class ChromeFileSystemAccessPermissionContext
       base::FilePath file_path = base::FilePath()) {
     return RevokeActiveGrants(origin, std::move(file_path));
   }
-  std::vector<std::unique_ptr<Object>> GetExtendedGrantedObjectsForTesting(
+  std::vector<std::unique_ptr<Object>> GetExtendedPersistedObjectsForTesting(
       const url::Origin& origin) {
-    return GetExtendedGrantedObjects(origin);
+    return GetExtendedPersistedObjects(origin);
+  }
+  std::vector<std::unique_ptr<Object>> GetDormantPersistedObjectsForTesting(
+      const url::Origin& origin) {
+    return GetDormantPersistedObjects(origin);
   }
 
   enum class GrantType { kRead, kWrite };
@@ -261,8 +267,14 @@ class ChromeFileSystemAccessPermissionContext
                              HandleType handle_type,
                              GrantType grant_type);
 
+  bool HasGrantedActiveGrant(const url::Origin& origin);
+
   // Similar to GetGrantedObjects() but returns only extended grants.
-  std::vector<std::unique_ptr<Object>> GetExtendedGrantedObjects(
+  std::vector<std::unique_ptr<Object>> GetExtendedPersistedObjects(
+      const url::Origin& origin);
+
+  // Similar to GetGrantedObjects() but returns only dormant grants.
+  std::vector<std::unique_ptr<Object>> GetDormantPersistedObjects(
       const url::Origin& origin);
 
   // Revokes the active grants for the given origin, and returns whether any is

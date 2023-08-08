@@ -1192,10 +1192,8 @@ ChromeFileSystemAccessPermissionContext::GetWritePermissionGrant(
 }
 
 // Return extended permission grants for an origin.
-// TODO(crbug.com/1373962): Remove `kFileSystemAccessPersistentPermissions`
-// feature flag checks before launch.
 std::vector<std::unique_ptr<permissions::ObjectPermissionContextBase::Object>>
-ChromeFileSystemAccessPermissionContext::GetExtendedGrantedObjects(
+ChromeFileSystemAccessPermissionContext::GetExtendedPersistedObjects(
     const url::Origin& origin) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -1206,6 +1204,20 @@ ChromeFileSystemAccessPermissionContext::GetExtendedGrantedObjects(
   }
 
   // Return an empty vector since objects represent dormant grants.
+  return {};
+}
+
+// Return dormant permission grants for an origin.
+std::vector<std::unique_ptr<permissions::ObjectPermissionContextBase::Object>>
+ChromeFileSystemAccessPermissionContext::GetDormantPersistedObjects(
+    const url::Origin& origin) {
+  // TODO(crbug.com/1011533): Update this check to cover the scenario where
+  // granted active grants are destroyed during a session, and as a result,
+  // persisted grants that should be considered "shadow" grants will instead be
+  // considered "dormant".
+  if (!OriginHasExtendedPermission(origin) && !HasGrantedActiveGrant(origin)) {
+    return ObjectPermissionContextBase::GetGrantedObjects(origin);
+  }
   return {};
 }
 
@@ -1791,7 +1803,7 @@ bool ChromeFileSystemAccessPermissionContext::OriginHasReadAccess(
 
   // Check if an origin has read access granted via extended permissions.
   std::vector<std::unique_ptr<Object>> extended_grant_objects =
-      GetExtendedGrantedObjects(origin);
+      GetExtendedPersistedObjects(origin);
   if (extended_grant_objects.empty()) {
     return false;
   }
@@ -1817,7 +1829,7 @@ bool ChromeFileSystemAccessPermissionContext::OriginHasWriteAccess(
 
   // Check if an origin has write access granted via extended permissions.
   std::vector<std::unique_ptr<Object>> extended_grant_objects =
-      GetExtendedGrantedObjects(origin);
+      GetExtendedPersistedObjects(origin);
   if (extended_grant_objects.empty()) {
     return false;
   }
@@ -2043,6 +2055,29 @@ bool ChromeFileSystemAccessPermissionContext::HasExtendedPermission(
   return true;
 }
 
+// Determines if a given origin has active grants.
+bool ChromeFileSystemAccessPermissionContext::HasGrantedActiveGrant(
+    const url::Origin& origin) {
+  auto origin_it = active_permissions_map_.find(origin);
+  if (origin_it == active_permissions_map_.end()) {
+    return false;
+  }
+  OriginState& origin_state = origin_it->second;
+  return (base::ranges::any_of(origin_state.read_grants,
+                               [&](const auto& grant) {
+                                 return grant.second->GetStatus() ==
+                                        PermissionStatus::GRANTED;
+                               }) ||
+
+          base::ranges::any_of(origin_state.write_grants,
+                               [&](const auto& grant) {
+                                 return grant.second->GetStatus() ==
+                                        PermissionStatus::GRANTED;
+                               })
+
+  );
+}
+
 void ChromeFileSystemAccessPermissionContext::PermissionGrantDestroyed(
     PermissionGrantImpl* grant) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -2054,10 +2089,10 @@ void ChromeFileSystemAccessPermissionContext::PermissionGrantDestroyed(
   auto& grants = grant->type() == GrantType::kRead ? it->second.read_grants
                                                    : it->second.write_grants;
   auto grant_it = grants.find(grant->GetPath());
-  // Any non-denied permission grants should have still been in our grants list.
-  // If this invariant is violated we would have permissions that might be
-  // granted but won't be visible in any UI because the permission context isn't
-  // tracking them anymore.
+  // Any non-denied permission grants should have still been in our grants
+  // list. If this invariant is violated we would have permissions that might
+  // be granted but won't be visible in any UI because the permission context
+  // isn't tracking them anymore.
   if (grant_it == grants.end()) {
     DCHECK_EQ(PermissionStatus::DENIED, grant->GetStatus());
     return;
