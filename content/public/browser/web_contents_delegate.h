@@ -123,7 +123,8 @@ class CONTENT_EXPORT WebContentsDelegate {
   // OpenURL() for these cases which does it for you).
 
   // Returns the WebContents the URL is opened in, or nullptr if the URL wasn't
-  // opened immediately.
+  // opened immediately. Note that the URL might be opened in another context
+  // when a nullptr is returned.
   virtual WebContents* OpenURLFromTab(WebContents* source,
                                       const OpenURLParams& params);
 

@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/file_select_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -17,6 +18,10 @@
 #include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/url_handler.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 using content::BrowserContext;
 using content::OpenURLParams;
@@ -30,15 +35,22 @@ ChromeWebContentsHandler::~ChromeWebContentsHandler() {
 
 // Opens a new URL inside |source|. |context| is the browser context that the
 // browser should be owned by. |params| contains the URL to open and various
-// attributes such as disposition. On return |out_new_contents| contains the
-// WebContents the URL is opened in. Returns the web contents opened by the
-// browser.
+// attributes such as disposition. Returns the WebContents opened by the browser
+// on success. Otherwise, returns nullptr. In ChromeOS Ash, the URL might be
+// opened in Lacros. In that case, this function returns nullptr.
 WebContents* ChromeWebContentsHandler::OpenURLFromTab(
     content::BrowserContext* context,
     WebContents* source,
     const OpenURLParams& params) {
   if (!context)
     return nullptr;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Try to intercept the request and open the URL with Lacros.
+  if (ash::TryOpenUrl(params.url, params.disposition)) {
+    return nullptr;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   Profile* profile = Profile::FromBrowserContext(context);
 

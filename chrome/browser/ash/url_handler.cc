@@ -58,6 +58,11 @@ bool TryOpenUrl(const GURL& url,
     return false;
   }
 
+  if (disposition == WindowOpenDisposition::CURRENT_TAB) {
+    // We don't intercept CURRENT_TAB navigations.
+    return false;
+  }
+
   if (disposition == WindowOpenDisposition::NEW_POPUP) {
     // Some applications still open popup windows that need to stay in Ash:
     // - Gallery (chrome://media-app), see OPEN_IN_SANDBOXED_VIEWER in
