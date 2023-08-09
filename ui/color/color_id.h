@@ -246,7 +246,6 @@
   E_CPONLY(kColorBubbleBorder) \
   E_CPONLY(kColorBubbleBorderShadowLarge) \
   E_CPONLY(kColorBubbleBorderShadowSmall) \
-  E_CPONLY(kColorBubbleBorderWhenShadowPresent) \
   E_CPONLY(kColorBubbleFooterBackground) \
   E_CPONLY(kColorBubbleFooterBorder) \
   E_CPONLY(kColorButtonFeatureAttentionHighlight) \

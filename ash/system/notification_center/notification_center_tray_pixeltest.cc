@@ -51,8 +51,7 @@ TEST_F(NotificationCenterTrayPixelTest,
 
   EXPECT_TRUE(test_api()->GetTray()->GetVisible());
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "check_view",
-      /*revision_number=*/1, test_api()->GetTray()));
+      "check_view", /*revision_number=*/2, test_api()->GetTray()));
 }
 
 TEST_F(NotificationCenterTrayPixelTest,

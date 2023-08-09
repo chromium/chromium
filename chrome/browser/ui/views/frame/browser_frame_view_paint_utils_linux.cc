@@ -43,9 +43,7 @@ void PaintRestoredFrameBorderLinux(gfx::Canvas& canvas,
     inset_rect.inset(one_pixel, one_pixel);
 
   cc::PaintFlags flags;
-  flags.setColor(color_provider->GetColor(
-      showing_shadow ? ui::kColorBubbleBorderWhenShadowPresent
-                     : ui::kColorBubbleBorder));
+  flags.setColor(color_provider->GetColor(ui::kColorBubbleBorder));
   flags.setAntiAlias(true);
   if (showing_shadow)
     flags.setLooper(gfx::CreateShadowDrawLooper(shadow_values));
