@@ -13,12 +13,14 @@
     </settings-toggle-button>
     <template is="dom-if" if="[[isAltClickAndSixPackCustomizationEnabled]]">
       <div id="simulateRightClickContainer" class="settings-box">
-        <div id="simulateRightClickLabel" class="start settings-box-text">
+        <div id="simulateRightClickLabel" aria-hidden="true"
+            class="start settings-box-text">
           $i18n{touchpadSimulateRightClickLabel}
         </div>
         <settings-dropdown-menu id="simulateRightClickDropdown"
-            label="[[touchpadSimulateRightClickLabel]]"
+            label="$i18n{touchpadSimulateRightClickLabel}"
             pref="{{simulateRightClickPref}}"
+            aria-describedby="touchpadName"
             menu-options="[[simulateRightClickOptions]]">
         </settings-dropdown-menu>
       </div>
