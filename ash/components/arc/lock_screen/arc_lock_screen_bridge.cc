@@ -9,6 +9,7 @@
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "base/functional/bind.h"
 #include "base/memory/singleton.h"
+#include "base/trace_event/trace_event.h"
 #include "components/session_manager/core/session_manager.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 
@@ -70,6 +71,7 @@ void ArcLockScreenBridge::OnSessionStateChanged() {
 }
 
 void ArcLockScreenBridge::SendDeviceLockedState() {
+  TRACE_EVENT0("ui", "ArcLockScreenBridge::SendDeviceLockedState");
   mojom::LockScreenInstance* lock_screen_instance = ARC_GET_INSTANCE_FOR_METHOD(
       arc_bridge_service_->lock_screen(), SetDeviceLocked);
   if (!lock_screen_instance)
