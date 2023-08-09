@@ -29,7 +29,9 @@ class WebBundleSigner {
     kNoPublicKeySignatureStackEntryAttribute,
     kAdditionalSignatureStackEntryAttribute,
     kAdditionalSignatureStackEntryElement,
-    kMaxValue = kAdditionalSignatureStackEntryElement
+    kInvalidIntegrityBlockStructure,
+    kInvalidVersion,
+    kMaxValue = kInvalidVersion
   };
 
   using ErrorsForTesting = base::EnumSet<ErrorForTesting,
@@ -60,7 +62,8 @@ class WebBundleSigner {
 
   // Creates an integrity block with the given signature stack entries.
   static cbor::Value CreateIntegrityBlock(
-      const cbor::Value::ArrayValue& signature_stack);
+      const cbor::Value::ArrayValue& signature_stack,
+      ErrorsForTesting errors_for_testing = {});
 
   static cbor::Value CreateIntegrityBlockForBundle(
       base::span<const uint8_t> unsigned_bundle,

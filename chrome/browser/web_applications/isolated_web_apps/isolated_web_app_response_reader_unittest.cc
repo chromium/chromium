@@ -29,7 +29,6 @@ namespace {
 using ::testing::Eq;
 using ::testing::IsFalse;
 using ::testing::IsTrue;
-using ::testing::UnorderedElementsAre;
 
 class IsolatedWebAppResponseReaderTest : public ::testing::Test {
  protected:

@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/strings/string_piece.h"
+#include "base/strings/string_piece_forward.h"
 #include "base/version.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "components/web_package/test_support/signed_web_bundles/web_bundle_signer.h"
@@ -35,8 +36,6 @@ constexpr base::StringPiece kTestManifest = R"({
       ]
     })";
 
-constexpr base::StringPiece kTestIconUrl = "/256x256-green.png";
-
 std::string GetTestIconInString() {
   SkBitmap icon_bitmap = CreateSquareIcon(256, SK_ColorGREEN);
   SkDynamicMemoryWStream stream;
@@ -60,13 +59,14 @@ TestSignedWebBundle::TestSignedWebBundle(TestSignedWebBundle&&) = default;
 TestSignedWebBundle::~TestSignedWebBundle() = default;
 
 TestSignedWebBundleBuilder::TestSignedWebBundleBuilder(
-    web_package::WebBundleSigner::KeyPair key_pair)
-    : key_pair_(key_pair) {}
+    web_package::WebBundleSigner::KeyPair key_pair,
+    web_package::WebBundleSigner::ErrorsForTesting errors_for_testing)
+    : key_pair_(key_pair), errors_for_testing_(errors_for_testing) {}
 
 void TestSignedWebBundleBuilder::AddManifest(
     base::StringPiece manifest_string) {
   builder_.AddExchange(
-      "/manifest.webmanifest",
+      kTestManifestUrl,
       {{":status", "200"}, {"content-type", "application/manifest+json"}},
       manifest_string);
 }
@@ -77,12 +77,20 @@ void TestSignedWebBundleBuilder::AddPngImage(base::StringPiece url,
                        image_string);
 }
 
-TestSignedWebBundle TestSignedWebBundleBuilder::Build(
-    TestSignedWebBundleBuilderOptions build_options) {
+void TestSignedWebBundleBuilder::AddHtml(base::StringPiece url,
+                                         base::StringPiece html_content) {
+  builder_.AddExchange(url, {{":status", "200"}, {"content-type", "text/html"}},
+                       html_content);
+}
+
+void TestSignedWebBundleBuilder::AddPrimaryUrl(base::StringPiece url) {
+  builder_.AddPrimaryURL(url);
+}
+
+TestSignedWebBundle TestSignedWebBundleBuilder::Build() {
   return TestSignedWebBundle(
       web_package::WebBundleSigner::SignBundle(
-          builder_.CreateBundle(), {key_pair_},
-          build_options.errors_for_testing),
+          builder_.CreateBundle(), {key_pair_}, errors_for_testing_),
       web_package::SignedWebBundleId::CreateForEd25519PublicKey(
           key_pair_.public_key));
 }
@@ -90,11 +98,32 @@ TestSignedWebBundle TestSignedWebBundleBuilder::Build(
 TestSignedWebBundle TestSignedWebBundleBuilder::BuildDefault(
     TestSignedWebBundleBuilderOptions build_options) {
   TestSignedWebBundleBuilder builder = TestSignedWebBundleBuilder(
-      web_package::WebBundleSigner::KeyPair(kTestPublicKey, kTestPrivateKey));
+      web_package::WebBundleSigner::KeyPair(kTestPublicKey, kTestPrivateKey),
+      build_options.errors_for_testing);
+
+  if (build_options.primary_url != "") {
+    builder.AddPrimaryUrl(build_options.primary_url);
+  }
+
+  const bool has_valid_base_url = build_options.base_url.is_valid();
+
   builder.AddManifest(base::ReplaceStringPlaceholders(
-      kTestManifest, {build_options.version.GetString()}, nullptr));
-  builder.AddPngImage(kTestIconUrl, GetTestIconInString());
-  return builder.Build(build_options);
+      kTestManifest, {build_options.version.GetString()},
+      /*offsets=*/nullptr));
+
+  builder.AddPngImage(has_valid_base_url
+                          ? build_options.base_url.Resolve(kTestIconUrl).spec()
+                          : kTestIconUrl,
+                      GetTestIconInString());
+
+  if (!build_options.html_content.empty()) {
+    builder.AddHtml(has_valid_base_url
+                        ? build_options.base_url.Resolve(kTestHtmlUrl).spec()
+                        : kTestHtmlUrl,
+                    build_options.html_content);
+  }
+
+  return builder.Build();
 }
 
 }  // namespace web_app

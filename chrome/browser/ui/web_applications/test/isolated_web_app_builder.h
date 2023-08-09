@@ -12,6 +12,7 @@
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/web_package/test_support/signed_web_bundles/web_bundle_signer.h"
 #include "components/web_package/web_bundle_builder.h"
+#include "url/gurl.h"
 
 namespace web_app {
 
@@ -48,6 +49,9 @@ struct TestSignedWebBundle {
 
 struct TestSignedWebBundleBuilderOptions {
   base::Version version = base::Version("1.0.0");
+  base::StringPiece primary_url = "";
+  GURL base_url;
+  base::StringPiece html_content = "";
   web_package::WebBundleSigner::ErrorsForTesting errors_for_testing = {};
 };
 
@@ -55,7 +59,12 @@ class TestSignedWebBundleBuilder {
  public:
   explicit TestSignedWebBundleBuilder(
       web_package::WebBundleSigner::KeyPair key_pair =
-          web_package::WebBundleSigner::KeyPair::CreateRandom());
+          web_package::WebBundleSigner::KeyPair::CreateRandom(),
+      web_package::WebBundleSigner::ErrorsForTesting errors_for_testing = {});
+
+  static constexpr base::StringPiece kTestManifestUrl = "/manifest.webmanifest";
+  static constexpr base::StringPiece kTestIconUrl = "/256x256-green.png";
+  static constexpr base::StringPiece kTestHtmlUrl = "/index.html";
 
   // Adds a manifest type payload to the bundle.
   void AddManifest(base::StringPiece manifest_string);
@@ -63,13 +72,20 @@ class TestSignedWebBundleBuilder {
   // Adds a image/PNG type payload to the bundle.
   void AddPngImage(base::StringPiece url, base::StringPiece image_string);
 
-  TestSignedWebBundle Build(
-      TestSignedWebBundleBuilderOptions build_options = {});
+  // Adds a text/html type payload to the bundle.
+  void AddHtml(base::StringPiece url, base::StringPiece html_content);
+
+  // Adds the primary url to the bundle. DO NOT use this for IWAs - primary URLs
+  // are not supported in IWAs.
+  void AddPrimaryUrl(base::StringPiece url);
+
+  TestSignedWebBundle Build();
   static TestSignedWebBundle BuildDefault(
       TestSignedWebBundleBuilderOptions build_options = {});
 
  private:
   web_package::WebBundleSigner::KeyPair key_pair_;
+  web_package::WebBundleSigner::ErrorsForTesting errors_for_testing_;
   web_package::WebBundleBuilder builder_;
 };
 

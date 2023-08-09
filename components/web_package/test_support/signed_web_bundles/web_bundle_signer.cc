@@ -14,16 +14,23 @@
 namespace web_package {
 
 cbor::Value WebBundleSigner::CreateIntegrityBlock(
-    const cbor::Value::ArrayValue& signature_stack) {
+    const cbor::Value::ArrayValue& signature_stack,
+    ErrorsForTesting errors_for_testing) {
   cbor::Value::ArrayValue integrity_block;
   // magic bytes
   integrity_block.emplace_back(cbor::Value::BinaryValue(
       {0xF0, 0x9F, 0x96, 0x8B, 0xF0, 0x9F, 0x93, 0xA6}));
   // version
   integrity_block.emplace_back(
-      cbor::Value::BinaryValue({'1', 'b', '\0', '\0'}));
+      errors_for_testing.Has(ErrorForTesting::kInvalidVersion)
+          ? cbor::Value::BinaryValue({'1', 'p', '\0', '\0'})  // Invalid.
+          : cbor::Value::BinaryValue({'1', 'b', '\0', '\0'}));
   // signature stack
   integrity_block.emplace_back(signature_stack);
+  if (errors_for_testing.Has(
+          ErrorForTesting::kInvalidIntegrityBlockStructure)) {
+    integrity_block.emplace_back(signature_stack);
+  }
 
   return cbor::Value(integrity_block);
 }
@@ -91,8 +98,8 @@ cbor::Value WebBundleSigner::CreateIntegrityBlockForBundle(
   std::vector<cbor::Value> signature_stack;
   for (const KeyPair& key_pair : key_pairs) {
     // Create an integrity block with all previous signature stack entries.
-    absl::optional<std::vector<uint8_t>> integrity_block =
-        cbor::Writer::Write(CreateIntegrityBlock(signature_stack));
+    absl::optional<std::vector<uint8_t>> integrity_block = cbor::Writer::Write(
+        CreateIntegrityBlock(signature_stack, errors_for_testing));
 
     // Create the attributes map for the current signature stack entry.
     absl::optional<std::vector<uint8_t>> attributes =
@@ -120,7 +127,7 @@ cbor::Value WebBundleSigner::CreateIntegrityBlockForBundle(
         key_pair.public_key, signature, errors_for_testing));
   }
 
-  return CreateIntegrityBlock(signature_stack);
+  return CreateIntegrityBlock(signature_stack, errors_for_testing);
 }
 
 std::vector<uint8_t> WebBundleSigner::SignBundle(
