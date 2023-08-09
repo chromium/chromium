@@ -61,6 +61,9 @@ class NavigationPredictor
   void ReportAnchorElementsLeftViewport(
       std::vector<blink::mojom::AnchorElementLeftViewportPtr> elements)
       override;
+  void ReportAnchorElementPointerDataOnHoverTimerFired(
+      blink::mojom::AnchorElementPointerDataOnHoverTimerFiredPtr pointer_data)
+      override;
   void ReportAnchorElementPointerOver(
       blink::mojom::AnchorElementPointerOverPtr pointer_over_event) override;
   void ReportAnchorElementPointerOut(

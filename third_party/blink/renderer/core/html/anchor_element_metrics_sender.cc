@@ -67,6 +67,21 @@ bool AnchorElementMetricsSender::HasAnchorElementMetricsSender(
          url.IsValid() && url.ProtocolIs("https");
 }
 
+void AnchorElementMetricsSender::
+    MaybeReportAnchorElementPointerDataOnHoverTimerFired(
+        uint32_t anchor_id,
+        mojom::blink::AnchorElementPointerDataPtr pointer_data) {
+  DCHECK(base::FeatureList::IsEnabled(features::kNavigationPredictor));
+  if (!AssociateInterface()) {
+    return;
+  }
+  auto msg = mojom::blink::AnchorElementPointerDataOnHoverTimerFired::New();
+  msg->anchor_id = anchor_id;
+  msg->pointer_data = std::move(pointer_data);
+  metrics_host_->ReportAnchorElementPointerDataOnHoverTimerFired(
+      std::move(msg));
+}
+
 void AnchorElementMetricsSender::MaybeReportClickedMetricsOnClick(
     const HTMLAnchorElement& anchor_element) {
   DCHECK(base::FeatureList::IsEnabled(features::kNavigationPredictor));

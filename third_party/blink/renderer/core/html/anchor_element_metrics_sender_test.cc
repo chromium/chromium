@@ -14,10 +14,12 @@
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer.h"
+#include "third_party/blink/renderer/core/loader/anchor_element_interaction_tracker.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
+#include "third_party/blink/renderer/platform/scheduler/test/fake_task_runner.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support_with_mock_scheduler.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -56,6 +58,12 @@ class MockAnchorElementMetricsHost
     }
   }
 
+  void ReportAnchorElementPointerDataOnHoverTimerFired(
+      mojom::blink::AnchorElementPointerDataOnHoverTimerFiredPtr pointer_data)
+      override {
+    pointer_data_on_hover_.emplace_back(std::move(pointer_data));
+  }
+
   void ReportAnchorElementPointerOver(
       mojom::blink::AnchorElementPointerOverPtr pointer_over_event) override {
     pointer_over_.emplace_back(std::move(pointer_over_event));
@@ -91,6 +99,8 @@ class MockAnchorElementMetricsHost
   std::vector<mojom::blink::AnchorElementPointerOutPtr>
       pointer_hover_dwell_time_;
   std::vector<mojom::blink::AnchorElementPointerDownPtr> pointer_down_;
+  std::vector<mojom::blink::AnchorElementPointerDataOnHoverTimerFiredPtr>
+      pointer_data_on_hover_;
   std::vector<mojom::blink::AnchorElementMetricsPtr> elements_;
   std::set<int32_t> anchor_ids_;
 
@@ -536,6 +546,49 @@ TEST_F(AnchorElementMetricsSenderTest, AnchorElementClicked) {
   // The second page load has no anchor elements and therefore no host is bound.
   EXPECT_EQ(1u, hosts_.size());
   EXPECT_EQ(1u, mock_host->clicks_.size());
+}
+
+TEST_F(AnchorElementMetricsSenderTest,
+       ReportAnchorElementPointerDataOnHoverTimerFired) {
+  String source("https://example.com/p1");
+  SimRequest main_resource(source, "text/html");
+  LoadURL(source);
+  main_resource.Complete(R"HTML(
+    <a href='https://anchor1.com/'>
+      <div style='padding: 0px; width: 400px; height: 400px;'></div>
+    </a>
+  )HTML");
+
+  auto task_runner = base::MakeRefCounted<scheduler::FakeTaskRunner>();
+  GetDocument().GetAnchorElementInteractionTracker()->SetTaskRunnerForTesting(
+      task_runner, task_runner->GetMockTickClock());
+
+  constexpr gfx::PointF origin{200, 200};
+  constexpr gfx::Vector2dF velocity{20, 20};
+  constexpr base::TimeDelta timestep = base::Milliseconds(20);
+  for (base::TimeDelta t;
+       t <= 2 * AnchorElementInteractionTracker::GetHoverDwellTime();
+       t += timestep) {
+    gfx::PointF coordinates =
+        origin + gfx::ScaleVector2d(velocity, t.InSecondsF());
+    WebMouseEvent event(WebInputEvent::Type::kMouseMove, coordinates,
+                        coordinates, WebPointerProperties::Button::kNoButton, 0,
+                        WebInputEvent::kNoModifiers,
+                        WebInputEvent::GetStaticTimeStampForTests());
+    GetDocument().GetFrame()->GetEventHandler().HandleMouseMoveEvent(
+        event, Vector<WebMouseEvent>(), Vector<WebMouseEvent>());
+    task_runner->AdvanceTimeAndRun(timestep);
+  }
+
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(1u, hosts_.size());
+  const auto& mock_host = hosts_[0];
+  EXPECT_EQ(1u, mock_host->pointer_data_on_hover_.size());
+  EXPECT_TRUE(
+      mock_host->pointer_data_on_hover_[0]->pointer_data->is_mouse_pointer);
+  EXPECT_NEAR(
+      20.0 * std::sqrt(2.0),
+      mock_host->pointer_data_on_hover_[0]->pointer_data->mouse_velocity, 0.5);
 }
 
 }  // namespace blink

@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/events/pointer_event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/html/anchor_element_metrics.h"
 #include "third_party/blink/renderer/core/html/anchor_element_metrics_sender.h"
 #include "third_party/blink/renderer/core/pointer_type_names.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
@@ -295,6 +296,7 @@ void AnchorElementInteractionTracker::OnPointerEvent(
         url, HoverEventCandidate{
                  .is_mouse =
                      pointer_event.pointerType() == pointer_type_names::kMouse,
+                 .anchor_id = AnchorElementId(*anchor),
                  .timestamp = clock_->NowTicks() + GetHoverDwellTime()});
     if (!hover_timer_.IsActive()) {
       hover_timer_.StartOneShot(GetHoverDwellTime(), FROM_HERE);
@@ -317,15 +319,26 @@ void AnchorElementInteractionTracker::HoverTimerFired(TimerBase*) {
     // Check whether pointer hovered long enough on the link to send the
     // PointerHover event to interaction host.
     if (now >= hover_event_candidate.value.timestamp) {
+      auto pointer_data = mojom::blink::AnchorElementPointerData::New(
+          /*is_mouse_pointer=*/hover_event_candidate.value.is_mouse,
+          /*mouse_velocity=*/
+          mouse_motion_estimator_->GetMouseVelocity().Length(),
+          /*mouse_acceleration=*/
+          mouse_motion_estimator_->GetMouseTangentialAcceleration());
+
+      Document& top_document = GetDocument()->TopDocument();
+      if (hover_event_candidate.value.is_mouse &&
+          AnchorElementMetricsSender::HasAnchorElementMetricsSender(
+              top_document)) {
+        AnchorElementMetricsSender::From(top_document)
+            ->MaybeReportAnchorElementPointerDataOnHoverTimerFired(
+                hover_event_candidate.value.anchor_id, pointer_data->Clone());
+      }
+
       interaction_host_->OnPointerHover(
-          /*target=*/hover_event_candidate.key,
-          mojom::blink::AnchorElementPointerData::New(
-              /*is_mouse_pointer=*/hover_event_candidate.value.is_mouse,
-              /*mouse_velocity=*/
-              mouse_motion_estimator_->GetMouseVelocity().Length(),
-              /*mouse_acceleration=*/
-              mouse_motion_estimator_->GetMouseTangentialAcceleration()));
+          /*target=*/hover_event_candidate.key, std::move(pointer_data));
       to_be_erased.push_back(hover_event_candidate.key);
+
       continue;
     }
     // Update next fire time

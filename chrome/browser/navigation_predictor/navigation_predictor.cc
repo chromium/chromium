@@ -292,6 +292,24 @@ void NavigationPredictor::ReportAnchorElementsLeftViewport(
   }
 }
 
+void NavigationPredictor::ReportAnchorElementPointerDataOnHoverTimerFired(
+    blink::mojom::AnchorElementPointerDataOnHoverTimerFiredPtr msg) {
+  if (!msg->pointer_data || !msg->pointer_data->is_mouse_pointer) {
+    return;
+  }
+
+  auto& user_interactions =
+      GetNavigationPredictorMetricsDocumentData().GetUserInteractionsData();
+  auto index_it = tracked_anchor_id_to_index_.find(AnchorId(msg->anchor_id));
+  if (index_it == tracked_anchor_id_to_index_.end()) {
+    return;
+  }
+
+  auto& user_interaction = user_interactions[index_it->second];
+  user_interaction.mouse_velocity = msg->pointer_data->mouse_velocity;
+  user_interaction.mouse_acceleration = msg->pointer_data->mouse_acceleration;
+}
+
 void NavigationPredictor::ReportAnchorElementPointerOver(
     blink::mojom::AnchorElementPointerOverPtr pointer_over_event) {
   auto& user_interactions =
@@ -385,6 +403,9 @@ void NavigationPredictor::ReportAnchorElementsEnteredViewport(
       continue;
     }
     auto& user_interaction = user_interactions[index_it->second];
+    if (!user_interaction.is_in_viewport) {
+      user_interaction.entered_viewport_count++;
+    }
     user_interaction.is_in_viewport = true;
     user_interaction.last_navigation_start_to_entered_viewport =
         element->navigation_start_to_entered_viewport;

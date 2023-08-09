@@ -105,6 +105,7 @@ class BLINK_EXPORT AnchorElementInteractionTracker
   // if not canceled.
   struct HoverEventCandidate {
     bool is_mouse;
+    uint32_t anchor_id;
     base::TimeTicks timestamp;
   };
   HashMap<KURL, HoverEventCandidate> hover_event_candidates_;
