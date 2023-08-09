@@ -100,6 +100,7 @@
 <translation id="2621115761605608342">‏السماح لموقع إلكتروني معيّن بتشغيل JavaScript</translation>
 <translation id="2653659639078652383">إرسال</translation>
 <translation id="2677748264148917807">الخروج</translation>
+<translation id="2678468611080193228">جرِّب السماح مؤقتًا باستخدام ملفات تعريف الارتباط التابعة لجهات خارجية. هذا يعني أنّك ستحظى بمستوى حماية أقل، غير أنّ ميزات الموقع الإلكتروني ستعمل غالبًا.</translation>
 <translation id="2687403674020088961">حظر كل ملفات تعريف الارتباط (لا ننصح بهذا الخيار)</translation>
 <translation id="2713106313042589954">إيقاف الكاميرا</translation>
 <translation id="2717722538473713889">عنوان البريد الإلكتروني</translation>
@@ -139,6 +140,7 @@
 <translation id="3362437373201486687">جارٍ البحث عن أجهزة تتضمّن بلوتوث.</translation>
 <translation id="3386292677130313581">السؤال قبل السماح للمواقع الإلكترونية بمعرفة الموقع الجغرافي (موصى به)</translation>
 <translation id="3403537308306431953">%% <ph name="ZOOM_LEVEL" /></translation>
+<translation id="344449859752187052">ملفات تعريف الارتباط التابعة لجهات خارجية محظورة.</translation>
 <translation id="3521663503435878242">المواقع الإلكترونية ضِمن <ph name="DOMAIN" /></translation>
 <translation id="3538390592868664640">منع المواقع الإلكترونية من إنشاء خريطة ثلاثية الأبعاد للبيئة المحيطة بك أو تتبُّع موضع الكاميرا</translation>
 <translation id="3544058026430919413">يمكن للشركات تحديد مجموعة مواقع إلكترونية يمكنها استخدام ملفات تعريف الارتباط لمشاركة نشاطك في المجموعة. يكون هذا الإعداد غير مفعّل في "وضع التصفّح المتخفي".</translation>
@@ -213,6 +215,7 @@
 <translation id="4962975101802056554">إبطال جميع الأذونات للجهاز</translation>
 <translation id="497421865427891073">انتقال للأمام</translation>
 <translation id="4976702386844183910">تاريخ آخر زيارة للموقع الإلكتروني: <ph name="DATE" /></translation>
+<translation id="4985206706500620449">لقد سمحت باستخدام ملفات تعريف الارتباط التابعة لجهات خارجية في هذا الموقع الإلكتروني.</translation>
 <translation id="4994033804516042629">لم يتم العثور على أي جهات اتصال</translation>
 <translation id="4996978546172906250">المشاركة عن طريق</translation>
 <translation id="5001526427543320409">ملفات تعريف الارتباط التابعة لجهات خارجية</translation>
@@ -257,6 +260,7 @@
 <translation id="5677928146339483299">محظور</translation>
 <translation id="5689516760719285838">الموقع الجغرافي</translation>
 <translation id="5690795753582697420">‏تم إيقاف الكاميرا في إعدادات Android.</translation>
+<translation id="5700761515355162635">ملفات تعريف الارتباط التابعة لجهات خارجية مسموح بها.</translation>
 <translation id="5706552988683188916">يؤدي هذا الإجراء إلى حذف ملفات تعريف الارتباط وبيانات الموقع الإلكتروني الأخرى لـ "<ph name="WEBSITE" />".</translation>
 <translation id="5719847187258001597">سيؤدي هذا الإجراء إلى محو جميع البيانات وملفات تعريف الارتباط المُخزّنة من خلال <ph name="ORIGIN" /> أو من خلال التطبيق على الشاشة الرئيسية.</translation>
 <translation id="5723967018671998714">يتم حظر ملفات تعريف الارتباط التابعة لجهات خارجية في وضع التصفُّح المتخفي.</translation>
@@ -304,6 +308,7 @@
 <translation id="6467852467360539617">محو البيانات وإعادة ضبط الأذونات</translation>
 <translation id="6500423977866688905">تفعيل الإعداد "العرض المخصص للجهاز الجوّال" عند صغر حجم النافذة</translation>
 <translation id="6527303717912515753">مشاركة</translation>
+<translation id="652937045869844725">جرِّب السماح باستخدام ملفات تعريف الارتباط التابعة لجهات خارجية. هذا يعني أنّك ستحظى بمستوى حماية أقل، غير أنّ ميزات الموقع الإلكتروني ستعمل غالبًا.</translation>
 <translation id="6545864417968258051">البحث عن بلوتوث</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{تم حظر <ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> وإذن واحد (<ph name="NUM_MORE" />) آخر.}zero{تم حظر <ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> و<ph name="NUM_MORE" /> إذن آخر.}two{تم حظر <ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> وإذنَين (<ph name="NUM_MORE" />) آخرَين.}few{تم حظر <ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> و<ph name="NUM_MORE" /> أذونات أخرى.}many{تم حظر <ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> و<ph name="NUM_MORE" /> إذنًا آخر.}other{تم حظر <ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> و<ph name="NUM_MORE" /> إذن آخر.}}</translation>
 <translation id="6554732001434021288">تمّت زيارة الموقع الإلكتروني آخر مرّة قبل <ph name="NUM_DAYS" /> يوم.</translation>
@@ -437,6 +442,7 @@
 <translation id="8736193154595564524">{NUM_SELECTED,plural, =1{موقع إلكتروني واحد مسموح به}zero{‫# موقع إلكتروني مسموح به}two{موقعان إلكترونيان مسموح بهما}few{‫# مواقع إلكترونية مسموح بها}many{‫# موقعًا إلكترونيًا مسموح به}other{‫# موقع إلكتروني مسموح به}}</translation>
 <translation id="8737217482364735741">سيؤدي هذا الإجراء إلى محو جميع البيانات وملفات تعريف الارتباط المُخزّنة من خلال <ph name="ORIGIN" />.</translation>
 <translation id="8751914237388039244">اختيار صورة</translation>
+<translation id="8800034312320686233">هل الموقع الإلكتروني لا يعمل؟</translation>
 <translation id="8801436777607969138">‏حظر JavaScript لموقع إلكتروني مُعيَّن.</translation>
 <translation id="8803526663383843427">عندما يكون الإعداد مفعَّلاً</translation>
 <translation id="8805385115381080995">يكون التصفُّح أسرع لأنّ المواقع الإلكترونية قد لا تطلب منك إثبات أنّك مستخدِم حقيقي.</translation>

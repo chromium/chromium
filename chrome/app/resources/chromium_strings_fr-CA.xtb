@@ -74,7 +74,6 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="2592940277904433508">Continuer à utiliser Chromium</translation>
 <translation id="2648074677641340862">Une erreur de système d'exploitation s'est produite pendant l'installation. Veuillez télécharger de nouveau Chromium.</translation>
 <translation id="2661879430930417727">Si vous partagez un appareil avec vos proches, ceux-ci peuvent configurer Chromium comme bon leur semble et naviguer sur le Web de façon autonome.</translation>
-<translation id="2669853942967761236">Chromium a bloqué ce fichier d'archive, car il peut masquer des logiciels malveillants</translation>
 <translation id="268602741124540128">Bienvenue dans Chromium, <ph name="ACCOUNT_FIRST_NAME" /></translation>
 <translation id="2711502716910134313">Onglet Chromium</translation>
 <translation id="2718390899429598676">Pour une sécurité accrue, Chromium va chiffrer vos données.</translation>
@@ -408,6 +407,5 @@ Chromium est incapable de récupérer vos paramètres.</translation>
 <translation id="942598560705308788">Certificats gérés par Chromium</translation>
 <translation id="965162752251293939">Qui utilise Chromium?</translation>
 <translation id="967427899662692980">Profiter de la sécurité la plus robuste de Chromium</translation>
-<translation id="9792300276217204">Toujours effacer les données relatives aux sites sur votre appareil lorsque vous fermez Chromium</translation>
 <translation id="985602178874221306">Les auteurs de Chrome</translation>
 </translationbundle>

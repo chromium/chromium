@@ -15,7 +15,6 @@
 <translation id="1075811647922107217">Sidstorlek</translation>
 <translation id="1082009148392559545">Laddar ned skärmsläckaren</translation>
 <translation id="1094693127011229778">IP-adress är inte tillgänglig</translation>
-<translation id="1113892970288677790">Välj handplockade konstverk och foton</translation>
 <translation id="1118572504348554005">Vi kan dela feedback som skickas via det här formuläret med våra partners för att felsöka problem som du rapporterar till oss. Ange inte känsliga uppgifter somlösenord.</translation>
 <translation id="1119447706177454957">Internt fel</translation>
 <translation id="1124772482545689468">Användare</translation>
@@ -183,6 +182,7 @@
 <translation id="225692081236532131">Aktiveringsstatus</translation>
 <translation id="2271469253353559191">Schema för mörkt läge</translation>
 <translation id="2276999893457278469">Populärt hjälpinnehåll</translation>
+<translation id="2279051792571591988">Återställ standardinställningar</translation>
 <translation id="2287186687001756809">Det finns inga bilder. Du kan lägga till foton via <ph name="LINK" /></translation>
 <translation id="2307344026739914387">Använd nuvarande nyckelpar</translation>
 <translation id="2320295602967756579">Aktivera ljust tema</translation>
@@ -332,7 +332,6 @@
 <translation id="361575905210396100">Tack för din feedback</translation>
 <translation id="3632579075709132555">Tangenten som aktiverar och inaktiverar sekretesskärmen</translation>
 <translation id="3651050199673793219">Välj en temperaturenhet</translation>
-<translation id="3663574643422533538">Välj konst som är exklusiv för <ph name="PRODUCT_NAME" /></translation>
 <translation id="3668449597372804501">Bakgrund med moln</translation>
 <translation id="3689839747745352263">Test – <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Läser in...</translation>
@@ -646,6 +645,7 @@
 <translation id="6061772781719867950">Misslyckade HTTP-förfrågningar</translation>
 <translation id="6073292342939316679">minska ljusstyrkan på tangentbordet</translation>
 <translation id="6075872808778243331">(Android) HTTP-latens</translation>
+<translation id="6078323886959318429">Lägg till genväg</translation>
 <translation id="6104112872696127344">Skanningen har avbrutits</translation>
 <translation id="6106186594183574873">Slutför genom att ange det gamla lösenordet</translation>
 <translation id="6108689792487843350">Gateway kan inte nås</translation>

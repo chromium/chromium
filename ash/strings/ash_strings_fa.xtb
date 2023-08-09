@@ -63,6 +63,7 @@
 <translation id="1235458158152011030">شبکه‌های شناخته‌شده</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> متصل است.</translation>
 <translation id="1240638468526743569">برنامه‌ای</translation>
+<translation id="1242883863226959074">دستگاه</translation>
 <translation id="124678866338384709">بستن برگه کنونی</translation>
 <translation id="1246890715821376239">برنامه‌های پشتیبانی‌نشده</translation>
 <translation id="1247372569136754018">میکروفون (داخلی)</translation>
@@ -181,6 +182,7 @@
 <translation id="1747827819627189109">صفحه‌کلید مجازی فعال شد</translation>
 <translation id="1749109475624620922">پنجره <ph name="WINDOW_TITLE" /> به همه میزکارها واگذار شد</translation>
 <translation id="1750088060796401187">فقط <ph name="MAX_DESK_LIMIT" /> میزکار مجاز است. یکی‌از میزکارها را بردارید تا بتوانید میزکار جدیدی باز کنید.</translation>
+<translation id="1755556344721611131">برنامه عیب‌یابی</translation>
 <translation id="1756833229520115364">الگو ذخیره نشد. تعداد پنجره‌ها یا برگه‌ها خیلی زیاد است.</translation>
 <translation id="1757857692711134412">خاموش تا غروب آفتاب</translation>
 <translation id="1768366657309696705">میان‌بر صفحه‌کلید «<ph name="LAUNCHER_KEY_NAME" /> + نقطه» تغییر کرده است. برای استفاده از کلید «درج»، کلید <ph name="LAUNCHER_KEY_NAME" /> + تبدیل + پس‌بر را فشار دهید.</translation>
@@ -266,7 +268,6 @@
 <translation id="2148716181193084225">امروز</translation>
 <translation id="2149229036084364364">رفتن به آهنگ قبلی</translation>
 <translation id="2161132820593978283">برای اینکه درحین تماس‌های تصویری در مرکز صفحه قرار داشته باشید، از قاب‌بندی دوربین استفاده کنید. آن را در «تنظیمات فوری» روشن کنید.</translation>
-<translation id="2165966740263283349">فضای ذخیره‌سازی مصرفی</translation>
 <translation id="2170530631236737939">برای خروج از «نمای کلی»، با سه انگشت تند به پایین بکشید</translation>
 <translation id="2185166372312820725">رفتن به برگه قبلی</translation>
 <translation id="2185444992308415167">مرور برگه‌های ۱ تا ۸</translation>
@@ -474,6 +475,7 @@
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (بلوتوث)</translation>
 <translation id="3113492864356515707">برجسته کردن مورد قبلی در قفسه</translation>
 <translation id="3120421559657122717">دستگاه خاموش شود؟</translation>
+<translation id="3122464029669770682">CPU</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">راه‌اندازی مجدد برای به‌روزرسانی</translation>
 <translation id="3139188263101386725">از میان‌بر به‌روزشده استفاده کنید</translation>
@@ -518,7 +520,6 @@
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> همچنان می‌تواند بعداً به سیستم وارد شود.</translation>
 <translation id="3321628682574733415">کد والدین نادرست است</translation>
 <translation id="332827762492701193">اعلان‌ها پنهان شده است</translation>
-<translation id="3338855835380298613">‏مقدار CPU استفاده‌شده</translation>
 <translation id="3339826665088060472">ضبط صفحه، ابزارهایی برای گرفتن نماگرفت و ضبط کردن صفحه</translation>
 <translation id="3340978935015468852">تنظیمات</translation>
 <translation id="3341303451326249809">نماگرفت گرفته شد</translation>
@@ -641,7 +642,6 @@
 <translation id="3781910048497807059">انتقال تمرکز به قاب قبلی</translation>
 <translation id="3783640748446814672">دگرساز</translation>
 <translation id="3784455785234192852">قفل</translation>
-<translation id="3796198851576711985">سلامت باتری</translation>
 <translation id="3796746699333205839">برنامه‌ای درحال استفاده از دوربین و میکروفونتان است</translation>
 <translation id="3798670284305777884">بلندگو (داخلی)</translation>
 <translation id="3799080171973636491">میان‌بر صفحه‌کلید مربوط به ذره‌بین تمام‌صفحه را فشار دادید. می‌خواهید آن را روشن کنید؟</translation>
@@ -813,12 +813,10 @@
 <translation id="4527045527269911712">دستگاه بلوتوث «<ph name="DEVICE_NAME" />» برای مرتبط‌سازی به مجوز نیاز دارد.</translation>
 <translation id="4533343294786968049">عمر باتری شما افزایش می‌یابد. باتری تا <ph name="FULLY_CHARGE_TIME" /> کاملاً شارژ خواهد شد.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> مانده تا کامل شود</translation>
-<translation id="4536664881735498710">‏میزان استفاده از RAM</translation>
 <translation id="4538824937723742295">گرفتن نماگرفت تمام‌صفحه</translation>
 <translation id="4539127209940689201">چاپ کردن صفحه کنونی</translation>
 <translation id="4541706525461326392">درحال برداشتن نمایه. ممکن است چند دقیقه طول بکشد.</translation>
 <translation id="4544483149666270818">پنجره‌ای را برای ضبط انتخاب کنید</translation>
-<translation id="454541942614298893">دستگاه من</translation>
 <translation id="4545950850562423083">ذخیره صفحه فعلی به‌عنوان نشانک</translation>
 <translation id="4548482551627849548">انتقال پنجره فعال به میزکار در سمت چپ</translation>
 <translation id="4560576029703263363">روشن</translation>
@@ -977,7 +975,6 @@
 <translation id="5208059991603368177">روشن</translation>
 <translation id="5216991270656129561">خاموش تا <ph name="TIME" /></translation>
 <translation id="5217646019792206018">میزکار بعدی: <ph name="NEXT_DESK_NAME" />، برای فعال‌سازی از «جستجو+فاصله» یا میان‌بر صفحه‌کلید: «تبدیل+جستجو+<ph name="NEXT_DESK_INDEX" />» استفاده کنید.</translation>
-<translation id="5221423477036820198">بااستفاده از «مرکز کنترل تلفن»، به‌سرعت از تلفنتان پیام ارسال کنید یا به پیام‌ها پاسخ دهید.</translation>
 <translation id="5222676887888702881">خروج از سیستم</translation>
 <translation id="5229343007215035173">روشن/ خاموش کردن صفحه حریم خصوصی</translation>
 <translation id="5234764350956374838">رد کردن</translation>
@@ -1138,7 +1135,6 @@
 <translation id="589817443623831496">اسکن نقطه‌ای</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5901630391730855834">زرد</translation>
-<translation id="5902162043476810127">حافظه دسترسی تصادفی</translation>
 <translation id="5909862606227538307">میزکار غیرفعال است.</translation>
 <translation id="5911231045062997865">‏درحال‌حاضر، از پنجره‌های Lacros پشتیبانی نمی‌شود. برنامه‌های دیگر ذخیره خواهد شد.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
@@ -1542,7 +1538,6 @@
 <translation id="7724603315864178912">برش</translation>
 <translation id="7725108879223146004">نمایش جزئیات نقطه اتصال. نقطه اتصال درحال خاموش شدن است.</translation>
 <translation id="7727952505535211425">باز کردن وب‌سایت در نوار نشانی در برگه جدید</translation>
-<translation id="77365090426890123">استفاده از حافظه</translation>
 <translation id="7742327441377685481">اعلانی ندارید</translation>
 <translation id="7748275671948949022">برجسته کردن دکمه «راه‌انداز» در قفسه</translation>
 <translation id="7749443890790263709">به حداکثر تعداد میز رسیده‌اید.</translation>
@@ -1793,7 +1788,6 @@
 <translation id="8853703225951107899">همچنان نمی‌توان پین یا گذرواژه را تأیید کرد. توجه: اگر اخیراً گذرواژه‌تان را تغییر داده‌اید، از گذرواژه قدیمی‌تان استفاده کنید. گذرواژه جدیدتان بعد از خروج شما از سیستم اعمال می‌شود.</translation>
 <translation id="8855885154700222542">کلید تمام‌صفحه</translation>
 <translation id="8858369206579825206">تنظیمات حریم خصوصی</translation>
-<translation id="8860817004574502558">عمر باتری</translation>
 <translation id="8870509716567206129">برنامه از تقسیم صفحه پشتیبانی نمی‌کند.</translation>
 <translation id="8874184842967597500">متصل نیست</translation>
 <translation id="8875021410787719674">جابه‌جایی بین گوشه پایین سمت راست، «راه‌انداز»، نوار نشانی، نوار نشانک‌ها، وب‌سایتی که باز است، و بارگیری‌ها</translation>
@@ -1846,6 +1840,7 @@
 <translation id="9080073830732419341">دوربین به گوشه بالا سمت چپ چسبید</translation>
 <translation id="9080132581049224423">برای رفتن به صفحه اصلی تند به‌بالا بکشید</translation>
 <translation id="9080206825613744995">میکروفون در حال استفاده است.</translation>
+<translation id="9083324773537346962">نسخه سیستم‌عامل</translation>
 <translation id="908451241440060346">وقتی «مزاحم نشوید» روشن باشد، اعلان‌ها بی‌صدا می‌شود</translation>
 <translation id="9084606467167974638">جابه‌جایی موقعیت منو</translation>
 <translation id="9085962983642906571">شارژ باتری شما در حالت اتصال به برق به‌طور موقت روی ۸۰٪ می‌ماند تا عمر باتری افزایش یابد.</translation>
@@ -1886,7 +1881,6 @@
 <translation id="951991426597076286">رد کردن</translation>
 <translation id="953431725143473984">دستگاه خاموش شود؟</translation>
 <translation id="954052413789300507">فضای کافی برای <ph name="FILENAME" /> وجود ندارد فضا آزاد کنید.</translation>
-<translation id="968627661524972577">‏بااستفاده از برنامه‌ها هر کاری را که لازم دارید در Chromebook انجام دهید. می‌توانید برنامه‌ها را در «راه‌انداز» پیدا کنید. همچنین می‌توانید کلید «راه‌انداز» را در صفحه‌کلید فشار دهید.</translation>
 <translation id="974545358917229949">نمایش <ph name="RESULT_COUNT" /> نتیجه برای <ph name="QUERY" /></translation>
 <translation id="98120814841227350">رفتن به انتهای سند</translation>
 <translation id="987589956647469042">داده تلفن همراه روشن است</translation>

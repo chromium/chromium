@@ -63,6 +63,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1235458158152011030">Rețele cunoscute</translation>
 <translation id="1239161794459865856">Opțiunea <ph name="FEATURE_NAME" /> s-a conectat.</translation>
 <translation id="1240638468526743569">O aplicație</translation>
+<translation id="1242883863226959074">dispozitiv</translation>
 <translation id="124678866338384709">Închide fila actuală</translation>
 <translation id="1246890715821376239">Aplicații neacceptate</translation>
 <translation id="1247372569136754018">Microfon (intern)</translation>
@@ -181,6 +182,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1747827819627189109">Tastatură pe ecran activată</translation>
 <translation id="1749109475624620922">Fereastra <ph name="WINDOW_TITLE" /> a fost atribuită tuturor desktopurilor</translation>
 <translation id="1750088060796401187">Doar <ph name="MAX_DESK_LIMIT" /> desktopuri permise. Elimină un desktop ca să deschizi unul nou.</translation>
+<translation id="1755556344721611131">Aplicația Diagnosticare</translation>
 <translation id="1756833229520115364">Nu s-a putut salva șablonul. Prea multe ferestre sau file.</translation>
 <translation id="1757857692711134412">Dezactivată până la apus</translation>
 <translation id="1768366657309696705">Comanda rapidă de la tastatură <ph name="LAUNCHER_KEY_NAME" /> + punct s-a schimbat. Pentru a folosi tasta Insert, apasă tasta <ph name="LAUNCHER_KEY_NAME" /> + Shift + Backspace.</translation>
@@ -266,7 +268,6 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="2148716181193084225">Astăzi</translation>
 <translation id="2149229036084364364">Accesează melodia anterioară</translation>
 <translation id="2161132820593978283">Încearcă încadrarea camerei ca să fii în centrul ecranului în apelurile video. Activează în Setări rapide.</translation>
-<translation id="2165966740263283349">spațiul de stocare folosit</translation>
 <translation id="2170530631236737939">Glisează în jos cu trei degete pentru a ieși din modul Prezentare generală</translation>
 <translation id="2185166372312820725">Accesează fila anterioară</translation>
 <translation id="2185444992308415167">Parcurge filele de la 1 la 8</translation>
@@ -474,6 +475,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3113492864356515707">Evidențiază elementul anterior de pe raft</translation>
 <translation id="3120421559657122717">Închizi dispozitivul?</translation>
+<translation id="3122464029669770682">CPU</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">Reporniți pentru a actualiza</translation>
 <translation id="3139188263101386725">Folosește comanda rapidă actualizată</translation>
@@ -518,7 +520,6 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> se poate conecta în continuare mai târziu.</translation>
 <translation id="3321628682574733415">Codul pentru părinte este incorect</translation>
 <translation id="332827762492701193">Notificările sunt ascunse</translation>
-<translation id="3338855835380298613">utilizarea procesorului</translation>
 <translation id="3339826665088060472">Captură de ecran, instrumente pentru realizarea capturilor de ecran și a înregistrărilor ecranului</translation>
 <translation id="3340978935015468852">setări</translation>
 <translation id="3341303451326249809">Captură de ecran realizată</translation>
@@ -642,7 +643,6 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="3781910048497807059">Mută focalizarea pe panoul anterior</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">Blochează</translation>
-<translation id="3796198851576711985">buna funcționare a bateriei</translation>
 <translation id="3796746699333205839">O aplicație folosește camera și microfonul</translation>
 <translation id="3798670284305777884">Difuzor (intern)</translation>
 <translation id="3799080171973636491">Ai accesat comanda rapidă de la tastatură pentru lupa de ecran complet. Vrei să o activezi?</translation>
@@ -814,12 +814,10 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="4527045527269911712">Dispozitivul Bluetooth „<ph name="DEVICE_NAME" />” solicită permisiunea de a se conecta.</translation>
 <translation id="4533343294786968049">Se prelungește duratei de funcționare a bateriei. Bateria se va încărca complet până la <ph name="FULLY_CHARGE_TIME" />.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> până la încărcare completă</translation>
-<translation id="4536664881735498710">utilizarea memoriei ram</translation>
 <translation id="4538824937723742295">Capturează ecranul complet</translation>
 <translation id="4539127209940689201">Printează pagina actuală</translation>
 <translation id="4541706525461326392">Se elimină profilul. Poate dura câteva minute.</translation>
 <translation id="4544483149666270818">Selectează o fereastră de înregistrat</translation>
-<translation id="454541942614298893">dispozitivul meu</translation>
 <translation id="4545950850562423083">Salvează pagina actuală ca marcaj</translation>
 <translation id="4548482551627849548">Mută fereastra activă pe desktopul din stânga</translation>
 <translation id="4560576029703263363">Activat</translation>
@@ -978,7 +976,6 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="5208059991603368177">Activată</translation>
 <translation id="5216991270656129561">Dezactivată până la <ph name="TIME" /></translation>
 <translation id="5217646019792206018">Desktopul următor: <ph name="NEXT_DESK_NAME" />, folosește Căutare + bara de spațiu sau comanda rapidă de la tastatură Shift + Căutare +<ph name="NEXT_DESK_INDEX" /> pentru activare.</translation>
-<translation id="5221423477036820198">Trimite sau răspunde rapid la mesaje de pe telefon folosind Phone Hub.</translation>
 <translation id="5222676887888702881">Deconectează-te</translation>
 <translation id="5229343007215035173">Activează / dezactivează ecranul de confidențialitate</translation>
 <translation id="5234764350956374838">Închide</translation>
@@ -1139,7 +1136,6 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="589817443623831496">Scanare punctuală</translation>
 <translation id="5901316534475909376">Shift + Esc</translation>
 <translation id="5901630391730855834">Galben</translation>
-<translation id="5902162043476810127">memorie cu acces aleator</translation>
 <translation id="5909862606227538307">Desktop inactiv.</translation>
 <translation id="5911231045062997865">Ferestrele Lacros nu sunt acceptate momentan. Alte aplicații se vor salva.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
@@ -1543,7 +1539,6 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="7724603315864178912">Decupează</translation>
 <translation id="7725108879223146004">Afișează detaliile despre hotspot. Hotspotul se dezactivează.</translation>
 <translation id="7727952505535211425">Deschide site-ul în bara de adrese într-o filă nouă</translation>
-<translation id="77365090426890123">utilizarea memoriei</translation>
 <translation id="7742327441377685481">Nicio notificare</translation>
 <translation id="7748275671948949022">Evidențiază butonul Lansator de pe raft</translation>
 <translation id="7749443890790263709">S-a atins numărul maxim de desktopuri.</translation>
@@ -1795,7 +1790,6 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="8853703225951107899">Codul PIN sau parola tot nu au putut fi confirmate. Notă: dacă ai schimbat parola recent, folosește vechea parolă. Noua parolă se va aplica după ce te deconectezi.</translation>
 <translation id="8855885154700222542">Tasta pentru ecran complet</translation>
 <translation id="8858369206579825206">Opțiuni de confidențialitate</translation>
-<translation id="8860817004574502558">autonomia bateriei</translation>
 <translation id="8870509716567206129">Aplicația nu acceptă ecranul împărțit.</translation>
 <translation id="8874184842967597500">Neconectat</translation>
 <translation id="8875021410787719674">Mută între colțul din dreapta jos, Lansator, bara de adrese, bara de marcaje, site-ul deschis și descărcări</translation>
@@ -1848,6 +1842,7 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="9080073830732419341">Camera foto este aliniată cu colțul din stânga sus</translation>
 <translation id="9080132581049224423">Glisează în sus pentru a accesa pagina principală</translation>
 <translation id="9080206825613744995">Microfonul este în uz.</translation>
+<translation id="9083324773537346962">Versiune SO</translation>
 <translation id="908451241440060346">Notificările sunt dezactivate când se activează funcția Nu deranja</translation>
 <translation id="9084606467167974638">Comută poziția meniului</translation>
 <translation id="9085962983642906571">Bateria este menținută la 80 % în timp ce este conectată, pentru a-i extinde autonomia.</translation>
@@ -1888,7 +1883,6 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="951991426597076286">Refuză</translation>
 <translation id="953431725143473984">Închizi dispozitivul?</translation>
 <translation id="954052413789300507">Nu există suficient spațiu pentru <ph name="FILENAME" />. Eliberează spațiu.</translation>
-<translation id="968627661524972577">Folosește aplicațiile pentru a face toate activitățile necesare pe Chromebook. Aplicațiile se găsesc în Lansator. Poți și să apeși tasta Lansator de pe tastatură.</translation>
 <translation id="974545358917229949">Se afișează <ph name="RESULT_COUNT" /> rezultate pentru <ph name="QUERY" /></translation>
 <translation id="98120814841227350">Accesează sfârșitul documentului</translation>
 <translation id="987589956647469042">Datele mobile sunt activate</translation>

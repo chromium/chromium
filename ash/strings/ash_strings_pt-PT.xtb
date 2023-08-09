@@ -63,6 +63,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="1235458158152011030">Redes conhecidas</translation>
 <translation id="1239161794459865856">A funcionalidade <ph name="FEATURE_NAME" /> está ligada.</translation>
 <translation id="1240638468526743569">Uma app</translation>
+<translation id="1242883863226959074">dispositivo</translation>
 <translation id="124678866338384709">Fechar o separador atual</translation>
 <translation id="1246890715821376239">Apps não suportadas</translation>
 <translation id="1247372569136754018">Microfone (interno)</translation>
@@ -181,6 +182,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="1747827819627189109">Teclado no ecrã ativado</translation>
 <translation id="1749109475624620922">Janela <ph name="WINDOW_TITLE" /> atribuída a todos os espaços de trabalho</translation>
 <translation id="1750088060796401187">Apenas são permitidos <ph name="MAX_DESK_LIMIT" /> espaços de trabalho. Remova um espaço de trabalho para abrir um novo.</translation>
+<translation id="1755556344721611131">App Diagnósticos</translation>
 <translation id="1756833229520115364">Não foi possível guardar o modelo. Existem demasiadas janelas ou separadores.</translation>
 <translation id="1757857692711134412">Desativada até ao nascer do sol</translation>
 <translation id="1768366657309696705">O atalho de teclado <ph name="LAUNCHER_KEY_NAME" /> + ponto final foi alterado. Para utilizar a tecla Inserir, prima a tecla <ph name="LAUNCHER_KEY_NAME" /> + Shift + retrocesso.</translation>
@@ -266,7 +268,6 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="2148716181193084225">Hoje</translation>
 <translation id="2149229036084364364">Ir para a faixa anterior</translation>
 <translation id="2161132820593978283">Experimente o enquadramento da câmara para ficar no centro do ecrã nas videochamadas. Ative-o nas Definições rápidas.</translation>
-<translation id="2165966740263283349">utilização do armazenamento</translation>
 <translation id="2170530631236737939">Deslize rapidamente para baixo com três dedos para sair da Vista geral.</translation>
 <translation id="2185166372312820725">Aceder ao separador anterior</translation>
 <translation id="2185444992308415167">Passar pelos separadores de 1 a 8</translation>
@@ -474,6 +475,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3113492864356515707">Realçar o item anterior na prateleira</translation>
 <translation id="3120421559657122717">Encerrar dispositivo?</translation>
+<translation id="3122464029669770682">CPU</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">Reiniciar para atualizar</translation>
 <translation id="3139188263101386725">Use o atalho atualizado</translation>
@@ -518,7 +520,6 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> pode iniciar sessão mais tarde.</translation>
 <translation id="3321628682574733415">Código parental incorreto</translation>
 <translation id="332827762492701193">As notificações estão ocultas</translation>
-<translation id="3338855835380298613">utilização da cpu</translation>
 <translation id="3339826665088060472">Captura de ecrã, ferramentas para fazer capturas de ecrã e gravações de ecrã</translation>
 <translation id="3340978935015468852">definições</translation>
 <translation id="3341303451326249809">Captura de ecrã efetuada</translation>
@@ -642,7 +643,6 @@ Ligue o dispositivo à corrente.</translation>
 <translation id="3781910048497807059">Mover o foco para o painel anterior</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">Bloquear</translation>
-<translation id="3796198851576711985">estado da bateria</translation>
 <translation id="3796746699333205839">Uma aplicação está a utilizar a sua câmara e microfone.</translation>
 <translation id="3798670284305777884">Altifalante (interno)</translation>
 <translation id="3799080171973636491">Premiu o atalho de teclado da lupa de ecrã inteiro. Quer ativá-la?</translation>
@@ -814,12 +814,10 @@ Ligue o dispositivo à corrente.</translation>
 <translation id="4527045527269911712">O dispositivo Bluetooth "<ph name="DEVICE_NAME" />" necessita de autorização para sincronizar.</translation>
 <translation id="4533343294786968049">A prolongar a autonomia da bateria. A bateria vai ficar totalmente carregada à(s) <ph name="FULLY_CHARGE_TIME" />.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> até estar totalmente carregada</translation>
-<translation id="4536664881735498710">utilização da ram</translation>
 <translation id="4538824937723742295">Faça uma captura de ecrã inteiro</translation>
 <translation id="4539127209940689201">Imprimir a página atual</translation>
 <translation id="4541706525461326392">A remover o perfil. Esta ação pode demorar alguns minutos.</translation>
 <translation id="4544483149666270818">Selecione uma janela para gravar.</translation>
-<translation id="454541942614298893">o meu dispositivo</translation>
 <translation id="4545950850562423083">Guardar a página atual como marcador</translation>
 <translation id="4548482551627849548">Mover janela ativa para o espaço de trabalho à esquerda</translation>
 <translation id="4560576029703263363">Ativado</translation>
@@ -978,7 +976,6 @@ Ligue o dispositivo à corrente.</translation>
 <translation id="5208059991603368177">Ativado</translation>
 <translation id="5216991270656129561">Desativada até à(s) <ph name="TIME" /></translation>
 <translation id="5217646019792206018">Espaço de trabalho seguinte: <ph name="NEXT_DESK_NAME" />, use Pesquisar + Espaço ou o atalho de teclado: Shift + Pesquisar + <ph name="NEXT_DESK_INDEX" /> para ativar.</translation>
-<translation id="5221423477036820198">Envie ou responda rapidamente às mensagens do seu telemóvel através do Phone Hub.</translation>
 <translation id="5222676887888702881">Terminar sessão</translation>
 <translation id="5229343007215035173">Ativar/desativar o ecrã de privacidade</translation>
 <translation id="5234764350956374838">Ignorar</translation>
@@ -1139,7 +1136,6 @@ Ligue o dispositivo à corrente.</translation>
 <translation id="589817443623831496">Análise de pontos</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5901630391730855834">Amarelo</translation>
-<translation id="5902162043476810127">memória de acesso aleatório</translation>
 <translation id="5909862606227538307">Espaço de trabalho inativo.</translation>
 <translation id="5911231045062997865">De momento, as janelas do Lacros não são suportadas. As outras apps serão guardadas.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
@@ -1543,7 +1539,6 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="7724603315864178912">Cortar</translation>
 <translation id="7725108879223146004">Veja os detalhes da zona Wi-Fi. A zona Wi-Fi está a ser desativada.</translation>
 <translation id="7727952505535211425">Abrir o Website na barra de endereço num novo separador</translation>
-<translation id="77365090426890123">utilização de memória</translation>
 <translation id="7742327441377685481">Sem notificações</translation>
 <translation id="7748275671948949022">Realçar o botão do Launcher na prateleira</translation>
 <translation id="7749443890790263709">Atingiu o número máximo de espaços de trabalho.</translation>
@@ -1795,7 +1790,6 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="8853703225951107899">Ainda não foi possível validar o seu PIN ou palavra-passe. Nota: se alterou a sua palavra-passe recentemente, utilize a palavra-passe antiga. A nova palavra-passe será aplicada quando terminar sessão.</translation>
 <translation id="8855885154700222542">Tecla de ecrã inteiro</translation>
 <translation id="8858369206579825206">Controlos de privacidade</translation>
-<translation id="8860817004574502558">autonomia da bateria</translation>
 <translation id="8870509716567206129">A aplicação não é compatível com o ecrã dividido.</translation>
 <translation id="8874184842967597500">Sem ligação</translation>
 <translation id="8875021410787719674">Mover-se entre o canto inferior direito, o Launcher, a barra de endereço, a barra de marcadores, o Website aberto e as transferências</translation>
@@ -1848,6 +1842,7 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="9080073830732419341">Câmara ajustada ao canto superior esquerdo</translation>
 <translation id="9080132581049224423">Deslize rapidamente para cima para aceder à página inicial</translation>
 <translation id="9080206825613744995">O microfone está a ser utilizado.</translation>
+<translation id="9083324773537346962">Versão SO</translation>
 <translation id="908451241440060346">O som das notificações está desativado quando o modo Não incomodar está ativado</translation>
 <translation id="9084606467167974638">Alternar a posição do menu</translation>
 <translation id="9085962983642906571">A bateria é mantida a 80% quando ligada à corrente para prolongar a autonomia da bateria.</translation>
@@ -1888,7 +1883,6 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="951991426597076286">Recusar</translation>
 <translation id="953431725143473984">Encerrar o dispositivo?</translation>
 <translation id="954052413789300507">Não existe espaço suficiente para o ficheiro <ph name="FILENAME" />. Liberte espaço.</translation>
-<translation id="968627661524972577">Use apps para fazer tudo o que precisa no Chromebook. Pode encontrar as suas apps no Launcher. Também pode premir a tecla do Launcher no teclado.</translation>
 <translation id="974545358917229949">A apresentar <ph name="RESULT_COUNT" /> resultados para <ph name="QUERY" /></translation>
 <translation id="98120814841227350">Ir para o fim do documento</translation>
 <translation id="987589956647469042">Os dados móveis estão ativados</translation>

@@ -15,7 +15,6 @@
 <translation id="1075811647922107217">ページサイズ</translation>
 <translation id="1082009148392559545">スクリーン セーバーをダウンロードしています</translation>
 <translation id="1094693127011229778">IP アドレスを取得できません</translation>
-<translation id="1113892970288677790">アートワークや画像のライブラリから選択してください</translation>
 <translation id="1118572504348554005">Google は、バグやその他ご報告いただいた問題を解決するため、このフォームからお送りいただいたフィードバックをパートナーと共有する場合があります。パスワードなどの機密情報は含めないでください。</translation>
 <translation id="1119447706177454957">内部エラー</translation>
 <translation id="1124772482545689468">ユーザー</translation>
@@ -183,6 +182,7 @@
 <translation id="225692081236532131">起動状態</translation>
 <translation id="2271469253353559191">ダークモードのスケジュールを設定する</translation>
 <translation id="2276999893457278469">関連するヘルプ コンテンツ</translation>
+<translation id="2279051792571591988">初期設定に戻す</translation>
 <translation id="2287186687001756809">画像がありません。写真を追加するには、<ph name="LINK" /> にアクセスしてください</translation>
 <translation id="2307344026739914387">現在の鍵ペアを使用</translation>
 <translation id="2320295602967756579">ライトモードを有効にする</translation>
@@ -332,7 +332,6 @@
 <translation id="361575905210396100">ありがとうございました</translation>
 <translation id="3632579075709132555">プライバシー画面の切り替え</translation>
 <translation id="3651050199673793219">温度の単位を選択してください</translation>
-<translation id="3663574643422533538"><ph name="PRODUCT_NAME" /> 限定アートワークを選択する</translation>
 <translation id="3668449597372804501">「雲の流れ」の壁紙</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> テスト</translation>
 <translation id="370665806235115550">読み込んでいます...</translation>
@@ -646,6 +645,7 @@
 <translation id="6061772781719867950">HTTP リクエストが失敗しました</translation>
 <translation id="6073292342939316679">キーボードの明るさを下げる</translation>
 <translation id="6075872808778243331">（Android）HTTP レイテンシ</translation>
+<translation id="6078323886959318429">ショートカットを追加</translation>
 <translation id="6104112872696127344">スキャンをキャンセルしました</translation>
 <translation id="6106186594183574873">終了するには、古いパスワードを入力してください</translation>
 <translation id="6108689792487843350">ゲートウェイにアクセスできません</translation>

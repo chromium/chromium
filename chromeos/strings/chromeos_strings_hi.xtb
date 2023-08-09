@@ -15,7 +15,6 @@
 <translation id="1075811647922107217">पेज का साइज़</translation>
 <translation id="1082009148392559545">स्क्रीन सेवर डाउनलोड हो रहा है</translation>
 <translation id="1094693127011229778">आईपी पता मौजूद नहीं है</translation>
-<translation id="1113892970288677790">चुनिंदा आर्टवर्क और इमेज चुनें</translation>
 <translation id="1118572504348554005">इस फ़ॉर्म की मदद से सबमिट किए गए किसी भी सुझाव, शिकायत या राय को हम अपने पार्टनर के साथ शेयर कर सकते हैं. इससे हम उन गड़बड़ियों और अन्य समस्याओं को हल कर पाते हैं जिनकी शिकायत हमसे की जाती है. इस फ़ॉर्म में, पासवर्ड जैसी संवेदनशील जानकारी न दें.</translation>
 <translation id="1119447706177454957">आंतरिक गड़बड़ी</translation>
 <translation id="1124772482545689468">उपयोगकर्ता</translation>
@@ -183,6 +182,7 @@
 <translation id="225692081236532131">सक्रियण की स्थिति</translation>
 <translation id="2271469253353559191">गहरे रंग वाला मोड शेड्यूल करें</translation>
 <translation id="2276999893457278469">सबसे ज़्यादा उपयोगी सहायता कॉन्टेंट</translation>
+<translation id="2279051792571591988">डिफ़ॉल्ट बटन लेबल पहले जैसा करें</translation>
 <translation id="2287186687001756809">कोई इमेज उपलब्ध नहीं है. फ़ोटो जोड़ने के लिए, <ph name="LINK" /> पर जाएं</translation>
 <translation id="2307344026739914387">मौजूदा कुंजी के जोड़े का इस्तेमाल करें</translation>
 <translation id="2320295602967756579">हल्के रंग वाली थीम चालू करें</translation>
@@ -332,7 +332,6 @@
 <translation id="361575905210396100">आपके सुझाव, शिकायत या राय के लिए धन्यवाद</translation>
 <translation id="3632579075709132555">निजता स्क्रीन टॉगल करने वाला बटन</translation>
 <translation id="3651050199673793219">तापमान की इकाई चुनें</translation>
-<translation id="3663574643422533538">खास <ph name="PRODUCT_NAME" /> आर्टवर्क चुनें</translation>
 <translation id="3668449597372804501">क्लाउड फ़्लो वॉलपेपर</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> टेस्ट</translation>
 <translation id="370665806235115550">लोड हो रही हैं...</translation>
@@ -646,6 +645,7 @@
 <translation id="6061772781719867950">वे एचटीटीपी अनुरोध जो नहीं किए जा सके</translation>
 <translation id="6073292342939316679">कीबोर्ड की रोशनी कम करें</translation>
 <translation id="6075872808778243331">(Android) एचटीटीपी के इंतज़ार का समय</translation>
+<translation id="6078323886959318429">शॉर्टकट जोड़ें</translation>
 <translation id="6104112872696127344">स्कैन करने की प्रोसेस रद्द कर दी गई है</translation>
 <translation id="6106186594183574873">पूरा करने के लिए, पुराना पासवर्ड डालें</translation>
 <translation id="6108689792487843350">गेटवे से कनेक्ट नहीं किया जा सका</translation>

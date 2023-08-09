@@ -74,7 +74,6 @@
 <translation id="2592940277904433508">Продолжете да користите Chromium</translation>
 <translation id="2648074677641340862">Настана грешка на оперативен систем при инсталација. Преземете го Chromium повторно.</translation>
 <translation id="2661879430930417727">Ако споделувате уред, пријателите и членовите на семејството може одделно да прелистуваат и да го поставуваат Chromium како што сакаат</translation>
-<translation id="2669853942967761236">Chromium ја блокираше оваа датотека од архивате бидејќи можеби крие злонамерен софтвер</translation>
 <translation id="268602741124540128">Добре дојдовте во Chromium, <ph name="ACCOUNT_FIRST_NAME" /></translation>
 <translation id="2711502716910134313">Картичка на Chromium</translation>
 <translation id="2718390899429598676">За дополнителна безбедност, Chromium ќе ги шифрира вашите податоци.</translation>
@@ -409,6 +408,5 @@ Chromium не може да ги обнови вашите поставки.</tr
 <translation id="942598560705308788">Сертификати управувани од Chromium</translation>
 <translation id="965162752251293939">Кој користи Chromium?</translation>
 <translation id="967427899662692980">Добијте ја најсилната безбедност на Chromium</translation>
-<translation id="9792300276217204">Секогаш бришете ги податоците од сајт од вашиот уред кога го затворате Chromium</translation>
 <translation id="985602178874221306">Автори на Chromium</translation>
 </translationbundle>

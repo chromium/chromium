@@ -90,6 +90,7 @@
 <translation id="1175393348063009671">Фотографија (мат)</translation>
 <translation id="1175875016430184367">Тројно спојување десно</translation>
 <translation id="1177802847690410663">Прелистувачи</translation>
+<translation id="1177863135347784049">Приспособено</translation>
 <translation id="1178581264944972037">Пауза</translation>
 <translation id="1178821169867863726">12 x 16 инчи</translation>
 <translation id="1181037720776840403">Отстрани</translation>
@@ -134,7 +135,6 @@
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">Ја внесовте лозинката на сајт што не е управуван од организацијата. За да ја заштитите сметката, не користете ја лозинката повторно на други апликации и сајтови.</translation>
 <translation id="1257553931232494454">нивоа на зумирање</translation>
-<translation id="1259843033850529027">Изберете ниво на правилото</translation>
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, притиснете го копчето Tab, а потоа Enter за да управувате со поставките за Chrome</translation>
 <translation id="1264309058268477500">Наизменична</translation>
 <translation id="1264974993859112054">Спорт</translation>
@@ -256,12 +256,6 @@
 <translation id="1482879811280872320">Велосипедизам</translation>
 <translation id="1483493594462132177">Испрати</translation>
 <translation id="1492194039220927094">Туркање на правилата:</translation>
-<translation id="149293076951187737">Кога ќе ги затворите сите картички „Инкогнито“ на Chrome, вашата активност во тие картички се брише од уредов:
-          <ph name="BEGIN_LIST" />
-            <ph name="LIST_ITEM" />активност од прелистувањето<ph name="END_LIST_ITEM" />
-            <ph name="LIST_ITEM" />историја на пребарување<ph name="END_LIST_ITEM" />
-            <ph name="LIST_ITEM" />податоци внесени во формулари<ph name="END_LIST_ITEM" />
-          <ph name="END_LIST" /></translation>
 <translation id="14938948731065592">Компјутерски периферни уреди</translation>
 <translation id="1495677929897281669">Назад на картичката</translation>
 <translation id="1501859676467574491">Прикажувај картички од сметката на Google</translation>
@@ -390,7 +384,6 @@
 <translation id="1741613555002899862">Мора да е одредена и важечка низа кога DnsOverHttpsMode е <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="1743393865165844832">Постелнина и креветски чаршави</translation>
 <translation id="1745399796851657441"><ph name="BEGIN_BOLD" />Како ги користиме податоциве:<ph name="END_BOLD" /> Chrome ги утврдува темите од интерес додека прелистувате. Етикетите за теми се дефинирани однапред и вклучуваат работи како уметност и забава, купување и спорт. Подоцна, сајтот што го посетувате може да побара од Chrome неколку од вашите теми (но не и вашата историја на прелистувањето) за да ги персонализира рекламите што ги гледате.</translation>
-<translation id="1745880797583122200">Прелистувачот е управуван</translation>
 <translation id="1746113442205726301">Промена на сликата Y</translation>
 <translation id="1746531169546376413">0 степени</translation>
 <translation id="1752021286346845558">Поштенско сандаче 8</translation>
@@ -456,6 +449,7 @@
 <translation id="1883255238294161206">Собери список</translation>
 <translation id="1884843295353628214">Џез</translation>
 <translation id="1890171020361705182">Игра со диносаурус. Пикселиран диносаурус избегнува кактуси и птеродактили додека трча низ пуст пејзаж. Кога ќе слушнете аудиосигнал, допрете за да ги прескокнете препреките.</translation>
+<translation id="189035593835762169">Одредби и услови</translation>
 <translation id="1898423065542865115">Филтрирање</translation>
 <translation id="1901443836186977402">{1,plural, =1{Серверот не може да докаже дека е <ph name="DOMAIN" />; неговиот безбедносен сертификат истече претходниот ден. Тоа можеби се должи на погрешна конфигурација или на напаѓач што ја пресретнува вашата врска. Часовникот на компјутерот моментално е поставен на <ph name="CURRENT_DATE" />. Дали е тоа во ред? Доколку не, наместете го часовникот на системот, па освежете ја страницата.}one{Серверот не може да докаже дека е <ph name="DOMAIN" /> бидејќи неговиот безбедносен сертификат истече пред # ден. Тоа можеби се должи на погрешна конфигурација или на напаѓач којшто го пресретнува поврзувањето. Часовникот на компјутерот моментално е поставен на <ph name="CURRENT_DATE" />. Дали тоа е во ред? Доколку не е, треба да го поправите часовникот на системот, а потоа да ја освежите страницата.}other{Серверот не може да докаже дека е <ph name="DOMAIN" /> бидејќи неговиот безбедносен сертификат истече пред # дена. Тоа можеби се должи на погрешна конфигурација или на напаѓач којшто го пресретнува поврзувањето. Часовникот на компјутерот моментално е поставен на <ph name="CURRENT_DATE" />. Дали тоа е во ред? Доколку не е, треба да го поправите часовникот на системот, а потоа да ја освежите страницата.}}</translation>
 <translation id="1902576642799138955">Период на важност</translation>
@@ -807,6 +801,7 @@
 <translation id="2674804415323431591">Скриј ги предлозите</translation>
 <translation id="2677696497921480781">Родендени и имендени</translation>
 <translation id="2677748264148917807">Напушти</translation>
+<translation id="2678468611080193228">Обидете се со привремено дозволување колачиња од трети страни, што значи помала заштита, но поголема веројатност да функционираат функциите на сајтот</translation>
 <translation id="2687555958734450033">Најдобро вклопување</translation>
 <translation id="2688186765492306706">500 x 760 mm</translation>
 <translation id="2688969097326701645">Да, продолжи</translation>
@@ -1471,6 +1466,7 @@
 <translation id="4152318981910038897">{COUNT,plural, =1{Страница 1}one{Страница {COUNT}}other{Страница {COUNT}}}</translation>
 <translation id="4154277373259957087">Сега Chrome ќе го потврди вашиот идентитет пред да ги пополни начините на плаќање. Ова може да го ажурирате во секое време во <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
 <translation id="4154664944169082762">Отпечатоци</translation>
+<translation id="4159149286839604525">Ова значи дека повеќето од функциите на сајтот би требало да функционираат, но заштитата е помала</translation>
 <translation id="4159784952369912983">Пурпурна</translation>
 <translation id="4165986682804962316">Поставки на локација</translation>
 <translation id="4169535189173047238">Не дозволувај</translation>
@@ -1877,6 +1873,7 @@
 <translation id="4983145717627482381">Обиколки со водич и одмори со придружба</translation>
 <translation id="498323057460789381">Грешка при потврда на шема: <ph name="ERROR" /></translation>
 <translation id="4984088539114770594">Да се користи микрофонот?</translation>
+<translation id="4985206706500620449">Дозволивте колачиња од трети страни за сајтов</translation>
 <translation id="4989163558385430922">Прикажи ги сите</translation>
 <translation id="4989542687859782284">Недостапни</translation>
 <translation id="4989809363548539747">Приклучоков не е поддржан</translation>
@@ -1886,6 +1883,7 @@
 <translation id="4995474875135717171">Изменето:</translation>
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />, притиснете го копчето Tab, а потоа Enter за да управувате со пребарувањето на сајтот и со стандардниот пребарувач</translation>
 <translation id="4998950033665438990">Еднострано</translation>
+<translation id="5001526427543320409">Колачиња од трети страни</translation>
 <translation id="5002932099480077015">Ако е овозможено, Chrome ќе складира копија од картичката на уредот за побрзо пополнување формулари.</translation>
 <translation id="5007392906805964215">Прегледајте</translation>
 <translation id="5011561501798487822">Откриен јазик</translation>
@@ -2568,7 +2566,6 @@
 <translation id="6450212216969386944">Плик Chou 40</translation>
 <translation id="6451458296329894277">Потврди повторно поднесување на формулар</translation>
 <translation id="6452889436791091116">ISO ID-1</translation>
-<translation id="6453457495574553803">Изберете цел на правилото</translation>
 <translation id="6456955391422100996">Рекламата е отстранета.</translation>
 <translation id="6457206614190510200">Шиење на работ од превиткувањето</translation>
 <translation id="6457455098507772300">Известувањата за намалување на цената се појавуваат како скокачки известувања на вашиот компјутер</translation>
@@ -2602,6 +2599,7 @@
 <translation id="6521745193039995384">Неактивна</translation>
 <translation id="6524830701589638230">Копче за управување со поставките за пристапност, активирајте го за да ги персонализирате алатките за пристапност во поставките за Chrome</translation>
 <translation id="6529173248185917884">Седма ролна</translation>
+<translation id="652937045869844725">Обидете се со дозволување колачиња од трети страни, што значи помала заштита, но поголема веројатност да функционираат функциите на сајтот</translation>
 <translation id="6529602333819889595">&amp;Повтори бришење</translation>
 <translation id="6535751101619004418">Валути и странска размена</translation>
 <translation id="6536221421038631327">Со отстранувањето претплата на Passpoint од вашиот уред <ph name="DEVICE_TYPE" />, ќе се отстранат и поврзаните мрежи. Контактирајте со „<ph name="FRIENDLY_NAME" />“ за да извршите промени на вашата претплата. <ph name="LEARN_MORE" /></translation>
@@ -2865,6 +2863,7 @@
 <translation id="7102079138917191645">Градежништво и одржување</translation>
 <translation id="7102554173784142865">Пушти ја играта „Диносаурус на Chrome“</translation>
 <translation id="7102760431686146931">Садови за готвење и прибор за јадење</translation>
+<translation id="7106762743910369165">Вашата организација управува со прелистувачот</translation>
 <translation id="7108338896283013870">Скриј</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> сака да ја користи вашата камера</translation>
 <translation id="7108819624672055576">Дозволено од екстензија</translation>
@@ -2878,12 +2877,6 @@
 <translation id="7119371694555167493">Времето за копирање истече</translation>
 <translation id="7119414471315195487">Затворете ги другите картички или програми</translation>
 <translation id="7124354851782353862">Внесување на вашиот CVC</translation>
-<translation id="7129355289156517987">Кога ќе ги затворите сите картички „Инкогнито“ на Chromium, вашата активност во тие картички се брише од уредов:
-          <ph name="BEGIN_LIST" />
-            <ph name="LIST_ITEM" />активност од прелистувањето<ph name="END_LIST_ITEM" />
-            <ph name="LIST_ITEM" />историја на пребарување<ph name="END_LIST_ITEM" />
-            <ph name="LIST_ITEM" />податоци внесени во формулари<ph name="END_LIST_ITEM" />
-          <ph name="END_LIST" /></translation>
 <translation id="7129409597930077180">Не може да се испорача на оваа адреса. Изберете друга.</translation>
 <translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
 <translation id="7130775116821607281">Блокирано прикачување</translation>
@@ -2934,6 +2927,7 @@
 <translation id="7221855153210829124">Прикажи известувања</translation>
 <translation id="7221857374443660083">Вашата банка сака да го потврди вашиот идентитет</translation>
 <translation id="722454870747268814">Нова инкогнито картичка</translation>
+<translation id="7226276626900992675">Дозволивте сајтов да користи колачиња од трети страни. Ова значи дека повеќето од функциите на сајтот би требало да функционираат, но заштитата е помала.</translation>
 <translation id="7227293336683593977">Историја на цените</translation>
 <translation id="7233592378249864828">Испечати лист за потврда</translation>
 <translation id="7234638337680728591">Цени за гориво и точење гориво</translation>
@@ -3553,7 +3547,6 @@
 <translation id="8483229036294884935">Адресава ќе биде избришана од вашата сметка на Google, <ph name="ACCOUNT" /></translation>
 <translation id="8488350697529856933">Се однесува на</translation>
 <translation id="8490137692873530638">Фиока за складирање 10</translation>
-<translation id="8493829133024050711">Изберете извор на правилото</translation>
 <translation id="8493948351860045254">Ослободете простор</translation>
 <translation id="8498891568109133222">На <ph name="HOST_NAME" /> му требаше премногу време да одговори.</translation>
 <translation id="8503559462189395349">Лозинки на Chrome</translation>
@@ -3618,7 +3611,6 @@
 <translation id="8623885649813806493">Нема лозинки што се совпаѓаат. Прикажи ги сите зачувани лозинки.</translation>
 <translation id="8624354461147303341">Сакам попусти</translation>
 <translation id="8634957317623797170">54 x 86 mm</translation>
-<translation id="8637577059508742477">Со вашиот профил и прелистувач управува <ph name="DOMAIN" /></translation>
 <translation id="8641131559425911240">Коверт (цврст)</translation>
 <translation id="8643409044755049933">Плик Kaku 3</translation>
 <translation id="8647287295490773273">210 x 330 mm</translation>
@@ -3695,6 +3687,7 @@
 <translation id="8793655568873652685"><ph name="ENROLLMENT_DOMAIN" /> вклучил Chrome Enterprise Connectors на вашиот прелистувач. Овие конектори имаат пристап до дел од вашите податоци.</translation>
 <translation id="8798099450830957504">Стандардно</translation>
 <translation id="8798739476508189189">Барате ознаки за прелистувач? Оди</translation>
+<translation id="8800034312320686233">Дали сајтот не работи?</translation>
 <translation id="8805819170075074995">Запис во список „<ph name="LANGUAGE_ID" />“: записот е игнориран бидејќи е вклучен и во правилото SpellcheckLanguage.</translation>
 <translation id="8806285662264631610">Производи за бања и тело</translation>
 <translation id="8806696968588872703">Пластика (сатен)</translation>

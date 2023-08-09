@@ -90,6 +90,7 @@
 <translation id="1175393348063009671">写真（非光沢）</translation>
 <translation id="1175875016430184367">3 か所のステープル（右）</translation>
 <translation id="1177802847690410663">ウェブブラウザ</translation>
+<translation id="1177863135347784049">カスタム</translation>
 <translation id="1178581264944972037">一時停止</translation>
 <translation id="1178821169867863726">12x16 インチ</translation>
 <translation id="1181037720776840403">削除</translation>
@@ -134,7 +135,6 @@
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">組織が管理していないサイトでパスワードを入力しました。アカウントを保護するには、他のアプリやサイトでパスワードを再使用しないでください。</translation>
 <translation id="1257553931232494454">ズームレベル</translation>
-<translation id="1259843033850529027">ポリシーのレベルを選択</translation>
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab、Enter キーの順に押すと、Chrome の設定を管理します</translation>
 <translation id="1264309058268477500">代替</translation>
 <translation id="1264974993859112054">スポーツ</translation>
@@ -256,12 +256,6 @@
 <translation id="1482879811280872320">自転車</translation>
 <translation id="1483493594462132177">送信</translation>
 <translation id="1492194039220927094">ポリシーのプッシュ:</translation>
-<translation id="149293076951187737">Chrome のシークレット タブをすべて閉じると、シークレット タブでの以下のアクティビティがこのデバイスから削除されます。
-          <ph name="BEGIN_LIST" />
-            <ph name="LIST_ITEM" />閲覧アクティビティ<ph name="END_LIST_ITEM" />
-            <ph name="LIST_ITEM" />検索履歴<ph name="END_LIST_ITEM" />
-            <ph name="LIST_ITEM" />フォームに入力された情報<ph name="END_LIST_ITEM" />
-          <ph name="END_LIST" /></translation>
 <translation id="14938948731065592">コンピュータ関連</translation>
 <translation id="1495677929897281669">タブに戻る</translation>
 <translation id="1501859676467574491">Google アカウントに保存したカードを表示</translation>
@@ -390,7 +384,6 @@
 <translation id="1741613555002899862">DnsOverHttpsMode が「<ph name="SECURE_DNS_MODE_SECURE" />」の場合は、有効な文字列を指定する必要があります。</translation>
 <translation id="1743393865165844832">寝具</translation>
 <translation id="1745399796851657441"><ph name="BEGIN_BOLD" />Google によるこのデータの使用:<ph name="END_BOLD" /> Chrome では、ユーザーのブラウジング時に興味 / 関心のあるトピックが記録されます。トピックのラベルは事前定義されていて、「アート、エンターテインメント」、「ショッピング」、「スポーツ」などがあります。その後、アクセスするサイトでは、表示する広告をパーソナライズするため、Chrome に（閲覧履歴ではなく）いくつかのトピックを提示するよう要求されることがあります。</translation>
-<translation id="1745880797583122200">ご使用のブラウザは管理されています</translation>
 <translation id="1746113442205726301">画像の Y 軸移動</translation>
 <translation id="1746531169546376413">0°</translation>
 <translation id="1752021286346845558">用紙受け 8</translation>
@@ -455,6 +448,7 @@
 <translation id="1883255238294161206">リストを折りたたむ</translation>
 <translation id="1884843295353628214">ジャズ</translation>
 <translation id="1890171020361705182">Dino ゲーム。ピクセル画像の恐竜がサボテンやプテロダクティルスをよけながら、荒地を走り抜けます。合図の音が聞こえたら、タップして障害物を飛び越えましょう。</translation>
+<translation id="189035593835762169">利用規約</translation>
 <translation id="1898423065542865115">フィルタ</translation>
 <translation id="1901443836186977402">{1,plural, =1{このサーバーが <ph name="DOMAIN" /> であることを確認できませんでした。セキュリティ証明書の期限が昨日で切れています。原因として、設定が不適切であるか、悪意のあるユーザーが接続を妨害していることが考えられます。パソコンの時計は現在 <ph name="CURRENT_DATE" /> に設定されています。この時刻が正しくない場合は、システムの時計を修正して、このページを更新してください。}other{このサーバーが <ph name="DOMAIN" /> であることを確認できませんでした。セキュリティ証明書の期限が # 日前に切れています。原因として、設定が不適切であるか、悪意のあるユーザーが接続を妨害していることが考えられます。パソコンの時計は現在 <ph name="CURRENT_DATE" /> に設定されています。この時刻が正しくない場合は、システムの時計を修正して、このページを更新してください。}}</translation>
 <translation id="1902576642799138955">有効期間</translation>
@@ -806,6 +800,7 @@
 <translation id="2674804415323431591">候補を非表示にする</translation>
 <translation id="2677696497921480781">誕生日</translation>
 <translation id="2677748264148917807">このページを離れる</translation>
+<translation id="2678468611080193228">サードパーティ Cookie を一時的に許可してみてください。保護の強度は低下しますが、サイトの機能が動作する可能性が高くなります</translation>
 <translation id="2687555958734450033">最適サイズ</translation>
 <translation id="2688186765492306706">500x760 mm</translation>
 <translation id="2688969097326701645">はい、続行します</translation>
@@ -1469,6 +1464,7 @@
 <translation id="4152318981910038897">{COUNT,plural, =1{1 ページ}other{{COUNT} ページ}}</translation>
 <translation id="4154277373259957087">Chrome では、お支払い方法を入力する前に本人確認が行われるようになります。この機能は <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" /> でいつでも変更できます。</translation>
 <translation id="4154664944169082762">指紋</translation>
+<translation id="4159149286839604525">サイトのほとんどの機能は動作しますが、保護の強度が低下します</translation>
 <translation id="4159784952369912983">パープル</translation>
 <translation id="4165986682804962316">サイトの設定</translation>
 <translation id="4169535189173047238">許可しない</translation>
@@ -1875,6 +1871,7 @@
 <translation id="4983145717627482381">ガイド付きツアー、添乗員同行の旅</translation>
 <translation id="498323057460789381">スキーマ検証エラー: <ph name="ERROR" /></translation>
 <translation id="4984088539114770594">マイクを使用しますか？</translation>
+<translation id="4985206706500620449">このサイトのサードパーティ Cookie を許可しました</translation>
 <translation id="4989163558385430922">すべて表示</translation>
 <translation id="4989542687859782284">利用不可</translation>
 <translation id="4989809363548539747">このプラグインはサポートされていません</translation>
@@ -1884,6 +1881,7 @@
 <translation id="4995474875135717171">更新日時:</translation>
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab、Enter キーの順に押すと、サイト内検索とデフォルトの検索エンジンを管理します</translation>
 <translation id="4998950033665438990">片面</translation>
+<translation id="5001526427543320409">サードパーティ Cookie</translation>
 <translation id="5002932099480077015">有効にすると、Chrome ではこのデバイスにカードのコピーが保存されます。これにより、フォームにすばやく入力できるようになります。</translation>
 <translation id="5007392906805964215">内容を確認</translation>
 <translation id="5011561501798487822">検出された言語</translation>
@@ -2566,7 +2564,6 @@
 <translation id="6450212216969386944">長形 40 号封筒</translation>
 <translation id="6451458296329894277">フォーム再送信の確認</translation>
 <translation id="6452889436791091116">ISO ID-1</translation>
-<translation id="6453457495574553803">ポリシーの対象を選択</translation>
 <translation id="6456955391422100996">広告を削除しました。</translation>
 <translation id="6457206614190510200">中綴じ</translation>
 <translation id="6457455098507772300">値下げアラートがデスクトップにポップアップ通知として表示されます</translation>
@@ -2600,6 +2597,7 @@
 <translation id="6521745193039995384">無効</translation>
 <translation id="6524830701589638230">[ユーザー補助設定を管理] ボタンです。実行すると、Chrome の設定でユーザー補助ツールをカスタマイズできます</translation>
 <translation id="6529173248185917884">ロール 7</translation>
+<translation id="652937045869844725">サードパーティ Cookie を許可してみてください。保護の強度は低下しますが、サイトの機能が動作する可能性が高くなります</translation>
 <translation id="6529602333819889595">削除のやり直し（&amp;R）</translation>
 <translation id="6535751101619004418">通貨、為替</translation>
 <translation id="6536221421038631327"><ph name="DEVICE_TYPE" /> から Passpoint の登録を削除すると、関連付けられているネットワークが削除されます。登録プランを変更するには「<ph name="FRIENDLY_NAME" />」にお問い合わせください。<ph name="LEARN_MORE" /></translation>
@@ -2862,6 +2860,7 @@
 <translation id="7102079138917191645">建設、メンテナンス</translation>
 <translation id="7102554173784142865">Chrome Dino ゲームをプレイ</translation>
 <translation id="7102760431686146931">調理器具、食器類</translation>
+<translation id="7106762743910369165">お使いのブラウザは組織によって管理されています</translation>
 <translation id="7108338896283013870">非表示</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> から、カメラの使用許可を求められています</translation>
 <translation id="7108819624672055576">拡張機能によって許可</translation>
@@ -2875,12 +2874,6 @@
 <translation id="7119371694555167493">コピーがタイムアウトしました</translation>
 <translation id="7119414471315195487">他のタブやプログラムを閉じる</translation>
 <translation id="7124354851782353862">CVC を入力してください</translation>
-<translation id="7129355289156517987">Chromium のシークレット タブをすべて閉じると、シークレット タブでの以下のアクティビティがこのデバイスから削除されます。
-          <ph name="BEGIN_LIST" />
-            <ph name="LIST_ITEM" />閲覧アクティビティ<ph name="END_LIST_ITEM" />
-            <ph name="LIST_ITEM" />検索履歴<ph name="END_LIST_ITEM" />
-            <ph name="LIST_ITEM" />フォームに入力された情報<ph name="END_LIST_ITEM" />
-          <ph name="END_LIST" /></translation>
 <translation id="7129409597930077180">この住所には配送できません。別の住所を選択してください。</translation>
 <translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
 <translation id="7130775116821607281">アップロードがブロックされました</translation>
@@ -2931,6 +2924,7 @@
 <translation id="7221855153210829124">通知を表示</translation>
 <translation id="7221857374443660083">ご利用の銀行が本人確認を求めています</translation>
 <translation id="722454870747268814">新しいシークレット タブ</translation>
+<translation id="7226276626900992675">このサイトにサードパーティ Cookie の使用を許可しました。サイトのほとんどの機能は動作しますが、保護の強度が低下します。</translation>
 <translation id="7227293336683593977">価格の推移</translation>
 <translation id="7233592378249864828">確認シートの印刷</translation>
 <translation id="7234638337680728591">ガソリン料金、燃費</translation>
@@ -3549,7 +3543,6 @@
 <translation id="8483229036294884935">この住所は Google アカウント（<ph name="ACCOUNT" />）から削除されます</translation>
 <translation id="8488350697529856933">適用先</translation>
 <translation id="8490137692873530638">スタッカー 10</translation>
-<translation id="8493829133024050711">ポリシーのソースを選択</translation>
 <translation id="8493948351860045254">容量を空ける</translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" /> からの応答時間が長すぎます。</translation>
 <translation id="8503559462189395349">Chrome パスワード</translation>
@@ -3615,7 +3608,6 @@
 <translation id="8623885649813806493">一致するパスワードがありません。保存したパスワードをすべて表示します。</translation>
 <translation id="8624354461147303341">割引情報を取得</translation>
 <translation id="8634957317623797170">54x86 mm</translation>
-<translation id="8637577059508742477">お使いのプロフィールとブラウザは <ph name="DOMAIN" /> によって管理されています</translation>
 <translation id="8641131559425911240">封筒（ボンド）</translation>
 <translation id="8643409044755049933">角形 3 号封筒</translation>
 <translation id="8647287295490773273">210x330 mm</translation>
@@ -3692,6 +3684,7 @@
 <translation id="8793655568873652685"><ph name="ENROLLMENT_DOMAIN" /> により、お使いのブラウザで Chrome Enterprise Connectors が有効化されています。これらのコネクタには、一部のユーザーデータへのアクセスが許可されます。</translation>
 <translation id="8798099450830957504">既定</translation>
 <translation id="8798739476508189189">ブラウザのフラグをお探しですか？次にアクセスしてください:</translation>
+<translation id="8800034312320686233">サイトが動作していない場合</translation>
 <translation id="8805819170075074995">リスト項目「<ph name="LANGUAGE_ID" />」: SpellcheckLanguage ポリシーにも含まれているため、この項目は無視されます。</translation>
 <translation id="8806285662264631610">バス、ボディ商品</translation>
 <translation id="8806696968588872703">プラスチック（サテン）</translation>

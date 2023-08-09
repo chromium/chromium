@@ -166,7 +166,6 @@
 <translation id="2312704192806647271">{COUNT,plural, =1{Nie udało się znaleźć rozszerzenia o identyfikatorze <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Skontaktuj się z administratorem.}few{Nie udało się znaleźć rozszerzeń o identyfikatorach <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Skontaktuj się z administratorem.}many{Nie udało się znaleźć rozszerzeń o identyfikatorach <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Skontaktuj się z administratorem.}other{Nie udało się znaleźć rozszerzeń o identyfikatorach <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Skontaktuj się z administratorem.}}</translation>
 <translation id="2325650632570794183">Ten typ plików jest nieobsługiwany. W Chrome Web Store znajdziesz aplikację otwierającą pliki tego typu.</translation>
 <translation id="2326539130272988168">Bułgarski</translation>
-<translation id="2337715497728194187">Udostępnij maszynie wirtualnej Bruschetta</translation>
 <translation id="233822363739146957">Za mało miejsca na synchronizację wszystkich plików</translation>
 <translation id="23721837607121582">Pobierz profil mobilny: sieć <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Przełącz na widok listy</translation>
@@ -197,7 +196,6 @@
 <translation id="2544853746127077729">Certyfikat uwierzytelniania został odrzucony przez sieć</translation>
 <translation id="255937426064304553">amerykańska klawiatura międzynarodowa</translation>
 <translation id="2563185590376525700">Żaba</translation>
-<translation id="2574327434504608656">Maszynie wirtualnej Bruschetta udostępniono 1 folder</translation>
 <translation id="2578394532502990878">Tamilski fonetyczny</translation>
 <translation id="2579959351793446050">Orija</translation>
 <translation id="2587195714949534472">Przygotowuję do synchronizacji pliku <ph name="FILE_NAME" />…</translation>
@@ -297,7 +295,6 @@
 <translation id="3408072735282270043">Aktywuj, <ph name="NETWORK_NAME" /></translation>
 <translation id="3408236822532681288">Niemiecki (Niemcy) z klawiaturą Neo 2</translation>
 <translation id="3414856743105198592">Formatowanie nośnika wymiennego spowoduje usunięcie wszystkich danych. Czy chcesz kontynuować?</translation>
-<translation id="3435143625481187092">Przyznaj maszynie wirtualnej Bruschetta uprawnienia dostępu do plików w folderze <ph name="FOLDER_NAME" /></translation>
 <translation id="3437801641691368414">Godzina utworzenia</translation>
 <translation id="343907260260897561">Polaroid</translation>
 <translation id="3455931012307786678">Estoński</translation>
@@ -385,7 +382,6 @@
 <translation id="4159731583141908892">Plik <ph name="FILE_NAME" /> został przeniesiony.</translation>
 <translation id="4176286497474237543">Opróżnij kosz</translation>
 <translation id="4179621117429069925">Ten element jest w koszu</translation>
-<translation id="4181839429935094755">Foldery udostępnione maszynie wirtualnej Bruschetta: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="4186579485882418952">Włącz tryb offline</translation>
 <translation id="4193154014135846272">Dokument Google</translation>
 <translation id="4197674956721858839">Spakuj wybrane do pliku ZIP</translation>
@@ -452,7 +448,6 @@
 <translation id="4646813851450205600">Czeski z klawiaturą QWERTY</translation>
 <translation id="4656777537938206294">Udostępnij pliki offline</translation>
 <translation id="4658782175094886150">Osoba w śniegu</translation>
-<translation id="466782788172479199">Przyznaj maszynie wirtualnej Bruschetta uprawnienia dostępu do plików na Dysku Google. Zmiany będą synchronizowane z innymi urządzeniami.</translation>
 <translation id="4669606053856530811">Osoby z uprawnieniami do: „<ph name="SOURCE_NAME" />” utracą dostęp do tych elementów, chyba że zostaną one im udostępnione.</translation>
 <translation id="467809019005607715">Prezentacje Google</translation>
 <translation id="4690246192099372265">Szwedzki</translation>
@@ -564,7 +559,6 @@
 <translation id="5323213332664049067">Ameryka Łacińska</translation>
 <translation id="5330145655348521461">Te pliki zostały otwarte na innym pulpicie. Przejdź do <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />), aby je zobaczyć.</translation>
 <translation id="5330512191124428349">Więcej informacji</translation>
-<translation id="5344246330454251646">Zarządzaj udostępnianiem danych maszynie wirtualnej Bruschetta</translation>
 <translation id="535792325654997756">Osoba z kotami</translation>
 <translation id="5358764674931277">Liczba klatek</translation>
 <translation id="5363339716524495120">Język wprowadzania: chiński</translation>
@@ -732,7 +726,6 @@
 <translation id="6710213216561001401">Poprzedni</translation>
 <translation id="6732801395666424405">Certyfikaty nie zostały wczytane</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
-<translation id="6740270213273127264">Udostępnij folder maszynie wirtualnej Bruschetta</translation>
 <translation id="6750737795876287924">Bieżący katalog</translation>
 <translation id="6751256176799620176">Wybrano jeden folder</translation>
 <translation id="6755827872271341378">Urządzenie z ChromeOS Flex</translation>

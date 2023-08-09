@@ -72,7 +72,6 @@
 <translation id="2592940277904433508">Продължаване на използването на Chromium</translation>
 <translation id="2648074677641340862">По време на инсталирането възникна грешка в операционната система. Моля, изтеглете отново Chromium.</translation>
 <translation id="2661879430930417727">Ако споделяте устройство, близките и приятелите ви могат да сърфират отделно и да настроят Chromium точно така, както искат</translation>
-<translation id="2669853942967761236">Chromium блокира този архивен файл, защото е възможно да крие злонамерен софтуер</translation>
 <translation id="268602741124540128">Добре дошли в Chromium, <ph name="ACCOUNT_FIRST_NAME" /></translation>
 <translation id="2711502716910134313">Раздел в Chromium</translation>
 <translation id="2718390899429598676">За повишаване на сигурността Chromium ще шифрова данните ви.</translation>
@@ -401,6 +400,5 @@
 <translation id="942598560705308788">Сертификати, управлявани от Chromium</translation>
 <translation id="965162752251293939">Кой използва Chromium?</translation>
 <translation id="967427899662692980">Получете най-високото ниво на сигурност на Chromium</translation>
-<translation id="9792300276217204">Изчистване на данните за сайтовете от устройството ви при всяко затваряне на Chromium</translation>
 <translation id="985602178874221306">Авторите на Chromium</translation>
 </translationbundle>

@@ -70,7 +70,6 @@
 <translation id="2592940277904433508">‏مواصلة استخدام Chromium</translation>
 <translation id="2648074677641340862">‏حدث خطأ في نظام التشغيل أثناء عملية التثبيت. يُرجى إعادة تنزيل Chromium.</translation>
 <translation id="2661879430930417727">‏في حال مشاركة جهاز مع الأصدقاء والعائلة، يمكنهم الحصول على تجربة تصفّح منفصلة وإعداد Chromium على النحو المفضّل لديهم.</translation>
-<translation id="2669853942967761236">‏حَظَر Chromium ملف الأرشيف هذا لأنّه يُحتمَل أن يُخفي برامج ضارة.</translation>
 <translation id="268602741124540128">‏مرحبًا بك في Chromium، <ph name="ACCOUNT_FIRST_NAME" /></translation>
 <translation id="2711502716910134313">‏علامة تبويب Chromium</translation>
 <translation id="2718390899429598676">‏لمزيد من الأمان، سيشفر Chromium بياناتك</translation>
@@ -405,6 +404,5 @@
 <translation id="942598560705308788">‏الشهادات التي يديرها متصفّح Chromium</translation>
 <translation id="965162752251293939">‏مَن يستخدم Chromium؟</translation>
 <translation id="967427899662692980">‏الحصول على أعلى مستوى من الأمان في متصفِّح Chromium</translation>
-<translation id="9792300276217204">‏محو بيانات الموقع الإلكتروني من جهازك دائمًا عند إغلاق Chromium</translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
 </translationbundle>

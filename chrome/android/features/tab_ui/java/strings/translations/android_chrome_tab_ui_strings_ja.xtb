@@ -3,7 +3,6 @@
 <translationbundle lang="ja">
 <translation id="1075622780330595106">しばらく使用していないタブが <ph name="NUMBER_OF_TABS" /> 個あります。これらのタブを閉じますか？</translation>
 <translation id="125153950246128346">タップすると他のタブが表示されます</translation>
-<translation id="1455506303394048917">これらのシークレット タブでのアクティビティはこのデバイスから削除されます</translation>
 <translation id="1499635324672558517">すべてのシークレット タブを閉じますか？</translation>
 <translation id="1657719826150349398">タブを下に移動</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> 個のタブ}other{<ph name="TABS_COUNT_MANY" /> 個のタブ}}</translation>

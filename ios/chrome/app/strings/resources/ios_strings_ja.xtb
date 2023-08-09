@@ -268,6 +268,7 @@
 <translation id="2648721026697078500">移動しない</translation>
 <translation id="2648803196158606475">既読を削除</translation>
 <translation id="2664621323652615289">停止</translation>
+<translation id="2666092431469916601">一番上</translation>
 <translation id="2671426118752779020">iPhone の他のアプリで Google パスワード マネージャーに保存したパスワードを使用できます。</translation>
 <translation id="2690858294534178585">カメラが使用中です</translation>
 <translation id="26915454213703967">Google で画像内を検索</translation>
@@ -354,6 +355,7 @@
 検索履歴を削除する場合は、お使いの検索エンジンの手順をご確認ください（該当する場合）。</translation>
 <translation id="3080525922482950719">ページを保存して、後で読んだり、オフラインで読んだりできます</translation>
 <translation id="3081338492074632642">保存するパスワードが <ph name="WEBSITE" /> のパスワードと一致していることを確認してください</translation>
+<translation id="3087734570205094154">下</translation>
 <translation id="309672519329227863">他のアプリから Chrome のパスワードなどにアクセスできます。</translation>
 <translation id="3112556859945124369">マーク...</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />同期できるアイテムを確認する<ph name="END_LINK" /></translation>
@@ -431,7 +433,6 @@
 <translation id="3533436815740441613">新しいタブ</translation>
 <translation id="3540141921715814660">ブックマークに追加する</translation>
 <translation id="3551320343578183772">タブを閉じる</translation>
-<translation id="3554280880535219766">下部にアドレスバーを表示</translation>
 <translation id="3565207542107370586">閲覧履歴データを削除する…</translation>
 <translation id="3575234738189584619">レンズで検索</translation>
 <translation id="3577555362230509265">Chrome を他のアプリで使用します。</translation>
@@ -441,7 +442,6 @@
 <translation id="3595252146048399851">同期する項目はいつでも [<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />] で選択できます。Google では、履歴に基づいて検索やその他のサービスをカスタマイズすることがあります。</translation>
 <translation id="3603009562372709545">リンクのURLをコピー</translation>
 <translation id="3607167657931203000">自動入力のデータ</translation>
-<translation id="3608008480985212611">設定を管理するにはログインしてください。</translation>
 <translation id="3609785682760573515">同期しています...</translation>
 <translation id="3631443864840848029">このサイトの現在のパスワードを保存していることをご確認ください。</translation>
 <translation id="3638472932233958418">ウェブページのプリロード</translation>
@@ -515,6 +515,7 @@
 <translation id="4133265950310064865">保護強化機能</translation>
 <translation id="4148023517926189160">このウェブサイトがファイルをダウンロードしてカレンダーに追加する許可を求めています。</translation>
 <translation id="4152011295694446843">ブックマークはここに表示されます</translation>
+<translation id="4168651806173792090"><ph name="NETWORK_NAME" />（末尾 4 桁: <ph name="LAST_FOUR_DIGITS" />）</translation>
 <translation id="4172051516777682613">常に表示</translation>
 <translation id="418156467088430727">オフライン版を新しいタブで表示</translation>
 <translation id="4181841719683918333">言語</translation>
@@ -700,7 +701,6 @@
 <translation id="5271265092610673171">{count,plural, =1{必須項目が空白です。保存する前に入力してください。}other{一部の必須項目が空白です。保存する前に入力してください。}}</translation>
 <translation id="5271549068863921519">パスワードを保存</translation>
 <translation id="5283494734135414249">アドレスバーの下に表示されるショートカットをタップします。</translation>
-<translation id="5292723732574094123">ログアウトしています。ログインすると、アカウントにブックマークやパスワードなどが表示されます。</translation>
 <translation id="5295239312320826323">アカウント（<ph name="USER_EMAIL" />）を削除しますか？</translation>
 <translation id="5300589172476337783">表示</translation>
 <translation id="5317780077021120954">保存</translation>
@@ -759,7 +759,6 @@
 <translation id="5702108177581350218">ユーザー名とパスワードを共有すると、ファミリー メンバーは Google パスワード マネージャーを使用してそれらを入力できます。</translation>
 <translation id="5704908597376970822">ログインできません。</translation>
 <translation id="5706552126692816153">最終同期: 1 日前</translation>
-<translation id="5711039611392265845">プライバシー、セキュリティ、データ収集に関連するその他の設定については、<ph name="BEGIN_LINK" />同期と Google サービス<ph name="END_LINK" />をご覧ください。</translation>
 <translation id="5718049162805123412">今すぐ変更してください</translation>
 <translation id="5724941645893276623">ウェブをプライベートに閲覧するには、新しいタブを追加してください</translation>
 <translation id="5728700505257787410">アカウントへのログイン中に問題が発生しました。</translation>
@@ -771,7 +770,6 @@
 <translation id="574762237186762643">予定</translation>
 <translation id="5755162682436943950">ログアウトしています。ログインして同期をオンにするダイアログを開きます。</translation>
 <translation id="5758631781033351321">リーディング リストはここに表示されます</translation>
-<translation id="5760258696409739442">上部にアドレスバーを表示</translation>
 <translation id="5762370665605786758">Google Pay のお支払い方法と住所は、パスフレーズによる暗号化の対象には含まれません。
 
 パスフレーズを知っているユーザーだけが暗号化されたデータを見ることができます。パスフレーズは Google には送信されず、保存されることもありません。パスフレーズを忘れた場合や、この設定を変更する場合は、<ph name="BEGIN_LINK" />アカウントの Chrome データを消去<ph name="END_LINK" />してください。</translation>
@@ -935,6 +933,7 @@
 <translation id="651505212789431520">同期をキャンセルしますか？同期は設定でいつでもオンにできます。</translation>
 <translation id="6518133107902771759">確認</translation>
 <translation id="6524918542306337007">シークレット モードは使用できません</translation>
+<translation id="6527303717912515753">共有</translation>
 <translation id="6530992499366869131">データ侵害によりパスワードが漏洩した場合に警告する</translation>
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6540120577248033958">サイトにアクセスして、Chrome メニューで [フォロー] をクリックします</translation>
@@ -1222,6 +1221,7 @@
 <translation id="8281781826761538115">デフォルト - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">スキップ</translation>
 <translation id="8283172974887967105">設定…</translation>
+<translation id="8286036467436129157">ログイン</translation>
 <translation id="8299417921174340354">パスワードを使用するには、まずデバイスにパスコードを設定する必要があります。</translation>
 <translation id="8299613349954694191">ウェブをプライベート モードで閲覧するにはシークレット タブを開きます。</translation>
 <translation id="8316944564970119719">サイトとパスワードを入力し、保存する</translation>

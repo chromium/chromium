@@ -99,6 +99,7 @@
 <translation id="2621115761605608342">Permitir la ejecución de JavaScript para un sitio específico</translation>
 <translation id="2653659639078652383">Enviar</translation>
 <translation id="2677748264148917807">Abandonar</translation>
+<translation id="2678468611080193228">Intenta permitir temporalmente cookies de terceros, lo que implica menos protección, pero aumenta las probabilidades de que las funciones del sitio puedan usarse</translation>
 <translation id="2687403674020088961">Bloquear todas las cookies (opción no recomendada)</translation>
 <translation id="2713106313042589954">Desactivar la cámara</translation>
 <translation id="2717722538473713889">Direcciones de correo electrónico</translation>
@@ -138,6 +139,7 @@
 <translation id="3362437373201486687">Buscando dispositivos Bluetooth</translation>
 <translation id="3386292677130313581">Preguntar antes de permitir que los sitios conozcan tu ubicación (recomendado)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" />%%</translation>
+<translation id="344449859752187052">Se bloquearon las cookies de terceros</translation>
 <translation id="3521663503435878242">Sitios en <ph name="DOMAIN" /></translation>
 <translation id="3538390592868664640">No permitir que los sitios creen un mapa 3D de tu entorno ni hagan un seguimiento de la posición de la cámara</translation>
 <translation id="3544058026430919413">Una empresa puede definir un grupo de sitios que pueden usar cookies para compartir tu actividad en el grupo. Esta función está desactivada en el modo Incógnito.</translation>
@@ -212,6 +214,7 @@
 <translation id="4962975101802056554">Revocar todos los permisos del dispositivo</translation>
 <translation id="497421865427891073">Avanzar</translation>
 <translation id="4976702386844183910">Última visita: <ph name="DATE" /></translation>
+<translation id="4985206706500620449">Permitiste las cookies de terceros para este sitio</translation>
 <translation id="4994033804516042629">No se encontraron contactos</translation>
 <translation id="4996978546172906250">Compartir mediante</translation>
 <translation id="5001526427543320409">Cookies de terceros</translation>
@@ -256,6 +259,7 @@
 <translation id="5677928146339483299">Bloqueado</translation>
 <translation id="5689516760719285838">Ubicación</translation>
 <translation id="5690795753582697420">La cámara está desactivada en la configuración de Android</translation>
+<translation id="5700761515355162635">Se permiten cookies de terceros</translation>
 <translation id="5706552988683188916">Esta acción borra las cookies y otros datos de sitios para <ph name="WEBSITE" /></translation>
 <translation id="5719847187258001597">Esta acción borrará todos los datos y cookies almacenados por <ph name="ORIGIN" /> o su app que aparece en la pantalla principal.</translation>
 <translation id="5723967018671998714">En el modo Incógnito, se bloquean las cookies de terceros</translation>
@@ -303,6 +307,7 @@
 <translation id="6467852467360539617">Borrar datos y restablecer permisos</translation>
 <translation id="6500423977866688905">Cuando la ventana sea reducida, solicita la vista para dispositivos móviles</translation>
 <translation id="6527303717912515753">Compartir</translation>
+<translation id="652937045869844725">Intenta permitir cookies de terceros, lo que implica menos protección, pero aumenta las probabilidades de que las funciones del sitio puedan usarse</translation>
 <translation id="6545864417968258051">Búsqueda de dispositivos Bluetooth</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{Bloqueados: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> y <ph name="NUM_MORE" /> más}other{Bloqueados: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> y <ph name="NUM_MORE" /> más}}</translation>
 <translation id="6554732001434021288">Última visita: hace <ph name="NUM_DAYS" /> días</translation>
@@ -435,6 +440,7 @@
 <translation id="8736193154595564524">{NUM_SELECTED,plural, =1{Se permite 1 sitio}other{Se permiten # sitios}}</translation>
 <translation id="8737217482364735741">Esta acción borrará todos los datos y cookies almacenados por <ph name="ORIGIN" />.</translation>
 <translation id="8751914237388039244">Seleccionar una imagen</translation>
+<translation id="8800034312320686233">¿No funciona el sitio?</translation>
 <translation id="8801436777607969138">Bloquea JavaScript para un sitio específico.</translation>
 <translation id="8803526663383843427">Cuando está activada</translation>
 <translation id="8805385115381080995">La navegación es más rápida porque el sitio tiene menos probabilidades de pedirte que verifiques si eres una persona real.</translation>

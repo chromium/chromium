@@ -37,7 +37,7 @@
 <translation id="2732745070297234559">Chrome no ha pogut comprovar totes les contrasenyes. Torna-ho a provar demà.</translation>
 <translation id="2736805085127235148">En aquests moments, les notificacions de Chrome estan desactivades a la configuració del dispositiu.</translation>
 <translation id="2767464022270041271">No hi ha cap contrasenya desada. El gestor de contrasenyes de Google pot comprovar les teves contrasenyes quan les deses.</translation>
-<translation id="2840432500933227975">Obre la configuració de Chrome a iOS, toca Aplicació de navegador predeterminada i selecciona Chrome.</translation>
+<translation id="2840432500933227975">Obre la configuració de Chrome a iOS, toca App de navegació per omissió i selecciona Chrome.</translation>
 <translation id="2869959624320573933">Inicia la sessió a Chrome</translation>
 <translation id="2876628302275096482">Més informació sobre <ph name="BEGIN_LINK" />com Chrome manté la privadesa de les teves dades<ph name="END_LINK" /></translation>
 <translation id="2957447865124070833">Selecciona <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
@@ -143,7 +143,7 @@
 <translation id="8459495907675268833">Les dades seleccionades s'han suprimit de Chrome i dels dispositius sincronitzats. És possible que el vostre compte de Google tingui altres formes de l'historial de navegació a history.google.com, com ara les cerques i l'activitat d'altres serveis de Google.</translation>
 <translation id="850555388806794946">Per establir Chrome com a navegador predeterminat:
   1. Obre Configuració.
-  2. Toca Aplicació de navegador predeterminada.
+  2. Toca App de navegació per omissió.
   3. Selecciona Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8603022514504485810">El gestor de contrasenyes de Google no ha pogut comprovar totes les contrasenyes. Torna-ho a provar demà o <ph name="BEGIN_LINK" />comprova les contrasenyes desades al teu Compte de Google<ph name="END_LINK" />.</translation>
@@ -151,6 +151,7 @@
 <translation id="8765470054473112089">Quan escrius a la barra d'adreces o al quadre de cerca, Chrome envia el que escrius al teu motor de cerca predeterminat per obtenir millors suggeriments. Aquesta opció està desactivada en el mode d'incògnit.</translation>
 <translation id="8772179140489533211">Mostra sol·licituds per iniciar la sessió a Chrome.</translation>
 <translation id="8788269841521769222">No caldrà que recordis aquesta contrasenya. Es desarà al gestor de contrasenyes de Google per a <ph name="EMAIL" /></translation>
+<translation id="8808828119384186784">Configuració de Chrome</translation>
 <translation id="8857676124663337448">El gestor de contrasenyes de Google no ha pogut comprovar totes les contrasenyes. Torna-ho a provar demà.</translation>
 <translation id="8897749957032330183">Les contrasenyes es desen al gestor de contrasenyes de Google en aquest dispositiu.</translation>
 <translation id="8969290730818637510">Quan aquesta opció està activada:

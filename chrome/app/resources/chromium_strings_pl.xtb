@@ -72,7 +72,6 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="2592940277904433508">Nadal korzystaj z Chromium</translation>
 <translation id="2648074677641340862">Podczas instalacji wystąpił błąd systemu operacyjnego. Pobierz Chromium ponownie.</translation>
 <translation id="2661879430930417727">Jeśli dzielisz urządzenie ze znajomymi lub rodziną, wszyscy możecie niezależnie przeglądać internet i skonfigurować Chromium po swojemu</translation>
-<translation id="2669853942967761236">Ten plik archiwum został zablokowany przez Chromium, bo może zawierać złośliwe oprogramowanie</translation>
 <translation id="268602741124540128">Witamy w Chromium, <ph name="ACCOUNT_FIRST_NAME" /></translation>
 <translation id="2711502716910134313">Karta Chromium</translation>
 <translation id="2718390899429598676">Dla większego bezpieczeństwa Chromium szyfruje dane.</translation>
@@ -404,6 +403,5 @@ Chromium nie może odzyskać ustawień.</translation>
 <translation id="942598560705308788">Certyfikaty zarządzane przez Chromium</translation>
 <translation id="965162752251293939">Kto używa Chromium?</translation>
 <translation id="967427899662692980">Korzystaj z najlepszych zabezpieczeń Chromium</translation>
-<translation id="9792300276217204">Zawsze usuwaj dane witryn z urządzenia po zamknięciu Chromium</translation>
 <translation id="985602178874221306">Autorzy Chromium</translation>
 </translationbundle>

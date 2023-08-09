@@ -63,6 +63,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="1235458158152011030">Redes conhecidas</translation>
 <translation id="1239161794459865856">O recurso <ph name="FEATURE_NAME" /> está conectado.</translation>
 <translation id="1240638468526743569">Um app</translation>
+<translation id="1242883863226959074">dispositivo</translation>
 <translation id="124678866338384709">Fechar a guia atual</translation>
 <translation id="1246890715821376239">Apps sem suporte</translation>
 <translation id="1247372569136754018">Microfone (interno)</translation>
@@ -181,6 +182,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="1747827819627189109">Teclado na tela ativado</translation>
 <translation id="1749109475624620922">Janela <ph name="WINDOW_TITLE" /> atribuída a todos os espaços de trabalho</translation>
 <translation id="1750088060796401187">São permitidos apenas <ph name="MAX_DESK_LIMIT" /> espaços de trabalho. Remova um deles para abrir outro novo.</translation>
+<translation id="1755556344721611131">App Diagnóstico</translation>
 <translation id="1756833229520115364">Não foi possível salvar o modelo. Excesso de janelas ou guias.</translation>
 <translation id="1757857692711134412">Desativado até o pôr do sol</translation>
 <translation id="1768366657309696705">O atalho de teclado <ph name="LAUNCHER_KEY_NAME" /> + ponto final mudou. Para usar a tecla Insert, pressione <ph name="LAUNCHER_KEY_NAME" /> + Shift + Backspace.</translation>
@@ -266,7 +268,6 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="2148716181193084225">Hoje</translation>
 <translation id="2149229036084364364">Ir para a faixa anterior</translation>
 <translation id="2161132820593978283">Use o enquadramento da câmera para ficar no centro da tela durante videochamadas. Ative essa opção nas Configurações rápidas.</translation>
-<translation id="2165966740263283349">uso do armazenamento</translation>
 <translation id="2170530631236737939">Deslize com três dedos para baixo para fechar a Visão geral</translation>
 <translation id="2185166372312820725">Ir para a guia anterior</translation>
 <translation id="2185444992308415167">Percorrer as guias 1 a 8</translation>
@@ -474,6 +475,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3113492864356515707">Destacar item anterior na estante</translation>
 <translation id="3120421559657122717">Desligar dispositivo?</translation>
+<translation id="3122464029669770682">CPU</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">Reiniciar para atualizar</translation>
 <translation id="3139188263101386725">Use o atalho atualizado</translation>
@@ -518,7 +520,6 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="3308453408813785101">O usuário <ph name="USER_EMAIL_ADDRESS" /> ainda poderá fazer login mais tarde.</translation>
 <translation id="3321628682574733415">Código de familiar responsável incorreto</translation>
 <translation id="332827762492701193">As notificações estão ocultas</translation>
-<translation id="3338855835380298613">uso da cpu</translation>
 <translation id="3339826665088060472">Captura de tela, ferramentas para capturar e gravar a tela do dispositivo</translation>
 <translation id="3340978935015468852">configurações</translation>
 <translation id="3341303451326249809">Captura de tela feita</translation>
@@ -642,7 +643,6 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="3781910048497807059">Mudar o foco para o painel anterior</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">Bloquear</translation>
-<translation id="3796198851576711985">integridade da bateria</translation>
 <translation id="3796746699333205839">Um aplicativo está usando a câmera e o microfone</translation>
 <translation id="3798670284305777884">Alto-falante (interno)</translation>
 <translation id="3799080171973636491">Você pressionou o atalho de teclado para a lupa de tela cheia. Gostaria de ativá-la?</translation>
@@ -814,12 +814,10 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="4527045527269911712">O dispositivo Bluetooth "<ph name="DEVICE_NAME" />" deseja permissão para realizar o pareamento.</translation>
 <translation id="4533343294786968049">Carregando o dispositivo. A bateria será completamente carregada até <ph name="FULLY_CHARGE_TIME" />.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> até completar</translation>
-<translation id="4536664881735498710">uso de ram</translation>
 <translation id="4538824937723742295">Capturar tela cheia</translation>
 <translation id="4539127209940689201">Imprimir a página atual</translation>
 <translation id="4541706525461326392">Removendo o perfil. Pode levar alguns minutos..</translation>
 <translation id="4544483149666270818">Selecione uma janela para a gravação</translation>
-<translation id="454541942614298893">meu dispositivo</translation>
 <translation id="4545950850562423083">Salvar a página atual como favorita</translation>
 <translation id="4548482551627849548">Mover a janela ativa para o espaço de trabalho à esquerda</translation>
 <translation id="4560576029703263363">Ativado</translation>
@@ -978,7 +976,6 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="5208059991603368177">Ativado</translation>
 <translation id="5216991270656129561">Desativado até <ph name="TIME" /></translation>
 <translation id="5217646019792206018">Próximo espaço de trabalho: <ph name="NEXT_DESK_NAME" />. Use as teclas Pesquisa + barra de espaço ou o atalho Shift + Pesquisa + <ph name="NEXT_DESK_INDEX" /> para ativar.</translation>
-<translation id="5221423477036820198">Envie ou responda rapidamente às mensagens do smartphone usando o recurso Seu smartphone.</translation>
 <translation id="5222676887888702881">Sair</translation>
 <translation id="5229343007215035173">Ativar/desativar a Tela de privacidade</translation>
 <translation id="5234764350956374838">Dispensar</translation>
@@ -1139,7 +1136,6 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="589817443623831496">Verificação por ponto</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5901630391730855834">Amarelo</translation>
-<translation id="5902162043476810127">memória de acesso aleatório</translation>
 <translation id="5909862606227538307">Espaço de trabalho inativo.</translation>
 <translation id="5911231045062997865">Não é possível usar janelas do Lacros no momento. Outros apps vão ser salvos.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
@@ -1543,7 +1539,6 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="7724603315864178912">Recortar</translation>
 <translation id="7725108879223146004">Consulte detalhes do ponto de acesso. Ele está sendo desativado.</translation>
 <translation id="7727952505535211425">Abrir o site na barra de endereço em uma nova guia</translation>
-<translation id="77365090426890123">uso da memória</translation>
 <translation id="7742327441377685481">Sem notificações</translation>
 <translation id="7748275671948949022">Destacar o botão do acesso rápido na estante</translation>
 <translation id="7749443890790263709">O número máximo de áreas de trabalho foi atingido.</translation>
@@ -1795,7 +1790,6 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="8853703225951107899">Ainda não foi possível verificar seu PIN ou sua senha. Observação: se você mudou a senha recentemente, use a antiga. A nova senha será aplicada depois que você sair.</translation>
 <translation id="8855885154700222542">Tecla de tela cheia</translation>
 <translation id="8858369206579825206">Controles de privacidade</translation>
-<translation id="8860817004574502558">duração da bateria</translation>
 <translation id="8870509716567206129">O app não é compatível com a divisão de tela.</translation>
 <translation id="8874184842967597500">Não conectado</translation>
 <translation id="8875021410787719674">Alternar entre o canto inferior direito, o acesso rápido, a barra de endereço, a barra de favoritos, o site aberto e os downloads</translation>
@@ -1848,6 +1842,7 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="9080073830732419341">Câmera alinhada ao canto esquerdo de cima</translation>
 <translation id="9080132581049224423">Deslize para cima para ir para a tela inicial</translation>
 <translation id="9080206825613744995">O microfone está sendo usado.</translation>
+<translation id="9083324773537346962">Versão de sistema operacional</translation>
 <translation id="908451241440060346">As notificações são silenciadas quando o modo "Não perturbe" está ativado</translation>
 <translation id="9084606467167974638">Alternar posição do menu</translation>
 <translation id="9085962983642906571">A bateria fica em 80% enquanto o dispositivo está conectado à fonte de energia para prolongar a duração.</translation>
@@ -1888,7 +1883,6 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="951991426597076286">Recusar</translation>
 <translation id="953431725143473984">Desligar o dispositivo?</translation>
 <translation id="954052413789300507">Não há espaço suficiente para o arquivo <ph name="FILENAME" />. Libere espaço.</translation>
-<translation id="968627661524972577">Use apps para fazer tudo o que você precisa no seu Chromebook. Seus apps estão disponíveis no acesso rápido. Você também pode pressionar a tecla de acesso rápido no teclado.</translation>
 <translation id="974545358917229949">Exibindo <ph name="RESULT_COUNT" /> resultados para <ph name="QUERY" /></translation>
 <translation id="98120814841227350">Ir para o final do documento</translation>
 <translation id="987589956647469042">Os dados móveis estão ativados</translation>

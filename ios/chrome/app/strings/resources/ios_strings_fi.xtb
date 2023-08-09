@@ -268,6 +268,7 @@ Sivustot eivät näe selaustoimintaasi eri sivustoilla evästeiden kautta esim. 
 <translation id="2648721026697078500">Älä koskaan siirrä</translation>
 <translation id="2648803196158606475">Poista luetut</translation>
 <translation id="2664621323652615289">Lopeta</translation>
+<translation id="2666092431469916601">Yleisin</translation>
 <translation id="2671426118752779020">Voit käyttää Googlen Salasanojen ylläpitoon tallennettuja salasanoja muissa iPhonesi sovelluksissa.</translation>
 <translation id="2690858294534178585">Kamera on käytössä</translation>
 <translation id="26915454213703967">Hae kuvasta Googlella</translation>
@@ -354,6 +355,7 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 Katso tarvittaessa hakukoneesi ohjeet hakuhistorian poistamiselle.</translation>
 <translation id="3080525922482950719">Voit tallentaa sivuja myöhempää tai offline-tilassa lukemista varten</translation>
 <translation id="3081338492074632642">Varmista, että tallennettava salasana vastaa palvelun (<ph name="WEBSITE" />) salasanaa.</translation>
+<translation id="3087734570205094154">Alaosassa</translation>
 <translation id="309672519329227863">Käytä Chrome-salasanojasi ja muita ominaisuuksia eri sovelluksissa.</translation>
 <translation id="3112556859945124369">Merkitse…</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Katso, mitä voit synkronoida<ph name="END_LINK" /></translation>
@@ -431,7 +433,6 @@ Katso tarvittaessa hakukoneesi ohjeet hakuhistorian poistamiselle.</translation>
 <translation id="3533436815740441613">Uusi välilehti</translation>
 <translation id="3540141921715814660">Lisää kirjanmerkkeihin</translation>
 <translation id="3551320343578183772">Sulje välilehti</translation>
-<translation id="3554280880535219766">Näytä alareunan osoitepalkki</translation>
 <translation id="3565207542107370586">Poista selaustietoja…</translation>
 <translation id="3575234738189584619">Hae Lensilla</translation>
 <translation id="3577555362230509265">Käytä Chromea muissa sovelluksissa.</translation>
@@ -441,7 +442,6 @@ Katso tarvittaessa hakukoneesi ohjeet hakuhistorian poistamiselle.</translation>
 <translation id="3595252146048399851">Voit valita synkronoitavan sisällön <ph name="BEGIN_LINK" />asetuksista<ph name="END_LINK" />. Google voi personoida Hakua ja muita palveluita historiasi perusteella.</translation>
 <translation id="3603009562372709545">Kopioi linkin URL-osoite</translation>
 <translation id="3607167657931203000">Automaattisen täytön tiedot</translation>
-<translation id="3608008480985212611">Kirjaudu sisään, niin voit muuttaa asetuksia.</translation>
 <translation id="3609785682760573515">Synkronoidaan…</translation>
 <translation id="3631443864840848029">Varmista, että tallennat tämän sivuston nykyisen salasanasi.</translation>
 <translation id="3638472932233958418">Lataa verkkosivut</translation>
@@ -517,6 +517,7 @@ Katso tarvittaessa hakukoneesi ohjeet hakuhistorian poistamiselle.</translation>
 <translation id="4133265950310064865">Parannettu suojaus</translation>
 <translation id="4148023517926189160">Verkkosivusto haluaa ladata tiedoston ja lisätä sen kalenteriisi.</translation>
 <translation id="4152011295694446843">Näet kirjanmerkkisi täällä</translation>
+<translation id="4168651806173792090"><ph name="NETWORK_NAME" />, jonka lopussa on <ph name="LAST_FOUR_DIGITS" /></translation>
 <translation id="4172051516777682613">Näytä aina</translation>
 <translation id="418156467088430727">Näytä offline-versio uudella välilehdellä</translation>
 <translation id="4181841719683918333">Kielet</translation>
@@ -703,7 +704,6 @@ Katso tarvittaessa hakukoneesi ohjeet hakuhistorian poistamiselle.</translation>
 <translation id="5271265092610673171">{count,plural, =1{Pakollinen kenttä on tyhjä. Täytä se ennen tallentamista.}other{Jotkin pakolliset kentät ovat tyhjiä. Täytä ne ennen tallentamista.}}</translation>
 <translation id="5271549068863921519">Tallenna salasana</translation>
 <translation id="5283494734135414249">Napauta osoitepalkin alla näkyvää pikakuvaketta.</translation>
-<translation id="5292723732574094123">Kirjautunut ulos. Kirjaudu takaisin, niin näet tilisi kirjanmerkit, salasanat ja muut tiedot.</translation>
 <translation id="5295239312320826323">Poistetaanko tili <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Näytä</translation>
 <translation id="5317780077021120954">Tallenna</translation>
@@ -762,7 +762,6 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="5702108177581350218">Kun jaat kopion käyttäjätunnuksestasi ja salasanastasi, perheenjäsenesi voi täyttää ne Googlen Salasanojen avulla.</translation>
 <translation id="5704908597376970822">Sisäänkirjautuminen ei onnistu.</translation>
 <translation id="5706552126692816153">Aktiivinen 1 päivä sitten</translation>
-<translation id="5711039611392265845">Näet lisää yksityisyyteen, tietoturvaan ja datankeruuseen liittyviä asetuksia <ph name="BEGIN_LINK" />Synkronointi ja Google-palvelut<ph name="END_LINK" /> ‑kohdasta.</translation>
 <translation id="5718049162805123412">Vaihda nämä nyt</translation>
 <translation id="5724941645893276623">Jos haluat selata verkkoa yksityisesti, lisää uusi välilehti</translation>
 <translation id="5728700505257787410">Tiliin kirjautuminen epäonnistui.</translation>
@@ -774,7 +773,6 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="574762237186762643">Tapahtumat</translation>
 <translation id="5755162682436943950">Kirjautunut ulos. Avaa valintaikkunan, jotta voit kirjautua sisään ja laittaa synkronoinnin päälle.</translation>
 <translation id="5758631781033351321">Näet lukulistasi täällä</translation>
-<translation id="5760258696409739442">Näytä yläreunan osoitepalkki</translation>
 <translation id="5762370665605786758">Tunnuslauseella ei salata Google Payn maksutapoja ja osoitteita.
 
 Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä Googlelle eikä Google tallenna sitä. Jos unohdat tunnuslauseen tai haluat muuttaa asetusta, <ph name="BEGIN_LINK" />tyhjennä tilin Chrome-data<ph name="END_LINK" />.</translation>
@@ -942,6 +940,7 @@ Yritä käyttää jokaisella sivustolla yksilöllistä salasanaa.</translation>
 <translation id="651505212789431520">Perutaanko synkronointi? Voit ottaa synkronoinnin käyttöön milloin tahansa asetuksista.</translation>
 <translation id="6518133107902771759">Vahvista</translation>
 <translation id="6524918542306337007">Incognito-tila ei ole käytettävissä</translation>
+<translation id="6527303717912515753">Jaa</translation>
 <translation id="6530992499366869131">Varoita, jos salasanoja vaarantuu tietosuojaloukkauksessa</translation>
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6540120577248033958">Siirry sivustolle ja valitse Chromen valikosta Seuraa</translation>
@@ -1233,6 +1232,7 @@ Sivustot voivat nähdä selaustoimintaasi eri sivustoilta evästeiden kautta esi
 <translation id="8281781826761538115">Oletus – <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Ohita</translation>
 <translation id="8283172974887967105">Valitse…</translation>
+<translation id="8286036467436129157">Kirjaudu sisään</translation>
 <translation id="8299417921174340354">Salasanojen käyttöä varten sinun on ensin asetettava laitteellesi tunnuskoodi.</translation>
 <translation id="8299613349954694191">Selaa verkkoa yksityisesti avaamalla incognito-välilehden.</translation>
 <translation id="8316944564970119719">Lisää sivusto ja salasana ja sitten tallenna</translation>

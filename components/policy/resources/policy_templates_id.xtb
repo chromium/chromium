@@ -3106,17 +3106,6 @@ Jika kebijakan ini disetel ke nonaktif atau tidak disetel, perangkat yang terdaf
 
       Jika kebijakan tidak disetel, <ph name="PRODUCT_NAME" /> akan menggunakan nama library default.</translation>
 <translation id="3650122925429054129">Nonaktifkan sorotan kursor di layar login</translation>
-<translation id="3652207037778361023">Mengaktifkan fitur suara baterai lemah.
-
-          Fitur ini berfungsi untuk memutar suara baterai lemah.
-
-          Jika kebijakan ini disetel ke aktif, suara baterai lemah akan diputar saat level baterai atau waktu yang tersisa turun di bawah nilai minimum.
-
-          Jika kebijakan ini disetel ke nonaktif, suara baterai lemah tidak akan diputar.
-
-          Jika kebijakan ini disetel, pengguna tidak dapat mengubah atau menggantinya.
-
-          Jika kebijakan ini tidak disetel, fitur ini dinonaktifkan di perangkat <ph name="PRODUCT_OS_NAME" /> terkelola, tetapi akan diaktifkan dalam keadaan tertentu.</translation>
 <translation id="3652670852519271837">Izinkan situs meminta pengguna memberikan akses baca ke file dan direktori melalui File System API</translation>
 <translation id="3653237928288822292">Ikon penyedia penelusuran default</translation>
 <translation id="3654906736796256792">Mengizinkan sandbox audio berjalan</translation>
@@ -3862,17 +3851,6 @@ Catatan: Jika diblokir, URL chrome://* dan chrome-untrusted://* internal dapat m
 <translation id="4311662690937656540">Terapkan login online di layar login dan layar kunci</translation>
 <translation id="4313767483634435271">Alamat MAC dok yang ditetapkan untuk perangkat</translation>
 <translation id="4314538398999793073">Nonaktifkan pencarian CNAME selama autentikasi Kerberos</translation>
-<translation id="4316437338046981895">Mengaktifkan fitur suara pengisian daya.
-
-          Fitur ini berfungsi untuk memutar suara pengisian daya.
-
-          Jika kebijakan ini disetel ke aktif, suara pengisian daya akan diputar saat perangkat terhubung ke pengisi daya AC.
-
-          Jika kebijakan ini disetel ke nonaktif, suara pengisian daya tidak akan diputar.
-
-          Jika kebijakan ini disetel, pengguna tidak dapat mengubah atau menggantinya.
-
-          Jika kebijakan ini tidak disetel, fitur ini dinonaktifkan di perangkat <ph name="PRODUCT_OS_NAME" /> terkelola, tetapi akan diaktifkan dalam keadaan tertentu.</translation>
 <translation id="4320592646346933548">WiFi</translation>
 <translation id="4322842393287974810">Izinkan peluncuran otomatis dengan aplikasi kios tanpa penundaan untuk mengontrol versi <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="4323412353642577604">Aktifkan pengesahan jarak jauh untuk perlindungan konten</translation>
@@ -9483,16 +9461,6 @@ Jika kebijakan tidak disetel, <ph name="PRODUCT_NAME" /> akan mengumpulkan dan m
 <translation id="9220314833408124365">Gunakan kebijakan perujuk default untuk no-referrer-when-downgrade</translation>
 <translation id="9221827710437832530">Izinkan akses geolokasi di layar login.</translation>
 <translation id="922540222991413931">Konfigurasi sumber pemasangan skrip pengguna, aplikasi, dan ekstensi</translation>
-<translation id="922656089385303086">Kebijakan ini tidak digunakan lagi dan akan dihapus di versi 130. Sebagai gantinya, gunakan <ph name="URL_KEYED_METRICS_ALLOWED_POLICY_NAME" />.
-
-Jika kebijakan disetel ke Aktif berarti pengumpulan data anonim yang menyertakan URL, yang mengirimkan informasi URL halaman yang dikunjungi oleh pengguna kepada Google untuk meningkatkan (kualitas) penelusuran dan penjelajahan, akan selalu aktif.
-
-Jika kebijakan disetel ke Nonaktif, pengumpulan data anonim yang menyertakan URL tidak diaktifkan.
-
-Jika kebijakan ini tidak disetel, pengguna akan dapat mengubah setelan ini secara manual.
-
-Di <ph name="PRODUCT_OS_NAME" /> Kiosk, kebijakan ini tidak menawarkan opsi "Izinkan pengguna untuk memutuskan". Jika kebijakan ini tidak disetel untuk <ph name="PRODUCT_OS_NAME" />Kiosk, pengumpulan data anonim yang menyertakan URL akan selalu aktif.
-Jika kebijakan disetel untuk <ph name="PRODUCT_OS_NAME" /> Kiosk, kebijakan ini akan mengaktifkan pengumpulan metrik yang menyertakan URL untuk aplikasi kios.</translation>
 <translation id="924557436754151212">Impor sandi yang disimpan dari browser default saat pertama kali dijalankan</translation>
 <translation id="926104720905645793">Kebijakan ini mengontrol pelaporan cloud <ph name="PRODUCT_NAME" /> yang mengupload informasi tentang operasi browser ke <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
 

@@ -63,6 +63,7 @@
 <translation id="1235458158152011030">Відомі мережі</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> підключено.</translation>
 <translation id="1240638468526743569">Додаток</translation>
+<translation id="1242883863226959074">пристрої</translation>
 <translation id="124678866338384709">Закрити поточну вкладку</translation>
 <translation id="1246890715821376239">Непідтримувані додатки</translation>
 <translation id="1247372569136754018">Мікрофон (внутрішній)</translation>
@@ -181,6 +182,7 @@
 <translation id="1747827819627189109">Екранну клавіатуру ввімкнено</translation>
 <translation id="1749109475624620922">Вікно "<ph name="WINDOW_TITLE" />" призначено для всіх робочих столів</translation>
 <translation id="1750088060796401187">Максимальна кількість робочих столів – <ph name="MAX_DESK_LIMIT" />. Щоб додати новий робочий стіл, вилучіть старий.</translation>
+<translation id="1755556344721611131">Додаток Діагностика</translation>
 <translation id="1756833229520115364">Не вдалося зберегти шаблон. Забагато вікон або вкладок.</translation>
 <translation id="1757857692711134412">Вимкнено до заходу сонця</translation>
 <translation id="1768366657309696705">Комбінацію клавіш <ph name="LAUNCHER_KEY_NAME" /> + крапка змінено. Щоб скористатися клавішею Insert, натисніть <ph name="LAUNCHER_KEY_NAME" /> + Shift + Backspace.</translation>
@@ -266,7 +268,6 @@
 <translation id="2148716181193084225">Сьогодні</translation>
 <translation id="2149229036084364364">Перейти до попередньої композиції</translation>
 <translation id="2161132820593978283">Налаштуйте режим слідкування, щоб ваше обличчя завжди залишалося в центрі екрана під час відеодзвінків. Увімкніть цю функцію в меню "Швидкі налаштування".</translation>
-<translation id="2165966740263283349">використання сховища</translation>
 <translation id="2170530631236737939">Щоб вийти з режиму огляду, проведіть трьома пальцями вниз</translation>
 <translation id="2185166372312820725">Перейти на попередню вкладку</translation>
 <translation id="2185444992308415167">По черзі відкривати вкладки 1–8</translation>
@@ -351,7 +352,7 @@
 <translation id="2531025035050312891">пристрій працює повільно</translation>
 <translation id="2531107890083353124">Перетягуючи вкладку, натисніть <ph name="KEY_ONE" /></translation>
 <translation id="254900897760075745">Копіювати вибраний контент у буфер обміну</translation>
-<translation id="2549711466868162843">Покращити освітлення</translation>
+<translation id="2549711466868162843">Покращення освітлення</translation>
 <translation id="2549985041256363841">Почати запис</translation>
 <translation id="255671100581129685">Google Асистент недоступний у сеансі для всіх.</translation>
 <translation id="256712445991462162">закріплену лупу</translation>
@@ -474,6 +475,7 @@
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3113492864356515707">Виділити попередній елемент на панелі запуску</translation>
 <translation id="3120421559657122717">Завершити роботу пристрою?</translation>
+<translation id="3122464029669770682">ЦП</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">Перезапустіть, щоб оновити</translation>
 <translation id="3139188263101386725">Використовуйте оновлену комбінацію клавіш</translation>
@@ -518,7 +520,6 @@
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> усе одно зможе ввійти в обліковий запис.</translation>
 <translation id="3321628682574733415">Неправильний код доступу батьків</translation>
 <translation id="332827762492701193">Сповіщення сховано</translation>
-<translation id="3338855835380298613">використання ЦП</translation>
 <translation id="3339826665088060472">Запис екрана, інструменти для знімків екрана та запису відео з екрана</translation>
 <translation id="3340978935015468852">налаштування</translation>
 <translation id="3341303451326249809">Знімок екрана зроблено</translation>
@@ -642,7 +643,6 @@
 <translation id="3781910048497807059">Виділити попередню панель</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">Заблокувати</translation>
-<translation id="3796198851576711985">стан акумулятора</translation>
 <translation id="3796746699333205839">Додаток використовує ваші камеру й мікрофон</translation>
 <translation id="3798670284305777884">Динамік (внутрішній)</translation>
 <translation id="3799080171973636491">Ви натиснули комбінацію клавіш для лупи на весь екран. Увімкнути?</translation>
@@ -814,12 +814,10 @@
 <translation id="4527045527269911712">Пристрою Bluetooth "<ph name="DEVICE_NAME" />" потрібен дозвіл на підключення.</translation>
 <translation id="4533343294786968049">Щоб подовжити час роботи акумулятора, пристрій тимчасово утримує заряд на рівні 80%. Акумулятор зарядиться повністю до <ph name="FULLY_CHARGE_TIME" />.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> до повного заряду</translation>
-<translation id="4536664881735498710">використання оперативної пам’яті</translation>
 <translation id="4538824937723742295">Зробити знімок усього екрана</translation>
 <translation id="4539127209940689201">Друкувати поточну сторінку</translation>
 <translation id="4541706525461326392">Триває видалення профілю. Це може зайняти кілька хвилин.</translation>
 <translation id="4544483149666270818">Виберіть вікно, яке потрібно записати на відео</translation>
-<translation id="454541942614298893">мій пристрій</translation>
 <translation id="4545950850562423083">Зберегти поточну сторінку як закладку</translation>
 <translation id="4548482551627849548">Перемістити активне вікно на робочий стіл ліворуч</translation>
 <translation id="4560576029703263363">Увімкнено</translation>
@@ -978,7 +976,6 @@
 <translation id="5208059991603368177">Увімкнено</translation>
 <translation id="5216991270656129561">Вимкнено до <ph name="TIME" /></translation>
 <translation id="5217646019792206018">Наступний робочий стіл: <ph name="NEXT_DESK_NAME" />. Щоб активувати його, натисніть клавішу пошуку й пробіл або комбінацію клавіш Shift + клавіша пошуку + <ph name="NEXT_DESK_INDEX" />.</translation>
-<translation id="5221423477036820198">Швидко надсилайте повідомлення й відповідайте на них із телефона за допомогою функції "Керування телефоном".</translation>
 <translation id="5222676887888702881">Вийти</translation>
 <translation id="5229343007215035173">Увімкнути або вимкнути екран конфіденційності</translation>
 <translation id="5234764350956374838">Закрити</translation>
@@ -1139,7 +1136,6 @@
 <translation id="589817443623831496">Точкове сканування</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5901630391730855834">Жовтий</translation>
-<translation id="5902162043476810127">пам’ять із довільним доступом</translation>
 <translation id="5909862606227538307">Неактивний робочий стіл.</translation>
 <translation id="5911231045062997865">Вікна Lacros наразі не підтримуються. Інші додатки буде збережено.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
@@ -1543,7 +1539,6 @@
 <translation id="7724603315864178912">Вирізати</translation>
 <translation id="7725108879223146004">Показати відомості про точку доступу. Точка доступу вимикається.</translation>
 <translation id="7727952505535211425">Відкрити веб-сайт в адресному рядку на новій вкладці</translation>
-<translation id="77365090426890123">використання пам’яті</translation>
 <translation id="7742327441377685481">Немає сповіщень</translation>
 <translation id="7748275671948949022">Виділити кнопку запуску на панелі</translation>
 <translation id="7749443890790263709">Ви додали максимальну кількість робочих столів.</translation>
@@ -1795,7 +1790,6 @@
 <translation id="8853703225951107899">PIN-код або пароль усе ще не вдається підтвердити. Примітка: якщо ви нещодавно змінювали пароль, введіть старий. Новий пароль буде застосовано, щойно ви вийдете з облікового запису.</translation>
 <translation id="8855885154700222542">Клавіша повноекранного режиму</translation>
 <translation id="8858369206579825206">Налаштування конфіденційності</translation>
-<translation id="8860817004574502558">час роботи акумулятора</translation>
 <translation id="8870509716567206129">Додаток не підтримує розділення екрана.</translation>
 <translation id="8874184842967597500">Не під’єднано</translation>
 <translation id="8875021410787719674">Перейти між нижнім правим кутом, панеллю запуску, адресним рядком, панеллю закладок, відкритим веб-сайтом і завантаженнями</translation>
@@ -1848,6 +1842,7 @@
 <translation id="9080073830732419341">Зображення з камери прикріплено у верхньому лівому куті</translation>
 <translation id="9080132581049224423">Щоб перейти на головний екран, проведіть пальцем угору</translation>
 <translation id="9080206825613744995">Мікрофон використовується.</translation>
+<translation id="9083324773537346962">Версія ОС</translation>
 <translation id="908451241440060346">Коли ввімкнено режим "Не турбувати", сповіщення надходять без звуку</translation>
 <translation id="9084606467167974638">Змінити розташування меню</translation>
 <translation id="9085962983642906571">Щоб подовжити час роботи акумулятора, пристрій утримує заряд на рівні 80% (поки підключений до джерела живлення).</translation>
@@ -1888,7 +1883,6 @@
 <translation id="951991426597076286">Відхилити</translation>
 <translation id="953431725143473984">Завершити роботу пристрою?</translation>
 <translation id="954052413789300507">Недостатньо місця для файлу "<ph name="FILENAME" />". Очистьте пам’ять.</translation>
-<translation id="968627661524972577">Виконуйте різні завдання за допомогою додатків на Chromebook. Додатки можна знайти на Панелі запуску. Також можна натиснути клавішу Панелі запуску на клавіатурі.</translation>
 <translation id="974545358917229949">Показано результати (<ph name="RESULT_COUNT" />) для запиту "<ph name="QUERY" />"</translation>
 <translation id="98120814841227350">Перейти в кінець документа</translation>
 <translation id="987589956647469042">Мобільний Інтернет увімкнено</translation>

@@ -63,6 +63,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="1235458158152011030">Réseaux connus</translation>
 <translation id="1239161794459865856">La fonctionnalité <ph name="FEATURE_NAME" /> est connectée.</translation>
 <translation id="1240638468526743569">Une application</translation>
+<translation id="1242883863226959074">appareil</translation>
 <translation id="124678866338384709">Fermer l'onglet actuel</translation>
 <translation id="1246890715821376239">Applications non prises en charge</translation>
 <translation id="1247372569136754018">Microphone (interne)</translation>
@@ -181,6 +182,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="1747827819627189109">Clavier à l'écran activé</translation>
 <translation id="1749109475624620922">La fenêtre <ph name="WINDOW_TITLE" /> est attribuée à tous les bureaux</translation>
 <translation id="1750088060796401187">Uniquement <ph name="MAX_DESK_LIMIT" /> bureaux sont autorisés. Retirez un bureau pour en ouvrir un nouveau.</translation>
+<translation id="1755556344721611131">Application de diagnostics</translation>
 <translation id="1756833229520115364">Impossible d'enregistrer ce modèle. Trop de fenêtres ou d'onglets sont ouverts.</translation>
 <translation id="1757857692711134412">Désactivée jusqu'au couchant</translation>
 <translation id="1768366657309696705">Le raccourci-clavier <ph name="LAUNCHER_KEY_NAME" />+Point a changé. Pour utiliser la touche Insertion, appuyez sur la touche <ph name="LAUNCHER_KEY_NAME" />+Majuscule+Retour arrière.</translation>
@@ -266,7 +268,6 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="2148716181193084225">Aujourd'hui</translation>
 <translation id="2149229036084364364">Revenir à la chanson précédente</translation>
 <translation id="2161132820593978283">Essayez le cadrage de l'appareil photo afin d'être au centre de l'écran lors des appels vidéo. Activez-le dans les paramètres rapides.</translation>
-<translation id="2165966740263283349">utilisation de l'espace de stockage</translation>
 <translation id="2170530631236737939">Balayez l'écran vers le bas avec trois doigts pour quitter le mode Aperçu</translation>
 <translation id="2185166372312820725">Accéder à l'onglet précédent</translation>
 <translation id="2185444992308415167">Consulter les onglets 1 à 8</translation>
@@ -474,6 +475,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3113492864356515707">Mettre en évidence l'article précédent sur l'étagère</translation>
 <translation id="3120421559657122717">Éteindre l'appareil?</translation>
+<translation id="3122464029669770682">Processeur</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">Redémarrer pour faire la mise à jour</translation>
 <translation id="3139188263101386725">Utilisez le raccourci mis à jour</translation>
@@ -518,7 +520,6 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> peut toujours se connecter plus tard.</translation>
 <translation id="3321628682574733415">Code parental incorrect</translation>
 <translation id="332827762492701193">Les notifications sont masquées</translation>
-<translation id="3338855835380298613">utilisation du processeur</translation>
 <translation id="3339826665088060472">Captures d'écran, outils pour réaliser des captures d'écran et des enregistrements d'écran</translation>
 <translation id="3340978935015468852">paramètres</translation>
 <translation id="3341303451326249809">Capture d'écran réussie</translation>
@@ -642,7 +643,6 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="3781910048497807059">Déplacer la cible vers le volet précédent</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">Verrouiller</translation>
-<translation id="3796198851576711985">état de la pile</translation>
 <translation id="3796746699333205839">Une application utilise votre caméra et votre microphone</translation>
 <translation id="3798670284305777884">Haut-parleur (interne)</translation>
 <translation id="3799080171973636491">Vous avez appuyé sur le raccourci-clavier de loupe en mode plein écran. Voulez-vous l'activer?</translation>
@@ -814,12 +814,10 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="4527045527269911712">L'appareil Bluetooth « <ph name="DEVICE_NAME" /> » demande l'autorisation de s'associer.</translation>
 <translation id="4533343294786968049">Prolongation de l'autonomie de votre pile en cours… La pile sera complètement rechargée d'ici <ph name="FULLY_CHARGE_TIME" />.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> avant la recharge complète</translation>
-<translation id="4536664881735498710">utilisation de la mémoire vive</translation>
 <translation id="4538824937723742295">Prendre une capture de l'écran au complet</translation>
 <translation id="4539127209940689201">Imprimer la page actuelle</translation>
 <translation id="4541706525461326392">Retrait du profil en cours… Cette opération peut prendre quelques minutes.</translation>
 <translation id="4544483149666270818">Sélectionnez une fenêtre à enregistrer</translation>
-<translation id="454541942614298893">mon appareil</translation>
 <translation id="4545950850562423083">Enregistrer la page actuelle comme signet</translation>
 <translation id="4548482551627849548">Déplacer la fenêtre active vers le bureau à gauche</translation>
 <translation id="4560576029703263363">Activé</translation>
@@ -978,7 +976,6 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="5208059991603368177">Activé</translation>
 <translation id="5216991270656129561">Désactivée jusqu'à <ph name="TIME" /></translation>
 <translation id="5217646019792206018">Bureau suivant : <ph name="NEXT_DESK_NAME" />, utilisez Recherche+Espace ou le raccourci-clavier : Maj+Recherche+<ph name="NEXT_DESK_INDEX" /> pour l'activer.</translation>
-<translation id="5221423477036820198">Envoyez rapidement des messages sur votre téléphone ou répondez aux messages à l'aide de Phone Hub.</translation>
 <translation id="5222676887888702881">Déconnexion</translation>
 <translation id="5229343007215035173">Activer ou désactiver l'écran de confidentialité</translation>
 <translation id="5234764350956374838">Fermer</translation>
@@ -1139,7 +1136,6 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="589817443623831496">Numérisation de points</translation>
 <translation id="5901316534475909376">Maj+Échap</translation>
 <translation id="5901630391730855834">Jaune</translation>
-<translation id="5902162043476810127">mémoire vive</translation>
 <translation id="5909862606227538307">Bureau inactif.</translation>
 <translation id="5911231045062997865">Les fenêtres Lacros ne sont pas prises en charge pour le moment. D'autres applications seront enregistrées.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
@@ -1543,7 +1539,6 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="7724603315864178912">Couper</translation>
 <translation id="7725108879223146004">Afficher les détails du point d'accès sans fil. Désactivation du point d'accès sans fil en cours…</translation>
 <translation id="7727952505535211425">Ouvrir le site Web dans la barre d'adresse dans un nouvel onglet</translation>
-<translation id="77365090426890123">utilisation de la mémoire</translation>
 <translation id="7742327441377685481">Aucune notification</translation>
 <translation id="7748275671948949022">Mettre en évidence le bouton du lanceur sur l'étagère</translation>
 <translation id="7749443890790263709">Le nombre maximal de bureaux a été atteint.</translation>
@@ -1794,7 +1789,6 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="8853703225951107899">Votre NIP ou votre mot de passe n'a toujours pas pu être vérifié. Remarque : Si vous avez récemment changé votre mot de passe, servez-vous de votre ancien mot de passe. Votre nouveau mot de passe sera appliqué lorsque vous vous déconnecterez.</translation>
 <translation id="8855885154700222542">Touche mode Plein écran</translation>
 <translation id="8858369206579825206">Paramètres de confidentialité</translation>
-<translation id="8860817004574502558">autonomie de la pile</translation>
 <translation id="8870509716567206129">L'application n'est pas compatible avec l'écran partagé.</translation>
 <translation id="8874184842967597500">Non connecté</translation>
 <translation id="8875021410787719674">Se déplacer entre le coin inférieur droit, le lanceur, la barre d'adresse, la barre de favoris, le site Web ouvert et les téléchargements</translation>
@@ -1847,6 +1841,7 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="9080073830732419341">Caméra alignée sur le coin supérieur gauche</translation>
 <translation id="9080132581049224423">Balayez l'écran vers le haut pour accéder à l'écran d'accueil</translation>
 <translation id="9080206825613744995">Le microphone est en cours d'utilisation.</translation>
+<translation id="9083324773537346962">Version système d'exploitation</translation>
 <translation id="908451241440060346">Les notifications sont mises en sourdine lorsque le mode Ne pas déranger est activé</translation>
 <translation id="9084606467167974638">Basculer la position du menu</translation>
 <translation id="9085962983642906571">Votre pile reste à 80 % pour prolonger son autonomie tant que l'appareil est branché.</translation>
@@ -1887,7 +1882,6 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="951991426597076286">Refuser</translation>
 <translation id="953431725143473984">Éteindre l'appareil?</translation>
 <translation id="954052413789300507">Espace de stockage insuffisant pour <ph name="FILENAME" />. Libérez de l'espace de stockage.</translation>
-<translation id="968627661524972577">Utilisez des applications pour faire tout ce dont vous avez besoin sur votre Chromebook. Vous trouverez vos applications dans le lanceur. Vous pouvez également appuyer sur la touche de lancement du clavier.</translation>
 <translation id="974545358917229949">Affichage de <ph name="RESULT_COUNT" /> résultats pour <ph name="QUERY" /></translation>
 <translation id="98120814841227350">Aller à la fin du document</translation>
 <translation id="987589956647469042">Les données cellulaires sont activées</translation>

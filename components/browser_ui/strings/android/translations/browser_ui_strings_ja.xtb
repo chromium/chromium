@@ -99,6 +99,7 @@
 <translation id="2621115761605608342">特定のサイトに対して JavaScript を許可します。</translation>
 <translation id="2653659639078652383">送信</translation>
 <translation id="2677748264148917807">このページを離れる</translation>
+<translation id="2678468611080193228">サードパーティ Cookie を一時的に許可してみてください。保護の強度は低下しますが、サイトの機能が動作する可能性が高くなります</translation>
 <translation id="2687403674020088961">すべての Cookie をブロックする（推奨されません）</translation>
 <translation id="2713106313042589954">カメラをオフにする</translation>
 <translation id="2717722538473713889">メールアドレス</translation>
@@ -138,6 +139,7 @@
 <translation id="3362437373201486687">Bluetooth デバイスをスキャンしています</translation>
 <translation id="3386292677130313581">サイトに現在地の認識を許可する前に確認する（推奨）</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" />%%</translation>
+<translation id="344449859752187052">サードパーティ Cookie がブロックされています</translation>
 <translation id="3521663503435878242"><ph name="DOMAIN" /> のサイト</translation>
 <translation id="3538390592868664640">サイトによる周囲の 3D マップの作成またはカメラ位置の追跡をブロックします</translation>
 <translation id="3544058026430919413">企業は、Cookie を使用してグループ内のアクティビティを共有できるサイトのグループを定義できます。シークレット モードの場合、この設定はオフになっています。</translation>
@@ -212,6 +214,7 @@
 <translation id="4962975101802056554">デバイスのすべての権限を取り消します</translation>
 <translation id="497421865427891073">次に進む</translation>
 <translation id="4976702386844183910">最終アクセス日: <ph name="DATE" /></translation>
+<translation id="4985206706500620449">このサイトのサードパーティ Cookie を許可しました</translation>
 <translation id="4994033804516042629">連絡先が見つかりませんでした</translation>
 <translation id="4996978546172906250">共有方法</translation>
 <translation id="5001526427543320409">サードパーティ Cookie</translation>
@@ -256,6 +259,7 @@
 <translation id="5677928146339483299">ブロック</translation>
 <translation id="5689516760719285838">位置情報</translation>
 <translation id="5690795753582697420">Android の設定でカメラがオフになっています</translation>
+<translation id="5700761515355162635">サードパーティ Cookie が許可されています</translation>
 <translation id="5706552988683188916"><ph name="WEBSITE" /> の Cookie などのサイトデータが削除されます</translation>
 <translation id="5719847187258001597"><ph name="ORIGIN" /> またはホーム画面の同アプリにより保存されたすべてのデータおよび Cookie が削除されます。</translation>
 <translation id="5723967018671998714">シークレット モードでサードパーティの Cookie がブロックされています</translation>
@@ -303,6 +307,7 @@
 <translation id="6467852467360539617">データを消去して権限をリセット</translation>
 <translation id="6500423977866688905">ウィンドウが狭い場合はモバイルビューをリクエストする</translation>
 <translation id="6527303717912515753">共有</translation>
+<translation id="652937045869844725">サードパーティ Cookie を許可してみてください。保護の強度は低下しますが、サイトの機能が動作する可能性が高くなります</translation>
 <translation id="6545864417968258051">Bluetooth のスキャン</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />、他 <ph name="NUM_MORE" /> 個の権限がブロックされています}other{<ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />、他 <ph name="NUM_MORE" /> 個の権限がブロックされています}}</translation>
 <translation id="6554732001434021288">最終アクセス日: <ph name="NUM_DAYS" /> 日前</translation>
@@ -435,6 +440,7 @@
 <translation id="8736193154595564524">{NUM_SELECTED,plural, =1{1 件のサイトが許可されています}other{# 件のサイトが許可されています}}</translation>
 <translation id="8737217482364735741"><ph name="ORIGIN" /> により保存されたすべてのデータと Cookie が削除されます。</translation>
 <translation id="8751914237388039244">画像を選択</translation>
+<translation id="8800034312320686233">サイトが動作していない場合</translation>
 <translation id="8801436777607969138">特定のサイトで JavaScript をブロックします。</translation>
 <translation id="8803526663383843427">有効にした場合</translation>
 <translation id="8805385115381080995">サイトであなたが実在のユーザーであることを確認する頻度が減るため、ブラウジングが高速化されます</translation>

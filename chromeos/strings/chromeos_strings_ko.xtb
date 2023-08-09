@@ -15,7 +15,6 @@
 <translation id="1075811647922107217">페이지 크기</translation>
 <translation id="1082009148392559545">화면 보호기 다운로드 중</translation>
 <translation id="1094693127011229778">IP 주소를 사용할 수 없습니다.</translation>
-<translation id="1113892970288677790">선별된 예술작품 및 이미지를 선택합니다.</translation>
 <translation id="1118572504348554005">신고된 버그 및 기타 문제를 해결하기 위해 이 양식을 통해 제출된 의견을 파트너와 공유할 수 있습니다. 비밀번호와 같은 민감한 정보는 포함하지 마세요.</translation>
 <translation id="1119447706177454957">내부 오류</translation>
 <translation id="1124772482545689468">사용자</translation>
@@ -183,6 +182,7 @@
 <translation id="225692081236532131">활성화 상태</translation>
 <translation id="2271469253353559191">어두운 모드 예약</translation>
 <translation id="2276999893457278469">상위 도움말 콘텐츠</translation>
+<translation id="2279051792571591988">기본값 복원</translation>
 <translation id="2287186687001756809">사용할 수 있는 이미지가 없습니다. 사진을 추가하려면 <ph name="LINK" />(으)로 이동하세요.</translation>
 <translation id="2307344026739914387">현재 키 쌍 사용</translation>
 <translation id="2320295602967756579">밝은 테마 사용 설정</translation>
@@ -332,7 +332,6 @@
 <translation id="361575905210396100">의견을 보내 주셔서 감사합니다</translation>
 <translation id="3632579075709132555">개인 정보 보호 화면 전환</translation>
 <translation id="3651050199673793219">온도 단위 선택</translation>
-<translation id="3663574643422533538"><ph name="PRODUCT_NAME" /> 전용 포스터를 선택합니다.</translation>
 <translation id="3668449597372804501">구름 흐름 배경화면</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> 테스트</translation>
 <translation id="370665806235115550">로드 중...</translation>
@@ -646,6 +645,7 @@
 <translation id="6061772781719867950">HTTPS 요청 실패함</translation>
 <translation id="6073292342939316679">키보드 밝기를 낮춥니다</translation>
 <translation id="6075872808778243331">(Android) HTTP 지연 시간</translation>
+<translation id="6078323886959318429">바로가기 추가</translation>
 <translation id="6104112872696127344">스캔이 취소되었습니다.</translation>
 <translation id="6106186594183574873">완료하려면 이전 비밀번호를 입력하세요.</translation>
 <translation id="6108689792487843350">게이트웨이에 연결할 수 없습니다.</translation>

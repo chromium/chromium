@@ -63,6 +63,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1235458158152011030">Reti note</translation>
 <translation id="1239161794459865856">La funzionalità <ph name="FEATURE_NAME" /> è connessa.</translation>
 <translation id="1240638468526743569">Un'app</translation>
+<translation id="1242883863226959074">dispositivo</translation>
 <translation id="124678866338384709">Chiudi scheda corrente</translation>
 <translation id="1246890715821376239">App non supportate</translation>
 <translation id="1247372569136754018">Microfono (interno)</translation>
@@ -181,6 +182,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1747827819627189109">Tastiera sullo schermo attiva</translation>
 <translation id="1749109475624620922">Finestra <ph name="WINDOW_TITLE" /> assegnata a tutte le scrivanie</translation>
 <translation id="1750088060796401187">Sono consentite al massimo <ph name="MAX_DESK_LIMIT" /> scrivanie. Rimuovi una scrivania per aprirne una nuova.</translation>
+<translation id="1755556344721611131">App Diagnostica</translation>
 <translation id="1756833229520115364">Impossibile salvare il modello. Troppe finestre o schede.</translation>
 <translation id="1757857692711134412">Funzionalità disattivata fino al tramonto</translation>
 <translation id="1768366657309696705">La scorciatoia da tastiera <ph name="LAUNCHER_KEY_NAME" /> + Punto è cambiata. Per usare il tasto Ins, premi il tasto <ph name="LAUNCHER_KEY_NAME" /> + Maiusc + Backspace.</translation>
@@ -266,7 +268,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2148716181193084225">Oggi</translation>
 <translation id="2149229036084364364">Vai alla traccia precedente</translation>
 <translation id="2161132820593978283">Prova Zoom automatico per essere al centro dello schermo durante le videochiamate. Attiva la funzionalità nelle Impostazioni rapide.</translation>
-<translation id="2165966740263283349">utilizzo dello spazio di archiviazione</translation>
 <translation id="2170530631236737939">Scorri con tre dita verso il basso per uscire dalla modalità Panoramica</translation>
 <translation id="2185166372312820725">Passa alla scheda precedente</translation>
 <translation id="2185444992308415167">Scorri le schede da 1 a 8</translation>
@@ -474,6 +475,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3113492864356515707">Evidenzia l'elemento precedente nella barra delle app</translation>
 <translation id="3120421559657122717">Arrestare il dispositivo?</translation>
+<translation id="3122464029669770682">CPU</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">Riavvia per aggiornare</translation>
 <translation id="3139188263101386725">Usa la scorciatoia aggiornata</translation>
@@ -518,7 +520,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> può ancora accedere in seguito.</translation>
 <translation id="3321628682574733415">Codice genitore errato</translation>
 <translation id="332827762492701193">Le notifiche sono nascoste</translation>
-<translation id="3338855835380298613">utilizzo della CPU</translation>
 <translation id="3339826665088060472">Cattura schermo, strumenti per acquisire screenshot e registrazione dello schermo</translation>
 <translation id="3340978935015468852">impostazioni</translation>
 <translation id="3341303451326249809">Screenshot acquisito</translation>
@@ -639,7 +640,6 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="3781910048497807059">Sposta lo stato attivo sul riquadro precedente</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">Blocca</translation>
-<translation id="3796198851576711985">condizioni della batteria</translation>
 <translation id="3796746699333205839">Un'applicazione sta utilizzando la fotocamera e il microfono</translation>
 <translation id="3798670284305777884">Altoparlante (interno)</translation>
 <translation id="3799080171973636491">Hai premuto la scorciatoia da tastiera per la lente d'ingrandimento a schermo intero. Vuoi attivarla?</translation>
@@ -811,12 +811,10 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="4527045527269911712">Il dispositivo Bluetooth "<ph name="DEVICE_NAME" />" chiede l'autorizzazione per essere accoppiato.</translation>
 <translation id="4533343294786968049">Prolunga la durata della batteria. La batteria si ricaricherà completamente entro le ore <ph name="FULLY_CHARGE_TIME" />.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> alla ricarica completa</translation>
-<translation id="4536664881735498710">utilizzo della ram</translation>
 <translation id="4538824937723742295">Acquisisci screenshot a schermo intero</translation>
 <translation id="4539127209940689201">Stampa pagina corrente</translation>
 <translation id="4541706525461326392">Rimozione del profilo in corso. Questa operazione può richiedere alcuni minuti.</translation>
 <translation id="4544483149666270818">Seleziona una finestra da registrare</translation>
-<translation id="454541942614298893">il mio dispositivo</translation>
 <translation id="4545950850562423083">Salva la pagina corrente come preferito</translation>
 <translation id="4548482551627849548">Sposta la finestra attiva sulla scrivania a sinistra</translation>
 <translation id="4560576029703263363">On</translation>
@@ -975,7 +973,6 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="5208059991603368177">On</translation>
 <translation id="5216991270656129561">Funzionalità disattivata fino alle ore <ph name="TIME" /></translation>
 <translation id="5217646019792206018">Scrivania successiva: <ph name="NEXT_DESK_NAME" />, usa Ricerca + Barra spaziatrice. In alternativa usa la scorciatoia da tastiera: Maiusc + Ricerca + <ph name="NEXT_DESK_INDEX" /> per procedere con l'attivazione.</translation>
-<translation id="5221423477036820198">Invia messaggi o rispondi rapidamente sul tuo smartphone usando Phone Hub.</translation>
 <translation id="5222676887888702881">Esci</translation>
 <translation id="5229343007215035173">Attiva/disattiva la Schermata privata</translation>
 <translation id="5234764350956374838">Ignora</translation>
@@ -1136,7 +1133,6 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="589817443623831496">Scansione per punto</translation>
 <translation id="5901316534475909376">MAIUSC+ESC</translation>
 <translation id="5901630391730855834">Giallo</translation>
-<translation id="5902162043476810127">memoria ad accesso casuale</translation>
 <translation id="5909862606227538307">Scrivania inattiva.</translation>
 <translation id="5911231045062997865">Al momento le finestre Lacros non sono supportate. Le altre app verranno salvate.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
@@ -1540,7 +1536,6 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="7724603315864178912">Taglia</translation>
 <translation id="7725108879223146004">Mostra i dettagli relativi all'hotspot. È in corso la disattivazione dell'hotspot.</translation>
 <translation id="7727952505535211425">Apri il sito web nella barra degli indirizzi in una nuova scheda</translation>
-<translation id="77365090426890123">memoria utilizzata</translation>
 <translation id="7742327441377685481">Nessuna notifica</translation>
 <translation id="7748275671948949022">Evidenzia il pulsante Avvio app nella barra delle app</translation>
 <translation id="7749443890790263709">Numero massimo di scrivanie raggiunto.</translation>
@@ -1791,7 +1786,6 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="8853703225951107899">Non è stato di nuovo possibile verificare il PIN o la password. Nota: se hai modificato la password di recente, usa la password precedente. La nuova password verrà applicata quando uscirai dall'account.</translation>
 <translation id="8855885154700222542">Tasto schermo intero</translation>
 <translation id="8858369206579825206">Controlli per la privacy</translation>
-<translation id="8860817004574502558">durata della batteria</translation>
 <translation id="8870509716567206129">L'app non supporta la modalità Schermo diviso.</translation>
 <translation id="8874184842967597500">Non connesso</translation>
 <translation id="8875021410787719674">Spostati tra l'angolo in basso a destra, Avvio app, la barra degli indirizzi, la barra dei preferiti, il sito web aperto e i download</translation>
@@ -1844,6 +1838,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="9080073830732419341">Fotocamera allineata all'angolo in alto a sinistra</translation>
 <translation id="9080132581049224423">Scorri verso l'alto per andare alla Home page</translation>
 <translation id="9080206825613744995">Il microfono è in uso.</translation>
+<translation id="9083324773537346962">Versione del sistema operativo</translation>
 <translation id="908451241440060346">Le notifiche sono disattivate quando è attiva la modalità Non disturbare</translation>
 <translation id="9084606467167974638">Attiva/disattiva posizione menu</translation>
 <translation id="9085962983642906571">La batteria viene mantenuta all'80%, anche se il dispositivo è collegato alla corrente, per prolungarne la durata.</translation>
@@ -1884,7 +1879,6 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="951991426597076286">Rifiuta</translation>
 <translation id="953431725143473984">Vuoi arrestare il dispositivo?</translation>
 <translation id="954052413789300507">Spazio disponibile insufficiente per il file <ph name="FILENAME" />. Libera spazio.</translation>
-<translation id="968627661524972577">Usa le app per fare tutto ciò che ti serve su Chromebook. Puoi trovare le tue app in Avvio app. Inoltre puoi premere il tasto Avvio app sulla tastiera.</translation>
 <translation id="974545358917229949">Visualizzazione di <ph name="RESULT_COUNT" /> risultati per <ph name="QUERY" /></translation>
 <translation id="98120814841227350">Passa alla fine del documento</translation>
 <translation id="987589956647469042">I dati mobili sono attivi</translation>

@@ -15,7 +15,6 @@
 <translation id="1075811647922107217">Dimensioni pagina</translation>
 <translation id="1082009148392559545">Download del salvaschermo in corso…</translation>
 <translation id="1094693127011229778">Indirizzo IP non disponibile</translation>
-<translation id="1113892970288677790">Seleziona opere d'arte e immagini curate</translation>
 <translation id="1118572504348554005">Potremmo condividere il feedback inviato tramite questo modulo con i nostri partner per risolvere bug e altri problemi che ci segnali. Non includere informazioni sensibili come password.</translation>
 <translation id="1119447706177454957">Errore interno</translation>
 <translation id="1124772482545689468">Utente</translation>
@@ -183,6 +182,7 @@
 <translation id="225692081236532131">Stato attivazione</translation>
 <translation id="2271469253353559191">Programmazione modalità Buio</translation>
 <translation id="2276999893457278469">Contenuti Help principali</translation>
+<translation id="2279051792571591988">Ripristina predefinite</translation>
 <translation id="2287186687001756809">Nessuna immagine disponibile. Per aggiungere foto, visita la pagina <ph name="LINK" />.</translation>
 <translation id="2307344026739914387">Utilizza coppia di chiavi corrente</translation>
 <translation id="2320295602967756579">Abilita il tema chiaro</translation>
@@ -332,7 +332,6 @@
 <translation id="361575905210396100">Grazie per il tuo feedback</translation>
 <translation id="3632579075709132555">Attivazione/disattivazione della Schermata privata</translation>
 <translation id="3651050199673793219">Seleziona un'unità di temperatura</translation>
-<translation id="3663574643422533538">Seleziona artwork esclusive di <ph name="PRODUCT_NAME" /></translation>
 <translation id="3668449597372804501">Sfondo Flusso di nuvole</translation>
 <translation id="3689839747745352263">Test <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Caricamento in corso...</translation>
@@ -646,6 +645,7 @@
 <translation id="6061772781719867950">Richieste HTTPS non riuscite</translation>
 <translation id="6073292342939316679">riduci la luminosità della tastiera</translation>
 <translation id="6075872808778243331">(Android) Latenza HTTP</translation>
+<translation id="6078323886959318429">Aggiungi scorciatoia</translation>
 <translation id="6104112872696127344">La scansione è stata annullata</translation>
 <translation id="6106186594183574873">Per terminare, inserisci la vecchia password</translation>
 <translation id="6108689792487843350">gateway non raggiungibile</translation>

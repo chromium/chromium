@@ -72,7 +72,6 @@ Load, mille olete juba veebisaitidele ja rakendustele andnud, võivad selle kont
 <translation id="2592940277904433508">Jätkan Chromiumi kasutamist</translation>
 <translation id="2648074677641340862">Installimisel ilmnes operatsioonisüsteemi viga. Laadige Chromium uuesti alla.</translation>
 <translation id="2661879430930417727">Kui jagate seadet, saavad sõbrad ja pereliikmed eraldi sirvida ning seadistada Chromiumi just nii, nagu neile meeldib.</translation>
-<translation id="2669853942967761236">Chromium blokeeris selle arhiivifaili, kuna see võib sisaldada pahavara</translation>
 <translation id="268602741124540128">Tere tulemast Chromiumi, <ph name="ACCOUNT_FIRST_NAME" />!</translation>
 <translation id="2711502716910134313">Chromiumi vaheleht</translation>
 <translation id="2718390899429598676">Turvalisuse suurendamiseks krüptib Chromium teie andmed.</translation>
@@ -406,6 +405,5 @@ Chromium ei saa teie seadeid taastada.</translation>
 <translation id="942598560705308788">Chromiumi hallatavad sertifikaadid</translation>
 <translation id="965162752251293939">Kes kasutab Chromiumi?</translation>
 <translation id="967427899662692980">Hankige Chromiumi parimad turbefunktsioonid</translation>
-<translation id="9792300276217204">Saidi andmed kustutatakse alati seadmest, kui Chromiumi sulgete</translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
 </translationbundle>

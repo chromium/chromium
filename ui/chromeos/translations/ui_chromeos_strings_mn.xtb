@@ -166,7 +166,6 @@
 <translation id="2312704192806647271">{COUNT,plural, =1{<ph name="BEGIN_LIST" /><ph name="END_LIST" /> ID-тай өргөтгөлийн байршлыг тогтоох боломжгүй. Администратортайгаа холбогдоно уу.}other{<ph name="BEGIN_LIST" /><ph name="END_LIST" /> ID-нуудтай өргөтгөлүүдийн байршлыг тогтоох боломжгүй. Администратортайгаа холбогдоно уу.}}</translation>
 <translation id="2325650632570794183">Энэ төрлийн файлыг дэмжихгүй байна. Chrome Web Store-т нэвтрэн энэ төрлийн файл нээж чадахуйц программыг татан авна уу.</translation>
 <translation id="2326539130272988168">Болгар</translation>
-<translation id="2337715497728194187">Bruschetta-тай хуваалцах</translation>
 <translation id="233822363739146957">Таны бүх файлыг синк хийхэд хангалттай хадгалах сангийн зай байхгүй байна</translation>
 <translation id="23721837607121582">Мобайл профайл татах, <ph name="NETWORK_COUNT" />-н <ph name="NETWORK_INDEX" /> сүлжээ, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Жагсаалтаар харах горим руу сэлгэх</translation>
@@ -197,7 +196,6 @@
 <translation id="2544853746127077729">Таниулах гэрчилгээг сүлжээнээс цуцалсан байна</translation>
 <translation id="255937426064304553">АНУ олон улсын</translation>
 <translation id="2563185590376525700">Frog</translation>
-<translation id="2574327434504608656">Bruschetta-тай 1 фолдер хуваалцсан</translation>
 <translation id="2578394532502990878">Тамил авиа зүй</translation>
 <translation id="2579959351793446050">Одиа</translation>
 <translation id="2587195714949534472"><ph name="FILE_NAME" />-г синк хийхээр бэлтгэж байна...</translation>
@@ -297,7 +295,6 @@
 <translation id="3408072735282270043">Идэвхжүүлэх, <ph name="NETWORK_NAME" /></translation>
 <translation id="3408236822532681288">Neo 2 гартай герман (Герман)</translation>
 <translation id="3414856743105198592">Зөөврийн хэрэгслийг форматлах нь бүх өгөгдлийг арилгана. Та үйлдлийг үргэжлүүлэх үү?</translation>
-<translation id="3435143625481187092">Bruschetta-д <ph name="FOLDER_NAME" /> фолдерын файлуудад хандах зөвшөөрөл өгнө үү</translation>
 <translation id="3437801641691368414">Үүсгэсэн цаг</translation>
 <translation id="343907260260897561">Шууд Камер</translation>
 <translation id="3455931012307786678">Эстон</translation>
@@ -385,7 +382,6 @@
 <translation id="4159731583141908892"><ph name="FILE_NAME" />-г зөөсөн.</translation>
 <translation id="4176286497474237543">Хогийн савыг одоо суллах</translation>
 <translation id="4179621117429069925">Энэ зүйл таны хогийн саванд байна</translation>
-<translation id="4181839429935094755"><ph name="NUMBER_OF_ITEMS" /> фолдерыг Bruschetta-тай хуваалцсан</translation>
 <translation id="4186579485882418952">Офлайн горимыг идэвхжүүлэх</translation>
 <translation id="4193154014135846272">Google баримт бичиг</translation>
 <translation id="4197674956721858839">Зип сонголт</translation>
@@ -452,7 +448,6 @@
 <translation id="4646813851450205600">Qwerty гартай чех</translation>
 <translation id="4656777537938206294">Файлуудыг офлайн үед ашиглах боломжтой болгох</translation>
 <translation id="4658782175094886150">Цасан дунд байгаа хүн</translation>
-<translation id="466782788172479199">Bruschetta-д таны Google Драйвын файлуудад хандах зөвшөөрөл өгнө үү. Өөрчлөлтүүдийг таны бусад төхөөрөмжид синк хийнэ.</translation>
 <translation id="4669606053856530811">Эдгээр зүйлийг '<ph name="SOURCE_NAME" />'-н гишүүдтэй хуваалцаагүй тохиолдолд тус гишүүд хандах боломжгүй.</translation>
 <translation id="467809019005607715">Google Слайд</translation>
 <translation id="4690246192099372265">Швед</translation>
@@ -561,7 +556,6 @@
 <translation id="5323213332664049067">Латин Америк</translation>
 <translation id="5330145655348521461">Эдгээр файлууд өөр компьютер дээр нээгдсэн байна. Нээхийн тулд <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) рүү шилжүүл.</translation>
 <translation id="5330512191124428349">Мэдээлэл авах</translation>
-<translation id="5344246330454251646">Bruschetta-н хуваалцах зүйлсийг удирдах</translation>
 <translation id="535792325654997756">Мууртай хүн</translation>
 <translation id="5358764674931277">Фреймийн хурд</translation>
 <translation id="5363339716524495120">Оролтын хэл нь Хятад хэл юм</translation>
@@ -729,7 +723,6 @@
 <translation id="6710213216561001401">Өмнөх</translation>
 <translation id="6732801395666424405">Гэрчилгээнүүдийг ачаалласангүй</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [ <ph name="ISSUED_TO" /> ]</translation>
-<translation id="6740270213273127264">Bruschetta-тай фолдер хуваалцах</translation>
 <translation id="6750737795876287924">Одоогийн лавлах</translation>
 <translation id="6751256176799620176">1 фолдер сонгосон</translation>
 <translation id="6755827872271341378">ChromeOS Flex төхөөрөмж</translation>

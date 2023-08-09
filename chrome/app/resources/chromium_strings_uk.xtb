@@ -72,7 +72,6 @@
 <translation id="2592940277904433508">Продовжити використовувати Chromium</translation>
 <translation id="2648074677641340862">Під час встановлення сталася помилка операційної системи. Завантажте Chromium ще раз.</translation>
 <translation id="2661879430930417727">Якщо ви користуєтеся пристроєм спільно з друзями та рідними, вони зможуть переглядати веб-сторінки окремо та налаштовувати Chromium на свій смак</translation>
-<translation id="2669853942967761236">Веб-переглядач Chromium заблокував цей архівний файл, оскільки він може містити зловмисне програмне забезпечення</translation>
 <translation id="268602741124540128">Вітаємо в Chromium, <ph name="ACCOUNT_FIRST_NAME" /></translation>
 <translation id="2711502716910134313">Вкладка Chromium</translation>
 <translation id="2718390899429598676">Задля підвищення безпеки Chromium шифруватиме ваші дані.</translation>
@@ -407,6 +406,5 @@ Chromium не може відновити ваші налаштування.</tr
 <translation id="942598560705308788">Сертифікати, якими керує Chromium</translation>
 <translation id="965162752251293939">Хто користується веб-переглядачем Chromium?</translation>
 <translation id="967427899662692980">Отримайте найвищий рівень безпеки в Chromium</translation>
-<translation id="9792300276217204">Завжди очищати дані сайтів із пристрою, коли ви закриваєте Chromium</translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
 </translationbundle>

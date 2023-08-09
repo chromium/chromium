@@ -63,6 +63,7 @@
 <translation id="1235458158152011030">Сохраненные сети</translation>
 <translation id="1239161794459865856">Функция "<ph name="FEATURE_NAME" />" подключена.</translation>
 <translation id="1240638468526743569">приложение</translation>
+<translation id="1242883863226959074">устройстве</translation>
 <translation id="124678866338384709">Закрыть вкладку</translation>
 <translation id="1246890715821376239">Неподдерживаемые приложения</translation>
 <translation id="1247372569136754018">Микрофон (встроенный)</translation>
@@ -181,6 +182,7 @@
 <translation id="1747827819627189109">Экранная клавиатура включена</translation>
 <translation id="1749109475624620922">Окно "<ph name="WINDOW_TITLE" />" назначено всем рабочим столам.</translation>
 <translation id="1750088060796401187">Достигнуто максимальное количество рабочих столов (<ph name="MAX_DESK_LIMIT" />). Удалите рабочий стол, чтобы открыть новый.</translation>
+<translation id="1755556344721611131">Приложение "Диагностика"</translation>
 <translation id="1756833229520115364">Не удалось сохранить шаблон. Слишком много окон или вкладок.</translation>
 <translation id="1757857692711134412">Выкл. до заката</translation>
 <translation id="1768366657309696705">Функция сочетания клавиш <ph name="LAUNCHER_KEY_NAME" /> + . (точка) изменилась. Чтобы использовать клавишу Insert, нажмите <ph name="LAUNCHER_KEY_NAME" /> + Shift + Backspace.</translation>
@@ -266,7 +268,6 @@
 <translation id="2148716181193084225">Сегодня</translation>
 <translation id="2149229036084364364">Перейти к предыдущему треку</translation>
 <translation id="2161132820593978283">Используйте автомасштабирование, чтобы во время видеовстреч оставаться в центре экрана. Эту функцию можно включить в быстрых настройках.</translation>
-<translation id="2165966740263283349">использование хранилища</translation>
 <translation id="2170530631236737939">Чтобы выйти из режима обзора, проведите тремя пальцами вниз.</translation>
 <translation id="2185166372312820725">Перейти на предыдущую вкладку</translation>
 <translation id="2185444992308415167">Перейти по вкладкам 1–8</translation>
@@ -474,6 +475,7 @@
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3113492864356515707">Выделить предыдущий элемент на панели запуска</translation>
 <translation id="3120421559657122717">Выключить устройство?</translation>
+<translation id="3122464029669770682">Процессор</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">Перезагрузите, чтобы обновить</translation>
 <translation id="3139188263101386725">Воспользуйтесь обновленным сочетанием клавиш</translation>
@@ -518,7 +520,6 @@
 <translation id="3308453408813785101">Пользователь <ph name="USER_EMAIL_ADDRESS" /> сможет войти в аккаунт позже.</translation>
 <translation id="3321628682574733415">Неверный родительский код доступа</translation>
 <translation id="332827762492701193">Уведомления скрыты</translation>
-<translation id="3338855835380298613">использование процессора</translation>
 <translation id="3339826665088060472">Запись экрана, инструменты для создания скриншотов и записи видео с экрана</translation>
 <translation id="3340978935015468852">настройки</translation>
 <translation id="3341303451326249809">Скриншот сохранен</translation>
@@ -642,7 +643,6 @@
 <translation id="3781910048497807059">Перейти к предыдущей панели</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">Заблокировать</translation>
-<translation id="3796198851576711985">состояние батареи</translation>
 <translation id="3796746699333205839">Приложение использует вашу камеру и микрофон</translation>
 <translation id="3798670284305777884">Динамик (встроенный)</translation>
 <translation id="3799080171973636491">Вы нажали сочетание клавиш для включения полноэкранной лупы. Выполнить это действие?</translation>
@@ -814,12 +814,10 @@
 <translation id="4527045527269911712">Устройству <ph name="DEVICE_NAME" /> требуется разрешение на подключение через Bluetooth.</translation>
 <translation id="4533343294786968049">Включен режим, продлевающий срок службы батареи. Она полностью зарядится к <ph name="FULLY_CHARGE_TIME" />.</translation>
 <translation id="453661520163887813">До полной зарядки <ph name="TIME" /></translation>
-<translation id="4536664881735498710">использование озу</translation>
 <translation id="4538824937723742295">Сделать снимок всего экрана</translation>
 <translation id="4539127209940689201">Распечатать текущую страницу</translation>
 <translation id="4541706525461326392">Профиль удаляется. Это может занять несколько минут.</translation>
 <translation id="4544483149666270818">Выберите окно для записи</translation>
-<translation id="454541942614298893">мое устройство</translation>
 <translation id="4545950850562423083">Добавить текущую страницу в закладки</translation>
 <translation id="4548482551627849548">Переместить активное окно на рабочий стол слева</translation>
 <translation id="4560576029703263363">Включено</translation>
@@ -978,7 +976,6 @@
 <translation id="5208059991603368177">Включено</translation>
 <translation id="5216991270656129561">Выкл. до <ph name="TIME" /></translation>
 <translation id="5217646019792206018">Следующий рабочий стол: <ph name="NEXT_DESK_NAME" />. Чтобы активировать его, нажмите Поиск + Пробел или Shift + Поиск + <ph name="NEXT_DESK_INDEX" />.</translation>
-<translation id="5221423477036820198">Быстро отправляйте и получайте сообщения на телефоне с помощью функции "Управление телефоном".</translation>
 <translation id="5222676887888702881">Выйти</translation>
 <translation id="5229343007215035173">Включить/отключить экран конфиденциальности</translation>
 <translation id="5234764350956374838">Закрыть</translation>
@@ -1139,7 +1136,6 @@
 <translation id="589817443623831496">Точечное сканирование</translation>
 <translation id="5901316534475909376">Shift + Esc</translation>
 <translation id="5901630391730855834">Желтый</translation>
-<translation id="5902162043476810127">оперативная память</translation>
 <translation id="5909862606227538307">Рабочий стол неактивен.</translation>
 <translation id="5911231045062997865">Окна Lacros пока не поддерживаются. Остальные приложения будут сохранены.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
@@ -1543,7 +1539,6 @@
 <translation id="7724603315864178912">Вырезать</translation>
 <translation id="7725108879223146004">Показать сведения о точке доступа. Точка доступа отключается.</translation>
 <translation id="7727952505535211425">Открыть сайт из адресной строки в новой вкладке</translation>
-<translation id="77365090426890123">использование памяти</translation>
 <translation id="7742327441377685481">Нет уведомлений</translation>
 <translation id="7748275671948949022">Выделить кнопку запуска на панели запуска</translation>
 <translation id="7749443890790263709">Достигнуто максимально допустимое количество рабочих столов.</translation>
@@ -1795,7 +1790,6 @@
 <translation id="8853703225951107899">Введенный PIN-код или пароль снова оказался недействительным. Если вы недавно меняли пароль, введите прежний. Новый пароль вступит в силу после того, как вы выйдете из аккаунта.</translation>
 <translation id="8855885154700222542">Клавиша полноэкранного режима</translation>
 <translation id="8858369206579825206">Настройки конфиденциальности</translation>
-<translation id="8860817004574502558">время работы от батареи</translation>
 <translation id="8870509716567206129">Приложение не поддерживает разделение экрана.j</translation>
 <translation id="8874184842967597500">Не подключено</translation>
 <translation id="8875021410787719674">Переключаться между правым нижним углом, панелью запуска, адресной строкой, панелью закладок, открытой веб-страницей и панелью скачанных файлов</translation>
@@ -1848,6 +1842,7 @@
 <translation id="9080073830732419341">Окно предварительного просмотра камеры привязано к левому верхнему углу</translation>
 <translation id="9080132581049224423">Чтобы перейти на главный экран, проведите вверх.</translation>
 <translation id="9080206825613744995">Микрофон используется</translation>
+<translation id="9083324773537346962">Версия ОС</translation>
 <translation id="908451241440060346">Пока он работает, уведомления будут приходить без звука.</translation>
 <translation id="9084606467167974638">Переместить меню</translation>
 <translation id="9085962983642906571">Устройство будет поддерживать заряд на уровне 80 %, чтобы продлить срок службы батареи.</translation>
@@ -1888,7 +1883,6 @@
 <translation id="951991426597076286">Отклонить</translation>
 <translation id="953431725143473984">Выключить устройство?</translation>
 <translation id="954052413789300507">Недостаточно свободного места для скачивания файла <ph name="FILENAME" />. Освободите пространство.</translation>
-<translation id="968627661524972577">С помощью приложений на Chromebook можно выполнять разнообразные задачи. Чтобы найти нужное приложение, откройте панель запуска. Для этого можно нажать специальную клавишу на клавиатуре.</translation>
 <translation id="974545358917229949">Показано результатов поиска по запросу "<ph name="QUERY" />": <ph name="RESULT_COUNT" /></translation>
 <translation id="98120814841227350">Перейти к концу документа</translation>
 <translation id="987589956647469042">Мобильный интернет включен.</translation>

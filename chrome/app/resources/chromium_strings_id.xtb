@@ -72,7 +72,6 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="2592940277904433508">Terus gunakan Chromium</translation>
 <translation id="2648074677641340862">Terjadi error pada sistem operasi saat pemasangan berlangsung. Download Chromium lagi.</translation>
 <translation id="2661879430930417727">Jika Anda berbagi perangkat, teman dan keluarga dapat menjelajah secara terpisah dan menyiapkan Chromium sesuai keinginannya</translation>
-<translation id="2669853942967761236">Chromium memblokir file arsip ini karena dapat menyembunyikan malware</translation>
 <translation id="268602741124540128">Selamat Datang di Chromium, <ph name="ACCOUNT_FIRST_NAME" /></translation>
 <translation id="2711502716910134313">Tab Chromium</translation>
 <translation id="2718390899429598676">Untuk keamanan tambahan, Chromium akan mengenkripsi data Anda.</translation>
@@ -407,6 +406,5 @@ Chromium tidak dapat memulihkan setelan Anda.</translation>
 <translation id="942598560705308788">Sertifikat yang dikelola oleh Chromium</translation>
 <translation id="965162752251293939">Siapa yang menggunakan Chromium?</translation>
 <translation id="967427899662692980">Dapatkan keamanan terkuat Chromium</translation>
-<translation id="9792300276217204">Selalu menghapus data situs dari perangkat saat Anda menutup Chromium</translation>
 <translation id="985602178874221306">Pengarang Chromium</translation>
 </translationbundle>

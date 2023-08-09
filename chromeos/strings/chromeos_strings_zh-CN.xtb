@@ -15,7 +15,6 @@
 <translation id="1075811647922107217">页面大小</translation>
 <translation id="1082009148392559545">正在下载屏保</translation>
 <translation id="1094693127011229778">IP 地址缺失</translation>
-<translation id="1113892970288677790">选择系统挑选的美术作品和图片</translation>
 <translation id="1118572504348554005">我们可能会与合作伙伴分享通过本表单提交的反馈，以便排查您向我们报告的错误和其他问题。请勿包含密码等敏感信息。</translation>
 <translation id="1119447706177454957">内部错误</translation>
 <translation id="1124772482545689468">用户</translation>
@@ -183,6 +182,7 @@
 <translation id="225692081236532131">激活状态</translation>
 <translation id="2271469253353559191">深色模式时间表</translation>
 <translation id="2276999893457278469">热门帮助内容</translation>
+<translation id="2279051792571591988">恢复默认设置</translation>
 <translation id="2287186687001756809">没有可显示的图片。若要添加照片，请前往 <ph name="LINK" /></translation>
 <translation id="2307344026739914387">使用当前密钥对</translation>
 <translation id="2320295602967756579">启用浅色主题</translation>
@@ -332,7 +332,6 @@
 <translation id="361575905210396100">感谢您的反馈</translation>
 <translation id="3632579075709132555">隐私保护屏幕开关</translation>
 <translation id="3651050199673793219">选择温度单位</translation>
-<translation id="3663574643422533538">选择 <ph name="PRODUCT_NAME" /> 专有艺术作品</translation>
 <translation id="3668449597372804501">“云朵的动态变化”壁纸</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" />测试</translation>
 <translation id="370665806235115550">正在加载...</translation>
@@ -646,6 +645,7 @@
 <translation id="6061772781719867950">HTTPS 请求失败</translation>
 <translation id="6073292342939316679">调低键盘亮度</translation>
 <translation id="6075872808778243331">(Android) HTTP 延迟时间</translation>
+<translation id="6078323886959318429">添加快捷方式</translation>
 <translation id="6104112872696127344">已取消扫描</translation>
 <translation id="6106186594183574873">要完成更改，请输入您的旧密码</translation>
 <translation id="6108689792487843350">无法连接至网关</translation>

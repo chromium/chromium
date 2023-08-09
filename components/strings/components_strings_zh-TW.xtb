@@ -90,6 +90,7 @@
 <translation id="1175393348063009671">相紙 (霧面)</translation>
 <translation id="1175875016430184367">三釘 (右側)</translation>
 <translation id="1177802847690410663">網路瀏覽器</translation>
+<translation id="1177863135347784049">自訂</translation>
 <translation id="1178581264944972037">暫停</translation>
 <translation id="1178821169867863726">12 x 16 吋</translation>
 <translation id="1181037720776840403">移除</translation>
@@ -134,7 +135,6 @@
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">你在不是由貴機構管理的網站上輸入了你的密碼。為確保帳戶安全，請勿在其他應用程式和網站上重複使用你的密碼。</translation>
 <translation id="1257553931232494454">縮放等級</translation>
-<translation id="1259843033850529027">選取政策層級</translation>
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />；按下 Tab 鍵再按下 Enter 鍵即可管理 Chrome 設定</translation>
 <translation id="1264309058268477500">替用匣</translation>
 <translation id="1264974993859112054">運動資訊</translation>
@@ -256,12 +256,6 @@
 <translation id="1482879811280872320">單車運動</translation>
 <translation id="1483493594462132177">傳送</translation>
 <translation id="1492194039220927094">政策通知推送：</translation>
-<translation id="149293076951187737">關閉所有 Chrome 無痕分頁後，系統會將你在這些分頁上的活動記錄從這部裝置上清除：
-          <ph name="BEGIN_LIST" />
-            <ph name="LIST_ITEM" />瀏覽活動<ph name="END_LIST_ITEM" />
-            <ph name="LIST_ITEM" />搜尋記錄<ph name="END_LIST_ITEM" />
-            <ph name="LIST_ITEM" />在表單中輸入的資訊<ph name="END_LIST_ITEM" />
-          <ph name="END_LIST" /></translation>
 <translation id="14938948731065592">電腦周邊設備</translation>
 <translation id="1495677929897281669">返回分頁</translation>
 <translation id="1501859676467574491">顯示你 Google 帳戶中的卡片</translation>
@@ -390,7 +384,6 @@
 <translation id="1741613555002899862">將 DnsOverHttpsMode 設為 <ph name="SECURE_DNS_MODE_SECURE" /> 時，必須指定有效的字串。</translation>
 <translation id="1743393865165844832">寢具與床用織物</translation>
 <translation id="1745399796851657441"><ph name="BEGIN_BOLD" />我們使用這些資料的方式：<ph name="END_BOLD" />Chrome 會在你瀏覽內容時記錄感興趣的主題。系統已預先定義主題標籤，包括「藝術與娛樂」、「購物」和「運動」等。在此之後，你造訪的網站就可以要求 Chrome 提供一些主題 (而非你的瀏覽記錄)，據此向你放送個人化廣告。</translation>
-<translation id="1745880797583122200">你的瀏覽器受到管理</translation>
 <translation id="1746113442205726301">圖片 Y 批次</translation>
 <translation id="1746531169546376413">0 度</translation>
 <translation id="1752021286346845558">出紙槽 8</translation>
@@ -456,6 +449,7 @@
 <translation id="1883255238294161206">收合清單</translation>
 <translation id="1884843295353628214">爵士</translation>
 <translation id="1890171020361705182">在這款恐龍遊戲中，你要協助在荒野中奔馳的像素風恐龍閃避仙人掌和翼手龍。聽見提示音效時，輕觸一下即可躍過障礙物。</translation>
+<translation id="189035593835762169">條款及細則</translation>
 <translation id="1898423065542865115">篩選</translation>
 <translation id="1901443836186977402">{1,plural, =1{伺服器無法證明其屬於 <ph name="DOMAIN" /> 網域；其安全性憑證已在昨天到期。這可能是因為設定錯誤，或是有攻擊者攔截你的連線。這台電腦的時鐘目前設為 <ph name="CURRENT_DATE" />，這是正確的時間嗎？如果不是的話，請更新系統時鐘，然後重新整理這個網頁。}other{伺服器無法證明其屬於 <ph name="DOMAIN" /> 網域；其安全性憑證已在 # 天前到期。這可能是因為設定錯誤，或有攻擊者攔截你的連線。這台電腦的時鐘目前設為 <ph name="CURRENT_DATE" />，這是正確的時間嗎？如果不是的話，請更新系統時鐘，然後重新整理這個網頁。}}</translation>
 <translation id="1902576642799138955">有效期間</translation>
@@ -807,6 +801,7 @@
 <translation id="2674804415323431591">隱藏建議項目</translation>
 <translation id="2677696497921480781">生日與命名日</translation>
 <translation id="2677748264148917807">離開</translation>
+<translation id="2678468611080193228">請嘗試暫時允許使用第三方 Cookie，這代表保護程度較低，但網站功能較容易運作</translation>
 <translation id="2687555958734450033">最適配置</translation>
 <translation id="2688186765492306706">500 x 760 公釐</translation>
 <translation id="2688969097326701645">是，請繼續</translation>
@@ -1470,6 +1465,7 @@
 <translation id="4152318981910038897">{COUNT,plural, =1{第 1 頁}other{第 {COUNT} 頁}}</translation>
 <translation id="4154277373259957087">Chrome 會先驗證你的身分，再填入付款方式。你隨時可以前往 <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" /> 更新這項設定。</translation>
 <translation id="4154664944169082762">指紋</translation>
+<translation id="4159149286839604525">這表示大多數網站功能應該都能正常運作，但保護程度較低</translation>
 <translation id="4159784952369912983">紫色</translation>
 <translation id="4165986682804962316">網站設定</translation>
 <translation id="4169535189173047238">不允許</translation>
@@ -1876,6 +1872,7 @@
 <translation id="4983145717627482381">導覽行程及導遊同行假期</translation>
 <translation id="498323057460789381">結構定義驗證錯誤：<ph name="ERROR" /></translation>
 <translation id="4984088539114770594">要使用麥克風嗎？</translation>
+<translation id="4985206706500620449">你已允許這個網站使用第三方 Cookie</translation>
 <translation id="4989163558385430922">查看全部</translation>
 <translation id="4989542687859782284">尚未支援</translation>
 <translation id="4989809363548539747">這是不支援的外掛程式</translation>
@@ -1885,6 +1882,7 @@
 <translation id="4995474875135717171">修改日期：</translation>
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />；按下 Tab 鍵再按下 Enter 鍵即可管理站內搜尋和預設搜尋引擎</translation>
 <translation id="4998950033665438990">單面</translation>
+<translation id="5001526427543320409">第三方 Cookie</translation>
 <translation id="5002932099480077015">啟用後，Chrome 會將您的信用卡複本儲存在這個裝置上，以加快表單填寫速度。</translation>
 <translation id="5007392906805964215">查看</translation>
 <translation id="5011561501798487822">偵測到的語言</translation>
@@ -2567,7 +2565,6 @@
 <translation id="6450212216969386944">Envelope Chou 40</translation>
 <translation id="6451458296329894277">確認重新提交表單</translation>
 <translation id="6452889436791091116">ISO ID-1</translation>
-<translation id="6453457495574553803">選取政策目標</translation>
 <translation id="6456955391422100996">已移除廣告。</translation>
 <translation id="6457206614190510200">騎馬訂</translation>
 <translation id="6457455098507772300">系統會以彈出式通知形式在電腦上顯示降價快訊</translation>
@@ -2601,6 +2598,7 @@
 <translation id="6521745193039995384">未啟用</translation>
 <translation id="6524830701589638230">「管理無障礙設定」按鈕，啟動後即可在 Chrome 設定中依個人需求調整無障礙工具</translation>
 <translation id="6529173248185917884">第七卷</translation>
+<translation id="652937045869844725">請嘗試允許使用第三方 Cookie，這代表保護程度較低，但網站功能較容易運作</translation>
 <translation id="6529602333819889595">重做刪除(&amp;R)</translation>
 <translation id="6535751101619004418">貨幣與外匯交易</translation>
 <translation id="6536221421038631327">從 <ph name="DEVICE_TYPE" /> 移除 Passpoint 訂閱後，相關聯的網路也會一併移除。如要變更訂閱方案，請聯絡「<ph name="FRIENDLY_NAME" />」。<ph name="LEARN_MORE" /></translation>
@@ -2864,6 +2862,7 @@
 <translation id="7102079138917191645">建築與裝修</translation>
 <translation id="7102554173784142865">暢玩 Chrome 恐龍遊戲</translation>
 <translation id="7102760431686146931">廚具與餐具</translation>
+<translation id="7106762743910369165">你的瀏覽器是由貴機構管理</translation>
 <translation id="7108338896283013870">隱藏</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> 要求使用攝影機</translation>
 <translation id="7108819624672055576">依據擴充功能設定允許</translation>
@@ -2877,12 +2876,6 @@
 <translation id="7119371694555167493">複製作業逾時</translation>
 <translation id="7119414471315195487">關閉其他分頁或程式</translation>
 <translation id="7124354851782353862">請輸入信用卡驗證碼</translation>
-<translation id="7129355289156517987">關閉所有 Chromium 無痕分頁後，系統會將你在這些分頁上的活動記錄從這部裝置上清除：
-          <ph name="BEGIN_LIST" />
-            <ph name="LIST_ITEM" />瀏覽活動<ph name="END_LIST_ITEM" />
-            <ph name="LIST_ITEM" />搜尋記錄<ph name="END_LIST_ITEM" />
-            <ph name="LIST_ITEM" />在表單中輸入的資訊<ph name="END_LIST_ITEM" />
-          <ph name="END_LIST" /></translation>
 <translation id="7129409597930077180">無法運送到這個地址，請改用其他地址。</translation>
 <translation id="7129809579943936035"><ph name="VALUE_PROP" /><ph name="DETAILS" /></translation>
 <translation id="7130775116821607281">禁止上傳</translation>
@@ -2933,6 +2926,7 @@
 <translation id="7221855153210829124">顯示通知</translation>
 <translation id="7221857374443660083">銀行想要確認你的身分</translation>
 <translation id="722454870747268814">新無痕式分頁</translation>
+<translation id="7226276626900992675">你已允許這個網站使用第三方 Cookie。這表示大多數網站功能應該都能正常運作，但保護程度較低。</translation>
 <translation id="7227293336683593977">價格記錄</translation>
 <translation id="7233592378249864828">列印確認工作表</translation>
 <translation id="7234638337680728591">汽油價格與交通工具燃油</translation>
@@ -3552,7 +3546,6 @@
 <translation id="8483229036294884935">這個地址將從 Google 帳戶 (<ph name="ACCOUNT" />) 中刪除</translation>
 <translation id="8488350697529856933">適用對象</translation>
 <translation id="8490137692873530638">堆疊出紙器 10</translation>
-<translation id="8493829133024050711">選取政策來源</translation>
 <translation id="8493948351860045254">釋出空間</translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" /> 的回應時間過長。</translation>
 <translation id="8503559462189395349">Chrome 密碼</translation>
@@ -3617,7 +3610,6 @@
 <translation id="8623885649813806493">找不到相符的密碼。顯示所有已儲存的密碼。</translation>
 <translation id="8624354461147303341">取得折扣</translation>
 <translation id="8634957317623797170">54 x 86 公釐</translation>
-<translation id="8637577059508742477">你的設定檔和瀏覽器是由 <ph name="DOMAIN" /> 管理</translation>
 <translation id="8641131559425911240">信封 (證券紙)</translation>
 <translation id="8643409044755049933">Envelope Kaku 3</translation>
 <translation id="8647287295490773273">210 x 330 公釐</translation>
@@ -3694,6 +3686,7 @@
 <translation id="8793655568873652685"><ph name="ENROLLMENT_DOMAIN" /> 已為你的瀏覽器啟用 Chrome Enterprise 連接器。這些連接器可以存取你的部分資料。</translation>
 <translation id="8798099450830957504">預設</translation>
 <translation id="8798739476508189189">在尋找瀏覽器旗標嗎？請前往</translation>
+<translation id="8800034312320686233">網站無法正常運作嗎？</translation>
 <translation id="8805819170075074995">清單項目「<ph name="LANGUAGE_ID" />」：這個項目同時也納入在 SpellcheckLanguage 政策中，因此系統已予以忽略。</translation>
 <translation id="8806285662264631610">沐浴與身體護理產品</translation>
 <translation id="8806696968588872703">塑膠 (光滑)</translation>

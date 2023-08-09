@@ -15,7 +15,6 @@
 <translation id="1075811647922107217">حجم الصفحة</translation>
 <translation id="1082009148392559545">جارٍ تنزيل شاشة الاستراحة</translation>
 <translation id="1094693127011229778">‏عنوان IP غير متوفّر.</translation>
-<translation id="1113892970288677790">اختَر الأعمال الفنية والصور المنظَّمة.</translation>
 <translation id="1118572504348554005">قد نشارك مع شركائنا الملاحظات التي يتم إرسالها من خلال هذا النموذج، وذلك لتحديد وحلّ المشاكل والأخطاء التي يتم الإبلاغ عنها، لذا يُرجى عدم إدراج معلومات حساسة، مثل كلمات المرور.</translation>
 <translation id="1119447706177454957">خطأ داخلي</translation>
 <translation id="1124772482545689468">المستخدم</translation>
@@ -183,6 +182,7 @@
 <translation id="225692081236532131">حالة التفعيل</translation>
 <translation id="2271469253353559191">الجدول الزمني للوضع المُعتِم</translation>
 <translation id="2276999893457278469">أهم مقالات المحتوى المساعِد ذات الصلة</translation>
+<translation id="2279051792571591988">استعادة الإعدادات التلقائية</translation>
 <translation id="2287186687001756809">لا تتوفّر صور. لإضافة صور، انتقِل إلى <ph name="LINK" />.</translation>
 <translation id="2307344026739914387">استخدام مفتاحَي التشفير الحاليين</translation>
 <translation id="2320295602967756579">تفعيل المظهر الفاتح</translation>
@@ -332,7 +332,6 @@
 <translation id="361575905210396100">شكرًا على ملاحظاتك</translation>
 <translation id="3632579075709132555">إيقاف/تفعيل شاشة الخصوصية</translation>
 <translation id="3651050199673793219">اختيار وحدة قياس درجة الحرارة</translation>
-<translation id="3663574643422533538">اختيار عمل فني حصري لجهاز <ph name="PRODUCT_NAME" /></translation>
 <translation id="3668449597372804501">خلفية تعرض منظرًا انسيابيًا للسُحب</translation>
 <translation id="3689839747745352263">اختبار <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">جارٍ التحميل...</translation>
@@ -646,6 +645,7 @@
 <translation id="6061772781719867950">‏حدث خطأ في طلبات HTTPS.</translation>
 <translation id="6073292342939316679">تقليل سطوع لوحة المفاتيح</translation>
 <translation id="6075872808778243331">‏(نظام التشغيل Android) اختبار وقت استجابة بروتوكول HTTP</translation>
+<translation id="6078323886959318429">إضافة اختصار</translation>
 <translation id="6104112872696127344">تم إلغاء المسح الضوئي.</translation>
 <translation id="6106186594183574873">يُرجى إدخال كلمة المرور القديمة لإنهاء الإجراء.</translation>
 <translation id="6108689792487843350">يتعذّر الوصول إلى البوابة</translation>

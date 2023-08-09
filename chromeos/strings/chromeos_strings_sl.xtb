@@ -15,7 +15,6 @@
 <translation id="1075811647922107217">Velikost strani</translation>
 <translation id="1082009148392559545">Prenos ohranjevalnika zaslona</translation>
 <translation id="1094693127011229778">Naslov IP ni na voljo.</translation>
-<translation id="1113892970288677790">Izberite izbrani slikovni material in slike</translation>
 <translation id="1118572504348554005">Povratne informacije, ki jih pošljete v tem obrazcu, lahko delimo z našimi partnerji in tako odpravljamo napake ter druge težave, o katerih nas obvestite. Ne vključite občutljivih podatkov, kot so gesla.</translation>
 <translation id="1119447706177454957">Notranja napaka</translation>
 <translation id="1124772482545689468">Uporabnik</translation>
@@ -183,6 +182,7 @@
 <translation id="225692081236532131">Stanje aktiviranja</translation>
 <translation id="2271469253353559191">Urnik za temni način</translation>
 <translation id="2276999893457278469">Najbolj priljubljena vsebina s pomočjo</translation>
+<translation id="2279051792571591988">Ponastavi na privzeto</translation>
 <translation id="2287186687001756809">Na voljo ni nobene slike. Fotografije lahko dodate na <ph name="LINK" />.</translation>
 <translation id="2307344026739914387">Uporaba trenutnega para ključev</translation>
 <translation id="2320295602967756579">Omogočanje svetle teme</translation>
@@ -332,7 +332,6 @@
 <translation id="361575905210396100">Hvala za povratne informacije</translation>
 <translation id="3632579075709132555">Preklop zaslona za zasebnost</translation>
 <translation id="3651050199673793219">Izbira enote temperature</translation>
-<translation id="3663574643422533538">Izberite ekskluzivna umetniška dela za <ph name="PRODUCT_NAME" /></translation>
 <translation id="3668449597372804501">Zaslonsko ozadje premika oblakov</translation>
 <translation id="3689839747745352263">Preizkus <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Nalaganje ...</translation>
@@ -646,6 +645,7 @@
 <translation id="6061772781719867950">Neuspele zahteve HTTP</translation>
 <translation id="6073292342939316679">zmanjšanje svetlosti osvetlitve tipkovnice</translation>
 <translation id="6075872808778243331">Zakasnitev HTTP (Android)</translation>
+<translation id="6078323886959318429">Dodajanje bližnjice</translation>
 <translation id="6104112872696127344">Optično branje je preklicano</translation>
 <translation id="6106186594183574873">Za dokončanje vnesite staro geslo</translation>
 <translation id="6108689792487843350">Prehod ni dosegljiv</translation>

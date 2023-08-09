@@ -15,7 +15,6 @@
 <translation id="1075811647922107217">Lehe suurus</translation>
 <translation id="1082009148392559545">Ekraanisäästja allalaadimine</translation>
 <translation id="1094693127011229778">IP-aadress pole saadaval</translation>
-<translation id="1113892970288677790">Valige kureeritud kujundused ja pildid</translation>
 <translation id="1118572504348554005">Võime selle vormi kaudu saadetud tagasisidet jagada oma partneritega, et teha veaotsingut vigade ja muude probleemide jaoks, millest meid teavitate. Ärge lisage delikaatset teavet, näiteks paroole.</translation>
 <translation id="1119447706177454957">Sisemine viga</translation>
 <translation id="1124772482545689468">Kasutaja</translation>
@@ -183,6 +182,7 @@
 <translation id="225692081236532131">Aktiveerimise olek</translation>
 <translation id="2271469253353559191">Tumeda režiimi ajakava</translation>
 <translation id="2276999893457278469">Peamine abisisu</translation>
+<translation id="2279051792571591988">Taasta vaikeväärtused</translation>
 <translation id="2287186687001756809">Pilte pole saadaval. Fotode lisamiseks minge saidile <ph name="LINK" /></translation>
 <translation id="2307344026739914387">Kasuta praegust võtmepaari</translation>
 <translation id="2320295602967756579">Heleda teema lubamine</translation>
@@ -332,7 +332,6 @@
 <translation id="361575905210396100">Suur tänu tagasiside eest</translation>
 <translation id="3632579075709132555">Privaatsuskuva lüliti</translation>
 <translation id="3651050199673793219">Valige temperatuuriühik</translation>
-<translation id="3663574643422533538">Valige <ph name="PRODUCT_NAME" /> eksklusiivne kujundus</translation>
 <translation id="3668449597372804501">Pilvevoolu taustapilt</translation>
 <translation id="3689839747745352263">Test <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Laadimine...</translation>
@@ -646,6 +645,7 @@
 <translation id="6061772781719867950">Ebaõnnestunud HTTP-päringud</translation>
 <translation id="6073292342939316679">vähendab klaviatuuri eredust</translation>
 <translation id="6075872808778243331">(Android) HTTP latentsusaeg</translation>
+<translation id="6078323886959318429">Otsetee lisamine</translation>
 <translation id="6104112872696127344">Skannimine tühistati</translation>
 <translation id="6106186594183574873">Toimingu lõpuleviimiseks sisestage oma vana parool</translation>
 <translation id="6108689792487843350">Lüüs on kättesaamatu</translation>

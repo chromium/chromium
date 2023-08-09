@@ -72,7 +72,6 @@
 <translation id="2592940277904433508">繼續使用 Chromium</translation>
 <translation id="2648074677641340862">安裝期間發生作業系統錯誤，請重新下載 Chromium。</translation>
 <translation id="2661879430930417727">如果你與親朋好友共用裝置，人人皆可享有獨立的瀏覽空間，依照自己的偏好設定 Chromium</translation>
-<translation id="2669853942967761236">這個封存檔可能藏有惡意軟體，因此 Chromium 已封鎖這個檔案</translation>
 <translation id="268602741124540128"><ph name="ACCOUNT_FIRST_NAME" />，歡迎使用 Chromium</translation>
 <translation id="2711502716910134313">Chromium 分頁</translation>
 <translation id="2718390899429598676">為了提升安全性，Chromium 會將您的資料加密保護。</translation>
@@ -407,6 +406,5 @@ Chromium 無法復原你的設定。</translation>
 <translation id="942598560705308788">由 Chromium 管理的憑證</translation>
 <translation id="965162752251293939">誰在使用 Chromium？</translation>
 <translation id="967427899662692980">獲得 Chromium 最強大的安全防護</translation>
-<translation id="9792300276217204">在 Chromium 關閉後一律清除裝置上的網站資料</translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
 </translationbundle>

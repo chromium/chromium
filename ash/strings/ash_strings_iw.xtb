@@ -63,6 +63,7 @@
 <translation id="1235458158152011030">רשתות מוכרות</translation>
 <translation id="1239161794459865856">התכונה <ph name="FEATURE_NAME" /> מחוברת.</translation>
 <translation id="1240638468526743569">אפליקציה כלשהי</translation>
+<translation id="1242883863226959074">מכשיר</translation>
 <translation id="124678866338384709">סגירת הכרטיסייה הנוכחית</translation>
 <translation id="1246890715821376239">אפליקציות שאינן נתמכות</translation>
 <translation id="1247372569136754018">מיקרופון (פנימי)</translation>
@@ -181,6 +182,7 @@
 <translation id="1747827819627189109">המקלדת שמופיעה במסך מופעלת</translation>
 <translation id="1749109475624620922">החלון <ph name="WINDOW_TITLE" /> מוקצה לכל שולחנות העבודה הווירטואליים</translation>
 <translation id="1750088060796401187">מותר להשתמש ב-<ph name="MAX_DESK_LIMIT" /> שולחנות עבודה וירטואליים לכל היותר. צריך להסיר שולחן עבודה וירטואלי כדי לפתוח אחד חדש.</translation>
+<translation id="1755556344721611131">אפליקציית אבחון</translation>
 <translation id="1756833229520115364">לא ניתן היה לשמור את התבנית. יש יותר מדי חלונות או כרטיסיות.</translation>
 <translation id="1757857692711134412">התכונה כבויה עד השקיעה</translation>
 <translation id="1768366657309696705">‏מקשי הקיצור <ph name="LAUNCHER_KEY_NAME" /> + נקודה השתנו. כדי להשתמש במקש Insert, יש להקיש על <ph name="LAUNCHER_KEY_NAME" /> + Shift + ‏Backspace.</translation>
@@ -266,7 +268,6 @@
 <translation id="2148716181193084225">היום</translation>
 <translation id="2149229036084364364">מעבר לטראק הקודם</translation>
 <translation id="2161132820593978283">אפשר להפעיל את הפריים האוטומטי במצלמה כדי למקם את עצמך במרכז המסך בשיחות וידאו. ניתן להפעיל אותו בהגדרות המהירות.</translation>
-<translation id="2165966740263283349">נפח אחסון בשימוש</translation>
 <translation id="2170530631236737939">כדי לצאת מ'מסכים אחרונים', יש להחליק למטה בעזרת שלוש אצבעות</translation>
 <translation id="2185166372312820725">מעבר לכרטיסייה הקודמת</translation>
 <translation id="2185444992308415167">מקשי קיצור למעבר בין כרטיסיות 1 עד 8</translation>
@@ -474,6 +475,7 @@
 <translation id="3105990244222795498">‏<ph name="DEVICE_NAME" />‏ (Bluetooth)</translation>
 <translation id="3113492864356515707">הדגשת הפריט הקודם במדף</translation>
 <translation id="3120421559657122717">לכבות את המכשיר?</translation>
+<translation id="3122464029669770682">CPU</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">הפעלה מחדש כדי לעדכן</translation>
 <translation id="3139188263101386725">שימוש במקש הקיצור המעודכן.</translation>
@@ -518,7 +520,6 @@
 <translation id="3308453408813785101">ל-<ph name="USER_EMAIL_ADDRESS" /> תהיה עדיין אפשרות להיכנס לחשבון מאוחר יותר.</translation>
 <translation id="3321628682574733415">קוד הורה שגוי</translation>
 <translation id="332827762492701193">ההתראות מוסתרות</translation>
-<translation id="3338855835380298613">‏שימוש במעבד (CPU)</translation>
 <translation id="3339826665088060472">צילום מסך, כלים ליצירת צילומי מסך והקלטות מסך</translation>
 <translation id="3340978935015468852">הגדרות</translation>
 <translation id="3341303451326249809">צילום המסך בוצע</translation>
@@ -642,7 +643,6 @@
 <translation id="3781910048497807059">הזזת המיקוד לחלונית הקודמת</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">נעילה</translation>
-<translation id="3796198851576711985">תקינות הסוללה</translation>
 <translation id="3796746699333205839">אפליקציה כלשהי משתמשת במצלמה ובמיקרופון שלך</translation>
 <translation id="3798670284305777884">רמקול (פנימי)</translation>
 <translation id="3799080171973636491">הקשת על מקש הקיצור של זכוכית מגדלת במסך מלא. להפעיל אותה?</translation>
@@ -814,12 +814,10 @@
 <translation id="4527045527269911712">‏מכשיר ה-Bluetooth ‏"<ph name="DEVICE_NAME" />" מבקש הרשאה לבצע התאמה.</translation>
 <translation id="4533343294786968049">אנחנו מאריכים את חיי הסוללה. הסוללה תיטען באופן מלא עד <ph name="FULLY_CHARGE_TIME" />.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> עד למילוי</translation>
-<translation id="4536664881735498710">‏שימוש ב-RAM</translation>
 <translation id="4538824937723742295">לצילום מסך מלא</translation>
 <translation id="4539127209940689201">הדפסת הדף הנוכחי</translation>
 <translation id="4541706525461326392">הסרת הפרופיל מתבצעת. הפעולה עשויה להימשך מספר דקות.</translation>
 <translation id="4544483149666270818">יש לבחור חלון להקלטה</translation>
-<translation id="454541942614298893">המכשיר שלי</translation>
 <translation id="4545950850562423083">שמירת הדף הנוכחי כסימנייה</translation>
 <translation id="4548482551627849548">העברת החלון הפעיל לשולחן העבודה הווירטואלי שבצד שמאל</translation>
 <translation id="4560576029703263363">מופעל</translation>
@@ -978,7 +976,6 @@
 <translation id="5208059991603368177">פועל</translation>
 <translation id="5216991270656129561">התכונה כבויה עד <ph name="TIME" /></translation>
 <translation id="5217646019792206018">‏שולחן העבודה הווירטואלי הבא: <ph name="NEXT_DESK_NAME" />, אפשר להפעיל אותו בעזרת המקשים 'חיפוש'+'רווח' או מקשי הקיצור Shift+'חיפוש'+<ph name="NEXT_DESK_INDEX" />.</translation>
-<translation id="5221423477036820198">‏בעזרת Phone Hub, אפשר לשלוח הודעות בטלפון או להשיב להן במהירות.</translation>
 <translation id="5222676887888702881">יציאה</translation>
 <translation id="5229343007215035173">‏הפעלה או השבתה של Privacy Screen</translation>
 <translation id="5234764350956374838">סגירה</translation>
@@ -1139,7 +1136,6 @@
 <translation id="589817443623831496">סריקת נקודות</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5901630391730855834">צהוב</translation>
-<translation id="5902162043476810127">זיכרון הגישה האקראית</translation>
 <translation id="5909862606227538307">שולחן עבודה וירטואלי לא פעיל.</translation>
 <translation id="5911231045062997865">‏בשלב זה, אין תמיכה בחלונות Lacros. אפליקציות אחרות יישמרו.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
@@ -1545,7 +1541,6 @@
 <translation id="7724603315864178912">חיתוך</translation>
 <translation id="7725108879223146004">‏הצגת פרטי הנקודה לשיתוף אינטרנט (Hotspot). מתבצעת השבתה של הנקודה לשיתוף אינטרנט.</translation>
 <translation id="7727952505535211425">פתיחת האתר שרשום בסרגל הכתובות בכרטיסייה חדשה</translation>
-<translation id="77365090426890123">שימוש בזיכרון</translation>
 <translation id="7742327441377685481">אין התראות</translation>
 <translation id="7748275671948949022">הדגשת הלחצן של מרכז האפליקציות במדף</translation>
 <translation id="7749443890790263709">הגעת למספר המקסימלי של שולחנות עבודה.</translation>
@@ -1797,7 +1792,6 @@
 <translation id="8853703225951107899">לא הצלחנו לאמת את קוד האימות או את הסיסמה שלך. הערה: אם שינית לאחרונה את הסיסמה, עליך לנסות להיכנס עם הסיסמה הישנה. הסיסמה החדשה תיכנס לתוקף לאחר היציאה מהחשבון.</translation>
 <translation id="8855885154700222542">מקש מסך מלא</translation>
 <translation id="8858369206579825206">אמצעי בקרה על פרטיות</translation>
-<translation id="8860817004574502558">חיי הסוללה</translation>
 <translation id="8870509716567206129">האפליקציה אינה תומכת במסך מפוצל.</translation>
 <translation id="8874184842967597500">לא מחובר</translation>
 <translation id="8875021410787719674">מעבר בין הפינה השמאלית התחתונה, מרכז האפליקציות, סרגל הכתובות, סרגל הסימניות, האתר שפתוח וההורדות</translation>
@@ -1850,6 +1844,7 @@
 <translation id="9080073830732419341">המצלמה מוצמדת לפינה הימנית העליונה</translation>
 <translation id="9080132581049224423">כדי לחזור לדף הבית, מחליקים כלפי מעלה</translation>
 <translation id="9080206825613744995">המיקרופון נמצא בשימוש.</translation>
+<translation id="9083324773537346962">גרסת מערכת הפעלה </translation>
 <translation id="908451241440060346">ההתראות מושתקות כשהמצב 'נא לא להפריע' מופעל</translation>
 <translation id="9084606467167974638">שינוי מיקום התפריט</translation>
 <translation id="9085962983642906571">כדי להאריך את חיי הסוללה, טעינת הסוללה מושהית ב-80% בזמן החיבור למטען.</translation>
@@ -1892,7 +1887,6 @@
 <translation id="951991426597076286">דחייה</translation>
 <translation id="953431725143473984">לכבות את המכשיר?</translation>
 <translation id="954052413789300507">אין מספיק נפח אחסון פנוי בשביל <ph name="FILENAME" />. עליך לפנות מקום.</translation>
-<translation id="968627661524972577">‏בעזרת האפליקציות אפשר לבצע כל מה שצריך ב-Chromebook. האפליקציות נמצאות במרכז האפליקציות. אפשר גם להקיש על המקש 'מרכז האפליקציות' במקלדת.</translation>
 <translation id="974545358917229949">מוצגות <ph name="RESULT_COUNT" /> תוצאות עבור השאילתה: <ph name="QUERY" /></translation>
 <translation id="98120814841227350">מעבר אל סוף המסמך</translation>
 <translation id="987589956647469042">חבילת הגלישה פועלת</translation>

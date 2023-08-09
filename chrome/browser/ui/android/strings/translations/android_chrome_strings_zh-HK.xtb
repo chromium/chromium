@@ -495,6 +495,7 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="3692944402865947621">無法存取儲存位置，因此無法下載 <ph name="FILE_NAME" />。</translation>
 <translation id="3697705478071004188">按網站排序</translation>
 <translation id="3699022356773522638">要下載檔案嗎？</translation>
+<translation id="3701515417135397388">在密碼於資料外洩中被盜用時警告你</translation>
 <translation id="371230970611282515">在危險事件發生前進行預測並發出警告。</translation>
 <translation id="3714981814255182093">開啟搜尋列</translation>
 <translation id="3716182511346448902">這個網頁使用過多記憶體，因此 Chrome 已暫停顯示這個網頁。</translation>
@@ -520,6 +521,7 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="3819183753496523827">您已離線。請檢查您的互聯網連線，然後再試一次。</translation>
 <translation id="3830886834687455630">需要更新 Google Play 服務才能檢查密碼</translation>
 <translation id="3845098929839618392">在無痕式分頁中開啟</translation>
+<translation id="3847319713229060696">可為所有網絡使用者提供更完善的安全防護</translation>
 <translation id="3856096718352044181">請驗證供應商的有效性，或稍後再試</translation>
 <translation id="3858860766373142691">名稱</translation>
 <translation id="3874520961715512166">已移除網站</translation>
@@ -530,6 +532,7 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="3924911262913579434">已開啟「<ph name="SAFE_BROWSING_MODE" />」</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">合併我的資料</translation>
+<translation id="3931947361983910192">過去 4 週</translation>
 <translation id="3932390316856284148">登入頁底面板宜家顯示喺成個畫面。</translation>
 <translation id="3934366560681368531">「</translation>
 <translation id="393697183122708255">沒有可用的語音搜尋功能</translation>
@@ -540,6 +543,7 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="3963007978381181125">密碼短語加密的資料不包括 Google Pay 的付款方法和地址。只有知道您密碼短語的使用者，才能讀取已加密的資料。系統不會將密碼短語傳送給 Google，Google 也不會儲存您的密碼短語。如果您忘記自己的密碼短語，或希望變更這項設定，則必須重設同步功能。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">Chrome 無法檢查密碼</translation>
 <translation id="3969863827134279083">向上移動</translation>
+<translation id="397105322502079400">計算中…</translation>
 <translation id="397583555483684758">同步處理功能已停止運作</translation>
 <translation id="3976396876660209797">移除並重新建立此捷徑</translation>
 <translation id="3981902534690264083">廣告客戶可以瞭解廣告的效益</translation>
@@ -840,6 +844,7 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="5524761631371622910">在試用期間，如果 Chrome 隨機將您加入試用行列，您的瀏覽記錄會影響所看到的廣告，以及系統推測的以下興趣。為保障您的私隱，Chrome 每個月都會自動刪除您的興趣。</translation>
 <translation id="5524843473235508879">已禁止重新導向。</translation>
 <translation id="5548606607480005320">安全檢查</translation>
+<translation id="5554520618550346933">使用密碼時，如果密碼已在網上發佈，Chrome 將會提醒你。核對時，您的密碼和使用者名稱將會加密，任何人 (包括 Google) 均無法讀取。</translation>
 <translation id="5555525474779371165">選取您的「安全瀏覽」功能</translation>
 <translation id="5556459405103347317">重新載入</translation>
 <translation id="555816257274242153">已停止追蹤價格</translation>
@@ -1056,7 +1061,6 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="663674369910034433">如需更多與私隱權、安全性和資料收集相關的設定，請參閱<ph name="BEGIN_LINK1" />同步處理<ph name="END_LINK1" />和 <ph name="BEGIN_LINK2" />Google 服務<ph name="END_LINK2" /></translation>
 <translation id="6637100877383020115">Chrome 會向 Google 傳送使用情況和當機資料，以協助改善應用程式。<ph name="BEGIN_UMA_LINK" />管理<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">一律封鎖</translation>
-<translation id="664050863900079109">朗讀</translation>
 <translation id="6641780377503683465">移除<ph name="INTEREST" /></translation>
 <translation id="6643016212128521049">清除</translation>
 <translation id="6645629752388991326">透過使用此裝置作為安全密鑰，控制可以登入的裝置。</translation>
@@ -1156,7 +1160,6 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="7138678301420049075">其他</translation>
 <translation id="7146622961999026732">這些網站和應用程式似乎對您很重要：</translation>
 <translation id="7149893636342594995">最近 24 小時</translation>
-<translation id="7152808996372201178">朗讀支援的頁面。按住這裡即可編輯此捷徑。</translation>
 <translation id="7155317020660659215">如要掃瞄 QR 碼，請將設定變更為允許 Chrome 使用攝錄機</translation>
 <translation id="7168323970702333693">已使用<ph name="USER_NAME" />的身分登入。開啟設定。</translation>
 <translation id="7173114856073700355">開啟設定</translation>
@@ -1525,6 +1528,7 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="8996847606757455498">選擇其他供應商</translation>
 <translation id="8998289560386111590">此功能無法在您的裝置上使用</translation>
 <translation id="8998729206196772491">您即將登入由 <ph name="MANAGED_DOMAIN" /> 管理的帳戶，並讓帳戶管理員控制您的 Chrome 資料。您的資料將與這個帳戶建立永久連結。如果您登出 Chrome，系統將刪除此裝置上的資料，但這些資料仍會保留在您的 Google 帳戶中。</translation>
+<translation id="9012585441087414258">對已知的危險網站、下載檔案及擴充程式提供保護功能。如果頁面作出可疑行為，系統會將網址和部分網頁內容傳送至「Google 安全瀏覽」功能。</translation>
 <translation id="9022774213089566801">經常瀏覽</translation>
 <translation id="9022871169049522985">網站和廣告客戶可評估廣告的效益</translation>
 <translation id="9035378196785279980">移至\u2026</translation>

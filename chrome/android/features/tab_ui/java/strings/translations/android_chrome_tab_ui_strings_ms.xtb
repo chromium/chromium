@@ -3,7 +3,6 @@
 <translationbundle lang="ms">
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> daripada tab anda sudah lama tidak digunakan. Tutup tab?</translation>
 <translation id="125153950246128346">Ketik untuk melihat tab lain</translation>
-<translation id="1455506303394048917">Aktiviti anda dalam tab Inkognito ini akan dikosongkan daripada peranti ini</translation>
 <translation id="1499635324672558517">Tutup semua tab Inkognito?</translation>
 <translation id="1657719826150349398">Alihkan tab ke bawah</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tab}other{<ph name="TABS_COUNT_MANY" /> tab}}</translation>

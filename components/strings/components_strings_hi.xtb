@@ -90,6 +90,7 @@
 <translation id="1175393348063009671">फ़ोटो (मैट)</translation>
 <translation id="1175875016430184367">दाईं ओर ट्रिपल स्टेपल</translation>
 <translation id="1177802847690410663">वेब ब्राउज़र</translation>
+<translation id="1177863135347784049">कस्टम</translation>
 <translation id="1178581264944972037">रोकें</translation>
 <translation id="1178821169867863726">12 x 16 इंच</translation>
 <translation id="1181037720776840403">हटाएं</translation>
@@ -134,7 +135,6 @@
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">आपने अपना पासवर्ड ऐसी साइट पर डाला है जिसे आपका संगठन प्रबंधित नहीं करता है. अपना खाता सुरक्षित करने के लिए, दूसरे ऐप्लिकेशन और साइटों पर अपना पासवर्ड दोबारा इस्तेमाल न करें.</translation>
 <translation id="1257553931232494454">ज़ूम लेवल</translation>
-<translation id="1259843033850529027">नीति का लेवल चुनें</translation>
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome की सेटिंग को मैनेज करने के लिए, पहले Tab और फिर Enter दबाएं</translation>
 <translation id="1264309058268477500">वैकल्पिक ट्रे</translation>
 <translation id="1264974993859112054">खेल-कूद</translation>
@@ -256,12 +256,6 @@
 <translation id="1482879811280872320">साइकलिंग</translation>
 <translation id="1483493594462132177">भेजें</translation>
 <translation id="1492194039220927094">नीतियां भेजें:</translation>
-<translation id="149293076951187737">Chrome में खोले गए सभी गुप्त टैब बंद करने पर, इन टैब में हुई आपकी गतिविधि का डेटा इस डिवाइस से हटा दिया जाता है:
-          <ph name="BEGIN_LIST" />
-            <ph name="LIST_ITEM" />ब्राउज़िंग गतिविधि<ph name="END_LIST_ITEM" />
-            <ph name="LIST_ITEM" />खोज इतिहास<ph name="END_LIST_ITEM" />
-            <ph name="LIST_ITEM" />फ़ॉर्म में डाली गई जानकारी<ph name="END_LIST_ITEM" />
-          <ph name="END_LIST" /></translation>
 <translation id="14938948731065592">कंप्यूटर के सहायक डिवाइस (जैसे, कीबोर्ड, माउस, मॉनिटर, वेबकैम वगैरह)</translation>
 <translation id="1495677929897281669">टैब पर वापस जाएं</translation>
 <translation id="1501859676467574491">अपने Google खाते में मौजूद कार्ड दिखाएं</translation>
@@ -391,7 +385,6 @@
 <translation id="1741613555002899862">DnsOverHttpsMode <ph name="SECURE_DNS_MODE_SECURE" /> होने पर, नीति तय हाेनी चाहिए. साथ ही, इसकी एक मान्य स्ट्रिंग भी होनी चाहिए.</translation>
 <translation id="1743393865165844832">बेडिंग और बेड लिनन</translation>
 <translation id="1745399796851657441"><ph name="BEGIN_BOLD" />हम इस डेटा का इस्तेमाल कैसे करते हैं:<ph name="END_BOLD" /> जब कोई व्यक्ति ब्राउज़िंग करता है, तो Chrome उसकी दिलचस्पियों के विषयों को सेव करता है. विषय के लेबल पहले से तय होते हैं. इनमें कला और मनोरंजन, शॉपिंग, और खेल-कूद जैसी चीज़ें शामिल होती हैं. इसके बाद, किसी साइट को विज़िट करने पर, वह साइट Chrome से इनमें से कुछ विषयों की जानकारी मांग सकती है. इससे उस साइट को आपकी पसंद के हिसाब से विज्ञापन दिखाने में मदद मिलती है. हालांकि, इन विषयों में आपके ब्राउज़िंग इतिहास की जानकारी शामिल नहीं होती है.</translation>
-<translation id="1745880797583122200">आपका ब्राउज़र प्रबंधित है</translation>
 <translation id="1746113442205726301">इमेज Y शिफ़्ट</translation>
 <translation id="1746531169546376413">0 डिग्री</translation>
 <translation id="1752021286346845558">मेलबॉक्स 8</translation>
@@ -457,6 +450,7 @@
 <translation id="1883255238294161206">सूची छोटी करें</translation>
 <translation id="1884843295353628214">जैज़</translation>
 <translation id="1890171020361705182">डायनो गेम. पिक्सलेट किया हुआ डायनासोर, जो कटीले पौधों और उड़ने वाले जीवों से बचते हुए, ज़मीन पर भागता है. जब आप ऑडियो क्यू सुनते हैं, तो बाधाएं आने पर कूदने के लिए, टैप करें.</translation>
+<translation id="189035593835762169">नियम और शर्तें</translation>
 <translation id="1898423065542865115">फ़िल्टर किया जा रहा है</translation>
 <translation id="1901443836186977402">{1,plural, =1{यह सर्वर पुष्टि नहीं कर सका कि यह <ph name="DOMAIN" /> है; इसका सुरक्षा सर्टिफ़िकेट कल खत्म हो गया था. इसकी वजह गलत कॉन्फ़िगरेशन या किसी हमलावर का आपके कनेक्शन में छेड़छाड़ करना हो सकती है. अभी आपके कंप्यूटर की घड़ी <ph name="CURRENT_DATE" /> पर सेट है. क्या यह सही तारीख है? अगर नहीं, तो आपको सिस्टम की घड़ी सही करके, इस पेज को रीफ़्रेश करना चाहिए.}one{यह सर्वर पुष्टि नहीं कर सका कि यह <ph name="DOMAIN" /> है; इसका सुरक्षा सर्टिफ़िकेट # दिन पहले खत्म हो गया था. इसकी वजह गलत कॉन्फ़िगरेशन या किसी हमलावर का आपके कनेक्शन में छेड़छाड़ करना हो सकती है. अभी आपके कंप्यूटर की घड़ी <ph name="CURRENT_DATE" /> पर सेट है. क्या यह सही तारीख है? अगर नहीं, तो आपको सिस्टम की घड़ी सही करके, इस पेज को रीफ़्रेश करना चाहिए.}other{यह सर्वर पुष्टि नहीं कर सका कि यह <ph name="DOMAIN" /> है; इसका सुरक्षा सर्टिफ़िकेट # दिन पहले खत्म हो गया था. इसकी वजह गलत कॉन्फ़िगरेशन या किसी हमलावर का आपके कनेक्शन में छेड़छाड़ करना हो सकती है. अभी आपके कंप्यूटर की घड़ी <ph name="CURRENT_DATE" /> पर सेट है. क्या यह सही तारीख है? अगर नहीं, तो आपको सिस्टम की घड़ी सही करके, इस पेज को रीफ़्रेश करना चाहिए.}}</translation>
 <translation id="1902576642799138955">मान्यता अवधि</translation>
@@ -808,6 +802,7 @@
 <translation id="2674804415323431591">सुझाव छिपाएं</translation>
 <translation id="2677696497921480781">जन्मदिन और नामकरण का दिन</translation>
 <translation id="2677748264148917807">छोड़ें</translation>
+<translation id="2678468611080193228">कुछ समय के लिए तीसरे पक्ष की कुकी को अनुमति दें. इसका मतलब है कि साइट की सुविधाएं काम करेंगी, लेकिन आपकी सुरक्षा का स्तर कम हो जाएगा</translation>
 <translation id="2687555958734450033">सबसे बढ़िया फ़िटिंग</translation>
 <translation id="2688186765492306706">500 x 760 मि॰मी॰</translation>
 <translation id="2688969097326701645">हां, जारी रखें</translation>
@@ -1471,6 +1466,7 @@
 <translation id="4152318981910038897">{COUNT,plural, =1{पेज 1}one{पेज {COUNT}}other{पेज {COUNT}}}</translation>
 <translation id="4154277373259957087">पेमेंट के तरीके भरने से पहले, Chrome आपकी पहचान की पुष्टि करेगा. <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" /> में जाकर, इसे कभी भी अपडेट किया जा सकता है.</translation>
 <translation id="4154664944169082762">फ़िंगरप्रिंट</translation>
+<translation id="4159149286839604525">इसका मतलब है कि साइट की ज़्यादातर सुविधाएं काम करेंगी, लेकिन आपकी सुरक्षा का स्तर कम हो जाएगा</translation>
 <translation id="4159784952369912983">बैंगनी</translation>
 <translation id="4165986682804962316">साइट सेटिंग</translation>
 <translation id="4169535189173047238">अनुमति न दें</translation>
@@ -1877,6 +1873,7 @@
 <translation id="4983145717627482381">निर्देशों के साथ सैर और छुट्टियां</translation>
 <translation id="498323057460789381">स्कीमा की पुष्टि करने के दौरान कोई गड़बड़ी हुई: <ph name="ERROR" /></translation>
 <translation id="4984088539114770594">क्या आप माइक्रोफ़ोन का इस्तेमाल करना चाहते हैं?</translation>
+<translation id="4985206706500620449">आपने इस साइट के लिए तीसरे पक्ष की कुकी को अनुमति दी है</translation>
 <translation id="4989163558385430922">सभी देखें</translation>
 <translation id="4989542687859782284">अनुपलब्ध</translation>
 <translation id="4989809363548539747">यह प्लग इन समर्थित नहीं है</translation>
@@ -1886,6 +1883,7 @@
 <translation id="4995474875135717171">आखिरी बार बदलाव किया गया:</translation>
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />, साइट खोज और अपने डिफ़ॉल्ट सर्च इंजन को मैनेज करने के लिए, पहले Tab और फिर Enter दबाएं</translation>
 <translation id="4998950033665438990">सिंगल फ़ेस</translation>
+<translation id="5001526427543320409">तीसरे पक्ष की कुकी</translation>
 <translation id="5002932099480077015">अगर सक्षम किया हुआ हो, तो Chrome फ़ॉर्म को तेज़ी से भरने के लिए इस डिवाइस पर आपके कार्ड की एक प्रति संग्रहित करेगा.</translation>
 <translation id="5007392906805964215">समीक्षा करें</translation>
 <translation id="5011561501798487822">पहचानी गई भाषा</translation>
@@ -2568,7 +2566,6 @@
 <translation id="6450212216969386944">चोउ 40 साइज़ का लिफ़ाफ़ा</translation>
 <translation id="6451458296329894277">फ़ार्म फिर से जमा करने की पुष्टि करें</translation>
 <translation id="6452889436791091116">ISO ID-1</translation>
-<translation id="6453457495574553803">नीति से जुड़ा टारगेट चुनें</translation>
 <translation id="6456955391422100996">विज्ञापन हटाया गया.</translation>
 <translation id="6457206614190510200">सैडल स्टिच</translation>
 <translation id="6457455098507772300">कीमत में कमी की सूचनाएं, आपके डेस्कटॉप पर पॉप-अप सूचनाओं के तौर पर दिखती हैं</translation>
@@ -2602,6 +2599,7 @@
 <translation id="6521745193039995384">चालू नहीं</translation>
 <translation id="6524830701589638230">'सुलभता सेटिंग को मैनेज करें' बटन, Chrome की सेटिंग में सुलभता टूल को अपने हिसाब से बनाने के लिए इसे चालू करें</translation>
 <translation id="6529173248185917884">सातवां रोल</translation>
+<translation id="652937045869844725">तीसरे पक्ष की कुकी को अनुमति दें. इसका मतलब है कि साइट की सुविधाएं काम करेंगी, लेकिन आपकी सुरक्षा का स्तर कम हो जाएगा</translation>
 <translation id="6529602333819889595">मिटाना &amp;फिर से करें</translation>
 <translation id="6535751101619004418">मुद्राएं और विदेशी मुद्रा विनिमय</translation>
 <translation id="6536221421038631327"><ph name="DEVICE_TYPE" /> से पासपॉइंट सदस्यता हटाने पर, उससे जुड़े नेटवर्क भी हट जाएंगे. अपनी सदस्यता की योजना में बदलाव करने के लिए, "<ph name="FRIENDLY_NAME" />" से संपर्क करें. <ph name="LEARN_MORE" /></translation>
@@ -2865,6 +2863,7 @@
 <translation id="7102079138917191645">निर्माण और रखरखाव</translation>
 <translation id="7102554173784142865">Chrome Dino गेम खेलें</translation>
 <translation id="7102760431686146931">खाना बनाने और खाने वाले बर्तन</translation>
+<translation id="7106762743910369165">आपका संगठन आपके ब्राउज़र को मैनेज करता है</translation>
 <translation id="7108338896283013870">छुपाएं</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> को आपके कैमरे का इस्तेमाल करना है</translation>
 <translation id="7108819624672055576">किसी एक्सटेंशन ने अनुमति दी है</translation>
@@ -2878,12 +2877,6 @@
 <translation id="7119371694555167493">कॉपी करने का समय खत्म हो गया</translation>
 <translation id="7119414471315195487">दूसरे टैब या प्रोग्राम बंद करें</translation>
 <translation id="7124354851782353862">अपना सीवीसी डालें</translation>
-<translation id="7129355289156517987">Chromium में खोले गए सभी गुप्त टैब बंद करने पर, इन टैब में हुई आपकी गतिविधि का डेटा इस डिवाइस से हटा दिया जाता है:
-          <ph name="BEGIN_LIST" />
-            <ph name="LIST_ITEM" />ब्राउज़िंग गतिविधि<ph name="END_LIST_ITEM" />
-            <ph name="LIST_ITEM" />खोज इतिहास<ph name="END_LIST_ITEM" />
-            <ph name="LIST_ITEM" />फ़ॉर्म में डाली गई जानकारी<ph name="END_LIST_ITEM" />
-          <ph name="END_LIST" /></translation>
 <translation id="7129409597930077180">इस पते पर शिप नहीं किया जा सकता. कोई दूसरा पता चुनें.</translation>
 <translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
 <translation id="7130775116821607281">फ़ाइल को अपलोड करने की अनुमति नहीं है</translation>
@@ -2934,6 +2927,7 @@
 <translation id="7221855153210829124">नोटिफ़िकेशन दिखाएं</translation>
 <translation id="7221857374443660083">बैंक आपकी पहचान की पुष्टि करना चाहता है</translation>
 <translation id="722454870747268814">नया गुप्त टैब</translation>
+<translation id="7226276626900992675">आपने इस साइट को तीसरे पक्ष की कुकी का इस्तेमाल करने की अनुमति दी है. इसका मतलब है कि साइट की ज़्यादातर सुविधाएं काम करेंगी, लेकिन आपकी सुरक्षा का स्तर कम हो जाएगा.</translation>
 <translation id="7227293336683593977">कीमत का इतिहास</translation>
 <translation id="7233592378249864828">जिस शीट की पुष्टि की गई है उसे प्रिंट करें</translation>
 <translation id="7234638337680728591">पेट्रोलियम से जुड़ी सेवाएं</translation>
@@ -3553,7 +3547,6 @@
 <translation id="8483229036294884935">आपके Google खाते, <ph name="ACCOUNT" /> से यह पता मिटा दिया जाएगा</translation>
 <translation id="8488350697529856933">इस पर लागू होती है</translation>
 <translation id="8490137692873530638">स्टैकर 10</translation>
-<translation id="8493829133024050711">नीति का सोर्स चुनें</translation>
 <translation id="8493948351860045254">स्‍थान खाली करें</translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" /> को लोड होने में बहुत ज़्यादा समय लगा.</translation>
 <translation id="8503559462189395349">Chrome पासवर्ड</translation>
@@ -3619,7 +3612,6 @@
 <translation id="8623885649813806493">पासवर्ड गलत है. सेव किए गए सभी पासवर्ड दिखाएं.</translation>
 <translation id="8624354461147303341">छूट पाएं</translation>
 <translation id="8634957317623797170">54 x 86 मि॰मी॰</translation>
-<translation id="8637577059508742477">आपकी प्रोफ़ाइल और ब्राउज़र को <ph name="DOMAIN" /> मैनेज करता है</translation>
 <translation id="8641131559425911240">एन्वेलप (बॉन्ड)</translation>
 <translation id="8643409044755049933">काकू 3 साइज़ का लिफ़ाफ़ा</translation>
 <translation id="8647287295490773273">210 x 330 मि॰मी॰</translation>
@@ -3696,6 +3688,7 @@
 <translation id="8793655568873652685"><ph name="ENROLLMENT_DOMAIN" /> ने आपके ब्राउज़र पर Chrome Enterprise Connectors चालू कर दिया है. इस सेटिंग की मदद से आपके कुछ डेटा को ऐक्सेस किया जा सकता है.</translation>
 <translation id="8798099450830957504">डिफ़ॉल्ट</translation>
 <translation id="8798739476508189189">क्या आपको ब्राउज़र के फ़्लैग ढूंढने हैं? यहां जाएं</translation>
+<translation id="8800034312320686233">साइट काम नहीं कर रही है?</translation>
 <translation id="8805819170075074995">सूची एंट्री "<ph name="LANGUAGE_ID" />": एंट्री को अनदेखा किया गया क्योंकि इसे SpellcheckLanguage नीति में भी शामिल किया गया है.</translation>
 <translation id="8806285662264631610">नहाने और शरीर की देखभाल से जुड़े प्रॉडक्ट</translation>
 <translation id="8806696968588872703">प्लास्टिक (सैटिन)</translation>

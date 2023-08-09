@@ -99,6 +99,7 @@
 <translation id="2621115761605608342">Tillad JavaScript for et bestemt website.</translation>
 <translation id="2653659639078652383">Send</translation>
 <translation id="2677748264148917807">Forlad</translation>
+<translation id="2678468611080193228">Prøv midlertidigt at tillade tredjepartscookies, hvilket vil betyde mindre beskyttelse, men større sandsynlighed for, at websitefunktionerne fungerer</translation>
 <translation id="2687403674020088961">Bloker alle cookies (anbefales ikke)</translation>
 <translation id="2713106313042589954">Slå kamera fra</translation>
 <translation id="2717722538473713889">Mailadresser</translation>
@@ -138,6 +139,7 @@
 <translation id="3362437373201486687">Søger efter Bluetooth-enheder</translation>
 <translation id="3386292677130313581">Spørg, om websites må få adgang til din lokation (anbefales)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
+<translation id="344449859752187052">Tredjepartscookies er blokeret</translation>
 <translation id="3521663503435878242">Websites på <ph name="DOMAIN" /></translation>
 <translation id="3538390592868664640">Bloker oprettelsen af 3D-kort over dine omgivelser eller registrering af kamerapositionen for websites</translation>
 <translation id="3544058026430919413">En virksomhed kan definere en gruppe af websites, der kan bruge cookies til at dele din aktivitet i gruppen. Dette er deaktiveret i inkognitotilstand.</translation>
@@ -212,6 +214,7 @@
 <translation id="4962975101802056554">Tilbagekald alle tilladelser for enheden</translation>
 <translation id="497421865427891073">Gå fremad</translation>
 <translation id="4976702386844183910">Senest besøgt <ph name="DATE" /></translation>
+<translation id="4985206706500620449">Du har tilladt tredjepartscookies for dette website</translation>
 <translation id="4994033804516042629">Der blev ikke fundet nogen kontakter</translation>
 <translation id="4996978546172906250">Del via</translation>
 <translation id="5001526427543320409">Tredjepartscookies</translation>
@@ -256,6 +259,7 @@
 <translation id="5677928146339483299">Blokeret</translation>
 <translation id="5689516760719285838">Placering</translation>
 <translation id="5690795753582697420">Kameraet er deaktiveret i Android-indstillingerne</translation>
+<translation id="5700761515355162635">Tredjepartscookies er tilladt</translation>
 <translation id="5706552988683188916">Denne handling sletter cookies og andre websitedata for <ph name="WEBSITE" /></translation>
 <translation id="5719847187258001597">Dette rydder alle data og cookies, som er gemt af <ph name="ORIGIN" /> eller de tilhørende apps på din startskærm.</translation>
 <translation id="5723967018671998714">Tredjepartscookies er blokeret i inkognitotilstand</translation>
@@ -303,6 +307,7 @@
 <translation id="6467852467360539617">Ryd data, og nulstil tilladelser</translation>
 <translation id="6500423977866688905">Når vinduet er smalt, kan du anmode om mobilvenlig visning</translation>
 <translation id="6527303717912515753">Del</translation>
+<translation id="652937045869844725">Prøv at tillade tredjepartscookies, hvilket vil betyde mindre beskyttelse, men større sandsynlighed for, at websitefunktionerne fungerer</translation>
 <translation id="6545864417968258051">Bluetooth-scanning</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> og <ph name="NUM_MORE" /> mere er blokeret}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, and <ph name="NUM_MORE" /> more blocked}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> og <ph name="NUM_MORE" /> mere er blokeret}}</translation>
 <translation id="6554732001434021288">Senest besøgt for <ph name="NUM_DAYS" /> dage siden</translation>
@@ -435,6 +440,7 @@
 <translation id="8736193154595564524">{NUM_SELECTED,plural, =1{1 website er tilladt}one{# website er tilladt}other{# websites er tilladt}}</translation>
 <translation id="8737217482364735741">Dette rydder alle data og cookies, der er gemt af <ph name="ORIGIN" />.</translation>
 <translation id="8751914237388039244">Vælg et billede</translation>
+<translation id="8800034312320686233">Fungerer websitet ikke?</translation>
 <translation id="8801436777607969138">Bloker JavaScript for et bestemt website.</translation>
 <translation id="8803526663383843427">Når funktionen er aktiveret</translation>
 <translation id="8805385115381080995">Dette skaber færre afbrydelser, når du bruger nettet, da det er mindre sandsynligt, at et website beder dig om at verificere, at du er en rigtig person</translation>

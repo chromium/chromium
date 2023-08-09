@@ -90,6 +90,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="1175393348063009671">Foto (Kusam)</translation>
 <translation id="1175875016430184367">Tiga kokot kanan</translation>
 <translation id="1177802847690410663">Penyemak imbas web</translation>
+<translation id="1177863135347784049">Tersuai</translation>
 <translation id="1178581264944972037">Jeda</translation>
 <translation id="1178821169867863726">12 x 16 in</translation>
 <translation id="1181037720776840403">Alih keluar</translation>
@@ -134,7 +135,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">Anda memasukkan kata laluan pada tapak yang tidak diurus oleh organisasi anda. Untuk melindungi akaun anda, jangan gunakan semula kata laluan anda pada apl dan tapak lain.</translation>
 <translation id="1257553931232494454">tahap zum</translation>
-<translation id="1259843033850529027">Pilih tahap dasar</translation>
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tekan Tab kemudian Enter untuk mengurus tetapan Chrome anda</translation>
 <translation id="1264309058268477500">Alternatif</translation>
 <translation id="1264974993859112054">Sukan</translation>
@@ -256,12 +256,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="1482879811280872320">Berbasikal</translation>
 <translation id="1483493594462132177">Hantar</translation>
 <translation id="1492194039220927094">Penolakan dasar:</translation>
-<translation id="149293076951187737">Apabila anda menutup semua tab Inkognito Chrome, aktiviti anda dalam tab tersebut dikosongkan daripada peranti ini:
-          <ph name="BEGIN_LIST" />
-            <ph name="LIST_ITEM" />Aktiviti penyemakan imbas<ph name="END_LIST_ITEM" />
-            <ph name="LIST_ITEM" />Sejarah carian<ph name="END_LIST_ITEM" />
-            <ph name="LIST_ITEM" />Maklumat yang dimasukkan dalam borang<ph name="END_LIST_ITEM" />
-          <ph name="END_LIST" /></translation>
 <translation id="14938948731065592">Peranti persisian komputer</translation>
 <translation id="1495677929897281669">Kembali ke tab</translation>
 <translation id="1501859676467574491">Tunjukkan kad daripada Akaun Google anda</translation>
@@ -390,7 +384,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="1741613555002899862">Mesti dinyatakan dan merupakan rentetan yang sah apabila DnsOverHttpsMode <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="1743393865165844832">Cadar &amp; Peralatan Tempat Tidur</translation>
 <translation id="1745399796851657441"><ph name="BEGIN_BOLD" />Cara kami menggunakan data ini:<ph name="END_BOLD" /> Chrome mengingati topik yang anda minati semasa anda membuat penyemakan imbas. Label topik dipratakrifkan dan merangkumi perkara seperti Seni &amp; Hiburan, Beli-belah dan Sukan. Kemudian, laman yang anda lawati boleh meminta Chrome beberapa topik anda (tetapi bukan sejarah penyemakan imbas anda) untuk memeribadikan iklan yang anda lihat.</translation>
-<translation id="1745880797583122200">Penyemak imbas anda diurus</translation>
 <translation id="1746113442205726301">Anjakan Y imej</translation>
 <translation id="1746531169546376413">0 darjah</translation>
 <translation id="1752021286346845558">Peti mel 8</translation>
@@ -456,6 +449,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="1883255238294161206">Runtuhkan senarai</translation>
 <translation id="1884843295353628214">Jaz</translation>
 <translation id="1890171020361705182">Permainan Dino. Dinosaur berpiksel mengelak daripada terlanggar kaktus dan pterodaktil ketika berlari merentas daratan yang tandus. Apabila anda mendengar kiu audio, ketik untuk melompat melepasi halangan.</translation>
+<translation id="189035593835762169">Terma dan syarat</translation>
 <translation id="1898423065542865115">Penapisan</translation>
 <translation id="1901443836186977402">{1,plural, =1{Pelayan ini tidak dapat membuktikan bahawa itu ialah <ph name="DOMAIN" />; sijil keselamatan domain itu tamat tempoh sehari yang lalu. Ini mungkin disebabkan oleh kesilapan konfigurasi atau penyerang memintas sambungan anda. Jam komputer anda ditetapkan kepada <ph name="CURRENT_DATE" /> pada masa ini. Adakah itu betul? Jika tidak, anda perlu membetulkan jam sistem anda dan kemudian memuatkan semula halaman ini.}other{Pelayan ini tidak dapat membuktikan bahawa itu ialah <ph name="DOMAIN" />; sijil keselamatan domain itu tamat tempoh # hari yang lalu. Ini mungkin disebabkan oleh kesilapan konfigurasi atau penyerang memintas sambungan anda. Jam komputer anda buat masa ini ditetapkan kepada <ph name="CURRENT_DATE" />. Adakah itu betul? Jika tidak, anda perlu membetulkan jam sistem anda dan kemudian memuatkan semula halaman ini.}}</translation>
 <translation id="1902576642799138955">Tempoh Masa Sah</translation>
@@ -807,6 +801,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2674804415323431591">Sembunyikan cadangan</translation>
 <translation id="2677696497921480781">Hari lahir &amp; hari nama</translation>
 <translation id="2677748264148917807">Tinggalkan</translation>
+<translation id="2678468611080193228">Cuba berikan kebenaran sementara untuk kuki pihak ketiga yang boleh mengurangkan perlindungan tetapi ciri laman lebih berkemungkinan untuk berfungsi</translation>
 <translation id="2687555958734450033">Paling sesuai</translation>
 <translation id="2688186765492306706">500 x 760 mm</translation>
 <translation id="2688969097326701645">Ya, teruskan</translation>
@@ -1472,6 +1467,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="4152318981910038897">{COUNT,plural, =1{Halaman 1}other{Halaman {COUNT}}}</translation>
 <translation id="4154277373259957087">Chrome akan mengesahkan identiti anda sebelum mengisi kaedah pembayaran. Anda boleh mengemaskinikan kaedah pembayaran ini pada bila-bila masa dalam <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
 <translation id="4154664944169082762">Cap jari</translation>
+<translation id="4159149286839604525">Hal ini bermakna kebanyakan ciri laman boleh berfungsi tetapi anda mempunyai kurang perlindungan</translation>
 <translation id="4159784952369912983">Ungu</translation>
 <translation id="4165986682804962316">Tetapan tapak</translation>
 <translation id="4169535189173047238">Jangan benarkan</translation>
@@ -1878,6 +1874,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="4983145717627482381">Lawatan Berpandu &amp; Percutian Beriring</translation>
 <translation id="498323057460789381">Ralat pengesahan skema: <ph name="ERROR" /></translation>
 <translation id="4984088539114770594">Gunakan mikrofon?</translation>
+<translation id="4985206706500620449">Anda membenarkan kuki pihak ketiga untuk laman ini</translation>
 <translation id="4989163558385430922">Lihat semua</translation>
 <translation id="4989542687859782284">Tidak tersedia</translation>
 <translation id="4989809363548539747">Pemalam ini tidak disokong</translation>
@@ -1887,6 +1884,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="4995474875135717171">Diubah suai:</translation>
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tekan Tab kemudian Enter untuk mengurus carian laman dan enjin carian lalai anda</translation>
 <translation id="4998950033665438990">Satu Wajah</translation>
+<translation id="5001526427543320409">Kuki pihak ketiga</translation>
 <translation id="5002932099480077015">Jika didayakan, Chrome akan menyimpan salinan kad anda pada peranti ini untuk pengisian borang yang lebih cepat.</translation>
 <translation id="5007392906805964215">Semak</translation>
 <translation id="5011561501798487822">Bahasa yang Dikesan</translation>
@@ -2569,7 +2567,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="6450212216969386944">Sampul Chou 40</translation>
 <translation id="6451458296329894277">Sahkan Penyerahan Semula Borang</translation>
 <translation id="6452889436791091116">ISO ID-1</translation>
-<translation id="6453457495574553803">Pilih sasaran dasar</translation>
 <translation id="6456955391422100996">Iklan dialih keluar.</translation>
 <translation id="6457206614190510200">Jahitan pelana</translation>
 <translation id="6457455098507772300">Pemakluman penurunan harga dipaparkan sebagai pemberitahuan pop timbul pada desktop anda</translation>
@@ -2603,6 +2600,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="6521745193039995384">Tidak aktif</translation>
 <translation id="6524830701589638230">Urus butang tetapan kebolehaksesan, aktifkan untuk memeribadikan alatan kebolehaksesan anda dalam tetapan Chrome</translation>
 <translation id="6529173248185917884">Gulungan Ketujuh</translation>
+<translation id="652937045869844725">Cuba berikan kebenaran untuk kuki pihak ketiga yang boleh mengurangkan perlindungan tetapi ciri laman lebih berkemungkinan untuk berfungsi</translation>
 <translation id="6529602333819889595">&amp;Buat Semula Pemadaman</translation>
 <translation id="6535751101619004418">Mata wang &amp; pertukaran asing</translation>
 <translation id="6536221421038631327">Tindakan mengalih keluar langganan Passpoint daripada <ph name="DEVICE_TYPE" /> anda akan turut mengalih keluar rangkaian yang berkaitan. Hubungi "<ph name="FRIENDLY_NAME" />" untuk membuat perubahan pada pelan langganan anda. <ph name="LEARN_MORE" /></translation>
@@ -2866,6 +2864,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="7102079138917191645">Pembinaan &amp; penyenggaraan</translation>
 <translation id="7102554173784142865">Main permainan Dino Chrome</translation>
 <translation id="7102760431686146931">Peralatan Memasak &amp; Hidangan Makanan</translation>
+<translation id="7106762743910369165">Penyemak imbas anda diurus oleh organisasi anda</translation>
 <translation id="7108338896283013870">Sembunyikan</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> mahu menggunakan kamera anda</translation>
 <translation id="7108819624672055576">Dibenarkan oleh sambungan</translation>
@@ -2879,12 +2878,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="7119371694555167493">Penyalinan tamat masa</translation>
 <translation id="7119414471315195487">Tutup tab atau atur cara lain</translation>
 <translation id="7124354851782353862">Masukkan CVC anda</translation>
-<translation id="7129355289156517987">Apabila anda menutup semua tab Inkognito Chromium, aktiviti anda dalam tab tersebut dikosongkan daripada peranti ini:
-          <ph name="BEGIN_LIST" />
-            <ph name="LIST_ITEM" />Aktiviti penyemakan imbas<ph name="END_LIST_ITEM" />
-            <ph name="LIST_ITEM" />Sejarah carian<ph name="END_LIST_ITEM" />
-            <ph name="LIST_ITEM" />Maklumat yang dimasukkan dalam borang<ph name="END_LIST_ITEM" />
-          <ph name="END_LIST" /></translation>
 <translation id="7129409597930077180">Tidak dapat menghantar ke alamat ini. Pilih alamat lain.</translation>
 <translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
 <translation id="7130775116821607281">Pemuatan naik disekat</translation>
@@ -2935,6 +2928,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="7221855153210829124">Tunjukkan pemberitahuan</translation>
 <translation id="7221857374443660083">Bank anda mahu memastikan identiti anda</translation>
 <translation id="722454870747268814">Tab Inkognito Baharu</translation>
+<translation id="7226276626900992675">Anda membenarkan laman ini untuk menggunakan kuki pihak ketiga. Hal ini bermakna kebanyakan ciri laman boleh berfungsi tetapi anda mempunyai kurang perlindungan.</translation>
 <translation id="7227293336683593977">Sejarah Harga</translation>
 <translation id="7233592378249864828">Cetak helaian pengesahan</translation>
 <translation id="7234638337680728591">Harga gas &amp; pengisian bahan api kenderaan</translation>
@@ -3554,7 +3548,6 @@ Butiran tambahan:
 <translation id="8483229036294884935">Alamat ini akan dipadamkan daripada Google Account anda, <ph name="ACCOUNT" /></translation>
 <translation id="8488350697529856933">Diguna pakai untuk</translation>
 <translation id="8490137692873530638">Petak 10</translation>
-<translation id="8493829133024050711">Pilih sumber dasar</translation>
 <translation id="8493948351860045254">Kosongkan ruang</translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" /> mengambil masa terlalu lama untuk bertindak balas.</translation>
 <translation id="8503559462189395349">Kata Laluan Chrome</translation>
@@ -3620,7 +3613,6 @@ Butiran tambahan:
 <translation id="8623885649813806493">Tiada kata laluan yang sepadan. Tunjukkan semua kata laluan yang disimpan.</translation>
 <translation id="8624354461147303341">Dapatkan diskaun</translation>
 <translation id="8634957317623797170">54 x 86 mm</translation>
-<translation id="8637577059508742477">Profil dan penyemak imbas anda diurus oleh <ph name="DOMAIN" /></translation>
 <translation id="8641131559425911240">Sampul (Bond)</translation>
 <translation id="8643409044755049933">Sampul Kaku 3</translation>
 <translation id="8647287295490773273">210 x 330 mm</translation>
@@ -3697,6 +3689,7 @@ Butiran tambahan:
 <translation id="8793655568873652685"><ph name="ENROLLMENT_DOMAIN" /> telah menghidupkan Chrome Enterprise Connectors pada penyemak imbas anda. Penyambung ini boleh mengakses sesetengah data anda.</translation>
 <translation id="8798099450830957504">Lalai</translation>
 <translation id="8798739476508189189">Mencari bendera penyemak imbas? Lawati</translation>
+<translation id="8800034312320686233">Tapak tidak berfungsi?</translation>
 <translation id="8805819170075074995">Masukan senarai "<ph name="LANGUAGE_ID" />": Masukan diabaikan kerana masukan ini disertakan dalam dasar SpellcheckLanguage juga.</translation>
 <translation id="8806285662264631610">Produk mandian &amp; badan</translation>
 <translation id="8806696968588872703">Plastik (Satin)</translation>

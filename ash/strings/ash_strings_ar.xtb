@@ -63,6 +63,7 @@
 <translation id="1235458158152011030">الشبكات المعروفة</translation>
 <translation id="1239161794459865856">ميزة <ph name="FEATURE_NAME" /> متصلة.</translation>
 <translation id="1240638468526743569">تطبيق</translation>
+<translation id="1242883863226959074">جهاز</translation>
 <translation id="124678866338384709">إغلاق علامة التبويب الحالية</translation>
 <translation id="1246890715821376239">تطبيقات غير متوافقة</translation>
 <translation id="1247372569136754018">ميكروفون (داخلي)</translation>
@@ -182,6 +183,7 @@
 <translation id="1747827819627189109">تم تفعيل لوحة المفاتيح على الشاشة</translation>
 <translation id="1749109475624620922">تم تخصيص النافذة <ph name="WINDOW_TITLE" /> لجميع أسطح المكتب.</translation>
 <translation id="1750088060796401187">لا يُسمح باستخدام سوى <ph name="MAX_DESK_LIMIT" /> سطح مكتب. يجب إزالة أحد أسطح المكتب لفتح سطح مكتب جديد.</translation>
+<translation id="1755556344721611131">تطبيق "بيانات التشخيص"</translation>
 <translation id="1756833229520115364">لا يمكن حفظ النموذج بسبب تخطّي عدد النوافذ أو علامات التبويب الحد المسموح به.</translation>
 <translation id="1757857692711134412">إيقاف الميزة حتى غروب الشمس</translation>
 <translation id="1768366657309696705">‏تم تغيير اختصار لوحة المفاتيح <ph name="LAUNCHER_KEY_NAME" /> + مفتاح Period. لاستخدام مفتاح Insert، اضغط على مفتاح <ph name="LAUNCHER_KEY_NAME" /> + Shift + مفتاح Backspace.</translation>
@@ -267,7 +269,6 @@
 <translation id="2148716181193084225">اليوم</translation>
 <translation id="2149229036084364364">الانتقال إلى المقطع الصوتي السابق</translation>
 <translation id="2161132820593978283">جرِّب استخدام ميزة "تكبير تلقائي" حتى تظهر صورة وجهك في وسط الشاشة أثناء مكالمات الفيديو. يمكنك تفعيل هذه الميزة من خلال قائمة "الإعدادات السريعة".</translation>
-<translation id="2165966740263283349">مساحة التخزين المستخدَمة</translation>
 <translation id="2170530631236737939">يمكنك التمرير سريعًا لأسفل الشاشة بثلاثة أصابع للخروج من وضع "النظرة العامة".</translation>
 <translation id="2185166372312820725">الانتقال إلى علامة التبويب السابقة</translation>
 <translation id="2185444992308415167">التنقّل بين علامات التبويب من الأولى حتى الثامنة</translation>
@@ -475,6 +476,7 @@
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (بلوتوث)</translation>
 <translation id="3113492864356515707">تمييز العنصر السابق على الرف</translation>
 <translation id="3120421559657122717">هل تريد إيقاف تشغيل الجهاز؟</translation>
+<translation id="3122464029669770682">وحدة المعالجة المركزية</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">إعادة التشغيل للتحديث</translation>
 <translation id="3139188263101386725">استخدام الاختصار الجديد</translation>
@@ -519,7 +521,6 @@
 <translation id="3308453408813785101">سيظل بإمكان <ph name="USER_EMAIL_ADDRESS" /> تسجيل الدخول لاحقًا.</translation>
 <translation id="3321628682574733415">رمز أحد الوالدين غير صحيح</translation>
 <translation id="332827762492701193">الإشعارات مخفية.</translation>
-<translation id="3338855835380298613">‏استخدام وحدة المعالجة المركزية (CPU)</translation>
 <translation id="3339826665088060472">لقطة الشاشة، أدوات التقاط لقطات الشاشة وتسجيلات الشاشة</translation>
 <translation id="3340978935015468852">الإعدادات</translation>
 <translation id="3341303451326249809">تم أخذ لقطة الشاشة.</translation>
@@ -644,7 +645,6 @@
 <translation id="3781910048497807059">نقل التركيز إلى اللوحة السابقة</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">قفل</translation>
-<translation id="3796198851576711985">حالة البطارية</translation>
 <translation id="3796746699333205839">أحد التطبيقات يستخدم الكاميرا والميكروفون.</translation>
 <translation id="3798670284305777884">سماعة (داخلية)</translation>
 <translation id="3799080171973636491">لقد ضغطت على اختصار لوحة المفاتيح للمُكبِّر بملء الشاشة. هل ترغب في تفعيله؟</translation>
@@ -816,12 +816,10 @@
 <translation id="4527045527269911712">يريد جهاز بلوتوث "<ph name="DEVICE_NAME" />" الحصول على إذن للإقران.</translation>
 <translation id="4533343294786968049">يتم حاليًا شحن البطارية، وستكتمل عملية الشحن بحلول <ph name="FULLY_CHARGE_TIME" />.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> حتى اكتمال الشحن</translation>
-<translation id="4536664881735498710">‏استخدام ذاكرة الوصول العشوائي (RAM)</translation>
 <translation id="4538824937723742295">الحصول على لقطة شاشة في وضع ملء الشاشة</translation>
 <translation id="4539127209940689201">طباعة الصفحة الحالية</translation>
 <translation id="4541706525461326392">جارٍ إزالة الملف الشخصي. قد تستغرق هذه العملية بضع دقائق.</translation>
 <translation id="4544483149666270818">يُرجى اختيار نافذة لتسجيل فيديو لها.</translation>
-<translation id="454541942614298893">جهازي</translation>
 <translation id="4545950850562423083">حفظ الصفحة الحالية كإشارة مرجعية</translation>
 <translation id="4548482551627849548">نقل النافذة النشطة إلى سطح المكتب على يمين الشاشة</translation>
 <translation id="4560576029703263363">مُفعَّل</translation>
@@ -980,7 +978,6 @@
 <translation id="5208059991603368177">مُفعَّل</translation>
 <translation id="5216991270656129561">إيقاف الميزة حتى <ph name="TIME" /></translation>
 <translation id="5217646019792206018">‏سطح المكتب التالي: "<ph name="NEXT_DESK_NAME" />"، يمكنك الضغط على مفتاح البحث + مفتاح المسافة أو على اختصار لوحة المفاتيح: Shift + مفتاح البحث + <ph name="NEXT_DESK_INDEX" /> للتفعيل.</translation>
-<translation id="5221423477036820198">يمكنك إرسال رسائل إلى هاتفك أو الردّ عليها بسرعة باستخدام ميزة "مركز التحكّم بالهاتف".</translation>
 <translation id="5222676887888702881">تسجيل الخروج</translation>
 <translation id="5229343007215035173">تفعيل/إيقاف شاشة الخصوصية</translation>
 <translation id="5234764350956374838">تجاهل</translation>
@@ -1141,7 +1138,6 @@
 <translation id="589817443623831496">مسح النقاط</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5901630391730855834">أصفر</translation>
-<translation id="5902162043476810127">ذاكرة الوصول العشوائي</translation>
 <translation id="5909862606227538307">سطح مكتب غير نشط</translation>
 <translation id="5911231045062997865">‏نوافذ متصفّح Lacros غير متوافقة حاليًا. سيتم حفظ التطبيقات الأخرى.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
@@ -1545,7 +1541,6 @@
 <translation id="7724603315864178912">قص</translation>
 <translation id="7725108879223146004">يمكنك عرض تفاصيل نقطة الاتصال. ويجري الآن إيقاف نقطة الاتصال.</translation>
 <translation id="7727952505535211425">فتح الموقع الإلكتروني بشريط العناوين في علامة تبويب جديدة</translation>
-<translation id="77365090426890123">استخدام الذاكرة</translation>
 <translation id="7742327441377685481">ما مِن إشعارات</translation>
 <translation id="7748275671948949022">تمييز زر مشغّل التطبيقات على الرف</translation>
 <translation id="7749443890790263709">تم تجاوز أقصى عدد مسموح به من محطات الإرساء.</translation>
@@ -1797,7 +1792,6 @@
 <translation id="8853703225951107899">يتعذّر حتى الآن التحقُّق من رقم التعريف الشخصي أو كلمة المرور الخاصّة بك. ملاحظة: في حال تم تغيير كلمة المرور الخاصّة بك مؤخرًا، يمكنك تسجيل الدخول باستخدام كلمة المرور القديمة. وسيتم تطبيق كلمة المرور الجديدة بعد تسجيل الخروج.</translation>
 <translation id="8855885154700222542">مفتاح ملء الشاشة</translation>
 <translation id="8858369206579825206">عناصر التحكّم في الخصوصية</translation>
-<translation id="8860817004574502558">عمر البطارية</translation>
 <translation id="8870509716567206129">التطبيق لا يتيح تقسيم الشاشة.</translation>
 <translation id="8874184842967597500">غير متصل</translation>
 <translation id="8875021410787719674">التنقُّل بين أسفل يسار الشاشة ومشغّل التطبيقات وشريط العناوين وشريط الإشارات والموقع الإلكتروني المفتوح وعمليات التنزيل</translation>
@@ -1850,6 +1844,7 @@
 <translation id="9080073830732419341">تم توجيه الكاميرا إلى الزاوية العلوية اليسرى.</translation>
 <translation id="9080132581049224423">يُرجى التمرير السريع إلى الأعلى للانتقال إلى الصفحة الرئيسية.</translation>
 <translation id="9080206825613744995">الميكروفون قيد الاستخدام</translation>
+<translation id="9083324773537346962">إصدار نظام التشغيل</translation>
 <translation id="908451241440060346">يتم كتم صوت الإشعارات عندما تكون ميزة "عدم الإزعاج" مفعَّلة.</translation>
 <translation id="9084606467167974638">تبديل موضع القائمة</translation>
 <translation id="9085962983642906571">سيبقى مستوى شحن البطارية عند %80 أثناء توصيل الجهاز بمصدر طاقة، وذلك لإطالة عمر البطارية.</translation>
@@ -1890,7 +1885,6 @@
 <translation id="951991426597076286">رفض</translation>
 <translation id="953431725143473984">هل تريد إطفاء الجهاز؟</translation>
 <translation id="954052413789300507">لا تتوفّر مساحة كافية لتنزيل الملف <ph name="FILENAME" />. عليك إخلاء بعض المساحة.</translation>
-<translation id="968627661524972577">‏استخدِم التطبيقات لتنفيذ كل مهامك المطلوبة على جهاز Chromebook. انتقِل إلى "مشغِّل التطبيقات" للعثور على كل تطبيقاتك. يمكنك أيضًا الضغط على مفتاح "مشغِّل التطبيقات" في لوحة المفاتيح.</translation>
 <translation id="974545358917229949">عرض <ph name="RESULT_COUNT" /> نتيجة عن <ph name="QUERY" /></translation>
 <translation id="98120814841227350">الانتقال إلى نهاية المستند</translation>
 <translation id="987589956647469042">بيانات الجوّال مفعَّلة.</translation>

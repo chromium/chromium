@@ -63,6 +63,7 @@
 <translation id="1235458158152011030">Պահված ցանցեր</translation>
 <translation id="1239161794459865856">«<ph name="FEATURE_NAME" />» գործառույթը միացված է։</translation>
 <translation id="1240638468526743569">Հավելված</translation>
+<translation id="1242883863226959074">սարք</translation>
 <translation id="124678866338384709">Փակել ընթացիկ ներդիրը</translation>
 <translation id="1246890715821376239">Չաջակցվող հավելվածներ</translation>
 <translation id="1247372569136754018">Խոսափող (ներքին)</translation>
@@ -181,6 +182,7 @@
 <translation id="1747827819627189109">Էկրանի ստեղնաշարը միացված է</translation>
 <translation id="1749109475624620922">«<ph name="WINDOW_TITLE" />» պատուհանը նշանակվեց բոլոր աշխատասեղաններին։</translation>
 <translation id="1750088060796401187">Աշխատասեղանների առավելագույն թիվը (<ph name="MAX_DESK_LIMIT" />) լրացել է։ Հեռացրեք որևէ աշխատասեղան՝ նորը բացելու համար։</translation>
+<translation id="1755556344721611131">«Դիագնոստիկա» հավելված</translation>
 <translation id="1756833229520115364">Չհաջողվեց պահել ձևանմուշը։ Չափազանց շատ պատուհաններ կամ ներդիրներ կան։</translation>
 <translation id="1757857692711134412">Անջատված է մինչև մայրամուտ</translation>
 <translation id="1768366657309696705"><ph name="LAUNCHER_KEY_NAME" /> + ․ (միջակետ) ստեղնային դյուրանցումը փոփոխվել է։ Insert ստեղնն օգտագործելու համար սեղմեք <ph name="LAUNCHER_KEY_NAME" /> + Shift + Backspace։</translation>
@@ -266,7 +268,6 @@
 <translation id="2148716181193084225">Այսօր</translation>
 <translation id="2149229036084364364">Անցնել նախորդ կատարմանը</translation>
 <translation id="2161132820593978283">Տեսազանգերում փորձեք օգտագործել տեսախցիկի կադրավորումը էկրանի կենտրոնով։ Միացրեք այն Արագ կարգավորումներում։</translation>
-<translation id="2165966740263283349">տարածքի օգտագործում</translation>
 <translation id="2170530631236737939">Համատեսքը փակելու համար երեք մատով սահեցրեք վար</translation>
 <translation id="2185166372312820725">Անցնել նախորդ ներդիր</translation>
 <translation id="2185444992308415167">Անցնել 1–8 ներդիրներ</translation>
@@ -474,6 +475,7 @@
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3113492864356515707">Առանձնացնել նախորդ տարրը դարակում</translation>
 <translation id="3120421559657122717">Անջատե՞լ սարքը</translation>
+<translation id="3122464029669770682">CPU</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">Թարմացնելու համար վերագործարկեք</translation>
 <translation id="3139188263101386725">Օգտագործեք թարմացված դյուրանցումը</translation>
@@ -518,7 +520,6 @@
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> օգտատերը կարող է ավելի ուշ հաշիվ մտնել։</translation>
 <translation id="3321628682574733415">Ծնողի մուտքի կոդը սխալ է</translation>
 <translation id="332827762492701193">Ծանուցումները թաքցված են</translation>
-<translation id="3338855835380298613">պրոցեսորի օգտագործում</translation>
 <translation id="3339826665088060472">Էկրանի տեսագրում, սքրինշոթների ստեղծման գործիքներ և Էկրանի տեսագրություններ</translation>
 <translation id="3340978935015468852">կարգավորումներում</translation>
 <translation id="3341303451326249809">Սքրինշոթը ստեղծվեց</translation>
@@ -641,7 +642,6 @@
 <translation id="3781910048497807059">Անցնել նախորդ փեղկին</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">Կողպել</translation>
-<translation id="3796198851576711985">մարտկոցի վիճակը</translation>
 <translation id="3796746699333205839">Ինչ-որ հավելված օգտագործում է ձեր տեսախցիկն ու խոսափողը</translation>
 <translation id="3798670284305777884">Բարձրախոս (ներքին)</translation>
 <translation id="3799080171973636491">Դուք սեղմել եք լիաէկրան խոշորացույցի դյուրանցման ստեղները: Ուզում եք միացնե՞լ այն:</translation>
@@ -813,12 +813,10 @@
 <translation id="4527045527269911712">«<ph name="DEVICE_NAME" />» Bluetooth սարքը զուգավորվելու թույլտվություն է խնդրում:</translation>
 <translation id="4533343294786968049">Մարտկոցի աշխատաժամանակը երկարացվում է։ Այն լրիվ կլիցքավորվի մինչև <ph name="FULLY_CHARGE_TIME" />։</translation>
 <translation id="453661520163887813">Լրիվ կլիցքավորվի <ph name="TIME" />-ից</translation>
-<translation id="4536664881735498710">օպերատիվ հիշողության օգտագործումը</translation>
 <translation id="4538824937723742295">Լիաէկրան սքրինշոթ անել</translation>
 <translation id="4539127209940689201">Տպել ընթացիկ էջը</translation>
 <translation id="4541706525461326392">Պրոֆիլը հեռացվում է։ Դա կարող է մի քանի րոպե տևել։</translation>
 <translation id="4544483149666270818">Ընտրեք պատուհանը՝ տեսագրելու համար</translation>
-<translation id="454541942614298893">իմ սարքը</translation>
 <translation id="4545950850562423083">Պահել ընթացիկ էջը որպես էջանիշ</translation>
 <translation id="4548482551627849548">Ակտիվ պատուհանը տեղափոխել ձախ աշխատասեղան</translation>
 <translation id="4560576029703263363">Միացված է</translation>
@@ -977,7 +975,6 @@
 <translation id="5208059991603368177">Միացված է</translation>
 <translation id="5216991270656129561">Անջատված կլինի մինչև <ph name="TIME" /></translation>
 <translation id="5217646019792206018">Հաջորդ աշխատասեղանը՝ <ph name="NEXT_DESK_NAME" />։ Այն ակտիվացնելու համար սեղմեք «Որոնում» + բացատ կամ Shift + «Որոնում» + <ph name="NEXT_DESK_INDEX" />։</translation>
-<translation id="5221423477036820198">Արագ ուղարկեք հաղորդագրություններ կամ պատասխանեք դրանց Հեռախոսի կառավարման կենտրոնի միջոցով։</translation>
 <translation id="5222676887888702881">Դուրս գրվել</translation>
 <translation id="5229343007215035173">Միացնել/անջատել գաղտնիության էկրանը</translation>
 <translation id="5234764350956374838">Փակել</translation>
@@ -1138,7 +1135,6 @@
 <translation id="589817443623831496">Կետերի որոնում</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5901630391730855834">Դեղին</translation>
-<translation id="5902162043476810127">օպերատիվ հիշողություն</translation>
 <translation id="5909862606227538307">Աշխատասեղանն ակտիվ չէ։</translation>
 <translation id="5911231045062997865">Lacros պատուհանները ներկայումս չեն աջակցվում։ Մյուս հավելվածները կպահվեն։</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
@@ -1541,7 +1537,6 @@
 <translation id="7724603315864178912">Կտրել</translation>
 <translation id="7725108879223146004">Ցույց տալ թեժ կետի մանրամասները։ Թեժ կետն անջատվում է։</translation>
 <translation id="7727952505535211425">Բացել կայքը հասցեագոտում՝ նոր ներդիրում</translation>
-<translation id="77365090426890123">հիշողության օգտագործումը</translation>
 <translation id="7742327441377685481">Ծանուցումներ չկան</translation>
 <translation id="7748275671948949022">Առանձնացնել գործարկիչի կոճակը դարակում</translation>
 <translation id="7749443890790263709">Աշխատասեղանների առավելագույն թույլատրելի քանակը լրացել է:</translation>
@@ -1793,7 +1788,6 @@
 <translation id="8853703225951107899">Չհաջողվեց հաստատել ձեր PIN կոդը կամ գաղտնաբառը։ Նշում․ եթե դուք վերջերս փոխել եք ձեր գաղտնաբառը, ապա օգտագործեք հինը։ Ձեր նոր գաղտնաբառն ուժի մեջ կմտնի, երբ դուրս գաք հաշվից։</translation>
 <translation id="8855885154700222542">Լիաէկրան ռեժիմի ստեղն</translation>
 <translation id="8858369206579825206">Գաղտնիության կարգավորումներ</translation>
-<translation id="8860817004574502558">մարտկոցի աշխատաժամանակը</translation>
 <translation id="8870509716567206129">Հավելվածը չի աջակցում էկրանի տրոհումը:</translation>
 <translation id="8874184842967597500">Կապ չկա</translation>
 <translation id="8875021410787719674">Տեղաշարժվել ներքևի աջ անկյունի, Գործարկիչի, հասցեագոտու, էջանիշների գոտու, բացված կայքի և ներբեռնումների միջև</translation>
@@ -1846,6 +1840,7 @@
 <translation id="9080073830732419341">Տեսախցիկի պատկերն ամրացված է վերևի ձախ անկյունում</translation>
 <translation id="9080132581049224423">Սահեցրեք վերև՝ հիմնական էկրան անցնելու համար</translation>
 <translation id="9080206825613744995">Խոսափողն օգտագործվում է:</translation>
+<translation id="9083324773537346962">OS-ի տարբերակը</translation>
 <translation id="908451241440060346">Ծանուցումների ձայնը «Չանհանգստացնել» ռեժիմում անջատված է</translation>
 <translation id="9084606467167974638">Փոխել ընտրացանկի դիրքը</translation>
 <translation id="9085962983642906571">Մարտկոցի աշխատաժամանակը երկարացնելու համար սարքը պահում է լիցքը 80%-ի մակարդակում (քանի դեռ միացված է հոսանքին)։</translation>
@@ -1886,7 +1881,6 @@
 <translation id="951991426597076286">Մերժել</translation>
 <translation id="953431725143473984">Անջատե՞լ սարքը</translation>
 <translation id="954052413789300507">Բավարար տարածք չկա <ph name="FILENAME" /> ֆայլը ներբեռնելու համար։ Ազատեք տարածք։</translation>
-<translation id="968627661524972577">Ձեր Chromebook-ի հավելվածներով դուք կարող եք կատարել մի շարք առաջադրանքներ։ Անհրաժեշտ հավելվածը գտնելու համար բացեք Գործարկիչը։ Դա անելու համար կարող եք նաև սեղմել ստեղնաշարի համապատասխան կոճակը։</translation>
 <translation id="974545358917229949">Ցուցադրվում է «<ph name="QUERY" />»-ի որոնման <ph name="RESULT_COUNT" /> արդյունք</translation>
 <translation id="98120814841227350">Անցնել փաստաթղթի վերջ</translation>
 <translation id="987589956647469042">Բջջային ինտերնետը միացված է</translation>

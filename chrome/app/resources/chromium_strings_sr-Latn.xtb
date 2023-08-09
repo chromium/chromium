@@ -74,7 +74,6 @@ Dozvole koje ste već dali veb-sajtovima i aplikacijama mogu da važe za ovaj n
 <translation id="2592940277904433508">Nastavi sa korišćenjem Chromium-a</translation>
 <translation id="2648074677641340862">Tokom instalacije je došlo do greške u operativnom sistemu. Preuzmite Chromium ponovo.</translation>
 <translation id="2661879430930417727">Ako delite uređaj, prijatelji i porodica mogu zasebno da pregledaju i da podese Chromium baš onako kako žele</translation>
-<translation id="2669853942967761236">Chromium je blokirao ovaj fajl arhive jer možda krije malver</translation>
 <translation id="268602741124540128">Dobro došli u Chromium, <ph name="ACCOUNT_FIRST_NAME" /></translation>
 <translation id="2711502716910134313">Kartica Chromium</translation>
 <translation id="2718390899429598676">Chromium će šifrovati podatke radi dodatne sigurnosti.</translation>
@@ -409,6 +408,5 @@ Chromium ne može da vrati podešavanja.</translation>
 <translation id="942598560705308788">Sertifikati kojima upravlja Chromium</translation>
 <translation id="965162752251293939">Ko koristi Chromium?</translation>
 <translation id="967427899662692980">Nabavite najjaču Chromium zaštitu</translation>
-<translation id="9792300276217204">Uvek obrišite podatke o sajtovima sa uređaja kada zatvorite Chromium</translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
 </translationbundle>

@@ -99,6 +99,7 @@
 <translation id="2621115761605608342">Xüsusi sayt üçün JavaScript'ə icazə verin.</translation>
 <translation id="2653659639078652383">Təqdim edin</translation>
 <translation id="2677748264148917807">Tərk edin</translation>
+<translation id="2678468611080193228">Üçüncü tərəf kukilərinə müvəqqəti icazə verin. Beləcə, qoruma az olsa da, sayt funksiyalarının işləmə ehtimalı yüksəkdir</translation>
 <translation id="2687403674020088961">Bütün kukiləri bloklayın (tövsiyə edilmir)</translation>
 <translation id="2713106313042589954">Kameranı deaktiv edin</translation>
 <translation id="2717722538473713889">E-poçt ünvanları</translation>
@@ -138,6 +139,7 @@
 <translation id="3362437373201486687">Bluetooth cihazları skan edilir</translation>
 <translation id="3386292677130313581">Saytlara məkanınızı bilmək icazəsi verməmişdən əvvəl soruşun (tövsiyə olunur)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
+<translation id="344449859752187052">Üçüncü tərəf kukiləri bloklandı</translation>
 <translation id="3521663503435878242"><ph name="DOMAIN" /> domenindəki saytlar</translation>
 <translation id="3538390592868664640">Saytların ətrafınızdakı sahələrin 3D xəritəsini yaratmasına və ya kamera mövqeyini izləməsinə qarşı blok qoyun</translation>
 <translation id="3544058026430919413">Şirkət qrupda fəaliyyətinizi paylaşmaq üçün kukilərdən istifadə edə biləcək saytlar qrupu təyin edə bilər. Bu, Anonim rejimdə deaktivdir.</translation>
@@ -212,6 +214,7 @@
 <translation id="4962975101802056554">Cihaz üçün bütün icazələri ləğv edin</translation>
 <translation id="497421865427891073">İrəli</translation>
 <translation id="4976702386844183910">Son ziyarət: <ph name="DATE" /></translation>
+<translation id="4985206706500620449">Bu saytda üçüncü tərəf kukilərinə icazə verdiniz</translation>
 <translation id="4994033804516042629">Kontakt tapılmadı</translation>
 <translation id="4996978546172906250">Paylaşma vasitəsi:</translation>
 <translation id="5001526427543320409">Üçüncü tərəf kukiləri</translation>
@@ -256,6 +259,7 @@
 <translation id="5677928146339483299">Bloklananlar</translation>
 <translation id="5689516760719285838">Məkan</translation>
 <translation id="5690795753582697420">Kamera Android ayarlarında deaktiv edilib</translation>
+<translation id="5700761515355162635">Üçüncü tərəf kukilərinə icazə verildi</translation>
 <translation id="5706552988683188916">Bu, <ph name="WEBSITE" /> üçün kukiləri və digər sayt datasını silir</translation>
 <translation id="5719847187258001597">Bununla Əsas ekranda <ph name="ORIGIN" /> və ya onun tətbiqi tərəfindən saxlanılan bütün data və kukilər silinəcək.</translation>
 <translation id="5723967018671998714">Üçüncü tərəf kukiləri Anonim rejimdə bloklanır</translation>
@@ -303,6 +307,7 @@
 <translation id="6467852467360539617">Datanı silin və icazələri sıfırlayın</translation>
 <translation id="6500423977866688905">Pəncərə dar olduqda mobil görünüş tələb edin</translation>
 <translation id="6527303717912515753">Paylaşın</translation>
+<translation id="652937045869844725">Üçüncü tərəf kukilərinə icazə verin. Beləcə, qoruma az olsa da, sayt funksiyalarının işləmə ehtimalı yüksəkdir</translation>
 <translation id="6545864417968258051">Bluetooth axtarışı</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> və daha <ph name="NUM_MORE" /> icazə bloklanıb}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> və daha <ph name="NUM_MORE" /> icazə bloklanıb}}</translation>
 <translation id="6554732001434021288">Son ziyarət <ph name="NUM_DAYS" /> gün əvvəl olub</translation>
@@ -435,6 +440,7 @@
 <translation id="8736193154595564524">{NUM_SELECTED,plural, =1{1 sayta icazə verilib}other{# sayta icazə verilib}}</translation>
 <translation id="8737217482364735741">Bununla <ph name="ORIGIN" /> tərəfindən saxlanılan bütün data və kukilər silinəcək.</translation>
 <translation id="8751914237388039244">Şəkil seçin</translation>
+<translation id="8800034312320686233">Sayt işləmir?</translation>
 <translation id="8801436777607969138">JavaScript'i bəzi saytlarda blok edin.</translation>
 <translation id="8803526663383843427">Aktiv olduqda</translation>
 <translation id="8805385115381080995">Saytın real insan olduğunuzu təsdiqləmək ehtimalı az olduğuna görə daha sürətlə baxmaq olur</translation>

@@ -99,6 +99,7 @@
 <translation id="2621115761605608342">Белгілі бір сайт үшін JavaScript бағдарламасына рұқсат беру.</translation>
 <translation id="2653659639078652383">Жіберу</translation>
 <translation id="2677748264148917807">Шығу</translation>
+<translation id="2678468611080193228">Үшінші тарап cookie файлдарын уақытша рұқсат етіп көріңіз, бұл қорғаныстың аз екенін, бірақ сайт мүмкіндіктерінің жұмыс істеу ықтималдығы жоғары екенін білдіреді.</translation>
 <translation id="2687403674020088961">Барлық cookie файлын бөгеу (ұсынылмайды)</translation>
 <translation id="2713106313042589954">Камераны өшіру</translation>
 <translation id="2717722538473713889">электрондық пошта мекенжайлары</translation>
@@ -138,6 +139,7 @@
 <translation id="3362437373201486687">Bluetooth құрылғылары сканерленуде</translation>
 <translation id="3386292677130313581">Сайттар орналасқан орныңызды анықтау үшін рұқсат сұрайды (ұсынылады)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" />%%</translation>
+<translation id="344449859752187052">Үшінші тарап cookie файлдары блокталған</translation>
 <translation id="3521663503435878242"><ph name="DOMAIN" /> доменіндегі сайттар</translation>
 <translation id="3538390592868664640">Сайттарға айналаңыздың 3D картасын жасауға немесе камера орнын бақылауға тыйым салу</translation>
 <translation id="3544058026430919413">Компания әрекетіңізді топтағы басқа мүшелермен бөлісу үшін cookie файлдарын қолданатын сайттар тобын анықтай алады. Бұл Инкогнито режимінде өшірілген.</translation>
@@ -212,6 +214,7 @@
 <translation id="4962975101802056554">Құрылғыға арналған барлық рұқсаттардың күші жойылсын.</translation>
 <translation id="497421865427891073">Алға өту</translation>
 <translation id="4976702386844183910">Cоңғы кіру: <ph name="DATE" /></translation>
+<translation id="4985206706500620449">Сіз осы сайт үшін үшінші тарап cookie файлдарына рұқсат еттіңіз.</translation>
 <translation id="4994033804516042629">Ешқандай контакт табылмады.</translation>
 <translation id="4996978546172906250">Бөлісу</translation>
 <translation id="5001526427543320409">Үшінші тарап cookie файлдары</translation>
@@ -256,6 +259,7 @@
 <translation id="5677928146339483299">Тыйым салынған</translation>
 <translation id="5689516760719285838">Локация</translation>
 <translation id="5690795753582697420">Камера Android параметрлерінде өшірілген.</translation>
+<translation id="5700761515355162635">Үшінші тарап cookie файлдары рұқсат етілген</translation>
 <translation id="5706552988683188916"><ph name="WEBSITE" /> арналған cookie файлдары мен басқа да сайт деректері өшіріледі.</translation>
 <translation id="5719847187258001597">Негізгі экрандағы <ph name="ORIGIN" /> сайты мен қолданбада сақталған барлық деректер мен cookie файлдары өшіріледі.</translation>
 <translation id="5723967018671998714">Үшінші тараптың cookie файлдары инкогнито режимінде блокталған.</translation>
@@ -303,6 +307,7 @@
 <translation id="6467852467360539617">Деректерді өшіру және рұқсаттарды бастапқы күйіне қайтару</translation>
 <translation id="6500423977866688905">Терезе тар болғанда, мобильді нұсқаны сұраңыз</translation>
 <translation id="6527303717912515753">Бөлісу</translation>
+<translation id="652937045869844725">Үшінші тарап cookie файлдарын рұқсат етіп көріңіз, бұл қорғаныстың аз екенін, бірақ сайт мүмкіндіктерінің жұмыс істеу ықтималдығы жоғары екенін білдіреді.</translation>
 <translation id="6545864417968258051">Bluetooth құрылғыларын іздеу</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> және тағы <ph name="NUM_MORE" /> қызметті пайдалануға тыйым салынған.}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> және тағы <ph name="NUM_MORE" /> қызметті пайдалануға тыйым салынған.}}</translation>
 <translation id="6554732001434021288">Соңғы кіру: <ph name="NUM_DAYS" /> күн бұрын</translation>
@@ -435,6 +440,7 @@
 <translation id="8736193154595564524">{NUM_SELECTED,plural, =1{1 сайтқа рұқсат етілген}other{# сайтқа рұқсат етілген}}</translation>
 <translation id="8737217482364735741"><ph name="ORIGIN" /> сақтаған барлық деректер мен cookie файлдары өшіріледі.</translation>
 <translation id="8751914237388039244">Кескін таңдау</translation>
+<translation id="8800034312320686233">Сайт жұмыс істемей ме?</translation>
 <translation id="8801436777607969138">Белгілі бір сайт үшін JavaScript бағдарламасын бөгеуге болады.</translation>
 <translation id="8803526663383843427">Қосулы кезде</translation>
 <translation id="8805385115381080995">Шолу жылдамырақ, себебі сайт сізден шынайы адам екеніңізді растауды сұрамайды.</translation>

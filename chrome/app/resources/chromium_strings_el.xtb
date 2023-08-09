@@ -72,7 +72,6 @@
 <translation id="2592940277904433508">Συνέχεια χρήσης του Chromium</translation>
 <translation id="2648074677641340862">Παρουσιάστηκε σφάλμα στο λειτουργικό σύστημα κατά την εγκατάσταση. Κατεβάστε το Chromium ξανά.</translation>
 <translation id="2661879430930417727">Εάν χρησιμοποιείτε μια συσκευή από κοινού με άλλα άτομα, οι φίλοι και τα μέλη της οικογένειάς σας μπορούν να περιηγούνται αυτόνομα και να ρυθμίζουν το Chromium ακριβώς όπως θέλουν.</translation>
-<translation id="2669853942967761236">Το Chromium απέκλεισε αυτό το αρχείο επειδή μπορεί να κρύβει κάποιο κακόβουλο πρόγραμμα.</translation>
 <translation id="268602741124540128">Καλώς ήρθατε στο Chromium, <ph name="ACCOUNT_FIRST_NAME" /></translation>
 <translation id="2711502716910134313">Καρτέλα Chromium</translation>
 <translation id="2718390899429598676">Για επιπλέον ασφάλεια, το Chromium θα κρυπτογραφήσει τα δεδομένα σας.</translation>
@@ -407,6 +406,5 @@
 <translation id="942598560705308788">Πιστοποιητικά που διαχειρίζεται το Chromium</translation>
 <translation id="965162752251293939">Ποιος χρησιμοποιεί το Chromium;</translation>
 <translation id="967427899662692980">Λάβετε την ισχυρότερη προστασία του Chromium</translation>
-<translation id="9792300276217204">Να γίνεται πάντα διαγραφή των δεδομένων ιστοτόπων από τη συσκευή σας όταν κλείνετε το Chromium</translation>
 <translation id="985602178874221306">Οι συντάκτες του Chromium</translation>
 </translationbundle>

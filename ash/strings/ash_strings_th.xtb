@@ -63,6 +63,7 @@
 <translation id="1235458158152011030">เครือข่ายที่รู้จัก</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> เชื่อมต่อแล้ว</translation>
 <translation id="1240638468526743569">แอป</translation>
+<translation id="1242883863226959074">อุปกรณ์</translation>
 <translation id="124678866338384709">ปิดแท็บปัจจุบัน</translation>
 <translation id="1246890715821376239">แอปที่ไม่รองรับ</translation>
 <translation id="1247372569136754018">ไมโครโฟน (ภายใน)</translation>
@@ -181,6 +182,7 @@
 <translation id="1747827819627189109">เปิดใช้แป้นพิมพ์บนหน้าจออยู่</translation>
 <translation id="1749109475624620922">กำหนดหน้าต่าง <ph name="WINDOW_TITLE" /> ให้ทุกเดสก์แล้ว</translation>
 <translation id="1750088060796401187">เปิดได้ <ph name="MAX_DESK_LIMIT" /> เดสก์เท่านั้น นำออก 1 เดสก์เพื่อเปิดเดสก์ใหม่</translation>
+<translation id="1755556344721611131">แอปการวินิจฉัย</translation>
 <translation id="1756833229520115364">บันทึกเทมเพลตไม่ได้ มีหน้าต่างหรือแท็บมากเกินไป</translation>
 <translation id="1757857692711134412">ปิดจนถึงพระอาทิตย์ตก</translation>
 <translation id="1768366657309696705">มีการเปลี่ยนแปลงแป้นพิมพ์ลัด <ph name="LAUNCHER_KEY_NAME" /> + จุด หากต้องการใช้แป้น Insert ให้กดแป้น <ph name="LAUNCHER_KEY_NAME" /> + Shift + Backspace</translation>
@@ -266,7 +268,6 @@
 <translation id="2148716181193084225">วันนี้</translation>
 <translation id="2149229036084364364">ไปที่แทร็กก่อนหน้า</translation>
 <translation id="2161132820593978283">ลองใช้การจัดเฟรมกล้องเพื่อให้คุณอยู่ตรงกลางหน้าจอของวิดีโอคอล เปิดได้ในการตั้งค่าด่วน</translation>
-<translation id="2165966740263283349">การใช้พื้นที่เก็บข้อมูล</translation>
 <translation id="2170530631236737939">ใช้ 3 นิ้วเลื่อนลงเพื่อออกจาก "ภาพรวม"</translation>
 <translation id="2185166372312820725">ไปที่แท็บก่อนหน้า</translation>
 <translation id="2185444992308415167">ไปที่แท็บ 1 ถึง 8</translation>
@@ -474,6 +475,7 @@
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (บลูทูธ)</translation>
 <translation id="3113492864356515707">ไฮไลต์รายการก่อนหน้าบนแถบ</translation>
 <translation id="3120421559657122717">ปิดอุปกรณ์ใช่ไหม</translation>
+<translation id="3122464029669770682">CPU</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">รีสตาร์ทเพื่ออัปเดต</translation>
 <translation id="3139188263101386725">ใช้แป้นพิมพ์ลัดที่อัปเดต</translation>
@@ -518,7 +520,6 @@
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> ยังมีสิทธิ์ลงชื่อเข้าใช้ภายหลังได้</translation>
 <translation id="3321628682574733415">รหัสผู้ปกครองไม่ถูกต้อง</translation>
 <translation id="332827762492701193">การแจ้งเตือนซ่อนอยู่</translation>
-<translation id="3338855835380298613">การใช้ CPU</translation>
 <translation id="3339826665088060472">การจับภาพหน้าจอคือเครื่องมือในการถ่ายภาพหน้าจอและบันทึกหน้าจอ</translation>
 <translation id="3340978935015468852">การตั้งค่า</translation>
 <translation id="3341303451326249809">จับภาพหน้าจอแล้ว</translation>
@@ -638,7 +639,6 @@
 <translation id="3781910048497807059">ย้ายโฟกัสไปยังแผงก่อนหน้า</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">ล็อก</translation>
-<translation id="3796198851576711985">ประสิทธิภาพของแบตเตอรี่</translation>
 <translation id="3796746699333205839">มีแอปพลิเคชันกำลังใช้กล้องและไมโครโฟน</translation>
 <translation id="3798670284305777884">ลำโพง (ภายใน)</translation>
 <translation id="3799080171973636491">คุณกดแป้นพิมพ์ลัดสำหรับแว่นขยายทั้งหน้าจอ จะเปิดแว่นขยายไหม</translation>
@@ -810,12 +810,10 @@
 <translation id="4527045527269911712">อุปกรณ์บลูทูธ "<ph name="DEVICE_NAME" />" ต้องการสิทธิ์ในการจับคู่</translation>
 <translation id="4533343294786968049">กำลังยืดอายุการใช้งานแบตเตอรี่ แบตเตอรี่จะชาร์จจนเต็มภายใน <ph name="FULLY_CHARGE_TIME" /></translation>
 <translation id="453661520163887813">อีก <ph name="TIME" /> จะเต็ม</translation>
-<translation id="4536664881735498710">การใช้ RAM</translation>
 <translation id="4538824937723742295">จับภาพแบบเต็มหน้าจอ</translation>
 <translation id="4539127209940689201">พิมพ์หน้าปัจจุบัน</translation>
 <translation id="4541706525461326392">กำลังนำโปรไฟล์ออก การดำเนินการนี้อาจใช้เวลาสักครู่</translation>
 <translation id="4544483149666270818">เลือกหน้าต่างที่จะบันทึก</translation>
-<translation id="454541942614298893">อุปกรณ์ของฉัน</translation>
 <translation id="4545950850562423083">บันทึกหน้าปัจจุบันเป็นบุ๊กมาร์ก</translation>
 <translation id="4548482551627849548">ย้ายหน้าต่างที่เปิดใช้งานอยู่ไปยังเดสก์ทางด้านซ้าย</translation>
 <translation id="4560576029703263363">เปิด</translation>
@@ -974,7 +972,6 @@
 <translation id="5208059991603368177">เปิด</translation>
 <translation id="5216991270656129561">ปิดจนถึง <ph name="TIME" /></translation>
 <translation id="5217646019792206018">เดสก์ถัดไป: <ph name="NEXT_DESK_NAME" /> ใช้ Search+Space หรือแป้นพิมพ์ลัด: Shift+Search+<ph name="NEXT_DESK_INDEX" /> เพื่อเปิดใช้งาน</translation>
-<translation id="5221423477036820198">ส่งหรือตอบกลับข้อความในโทรศัพท์ได้อย่างรวดเร็วโดยใช้ฮับโทรศัพท์</translation>
 <translation id="5222676887888702881">ออกจากระบบ</translation>
 <translation id="5229343007215035173">เปิด/ปิดหน้าจอความเป็นส่วนตัว</translation>
 <translation id="5234764350956374838">ปิด</translation>
@@ -1135,7 +1132,6 @@
 <translation id="589817443623831496">การสแกนจุด</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5901630391730855834">สีเหลือง</translation>
-<translation id="5902162043476810127">หน่วยความจำเข้าถึงโดยสุ่ม</translation>
 <translation id="5909862606227538307">เดสก์ที่ไม่ได้ใช้งาน</translation>
 <translation id="5911231045062997865">ขณะนี้ยังไม่รองรับหน้าต่าง Lacros ระบบจะบันทึกแอปอื่นๆ</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
@@ -1539,7 +1535,6 @@
 <translation id="7724603315864178912">ตัด</translation>
 <translation id="7725108879223146004">แสดงรายละเอียดฮอตสปอต กำลังปิดฮอตสปอต</translation>
 <translation id="7727952505535211425">เปิดเว็บไซต์ในแถบที่อยู่ในแท็บใหม่</translation>
-<translation id="77365090426890123">การใช้งานหน่วยความจำ</translation>
 <translation id="7742327441377685481">ไม่มีการแจ้งเตือน</translation>
 <translation id="7748275671948949022">ไฮไลต์ปุ่ม Launcher บนแถบ</translation>
 <translation id="7749443890790263709">มีพื้นที่ทำงานครบตามจำนวนสูงสุดแล้ว</translation>
@@ -1791,7 +1786,6 @@
 <translation id="8853703225951107899">ยังคงยืนยัน PIN หรือรหัสผ่านของคุณไม่ได้ หากคุณเพิ่งเปลี่ยนรหัสผ่านไปไม่นาน ให้ใช้รหัสผ่านเก่า รหัสผ่านใหม่จะมีผลเมื่อคุณออกจากระบบ</translation>
 <translation id="8855885154700222542">แป้นแสดงเต็มหน้าจอ</translation>
 <translation id="8858369206579825206">การควบคุมความเป็นส่วนตัว</translation>
-<translation id="8860817004574502558">อายุการใช้งานแบตเตอรี่</translation>
 <translation id="8870509716567206129">แอปไม่สนับสนุนการแยกหน้าจอ</translation>
 <translation id="8874184842967597500">ไม่เชื่อมต่อ</translation>
 <translation id="8875021410787719674">ย้ายไปมาระหว่างมุมขวาล่าง, Launcher, แถบที่อยู่, แถบบุ๊กมาร์ก, เว็บไซต์ที่เปิดอยู่ และการดาวน์โหลด</translation>
@@ -1844,6 +1838,7 @@
 <translation id="9080073830732419341">จัดกล้องพอดีกับมุมซ้ายบนแล้ว</translation>
 <translation id="9080132581049224423">ปัดขึ้นเพื่อไปที่หน้าแรก</translation>
 <translation id="9080206825613744995">ใช้ไมโครโฟนอยู่</translation>
+<translation id="9083324773537346962">รุ่นของระบบปฏิบัติการ </translation>
 <translation id="908451241440060346">ปิดเสียงการแจ้งเตือนเมื่อโหมดห้ามรบกวนเปิดอยู่</translation>
 <translation id="9084606467167974638">เปลี่ยนตำแหน่งเมนู</translation>
 <translation id="9085962983642906571">แบตเตอรี่จะคงไว้ที่ระดับ 80% ในระหว่างเสียบปลั๊กอยู่เพื่อยืดอายุการใช้งานแบตเตอรี่</translation>
@@ -1884,7 +1879,6 @@
 <translation id="951991426597076286">ปฏิเสธ</translation>
 <translation id="953431725143473984">ปิดอุปกรณ์ใช่ไหม</translation>
 <translation id="954052413789300507">มีพื้นที่ไม่เพียงพอสำหรับ <ph name="FILENAME" /> เพิ่มพื้นที่ว่าง</translation>
-<translation id="968627661524972577">ใช้แอปเพื่อทำทุกอย่างที่คุณต้องการใน Chromebook คุณค้นหาแอปได้ใน Launcher และยังกดแป้น Launcher บนแป้นพิมพ์ได้ด้วย</translation>
 <translation id="974545358917229949">กำลังแสดงผลการค้นหา <ph name="RESULT_COUNT" /> รายการสำหรับ "<ph name="QUERY" />"</translation>
 <translation id="98120814841227350">ไปที่ส่วนท้ายของเอกสาร</translation>
 <translation id="987589956647469042">อินเทอร์เน็ตมือถือเปิดอยู่</translation>

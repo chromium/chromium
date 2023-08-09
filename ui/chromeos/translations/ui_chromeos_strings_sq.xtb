@@ -166,7 +166,6 @@
 <translation id="2312704192806647271">{COUNT,plural, =1{Një shtesë me ID-në <ph name="BEGIN_LIST" /><ph name="END_LIST" /> nuk mund të lokalizohet. Kontakto me administratorin tënd.}other{Shtesat me ID-të <ph name="BEGIN_LIST" /><ph name="END_LIST" /> nuk mund të lokalizohen. Kontakto me administratorin tënd.}}</translation>
 <translation id="2325650632570794183">Ky lloj skedari nuk mbështetet. Vizito Dyqanin e uebit të Chrome për të gjetur një aplikacion që mund të hapë këtë lloj skedari.</translation>
 <translation id="2326539130272988168">Bullgarisht</translation>
-<translation id="2337715497728194187">Ndaj me Bruschetta</translation>
 <translation id="233822363739146957">Nuk ka hapësirë ruajtëse të mjaftueshme për të sinkronizuar të gjithë skedarët e tu</translation>
 <translation id="23721837607121582">Shkarko profilin e celularit, rrjeti <ph name="NETWORK_INDEX" /> nga <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Kalo te pamja e listës</translation>
@@ -197,7 +196,6 @@
 <translation id="2544853746127077729">Certifikata e vërtetimit u refuzua nga rrjeti</translation>
 <translation id="255937426064304553">Amerikane ndërkombëtare</translation>
 <translation id="2563185590376525700">Bretkosa</translation>
-<translation id="2574327434504608656">1 dosje është ndarë me Bruschetta</translation>
 <translation id="2578394532502990878">Tamilisht fonetike</translation>
 <translation id="2579959351793446050">Odiaisht</translation>
 <translation id="2587195714949534472">Po përgatitet për të sinkronizuar <ph name="FILE_NAME" />...</translation>
@@ -297,7 +295,6 @@
 <translation id="3408072735282270043">Aktivizo <ph name="NETWORK_NAME" /></translation>
 <translation id="3408236822532681288">Gjermanisht (Gjermani) me tastierë Neo 2</translation>
 <translation id="3414856743105198592">Formatimi i medias së çmontueshme do të spastrojë të gjitha të dhënat. Dëshiron të vazhdosh?</translation>
-<translation id="3435143625481187092">Jepi leje Bruschetta që të ketë qasje te skedarët në dosjen <ph name="FOLDER_NAME" /></translation>
 <translation id="3437801641691368414">Ora e krijimit</translation>
 <translation id="343907260260897561">Kamerë e çastit</translation>
 <translation id="3455931012307786678">Estonisht</translation>
@@ -385,7 +382,6 @@
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> është zhvendosur.</translation>
 <translation id="4176286497474237543">Boshatise koshin tani</translation>
 <translation id="4179621117429069925">Ky artikull është te koshi</translation>
-<translation id="4181839429935094755"><ph name="NUMBER_OF_ITEMS" /> dosje u ndanë me Bruschetta</translation>
 <translation id="4186579485882418952">Aktivizo jashtë linje</translation>
 <translation id="4193154014135846272">Dokument i Google</translation>
 <translation id="4197674956721858839">Përzgjedhja e ngjeshjes</translation>
@@ -452,7 +448,6 @@
 <translation id="4646813851450205600">Çekisht me tastierë Qwerty</translation>
 <translation id="4656777537938206294">Bëji skedarët të disponueshëm jashtë linje</translation>
 <translation id="4658782175094886150">Person në dëborë</translation>
-<translation id="466782788172479199">Jepi leje Bruschetta që të ketë qasje te skedarët në "Diskun tënd të Google". Ndryshimet do të sinkronizohen në pajisjet e tua të tjera.</translation>
 <translation id="4669606053856530811">Anëtarët e "<ph name="SOURCE_NAME" />" do të humbin qasjen në rast se këta artikuj nuk ndahen me ta.</translation>
 <translation id="467809019005607715">Google Slides</translation>
 <translation id="4690246192099372265">Suedisht</translation>
@@ -563,7 +558,6 @@
 <translation id="5323213332664049067">Tastiera amerikano-latine</translation>
 <translation id="5330145655348521461">Këta skedarë u hapën në një desktop tjetër. Lëviz te <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) për ta parë.</translation>
 <translation id="5330512191124428349">Merr informacione</translation>
-<translation id="5344246330454251646">Menaxho ndarjen për Bruschetta</translation>
 <translation id="535792325654997756">Person me mace</translation>
 <translation id="5358764674931277">Shpejtësia e kuadrove</translation>
 <translation id="5363339716524495120">Gjuha e hyrjes është kinezisht</translation>
@@ -731,7 +725,6 @@
 <translation id="6710213216561001401">Prapa</translation>
 <translation id="6732801395666424405">Certifikatat nuk janë ngarkuar</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
-<translation id="6740270213273127264">Ndaje dosjen me Bruschetta</translation>
 <translation id="6750737795876287924">Direktoria aktuale</translation>
 <translation id="6751256176799620176">U zgjodh 1 dosje</translation>
 <translation id="6755827872271341378">Pajisja Chrome OS Flex</translation>

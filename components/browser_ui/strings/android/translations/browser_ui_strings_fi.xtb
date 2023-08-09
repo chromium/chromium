@@ -99,6 +99,7 @@
 <translation id="2621115761605608342">Salli JavaScript tietyllä sivustolla.</translation>
 <translation id="2653659639078652383">Lähetä</translation>
 <translation id="2677748264148917807">Poistu</translation>
+<translation id="2678468611080193228">Kokeile sallia kolmannen osapuolen evästeet väliaikaisesti. Suojaus ei tällöin ole niin vahva, mutta sivuston ominaisuudet toimivat todennäköisemmin.</translation>
 <translation id="2687403674020088961">Estä kaikki evästeet (ei suositella)</translation>
 <translation id="2713106313042589954">Sammuta kamera</translation>
 <translation id="2717722538473713889">Sähköpostiosoitteet</translation>
@@ -138,6 +139,7 @@
 <translation id="3362437373201486687">Haetaan Bluetooth-laitteita</translation>
 <translation id="3386292677130313581">Pyydä lupaa, kun sivustot yrittävät käyttää sijaintiasi (suositus).</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
+<translation id="344449859752187052">Kolmannen osapuolen evästeet estetty</translation>
 <translation id="3521663503435878242">Sivustot, joiden verkkotunnus on <ph name="DOMAIN" /></translation>
 <translation id="3538390592868664640">Estä sivustoja luomasta 3D-karttaa ympäristöstäsi tai seuraamasta kameran asentoa</translation>
 <translation id="3544058026430919413">Yritys voi määrittää ryhmän sivustoja, jotka voivat jakaa toimintasi ryhmässä evästeiden avulla. Tämä on poissa päältä incognito-tilassa.</translation>
@@ -212,6 +214,7 @@
 <translation id="4962975101802056554">Peru kaikki laitteen käyttöoikeudet</translation>
 <translation id="497421865427891073">Siirry eteenpäin</translation>
 <translation id="4976702386844183910">Viimeksi avattu <ph name="DATE" /></translation>
+<translation id="4985206706500620449">Olet sallinut kolmannen osapuolen evästeet tällä sivustolla</translation>
 <translation id="4994033804516042629">Kontakteja ei löytynyt</translation>
 <translation id="4996978546172906250">Jaa palvelussa:</translation>
 <translation id="5001526427543320409">Kolmannen osapuolen evästeet</translation>
@@ -256,6 +259,7 @@
 <translation id="5677928146339483299">Estetty</translation>
 <translation id="5689516760719285838">Sijainti</translation>
 <translation id="5690795753582697420">Kamera laitettiin pois päältä Androidin asetuksista</translation>
+<translation id="5700761515355162635">Kolmannen osapuolen evästeet sallittu</translation>
 <translation id="5706552988683188916">Tämä poistaa evästeet ja muun sivustodatan täällä: <ph name="WEBSITE" /></translation>
 <translation id="5719847187258001597">Tämä tyhjentää kaiken datan ja kaikki evästeet, jotka <ph name="ORIGIN" /> tai sen aloitusnäytölläsi oleva sovellus on tallentanut.</translation>
 <translation id="5723967018671998714">Kolmannen osapuolen evästeet estetään incognito-tilassa</translation>
@@ -303,6 +307,7 @@
 <translation id="6467852467360539617">Poista data ja nollaa luvat</translation>
 <translation id="6500423977866688905">Kun ikkuna on kapea, pyydä mobiilinäkymää</translation>
 <translation id="6527303717912515753">Jaa</translation>
+<translation id="652937045869844725">Kokeile sallia kolmannen osapuolen evästeet. Suojaus ei tällöin ole niin vahva, mutta sivuston ominaisuudet toimivat todennäköisemmin.</translation>
 <translation id="6545864417968258051">Bluetooth-haku</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ja <ph name="NUM_MORE" /> muuta estetty}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ja <ph name="NUM_MORE" /> muuta estetty}}</translation>
 <translation id="6554732001434021288">Viimeksi avattu <ph name="NUM_DAYS" /> päivää sitten</translation>
@@ -435,6 +440,7 @@
 <translation id="8736193154595564524">{NUM_SELECTED,plural, =1{1 sivusto sallittu}other{# sivustoa sallittu}}</translation>
 <translation id="8737217482364735741">Tämä tyhjentää kaiken datan ja evästeet, jotka <ph name="ORIGIN" /> on tallentanut.</translation>
 <translation id="8751914237388039244">Valitse kuva</translation>
+<translation id="8800034312320686233">Eikö sivusto toimi?</translation>
 <translation id="8801436777607969138">Estä JavaScript tietyllä sivustolla.</translation>
 <translation id="8803526663383843427">Toiminnon ollessa päällä</translation>
 <translation id="8805385115381080995">Selaaminen on nopeampaa, koska sivusto ei todennäköisesti pyydä sinua vahvistamaan, että olet oikea ihminen</translation>

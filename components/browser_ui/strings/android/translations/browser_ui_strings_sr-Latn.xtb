@@ -99,6 +99,7 @@
 <translation id="2621115761605608342">Dozvolite JavaScript za određeni sajt.</translation>
 <translation id="2653659639078652383">Pošalji</translation>
 <translation id="2677748264148917807">Zatvori</translation>
+<translation id="2678468611080193228">Probajte privremeno da dozvolite kolačiće treće strane, što znači slabiju zaštitu, ali veću verovatnoću da će funkcije sajta raditi</translation>
 <translation id="2687403674020088961">Blokiraj sve kolačiće (ne preporučuje se)</translation>
 <translation id="2713106313042589954">Isključi kameru</translation>
 <translation id="2717722538473713889">Imejl adrese</translation>
@@ -138,6 +139,7 @@
 <translation id="3362437373201486687">Traže se Bluetooth uređaji</translation>
 <translation id="3386292677130313581">Pitaj pre nego što dozvoliš sajtovima da znaju lokaciju (preporučeno)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" />%%</translation>
+<translation id="344449859752187052">Kolačići treće strane su blokirani</translation>
 <translation id="3521663503435878242">Sajtovi na domenu <ph name="DOMAIN" /></translation>
 <translation id="3538390592868664640">Sprečite sajtove da prave 3D mapu okruženja ili da prate položaj kamere</translation>
 <translation id="3544058026430919413">Preduzeće može da definiše grupu sajtova koji mogu da koriste kolačiće da bi delili aktivnosti u grupi. Ovo je isključeno u režimu bez arhiviranja.</translation>
@@ -212,6 +214,7 @@
 <translation id="4962975101802056554">Opozovite sve dozvole za uređaj</translation>
 <translation id="497421865427891073">Kretanje unapred</translation>
 <translation id="4976702386844183910">Poslednja poseta: <ph name="DATE" /></translation>
+<translation id="4985206706500620449">Dozvolili ste kolačiće treće strane za ovaj sajt</translation>
 <translation id="4994033804516042629">Nije pronađen nijedan kontakt</translation>
 <translation id="4996978546172906250">Deljenje preko</translation>
 <translation id="5001526427543320409">Kolačići treće strane</translation>
@@ -256,6 +259,7 @@
 <translation id="5677928146339483299">Blokirano</translation>
 <translation id="5689516760719285838">Lokacija</translation>
 <translation id="5690795753582697420">Kamera je isključena u Android podešavanjima</translation>
+<translation id="5700761515355162635">Kolačići trećih strana su dozvoljeni</translation>
 <translation id="5706552988683188916">Ovim se brišu kolačići i drugi podaci o sajtu za <ph name="WEBSITE" /></translation>
 <translation id="5719847187258001597">Ovim brišete sve podatke i kolačiće koje čuva sajt <ph name="ORIGIN" /> ili njegova aplikacija na početnom ekranu.</translation>
 <translation id="5723967018671998714">Kolačići treće strane su blokirani u režimu bez arhiviranja</translation>
@@ -303,6 +307,7 @@
 <translation id="6467852467360539617">Obriši podatke i resetuj dozvole</translation>
 <translation id="6500423977866688905">Kada je prozor uzak, zahtevaj prikaz za mobilne uređaje</translation>
 <translation id="6527303717912515753">Deli</translation>
+<translation id="652937045869844725">Probajte da dozvolite kolačiće treće strane, što znači slabiju zaštitu, ali veću verovatnoću da će funkcije sajta raditi</translation>
 <translation id="6545864417968258051">Bluetooth skeniranje</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{Blokirane su dozvole <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i još <ph name="NUM_MORE" />}one{Blokirane su dozvole <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i još <ph name="NUM_MORE" />}few{Blokirane su dozvole <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i još <ph name="NUM_MORE" />}other{Blokirane su dozvole <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i još <ph name="NUM_MORE" />}}</translation>
 <translation id="6554732001434021288">Poslednja poseta: pre <ph name="NUM_DAYS" /> dana</translation>
@@ -435,6 +440,7 @@
 <translation id="8736193154595564524">{NUM_SELECTED,plural, =1{1 sajt je dozvoljen}one{# sajt je dozvoljen}few{# sajta su dozvoljena}other{# sajtova je dozvoljeno}}</translation>
 <translation id="8737217482364735741">Ovim brišete sve podatke i kolačiće koje čuva sajt <ph name="ORIGIN" />.</translation>
 <translation id="8751914237388039244">Izaberite sliku</translation>
+<translation id="8800034312320686233">Da li sajt ne radi?</translation>
 <translation id="8801436777607969138">Blokirajte JavaScript za određeni sajt.</translation>
 <translation id="8803526663383843427">Kada je uključeno</translation>
 <translation id="8805385115381080995">Pregledanje je brže jer je manja verovatnoća da će sajt zatražiti da potvrdite da ste stvarna osoba</translation>

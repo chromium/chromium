@@ -15,7 +15,6 @@
 <translation id="1075811647922107217">Oldal mérete</translation>
 <translation id="1082009148392559545">Képernyővédő letöltése</translation>
 <translation id="1094693127011229778">Az IP-cím nem áll rendelkezésre</translation>
-<translation id="1113892970288677790">Válogatott műalkotások és képek kiválasztása</translation>
 <translation id="1118572504348554005">Az ezen az űrlapon keresztül beküldött visszajelzést partnereinkkel is megoszthatjuk az Ön által bejelentett programhibák és további problémák megoldása érdekében. Ne adjon meg bizalmas adatokat, például jelszavakat.</translation>
 <translation id="1119447706177454957">Belső hiba</translation>
 <translation id="1124772482545689468">Felhasználó</translation>
@@ -183,6 +182,7 @@
 <translation id="225692081236532131">Aktiválás állapota</translation>
 <translation id="2271469253353559191">Sötét mód ütemezése</translation>
 <translation id="2276999893457278469">Legnépszerűbb súgótartalmak</translation>
+<translation id="2279051792571591988">Alapértelmezés visszaállítása</translation>
 <translation id="2287186687001756809">Nem található kép. Fotók hozzáadásához ugorjon a következőre: <ph name="LINK" />.</translation>
 <translation id="2307344026739914387">Jelenlegi kulcspár használata</translation>
 <translation id="2320295602967756579">Világos téma bekapcsolása</translation>
@@ -332,7 +332,6 @@
 <translation id="361575905210396100">Köszönjük visszajelzését!</translation>
 <translation id="3632579075709132555">Az Adatvédelmi képernyő kapcsolója</translation>
 <translation id="3651050199673793219">Hőmérséklet mértékegységének kiválasztása</translation>
-<translation id="3663574643422533538">Exkluzív <ph name="PRODUCT_NAME" />-műalkotás kiválasztása</translation>
 <translation id="3668449597372804501">Szálló felhők háttérkép</translation>
 <translation id="3689839747745352263">Teszt: <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Betöltés...</translation>
@@ -646,6 +645,7 @@
 <translation id="6061772781719867950">Sikertelen HTTP-kérések</translation>
 <translation id="6073292342939316679">billentyűzet fényerejének csökkentése</translation>
 <translation id="6075872808778243331">(Android) HTTP várakozási idő</translation>
+<translation id="6078323886959318429">Parancsikon hozzáadása</translation>
 <translation id="6104112872696127344">Beolvasás megszakítva</translation>
 <translation id="6106186594183574873">A befejezéshez adja meg régi jelszavát</translation>
 <translation id="6108689792487843350">Az átjáró nem érhető el</translation>

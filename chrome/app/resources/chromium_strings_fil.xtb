@@ -74,7 +74,6 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="2592940277904433508">Ipagpatuloy ang paggamit ng Chromium</translation>
 <translation id="2648074677641340862">May naganap na error sa operating system sa panahon ng pag-install. Mangyaring i-download muli ang Chromium.</translation>
 <translation id="2661879430930417727">Kung magpapahiram ka ng device, puwedeng mag-browse nang hiwalay ang mga kaibigan at kapamilya, at puwede nilang i-set up ang Chromium sa paraang gusto nila</translation>
-<translation id="2669853942967761236">Na-block ng Chromium ang naka-archive na file na ito dahil posibleng nagtatago ito ng malware</translation>
 <translation id="268602741124540128">Maligayang Pagdating sa Chromium, <ph name="ACCOUNT_FIRST_NAME" /></translation>
 <translation id="2711502716910134313">Tab ng Chromium</translation>
 <translation id="2718390899429598676">Para sa karagdagang seguridad, ie-encrypt ng Chromium ang iyong data.</translation>
@@ -409,6 +408,5 @@ Hindi mabawi ng Chromium ang iyong mga setting.</translation>
 <translation id="942598560705308788">Mga certificate na pinapamahalaan ng Chromium</translation>
 <translation id="965162752251293939">Sino ang gumagamit ng Chromium?</translation>
 <translation id="967427899662692980">Kunin ang pinakamahusay na seguridad ng Chromium</translation>
-<translation id="9792300276217204">Palaging i-clear ang data ng site mula sa iyong device kapag isinara mo ang Chromium</translation>
 <translation id="985602178874221306">Ang Mga May-akda ng Chromium</translation>
 </translationbundle>

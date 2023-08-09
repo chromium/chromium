@@ -63,6 +63,7 @@
 <translation id="1235458158152011030">ज्ञात नेटवर्क</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> शी कनेक्ट केले.</translation>
 <translation id="1240638468526743569">ॲप</translation>
+<translation id="1242883863226959074">डिव्हाइस</translation>
 <translation id="124678866338384709">वर्तमान टॅब बंद करा</translation>
 <translation id="1246890715821376239">सपोर्ट नसलेली ॲप्स</translation>
 <translation id="1247372569136754018">मायक्रोफोन (अंतर्गत)</translation>
@@ -181,6 +182,7 @@
 <translation id="1747827819627189109">ऑन-स्क्रीन कीबोर्ड सक्षम</translation>
 <translation id="1749109475624620922">विंडो <ph name="WINDOW_TITLE" /> सर्व डेस्कना असाइन केले</translation>
 <translation id="1750088060796401187">फक्त <ph name="MAX_DESK_LIMIT" /> डेस्कना अनुमती आहे. नवीन डेस्क उघडण्यासाठी एक डेस्क काढून टाका.</translation>
+<translation id="1755556344721611131">निदान करण्यासाठी अ‍ॅप</translation>
 <translation id="1756833229520115364">टेंप्लेट सेव्ह करता आले नाही. खूप जास्त विंडो किंवा टॅब आहेत.</translation>
 <translation id="1757857692711134412">सूर्यास्तापर्यंत बंद</translation>
 <translation id="1768366657309696705"><ph name="LAUNCHER_KEY_NAME" /> + पीरियड कीबोर्ड शॉर्टकट बदलला आहे. Insert की वापरण्यासाठी, <ph name="LAUNCHER_KEY_NAME" /> की + Shift + Backspace प्रेस करा.</translation>
@@ -266,7 +268,6 @@
 <translation id="2148716181193084225">आज</translation>
 <translation id="2149229036084364364">मागील ट्रॅकवर जा</translation>
 <translation id="2161132820593978283">कॅमेरा फ्रेमिंग वापरून पहा, जेणेकरून व्हिडिओ कॉलवर तुम्ही स्क्रीनच्या मध्यभागी राहाल. ते क्विक सेटिंग्जमध्ये सुरू करा.</translation>
-<translation id="2165966740263283349">स्टोरेजचा वापर</translation>
 <translation id="2170530631236737939">अवलोकन मधून बाहेर पडण्यासाठी तीन बोटांनी खाली स्वाइप करा</translation>
 <translation id="2185166372312820725">आधीच्या टॅबवर जा</translation>
 <translation id="2185444992308415167">एक ते आठ टॅबमधून जा</translation>
@@ -474,6 +475,7 @@
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (ब्लूटूथ)</translation>
 <translation id="3113492864356515707">शेल्फवरील आधीचा आयटम हायलाइट करा</translation>
 <translation id="3120421559657122717">डिव्हाइस बंद करायचे का?</translation>
+<translation id="3122464029669770682">सीपीयू</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">अपडेटासाठी पुनर्सुरू करा</translation>
 <translation id="3139188263101386725">अपडेट केलेला शॉर्टकट वापरा</translation>
@@ -518,7 +520,6 @@
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> नंतरही साइन इन करू शकतो.</translation>
 <translation id="3321628682574733415">चुकीचा पालक कोड</translation>
 <translation id="332827762492701193">सूचना लपवलेल्या आहेत</translation>
-<translation id="3338855835380298613">CPU चा वापर</translation>
 <translation id="3339826665088060472">स्क्रीन कॅप्चर, स्क्रीनशॉट घेण्यासाठी टूल आणि स्क्रीन रेकॉर्डिंग</translation>
 <translation id="3340978935015468852">सेटिंग्ज</translation>
 <translation id="3341303451326249809">स्क्रीनशॉट कॅप्चर केला</translation>
@@ -642,7 +643,6 @@
 <translation id="3781910048497807059">मागील पेनवर फोकस हलवा</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">लॉक करा</translation>
-<translation id="3796198851576711985">बॅटरीची स्थिती</translation>
 <translation id="3796746699333205839">अ‍ॅप्लिकेशन तुमचा कॅमेरा आणि मायक्रोफोन वापरत आहे</translation>
 <translation id="3798670284305777884">स्पीकर (अंतर्गत)</translation>
 <translation id="3799080171973636491">तुम्ही फुल-स्क्रीन मॅग्निफायरसाठी कीबोर्ड शॉर्टकट दाबला आहे. तुम्हाला ते सुरू करायचे आहे का?</translation>
@@ -814,12 +814,10 @@
 <translation id="4527045527269911712">"<ph name="DEVICE_NAME" />" Bluetooth डिव्हाइस जोडण्यासाठी परवानगी घेऊ इच्छिते.</translation>
 <translation id="4533343294786968049">तुमची बॅटरी लाइफ वाढवत आहे. <ph name="FULLY_CHARGE_TIME" /> पर्यंत बॅटरी पूर्णपणे चार्ज होईल.</translation>
 <translation id="453661520163887813">पूर्ण होण्यात <ph name="TIME" /></translation>
-<translation id="4536664881735498710">RAM चा वापर</translation>
 <translation id="4538824937723742295">फुल स्क्रीन स्क्रीनशॉट घ्या</translation>
 <translation id="4539127209940689201">सध्याचे पेज प्रिंट करा</translation>
 <translation id="4541706525461326392">प्रोफाइल काढून टाकत आहे. याला काही मिनिटे लागू शकतात.</translation>
 <translation id="4544483149666270818">रेकॉर्ड करण्यासाठी विंडो निवडा</translation>
-<translation id="454541942614298893">माझे डिव्हाइस</translation>
 <translation id="4545950850562423083">सद्य पेज बुकमार्क म्हणून सेव्ह करा</translation>
 <translation id="4548482551627849548">डावीकडील डेस्‍कवर अ‍ॅक्टिव्ह विंडो हलवा</translation>
 <translation id="4560576029703263363">सुरू</translation>
@@ -978,7 +976,6 @@
 <translation id="5208059991603368177">सुरू करा</translation>
 <translation id="5216991270656129561"><ph name="TIME" /> पर्यंत बंद</translation>
 <translation id="5217646019792206018">नवीन डेस्‍क: <ph name="NEXT_DESK_NAME" />, Search+Space किंवा कीबोर्ड शॉर्टकट वापरा: अ‍ॅक्टिव्हेट करण्यासाठी Shift+Search+<ph name="NEXT_DESK_INDEX" /> वापरा.</translation>
-<translation id="5221423477036820198">फोन हब वापरून तुमच्या फोनचे मेसेज झटपट पाठवा किंवा उत्तर द्या.</translation>
 <translation id="5222676887888702881">साइन आउट करा</translation>
 <translation id="5229343007215035173">गोपनीयता स्क्रीन सुरू/बंद करा</translation>
 <translation id="5234764350956374838">डिसमिस करा</translation>
@@ -1139,7 +1136,6 @@
 <translation id="589817443623831496">पॉइंट स्कॅनिंग</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5901630391730855834">पिवळा</translation>
-<translation id="5902162043476810127">random access memory</translation>
 <translation id="5909862606227538307">इनॅक्टिव्ह डेस्‍क.</translation>
 <translation id="5911231045062997865">Lacros विंडोना सध्या सपोर्ट नाही. इतर ॲप्स सेव्ह केली जातील.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
@@ -1543,7 +1539,6 @@
 <translation id="7724603315864178912">कट करा</translation>
 <translation id="7725108879223146004">हॉटस्पॉटचे तपशील दाखवा. हॉटस्पॉट बंद करत आहे.</translation>
 <translation id="7727952505535211425">वेबसाइट नवीन टॅबमधील अ‍ॅड्रेस बारमध्ये उघडा</translation>
-<translation id="77365090426890123">मेमरीचा वापर</translation>
 <translation id="7742327441377685481">सूचना नाहीत</translation>
 <translation id="7748275671948949022">शेल्फवरील लाँचर बटण हायलाइट करा</translation>
 <translation id="7749443890790263709">डेस्कची कमाल मर्यादा गाठली आहे.</translation>
@@ -1795,7 +1790,6 @@
 <translation id="8853703225951107899">तुमच्या पिन किंवा पासवर्डची अद्याप पडताळणी करता आली नाही. टीप: तुम्ही अलीकडेच तुमचा पासवर्ड बदलला असल्यास, जुना पासवर्ड वापरा. तुम्ही साइन आउट केल्यानंतर तुमचा नवीन पासवर्ड लागू केला जाईल.</translation>
 <translation id="8855885154700222542">क्षेत्रे की</translation>
 <translation id="8858369206579825206">गोपनीयता नियंत्रणे</translation>
-<translation id="8860817004574502558">बॅटरी लाइफ</translation>
 <translation id="8870509716567206129">अ‍ॅप विभाजित-स्क्रीनला सपोर्ट करत नाही.</translation>
 <translation id="8874184842967597500">कनेक्ट नाही</translation>
 <translation id="8875021410787719674">तळाकडील उजवा कोपरा, लाँचर, अ‍ॅड्रेस बार, बुकमार्क बार, उघडी असलेली वेबसाइट आणि डाउनलोड यांदरम्यान हलवा</translation>
@@ -1848,6 +1842,7 @@
 <translation id="9080073830732419341">कॅमेरा सर्वात वरच्या डाव्या कोपर्‍यात स्नॅप केला आहे</translation>
 <translation id="9080132581049224423">होमवर जाण्यासाठी वर स्वाइप करा</translation>
 <translation id="9080206825613744995">मायक्रोफोन वापरात आहे.</translation>
+<translation id="9083324773537346962">OS आवृत्ती</translation>
 <translation id="908451241440060346">व्यत्यय आणू नका सुरू असते, तेव्हा सूचना म्यूट केल्या जातात</translation>
 <translation id="9084606467167974638">मेनूची जागा टॉगल करा</translation>
 <translation id="9085962983642906571">बॅटरी लाइफ वाढवण्यासाठी प्लग इन केलेले असताना तुमची बॅटरी ८०% वर ठेवली जाते.</translation>
@@ -1888,7 +1883,6 @@
 <translation id="951991426597076286">नकार द्या</translation>
 <translation id="953431725143473984">डिव्हाइस बंद करायचे आहे का?</translation>
 <translation id="954052413789300507"><ph name="FILENAME" /> साठी पुरेशी जागा नाही. जागा मोकळी करा.</translation>
-<translation id="968627661524972577">तुम्हाला तुमच्या Chromebook वर आवश्यक असलेली प्रत्येक गोष्ट करण्यासाठी अ‍ॅप्स वापरा. तुम्ही तुमचे अ‍ॅप्स लाँचर मध्ये शोधू शकता. तुम्ही कीबोर्डवरील लाँचर कीदेखील दाबू शकता.</translation>
 <translation id="974545358917229949"><ph name="QUERY" /> साठी <ph name="RESULT_COUNT" /> परिणाम दाखवत आहे</translation>
 <translation id="98120814841227350">दस्तऐवजाच्या शेवटी जा</translation>
 <translation id="987589956647469042">मोबाइल डेटा सुरू केलेला आहे</translation>

@@ -15,7 +15,6 @@
 <translation id="1075811647922107217">पेजको आकार</translation>
 <translation id="1082009148392559545">स्क्रिन सेभर डाउनलोड गरिँदै छ</translation>
 <translation id="1094693127011229778">IP ठेगाना उपलब्ध छैन</translation>
-<translation id="1113892970288677790">छनौट गरिएका कलाकृति तथा फोटोहरू चयन गर्नुहोस्</translation>
 <translation id="1118572504348554005">हामी यो फाराममार्फत पेस गरिएका प्रतिक्रिया त्रुटि सच्याउने र तपाईंले हामीलाई जानकारी गराउने अन्य समस्याहरू निवारण गर्ने प्रयोजनका लागि हाम्रा साझेदारसँग सेयर गर्न सक्छौँ। आफ्नो पासवर्ड जस्ता संवेदनशील जानकारी समावेश नगर्नुहोस्।</translation>
 <translation id="1119447706177454957">आन्तरिक त्रुटि</translation>
 <translation id="1124772482545689468">प्रयोगकर्ता</translation>
@@ -183,6 +182,7 @@
 <translation id="225692081236532131">सक्रियताको वस्तुस्थिति</translation>
 <translation id="2271469253353559191">अँध्यारो मोडको समयतालिका</translation>
 <translation id="2276999893457278469">मद्दतसम्बन्धी मुख्य सामग्री</translation>
+<translation id="2279051792571591988">डिफल्ट सेटिङ रिस्टोर गर्नुहोस्</translation>
 <translation id="2287186687001756809">कुनै पनि फोटो छैन। तपाईं फोटो हाल्न चाहनुहुन्छ भने <ph name="LINK" /> मा जानुहोस्</translation>
 <translation id="2307344026739914387">हालको किपेयर प्रयोग गर्नुहोस्</translation>
 <translation id="2320295602967756579">उज्यालो थिम अन गर्नुहोस्</translation>
@@ -332,7 +332,6 @@
 <translation id="361575905210396100">प्रतिक्रिया दिनुभएकोमा धन्यवाद</translation>
 <translation id="3632579075709132555">प्राइभेसी स्क्रिन टगल</translation>
 <translation id="3651050199673793219">तापक्रमको एकाइ चयन गर्नुहोस्</translation>
-<translation id="3663574643422533538"><ph name="PRODUCT_NAME" /> को खास कलाकृति चयन गर्नुहोस्</translation>
 <translation id="3668449597372804501">क्लाउड फ्लो वालपेपर</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> परीक्षण</translation>
 <translation id="370665806235115550">लोड गर्दै...</translation>
@@ -646,6 +645,7 @@
 <translation id="6061772781719867950">HTTP अनुरोधहरू पठाउन सकिएन</translation>
 <translation id="6073292342939316679">"किबोर्डको चमक घटाउनुहोस्" जनाउने आइकन</translation>
 <translation id="6075872808778243331">(Android) HTTP को विलम्बता</translation>
+<translation id="6078323886959318429">सर्टकट थप्नुहोस्</translation>
 <translation id="6104112872696127344">स्क्यान गर्ने कार्य रद्द गरिएको छ</translation>
 <translation id="6106186594183574873">यो कार्य पूरा गर्न आफ्नो पुरानो पासवर्ड प्रविष्टि गर्नुहोस्</translation>
 <translation id="6108689792487843350">गेटवेमा कनेक्ट गर्न सकिएन</translation>

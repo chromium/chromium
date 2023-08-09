@@ -268,6 +268,7 @@ Weby si nemôžu na základe súborov cookie zobraziť vašu históriu prehliada
 <translation id="2648721026697078500">Nikdy nepresúvať</translation>
 <translation id="2648803196158606475">Odstrániť prečítané</translation>
 <translation id="2664621323652615289">Ukončiť</translation>
+<translation id="2666092431469916601">Vrch</translation>
 <translation id="2671426118752779020">Heslá, ktoré ste uložili do správcu hesiel Google, môžete v iPhone použiť v iných aplikáciách.</translation>
 <translation id="2690858294534178585">Kamera sa používa</translation>
 <translation id="26915454213703967">Hľadať na obrázku Googlom</translation>
@@ -354,6 +355,7 @@ Používate vyhľadávač <ph name="DSE_NAME" />. Prečítajte si jeho pokyny, a
 Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania (ak je to možné).</translation>
 <translation id="3080525922482950719">Stránky si môžete uložiť a prečítať neskôr či offline</translation>
 <translation id="3081338492074632642">Ukladané heslo sa musí zhodovať s tým, ktoré používate pre web <ph name="WEBSITE" />.</translation>
+<translation id="3087734570205094154">Spodok</translation>
 <translation id="309672519329227863">Majte prístup k heslám Chromu a ďalšiemu obsahu v iných aplikáciách.</translation>
 <translation id="3112556859945124369">Označiť…</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Čo môžete synchronizovať<ph name="END_LINK" /></translation>
@@ -431,7 +433,6 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="3533436815740441613">Nová karta</translation>
 <translation id="3540141921715814660">Pridať medzi záložky</translation>
 <translation id="3551320343578183772">Zatvoriť kartu</translation>
-<translation id="3554280880535219766">Zobrazovať dolný panel s adresou</translation>
 <translation id="3565207542107370586">Vymazať dáta prehliadania…</translation>
 <translation id="3575234738189584619">Vyhľadávať pomocou funkcie Lens</translation>
 <translation id="3577555362230509265">Používajte Chrome v iných aplikáciách.</translation>
@@ -441,7 +442,6 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="3595252146048399851">Položky, ktoré chcete synchronizovať, môžete kedykoľvek vybrať v <ph name="BEGIN_LINK" />nastaveniach<ph name="END_LINK" />. Google môže prispôsobiť Vyhľadávanie a ďalšie služby na základe vašej histórie.</translation>
 <translation id="3603009562372709545">Kopírovať webovú adresu odkazu</translation>
 <translation id="3607167657931203000">Údaje automatického dopĺňania</translation>
-<translation id="3608008480985212611">Ak chcete spravovať predvoľby, prihláste sa</translation>
 <translation id="3609785682760573515">Prebieha synchronizácia...</translation>
 <translation id="3631443864840848029">Uistite sa, že ukladáte aktuálne heslo tohto webu.</translation>
 <translation id="3638472932233958418">Predbežne načítavať webové stránky</translation>
@@ -517,6 +517,7 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="4133265950310064865">Rozšírená ochrana</translation>
 <translation id="4148023517926189160">Tento web chce stiahnuť súbor a pridať ho do vášho kalendára.</translation>
 <translation id="4152011295694446843">Tu nájdete svoje záložky</translation>
+<translation id="4168651806173792090"><ph name="NETWORK_NAME" /> s koncovým štvorčíslím <ph name="LAST_FOUR_DIGITS" /></translation>
 <translation id="4172051516777682613">Vždy zobraziť</translation>
 <translation id="418156467088430727">Zobraziť offline verziu na novej karte</translation>
 <translation id="4181841719683918333">Jazyky</translation>
@@ -703,7 +704,6 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="5271265092610673171">{count,plural, =1{Povinné pole je prázdne. Pred uložením ho vyplňte.}few{Niektoré povinné polia sú prázdne. Pred uložením ich vyplňte.}many{Niektoré povinné polia sú prázdne. Pred uložením ich vyplňte.}other{Niektoré povinné polia sú prázdne. Pred uložením ich vyplňte.}}</translation>
 <translation id="5271549068863921519">Uložiť heslo</translation>
 <translation id="5283494734135414249">Klepnite na skratku, ktorá sa zobrazí pod panelom s adresou.</translation>
-<translation id="5292723732574094123">Účet je odhlásený. Ak si chcete zobrazovať záložky, heslá a ďalšie položky v ňom, znova sa prihláste.</translation>
 <translation id="5295239312320826323">Chcete odstrániť účet <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Zobraziť</translation>
 <translation id="5317780077021120954">Uložiť</translation>
@@ -762,7 +762,6 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="5702108177581350218">Keď zdieľate svoje používateľské meno a heslo, člen vašej rodiny ich môže vyplniť pomocou Správcu hesiel Google.</translation>
 <translation id="5704908597376970822">Nepodarilo sa prihlásiť.</translation>
 <translation id="5706552126692816153">Aktívne včera</translation>
-<translation id="5711039611392265845">Ďalšie nastavenia týkajúce sa ochrany súkromia, zabezpečenia a zhromažďovania údajov nájdete v časti <ph name="BEGIN_LINK" />Synchronizácia a služby Googlu<ph name="END_LINK" />.</translation>
 <translation id="5718049162805123412">Mali by ste ich okamžite zmeniť</translation>
 <translation id="5724941645893276623">Ak chcete internet prehliadať v súkromí, pridajte novú kartu</translation>
 <translation id="5728700505257787410">Je nám ľúto, pri prihlasovaní do účtu sa vyskytol problém.</translation>
@@ -774,7 +773,6 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="574762237186762643">Udalosti</translation>
 <translation id="5755162682436943950">Účet je odhlásený. Otvorí dialógové okno, pomocou ktorého sa môžete prihlásiť a zapnúť synchronizáciu.</translation>
 <translation id="5758631781033351321">Tu nájdete svoj čitateľský zoznam</translation>
-<translation id="5760258696409739442">Zobrazovať horný panel s adresou</translation>
 <translation id="5762370665605786758">Šifrovanie pomocou prístupovej frázy nezahŕňa spôsoby platby ani adresy zo služby Google Pay.
 
 Šifrované údaje môže čítať iba používateľ s prístupovou frázou. Prístupová fráza sa do Googlu neodosiela a Google ju ani neukladá. Ak prístupovú frázu zabudnete alebo budete chcieť toto nastavenie zmeniť, <ph name="BEGIN_LINK" />vymažte údaje Chromu vo svojom účte<ph name="END_LINK" />.</translation>
@@ -942,6 +940,7 @@ Pre každý web skúste použiť jedinečné heslo.</translation>
 <translation id="651505212789431520">Chcete zrušiť synchronizáciu? Môžete ju kedykoľvek zapnúť v Nastaveniach.</translation>
 <translation id="6518133107902771759">Overiť</translation>
 <translation id="6524918542306337007">Režim inkognito nie je k dispozícii</translation>
+<translation id="6527303717912515753">Zdieľať</translation>
 <translation id="6530992499366869131">Upozorňovať pri prezradení hesiel v rámci porušenia ochrany údajov</translation>
 <translation id="6537746030088321027">priklad.sk</translation>
 <translation id="6540120577248033958">Navštívte nejaký web a v Ponuke Chromu kliknite na Sledovať</translation>
@@ -1233,6 +1232,7 @@ Na základe súborov cookie si môžu zobraziť vašu históriu prehliadania v 
 <translation id="8281781826761538115">Predvolené – <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Preskočiť</translation>
 <translation id="8283172974887967105">Nastaviť…</translation>
+<translation id="8286036467436129157">Prihlásenie</translation>
 <translation id="8299417921174340354">Ak chcete používať heslá, najprv musíte v zariadení nastaviť vstupný kód.</translation>
 <translation id="8299613349954694191">Otvorte kartu inkognito a prehliadajte internet v súkromí.</translation>
 <translation id="8316944564970119719">Zadajte web a heslo a potom kliknite na Uložiť</translation>

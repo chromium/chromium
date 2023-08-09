@@ -90,6 +90,7 @@
 <translation id="1175393348063009671">عکس (مات)</translation>
 <translation id="1175875016430184367">سه منگنه در راست</translation>
 <translation id="1177802847690410663">مرورگر وب</translation>
+<translation id="1177863135347784049">سفارشی</translation>
 <translation id="1178581264944972037">مکث</translation>
 <translation id="1178821169867863726">۱۶ × ۱۲ اینچ</translation>
 <translation id="1181037720776840403">حذف</translation>
@@ -134,7 +135,6 @@
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">گذرواژه‌تان را در سایتی که توسط سازمانتان مدیریت نمی‌شود وارد کردید. برای محافظت از حسابتان، از گذرواژه‌تان در سایر برنامه‌ها و سایت‌ها مجدداً استفاده نکنید.</translation>
 <translation id="1257553931232494454">سطوح بزرگ‌نمایی</translation>
-<translation id="1259843033850529027">انتخاب سطح خط‌مشی</translation>
 <translation id="1262388120645841613">‏<ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />؛ برای مدیریت تنظیمات Chrome، کلید «جهش» و سپس «ورود» را فشار دهید</translation>
 <translation id="1264309058268477500">جایگزین</translation>
 <translation id="1264974993859112054">ورزش</translation>
@@ -256,12 +256,6 @@
 <translation id="1482879811280872320">دوچرخه‌سواری</translation>
 <translation id="1483493594462132177">ارسال</translation>
 <translation id="1492194039220927094">اعمال خط‌مشی‌ها:</translation>
-<translation id="149293076951187737">‏وقتی همه برگه‌های ناشناس Chrome را ببندید، فعالیتتان در این برگه‌ها از دستگاهتان پاک می‌شود:
-          <ph name="BEGIN_LIST" />
-            <ph name="LIST_ITEM" />فعالیت مرور<ph name="END_LIST_ITEM" />
-            <ph name="LIST_ITEM" />سابقه جستجو<ph name="END_LIST_ITEM" />
-            <ph name="LIST_ITEM" />اطلاعات واردشده در فرم‌ها<ph name="END_LIST_ITEM" />
-          <ph name="END_LIST" /></translation>
 <translation id="14938948731065592">لوازم جانبی رایانه</translation>
 <translation id="1495677929897281669">برگشتن به برگه</translation>
 <translation id="1501859676467574491">‏کارت‌ها را از حساب Google خود نمایش دهید</translation>
@@ -390,7 +384,6 @@
 <translation id="1741613555002899862">‏وقتی DnsOverHttpsMode <ph name="SECURE_DNS_MODE_SECURE" /> است، باید مشخص شده باشد و رشته‌ای معتبر باشد</translation>
 <translation id="1743393865165844832">روتختی و ملحفه</translation>
 <translation id="1745399796851657441">‏<ph name="BEGIN_BOLD" />چگونه از این داده‌ها استفاده می‌کنیم:<ph name="END_BOLD" /> همان‌طور که مرور می‌کنید Chrome موضوعات موردعلاقه را ثبت می‌کند. برچسب موضوعات ازپیش‌تعریف‌شده است و شامل مواردی مانند «هنر و سرگرمی»، «خرید»، و «ورزش» می‌شود. بعداً، سایتی که از آن بازدید می‌کنید می‌تواند برای شخصی‌سازی کردن آگهی‌هایی که به شما نشان می‌دهد تعدادی از موضوعات شما (اما نه سابقه مرورتان) را از Chrome بخواهد.</translation>
-<translation id="1745880797583122200">مرورگرتان تحت مدیریت است</translation>
 <translation id="1746113442205726301">‏تغییر جهت تصویر حول محور Y</translation>
 <translation id="1746531169546376413">۰ درجه</translation>
 <translation id="1752021286346845558">صندوق پست ۸</translation>
@@ -456,6 +449,7 @@
 <translation id="1883255238294161206">کوچک کردن فهرست</translation>
 <translation id="1884843295353628214">جاز</translation>
 <translation id="1890171020361705182">بازی داینو. دایناسوری نقطه‌ای همان‌طور که در دشتی دورافتاده می‌دود، موقع رسیدن به کاکتوس‌ها و پتروداکتیل‌ها جاخالی می‌دهد. وقتی صدای نشانه صوتی را شنیدید، برای پریدن از روی موانع ضربه بزنید.</translation>
+<translation id="189035593835762169">شرایط خدمات</translation>
 <translation id="1898423065542865115">فیلتر کردن</translation>
 <translation id="1901443836186977402">{1,plural, =1{این سرور نتوانست اثبات کند که <ph name="DOMAIN" /> است؛ گواهی امنیتی آن روز گذشته منقضی شده است. ممکن است علت این موضوع پیکربندی اشتباه باشد یا مهاجمی درحال رهگیری اتصالتان باشد. ساعت رایانه‌تان درحال‌حاضر روی <ph name="CURRENT_DATE" /> تنظیم شده است. آیا درست است؟ اگر نه، باید ساعت سیستم را درست کنید و سپس این صفحه را بازآورید.}one{این سرور نتوانست اثبات کند که <ph name="DOMAIN" /> است؛ گواهینامه امنیتی آن # روز پیش منقضی شده است. ممکن است علت این موضوع پیکربندی اشتباه باشد یا مهاجمی درحال رهگیری اتصالتان باشد. ساعت رایانه‌تان درحال‌حاضر روی <ph name="CURRENT_DATE" /> تنظیم شده است. آیا درست است؟ اگر نه، باید ساعت سیستم را درست کنید و سپس این صفحه را بازآورید.}other{این سرور نتوانست اثبات کند که <ph name="DOMAIN" /> است؛ گواهینامه امنیتی آن # روز پیش منقضی شده است. ممکن است علت این موضوع پیکربندی اشتباه باشد یا مهاجمی درحال رهگیری اتصالتان باشد. ساعت رایانه‌تان درحال‌حاضر روی <ph name="CURRENT_DATE" /> تنظیم شده است. آیا درست است؟ اگر نه، باید ساعت سیستم را درست کنید و سپس این صفحه را بازآورید.}}</translation>
 <translation id="1902576642799138955">مدت اعتبار</translation>
@@ -807,6 +801,7 @@
 <translation id="2674804415323431591">پنهان کردن پیشنهادها</translation>
 <translation id="2677696497921480781">تاریخ تولد و روز نام‌گذاری</translation>
 <translation id="2677748264148917807">خروج</translation>
+<translation id="2678468611080193228">کوکی‌های شخص ثالث را به‌طور موقت مجاز کنید. این کار به‌معنی محافظت کمتر است اما ویژگی‌های سایت به احتمال زیاد کار می‌کنند</translation>
 <translation id="2687555958734450033">بهترین اندازه</translation>
 <translation id="2688186765492306706">۷۶۰ × ۵۰۰ میلی‌متر</translation>
 <translation id="2688969097326701645">بله، ادامه می‌دهم</translation>
@@ -1471,6 +1466,7 @@
 <translation id="4152318981910038897">{COUNT,plural, =1{صفحه ۱}one{صفحه {COUNT}}other{صفحه {COUNT}}}</translation>
 <translation id="4154277373259957087">‏Chrome‌ اکنون پیش‌از پر کردن روش‌های پرداخت، هویت شما را به‌تأیید می‌رساند. هرزمان بخواهید می‌توانید این گزینه را در <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" /> به‌روز کنید.</translation>
 <translation id="4154664944169082762">اثر انگشت</translation>
+<translation id="4159149286839604525">این بدین معنی است که اکثر ویژگی‌های سایت باید کار کند، اما محافظت کمتری دارید</translation>
 <translation id="4159784952369912983">بنفش</translation>
 <translation id="4165986682804962316">تنظیمات سایت</translation>
 <translation id="4169535189173047238">اجازه داده نشود</translation>
@@ -1877,6 +1873,7 @@
 <translation id="4983145717627482381">گشت‌های با راهنما و تعطیلات با همراه</translation>
 <translation id="498323057460789381">خطا در اعتبارسنجی طرح: <ph name="ERROR" /></translation>
 <translation id="4984088539114770594">از میکروفون استفاده شود؟</translation>
+<translation id="4985206706500620449">کوکی‌های شخص ثالث را برای این سایت مجاز کرده‌اید</translation>
 <translation id="4989163558385430922">دیدن همه</translation>
 <translation id="4989542687859782284">دردسترس نیست</translation>
 <translation id="4989809363548539747">این افزایه پشتیبانی نمی‌شود</translation>
@@ -1886,6 +1883,7 @@
 <translation id="4995474875135717171">اصلاح‌شده در:</translation>
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />؛ برای مدیریت جستجوی سایت و موتور جستجوی پیش‌فرض، کلید «جهش» و سپس «ورود» را فشار دهید</translation>
 <translation id="4998950033665438990">یک‌رو</translation>
+<translation id="5001526427543320409">کوکی‌های شخص ثالث</translation>
 <translation id="5002932099480077015">‏اگر فعال شود، Chrome یک کپی از کارت شما را برای پرکردن سریع‌تر فرم در این دستگاه ذخیره می‌کند.</translation>
 <translation id="5007392906805964215">مرور</translation>
 <translation id="5011561501798487822">زبان شناسایی‌شده</translation>
@@ -2568,7 +2566,6 @@
 <translation id="6450212216969386944">پاکت چو ۴۰</translation>
 <translation id="6451458296329894277">تأیید ارسال مجدد فرم</translation>
 <translation id="6452889436791091116">ISO ID-1</translation>
-<translation id="6453457495574553803">انتخاب هدف خط‌مشی</translation>
 <translation id="6456955391422100996">آگهی حذف شد.</translation>
 <translation id="6457206614190510200">منگنه تخت</translation>
 <translation id="6457455098507772300">هشدارهای کاهش قیمت به‌صورت اعلان‌های بالاپر در میز کار نشان داده می‌شود</translation>
@@ -2602,6 +2599,7 @@
 <translation id="6521745193039995384">غیرفعال</translation>
 <translation id="6524830701589638230">‏دکمه «مدیریت تنظیمات دسترس‌پذیری»؛ برای شخصی کردن ابزارهای دسترس‌پذیری در تنظیمات Chrome، آن را فعال کنید</translation>
 <translation id="6529173248185917884">رول هفتم</translation>
+<translation id="652937045869844725">کوکی‌های شخص ثالث را مجاز کنید. این کار به‌معنی محافظت کمتر است اما ویژگی‌های سایت به احتمال زیاد کار می‌کنند</translation>
 <translation id="6529602333819889595">&amp;انجام مجدد حذف</translation>
 <translation id="6535751101619004418">پول و تبادل ارز</translation>
 <translation id="6536221421038631327">‏حذف اشتراک Passpoint از <ph name="DEVICE_TYPE" /> باعث می‌شود شبکه‌های مرتبط نیز حذف شوند. برای تغییر در طرح اشتراکتان، با «<ph name="FRIENDLY_NAME" />» تماس بگیرید. <ph name="LEARN_MORE" /></translation>
@@ -2865,6 +2863,7 @@
 <translation id="7102079138917191645">ساخت‌و‌ساز و نگهداری</translation>
 <translation id="7102554173784142865">‏بازی کردن بازی «دایناسور Chrome»</translation>
 <translation id="7102760431686146931">وسایل آشپزی و غذاخوری</translation>
+<translation id="7106762743910369165">سازمانتان مرورگر را مدیریت می‌کند</translation>
 <translation id="7108338896283013870">عدم نمایش</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> می‌خواهد از دوربین شما استفاده کند</translation>
 <translation id="7108819624672055576">توسط افزونه مجاز شده است</translation>
@@ -2878,12 +2877,6 @@
 <translation id="7119371694555167493">مهلت زمانی کپی کردن تمام شد</translation>
 <translation id="7119414471315195487">برگه‌ها یا برنامه‌های دیگر را ببندید</translation>
 <translation id="7124354851782353862">‏کد تأیید کارت (CVC) را وارد کنید</translation>
-<translation id="7129355289156517987">‏وقتی همه برگه‌های ناشناس Chromium را ببندید، فعالیتتان در این برگه‌ها از دستگاهتان پاک می‌شود:
-          <ph name="BEGIN_LIST" />
-            <ph name="LIST_ITEM" />فعالیت مرور<ph name="END_LIST_ITEM" />
-            <ph name="LIST_ITEM" />سابقه جستجو<ph name="END_LIST_ITEM" />
-            <ph name="LIST_ITEM" />اطلاعات واردشده در فرم‌ها<ph name="END_LIST_ITEM" />
-          <ph name="END_LIST" /></translation>
 <translation id="7129409597930077180">ارسال به این نشانی ممکن نیست. نشانی دیگری را انتخاب کنید.</translation>
 <translation id="7129809579943936035"><ph name="VALUE_PROP" /><ph name="DETAILS" /></translation>
 <translation id="7130775116821607281">بارگذاری مسدود شد</translation>
@@ -2934,6 +2927,7 @@
 <translation id="7221855153210829124">نمایش اعلان‌ها</translation>
 <translation id="7221857374443660083">بانک شما می‌خواهد از هویت شما مطمئن شود</translation>
 <translation id="722454870747268814">برگه ناشناس جدید</translation>
+<translation id="7226276626900992675">به این سایت اجازه داده‌اید از کوکی‌های شخص ثالث استفاده کند این بدین معنی است که اکثر ویژگی‌های سایت باید کار کند، اما محافظت کمتری دارید.</translation>
 <translation id="7227293336683593977">سابقه قیمت</translation>
 <translation id="7233592378249864828">برگ تأیید چاپ</translation>
 <translation id="7234638337680728591">قیمت بنزین و سوخت خودرو</translation>
@@ -3553,7 +3547,6 @@
 <translation id="8483229036294884935">‏این نشانی از «حساب Google» شما (<ph name="ACCOUNT" />) حذف خواهد شد</translation>
 <translation id="8488350697529856933">اعمال برای</translation>
 <translation id="8490137692873530638">پشته‌ساز ۱۰</translation>
-<translation id="8493829133024050711">انتخاب منبع خط‌مشی</translation>
 <translation id="8493948351860045254">آزاد کردن فضا</translation>
 <translation id="8498891568109133222">پاسخ <ph name="HOST_NAME" /> بیش از حد طول کشیده است.</translation>
 <translation id="8503559462189395349">‏گذرواژه‌های Chrome</translation>
@@ -3618,7 +3611,6 @@
 <translation id="8623885649813806493">گذرواژه منطبقی وجود ندارد. نمایش همه گذرواژه‌های ذخیره‌شده.</translation>
 <translation id="8624354461147303341">دریافت تخفیف</translation>
 <translation id="8634957317623797170">۸۶ × ۵۴ میلی‌متر</translation>
-<translation id="8637577059508742477">نمایه و مرورگر شما تحت‌مدیریت <ph name="DOMAIN" /> است</translation>
 <translation id="8641131559425911240">پاکت (باند)</translation>
 <translation id="8643409044755049933">پاکت کاکو ۳</translation>
 <translation id="8647287295490773273">۳۳۰ × ۲۱۰ میلی‌متر</translation>
@@ -3695,6 +3687,7 @@
 <translation id="8793655568873652685">‏<ph name="ENROLLMENT_DOMAIN" /> «رابط‌های Chrome Enterprise» را در مرورگرتان روشن کرده است. این رابط‌ها به برخی از داده‌هایتان دسترسی دارند.</translation>
 <translation id="8798099450830957504">پیش‌فرض</translation>
 <translation id="8798739476508189189">به‌دنبال پرچم‌های مرورگر هستید؟ بازدید</translation>
+<translation id="8800034312320686233">سایت کار نمی‌کند؟</translation>
 <translation id="8805819170075074995">‏ورودی فهرست «<ph name="LANGUAGE_ID" />»: ورودی نادیده گرفته شد زیرا در خط‌مشی SpellcheckLanguage نیز لحاظ شده است.</translation>
 <translation id="8806285662264631610">محصولات حمام و بدن</translation>
 <translation id="8806696968588872703">پلاستیک (ساتن)</translation>

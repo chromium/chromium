@@ -166,7 +166,6 @@
 <translation id="2312704192806647271">{COUNT,plural, =1{Ni ellir dod o hyd i estyniad gyda'r rhif adnabod <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Cysylltwch â'ch gweinyddwr.}zero{Ni ellir dod o hyd i estyniadau gyda'r rhifau adnabod <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Cysylltwch â'ch gweinyddwr.}two{Ni ellir dod o hyd i estyniadau gyda'r rhifau adnabod <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Cysylltwch â'ch gweinyddwr.}few{Ni ellir dod o hyd i estyniadau gyda'r rhifau adnabod <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Cysylltwch â'ch gweinyddwr.}many{Ni ellir dod o hyd i estyniadau gyda'r rhifau adnabod <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Cysylltwch â'ch gweinyddwr.}other{Ni ellir dod o hyd i estyniadau gyda'r rhifau adnabod <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Cysylltwch â'ch gweinyddwr.}}</translation>
 <translation id="2325650632570794183">Ni chefnogir y math hwn o ffeil. Ewch i Chrome Web Store i ddod o hyd i ap a all agor y math hwn o ffeil.</translation>
 <translation id="2326539130272988168">Bwlgareg</translation>
-<translation id="2337715497728194187">Rhannu â Bruschetta</translation>
 <translation id="233822363739146957">Nid oes digon o le storio i gysoni'ch holl ffeiliau</translation>
 <translation id="23721837607121582">Lawrlwytho proffil dyfais symudol, Rhwydwaith <ph name="NETWORK_INDEX" /> o <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Newid i'r wedd rhestr</translation>
@@ -197,7 +196,6 @@
 <translation id="2544853746127077729">Gwrthodwyd y dystysgrif ddilysu gan y rhwydwaith</translation>
 <translation id="255937426064304553">Rhyngwladol UDA</translation>
 <translation id="2563185590376525700">Broga</translation>
-<translation id="2574327434504608656">Mae 1 ffolder wedi'i rhannu â Bruschetta</translation>
 <translation id="2578394532502990878">Tamileg Seinegol</translation>
 <translation id="2579959351793446050">Odia</translation>
 <translation id="2587195714949534472">Wrthi'n paratoi i gysoni <ph name="FILE_NAME" />...</translation>
@@ -297,7 +295,6 @@
 <translation id="3408072735282270043">Gweithredu, <ph name="NETWORK_NAME" /></translation>
 <translation id="3408236822532681288">Almaeneg (Yr Almaen) gyda bysellfwrdd Neo 2</translation>
 <translation id="3414856743105198592">Bydd fformatio'r cyfryngau y gellir eu tynnu yn dileu'r holl ddata. Hoffech chi barhau?</translation>
-<translation id="3435143625481187092">Rhowch ganiatâd i Bruschetta gael mynediad at ffeiliau yn y ffolder <ph name="FOLDER_NAME" /></translation>
 <translation id="3437801641691368414">Amser creu</translation>
 <translation id="343907260260897561">Camera Sydyn</translation>
 <translation id="3455931012307786678">Estoneg</translation>
@@ -385,7 +382,6 @@
 <translation id="4159731583141908892">Symudwyd <ph name="FILE_NAME" />.</translation>
 <translation id="4176286497474237543">Gwagio'r bin sbwriel nawr</translation>
 <translation id="4179621117429069925">Mae'r eitem hon yn eich bin sbwriel</translation>
-<translation id="4181839429935094755">Mae <ph name="NUMBER_OF_ITEMS" /> ffolder wedi'u rhannu â Bruschetta</translation>
 <translation id="4186579485882418952">Galluogi All-lein</translation>
 <translation id="4193154014135846272">Dogfen Google</translation>
 <translation id="4197674956721858839">Dewis i'w sipio</translation>
@@ -452,7 +448,6 @@
 <translation id="4646813851450205600">Tsieceg gyda bysellfwrdd Qwerty</translation>
 <translation id="4656777537938206294">Gwneud ffeiliau ar gael all-lein</translation>
 <translation id="4658782175094886150">Person yn yr eira</translation>
-<translation id="466782788172479199">Rhowch ganiatâd i Bruschetta gael mynediad at ffeiliau yn eich Google Drive. Bydd newidiadau yn cysoni â'ch dyfeisiau eraill.</translation>
 <translation id="4669606053856530811">Bydd aelodau '<ph name="SOURCE_NAME" />' yn colli mynediad oni bai bod yr eitemau hyn yn cael eu rhannu â nhw.</translation>
 <translation id="467809019005607715">Google Slides</translation>
 <translation id="4690246192099372265">Swedeg</translation>
@@ -563,7 +558,6 @@
 <translation id="5323213332664049067">Lladin Americanaidd</translation>
 <translation id="5330145655348521461">Gwnaeth y ffeiliau hyn agor ar fwrdd gwaith gwahanol. Symudwch i <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) i'w gweld.</translation>
 <translation id="5330512191124428349">Cael gwybodaeth</translation>
-<translation id="5344246330454251646">Rheoli rhannu Bruschetta</translation>
 <translation id="535792325654997756">Person â chathod</translation>
 <translation id="5358764674931277">Cyfradd ffrâm</translation>
 <translation id="5363339716524495120">Yr iaith mewnbwn yw Tsieinëeg</translation>
@@ -731,7 +725,6 @@
 <translation id="6710213216561001401">Blaenorol</translation>
 <translation id="6732801395666424405">Tystysgrifau heb eu llwytho</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
-<translation id="6740270213273127264">Rhannu ffolder â Bruschetta</translation>
 <translation id="6750737795876287924">Cyfeiriadur presennol</translation>
 <translation id="6751256176799620176">Mae 1 ffolder wedi'i dewis</translation>
 <translation id="6755827872271341378">Dyfais ChromeOS Flex</translation>

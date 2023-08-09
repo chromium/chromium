@@ -166,7 +166,6 @@
 <translation id="2312704192806647271">{COUNT,plural, =1{No es troba cap extensió amb l'identificador: <ph name="BEGIN_LIST" /><ph name="END_LIST" /> Contacta amb l'administrador.}other{No es troben extensions amb els identificadors: <ph name="BEGIN_LIST" /><ph name="END_LIST" /> Contacta amb l'administrador.}}</translation>
 <translation id="2325650632570794183">Aquest tipus de fitxer no és compatible. Visiteu Chrome Web Store per trobar una aplicació que pugui obrir aquest tipus de fitxer.</translation>
 <translation id="2326539130272988168">Búlgar</translation>
-<translation id="2337715497728194187">Comparteix amb Bruschetta</translation>
 <translation id="233822363739146957">No hi ha prou espai d'emmagatzematge per sincronitzar tots els fitxers</translation>
 <translation id="23721837607121582">Baixa el perfil mòbil, xarxa <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Canvia a la visualització de llista</translation>
@@ -197,7 +196,6 @@
 <translation id="2544853746127077729">La xarxa ha rebutjat el certificat d'autenticació</translation>
 <translation id="255937426064304553">Teclat internacional d'Estats Units</translation>
 <translation id="2563185590376525700">Granota</translation>
-<translation id="2574327434504608656">S'ha compartit 1 carpeta amb Bruschetta</translation>
 <translation id="2578394532502990878">Tàmil fonètic</translation>
 <translation id="2579959351793446050">Oriya</translation>
 <translation id="2587195714949534472">S'està preparant per sincronitzar <ph name="FILE_NAME" />...</translation>
@@ -297,7 +295,6 @@
 <translation id="3408072735282270043">Activa, <ph name="NETWORK_NAME" /></translation>
 <translation id="3408236822532681288">Alemany (Alemanya) amb teclat Neo 2</translation>
 <translation id="3414856743105198592">Si formateu els suports extraïbles esborrareu totes les dades. Voleu continuar?</translation>
-<translation id="3435143625481187092">Dona permís a Bruschetta per accedir als fitxers que hi ha a la carpeta <ph name="FOLDER_NAME" /></translation>
 <translation id="3437801641691368414">Hora de creació</translation>
 <translation id="343907260260897561">Càmera instantània</translation>
 <translation id="3455931012307786678">Estonià</translation>
@@ -385,7 +382,6 @@
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> s'ha mogut.</translation>
 <translation id="4176286497474237543">Buida la paperera ara</translation>
 <translation id="4179621117429069925">Aquest element és a la paperera</translation>
-<translation id="4181839429935094755">S'han compartit <ph name="NUMBER_OF_ITEMS" /> carpetes amb Bruschetta</translation>
 <translation id="4186579485882418952">Activa el mode sense connexió</translation>
 <translation id="4193154014135846272">Document de Google</translation>
 <translation id="4197674956721858839">Selecció de ZIP</translation>
@@ -452,7 +448,6 @@
 <translation id="4646813851450205600">Txec amb teclat QWERTY</translation>
 <translation id="4656777537938206294">Fes que els fitxers estiguin disponibles sense connexió</translation>
 <translation id="4658782175094886150">Persona a la neu</translation>
-<translation id="466782788172479199">Dona permís a Bruschetta per accedir als fitxers que hi ha al teu Google Drive. Els canvis se sincronitzaran amb els altres dispositius que tinguis.</translation>
 <translation id="4669606053856530811">Els membres de l'equip <ph name="SOURCE_NAME" /> ja no podran accedir a aquests elements, tret que es comparteixin amb ells.</translation>
 <translation id="467809019005607715">Presentacions de Google</translation>
 <translation id="4690246192099372265">Suec</translation>
@@ -564,7 +559,6 @@
 <translation id="5323213332664049067">Espanyol d'Amèrica Llatina</translation>
 <translation id="5330145655348521461">Aquests fitxers s'han obert en un altre escriptori. Aneu a <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) per veure'l.</translation>
 <translation id="5330512191124428349">Mostra la informació</translation>
-<translation id="5344246330454251646">Gestiona la compartició amb Bruschetta</translation>
 <translation id="535792325654997756">Persona amb gats</translation>
 <translation id="5358764674931277">Fotogrames per segon</translation>
 <translation id="5363339716524495120">L'idioma d'introducció és el xinès</translation>
@@ -732,7 +726,6 @@
 <translation id="6710213216561001401">Anterior</translation>
 <translation id="6732801395666424405">Els certificats no s'han carregat.</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
-<translation id="6740270213273127264">Comparteix la carpeta amb Bruschetta</translation>
 <translation id="6750737795876287924">Directori actual</translation>
 <translation id="6751256176799620176">1 carpeta seleccionada</translation>
 <translation id="6755827872271341378">Dispositiu ChromeOS Flex</translation>

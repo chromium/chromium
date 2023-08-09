@@ -166,7 +166,6 @@
 <translation id="2312704192806647271">{COUNT,plural, =1{Laajennusta, jonka tunnus on <ph name="BEGIN_LIST" /><ph name="END_LIST" />, ei löydy. Ota yhteyttä järjestelmänvalvojaan.}other{Laajennuksia, joiden tunnukset ovat <ph name="BEGIN_LIST" /><ph name="END_LIST" />, ei löydy. Ota yhteyttä järjestelmänvalvojaan.}}</translation>
 <translation id="2325650632570794183">Tätä tiedostotyyppiä ei tueta. Etsi tämäntyyppisiä tiedostoja avaava sovellus Chrome Web Storesta.</translation>
 <translation id="2326539130272988168">bulgaria</translation>
-<translation id="2337715497728194187">Jaa Bruschettalle</translation>
 <translation id="233822363739146957">Tallennustila ei riitä kaikkien tiedostojen synkronointiin</translation>
 <translation id="23721837607121582">Lataa mobiiliprofiili, verkko <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Vaihda luettelonäkymään</translation>
@@ -197,7 +196,6 @@
 <translation id="2544853746127077729">Verkko on hylännyt todennusvarmenteen</translation>
 <translation id="255937426064304553">USA (kansainvälinen)</translation>
 <translation id="2563185590376525700">Sammakko</translation>
-<translation id="2574327434504608656">1 kansio jaettu Bruschettalle</translation>
 <translation id="2578394532502990878">foneettinen tamil</translation>
 <translation id="2579959351793446050">orija</translation>
 <translation id="2587195714949534472">Valmistellaan <ph name="FILE_NAME" />-tiedoston synkronointia…</translation>
@@ -297,7 +295,6 @@
 <translation id="3408072735282270043">Aktivoi, <ph name="NETWORK_NAME" /></translation>
 <translation id="3408236822532681288">saksa (Saksa), Neo 2 ‑näppäimistö</translation>
 <translation id="3414856743105198592">Siirrettävän tietovälineen alustaminen poistaa kaikki sen tiedot. Haluatko jatkaa?</translation>
-<translation id="3435143625481187092">Myönnä Bruschettalle pääsy kansiossa <ph name="FOLDER_NAME" /> oleviin tiedostoihin</translation>
 <translation id="3437801641691368414">Luontiaika</translation>
 <translation id="343907260260897561">Pikakamera</translation>
 <translation id="3455931012307786678">viro</translation>
@@ -385,7 +382,6 @@
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> siirretty.</translation>
 <translation id="4176286497474237543">Tyhjennä roskakori nyt</translation>
 <translation id="4179621117429069925">Tämä kohde on roskakorissasi</translation>
-<translation id="4181839429935094755"><ph name="NUMBER_OF_ITEMS" /> kansiota jaettu Bruschettalle</translation>
 <translation id="4186579485882418952">Ota Docs Offline käyttöön</translation>
 <translation id="4193154014135846272">Google-dokumentti</translation>
 <translation id="4197674956721858839">Pakkaa valitut</translation>
@@ -452,7 +448,6 @@
 <translation id="4646813851450205600">tšekki, qwerty-näppäimistö</translation>
 <translation id="4656777537938206294">Muuta tiedostot käytettäviksi ilman verkkoyhteyttä</translation>
 <translation id="4658782175094886150">Henkilö lumessa</translation>
-<translation id="466782788172479199">Myönnä Bruschettalle pääsy Google Driveesi tallennettuihin tiedostoihin. Muutokset synkronoidaan muille laitteillesi.</translation>
 <translation id="4669606053856530811">Jäsenet (<ph name="SOURCE_NAME" />) menettävät käyttöoikeuden, ellei näitä kohteita jaeta heille.</translation>
 <translation id="467809019005607715">Google Slides</translation>
 <translation id="4690246192099372265">ruotsi</translation>
@@ -564,7 +559,6 @@
 <translation id="5323213332664049067">Latinalainen Amerikka</translation>
 <translation id="5330145655348521461">Nämä tiedostot avattiin toisella työpöydällä. Näet tiedostot siirtymällä profiiliin <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />).</translation>
 <translation id="5330512191124428349">Näytä tiedot</translation>
-<translation id="5344246330454251646">Hallinnoi Bruschettalle jakamista</translation>
 <translation id="535792325654997756">Henkilö ja kissoja</translation>
 <translation id="5358764674931277">Kuvanopeus</translation>
 <translation id="5363339716524495120">Syöttökieli on kiina</translation>
@@ -732,7 +726,6 @@
 <translation id="6710213216561001401">Edellinen</translation>
 <translation id="6732801395666424405">Varmenteita ei ole ladattu</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
-<translation id="6740270213273127264">Jaa kansio Bruschettalle</translation>
 <translation id="6750737795876287924">Nykyinen hakemisto</translation>
 <translation id="6751256176799620176">1 kansio valittu</translation>
 <translation id="6755827872271341378">ChromeOS Flex ‑laite</translation>

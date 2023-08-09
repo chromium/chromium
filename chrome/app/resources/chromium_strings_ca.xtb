@@ -72,7 +72,6 @@
 <translation id="2592940277904433508">Continua utilitzant Chromium</translation>
 <translation id="2648074677641340862">S'ha produït un error en el sistema operatiu durant la instal·lació. Torneu a baixar Chromium.</translation>
 <translation id="2661879430930417727">Si comparteixes un dispositiu, els amics i els familiars poden navegar per separat i configurar Chromium com vulguin</translation>
-<translation id="2669853942967761236">Chromium ha bloquejat aquest fitxer d'arxiu perquè és possible que amagui programari maliciós</translation>
 <translation id="268602741124540128"><ph name="ACCOUNT_FIRST_NAME" />, et donem la benvinguda a Chromium</translation>
 <translation id="2711502716910134313">Pestanya de Chromium</translation>
 <translation id="2718390899429598676">Per a més seguretat, Chromium encriptarà les teves dades.</translation>
@@ -407,6 +406,5 @@ Chromium no pot recuperar la configuració.</translation>
 <translation id="942598560705308788">Certificats gestionats per Chromium</translation>
 <translation id="965162752251293939">Qui està utilitzant Chromium?</translation>
 <translation id="967427899662692980">Obtén la seguretat més efectiva de Chromium</translation>
-<translation id="9792300276217204">Esborra sempre les dades dels llocs web del dispositiu quan tanquis Chromium</translation>
 <translation id="985602178874221306">Els autors de Chromium</translation>
 </translationbundle>

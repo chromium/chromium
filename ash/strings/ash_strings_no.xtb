@@ -63,6 +63,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1235458158152011030">Kjente nettverk:</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> er tilkoblet.</translation>
 <translation id="1240638468526743569">En app</translation>
+<translation id="1242883863226959074">enhet</translation>
 <translation id="124678866338384709">Lukk den aktive fanen</translation>
 <translation id="1246890715821376239">Apper som ikke støttes</translation>
 <translation id="1247372569136754018">Mikrofon (intern)</translation>
@@ -181,6 +182,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1747827819627189109">Skjermtastaturet er aktivert</translation>
 <translation id="1749109475624620922">Vinduet <ph name="WINDOW_TITLE" /> er tilordnet alle skrivebord</translation>
 <translation id="1750088060796401187">Kun <ph name="MAX_DESK_LIMIT" /> skrivebord er tillatt. Fjern et skrivebord for å åpne et nytt.</translation>
+<translation id="1755556344721611131">Diagnostikk-appen</translation>
 <translation id="1756833229520115364">Kunne ikke lagre malen. For mange vinduer eller faner.</translation>
 <translation id="1757857692711134412">Avslått til solnedgang</translation>
 <translation id="1768366657309696705">Hurtigtasten <ph name="LAUNCHER_KEY_NAME" /> + punktum er endret. For å bruke Insert-tasten, trykk på <ph name="LAUNCHER_KEY_NAME" />-tasten + Shift + tilbaketasten.</translation>
@@ -266,7 +268,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2148716181193084225">I dag</translation>
 <translation id="2149229036084364364">Gå til forrige spor</translation>
 <translation id="2161132820593978283">Prøv kamerainnramming, så du er midt på skjermen i videosamtaler. Slå det på i hurtiginnstillingene.</translation>
-<translation id="2165966740263283349">bruk av lagringsplass</translation>
 <translation id="2170530631236737939">Sveip ned med tre fingre for å lukke Oversikt</translation>
 <translation id="2185166372312820725">Gå til forrige fane</translation>
 <translation id="2185444992308415167">Gå gjennom fane 1–8</translation>
@@ -474,6 +475,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3113492864356515707">Fremhev det forrige elementet på hyllen</translation>
 <translation id="3120421559657122717">Vil du slå av enheten?</translation>
+<translation id="3122464029669770682">Prosessor</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">Start på nytt for å oppdatere</translation>
 <translation id="3139188263101386725">Bruk den oppdaterte snarveien</translation>
@@ -518,7 +520,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> kan fortsatt logge på senere.</translation>
 <translation id="3321628682574733415">Feil kode for foreldertilgang</translation>
 <translation id="332827762492701193">Varsler er skjult</translation>
-<translation id="3338855835380298613">prosessorbruk</translation>
 <translation id="3339826665088060472">Skjermdump, verktøy for å ta skjermdumper og skjermopptak</translation>
 <translation id="3340978935015468852">innstillinger</translation>
 <translation id="3341303451326249809">Skjermdumpen er lagret</translation>
@@ -642,7 +643,6 @@ Koble enheten til strøm.</translation>
 <translation id="3781910048497807059">Flytt fokus til forrige felt</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">Lås</translation>
-<translation id="3796198851576711985">batterihelse</translation>
 <translation id="3796746699333205839">Et program bruker kameraet ditt og mikrofonen din</translation>
 <translation id="3798670284305777884">Høyttaler (intern)</translation>
 <translation id="3799080171973636491">Du trykket på hurtigtasten for lupen for hele skjermen. Vil du slå den på?</translation>
@@ -814,12 +814,10 @@ Koble enheten til strøm.</translation>
 <translation id="4527045527269911712">Bluetooth-enheten «<ph name="DEVICE_NAME" />» ber om tillatelse til å koble til.</translation>
 <translation id="4533343294786968049">Batterilevetiden forlenges. Batteriet kommer til å være helt oppladet innen <ph name="FULLY_CHARGE_TIME" />.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> til batteriet er fulladet</translation>
-<translation id="4536664881735498710">ram-bruk</translation>
 <translation id="4538824937723742295">Ta skjermdump i fullskjerm</translation>
 <translation id="4539127209940689201">Skriv ut gjeldende side</translation>
 <translation id="4541706525461326392">Fjerner profilen. Dette kan ta noen minutter.</translation>
 <translation id="4544483149666270818">Velg vinduet du vil ta opp</translation>
-<translation id="454541942614298893">enheten min</translation>
 <translation id="4545950850562423083">Lagre denne siden som bokmerke</translation>
 <translation id="4548482551627849548">Flytt det aktive vinduet til skrivebordet til venstre</translation>
 <translation id="4560576029703263363">På</translation>
@@ -978,7 +976,6 @@ Koble enheten til strøm.</translation>
 <translation id="5208059991603368177">På</translation>
 <translation id="5216991270656129561">Avslått til <ph name="TIME" /></translation>
 <translation id="5217646019792206018">Neste skrivebord: <ph name="NEXT_DESK_NAME" />. Bruk Søk + mellomrom eller hurtigtasten Shift + Søk + <ph name="NEXT_DESK_INDEX" /> for å aktivere.</translation>
-<translation id="5221423477036820198">Send eller svar raskt på meldinger på telefonen din med telefonstyring.</translation>
 <translation id="5222676887888702881">Logg av</translation>
 <translation id="5229343007215035173">Slå personvernskjermen av eller på</translation>
 <translation id="5234764350956374838">Lukk</translation>
@@ -1139,7 +1136,6 @@ Koble enheten til strøm.</translation>
 <translation id="589817443623831496">Punktskanning</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5901630391730855834">Gul</translation>
-<translation id="5902162043476810127">RAM-minne (random-access memory)</translation>
 <translation id="5909862606227538307">Inaktivt skrivebord.</translation>
 <translation id="5911231045062997865">Lacros-vinduer støttes ikke for øyeblikket. Andre apper blir lagret.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
@@ -1543,7 +1539,6 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="7724603315864178912">Klipp ut</translation>
 <translation id="7725108879223146004">Vis detaljer for wifi-sonen. Wifi-sonen slås av.</translation>
 <translation id="7727952505535211425">Åpne nettstedet i adressefeltet i en ny fane</translation>
-<translation id="77365090426890123">minnebruk</translation>
 <translation id="7742327441377685481">Ingen varsler</translation>
 <translation id="7748275671948949022">Fremhev Appoversikt-knappen på hyllen</translation>
 <translation id="7749443890790263709">Maksimalt antall skrivebord er nådd.</translation>
@@ -1795,7 +1790,6 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="8853703225951107899">PIN-koden eller passordet kunne fremdeles ikke verifiseres. Merk: Hvis du nylig har byttet passord, bruker du det gamle passordet. Det nye passordet blir tatt i bruk når du logger av.</translation>
 <translation id="8855885154700222542">Tast for fullskjermmodus</translation>
 <translation id="8858369206579825206">Personverninnstillinger</translation>
-<translation id="8860817004574502558">batterilevetid</translation>
 <translation id="8870509716567206129">Appen støtter ikke delt skjerm.</translation>
 <translation id="8874184842967597500">Ikke tilkoblet</translation>
 <translation id="8875021410787719674">Beveg deg mellom nedre høyre hjørne, Appoversikt, adressefeltet, bokmerkeraden, nettstedet som er åpent og nedlastingene.</translation>
@@ -1848,6 +1842,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="9080073830732419341">Kameraet er festet til øvre venstre hjørne</translation>
 <translation id="9080132581049224423">Sveip opp for å gå til startskjermen</translation>
 <translation id="9080206825613744995">Mikrofonen er i bruk.</translation>
+<translation id="9083324773537346962">Operativsystemversjon</translation>
 <translation id="908451241440060346">Varsler ignoreres når Ikke forstyrr er på</translation>
 <translation id="9084606467167974638">Endre menyplasseringen</translation>
 <translation id="9085962983642906571">Batteriet holdes på 80 % mens enheten er koblet til strøm, slik at batterilevetiden forlenges.</translation>
@@ -1888,7 +1883,6 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="951991426597076286">Avvis</translation>
 <translation id="953431725143473984">Vil du slå av enheten?</translation>
 <translation id="954052413789300507">Ikke nok plass til <ph name="FILENAME" />. Frigjør plass.</translation>
-<translation id="968627661524972577">Bruk apper til å gjøre alt du trenger på Chromebook. Du finner appene dine i appoversikten. Du kan også trykke på Appoversikt-tasten på tastaturet.</translation>
 <translation id="974545358917229949">Viser <ph name="RESULT_COUNT" /> resultater for <ph name="QUERY" /></translation>
 <translation id="98120814841227350">Gå til slutten av dokumentet</translation>
 <translation id="987589956647469042">Mobildata er slått på</translation>

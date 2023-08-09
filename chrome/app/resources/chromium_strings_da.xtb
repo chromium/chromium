@@ -72,7 +72,6 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="2592940277904433508">Fortsæt med at bruge Chromium</translation>
 <translation id="2648074677641340862">Der opstod en fejl i operativsystemet under installationen. Download Chromium igen.</translation>
 <translation id="2661879430930417727">Hvis du deler en enhed, kan venner og familie browse individuelt og konfigurere Chromium hver især</translation>
-<translation id="2669853942967761236">Chromium har blokeret denne arkivfil, fordi den kan indeholde malware</translation>
 <translation id="268602741124540128">Velkommen til Chromium, <ph name="ACCOUNT_FIRST_NAME" /></translation>
 <translation id="2711502716910134313">Fanen Chromium</translation>
 <translation id="2718390899429598676">Som et ekstra sikkerhedsniveau krypterer Chromium dine data.</translation>
@@ -407,6 +406,5 @@ Chromium kan ikke gendanne dine præferencer.</translation>
 <translation id="942598560705308788">Certifikater, der administreres af Chromium</translation>
 <translation id="965162752251293939">Hvem bruger Chromium?</translation>
 <translation id="967427899662692980">Få Chromiums stærkeste beskyttelse</translation>
-<translation id="9792300276217204">Ryd altid websitedata fra din enhed, når du lukker Chromium</translation>
 <translation id="985602178874221306">Forfatterne til Chromium</translation>
 </translationbundle>

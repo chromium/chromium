@@ -63,6 +63,7 @@
 <translation id="1235458158152011030">ເຄືອຂ່າຍທີ່ຮູ້ຈັກ</translation>
 <translation id="1239161794459865856">ເຊື່ອມຕໍ່ <ph name="FEATURE_NAME" /> ແລ້ວ.</translation>
 <translation id="1240638468526743569">ແອັບ</translation>
+<translation id="1242883863226959074">ອຸປະກອນ</translation>
 <translation id="124678866338384709">ປິດແຖບປັດຈຸບັນ</translation>
 <translation id="1246890715821376239">ແອັບທີ່ບໍ່ຮອງຮັບ</translation>
 <translation id="1247372569136754018">ໄມໂຄຣໂຟນ (ພາຍໃນ)</translation>
@@ -181,6 +182,7 @@
 <translation id="1747827819627189109">ແປ້ນພິມ​ເທິງ​ໜ້າ​ຈໍ​ເປີດໃຊ້​ງານ​ແລ້ວ</translation>
 <translation id="1749109475624620922">ໜ້າຈໍ <ph name="WINDOW_TITLE" /> ຖືກມອບໝາຍໄປໃສ່ໂຕະທັງໝົດແລ້ວ</translation>
 <translation id="1750088060796401187">ອະນຸຍາດໃຫ້ມີ <ph name="MAX_DESK_LIMIT" /> ໂຕະເທົ່ານັ້ນ. ກະລຸນາລຶບໂຕະໃດໜຶ່ງອອກເພື່ອເປີດໂຕະໃໝ່.</translation>
+<translation id="1755556344721611131">ແອັບການວິນິໄສ</translation>
 <translation id="1756833229520115364">ບໍ່ສາມາດບັນທຶກແມ່ແບບໄດ້. ມີໜ້າຈໍ ຫຼື ແຖບຫຼາຍເກີນໄປ.</translation>
 <translation id="1757857692711134412">ປິດຈົນກວ່າຕາເວັນຕົກ</translation>
 <translation id="1768366657309696705">ປ່ຽນປຸ່ມລັດແປ້ນພິມ <ph name="LAUNCHER_KEY_NAME" /> + ຈ້ຳເມັດ ແລ້ວ. ເພື່ອໃຊ້ປຸ່ມ Insert, ກະລຸນາກົດປຸ່ມ <ph name="LAUNCHER_KEY_NAME" /> + Shift + Backspace.</translation>
@@ -266,7 +268,6 @@
 <translation id="2148716181193084225">ມື້​ນີ້</translation>
 <translation id="2149229036084364364">ໄປຫາແທຣັກກ່ອນໜ້າ</translation>
 <translation id="2161132820593978283">ລອງໃຊ້ການວາງເຟຣມກ້ອງຖ່າຍຮູບເພື່ອໃຫ້ທ່ານຢູ່ກາງຈໍໃນເວລາໂທວິດີໂອ ເປີດໃຊ້ມັນໃນການຕັ້ງຄ່າດ່ວນ.</translation>
-<translation id="2165966740263283349">ການໃຊ້ບ່ອນຈັດເກັບຂໍ້ມູນ</translation>
 <translation id="2170530631236737939">ໃຊ້ສາມນິ້ວມືປັດລົງເພື່ອອອກຈາກພາບຮວມ</translation>
 <translation id="2185166372312820725">ໄປຫາແຖບກ່ອນນີ້</translation>
 <translation id="2185444992308415167">ເຂົ້າໄປແຖບ 1 ຫາ 8</translation>
@@ -474,6 +475,7 @@
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3113492864356515707">ໄຮໄລ້ລາຍການກ່ອນໜ້າຢູ່ຖ້ານ</translation>
 <translation id="3120421559657122717">ປິດອຸປະກອນບໍ?</translation>
+<translation id="3122464029669770682">CPU</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">ເລີ່ມການອັບເດດໃໝ່</translation>
 <translation id="3139188263101386725">ໃຊ້ທາງລັດທີ່ອັບເດດແລ້ວ</translation>
@@ -518,7 +520,6 @@
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> ສາມາດເຂົ້າສູ່ລະບົບໃນພາຍຫຼັງໄດ້ຄືເກົ່າ.</translation>
 <translation id="3321628682574733415">ລະຫັດພໍ່ແມ່ບໍ່ຖືກຕ້ອງ</translation>
 <translation id="332827762492701193">ການແຈ້ງເຕືອນຖືກເຊື່ອງໄວ້</translation>
-<translation id="3338855835380298613">ການໃຊ້ CPU</translation>
 <translation id="3339826665088060472">ຖ່າຍຮູບໜ້າຈໍ, ເຄື່ອງມືເພື່ອຖ່າຍຮູບໜ້າຈໍ ແລະ ການບັນທຶກໜ້າຈໍ</translation>
 <translation id="3340978935015468852">ການຕັ້ງຄ່າ</translation>
 <translation id="3341303451326249809">ຖ່າຍຮູບໜ້າຈໍແລ້ວ</translation>
@@ -642,7 +643,6 @@
 <translation id="3781910048497807059">ຍ້າຍໂຟກັສໄປຫາແຖບກ່ອນໜ້າ</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">ລັອກ</translation>
-<translation id="3796198851576711985">ປະສິດທິພາບຂອງແບັດເຕີຣີ</translation>
 <translation id="3796746699333205839">ມີແອັບພລິເຄຊັນກຳລັງໃຊ້ກ້ອງ ແລະ ໄມໂຄຣໂຟນຂອງທ່ານຢູ່</translation>
 <translation id="3798670284305777884">ລໍາໂພງ (ພາຍໃນ)</translation>
 <translation id="3799080171973636491">ທ່ານໄດ້ກົດປຸ່ມລັດແປ້ນພິມສຳລັບແວ່ນຂະຫຍາຍເຕັມຈໍແລ້ວ. ທ່ານຕ້ອງການເປີດມັນບໍ?</translation>
@@ -814,12 +814,10 @@
 <translation id="4527045527269911712">ອຸປະກອນ Bluetooth "<ph name="DEVICE_NAME" />" ຢາກໄດ້ການອະນຸຍາດຈັບຄູ່.</translation>
 <translation id="4533343294786968049">ການຍືດອາຍຸແບັດເຕີຣີຂອງທ່ານ. ແບັດເຕີຣີຈະເຕັມຕອນ <ph name="FULLY_CHARGE_TIME" />.</translation>
 <translation id="453661520163887813">ອີກ <ph name="TIME" /> ຈຶ່ງຈະເຕັມ</translation>
-<translation id="4536664881735498710">ການໃຊ້ RAM</translation>
 <translation id="4538824937723742295">ຖ່າຍຮູບໜ້າຈໍແບບເຕັມຈໍ</translation>
 <translation id="4539127209940689201">ພິມໜ້າປັດຈຸບັນ</translation>
 <translation id="4541706525461326392">ກຳລັງລຶບໂປຣໄຟລ໌ອອກ. ຂັ້ນຕອນນີ້ອາດໃຊ້ເວລາສອງສາມນາທີ.</translation>
 <translation id="4544483149666270818">ເລືອກໜ້າຈໍເພື່ອບັນທຶກ</translation>
-<translation id="454541942614298893">ອຸປະກອນຂອງຂ້ອຍ</translation>
 <translation id="4545950850562423083">ບັນທຶກໜ້າປັດຈຸບັນເປັນບຸກມາກ</translation>
 <translation id="4548482551627849548">ຍ້າຍໜ້າຈໍທີ່ເປີດນຳໃຊ້ຢູ່ໄປໃສ່ໂຕະຢູ່ທາງຊ້າຍ</translation>
 <translation id="4560576029703263363">ເປີດ</translation>
@@ -978,7 +976,6 @@
 <translation id="5208059991603368177">ເປີດ</translation>
 <translation id="5216991270656129561">ປິດຈົນຮອດ <ph name="TIME" /></translation>
 <translation id="5217646019792206018">ໂຕະຕໍ່ໄປ: <ph name="NEXT_DESK_NAME" />, ໃຊ້ປຸ່ມຊອກຫາ+ຍະຫວ່າງ ຫຼື ຄີລັດ: Shift+ຊອກຫາ+<ph name="NEXT_DESK_INDEX" /> ເພືຶ່ອເປີດໃຊ້.</translation>
-<translation id="5221423477036820198">ສົ່ງ ຫຼື ຕອບກັບຂໍ້ຄວາມໃນໂທລະສັບຂອງທ່ານຢ່າງວ່ອງໄວໂດຍໃຊ້ Phone Hub.</translation>
 <translation id="5222676887888702881">ອອກຈາກລະບົບ</translation>
 <translation id="5229343007215035173">ເປີດ/ປິດໜ້າຈໍຄວາມເປັນສ່ວນຕົວ</translation>
 <translation id="5234764350956374838">ປ່ອຍໄປ</translation>
@@ -1139,7 +1136,6 @@
 <translation id="589817443623831496">ການສະແກນຈຸດ</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5901630391730855834">ສີ​ເຫຼືອງ</translation>
-<translation id="5902162043476810127">ໜ່ວຍຄວາມຈຳເຂົ້າເຖິງແບບສຸ່ມ</translation>
 <translation id="5909862606227538307">ໂຕະທີ່ບໍ່ໄດ້ນຳໃຊ້.</translation>
 <translation id="5911231045062997865">ຕອນນີ້ບໍ່ຮອງຮັບໜ້າຈໍ Lacros ເທື່ອ. ແອັບອື່ນໆຈະຖືກບັນທຶກໄວ້.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
@@ -1543,7 +1539,6 @@
 <translation id="7724603315864178912">ຕັດ</translation>
 <translation id="7725108879223146004">ສະແດງລາຍລະອຽດຮັອດສະປອດ. ກຳລັງປິດຮັອດສະປອດ.</translation>
 <translation id="7727952505535211425">ເປີດເວັບໄຊໃນແຖບທີ່ຢູ່ໃນແຖບໃໝ່</translation>
-<translation id="77365090426890123">ການໃຊ້ໜ່ວຍຄວາມຈຳ</translation>
 <translation id="7742327441377685481">ບໍ່ມີການແຈ້ງເຕືອນ</translation>
 <translation id="7748275671948949022">ໄຮໄລ້ປຸ່ມຕົວເປີດໃຊ້ຢູ່ຖ້ານ</translation>
 <translation id="7749443890790263709">ຮອດຈຳນວນສູງສຸດຂອງພື້ນທີ່ເຮັດວຽກແລ້ວ</translation>
@@ -1795,7 +1790,6 @@
 <translation id="8853703225951107899">ຍັງບໍ່ສາມາດຢັ້ງຢືນ PIN ຫຼື ລະຫັດຜ່ານຂອງທ່ານໄດ້. ໝາຍເຫດ: ຖ້າທ່ານໄດ້ປ່ຽນລະຫັດຜ່ານຂອງທ່ານເມື່ອບໍ່ດົນມານີ້, ກະລຸນາໃຊ້ລະຫັດຜ່ານເກົ່າຂອງທ່ານ. ຈະມີການນຳໃຊ້ລະຫັດຜ່ານໃໝ່ຂອງທ່ານເມື່ອທ່ານອອກຈາກລະບົບແລ້ວ.</translation>
 <translation id="8855885154700222542">ປຸ່ມເຕັມຈໍ</translation>
 <translation id="8858369206579825206">ການຄວບຄຸມຄວາມເປັນສ່ວນຕົວ</translation>
-<translation id="8860817004574502558">ອາຍຸແບັດເຕີຣີ</translation>
 <translation id="8870509716567206129">ແອັບບໍ່ຮອງຮັບໜ້າຈໍແບບແຍກກັນ.</translation>
 <translation id="8874184842967597500">ບໍ່​ໄດ້​ເຊື່ອມ​ຕໍ່</translation>
 <translation id="8875021410787719674">ຍ້າຍລະຫວ່າງມຸມຂວາລຸ່ມ, ຕົວເປີດໃຊ້, ແຖບທີ່ຢູ່, ແຖບບຸກມາກ, ເວັບໄຊທີ່ເປີດ ແລະ ດາວໂຫຼດ</translation>
@@ -1848,6 +1842,7 @@
 <translation id="9080073830732419341">ແນບກ້ອງຖ່າຍຮູບໄປໃສ່ມຸມຊ້າຍເທິງແລ້ວ</translation>
 <translation id="9080132581049224423">ປັດຂຶ້ນເພື່ອໄປຫາໜ້າຫຼັກ</translation>
 <translation id="9080206825613744995">ໄມໂຄຣໂຟນໃຊ້ງານຢູ່.</translation>
+<translation id="9083324773537346962">ລຸ້ນ OS</translation>
 <translation id="908451241440060346">ປິດສຽງການແຈ້ງເຕືອນເມື່ອຄຸນສົມບັດຫ້າມລົບກວນເປີດຢູ່</translation>
 <translation id="9084606467167974638">ເປີດປິດຕຳແໜ່ງເມນູ</translation>
 <translation id="9085962983642906571">ແບັດເຕີຣີຂອງທ່ານຈະຖືກຮັກສາໄວ້ທີ່ 80% ໃນເວລາທີ່ສຽບໄຟເພື່ອຍືດອາຍຸແບັດເຕີຣີ.</translation>
@@ -1888,7 +1883,6 @@
 <translation id="951991426597076286">ປະຕິເສດ</translation>
 <translation id="953431725143473984">ປິດເຄື່ອງບໍ?</translation>
 <translation id="954052413789300507">ພື້ນທີ່ບໍ່ພຽງພໍສຳລັບ <ph name="FILENAME" />. ກະລຸນາສ້າງພື້ນທີ່ຫວ່າງກ່ອນ.</translation>
-<translation id="968627661524972577">ໃຊ້ແອັບຂອງທ່ານເພື່ອເຮັດທຸກຢ່າງທີ່ທ່ານຕ້ອງການຢູ່ Chromebook ຂອງທ່ານ. ທ່ານສາມາດຊອກຫາແອັບຂອງທ່ານໄດ້ໃນຕົວເປີດໃຊ້. ນອກຈາກນັ້ນ, ທ່ານຍັງສາມາດກົດປຸ່ມຕົວເປີດໃຊ້ຢູ່ແປ້ນພິມນີ້ໄດ້ນຳ.</translation>
 <translation id="974545358917229949">ສະແດງຜົນການຊອກຫາ <ph name="RESULT_COUNT" /> ລາຍການສຳລັບ <ph name="QUERY" /></translation>
 <translation id="98120814841227350">ໄປຫາທ້າຍເອກະສານ</translation>
 <translation id="987589956647469042">ອິນເຕີເນັດມືຖືເປີດຢູ່</translation>

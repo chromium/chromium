@@ -72,7 +72,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="2592940277904433508">Seguir usando Chromium</translation>
 <translation id="2648074677641340862">Se produjo un error del sistema operativo durante la instalación. Descarga Chromium nuevamente.</translation>
 <translation id="2661879430930417727">Si compartes un dispositivo, tus amigos y familiares podrán navegar de forma independiente y configurar Chromium según sus preferencias.</translation>
-<translation id="2669853942967761236">Chromium bloqueó este archivo porque es posible que ocultara software malicioso</translation>
 <translation id="268602741124540128">Bienvenido a Chromium, <ph name="ACCOUNT_FIRST_NAME" /></translation>
 <translation id="2711502716910134313">Pestaña de Chromium</translation>
 <translation id="2718390899429598676">Para mayor seguridad, Chromium encriptará los datos.</translation>
@@ -401,6 +400,5 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="942598560705308788">Certificados administrados por Chromium</translation>
 <translation id="965162752251293939">¿Quién usa Chromium?</translation>
 <translation id="967427899662692980">Obtén la seguridad más sólida de Chromium</translation>
-<translation id="9792300276217204">Siempre borrar los datos de sitios de tu dispositivo cuando cierras Chromium</translation>
 <translation id="985602178874221306">Los creadores de Chromium</translation>
 </translationbundle>

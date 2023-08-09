@@ -99,6 +99,7 @@
 <translation id="2621115761605608342">Benarkan JavaScript untuk tapak tertentu.</translation>
 <translation id="2653659639078652383">Serah</translation>
 <translation id="2677748264148917807">Tinggalkan</translation>
+<translation id="2678468611080193228">Cuba berikan kebenaran sementara untuk kuki pihak ketiga yang boleh mengurangkan perlindungan tetapi ciri laman lebih berkemungkinan untuk berfungsi</translation>
 <translation id="2687403674020088961">Sekat semua kuki (tidak disyorkan)</translation>
 <translation id="2713106313042589954">Matikan kamera</translation>
 <translation id="2717722538473713889">Alamat e-mel</translation>
@@ -138,6 +139,7 @@
 <translation id="3362437373201486687">Mengimbas peranti Bluetooth</translation>
 <translation id="3386292677130313581">Tanya sebelum membenarkan tapak mengetahui lokasi anda (disyorkan)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
+<translation id="344449859752187052">Kuki pihak ketiga disekat</translation>
 <translation id="3521663503435878242">Laman di bawah <ph name="DOMAIN" /></translation>
 <translation id="3538390592868664640">Sekat tapak daripada membuat peta 3D bagi persekitaran anda atau menjejaki kedudukan kamera</translation>
 <translation id="3544058026430919413">Syarikat boleh menentukan kumpulan laman yang boleh menggunakan kuki untuk berkongsi aktiviti anda dalam kumpulan. Tetapan ini dimatikan dalam Inkognito.</translation>
@@ -212,6 +214,7 @@
 <translation id="4962975101802056554">Batalkan semua kebenaran untuk peranti</translation>
 <translation id="497421865427891073">Ke hadapan</translation>
 <translation id="4976702386844183910">Terakhir dilawati <ph name="DATE" /></translation>
+<translation id="4985206706500620449">Anda membenarkan kuki pihak ketiga untuk laman ini</translation>
 <translation id="4994033804516042629">Tiada kenalan ditemui</translation>
 <translation id="4996978546172906250">Kongsi melalui</translation>
 <translation id="5001526427543320409">Kuki pihak ketiga</translation>
@@ -256,6 +259,7 @@
 <translation id="5677928146339483299">Disekat</translation>
 <translation id="5689516760719285838">Lokasi</translation>
 <translation id="5690795753582697420">Kamera dimatikan dalam tetapan Android</translation>
+<translation id="5700761515355162635">Kuki pihak ketiga dibenarkan</translation>
 <translation id="5706552988683188916">Tindakan ini memadamkan kuki dan data laman lain untuk <ph name="WEBSITE" /></translation>
 <translation id="5719847187258001597">Tindakan ini akan mengosongkan semua data dan kuki yang disimpan oleh <ph name="ORIGIN" /> atau oleh aplnya pada Skrin utama anda.</translation>
 <translation id="5723967018671998714">Kuki pihak ketiga disekat dalam mod Inkognito</translation>
@@ -303,6 +307,7 @@
 <translation id="6467852467360539617">Kosongkan data &amp; tetapkan semula kebenaran</translation>
 <translation id="6500423977866688905">Apabila tetingkap sempit, minta paparan mudah alih</translation>
 <translation id="6527303717912515753">Kongsi</translation>
+<translation id="652937045869844725">Cuba berikan kebenaran untuk kuki pihak ketiga yang boleh mengurangkan perlindungan tetapi ciri laman lebih berkemungkinan untuk berfungsi</translation>
 <translation id="6545864417968258051">Pengimbasan Bluetooth</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> dan <ph name="NUM_MORE" /> lagi disekat}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> dan <ph name="NUM_MORE" /> lagi disekat}}</translation>
 <translation id="6554732001434021288">Terakhir dilawati <ph name="NUM_DAYS" /> hari yang lalu</translation>
@@ -435,6 +440,7 @@
 <translation id="8736193154595564524">{NUM_SELECTED,plural, =1{1 laman dibenarkan}other{# laman dibenarkan}}</translation>
 <translation id="8737217482364735741">Tindakan ini akan mengosongkan semua data dan kuki yang disimpan oleh <ph name="ORIGIN" />.</translation>
 <translation id="8751914237388039244">Pilih imej</translation>
+<translation id="8800034312320686233">Tapak tidak berfungsi?</translation>
 <translation id="8801436777607969138">Sekat JavaScript untuk tapak tertentu.</translation>
 <translation id="8803526663383843427">Apabila dihidupkan</translation>
 <translation id="8805385115381080995">Penyemakan imbas akan menjadi lebih pantas kerana laman kurang berkemungkinan untuk meminta anda mengesahkan anda orang sebenar</translation>

@@ -63,6 +63,7 @@
 <translation id="1235458158152011030">معلوم نیٹ ورکس</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> منسلک ہے۔</translation>
 <translation id="1240638468526743569">ایک ایپ</translation>
+<translation id="1242883863226959074">آلہ</translation>
 <translation id="124678866338384709">موجودہ ٹیب بند کریں</translation>
 <translation id="1246890715821376239">غیر تعاون یافتہ ایپس</translation>
 <translation id="1247372569136754018">مائیکروفون (داخلی)</translation>
@@ -181,6 +182,7 @@
 <translation id="1747827819627189109">آن اسکرین کی بورڈ فعال ہے</translation>
 <translation id="1749109475624620922">ونڈو <ph name="WINDOW_TITLE" /> کو سبھی ڈیسکس پر تفویض کیا گیا</translation>
 <translation id="1750088060796401187">صرف <ph name="MAX_DESK_LIMIT" /> ڈیسکس کی اجازت ہے۔ نئی کھولنے کے لیے ڈیسک کو ہٹا دیں۔</translation>
+<translation id="1755556344721611131">تشخیصات کی ایپ</translation>
 <translation id="1756833229520115364">تمثیل محفوظ نہیں ہو سکی۔ بہت ساری ونڈوز یا ٹیبز۔</translation>
 <translation id="1757857692711134412">غروب آفتاب تک آف کریں</translation>
 <translation id="1768366657309696705">‏Period + <ph name="LAUNCHER_KEY_NAME" /> کی بورڈ شارٹ کٹ تبدیل ہو گیا ہے۔ انسرٹ کلید کا استعمال کرنے کیلئے <ph name="LAUNCHER_KEY_NAME" /> کلید + شفٹ + بیک اسپیس کو دبائیں۔</translation>
@@ -266,7 +268,6 @@
 <translation id="2148716181193084225">آج</translation>
 <translation id="2149229036084364364">پچھلے ٹریک پر جائیں</translation>
 <translation id="2161132820593978283">کیمرا فریمنگ کو آزمائیں تاکہ آپ ویڈیو کالز پر اسکرین کے وسط میں رہیں۔ فوری ترتیبات میں اسے آن کریں۔</translation>
-<translation id="2165966740263283349">اسٹوریج کا استعمال</translation>
 <translation id="2170530631236737939">مجموعی جائزے سے باہر نکلنے کے لیے تین انگلیوں سے نیچے سوائپ کریں</translation>
 <translation id="2185166372312820725">پچھلے ٹیب پر جائیں</translation>
 <translation id="2185444992308415167">ٹیبز 1 سے 8 تک جائیں</translation>
@@ -474,6 +475,7 @@
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (بلوٹوتھ)</translation>
 <translation id="3113492864356515707">گزشتہ آئٹم کو شیلف پر نمایاں کریں</translation>
 <translation id="3120421559657122717">آلہ بند کریں؟</translation>
+<translation id="3122464029669770682">CPU</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">اپ ڈیٹ کرنے کیلئے دوبارہ شروع کریں</translation>
 <translation id="3139188263101386725">اپ ڈیٹ کردہ شارٹ کٹ استعمال کریں</translation>
@@ -518,7 +520,6 @@
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> اب بھی بعد میں سائن ان کر سکتا ہے۔</translation>
 <translation id="3321628682574733415">والدین کا غلط کوڈ</translation>
 <translation id="332827762492701193">اطلاعات پوشیدہ ہیں</translation>
-<translation id="3338855835380298613">‏CPU کا استعمال</translation>
 <translation id="3339826665088060472">اسکرین کیپچر، اسکرین شاٹس لینے کے لیے ٹولز اور اسکرین ریکارڈنگز</translation>
 <translation id="3340978935015468852">ترتیبات</translation>
 <translation id="3341303451326249809">اسکرین شاٹ کیپچر ہو گیا</translation>
@@ -642,7 +643,6 @@
 <translation id="3781910048497807059">فوکس کو گزشتہ پین پر منتقل کریں</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">مقفل کریں</translation>
-<translation id="3796198851576711985">بیٹری کی صحت</translation>
 <translation id="3796746699333205839">ایک ایپلیکیشن آپ کا کیمرا اور مائیکروفون استعمال کر رہی ہے</translation>
 <translation id="3798670284305777884">اسپیکر (داخلی)</translation>
 <translation id="3799080171973636491">آپ نے پوری اسکرین کے مکبّر کیلئے کی بورڈ شارٹ کٹ دبایا ہے۔ کیا آپ اسے آن کرنا چاہتے ہیں؟</translation>
@@ -814,12 +814,10 @@
 <translation id="4527045527269911712">بلوٹوتھ آلہ "<ph name="DEVICE_NAME" />" جوڑا بنانے کی اجازت چاہتا ہے۔</translation>
 <translation id="4533343294786968049">آپ کی بیٹری کی لائف کی توسیع کرنا۔ <ph name="FULLY_CHARGE_TIME" /> تک بیٹری مکمل طور پر چارج ہو جائے گی۔</translation>
 <translation id="453661520163887813">مکمل ہونے میں <ph name="TIME" /> باقی</translation>
-<translation id="4536664881735498710">‏RAM کا استعمال</translation>
 <translation id="4538824937723742295">فُل اسکرین کا اسکرین شاٹ لیں</translation>
 <translation id="4539127209940689201">موجودہ صفحہ پرنٹ کریں</translation>
 <translation id="4541706525461326392">پروفائل ہٹائی جا رہی ہے۔ اس میں چند منٹ لگ سکتے ہیں۔</translation>
 <translation id="4544483149666270818">ریکارڈ کرنے کیلئے ایک ونڈو منتخب کریں</translation>
-<translation id="454541942614298893">میرا آلہ</translation>
 <translation id="4545950850562423083">موجودہ صفحہ کو بُک مارک کے طور پر محفوظ کریں</translation>
 <translation id="4548482551627849548">فعال ونڈو کو بائیں ڈیسک کی طرف منتقل کریں</translation>
 <translation id="4560576029703263363">آن</translation>
@@ -978,7 +976,6 @@
 <translation id="5208059991603368177">آن</translation>
 <translation id="5216991270656129561"><ph name="TIME" /> تک آف</translation>
 <translation id="5217646019792206018">‏اگلا ڈیسک: <ph name="NEXT_DESK_NAME" />، فعال کرنے کے لیے Search+Space یا کی بورڈ شارٹ کٹ: Shift+Search+<ph name="NEXT_DESK_INDEX" /> استعمال کریں۔</translation>
-<translation id="5221423477036820198">فون ہب کا استعمال کر کے اپنے فون کے پیغامات کو تیزی سے بھیجیں یا ان پیغامات کا تیزی سے جواب دیں۔</translation>
 <translation id="5222676887888702881">سائن آؤٹ</translation>
 <translation id="5229343007215035173">رازداری کی اسکرین آن/آف کریں</translation>
 <translation id="5234764350956374838">برخاست کریں</translation>
@@ -1139,7 +1136,6 @@
 <translation id="589817443623831496">پوائنٹ اسکیننگ</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5901630391730855834">پیلا</translation>
-<translation id="5902162043476810127">میموری تک بے ترتیب رسائی</translation>
 <translation id="5909862606227538307">غیر فعال ڈیسک۔</translation>
 <translation id="5911231045062997865">‏Lacros windows فی الحال تعاون یافتہ نہیں ہیں۔ دیگر ایپس کو محفوظ کیا جائے گا۔</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
@@ -1542,7 +1538,6 @@
 <translation id="7724603315864178912">کٹ کریں</translation>
 <translation id="7725108879223146004">ہاٹ اسپاٹ کی تفصیلات دکھائیں۔ ہاٹ اسپاٹ آف ہو رہا ہے۔</translation>
 <translation id="7727952505535211425">ایڈریس بار میں ویب سائٹ کو ایک نئے ٹیب میں کھولیں</translation>
-<translation id="77365090426890123">میموری کا استعمال</translation>
 <translation id="7742327441377685481">کوئی اطلاع نہیں ہے</translation>
 <translation id="7748275671948949022">لانچر بٹن کو شیلف پر نمایاں کریں</translation>
 <translation id="7749443890790263709">ڈیسکس کی زیادہ سے زیادہ تعداد تک پہنچ گئی۔</translation>
@@ -1794,7 +1789,6 @@
 <translation id="8853703225951107899">‏آپ کے PIN یا پاس ورڈ کی توثیق ابھی بھی نہیں کی جا سکی۔ نوٹ: اگر آپ نے حال ہی میں اپنا پاس ورڈ تبدیل کیا ہے تو اپنا پرانا پاس ورڈ استعمال کریں۔ آپ کے سائن آؤٹ ہونے کے بعد آپ کا نیا پاس ورڈ لاگو ہوگا۔</translation>
 <translation id="8855885154700222542">پوری اسکرین کی کلید</translation>
 <translation id="8858369206579825206">رازداری سے متعلق کنٹرولز</translation>
-<translation id="8860817004574502558">بیٹری لائف</translation>
 <translation id="8870509716567206129">ایپ اسپلٹ اسکرین کو سپورٹ نہیں کرتی ہے۔</translation>
 <translation id="8874184842967597500">منسلک نہیں</translation>
 <translation id="8875021410787719674">نیچے دائیں کونے، لانچر، ایڈریس بار، بُک مارکس بار، کھلی ہوئی ویب سائٹ اور ڈاؤن لوڈز کے درمیان منتقل ہوں</translation>
@@ -1847,6 +1841,7 @@
 <translation id="9080073830732419341">کیمرا اوپری بائیں کونے میں اسنیپ کیا گیا ہے</translation>
 <translation id="9080132581049224423">ہوم پر جانے کے لیے اوپر سوائپ کریں</translation>
 <translation id="9080206825613744995">مائیکروفون زیر استعمال ہے۔</translation>
+<translation id="9083324773537346962">‏OS ورژن</translation>
 <translation id="908451241440060346">'ڈسٹرب نہ کریں' کے آن ہونے پر اطلاعات کی آواز سنائی نہیں دیتی ہے</translation>
 <translation id="9084606467167974638">مینیو پوزیشن کو ٹوگل کریں</translation>
 <translation id="9085962983642906571">بیٹری لائف بڑھانے کے لیے پلگ ان کے دوران آپ کی بیٹری عارضی طور پر 80 فیصد پر رکھی جاتی ہے۔</translation>
@@ -1887,7 +1882,6 @@
 <translation id="951991426597076286">مسترد کریں</translation>
 <translation id="953431725143473984">آلہ کو شٹ ڈاؤن کریں؟</translation>
 <translation id="954052413789300507"><ph name="FILENAME" /> کے لیے کافی جگہ نہیں ہے۔ جگہ خالی کریں۔</translation>
-<translation id="968627661524972577">‏اپنے Chromebook پر اپنی ضرورت کی ہر چیز کرنے کے لیے ایپس کا استعمال کریں۔ آپ لانچر میں اپنی ایپس تلاش کر سکتے ہیں۔ آپ کی بورڈ پر لانچر کلید کو بھی دبا سکتے ہیں۔</translation>
 <translation id="974545358917229949"><ph name="QUERY" /> کے <ph name="RESULT_COUNT" /> نتائج دکھائے جا رہے ہیں</translation>
 <translation id="98120814841227350">دستاویز کے آخر میں جائیں</translation>
 <translation id="987589956647469042">موبائل ڈیٹا آن ہے</translation>

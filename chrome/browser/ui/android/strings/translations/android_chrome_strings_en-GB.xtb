@@ -495,6 +495,7 @@ Private state tokens improve privacy on the web and can’t be used to find out 
 <translation id="3692944402865947621"><ph name="FILE_NAME" /> download failed because storage location is not reachable.</translation>
 <translation id="3697705478071004188">Sort by site</translation>
 <translation id="3699022356773522638">Download file?</translation>
+<translation id="3701515417135397388">Warn you if a password was compromised in a data breach</translation>
 <translation id="371230970611282515">Predicts and warns you about dangerous events before they happen.</translation>
 <translation id="3714981814255182093">Open the Find Bar</translation>
 <translation id="3716182511346448902">This page uses too much memory, so Chrome paused it.</translation>
@@ -520,6 +521,7 @@ Private state tokens improve privacy on the web and can’t be used to find out 
 <translation id="3819183753496523827">You're offline. Check your Internet connection and try again.</translation>
 <translation id="3830886834687455630">Update Google Play services to check your passwords</translation>
 <translation id="3845098929839618392">Open in Incognito tab</translation>
+<translation id="3847319713229060696">Help improve security on the web for everyone</translation>
 <translation id="3856096718352044181">Please verify that this is a valid provider or try again later</translation>
 <translation id="3858860766373142691">Name</translation>
 <translation id="3874520961715512166">Site removed</translation>
@@ -530,6 +532,7 @@ Private state tokens improve privacy on the web and can’t be used to find out 
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> is on</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">Combine my data</translation>
+<translation id="3931947361983910192">last 4 weeks</translation>
 <translation id="3932390316856284148">Sign-in bottom sheet opened at full height.</translation>
 <translation id="3934366560681368531">'</translation>
 <translation id="393697183122708255">No enabled voice search available</translation>
@@ -540,6 +543,7 @@ Private state tokens improve privacy on the web and can’t be used to find out 
 <translation id="3963007978381181125">Passphrase encryption doesn’t include payment methods and addresses from Google Pay. Only someone with your passphrase can read your encrypted data. The passphrase is not sent to or stored by Google. If you forget your passphrase or want to change this setting, you'll need to reset sync. <ph name="BEGIN_LINK" />Find out more<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">Chrome can’t check your passwords</translation>
 <translation id="3969863827134279083">Move Up</translation>
+<translation id="397105322502079400">Calculating...</translation>
 <translation id="397583555483684758">Sync has stopped working</translation>
 <translation id="3976396876660209797">Remove and recreate this shortcut</translation>
 <translation id="3981902534690264083">Advertisers can understand how ads perform</translation>
@@ -840,6 +844,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5524761631371622910">When trials are on and if Chrome has randomly placed you in an active trial, your browsing history affects the ads that you see and the interests as estimated below. To protect your privacy, Chrome deletes your interests on a rolling basis each month.</translation>
 <translation id="5524843473235508879">Redirect blocked.</translation>
 <translation id="5548606607480005320">Safety check</translation>
+<translation id="5554520618550346933">When you use a password, Chrome warns you if it has been published online. When doing this, your passwords and usernames are encrypted, so they can’t be read by anyone, including Google.</translation>
 <translation id="5555525474779371165">Choose your Safe Browsing protection</translation>
 <translation id="5556459405103347317">Reload</translation>
 <translation id="555816257274242153">Stopped tracking price</translation>
@@ -1056,7 +1061,6 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="663674369910034433">For more settings that relate to privacy, security and data collection, see <ph name="BEGIN_LINK1" />Sync<ph name="END_LINK1" /> and <ph name="BEGIN_LINK2" />Google services<ph name="END_LINK2" /></translation>
 <translation id="6637100877383020115">To help improve the app, Chrome sends usage and crash data to Google. <ph name="BEGIN_UMA_LINK" />Manage<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">Block all the time</translation>
-<translation id="664050863900079109">Read Aloud</translation>
 <translation id="6641780377503683465">Remove <ph name="INTEREST" /></translation>
 <translation id="6643016212128521049">Clear</translation>
 <translation id="6645629752388991326">Control which devices can sign in by using this device as a security key.</translation>
@@ -1156,7 +1160,6 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="7138678301420049075">Other</translation>
 <translation id="7146622961999026732">These sites and apps seem important to you:</translation>
 <translation id="7149893636342594995">Last 24 Hours</translation>
-<translation id="7152808996372201178">Read aloud supported pages. To edit this shortcut, touch and hold.</translation>
 <translation id="7155317020660659215">To scan a QR code, change your settings so that Chrome can use your camera</translation>
 <translation id="7168323970702333693">Signed in as <ph name="USER_NAME" />. Opens settings.</translation>
 <translation id="7173114856073700355">Open settings</translation>
@@ -1525,6 +1528,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="8996847606757455498">Choose another provider</translation>
 <translation id="8998289560386111590">Not available on your device</translation>
 <translation id="8998729206196772491">You are signing in with an account managed by <ph name="MANAGED_DOMAIN" /> and giving its administrator control over your Chrome data. Your data will become permanently tied to this account. Signing out of Chrome will delete your data from this device, but it will remain stored in your Google Account.</translation>
+<translation id="9012585441087414258">Protects against sites, downloads and extensions that are known to be dangerous. If a page does something suspicious, URLs and bits of page content are sent to Google Safe Browsing.</translation>
 <translation id="9022774213089566801">Frequently visited</translation>
 <translation id="9022871169049522985">Sites and advertisers can measure the performance of their ads</translation>
 <translation id="9035378196785279980">Move to\u2026</translation>

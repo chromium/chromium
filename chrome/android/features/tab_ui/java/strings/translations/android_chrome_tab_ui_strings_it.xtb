@@ -3,7 +3,6 @@
 <translationbundle lang="it">
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> delle tue schede non sono state usate ultimamente. Vuoi chiuderle?</translation>
 <translation id="125153950246128346">Tocca per visualizzare un'altra scheda</translation>
-<translation id="1455506303394048917">La tua attività in queste schede di navigazione in incognito verrà cancellata da questo dispositivo</translation>
 <translation id="1499635324672558517">Chiudere tutte le schede di navigazione in incognito?</translation>
 <translation id="1657719826150349398">Sposta scheda in basso</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> scheda}other{<ph name="TABS_COUNT_MANY" /> schede}}</translation>

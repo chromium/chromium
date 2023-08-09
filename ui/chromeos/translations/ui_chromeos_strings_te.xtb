@@ -166,7 +166,6 @@
 <translation id="2312704192806647271">{COUNT,plural, =1{IDతో <ph name="BEGIN_LIST" /><ph name="END_LIST" /> ఎక్స్‌టెన్షన్‌ను కనుగొనడం సాధ్యం కాదు. మీ అడ్మినిస్ట్రేటర్‌ను కాంటాక్ట్ చేయండి.}other{IDలతో <ph name="BEGIN_LIST" /><ph name="END_LIST" /> ఎక్స్‌టెన్షన్‌లను కనుగొనడం సాధ్యం కాదు. మీ అడ్మినిస్ట్రేటర్‌ను కాంటాక్ట్ చేయండి.}}</translation>
 <translation id="2325650632570794183">ఈ ఫైల్ రకానికి మద్దతు లేదు. దయచేసి ఈ రకమైన ఫైల్‌ను తెరవగల యాప్‌ను కనుగొనడానికి Chrome వెబ్ స్టోర్‌ను సందర్శించండి.</translation>
 <translation id="2326539130272988168">బల్గేరియన్</translation>
-<translation id="2337715497728194187">Bruschettaతో షేర్ చేయండి</translation>
 <translation id="233822363739146957">మీ అన్ని ఫైళ్లను సింక్ చేయడానికి తగినంత స్టోరేజ్ స్పేస్ లేదు</translation>
 <translation id="23721837607121582"><ph name="NETWORK_NAME" />, <ph name="NETWORK_COUNT" />లో <ph name="NETWORK_INDEX" />వ నెట్‌వర్క్ మొబైల్ ప్రొఫైల్‌ను డౌన్‌లోడ్ చేయండి</translation>
 <translation id="2377319039870049694">లిస్ట్‌ వీక్షణకు మార్చు</translation>
@@ -197,7 +196,6 @@
 <translation id="2544853746127077729">ప్రామాణీకరణ ప్రమాణపత్రం నెట్‌వర్క్ ద్వారా తిరస్కరించబడింది</translation>
 <translation id="255937426064304553">యుఎస్ అంతర్జాతీయం</translation>
 <translation id="2563185590376525700">కప్ప</translation>
-<translation id="2574327434504608656">Bruschettaతో 1 ఫోల్డర్ షేర్ చేయబడింది</translation>
 <translation id="2578394532502990878">తమిళం ఫొనెటిక్</translation>
 <translation id="2579959351793446050">ఒడియా</translation>
 <translation id="2587195714949534472"><ph name="FILE_NAME" />ని సింక్ చేయడానికి సిద్ధం చేస్తోంది...</translation>
@@ -297,7 +295,6 @@
 <translation id="3408072735282270043"><ph name="NETWORK_NAME" />, యాక్టివేట్ చేయి</translation>
 <translation id="3408236822532681288">నియో 2 కీబోర్డ్‌తో జర్మన్ (జర్మనీ)</translation>
 <translation id="3414856743105198592">తొలగించగల మీడియాను ఫార్మాట్ చేయడం వలన మొత్తం డేటా తుడిచి వేయబడుతుంది. మీరు కొనసాగించాలనుకుంటున్నారా?</translation>
-<translation id="3435143625481187092"><ph name="FOLDER_NAME" /> ఫోల్డర్‌లో ఉన్న ఫైల్స్‌ను యాక్సెస్ చేయడానికి Bruschettaకు అనుమతినివ్వండి</translation>
 <translation id="3437801641691368414">క్రియేట్ చేసిన సమయం</translation>
 <translation id="343907260260897561">ఇన్‌స్టంట్ కెమెరా</translation>
 <translation id="3455931012307786678">ఎస్టోనియన్</translation>
@@ -385,7 +382,6 @@
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> తరలించబడింది.</translation>
 <translation id="4176286497474237543">ఇప్పుడే ట్రాష్‌ను ఖాళీ చేయండి</translation>
 <translation id="4179621117429069925">ఈ ఐటెమ్ మీ ట్రాష్‌లో ఉంది</translation>
-<translation id="4181839429935094755">Bruschettaతో <ph name="NUMBER_OF_ITEMS" /> ఫోల్డర్‌లు షేర్ చేయబడ్డాయి</translation>
 <translation id="4186579485882418952">ఆఫ్‌లైన్ మోడ్‌ను ఎనేబుల్ చేయి</translation>
 <translation id="4193154014135846272">Google డాక్యుమెంట్‌</translation>
 <translation id="4197674956721858839">జిప్ ఎంపిక</translation>
@@ -452,7 +448,6 @@
 <translation id="4646813851450205600">Qwerty కీబోర్డ్‌తో చెక్(Czech)</translation>
 <translation id="4656777537938206294">ఫైళ్లను ఆఫ్‌లైన్‌లో అందుబాటులో ఉంచండి</translation>
 <translation id="4658782175094886150">మంచు ప్రదేశంలో ఉన్న వ్యక్తి</translation>
-<translation id="466782788172479199">మీ Google Driveలోని ఫైల్స్‌ను యాక్సెస్ చేయడానికి Bruschettaకు అనుమతినివ్వండి. మార్పులు మీ ఇతర పరికరాలలో కూడా సింక్ చేయబడతాయి.</translation>
 <translation id="4669606053856530811">'<ph name="SOURCE_NAME" />' యొక్క సభ్యులతో ఈ అంశాలను షేర్ చేస్తే మినహా వారు యాక్సెస్‌ను కోల్పోతారు.</translation>
 <translation id="467809019005607715">Google Slides</translation>
 <translation id="4690246192099372265">స్వీడిష్</translation>
@@ -564,7 +559,6 @@
 <translation id="5323213332664049067">లాటిన్ అమెరికన్</translation>
 <translation id="5330145655348521461">ఈ ఫైల్స్ వేరే డెస్క్‌టాప్‌లో తెరవబడ్డాయి. దీన్ని చూడటానికి <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />)కు తరలించండి.</translation>
 <translation id="5330512191124428349">సమాచారం పొందండి</translation>
-<translation id="5344246330454251646">Bruschetta షేరింగ్‌ను మేనేజ్ చేయండి</translation>
 <translation id="535792325654997756">పిల్లులతో ఉన్న వ్యక్తి</translation>
 <translation id="5358764674931277">ఫ్రేమ్ రేట్</translation>
 <translation id="5363339716524495120">ఇన్‌పుట్ భాష చైనీస్</translation>
@@ -732,7 +726,6 @@
 <translation id="6710213216561001401">మునుపటి</translation>
 <translation id="6732801395666424405">ప్రమాణపత్రాలు లోడ్ కాలేదు</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
-<translation id="6740270213273127264">Bruschettaతో ఫోల్డర్‌ను షేర్ చేయండి</translation>
 <translation id="6750737795876287924">ప్రస్తుత డైరెక్టరీ</translation>
 <translation id="6751256176799620176">1 ఫోల్డర్ ఎంచుకోబడింది</translation>
 <translation id="6755827872271341378">ChromeOS Flex పరికరం</translation>

@@ -63,6 +63,7 @@
 <translation id="1235458158152011030">જાણીતા નેટવર્ક્સ</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> કનેક્ટ કરેલું છે.</translation>
 <translation id="1240638468526743569">ઍપ</translation>
+<translation id="1242883863226959074">ડિવાઇસ</translation>
 <translation id="124678866338384709">વર્તમાન ટૅબ બંધ કરો</translation>
 <translation id="1246890715821376239">સપોર્ટ ન કરવામાં આવતી ઍપ</translation>
 <translation id="1247372569136754018">માઇક્રોફોન (આંતરિક)</translation>
@@ -181,6 +182,7 @@
 <translation id="1747827819627189109">ઓન-સ્ક્રીન કીબોર્ડ સક્ષમ કર્યું</translation>
 <translation id="1749109475624620922"><ph name="WINDOW_TITLE" /> વિન્ડોની સોંપણી બધા ડેસ્કને કરવામાં આવી છે</translation>
 <translation id="1750088060796401187">માત્ર <ph name="MAX_DESK_LIMIT" /> ડેસ્કની મંજૂરી આપવામાં આવી છે. નવી ડેસ્ક ખોલવા માટે, એક ડેસ્ક કાઢી નાખો.</translation>
+<translation id="1755556344721611131">ડાયગ્નોસ્ટિક્સ ઍપ</translation>
 <translation id="1756833229520115364">નમૂનો સાચવી ન શક્યાં. ઘણી બધી વિન્ડો અને ટૅબ છે.</translation>
 <translation id="1757857692711134412">સૂર્યાસ્ત સુધી બંધ રાખો</translation>
 <translation id="1768366657309696705"><ph name="LAUNCHER_KEY_NAME" /> + Period કીનો કીબોર્ડ શૉર્ટકટ બદલવામાં આવ્યો છે. Insert કીનો ઉપયોગ કરવા માટે, <ph name="LAUNCHER_KEY_NAME" /> + Shift + Backspace કી દબાવો.</translation>
@@ -266,7 +268,6 @@
 <translation id="2148716181193084225">આજે</translation>
 <translation id="2149229036084364364">પાછલા ટ્રૅક પર જાઓ</translation>
 <translation id="2161132820593978283">કૅમેરા ફ્રેમિંગ અજમાવી જુઓ, જેથી તમે વીડિયો કૉલમાં સ્ક્રીનની મધ્યમાં રહેશો. ઝડપી સેટિંગમાં જઈને તેને ચાલુ કરો.</translation>
-<translation id="2165966740263283349">સ્ટોરેજનો વપરાશ</translation>
 <translation id="2170530631236737939">ઓવરવ્યૂમાંથી બહાર નીકળવા માટે, ત્રણ આંગળી વડે નીચેની તરફ સ્વાઇપ કરો</translation>
 <translation id="2185166372312820725">પાછલી ટૅબ પર જાઓ</translation>
 <translation id="2185444992308415167">ટૅબ 1થી 8 પર જાઓ</translation>
@@ -474,6 +475,7 @@
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3113492864356515707">શેલ્ફ પર પાછલી આઇટમ હાઇલાઇટ કરો</translation>
 <translation id="3120421559657122717">શું ડિવાઇસને શટ ડાઉન કરીએ?</translation>
+<translation id="3122464029669770682">CPU</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">અપડેટ કરવા માટે પુનઃપ્રારંભ કરો</translation>
 <translation id="3139188263101386725">અપડેટ કરેલા શૉર્ટકટનો ઉપયોગ કરો</translation>
@@ -518,7 +520,6 @@
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> હજીએ થોડા સમય પછી સાઇન ઇન કરી શકશે.</translation>
 <translation id="3321628682574733415">માતાપિતાનો કોડ ખોટો</translation>
 <translation id="332827762492701193">નોટિફિકેશન છુપાવેલા છે</translation>
-<translation id="3338855835380298613">CPUનો વપરાશ</translation>
 <translation id="3339826665088060472">સ્ક્રીન કૅપ્ચર, સ્ક્રીનશૉટ લેવા અને સ્ક્રીન રેકોર્ડિંગ કરવા માટેના ટૂલ છે</translation>
 <translation id="3340978935015468852">સેટિંગ</translation>
 <translation id="3341303451326249809">સ્ક્રીનશૉટ કૅપ્ચર કર્યો</translation>
@@ -642,7 +643,6 @@
 <translation id="3781910048497807059">ફોકસને પાછળના વિભાગ પર ખસેડો</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">લૉક છે</translation>
-<translation id="3796198851576711985">બૅટરીની અવસ્થા</translation>
 <translation id="3796746699333205839">કોઈ ઍપ્લિકેશન તમારા કૅમેરા અને માઇક્રોફોનનો ઉપયોગ કરી રહી છે</translation>
 <translation id="3798670284305777884">સ્પીકર (આંતરિક)</translation>
 <translation id="3799080171973636491">તમે પૂર્ણ-સ્ક્રીન મેગ્નિફાયર માટેનો કીબોર્ડ શૉર્ટકટ દબાવેલ છે. શું તમે તેને ચાલુ કરવા માગો છો?</translation>
@@ -814,12 +814,10 @@
 <translation id="4527045527269911712">Bluetooth ડિવાઇસ "<ph name="DEVICE_NAME" />" ને જોડી બનાવવા માટે પરવાનગી જોઈએ છે.</translation>
 <translation id="4533343294786968049">તમારી બૅટરીની આવરદા વધારી રહ્યાં છીએ. બૅટરી <ph name="FULLY_CHARGE_TIME" /> વાગ્યા સુધીમાં પૂરી ચાર્જ થઈ જશે.</translation>
 <translation id="453661520163887813">પૂર્ણપણે ચાર્જ થવામાં <ph name="TIME" /></translation>
-<translation id="4536664881735498710">RAMનો વપરાશ</translation>
 <translation id="4538824937723742295">પૂર્ણ સ્ક્રીનનો સ્ક્રીનશૉટ લો</translation>
 <translation id="4539127209940689201">વર્તમાન પેજ પ્રિન્ટ કરો</translation>
 <translation id="4541706525461326392">પ્રોફાઇલ કાઢી નાખી રહ્યાં છીએ. આમાં થોડો સમય લાગી શકે છે.</translation>
 <translation id="4544483149666270818">રેકોર્ડ કરવા માટે વિન્ડો પસંદ કરો</translation>
-<translation id="454541942614298893">મારું ડિવાઇસ</translation>
 <translation id="4545950850562423083">વર્તમાન પેજને બુકમાર્ક તરીકે સાચવો</translation>
 <translation id="4548482551627849548">સક્રિય વિન્ડોને ડાબી બાજુએ ડેસ્ક પર ખસેડો</translation>
 <translation id="4560576029703263363">ચાલુ</translation>
@@ -978,7 +976,6 @@
 <translation id="5208059991603368177">ચાલુ</translation>
 <translation id="5216991270656129561"><ph name="TIME" /> સુધી બંધ રાખો</translation>
 <translation id="5217646019792206018">આગલું ડેસ્ક: <ph name="NEXT_DESK_NAME" />, સક્રિય કરવા માટે Search+Space અથવા કીબોર્ડ શૉર્ટકટ: Shift+Search+<ph name="NEXT_DESK_INDEX" />નો ઉપયોગ કરો.</translation>
-<translation id="5221423477036820198">ફોન હબનો ઉપયોગ કરીને તમારા ફોન પરથી ઝડપથી મેસેજ મોકલો અથવા તેમનો જવાબ આપો.</translation>
 <translation id="5222676887888702881">સાઇન આઉટ</translation>
 <translation id="5229343007215035173">પ્રાઇવસી સ્ક્રીન ચાલુ/બંધ કરો</translation>
 <translation id="5234764350956374838">કાઢી નાખો</translation>
@@ -1139,7 +1136,6 @@
 <translation id="589817443623831496">પૉઇન્ટ સ્કૅનિંગ</translation>
 <translation id="5901316534475909376">Shift + Esc</translation>
 <translation id="5901630391730855834">પીળો</translation>
-<translation id="5902162043476810127">રેન્ડમ ઍક્સેસ મેમરી</translation>
 <translation id="5909862606227538307">નિષ્ક્રિય ડેસ્કટૉપ.</translation>
 <translation id="5911231045062997865">Lacros વિન્ડોને હાલમાં સપોર્ટ કરવામાં આવતો નથી. અન્ય ઍપ સાચવવામાં આવશે.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
@@ -1543,7 +1539,6 @@
 <translation id="7724603315864178912">કાપો</translation>
 <translation id="7725108879223146004">હૉટસ્પૉટની વિગતો બતાવો. હૉટસ્પૉટ બંધ કરવામાં આવ્યું છે.</translation>
 <translation id="7727952505535211425">નવા ટૅબમાં ઍડ્રેસ બારમાં વેબસાઇટ ખોલો</translation>
-<translation id="77365090426890123">મેમરીનો વપરાશ</translation>
 <translation id="7742327441377685481">કોઈ નોટિફિકેશન નથી</translation>
 <translation id="7748275671948949022">શેલ્ફ પર લૉન્ચર બટનને હાઇલાઇટ કરો</translation>
 <translation id="7749443890790263709">ડેસ્કની મહત્તમ સંખ્યા પર પહોંચી ગયા.</translation>
@@ -1795,7 +1790,6 @@
 <translation id="8853703225951107899">તમારો પિન કે પાસવર્ડ હજી પણ ચકાસી શકાયો નથી. નોંધ: જો તમે તમારો પાસવર્ડ તાજેતરમાં બદલ્યો હોય, તો તમારા જૂના પાસવર્ડનો ઉપયોગ કરો. એકવાર તમે સાઇન આઉટ કરો, તે પછી તમારો નવો પાસવર્ડ લાગુ કરવામાં આવશે.</translation>
 <translation id="8855885154700222542">પૂર્ણસ્ક્રીન કી</translation>
 <translation id="8858369206579825206">પ્રાઇવસીને લગતાં નિયંત્રણ</translation>
-<translation id="8860817004574502558">બૅટરી આવરદા</translation>
 <translation id="8870509716567206129">ઍપ સ્ક્રીન-વિભાજનને સહાય કરતી નથી.</translation>
 <translation id="8874184842967597500">કનેક્ટ નથી</translation>
 <translation id="8875021410787719674">સૌથી નીચેના જમણા ખૂણા, લૉન્ચર, ઍડ્રેસ બાર, બુકમાર્ક બાર, ખુલ્લી હોય તે વેબસાઇટ અને ડાઉનલોડ વચ્ચે ખસેડો</translation>
@@ -1848,6 +1842,7 @@
 <translation id="9080073830732419341">કૅમેરાને ઉપરના ડાબા ખૂણામાં સ્નેપ કર્યો</translation>
 <translation id="9080132581049224423">હોમ પર જવા માટે ઉપર સ્વાઇપ કરો</translation>
 <translation id="9080206825613744995">માઇકોફોન ઉપયોગમાં છે.</translation>
+<translation id="9083324773537346962">OS વર્ઝન</translation>
 <translation id="908451241440060346">'ખલેલ પાડશો નહીં' સુવિધા ચાલુ હોય ત્યારે નોટિફિકેશન મ્યૂટ કરેલા હોય છે</translation>
 <translation id="9084606467167974638">મેનૂની સ્થિતિને ટૉગલ કરો</translation>
 <translation id="9085962983642906571">તમારી બૅટરીની આવરદા વધારવા માટે તે પ્લગ-ઇન કરેલી હોય ત્યારે તેને 80% ચાર્જ થયેલી રાખવામાં આવે છે.</translation>
@@ -1888,7 +1883,6 @@
 <translation id="951991426597076286">નકારો</translation>
 <translation id="953431725143473984">ડિવાઇસ શટ ડાઉન કરીએ?</translation>
 <translation id="954052413789300507"><ph name="FILENAME" /> માટે પર્યાપ્ત સ્પેસ નથી. સ્પેસ ખાલી કરો.</translation>
-<translation id="968627661524972577">તમારી Chromebook પર તમને જે પણ કરવાની જરૂર હોય તે દરેક વસ્તુ કરવા માટે ઍપનો ઉપયોગ કરો. તમે લૉન્ચરમાં તમારી ઍપ મેળવી શકો છો. તમે કીબોર્ડ પરની લૉન્ચર કીને પણ દબાવી શકો છો.</translation>
 <translation id="974545358917229949"><ph name="QUERY" /> માટે <ph name="RESULT_COUNT" /> પરિણામ બતાવી રહ્યાં છીએ</translation>
 <translation id="98120814841227350">દસ્તાવેજના અંતે જાઓ</translation>
 <translation id="987589956647469042">મોબાઇલ ડેટા ચાલુ કરેલો છે</translation>

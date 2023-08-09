@@ -63,6 +63,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1235458158152011030">Rrjetet e njohura</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> është lidhur.</translation>
 <translation id="1240638468526743569">Një aplikacion</translation>
+<translation id="1242883863226959074">pajisja</translation>
 <translation id="124678866338384709">Mbyll skedën aktuale</translation>
 <translation id="1246890715821376239">Aplikacionet e pambështetura</translation>
 <translation id="1247372569136754018">Mikrofoni (i brendshëm)</translation>
@@ -181,6 +182,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1747827819627189109">Tastiera në ekran u aktivizua</translation>
 <translation id="1749109475624620922">Dritarja <ph name="WINDOW_TITLE" /> u caktua për të gjitha tavolinat e punës</translation>
 <translation id="1750088060796401187">Lejohen vetëm <ph name="MAX_DESK_LIMIT" /> tavolina pune. Hiq një tavolinë pune për të hapur një të re.</translation>
+<translation id="1755556344721611131">Aplikacioni i diagnostikimit</translation>
 <translation id="1756833229520115364">Shablloni nuk mund të ruhej. Shumë dritare ose skeda.</translation>
 <translation id="1757857692711134412">Joaktive deri në perëndim</translation>
 <translation id="1768366657309696705">Shkurtorja e tastierës për <ph name="LAUNCHER_KEY_NAME" /> + Pikë është ndryshuar. Për të përdorur tastin Insert, shtyp tastin <ph name="LAUNCHER_KEY_NAME" /> + Shift + Backspace.</translation>
@@ -266,7 +268,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="2148716181193084225">Sot</translation>
 <translation id="2149229036084364364">Shko te pjesa muzikore e mëparshme</translation>
 <translation id="2161132820593978283">Provo inkuadrimin e kamerës që të shfaqesh në qendër të ekranit në videotelefonata. Aktivizoje te "Cilësimet e shpejta".</translation>
-<translation id="2165966740263283349">përdorimi i hapësirës ruajtëse</translation>
 <translation id="2170530631236737939">Rrëshqit shpejt poshtë me tre gishta për të dalë nga "Përmbledhja"</translation>
 <translation id="2185166372312820725">Shko te skeda e mëparshme</translation>
 <translation id="2185444992308415167">Kalo nëpër skedat 1 deri në 8</translation>
@@ -474,6 +475,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3113492864356515707">Thekso artikullin e mëparshëm në raft</translation>
 <translation id="3120421559657122717">Të fiket pajisja?</translation>
+<translation id="3122464029669770682">CPU</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">Rifillo për të përditësuar</translation>
 <translation id="3139188263101386725">Përdor shkurtoren e përditësuar</translation>
@@ -518,7 +520,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> mund të identifikohet përsëri më vonë.</translation>
 <translation id="3321628682574733415">Kod i gabuar prindi</translation>
 <translation id="332827762492701193">Njoftimet janë të fshehura</translation>
-<translation id="3338855835380298613">përdorimi i cpu-së</translation>
 <translation id="3339826665088060472">"Regjistrimi i ekranit", veglat për të nxjerrë pamje ekrani dhe regjistrime ekrani</translation>
 <translation id="3340978935015468852">cilësimet</translation>
 <translation id="3341303451326249809">Pamja e ekranit u regjistrua</translation>
@@ -642,7 +643,6 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="3781910048497807059">Zhvendos fokusin te paneli i mëparshëm</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">Kyçe</translation>
-<translation id="3796198851576711985">integriteti i baterisë</translation>
 <translation id="3796746699333205839">Kamerën dhe mikrofonin tënd po i përdor një aplikacion</translation>
 <translation id="3798670284305777884">Altoparlanti (i brendshëm)</translation>
 <translation id="3799080171973636491">Ke shtypur shkurtoren e tastierës për zmadhuesin në ekran të plotë. Dëshiron ta aktivizosh?</translation>
@@ -814,12 +814,10 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="4527045527269911712">Pajisja me Bluetooth "<ph name="DEVICE_NAME" />" kërkon leje për çiftim.</translation>
 <translation id="4533343294786968049">Kohëzgjatja e baterisë po rritet. Bateria do të karikohet plotësisht në <ph name="FULLY_CHARGE_TIME" />.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> derisa të mbushet</translation>
-<translation id="4536664881735498710">përdorimi i memories ram</translation>
 <translation id="4538824937723742295">Shkrep një pamje ekrani të plotë</translation>
 <translation id="4539127209940689201">Printo faqen aktuale</translation>
 <translation id="4541706525461326392">Profili po hiqet. Kjo mund të zgjasë disa minuta.</translation>
 <translation id="4544483149666270818">Zgjidh një dritare për të regjistruar</translation>
-<translation id="454541942614298893">pajisja ime</translation>
 <translation id="4545950850562423083">Ruaj faqen aktuale si faqeshënues</translation>
 <translation id="4548482551627849548">Zhvendos dritaren aktive në tavolinën e punës në të majtë</translation>
 <translation id="4560576029703263363">Aktiv</translation>
@@ -978,7 +976,6 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="5208059991603368177">Aktive</translation>
 <translation id="5216991270656129561">Joaktive deri në <ph name="TIME" /></translation>
 <translation id="5217646019792206018">Tavolina tjetër e punës: <ph name="NEXT_DESK_NAME" />, përdor Kërko + Hapësirë ose shkurtoren e tastierës: Shift + Kërko + <ph name="NEXT_DESK_INDEX" /> për ta aktivizuar.</translation>
-<translation id="5221423477036820198">Dërgo ose përgjigjju me shpejtësi mesazheve të telefonit duke përdorur "Qendrën e telefonit".</translation>
 <translation id="5222676887888702881">Dil</translation>
 <translation id="5229343007215035173">Aktivizo/çaktivizo ekranin e privatësisë</translation>
 <translation id="5234764350956374838">Hiq</translation>
@@ -1139,7 +1136,6 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="589817443623831496">Skanimi me pika</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5901630391730855834">E verdhë</translation>
-<translation id="5902162043476810127">memoria me qasje të rastësishme</translation>
 <translation id="5909862606227538307">Tavolinë pune joaktive.</translation>
 <translation id="5911231045062997865">Dritaret e Lacros nuk mbështeten aktualisht. Aplikacionet e tjera do të ruhen.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
@@ -1543,7 +1539,6 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="7724603315864178912">Prite</translation>
 <translation id="7725108879223146004">Shfaq detajet e zonës së qasjes për internet. Zona e qasjes për internet po çaktivizohet.</translation>
 <translation id="7727952505535211425">Hape në një skedë të re sajtin e uebit në shiritin e adresës</translation>
-<translation id="77365090426890123">përdorimi i memories</translation>
 <translation id="7742327441377685481">Asnjë njoftim</translation>
 <translation id="7748275671948949022">Thekso butonin e "Nisësit" në raft</translation>
 <translation id="7749443890790263709">Është arritur numri maksimal i tavolinave të punës.</translation>
@@ -1795,7 +1790,6 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="8853703225951107899">Kod yt PIN ose fjalëkalimi përsëri nuk mund të verifikoheshin. Shënim. Nëse e ke ndryshuar fjalëkalimin së fundi, përdor fjalëkalimin e vjetër. Fjalëkalimi yt i ri do të zbatohet pasi të dalësh nga llogaria.</translation>
 <translation id="8855885154700222542">Tasti i ekranit të plotë</translation>
 <translation id="8858369206579825206">Kontrollet e privatësisë</translation>
-<translation id="8860817004574502558">kohëzgjatja e baterisë</translation>
 <translation id="8870509716567206129">Aplikacioni nuk e mbështet ekranin e ndarë.</translation>
 <translation id="8874184842967597500">Nuk u lidh</translation>
 <translation id="8875021410787719674">Kalo mes këndit të poshtëm djathtas, "Nisësit", shiritit të adresës, shiritit të faqeshënuesve, sajtit të uebit që është i hapur dhe shkarkimeve</translation>
@@ -1848,6 +1842,7 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="9080073830732419341">Pamja paraprake e kamerës ka kaluar në këndin e sipërm majtas</translation>
 <translation id="9080132581049224423">Rrëshqit shpejt lart për të shkuar në ekranin kryesor</translation>
 <translation id="9080206825613744995">Mikrofoni është në përdorim.</translation>
+<translation id="9083324773537346962">Versioni i OS</translation>
 <translation id="908451241440060346">Njoftimet janë të vendosura në heshtje kur modaliteti "Mos shqetëso" është aktiv</translation>
 <translation id="9084606467167974638">Ndrysho pozicionin e menysë</translation>
 <translation id="9085962983642906571">Bateria mbahet në 80% kur është në prizë për të rritur kohëzgjatjen e baterisë.</translation>
@@ -1888,7 +1883,6 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="951991426597076286">Refuzo</translation>
 <translation id="953431725143473984">Të fiket pajisja?</translation>
 <translation id="954052413789300507">Nuk ka hapësirë të mjaftueshme për <ph name="FILENAME" />. Liro hapësirën.</translation>
-<translation id="968627661524972577">Përdor aplikacionet për të bërë gjithçka që të duhet në Chromebook. Aplikacionet e tua mund t'i gjesh te "Nisësi". Mund të shtypësh po ashtu tastin e "Nisësit" në tastierë.</translation>
 <translation id="974545358917229949">Po shfaq <ph name="RESULT_COUNT" /> rezultate për <ph name="QUERY" /></translation>
 <translation id="98120814841227350">Shko në fund të dokumentit</translation>
 <translation id="987589956647469042">Të dhënat celulare janë aktivizuar</translation>

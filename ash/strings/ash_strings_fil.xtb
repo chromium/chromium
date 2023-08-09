@@ -63,6 +63,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1235458158152011030">Mga kilalang network</translation>
 <translation id="1239161794459865856">Nakakonekta ang <ph name="FEATURE_NAME" />.</translation>
 <translation id="1240638468526743569">Isang app</translation>
+<translation id="1242883863226959074">device</translation>
 <translation id="124678866338384709">Isara ang kasalukuyang tab</translation>
 <translation id="1246890715821376239">Mga hindi sinusuportahang app</translation>
 <translation id="1247372569136754018">Mikropono (internal)</translation>
@@ -181,6 +182,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1747827819627189109">Naka-enable ang on-screen na keyboard</translation>
 <translation id="1749109475624620922">Naitalaga sa lahat ng desk ang window na <ph name="WINDOW_TITLE" /></translation>
 <translation id="1750088060796401187"><ph name="MAX_DESK_LIMIT" /> (na) desk lang ang pinapayagan. Mag-alis ng desk para makapagbukas ng bago.</translation>
+<translation id="1755556344721611131">Diagnostics app</translation>
 <translation id="1756833229520115364">Hindi ma-save ang template. Masyadong maraming window o tab.</translation>
 <translation id="1757857692711134412">Naka-off hanggang paglubog ng araw</translation>
 <translation id="1768366657309696705">Nagbago ang keyboard shortcut na <ph name="LAUNCHER_KEY_NAME" /> + Period. Para magamit ang Insert key, pindutin ang <ph name="LAUNCHER_KEY_NAME" /> key + Shift + Backspace.</translation>
@@ -266,7 +268,6 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="2148716181193084225">Ngayong Araw</translation>
 <translation id="2149229036084364364">Pumunta sa nakaraang track</translation>
 <translation id="2161132820593978283">Subukan ang camera framing para mapunta ka sa gitna ng screen sa mga video call. I-on ito sa Mga Mabilisang Setting.</translation>
-<translation id="2165966740263283349">paggamit ng storage</translation>
 <translation id="2170530631236737939">Mag-swipe pababa gamit ang tatlong daliri para lumabas sa Overview</translation>
 <translation id="2185166372312820725">Pumunta sa nakaraang tab</translation>
 <translation id="2185444992308415167">Tingnan ang tab 1 hanggang 8</translation>
@@ -474,6 +475,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3113492864356515707">I-highlight ang nakaraang item sa shelf</translation>
 <translation id="3120421559657122717">I-shut down ang device?</translation>
+<translation id="3122464029669770682">CPU</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">I-restart upang mag-update</translation>
 <translation id="3139188263101386725">Gamitin ang in-update na shortcut</translation>
@@ -518,7 +520,6 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="3308453408813785101">Maaari pa ring mag-sign in si <ph name="USER_EMAIL_ADDRESS" /> sa ibang pagkakataon.</translation>
 <translation id="3321628682574733415">Maling code ng magulang</translation>
 <translation id="332827762492701193">Nakatago ang mga notification</translation>
-<translation id="3338855835380298613">paggamit ng cpu</translation>
 <translation id="3339826665088060472">Screen capture, mga tool sa pagkuha ng mga screenshot at recording ng screen</translation>
 <translation id="3340978935015468852">mga setting</translation>
 <translation id="3341303451326249809">Na-capture na ang screenshot</translation>
@@ -642,7 +643,6 @@ Isaksak ang iyong device.</translation>
 <translation id="3781910048497807059">Ilipat ang focus sa nakaraang pane</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">I-lock</translation>
-<translation id="3796198851576711985">tagal ng baterya</translation>
 <translation id="3796746699333205839">May application na gumagamit ng iyong camera at mikropono</translation>
 <translation id="3798670284305777884">Speaker (internal)</translation>
 <translation id="3799080171973636491">Napindot mo ang keyboard shortcut para sa full-screen magnifier. Gusto mo ba itong i-on?</translation>
@@ -814,12 +814,10 @@ Isaksak ang iyong device.</translation>
 <translation id="4527045527269911712">Gusto ng bluetooth device na "<ph name="DEVICE_NAME" />" na magpares.</translation>
 <translation id="4533343294786968049">China-charge ang iyong baterya Magfu-full charge ang baterya bago sumapit ang <ph name="FULLY_CHARGE_TIME" />.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> na lang bago mapuno</translation>
-<translation id="4536664881735498710">paggamit ng ram</translation>
 <translation id="4538824937723742295">Kumuha ng screenshot ng full screen</translation>
 <translation id="4539127209940689201">I-print ang kasalukuyang page</translation>
 <translation id="4541706525461326392">Inaalis ang profile. Puwede itong tumagal nang ilang minuto.</translation>
 <translation id="4544483149666270818">Pumili ng window na ire-record</translation>
-<translation id="454541942614298893">aking device</translation>
 <translation id="4545950850562423083">I-save ang kasalukuyang page bilang bookmark</translation>
 <translation id="4548482551627849548">Ilipat ang aktibong window sa desk sa kaliwa</translation>
 <translation id="4560576029703263363">Naka-on</translation>
@@ -978,7 +976,6 @@ Isaksak ang iyong device.</translation>
 <translation id="5208059991603368177">Naka-on</translation>
 <translation id="5216991270656129561">Naka-off hanggang <ph name="TIME" /></translation>
 <translation id="5217646019792206018">Susunod na Desk: <ph name="NEXT_DESK_NAME" />, gamitin ang Search+Space o keyboard shortcut: Shift+Search+<ph name="NEXT_DESK_INDEX" /> para i-activate.</translation>
-<translation id="5221423477036820198">Mabilis na magpadala ng o sumagot sa mga mensahe sa telepono mo gamit ang Phone Hub.</translation>
 <translation id="5222676887888702881">Mag-sign out</translation>
 <translation id="5229343007215035173">I-on/i-off ang privacy screen</translation>
 <translation id="5234764350956374838">Huwag pansinin</translation>
@@ -1139,7 +1136,6 @@ Isaksak ang iyong device.</translation>
 <translation id="589817443623831496">Pag-point scan</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5901630391730855834">Dilaw</translation>
-<translation id="5902162043476810127">random access memory</translation>
 <translation id="5909862606227538307">Hindi aktibong desk.</translation>
 <translation id="5911231045062997865">Kasalukuyang hindi sinusuportahan ang mga Lacros window. Mase-save ang iba pang app.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
@@ -1543,7 +1539,6 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="7724603315864178912">I-cut</translation>
 <translation id="7725108879223146004">Ipakita ang mga detalye ng hotspot. Ino-off ang hotspot.</translation>
 <translation id="7727952505535211425">Buksan ang website sa address bar sa bagong tab</translation>
-<translation id="77365090426890123">paggamit ng memory</translation>
 <translation id="7742327441377685481">Walang notification</translation>
 <translation id="7748275671948949022">I-highlight ang button ng Launcher sa shelf</translation>
 <translation id="7749443890790263709">Naabot ang maximum na bilang ng desk.</translation>
@@ -1794,7 +1789,6 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="8853703225951107899">Hindi pa rin ma-verify ang iyong PIN o password. Tandaan: Kung pinalitan mo kamakailan ang iyong password, gamitin ang lumang password mo. Malalapat ang iyong bagong password kapag nag-sign out ka.</translation>
 <translation id="8855885154700222542">Key ng fullscreen</translation>
 <translation id="8858369206579825206">Mga kontrol sa privacy</translation>
-<translation id="8860817004574502558">tagal ng baterya</translation>
 <translation id="8870509716567206129">Hindi sinusuportahan ng app ang split-screen.</translation>
 <translation id="8874184842967597500">Hindi konekta</translation>
 <translation id="8875021410787719674">Magpalipat-lipat sa kanang sulok sa ibaba, Launcher, address bar, bookmarks bar, website na nakabukas, at mga download</translation>
@@ -1847,6 +1841,7 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="9080073830732419341">Nag-snap ang camera sa kaliwang sulok sa itaas</translation>
 <translation id="9080132581049224423">Mag-swipe pataas para pumunta sa home</translation>
 <translation id="9080206825613744995">Ginagamit ang mikropono.</translation>
+<translation id="9083324773537346962">OS na bersyon</translation>
 <translation id="908451241440060346">Naka-mute ang mga notification kapag naka-on ang Huwag Istorbohin</translation>
 <translation id="9084606467167974638">I-toggle ang posisyon ng menu</translation>
 <translation id="9085962983642906571">Pinapanatili sa 80% ang iyong baterya kapag nakasaksak ito para patagalin ang baterya.</translation>
@@ -1887,7 +1882,6 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="951991426597076286">Tanggihan</translation>
 <translation id="953431725143473984">I-shut down ang device?</translation>
 <translation id="954052413789300507">Walang sapat na espasyo para sa <ph name="FILENAME" />. Magbakante ng espasyo.</translation>
-<translation id="968627661524972577">Gumamit ng mga app para gawin ang lahat ng kailangan mong gawin sa iyong Chromebook. Makikita mo ang iyong mga app sa Launcher. Puwede mo ring pindutin ang Launcher key sa keyboard.</translation>
 <translation id="974545358917229949">Ipinapakita ang <ph name="RESULT_COUNT" /> (na) resulta para sa <ph name="QUERY" /></translation>
 <translation id="98120814841227350">Pumunta sa dulo ng dokumento</translation>
 <translation id="987589956647469042">Naka-on ang mobile data</translation>

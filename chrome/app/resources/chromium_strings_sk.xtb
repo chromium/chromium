@@ -74,7 +74,6 @@ Povolenia, ktoré ste už udelili webom a aplikáciám, sa môžu vzťahovať n
 <translation id="2592940277904433508">Pokračovať v používaní prehliadača Chromium</translation>
 <translation id="2648074677641340862">V priebehu inštalácie sa vyskytla chyba operačného systému. Stiahnite prehliadač Chromium znova.</translation>
 <translation id="2661879430930417727">Ak zdieľate zariadenie s rodinou a priateľmi, môžu v prehliadači Chromium prehliadať samostatne a tiež si ho nastaviť podľa vlastných požiadaviek</translation>
-<translation id="2669853942967761236">Chromium tento súbor archívu zablokoval, pretože môže skrývať malvér</translation>
 <translation id="268602741124540128">Vitajte v prehliadači Chromium, <ph name="ACCOUNT_FIRST_NAME" /></translation>
 <translation id="2711502716910134313">Karta Chromium</translation>
 <translation id="2718390899429598676">V záujme vyššej miery zabezpečenia budú dáta v prehliadači Chromium šifrované.</translation>
@@ -409,6 +408,5 @@ Prehliadač Chromium nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="942598560705308788">Certifikáty, ktoré spravuje Chromium</translation>
 <translation id="965162752251293939">Kto používa Chromium?</translation>
 <translation id="967427899662692980">Získajte najsilnejšie zabezpečenie prehliadača Chromium</translation>
-<translation id="9792300276217204">Vždy vymazať dáta webov zo zariadenia po zavretí prehliadača Chromium</translation>
 <translation id="985602178874221306">Autori prehliadača Chromium</translation>
 </translationbundle>

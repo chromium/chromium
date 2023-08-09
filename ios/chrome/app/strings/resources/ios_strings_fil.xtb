@@ -268,6 +268,7 @@ Hindi magagamit ng mga site ang cookies para makita ang iyong aktibidad sa pag-b
 <translation id="2648721026697078500">Huwag Kailanman Ilipat</translation>
 <translation id="2648803196158606475">I-delete ang Nabasa Na</translation>
 <translation id="2664621323652615289">Ihinto</translation>
+<translation id="2666092431469916601">Tuktok</translation>
 <translation id="2671426118752779020">Puwede mong gamitin ang mga password na na-save mo sa Google Password Manager sa iba pang app sa iyong iPhone.</translation>
 <translation id="2690858294534178585">Ginagamit ang camera</translation>
 <translation id="26915454213703967">Maghanap sa Loob ng Larawan gamit ang Google</translation>
@@ -354,6 +355,7 @@ Ang taong may passphrase mo lang ang makakapagbasa sa iyong naka-encrypt na data
 Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa history ng paghahanap mo, kung naaangkop.</translation>
 <translation id="3080525922482950719">Puwede kang mag-save ng mga page para basahin sa ibang pagkakataon o nang offline</translation>
 <translation id="3081338492074632642">Tiyaking tumutugma ang password na sine-save mo sa iyong password para sa <ph name="WEBSITE" /></translation>
+<translation id="3087734570205094154">Sa ilalim</translation>
 <translation id="309672519329227863">I-access ang iyong mga password sa Chrome at higit pa sa iba pang app.</translation>
 <translation id="3112556859945124369">Markahan…</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Tingnan Kung Ano ang Puwede Mong I-sync<ph name="END_LINK" /></translation>
@@ -431,7 +433,6 @@ Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa history n
 <translation id="3533436815740441613">Bagong Tab</translation>
 <translation id="3540141921715814660">Idagdag sa Mga Bookmark</translation>
 <translation id="3551320343578183772">Isara ang Tab</translation>
-<translation id="3554280880535219766">Ipakita ang Address Bar sa Ibaba</translation>
 <translation id="3565207542107370586">I-clear ang Data ng Pag-browse…</translation>
 <translation id="3575234738189584619">Maghanap gamit ang Lens</translation>
 <translation id="3577555362230509265">Gamitin ang Chrome sa iba pang app.</translation>
@@ -441,7 +442,6 @@ Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa history n
 <translation id="3595252146048399851">Mapipili mo kung ano ang isi-sync anumang oras sa <ph name="BEGIN_LINK" />mga setting<ph name="END_LINK" />. Puwedeng i-personalize ng Google ang Search at iba pang serbisyo batay sa iyong history.</translation>
 <translation id="3603009562372709545">Kopyahin ang URL ng Link</translation>
 <translation id="3607167657931203000">Mag-autofill ng Data</translation>
-<translation id="3608008480985212611">Mag-sign in para pamahalaan ang iyong mga preference.</translation>
 <translation id="3609785682760573515">Nagsi-sync...</translation>
 <translation id="3631443864840848029">Tiyaking sine-save mo ang iyong kasalukuyang password para sa site na ito.</translation>
 <translation id="3638472932233958418">Mag-preload ng Mga Webpage</translation>
@@ -517,6 +517,7 @@ Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa history n
 <translation id="4133265950310064865">Enhanced Protection</translation>
 <translation id="4148023517926189160">Gusto ng website na ito na mag-download ng file at idagdag ito sa iyong kalendaryo.</translation>
 <translation id="4152011295694446843">Makikita mo rito ang iyong mga bookmark</translation>
+<translation id="4168651806173792090"><ph name="NETWORK_NAME" /> na nagtatapos sa <ph name="LAST_FOUR_DIGITS" /></translation>
 <translation id="4172051516777682613">Palaging ipakita</translation>
 <translation id="418156467088430727">Tingnan ang Offline na Bersyon sa Bagong Tab</translation>
 <translation id="4181841719683918333">Mga Wika</translation>
@@ -703,7 +704,6 @@ Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa history n
 <translation id="5271265092610673171">{count,plural, =1{Walang laman ang isang nire-require na field. Sagutan ito bago i-save.}one{Walang laman ang ilang nire-require na field. Sagutan ang mga ito bago i-save.}other{Walang laman ang ilang nire-require na field. Sagutan ang mga ito bago i-save.}}</translation>
 <translation id="5271549068863921519">I-save ang password</translation>
 <translation id="5283494734135414249">I-tap ang shortcut na lalabas sa ilalim ng address bar.</translation>
-<translation id="5292723732574094123">Naka-sign out. Mag-sign in ulit para makita ang mga bookmark, password, at higit pa sa iyong account.</translation>
 <translation id="5295239312320826323">Alisin ang account na <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Ipakita</translation>
 <translation id="5317780077021120954">I-save</translation>
@@ -762,7 +762,6 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="5702108177581350218">Kapag nag-share ka ng kopya ng iyong username at password, puwedeng ilagay ng miyembro ng pamilya mo ang mga ito gamit ang Google Password Manager.</translation>
 <translation id="5704908597376970822">Hindi makapag-sign in.</translation>
 <translation id="5706552126692816153">Aktibo 1 Araw ang Nakalipas</translation>
-<translation id="5711039611392265845">Para sa higit pang setting na nauugnay sa privacy, seguridad, at pagkolekta ng data, tingnan ang <ph name="BEGIN_LINK" />Pag-sync at Mga Serbisyo ng Google<ph name="END_LINK" />.</translation>
 <translation id="5718049162805123412">Dapat mong palitan ang mga ito ngayon mismo</translation>
 <translation id="5724941645893276623">Para pribadong mag-browse sa web, magdagdag ng bagong tab</translation>
 <translation id="5728700505257787410">Paumanhin, may problema sa pag-sign in sa iyong account.</translation>
@@ -774,7 +773,6 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="574762237186762643">Mga Event</translation>
 <translation id="5755162682436943950">Naka-sign out. Binubuksan ang dialog para mag-sign in at i-on ang pag-sync.</translation>
 <translation id="5758631781033351321">Makikita mo rito ang iyong listahan ng babasahin</translation>
-<translation id="5760258696409739442">Ipakita ang Address Bar sa Itaas</translation>
 <translation id="5762370665605786758">Hindi kasama sa pag-encrypt ng passphrase ang mga paraan ng pagbabayad at address mula sa Google Pay.
 
 Ang taong may passphrase mo lang ang makakapagbasa sa iyong naka-encrypt na data. Hindi ipinapadala sa o sino-store ng Google ang passphrase. Kung makalimutan mo ang iyong passphrase o gusto mong baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-clear ang data sa Chrome sa iyong account<ph name="END_LINK" />.</translation>
@@ -942,6 +940,7 @@ Subukang gumamit ng natatanging password para sa bawat site.</translation>
 <translation id="651505212789431520">Kanselahin ang Pag-sync? Puwede mong i-on ang pag-sync anumang oras sa Mga Setting.</translation>
 <translation id="6518133107902771759">I-verify</translation>
 <translation id="6524918542306337007">Hindi Available ang Incognito Mode</translation>
+<translation id="6527303717912515753">Ibahagi</translation>
 <translation id="6530992499366869131">Balaan Ka kung Ma-expose ang Mga Password sa isang Paglabag sa Data</translation>
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6540120577248033958">Bumisita sa isang site at i-click ang Subaybayan sa menu ng Chrome</translation>
@@ -1233,6 +1232,7 @@ Puwedeng gumamit ng cookies ang mga site para makita ang iyong aktibidad sa pag-
 <translation id="8281781826761538115">Default - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Laktawan</translation>
 <translation id="8283172974887967105">Itakda…</translation>
+<translation id="8286036467436129157">Mag-sign In</translation>
 <translation id="8299417921174340354">Para gumamit ng mga password, dapat ka munang magtakda ng passcode sa iyong device.</translation>
 <translation id="8299613349954694191">Magbukas ng tab na Incognito para pribadong i-browse ang web.</translation>
 <translation id="8316944564970119719">Ilagay ang Site at Password, at Pagkatapos ay I-save</translation>

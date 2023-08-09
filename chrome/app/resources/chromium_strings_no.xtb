@@ -72,7 +72,6 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="2592940277904433508">Fortsett å bruke Chromium</translation>
 <translation id="2648074677641340862">Det oppsto en systemfeil under installering. Last ned Chromium på nytt.</translation>
 <translation id="2661879430930417727">Hvis du deler en enhet med andre, kan venner og familie surfe hver for seg og konfigurere Chromium akkurat slik de vil</translation>
-<translation id="2669853942967761236">Chromium har blokkert denne arkivfilen fordi den kan inneholde skadelig programvare</translation>
 <translation id="268602741124540128">Velkommen til Chromium, <ph name="ACCOUNT_FIRST_NAME" /></translation>
 <translation id="2711502716910134313">Chromium-fane</translation>
 <translation id="2718390899429598676">Chromium krypterer dataene dine for å øke sikkerheten.</translation>
@@ -406,6 +405,5 @@ Chromium kan ikke gjenopprette innstillingen dine.</translation>
 <translation id="942598560705308788">Sertifikater administreres av Chromium</translation>
 <translation id="965162752251293939">Hvem bruker Chromium?</translation>
 <translation id="967427899662692980">Få den sterkeste sikkerheten i Chromium</translation>
-<translation id="9792300276217204">Slett alltid nettstedsdata fra enheten når du lukker Chromium</translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
 </translationbundle>

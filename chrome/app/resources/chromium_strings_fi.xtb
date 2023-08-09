@@ -72,7 +72,6 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="2592940277904433508">Jatka Chromiumin käyttöä</translation>
 <translation id="2648074677641340862">Asennuksessa ilmeni käyttöjärjestelmävirhe. Lataa Chromium uudelleen.</translation>
 <translation id="2661879430930417727">Jos käytät jaettua laitetta, kaverisi ja perheenjäsenesi voivat selata verkkoa erillään ja räätälöidä Chromiumista juuri itselleen sopivan</translation>
-<translation id="2669853942967761236">Chromium on estänyt tämän arkistotiedoston, koska se voi piilottaa haittaohjelman</translation>
 <translation id="268602741124540128">Tervetuloa Chromiumiin, <ph name="ACCOUNT_FIRST_NAME" /></translation>
 <translation id="2711502716910134313">Chromium-välilehti</translation>
 <translation id="2718390899429598676">Chromium lisää suojausta salaamalla tietosi.</translation>
@@ -407,6 +406,5 @@ Chromium ei voi palauttaa asetuksiasi.</translation>
 <translation id="942598560705308788">Chromiumin hallinnoimat varmenteet</translation>
 <translation id="965162752251293939">Kuka käyttää Chromiumia?</translation>
 <translation id="967427899662692980">Ota Chromiumin tehokkain suojaus käyttöön</translation>
-<translation id="9792300276217204">Tyhjennä sivustodata aina laitteelta, kun suljet Chromiumin</translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
 </translationbundle>
