@@ -27,8 +27,10 @@
 
 namespace autofill {
 
-PopupCellView::PopupCellView(AutofillSuggestionTriggerSource trigger_source)
-    : trigger_source_(trigger_source) {
+PopupCellView::PopupCellView(
+    bool should_ignore_mouse_observed_outside_item_bounds_check)
+    : should_ignore_mouse_observed_outside_item_bounds_check_(
+          should_ignore_mouse_observed_outside_item_bounds_check) {
   SetNotifyEnterExitOnChild(true);
   SetFocusBehavior(FocusBehavior::ALWAYS);
   RefreshStyle();
@@ -115,8 +117,7 @@ void PopupCellView::OnMouseEntered(const ui::MouseEvent& event) {
   // fallback we do not care since the user has made a specific choice of
   // opening the autofill popup.
   if (!mouse_observed_outside_item_bounds_ &&
-      trigger_source_ != AutofillSuggestionTriggerSource::
-                             kManualFallbackForAutocompleteUnrecognized) {
+      !should_ignore_mouse_observed_outside_item_bounds_check_) {
     return;
   }
 
@@ -143,8 +144,7 @@ void PopupCellView::OnMouseReleased(const ui::MouseEvent& event) {
   // the manual fallback case the user has made an explicit choice of opening
   // the popup and so will not select an address by accident.
   if (!mouse_observed_outside_item_bounds_ &&
-      trigger_source_ != AutofillSuggestionTriggerSource::
-                             kManualFallbackForAutocompleteUnrecognized) {
+      !should_ignore_mouse_observed_outside_item_bounds_check_) {
     return;
   }
 

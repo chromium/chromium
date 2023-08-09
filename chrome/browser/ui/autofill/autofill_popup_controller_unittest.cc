@@ -256,15 +256,16 @@ class AutofillPopupControllerUnitTest : public ChromeRenderViewHostTestHarness {
 
   // Shows empty suggestions with the popup_item_id ids passed as
   // `popup_item_ids`.
-  void ShowSuggestions(const std::vector<PopupItemId>& popup_item_ids) {
+  void ShowSuggestions(
+      const std::vector<PopupItemId>& popup_item_ids,
+      AutofillSuggestionTriggerSource trigger_source =
+          AutofillSuggestionTriggerSource::kFormControlElementClicked) {
     std::vector<Suggestion> suggestions;
     suggestions.reserve(popup_item_ids.size());
     for (PopupItemId popup_item_id : popup_item_ids) {
       suggestions.emplace_back("", "", "", popup_item_id);
     }
-    popup_controller().Show(
-        std::move(suggestions),
-        AutofillSuggestionTriggerSource::kFormControlElementClicked);
+    popup_controller().Show(std::move(suggestions), trigger_source);
   }
 
   TestAutofillPopupController& popup_controller() {
@@ -351,6 +352,41 @@ TEST_F(AutofillPopupControllerUnitTest, RemoveSuggestion) {
   // no Autofill entries left.
   EXPECT_CALL(popup_controller(), Hide(PopupHidingReason::kNoSuggestions));
   EXPECT_TRUE(popup_controller().RemoveSuggestion(0));
+}
+
+TEST_F(AutofillPopupControllerUnitTest,
+       RemoveAutocompleteSuggestion_IgnoresClickOutsideCheck) {
+  ShowSuggestions(
+      {PopupItemId::kAutocompleteEntry, PopupItemId::kAutocompleteEntry});
+
+  // Generate a popup, so it can be hidden later. It doesn't matter what the
+  // external_delegate thinks is being shown in the process, since we are just
+  // testing the popup here.
+  test::GenerateTestAutofillPopup(external_delegate_.get());
+
+  // Remove the first entry. The popup should be redrawn since its size has
+  // changed.
+  EXPECT_CALL(popup_controller(), OnSuggestionsChanged());
+  EXPECT_TRUE(popup_controller().RemoveSuggestion(0));
+  Mock::VerifyAndClearExpectations(autofill_popup_view());
+
+  EXPECT_TRUE(
+      popup_controller().ShouldIgnoreMouseObservedOutsideItemBoundsCheck());
+}
+
+TEST_F(AutofillPopupControllerUnitTest,
+       ManualFallBackTriggerSource_IgnoresClickOutsideCheck) {
+  ShowSuggestions({PopupItemId::kAddressEntry},
+                  AutofillSuggestionTriggerSource::
+                      kManualFallbackForAutocompleteUnrecognized);
+
+  // Generate a popup, so it can be hidden later. It doesn't matter what the
+  // external_delegate thinks is being shown in the process, since we are just
+  // testing the popup here.
+  test::GenerateTestAutofillPopup(external_delegate_.get());
+
+  EXPECT_TRUE(
+      popup_controller().ShouldIgnoreMouseObservedOutsideItemBoundsCheck());
 }
 
 TEST_F(AutofillPopupControllerUnitTest, UpdateDataListValues) {

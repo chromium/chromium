@@ -40,6 +40,10 @@ class MockAutofillPopupController
               GetAutofillSuggestionTriggerSource,
               (),
               (const override));
+  MOCK_METHOD(bool,
+              ShouldIgnoreMouseObservedOutsideItemBoundsCheck,
+              (),
+              (const override));
   MOCK_METHOD(gfx::NativeView, container_view, (), (const override));
   MOCK_METHOD(content::WebContents*, GetWebContents, (), (const override));
   const gfx::RectF& element_bounds() const override { return element_bounds_; }

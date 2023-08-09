@@ -98,6 +98,7 @@ class AutofillPopupControllerImpl : public AutofillPopupController {
 
   // AutofillPopupController:
   std::vector<Suggestion> GetSuggestions() const override;
+  bool ShouldIgnoreMouseObservedOutsideItemBoundsCheck() const override;
 
   // Disables show thresholds. See the documentation of the member for details.
   void DisableThresholdForTesting(bool disable_threshold) {
@@ -263,6 +264,9 @@ class AutofillPopupControllerImpl : public AutofillPopupController {
       Profile*,
       password_manager::metrics_util::PasswordMigrationWarningTriggers)>
       show_pwd_migration_warning_callback_;
+
+  // Whether the popup should ignore mouse observed outside check.
+  bool should_ignore_mouse_observed_outside_item_bounds_check_ = false;
 
   // AutofillPopupControllerImpl deletes itself. To simplify memory management,
   // we delete the object asynchronously.

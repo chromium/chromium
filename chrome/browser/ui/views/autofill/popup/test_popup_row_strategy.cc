@@ -28,9 +28,7 @@ TestPopupRowStrategy::~TestPopupRowStrategy() = default;
 
 std::unique_ptr<PopupCellView> TestPopupRowStrategy::CreateContent() {
   std::unique_ptr<PopupCellView> cell =
-      views::Builder<PopupCellView>(
-          std::make_unique<PopupCellView>(
-              AutofillSuggestionTriggerSource::kFormControlElementClicked))
+      views::Builder<PopupCellView>(std::make_unique<PopupCellView>())
           .SetAccessibilityDelegate(
               std::make_unique<TestAccessibilityDelegate>())
           .SetUseDefaultFillLayout(true)
@@ -44,9 +42,7 @@ std::unique_ptr<PopupCellView> TestPopupRowStrategy::CreateControl() {
     return nullptr;
   }
   std::unique_ptr<PopupCellView> cell =
-      views::Builder<PopupCellView>(
-          std::make_unique<PopupCellView>(
-              AutofillSuggestionTriggerSource::kFormControlElementClicked))
+      views::Builder<PopupCellView>(std::make_unique<PopupCellView>())
           .SetAccessibilityDelegate(
               std::make_unique<TestAccessibilityDelegate>())
           .SetUseDefaultFillLayout(true)

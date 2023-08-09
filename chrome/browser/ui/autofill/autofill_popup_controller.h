@@ -81,6 +81,10 @@ class AutofillPopupController : public AutofillPopupViewDelegate {
   virtual AutofillSuggestionTriggerSource GetAutofillSuggestionTriggerSource()
       const = 0;
 
+  // Returns whether the popup should ignore the check that the mouse was
+  // observed out of bounds - see PopupCellView for more detail.
+  virtual bool ShouldIgnoreMouseObservedOutsideItemBoundsCheck() const = 0;
+
  protected:
   ~AutofillPopupController() override = default;
 };

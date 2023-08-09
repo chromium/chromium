@@ -105,7 +105,7 @@ class AutofillKeyboardAccessoryAdapter : public AutofillPopupView,
   PopupType GetPopupType() const override;
   AutofillSuggestionTriggerSource GetAutofillSuggestionTriggerSource()
       const override;
-
+  bool ShouldIgnoreMouseObservedOutsideItemBoundsCheck() const override;
   void Hide(PopupHidingReason reason) override;
   void ViewDestroyed() override;
   gfx::NativeView container_view() const override;

@@ -168,6 +168,13 @@ AutofillKeyboardAccessoryAdapter::GetAutofillSuggestionTriggerSource() const {
   return controller_->GetAutofillSuggestionTriggerSource();
 }
 
+bool AutofillKeyboardAccessoryAdapter::
+    ShouldIgnoreMouseObservedOutsideItemBoundsCheck() const {
+  CHECK(controller_) << "Call ShouldIgnoreMouseObservedOutsideItemBoundsCheck "
+                        "only from its owner!";
+  return controller_->ShouldIgnoreMouseObservedOutsideItemBoundsCheck();
+}
+
 bool AutofillKeyboardAccessoryAdapter::GetRemovalConfirmationText(
     int index,
     std::u16string* title,

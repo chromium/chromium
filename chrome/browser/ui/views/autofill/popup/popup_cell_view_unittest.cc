@@ -69,10 +69,10 @@ class PopupCellViewTest : public ChromeViewsTestBase {
   }
 
   std::unique_ptr<PopupCellView> CreatePopupCellView(
-      AutofillSuggestionTriggerSource trigger_source =
-          AutofillSuggestionTriggerSource::kFormControlElementClicked) {
+      bool should_ignore_mouse_observed_outside_item_bounds_check = false) {
     return views::Builder<PopupCellView>(
-               std::make_unique<PopupCellView>(trigger_source))
+               std::make_unique<PopupCellView>(
+                   should_ignore_mouse_observed_outside_item_bounds_check))
         .SetAccessibilityDelegate(std::make_unique<TestAccessibilityDelegate>())
         .Build();
   }
@@ -224,10 +224,10 @@ TEST_F(PopupCellViewTest, GestureEvents) {
 }
 #endif  // !BUILDFLAG(IS_MAC)
 
-TEST_F(
-    PopupCellViewTest,
-    IgnoreClickIfMouseWasNotOutsideBeforeAndTriggerSourceIsNotManualFallback) {
-  std::unique_ptr<PopupCellView> cell = CreatePopupCellView();
+TEST_F(PopupCellViewTest,
+       ShouldIgnoreMouseObservedOutsideItemBoundsCheckIsFalse_IgnoreClick) {
+  std::unique_ptr<PopupCellView> cell = CreatePopupCellView(
+      /*should_ignore_mouse_observed_outside_item_bounds_check=*/false);
   views::Label* label =
       cell->AddChildView(std::make_unique<views::Label>(u"Label text"));
   ShowView(std::move(cell));
@@ -248,12 +248,10 @@ TEST_F(
   generator().ClickLeftButton();
 }
 
-TEST_F(
-    PopupCellViewTest,
-    DoNotIgnoreClickIfMouseWasNotOutsideBeforeAndTriggerSourceIsManualFallback) {
-  std::unique_ptr<PopupCellView> cell =
-      CreatePopupCellView(AutofillSuggestionTriggerSource::
-                              kManualFallbackForAutocompleteUnrecognized);
+TEST_F(PopupCellViewTest,
+       ShouldIgnoreMouseObservedOutsideItemBoundsCheckIsTrue_DoNotIgnoreClick) {
+  std::unique_ptr<PopupCellView> cell = CreatePopupCellView(
+      /*should_ignore_mouse_observed_outside_item_bounds_check=*/true);
   views::Label* label =
       cell->AddChildView(std::make_unique<views::Label>(u"Label text"));
   ShowView(std::move(cell));
