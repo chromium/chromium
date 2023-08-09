@@ -1192,14 +1192,11 @@ TEST_P(PasswordFormManagerTest, UsernameCorrectionVote) {
     FormFieldData text_field;
     text_field.name = alternative.name;
     text_field.form_control_type = "text";
-    // Uniqueness doesn't matter in this test.
-    text_field.unique_renderer_id = autofill::FieldRendererId();
     saved_match_.form_data.fields.push_back(text_field);
   }
   FormFieldData password_field;
   password_field.name = saved_match_.password_element;
   password_field.form_control_type = "password";
-  password_field.unique_renderer_id = autofill::FieldRendererId();
   saved_match_.form_data.fields.push_back(password_field);
   SetNonFederatedAndNotifyFetchCompleted({&saved_match_});
 
@@ -1229,9 +1226,92 @@ TEST_P(PasswordFormManagerTest, UsernameCorrectionVote) {
       autofill::USERNAME;
   expected_types[saved_match_.password_element] =
       autofill::ACCOUNT_CREATION_PASSWORD;
-  EXPECT_CALL(mock_autofill_download_manager_,
-              StartUploadRequest(UploadedAutofillTypesAre(expected_types), _, _,
-                                 _, _, _, _));
+
+  // The first key in the map should be
+  // `saved_match_.form_data.fields[0].unique_renderer_id`, but the new
+  // `unique_renderer_id` of value 1 should be assigned in
+  // `GenerateSyntheticRenderIdsAndAssignThem()` in the flow
+  // of `Save()`.
+  VoteTypeMap expected_vote_types = {
+      {autofill::FieldRendererId(1),
+       AutofillUploadContents::Field::USERNAME_OVERWRITTEN}};
+
+  EXPECT_CALL(
+      mock_autofill_download_manager_,
+      StartUploadRequest(
+          AllOf(SignatureIs(CalculateFormSignature(saved_match_.form_data)),
+                UploadedAutofillTypesAre(expected_types),
+                VoteTypesAre(expected_vote_types)),
+          _, _, _, _, _, _));
+
+  form_manager_->Save();
+}
+
+// Checks votes uploading when user reuses credentials on login form. Simulates
+// the whole flow by saving the same username and password from the sign-up form
+// (`saved_match_`) on a different form (`submitted_form`).
+TEST_P(PasswordFormManagerTest, CredentialsReusedVote) {
+  // The credentials are saved on a sign-up form.
+  saved_match_.username_value = u"username_value";
+  saved_match_.all_alternative_usernames = {
+      {AlternativeElement::Value(u"user@gmail.com"),
+       autofill::FieldRendererId(), AlternativeElement::Name(u"email_field")},
+      {AlternativeElement::Value(u"username_value"),
+       autofill::FieldRendererId(),
+       AlternativeElement::Name(u"username_field")}};
+
+  // Add fields because it is necessary for vote uploading.
+  for (const AlternativeElement& alternative :
+       saved_match_.all_alternative_usernames) {
+    FormFieldData field;
+    field.name = alternative.name;
+    field.form_control_type = "text";
+    saved_match_.form_data.fields.push_back(field);
+  }
+  FormFieldData password_field;
+  password_field.name = saved_match_.password_element;
+  password_field.form_control_type = "password";
+  saved_match_.form_data.fields.push_back(password_field);
+
+  SetNonFederatedAndNotifyFetchCompleted({&saved_match_});
+
+  // On a login form, the user reuses the username value and password value.
+  submitted_form_.fields[kUsernameFieldIndex].value =
+      saved_match_.username_value;
+  submitted_form_.fields[kPasswordFieldIndex].value =
+      saved_match_.password_value;
+
+  ASSERT_TRUE(form_manager_->ProvisionallySave(submitted_form_, &driver_,
+                                               /*possible_username=*/nullptr));
+
+  // Credentials saved on the signup form were reused on a login form. The vote
+  // applies to the first (signup) form.
+  EXPECT_CALL(
+      mock_autofill_download_manager_,
+      StartUploadRequest(
+          AllOf(SignatureIs(CalculateFormSignature(saved_match_.form_data)),
+                VoteTypesAre(
+                    {{saved_match_.form_data.fields[kUsernameFieldIndex]
+                          .unique_renderer_id,
+                      AutofillUploadContents::Field::CREDENTIALS_REUSED},
+                     {saved_match_.form_data.fields[kPasswordFieldIndex]
+                          .unique_renderer_id,
+                      AutofillUploadContents::Field::CREDENTIALS_REUSED}})),
+          _, _, _, _, _, _));
+
+  // Saved credentials from the signup form were used for the first time on a
+  // submitted form. The vote applies to the new form being submitted.
+  EXPECT_CALL(
+      mock_autofill_download_manager_,
+      StartUploadRequest(
+          AllOf(SignatureIs(CalculateFormSignature(submitted_form_)),
+                VoteTypesAre({{submitted_form_.fields[kPasswordFieldIndex]
+                                   .unique_renderer_id,
+                               AutofillUploadContents::Field::FIRST_USE},
+                              {submitted_form_.fields[kUsernameFieldIndex]
+                                   .unique_renderer_id,
+                               AutofillUploadContents::Field::FIRST_USE}})),
+          _, _, _, _, _, _));
 
   form_manager_->Save();
 }
