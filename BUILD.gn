@@ -361,7 +361,6 @@ group("gn_all") {
     if (is_android) {
       deps += [
         "//base:base_junit_tests",
-        "//base/android/jni_generator:jni_generator_tests",
         "//base/android/linker:chromium_android_linker",
         "//build/android/gyp/test:hello_world",
         "//build/android/stacktrace:java_deobfuscate",
@@ -383,6 +382,7 @@ group("gn_all") {
         "//third_party/android_build_tools/lint:custom_lint_java",
         "//third_party/androidx_javascriptengine",
         "//third_party/catapult/devil",
+        "//third_party/jni_zero:jni_generator_tests",
         "//third_party/r8:custom_d8_java",
         "//tools/android:android_tools",
         "//tools/android:memconsumer",

@@ -188,8 +188,6 @@ JNI Generator automatically produces asserts that verify that the Natives interf
 called. These checks are compiled out of Release builds, making these an excellent way to determine
 whether your code is called safely.
 
-![Check Flow](doc/jni-check-flow.svg)
-
 It is not sufficient, however, to use `<Class>Jni.get()` to guarantee native is initialized - it is
 only a debugging tool to ensure that you're using native after native is loaded.
 
