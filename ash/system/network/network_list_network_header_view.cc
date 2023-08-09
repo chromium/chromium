@@ -67,10 +67,9 @@ NetworkListNetworkHeaderView::NetworkListNetworkHeaderView(
     }
     entry_row()->SetExpandable(true);
     entry_row()->AddRightView(qs_toggle.release());
-    // ChromeVox users will use the entire row to toggle the feature.
+    // ChromeVox users will use the `qs_toggle_` to toggle the feature.
     entry_row()->left_view()->GetViewAccessibility().OverrideIsIgnored(true);
     entry_row()->text_label()->GetViewAccessibility().OverrideIsIgnored(true);
-    qs_toggle_->GetViewAccessibility().OverrideIsIgnored(true);
   } else {
     container()->AddView(TriView::Container::END, toggle.release());
   }

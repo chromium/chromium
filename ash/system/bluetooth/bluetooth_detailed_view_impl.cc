@@ -25,6 +25,7 @@
 #include "base/functional/bind.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "device/bluetooth/chromeos/bluetooth_utils.h"
+#include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
@@ -98,6 +99,8 @@ void BluetoothDetailedViewImpl::UpdateBluetoothEnabledState(bool enabled) {
       IDS_ASH_STATUS_TRAY_BLUETOOTH_TOGGLE_TOOLTIP, tooltip_template);
   toggle_row_->SetTooltipText(tooltip_text);
   toggle_button_->SetTooltipText(tooltip_text);
+  toggle_button_->SetAccessibleName(
+      l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_BLUETOOTH));
 
   // Ensure the toggle button is in sync with the current Bluetooth state.
   if (toggle_button_->GetIsOn() != enabled) {
@@ -200,11 +203,9 @@ void BluetoothDetailedViewImpl::CreateTopContainer() {
   toggle_row_->SetExpandable(true);
   toggle_row_->tri_view()->SetInsets(kToggleRowTriViewInsets);
 
-  // ChromeVox users will just use the `toggle_row_` to toggle. Otherwise there
-  // is too much repetition in the accessibility descriptions.
+  // ChromeVox users will just use the `toggle_button_` to toggle.
   toggle_icon_->GetViewAccessibility().OverrideIsIgnored(true);
   toggle_row_->text_label()->GetViewAccessibility().OverrideIsIgnored(true);
-  toggle_button_->GetViewAccessibility().OverrideIsIgnored(true);
 }
 
 void BluetoothDetailedViewImpl::CreateMainContainer() {
