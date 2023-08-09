@@ -56,10 +56,6 @@ public interface LocationBarDataProvider {
     /** Removes an observer of changes to LocationBarDataProvider's data. */
     void removeObserver(Observer observer);
 
-    /** Returns The url for the currently active page.*/
-    @NonNull
-    String getCurrentUrl();
-
     /**
      * Returns the url of the current tab, represented as a GURL. Returns an empty GURL when there
      * is no tab.

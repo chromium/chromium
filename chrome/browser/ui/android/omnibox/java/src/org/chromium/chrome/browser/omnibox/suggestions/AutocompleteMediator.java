@@ -709,7 +709,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
                         : -1;
                 int pageClassification = mDataProvider.getPageClassification(
                         mDelegate.didFocusUrlFromFakebox(), /*isPrefetch=*/false);
-                String currentUrl = mDataProvider.getCurrentUrl();
+                GURL currentUrl = mDataProvider.getCurrentGurl();
 
                 postAutocompleteRequest(() -> {
                     startMeasuringSuggestionRequestToUiModelTime();
@@ -829,7 +829,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
 
             recordMetrics(matchIndex, WindowOpenDisposition.CURRENT_TAB, suggestion);
             if (((transition & PageTransition.CORE_MASK) == PageTransition.TYPED)
-                    && TextUtils.equals(url.getSpec(), mDataProvider.getCurrentUrl())) {
+                    && url.equals(mDataProvider.getCurrentGurl())) {
                 // When the user hit enter on the existing permanent URL, treat it like a
                 // reload for scoring purposes.  We could detect this by just checking
                 // user_input_in_progress_, but it seems better to treat "edits" that end
@@ -891,7 +891,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
         int pageClassification = mDataProvider.getPageClassification(
                 /*isFocusedFromFakebox=*/false, /*isPrefetch=*/true);
         postAutocompleteRequest(() -> {
-            mAutocomplete.startPrefetch(mDataProvider.getCurrentUrl(), pageClassification);
+            mAutocomplete.startPrefetch(mDataProvider.getCurrentGurl(), pageClassification);
         }, SCHEDULE_FOR_IMMEDIATE_EXECUTION);
     }
 
@@ -917,7 +917,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
             mShouldCacheSuggestions =
                     pageClassification == PageClassification.ANDROID_SEARCH_WIDGET_VALUE;
             mAutocomplete.startZeroSuggest(mUrlBarEditingTextProvider.getTextWithAutocomplete(),
-                    mDataProvider.getCurrentUrl(), pageClassification, mDataProvider.getTitle());
+                    mDataProvider.getCurrentGurl(), pageClassification, mDataProvider.getTitle());
         }
     }
 
@@ -970,7 +970,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
         if (!mNativeInitialized || mAutocomplete == null) return;
         stopAutocomplete(false);
         if (mDataProvider.hasTab()) {
-            mAutocomplete.start(mDataProvider.getCurrentUrl(),
+            mAutocomplete.start(mDataProvider.getCurrentGurl(),
                     mDataProvider.getPageClassification(
                             /*isFocusedFromFakebox=*/false, /*isPrefetch=*/false),
                     query, -1, false);
@@ -1015,7 +1015,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
         // validation.
         if (mAutocompleteResult.isFromCachedResult()) return;
 
-        String currentPageUrl = mDataProvider.getCurrentUrl();
+        GURL currentPageUrl = mDataProvider.getCurrentGurl();
         int pageClassification = mDataProvider.getPageClassification(
                 mDelegate.didFocusUrlFromFakebox(), /*isPrefetch=*/false);
         long elapsedTimeSinceModified = getElapsedTimeSinceInputChange();

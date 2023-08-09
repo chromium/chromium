@@ -61,6 +61,7 @@ import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.url.JUnitTestGURLs;
 
 /**
  * Unit tests for {@link StatusMediator}.
@@ -445,7 +446,7 @@ public final class StatusMediatorUnitTest {
     @Test
     @SmallTest
     public void testShowStoreIcon_DifferentUrl() {
-        setupStoreIconForTesting("test1.com", false);
+        setupStoreIconForTesting(false);
         // Show the default icon first.
         mMediator.setUrlHasFocus(true);
         mMediator.setShowIconsWhenUrlFocused(true);
@@ -459,28 +460,28 @@ public final class StatusMediatorUnitTest {
     @Test
     @SmallTest
     public void testShowStoreIcon_InIncognito() {
-        setupStoreIconForTesting("test.com", true);
+        setupStoreIconForTesting(true);
         // Show the default icon first.
         mMediator.setUrlHasFocus(true);
         mMediator.setShowIconsWhenUrlFocused(true);
         Assert.assertFalse(mMediator.isStoreIconShowing());
 
         // Try to show the store icon.
-        mMediator.showStoreIcon(mWindowAndroid, "test.com", mStoreIconDrawable, 0, true);
+        mMediator.showStoreIcon(mWindowAndroid, JUnitTestGURLs.BLUE_1, mStoreIconDrawable, 0, true);
         Assert.assertFalse(mMediator.isStoreIconShowing());
     }
 
     @Test
     @SmallTest
     public void testShowStoreIcon() {
-        setupStoreIconForTesting("test.com", false);
+        setupStoreIconForTesting(false);
         // Show the default icon first.
         mMediator.setUrlHasFocus(true);
         mMediator.setShowIconsWhenUrlFocused(true);
         Assert.assertFalse(mMediator.isStoreIconShowing());
 
         // Try to show the store icon.
-        mMediator.showStoreIcon(mWindowAndroid, "test.com", mStoreIconDrawable, 0, true);
+        mMediator.showStoreIcon(mWindowAndroid, JUnitTestGURLs.BLUE_1, mStoreIconDrawable, 0, true);
         Assert.assertTrue(mMediator.isStoreIconShowing());
         Assert.assertEquals(IconTransitionType.ROTATE,
                 mModel.get(StatusProperties.STATUS_ICON_RESOURCE).getTransitionType());
@@ -494,7 +495,7 @@ public final class StatusMediatorUnitTest {
         Assert.assertFalse(mMediator.isStoreIconShowing());
 
         // Show store icon again.
-        mMediator.showStoreIcon(mWindowAndroid, "test.com", mStoreIconDrawable, 0, true);
+        mMediator.showStoreIcon(mWindowAndroid, JUnitTestGURLs.BLUE_1, mStoreIconDrawable, 0, true);
         Assert.assertTrue(mMediator.isStoreIconShowing());
 
         // Simulate that we need to switch back to the default icon.
@@ -505,14 +506,15 @@ public final class StatusMediatorUnitTest {
     @Test
     @SmallTest
     public void testShowStoreIcon_NotEligibleToShowIph() {
-        setupStoreIconForTesting("test.com", false);
+        setupStoreIconForTesting(false);
         // Show the default icon first.
         mMediator.setUrlHasFocus(true);
         mMediator.setShowIconsWhenUrlFocused(true);
         Assert.assertFalse(mMediator.isStoreIconShowing());
 
         // Try to show the store icon.
-        mMediator.showStoreIcon(mWindowAndroid, "test.com", mStoreIconDrawable, 0, false);
+        mMediator.showStoreIcon(
+                mWindowAndroid, JUnitTestGURLs.BLUE_1, mStoreIconDrawable, 0, false);
         Assert.assertTrue(mMediator.isStoreIconShowing());
         Assert.assertEquals(IconTransitionType.ROTATE,
                 mModel.get(StatusProperties.STATUS_ICON_RESOURCE).getTransitionType());
@@ -596,11 +598,12 @@ public final class StatusMediatorUnitTest {
     }
 
     /**
-     * @param currentUrl Url of current page.
      * @param isIncognito Whether the current page is in an incognito mode.
      */
-    private void setupStoreIconForTesting(String currentUrl, boolean isIncognito) {
-        doReturn(currentUrl).when(mLocationBarDataProvider).getCurrentUrl();
+    private void setupStoreIconForTesting(boolean isIncognito) {
+        doReturn(JUnitTestGURLs.getGURL(JUnitTestGURLs.BLUE_1))
+                .when(mLocationBarDataProvider)
+                .getCurrentGurl();
         doReturn(isIncognito).when(mLocationBarDataProvider).isIncognito();
     }
 }

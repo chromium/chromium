@@ -1208,7 +1208,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             // LocationBarDataProvider#getTitle always returns the url. We postpone the title
             // animation until the title is authentic.
             if ((mState == STATE_DOMAIN_AND_TITLE || mState == STATE_TITLE_ONLY)
-                    && !title.equals(mLocationBarDataProvider.getCurrentUrl())
+                    && !title.equals(mLocationBarDataProvider.getCurrentGurl().getSpec())
                     && !title.equals(ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL)) {
                 // Delay the title animation until security icon animation finishes.
                 // If this is updated after branding, we don't need to wait.

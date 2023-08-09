@@ -196,8 +196,8 @@ public class SearchResumptionModuleMediator implements OnSuggestionsReceivedList
             mAutoComplete = mAutocompleteProvider.get(profile);
             mAutoComplete.addOnSuggestionsReceivedListener(this);
             int pageClassification = getPageClassification();
-            mAutoComplete.startZeroSuggest("", mTabToTrackSuggestion.getUrl().getSpec(),
-                    pageClassification, mTabToTrackSuggestion.getTitle());
+            mAutoComplete.startZeroSuggest("", mTabToTrackSuggestion.getUrl(), pageClassification,
+                    mTabToTrackSuggestion.getTitle());
         } else {
             mSearchResumptionModuleBridge = new SearchResumptionModuleBridge(profile);
             mSearchResumptionModuleBridge.fetchSuggestions(

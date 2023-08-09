@@ -6,7 +6,7 @@ package org.chromium.chrome.browser.search_resumption;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.endsWith;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -302,7 +302,7 @@ public class SearchResumptionModuleMediatorUnitTest {
         if (!useNewServiceEnabled && cachedSuggestions == null) {
             verify(mAutocompleteController).addOnSuggestionsReceivedListener(mListener.capture());
             verify(mAutocompleteController, times(1))
-                    .startZeroSuggest(any(), endsWith(mUrlToTrack.getSpec()), anyInt(), any());
+                    .startZeroSuggest(any(), eq(mUrlToTrack), anyInt(), any());
         }
 
         mFeatureListValues.addFeatureFlagOverride(

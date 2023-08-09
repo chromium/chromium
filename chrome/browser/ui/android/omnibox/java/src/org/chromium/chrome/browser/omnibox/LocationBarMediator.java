@@ -73,6 +73,7 @@ import org.chromium.content_public.common.ResourceRequestBody;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.interpolators.Interpolators;
+import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -161,7 +162,7 @@ class LocationBarMediator
     private final Context mContext;
     private final BackKeyBehaviorDelegate mBackKeyBehavior;
     private final WindowAndroid mWindowAndroid;
-    private String mOriginalUrl = "";
+    private GURL mOriginalUrl = GURL.emptyGURL();
     private Animator mUrlFocusChangeAnimator;
     private final ObserverList<UrlFocusChangeListener> mUrlFocusChangeListeners =
             new ObserverList<>();
@@ -304,7 +305,7 @@ class LocationBarMediator
             }
         } // Focus change caused by a closed tab may result in there not being an active tab.
         if (!hasFocus && mLocationBarDataProvider.hasTab()) {
-            setUrl(mLocationBarDataProvider.getCurrentUrl(),
+            setUrl(mLocationBarDataProvider.getCurrentGurl(),
                     mLocationBarDataProvider.getUrlBarData());
         }
     }
@@ -403,7 +404,7 @@ class LocationBarMediator
 
     /*package */ void revertChanges() {
         if (mUrlHasFocus) {
-            String currentUrl = mLocationBarDataProvider.getCurrentUrl();
+            GURL currentUrl = mLocationBarDataProvider.getCurrentGurl();
             if (NativePage.isNativePageUrl(currentUrl, mLocationBarDataProvider.isIncognito())) {
                 setUrlBarTextEmpty();
             } else {
@@ -412,7 +413,7 @@ class LocationBarMediator
             }
             mUrlCoordinator.setKeyboardVisibility(false, false);
         } else {
-            setUrl(mLocationBarDataProvider.getCurrentUrl(),
+            setUrl(mLocationBarDataProvider.getCurrentGurl(),
                     mLocationBarDataProvider.getUrlBarData());
         }
     }
@@ -441,7 +442,7 @@ class LocationBarMediator
                 && DeviceClassManager.enablePrerendering()
                 && PreloadPagesSettingsBridge.getState() != PreloadPagesState.NO_PRELOADING
                 && mLocationBarDataProvider.hasTab()) {
-            mOmniboxPrerender.prerenderMaybe(userText, mOriginalUrl,
+            mOmniboxPrerender.prerenderMaybe(userText, mOriginalUrl.getSpec(),
                     mAutocompleteCoordinator.getCurrentNativeAutocompleteResult(),
                     mProfileSupplier.get(), mLocationBarDataProvider.getTab());
         }
@@ -541,11 +542,11 @@ class LocationBarMediator
      *
      * <p>If the current tab is null, the URL text will be cleared.
      */
-    /* package */ void setUrl(String currentUrlString, UrlBarData urlBarData) {
+    /* package */ void setUrl(GURL currentUrl, UrlBarData urlBarData) {
         // If the URL is currently focused, do not replace the text they have entered with the URL.
         // Once they stop editing the URL, the current tab's URL will automatically be filled in.
         if (mUrlCoordinator.hasFocus()) {
-            if (mUrlFocusedWithoutAnimations && !UrlUtilities.isNTPUrl(currentUrlString)) {
+            if (mUrlFocusedWithoutAnimations && !UrlUtilities.isNTPUrl(currentUrl)) {
                 // If we did not run the focus animations, then the user has not typed any text.
                 // So, clear the focus and accept whatever URL the page is currently attempting to
                 // display. If the NTP is showing, the current page's URL should not be displayed.
@@ -555,7 +556,7 @@ class LocationBarMediator
             }
         }
 
-        mOriginalUrl = currentUrlString;
+        mOriginalUrl = currentUrl;
         setUrlBarText(urlBarData, UrlBar.ScrollType.SCROLL_TO_TLD, SelectionState.SELECT_ALL);
     }
 
@@ -1104,7 +1105,7 @@ class LocationBarMediator
     }
 
     private void updateUrl() {
-        setUrl(mLocationBarDataProvider.getCurrentUrl(), mLocationBarDataProvider.getUrlBarData());
+        setUrl(mLocationBarDataProvider.getCurrentGurl(), mLocationBarDataProvider.getUrlBarData());
     }
 
     private void updateOmniboxPrerender() {
@@ -1381,7 +1382,7 @@ class LocationBarMediator
 
         setUrlBarFocus(false, null, OmniboxFocusReason.UNFOCUS);
         // Revert the URL to match the current page.
-        setUrl(mLocationBarDataProvider.getCurrentUrl(), mLocationBarDataProvider.getUrlBarData());
+        setUrl(mLocationBarDataProvider.getCurrentGurl(), mLocationBarDataProvider.getUrlBarData());
         focusCurrentTab();
     }
 

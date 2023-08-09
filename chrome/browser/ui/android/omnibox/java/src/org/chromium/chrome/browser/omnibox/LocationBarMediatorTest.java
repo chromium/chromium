@@ -86,7 +86,6 @@ import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.browser_ui.styles.ChromeColors;
-import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.signin.identitymanager.IdentityManager;
@@ -94,6 +93,7 @@ import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
+import org.chromium.url.JUnitTestGURLs;
 
 import java.lang.ref.WeakReference;
 import java.util.Arrays;
@@ -293,7 +293,9 @@ public class LocationBarMediatorTest {
 
     @Test
     public void testRevertChanges_focusedNativePage() {
-        doReturn(UrlConstants.NTP_URL).when(mLocationBarDataProvider).getCurrentUrl();
+        doReturn(JUnitTestGURLs.getGURL(JUnitTestGURLs.NTP_URL))
+                .when(mLocationBarDataProvider)
+                .getCurrentGurl();
         mMediator.onUrlFocusChange(true);
         mMediator.revertChanges();
         verify(mUrlCoordinator)
@@ -303,7 +305,9 @@ public class LocationBarMediatorTest {
 
     @Test
     public void testRevertChanges_unFocused() {
-        doReturn("http://url.com").when(mLocationBarDataProvider).getCurrentUrl();
+        doReturn(JUnitTestGURLs.getGURL(JUnitTestGURLs.BLUE_1))
+                .when(mLocationBarDataProvider)
+                .getCurrentGurl();
         mMediator.revertChanges();
         verify(mUrlCoordinator)
                 .setUrlBarData(mLocationBarDataProvider.getUrlBarData(),
@@ -328,7 +332,8 @@ public class LocationBarMediatorTest {
                         anyLong(), any(), anyString(), anyString(), anyLong(), any(), any());
 
         doReturn(PreloadPagesState.STANDARD_PRELOADING).when(mPreloadPagesSettingsJni).getState();
-        mMediator.setUrl("originalUrl", null);
+        GURL url = JUnitTestGURLs.getGURL(JUnitTestGURLs.RED_1);
+        mMediator.setUrl(url, null);
         doReturn(true).when(mLocationBarDataProvider).hasTab();
         doReturn(mTab).when(mLocationBarDataProvider).getTab();
         doReturn(456L).when(mAutocompleteCoordinator).getCurrentNativeAutocompleteResult();
@@ -339,8 +344,8 @@ public class LocationBarMediatorTest {
 
         mMediator.onSuggestionsChanged("textWithAutocomplete", true);
         verify(mPrerenderJni)
-                .prerenderMaybe(123L, omniboxPrerenderCaptor.getValue(), "text", "originalUrl",
-                        456L, profile, mTab);
+                .prerenderMaybe(123L, omniboxPrerenderCaptor.getValue(), "text",
+                        JUnitTestGURLs.RED_1, 456L, profile, mTab);
         verify(mUrlCoordinator).setAutocompleteText("text", "textWithAutocomplete");
     }
 
@@ -669,10 +674,10 @@ public class LocationBarMediatorTest {
 
     @Test
     public void testUpdateColors_setColorScheme() {
-        String url = "https://www.google.com";
+        String url = JUnitTestGURLs.BLUE_1;
         UrlBarData urlBarData = UrlBarData.forUrl(url);
         doReturn(urlBarData).when(mLocationBarDataProvider).getUrlBarData();
-        doReturn(url).when(mLocationBarDataProvider).getCurrentUrl();
+        doReturn(JUnitTestGURLs.getGURL(url)).when(mLocationBarDataProvider).getCurrentGurl();
         doReturn(true).when(mUrlCoordinator).setBrandedColorScheme(anyInt());
 
         mMediator.updateBrandedColorScheme();
@@ -687,9 +692,9 @@ public class LocationBarMediatorTest {
 
     @Test
     public void testSetUrl() {
-        String url = "http://url.com";
+        String url = JUnitTestGURLs.BLUE_1;
         UrlBarData urlBarData = UrlBarData.forUrl(url);
-        mMediator.setUrl(url, urlBarData);
+        mMediator.setUrl(JUnitTestGURLs.getGURL(url), urlBarData);
 
         verify(mUrlCoordinator)
                 .setUrlBarData(
@@ -697,7 +702,7 @@ public class LocationBarMediatorTest {
 
         doReturn(true).when(mUrlCoordinator).hasFocus();
         mMediator.setIsUrlBarFocusedWithoutAnimationsForTesting(true);
-        mMediator.setUrl(url, urlBarData);
+        mMediator.setUrl(JUnitTestGURLs.getGURL(url), urlBarData);
 
         verify(mUrlCoordinator).clearFocus();
     }

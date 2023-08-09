@@ -708,7 +708,8 @@ public class StatusMediator
     @Override
     public void showStoreIcon(WindowAndroid window, String url, Drawable drawable,
             @StringRes int stringId, boolean canShowIph) {
-        if ((window != mWindowAndroid) || (!url.equals(mLocationBarDataProvider.getCurrentUrl()))
+        if ((window != mWindowAndroid)
+                || (!url.equals(mLocationBarDataProvider.getCurrentGurl().getSpec()))
                 || (mLocationBarDataProvider.isIncognito())) {
             return;
         }
