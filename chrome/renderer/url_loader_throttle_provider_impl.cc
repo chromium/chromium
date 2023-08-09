@@ -94,19 +94,19 @@ URLLoaderThrottleProviderImpl::URLLoaderThrottleProviderImpl(
     ChromeContentRendererClient* chrome_content_renderer_client)
     : type_(type),
       chrome_content_renderer_client_(chrome_content_renderer_client) {
-  DETACH_FROM_THREAD(thread_checker_);
+  DETACH_FROM_SEQUENCE(sequence_checker_);
   broker->GetInterface(safe_browsing_remote_.InitWithNewPipeAndPassReceiver());
 }
 
 URLLoaderThrottleProviderImpl::~URLLoaderThrottleProviderImpl() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
 URLLoaderThrottleProviderImpl::URLLoaderThrottleProviderImpl(
     const URLLoaderThrottleProviderImpl& other)
     : type_(other.type_),
       chrome_content_renderer_client_(other.chrome_content_renderer_client_) {
-  DETACH_FROM_THREAD(thread_checker_);
+  DETACH_FROM_SEQUENCE(sequence_checker_);
   if (other.safe_browsing_) {
     other.safe_browsing_->Clone(
         safe_browsing_remote_.InitWithNewPipeAndPassReceiver());
@@ -116,7 +116,7 @@ URLLoaderThrottleProviderImpl::URLLoaderThrottleProviderImpl(
 
 std::unique_ptr<blink::URLLoaderThrottleProvider>
 URLLoaderThrottleProviderImpl::Clone() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (safe_browsing_remote_)
     safe_browsing_.Bind(std::move(safe_browsing_remote_));
   return base::WrapUnique(new URLLoaderThrottleProviderImpl(*this));
@@ -126,7 +126,7 @@ blink::WebVector<std::unique_ptr<blink::URLLoaderThrottle>>
 URLLoaderThrottleProviderImpl::CreateThrottles(
     int render_frame_id,
     const blink::WebURLRequest& request) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   blink::WebVector<std::unique_ptr<blink::URLLoaderThrottle>> throttles;
 
