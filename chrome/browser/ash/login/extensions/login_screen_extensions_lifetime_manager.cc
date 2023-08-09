@@ -11,6 +11,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/trace_event/trace_event.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -88,6 +89,8 @@ void LoginScreenExtensionsLifetimeManager::OnProfileManagerDestroying() {
 }
 
 void LoginScreenExtensionsLifetimeManager::OnSessionStateChanged() {
+  TRACE_EVENT0("login",
+               "LoginScreenExtensionsLifetimeManager::OnSessionStateChanged");
   UpdateStateIfProfileReady();
 }
 
