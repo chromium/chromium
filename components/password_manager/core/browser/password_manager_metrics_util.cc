@@ -398,4 +398,11 @@ void LogUserInteractionsInPasswordManagementBubble(
       password_management_bubble_interaction);
 }
 
+void LogUserInteractionsInSharedPasswordsNotificationBubble(
+    SharedPasswordsNotificationBubbleInteractions interaction) {
+  base::UmaHistogramEnumeration(
+      "PasswordManager.SharedPasswordsNotificationBubble.UserAction",
+      interaction);
+}
+
 }  // namespace password_manager::metrics_util

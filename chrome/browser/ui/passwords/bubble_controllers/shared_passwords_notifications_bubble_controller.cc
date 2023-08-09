@@ -15,6 +15,8 @@
 #include "ui/base/l10n/l10n_util.h"
 
 using password_manager::PasswordForm;
+using password_manager::metrics_util::
+    SharedPasswordsNotificationBubbleInteractions;
 
 SharedPasswordsNotificationBubbleController::
     SharedPasswordsNotificationBubbleController(
@@ -22,7 +24,12 @@ SharedPasswordsNotificationBubbleController::
     : PasswordBubbleControllerBase(
           std::move(delegate),
           password_manager::metrics_util::
-              AUTOMATIC_SHARED_PASSWORDS_NOTIFICATION) {}
+              AUTOMATIC_SHARED_PASSWORDS_NOTIFICATION) {
+  password_manager::metrics_util::
+      LogUserInteractionsInSharedPasswordsNotificationBubble(
+          SharedPasswordsNotificationBubbleInteractions::
+              kNotificationDisplayed);
+}
 
 SharedPasswordsNotificationBubbleController::
     ~SharedPasswordsNotificationBubbleController() {
@@ -60,10 +67,17 @@ gfx::Range SharedPasswordsNotificationBubbleController::GetSenderNameRange()
 }
 
 void SharedPasswordsNotificationBubbleController::OnAcknowledgeClicked() {
+  password_manager::metrics_util::
+      LogUserInteractionsInSharedPasswordsNotificationBubble(
+          SharedPasswordsNotificationBubbleInteractions::kGotItButtonClicked);
   MarkSharedCredentialAsNotifiedInPasswordStore();
 }
 
 void SharedPasswordsNotificationBubbleController::OnManagePasswordsClicked() {
+  password_manager::metrics_util::
+      LogUserInteractionsInSharedPasswordsNotificationBubble(
+          SharedPasswordsNotificationBubbleInteractions::
+              kManagePasswordsButtonClicked);
   MarkSharedCredentialAsNotifiedInPasswordStore();
   delegate_->NavigateToPasswordManagerSettingsPage(
       password_manager::ManagePasswordsReferrer::
@@ -71,6 +85,9 @@ void SharedPasswordsNotificationBubbleController::OnManagePasswordsClicked() {
 }
 
 void SharedPasswordsNotificationBubbleController::OnCloseBubbleClicked() {
+  password_manager::metrics_util::
+      LogUserInteractionsInSharedPasswordsNotificationBubble(
+          SharedPasswordsNotificationBubbleInteractions::kCloseButtonClicked);
   MarkSharedCredentialAsNotifiedInPasswordStore();
 }
 

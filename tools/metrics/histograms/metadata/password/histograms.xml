@@ -3146,6 +3146,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.SharedPasswordsNotificationBubble.UserAction"
+    enum="PasswordManager.SharedPasswordsNotificationInteractions"
+    expires_after="2024-03-01">
+  <owner>mamir@chromium.org</owner>
+  <owner>rgod@google.com</owner>
+  <summary>
+    Records different user interactions with the shared password notification
+    bubble. The bubble is displayed upon visiting a sign-in form for which one
+    or more saved passwords are shared by other users. The metric is recorded
+    upon displaying the notification and upon user interaction with one of the
+    buttons in the notification.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.ShortcutMetric"
     enum="PasswordManagerShortcutMetric" expires_after="2023-12-17">
   <owner>vasilii@chromium.org</owner>

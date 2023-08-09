@@ -82163,6 +82163,13 @@ Called by update_net_trust_anchors.py.-->
   <int value="2" label="Skipped"/>
 </enum>
 
+<enum name="PasswordManager.SharedPasswordsNotificationInteractions">
+  <int value="0" label="Notification displayed"/>
+  <int value="1" label="Got it button clicked"/>
+  <int value="2" label="Manage passwords button clicked"/>
+  <int value="3" label="Close button clicked"/>
+</enum>
+
 <enum name="PasswordManager.Store">
   <int value="0" label="Not set"/>
   <int value="1" label="Profile store"/>
