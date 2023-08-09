@@ -28,7 +28,6 @@
 
 #include "testing/libfuzzer/proto/skia_image_filter_proto_converter.h"
 
-#include <ctype.h>
 #include <stdlib.h>
 
 #include <algorithm>
