@@ -256,8 +256,8 @@ float ShapeResult::RunInfo::XPositionForOffset(
     }
   }
 
-  // Determine if the offset is at the beginning of the current glyph sequence.
-  bool is_offset_at_glyph_sequence_start = (offset == glyph_sequence_start);
+  // This is the character position inside the glyph sequence.
+  unsigned pos = offset - glyph_sequence_start;
 
   // We calculate the number of Unicode grapheme clusters (actually cursor
   // position stops) on the subset of characters. We use this to divide
@@ -268,23 +268,14 @@ float ShapeResult::RunInfo::XPositionForOffset(
   unsigned graphemes = NumGraphemes(glyph_sequence_start, glyph_sequence_end);
   if (graphemes > 1) {
     DCHECK_GE(glyph_sequence_end, glyph_sequence_start);
-    unsigned next_offset = offset + (offset == num_characters_ ? 0 : 1);
-    unsigned num_graphemes_to_offset =
-        NumGraphemes(glyph_sequence_start, next_offset) - 1;
-    // |is_offset_at_glyph_sequence_start| bool variable above does not take
-    // into account the case of broken glyphs (with multi graphemes) scenarios,
-    // so make amend here. Check if the offset is at the beginning of the
-    // specific grapheme cluster in the broken glyphs.
-    if (offset > 0) {
-      is_offset_at_glyph_sequence_start =
-          (NumGraphemes(offset - 1, next_offset) != 1);
-    }
+    unsigned size = glyph_sequence_end - glyph_sequence_start;
+    unsigned place = graphemes * pos / size;
+    pos -= place;
     glyph_sequence_advance = glyph_sequence_advance / graphemes;
     if (IsRtl()) {
-      accumulated_position +=
-          glyph_sequence_advance * (graphemes - num_graphemes_to_offset - 1);
+      accumulated_position += glyph_sequence_advance * (graphemes - place - 1);
     } else {
-      accumulated_position += glyph_sequence_advance * num_graphemes_to_offset;
+      accumulated_position += glyph_sequence_advance * place;
     }
   }
 
@@ -292,11 +283,10 @@ float ShapeResult::RunInfo::XPositionForOffset(
   // offset is not at the beginning, we need to jump to the right side of the
   // grapheme. On RTL, if we want AdjustToStart and offset is not at the end, we
   // need to jump to the left side of the grapheme.
-  if (IsLtr() && adjust_mid_cluster == AdjustMidCluster::kToEnd &&
-      !is_offset_at_glyph_sequence_start) {
+  if (IsLtr() && adjust_mid_cluster == AdjustMidCluster::kToEnd && pos != 0) {
     accumulated_position += glyph_sequence_advance;
   } else if (IsRtl() && adjust_mid_cluster == AdjustMidCluster::kToEnd &&
-             !is_offset_at_glyph_sequence_start) {
+             pos != 0) {
     accumulated_position -= glyph_sequence_advance;
   }
 
