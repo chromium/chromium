@@ -8227,6 +8227,7 @@ test("unit_tests") {
       "../browser/lacros/account_manager/get_account_information_helper_unittest.cc",
       "../browser/lacros/account_manager/profile_account_manager_unittest.cc",
       "../browser/lacros/account_manager/signin_helper_lacros_unittest.cc",
+      "../browser/lacros/app_mode/web_kiosk_installer_lacros_unittest.cc",
       "../browser/lacros/cert/client_cert_store_lacros_unittest.cc",
       "../browser/lacros/clipboard_history_lacros_unittest.cc",
       "../browser/lacros/device_settings_lacros_unittest.cc",

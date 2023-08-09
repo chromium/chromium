@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/functional/callback_helpers.h"
 #include "chrome/browser/chromeos/app_mode/web_kiosk_app_installer.h"
 #include "chromeos/crosapi/mojom/web_kiosk_service.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
@@ -38,7 +37,7 @@ WebKioskInstallerLacros::WebKioskInstallerLacros(Profile& profile)
       receiver_.BindNewPipeAndPassRemoteWithVersion());
 }
 
-WebKioskInstallerLacros::~WebKioskInstallerLacros() {}
+WebKioskInstallerLacros::~WebKioskInstallerLacros() = default;
 
 void WebKioskInstallerLacros::GetWebKioskInstallState(
     const GURL& url,
