@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<script src="../../perf_tests/resources/runner.js"></script>
+<script src="../../perf_tests/dom/resources/dom-parts-api.js"></script>
+
+<fieldset id=controls disabled>
+  <span>
+    <button id=small>Small defaults</button>
+    <button id=big>Big defaults</button>
+  </span>
+  <label>Width <input type=number id=width></label>
+  <label>Depth <input type=number id=depth></label>
+  <label>Extra <input type=number id=extra></label>
+  <span>
+    <label>Total parts: <input type=number disabled id=total_parts></label>
+    <label><input type=checkbox id=show_dom>Show cloned content</label>
+  </span>
+  <label>Total DOM nodes: <input type=number disabled id=total_nodes></label>
+  <label>Repeats <input type=number id=repeats></label>
+  <button id="Raw">Raw</button>
+  <button id="Comments">Comments</button>
+  <button id="PartsFlat">Parts (flat)</button>
+  <button id="PartsNested">Parts (nested)</button>
+</fieldset>
+<div id="status"></div>
+<div id="testContainer" class="hidden"></div>
+<script>
+  const container = window.testContainer;
+  const statusDiv = document.getElementById('status');
+
+  if (typeof document.getPartRoot !== "function") {
+    window.onload = () => document.write('<h1>DOM Parts API is not supported in this browser. Perhaps enable it?</h1>');
+  }
+
+  async function setStatus(m, enabled) {
+    statusDiv.textContent = m;
+    controls.disabled = !enabled;
+    await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+  }
+
+  async function recreateAllContent() {
+    await window.setStatus('Building templates...', false);
+    window.createAllContent(getWidth(), getDepth(), getExtra());
+    await window.setStatus('Ready.', true);
+  }
+
+  const width = document.getElementById('width');
+  const depth = document.getElementById('depth');
+  const extra = document.getElementById('extra');
+  const repeats = document.getElementById('repeats');
+  const showDOM = document.getElementById('show_dom');
+  const totalParts = document.getElementById('total_parts');
+  const totalNodes = document.getElementById('total_nodes');
+  let timeoutId;
+  function getWidth() { return Number(width.value); }
+  function getDepth() { return Number(depth.value); }
+  function getExtra() { return Number(extra.value); }
+  function getRepeats() { return Number(repeats.value); }
+  function updateTotalParts() {
+    let totalP = 0, totalN = 0;
+    for(let i=1;i<=getDepth();++i) {
+      const thisLayer = Math.pow(getWidth(), i);
+      totalP += thisLayer;
+      totalN += thisLayer*(1 + 1 + 2 + getExtra()); // <section>, label text, 2 comments, plus extra nodes
+    }
+    totalParts.value = totalP;
+    totalNodes.value = totalN;
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(recreateAllContent,1000);
+  }
+  width.onchange = updateTotalParts;
+  depth.onchange = updateTotalParts;
+  extra.onchange = updateTotalParts;
+  showDOM.onchange = () => {
+    testContainer.classList.toggle('hidden');
+  }
+  function smallDefaults() {
+    width.value = 2;
+    depth.value = 2;
+    extra.value = 0;
+    repeats.value = 1;
+    updateTotalParts();
+  };
+  function bigDefaults() {
+    width.value = 5;
+    depth.value = 5;
+    extra.value = 8; // Reddit is 8:1 Nodes to Parts
+    repeats.value = 100;
+    updateTotalParts();
+  };
+  document.getElementById('small').onclick = smallDefaults;
+  document.getElementById('big').onclick = bigDefaults;
+  bigDefaults();
+
+  const test = async (testCase) => {
+    await setStatus('Running test...', false);
+    const results = manualRunTest(testCase, getRepeats(), container);
+    await setStatus('Ready.', true);
+    return results;
+  }
+
+  const countNodes = (node) => {
+    let c = 1;
+    node.childNodes.forEach(child => {
+      c += countNodes(child);
+    });
+    return c;
+  }
+
+  const listen = (node, cb) => {
+    node.addEventListener('click', async () => {
+      const {cloneTime, appendTime, getPartsTime, state} = await cb();
+      const nodes = countNodes(state.container) - 2; // 2 for extra container nodes
+      node.textContent = `${node.id}: ${cloneTime.toFixed(1)}ms + ${appendTime.toFixed(1)}ms + ${getPartsTime.toFixed(1)}ms = ${(cloneTime+appendTime+getPartsTime).toFixed(1)}ms, ${state.parts.length} parts, ${nodes} nodes`;
+    });
+  }
+
+  listen(Raw, () => test('Raw, no parts'));
+  listen(Comments, () => test('Manual tree walk'));
+  listen(PartsFlat, () => test('Parts, flat'));
+  listen(PartsNested, () => test('Parts, nested'));
+</script>
+
+<style>
+body {
+  font-family: system-ui;
+  font-size: 10px;
+}
+section {
+  display: inline-flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  --s: 4px;
+  gap: var(--s);
+  padding: var(--s);
+  border-radius: var(--s);
+  border: 1px dashed gray;
+}
+
+:not(:has(section section)) {
+  flex-direction: row;
+}
+span.extra {
+  width: 2px;
+  height: 2px;
+  background-color: blue;
+}
+
+#controls {
+  display: inline-flex;
+  min-width: 400px;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+  border:0;
+}
+
+#testContainer.hidden {
+  display: none;
+}
+</style>
