@@ -62,7 +62,7 @@
 }
 
 - (void)dealloc {
-  [self disconnect];
+  CHECK(!self.webStateList);
 }
 
 - (void)disconnect {

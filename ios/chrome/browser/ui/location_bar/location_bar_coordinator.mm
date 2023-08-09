@@ -270,6 +270,9 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   [self.mediator disconnect];
   self.mediator = nil;
   [self.steadyViewMediator disconnect];
+  self.steadyViewMediator.webStateList = nullptr;
+  self.steadyViewMediator.webContentAreaOverlayPresenter = nil;
+  self.steadyViewMediator.consumer = nil;
   self.steadyViewMediator = nil;
 
   _locationBarModel = nullptr;
