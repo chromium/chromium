@@ -96,3 +96,14 @@ if (is_linux && is_chrome_for_testing) {
     }
   }
 }
+
+if (is_chrome_for_testing) {
+  action("generate_about_file") {
+    script = "//chrome/browser/chrome_for_testing/tools/generate_about_file.py"
+    args = [
+      "--output-file",
+      rebase_path("$root_out_dir/ABOUT"),
+    ]
+    outputs = [ "$root_out_dir/ABOUT" ]
+  }
+}
