@@ -176,7 +176,8 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
       mojo_base::BigBuffer response) override;
   void ResolvedAdditionalBids(
       blink::mojom::AuctionAdConfigAuctionIdPtr auction,
-      std::vector<mojo_base::BigBuffer> additional_bids) override;
+      std::vector<blink::mojom::AuctionAdConfigAdditionalBidPtr>
+          additional_bids) override;
   void Abort() override;
 
   // Fails the auction, invoking `callback_` and prevents any future calls into

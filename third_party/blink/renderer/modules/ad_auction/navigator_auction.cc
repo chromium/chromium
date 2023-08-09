@@ -49,6 +49,8 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_auction_ad_interest_group.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_auction_ad_interest_group_key.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_auction_ad_interest_group_size.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_auction_additional_bid_config.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_auction_additional_bid_signature.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_auction_report_buyers_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_adproperties_adpropertiessequence.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
@@ -2673,26 +2675,64 @@ ScriptValue NavigatorAuction::AuctionHandle::AdditionalBidsResolved::Call(
   ExceptionState exception_state(script_state->GetIsolate(),
                                  ExceptionState::kExecutionContext,
                                  "NavigatorAuction", "runAdAuction");
-  blink::HeapVector<blink::NotShared<DOMUint8Array>> additional_ads;
+  HeapVector<Member<AuctionAdditionalBidConfig>> additional_bids;
   bool ok = false;
 
   if (!value.IsEmpty()) {
-    additional_ads =
-        NativeValueTraits<IDLSequence<NotShared<DOMUint8Array>>>::NativeValue(
+    additional_bids =
+        NativeValueTraits<IDLSequence<AuctionAdditionalBidConfig>>::NativeValue(
             script_state->GetIsolate(), value.V8Value(), exception_state);
+
     ok = true;
+    // Check the array dimensions.
+    for (const auto& entry : additional_bids) {
+      for (wtf_size_t s = 0; s < entry->signatures().size(); ++s) {
+        const auto& sig = entry->signatures()[s];
+        if (sig->key()->length() != 32) {
+          exception_state.ThrowTypeError(String::Format(
+              "'additionalBids.signatures[%d].key' for AuctionAdConfig with "
+              "seller '%s' must be 32 bytes long.",
+              static_cast<int>(s), seller_name_.Utf8().c_str()));
+          ok = false;
+          break;
+        }
+
+        if (sig->signature()->length() != 64) {
+          exception_state.ThrowTypeError(String::Format(
+              "'additionalBids.signatures[%d].signature' for AuctionAdConfig "
+              "with seller '%s' must be 64 bytes long.",
+              static_cast<int>(s), seller_name_.Utf8().c_str()));
+          ok = false;
+          break;
+        }
+      }
+      if (!ok) {
+        break;
+      }
+    }
   }
 
   if (ok && !exception_state.HadException()) {
-    WTF::Vector<mojo_base::BigBuffer> converted_additional_ads;
-    for (const auto& entry : additional_ads) {
-      mojo_base::BigBuffer mojo_buffer(
-          base::make_span(entry->Data(), entry->length()));
-      converted_additional_ads.push_back(std::move(mojo_buffer));
+    WTF::Vector<mojom::blink::AuctionAdConfigAdditionalBidPtr>
+        converted_additional_bids;
+    for (const auto& entry : additional_bids) {
+      auto additional_bid = mojom::blink::AuctionAdConfigAdditionalBid::New();
+      additional_bid->bid = entry->bid();
+      for (const auto& sig : entry->signatures()) {
+        additional_bid->signatures.push_back(
+            mojom::blink::AuctionAdConfigAdditionalBidSignature::New());
+        additional_bid->signatures.back()->key.Append(
+            sig->key()->Data(), static_cast<wtf_size_t>(sig->key()->length()));
+        additional_bid->signatures.back()->signature.Append(
+            sig->signature()->Data(),
+            static_cast<wtf_size_t>(sig->signature()->length()));
+      }
+
+      converted_additional_bids.push_back(std::move(additional_bid));
     }
 
     auction_handle()->mojo_pipe()->ResolvedAdditionalBids(
-        auction_id_->Clone(), std::move(converted_additional_ads));
+        auction_id_->Clone(), std::move(converted_additional_bids));
   } else {
     auction_handle()->Abort();
   }

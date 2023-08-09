@@ -40,6 +40,7 @@
 #include "services/network/public/mojom/client_security_state.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
+#include "third_party/blink/public/mojom/interest_group/ad_auction_service.mojom.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -524,7 +525,8 @@ class CONTENT_EXPORT InterestGroupAuction
   // Called by AuctionRunner when the promise providing the additional_bids
   // array has been resolved, if one exists.
   void NotifyAdditionalBidsConfig(
-      std::vector<mojo_base::BigBuffer> additional_bids);
+      std::vector<blink::mojom::AuctionAdConfigAdditionalBidPtr>
+          additional_bids);
 
   // Called by AuctionRunner when the value of `additional_bids` for component
   // auction with position `pos` in the original configuration has been
@@ -534,7 +536,8 @@ class CONTENT_EXPORT InterestGroupAuction
   // a parent auction.
   void NotifyComponentAdditionalBidsConfig(
       uint32_t pos,
-      std::vector<mojo_base::BigBuffer> additional_bids);
+      std::vector<blink::mojom::AuctionAdConfigAdditionalBidPtr>
+          additional_bids);
 
   // Called by AuctionRunner when the promise providing the
   // `direct_from_seller_signals_header_ad_slot` string has been resolved, if
@@ -1047,7 +1050,8 @@ class CONTENT_EXPORT InterestGroupAuction
 
   // Supposed additional bids provided by the renderer; not decoded or checked
   // yet.
-  std::vector<mojo_base::BigBuffer> encoded_additional_bids_;
+  std::vector<blink::mojom::AuctionAdConfigAdditionalBidPtr>
+      encoded_additional_bids_;
 
   // True once all promises in this and component auction's configuration have
   // been resolved. (Note that if `this` is a component auction, it only looks

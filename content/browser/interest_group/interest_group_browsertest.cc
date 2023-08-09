@@ -5777,7 +5777,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   WebContentsConsoleObserver console_observer(shell()->web_contents());
   console_observer.SetPattern(
       "Uncaught (in promise) TypeError: Failed to execute 'runAdAuction' on "
-      "'NavigatorAuction': Failed to convert value to 'Uint8Array'.");
+      "'NavigatorAuction': The provided value is not of type "
+      "'AuctionAdditionalBidConfig'.");
 
   EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
             RunAuctionAndWait(JsReplace(R"({
@@ -5788,6 +5789,88 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   })",
                                         test_origin, decision_url)));
   EXPECT_TRUE(console_observer.Wait());
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
+                       RunAdAuctionInvalidAdditionalBids2) {
+  GURL test_url = https_server_->GetURL("a.test", "/echo");
+  url::Origin test_origin = url::Origin::Create(test_url);
+  GURL decision_url =
+      https_server_->GetURL("a.test", "/interest_group/decision_logic.js");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+  console_observer.SetPattern(
+      "Uncaught (in promise) TypeError: Failed to execute 'runAdAuction' on "
+      "'NavigatorAuction': 'additionalBids.signatures[0].key' for "
+      "AuctionAdConfig with seller 'https://a.test:*' must be 32 bytes long.");
+
+  EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
+            RunAuctionAndWait(JsReplace(R"({
+      seller: $1,
+      decisionLogicUrl: $2,
+      additionalBids: Promise.resolve([{
+        bid: "",
+        signatures: [{key: new Uint8Array(), signature: new Uint8Array()}]
+      }]),
+      interestGroupBuyers: [$1]
+  })",
+                                        test_origin, decision_url)));
+  EXPECT_TRUE(console_observer.Wait());
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
+                       RunAdAuctionInvalidAdditionalBids3) {
+  GURL test_url = https_server_->GetURL("a.test", "/echo");
+  url::Origin test_origin = url::Origin::Create(test_url);
+  GURL decision_url =
+      https_server_->GetURL("a.test", "/interest_group/decision_logic.js");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+  console_observer.SetPattern(
+      "Uncaught (in promise) TypeError: Failed to execute 'runAdAuction' on "
+      "'NavigatorAuction': 'additionalBids.signatures[0].signature' for "
+      "AuctionAdConfig with seller 'https://a.test:*' must be 64 bytes long.");
+
+  EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
+            RunAuctionAndWait(JsReplace(R"({
+      seller: $1,
+      decisionLogicUrl: $2,
+      additionalBids: Promise.resolve([{
+        bid: "",
+        signatures: [{key: new Uint8Array(32), signature: new Uint8Array()}]
+      }, {
+        bid: "",
+        signatures: [{key: new Uint8Array(), signature: new Uint8Array(64)}]
+      }]),
+      interestGroupBuyers: [$1]
+  })",
+                                        test_origin, decision_url)));
+  EXPECT_TRUE(console_observer.Wait());
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
+                       RunAdAuctionValidAdditionalBid) {
+  // TODO(morlovich): This isn't actually valid, and should be re-targeted
+  // as yet another failure test once we have something actually decoding these
+  // things and tests with proper valid inputs.
+  GURL test_url = https_server_->GetURL("a.test", "/echo");
+  url::Origin test_origin = url::Origin::Create(test_url);
+  GURL decision_url =
+      https_server_->GetURL("a.test", "/interest_group/decision_logic.js");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+
+  EXPECT_EQ(nullptr, RunAuctionAndWait(JsReplace(R"({
+      seller: $1,
+      decisionLogicUrl: $2,
+      additionalBids: Promise.resolve([{
+        bid: "",
+        signatures: [{key: new Uint8Array(32), signature: new Uint8Array(64)}]
+      }]),
+      interestGroupBuyers: [$1]
+  })",
+                                                 test_origin, decision_url)));
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,

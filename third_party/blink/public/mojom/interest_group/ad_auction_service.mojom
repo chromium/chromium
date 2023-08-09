@@ -41,6 +41,24 @@ enum AuctionAdConfigBuyerTimeoutField {
   kPerBuyerCumulativeTimeouts
 };
 
+struct AuctionAdConfigAdditionalBidSignature {
+  // The Ed25519 (https://datatracker.ietf.org/doc/html/rfc8032#section-5.1)
+  // signature of the bid field of the enclosing AuctionAdConfigAdditionalBid.
+  array<uint8, 32> key;
+
+  // The Ed25519 public key (a 256-bit EdDSA public key) that was used to sign
+  // the bid field of the enclosing AuctionAdConfigAdditionalBid.
+  array<uint8, 64> signature;
+};
+
+struct AuctionAdConfigAdditionalBid {
+  // JSON, encapsulated as string so its signature can be checked.
+  string bid;
+
+  // Potential signatures of `bid`.
+  array<AuctionAdConfigAdditionalBidSignature> signatures;
+};
+
 // Used to provide a way of aborting a call to AdAuctionService.RunAdAuction
 interface AbortableAdAuction {
   // These methods should be called to provide a value for part of auction
@@ -102,7 +120,7 @@ interface AbortableAdAuction {
   // bidding and scoring auction phase.
   ResolvedAdditionalBids(
       AuctionAdConfigAuctionId auction,
-      array<mojo_base.mojom.BigBuffer> additional_bids);
+      array<AuctionAdConfigAdditionalBid> additional_bids);
 
   // Aborts the auction for which the receiver for this pipe was passed to
   // RunAdAuction(), unless the auction has already finished (with at most

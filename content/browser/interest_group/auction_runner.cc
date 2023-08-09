@@ -358,7 +358,8 @@ void AuctionRunner::ResolvedAuctionAdResponsePromise(
 
 void AuctionRunner::ResolvedAdditionalBids(
     blink::mojom::AuctionAdConfigAuctionIdPtr auction_id,
-    std::vector<mojo_base::BigBuffer> additional_bids) {
+    std::vector<blink::mojom::AuctionAdConfigAdditionalBidPtr>
+        additional_bids) {
   if (!base::FeatureList::IsEnabled(
           blink::features::kFledgeNegativeTargeting)) {
     mojo::ReportBadMessage(

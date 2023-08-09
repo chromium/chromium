@@ -2382,7 +2382,8 @@ void InterestGroupAuction::NotifyComponentConfigPromisesResolved(uint32_t pos) {
 }
 
 void InterestGroupAuction::NotifyAdditionalBidsConfig(
-    std::vector<mojo_base::BigBuffer> additional_bids) {
+    std::vector<blink::mojom::AuctionAdConfigAdditionalBidPtr>
+        additional_bids) {
   encoded_additional_bids_ = std::move(additional_bids);
 
   // Note that there is no need to do anything to advance the auction, since
@@ -2392,7 +2393,8 @@ void InterestGroupAuction::NotifyAdditionalBidsConfig(
 
 void InterestGroupAuction::NotifyComponentAdditionalBidsConfig(
     uint32_t pos,
-    std::vector<mojo_base::BigBuffer> additional_bids) {
+    std::vector<blink::mojom::AuctionAdConfigAdditionalBidPtr>
+        additional_bids) {
   DCHECK(!parent_);  // Should not be called on a component.
   auto it = component_auctions_.find(pos);
 
