@@ -26,6 +26,7 @@
 #import "ios/chrome/browser/sync/sync_setup_service.h"
 #import "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #import "ios/chrome/browser/tabs/inactive_tabs/features.h"
+#import "ios/chrome/browser/ui/authentication/enterprise/enterprise_utils.h"
 #import "ios/chrome/browser/ui/keyboard/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_credit_card_edit_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_credit_card_table_view_controller.h"
@@ -934,10 +935,15 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 }
 
 - (void)showSignOutToast {
-  MDCSnackbarMessage* message = [MDCSnackbarMessage
-      messageWithText:
-          l10n_util::GetNSString(
-              IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_SIGN_OUT_SNACKBAR_MESSAGE)];
+  syncer::SyncService* syncService = SyncServiceFactory::GetForBrowserState(
+      self.browser->GetBrowserState()->GetOriginalChromeBrowserState());
+  int message_id =
+      (IsSyncDisabledByPolicy(syncService) ||
+       HasManagedSyncDataType(syncService))
+          ? IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_SIGN_OUT_SNACKBAR_MESSAGE_ENTERPRISE
+          : IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_SIGN_OUT_SNACKBAR_MESSAGE;
+  MDCSnackbarMessage* message =
+      [MDCSnackbarMessage messageWithText:l10n_util::GetNSString(message_id)];
   [self.snackbarCommandsHandler showSnackbarMessage:message bottomOffset:0];
 }
 
