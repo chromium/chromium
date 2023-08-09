@@ -355,6 +355,21 @@ public class ChromeMessageQueueMediatorTest {
     }
 
     /**
+     * Test the queue can be suspended and resumed correctly when tab is un/available.
+     */
+    @Test
+    public void testNoValidTab() {
+        ArgumentCaptor<Callback<Tab>> captor = ArgumentCaptor.forClass(Callback.class);
+        initMediator();
+        verify(mActivityTabProvider).addObserver(captor.capture());
+        captor.getValue().onResult(null);
+        verify(mMessageDispatcher).suspend();
+
+        captor.getValue().onResult(mTab);
+        verify(mMessageDispatcher).resume(EXPECTED_TOKEN);
+    }
+
+    /**
      * Test when tab is destroyed before {@link ChromeMessageQueueMediator#destroy()}.
      */
     @Test
