@@ -144,6 +144,14 @@ class WebTestPermissionManager
   using DefaultPermissionStatusMap =
       std::unordered_map<blink::PermissionType, blink::mojom::PermissionStatus>;
 
+  // A wrapper function of `GetPermissionStatus`. Called in requesting
+  // permissions to handle the case when `GetPermissionStatus` should behave
+  // differently when requesting and getting permissions.
+  blink::mojom::PermissionStatus GetPermissionStatusForRequestPermission(
+      blink::PermissionType permission,
+      const GURL& requesting_origin,
+      const GURL& embedding_origin);
+
   void OnPermissionChanged(
       const PermissionDescription& permission,
       blink::mojom::PermissionStatus status,

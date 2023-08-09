@@ -50,8 +50,10 @@ enum class RequestOutcome {
   kReusedImplicitGrant = 10,
   // 3p cookies are blocked by user explicitly, so there is no need to ask.
   kDeniedByCookieSettings = 11,
+  // The requesting origin is same-site with the embedding origin.
+  kAllowedBySameSite = 12,
 
-  kMaxValue = kDeniedByCookieSettings,
+  kMaxValue = kAllowedBySameSite,
 };
 
 class StorageAccessGrantPermissionContext
