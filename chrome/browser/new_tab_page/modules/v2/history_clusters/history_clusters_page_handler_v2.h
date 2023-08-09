@@ -63,10 +63,8 @@ class HistoryClustersPageHandlerV2
       base::flat_map<int64_t, HistoryClustersModuleRankingSignals>
           ranking_signals);
 
-  mojo::Receiver<ntp::history_clusters_v2::mojom::PageHandler> receiver_;
-  raw_ptr<Profile, DanglingUntriaged> profile_;
-  raw_ptr<content::WebContents, DanglingUntriaged> web_contents_;
-
+  raw_ptr<Profile> profile_;
+  raw_ptr<content::WebContents> web_contents_;
   base::CancelableTaskTracker update_visits_task_tracker_;
   std::unique_ptr<CartProcessor> cart_processor_;
   // The logger used to record metrics related to module ranking scoped to
@@ -74,6 +72,10 @@ class HistoryClustersPageHandlerV2
   // returned in the callback.
   std::unique_ptr<HistoryClustersModuleRankingMetricsLogger>
       ranking_metrics_logger_;
+
+  // Located at the end of the list of member variables to ensure the WebUI page
+  // is disconnected before other members are destroyed.
+  mojo::Receiver<ntp::history_clusters_v2::mojom::PageHandler> receiver_;
 
   base::WeakPtrFactory<HistoryClustersPageHandlerV2> weak_ptr_factory_{this};
 };
