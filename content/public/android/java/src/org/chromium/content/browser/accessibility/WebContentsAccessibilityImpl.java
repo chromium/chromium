@@ -331,6 +331,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
                     : "Disable was called, but Auto-disable accessibility is not enabled.";
                 TraceEvent.begin(
                         "WebContentsAccessibilityImpl.AutoDisableAccessibilityHandler.onDisabled");
+                mHistogramRecorder.onDisableCalled(mAutoDisableUsageCounter == 0);
                 // If the Auto-disable timer has expired, begin disabling the renderer, and clearing
                 // the Java-side caches. Changing AXModes must be done on the main thread.
                 WebContentsAccessibilityImplJni.get().disableRendererAccessibility(mNativeObj);
@@ -503,6 +504,10 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
                 mNativeObj);
     }
 
+    public void forceAutoDisableAccessibilityForTesting() {
+        mAutoDisableAccessibilityHandler.notifyDisable();
+    }
+
     public void setAccessibilityTrackerForTesting(AccessibilityActionAndEventTracker tracker) {
         mHistogramRecorder.updateTimeOfFirstShown();
         var oldValue = mTracker;
@@ -568,6 +573,10 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
                 // backgrounded Chrome, opened Settings, etc. Record usage times and reset state.
                 super.wasHidden();
                 mHistogramRecorder.recordAccessibilityUsageHistograms();
+
+                // When the native code was initialized, also record performance metrics.
+                if (!isNativeInitialized()) return;
+                mHistogramRecorder.recordAccessibilityPerformanceHistograms();
             }
         };
     }
@@ -576,21 +585,26 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
 
     @Override
     public void onDetachedFromWindow() {
-        mCaptioningController.stopListening();
+        try (TraceEvent te =
+                        TraceEvent.scoped("WebContentsAccessibilityImpl.onDetachedFromWindow")) {
+            mCaptioningController.stopListening();
 
-        // Destroy the WebContentsObserver if |this| is no longer attached to a Window, but first
-        // record whatever data we have collected since #wasHidden may not have been called, for
-        // example when opening the Tab Switcher. Timers will restart during the next onAttach.
-        if (mWebContentsObserver != null) {
-            mHistogramRecorder.recordAccessibilityUsageHistograms();
-            mWebContentsObserver.destroy();
-            mWebContentsObserver = null;
+            // Destroy the WebContentsObserver if |this| is no longer attached to a Window, but
+            // first record whatever data we have collected since #wasHidden may not have been
+            // called, for example when opening the Tab Switcher. Timers will restart during the
+            // next onAttach.
+            if (mWebContentsObserver != null) {
+                mHistogramRecorder.recordAccessibilityUsageHistograms();
+                mWebContentsObserver.destroy();
+                mWebContentsObserver = null;
+            }
+
+            if (!isNativeInitialized()) return;
+
+            ContextUtils.getApplicationContext().unregisterReceiver(mBroadcastReceiver);
+            mHistogramRecorder.recordAccessibilityPerformanceHistograms();
+            mAutoDisableAccessibilityHandler.cancelDisableTimer();
         }
-
-        if (!isNativeInitialized()) return;
-        ContextUtils.getApplicationContext().unregisterReceiver(mBroadcastReceiver);
-        mHistogramRecorder.recordAccessibilityPerformanceHistograms();
-        mAutoDisableAccessibilityHandler.cancelDisableTimer();
     }
 
     @Override
@@ -764,6 +778,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         // requires a reference to the webContents.
         if (mIsCurrentlyAutoDisabled) {
             TraceEvent.begin("WebContentsAccessibilityImpl.reEnableRendererAccessibility");
+            mHistogramRecorder.onReEnableCalled(mAutoDisableUsageCounter == 0);
             WebContentsAccessibilityImplJni.get().reEnableRendererAccessibility(
                     mNativeObj, mDelegate.getWebContents());
             mIsCurrentlyAutoDisabled = false;
