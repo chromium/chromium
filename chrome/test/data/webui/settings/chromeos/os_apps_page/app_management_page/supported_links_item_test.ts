@@ -5,10 +5,9 @@
 import 'chrome://os-settings/lazy_load.js';
 
 import {AppManagementSupportedLinksItemElement, AppManagementSupportedLinksOverlappingAppsDialogElement} from 'chrome://os-settings/lazy_load.js';
-import {AppManagementStore, updateSelectedAppId} from 'chrome://os-settings/os_settings.js';
+import {AppManagementStore, CrRadioGroupElement, updateSelectedAppId} from 'chrome://os-settings/os_settings.js';
 import {App, AppType, WindowMode} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {CrRadioButtonElement} from 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.js';
-import {CrRadioGroupElement} from 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.js';
 import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
