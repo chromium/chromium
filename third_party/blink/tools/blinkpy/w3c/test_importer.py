@@ -524,6 +524,7 @@ class TestImporter(object):
             message += '\n'.join(
                 str(commit) for commit in locally_applied_commits)
         message += '\nNo-Export: true'
+        message += '\nValidate-Test-Flakiness: skip'
         return message
 
     def _delete_orphaned_baselines(self):
@@ -619,10 +620,12 @@ class TestImporter(object):
         # Prevent FindIt from auto-reverting import CLs.
         description += 'NOAUTOREVERT=true\n'
 
-        # Move any No-Export tag to the end of the description.
+        # Move any No-Export tag and flakiness footers to the end of the description.
         description = description.replace('No-Export: true', '')
-        description = description.replace('\n\n\n\n', '\n\n')
+        description = description.replace('Validate-Test-Flakiness: skip', '')
+        description = description.replace('\n\n\n\n\n', '\n\n')
         description += 'No-Export: true\n'
+        description += 'Validate-Test-Flakiness: skip\n'
 
         # Add the wptrunner MVP tryjobs as blocking trybots, to catch any test
         # changes or infrastructure changes from upstream.
