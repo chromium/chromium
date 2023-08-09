@@ -1499,7 +1499,7 @@ chromium-metrics-reviews@google.com.
     expires_after="M120">
   <owner>olesiamarukhno@google.com</owner>
   <owner>sauski@google.com</owner>
-  <owner>chrome-friendly-settings@google.com</owner>
+  <owner>chrome-privacy-controls@google.com</owner>
   <summary>
     Records the load time of the &quot;All sites&quot; settings page. The load
     time is the time between the &quot;GetAllSites&quot; request start and the

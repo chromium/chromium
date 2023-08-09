@@ -5480,7 +5480,7 @@
     "owners": [
       "andzaytsev",
       "msramek",
-      "chrome-friendly-settings@google.com"
+      "chrome-privacy-controls@google.com"
     ],
     "expiry_milestone": 95
   },
@@ -5601,7 +5601,7 @@
     "owners": [
       "sideyilmaz",
       "msramek",
-      "chrome-friendly-settings@google.com"
+      "chrome-privacy-controls@google.com"
     ],
     "expiry_milestone": 120
   },
@@ -6718,7 +6718,7 @@
     "owners": [
       "rubindl",
       "msramek",
-      "chrome-friendly-settings@google.com"],
+      "chrome-privacy-controls@google.com"],
     "expiry_milestone": 120
   },
   {
@@ -6946,7 +6946,7 @@
     "owners": [
       "sideyilmaz",
       "dullweber",
-      "chrome-friendly-settings@google.com"],
+      "chrome-privacy-controls@google.com"],
     "expiry_milestone": 120
   },
   {
@@ -7422,7 +7422,7 @@
     "owners": [
       "andzaytsev@google.com",
       "sauski@google.com",
-      "chrome-friendly-settings@google.com"
+      "chrome-privacy-controls@google.com"
     ],
     "expiry_milestone": 117
   },
