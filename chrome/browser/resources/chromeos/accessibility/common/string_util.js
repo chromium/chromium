@@ -77,6 +77,15 @@ export class StringUtil {
   }
 
   /**
+   * @param {string} title
+   * @return {string}
+   */
+  static toTitleCase(title) {
+    return title.replace(
+        /\w\S*/g, word => word.charAt(0).toUpperCase() + word.substr(1));
+  }
+
+  /**
    * Returns a unicode-aware substring of |text|.
    * @param {string} text
    * @param {number} startIndex

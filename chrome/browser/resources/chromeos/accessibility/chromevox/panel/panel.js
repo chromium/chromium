@@ -8,6 +8,7 @@
 import {BrowserUtil} from '../../common/browser_util.js';
 import {constants} from '../../common/constants.js';
 import {LocalStorage} from '../../common/local_storage.js';
+import {StringUtil} from '../../common/string_util.js';
 import {BackgroundBridge} from '../common/background_bridge.js';
 import {BrailleCommandData} from '../common/braille/braille_command_data.js';
 import {BridgeConstants} from '../common/bridge_constants.js';
@@ -357,11 +358,8 @@ export class Panel extends PanelInterface {
           binding.title = '';
           continue;
         }
-        let title = Msgs.getMsg(titleMsgId);
-        // Convert to title case.
-        title = title.replace(
-            /\w\S*/g, word => word.charAt(0).toUpperCase() + word.substr(1));
-        binding.title = title;
+        const title = Msgs.getMsg(titleMsgId);
+        binding.title = StringUtil.toTitleCase(title);
       }
       sortedBindings.sort(
           (binding1, binding2) =>
