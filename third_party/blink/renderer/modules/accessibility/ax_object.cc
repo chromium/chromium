@@ -628,7 +628,11 @@ void AXObject::SetAncestorsHaveDirtyDescendants() const {
 
   while (true) {
     if (can_repair_parents && ancestor->IsMissingParent()) {
+      // RepairMissingParent() will finish setting the
+      // "has dirty descendants" flag the rest of the way of the parent chain
+      // by calling back into this method.
       ancestor->RepairMissingParent();
+      break;
     }
     ancestor = ancestor->CachedParentObject();
     if (!ancestor) {
