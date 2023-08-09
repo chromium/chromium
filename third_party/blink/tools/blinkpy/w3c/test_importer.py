@@ -478,8 +478,9 @@ class TestImporter(object):
         first ensures if upstream deletes some files, we also delete them.
         """
         _log.info('Cleaning out tests from %s.', self.dest_path)
-        should_remove = lambda fs, dirname, basename: (
-            is_file_exportable(fs.relpath(fs.join(dirname, basename), self.finder.chromium_base())))
+        should_remove = lambda fs, dirname, basename: (is_file_exportable(
+            fs.relpath(fs.join(dirname, basename), self.finder.chromium_base()
+                       ), self.host.project_config))
         files_to_delete = self.fs.files_under(
             self.dest_path, file_filter=should_remove)
         for subpath in files_to_delete:

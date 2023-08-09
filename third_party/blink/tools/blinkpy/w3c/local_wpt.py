@@ -10,41 +10,67 @@ from blinkpy.common.system.executive import ScriptError
 from blinkpy.w3c.common import (
     DEFAULT_WPT_COMMITTER_EMAIL,
     DEFAULT_WPT_COMMITTER_NAME,
+    WPT_GH_ORG,
+    WPT_GH_REPO_NAME,
     WPT_GH_SSH_URL_TEMPLATE,
     WPT_MIRROR_URL,
+    LEGACY_MAIN_BRANCH_NAME,
 )
 
 _log = logging.getLogger(__name__)
 
 
-class LocalWPT(object):
-    def __init__(self, host, gh_token=None, path='/tmp/wpt'):
-        """Initializes a LocalWPT instance.
-
+class LocalRepo(object):
+    def __init__(self,
+                 name,
+                 gh_org,
+                 gh_repo_name,
+                 gh_ssh_url_template,
+                 mirror_url,
+                 default_committer_email,
+                 default_committer_name,
+                 relative_tests,
+                 host,
+                 gh_token=None,
+                 path=None,
+                 main_branch=None):
+        """An interface to a local repo for interacting with it. This is the
+        local countarpart of GitHubRepo.
         Args:
             host: A Host object.
-            path: Optional, the path to the web-platform-tests repo.
+            path: Optional, the path to the local repo.
                 If this directory already exists, it is assumed that the
-                web-platform-tests repo is already checked out at this path.
+                local repo is already checked out at this path.
         """
+        self.name = name
+        self.gh_org = gh_org
+        self.gh_repo_name = gh_repo_name
+        self.gh_ssh_url_template = gh_ssh_url_template
+        self.mirror_url = mirror_url
+        self.default_committer_email = default_committer_email
+        self.default_committer_name = default_committer_name
+        self.relative_tests = relative_tests
         self.host = host
-        self.path = path
+        self.path = path or f'/tmp/{self.name.lower()}'
         self.gh_token = gh_token
+        self.main_branch = main_branch or LEGACY_MAIN_BRANCH_NAME
 
     def fetch(self):
         """Fetches a copy of the web-platform-tests repo in `self.path`."""
         if self.host.filesystem.exists(self.path):
-            _log.info('WPT checkout exists at %s, fetching latest', self.path)
+            _log.info('%s checkout exists at %s, fetching latest', self.name,
+                      self.path)
             self.run(['git', 'fetch', 'origin'])
-            self.run(['git', 'reset', '--hard', 'origin/master'])
+            self.run(['git', 'reset', '--hard', f'origin/{self.main_branch}'])
             return
-
-        _log.info('Cloning GitHub web-platform-tests/wpt into %s', self.path)
+        _log.info('Cloning GitHub %s/%s into %s', self.gh_org,
+                  self.gh_repo_name, self.path)
         if self.gh_token:
-            remote_url = WPT_GH_SSH_URL_TEMPLATE.format(self.gh_token)
+            remote_url = self.gh_ssh_url_template.format(self.gh_token)
         else:
-            remote_url = WPT_MIRROR_URL
-            _log.info('No credentials given, using wpt mirror URL.')
+            remote_url = self.mirror_url
+            _log.info('No credentials given, using %s mirror URL.',
+                      self.name.lower())
             _log.info(
                 'It is possible for the mirror to be delayed; see https://crbug.com/698272.'
             )
@@ -53,11 +79,11 @@ class LocalWPT(object):
             ['git', 'clone', remote_url, self.path])
 
         _log.info('Setting git user name & email in %s', self.path)
-        self.run(['git', 'config', 'user.name', DEFAULT_WPT_COMMITTER_NAME])
-        self.run(['git', 'config', 'user.email', DEFAULT_WPT_COMMITTER_EMAIL])
+        self.run(['git', 'config', 'user.name', self.default_committer_name])
+        self.run(['git', 'config', 'user.email', self.default_committer_email])
 
     def run(self, command, **kwargs):
-        """Runs a command in the local WPT directory."""
+        """Runs a command in the local repo directory."""
         # TODO(robertma): Migrate to blinkpy.common.checkout.Git. (crbug.com/676399)
         return self.host.executive.run_command(
             command, cwd=self.path, **kwargs)
@@ -66,7 +92,7 @@ class LocalWPT(object):
         """Resets git to a clean state, on origin/master with no changed files."""
         self.run(['git', 'reset', '--hard', 'HEAD'])
         self.run(['git', 'clean', '-fdx'])
-        self.run(['git', 'checkout', 'origin/master'])
+        self.run(['git', 'checkout', f'origin/{self.main_branch}'])
 
     def create_branch_with_patch(self,
                                  branch_name,
@@ -86,7 +112,7 @@ class LocalWPT(object):
         self.clean()
 
         try:
-            # This won't be exercised in production because wpt-exporter
+            # This won't be exercised in production because exporter recipe
             # always runs on a clean machine. But it's useful when running
             # locally since branches stick around.
             _log.info('Deleting old branch %s', branch_name)
@@ -97,9 +123,9 @@ class LocalWPT(object):
 
         _log.info('Creating local branch %s', branch_name)
         self.run(['git', 'checkout', '-b', branch_name])
-
-        # Remove Chromium WPT directory prefix.
-        patch = patch.replace(RELATIVE_WPT_TESTS, '')
+        # Remove directory prefix.
+        # TODO(liviurau): Maybe provide a clean patch at the call site.
+        patch = patch.replace(self.relative_tests, '')
 
         _log.info('Author: %s', author)
         if '<' in author:
@@ -133,7 +159,7 @@ class LocalWPT(object):
         """
         self.clean()
         error = self.apply_patch(patch)
-        diff = self.run(['git', 'diff', 'origin/master'])
+        diff = self.run(['git', 'diff', f'origin/{self.main_branch}'])
         self.clean()
         if error != '':
             return False, error
@@ -144,13 +170,15 @@ class LocalWPT(object):
         return True, ''
 
     def apply_patch(self, patch):
-        """Applies a Chromium patch to the local WPT repo and stages.
+        """Applies a patch coming from a client repo (Chromium/V8) to the local
+        repo and stages.
 
         Returns:
             A string containing error messages from git, empty if the patch applies cleanly.
         """
-        # Remove Chromium WPT directory prefix.
-        patch = patch.replace(RELATIVE_WPT_TESTS, '')
+        # Remove directory prefix.
+        # TODO(liviurau): Maybe provide a clean patch at the call site.
+        patch = patch.replace(self.relative_tests, '')
         try:
             self.run(['git', 'apply', '-'], input=patch)
             self.run(['git', 'add', '.'])
@@ -229,3 +257,12 @@ class LocalWPT(object):
         """
         return self._most_recent_log_matching(
             '^Cr-Commit-Position: %s' % commit_position)
+
+
+class LocalWPT(LocalRepo):
+    def __init__(self, host, gh_token=None, path='/tmp/wpt'):
+        super().__init__('WPT', WPT_GH_ORG, WPT_GH_REPO_NAME,
+                         WPT_GH_SSH_URL_TEMPLATE, WPT_MIRROR_URL,
+                         DEFAULT_WPT_COMMITTER_EMAIL,
+                         DEFAULT_WPT_COMMITTER_NAME, RELATIVE_WPT_TESTS, host,
+                         gh_token, path)
