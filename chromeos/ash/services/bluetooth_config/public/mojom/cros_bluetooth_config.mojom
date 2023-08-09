@@ -164,6 +164,10 @@ struct BluetoothSystemProperties {
   // List of paired devices. UI surfaces should display devices in the order
   // indicated by this array.
   array<PairedBluetoothDeviceProperties> paired_devices;
+
+  // Devices detected by Fast Pair that are available to pair.
+  array<PairedBluetoothDeviceProperties> fast_pairable_devices;
+
 };
 
 // Observer for changes to Bluetooth system properties.

@@ -27,8 +27,7 @@ namespace ash::bluetooth_config {
 class DeviceCacheImpl : public DeviceCache,
                         public AdapterStateController::Observer,
                         public device::BluetoothAdapter::Observer,
-                        public DeviceNameManager::Observer,
-                        public FastPairDelegate::Observer {
+                        public DeviceNameManager::Observer {
  public:
   DeviceCacheImpl(AdapterStateController* adapter_state_controller,
                   scoped_refptr<device::BluetoothAdapter> bluetooth_adapter,
@@ -85,11 +84,6 @@ class DeviceCacheImpl : public DeviceCache,
   void OnDeviceNicknameChanged(
       const std::string& device_id,
       const absl::optional<std::string>& nickname) override;
-
-  // FastPairDelegate::Observer
-  void OnFastPairableDevicesChanged(
-      const std::vector<mojom::PairedBluetoothDevicePropertiesPtr>&
-          fast_pairable_devices) override;
 
   // Fetches all known devices from BluetoothAdapter and populates them into
   // |paired_devices_| and |unpaired_devices_|.
@@ -161,8 +155,6 @@ class DeviceCacheImpl : public DeviceCache,
       adapter_observation_{this};
   base::ScopedObservation<DeviceNameManager, DeviceNameManager::Observer>
       device_name_manager_observation_{this};
-  base::ScopedObservation<FastPairDelegate, FastPairDelegate::Observer>
-      device_cache_observation_{this};
 };
 
 }  // namespace ash::bluetooth_config

@@ -52,6 +52,7 @@ export class FakeBluetoothConfig {
       systemState: BluetoothSystemState.kDisabled,
       modificationState: BluetoothModificationState.kCannotModifyBluetooth,
       pairedDevices: [],
+      fastPairableDevices: [],
     };
 
     /**
