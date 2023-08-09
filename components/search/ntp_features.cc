@@ -220,6 +220,12 @@ BASE_FEATURE(kNtpRealboxLensSearch,
              "NtpRealboxLensSearch",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// If enabled, Google Lens image search will call Lens v3 direct upload
+// endpoint instead of uploading to Scotty.
+BASE_FEATURE(kNtpLensDirectUpload,
+             "NtpLensDirectUpload",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, recipe tasks module will be shown.
 BASE_FEATURE(kNtpRecipeTasksModule,
              "NtpRecipeTasksModule",
