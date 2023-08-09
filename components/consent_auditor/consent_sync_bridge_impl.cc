@@ -14,6 +14,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "components/sync/model/data_type_activation_request.h"
 #include "components/sync/model/entity_change.h"
@@ -262,6 +263,7 @@ void ConsentSyncBridgeImpl::OnStoreCreated(
 void ConsentSyncBridgeImpl::OnReadAllMetadata(
     const absl::optional<ModelError>& error,
     std::unique_ptr<MetadataBatch> metadata_batch) {
+  TRACE_EVENT0("ui", "ConsentSyncBridgeImpl::OnReadAllMetadata");
   if (error) {
     change_processor()->ReportError(*error);
   } else {
