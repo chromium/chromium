@@ -56,6 +56,12 @@ class ShoppingBookmarkModelObserver
                          size_t index,
                          bool added_by_user) override;
 
+  void BookmarkNodeMoved(bookmarks::BookmarkModel* model,
+                         const bookmarks::BookmarkNode* old_parent,
+                         size_t old_index,
+                         const bookmarks::BookmarkNode* new_parent,
+                         size_t new_index) override;
+
   void BookmarkNodeRemoved(bookmarks::BookmarkModel* model,
                            const bookmarks::BookmarkNode* parent,
                            size_t old_index,
@@ -73,6 +79,10 @@ class ShoppingBookmarkModelObserver
   // A map of bookmark ID to its current URL. This is used to detect incoming
   // changes to the URL since there isn't an explicit event for it.
   std::map<int64_t, GURL> node_to_url_map_;
+
+  // Track the title of the shopping collection if we get a signal that the node
+  // will change.
+  absl::optional<std::u16string> shopping_collection_name_before_change_;
 
   // Automatically remove this observer from its host when destroyed.
   base::ScopedObservation<bookmarks::BookmarkModel,

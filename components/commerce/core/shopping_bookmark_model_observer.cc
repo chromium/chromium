@@ -9,6 +9,7 @@
 
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
+#include "base/metrics/user_metrics.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/commerce/core/commerce_feature_list.h"
@@ -41,11 +42,24 @@ void ShoppingBookmarkModelObserver::OnWillChangeBookmarkNode(
     const bookmarks::BookmarkNode* node) {
   // Since the node is about to change, map its current known URL.
   node_to_url_map_[node->id()] = node->url();
+
+  // Specifically track changes to parent and title for the shopping collection.
+  if (IsShoppingCollectionBookmarkFolder(node)) {
+    shopping_collection_name_before_change_ = node->GetTitle();
+  }
 }
 
 void ShoppingBookmarkModelObserver::BookmarkNodeChanged(
     bookmarks::BookmarkModel* model,
     const bookmarks::BookmarkNode* node) {
+  if (IsShoppingCollectionBookmarkFolder(node) &&
+      shopping_collection_name_before_change_.value() != node->GetTitle()) {
+    base::RecordAction(base::UserMetricsAction(
+        "Commerce.PriceTracking.ShoppingCollection.NameChanged"));
+
+    shopping_collection_name_before_change_.reset();
+  }
+
   if (node_to_url_map_[node->id()] != node->url()) {
     // If the URL did change, clear the power bookmark shopping meta and
     // unsubscribe if needed.
@@ -85,19 +99,34 @@ void ShoppingBookmarkModelObserver::BookmarkNodeAdded(
     const bookmarks::BookmarkNode* parent,
     size_t index,
     bool added_by_user) {
-  // Skip non-user added bookmarks.
-  if (!added_by_user) {
-    return;
+  const bookmarks::BookmarkNode* node = parent->children()[index].get();
+
+  if (IsShoppingCollectionBookmarkFolder(node)) {
+    base::RecordAction(base::UserMetricsAction(
+        "Commerce.PriceTracking.ShoppingCollection.Created"));
   }
 
   // TODO(b:287289351): We should consider listening to metadata changes
   //                    instead. Presumably, shopping data is primarily being
   //                    added to new bookmarks, so we could potentially use the
   //                    node change event.
-  if (base::FeatureList::IsEnabled(kShoppingListTrackByDefault)) {
-    const bookmarks::BookmarkNode* node = parent->children()[index].get();
+  if (added_by_user &&
+      base::FeatureList::IsEnabled(kShoppingListTrackByDefault)) {
     SetPriceTrackingStateForBookmark(shopping_service_, model, node, true,
                                      base::DoNothing());
+  }
+}
+
+void ShoppingBookmarkModelObserver::BookmarkNodeMoved(
+    bookmarks::BookmarkModel* model,
+    const bookmarks::BookmarkNode* old_parent,
+    size_t old_index,
+    const bookmarks::BookmarkNode* new_parent,
+    size_t new_index) {
+  const bookmarks::BookmarkNode* node = new_parent->children()[new_index].get();
+  if (IsShoppingCollectionBookmarkFolder(node)) {
+    base::RecordAction(base::UserMetricsAction(
+        "Commerce.PriceTracking.ShoppingCollection.ParentChanged"));
   }
 }
 
@@ -107,6 +136,11 @@ void ShoppingBookmarkModelObserver::BookmarkNodeRemoved(
     size_t old_index,
     const bookmarks::BookmarkNode* node,
     const std::set<GURL>& removed_urls) {
+  if (IsShoppingCollectionBookmarkFolder(node)) {
+    base::RecordAction(base::UserMetricsAction(
+        "Commerce.PriceTracking.ShoppingCollection.Deleted"));
+  }
+
   // If the number of bookmarks with the node's cluster ID is now 0, unsubscribe
   // from the product.
   std::unique_ptr<power_bookmarks::PowerBookmarkMeta> meta =

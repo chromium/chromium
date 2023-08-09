@@ -481,4 +481,10 @@ const bookmarks::BookmarkNode* GetShoppingCollectionBookmarkFolder(
   return collection_node;
 }
 
+bool IsShoppingCollectionBookmarkFolder(const bookmarks::BookmarkNode* node) {
+  return node && node->is_folder() &&
+         node->uuid() ==
+             base::Uuid::ParseLowercase(bookmarks::kShoppingCollectionUuid);
+}
+
 }  // namespace commerce

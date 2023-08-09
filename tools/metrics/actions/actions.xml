@@ -6679,6 +6679,42 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Commerce.PriceTracking.ShoppingCollection.Created">
+  <owner>mdjones@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <description>
+    Records when the shopping collection bookmark folder is created as the
+    result of a user bookmarking a product page.
+  </description>
+</action>
+
+<action name="Commerce.PriceTracking.ShoppingCollection.Deleted">
+  <owner>mdjones@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <description>
+    Records when a user deletes the automatically created shopping collection
+    bookmark folder.
+  </description>
+</action>
+
+<action name="Commerce.PriceTracking.ShoppingCollection.NameChanged">
+  <owner>mdjones@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <description>
+    Records when a user changes the name of the shopping collection bookmark
+    folder.
+  </description>
+</action>
+
+<action name="Commerce.PriceTracking.ShoppingCollection.ParentChanged">
+  <owner>mdjones@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <description>
+    Records when a user changes the containing folder of the shopping collection
+    bookmark folder.
+  </description>
+</action>
+
 <action name="Commerce.PriceTracking.SidePanel.ClickedTrackedProduct">
   <owner>yuezhanggg@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
