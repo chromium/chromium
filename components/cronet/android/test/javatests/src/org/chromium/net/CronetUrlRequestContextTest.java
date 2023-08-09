@@ -43,6 +43,7 @@ import org.chromium.net.TestUrlRequestCallback.ResponseStep;
 import org.chromium.net.impl.CronetLibraryLoader;
 import org.chromium.net.impl.CronetUrlRequestContext;
 import org.chromium.net.impl.NativeCronetEngineBuilderImpl;
+import org.chromium.net.impl.NetworkExceptionImpl;
 import org.chromium.net.test.EmbeddedTestServer;
 
 import java.io.BufferedReader;
@@ -434,8 +435,7 @@ public class CronetUrlRequestContextTest {
 
     @Test
     @OnlyRunJavaCronet
-    @RequiresMinAndroidApi(Build.VERSION_CODES.P)
-    // JavaCronetEngine Multi-network API is supported from Pie
+    @RequiresMinAndroidApi(Build.VERSION_CODES.M)
     public void testBindToNetwork() {
         // bind to invalid network handle
         ExperimentalCronetEngine cronetEngine = mTestRule.getTestFramework().startEngine();
@@ -446,8 +446,8 @@ public class CronetUrlRequestContextTest {
         builder.build().start();
         callback.blockForDone();
 
-        assertThat(callback.mError).hasCauseThat().isInstanceOf(IllegalArgumentException.class);
-        assertThat(callback.mError).hasCauseThat().hasMessageThat().contains("NetworkHandle");
+        assertThat(callback.mError).hasCauseThat().isInstanceOf(NetworkExceptionImpl.class);
+        assertThat(callback.mError).hasCauseThat().hasMessageThat().contains("Network bound");
 
         // bind to the default network
         ConnectivityManagerDelegate delegate =

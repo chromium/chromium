@@ -4,6 +4,8 @@
 
 package org.chromium.net.impl;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.TrafficStats;
 import android.os.Build;
@@ -15,6 +17,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.net.CronetException;
 import org.chromium.net.InlineExecutionProhibitedException;
+import org.chromium.net.NetworkException;
 import org.chromium.net.ThreadStatsUid;
 import org.chromium.net.UploadDataProvider;
 import org.chromium.net.UrlResponseInfo;
@@ -595,12 +598,16 @@ final class JavaUrlRequest extends UrlRequestBase {
                 }
 
                 if (mNetworkHandle == CronetEngineBase.DEFAULT_NETWORK_HANDLE
-                        || Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
+                        || Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
                     mCurrentUrlConnection = (HttpURLConnection) url.openConnection();
                 } else {
-                    mCurrentUrlConnection =
-                            (HttpURLConnection) Network.fromNetworkHandle(mNetworkHandle)
-                                    .openConnection(url);
+                    Network network = getNetworkFromHandle(mNetworkHandle);
+                    if (network == null) {
+                        throw new NetworkExceptionImpl("Network bound to request not found",
+                                NetworkException.ERROR_ADDRESS_UNREACHABLE,
+                                -4 /*Invalid argument*/);
+                    }
+                    mCurrentUrlConnection = (HttpURLConnection) network.openConnection(url);
                 }
                 mCurrentUrlConnection.setInstanceFollowRedirects(false);
                 if (!mRequestHeaders.containsKey(USER_AGENT)) {
@@ -1056,5 +1063,17 @@ final class JavaUrlRequest extends UrlRequestBase {
                 }
             }
         });
+    }
+
+    private Network getNetworkFromHandle(long networkHandle) {
+        Network[] networks = ((ConnectivityManager) mEngine.getContext().getSystemService(
+                                      Context.CONNECTIVITY_SERVICE))
+                                     .getAllNetworks();
+
+        for (Network network : networks) {
+            if (network.getNetworkHandle() == networkHandle) return network;
+        }
+
+        return null;
     }
 }

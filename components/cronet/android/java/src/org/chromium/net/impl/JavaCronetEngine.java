@@ -7,6 +7,7 @@ package org.chromium.net.impl;
 import static android.os.Process.THREAD_PRIORITY_BACKGROUND;
 import static android.os.Process.THREAD_PRIORITY_MORE_FAVORABLE;
 
+import android.content.Context;
 import android.os.Build;
 import android.util.Log;
 
@@ -54,7 +55,10 @@ public final class JavaCronetEngine extends CronetEngineBase {
     /** The network handle to be used for requests that do not explicitly specify one. **/
     private long mNetworkHandle = DEFAULT_NETWORK_HANDLE;
 
+    private final Context mContext;
+
     public JavaCronetEngine(CronetEngineBuilderImpl builder) {
+        mContext = builder.getContext();
         mCronetEngineId = hashCode();
         // On android, all background threads (and all threads that are part
         // of background processes) are put in a cgroup that is allowed to
@@ -114,6 +118,10 @@ public final class JavaCronetEngine extends CronetEngineBase {
 
     CronetLogger getCronetLogger() {
         return mLogger;
+    }
+
+    Context getContext() {
+        return mContext;
     }
 
     @Override
@@ -210,7 +218,7 @@ public final class JavaCronetEngine extends CronetEngineBase {
 
     @Override
     public void bindToNetwork(long networkHandle) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
             throw new UnsupportedOperationException(
                     "This multi-network Java implementation is available starting from Android Pie");
         }
