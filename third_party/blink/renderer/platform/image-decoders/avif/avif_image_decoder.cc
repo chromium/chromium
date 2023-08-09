@@ -35,9 +35,9 @@
 #include "third_party/libavifinfo/src/avifinfo.h"
 #include "third_party/libyuv/include/libyuv.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
-#include "third_party/skia/include/core/SkTypes.h"
 #include "third_party/skia/include/private/SkXmp.h"
 #include "ui/gfx/color_space.h"
+#include "ui/gfx/color_transform.h"
 #include "ui/gfx/half_float.h"
 #include "ui/gfx/icc_profile.h"
 
@@ -61,7 +61,9 @@ const char* AvifDecoderErrorMessage(const avifDecoder* decoder) {
 }
 
 // Builds a gfx::ColorSpace from the ITU-T H.273 (CICP) color description in the
-// image.
+// image. This color space is used to create the gfx::ColorTransform for the
+// YUV-to-RGB conversion. If the image does not have an ICC profile, this color
+// space is also used to create the embedded color profile.
 gfx::ColorSpace GetColorSpace(const avifImage* image) {
   // (As of ISO/IEC 23000-22:2019 Amendment 2) MIAF Section 7.3.6.4 says:
   //   If a coded image has no associated colour property, the default property
@@ -179,6 +181,93 @@ media::VideoPixelFormat AvifToVideoPixelFormat(avifPixelFormat fmt,
 int UVSize(int y_size, int chroma_shift) {
   DCHECK(chroma_shift == 0 || chroma_shift == 1);
   return (y_size + chroma_shift) >> chroma_shift;
+}
+
+inline void WritePixel(float max_channel,
+                       const gfx::Point3F& pixel,
+                       float alpha,
+                       bool premultiply_alpha,
+                       uint32_t* rgba_dest) {
+  uint8_t r = base::ClampRound<uint8_t>(pixel.x() * 255.0f);
+  uint8_t g = base::ClampRound<uint8_t>(pixel.y() * 255.0f);
+  uint8_t b = base::ClampRound<uint8_t>(pixel.z() * 255.0f);
+  uint8_t a = base::ClampRound<uint8_t>(alpha * 255.0f);
+  if (premultiply_alpha) {
+    ImageFrame::SetRGBAPremultiply(rgba_dest, r, g, b, a);
+  } else {
+    *rgba_dest = SkPackARGB32NoCheck(a, r, g, b);
+  }
+}
+
+inline void WritePixel(float max_channel,
+                       const gfx::Point3F& pixel,
+                       float alpha,
+                       bool premultiply_alpha,
+                       uint64_t* rgba_dest) {
+  float rgba_pixels[4];
+  rgba_pixels[0] = pixel.x();
+  rgba_pixels[1] = pixel.y();
+  rgba_pixels[2] = pixel.z();
+  rgba_pixels[3] = alpha;
+  if (premultiply_alpha && alpha != 1.0f) {
+    rgba_pixels[0] *= alpha;
+    rgba_pixels[1] *= alpha;
+    rgba_pixels[2] *= alpha;
+  }
+
+  gfx::FloatToHalfFloat(rgba_pixels, reinterpret_cast<uint16_t*>(rgba_dest),
+                        std::size(rgba_pixels));
+}
+
+enum class ColorType { kMono, kColor };
+
+template <ColorType color_type, typename InputType, typename OutputType>
+void YUVAToRGBA(const avifImage* image,
+                const gfx::ColorTransform* transform,
+                bool premultiply_alpha,
+                OutputType* rgba_dest) {
+  avifPixelFormatInfo format_info;
+  avifGetPixelFormatInfo(image->yuvFormat, &format_info);
+  gfx::Point3F pixel;
+  const int max_channel_i = (1 << image->depth) - 1;
+  const float max_channel = static_cast<float>(max_channel_i);
+  for (uint32_t j = 0; j < image->height; ++j) {
+    const int uv_j = j >> format_info.chromaShiftY;
+
+    const InputType* y_ptr = reinterpret_cast<InputType*>(
+        &image->yuvPlanes[AVIF_CHAN_Y][j * image->yuvRowBytes[AVIF_CHAN_Y]]);
+    const InputType* u_ptr = reinterpret_cast<InputType*>(
+        &image->yuvPlanes[AVIF_CHAN_U][uv_j * image->yuvRowBytes[AVIF_CHAN_U]]);
+    const InputType* v_ptr = reinterpret_cast<InputType*>(
+        &image->yuvPlanes[AVIF_CHAN_V][uv_j * image->yuvRowBytes[AVIF_CHAN_V]]);
+    const InputType* a_ptr = nullptr;
+    if (image->alphaPlane) {
+      a_ptr = reinterpret_cast<InputType*>(
+          &image->alphaPlane[j * image->alphaRowBytes]);
+    }
+
+    for (uint32_t i = 0; i < image->width; ++i) {
+      const int uv_i = i >> format_info.chromaShiftX;
+      pixel.set_x(y_ptr[i] / max_channel);
+      if (color_type == ColorType::kColor) {
+        pixel.set_y(u_ptr[uv_i] / max_channel);
+        pixel.set_z(v_ptr[uv_i] / max_channel);
+      } else {
+        pixel.set_y(0.5f);
+        pixel.set_z(0.5f);
+      }
+
+      transform->Transform(&pixel, 1);
+
+      // TODO(wtc): Use templates or other ways to avoid checking whether the
+      // image supports alpha in the inner loop.
+      const int alpha = a_ptr ? a_ptr[i] : max_channel_i;
+
+      WritePixel(max_channel, pixel, alpha / max_channel, premultiply_alpha,
+                 rgba_dest);
+      rgba_dest++;
+    }
+  }
 }
 
 // Creates a copy of the given input (AVIF image data), with the primary item id
@@ -585,8 +674,9 @@ bool AVIFImageDecoder::MatchesAVIFSignature(
   return avifPeekCompatibleFileType(&input);
 }
 
-gfx::ColorSpace AVIFImageDecoder::GetColorSpaceForTesting() const {
-  return GetColorSpace(decoder_->image);
+gfx::ColorTransform* AVIFImageDecoder::GetColorTransformForTesting() {
+  UpdateColorTransform(GetColorSpace(decoder_->image), decoder_->image->depth);
+  return color_transform_.get();
 }
 
 void AVIFImageDecoder::ParseMetadata() {
@@ -1109,6 +1199,21 @@ avifResult AVIFImageDecoder::DecodeImage(wtf_size_t index) {
   return ret;
 }
 
+void AVIFImageDecoder::UpdateColorTransform(const gfx::ColorSpace& frame_cs,
+                                            int bit_depth) {
+  if (color_transform_ && color_transform_->GetSrcColorSpace() == frame_cs) {
+    return;
+  }
+
+  // For YUV-to-RGB color conversion we can pass an invalid dst color space to
+  // skip the code for full color conversion.
+  gfx::ColorTransform::Options options;
+  options.src_bit_depth = bit_depth;
+  options.dst_bit_depth = bit_depth;
+  color_transform_ = gfx::ColorTransform::NewColorTransform(
+      frame_cs, gfx::ColorSpace(), options);
+}
+
 void AVIFImageDecoder::CropDecodedImage() {
   DCHECK_NE(decoded_image_, cropped_image_.get());
   if (!cropped_image_) {
@@ -1130,6 +1235,7 @@ bool AVIFImageDecoder::RenderImage(const avifImage* image,
                                    int* to_row,
                                    ImageFrame* buffer) {
   const gfx::ColorSpace frame_cs = GetColorSpace(image);
+  const bool is_mono = image->yuvFormat == AVIF_PIXEL_FORMAT_YUV400;
   const bool premultiply_alpha = buffer->PremultiplyAlpha();
 
   DCHECK_LT(from_row, *to_row);
@@ -1199,9 +1305,27 @@ bool AVIFImageDecoder::RenderImage(const avifImage* image,
     image = view.get();
   }
 
+  if (decode_to_half_float_) {
+    UpdateColorTransform(frame_cs, image->depth);
+
+    uint64_t* rgba_hhhh = buffer->GetAddrF16(0, from_row);
+
+    // Color and format convert from YUV HBD -> RGBA half float.
+    if (is_mono) {
+      YUVAToRGBA<ColorType::kMono, uint16_t>(image, color_transform_.get(),
+                                             premultiply_alpha, rgba_hhhh);
+    } else {
+      // TODO(crbug.com/1099820): Add fast path for 10bit 4:2:0 using libyuv.
+      YUVAToRGBA<ColorType::kColor, uint16_t>(image, color_transform_.get(),
+                                              premultiply_alpha, rgba_hhhh);
+    }
+    return true;
+  }
+
+  uint32_t* rgba_8888 = buffer->GetAddr(0, from_row);
   // Call media::PaintCanvasVideoRenderer (PCVR) if the color space is
   // supported.
-  if (!decode_to_half_float_ && IsColorSpaceSupportedByPCVR(image)) {
+  if (IsColorSpaceSupportedByPCVR(image)) {
     // Create temporary frame wrapping the YUVA planes.
     const bool has_alpha = image->alphaPlane != nullptr;
     auto pixel_format =
@@ -1227,7 +1351,6 @@ bool AVIFImageDecoder::RenderImage(const avifImage* image,
       return false;
     }
     frame->set_color_space(frame_cs);
-    uint32_t* rgba_8888 = buffer->GetAddr(0, from_row);
 
     if (save_top_row) {
       previous_last_decoded_row_.resize(image->width);
@@ -1254,35 +1377,25 @@ bool AVIFImageDecoder::RenderImage(const avifImage* image,
     return true;
   }
 
-  avifRGBImage rgb_image;
-  avifRGBImageSetDefaults(&rgb_image, image);
-
-  if (decode_to_half_float_) {
-    rgb_image.depth = 16;
-    rgb_image.isFloat = AVIF_TRUE;
-    rgb_image.pixels =
-        reinterpret_cast<uint8_t*>(buffer->GetAddrF16(0, from_row));
-    rgb_image.rowBytes = image->width * sizeof(uint64_t);
+  UpdateColorTransform(frame_cs, image->depth);
+  if (ImageIsHighBitDepth()) {
+    if (is_mono) {
+      YUVAToRGBA<ColorType::kMono, uint16_t>(image, color_transform_.get(),
+                                             premultiply_alpha, rgba_8888);
+    } else {
+      YUVAToRGBA<ColorType::kColor, uint16_t>(image, color_transform_.get(),
+                                              premultiply_alpha, rgba_8888);
+    }
   } else {
-    rgb_image.depth = 8;
-    rgb_image.pixels = reinterpret_cast<uint8_t*>(buffer->GetAddr(0, from_row));
-    rgb_image.rowBytes = image->width * sizeof(uint32_t);
+    if (is_mono) {
+      YUVAToRGBA<ColorType::kMono, uint8_t>(image, color_transform_.get(),
+                                            premultiply_alpha, rgba_8888);
+    } else {
+      YUVAToRGBA<ColorType::kColor, uint8_t>(image, color_transform_.get(),
+                                             premultiply_alpha, rgba_8888);
+    }
   }
-  rgb_image.alphaPremultiplied = premultiply_alpha;
-
-  static_assert(SK_B32_SHIFT == 16 - SK_R32_SHIFT);
-  static_assert(SK_G32_SHIFT == 8);
-  static_assert(SK_A32_SHIFT == 24);
-#if SK_B32_SHIFT
-  // Android uses little-endian RGBA pixels.
-  rgb_image.format = AVIF_RGB_FORMAT_RGBA;
-#else
-  rgb_image.format = AVIF_RGB_FORMAT_BGRA;
-#endif
-
-  rgb_image.maxThreads = decoder_->maxThreads;
-
-  return avifImageYUVToRGB(image, &rgb_image) == AVIF_RESULT_OK;
+  return true;
 }
 
 void AVIFImageDecoder::ColorCorrectImage(int from_row,
