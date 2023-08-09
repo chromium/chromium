@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -22,6 +23,7 @@
 #include "components/segmentation_platform/internal/database/config_holder.h"
 #include "components/segmentation_platform/internal/database/mock_signal_storage_config.h"
 #include "components/segmentation_platform/internal/database/test_segment_info_database.h"
+#include "components/segmentation_platform/internal/execution/processing/feature_list_query_processor.h"
 #include "components/segmentation_platform/internal/execution/processing/mock_feature_list_query_processor.h"
 #include "components/segmentation_platform/internal/metadata/metadata_utils.h"
 #include "components/segmentation_platform/internal/mock_ukm_data_manager.h"
@@ -31,6 +33,7 @@
 #include "components/segmentation_platform/internal/selection/segmentation_result_prefs.h"
 #include "components/segmentation_platform/internal/signals/mock_histogram_signal_handler.h"
 #include "components/segmentation_platform/internal/signals/mock_user_action_signal_handler.h"
+#include "components/segmentation_platform/internal/stats.h"
 #include "components/segmentation_platform/public/config.h"
 #include "components/segmentation_platform/public/features.h"
 #include "components/segmentation_platform/public/local_state_helper.h"
@@ -860,6 +863,43 @@ TEST_F(TrainingDataCollectorImplTest, DataCollectionWithTriggerAPI) {
   run_loop.Run();
   ExpectUkmCount(1u);
   ExpectResult1UkmWithSample(kSample);
+}
+
+// Tests that we don't collect training data if input processing fails.
+TEST_F(TrainingDataCollectorImplTest,
+       DataCollectionSkippedWhenInputProcessingFails) {
+  base::HistogramTester tester;
+
+  // Set feature_list_processor to return an error when processing input data.
+  EXPECT_CALL(
+      *feature_list_processor(),
+      ProcessFeatureList(
+          _, _, _, _, _,
+          processing::FeatureListQueryProcessor::ProcessOption::kInputsOnly, _))
+      .WillOnce(RunOnceCallback<6>(/* has_error= */ true,
+                                   ModelProvider::Request{},
+                                   ModelProvider::Response{}));
+
+  CreateSegmentInfo(kTestOptimizationTarget0, kOnDemandDecisionType);
+  Init();
+
+  auto input_context = base::MakeRefCounted<InputContext>();
+  auto request_id = collector()->OnDecisionTime(
+      kTestOptimizationTarget0, input_context, kOnDemandDecisionType);
+  task_environment()->RunUntilIdle();
+  ExpectUkmCount(0u);
+
+  TrainingLabels label;
+  label.output_metric = {{kHistogramName0, kSample}};
+  // Trigger output collection and ukm data recording.
+  collector()->CollectTrainingData(kTestOptimizationTarget0, request_id, label,
+                                   base::DoNothing());
+  ExpectUkmCount(0u);
+  // A histogram should have been recorded.
+  EXPECT_EQ(
+      1, tester.GetBucketCount(
+             "SegmentationPlatform.TrainingDataCollectionEvents.ShoppingUser",
+             stats::TrainingDataCollectionEvent::kGetInputTensorsFailed));
 }
 
 }  // namespace

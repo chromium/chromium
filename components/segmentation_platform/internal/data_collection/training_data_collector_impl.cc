@@ -567,6 +567,17 @@ void TrainingDataCollectorImpl::OnGetTrainingTensorsAtDecisionTime(
     bool has_error,
     const ModelProvider::Request& input_tensors,
     const ModelProvider::Response& output_tensors) {
+  if (has_error) {
+    RecordTrainingDataCollectionEvent(
+        segment_info.segment_id(),
+        stats::TrainingDataCollectionEvent::kGetInputTensorsFailed);
+    return;
+  } else {
+    RecordTrainingDataCollectionEvent(
+        segment_info.segment_id(),
+        stats::TrainingDataCollectionEvent::kCollectAndStoreInputsSuccess);
+  }
+
   // Store inputs to cache.
   proto::TrainingData training_data;
   bool store_to_disk = FillTrainingData(
@@ -587,15 +598,6 @@ void TrainingDataCollectorImpl::OnGetTrainingTensorsAtDecisionTime(
                                std::move(training_data),
                                /*save_to_db=*/store_to_disk);
 
-  if (has_error) {
-    RecordTrainingDataCollectionEvent(
-        segment_info.segment_id(),
-        stats::TrainingDataCollectionEvent::kGetInputTensorsFailed);
-  } else {
-    RecordTrainingDataCollectionEvent(
-        segment_info.segment_id(),
-        stats::TrainingDataCollectionEvent::kCollectAndStoreInputsSuccess);
-  }
 
   // Set up delayed output recordings based on time delay triggers defined
   // in model metadata.
