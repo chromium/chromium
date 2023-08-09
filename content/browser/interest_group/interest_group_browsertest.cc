@@ -3185,13 +3185,15 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
-                       JoinInterestGroupValidAllowedReportingOrigins) {
+                       JoinInterestGroupValidAttestedAllowedReportingOrigins) {
   GURL url = https_server_->GetURL("a.test", "/echo");
   auto origin = url::Origin::Create(url);
   ASSERT_TRUE(NavigateToURL(shell(), url));
 
-  std::vector<url::Origin> allowed_reporting_origins = {
-      url::Origin::Create(GURL("https://report.test"))};
+  url::Origin other_origin =
+      url::Origin::Create(https_server_->GetURL("b.test", "/echo"));
+  content_browser_client_->AddToAllowList({other_origin});
+  std::vector<url::Origin> allowed_reporting_origins = {other_origin};
   EXPECT_EQ(
       kSuccess,
       JoinInterestGroupAndVerify(

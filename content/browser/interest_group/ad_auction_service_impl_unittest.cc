@@ -806,11 +806,10 @@ class AdAuctionServiceImplTest : public RenderViewHostTestHarness {
   // Creates a new AdAuctionServiceImpl and use it to try and join
   // `interest_group`. Waits for the operation to signal completion.
   //
-  // Creates a new AdAuctionServiceImpl with each call so the RFH
-  // can be navigated between different sites. And
-  // AdAuctionServiceImpl only handles one site (cross site navs use
-  // different AdAuctionServices, and generally use different
-  // RFHs as well).
+  // Creates a new AdAuctionServiceImpl with each call so the RFH can be
+  // navigated between different sites. And AdAuctionServiceImpl only handles
+  // one site (cross site navs use different AdAuctionServices, and generally
+  // use different RFHs as well).
   //
   // If `rfh` is nullptr, uses the main frame.
   void JoinInterestGroupAndFlush(const blink::InterestGroup& interest_group,
@@ -1135,6 +1134,31 @@ TEST_F(AdAuctionServiceImplTest, JoinInterestGroupDisallowedUrls) {
   EXPECT_EQ(0, GetJoinCount(kOriginA, kInterestGroupName));
 }
 
+// Attempt to join an interest group whose allowed reporting origins are not all
+// attested. No join should happen.
+TEST_F(AdAuctionServiceImplTest,
+       JoinInterestGroupNotAttestedAllowedReportingOrigins) {
+  const url::Origin kNotAttestedOrigin =
+      url::Origin::Create(GURL("https://a.test"));
+  content_browser_client_.SetAllowList({kOriginG});
+  // Test `bidding_url`.
+  blink::InterestGroup interest_group = CreateInterestGroup();
+  interest_group.ads.emplace();
+  std::vector<url::Origin> allowed_reporting_origins = {kOriginG,
+                                                        kNotAttestedOrigin};
+  blink::InterestGroup::Ad ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/absl::nullopt,
+      /*size_group=*/absl::nullopt,
+      /*buyer_reporting_id=*/absl::nullopt,
+      /*buyer_and_seller_reporting_id=*/absl::nullopt,
+      /*ad_render_id=*/absl::nullopt,
+      /*allowed_reporting_origins=*/std::move(allowed_reporting_origins));
+  interest_group.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group);
+  EXPECT_EQ(0, GetJoinCount(kOriginA, kInterestGroupName));
+}
+
 // Attempt to join an interest group whose size is very large. No join should
 // happen -- it should fail and close the pipe.
 TEST_F(AdAuctionServiceImplTest, JoinMassiveInterestGroupFails) {
@@ -1207,6 +1231,7 @@ TEST_F(AdAuctionServiceImplTest, FixExpiryOnJoin) {
 
 // The server JSON updates all fields that can be updated.
 TEST_F(AdAuctionServiceImplTest, UpdateAllUpdatableFields) {
+  content_browser_client_.SetAllowList({kOriginF, kOriginG});
   // TODO(caraitto): Remove camelCase sellerCapabilities fields when no longer
   // supported.
   network_responder_->RegisterUpdateResponse(
@@ -1265,7 +1290,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateAllUpdatableFields) {
   interest_group.trusted_bidding_signals_keys.emplace();
   interest_group.trusted_bidding_signals_keys->push_back("key1");
   interest_group.ads.emplace();
-  std::vector<url::Origin> allowed_reporting_origins = {kOriginG};
+  std::vector<url::Origin> allowed_reporting_origins = {kOriginF};
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
       /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}",
@@ -1273,7 +1298,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateAllUpdatableFields) {
       /*buyer_reporting_id=*/"old_brid",
       /*buyer_and_seller_reporting_id=*/"old_shrid",
       /*ad_render_id=*/"123abc",
-      /*allowed_reporting_origins*/ std::move(allowed_reporting_origins));
+      /*allowed_reporting_origins=*/std::move(allowed_reporting_origins));
   interest_group.ads->emplace_back(std::move(ad));
   interest_group.ad_components.emplace();
   blink::InterestGroup::Ad ad_component(
@@ -2155,6 +2180,53 @@ TEST_F(AdAuctionServiceImplTest, UpdateInvalidFieldCancelsAllUpdates) {
   }
 }
 
+// The `ads` field is valid, but one of its allowed reporting origins is not
+// attested. The entire update should get cancelled.
+TEST_F(AdAuctionServiceImplTest,
+       UpdateNotAttestedAllowedReportingOriginsCancelsAllUpdates) {
+  blink::InterestGroup interest_group = CreateInterestGroup();
+  interest_group.update_url = kUpdateUrlA;
+  interest_group.bidding_url = kBiddingLogicUrlA;
+  interest_group.trusted_bidding_signals_url = kTrustedBiddingSignalsUrlA;
+  interest_group.trusted_bidding_signals_keys.emplace();
+  interest_group.trusted_bidding_signals_keys->push_back("key1");
+  interest_group.ads.emplace();
+  blink::InterestGroup::Ad ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}");
+  interest_group.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group);
+  EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
+
+  content_browser_client_.SetAllowList({kOriginG});
+  network_responder_->RegisterUpdateResponse(
+      kUpdateUrlPath, base::StringPrintf(R"({
+"biddingLogicUrl": "%s/interest_group/new_bidding_logic.js",
+"ads": [{"renderURL": "https://test.com",
+        "metadata": {"new_a": "b"},
+        "allowedReportingOrigins": ["https://a.test", "https://g.test"]
+        }]
+})",
+                                         kOriginStringA));
+
+  UpdateInterestGroupNoFlush();
+  task_environment()->RunUntilIdle();
+
+  // Check that the ads and bidding logic URL didn't change.
+  std::vector<StorageInterestGroup> groups =
+      GetInterestGroupsForOwner(kOriginA);
+  ASSERT_EQ(groups.size(), 1u);
+  const auto& group = groups[0].interest_group;
+  ASSERT_TRUE(group.ads.has_value());
+  ASSERT_EQ(group.ads->size(), 1u);
+  EXPECT_EQ(group.ads.value()[0].render_url.spec(),
+            "https://example.com/render");
+  EXPECT_EQ(group.ads.value()[0].metadata,
+            "{\"ad\":\"metadata\",\"here\":[1,2,3]}");
+  EXPECT_FALSE(group.ads.value()[0].allowed_reporting_origins.has_value());
+  EXPECT_EQ(group.bidding_url, kBiddingLogicUrlA);
+}
+
 // The `priority` field is not a valid number. The entire update should get
 // cancelled, since updates are atomic.
 TEST_F(AdAuctionServiceImplTest, UpdateInvalidPriorityCancelsAllUpdates) {
@@ -2903,6 +2975,117 @@ TEST_F(AdAuctionServiceImplTest, UpdateRateLimitedAfterBadUpdateResponse) {
   ASSERT_EQ(group4.ads->size(), 1u);
   EXPECT_EQ(group4.ads.value()[0].render_url.spec(),
             "https://example.com/new_render");
+}
+
+// Just like AdAuctionServiceImplTest.UpdateRateLimitedAfterBadUpdateResponse,
+// except server returns a valid JSON response for update but with un-enrolled
+// allowedReportingOrigins.
+//
+// Join an interest group.
+// Set up update to fail (return server response with un-enrolled origins).
+// Update interest group fails.
+// Change update response to different value that will succeed.
+// Update does nothing (rate limited).
+// Advance to just before rate limit drops (which for bad response is the longer
+// "successful" duration), update does nothing (rate limited).
+// Advance after time limit. Update should work.
+TEST_F(AdAuctionServiceImplTest,
+       UpdateRateLimitedAfterGotNotAttestedAllowedReportingOrigins) {
+  content_browser_client_.SetAllowList({kOriginB});
+  network_responder_->RegisterUpdateResponse(kUpdateUrlPath,
+                                             R"({
+"ads": [{"renderURL": "https://example.com/new_render",
+        "allowedReportingOrigins": ["https://a.test"]
+        }]
+})");
+
+  blink::InterestGroup interest_group = CreateInterestGroup();
+  // Set a long expiration delta so that we can advance to the next rate limit
+  // period without the interest group expiring.
+  interest_group.expiry = base::Time::Now() + base::Days(30);
+  interest_group.update_url = kUpdateUrlA;
+  interest_group.ads.emplace();
+  blink::InterestGroup::Ad ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/absl::nullopt);
+  interest_group.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group);
+  EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
+
+  UpdateInterestGroupNoFlush();
+  task_environment()->RunUntilIdle();
+
+  // The first update fails, nothing changes.
+  std::vector<StorageInterestGroup> groups =
+      GetInterestGroupsForOwner(kOriginA);
+  ASSERT_EQ(groups.size(), 1u);
+  const auto& group = groups[0].interest_group;
+  ASSERT_TRUE(group.ads.has_value());
+  ASSERT_EQ(group.ads->size(), 1u);
+  EXPECT_EQ(group.ads.value()[0].render_url.spec(),
+            "https://example.com/render");
+  EXPECT_FALSE(group.ads.value()[0].allowed_reporting_origins.has_value());
+
+  // Change the allowedReportingOrigins to attested origins and try updating
+  // again.
+  network_responder_->RegisterUpdateResponse(kUpdateUrlPath, R"({
+"ads": [{"renderURL": "https://example.com/new_render",
+        "allowedReportingOrigins": ["https://b.test"]
+        }]
+})");
+  UpdateInterestGroupNoFlush();
+  task_environment()->RunUntilIdle();
+
+  // The update does nothing due to rate limiting, nothing changes.
+  std::vector<StorageInterestGroup> groups2 =
+      GetInterestGroupsForOwner(kOriginA);
+  ASSERT_EQ(groups2.size(), 1u);
+  const auto& group2 = groups2[0].interest_group;
+  ASSERT_TRUE(group2.ads.has_value());
+  ASSERT_EQ(group2.ads->size(), 1u);
+  EXPECT_EQ(group.ads.value()[0].render_url.spec(),
+            "https://example.com/render");
+  EXPECT_FALSE(group.ads.value()[0].allowed_reporting_origins.has_value());
+
+  // Advance time to just before end of rate limit period. Update should still
+  // do nothing due to rate limiting. Invalid responses use the longer
+  // "successful" backoff period.
+  task_environment()->FastForwardBy(
+      InterestGroupStorage::kUpdateSucceededBackoffPeriod - base::Seconds(1));
+
+  UpdateInterestGroupNoFlush();
+  task_environment()->RunUntilIdle();
+
+  // The update does nothing due to rate limiting, nothing changes.
+  std::vector<StorageInterestGroup> groups3 =
+      GetInterestGroupsForOwner(kOriginA);
+  ASSERT_EQ(groups3.size(), 1u);
+  const auto& group3 = groups3[0].interest_group;
+  ASSERT_TRUE(group3.ads.has_value());
+  ASSERT_EQ(group3.ads->size(), 1u);
+  EXPECT_EQ(group.ads.value()[0].render_url.spec(),
+            "https://example.com/render");
+  EXPECT_FALSE(group.ads.value()[0].allowed_reporting_origins.has_value());
+
+  // Advance time to just after end of rate limit period. Update should now
+  // succeed.
+  task_environment()->FastForwardBy(base::Seconds(2));
+
+  UpdateInterestGroupNoFlush();
+  task_environment()->RunUntilIdle();
+
+  // The update changes the database contents.
+  std::vector<StorageInterestGroup> groups4 =
+      GetInterestGroupsForOwner(kOriginA);
+  ASSERT_EQ(groups4.size(), 1u);
+  const auto& group4 = groups4[0].interest_group;
+  ASSERT_TRUE(group4.ads.has_value());
+  ASSERT_EQ(group4.ads->size(), 1u);
+  EXPECT_EQ(group4.ads.value()[0].render_url.spec(),
+            "https://example.com/new_render");
+  std::vector<url::Origin> allowed_reporting_origins = {kOriginB};
+  EXPECT_EQ(group4.ads.value()[0].allowed_reporting_origins,
+            allowed_reporting_origins);
 }
 
 // Join an interest group.
@@ -4388,8 +4571,10 @@ function scoreAd(
 }
 )";
 
+  content_browser_client_.SetAllowList({kOriginG});
   network_responder_->RegisterUpdateResponse(kUpdateUrlPath, R"({
-"ads": [{"renderURL": "https://example.com/new_render"
+"ads": [{"renderURL": "https://example.com/new_render",
+         "allowedReportingOrigins": ["https://g.test"]
         }]
 })");
 
@@ -4426,6 +4611,9 @@ function scoreAd(
   ASSERT_EQ(a_group.ads->size(), 1u);
   EXPECT_EQ(a_group.ads.value()[0].render_url.spec(),
             "https://example.com/new_render");
+  std::vector<url::Origin> allowed_reporting_origins = {kOriginG};
+  EXPECT_EQ(a_group.ads.value()[0].allowed_reporting_origins,
+            allowed_reporting_origins);
 }
 
 // Like UpdatesInterestGroupsAfterSuccessfulAuction, but the auction fails

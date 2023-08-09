@@ -78,6 +78,7 @@ std::unique_ptr<AuctionRunner> AuctionRunner::CreateAndStart(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     IsInterestGroupApiAllowedCallback is_interest_group_api_allowed_callback,
     GetAdAuctionPageDataCallback get_page_data_callback,
+    AreReportingOriginsAttestedCallback attestation_callback,
     mojo::PendingReceiver<AbortableAdAuction> abort_receiver,
     RunAuctionCallback callback) {
   std::unique_ptr<AuctionRunner> instance(new AuctionRunner(
@@ -88,8 +89,8 @@ std::unique_ptr<AuctionRunner> AuctionRunner::CreateAndStart(
       frame_origin, ukm_source_id, std::move(client_security_state),
       std::move(url_loader_factory),
       std::move(is_interest_group_api_allowed_callback),
-      std::move(get_page_data_callback), std::move(abort_receiver),
-      std::move(callback)));
+      std::move(get_page_data_callback), std::move(attestation_callback),
+      std::move(abort_receiver), std::move(callback)));
   instance->StartAuction();
   return instance;
 }
@@ -462,6 +463,7 @@ AuctionRunner::AuctionRunner(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     IsInterestGroupApiAllowedCallback is_interest_group_api_allowed_callback,
     GetAdAuctionPageDataCallback get_page_data_callback,
+    AreReportingOriginsAttestedCallback attestation_callback,
     mojo::PendingReceiver<AbortableAdAuction> abort_receiver,
     RunAuctionCallback callback)
     : interest_group_manager_(interest_group_manager),
@@ -474,6 +476,7 @@ AuctionRunner::AuctionRunner(
       is_interest_group_api_allowed_callback_(
           is_interest_group_api_allowed_callback),
       get_page_data_callback_(get_page_data_callback),
+      attestation_callback_(attestation_callback),
       abort_receiver_(this, std::move(abort_receiver)),
       kanon_mode_(kanon_mode),
       owned_auction_config_(
@@ -611,7 +614,7 @@ void AuctionRunner::UpdateInterestGroupsPostAuction() {
   });
 
   interest_group_manager_->UpdateInterestGroupsOfOwners(
-      update_owners, client_security_state_.Clone());
+      update_owners, client_security_state_.Clone(), attestation_callback_);
 }
 
 void AuctionRunner::NotifyPromiseResolved(

@@ -57,6 +57,9 @@ class InterestGroupStorage;
 // as it performs blocking file IO when backed by on-disk storage.
 class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
  public:
+  using AreReportingOriginsAttestedCallback =
+      base::RepeatingCallback<bool(const std::vector<url::Origin>&)>;
+
   // Controls how auction worklets will be run. kDedicated will use
   // fully-isolated utility processes solely for worklet. kInRenderer will
   // re-use regular renderers following the normal site isolation policy.
@@ -133,6 +136,7 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
       const net::NetworkIsolationKey& network_isolation_key,
       bool report_result_only,
       network::mojom::URLLoaderFactory& url_loader_factory,
+      AreReportingOriginsAttestedCallback attestation_callback,
       blink::mojom::AdAuctionService::JoinInterestGroupCallback callback);
 
   // Same as CheckPermissionsAndJoinInterestGroup(), except for a leave
@@ -159,14 +163,16 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
   // load or validate are skipped, but other updates will proceed.
   void UpdateInterestGroupsOfOwner(
       const url::Origin& owner,
-      network::mojom::ClientSecurityStatePtr client_security_state);
+      network::mojom::ClientSecurityStatePtr client_security_state,
+      AreReportingOriginsAttestedCallback callback);
   // Like UpdateInterestGroupsOfOwner(), but handles multiple interest group
   // owners.
   //
   // The list is shuffled in-place to ensure fairness.
   void UpdateInterestGroupsOfOwners(
       base::span<url::Origin> owners,
-      network::mojom::ClientSecurityStatePtr client_security_state);
+      network::mojom::ClientSecurityStatePtr client_security_state,
+      AreReportingOriginsAttestedCallback callback);
 
   // For testing *only*; changes the maximum amount of time that the update
   // process can run before it gets cancelled for taking too long.
@@ -370,6 +376,7 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
       blink::InterestGroup group,
       const GURL& joining_url,
       bool report_result_only,
+      AreReportingOriginsAttestedCallback attestation_callback,
       blink::mojom::AdAuctionService::JoinInterestGroupCallback callback,
       bool can_join);
   void OnLeaveInterestGroupPermissionsChecked(

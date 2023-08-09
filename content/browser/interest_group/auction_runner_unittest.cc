@@ -1721,6 +1721,15 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
 
     auction_run_loop_ = std::make_unique<base::RunLoop>();
     abortable_ad_auction_.reset();
+
+    // The callback to check attestation is not tested at this layer.
+    // AdAuctionServiceImplTest tests it.
+    base::RepeatingCallback<bool(const std::vector<url::Origin>&)>
+        attestation_callback = base::BindRepeating(
+            [](BrowserContext* browser_context,
+               const std::vector<url::Origin>& origins) { return true; },
+            base::Unretained(browser_context()));
+
     auction_runner_ = AuctionRunner::CreateAndStart(
         auction_worklet_manager_.get(), interest_group_manager_.get(),
         /*browser_context=*/browser_context(), &private_aggregation_manager_,
@@ -1730,6 +1739,7 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
         IsInterestGroupApiAllowedCallback(), base::BindLambdaForTesting([&]() {
           return ad_auction_page_data_.get();
         }),
+        std::move(attestation_callback),
         abortable_ad_auction_.BindNewPipeAndPassReceiver(),
         base::BindOnce(&AuctionRunnerTest::OnAuctionComplete,
                        base::Unretained(this)));

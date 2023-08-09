@@ -93,6 +93,9 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
   using GetAdAuctionPageDataCallback =
       base::RepeatingCallback<AdAuctionPageData*()>;
 
+  using AreReportingOriginsAttestedCallback =
+      base::RepeatingCallback<bool(const std::vector<url::Origin>&)>;
+
   // Creates an entire FLEDGE auction. Single-use object.
   //
   // Arguments: `auction_worklet_manager`, `interest_group_manager`,
@@ -121,6 +124,10 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
   //   seller origins, and those for which it returns false will not be allowed
   //   to participate in the auction.
   //
+  //  `attestation_callback` will be called on all interest group
+  //   updates' ad allowed reporting origins, and those updates which the
+  //   callback returns false will not update the interest group.
+  //
   //  `callback` is invoked on auction completion. It should synchronously
   //   destroy this AuctionRunner object. `callback` won't be invoked until
   //   after CreateAndStart() returns.
@@ -139,6 +146,7 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       IsInterestGroupApiAllowedCallback is_interest_group_api_allowed_callback,
       GetAdAuctionPageDataCallback get_page_data_callback,
+      AreReportingOriginsAttestedCallback attestation_callback,
       mojo::PendingReceiver<AbortableAdAuction> abort_receiver,
       RunAuctionCallback callback);
 
@@ -215,6 +223,7 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       IsInterestGroupApiAllowedCallback is_interest_group_api_allowed_callback,
       GetAdAuctionPageDataCallback get_page_data_callback,
+      AreReportingOriginsAttestedCallback attestation_callback,
       mojo::PendingReceiver<AbortableAdAuction> abort_receiver,
       RunAuctionCallback callback);
 
@@ -281,6 +290,8 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
   IsInterestGroupApiAllowedCallback is_interest_group_api_allowed_callback_;
 
   GetAdAuctionPageDataCallback get_page_data_callback_;
+
+  AreReportingOriginsAttestedCallback attestation_callback_;
 
   mojo::Receiver<blink::mojom::AbortableAdAuction> abort_receiver_;
 
