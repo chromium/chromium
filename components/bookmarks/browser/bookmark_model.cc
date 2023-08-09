@@ -124,13 +124,13 @@ void DeleteAccountStorageFileSynchronously(
 // BookmarkModel --------------------------------------------------------------
 
 BookmarkModel::BookmarkModel(std::unique_ptr<BookmarkClient> client)
-    : client_(std::move(client)),
-      owned_root_(std::make_unique<BookmarkNode>(
+    : owned_root_(std::make_unique<BookmarkNode>(
           /*id=*/0,
           base::Uuid::ParseLowercase(kRootNodeUuid),
           GURL())),
       root_(owned_root_.get()),
-      observers_(base::ObserverListPolicy::EXISTING_ONLY) {
+      observers_(base::ObserverListPolicy::EXISTING_ONLY),
+      client_(std::move(client)) {
   DCHECK(client_);
   client_->Init(this);
 }
@@ -147,6 +147,14 @@ BookmarkModel::~BookmarkModel() {
     // so that it doesn't try and invoke a method back on us again.
     store_->BookmarkModelDeleted();
   }
+
+  // `TitledUrlIndex` owns  a `TypedCountSorter` that keeps a raw_ptr to the
+  // client. So titled_url_index_ must be reset first.
+  titled_url_index_.reset();
+
+  // ChromeBookmarkClient indirectly observes the model. The client should thus
+  // be reset before the observer list.
+  client_.reset();
 }
 
 void BookmarkModel::Load(const base::FilePath& profile_path,
