@@ -24,6 +24,7 @@
 #include "components/password_manager/core/browser/password_store_sync.h"
 #include "components/password_manager/core/browser/sync/password_proto_utils.h"
 #include "components/password_manager/core/common/password_manager_features.h"
+#include "components/sync/base/data_type_histogram.h"
 #include "components/sync/base/features.h"
 #include "components/sync/model/in_memory_metadata_change_list.h"
 #include "components/sync/model/metadata_batch.h"
@@ -1011,6 +1012,7 @@ void PasswordSyncBridge::ApplyDisableSyncChanges(
       CHECK(!password_store_sync_->IsAccountStore());
       // Wipe the model data this once, and flip the behavior to kNever so it
       // doesn't get wiped again.
+      syncer::SyncRecordModelClearedOnceHistogram(syncer::PASSWORDS);
       wipe_model_upon_sync_disabled_behavior_ =
           syncer::WipeModelUponSyncDisabledBehavior::kNever;
       break;
