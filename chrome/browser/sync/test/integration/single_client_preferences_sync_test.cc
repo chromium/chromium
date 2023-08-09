@@ -24,6 +24,7 @@
 #include "components/ntp_tiles/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/json_pref_store.h"
+#include "components/prefs/mock_pref_change_callback.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
@@ -735,6 +736,67 @@ IN_PROC_BROWSER_TEST_F(
   // However, the account value should still apply.
   EXPECT_EQ(GetPrefs(0)->GetString(sync_preferences::kSyncablePrefForTesting),
             "account value");
+}
+
+// Adds pref values to persistent storage.
+IN_PROC_BROWSER_TEST_F(
+    SingleClientPreferencesWithPersistentAccountStorageSyncTest,
+    PRE_ShouldNotNotifyUponSyncStart) {
+  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  // Register `sync_preferences::kSyncablePrefForTesting`.
+  GetRegistry(GetProfile(0))
+      ->RegisterBooleanPref(sync_preferences::kSyncablePrefForTesting, false,
+                            user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+
+  InjectPreferenceToFakeServer(syncer::PREFERENCES,
+                               sync_preferences::kSyncablePrefForTesting,
+                               base::Value(true));
+
+  // Enable Sync.
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::PREFERENCES));
+  // Fake server value is synced to the account store.
+  ASSERT_TRUE(
+      GetPrefs(0)->GetBoolean(sync_preferences::kSyncablePrefForTesting));
+}
+
+// Regression test for crbug.com/1470161.
+IN_PROC_BROWSER_TEST_F(
+    SingleClientPreferencesWithPersistentAccountStorageSyncTest,
+    ShouldNotNotifyUponSyncStart) {
+  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  // Register `sync_preferences::kSyncablePrefForTesting`.
+  GetRegistry(GetProfile(0))
+      ->RegisterBooleanPref(sync_preferences::kSyncablePrefForTesting, false,
+                            user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+
+  MockPrefChangeCallback observer(GetPrefs(0));
+  PrefChangeRegistrar registrar;
+  registrar.Init(GetPrefs(0));
+  registrar.Add(sync_preferences::kSyncablePrefForTesting,
+                observer.GetCallback());
+
+  // Pref value is restored from the persisted json layer and never changes.
+  EXPECT_CALL(observer, OnPreferenceChanged).Times(0);
+
+  // Sync has not started up yet, and thus PREFERENCES is not active yet.
+  ASSERT_FALSE(
+      GetSyncService(0)->GetActiveDataTypes().Has(syncer::PREFERENCES));
+
+  // The account value is loaded from the persistence layer.
+  ASSERT_TRUE(
+      GetPrefs(0)->GetBoolean(sync_preferences::kSyncablePrefForTesting));
+
+  // Explicitly set the pref value before sync is initialized. Since the
+  // effective value doesn't change, this should be a no-op.
+  GetPrefs(0)->SetBoolean(sync_preferences::kSyncablePrefForTesting, true);
+
+  // Wait for sync to start. This would read sync data but should not result in
+  // any changes to effective pref value, and thus not cause any observer calls.
+  ASSERT_TRUE(GetClient(0)->AwaitSyncSetupCompletion());
+  ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::PREFERENCES));
+  ASSERT_TRUE(
+      GetPrefs(0)->GetBoolean(sync_preferences::kSyncablePrefForTesting));
 }
 
 using SingleClientPreferencesWithAccountStorageMergeSyncTest =
