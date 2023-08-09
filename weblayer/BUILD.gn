@@ -408,6 +408,7 @@ source_set("weblayer_lib_base") {
     "//components/autofill/content/renderer",
     "//components/autofill/core/browser",
     "//components/autofill/core/common",
+    "//components/autofill/core/common:features",
     "//components/background_fetch",
     "//components/background_sync",
     "//components/base32",

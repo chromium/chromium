@@ -6,6 +6,7 @@ include_rules = [
 
   "+components/android_system_error_page",
   "+components/autofill/content/renderer",
+  "+components/autofill/core/common",
   "+components/cdm/renderer",
   "+components/network_hints/renderer",
   "+components/page_load_metrics/renderer",

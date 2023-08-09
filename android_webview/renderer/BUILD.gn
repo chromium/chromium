@@ -34,6 +34,7 @@ source_set("renderer") {
     "//base",
     "//components/android_system_error_page",
     "//components/autofill/content/renderer",
+    "//components/autofill/core/common:features",
     "//components/cdm/renderer",
     "//components/content_capture/common",
     "//components/content_capture/renderer",

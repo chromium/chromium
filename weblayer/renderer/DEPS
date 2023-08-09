@@ -1,5 +1,6 @@
 include_rules = [
   "+components/android_system_error_page",
+  "+components/autofill/core/common",
   "+components/autofill/content/renderer",
   "+components/cdm/renderer",
   "+components/content_capture/common",

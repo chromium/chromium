@@ -68,7 +68,6 @@ target(link_target_type, "child") {
     "//base",
     "//build/config/compiler:compiler_buildflags",
     "//cc/paint",
-    "//components/autofill/core/common:features",
     "//components/discardable_memory/client",
     "//components/discardable_memory/public/mojom",
     "//components/tracing:startup_tracing",

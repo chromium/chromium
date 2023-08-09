@@ -8,6 +8,7 @@
 #include "build/build_config.h"
 #include "components/autofill/content/renderer/autofill_agent.h"
 #include "components/autofill/content/renderer/password_autofill_agent.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/content_capture/common/content_capture_features.h"
 #include "components/content_capture/renderer/content_capture_sender.h"
 #include "components/content_settings/renderer/content_settings_agent_impl.h"
@@ -236,6 +237,11 @@ void ContentRendererClientImpl::
 
   if (base::FeatureList::IsEnabled(subresource_filter::kAdTagging)) {
     blink::WebRuntimeFeatures::EnableAdTagging(true);
+  }
+
+  if (base::FeatureList::IsEnabled(
+          autofill::features::kAutofillSharedAutofill)) {
+    blink::WebRuntimeFeatures::EnableSharedAutofill(true);
   }
 }
 
