@@ -547,5 +547,7 @@ void PageInfoCookiesContentView::AddThirdPartyCookiesContainer() {
       std::make_unique<views::ImageView>());
 
   third_party_cookies_container_->AddChildView(
-      PageInfoViewFactory::CreateSeparator());
+      PageInfoViewFactory::CreateSeparator(
+          ChromeLayoutProvider::Get()->GetDistanceMetric(
+              DISTANCE_HORIZONTAL_SEPARATOR_PADDING_PAGE_INFO_VIEW)));
 }
