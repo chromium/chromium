@@ -11,7 +11,9 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/power/power_notification_controller.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/time/time.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -61,7 +63,7 @@ void BatterySaverController::MaybeResetNotificationAvailability(
 
 void BatterySaverController::OnPowerStatusChanged() {
   if (always_on_) {
-    SetBatterySaverState(true);
+    SetState(true, UpdateReason::kAlwaysOn);
     return;
   }
 
@@ -72,7 +74,9 @@ void BatterySaverController::OnPowerStatusChanged() {
   const bool on_line_power = power_status->IsLinePowerConnected();
 
   // Update Settings UI to reflect current BSM state.
-  UpdateSettings(active);
+  if (local_state_->GetBoolean(prefs::kPowerBatterySaver) != active) {
+    SetState(active, UpdateReason::kPowerManager);
+  }
 
   // If we don't have a time-to-empty, powerd is still thinking so don't
   // try to auto-enable.
@@ -102,7 +106,7 @@ void BatterySaverController::OnPowerStatusChanged() {
 
   // Should we turn off battery saver?
   if (active && on_AC_power) {
-    SetBatterySaverState(false);
+    SetState(false, UpdateReason::kCharging);
     return;
   }
 
@@ -121,14 +125,14 @@ void BatterySaverController::OnPowerStatusChanged() {
       if (threshold_conditions_met) {
         threshold_crossed_ = true;
         if (!active) {
-          SetBatterySaverState(true);
+          SetState(true, UpdateReason::kThreshold);
         }
       }
 
       if (low_power_conditions_met) {
         low_power_crossed_ = true;
         if (!active) {
-          SetBatterySaverState(true);
+          SetState(true, UpdateReason::kLowPower);
         }
       }
       break;
@@ -139,7 +143,7 @@ void BatterySaverController::OnPowerStatusChanged() {
       if (low_power_conditions_met) {
         low_power_crossed_ = true;
         if (!active) {
-          SetBatterySaverState(true);
+          SetState(true, UpdateReason::kLowPower);
         }
       }
       break;
@@ -156,16 +160,13 @@ void BatterySaverController::OnPowerStatusChanged() {
 
 void BatterySaverController::OnSettingsPrefChanged() {
   if (always_on_) {
-    SetBatterySaverState(true);
+    SetState(true, UpdateReason::kAlwaysOn);
     return;
   }
 
   // OS Settings has changed the pref, tell Power Manager.
-  SetBatterySaverState(local_state_->GetBoolean(prefs::kPowerBatterySaver));
-}
-
-void BatterySaverController::SetStateForTesting(bool active) {
-  SetBatterySaverState(active);
+  SetState(local_state_->GetBoolean(prefs::kPowerBatterySaver),
+           UpdateReason::kSettings);
 }
 
 void BatterySaverController::DisplayBatterySaverModeDisabledToast() {
@@ -183,26 +184,119 @@ void BatterySaverController::DisplayBatterySaverModeDisabledToast() {
       ToastData::kDefaultToastDuration, true));
 }
 
-bool BatterySaverController::UpdateSettings(bool active) {
-  bool changed = false;
-  if (active != local_state_->GetBoolean(prefs::kPowerBatterySaver)) {
-    local_state_->SetBoolean(prefs::kPowerBatterySaver, active);
-    changed = true;
-  }
-  return changed;
-}
+void BatterySaverController::SetState(bool active, UpdateReason reason) {
+  auto* power_status = PowerStatus::Get();
+  absl::optional<base::TimeDelta> time_to_empty =
+      power_status->GetBatteryTimeToEmpty();
+  double battery_percent = power_status->GetBatteryPercent();
 
-void BatterySaverController::SetBatterySaverState(bool active) {
-  bool changed = UpdateSettings(active);
+  if (active == active_) {
+    return;
+  }
+  active_ = active;
+
+  // Update pref and Power Manager state.
+  if (active != local_state_->GetBoolean(prefs::kPowerBatterySaver)) {
+    // NB: This call is re-entrant. SetBoolean will call OnSettingsPrefChanged
+    // which will call SetState recursively, which will exit early because
+    // active_ == active.
+    local_state_->SetBoolean(prefs::kPowerBatterySaver, active);
+  }
   if (active != PowerStatus::Get()->IsBatterySaverActive()) {
     power_manager::SetBatterySaverModeStateRequest request;
     request.set_enabled(active);
     chromeos::PowerManagerClient::Get()->SetBatterySaverModeState(request);
-    changed = true;
   }
 
-  if (changed && !active) {
+  if (active && !enable_record_) {
+    // An enable_record_ means that we were already active, so skip metrics if
+    // it exists.
+    enable_record_ = EnableRecord{base::Time::Now(), reason};
+    base::UmaHistogramPercentage("Ash.BatterySaver.BatteryPercent.Enabled",
+                                 static_cast<int>(battery_percent));
+    if (time_to_empty) {
+      base::UmaHistogramCustomTimes("Ash.BatterySaver.TimeToEmpty.Enabled",
+                                    *time_to_empty, base::Hours(0),
+                                    base::Hours(10), 100);
+    }
+    if (reason == UpdateReason::kSettings) {
+      base::UmaHistogramPercentage(
+          "Ash.BatterySaver.BatteryPercent.EnabledSettings",
+          static_cast<int>(battery_percent));
+      if (time_to_empty) {
+        base::UmaHistogramCustomTimes(
+            "Ash.BatterySaver.TimeToEmpty.EnabledSettings", *time_to_empty,
+            base::Hours(0), base::Hours(10), 100);
+      }
+    }
+  }
+
+  if (!active && enable_record_) {
+    // NB: We show the toast after checking enable_record_ to make sure we were
+    // enabled before this Disable call.
     DisplayBatterySaverModeDisabledToast();
+
+    // Log metrics.
+    base::UmaHistogramPercentage("Ash.BatterySaver.BatteryPercent.Disabled",
+                                 static_cast<int>(battery_percent));
+    if (time_to_empty) {
+      base::UmaHistogramCustomTimes("Ash.BatterySaver.TimeToEmpty.Disabled",
+                                    *time_to_empty, base::Hours(0),
+                                    base::Hours(10), 100);
+    }
+    auto duration = base::Time::Now() - enable_record_->time;
+    base::UmaHistogramCustomTimes("Ash.BatterySaver.Duration", duration,
+                                  base::Hours(0), base::Hours(10), 100);
+    // Duration by enabled reason metrics
+    switch (enable_record_->reason) {
+      case UpdateReason::kAlwaysOn:
+      case UpdateReason::kCharging:
+      case UpdateReason::kPowerManager:
+        break;
+
+      case UpdateReason::kLowPower:
+      case UpdateReason::kThreshold:
+        base::UmaHistogramLongTimes(
+            "Ash.BatterySaver.Duration.EnabledNotification", duration);
+        break;
+
+      case UpdateReason::kSettings:
+        base::UmaHistogramLongTimes("Ash.BatterySaver.Duration.EnabledSettings",
+                                    duration);
+        break;
+    }
+    enable_record_ = absl::nullopt;
+
+    // Disabled reason metrics.
+    switch (reason) {
+      case UpdateReason::kAlwaysOn:
+      case UpdateReason::kPowerManager:
+        break;
+
+      case UpdateReason::kCharging:
+        base::UmaHistogramLongTimes(
+            "Ash.BatterySaver.Duration.DisabledCharging", duration);
+        break;
+
+      case UpdateReason::kLowPower:
+      case UpdateReason::kThreshold:
+        base::UmaHistogramLongTimes(
+            "Ash.BatterySaver.Duration.DisabledNotification", duration);
+        break;
+
+      case UpdateReason::kSettings:
+        base::UmaHistogramLongTimes(
+            "Ash.BatterySaver.Duration.DisabledSettings", duration);
+        base::UmaHistogramPercentage(
+            "Ash.BatterySaver.BatteryPercent.DisabledSettings",
+            static_cast<int>(battery_percent));
+        if (time_to_empty) {
+          base::UmaHistogramCustomTimes(
+              "Ash.BatterySaver.TimeToEmpty.DisabledSettings", *time_to_empty,
+              base::Hours(0), base::Hours(10), 100);
+        }
+        break;
+    }
   }
 }
 
@@ -218,22 +312,6 @@ absl::optional<int> BatterySaverController::GetRemainingMinutes(
   }
 
   return base::ClampRound(*remaining_time / base::Minutes(1));
-}
-
-void BatterySaverController::UpdateBatterySaverStateFromNotification(
-    NotificationType notification_type,
-    bool active) {
-  // TODO(cwd): Implement metrics based on the notification type that called
-  // this method. For example:
-  //  FullyAutoEnable + kThreshold + off => User explicitly opted out at 20%.
-  //  OptInAutoEnable + kThreshold + on => User explicitly opted in at 20%.
-  //  FullyOptIn + kLowPower + on => User explicitly opted in at 15 mins left.
-  // Handle this how you like: either a map, switch statements, etc.
-  // users_opt_status[features::kBatterySaverNotificationBehavior.Get()]
-  //                 [notification_type] = active;
-
-  // Update Battery Saver.
-  SetBatterySaverState(active);
 }
 
 }  // namespace ash

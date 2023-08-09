@@ -8,24 +8,31 @@
 #include "ash/ash_export.h"
 #include "ash/constants/ash_features.h"
 #include "ash/system/power/power_status.h"
-#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/time/time.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
-#include "ui/message_center/public/cpp/notifier_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
 // BatterySaverController is a singleton that controls battery saver state via
 // PowerManagerClient by watching for updates to ash::prefs::kPowerBatterySaver
-// from settings and power status for charging state.
-// TODO(cwd): And logs metrics.
+// from settings and power status for charging state, and logs metrics.
 class ASH_EXPORT BatterySaverController : public PowerStatus::Observer {
  public:
-  enum NotificationType { kThreshold, kLowPower };
+  enum class UpdateReason {
+    kCharging,
+    kLowPower,
+    kPowerManager,
+    kSettings,
+    kThreshold,
+    kAlwaysOn,
+  };
+
   // The battery charge percent at which battery saver is activated.
   static const double kActivationChargePercent;
 
@@ -37,23 +44,21 @@ class ASH_EXPORT BatterySaverController : public PowerStatus::Observer {
   // Registers local state prefs used in the settings UI.
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
-  void SetStateForTesting(bool active);
-
-  void UpdateBatterySaverStateFromNotification(
-      NotificationType notification_type,
-      bool active);
+  void SetState(bool active, UpdateReason reason);
 
  private:
+  // Types used for metrics tracking.
+  struct EnableRecord {
+    base::Time time;
+    UpdateReason reason;
+  };
+
   // PowerStatus::Observer:
   void OnPowerStatusChanged() override;
 
   void OnSettingsPrefChanged();
 
   void DisplayBatterySaverModeDisabledToast();
-
-  bool UpdateSettings(bool active);
-
-  void SetBatterySaverState(bool active);
 
   absl::optional<int> GetRemainingMinutes(const PowerStatus* status);
 
@@ -70,6 +75,9 @@ class ASH_EXPORT BatterySaverController : public PowerStatus::Observer {
 
   PrefChangeRegistrar pref_change_registrar_;
 
+  // Used to debounce changes to the pref and state in Power Manager.
+  bool active_ = false;
+
   bool always_on_ = false;
 
   bool previously_plugged_in_ = false;
@@ -78,11 +86,7 @@ class ASH_EXPORT BatterySaverController : public PowerStatus::Observer {
 
   bool low_power_crossed_ = false;
 
-  // Has the user opted in or out (meaning depends on experiment arm), and at
-  // what level (threshold or low power)?
-  std::map<features::BatterySaverNotificationBehavior,
-           std::map<NotificationType, bool>>
-      users_opt_status_;
+  absl::optional<EnableRecord> enable_record_{absl::nullopt};
 
   base::WeakPtrFactory<BatterySaverController> weak_ptr_factory_{this};
 };

@@ -232,18 +232,16 @@ void HandlePowerNotificationButtonClick(
     return;
   }
 
-  const BatterySaverController::NotificationType notification_type =
-      is_low_power ? BatterySaverController::kLowPower
-                   : BatterySaverController::kThreshold;
+  const BatterySaverController::UpdateReason reason =
+      is_low_power ? BatterySaverController::UpdateReason::kLowPower
+                   : BatterySaverController::UpdateReason::kThreshold;
   const bool active =
       token.value() == IDS_ASH_STATUS_TRAY_LOW_BATTERY_BSM_BUTTON_OPT_IN;
 
   // Handle Button functionality based on button pressed, and button text.
   switch (button_index.value()) {
     case 0: {
-      Shell::Get()
-          ->battery_saver_controller()
-          ->UpdateBatterySaverStateFromNotification(notification_type, active);
+      Shell::Get()->battery_saver_controller()->SetState(active, reason);
       break;
     }
     default:
