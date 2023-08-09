@@ -4314,12 +4314,6 @@
       'Dawn Android arm Release (Pixel 4)',
     ],
     'modifications': {
-      # Increase the timeout with ASAN (crbug.com/1208253)
-      'Dawn Win10 x64 ASAN Release': {
-        'args': [
-          '--timeout-ms=48000',
-        ],
-      },
       # These tests must run with a GPU.
       'linux-code-coverage': {
         'swarming': {
