@@ -591,6 +591,18 @@ chromium-metrics-reviews@google.com.
   <token key="NetworkType" variants="AshNetworkType"/>
 </histogram>
 
+<histogram name="Network.Ash.{NetworkType}.ConnectionResult.NonUserInitiated"
+    enum="ShillConnectResult" expires_after="2023-12-31">
+  <owner>jiajunz@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <summary>
+    Tracks the result of automatic Network connection attempts. A success is
+    emitted when a network of type {NetworkType} becomes connected from a
+    non-connected state without user action.
+  </summary>
+  <token key="NetworkType" variants="AshNetworkType"/>
+</histogram>
+
 <histogram name="Network.Ash.{NetworkType}.ConnectionResult.UserInitiated"
     enum="UserInitiatedNetworkConnectResult" expires_after="2023-12-31">
   <owner>hsuregan@chromium.org</owner>

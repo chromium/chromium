@@ -20,6 +20,8 @@ namespace {
 
 const char kNetworkMetricsPrefix[] = "Network.Ash.";
 const char kAllConnectionResultSuffix[] = ".ConnectionResult.All";
+const char kNonUserInitiatedConnectionResultSuffix[] =
+    ".ConnectionResult.NonUserInitiated";
 const char kUserInitiatedConnectionResultSuffix[] =
     ".ConnectionResult.UserInitiated";
 const char kDisconnectionsWithoutUserActionSuffix[] =
@@ -173,6 +175,7 @@ const std::vector<std::string> GetNetworkTypeHistogramNames(
 // static
 void NetworkMetricsHelper::LogAllConnectionResult(
     const std::string& guid,
+    bool is_auto_connect,
     const absl::optional<std::string>& shill_error) {
   DCHECK(GetNetworkStateHandler());
   const NetworkState* network_state =
@@ -189,6 +192,12 @@ void NetworkMetricsHelper::LogAllConnectionResult(
         base::StrCat(
             {kNetworkMetricsPrefix, network_type, kAllConnectionResultSuffix}),
         connect_result);
+    if (is_auto_connect) {
+      base::UmaHistogramEnumeration(
+          base::StrCat({kNetworkMetricsPrefix, network_type,
+                        kNonUserInitiatedConnectionResultSuffix}),
+          connect_result);
+    }
   }
 }
 

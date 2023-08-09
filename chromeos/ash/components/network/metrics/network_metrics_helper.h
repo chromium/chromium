@@ -26,10 +26,14 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkMetricsHelper {
     kMaxValue = kDisconnectedWithoutUserAction
   };
 
-  // Logs connection result for network with given |guid|. If |shill_error| has
-  // no value, a connection success is logged.
+  // Logs connection result for network with given |guid| in
+  // Network.Ash.{NetworkType}.ConnectionResult.All, it will also logs the
+  // result to Network.Ash.{NetworkType}.ConnectionResult.Auto if
+  // `is_auto_connect` is set to true. If `shill_error` has no value, a
+  // connection success is logged.
   static void LogAllConnectionResult(
       const std::string& guid,
+      bool is_auto_connect,
       const absl::optional<std::string>& shill_error = absl::nullopt);
 
   // Logs result of a user initiated connection attempt for a network with a

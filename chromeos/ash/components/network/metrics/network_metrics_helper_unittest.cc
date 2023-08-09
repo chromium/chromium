@@ -32,8 +32,12 @@ const char kCellularConnectResultAllHistogram[] =
     "Network.Ash.Cellular.ConnectionResult.All";
 const char kCellularESimConnectResultAllHistogram[] =
     "Network.Ash.Cellular.ESim.ConnectionResult.All";
+const char kCellularESimConnectResultNonUserInitiatedHistogram[] =
+    "Network.Ash.Cellular.ESim.ConnectionResult.NonUserInitiated";
 const char kCellularPSimConnectResultAllHistogram[] =
     "Network.Ash.Cellular.PSim.ConnectionResult.All";
+const char kCellularPSimConnectResultNonUserInitiatedHistogram[] =
+    "Network.Ash.Cellular.PSim.ConnectionResult.NonUserInitiated";
 const char kCellularESimPolicyConnectResultAllHistogram[] =
     "Network.Ash.Cellular.ESim.Policy.ConnectionResult.All";
 
@@ -50,6 +54,8 @@ const char kVpnUnknownConnectResultAllHistogram[] =
 // LogAllConnectionResult() WiFi histograms.
 const char kWifiConnectResultAllHistogram[] =
     "Network.Ash.WiFi.ConnectionResult.All";
+const char kWifiConnectResultNonUserInitiatedHistogram[] =
+    "Network.Ash.WiFi.ConnectionResult.NonUserInitiated";
 const char kWifiOpenConnectResultAllHistogram[] =
     "Network.Ash.WiFi.SecurityOpen.ConnectionResult.All";
 const char kWifiPasswordProtectedConnectResultAllHistogram[] =
@@ -379,13 +385,25 @@ TEST_F(NetworkMetricsHelperTest, CellularESim) {
       kTestServicePath, shill::kIccidProperty, base::Value("iccid"));
   base::RunLoop().RunUntilIdle();
 
-  NetworkMetricsHelper::LogAllConnectionResult(kTestGuid,
-                                               shill::kErrorNotRegistered);
+  NetworkMetricsHelper::LogAllConnectionResult(
+      kTestGuid, /*is_auto_connect=*/false, shill::kErrorNotRegistered);
   histogram_tester_->ExpectTotalCount(kCellularConnectResultAllHistogram, 1);
   histogram_tester_->ExpectTotalCount(kCellularESimConnectResultAllHistogram,
                                       1);
   histogram_tester_->ExpectTotalCount(kCellularPSimConnectResultAllHistogram,
                                       0);
+  histogram_tester_->ExpectTotalCount(
+      kCellularESimConnectResultNonUserInitiatedHistogram, 0);
+
+  NetworkMetricsHelper::LogAllConnectionResult(
+      kTestGuid, /*is_auto_connect=*/true, shill::kErrorNotRegistered);
+  histogram_tester_->ExpectTotalCount(kCellularConnectResultAllHistogram, 2);
+  histogram_tester_->ExpectTotalCount(kCellularESimConnectResultAllHistogram,
+                                      2);
+  histogram_tester_->ExpectTotalCount(kCellularPSimConnectResultAllHistogram,
+                                      0);
+  histogram_tester_->ExpectTotalCount(
+      kCellularESimConnectResultNonUserInitiatedHistogram, 1);
 
   NetworkMetricsHelper::LogUserInitiatedConnectionResult(
       kTestGuid, shill::kErrorNotRegistered);
@@ -452,8 +470,8 @@ TEST_F(NetworkMetricsHelperTest, CellularESimPolicy) {
                                             base::Value(ui_data->GetAsJson()));
   base::RunLoop().RunUntilIdle();
 
-  NetworkMetricsHelper::LogAllConnectionResult(kTestGuid,
-                                               shill::kErrorNotRegistered);
+  NetworkMetricsHelper::LogAllConnectionResult(
+      kTestGuid, /*is_auto_connect=*/false, shill::kErrorNotRegistered);
   histogram_tester_->ExpectTotalCount(kCellularConnectResultAllHistogram, 1);
   histogram_tester_->ExpectTotalCount(kCellularESimConnectResultAllHistogram,
                                       1);
@@ -524,13 +542,25 @@ TEST_F(NetworkMetricsHelperTest, CellularPSim) {
       kTestServicePath, shill::kIccidProperty, base::Value("iccid"));
   base::RunLoop().RunUntilIdle();
 
-  NetworkMetricsHelper::LogAllConnectionResult(kTestGuid,
-                                               shill::kErrorNotRegistered);
+  NetworkMetricsHelper::LogAllConnectionResult(
+      kTestGuid, /*is_auto_connect=*/false, shill::kErrorNotRegistered);
   histogram_tester_->ExpectTotalCount(kCellularConnectResultAllHistogram, 1);
   histogram_tester_->ExpectTotalCount(kCellularPSimConnectResultAllHistogram,
                                       1);
   histogram_tester_->ExpectTotalCount(kCellularESimConnectResultAllHistogram,
                                       0);
+  histogram_tester_->ExpectTotalCount(
+      kCellularPSimConnectResultNonUserInitiatedHistogram, 0);
+
+  NetworkMetricsHelper::LogAllConnectionResult(
+      kTestGuid, /*is_auto_connect=*/true, shill::kErrorNotRegistered);
+  histogram_tester_->ExpectTotalCount(kCellularConnectResultAllHistogram, 2);
+  histogram_tester_->ExpectTotalCount(kCellularPSimConnectResultAllHistogram,
+                                      2);
+  histogram_tester_->ExpectTotalCount(kCellularESimConnectResultAllHistogram,
+                                      0);
+  histogram_tester_->ExpectTotalCount(
+      kCellularPSimConnectResultNonUserInitiatedHistogram, 1);
 
   NetworkMetricsHelper::LogUserInitiatedConnectionResult(
       kTestGuid, shill::kErrorNotRegistered);
@@ -605,9 +635,9 @@ TEST_F(NetworkMetricsHelperTest, VPN) {
   size_t expected_third_party_count = 0;
   size_t expected_unknown_count = 0;
 
-  base::RepeatingClosure log_all_connection_result =
-      base::BindRepeating(&NetworkMetricsHelper::LogAllConnectionResult,
-                          kTestGuid, shill::kErrorNotRegistered);
+  base::RepeatingClosure log_all_connection_result = base::BindRepeating(
+      &NetworkMetricsHelper::LogAllConnectionResult, kTestGuid,
+      /*is_auto_connect=*/false, shill::kErrorNotRegistered);
   base::RepeatingClosure log_user_initiated_connection_result =
       base::BindRepeating(
           &NetworkMetricsHelper::LogUserInitiatedConnectionResult, kTestGuid,
@@ -729,10 +759,21 @@ TEST_F(NetworkMetricsHelperTest, WifiOpen) {
       base::Value(shill::kSecurityClassNone));
   base::RunLoop().RunUntilIdle();
 
-  NetworkMetricsHelper::LogAllConnectionResult(kTestGuid,
-                                               shill::kErrorNotRegistered);
+  NetworkMetricsHelper::LogAllConnectionResult(
+      kTestGuid, /*is_auto_connect=*/false, shill::kErrorNotRegistered);
   histogram_tester_->ExpectTotalCount(kWifiConnectResultAllHistogram, 1);
+  histogram_tester_->ExpectTotalCount(
+      kWifiConnectResultNonUserInitiatedHistogram, 0);
   histogram_tester_->ExpectTotalCount(kWifiOpenConnectResultAllHistogram, 1);
+  histogram_tester_->ExpectTotalCount(
+      kWifiPasswordProtectedConnectResultAllHistogram, 0);
+
+  NetworkMetricsHelper::LogAllConnectionResult(
+      kTestGuid, /*is_auto_connect=*/true, shill::kErrorNotRegistered);
+  histogram_tester_->ExpectTotalCount(kWifiConnectResultAllHistogram, 2);
+  histogram_tester_->ExpectTotalCount(
+      kWifiConnectResultNonUserInitiatedHistogram, 1);
+  histogram_tester_->ExpectTotalCount(kWifiOpenConnectResultAllHistogram, 2);
   histogram_tester_->ExpectTotalCount(
       kWifiPasswordProtectedConnectResultAllHistogram, 0);
 
@@ -788,12 +829,23 @@ TEST_F(NetworkMetricsHelperTest, WifiPasswordProtected) {
       base::Value(shill::kSecurityClassPsk));
   base::RunLoop().RunUntilIdle();
 
-  NetworkMetricsHelper::LogAllConnectionResult(kTestGuid,
-                                               shill::kErrorNotRegistered);
+  NetworkMetricsHelper::LogAllConnectionResult(
+      kTestGuid, /*is_auto_connect=*/false, shill::kErrorNotRegistered);
   histogram_tester_->ExpectTotalCount(kWifiConnectResultAllHistogram, 1);
+  histogram_tester_->ExpectTotalCount(
+      kWifiConnectResultNonUserInitiatedHistogram, 0);
   histogram_tester_->ExpectTotalCount(kWifiOpenConnectResultAllHistogram, 0);
   histogram_tester_->ExpectTotalCount(
       kWifiPasswordProtectedConnectResultAllHistogram, 1);
+
+  NetworkMetricsHelper::LogAllConnectionResult(
+      kTestGuid, /*is_auto_connect=*/true, shill::kErrorNotRegistered);
+  histogram_tester_->ExpectTotalCount(kWifiConnectResultAllHistogram, 2);
+  histogram_tester_->ExpectTotalCount(
+      kWifiConnectResultNonUserInitiatedHistogram, 1);
+  histogram_tester_->ExpectTotalCount(kWifiOpenConnectResultAllHistogram, 0);
+  histogram_tester_->ExpectTotalCount(
+      kWifiPasswordProtectedConnectResultAllHistogram, 2);
 
   NetworkMetricsHelper::LogUserInitiatedConnectionResult(
       kTestGuid, shill::kErrorNotRegistered);
@@ -847,8 +899,8 @@ TEST_F(NetworkMetricsHelperTest, EthernetNoEap) {
       base::Value(shill::kSecurityClassNone));
   base::RunLoop().RunUntilIdle();
 
-  NetworkMetricsHelper::LogAllConnectionResult(kTestGuid,
-                                               shill::kErrorNotRegistered);
+  NetworkMetricsHelper::LogAllConnectionResult(
+      kTestGuid, /*is_auto_connect=*/false, shill::kErrorNotRegistered);
   histogram_tester_->ExpectTotalCount(kEthernetConnectResultAllHistogram, 1);
   histogram_tester_->ExpectTotalCount(kEthernetEapConnectResultAllHistogram, 0);
   histogram_tester_->ExpectTotalCount(kEthernetNoEapConnectResultAllHistogram,
@@ -930,8 +982,8 @@ TEST_F(NetworkMetricsHelperTest, EthernetEap) {
   histogram_tester_->ExpectTotalCount(kEthernetNoEapConnectResultAllHistogram,
                                       0);
 
-  NetworkMetricsHelper::LogAllConnectionResult(kTestGuid,
-                                               shill::kErrorNotRegistered);
+  NetworkMetricsHelper::LogAllConnectionResult(
+      kTestGuid, /*is_auto_connect=*/false, shill::kErrorNotRegistered);
   histogram_tester_->ExpectTotalCount(kEthernetConnectResultAllHistogram, 1);
   histogram_tester_->ExpectTotalCount(kEthernetEapConnectResultAllHistogram, 1);
   histogram_tester_->ExpectTotalCount(kEthernetNoEapConnectResultAllHistogram,
