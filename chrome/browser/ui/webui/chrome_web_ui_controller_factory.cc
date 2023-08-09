@@ -1211,6 +1211,14 @@ ChromeWebUIControllerFactory::GetListOfAcceptableURLs() {
                        url::kStandardSchemeSeparator,
                        extension_misc::kEspeakSpeechSynthesisExtensionId,
                        extension_misc::kEspeakSpeechSynthesisOptionsPath})),
+    // This file doesn't exist but the options page links to it (b/269703827),
+    // so we have to list it here anyways to prevent opening an Ash window on
+    // e.g. shift-click.
+    // TODO(b/269703827): Revisit when Espeak is fixed.
+    GURL(base::StrCat({extensions::kExtensionScheme,
+                       url::kStandardSchemeSeparator,
+                       extension_misc::kEspeakSpeechSynthesisExtensionId,
+                       "/COPYING"})),
     GURL(base::StrCat({extensions::kExtensionScheme,
                        url::kStandardSchemeSeparator,
                        extension_misc::kGoogleSpeechSynthesisExtensionId,
