@@ -1111,6 +1111,7 @@ ChromeWebUIControllerFactory::GetListOfAcceptableURLs() {
     // avoid confusion, the two instances should provide a link to each other.
     GURL(chrome::kChromeUIAboutURL),
     GURL(chrome::kChromeUIAppServiceInternalsURL),
+    GURL(chrome::kChromeUIChromeURLsURL),
     GURL(chrome::kChromeUIComponentsUrl),
     GURL(chrome::kChromeUICreditsURL),
     GURL(chrome::kChromeUIDeviceLogUrl),
