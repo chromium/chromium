@@ -157,9 +157,9 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "base/test/test_future.h"
 #include "base/version.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_lacros.h"
-#include "chromeos/crosapi/mojom/test_controller.mojom-test-utils.h"
 #include "chromeos/crosapi/mojom/test_controller.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "chromeos/lacros/lacros_test_helper.h"
@@ -672,11 +672,11 @@ void WaitForAndAcceptInstallDialogForSite(InstallableSite site) {
 // earlier tests.
 void ReinitializeAppService(Profile* profile) {
   if (chromeos::IsAshVersionAtLeastForTesting(base::Version({108, 0, 5354}))) {
-    crosapi::mojom::TestControllerAsyncWaiter(
-        chromeos::LacrosService::Get()
-            ->GetRemote<crosapi::mojom::TestController>()
-            .get())
-        .ReinitializeAppService();
+    base::test::TestFuture<void> future;
+    chromeos::LacrosService::Get()
+        ->GetRemote<crosapi::mojom::TestController>()
+        ->ReinitializeAppService(future.GetCallback());
+    ASSERT_TRUE(future.Wait());
 
     apps::AppServiceProxyFactory::GetForProfile(profile)
         ->ReinitializeForTesting(profile);

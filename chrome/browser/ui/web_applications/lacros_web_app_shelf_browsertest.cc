@@ -4,6 +4,8 @@
 
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/run_until.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -28,7 +30,6 @@
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "chromeos/crosapi/mojom/test_controller.mojom-test-utils.h"
 #include "chromeos/crosapi/mojom/test_controller.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "components/app_constants/constants.h"
@@ -45,23 +46,6 @@ namespace {
 
 constexpr char kFirstAppUrlHost[] = "first-pwa.test";
 constexpr char kSecondAppUrlHost[] = "second-pwa.test";
-
-// Polls until the command has the expected state.
-void WaitForAppMenuCommandState(int command_id,
-                                Browser* browser,
-                                web_app::AppMenuCommandState command_state) {
-  base::RunLoop run_loop;
-  base::RepeatingTimer timer;
-  constexpr base::TimeDelta kPollingInterval = base::Milliseconds(1000);
-  timer.Start(FROM_HERE, kPollingInterval, base::BindLambdaForTesting([&]() {
-                if (web_app::GetAppMenuCommandState(command_id, browser) ==
-                    command_state) {
-                  timer.Stop();
-                  run_loop.Quit();
-                }
-              }));
-  run_loop.Run();
-}
 
 }  // namespace
 
@@ -226,11 +210,8 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppShelfBrowserTest, RunningInTab) {
   if (!IsServiceAvailable())
     GTEST_SKIP();
 
-  crosapi::mojom::TestController* const test_controller =
-      chromeos::LacrosService::Get()
-          ->GetRemote<crosapi::mojom::TestController>()
-          .get();
-  crosapi::mojom::TestControllerAsyncWaiter waiter(test_controller);
+  auto& test_controller = chromeos::LacrosService::Get()
+                              ->GetRemote<crosapi::mojom::TestController>();
   const GURL app1_url = https_server().GetURL(
       kFirstAppUrlHost, "/web_apps/standalone/basic.html");
   const AppId app1_id =
@@ -248,7 +229,12 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppShelfBrowserTest, RunningInTab) {
     Browser* app_browser1 = LaunchWebAppBrowser(app1_id);
     ASSERT_TRUE(browser_test_util::WaitForShelfItemState(
         app1_id, static_cast<uint32_t>(ShelfItemState::kActive)));
-    waiter.PinOrUnpinItemInShelf(app1_id, /*pin=*/true);
+    {
+      base::test::TestFuture<bool> success_future;
+      test_controller->PinOrUnpinItemInShelf(app1_id, /*pin=*/true,
+                                             success_future.GetCallback());
+      EXPECT_TRUE(success_future.Get());
+    }
     CloseAndWait(app_browser1);
     sync_bridge.SetAppUserDisplayMode(app1_id, mojom::UserDisplayMode::kBrowser,
                                       /*is_user_action=*/true);
@@ -257,7 +243,12 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppShelfBrowserTest, RunningInTab) {
     Browser* app_browser2 = LaunchWebAppBrowser(app2_id);
     ASSERT_TRUE(browser_test_util::WaitForShelfItemState(
         app2_id, static_cast<uint32_t>(ShelfItemState::kActive)));
-    waiter.PinOrUnpinItemInShelf(app2_id, /*pin=*/true);
+    {
+      base::test::TestFuture<bool> success_future;
+      test_controller->PinOrUnpinItemInShelf(app2_id, /*pin=*/true,
+                                             success_future.GetCallback());
+      EXPECT_TRUE(success_future.Get());
+    }
     CloseAndWait(app_browser2);
     sync_bridge.SetAppUserDisplayMode(app2_id, mojom::UserDisplayMode::kBrowser,
                                       /*is_user_action=*/true);
@@ -351,7 +342,10 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppShelfBrowserTest, CreateShortcut) {
 
     ASSERT_TRUE(
         AddTabAtIndex(/*index=*/2, app2_url, ui::PAGE_TRANSITION_TYPED));
-    WaitForAppMenuCommandState(IDC_INSTALL_PWA, browser(), kEnabled);
+    ASSERT_TRUE(base::test::RunUntil([&] {
+      return web_app::GetAppMenuCommandState(IDC_INSTALL_PWA, browser()) ==
+             kEnabled;
+    }));
 
     // Install app1 shortcut.
     browser()->tab_strip_model()->ActivateTabAt(/*index=*/1);
