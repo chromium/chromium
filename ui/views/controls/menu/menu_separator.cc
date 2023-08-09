@@ -5,6 +5,7 @@
 #include "ui/views/controls/menu/menu_separator.h"
 
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -68,12 +69,13 @@ void MenuSeparator::OnPaint(gfx::Canvas* canvas) {
     paint_rect.set_y(1);
 #endif
 
-  ui::NativeTheme::ExtraParams params;
-  params.menu_separator.paint_rect = &paint_rect;
-  params.menu_separator.type = type_;
+  ui::NativeTheme::MenuSeparatorExtraParams menu_separator;
+  menu_separator.paint_rect = &paint_rect;
+  menu_separator.type = type_;
   GetNativeTheme()->Paint(canvas->sk_canvas(), GetColorProvider(),
                           ui::NativeTheme::kMenuPopupSeparator,
-                          ui::NativeTheme::kNormal, GetLocalBounds(), params);
+                          ui::NativeTheme::kNormal, GetLocalBounds(),
+                          ui::NativeTheme::ExtraParams(menu_separator));
 }
 
 gfx::Size MenuSeparator::CalculatePreferredSize() const {

@@ -25,19 +25,19 @@
 
 namespace ui {
 
-#if BUILDFLAG(IS_APPLE)
-NativeTheme::ExtraParams::ExtraParams() : scrollbar_extra() {
-  memset(this, 0, sizeof(*this));
-}
-#else
-NativeTheme::ExtraParams::ExtraParams() {
-  memset(this, 0, sizeof(*this));
-}
-#endif
+NativeTheme::MenuListExtraParams::MenuListExtraParams() = default;
+NativeTheme::TextFieldExtraParams::TextFieldExtraParams() = default;
 
-NativeTheme::ExtraParams::ExtraParams(const ExtraParams& other) {
-  memcpy(this, &other, sizeof(*this));
-}
+NativeTheme::MenuListExtraParams::MenuListExtraParams(
+    const NativeTheme::MenuListExtraParams&) = default;
+
+NativeTheme::TextFieldExtraParams::TextFieldExtraParams(
+    const NativeTheme::TextFieldExtraParams&) = default;
+
+NativeTheme::MenuListExtraParams& NativeTheme::MenuListExtraParams::operator=(
+    const NativeTheme::MenuListExtraParams&) = default;
+NativeTheme::TextFieldExtraParams& NativeTheme::TextFieldExtraParams::operator=(
+    const NativeTheme::TextFieldExtraParams&) = default;
 
 #if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_APPLE)
 // static

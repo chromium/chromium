@@ -1057,12 +1057,10 @@ void MenuItemView::PaintBackground(gfx::Canvas* canvas,
 
     ui::NativeTheme::MenuItemExtraParams menu_item_extra_params;
     menu_item_extra_params.corner_radius = config.item_corner_radius;
-    ui::NativeTheme::ExtraParams extra_params;
-    extra_params.menu_item = menu_item_extra_params;
-    GetNativeTheme()->Paint(canvas->sk_canvas(), GetColorProvider(),
-                            ui::NativeTheme::kMenuItemBackground,
-                            ui::NativeTheme::kHovered, item_bounds,
-                            extra_params);
+    GetNativeTheme()->Paint(
+        canvas->sk_canvas(), GetColorProvider(),
+        ui::NativeTheme::kMenuItemBackground, ui::NativeTheme::kHovered,
+        item_bounds, ui::NativeTheme::ExtraParams(menu_item_extra_params));
   }
 }
 

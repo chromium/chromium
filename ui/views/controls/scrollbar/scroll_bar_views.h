@@ -48,7 +48,6 @@ class VIEWS_EXPORT ScrollBarViews : public ScrollBar {
   raw_ptr<Button> prev_button_;
   raw_ptr<Button> next_button_;
 
-  ui::NativeTheme::ExtraParams params_;
   ui::NativeTheme::Part part_;
   ui::NativeTheme::State state_;
 };

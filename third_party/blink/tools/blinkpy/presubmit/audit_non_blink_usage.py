@@ -46,6 +46,7 @@ _CONFIG = [
             'absl::get_if',
             'absl::holds_alternative',
             'absl::in_place',
+            'absl::in_place_type',
             'absl::int128',
             'absl::make_optional',
             'absl::nullopt',

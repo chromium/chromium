@@ -309,7 +309,7 @@ ui::NativeTheme::Part Checkbox::GetThemePart() const {
 
 void Checkbox::GetExtraParams(ui::NativeTheme::ExtraParams* params) const {
   LabelButton::GetExtraParams(params);
-  params->button.checked = GetChecked();
+  absl::get<ui::NativeTheme::ButtonExtraParams>(*params).checked = GetChecked();
 }
 
 BEGIN_METADATA(Checkbox, LabelButton)

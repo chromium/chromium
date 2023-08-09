@@ -11,6 +11,7 @@
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/canvas.h"
@@ -79,9 +80,9 @@ void ScrollBarThumb::OnThemeChanged() {
 
 ui::NativeTheme::ExtraParams ScrollBarThumb::GetNativeThemeParams() const {
   // This gives the behavior we want.
-  ui::NativeTheme::ExtraParams params;
-  params.scrollbar_thumb.is_hovering = (GetState() != Button::STATE_HOVERED);
-  return params;
+  ui::NativeTheme::ScrollbarThumbExtraParams scrollbar_thumb;
+  scrollbar_thumb.is_hovering = (GetState() != Button::STATE_HOVERED);
+  return ui::NativeTheme::ExtraParams(scrollbar_thumb);
 }
 
 ui::NativeTheme::Part ScrollBarThumb::GetNativeThemePart() const {
@@ -147,17 +148,17 @@ ScrollBarViews::~ScrollBarViews() = default;
 
 // static
 int ScrollBarViews::GetVerticalScrollBarWidth(const ui::NativeTheme* theme) {
-  ui::NativeTheme::ExtraParams button_params;
-  button_params.scrollbar_arrow.is_hovering = false;
-  gfx::Size button_size =
-      theme->GetPartSize(ui::NativeTheme::kScrollbarUpArrow,
-                         ui::NativeTheme::kNormal, button_params);
+  ui::NativeTheme::ScrollbarArrowExtraParams scrollbar_arrow;
+  scrollbar_arrow.is_hovering = false;
+  gfx::Size button_size = theme->GetPartSize(
+      ui::NativeTheme::kScrollbarUpArrow, ui::NativeTheme::kNormal,
+      ui::NativeTheme::ExtraParams(scrollbar_arrow));
 
-  ui::NativeTheme::ExtraParams thumb_params;
-  thumb_params.scrollbar_thumb.is_hovering = false;
-  gfx::Size track_size =
-      theme->GetPartSize(ui::NativeTheme::kScrollbarVerticalThumb,
-                         ui::NativeTheme::kNormal, thumb_params);
+  ui::NativeTheme::ScrollbarThumbExtraParams scrollbar_thumb;
+  scrollbar_thumb.is_hovering = false;
+  gfx::Size track_size = theme->GetPartSize(
+      ui::NativeTheme::kScrollbarVerticalThumb, ui::NativeTheme::kNormal,
+      ui::NativeTheme::ExtraParams(scrollbar_thumb));
 
   return std::max(track_size.width(), button_size.width());
 }
@@ -167,14 +168,16 @@ void ScrollBarViews::OnPaint(gfx::Canvas* canvas) {
   if (bounds.IsEmpty())
     return;
 
-  params_.scrollbar_track.track_x = bounds.x();
-  params_.scrollbar_track.track_y = bounds.y();
-  params_.scrollbar_track.track_width = bounds.width();
-  params_.scrollbar_track.track_height = bounds.height();
-  params_.scrollbar_track.classic_state = 0;
+  ui::NativeTheme::ScrollbarTrackExtraParams scrollbar_track;
+  scrollbar_track.track_x = bounds.x();
+  scrollbar_track.track_y = bounds.y();
+  scrollbar_track.track_width = bounds.width();
+  scrollbar_track.track_height = bounds.height();
+  scrollbar_track.classic_state = 0;
   const BaseScrollBarThumb* thumb = GetThumb();
 
-  params_.scrollbar_track.is_upper = true;
+  scrollbar_track.is_upper = true;
+  ui::NativeTheme::ExtraParams params(scrollbar_track);
   gfx::Rect upper_bounds = bounds;
   if (IsHorizontal())
     upper_bounds.set_width(thumb->x() - upper_bounds.x());
@@ -182,10 +185,10 @@ void ScrollBarViews::OnPaint(gfx::Canvas* canvas) {
     upper_bounds.set_height(thumb->y() - upper_bounds.y());
   if (!upper_bounds.IsEmpty()) {
     GetNativeTheme()->Paint(canvas->sk_canvas(), GetColorProvider(), part_,
-                            state_, upper_bounds, params_);
+                            state_, upper_bounds, params);
   }
 
-  params_.scrollbar_track.is_upper = false;
+  scrollbar_track.is_upper = false;
   if (IsHorizontal())
     bounds.Inset(
         gfx::Insets::TLBR(0, thumb->bounds().right() - bounds.x(), 0, 0));
@@ -194,7 +197,7 @@ void ScrollBarViews::OnPaint(gfx::Canvas* canvas) {
         gfx::Insets::TLBR(thumb->bounds().bottom() - bounds.y(), 0, 0, 0));
   if (!bounds.IsEmpty()) {
     GetNativeTheme()->Paint(canvas->sk_canvas(), GetColorProvider(), part_,
-                            state_, bounds, params_);
+                            state_, bounds, params);
   }
 }
 

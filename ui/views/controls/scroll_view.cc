@@ -64,11 +64,16 @@ class ScrollCornerView : public View {
   ScrollCornerView& operator=(const ScrollCornerView&) = delete;
 
   void OnPaint(gfx::Canvas* canvas) override {
-    ui::NativeTheme::ExtraParams ignored;
+#if BUILDFLAG(IS_APPLE)
+    ui::NativeTheme::ExtraParams params(
+        absl::in_place_type<ui::NativeTheme::ScrollbarExtraParams>);
+#else
+    // This is ignored on non-Apple platforms.
+    ui::NativeTheme::ExtraParams params;
+#endif
     GetNativeTheme()->Paint(canvas->sk_canvas(), GetColorProvider(),
                             ui::NativeTheme::kScrollbarCorner,
-                            ui::NativeTheme::kNormal, GetLocalBounds(),
-                            ignored);
+                            ui::NativeTheme::kNormal, GetLocalBounds(), params);
   }
 };
 

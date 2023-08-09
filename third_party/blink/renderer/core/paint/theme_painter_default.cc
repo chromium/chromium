@@ -24,6 +24,7 @@
 
 #include "third_party/blink/renderer/core/paint/theme_painter_default.h"
 
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/platform/web_theme_engine.h"
 #include "third_party/blink/public/resources/grit/blink_image_resources.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
@@ -197,17 +198,16 @@ bool ThemePainterDefault::PaintCheckbox(const Element& element,
                                         const ComputedStyle& style,
                                         const PaintInfo& paint_info,
                                         const gfx::Rect& rect) {
-  WebThemeEngine::ExtraParams extra_params;
-  extra_params.button = WebThemeEngine::ButtonExtraParams();
-  extra_params.button.checked = IsChecked(element);
-  extra_params.button.indeterminate = IsIndeterminate(element);
+  WebThemeEngine::ButtonExtraParams button;
+  button.checked = IsChecked(element);
+  button.indeterminate = IsIndeterminate(element);
 
   float zoom_level = style.EffectiveZoom();
-  extra_params.button.zoom = zoom_level;
+  button.zoom = zoom_level;
   GraphicsContextStateSaver state_saver(paint_info.context, false);
   gfx::Rect unzoomed_rect =
       ApplyZoomToRect(rect, paint_info, state_saver, zoom_level);
-
+  WebThemeEngine::ExtraParams extra_params(button);
   WebThemeEngineHelper::GetNativeThemeEngine()->Paint(
       paint_info.context.Canvas(), WebThemeEngine::kPartCheckbox,
       GetWebThemeState(element), unzoomed_rect, &extra_params,
@@ -220,12 +220,12 @@ bool ThemePainterDefault::PaintRadio(const Element& element,
                                      const ComputedStyle& style,
                                      const PaintInfo& paint_info,
                                      const gfx::Rect& rect) {
-  WebThemeEngine::ExtraParams extra_params;
-  extra_params.button = WebThemeEngine::ButtonExtraParams();
-  extra_params.button.checked = IsChecked(element);
+  WebThemeEngine::ButtonExtraParams button;
+  button.checked = IsChecked(element);
 
   float zoom_level = style.EffectiveZoom();
-  extra_params.button.zoom = zoom_level;
+  button.zoom = zoom_level;
+  WebThemeEngine::ExtraParams extra_params(button);
   GraphicsContextStateSaver state_saver(paint_info.context, false);
   gfx::Rect unzoomed_rect =
       ApplyZoomToRect(rect, paint_info, state_saver, zoom_level);
@@ -242,10 +242,10 @@ bool ThemePainterDefault::PaintButton(const Element& element,
                                       const ComputedStyle& style,
                                       const PaintInfo& paint_info,
                                       const gfx::Rect& rect) {
-  WebThemeEngine::ExtraParams extra_params;
-  extra_params.button = WebThemeEngine::ButtonExtraParams();
-  extra_params.button.has_border = true;
-  extra_params.button.zoom = style.EffectiveZoom();
+  WebThemeEngine::ButtonExtraParams button;
+  button.has_border = true;
+  button.zoom = style.EffectiveZoom();
+  WebThemeEngine::ExtraParams extra_params(button);
 
   WebThemeEngineHelper::GetNativeThemeEngine()->Paint(
       paint_info.context.Canvas(), WebThemeEngine::kPartButton,
@@ -265,19 +265,21 @@ bool ThemePainterDefault::PaintTextField(const Element& element,
 
   ControlPart part = style.EffectiveAppearance();
 
-  WebThemeEngine::ExtraParams extra_params;
-  extra_params.text_field.is_text_area = part == kTextAreaPart;
-  extra_params.text_field.is_listbox = part == kListboxPart;
-  extra_params.text_field.has_border = true;
-  extra_params.text_field.zoom = style.EffectiveZoom();
+  WebThemeEngine::TextFieldExtraParams text_field;
+  text_field.is_text_area = part == kTextAreaPart;
+  text_field.is_listbox = part == kListboxPart;
+  text_field.has_border = true;
+  text_field.zoom = style.EffectiveZoom();
 
   Color background_color =
       style.VisitedDependentColor(GetCSSPropertyBackgroundColor());
-  extra_params.text_field.background_color = background_color.Rgb();
-  extra_params.text_field.auto_complete_active =
+  text_field.background_color = background_color.Rgb();
+  text_field.auto_complete_active =
       DynamicTo<HTMLFormControlElement>(element)->HighlightAutofilled() ||
       DynamicTo<HTMLFormControlElement>(element)->GetAutofillState() ==
           WebAutofillState::kPreviewed;
+
+  WebThemeEngine::ExtraParams extra_params(text_field);
 
   WebThemeEngineHelper::GetNativeThemeEngine()->Paint(
       paint_info.context.Canvas(), WebThemeEngine::kPartTextField,
@@ -291,26 +293,28 @@ bool ThemePainterDefault::PaintMenuList(const Element& element,
                                         const ComputedStyle& style,
                                         const PaintInfo& paint_info,
                                         const gfx::Rect& rect) {
-  WebThemeEngine::ExtraParams extra_params;
+  WebThemeEngine::MenuListExtraParams menu_list;
   // Match Chromium Win behaviour of showing all borders if any are shown.
-  extra_params.menu_list.has_border = style.HasBorder();
-  extra_params.menu_list.has_border_radius = style.HasBorderRadius();
-  extra_params.menu_list.zoom = style.EffectiveZoom();
+  menu_list.has_border = style.HasBorder();
+  menu_list.has_border_radius = style.HasBorderRadius();
+  menu_list.zoom = style.EffectiveZoom();
   // Fallback to transparent if the specified color object is invalid.
   Color background_color(Color::kTransparent);
   if (style.HasBackground()) {
     background_color =
         style.VisitedDependentColor(GetCSSPropertyBackgroundColor());
   }
-  extra_params.menu_list.background_color = background_color.Rgb();
+  menu_list.background_color = background_color.Rgb();
 
   // If we have a background image, don't fill the content area to expose the
   // parent's background. Also, we shouldn't fill the content area if the
   // alpha of the color is 0. The API of Windows GDI ignores the alpha.
   // FIXME: the normal Aura theme doesn't care about this, so we should
   // investigate if we really need fillContentArea.
-  extra_params.menu_list.fill_content_area =
+  menu_list.fill_content_area =
       !style.HasBackgroundImage() && !background_color.IsFullyTransparent();
+
+  WebThemeEngine::ExtraParams extra_params(menu_list);
 
   SetupMenuListArrow(document, style, rect, extra_params);
 
@@ -326,11 +330,12 @@ bool ThemePainterDefault::PaintMenuListButton(const Element& element,
                                               const ComputedStyle& style,
                                               const PaintInfo& paint_info,
                                               const gfx::Rect& rect) {
-  WebThemeEngine::ExtraParams extra_params;
-  extra_params.menu_list.has_border = false;
-  extra_params.menu_list.has_border_radius = style.HasBorderRadius();
-  extra_params.menu_list.background_color = SK_ColorTRANSPARENT;
-  extra_params.menu_list.fill_content_area = false;
+  WebThemeEngine::MenuListExtraParams menu_list;
+  menu_list.has_border = false;
+  menu_list.has_border_radius = style.HasBorderRadius();
+  menu_list.background_color = SK_ColorTRANSPARENT;
+  menu_list.fill_content_area = false;
+  WebThemeEngine::ExtraParams extra_params(menu_list);
   SetupMenuListArrow(document, style, rect, extra_params);
 
   WebThemeEngineHelper::GetNativeThemeEngine()->Paint(
@@ -345,17 +350,18 @@ void ThemePainterDefault::SetupMenuListArrow(
     const ComputedStyle& style,
     const gfx::Rect& rect,
     WebThemeEngine::ExtraParams& extra_params) {
+  auto& menu_list =
+      absl::get<WebThemeEngine::MenuListExtraParams>(extra_params);
   if (IsHorizontalWritingMode(style.GetWritingMode()) ||
       !RuntimeEnabledFeatures::
           FormControlsVerticalWritingModeSupportEnabled()) {
-    extra_params.menu_list.arrow_direction =
-        WebThemeEngine::ArrowDirection::kDown;
+    menu_list.arrow_direction = WebThemeEngine::ArrowDirection::kDown;
     const int left = rect.x() + floorf(style.BorderLeftWidth());
     const int right =
         rect.x() + rect.width() - floorf(style.BorderRightWidth());
     const int middle = rect.y() + rect.height() / 2;
 
-    extra_params.menu_list.arrow_y = middle;
+    menu_list.arrow_y = middle;
     float arrow_box_width =
         theme_.ClampedMenuListArrowPaddingSize(document.GetFrame(), style);
     float arrow_scale_factor =
@@ -364,24 +370,21 @@ void ThemePainterDefault::SetupMenuListArrow(
     float arrow_size = 8.0 * arrow_scale_factor;
     // Put the arrow at the center of paddingForArrow area.
     // |arrowX| is the left position for Aura theme engine.
-    extra_params.menu_list.arrow_x =
-        (style.Direction() == TextDirection::kRtl)
-            ? left + (arrow_box_width - arrow_size) / 2
-            : right - (arrow_box_width + arrow_size) / 2;
-    extra_params.menu_list.arrow_size = arrow_size;
+    menu_list.arrow_x = (style.Direction() == TextDirection::kRtl)
+                            ? left + (arrow_box_width - arrow_size) / 2
+                            : right - (arrow_box_width + arrow_size) / 2;
+    menu_list.arrow_size = arrow_size;
   } else {
     if (style.GetWritingMode() == WritingMode::kVerticalLr) {
-      extra_params.menu_list.arrow_direction =
-          WebThemeEngine::ArrowDirection::kRight;
+      menu_list.arrow_direction = WebThemeEngine::ArrowDirection::kRight;
     } else {
-      extra_params.menu_list.arrow_direction =
-          WebThemeEngine::ArrowDirection::kLeft;
+      menu_list.arrow_direction = WebThemeEngine::ArrowDirection::kLeft;
     }
     const int bottom = rect.y() + floorf(style.BorderBottomWidth());
     const int top = rect.y() + rect.height() - floorf(style.BorderTopWidth());
     const int middle = rect.x() + rect.width() / 2;
 
-    extra_params.menu_list.arrow_x = middle;
+    menu_list.arrow_x = middle;
     float arrow_box_height =
         theme_.ClampedMenuListArrowPaddingSize(document.GetFrame(), style);
     float arrow_scale_factor =
@@ -390,16 +393,15 @@ void ThemePainterDefault::SetupMenuListArrow(
     float arrow_size = 8.0 * arrow_scale_factor;
     // Put the arrow at the center of paddingForArrow area.
     // |arrowY| is the bottom position for Aura theme engine.
-    extra_params.menu_list.arrow_y =
-        (style.Direction() == TextDirection::kRtl)
-            ? bottom + (arrow_box_height - arrow_size) / 2
-            : top - (arrow_box_height + arrow_size) / 2;
-    extra_params.menu_list.arrow_size = arrow_size;
+    menu_list.arrow_y = (style.Direction() == TextDirection::kRtl)
+                            ? bottom + (arrow_box_height - arrow_size) / 2
+                            : top - (arrow_box_height + arrow_size) / 2;
+    menu_list.arrow_size = arrow_size;
   }
 
   // TODO: (https://crbug.com/1227305)This color still does not support forced
   // dark mode
-  extra_params.menu_list.arrow_color =
+  menu_list.arrow_color =
       style.VisitedDependentColor(GetCSSPropertyColor()).Rgb();
 }
 
@@ -408,25 +410,25 @@ bool ThemePainterDefault::PaintSliderTrack(const Element& element,
                                            const PaintInfo& paint_info,
                                            const gfx::Rect& rect,
                                            const ComputedStyle& style) {
-  WebThemeEngine::ExtraParams extra_params;
-  extra_params.slider.vertical =
+  WebThemeEngine::SliderExtraParams slider;
+  slider.vertical =
       (RuntimeEnabledFeatures::
            FormControlsVerticalWritingModeSupportEnabled() &&
        !IsHorizontalWritingMode(style.GetWritingMode())) ||
       (!RuntimeEnabledFeatures::
            RemoveNonStandardAppearanceValueSliderVerticalEnabled() &&
        style.EffectiveAppearance() == kSliderVerticalPart);
-  extra_params.slider.in_drag = false;
+  slider.in_drag = false;
 
   PaintSliderTicks(layout_object, paint_info, rect);
 
-  extra_params.slider.zoom = style.EffectiveZoom();
-  extra_params.slider.thumb_x = 0;
-  extra_params.slider.thumb_y = 0;
-  extra_params.slider.right_to_left =
+  slider.zoom = style.EffectiveZoom();
+  slider.thumb_x = 0;
+  slider.thumb_y = 0;
+  slider.right_to_left =
       !RuntimeEnabledFeatures::
                   FormControlsVerticalWritingModeDirectionSupportEnabled() &&
-              extra_params.slider.vertical
+              slider.vertical
           ? true
           : !style.IsLeftToRightDirection();
   if (auto* input = DynamicTo<HTMLInputElement>(element)) {
@@ -442,14 +444,13 @@ bool ThemePainterDefault::PaintSliderTrack(const Element& element,
               ? ToPixelSnappedRect(
                     PhysicalRect(thumb->PhysicalLocation(), thumb->Size()))
               : ToPixelSnappedRect(thumb->FrameRect());
-      extra_params.slider.thumb_x = thumb_rect.x() +
-                                    input_box->PaddingLeft().ToInt() +
-                                    input_box->BorderLeft().ToInt();
-      extra_params.slider.thumb_y = thumb_rect.y() +
-                                    input_box->PaddingTop().ToInt() +
-                                    input_box->BorderTop().ToInt();
+      slider.thumb_x = thumb_rect.x() + input_box->PaddingLeft().ToInt() +
+                       input_box->BorderLeft().ToInt();
+      slider.thumb_y = thumb_rect.y() + input_box->PaddingTop().ToInt() +
+                       input_box->BorderTop().ToInt();
     }
   }
+  WebThemeEngine::ExtraParams extra_params(slider);
 
   WebThemeEngineHelper::GetNativeThemeEngine()->Paint(
       paint_info.context.Canvas(), WebThemeEngine::kPartSliderTrack,
@@ -462,16 +463,16 @@ bool ThemePainterDefault::PaintSliderThumb(const Element& element,
                                            const ComputedStyle& style,
                                            const PaintInfo& paint_info,
                                            const gfx::Rect& rect) {
-  WebThemeEngine::ExtraParams extra_params;
-  extra_params.slider.vertical =
+  WebThemeEngine::SliderExtraParams slider;
+  slider.vertical =
       (RuntimeEnabledFeatures::
            FormControlsVerticalWritingModeSupportEnabled() &&
        !IsHorizontalWritingMode(style.GetWritingMode())) ||
       (!RuntimeEnabledFeatures::
            RemoveNonStandardAppearanceValueSliderVerticalEnabled() &&
        style.EffectiveAppearance() == kSliderThumbVerticalPart);
-  extra_params.slider.in_drag = element.IsActive();
-  extra_params.slider.zoom = style.EffectiveZoom();
+  slider.in_drag = element.IsActive();
+  slider.zoom = style.EffectiveZoom();
 
   // The element passed in is inside the user agent shadow DOM of the input
   // element, so we have to access the parent input element in order to get the
@@ -482,6 +483,7 @@ bool ThemePainterDefault::PaintSliderThumb(const Element& element,
                            // SliderThumbElement
   absl::optional<SkColor> accent_color =
       GetAccentColor(*slider_element->HostInput()->EnsureComputedStyle());
+  WebThemeEngine::ExtraParams extra_params(slider);
 
   WebThemeEngineHelper::GetNativeThemeEngine()->Paint(
       paint_info.context.Canvas(), WebThemeEngine::kPartSliderThumb,
@@ -494,7 +496,7 @@ bool ThemePainterDefault::PaintInnerSpinButton(const Element& element,
                                                const ComputedStyle& style,
                                                const PaintInfo& paint_info,
                                                const gfx::Rect& rect) {
-  WebThemeEngine::ExtraParams extra_params;
+  WebThemeEngine::InnerSpinButtonExtraParams inner_spin;
 
   bool spin_up = false;
   if (const auto* spin_buttom = DynamicTo<SpinButtonElement>(element)) {
@@ -506,8 +508,10 @@ bool ThemePainterDefault::PaintInnerSpinButton(const Element& element,
   if (const auto* control = DynamicTo<HTMLFormControlElement>(element))
     read_only = control->IsReadOnly();
 
-  extra_params.inner_spin.spin_up = spin_up;
-  extra_params.inner_spin.read_only = read_only;
+  inner_spin.spin_up = spin_up;
+  inner_spin.read_only = read_only;
+
+  WebThemeEngine::ExtraParams extra_params(inner_spin);
 
   WebThemeEngineHelper::GetNativeThemeEngine()->Paint(
       paint_info.context.Canvas(), WebThemeEngine::kPartInnerSpinButton,
@@ -527,16 +531,16 @@ bool ThemePainterDefault::PaintProgressBar(const Element& element,
 
   gfx::Rect value_rect = ProgressValueRectFor(*layout_progress, rect);
 
-  WebThemeEngine::ExtraParams extra_params;
-  extra_params.progress_bar.determinate = layout_progress->IsDeterminate();
-  extra_params.progress_bar.value_rect_x = value_rect.x();
-  extra_params.progress_bar.value_rect_y = value_rect.y();
-  extra_params.progress_bar.value_rect_width = value_rect.width();
-  extra_params.progress_bar.value_rect_height = value_rect.height();
-  extra_params.progress_bar.zoom = style.EffectiveZoom();
-  extra_params.progress_bar.is_horizontal =
+  WebThemeEngine::ProgressBarExtraParams progress_bar;
+  progress_bar.determinate = layout_progress->IsDeterminate();
+  progress_bar.value_rect_x = value_rect.x();
+  progress_bar.value_rect_y = value_rect.y();
+  progress_bar.value_rect_width = value_rect.width();
+  progress_bar.value_rect_height = value_rect.height();
+  progress_bar.zoom = style.EffectiveZoom();
+  progress_bar.is_horizontal =
       IsHorizontalWritingMode(layout_progress->StyleRef().GetWritingMode());
-
+  WebThemeEngine::ExtraParams extra_params(progress_bar);
   DirectionFlippingScope scope(layout_object, paint_info, rect);
   WebThemeEngineHelper::GetNativeThemeEngine()->Paint(
       paint_info.context.Canvas(), WebThemeEngine::kPartProgressBar,

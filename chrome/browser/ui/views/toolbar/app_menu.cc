@@ -59,6 +59,7 @@
 #include "content/public/browser/web_contents.h"
 #include "extensions/common/feature_switch.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkPaint.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -185,15 +186,15 @@ class InMenuButtonBackground : public views::Background {
       gfx::ScopedCanvas scoped_canvas(canvas);
       if (!view->GetFlipCanvasOnPaintForRTLUI())
         scoped_canvas.FlipIfRTL(view->width());
-      ui::NativeTheme::ExtraParams params;
+      ui::NativeTheme::MenuSeparatorExtraParams menu_separator;
       const gfx::Rect separator_bounds(gfx::Size(
           MenuConfig::instance().separator_thickness, view->height()));
-      params.menu_separator.paint_rect = &separator_bounds;
-      params.menu_separator.type = ui::VERTICAL_SEPARATOR;
+      menu_separator.paint_rect = &separator_bounds;
+      menu_separator.type = ui::VERTICAL_SEPARATOR;
       view->GetNativeTheme()->Paint(
           canvas->sk_canvas(), view->GetColorProvider(),
           ui::NativeTheme::kMenuPopupSeparator, ui::NativeTheme::kNormal,
-          separator_bounds, params);
+          separator_bounds, ui::NativeTheme::ExtraParams(menu_separator));
       bounds.Inset(gfx::Insets::TLBR(
           0, MenuConfig::instance().separator_thickness, 0, 0));
     }
@@ -213,16 +214,16 @@ class InMenuButtonBackground : public views::Background {
     }
 
     gfx::Rect bounds_rect = bounds;
-    ui::NativeTheme::ExtraParams params;
+    ui::NativeTheme::MenuItemExtraParams menu_item;
     if (type_ == ButtonType::kRoundedButton) {
       // Consistent with a hover corner radius (kInkDropSmallCornerRadius).
       const int kBackgroundCornerRadius = 2;
-      params.menu_item.corner_radius = kBackgroundCornerRadius;
+      menu_item.corner_radius = kBackgroundCornerRadius;
     } else if (shape_ == ButtonShape::kCircular) {
       constexpr int kCircularButtonSize = 28;
       bounds_rect.ClampToCenteredSize(
           gfx::Size(kCircularButtonSize, kCircularButtonSize));
-      params.menu_item.corner_radius = kCircularButtonSize / 2;
+      menu_item.corner_radius = kCircularButtonSize / 2;
     }
     const auto* const color_provider = view->GetColorProvider();
     if (features::IsChromeRefresh2023()) {
@@ -231,15 +232,15 @@ class InMenuButtonBackground : public views::Background {
           state == views::Button::STATE_NORMAL
               ? ui::kColorMenuButtonBackground
               : ui::kColorMenuButtonBackgroundSelected));
-      canvas->DrawRoundRect(gfx::RectF(bounds_rect),
-                            params.menu_item.corner_radius, flags);
+      canvas->DrawRoundRect(gfx::RectF(bounds_rect), menu_item.corner_radius,
+                            flags);
       return;
     }
     if (state != views::Button::STATE_NORMAL) {
       view->GetNativeTheme()->Paint(canvas->sk_canvas(), color_provider,
                                     ui::NativeTheme::kMenuItemBackground,
                                     ui::NativeTheme::kHovered, bounds_rect,
-                                    params);
+                                    ui::NativeTheme::ExtraParams(menu_item));
     }
   }
 

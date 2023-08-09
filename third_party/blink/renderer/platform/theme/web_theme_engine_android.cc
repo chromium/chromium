@@ -13,107 +13,121 @@
 
 namespace blink {
 
-static void GetNativeThemeExtraParams(
+static ui::NativeTheme::ExtraParams GetNativeThemeExtraParams(
     WebThemeEngine::Part part,
     WebThemeEngine::State state,
-    const WebThemeEngine::ExtraParams* extra_params,
-    ui::NativeTheme::ExtraParams* native_theme_extra_params) {
+    const WebThemeEngine::ExtraParams* extra_params) {
   switch (part) {
     case WebThemeEngine::kPartScrollbarHorizontalTrack:
-    case WebThemeEngine::kPartScrollbarVerticalTrack:
+    case WebThemeEngine::kPartScrollbarVerticalTrack: {
       // Android doesn't draw scrollbars.
       NOTREACHED();
-      break;
-    case WebThemeEngine::kPartCheckbox:
-      native_theme_extra_params->button.checked = extra_params->button.checked;
-      native_theme_extra_params->button.indeterminate =
-          extra_params->button.indeterminate;
-      native_theme_extra_params->button.zoom = extra_params->button.zoom;
-      break;
-    case WebThemeEngine::kPartRadio:
-      native_theme_extra_params->button.checked = extra_params->button.checked;
-      break;
-    case WebThemeEngine::kPartButton:
-      native_theme_extra_params->button.has_border =
-          extra_params->button.has_border;
-      // Native buttons have a different focus style.
-      native_theme_extra_params->button.is_focused = false;
-      native_theme_extra_params->button.background_color =
-          extra_params->button.background_color;
-      native_theme_extra_params->button.zoom = extra_params->button.zoom;
-      break;
-    case WebThemeEngine::kPartTextField:
-      native_theme_extra_params->text_field.is_text_area =
-          extra_params->text_field.is_text_area;
-      native_theme_extra_params->text_field.is_listbox =
-          extra_params->text_field.is_listbox;
-      native_theme_extra_params->text_field.background_color =
-          extra_params->text_field.background_color;
-      native_theme_extra_params->text_field.has_border =
-          extra_params->text_field.has_border;
-      native_theme_extra_params->text_field.auto_complete_active =
-          extra_params->text_field.auto_complete_active;
-      native_theme_extra_params->text_field.zoom =
-          extra_params->text_field.zoom;
-      break;
-    case WebThemeEngine::kPartMenuList: {
-      native_theme_extra_params->menu_list.has_border =
-          extra_params->menu_list.has_border;
-      native_theme_extra_params->menu_list.has_border_radius =
-          extra_params->menu_list.has_border_radius;
-      native_theme_extra_params->menu_list.arrow_x =
-          extra_params->menu_list.arrow_x;
-      native_theme_extra_params->menu_list.arrow_y =
-          extra_params->menu_list.arrow_y;
-      native_theme_extra_params->menu_list.arrow_size =
-          extra_params->menu_list.arrow_size;
-      //  Need to explicit cast so we can assign enum to enum.
-      ui::NativeTheme::ArrowDirection dir = ui::NativeTheme::ArrowDirection(
-          extra_params->menu_list.arrow_direction);
-      native_theme_extra_params->menu_list.arrow_direction = dir;
-      native_theme_extra_params->menu_list.arrow_color =
-          extra_params->menu_list.arrow_color;
-      native_theme_extra_params->menu_list.background_color =
-          extra_params->menu_list.background_color;
-      native_theme_extra_params->menu_list.zoom = extra_params->menu_list.zoom;
-      break;
+      ui::NativeTheme::ExtraParams native_theme_extra_params;
+      return native_theme_extra_params;
     }
-    case WebThemeEngine::kPartSliderTrack:
-      native_theme_extra_params->slider.thumb_x = extra_params->slider.thumb_x;
-      native_theme_extra_params->slider.thumb_y = extra_params->slider.thumb_y;
-      native_theme_extra_params->slider.zoom = extra_params->slider.zoom;
-      native_theme_extra_params->slider.right_to_left =
-          extra_params->slider.right_to_left;
-      [[fallthrough]];
-    case WebThemeEngine::kPartSliderThumb:
-      native_theme_extra_params->slider.vertical =
-          extra_params->slider.vertical;
-      native_theme_extra_params->slider.in_drag = extra_params->slider.in_drag;
-      break;
-    case WebThemeEngine::kPartInnerSpinButton:
-      native_theme_extra_params->inner_spin.spin_up =
-          extra_params->inner_spin.spin_up;
-      native_theme_extra_params->inner_spin.read_only =
-          extra_params->inner_spin.read_only;
-      break;
-    case WebThemeEngine::kPartProgressBar:
-      native_theme_extra_params->progress_bar.determinate =
-          extra_params->progress_bar.determinate;
-      native_theme_extra_params->progress_bar.value_rect_x =
-          extra_params->progress_bar.value_rect_x;
-      native_theme_extra_params->progress_bar.value_rect_y =
-          extra_params->progress_bar.value_rect_y;
-      native_theme_extra_params->progress_bar.value_rect_width =
-          extra_params->progress_bar.value_rect_width;
-      native_theme_extra_params->progress_bar.value_rect_height =
-          extra_params->progress_bar.value_rect_height;
-      native_theme_extra_params->progress_bar.zoom =
-          extra_params->progress_bar.zoom;
-      native_theme_extra_params->progress_bar.is_horizontal =
-          extra_params->progress_bar.is_horizontal;
-      break;
-    default:
-      break;  // Parts that have no extra params get here.
+    case WebThemeEngine::kPartCheckbox: {
+      ui::NativeTheme::ButtonExtraParams native_button;
+      const auto& button =
+          absl::get<WebThemeEngine::ButtonExtraParams>(*extra_params);
+      native_button.checked = button.checked;
+      native_button.indeterminate = button.indeterminate;
+      native_button.zoom = button.zoom;
+      return ui::NativeTheme::ExtraParams(native_button);
+    }
+    case WebThemeEngine::kPartRadio: {
+      ui::NativeTheme::ButtonExtraParams native_button;
+      const auto& button =
+          absl::get<WebThemeEngine::ButtonExtraParams>(*extra_params);
+      native_button.checked = button.checked;
+      return ui::NativeTheme::ExtraParams(native_button);
+    }
+    case WebThemeEngine::kPartButton: {
+      ui::NativeTheme::ButtonExtraParams native_button;
+      const auto& button =
+          absl::get<WebThemeEngine::ButtonExtraParams>(*extra_params);
+      native_button.has_border = button.has_border;
+      // Native buttons have a different focus style.
+      native_button.is_focused = false;
+      native_button.background_color = button.background_color;
+      native_button.zoom = button.zoom;
+      return ui::NativeTheme::ExtraParams(native_button);
+    }
+    case WebThemeEngine::kPartTextField: {
+      ui::NativeTheme::TextFieldExtraParams native_text_field;
+      const auto& text_field =
+          absl::get<WebThemeEngine::TextFieldExtraParams>(*extra_params);
+      native_text_field.is_text_area = text_field.is_text_area;
+      native_text_field.is_listbox = text_field.is_listbox;
+      native_text_field.background_color = text_field.background_color;
+      native_text_field.has_border = text_field.has_border;
+      native_text_field.auto_complete_active = text_field.auto_complete_active;
+      native_text_field.zoom = text_field.zoom;
+      return ui::NativeTheme::ExtraParams(native_text_field);
+    }
+    case WebThemeEngine::kPartMenuList: {
+      ui::NativeTheme::MenuListExtraParams native_menu_list;
+      const auto& menu_list =
+          absl::get<WebThemeEngine::MenuListExtraParams>(*extra_params);
+      native_menu_list.has_border = menu_list.has_border;
+      native_menu_list.has_border_radius = menu_list.has_border_radius;
+      native_menu_list.arrow_x = menu_list.arrow_x;
+      native_menu_list.arrow_y = menu_list.arrow_y;
+      native_menu_list.arrow_size = menu_list.arrow_size;
+      //  Need to explicit cast so we can assign enum to enum.
+      ui::NativeTheme::ArrowDirection dir =
+          ui::NativeTheme::ArrowDirection(menu_list.arrow_direction);
+      native_menu_list.arrow_direction = dir;
+      native_menu_list.arrow_color = menu_list.arrow_color;
+      native_menu_list.background_color = menu_list.background_color;
+      native_menu_list.zoom = menu_list.zoom;
+      return ui::NativeTheme::ExtraParams(native_menu_list);
+    }
+    case WebThemeEngine::kPartSliderTrack: {
+      ui::NativeTheme::SliderExtraParams native_slider_track;
+      const auto& slider_track =
+          absl::get<WebThemeEngine::SliderExtraParams>(*extra_params);
+      native_slider_track.thumb_x = slider_track.thumb_x;
+      native_slider_track.thumb_y = slider_track.thumb_y;
+      native_slider_track.zoom = slider_track.zoom;
+      native_slider_track.right_to_left = slider_track.right_to_left;
+      native_slider_track.vertical = slider_track.vertical;
+      native_slider_track.in_drag = slider_track.in_drag;
+      return ui::NativeTheme::ExtraParams(native_slider_track);
+    }
+    case WebThemeEngine::kPartSliderThumb: {
+      ui::NativeTheme::SliderExtraParams native_slider_thumb;
+      const auto& slider_thumb =
+          absl::get<WebThemeEngine::SliderExtraParams>(*extra_params);
+      native_slider_thumb.vertical = slider_thumb.vertical;
+      native_slider_thumb.in_drag = slider_thumb.in_drag;
+      return ui::NativeTheme::ExtraParams(native_slider_thumb);
+    }
+    case WebThemeEngine::kPartInnerSpinButton: {
+      ui::NativeTheme::InnerSpinButtonExtraParams native_inner_spin;
+      const auto& inner_spin =
+          absl::get<WebThemeEngine::InnerSpinButtonExtraParams>(*extra_params);
+      native_inner_spin.spin_up = inner_spin.spin_up;
+      native_inner_spin.read_only = inner_spin.read_only;
+      return ui::NativeTheme::ExtraParams(native_inner_spin);
+    }
+    case WebThemeEngine::kPartProgressBar: {
+      ui::NativeTheme::ProgressBarExtraParams native_progress_bar;
+      const auto& progress_bar =
+          absl::get<WebThemeEngine::ProgressBarExtraParams>(*extra_params);
+      native_progress_bar.determinate = progress_bar.determinate;
+      native_progress_bar.value_rect_x = progress_bar.value_rect_x;
+      native_progress_bar.value_rect_y = progress_bar.value_rect_y;
+      native_progress_bar.value_rect_width = progress_bar.value_rect_width;
+      native_progress_bar.value_rect_height = progress_bar.value_rect_height;
+      native_progress_bar.zoom = progress_bar.zoom;
+      native_progress_bar.is_horizontal = progress_bar.is_horizontal;
+      return ui::NativeTheme::ExtraParams(native_progress_bar);
+    }
+    default: {
+      ui::NativeTheme::ExtraParams native_theme_extra_params;
+      return native_theme_extra_params;  // Parts that have no extra params get
+                                         // here.
+    }
   }
 }
 
@@ -157,9 +171,8 @@ void WebThemeEngineAndroid::Paint(
     const WebThemeEngine::ExtraParams* extra_params,
     blink::mojom::ColorScheme color_scheme,
     const absl::optional<SkColor>& accent_color) {
-  ui::NativeTheme::ExtraParams native_theme_extra_params;
-  GetNativeThemeExtraParams(part, state, extra_params,
-                            &native_theme_extra_params);
+  ui::NativeTheme::ExtraParams native_theme_extra_params =
+      GetNativeThemeExtraParams(part, state, extra_params);
   // ColorProviders are not supported on android and there are no controls that
   // require ColorProvider colors on the platform.
   const ui::ColorProvider* color_provider = nullptr;

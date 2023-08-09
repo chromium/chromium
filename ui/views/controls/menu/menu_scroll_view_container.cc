@@ -15,6 +15,7 @@
 #include "cc/paint/paint_flags.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -94,10 +95,12 @@ class MenuScrollButton : public View {
   void OnPaint(gfx::Canvas* canvas) override {
     // The background.
     const auto* const color_provider = GetColorProvider();
-    GetNativeTheme()->Paint(canvas->sk_canvas(), color_provider,
-                            ui::NativeTheme::kMenuItemBackground,
-                            ui::NativeTheme::kNormal, GetLocalBounds(),
-                            ui::NativeTheme::ExtraParams());
+    GetNativeTheme()->Paint(
+        canvas->sk_canvas(), color_provider,
+        ui::NativeTheme::kMenuItemBackground, ui::NativeTheme::kNormal,
+        GetLocalBounds(),
+        ui::NativeTheme::ExtraParams(
+            absl::in_place_type<ui::NativeTheme::MenuItemExtraParams>));
 
     // Then the arrow.
     const int x = width() / 2;
@@ -324,21 +327,22 @@ void MenuScrollViewContainer::OnPaintBackground(gfx::Canvas* canvas) {
     return;
 
   gfx::Rect bounds(0, 0, width(), height());
-  ui::NativeTheme::ExtraParams extra;
-  extra.menu_background.corner_radius = GetCornerRadius();
+  ui::NativeTheme::MenuBackgroundExtraParams menu_background;
+  menu_background.corner_radius = GetCornerRadius();
   const auto* const color_provider = GetColorProvider();
   if (border_color_id_.has_value()) {
     cc::PaintFlags flags;
     flags.setAntiAlias(true);
     flags.setStyle(cc::PaintFlags::kFill_Style);
     flags.setColor(color_provider->GetColor(border_color_id_.value()));
-    canvas->DrawRoundRect(GetLocalBounds(), extra.menu_background.corner_radius,
+    canvas->DrawRoundRect(GetLocalBounds(), menu_background.corner_radius,
                           flags);
     return;
   }
   GetNativeTheme()->Paint(canvas->sk_canvas(), color_provider,
                           ui::NativeTheme::kMenuPopupBackground,
-                          ui::NativeTheme::kNormal, bounds, extra);
+                          ui::NativeTheme::kNormal, bounds,
+                          ui::NativeTheme::ExtraParams(menu_background));
 }
 
 void MenuScrollViewContainer::OnThemeChanged() {

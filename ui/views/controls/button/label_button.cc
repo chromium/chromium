@@ -496,13 +496,14 @@ void LabelButton::RemoveLayerFromRegions(ui::Layer* old_layer) {
 }
 
 void LabelButton::GetExtraParams(ui::NativeTheme::ExtraParams* params) const {
-  params->button.checked = false;
-  params->button.indeterminate = false;
-  params->button.is_default = GetIsDefault();
-  params->button.is_focused = HasFocus() && IsAccessibilityFocusable();
-  params->button.has_border = false;
-  params->button.classic_state = 0;
-  params->button.background_color = label_->GetBackgroundColor();
+  auto& button = absl::get<ui::NativeTheme::ButtonExtraParams>(*params);
+  button.checked = false;
+  button.indeterminate = false;
+  button.is_default = GetIsDefault();
+  button.is_focused = HasFocus() && IsAccessibilityFocusable();
+  button.has_border = false;
+  button.classic_state = 0;
+  button.background_color = label_->GetBackgroundColor();
 }
 
 PropertyEffects LabelButton::UpdateStyleToIndicateDefaultStatus() {

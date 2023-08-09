@@ -15,9 +15,11 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/models/menu_separator_types.h"
 #include "ui/color/color_provider_key.h"
+#include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_widget_types.h"
@@ -166,58 +168,56 @@ class NATIVE_THEME_EXPORT NativeTheme {
   // part.
 
   struct ButtonExtraParams {
-    bool checked;
-    bool indeterminate;  // Whether the button state is indeterminate.
-    bool is_default;  // Whether the button is default button.
-    bool is_focused;
-    bool has_border;
-    int classic_state;  // Used on Windows when uxtheme is not available.
-    SkColor background_color;
-    float zoom;
+    bool checked = false;
+    bool indeterminate = false;  // Whether the button state is indeterminate.
+    bool is_default = false;     // Whether the button is default button.
+    bool is_focused = false;
+    bool has_border = false;
+    int classic_state = 0;  // Used on Windows when uxtheme is not available.
+    SkColor background_color = gfx::kPlaceholderColor;
+    float zoom = 0;
   };
 
   struct FrameTopAreaExtraParams {
     // Distinguishes between active (foreground) and inactive
     // (background) window frame styles.
-    bool is_active;
+    bool is_active = false;
     // True when Chromium renders the titlebar.  False when the window
     // manager renders the titlebar.
-    bool use_custom_frame;
+    bool use_custom_frame = false;
     // If the NativeTheme will paint a solid color, it should use
     // |default_background_color|.
-    SkColor default_background_color;
+    SkColor default_background_color = gfx::kPlaceholderColor;
   };
 
   struct InnerSpinButtonExtraParams {
-    bool spin_up;
-    bool read_only;
-    int classic_state;  // Used on Windows when uxtheme is not available.
+    bool spin_up = false;
+    bool read_only = false;
+    int classic_state = 0;  // Used on Windows when uxtheme is not available.
   };
 
   struct MenuArrowExtraParams {
-    bool pointing_right;
+    bool pointing_right = false;
     // Used for the disabled state to indicate if the item is both disabled and
     // selected.
-    bool is_selected;
+    bool is_selected = false;
   };
 
   struct MenuCheckExtraParams {
-    bool is_radio;
+    bool is_radio = false;
     // Used for the disabled state to indicate if the item is both disabled and
     // selected.
-    bool is_selected;
+    bool is_selected = false;
   };
 
   struct MenuSeparatorExtraParams {
-    // This field is not a raw_ptr<> because it was filtered by the rewriter
-    // for: #union
-    RAW_PTR_EXCLUSION const gfx::Rect* paint_rect;
-    MenuSeparatorType type;
+    raw_ptr<const gfx::Rect> paint_rect = nullptr;
+    MenuSeparatorType type = MenuSeparatorType::NORMAL_SEPARATOR;
   };
 
   struct MenuItemExtraParams {
-    bool is_selected;
-    int corner_radius;
+    bool is_selected = false;
+    int corner_radius = 0;
   };
 
   enum class ArrowDirection : int {
@@ -226,47 +226,51 @@ class NATIVE_THEME_EXPORT NativeTheme {
     kRight,
   };
 
-  struct MenuListExtraParams {
-    bool has_border;
-    bool has_border_radius;
-    int arrow_x;
-    int arrow_y;
-    int arrow_size;
-    ArrowDirection arrow_direction;
-    SkColor arrow_color;
-    SkColor background_color;
-    int classic_state;  // Used on Windows when uxtheme is not available.
-    float zoom;
+  struct NATIVE_THEME_EXPORT MenuListExtraParams {
+    bool has_border = false;
+    bool has_border_radius = false;
+    int arrow_x = 0;
+    int arrow_y = 0;
+    int arrow_size = 0;
+    ArrowDirection arrow_direction = ArrowDirection::kDown;
+    SkColor arrow_color = gfx::kPlaceholderColor;
+    SkColor background_color = gfx::kPlaceholderColor;
+    int classic_state = 0;  // Used on Windows when uxtheme is not available.
+    float zoom = 0;
+
+    MenuListExtraParams();
+    MenuListExtraParams(const MenuListExtraParams&);
+    MenuListExtraParams& operator=(const MenuListExtraParams&);
   };
 
   struct MenuBackgroundExtraParams {
-    int corner_radius;
+    int corner_radius = 0;
   };
 
   struct ProgressBarExtraParams {
-    double animated_seconds;
-    bool determinate;
-    int value_rect_x;
-    int value_rect_y;
-    int value_rect_width;
-    int value_rect_height;
-    float zoom;
-    bool is_horizontal;
+    double animated_seconds = 0;
+    bool determinate = false;
+    int value_rect_x = 0;
+    int value_rect_y = 0;
+    int value_rect_width = 0;
+    int value_rect_height = 0;
+    float zoom = 0;
+    bool is_horizontal = false;
   };
 
   struct ScrollbarArrowExtraParams {
-    bool is_hovering;
-    float zoom;
-    bool right_to_left;
+    bool is_hovering = false;
+    float zoom = 0;
+    bool right_to_left = false;
   };
 
   struct ScrollbarTrackExtraParams {
-    bool is_upper;
-    int track_x;
-    int track_y;
-    int track_width;
-    int track_height;
-    int classic_state;  // Used on Windows when uxtheme is not available.
+    bool is_upper = false;
+    int track_x = 0;
+    int track_y = 0;
+    int track_width = 0;
+    int track_height = 0;
+    int classic_state = 0;  // Used on Windows when uxtheme is not available.
   };
 
   enum class ScrollbarOverlayColorTheme {
@@ -276,8 +280,9 @@ class NATIVE_THEME_EXPORT NativeTheme {
   };
 
   struct ScrollbarThumbExtraParams {
-    bool is_hovering;
-    ScrollbarOverlayColorTheme scrollbar_theme;
+    bool is_hovering = false;
+    ScrollbarOverlayColorTheme scrollbar_theme =
+        ScrollbarOverlayColorTheme::kDefault;
   };
 
 #if BUILDFLAG(IS_APPLE)
@@ -292,71 +297,70 @@ class NATIVE_THEME_EXPORT NativeTheme {
 
   // A unique set of scrollbar params. Currently needed for Mac.
   struct ScrollbarExtraParams {
-    bool is_hovering;
-    bool is_overlay;
-    ScrollbarOverlayColorTheme scrollbar_theme;
-    ScrollbarOrientation orientation;  // Used on Mac for drawing gradients.
-    float scale_from_dip;
+    bool is_hovering = false;
+    bool is_overlay = false;
+    ScrollbarOverlayColorTheme scrollbar_theme =
+        ScrollbarOverlayColorTheme::kDefault;
+    ScrollbarOrientation orientation =
+        ScrollbarOrientation::kVerticalOnRight;  // Used on Mac for drawing
+                                                 // gradients.
+    float scale_from_dip = 0;
     absl::optional<SkColor> thumb_color;
     absl::optional<SkColor> track_color;
-
-    ScrollbarExtraParams()
-        : thumb_color(absl::nullopt), track_color(absl::nullopt) {}
   };
 #endif
 
   struct SliderExtraParams {
-    bool vertical;
-    bool in_drag;
-    int thumb_x;
-    int thumb_y;
-    float zoom;
-    bool right_to_left;
+    bool vertical = false;
+    bool in_drag = false;
+    int thumb_x = 0;
+    int thumb_y = 0;
+    float zoom = 0;
+    bool right_to_left = false;
   };
 
-  struct TextFieldExtraParams {
-    bool is_text_area;
-    bool is_listbox;
-    SkColor background_color;
-    bool is_read_only;
-    bool is_focused;
-    bool fill_content_area;
-    bool draw_edges;
-    int classic_state;  // Used on Windows when uxtheme is not available.
-    bool has_border;
-    bool auto_complete_active;
-    float zoom;
+  struct NATIVE_THEME_EXPORT TextFieldExtraParams {
+    bool is_text_area = false;
+    bool is_listbox = false;
+    SkColor background_color = gfx::kPlaceholderColor;
+    bool is_read_only = false;
+    bool is_focused = false;
+    bool fill_content_area = false;
+    bool draw_edges = false;
+    int classic_state = 0;  // Used on Windows when uxtheme is not available.
+    bool has_border = false;
+    bool auto_complete_active = false;
+    float zoom = 0;
+
+    TextFieldExtraParams();
+    TextFieldExtraParams(const TextFieldExtraParams&);
+    TextFieldExtraParams& operator=(const TextFieldExtraParams&);
   };
 
   struct TrackbarExtraParams {
-    bool vertical;
-    int classic_state;  // Used on Windows when uxtheme is not available.
+    bool vertical = false;
+    int classic_state = 0;  // Used on Windows when uxtheme is not available.
   };
 
-  union NATIVE_THEME_EXPORT ExtraParams {
-    ExtraParams();
-    ExtraParams(const ExtraParams& other);
-
-    ButtonExtraParams button;
-    FrameTopAreaExtraParams frame_top_area;
-    InnerSpinButtonExtraParams inner_spin;
-    MenuArrowExtraParams menu_arrow;
-    MenuCheckExtraParams menu_check;
-    MenuItemExtraParams menu_item;
-    MenuSeparatorExtraParams menu_separator;
-    MenuListExtraParams menu_list;
-    MenuBackgroundExtraParams menu_background;
-    ProgressBarExtraParams progress_bar;
-    ScrollbarArrowExtraParams scrollbar_arrow;
+  using ExtraParams = absl::variant<ButtonExtraParams,
+                                    FrameTopAreaExtraParams,
+                                    InnerSpinButtonExtraParams,
+                                    MenuArrowExtraParams,
+                                    MenuCheckExtraParams,
+                                    MenuItemExtraParams,
+                                    MenuSeparatorExtraParams,
+                                    MenuListExtraParams,
+                                    MenuBackgroundExtraParams,
+                                    ProgressBarExtraParams,
+                                    ScrollbarArrowExtraParams,
 #if BUILDFLAG(IS_APPLE)
-    ScrollbarExtraParams scrollbar_extra;
+                                    ScrollbarExtraParams,
 #endif
-    ScrollbarTrackExtraParams scrollbar_track;
-    ScrollbarThumbExtraParams scrollbar_thumb;
-    SliderExtraParams slider;
-    TextFieldExtraParams text_field;
-    TrackbarExtraParams trackbar;
-  };
+                                    ScrollbarTrackExtraParams,
+                                    ScrollbarThumbExtraParams,
+                                    SliderExtraParams,
+                                    TextFieldExtraParams,
+                                    TrackbarExtraParams>;
 
   NativeTheme(const NativeTheme&) = delete;
   NativeTheme& operator=(const NativeTheme&) = delete;

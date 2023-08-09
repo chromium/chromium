@@ -359,7 +359,9 @@ ThumbnailCaptureInfo ThumbnailTabHelper::GetInitialCaptureInfo(
       ui::NativeTheme::GetInstanceForWeb()
           ->GetPartSize(ui::NativeTheme::Part::kScrollbarVerticalTrack,
                         ui::NativeTheme::State::kNormal,
-                        ui::NativeTheme::ExtraParams())
+                        ui::NativeTheme::ExtraParams(
+                            absl::in_place_type<
+                                ui::NativeTheme::ScrollbarTrackExtraParams>))
           .width();
   // Round up to make sure any scrollbar pixls are eliminated. It's better to
   // lose a single pixel of content than having a single pixel of scrollbar.

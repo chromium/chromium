@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
 #include "cc/paint/paint_shader.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/effects/SkGradientShader.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -102,10 +103,11 @@ gfx::Size CocoaScrollBarThumb::CalculatePreferredSize() const {
 
 void CocoaScrollBarThumb::OnPaint(gfx::Canvas* canvas) {
   auto params = cocoa_scroll_bar_->GetPainterParams();
+  auto& scrollbar = absl::get<ui::NativeTheme::ScrollbarExtraParams>(params);
   // Set the hover state based only on the thumb.
-  params.scrollbar_extra.is_hovering = IsStateHovered() || IsStatePressed();
+  scrollbar.is_hovering = IsStateHovered() || IsStatePressed();
   ui::NativeTheme::Part thumb_part =
-      params.scrollbar_extra.orientation ==
+      scrollbar.orientation ==
               ui::NativeTheme::ScrollbarOrientation::kHorizontal
           ? ui::NativeTheme::kScrollbarHorizontalThumb
           : ui::NativeTheme::kScrollbarVerticalThumb;
@@ -211,11 +213,12 @@ void CocoaScrollBar::OnPaint(gfx::Canvas* canvas) {
   if (!has_scrolltrack_)
     return;
   auto params = GetPainterParams();
+  auto& scrollbar = absl::get<ui::NativeTheme::ScrollbarExtraParams>(params);
   // Transparency of the track is handled by the View opacity, so always draw
   // using the non-overlay path.
-  params.scrollbar_extra.is_overlay = false;
+  scrollbar.is_overlay = false;
   ui::NativeTheme::Part track_part =
-      params.scrollbar_extra.orientation ==
+      scrollbar.orientation ==
               ui::NativeTheme::ScrollbarOrientation::kHorizontal
           ? ui::NativeTheme::kScrollbarHorizontalTrack
           : ui::NativeTheme::kScrollbarVerticalTrack;
@@ -411,21 +414,19 @@ bool CocoaScrollBar::IsScrollbarFullyHidden() const {
 }
 
 ui::NativeTheme::ExtraParams CocoaScrollBar::GetPainterParams() const {
-  ui::NativeTheme::ExtraParams params;
+  ui::NativeTheme::ScrollbarExtraParams scrollbar;
   if (IsHorizontal()) {
-    params.scrollbar_extra.orientation =
-        ui::NativeTheme::ScrollbarOrientation::kHorizontal;
+    scrollbar.orientation = ui::NativeTheme::ScrollbarOrientation::kHorizontal;
   } else if (base::i18n::IsRTL()) {
-    params.scrollbar_extra.orientation =
+    scrollbar.orientation =
         ui::NativeTheme::ScrollbarOrientation::kVerticalOnLeft;
   } else {
-    params.scrollbar_extra.orientation =
+    scrollbar.orientation =
         ui::NativeTheme::ScrollbarOrientation::kVerticalOnRight;
   }
-  params.scrollbar_extra.is_overlay =
-      GetScrollerStyle() == NSScrollerStyleOverlay;
-  params.scrollbar_extra.scale_from_dip = 1.0f;
-  return params;
+  scrollbar.is_overlay = GetScrollerStyle() == NSScrollerStyleOverlay;
+  scrollbar.scale_from_dip = 1.0f;
+  return ui::NativeTheme::ExtraParams(scrollbar);
 }
 
 //////////////////////////////////////////////////////////////////

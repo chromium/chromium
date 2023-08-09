@@ -150,16 +150,19 @@ void NativeThemeMac::Paint(cc::PaintCanvas* canvas,
   switch (part) {
     case kScrollbarHorizontalThumb:
     case kScrollbarVerticalThumb:
-      PaintMacScrollbarThumb(canvas, part, state, rect, extra.scrollbar_extra,
+      PaintMacScrollbarThumb(canvas, part, state, rect,
+                             absl::get<ScrollbarExtraParams>(extra),
                              color_scheme_updated);
       break;
     case kScrollbarHorizontalTrack:
     case kScrollbarVerticalTrack:
-      PaintMacScrollBarTrackOrCorner(canvas, part, state, extra.scrollbar_extra,
+      PaintMacScrollBarTrackOrCorner(canvas, part, state,
+                                     absl::get<ScrollbarExtraParams>(extra),
                                      rect, color_scheme_updated, false);
       break;
     case kScrollbarCorner:
-      PaintMacScrollBarTrackOrCorner(canvas, part, state, extra.scrollbar_extra,
+      PaintMacScrollBarTrackOrCorner(canvas, part, state,
+                                     absl::get<ScrollbarExtraParams>(extra),
                                      rect, color_scheme_updated, true);
       break;
     default:
