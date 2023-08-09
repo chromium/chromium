@@ -198,6 +198,7 @@ source_set("content_suggestions_ui") {
     ":metrics",
     ":public",
     "//base",
+    "//components/segmentation_platform/public",
     "//components/strings",
     "//ios/chrome/browser/drag_and_drop",
     "//ios/chrome/browser/ntp",
