@@ -1903,6 +1903,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Tabs.TabSearch.BubbleWidgetInitializationTime" units="ms"
+    expires_after="2024-08-03">
+  <owner>temao@chromium.org</owner>
+  <owner>tluk@chromium.org</owner>
+  <owner>robliao@chromium.org</owner>
+  <summary>
+    Tab Search is a feature that allows users to better search for and switch to
+    their desired tabs. The Tab Search UI is shown in a bubble anchored to an
+    element of the UI in the browser window.
+
+    This metric measures the time it takes for the Tab Search bubble widget to
+    be initialized.
+  </summary>
+</histogram>
+
 <histogram name="Tabs.TabSearch.ButtonPressedToNextFramePresented" units="ms"
     expires_after="2024-07-27">
   <owner>temao@chromium.org</owner>
