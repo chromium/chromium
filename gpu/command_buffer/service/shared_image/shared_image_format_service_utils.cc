@@ -19,26 +19,115 @@ namespace gpu {
 // Wraps functions from shared_image_format_utils.h that are made private with
 // friending to prevent their existing client-side usage (which is an
 // anti-pattern) from growing within a class that
-// SharedImageFormatRestrictedSinglePlaneUtils can friend. (Note that if
-// SharedImageFormatRestrictedSinglePlaneUtils instead directly friended the
+// SharedImageFormatRestrictedUtils can friend. (Note that if
+// SharedImageFormatRestrictedUtils instead directly friended the
 // service-side calling functions, any client-side code could then also
 // directly call those service-side calling functions as well, defeating the
 // purpose).
-class SharedImageFormatRestrictedSinglePlaneUtilsAccessor {
+class SharedImageFormatRestrictedUtilsAccessor {
  public:
-  static GLenum ToGLDataFormat(viz::SharedImageFormat format) {
-    return viz::SharedImageFormatRestrictedSinglePlaneUtils::ToGLDataFormat(
-        format);
-  }
-  static GLenum ToGLDataType(viz::SharedImageFormat format) {
-    return viz::SharedImageFormatRestrictedSinglePlaneUtils::ToGLDataType(
-        format);
+  // Returns GL data format for given `format`.
+  static GLenum GLDataFormat(viz::SharedImageFormat format, int plane_index) {
+    DCHECK(format.IsValidPlaneIndex(plane_index));
+    if (format.is_single_plane()) {
+      return viz::SharedImageFormatRestrictedSinglePlaneUtils::ToGLDataFormat(
+          format);
+    }
+
+    // For multiplanar formats without external sampler, GL formats are per
+    // plane. For single channel planes Y, U, V, A return GL_RED_EXT. For 2
+    // channel plane UV return GL_RG_EXT.
+    int num_channels = format.NumChannelsInPlane(plane_index);
+    DCHECK_LE(num_channels, 2);
+    return num_channels == 2 ? GL_RG_EXT : GL_RED_EXT;
   }
 
-  static unsigned int ToGLTextureStorageFormat(viz::SharedImageFormat format,
-                                               bool use_angle_rgbx_format) {
-    return viz::SharedImageFormatRestrictedSinglePlaneUtils::
-        ToGLTextureStorageFormat(format, use_angle_rgbx_format);
+  // Returns GL data type for given `format`.
+  static GLenum GLDataType(viz::SharedImageFormat format) {
+    if (format.is_single_plane()) {
+      return viz::SharedImageFormatRestrictedSinglePlaneUtils::ToGLDataType(
+          format);
+    }
+
+    switch (format.channel_format()) {
+      case viz::SharedImageFormat::ChannelFormat::k8:
+        return GL_UNSIGNED_BYTE;
+      case viz::SharedImageFormat::ChannelFormat::k10:
+        return GL_UNSIGNED_SHORT;
+      case viz::SharedImageFormat::ChannelFormat::k16:
+        return GL_UNSIGNED_SHORT;
+      case viz::SharedImageFormat::ChannelFormat::k16F:
+        return GL_HALF_FLOAT_OES;
+    }
+  }
+
+  // Returns the GL format used internally for matching with the texture format
+  // for a given `format`.
+  static GLenum GLInternalFormat(viz::SharedImageFormat format,
+                                 int plane_index) {
+    DCHECK(format.IsValidPlaneIndex(plane_index));
+    if (format.is_single_plane()) {
+      // In GLES2, the internal format must match the texture format. (It no
+      // longer is true in GLES3, however it still holds for the BGRA
+      // extension.) GL_EXT_texture_norm16 follows GLES3 semantics and only
+      // exposes a sized internal format (GL_R16_EXT).
+      if (format == viz::SinglePlaneFormat::kR_16) {
+        return GL_R16_EXT;
+      } else if (format == viz::SinglePlaneFormat::kRG_1616) {
+        return GL_RG16_EXT;
+      } else if (format == viz::SinglePlaneFormat::kETC1) {
+        return GL_ETC1_RGB8_OES;
+      } else if (format == viz::SinglePlaneFormat::kRGBA_1010102 ||
+                 format == viz::SinglePlaneFormat::kBGRA_1010102) {
+        return GL_RGB10_A2_EXT;
+      }
+      return GLDataFormat(format, /*plane_index=*/0);
+    }
+
+    // For multiplanar formats without external sampler, GL formats are per
+    // plane. For single channel 8-bit planes Y, U, V, A return GL_RED_EXT. For
+    // single channel 10/16-bit planes Y,  U, V, A return GL_R16_EXT. For 2
+    // channel plane 8-bit UV return GL_RG_EXT. For 2 channel plane 10/16-bit UV
+    // return GL_RG16_EXT.
+    int num_channels = format.NumChannelsInPlane(plane_index);
+    DCHECK_LE(num_channels, 2);
+    switch (format.channel_format()) {
+      case viz::SharedImageFormat::ChannelFormat::k8:
+        return num_channels == 2 ? GL_RG_EXT : GL_RED_EXT;
+      case viz::SharedImageFormat::ChannelFormat::k10:
+      case viz::SharedImageFormat::ChannelFormat::k16:
+        return num_channels == 2 ? GL_RG16_EXT : GL_R16_EXT;
+      case viz::SharedImageFormat::ChannelFormat::k16F:
+        return num_channels == 2 ? GL_RG16F_EXT : GL_R16F_EXT;
+    }
+  }
+
+  // Returns texture storage format for given `format`.
+  static GLenum TextureStorageFormat(viz::SharedImageFormat format,
+                                     bool use_angle_rgbx_format,
+                                     int plane_index) {
+    DCHECK(format.IsValidPlaneIndex(plane_index));
+    if (format.is_single_plane()) {
+      return viz::SharedImageFormatRestrictedSinglePlaneUtils::
+          ToGLTextureStorageFormat(format, use_angle_rgbx_format);
+    }
+
+    // For multiplanar formats without external sampler, GL formats are per
+    // plane. For single channel 8-bit planes Y, U, V, A return GL_R8_EXT. For
+    // single channel 10/16-bit planes Y,  U, V, A return GL_R16_EXT. For 2
+    // channel plane 8-bit UV return GL_RG8_EXT. For 2 channel plane 10/16-bit
+    // UV return GL_RG16_EXT.
+    int num_channels = format.NumChannelsInPlane(plane_index);
+    DCHECK_LE(num_channels, 2);
+    switch (format.channel_format()) {
+      case viz::SharedImageFormat::ChannelFormat::k8:
+        return num_channels == 2 ? GL_RG8_EXT : GL_R8_EXT;
+      case viz::SharedImageFormat::ChannelFormat::k10:
+      case viz::SharedImageFormat::ChannelFormat::k16:
+        return num_channels == 2 ? GL_RG16_EXT : GL_R16_EXT;
+      case viz::SharedImageFormat::ChannelFormat::k16F:
+        return num_channels == 2 ? GL_RG16F_EXT : GL_R16F_EXT;
+    }
   }
 
 #if BUILDFLAG(ENABLE_VULKAN)
@@ -135,118 +224,25 @@ GLFormatDesc ToGLFormatDesc(viz::SharedImageFormat format,
                             int plane_index,
                             bool use_angle_rgbx_format) {
   GLFormatDesc gl_format;
-  gl_format.data_type = GLDataType(format);
-  gl_format.data_format = GLDataFormat(format, plane_index);
-  gl_format.image_internal_format = GLInternalFormat(format, plane_index);
+  gl_format.data_type =
+      SharedImageFormatRestrictedUtilsAccessor::GLDataType(format);
+  gl_format.data_format =
+      SharedImageFormatRestrictedUtilsAccessor::GLDataFormat(format,
+                                                             plane_index);
+  gl_format.image_internal_format =
+      SharedImageFormatRestrictedUtilsAccessor::GLInternalFormat(format,
+                                                                 plane_index);
   gl_format.storage_internal_format =
-      TextureStorageFormat(format, use_angle_rgbx_format, plane_index);
+      SharedImageFormatRestrictedUtilsAccessor::TextureStorageFormat(
+          format, use_angle_rgbx_format, plane_index);
   gl_format.target = GL_TEXTURE_2D;
   return gl_format;
-}
-
-GLenum GLDataType(viz::SharedImageFormat format) {
-  if (format.is_single_plane()) {
-    return SharedImageFormatRestrictedSinglePlaneUtilsAccessor::ToGLDataType(
-        format);
-  }
-
-  switch (format.channel_format()) {
-    case viz::SharedImageFormat::ChannelFormat::k8:
-      return GL_UNSIGNED_BYTE;
-    case viz::SharedImageFormat::ChannelFormat::k10:
-      return GL_UNSIGNED_SHORT;
-    case viz::SharedImageFormat::ChannelFormat::k16:
-      return GL_UNSIGNED_SHORT;
-    case viz::SharedImageFormat::ChannelFormat::k16F:
-      return GL_HALF_FLOAT_OES;
-  }
-}
-
-GLenum GLDataFormat(viz::SharedImageFormat format, int plane_index) {
-  DCHECK(format.IsValidPlaneIndex(plane_index));
-  if (format.is_single_plane()) {
-    return SharedImageFormatRestrictedSinglePlaneUtilsAccessor::ToGLDataFormat(
-        format);
-  }
-
-  // For multiplanar formats without external sampler, GL formats are per plane.
-  // For single channel planes Y, U, V, A return GL_RED_EXT.
-  // For 2 channel plane UV return GL_RG_EXT.
-  int num_channels = format.NumChannelsInPlane(plane_index);
-  DCHECK_LE(num_channels, 2);
-  return num_channels == 2 ? GL_RG_EXT : GL_RED_EXT;
-}
-
-GLenum GLInternalFormat(viz::SharedImageFormat format, int plane_index) {
-  DCHECK(format.IsValidPlaneIndex(plane_index));
-  if (format.is_single_plane()) {
-    // In GLES2, the internal format must match the texture format. (It no
-    // longer is true in GLES3, however it still holds for the BGRA extension.)
-    // GL_EXT_texture_norm16 follows GLES3 semantics and only exposes a sized
-    // internal format (GL_R16_EXT).
-    if (format == viz::SinglePlaneFormat::kR_16) {
-      return GL_R16_EXT;
-    } else if (format == viz::SinglePlaneFormat::kRG_1616) {
-      return GL_RG16_EXT;
-    } else if (format == viz::SinglePlaneFormat::kETC1) {
-      return GL_ETC1_RGB8_OES;
-    } else if (format == viz::SinglePlaneFormat::kRGBA_1010102 ||
-               format == viz::SinglePlaneFormat::kBGRA_1010102) {
-      return GL_RGB10_A2_EXT;
-    }
-    return GLDataFormat(format);
-  }
-
-  // For multiplanar formats without external sampler, GL formats are per plane.
-  // For single channel 8-bit planes Y, U, V, A return GL_RED_EXT.
-  // For single channel 10/16-bit planes Y,  U, V, A return GL_R16_EXT.
-  // For 2 channel plane 8-bit UV return GL_RG_EXT.
-  // For 2 channel plane 10/16-bit UV return GL_RG16_EXT.
-  int num_channels = format.NumChannelsInPlane(plane_index);
-  DCHECK_LE(num_channels, 2);
-  switch (format.channel_format()) {
-    case viz::SharedImageFormat::ChannelFormat::k8:
-      return num_channels == 2 ? GL_RG_EXT : GL_RED_EXT;
-    case viz::SharedImageFormat::ChannelFormat::k10:
-    case viz::SharedImageFormat::ChannelFormat::k16:
-      return num_channels == 2 ? GL_RG16_EXT : GL_R16_EXT;
-    case viz::SharedImageFormat::ChannelFormat::k16F:
-      return num_channels == 2 ? GL_RG16F_EXT : GL_R16F_EXT;
-  }
-}
-
-GLenum TextureStorageFormat(viz::SharedImageFormat format,
-                            bool use_angle_rgbx_format,
-                            int plane_index) {
-  DCHECK(format.IsValidPlaneIndex(plane_index));
-  if (format.is_single_plane()) {
-    return SharedImageFormatRestrictedSinglePlaneUtilsAccessor::
-        ToGLTextureStorageFormat(format, use_angle_rgbx_format);
-  }
-
-  // For multiplanar formats without external sampler, GL formats are per plane.
-  // For single channel 8-bit planes Y, U, V, A return GL_R8_EXT.
-  // For single channel 10/16-bit planes Y,  U, V, A return GL_R16_EXT.
-  // For 2 channel plane 8-bit UV return GL_RG8_EXT.
-  // For 2 channel plane 10/16-bit UV return GL_RG16_EXT.
-  int num_channels = format.NumChannelsInPlane(plane_index);
-  DCHECK_LE(num_channels, 2);
-  switch (format.channel_format()) {
-    case viz::SharedImageFormat::ChannelFormat::k8:
-      return num_channels == 2 ? GL_RG8_EXT : GL_R8_EXT;
-    case viz::SharedImageFormat::ChannelFormat::k10:
-    case viz::SharedImageFormat::ChannelFormat::k16:
-      return num_channels == 2 ? GL_RG16_EXT : GL_R16_EXT;
-    case viz::SharedImageFormat::ChannelFormat::k16F:
-      return num_channels == 2 ? GL_RG16F_EXT : GL_R16F_EXT;
-  }
 }
 
 #if BUILDFLAG(ENABLE_VULKAN)
 bool HasVkFormat(viz::SharedImageFormat format) {
   if (format.is_single_plane()) {
-    return SharedImageFormatRestrictedSinglePlaneUtilsAccessor::HasVkFormat(
-        format);
+    return SharedImageFormatRestrictedUtilsAccessor::HasVkFormat(format);
   } else if (format == viz::MultiPlaneFormat::kYV12 ||
              format == viz::MultiPlaneFormat::kNV12 ||
              format == viz::MultiPlaneFormat::kP010 ||
@@ -261,8 +257,7 @@ VkFormat ToVkFormat(viz::SharedImageFormat format, int plane_index) {
   DCHECK(format.IsValidPlaneIndex(plane_index));
 
   if (format.is_single_plane()) {
-    return SharedImageFormatRestrictedSinglePlaneUtilsAccessor::ToVkFormat(
-        format);
+    return SharedImageFormatRestrictedUtilsAccessor::ToVkFormat(format);
   }
 
   // The following SharedImageFormat constants have PrefersExternalSampler()

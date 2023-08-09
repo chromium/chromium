@@ -16,7 +16,7 @@
 #endif
 
 namespace gpu {
-class SharedImageFormatRestrictedSinglePlaneUtilsAccessor;
+class SharedImageFormatRestrictedUtilsAccessor;
 }  // namespace gpu
 
 namespace cc {
@@ -85,7 +85,7 @@ class COMPONENT_EXPORT(VIZ_SHARED_IMAGE_FORMAT)
   friend class TestInProcessContextProvider;
   friend class cc::PerfContextProvider;
   friend class media::VideoResourceUpdater;
-  friend class gpu::SharedImageFormatRestrictedSinglePlaneUtilsAccessor;
+  friend class gpu::SharedImageFormatRestrictedUtilsAccessor;
 
   // The following functions use unsigned int instead of GLenum, since including
   // third_party/khronos/GLES2/gl2.h causes redefinition errors as
