@@ -12,37 +12,29 @@ import org.chromium.url.GURL;
  * Account Selection sheet.
  */
 public class Account {
-    private final String mSubject;
+    private final String mId;
     private final String mEmail;
     private final String mName;
     private final String mGivenName;
     private final GURL mPictureUrl;
-    private final String[] mLoginHints;
     private final boolean mIsSignIn;
 
     /**
-     * @param subject Subject shown to the user.
+     * @param id The account ID.
      * @param email Email shown to the user.
      * @param givenName Given name.
      * @param picture picture URL of the avatar shown to the user.
-     * @param loginHints the login hints which can match to this account.
      * @param isSignIn whether this account is a sign in or a sign up.
      */
     @CalledByNative
-    public Account(String subject, String email, String name, String givenName, GURL pictureUrl,
-            String[] loginHints, boolean isSignIn) {
-        assert subject != null : "Account subject is null!";
-        mSubject = subject;
+    public Account(String id, String email, String name, String givenName, GURL pictureUrl,
+            boolean isSignIn) {
+        mId = id;
         mEmail = email;
         mName = name;
         mGivenName = givenName;
         mPictureUrl = pictureUrl;
-        mLoginHints = loginHints;
         mIsSignIn = isSignIn;
-    }
-
-    public String getSubject() {
-        return mSubject;
     }
 
     public String getEmail() {
@@ -61,17 +53,13 @@ public class Account {
         return mPictureUrl;
     }
 
-    public String[] getLoginHints() {
-        return mLoginHints;
-    }
-
     public boolean isSignIn() {
         return mIsSignIn;
     }
 
     // Return all the String fields. Note that this excludes non-string fields, in particular
-    // mPictureUrl and mLoginHints.
+    // mPictureUrl.
     public String[] getStringFields() {
-        return new String[] {mSubject, mEmail, mName, mGivenName};
+        return new String[] {mId, mEmail, mName, mGivenName};
     }
 }
