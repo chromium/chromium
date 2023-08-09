@@ -4,15 +4,13 @@
 
 #include "remoting/host/chromeos/remote_support_host_ash.h"
 
-#include <utility>
-
 #include <stddef.h>
+#include <utility>
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/notreached.h"
 #include "base/sequence_checker.h"
 #include "base/strings/stringize_macros.h"
 #include "remoting/host/chromeos/browser_interop.h"
@@ -182,10 +180,12 @@ void RemoteSupportHostAsh::ReconnectToSession(SessionId session_id,
   }
 
   if (session_id != kEnterpriseSessionId) {
-    LOG(ERROR) << "No reconnectable session found with id " << session_id;
+    LOG(ERROR) << "CRD: No reconnectable session found with id " << session_id;
     std::move(callback).Run(GetUnableToReconnectError());
     return;
   }
+
+  LOG(INFO) << "CRD: Checking for reconnectable session";
 
   session_storage_->RetrieveSession(base::BindOnce(
       [](base::WeakPtr<RemoteSupportHostAsh> self,
@@ -196,12 +196,12 @@ void RemoteSupportHostAsh::ReconnectToSession(SessionId session_id,
         }
 
         if (!session.has_value()) {
-          LOG(ERROR) << "No reconnectable session found";
+          LOG(ERROR) << "CRD: No reconnectable session found";
           std::move(callback).Run(GetUnableToReconnectError());
           return;
         }
 
-        LOG(INFO) << "Reconnectable session found - starting connection";
+        LOG(INFO) << "CRD: Reconnectable session found - starting connection";
         self->StartSession(
             SessionParamsFromDict(*session->EnsureDict(kSessionParamsDictKey)),
             EnterpriseParamsFromDict(
@@ -231,7 +231,7 @@ void RemoteSupportHostAsh::OnClientConnected(
   }
 
   if (enterprise_params.has_value() && enterprise_params->allow_reconnections) {
-    LOG(INFO) << "Storing information for reconnectable CRD session";
+    LOG(INFO) << "CRD: Storing information for reconnectable session";
     session_storage_->StoreSession(
         base::Value::Dict()
             .Set(kReconnectParamsDictKey, ConnectionDetailsToDict(details))
@@ -239,7 +239,10 @@ void RemoteSupportHostAsh::OnClientConnected(
             .Set(kEnterpriseParamsDictKey,
                  EnterpriseParamsToDict(*enterprise_params)),
         base::DoNothing());
+    return;
   }
+
+  VLOG(3) << "CRD: Not a reconnectable session";
 }
 
 void RemoteSupportHostAsh::OnSessionDisconnected() {

@@ -54,13 +54,6 @@ class StartCrdSessionJobDelegate {
   // is terminated.
   virtual void TerminateSession(base::OnceClosure callback) = 0;
 
-  // Checks if there is a reconnectable session, and if so this will reconnect
-  // to it. A session is reconnectable when it was created with
-  // `SessionParameters::allow_reconnections` set. `done_callback` is invoked
-  // either when we conclude there is no reconnectable session, or when we the
-  // reconnectable session has been reestablished.
-  virtual void TryToReconnect(base::OnceClosure done_callback) = 0;
-
   // Attempts to start CRD host and get Auth Code.
   // `session_finished_callback` is invoked when an active crd session is
   // terminated.

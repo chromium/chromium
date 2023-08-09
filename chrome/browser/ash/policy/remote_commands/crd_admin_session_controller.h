@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "chrome/browser/ash/policy/remote_commands/start_crd_session_job_delegate.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "remoting/host/chromeos/chromeos_enterprise_params.h"
@@ -61,15 +62,24 @@ class CrdAdminSessionController : private StartCrdSessionJobDelegate {
   ~CrdAdminSessionController() override;
 
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
+
+  void Init(base::OnceClosure done_callback = base::DoNothing());
+
   StartCrdSessionJobDelegate& GetDelegate();
 
  private:
   class CrdHostSession;
 
+  // Checks if there is a reconnectable session, and if so this will reconnect
+  // to it. A session is reconnectable when it was created with
+  // `SessionParameters::allow_reconnections` set. `done_callback` is invoked
+  // either when we conclude there is no reconnectable session, or when the
+  // reconnectable session has been re-established.
+  void TryToReconnect(base::OnceClosure done_callback);
+
   // `DeviceCommandStartCrdSessionJob::Delegate` implementation:
   bool HasActiveSession() const override;
   void TerminateSession(base::OnceClosure callback) override;
-  void TryToReconnect(base::OnceClosure done_callback) override;
   void StartCrdHostAndGetCode(
       const SessionParameters& parameters,
       AccessCodeCallback success_callback,
@@ -79,6 +89,7 @@ class CrdAdminSessionController : private StartCrdSessionJobDelegate {
   std::unique_ptr<RemotingServiceProxy> remoting_service_;
   std::unique_ptr<CrdHostSession> active_session_;
 };
+
 }  // namespace policy
 
 #endif  // CHROME_BROWSER_ASH_POLICY_REMOTE_COMMANDS_CRD_ADMIN_SESSION_CONTROLLER_H_

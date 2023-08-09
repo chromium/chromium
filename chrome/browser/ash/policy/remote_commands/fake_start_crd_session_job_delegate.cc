@@ -5,7 +5,6 @@
 #include "chrome/browser/ash/policy/remote_commands/fake_start_crd_session_job_delegate.h"
 
 #include "base/functional/callback.h"
-#include "base/notreached.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace policy {
@@ -38,11 +37,6 @@ void FakeStartCrdSessionJobDelegate::TerminateSession(
   has_active_session_ = false;
   terminate_session_called_ = true;
   std::move(callback).Run();
-}
-
-void FakeStartCrdSessionJobDelegate::TryToReconnect(
-    base::OnceClosure done_callback) {
-  NOTREACHED_NORETURN();
 }
 
 void FakeStartCrdSessionJobDelegate::StartCrdHostAndGetCode(

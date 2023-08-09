@@ -7,6 +7,7 @@
 #include <iomanip>
 #include <ostream>
 #include <string>
+#include <utility>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
@@ -18,6 +19,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "remoting/host/chromeos/features.h"
 #include "remoting/host/chromeos/remote_support_host_ash.h"
 #include "remoting/host/chromeos/remoting_service.h"
 #include "remoting/host/chromeos/session_id.h"
@@ -31,6 +33,7 @@ using AccessCodeCallback = StartCrdSessionJobDelegate::AccessCodeCallback;
 using ErrorCallback = StartCrdSessionJobDelegate::ErrorCallback;
 using SessionEndCallback = StartCrdSessionJobDelegate::SessionEndCallback;
 using SessionParameters = StartCrdSessionJobDelegate::SessionParameters;
+using remoting::features::kEnableCrdAdminRemoteAccessV2;
 
 namespace {
 
@@ -247,6 +250,7 @@ class CrdAdminSessionController::CrdHostSession {
   }
 
   void TryToReconnect(base::OnceClosure done_callback) {
+    CRD_DVLOG(3) << "Trying to reconnect to previous CRD session (if any)";
     remoting_service_->GetReconnectableSessionId(
         base::BindOnce(&CrdHostSession::ReconnectToSession,
                        weak_factory_.GetWeakPtr())
@@ -256,7 +260,7 @@ class CrdAdminSessionController::CrdHostSession {
  private:
   void ReconnectToSession(absl::optional<remoting::SessionId> id) {
     if (id.has_value()) {
-      CRD_LOG(INFO) << "Resuming CRD session";
+      CRD_LOG(INFO) << "Attempting to resume reconnectable session";
 
       remoting_service_->ReconnectToSession(
           id.value(),
@@ -293,6 +297,14 @@ CrdAdminSessionController::CrdAdminSessionController(
     : remoting_service_(std::move(remoting_service)) {}
 
 CrdAdminSessionController::~CrdAdminSessionController() = default;
+
+void CrdAdminSessionController::Init(base::OnceClosure done_callback) {
+  if (base::FeatureList::IsEnabled(kEnableCrdAdminRemoteAccessV2)) {
+    TryToReconnect(std::move(done_callback));
+  } else {
+    std::move(done_callback).Run();
+  }
+}
 
 StartCrdSessionJobDelegate& CrdAdminSessionController::GetDelegate() {
   return *this;
