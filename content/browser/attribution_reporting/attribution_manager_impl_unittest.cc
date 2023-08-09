@@ -1445,7 +1445,7 @@ TEST_F(AttributionManagerImplTest, HandleSource_RecordsMetric) {
   base::HistogramTester histograms;
   attribution_manager_->HandleSource(SourceBuilder().Build(), kFrameId);
   task_environment_.RunUntilIdle();
-  histograms.ExpectUniqueSample("Conversions.SourceStoredStatus5",
+  histograms.ExpectUniqueSample("Conversions.SourceStoredStatus6",
                                 StorableSource::Result::kSuccess, 1);
 }
 
@@ -1641,7 +1641,7 @@ TEST_F(AttributionManagerImplTest,
   EXPECT_THAT(StoredSources(), IsEmpty());
 
   histograms.ExpectUniqueSample(
-      "Conversions.SourceStoredStatus5",
+      "Conversions.SourceStoredStatus6",
       StorableSource::Result::kProhibitedByBrowserPolicy, 1);
 }
 
@@ -2326,10 +2326,10 @@ TEST_F(AttributionManagerImplTest,
   // Should fail due to limit
   attribution_manager_->HandleSource(SourceBuilder().Build(), kFrameId);
   EXPECT_THAT(StoredSources(), SizeIs(max_per_reporting_source_site));
-  histograms.ExpectBucketCount("Conversions.SourceStoredStatus5",
+  histograms.ExpectBucketCount("Conversions.SourceStoredStatus6",
                                StorableSource::Result::kSuccess, 50);
   histograms.ExpectBucketCount(
-      "Conversions.SourceStoredStatus5",
+      "Conversions.SourceStoredStatus6",
       StorableSource::Result::kDestinationReportingLimitReached, 1);
 }
 
@@ -2354,10 +2354,10 @@ TEST_F(AttributionManagerImplTest,
   // Should fail due to limit
   attribution_manager_->HandleSource(SourceBuilder().Build(), kFrameId);
   EXPECT_THAT(StoredSources(), SizeIs(max_global_source_site));
-  histograms.ExpectBucketCount("Conversions.SourceStoredStatus5",
+  histograms.ExpectBucketCount("Conversions.SourceStoredStatus6",
                                StorableSource::Result::kSuccess, 200);
   histograms.ExpectBucketCount(
-      "Conversions.SourceStoredStatus5",
+      "Conversions.SourceStoredStatus6",
       StorableSource::Result::kDestinationGlobalLimitReached, 1);
 }
 
@@ -2405,10 +2405,10 @@ TEST_F(AttributionManagerImplTest,
           .Build(),
       kFrameId);
   EXPECT_THAT(StoredSources(), SizeIs(max_global_source_site));
-  histograms.ExpectBucketCount("Conversions.SourceStoredStatus5",
+  histograms.ExpectBucketCount("Conversions.SourceStoredStatus6",
                                StorableSource::Result::kSuccess, 200);
   histograms.ExpectBucketCount(
-      "Conversions.SourceStoredStatus5",
+      "Conversions.SourceStoredStatus6",
       StorableSource::Result::kDestinationBothLimitsReached, 1);
 }
 

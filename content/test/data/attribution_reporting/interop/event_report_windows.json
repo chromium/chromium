@@ -1,0 +1,271 @@
+{
+  "description": "Set report windows for navigation type event-level reporting",
+  "input": {
+    "sources": [
+      {
+        "timestamp": "0",
+        "registration_request": {
+          "source_origin": "https://source.test",
+          "attribution_src_url": "https://reporter.test/register-source",
+          "source_type": "navigation"
+        },
+        "responses": [{
+          "url": "https://reporter.test/register-source",
+          "response": {
+            "Attribution-Reporting-Register-Source": {
+              "destination": "https://destination.test",
+              "source_event_id": "123",
+              "expiry": "1296000",
+              "event_report_windows": {
+                "start_time":3600,
+                // 2592000 s clamped down to expiry.
+                "end_times":[86400, 2592000]
+              }
+            }
+          }
+        }]
+      },
+      {
+        "timestamp": "1000",
+        "registration_request": {
+          "source_origin": "https://source.test",
+          "attribution_src_url": "https://reporter2.test/register-source",
+          "source_type": "navigation"
+        },
+        "responses": [{
+          "url": "https://reporter2.test/register-source",
+          "response": {
+            "Attribution-Reporting-Register-Source": {
+              "destination": "https://destination2.test",
+              "source_event_id": "456",
+              "event_report_windows": {
+                "start_time":0,
+                // 1800 rounded to 3600 (1 hr).
+                "end_times":[1800]
+              }
+            }
+          }
+        }]
+      }
+    ],
+    "triggers": [
+      // Should not result in an event-level report as the event report start
+      // time has passed,
+      {
+        // 3,600,000 ms = 1 hour = clamped event_report_window value.
+        "timestamp": "3590000",
+        "registration_request": {
+          "attribution_src_url": "https://reporter.test/register-trigger",
+          "destination_origin": "https://destination.test"
+        },
+        "responses": [{
+          "url": "https://reporter.test/register-trigger",
+          "debug_permission": true,
+          "response": {
+            "Attribution-Reporting-Register-Trigger": {
+              "debug_reporting": true,
+              "event_trigger_data": [
+                {
+                  "trigger_data": "1"
+                }
+              ]
+            }
+          }
+        }]
+      },
+      {
+        // Should result in an event-level report in the first window.
+        "timestamp": "3600000",
+        "registration_request": {
+          "attribution_src_url": "https://reporter.test/register-trigger",
+          "destination_origin": "https://destination.test"
+        },
+        "responses": [{
+          "url": "https://reporter.test/register-trigger",
+          "debug_permission": true,
+          "response": {
+            "Attribution-Reporting-Register-Trigger": {
+              "debug_reporting": true,
+              "event_trigger_data": [
+                {
+                  "trigger_data": "1"
+                }
+              ]
+            }
+          }
+        }]
+      },
+      {
+        // Should result in an event-level report in the last window.
+        "timestamp": "1209600000",
+        "registration_request": {
+          "attribution_src_url": "https://reporter.test/register-trigger",
+          "destination_origin": "https://destination.test"
+        },
+        "responses": [{
+          "url": "https://reporter.test/register-trigger",
+          "debug_permission": true,
+          "response": {
+            "Attribution-Reporting-Register-Trigger": {
+              "debug_reporting": true,
+              "event_trigger_data": [
+                {
+                  "trigger_data": "2"
+                }
+              ]
+            }
+          }
+        }]
+      },
+      {
+        // Should not result in an event-level report as the last window was
+        // clamped to 1296000 s.
+        "timestamp": "1296000000",
+        "registration_request": {
+          "attribution_src_url": "https://reporter.test/register-trigger",
+          "destination_origin": "https://destination.test"
+        },
+        "responses": [{
+          "url": "https://reporter.test/register-trigger",
+          "debug_permission": true,
+          "response": {
+            "Attribution-Reporting-Register-Trigger": {
+              "debug_reporting": true,
+              "event_trigger_data": [
+                {
+                  "trigger_data": "3"
+                }
+              ]
+            }
+          }
+        }]
+      },
+      {
+        // Should result in an event-level report in the first window
+        // rounded up to 1 hour (3600 s).
+        "timestamp": "1900000",
+        "registration_request": {
+          "attribution_src_url": "https://reporter2.test/register-trigger",
+          "destination_origin": "https://destination2.test"
+        },
+        "responses": [{
+          "url": "https://reporter2.test/register-trigger",
+          "debug_permission": true,
+          "response": {
+            "Attribution-Reporting-Register-Trigger": {
+              "debug_reporting": true,
+              "event_trigger_data": [
+                {
+                  "trigger_data": "4"
+                }
+              ]
+            }
+          }
+        }]
+      },
+      {
+        // Should not result in an event-level report.
+        "timestamp": "3700000",
+        "registration_request": {
+          "attribution_src_url": "https://reporter2.test/register-trigger",
+          "destination_origin": "https://destination2.test"
+        },
+        "responses": [{
+          "url": "https://reporter2.test/register-trigger",
+          "debug_permission": true,
+          "response": {
+            "Attribution-Reporting-Register-Trigger": {
+              "debug_reporting": true,
+              "event_trigger_data": [
+                {
+                  "trigger_data": "5"
+                }
+              ]
+            }
+          }
+        }]
+      }
+    ]
+  },
+  "output": {
+    "event_level_results": [
+      {
+        "payload": {
+          "attribution_destination": "https://destination.test",
+          "randomized_trigger_rate": 0.0008051,
+          // 90000 s = 86400 s + 1 h (base delay).
+          "scheduled_report_time": "90000",
+          "source_event_id": "123",
+          "source_type": "navigation",
+          "trigger_data": "1"
+        },
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/report-event-attribution",
+        "report_time": "90000000"
+      },
+      {
+        "payload": {
+          "attribution_destination": "https://destination.test",
+          "randomized_trigger_rate": 0.0008051,
+          // 1299600 s = 1296000 s + 1 h (base delay).
+          "scheduled_report_time": "1299600",
+          "source_event_id": "123",
+          "source_type": "navigation",
+          "trigger_data": "2"
+        },
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/report-event-attribution",
+        "report_time": "1299600000"
+      },
+      {
+        "payload": {
+          "attribution_destination": "https://destination2.test",
+          "randomized_trigger_rate": 0.0001372,
+          // 7201 s = 3600 s (rounded window) + 1 h (base delay) + 1 s (source
+          // timestamp).
+          "scheduled_report_time": "7201",
+          "source_event_id": "456",
+          "source_type": "navigation",
+          "trigger_data": "4"
+        },
+        "report_url": "https://reporter2.test/.well-known/attribution-reporting/report-event-attribution",
+        "report_time": "7201000"
+      }
+    ],
+    "verbose_debug_reports": [
+      {
+        "payload": [ {
+          "body": {
+             "attribution_destination": "https://destination.test",
+             "source_event_id": "123",
+             "source_site": "https://source.test"
+          },
+          "type": "trigger-event-report-window-not-started"
+       } ],
+       "report_time": "3590000",
+       "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
+        "payload": [ {
+          "body": {
+             "attribution_destination": "https://destination.test"
+          },
+          // Source has expired at this point.
+          "type": "trigger-no-matching-source"
+       } ],
+       "report_time": "1296000000",
+       "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
+        "payload": [ {
+          "body": {
+             "attribution_destination": "https://destination2.test",
+             "source_event_id": "456",
+             "source_site": "https://source.test"
+          },
+          "type": "trigger-event-report-window-passed"
+       } ],
+       "report_time": "3700000",
+       "report_url": "https://reporter2.test/.well-known/attribution-reporting/debug/verbose"
+      }
+    ]
+  }
+}

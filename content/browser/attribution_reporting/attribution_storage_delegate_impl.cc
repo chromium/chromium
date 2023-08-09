@@ -45,6 +45,9 @@ namespace {
 using ::attribution_reporting::EventReportWindows;
 using ::attribution_reporting::mojom::SourceType;
 
+// The max possible number of state combinations given a valid input.
+constexpr int64_t kMaxNumCombinations = 4191844505805495;
+
 bool GenerateWithRate(double r) {
   DCHECK_GE(r, 0);
   DCHECK_LE(r, 1);
@@ -219,7 +222,7 @@ double AttributionStorageDelegateImpl::GetRandomizedResponseRate(
     int max_event_level_reports) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  const int num_combinations = GetNumberOfStarsAndBarsSequences(
+  const int64_t num_combinations = GetNumberOfStarsAndBarsSequences(
       /*num_stars=*/max_event_level_reports,
       /*num_bars=*/TriggerDataCardinality(source_type) *
           event_report_windows.end_times().size());
@@ -261,13 +264,15 @@ AttributionStorageDelegateImpl::GetRandomFakeReports(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(noise_mode_, AttributionNoiseMode::kDefault);
 
-  const int num_combinations = GetNumberOfStarsAndBarsSequences(
+  const int64_t num_combinations = GetNumberOfStarsAndBarsSequences(
       /*num_stars=*/max_event_level_reports,
       /*num_bars=*/TriggerDataCardinality(source.source_type()) *
           event_report_windows.end_times().size());
 
-  // Subtract 1 because `AttributionRandomGenerator::RandInt()` is inclusive.
-  const int sequence_index = base::RandInt(0, num_combinations - 1);
+  const int64_t sequence_index =
+      static_cast<int64_t>(base::RandGenerator(num_combinations));
+  DCHECK_GE(sequence_index, 0);
+  DCHECK_LE(sequence_index, kMaxNumCombinations);
 
   return GetFakeReportsForSequenceIndex(
       source, source_time, event_report_windows, max_event_level_reports,
@@ -280,7 +285,7 @@ AttributionStorageDelegateImpl::GetFakeReportsForSequenceIndex(
     base::Time source_time,
     const EventReportWindows& event_report_windows,
     int max_event_level_reports,
-    int random_stars_and_bars_sequence_index) const {
+    int64_t random_stars_and_bars_sequence_index) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(noise_mode_, AttributionNoiseMode::kDefault);
 
@@ -338,7 +343,7 @@ double AttributionStorageDelegateImpl::ComputeChannelCapacity(
     int max_event_level_reports) {
   double randomized_trigger_rate = GetRandomizedResponseRate(
       event_report_windows, source.source_type(), max_event_level_reports);
-  const int num_states = GetNumberOfStarsAndBarsSequences(
+  const int64_t num_states = GetNumberOfStarsAndBarsSequences(
       /*num_stars=*/max_event_level_reports,
       /*num_bars=*/TriggerDataCardinality(source.source_type()) *
           event_report_windows.end_times().size());

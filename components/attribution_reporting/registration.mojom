@@ -91,6 +91,8 @@ struct SourceRegistration {
   // report can be generated with this source.
   mojo_base.mojom.TimeDelta? aggregatable_report_window;
 
+  // Optionally specifies a custom set of report windows determining the time
+  // bounds of a report being generated with this source.
   EventReportWindows? event_report_windows;
 
   // Optionally specifies how many event-level reports can be generated with

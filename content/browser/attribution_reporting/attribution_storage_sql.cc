@@ -85,6 +85,7 @@ namespace {
 using AggregatableResult = ::content::AttributionTrigger::AggregatableResult;
 using EventLevelResult = ::content::AttributionTrigger::EventLevelResult;
 
+using ::attribution_reporting::EventReportWindows;
 using ::attribution_reporting::SuitableOrigin;
 using ::attribution_reporting::mojom::SourceRegistrationTimeConfig;
 using ::attribution_reporting::mojom::SourceType;
@@ -501,6 +502,21 @@ absl::optional<uint64_t> ColumnUint64OrNull(sql::Statement& statement,
                    DeserializeUint64(statement.ColumnInt64(col)));
 }
 
+absl::optional<EventReportWindows> ValidateEventReportWindows(
+    absl::optional<EventReportWindows> registered_windows,
+    const EventReportWindows& default_windows) {
+  if (!registered_windows.has_value()) {
+    return default_windows;
+  }
+  base::TimeDelta default_end_duration = *default_windows.end_times().rbegin();
+  if (registered_windows->start_time() > default_end_duration) {
+    return absl::nullopt;
+  }
+
+  registered_windows->MaybeTruncate(default_end_duration);
+  return registered_windows;
+}
+
 struct StoredSourceData {
   StoredSource source;
   int num_conversions;
@@ -586,8 +602,8 @@ absl::optional<StoredSourceData> ReadSourceFromStatement(
     end_times.push_back(base::Microseconds(time));
   }
 
-  absl::optional<attribution_reporting::EventReportWindows>
-      event_report_windows = attribution_reporting::EventReportWindows::Create(
+  absl::optional<EventReportWindows> event_report_windows =
+      EventReportWindows::Create(
           base::Microseconds(read_only_source_data_msg
                                  ->event_level_report_window_start_time()),
           std::move(end_times));
@@ -812,15 +828,20 @@ StoreSourceResult AttributionStorageSql::StoreSource(
                                   reg.aggregatable_report_window, source_time),
                               expiry_time);
 
-  attribution_reporting::EventReportWindows event_report_windows =
-      reg.event_report_windows.value_or(delegate_->GetDefaultEventReportWindows(
+  auto event_report_windows = ValidateEventReportWindows(
+      std::move(reg.event_report_windows),
+      delegate_->GetDefaultEventReportWindows(
           common_info.source_type(), event_report_window_time - source_time));
+  if (!event_report_windows.has_value()) {
+    return StoreSourceResult(
+        StorableSource::Result::kEventReportWindowsInvalidStartTime);
+  }
 
   int max_event_level_reports = reg.max_event_level_reports.value_or(
       delegate_->GetDefaultAttributionsPerSource(common_info.source_type()));
 
   double channel_capacity = delegate_->ComputeChannelCapacity(
-      common_info, event_report_windows, source_time, max_event_level_reports);
+      common_info, *event_report_windows, source_time, max_event_level_reports);
   if (channel_capacity >
       delegate_->GetMaxChannelCapacity(common_info.source_type())) {
     return StoreSourceResult(
@@ -828,7 +849,7 @@ StoreSourceResult AttributionStorageSql::StoreSource(
   }
 
   AttributionStorageDelegate::RandomizedResponse randomized_response =
-      delegate_->GetRandomizedResponse(common_info, event_report_windows,
+      delegate_->GetRandomizedResponse(common_info, *event_report_windows,
                                        source_time, max_event_level_reports);
   int num_conversions = 0;
   auto attribution_logic = StoredSource::AttributionLogic::kTruthfully;
@@ -877,7 +898,7 @@ StoreSourceResult AttributionStorageSql::StoreSource(
 
   statement.BindBlob(14, SerializeAggregationKeys(reg.aggregation_keys));
   statement.BindBlob(15, SerializeFilterData(reg.filter_data));
-  statement.BindBlob(16, SerializeReadOnlySourceData(event_report_windows,
+  statement.BindBlob(16, SerializeReadOnlySourceData(*event_report_windows,
                                                      max_event_level_reports));
 
   if (!statement.Run()) {
@@ -902,7 +923,7 @@ StoreSourceResult AttributionStorageSql::StoreSource(
 
   const StoredSource stored_source(
       source.common_info(), reg.source_event_id, reg.destination_set,
-      source_time, expiry_time, std::move(event_report_windows),
+      source_time, expiry_time, std::move(*event_report_windows),
       aggregatable_report_window_time, max_event_level_reports, reg.priority,
       reg.filter_data, reg.debug_key, reg.aggregation_keys, attribution_logic,
       *active_state, source_id,
@@ -1508,11 +1529,11 @@ EventLevelResult AttributionStorageSql::MaybeCreateEventLevelReport(
 
   switch (source.event_report_windows().FallsWithin(attribution_info.time -
                                                     source.source_time())) {
-    case attribution_reporting::EventReportWindows::WindowResult::kFallsWithin:
+    case EventReportWindows::WindowResult::kFallsWithin:
       break;
-    case attribution_reporting::EventReportWindows::WindowResult::kNotStarted:
+    case EventReportWindows::WindowResult::kNotStarted:
       return EventLevelResult::kReportWindowNotStarted;
-    case attribution_reporting::EventReportWindows::WindowResult::kPassed:
+    case EventReportWindows::WindowResult::kPassed:
       return EventLevelResult::kReportWindowPassed;
   }
 
@@ -1553,7 +1574,7 @@ EventLevelResult AttributionStorageSql::MaybeCreateEventLevelReport(
       return EventLevelResult::kInternalError;
   }
 
-  const attribution_reporting::EventReportWindows& event_report_windows =
+  const EventReportWindows& event_report_windows =
       source.event_report_windows();
 
   const base::Time report_time = delegate_->GetEventLevelReportTime(

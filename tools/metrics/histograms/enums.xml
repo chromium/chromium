@@ -19919,6 +19919,22 @@ Called by update_net_error_codes.py.-->
   <int value="22" label="event_report_window value is invalid"/>
   <int value="23" label="aggregatable_report_window value is invalid"/>
   <int value="24" label="filter_data has a _lookback_window key"/>
+  <int value="25" label="max_event_level_reports value is invalid"/>
+  <int value="26" label="event_report_windows has wrong type"/>
+  <int value="27" label="event_report_windows' start_time has wrong type"/>
+  <int value="28" label="event_report_windows' start_time value is invalid"/>
+  <int value="29" label="event_report_windows' end_times missing"/>
+  <int value="30" label="event_report_windows' end_times has wrong type"/>
+  <int value="31" label="event_report_windows' end_times is empty"/>
+  <int value="32" label="event_report_windows' end_times is too long"/>
+  <int value="33" label="event_report_windows' end time value has wrong type"/>
+  <int value="34" label="event_report_windows' end time value is invalid"/>
+  <int value="35"
+      label="event_report_windows' end duration is less than or equal to
+             start duration"/>
+  <int value="36"
+      label="event_report_windows and event_report_window are mutually
+             exclusive"/>
 </enum>
 
 <enum name="ConversionStorageCreateReportStatus">
@@ -19955,6 +19971,7 @@ Called by update_net_error_codes.py.-->
   <int value="9" label="Excessive destinations (both rate-limits)"/>
   <int value="10" label="Excessive reporting origins per site limit"/>
   <int value="11" label="Excessive channel capacity"/>
+  <int value="12" label="Event Report Windows start time is invalid"/>
 </enum>
 
 <enum name="ConversionStorageSqlInitStatus">

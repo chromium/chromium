@@ -91,6 +91,14 @@ and optional in "api_config" field.
   // an event-level report. Formatted as a base-10 string.
   "max_attributions_per_event_source": "1",
 
+  // Positive double that controls the max channel capacity in bits for
+  // navigation sources.
+  "max_navigation_info_gain": "11.46173",
+
+  // Positive double that controls the max channel capacity in bits for event
+  // sources.
+  "max_event_info_gain": "1.58494",
+
   // Positive integer that controls how many aggregatable reports can be in the
   // storage per destination. Formatted as a base-10 string.
   "max_aggregatable_reports_per_destination": "1024",

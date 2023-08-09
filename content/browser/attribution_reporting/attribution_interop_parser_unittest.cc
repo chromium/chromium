@@ -62,16 +62,17 @@ bool operator==(const AttributionConfig::RateLimitConfig& a,
 bool operator==(const AttributionConfig::EventLevelLimit& a,
                 const AttributionConfig::EventLevelLimit& b) {
   const auto tie = [](const AttributionConfig::EventLevelLimit& config) {
-    return std::make_tuple(config.navigation_source_trigger_data_cardinality,
-                           config.event_source_trigger_data_cardinality,
-                           config.randomized_response_epsilon,
-                           config.max_reports_per_destination,
-                           config.max_attributions_per_navigation_source,
-                           config.max_attributions_per_event_source,
-                           config.first_navigation_report_window_deadline,
-                           config.second_navigation_report_window_deadline,
-                           config.first_event_report_window_deadline,
-                           config.second_event_report_window_deadline);
+    return std::make_tuple(
+        config.navigation_source_trigger_data_cardinality,
+        config.event_source_trigger_data_cardinality,
+        config.randomized_response_epsilon, config.max_reports_per_destination,
+        config.max_attributions_per_navigation_source,
+        config.max_attributions_per_event_source,
+        config.first_navigation_report_window_deadline,
+        config.second_navigation_report_window_deadline,
+        config.first_event_report_window_deadline,
+        config.second_event_report_window_deadline,
+        config.max_navigation_info_gain, config.max_event_info_gain);
   };
   return tie(a) == tie(b);
 }
@@ -685,6 +686,20 @@ TEST(AttributionInteropParserTest, ValidConfig) {
                e.max_attributions_per_event_source = 10;
              });
        })},
+      {R"json({"max_navigation_info_gain":"0.2"})json", false,
+       AttributionConfigWith([](AttributionConfig& c) {
+         c.event_level_limit =
+             EventLevelLimitWith([](AttributionConfig::EventLevelLimit& e) {
+               e.max_navigation_info_gain = 0.2;
+             });
+       })},
+      {R"json({"max_event_info_gain":"0.2"})json", false,
+       AttributionConfigWith([](AttributionConfig& c) {
+         c.event_level_limit =
+             EventLevelLimitWith([](AttributionConfig::EventLevelLimit& e) {
+               e.max_event_info_gain = 0.2;
+             });
+       })},
       {R"json({"max_aggregatable_reports_per_destination":"10"})json", false,
        AttributionConfigWith([](AttributionConfig& c) {
          c.aggregate_limit =
@@ -729,6 +744,8 @@ TEST(AttributionInteropParserTest, ValidConfig) {
         "max_event_level_reports_per_destination":"10",
         "max_attributions_per_navigation_source":"5",
         "max_attributions_per_event_source":"1",
+        "max_navigation_info_gain":"5.5",
+        "max_event_info_gain":"0.5",
         "max_aggregatable_reports_per_destination":"10",
         "aggregatable_budget_per_source":"1000",
         "aggregatable_report_min_delay":"10",
@@ -753,6 +770,8 @@ TEST(AttributionInteropParserTest, ValidConfig) {
                e.max_reports_per_destination = 10;
                e.max_attributions_per_navigation_source = 5;
                e.max_attributions_per_event_source = 1;
+               e.max_navigation_info_gain = 5.5;
+               e.max_event_info_gain = 0.5;
              });
          c.aggregate_limit =
              AggregateLimitWith([](AttributionConfig::AggregateLimit& a) {
@@ -883,6 +902,35 @@ TEST(AttributionInteropParserTest, InvalidConfigRandomizedResponseEpsilon) {
         error,
         HasSubstr("[\"randomized_response_epsilon\"]: must be \"inf\" or a "
                   "non-negative double formated as a base-10 string"));
+  }
+}
+
+TEST(AttributionInteropParserTest, InvalidConfigMaxInfGain) {
+  {
+    auto result = ParseAttributionConfig(base::Value::Dict());
+    ASSERT_FALSE(result.has_value());
+    EXPECT_THAT(
+        result.error(),
+        HasSubstr("[\"randomized_response_epsilon\"]: must be \"inf\" or a "
+                  "non-negative double formated as a base-10 string"));
+  }
+  {
+    AttributionConfig config;
+    base::Value::Dict dict;
+    dict.Set("max_navigation_info_gain", "-1.5");
+    std::string error = MergeAttributionConfig(dict, config);
+    EXPECT_THAT(
+        error, HasSubstr("[\"max_navigation_info_gain\"]: must be \"inf\" or a "
+                         "non-negative double formated as a base-10 string"));
+  }
+  {
+    AttributionConfig config;
+    base::Value::Dict dict;
+    dict.Set("max_event_info_gain", "-1.5");
+    std::string error = MergeAttributionConfig(dict, config);
+    EXPECT_THAT(error,
+                HasSubstr("[\"max_event_info_gain\"]: must be \"inf\" or a "
+                          "non-negative double formated as a base-10 string"));
   }
 }
 

@@ -4137,7 +4137,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Conversions.SourceRegistrationError4"
+<histogram name="Conversions.SourceRegistrationError5"
     enum="ConversionSourceRegistrationError" expires_after="M121">
   <owner>tquintanilla@chromium.org</owner>
   <owner>linnan@chromium.org</owner>
@@ -4148,7 +4148,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Conversions.SourceStoredStatus5"
+<histogram name="Conversions.SourceStoredStatus6"
     enum="ConversionStorageSourceStatus" expires_after="M121">
   <owner>tquintanilla@chromium.org</owner>
   <owner>anthonygarant@chromium.org</owner>

@@ -1,0 +1,144 @@
+{
+  "description": "Set report windows for event type event-level reporting",
+  "api_config": {
+    "max_event_info_gain": "6"
+  },
+  "input": {
+    "sources": [
+      {
+        "timestamp": "0",
+        "registration_request": {
+          "source_origin": "https://source.test",
+          "attribution_src_url": "https://reporter.test/register-source",
+          "source_type": "event"
+        },
+        "responses": [{
+          "url": "https://reporter.test/register-source",
+          "response": {
+            "Attribution-Reporting-Register-Source": {
+              "destination": "https://destination.test",
+              "source_event_id": "123",
+              "max_event_level_reports": 3,
+              "event_report_windows": {
+                "start_time":0,
+                "end_times":[21600, 43200]
+              }
+            }
+          }
+        }]
+      }
+    ],
+    "triggers": [
+      {
+        // Should result in an event-level report in the first window.
+        "timestamp": "1000",
+        "registration_request": {
+          "attribution_src_url": "https://reporter.test/register-trigger",
+          "destination_origin": "https://destination.test"
+        },
+        "responses": [{
+          "url": "https://reporter.test/register-trigger",
+          "debug_permission": true,
+          "response": {
+            "Attribution-Reporting-Register-Trigger": {
+              "debug_reporting": true,
+              "event_trigger_data": [
+                {
+                  "trigger_data": "0"
+                }
+              ]
+            }
+          }
+        }]
+      },
+      {
+        // Should result in an event-level report in the second window.
+        "timestamp": "21601000",
+        "registration_request": {
+          "attribution_src_url": "https://reporter.test/register-trigger",
+          "destination_origin": "https://destination.test"
+        },
+        "responses": [{
+          "url": "https://reporter.test/register-trigger",
+          "debug_permission": true,
+          "response": {
+            "Attribution-Reporting-Register-Trigger": {
+              "debug_reporting": true,
+              "event_trigger_data": [
+                {
+                  "trigger_data": "1"
+                }
+              ]
+            }
+          }
+        }]
+      },
+      {
+        // Should not result in an event-level report.
+        "timestamp": "43201000",
+        "registration_request": {
+          "attribution_src_url": "https://reporter.test/register-trigger",
+          "destination_origin": "https://destination.test"
+        },
+        "responses": [{
+          "url": "https://reporter.test/register-trigger",
+          "debug_permission": true,
+          "response": {
+            "Attribution-Reporting-Register-Trigger": {
+              "debug_reporting": true,
+              "event_trigger_data": [
+                {
+                  "trigger_data": "1"
+                }
+              ]
+            }
+          }
+        }]
+      }
+    ]
+  },
+  "output": {
+    "event_level_results": [
+      {
+        "payload": {
+           "attribution_destination": "https://destination.test",
+           "randomized_trigger_rate": 0.0000291,
+           // 25200 s = 21600 s + 1 h (base delay).
+           "scheduled_report_time": "25200",
+           "source_event_id": "123",
+           "source_type": "event",
+           "trigger_data": "0"
+        },
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/report-event-attribution",
+        "report_time": "25200000"
+      },
+      {
+        "payload": {
+           "attribution_destination": "https://destination.test",
+           "randomized_trigger_rate": 0.0000291,
+           // 46800 s = 43200 s + 1 h (base delay).
+           "scheduled_report_time": "46800",
+           "source_event_id": "123",
+           "source_type": "event",
+           "trigger_data": "1"
+        },
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/report-event-attribution",
+        "report_time": "46800000"
+      }
+    ],
+    "verbose_debug_reports": [
+      {
+        "payload": [ {
+          "body": {
+             "attribution_destination": "https://destination.test",
+             "source_event_id": "123",
+             "source_site": "https://source.test"
+          },
+          "type": "trigger-event-report-window-passed"
+       } ],
+       "report_time": "43201000",
+       "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+      }
+    ]
+  }
+}

@@ -10,7 +10,9 @@
 #include "base/component_export.h"
 #include "base/containers/flat_set.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "base/values.h"
+#include "components/attribution_reporting/source_registration_error.mojom-forward.h"
 #include "mojo/public/cpp/bindings/default_construct_tag.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -31,12 +33,15 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) EventReportWindows {
       base::TimeDelta start_time,
       std::vector<base::TimeDelta> end_times);
 
-  // Creates and sets `expiry` as the last reporting window end time in
+  // Creates and sets `report_window` as the last reporting window end time in
   // `end_times`, removing every existing end time greater than it.
   static absl::optional<EventReportWindows> CreateAndTruncate(
       base::TimeDelta start_time,
       std::vector<base::TimeDelta> end_times,
-      base::TimeDelta expiry);
+      base::TimeDelta report_window);
+
+  static base::expected<EventReportWindows, mojom::SourceRegistrationError>
+  FromJSON(const base::Value&);
 
   explicit EventReportWindows(mojo::DefaultConstruct::Tag);
   ~EventReportWindows();
@@ -52,6 +57,12 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) EventReportWindows {
   const base::flat_set<base::TimeDelta>& end_times() const {
     return end_times_;
   }
+
+  // Sets `report_window` as the last reporting window end time in `end_times_`,
+  // removing every existing end time greater than it.
+  // Returns whether the report window is greater than the start time, i.e.
+  // returns false for invalid configurations which have no effective windows.
+  bool MaybeTruncate(base::TimeDelta report_window);
 
   // Calculates the report time for a conversion associated with a given
   // source.

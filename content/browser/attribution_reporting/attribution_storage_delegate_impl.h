@@ -5,6 +5,8 @@
 #ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_STORAGE_DELEGATE_IMPL_H_
 #define CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_STORAGE_DELEGATE_IMPL_H_
 
+#include <stdint.h>
+
 #include <memory>
 #include <vector>
 
@@ -141,7 +143,7 @@ class CONTENT_EXPORT AttributionStorageDelegateImpl
       base::Time source_time,
       const attribution_reporting::EventReportWindows& event_report_windows,
       int max_event_level_reports,
-      int random_stars_and_bars_sequence_index) const;
+      int64_t random_stars_and_bars_sequence_index) const;
 
  private:
   AttributionStorageDelegateImpl(AttributionNoiseMode noise_mode,

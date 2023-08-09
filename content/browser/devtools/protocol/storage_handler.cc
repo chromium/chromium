@@ -1668,6 +1668,9 @@ ToSourceRegistrationResult(StoreSourceResult result) {
   switch (result) {
     case StoreSourceResult::kSuccess:
       return Storage::AttributionReportingSourceRegistrationResultEnum::Success;
+    // This is temporarily being shown as an internal error, will be surfaced
+    // as the source-registration-parsing level after refactoring.
+    case StoreSourceResult::kEventReportWindowsInvalidStartTime:
     case StoreSourceResult::kInternalError:
       return Storage::AttributionReportingSourceRegistrationResultEnum::
           InternalError;
