@@ -1029,6 +1029,11 @@ void AutocompleteMatch::LogSearchEngineUsed(
             : SEARCH_ENGINE_OTHER;
     UMA_HISTOGRAM_ENUMERATION("Omnibox.SearchEngineType", search_engine_type,
                               SEARCH_ENGINE_MAX);
+    if (template_url->created_by_policy()) {
+      UMA_HISTOGRAM_ENUMERATION(
+          "Omnibox.SearchEngineType.SetByEnterprisePolicy", search_engine_type,
+          SEARCH_ENGINE_MAX);
+    }
   }
 }
 
