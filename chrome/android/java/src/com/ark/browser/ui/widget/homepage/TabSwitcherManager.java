@@ -198,6 +198,7 @@ public class TabSwitcherManager implements SwitcherRecyclerLayout.Callback {
                 mSwitcher.setTabGroup(tab.getParentGroup());
                 mViewHolder.getLayoutManager().initLayoutTabFromHost(tab.getId());
                 mViewHolder.setTab(TabCacheManager.getInstance().findTab(tab));
+                showBrowser();
             }
 
             @Override

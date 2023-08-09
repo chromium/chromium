@@ -1338,7 +1338,7 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
                     mArkWeb.getWebContents(), mSourceTabId, mWebContentsDelegate,
                     new ArkTabContextMenuPopulatorFactory(this));
 
-            JavascriptInjector mInjector = JavascriptInjector.fromWebContents(mArkWeb.getWebContents(), true);
+            JavascriptInjector mInjector = JavascriptInjector.fromWebContents(mArkWeb.getWebContents(), false);
             mInjector.addPossiblyUnsafeInterface(mArkWeb, "ark_bridge", JavascriptInterface.class);
 
             if (oldWebContents == null) {

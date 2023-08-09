@@ -84,7 +84,7 @@ public class ArkLauncherLayout extends LauncherLayout {
             }
         });
 
-        setItemLoader(new HomepageItemLoader());
+        setItemLoader(new HomepageItemLoader(getContext()));
 
     }
 
