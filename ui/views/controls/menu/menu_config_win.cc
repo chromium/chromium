@@ -39,6 +39,7 @@ void MenuConfig::Init() {
       between_item_vertical_padding = 2;
       item_corner_radius = 4;
     } else {
+      icon_label_spacing = 10;
       always_reserve_check_region = true;
     }
   }

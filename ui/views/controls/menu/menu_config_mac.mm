@@ -26,6 +26,7 @@ void InitMaterialMenuConfig(views::MenuConfig* config) {
   config->separator_thickness = 1;
   config->reserve_dedicated_arrow_column = false;
   config->icons_in_label = true;
+  config->icon_label_spacing = 8;
   config->corner_radius = 8;
   config->auxiliary_corner_radius = 4;
   config->item_horizontal_border_padding = 0;

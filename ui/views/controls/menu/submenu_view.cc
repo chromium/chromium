@@ -152,14 +152,9 @@ void SubmenuView::UpdateMenuPartSizes() {
   label_start_ = parent_menu_item_->GetContentStart() + icon_area_width_;
   if (icon_area_width_) {
     const auto* const controller = parent_menu_item_->GetMenuController();
-    if (controller && controller->use_ash_system_ui_layout()) {
-      label_start_ += config.touchable_item_horizontal_padding;
-    } else if (config.icons_in_label) {
-      label_start_ += config.item_horizontal_padding;
-    } else {
-      label_start_ += LayoutProvider::Get()->GetDistanceMetric(
-          DISTANCE_RELATED_LABEL_HORIZONTAL);
-    }
+    label_start_ += (controller && controller->use_ash_system_ui_layout())
+                        ? config.touchable_item_horizontal_padding
+                        : config.icon_label_spacing;
   }
 
   if (config.icons_in_label) {

@@ -156,6 +156,10 @@ struct VIEWS_EXPORT MenuConfig {
   // True if the icon is part of the label rather than in its own column.
   bool icons_in_label = false;
 
+  // Spacing between icon and main label.
+  int icon_label_spacing = LayoutProvider::Get()->GetDistanceMetric(
+      DISTANCE_RELATED_LABEL_HORIZONTAL);
+
   // Menus lay out as if some items have checkmarks, even if none do.
   bool always_reserve_check_region = false;
 
