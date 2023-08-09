@@ -1169,6 +1169,8 @@ component("ash") {
     "style/color_palette_controller.h",
     "style/color_util.cc",
     "style/color_util.h",
+    "style/combobox.cc",
+    "style/combobox.h",
     "style/dark_light_mode_controller_impl.cc",
     "style/dark_light_mode_controller_impl.h",
     "style/dot_indicator.cc",
