@@ -10,6 +10,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "components/segmentation_platform/internal/execution/processing/feature_processor_state.h"
 #include "components/segmentation_platform/public/types/processed_value.h"
 #include "components/sync_device_info/device_info.h"
@@ -28,6 +29,7 @@ constexpr int kActiveDayThresholdForInputDelegate = 60;
 #define AS_FLOAT_VAL(x) ProcessedValue(static_cast<float>(x))
 
 base::TimeDelta GetActivePeriodForMetrics() {
+  TRACE_EVENT0("ui", "sync_device_info_observer.cc::GetActivePeriodForMetrics");
   return base::Days(base::GetFieldTrialParamByFeatureAsInt(
       kSegmentationDeviceCountByOsType, "active_days_threshold",
       kActiveDaysThresholdForMetrics));
@@ -43,6 +45,7 @@ base::TimeDelta Age(base::Time last_update, base::Time now) {
 bool IsDeviceActive(base::Time last_update,
                     base::Time now,
                     base::TimeDelta active_threshold) {
+  TRACE_EVENT0("ui", "sync_device_info_observer.cc::GetActivePeriodForMetrics");
   base::TimeDelta active_days_threshold = GetActivePeriodForMetrics();
   return Age(last_update, now) < active_days_threshold;
 }
@@ -91,6 +94,7 @@ SyncDeviceInfoObserver::~SyncDeviceInfoObserver() {
 
 // Count device by os types and record them in UMA only if not recorded yet.
 void SyncDeviceInfoObserver::OnDeviceInfoChange() {
+  TRACE_EVENT0("ui", "SyncDeviceInfoObserver::OnDeviceInfoChange");
   if (!device_info_tracker_->IsSyncing() ||
       device_info_status_ == DeviceInfoStatus::INFO_AVAILABLE) {
     return;
@@ -100,6 +104,7 @@ void SyncDeviceInfoObserver::OnDeviceInfoChange() {
 
   // Run any method calls that were received during initialization.
   while (!pending_actions_.empty()) {
+    TRACE_EVENT0("ui", "post_pending_action");
     auto callback = std::move(pending_actions_.front());
     pending_actions_.pop_front();
     device_info_status_ = DeviceInfoStatus::INFO_AVAILABLE;
@@ -126,6 +131,7 @@ void SyncDeviceInfoObserver::OnDeviceInfoChange() {
 
 std::map<OsType, int> SyncDeviceInfoObserver::CountActiveDevicesByOsType(
     base::TimeDelta active_threshold) const {
+  TRACE_EVENT0("ui", "SyncDeviceInfoObserver::CountActiveDevicesByOsType");
   std::map<OsType, int> count_by_os_type;
   const base::Time now = base::Time::Now();
   for (const auto& device_info : device_info_tracker_->GetAllDeviceInfo()) {
