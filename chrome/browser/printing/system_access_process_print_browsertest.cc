@@ -2764,15 +2764,8 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisBeforePrintPreviewBrowserTest,
   EXPECT_EQ(new_document_called_count(), GetExpectedNewDocumentCalledCount());
 }
 
-// TODO(crbug.com/1469456):  Suspect this bug to be the cause of flakes for
-// linux-rel bot, try re-enabling this test once that issue is resolved.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_WindowDotPrint DISABLED_WindowDotPrint
-#else
-#define MAYBE_WindowDotPrint WindowDotPrint
-#endif
 IN_PROC_BROWSER_TEST_P(ContentAnalysisBeforePrintPreviewBrowserTest,
-                       MAYBE_WindowDotPrint) {
+                       WindowDotPrint) {
   if (UseService()) {
     // TODO(crbug.com/1464566):  Enable this test variant once an extra system
     // dialog is not being displayed before analysis completes.
