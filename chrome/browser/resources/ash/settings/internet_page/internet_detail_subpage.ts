@@ -720,7 +720,7 @@ class SettingsInternetDetailPageElement extends
     this.ipAddress_ = (ipv4 && ipv4.ipAddress) || '';
 
     // Update the detail page title.
-    const networkName = OncMojo.getNetworkName(this.managedProperties_);
+    const networkName = OncMojo.getNetworkNameUnsafe(this.managedProperties_);
     (this.parentNode as OsSettingsSubpageElement).pageTitle = networkName;
     flush();
 
@@ -1661,7 +1661,7 @@ class SettingsInternetDetailPageElement extends
       detail: {
         guid: this.guid,
         type: OncMojo.getNetworkTypeString(this.managedProperties_.type),
-        name: OncMojo.getNetworkName(this.managedProperties_),
+        name: OncMojo.getNetworkNameUnsafe(this.managedProperties_),
       },
     });
     this.dispatchEvent(showConfigEvent);

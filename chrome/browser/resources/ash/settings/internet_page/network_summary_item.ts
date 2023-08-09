@@ -162,7 +162,7 @@ export class NetworkSummaryItemElement extends NetworkSummaryItemElementBase {
       return '';
     }
     const connectionState = networkState.connectionState;
-    const name = OncMojo.getNetworkStateDisplayName(networkState);
+    const name = OncMojo.getNetworkStateDisplayNameUnsafe(networkState);
     if (OncMojo.connectionStateIsConnected(connectionState)) {
       // Ethernet networks always have the display name 'Ethernet' so we use the
       // state text 'Connected' to avoid repeating the label in the sublabel.
@@ -172,8 +172,9 @@ export class NetworkSummaryItemElement extends NetworkSummaryItemElementBase {
           name;
     }
     if (connectionState === ConnectionStateType.kConnecting) {
-      return name ? this.i18n('networkListItemConnectingTo', name) :
-                    this.i18n('networkListItemConnecting');
+      return name ?
+          loadTimeData.getStringF('networkListItemConnectingTo', name) :
+          this.i18n('networkListItemConnecting');
     }
     return this.i18n('networkListItemNotConnected');
   }

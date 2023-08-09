@@ -76,6 +76,10 @@ export class InternetConfigElement extends InternetConfigElementBase {
       type: String,
 
       /**
+       * WARNING: This string may contain malicious HTML and should not be used
+       * for Polymer bindings in CSS code. For additional information see
+       * b/286254915.
+       *
        * The name of the network. May be set initially or updated by
        * network-config.
        */

@@ -392,7 +392,7 @@ Polymer({
    * @private
    */
   getNameText_(managedProperties) {
-    return OncMojo.getNetworkName(managedProperties);
+    return OncMojo.getNetworkNameUnsafe(managedProperties);
   },
 
   /**

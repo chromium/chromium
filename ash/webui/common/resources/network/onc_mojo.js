@@ -8,8 +8,8 @@
  * strings and for debugging. They are not intended to be drectly user facing.
  */
 
-import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {assert, assertNotReached} from 'chrome://resources/ash/common/assert.js';
+import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {ActivationStateType, ApnProperties, AuthenticationType, ConfigProperties, DeviceStateProperties as MojomDeviceStateProperties, HiddenSsidMode, InhibitReason, IPConfigProperties, ManagedApnList, ManagedBoolean, ManagedInt32, ManagedProperties, ManagedString, ManagedStringList, ManagedSubjectAltNameMatchList, MatchType, NetworkStateProperties as MojomNetworkStateProperties, ProxyMode, SecurityType, SIMInfo, SIMLockStatus, SubjectAltName, SubjectAltName_Type, TetherStateProperties, TrafficCounterProperties, VpnType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {ConnectionStateType, DeviceStateType, IPConfigType, NetworkType, OncSource, PolicySource, PortalState} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {IPAddress} from 'chrome://resources/mojo/services/network/public/mojom/ip_address.mojom-webui.js';
@@ -467,46 +467,42 @@ export class OncMojo {
   }
 
   /**
-   * @param {string} networkName
-   * @param {string|undefined} providerName
-   * @return {string}
-   */
-  static getVpnDisplayName(networkName, providerName) {
-    if (providerName) {
-      return loadTimeData.getStringF(
-          'vpnNameTemplate', providerName, networkName);
-    }
-    return networkName;
-  }
-
-  /**
+   * WARNING: The string returned by this method may contain malicious HTML and
+   * should not be used for Polymer bindings in CSS code. For additional
+   * information see b/286254915.
+   *
    * @param {!MojomNetworkStateProperties} network
    * @return {string}
    */
-  static getNetworkStateDisplayName(network) {
+  static getNetworkStateDisplayNameUnsafe(network) {
     if (!network.name) {
       return OncMojo.getNetworkTypeDisplayName(network.type);
     }
     if (network.type === NetworkType.kVPN &&
         network.typeState.vpn.providerName) {
-      return OncMojo.getVpnDisplayName(
-          network.name, network.typeState.vpn.providerName);
+      return loadTimeData.getStringF(
+          'vpnNameTemplate', network.typeState.vpn.providerName, network.name);
     }
     return network.name;
   }
 
   /**
+   * WARNING: The string returned by this method may contain malicious HTML and
+   * should not be used for Polymer bindings in CSS code. For additional
+   * information see b/286254915.
+   *
    * @param {!ManagedProperties} network
    * @return {string}
    */
-  static getNetworkName(network) {
+  static getNetworkNameUnsafe(network) {
     if (!network.name || !network.name.activeValue) {
       return OncMojo.getNetworkTypeDisplayName(network.type);
     }
     if (network.type === NetworkType.kVPN &&
         network.typeProperties.vpn.providerName) {
-      return OncMojo.getVpnDisplayName(
-          network.name.activeValue, network.typeProperties.vpn.providerName);
+      return loadTimeData.getStringF(
+          'vpnNameTemplate', network.typeProperties.vpn.providerName,
+          network.name.activeValue);
     }
     return network.name.activeValue;
   }

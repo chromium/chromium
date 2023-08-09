@@ -22,6 +22,7 @@ import {NetworkListenerBehavior, NetworkListenerBehaviorInterface} from 'chrome:
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {ConfigProperties, CrosNetworkConfigInterface, FilterType, NetworkStateProperties, NO_LIMIT} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {DomRepeatEvent, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -261,7 +262,7 @@ class SettingsInternetKnownNetworksPageElement extends
 
   private getNetworkDisplayName_(networkState: OncMojo.NetworkStateProperties):
       string {
-    return OncMojo.getNetworkStateDisplayName(networkState);
+    return OncMojo.getNetworkStateDisplayNameUnsafe(networkState);
   }
 
   private shouldShowPasspointSection_(subscriptionsList:
@@ -280,7 +281,7 @@ class SettingsInternetKnownNetworksPageElement extends
 
   private getEnterpriseIconAriaLabel_(
       networkState: OncMojo.NetworkStateProperties): string {
-    return this.i18n(
+    return loadTimeData.getStringF(
         'networkA11yManagedByAdministrator',
         this.getNetworkDisplayName_(networkState));
   }
@@ -316,7 +317,7 @@ class SettingsInternetKnownNetworksPageElement extends
 
   private getMenuButtonTitle_(networkState: OncMojo.NetworkStateProperties):
       string {
-    return this.i18n(
+    return loadTimeData.getStringF(
         'knownNetworksMenuButtonTitle',
         this.getNetworkDisplayName_(networkState));
   }

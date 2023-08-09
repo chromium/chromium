@@ -206,7 +206,7 @@ export class SettingsPasspointSubpageElement extends PasspointListenerMixin
 
   private getNetworkDisplayName_(networkState: OncMojo.NetworkStateProperties):
       string {
-    return OncMojo.getNetworkStateDisplayName(networkState);
+    return OncMojo.getNetworkStateDisplayNameUnsafe(networkState);
   }
 
   private hasNetworks_(): boolean {

@@ -14,10 +14,11 @@ import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 
 import {HTMLEscape} from '//resources/ash/common/util.js';
+import {assert} from 'chrome://resources/ash/common/assert.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
 import {NetworkListenerBehavior, NetworkListenerBehaviorInterface} from 'chrome://resources/ash/common/network/network_listener_behavior.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
-import {assert} from 'chrome://resources/ash/common/assert.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {FilterType, NetworkStateProperties, NO_LIMIT, StartConnectResult} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {ConnectionStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -89,6 +90,10 @@ export class OnboardingNetworkPage extends OnboardingNetworkPageBase {
       },
 
       /**
+       * WARNING: This string may contain malicious HTML and should not be used
+       * for Polymer bindings in CSS code. For additional information see
+       * b/286254915.
+       *
        * The name of the network. May be set initially or updated by
        * network-config.
        * @protected
@@ -192,7 +197,7 @@ export class OnboardingNetworkPage extends OnboardingNetworkPageBase {
   onNetworkSelected_(event) {
     const networkState = event.detail;
     const type = networkState.type;
-    const displayName = OncMojo.getNetworkStateDisplayName(networkState);
+    const displayName = OncMojo.getNetworkStateDisplayNameUnsafe(networkState);
 
     this.networkShowConnect_ =
         (networkState.connectionState === ConnectionStateType.kNotConnected);
@@ -320,7 +325,7 @@ export class OnboardingNetworkPage extends OnboardingNetworkPageBase {
    */
   getDialogTitle_() {
     if (this.networkName_ && !this.networkShowConnect_) {
-      return this.i18n('internetConfigName', HTMLEscape(this.networkName_));
+      return loadTimeData.getStringF('internetConfigName', this.networkName_);
     }
     const type = this.i18n('OncType' + this.networkType_);
     return this.i18n('internetJoinType', type);

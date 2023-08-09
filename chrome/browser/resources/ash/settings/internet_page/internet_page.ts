@@ -673,7 +673,8 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
     const params = new URLSearchParams();
     params.append('guid', networkState.guid);
     params.append('type', OncMojo.getNetworkTypeString(networkState.type));
-    params.append('name', OncMojo.getNetworkStateDisplayName(networkState));
+    params.append(
+        'name', OncMojo.getNetworkStateDisplayNameUnsafe(networkState));
     Router.getInstance().navigateTo(routes.NETWORK_DETAIL, params);
   }
 
@@ -887,7 +888,7 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
   }>): Promise<void> {
     const networkState = event.detail.networkState;
     const type = networkState.type;
-    const displayName = OncMojo.getNetworkStateDisplayName(networkState);
+    const displayName = OncMojo.getNetworkStateDisplayNameUnsafe(networkState);
 
     if (!event.detail.bypassConnectionDialog && type === NetworkType.kTether &&
         !networkState.typeState.tether!.hasConnectedToHost) {
