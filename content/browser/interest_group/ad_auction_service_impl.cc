@@ -321,10 +321,11 @@ void AdAuctionServiceImpl::RunAdAuction(
       base::BindRepeating(&AdAuctionServiceImpl::GetAdAuctionPageData,
                           base::Unretained(this)),
       std::move(abort_receiver),
-      base::BindOnce(&AdAuctionServiceImpl::OnAuctionComplete,
-                     base::Unretained(this), std::move(callback),
-                     std::move(urn_uuid.value()),
-                     fenced_frame_urls_map.unique_id()));
+      base::BindOnce(
+          &AdAuctionServiceImpl::OnAuctionComplete, base::Unretained(this),
+          std::move(callback), std::move(urn_uuid.value()),
+          fenced_frame_urls_map.unique_id(), base::Unretained(GetFrame()),
+          base::Unretained(&(GetFrame()->GetPage()))));
   AuctionRunner* raw_auction = auction.get();
   auctions_.emplace(raw_auction, std::move(auction));
 }
@@ -621,6 +622,8 @@ void AdAuctionServiceImpl::OnAuctionComplete(
     RunAdAuctionCallback callback,
     GURL urn_uuid,
     FencedFrameURLMapping::Id fenced_frame_urls_map_id,
+    const RenderFrameHostImpl* render_frame_host_impl,
+    const PageImpl* page_impl,
     AuctionRunner* auction,
     bool manually_aborted,
     absl::optional<blink::InterestGroupKey> winning_group_key,
@@ -687,8 +690,28 @@ void AdAuctionServiceImpl::OnAuctionComplete(
   // mapping that was used at the beginning of the auction. If not, we fail the
   // auction and dump without crashing the browser. Once the root cause is known
   // and the issue fixed, convert it back to a CHECK.
-  if (fenced_frame_urls_map_id != current_fenced_frame_urls_map.unique_id()) {
+  //
+  // The fenced frame mapping may be changed because:
+  // 1. The render frame host has changed.
+  // 2. The page owned by the render frame host has changed.
+  // 3. The fenced frame mapping of the page has changed.
+  //
+  // Each possible scenario is checked below. They are put in separate if branch
+  // in order to identify from the dump.
+  bool mismatch_with_auction_start = false;
+  if (render_frame_host_impl != GetFrame()) {
     base::debug::DumpWithoutCrashing();
+    mismatch_with_auction_start = true;
+  } else if (page_impl != &(GetFrame()->GetPage())) {
+    base::debug::DumpWithoutCrashing();
+    mismatch_with_auction_start = true;
+  } else if (fenced_frame_urls_map_id !=
+             current_fenced_frame_urls_map.unique_id()) {
+    base::debug::DumpWithoutCrashing();
+    mismatch_with_auction_start = true;
+  }
+
+  if (mismatch_with_auction_start) {
     if (auction_result_metrics) {
       auction_result_metrics->ReportAuctionResult(
           AdAuctionResultMetrics::AuctionResult::kFailed);

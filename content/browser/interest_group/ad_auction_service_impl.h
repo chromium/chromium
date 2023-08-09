@@ -43,6 +43,7 @@ class InterestGroupManagerImpl;
 struct BiddingAndAuctionServerKey;
 class RenderFrameHost;
 class RenderFrameHostImpl;
+class PageImpl;
 class PrivateAggregationManager;
 
 // Implements the AdAuctionService service called by Blink code.
@@ -147,6 +148,8 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
       RunAdAuctionCallback callback,
       GURL urn_uuid,
       FencedFrameURLMapping::Id fenced_frame_urls_map_id,
+      const RenderFrameHostImpl* render_frame_host_impl,
+      const PageImpl* page_impl,
       AuctionRunner* auction,
       bool manually_aborted,
       absl::optional<blink::InterestGroupKey> winning_group_key,
