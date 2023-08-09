@@ -5,7 +5,10 @@
 #import <UIKit/UIKit.h>
 #import <XCTest/XCTest.h>
 
+#import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "components/autofill/core/browser/autofill_test_utils.h"
+#import "components/url_formatter/elide_url.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/autofill/autofill_app_interface.h"
 #import "ios/chrome/browser/ui/settings/settings_root_table_constants.h"
@@ -24,6 +27,7 @@ using chrome_test_util::TextFieldForCellWithLabelId;
 
 namespace {
 
+const char kCreditCardUrl[] = "/credit_card.html";
 const char kFormCardName[] = "CCName";
 
 using base::test::ios::kWaitForActionTimeout;
@@ -101,12 +105,25 @@ id<GREYMatcher> NicknameTextField() {
   return TextFieldForCellWithLabelId(IDS_IOS_AUTOFILL_NICKNAME);
 }
 
+id<GREYMatcher> SubtitleString(const GURL& url) {
+  return grey_text(l10n_util::GetNSStringF(
+      IDS_IOS_PAYMENT_BOTTOM_SHEET_SUBTITLE,
+      url_formatter::FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+          url)));
+}
+
+id<GREYMatcher> ExpirationDateLabel() {
+  return grey_text(
+      base::SysUTF8ToNSString(autofill::test::NextMonth() + "/" +
+                              autofill::test::NextYear().substr(2)));
+}
+
 #pragma mark - Helper methods
 
 // Loads simple page on localhost.
 - (void)loadPaymentsPage {
   // Loads simple page. It is on localhost so it is considered a secure context.
-  [ChromeEarlGrey loadURL:self.testServer->GetURL("/credit_card.html")];
+  [ChromeEarlGrey loadURL:self.testServer->GetURL(kCreditCardUrl)];
   [ChromeEarlGrey waitForWebStateContainingText:"Autofill Test"];
 }
 
@@ -218,6 +235,8 @@ id<GREYMatcher> NicknameTextField() {
 }
 
 // Verify that the Payments Bottom Sheet "No Thanks" button opens the keyboard.
+// Also checks that the bottom sheet's subtitle and the credit card's expiration
+// appear as expected before dismissing the bottom sheet.
 - (void)testOpenPaymentsBottomSheetTapNoThanksShowKeyboard {
   [self loadPaymentsPage];
 
@@ -228,6 +247,16 @@ id<GREYMatcher> NicknameTextField() {
 
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:noThanksButton];
 
+  // Verify that the subtitle string appears.
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:SubtitleString(
+                                              self.testServer->GetURL(
+                                                  kCreditCardUrl))];
+
+  // Verify that the credit card's expiration date appears.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:ExpirationDateLabel()];
+
+  // Dismiss the bottom sheet.
   [[EarlGrey selectElementWithMatcher:noThanksButton] performAction:grey_tap()];
 
   WaitForKeyboardToAppear();

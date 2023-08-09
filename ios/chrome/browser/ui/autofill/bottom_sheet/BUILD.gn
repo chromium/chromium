@@ -86,6 +86,8 @@ source_set("eg2_tests") {
   testonly = true
   sources = [ "payments_suggestion_bottom_sheet_egtest.mm" ]
   deps = [
+    "//components/autofill/core/browser:test_support",
+    "//components/url_formatter",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/ui/autofill:eg_test_support+eg2",
