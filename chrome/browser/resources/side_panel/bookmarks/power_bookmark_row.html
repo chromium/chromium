@@ -65,6 +65,7 @@
     force-hover="[[forceHover]]">
   <template is="dom-if" if="[[hasCheckbox]]" restamp>
     <cr-checkbox id="checkbox" slot="prefix" hidden="[[!hasCheckbox]]"
+        checked="[[checkboxChecked]]"
         on-checked-changed="onCheckboxChange_"
         disabled="[[checkboxDisabled]]">
       $i18n{checkboxA11yLabel}

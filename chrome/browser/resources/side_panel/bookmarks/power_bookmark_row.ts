@@ -35,6 +35,10 @@ export class PowerBookmarkRowElement extends PolymerElement {
   static get properties() {
     return {
       bookmark: Object,
+      checkboxChecked: {
+        type: Boolean,
+        value: false,
+      },
       checkboxDisabled: {
         type: Boolean,
         value: false,
@@ -89,6 +93,7 @@ export class PowerBookmarkRowElement extends PolymerElement {
   }
 
   bookmark: chrome.bookmarks.BookmarkTreeNode;
+  checkboxChecked: boolean;
   checkboxDisabled: boolean;
   compact: boolean;
   description: string;
