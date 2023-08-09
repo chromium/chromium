@@ -41,9 +41,9 @@ class VIEWS_EXPORT MenuScrollViewContainer : public View {
 
   // View:
   gfx::Insets GetInsets() const override;
+  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   gfx::Size CalculatePreferredSize() const override;
   void OnPaintBackground(gfx::Canvas* canvas) override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void OnThemeChanged() override;
 
   void SetBorderColorId(absl::optional<ui::ColorId> border_color_id) {

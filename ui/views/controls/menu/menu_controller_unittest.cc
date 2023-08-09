@@ -809,14 +809,14 @@ class MenuControllerTest : public ViewsTestBase,
 
   gfx::Insets GetBorderAndShadowInsets(bool is_submenu) {
     const MenuConfig& menu_config = MenuConfig::instance();
-    int elevation = menu_config.touchable_menu_shadow_elevation;
+    int elevation = menu_config.bubble_menu_shadow_elevation;
     BubbleBorder::Shadow shadow_type = BubbleBorder::STANDARD_SHADOW;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     // Increase the submenu shadow elevation and change the shadow style to
     // ChromeOS system UI shadow style when using Ash System UI layout.
     if (menu_controller_->use_ash_system_ui_layout()) {
       if (is_submenu)
-        elevation = menu_config.touchable_submenu_shadow_elevation;
+        elevation = menu_config.bubble_submenu_shadow_elevation;
 
       shadow_type = BubbleBorder::CHROMEOS_SYSTEM_UI_SHADOW;
     }

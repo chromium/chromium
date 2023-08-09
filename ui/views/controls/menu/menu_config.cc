@@ -53,16 +53,16 @@ void MenuConfig::InitCR2023() {
   if (!features::IsChromeRefresh2023()) {
     return;
   }
-  // CR2023 menu metrics
+
   font_list = LayoutProvider::Get()->GetTypographyProvider().GetFont(
       style::CONTEXT_MENU, style::STYLE_BODY_3_EMPHASIS);
   reserve_dedicated_arrow_column = false;
   menu_horizontal_border_size = 0;
   submenu_horizontal_overlap = 0;
-  separator_height = 17;
-  separator_spacing_height = 4;
   item_vertical_margin = 6;
   item_horizontal_border_padding = 12;
+  separator_height = 17;
+  separator_spacing_height = 4;
   use_outer_border = false;
 
   InitPlatformCR2023();

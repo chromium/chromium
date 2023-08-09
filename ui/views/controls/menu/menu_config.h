@@ -83,7 +83,8 @@ struct VIEWS_EXPORT MenuConfig {
   // Horizontal padding between components in a touchable menu item.
   int touchable_item_horizontal_padding = 16;
 
-  // Horizontal border padding in a menu item
+  // Additional padding between the item left/right and its contents. Note that
+  // the final padding will also include `item_horizontal_padding`.
   int item_horizontal_border_padding = 0;
 
   // Horizontal border padding in a menu item for ash system ui layout.
@@ -129,9 +130,6 @@ struct VIEWS_EXPORT MenuConfig {
 
   // Height of the scroll arrow.
   int scroll_arrow_height = 3;
-
-  // Minimum height of menu item.
-  int item_min_height = 0;
 
   // Edge padding for an actionable submenu arrow.
   int actionable_submenu_arrow_to_edge_padding = 14;
@@ -196,11 +194,11 @@ struct VIEWS_EXPORT MenuConfig {
   // Maximum width of touchable menus.
   int touchable_menu_max_width = 352;
 
-  // Shadow elevation of touchable menus.
-  int touchable_menu_shadow_elevation = 12;
+  // Shadow elevation of bubble menus.
+  int bubble_menu_shadow_elevation = 12;
 
-  // Shadow elevation of touchable submenus.
-  int touchable_submenu_shadow_elevation = 16;
+  // Shadow elevation of bubble submenus.
+  int bubble_submenu_shadow_elevation = 16;
 
   // Vertical padding for touchable menus.
   int vertical_touchable_menu_item_padding = 8;

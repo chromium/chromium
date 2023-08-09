@@ -2372,15 +2372,16 @@ gfx::Rect MenuController::CalculateMenuBounds(
   // Sets additional anchor parameters.
   SetAnchorParametersForItem(item, item_loc, anchor);
 
-  gfx::Rect menu_bounds =
-      gfx::Rect(submenu->GetScrollViewContainer()->GetPreferredSize());
+  const auto* const scroll_view_container = submenu->GetScrollViewContainer();
+  gfx::Rect menu_bounds = gfx::Rect(scroll_view_container->GetPreferredSize());
 
   const gfx::Rect& monitor_bounds = state_.monitor_bounds;
   const gfx::Rect& anchor_bounds = state_.initial_bounds;
 
   // For comboboxes, ensure the menu is at least as wide as the anchor.
-  if (IsCombobox())
+  if (IsCombobox()) {
     menu_bounds.set_width(std::max(menu_bounds.width(), anchor_bounds.width()));
+  }
 
   // Don't let the menu go too wide or too tall.
   menu_bounds.set_width(std::min(
@@ -2413,9 +2414,7 @@ gfx::Rect MenuController::CalculateMenuBounds(
     const int right_of_parent =
         item_loc.x() + item->width() - menu_config.submenu_horizontal_overlap;
 
-    MenuScrollViewContainer* container =
-        item->GetParentMenuItem()->GetSubmenu()->GetScrollViewContainer();
-    menu_bounds.set_y(item_loc.y() - container->GetInsets().top());
+    menu_bounds.set_y(item_loc.y() - scroll_view_container->GetInsets().top());
 
     // Assume the menu can be placed in the preferred location.
     menu_bounds.set_x(create_on_right ? right_of_parent : left_of_parent);
@@ -2542,8 +2541,6 @@ gfx::Rect MenuController::CalculateBubbleMenuBounds(
   DCHECK(item);
   DCHECK(anchor);
 
-  const bool is_anchored_bubble = MenuItemView::IsBubble(state_.anchor);
-
   // TODO(msisov): Shall we also calculate anchor for bubble menus, which are
   // used by ash? If there is a need. Fix that.
   anchor->anchor_position = ui::OwnedWindowAnchorPosition::kTopLeft;
@@ -2555,8 +2552,7 @@ gfx::Rect MenuController::CalculateBubbleMenuBounds(
   *resulting_direction = preferred_open_direction;
 
   SubmenuView* submenu = item->GetSubmenu();
-  DCHECK(submenu);
-
+  CHECK(submenu);
   const auto* const scroll_view_container = submenu->GetScrollViewContainer();
   gfx::Size menu_size = scroll_view_container->GetPreferredSize();
   // Respect the delegate's maximum width.
@@ -2573,9 +2569,7 @@ gfx::Rect MenuController::CalculateBubbleMenuBounds(
 
   int x = 0;
   int y = 0;
-
   const gfx::Rect& monitor_bounds = state_.monitor_bounds;
-
   const MenuConfig& menu_config = MenuConfig::instance();
   const int corner_radius = menu_config.CornerRadiusForMenu(this);
 
@@ -2584,6 +2578,7 @@ gfx::Rect MenuController::CalculateBubbleMenuBounds(
     using MenuPosition = MenuItemView::MenuPosition;
 
     // First the size gets reduced to the possible space.
+    const bool is_anchored_bubble = MenuItemView::IsBubble(state_.anchor);
     if (!monitor_bounds.IsEmpty()) {
       int max_width = monitor_bounds.width();
       int max_height = monitor_bounds.height();

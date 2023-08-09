@@ -1291,8 +1291,7 @@ MenuItemView::MenuItemDimensions MenuItemView::CalculateDimensions() const {
   int label_text_height = secondary_title().empty() ? font_list.GetHeight()
                                                     : font_list.GetHeight() * 2;
   dimensions.height =
-      std::max({dimensions.height, label_text_height + vertical_margins,
-                config.item_min_height});
+      std::max(dimensions.height, label_text_height + vertical_margins);
 
   ApplyMinimumDimensions(&dimensions);
   return dimensions;
@@ -1300,14 +1299,10 @@ MenuItemView::MenuItemDimensions MenuItemView::CalculateDimensions() const {
 
 void MenuItemView::ApplyMinimumDimensions(MenuItemDimensions* dims) const {
   // Don't apply minimums to menus without controllers or to comboboxes.
-  if (!GetMenuController() || GetMenuController()->IsCombobox())
+  if (const auto* const controller = GetMenuController();
+      !controller || controller->IsCombobox()) {
     return;
-
-  // TODO(nicolaso): PaintBackground() doesn't cover the whole area in footnotes
-  // when minimum height is set too high. For now, just ignore minimum height
-  // for kHighlighted elements.
-  if (type_ == Type::kHighlighted)
-    return;
+  }
 
   const MenuConfig& config = MenuConfig::instance();
   dims->height = std::max(dims->height,

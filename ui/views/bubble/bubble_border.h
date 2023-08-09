@@ -94,10 +94,8 @@ class VIEWS_EXPORT BubbleBorder : public Border {
   // have to deal in dip coordinates, so round up to 1dip.
   static constexpr int kBorderThicknessDip = 1;
 
-  // Specific to MD bubbles: size of shadow blur (outside the bubble) and
-  // vertical offset, both in DIP.
+  // Specific to MD bubbles: size of shadow blur (outside the bubble) in DIP.
   static constexpr int kShadowBlur = 6;
-  static constexpr int kShadowVerticalOffset = 2;
 
   // Space between the anchor view and a visible arrow if one is present.
   static constexpr int kVisibleArrowGap = 4;
@@ -156,7 +154,7 @@ class VIEWS_EXPORT BubbleBorder : public Border {
   // |shadow_elevation|. This is only used for MD bubbles. A null
   // |shadow_elevation| will yield the default BubbleBorder MD insets.
   static gfx::Insets GetBorderAndShadowInsets(
-      absl::optional<int> shadow_elevation = absl::nullopt,
+      const absl::optional<int>& shadow_elevation = absl::nullopt,
       const absl::optional<bool>& draw_border_stroke = absl::nullopt,
       Shadow shadow_type = Shadow::STANDARD_SHADOW);
 

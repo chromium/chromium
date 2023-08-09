@@ -12,7 +12,8 @@ void MenuConfig::Init() {
   if (!features::IsChromeRefresh2023()) {
     arrow_to_edge_padding = 21;              // Undesirable in CR2023.
     corner_radius = 2;                       // Overridden in CR2023.
-    item_min_height = 29;                    // Undesirable in CR2023.
+    minimum_text_item_height = 29;           // Undesirable in CR2023.
+    minimum_container_item_height = 29;      // Undesirable in CR2023.
     reserve_dedicated_arrow_column = false;  // Default in CR2023.
     menu_horizontal_border_size = 0;         // Default in CR2023.
     separator_lower_height = 8;              // Unused in CR2023.

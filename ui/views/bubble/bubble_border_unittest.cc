@@ -654,6 +654,8 @@ TEST_F(BubbleBorderTest, BubblePositionedCorrectlyWithVisibleArrow) {
   // is applied vertically) will affect the vertical positioning of a bubble
   // which is placed next to the anchor by a similar amount.
   border.set_arrow(BubbleBorder::LEFT_CENTER);
+  const auto insets = border.GetInsets();
+  const int shadow_offset = (insets.bottom() - insets.top()) / 2;
   bounds = border.GetBounds(kAnchor1, kContentSize);
   EXPECT_EQ(kContentSize.width() + kInsets.right() +
                 BubbleBorder::kVisibleArrowLength,
@@ -663,7 +665,7 @@ TEST_F(BubbleBorderTest, BubblePositionedCorrectlyWithVisibleArrow) {
                 BubbleBorder::kBorderThicknessDip,
             bounds.x());
   EXPECT_NEAR(kAnchor1.right_center().y() - bounds.height() / 2, bounds.y(),
-              BubbleBorder::kShadowVerticalOffset);
+              shadow_offset);
 
   bounds = border.GetBounds(kAnchor2, kContentSize);
   EXPECT_EQ(kContentSize.width() + kInsets.right() +
@@ -674,7 +676,7 @@ TEST_F(BubbleBorderTest, BubblePositionedCorrectlyWithVisibleArrow) {
                 BubbleBorder::kBorderThicknessDip,
             bounds.x());
   EXPECT_NEAR(kAnchor2.right_center().y() - bounds.height() / 2, bounds.y(),
-              BubbleBorder::kShadowVerticalOffset);
+              shadow_offset);
 
   bounds = border.GetBounds(kAnchor3, kContentSize);
   EXPECT_EQ(kContentSize.width() + kInsets.right() +
@@ -685,7 +687,7 @@ TEST_F(BubbleBorderTest, BubblePositionedCorrectlyWithVisibleArrow) {
                 BubbleBorder::kBorderThicknessDip,
             bounds.x());
   EXPECT_NEAR(kAnchor3.right_center().y() - bounds.height() / 2, bounds.y(),
-              BubbleBorder::kShadowVerticalOffset);
+              shadow_offset);
 
   // LEFT_BOTTOM:
 
@@ -781,7 +783,7 @@ TEST_F(BubbleBorderTest, BubblePositionedCorrectlyWithVisibleArrow) {
                 BubbleBorder::kBorderThicknessDip,
             bounds.right());
   EXPECT_NEAR(kAnchor1.right_center().y() - bounds.height() / 2, bounds.y(),
-              BubbleBorder::kShadowVerticalOffset);
+              shadow_offset);
 
   bounds = border.GetBounds(kAnchor2, kContentSize);
   EXPECT_EQ(kContentSize.width() + kInsets.right() +
@@ -792,7 +794,7 @@ TEST_F(BubbleBorderTest, BubblePositionedCorrectlyWithVisibleArrow) {
                 BubbleBorder::kBorderThicknessDip,
             bounds.right());
   EXPECT_NEAR(kAnchor2.right_center().y() - bounds.height() / 2, bounds.y(),
-              BubbleBorder::kShadowVerticalOffset);
+              shadow_offset);
 
   bounds = border.GetBounds(kAnchor3, kContentSize);
   EXPECT_EQ(kContentSize.width() + kInsets.right() +
@@ -803,7 +805,7 @@ TEST_F(BubbleBorderTest, BubblePositionedCorrectlyWithVisibleArrow) {
                 BubbleBorder::kBorderThicknessDip,
             bounds.right());
   EXPECT_NEAR(kAnchor3.right_center().y() - bounds.height() / 2, bounds.y(),
-              BubbleBorder::kShadowVerticalOffset);
+              shadow_offset);
 
   // RIGHT_BOTTOM:
 

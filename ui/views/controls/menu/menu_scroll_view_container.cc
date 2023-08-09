@@ -219,6 +219,7 @@ MenuScrollViewContainer::MenuScrollViewContainer(SubmenuView* content_view)
       use_ash_system_ui_layout_(content_view->GetMenuItem()
                                     ->GetMenuController()
                                     ->use_ash_system_ui_layout()) {
+  SetUseDefaultFillLayout(true);
   background_view_ = AddChildView(std::make_unique<View>());
   if (use_ash_system_ui_layout_) {
     // Enable background blur for ChromeOS system context menu.
@@ -237,7 +238,7 @@ MenuScrollViewContainer::MenuScrollViewContainer(SubmenuView* content_view)
       std::make_unique<MenuScrollButton>(content_view, true));
 
   scroll_view_ = background_view_->AddChildView(
-      std::make_unique<MenuScrollView>(content_view, this));
+      std::make_unique<MenuScrollView>(content_view_, this));
   scroll_view_->SetProperty(
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
@@ -256,7 +257,8 @@ MenuScrollViewContainer::MenuScrollViewContainer(SubmenuView* content_view)
 }
 
 bool MenuScrollViewContainer::HasBubbleBorder() const {
-  return arrow_ != BubbleBorder::NONE;
+  return arrow_ != BubbleBorder::NONE ||
+         (MenuConfig::instance().use_bubble_border && GetCornerRadius());
 }
 
 MenuItemView* MenuScrollViewContainer::GetFootnote() const {
@@ -289,16 +291,26 @@ gfx::Insets MenuScrollViewContainer::GetInsets() const {
   return View::GetInsets() + additional_insets_;
 }
 
-gfx::Size MenuScrollViewContainer::CalculatePreferredSize() const {
-  gfx::Size prefsize = scroll_view_->GetContents()->GetPreferredSize();
-  gfx::Insets insets = GetInsets();
-  prefsize.Enlarge(insets.width(), insets.height());
-  return prefsize;
+void MenuScrollViewContainer::GetAccessibleNodeData(ui::AXNodeData* node_data) {
+  // Get the name from the submenu view.
+  content_view_->GetAccessibleNodeData(node_data);
+
+  // On macOS, NSMenus are not supposed to have anything wrapped around them. To
+  // allow VoiceOver to recognize this as a menu and to read aloud the total
+  // number of items inside it, we ignore the MenuScrollViewContainer (which
+  // holds the menu itself: the SubmenuView).
+#if BUILDFLAG(IS_MAC)
+  node_data->role = ax::mojom::Role::kNone;
+#else
+  node_data->role = ax::mojom::Role::kMenuBar;
+#endif
 }
 
-void MenuScrollViewContainer::OnThemeChanged() {
-  View::OnThemeChanged();
-  CreateBorder();
+gfx::Size MenuScrollViewContainer::CalculatePreferredSize() const {
+  gfx::Size prefsize = scroll_view_->GetContents()->GetPreferredSize();
+  const gfx::Insets insets = GetInsets();
+  prefsize.Enlarge(insets.width(), insets.height());
+  return prefsize;
 }
 
 void MenuScrollViewContainer::OnPaintBackground(gfx::Canvas* canvas) {
@@ -314,8 +326,8 @@ void MenuScrollViewContainer::OnPaintBackground(gfx::Canvas* canvas) {
   gfx::Rect bounds(0, 0, width(), height());
   ui::NativeTheme::ExtraParams extra;
   extra.menu_background.corner_radius = GetCornerRadius();
+  const auto* const color_provider = GetColorProvider();
   if (border_color_id_.has_value()) {
-    ui::ColorProvider* color_provider = GetColorProvider();
     cc::PaintFlags flags;
     flags.setAntiAlias(true);
     flags.setStyle(cc::PaintFlags::kFill_Style);
@@ -324,24 +336,14 @@ void MenuScrollViewContainer::OnPaintBackground(gfx::Canvas* canvas) {
                           flags);
     return;
   }
-  GetNativeTheme()->Paint(canvas->sk_canvas(), GetColorProvider(),
+  GetNativeTheme()->Paint(canvas->sk_canvas(), color_provider,
                           ui::NativeTheme::kMenuPopupBackground,
                           ui::NativeTheme::kNormal, bounds, extra);
 }
 
-void MenuScrollViewContainer::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  // Get the name from the submenu view.
-  content_view_->GetAccessibleNodeData(node_data);
-
-  // On macOS, NSMenus are not supposed to have anything wrapped around them. To
-  // allow VoiceOver to recognize this as a menu and to read aloud the total
-  // number of items inside it, we ignore the MenuScrollViewContainer (which
-  // holds the menu itself: the SubmenuView).
-#if BUILDFLAG(IS_MAC)
-  node_data->role = ax::mojom::Role::kNone;
-#else
-  node_data->role = ax::mojom::Role::kMenuBar;
-#endif
+void MenuScrollViewContainer::OnThemeChanged() {
+  View::OnThemeChanged();
+  CreateBorder();
 }
 
 void MenuScrollViewContainer::OnBoundsChanged(
@@ -359,9 +361,6 @@ void MenuScrollViewContainer::OnBoundsChanged(
   MenuItemView* const footnote = GetFootnote();
   if (footnote)
     footnote->SetCornerRadius(any_scroll_button_visible ? 0 : corner_radius_);
-  InvalidateLayout();
-
-  background_view_->SetBoundsRect(GetContentsBounds());
 }
 
 void MenuScrollViewContainer::DidScrollToTop() {
@@ -381,8 +380,7 @@ void MenuScrollViewContainer::DidScrollAwayFromBottom() {
 }
 
 void MenuScrollViewContainer::CreateBorder() {
-  if (HasBubbleBorder() ||
-      (MenuConfig::instance().use_bubble_border && GetCornerRadius())) {
+  if (HasBubbleBorder()) {
     CreateBubbleBorder();
   } else {
     CreateDefaultBorder();
@@ -391,10 +389,10 @@ void MenuScrollViewContainer::CreateBorder() {
 
 void MenuScrollViewContainer::CreateDefaultBorder() {
   DCHECK_EQ(arrow_, BubbleBorder::NONE);
-  const MenuConfig& menu_config = MenuConfig::instance();
   corner_radius_ = GetCornerRadius();
   outside_border_insets_ = {};
 
+  const auto& menu_config = MenuConfig::instance();
   const int vertical_inset =
       corner_radius_ ? menu_config.rounded_menu_vertical_border_size.value_or(
                            corner_radius_)
@@ -405,54 +403,57 @@ void MenuScrollViewContainer::CreateDefaultBorder() {
       gfx::Insets::TLBR(vertical_inset, horizontal_inset,
                         has_footnote ? 0 : vertical_inset, horizontal_inset);
 
-  if (menu_config.use_outer_border) {
-    // When a custom background color is used, ensure that the border uses
-    // the custom background color for its insets.
-    if (border_color_id_.has_value()) {
-      SetBorder(views::CreateThemedSolidSidedBorder(insets,
-                                                    border_color_id_.value()));
-      return;
-    }
-
-    SetBackground(CreateThemedRoundedRectBackground(ui::kColorMenuBackground,
-                                                    corner_radius_));
-
-    SkColor color = GetWidget()
-                        ? GetColorProvider()->GetColor(ui::kColorMenuBorder)
-                        : gfx::kPlaceholderColor;
-    if (has_footnote) {
-      insets.set_bottom(views::RoundRectPainter::kBorderWidth);
-    }
-    SetBorder(views::CreateBorderPainter(
-        std::make_unique<views::RoundRectPainter>(color, corner_radius_),
-        insets));
-  } else {
+  if (!menu_config.use_outer_border) {
     SetBorder(CreateEmptyBorder(insets));
+    return;
   }
+
+  // When a custom background color is used, ensure that the border uses
+  // the custom background color for its insets.
+  if (border_color_id_.has_value()) {
+    SetBorder(
+        views::CreateThemedSolidSidedBorder(insets, border_color_id_.value()));
+    return;
+  }
+
+  SetBackground(CreateThemedRoundedRectBackground(
+      ui::kColorMenuBackground, corner_radius_,
+      views::RoundRectPainter::kBorderWidth));
+
+  const auto* const color_provider = GetColorProvider();
+  SkColor color = color_provider
+                      ? color_provider->GetColor(ui::kColorMenuBorder)
+                      : gfx::kPlaceholderColor;
+  if (has_footnote) {
+    insets.set_bottom(views::RoundRectPainter::kBorderWidth);
+  }
+  SetBorder(views::CreateBorderPainter(
+      std::make_unique<views::RoundRectPainter>(color, corner_radius_),
+      insets));
 }
 
 void MenuScrollViewContainer::CreateBubbleBorder() {
-  const int border_radius = GetCornerRadius();
-
-  ui::ColorId id = ui::kColorMenuBackground;
   BubbleBorder::Shadow shadow_type = BubbleBorder::STANDARD_SHADOW;
+  ui::ColorId id = ui::kColorMenuBackground;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (use_ash_system_ui_layout_) {
+    shadow_type = BubbleBorder::CHROMEOS_SYSTEM_UI_SHADOW;
+  }
   id = ui::kColorAshSystemUIMenuBackground;
   if (use_ash_system_ui_layout_) {
     shadow_type = BubbleBorder::CHROMEOS_SYSTEM_UI_SHADOW;
   }
 #endif
-  if (border_color_id_.has_value()) {
-    // If there's a custom border color, use this for the bubble border color.
-    id = border_color_id_.value();
-  }
+  id = border_color_id_.value_or(id);
   auto bubble_border = std::make_unique<BubbleBorder>(arrow_, shadow_type, id);
   const MenuConfig& menu_config = MenuConfig::instance();
   bubble_border->set_md_shadow_elevation(
       content_view_->GetMenuItem()->GetParentMenuItem()
-          ? menu_config.touchable_submenu_shadow_elevation
-          : menu_config.touchable_menu_shadow_elevation);
+          ? menu_config.bubble_submenu_shadow_elevation
+          : menu_config.bubble_menu_shadow_elevation);
   bubble_border->set_draw_border_stroke(menu_config.use_outer_border);
+
+  const int border_radius = GetCornerRadius();
   if (use_ash_system_ui_layout_ || border_radius) {
     if (const auto* const menu_controller =
             content_view_->GetMenuItem()->GetMenuController();

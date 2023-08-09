@@ -129,7 +129,7 @@ SkPath GetVisibleArrowPath(BubbleBorder::Arrow arrow,
 
 const gfx::ShadowValues& GetShadowValues(
     const ui::ColorProvider* color_provider,
-    absl::optional<int> elevation,
+    const absl::optional<int>& elevation,
     BubbleBorder::Shadow shadow_type) {
   // If the color provider does not exist the shadow values are being created in
   // order to calculate Insets. In that case the color plays no role so always
@@ -167,13 +167,13 @@ const gfx::ShadowValues& GetShadowValues(
     }
 #endif
   } else {
-    constexpr int kSmallShadowVerticalOffset = 2;
+    constexpr gfx::Vector2d kOffset(0, 2);
     constexpr int kSmallShadowBlur = 4;
-    SkColor kSmallShadowColor =
+    const SkColor small_shadow_color =
         color_provider
             ? color_provider->GetColor(ui::kColorBubbleBorderShadowSmall)
             : gfx::kPlaceholderColor;
-    SkColor kLargeShadowColor =
+    const SkColor large_shadow_color =
         color_provider
             ? color_provider->GetColor(ui::kColorBubbleBorderShadowLarge)
             : gfx::kPlaceholderColor;
@@ -181,10 +181,8 @@ const gfx::ShadowValues& GetShadowValues(
     // whereas these blur values only describe the outside portion, hence they
     // must be doubled.
     shadows = gfx::ShadowValues({
-        {gfx::Vector2d(0, kSmallShadowVerticalOffset), 2 * kSmallShadowBlur,
-         kSmallShadowColor},
-        {gfx::Vector2d(0, BubbleBorder::kShadowVerticalOffset),
-         2 * BubbleBorder::kShadowBlur, kLargeShadowColor},
+        {kOffset, 2 * kSmallShadowBlur, small_shadow_color},
+        {kOffset, 2 * BubbleBorder::kShadowBlur, large_shadow_color},
     });
   }
 
@@ -201,7 +199,7 @@ bool ShouldDrawStrokeForArgs(const absl::optional<bool>& draw_border_stroke,
 
 const cc::PaintFlags& GetBorderAndShadowFlags(
     const ui::ColorProvider* color_provider,
-    absl::optional<int> elevation,
+    const absl::optional<int>& elevation,
     BubbleBorder::Shadow shadow_type) {
   // The flags are always the same for any elevation and color combination, so
   // construct them once and cache.
@@ -245,14 +243,6 @@ void DrawBorderAndShadowImpl(
 
 }  // namespace
 
-constexpr int BubbleBorder::kBorderThicknessDip;
-constexpr int BubbleBorder::kShadowBlur;
-constexpr int BubbleBorder::kShadowVerticalOffset;
-constexpr int BubbleBorder::kVisibleArrowGap;
-constexpr int BubbleBorder::kVisibleArrowLength;
-constexpr int BubbleBorder::kVisibleArrowRadius;
-constexpr int BubbleBorder::kVisibleArrowBuffer;
-
 BubbleBorder::BubbleBorder(Arrow arrow, Shadow shadow, ui::ColorId color_id)
     : arrow_(arrow), shadow_(shadow), color_id_(color_id) {
   DCHECK_LT(shadow_, SHADOW_COUNT);
@@ -262,7 +252,7 @@ BubbleBorder::~BubbleBorder() = default;
 
 // static
 gfx::Insets BubbleBorder::GetBorderAndShadowInsets(
-    absl::optional<int> elevation,
+    const absl::optional<int>& elevation,
     const absl::optional<bool>& draw_border_stroke,
     BubbleBorder::Shadow shadow_type) {
   return gfx::Insets(

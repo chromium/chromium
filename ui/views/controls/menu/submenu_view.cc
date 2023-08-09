@@ -189,22 +189,22 @@ void SubmenuView::ChildPreferredSizeChanged(View* child) {
 
 void SubmenuView::Layout() {
   // We're in a ScrollView, and need to set our width/height ourselves.
-  if (!parent())
+  if (!parent()) {
     return;
+  }
 
   // Use our current y, unless it means part of the menu isn't visible anymore.
-  int pref_height = GetPreferredSize().height();
-  int new_y;
-  if (pref_height > parent()->height())
-    new_y = std::max(parent()->height() - pref_height, y());
-  else
-    new_y = 0;
-  SetBounds(x(), new_y, parent()->width(), pref_height);
+  const int pref_height = GetPreferredSize().height();
+  SetBounds(x(),
+            (pref_height > parent()->height())
+                ? std::max(parent()->height() - pref_height, y())
+                : 0,
+            parent()->width(), pref_height);
 
-  gfx::Insets insets = GetInsets();
-  int x = insets.left();
+  const gfx::Insets insets = GetInsets();
+  const int x = insets.left();
   int y = insets.top();
-  int menu_item_width = width() - insets.width();
+  const int menu_item_width = width() - insets.width();
   const int between_item_vertical_padding =
       MenuConfig::instance().between_item_vertical_padding;
   bool previous_child_was_lower_separator = false;
@@ -225,8 +225,9 @@ void SubmenuView::Layout() {
 }
 
 gfx::Size SubmenuView::CalculatePreferredSize() const {
-  if (children().empty())
+  if (children().empty()) {
     return gfx::Size();
+  }
 
   max_minor_text_width_ = 0;
   // The maximum width of items which contain maybe a label and multiple views.
@@ -241,9 +242,10 @@ gfx::Size SubmenuView::CalculatePreferredSize() const {
   // using that width. This allows views that have flexible widths to adjust
   // accordingly.
   for (const View* child : children()) {
-    if (!child->GetVisible())
+    if (!child->GetVisible()) {
       continue;
-    if (auto* menu = AsViewClass<const MenuItemView>(child)) {
+    }
+    if (const auto* const menu = AsViewClass<const MenuItemView>(child)) {
       const MenuItemView::MenuItemDimensions& dimensions =
           menu->GetDimensions();
       max_simple_width = std::max(max_simple_width, dimensions.standard_width);
@@ -264,7 +266,7 @@ gfx::Size SubmenuView::CalculatePreferredSize() const {
   }
 
   // Finish calculating our optimum width.
-  gfx::Insets insets = GetInsets();
+  const gfx::Insets insets = GetInsets();
   int width = std::max(
       max_complex_width,
       std::max(max_simple_width + max_minor_text_width_ + insets.width(),
