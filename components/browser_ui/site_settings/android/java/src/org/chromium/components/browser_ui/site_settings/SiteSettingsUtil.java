@@ -85,7 +85,7 @@ public class SiteSettingsUtil {
      * @return whether the flag for the improved UI for "All sites" and "Site settings" is enabled.
      */
     public static boolean isSiteDataImprovementEnabled() {
-        return SiteSettingsFeatureList.isEnabled(SiteSettingsFeatureList.SITE_DATA_IMPROVEMENTS);
+        return SiteSettingsFeatureMap.isEnabled(SiteSettingsFeatureList.SITE_DATA_IMPROVEMENTS);
     }
 
     /**

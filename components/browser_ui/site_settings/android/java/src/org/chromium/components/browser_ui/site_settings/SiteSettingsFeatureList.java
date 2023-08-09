@@ -4,39 +4,12 @@
 
 package org.chromium.components.browser_ui.site_settings;
 
-import org.chromium.base.FeatureList;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
-
 /**
- * Provides an API for querying the status of Site Settings features.
+ * Lists base::Features that can be accessed through {@link SiteSettingsFeatureMap}.
+ *
+ * Should be kept in sync with |kFeaturesExposedToJava| in
+ * //components/browser_ui/site_settings/android/site_settings_feature_map.cc
  */
-// TODO(crbug.com/1060097): Remove/update this once a generalized FeatureList exists.
-@JNINamespace("browser_ui")
-public class SiteSettingsFeatureList {
+public abstract class SiteSettingsFeatureList {
     public static final String SITE_DATA_IMPROVEMENTS = "SiteDataImprovements";
-
-    private SiteSettingsFeatureList() {}
-
-    /**
-     * Returns whether the specified feature is enabled or not.
-     *
-     * Note: Features queried through this API must be added to the array
-     * |kFeaturesExposedToJava| in
-     * //components/browser_ui/site_settings/android/site_settings_feature_list.cc
-     *
-     * @param featureName The name of the feature to query.
-     * @return Whether the feature is enabled or not.
-     */
-    public static boolean isEnabled(String featureName) {
-        Boolean testValue = FeatureList.getTestValueForFeature(featureName);
-        if (testValue != null) return testValue;
-        assert FeatureList.isNativeInitialized();
-        return SiteSettingsFeatureListJni.get().isEnabled(featureName);
-    }
-
-    @NativeMethods
-    interface Natives {
-        boolean isEnabled(String featureName);
-    }
 }
