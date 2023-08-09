@@ -5,9 +5,8 @@
 import 'chrome://os-settings/lazy_load.js';
 
 import {KerberosAccount, KerberosAccountsBrowserProxyImpl, KerberosAddAccountDialogElement, KerberosConfigErrorCode, KerberosErrorType} from 'chrome://os-settings/lazy_load.js';
-import {CrButtonElement} from 'chrome://os-settings/os_settings.js';
+import {CrButtonElement, CrDialogElement} from 'chrome://os-settings/os_settings.js';
 import {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
-import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import {CrTextareaElement} from 'chrome://resources/cr_elements/cr_textarea/cr_textarea.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
