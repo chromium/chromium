@@ -18,16 +18,24 @@
 #include "components/policy/core/common/policy_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/android/tab_model/tab_model_observer.h"
+#else
+#include "chrome/browser/ui/browser_list_observer.h"
+#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
+#endif
+
 namespace user_manager {
 class User;
 }
 
 namespace policy {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 namespace internal {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 class ProxiedPoliciesPropagatedWatcher;
-}
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+class LocalTestInfoBarVisibilityManager;
+}  // namespace internal
 
 class CloudPolicyStore;
 class ConfigurationPolicyProvider;
@@ -197,6 +205,9 @@ class ProfilePolicyConnector final : public PolicyService::Observer {
 
   raw_ptr<ConfigurationPolicyProvider> local_test_policy_provider_ = nullptr;
 
+  std::unique_ptr<internal::LocalTestInfoBarVisibilityManager>
+      local_test_infobar_visibility_manager_;
+
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // Returns |true| when this is the main profile.
   bool IsMainProfile() const;
@@ -207,7 +218,6 @@ class ProfilePolicyConnector final : public PolicyService::Observer {
   raw_ptr<ChromeBrowserPolicyConnector> browser_policy_connector_ = nullptr;
 #endif
 };
-
 }  // namespace policy
 
 #endif  // CHROME_BROWSER_POLICY_PROFILE_POLICY_CONNECTOR_H_

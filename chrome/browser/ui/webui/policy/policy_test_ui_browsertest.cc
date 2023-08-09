@@ -661,6 +661,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTestUITest, TestErrorStateWhenNameNotSelected) {
 IN_PROC_BROWSER_TEST_F(PolicyTestUITest, TestIncorrectValueTypeRaisesError) {
   ASSERT_TRUE(content::NavigateToURL(web_contents(),
                                      GURL(chrome::kChromeUIPolicyTestURL)));
+  EXPECT_TRUE(ClickAddPolicy());
   const std::string getValueCellInErrorStateJs =
       R"(
         document

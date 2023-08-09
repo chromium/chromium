@@ -38,6 +38,7 @@
 #include "components/policy/policy_constants.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/user_manager/user.h"
+#include "content/public/test/browser_task_environment.h"
 #include "services/network/test/test_network_connection_tracker.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -155,9 +156,11 @@ class ProfilePolicyConnectorTest : public testing::Test {
                                               user_manager::USER_TYPE_REGULAR));
   }
 
-  // Needs to be the first member.
-  base::test::TaskEnvironment task_environment_{
+  // Needs to be the first member. Some tests need to be
+  // called on the called on Chrome_UIThread.
+  content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+
   SchemaRegistry schema_registry_;
   MockCloudPolicyStore cloud_policy_store_;
   std::unique_ptr<CloudPolicyManager> cloud_policy_manager_;

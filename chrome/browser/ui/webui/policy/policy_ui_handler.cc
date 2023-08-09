@@ -34,7 +34,6 @@
 #include "chrome/browser/enterprise/reporting/cloud_profile_reporting_service.h"
 #include "chrome/browser/enterprise/reporting/cloud_profile_reporting_service_factory.h"
 #include "chrome/browser/enterprise/util/affiliation.h"
-#include "chrome/browser/infobars/simple_alert_infobar_creator.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/policy_ui_utils.h"
@@ -52,9 +51,6 @@
 #include "components/enterprise/browser/controller/browser_dm_token_storage.h"
 #include "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.h"
 #include "components/enterprise/browser/reporting/common_pref_names.h"
-#include "components/infobars/content/content_infobar_manager.h"
-#include "components/infobars/core/infobar.h"
-#include "components/infobars/core/infobar_delegate.h"
 #include "components/policy/core/browser/configuration_policy_handler_list.h"
 #include "components/policy/core/browser/policy_conversions.h"
 #include "components/policy/core/browser/webui/json_generation.h"
@@ -101,16 +97,6 @@
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #endif
 
-#if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/android/tab_android.h"
-#include "chrome/browser/ui/android/tab_model/tab_model.h"
-#include "chrome/browser/ui/android/tab_model/tab_model_list.h"
-#else
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_list.h"
-#endif
-
 namespace {
 
 // Key under which extension policies are grouped in JSON policy exports.
@@ -127,9 +113,6 @@ PolicyUIHandler::~PolicyUIHandler() {
   policy::RecordPolicyUIButtonUsage(reload_policies_count_,
                                     export_to_json_count_, copy_to_json_count_,
                                     upload_report_count_);
-  if (local_test_infobar_added_) {
-    DismissInfobarsForActiveLocalTestPoliciesAllTabs();
-  }
 }
 
 void PolicyUIHandler::AddCommonLocalizedStringsToSource(
@@ -260,128 +243,6 @@ void PolicyUIHandler::FileSelectionCanceled(void* params) {
   export_policies_select_file_dialog_ = nullptr;
 }
 
-#if BUILDFLAG(IS_ANDROID)
-void PolicyUIHandler::DidAddTab(TabAndroid* tab, TabModel::TabLaunchType type) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (tab) {
-    AddInfobarForActiveLocalTestPolicies(tab->web_contents());
-  }
-}
-#else
-void PolicyUIHandler::OnBrowserAdded(Browser* browser) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  CHECK(browser);
-
-  browser->tab_strip_model()->AddObserver(this);
-}
-
-void PolicyUIHandler::OnBrowserRemoved(Browser* browser) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  CHECK(browser);
-
-  if (BrowserList::GetInstance()->empty()) {
-    BrowserList::GetInstance()->RemoveObserver(this);
-  }
-  browser->tab_strip_model()->RemoveObserver(this);
-}
-
-void PolicyUIHandler::OnTabStripModelChanged(
-    TabStripModel* tab_strip_model,
-    const TabStripModelChange& change,
-    const TabStripSelectionChange& selection) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (change.type() == TabStripModelChange::kInserted) {
-    for (const auto& contents : change.GetInsert()->contents) {
-      AddInfobarForActiveLocalTestPolicies(contents.contents);
-    }
-  } else if (change.type() == TabStripModelChange::kRemoved) {
-    tab_strip_model->RemoveObserver(this);
-  }
-}
-#endif  // BUILDFLAG(IS_ANDROID)
-
-void PolicyUIHandler::AddInfobarsForActiveLocalTestPoliciesAllTabs() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-#if BUILDFLAG(IS_ANDROID)
-  for (TabModel* model : TabModelList::models()) {
-    for (int index = 0; index < model->GetTabCount(); ++index) {
-      TabAndroid* tab = model->GetTabAt(index);
-      if (tab) {
-        AddInfobarForActiveLocalTestPolicies(tab->web_contents());
-      }
-    }
-    model->AddObserver(this);
-  }
-
-#else
-  for (auto* browser : *BrowserList::GetInstance()) {
-    CHECK(browser);
-
-    OnBrowserAdded(browser);
-
-    TabStripModel* tab_strip_model = browser->tab_strip_model();
-    for (int i = 0; i < tab_strip_model->count(); i++) {
-      AddInfobarForActiveLocalTestPolicies(
-          tab_strip_model->GetWebContentsAt(i));
-    }
-  }
-  BrowserList::GetInstance()->AddObserver(this);
-#endif  // BUILDFLAG(IS_ANDROID)
-  local_test_infobar_added_ = true;
-}
-
-void PolicyUIHandler::AddInfobarForActiveLocalTestPolicies(
-    content::WebContents* web_contents) {
-  CreateSimpleAlertInfoBar(
-      infobars::ContentInfoBarManager::FromWebContents(web_contents),
-      infobars::InfoBarDelegate::LOCAL_TEST_POLICIES_APPLIED_INFOBAR, nullptr,
-      l10n_util::GetStringUTF16(IDS_LOCAL_TEST_POLICIES_ENABLED),
-      /*auto_expire=*/false, /*should_animate=*/false, /*closeable=*/false);
-}
-
-void PolicyUIHandler::DismissInfobarsForActiveLocalTestPoliciesAllTabs() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-#if BUILDFLAG(IS_ANDROID)
-  for (TabModel* model : TabModelList::models()) {
-    for (int index = 0; index < model->GetTabCount(); ++index) {
-      TabAndroid* tab = model->GetTabAt(index);
-      if (tab) {
-        DismissInfobarForActiveLocalTestPolicies(tab->web_contents());
-      }
-    }
-    model->RemoveObserver(this);
-  }
-#else
-  for (auto* browser : *BrowserList::GetInstance()) {
-    CHECK(browser);
-
-    browser->tab_strip_model()->RemoveObserver(this);
-
-    TabStripModel* tab_strip_model = browser->tab_strip_model();
-    for (int i = 0; i < tab_strip_model->count(); i++) {
-      DismissInfobarForActiveLocalTestPolicies(
-          tab_strip_model->GetWebContentsAt(i));
-    }
-  }
-  BrowserList::GetInstance()->RemoveObserver(this);
-#endif  // BUILDFLAG(IS_ANDROID)
-  local_test_infobar_added_ = false;
-}
-
-void PolicyUIHandler::DismissInfobarForActiveLocalTestPolicies(
-    content::WebContents* web_contents) {
-  auto* infobar_manager =
-      infobars::ContentInfoBarManager::FromWebContents(web_contents);
-  for (size_t i = 0; i < infobar_manager->infobar_count(); i++) {
-    auto* infobar = infobar_manager->infobar_at(i);
-    if (infobar->delegate()->GetIdentifier() ==
-        infobars::InfoBarDelegate::LOCAL_TEST_POLICIES_APPLIED_INFOBAR) {
-      infobar_manager->RemoveInfoBar(infobar);
-      return;
-    }
-  }
-}
-
 void PolicyUIHandler::HandleExportPoliciesJson(const base::Value::List& args) {
   export_to_json_count_ += 1;
 #if BUILDFLAG(IS_ANDROID)
@@ -483,9 +344,6 @@ void PolicyUIHandler::HandleSetLocalTestPolicies(
       ->UseLocalTestPolicyProvider();
 
   local_test_provider->LoadJsonPolicies(json_policies_string);
-  if (!local_test_infobar_added_) {
-    AddInfobarsForActiveLocalTestPoliciesAllTabs();
-  }
   AllowJavascript();
   ResolveJavascriptCallback(args[0], true);
 }
@@ -495,9 +353,6 @@ void PolicyUIHandler::HandleRevertLocalTestPolicies(
   Profile::FromWebUI(web_ui())
       ->GetProfilePolicyConnector()
       ->RevertUseLocalTestPolicyProvider();
-  if (local_test_infobar_added_) {
-    DismissInfobarsForActiveLocalTestPoliciesAllTabs();
-  }
 }
 
 void PolicyUIHandler::HandleRestartBrowser(const base::Value::List& args) {
