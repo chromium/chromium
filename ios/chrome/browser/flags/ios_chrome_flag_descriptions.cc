@@ -559,9 +559,6 @@ const char kHideContentSuggestionTilesName[] = "Hide content suggestions tiles";
 const char kHideContentSuggestionTilesDescription[] =
     "Hides content suggestions tiles from the new tab page.";
 
-const char kHttpsOnlyModeName[] = "HTTPS-Only Mode Setting";
-const char kHttpsOnlyModeDescription[] = "Enables the HTTPS-Only Mode setting";
-
 const char kIncognitoNtpRevampName[] = "Revamped Incognito New Tab Page";
 const char kIncognitoNtpRevampDescription[] =
     "When enabled, Incognito new tab page will have an updated UI.";

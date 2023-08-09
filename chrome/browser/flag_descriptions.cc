@@ -1912,11 +1912,6 @@ const char kStorageBucketsDescription[] =
     "multiple buckets of storage to organize their data, allowing user agents "
     "to delete each bucket independently of other buckets.";
 
-const char kHttpsOnlyModeName[] = "HTTPS-First Mode Setting";
-const char kHttpsOnlyModeDescription[] =
-    "Adds a setting under chrome://settings/security to opt-in to HTTPS-First "
-    "Mode.";
-
 const char kHttpsFirstModeV2Name[] = "HTTPS-First Mode V2";
 const char kHttpsFirstModeV2Description[] =
     "Enable rearchitected version of HTTPS-First Mode.";
