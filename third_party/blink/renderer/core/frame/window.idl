@@ -74,7 +74,7 @@
     [NotEnumerable, CrossOrigin] getter Window (unsigned long index);
 
     // named properties
-    [Custom, NotEnumerable, CrossOrigin] getter object (DOMString name);
+    [NotEnumerable, CrossOrigin] getter object (DOMString name);
 
     // the user agent
     [LogActivity=GetterOnly] readonly attribute Navigator navigator;

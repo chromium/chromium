@@ -3895,10 +3895,12 @@ def make_named_props_obj_named_getter_callback(cg_context, function_name):
         TextNode("""\
 // 3.6.4.1. [[GetOwnProperty]]
 // https://webidl.spec.whatwg.org/#named-properties-object-getownproperty
-//
-// TODO(yukishiino): Update the following hard-coded call to an appropriate
-// one.
-V8Window::NamedPropertyGetterCustom(${blink_property_name}, ${info});
+auto&& return_value = ${blink_receiver}->AnonymousNamedGetter(
+    ${blink_property_name});
+if (!return_value.IsEmpty()) {
+  bindings::V8SetReturnValue(${info}, return_value);
+  return;
+}
 """))
 
     return func_def
@@ -4026,19 +4028,18 @@ if (${v8_receiver}->GetRealNamedPropertyAttributesInPrototypeChain(
   return;  // Do not intercept.  Fallback to OrdinaryGetOwnProperty.
 }
 
-// TODO(yukishiino): Update the following hard-coded call to an appropriate
-// one.
-V8Window::NamedPropertyGetterCustom(${blink_property_name}, ${info});
-v8::Local<v8::Value> v8_value = ${info}.GetReturnValue().Get();
-if (v8_value->IsUndefined())
+auto&& return_value = ${blink_receiver}->AnonymousNamedGetter(
+    ${blink_property_name});
+if (return_value.IsEmpty()) {
   return;  // Do not intercept.  Fallback to OrdinaryGetOwnProperty.
+}
 
 // step 4.7. If A implements an interface with the
 //   [LegacyUnenumerableNamedProperties] extended attribute, then set
 //   desc.[[Enumerable]] to false, otherwise set it to true.
 // step 4.8. Set desc.[[Writable]] to true and desc.[[Configurable]] to
 //   true.
-v8::PropertyDescriptor desc(v8_value, /*writable=*/true);
+v8::PropertyDescriptor desc(return_value, /*writable=*/true);
 desc.set_enumerable(false);
 desc.set_configurable(true);
 bindings::V8SetReturnValue(${info}, desc);
@@ -4299,12 +4300,12 @@ for (const auto& operation : kCrossOriginOperationTable) {
         string_case_body.append(
             TextNode("""\
 // Window object's document-tree child browsing context name property set
-//
-// TODO(yukishiino): Update the following hard-coded call to an appropriate
-// one.
-V8Window::NamedPropertyGetterCustom(${blink_property_name}, ${info});
-if (!${info}.GetReturnValue().Get()->IsUndefined())
+auto&& return_value = ${blink_receiver}->AnonymousNamedGetter(
+    ${blink_property_name});
+if (!return_value.IsEmpty()) {
+  bindings::V8SetReturnValue(${info}, return_value);
   return;
+}
 """))
 
     body.extend([
@@ -4465,13 +4466,10 @@ for (const auto& operation : kCrossOriginOperationTable) {
         string_case_body.append(
             TextNode("""\
 // Window object's document-tree child browsing context name property set
-//
-// TODO(yukishiino): Update the following hard-coded call to an appropriate
-// one.
-V8Window::NamedPropertyGetterCustom(${blink_property_name}, ${info});
-if (!${info}.GetReturnValue().Get()->IsUndefined()) {
-  v8::PropertyDescriptor desc(${info}.GetReturnValue().Get(),
-                              /*writable=*/false);
+auto&& return_value = ${blink_receiver}->AnonymousNamedGetter(
+    ${blink_property_name});
+if (!return_value.IsEmpty()) {
+  v8::PropertyDescriptor desc(return_value, /*writable=*/false);
   desc.set_enumerable(false);
   desc.set_configurable(true);
   bindings::V8SetReturnValue(${info}, desc);

@@ -24,7 +24,6 @@ blink_core_sources_bindings =
                     "core/v8/callback_promise_adapter.h",
                     "core/v8/capture_source_location.cc",
                     "core/v8/capture_source_location.h",
-                    "core/v8/custom/v8_window_custom.cc",
                     "core/v8/dictionary.cc",
                     "core/v8/dictionary.h",
                     "core/v8/dictionary_helper_for_core.cc",
