@@ -16,11 +16,9 @@
 #include "chrome/browser/signin/bound_session_credentials/bound_session_registration_fetcher.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_registration_fetcher_param.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_registration_params.pb.h"
+#include "content/public/browser/storage_partition.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-
-class SigninClient;
-class PrefService;
 
 namespace unexportable_keys {
 class UnexportableKeyService;
@@ -30,6 +28,12 @@ namespace user_prefs {
 class PrefRegistrySyncable;
 }
 
+namespace content {
+class StoragePartition;
+}
+
+class PrefService;
+
 class BoundSessionCookieRefreshServiceImpl
     : public BoundSessionCookieRefreshService,
       public BoundSessionCookieController::Delegate {
@@ -37,7 +41,7 @@ class BoundSessionCookieRefreshServiceImpl
   explicit BoundSessionCookieRefreshServiceImpl(
       unexportable_keys::UnexportableKeyService& key_service,
       PrefService* pref_service,
-      SigninClient* client);
+      content::StoragePartition* storage_partion);
 
   ~BoundSessionCookieRefreshServiceImpl() override;
 
@@ -112,7 +116,7 @@ class BoundSessionCookieRefreshServiceImpl
 
   const raw_ref<unexportable_keys::UnexportableKeyService> key_service_;
   const raw_ptr<PrefService> pref_service_;
-  const raw_ptr<SigninClient> client_;
+  const raw_ptr<content::StoragePartition> storage_partition_;
   BoundSessionCookieControllerFactoryForTesting controller_factory_for_testing_;
   RendererBoundSessionParamsUpdaterDelegate renderer_updater_;
 

@@ -18,6 +18,7 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_client.h"
+#include "content/public/browser/storage_partition.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -31,8 +32,10 @@ const char kGoogleSessionTerminationHeader[] = "Sec-Session-Google-Termination";
 BoundSessionCookieRefreshServiceImpl::BoundSessionCookieRefreshServiceImpl(
     unexportable_keys::UnexportableKeyService& key_service,
     PrefService* pref_service,
-    SigninClient* client)
-    : key_service_(key_service), pref_service_(pref_service), client_(client) {}
+    content::StoragePartition* storage_partion)
+    : key_service_(key_service),
+      pref_service_(pref_service),
+      storage_partition_(storage_partion) {}
 
 BoundSessionCookieRefreshServiceImpl::~BoundSessionCookieRefreshServiceImpl() =
     default;
@@ -123,7 +126,8 @@ void BoundSessionCookieRefreshServiceImpl::CreateRegistrationRequest(
 
   active_registration_request_ =
       std::make_unique<BoundSessionRegistrationFetcherImpl>(
-          std::move(registration_params), client_->GetURLLoaderFactory(),
+          std::move(registration_params),
+          storage_partition_->GetURLLoaderFactoryForBrowserProcess(),
           &key_service_.get());
   // `base::Unretained(this)` is safe here because `this` owns the fetcher via
   // `active_registration_requests_`
@@ -203,7 +207,7 @@ BoundSessionCookieRefreshServiceImpl::CreateBoundSessionCookieController(
     const base::flat_set<std::string>& cookie_names) {
   return controller_factory_for_testing_.is_null()
              ? std::make_unique<BoundSessionCookieControllerImpl>(
-                   key_service_.get(), client_, registration_params,
+                   key_service_.get(), storage_partition_, registration_params,
                    cookie_names, this)
              : controller_factory_for_testing_.Run(registration_params,
                                                    cookie_names, this);

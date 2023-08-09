@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_refresh_cookie_fetcher.h"
+#include "content/public/browser/storage_partition.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "url/gurl.h"
 
@@ -21,7 +22,10 @@ namespace unexportable_keys {
 class UnexportableKeyService;
 }  // namespace unexportable_keys
 
-class SigninClient;
+namespace content {
+class StoragePartition;
+}
+
 class BoundSessionCookieObserver;
 class SessionBindingHelper;
 class WaitForNetworkCallbackHelper;
@@ -30,7 +34,7 @@ class BoundSessionCookieControllerImpl : public BoundSessionCookieController {
  public:
   BoundSessionCookieControllerImpl(
       unexportable_keys::UnexportableKeyService& key_service,
-      SigninClient* client,
+      content::StoragePartition* storage_partition,
       bound_session_credentials::RegistrationParams registration_params,
       const base::flat_set<std::string>& cookie_names,
       Delegate* delegate);
@@ -78,7 +82,7 @@ class BoundSessionCookieControllerImpl : public BoundSessionCookieController {
   }
 
   const raw_ref<unexportable_keys::UnexportableKeyService> key_service_;
-  const raw_ptr<SigninClient> client_;
+  const raw_ptr<content::StoragePartition> storage_partition_;
   std::vector<std::unique_ptr<BoundSessionCookieObserver>>
       bound_cookies_observers_;
 

@@ -39,7 +39,6 @@ BoundSessionCookieRefreshServiceFactory::
               .WithRegular(ProfileSelection::kOriginalOnly)
               .WithGuest(ProfileSelection::kOriginalOnly)
               .Build()) {
-  DependsOn(ChromeSigninClientFactory::GetInstance());
   DependsOn(UnexportableKeyServiceFactory::GetInstance());
 }
 
@@ -65,7 +64,7 @@ BoundSessionCookieRefreshServiceFactory::BuildServiceInstanceForBrowserContext(
       bound_session_cookie_refresh_service =
           std::make_unique<BoundSessionCookieRefreshServiceImpl>(
               *key_service, profile->GetPrefs(),
-              ChromeSigninClientFactory::GetForProfile(profile));
+              profile->GetDefaultStoragePartition());
   bound_session_cookie_refresh_service->Initialize();
   return bound_session_cookie_refresh_service;
 }

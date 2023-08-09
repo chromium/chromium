@@ -4,7 +4,7 @@
 
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_observer.h"
 
-#include "chrome/browser/signin/chrome_signin_client.h"
+#include "content/public/browser/storage_partition.h"
 #include "net/cookies/canonical_cookie.h"
 
 namespace {
@@ -26,11 +26,11 @@ absl::optional<const net::CanonicalCookie> GetCookie(
 }  // namespace
 
 BoundSessionCookieObserver::BoundSessionCookieObserver(
-    SigninClient* client,
+    content::StoragePartition* storage_partion,
     const GURL& url,
     const std::string& cookie_name,
     CookieExpirationDateUpdate callback)
-    : client_(client),
+    : storage_partition_(storage_partion),
       url_(url),
       cookie_name_(cookie_name),
       callback_(std::move(callback)) {
@@ -41,7 +41,8 @@ BoundSessionCookieObserver::BoundSessionCookieObserver(
 BoundSessionCookieObserver::~BoundSessionCookieObserver() = default;
 
 void BoundSessionCookieObserver::StartGetCookieList() {
-  network::mojom::CookieManager* cookie_manager = client_->GetCookieManager();
+  network::mojom::CookieManager* cookie_manager =
+      storage_partition_->GetCookieManagerForBrowserProcess();
   if (!cookie_manager) {
     return;
   }
@@ -104,7 +105,8 @@ void BoundSessionCookieObserver::OnCookieChange(
 
 void BoundSessionCookieObserver::AddCookieChangeListener() {
   DCHECK(!cookie_listener_receiver_.is_bound());
-  network::mojom::CookieManager* cookie_manager = client_->GetCookieManager();
+  network::mojom::CookieManager* cookie_manager =
+      storage_partition_->GetCookieManagerForBrowserProcess();
   // NOTE: `cookie_manager` can be nullptr when TestSigninClient is used in
   // testing contexts.
   if (!cookie_manager) {

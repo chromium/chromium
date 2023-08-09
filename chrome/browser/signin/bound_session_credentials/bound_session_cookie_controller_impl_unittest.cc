@@ -17,13 +17,12 @@
 #include "chrome/browser/signin/bound_session_credentials/bound_session_test_cookie_manager.h"
 #include "chrome/browser/signin/bound_session_credentials/fake_bound_session_refresh_cookie_fetcher.h"
 #include "chrome/browser/signin/bound_session_credentials/session_binding_helper.h"
-#include "components/signin/public/base/test_signin_client.h"
-#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/unexportable_keys/service_error.h"
 #include "components/unexportable_keys/unexportable_key_id.h"
 #include "components/unexportable_keys/unexportable_key_loader.h"
 #include "components/unexportable_keys/unexportable_key_service_impl.h"
 #include "components/unexportable_keys/unexportable_key_task_manager.h"
+#include "content/public/test/test_storage_partition.h"
 #include "crypto/scoped_mock_unexportable_key_provider.h"
 #include "crypto/signature_verifier.h"
 #include "google_apis/gaia/gaia_urls.h"
@@ -53,10 +52,7 @@ class BoundSessionCookieControllerImplTest
  public:
   BoundSessionCookieControllerImplTest()
       : unexportable_key_service_(unexportable_key_task_manager_),
-        signin_client_(&prefs_),
         key_id_(GenerateNewKey()) {
-    signin_client_.set_cookie_manager(
-        std::make_unique<BoundSessionTestCookieManager>());
 
     std::vector<uint8_t> wrapped_key = GetWrappedKey(key_id_);
     bound_session_credentials::RegistrationParams registration_params;
@@ -66,9 +62,10 @@ class BoundSessionCookieControllerImplTest
     registration_params.set_wrapped_key(
         std::string(wrapped_key.begin(), wrapped_key.end()));
 
+    storage_partition_.set_cookie_manager_for_browser_process(&cookie_manager_);
     bound_session_cookie_controller_ =
         std::make_unique<BoundSessionCookieControllerImpl>(
-            unexportable_key_service_, &signin_client_, registration_params,
+            unexportable_key_service_, &storage_partition_, registration_params,
             base::flat_set<std::string>(
                 {k1PSIDTSCookieName, k3PSIDTSCookieName}),
             this);
@@ -234,8 +231,8 @@ class BoundSessionCookieControllerImplTest
   crypto::ScopedMockUnexportableKeyProvider scoped_key_provider_;
   unexportable_keys::UnexportableKeyTaskManager unexportable_key_task_manager_;
   unexportable_keys::UnexportableKeyServiceImpl unexportable_key_service_;
-  sync_preferences::TestingPrefServiceSyncable prefs_;
-  TestSigninClient signin_client_;
+  BoundSessionTestCookieManager cookie_manager_;
+  content::TestStoragePartition storage_partition_;
   UnexportableKeyId key_id_;
   std::unique_ptr<BoundSessionCookieControllerImpl>
       bound_session_cookie_controller_;

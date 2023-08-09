@@ -21,6 +21,7 @@
 #include "components/signin/public/base/test_signin_client.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/unexportable_keys/fake_unexportable_key_service.h"
+#include "content/public/test/test_storage_partition.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -111,7 +112,8 @@ bound_session_credentials::RegistrationParams CreateTestRegistrationParams() {
 class BoundSessionCookieRefreshServiceImplTest : public testing::Test {
  public:
   const GURL kTestGaiaURL = GURL("https://google.com");
-  BoundSessionCookieRefreshServiceImplTest() : signin_client_(&prefs_) {
+
+  BoundSessionCookieRefreshServiceImplTest() {
     BoundSessionCookieRefreshServiceImpl::RegisterProfilePrefs(
         prefs_.registry());
   }
@@ -138,7 +140,7 @@ class BoundSessionCookieRefreshServiceImplTest : public testing::Test {
     if (!cookie_refresh_service_) {
       cookie_refresh_service_ =
           std::make_unique<BoundSessionCookieRefreshServiceImpl>(
-              fake_unexportable_key_service_, &prefs_, &signin_client_);
+              fake_unexportable_key_service_, &prefs_, &storage_partition_);
       cookie_refresh_service_->set_controller_factory_for_testing(
           base::BindRepeating(&BoundSessionCookieRefreshServiceImplTest::
                                   GetBoundSessionCookieController,
@@ -203,8 +205,7 @@ class BoundSessionCookieRefreshServiceImplTest : public testing::Test {
   base::test::ScopedFeatureList scoped_feature_list_;
   base::test::TaskEnvironment task_environment_;
   sync_preferences::TestingPrefServiceSyncable prefs_;
-  TestSigninClient signin_client_;
-  network::TestURLLoaderFactory test_url_loader_factory_;
+  content::TestStoragePartition storage_partition_;
   std::unique_ptr<BoundSessionCookieRefreshServiceImpl> cookie_refresh_service_;
   unexportable_keys::FakeUnexportableKeyService fake_unexportable_key_service_;
   raw_ptr<FakeBoundSessionCookieController> cookie_controller_ = nullptr;

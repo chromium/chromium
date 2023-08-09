@@ -10,18 +10,14 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
-#include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_test_cookie_manager.h"
-#include "components/signin/public/base/test_signin_client.h"
-#include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "content/public/test/test_storage_partition.h"
 #include "net/cookies/canonical_cookie.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
-
-using signin::ConsentLevel;
 
 namespace {
 constexpr char kSIDTSCookieName[] = "__Secure-1PSIDTS";
@@ -29,9 +25,7 @@ constexpr char kSIDTSCookieName[] = "__Secure-1PSIDTS";
 class BoundSessionCookieObserverTest : public testing::Test {
  public:
   const GURL kGaiaUrl = GURL("https://google.com");
-  BoundSessionCookieObserverTest() : signin_client_(&prefs_) {
-    ResetCookieManager();
-  }
+  BoundSessionCookieObserverTest() { ResetCookieManager(); }
 
   ~BoundSessionCookieObserverTest() override = default;
 
@@ -39,7 +33,7 @@ class BoundSessionCookieObserverTest : public testing::Test {
     if (!bound_session_cookie_observer_) {
       bound_session_cookie_observer_ =
           std::make_unique<BoundSessionCookieObserver>(
-              &signin_client_, kGaiaUrl, kSIDTSCookieName,
+              &storage_partition_, kGaiaUrl, kSIDTSCookieName,
               base::BindRepeating(
                   &BoundSessionCookieObserverTest::UpdateExpirationDate,
                   base::Unretained(this)));
@@ -47,10 +41,12 @@ class BoundSessionCookieObserverTest : public testing::Test {
   }
 
   void ResetCookieManager() {
-    std::unique_ptr<BoundSessionTestCookieManager> fake_cookie_manager =
-        std::make_unique<BoundSessionTestCookieManager>();
-    cookie_manager_ = fake_cookie_manager.get();
-    signin_client_.set_cookie_manager(std::move(fake_cookie_manager));
+    auto cookie_manager = std::make_unique<BoundSessionTestCookieManager>();
+    storage_partition_.set_cookie_manager_for_browser_process(
+        cookie_manager.get());
+    // Reset storage partition's cookie manager before resetting
+    // `cookie_manager_` to avoid having a dangling raw pointer.
+    cookie_manager_ = std::move(cookie_manager);
   }
 
   void Reset() {
@@ -78,10 +74,8 @@ class BoundSessionCookieObserverTest : public testing::Test {
 
  protected:
   base::test::TaskEnvironment task_environment_;
-  sync_preferences::TestingPrefServiceSyncable prefs_;
-  TestSigninClient signin_client_;
-
-  raw_ptr<BoundSessionTestCookieManager> cookie_manager_;
+  std::unique_ptr<BoundSessionTestCookieManager> cookie_manager_;
+  content::TestStoragePartition storage_partition_;
   std::unique_ptr<BoundSessionCookieObserver> bound_session_cookie_observer_;
   size_t update_expiration_date_call_count_ = 0;
   base::Time cookie_expiration_date_;

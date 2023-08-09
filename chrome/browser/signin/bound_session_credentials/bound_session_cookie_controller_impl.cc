@@ -13,7 +13,7 @@
 #include "chrome/browser/signin/bound_session_credentials/bound_session_refresh_cookie_fetcher_impl.h"
 #include "chrome/browser/signin/bound_session_credentials/session_binding_helper.h"
 #include "chrome/browser/signin/wait_for_network_callback_helper_chrome.h"
-#include "components/signin/public/base/signin_client.h"
+#include "content/public/browser/storage_partition.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace {
@@ -22,13 +22,13 @@ using Result = BoundSessionRefreshCookieFetcher::Result;
 
 BoundSessionCookieControllerImpl::BoundSessionCookieControllerImpl(
     unexportable_keys::UnexportableKeyService& key_service,
-    SigninClient* client,
+    content::StoragePartition* storage_partition,
     bound_session_credentials::RegistrationParams registration_params,
     const base::flat_set<std::string>& cookie_names,
     Delegate* delegate)
     : BoundSessionCookieController(registration_params, cookie_names, delegate),
       key_service_(key_service),
-      client_(client),
+      storage_partition_(storage_partition),
       wait_for_network_callback_helper_(
           std::make_unique<WaitForNetworkCallbackHelperChrome>()) {
   // TODO(b/273920907): Mark `wrapped_key` as non-optional when
@@ -99,7 +99,7 @@ void BoundSessionCookieControllerImpl::CreateBoundCookiesObservers() {
     // `cookie_observer_`.
     std::unique_ptr<BoundSessionCookieObserver> cookie_observer =
         std::make_unique<BoundSessionCookieObserver>(
-            client_, url_, cookie_name,
+            storage_partition_, url_, cookie_name,
             base::BindRepeating(&BoundSessionCookieControllerImpl::
                                     SetCookieExpirationTimeAndNotify,
                                 base::Unretained(this)));
@@ -116,11 +116,12 @@ BoundSessionCookieControllerImpl::CreateRefreshCookieFetcher() const {
 
   return refresh_cookie_fetcher_factory_for_testing_.is_null()
              ? std::make_unique<BoundSessionRefreshCookieFetcherImpl>(
-                   client_->GetURLLoaderFactory(),
+                   storage_partition_->GetURLLoaderFactoryForBrowserProcess(),
                    *wait_for_network_callback_helper_, *session_binding_helper_,
                    url_, std::move(cookie_names))
              : refresh_cookie_fetcher_factory_for_testing_.Run(
-                   client_->GetCookieManager(), url_, std::move(cookie_names));
+                   storage_partition_->GetCookieManagerForBrowserProcess(),
+                   url_, std::move(cookie_names));
 }
 
 bool BoundSessionCookieControllerImpl::AreAllCookiesFresh() {
