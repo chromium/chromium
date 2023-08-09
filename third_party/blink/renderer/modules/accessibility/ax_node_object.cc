@@ -3185,6 +3185,7 @@ bool AXNodeObject::ValueForRange(float* out_value) const {
   }
 
   // In ARIA 1.1, default values for aria-valuenow were changed as below.
+  // - meter: A value matching the implicit or explicitly set aria-valuemin.
   // - scrollbar, slider : half way between aria-valuemin and aria-valuemax
   // - separator : 50
   // - spinbutton : 0
@@ -3201,6 +3202,14 @@ bool AXNodeObject::ValueForRange(float* out_value) const {
     case ax::mojom::blink::Role::kSplitter: {
       *out_value = 50.0f;
       return true;
+    }
+    case ax::mojom::blink::Role::kMeter: {
+      float min_value;
+      if (MinValueForRange(&min_value)) {
+        *out_value = min_value;
+        return true;
+      }
+      [[fallthrough]];
     }
     case ax::mojom::blink::Role::kSpinButton: {
       *out_value = 0.0f;
@@ -3234,6 +3243,7 @@ bool AXNodeObject::MaxValueForRange(float* out_value) const {
   // for aria-valuemax were changed to 100. This change was made for
   // progressbar in ARIA 1.2.
   switch (AriaRoleAttribute()) {
+    case ax::mojom::blink::Role::kMeter:
     case ax::mojom::blink::Role::kProgressIndicator:
     case ax::mojom::blink::Role::kScrollBar:
     case ax::mojom::blink::Role::kSplitter:
@@ -3269,6 +3279,7 @@ bool AXNodeObject::MinValueForRange(float* out_value) const {
   // for aria-valuemin were changed to 0. This change was made for
   // progressbar in ARIA 1.2.
   switch (AriaRoleAttribute()) {
+    case ax::mojom::blink::Role::kMeter:
     case ax::mojom::blink::Role::kProgressIndicator:
     case ax::mojom::blink::Role::kScrollBar:
     case ax::mojom::blink::Role::kSplitter:

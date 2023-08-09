@@ -1,0 +1,19 @@
+X
+
+X
+
+X
+
+X
+
+X
+
+X
+
+The meter1 test PASSES in DumpRenderTree. The value is 0, the minValue is 0, and the max value is 100.
+The meter2 test PASSES in DumpRenderTree. The value is 10, the minValue is 10, and the max value is 100.
+The meter3 test PASSES in DumpRenderTree. The value is 0, the minValue is 0, and the max value is 10.
+The meter4 test PASSES in DumpRenderTree. The value is 3, the minValue is 0, and the max value is 10.
+The meter5 test PASSES in DumpRenderTree. The value is 7, the minValue is 7, and the max value is 10.
+The meter6 test PASSES in DumpRenderTree. The value is 3, the minValue is 0, and the max value is 3.
+
