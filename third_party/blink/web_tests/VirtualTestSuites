@@ -1140,6 +1140,14 @@
     "expires": "Jul 1, 2023"
   },
   {
+    "prefix": "third-party-cookie-phaseout-enabled",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": ["http/tests/inspector-protocol/issues/third-party-cookie-phaseout-exclusion.js"],
+    "exclusive_tests": "ALL",
+    "args": ["--test-third-party-cookie-phaseout"],
+    "expires": "Mar 1, 2024"
+  },
+  {
     "prefix": "third-party-storage-partitioning",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [
