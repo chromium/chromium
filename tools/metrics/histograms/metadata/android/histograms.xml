@@ -1240,6 +1240,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.DragDrop.ToOmnibox.DropType"
+    enum="AndroidToolbarDropType" expires_after="2023-12-10">
+  <owner>wenyufu@chromium.org</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    Records the type of object dropped on the Omnibox, as well as whether it
+    originated from Chrome. This metric could be used to determine the total
+    number of uses for drag and drop to Omnibox, and specifics on how much each
+    data type is being dropped. Android only.
+  </summary>
+</histogram>
+
 <histogram name="Android.DynamicColors.IsAvailable" enum="Boolean"
     expires_after="2023-12-10">
   <owner>skym@chromium.org</owner>

@@ -10,8 +10,10 @@ import android.view.View;
 import android.view.View.OnDragListener;
 import android.widget.FrameLayout;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
 import org.chromium.chrome.browser.omnibox.OmniboxStub;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteDelegate;
@@ -21,10 +23,30 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.widget.Toast;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
 /**
  * ToolbarDragDrop Coordinator owns the view and the model change processor.
  */
 public class ToolbarDragDropCoordinator implements OnDragListener {
+    /**
+     * Java Enum of AndroidToolbarDropType used for histogram recording for
+     * Android.DragDrop.ToOmnibox.DropType. This is used for histograms and should therefore
+     * be treated as append-only.
+     */
+    @IntDef({DropType.INVALID, DropType.TEXT, DropType.CHROME_TEXT, DropType.CHROME_LINK,
+            DropType.NUM_ENTRIES})
+    @Retention(RetentionPolicy.SOURCE)
+    @interface DropType {
+        int INVALID = 0;
+        int CHROME_TEXT = 1;
+        int TEXT = 2;
+        int CHROME_LINK = 3;
+
+        int NUM_ENTRIES = 4;
+    }
+
     // TODO(crbug.com/1469224): Swap error message to a translated string.
     private static final String ERROR_MESSAGE = "Unable to handle drop";
     private AutocompleteDelegate mAutocompleteDelegate;
@@ -106,6 +128,7 @@ public class ToolbarDragDropCoordinator implements OnDragListener {
                             .coerceToText(mTargetView.getContext())
                             .toString(),
                     OmniboxFocusReason.DRAG_DROP_TO_OMNIBOX);
+            recordDropType(DropType.CHROME_TEXT);
         } else if (event.getClipDescription().hasMimeType(MimeTypeUtils.CHROME_MIMETYPE_LINK)) {
             /**
              * This parsing is based on the implementation in
@@ -116,6 +139,7 @@ public class ToolbarDragDropCoordinator implements OnDragListener {
              */
             String url = event.getClipData().getItemAt(0).getIntent().getData().toString();
             mAutocompleteDelegate.loadUrl(url, PageTransition.TYPED, SystemClock.uptimeMillis());
+            recordDropType(DropType.CHROME_LINK);
         } else {
             // case where dragged object is not from Chrome
             event.getClipDescription().filterMimeTypes(MimeTypeUtils.TEXT_MIME_TYPE);
@@ -123,6 +147,7 @@ public class ToolbarDragDropCoordinator implements OnDragListener {
                 Toast errorMessage =
                         Toast.makeText(mTargetView.getContext(), ERROR_MESSAGE, Toast.LENGTH_SHORT);
                 errorMessage.show();
+                recordDropType(DropType.INVALID);
             } else {
                 mOmniboxStub.setUrlBarFocus(true,
                         event.getClipData()
@@ -130,7 +155,13 @@ public class ToolbarDragDropCoordinator implements OnDragListener {
                                 .coerceToText(mTargetView.getContext())
                                 .toString(),
                         OmniboxFocusReason.DRAG_DROP_TO_OMNIBOX);
+                recordDropType(DropType.TEXT);
             }
         }
+    }
+
+    private void recordDropType(@DropType int type) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "Android.DragDrop.ToOmnibox.DropType", type, DropType.NUM_ENTRIES);
     }
 }
