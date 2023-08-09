@@ -520,7 +520,7 @@ AcceleratorConfigResult AshAcceleratorConfiguration::DoAddAccelerator(
     // then we should update the override accordingly. Otherwise, we do not
     // save the override as it will be handled implicitly when applying the
     // prefs.
-    bool save_remove_override = false;
+    bool save_remove_override = true;
     absl::optional<AcceleratorAction> conflict_accelerator_default_id =
         GetIdForDefaultAccelerator(accelerator);
     if (conflict_accelerator_default_id.has_value()) {

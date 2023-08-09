@@ -29,7 +29,7 @@ namespace {
 // Represents the state of the accelerator modification in the prefs.
 // `kAdd` - User adds a custom accelerator ontop of the default accelerators.
 // `kRemove` - User removes a default accelerator.
-// Removing a user-added accelerator will result in a new action, rather it
+// Removing a user-added accelerator will not result in a new action, rather it
 // will remove the pref override entry with `kAdd`.
 enum class AcceleratorModificationAction {
   kAdd = 0,
