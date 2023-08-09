@@ -13,9 +13,11 @@ import android.widget.RadioGroup;
 import androidx.fragment.app.Fragment;
 
 import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridge;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionAndAuxButton;
 
 /**
@@ -24,6 +26,7 @@ import org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionAndAu
 public class SafeBrowsingFragment extends Fragment
         implements RadioButtonWithDescriptionAndAuxButton.OnAuxButtonClickedListener,
                    RadioGroup.OnCheckedChangeListener {
+    private RadioButtonWithDescription mStandardProtectionFriendlier;
     private RadioButtonWithDescriptionAndAuxButton mStandardProtection;
     private RadioButtonWithDescriptionAndAuxButton mEnhancedProtection;
     private BottomSheetController mBottomSheetController;
@@ -44,9 +47,19 @@ public class SafeBrowsingFragment extends Fragment
                 (RadioButtonWithDescriptionAndAuxButton) view.findViewById(R.id.enhanced_option);
         mStandardProtection =
                 (RadioButtonWithDescriptionAndAuxButton) view.findViewById(R.id.standard_option);
+        mStandardProtectionFriendlier =
+                (RadioButtonWithDescription) view.findViewById(R.id.standard_option_friendlier);
+
+        if (ChromeFeatureList.sFriendlierSafeBrowsingSettingsStandardProtection.isEnabled()) {
+            mStandardProtection.setVisibility(View.GONE);
+            mStandardProtectionFriendlier.setVisibility(View.VISIBLE);
+        } else {
+            mStandardProtection.setAuxButtonClickedListener(this);
+            mStandardProtection.setVisibility(View.VISIBLE);
+            mStandardProtectionFriendlier.setVisibility(View.GONE);
+        }
 
         mEnhancedProtection.setAuxButtonClickedListener(this);
-        mStandardProtection.setAuxButtonClickedListener(this);
 
         initialRadioButtonConfig();
     }
@@ -59,7 +72,12 @@ public class SafeBrowsingFragment extends Fragment
                 mEnhancedProtection.setChecked(true);
                 break;
             case (SafeBrowsingState.STANDARD_PROTECTION):
-                mStandardProtection.setChecked(true);
+                if (ChromeFeatureList.sFriendlierSafeBrowsingSettingsStandardProtection
+                                .isEnabled()) {
+                    mStandardProtectionFriendlier.setChecked(true);
+                } else {
+                    mStandardProtection.setChecked(true);
+                }
                 break;
             default:
                 assert false : "Unexpected SafeBrowsingState " + safeBrowsingState;
@@ -86,7 +104,8 @@ public class SafeBrowsingFragment extends Fragment
             SafeBrowsingBridge.setSafeBrowsingState(SafeBrowsingState.ENHANCED_PROTECTION);
             PrivacyGuideMetricsDelegate.recordMetricsOnSafeBrowsingChange(
                     SafeBrowsingState.ENHANCED_PROTECTION);
-        } else if (clickedButtonId == R.id.standard_option) {
+        } else if (clickedButtonId == R.id.standard_option
+                || clickedButtonId == R.id.standard_option_friendlier) {
             SafeBrowsingBridge.setSafeBrowsingState(SafeBrowsingState.STANDARD_PROTECTION);
             PrivacyGuideMetricsDelegate.recordMetricsOnSafeBrowsingChange(
                     SafeBrowsingState.STANDARD_PROTECTION);

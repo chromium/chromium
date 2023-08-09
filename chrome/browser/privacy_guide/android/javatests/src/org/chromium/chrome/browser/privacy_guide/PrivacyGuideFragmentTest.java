@@ -1049,8 +1049,8 @@ public class PrivacyGuideFragmentTest {
         onViewWaiting(withId(R.id.sb_standard_sheet)).check(matches(isDisplayed()));
 
         pressBack();
-        onViewWaiting(withText(R.string.privacy_guide_safe_browsing_standard_title))
-                .check(matches(isDisplayed()));
+        onViewWaiting(allOf(
+                withText(R.string.privacy_guide_safe_browsing_standard_title), isDisplayed()));
     }
 
     @Test
