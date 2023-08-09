@@ -51,6 +51,7 @@
             <cr-toggle checked="{{option.value}}"
                 on-change="onToggleButtonOrDropdownChange_"
                 aria-label="[[option.label]]"
+                aria-description="[[option.subtitle]]"
                 deep-link-focus-id$="[[option.deepLink]]">
             </cr-toggle>
           </template>
@@ -94,6 +95,7 @@
               <cr-toggle checked="{{dependent.value}}"
                   on-click="onToggleButtonOrDropdownChange_"
                   aria-label="[[dependent.label]]"
+                  aria-description="[[dependent.subtitle]]"
                   disabled="[[dependentOptionsDisabled_(option.value)]]">
               </cr-toggle>
             </template>
