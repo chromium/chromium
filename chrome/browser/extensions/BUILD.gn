@@ -568,6 +568,8 @@ static_library("extensions") {
     "extension_system_impl.h",
     "extension_tab_util.cc",
     "extension_tab_util.h",
+    "extension_telemetry_service_verdict_handler.cc",
+    "extension_telemetry_service_verdict_handler.h",
     "extension_ui_util.cc",
     "extension_ui_util.h",
     "extension_uninstall_dialog.cc",

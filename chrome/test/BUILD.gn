@@ -8512,6 +8512,7 @@ test("unit_tests") {
       "../browser/extensions/extension_special_storage_policy_unittest.cc",
       "../browser/extensions/extension_sync_data_unittest.cc",
       "../browser/extensions/extension_tab_util_unittest.cc",
+      "../browser/extensions/extension_telemetry_service_verdict_handler_unittest.cc",
       "../browser/extensions/extension_test_message_listener_unittest.cc",
       "../browser/extensions/extension_user_script_loader_unittest.cc",
       "../browser/extensions/extension_util_unittest.cc",
