@@ -1913,12 +1913,11 @@ config("chromium_code") {
 
       # Warn on unnecessary extra semicolons outside of function definitions.
       "-Wextra-semi",
-    ]
 
-    # TODO(thakis): Enable this more often, https://crbug.com/346399
-    if (!is_nacl || is_nacl_saigo) {
-      cflags += [ "-Wunreachable-code-aggressive" ]
-    }
+      # Warn on unreachable code, including unreachable breaks and returns.
+      # See https://crbug.com/346399#c148 for suppression strategies.
+      "-Wunreachable-code-aggressive",
+    ]
 
     # Thread safety analysis is broken under nacl: https://crbug.com/982423.
     if (!is_nacl || is_nacl_saigo) {

@@ -28,5 +28,4 @@ PP_EXPORT void PPP_ShutdownModule() {
 PP_EXPORT const void* PPP_GetInterface(const char* interface_name) {
   printf("PPP_GetInterface\n");
   NACL_NOTREACHED();  // If initialization fails, this should not be called.
-  return NULL;
 }
