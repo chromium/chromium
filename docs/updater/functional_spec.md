@@ -681,8 +681,8 @@ python3 chrome/updater/win/signing/msi_from_standalone.py
     --candle_path ../third_party/wix/v3_8_1128/files/candle.exe
     --light_path ../third_party/wix/v3_8_1128/files/light.exe
     --product_name "Google Chrome Beta"
-    --product_version "110.0.5478.0"
-    --appid "{8237E44A-0054-442C-B6B6-EA0509993955}"
+    --product_version 110.0.5478.0
+    --appid {8237E44A-0054-442C-B6B6-EA0509993955}
     --product_custom_params "&brand=GCEA"
     --product_uninstaller_additional_args=--force-uninstall
     --product_installer_data "%7B%22dis%22%3A%7B%22msi%22%3Atrue%7D%7D"
