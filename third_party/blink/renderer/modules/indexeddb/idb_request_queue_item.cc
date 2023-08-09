@@ -261,10 +261,10 @@ IDBRequestQueueItem::~IDBRequestQueueItem() {
 }
 
 void IDBRequestQueueItem::OnResultLoadComplete() {
-  DCHECK(!ready_);
+  CHECK(!ready_);
   ready_ = true;
 
-  DCHECK(on_result_ready_);
+  CHECK(on_result_ready_);
   std::move(on_result_ready_).Run();
 }
 
@@ -339,7 +339,7 @@ void IDBRequestQueueItem::SendResult() {
   DCHECK(!result_sent_);
   result_sent_ = true;
 #endif  // DCHECK_IS_ON()
-  DCHECK_EQ(request_->queue_item_, this);
+  CHECK_EQ(request_->queue_item_, this);
   request_->queue_item_ = nullptr;
 
   switch (response_type_) {

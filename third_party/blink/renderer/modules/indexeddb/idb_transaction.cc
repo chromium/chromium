@@ -410,6 +410,7 @@ void IDBTransaction::OnResultReady() {
 
   while (!result_queue_.empty()) {
     IDBRequestQueueItem* result = result_queue_.front().get();
+    CHECK(result);
     if (!result->IsReady())
       break;
 
