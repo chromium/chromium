@@ -29,7 +29,6 @@ THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 BROWSER_CONFIG_TO_TARGET_SUFFIX_MAP = {
     'android-chromium': '_android_chrome',
     'android-chromium-monochrome': '_android_monochrome',
-    'android-weblayer': '_android_weblayer',
     'android-webview': '_android_webview',
 }
 
