@@ -274,7 +274,13 @@ void RenderViewHostImpl::GetPlatformSpecificPrefs(
   prefs->arrow_bitmap_width_horizontal_scroll_bar_in_dips =
       display::win::ScreenWin::GetSystemMetricsInDIP(SM_CXHSCROLL);
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  prefs->system_font_family_name = gfx::Font().GetFontName();
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(switches::kSystemFontFamily)) {
+    prefs->system_font_family_name =
+        command_line->GetSwitchValueASCII(switches::kSystemFontFamily);
+  } else {
+    prefs->system_font_family_name = gfx::Font().GetFontName();
+  }
 #elif BUILDFLAG(IS_FUCHSIA)
   // Make Blink's "focus ring" invisible. The focus ring is a hairline border
   // that's rendered around clickable targets.
