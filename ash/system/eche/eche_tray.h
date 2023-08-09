@@ -314,9 +314,6 @@ class ASH_EXPORT EcheTray
   void OnShelfAlignmentChanged(aura::Window* root_window,
                                ShelfAlignment old_alignment) override;
 
-  // returns the position of the anchor that bubble needs to be anchored to.
-  gfx::Rect GetAnchor();
-
   // Processes the accelerator keys and returns true if the accelerator was
   // processed completely in this method and no further processing is needed.
   bool ProcessAcceleratorKeys(ui::KeyEvent* event);

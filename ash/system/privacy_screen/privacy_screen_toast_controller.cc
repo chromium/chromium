@@ -45,17 +45,13 @@ void PrivacyScreenToastController::ShowToast() {
 
   tray_->CloseSecondaryBubbles();
 
-  TrayBubbleView::InitParams init_params;
+  TrayBubbleView::InitParams init_params =
+      CreateInitParamsForTrayBubble(tray_, /*anchor_to_shelf_corner=*/true);
   init_params.type = TrayBubbleView::TrayBubbleType::kSecondaryBubble;
-  init_params.shelf_alignment = tray_->shelf()->alignment();
   init_params.preferred_width = kPrivacyScreenToastMinWidth;
+
+  // Use this controller as the delegate rather than the tray.
   init_params.delegate = GetWeakPtr();
-  init_params.parent_window = tray_->GetBubbleWindowContainer();
-  init_params.anchor_view = nullptr;
-  init_params.anchor_mode = TrayBubbleView::AnchorMode::kRect;
-  init_params.anchor_rect = tray_->shelf()->GetSystemTrayAnchorRect();
-  init_params.insets = GetTrayBubbleInsets(tray_->GetBubbleWindowContainer());
-  init_params.translucent = true;
 
   bubble_view_ = new TrayBubbleView(init_params);
   toast_view_ = new PrivacyScreenToastView(
