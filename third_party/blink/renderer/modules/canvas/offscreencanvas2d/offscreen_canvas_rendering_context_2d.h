@@ -87,7 +87,6 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
            !dirty_rect_for_commit_.isEmpty();
   }
 
-  String font() const;
   void setFont(const String&) override;
 
   String direction() const;

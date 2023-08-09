@@ -12,7 +12,6 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_gpucanvascontext_imagebitmaprenderingcontext_offscreencanvasrenderingcontext2d_webgl2renderingcontext_webglrenderingcontext.h"
 #include "third_party/blink/renderer/core/css/offscreen_font_selector.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
-#include "third_party/blink/renderer/core/css/properties/computed_style_utils.h"
 #include "third_party/blink/renderer/core/css/resolver/font_style_resolver.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -366,35 +365,6 @@ bool OffscreenCanvasRenderingContext2D::IsAccelerated() const {
 
 void OffscreenCanvasRenderingContext2D::WillOverwriteCanvas() {
   GetCanvasResourceProvider()->SkipQueuedDrawCommands();
-}
-
-String OffscreenCanvasRenderingContext2D::font() const {
-  if (!GetState().HasRealizedFont())
-    return kDefaultFont;
-
-  StringBuilder serialized_font;
-  const FontDescription& font_description = GetState().GetFontDescription();
-
-  if (font_description.Style() == ItalicSlopeValue())
-    serialized_font.Append("italic ");
-  if (font_description.Weight() == BoldWeightValue()) {
-    serialized_font.Append("bold ");
-  } else if (font_description.Weight() != NormalWeightValue()) {
-    int weight_as_int = static_cast<int>((float)font_description.Weight());
-    serialized_font.AppendNumber(weight_as_int);
-    serialized_font.Append(" ");
-  }
-  if (font_description.VariantCaps() == FontDescription::kSmallCaps)
-    serialized_font.Append("small-caps ");
-
-  serialized_font.AppendNumber(font_description.ComputedPixelSize());
-  serialized_font.Append("px ");
-
-  serialized_font.Append(
-      ComputedStyleUtils::ValueForFontFamily(font_description.Family())
-          ->CssText());
-
-  return serialized_font.ToString();
 }
 
 void OffscreenCanvasRenderingContext2D::setFont(const String& new_font) {

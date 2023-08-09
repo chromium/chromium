@@ -320,6 +320,8 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
   String fontStretch() const;
   String fontVariantCaps() const;
 
+  String font() const;
+
   void Trace(Visitor*) const override;
 
   enum DrawCallType {
@@ -415,6 +417,8 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
   unsigned try_restore_context_attempt_count_ = 0;
 
  protected:
+  virtual void WillUseCurrentFont() const;
+
   explicit BaseRenderingContext2D(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
