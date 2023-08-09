@@ -892,6 +892,36 @@ TEST_P(SixPackAliasSearchTest, CheckSixPackAliasSearch) {
   EXPECT_EQ(expected_accelerators_, accelerator_alias[0]);
 }
 
+TEST_P(SixPackAliasSearchTest, CheckSixPackAliasNone) {
+  fake_keyboard_manager_->RemoveAllDevices();
+  ui::KeyboardDevice fake_keyboard(
+      /*id=*/1, /*type=*/ui::InputDeviceType::INPUT_DEVICE_INTERNAL,
+      /*name=*/kKbdTopRowLayout1Tag);
+  fake_keyboard.sys_path = base::FilePath("path");
+  fake_keyboard_manager_->AddFakeKeyboard(fake_keyboard, kKbdTopRowLayout2Tag);
+  auto settings = Shell::Get()
+                      ->input_device_settings_controller()
+                      ->GetKeyboardSettings(fake_keyboard.id)
+                      ->Clone();
+
+  mojom::SixPackKeyInfoPtr six_pack_key_info = mojom::SixPackKeyInfo::New();
+  six_pack_key_info->del = ui::mojom::SixPackShortcutModifier::kNone;
+  six_pack_key_info->home = ui::mojom::SixPackShortcutModifier::kNone;
+  six_pack_key_info->insert = ui::mojom::SixPackShortcutModifier::kNone;
+  six_pack_key_info->end = ui::mojom::SixPackShortcutModifier::kNone;
+  six_pack_key_info->page_down = ui::mojom::SixPackShortcutModifier::kNone;
+  six_pack_key_info->page_up = ui::mojom::SixPackShortcutModifier::kNone;
+  settings->six_pack_key_remappings = six_pack_key_info.Clone();
+  Shell::Get()->input_device_settings_controller()->SetKeyboardSettings(
+      fake_keyboard.id, std::move(settings));
+  AcceleratorAliasConverter accelerator_alias_converter_;
+
+  std::vector<ui::Accelerator> accelerator_alias =
+      accelerator_alias_converter_.CreateAcceleratorAlias(accelerator_);
+
+  EXPECT_EQ(0u, accelerator_alias.size());
+}
+
 class MediaKeyAliasTest : public AcceleratorAliasConverterTest,
                           public testing::WithParamInterface<ui::KeyboardCode> {
 };

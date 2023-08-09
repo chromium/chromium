@@ -440,6 +440,11 @@ std::vector<ui::Accelerator> AcceleratorAliasConverter::CreateSixPackAliases(
   const ui::KeyboardCode accel_key_code = accelerator.key_code();
   const ui::mojom::SixPackShortcutModifier six_pack_shortcut_modifier =
       GetSixPackShortcutModifier(accel_key_code, device_id);
+
+  if (six_pack_shortcut_modifier == ui::mojom::SixPackShortcutModifier::kNone) {
+    return std::vector<ui::Accelerator>();
+  }
+
   int modifiers;
   ui::KeyboardCode key_code;
   if (six_pack_shortcut_modifier ==
