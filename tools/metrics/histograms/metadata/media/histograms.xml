@@ -3085,7 +3085,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.GlobalMediaControls.MediaCastMode.{Action}"
-    enum="GlobalMediaControlsCastMode" expires_after="2023-09-20">
+    enum="GlobalMediaControlsCastMode" expires_after="2024-08-01">
   <owner>muyaoxu@google.com</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
