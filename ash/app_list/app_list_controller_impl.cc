@@ -511,6 +511,8 @@ void AppListControllerImpl::UpdateAppListWithNewTemporarySortOrder(
     const absl::optional<AppListSortOrder>& new_order,
     bool animate,
     base::OnceClosure update_position_closure) {
+  TRACE_EVENT0("ui",
+               "AppListControllerImpl::UpdateAppListWithNewTemporarySortOrder");
   if (new_order) {
     RecordAppListSortAction(*new_order, IsInTabletMode());
 

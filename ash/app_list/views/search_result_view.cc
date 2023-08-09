@@ -31,6 +31,7 @@
 #include "ash/style/typography.h"
 #include "base/functional/bind.h"
 #include "base/i18n/number_formatting.h"
+#include "base/trace_event/trace_event.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -1425,6 +1426,7 @@ void SearchResultView::OnGestureEvent(ui::GestureEvent* event) {
 }
 
 void SearchResultView::OnMetadataChanged() {
+  TRACE_EVENT0("ui", "SearchResultView::OnMetadataChanged");
   if (view_type_ == SearchResultViewType::kAnswerCard) {
     UpdateBigTitleContainer();
     UpdateBigTitleSuperscriptContainer();
@@ -1472,6 +1474,7 @@ void SearchResultView::OnButtonPressed(const ui::Event& event) {
 void SearchResultView::SetIconImage(const gfx::ImageSkia& source,
                                     views::ImageView* const icon,
                                     const gfx::Size& size) {
+  TRACE_EVENT0("ui", "SearchResultView::SetIconImage");
   gfx::ImageSkia image(source);
   image = gfx::ImageSkiaOperations::CreateResizedImage(
       source, skia::ImageOperations::RESIZE_BEST, size);
