@@ -48,8 +48,8 @@ static_library("browser") {
     "website_settings_registry.h",
   ]
 
+  public_deps = [ "//base" ]
   deps = [
-    "//base",
     "//build:blink_buildflags",
     "//build:chromeos_buildflags",
     "//components/content_settings/core/common",
