@@ -487,5 +487,27 @@ TEST_F(AutofillSyncBridgeUtilTest, VirtualCardUsageDataFromUsageSpecifics) {
             usage_specifics.virtual_card_usage_data().merchant_url());
 }
 
+// Test to ensure that WalletCredential struct data for CVV storage is correctly
+// converted to AutofillWalletCredentialSpecifics.
+TEST_F(AutofillSyncBridgeUtilTest,
+       AutofillWalletCredentialSpecificsFromStructData) {
+  std::unique_ptr<ServerCvc> server_cvc = std::make_unique<ServerCvc>(
+      1234, u"890", base::Time::UnixEpoch() + base::Milliseconds(25000));
+
+  sync_pb::AutofillWalletCredentialSpecifics wallet_credential_specifics =
+      AutofillWalletCredentialSpecificsFromStructData(*server_cvc);
+
+  EXPECT_EQ(base::NumberToString(server_cvc->instrument_id),
+            wallet_credential_specifics.instrument_id());
+  EXPECT_EQ(base::UTF16ToUTF8(server_cvc->cvc),
+            wallet_credential_specifics.cvc());
+  EXPECT_EQ((server_cvc->last_updated_timestamp - base::Time::UnixEpoch())
+                .InMilliseconds(),
+            wallet_credential_specifics.last_updated_time_unix_epoch_millis());
+  EXPECT_EQ((server_cvc->last_updated_timestamp - base::Time::UnixEpoch())
+                .InMilliseconds(),
+            25000);
+}
+
 }  // namespace
 }  // namespace autofill

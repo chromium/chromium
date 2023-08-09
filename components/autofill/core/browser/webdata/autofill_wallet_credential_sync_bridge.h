@@ -61,6 +61,7 @@ class AutofillWalletCredentialSyncBridge : public base::SupportsUserData::Data,
   std::string GetStorageKey(const syncer::EntityData& entity_data) override;
   void ApplyDisableSyncChanges(std::unique_ptr<syncer::MetadataChangeList>
                                    delete_metadata_change_list) override;
+  bool IsEntityDataValid(const syncer::EntityData& entity_data) const override;
 
  private:
   // AutofillWalletCredentialDataSyncBridge is owned by `web_data_backend_`

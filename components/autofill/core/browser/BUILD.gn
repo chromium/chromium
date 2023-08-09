@@ -1044,6 +1044,7 @@ source_set("unit_tests") {
     "webdata/autofill_profile_sync_difference_tracker_unittest.cc",
     "webdata/autofill_sync_bridge_util_unittest.cc",
     "webdata/autofill_table_unittest.cc",
+    "webdata/autofill_wallet_credential_sync_bridge_unittest.cc",
     "webdata/autofill_wallet_metadata_sync_bridge_unittest.cc",
     "webdata/autofill_wallet_offer_sync_bridge_unittest.cc",
     "webdata/autofill_wallet_sync_bridge_unittest.cc",

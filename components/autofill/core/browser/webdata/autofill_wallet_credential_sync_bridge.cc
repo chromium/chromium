@@ -6,8 +6,11 @@
 
 #include <utility>
 
+#include "base/check.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/sync/model/client_tag_based_model_type_processor.h"
+#include "components/sync/protocol/autofill_wallet_credential_specifics.pb.h"
+#include "components/sync/protocol/entity_data.h"
 
 namespace autofill {
 
@@ -86,19 +89,36 @@ void AutofillWalletCredentialSyncBridge::GetAllDataForDebugging(
 
 std::string AutofillWalletCredentialSyncBridge::GetClientTag(
     const syncer::EntityData& entity_data) {
-  NOTIMPLEMENTED();
-  return "";
+  CHECK(IsEntityDataValid(entity_data));
+  const sync_pb::AutofillWalletCredentialSpecifics&
+      autofill_wallet_credential_data =
+          entity_data.specifics.autofill_wallet_credential();
+
+  return autofill_wallet_credential_data.instrument_id();
 }
 
 std::string AutofillWalletCredentialSyncBridge::GetStorageKey(
     const syncer::EntityData& entity_data) {
-  NOTIMPLEMENTED();
-  return "";
+  // Storage key and client tag are equivalent for this ModelType.
+  return GetClientTag(entity_data);
 }
 
 void AutofillWalletCredentialSyncBridge::ApplyDisableSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> delete_metadata_change_list) {
   NOTIMPLEMENTED();
+}
+
+bool AutofillWalletCredentialSyncBridge::IsEntityDataValid(
+    const syncer::EntityData& entity_data) const {
+  return entity_data.specifics.has_autofill_wallet_credential() &&
+         !entity_data.specifics.autofill_wallet_credential()
+              .instrument_id()
+              .empty() &&
+         !entity_data.specifics.autofill_wallet_credential().cvc().empty() &&
+         entity_data.specifics.autofill_wallet_credential()
+             .has_last_updated_time_unix_epoch_millis() &&
+         entity_data.specifics.autofill_wallet_credential()
+                 .last_updated_time_unix_epoch_millis() != 0;
 }
 
 }  // namespace autofill
