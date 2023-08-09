@@ -5,8 +5,9 @@
 #import "ios/chrome/browser/ui/settings/password/password_sharing/family_picker_view_controller.h"
 
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
 #import "ios/chrome/browser/ui/authentication/authentication_constants.h"
-#import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_cell.h"
+#import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_item.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/recipient_info.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -16,16 +17,21 @@
 
 namespace {
 
+typedef NS_ENUM(NSInteger, SectionIdentifier) {
+  SectionIdentifierRecipients = kSectionIdentifierEnumZero,
+};
+
+typedef NS_ENUM(NSInteger, ItemType) {
+  ItemTypeRecipient = kItemTypeEnumZero,
+  ItemTypeHeader,
+};
+
 // Size of the accessory view symbol.
 const CGFloat kAccessorySymbolSize = 22;
 
 }  // namespace
 
-@interface FamilyPickerViewController () <UITableViewDataSource,
-                                          UITableViewDelegate> {
-  // Height constraint for the bottom sheet.
-  NSLayoutConstraint* _heightConstraint;
-
+@interface FamilyPickerViewController () {
   // List of password sharing recipients that the user can pick from.
   NSArray<RecipientInfoForIOSDisplay*>* _recipients;
 }
@@ -34,18 +40,42 @@ const CGFloat kAccessorySymbolSize = 22;
 
 @implementation FamilyPickerViewController
 
-- (instancetype)init {
-  self = [super init];
-  return self;
-}
-
 #pragma mark - UIViewController
 
 - (void)viewDidLoad {
-  self.subtitleString =
-      l10n_util::GetNSString(IDS_IOS_PASSWORD_SHARING_FAMILY_PICKER_SUBTITLE);
-  self.subtitleTextStyle = UIFontTextStyleFootnote;
   [super viewDidLoad];
+
+  self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc]
+      initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
+                           target:self
+                           action:@selector(cancelButtonTapped)];
+  self.navigationItem.title =
+      l10n_util::GetNSString(IDS_IOS_PASSWORD_SHARING_TITLE);
+  UIBarButtonItem* shareButton = [[UIBarButtonItem alloc]
+      initWithTitle:l10n_util::GetNSString(
+                        IDS_IOS_PASSWORD_SHARING_SHARE_BUTTON)
+              style:UIBarButtonItemStylePlain
+             target:self
+             action:@selector(shareButtonTapped)];
+  shareButton.enabled = NO;
+  self.navigationItem.rightBarButtonItem = shareButton;
+
+  self.tableView.allowsMultipleSelection = YES;
+
+  [self loadModel];
+}
+
+- (void)loadModel {
+  [super loadModel];
+
+  TableViewModel* model = self.tableViewModel;
+  [model addSectionWithIdentifier:SectionIdentifierRecipients];
+  [model setHeader:[self headerItem]
+      forSectionWithIdentifier:SectionIdentifierRecipients];
+  for (RecipientInfoForIOSDisplay* recipient in _recipients) {
+    [model addItem:[self recipientItem:recipient]
+        toSectionWithIdentifier:SectionIdentifierRecipients];
+  }
 }
 
 #pragma mark - UITableViewDelegate
@@ -79,15 +109,9 @@ const CGFloat kAccessorySymbolSize = 22;
 
 - (UITableViewCell*)tableView:(UITableView*)tableView
         cellForRowAtIndexPath:(NSIndexPath*)indexPath {
-  SettingsImageDetailTextCell* cell =
-      [tableView dequeueReusableCellWithIdentifier:@"cell"];
+  UITableViewCell* cell = [super tableView:tableView
+                     cellForRowAtIndexPath:indexPath];
   cell.selectionStyle = UITableViewCellSelectionStyleNone;
-
-  cell.textLabel.text = _recipients[indexPath.row].fullName;
-  cell.detailTextLabel.text = _recipients[indexPath.row].email;
-  // TODO(crbug.com/1463882): Replace with the actual image of the recipient.
-  cell.image = DefaultSymbolTemplateWithPointSize(
-      kPersonCropCircleSymbol, kAccountProfilePhotoDimension);
   cell.userInteractionEnabled = YES;
   if (_recipients[indexPath.row].isEligible) {
     cell.accessoryView = [[UIImageView alloc] initWithImage:[self circleIcon]];
@@ -103,24 +127,29 @@ const CGFloat kAccessorySymbolSize = 22;
   return cell;
 }
 
-#pragma mark - Private
+#pragma mark - Items
 
-- (UITableView*)createTableView {
-  UITableView* tableView = [super createTableView];
-
-  tableView.dataSource = self;
-  tableView.accessibilityIdentifier = @"FamilyPickerBottomSheetViewId";
-  tableView.allowsMultipleSelection = YES;
-  [tableView registerClass:SettingsImageDetailTextCell.class
-      forCellReuseIdentifier:@"cell"];
-
-  _heightConstraint = [tableView.heightAnchor
-      constraintEqualToConstant:[self tableViewEstimatedRowHeight] *
-                                _recipients.count];
-  _heightConstraint.active = YES;
-
-  return tableView;
+- (TableViewLinkHeaderFooterItem*)headerItem {
+  TableViewLinkHeaderFooterItem* header =
+      [[TableViewLinkHeaderFooterItem alloc] initWithType:ItemTypeHeader];
+  header.text =
+      l10n_util::GetNSString(IDS_IOS_PASSWORD_SHARING_FAMILY_PICKER_SUBTITLE);
+  return header;
 }
+
+- (SettingsImageDetailTextItem*)recipientItem:
+    (RecipientInfoForIOSDisplay*)recipient {
+  SettingsImageDetailTextItem* item =
+      [[SettingsImageDetailTextItem alloc] initWithType:ItemTypeRecipient];
+  item.text = recipient.fullName;
+  item.detailText = recipient.email;
+  // TODO(crbug.com/1463882): Replace with the actual image of the recipient.
+  item.image = DefaultSymbolTemplateWithPointSize(
+      kPersonCropCircleSymbol, kAccountProfilePhotoDimension);
+  return item;
+}
+
+#pragma mark - Private
 
 - (UIImage*)checkmarkCircleIcon {
   return DefaultSymbolWithPointSize(kCheckmarkCircleFillSymbol,
@@ -169,6 +198,14 @@ const CGFloat kAccessorySymbolSize = 22;
   [self presentViewController:popoverViewController
                      animated:YES
                    completion:nil];
+}
+
+- (void)cancelButtonTapped {
+  // TODO(crbug.com/1463882): Handle cancel tap.
+}
+
+- (void)shareButtonTapped {
+  // TODO(crbug.com/1463882): Handle share tap.
 }
 
 @end
