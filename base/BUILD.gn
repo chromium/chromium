@@ -2012,6 +2012,7 @@ component("base") {
       "mac/close_nocancel.cc",
       "mac/launch_application.h",
       "mac/launch_application.mm",
+      "mac/launch_services_spi.h",
       "mac/launchd.cc",
       "mac/launchd.h",
       "mac/mac_util.h",

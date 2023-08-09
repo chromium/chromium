@@ -4,10 +4,12 @@
 
 #import "base/mac/launch_application.h"
 
+#include "base/apple/bridging.h"
 #include "base/command_line.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/mac/foundation_util.h"
+#include "base/mac/launch_services_spi.h"
 #include "base/mac/mac_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/types/expected.h"
@@ -59,6 +61,24 @@ NSWorkspaceOpenConfiguration* GetOpenConfiguration(
   config.arguments = CommandLineArgsToArgsArray(command_line_args);
 
   return config;
+}
+
+NSDictionary* GetOpenOptions(LaunchApplicationOptions options,
+                             const CommandLineArgs& command_line_args) {
+  NSDictionary* dict = @{
+    base::apple::CFToNSPtrCast(_kLSOpenOptionArgumentsKey) :
+        CommandLineArgsToArgsArray(command_line_args),
+    base::apple::CFToNSPtrCast(_kLSOpenOptionHideKey) :
+        @(options.hidden_in_background),
+    base::apple::CFToNSPtrCast(_kLSOpenOptionBackgroundLaunchKey) :
+        @(options.hidden_in_background),
+    base::apple::CFToNSPtrCast(_kLSOpenOptionAddToRecentsKey) :
+        @(!options.hidden_in_background),
+    base::apple::CFToNSPtrCast(_kLSOpenOptionActivateKey) : @(options.activate),
+    base::apple::CFToNSPtrCast(_kLSOpenOptionPreferRunningInstanceKey) :
+        @(!options.create_new_instance),
+  };
+  return dict;
 }
 
 // Sometimes macOS 11 and 12 report an error launching even though the launch
@@ -134,6 +154,33 @@ void LaunchApplication(const base::FilePath& app_bundle_path,
       [ns_urls
           addObject:[NSURL URLWithString:base::SysUTF8ToNSString(url_spec)]];
     }
+  }
+
+  if (options.hidden_in_background) {
+    _LSOpenCompletionHandler action_block =
+        ^void(LSASNRef asn, Boolean success, CFErrorRef cf_error) {
+          NSRunningApplication* app = nil;
+          if (asn) {
+            app = [[NSRunningApplication alloc]
+                initWithApplicationSerialNumber:asn];
+          }
+          NSError* error = base::apple::CFToNSPtrCast(cf_error);
+          dispatch_async(dispatch_get_main_queue(), ^{
+            if (error) {
+              LOG(ERROR) << base::SysNSStringToUTF8(error.localizedDescription);
+              std::move(callback_block_access).Run(nil, error);
+            } else {
+              std::move(callback_block_access).Run(app, nil);
+            }
+          });
+        };
+
+    _LSOpenURLsWithCompletionHandler(
+        base::apple::NSToCFPtrCast(ns_urls ? ns_urls : @[]),
+        mac::FilePathToCFURL(app_bundle_path),
+        base::apple::NSToCFPtrCast(GetOpenOptions(options, command_line_args)),
+        action_block);
+    return;
   }
 
   void (^action_block)(NSRunningApplication*, NSError*) =

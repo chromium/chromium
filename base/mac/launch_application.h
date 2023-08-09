@@ -30,6 +30,13 @@ struct LaunchApplicationOptions {
   bool activate = true;
   bool create_new_instance = false;
   bool prompt_user_if_needed = false;
+
+  // When this option is set to true, a private SPI is used to launch the app
+  // "invisibly". Apps launched this way do not show up as running.
+  // Note that opening URLs in an already running hidden-in-background app
+  // appears to always cause the app to transition to foreground, even if we've
+  // requested a background launch.
+  bool hidden_in_background = false;
 };
 
 using LaunchApplicationCallback =

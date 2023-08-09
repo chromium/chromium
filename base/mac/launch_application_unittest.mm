@@ -297,6 +297,9 @@ TEST_F(LaunchApplicationTest, Basic) {
 
   WaitForLaunchEvents(1);
   EXPECT_NSEQ(LaunchEventName(0), @"applicationDidFinishLaunching");
+  EXPECT_NSEQ(LaunchEventData(0)[@"activationPolicy"],
+              @(NSApplicationActivationPolicyRegular));
+  EXPECT_EQ(app.activationPolicy, NSApplicationActivationPolicyRegular);
   EXPECT_NSEQ(LaunchEventData(0)[@"commandLine"],
               (@[ FilePathToNSString(helper_app_executable_path_) ]));
   EXPECT_NSEQ(LaunchEventData(0)[@"processIdentifier"],
@@ -309,6 +312,10 @@ TEST_F(LaunchApplicationTest, BundleDoesntExist) {
       temp_dir_.GetPath().AppendASCII("notexists.app"), command_line_args, {},
       {});
   ASSERT_TRUE(err);
+  err = LaunchApplicationSyncExpectError(
+      temp_dir_.GetPath().AppendASCII("notexists.app"), command_line_args, {},
+      {.hidden_in_background = true});
+  ASSERT_TRUE(err);
 }
 
 TEST_F(LaunchApplicationTest, BundleCorrupt) {
@@ -316,6 +323,10 @@ TEST_F(LaunchApplicationTest, BundleCorrupt) {
   std::vector<std::string> command_line_args;
   NSError* err = LaunchApplicationSyncExpectError(helper_app_bundle_path_,
                                                   command_line_args, {}, {});
+  ASSERT_TRUE(err);
+  err = LaunchApplicationSyncExpectError(helper_app_bundle_path_,
+                                         command_line_args, {},
+                                         {.hidden_in_background = true});
   ASSERT_TRUE(err);
 }
 
@@ -414,6 +425,154 @@ TEST_F(LaunchApplicationTest, CreateNewInstance) {
   EXPECT_NSEQ(LaunchEventName(3), @"applicationDidFinishLaunching");
   EXPECT_NSEQ(LaunchEventData(3)[@"processIdentifier"],
               @(app3.processIdentifier));
+}
+
+TEST_F(LaunchApplicationTest, HiddenInBackground) {
+  std::vector<std::string> command_line_args = {"--test", "--foo"};
+  NSRunningApplication* app = LaunchApplicationSyncExpectSuccess(
+      helper_app_bundle_path_, command_line_args, {},
+      {.hidden_in_background = true});
+  ASSERT_TRUE(app);
+  EXPECT_NSEQ(app.bundleIdentifier, helper_bundle_id_);
+  EXPECT_EQ(helper_app_bundle_path_, NSURLToFilePath(app.bundleURL));
+
+  WaitForLaunchEvents(1);
+  EXPECT_NSEQ(LaunchEventName(0), @"applicationDidFinishLaunching");
+  EXPECT_NSEQ(LaunchEventData(0)[@"activationPolicy"],
+              @(NSApplicationActivationPolicyProhibited));
+  EXPECT_EQ(app.activationPolicy, NSApplicationActivationPolicyProhibited);
+  EXPECT_NSEQ(
+      LaunchEventData(0)[@"commandLine"], (@[
+        FilePathToNSString(helper_app_executable_path_), @"--test", @"--foo"
+      ]));
+  EXPECT_NSEQ(LaunchEventData(0)[@"processIdentifier"],
+              @(app.processIdentifier));
+
+  NSRunningApplication* app2 = LaunchApplicationSyncExpectSuccess(
+      helper_app_bundle_path_, command_line_args, {},
+      {.create_new_instance = false, .hidden_in_background = true});
+  EXPECT_NSEQ(app, app2);
+  EXPECT_EQ(app.processIdentifier, app2.processIdentifier);
+  EXPECT_EQ(app.activationPolicy, NSApplicationActivationPolicyProhibited);
+  EXPECT_EQ(app2.activationPolicy, NSApplicationActivationPolicyProhibited);
+  // Launching without opening anything should not trigger any launch events.
+
+  // Opening a URL in a new instance, should leave both instances in the
+  // background.
+  NSRunningApplication* app3 = LaunchApplicationSyncExpectSuccess(
+      helper_app_bundle_path_, command_line_args, {"x-chrome-launch://2"},
+      {.create_new_instance = true, .hidden_in_background = true});
+  EXPECT_NSNE(app, app3);
+  EXPECT_NE(app.processIdentifier, app3.processIdentifier);
+  WaitForLaunchEvents(3);
+  EXPECT_NSEQ(LaunchEventName(1), @"openURLs");
+  EXPECT_NSEQ(LaunchEventName(2), @"applicationDidFinishLaunching");
+  EXPECT_NSEQ(LaunchEventData(2)[@"processIdentifier"],
+              @(app3.processIdentifier));
+  EXPECT_EQ(app.activationPolicy, NSApplicationActivationPolicyProhibited);
+  EXPECT_EQ(app2.activationPolicy, NSApplicationActivationPolicyProhibited);
+  EXPECT_EQ(app3.activationPolicy, NSApplicationActivationPolicyProhibited);
+}
+
+TEST_F(LaunchApplicationTest,
+       HiddenInBackground_OpenUrlChangesActivationPolicy) {
+  std::vector<std::string> command_line_args = {"--test", "--foo"};
+  NSRunningApplication* app = LaunchApplicationSyncExpectSuccess(
+      helper_app_bundle_path_, command_line_args, {},
+      {.hidden_in_background = true});
+  ASSERT_TRUE(app);
+  EXPECT_NSEQ(app.bundleIdentifier, helper_bundle_id_);
+  EXPECT_EQ(helper_app_bundle_path_, NSURLToFilePath(app.bundleURL));
+
+  WaitForLaunchEvents(1);
+  EXPECT_NSEQ(LaunchEventName(0), @"applicationDidFinishLaunching");
+  EXPECT_NSEQ(LaunchEventData(0)[@"activationPolicy"],
+              @(NSApplicationActivationPolicyProhibited));
+  EXPECT_EQ(app.activationPolicy, NSApplicationActivationPolicyProhibited);
+  EXPECT_NSEQ(
+      LaunchEventData(0)[@"commandLine"], (@[
+        FilePathToNSString(helper_app_executable_path_), @"--test", @"--foo"
+      ]));
+  EXPECT_NSEQ(LaunchEventData(0)[@"processIdentifier"],
+              @(app.processIdentifier));
+
+  NSRunningApplication* app2 = LaunchApplicationSyncExpectSuccess(
+      helper_app_bundle_path_, command_line_args, {"chrome://app-launch/0"},
+      {.create_new_instance = false, .hidden_in_background = true});
+  EXPECT_NSEQ(app, app2);
+  EXPECT_EQ(app.processIdentifier, app2.processIdentifier);
+  // Unexpected to me, but opening a URL seems to always change the activation
+  // policy.
+  EXPECT_EQ(app.activationPolicy, NSApplicationActivationPolicyRegular);
+  EXPECT_EQ(app2.activationPolicy, NSApplicationActivationPolicyRegular);
+  WaitForLaunchEvents(3);
+  EXPECT_THAT(
+      std::vector<std::string>({SysNSStringToUTF8(LaunchEventName(1)),
+                                SysNSStringToUTF8(LaunchEventName(2))}),
+      testing::UnorderedElementsAre("activationPolicyChanged", "openURLs"));
+}
+
+TEST_F(LaunchApplicationTest, HiddenInBackground_TransitionToForeground) {
+  std::vector<std::string> command_line_args;
+  NSRunningApplication* app = LaunchApplicationSyncExpectSuccess(
+      helper_app_bundle_path_, command_line_args, {"x-chrome-launch://1"},
+      {.hidden_in_background = true});
+  ASSERT_TRUE(app);
+
+  WaitForLaunchEvents(2);
+  EXPECT_NSEQ(LaunchEventName(0), @"openURLs");
+  EXPECT_NSEQ(LaunchEventName(1), @"applicationDidFinishLaunching");
+  EXPECT_NSEQ(LaunchEventData(1)[@"activationPolicy"],
+              @(NSApplicationActivationPolicyProhibited));
+  EXPECT_EQ(app.activationPolicy, NSApplicationActivationPolicyProhibited);
+  EXPECT_NSEQ(LaunchEventData(1)[@"processIdentifier"],
+              @(app.processIdentifier));
+
+  // Second launch with hidden_in_background set to false should cause the first
+  // app to switch activation policy.
+  NSRunningApplication* app2 = LaunchApplicationSyncExpectSuccess(
+      helper_app_bundle_path_, command_line_args, {},
+      {.hidden_in_background = false});
+  EXPECT_NSEQ(app, app2);
+  WaitForLaunchEvents(3);
+  EXPECT_NSEQ(LaunchEventName(2), @"activationPolicyChanged");
+  EXPECT_NSEQ(LaunchEventData(2)[@"activationPolicy"],
+              @(NSApplicationActivationPolicyRegular));
+  EXPECT_EQ(app2.activationPolicy, NSApplicationActivationPolicyRegular);
+}
+
+TEST_F(LaunchApplicationTest, HiddenInBackground_AlreadyInForeground) {
+  std::vector<std::string> command_line_args;
+  NSRunningApplication* app = LaunchApplicationSyncExpectSuccess(
+      helper_app_bundle_path_, command_line_args, {"x-chrome-launch://1"},
+      {.hidden_in_background = false});
+  ASSERT_TRUE(app);
+
+  WaitForLaunchEvents(2);
+  EXPECT_NSEQ(LaunchEventName(0), @"openURLs");
+  EXPECT_NSEQ(LaunchEventName(1), @"applicationDidFinishLaunching");
+  EXPECT_NSEQ(LaunchEventData(1)[@"activationPolicy"],
+              @(NSApplicationActivationPolicyRegular));
+  EXPECT_EQ(app.activationPolicy, NSApplicationActivationPolicyRegular);
+  EXPECT_NSEQ(LaunchEventData(1)[@"processIdentifier"],
+              @(app.processIdentifier));
+
+  // Second (and third) launch with hidden_in_background set to true should
+  // reuse the existing app and keep it visible.
+  NSRunningApplication* app2 = LaunchApplicationSyncExpectSuccess(
+      helper_app_bundle_path_, command_line_args, {},
+      {.hidden_in_background = true});
+  EXPECT_NSEQ(app, app2);
+  EXPECT_EQ(app2.activationPolicy, NSApplicationActivationPolicyRegular);
+  NSRunningApplication* app3 = LaunchApplicationSyncExpectSuccess(
+      helper_app_bundle_path_, command_line_args, {"x-chrome-launch://23"},
+      {.hidden_in_background = true});
+  EXPECT_NSEQ(app, app3);
+  WaitForLaunchEvents(3);
+  EXPECT_NSEQ(LaunchEventName(2), @"openURLs");
+  EXPECT_NSEQ(LaunchEventData(2)[@"processIdentifier"],
+              @(app.processIdentifier));
+  EXPECT_EQ(app3.activationPolicy, NSApplicationActivationPolicyRegular);
 }
 
 }  // namespace

@@ -36,7 +36,7 @@ def _CheckNoInterfacesInBase(input_api, output_api):
         not "/test/" in f.LocalPath() and
         not f.LocalPath().endswith('.java') and
         not f.LocalPath().endswith('_unittest.mm') and
-        not f.LocalPath().endswith('mac/sdk_forward_declarations.h')):
+        not f.LocalPath().endswith('_spi.h')):
       contents = input_api.ReadFile(f)
       if pattern.search(contents):
         files.append(f)

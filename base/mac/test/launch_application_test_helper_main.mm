@@ -17,6 +17,7 @@
 @implementation AppDelegate {
   NSArray* _command_line;
   NSURL* _fifo_url;
+  NSRunningApplication* _running_app;
 }
 
 - (instancetype)initWithCommandLine:(NSArray*)command_line {
@@ -29,14 +30,39 @@
             [bundle_url.lastPathComponent
                 stringByReplacingOccurrencesOfString:@".app"
                                           withString:@".fifo"]];
+    _running_app = NSRunningApplication.currentApplication;
+    [_running_app addObserver:self
+                   forKeyPath:@"activationPolicy"
+                      options:NSKeyValueObservingOptionNew
+                      context:nullptr];
   }
   return self;
+}
+
+- (void)dealloc {
+  [_running_app removeObserver:self
+                    forKeyPath:@"activationPolicy"
+                       context:nullptr];
+}
+
+- (void)observeValueForKeyPath:(NSString*)keyPath
+                      ofObject:(id)object
+                        change:(NSDictionary*)change
+                       context:(void*)context {
+  [self
+      addLaunchEvent:@"activationPolicyChanged"
+            withData:@{
+              @"activationPolicy" : change[@"new"],
+              @"processIdentifier" :
+                  @(NSRunningApplication.currentApplication.processIdentifier),
+            }];
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification*)notification {
   [self
       addLaunchEvent:@"applicationDidFinishLaunching"
             withData:@{
+              @"activationPolicy" : @(NSApp.activationPolicy),
               @"commandLine" : _command_line,
               @"processIdentifier" :
                   @(NSRunningApplication.currentApplication.processIdentifier),
@@ -54,6 +80,7 @@
   [self
       addLaunchEvent:@"openURLs"
             withData:@{
+              @"activationPolicy" : @(NSApp.activationPolicy),
               @"processIdentifier" :
                   @(NSRunningApplication.currentApplication.processIdentifier),
               @"urls" : url_specs,
