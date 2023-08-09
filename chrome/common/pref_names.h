@@ -630,10 +630,6 @@ inline constexpr char kLastSessionLength[] = "session.last_session_length";
 // honored for public accounts.
 inline constexpr char kTermsOfServiceURL[] = "terms_of_service.url";
 
-// TODO(b/285556135): Remove this pref together with AttestationEnabledForUser
-// Indicates whether the remote attestation is enabled for the user.
-inline constexpr char kAttestationEnabled[] = "attestation.enabled";
-
 // A boolean pref recording whether user has dismissed the multiprofile
 // introduction dialog show.
 inline constexpr char kMultiProfileNeverShowIntro[] =

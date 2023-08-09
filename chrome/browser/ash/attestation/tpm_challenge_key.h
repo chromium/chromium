@@ -20,10 +20,6 @@
 class Profile;
 class AttestationFlow;
 
-namespace user_prefs {
-class PrefRegistrySyncable;
-}  // namespace user_prefs
-
 namespace ash {
 namespace attestation {
 
@@ -55,8 +51,6 @@ class TpmChallengeKey {
   TpmChallengeKey(const TpmChallengeKey&) = delete;
   TpmChallengeKey& operator=(const TpmChallengeKey&) = delete;
   virtual ~TpmChallengeKey() = default;
-
-  static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
   // Should be called only once for every instance. |TpmChallengeKey| object
   // should live as long as response from |BuildResponse| function via

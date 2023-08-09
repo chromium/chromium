@@ -11024,29 +11024,7 @@
     ]
   },
   "AttestationEnabledForUser": {
-    "os": [
-      "chromeos_ash"
-    ],
-    "policy_pref_mapping_tests": [
-      {
-        "note": "Default value (no policies set).",
-        "prefs": {
-          "attestation.enabled": {
-            "default_value": false
-          }
-        }
-      },
-      {
-        "policies": {
-          "AttestationEnabledForUser": true
-        },
-        "prefs": {
-          "attestation.enabled": {
-            "value": true
-          }
-        }
-      }
-    ]
+    "reason_for_missing_test": "Policy was removed"
   },
   "AttestationExtensionAllowlist": {
     "os": [

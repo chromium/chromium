@@ -16,7 +16,6 @@
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/dbus/attestation/attestation_ca.pb.h"
 #include "chromeos/ash/components/dbus/constants/attestation_constants.h"
-#include "components/pref_registry/pref_registry_syncable.h"
 
 class Profile;
 class AttestationFlow;
@@ -48,11 +47,6 @@ void TpmChallengeKeyFactory::SetForTesting(
 }
 
 //=========================== TpmChallengeKeyImpl ==============================
-
-void TpmChallengeKey::RegisterProfilePrefs(
-    user_prefs::PrefRegistrySyncable* registry) {
-  registry->RegisterBooleanPref(prefs::kAttestationEnabled, false);
-}
 
 TpmChallengeKeyImpl::TpmChallengeKeyImpl() {
   tpm_challenge_key_subtle_ = TpmChallengeKeySubtleFactory::Create();
