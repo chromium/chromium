@@ -6,6 +6,7 @@
 
 #include "base/containers/contains.h"
 #include "base/strings/string_piece.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/ash/crosapi/ash_requires_lacros_extension_apitest.h"
 #include "chrome/browser/extensions/extension_keeplist_chromeos.h"
 #include "chromeos/crosapi/mojom/test_controller.mojom-test-utils.h"
@@ -47,10 +48,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionKeeplistTest,
     return;
 
   // Get the Ash extension keeplist data from Lacros.
-  crosapi::mojom::StandaloneBrowserTestControllerAsyncWaiter waiter(
-      GetStandaloneBrowserTestController());
-  auto mojo_keeplist = crosapi::mojom::ExtensionKeepList::New();
-  waiter.GetExtensionKeeplist(&mojo_keeplist);
+  base::test::TestFuture<crosapi::mojom::ExtensionKeepListPtr> future;
+  GetStandaloneBrowserTestController()->GetExtensionKeeplist(
+      future.GetCallback());
+  auto mojo_keeplist = future.Take();
 
   // Verify the ash extension keeplist data from Ash and Lacros are identical.
 

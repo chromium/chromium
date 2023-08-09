@@ -18,7 +18,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/crosapi/mojom/prefs.mojom-shared.h"
-#include "chromeos/crosapi/mojom/prefs.mojom-test-utils.h"
 #include "chromeos/crosapi/mojom/prefs.mojom.h"
 #include "chromeos/lacros/crosapi_pref_observer.h"
 #include "chromeos/lacros/lacros_service.h"
@@ -40,7 +39,25 @@
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace {
+
 using ContextType = extensions::ExtensionBrowserTest::ContextType;
+
+void SetPref(crosapi::mojom::PrefPath path, base::Value value) {
+  base::test::TestFuture<void> future;
+  chromeos::LacrosService::Get()->GetRemote<crosapi::mojom::Prefs>()->SetPref(
+      path, std::move(value), future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+}
+
+absl::optional<base::Value> GetPref(crosapi::mojom::PrefPath path) {
+  base::test::TestFuture<absl::optional<base::Value>> future;
+  chromeos::LacrosService::Get()->GetRemote<crosapi::mojom::Prefs>()->GetPref(
+      path, future.GetCallback());
+  return future.Take();
+}
+
+}  // namespace
 
 // Tests for extension-controlled prefs, where an extension in lacros sets a
 // pref where the underlying feature lives in ash.
@@ -177,14 +194,9 @@ INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          ::testing::Values(ContextType::kServiceWorker));
 
 IN_PROC_BROWSER_TEST_P(ExtensionPreferenceApiLacrosBrowserTest, Lacros) {
-  absl::optional<::base::Value> out_value;
-  crosapi::mojom::PrefsAsyncWaiter async_waiter(
-      chromeos::LacrosService::Get()->GetRemote<crosapi::mojom::Prefs>().get());
-
   // At start, the value in ash should not be set.
-  async_waiter.GetPref(
-      crosapi::mojom::PrefPath::kAccessibilitySpokenFeedbackEnabled,
-      &out_value);
+  absl::optional<base::Value> out_value =
+      GetPref(crosapi::mojom::PrefPath::kAccessibilitySpokenFeedbackEnabled);
   EXPECT_FALSE(out_value.value().GetBool());
 
   extensions::ExtensionId test_extension_id;
@@ -207,12 +219,11 @@ IN_PROC_BROWSER_TEST_P(ExtensionPreferenceApiLacrosBrowserTest, Lacros) {
   CheckPreferencesSet();
 
   // In ash, the value should now be set.
-  async_waiter.GetPref(
-      crosapi::mojom::PrefPath::kAccessibilitySpokenFeedbackEnabled,
-      &out_value);
+  out_value =
+      GetPref(crosapi::mojom::PrefPath::kAccessibilitySpokenFeedbackEnabled);
   EXPECT_TRUE(out_value.value().GetBool());
   if (IsLacrosServiceSyncingProxyPref()) {
-    async_waiter.GetPref(crosapi::mojom::PrefPath::kProxy, &out_value);
+    out_value = GetPref(crosapi::mojom::PrefPath::kProxy);
     EXPECT_EQ(out_value.value().GetDict(),
               ProxyConfigDictionary::CreateDirect());
   }
@@ -237,13 +248,12 @@ IN_PROC_BROWSER_TEST_P(ExtensionPreferenceApiLacrosBrowserTest, Lacros) {
     // When the extension in uninstalled, the pref in lacros should be the
     // default value (false). This only works if Ash correctly implements
     // extension-controlled pref observers.
-    async_waiter.GetPref(
-        crosapi::mojom::PrefPath::kAccessibilitySpokenFeedbackEnabled,
-        &out_value);
+    out_value =
+        GetPref(crosapi::mojom::PrefPath::kAccessibilitySpokenFeedbackEnabled);
     EXPECT_FALSE(out_value.value().GetBool());
 
     if (IsLacrosServiceSyncingProxyPref()) {
-      async_waiter.GetPref(crosapi::mojom::PrefPath::kProxy, &out_value);
+      out_value = GetPref(crosapi::mojom::PrefPath::kProxy);
       EXPECT_EQ(out_value.value().GetDict(),
                 ProxyConfigDictionary::CreateSystem());
     }
@@ -260,14 +270,9 @@ IN_PROC_BROWSER_TEST_P(ExtensionPreferenceApiLacrosBrowserTest, Lacros) {
 
 IN_PROC_BROWSER_TEST_P(ExtensionPreferenceApiLacrosBrowserTest,
                        LacrosSecondaryProfile) {
-  absl::optional<::base::Value> out_value;
-  crosapi::mojom::PrefsAsyncWaiter async_waiter(
-      chromeos::LacrosService::Get()->GetRemote<crosapi::mojom::Prefs>().get());
-
   // At start, the value in ash should not be set.
-  async_waiter.GetPref(
-      crosapi::mojom::PrefPath::kAccessibilitySpokenFeedbackEnabled,
-      &out_value);
+  absl::optional<base::Value> out_value =
+      GetPref(crosapi::mojom::PrefPath::kAccessibilitySpokenFeedbackEnabled);
   EXPECT_FALSE(out_value.value().GetBool());
 
   // Create a secondary profile.
@@ -293,14 +298,12 @@ IN_PROC_BROWSER_TEST_P(ExtensionPreferenceApiLacrosBrowserTest,
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
 
   // Set the pref value in ash.
-  async_waiter.SetPref(
-      crosapi::mojom::PrefPath::kAccessibilitySpokenFeedbackEnabled,
-      base::Value(true));
+  SetPref(crosapi::mojom::PrefPath::kAccessibilitySpokenFeedbackEnabled,
+          base::Value(true));
 
   // Verify the value is set in ash side.
-  async_waiter.GetPref(
-      crosapi::mojom::PrefPath::kAccessibilitySpokenFeedbackEnabled,
-      &out_value);
+  out_value =
+      GetPref(crosapi::mojom::PrefPath::kAccessibilitySpokenFeedbackEnabled);
   EXPECT_TRUE(out_value.value().GetBool());
 
   // Reload the testing extension in the secondary profile.
@@ -321,12 +324,10 @@ IN_PROC_BROWSER_TEST_P(ExtensionPreferenceApiLacrosBrowserTest,
   // Since lacros browser tests shared the same ash instance, we need to restore
   // the modified pref in ash to default before exiting the test, so that
   // it won't affect other lacros browser tests.
-  async_waiter.SetPref(
-      crosapi::mojom::PrefPath::kAccessibilitySpokenFeedbackEnabled,
-      base::Value(false));
-  async_waiter.GetPref(
-      crosapi::mojom::PrefPath::kAccessibilitySpokenFeedbackEnabled,
-      &out_value);
+  SetPref(crosapi::mojom::PrefPath::kAccessibilitySpokenFeedbackEnabled,
+          base::Value(false));
+  out_value =
+      GetPref(crosapi::mojom::PrefPath::kAccessibilitySpokenFeedbackEnabled);
   EXPECT_FALSE(out_value.value().GetBool());
 }
 
@@ -352,10 +353,8 @@ IN_PROC_BROWSER_TEST_P(ExtensionPreferenceApiLacrosBrowserTest,
 }
 
 base::Value::Dict GetAshProxyPrefValue() {
-  absl::optional<::base::Value> out_value;
-  crosapi::mojom::PrefsAsyncWaiter async_waiter(
-      chromeos::LacrosService::Get()->GetRemote<crosapi::mojom::Prefs>().get());
-  async_waiter.GetPref(crosapi::mojom::PrefPath::kProxy, &out_value);
+  absl::optional<::base::Value> out_value =
+      GetPref(crosapi::mojom::PrefPath::kProxy);
   return out_value.value().GetDict().Clone();
 }
 

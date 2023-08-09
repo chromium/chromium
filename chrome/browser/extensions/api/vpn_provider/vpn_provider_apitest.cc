@@ -16,7 +16,7 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/common/extensions/api/vpn_provider.h"
 #include "chromeos/ash/components/network/shill_property_handler.h"
-#include "chromeos/crosapi/mojom/vpn_service.mojom-test-utils.h"
+#include "chromeos/crosapi/mojom/vpn_service.mojom.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/pepper_vpn_provider_resource_host_proxy.h"
 #include "content/public/browser/vpn_service_proxy.h"
@@ -41,7 +41,6 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/crosapi/mojom/test_controller.mojom-test-utils.h"
 #include "chromeos/crosapi/mojom/test_controller.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
 #endif
@@ -208,9 +207,11 @@ class VpnProviderApiTestLacros : public VpnProviderApiTestBase {
       LOG(ERROR) << "Unsupported ash version.";
       return false;
     }
-    crosapi::mojom::TestControllerAsyncWaiter waiter{
-        service->GetRemote<crosapi::mojom::TestController>().get()};
-    waiter.BindTestShillController(controller_.BindNewPipeAndPassReceiver());
+    base::test::TestFuture<void> future;
+    service->GetRemote<crosapi::mojom::TestController>()
+        ->BindTestShillController(controller_.BindNewPipeAndPassReceiver(),
+                                  future.GetCallback());
+    EXPECT_TRUE(future.Wait());
     return true;
   }
 
@@ -650,9 +651,9 @@ IN_PROC_BROWSER_TEST_F(VpnProviderApiTest, PlatformMessage) {
       extension_id(), remote.BindNewPipeAndPassReceiver(),
       receiver.BindNewPipeAndPassRemote());
 
-  crosapi::mojom::VpnServiceForExtensionAsyncWaiter waiter{remote.get()};
-  crosapi::mojom::VpnErrorResponsePtr error;
-  waiter.CreateConfiguration(kTestConfig, &error);
+  base::test::TestFuture<crosapi::mojom::VpnErrorResponsePtr> future;
+  remote->CreateConfiguration(kTestConfig, future.GetCallback());
+  auto error = future.Take();
   ASSERT_FALSE(error) << "CreateConfiguration failed with |message| = "
                       << error->message.value_or(std::string{});
 
