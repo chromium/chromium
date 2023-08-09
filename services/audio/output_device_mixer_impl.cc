@@ -23,17 +23,17 @@ constexpr double OutputDeviceMixerImpl::kDefaultVolume;
 
 namespace {
 
-const char* LatencyToUmaSuffix(media::AudioLatency::LatencyType latency) {
+const char* LatencyToUmaSuffix(media::AudioLatency::Type latency) {
   switch (latency) {
-    case media::AudioLatency::LATENCY_EXACT_MS:
+    case media::AudioLatency::Type::kExactMS:
       return "LatencyExactMs";
-    case media::AudioLatency::LATENCY_INTERACTIVE:
+    case media::AudioLatency::Type::kInteractive:
       return "LatencyInteractive";
-    case media::AudioLatency::LATENCY_RTC:
+    case media::AudioLatency::Type::kRtc:
       return "LatencyRtc";
-    case media::AudioLatency::LATENCY_PLAYBACK:
+    case media::AudioLatency::Type::kPlayback:
       return "LatencyPlayback";
-    default:
+    case media::AudioLatency::Type::kUnknown:
       return "LatencyUnknown";
   }
 }

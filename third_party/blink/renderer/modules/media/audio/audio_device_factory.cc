@@ -99,24 +99,24 @@ AudioDeviceFactory::~AudioDeviceFactory() {
 }
 
 // static
-media::AudioLatency::LatencyType AudioDeviceFactory::GetSourceLatencyType(
+media::AudioLatency::Type AudioDeviceFactory::GetSourceLatencyType(
     blink::WebAudioDeviceSourceType source) {
   switch (source) {
     case blink::WebAudioDeviceSourceType::kWebAudioInteractive:
-      return media::AudioLatency::LATENCY_INTERACTIVE;
+      return media::AudioLatency::Type::kInteractive;
     case blink::WebAudioDeviceSourceType::kNone:
     case blink::WebAudioDeviceSourceType::kWebRtc:
     case blink::WebAudioDeviceSourceType::kNonRtcAudioTrack:
     case blink::WebAudioDeviceSourceType::kWebAudioBalanced:
-      return media::AudioLatency::LATENCY_RTC;
+      return media::AudioLatency::Type::kRtc;
     case blink::WebAudioDeviceSourceType::kMediaElement:
     case blink::WebAudioDeviceSourceType::kWebAudioPlayback:
-      return media::AudioLatency::LATENCY_PLAYBACK;
+      return media::AudioLatency::Type::kPlayback;
     case blink::WebAudioDeviceSourceType::kWebAudioExact:
-      return media::AudioLatency::LATENCY_EXACT_MS;
+      return media::AudioLatency::Type::kExactMS;
   }
   NOTREACHED();
-  return media::AudioLatency::LATENCY_INTERACTIVE;
+  return media::AudioLatency::Type::kUnknown;
 }
 
 scoped_refptr<media::AudioRendererSink>

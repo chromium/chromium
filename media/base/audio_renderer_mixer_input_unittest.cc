@@ -51,15 +51,15 @@ class AudioRendererMixerInputTest : public testing::Test,
       delete;
 
   void CreateMixerInput(const std::string& device_id) {
-    mixer_input_ = new AudioRendererMixerInput(this, kFrameToken, device_id,
-                                               AudioLatency::LATENCY_PLAYBACK);
+    mixer_input_ = new AudioRendererMixerInput(
+        this, kFrameToken, device_id, AudioLatency::Type::kPlayback);
     mixer_input_->GetOutputDeviceInfoAsync(base::DoNothing());
     task_environment_.RunUntilIdle();
   }
 
   AudioRendererMixer* GetMixer(const base::UnguessableToken& owner_token,
                                const AudioParameters& params,
-                               AudioLatency::LatencyType latency,
+                               AudioLatency::Type latency,
                                const OutputDeviceInfo& sink_info,
                                scoped_refptr<AudioRendererSink> sink) override {
     EXPECT_TRUE(params.IsValid());
@@ -332,8 +332,9 @@ TEST_F(AudioRendererMixerInputTest, SwitchOutputDeviceBeforeInitialize) {
 // GetOutputDeviceInfoAsync() works correctly.
 TEST_F(AudioRendererMixerInputTest, SwitchOutputDeviceBeforeGODIA) {
   mixer_input_->Stop();
-  mixer_input_ = new AudioRendererMixerInput(
-      this, kFrameToken, kDefaultDeviceId, AudioLatency::LATENCY_PLAYBACK);
+  mixer_input_ =
+      new AudioRendererMixerInput(this, kFrameToken, kDefaultDeviceId,
+                                  AudioLatency::Type::kPlayback);
 
   base::RunLoop run_loop;
   EXPECT_CALL(*this, SwitchCallbackCalled(OUTPUT_DEVICE_STATUS_OK));
@@ -349,8 +350,9 @@ TEST_F(AudioRendererMixerInputTest, SwitchOutputDeviceBeforeGODIA) {
 // GetOutputDeviceInfoAsync() call works correctly.
 TEST_F(AudioRendererMixerInputTest, SwitchOutputDeviceDuringGODIA) {
   mixer_input_->Stop();
-  mixer_input_ = new AudioRendererMixerInput(
-      this, kFrameToken, kDefaultDeviceId, AudioLatency::LATENCY_PLAYBACK);
+  mixer_input_ =
+      new AudioRendererMixerInput(this, kFrameToken, kDefaultDeviceId,
+                                  AudioLatency::Type::kPlayback);
 
   mixer_input_->GetOutputDeviceInfoAsync(
       base::BindOnce(&AudioRendererMixerInputTest::OnDeviceInfoReceived,
@@ -379,8 +381,9 @@ TEST_F(AudioRendererMixerInputTest, SwitchOutputDeviceDuringGODIA) {
 // SwitchOutputDevice() call works correctly.
 TEST_F(AudioRendererMixerInputTest, GODIADuringSwitchOutputDevice) {
   mixer_input_->Stop();
-  mixer_input_ = new AudioRendererMixerInput(
-      this, kFrameToken, kDefaultDeviceId, AudioLatency::LATENCY_PLAYBACK);
+  mixer_input_ =
+      new AudioRendererMixerInput(this, kFrameToken, kDefaultDeviceId,
+                                  AudioLatency::Type::kPlayback);
 
   mixer_input_->SwitchOutputDevice(
       kAnotherDeviceId,
@@ -410,8 +413,9 @@ TEST_F(AudioRendererMixerInputTest, GODIADuringSwitchOutputDevice) {
 // SwitchOutputDevice() call which eventually fails works correctly.
 TEST_F(AudioRendererMixerInputTest, GODIADuringSwitchOutputDeviceWhichFails) {
   mixer_input_->Stop();
-  mixer_input_ = new AudioRendererMixerInput(
-      this, kFrameToken, kDefaultDeviceId, AudioLatency::LATENCY_PLAYBACK);
+  mixer_input_ =
+      new AudioRendererMixerInput(this, kFrameToken, kDefaultDeviceId,
+                                  AudioLatency::Type::kPlayback);
 
   mixer_input_->SwitchOutputDevice(
       kNonexistentDeviceId,

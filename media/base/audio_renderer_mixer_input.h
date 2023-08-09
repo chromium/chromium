@@ -39,7 +39,7 @@ class MEDIA_EXPORT AudioRendererMixerInput
   AudioRendererMixerInput(AudioRendererMixerPool* mixer_pool,
                           const base::UnguessableToken& owner_token,
                           const std::string& device_id,
-                          AudioLatency::LatencyType latency);
+                          AudioLatency::Type latency);
 
   AudioRendererMixerInput(const AudioRendererMixerInput&) = delete;
   AudioRendererMixerInput& operator=(const AudioRendererMixerInput&) = delete;
@@ -118,7 +118,7 @@ class MEDIA_EXPORT AudioRendererMixerInput
 
   const base::UnguessableToken owner_token_;
   std::string device_id_;  // ID of hardware device to use
-  const AudioLatency::LatencyType latency_;
+  const AudioLatency::Type latency_;
 
   // AudioRendererMixer obtained from mixer pool during Initialize(),
   // guaranteed to live (at least) until it is returned to the pool.

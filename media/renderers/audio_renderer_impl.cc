@@ -540,7 +540,7 @@ void AudioRendererImpl::OnDeviceInfoReceived(
     // If supported by the OS and the initial sample rate is not too low, let
     // the OS level resampler handle resampling for power efficiency.
     if (AudioLatency::IsResamplingPassthroughSupported(
-            AudioLatency::LATENCY_PLAYBACK) &&
+            AudioLatency::Type::kPlayback) &&
         stream->audio_decoder_config().samples_per_second() >= 44100) {
       sample_rate = stream->audio_decoder_config().samples_per_second();
     }
@@ -603,7 +603,7 @@ void AudioRendererImpl::OnDeviceInfoReceived(
   audio_parameters_.set_effects(audio_parameters_.effects() |
                                 AudioParameters::MULTIZONE);
 
-  audio_parameters_.set_latency_tag(AudioLatency::LATENCY_PLAYBACK);
+  audio_parameters_.set_latency_tag(AudioLatency::Type::kPlayback);
 
   audio_decoder_stream_ = std::make_unique<AudioDecoderStream>(
       std::make_unique<AudioDecoderStream::StreamTraits>(

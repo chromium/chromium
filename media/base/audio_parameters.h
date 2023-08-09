@@ -351,10 +351,10 @@ class MEDIA_SHMEM_EXPORT AudioParameters {
   }
   const std::vector<Point>& mic_positions() const { return mic_positions_; }
 
-  void set_latency_tag(AudioLatency::LatencyType latency_tag) {
+  void set_latency_tag(AudioLatency::Type latency_tag) {
     latency_tag_ = latency_tag;
   }
-  AudioLatency::LatencyType latency_tag() const { return latency_tag_; }
+  AudioLatency::Type latency_tag() const { return latency_tag_; }
 
   AudioParameters(const AudioParameters&);
   AudioParameters& operator=(const AudioParameters&);
@@ -385,7 +385,7 @@ class MEDIA_SHMEM_EXPORT AudioParameters {
 
   // Optional tag to pass latency info from renderer to browser. Set to
   // AudioLatency::LATENCY_COUNT by default, which means "not specified".
-  AudioLatency::LatencyType latency_tag_;
+  AudioLatency::Type latency_tag_;
 
   // Audio hardware specific parameters, these are treated as read-only and
   // changing them has no effect.

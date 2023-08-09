@@ -43,7 +43,7 @@ const std::string kCaptureGlitchDurationIntervals =
 
 class AudioDeviceStatsReporterOutputTest
     : public ::testing::TestWithParam<
-          std::tuple<media::AudioLatency::LatencyType, std::string>> {
+          std::tuple<media::AudioLatency::Type, std::string>> {
  public:
   AudioDeviceStatsReporterOutputTest() {
     latency_type_ = std::get<0>(GetParam());
@@ -67,7 +67,7 @@ class AudioDeviceStatsReporterOutputTest
                       ChannelLayoutConfig::Stereo(),
                       48000,
                       480);
-  AudioLatency::LatencyType latency_type_;
+  AudioLatency::Type latency_type_;
   std::string latency_tag_;
   std::unique_ptr<AudioDeviceStatsReporter> reporter_;
 };
@@ -171,16 +171,16 @@ TEST_P(AudioDeviceStatsReporterOutputTest, LongStreamTest) {
 INSTANTIATE_TEST_SUITE_P(
     All,
     AudioDeviceStatsReporterOutputTest,
-    ::testing::Values(std::make_tuple(media::AudioLatency::LATENCY_EXACT_MS,
-                                      ".LatencyExactMs"),
-                      std::make_tuple(media::AudioLatency::LATENCY_INTERACTIVE,
-                                      ".LatencyInteractive"),
-                      std::make_tuple(media::AudioLatency::LATENCY_RTC,
-                                      ".LatencyRtc"),
-                      std::make_tuple(media::AudioLatency::LATENCY_PLAYBACK,
-                                      ".LatencyPlayback"),
-                      std::make_tuple(media::AudioLatency::LATENCY_COUNT,
-                                      ".LatencyUnknown")));
+    ::testing::Values(
+        std::make_tuple(media::AudioLatency::Type::kExactMS,
+                        ".LatencyExactMs"),
+        std::make_tuple(media::AudioLatency::Type::kInteractive,
+                        ".LatencyInteractive"),
+        std::make_tuple(media::AudioLatency::Type::kRtc, ".LatencyRtc"),
+        std::make_tuple(media::AudioLatency::Type::kPlayback,
+                        ".LatencyPlayback"),
+        std::make_tuple(media::AudioLatency::Type::kUnknown,
+                        ".LatencyUnknown")));
 
 class AudioDeviceStatsReporterInputTest : public ::testing::Test {
  public:

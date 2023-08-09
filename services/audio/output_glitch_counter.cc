@@ -27,25 +27,24 @@ enum class AudioGlitchResult {
   kMaxValue = kGlitches
 };
 
-const char* LatencyToString(AudioLatency::LatencyType latency) {
+const char* LatencyToString(AudioLatency::Type latency) {
   switch (latency) {
-    case AudioLatency::LATENCY_EXACT_MS:
+    case AudioLatency::Type::kExactMS:
       return "LatencyExactMs";
-    case AudioLatency::LATENCY_INTERACTIVE:
+    case AudioLatency::Type::kInteractive:
       return "LatencyInteractive";
-    case AudioLatency::LATENCY_RTC:
+    case AudioLatency::Type::kRtc:
       return "LatencyRtc";
-    case AudioLatency::LATENCY_PLAYBACK:
+    case AudioLatency::Type::kPlayback:
       return "LatencyPlayback";
-    default:
+    case AudioLatency::Type::kUnknown:
       return "LatencyUnknown";
   }
 }
 
 }  // namespace
 
-OutputGlitchCounter::OutputGlitchCounter(
-    media::AudioLatency::LatencyType latency_tag)
+OutputGlitchCounter::OutputGlitchCounter(media::AudioLatency::Type latency_tag)
     : latency_tag_(latency_tag),
       overall_counter_(latency_tag, false),
       mixing_counter_(latency_tag, true) {}
@@ -81,9 +80,8 @@ OutputGlitchCounter::LogStats OutputGlitchCounter::GetLogStats() {
                      overall_counter_.total_trailing_miss_count_};
 }
 
-OutputGlitchCounter::Counter::Counter(
-    media::AudioLatency::LatencyType latency_tag,
-    bool mixing)
+OutputGlitchCounter::Counter::Counter(media::AudioLatency::Type latency_tag,
+                                      bool mixing)
     : histogram_name_intervals_(
           base::StrCat({"Media.AudioRendererMissedDeadline3",
                         mixing ? ".Mixing" : "", ".Intervals"})),

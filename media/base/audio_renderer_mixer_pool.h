@@ -41,7 +41,7 @@ class MEDIA_EXPORT AudioRendererMixerPool {
   virtual AudioRendererMixer* GetMixer(
       const base::UnguessableToken& owner_token,
       const AudioParameters& input_params,
-      AudioLatency::LatencyType latency,
+      AudioLatency::Type latency,
       const OutputDeviceInfo& sink_info,
       scoped_refptr<AudioRendererSink> sink) = 0;
 

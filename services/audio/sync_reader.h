@@ -78,7 +78,7 @@ class SyncReader : public OutputController::SyncReader {
   base::UnsafeSharedMemoryRegion shared_memory_region_;
   base::WritableSharedMemoryMapping shared_memory_mapping_;
 
-  const media::AudioLatency::LatencyType latency_tag_;
+  const media::AudioLatency::Type latency_tag_;
 
   // Mutes all incoming samples. This is used to prevent audible sound
   // during automated testing.

@@ -17,17 +17,17 @@
 namespace media {
 namespace {
 
-const char* LatencyToString(AudioLatency::LatencyType latency) {
+const char* LatencyToString(AudioLatency::Type latency) {
   switch (latency) {
-    case AudioLatency::LATENCY_EXACT_MS:
+    case AudioLatency::Type::kExactMS:
       return "LatencyExactMs";
-    case AudioLatency::LATENCY_INTERACTIVE:
+    case AudioLatency::Type::kInteractive:
       return "LatencyInteractive";
-    case AudioLatency::LATENCY_RTC:
+    case AudioLatency::Type::kRtc:
       return "LatencyRtc";
-    case AudioLatency::LATENCY_PLAYBACK:
+    case AudioLatency::Type::kPlayback:
       return "LatencyPlayback";
-    default:
+    case AudioLatency::Type::kUnknown:
       return "LatencyUnknown";
   }
 }
@@ -115,7 +115,7 @@ void AudioDeviceStatsReporter::UploadStats(const Stats& stats,
 AudioDeviceStatsReporter::AggregateLogCallback
 AudioDeviceStatsReporter::CreateAggregateCallback(
     const std::string& stat_name,
-    media::AudioLatency::LatencyType latency,
+    media::AudioLatency::Type latency,
     int max_value,
     size_t bucket_count,
     Type type) {
@@ -178,7 +178,7 @@ AudioDeviceStatsReporter::CreateAggregateCallback(
 AudioDeviceStatsReporter::RealtimeLogCallback
 AudioDeviceStatsReporter::CreateRealtimeCallback(
     const std::string& stat_name,
-    media::AudioLatency::LatencyType latency,
+    media::AudioLatency::Type latency,
     int max_value,
     size_t bucket_count,
     Type type) {

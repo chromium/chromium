@@ -568,9 +568,9 @@ class BLINK_PLATFORM_EXPORT Platform {
       const media::AudioSinkParameters& params) {
     return nullptr;
   }
-  virtual media::AudioLatency::LatencyType GetAudioSourceLatencyType(
+  virtual media::AudioLatency::Type GetAudioSourceLatencyType(
       blink::WebAudioDeviceSourceType source_type) {
-    return media::AudioLatency::LATENCY_PLAYBACK;
+    return media::AudioLatency::Type::kPlayback;
   }
 
   virtual bool ShouldEnforceWebRTCRoutingPreferences() { return true; }
