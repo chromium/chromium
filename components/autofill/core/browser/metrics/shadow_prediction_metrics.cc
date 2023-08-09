@@ -5,45 +5,33 @@
 #include "components/autofill/core/browser/metrics/shadow_prediction_metrics.h"
 
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/sparse_histogram.h"
 #include "components/autofill/core/browser/form_parsing/buildflags.h"
-#include "components/autofill/core/browser/form_parsing/field_candidates.h"
 
 namespace autofill::autofill_metrics {
 
 namespace {
 
-// The number of basic comparison results (i.e. without offsetting to encode the
-// field type).
-constexpr int kBaseComparisonRange = 6;
-
-// Encode `prediction` into `comparison_base`.
-int GetTypeSpecificComparison(ServerFieldType prediction, int comparison_base) {
-  DCHECK_LE(comparison_base, kDifferentPredictionsValueAgreesWithBoth);
-  DCHECK_NE(comparison_base, kNoPrediction);
-
-  return static_cast<int>(prediction) * kBaseComparisonRange + comparison_base;
-}
-
 // Get the comparison between the predictions, without the prediction type being
-// encoded in the returned value. The returned value is in the range [0,6]
-// inclusive.
-int GetBaseComparison(ServerFieldType current,
-                      ServerFieldType next,
-                      const ServerFieldTypeSet& submitted_types) {
+// encoded in the returned value.
+ShadowPredictionComparison GetBaseComparison(
+    ServerFieldType current,
+    ServerFieldType next,
+    const ServerFieldTypeSet& submitted_types) {
   if (current == NO_SERVER_DATA || next == NO_SERVER_DATA) {
-    return kNoPrediction;
+    return ShadowPredictionComparison::kNoPrediction;
   } else if (current == next) {
-    return submitted_types.contains(current) ? kSamePredictionValueAgrees
-                                             : kSamePredictionValueDisagrees;
+    return submitted_types.contains(current)
+               ? ShadowPredictionComparison::kSamePredictionValueAgrees
+               : ShadowPredictionComparison::kSamePredictionValueDisagrees;
   } else if (submitted_types.contains_all({current, next})) {
-    return kDifferentPredictionsValueAgreesWithBoth;
+    return ShadowPredictionComparison::kDifferentPredictionsValueAgreesWithBoth;
   } else if (submitted_types.contains(current)) {
-    return kDifferentPredictionsValueAgreesWithOld;
+    return ShadowPredictionComparison::kDifferentPredictionsValueAgreesWithOld;
   } else if (submitted_types.contains(next)) {
-    return kDifferentPredictionsValueAgreesWithNew;
+    return ShadowPredictionComparison::kDifferentPredictionsValueAgreesWithNew;
   } else {
-    return kDifferentPredictionsValueAgreesWithNeither;
+    return ShadowPredictionComparison::
+        kDifferentPredictionsValueAgreesWithNeither;
   }
 }
 
@@ -52,18 +40,20 @@ int GetBaseComparison(ServerFieldType current,
 int GetShadowPrediction(ServerFieldType current,
                         ServerFieldType next,
                         const ServerFieldTypeSet& submitted_types) {
-  // `NO_SERVER_DATA` means that we didn't actually run any heuristics.
-  if (current == NO_SERVER_DATA || next == NO_SERVER_DATA)
-    return kNoPrediction;
-
-  int comparison = GetBaseComparison(current, next, submitted_types);
-
-  // If we compared the predictions, offset them by the field type, so that the
-  // type is included in the enum.
-  if (comparison != kNoPrediction)
-    comparison = GetTypeSpecificComparison(current, comparison);
-
-  return comparison;
+  ShadowPredictionComparison comparison =
+      GetBaseComparison(current, next, submitted_types);
+  // Encode the `current` type and `comparison` into an int.
+  int encoding = static_cast<int>(comparison);
+  if (comparison != ShadowPredictionComparison::kNoPrediction) {
+    // Multiplying by `kMaxValue` (instead of `kMaxValue + 1`) is fine, because
+    // the `kNoPrediction` case is ignored.
+    // When `comparison == kMaxValue`, the base-`kMaxValue` representation of
+    // the `encoding` "overflows" into `static_cast<int>(current) + 1`, but
+    // since `kNoPrediction` is skipped, this doesn't cause an overlap.
+    encoding += static_cast<int>(current) *
+                static_cast<int>(ShadowPredictionComparison::kMaxValue);
+  }
+  return encoding;
 }
 
 void LogShadowPredictionComparison(const AutofillField& field) {
