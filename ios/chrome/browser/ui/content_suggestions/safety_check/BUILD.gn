@@ -4,9 +4,16 @@
 
 source_set("safety_check") {
   sources = [
+    "safety_check_item_icon.h",
+    "safety_check_item_icon.mm",
     "safety_check_state.h",
     "safety_check_state.mm",
   ]
-  deps = [ "//ios/chrome/browser/safety_check:constants" ]
+  deps = [
+    "//ios/chrome/browser/safety_check:constants",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
+  ]
   frameworks = [ "UIKit.framework" ]
 }
