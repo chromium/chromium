@@ -1132,8 +1132,9 @@ chromium-metrics-reviews@google.com.
   <summary>
     Logs whether hash-prefix real-time lookups are ineligible due to
     {IneligibleReason}. Logged when a browser URL loader throttle is created.
-    There may be multiple reasons why the lookups are ineligible, but this
-    reason is one of them.
+    Additionally, logged when creating a SafeBrowsing URL checker on iOS. There
+    may be multiple reasons why the lookups are ineligible, but this reason is
+    one of them.
   </summary>
   <token key="IneligibleReason">
     <variant name="IneligibleForSession"
