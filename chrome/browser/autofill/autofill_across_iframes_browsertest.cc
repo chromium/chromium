@@ -30,7 +30,6 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_mock_cert_verifier.h"
@@ -210,7 +209,7 @@ class AutofillAcrossIframesTest : public InProcessBrowserTest {
   AutofillAcrossIframesTest()
       : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{::features::kAutofillSharedAutofill},
+        /*enabled_features=*/{features::kAutofillSharedAutofill},
         /*disabled_features=*/{});
   }
 
@@ -453,7 +452,7 @@ class AutofillAcrossIframesTest_SharedAutofill
     : public AutofillAcrossIframesTest_Simple {
  private:
   base::test::ScopedFeatureList feature_list_{
-      ::features::kAutofillSharedAutofill};
+      features::kAutofillSharedAutofill};
 };
 
 // Tests that autofilling on a main-origin field also fills cross-origin fields

@@ -71,18 +71,6 @@ BASE_FEATURE(kAudioServiceSandbox,
 #endif
 );
 
-// Controls whether Autofill may fill across origins.
-// In payment forms, the cardholder name field is often on the merchant's origin
-// while the credit card number and CVC are in iframes hosted by a payment
-// service provider. By enabling the policy-controlled feature "shared-autofill"
-// in those iframes, the merchant's website enable Autofill to fill the credit
-// card number and CVC fields from the cardholder name field, even though this
-// autofill operation crosses origins.
-// TODO(crbug.com/1304721): Enable this feature.
-BASE_FEATURE(kAutofillSharedAutofill,
-             "AutofillSharedAutofill",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // The following two features, when enabled, result in the browser process only
 // asking the renderer process to run beforeunload handlers if it knows such
 // handlers are registered. The two slightly differ in what they do and how

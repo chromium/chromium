@@ -18,6 +18,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "cc/base/features.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "content/common/content_navigation_policy.h"
 #include "content/common/content_switches_internal.h"
 #include "content/public/common/content_features.h"
@@ -279,7 +280,8 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
     {wf::EnableSharedArrayBuffer, raw_ref(features::kSharedArrayBuffer)},
     {wf::EnableSharedArrayBufferOnDesktop,
      raw_ref(features::kSharedArrayBufferOnDesktop)},
-    {wf::EnableSharedAutofill, raw_ref(features::kAutofillSharedAutofill)},
+    {wf::EnableSharedAutofill,
+     raw_ref(autofill::features::kAutofillSharedAutofill)},
     {wf::EnableTouchDragAndContextMenu,
      raw_ref(features::kTouchDragAndContextMenu)},
     {wf::EnableUserActivationSameOriginVisibility,
