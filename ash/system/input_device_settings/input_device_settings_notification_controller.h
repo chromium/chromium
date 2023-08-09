@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "ui/events/ash/mojom/simulate_right_click_modifier.mojom-shared.h"
 #include "ui/events/ash/mojom/six_pack_shortcut_modifier.mojom-shared.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
@@ -18,6 +19,12 @@ class MessageCenter;
 }  // namespace message_center
 
 namespace ash {
+
+// The notification button index.
+enum NotificationButtonIndex {
+  BUTTON_EDIT_SHORTCUT = 0,
+  BUTTON_LEARN_MORE,
+};
 
 // Manages showing notifications for Six Pack/right-click event rewrites.
 // Notifications are shown when the user's setting is inconsistent with
@@ -54,8 +61,18 @@ class ASH_EXPORT InputDeviceSettingsNotificationController {
       int device_id);
 
  private:
+  void HandleRightClickNotificationClicked(const std::string& notification_id,
+                                           absl::optional<int> button_index);
+
+  void HandleSixPackNotificationClicked(int device_id,
+                                        const char* pref_name,
+                                        const std::string& notification_id,
+                                        absl::optional<int> button_index);
   // MessageCenter for adding notifications.
   const raw_ptr<message_center::MessageCenter, ExperimentalAsh> message_center_;
+
+  base::WeakPtrFactory<InputDeviceSettingsNotificationController>
+      weak_ptr_factory_{this};
 };
 
 }  // namespace ash

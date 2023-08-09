@@ -7051,6 +7051,12 @@ To shut down the device, press and hold the power button on the device again.
       <message name="IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_RIGHT_CLICK_DISABLED_TITLE" desc="Title for the notification shown when the right-click shortcut is disabled.">
         Keyboard shortcut is off
       </message>
+      <message name="IDS_ASH_DEVICE_SETTINGS_EDIT_SHORTCUT_BUTTON" desc="Button shown for device settings notifications which links to the settings app.">
+        Edit shortcut
+      </message>
+      <message name="IDS_ASH_DEVICE_SETTINGS_LEARN_MORE_BUTTON" desc="Button shown for device settings notifications which opens an article with helpful information related to the notification.">
+        Learn more
+      </message>
      </messages>
     </release>
 </grit>

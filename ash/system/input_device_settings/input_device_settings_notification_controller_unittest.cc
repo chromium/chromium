@@ -5,6 +5,7 @@
 #include "ash/system/input_device_settings/input_device_settings_notification_controller.h"
 
 #include "ash/constants/ash_pref_names.h"
+#include "ash/public/cpp/test/test_system_tray_client.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -36,6 +37,14 @@ class TestMessageCenter : public message_center::FakeMessageCenter {
         FindVisibleNotificationById(id);
     CHECK(notification);
     notification->delegate()->Click(absl::nullopt, absl::nullopt);
+  }
+
+  void ClickOnNotificationButton(const std::string& id,
+                                 int button_index) override {
+    message_center::Notification* notification =
+        FindVisibleNotificationById(id);
+    CHECK(notification);
+    notification->delegate()->Click(button_index, absl::nullopt);
   }
 };
 
@@ -210,6 +219,31 @@ TEST_F(InputDeviceSettingsNotificationControllerTest,
       "alt_right_click_rewrite_blocked_by_setting");
   EXPECT_EQ(0, GetPrefNotificationCount(
                    prefs::kRemapToRightClickNotificationsRemaining));
+}
+
+// TODO(b/279503977): Add test that verifies behavior of clicking on the
+// "Learn more" button.
+TEST_F(InputDeviceSettingsNotificationControllerTest,
+       ShowTouchpadSettingsOnRightClickNotificationClick) {
+  controller()->NotifyRightClickRewriteBlockedBySetting(
+      ui::mojom::SimulateRightClickModifier::kAlt,
+      ui::mojom::SimulateRightClickModifier::kSearch);
+  message_center()->ClickOnNotificationButton(
+      "alt_right_click_rewrite_blocked_by_setting",
+      NotificationButtonIndex::BUTTON_EDIT_SHORTCUT);
+  EXPECT_EQ(GetSystemTrayClient()->show_touchpad_settings_count(), 1);
+}
+
+TEST_F(InputDeviceSettingsNotificationControllerTest,
+       ShowRemapKeysSettingsOnSixPackNotificationClick) {
+  controller()->NotifySixPackRewriteBlockedBySetting(
+      ui::VKEY_DELETE, ui::mojom::SixPackShortcutModifier::kAlt,
+      ui::mojom::SixPackShortcutModifier::kSearch,
+      /*device_id=*/1);
+  message_center()->ClickOnNotificationButton(
+      "delete_six_pack_rewrite_blocked_by_setting_1",
+      NotificationButtonIndex::BUTTON_EDIT_SHORTCUT);
+  EXPECT_EQ(GetSystemTrayClient()->show_remap_keys_subpage_count(), 1);
 }
 
 TEST_F(InputDeviceSettingsNotificationControllerTest,
