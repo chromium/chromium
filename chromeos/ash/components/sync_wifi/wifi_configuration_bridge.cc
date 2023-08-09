@@ -15,6 +15,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "base/values.h"
 #include "chromeos/ash/components/network/network_configuration_handler.h"
 #include "chromeos/ash/components/network/network_event_log.h"
@@ -392,6 +393,7 @@ void WifiConfigurationBridge::OnFixAutoconnectComplete() {
 void WifiConfigurationBridge::OnReadAllMetadata(
     const absl::optional<syncer::ModelError>& error,
     std::unique_ptr<syncer::MetadataBatch> metadata_batch) {
+  TRACE_EVENT0("ui", "WifiConfigurationBridge::OnReadAllMetadata");
   if (error) {
     change_processor()->ReportError(*error);
     return;
