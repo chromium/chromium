@@ -19,8 +19,8 @@ script_test("chrome_ios_wpt") {
     "Release",
     "--zero-tests-executed-ok",
 
-    # TODO(crbug.com/1351820): Enable more tests to run.
-    "/css/css-transforms/",
+    # TODO(crbug.com/1351820): Enable more tests to run, update the dependency to third_party/blink/tools build file.
+    "external/wpt/css/css-transforms/",
   ]
   deps = [ ":all_tests" ]
   data = [
@@ -34,6 +34,7 @@ script_test("chrome_ios_wpt") {
     "//third_party/blink/web_tests/wptrunner.blink.ini",
     "//third_party/blink/web_tests/FlagSpecificConfig",
     "//third_party/blink/web_tests/TestLists/",
+    "//third_party/blink/web_tests/VirtualTestSuites",
     "//.vpython3",
   ]
   data_deps = [
