@@ -59,6 +59,8 @@ PolicyService::PolicyManagers SortManagers(
   return {managers_vector, managers_map};
 }
 
+}  // namespace
+
 PolicyService::PolicyManagerVector CreatePolicyManagerVector(
     bool should_take_policy_critical_section,
     scoped_refptr<ExternalConstants> external_constants,
@@ -98,8 +100,6 @@ PolicyService::PolicyManagerVector CreatePolicyManagerVector(
   managers.push_back(GetDefaultValuesPolicyManager());
   return managers;
 }
-
-}  // namespace
 
 PolicyService::PolicyManagers::PolicyManagers(
     PolicyManagerVector manager_vector,

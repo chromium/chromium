@@ -191,6 +191,11 @@ struct PolicyServiceProxyConfiguration {
   absl::optional<std::string> proxy_url;
 };
 
+PolicyService::PolicyManagerVector CreatePolicyManagerVector(
+    bool should_take_policy_critical_section,
+    scoped_refptr<ExternalConstants> external_constants,
+    scoped_refptr<PolicyManagerInterface> dm_policy_manager);
+
 }  // namespace updater
 
 #endif  // CHROME_UPDATER_POLICY_SERVICE_H_
