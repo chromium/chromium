@@ -476,6 +476,12 @@ enum AutofillActionPersistence {
   kPreview,  // The action is previewed and will be cleared afterwards.
 };
 
+// The possible actions that Autofill can perform on forms.
+enum AutofillActionType {
+  kFill,  // Autofill should fill the form.
+  kUndo,  // Autofill should undo some previous fill operation on the form.
+};
+
 // Describes which action triggered Autofill suggestions. This has implications
 // how the suggestions behave, as described below.
 // Some further properties of suggestions are implied by the source. See
