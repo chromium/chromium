@@ -16,7 +16,9 @@
 
 namespace blink {
 
-static void LayoutMarkerResourcesIfNeeded(LayoutObject& layout_object) {
+namespace {
+
+void LayoutMarkerResourcesIfNeeded(LayoutObject& layout_object) {
   SVGElementResourceClient* client = SVGResources::GetClient(layout_object);
   if (!client)
     return;
@@ -31,6 +33,52 @@ static void LayoutMarkerResourcesIfNeeded(LayoutObject& layout_object) {
           *client, style.MarkerEndResource()))
     marker->LayoutIfNeeded();
 }
+
+// Update a bounding box taking into account the validity of the other bounding
+// box.
+inline void UpdateObjectBoundingBox(gfx::RectF& object_bounding_box,
+                                    bool& object_bounding_box_valid,
+                                    const gfx::RectF& other_bounding_box) {
+  if (!object_bounding_box_valid) {
+    object_bounding_box = other_bounding_box;
+    object_bounding_box_valid = true;
+    return;
+  }
+  object_bounding_box.UnionEvenIfEmpty(other_bounding_box);
+}
+
+bool HasValidBoundingBoxForContainer(const LayoutObject& object) {
+  if (auto* svg_shape = DynamicTo<LayoutSVGShape>(object)) {
+    return !svg_shape->IsShapeEmpty();
+  }
+  if (auto* ng_text = DynamicTo<LayoutNGSVGText>(object)) {
+    return ng_text->IsObjectBoundingBoxValid();
+  }
+  if (auto* svg_container = DynamicTo<LayoutSVGContainer>(object)) {
+    return svg_container->IsObjectBoundingBoxValid() &&
+           !svg_container->IsSVGHiddenContainer();
+  }
+  if (auto* foreign_object = DynamicTo<LayoutNGSVGForeignObject>(object)) {
+    return foreign_object->IsObjectBoundingBoxValid();
+  }
+  if (auto* svg_image = DynamicTo<LayoutSVGImage>(object)) {
+    return svg_image->IsObjectBoundingBoxValid();
+  }
+  return false;
+}
+
+gfx::RectF ObjectBoundsForPropagation(const LayoutObject& object) {
+  gfx::RectF bounds = object.ObjectBoundingBox();
+  // The local-to-parent transform for <foreignObject> contains a zoom inverse,
+  // so we need to apply zoom to the bounding box that we use for propagation to
+  // be in the correct coordinate space.
+  if (object.IsSVGForeignObject()) {
+    bounds.Scale(object.StyleRef().EffectiveZoom());
+  }
+  return bounds;
+}
+
+}  // namespace
 
 // static
 bool SVGContentContainer::IsChildAllowed(const LayoutObject& child) {
@@ -128,51 +176,6 @@ bool SVGContentContainer::HitTest(HitTestResult& result,
     }
   }
   return false;
-}
-
-// Update a bounding box taking into account the validity of the other bounding
-// box.
-static inline void UpdateObjectBoundingBox(
-    gfx::RectF& object_bounding_box,
-    bool& object_bounding_box_valid,
-    const gfx::RectF& other_bounding_box) {
-  if (!object_bounding_box_valid) {
-    object_bounding_box = other_bounding_box;
-    object_bounding_box_valid = true;
-    return;
-  }
-  object_bounding_box.UnionEvenIfEmpty(other_bounding_box);
-}
-
-static bool HasValidBoundingBoxForContainer(const LayoutObject& object) {
-  if (auto* svg_shape = DynamicTo<LayoutSVGShape>(object)) {
-    return !svg_shape->IsShapeEmpty();
-  }
-  if (auto* ng_text = DynamicTo<LayoutNGSVGText>(object)) {
-    return ng_text->IsObjectBoundingBoxValid();
-  }
-  if (auto* svg_container = DynamicTo<LayoutSVGContainer>(object)) {
-    return svg_container->IsObjectBoundingBoxValid() &&
-           !svg_container->IsSVGHiddenContainer();
-  }
-  if (auto* foreign_object = DynamicTo<LayoutNGSVGForeignObject>(object)) {
-    return foreign_object->IsObjectBoundingBoxValid();
-  }
-  if (auto* svg_image = DynamicTo<LayoutSVGImage>(object)) {
-    return svg_image->IsObjectBoundingBoxValid();
-  }
-  return false;
-}
-
-static gfx::RectF ObjectBoundsForPropagation(const LayoutObject& object) {
-  gfx::RectF bounds = object.ObjectBoundingBox();
-  // The local-to-parent transform for <foreignObject> contains a zoom inverse,
-  // so we need to apply zoom to the bounding box that we use for propagation to
-  // be in the correct coordinate space.
-  if (object.IsSVGForeignObject()) {
-    bounds.Scale(object.StyleRef().EffectiveZoom());
-  }
-  return bounds;
 }
 
 bool SVGContentContainer::UpdateBoundingBoxes(bool& object_bounding_box_valid) {
