@@ -5665,7 +5665,7 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         chrome_stylized_highlight_
       </message>
       <message name="IDS_CONTENT_CREATION_NOTE_TEMPLATE_SELECTED" desc="Announcment string for accessibility when selected template changes.">
-        <ph name="TEMPLATE_TITLE">%1$s<ex>Classic</ex> template selected</ph>
+        <ph name="TEMPLATE_TITLE">%1$s<ex>Classic</ex></ph> template selected
       </message>
       <message name="IDS_CONTENT_CREATION_NOTE_DIALOG_DESCRIPTION" desc="Accessibility information for note template picking dialog.">
         Select a template for your highlight.
