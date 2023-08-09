@@ -98,25 +98,10 @@ void AppDeduplicationServerConnector::OnGetDeduplicateAppsResponse(
     std::unique_ptr<network::SimpleURLLoader> loader,
     GetDeduplicateAppsCallback callback,
     std::unique_ptr<std::string> response_body) {
-  int response_code = 0;
-  if (loader->ResponseInfo()) {
-    response_code = loader->ResponseInfo()->headers->response_code();
-  }
-
-  const int net_error = loader->NetError();
-  if (net_error == net::Error::ERR_INSUFFICIENT_RESOURCES) {
-    LOG(ERROR) << "Network request failed due to insufficent resources.";
-    std::move(callback).Run(absl::nullopt);
-    return;
-  }
-
-  // HTTP error codes in the 500-599 range represent server errors.
-  const bool server_error =
-      net_error != net::OK || (response_code >= 500 && response_code < 600);
-  if (server_error) {
-    LOG(ERROR) << "Server error. "
-               << "Response code: " << response_code
-               << ". Net error: " << net::ErrorToString(net_error);
+  absl::Status error = GetDownloadError(
+      loader->NetError(), loader->ResponseInfo(), response_body.get());
+  if (!error.ok()) {
+    LOG(ERROR) << error.message();
     std::move(callback).Run(absl::nullopt);
     return;
   }

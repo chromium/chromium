@@ -11,7 +11,6 @@
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_wrapper.h"
 #include "chrome/browser/apps/app_service/promise_apps/proto/promise_app.pb.h"
 #include "chrome/browser/profiles/profile.h"
-#include "net/base/net_errors.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -124,17 +123,10 @@ void PromiseAppAlmanacConnector::OnGetPromiseAppResponse(
     std::unique_ptr<network::SimpleURLLoader> loader,
     GetPromiseAppCallback callback,
     std::unique_ptr<std::string> response_body) {
-  int response_code = 0;
-  if (loader->ResponseInfo()) {
-    response_code = loader->ResponseInfo()->headers->response_code();
-  }
-  const int net_error = loader->NetError();
-
-  // HTTP error codes in the 500-599 range represent server errors.
-  if (net_error != net::OK || (response_code >= 500 && response_code < 600)) {
-    LOG(ERROR) << "Server error. "
-               << "Response code: " << response_code
-               << ". Net error: " << net::ErrorToString(net_error);
+  absl::Status error = GetDownloadError(
+      loader->NetError(), loader->ResponseInfo(), response_body.get());
+  if (!error.ok()) {
+    LOG(ERROR) << error.message();
     std::move(callback).Run(absl::nullopt);
     return;
   }

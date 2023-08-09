@@ -8,10 +8,15 @@
 
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "google_apis/google_api_keys.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/abseil-cpp/absl/status/status.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace apps {
@@ -65,5 +70,35 @@ std::unique_ptr<network::SimpleURLLoader> GetAlmanacUrlLoader(
       kMaxRetries, network::SimpleURLLoader::RETRY_ON_NETWORK_CHANGE |
                        network::SimpleURLLoader::RETRY_ON_NAME_NOT_RESOLVED);
   return loader;
+}
+
+absl::Status GetDownloadError(
+    int net_error,
+    const network::mojom::URLResponseHead* response_info,
+    const std::string* response_body,
+    const absl::optional<std::string>& histogram_name) {
+  int response_code = 0;
+  if (response_info && response_info->headers) {
+    response_code = response_info->headers->response_code();
+  }
+  if (histogram_name.has_value()) {
+    // If there is no response code, there was a net error.
+    base::UmaHistogramSparse(*histogram_name,
+                             response_code > 0 ? response_code : net_error);
+  }
+  if (net_error != net::OK) {
+    return absl::InternalError(
+        base::StrCat({"net error: ", net::ErrorToString(net_error)}));
+  }
+
+  if ((response_code >= 200 && response_code < 300) || response_code == 0) {
+    if (!response_body) {
+      return absl::InternalError("request body is nullptr");
+    }
+    return absl::OkStatus();
+  }
+
+  return absl::InternalError(
+      base::StrCat({"HTTP error code: ", base::NumberToString(response_code)}));
 }
 }  // namespace apps
