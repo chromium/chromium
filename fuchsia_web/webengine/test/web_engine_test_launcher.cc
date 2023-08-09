@@ -45,7 +45,6 @@ class WebEngineTestLauncherDelegate : public content::TestLauncherDelegate {
 int main(int argc, char** argv) {
   base::CommandLine::Init(argc, argv);
   auto* command_line = base::CommandLine::ForCurrentProcess();
-  command_line->AppendSwitchASCII(switches::kOzonePlatform, "scenic");
   command_line->AppendSwitchASCII(switches::kEnableLogging, "stderr");
 
   // Indicate to all processes that they are being run as part of a browser

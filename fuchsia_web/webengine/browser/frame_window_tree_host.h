@@ -7,6 +7,7 @@
 
 #include <lib/ui/scenic/cpp/view_ref_pair.h>
 
+#include "fuchsia_web/webengine/web_engine_export.h"
 #include "ui/aura/window_tree_host_platform.h"
 #include "ui/platform_window/fuchsia/scenic_window_delegate.h"
 
@@ -16,8 +17,9 @@ class WebContents;
 
 // aura::WindowTreeHost implementation used to present web content inside
 // web.Frame.
-class FrameWindowTreeHost final : public aura::WindowTreeHostPlatform,
-                                  public ui::ScenicWindowDelegate {
+class WEB_ENGINE_EXPORT FrameWindowTreeHost final
+    : public aura::WindowTreeHostPlatform,
+      public ui::ScenicWindowDelegate {
  public:
   using OnPixelScaleUpdateCallback = base::RepeatingCallback<void(float)>;
 

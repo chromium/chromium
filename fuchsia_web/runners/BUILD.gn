@@ -240,6 +240,7 @@ test("cast_runner_browsertests") {
   additional_manifest_fragments = [
     "//build/config/fuchsia/test/mark_vmo_executable.shard.test-cml",
     "//build/config/fuchsia/test/network.shard.test-cml",
+    "//build/config/fuchsia/test/test_ui_stack.shard.test-cml",
     "//third_party/fuchsia-sdk/sdk/pkg/vulkan/client.shard.cml",
   ]
 }

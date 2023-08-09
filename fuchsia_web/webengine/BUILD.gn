@@ -596,6 +596,7 @@ test("web_engine_browsertests") {
     ":browsertest_core",
     ":switches",
     ":web_engine_core",
+    "//components/fuchsia_component_support:annotations_manager",
     "//components/policy/content:safe_sites_navigation_throttle",
     "//components/safe_search_api:safe_search_api",
     "//components/safe_search_api:test_support",
@@ -622,7 +623,7 @@ test("web_engine_browsertests") {
     "//build/config/fuchsia/test/fonts.shard.test-cml",
     "//build/config/fuchsia/test/mark_vmo_executable.shard.test-cml",
     "//build/config/fuchsia/test/network.shard.test-cml",
-    "//build/config/fuchsia/test/gfx_test_ui_stack.shard.test-cml",
+    "//build/config/fuchsia/test/test_ui_stack.shard.test-cml",
     "//third_party/fuchsia-sdk/sdk/pkg/vulkan/client.shard.cml",
   ]
 
