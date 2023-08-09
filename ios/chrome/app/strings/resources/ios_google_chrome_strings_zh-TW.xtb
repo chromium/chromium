@@ -109,7 +109,7 @@
 <translation id="7272930098487145294">如要儲存圖片，請輕觸 [設定] 並允許 Chrome 新增相片</translation>
 <translation id="7275945473750112644">由於你的帳戶受到 <ph name="HOSTED_DOMAIN" /> 管理，因此系統會在你登出後，清除你在這部裝置上的 Chrome 資料</translation>
 <translation id="7400722733683201933">關於 Google Chrome</translation>
-<translation id="7501046334262221972">如要將 Chrome 設為預設瀏覽器，請開啟「設定」，然後輕觸 [預設的瀏覽器應用程式] 並選取 [Chrome]。</translation>
+<translation id="7501046334262221972">如要將 Chrome 設為預設瀏覽器，請開啟「設定」，然後輕觸「預設的瀏覽器應用程式」並選取「Chrome」。</translation>
 <translation id="756809126120519699">已清除 Chrome 資料</translation>
 <translation id="7662994914830945754">登入帳戶並開啟同步功能後，不論從何處使用 Chrome 都能查看你的分頁</translation>
 <translation id="7693590760643069321">現在只要在訊息、文件和其他應用程式中輕觸連結，即可透過 Chrome 開啟。</translation>
@@ -129,8 +129,8 @@
 <translation id="8459495907675268833">系統已將您所選取的資料從 Chrome 和其他同步的裝置中移除。您的 Google 帳戶仍可能保留了其他類型的瀏覽記錄，例如其他 Google 服務中的搜尋和活動記錄 (可前往 history.google.com 查詢)。</translation>
 <translation id="850555388806794946">如何將 Chrome 設為預設瀏覽器：
   1. 開啟「設定」
-  2. 輕觸 [預設瀏覽器 App]
-  3. 選取 [Chrome]</translation>
+  2. 輕觸「預設瀏覽器 App」
+  3. 選取「Chrome」</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8603022514504485810">Google 密碼管理工具無法檢查所有密碼，請明天再試。你也可以<ph name="BEGIN_LINK" />檢查 Google 帳戶中的密碼<ph name="END_LINK" />。</translation>
 <translation id="8736550665979974340">讓 Google Chrome 保障你的安全</translation>
