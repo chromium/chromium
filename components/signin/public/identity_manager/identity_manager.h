@@ -167,8 +167,12 @@ class IdentityManager : public KeyedService,
   // Returns an empty struct if no such info is available, either because there
   // is no primary account yet or because the user signed out or the |consent|
   // level required |ConsentLevel::kSync| was not granted.
+  // Note that `ConsentLevel::kSync` is deprecated, see the `ConsentLevel`
+  // documentation.
   // Returns a non-empty struct if the primary account exists and was granted
   // the required consent level.
+  // TODO(crbug.com/1462978): revisit this once `ConsentLevel::kSync` is
+  // removed.
   // TODO(1046746): Update (./README.md).
   CoreAccountInfo GetPrimaryAccountInfo(ConsentLevel consent_level) const;
 
@@ -179,6 +183,10 @@ class IdentityManager : public KeyedService,
   // Returns whether the user's primary account is available. If consent is
   // |ConsentLevel::kSync| then true implies that the user has blessed this
   // account for sync.
+  // Note that `ConsentLevel::kSync` is deprecated, see the `ConsentLevel`
+  // documentation.
+  // TODO(crbug.com/1462978): revisit this once `ConsentLevel::kSync` is
+  // removed.
   bool HasPrimaryAccount(ConsentLevel consent_level) const;
 
   // Creates an AccessTokenFetcher given the passed-in information.
