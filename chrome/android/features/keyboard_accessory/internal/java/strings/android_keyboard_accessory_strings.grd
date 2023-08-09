@@ -184,10 +184,7 @@
       <message name="IDS_ALL_PASSWORDS_BOTTOM_SHEET_CLOSED" desc="Accessibility string read when the all passwords bottom sheet showing a list of the user's credentials is closed.">
         List of credentials to be filled on touch is closed.
       </message>
-      <message name="IDS_ALL_PASSWORDS_BOTTOM_SHEET_TITLE" desc="The title string for the all passwords bottom sheet showing a list of the user's credentials.">
-        Passwords
-      </message>
-      <message name="IDS_ALL_PASSWORDS_BOTTOM_SHEET_TITLE_GPM" desc="The title string for the all passwords bottom sheet showing a list of the user's credentials when the `Select password` button is clicked.">
+      <message name="IDS_ALL_PASSWORDS_BOTTOM_SHEET_TITLE" desc="The title string for the all passwords bottom sheet showing a list of the user's credentials when the `Select password` button is clicked.">
         Select password
       </message>
       <message name="IDS_ALL_PASSWORDS_BOTTOM_SHEET_SEARCH_HINT" desc="The label for a search button appears in all passwords bottom sheet.">
@@ -195,12 +192,6 @@
       </message>
       <message name="IDS_ALL_PASSWORDS_BOTTOM_SHEET_NO_PASSWORD" desc="The title for the disabled button on the all passwords bottom sheet UI when a credential doesn't contain a password.">
         No password
-      </message>
-      <message name="IDS_ALL_PASSWORDS_BOTTOM_SHEET_WARNING_DIALOG_MESSAGE_FIRST" desc="The first paragraph in the warning message showing when the `User other password` button is clicked.">
-        If you trust <ph name="ORIGIN">%s<ex>example.com</ex></ph>, you can use a saved password for another site.
-      </message>
-      <message name="IDS_ALL_PASSWORDS_BOTTOM_SHEET_WARNING_DIALOG_MESSAGE_SECOND" desc="The second paragraph in the warning message showing when the `User other password` button is clicked.">
-        Try to use a unique password for every site.
       </message>
       <message name="IDS_ALL_PASSWORDS_BOTTOM_SHEET_SUBTITLE" desc="The subtitle string for the all passwords bottom sheet showing when the `Select password` button is clicked.">
         If you trust <ph name="ORIGIN">%s<ex>example.com</ex></ph>, you can use a saved password to sign in
