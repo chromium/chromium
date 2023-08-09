@@ -14,5 +14,5 @@ CBU_/CBU8_/CBU16_/CBUPRV_ (for "Chrome Base") to avoid confusion with the "real"
 ICU macros should ICU be in use on the system. For the same reason, the
 functions and types have been put in the "base_icu" namespace.
 
-Note that this license file is marked as NOT_SHIPPED, since a more complete
+Note that this license file is marked as not shipped, since a more complete
 ICU license is included from //third_party/icu/README.chromium

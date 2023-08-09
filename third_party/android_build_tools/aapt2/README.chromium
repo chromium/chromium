@@ -5,7 +5,6 @@ URL:  https://dl.google.com/dl/android/maven2/com/android/tools/build/aapt2/${Ve
 Security Critical: no
 Shipped: no
 License: Apache Version 2.0
-License file: NOT_SHIPPED
 
 Description:
 The Linux host aapt2 tool is now released on Google Maven, however as a .jar
