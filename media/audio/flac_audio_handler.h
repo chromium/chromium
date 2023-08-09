@@ -72,6 +72,7 @@ class MEDIA_EXPORT FlacAudioHandler : public AudioHandler {
       const FLAC__Frame* frame,
       const FLAC__int32* const buffer[]);
   void MetaCallbackInternal(const FLAC__StreamMetadata* metadata);
+  void ErrorCallbackInternal();
 
   // Check if the metadata fecthed in `MetaCallback()` is valid or not. This
   // function will check the `num_channels_`, `bits_per_sample_`, `sample_rate_`
@@ -97,6 +98,9 @@ class MEDIA_EXPORT FlacAudioHandler : public AudioHandler {
 
   // Equal to the total number of samples per channel.
   uint64_t total_frames_ = 0u;
+
+  // Set to true if the error callback is called.
+  bool has_error_ = false;
 };
 
 }  // namespace media
