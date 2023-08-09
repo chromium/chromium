@@ -33785,6 +33785,7 @@ Called by update_document_policy_enum.py.-->
   <int value="1139" label="ReportWebsiteUsage"/>
   <int value="1140" label="ReportWebsiteUsageCollectionRateMs"/>
   <int value="1141" label="SafeBrowsingSurveysEnabled"/>
+  <int value="1142" label="BlockTruncatedCookies"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

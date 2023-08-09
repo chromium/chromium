@@ -13,6 +13,8 @@ namespace prefs {
 // kBlockThirdPartyCookies but with a new UI.
 const char kCookieControlsMode[] = "profile.cookie_controls_mode";
 
+const char kBlockTruncatedCookies[] = "profile.cookie_block_truncated";
+
 // Version of the pattern format used to define content settings.
 const char kContentSettingsVersion[] = "profile.content_settings.pref_version";
 

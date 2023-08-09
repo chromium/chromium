@@ -432,6 +432,9 @@ public final class ProductionSupportedFlagList {
                             + "entry?labels=StoragePartitioning-trial-bugs&components=Blink%3EStorage."),
             Flag.baseFeature(
                     NetFeatures.ASYNC_QUIC_SESSION, "Enables asynchronous QUIC session creation"),
+            Flag.baseFeature(NetFeatures.BLOCK_TRUNCATED_COOKIES,
+                    "When enabled, cookies containing '\\0', '\\r', and '\\n' characters will be "
+                            + "deemed invalid and the cookie won't be set."),
             Flag.baseFeature(BaseFeatures.CRASH_BROWSER_ON_CHILD_MISMATCH_IF_BROWSER_CHANGED,
                     "Causes the browser process to crash if child processes are failing to launch"
                             + " due to a browser version change."),

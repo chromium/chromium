@@ -1140,6 +1140,7 @@ policies:
   1139: ReportWebsiteUsage
   1140: ReportWebsiteUsageCollectionRateMs
   1141: SafeBrowsingSurveysEnabled
+  1142: BlockTruncatedCookies
 atomic_groups:
   1: Homepage
   2: RemoteAccess

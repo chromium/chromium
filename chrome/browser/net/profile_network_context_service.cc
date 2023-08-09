@@ -44,6 +44,7 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/content_settings/core/common/pref_names.h"
 #include "components/embedder_support/pref_names.h"
 #include "components/embedder_support/switches.h"
 #include "components/language/core/browser/language_prefs.h"
@@ -362,8 +363,11 @@ ProfileNetworkContextService::ProfileNetworkContextService(Profile* profile)
       base::BindRepeating(&ProfileNetworkContextService::
                               UpdateCorsNonWildcardRequestHeadersSupport,
                           base::Unretained(this)));
-  // TODO(awillia): Register a pref change callback to call
-  // OnTruncatedCookieBlockingChanged.
+  pref_change_registrar_.Add(
+      prefs::kBlockTruncatedCookies,
+      base::BindRepeating(
+          &ProfileNetworkContextService::OnTruncatedCookieBlockingChanged,
+          base::Unretained(this)));
 }
 
 ProfileNetworkContextService::~ProfileNetworkContextService() = default;
@@ -467,8 +471,10 @@ void ProfileNetworkContextService::OnThirdPartyCookieBlockingChanged(
       block_third_party_cookies));
 }
 
-void ProfileNetworkContextService::OnTruncatedCookieBlockingChanged(
-    bool block_truncated_cookies) {
+void ProfileNetworkContextService::OnTruncatedCookieBlockingChanged() {
+  const bool block_truncated_cookies =
+      profile_->GetPrefs()->GetBoolean(prefs::kBlockTruncatedCookies);
+
   profile_->ForEachLoadedStoragePartition(base::BindRepeating(
       [](bool block_truncated_cookies,
          content::StoragePartition* storage_partition) {
@@ -647,8 +653,8 @@ ProfileNetworkContextService::CreateCookieManagerParams(
   out->cookie_access_delegate_type =
       network::mojom::CookieAccessDelegateType::USE_CONTENT_SETTINGS;
 
-  // TODO(awillia): Will get this value from prefs in a follow-up CL.
-  out->block_truncated_cookies = false;
+  out->block_truncated_cookies =
+      profile->GetPrefs()->GetBoolean(prefs::kBlockTruncatedCookies);
 
   return out;
 }

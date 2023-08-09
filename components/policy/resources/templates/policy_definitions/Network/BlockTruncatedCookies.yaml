@@ -1,0 +1,32 @@
+caption: Block truncated cookies
+default: true
+desc: |-
+  This policy provides a temporary opt-out for changes to how Chrome handles cookies set via JavaScript that contain certain control characters (NULL, carriage return, and line feed).
+  Previously, the presence of any of these characters in a cookie string would cause it to be truncated but still set.
+  Now, the presence of these characters will cause the whole cookie string to be ignored.
+
+  When this policy is set to True (the default), the new behavior is enabled.
+
+  When this policy is set to False, the old behavior is enabled.
+example_value: false
+features:
+  dynamic_refresh: true
+  per_profile: true
+future_on:
+- fuchsia
+items:
+- caption: Block truncated cookies
+  value: true
+- caption: Allow truncated cookies
+  value: false
+owners:
+- awillia@chromium.org
+- file://net/cookies/OWNERS
+schema:
+  type: boolean
+supported_on:
+- android:118-
+- chrome_os:118-
+- chrome.*:118-
+tags: []
+type: main

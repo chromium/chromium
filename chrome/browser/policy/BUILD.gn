@@ -242,6 +242,7 @@ source_set("policy_specific_browser_tests") {
   if (!is_android) {
     sources += [
       "test/autoplay_policy_browsertest.cc",
+      "test/block_truncated_cookies_policy_browsertest.cc",
       "test/bookmark_bar_enabled_browsertest.cc",
       "test/component_updater_policy_browsertest.cc",
       "test/developer_tools_policy_browsertest.cc",

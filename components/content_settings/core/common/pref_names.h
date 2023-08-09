@@ -14,6 +14,7 @@ namespace prefs {
 // names.
 
 extern const char kCookieControlsMode[];
+extern const char kBlockTruncatedCookies[];
 
 extern const char kContentSettingsVersion[];
 extern const char kContentSettingsWindowLastTabIndex[];
