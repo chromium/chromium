@@ -30,6 +30,7 @@
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
 #include "components/history/core/common/pref_names.h"
+#include "components/history/core/test/history_service_test_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url_service.h"
 #include "content/public/browser/navigation_handle.h"
@@ -927,20 +928,18 @@ IN_PROC_BROWSER_TEST_F(HistoryBrowserTest, VisitAnnotations) {
             base::Seconds(0));
 }
 
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_ObserversCallBothOnURLVisitedForLocalVisits \
-  DISABLED_ObserversCallBothOnURLVisitedForLocalVisits
-#else
-#define MAYBE_ObserversCallBothOnURLVisitedForLocalVisits \
-  ObserversCallBothOnURLVisitedForLocalVisits
-#endif
-// TODO(crbug.com/1471260): The test is flaky on Mac.
 IN_PROC_BROWSER_TEST_F(HistoryBrowserTest,
-                       MAYBE_ObserversCallBothOnURLVisitedForLocalVisits) {
+                       ObserversCallBothOnURLVisitedForLocalVisits) {
   history::HistoryService* history_service =
       HistoryServiceFactory::GetForProfile(browser()->profile(),
                                            ServiceAccessType::EXPLICIT_ACCESS);
   ui_test_utils::WaitForHistoryToLoad(history_service);
+
+  // Load a page and wait for the history service to finish all its background
+  // tasks before actually running the test.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GetTestFileURL("landing.html?first=load")));
+  history::BlockUntilHistoryProcessesPendingRequests(history_service);
 
   MockHistoryServiceObserver observer;
   history_service->AddObserver(&observer);
