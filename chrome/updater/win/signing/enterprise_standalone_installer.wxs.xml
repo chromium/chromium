@@ -4,7 +4,7 @@
   <?define CompanyFullName = 'Google LLC'?>
   <?define Copyright = '$(var.ProductOriginalVersionString) Copyright $(var.ProductBuildYear) Google LLC'?>
   <?define UpdateKeyPath = 'SOFTWARE\$(var.CompanyName)\Update'?>
-  <?define InstallCommandBase='/silent /install "[ProductTag]" /installsource enterprisemsi[OptOmahaArgs]'?>
+  <?define InstallCommandBase='--silent --tag=[ProductTag] --installsource enterprisemsi[OptOmahaArgs]'?>
 
   <Product
     Id='$(var.MsiProductId)'
@@ -168,14 +168,14 @@
       Return='check' />
     <CustomAction Id='AppendEnterpriseToOptArgsProperty'
       Property='OptOmahaArgs'
-      Value='[OptOmahaArgs] /enterprise'
+      Value='[OptOmahaArgs] --enterprise'
       Execute='immediate'
       Return='check' />
 
     <?ifdef ProductInstallerData ?>
         <CustomAction Id='BuildInstallCommand'
                       Property='InstallCommand'
-                      Value='$(var.InstallCommandBase) /appargs "appguid=$(var.ProductGuid)&amp;installerdata=$(var.ProductInstallerData)"'
+                      Value='$(var.InstallCommandBase) --appargs="appguid=$(var.ProductGuid)&amp;installerdata=$(var.ProductInstallerData)"'
                       Execute='immediate'
                       Return='check' />
     <?else?>
