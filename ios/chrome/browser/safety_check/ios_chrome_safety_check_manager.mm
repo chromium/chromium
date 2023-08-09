@@ -8,6 +8,7 @@
 
 #import "base/functional/bind.h"
 #import "base/location.h"
+#import "base/time/time.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/prefs/pref_service.h"
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -79,6 +80,8 @@ void IOSChromeSafetyCheckManager::StartSafetyCheck() {
     return;
   }
 
+  LogCurrentSafetyCheckRunTime();
+
   // Asynchronous checks
   StartPasswordCheck();
   StartUpdateChromeCheck();
@@ -101,6 +104,9 @@ void IOSChromeSafetyCheckManager::StopSafetyCheck() {
 
 void IOSChromeSafetyCheckManager::RestorePreviousSafetyCheckState() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  last_safety_check_run_time_ =
+      local_pref_service_->GetTime(prefs::kIosSafetyCheckManagerLastRunTime);
 
   absl::optional<SafeBrowsingSafetyCheckState> safe_browsing_check_state =
       SafeBrowsingSafetyCheckStateForName(local_pref_service_->GetString(
@@ -242,6 +248,11 @@ std::vector<password_manager::CredentialUIEntry>
 IOSChromeSafetyCheckManager::GetInsecureCredentials() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return password_check_manager_->GetInsecureCredentials();
+}
+
+base::Time IOSChromeSafetyCheckManager::GetLastSafetyCheckRunTime() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return last_safety_check_run_time_;
 }
 
 // Returns the Chrome app next version.
@@ -480,6 +491,14 @@ void IOSChromeSafetyCheckManager::RefreshSafetyCheckRunningState() {
   for (auto& observer : observers_) {
     observer.RunningStateChanged(running_safety_check_state_);
   }
+}
+
+void IOSChromeSafetyCheckManager::LogCurrentSafetyCheckRunTime() {
+  base::Time now = base::Time::Now();
+
+  last_safety_check_run_time_ = now;
+
+  local_pref_service_->SetTime(prefs::kIosSafetyCheckManagerLastRunTime, now);
 }
 
 void IOSChromeSafetyCheckManager::AddObserver(

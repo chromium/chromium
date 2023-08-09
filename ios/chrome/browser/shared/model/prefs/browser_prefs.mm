@@ -299,6 +299,8 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
       prefs::kIosSafetyCheckManagerSafeBrowsingCheckResult,
       NameForSafetyCheckState(SafeBrowsingSafetyCheckState::kDefault),
       PrefRegistry::LOSSY_PREF);
+  registry->RegisterTimePref(prefs::kIosSafetyCheckManagerLastRunTime,
+                             base::Time(), PrefRegistry::LOSSY_PREF);
 }
 
 void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {

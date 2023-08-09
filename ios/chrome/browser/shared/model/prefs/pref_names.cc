@@ -206,6 +206,10 @@ const char kIosPromosManagerImpressions[] = "ios.promos_manager.impressions";
 const char kIosPromosManagerSingleDisplayActivePromos[] =
     "ios.promos_manager.single_display_active_promos";
 
+// Time preference containing the last run time of the Safety Check.
+const char kIosSafetyCheckManagerLastRunTime[] =
+    "ios.safety_check_manager.last_run_time";
+
 // String preference containing the Password Check result from the most recent
 // Safety Check run (using the new Safety Check Manager).
 const char kIosSafetyCheckManagerPasswordCheckResult[] =

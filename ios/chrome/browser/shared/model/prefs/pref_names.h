@@ -58,6 +58,7 @@ extern const char kIosPromosManagerActivePromos[];
 extern const char kIosPromosManagerImpressions[];
 extern const char kIosPromosManagerSingleDisplayActivePromos[];
 extern const char kIosPromosManagerSingleDisplayPendingPromos[];
+extern const char kIosSafetyCheckManagerLastRunTime[];
 extern const char kIosSafetyCheckManagerPasswordCheckResult[];
 extern const char kIosSafetyCheckManagerUpdateCheckResult[];
 extern const char kIosSafetyCheckManagerSafeBrowsingCheckResult[];
