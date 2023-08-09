@@ -177,6 +177,7 @@
 
 - (void)stop {
   [self.sharingCoordinator stop];
+  self.sharingCoordinator = nil;
   _popupView.reset();
 }
 
