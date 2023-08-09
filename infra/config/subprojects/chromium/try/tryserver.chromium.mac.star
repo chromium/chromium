@@ -467,6 +467,7 @@ try_.compilator_builder(
     # Set builderless to False so that branch builders use builderful bots
     builderless = False,
     os = os.MAC_DEFAULT,
+    cpu = cpu.ARM64,
     ssd = None,
     # TODO(crbug.com/1456545) - _with_resultdb should be deprecated in favor for
     # the original property once all builders have migrated.
