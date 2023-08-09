@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/base64.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/scoped_feature_list.h"
@@ -197,6 +198,8 @@ TEST_F(NetworkServiceProxyDelegateTest, AddsTokenToTunnelRequest) {
   auto auth_token_cache = std::make_unique<MockIpProtectionAuthTokenCache>();
   auto token = mojom::BlindSignedAuthToken::New();
   token->token = "a-token";
+  std::string encoded_token;
+  base::Base64Encode(token->token, &encoded_token);
   auth_token_cache->SetNextAuthToken(std::move(token));
   delegate->SetIpProtectionAuthTokenCache(std::move(auth_token_cache));
 
@@ -204,7 +207,8 @@ TEST_F(NetworkServiceProxyDelegateTest, AddsTokenToTunnelRequest) {
   auto proxy_server = net::PacResultElementToProxyServer("HTTPS proxy");
   delegate->OnBeforeTunnelRequest(proxy_server, &headers);
 
-  EXPECT_THAT(headers, Contain("Authorization", "Bearer a-token"));
+  EXPECT_THAT(headers, Contain("Authorization",
+                               base::StrCat({"Bearer ", encoded_token})));
 }
 
 TEST_F(NetworkServiceProxyDelegateTest, NoTokenIfNotIpProtection) {

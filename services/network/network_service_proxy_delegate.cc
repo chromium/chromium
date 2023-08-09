@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "services/network/network_service_proxy_delegate.h"
+#include "base/base64.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/strcat.h"
@@ -175,7 +176,9 @@ void NetworkServiceProxyDelegate::OnBeforeTunnelRequest(
     if (auth_token_cache_ && IsForIpProtection()) {
       auto token = auth_token_cache_->GetAuthToken();
       if (token) {
-        auto value = base::StrCat({"Bearer ", (*token)->token});
+        std::string encoded_token;
+        base::Base64Encode((*token)->token, &encoded_token);
+        auto value = base::StrCat({"Bearer ", encoded_token});
         extra_headers->SetHeader(net::HttpRequestHeaders::kAuthorization,
                                  value);
       }
