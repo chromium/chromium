@@ -1207,4 +1207,18 @@ public class BookmarkManagerMediatorTest {
         mBookmarkUiPrefs.setBookmarkRowSortOrder(BookmarkRowSortOrder.REVERSE_ALPHABETICAL);
         verifyCurrentBookmarkIds(null, mFolderId2, mFolderId1);
     }
+
+    @Test
+    public void testSelectionMoved_dropSelection() {
+        finishLoading();
+        mMediator.openFolder(mFolderId1);
+
+        doReturn(true).when(mSelectionDelegate).isItemSelected(mFolderId2);
+        mModelList.removeAt(mMediator.getPositionForBookmark(mFolderId2));
+
+        verify(mBookmarkModel).addObserver(mBookmarkModelObserverArgumentCaptor.capture());
+        mBookmarkModelObserverArgumentCaptor.getValue().bookmarkNodeChanged(mFolderItem2);
+
+        verify(mSelectionDelegate).toggleSelectionForItem(mFolderId2);
+    }
 }

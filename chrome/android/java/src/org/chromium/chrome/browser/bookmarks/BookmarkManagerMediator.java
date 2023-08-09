@@ -149,14 +149,19 @@ class BookmarkManagerMediator
         }
 
         @Override
-        public void bookmarkNodeChanged(BookmarkItem node) {
+        public void bookmarkNodeChanged(BookmarkItem item) {
             clearHighlight();
 
+            BookmarkId id = item.getId();
+            if (getPositionForBookmark(id) == -1 && mSelectionDelegate.isItemSelected(id)) {
+                mSelectionDelegate.toggleSelectionForItem(id);
+            }
+
             if (getCurrentUiMode() == BookmarkUiMode.FOLDER
-                    && Objects.equals(node.getId(), getCurrentFolderId())) {
+                    && Objects.equals(id, getCurrentFolderId())) {
                 refresh();
             } else {
-                super.bookmarkNodeChanged(node);
+                super.bookmarkNodeChanged(item);
             }
         }
 
@@ -818,7 +823,8 @@ class BookmarkManagerMediator
     }
 
     /** @return The position of the given bookmark in adapter. Will return -1 if not found. */
-    private int getPositionForBookmark(BookmarkId bookmark) {
+    @VisibleForTesting
+    int getPositionForBookmark(BookmarkId bookmark) {
         assert bookmark != null;
         int position = -1;
         for (int i = 0; i < getItemCount(); i++) {
