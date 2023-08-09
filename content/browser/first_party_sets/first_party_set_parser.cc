@@ -52,31 +52,27 @@ class ValidateSiteResult {
   explicit ValidateSiteResult(ParseErrorType error_type)
       : ValidateSiteResult(absl::nullopt, error_type) {}
 
-  ValidateSiteResult(absl::optional<net::SchemefulSite> site,
-                     absl::optional<ParseErrorType> error_type)
-      : site_(std::move(site)), error_type_(error_type) {
-    // One or both of the fields must be populated.
-    CHECK(site_.has_value() || error_type_.has_value());
-    if (site_.has_value() && error_type_.has_value()) {
-      CHECK_EQ(error_type_.value(), ParseErrorType::kInvalidDomain);
-    }
+  ValidateSiteResult(net::SchemefulSite site, ParseErrorType error_type)
+      : ValidateSiteResult(absl::make_optional(std::move(site)),
+                           absl::make_optional(error_type)) {
+    // If we have both a site and an error, the error must be because the site
+    // didn't have a registerable domain (but we were still able to parse it).
+    CHECK_EQ(error_type_.value(), ParseErrorType::kInvalidDomain);
   }
 
   bool has_site() const { return site_.has_value(); }
   bool has_error() const { return error_type_.has_value(); }
 
-  const net::SchemefulSite& site() const {
-    // Either there's no error, or it was because the site didn't have a
-    // registerable domain (so we were still able to parse it).
-    CHECK(!has_error() || error_type_ == ParseErrorType::kInvalidDomain);
-    return site_.value();
-  }
-
+  const net::SchemefulSite& site() const { return site_.value(); }
   ParseErrorType error_type() const { return error_type_.value(); }
 
  private:
-  absl::optional<net::SchemefulSite> site_ = absl::nullopt;
-  absl::optional<ParseErrorType> error_type_ = absl::nullopt;
+  ValidateSiteResult(absl::optional<net::SchemefulSite> site,
+                     absl::optional<ParseErrorType> error_type)
+      : site_(std::move(site)), error_type_(error_type) {}
+
+  const absl::optional<net::SchemefulSite> site_ = absl::nullopt;
+  const absl::optional<ParseErrorType> error_type_ = absl::nullopt;
 };
 
 bool IsFatalError(ParseErrorType error_type) {
