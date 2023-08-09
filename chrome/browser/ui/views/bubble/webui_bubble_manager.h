@@ -45,7 +45,6 @@ class WebUIBubbleManager : public views::WidgetObserver {
   bool bubble_using_cached_web_contents() const {
     return bubble_using_cached_web_contents_;
   }
-  void SetBubbleInitStartTime(base::TimeTicks);
 
   // Creates the persistent renderer process if the feature is enabled.
   virtual void MaybeInitPersistentRenderer() = 0;
