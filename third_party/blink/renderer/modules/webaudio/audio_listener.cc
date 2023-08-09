@@ -33,7 +33,6 @@
 #include "third_party/blink/renderer/modules/webaudio/panner_handler.h"
 #include "third_party/blink/renderer/platform/audio/audio_bus.h"
 #include "third_party/blink/renderer/platform/audio/audio_utilities.h"
-#include "third_party/blink/renderer/platform/audio/hrtf_database_loader.h"
 
 namespace blink {
 
@@ -125,8 +124,6 @@ AudioListener::~AudioListener() {
     DeferredTaskHandler::GraphAutoLocker locker(*deferred_task_handler_);
     handler_ = nullptr;
   }
-
-  hrtf_database_loader_ = nullptr;
 }
 
 void AudioListener::setOrientation(float x, float y, float z,
@@ -218,18 +215,15 @@ void AudioListener::RemovePannerHandler(PannerHandler& panner_handler) {
 }
 
 void AudioListener::CreateAndLoadHRTFDatabaseLoader(float sample_rate) {
-  DCHECK(IsMainThread());
-
-  if (!hrtf_database_loader_) {
-    hrtf_database_loader_ =
-        HRTFDatabaseLoader::CreateAndLoadAsynchronouslyIfNecessary(sample_rate);
-  }
+  Handler().CreateAndLoadHRTFDatabaseLoader(sample_rate);
 }
 
 void AudioListener::WaitForHRTFDatabaseLoaderThreadCompletion() {
-  if (hrtf_database_loader_) {
-    hrtf_database_loader_->WaitForLoaderThreadCompletion();
-  }
+  Handler().WaitForHRTFDatabaseLoaderThreadCompletion();
+}
+
+HRTFDatabaseLoader*  AudioListener::HrtfDatabaseLoader() {
+  return Handler().HrtfDatabaseLoader();
 }
 
 void AudioListener::Trace(Visitor* visitor) const {

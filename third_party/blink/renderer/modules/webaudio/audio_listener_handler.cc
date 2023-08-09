@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/webaudio/audio_listener_handler.h"
 
 #include "third_party/blink/renderer/modules/webaudio/panner_handler.h"
+#include "third_party/blink/renderer/platform/audio/hrtf_database_loader.h"
 
 namespace blink {
 
@@ -71,6 +72,7 @@ AudioListenerHandler::~AudioListenerHandler() {
   up_x_handler_ = nullptr;
   up_y_handler_ = nullptr;
   up_z_handler_ = nullptr;
+  hrtf_database_loader_ = nullptr;
   panner_handlers_.clear();
 }
 
@@ -194,6 +196,33 @@ void AudioListenerHandler::UpdateState() {
     // work than necessary for one render quantum.
     is_listener_dirty_ = true;
   }
+}
+
+void AudioListenerHandler::CreateAndLoadHRTFDatabaseLoader(float sample_rate) {
+  DCHECK(IsMainThread());
+
+  if (hrtf_database_loader_) {
+    return;
+  }
+
+  hrtf_database_loader_ =
+      HRTFDatabaseLoader::CreateAndLoadAsynchronouslyIfNecessary(sample_rate);
+}
+
+void AudioListenerHandler::WaitForHRTFDatabaseLoaderThreadCompletion() {
+  // This can be called from both main and audio threads.
+
+  if (!hrtf_database_loader_) {
+    return;
+  }
+
+  hrtf_database_loader_->WaitForLoaderThreadCompletion();
+}
+
+HRTFDatabaseLoader* AudioListenerHandler::HrtfDatabaseLoader() {
+  DCHECK(IsMainThread());
+
+  return hrtf_database_loader_.get();
 }
 
 void AudioListenerHandler::UpdateValuesIfNeeded(uint32_t frames_to_process) {

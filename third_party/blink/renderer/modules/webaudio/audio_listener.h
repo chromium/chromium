@@ -107,9 +107,7 @@ class AudioListener final : public ScriptWrappable,
 
   void CreateAndLoadHRTFDatabaseLoader(float);
   void WaitForHRTFDatabaseLoaderThreadCompletion();
-  HRTFDatabaseLoader* HrtfDatabaseLoader() {
-    return hrtf_database_loader_.get();
-  }
+  HRTFDatabaseLoader* HrtfDatabaseLoader();
 
   // InspectorHelperMixin: Note that this object belongs to a BaseAudioContext,
   // so these methods get called by the parent context.
@@ -137,9 +135,6 @@ class AudioListener final : public ScriptWrappable,
   Member<AudioParam> up_x_;
   Member<AudioParam> up_y_;
   Member<AudioParam> up_z_;
-
-  // HRTF database loader used by PannderNodes in the same context.
-  scoped_refptr<HRTFDatabaseLoader> hrtf_database_loader_;
 };
 
 }  // namespace blink

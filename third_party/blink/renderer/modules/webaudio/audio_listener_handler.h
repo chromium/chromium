@@ -11,6 +11,7 @@
 
 namespace blink {
 
+class HRTFDatabaseLoader;
 class PannerHandler;
 
 class AudioListenerHandler final
@@ -78,6 +79,13 @@ class AudioListenerHandler final
 
   base::Lock& Lock() { return listener_lock_; }
 
+  void CreateAndLoadHRTFDatabaseLoader(float sample_rate);
+  HRTFDatabaseLoader* HrtfDatabaseLoader();
+
+  // TODO(crbug.com/1471284): this method can be called from both main and
+  // audio thread.
+  void WaitForHRTFDatabaseLoaderThreadCompletion();
+
  private:
   AudioListenerHandler(AudioParamHandler& position_x_handler,
                        AudioParamHandler& position_y_handler,
@@ -133,6 +141,9 @@ class AudioListenerHandler final
   // referred in the audio thread. These raw pointers are safe because
   // `PannerHandler::uninitialize()` unregisters it from this set.
   HashSet<PannerHandler*> panner_handlers_;
+
+  // HRTF database loader used by PannerHandlers in the same context.
+  scoped_refptr<HRTFDatabaseLoader> hrtf_database_loader_;
 };
 
 }  // namespace blink
