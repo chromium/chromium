@@ -29,9 +29,9 @@ class PersonalDataManager;
 // Server-side response can return SUCCESS, TEMPORARY_FAILURE, or
 // PERMANENT_FAILURE (see SaveResult enum). Use these to extract migration
 // result.
-const char kMigrationResultPermanentFailure[] = "PERMANENT_FAILURE";
-const char kMigrationResultTemporaryFailure[] = "TEMPORARY_FAILURE";
-const char kMigrationResultSuccess[] = "SUCCESS";
+inline constexpr char kMigrationResultPermanentFailure[] = "PERMANENT_FAILURE";
+inline constexpr char kMigrationResultTemporaryFailure[] = "TEMPORARY_FAILURE";
+inline constexpr char kMigrationResultSuccess[] = "SUCCESS";
 
 // MigratableCreditCard class is used as a data structure to work as an
 // intermediary between the UI side and the migration manager. Besides the basic
@@ -51,6 +51,10 @@ class MigratableCreditCard {
   };
 
   explicit MigratableCreditCard(const CreditCard& credit_card);
+  MigratableCreditCard(const MigratableCreditCard&);
+  MigratableCreditCard(MigratableCreditCard&&);
+  MigratableCreditCard& operator=(const MigratableCreditCard&);
+  MigratableCreditCard& operator=(MigratableCreditCard&&);
   ~MigratableCreditCard();
 
   CreditCard credit_card() const { return credit_card_; }

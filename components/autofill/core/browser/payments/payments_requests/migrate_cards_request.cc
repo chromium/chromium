@@ -5,7 +5,9 @@
 #include "components/autofill/core/browser/payments/payments_requests/migrate_cards_request.h"
 
 #include <string>
+#include <utility>
 
+#include "base/containers/span.h"
 #include "base/json/json_writer.h"
 #include "base/strings/escape.h"
 #include "base/strings/utf_string_conversions.h"
@@ -14,20 +16,21 @@
 namespace autofill::payments {
 
 namespace {
-const char kMigrateCardsRequestPath[] =
+constexpr char kMigrateCardsRequestPath[] =
     "payments/apis-secure/chromepaymentsservice/migratecards"
     "?s7e_suffix=chromewallet";
-const char kMigrateCardsRequestFormat[] =
+constexpr char kMigrateCardsRequestFormat[] =
     "requestContentType=application/json; charset=utf-8&request=%s";
 }  // namespace
 
 MigrateCardsRequest::MigrateCardsRequest(
     const PaymentsClient::MigrationRequestDetails& request_details,
-    const std::vector<MigratableCreditCard>& migratable_credit_cards,
+    base::span<const MigratableCreditCard> migratable_credit_cards,
     const bool full_sync_enabled,
     MigrateCardsCallback callback)
     : request_details_(request_details),
-      migratable_credit_cards_(migratable_credit_cards),
+      migratable_credit_cards_(migratable_credit_cards.begin(),
+                               migratable_credit_cards.end()),
       full_sync_enabled_(full_sync_enabled),
       callback_(std::move(callback)) {}
 
@@ -61,21 +64,19 @@ std::string MigrateCardsRequest::GetRequestContent() {
   base::Value::Dict chrome_user_context;
   chrome_user_context.Set("full_sync_enabled", full_sync_enabled_);
   request_dict.Set("chrome_user_context", std::move(chrome_user_context));
-
   request_dict.Set("context_token", request_details_.context_token);
 
   std::string all_pans_data;
   base::Value::List migrate_cards;
-  for (size_t index = 0; index < migratable_credit_cards_->size(); ++index) {
+  for (size_t index = 0; index < migratable_credit_cards_.size(); ++index) {
     std::string pan_field_name = GetPanFieldName(index);
     // Generate credit card dictionary.
-    migrate_cards.Append(BuildCreditCardDictionary(
-        (*migratable_credit_cards_)[index].credit_card(), app_locale,
-        pan_field_name));
+    migrate_cards.Append(
+        BuildCreditCardDictionary(migratable_credit_cards_[index].credit_card(),
+                                  app_locale, pan_field_name));
     // Append pan data to the |all_pans_data|.
-    all_pans_data +=
-        GetAppendPan((*migratable_credit_cards_)[index].credit_card(),
-                     app_locale, pan_field_name);
+    all_pans_data += GetAppendPan(migratable_credit_cards_[index].credit_card(),
+                                  app_locale, pan_field_name);
   }
   request_dict.Set("local_card", std::move(migrate_cards));
 

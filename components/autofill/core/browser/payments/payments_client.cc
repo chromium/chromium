@@ -23,11 +23,9 @@
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/payments/account_info_getter.h"
 #include "components/autofill/core/browser/payments/client_behavior_constants.h"
-#include "components/autofill/core/browser/payments/local_card_migration_manager.h"
 #include "components/autofill/core/browser/payments/payments_requests/get_details_for_enrollment_request.h"
 #include "components/autofill/core/browser/payments/payments_requests/get_unmask_details_request.h"
 #include "components/autofill/core/browser/payments/payments_requests/get_upload_details_request.h"
-#include "components/autofill/core/browser/payments/payments_requests/migrate_cards_request.h"
 #include "components/autofill/core/browser/payments/payments_requests/opt_change_request.h"
 #include "components/autofill/core/browser/payments/payments_requests/payments_request.h"
 #include "components/autofill/core/browser/payments/payments_requests/select_challenge_option_request.h"
@@ -50,6 +48,11 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#include "components/autofill/core/browser/payments/local_card_migration_manager.h"
+#include "components/autofill/core/browser/payments/payments_requests/migrate_cards_request.h"
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 namespace autofill::payments {
 
@@ -78,9 +81,6 @@ GURL GetRequestUrl(const std::string& path) {
 }
 
 }  // namespace
-
-const char PaymentsClient::kRecipientName[] = "recipient_name";
-const char PaymentsClient::kPhoneNumber[] = "phone_number";
 
 PaymentsClient::UnmaskDetails::UnmaskDetails() = default;
 PaymentsClient::UnmaskDetails::~UnmaskDetails() = default;
@@ -315,6 +315,7 @@ void PaymentsClient::UploadCard(
       /*authenticate=*/true);
 }
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 void PaymentsClient::MigrateCards(
     const MigrationRequestDetails& request_details,
     const std::vector<MigratableCreditCard>& migratable_credit_cards,
@@ -326,6 +327,7 @@ void PaymentsClient::MigrateCards(
           std::move(callback)),
       /*authenticate=*/true);
 }
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 void PaymentsClient::SelectChallengeOption(
     const SelectChallengeOptionRequestDetails& request_details,

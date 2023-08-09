@@ -10,6 +10,7 @@
 #include "base/json/json_reader.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -90,6 +91,7 @@ void TestPaymentsClient::UploadCard(
                           upload_card_response_details_);
 }
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 void TestPaymentsClient::MigrateCards(
     const MigrationRequestDetails& details,
     const std::vector<MigratableCreditCard>& migratable_credit_cards,
@@ -97,6 +99,7 @@ void TestPaymentsClient::MigrateCards(
   std::move(callback).Run(AutofillClient::PaymentsRpcResult::kSuccess,
                           std::move(save_result_), "this is display text");
 }
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 void TestPaymentsClient::SelectChallengeOption(
     const SelectChallengeOptionRequestDetails& details,

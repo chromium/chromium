@@ -15,6 +15,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
@@ -41,10 +42,13 @@ class SharedURLLoaderFactory;
 namespace autofill {
 
 class AccountInfoGetter;
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 class MigratableCreditCard;
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 namespace payments {
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 // Callback type for MigrateCards callback. |result| is the Payments Rpc result.
 // |save_result| is an unordered_map parsed from the response whose key is the
 // unique id (guid) for each card and value is the server save result string.
@@ -54,12 +58,13 @@ typedef base::OnceCallback<void(
     std::unique_ptr<std::unordered_map<std::string, std::string>> save_result,
     const std::string& display_text)>
     MigrateCardsCallback;
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 // Billable service number is defined in Payments server to distinguish
 // different requests.
-const int kUnmaskCardBillableServiceNumber = 70154;
-const int kUploadCardBillableServiceNumber = 70073;
-const int kMigrateCardsBillableServiceNumber = 70264;
+inline constexpr int kUnmaskCardBillableServiceNumber = 70154;
+inline constexpr int kUploadCardBillableServiceNumber = 70073;
+inline constexpr int kMigrateCardsBillableServiceNumber = 70264;
 
 class PaymentsRequest;
 
@@ -73,8 +78,8 @@ class PaymentsClient {
   // The names of the fields used to send non-location elements as part of an
   // address. Used in the implementation and in tests which verify that these
   // values are set or not at appropriate times.
-  static const char kRecipientName[];
-  static const char kPhoneNumber[];
+  static constexpr char kRecipientName[] = "recipient_name";
+  static constexpr char kPhoneNumber[] = "phone_number";
 
   // Details for card unmasking, such as the suggested method of authentication,
   // along with any information required to facilitate the authentication.
@@ -482,6 +487,7 @@ class PaymentsClient {
                               const PaymentsClient::UploadCardResponseDetails&)>
           callback);
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // The user has indicated that they would like to migrate their local credit
   // cards. This request will fail server-side if a successful call to
   // GetUploadDetails has not already been made.
@@ -489,6 +495,7 @@ class PaymentsClient {
       const MigrationRequestDetails& details,
       const std::vector<MigratableCreditCard>& migratable_credit_cards,
       MigrateCardsCallback callback);
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
   // The user has chosen one of the available challenge options. Send the
   // selected challenge option to server to continue the unmask flow.

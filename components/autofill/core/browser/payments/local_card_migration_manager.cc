@@ -33,7 +33,18 @@ namespace autofill {
 MigratableCreditCard::MigratableCreditCard(const CreditCard& credit_card)
     : credit_card_(credit_card) {}
 
-MigratableCreditCard::~MigratableCreditCard() {}
+MigratableCreditCard::MigratableCreditCard(const MigratableCreditCard&) =
+    default;
+
+MigratableCreditCard::MigratableCreditCard(MigratableCreditCard&&) = default;
+
+MigratableCreditCard& MigratableCreditCard::operator=(
+    const MigratableCreditCard&) = default;
+
+MigratableCreditCard& MigratableCreditCard::operator=(MigratableCreditCard&&) =
+    default;
+
+MigratableCreditCard::~MigratableCreditCard() = default;
 
 LocalCardMigrationManager::LocalCardMigrationManager(
     AutofillClient* client,

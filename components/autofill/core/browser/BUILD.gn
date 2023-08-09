@@ -368,8 +368,6 @@ static_library("browser") {
     "payments/payments_requests/get_unmask_details_request.h",
     "payments/payments_requests/get_upload_details_request.cc",
     "payments/payments_requests/get_upload_details_request.h",
-    "payments/payments_requests/migrate_cards_request.cc",
-    "payments/payments_requests/migrate_cards_request.h",
     "payments/payments_requests/opt_change_request.cc",
     "payments/payments_requests/opt_change_request.h",
     "payments/payments_requests/payments_request.cc",
@@ -674,6 +672,8 @@ static_library("browser") {
     sources += [
       "payments/local_card_migration_manager.cc",
       "payments/local_card_migration_manager.h",
+      "payments/payments_requests/migrate_cards_request.cc",
+      "payments/payments_requests/migrate_cards_request.h",
       "payments/upi_vpa_save_manager.cc",
       "payments/upi_vpa_save_manager.h",
       "server_prediction_overrides.cc",
