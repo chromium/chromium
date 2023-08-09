@@ -17,6 +17,7 @@
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/trace_event/trace_event.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/model/client_tag_based_model_type_processor.h"
@@ -382,6 +383,7 @@ void PasskeySyncBridge::OnStoreReadAllMetadata(
     std::unique_ptr<syncer::ModelTypeStore::RecordList> entries,
     const absl::optional<syncer::ModelError>& error,
     std::unique_ptr<syncer::MetadataBatch> metadata_batch) {
+  TRACE_EVENT0("sync", "PasskeySyncBridge::OnStoreReadAllMetadata");
   if (error) {
     change_processor()->ReportError(*error);
     return;
@@ -409,6 +411,7 @@ void PasskeySyncBridge::OnStoreCommitWriteBatch(
 }
 
 void PasskeySyncBridge::NotifyPasskeysChanged() {
+  TRACE_EVENT0("sync", "PasskeySyncBridge::NotifyPasskeysChanged");
   for (auto& observer : observers_) {
     observer.OnPasskeysChanged();
   }
