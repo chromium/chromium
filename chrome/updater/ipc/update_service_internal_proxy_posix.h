@@ -10,6 +10,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "chrome/updater/app/server/posix/mojom/updater_service_internal.mojom.h"
 #include "chrome/updater/update_service_internal.h"
 #include "chrome/updater/updater_scope.h"
@@ -23,28 +24,27 @@ class IsolatedConnection;
 
 namespace updater {
 
-class UpdateServiceInternalProxy : public UpdateServiceInternal {
- public:
-  // Creates an UpdateServiceInternalProxy which is not bound to a remote. It
-  // establishes a connection lazily and can be used immediately.
-  explicit UpdateServiceInternalProxy(UpdaterScope scope);
+using RpcError = int;
 
-  // Overrides for UpdateServiceInternal.
-  // UpdateServiceInternalProxy will not be destroyed while these calls are
-  // outstanding; the caller need not retain a ref.
-  void Run(base::OnceClosure callback) override;
-  void Hello(base::OnceClosure callback) override;
+class UpdateServiceInternalProxyImpl
+    : public base::RefCountedThreadSafe<UpdateServiceInternalProxyImpl> {
+ public:
+  // Creates an UpdateServiceInternalProxyImpl which is not bound to a remote.
+  // It establishes a connection lazily and can be used immediately.
+  explicit UpdateServiceInternalProxyImpl(UpdaterScope scope);
+
+  void Run(base::OnceCallback<void(absl::optional<RpcError>)> callback);
+  void Hello(base::OnceCallback<void(absl::optional<RpcError>)> callback);
 
  private:
-  ~UpdateServiceInternalProxy() override;
+  friend class base::RefCountedThreadSafe<UpdateServiceInternalProxyImpl>;
+  ~UpdateServiceInternalProxyImpl();
 
   void EnsureConnecting();
   void OnDisconnected();
   void OnConnected(
       mojo::PendingReceiver<mojom::UpdateServiceInternal> pending_receiver,
       absl::optional<mojo::PlatformChannelEndpoint> endpoint);
-  void RunDone(base::OnceClosure callback);
-  void HelloDone(base::OnceClosure callback);
 
   SEQUENCE_CHECKER(sequence_checker_);
   const UpdaterScope scope_;
@@ -52,9 +52,9 @@ class UpdateServiceInternalProxy : public UpdateServiceInternal {
       GUARDED_BY_CONTEXT(sequence_checker_);
   mojo::Remote<mojom::UpdateServiceInternal> remote_
       GUARDED_BY_CONTEXT(sequence_checker_);
-  base::WeakPtrFactory<UpdateServiceInternalProxy> weak_factory_{this};
+  base::WeakPtrFactory<UpdateServiceInternalProxyImpl> weak_factory_{this};
 };
 
 }  // namespace updater
 
-#endif  // CHROME_UPDATER_UPDATE_SERVICE_INTERNAL_PROXY_POSIX_H_
+#endif  // CHROME_UPDATER_IPC_UPDATE_SERVICE_INTERNAL_PROXY_POSIX_H_

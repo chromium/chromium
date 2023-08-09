@@ -120,13 +120,13 @@ class ProxyImplBase {
     return interface_.value();
   }
 
-  bool ConnectToServer() {
+  HRESULT ConnectToServer() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     if (interface_.has_value()) {
-      return true;
+      return S_OK;
     }
     interface_ = CreateInterface();
-    return interface_.has_value();
+    return interface_.has_value() ? S_OK : interface_.error();
   }
 
   // Bound to the `task_runner_` sequence.

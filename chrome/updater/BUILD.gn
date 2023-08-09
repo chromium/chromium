@@ -101,6 +101,8 @@ if (is_win || is_mac || is_linux) {
       "device_management/dm_storage.h",
       "installer.cc",
       "installer.h",
+      "ipc/update_service_internal_proxy.cc",
+      "ipc/update_service_internal_proxy.h",
       "lock.h",
       "net/network.h",
       "persisted_data.cc",

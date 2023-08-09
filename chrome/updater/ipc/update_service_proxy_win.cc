@@ -495,7 +495,7 @@ class UpdateServiceProxyImpl
   void GetVersionOnSTA(
       base::OnceCallback<void(const base::Version&)> callback) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    if (!ConnectToServer()) {
+    if (FAILED(ConnectToServer())) {
       std::move(callback).Run(base::Version());
       return;
     }
@@ -511,7 +511,7 @@ class UpdateServiceProxyImpl
 
   void FetchPoliciesOnSTA(base::OnceCallback<void(int)> callback) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    if (!ConnectToServer()) {
+    if (FAILED(ConnectToServer())) {
       std::move(callback).Run(hresult());
       return;
     }
@@ -532,7 +532,7 @@ class UpdateServiceProxyImpl
   void RegisterAppOnSTA(const RegistrationRequest& request,
                         base::OnceCallback<void(int)> callback) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    if (!ConnectToServer()) {
+    if (FAILED(ConnectToServer())) {
       std::move(callback).Run(hresult());
       return;
     }
@@ -588,7 +588,7 @@ class UpdateServiceProxyImpl
       base::OnceCallback<void(const std::vector<UpdateService::AppState>&)>
           callback) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    if (!ConnectToServer()) {
+    if (FAILED(ConnectToServer())) {
       std::move(callback).Run({});
       return;
     }
@@ -604,7 +604,7 @@ class UpdateServiceProxyImpl
 
   void RunPeriodicTasksOnSTA(base::OnceClosure callback) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    if (!ConnectToServer()) {
+    if (FAILED(ConnectToServer())) {
       std::move(callback).Run();
       return;
     }
@@ -627,7 +627,7 @@ class UpdateServiceProxyImpl
       UpdateService::StateChangeCallback state_update,
       UpdateService::Callback callback) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    if (!ConnectToServer()) {
+    if (FAILED(ConnectToServer())) {
       std::move(callback).Run(UpdateService::Result::kServiceFailed);
       return;
     }
@@ -659,7 +659,7 @@ class UpdateServiceProxyImpl
       UpdateService::StateChangeCallback state_update,
       UpdateService::Callback callback) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    if (!ConnectToServer()) {
+    if (FAILED(ConnectToServer())) {
       std::move(callback).Run(UpdateService::Result::kServiceFailed);
       return;
     }
@@ -698,7 +698,7 @@ class UpdateServiceProxyImpl
   void UpdateAllOnSTA(UpdateService::StateChangeCallback state_update,
                       UpdateService::Callback callback) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    if (!ConnectToServer()) {
+    if (FAILED(ConnectToServer())) {
       std::move(callback).Run(UpdateService::Result::kServiceFailed);
       return;
     }
@@ -718,7 +718,7 @@ class UpdateServiceProxyImpl
                     UpdateService::StateChangeCallback state_update,
                     UpdateService::Callback callback) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    if (!ConnectToServer()) {
+    if (FAILED(ConnectToServer())) {
       std::move(callback).Run(UpdateService::Result::kServiceFailed);
       return;
     }
@@ -780,7 +780,7 @@ class UpdateServiceProxyImpl
 
   void CancelInstallsOnSTA(const std::string& app_id) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    if (!ConnectToServer()) {
+    if (FAILED(ConnectToServer())) {
       return;
     }
     if (HRESULT hr =
@@ -799,7 +799,7 @@ class UpdateServiceProxyImpl
                          UpdateService::Callback callback) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     VLOG(1) << __func__;
-    if (!ConnectToServer()) {
+    if (FAILED(ConnectToServer())) {
       std::move(callback).Run(UpdateService::Result::kServiceFailed);
       return;
     }

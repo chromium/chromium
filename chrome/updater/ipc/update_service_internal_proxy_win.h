@@ -5,34 +5,36 @@
 #ifndef CHROME_UPDATER_IPC_UPDATE_SERVICE_INTERNAL_PROXY_WIN_H_
 #define CHROME_UPDATER_IPC_UPDATE_SERVICE_INTERNAL_PROXY_WIN_H_
 
+#include <windows.h>
+
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "chrome/updater/update_service_internal.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 
+using RpcError = HRESULT;
+
 enum class UpdaterScope;
-class UpdateServiceInternalProxyImpl;
+class UpdateServiceInternalProxyImplImpl;
 
 // All functions and callbacks must be called on the same sequence.
-class UpdateServiceInternalProxy : public UpdateServiceInternal {
+class UpdateServiceInternalProxyImpl
+    : public base::RefCountedThreadSafe<UpdateServiceInternalProxyImpl> {
  public:
-  explicit UpdateServiceInternalProxy(UpdaterScope scope);
+  explicit UpdateServiceInternalProxyImpl(UpdaterScope scope);
 
-  // Overrides for UpdateServiceInternal.
-  // UpdateServiceInternalProxy will not be destroyed while these calls are
-  // outstanding; the caller need not retain a ref.
-  void Run(base::OnceClosure callback) override;
-  void Hello(base::OnceClosure callback) override;
+  void Run(base::OnceCallback<void(absl::optional<RpcError>)> callback);
+  void Hello(base::OnceCallback<void(absl::optional<RpcError>)> callback);
 
  private:
-  ~UpdateServiceInternalProxy() override;
-  void RunDone(base::OnceClosure callback);
-  void HelloDone(base::OnceClosure callback);
+  friend class base::RefCountedThreadSafe<UpdateServiceInternalProxyImpl>;
+  ~UpdateServiceInternalProxyImpl();
 
   SEQUENCE_CHECKER(sequence_checker_);
-  scoped_refptr<UpdateServiceInternalProxyImpl> impl_;
+  scoped_refptr<UpdateServiceInternalProxyImplImpl> impl_;
 };
 
 }  // namespace updater
