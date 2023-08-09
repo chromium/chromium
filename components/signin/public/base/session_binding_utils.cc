@@ -108,6 +108,7 @@ CreateKeyRegistrationHeaderAndPayloadForTokenBinding(
 
 absl::optional<std::string>
 CreateKeyRegistrationHeaderAndPayloadForSessionBinding(
+    base::StringPiece challenge,
     const GURL& registration_url,
     crypto::SignatureVerifier::SignatureAlgorithm algorithm,
     base::span<const uint8_t> pubkey,
@@ -115,6 +116,7 @@ CreateKeyRegistrationHeaderAndPayloadForSessionBinding(
   auto payload =
       base::Value::Dict()
           .Set("aud", registration_url.spec())
+          .Set("jti", challenge)
           // Write out int64_t variable as a double.
           // Note: this may discard some precision, but for `base::Value`
           // there's no other option.

@@ -59,6 +59,7 @@ class RegistrationTokenHelper {
   // TODO(alexilin): support timeout.
   static std::unique_ptr<RegistrationTokenHelper> CreateForSessionBinding(
       unexportable_keys::UnexportableKeyService& unexportable_key_service,
+      base::StringPiece challenge,
       const GURL& registration_url,
       base::OnceCallback<void(absl::optional<Result>)> callback);
   static std::unique_ptr<RegistrationTokenHelper> CreateForTokenBinding(

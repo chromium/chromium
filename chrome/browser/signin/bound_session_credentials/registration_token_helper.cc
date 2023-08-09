@@ -46,11 +46,12 @@ RegistrationTokenHelper::Result& RegistrationTokenHelper::Result::operator=(
 std::unique_ptr<RegistrationTokenHelper>
 RegistrationTokenHelper::CreateForSessionBinding(
     unexportable_keys::UnexportableKeyService& unexportable_key_service,
+    base::StringPiece challenge,
     const GURL& registration_url,
     base::OnceCallback<void(absl::optional<Result>)> callback) {
   HeaderAndPayloadGenerator header_and_payload_generator = base::BindRepeating(
       &signin::CreateKeyRegistrationHeaderAndPayloadForSessionBinding,
-      registration_url);
+      std::string(challenge), registration_url);
   return base::WrapUnique(new RegistrationTokenHelper(
       unexportable_key_service, std::move(header_and_payload_generator),
       std::move(callback)));

@@ -67,7 +67,7 @@ TEST_F(RegistrationTokenHelperTest, SuccessForSessionBinding) {
       future;
   std::unique_ptr<RegistrationTokenHelper> helper =
       RegistrationTokenHelper::CreateForSessionBinding(
-          unexportable_key_service(),
+          unexportable_key_service(), "test_challenge",
           GURL("https://accounts.google.com/Register"), future.GetCallback());
   helper->Start();
   RunBackgroundTasks();

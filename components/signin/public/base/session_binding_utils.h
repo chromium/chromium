@@ -31,6 +31,7 @@ CreateKeyRegistrationHeaderAndPayloadForTokenBinding(
     base::Time timestamp);
 absl::optional<std::string>
 CreateKeyRegistrationHeaderAndPayloadForSessionBinding(
+    base::StringPiece challenge,
     const GURL& registration_url,
     crypto::SignatureVerifier::SignatureAlgorithm algorithm,
     base::span<const uint8_t> pubkey,

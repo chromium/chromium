@@ -75,7 +75,7 @@ TEST(SessionBindingUtilsTest,
      CreateKeyRegistrationHeaderAndPayloadForSessionBinding) {
   absl::optional<std::string> result =
       CreateKeyRegistrationHeaderAndPayloadForSessionBinding(
-          GURL("https://accounts.google.com/RegisterKey"),
+          "test_challenge", GURL("https://accounts.google.com/RegisterKey"),
           crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256,
           std::vector<uint8_t>({1, 2, 3}),
           base::Time::UnixEpoch() + base::Days(200) + base::Milliseconds(123));
@@ -94,6 +94,7 @@ TEST(SessionBindingUtilsTest,
   base::Value::Dict expected_payload =
       base::Value::Dict()
           .Set("aud", "https://accounts.google.com/RegisterKey")
+          .Set("jti", "test_challenge")
           .Set("iat", 17280000)
           .Set("key", base::Value::Dict()
                           .Set("kty",
