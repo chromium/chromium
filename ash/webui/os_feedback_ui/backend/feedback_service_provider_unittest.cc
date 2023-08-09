@@ -9,12 +9,12 @@
 #include "ash/constants/ash_features.h"
 #include "ash/webui/os_feedback_ui/backend/histogram_util.h"
 #include "ash/webui/os_feedback_ui/backend/os_feedback_delegate.h"
-#include "ash/webui/os_feedback_ui/mojom/os_feedback_ui.mojom-test-utils.h"
 #include "ash/webui/os_feedback_ui/mojom/os_feedback_ui.mojom.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -47,7 +47,6 @@ using FeedbackAppPostSubmitAction =
 
 using ::ash::os_feedback_ui::mojom::FeedbackContext;
 using ::ash::os_feedback_ui::mojom::FeedbackContextPtr;
-using ::ash::os_feedback_ui::mojom::FeedbackServiceProviderAsyncWaiter;
 using ::ash::os_feedback_ui::mojom::Report;
 using ::ash::os_feedback_ui::mojom::ReportPtr;
 using ::ash::os_feedback_ui::mojom::SendReportStatus;
@@ -113,28 +112,25 @@ class FeedbackServiceProviderTest : public testing::Test {
   // Call the GetFeedbackContext of the remote provider async and return the
   // response.
   FeedbackContextPtr GetFeedbackContextAndWait() {
-    FeedbackContextPtr out_feedback_context;
-    FeedbackServiceProviderAsyncWaiter(provider_remote_.get())
-        .GetFeedbackContext(&out_feedback_context);
-    return out_feedback_context;
+    base::test::TestFuture<FeedbackContextPtr> future;
+    provider_remote_->GetFeedbackContext(future.GetCallback());
+    return future.Take();
   }
 
   // Call the GetScreenshotPng of the remote provider async and return the
   // response.
   std::vector<uint8_t> GetScreenshotPngAndWait() {
-    std::vector<uint8_t> out_png_data;
-    FeedbackServiceProviderAsyncWaiter(provider_remote_.get())
-        .GetScreenshotPng(&out_png_data);
-    return out_png_data;
+    base::test::TestFuture<const std::vector<uint8_t>&> future;
+    provider_remote_->GetScreenshotPng(future.GetCallback());
+    return future.Take();
   }
 
   // Call the SendReport of the remote provider async and return the
   // response.
   SendReportStatus SendReportAndWait(ReportPtr report) {
-    SendReportStatus out_status;
-    FeedbackServiceProviderAsyncWaiter(provider_remote_.get())
-        .SendReport(std::move(report), &out_status);
-    return out_status;
+    base::test::TestFuture<SendReportStatus> future;
+    provider_remote_->SendReport(std::move(report), future.GetCallback());
+    return future.Take();
   }
 
  protected:

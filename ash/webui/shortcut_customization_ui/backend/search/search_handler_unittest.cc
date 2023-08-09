@@ -12,6 +12,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -212,6 +213,16 @@ class SearchHandlerTest : public testing::Test {
     EXPECT_NE(description_iterator, search_results.end());
   }
 
+  std::vector<shortcut_customization::mojom::SearchResultPtr> Search(
+      const std::u16string& query,
+      int32_t max_num_results) {
+    base::test::TestFuture<
+        std::vector<shortcut_customization::mojom::SearchResultPtr>>
+        future;
+    handler_remote_->Search(query, max_num_results, future.GetCallback());
+    return future.Take();
+  }
+
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<local_search_service::LocalSearchServiceProxy>
       local_search_service_proxy_ =
@@ -232,12 +243,10 @@ TEST_F(SearchHandlerTest, SearchResultsNormalUsage) {
   // SearchHandler observer should be called after the registry is updated.
   EXPECT_EQ(1u, results_availability_observer_.num_calls());
 
-  std::vector<shortcut_customization::mojom::SearchResultPtr> search_results;
-
   // A search with no matches should return no results.
-  shortcut_customization::mojom::SearchHandlerAsyncWaiter(handler_remote_.get())
-      .Search(u"this search matches nothing!",
-              /*max_num_results=*/5u, &search_results);
+  std::vector<shortcut_customization::mojom::SearchResultPtr> search_results =
+      Search(u"this search matches nothing!",
+             /*max_num_results=*/5u);
   EXPECT_EQ(search_results.size(), 0u);
 
   // The number of observer calls should not have changed, even though a search
@@ -249,9 +258,8 @@ TEST_F(SearchHandlerTest, SearchResultsNormalUsage) {
   // tab", "Open the Foo app", and "Select all text content".
   // The query "Open" matches the first three shortcuts because they contain the
   // word "open".
-  shortcut_customization::mojom::SearchHandlerAsyncWaiter(handler_remote_.get())
-      .Search(u"Open",
-              /*max_num_results=*/5u, &search_results);
+  search_results = Search(u"Open",
+                          /*max_num_results=*/5u);
   EXPECT_EQ(search_results.size(), 3u);
   VerifySearchResultIsPresent(/*description=*/u"Open launcher",
                               /*search_results=*/search_results);
@@ -265,9 +273,8 @@ TEST_F(SearchHandlerTest, SearchResultsNormalUsage) {
 
   // The query "open" should also match the same concepts (query case doesn't
   // matter).
-  shortcut_customization::mojom::SearchHandlerAsyncWaiter(handler_remote_.get())
-      .Search(u"open",
-              /*max_num_results=*/5u, &search_results);
+  search_results = Search(u"open",
+                          /*max_num_results=*/5u);
   EXPECT_EQ(search_results.size(), 3u);
   VerifySearchResultIsPresent(/*description=*/u"Open launcher",
                               /*search_results=*/search_results);
@@ -277,9 +284,8 @@ TEST_F(SearchHandlerTest, SearchResultsNormalUsage) {
                               /*search_results=*/search_results);
 
   // For completeness, the query "OpEn" should also match the same concepts.
-  shortcut_customization::mojom::SearchHandlerAsyncWaiter(handler_remote_.get())
-      .Search(u"OpEn",
-              /*max_num_results=*/5u, &search_results);
+  search_results = Search(u"OpEn",
+                          /*max_num_results=*/5u);
   EXPECT_EQ(search_results.size(), 3u);
   VerifySearchResultIsPresent(/*description=*/u"Open launcher",
                               /*search_results=*/search_results);
@@ -289,18 +295,16 @@ TEST_F(SearchHandlerTest, SearchResultsNormalUsage) {
                               /*search_results=*/search_results);
 
   // Searching for a specific shortcut matches only that concept.
-  shortcut_customization::mojom::SearchHandlerAsyncWaiter(handler_remote_.get())
-      .Search(u"Open new tab",
-              /*max_num_results=*/5u, &search_results);
+  search_results = Search(u"Open new tab",
+                          /*max_num_results=*/5u);
   EXPECT_EQ(search_results.size(), 1u);
   VerifySearchResultIsPresent(/*description=*/u"Open new tab",
                               /*search_results=*/search_results);
 
   // Searching for a specific shortcut should work even if the query is a
   // "fuzzy" match.
-  shortcut_customization::mojom::SearchHandlerAsyncWaiter(handler_remote_.get())
-      .Search(u"Open tab",
-              /*max_num_results=*/5u, &search_results);
+  search_results = Search(u"Open tab",
+                          /*max_num_results=*/5u);
   // In this case, the search service also returns the other results, but with
   // lower relevance scores.
   EXPECT_EQ(search_results.size(), 3u);
@@ -321,9 +325,8 @@ TEST_F(SearchHandlerTest, SearchResultsNormalUsage) {
   std::vector<SearchConcept> empty_search_concepts;
   search_concept_registry_.SetSearchConcepts(std::move(empty_search_concepts));
   task_environment_.RunUntilIdle();
-  shortcut_customization::mojom::SearchHandlerAsyncWaiter(handler_remote_.get())
-      .Search(u"Open",
-              /*max_num_results=*/5u, &search_results);
+  search_results = Search(u"Open",
+                          /*max_num_results=*/5u);
   EXPECT_EQ(search_results.size(), 0u);
   EXPECT_EQ(results_availability_observer_.num_calls(), 2u);
 }
@@ -332,12 +335,11 @@ TEST_F(SearchHandlerTest, SearchResultsEdgeCases) {
   search_concept_registry_.SetSearchConcepts(GetTestSearchConcepts());
   handler_remote_.FlushForTesting();
   task_environment_.RunUntilIdle();
-  std::vector<shortcut_customization::mojom::SearchResultPtr> search_results;
 
   // A search with no matches should return no results.
-  shortcut_customization::mojom::SearchHandlerAsyncWaiter(handler_remote_.get())
-      .Search(u"this search matches nothing!",
-              /*max_num_results=*/5u, &search_results);
+  std::vector<shortcut_customization::mojom::SearchResultPtr> search_results =
+      Search(u"this search matches nothing!",
+             /*max_num_results=*/5u);
   EXPECT_EQ(search_results.size(), 0u);
 }
 
@@ -345,12 +347,11 @@ TEST_F(SearchHandlerTest, SearchResultsSingleCharacter) {
   search_concept_registry_.SetSearchConcepts(GetTestSearchConcepts());
   handler_remote_.FlushForTesting();
   task_environment_.RunUntilIdle();
-  std::vector<shortcut_customization::mojom::SearchResultPtr> search_results;
 
   // Searching for "o" returns all results since they each contain an "o".
-  shortcut_customization::mojom::SearchHandlerAsyncWaiter(handler_remote_.get())
-      .Search(u"o",
-              /*max_num_results=*/5u, &search_results);
+  std::vector<shortcut_customization::mojom::SearchResultPtr> search_results =
+      Search(u"o",
+             /*max_num_results=*/5u);
   EXPECT_EQ(search_results.size(), 4u);
   VerifySearchResultIsPresent(/*description=*/u"Open launcher",
                               /*search_results=*/search_results);
@@ -363,9 +364,8 @@ TEST_F(SearchHandlerTest, SearchResultsSingleCharacter) {
 
   // Searching for "O" returns all results since they each contain an "o",
   // regardless of capitalization.
-  shortcut_customization::mojom::SearchHandlerAsyncWaiter(handler_remote_.get())
-      .Search(u"O",
-              /*max_num_results=*/5u, &search_results);
+  search_results = Search(u"O",
+                          /*max_num_results=*/5u);
   EXPECT_EQ(search_results.size(), 4u);
   VerifySearchResultIsPresent(/*description=*/u"Open launcher",
                               /*search_results=*/search_results);
@@ -379,9 +379,8 @@ TEST_F(SearchHandlerTest, SearchResultsSingleCharacter) {
   // Searching for "p" returns all results that contain the letter "p".
   // In this case, "Select all text content" is included because its text
   // accelerator is "Press Ctrl+A".
-  shortcut_customization::mojom::SearchHandlerAsyncWaiter(handler_remote_.get())
-      .Search(u"p",
-              /*max_num_results=*/5u, &search_results);
+  search_results = Search(u"p",
+                          /*max_num_results=*/5u);
   EXPECT_EQ(search_results.size(), 4u);
   VerifySearchResultIsPresent(/*description=*/u"Open launcher",
                               /*search_results=*/search_results);
@@ -393,17 +392,15 @@ TEST_F(SearchHandlerTest, SearchResultsSingleCharacter) {
                               /*search_results=*/search_results);
 
   // Searching for "l" returns all results that contain the letter "l".
-  shortcut_customization::mojom::SearchHandlerAsyncWaiter(handler_remote_.get())
-      .Search(u"l",
-              /*max_num_results=*/5u, &search_results);
+  search_results = Search(u"l",
+                          /*max_num_results=*/5u);
   EXPECT_EQ(search_results.size(), 1u);
   VerifySearchResultIsPresent(/*description=*/u"Open launcher",
                               /*search_results=*/search_results);
 
   // Searching for "z" should return no results.
-  shortcut_customization::mojom::SearchHandlerAsyncWaiter(handler_remote_.get())
-      .Search(u"z",
-              /*max_num_results=*/5u, &search_results);
+  search_results = Search(u"z",
+                          /*max_num_results=*/5u);
   EXPECT_EQ(search_results.size(), 0u);
 }
 
@@ -411,30 +408,27 @@ TEST_F(SearchHandlerTest, SearchResultsSearchByKeys) {
   search_concept_registry_.SetSearchConcepts(GetTestSearchConcepts());
   handler_remote_.FlushForTesting();
   task_environment_.RunUntilIdle();
-  std::vector<shortcut_customization::mojom::SearchResultPtr> search_results;
 
   // Searching for the keys/modifiers of a shortcut should only work for text
   // accelerators. In this case, all shortcuts contain "Ctrl" as one of their
   // modifiers, but only one of them is a text accelerator, so only that one
   // should be returned.
-  shortcut_customization::mojom::SearchHandlerAsyncWaiter(handler_remote_.get())
-      .Search(u"ctrl",
-              /*max_num_results=*/5u, &search_results);
+  std::vector<shortcut_customization::mojom::SearchResultPtr> search_results =
+      Search(u"ctrl",
+             /*max_num_results=*/5u);
   EXPECT_EQ(search_results.size(), 1u);
   VerifySearchResultIsPresent(/*description=*/u"Select all text content",
                               /*search_results=*/search_results);
 
   // Verify that different various combinations of uppercase and lowercase work
   // when querying by modifier.
-  shortcut_customization::mojom::SearchHandlerAsyncWaiter(handler_remote_.get())
-      .Search(u"CTRL",
-              /*max_num_results=*/5u, &search_results);
+  search_results = Search(u"CTRL",
+                          /*max_num_results=*/5u);
   EXPECT_EQ(search_results.size(), 1u);
   VerifySearchResultIsPresent(/*description=*/u"Select all text content",
                               /*search_results=*/search_results);
-  shortcut_customization::mojom::SearchHandlerAsyncWaiter(handler_remote_.get())
-      .Search(u"CtRl",
-              /*max_num_results=*/5u, &search_results);
+  search_results = Search(u"CtRl",
+                          /*max_num_results=*/5u);
   EXPECT_EQ(search_results.size(), 1u);
   VerifySearchResultIsPresent(/*description=*/u"Select all text content",
                               /*search_results=*/search_results);
@@ -443,25 +437,22 @@ TEST_F(SearchHandlerTest, SearchResultsSearchByKeys) {
   // its key combinations. Searching based on "BrightnessDown" should not return
   // that shortcut as a SearchResult because that shortcut is a standard
   // accelerator.
-  shortcut_customization::mojom::SearchHandlerAsyncWaiter(handler_remote_.get())
-      .Search(u"BrightnessDown",
-              /*max_num_results=*/5u, &search_results);
+  search_results = Search(u"BrightnessDown",
+                          /*max_num_results=*/5u);
   EXPECT_EQ(search_results.size(), 0u);
 
   // Searching for text-based shortcuts should work. In this case, the query
   // should match the shortcut "Select all text content" which has a shortcut
   // "Press Ctrl+A".
-  shortcut_customization::mojom::SearchHandlerAsyncWaiter(handler_remote_.get())
-      .Search(u"Press Ctrl+A",
-              /*max_num_results=*/5u, &search_results);
+  search_results = Search(u"Press Ctrl+A",
+                          /*max_num_results=*/5u);
   EXPECT_EQ(search_results.size(), 1u);
   VerifySearchResultIsPresent(/*description=*/u"Select all text content",
                               /*search_results=*/search_results);
 
   // Searching for text-based shortcuts should work with an inexact query.
-  shortcut_customization::mojom::SearchHandlerAsyncWaiter(handler_remote_.get())
-      .Search(u"Press",
-              /*max_num_results=*/5u, &search_results);
+  search_results = Search(u"Press",
+                          /*max_num_results=*/5u);
   EXPECT_EQ(search_results.size(), 1u);
   VerifySearchResultIsPresent(/*description=*/u"Select all text content",
                               /*search_results=*/search_results);

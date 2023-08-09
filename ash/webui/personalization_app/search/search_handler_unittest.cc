@@ -18,7 +18,6 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/webui/personalization_app/personalization_app_url_constants.h"
 #include "ash/webui/personalization_app/search/search.mojom-shared.h"
-#include "ash/webui/personalization_app/search/search.mojom-test-utils.h"
 #include "ash/webui/personalization_app/search/search.mojom.h"
 #include "ash/webui/personalization_app/search/search_concept.h"
 #include "ash/webui/personalization_app/search/search_tag_registry.h"
@@ -28,9 +27,9 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "chromeos/ash/components/local_search_service/public/cpp/local_search_service_proxy.h"
-#include "chromeos/ash/components/local_search_service/public/mojom/index.mojom-test-utils.h"
 #include "chromeos/ash/components/test/ash_test_suite.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -235,21 +234,26 @@ class PersonalizationAppSearchHandlerTest : public AshTestBase {
     test_pref_service_->SetBoolean(::ash::prefs::kDarkModeEnabled, enabled);
   }
 
+  std::vector<mojom::SearchResultPtr> Search(const std::u16string& query,
+                                             int32_t max_num_results) {
+    base::test::TestFuture<std::vector<mojom::SearchResultPtr>> future;
+    search_handler_remote_->Search(query, max_num_results,
+                                   future.GetCallback());
+    return future.Take();
+  }
+
   std::vector<mojom::SearchResultPtr> RunSearch(int message_id) {
-    std::vector<mojom::SearchResultPtr> search_results;
     std::u16string query = SearchTagRegistry::MessageIdToString(message_id);
     // Search results match better if one character is subtracted.
     query.pop_back();
-    mojom::SearchHandlerAsyncWaiter(search_handler_remote()->get())
-        .Search(query, /*max_num_results=*/kMaxNumResults, &search_results);
-    return search_results;
+    return Search(query, /*max_num_results=*/kMaxNumResults);
   }
 
   // Remove all existing search concepts saved in the registry.
   void ClearSearchTagRegistry() {
-    local_search_service::mojom::IndexAsyncWaiter(
-        search_tag_registry()->index_remote_.get())
-        .ClearIndex();
+    base::test::TestFuture<void> future;
+    search_tag_registry()->index_remote_->ClearIndex(future.GetCallback());
+    EXPECT_TRUE(future.Wait());
     search_tag_registry()->result_id_to_search_concept_.clear();
   }
 
@@ -263,15 +267,13 @@ class PersonalizationAppSearchHandlerTest : public AshTestBase {
 };
 
 TEST_F(PersonalizationAppSearchHandlerTest, AnswersPersonalizationQuery) {
-  std::vector<mojom::SearchResultPtr> search_results;
-  mojom::SearchHandlerAsyncWaiter(search_handler_remote()->get())
-      .Search(u"testing", /*max_num_results=*/kMaxNumResults, &search_results);
+  std::vector<mojom::SearchResultPtr> search_results =
+      Search(u"testing", /*max_num_results=*/kMaxNumResults);
   EXPECT_TRUE(search_results.empty());
 
   std::u16string title =
       l10n_util::GetStringUTF16(IDS_PERSONALIZATION_APP_SEARCH_RESULT_TITLE);
-  mojom::SearchHandlerAsyncWaiter(search_handler_remote()->get())
-      .Search(title, /*max_num_results=*/kMaxNumResults, &search_results);
+  search_results = Search(title, /*max_num_results=*/kMaxNumResults);
   EXPECT_EQ(search_results.size(), 1u);
   EXPECT_EQ(search_results.front()->text, title);
   EXPECT_GT(search_results.front()->relevance_score, 0.9);
@@ -307,13 +309,11 @@ TEST_F(PersonalizationAppSearchHandlerTest, ObserverFiresWhenResultsUpdated) {
 }
 
 TEST_F(PersonalizationAppSearchHandlerTest, RespondsToAltQuery) {
-  std::vector<mojom::SearchResultPtr> search_results;
   std::u16string search_query = l10n_util::GetStringUTF16(
       IDS_PERSONALIZATION_APP_SEARCH_RESULT_TITLE_ALT1);
 
-  mojom::SearchHandlerAsyncWaiter(search_handler_remote()->get())
-      .Search(search_query, /*max_num_results=*/kMaxNumResults,
-              &search_results);
+  std::vector<mojom::SearchResultPtr> search_results =
+      Search(search_query, /*max_num_results=*/kMaxNumResults);
 
   EXPECT_EQ(search_results.size(), 1u);
   EXPECT_EQ(search_results.front()->text, search_query);
