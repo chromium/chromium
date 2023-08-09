@@ -14,6 +14,7 @@
 #include "chrome/browser/platform_util.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_url.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -148,6 +149,10 @@ file_system_provider::ProvidedFileSystemInterface* GetODFS(Profile* profile);
 void GetODFSMetadata(
     file_system_provider::ProvidedFileSystemInterface* file_system,
     GetODFSMetadataCallback callback);
+
+// Get the first task error that is not `base::File::Error::FILE_OK`.
+absl::optional<base::File::Error> GetFirstTaskError(
+    const ::file_manager::io_task::ProgressStatus& status);
 
 }  // namespace ash::cloud_upload
 

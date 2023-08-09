@@ -386,16 +386,10 @@ void DriveUploadHandler::ShowIOTaskError(
   std::string error_message;
   bool copy = upload_type_ == UploadType::kCopy;
 
-  base::File::Error file_error = base::File::FILE_ERROR_FAILED;
   // TODO(b/242685536) Find most relevant error in a multi-file upload when
   // support for multi-files is added.
-  // Find the first not base::File::Error::FILE_OK.
-  if (status.sources.size() > 0 && status.sources[0].error.has_value() &&
-      status.sources[0].error.value() != base::File::Error::FILE_OK) {
-    file_error = status.sources[0].error.value();
-  } else if (status.outputs.size() > 0 && status.outputs[0].error.has_value()) {
-    file_error = status.outputs[0].error.value();
-  }
+  base::File::Error file_error =
+      GetFirstTaskError(status).value_or(base::File::FILE_ERROR_FAILED);
 
   switch (file_error) {
     case base::File::FILE_ERROR_NO_SPACE:

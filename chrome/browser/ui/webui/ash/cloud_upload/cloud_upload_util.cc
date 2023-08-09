@@ -168,4 +168,16 @@ void GetODFSMetadata(ProvidedFileSystemInterface* file_system,
       base::BindOnce(&OnODFSMetadataActions, std::move(callback)));
 }
 
+absl::optional<base::File::Error> GetFirstTaskError(
+    const ::file_manager::io_task::ProgressStatus& status) {
+  for (const auto* entries : {&status.sources, &status.outputs}) {
+    for (const ::file_manager::io_task::EntryStatus& entry : *entries) {
+      if (entry.error && *entry.error != base::File::Error::FILE_OK) {
+        return entry.error;
+      }
+    }
+  }
+  return absl::nullopt;
+}
+
 }  // namespace ash::cloud_upload
