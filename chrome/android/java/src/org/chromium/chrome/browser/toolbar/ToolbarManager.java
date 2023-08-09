@@ -1154,7 +1154,8 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                 DownloadUtils::downloadOfflinePage, initializeWithIncognitoColors,
                 logoClickedCallback, mIsStartSurfaceRefactorEnabled, constraintsSupplier,
                 mCompositorViewHolder.getInMotionSupplier(), mControlsVisibilityDelegate,
-                !ReturnToChromeUtil.shouldImproveStartWhenFeedIsDisabled(mActivity));
+                !ReturnToChromeUtil.shouldImproveStartWhenFeedIsDisabled(mActivity),
+                mFullscreenManager);
 
         // clang-format on
         mHomepageStateListener = () -> {

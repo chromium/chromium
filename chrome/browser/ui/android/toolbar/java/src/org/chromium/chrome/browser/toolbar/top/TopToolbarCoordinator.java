@@ -21,6 +21,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.device.DeviceClassManager;
+import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -168,6 +169,7 @@ public class TopToolbarCoordinator implements Toolbar {
      * @param shouldCreateLogoInStartToolbar Whether logo should be created in Start surface
      *        toolbar. True if the logo should be created in the Start surface toolbar; False if
      *        the logo should be shown in Start surface content.
+     * @param fullscreenManager Used to check whether in fullscreen.
      */
     public TopToolbarCoordinator(ToolbarControlContainer controlContainer, ViewStub toolbarStub,
             ToolbarLayout toolbarLayout, ToolbarDataProvider toolbarDataProvider,
@@ -194,7 +196,7 @@ public class TopToolbarCoordinator implements Toolbar {
             ObservableSupplier<Boolean> compositorInMotionSupplier,
             BrowserStateBrowserControlsVisibilityDelegate
                     browserStateBrowserControlsVisibilityDelegate,
-            boolean shouldCreateLogoInStartToolbar) {
+            boolean shouldCreateLogoInStartToolbar, FullscreenManager fullscreenManager) {
         mControlContainer = controlContainer;
         mToolbarLayout = toolbarLayout;
         mMenuButtonCoordinator = browsingModeMenuButtonCoordinator;
@@ -225,7 +227,8 @@ public class TopToolbarCoordinator implements Toolbar {
         }
         controlContainer.setPostInitializationDependencies(this, initializeWithIncognitoColors,
                 constraintsSupplier, toolbarDataProvider::getTab, compositorInMotionSupplier,
-                browserStateBrowserControlsVisibilityDelegate, layoutStateProviderSupplier);
+                browserStateBrowserControlsVisibilityDelegate, layoutStateProviderSupplier,
+                fullscreenManager);
         mToolbarLayout.initialize(toolbarDataProvider, tabController, mMenuButtonCoordinator,
                 historyDelegate, partnerHomepageEnabledSupplier, offlineDownloader);
         mToolbarLayout.setThemeColorProvider(normalThemeColorProvider);

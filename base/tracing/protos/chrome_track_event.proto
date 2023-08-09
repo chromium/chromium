@@ -977,6 +977,7 @@ message AndroidToolbar {
     BLOCKED_TAB_SWITCHER_MODE = 10;
     BLOCKED_COMPOSITOR_IN_MOTION = 11;
     BLOCKED_NTP_Y_TRANSLATION = 12;
+    BLOCKED_FULLSCREEN = 13;
   }
   enum AllowCaptureReason {
     ALLOWED_UNKNOWN = 0;
