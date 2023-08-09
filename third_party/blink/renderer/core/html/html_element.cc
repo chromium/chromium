@@ -3020,7 +3020,7 @@ int HTMLElement::OffsetTopOrLeft(bool top) {
   if (!layout_object)
     return 0;
 
-  HashSet<Member<TreeScope>> ancestor_tree_scopes = GetAncestorTreeScopes();
+  HeapHashSet<Member<TreeScope>> ancestor_tree_scopes = GetAncestorTreeScopes();
   LayoutUnit offset;
   Element* offset_parent = this;
   bool new_spec_behavior =

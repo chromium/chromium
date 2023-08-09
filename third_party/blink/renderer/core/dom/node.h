@@ -675,7 +675,7 @@ class CORE_EXPORT Node : public EventTarget {
   // This differs from GetTreeScope for shadow clones inside <svg:use/>.
   TreeScope& OriginatingTreeScope() const;
 
-  HashSet<Member<TreeScope>> GetAncestorTreeScopes() const;
+  HeapHashSet<Member<TreeScope>> GetAncestorTreeScopes() const;
 
   bool InActiveDocument() const;
 

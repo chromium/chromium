@@ -4293,7 +4293,7 @@ Element* LayoutObject::OffsetParent(const Element* base) const {
   if (IsFixedPositioned())
     return nullptr;
 
-  HashSet<Member<TreeScope>> ancestor_tree_scopes;
+  HeapHashSet<Member<TreeScope>> ancestor_tree_scopes;
   if (base)
     ancestor_tree_scopes = base->GetAncestorTreeScopes();
 
