@@ -274,3 +274,7 @@ BASE_FEATURE(kTabGridRefactoring,
 bool IsSafetyCheckMagicStackEnabled() {
   return base::FeatureList::IsEnabled(kSafetyCheckMagicStack);
 }
+
+BASE_FEATURE(kBlockSimultaneousCellSelectionKillSwitch,
+             "BlockSimultaneousCellSelectionKillSwitch",
+             base::FEATURE_ENABLED_BY_DEFAULT);

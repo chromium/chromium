@@ -234,4 +234,8 @@ BASE_DECLARE_FEATURE(kTabGridRefactoring);
 // Whether the Safety Check module should be shown in the Magic Stack.
 bool IsSafetyCheckMagicStackEnabled();
 
+// Kill switch to control the blocking of the simultaneous cell selection in
+// ChromeTableViewController.
+BASE_DECLARE_FEATURE(kBlockSimultaneousCellSelectionKillSwitch);
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_
