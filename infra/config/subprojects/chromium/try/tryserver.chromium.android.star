@@ -175,6 +175,7 @@ try_.orchestrator_builder(
 
 try_.compilator_builder(
     name = "android-arm64-rel-compilator",
+    branch_selector = branches.selector.ANDROID_BRANCHES,
     # TODO(crbug.com/1456545) - _with_resultdb should be deprecated in favor for
     # the original property once all builders have migrated.
     # check_for_flakiness = True,
