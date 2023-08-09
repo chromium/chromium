@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_PERMISSIONS_ADAPTIVE_QUIET_NOTIFICATION_PERMISSION_UI_ENABLER_H_
 
 #include <memory>
+
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
@@ -57,6 +58,11 @@ class AdaptiveQuietNotificationPermissionUiEnabler : public KeyedService {
     BackfillEnablingMethodIfMissing();
   }
 
+  // Only used for testing.
+  void MigrateAdaptiveNotificationQuietingToCPSSForTesting() {
+    MigrateAdaptiveNotificationQuietingToCPSS();
+  }
+
  private:
   explicit AdaptiveQuietNotificationPermissionUiEnabler(Profile* profile);
   ~AdaptiveQuietNotificationPermissionUiEnabler() override;
@@ -67,6 +73,11 @@ class AdaptiveQuietNotificationPermissionUiEnabler : public KeyedService {
   // Retroactively backfills the enabling method, which was not populated
   // before M88.
   void BackfillEnablingMethodIfMissing();
+
+  // Users who had manually enabled quiet ui for notification will stay in quiet
+  // ui, others will be migrated to CPSS. Migration logic will be removed in
+  // M127
+  void MigrateAdaptiveNotificationQuietingToCPSS();
 
   raw_ptr<Profile> profile_;
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;

@@ -2,13 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/permissions/pref_notification_permission_ui_selector.h"
+#include "chrome/browser/permissions/pref_based_quiet_permission_ui_selector.h"
 
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_feature_list.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/permissions/request_type.h"
@@ -24,9 +22,9 @@ namespace {
 
 using testing::DoAll;
 
-using QuietUiReason = PrefNotificationPermissionUiSelector::QuietUiReason;
-using WarningReason = PrefNotificationPermissionUiSelector::WarningReason;
-using Decision = PrefNotificationPermissionUiSelector::Decision;
+using QuietUiReason = PrefBasedQuietPermissionUiSelector::QuietUiReason;
+using WarningReason = PrefBasedQuietPermissionUiSelector::WarningReason;
+using Decision = PrefBasedQuietPermissionUiSelector::Decision;
 
 ACTION_P(QuitMessageLoop, loop) {
   loop->Quit();
@@ -34,18 +32,18 @@ ACTION_P(QuitMessageLoop, loop) {
 
 }  // namespace
 
-class PrefNotificationPermissionUiSelectorTest : public testing::Test {
+class PrefBasedQuietPermissionUiSelectorTest : public testing::Test {
  public:
-  PrefNotificationPermissionUiSelectorTest()
+  PrefBasedQuietPermissionUiSelectorTest()
       : testing_profile_(std::make_unique<TestingProfile>()),
         pref_selector_(testing_profile_.get()) {}
 
-  PrefNotificationPermissionUiSelectorTest(
-      const PrefNotificationPermissionUiSelectorTest&) = delete;
-  PrefNotificationPermissionUiSelectorTest& operator=(
-      const PrefNotificationPermissionUiSelectorTest&) = delete;
+  PrefBasedQuietPermissionUiSelectorTest(
+      const PrefBasedQuietPermissionUiSelectorTest&) = delete;
+  PrefBasedQuietPermissionUiSelectorTest& operator=(
+      const PrefBasedQuietPermissionUiSelectorTest&) = delete;
 
-  PrefNotificationPermissionUiSelector* pref_selector() {
+  PrefBasedQuietPermissionUiSelector* pref_selector() {
     return &pref_selector_;
   }
 
@@ -56,40 +54,30 @@ class PrefNotificationPermissionUiSelectorTest : public testing::Test {
 
   std::unique_ptr<TestingProfile> testing_profile_;
 
-  PrefNotificationPermissionUiSelector pref_selector_;
+  PrefBasedQuietPermissionUiSelector pref_selector_;
 };
 
-TEST_F(PrefNotificationPermissionUiSelectorTest, FeatureAndPrefCombinations) {
+TEST_F(PrefBasedQuietPermissionUiSelectorTest, FeatureAndPrefCombinations) {
   const struct {
-    bool feature_enabled;
     bool quiet_ui_enabled_in_prefs;
     absl::optional<QuietUiReason> expected_reason;
   } kTests[] = {
-      {true, false, Decision::UseNormalUi()},
-      {true, true, QuietUiReason::kEnabledInPrefs},
-      {false, true, Decision::UseNormalUi()},
-      {false, false, Decision::UseNormalUi()},
+      {false, Decision::UseNormalUi()},
+      {true, QuietUiReason::kEnabledInPrefs},
   };
 
   for (const auto& test_case : kTests) {
-    SCOPED_TRACE(base::StringPrintf("feature: %d, pref: %d",
-                                    test_case.feature_enabled,
-                                    test_case.quiet_ui_enabled_in_prefs));
+    SCOPED_TRACE(
+        base::StringPrintf("pref: %d", test_case.quiet_ui_enabled_in_prefs));
 
-    // Init feature and pref settings.
-    base::test::ScopedFeatureList feature_list;
-    if (test_case.feature_enabled)
-      feature_list.InitAndEnableFeature(features::kQuietNotificationPrompts);
-    else
-      feature_list.InitAndDisableFeature(features::kQuietNotificationPrompts);
+    // Init pref settings.
     profile()->GetPrefs()->SetBoolean(
         prefs::kEnableQuietNotificationPermissionUi,
         test_case.quiet_ui_enabled_in_prefs);
 
     // Setup and prepare for the request.
     base::RunLoop callback_loop;
-    base::MockCallback<
-        PrefNotificationPermissionUiSelector::DecisionMadeCallback>
+    base::MockCallback<PrefBasedQuietPermissionUiSelector::DecisionMadeCallback>
         mock_callback;
     Decision actual_decison(absl::nullopt, absl::nullopt);
 

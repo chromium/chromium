@@ -1734,9 +1734,12 @@ ContentSettingQuietRequestBubbleModel::ContentSettingQuietRequestBubbleModel(
   set_title(l10n_util::GetStringUTF16(bubble_title_string_id));
   switch (*quiet_ui_reason) {
     case QuietUiReason::kEnabledInPrefs:
-      DCHECK_EQ(request_type, permissions::RequestType::kNotifications);
+      DCHECK(request_type == permissions::RequestType::kNotifications ||
+             request_type == permissions::RequestType::kGeolocation);
       set_message(l10n_util::GetStringUTF16(
-          IDS_NOTIFICATIONS_QUIET_PERMISSION_BUBBLE_DESCRIPTION));
+          request_type == permissions::RequestType::kNotifications
+              ? IDS_NOTIFICATIONS_QUIET_PERMISSION_BUBBLE_DESCRIPTION
+              : IDS_GEOLOCATION_QUIET_PERMISSION_BUBBLE_DESCRIPTION));
       set_done_button_text(l10n_util::GetStringUTF16(
           IDS_NOTIFICATIONS_QUIET_PERMISSION_BUBBLE_ALLOW_BUTTON));
       set_show_learn_more(false);
