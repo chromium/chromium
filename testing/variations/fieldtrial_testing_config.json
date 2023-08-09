@@ -4768,6 +4768,25 @@
             ]
         }
     ],
+    "DesktopNtpImageErrorDetection": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "ImageErrorDetection",
+                    "enable_features": [
+                        "NtpBackgroundImageErrorDetection"
+                    ]
+                }
+            ]
+        }
+    ],
     "DesktopNtpMiddleSlotPromoDismissal": [
         {
             "platforms": [
