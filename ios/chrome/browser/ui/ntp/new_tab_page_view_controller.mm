@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/ntp/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/bubble/bubble_presenter.h"
+#import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_cells_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_view_controller.h"
@@ -26,6 +27,7 @@
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_header_constants.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_header_view_controller.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_mutator.h"
 #import "ios/chrome/browser/ui/overscroll_actions/overscroll_actions_controller.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_utils.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -531,6 +533,46 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
   self.hasSavedOffsetFromPreviousScrollState = NO;
 }
 
+- (void)setContentOffsetToTop {
+  // There are many instances during NTP startup where the NTP layout is reset
+  // (e.g. calling -updateNTPLayout), which involves resetting the scroll
+  // offset. Some come from mutliple layout calls from the BVC, some come from
+  // an ambifuous source (likely the Feed). Particularly, the mediator's
+  // -setContentOffsetForWebState: call happens late in the cycle, which can
+  // clash with an already focused omnibox state. That call to reset the content
+  // offset to the top is important since the MVTiles and Google doodle are aync
+  // fetched/displayed, thus needed a reset. However, in the instance where the
+  // omnibox is focused, it is more important to keep that focused state and not
+  // show a "double" omibox state.
+  // TODO(crbug.com/1371261): Replace the -setContentOffsetForWebState: call
+  // with calls directly from all async updates to the NTP.
+  if (self.omniboxFocused) {
+    return;
+  }
+  [self setContentOffset:-[self heightAboveFeed]];
+  // TODO(crbug.com/1406940): Constraint updating should not be necessary since
+  // scrollViewDidScroll: calls this if needed.
+  [self setInitialFakeOmniboxConstraints];
+  if ([self.NTPContentDelegate isContentHeaderSticky]) {
+    [self setInitialFeedHeaderConstraints];
+  }
+  // Reset here since none of the view lifecycle callbacks (e.g.
+  // viewDidDisappear) can be reliably used (it seems) (i.e. switching between
+  // NTPs where there is saved scroll state in the destination tab). If the
+  // content offset is being set to the top, it is safe to assume this can be
+  // set to NO. Being called before setSavedContentOffset: is no problem since
+  // then it will be subsequently overriden to YES.
+  self.hasSavedOffsetFromPreviousScrollState = NO;
+}
+
+- (CGFloat)heightAboveFeed {
+  CGFloat heightAboveFeed = 0;
+  for (UIViewController* viewController in self.viewControllersAboveFeed) {
+    heightAboveFeed += viewController.view.frame.size.height;
+  }
+  return heightAboveFeed;
+}
+
 - (void)setContentOffsetToTopOfFeed:(CGFloat)contentOffset {
   if (contentOffset < [self offsetWhenScrolledIntoFeed]) {
     [self setContentOffset:contentOffset];
@@ -581,50 +623,18 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
 
 #pragma mark - NewTabPageConsumer
 
-- (void)setSavedContentOffset:(CGFloat)offset {
-  self.hasSavedOffsetFromPreviousScrollState = YES;
-  self.savedScrollOffset = offset;
-  [self setContentOffset:offset];
-}
+- (void)restoreScrollPosition:(CGFloat)scrollPosition {
+  if (scrollPosition > -[self heightAboveFeed]) {
+    [self setSavedContentOffset:scrollPosition];
+  } else {
+    // Remove this if NTPs are ever scoped back to the WebState.
+    [self setContentOffsetToTop];
 
-- (void)setContentOffsetToTop {
-  // There are many instances during NTP startup where the NTP layout is reset
-  // (e.g. calling -updateNTPLayout), which involves resetting the scroll
-  // offset. Some come from mutliple layout calls from the BVC, some come from
-  // an ambifuous source (likely the Feed). Particularly, the mediator's
-  // -setContentOffsetForWebState: call happens late in the cycle, which can
-  // clash with an already focused omnibox state. That call to reset the content
-  // offset to the top is important since the MVTiles and Google doodle are aync
-  // fetched/displayed, thus needed a reset. However, in the instance where the
-  // omnibox is focused, it is more important to keep that focused state and not
-  // show a "double" omibox state.
-  // TODO(crbug.com/1371261): Replace the -setContentOffsetForWebState: call
-  // with calls directly from all async updates to the NTP.
-  if (self.omniboxFocused) {
-    return;
+    // Refresh NTP content if there is is no saved scrolled state or when a new
+    // NTP is opened. Since the same NTP is being shared across tabs, this
+    // ensures that new content is being fetched.
+    [self.NTPContentDelegate refreshNTPContent];
   }
-  [self setContentOffset:-[self heightAboveFeed]];
-  // TODO(crbug.com/1406940): Constraint updating should not be necessary since
-  // scrollViewDidScroll: calls this if needed.
-  [self setInitialFakeOmniboxConstraints];
-  if ([self.ntpContentDelegate isContentHeaderSticky]) {
-    [self setInitialFeedHeaderConstraints];
-  }
-  // Reset here since none of the view lifecycle callbacks (e.g.
-  // viewDidDisappear) can be reliably used (it seems) (i.e. switching between
-  // NTPs where there is saved scroll state in the destination tab). If the
-  // content offset is being set to the top, it is safe to assume this can be
-  // set to NO. Being called before setSavedContentOffset: is no problem since
-  // then it will be subsequently overriden to YES.
-  self.hasSavedOffsetFromPreviousScrollState = NO;
-}
-
-- (CGFloat)heightAboveFeed {
-  CGFloat heightAboveFeed = 0;
-  for (UIViewController* viewController in self.viewControllersAboveFeed) {
-    heightAboveFeed += viewController.view.frame.size.height;
-  }
-  return heightAboveFeed;
 }
 
 - (CGFloat)scrollPosition {
@@ -664,6 +674,8 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
   if (self.viewDidAppear) {
     [self updateFeedSigninPromoIsVisible];
   }
+
+  [self updateScrollPositionToSave];
 }
 
 - (void)scrollViewWillBeginDragging:(UIScrollView*)scrollView {
@@ -792,7 +804,7 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
   if (self.scrolledToMinimumHeight) {
     self.shouldAnimateHeader = NO;
     self.disableScrollAnimation = NO;
-    [self.ntpContentDelegate focusOmnibox];
+    [self.NTPContentDelegate focusOmnibox];
     [self.headerViewController
         completeHeaderFakeOmniboxFocusAnimationWithFinalPosition:
             UIViewAnimatingPositionEnd];
@@ -836,7 +848,7 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
                 self.disableScrollAnimation = YES;
                 [strongSelf.headerViewController expandHeaderForFocus];
                 shiftOmniboxToTop();
-                [strongSelf.ntpContentDelegate focusOmnibox];
+                [strongSelf.NTPContentDelegate focusOmnibox];
               }
             }];
 
@@ -890,6 +902,14 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
   return content_suggestions::FakeOmniboxHeight();
 }
 
+// Sets the feed collection contentOffset from the saved state to `offset` to
+// set the initial scroll position.
+- (void)setSavedContentOffset:(CGFloat)offset {
+  self.hasSavedOffsetFromPreviousScrollState = YES;
+  self.savedScrollOffset = offset;
+  [self setContentOffset:offset];
+}
+
 // Configures overscroll actions controller.
 - (void)configureOverscrollActionsController {
   // Ensure the feed's scroll view exists to prevent crashing the overscroll
@@ -923,7 +943,7 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
 // NTP state for an unfocused state.
 - (void)unfocusOmnibox {
   if (self.omniboxFocused) {
-    [self.ntpContentDelegate cancelOmniboxEdit];
+    [self.NTPContentDelegate cancelOmniboxEdit];
   } else {
     [self omniboxDidResignFirstResponder];
   }
@@ -932,7 +952,7 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
 // Shifts tiles down when defocusing the omnibox.
 - (void)shiftTilesDownForOmniboxDefocus {
   if (IsSplitToolbarMode(self)) {
-    [self.ntpContentDelegate onFakeboxBlur];
+    [self.NTPContentDelegate onFakeboxBlur];
   }
 
   [self.view removeGestureRecognizer:self.tapGestureRecognizer];
@@ -1097,7 +1117,7 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
   }
 
   [self.feedHeaderViewController
-      toggleBackgroundBlur:[self.ntpContentDelegate isContentHeaderSticky]
+      toggleBackgroundBlur:[self.NTPContentDelegate isContentHeaderSticky]
                   animated:YES];
   [NSLayoutConstraint activateConstraints:self.feedHeaderConstraints];
 }
@@ -1134,7 +1154,7 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
 }
 
 // Checks whether the feed top section is visible and updates the
-// `ntpContentDelegate`.
+// `NTPContentDelegate`.
 - (void)updateFeedSigninPromoIsVisible {
   if (!self.feedTopSectionViewController) {
     return;
@@ -1153,7 +1173,7 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
         -([self stickyContentHeight] + [self feedTopSectionHeight] / 3))) &&
       !self.omniboxFocused;
 
-  [self.ntpContentDelegate
+  [self.NTPContentDelegate
       signinPromoHasChangedVisibility:isFeedSigninPromoVisible];
 }
 
@@ -1194,7 +1214,7 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
   }
 
   // Handles the sticky feed header.
-  if ([self.ntpContentDelegate isContentHeaderSticky] &&
+  if ([self.NTPContentDelegate isContentHeaderSticky] &&
       self.feedHeaderViewController) {
     if ((!self.isScrolledIntoFeed || force) &&
         scrollPosition > [self offsetWhenScrolledIntoFeed]) {
@@ -1212,7 +1232,7 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
   // make sure the header is properly positioned. (crbug.com/1261458)
   if ([self isNTPScrolledToTop]) {
     [self setInitialFakeOmniboxConstraints];
-    if ([self.ntpContentDelegate isContentHeaderSticky]) {
+    if ([self.NTPContentDelegate isContentHeaderSticky]) {
       [self setInitialFeedHeaderConstraints];
     }
   }
@@ -1329,7 +1349,7 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
 // The total height of all sticky content.
 - (CGFloat)stickyContentHeight {
   CGFloat stickyContentHeight = [self stickyOmniboxHeight];
-  if ([self.ntpContentDelegate isContentHeaderSticky]) {
+  if ([self.NTPContentDelegate isContentHeaderSticky]) {
     stickyContentHeight += [self feedHeaderHeight];
   }
   return stickyContentHeight;
@@ -1380,6 +1400,22 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
   }
   [elements addObject:self.collectionView];
   self.accessibilityElements = elements;
+}
+
+// Calculate the scroll position that should be saved in the NTP state and
+// update the mutator.
+- (void)updateScrollPositionToSave {
+  CGFloat scrollPositionToSave = [self scrollPosition];
+  if ([self.NTPContentDelegate isRecentTabTileVisible]) {
+    CGFloat tileSectionHeight =
+        ReturnToRecentTabHeight() +
+        content_suggestions::kReturnToRecentTabSectionBottomMargin;
+    if ([self scrollPosition] > tileSectionHeight + [self pinnedOffsetY]) {
+      scrollPositionToSave -= tileSectionHeight;
+    }
+  }
+  scrollPositionToSave -= self.collectionShiftingOffset;
+  self.mutator.scrollPositionToSave = scrollPositionToSave;
 }
 
 #pragma mark - Helpers
@@ -1614,9 +1650,10 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
   if (self.feedHeaderViewController) {
     [self.feedHeaderViewController
         toggleBackgroundBlur:(self.scrolledIntoFeed &&
-                              [self.ntpContentDelegate isContentHeaderSticky])
+                              [self.NTPContentDelegate isContentHeaderSticky])
                     animated:NO];
   }
+  [self updateScrollPositionToSave];
 }
 
 @end

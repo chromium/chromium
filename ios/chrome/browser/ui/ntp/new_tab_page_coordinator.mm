@@ -68,7 +68,6 @@
 #import "ios/chrome/browser/signin/system_identity_manager.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/enterprise/enterprise_utils.h"
-#import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_cells_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_coordinator.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
@@ -707,6 +706,7 @@
   NewTabPageMediator* NTPMediator = self.NTPMediator;
   DCHECK(NTPMediator);
   NTPMediator.feedControlDelegate = self;
+  NTPMediator.NTPContentDelegate = self;
   NTPMediator.headerConsumer = self.headerViewController;
   NTPMediator.consumer = self.NTPViewController;
   [NTPMediator setUp];
@@ -741,13 +741,14 @@
   self.NTPViewController.feedWrapperViewController =
       self.feedWrapperViewController;
   self.NTPViewController.overscrollDelegate = self;
-  self.NTPViewController.ntpContentDelegate = self;
+  self.NTPViewController.NTPContentDelegate = self;
 
   self.NTPViewController.headerViewController = self.headerViewController;
 
   [self configureMainViewControllerUsing:self.NTPViewController];
   self.NTPViewController.feedMetricsRecorder = self.feedMetricsRecorder;
   self.NTPViewController.bubblePresenter = self.bubblePresenter;
+  self.NTPViewController.mutator = self.NTPMediator;
 }
 
 // Configures the main ViewController managed by this Coordinator.
@@ -1063,6 +1064,11 @@
          !IsStickyHeaderDisabledForFollowingFeed();
 }
 
+- (BOOL)isRecentTabTileVisible {
+  return [self.contentSuggestionsCoordinator.contentSuggestionsMediator
+              mostRecentTabStartSurfaceTileIsShowing];
+}
+
 - (void)signinPromoHasChangedVisibility:(BOOL)visible {
   [self.feedTopSectionCoordinator signinPromoHasChangedVisibility:visible];
 }
@@ -1083,6 +1089,26 @@
   id<FakeboxFocuser> fakeboxFocuserHandler =
       HandlerForProtocol(self.browser->GetCommandDispatcher(), FakeboxFocuser);
   [fakeboxFocuserHandler fakeboxFocused];
+}
+
+- (void)refreshNTPContent {
+  [self.contentSuggestionsCoordinator
+          .contentSuggestionsMediator refreshMostVisitedTiles];
+  self.discoverFeedService->RefreshFeed(
+      FeedRefreshTrigger::kForegroundFeedVisibleOther);
+}
+
+- (void)updateForSelectedFeed:(FeedType)selectedFeed {
+  [self selectFeedType:selectedFeed];
+  // Reassign the sort type in case it changed in another tab.
+  self.feedHeaderViewController.followingFeedSortType =
+      self.followingFeedSortType;
+  // Update the header so that it's synced with the currently selected
+  // feed, which could have been changed when a new web state was
+  // inserted.
+  [self.feedHeaderViewController updateForSelectedFeed];
+  self.feedMetricsRecorder.feedControlDelegate = self;
+  self.feedMetricsRecorder.followDelegate = self;
 }
 
 #pragma mark - NewTabPageDelegate
@@ -1641,73 +1667,13 @@
 
 // Saves the state of the NTP associated with `self.webState`.
 - (void)saveNTPState {
-  if (self.browser->GetBrowserState()->IsOffTheRecord()) {
-    return;
-  }
-
-  // Get scroll position to save, and remove additional offset from "Return to
-  // Recent tab tile" and focused omnibox shifting.
-  CGFloat scrollPosition = [self.NTPViewController scrollPosition];
-  if ([self.contentSuggestionsCoordinator.contentSuggestionsMediator
-              mostRecentTabStartSurfaceTileIsShowing]) {
-    CGFloat tileSectionHeight =
-        ReturnToRecentTabHeight() +
-        content_suggestions::kReturnToRecentTabSectionBottomMargin;
-    if (scrollPosition >
-        tileSectionHeight + [self.NTPViewController pinnedOffsetY]) {
-      scrollPosition -= tileSectionHeight;
-    }
-  }
-  scrollPosition -= self.NTPViewController.collectionShiftingOffset;
-
-  NewTabPageTabHelper::FromWebState(self.webState)
-      ->SetNTPState([[NewTabPageState alloc]
-          initWithScrollPosition:scrollPosition
-                    selectedFeed:self.selectedFeed]);
+  [self.NTPMediator saveNTPStateForWebState:self.webState];
 }
 
 // Restores the saved state of the NTP associated with `self.webState` if
 // necessary.
 - (void)restoreNTPState {
-  if (self.browser->GetBrowserState()->IsOffTheRecord()) {
-    return;
-  }
-
-  NewTabPageState* ntpState =
-      NewTabPageTabHelper::FromWebState(self.webState)->GetNTPState();
-
-  // Restore selected feed type and ensure that coordinator's properties are
-  // updated for current web state.
-  if ([self isFollowingFeedAvailable]) {
-    [self selectFeedType:ntpState.selectedFeed];
-    // Reassign the sort type in case it changed in another tab.
-    self.feedHeaderViewController.followingFeedSortType =
-        self.followingFeedSortType;
-    // Update the header so that it's synced with the currently selected
-    // feed, which could have been changed when a new web state was
-    // inserted.
-    [self.feedHeaderViewController updateForSelectedFeed];
-    self.feedMetricsRecorder.feedControlDelegate = self;
-    self.feedMetricsRecorder.followDelegate = self;
-  }
-
-  // Restore saved scroll position.
-  CGFloat minimumOffset = -[self.NTPViewController heightAboveFeed];
-  if (ntpState.scrollPosition > minimumOffset) {
-    [self.NTPViewController setSavedContentOffset:ntpState.scrollPosition];
-  } else {
-    // Remove this if NTPs are ever scoped back to the WebState.
-    [self.NTPViewController setContentOffsetToTop];
-    // Refresh NTP content if there is is no saved scrolled state or when a new
-    // NTP is opened. Since the same NTP is being shared across tabs, this
-    // ensures that new content is being fetched.
-    [self.contentSuggestionsCoordinator
-            .contentSuggestionsMediator refreshMostVisitedTiles];
-
-    // If the scroll position was not restored, attempt to refresh the feed.
-    self.discoverFeedService->RefreshFeed(
-        FeedRefreshTrigger::kForegroundFeedVisibleOther);
-  }
+  [self.NTPMediator restoreNTPStateForWebState:self.webState];
 }
 
 #pragma mark - FeedSignInPromoCoordinatorDelegate
