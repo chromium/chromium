@@ -114,8 +114,8 @@ std::u16string GetRightClickRewriteNotificationMessage(
 
   const int launcher_key_name_id =
       Shell::Get()->keyboard_capability()->HasLauncherButtonOnAnyKeyboard()
-          ? IDS_ASH_SHORTCUT_MODIFIER_LAUNCHER
-          : IDS_ASH_SHORTCUT_MODIFIER_SEARCH;
+          ? IDS_ASH_SETTINGS_SHORTCUT_MODIFIER_LAUNCHER
+          : IDS_ASH_SETTINGS_SHORTCUT_MODIFIER_SEARCH;
   const std::u16string launcher_key_name =
       l10n_util::GetStringUTF16(launcher_key_name_id);
 

@@ -6970,13 +6970,12 @@ To shut down the device, press and hold the power button on the device again.
         Toolbar
       </message>
 
-      <!-- TODO(b/286937607): Finalize and translate these strings -->
       <!-- Input device settings notifications -->
       <message name="IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_ALT_RIGHT_CLICK" desc="The message shown to notify a user that the shortcut used to simulate a right-click using touchpad and keyboard has changed.">
-        The right-click shortcut is updated to <ph name="LAUNCHER_KEY_NAME">$1<ex>Launcher</ex></ph> key + click from Alt + click
+        The right-click shortcut is updated to <ph name="LAUNCHER_KEY_NAME">$1<ex>launcher</ex></ph> key + click from alt + click
       </message>
       <message name="IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_LAUNCHER_RIGHT_CLICK" desc="The message shown to notify a user that the shortcut used to simulate a right-click using touchpad and keyboard has changed.">
-        The right-click shortcut is updated to Alt + click from <ph name="LAUNCHER_KEY_NAME">$1<ex>Launcher</ex></ph> key + click
+        The right-click shortcut is updated to alt + click from <ph name="LAUNCHER_KEY_NAME">$1<ex>launcher</ex></ph> key + click
       </message>
       <message name="IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_RIGHT_CLICK_DISABLED" desc="The message shown to notify a user that the shortcut used to simulate a right-click using touchpad and keyboard is disabled.">
         The right-click shortcut is currently off
