@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/functional/bind.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -31,20 +30,16 @@
 #include "components/version_info/version_info.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/network_service_util.h"
-#include "content/public/browser/service_process_host.h"
-#include "content/public/browser/service_process_info.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/user_agent.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/test_utils.h"
-#include "mojo/public/cpp/bindings/sync_call_restrictions.h"
 #include "net/base/features.h"
 #include "net/cookies/canonical_cookie_test_helpers.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/net_buildflags.h"
-#include "sandbox/policy/features.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/network_service_buildflags.h"
 #include "services/network/public/mojom/network_context.mojom.h"
@@ -216,123 +211,6 @@ IN_PROC_BROWSER_TEST_F(SystemNetworkContextManagerBrowsertest, AuthParams) {
   EXPECT_EQ((std::vector<std::string>{"*.allowed.google.com", "*.youtube.com"}),
             dynamic_params->patterns_allowed_to_use_all_schemes);
 }
-
-#if BUILDFLAG(IS_CHROMEOS)
-class SystemNetworkContextManagerNetworkServiceSandboxEnabledBrowsertest
-    : public SystemNetworkContextManagerBrowsertest,
-      public content::ServiceProcessHost::Observer {
- public:
-  SystemNetworkContextManagerNetworkServiceSandboxEnabledBrowsertest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        sandbox::policy::features::kNetworkServiceSandbox);
-  }
-
-  void SetUpOnMainThread() override {
-    SystemNetworkContextManagerBrowsertest::SetUpOnMainThread();
-
-    content::ServiceProcessHost::AddObserver(this);
-    auto running_processes =
-        content::ServiceProcessHost::GetRunningProcessInfo();
-    for (const auto& info : running_processes) {
-      if (info.IsService<network::mojom::NetworkService>()) {
-        network_process_ = info.GetProcess().Duplicate();
-        break;
-      }
-    }
-  }
-
-  void WaitForNextLaunch() {
-    launch_run_loop_.emplace();
-    launch_run_loop_->Run();
-  }
-
-  void WaitForNetworkServiceReady() {
-    mojo::Remote<network::mojom::NetworkServiceTest> network_service_test;
-    content::GetNetworkService()->BindTestInterfaceForTesting(
-        network_service_test.BindNewPipeAndPassReceiver());
-    mojo::ScopedAllowSyncCallForTesting allow_sync_call;
-    // Log() is sync so this thread will wait for this call to succeed.
-    network_service_test->Log(
-        "Logging in network service to ensure it's ready.");
-  }
-
-  void ExpectNetworkServiceSeccompSandboxed(bool sandboxed) {
-    // The network service may have been launched but has not yet sandboxed
-    // itself. So, wait for the Mojo endpoints to start accepting messages.
-    WaitForNetworkServiceReady();
-    EXPECT_EQ(sandboxed, GetNetworkServiceProcess().IsSeccompSandboxed());
-  }
-
-  base::Process GetNetworkServiceProcess() {
-    CHECK(content::IsOutOfProcessNetworkService());
-    return network_process_.Duplicate();
-  }
-
- private:
-  void OnServiceProcessLaunched(
-      const content::ServiceProcessInfo& info) override {
-    if (!info.IsService<network::mojom::NetworkService>()) {
-      return;
-    }
-    network_process_ = info.GetProcess().Duplicate();
-    if (launch_run_loop_) {
-      launch_run_loop_->Quit();
-    }
-  }
-
-  void OnServiceProcessTerminatedNormally(
-      const content::ServiceProcessInfo& info) override {}
-
-  void OnServiceProcessCrashed(
-      const content::ServiceProcessInfo& info) override {}
-
-  base::test::ScopedFeatureList scoped_feature_list_;
-  base::Process network_process_;
-  absl::optional<base::RunLoop> launch_run_loop_;
-};
-
-IN_PROC_BROWSER_TEST_F(
-    SystemNetworkContextManagerNetworkServiceSandboxEnabledBrowsertest,
-    NetworkServiceRestartsUnsandboxedOnKerberosEnabled) {
-  PrefService* local_state = g_browser_process->local_state();
-
-  // Ensure kerberos starts disabled.
-  EXPECT_FALSE(local_state->GetBoolean(prefs::kKerberosEnabled));
-  // Ensure the network service starts sandboxed.
-  ExpectNetworkServiceSeccompSandboxed(/*sandboxed=*/true);
-
-  // Now enable kerberos.
-  local_state->SetBoolean(prefs::kKerberosEnabled, true);
-  EXPECT_TRUE(local_state->GetBoolean(prefs::kKerberosEnabled));
-  // The network service should automatically restart, and be unsandboxed.
-  WaitForNextLaunch();
-  ExpectNetworkServiceSeccompSandboxed(/*sandboxed=*/false);
-
-  // After killing the network service, it should still restart unsandboxed.
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(base::IgnoreResult(&content::RestartNetworkService)));
-  WaitForNextLaunch();
-  ExpectNetworkServiceSeccompSandboxed(/*sandboxed=*/false);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    SystemNetworkContextManagerNetworkServiceSandboxEnabledBrowsertest,
-    PRE_NetworkServiceStartsUnsandboxedWithKerberosEnabled) {
-  PrefService* local_state = g_browser_process->local_state();
-  // Enable kerberos.
-  local_state->SetBoolean(prefs::kKerberosEnabled, true);
-  EXPECT_TRUE(local_state->GetBoolean(prefs::kKerberosEnabled));
-}
-
-IN_PROC_BROWSER_TEST_F(
-    SystemNetworkContextManagerNetworkServiceSandboxEnabledBrowsertest,
-    NetworkServiceStartsUnsandboxedWithKerberosEnabled) {
-  // Ensure the network service starts sandboxed.
-  ExpectNetworkServiceSeccompSandboxed(/*sandboxed=*/false);
-}
-
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 class SystemNetworkContextManagerWithFirstPartySetComponentBrowserTest
     : public SystemNetworkContextManagerBrowsertest {
