@@ -106,6 +106,10 @@ void MLInstallabilityPromoter::StartPipeline(const GURL& validated_url) {
     return;
   }
 
+  if (app_banner_manager->TriggeringDisabledForTesting()) {
+    return;
+  }
+
   app_banner_manager_ = app_banner_manager->GetWeakPtr();
   site_url_ = validated_url;
 

@@ -145,6 +145,7 @@ class CallbackTester {
     errors_ = data.errors;
     manifest_url_ = *data.manifest_url;
     manifest_ = data.manifest->Clone();
+    metadata_ = data.web_page_metadata->Clone();
     primary_icon_url_ = *data.primary_icon_url;
     if (data.primary_icon)
       primary_icon_ = std::make_unique<SkBitmap>(*data.primary_icon);
@@ -161,6 +162,7 @@ class CallbackTester {
     DCHECK(manifest_);
     return *manifest_;
   }
+  const mojom::WebPageMetadata& metadata() const { return *metadata_; }
   const GURL& primary_icon_url() const { return primary_icon_url_; }
   const SkBitmap* primary_icon() const { return primary_icon_.get(); }
   bool has_maskable_primary_icon() const { return has_maskable_primary_icon_; }
@@ -172,6 +174,7 @@ class CallbackTester {
   std::vector<InstallableStatusCode> errors_;
   GURL manifest_url_;
   blink::mojom::ManifestPtr manifest_ = blink::mojom::Manifest::New();
+  mojom::WebPageMetadataPtr metadata_ = mojom::WebPageMetadata::New();
   GURL primary_icon_url_;
   std::unique_ptr<SkBitmap> primary_icon_;
   bool has_maskable_primary_icon_;
@@ -263,6 +266,15 @@ class InstallableManagerBrowserTest : public PlatformBrowserTest {
       const std::string& manifest_url) {
     return "/banners/manifest_test_page.html?manifest=" +
            embedded_test_server()->GetURL(manifest_url).spec();
+  }
+
+  std::string GetURLOfPageWitTags(const std::string& base_page,
+                                  std::map<std::string, std::string> tags) {
+    std::string test_url = base_page + "?";
+    for (const auto& [key, value] : tags) {
+      test_url.append("&" + key + "=" + value);
+    }
+    return test_url;
   }
 
   std::string GetURLOfPageWithManifestAndTags(
@@ -594,6 +606,59 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest,
   EXPECT_FALSE(tester->valid_manifest());
   EXPECT_TRUE(tester->worker_check_passed());
   EXPECT_EQ(std::vector<InstallableStatusCode>{}, tester->errors());
+}
+
+IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest, FetchWebPageMetaData) {
+  InstallableParams params;
+  params.check_eligibility = true;
+  params.fetch_metadata = true;
+
+  const std::map<std::string, std::string> meta_tags = {
+      {"application-name", "Test App Name"}, {"description", "description"}};
+
+  // Test fetch web page metadata.
+  {
+    base::RunLoop run_loop;
+    std::unique_ptr<CallbackTester> tester(
+        new CallbackTester(run_loop.QuitClosure()));
+
+    NavigateAndRunInstallableManager(
+        tester.get(), params,
+        GetURLOfPageWitTags("/banners/manifest_test_page.html", meta_tags));
+
+    run_loop.Run();
+
+    EXPECT_FALSE(blink::IsEmptyManifest(tester->manifest()));
+    EXPECT_FALSE(tester->manifest_url().is_empty());
+
+    EXPECT_EQ(u"Test App Name", tester->metadata().application_name);
+    EXPECT_EQ(u"description", tester->metadata().description);
+
+    EXPECT_TRUE(tester->primary_icon_url().is_empty());
+    EXPECT_EQ(nullptr, tester->primary_icon());
+    EXPECT_EQ(std::vector<InstallableStatusCode>{}, tester->errors());
+  }
+
+  // Test fetch web page metadata when no manifest.
+  {
+    base::RunLoop run_loop;
+    std::unique_ptr<CallbackTester> tester(
+        new CallbackTester(run_loop.QuitClosure()));
+
+    NavigateAndRunInstallableManager(
+        tester.get(), params,
+        GetURLOfPageWitTags("/banners/no_manifest_test_page.html", meta_tags));
+
+    run_loop.Run();
+
+    EXPECT_FALSE(tester->metadata().application_name.empty());
+
+    EXPECT_TRUE(blink::IsEmptyManifest(tester->manifest()));
+    EXPECT_TRUE(tester->manifest_url().is_empty());
+
+    EXPECT_EQ(std::vector<InstallableStatusCode>{NO_MANIFEST},
+              tester->errors());
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest,

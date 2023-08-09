@@ -35,6 +35,7 @@
 #include "content/public/common/url_constants.h"
 #include "net/base/url_util.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
+#include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/manifest/manifest_icon_selector.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
@@ -249,6 +250,7 @@ InstallableManager::InstallableManager(content::WebContents* web_contents)
       eligibility_(std::make_unique<EligiblityProperty>()),
       manifest_(std::make_unique<ManifestProperty>()),
       valid_manifest_(std::make_unique<ValidManifestProperty>()),
+      web_page_metadata_(std::make_unique<WebPageMetadataProperty>()),
       worker_(std::make_unique<ServiceWorkerProperty>()),
       primary_icon_(std::make_unique<IconProperty>()),
       service_worker_context_(nullptr),
@@ -315,7 +317,6 @@ void InstallableManager::GetData(const InstallableParams& params,
                                  InstallableCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(callback);
-
   // Return immediately if we're already working on a task. The new task will be
   // looked at once the current task is finished.
   bool was_active = task_queue_.HasCurrent();
@@ -358,6 +359,11 @@ void InstallableManager::SetSequencedTaskRunnerForTesting(
 InstallableManager::ManifestProperty::ManifestProperty() = default;
 InstallableManager::ManifestProperty::~ManifestProperty() = default;
 
+InstallableManager::WebPageMetadataProperty::WebPageMetadataProperty() =
+    default;
+InstallableManager::WebPageMetadataProperty::~WebPageMetadataProperty() =
+    default;
+
 std::vector<InstallableStatusCode> InstallableManager::GetErrors(
     const InstallableParams& params) {
   std::vector<InstallableStatusCode> errors;
@@ -369,6 +375,10 @@ std::vector<InstallableStatusCode> InstallableManager::GetErrors(
 
   if (manifest_->error != NO_ERROR_DETECTED)
     errors.push_back(manifest_->error);
+
+  if (params.fetch_metadata && web_page_metadata_->error != NO_ERROR_DETECTED) {
+    errors.push_back(web_page_metadata_->error);
+  }
 
   if (params.valid_manifest && !valid_manifest_->errors.empty()) {
     errors.insert(errors.end(), valid_manifest_->errors.begin(),
@@ -438,6 +448,7 @@ bool InstallableManager::IsComplete(const InstallableParams& params) const {
   return (!params.check_eligibility || eligibility_->fetched) &&
          manifest_->fetched &&
          (!params.valid_manifest || valid_manifest_->fetched) &&
+         (!params.fetch_metadata || web_page_metadata_->fetched) &&
          (!params.has_worker || worker_->fetched) &&
          (!params.fetch_screenshots || is_screenshots_fetch_complete_) &&
          (!params.valid_primary_icon || primary_icon_->fetched) &&
@@ -462,6 +473,7 @@ void InstallableManager::Reset(InstallableStatusCode error) {
   eligibility_ = std::make_unique<EligiblityProperty>();
   manifest_ = std::make_unique<ManifestProperty>();
   valid_manifest_ = std::make_unique<ValidManifestProperty>();
+  web_page_metadata_ = std::make_unique<WebPageMetadataProperty>();
   worker_ = std::make_unique<ServiceWorkerProperty>();
   primary_icon_ = std::make_unique<IconProperty>();
 
@@ -505,6 +517,7 @@ void InstallableManager::RunCallback(
       std::move(errors),
       manifest_url(),
       manifest(),
+      *web_page_metadata_->metadata,
       primary_icon_->url,
       primary_icon_->icon.get(),
       primary_icon_->purpose == IconPurpose::MASKABLE,
@@ -536,9 +549,10 @@ void InstallableManager::WorkOnTask() {
     RunCallback(std::move(task), std::move(errors));
     return;
   }
-
   if (params.check_eligibility && !eligibility_->fetched) {
     CheckEligiblity();
+  } else if (params.fetch_metadata && !web_page_metadata_->fetched) {
+    FetchWebPageMetadata();
   } else if (!manifest_->fetched) {
     FetchManifest();
   } else if (params.valid_manifest && !valid_manifest_->fetched) {
@@ -661,6 +675,41 @@ bool InstallableManager::IsManifestValidForWebApp(
   }
 
   return is_valid;
+}
+
+void InstallableManager::FetchWebPageMetadata() {
+  content::WebContents* web_contents = GetWebContents();
+  // Send a message to the renderer to retrieve information about the page.
+  mojo::AssociatedRemote<mojom::WebPageMetadataAgent> metadata_agent;
+  web_contents->GetPrimaryMainFrame()
+      ->GetRemoteAssociatedInterfaces()
+      ->GetInterface(&metadata_agent);
+  // Bind the InterfacePtr into the callback so that it's kept alive until
+  // there's either a connection error or a response.
+  auto* web_page_metadata_proxy = metadata_agent.get();
+  metadata_agent.set_disconnect_handler(
+      base::BindOnce(&InstallableManager::OnMetadataAgentDisconnect,
+                     weak_factory_.GetWeakPtr()));
+  web_page_metadata_proxy->GetWebPageMetadata(
+      base::BindOnce(&InstallableManager::OnDidGetWebPageMetadata,
+                     weak_factory_.GetWeakPtr(), std::move(metadata_agent)));
+}
+
+void InstallableManager::OnDidGetWebPageMetadata(
+    mojo::AssociatedRemote<mojom::WebPageMetadataAgent> metadata_agent,
+    mojom::WebPageMetadataPtr web_page_metadata) {
+  if (!GetWebContents()) {
+    return;
+  }
+
+  web_page_metadata_->metadata = std::move(web_page_metadata);
+  web_page_metadata_->fetched = true;
+  WorkOnTask();
+}
+
+void InstallableManager::OnMetadataAgentDisconnect() {
+  web_page_metadata_->error = webapps::InstallableStatusCode::RENDERER_EXITING;
+  web_page_metadata_->fetched = true;
 }
 
 void InstallableManager::CheckServiceWorker() {

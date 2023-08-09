@@ -12,7 +12,9 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
+#include "base/memory/scoped_refptr.h"
 #include "components/webapps/browser/installable/installable_logging.h"
+#include "components/webapps/common/web_page_metadata.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -41,6 +43,7 @@ struct InstallableData {
   InstallableData(std::vector<InstallableStatusCode> errors,
                   const GURL& manifest_url,
                   const blink::mojom::Manifest& manifest,
+                  const mojom::WebPageMetadata& metadata,
                   const GURL& primary_icon_url,
                   const SkBitmap* primary_icon,
                   bool has_maskable_primary_icon,
@@ -83,6 +86,10 @@ struct InstallableData {
 
   // The parsed web app manifest.
   const raw_ref<const blink::mojom::Manifest, DanglingUntriaged> manifest;
+
+  // Manifest data provided by the HTML document.
+  const raw_ref<const mojom::WebPageMetadata, DanglingUntriaged>
+      web_page_metadata;
 
   // The URL of the chosen primary icon.
   const raw_ref<const GURL, DanglingUntriaged> primary_icon_url;

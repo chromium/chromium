@@ -172,7 +172,7 @@ class TestInstallableManager : public InstallableManager {
     if (code != NO_ERROR_DETECTED)
       errors.push_back(code);
     std::move(callback).Run(
-        {std::move(errors), GURL(kDefaultManifestUrl), *manifest_,
+        {std::move(errors), GURL(kDefaultManifestUrl), *manifest_, *metadata_,
          params.valid_primary_icon ? primary_icon_url_ : GURL(),
          params.valid_primary_icon ? primary_icon_.get() : nullptr,
          params.prefer_maskable_icon,
@@ -204,6 +204,7 @@ class TestInstallableManager : public InstallableManager {
 
  private:
   blink::mojom::ManifestPtr manifest_ = blink::mojom::Manifest::New();
+  mojom::WebPageMetadataPtr metadata_ = mojom::WebPageMetadata::New();
   GURL primary_icon_url_;
   std::unique_ptr<SkBitmap> primary_icon_;
 

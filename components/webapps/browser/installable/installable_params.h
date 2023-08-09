@@ -27,6 +27,10 @@ struct InstallableParams {
   // conforming to the primary icon size parameters.
   bool valid_primary_icon = false;
 
+  // Whether to fetch web page metadata for installable checks if manifest is
+  // not available.
+  bool fetch_metadata = false;
+
   // Whether to prefer an icon with purpose 'maskable' for the primary icon.
   // An icon with purpose 'any' is still required for a valid manifest.
   bool prefer_maskable_icon = false;

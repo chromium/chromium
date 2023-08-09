@@ -160,7 +160,7 @@ function removeAllManifestTags() {
 function initialize() {
   const url = new URL(window.location.href);
   initializeActions(url.searchParams.get('action'));
-  addOtherLinkTags(url);
+  addOtherTags(url);
 }
 
 function initializeActions(action) {
@@ -215,15 +215,23 @@ function changeManifestUrl(newManifestUrl) {
   linkTag.href = newManifestUrl;
 }
 
-function addOtherLinkTags(url) {
+function addOtherTags(url) {
   for (const [key, value] of url.searchParams) {
     if (key === "manifest" || key === "action" || !value) {
       continue;
     }
-    var linkTag = document.createElement("link");
-    linkTag.id = key
-    linkTag.rel = key;
-    linkTag.href = value;
-    document.head.append(linkTag);
+    if (key === 'icon') {
+      var linkTag = document.createElement("link");
+      linkTag.id = key
+      linkTag.rel = key;
+      linkTag.href = value;
+      document.head.append(linkTag);
+    }
+    else {
+      var meta = document.createElement('meta');
+      meta.name = key
+      meta.content = value
+      document.head.append(meta);
+    }
   }
 }
