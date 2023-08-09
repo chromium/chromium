@@ -86,7 +86,10 @@
   // Important: do not add code after this block because its purpose is to
   // clear `self` when not needed anymore.
   if (previousInitStage == InitStageFirstRun) {
-    // Nothing left to do; clean up.
+    if (self.appState.startupInformation.isFirstRun) {
+      [self unlockInterfaceOrientation];
+    }
+    // Clean up.
     [self.appState removeAgent:self];
   }
 }
@@ -166,6 +169,15 @@
                   screenProvider:provider];
   self.firstRunCoordinator.delegate = self;
   [self.firstRunCoordinator start];
+}
+
+// The FRE only displays in "portrait" on iPhone. When the FRE is done, iOS
+// must be notified that the supported interface orientations have changed.
+- (void)unlockInterfaceOrientation {
+  if (@available(iOS 16, *)) {
+    [self.presentingInterface
+            .viewController setNeedsUpdateOfSupportedInterfaceOrientations];
+  }
 }
 
 #pragma mark - FirstRunCoordinatorDelegate
