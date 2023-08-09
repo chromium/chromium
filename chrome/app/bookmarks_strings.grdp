@@ -200,8 +200,14 @@
   <message name="IDS_BOOKMARK_BUBBLE_PAGE_BOOKMARK" desc="Title of the bubble when re-clicking on a bookmark">
     Edit bookmark
   </message>
+  <message name="IDS_BOOKMARK_BUBBLE_EDIT_BOOKMARK" desc="Title of the button for editing the bookmark">
+    Edit
+  </message>
   <message name="IDS_BOOKMARK_BUBBLE_NAME_LABEL" desc="Text preceding the title of the page that was bookmarked" meaning="Name of an inanimate object">
     Name
+  </message>
+  <message name="IDS_BOOKMARK_BUBBLE_SAVED_TO" desc="Text notifying a user which folder their bookmark was saved to.">
+    This page is saved to <ph name="BOOKMARK_FOLDER">$1<ex>All Bookmarks</ex></ph>
   </message>
   <message name="IDS_BOOKMARK_AX_BUBBLE_NAME_LABEL" desc="Text preceding the title of the page that was bookmarked, read by spoken feedback">
     Bookmark name

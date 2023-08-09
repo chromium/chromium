@@ -62323,6 +62323,7 @@ from previous Chrome versions.
   <int value="-954972757"
       label="QuickAnswersAlwaysTriggerForSingleWord:enabled"/>
   <int value="-954789862" label="ProductivityLauncher:enabled"/>
+  <int value="-953440781" label="SimplifiedBookmarkSaveFlow:disabled"/>
   <int value="-953330528" label="UserAgentOverrideExperiment:disabled"/>
   <int value="-953215709" label="StorageAccessAPI:enabled"/>
   <int value="-952996862" label="ArcUseHighMemoryDalvikProfile:enabled"/>
@@ -67726,6 +67727,7 @@ from previous Chrome versions.
   <int value="1809704744"
       label="SyncAndroidPromosWithAlternativeTitle:disabled"/>
   <int value="1809940714" label="SpeculativeLaunchServiceWorker:disabled"/>
+  <int value="1810157428" label="SimplifiedBookmarkSaveFlow:enabled"/>
   <int value="1810258949" label="DisplayLocking:enabled"/>
   <int value="1810311887" label="WebAssemblyThreads:enabled"/>
   <int value="1810693550" label="OnlyShowNewShortcutsApp:enabled"/>

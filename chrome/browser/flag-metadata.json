@@ -7418,6 +7418,11 @@
     "expiry_milestone": 112
   },
   {
+    "name": "simplified-bookmark-save-flow",
+    "owners": [ "mdjones@google.com", "chrome-shopping-eng@google.com" ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "site-data-improvements",
     "owners": [
       "andzaytsev@google.com",

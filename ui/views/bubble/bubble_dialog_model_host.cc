@@ -634,6 +634,10 @@ void BubbleDialogModelHost::OnFieldChanged(ui::DialogModelField* field) {
   if (field->type(GetPassKey()) == ui::DialogModelField::kButton) {
     UpdateButton(field->AsButton(GetPassKey()));
   }
+
+  // If the contents of the dialog change (text, field visitiblity, etc.), the
+  // dialog may need to be resized.
+  SizeToContents();
 }
 
 void BubbleDialogModelHost::AddInitialFields() {
