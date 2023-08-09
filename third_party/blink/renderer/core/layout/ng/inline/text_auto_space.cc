@@ -43,6 +43,63 @@ inline bool MaybeIdeograph(UScriptCode script, StringView text) {
                      });
 }
 
+// `TextAutoSpace::ApplyIfNeeded` computes offsets to insert spacing *before*,
+// but `ShapeResult` can handle spacing *after* a glyph. Due to this difference,
+// when adding a spacing before the start offset of an item, the spacing
+// should be added to the end of the previous item. This class keeps the
+// previous item's `shape_result_` for this purpose.
+class SpacingApplier {
+ public:
+  void SetSpacing(const Vector<wtf_size_t, 16>& offsets,
+                  float spacing,
+                  const NGInlineItem& item) {
+    DCHECK(item.TextShapeResult());
+    const wtf_size_t* offset = offsets.begin();
+    if (!offsets.empty() && *offset == item.StartOffset()) {
+      DCHECK(shape_result_);
+      offsets_with_spacing_.emplace_back(
+          OffsetWithSpacing({.offset = *offset - 1, .spacing = spacing}));
+      ++offset;
+    }
+    // Apply all pending spaces to the previous item.
+    ApplyIfNeeded();
+    offsets_with_spacing_.Shrink(0);
+
+    // Update the previous item in prepare for the next iteration.
+    shape_result_ = const_cast<ShapeResult*>(item.TextShapeResult());
+    DCHECK(shape_result_);
+    for (; offset != offsets.end(); ++offset) {
+      offsets_with_spacing_.emplace_back(
+          OffsetWithSpacing({.offset = *offset - 1, .spacing = spacing}));
+    }
+  }
+
+  void ApplyIfNeeded() {
+    if (offsets_with_spacing_.empty()) {
+      return;
+    }
+    DCHECK(shape_result_);
+    shape_result_->ApplyTextAutoSpacing(offsets_with_spacing_);
+  }
+
+ private:
+  ShapeResult* shape_result_ = nullptr;
+  // Stores the spacing (1/8 ic) and auto-space points's previous positions, for
+  // the previous item.
+  Vector<OffsetWithSpacing, 16> offsets_with_spacing_;
+};
+
+// https://drafts.csswg.org/css-text-4/#inter-script-spacing
+float GetSpacingWidth(const ComputedStyle* style) {
+  const SimpleFontData* font_data = style->GetFont().PrimaryFont();
+  if (!font_data) {
+    return style->ComputedFontSize() / 8;
+  }
+  return font_data->GetFontMetrics().IdeographicFullWidth().value_or(
+             style->ComputedFontSize()) /
+         8;
+}
+
 }  // namespace
 
 // static
@@ -87,6 +144,7 @@ void TextAutoSpace::ApplyIfNeeded(NGInlineItemsData& data,
   CHECK(!ranges.empty());
   const RunSegmenter::RunSegmenterRange* range = ranges.begin();
   absl::optional<CharType> last_type = kOther;
+  SpacingApplier applier;
   for (const NGInlineItem& item : items) {
     if (item.Type() != NGInlineItem::kText) {
       if (item.Length()) {
@@ -167,12 +225,16 @@ void TextAutoSpace::ApplyIfNeeded(NGInlineItemsData& data,
     } while (offset < item.EndOffset());
 
     if (!offsets_out) {
-      // TODO(crbug.com/1463890): Apply to `ShapeResult` not implemented yet.
+      DCHECK(item.TextShapeResult());
+      float spacing = GetSpacingWidth(style);
+      applier.SetSpacing(offsets, spacing, item);
     } else {
       offsets_out->AppendVector(offsets);
     }
     offsets.Shrink(0);
   }
+  // Apply the pending spacing for the last item if needed.
+  applier.ApplyIfNeeded();
 }
 
 // static

@@ -8,6 +8,7 @@
 #include <gtest/gtest.h>
 
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
+#include "third_party/blink/renderer/platform/fonts/character_range.h"
 
 namespace blink {
 
@@ -20,11 +21,12 @@ class TextAutoSpaceTest : public RenderingTest, ScopedCSSTextAutoSpaceForTest {
 public:
   explicit TextAutoSpaceTest() : ScopedCSSTextAutoSpaceForTest(true) {}
 
-  Vector<wtf_size_t> AutoSpaceOffsets(String html,
-                                      String container_css = String()) {
+  LayoutBlockFlow* PreparePageLayoutBlock(String html,
+                                          String container_css = String()) {
     html = String(R"HTML(
       <style>
       #container {
+        font-family: Ahem;
         font-size: 10px;)HTML") +
            container_css + R"HTML(
       }
@@ -32,7 +34,13 @@ public:
       <div id="container">)HTML" +
            html + "</div>";
     SetBodyInnerHTML(html);
-    const auto* container = GetLayoutBlockFlowByElementId("container");
+    return GetLayoutBlockFlowByElementId("container");
+  }
+
+  Vector<wtf_size_t> AutoSpaceOffsets(String html,
+                                      String container_css = String()) {
+    const LayoutBlockFlow* container =
+        PreparePageLayoutBlock(html, container_css);
     NGInlineNodeData* node_data = container->GetNGInlineNodeData();
     Vector<wtf_size_t> offsets;
     TextAutoSpace::ApplyIfNeeded(*node_data, &offsets);
@@ -95,6 +103,30 @@ TEST_F(TextAutoSpaceTest, NonHanIdeograph) {
     } else {
       EXPECT_THAT(offsets, ElementsAre()) << String::Format("U+%04X", ch);
     }
+  }
+}
+
+// End to end test for text-autospace
+TEST_F(TextAutoSpaceTest, InsertSpacing) {
+  LoadAhem();
+  String test_string = u"AAAあああa";
+  LayoutBlockFlow* container = PreparePageLayoutBlock(test_string);
+  NGInlineNode inline_node{container};
+  NGInlineNodeData* node_data = container->GetNGInlineNodeData();
+  inline_node.PrepareLayoutIfNeeded();
+
+  Vector<CharacterRange> final_ranges;
+  for (const NGInlineItem& item : node_data->items) {
+    const auto* shape_result = item.TextShapeResult();
+    Vector<CharacterRange> ranges;
+    shape_result->IndividualCharacterRanges(&ranges);
+    final_ranges.AppendVector(ranges);
+  }
+  Vector<float> expected_result_start{0, 10, 20, 31.25, 41.25, 51.25, 62.5};
+  ASSERT_EQ(expected_result_start.size(), final_ranges.size());
+  for (wtf_size_t i = 0; i < final_ranges.size(); i++) {
+    EXPECT_NEAR(final_ranges[i].start, expected_result_start[i], 1e-6)
+        << "unexpected width at position i of " << i;
   }
 }
 

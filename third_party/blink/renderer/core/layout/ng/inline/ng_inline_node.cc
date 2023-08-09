@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_line_breaker.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_line_info.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_offset_mapping.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/text_auto_space.h"
 #include "third_party/blink/renderer/core/layout/ng/legacy_layout_tree_walking.h"
 #include "third_party/blink/renderer/core/layout/ng/list/layout_ng_inline_list_item.h"
 #include "third_party/blink/renderer/core/layout/ng/list/layout_ng_list_item.h"
@@ -527,6 +528,12 @@ void NGInlineNode::PrepareLayout(NGInlineNodeData* previous_data) const {
   SegmentText(data);
   ShapeTextIncludingFirstLine(
       data, previous_data ? &previous_data->text_content : nullptr, nullptr);
+
+  // TODO(https://crbug.com/1463890): Update the likelihood condition.
+  if (UNLIKELY(RuntimeEnabledFeatures::CSSTextAutoSpaceEnabled())) {
+    TextAutoSpace::ApplyIfNeeded(*data);
+  }
+
   AssociateItemsWithInlines(data);
   DCHECK_EQ(data, MutableData());
 
