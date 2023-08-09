@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 
+#include "base/observer_list_types.h"
 #include "ios/web/public/web_state_observer.h"
 
 namespace web {
@@ -23,10 +24,14 @@ class WebState;
 // DEPRECATED. Use TabHelper to observe WebState creation. Use WebStateObserver
 // to observe WebState changes.
 // TODO(crbug.com/782269): Remove this class.
-class GlobalWebStateObserver {
+class GlobalWebStateObserver : public base::CheckedObserver {
  public:
+  GlobalWebStateObserver();
+
   GlobalWebStateObserver(const GlobalWebStateObserver&) = delete;
   GlobalWebStateObserver& operator=(const GlobalWebStateObserver&) = delete;
+
+  ~GlobalWebStateObserver() override;
 
   // Called when `web_state` has started loading a page.
   // DEPRECATED. Use WebStateObserver's `DidStartLoading` instead.
@@ -55,10 +60,6 @@ class GlobalWebStateObserver {
   // DEPRECATED. Use WebStateObserver's `WebStateDestroyed` instead.
   // TODO(crbug.com/782269): Remove this method.
   virtual void WebStateDestroyed(WebState* web_state) {}
-
- protected:
-  GlobalWebStateObserver();
-  virtual ~GlobalWebStateObserver();
 };
 
 }  // namespace web
