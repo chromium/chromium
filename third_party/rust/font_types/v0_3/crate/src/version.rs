@@ -4,7 +4,7 @@
 ///
 /// This is a legacy type with an unusual representation. See [the spec][] for
 /// additional details.
-#[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Copy, Clone, Default, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct Version16Dot16(u32);
 
@@ -14,7 +14,7 @@ pub struct Version16Dot16(u32);
 /// represented as a `major_version`, `minor_version` pair. This type encodes
 /// those as a single type, which is useful for some of the generated code that
 /// parses out a version.
-#[derive(Copy, Clone, Debug, Default, PartialEq, Eq)]
+#[derive(Copy, Clone, Debug, Default, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct MajorMinor {
     /// The major version number

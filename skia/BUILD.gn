@@ -33,16 +33,7 @@ buildflag_header("buildflags") {
 
 if (use_typeface_fontations) {
   source_set("path_bridge") {
-    sources = [
-      "//third_party/skia/src/ports/fontations/src/skpath_bridge.cpp",
-      "//third_party/skia/src/ports/fontations/src/skpath_bridge.h",
-    ]
-    deps = [ ":skia_core_public_headers" ]
-    configs -= [ "//build/config/compiler:chromium_code" ]
-    configs += [
-      ":skia_config",
-      "//build/config/compiler:no_chromium_code",
-    ]
+    sources = [ "//third_party/skia/src/ports/fontations/src/skpath_bridge.h" ]
   }
 
   rust_static_library("bridge_rust_side") {
@@ -53,8 +44,8 @@ if (use_typeface_fontations) {
     deps = [
       ":path_bridge",
       "//third_party/rust/font_types/v0_3:lib",
-      "//third_party/rust/read_fonts/v0_5:lib",
-      "//third_party/rust/skrifa/v0_4:lib",
+      "//third_party/rust/read_fonts/v0_10:lib",
+      "//third_party/rust/skrifa/v0_9:lib",
     ]
     configs -= [ "//build/config/compiler:chromium_code" ]
     configs += [
@@ -467,8 +458,8 @@ component("skia") {
     deps += [
       ":bridge_rust_side",
       ":path_bridge",
-      "//third_party/rust/read_fonts/v0_5:lib",
-      "//third_party/rust/skrifa/v0_4:lib",
+      "//third_party/rust/read_fonts/v0_10:lib",
+      "//third_party/rust/skrifa/v0_9:lib",
     ]
   }
 

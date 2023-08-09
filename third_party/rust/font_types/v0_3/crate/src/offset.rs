@@ -3,9 +3,14 @@
 use crate::{Scalar, Uint24};
 
 /// An offset of a given width for which NULL (zero) is a valid value.
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct Nullable<T>(T);
+
+// internal implementation detail; lets us implement Default for nullable offsets.
+trait NullValue {
+    const NULL: Self;
+}
 
 impl<T: Scalar> Scalar for Nullable<T> {
     type Raw = T::Raw;
@@ -40,6 +45,12 @@ impl<T: PartialEq<u32>> PartialEq<u32> for Nullable<T> {
     #[inline]
     fn eq(&self, other: &u32) -> bool {
         self.0 == *other
+    }
+}
+
+impl<T: NullValue> Default for Nullable<T> {
+    fn default() -> Self {
+        Self(T::NULL)
     }
 }
 
@@ -90,6 +101,10 @@ macro_rules! impl_offset {
             fn eq(&self, other: &u32) -> bool {
                 self.to_u32() == *other
             }
+        }
+
+        impl NullValue for $name {
+            const NULL: $name = $name(<$rawty>::MIN);
         }
     };
 }

@@ -30,57 +30,68 @@ macro_rules! fixed_impl {
             const FRACT_BITS: usize = $fract_bits;
 
             /// Creates a new fixed point value from the underlying bit representation.
+            #[inline(always)]
             pub const fn from_bits(bits: $ty) -> Self {
                 Self(bits)
             }
 
             /// Returns the underlying bit representation of the value.
+            #[inline(always)]
             pub const fn to_bits(self) -> $ty {
                 self.0
             }
 
             //TODO: is this actually useful?
             /// Returns the nearest integer value.
+            #[inline(always)]
             pub const fn round(self) -> Self {
                 Self(self.0.wrapping_add(Self::ROUND) & Self::INT_MASK)
             }
 
             /// Returns the absolute value of the number.
+            #[inline(always)]
             pub const fn abs(self) -> Self {
                 Self(self.0.abs())
             }
 
             /// Returns the largest integer less than or equal to the number.
+            #[inline(always)]
             pub const fn floor(self) -> Self {
                 Self(self.0 & Self::INT_MASK)
             }
 
             /// Returns the fractional part of the number.
+            #[inline(always)]
             pub const fn fract(self) -> Self {
                 Self(self.0 - self.floor().0)
             }
 
             /// Wrapping addition.
+            #[inline(always)]
             pub fn wrapping_add(self, other: Self) -> Self {
                 Self(self.0.wrapping_add(other.0))
             }
 
             /// Saturating addition.
+            #[inline(always)]
             pub const fn saturating_add(self, other: Self) -> Self {
                 Self(self.0.saturating_add(other.0))
             }
 
             /// Wrapping substitution.
+            #[inline(always)]
             pub const fn wrapping_sub(self, other: Self) -> Self {
                 Self(self.0.wrapping_sub(other.0))
             }
 
             /// Saturating substitution.
+            #[inline(always)]
             pub const fn saturating_sub(self, other: Self) -> Self {
                 Self(self.0.saturating_sub(other.0))
             }
 
             /// The representation of this number as a big-endian byte array.
+            #[inline(always)]
             pub const fn to_be_bytes(self) -> [u8; $bits / 8] {
                 self.0.to_be_bytes()
             }
@@ -96,6 +107,7 @@ macro_rules! fixed_impl {
         }
 
         impl AddAssign for $name {
+            #[inline(always)]
             fn add_assign(&mut self, other: Self) {
                 *self = *self + other;
             }
@@ -110,6 +122,7 @@ macro_rules! fixed_impl {
         }
 
         impl SubAssign for $name {
+            #[inline(always)]
             fn sub_assign(&mut self, other: Self) {
                 *self = *self - other;
             }
@@ -122,6 +135,9 @@ macro_rules! fixed_mul_div {
     ($ty:ty) => {
         impl $ty {
             /// Multiplies `self` by `a` and divides the product by `b`.
+            // This one is specifically not always inlined due to size and
+            // frequency of use. We leave it to compiler discretion.
+            #[inline]
             pub const fn mul_div(&self, a: Self, b: Self) -> Self {
                 let mut sign = 1;
                 let mut su = self.0 as u64;
@@ -162,6 +178,7 @@ macro_rules! fixed_mul_div {
         }
 
         impl MulAssign for $ty {
+            #[inline(always)]
             fn mul_assign(&mut self, rhs: Self) {
                 *self = *self * rhs;
             }
@@ -192,6 +209,7 @@ macro_rules! fixed_mul_div {
         }
 
         impl DivAssign for $ty {
+            #[inline(always)]
             fn div_assign(&mut self, rhs: Self) {
                 *self = *self / rhs;
             }
@@ -269,17 +287,20 @@ crate::newtype_scalar!(Fixed, [u8; 4]);
 
 impl Fixed {
     /// Creates a 16.16 fixed point value from a 32 bit integer.
+    #[inline(always)]
     pub const fn from_i32(i: i32) -> Self {
         Self(i << 16)
     }
 
     /// Converts a 16.16 fixed point value to a 32 bit integer, rounding off
     /// the fractional bits.
+    #[inline(always)]
     pub const fn to_i32(self) -> i32 {
         self.0.wrapping_add(0x8000) >> 16
     }
 
     /// Converts a 16.16 to 26.6 fixed point value.
+    #[inline(always)]
     pub const fn to_f26dot6(self) -> F26Dot6 {
         F26Dot6(self.0.wrapping_add(0x200) >> 10)
     }
@@ -291,26 +312,50 @@ impl Fixed {
     ///
     /// "5. Convert the final, normalized 16.16 coordinate value to 2.14 by this method: add 0x00000002,
     /// and sign-extend shift to the right by 2."
+    #[inline(always)]
     pub const fn to_f2dot14(self) -> F2Dot14 {
         F2Dot14((self.0.wrapping_add(2) >> 2) as _)
+    }
+
+    /// Converts a 16.16 fixed point value to a single precision floating
+    /// point value.
+    ///
+    /// This operation is lossy. Use `to_f64()` for a lossless conversion.
+    #[inline(always)]
+    pub fn to_f32(self) -> f32 {
+        const SCALE_FACTOR: f32 = 1.0 / 65536.0;
+        self.0 as f32 * SCALE_FACTOR
     }
 }
 
 impl F26Dot6 {
     /// Creates a 26.6 fixed point value from a 32 bit integer.
+    #[inline(always)]
     pub const fn from_i32(i: i32) -> Self {
         Self(i << 6)
     }
 
     /// Converts a 26.6 fixed point value to a 32 bit integer, rounding off
     /// the fractional bits.
+    #[inline(always)]
     pub const fn to_i32(self) -> i32 {
         self.0.wrapping_add(32) >> 6
+    }
+
+    /// Converts a 26.6 fixed point value to a single precision floating
+    /// point value.
+    ///
+    /// This operation is lossy. Use `to_f64()` for a lossless conversion.
+    #[inline(always)]
+    pub fn to_f32(self) -> f32 {
+        const SCALE_FACTOR: f32 = 1.0 / 64.0;
+        self.0 as f32 * SCALE_FACTOR
     }
 }
 
 impl F2Dot14 {
     /// Converts a 2.14 to 16.16 fixed point value.
+    #[inline(always)]
     pub const fn to_fixed(self) -> Fixed {
         Fixed(self.0 as i32 * 4)
     }

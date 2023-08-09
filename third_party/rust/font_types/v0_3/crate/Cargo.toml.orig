@@ -1,6 +1,6 @@
 [package]
 name = "font-types"
-version = "0.3.0"
+version = "0.3.4"
 edition = "2021"
 license = "MIT/Apache-2.0"
 description = "Scalar types used in fonts."

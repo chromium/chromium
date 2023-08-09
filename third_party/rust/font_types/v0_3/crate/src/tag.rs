@@ -18,7 +18,6 @@ use std::{
 ///
 /// [spec]: https://learn.microsoft.com/en-us/typography/opentype/spec/otff#data-types
 #[derive(Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
-#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct Tag([u8; 4]);
 
 impl Tag {
@@ -233,6 +232,55 @@ impl Default for Tag {
     }
 }
 
+// fancy impls: these will serialize to a string if the target format is
+// human-readable, but to bytes otherwise.
+//
+// NOTE: this means that tags which are not utf-8 will fail to serialize to
+// json/yaml.
+#[cfg(feature = "serde")]
+impl serde::Serialize for Tag {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        if serializer.is_human_readable() {
+            std::str::from_utf8(&self.0)
+                .map_err(serde::ser::Error::custom)?
+                .serialize(serializer)
+        } else {
+            self.0.serialize(serializer)
+        }
+    }
+}
+
+#[cfg(feature = "serde")]
+impl<'de> serde::Deserialize<'de> for Tag {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        struct TagStrVisitor;
+        impl<'de> serde::de::Visitor<'de> for TagStrVisitor {
+            type Value = Tag;
+
+            fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
+                write!(formatter, "a four-byte ascii string")
+            }
+            fn visit_str<E>(self, v: &str) -> Result<Self::Value, E>
+            where
+                E: serde::de::Error,
+            {
+                v.parse().map_err(serde::de::Error::custom)
+            }
+        }
+        if deserializer.is_human_readable() {
+            deserializer.deserialize_str(TagStrVisitor)
+        } else {
+            <[u8; 4]>::deserialize(deserializer).map(|raw| Tag::new(&raw))
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -276,8 +324,50 @@ mod tests {
     }
 
     #[test]
+    #[cfg(feature = "std")]
     fn display() {
         let bad_tag = Tag::new(&[0x19, b'z', b'@', 0x7F]);
         assert_eq!(bad_tag.to_string(), "{0x19}z@{0x7F}");
+    }
+}
+
+#[cfg(all(test, feature = "serde"))]
+mod serde_tests {
+    use super::*;
+
+    #[derive(PartialEq, Eq, Debug, serde::Serialize, serde::Deserialize)]
+    struct TestMe {
+        tag: Tag,
+    }
+
+    #[test]
+    fn serde_json_good() {
+        let ser_me = TestMe {
+            tag: Tag::new(b"yolo"),
+        };
+
+        let json_str = serde_json::to_string(&ser_me).unwrap();
+        assert_eq!(json_str, r#"{"tag":"yolo"}"#);
+
+        let de_me: TestMe = serde_json::from_str(&json_str).unwrap();
+        assert_eq!(de_me, ser_me);
+    }
+
+    #[test]
+    #[should_panic(expected = "invalid utf-8")]
+    fn serde_json_bad() {
+        let ser_me = TestMe {
+            tag: Tag::new(&[3, 244, 0, 221]),
+        };
+
+        serde_json::to_string(&ser_me).unwrap();
+    }
+
+    // ensure that we impl DeserializeOwned
+    #[test]
+    fn deser_json_owned() {
+        let json = r#"{"tag":"yolo"}"#;
+        let de_me: TestMe = serde_json::from_reader(json.as_bytes()).unwrap();
+        assert_eq!(de_me.tag, Tag::new(b"yolo"));
     }
 }

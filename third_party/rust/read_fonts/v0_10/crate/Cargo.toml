@@ -11,23 +11,27 @@
 
 [package]
 edition = "2021"
-name = "font-types"
-version = "0.3.4"
-description = "Scalar types used in fonts."
+name = "read-fonts"
+version = "0.10.0"
+description = "Reading OpenType font files."
 readme = "README.md"
-categories = ["text-processing"]
+categories = [
+    "text-processing",
+    "parsing",
+    "graphics",
+]
 license = "MIT/Apache-2.0"
 repository = "https://github.com/googlefonts/fontations"
 resolver = "1"
 
-[dependencies.serde]
-version = "1.0"
-features = ["derive"]
-optional = true
+[dependencies.font-types]
+version = "0.3.4"
 
-[dev-dependencies.serde_json]
-version = "1.0"
+[dev-dependencies]
 
 [features]
-default = ["std"]
-std = []
+codegen_test = []
+default = ["traversal"]
+scaler_test = []
+std = ["font-types/std"]
+traversal = ["std"]
