@@ -11,12 +11,26 @@
 #include "base/mac/foundation_util.h"
 #include "base/mac/launch_services_spi.h"
 #include "base/mac/mac_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/types/expected.h"
 
 namespace base::mac {
 
 namespace {
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class LaunchResult {
+  kSuccess = 0,
+  kSuccessDespiteError = 1,
+  kFailure = 2,
+  kMaxValue = kFailure,
+};
+
+void LogLaunchResult(LaunchResult result) {
+  UmaHistogramEnumeration("Mac.LaunchApplicationResult", result);
+}
 
 NSArray* CommandLineArgsToArgsArray(const CommandLineArgs& command_line_args) {
   if (const CommandLine* command_line =
@@ -99,6 +113,45 @@ bool ShouldScanRunningAppsForError(NSError* error) {
   return false;
 }
 
+void LogResultAndInvokeCallback(const base::FilePath& app_bundle_path,
+                                bool create_new_instance,
+                                LaunchApplicationCallback callback,
+                                NSRunningApplication* app,
+                                NSError* error) {
+  // Sometimes macOS 11 and 12 report an error launching even though the
+  // launch succeeded anyway. To work around such cases, check if we can
+  // find a running application matching the app we were trying to launch.
+  // Only do this if `options.create_new_instance` is false though, as
+  // otherwise we wouldn't know which instance to return.
+  if (IsAtLeastOS11() && IsAtMostOS12() && !create_new_instance && !app &&
+      ShouldScanRunningAppsForError(error)) {
+    NSArray<NSRunningApplication*>* all_apps =
+        NSWorkspace.sharedWorkspace.runningApplications;
+    for (NSRunningApplication* running_app in all_apps) {
+      if (NSURLToFilePath(running_app.bundleURL) == app_bundle_path) {
+        LOG(ERROR) << "Launch succeeded despite error: "
+                   << base::SysNSStringToUTF8(error.localizedDescription);
+        app = running_app;
+        break;
+      }
+    }
+    if (app) {
+      error = nil;
+    }
+    LogLaunchResult(app ? LaunchResult::kSuccessDespiteError
+                        : LaunchResult::kFailure);
+  } else {
+    LogLaunchResult(app ? LaunchResult::kSuccess : LaunchResult::kFailure);
+  }
+
+  if (error) {
+    LOG(ERROR) << base::SysNSStringToUTF8(error.localizedDescription);
+    std::move(callback).Run(nil, error);
+  } else {
+    std::move(callback).Run(app, nil);
+  }
+}
+
 }  // namespace
 
 void LaunchApplication(const base::FilePath& app_bundle_path,
@@ -106,35 +159,9 @@ void LaunchApplication(const base::FilePath& app_bundle_path,
                        const std::vector<std::string>& url_specs,
                        LaunchApplicationOptions options,
                        LaunchApplicationCallback callback) {
-  __block LaunchApplicationCallback callback_block_access = std::move(callback);
-  if (IsAtLeastOS11() && IsAtMostOS12() && !options.create_new_instance) {
-    // Sometimes macOS 11 and 12 report an error launching even though the
-    // launch succeeded anyway. To work around such cases, check if we can
-    // find a running application matching the app we were trying to launch.
-    // Only do this if `options.create_new_instance` is false though, as
-    // otherwise we wouldn't know which instance to return.
-    callback_block_access = base::BindOnce(
-        [](const base::FilePath& app_bundle_path,
-           LaunchApplicationCallback callback, NSRunningApplication* app,
-           NSError* error) {
-          if (!app && ShouldScanRunningAppsForError(error)) {
-            NSArray<NSRunningApplication*>* all_apps =
-                NSWorkspace.sharedWorkspace.runningApplications;
-            for (NSRunningApplication* running_app in all_apps) {
-              if (NSURLToFilePath(running_app.bundleURL) == app_bundle_path) {
-                LOG(ERROR) << "Launch succeeded despite error";
-                app = running_app;
-                break;
-              }
-            }
-            if (app) {
-              error = nil;
-            }
-          }
-          std::move(callback).Run(app, error);
-        },
-        app_bundle_path, std::move(callback_block_access));
-  }
+  __block LaunchApplicationCallback callback_block_access =
+      base::BindOnce(&LogResultAndInvokeCallback, app_bundle_path,
+                     options.create_new_instance, std::move(callback));
 
   NSURL* bundle_url = FilePathToNSURL(app_bundle_path);
   if (!bundle_url) {
@@ -166,12 +193,7 @@ void LaunchApplication(const base::FilePath& app_bundle_path,
           }
           NSError* error = base::apple::CFToNSPtrCast(cf_error);
           dispatch_async(dispatch_get_main_queue(), ^{
-            if (error) {
-              LOG(ERROR) << base::SysNSStringToUTF8(error.localizedDescription);
-              std::move(callback_block_access).Run(nil, error);
-            } else {
-              std::move(callback_block_access).Run(app, nil);
-            }
+            std::move(callback_block_access).Run(app, error);
           });
         };
 
@@ -186,12 +208,7 @@ void LaunchApplication(const base::FilePath& app_bundle_path,
   void (^action_block)(NSRunningApplication*, NSError*) =
       ^void(NSRunningApplication* app, NSError* error) {
         dispatch_async(dispatch_get_main_queue(), ^{
-          if (error) {
-            LOG(ERROR) << base::SysNSStringToUTF8(error.localizedDescription);
-            std::move(callback_block_access).Run(nil, error);
-          } else {
-            std::move(callback_block_access).Run(app, nil);
-          }
+          std::move(callback_block_access).Run(app, error);
         });
       };
 

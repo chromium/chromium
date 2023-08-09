@@ -7875,6 +7875,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Mac.LaunchApplicationResult" enum="MacLaunchApplicationResult"
+    expires_after="2023-12-31">
+  <owner>mek@chromium.org</owner>
+  <owner>src/base/mac/OWNERS</owner>
+  <summary>
+    The result of calls to base::mac::LaunchApplication, logged once for every
+    invocation of that method.
+  </summary>
+</histogram>
+
 <histogram name="Mac.UniversalLink.APIDuration" units="ms"
     expires_after="2022-07-01">
   <obsolete>

@@ -69063,6 +69063,14 @@ from previous Chrome versions.
   </int>
 </enum>
 
+<enum name="MacLaunchApplicationResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Success despite error">
+    The OS returned an error, but the launch appears to have succeeded anyway.
+  </int>
+  <int value="2" label="Failure"/>
+</enum>
+
 <enum name="MacThermalState">
   <int value="0" label="0-Nominal"/>
   <int value="1" label="1-Fair"/>
