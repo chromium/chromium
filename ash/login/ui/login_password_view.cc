@@ -129,6 +129,7 @@ constexpr const int kPasswordRowHorizontalSpacingDp = 6;
 constexpr const int kPasswordTextfieldMarginDp = 2;
 
 constexpr const int kPasswordRowCornerRadiusDp = 4;
+constexpr const int kJellyPasswordRowCornerRadiusDp = 8;
 
 // Delay after which the password gets cleared if nothing has been typed. It is
 // only running if the display password button is shown, as there is no
@@ -145,31 +146,26 @@ constexpr base::TimeDelta kHidePasswordAfterDelay = base::Seconds(5);
 class LoginPasswordView::LoginPasswordRow : public views::View {
  public:
   explicit LoginPasswordRow() {
+    const bool is_jelly = chromeos::features::IsJellyEnabled();
+    const int corner_radius =
+        is_jelly ? kJellyPasswordRowCornerRadiusDp : kPasswordRowCornerRadiusDp;
+    const ui::ColorId background_color =
+        is_jelly
+            ? static_cast<ui::ColorId>(cros_tokens::kCrosSysSystemBaseElevated)
+            : kColorAshControlBackgroundColorInactive;
+
+    SetBackground(views::CreateThemedRoundedRectBackground(background_color,
+                                                           corner_radius));
+
     if (chromeos::features::IsJellyrollEnabled()) {
       SetBackground(views::CreateThemedRoundedRectBackground(
           cros_tokens::kCrosSysSystemBaseElevated, 8));
-      SetBorder(std::make_unique<views::HighlightBorder>(
-          8, views::HighlightBorder::Type::kHighlightBorderNoShadow));
     }
   }
 
   ~LoginPasswordRow() override = default;
   LoginPasswordRow(const LoginPasswordRow&) = delete;
   LoginPasswordRow& operator=(const LoginPasswordRow&) = delete;
-
-  // views::View:
-  void OnPaint(gfx::Canvas* canvas) override {
-    views::View::OnPaint(canvas);
-    if (!chromeos::features::IsJellyrollEnabled()) {
-      cc::PaintFlags flags;
-      flags.setStyle(cc::PaintFlags::kFill_Style);
-      flags.setColor(AshColorProvider::Get()->GetControlsLayerColor(
-          AshColorProvider::ControlsLayerType::
-              kControlBackgroundColorInactive));
-      canvas->DrawRoundRect(GetContentsBounds(), kPasswordRowCornerRadiusDp,
-                            flags);
-    }
-  }
 };
 
 // A textfield that selects all text on focus and allows to switch between
