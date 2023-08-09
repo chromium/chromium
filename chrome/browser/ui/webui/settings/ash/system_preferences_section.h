@@ -7,6 +7,7 @@
 
 #include "base/values.h"
 #include "chrome/browser/ui/webui/settings/ash/os_settings_section.h"
+#include "chrome/browser/ui/webui/settings/ash/reset_section.h"
 
 namespace content {
 class WebUIDataSource;
@@ -17,6 +18,7 @@ namespace ash::settings {
 class SearchTagRegistry;
 
 // Provides UI strings and search tags for System Preferences settings.
+// Includes the Reset section.
 class SystemPreferencesSection : public OsSettingsSection {
  public:
   SystemPreferencesSection(Profile* profile,
@@ -33,6 +35,9 @@ class SystemPreferencesSection : public OsSettingsSection {
   bool LogMetric(chromeos::settings::mojom::Setting setting,
                  base::Value& value) const override;
   void RegisterHierarchy(HierarchyGenerator* generator) const override;
+
+ private:
+  ResetSection reset_subsection_;
 };
 
 }  // namespace ash::settings

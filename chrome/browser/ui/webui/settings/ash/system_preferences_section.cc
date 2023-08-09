@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/settings/ash/system_preferences_section.h"
 
+#include "chrome/browser/ui/webui/settings/ash/reset_section.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/webui/web_ui_util.h"
@@ -20,12 +21,15 @@ using ::chromeos::settings::mojom::Subpage;
 SystemPreferencesSection::SystemPreferencesSection(
     Profile* profile,
     SearchTagRegistry* search_tag_registry)
-    : OsSettingsSection(profile, search_tag_registry) {}
+    : OsSettingsSection(profile, search_tag_registry),
+      reset_subsection_(ResetSection(profile, search_tag_registry)) {}
 
-SystemPreferencesSection::~SystemPreferencesSection() {}
+SystemPreferencesSection::~SystemPreferencesSection() = default;
 
 void SystemPreferencesSection::AddLoadTimeData(
     content::WebUIDataSource* html_source) {
+  reset_subsection_.AddLoadTimeData(html_source);
+
   webui::LocalizedString kLocalizedStrings[] = {
       {"systemPreferencesTitle", IDS_OS_SETTINGS_SYSTEM_PREFERENCES_TITLE},
   };
@@ -33,8 +37,7 @@ void SystemPreferencesSection::AddLoadTimeData(
 }
 
 void SystemPreferencesSection::AddHandlers(content::WebUI* web_ui) {
-  // TODO(b/292678609) Register handlers.
-  NOTIMPLEMENTED();
+  reset_subsection_.AddHandlers(web_ui);
 }
 
 int SystemPreferencesSection::GetSectionNameMessageId() const {
@@ -60,9 +63,7 @@ bool SystemPreferencesSection::LogMetric(mojom::Setting setting,
 
 void SystemPreferencesSection::RegisterHierarchy(
     HierarchyGenerator* generator) const {
-  // TODO(b/292678609) Register subpages and list of settings contained in
-  // this Section.
-  NOTIMPLEMENTED();
+  reset_subsection_.RegisterHierarchy(generator);
 }
 
 }  // namespace ash::settings

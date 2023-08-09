@@ -111,9 +111,6 @@ OsSettingsSections::OsSettingsSections(
              std::make_unique<AccessibilitySection>(
                  profile, search_tag_registry, prefs));
 
-  AddSection(mojom::Section::kReset,
-             std::make_unique<ResetSection>(profile, search_tag_registry));
-
   AddSection(mojom::Section::kAboutChromeOs,
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
              std::make_unique<AboutSection>(profile, search_tag_registry, prefs)
@@ -130,6 +127,9 @@ OsSettingsSections::OsSettingsSections(
     AddSection(mojom::Section::kSystemPreferences,
                std::make_unique<SystemPreferencesSection>(profile,
                                                           search_tag_registry));
+  } else {
+    AddSection(mojom::Section::kReset,
+               std::make_unique<ResetSection>(profile, search_tag_registry));
   }
 }
 

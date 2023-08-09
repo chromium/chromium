@@ -14,6 +14,7 @@ class WebUIDataSource;
 
 namespace ash::settings {
 
+struct SearchConcept;
 class SearchTagRegistry;
 
 // Provides UI strings and search tags for Reset settings. Note that search tags
@@ -34,6 +35,10 @@ class ResetSection : public OsSettingsSection {
   bool LogMetric(chromeos::settings::mojom::Setting setting,
                  base::Value& value) const override;
   void RegisterHierarchy(HierarchyGenerator* generator) const override;
+
+ private:
+  const bool isRevampWayfindingEnabled_;
+  const std::vector<SearchConcept>& GetSearchConcepts();
 };
 
 }  // namespace ash::settings
