@@ -6,11 +6,10 @@ import 'chrome://os-settings/os_settings.js';
 import 'chrome://os-settings/lazy_load.js';
 
 import {SettingsHotspotSubpageElement} from 'chrome://os-settings/lazy_load.js';
-import {Router, routes, settingMojom, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import {CrButtonElement, Router, routes, settingMojom, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
 import {setHotspotConfigForTesting} from 'chrome://resources/ash/common/hotspot/cros_hotspot_config.js';
 import {CrosHotspotConfigObserverInterface, CrosHotspotConfigObserverRemote, HotspotAllowStatus, HotspotConfig, HotspotControlResult, HotspotInfo, HotspotState, SetHotspotConfigResult} from 'chrome://resources/ash/common/hotspot/cros_hotspot_config.mojom-webui.js';
 import {FakeHotspotConfig} from 'chrome://resources/ash/common/hotspot/fake_hotspot_config.js';
-import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util_ts.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';

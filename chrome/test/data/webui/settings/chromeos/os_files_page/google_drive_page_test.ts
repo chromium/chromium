@@ -4,8 +4,7 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {ConfirmationDialogType, CrSettingsPrefs, GoogleDriveBrowserProxy, GoogleDrivePageCallbackRouter, GoogleDrivePageHandlerRemote, GoogleDrivePageRemote, SettingsGoogleDriveSubpageElement, SettingsPrefsElement, SettingsToggleButtonElement, Stage} from 'chrome://os-settings/os_settings.js';
-import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import {ConfirmationDialogType, CrButtonElement, CrSettingsPrefs, GoogleDriveBrowserProxy, GoogleDrivePageCallbackRouter, GoogleDrivePageHandlerRemote, GoogleDrivePageRemote, SettingsGoogleDriveSubpageElement, SettingsPrefsElement, SettingsToggleButtonElement, Stage} from 'chrome://os-settings/os_settings.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';

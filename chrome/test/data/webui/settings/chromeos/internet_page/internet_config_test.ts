@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {InternetConfigElement, setUserActionRecorderForTesting} from 'chrome://os-settings/os_settings.js';
+import {CrButtonElement, InternetConfigElement, setUserActionRecorderForTesting} from 'chrome://os-settings/os_settings.js';
 import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
-import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';

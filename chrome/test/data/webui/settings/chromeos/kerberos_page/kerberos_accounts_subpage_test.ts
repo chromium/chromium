@@ -5,8 +5,7 @@
 import 'chrome://os-settings/lazy_load.js';
 
 import {KerberosAccountsBrowserProxyImpl, SettingsKerberosAccountsSubpageElement} from 'chrome://os-settings/lazy_load.js';
-import {createRouterForTesting, Router, routes} from 'chrome://os-settings/os_settings.js';
-import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import {CrButtonElement, createRouterForTesting, Router, routes} from 'chrome://os-settings/os_settings.js';
 import {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
