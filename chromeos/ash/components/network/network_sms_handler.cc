@@ -11,6 +11,7 @@
 #include <memory>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "base/containers/circular_deque.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -31,6 +32,15 @@ namespace {
 // Maximum number of messages stored for RequestUpdate(true).
 const size_t kMaxReceivedMessages = 100;
 
+absl::optional<const std::string> GetStringOptional(
+    const base::Value::Dict& dict,
+    const std::string& key) {
+  if (!dict.FindString(key)) {
+    return absl::nullopt;
+  }
+  return *dict.FindString(key);
+}
+
 }  // namespace
 
 namespace ash {
@@ -41,6 +51,13 @@ const char NetworkSmsHandler::kTextKey[] = "text";
 const char NetworkSmsHandler::kTimestampKey[] = "timestamp";
 const base::TimeDelta NetworkSmsHandler::kFetchSmsDetailsTimeout =
     base::Seconds(60);
+
+TextMessageData::TextMessageData(absl::optional<const std::string> number,
+                                 absl::optional<const std::string> text,
+                                 absl::optional<const std::string> timestamp)
+    : number(number), text(text), timestamp(timestamp) {}
+
+TextMessageData::~TextMessageData() = default;
 
 class NetworkSmsHandler::NetworkSmsDeviceHandler {
  public:
@@ -330,8 +347,20 @@ void NetworkSmsHandler::AddReceivedMessage(const base::Value::Dict& message) {
 
 void NetworkSmsHandler::NotifyMessageReceived(
     const base::Value::Dict& message) {
-  for (auto& observer : observers_)
-    observer.MessageReceived(message);
+  if (!ash::features::IsSuppressTextMessagesEnabled()) {
+    for (auto& observer : observers_) {
+      observer.MessageReceived(message);
+    }
+    return;
+  }
+
+  TextMessageData message_data{GetStringOptional(message, kNumberKey),
+                               GetStringOptional(message, kTextKey),
+                               GetStringOptional(message, kTimestampKey)};
+  for (auto& observer : observers_) {
+    // TODO(b/291875994) Pass the correct GUID.
+    observer.MessageReceivedFromNetwork("", message_data);
+  }
 }
 
 void NetworkSmsHandler::MessageReceived(const base::Value::Dict& message) {

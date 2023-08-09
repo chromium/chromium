@@ -19,6 +19,21 @@
 
 namespace ash {
 
+// Struct used for passing around text message data like number, text and
+// timestamp.
+struct COMPONENT_EXPORT(CHROMEOS_NETWORK) TextMessageData {
+  TextMessageData(absl::optional<const std::string> number,
+                  absl::optional<const std::string> text,
+                  absl::optional<const std::string> timestamp);
+  TextMessageData(TextMessageData&& other) = delete;
+  TextMessageData& operator=(TextMessageData&& other) = delete;
+  ~TextMessageData();
+
+  absl::optional<const std::string> number;
+  absl::optional<const std::string> text;
+  absl::optional<const std::string> timestamp;
+};
+
 // Class to watch sms without Libcros.
 class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkSmsHandler
     : public ShillPropertyChangedObserver {
@@ -34,7 +49,11 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkSmsHandler
     // Called when a new message arrives. |message| contains the message which
     // is a dictionary value containing entries for kNumberKey, kTextKey, and
     // kTimestampKey.
-    virtual void MessageReceived(const base::Value::Dict& message) = 0;
+    virtual void MessageReceived(const base::Value::Dict& message) {}
+
+    // Called when a new message arrives from a network with |guid|.
+    virtual void MessageReceivedFromNetwork(const std::string& guid,
+                                            const TextMessageData& message) {}
   };
 
   NetworkSmsHandler(const NetworkSmsHandler&) = delete;
