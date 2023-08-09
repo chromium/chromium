@@ -37,9 +37,10 @@
             </cr-button>
           </template>
           <template is="dom-if" if="[[!isSubmenuButton_(option.uiType)]]">
-            <div class="start" id="option-label" aria-hidden="true">
+            <div class="start" id="option-label" role="heading"
+                 aria-hidden="[[shouldShowTitle(section)]]">
               [[option.label]]
-              <template is="dom-if" if="[[option.subtitle)]]">
+              <template is="dom-if" if="[[option.subtitle]]" aria-hidden="true">
                 <span class="secondary label subtitle">
                   [[option.subtitle]]
                 </span>
