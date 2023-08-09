@@ -25,16 +25,16 @@ namespace web_app {
 
 // Installations of Web Apps have different sources of management. Apps can be
 // installed by different management systems - for example an app can be both
-// installed by the user and by policy. Keeping track of the which installation
+// installed by the user and by policy. Keeping track of which installation
 // managers have installed a web app allows for them to be installed by multiple
-// at the same time, and uninstalls from one manager doesn't affect another -
-// the app will stay installed as long as at least one management source has it
-// installed.
+// managers at the same time, and uninstalls from one manager doesn't affect
+// another - the app will stay installed as long as at least one management
+// source has it installed.
 //
 // This enum is also used to rank installation sources, so the ordering matters.
 // This enum should be zero based: values are used as index in a bitset.
 // We don't use this enum values in prefs or metrics: enumerators can be
-// reordered. This enum is not strongly typed enum class: it supports implicit
+// reordered. This enum is not a strongly typed enum class: it supports implicit
 // conversion to int and <> comparison operators.
 namespace WebAppManagement {
 enum Type {
