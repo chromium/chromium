@@ -19,6 +19,7 @@
 #include "chromeos/ash/services/chromebox_for_meetings/public/cpp/fake_service_context.h"
 #include "chromeos/ash/services/chromebox_for_meetings/public/cpp/service_connection.h"
 #include "chromeos/ash/services/chromebox_for_meetings/public/mojom/xu_camera.mojom.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -152,7 +153,7 @@ class CfMXuCameraServiceTest : public ::testing::Test {
       context_receiver_set_;
   mojo::Remote<chromeos::cfm::mojom::CfmServiceAdaptor> adaptor_remote_;
   FakeServiceConnectionImpl fake_service_connection_;
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  content::BrowserTaskEnvironment task_environment_;
   TestDelegate delegate_;
 };
 
