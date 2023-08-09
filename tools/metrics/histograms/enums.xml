@@ -96105,6 +96105,8 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="17" label="Disallowed for recording"/>
   <int value="18" label="Observation disallowed for recording"/>
   <int value="19" label="Training data missing"/>
+  <int value="20" label="Decision type mismatch failure"/>
+  <int value="21" label="Delay trigger sampled"/>
 </enum>
 
 <enum name="SegmentationPlatformValidationResult">

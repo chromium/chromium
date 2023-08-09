@@ -191,6 +191,8 @@ class TrainingDataCollectorImplTest : public ::testing::Test {
         &histogram_signal_handler_, &user_action_signal_handler_,
         storage_service_.get(), &prefs_, &clock_,
         cached_result_provider_.get());
+
+    collector_->SetSamplingRateForTesting(1);
   }
 
  protected:

@@ -8,9 +8,11 @@
 #include "base/containers/contains.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
+#include "base/rand_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
@@ -25,7 +27,6 @@
 #include "components/segmentation_platform/internal/platform_options.h"
 #include "components/segmentation_platform/internal/segmentation_ukm_helper.h"
 #include "components/segmentation_platform/internal/selection/segmentation_result_prefs.h"
-#include "components/segmentation_platform/internal/stats.h"
 #include "components/segmentation_platform/public/config.h"
 #include "components/segmentation_platform/public/local_state_helper.h"
 #include "components/segmentation_platform/public/proto/model_metadata.pb.h"
@@ -84,6 +85,10 @@ bool IsPeriodic(const proto::SegmentInfo& info) {
   return type == proto::TrainingOutputs::TriggerConfig::PERIODIC;
 }
 
+constexpr base::FeatureParam<int> TimeDelaySamplingRate{
+    &features::kSegmentationPlatformTimeDelaySampling,
+    /*name=*/"SamplingRate", /*default_value=*/20};
+
 }  // namespace
 
 struct TrainingDataCollectorImpl::TrainingTimings {
@@ -112,7 +117,8 @@ TrainingDataCollectorImpl::TrainingDataCollectorImpl(
       cached_result_provider_(cached_result_provider),
       training_cache_(std::make_unique<TrainingDataCache>(
           storage_service->segment_info_database())),
-      default_model_manager_(storage_service->default_model_manager()) {}
+      default_model_manager_(storage_service->default_model_manager()),
+      time_trigger_sampling_rate_(TimeDelaySamplingRate.Get()) {}
 
 TrainingDataCollectorImpl::~TrainingDataCollectorImpl() {
   histogram_signal_handler_->RemoveObserver(this);
@@ -275,6 +281,11 @@ void TrainingDataCollectorImpl::OnUserAction(const std::string& user_action,
               weak_ptr_factory_.GetWeakPtr(), absl::nullopt));
     }
   }
+}
+
+void TrainingDataCollectorImpl::SetSamplingRateForTesting(
+    uint64_t sampling_rate) {
+  time_trigger_sampling_rate_ = sampling_rate;
 }
 
 void TrainingDataCollectorImpl::OnUmaUpdatedReportForSegmentInfo(
@@ -604,26 +615,28 @@ void TrainingDataCollectorImpl::OnGetTrainingTensorsAtDecisionTime(
   // TODO(haileywang): This is slightly inaccurate since the the delay timer is
   // only started after the input training tensors are cached.
   if (training_request.observation_delayed_task) {
-    if (training_request.observation_delayed_task.value().is_zero()) {
-      RecordTrainingDataCollectionEvent(
-          segment_info.segment_id(),
-          stats::TrainingDataCollectionEvent::kImmediateObservationPosted);
-    } else {
-      RecordTrainingDataCollectionEvent(
-          segment_info.segment_id(),
-          stats::TrainingDataCollectionEvent::kDelayedTaskPosted);
-    }
-
     VLOG(1) << "Observation timeout set for "
             << proto::SegmentId_Name(segment_info.segment_id()) << " "
             << *training_request.observation_delayed_task;
 
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(&TrainingDataCollectorImpl::OnObservationTrigger,
-                       weak_ptr_factory_.GetWeakPtr(), absl::nullopt,
-                       request_id, segment_info, base::DoNothing()),
-        *training_request.observation_delayed_task);
+    if (training_request.observation_delayed_task.value().is_zero()) {
+      PostObservationTask(
+          request_id, segment_info, *training_request.observation_delayed_task,
+          stats::TrainingDataCollectionEvent::kImmediateObservationPosted);
+    } else {
+      // Sample time triggered data for ondemand models.
+      if (IsPeriodic(segment_info) ||
+          base::RandGenerator(time_trigger_sampling_rate_) == 0) {
+        PostObservationTask(
+            request_id, segment_info,
+            *training_request.observation_delayed_task,
+            stats::TrainingDataCollectionEvent::kDelayedTaskPosted);
+      } else {
+        RecordTrainingDataCollectionEvent(
+            segment_info.segment_id(),
+            stats::TrainingDataCollectionEvent::kDelayTriggerSampled);
+      }
+    }
   } else {
     VLOG(1) << "Observation without timeout "
             << proto::SegmentId_Name(segment_info.segment_id());
@@ -631,6 +644,20 @@ void TrainingDataCollectorImpl::OnGetTrainingTensorsAtDecisionTime(
         segment_info.segment_id(),
         stats::TrainingDataCollectionEvent::kWaitingForNonDelayedTrigger);
   }
+}
+
+void TrainingDataCollectorImpl::PostObservationTask(
+    TrainingRequestId request_id,
+    const proto::SegmentInfo& segment_info,
+    const base::TimeDelta& delay,
+    stats::TrainingDataCollectionEvent event) {
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&TrainingDataCollectorImpl::OnObservationTrigger,
+                     weak_ptr_factory_.GetWeakPtr(), absl::nullopt, request_id,
+                     segment_info, base::DoNothing()),
+      delay);
+  RecordTrainingDataCollectionEvent(segment_info.segment_id(), event);
 }
 
 void TrainingDataCollectorImpl::OnObservationTrigger(
