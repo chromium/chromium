@@ -689,10 +689,6 @@ class NET_EXPORT SpdySession
   // possible.
   void ProcessPendingStreamRequests();
 
-  void TryCreatePushStream(spdy::SpdyStreamId stream_id,
-                           spdy::SpdyStreamId associated_stream_id,
-                           spdy::Http2HeaderBlock headers);
-
   // Close the stream pointed to by the given iterator. Note that that
   // stream may hold the last reference to the session.
   void CloseActiveStreamIterator(ActiveStreamMap::iterator it, int status);
