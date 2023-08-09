@@ -428,10 +428,6 @@ NET_EXPORT BASE_DECLARE_FEATURE(kEnableWebTransportDraft07);
 // Enables Zstandard Content-Encoding support.
 NET_EXPORT BASE_DECLARE_FEATURE(kZstdContentEncoding);
 
-// When enabled, the Clear-Site-Data HTTP Response header supports clearing all
-// targets as "*" rather than requiring all targets be listed out.
-NET_EXPORT BASE_DECLARE_FEATURE(kClearSiteDataWildcardSupport);
-
 // Enables SHA-256 and username hashing support for HTTP Digest auth.
 NET_EXPORT BASE_DECLARE_FEATURE(kDigestAuthEnableSecureAlgorithms);
 

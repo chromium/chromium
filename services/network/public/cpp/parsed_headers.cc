@@ -58,27 +58,22 @@ mojom::ParsedHeadersPtr PopulateParsedHeaders(
   // If the Clear-Site-Data header would clear client hints, we must not respect
   // any Accept-CH or Critical-CH headers.
   parsed_headers->client_hints_ignored_due_to_clear_site_data_header = false;
-  if (base::FeatureList::IsEnabled(
-          features::kClearSiteDataClientHintsSupport)) {
-    std::string clear_site_data_header;
-    headers->GetNormalizedHeader(net::kClearSiteDataHeader,
-                                 &clear_site_data_header);
-    std::vector<std::string> clear_site_data_types =
-        net::ClearSiteDataHeaderContents(clear_site_data_header);
-    std::set<std::string> clear_site_data_set(clear_site_data_types.begin(),
-                                              clear_site_data_types.end());
-    if (clear_site_data_set.find(net::kDatatypeCache) !=
-            clear_site_data_set.end() ||
-        clear_site_data_set.find(net::kDatatypeClientHints) !=
-            clear_site_data_set.end() ||
-        clear_site_data_set.find(net::kDatatypeCookies) !=
-            clear_site_data_set.end() ||
-        (base::FeatureList::IsEnabled(
-             net::features::kClearSiteDataWildcardSupport) &&
-         clear_site_data_set.find(net::kDatatypeWildcard) !=
-             clear_site_data_set.end())) {
-      parsed_headers->client_hints_ignored_due_to_clear_site_data_header = true;
-    }
+  std::string clear_site_data_header;
+  headers->GetNormalizedHeader(net::kClearSiteDataHeader,
+                               &clear_site_data_header);
+  std::vector<std::string> clear_site_data_types =
+      net::ClearSiteDataHeaderContents(clear_site_data_header);
+  std::set<std::string> clear_site_data_set(clear_site_data_types.begin(),
+                                            clear_site_data_types.end());
+  if (clear_site_data_set.find(net::kDatatypeCache) !=
+          clear_site_data_set.end() ||
+      clear_site_data_set.find(net::kDatatypeClientHints) !=
+          clear_site_data_set.end() ||
+      clear_site_data_set.find(net::kDatatypeCookies) !=
+          clear_site_data_set.end() ||
+      clear_site_data_set.find(net::kDatatypeWildcard) !=
+          clear_site_data_set.end()) {
+    parsed_headers->client_hints_ignored_due_to_clear_site_data_header = true;
   }
   if (!parsed_headers->client_hints_ignored_due_to_clear_site_data_header) {
     std::string accept_ch;

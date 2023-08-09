@@ -12,10 +12,8 @@
 #include "content/browser/buckets/bucket_utils.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
-#include "net/base/features.h"
 #include "net/base/load_flags.h"
 #include "net/url_request/clear_site_data.h"
-#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/blink/public/common/features_generated.h"
 
@@ -59,9 +57,7 @@ int ParametersMask(const ClearSiteDataTypeSet clear_site_data_types,
   if (has_buckets) {
     mask = mask | CLEAR_SITE_DATA_BUCKETS;
   }
-  if (clear_site_data_types.Has(ClearSiteDataType::kClientHints) &&
-      base::FeatureList::IsEnabled(
-          network::features::kClearSiteDataClientHintsSupport)) {
+  if (clear_site_data_types.Has(ClearSiteDataType::kClientHints)) {
     mask = mask | CLEAR_SITE_DATA_CLIENT_HINTS;
   }
   return mask;
@@ -265,17 +261,12 @@ bool ClearSiteDataHandler::ParseHeader(
       net::ClearSiteDataHeaderContents(header);
   std::string output_types;
 
-  if (base::FeatureList::IsEnabled(
-          net::features::kClearSiteDataWildcardSupport) &&
-      std::find(input_types.begin(), input_types.end(),
+  if (std::find(input_types.begin(), input_types.end(),
                 net::kDatatypeWildcard) != input_types.end()) {
     input_types.push_back(net::kDatatypeCookies);
     input_types.push_back(net::kDatatypeStorage);
     input_types.push_back(net::kDatatypeCache);
-    if (base::FeatureList::IsEnabled(
-            network::features::kClearSiteDataClientHintsSupport)) {
-      input_types.push_back(net::kDatatypeClientHints);
-    }
+    input_types.push_back(net::kDatatypeClientHints);
   }
 
   for (auto& input_type : input_types) {
@@ -305,13 +296,9 @@ bool ClearSiteDataHandler::ParseHeader(
       data_type = ClearSiteDataType::kStorage;
     } else if (input_type == net::kDatatypeCache) {
       data_type = ClearSiteDataType::kCache;
-    } else if (base::FeatureList::IsEnabled(
-                   network::features::kClearSiteDataClientHintsSupport) &&
-               input_type == net::kDatatypeClientHints) {
+    } else if (input_type == net::kDatatypeClientHints) {
       data_type = ClearSiteDataType::kClientHints;
-    } else if (base::FeatureList::IsEnabled(
-                   net::features::kClearSiteDataWildcardSupport) &&
-               input_type == net::kDatatypeWildcard) {
+    } else if (input_type == net::kDatatypeWildcard) {
       continue;
     } else {
       delegate->AddMessage(

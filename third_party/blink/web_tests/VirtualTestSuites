@@ -2231,37 +2231,6 @@
     "expires": "never"
   },
   {
-    "prefix": "clear-site-data-client-hints-support",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": [
-      "external/wpt/client-hints/clear-site-data"
-    ],
-    "args": ["--disable-features=ClearSiteDataClientHintsSupport"],
-    "expires": "Oct 31, 2023",
-    "owners": ["arichiv@chromium.org"]
-  },
-  {
-    "prefix": "clear-site-data-wildcard-support",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": [
-      "external/wpt/clear-site-data"
-    ],
-    "args": ["--disable-features=ClearSiteDataWildcardSupport"],
-    "expires": "Oct 31, 2023",
-    "owners": ["arichiv@chromium.org"]
-  },
-  {
-    "prefix": "clear-site-data-client-hints-and-wildcard-support",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": [
-      "external/wpt/clear-site-data",
-      "external/wpt/client-hints/clear-site-data"
-    ],
-    "args": ["--disable-features=ClearSiteDataClientHintsSupport,ClearSiteDataWildcardSupport"],
-    "expires": "Oct 31, 2023",
-    "owners": ["arichiv@chromium.org"]
-  },
-  {
     "prefix": "static-routing-api",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [
