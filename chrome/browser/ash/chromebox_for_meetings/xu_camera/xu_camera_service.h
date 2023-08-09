@@ -7,9 +7,11 @@
 
 #include <linux/usb/video.h>
 #include <linux/uvcvideo.h>
+#include <linux/videodev2.h>
 
 #include <cstdint>
 #include <string>
+#include <vector>
 
 #include "chrome/browser/ash/chromebox_for_meetings/service_adaptor.h"
 #include "chromeos/ash/components/dbus/chromebox_for_meetings/cfm_observer.h"
@@ -30,7 +32,7 @@ class XuCameraService : public CfmObserver,
     virtual ~Delegate() = default;
 
     // System call for device input/output operations.
-    virtual int Ioctl(int fd, int request, uvc_xu_control_query* query) = 0;
+    virtual int Ioctl(int fd, unsigned int request, void* query) = 0;
 
     // Open file given the file path and return the file descriptor.
     virtual int OpenFile(std::string path) = 0;
