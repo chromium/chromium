@@ -344,8 +344,7 @@ std::unique_ptr<SegmentResultProvider>
 SegmentationPlatformServiceImpl::CreateSegmentResultProvider() {
   return SegmentResultProvider::Create(
       storage_service_->segment_info_database(),
-      storage_service_->signal_storage_config(),
-      storage_service_->default_model_manager(), &execution_service_, clock_,
+      storage_service_->signal_storage_config(), &execution_service_, clock_,
       platform_options_.force_refresh_results);
 }
 

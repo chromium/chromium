@@ -137,8 +137,8 @@ void SegmentSelectorImpl::OnPlatformInitialized(
     training_data_collector_ = execution_service->training_data_collector();
   }
   segment_result_provider_ = SegmentResultProvider::Create(
-      segment_database_, signal_storage_config_, default_model_manager_,
-      execution_service, clock_, platform_options_.force_refresh_results);
+      segment_database_, signal_storage_config_, execution_service, clock_,
+      platform_options_.force_refresh_results);
   if (IsPreviousSelectionInvalid()) {
     SelectSegmentAndStoreToPrefs();
   }

@@ -34,10 +34,12 @@ namespace {
 constexpr char kTestSegmentationKey[] = "test_key";
 
 // Adds a segment info into a map, and return a copy of it.
-proto::SegmentInfo* AddSegmentInfo(test::TestSegmentInfoDatabase* segment_db,
-                                   Config* config,
-                                   SegmentId segment_id) {
-  auto* info = segment_db->FindOrCreateSegment(segment_id);
+proto::SegmentInfo* AddSegmentInfo(
+    test::TestSegmentInfoDatabase* segment_db,
+    Config* config,
+    SegmentId segment_id,
+    ModelSource model_source = ModelSource::SERVER_MODEL_SOURCE) {
+  auto* info = segment_db->FindOrCreateSegment(segment_id, model_source);
   info->mutable_model_metadata()->set_time_unit(proto::TimeUnit::DAY);
   config->segments.insert(
       {segment_id, std::make_unique<Config::SegmentMetadata>("UmaName")});
@@ -76,6 +78,12 @@ class MockModelManager : public ModelManager {
       void,
       SetSegmentationModelUpdatedCallbackForTesting,
       (ModelManager::SegmentationModelUpdatedCallback model_updated_callback));
+};
+
+class MockModelExecutor : public ModelExecutor {
+ public:
+  MockModelExecutor() = default;
+  MOCK_METHOD(void, ExecuteModel, (std::unique_ptr<ExecutionRequest>));
 };
 
 }  // namespace
@@ -263,23 +271,30 @@ TEST_F(ServiceProxyImplTest, ExecuteModel) {
       SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB,
       ModelSource::SERVER_MODEL_SOURCE, *info, base::DoNothing());
 
-  auto scheduler_moved = std::make_unique<MockModelExecutionScheduler>();
-  MockModelExecutionScheduler* scheduler = scheduler_moved.get();
+  auto executor_moved = std::make_unique<MockModelExecutor>();
+  MockModelExecutor* mock_executor = executor_moved.get();
+
   mock_model_manager_ = std::make_unique<MockModelManager>();
-  execution_.InitForTesting(nullptr, nullptr, std::move(scheduler_moved),
+  execution_.InitForTesting(nullptr, std::move(executor_moved), nullptr,
                             mock_model_manager_.get());
 
-  // Scheduler is not set, ExecuteModel() will do nothing.
-  EXPECT_CALL(*scheduler, RequestModelExecution(_)).Times(0);
+  // ExecutionService is not set, ExecuteModel() will do nothing.
+  EXPECT_CALL(*mock_executor, ExecuteModel(_)).Times(0);
   service_proxy_impl_->ExecuteModel(
       SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB);
+
+  SegmentId segment_id = SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB;
+  data_.segments_supporting_default_model = {segment_id};
+  EXPECT_CALL(*mock_model_manager_, GetModelProvider(segment_id, _))
+      .WillOnce(testing::Return(nullptr))
+      .WillOnce(testing::Return(nullptr));
 
   service_proxy_impl_->SetExecutionService(&execution_);
-  EXPECT_CALL(*scheduler, RequestModelExecution(_)).Times(0);
+  EXPECT_CALL(*mock_executor, ExecuteModel(_)).Times(1);
   service_proxy_impl_->ExecuteModel(
       SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB);
 
-  EXPECT_CALL(*scheduler, RequestModelExecution(_)).Times(0);
+  EXPECT_CALL(*mock_executor, ExecuteModel(_)).Times(0);
   service_proxy_impl_->ExecuteModel(SegmentId::OPTIMIZATION_TARGET_UNKNOWN);
 }
 

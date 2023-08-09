@@ -211,4 +211,10 @@ TEST_F(SegmentInfoCacheTest, UpdateSegmentInfo) {
   EXPECT_EQ(4, segment_info_.value().model_version());
 }
 
+TEST_F(SegmentInfoCacheTest, GetSegmentInfoForBothModelsWithEmptyDatabase) {
+  auto segments_found = segment_info_cache_->GetSegmentInfoForBothModels(
+      {kSegmentId, kSegmentId2});
+  EXPECT_TRUE(segments_found.get()->empty());
+}
+
 }  // namespace segmentation_platform
