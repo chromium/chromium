@@ -10455,7 +10455,7 @@
             ]
         }
     ],
-    "OutOfProcessPrintDriversPrintPreview": [
+    "OutOfProcessPrintDriversPrint": [
         {
             "platforms": [
                 "windows"
