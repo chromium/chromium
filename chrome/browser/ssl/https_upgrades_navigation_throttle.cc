@@ -45,9 +45,11 @@ bool IsInterstitialEnabledByTypicallySecureUserHeuristic(Profile* profile) {
   }
   HttpsFirstModeService* hfm_service =
       HttpsFirstModeServiceFactory::GetForProfile(profile);
-  hfm_service->MaybeEnableHttpsFirstModeForUser(
-      /*add_fallback_entry=*/false);
-
+  // HttpsFirstModeService can be null in tests.
+  if (hfm_service) {
+    hfm_service->MaybeEnableHttpsFirstModeForUser(
+        /*add_fallback_entry=*/false);
+  }
   return profile->GetPrefs()->GetBoolean(prefs::kHttpsOnlyModeAutoEnabled) &&
          profile->GetPrefs()->GetBoolean(prefs::kHttpsOnlyModeEnabled);
 }

@@ -7327,6 +7327,26 @@
             ]
         }
     ],
+    "HttpsFirstModeV2ForTypicallySecureUsers": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "HttpsFirstModeV2ForTypicallySecureUsers"
+                    ]
+                }
+            ]
+        }
+    ],
     "HttpsUpgrades": [
         {
             "platforms": [
