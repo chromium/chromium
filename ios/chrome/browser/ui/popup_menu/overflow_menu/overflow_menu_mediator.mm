@@ -303,6 +303,10 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
   if (_model) {
     [self initializeModel];
     [self updateModel];
+    // Any state that is required for re-ordering the menu overall (e.g. badges)
+    // must be ready by this point. After this, the only order-based changes
+    // that will be observed are those that show/hide whole destinations.
+    [_menuOrderer reorderDestinationsForInitialMenu];
   }
 }
 

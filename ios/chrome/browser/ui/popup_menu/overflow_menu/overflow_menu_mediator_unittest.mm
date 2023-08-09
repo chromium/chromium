@@ -824,13 +824,14 @@ TEST_F(OverflowMenuMediatorTest, TestIdentityErrorWithWhatsNewPromo) {
   mediator_.browserStatePrefs = browserStatePrefs_.get();
   CreateLocalStatePrefs();
   mediator_.localStatePrefs = localStatePrefs_.get();
-  mediator_.model = model_;
 
   syncer::MockSyncService syncService;
   ON_CALL(syncService, GetUserActionableError())
       .WillByDefault(
           Return(syncer::SyncService::UserActionableError::kNeedsPassphrase));
   mediator_.syncService = &syncService;
+
+  mediator_.model = model_;
 
   // Verify that the Settings destination is put at the front of the
   // destinations and that What's New is put at the second place.

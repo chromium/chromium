@@ -245,12 +245,95 @@ struct BadgeData {
   [self.destinationUsageHistory recordClickForDestination:destination];
 }
 
+- (void)reorderDestinationsForInitialMenu {
+  [self initializeDestinationOrderDataIfEmpty];
+
+  DestinationRanking availableDestinations =
+      [self.destinationProvider baseDestinations];
+
+  if (IsOverflowMenuCustomizationEnabled()) {
+    DestinationRanking badgedRanking =
+        [self customizationRankingAfterBadgingWithAvailableDestinations:
+                  availableDestinations];
+    _destinationOrderData.shownDestinations = badgedRanking;
+    [self flushDestinationsToPrefs];
+  }
+
+  // If customization is enabled, then skip destination usage history if there
+  // are current badges, as those have more important positions.
+  BOOL hasBadgeWithImpressions = NO;
+  for (const auto& [key, value] : _destinationBadgeData) {
+    if (value.impressionsRemaining > 0) {
+      hasBadgeWithImpressions = YES;
+      break;
+    }
+  }
+  BOOL skipDestinationUsageHistory =
+      IsOverflowMenuCustomizationEnabled() &&
+      (hasBadgeWithImpressions || !_destinationUsageHistoryEnabled.value);
+
+  if (!skipDestinationUsageHistory && self.destinationUsageHistory) {
+    _destinationOrderData.shownDestinations = [self.destinationUsageHistory
+        sortedDestinationsFromCurrentRanking:_destinationOrderData
+                                                 .shownDestinations
+                       availableDestinations:availableDestinations];
+
+    [self flushDestinationsToPrefs];
+  }
+
+  if (!IsOverflowMenuCustomizationEnabled()) {
+    DestinationRanking badgedRanking = [self
+        rankingAfterBadgingWithAvailableDestinations:availableDestinations];
+
+    _destinationOrderData.shownDestinations = badgedRanking;
+    [self flushDestinationsToPrefs];
+  }
+
+  self.model.destinations = [self destinationsFromCurrentRanking];
+}
+
 - (void)updateDestinations {
-  self.model.destinations = [self sortedDestinations];
+  [self initializeDestinationOrderDataIfEmpty];
+  self.model.destinations = [self destinationsFromCurrentRanking];
 }
 
 - (void)updatePageActions {
   self.pageActionsGroup.actions = [self pageActions];
+}
+
+- (void)updateForMenuDisappearance {
+  // With Overflow Menu Customization, badge impressions need to be tracked.
+  if (IsOverflowMenuCustomizationEnabled()) {
+    // If spotlight debugging is enabled, an extra destination is auto-inserted
+    // at the beginning.
+    NSUInteger badgeImpressionLastIndex =
+        (experimental_flags::IsSpotlightDebuggingEnabled())
+            ? kNewDestinationsInsertionIndex + 1
+            : kNewDestinationsInsertionIndex;
+
+    NSRange impressedRange = NSMakeRange(
+        0, MIN(badgeImpressionLastIndex + 1, self.model.destinations.count));
+    for (OverflowMenuDestination* menuDestination :
+         [self.model.destinations subarrayWithRange:impressedRange]) {
+      overflow_menu::Destination destination =
+          static_cast<overflow_menu::Destination>(menuDestination.destination);
+      auto it = _destinationBadgeData.find(destination);
+      if (it == _destinationBadgeData.end()) {
+        continue;
+      }
+      // If the badge is feature-driven, just decrease its impression count
+      // until it hits 0. Otherwise, remove it when it hits 0.
+      if (it->second.isFeatureDrivenBadge) {
+        it->second.impressionsRemaining =
+            std::max(0, it->second.impressionsRemaining - 1);
+      } else {
+        it->second.impressionsRemaining = it->second.impressionsRemaining - 1;
+        if (it->second.impressionsRemaining <= 0) {
+          _destinationBadgeData.erase(destination);
+        }
+      }
+    }
+  }
 }
 
 - (void)commitActionsUpdate {
@@ -514,88 +597,6 @@ struct BadgeData {
     _destinationOrderData.shownDestinations =
         [self.destinationProvider baseDestinations];
   }
-}
-
-// Returns the current destinations in order.
-- (NSArray<OverflowMenuDestination*>*)sortedDestinations {
-  [self initializeDestinationOrderDataIfEmpty];
-
-  DestinationRanking availableDestinations =
-      [self.destinationProvider baseDestinations];
-
-  if (IsOverflowMenuCustomizationEnabled()) {
-    DestinationRanking badgedRanking =
-        [self customizationRankingAfterBadgingWithAvailableDestinations:
-                  availableDestinations];
-    _destinationOrderData.shownDestinations = badgedRanking;
-    [self flushDestinationsToPrefs];
-  }
-
-  // If customization is enabled, then skip destination usage history if there
-  // are current badges, as those have more important positions.
-  BOOL hasBadgeWithImpressions = NO;
-  for (const auto& [key, value] : _destinationBadgeData) {
-    if (value.impressionsRemaining > 0) {
-      hasBadgeWithImpressions = YES;
-      break;
-    }
-  }
-  BOOL skipDestinationUsageHistory =
-      IsOverflowMenuCustomizationEnabled() &&
-      (hasBadgeWithImpressions || !_destinationUsageHistoryEnabled.value);
-
-  if (!skipDestinationUsageHistory && self.destinationUsageHistory) {
-    _destinationOrderData.shownDestinations = [self.destinationUsageHistory
-        sortedDestinationsFromCurrentRanking:_destinationOrderData
-                                                 .shownDestinations
-                       availableDestinations:availableDestinations];
-
-    [self flushDestinationsToPrefs];
-  }
-
-  if (!IsOverflowMenuCustomizationEnabled()) {
-    DestinationRanking badgedRanking = [self
-        rankingAfterBadgingWithAvailableDestinations:availableDestinations];
-
-    _destinationOrderData.shownDestinations = badgedRanking;
-    [self flushDestinationsToPrefs];
-  }
-
-  NSArray<OverflowMenuDestination*>* finalDestinations =
-      [self destinationsFromCurrentRanking];
-
-  // With Overflow Menu Customization, badge impressions need to be tracked.
-  if (IsOverflowMenuCustomizationEnabled()) {
-    // If spotlight debugging is enabled, an extra destination is auto-inserted
-    // at the beginning.
-    int badgeImpressionLastIndex =
-        (experimental_flags::IsSpotlightDebuggingEnabled())
-            ? kNewDestinationsInsertionIndex + 1
-            : kNewDestinationsInsertionIndex;
-
-    for (OverflowMenuDestination* menuDestination : [finalDestinations
-             subarrayWithRange:NSMakeRange(0, badgeImpressionLastIndex + 1)]) {
-      overflow_menu::Destination destination =
-          static_cast<overflow_menu::Destination>(menuDestination.destination);
-      auto it = _destinationBadgeData.find(destination);
-      if (it == _destinationBadgeData.end()) {
-        continue;
-      }
-      // If the badge is feature-driven, just decrease its impression count
-      // until it hits 0. Otherwise, remove it when it hits 0.
-      if (it->second.isFeatureDrivenBadge) {
-        it->second.impressionsRemaining =
-            std::max(0, it->second.impressionsRemaining - 1);
-      } else {
-        it->second.impressionsRemaining = it->second.impressionsRemaining - 1;
-        if (it->second.impressionsRemaining <= 0) {
-          _destinationBadgeData.erase(destination);
-        }
-      }
-    }
-  }
-
-  return finalDestinations;
 }
 
 // Returns the current pageActions in order.

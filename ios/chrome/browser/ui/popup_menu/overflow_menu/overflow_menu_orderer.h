@@ -106,12 +106,19 @@ class PrefService;
 // Records a `destination` click from the overflow menu carousel.
 - (void)recordClickForDestination:(overflow_menu::Destination)destination;
 
-// Requests that the order update the order of the destinatoins in its model.
+// Requests that the orderer perform any per-appearance order updates.
+- (void)reorderDestinationsForInitialMenu;
+
+// Requests that the orderer update the order of the destinations in its model.
 - (void)updateDestinations;
 
 // Requests that the orderer update the order of the page actions in its page
 // actions group.
 - (void)updatePageActions;
+
+// Alerts the orderer that the menu has disappeared, so it can perform any
+// necessary updates.
+- (void)updateForMenuDisappearance;
 
 // Tells the orderer that actions customization has finished using the current
 // data in `actionCustomizationModel`.

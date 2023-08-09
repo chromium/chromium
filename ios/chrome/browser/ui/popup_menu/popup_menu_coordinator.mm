@@ -521,6 +521,7 @@ enum class IOSOverflowMenuActionType {
                              [weakSelf.bubblePresenter presentTabPinnedBubble];
                            }];
     _overflowMenuModel = nil;
+    [_overflowMenuOrderer updateForMenuDisappearance];
     [_overflowMenuOrderer disconnect];
     _overflowMenuOrderer = nil;
     [self.overflowMenuMediator disconnect];
