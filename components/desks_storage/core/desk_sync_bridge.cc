@@ -18,6 +18,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "base/uuid.h"
 #include "build/chromeos_buildflags.h"
 #include "chromeos/ui/base/window_state_type.h"
@@ -591,6 +592,7 @@ void DeskSyncBridge::OnReadAllData(
 void DeskSyncBridge::OnReadAllMetadata(
     const absl::optional<syncer::ModelError>& error,
     std::unique_ptr<syncer::MetadataBatch> metadata_batch) {
+  TRACE_EVENT0("ui", "DeskSyncBridge::OnReadAllMetadata");
   if (error) {
     change_processor()->ReportError(*error);
     return;
