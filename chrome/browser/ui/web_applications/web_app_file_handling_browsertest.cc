@@ -491,7 +491,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest, IsFileHandlerOnChromeOS) {
 // provided by extensions. These do not have local files (i.e. backed by
 // inodes).
 IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
-                       NotHandlerForNonNativeFiles) {
+                       HandlerForNonNativeFiles) {
   InstallFileHandlingPWA();
   base::WeakPtr<file_manager::Volume> fsp_volume =
       file_manager::test::InstallFileSystemProviderChromeApp(profile());
@@ -501,12 +501,9 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
       fsp_volume->mount_path().AppendASCII("readonly.txt");
   std::vector<file_manager::file_tasks::FullTaskDescriptor> tasks =
       file_manager::test::GetTasksForFile(profile(), test_file_path);
-
-  // Current expectation is for the task not to be found while the native
-  // filesystem API is still being built up. See https://crbug.com/1079065.
-  // When the "special file" check in file_manager::file_tasks::FindWebTasks()
-  // is removed, this test should work the same as IsFileHandlerOnChromeOS.
-  EXPECT_EQ(0u, tasks.size());
+  // This test should work the same as IsFileHandlerOnChromeOS.
+  ASSERT_EQ(1u, tasks.size());
+  EXPECT_EQ(tasks[0].task_descriptor.app_id, app_id());
 }
 #endif
 

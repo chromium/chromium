@@ -32,6 +32,7 @@
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/filesystem_api_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
+#include "chrome/browser/ash/fusebox/fusebox_server.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
@@ -176,6 +177,28 @@ Profile* GetProfileWithAppService(Profile* profile) {
   }
 }
 
+GURL GetRealOrFuseboxGURL(Profile* profile,
+                          const storage::FileSystemURL& file_system_url,
+                          bool use_fusebox_for_non_real_file_paths) {
+  fusebox::Server* server = fusebox::Server::GetInstance();
+  if (!use_fusebox_for_non_real_file_paths || !server ||
+      file_system_url.TypeImpliesPathIsReal()) {
+    return file_system_url.ToGURL();
+  }
+
+  base::FilePath path = server->InverseResolveFSURL(file_system_url);
+  if (path.empty()) {
+    return GURL();
+  }
+
+  GURL url;
+  if (!util::ConvertAbsoluteFilePathToFileSystemUrl(
+          profile, path, util::GetFileManagerURL(), &url)) {
+    return GURL();
+  }
+  return url;
+}
+
 // TODO(petermarshall): This can be removed along with ParseFilesAppActionId()
 // in file_tasks.cc as the legacy files app has been removed.
 std::string ToSwaActionId(const std::string& action_id) {
@@ -215,16 +238,6 @@ void FindAppServiceTasks(Profile* profile,
     DCHECK(url.is_valid());
   }
 #endif  // DCHECK_IS_ON()
-
-  // WebApps only have full support for files backed by inodes, so tasks
-  // provided by most Web Apps will be skipped if any non-native files are
-  // present. "System" Web Apps are an exception: we have more control over what
-  // they can do, so tasks provided by System Web Apps are the only ones
-  // permitted at present. See https://crbug.com/1079065.
-  const bool has_non_native_file =
-      base::ranges::any_of(entries, [profile](const auto& entry) {
-        return util::IsUnderNonNativeLocalPath(profile, entry.path);
-      });
 
   // App Service doesn't exist in Incognito mode but we still want to find
   // handlers to open a download from its notification from Incognito mode. Use
@@ -275,15 +288,6 @@ void FindAppServiceTasks(Profile* profile,
 
     if (app_type == apps::AppType::kWeb ||
         app_type == apps::AppType::kSystemWeb) {
-      // Media app and other SWAs can handle "non-native" files, as can special
-      // tasks which only access the file via URL.
-      if (has_non_native_file &&
-          !(IsSystemAppIdWithFileHandlers(launch_entry.app_id) ||
-            IsFilesAppUrlOpener(launch_entry.app_id,
-                                launch_entry.activity_name))) {
-        continue;
-      }
-
       // Check the origin trial and feature flag for file handling in web apps.
       // TODO(1240018): Remove when this feature is fully launched. This check
       // will not work for lacros web apps.
@@ -354,15 +358,32 @@ void ExecuteAppServiceTask(
     return;
   }
 
-  std::vector<GURL> file_urls;
+  apps::AppServiceProxy* app_service_proxy =
+      apps::AppServiceProxyFactory::GetForProfile(profile_with_app_service);
+  auto app_type = app_service_proxy->AppRegistryCache().GetAppType(task.app_id);
+
+  // In general, WebApps only have full support for files backed by inodes, so
+  // substitute Fusebox files for any "non-real" file paths. However, the Media
+  // app and other SWAs can handle "non-real" files, as can special tasks which
+  // only access the file via URL. See https://crbug.com/1079065
+  bool use_fusebox_for_non_real_file_paths = false;
+  if (app_type == apps::AppType::kWeb ||
+      app_type == apps::AppType::kSystemWeb) {
+    use_fusebox_for_non_real_file_paths =
+        !(IsSystemAppIdWithFileHandlers(task.app_id) ||
+          IsFilesAppUrlOpener(task.app_id, task.action_id));
+  }
+
   std::vector<apps::IntentFilePtr> intent_files;
-  file_urls.reserve(file_system_urls.size());
   intent_files.reserve(file_system_urls.size());
   for (size_t i = 0; i < file_system_urls.size(); i++) {
-    file_urls.push_back(file_system_urls[i].ToGURL());
-
-    auto file =
-        std::make_unique<apps::IntentFile>(file_system_urls[i].ToGURL());
+    GURL file_url =
+        GetRealOrFuseboxGURL(profile_with_app_service, file_system_urls[i],
+                             use_fusebox_for_non_real_file_paths);
+    if (!file_url.is_valid()) {
+      continue;
+    }
+    auto file = std::make_unique<apps::IntentFile>(file_url);
     file->mime_type = mime_types.at(i);
     intent_files.push_back(std::move(file));
   }
@@ -382,18 +403,17 @@ void ExecuteAppServiceTask(
   // `window_info` as nullptr sets `display_id` to `display::kInvalidDisplayId`
   // later, which is the default value. `display::kDefaultDisplayId` is not. The
   // default value allows a window on any display to be reused, i.e. a wildcard.
-  apps::AppServiceProxyFactory::GetForProfile(profile_with_app_service)
-      ->LaunchAppWithIntent(
-          task.app_id, ui::EF_NONE, std::move(intent),
-          apps::LaunchSource::kFromFileManager,
-          /*window_info=*/nullptr,
-          base::BindOnce(
-              [](FileTaskFinishedCallback done, TaskType task_type,
-                 apps::LaunchResult&& result) {
-                std::move(done).Run(
-                    ConvertLaunchResultToTaskResult(result, task_type), "");
-              },
-              std::move(done), task.task_type));
+  app_service_proxy->LaunchAppWithIntent(
+      task.app_id, ui::EF_NONE, std::move(intent),
+      apps::LaunchSource::kFromFileManager,
+      /*window_info=*/nullptr,
+      base::BindOnce(
+          [](FileTaskFinishedCallback done, TaskType task_type,
+             apps::LaunchResult&& result) {
+            std::move(done).Run(
+                ConvertLaunchResultToTaskResult(result, task_type), "");
+          },
+          std::move(done), task.task_type));
 }
 
 bool ChooseAndSetDefaultTaskFromPolicyPrefs(
