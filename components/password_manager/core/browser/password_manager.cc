@@ -56,7 +56,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "components/prefs/pref_registry_simple.h"
-#endif
+#endif  // BUILDFLAG(IS_WIN)
 
 using autofill::ACCOUNT_CREATION_PASSWORD;
 using autofill::CalculateFormSignature;
@@ -147,7 +147,7 @@ bool ShouldShowManualFallbackForGeneratedPassword(
   // On iOS manual fallback menu is only used to edit the credential,
   // and is not applicable to generated passwords.
   return false;
-#endif
+#endif  // !BUILDFLAG(IS_IOS)
 }
 
 #if BUILDFLAG(USE_BLINK)
@@ -242,7 +242,7 @@ void PasswordManager::RegisterProfilePrefs(
 #if BUILDFLAG(IS_IOS)
   registry->RegisterBooleanPref(prefs::kCredentialProviderEnabledOnStartup,
                                 false);
-#endif
+#endif  // BUILDFLAG(IS_IOS)
   registry->RegisterBooleanPref(
       prefs::kCredentialsEnableAutosignin, true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PRIORITY_PREF);
@@ -276,7 +276,7 @@ void PasswordManager::RegisterProfilePrefs(
 #if BUILDFLAG(IS_APPLE)
   registry->RegisterIntegerPref(prefs::kKeychainMigrationStatus,
                                 4 /* MIGRATED_DELETED */);
-#endif
+#endif  // BUILDFLAG(IS_APPLE)
   registry->RegisterListPref(prefs::kPasswordHashDataList,
                              PrefRegistry::NO_REGISTRATION_FLAGS);
   registry->RegisterBooleanPref(
@@ -315,7 +315,7 @@ void PasswordManager::RegisterProfilePrefs(
       prefs::kLocalPasswordMigrationWarningShownAtStartup, false);
   registry->RegisterIntegerPref(
       prefs::kLocalPasswordMigrationWarningPrefsVersion, 0);
-#endif
+#endif  // BUILDFLAG(IS_ANDROID)
   // Preferences for |PasswordChangeSuccessTracker|.
   registry->RegisterIntegerPref(prefs::kPasswordChangeSuccessTrackerVersion, 0);
   registry->RegisterListPref(prefs::kPasswordChangeSuccessTrackerFlows);
@@ -327,15 +327,15 @@ void PasswordManager::RegisterProfilePrefs(
                                 false);
   registry->RegisterBooleanPref(prefs::kBiometricAuthenticationBeforeFilling,
                                 false);
-#endif
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 #if BUILDFLAG(IS_IOS)
   registry->RegisterBooleanPref(prefs::kAccountStorageNoticeShown, false);
   registry->RegisterIntegerPref(prefs::kAccountStorageNewFeatureIconImpressions,
                                 0);
-#endif
+#endif  // BUILDFLAG(IS_IOS)
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop
   registry->RegisterListPref(prefs::kPasswordManagerPromoCardsList);
-#endif
+#endif  // BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 }
 
 // static
@@ -344,10 +344,10 @@ void PasswordManager::RegisterLocalPrefs(PrefRegistrySimple* registry) {
   registry->RegisterInt64Pref(prefs::kOsPasswordLastChanged, 0);
   registry->RegisterBooleanPref(prefs::kOsPasswordBlank, false);
   registry->RegisterBooleanPref(prefs::kIsBiometricAvailable, false);
-#endif
+#endif  // BUILDFLAG(IS_WIN)
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   registry->RegisterBooleanPref(prefs::kHadBiometricsAvailable, false);
-#endif
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 }
 
 PasswordManager::PasswordManager(PasswordManagerClient* client)
@@ -418,7 +418,7 @@ void PasswordManager::OnPresaveGeneratedPassword(
     // TODO(crbug/1399524): Invoke this from SharedPasswordController.
     form_manager->ProvisionallySave(form_data, driver,
                                     base::OptionalToPtr(possible_username_));
-#endif
+#endif  // BUILDFLAG(IS_IOS)
   }
 }
 
@@ -592,7 +592,7 @@ void PasswordManager::OnSubframeFormSubmission(PasswordManagerDriver* driver,
   if (IsAutomaticSavePromptAvailable())
     OnLoginSuccessful();
 }
-#endif
+#endif  // BUILDFLAG(IS_IOS)
 
 void PasswordManager::OnUserModifiedNonPasswordField(
     PasswordManagerDriver* driver,
@@ -879,7 +879,7 @@ void PasswordManager::PropagateFieldDataManagerInfo(
     manager->ProvisionallySaveFieldDataManagerInfo(field_data_manager, driver);
   }
 }
-#endif
+#endif  // BUILDFLAG(IS_IOS)
 
 bool PasswordManager::IsAutomaticSavePromptAvailable(
     PasswordFormManager* form_manager) {
@@ -974,7 +974,7 @@ void PasswordManager::OnPasswordFormsRendered(
       // missing, the current page has no password forms, but we still are
       // interested in detecting a submisison.
       driver &&
-#endif
+#endif  // BUILDFLAG(IS_IOS)
       !driver->IsInPrimaryMainFrame() &&
       submitted_manager->GetFrameId() != driver->GetFrameId()) {
     // Frames different from the main frame and the frame of the submitted form
@@ -1432,6 +1432,6 @@ bool PasswordManager::DetectPotentialSubmission(
   }
   return false;
 }
-#endif
+#endif  // BUILDFLAG(IS_IOS)
 
 }  // namespace password_manager
