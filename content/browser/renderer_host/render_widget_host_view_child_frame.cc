@@ -705,6 +705,10 @@ const viz::LocalSurfaceId& RenderWidgetHostViewChildFrame::GetLocalSurfaceId()
 
 void RenderWidgetHostViewChildFrame::NotifyHitTestRegionUpdated(
     const viz::AggregatedHitTestRegion& region) {
+  if (selection_controller_client_) {
+    selection_controller_client_->OnHitTestRegionUpdated();
+  }
+
   absl::optional<gfx::RectF> screen_rect =
       region.transform.InverseMapRect(gfx::RectF(region.rect));
   if (!screen_rect) {
@@ -719,10 +723,6 @@ void RenderWidgetHostViewChildFrame::NotifyHitTestRegionUpdated(
        blink::mojom::kMaxChildFrameScreenRectMovement)) {
     last_stable_screen_rect_ = *screen_rect;
     screen_rect_stable_since_ = base::TimeTicks::Now();
-
-    if (selection_controller_client_) {
-      selection_controller_client_->OnHitTestRegionUpdated();
-    }
   }
 }
 
