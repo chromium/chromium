@@ -41,7 +41,6 @@ class FakeCanvasResourceHost : public CanvasResourceHost {
     std::unique_ptr<CanvasResourceProvider> provider;
     if (hint == RasterModeHint::kPreferGPU ||
         RuntimeEnabledFeatures::Canvas2dImageChromiumEnabled()) {
-      constexpr bool kIsOriginTopLeft = true;
       constexpr uint32_t kSharedImageUsageFlags =
           gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
           gpu::SHARED_IMAGE_USAGE_SCANOUT;
@@ -50,7 +49,7 @@ class FakeCanvasResourceHost : public CanvasResourceHost {
           SharedGpuContext::ContextProviderWrapper(),
           hint == RasterModeHint::kPreferGPU ? RasterMode::kGPU
                                              : RasterMode::kCPU,
-          kIsOriginTopLeft, kSharedImageUsageFlags);
+          kSharedImageUsageFlags);
     }
     if (!provider) {
       provider = CanvasResourceProvider::CreateSharedBitmapProvider(

@@ -260,8 +260,7 @@ TEST_F(ImageBitmapTest, AvoidGPUReadback) {
   auto resource_provider = CanvasResourceProvider::CreateSharedImageProvider(
       SkImageInfo::MakeN32Premul(100, 100), cc::PaintFlags::FilterQuality::kLow,
       CanvasResourceProvider::ShouldInitialize::kNo, context_provider_wrapper,
-      RasterMode::kGPU, true /*is_origin_top_left*/,
-      0u /*shared_image_usage_flags*/);
+      RasterMode::kGPU, /*shared_image_usage_flags=*/0u);
 
   scoped_refptr<StaticBitmapImage> bitmap = resource_provider->Snapshot(
       CanvasResourceProvider::FlushReason::kTesting);

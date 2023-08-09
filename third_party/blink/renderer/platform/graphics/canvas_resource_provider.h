@@ -252,7 +252,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
       ShouldInitialize initialize_provider,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
       RasterMode raster_mode,
-      bool is_origin_top_left,
       uint32_t shared_image_usage_flags);
 
   static std::unique_ptr<CanvasResourceProvider> CreateWebGPUImageProvider(
@@ -271,8 +270,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
       cc::PaintFlags::FilterQuality filter_quality,
       ShouldInitialize initialize_provider,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
-      base::WeakPtr<CanvasResourceDispatcher>,
-      bool is_origin_top_left);
+      base::WeakPtr<CanvasResourceDispatcher>);
 
   // Use Snapshot() for capturing a frame that is intended to be displayed via
   // the compositor. Cases that are destined to be transferred via a

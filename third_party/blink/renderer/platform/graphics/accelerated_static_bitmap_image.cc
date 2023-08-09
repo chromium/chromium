@@ -480,7 +480,6 @@ AcceleratedStaticBitmapImage::ConvertToColorSpace(
                    .makeColorType(color_type)
                    .makeWH(Size().width(), Size().height());
 
-  constexpr bool kIsOriginTopLeft = true;
   const auto usage_flags = ContextProviderWrapper()
                                ->ContextProvider()
                                ->SharedImageInterface()
@@ -488,7 +487,7 @@ AcceleratedStaticBitmapImage::ConvertToColorSpace(
   auto provider = CanvasResourceProvider::CreateSharedImageProvider(
       image_info, cc::PaintFlags::FilterQuality::kLow,
       CanvasResourceProvider::ShouldInitialize::kNo, ContextProviderWrapper(),
-      RasterMode::kGPU, kIsOriginTopLeft, usage_flags);
+      RasterMode::kGPU, usage_flags);
   if (!provider) {
     return nullptr;
   }

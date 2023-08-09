@@ -48,7 +48,6 @@ scoped_refptr<StaticBitmapImage> MakeAccelerated(
   const auto paint_image = source->PaintImageForCurrentFrame();
   const auto image_info = paint_image.GetSkImageInfo().makeWH(
       source->Size().width(), source->Size().height());
-  constexpr bool kIsOriginTopLeft = true;
   // Always request gpu::SHARED_IMAGE_USAGE_SCANOUT when using gpu compositing,
   // if possible. This is safe because the prerequisite capabilities are checked
   // downstream in CanvasResourceProvider::CreateSharedImageProvider.
@@ -57,7 +56,7 @@ scoped_refptr<StaticBitmapImage> MakeAccelerated(
   auto provider = CanvasResourceProvider::CreateSharedImageProvider(
       image_info, cc::PaintFlags::FilterQuality::kLow,
       CanvasResourceProvider::ShouldInitialize::kNo, context_provider_wrapper,
-      RasterMode::kGPU, kIsOriginTopLeft, kSharedImageUsageFlags);
+      RasterMode::kGPU, kSharedImageUsageFlags);
   if (!provider || !provider->IsAccelerated())
     return nullptr;
 

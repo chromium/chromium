@@ -185,14 +185,13 @@ std::unique_ptr<CanvasResourceProvider> CreateProvider(
   constexpr auto kShouldInitialize =
       CanvasResourceProvider::ShouldInitialize::kNo;
   if (context_provider) {
-    constexpr bool kIsOriginTopLeft = true;
     const uint32_t usage_flags =
         context_provider->ContextProvider()
             ->SharedImageInterface()
             ->UsageForMailbox(source_image->GetMailboxHolder().mailbox);
     auto resource_provider = CanvasResourceProvider::CreateSharedImageProvider(
         info, kFilterQuality, kShouldInitialize, context_provider,
-        RasterMode::kGPU, kIsOriginTopLeft, usage_flags);
+        RasterMode::kGPU, usage_flags);
     if (resource_provider) {
       return resource_provider;
     }

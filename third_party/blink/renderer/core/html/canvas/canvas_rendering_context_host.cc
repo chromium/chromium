@@ -157,10 +157,6 @@ void CanvasRenderingContextHost::CreateCanvasResourceProviderWebGL() {
   const SkImageInfo resource_info =
       SkImageInfo::Make(SkISize::Make(Size().width(), Size().height()),
                         GetRenderingContextSkColorInfo());
-  // Use top left origin for shared image CanvasResourceProviders since those
-  // can be used for rendering with Skia, and Skia's Graphite backend doesn't
-  // support bottom left origin SkSurfaces.
-  constexpr bool kIsSharedImageOriginTopLeft = true;
   // Do not initialize the CRP using Skia. The CRP can have bottom left origin
   // in which case Skia Graphite won't be able to render into it, and WebGL is
   // responsible for clearing the CRP when it renders anyway and we have clear
@@ -194,7 +190,7 @@ void CanvasRenderingContextHost::CreateCanvasResourceProviderWebGL() {
       provider = CanvasResourceProvider::CreateSharedImageProvider(
           resource_info, FilterQuality(), kShouldInitialize,
           SharedGpuContext::ContextProviderWrapper(), RasterMode::kGPU,
-          kIsSharedImageOriginTopLeft, shared_image_usage_flags);
+          shared_image_usage_flags);
     }
   } else if (SharedGpuContext::IsGpuCompositingEnabled()) {
     // If there is no LawLatency mode, and GPU is enabled, will try a GPU
@@ -207,7 +203,7 @@ void CanvasRenderingContextHost::CreateCanvasResourceProviderWebGL() {
     provider = CanvasResourceProvider::CreateSharedImageProvider(
         resource_info, FilterQuality(), kShouldInitialize,
         SharedGpuContext::ContextProviderWrapper(), RasterMode::kGPU,
-        kIsSharedImageOriginTopLeft, shared_image_usage_flags);
+        shared_image_usage_flags);
   }
 
   // If either of the other modes failed and / or it was not possible to do, we
@@ -247,18 +243,12 @@ void CanvasRenderingContextHost::CreateCanvasResourceProvider2D(
       hint == RasterModeHint::kPreferGPU && ShouldAccelerate2dContext();
   constexpr auto kShouldInitialize =
       CanvasResourceProvider::ShouldInitialize::kCallClear;
-  // It is important to not use the context's IsOriginTopLeft() here
-  // because that denotes the current state and could change after the
-  // new resource provider is created e.g. due to switching between
-  // unaccelerated and accelerated modes during tab switching.
-  constexpr bool kIsOriginTopLeft = true;
   if (use_gpu && LowLatencyEnabled()) {
     // If we can use the gpu and low latency is enabled, we will try to use a
     // SwapChain if possible.
     provider = CanvasResourceProvider::CreateSwapChainProvider(
         resource_info, FilterQuality(), kShouldInitialize,
-        SharedGpuContext::ContextProviderWrapper(), dispatcher,
-        kIsOriginTopLeft);
+        SharedGpuContext::ContextProviderWrapper(), dispatcher);
     // If SwapChain failed or it was not possible, we will try a SharedImage
     // with a set of flags trying to add Usage Display and Usage Scanout and
     // Concurrent Read and Write if possible.
@@ -274,7 +264,7 @@ void CanvasRenderingContextHost::CreateCanvasResourceProvider2D(
       provider = CanvasResourceProvider::CreateSharedImageProvider(
           resource_info, FilterQuality(), kShouldInitialize,
           SharedGpuContext::ContextProviderWrapper(), RasterMode::kGPU,
-          kIsOriginTopLeft, shared_image_usage_flags);
+          shared_image_usage_flags);
     }
   } else if (use_gpu) {
     // First try to be optimized for displaying on screen. In the case we are
@@ -287,14 +277,14 @@ void CanvasRenderingContextHost::CreateCanvasResourceProvider2D(
     provider = CanvasResourceProvider::CreateSharedImageProvider(
         resource_info, FilterQuality(), kShouldInitialize,
         SharedGpuContext::ContextProviderWrapper(), RasterMode::kGPU,
-        kIsOriginTopLeft, shared_image_usage_flags);
+        shared_image_usage_flags);
   } else if (RuntimeEnabledFeatures::Canvas2dImageChromiumEnabled()) {
     const uint32_t shared_image_usage_flags =
         gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT;
     provider = CanvasResourceProvider::CreateSharedImageProvider(
         resource_info, FilterQuality(), kShouldInitialize,
         SharedGpuContext::ContextProviderWrapper(), RasterMode::kCPU,
-        kIsOriginTopLeft, shared_image_usage_flags);
+        shared_image_usage_flags);
   }
 
   // If either of the other modes failed and / or it was not possible to do, we

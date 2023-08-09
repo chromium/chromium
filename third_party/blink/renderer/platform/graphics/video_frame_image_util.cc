@@ -344,11 +344,10 @@ std::unique_ptr<CanvasResourceProvider> CreateResourceProviderForVideoFrame(
     return CanvasResourceProvider::CreateBitmapProvider(info, kFilterQuality,
                                                         kShouldInitialize);
   }
-  constexpr bool kIsOriginTopLeft = true;
   return CanvasResourceProvider::CreateSharedImageProvider(
       info, kFilterQuality, kShouldInitialize,
       SharedGpuContext::ContextProviderWrapper(), RasterMode::kGPU,
-      kIsOriginTopLeft, gpu::SHARED_IMAGE_USAGE_DISPLAY_READ);
+      gpu::SHARED_IMAGE_USAGE_DISPLAY_READ);
 }
 
 }  // namespace blink

@@ -786,12 +786,11 @@ scoped_refptr<StaticBitmapImage> WebGLRenderingContextBase::GetImage(
                         CanvasRenderingContextSkColorInfo());
   constexpr auto kShouldInitialize =
       CanvasResourceProvider::ShouldInitialize::kNo;
-  constexpr bool kIsOriginTopLeft = true;
   std::unique_ptr<CanvasResourceProvider> resource_provider =
       CanvasResourceProvider::CreateSharedImageProvider(
           image_info, GetDrawingBuffer()->FilterQuality(), kShouldInitialize,
           SharedGpuContext::ContextProviderWrapper(), RasterMode::kGPU,
-          kIsOriginTopLeft, gpu::SHARED_IMAGE_USAGE_DISPLAY_READ);
+          gpu::SHARED_IMAGE_USAGE_DISPLAY_READ);
   if (!resource_provider || !resource_provider->IsValid()) {
     resource_provider = CanvasResourceProvider::CreateBitmapProvider(
         image_info, GetDrawingBuffer()->FilterQuality(),
