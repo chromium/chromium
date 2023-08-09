@@ -5,6 +5,10 @@
 #ifndef CHROME_BROWSER_ASH_CHROMEBOX_FOR_MEETINGS_XU_CAMERA_XU_CAMERA_SERVICE_H_
 #define CHROME_BROWSER_ASH_CHROMEBOX_FOR_MEETINGS_XU_CAMERA_XU_CAMERA_SERVICE_H_
 
+#include <linux/usb/video.h>
+#include <linux/uvcvideo.h>
+
+#include <cstdint>
 #include <string>
 
 #include "chrome/browser/ash/chromebox_for_meetings/service_adaptor.h"
@@ -20,6 +24,21 @@ class XuCameraService : public CfmObserver,
                         public ServiceAdaptor::Delegate,
                         public mojom::XuCamera {
  public:
+  // Delegate interface to handle file-related operations.
+  class Delegate {
+   public:
+    virtual ~Delegate() = default;
+
+    // System call for device input/output operations.
+    virtual int Ioctl(int fd, int request, uvc_xu_control_query* query) = 0;
+
+    // Open file given the file path and return the file descriptor.
+    virtual int OpenFile(std::string path) = 0;
+
+    // Close file given the file descriptor.
+    virtual void CloseFile(int file_descriptor) = 0;
+  };
+
   ~XuCameraService() override;
 
   XuCameraService(const XuCameraService&) = delete;
@@ -27,9 +46,15 @@ class XuCameraService : public CfmObserver,
 
   // Manage singleton instance.
   static void Initialize();
+  static void InitializeForTesting(Delegate* delegate);
   static void Shutdown();
   static XuCameraService* Get();
   static bool IsInitialized();
+  static uint8_t GetRequest(const mojom::GetFn& fn);
+
+ protected:
+  // If nullptr is passed the default Delegate will be used
+  explicit XuCameraService(Delegate* delegate_);
 
   // CfmObserver implementation
   bool ServiceRequestReceived(const std::string& interface_name) override;
@@ -54,12 +79,27 @@ class XuCameraService : public CfmObserver,
                const std::vector<uint8_t>& data,
                SetCtrlCallback callback) override;
 
- private:
-  XuCameraService();
+  // Set the XuCameraService::Delegate
+  void SetDelegate(Delegate* delegate);
 
+ private:
+  uint8_t QueryXuControl(int file_descriptor,
+                         uint8_t unit_id,
+                         uint8_t selector,
+                         uint8_t* data,
+                         uint8_t query_request,
+                         uint16_t size);
+  std::string GetDevicePath(const std::string& device_id);
+  uint8_t GetCtrlThroughQuery(int file_descriptor,
+                              const mojom::ControlQueryPtr& query,
+                              std::vector<uint8_t>& data,
+                              const mojom::GetFn& fn);
+
+  Delegate* delegate_;
   ServiceAdaptor service_adaptor_;
   mojo::ReceiverSet<XuCamera> receivers_;
   std::vector<uint8_t> guid_;
+  std::map<std::vector<uint8_t>, uint8_t> guid_unitid_map_ = {};
 };
 
 }  // namespace ash::cfm
