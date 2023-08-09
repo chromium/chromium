@@ -8,7 +8,7 @@
 
 module ash.language.mojom;
 
-// Next MinVersion: 3
+// Next MinVersion: 4
 
 // ID of the Feature using LanguagePacks.
 // These values are persisted to logs. Entries should not be renumbered and
@@ -31,12 +31,14 @@ enum FeatureId {
 // numeric values should never be reused.  When adding new enumerations to this
 // enum, you must add those to the LanguagePackMojoPackState definition in
 // tools/metrics/histograms/enums.xml to keep them in sync.
+[Extensible]
 enum PackState {
   // TODO: b/294162606 - Deprecate this value and use UNKNOWN instead.
   ERROR = 0,
   NOT_INSTALLED = 1,
   INSTALLING = 2,
-  INSTALLED = 3
+  INSTALLED = 3,
+  [MinVersion=3, Default] UNKNOWN = 4
 };
 
 // The error that is encountered when performing an IPC operation.
