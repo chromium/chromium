@@ -38,13 +38,16 @@ const auto kMenuEntries = mojom::MenuEntries::New();
 const std::vector<uint8_t> kName(32, 'a');
 const std::vector<uint8_t> kData = {0x43, 0x21};
 const std::vector<uint8_t> kLen = {0x02, 0x00};  // little-endian uint16
+const int32_t kValue = 123;                      // Fake v4l2 value
+const std::vector<uint8_t> kValueAsUint8 = {
+    (std::uint8_t*)&(kValue), (std::uint8_t*)&(kValue) + sizeof(std::int32_t)};
 
 class TestDelegate : public XuCameraService::Delegate {
  public:
   int Ioctl(int fd, unsigned int request, void* query) override {
     if (VIDIOC_G_CTRL == request) {
       struct v4l2_control* control = static_cast<v4l2_control*>(query);
-      control->value = {'fake'};
+      control->value = kValue;
     } else if (UVCIOC_CTRL_QUERY == request) {
       uvc_xu_control_query* control_query =
           static_cast<uvc_xu_control_query*>(query);
@@ -60,17 +63,22 @@ class TestDelegate : public XuCameraService::Delegate {
   }
   int OpenFile(std::string path) override {
     if (path.empty()) {
-      fd_ = -1;
+      LOG(ERROR) << "Filepath is empty";
+      return -1;
     }
+    if (fd_ == 1) {
+      LOG(ERROR) << "Already opened file.";
+      return -1;
+    }
+    fd_ = 1;
     return fd_;
   }
 
   void CloseFile(int file_descriptor) override {
-    if (fd_ == file_descriptor) {
-      fd_ = 0;
-    } else {
+    if (fd_ != file_descriptor) {
       LOG(ERROR) << "No such file.";
     }
+    fd_ = 0;
   }
 
  private:
@@ -190,7 +198,8 @@ TEST_F(XuCameraServiceTest, GetXuCameraMapCtrl) {
   auto devPath = mojom::WebcamId::NewDevPath("/fake/device/path");
   auto mapping = mojom::ControlMapping::New(
       /* id= */ 1, /* name= */ kName, /* guid= */ kGuid, /* selector= */ 1,
-      /* size= */ 1, /* offset= */ 1, /* v4l2_type= */ V4L2_CTRL_TYPE_INTEGER,
+      /* size= */ 1, /* offset= */ 1,
+      /* v4l2_type= */ V4L2_CTRL_TYPE_INTEGER,
       /* data_type= */ UVC_CTRL_DATA_TYPE_SIGNED, /* menu_entries= */
       kMenuEntries->Clone());
   base::RunLoop run_loop;
@@ -209,7 +218,8 @@ TEST_F(XuCameraServiceTest, XuCameraGetCtrlWithDeviceIdCtrlMapping) {
   auto devId = mojom::WebcamId::NewDeviceId("123");
   auto mapping = mojom::CtrlType::NewMappingCtrl(mojom::ControlMapping::New(
       /* id= */ 1, /* name= */ kName, /* guid= */ kGuid, /* selector= */ 1,
-      /* size= */ 1, /* offset= */ 1, /* v4l2_type= */ V4L2_CTRL_TYPE_INTEGER,
+      /* size= */ 1, /* offset= */ 1,
+      /* v4l2_type= */ V4L2_CTRL_TYPE_INTEGER,
       /* data_type= */ UVC_CTRL_DATA_TYPE_SIGNED, /* menu_entries= */
       kMenuEntries->Clone()));
   GetXuCameraRemote()->GetCtrl(
@@ -240,9 +250,8 @@ TEST_F(XuCameraServiceTest, XuCameraGetCtrlWithDevPathCtrlMapping) {
       /* fn= */ mojom::GetFn::kCur,
       base::BindLambdaForTesting(
           [&](const uint8_t error_code, const std::vector<uint8_t>& data) {
-            const std::vector<uint8_t> vec;
-            EXPECT_EQ(error_code, ENOSYS);
-            EXPECT_EQ(data, vec);
+            EXPECT_EQ(error_code, 0);
+            EXPECT_EQ(data, kValueAsUint8);
             run_loop.Quit();
           }));
   run_loop.Run();
@@ -286,7 +295,8 @@ TEST_F(XuCameraServiceTest, XuCameraGetCtrlWithDevPathCtrlQuery) {
   run_loop.Run();
 }
 
-// This test ensure that the XU camera can get control length given a ctrl query
+// This test ensure that the XU camera can get control length given a ctrl
+// query
 TEST_F(XuCameraServiceTest, XuCameraGetCtrlLenWithDevPathCtrlQuery) {
   base::RunLoop run_loop;
   auto devPath = mojom::WebcamId::NewDevPath("/fake/device/path");
@@ -310,7 +320,8 @@ TEST_F(XuCameraServiceTest, XuCameraSetCtrlWithDeviceIdCtrlMapping) {
   auto devId = mojom::WebcamId::NewDeviceId("123");
   auto mapping = mojom::CtrlType::NewMappingCtrl(mojom::ControlMapping::New(
       /* id= */ 1, /* name= */ kName, /* guid= */ kGuid, /* selector= */ 1,
-      /* size= */ 1, /* offset= */ 1, /* v4l2_type= */ V4L2_CTRL_TYPE_INTEGER,
+      /* size= */ 1, /* offset= */ 1,
+      /* v4l2_type= */ V4L2_CTRL_TYPE_INTEGER,
       /* data_type= */ UVC_CTRL_DATA_TYPE_SIGNED, /* menu_entries= */
       kMenuEntries->Clone()));
   std::vector<uint8_t> data{'a', 'b', 'c'};
