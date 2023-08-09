@@ -14769,6 +14769,21 @@
             ]
         }
     ],
+    "TrackpadDropdownMenu": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20230808",
+                    "enable_features": [
+                        "MouseAndTrackpadDropdownMenu"
+                    ]
+                }
+            ]
+        }
+    ],
     "TrackpadGestureSupport": [
         {
             "platforms": [
@@ -14777,7 +14792,7 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20230427",
+                    "name": "Enabled_20230808",
                     "enable_features": [
                         "ConvertTrackpadEventsToMouse"
                     ]
