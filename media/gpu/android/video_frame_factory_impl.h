@@ -72,6 +72,7 @@ class MEDIA_GPU_EXPORT VideoFrameFactoryImpl
       PromotionHintAggregator::NotifyPromotionHintCB promotion_hint_cb,
       OnceOutputCB output_cb) override;
   void RunAfterPendingVideoFrames(base::OnceClosure closure) override;
+  bool IsStalled() const override;
 
   // This should be only used for testing.
   void SetCodecBufferWaitCorrdinatorForTesting(

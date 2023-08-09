@@ -356,4 +356,8 @@ void VideoFrameFactoryImpl::RunAfterPendingVideoFrames(
   RequestImage(nullptr, std::move(image_ready_cb));
 }
 
+bool VideoFrameFactoryImpl::IsStalled() const {
+  return frame_info_helper_->IsStalled();
+}
+
 }  // namespace media

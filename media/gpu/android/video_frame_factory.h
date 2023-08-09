@@ -69,6 +69,10 @@ class MEDIA_GPU_EXPORT VideoFrameFactory {
   // Runs |closure| on the calling sequence after all previous
   // CreateVideoFrame() calls have completed.
   virtual void RunAfterPendingVideoFrames(base::OnceClosure closure) = 0;
+
+  // Returns true if the VideoFrameFactory can't currently produce any more
+  // frames.
+  virtual bool IsStalled() const = 0;
 };
 
 }  // namespace media
