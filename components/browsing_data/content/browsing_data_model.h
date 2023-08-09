@@ -119,6 +119,9 @@ class BrowsingDataModel {
                           const DataDetails& data_details);
   };
 
+  // Retrieves the host from the data owner.
+  static const std::string GetHost(const DataOwner& data_owner);
+
   // A delegate to handle non components/ data type retrieval and deletion.
   class Delegate {
    public:

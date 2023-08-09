@@ -22,6 +22,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/browsing_data/content/browsing_data_helper.h"
+#include "components/browsing_data/core/features.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/browser/ui/cookie_controls_controller.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
@@ -273,7 +274,7 @@ PageInfo::PageInfo(std::unique_ptr<PageInfoDelegate> delegate,
     observation_.Observe(controller_.get());
     old_observation_.Observe(controller_.get());
 
-    // TODO(crbug.com/1430440): SetCookiesInfo is called twice, once from here
+    // TODO(crbug.com/1430440): SetCookieInfo is called twice, once from here
     // and once from InitializeUiState. This should be cleaned up.
     controller_->Update(web_contents);
   }
@@ -1425,6 +1426,11 @@ void PageInfo::PresentSiteDataInternal(base::OnceClosure done) {
   if (!web_contents_ || web_contents_->IsBeingDestroyed())
     return;
 
+  // Presenting site data is only needed if `PageInfoUI` is available.
+  if (!ui_) {
+    return;
+  }
+
   PageInfoUI::CookiesNewInfo cookies_info;
   cookies_info.allowed_sites_count = GetSitesWithAllowedCookiesAccessCount();
   // TODO(crbug.com/1446230): Clean up and remove the fallback after the feature
@@ -1459,9 +1465,15 @@ void PageInfo::PresentSiteDataInternal(base::OnceClosure done) {
 void PageInfo::PresentSiteData(base::OnceClosure done) {
   auto* settings = GetPageSpecificContentSettings();
   if (settings) {
-    settings->allowed_local_shared_objects().UpdateIgnoredEmptyStorageKeys(
-        base::BindOnce(&PageInfo::PresentSiteDataInternal,
-                       weak_factory_.GetWeakPtr(), std::move(done)));
+    if (base::FeatureList::IsEnabled(
+            browsing_data::features::kMigrateStorageToBDM) &&
+        weak_factory_.GetWeakPtr()) {
+      PresentSiteDataInternal(std::move(done));
+    } else {
+      settings->allowed_local_shared_objects().UpdateIgnoredEmptyStorageKeys(
+          base::BindOnce(&PageInfo::PresentSiteDataInternal,
+                         weak_factory_.GetWeakPtr(), std::move(done)));
+    }
   }
 }
 
@@ -1661,11 +1673,9 @@ int PageInfo::GetThirdPartySitesWithBlockedCookiesAccessCount(
   auto* settings = GetPageSpecificContentSettings();
   if (!settings)
     return 0;
-  // TODO(crbug.com/1466177): This needs to consider BrowsingDataModel counts as
-  // well.
-  return settings->blocked_local_shared_objects().GetHostCount() -
-         settings->blocked_local_shared_objects().GetHostCountForDomain(
-             site_url);
+  return browsing_data::GetUniqueThirdPartyCookiesHostCount(
+      site_url, settings->blocked_local_shared_objects(),
+      *(settings->blocked_browsing_data_model()));
 }
 
 int PageInfo::GetFirstPartyBlockedCookiesCount(const GURL& site_url) {

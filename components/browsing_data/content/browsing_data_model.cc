@@ -467,6 +467,15 @@ BrowsingDataModel::BrowsingDataEntryView::BrowsingDataEntryView(
     : data_owner(data_owner), data_key(data_key), data_details(data_details) {}
 BrowsingDataModel::BrowsingDataEntryView::~BrowsingDataEntryView() = default;
 
+// static
+const std::string BrowsingDataModel::GetHost(const DataOwner& data_owner) {
+  return absl::visit(
+      base::Overloaded{
+          [&](const std::string& host) { return host; },
+          [&](const url::Origin& origin) { return origin.host(); }},
+      data_owner);
+}
+
 bool BrowsingDataModel::BrowsingDataEntryView::Matches(
     const url::Origin& origin) const {
   return absl::visit(base::Overloaded{[&](const std::string& entry_host) {
