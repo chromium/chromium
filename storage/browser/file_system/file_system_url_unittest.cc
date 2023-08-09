@@ -426,18 +426,15 @@ TEST(FileSystemURLTest, IsInSameFileSystem) {
       kFileSystemTypeTemporary, base::FilePath::FromUTF8Unsafe("a"));
   EXPECT_FALSE(url_foo_temp_a.IsInSameFileSystem(url_foo_temp_c));
 
-  if (base::FeatureList::IsEnabled(
-          features::kFileSystemURLComparatorsTreatOpaqueOriginAsNoOrigin)) {
-    // Test that opaque origins with differing nonces are considered to be in
-    // the same file system.
-    EXPECT_NE(url_opaque_a, url_opaque_b);
-    EXPECT_TRUE(url_opaque_a.IsInSameFileSystem(url_opaque_b));
+  // Test that opaque origins with differing nonces are considered to be in
+  // the same file system.
+  EXPECT_NE(url_opaque_a, url_opaque_b);
+  EXPECT_TRUE(url_opaque_a.IsInSameFileSystem(url_opaque_b));
 
-    // Test that identical, invalid URLs are considered not to be in the same
-    // file system.
-    EXPECT_EQ(url_invalid_a, url_invalid_b);
-    EXPECT_FALSE(url_invalid_a.IsInSameFileSystem(url_invalid_b));
-  }
+  // Test that identical, invalid URLs are considered not to be in the same
+  // file system.
+  EXPECT_EQ(url_invalid_a, url_invalid_b);
+  EXPECT_FALSE(url_invalid_a.IsInSameFileSystem(url_invalid_b));
 }
 
 TEST(FileSystemURLTest, ValidAfterMoves) {

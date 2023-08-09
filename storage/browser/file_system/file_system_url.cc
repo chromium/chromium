@@ -7,11 +7,9 @@
 #include <sstream>
 
 #include "base/check.h"
-#include "base/feature_list.h"
 #include "base/files/safe_base_name.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_util.h"
-#include "storage/browser/file_system/file_system_features.h"
 #include "storage/browser/file_system/file_system_util.h"
 #include "storage/common/file_system/file_system_types.h"
 #include "storage/common/file_system/file_system_util.h"
@@ -30,15 +28,12 @@ bool AreSameStorageKey(const FileSystemURL& a, const FileSystemURL& b) {
   // systems. This leads to unexpected behavior when comparing two non-sandboxed
   // FileSystemURLs which differ only in the nonce of their default-constructed
   // StorageKey.
-  return base::FeatureList::IsEnabled(
-             features::kFileSystemURLComparatorsTreatOpaqueOriginAsNoOrigin)
-             ? a.storage_key() == b.storage_key() ||
-                   (a.type() == b.type() &&
-                    (a.type() == storage::kFileSystemTypeExternal ||
-                     a.type() == storage::kFileSystemTypeLocal) &&
-                    a.storage_key().origin().opaque() &&
-                    b.storage_key().origin().opaque())
-             : a.storage_key() == b.storage_key();
+  return a.storage_key() == b.storage_key() ||
+         (a.type() == b.type() &&
+          (a.type() == storage::kFileSystemTypeExternal ||
+           a.type() == storage::kFileSystemTypeLocal) &&
+          a.storage_key().origin().opaque() &&
+          b.storage_key().origin().opaque());
 }
 
 }  // namespace
@@ -277,11 +272,7 @@ bool FileSystemURL::IsParent(const FileSystemURL& child) const {
 
 bool FileSystemURL::IsInSameFileSystem(const FileSystemURL& other) const {
   // Invalid FileSystemURLs should never be considered of the same file system.
-  bool is_maybe_valid =
-      !base::FeatureList::IsEnabled(
-          features::kFileSystemURLComparatorsTreatOpaqueOriginAsNoOrigin) ||
-      (is_valid() && other.is_valid());
-  return AreSameStorageKey(*this, other) && is_maybe_valid &&
+  return AreSameStorageKey(*this, other) && is_valid() && other.is_valid() &&
          type() == other.type() && filesystem_id() == other.filesystem_id() &&
          bucket() == other.bucket();
 }

@@ -11,7 +11,6 @@
 #include <tuple>
 #include <utility>
 
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -24,7 +23,6 @@
 #include "storage/browser/file_system/file_observers.h"
 #include "storage/browser/file_system/file_system_backend.h"
 #include "storage/browser/file_system/file_system_context.h"
-#include "storage/browser/file_system/file_system_features.h"
 #include "storage/browser/file_system/file_system_file_util.h"
 #include "storage/browser/file_system/file_system_util.h"
 #include "storage/browser/file_system/remove_operation_delegate.h"
@@ -343,13 +341,8 @@ void FileSystemOperationImpl::CopyFileLocal(
   // the two URLs are mounted in two different isolated file systems. As long
   // as their origin and type are the same, they are part of the same file
   // system, and local operations are allowed. See https://crbug.com/1396116.
-  if (base::FeatureList::IsEnabled(
-          features::kFileSystemURLComparatorsTreatOpaqueOriginAsNoOrigin)) {
-    DCHECK(src_url.origin() == dest_url.origin() ||
-           (src_url.origin().opaque() && dest_url.origin().opaque()));
-  } else {
-    DCHECK_EQ(src_url.origin(), dest_url.origin());
-  }
+  DCHECK(src_url.origin() == dest_url.origin() ||
+         (src_url.origin().opaque() && dest_url.origin().opaque()));
   DCHECK_EQ(src_url.type(), dest_url.type());
 
   auto split_callback = base::SplitOnceCallback(std::move(callback));
@@ -371,13 +364,8 @@ void FileSystemOperationImpl::MoveFileLocal(const FileSystemURL& src_url,
   // the two URLs are mounted in two different isolated file systems. As long
   // as their origin and type are the same, they are part of the same file
   // system, and local operations are allowed. See https://crbug.com/1396116.
-  if (base::FeatureList::IsEnabled(
-          features::kFileSystemURLComparatorsTreatOpaqueOriginAsNoOrigin)) {
-    DCHECK(src_url.origin() == dest_url.origin() ||
-           (src_url.origin().opaque() && dest_url.origin().opaque()));
-  } else {
-    DCHECK_EQ(src_url.origin(), dest_url.origin());
-  }
+  DCHECK(src_url.origin() == dest_url.origin() ||
+         (src_url.origin().opaque() && dest_url.origin().opaque()));
   DCHECK_EQ(src_url.type(), dest_url.type());
 
   auto split_callback = base::SplitOnceCallback(std::move(callback));
