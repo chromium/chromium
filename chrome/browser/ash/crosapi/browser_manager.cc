@@ -50,6 +50,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/crosapi/browser_action.h"
@@ -1510,6 +1511,7 @@ void BrowserManager::OnLoginPromptVisible() {
 }
 
 void BrowserManager::OnSessionStateChanged() {
+  TRACE_EVENT0("login", "BrowserManager::OnSessionStateChanged");
   if (disabled_for_testing_) {
     CHECK_IS_TEST();
     LOG(WARNING)
