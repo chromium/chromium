@@ -1441,8 +1441,8 @@
   },
   {
     "name": "crostini-gpu-support",
-    "owners": [ "nverne", "benwells" ],
-    "expiry_milestone": 110
+    "owners": [ "nverne", "davidmunro@google.com", "clumptini@google.com" ],
+    "expiry_milestone": 130
   },
   {
     "name": "crostini-ime-support",
