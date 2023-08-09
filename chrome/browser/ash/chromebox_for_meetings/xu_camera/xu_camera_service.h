@@ -13,6 +13,7 @@
 #include <string>
 #include <vector>
 
+#include "base/files/scoped_file.h"
 #include "chrome/browser/ash/chromebox_for_meetings/service_adaptor.h"
 #include "chromeos/ash/components/dbus/chromebox_for_meetings/cfm_observer.h"
 #include "chromeos/ash/services/chromebox_for_meetings/public/mojom/xu_camera.mojom.h"
@@ -32,13 +33,12 @@ class XuCameraService : public CfmObserver,
     virtual ~Delegate() = default;
 
     // System call for device input/output operations.
-    virtual int Ioctl(int fd, unsigned int request, void* query) = 0;
+    virtual int Ioctl(const base::ScopedFD& fd,
+                      unsigned int request,
+                      void* query) = 0;
 
     // Open file given the file path and return the file descriptor.
-    virtual int OpenFile(std::string path) = 0;
-
-    // Close file given the file descriptor.
-    virtual void CloseFile(int file_descriptor) = 0;
+    virtual bool OpenFile(base::ScopedFD& fd, const std::string& path) = 0;
   };
 
   ~XuCameraService() override;
@@ -85,18 +85,18 @@ class XuCameraService : public CfmObserver,
   void SetDelegate(Delegate* delegate);
 
  private:
-  uint8_t QueryXuControl(int file_descriptor,
+  uint8_t QueryXuControl(const base::ScopedFD& file_descriptor,
                          uint8_t unit_id,
                          uint8_t selector,
                          uint8_t* data,
                          uint8_t query_request,
                          uint16_t size);
   std::string GetDevicePath(const std::string& device_id);
-  uint8_t CtrlThroughQuery(int file_descriptor,
+  uint8_t CtrlThroughQuery(const base::ScopedFD& file_descriptor,
                            const mojom::ControlQueryPtr& query,
                            std::vector<uint8_t>& data,
                            const uint8_t& query_request);
-  uint8_t CtrlThroughMapping(int file_descriptor,
+  uint8_t CtrlThroughMapping(const base::ScopedFD& file_descriptor,
                              const mojom::ControlMappingPtr& mapping,
                              std::vector<uint8_t>& data,
                              const mojom::GetFn& fn);
