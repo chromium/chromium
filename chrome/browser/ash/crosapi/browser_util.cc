@@ -8,6 +8,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/auto_reset.h"
+#include "base/check_is_test.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
@@ -15,6 +16,7 @@
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/json/values_util.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -885,6 +887,51 @@ absl::optional<MigrationMode> GetCompletedMigrationMode(
   }
 
   return absl::nullopt;
+}
+
+void RecordMigrationStatus() {
+  PrefService* local_state = g_browser_process->local_state();
+  if (!local_state) {
+    // This can happen in tests.
+    CHECK_IS_TEST();
+    return;
+  }
+
+  const auto* user = GetPrimaryUser();
+  if (!user) {
+    // The function is intended to be run after primary user is initialized.
+    // The function might be run in tests without primary user being set.
+    CHECK_IS_TEST();
+    return;
+  }
+
+  const MigrationStatus status = GetMigrationStatus(local_state, user);
+
+  UMA_HISTOGRAM_ENUMERATION(kLacrosMigrationStatus, status);
+}
+
+MigrationStatus GetMigrationStatus(PrefService* local_state,
+                                   const user_manager::User* user) {
+  if (!crosapi::browser_util::IsLacrosEnabledForMigration(
+          user, crosapi::browser_util::PolicyInitState::kAfterInit)) {
+    return MigrationStatus::kLacrosNotEnabled;
+  }
+
+  absl::optional<MigrationMode> mode =
+      GetCompletedMigrationMode(local_state, user->username_hash());
+
+  if (!mode.has_value()) {
+    return MigrationStatus::kUncompleted;
+  }
+
+  switch (mode.value()) {
+    case MigrationMode::kCopy:
+      return MigrationStatus::kCopyCompleted;
+    case MigrationMode::kMove:
+      return MigrationStatus::kMoveCompleted;
+    case MigrationMode::kSkipForNewUser:
+      return MigrationStatus::kSkippedForNewUser;
+  }
 }
 
 void SetProfileMigrationCompletedForUser(PrefService* local_state,

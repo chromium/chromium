@@ -116,6 +116,20 @@ enum class MigrationMode {
   kSkipForNewUser = 2,  // Skip migration for new users.
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// This enum corresponds to MoveMigratorTaskStatus in histograms.xml
+// and enums.xml.
+enum class MigrationStatus {
+  kLacrosNotEnabled = 0,  // Lacros is not enabled.
+  kUncompleted = 1,  // Lacros is enabled but migration has not been completed.
+  kSkippedForNewUser = 2,  // Migration is skipped for new users.
+  kCopyCompleted = 3,      // Migration was completed with `CopyMigratior`.
+  kMoveCompleted = 4,      // Migration was completed with `MoveMigrator`.
+  kMaxValue = kMoveCompleted,
+};
+
 // Specifies the mode Lacros is currently running.
 // This enum is different from LacrosAvailability in the way that
 // it describes the mode Lacros is running at a given point in time
@@ -196,6 +210,9 @@ extern const char kLaunchOnLoginPref[];
 // A dictionary local state pref that records the version at which profile
 // migration was marked as completed.
 extern const char kDataVerPref[];
+
+// Used to get field data on how much users have migrated to Lacros.
+constexpr char kLacrosMigrationStatus[] = "Ash.LacrosMigrationStatus";
 
 // Registers user profile preferences related to the lacros-chrome binary.
 void RegisterProfilePrefs(PrefRegistrySimple* registry);
@@ -390,6 +407,14 @@ bool IsProfileMigrationCompletedForUser(PrefService* local_state,
 absl::optional<MigrationMode> GetCompletedMigrationMode(
     PrefService* local_state,
     const std::string& user_id_hash);
+
+// Records `kLacrosMigrationStatus`. It should be called after primary user is
+// set. If it is called prior to that, it does not send any UMA.
+void RecordMigrationStatus();
+
+// Get the migration status for the user.
+MigrationStatus GetMigrationStatus(PrefService* local_state,
+                                   const user_manager::User* user);
 
 // Sets the value of `kProfileMigrationCompletedForUserPref` or
 // `kProfileMoveMigrationCompletedForUserPref` to be true for the user

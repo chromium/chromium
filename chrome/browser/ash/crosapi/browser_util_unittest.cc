@@ -776,6 +776,58 @@ TEST_F(BrowserUtilTest, IsProfileMigrationCompletedForUser) {
                                                                 user_id_hash));
 }
 
+TEST_F(BrowserUtilTest, GetMigrationStatus) {
+  using browser_util::GetMigrationStatus;
+  using browser_util::MigrationMode;
+  using browser_util::MigrationStatus;
+
+  AddRegularUser("user@test.com");
+  const user_manager::User* const user =
+      ash::ProfileHelper::Get()->GetUserByProfile(&testing_profile_);
+
+  EXPECT_EQ(GetMigrationStatus(&pref_service_, user),
+            MigrationStatus::kLacrosNotEnabled);
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({ash::features::kLacrosOnly}, {});
+
+  EXPECT_EQ(GetMigrationStatus(&pref_service_, user),
+            MigrationStatus::kUncompleted);
+
+  {
+    browser_util::SetProfileMigrationCompletedForUser(
+        &pref_service_, user->username_hash(), MigrationMode::kCopy);
+
+    EXPECT_EQ(GetMigrationStatus(&pref_service_, user),
+              MigrationStatus::kCopyCompleted);
+
+    browser_util::ClearProfileMigrationCompletedForUser(&pref_service_,
+                                                        user->username_hash());
+  }
+
+  {
+    browser_util::SetProfileMigrationCompletedForUser(
+        &pref_service_, user->username_hash(), MigrationMode::kMove);
+
+    EXPECT_EQ(GetMigrationStatus(&pref_service_, user),
+              MigrationStatus::kMoveCompleted);
+
+    browser_util::ClearProfileMigrationCompletedForUser(&pref_service_,
+                                                        user->username_hash());
+  }
+
+  {
+    browser_util::SetProfileMigrationCompletedForUser(
+        &pref_service_, user->username_hash(), MigrationMode::kSkipForNewUser);
+
+    EXPECT_EQ(GetMigrationStatus(&pref_service_, user),
+              MigrationStatus::kSkippedForNewUser);
+
+    browser_util::ClearProfileMigrationCompletedForUser(&pref_service_,
+                                                        user->username_hash());
+  }
+}
+
 TEST_F(BrowserUtilTest, IsAshBrowserSyncEnabled) {
   {
     EXPECT_FALSE(browser_util::IsLacrosEnabled());

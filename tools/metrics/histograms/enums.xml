@@ -57212,6 +57212,17 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="11" label="Policy forced, only Lacros browser"/>
 </enum>
 
+<enum name="LacrosMigrationStatus">
+  <int value="0" label="Lacros not enabled"/>
+  <int value="1" label="Uncompleted"/>
+  <int value="2" label="Completed via copy"/>
+  <int value="3" label="Completed via move"/>
+  <int value="4" label="Skipped for new user">
+    Migration was skipped but marked as completed because new users don't
+    require migration.
+  </int>
+</enum>
+
 <enum name="LanguageDetectionComparison">
   <int value="0" label="Language detected by TFLite only (CLD3 failed)"/>
   <int value="1" label="Language detected by CLD3 only (TFLite failed)"/>

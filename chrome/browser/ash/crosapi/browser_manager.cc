@@ -818,6 +818,8 @@ void BrowserManager::InitializeAndStartIfNeeded() {
   // Perform the UMA recording for the current Lacros mode of operation.
   RecordLacrosLaunchMode();
 
+  browser_util::RecordMigrationStatus();
+
   const bool is_lacros_enabled = browser_util::IsLacrosEnabled();
 
   // As a switch between Ash and Lacros mode requires an Ash restart plus

@@ -3908,6 +3908,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.LacrosMigrationStatus" enum="LacrosMigrationStatus"
+    expires_after="M121">
+  <owner>ythjkt@chromium.org</owner>
+  <owner>hidehiko@chromium.org</owner>
+  <summary>
+    Migration status from Ash to Lacros. It shows whether the user has migrated
+    from Ash to Lacros and if they did with which migration mode.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Login.Lock.AuthMethod.Switched"
     enum="AuthMethodSwitchType" expires_after="2023-12-24">
   <owner>emaamari@google.com</owner>
