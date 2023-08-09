@@ -7,8 +7,12 @@
 #include <utility>
 
 #include "base/check.h"
+#include "components/autofill/core/browser/webdata/autofill_table.h"
+#include "components/autofill/core/browser/webdata/autofill_webdata_backend.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
+#include "components/sync/base/model_type.h"
 #include "components/sync/model/client_tag_based_model_type_processor.h"
+#include "components/sync/model/sync_metadata_store_change_list.h"
 #include "components/sync/protocol/autofill_wallet_credential_specifics.pb.h"
 #include "components/sync/protocol/entity_data.h"
 
@@ -50,15 +54,21 @@ AutofillWalletCredentialSyncBridge::AutofillWalletCredentialSyncBridge(
     : ModelTypeSyncBridge(std::move(change_processor)),
       web_data_backend_(web_data_backend) {
   CHECK(web_data_backend_);
+  CHECK(GetAutofillTable());
+  LoadMetadata();
 }
 
-AutofillWalletCredentialSyncBridge::~AutofillWalletCredentialSyncBridge() =
-    default;
+AutofillWalletCredentialSyncBridge::~AutofillWalletCredentialSyncBridge() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
 
 std::unique_ptr<syncer::MetadataChangeList>
 AutofillWalletCredentialSyncBridge::CreateMetadataChangeList() {
-  NOTIMPLEMENTED();
-  return nullptr;
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return std::make_unique<syncer::SyncMetadataStoreChangeList>(
+      GetAutofillTable(), syncer::AUTOFILL_WALLET_CREDENTIAL,
+      base::BindRepeating(&syncer::ModelTypeChangeProcessor::ReportError,
+                          change_processor()->GetWeakPtr()));
 }
 
 absl::optional<syncer::ModelError>
@@ -119,6 +129,25 @@ bool AutofillWalletCredentialSyncBridge::IsEntityDataValid(
              .has_last_updated_time_unix_epoch_millis() &&
          entity_data.specifics.autofill_wallet_credential()
                  .last_updated_time_unix_epoch_millis() != 0;
+}
+
+AutofillTable* AutofillWalletCredentialSyncBridge::GetAutofillTable() {
+  return AutofillTable::FromWebDatabase(web_data_backend_->GetDatabase());
+}
+
+void AutofillWalletCredentialSyncBridge::LoadMetadata() {
+  CHECK(web_data_backend_->GetDatabase()) << "Failed to get database.";
+  CHECK(GetAutofillTable()) << "Failed to load Autofill table.";
+
+  auto batch = std::make_unique<syncer::MetadataBatch>();
+  if (!GetAutofillTable()->GetAllSyncMetadata(
+          syncer::AUTOFILL_WALLET_CREDENTIAL, batch.get())) {
+    change_processor()->ReportError(
+        {FROM_HERE,
+         "Failed reading Autofill Wallet Credential data from WebDatabase."});
+    return;
+  }
+  change_processor()->ModelReadyToSync(std::move(batch));
 }
 
 }  // namespace autofill
