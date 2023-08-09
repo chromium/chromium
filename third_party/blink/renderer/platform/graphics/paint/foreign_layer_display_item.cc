@@ -61,7 +61,6 @@ void RecordForeignLayer(GraphicsContext& context,
       client, type, std::move(layer), origin,
       client.VisualRectOutsetForRasterEffects(),
       client.GetPaintInvalidationReason());
-  paint_controller.RecordDebugInfo(client);
   if (properties) {
     paint_controller.UpdateCurrentPaintChunkProperties(*previous_properties);
   }

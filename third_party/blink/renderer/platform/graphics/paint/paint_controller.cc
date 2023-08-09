@@ -82,7 +82,6 @@ void PaintController::RecordHitTestData(const DisplayItemClient& client,
   ValidateNewChunkClient(client);
   if (paint_chunker_.AddHitTestDataToCurrentChunk(
           id, client, rect, touch_action, blocking_wheel)) {
-    RecordDebugInfo(client);
     CheckNewChunk();
   }
 }

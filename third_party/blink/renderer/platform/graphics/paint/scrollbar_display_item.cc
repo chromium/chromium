@@ -140,7 +140,6 @@ void ScrollbarDisplayItem::Record(
       std::move(scroll_translation), element_id,
       client.VisualRectOutsetForRasterEffects(),
       client.GetPaintInvalidationReason());
-  paint_controller.RecordDebugInfo(client);
 }
 
 }  // namespace blink

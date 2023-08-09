@@ -95,8 +95,6 @@ class PLATFORM_EXPORT PaintController {
 
   // These methods are called during painting.
 
-  void RecordDebugInfo(const DisplayItemClient& client);
-
   // Provide a new set of paint chunk properties to apply to recorded display
   // items. If id is nullptr, the id of the first display item will be used as
   // the id of the paint chunk if needed.
@@ -313,6 +311,8 @@ class PLATFORM_EXPORT PaintController {
   // will cleanup data that will no longer be used for the next cycle, validate
   // clients, and prepare for the next cycle.
   void FinishCycle();
+
+  void RecordDebugInfo(const DisplayItemClient&);
 
   // True if all display items associated with the client are validly cached.
   // However, the current algorithm allows the following situations even if

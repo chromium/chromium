@@ -756,10 +756,7 @@ class CORE_EXPORT LocalFrameView final
     return EnsurePaintController();
   }
 
-  bool PaintDebugInfoEnabled() const {
-    return layer_debug_info_enabled_ ||
-           RuntimeEnabledFeatures::PaintUnderInvalidationCheckingEnabled();
-  }
+  bool PaintDebugInfoEnabled() const { return paint_debug_info_enabled_; }
 
   void AddPendingTransformUpdate(LayoutObject& object);
   bool RemovePendingTransformUpdate(const LayoutObject& object);
@@ -992,8 +989,8 @@ class CORE_EXPORT LocalFrameView final
   // was prevented (e.g. by ancestor display-lock) or not needed.
   bool LayoutFromRootObject(LayoutObject& root);
 
-  // Returns true if the value of layer_debug_info_enabled_ changed.
-  bool UpdateLayerDebugInfoEnabled();
+  // Returns true if the value of paint_debug_info_enabled_ changed.
+  bool UpdatePaintDebugInfoEnabled();
 
   // Return the interstitial-ad detector for this frame, creating it if
   // necessary.
@@ -1135,7 +1132,7 @@ class CORE_EXPORT LocalFrameView final
 
   // Whether to collect layer debug information for debugging, tracing,
   // inspection, etc. Applies to local root only.
-  bool layer_debug_info_enabled_ = DCHECK_IS_ON();
+  bool paint_debug_info_enabled_ = DCHECK_IS_ON();
 
   LifecycleData lifecycle_data_;
 
