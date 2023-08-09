@@ -632,9 +632,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="FileBrowser.GoogleDrive.BulkPinning.QueueSize" units="count"
+    expires_after="2024-07-01">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    The maximum number of files that can be concurrently downloaded by the
+    bulk-pinning manager. This is recorded every time the bulk-pinning manager
+    starts pinning files, after having enumerated all the files to pin.
+  </summary>
+</histogram>
+
 <histogram
     name="FileBrowser.GoogleDrive.BulkPinning.StateWhenCacheVolumeRemoved"
-    units="BooleanEnabled" expires_after="2024-06-01">
+    enum="BooleanEnabled" expires_after="2024-06-01">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
