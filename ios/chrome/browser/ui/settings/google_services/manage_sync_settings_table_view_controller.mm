@@ -28,7 +28,6 @@ CGFloat kAdvancedSettingsSectionHeaderHeightPointSize = 26.;
 
 // Table view customized footer heights.
 CGFloat kAccountSectionFooterHeightPointSize = 16.;
-CGFloat kSyncDataTypeSectionFooterHeightPointSize = 50.;
 CGFloat kDefaultSectionFooterHeightPointSize = 10.;
 
 }  // namespace
@@ -204,7 +203,7 @@ CGFloat kDefaultSectionFooterHeightPointSize = 10.;
       case AccountSectionIdentifier:
         return kAccountSectionFooterHeightPointSize;
       case SyncDataTypeSectionIdentifier:
-        return kSyncDataTypeSectionFooterHeightPointSize;
+        return UITableViewAutomaticDimension;
       case AdvancedSettingsSectionIdentifier:
       case SyncErrorsSectionIdentifier:
       case SignOutSectionIdentifier:
