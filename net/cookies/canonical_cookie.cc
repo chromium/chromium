@@ -529,6 +529,7 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::Create(
     const base::Time& creation_time,
     absl::optional<base::Time> server_time,
     absl::optional<CookiePartitionKey> cookie_partition_key,
+    bool block_truncated,
     CookieInclusionStatus* status) {
   // Put a pointer on the stack so the rest of the function can assign to it if
   // the default nullptr is passed in.
@@ -545,7 +546,7 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::Create(
     return nullptr;
   }
 
-  ParsedCookie parsed_cookie(cookie_line, status);
+  ParsedCookie parsed_cookie(cookie_line, block_truncated, status);
 
   // We record this metric before checking validity because the presence of an
   // HTAB will invalidate the ParsedCookie.

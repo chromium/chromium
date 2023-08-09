@@ -17,6 +17,15 @@ struct CookieManagerParams {
   // Whether or not third party cookies should be blocked.
   bool block_third_party_cookies = false;
 
+  // Whether or not truncated cookies should be ignored. Defaults to true but
+  // can be overridden in cases such as when the feature has been disabled via
+  // Enterprise Policy. Regardless of whether this value is true, the blocking
+  // of truncated cookies will not occur if the kBlockTruncatedCookies feature
+  // is disabled (thus, this default value is acceptable for WebView and other
+  // non-Chrome platforms where the feature flag is the primary means to control
+  // the value).
+  bool block_truncated_cookies = true;
+
   // Content settings for cookies.
   array<content_settings.mojom.ContentSettingPatternSource> settings;
 
@@ -468,6 +477,11 @@ interface CookieManager {
 
   // Enables/Disables blocking of third-party cookies.
   BlockThirdPartyCookies(bool block);
+
+  // Enables/Disables blocking of truncated cookies. This provides a way to
+  // change the setting at runtime, which allows the corresponding enterprise
+  // policy to not require a restart to take affect.
+  BlockTruncatedCookies(bool block);
 
   // Sets content settings for which domains are allowed to use legacy cookie
   // access rules.

@@ -177,15 +177,17 @@ TEST(CanonicalCookieTest, CreationCornerCases) {
 
   // Control characters in name or value.
   CookieInclusionStatus status;
-  cookie = CanonicalCookie::Create(
-      GURL("http://www.example.com/test/foo.html"), "\b=foo", creation_time,
-      server_time, /*cookie_partition_key=*/absl::nullopt, &status);
+  cookie = CanonicalCookie::Create(GURL("http://www.example.com/test/foo.html"),
+                                   "\b=foo", creation_time, server_time,
+                                   /*cookie_partition_key=*/absl::nullopt,
+                                   /*block_truncated=*/true, &status);
   EXPECT_FALSE(cookie.get());
   EXPECT_TRUE(status.HasExclusionReason(
       CookieInclusionStatus::ExclusionReason::EXCLUDE_DISALLOWED_CHARACTER));
-  cookie = CanonicalCookie::Create(
-      GURL("http://www.example.com/test/foo.html"), "bar=\b", creation_time,
-      server_time, /*cookie_partition_key=*/absl::nullopt, &status);
+  cookie = CanonicalCookie::Create(GURL("http://www.example.com/test/foo.html"),
+                                   "bar=\b", creation_time, server_time,
+                                   /*cookie_partition_key=*/absl::nullopt,
+                                   /*block_truncated=*/true, &status);
   EXPECT_FALSE(cookie.get());
   EXPECT_TRUE(status.HasExclusionReason(
       CookieInclusionStatus::ExclusionReason::EXCLUDE_DISALLOWED_CHARACTER));
@@ -200,8 +202,8 @@ TEST(CanonicalCookieTest, CreationCornerCases) {
 
   cookie = CanonicalCookie::Create(GURL("http://www.example.com/test/foo.html"),
                                    too_long_value, creation_time, server_time,
-                                   absl::nullopt /* cookie_partition_key */,
-                                   &status);
+                                   /*cookie_partition_key=*/absl::nullopt,
+                                   /*block_truncated=*/true, &status);
   EXPECT_FALSE(cookie.get());
   EXPECT_TRUE(
       status.HasExclusionReason(CookieInclusionStatus::ExclusionReason::
@@ -358,9 +360,10 @@ TEST(CanonicalCookieTest, Create) {
   // An invalid port leads to an invalid GURL, which causes cookie creation
   // to fail.
   CookieInclusionStatus status;
-  cookie = CanonicalCookie::Create(
-      GURL("http://www.foo.com:70000"), "B=1", creation_time, server_time,
-      absl::nullopt /* cookie_partition_key */, &status);
+  cookie = CanonicalCookie::Create(GURL("http://www.foo.com:70000"), "B=1",
+                                   creation_time, server_time,
+                                   /*cookie_partition_key=*/absl::nullopt,
+                                   /*block_truncated=*/true, &status);
   EXPECT_FALSE(cookie.get());
   EXPECT_TRUE(status.HasExclusionReason(
       CookieInclusionStatus::ExclusionReason::EXCLUDE_FAILURE_TO_STORE));
@@ -372,7 +375,8 @@ TEST(CanonicalCookieTest, CreateInvalidUrl) {
   CookieInclusionStatus status;
   std::unique_ptr<CanonicalCookie> cookie = CanonicalCookie::Create(
       GURL("http://.127.0.0.1/path"), "A=2", creation_time, server_time,
-      absl::nullopt /* cookie_partition_key */, &status);
+      /*cookie_partition_key=*/absl::nullopt, /*block_truncated=*/true,
+      &status);
   EXPECT_FALSE(cookie.get());
   EXPECT_TRUE(status.HasExclusionReason(
       CookieInclusionStatus::ExclusionReason::EXCLUDE_FAILURE_TO_STORE));
@@ -444,9 +448,10 @@ TEST(CanonicalCookieTest, CreateHttpOnly) {
   CookieInclusionStatus status;
 
   // An HttpOnly cookie can be created.
-  std::unique_ptr<CanonicalCookie> cookie = CanonicalCookie::Create(
-      url, "A=2; HttpOnly", now, server_time,
-      absl::nullopt /* cookie_partition_key */, &status);
+  std::unique_ptr<CanonicalCookie> cookie =
+      CanonicalCookie::Create(url, "A=2; HttpOnly", now, server_time,
+                              /*cookie_partition_key=*/absl::nullopt,
+                              /*block_truncated=*/true, &status);
   EXPECT_TRUE(cookie->IsHttpOnly());
   EXPECT_TRUE(status.IsInclude());
 }
@@ -459,7 +464,8 @@ TEST(CanonicalCookieTest, CreateWithInvalidDomain) {
 
   std::unique_ptr<CanonicalCookie> cookie = CanonicalCookie::Create(
       url, "A=2; Domain=wrongdomain.com", now, server_time,
-      absl::nullopt /* cookie_partition_key */, &status);
+      /*cookie_partition_key=*/absl::nullopt, /*block_truncated=*/true,
+      &status);
   EXPECT_EQ(nullptr, cookie.get());
   EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
       {CookieInclusionStatus::EXCLUDE_INVALID_DOMAIN}));
@@ -474,8 +480,9 @@ TEST(CanonicalCookieTest, CreateFromPublicSuffix) {
   CookieInclusionStatus status;
 
   // Host cookie can be created for an eTLD.
-  std::unique_ptr<CanonicalCookie> cookie = CanonicalCookie::Create(
-      url, "A=2", now, server_time, absl::nullopt, &status);
+  std::unique_ptr<CanonicalCookie> cookie =
+      CanonicalCookie::Create(url, "A=2", now, server_time, absl::nullopt,
+                              /*block_truncated=*/true, &status);
   EXPECT_TRUE(status.IsInclude());
   EXPECT_TRUE(cookie->IsHostCookie());
   EXPECT_EQ("com", cookie->Domain());
@@ -483,22 +490,25 @@ TEST(CanonicalCookieTest, CreateFromPublicSuffix) {
   // Attempting to create a domain cookie still yields a valid cookie, but only
   // if the domain attribute is the same as the URL's host, and it becomes a
   // host cookie only.
-  cookie = CanonicalCookie::Create(url, "A=2; domain=com", now, server_time,
-                                   absl::nullopt, &status);
+  cookie =
+      CanonicalCookie::Create(url, "A=2; domain=com", now, server_time,
+                              absl::nullopt, /*block_truncated=*/true, &status);
   EXPECT_TRUE(status.IsInclude());
   EXPECT_TRUE(cookie->IsHostCookie());
   EXPECT_EQ("com", cookie->Domain());
 
   // Same thing if the domain attribute is specified with a dot.
-  cookie = CanonicalCookie::Create(url, "A=2; domain=.com", now, server_time,
-                                   absl::nullopt, &status);
+  cookie =
+      CanonicalCookie::Create(url, "A=2; domain=.com", now, server_time,
+                              absl::nullopt, /*block_truncated=*/true, &status);
   EXPECT_TRUE(status.IsInclude());
   EXPECT_TRUE(cookie->IsHostCookie());
   EXPECT_EQ("com", cookie->Domain());
 
   // Capitalization is ok because everything is canonicalized.
-  cookie = CanonicalCookie::Create(url, "A=2; domain=CoM", now, server_time,
-                                   absl::nullopt, &status);
+  cookie =
+      CanonicalCookie::Create(url, "A=2; domain=CoM", now, server_time,
+                              absl::nullopt, /*block_truncated=*/true, &status);
   EXPECT_TRUE(status.IsInclude());
   EXPECT_TRUE(cookie->IsHostCookie());
   EXPECT_EQ("com", cookie->Domain());
@@ -507,40 +517,46 @@ TEST(CanonicalCookieTest, CreateFromPublicSuffix) {
   // If the domain attribute minus any leading dot is the same as the url's
   // host, allow it to become a host cookie.
   GURL multilabel_url = GURL("http://co.uk/path");
-  cookie = CanonicalCookie::Create(multilabel_url, "A=2", now, server_time,
-                                   absl::nullopt, &status);
+  cookie =
+      CanonicalCookie::Create(multilabel_url, "A=2", now, server_time,
+                              absl::nullopt, /*block_truncated=*/true, &status);
   EXPECT_TRUE(status.IsInclude());
   EXPECT_TRUE(cookie->IsHostCookie());
   EXPECT_EQ("co.uk", cookie->Domain());
 
   cookie = CanonicalCookie::Create(multilabel_url, "A=2; domain=co.uk", now,
-                                   server_time, absl::nullopt, &status);
+                                   server_time, absl::nullopt,
+                                   /*block_truncated=*/true, &status);
   EXPECT_TRUE(status.IsInclude());
   EXPECT_TRUE(cookie->IsHostCookie());
   EXPECT_EQ("co.uk", cookie->Domain());
 
   cookie = CanonicalCookie::Create(multilabel_url, "A=2; domain=.co.uk", now,
-                                   server_time, absl::nullopt, &status);
+                                   server_time, absl::nullopt,
+                                   /*block_truncated=*/true, &status);
   EXPECT_TRUE(status.IsInclude());
   EXPECT_TRUE(cookie->IsHostCookie());
   EXPECT_EQ("co.uk", cookie->Domain());
 
   // Don't allow setting a domain cookie from a public suffix for a superdomain.
   cookie = CanonicalCookie::Create(multilabel_url, "A=2; domain=uk", now,
-                                   server_time, absl::nullopt, &status);
+                                   server_time, absl::nullopt,
+                                   /*block_truncated=*/true, &status);
   EXPECT_EQ(nullptr, cookie.get());
   EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
       {CookieInclusionStatus::EXCLUDE_INVALID_DOMAIN}));
 
   cookie = CanonicalCookie::Create(multilabel_url, "A=2; domain=.uk", now,
-                                   server_time, absl::nullopt, &status);
+                                   server_time, absl::nullopt,
+                                   /*block_truncated=*/true, &status);
   EXPECT_EQ(nullptr, cookie.get());
   EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
       {CookieInclusionStatus::EXCLUDE_INVALID_DOMAIN}));
 
   // Don't allow setting a domain cookie for an unrelated domain.
   cookie = CanonicalCookie::Create(multilabel_url, "A=2; domain=foo.com", now,
-                                   server_time, absl::nullopt, &status);
+                                   server_time, absl::nullopt,
+                                   /*block_truncated=*/true, &status);
   EXPECT_EQ(nullptr, cookie.get());
   EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
       {CookieInclusionStatus::EXCLUDE_INVALID_DOMAIN}));
@@ -548,7 +564,8 @@ TEST(CanonicalCookieTest, CreateFromPublicSuffix) {
   // Don't allow setting a domain cookie for some other domain with no
   // registrable domain.
   cookie = CanonicalCookie::Create(multilabel_url, "A=2; domain=com", now,
-                                   server_time, absl::nullopt, &status);
+                                   server_time, absl::nullopt,
+                                   /*block_truncated=*/true, &status);
   EXPECT_EQ(nullptr, cookie.get());
   EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
       {CookieInclusionStatus::EXCLUDE_INVALID_DOMAIN}));
@@ -568,7 +585,8 @@ TEST(CanonicalCookieTest, CreateWithNonASCIIDomain) {
     // Test that non-ascii characters are rejected.
     std::unique_ptr<CanonicalCookie> cookie = CanonicalCookie::Create(
         url, "A=1; Domain=\xC3\xA9xample.com", now, server_time,
-        absl::nullopt /* cookie_partition_key */, &status);
+        /*cookie_partition_key=*/absl::nullopt, /*block_truncated=*/true,
+        &status);
     EXPECT_EQ(nullptr, cookie.get());
     EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
         {CookieInclusionStatus::EXCLUDE_INVALID_DOMAIN,
@@ -585,7 +603,8 @@ TEST(CanonicalCookieTest, CreateWithNonASCIIDomain) {
 
     std::unique_ptr<CanonicalCookie> cookie2 = CanonicalCookie::Create(
         url, "A=2; Domain=\xC3\xA9xample.com", now, server_time,
-        absl::nullopt /* cookie_partition_key */, &status2);
+        /*cookie_partition_key=*/absl::nullopt, /*block_truncated=*/true,
+        &status2);
 
     EXPECT_TRUE(cookie2.get());
     EXPECT_TRUE(status2.IsInclude());
@@ -597,7 +616,8 @@ TEST(CanonicalCookieTest, CreateWithNonASCIIDomain) {
   CookieInclusionStatus status3;
   std::unique_ptr<CanonicalCookie> cookie3 = CanonicalCookie::Create(
       url, "A=3; Domain=xn--xample-9ua.com", now, server_time,
-      absl::nullopt /* cookie_partition_key */, &status3);
+      /*cookie_partition_key=*/absl::nullopt, /*block_truncated=*/true,
+      &status3);
   EXPECT_TRUE(cookie3.get());
   EXPECT_TRUE(status3.IsInclude());
   EXPECT_FALSE(
@@ -637,9 +657,10 @@ TEST(CanonicalCookieTest, CreateWithDomainAsIP) {
   };
 
   for (const auto& test : kTests) {
-    std::unique_ptr<CanonicalCookie> cookie = CanonicalCookie::Create(
-        test.url, test.cookie_line, now, server_time,
-        absl::nullopt /* cookie_partition_key */, &status);
+    std::unique_ptr<CanonicalCookie> cookie =
+        CanonicalCookie::Create(test.url, test.cookie_line, now, server_time,
+                                /*cookie_partition_key=*/absl::nullopt,
+                                /*block_truncated=*/true, &status);
     if (test.expectedResult) {
       ASSERT_TRUE(cookie.get());
       EXPECT_EQ(test.url.host(), cookie->Domain());
@@ -660,25 +681,28 @@ TEST(CanonicalCookieTest, CreateSameParty) {
   CookieInclusionStatus status;
   std::unique_ptr<CanonicalCookie> cookie = CanonicalCookie::Create(
       url, "A=2; SameParty; Secure", creation_time, server_time,
-      absl::nullopt /* cookie_partition_key */, &status);
+      /*cookie_partition_key=*/absl::nullopt, /*block_truncated=*/true,
+      &status);
   ASSERT_TRUE(cookie.get());
   EXPECT_TRUE(status.IsInclude());
   EXPECT_TRUE(cookie->IsSecure());
   EXPECT_TRUE(cookie->IsSameParty());
   EXPECT_EQ(CookieSameSite::UNSPECIFIED, cookie->SameSite());
 
-  cookie = CanonicalCookie::Create(
-      url, "A=2; SameParty; SameSite=None; Secure", creation_time, server_time,
-      absl::nullopt /* cookie_partition_key */, &status);
+  cookie = CanonicalCookie::Create(url, "A=2; SameParty; SameSite=None; Secure",
+                                   creation_time, server_time,
+                                   /*cookie_partition_key=*/absl::nullopt,
+                                   /*block_truncated=*/true, &status);
   ASSERT_TRUE(cookie.get());
   EXPECT_TRUE(status.IsInclude());
   EXPECT_TRUE(cookie->IsSecure());
   EXPECT_TRUE(cookie->IsSameParty());
   EXPECT_EQ(CookieSameSite::NO_RESTRICTION, cookie->SameSite());
 
-  cookie = CanonicalCookie::Create(
-      url, "A=2; SameParty; SameSite=Lax; Secure", creation_time, server_time,
-      absl::nullopt /* cookie_partition_key */, &status);
+  cookie = CanonicalCookie::Create(url, "A=2; SameParty; SameSite=Lax; Secure",
+                                   creation_time, server_time,
+                                   /*cookie_partition_key=*/absl::nullopt,
+                                   /*block_truncated=*/true, &status);
   ASSERT_TRUE(cookie.get());
   EXPECT_TRUE(status.IsInclude());
   EXPECT_TRUE(cookie->IsSecure());
@@ -688,13 +712,15 @@ TEST(CanonicalCookieTest, CreateSameParty) {
   // SameParty cookie with SameSite=Strict is valid, since SameParty is ignored.
   cookie = CanonicalCookie::Create(
       url, "A=2; SameParty; SameSite=Strict; Secure", creation_time,
-      server_time, absl::nullopt /* cookie_partition_key */, &status);
+      server_time, /*cookie_partition_key=*/absl::nullopt,
+      /*block_truncated=*/true, &status);
   EXPECT_TRUE(cookie.get());
 
   // SameParty cookie without Secure is valid, since SameParty is ignored.
-  cookie = CanonicalCookie::Create(
-      url, "A=2; SameParty; SameSite=Lax", creation_time, server_time,
-      absl::nullopt /* cookie_partition_key */, &status);
+  cookie = CanonicalCookie::Create(url, "A=2; SameParty; SameSite=Lax",
+                                   creation_time, server_time,
+                                   /*cookie_partition_key=*/absl::nullopt,
+                                   /*block_truncated=*/true, &status);
   EXPECT_TRUE(cookie.get());
 }
 
@@ -709,7 +735,7 @@ TEST(CanonicalCookieTest, CreateWithPartitioned) {
   // Valid Partitioned attribute
   std::unique_ptr<CanonicalCookie> cookie = CanonicalCookie::Create(
       url, "__Host-A=2; Partitioned; Path=/; Secure", creation_time,
-      server_time, partition_key, &status);
+      server_time, partition_key, /*block_truncated=*/true, &status);
   ASSERT_TRUE(cookie.get());
   EXPECT_TRUE(status.IsInclude());
   EXPECT_TRUE(cookie->IsSecure());
@@ -720,9 +746,9 @@ TEST(CanonicalCookieTest, CreateWithPartitioned) {
   // Create() without Partitioned in the cookie line should not result in a
   // partitioned cookie.
   status = CookieInclusionStatus();
-  cookie =
-      CanonicalCookie::Create(url, "__Host-A=2; Path=/; Secure", creation_time,
-                              server_time, partition_key, &status);
+  cookie = CanonicalCookie::Create(url, "__Host-A=2; Path=/; Secure",
+                                   creation_time, server_time, partition_key,
+                                   /*block_truncated=*/true, &status);
   ASSERT_TRUE(cookie.get());
   EXPECT_TRUE(status.IsInclude());
   EXPECT_FALSE(cookie->IsPartitioned());
@@ -733,7 +759,7 @@ TEST(CanonicalCookieTest, CreateWithPartitioned) {
   status = CookieInclusionStatus();
   cookie = CanonicalCookie::Create(url, "A=2; Partitioned; Path=/; Secure",
                                    creation_time, server_time, partition_key,
-                                   &status);
+                                   /*block_truncated=*/true, &status);
   EXPECT_TRUE(cookie.get());
   EXPECT_TRUE(status.IsInclude());
   EXPECT_TRUE(cookie->IsPartitioned());
@@ -741,18 +767,18 @@ TEST(CanonicalCookieTest, CreateWithPartitioned) {
 
   // Invalid Partitioned attribute: No Secure attribute.
   status = CookieInclusionStatus();
-  cookie =
-      CanonicalCookie::Create(url, "A=2; Partitioned; Path=/", creation_time,
-                              server_time, partition_key, &status);
+  cookie = CanonicalCookie::Create(url, "A=2; Partitioned; Path=/",
+                                   creation_time, server_time, partition_key,
+                                   /*block_truncated=*/true, &status);
   EXPECT_FALSE(cookie.get());
   EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
       {CookieInclusionStatus::EXCLUDE_INVALID_PARTITIONED}));
 
   // Partitioned attribute: No Path attribute.
   status = CookieInclusionStatus();
-  cookie =
-      CanonicalCookie::Create(url, "A=2; Partitioned; Secure", creation_time,
-                              server_time, partition_key, &status);
+  cookie = CanonicalCookie::Create(url, "A=2; Partitioned; Secure",
+                                   creation_time, server_time, partition_key,
+                                   /*block_truncated=*/true, &status);
   EXPECT_TRUE(cookie.get());
   EXPECT_TRUE(status.IsInclude());
   EXPECT_TRUE(cookie->IsPartitioned());
@@ -762,7 +788,7 @@ TEST(CanonicalCookieTest, CreateWithPartitioned) {
   status = CookieInclusionStatus();
   cookie = CanonicalCookie::Create(
       url, "A=2; Partitioned; Path=/foobar; Secure", creation_time, server_time,
-      partition_key, &status);
+      partition_key, /*block_truncated=*/true, &status);
   EXPECT_TRUE(cookie.get());
   EXPECT_TRUE(status.IsInclude());
   EXPECT_TRUE(cookie->IsPartitioned());
@@ -772,7 +798,8 @@ TEST(CanonicalCookieTest, CreateWithPartitioned) {
   status = CookieInclusionStatus();
   cookie = CanonicalCookie::Create(
       url, "A=2; Partitioned; Path=/; Secure; Domain=example.com",
-      creation_time, server_time, partition_key, &status);
+      creation_time, server_time, partition_key, /*block_truncated=*/true,
+      &status);
   EXPECT_TRUE(cookie.get());
   LOG(ERROR) << status;
   EXPECT_TRUE(status.IsInclude());
@@ -784,9 +811,9 @@ TEST(CanonicalCookieTest, CreateWithPartitioned) {
   auto partition_key_with_nonce =
       absl::make_optional(CookiePartitionKey::FromURLForTesting(
           GURL("https://toplevelsite.com"), base::UnguessableToken::Create()));
-  cookie =
-      CanonicalCookie::Create(url, "__Host-A=2; Path=/; Secure", creation_time,
-                              server_time, partition_key_with_nonce, &status);
+  cookie = CanonicalCookie::Create(
+      url, "__Host-A=2; Path=/; Secure", creation_time, server_time,
+      partition_key_with_nonce, /*block_truncated=*/true, &status);
   EXPECT_TRUE(cookie.get());
   EXPECT_TRUE(status.IsInclude());
   EXPECT_TRUE(cookie->IsPartitioned());
@@ -803,7 +830,7 @@ TEST(CanonicalCookieTest, CreateWithPartitioned_Localhost) {
 
   std::unique_ptr<CanonicalCookie> cookie = CanonicalCookie::Create(
       url, "foo=bar; Path=/; Secure; Partitioned", creation_time, server_time,
-      partition_key, &status);
+      partition_key, /*block_truncated=*/true, &status);
   ASSERT_TRUE(cookie.get());
   EXPECT_TRUE(status.IsInclude());
   EXPECT_TRUE(cookie->IsSecure());
@@ -2612,7 +2639,7 @@ TEST(CanonicalCookieTest, MultipleExclusionReasons) {
   CookieInclusionStatus create_status;
   auto cookie2 = CanonicalCookie::Create(
       url, "__Secure-notactuallysecure=value;Domain=some-other-domain.com",
-      creation_time, server_time, absl::nullopt /* cookie_partition_key */,
+      creation_time, server_time, /*cookie_partition_key=*/absl::nullopt, true,
       &create_status);
   ASSERT_FALSE(cookie2);
   EXPECT_TRUE(create_status.HasExactlyExclusionReasonsForTesting(
@@ -2676,14 +2703,16 @@ TEST(CanonicalCookieTest, SecureCookiePrefix) {
   CookieInclusionStatus status;
 
   // A __Secure- cookie must be Secure.
-  EXPECT_FALSE(CanonicalCookie::Create(
-      https_url, "__Secure-A=B", creation_time, server_time,
-      absl::nullopt /* cookie_partition_key */, &status));
+  EXPECT_FALSE(CanonicalCookie::Create(https_url, "__Secure-A=B", creation_time,
+                                       server_time,
+                                       /*cookie_partition_key=*/absl::nullopt,
+                                       /*block_truncated=*/true, &status));
   EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
       {CookieInclusionStatus::EXCLUDE_INVALID_PREFIX}));
-  EXPECT_FALSE(CanonicalCookie::Create(
-      https_url, "__Secure-A=B; httponly", creation_time, server_time,
-      absl::nullopt /* cookie_partition_key */, &status));
+  EXPECT_FALSE(CanonicalCookie::Create(https_url, "__Secure-A=B; httponly",
+                                       creation_time, server_time,
+                                       /*cookie_partition_key=*/absl::nullopt,
+                                       /*block_truncated=*/true, &status));
   // (EXCLUDE_HTTP_ONLY would be fine, too)
   EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
       {CookieInclusionStatus::EXCLUDE_INVALID_PREFIX}));
@@ -2736,21 +2765,24 @@ TEST(CanonicalCookieTest, SecureCookiePrefix) {
       absl::nullopt /* cookie_partition_key */));
 
   // A __Secure- cookie can't be set on a non-secure origin.
-  EXPECT_FALSE(CanonicalCookie::Create(
-      http_url, "__Secure-A=B; Secure", creation_time, server_time,
-      absl::nullopt /* cookie_partition_key */, &status));
+  EXPECT_FALSE(CanonicalCookie::Create(http_url, "__Secure-A=B; Secure",
+                                       creation_time, server_time,
+                                       /*cookie_partition_key=*/absl::nullopt,
+                                       /*block_truncated=*/true, &status));
   EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
       {CookieInclusionStatus::EXCLUDE_INVALID_PREFIX}));
 
   // Hidden __Secure- prefixes should be rejected.
-  EXPECT_FALSE(CanonicalCookie::Create(
-      https_url, "=__Secure-A=B; Secure", creation_time, server_time,
-      absl::nullopt /* cookie_partition_key */, &status));
+  EXPECT_FALSE(CanonicalCookie::Create(https_url, "=__Secure-A=B; Secure",
+                                       creation_time, server_time,
+                                       /*cookie_partition_key=*/absl::nullopt,
+                                       /*block_truncated=*/true, &status));
   EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
       {CookieInclusionStatus::EXCLUDE_INVALID_PREFIX}));
-  EXPECT_FALSE(CanonicalCookie::Create(
-      https_url, "=__Secure-A; Secure", creation_time, server_time,
-      absl::nullopt /* cookie_partition_key */, &status));
+  EXPECT_FALSE(CanonicalCookie::Create(https_url, "=__Secure-A; Secure",
+                                       creation_time, server_time,
+                                       /*cookie_partition_key=*/absl::nullopt,
+                                       /*block_truncated=*/true, &status));
   EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
       {CookieInclusionStatus::EXCLUDE_INVALID_PREFIX}));
 
@@ -2769,14 +2801,16 @@ TEST(CanonicalCookieTest, HostCookiePrefix) {
   CookieInclusionStatus status;
 
   // A __Host- cookie must be Secure.
-  EXPECT_FALSE(CanonicalCookie::Create(
-      https_url, "__Host-A=B;", creation_time, server_time,
-      absl::nullopt /* cookie_partition_key */, &status));
+  EXPECT_FALSE(CanonicalCookie::Create(https_url, "__Host-A=B;", creation_time,
+                                       server_time,
+                                       /*cookie_partition_key=*/absl::nullopt,
+                                       /*block_truncated=*/true, &status));
   EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
       {CookieInclusionStatus::EXCLUDE_INVALID_PREFIX}));
   EXPECT_FALSE(CanonicalCookie::Create(
       https_url, "__Host-A=B; Domain=" + domain + "; Path=/;", creation_time,
-      server_time, absl::nullopt /* cookie_partition_key */, &status));
+      server_time, /*cookie_partition_key=*/absl::nullopt,
+      /*block_truncated=*/true, &status));
   EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
       {CookieInclusionStatus::EXCLUDE_INVALID_PREFIX}));
   EXPECT_TRUE(CanonicalCookie::Create(
@@ -2786,8 +2820,8 @@ TEST(CanonicalCookieTest, HostCookiePrefix) {
   // A __Host- cookie must be set from a secure scheme.
   EXPECT_FALSE(CanonicalCookie::Create(
       http_url, "__Host-A=B; Domain=" + domain + "; Path=/; Secure;",
-      creation_time, server_time, absl::nullopt /* cookie_partition_key */,
-      &status));
+      creation_time, server_time, /*cookie_partition_key=*/absl::nullopt,
+      /*block_truncated=*/true, &status));
   EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
       {CookieInclusionStatus::EXCLUDE_INVALID_PREFIX}));
   EXPECT_TRUE(CanonicalCookie::Create(
@@ -2797,13 +2831,14 @@ TEST(CanonicalCookieTest, HostCookiePrefix) {
   // A __Host- cookie can't have a Domain.
   EXPECT_FALSE(CanonicalCookie::Create(
       https_url, "__Host-A=B; Domain=" + domain + "; Path=/; Secure;",
-      creation_time, server_time, absl::nullopt /* cookie_partition_key */,
-      &status));
+      creation_time, server_time, /*cookie_partition_key=*/absl::nullopt,
+      /*block_truncated=*/true, &status));
   EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
       {CookieInclusionStatus::EXCLUDE_INVALID_PREFIX}));
   EXPECT_FALSE(CanonicalCookie::Create(
       https_url, "__Host-A=B; Domain=" + domain + "; Secure;", creation_time,
-      server_time, absl::nullopt /* cookie_partition_key */, &status));
+      server_time, /*cookie_partition_key=*/absl::nullopt,
+      /*block_truncated=*/true, &status));
   EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
       {CookieInclusionStatus::EXCLUDE_INVALID_PREFIX}));
 
@@ -2812,23 +2847,25 @@ TEST(CanonicalCookieTest, HostCookiePrefix) {
   EXPECT_TRUE(CanonicalCookie::Create(
       GURL("https://127.0.0.1"),
       "__Host-A=B; Domain=127.0.0.1; Path=/; Secure;", creation_time,
-      server_time, absl::nullopt /* cookie_partition_key */, &status));
+      server_time, /*cookie_partition_key=*/absl::nullopt,
+      /*block_truncated=*/true, &status));
   // A __Host- cookie with an IP address domain does not need the domain
   // attribute specified explicitly (just like a normal domain).
   EXPECT_TRUE(CanonicalCookie::Create(
       GURL("https://127.0.0.1"), "__Host-A=B; Domain=; Path=/; Secure;",
-      creation_time, server_time, absl::nullopt /* cookie_partition_key */,
-      &status));
+      creation_time, server_time, /*cookie_partition_key=*/absl::nullopt,
+      /*block_truncated=*/true, &status));
 
   // A __Host- cookie must have a Path of "/".
   EXPECT_FALSE(CanonicalCookie::Create(
       https_url, "__Host-A=B; Path=/foo; Secure;", creation_time, server_time,
-      absl::nullopt /* cookie_partition_key */, &status));
+      /*cookie_partition_key=*/absl::nullopt, /*block_truncated=*/true,
+      &status));
   EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
       {CookieInclusionStatus::EXCLUDE_INVALID_PREFIX}));
   EXPECT_FALSE(CanonicalCookie::Create(
       https_url, "__Host-A=B; Secure;", creation_time, server_time,
-      absl::nullopt /* cookie_partition_key */, &status));
+      /*cookie_partition_key=*/absl::nullopt, true, &status));
   EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
       {CookieInclusionStatus::EXCLUDE_INVALID_PREFIX}));
   EXPECT_TRUE(CanonicalCookie::Create(
@@ -2838,19 +2875,22 @@ TEST(CanonicalCookieTest, HostCookiePrefix) {
   // Prefixes are case insensitive.
   EXPECT_FALSE(CanonicalCookie::Create(
       http_url, "__host-A=B; Domain=" + domain + "; Path=/;", creation_time,
-      server_time, absl::nullopt /* cookie_partition_key */, &status));
+      server_time, /*cookie_partition_key=*/absl::nullopt,
+      /*block_truncated=*/true, &status));
   EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
       {CookieInclusionStatus::EXCLUDE_INVALID_PREFIX}));
 
   EXPECT_FALSE(CanonicalCookie::Create(
       http_url, "__HOST-A=B; Domain=" + domain + "; Path=/;", creation_time,
-      server_time, absl::nullopt /* cookie_partition_key */, &status));
+      server_time, /*cookie_partition_key=*/absl::nullopt,
+      /*block_truncated=*/true, &status));
   EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
       {CookieInclusionStatus::EXCLUDE_INVALID_PREFIX}));
 
   EXPECT_FALSE(CanonicalCookie::Create(
       http_url, "__HoSt-A=B; Domain=" + domain + "; Path=/;", creation_time,
-      server_time, absl::nullopt /* cookie_partition_key */, &status));
+      server_time, /*cookie_partition_key=*/absl::nullopt,
+      /*block_truncated=*/true, &status));
   EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
       {CookieInclusionStatus::EXCLUDE_INVALID_PREFIX}));
 
@@ -2861,15 +2901,18 @@ TEST(CanonicalCookieTest, HostCookiePrefix) {
 
     EXPECT_TRUE(CanonicalCookie::Create(
         http_url, "__host-A=B; Domain=" + domain + "; Path=/;", creation_time,
-        server_time, absl::nullopt /* cookie_partition_key */, &status));
+        server_time, /*cookie_partition_key=*/absl::nullopt,
+        /*block_truncated=*/true, &status));
 
     EXPECT_TRUE(CanonicalCookie::Create(
         http_url, "__HOST-A=B; Domain=" + domain + "; Path=/;", creation_time,
-        server_time, absl::nullopt /* cookie_partition_key */, &status));
+        server_time, /*cookie_partition_key=*/absl::nullopt,
+        /*block_truncated=*/true, &status));
 
     EXPECT_TRUE(CanonicalCookie::Create(
         http_url, "__HoSt-A=B; Domain=" + domain + "; Path=/;", creation_time,
-        server_time, absl::nullopt /* cookie_partition_key */, &status));
+        server_time, /*cookie_partition_key=*/absl::nullopt,
+        /*block_truncated=*/true, &status));
   }
 
   // Rules don't apply for a typoed prefix.
@@ -2888,12 +2931,14 @@ TEST(CanonicalCookieTest, HostCookiePrefix) {
   // Hidden __Host- prefixes should be rejected.
   EXPECT_FALSE(CanonicalCookie::Create(
       https_url, "=__Host-A=B; Path=/; Secure;", creation_time, server_time,
-      absl::nullopt /* cookie_partition_key */, &status));
+      /*cookie_partition_key=*/absl::nullopt, /*block_truncated=*/true,
+      &status));
   EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
       {CookieInclusionStatus::EXCLUDE_INVALID_PREFIX}));
-  EXPECT_FALSE(CanonicalCookie::Create(
-      https_url, "=__Host-A; Path=/; Secure;", creation_time, server_time,
-      absl::nullopt /* cookie_partition_key */, &status));
+  EXPECT_FALSE(CanonicalCookie::Create(https_url, "=__Host-A; Path=/; Secure;",
+                                       creation_time, server_time,
+                                       /*cookie_partition_key=*/absl::nullopt,
+                                       /*block_truncated=*/true, &status));
   EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
       {CookieInclusionStatus::EXCLUDE_INVALID_PREFIX}));
 
@@ -4523,7 +4568,7 @@ TEST(CanonicalCookieTest, Create_SourceSchemePort) {
   // A secure url doesn't need "Secure" to have a source scheme of secure
   cc = CanonicalCookie::Create(secure_url, "a=b; SameSite=Lax",
                                base::Time::Now(), absl::nullopt, absl::nullopt,
-                               &status);
+                               /*block_truncated=*/true, &status);
   EXPECT_TRUE(cc);
   EXPECT_TRUE(status.IsInclude());
   EXPECT_FALSE(status.ShouldWarn());
@@ -4534,7 +4579,7 @@ TEST(CanonicalCookieTest, Create_SourceSchemePort) {
   // But having "Secure" shouldn't change anything
   cc = CanonicalCookie::Create(secure_url, "a=b; SameSite=Lax; Secure",
                                base::Time::Now(), absl::nullopt, absl::nullopt,
-                               &status);
+                               /*block_truncated=*/true, &status);
   EXPECT_TRUE(cc);
   EXPECT_TRUE(status.IsInclude());
   EXPECT_FALSE(status.ShouldWarn());
@@ -4546,7 +4591,7 @@ TEST(CanonicalCookieTest, Create_SourceSchemePort) {
   // a default port.
   cc = CanonicalCookie::Create(insecure_url, "a=b; SameSite=Lax",
                                base::Time::Now(), absl::nullopt, absl::nullopt,
-                               &status);
+                               /*block_truncated=*/true, &status);
   EXPECT_TRUE(cc);
   EXPECT_TRUE(status.IsInclude());
   EXPECT_FALSE(status.ShouldWarn());
@@ -4559,7 +4604,7 @@ TEST(CanonicalCookieTest, Create_SourceSchemePort) {
   // tentatively allowed.
   cc = CanonicalCookie::Create(insecure_url, "a=b; SameSite=Lax; Secure",
                                base::Time::Now(), absl::nullopt, absl::nullopt,
-                               &status);
+                               /*block_truncated=*/true, &status);
   EXPECT_TRUE(cc);
   EXPECT_TRUE(status.IsInclude());
   EXPECT_TRUE(status.HasExactlyWarningReasonsForTesting(
@@ -4572,7 +4617,7 @@ TEST(CanonicalCookieTest, Create_SourceSchemePort) {
   // non-secure source scheme and keep its port.
   cc = CanonicalCookie::Create(insecure_url_custom_port, "a=b; SameSite=Lax",
                                base::Time::Now(), absl::nullopt, absl::nullopt,
-                               &status);
+                               /*block_truncated=*/true, &status);
   EXPECT_TRUE(cc);
   EXPECT_TRUE(status.IsInclude());
   EXPECT_FALSE(status.ShouldWarn());
@@ -4583,9 +4628,9 @@ TEST(CanonicalCookieTest, Create_SourceSchemePort) {
   // An insecure url with a non-default port with "Secure" should get a secure
   // source scheme and keep its port. It should also get a warning that a secure
   // source scheme was tentatively allowed.
-  cc = CanonicalCookie::Create(insecure_url_custom_port,
-                               "a=b; SameSite=Lax; Secure", base::Time::Now(),
-                               absl::nullopt, absl::nullopt, &status);
+  cc = CanonicalCookie::Create(
+      insecure_url_custom_port, "a=b; SameSite=Lax; Secure", base::Time::Now(),
+      absl::nullopt, absl::nullopt, /*block_truncated=*/true, &status);
   EXPECT_TRUE(cc);
   EXPECT_TRUE(status.IsInclude());
   EXPECT_TRUE(status.HasExactlyWarningReasonsForTesting(
@@ -5357,7 +5402,8 @@ TEST(CanonicalCookieTest, IsSetPermittedInContext) {
 
   std::unique_ptr<CanonicalCookie> cookie_with_long_path =
       CanonicalCookie::Create(url, "A=B; Path=/" + long_path, current_time,
-                              absl::nullopt, absl::nullopt, &status);
+                              absl::nullopt, absl::nullopt,
+                              /*block_truncated=*/true, &status);
   CookieAccessResult cookie_access_result(status);
   CookieOptions cookie_with_long_path_options;
   EXPECT_THAT(

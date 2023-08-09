@@ -111,6 +111,14 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
     top_level_storage_access_grants_ = settings;
   }
 
+  void set_block_truncated_cookies(bool block_truncated_cookies) {
+    block_truncated_cookies_ = block_truncated_cookies;
+  }
+
+  bool are_truncated_cookies_blocked() const {
+    return block_truncated_cookies_;
+  }
+
   // Returns a predicate that takes the domain of a cookie and a bool whether
   // the cookie is secure and returns true if the cookie should be deleted on
   // exit.
@@ -214,6 +222,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
   ContentSettingsForOneType content_settings_;
   bool block_third_party_cookies_ =
       net::cookie_util::IsForceThirdPartyCookieBlockingEnabled();
+  bool block_truncated_cookies_ = true;
   std::set<std::string> secure_origin_cookies_allowed_schemes_;
   std::set<std::string> matching_scheme_cookies_allowed_schemes_;
   std::set<std::string> third_party_cookies_allowed_schemes_;

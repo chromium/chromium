@@ -314,6 +314,10 @@ NET_EXPORT BASE_DECLARE_FEATURE(kPartitionedCookies);
 // frames.
 NET_EXPORT BASE_DECLARE_FEATURE(kNoncedPartitionedCookies);
 
+// When enabled, cookie-related code will treat cookies containing '\0', '\r',
+// and '\n' as invalid and reject the cookie.
+NET_EXPORT BASE_DECLARE_FEATURE(kBlockTruncatedCookies);
+
 // When enabled, cookies cannot have an expiry date further than 400 days in the
 // future.
 NET_EXPORT BASE_DECLARE_FEATURE(kClampCookieExpiryTo400Days);

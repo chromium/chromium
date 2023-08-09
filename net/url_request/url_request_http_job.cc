@@ -918,9 +918,18 @@ void URLRequestHttpJob::SaveCookiesAndNotifyHeadersComplete(int result) {
 
     num_cookie_lines_left_++;
 
+    // For the block_truncated parameter, the value shouldn't matter here
+    // because HTTP requests containing NULLs causes an error before this code
+    // can be reached and unpaired carriage returns and line feed characters
+    // cause truncation during HTTP header processing before reaching this
+    // point, so DCHECK this assumption and just pass true for this parameter.
+    DCHECK(cookie_string.find('\0') == std::string::npos);
+    DCHECK(cookie_string.find('\r') == std::string::npos);
+    DCHECK(cookie_string.find('\n') == std::string::npos);
     std::unique_ptr<CanonicalCookie> cookie = net::CanonicalCookie::Create(
         request_->url(), cookie_string, base::Time::Now(), server_time,
-        cookie_partition_key_.value(), &returned_status);
+        cookie_partition_key_.value(), /*block_truncated=*/true,
+        &returned_status);
 
     absl::optional<CanonicalCookie> cookie_to_return = absl::nullopt;
     if (returned_status.IsInclude()) {

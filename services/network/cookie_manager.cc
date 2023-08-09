@@ -312,6 +312,11 @@ void CookieManager::BlockThirdPartyCookies(bool block) {
   cookie_settings_.set_block_third_party_cookies(block);
 }
 
+void CookieManager::BlockTruncatedCookies(bool block) {
+  OnSettingsWillChange();
+  cookie_settings_.set_block_truncated_cookies(block);
+}
+
 void CookieManager::SetContentSettingsForLegacyCookieAccess(
     const ContentSettingsForOneType& settings) {
   OnSettingsWillChange();
@@ -357,6 +362,7 @@ void CookieManager::ConfigureCookieSettings(
     const network::mojom::CookieManagerParams& params,
     CookieSettings* out) {
   out->set_block_third_party_cookies(params.block_third_party_cookies);
+  out->set_block_truncated_cookies(params.block_truncated_cookies);
   out->set_content_settings(params.settings);
   out->set_secure_origin_cookies_allowed_schemes(
       params.secure_origin_cookies_allowed_schemes);

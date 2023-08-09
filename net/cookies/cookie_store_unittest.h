@@ -303,8 +303,9 @@ class CookieStoreTest : public testing::Test {
       const std::string& cookie_line) {
     CookieInclusionStatus create_status;
     auto cookie = CanonicalCookie::Create(
-        url, cookie_line, base::Time::Now(), absl::nullopt /* server_time */,
-        absl::nullopt /* cookie_partition_key */, &create_status);
+        url, cookie_line, base::Time::Now(), /*server_time=*/absl::nullopt,
+        /*cookie_partition_key=*/absl::nullopt, /*block_truncated=*/true,
+        &create_status);
     if (!cookie)
       return create_status;
 
@@ -632,8 +633,8 @@ TYPED_TEST_P(CookieStoreTest, SetCanonicalCookieTest) {
   CookieInclusionStatus status;
   auto cookie = CanonicalCookie::Create(
       this->http_www_foo_.url(), "foo=1; Secure", base::Time::Now(),
-      absl::nullopt /* server_time */, absl::nullopt /* cookie_partition_key */,
-      &status);
+      /*server_time=*/absl::nullopt, /*cookie_partition_key=*/absl::nullopt,
+      /*block_truncated=*/true, &status);
   EXPECT_TRUE(cookie->IsSecure());
   EXPECT_TRUE(status.IsInclude());
   EXPECT_TRUE(this->SetCanonicalCookieReturnAccessResult(
@@ -682,10 +683,11 @@ TYPED_TEST_P(CookieStoreTest, SetCanonicalCookieTest) {
     // A HttpOnly cookie can be created, but is rejected
     // upon setting if the options do not specify include_httponly.
     CookieInclusionStatus create_status;
-    auto c = CanonicalCookie::Create(
-        this->http_www_foo_.url(), "bar=1; HttpOnly", base::Time::Now(),
-        absl::nullopt /* server_time */,
-        absl::nullopt /* cookie_partition_key */, &create_status);
+    auto c = CanonicalCookie::Create(this->http_www_foo_.url(),
+                                     "bar=1; HttpOnly", base::Time::Now(),
+                                     /*server_time=*/absl::nullopt,
+                                     /*cookie_partition_key=*/absl::nullopt,
+                                     /*block_truncated=*/true, &create_status);
     EXPECT_TRUE(c->IsHttpOnly());
     EXPECT_TRUE(create_status.IsInclude());
     EXPECT_TRUE(this->SetCanonicalCookieReturnAccessResult(

@@ -281,7 +281,33 @@ IN_PROC_BROWSER_TEST_F(CookieBrowserTest, SameSiteCookies) {
   EXPECT_EQ("none=1", GetCookieFromJS(b_iframe));
 }
 
-IN_PROC_BROWSER_TEST_F(CookieBrowserTest, CookieTruncatingCharFromJavascript) {
+class TruncatedCookieBrowserTestP : public CookieBrowserTest,
+                                    public testing::WithParamInterface<bool> {
+ public:
+  TruncatedCookieBrowserTestP() {
+    truncated_cookies_blocked_ = GetParam();
+
+    if (TruncatedCookiesBlocked()) {
+      feature_list_.InitAndEnableFeature(net::features::kBlockTruncatedCookies);
+    } else {
+      feature_list_.InitAndDisableFeature(
+          net::features::kBlockTruncatedCookies);
+    }
+  }
+
+  bool TruncatedCookiesBlocked() { return truncated_cookies_blocked_; }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  bool truncated_cookies_blocked_;
+};
+
+INSTANTIATE_TEST_SUITE_P(TruncatedCookieBrowserTests,
+                         TruncatedCookieBrowserTestP,
+                         testing::Values(true, false));
+
+IN_PROC_BROWSER_TEST_P(TruncatedCookieBrowserTestP,
+                       CookieTruncatingCharFromJavascript) {
   using std::string_literals::operator""s;
 
   base::HistogramTester histogram;
@@ -319,11 +345,16 @@ IN_PROC_BROWSER_TEST_F(CookieBrowserTest, CookieTruncatingCharFromJavascript) {
   }
 
   int expected_histogram_hit_count;
-  EXPECT_EQ("foo2=bar; foo3=ba; foo4=bar", GetCookieFromJS(frame));
-  // Note: the last three test cases above are detectable as truncations (since
-  // the first case results in a failure that occurs before the histogram is
-  // recorded), so check for that below.
-  expected_histogram_hit_count = 3;
+  if (TruncatedCookiesBlocked()) {
+    EXPECT_EQ("", GetCookieFromJS(frame));
+    expected_histogram_hit_count = 0;
+  } else {
+    // Note: the last three test cases above are detectable as truncations
+    // (since the first case results in a failure that occurs before the
+    // histogram is recorded), so check for that below.
+    EXPECT_EQ("foo2=bar; foo3=ba; foo4=bar", GetCookieFromJS(frame));
+    expected_histogram_hit_count = 3;
+  }
 
   FetchHistogramsFromChildProcesses();
   histogram.ExpectBucketCount(

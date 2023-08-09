@@ -785,9 +785,10 @@ void RestrictedCookieManager::SetCookieFromString(
 
   net::CookieInclusionStatus status;
   std::unique_ptr<net::CanonicalCookie> parsed_cookie =
-      net::CanonicalCookie::Create(url, cookie, base::Time::Now(),
-                                   absl::nullopt /* server_time */,
-                                   cookie_partition_key_, &status);
+      net::CanonicalCookie::Create(
+          url, cookie, base::Time::Now(), /*server_time=*/absl::nullopt,
+          cookie_partition_key_,
+          cookie_settings().are_truncated_cookies_blocked(), &status);
   if (!parsed_cookie) {
     if (cookie_observer_) {
       std::vector<network::mojom::CookieOrLineWithAccessResultPtr>

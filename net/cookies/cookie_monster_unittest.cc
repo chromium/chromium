@@ -4990,9 +4990,10 @@ TEST_F(CookieMonsterTest, RejectCreatedSameSiteCookieOnSet) {
 
   CookieInclusionStatus status;
   // Cookie can be created successfully; SameSite is not checked on Creation.
-  auto cookie = CanonicalCookie::Create(
-      url, cookie_line, base::Time::Now(), absl::nullopt /* server_time */,
-      absl::nullopt /* cookie_partition_key */, &status);
+  auto cookie = CanonicalCookie::Create(url, cookie_line, base::Time::Now(),
+                                        /*server_time=*/absl::nullopt,
+                                        /*cookie_partition_key=*/absl::nullopt,
+                                        /*block_truncated=*/true, &status);
   ASSERT_TRUE(cookie != nullptr);
   ASSERT_TRUE(status.IsInclude());
 
@@ -5014,8 +5015,9 @@ TEST_F(CookieMonsterTest, RejectCreatedSecureCookieOnSet) {
   // Cookie can be created successfully from an any url. Secure is not checked
   // on Create.
   auto cookie = CanonicalCookie::Create(
-      http_url, cookie_line, base::Time::Now(), absl::nullopt /* server_time */,
-      absl::nullopt /* cookie_partition_key */, &status);
+      http_url, cookie_line, base::Time::Now(), /*server_time=*/absl::nullopt,
+      /*cookie_partition_key=*/absl::nullopt, /*block_truncated=*/true,
+      &status);
 
   ASSERT_TRUE(cookie != nullptr);
   ASSERT_TRUE(status.IsInclude());
@@ -5037,9 +5039,10 @@ TEST_F(CookieMonsterTest, RejectCreatedHttpOnlyCookieOnSet) {
   CookieMonster cm(nullptr, nullptr);
   CookieInclusionStatus status;
   // Cookie can be created successfully; HttpOnly is not checked on Create.
-  auto cookie = CanonicalCookie::Create(
-      url, cookie_line, base::Time::Now(), absl::nullopt /* server_time */,
-      absl::nullopt /* cookie_partition_key */, &status);
+  auto cookie = CanonicalCookie::Create(url, cookie_line, base::Time::Now(),
+                                        /*server_time=*/absl::nullopt,
+                                        /*cookie_partition_key=*/absl::nullopt,
+                                        /*block_truncated=*/true, &status);
 
   ASSERT_TRUE(cookie != nullptr);
   ASSERT_TRUE(status.IsInclude());

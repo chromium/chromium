@@ -362,6 +362,8 @@ ProfileNetworkContextService::ProfileNetworkContextService(Profile* profile)
       base::BindRepeating(&ProfileNetworkContextService::
                               UpdateCorsNonWildcardRequestHeadersSupport,
                           base::Unretained(this)));
+  // TODO(awillia): Register a pref change callback to call
+  // OnTruncatedCookieBlockingChanged.
 }
 
 ProfileNetworkContextService::~ProfileNetworkContextService() = default;
@@ -463,6 +465,20 @@ void ProfileNetworkContextService::OnThirdPartyCookieBlockingChanged(
             ->BlockThirdPartyCookies(block_third_party_cookies);
       },
       block_third_party_cookies));
+}
+
+void ProfileNetworkContextService::OnTruncatedCookieBlockingChanged(
+    bool block_truncated_cookies) {
+  profile_->ForEachLoadedStoragePartition(base::BindRepeating(
+      [](bool block_truncated_cookies,
+         content::StoragePartition* storage_partition) {
+        // Update the main CookieManager's CookieSettings object to block
+        // truncated cookies, and since this is shared with all of the
+        // RestrictedCookieManager instances, those will get the change as well.
+        storage_partition->GetCookieManagerForBrowserProcess()
+            ->BlockTruncatedCookies(block_truncated_cookies);
+      },
+      block_truncated_cookies));
 }
 
 void ProfileNetworkContextService::OnFirstPartySetsEnabledChanged(
@@ -630,6 +646,10 @@ ProfileNetworkContextService::CreateCookieManagerParams(
 
   out->cookie_access_delegate_type =
       network::mojom::CookieAccessDelegateType::USE_CONTENT_SETTINGS;
+
+  // TODO(awillia): Will get this value from prefs in a follow-up CL.
+  out->block_truncated_cookies = false;
+
   return out;
 }
 

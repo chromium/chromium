@@ -115,6 +115,10 @@ class NET_EXPORT CanonicalCookie {
   // will be unpartitioned even when the cookie line has the Partitioned
   // attribute.
   //
+  // The `block_truncated` argument indicates whether the '\0', '\n', and '\r'
+  // characters should cause the cookie to fail to be created if present
+  // (instead of truncating `cookie_line` at the first occurrence).
+  //
   // If a cookie is returned, |cookie->IsCanonical()| will be true.
   static std::unique_ptr<CanonicalCookie> Create(
       const GURL& url,
@@ -122,6 +126,7 @@ class NET_EXPORT CanonicalCookie {
       const base::Time& creation_time,
       absl::optional<base::Time> server_time,
       absl::optional<CookiePartitionKey> cookie_partition_key,
+      bool block_truncated = true,
       CookieInclusionStatus* status = nullptr);
 
   // Create a canonical cookie based on sanitizing the passed inputs in the

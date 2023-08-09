@@ -132,6 +132,7 @@ base::StringPiece ValidStringPieceForValue(const std::string& value) {
 namespace net {
 
 ParsedCookie::ParsedCookie(const std::string& cookie_line,
+                           bool block_truncated,
                            CookieInclusionStatus* status_out) {
   // Put a pointer on the stack so the rest of the function can assign to it if
   // the default nullptr is passed in.
@@ -141,7 +142,7 @@ ParsedCookie::ParsedCookie(const std::string& cookie_line,
   }
   *status_out = CookieInclusionStatus();
 
-  ParseTokenValuePairs(cookie_line, *status_out);
+  ParseTokenValuePairs(cookie_line, block_truncated, *status_out);
   if (IsValid()) {
     SetupAttributes();
   } else if (status_out->IsInclude()) {
@@ -512,6 +513,7 @@ bool ParsedCookie::IsValidCookieNameValuePair(
 
 // Parse all token/value pairs and populate pairs_.
 void ParsedCookie::ParseTokenValuePairs(const std::string& cookie_line,
+                                        bool block_truncated,
                                         CookieInclusionStatus& status_out) {
   pairs_.clear();
 
@@ -541,6 +543,12 @@ void ParsedCookie::ParseTokenValuePairs(const std::string& cookie_line,
         break;
       default:
         NOTREACHED();
+    }
+    if (block_truncated &&
+        base::FeatureList::IsEnabled(net::features::kBlockTruncatedCookies)) {
+      status_out.AddExclusionReason(
+          CookieInclusionStatus::EXCLUDE_DISALLOWED_CHARACTER);
+      return;
     }
   }
 
