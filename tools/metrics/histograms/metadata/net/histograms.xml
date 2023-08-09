@@ -432,7 +432,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.AlternateServiceForDnsAlpnH3Failed" enum="NetErrorCodes"
-    expires_after="2023-09-17">
+    expires_after="2024-01-21">
   <owner>horo@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
