@@ -36,6 +36,7 @@ import './screens/common/oobe_reset.js';
 import './screens/common/os_install.js';
 import './screens/common/os_trial.js';
 import './screens/common/parental_handoff.js';
+import './screens/common/password_selection.js';
 import './screens/common/pin_setup.js';
 import './screens/common/recommend_apps.js';
 import './screens/common/saml_confirm_password.js';
@@ -129,6 +130,11 @@ export const commonScreensList = [
   },
   {tag: 'os-trial-element', id: 'os-trial', condition: 'isOsInstallAllowed'},
   {tag: 'parental-handoff-element', id: 'parental-handoff'},
+  {
+    tag: 'password-selection-element',
+    id: 'password-selection',
+    condition: 'isPasswordSelectionEnabledInOobe',
+  },
   {tag: 'pin-setup-element', id: 'pin-setup'},
   {tag: 'recommend-apps-element', id: 'recommend-apps'},
   {tag: 'saml-confirm-password-element', id: 'saml-confirm-password'},
