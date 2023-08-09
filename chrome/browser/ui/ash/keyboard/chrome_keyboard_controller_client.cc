@@ -15,6 +15,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
+#include "base/trace_event/trace_event.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -394,6 +395,8 @@ void ChromeKeyboardControllerClient::OnKeyboardContentsLoaded() {
 }
 
 void ChromeKeyboardControllerClient::OnSessionStateChanged() {
+  TRACE_EVENT0("login",
+               "ChromeKeyboardControllerClient::OnSessionStateChanged");
   if (!session_manager::SessionManager::Get()->IsSessionStarted()) {
     // Reset the registrar so that prefs are re-registered after a crash.
     pref_change_registrar_.RemoveAll();
