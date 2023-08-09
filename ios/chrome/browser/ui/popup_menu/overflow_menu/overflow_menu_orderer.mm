@@ -652,14 +652,20 @@ struct BadgeData {
   }
   for (overflow_menu::Destination destination :
        _destinationOrderData.shownDestinations) {
-    if (OverflowMenuDestination* overflowMenuDestination =
-            [self.destinationProvider
-                destinationForDestinationType:destination]) {
+    OverflowMenuDestination* overflowMenuDestination =
+        [self.destinationProvider destinationForDestinationType:destination];
+    if (overflowMenuDestination) {
       if (IsOverflowMenuCustomizationEnabled()) {
+        // If the orderer has stored badge data about this destination, the
+        // badge type may need to be upgraded. However, don't replace badges
+        // with less important ones. Specifically, error badges are most
+        // important.
         auto it = _destinationBadgeData.find(destination);
-        if (it != _destinationBadgeData.end() &&
-            !it->second.isFeatureDrivenBadge) {
-          overflowMenuDestination.badge = it->second.badgeType;
+        if (it != _destinationBadgeData.end()) {
+          if (it->second.badgeType == BadgeTypeError ||
+              overflowMenuDestination.badge == BadgeTypeNone) {
+            overflowMenuDestination.badge = it->second.badgeType;
+          }
         }
       }
       [sortedDestinations addObject:overflowMenuDestination];
@@ -926,20 +932,39 @@ struct BadgeData {
     }
   }
 
-  // Check if any destinations have badges from the destination provider.
+  std::map<overflow_menu::Destination, BadgeType> providerBadgeTypes;
+
   for (overflow_menu::Destination destination : availableDestinations) {
-    OverflowMenuDestination* menuDestination =
-        [self.destinationProvider destinationForDestinationType:destination];
-    if (menuDestination.badge != BadgeTypeNone) {
+    BadgeType badgeType =
+        [self.destinationProvider destinationForDestinationType:destination]
+            .badge;
+    // If `destination` is hidden and has an error badge, propagate that down to
+    // a visible badge.
+    if (badgeType == BadgeTypeError &&
+        std::find(_destinationOrderData.hiddenDestinations.begin(),
+                  _destinationOrderData.hiddenDestinations.end(),
+                  destination) !=
+            _destinationOrderData.hiddenDestinations.end()) {
+      providerBadgeTypes[overflow_menu::Destination::Settings] = BadgeTypeError;
+    } else {
+      // Don't override a previously propagated error badge.
+      providerBadgeTypes[destination] =
+          (providerBadgeTypes[destination] == BadgeTypeError) ? BadgeTypeError
+                                                              : badgeType;
+    }
+  }
+
+  // Make sure all badges from the provider end up in the stored badge data.
+  for (const auto& [destination, badgeType] : providerBadgeTypes) {
+    if (badgeType != BadgeTypeNone) {
       // If this is a new badge, the current badge is not feature driven, or the
       // badge from the provider is different than the current, then update the
       // data. Otherwise, the badge is already known about.
       if (_destinationBadgeData.find(destination) ==
               _destinationBadgeData.end() ||
           !_destinationBadgeData[destination].isFeatureDrivenBadge ||
-          menuDestination.badge !=
-              _destinationBadgeData[destination].badgeType) {
-        _destinationBadgeData[destination].badgeType = menuDestination.badge;
+          badgeType != _destinationBadgeData[destination].badgeType) {
+        _destinationBadgeData[destination].badgeType = badgeType;
         _destinationBadgeData[destination].impressionsRemaining = 3;
         _destinationBadgeData[destination].isFeatureDrivenBadge = true;
       }
@@ -951,10 +976,8 @@ struct BadgeData {
   // provider.
   for (auto it = _destinationBadgeData.begin();
        it != _destinationBadgeData.end();) {
-    OverflowMenuDestination* menuDestination =
-        [self.destinationProvider destinationForDestinationType:it->first];
     if (it->second.isFeatureDrivenBadge &&
-        menuDestination.badge == BadgeTypeNone) {
+        providerBadgeTypes[it->first] == BadgeTypeNone) {
       it = _destinationBadgeData.erase(it);
     } else if (!it->second.isFeatureDrivenBadge &&
                it->second.impressionsRemaining <= 0) {

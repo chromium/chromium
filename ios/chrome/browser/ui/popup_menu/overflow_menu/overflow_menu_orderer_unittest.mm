@@ -1686,3 +1686,46 @@ TEST_F(OverflowMenuOrdererTest, UpdateDoesntReorderMenu) {
                 overflow_menu_model_.destinations[5].destination),
             all_destinations[5]);
 }
+
+// Tests that if a hidden destination gets an error badge, that badge appears on
+// settings instead.
+TEST_F(OverflowMenuOrdererTest, HiddenDestinationPropagatesErrorBadge) {
+  base::test::ScopedFeatureList features(kOverflowMenuCustomization);
+
+  DestinationRanking all_destinations = SampleDestinations();
+  DestinationRanking current_destinations = {
+      overflow_menu::Destination::Settings,
+      all_destinations[1],
+      all_destinations[2],
+      all_destinations[3],
+      all_destinations[4],
+      all_destinations[5],
+  };
+
+  InitializeOverflowMenuOrdererWithRanking(NO, current_destinations);
+
+  // Hide destination 5.
+  DestinationCustomizationModel* destinationModel =
+      overflow_menu_orderer_.destinationCustomizationModel;
+  destinationModel.shownDestinations[5].shown = NO;
+  [overflow_menu_orderer_ commitDestinationsUpdate];
+
+  // Add error badge to destination 5
+  OverflowMenuDestination* destination =
+      CreateOverflowMenuDestination(all_destinations[5]);
+  destination.badge = BadgeTypeError;
+  [destination_provider_ storeCustomDestination:destination
+                             forDestinationType:all_destinations[5]];
+
+  [overflow_menu_orderer_ reorderDestinationsForInitialMenu];
+
+  // The badge on the hidden destination 5 should propagate to the settings
+  // destination.
+  ASSERT_EQ(overflow_menu_model_.destinations[0].badge, BadgeTypeError);
+
+  // Removing the badge on hidden destination 5 should also propagate to the
+  // settings destination
+  destination.badge = BadgeTypeNone;
+  [overflow_menu_orderer_ reorderDestinationsForInitialMenu];
+  ASSERT_EQ(overflow_menu_model_.destinations[0].badge, BadgeTypeNone);
+}
