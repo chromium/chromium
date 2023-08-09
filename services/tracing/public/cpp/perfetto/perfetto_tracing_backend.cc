@@ -629,11 +629,10 @@ PerfettoTracingBackend::ConnectConsumer(const ConnectConsumerArgs& args) {
   }
   auto consumer_endpoint =
       std::make_unique<ConsumerEndpoint>(args.consumer, args.task_runner);
-  consumer_endpoint_ = consumer_endpoint->GetWeakPtr();
   consumer_connection_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&PerfettoTracingBackend::CreateConsumerConnection,
-                     base::Unretained(this)));
+                     base::Unretained(this), consumer_endpoint->GetWeakPtr()));
   return consumer_endpoint;
 }
 
@@ -713,17 +712,23 @@ void PerfettoTracingBackend::BindProducerConnectionIfNecessary() {
   }
 }
 
-void PerfettoTracingBackend::CreateConsumerConnection() {
+void PerfettoTracingBackend::CreateConsumerConnection(
+    base::WeakPtr<ConsumerEndpoint> consumer_endpoint) {
   DCHECK(consumer_connection_task_runner_->RunsTasksInCurrentSequence());
-  consumer_host_remote_.reset();
+  auto consumer_host_remote =
+      std::make_unique<mojo::PendingRemote<mojom::ConsumerHost>>();
   auto& tracing_service = consumer_connection_factory_();
   tracing_service.BindConsumerHost(
-      consumer_host_remote_.InitWithNewPipeAndPassReceiver());
-  muxer_task_runner_->PostTask([this] {
-    if (!consumer_endpoint_)
-      return;
-    consumer_endpoint_->BindConnection(std::move(consumer_host_remote_));
-  });
+      consumer_host_remote->InitWithNewPipeAndPassReceiver());
+  muxer_task_runner_->PostTask(
+      [consumer_endpoint, raw_ptr = consumer_host_remote.release()] {
+        std::unique_ptr<mojo::PendingRemote<mojom::ConsumerHost>>
+            consumer_host_remote(raw_ptr);
+        if (!consumer_endpoint) {
+          return;
+        }
+        consumer_endpoint->BindConnection(std::move(*consumer_host_remote));
+      });
 }
 
 }  // namespace tracing
