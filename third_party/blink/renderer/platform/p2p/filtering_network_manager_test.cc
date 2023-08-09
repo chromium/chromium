@@ -121,11 +121,11 @@ class MockMediaPermission : public media::MediaPermission {
 
   void HasPermission(Type type,
                      PermissionStatusCB permission_status_cb) override {
-    if (type == MediaPermission::AUDIO_CAPTURE) {
+    if (type == MediaPermission::Type::kAudioCapture) {
       DCHECK(mic_callback_.is_null());
       mic_callback_ = std::move(permission_status_cb);
     } else {
-      DCHECK(type == MediaPermission::VIDEO_CAPTURE);
+      DCHECK(type == MediaPermission::Type::kVideoCapture);
       DCHECK(camera_callback_.is_null());
       camera_callback_ = std::move(permission_status_cb);
     }

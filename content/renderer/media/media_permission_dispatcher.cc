@@ -9,6 +9,7 @@
 #include "base/notreached.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "url/gurl.h"
 
@@ -24,18 +25,18 @@ blink::mojom::PermissionDescriptorPtr MediaPermissionTypeToPermissionDescriptor(
     Type type) {
   auto descriptor = blink::mojom::PermissionDescriptor::New();
   switch (type) {
-    case Type::PROTECTED_MEDIA_IDENTIFIER:
+    case Type::kProtectedMediaIdentifier:
       descriptor->name =
           blink::mojom::PermissionName::PROTECTED_MEDIA_IDENTIFIER;
       break;
-    case Type::AUDIO_CAPTURE:
+    case Type::kAudioCapture:
       descriptor->name = blink::mojom::PermissionName::AUDIO_CAPTURE;
       break;
-    case Type::VIDEO_CAPTURE:
+    case Type::kVideoCapture:
       descriptor->name = blink::mojom::PermissionName::VIDEO_CAPTURE;
       break;
     default:
-      NOTREACHED() << type;
+      NOTREACHED() << base::to_underlying(type);
       descriptor->name =
           blink::mojom::PermissionName::PROTECTED_MEDIA_IDENTIFIER;
   }

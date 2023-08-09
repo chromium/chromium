@@ -1108,7 +1108,7 @@ void KeySystemConfigSelector::SelectConfigInternal(
         }
         DVLOG(3) << "Request permission.";
         media_permission_->RequestPermission(
-            media::MediaPermission::PROTECTED_MEDIA_IDENTIFIER,
+            media::MediaPermission::Type::kProtectedMediaIdentifier,
             base::BindOnce(&KeySystemConfigSelector::OnPermissionResult,
                            weak_factory_.GetWeakPtr(), std::move(request)));
         return;
