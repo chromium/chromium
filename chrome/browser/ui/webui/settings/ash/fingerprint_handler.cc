@@ -13,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/trace_event/trace_event.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/quick_unlock/auth_token.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_factory.h"
@@ -139,6 +140,7 @@ void FingerprintHandler::OnSessionFailed() {
 }
 
 void FingerprintHandler::OnSessionStateChanged() {
+  TRACE_EVENT0("ui", "FingerprintHandler::OnSessionStateChanged");
   SessionState state = SessionManager::Get()->session_state();
 
   FireWebUIListener("on-screen-locked",
