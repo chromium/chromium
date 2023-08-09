@@ -989,15 +989,17 @@ TEST_P(IOSurfaceImageBackingFactoryScanoutTest, TexImageTexStorageEquivalence) {
     if (format == viz::SinglePlaneFormat::kBGR_565 || format.IsCompressed()) {
       continue;
     }
-    int storage_format = TextureStorageFormat(
-        format, feature_info->feature_flags().angle_rgbx_internal_format);
 
-    int image_gl_format = GLDataFormat(format);
+    GLFormatDesc format_desc = ToGLFormatDesc(
+        format, /*plane_index=*/0,
+        feature_info->feature_flags().angle_rgbx_internal_format);
+    int storage_format = format_desc.storage_internal_format;
+    int image_gl_format = format_desc.data_format;
     int storage_gl_format =
         gles2::TextureManager::ExtractFormatFromStorageFormat(storage_format);
     EXPECT_EQ(image_gl_format, storage_gl_format);
 
-    int image_gl_type = GLDataType(format);
+    int image_gl_type = format_desc.data_type;
     int storage_gl_type =
         gles2::TextureManager::ExtractTypeFromStorageFormat(storage_format);
 
@@ -1010,7 +1012,7 @@ TEST_P(IOSurfaceImageBackingFactoryScanoutTest, TexImageTexStorageEquivalence) {
     }
 
     // confirm that we support TexStorage2D only if we support TexImage2D:
-    int image_internal_format = GLInternalFormat(format);
+    int image_internal_format = format_desc.image_internal_format;
     bool supports_tex_image =
         validators->texture_internal_format.IsValid(image_internal_format) &&
         validators->texture_format.IsValid(image_gl_format) &&

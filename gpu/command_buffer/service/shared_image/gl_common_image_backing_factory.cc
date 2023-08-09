@@ -49,10 +49,13 @@ GLCommonImageBackingFactory::GLCommonImageBackingFactory(
     if (format == viz::SinglePlaneFormat::kBGR_565) {
       continue;
     }
-    const GLuint image_internal_format = GLInternalFormat(format);
-    const GLenum gl_format = GLDataFormat(format);
+    const GLFormatDesc format_desc = ToGLFormatDesc(
+        format, /*plane_index=*/0,
+        feature_info->feature_flags().angle_rgbx_internal_format);
+    const GLuint image_internal_format = format_desc.image_internal_format;
+    const GLenum gl_format = format_desc.data_format;
     CHECK_NE(gl_format, static_cast<GLenum>(GL_ZERO));
-    const GLenum gl_type = GLDataType(format);
+    const GLenum gl_type = format_desc.data_type;
     const bool uncompressed_format_valid =
         validators->texture_internal_format.IsValid(image_internal_format) &&
         validators->texture_format.IsValid(gl_format);
@@ -72,8 +75,7 @@ GLCommonImageBackingFactory::GLCommonImageBackingFactory(
         gles2::TextureManager::GetCompatibilitySwizzle(feature_info, gl_format);
     info.image_internal_format = gles2::TextureManager::AdjustTexInternalFormat(
         feature_info, image_internal_format, gl_type);
-    info.storage_internal_format = TextureStorageFormat(
-        format, feature_info->feature_flags().angle_rgbx_internal_format);
+    info.storage_internal_format = format_desc.storage_internal_format;
     info.adjusted_format =
         gles2::TextureManager::AdjustTexFormat(feature_info, gl_format);
 

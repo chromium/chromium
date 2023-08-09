@@ -86,13 +86,13 @@ SkiaGLImageRepresentationDXGISwapChain::Create(
   GrBackendTexture backend_texture;
   bool angle_rgbx_internal_format =
       context_state->feature_info()->feature_flags().angle_rgbx_internal_format;
-  GLenum gl_texture_storage_format = TextureStorageFormat(
-      backing->format(), angle_rgbx_internal_format, /*plane_index=*/0);
+  GLFormatDesc format_desc = ToGLFormatDesc(
+      backing->format(), /*plane_index=*/0, angle_rgbx_internal_format);
   if (!GetGrBackendTexture(
           context_state->feature_info(),
           gl_representation->GetTextureBase()->target(), backing->size(),
           gl_representation->GetTextureBase()->service_id(),
-          gl_texture_storage_format,
+          format_desc.storage_internal_format,
           context_state->gr_context()->threadSafeProxy(), &backend_texture)) {
     return nullptr;
   }

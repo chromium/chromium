@@ -266,15 +266,15 @@ void ImageContextImpl::BeginAccessIfNecessary(
   }
 
   // Legacy mailboxes support only single planar formats.
-  DCHECK(format().is_single_plane());
+  CHECK(format().is_single_plane());
   bool angle_rgbx_internal_format =
       context_state->feature_info()->feature_flags().angle_rgbx_internal_format;
   GrBackendTexture backend_texture;
-  GLenum gl_storage_internal_format =
-      gpu::TextureStorageFormat(format(), angle_rgbx_internal_format);
+  gpu::GLFormatDesc format_desc = gpu::ToGLFormatDesc(
+      format(), /*plane_index=*/0, angle_rgbx_internal_format);
   gpu::GetGrBackendTexture(
       context_state->feature_info(), texture_base->target(), size(),
-      texture_base->service_id(), gl_storage_internal_format,
+      texture_base->service_id(), format_desc.storage_internal_format,
       context_state->gr_context()->threadSafeProxy(), &backend_texture);
   if (!backend_texture.isValid()) {
     DLOG(ERROR) << "Failed to fulfill the promise texture.";

@@ -25,9 +25,11 @@ std::unique_ptr<TestImageBacking> AllocateTextureAndCreateSharedImage(
   GLuint service_id;
   glGenTextures(1, &service_id);
   glBindTexture(GL_TEXTURE_2D, service_id);
-  glTexImage2D(GL_TEXTURE_2D, 0, GLInternalFormat(format), size.width(),
-               size.height(), 0, GLDataFormat(format), GLDataType(format),
-               nullptr /* data */);
+  GLFormatDesc format_desc = ToGLFormatDesc(format, /*plane_index=*/0,
+                                            /*use_angle_rgbx_format*/ false);
+  glTexImage2D(GL_TEXTURE_2D, 0, format_desc.image_internal_format,
+               size.width(), size.height(), 0, format_desc.data_format,
+               format_desc.data_type, nullptr /* data */);
   return std::make_unique<TestImageBacking>(mailbox, format, size, color_space,
                                             surface_origin, alpha_type, usage,
                                             0 /* estimated_size */, service_id);

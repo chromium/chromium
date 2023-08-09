@@ -644,9 +644,11 @@ bool AngleVulkanImageBacking::InitializePassthroughTexture() {
     auto& vulkan_image = vk_textures_[plane].vulkan_image;
     DCHECK(vulkan_image);
 
+    auto format_desc =
+        ToGLFormatDesc(format(), plane, /*use_angle_rgbx_format=*/false);
     auto egl_image =
         CreateEGLImage(vulkan_image->image(), &vulkan_image->create_info(),
-                       GLInternalFormat(format(), plane));
+                       format_desc.image_internal_format);
     if (!egl_image.is_valid()) {
       LOG(ERROR) << "Error creating EGLImage: " << ui::GetLastEGLErrorString();
       gl_textures_.clear();

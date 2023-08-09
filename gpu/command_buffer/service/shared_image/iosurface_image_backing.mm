@@ -953,14 +953,15 @@ IOSurfaceImageBacking::ProduceSkiaGanesh(
     bool angle_rgbx_internal_format = context_state->feature_info()
                                           ->feature_flags()
                                           .angle_rgbx_internal_format;
-    GLenum gl_texture_storage_format =
-        TextureStorageFormat(format(), angle_rgbx_internal_format, plane_index);
+    GLFormatDesc format_desc =
+        ToGLFormatDesc(format(), plane_index, angle_rgbx_internal_format);
     GrBackendTexture backend_texture;
     auto plane_size = format().GetPlaneSize(plane_index, size());
-    GetGrBackendTexture(
-        context_state->feature_info(), egl_state->GetGLTarget(), plane_size,
-        egl_state->GetGLServiceId(plane_index), gl_texture_storage_format,
-        context_state->gr_context()->threadSafeProxy(), &backend_texture);
+    GetGrBackendTexture(context_state->feature_info(), egl_state->GetGLTarget(),
+                        plane_size, egl_state->GetGLServiceId(plane_index),
+                        format_desc.storage_internal_format,
+                        context_state->gr_context()->threadSafeProxy(),
+                        &backend_texture);
     sk_sp<GrPromiseImageTexture> promise_texture =
         GrPromiseImageTexture::Make(backend_texture);
     if (!promise_texture) {
