@@ -44,6 +44,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/menu_runner.h"
+#include "ui/views/controls/menu/menu_scroll_view_container.h"
 #include "ui/views/controls/menu/submenu_view.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -134,7 +135,8 @@ bool AppMenuBrowserTest::VerifyUi() {
 
   const auto* const test_info =
       testing::UnitTest::GetInstance()->current_test_info();
-  return VerifyPixelUi(menu_item->GetSubmenu(), test_info->test_case_name(),
+  return VerifyPixelUi(menu_item->GetSubmenu()->GetScrollViewContainer(),
+                       test_info->test_case_name(),
                        test_info->name()) != ui::test::ActionResult::kFailed;
 }
 

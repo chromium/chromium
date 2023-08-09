@@ -406,8 +406,9 @@ class MenuControllerTest : public ViewsTestBase,
     gfx::Rect bounds = menu_controller_->CalculateBubbleMenuBounds(
         menu_item, MenuController::MenuOpenDirection::kLeading,
         &resulting_direction, &anchor);
-    bounds.Inset(
-        menu_item->GetSubmenu()->GetScrollViewContainer()->GetInsets());
+    bounds.Inset(menu_item->GetSubmenu()
+                     ->GetScrollViewContainer()
+                     ->outside_border_insets());
     return bounds;
   }
 

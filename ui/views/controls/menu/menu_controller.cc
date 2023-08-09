@@ -2559,10 +2559,14 @@ gfx::Rect MenuController::CalculateBubbleMenuBounds(
 
   const auto* const scroll_view_container = submenu->GetScrollViewContainer();
   gfx::Size menu_size = scroll_view_container->GetPreferredSize();
+  // Respect the delegate's maximum width.
+  menu_size.set_width(std::min(menu_size.width(),
+                               item->GetDelegate()->GetMaxWidthForMenu(item)));
 
   // For comboboxes, ensure the menu is at least as wide as the anchor.
   const gfx::Rect& anchor_bounds = state_.initial_bounds;
-  const gfx::Insets border_insets = scroll_view_container->GetInsets();
+  const gfx::Insets border_insets =
+      scroll_view_container->outside_border_insets();
   if (IsCombobox()) {
     menu_size.SetToMax({anchor_bounds.width() + border_insets.width(), 0});
   }
@@ -2574,7 +2578,6 @@ gfx::Rect MenuController::CalculateBubbleMenuBounds(
 
   const MenuConfig& menu_config = MenuConfig::instance();
   const int corner_radius = menu_config.CornerRadiusForMenu(this);
-  const bool is_bubble_menu = menu_config.use_bubble_border && corner_radius;
 
   if (!item->GetParentMenuItem()) {
     // This is a top-level menu, position it relative to the anchor bounds.
@@ -2586,6 +2589,8 @@ gfx::Rect MenuController::CalculateBubbleMenuBounds(
       int max_height = monitor_bounds.height();
       // In case of bubbles, the maximum width is limited by the space
       // between the display corner and the target area + the tip size.
+      const bool is_bubble_menu =
+          menu_config.use_bubble_border && corner_radius;
       if (is_anchored_bubble || is_bubble_menu ||
           item->actual_menu_position() == MenuPosition::kAboveBounds) {
         // Don't consider `border_insets` because when the max size is enforced,
@@ -2600,9 +2605,6 @@ gfx::Rect MenuController::CalculateBubbleMenuBounds(
       DCHECK_GE(max_height, kBubbleTipSizeTopBottom);
       menu_size.SetToMin(gfx::Size(max_width, max_height));
     }
-    // Respect the delegate's maximum width.
-    menu_size.set_width(std::min(
-        menu_size.width(), item->GetDelegate()->GetMaxWidthForMenu(item)));
 
     // Calculate possible coordinates. Do not clamp values; that happens later.
     int x_menu_on_left = 0;
@@ -2741,16 +2743,8 @@ gfx::Rect MenuController::CalculateBubbleMenuBounds(
             ? preferred_open_direction == MenuOpenDirection::kTrailing
             : preferred_open_direction == MenuOpenDirection::kLeading;
 
-    // Don't let the menu get too wide if bubble menus are on.
-    if (is_bubble_menu) {
-      menu_size.set_width(std::min(
-          menu_size.width(), item->GetDelegate()->GetMaxWidthForMenu(item)));
-    }
-
     const int width_with_right_inset =
-        is_bubble_menu
-            ? (menu_size.width() - border_insets.right())
-            : (menu_config.touchable_menu_min_width + border_insets.right());
+        menu_size.width() - border_insets.right();
     const int x_max = monitor_bounds.right() - width_with_right_inset;
     const int x_left = item_bounds.x() - width_with_right_inset +
                        menu_config.submenu_horizontal_overlap;
@@ -2796,11 +2790,8 @@ gfx::Rect MenuController::CalculateBubbleMenuBounds(
              : menu_config.rounded_menu_vertical_border_size.value_or(
                    corner_radius));
     auto y_min = monitor_bounds.y() - border_insets.top();
-    auto y_max = is_bubble_menu
-                     ? monitor_bounds.bottom() + border_insets.bottom() -
-                           menu_size.height()
-                     : monitor_bounds.bottom() - menu_size.height() +
-                           border_insets.top();
+    auto y_max =
+        monitor_bounds.bottom() + border_insets.bottom() - menu_size.height();
     y = std::clamp(y, y_min, y_max);
   }
 

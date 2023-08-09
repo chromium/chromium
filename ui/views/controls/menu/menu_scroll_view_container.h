@@ -39,7 +39,8 @@ class VIEWS_EXPORT MenuScrollViewContainer : public View {
   // External function to check if the bubble border is used.
   bool HasBubbleBorder() const;
 
-  // View overrides.
+  // View:
+  gfx::Insets GetInsets() const override;
   gfx::Size CalculatePreferredSize() const override;
   void OnPaintBackground(gfx::Canvas* canvas) override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
@@ -48,6 +49,8 @@ class VIEWS_EXPORT MenuScrollViewContainer : public View {
   void SetBorderColorId(absl::optional<ui::ColorId> border_color_id) {
     border_color_id_ = border_color_id;
   }
+
+  gfx::Insets outside_border_insets() const { return outside_border_insets_; }
 
  protected:
   // View override.
@@ -103,6 +106,13 @@ class VIEWS_EXPORT MenuScrollViewContainer : public View {
 
   // Corner radius of the background.
   int corner_radius_ = 0;
+
+  // The portion of GetInsets() that represent the region outside the border
+  // (e.g. any shadows).
+  gfx::Insets outside_border_insets_;
+
+  // Any additional insets to add inside the border.
+  gfx::Insets additional_insets_;
 
   // Whether the menu uses ash system UI layout.
   const bool use_ash_system_ui_layout_;

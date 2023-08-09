@@ -14,11 +14,12 @@ void MenuConfig::Init() {
     corner_radius = 2;                       // Overridden in CR2023.
     item_min_height = 29;                    // Undesirable in CR2023.
     reserve_dedicated_arrow_column = false;  // Default in CR2023.
+    menu_horizontal_border_size = 0;         // Default in CR2023.
     separator_lower_height = 8;              // Unused in CR2023.
     separator_spacing_height = 7;            // Overridden in CR2023.
     separator_upper_height = 8;              // Unused in CR2023.
     submenu_horizontal_overlap = 1;          // Overridden in CR2023.
-    use_outer_border = false;                // Undesirable in CR2023.
+    use_outer_border = false;                // Default in CR2023.
   }
 }
 
