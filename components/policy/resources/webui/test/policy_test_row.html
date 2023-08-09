@@ -26,9 +26,9 @@
   }
 </style>
 <div role="cell" class="name-cell">
-  <select class="name">
-    <option selected disabled hidden>$i18n{testNameSelect}</option>
-  </select>
+  <input class='name' list="policy-name-list" autocomplete="off" placeholder="$i18n{testNameSelect}"></input>
+  <datalist id="policy-name-list">
+</datalist>
 </div>
 <div role="cell">
   <input type="text" class="value">

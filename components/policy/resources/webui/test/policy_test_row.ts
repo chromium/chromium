@@ -15,6 +15,7 @@ export class PolicyTestRowElement extends CustomElement {
   private hasAnError_: boolean = false;
   private errorEvents_: EventTracker = new EventTracker();
   private inputType_: string|number|boolean|any[]|object;
+  private policyNamesToTypes_: {[key: string]: string};
 
   static override get template() {
     return getTemplate();
@@ -32,15 +33,19 @@ export class PolicyTestRowElement extends CustomElement {
   // Event listener function for changing the input type when a policy name is
   // selected.
   private changeInputTypeEvent_(event: Event) {
-    this.changeInputType(event.target! as HTMLSelectElement);
+    const inputElement: HTMLInputElement = event.target! as HTMLInputElement;
+    this.changeInputType_(inputElement);
   }
 
-  // Class method for changing the type of input in the value cell of this row
-  // depending on the value type of the selected policy.
-  changeInputType(selectElement: HTMLSelectElement) {
-    const newValueType =
-        selectElement.options[selectElement.selectedIndex]!.className;
-    const inputElement = this.getRequiredElement('.value');
+  private changeInputType_(nameInput: HTMLInputElement) {
+    // Return if invalid policy name
+    if (!this.isValidPolicyName_(nameInput.value)) {
+      this.setInErrorState_(nameInput);
+      return;
+    }
+
+    const newValueType = this.policyNamesToTypes_[nameInput.value];
+    const inputElement = this.getRequiredElement<HTMLInputElement>('.value');
     const inputElementCell = inputElement.parentNode! as HTMLElement;
     inputElement.remove();
     switch (newValueType) {
@@ -56,9 +61,7 @@ export class PolicyTestRowElement extends CustomElement {
           'false': ['False', 'Disabled', 'Disallow'],
         };
         let boolOptionIndex = 0;
-        const policyNameLower =
-            selectElement.options[selectElement.selectedIndex]!.value
-                .toLowerCase();
+        const policyNameLower = nameInput.value.toLowerCase();
         if (policyNameLower.includes('enable')) {
           boolOptionIndex = 1;
         } else if (policyNameLower.includes('allow')) {
@@ -161,21 +164,30 @@ export class PolicyTestRowElement extends CustomElement {
     }
   }
 
+  // Function that verifies policy name is a valid.
+  private isValidPolicyName_(policyName: string) {
+    if (policyName in this.policyNamesToTypes_) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   // Function that initializes the policy selection dropdowns and delete
   // button for the current row.
   private initialize_() {
-    const policyNameDropdown = this.getRequiredElement('.name');
-    policyNameDropdown.addEventListener(
+    const policyNameDatalist = this.getRequiredElement('#policy-name-list');
+    const policyNameInput = this.getRequiredElement('.name');
+    policyNameInput.addEventListener(
         'change', this.changeInputTypeEvent_.bind(this));
 
     // Populate the policy name dropdown with all policy names.
-    const policyNamesToTypes =
+    this.policyNamesToTypes_ =
         JSON.parse(loadTimeData.getString('policyNamesToTypes'));
-    for (const name in policyNamesToTypes) {
+    for (const name in this.policyNamesToTypes_) {
       const currOption = document.createElement('option');
       currOption.textContent = name;
-      currOption.classList.add(policyNamesToTypes[name]);
-      policyNameDropdown.appendChild(currOption);
+      policyNameDatalist.appendChild(currOption);
     }
 
     // Add an event listener for this row's delete button.
@@ -231,7 +243,7 @@ export class PolicyTestRowElement extends CustomElement {
   // Class method for setting the name, source, scope, level and value cells for
   // this row.
   setInitialValues(initialValues: PolicyInfo) {
-    const policyNameInput = this.getRequiredElement<HTMLSelectElement>('.name');
+    const policyNameInput = this.getRequiredElement<HTMLInputElement>('.name');
     const policySourceInput =
         this.getRequiredElement<HTMLInputElement>('.source');
     const policyLevelInput =
@@ -245,13 +257,7 @@ export class PolicyTestRowElement extends CustomElement {
 
     // Change input type according to policy, set value to new input
     policyNameInput.value = initialValues.name;
-
-    // Check if policy name is valid
-    if (policyNameInput.selectedIndex === -1) {
-      this.setInErrorState_(policyNameInput);
-    } else {
-      this.changeInputType(policyNameInput);
-    }
+    this.changeInputType_(policyNameInput);
 
     const policyValueInput =
         this.getRequiredElement<HTMLInputElement>('.value');
@@ -313,7 +319,21 @@ export class PolicyTestRowElement extends CustomElement {
     return '';
   }
 
-  // Class method for returning the name, level, source or scope set in this
+  // Class method for returning the name for this policy (the value in the
+  // name cell of this row)
+  getPolicyName(): string {
+    const inputElement: HTMLInputElement =
+        this.getRequiredElement<HTMLInputElement>('.name');
+
+    if (this.isValidPolicyName_(inputElement.value)) {
+      return inputElement.value;
+    } else {
+      this.setInErrorState_(inputElement);
+      return '';
+    }
+  }
+
+  // Class method for returning the level, source or scope set in this
   // row.
   getPolicyAttribute(attributeName: string): string {
     const inputElement: HTMLSelectElement =

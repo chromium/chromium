@@ -64,7 +64,7 @@ export class PolicyTestTableElement extends CustomElement {
         Array.from(this.shadowRoot!.querySelectorAll('policy-test-row'));
     const policyInfoArray: PolicyInfo[] = policyRowArray.map(
         (row: PolicyTestRowElement) => ({
-          name: row.getPolicyAttribute('name'),
+          name: row.getPolicyName(),
           source: Number.parseInt(row.getPolicyAttribute('source')),
           scope: Number.parseInt(row.getPolicyAttribute('scope')),
           level: Number.parseInt(row.getPolicyAttribute('level')),
