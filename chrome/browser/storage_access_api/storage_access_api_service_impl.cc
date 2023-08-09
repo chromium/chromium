@@ -4,6 +4,7 @@
 
 #include <utility>
 
+#include "base/check.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -17,7 +18,9 @@
 #include "url/origin.h"
 #include "url/url_constants.h"
 
+namespace {
 constexpr base::TimeDelta kTimerPeriod = base::Days(1);
+}
 
 StorageAccessAPIServiceImpl::StorageAccessAPIServiceImpl(
     content::BrowserContext* browser_context)

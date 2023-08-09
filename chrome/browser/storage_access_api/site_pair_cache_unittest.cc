@@ -12,14 +12,14 @@
 
 namespace {
 
-const char* kHostA = "a.test";
-const char* kHostB = "b.test";
-const char* kHostC = "c.test";
-const char* kHostASubdomain = "foo.a.test";
-const char* kHostBSubdomain = "bar.b.test";
-const char* kIPv4Addr = "127.0.0.1";
-const char* kIPv6Addr = "::1";
-const char* kLocalhost = "localhost";
+constexpr char kHostA[] = "a.test";
+constexpr char kHostB[] = "b.test";
+constexpr char kHostC[] = "c.test";
+constexpr char kHostASubdomain[] = "foo.a.test";
+constexpr char kHostBSubdomain[] = "bar.b.test";
+constexpr char kIPv4Addr[] = "127.0.0.1";
+constexpr char kIPv6Addr[] = "::1";
+constexpr char kLocalhost[] = "localhost";
 
 url::Origin OriginFromHost(base::StringPiece host) {
   return url::Origin::Create(GURL(base::StrCat({"https://", host})));

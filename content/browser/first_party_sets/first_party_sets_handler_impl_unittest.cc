@@ -55,16 +55,16 @@ namespace {
 using ParseErrorType = FirstPartySetsHandler::ParseErrorType;
 using ParseWarningType = FirstPartySetsHandler::ParseWarningType;
 
-const char* kAdditionsField = "additions";
-const char* kPrimaryField = "primary";
-const char* kCctldsField = "ccTLDs";
+constexpr char kAdditionsField[] = "additions";
+constexpr char kPrimaryField[] = "primary";
+constexpr char kCctldsField[] = "ccTLDs";
 
-const char* kFirstPartySetsClearSiteDataOutcomeHistogram =
+constexpr char kFirstPartySetsClearSiteDataOutcomeHistogram[] =
     "FirstPartySets.Initialization.ClearSiteDataOutcome";
 
-const char* kDelayedQueriesCountHistogram =
+constexpr char kDelayedQueriesCountHistogram[] =
     "Cookie.FirstPartySets.Browser.DelayedQueriesCount";
-const char* kMostDelayedQueryDeltaHistogram =
+constexpr char kMostDelayedQueryDeltaHistogram[] =
     "Cookie.FirstPartySets.Browser.MostDelayedQueryDelta";
 
 }  // namespace

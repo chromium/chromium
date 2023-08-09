@@ -4,8 +4,6 @@
 
 #include "net/first_party_sets/addition_overlaps_union_find.h"
 
-#include "base/containers/flat_map.h"
-#include "base/containers/flat_set.h"
 #include "base/test/gtest_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 

@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "net/base/schemeful_site.h"
 #include "url/origin.h"
@@ -14,13 +13,11 @@
 SitePairCache::SitePairCache() = default;
 SitePairCache::~SitePairCache() = default;
 
-bool SitePairCache::Insert(const url::Origin& fst, const url::Origin& snd) {
-  if (!origins_.emplace(fst, snd).second) {
-    return false;
-  }
-
-  return sites_.emplace(net::SchemefulSite(fst), net::SchemefulSite(snd))
-      .second;
+bool SitePairCache::Insert(const url::Origin& first,
+                           const url::Origin& second) {
+  return origins_.emplace(first, second).second &&
+         sites_.emplace(net::SchemefulSite(first), net::SchemefulSite(second))
+             .second;
 }
 
 void SitePairCache::Clear() {

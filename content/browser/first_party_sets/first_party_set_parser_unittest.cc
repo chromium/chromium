@@ -33,11 +33,11 @@ using ParseError = FirstPartySetsHandler::ParseError;
 using ParseWarningType = FirstPartySetsHandler::ParseWarningType;
 using ParseWarning = FirstPartySetsHandler::ParseWarning;
 
-const char kPrimaryField[] = "primary";
-const char kAssociatedSitesField[] = "associatedSites";
-const char kCctldsField[] = "ccTLDs";
-const char kReplacementsField[] = "replacements";
-const char kAdditionsField[] = "additions";
+constexpr char kPrimaryField[] = "primary";
+constexpr char kAssociatedSitesField[] = "associatedSites";
+constexpr char kCctldsField[] = "ccTLDs";
+constexpr char kReplacementsField[] = "replacements";
+constexpr char kAdditionsField[] = "additions";
 constexpr char kParsedSuccessfullyHistogram[] =
     "Cookie.FirstPartySets.ComponentSetsParsedSuccessfully";
 constexpr char kNonfatalErrorsHistogram[] =

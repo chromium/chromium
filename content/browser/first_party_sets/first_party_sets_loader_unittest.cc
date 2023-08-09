@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "base/containers/flat_map.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/string_piece.h"

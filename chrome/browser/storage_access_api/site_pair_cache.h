@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_STORAGE_ACCESS_API_SITE_PAIR_CACHE_H_
 #define CHROME_BROWSER_STORAGE_ACCESS_API_SITE_PAIR_CACHE_H_
 
+#include <utility>
+
 #include "base/containers/flat_set.h"
 
 namespace net {
@@ -27,7 +29,7 @@ class SitePairCache {
 
   // Inserts into the cache if necessary. Returns true if a new <site, site>
   // pair was inserted; false if the <site, site> pair was already present.
-  bool Insert(const url::Origin& fst, const url::Origin& snd);
+  bool Insert(const url::Origin& first, const url::Origin& second);
 
   // Clears the cache.
   void Clear();
