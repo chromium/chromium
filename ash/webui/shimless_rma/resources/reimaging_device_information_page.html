@@ -1,6 +1,11 @@
 <style include="cr-shared-style shimless-rma-shared shimless-fonts">
   :host {
     --device-info-input-width: 336px;
+    /* Height of the shadows that are added by CrContainerShadowMixin. */
+    --shadow-height: 20px;
+    /* This inverted margin "pulls" in the content below/above it, so the shadow
+     * overlaps the content. The 2px is an optical adjustment. */
+    --shadow-negative-margin: calc(2px + calc(-1 * var(--shadow-height)));
   }
 
   hr {
@@ -15,6 +20,21 @@
     /* 90px is the width (including margins) of the revert button to the right
      * of each input. */
     width: calc(var(--device-info-input-width) + 90px);
+  }
+
+  .wrapper #cr-container-shadow-top,
+  .wrapper #cr-container-shadow-bottom {
+    background: linear-gradient(180deg, rgba(0,0,0,0.05), transparent);
+    box-shadow: none;
+    height: var(--shadow-height);
+  }
+
+  .wrapper #cr-container-shadow-top {
+    margin-bottom: var(--shadow-negative-margin);
+  }
+
+  .wrapper #cr-container-shadow-bottom {
+    margin-top: var(--shadow-negative-margin);
   }
 
   /* Hide the compliance info horizontal line when the bottom shadow is present
