@@ -1,6 +1,8 @@
 'use strict'
 
 /*
+ *  Taken from wpt/webrtc/RTCPeerConnection-helper.js, update occasionally.
+ *
  *  Helper Methods for testing the following methods in RTCPeerConnection:
  *    createOffer
  *    createAnswer
@@ -713,3 +715,10 @@ const expectNoMoreGatheringStateChanges = async (t, pc) => {
             'Should not get an icegatheringstatechange right now!');
       });
 };
+
+async function queueAWebrtcTask() {
+  const pc = new RTCPeerConnection();
+  pc.addTransceiver('audio');
+  await new Promise(r => pc.onnegotiationneeded = r);
+}
+
