@@ -174,7 +174,7 @@ void AsyncLayerTreeFrameSink::SubmitCompositorFrame(
   DCHECK(frame.metadata.begin_frame_ack.frame_id.IsSequenceValid());
 
   TRACE_EVENT(
-      "viz,benchmark", "Graphics.Pipeline",
+      "viz,benchmark,graphics.pipeline", "Graphics.Pipeline",
       perfetto::Flow::Global(frame.metadata.begin_frame_ack.trace_id),
       [&](perfetto::EventContext ctx) {
         auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
@@ -255,7 +255,7 @@ void AsyncLayerTreeFrameSink::DidNotProduceFrame(const viz::BeginFrameAck& ack,
   DCHECK(!ack.has_damage);
   DCHECK(ack.frame_id.IsSequenceValid());
   TRACE_EVENT(
-      "viz,benchmark", "Graphics.Pipeline",
+      "viz,benchmark,graphics.pipeline", "Graphics.Pipeline",
       perfetto::Flow::Global(ack.trace_id), [&](perfetto::EventContext ctx) {
         auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
         auto* data = event->set_chrome_graphics_pipeline();
@@ -313,7 +313,7 @@ void AsyncLayerTreeFrameSink::OnBeginFrame(
 
   if (!needs_begin_frames_) {
     TRACE_EVENT(
-        "viz,benchmark", "Graphics.Pipeline",
+        "viz,benchmark,graphics.pipeline", "Graphics.Pipeline",
         perfetto::Flow::Global(adjusted_args.trace_id),
         [&](perfetto::EventContext ctx) {
           auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
@@ -329,7 +329,7 @@ void AsyncLayerTreeFrameSink::OnBeginFrame(
     return;
   }
   TRACE_EVENT(
-      "viz,benchmark", "Graphics.Pipeline",
+      "viz,benchmark,graphics.pipeline", "Graphics.Pipeline",
       perfetto::Flow::Global(adjusted_args.trace_id),
       [&](perfetto::EventContext ctx) {
         auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
