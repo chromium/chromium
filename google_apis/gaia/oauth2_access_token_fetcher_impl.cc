@@ -26,9 +26,6 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
 namespace {
-BASE_FEATURE(kParseOauth2ErrorCode,
-             "ParseOAuth2ErrorCode",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 constexpr char kGetAccessTokenBodyFormat[] =
     "client_id=%s&"
@@ -215,49 +212,48 @@ void OAuth2AccessTokenFetcherImpl::EndGetAccessToken(
   OAuth2Response response = OAuth2ResponseErrorToOAuth2Response(oauth2_error);
   RecordOAuth2Response(response);
   absl::optional<GoogleServiceAuthError> error;
-  if (base::FeatureList::IsEnabled(kParseOauth2ErrorCode)) {
-    switch (response) {
-      case kOk:
-      case kOkUnexpectedFormat:
-        NOTREACHED();
-        break;
 
-      case kRateLimitExceeded:
-      case kInternalFailure:
-        // Transient error.
-        error = GoogleServiceAuthError::FromServiceUnavailable(response_str);
-        break;
+  switch (response) {
+    case kOk:
+    case kOkUnexpectedFormat:
+      NOTREACHED();
+      break;
 
-      case kInvalidGrant:
-        // Persistent error requiring the user to sign in again.
-        error = GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
-            GoogleServiceAuthError::InvalidGaiaCredentialsReason::
-                CREDENTIALS_REJECTED_BY_SERVER);
-        break;
+    case kRateLimitExceeded:
+    case kInternalFailure:
+      // Transient error.
+      error = GoogleServiceAuthError::FromServiceUnavailable(response_str);
+      break;
 
-      case kInvalidScope:
-      case kRestrictedClient:
-        // Scope persistent error that can't be fixed by user action.
-        error = GoogleServiceAuthError::FromScopeLimitedUnrecoverableError(
-            response_str);
-        break;
+    case kInvalidGrant:
+      // Persistent error requiring the user to sign in again.
+      error = GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+              CREDENTIALS_REJECTED_BY_SERVER);
+      break;
 
-      case kInvalidRequest:
-      case kInvalidClient:
-      case kUnauthorizedClient:
-      case kUnsuportedGrantType:
-        DLOG(ERROR) << "Unexpected persistent error: error code = "
-                    << oauth2_error;
-        error = GoogleServiceAuthError::FromServiceError(response_str);
-        break;
+    case kInvalidScope:
+    case kRestrictedClient:
+      // Scope persistent error that can't be fixed by user action.
+      error = GoogleServiceAuthError::FromScopeLimitedUnrecoverableError(
+          response_str);
+      break;
 
-      case kUnknownError:
-      case kErrorUnexpectedFormat:
-        // Failed request with unknown error code or unexpected format is
-        // treated as a persistent error case.
-        DLOG(ERROR) << "Unexpected error/format: error code = " << oauth2_error;
-        break;
-    }
+    case kInvalidRequest:
+    case kInvalidClient:
+    case kUnauthorizedClient:
+    case kUnsuportedGrantType:
+      DLOG(ERROR) << "Unexpected persistent error: error code = "
+                  << oauth2_error;
+      error = GoogleServiceAuthError::FromServiceError(response_str);
+      break;
+
+    case kUnknownError:
+    case kErrorUnexpectedFormat:
+      // Failed request with unknown error code or unexpected format is
+      // treated as a persistent error case.
+      DLOG(ERROR) << "Unexpected error/format: error code = " << oauth2_error;
+      break;
   }
 
   if (!error.has_value()) {
