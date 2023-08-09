@@ -72,10 +72,11 @@ ScopedAuthorizationRef GetAuthorizationRightsWithPrompt(
 
   // The OS will display |prompt| along with a sentence asking the user to type
   // the "password to allow this."
+  std::string prompt_string;
   const char* prompt_c = nullptr;
   size_t prompt_length = 0;
   if (prompt) {
-    std::string prompt_string = SysCFStringRefToUTF8(prompt);
+    prompt_string = SysCFStringRefToUTF8(prompt);
     prompt_c = prompt_string.c_str();
     prompt_length = prompt_string.length();
   }
