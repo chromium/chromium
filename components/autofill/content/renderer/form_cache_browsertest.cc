@@ -15,7 +15,6 @@
 #include "components/autofill/content/renderer/test_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/form_field_data.h"
-#include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "content/public/test/render_view_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -427,9 +426,8 @@ void FillAndCheckState(
     value_to_fill->is_autofilled = true;
   }
 
-  form_util::ApplyAutofillAction(values_to_fill, autofill_initiating_element,
-                                 mojom::AutofillActionType::kFill,
-                                 mojom::AutofillActionPersistence::kFill);
+  form_util::FillOrPreviewForm(values_to_fill, autofill_initiating_element,
+                               mojom::AutofillActionPersistence::kFill);
 
   for (const FillElementData& field_to_fill : form_to_fill) {
     EXPECT_EQ(field_to_fill.value, field_to_fill.element.Value().Utf16());
@@ -518,9 +516,8 @@ TEST_F(FormCacheBrowserTest,
       GetFormControlElementById(GetMainFrame()->GetDocument(), "fname");
 
   // Simulate filling the form using Autofill.
-  form_util::ApplyAutofillAction(values_to_fill, fname,
-                                 mojom::AutofillActionType::kFill,
-                                 mojom::AutofillActionPersistence::kFill);
+  form_util::FillOrPreviewForm(values_to_fill, fname,
+                               mojom::AutofillActionPersistence::kFill);
 
   // Simulate clearing the form.
   form_cache.ClearSectionWithElement(fname);

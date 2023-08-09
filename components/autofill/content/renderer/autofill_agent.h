@@ -17,7 +17,6 @@
 #include "components/autofill/content/common/mojom/autofill_agent.mojom.h"
 #include "components/autofill/content/common/mojom/autofill_driver.mojom.h"
 #include "components/autofill/content/renderer/form_tracker.h"
-#include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -370,11 +369,6 @@ class AutofillAgent : public content::RenderFrameObserver,
 
   // The elements that currently are being previewed.
   std::vector<blink::WebFormControlElement> previewed_elements_;
-
-  // Records the last autofill action (Fill or Undo) done by the agent. Used in
-  // ClearPreviewedForm to get the default state of previewed fields
-  // post-clearing.
-  mojom::AutofillActionType last_autofill_action_;
 
   // Last form which was interacted with by the user.
   blink::WebFormElement last_interacted_form_;

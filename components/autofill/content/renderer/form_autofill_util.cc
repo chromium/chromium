@@ -38,7 +38,6 @@
 #include "components/autofill/core/common/field_data_manager.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
-#include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "content/public/renderer/render_frame.h"
 #include "third_party/blink/public/platform/url_conversion.h"
 #include "third_party/blink/public/platform/web_string.h"
@@ -1114,12 +1113,10 @@ void FillFormField(const FormFieldData& data,
                    bool is_initiating_node,
                    blink::WebFormControlElement* field) {
   WebInputElement input_element = field->DynamicTo<WebInputElement>();
-  WebAutofillState new_autofill_state = data.is_autofilled
-                                            ? WebAutofillState::kAutofilled
-                                            : WebAutofillState::kNotFilled;
+
   if (IsCheckableElement(input_element)) {
     input_element.SetChecked(IsChecked(data.check_status), true,
-                             new_autofill_state);
+                             WebAutofillState::kAutofilled);
   } else {
     std::u16string value = data.value;
     if (IsTextInput(input_element) || IsMonthInput(input_element)) {
@@ -1128,8 +1125,51 @@ void FillFormField(const FormFieldData& data,
       value = std::move(value).substr(0, input_element.MaxLength());
     }
     field->SetAutofillValue(blink::WebString::FromUTF16(value),
-                            new_autofill_state);
+                            WebAutofillState::kAutofilled);
   }
+  // Changing the field's value might trigger JavaScript, which is capable of
+  // destroying the frame
+  if (!field->GetDocument().GetFrame()) {
+    return;
+  }
+
+  if (is_initiating_node &&
+      ((IsTextInput(input_element) || IsMonthInput(input_element)) ||
+       IsTextAreaElement(*field))) {
+    int length = field->Value().length();
+    field->SetSelectionRange(length, length);
+    // selectionchange event is capable of destroying the frame.
+    if (!field->GetDocument().GetFrame()) {
+      return;
+    }
+    // Clear the current IME composition (the underline), if there is one.
+    field->GetDocument().GetFrame()->UnmarkText();
+  }
+}
+
+// Sets the value of `field` to the value in `data`, and resets the "autofilled"
+// attribute. `is_initiating_node` indicates whether the current field processed
+// is the one where Undo was triggered.
+void UndoFormField(const FormFieldData& data,
+                   bool is_initiating_node,
+                   blink::WebFormControlElement* field) {
+  WebInputElement input_element = field->DynamicTo<WebInputElement>();
+  // If a field is not currently autofilled in blink there's no current autofill
+  // value to undo. Autofill currently has no support for checkable elements.
+  if (field->GetAutofillState() != blink::WebAutofillState::kAutofilled ||
+      IsCheckableElement(input_element)) {
+    return;
+  }
+
+  std::u16string value = data.value;
+  if (IsTextInput(input_element) || IsMonthInput(input_element)) {
+    // If the maxlength attribute contains a negative value, maxLength()
+    // returns the default maxlength value.
+    value = std::move(value).substr(0, input_element.MaxLength());
+  }
+  field->SetAutofillValue(blink::WebString::FromUTF16(value),
+                          data.is_autofilled ? WebAutofillState::kAutofilled
+                                             : WebAutofillState::kNotFilled);
   // Changing the field's value might trigger JavaScript, which is capable of
   // destroying the frame.
   if (!field->GetDocument().GetFrame()) {
@@ -1159,18 +1199,13 @@ void PreviewFormField(const FormFieldData& data,
   // checkboxes and radio buttons, as there is no provision for
   // setSuggestedCheckedValue in WebInputElement.
   WebInputElement input_element = field->DynamicTo<WebInputElement>();
-  WebAutofillState new_autofill_state = data.is_autofilled
-                                            ? WebAutofillState::kPreviewed
-                                            : WebAutofillState::kNotFilled;
   if (IsTextInput(input_element) || IsMonthInput(input_element)) {
     // If the maxlength attribute contains a negative value, maxLength()
     // returns the default maxlength value.
     input_element.SetSuggestedValue(blink::WebString::FromUTF16(
         data.value.substr(0, input_element.MaxLength())));
-    input_element.SetAutofillState(new_autofill_state);
   } else if (IsTextAreaElement(*field) || IsSelectOrSelectMenuElement(*field)) {
     field->SetSuggestedValue(blink::WebString::FromUTF16(data.value));
-    field->SetAutofillState(new_autofill_state);
   }
 
   if (is_initiating_node &&
@@ -2324,10 +2359,9 @@ bool FindFormAndFieldForFormControlElement(
       element, field_data_manager, form_util::EXTRACT_NONE, form, field);
 }
 
-std::vector<WebFormControlElement> ApplyAutofillAction(
+std::vector<WebFormControlElement> FillOrPreviewForm(
     const FormData& form,
     const WebFormControlElement& initiating_element,
-    mojom::AutofillActionType action_type,
     mojom::AutofillActionPersistence action_persistence) {
   DCHECK(!initiating_element.IsNull());
 
@@ -2336,6 +2370,7 @@ std::vector<WebFormControlElement> ApplyAutofillAction(
       form_element.IsNull() ? GetUnownedAutofillableFormFieldElements(
                                   initiating_element.GetDocument())
                             : ExtractAutofillableElementsInForm(form_element);
+
   if (!IsElementInControlElementSet(initiating_element, control_elements)) {
     return {};
   }
@@ -2363,8 +2398,7 @@ std::vector<WebFormControlElement> ApplyAutofillAction(
 
   // If this is a preview, prevent already autofilled fields from being
   // highlighted.
-  if (action_type == mojom::AutofillActionType::kFill &&
-      action_persistence == mojom::AutofillActionPersistence::kPreview &&
+  if (action_persistence == mojom::AutofillActionPersistence::kPreview &&
       base::FeatureList::IsEnabled(
           features::kAutofillHighlightOnlyChangedValuesInPreviewMode)) {
     for (auto& element : control_elements) {
@@ -2390,10 +2424,9 @@ std::vector<WebFormControlElement> ApplyAutofillAction(
     WebFormControlElement& element = *it;
     element.SetAutofillSection(WebString::FromUTF8(field.section.ToString()));
 
-    if ((action_type == mojom::AutofillActionType::kFill &&
-         ShouldSkipFillField(field, element, initiating_element)) ||
-        (action_type == mojom::AutofillActionType::kUndo &&
-         element.GetAutofillState() != WebAutofillState::kAutofilled)) {
+    if (ShouldSkipFillField(
+            field, element,
+            initiating_element.DynamicTo<WebFormControlElement>())) {
       continue;
     }
 
@@ -2451,13 +2484,98 @@ std::vector<WebFormControlElement> ApplyAutofillAction(
   return matching_fields;
 }
 
+void UndoForm(const FormData& form,
+              const WebFormControlElement& form_control_element) {
+  WebFormElement form_element = GetOwningForm(form_control_element);
+  if (form_element.IsNull() && form_control_element.IsNull()) {
+    return;
+  }
+  std::vector<WebFormControlElement> control_elements =
+      form_element.IsNull() ? GetUnownedAutofillableFormFieldElements(
+                                  form_control_element.GetDocument())
+                            : ExtractAutofillableElementsInForm(form_element);
+  if (!IsElementInControlElementSet(form_control_element, control_elements)) {
+    return;
+  }
+
+  const bool num_elements_matches_num_fields =
+      control_elements.size() == form.fields.size();
+  UMA_HISTOGRAM_BOOLEAN("Autofill.NumElementsMatchesNumFields",
+                        num_elements_matches_num_fields);
+
+  // The intended behaviour is:
+  // * Undo the currently focused element.
+  // * Send the blur event.
+  // * For each other element, focus -> undo -> blur.
+  // * Send the focus event for the initially focused element.
+  WebFormControlElement* initially_focused_element = nullptr;
+
+  // This container stores the pairs of autofillable WebFormControlElement* and
+  // the corresponding indexes of |data.fields| that are used to fill this
+  // element.
+  std::vector<std::pair<WebFormControlElement*, size_t>>
+      undo_autofill_elements_index_pairs;
+
+  // Prepare for binary search.
+  SortByFieldRendererIds(control_elements);
+  for (size_t i = 0; i < form.fields.size(); ++i) {
+    auto it = SearchInSortedVector(form.fields[i], control_elements);
+    if (it == control_elements.end()) {
+      continue;
+    }
+    // Undo autofill on the initiating element.
+    WebFormControlElement& element = *it;
+    bool is_initiating_element = (element == form_control_element);
+    if (is_initiating_element) {
+      if (element.Focused()) {
+        initially_focused_element = &element;
+      }
+      UndoFormField(form.fields[i], is_initiating_element, &element);
+      continue;
+    }
+
+    // If a field is not currently autofilled in blink there's no current
+    // autofill value to undo. Otherwise, if the FormFieldData's is_autofilled
+    // state is true, this means the current field is not included in the undo
+    // operation and has been filled by another fill operation.
+    if (element.GetAutofillState() == WebAutofillState::kAutofilled) {
+      // Storing the indexes of non-initiating elements to be undone after
+      // triggering the blur event for the initiating element.
+      undo_autofill_elements_index_pairs.emplace_back(&element, i);
+    }
+  }
+
+  // If there is no other field where autofill must be undone, sending the blur
+  // event and then the focus event for the initiating element does not make
+  // sense.
+  if (undo_autofill_elements_index_pairs.empty()) {
+    return;
+  }
+
+  // A blur event is emitted for the focused element if it is the initiating
+  // element before all other elements are autofilled.
+  if (initially_focused_element) {
+    initially_focused_element->DispatchBlurEvent();
+  }
+
+  // Undo autofill on the non-initiating elements.
+  for (const auto& [filled_element, index] :
+       undo_autofill_elements_index_pairs) {
+    UndoFormField(form.fields[index], false, filled_element);
+  }
+
+  // A focus event is emitted for the initiating element after undoing autofill
+  // is completed.
+  if (initially_focused_element) {
+    initially_focused_element->DispatchFocusEvent();
+  }
+}
+
 void ClearPreviewedElements(
-    mojom::AutofillActionType action_type,
     std::vector<blink::WebFormControlElement>& previewed_elements,
     const WebFormControlElement& initiating_element,
     blink::WebAutofillState old_autofill_state) {
-  if (action_type == mojom::AutofillActionType::kFill &&
-      base::FeatureList::IsEnabled(
+  if (base::FeatureList::IsEnabled(
           features::kAutofillHighlightOnlyChangedValuesInPreviewMode)) {
     // If this is a synthetic form, get the unowned form elements. Otherwise,
     // get all element associated with the form of the initiated field.
@@ -2471,10 +2589,7 @@ void ClearPreviewedElements(
       element.SetPreventHighlightingOfAutofilledFields(false);
     }
   }
-  WebAutofillState default_autofill_state =
-      action_type == mojom::AutofillActionType::kFill
-          ? WebAutofillState::kNotFilled
-          : WebAutofillState::kAutofilled;
+
   for (WebFormControlElement& control_element : previewed_elements) {
     // We do not add null elements to `previewed_elements_` in AutofillAgent.
     DCHECK(!control_element.IsNull());
@@ -2495,11 +2610,11 @@ void ClearPreviewedElements(
         control_element.SetSelectionRange(length, length);
         control_element.SetAutofillState(old_autofill_state);
       } else {
-        control_element.SetAutofillState(default_autofill_state);
+        control_element.SetAutofillState(WebAutofillState::kNotFilled);
       }
     } else {
       control_element.SetSuggestedValue(WebString());
-      control_element.SetAutofillState(default_autofill_state);
+      control_element.SetAutofillState(WebAutofillState::kNotFilled);
     }
   }
 }

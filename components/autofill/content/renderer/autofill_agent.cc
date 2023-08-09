@@ -675,8 +675,8 @@ void AutofillAgent::FillOrPreviewForm(
 
   if (action_persistence == mojom::AutofillActionPersistence::kPreview) {
     query_node_autofill_state_ = element_.GetAutofillState();
-    previewed_elements_ = form_util::ApplyAutofillAction(
-        form, element_, mojom::AutofillActionType::kFill, action_persistence);
+    previewed_elements_ =
+        form_util::FillOrPreviewForm(form, element_, action_persistence);
 
     if (auto* autofill_driver = unsafe_autofill_driver()) {
       autofill_driver->DidPreviewAutofillFormData();
@@ -686,9 +686,7 @@ void AutofillAgent::FillOrPreviewForm(
 
     query_node_autofill_state_ = element_.GetAutofillState();
     bool filled_some_fields =
-        !form_util::ApplyAutofillAction(form, element_,
-                                        mojom::AutofillActionType::kFill,
-                                        action_persistence)
+        !form_util::FillOrPreviewForm(form, element_, action_persistence)
              .empty();
 
     if (!element_.Form().IsNull()) {
@@ -708,7 +706,6 @@ void AutofillAgent::FillOrPreviewForm(
     TriggerRefillIfNeeded(form);
     SendPotentiallySubmittedFormToBrowser();
   }
-  last_autofill_action_ = mojom::AutofillActionType::kFill;
 }
 
 void AutofillAgent::UndoAutofill(
@@ -738,10 +735,8 @@ void AutofillAgent::UndoAutofill(
     return;
   }
   if (action_persistence == mojom::AutofillActionPersistence::kFill) {
-    form_util::ApplyAutofillAction(
-        form, element_, mojom::AutofillActionType::kUndo, action_persistence);
+    form_util::UndoForm(form, element_);
   }
-  last_autofill_action_ = mojom::AutofillActionType::kUndo;
 }
 
 void AutofillAgent::FieldTypePredictionsAvailable(
@@ -778,8 +773,9 @@ void AutofillAgent::ClearPreviewedForm() {
       password_generation_agent_->DidClearGenerationSuggestion(element_)) {
     return;
   }
-  form_util::ClearPreviewedElements(last_autofill_action_, previewed_elements_,
-                                    element_, query_node_autofill_state_);
+
+  form_util::ClearPreviewedElements(previewed_elements_, element_,
+                                    query_node_autofill_state_);
   previewed_elements_ = {};
 }
 
