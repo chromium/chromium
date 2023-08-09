@@ -175,10 +175,6 @@ declare_args() {
   # a reproducer file to be saved.
   save_reproducers_on_lld_crash = false
 
-  # Allow projects that wish to stay on C++17 to override Chromium's default.
-  # TODO(crbug.com/1402249): evaluate removing this end of 2023
-  use_cxx17 = false
-
   # Enable ShadowCallStack for compiled binaries. SCS stores a pointer to a
   # shadow call stack in register x18. Hence, x18 must not be used by the OS
   # or libraries. We assume that to be the case for high end Android
