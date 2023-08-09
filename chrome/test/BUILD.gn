@@ -3937,13 +3937,14 @@ if (!is_android) {
         sources += [
           "../browser/supervised_user/supervised_user_extension_browsertest.cc",
           "../browser/ui/views/supervised_user/extension_install_blocked_by_parent_dialog_browsertest.cc",
+          "../browser/ui/views/supervised_user/parent_permission_dialog_view_browsertest.cc",
         ]
       }
 
       if (is_chromeos_ash) {
         sources += [ "../browser/supervised_user/supervised_user_navigation_throttle_browsertest.cc" ]
         if (enable_extensions) {
-          sources += [ "../browser/ui/views/supervised_user/parent_permission_dialog_view_browsertest.cc" ]
+          sources += [ "../browser/ui/views/supervised_user/parent_permission_extension_flow_view_browsertest.cc" ]
         }
       }
 
@@ -9870,6 +9871,7 @@ if (!is_android) {
       "//components/signin/public/base",
       "//components/signin/public/identity_manager",
       "//components/storage_monitor:test_support",
+      "//components/supervised_user/core/browser/proto",
       "//components/sync:test_support",
       "//components/user_manager",
       "//components/webapps/browser",
@@ -9892,7 +9894,10 @@ if (!is_android) {
     ]
 
     if (enable_supervised_users) {
-      deps += [ "//components/supervised_user/test_support" ]
+      deps += [
+        "//components/prefs",
+        "//components/supervised_user/test_support",
+      ]
       public_deps += [
         "//components/supervised_user/core/browser:supervised_user_preferences",
       ]
