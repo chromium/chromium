@@ -89,7 +89,8 @@ LOGCAT_FILTERS = ['*:e', 'chromium:v', 'cr_*:v', 'DEBUG:I',
                   'StrictMode:D', '%s:I' % _TAG]
 
 EXTRA_CLANG_COVERAGE_DEVICE_FILE = (
-    'org.chromium.base.test.BaseJUnit4ClassRunner.ClangCoverageDeviceFile')
+    'org.chromium.base.test.BaseChromiumAndroidJUnitRunner.'
+    'ClangCoverageDeviceFile')
 
 EXTRA_SCREENSHOT_FILE = (
     'org.chromium.base.test.ScreenshotOnFailureStatement.ScreenshotFile')
