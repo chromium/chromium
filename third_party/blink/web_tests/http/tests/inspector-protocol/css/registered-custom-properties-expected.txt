@@ -1,0 +1,12 @@
+Test reporting of parser errors for registered custom properties
+[
+    [0] : {
+        name : --registered-prop
+        parsedOk : false
+    }
+    [1] : {
+        name : --correct-prop
+        parsedOk : undefined
+    }
+]
+

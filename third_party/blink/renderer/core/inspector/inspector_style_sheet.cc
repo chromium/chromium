@@ -51,6 +51,7 @@
 #include "third_party/blink/renderer/core/css/parser/css_parser_observer.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
 #include "third_party/blink/renderer/core/css/properties/shorthand.h"
+#include "third_party/blink/renderer/core/css/property_registry.h"
 #include "third_party/blink/renderer/core/css/style_rule.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -1704,7 +1705,8 @@ void InspectorStyleSheet::ParseText(const String& text) {
       MakeGarbageCollected<CSSRuleSourceDataList>();
   auto* style_sheet = MakeGarbageCollected<StyleSheetContents>(
       page_style_sheet_->Contents()->ParserContext());
-  StyleSheetHandler handler(text, page_style_sheet_->OwnerDocument(), rule_tree,
+  Document* owner_document = page_style_sheet_->OwnerDocument();
+  StyleSheetHandler handler(text, owner_document, rule_tree,
                             StyleSheetHandler::IssueReportingContext{
                                 page_style_sheet_->BaseURL(),
                                 page_style_sheet_->StartPositionInSource()});
@@ -1734,6 +1736,35 @@ void InspectorStyleSheet::ParseText(const String& text) {
   // The number of rules parsed should be equal to the number of source data
   // entries:
   DCHECK_EQ(parsed_flat_rules_.size(), source_data_->size());
+
+  if (owner_document) {
+    const auto* property_registry = owner_document->GetPropertyRegistry();
+
+    if (property_registry) {
+      for (const auto& rule_source_data : *source_data_) {
+        for (auto& property_source_data : rule_source_data->property_data) {
+          if (!property_source_data.name.StartsWith("--") ||
+              !property_source_data.parsed_ok) {
+            continue;
+          }
+
+          const auto* registration = property_registry->Registration(
+              AtomicString(property_source_data.name));
+          if (!registration) {
+            continue;
+          }
+          CSSTokenizer tokenizer(property_source_data.value);
+          Vector<CSSParserToken, 32> tokens = tokenizer.TokenizeToEOF();
+          CSSTokenizedValue tokenized_value{CSSParserTokenRange(tokens),
+                                            property_source_data.name};
+          if (!registration->Syntax().Parse(
+                  tokenized_value, *style_sheet->ParserContext(), false)) {
+            property_source_data.parsed_ok = false;
+          }
+        }
+      }
+    }
+  }
 }
 
 // The stylesheet text might be out of sync with `page_style_sheet_` rules.
