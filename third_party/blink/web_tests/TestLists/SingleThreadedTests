@@ -1159,7 +1159,6 @@ http/tests/devtools/tracing/timeline-misc/timeline-scheduler-posttask.js
 http/tests/devtools/tracing/timeline-misc/timeline-window-filter.js
 http/tests/devtools/tracing/timeline-paint/layer-tree.js
 http/tests/devtools/tracing/timeline-script-parse.js
-http/tests/devtools/tracing/tracing-record-input-events.js
 http/tests/devtools/unit/datagrid-editable-longtext.js
 http/tests/devtools/unit/list-control-equal-height.js
 http/tests/devtools/unit/list-control-non-viewport.js
