@@ -318,6 +318,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
     public void onFinishInflate() {
         try (TraceEvent te = TraceEvent.scoped("ToolbarPhone.onFinishInflate")) {
             super.onFinishInflate();
+
             mToolbarButtonsContainer = (ViewGroup) findViewById(R.id.toolbar_buttons);
             mHomeButton = findViewById(R.id.home_button);
             mUrlBar = (TextView) findViewById(R.id.url_bar);
@@ -336,6 +337,9 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
             setWillNotDraw(false);
             mUrlFocusTranslationX =
                     getResources().getDimensionPixelSize(R.dimen.toolbar_url_focus_translation_x);
+
+            // Set hover tooltip texts for toolbar buttons shared between phones and tablets.
+            super.setTooltipTextForToolbarButtons();
         }
     }
 
@@ -1748,6 +1752,11 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
     @Override
     public HomeButton getHomeButton() {
         return mHomeButton;
+    }
+
+    @Override
+    public ToggleTabStackButton getTabSwitcherButton() {
+        return mToggleTabStackButton;
     }
 
     private void removeHomeButton() {

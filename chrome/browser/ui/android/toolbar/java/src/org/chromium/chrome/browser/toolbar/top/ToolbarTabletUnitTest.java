@@ -67,7 +67,6 @@ public final class ToolbarTabletUnitTest {
     private MenuButtonCoordinator mMenuButtonCoordinator;
     @Mock
     private View mContainerView;
-
     private Activity mActivity;
     private ToolbarTablet mToolbarTablet;
     private LinearLayout mToolbarTabletLayout;
@@ -75,6 +74,11 @@ public final class ToolbarTabletUnitTest {
     private ImageButton mReloadingButton;
     private ImageButton mBackButton;
     private ImageButton mForwardButton;
+    private ImageButton mMenuButton;
+    private ImageButton mTabSwitcherButton;
+    private ImageButton mBookmarkButton;
+    private ImageButton mSaveOfflineButton;
+    private View mLocationBarButton;
 
     @Before
     public void setUp() {
@@ -94,6 +98,11 @@ public final class ToolbarTabletUnitTest {
         mBackButton = mToolbarTablet.findViewById(R.id.back_button);
         mForwardButton = mToolbarTablet.findViewById(R.id.forward_button);
         mReloadingButton = mToolbarTablet.findViewById(R.id.refresh_button);
+        mMenuButton = mToolbarTablet.findViewById(R.id.menu_button);
+        mTabSwitcherButton = mToolbarTablet.findViewById(R.id.tab_switcher_button);
+        mLocationBarButton = mToolbarTablet.findViewById(R.id.location_bar_status_icon);
+        mBookmarkButton = mToolbarTablet.findViewById(R.id.bookmark_button);
+        mSaveOfflineButton = mToolbarTablet.findViewById(R.id.save_offline_button);
     }
 
     @After
@@ -303,6 +312,33 @@ public final class ToolbarTabletUnitTest {
         CaptureReadinessResult result = mToolbarTablet.isReadyForTextureCapture();
         Assert.assertFalse(result.isReady);
         Assert.assertEquals(TopToolbarBlockCaptureReason.URL_BAR_HAS_FOCUS, result.blockReason);
+    }
+
+    @Test
+    public void testHoverTooltipText() {
+        // verify tooltip texts for tablet toolbar button are set.
+        Assert.assertEquals("Tooltip text for Home button is not as expected",
+                mActivity.getResources().getString(R.string.accessibility_toolbar_btn_home),
+                mHomeButton.getTooltipText());
+        Assert.assertEquals("Tooltip text for Reload button is not as expected",
+                mActivity.getResources().getString(R.string.accessibility_btn_refresh),
+                mReloadingButton.getTooltipText());
+        Assert.assertEquals("Tooltip text for Forward button is not as expected",
+                mActivity.getResources().getString(R.string.accessibility_menu_forward),
+                mForwardButton.getTooltipText());
+        Assert.assertEquals("Tooltip text for Back button is not as expected",
+                mActivity.getResources().getString(R.string.accessibility_toolbar_btn_back),
+                mBackButton.getTooltipText());
+        Assert.assertEquals("Tooltip text for Tab Switcher button is not as expected",
+                mActivity.getResources().getString(
+                        R.string.accessibility_toolbar_btn_tabswitcher_toggle_default),
+                mTabSwitcherButton.getTooltipText());
+        Assert.assertEquals("Tooltip text for Bookmark button is not as expected",
+                mActivity.getResources().getString(R.string.accessibility_menu_bookmark),
+                mBookmarkButton.getTooltipText());
+        Assert.assertEquals("Tooltip text for Save Offline button is not as expected",
+                mActivity.getResources().getString(R.string.download_page),
+                mSaveOfflineButton.getTooltipText());
     }
 
     @Test

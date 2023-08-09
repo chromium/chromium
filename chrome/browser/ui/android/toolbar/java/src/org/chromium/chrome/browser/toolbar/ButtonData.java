@@ -38,6 +38,7 @@ public interface ButtonData {
 
     /** A set of button properties which are not expected to change values often. */
     final class ButtonSpec {
+        public static final int INVALID_TOOLTIP_TEXT_ID = 0;
         @NonNull
         private final Drawable mDrawable;
         // TODO(crbug.com/1185382): make mOnClickListener @NonNull
@@ -119,6 +120,17 @@ public interface ButtonData {
         /** Returns {@code true} if the button is a contextual page action. False otherwise. */
         public boolean isDynamicAction() {
             return mIsDynamicAction;
+        }
+
+        /** Get hover state tooltip text for optional toolbar buttons(e.g. share, voice search). */
+        public int getHoverTooltipTextId() {
+            if (mButtonVariant == AdaptiveToolbarButtonVariant.SHARE) {
+                return R.string.adaptive_toolbar_button_preference_share;
+            } else if (mButtonVariant == AdaptiveToolbarButtonVariant.VOICE) {
+                return R.string.adaptive_toolbar_button_preference_voice_search;
+            } else {
+                return INVALID_TOOLTIP_TEXT_ID;
+            }
         }
 
         @Override

@@ -9,6 +9,8 @@ import android.content.res.ColorStateList;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
+import android.os.Build.VERSION;
 import android.os.SystemClock;
 import android.util.AttributeSet;
 import android.view.InputDevice;
@@ -25,6 +27,7 @@ import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import androidx.appcompat.widget.TooltipCompat;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
@@ -255,6 +258,26 @@ public abstract class ToolbarLayout
      */
     @CallSuper
     protected void onMenuButtonDisabled() {}
+
+    // Set hover tooltip text for buttons shared between phones and tablets.
+    public void setTooltipTextForToolbarButtons() {
+        // Set hover tooltip text for home and tab switcher buttons.
+        setTooltipText(((View) getHomeButton()),
+                getContext().getString(R.string.accessibility_toolbar_btn_home));
+        setTooltipText(((View) getTabSwitcherButton()),
+                getContext().getString(
+                        R.string.accessibility_toolbar_btn_tabswitcher_toggle_default));
+    }
+
+    /**
+     * Set hover tooltip text for buttons shared between phones and tablets.
+     * @TODO: Remove and use the method in UiUtils.java instead once JaCoCo issue is resolved.
+     */
+    protected void setTooltipText(View button, String text) {
+        if (button != null && VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            TooltipCompat.setTooltipText(button, text);
+        }
+    }
 
     @Override
     protected void onFinishInflate() {
@@ -815,6 +838,13 @@ public abstract class ToolbarLayout
      * @return {@link HomeButton} this {@link ToolbarLayout} contains.
      */
     public HomeButton getHomeButton() {
+        return null;
+    }
+
+    /**
+     * @return {@link ToggleTabStackButton} this {@link ToolbarLayout} contains.
+     */
+    public ToggleTabStackButton getTabSwitcherButton() {
         return null;
     }
 

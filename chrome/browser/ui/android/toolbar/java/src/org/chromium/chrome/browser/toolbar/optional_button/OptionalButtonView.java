@@ -8,6 +8,8 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
+import android.os.Build.VERSION;
 import android.os.Handler;
 import android.transition.ChangeBounds;
 import android.transition.Fade;
@@ -30,6 +32,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
+import androidx.appcompat.widget.TooltipCompat;
 import androidx.core.view.ViewCompat;
 import androidx.core.widget.ImageViewCompat;
 
@@ -218,6 +221,13 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
         mClickListener = buttonSpec.getOnClickListener();
         mLongClickListener = buttonSpec.getOnLongClickListener();
         mButton.setEnabled(buttonData.isEnabled());
+
+        // Set hover state tooltip text for optional toolbar buttons(e.g. share, voice search).
+        if (buttonSpec.getHoverTooltipTextId() != ButtonSpec.INVALID_TOOLTIP_TEXT_ID
+                && mButton != null && VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            TooltipCompat.setTooltipText(
+                    mButton, getContext().getString(buttonSpec.getHoverTooltipTextId()));
+        }
         mContentDescription = buttonSpec.getContentDescription();
 
         // If the transition root hasn't been laid out then try again after the next layout. This

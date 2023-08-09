@@ -324,7 +324,7 @@
       </message>
 
       <message name="IDS_ACCESSIBILITY_TOOLBAR_BTN_MENU" desc="Content description for the settings menu button.">
-        More options
+        Customize and control Google Chrome
       </message>
       <message name="IDS_ACCESSIBILITY_TOOLBAR_BTN_FORWARD" desc="Content description for the forward navigation button.">
         Go forward

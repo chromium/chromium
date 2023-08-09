@@ -215,6 +215,9 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         mMenuButton = findViewById(R.id.menu_button_wrapper);
 
         mLocationBar.onFinishInflate(this);
+
+        // Set hover tooltip texts for toolbar buttons.
+        super.setTooltipTextForToolbarButtons();
     }
 
     @Override
