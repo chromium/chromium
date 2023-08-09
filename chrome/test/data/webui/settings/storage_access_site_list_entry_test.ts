@@ -8,7 +8,7 @@
 import 'chrome://settings/lazy_load.js';
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {StorageAccessStaticSiteListEntry, IronCollapseElement, CrLazyRenderElement, StorageAccessSiteException, StorageAccessSiteListEntryElement, ContentSetting, ContentSettingsTypes, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
+import {StorageAccessStaticSiteListEntry, StorageAccessSiteException, StorageAccessSiteListEntryElement, ContentSetting, ContentSettingsTypes, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {assertEquals, assertDeepEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {loadTimeData} from 'chrome://settings/settings.js';
@@ -122,17 +122,16 @@ suite('StorageAccessSiteListEntry', function() {
     await setUpEntry(storageAccessException);
 
     assertTrue(!!testElement.shadowRoot);
-    const collapseChild =
-        testElement.shadowRoot
-            .querySelector<CrLazyRenderElement<IronCollapseElement>>(
-                '#originList')!.get();
-    assertTrue(!!collapseChild);
+    const expandButton =
+        testElement.shadowRoot.querySelector<HTMLElement>('#expandButton');
+    assertTrue(!!expandButton);
+    expandButton.click();
     flush();
 
     // Validate that the nested site entries are created on the collapsible
     // element.
-    const siteListEntry =
-        collapseChild.querySelectorAll('storage-access-static-site-list-entry');
+    const siteListEntry = testElement.shadowRoot.querySelectorAll(
+        'storage-access-static-site-list-entry');
 
     assertEquals(
         storageAccessException.exceptions.length, siteListEntry.length);
