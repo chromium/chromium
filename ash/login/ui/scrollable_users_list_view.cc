@@ -130,10 +130,9 @@ ScrollableUsersListView::GradientParams::BuildForStyle(LoginDisplayStyle style,
                                                        views::View* view) {
   switch (style) {
     case LoginDisplayStyle::kExtraSmall: {
-      SkColor dark_muted_color =
-          Shell::Get()->wallpaper_controller()->GetProminentColor(
-              color_utils::ColorProfile(color_utils::LumaRange::DARK,
-                                        color_utils::SaturationRange::MUTED));
+      SkColor dark_muted_color = view->GetColorProvider()->GetColor(
+          kColorAshLoginScrollableUserListBackground);
+
       SkColor tint_color = color_utils::GetResultingPaintColor(
           view->GetColorProvider()->GetColor(kColorAshShieldAndBase80),
           SkColorSetA(dark_muted_color, SK_AlphaOPAQUE));

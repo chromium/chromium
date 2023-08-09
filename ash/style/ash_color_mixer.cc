@@ -693,6 +693,11 @@ void AddAshColorMixer(ui::ColorProvider* provider,
   mixer[kColorAshWindowHeaderStrokeColor] =
       ui::SetAlpha(cros_tokens::kCrosRefNeutral0, kAlpha8);
 
+  // Color for the scrollable user view on login.
+  mixer[kColorAshLoginScrollableUserListBackground] = {
+      use_dark_color ? cros_tokens::kCrosRefNeutral20
+                     : cros_tokens::kCrosRefNeutral80};
+
   mixer[ui::kColorToggleButtonThumbOn] = {cros_tokens::kCrosSysOnPrimary};
   mixer[ui::kColorToggleButtonThumbOff] = {cros_tokens::kCrosSysOnSecondary};
   mixer[ui::kColorToggleButtonThumbOnDisabled] =
