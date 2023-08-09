@@ -2296,6 +2296,7 @@
     "bases": [
       "external/wpt/fetch/fetch-later"
     ],
+    "exclusive_tests": "ALL",
     "args": [
       "--enable-blink-features=FetchLaterAPI"
     ],
