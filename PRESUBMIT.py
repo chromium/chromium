@@ -740,6 +740,15 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
       [_THIRD_PARTY_EXCEPT_BLINK],  # Don't warn in third_party folders.
     ),
     BanRule(
+      r'/#include <(cctype|ctype\.h|cwctype|wctype.h)>',
+      (
+        '<cctype>/<ctype.h>/<cwctype>/<wctype.h> are banned. Use',
+        '"third_party/abseil-cpp/absl/strings/ascii.h" instead.',
+      ),
+      True,
+      [_THIRD_PARTY_EXCEPT_BLINK],  # Not an error in third_party folders.
+    ),
+    BanRule(
       r'/\bstd::shared_ptr\b',
       (
         'std::shared_ptr is banned. Use scoped_refptr instead.',

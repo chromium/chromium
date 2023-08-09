@@ -103,6 +103,29 @@ Banned in the
 
 The following C++11 library features are not allowed in the Chromium codebase.
 
+### &lt;cctype&gt;, &lt;ctype.h&gt;, &lt;cwctype&gt;, &lt;wctype.h&gt; <sup>[banned]</sup>
+
+```c++
+#include <cctype>
+#include <cwctype>
+#include <ctype.h>
+#include <wctype.h>
+```
+
+**Description:** Provides utilities for ASCII characters.
+
+**Documentation:**
+[Standard library header `<cctype>`](https://en.cppreference.com/w/cpp/header/cctype),
+[Standard library header `<cwctype>`](https://en.cppreference.com/w/cpp/header/cwctype)
+
+**Notes:**
+*** promo
+Banned due to dependence on the C locale as well as UB when arguments don't fit
+in an `unsigned char`/`wchar_t`. Use similarly-named replacements in
+[third_party/abseil-cpp/absl/strings/ascii.h](https://source.chromium.org/chromium/chromium/src/+/main:third_party/abseil-cpp/absl/strings/ascii.h)
+instead.
+***
+
 ### &lt;cfenv&gt;, &lt;fenv.h&gt; <sup>[banned]</sup>
 
 ```c++
