@@ -3215,7 +3215,7 @@ bool WebMediaPlayerImpl::IsMediaPlayerRendererClient() {
   // MediaResource::Type::URL for the moment.
   return renderer_factory_selector_->GetCurrentFactory()
              ->GetRequiredMediaResourceType() ==
-         media::MediaResource::Type::URL;
+         media::MediaResource::Type::KUrl;
 }
 
 void WebMediaPlayerImpl::ReportMemoryUsage() {

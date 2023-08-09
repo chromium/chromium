@@ -1133,7 +1133,7 @@ void PipelineImpl::RendererWrapper::InitializeRenderer(
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
 
   switch (demuxer_->GetType()) {
-    case MediaResource::Type::STREAM:
+    case MediaResource::Type::kStream:
       if (demuxer_->GetAllStreams().empty()) {
         DVLOG(1) << "Error: demuxer does not have an audio or a video stream.";
         std::move(done_cb).Run(PIPELINE_ERROR_COULD_NOT_RENDER);
@@ -1141,7 +1141,7 @@ void PipelineImpl::RendererWrapper::InitializeRenderer(
       }
       break;
 
-    case MediaResource::Type::URL:
+    case MediaResource::Type::KUrl:
       // NOTE: Empty GURL are not valid.
       if (!demuxer_->GetMediaUrlParams().media_url.is_valid()) {
         DVLOG(1) << "Error: demuxer does not have a valid URL.";
@@ -1195,7 +1195,7 @@ void PipelineImpl::RendererWrapper::ReportMetadata(StartType start_type) {
   std::vector<DemuxerStream*> streams;
 
   switch (demuxer_->GetType()) {
-    case MediaResource::Type::STREAM:
+    case MediaResource::Type::kStream:
       metadata.timeline_offset = demuxer_->GetTimelineOffset();
       // TODO(servolk): What should we do about metadata for multiple streams?
       streams = demuxer_->GetAllStreams();
@@ -1214,7 +1214,7 @@ void PipelineImpl::RendererWrapper::ReportMetadata(StartType start_type) {
       }
       break;
 
-    case MediaResource::Type::URL:
+    case MediaResource::Type::KUrl:
       // We don't know if the MediaPlayerRender has Audio/Video until we start
       // playing. Conservatively assume that they do.
       metadata.has_video = true;
@@ -1247,7 +1247,7 @@ void PipelineImpl::RendererWrapper::ReportMetadata(StartType start_type) {
 
 bool PipelineImpl::RendererWrapper::HasEncryptedStream() {
   // Encrypted streams are only handled explicitly for STREAM type.
-  if (demuxer_->GetType() != MediaResource::Type::STREAM)
+  if (demuxer_->GetType() != MediaResource::Type::kStream)
     return false;
 
   auto streams = demuxer_->GetAllStreams();

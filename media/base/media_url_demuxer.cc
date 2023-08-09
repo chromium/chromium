@@ -36,7 +36,7 @@ const MediaUrlParams& MediaUrlDemuxer::GetMediaUrlParams() const {
 }
 
 MediaResource::Type MediaUrlDemuxer::GetType() const {
-  return MediaResource::Type::URL;
+  return MediaResource::Type::KUrl;
 }
 
 std::string MediaUrlDemuxer::GetDisplayName() const {
