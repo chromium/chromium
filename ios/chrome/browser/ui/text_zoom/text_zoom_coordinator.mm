@@ -82,6 +82,7 @@
   self.textZoomViewController = nil;
 
   [self.mediator disconnect];
+  self.mediator.consumer = nil;
   self.mediator = nil;
 }
 

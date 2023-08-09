@@ -55,7 +55,8 @@
 }
 
 - (void)dealloc {
-  [self disconnect];
+  DCHECK(!_activeWebState);
+  DCHECK(!_webStateList);
 }
 
 - (void)disconnect {
