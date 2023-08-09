@@ -48,13 +48,11 @@
 #include "ui/base/ime/ash/component_extension_ime_manager.h"
 #include "ui/base/ime/ash/component_extension_ime_manager_delegate.h"
 #include "ui/base/ime/ash/extension_ime_util.h"
-#include "ui/base/ime/ash/fake_ime_keyboard.h"
 #include "ui/base/ime/ash/ime_bridge.h"
 #include "ui/base/ime/ash/ime_keyboard.h"
 #include "ui/base/ime/ash/ime_keyboard_impl.h"
 #include "ui/base/ime/ash/input_method_delegate.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/ozone/public/ozone_platform.h"
 
 namespace ash {
 namespace input_method {
@@ -972,9 +970,11 @@ InputMethodManagerImpl::InputMethodManagerImpl(
     std::unique_ptr<InputMethodDelegate> delegate,
     std::unique_ptr<ComponentExtensionIMEManagerDelegate>
         component_extension_ime_manager_delegate,
-    bool enable_extension_loading)
+    bool enable_extension_loading,
+    std::unique_ptr<ImeKeyboard> ime_keyboard)
     : delegate_(std::move(delegate)),
       util_(delegate_.get()),
+      keyboard_(std::move(ime_keyboard)),
       enable_extension_loading_(enable_extension_loading),
       features_enabled_state_(InputMethodManager::FEATURE_ALL) {
   if (::features::IsImprovedKeyboardShortcutsEnabled()) {
@@ -985,12 +985,6 @@ InputMethodManagerImpl::InputMethodManagerImpl(
     }
   }
 
-  if (base::SysInfo::IsRunningOnChromeOS()) {
-    keyboard_ = std::make_unique<ImeKeyboardImpl>(
-        ui::OzonePlatform::GetInstance()->GetInputController());
-  } else {
-    keyboard_ = std::make_unique<FakeImeKeyboard>();
-  }
   // Initializes the system IME list.
   component_extension_ime_manager_ =
       std::make_unique<ComponentExtensionIMEManager>(
@@ -1216,10 +1210,6 @@ void InputMethodManagerImpl::SetCandidateWindowControllerForTesting(
     CandidateWindowController* candidate_window_controller) {
   candidate_window_controller_.reset(candidate_window_controller);
   candidate_window_controller_->AddObserver(this);
-}
-
-void InputMethodManagerImpl::SetImeKeyboardForTesting(ImeKeyboard* keyboard) {
-  keyboard_.reset(keyboard);
 }
 
 void InputMethodManagerImpl::OnAppTerminating() {

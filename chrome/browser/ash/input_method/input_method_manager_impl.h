@@ -181,7 +181,8 @@ class InputMethodManagerImpl : public InputMethodManager,
   InputMethodManagerImpl(std::unique_ptr<InputMethodDelegate> delegate,
                          std::unique_ptr<ComponentExtensionIMEManagerDelegate>
                              component_extension_ime_manager_delegate,
-                         bool enable_extension_loading);
+                         bool enable_extension_loading,
+                         std::unique_ptr<ImeKeyboard> ime_keyboard);
 
   InputMethodManagerImpl(const InputMethodManagerImpl&) = delete;
   InputMethodManagerImpl& operator=(const InputMethodManagerImpl&) = delete;
@@ -191,8 +192,6 @@ class InputMethodManagerImpl : public InputMethodManager,
   // Sets |candidate_window_controller_|.
   void SetCandidateWindowControllerForTesting(
       CandidateWindowController* candidate_window_controller);
-  // Sets |keyboard_|.
-  void SetImeKeyboardForTesting(ImeKeyboard* keyboard);
 
   // InputMethodManager override:
   void AddObserver(InputMethodManager::Observer* observer) override;

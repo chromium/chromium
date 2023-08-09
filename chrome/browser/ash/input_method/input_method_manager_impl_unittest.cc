@@ -172,15 +172,16 @@ class InputMethodManagerImplTest :  public BrowserWithTestWindowTest {
     mock_delegate->set_ime_list(ime_list);
     mock_delegate->set_login_layout_set(login_layout_set);
 
-    manager_ =
-        new InputMethodManagerImpl(std::make_unique<FakeInputMethodDelegate>(),
-                                   std::move(mock_delegate), false);
+    auto fake_keyboard = std::make_unique<FakeImeKeyboard>();
+    keyboard_ = fake_keyboard.get();
+
+    manager_ = new InputMethodManagerImpl(
+        std::make_unique<FakeInputMethodDelegate>(), std::move(mock_delegate),
+        false, std::move(fake_keyboard));
     manager_->GetInputMethodUtil()->UpdateHardwareLayoutCache();
     candidate_window_controller_ = new MockCandidateWindowController;
     manager_->SetCandidateWindowControllerForTesting(
         candidate_window_controller_);
-    keyboard_ = new FakeImeKeyboard;
-    manager_->SetImeKeyboardForTesting(keyboard_);
     mock_engine_handler_ = std::make_unique<MockInputMethodEngine>();
     IMEBridge::Get()->SetCurrentEngineHandler(mock_engine_handler_.get());
 
