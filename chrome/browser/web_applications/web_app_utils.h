@@ -136,9 +136,6 @@ bool CanUserUninstallWebApp(WebAppManagementTypes sources);
 // Extracts app_id from chrome://app-settings/<app-id> URL path.
 AppId GetAppIdFromAppSettingsUrl(const GURL& url);
 
-// Check if |url|'s path is an installed web app.
-bool HasAppSettingsPage(Profile* profile, const GURL& url);
-
 // Returns whether `url` is in scope `scope`. False if scope is invalid.
 bool IsInScope(const GURL& url, const GURL& scope);
 
