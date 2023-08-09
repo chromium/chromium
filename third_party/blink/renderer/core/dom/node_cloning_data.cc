@@ -14,7 +14,7 @@ void NodeCloningData::Finalize() {
   if (!Has(CloneOption::kPreserveDOMParts) || finalized_) {
     return;
   }
-  CHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
+  DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
   for (auto part : part_queue_) {
     if (!part->IsValid()) {
       // Only valid parts are cloned.

@@ -130,22 +130,29 @@ void NodeRareData::AddDOMPart(Part& part) {
   if (!dom_parts_) {
     dom_parts_ = MakeGarbageCollected<PartsList>();
   }
-  dom_parts_->insert(&part);
+  DCHECK(!base::Contains(*dom_parts_, &part));
+  dom_parts_->push_back(&part);
 }
 
 void NodeRareData::RemoveDOMPart(Part& part) {
-  if (!dom_parts_ || !dom_parts_->Contains(&part)) {
-    return;
+  DCHECK(dom_parts_ && base::Contains(*dom_parts_, &part));
+  // Common case is that one node has one part:
+  if (dom_parts_->size() == 1) {
+    DCHECK_EQ(dom_parts_->front(), &part);
+    dom_parts_->clear();
+  } else {
+    // This is the very slow case - multiple parts for a single node.
+    PartsList new_list;
+    for (auto p : *dom_parts_) {
+      if (p != &part) {
+        new_list.push_back(p);
+      }
+    }
+    dom_parts_->Swap(new_list);
   }
-  dom_parts_->erase(&part);
   if (dom_parts_->empty()) {
     dom_parts_ = nullptr;
   }
-}
-
-PartsList NodeRareData::GetDOMParts() const {
-  CHECK(dom_parts_);
-  return *dom_parts_;
 }
 
 void NodeRareData::Trace(blink::Visitor* visitor) const {

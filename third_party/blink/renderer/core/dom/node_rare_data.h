@@ -24,8 +24,8 @@
 
 #include "base/check_op.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_deque.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
-#include "third_party/blink/renderer/platform/heap/collection_support/heap_linked_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/thread_state_storage.h"
@@ -46,7 +46,7 @@ class NodeRareData;
 class Part;
 class ScrollTimeline;
 
-using PartsList = HeapLinkedHashSet<Member<Part>>;
+using PartsList = HeapDeque<Member<Part>>;
 
 class NodeMutationObserverData final
     : public GarbageCollected<NodeMutationObserverData> {
@@ -231,8 +231,7 @@ class NodeRareData : public NodeData {
 
   void AddDOMPart(Part& part);
   void RemoveDOMPart(Part& part);
-  bool HasDOMParts() const { return dom_parts_; }
-  PartsList GetDOMParts() const;
+  PartsList* GetDOMParts() const { return dom_parts_; }
 
   void Trace(blink::Visitor*) const override;
 

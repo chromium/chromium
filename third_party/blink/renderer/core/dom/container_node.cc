@@ -1005,9 +1005,12 @@ void ContainerNode::NotifyNodeInsertedInternal(
 
   for (Node& node : NodeTraversal::InclusiveDescendantsOf(root)) {
     // As an optimization we don't notify leaf nodes when when inserting
-    // into detached subtrees that are not in a shadow tree.
-    if (!isConnected() && !IsInShadowTree() && !node.IsContainerNode())
+    // into detached subtrees that are not in a shadow tree, unless the
+    // node has DOM Parts attached.
+    if (!isConnected() && !IsInShadowTree() && !node.IsContainerNode() &&
+        !node.GetDOMParts()) {
       continue;
+    }
     if (Node::kInsertionShouldCallDidNotifySubtreeInsertions ==
         node.InsertedInto(*this))
       post_insertion_notification_targets.push_back(&node);
@@ -1023,10 +1026,13 @@ void ContainerNode::NotifyNodeRemoved(Node& root) {
 
   for (Node& node : NodeTraversal::InclusiveDescendantsOf(root)) {
     // As an optimization we skip notifying Text nodes and other leaf nodes
-    // of removal when they're not in the Document tree and not in a shadow root
-    // since the virtual call to removedFrom is not needed.
-    if (!node.IsContainerNode() && !node.IsInTreeScope())
+    // of removal when they're not in the Document tree, not in a shadow root,
+    // and don't have DOM Parts, since the virtual call to removedFrom is not
+    // needed.
+    if (!node.IsContainerNode() && !node.IsInTreeScope() &&
+        !node.GetDOMParts()) {
       continue;
+    }
     node.RemovedFrom(*this);
     if (ShadowRoot* shadow_root = node.GetShadowRoot())
       NotifyNodeRemoved(*shadow_root);
@@ -1098,7 +1104,7 @@ void ContainerNode::ClonePartsFrom(const ContainerNode& node,
   if (!data.Has(CloneOption::kPreserveDOMParts)) {
     return;
   }
-  CHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
+  DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
   if (auto* document = DynamicTo<Document>(const_cast<ContainerNode&>(node))) {
     data.ConnectPartRootToClone(document->getPartRoot(),
                                 To<Document>(this)->getPartRoot());
@@ -1107,9 +1113,9 @@ void ContainerNode::ClonePartsFrom(const ContainerNode& node,
     data.ConnectPartRootToClone(document_fragment->getPartRoot(),
                                 To<DocumentFragment>(this)->getPartRoot());
   }
-  if (node.HasDOMParts()) {
+  if (auto* parts = node.GetDOMParts()) {
     data.ConnectNodeToClone(node, *this);
-    for (Part* part : node.GetDOMParts()) {
+    for (Part* part : *parts) {
       if (part->NodeToSortBy() == node) {
         data.QueueForCloning(*part);
       }

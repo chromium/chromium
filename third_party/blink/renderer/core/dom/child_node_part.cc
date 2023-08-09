@@ -29,11 +29,10 @@ ChildNodePart::ChildNodePart(PartRoot& root,
     : Part(root, metadata),
       previous_sibling_(previous_sibling),
       next_sibling_(next_sibling) {
-  if (parentNode()) {
-    parentNode()->AddDOMPart(*this);
-  }
   previous_sibling.AddDOMPart(*this);
-  next_sibling.AddDOMPart(*this);
+  if (previous_sibling != next_sibling) {
+    next_sibling.AddDOMPart(*this);
+  }
 }
 
 void ChildNodePart::disconnect() {
@@ -41,11 +40,10 @@ void ChildNodePart::disconnect() {
     CHECK(!previous_sibling_ && !next_sibling_);
     return;
   }
-  if (parentNode()) {
-    parentNode()->RemoveDOMPart(*this);
-  }
   previous_sibling_->RemoveDOMPart(*this);
-  next_sibling_->RemoveDOMPart(*this);
+  if (next_sibling_ != previous_sibling_) {
+    next_sibling_->RemoveDOMPart(*this);
+  }
   previous_sibling_ = nullptr;
   next_sibling_ = nullptr;
   Part::disconnect();

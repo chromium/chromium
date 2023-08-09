@@ -270,11 +270,13 @@ void CharacterData::ClonePartsFrom(const CharacterData& node,
   if (!data.Has(CloneOption::kPreserveDOMParts)) {
     return;
   }
-  CHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
-  if (node.HasDOMParts()) {
+  DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
+  if (auto* parts = node.GetDOMParts()) {
     data.ConnectNodeToClone(node, *this);
-    for (Part* part : node.GetDOMParts()) {
-      data.QueueForCloning(*part);
+    for (Part* part : *parts) {
+      if (part->NodeToSortBy() == node) {
+        data.QueueForCloning(*part);
+      }
     }
   }
 }

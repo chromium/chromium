@@ -960,10 +960,9 @@ class CORE_EXPORT Node : public EventTarget {
 
   void AddDOMPart(Part& part) { EnsureRareData().AddDOMPart(part); }
   void RemoveDOMPart(Part& part) { EnsureRareData().RemoveDOMPart(part); }
-  bool HasDOMParts() const {
-    return HasRareData() && RareData()->HasDOMParts();
+  PartsList* GetDOMParts() const {
+    return HasRareData() ? RareData()->GetDOMParts() : nullptr;
   }
-  PartsList GetDOMParts() const { return RareData()->GetDOMParts(); }
   void UpdateForRemovedDOMParts(ContainerNode& insertion_point);
   void UpdateForInsertedDOMParts(ContainerNode& insertion_point);
 
