@@ -22,6 +22,7 @@
 #import "ios/components/security_interstitials/safe_browsing/url_checker_delegate_impl.h"
 #import "ios/net/cookies/system_cookie_store.h"
 #import "ios/web/common/user_agent.h"
+#import "ios/web/public/browser_state.h"
 #import "ios/web/public/thread/web_task_traits.h"
 #import "ios/web/public/thread/web_thread.h"
 #import "ios/web/public/web_client.h"
@@ -149,13 +150,22 @@ SafeBrowsingServiceImpl::CreateUrlChecker(
   scoped_refptr<safe_browsing::UrlCheckerDelegate> url_checker_delegate =
       base::MakeRefCounted<UrlCheckerDelegateImpl>(safe_browsing_db_manager_,
                                                    client->AsWeakPtr());
+  safe_browsing::HashRealTimeService* hash_real_time_service =
+      client->GetHashRealTimeService();
+
+  safe_browsing::hash_realtime_utils::HashRealTimeSelection
+      hash_real_time_selection =
+          safe_browsing::hash_realtime_utils::DetermineHashRealTimeSelection(
+              web_state->GetBrowserState()->IsOffTheRecord(),
+              pref_change_registrar_->prefs(), /*log_usage_histograms=*/true);
+
   return std::make_unique<safe_browsing::SafeBrowsingUrlCheckerImpl>(
       request_destination, url_checker_delegate, web_state->GetWeakPtr(),
       can_perform_full_url_lookup, can_url_realtime_check_subresource_url,
       web::GetUIThreadTaskRunner({}),
       url_lookup_service ? url_lookup_service->GetWeakPtr() : nullptr,
-      /*hash_realtime_service_on_ui=*/nullptr,
-      safe_browsing::hash_realtime_utils::HashRealTimeSelection::kNone);
+      hash_real_time_service ? hash_real_time_service->GetWeakPtr() : nullptr,
+      hash_real_time_selection);
 }
 
 bool SafeBrowsingServiceImpl::CanCheckUrl(const GURL& url) const {
