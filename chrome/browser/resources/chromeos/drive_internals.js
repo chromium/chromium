@@ -302,15 +302,6 @@ function onRemoveSyncPath(path, status) {
 }
 
 /**
- * @param {string} status The final status when updating the max queue size.
- * @param {string} size The max queue size, used to initialize on first load.
- */
-function onUpdateMaxQueueSize(status, size) {
-  $('max-queue-size-status').textContent = status;
-  $('bulk-pinning-max-queue-size').value = size;
-}
-
-/**
  * Creates an element named |elementName| containing the content |text|.
  * @param {string} elementName Name of the new element to be created.
  * @param {string} text Text to be contained in the new element.
@@ -411,17 +402,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
   $('bulk-pinning-toggle').addEventListener('change', function(e) {
     chrome.send('setBulkPinningEnabled', [e.target.checked]);
-  });
-
-  $('max-queue-size-form').addEventListener('submit', function(e) {
-    e.preventDefault();
-    $('max-queue-size-status').textContent = 'updating...';
-    try {
-      const maxQueueSize = parseInt($('bulk-pinning-max-queue-size').value, 10);
-      chrome.send('updateBulkPinningMaxQueueSize', [maxQueueSize]);
-    } catch (e) {
-      console.error('Failed parsing queue size', e);
-    }
   });
 
   $('startup-arguments-form').addEventListener('submit', function(e) {

@@ -30,6 +30,9 @@
   color: red;
 }
 
+.log-info {
+}
+
 summary {
   font-size: 1.5em;
 }
@@ -41,8 +44,4 @@ summary h2 {
 
 th {
   text-align: start;
-}
-
-#bulk-pinning-max-queue-size {
-  width: 50px;
 }

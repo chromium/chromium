@@ -858,6 +858,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsDnsOverHttpsWithIdentifiersEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsDisplayAlignmentAssistanceEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsDriveFsMirroringEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsDriveFsBulkPinningEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) int GetDriveFsBulkPinningQueueSize();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsInlineSyncStatusEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsInlineSyncStatusOldEventsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsInlineSyncStatusProgressEventsEnabled();

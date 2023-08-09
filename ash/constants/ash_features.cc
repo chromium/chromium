@@ -683,6 +683,11 @@ BASE_FEATURE(kDriveFsBulkPinning,
              "DriveFsBulkPinning",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Carries DriveFS' bulk-pinning experimental parameters.
+BASE_FEATURE(kDriveFsBulkPinningExperiment,
+             "DriveFsBulkPinningExperiment",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables DriveFS' bulk pinning functionality. This flag is to be enabled by
 // the feature management module.
 BASE_FEATURE(kFeatureManagementDriveFsBulkPinning,
@@ -3019,6 +3024,11 @@ bool IsDriveFsMirroringEnabled() {
 bool IsDriveFsBulkPinningEnabled() {
   return base::FeatureList::IsEnabled(kFeatureManagementDriveFsBulkPinning) &&
          base::FeatureList::IsEnabled(kDriveFsBulkPinning);
+}
+
+int GetDriveFsBulkPinningQueueSize() {
+  return base::GetFieldTrialParamByFeatureAsInt(kDriveFsBulkPinningExperiment,
+                                                "queue_size", 5);
 }
 
 bool IsInlineSyncStatusEnabled() {

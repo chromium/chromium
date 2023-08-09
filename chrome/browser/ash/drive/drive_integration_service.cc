@@ -1230,10 +1230,10 @@ void DriveIntegrationService::OnMounted(const base::FilePath& mount_path) {
 
     // Instantiate a PinManager.
     DCHECK(!pin_manager_);
-    const int max_queue_size =
-        GetPrefs()->GetInteger(prefs::kDriveFsBulkPinningMaxQueueSize);
+    const int queue_size = ash::features::GetDriveFsBulkPinningQueueSize();
+    VLOG(1) << "Bulk-pinning queue size: " << queue_size;
     pin_manager_ = std::make_unique<PinManager>(
-        profile_->GetPath(), mount_path, GetDriveFsInterface(), max_queue_size);
+        profile_->GetPath(), mount_path, GetDriveFsInterface(), queue_size);
 
     // Listen to progress events from this PinManager.
     pin_manager_->AddObserver(this);
