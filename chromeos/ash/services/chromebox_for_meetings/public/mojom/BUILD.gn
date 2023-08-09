@@ -21,6 +21,7 @@ mojom("mojom") {
       "meet_devices_diagnostics.mojom",
       "meet_devices_info.mojom",
       "meet_devices_logger.mojom",
+      "xu_camera.mojom",
     ]
     public_deps += [ "//chromeos/ash/services/cros_healthd/public/mojom" ]
   }
