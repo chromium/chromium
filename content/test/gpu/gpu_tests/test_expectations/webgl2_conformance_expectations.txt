@@ -425,6 +425,7 @@ crbug.com/1421437 [ mac amd-0x67ef angle-metal ] conformance2/extensions/webgl-s
 crbug.com/1421437 [ mac amd-0x679e angle-metal ] conformance2/extensions/webgl-shader-pixel-local-storage.html [ Failure ]
 
 crbug.com/641209 [ mac amd-0x679e angle-metal ] deqp/functional/gles3/fbomultisample* [ Failure ]
+crbug.com/1471530 [ mac amd-0x679e angle-metal ] deqp/functional/gles3/uniformbuffers/random.html [ Failure ]
 
 ## Metal Intel ##
 
