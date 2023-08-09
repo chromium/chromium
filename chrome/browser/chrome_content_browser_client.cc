@@ -3918,6 +3918,13 @@ bool ChromeContentBrowserClient::CanCreateWindow(
   DCHECK(profile);
   *no_javascript_access = false;
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Try to intercept the request and open the URL with Lacros.
+  if (ash::TryOpenUrl(target_url, disposition)) {
+    return false;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
   // If the opener is trying to create a background window but doesn't have
   // the appropriate permission, fail the attempt.
   if (container_type == content::mojom::WindowContainerType::BACKGROUND) {
@@ -7768,16 +7775,6 @@ ChromeContentBrowserClient::GetAlternativeErrorPageOverrideInfo(
 #endif
 
   return nullptr;
-}
-
-bool ChromeContentBrowserClient::OpenExternally(
-    const GURL& url,
-    WindowOpenDisposition disposition) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  return ash::TryOpenUrl(url, disposition);
-#else
-  return false;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void ChromeContentBrowserClient::OnSharedStorageWorkletHostCreated(

@@ -887,8 +887,6 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       content::BrowserContext* browser_context,
       int32_t error_code) override;
 
-  bool OpenExternally(const GURL& url,
-                      WindowOpenDisposition disposition) override;
   void OnSharedStorageWorkletHostCreated(
       content::RenderFrameHost* rfh) override;
 

@@ -4192,13 +4192,6 @@ FrameTree* WebContentsImpl::CreateNewWindow(
                "opener", opener, "params", params);
   DCHECK(opener);
 
-  // Give the content browser client a chance to intercept the request and open
-  // the URL with an external handler.
-  if (GetContentClient()->browser()->OpenExternally(params.target_url,
-                                                    params.disposition)) {
-    return nullptr;
-  }
-
   int render_process_id = opener->GetProcess()->GetID();
   SiteInstanceImpl* source_site_instance = opener->GetSiteInstance();
   const auto& partition_config =

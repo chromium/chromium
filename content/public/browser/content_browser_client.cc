@@ -1497,11 +1497,6 @@ ContentBrowserClient::GetAlternativeErrorPageOverrideInfo(
   return nullptr;
 }
 
-bool ContentBrowserClient::OpenExternally(const GURL& url,
-                                          WindowOpenDisposition disposition) {
-  return false;
-}
-
 bool ContentBrowserClient::ShouldSendOutermostOriginToRenderer(
     const url::Origin& outermost_origin) {
   return false;
