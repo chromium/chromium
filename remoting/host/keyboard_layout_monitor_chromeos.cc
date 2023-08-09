@@ -11,7 +11,9 @@
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversion_utils.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
 #include "remoting/proto/control.pb.h"
 #include "ui/base/ime/ash/ime_keyboard.h"
@@ -32,50 +34,63 @@ using protocol::LayoutKeyFunction;
 constexpr int kShiftLevelFlags[] = {0, ui::EF_SHIFT_DOWN, ui::EF_ALTGR_DOWN,
                                     ui::EF_SHIFT_DOWN | ui::EF_ALTGR_DOWN};
 
-class KeyboardLayoutMonitorChromeOs
-    : public KeyboardLayoutMonitor,
-      public ash::input_method::ImeKeyboard::Observer {
+class Core : private ash::input_method::ImeKeyboard::Observer {
  public:
-  explicit KeyboardLayoutMonitorChromeOs(
-      base::RepeatingCallback<void(const protocol::KeyboardLayout&)> callback);
-  ~KeyboardLayoutMonitorChromeOs() override;
+  explicit Core(
+      base::RepeatingCallback<void(const protocol::KeyboardLayout&)> callback,
+      const base::span<const ui::DomCode>& supported_keys);
+  Core(const Core&) = delete;
+  Core& operator=(const Core&) = delete;
+  ~Core() override = default;
 
-  // KeyboardLayoutMonitor implementation.
-  void Start() override;
+  void Start();
 
-  // ash::input_method::ImeKeyboard::Observer implementation.
+ private:
+  // `ash::input_method::ImeKeyboard::Observer` implementation.
   void OnCapsLockChanged(bool enabled) override;
   void OnLayoutChanging(const std::string& layout_name) override;
 
- private:
   void QueryLayout();
+  LayoutKeyFunction GetFunctionFromKeyboardCode(
+      ui::KeyboardCode key_code) const;
 
-  LayoutKeyFunction GetFunctionFromKeyboardCode(ui::KeyboardCode key_code);
-
+  const base::span<const ui::DomCode> supported_keys_;
   base::RepeatingCallback<void(const protocol::KeyboardLayout&)> callback_;
   base::ScopedObservation<ash::input_method::ImeKeyboard,
                           ash::input_method::ImeKeyboard::Observer>
       observation_{this};
-  base::WeakPtrFactory<KeyboardLayoutMonitorChromeOs> weak_ptr_factory_{this};
+  base::WeakPtrFactory<Core> weak_ptr_factory_{this};
 };
 
-KeyboardLayoutMonitorChromeOs::KeyboardLayoutMonitorChromeOs(
-    base::RepeatingCallback<void(const protocol::KeyboardLayout&)> callback)
-    : callback_(callback) {}
+class KeyboardLayoutMonitorChromeOs : public KeyboardLayoutMonitor {
+ public:
+  explicit KeyboardLayoutMonitorChromeOs(
+      base::RepeatingCallback<void(const protocol::KeyboardLayout&)> callback,
+      scoped_refptr<base::SingleThreadTaskRunner> input_task_runner);
+  ~KeyboardLayoutMonitorChromeOs() override;
 
-KeyboardLayoutMonitorChromeOs::~KeyboardLayoutMonitorChromeOs() = default;
+  // `KeyboardLayoutMonitor` implementation.
+  void Start() override;
 
-void KeyboardLayoutMonitorChromeOs::Start() {
+ private:
+  base::SequenceBound<Core> core_;
+};
+
+Core::Core(
+    base::RepeatingCallback<void(const protocol::KeyboardLayout&)> callback,
+    const base::span<const ui::DomCode>& supported_keys)
+    : supported_keys_(supported_keys), callback_(callback) {}
+
+void Core::Start() {
   QueryLayout();
 
   observation_.Observe(
       ash::input_method::InputMethodManager::Get()->GetImeKeyboard());
 }
 
-void KeyboardLayoutMonitorChromeOs::OnCapsLockChanged(bool enabled) {}
+void Core::OnCapsLockChanged(bool enabled) {}
 
-void KeyboardLayoutMonitorChromeOs::OnLayoutChanging(
-    const std::string& layout_name) {
+void Core::OnLayoutChanging(const std::string& layout_name) {
   // OnLayoutChanging() is triggered when the layout is changing but hasn't
   // changed yet. We can post an async task to allow the OS to 'finish' the
   // layout change however on very slow machines (e.g. a development VM), the
@@ -87,12 +102,11 @@ void KeyboardLayoutMonitorChromeOs::OnLayoutChanging(
   // change before the layout is actually loaded.
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
-      base::BindOnce(&KeyboardLayoutMonitorChromeOs::QueryLayout,
-                     weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(&Core::QueryLayout, weak_ptr_factory_.GetWeakPtr()),
       base::Milliseconds(500));
 }
 
-void KeyboardLayoutMonitorChromeOs::QueryLayout() {
+void Core::QueryLayout() {
   protocol::KeyboardLayout layout_message;
   ui::KeyboardLayoutEngine* keyboard_layout_engine =
       ui::KeyboardLayoutEngineManager::GetKeyboardLayoutEngine();
@@ -101,7 +115,7 @@ void KeyboardLayoutMonitorChromeOs::QueryLayout() {
                         ->GetImeKeyboard()
                         ->IsAltGrAvailable();
   int shift_levels = has_alt_gr ? 4 : 2;
-  for (auto code : kSupportedKeys) {
+  for (auto code : supported_keys_) {
     std::uint32_t usb_code = ui::KeycodeConverter::DomCodeToUsbKeycode(code);
     auto& key_actions =
         *(*layout_message.mutable_keys())[usb_code].mutable_actions();
@@ -139,8 +153,8 @@ void KeyboardLayoutMonitorChromeOs::QueryLayout() {
   callback_.Run(layout_message);
 }
 
-LayoutKeyFunction KeyboardLayoutMonitorChromeOs::GetFunctionFromKeyboardCode(
-    ui::KeyboardCode key_code) {
+LayoutKeyFunction Core::GetFunctionFromKeyboardCode(
+    ui::KeyboardCode key_code) const {
   // CAPS_LOCK and NUM_LOCK are left unmapped as they aren't handled by the
   // protocol or client (meaning lock states are not synchronized across so the
   // soft keyboard might not reflect the local settings accurately).
@@ -229,12 +243,28 @@ LayoutKeyFunction KeyboardLayoutMonitorChromeOs::GetFunctionFromKeyboardCode(
   }
 }
 
+KeyboardLayoutMonitorChromeOs::KeyboardLayoutMonitorChromeOs(
+    base::RepeatingCallback<void(const protocol::KeyboardLayout&)> callback,
+    scoped_refptr<base::SingleThreadTaskRunner> input_task_runner)
+    : core_(input_task_runner,
+            // Ensure callback is always invoked on the current sequence and not
+            // on `input_task_runner`.
+            base::BindPostTaskToCurrentDefault(callback),
+            kSupportedKeys) {}
+
+KeyboardLayoutMonitorChromeOs::~KeyboardLayoutMonitorChromeOs() = default;
+
+void KeyboardLayoutMonitorChromeOs::Start() {
+  core_.AsyncCall(&Core::Start);
+}
+
 }  // namespace
 
 std::unique_ptr<KeyboardLayoutMonitor> KeyboardLayoutMonitor::Create(
     base::RepeatingCallback<void(const protocol::KeyboardLayout&)> callback,
     scoped_refptr<base::SingleThreadTaskRunner> input_task_runner) {
-  return std::make_unique<KeyboardLayoutMonitorChromeOs>(std::move(callback));
+  return std::make_unique<KeyboardLayoutMonitorChromeOs>(std::move(callback),
+                                                         input_task_runner);
 }
 
 }  // namespace remoting
