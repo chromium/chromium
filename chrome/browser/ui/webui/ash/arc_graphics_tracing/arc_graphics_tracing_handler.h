@@ -16,6 +16,7 @@
 #include "base/timer/timer.h"
 #include "base/values.h"
 #include "components/exo/surface_observer.h"
+#include "content/public/browser/tracing_controller.h"
 #include "content/public/browser/web_ui_message_handler.h"
 #include "ui/aura/window_observer.h"
 #include "ui/events/event_handler.h"
@@ -74,7 +75,16 @@ class ArcGraphicsTracingHandler : public content::WebUIMessageHandler,
   void OnSurfaceDestroying(exo::Surface* surface) override;
   void OnCommit(exo::Surface* surface) override;
 
+  // Visible for testing.
+  base::TimeDelta max_tracing_time() const { return max_tracing_time_; }
+
  private:
+  virtual void StartTracingOnController(
+      const base::trace_event::TraceConfig& trace_config,
+      content::TracingController::StartTracingDoneCallback after_start);
+  virtual void StopTracingOnController(
+      content::TracingController::CompletionCallback after_stop);
+
   // For testing. This lets tests avoid casting from BrowserContext to Profile.
   virtual base::FilePath GetDownloadsFolder();
 
@@ -85,7 +95,12 @@ class ArcGraphicsTracingHandler : public content::WebUIMessageHandler,
   // parameterless.
   virtual base::Time Now();
 
-  void Activate();
+  // Exposed for testing. This implementation uses TRACE_TIME_TICKS_NOW.
+  // Returns the timestamp using clock_gettime(CLOCK_MONOTONIC), which is
+  // needed for comparison with trace timestamps.
+  virtual base::TimeTicks SystemTicksNow();
+
+  virtual void ActivateWebUIWindow();
   void StartTracing();
   void StopTracing();
   void StopTracingAndActivate();
