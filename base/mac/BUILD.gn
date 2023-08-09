@@ -1,0 +1,16 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/mac/rules.gni")
+
+executable("launch_application_test_helper") {
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+  sources = [ "test/launch_application_test_helper_main.mm" ]
+
+  frameworks = [
+    "AppKit.framework",
+    "CoreFoundation.framework",
+    "Foundation.framework",
+  ]
+}
