@@ -16,6 +16,6 @@ textarea,
 select,
 meter,
 progress,
-button:not(::-internal-selectmenu-button) {
+button {
   writing-mode: horizontal-tb !important;
 }
