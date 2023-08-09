@@ -18,6 +18,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_util.h"
+#include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/fileapi/file_access_permissions.h"
 #include "chrome/browser/ash/fileapi/file_system_backend.h"
 #include "chrome/browser/ash/fileapi/file_system_backend_delegate.h"
@@ -28,6 +29,7 @@
 #include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
 #include "components/file_access/scoped_file_access_delegate.h"
 #include "components/user_manager/user.h"
+#include "extensions/common/extension.h"
 #include "storage/browser/file_system/async_file_util.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "storage/browser/file_system/file_stream_reader.h"
@@ -51,6 +53,21 @@ AccountId GetAccountId(Profile* profile) {
   user_manager::User* user =
       profile ? ProfileHelper::Get()->GetUserByProfile(profile) : nullptr;
   return user ? user->GetAccountId() : AccountId();
+}
+
+// Returns true if the BackendFunction and OperationType correspond to the
+// GetMetadata() and CreateFileStreamReader() calls used when loading a
+// filesystem: URL via FileSystemUrlLoaderFactory.
+bool IsReadOperation(BackendFunction backend_function,
+                     storage::OperationType operation_type) {
+  if (backend_function == BackendFunction::kCreateFileSystemOperation &&
+      operation_type == storage::OperationType::kGetMetadata) {
+    return true;
+  }
+  if (backend_function == BackendFunction::kCreateFileStreamReader) {
+    return true;
+  }
+  return false;
 }
 
 }  // namespace
@@ -225,6 +242,8 @@ const storage::AccessObserverList* FileSystemBackend::GetAccessObservers(
 }
 
 bool FileSystemBackend::IsAccessAllowed(
+    BackendFunction backend_function,
+    storage::OperationType operation_type,
     const storage::FileSystemURL& url) const {
   if (!url.is_valid())
     return false;
@@ -243,6 +262,13 @@ bool FileSystemBackend::IsAccessAllowed(
 
   // The chrome://file-manager can access its filesystem origin.
   if (origin.GetURL() == file_manager::kChromeUIFileManagerURL) {
+    return true;
+  }
+
+  // ImageLoader extension has read-only access via FileSystemUrlLoaderFactory.
+  if (origin.GetURL() == extensions::Extension::GetBaseURLFromExtensionId(
+                             ::file_manager::kImageLoaderExtensionId) &&
+      IsReadOperation(backend_function, operation_type)) {
     return true;
   }
 
@@ -340,7 +366,8 @@ FileSystemBackend::CreateFileSystemOperation(
     base::File::Error* error_code) const {
   DCHECK(url.is_valid());
 
-  if (!IsAccessAllowed(url)) {
+  if (!IsAccessAllowed(BackendFunction::kCreateFileSystemOperation, type,
+                       url)) {
     *error_code = base::File::FILE_ERROR_SECURITY;
     return nullptr;
   }
@@ -413,8 +440,10 @@ FileSystemBackend::CreateFileStreamReader(
         file_access) const {
   DCHECK(url.is_valid());
 
-  if (!IsAccessAllowed(url))
+  if (!IsAccessAllowed(BackendFunction::kCreateFileStreamReader,
+                       storage::OperationType::kNone, url)) {
     return nullptr;
+  }
 
   switch (url.type()) {
     case storage::kFileSystemTypeProvided:
@@ -458,8 +487,10 @@ FileSystemBackend::CreateFileStreamWriter(
     storage::FileSystemContext* context) const {
   DCHECK(url.is_valid());
 
-  if (!IsAccessAllowed(url))
+  if (!IsAccessAllowed(BackendFunction::kCreateFileStreamWriter,
+                       storage::OperationType::kNone, url)) {
     return nullptr;
+  }
 
   switch (url.type()) {
     case storage::kFileSystemTypeProvided:
@@ -499,7 +530,8 @@ void FileSystemBackend::GetRedirectURLForContents(
     storage::URLCallback callback) const {
   DCHECK(url.is_valid());
 
-  if (!IsAccessAllowed(url)) {
+  if (!IsAccessAllowed(BackendFunction::kGetRedirectURLForContents,
+                       storage::OperationType::kNone, url)) {
     std::move(callback).Run(GURL());
     return;
   }
