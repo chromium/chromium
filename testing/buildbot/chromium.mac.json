@@ -1253,7 +1253,6 @@
           "--num-retries=3",
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
         ],
-        "check_flakiness_for_new_tests": false,
         "isolate_name": "blink_web_tests",
         "merge": {
           "args": [
@@ -1282,7 +1281,6 @@
           "--num-retries=3",
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
         ],
-        "check_flakiness_for_new_tests": false,
         "isolate_name": "blink_wpt_tests",
         "merge": {
           "args": [
@@ -1310,7 +1308,6 @@
         "args": [
           "--test-type=integration"
         ],
-        "check_flakiness_for_new_tests": false,
         "isolate_name": "chromedriver_py_tests",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -2828,7 +2825,6 @@
           "--num-retries=3",
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
         ],
-        "check_flakiness_for_new_tests": false,
         "isolate_name": "blink_web_tests",
         "isolate_profile_data": true,
         "merge": {
@@ -2858,7 +2854,6 @@
           "--num-retries=3",
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
         ],
-        "check_flakiness_for_new_tests": false,
         "isolate_name": "blink_wpt_tests",
         "isolate_profile_data": true,
         "merge": {
@@ -2887,7 +2882,6 @@
         "args": [
           "--test-type=integration"
         ],
-        "check_flakiness_for_new_tests": false,
         "isolate_name": "chromedriver_py_tests",
         "isolate_profile_data": true,
         "merge": {
@@ -4442,7 +4436,6 @@
           "--num-retries=3",
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
         ],
-        "check_flakiness_for_new_tests": false,
         "isolate_name": "blink_web_tests",
         "isolate_profile_data": true,
         "merge": {
@@ -4472,7 +4465,6 @@
           "--num-retries=3",
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
         ],
-        "check_flakiness_for_new_tests": false,
         "isolate_name": "blink_wpt_tests",
         "isolate_profile_data": true,
         "merge": {
@@ -4501,7 +4493,6 @@
         "args": [
           "--test-type=integration"
         ],
-        "check_flakiness_for_new_tests": false,
         "isolate_name": "chromedriver_py_tests",
         "isolate_profile_data": true,
         "merge": {
@@ -6065,7 +6056,6 @@
           "--num-retries=3",
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
         ],
-        "check_flakiness_for_new_tests": false,
         "isolate_name": "blink_web_tests",
         "isolate_profile_data": true,
         "merge": {
@@ -6095,7 +6085,6 @@
           "--num-retries=3",
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
         ],
-        "check_flakiness_for_new_tests": false,
         "isolate_name": "blink_wpt_tests",
         "isolate_profile_data": true,
         "merge": {
@@ -6124,7 +6113,6 @@
         "args": [
           "--test-type=integration"
         ],
-        "check_flakiness_for_new_tests": false,
         "isolate_name": "chromedriver_py_tests",
         "isolate_profile_data": true,
         "merge": {
@@ -7609,7 +7597,6 @@
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json",
           "--debug"
         ],
-        "check_flakiness_for_new_tests": false,
         "experiment_percentage": 100,
         "isolate_name": "blink_web_tests",
         "merge": {
@@ -7640,7 +7627,6 @@
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json",
           "--debug"
         ],
-        "check_flakiness_for_new_tests": false,
         "experiment_percentage": 100,
         "isolate_name": "blink_wpt_tests",
         "merge": {
@@ -24312,7 +24298,6 @@
           "--num-retries=3",
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
         ],
-        "check_flakiness_for_new_tests": false,
         "isolate_name": "blink_web_tests",
         "merge": {
           "args": [
@@ -24341,7 +24326,6 @@
           "--num-retries=3",
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
         ],
-        "check_flakiness_for_new_tests": false,
         "isolate_name": "blink_wpt_tests",
         "merge": {
           "args": [
@@ -24369,7 +24353,6 @@
         "args": [
           "--test-type=integration"
         ],
-        "check_flakiness_for_new_tests": false,
         "isolate_name": "chromedriver_py_tests",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -25816,7 +25799,6 @@
           "--num-retries=3",
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
         ],
-        "check_flakiness_for_new_tests": false,
         "ci_only": true,
         "isolate_name": "blink_web_tests",
         "merge": {
@@ -25846,7 +25828,6 @@
           "--num-retries=3",
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
         ],
-        "check_flakiness_for_new_tests": false,
         "ci_only": true,
         "isolate_name": "blink_wpt_tests",
         "merge": {
@@ -25875,7 +25856,6 @@
         "args": [
           "--test-type=integration"
         ],
-        "check_flakiness_for_new_tests": false,
         "ci_only": true,
         "isolate_name": "chromedriver_py_tests",
         "merge": {
@@ -27332,7 +27312,6 @@
           "--num-retries=3",
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
         ],
-        "check_flakiness_for_new_tests": false,
         "ci_only": true,
         "isolate_name": "blink_web_tests",
         "merge": {
@@ -27362,7 +27341,6 @@
           "--num-retries=3",
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
         ],
-        "check_flakiness_for_new_tests": false,
         "ci_only": true,
         "isolate_name": "blink_wpt_tests",
         "merge": {
@@ -27391,7 +27369,6 @@
         "args": [
           "--test-type=integration"
         ],
-        "check_flakiness_for_new_tests": false,
         "ci_only": true,
         "isolate_name": "chromedriver_py_tests",
         "merge": {

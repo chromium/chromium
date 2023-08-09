@@ -550,9 +550,6 @@
         'resultdb': {
           'enable': True,
         },
-        'mixins': [
-          'disable_check_flakiness_web_tests',
-        ],
       },
       'chromedriver_replay_unittests': {},
     },
@@ -1494,8 +1491,6 @@
         'mixins': [
           'has_native_resultdb_integration',
           'blink_tests_write_run_histories',
-          # TODO(crbug.com/1327314): Enable for blink web tests.
-          'disable_check_flakiness_web_tests',
         ],
         'results_handler': 'layout tests',
         'swarming': {
@@ -1524,8 +1519,6 @@
         'mixins': [
           'has_native_resultdb_integration',
           'blink_tests_write_run_histories',
-          # TODO(crbug.com/1327314): Enable for blink web tests.
-          'disable_check_flakiness_web_tests',
         ],
         'results_handler': 'layout tests',
         'swarming': {
@@ -1552,8 +1545,6 @@
         'mixins': [
           'has_native_resultdb_integration',
           'blink_tests_write_run_histories',
-          # TODO(crbug.com/1327314): Enable for blink web tests.
-          'disable_check_flakiness_web_tests',
         ],
         'results_handler': 'layout tests',
         'swarming': {
@@ -1577,8 +1568,6 @@
         'mixins': [
           'has_native_resultdb_integration',
           'blink_tests_write_run_histories',
-          # TODO(crbug.com/1327314): Enable for blink web tests.
-          'disable_check_flakiness_web_tests',
         ],
         'results_handler': 'layout tests',
         'swarming': {
@@ -2072,8 +2061,6 @@
         'mixins': [
           'has_native_resultdb_integration',
           'blink_tests_write_run_histories',
-          # TODO(crbug.com/1327314): Enable for blink web tests.
-          'disable_check_flakiness_web_tests',
         ],
         'results_handler': 'layout tests',
         'swarming': {
@@ -2097,8 +2084,6 @@
         'mixins': [
           'has_native_resultdb_integration',
           'blink_tests_write_run_histories',
-          # TODO(crbug.com/1327314): Enable for blink web tests.
-          'disable_check_flakiness_web_tests',
         ],
         'results_handler': 'layout tests',
         'swarming': {
@@ -2203,8 +2188,6 @@
         'mixins': [
           'has_native_resultdb_integration',
           'blink_tests_write_run_histories',
-          # TODO(crbug.com/1327314): Enable for blink web tests.
-          'disable_check_flakiness_web_tests',
         ],
         'results_handler': 'layout tests',
         'swarming': {
@@ -2230,8 +2213,6 @@
         'mixins': [
           'has_native_resultdb_integration',
           'blink_tests_write_run_histories',
-          # TODO(crbug.com/1327314): Enable for blink web tests.
-          'disable_check_flakiness_web_tests',
         ],
         'results_handler': 'layout tests',
         'swarming': {
@@ -2255,8 +2236,6 @@
         'mixins': [
           'has_native_resultdb_integration',
           'blink_tests_write_run_histories',
-          # TODO(crbug.com/1327314): Enable for blink web tests.
-          'disable_check_flakiness_web_tests',
         ],
         'results_handler': 'layout tests',
         'swarming': {
@@ -2283,8 +2262,6 @@
         'mixins': [
           'has_native_resultdb_integration',
           'blink_tests_write_run_histories',
-          # TODO(crbug.com/1327314): Enable for blink web tests.
-          'disable_check_flakiness_web_tests',
         ],
         'results_handler': 'layout tests',
         'swarming': {
@@ -2308,8 +2285,6 @@
         'mixins': [
           'has_native_resultdb_integration',
           'blink_tests_write_run_histories',
-          # TODO(crbug.com/1327314): Enable for blink web tests.
-          'disable_check_flakiness_web_tests',
         ],
         'results_handler': 'layout tests',
         'swarming': {
@@ -2924,8 +2899,6 @@
         ],
         'mixins': [
           'has_native_resultdb_integration',
-          # TODO(crbug.com/1327314): Enable for blink web tests.
-          'disable_check_flakiness_web_tests',
           'webgpu_cts',
         ],
       },
@@ -4806,8 +4779,6 @@
         'mixins': [
           'has_native_resultdb_integration',
           'blink_tests_write_run_histories',
-          # TODO(crbug.com/1327314): Enable for blink web tests.
-          'disable_check_flakiness_web_tests',
         ],
         'results_handler': 'layout tests',
         'swarming': {
@@ -4837,8 +4808,6 @@
         'mixins': [
           'has_native_resultdb_integration',
           'blink_tests_write_run_histories',
-          # TODO(crbug.com/1327314): Enable for blink web tests.
-          'disable_check_flakiness_web_tests',
         ],
         'results_handler': 'layout tests',
         'swarming': {
@@ -5489,9 +5458,6 @@
         'resultdb': {
           'enable': True,
         },
-        'mixins': [
-          'disable_check_flakiness_web_tests',
-        ],
       },
       'telemetry_monochrome_minidump_unittests': {
         'args': [
@@ -5521,9 +5487,6 @@
         'resultdb': {
           'enable': True,
         },
-        'mixins': [
-          'disable_check_flakiness_web_tests',
-        ],
       },
     },
 
@@ -5698,8 +5661,6 @@
         'mixins': [
           'has_native_resultdb_integration',
           'blink_tests_write_run_histories',
-          # TODO(crbug.com/1327314): Enable for blink web tests.
-          'disable_check_flakiness_web_tests',
         ],
         'results_handler': 'layout tests',
       },
@@ -5825,8 +5786,6 @@
         'mixins': [
           'has_native_resultdb_integration',
           'blink_tests_write_run_histories',
-          # TODO(crbug.com/1327314): Enable for blink web tests.
-          'disable_check_flakiness_web_tests',
         ],
         'results_handler': 'layout tests',
       },

@@ -7671,7 +7671,6 @@
           "--use-persistent-shell",
           "--avd-config=../../tools/android/avd/proto/generic_android24.textpb"
         ],
-        "check_flakiness_for_new_tests": false,
         "ci_only": true,
         "isolate_name": "telemetry_perf_unittests_android_chrome",
         "isolate_profile_data": true,
@@ -23899,7 +23898,6 @@
           "--additional-driver-flag=--no-sandbox",
           "--additional-env-var=LLVM_PROFILE_FILE=${ISOLATED_OUTDIR}/profraw/default-%9m.profraw"
         ],
-        "check_flakiness_for_new_tests": false,
         "isolate_name": "blink_web_tests",
         "isolate_profile_data": true,
         "merge": {
@@ -23930,7 +23928,6 @@
           "--additional-driver-flag=--no-sandbox",
           "--additional-env-var=LLVM_PROFILE_FILE=${ISOLATED_OUTDIR}/profraw/default-%9m.profraw"
         ],
-        "check_flakiness_for_new_tests": false,
         "isolate_name": "blink_wpt_tests",
         "isolate_profile_data": true,
         "merge": {
@@ -23958,7 +23955,6 @@
         "args": [
           "--test-type=integration"
         ],
-        "check_flakiness_for_new_tests": false,
         "isolate_name": "chromedriver_py_tests",
         "isolate_profile_data": true,
         "merge": {
@@ -24073,7 +24069,6 @@
           "--num-retries=3",
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
         ],
-        "check_flakiness_for_new_tests": false,
         "isolate_name": "blink_web_tests",
         "isolate_profile_data": true,
         "merge": {
@@ -24103,7 +24098,6 @@
           "--num-retries=3",
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
         ],
-        "check_flakiness_for_new_tests": false,
         "isolate_name": "blink_wpt_tests",
         "isolate_profile_data": true,
         "merge": {
@@ -24153,7 +24147,6 @@
           "--additional-driver-flag=--no-sandbox",
           "--additional-env-var=LLVM_PROFILE_FILE=${ISOLATED_OUTDIR}/profraw/default-%9m.profraw"
         ],
-        "check_flakiness_for_new_tests": false,
         "isolate_name": "blink_web_tests",
         "isolate_profile_data": true,
         "merge": {
@@ -24183,7 +24176,6 @@
           "--num-retries=3",
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
         ],
-        "check_flakiness_for_new_tests": false,
         "isolate_name": "blink_wpt_tests",
         "isolate_profile_data": true,
         "merge": {
@@ -24302,7 +24294,6 @@
           "--flag-specific=skia-vulkan-swiftshader",
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
         ],
-        "check_flakiness_for_new_tests": false,
         "isolate_name": "blink_web_tests",
         "isolate_profile_data": true,
         "merge": {
@@ -24355,7 +24346,6 @@
           "--no-xvfb",
           "--additional-driver-flag=--enable-features=Vulkan"
         ],
-        "check_flakiness_for_new_tests": false,
         "isolate_name": "webgpu_blink_web_tests",
         "isolate_profile_data": true,
         "merge": {
@@ -28750,7 +28740,6 @@
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--target=Release_x64"
         ],
-        "check_flakiness_for_new_tests": false,
         "isolate_name": "webgpu_blink_web_tests",
         "isolate_profile_data": true,
         "merge": {

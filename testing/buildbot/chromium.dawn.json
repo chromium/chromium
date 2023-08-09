@@ -1154,7 +1154,6 @@
           "--no-xvfb",
           "--additional-driver-flag=--enable-features=Vulkan"
         ],
-        "check_flakiness_for_new_tests": false,
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
           "args": [
@@ -1664,7 +1663,6 @@
           "--no-xvfb",
           "--additional-driver-flag=--enable-features=Vulkan"
         ],
-        "check_flakiness_for_new_tests": false,
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
           "args": [
@@ -2172,7 +2170,6 @@
           "--no-xvfb",
           "--additional-driver-flag=--enable-features=Vulkan"
         ],
-        "check_flakiness_for_new_tests": false,
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
           "args": [
@@ -2682,7 +2679,6 @@
           "--no-xvfb",
           "--additional-driver-flag=--enable-features=Vulkan"
         ],
-        "check_flakiness_for_new_tests": false,
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
           "args": [
@@ -3209,7 +3205,6 @@
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--platform=mac-mac11"
         ],
-        "check_flakiness_for_new_tests": false,
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
           "args": [
@@ -3757,7 +3752,6 @@
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--platform=mac-mac11"
         ],
-        "check_flakiness_for_new_tests": false,
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
           "args": [
@@ -4307,7 +4301,6 @@
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--platform=mac-mac11"
         ],
-        "check_flakiness_for_new_tests": false,
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
           "args": [
@@ -4837,7 +4830,6 @@
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--platform=mac-mac11"
         ],
-        "check_flakiness_for_new_tests": false,
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
           "args": [
@@ -5378,7 +5370,6 @@
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--platform=mac-mac11"
         ],
-        "check_flakiness_for_new_tests": false,
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
           "args": [
@@ -5925,7 +5916,6 @@
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--platform=mac-mac11"
         ],
-        "check_flakiness_for_new_tests": false,
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
           "args": [
@@ -6465,7 +6455,6 @@
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--platform=mac-mac11"
         ],
-        "check_flakiness_for_new_tests": false,
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
           "args": [
@@ -6995,7 +6984,6 @@
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--platform=mac-mac11"
         ],
-        "check_flakiness_for_new_tests": false,
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
           "args": [
@@ -7510,7 +7498,6 @@
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--target=Release_x64"
         ],
-        "check_flakiness_for_new_tests": false,
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
           "args": [
@@ -7907,7 +7894,6 @@
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--target=Release_x64"
         ],
-        "check_flakiness_for_new_tests": false,
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
           "args": [
@@ -8359,7 +8345,6 @@
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--target=Release_x64"
         ],
-        "check_flakiness_for_new_tests": false,
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
           "args": [
@@ -8817,7 +8802,6 @@
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--target=Release_x64"
         ],
-        "check_flakiness_for_new_tests": false,
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
           "args": [
@@ -9419,7 +9403,6 @@
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--target=Release_x64"
         ],
-        "check_flakiness_for_new_tests": false,
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
           "args": [
@@ -9877,7 +9860,6 @@
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--target=Release_x64"
         ],
-        "check_flakiness_for_new_tests": false,
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
           "args": [
@@ -10392,7 +10374,6 @@
           "--flag-specific=webgpu",
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000"
         ],
-        "check_flakiness_for_new_tests": false,
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
           "args": [
@@ -10824,7 +10805,6 @@
           "--flag-specific=webgpu",
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000"
         ],
-        "check_flakiness_for_new_tests": false,
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
           "args": [
@@ -11331,7 +11311,6 @@
           "--flag-specific=webgpu",
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000"
         ],
-        "check_flakiness_for_new_tests": false,
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
           "args": [
@@ -11763,7 +11742,6 @@
           "--flag-specific=webgpu",
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000"
         ],
-        "check_flakiness_for_new_tests": false,
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
           "args": [

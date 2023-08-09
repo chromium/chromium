@@ -29295,7 +29295,6 @@
           "--use-persistent-shell",
           "--avd-config=../../tools/android/avd/proto/generic_android24.textpb"
         ],
-        "check_flakiness_for_new_tests": false,
         "ci_only": true,
         "isolate_name": "telemetry_perf_unittests_android_chrome",
         "isolate_profile_data": true,
@@ -34022,7 +34021,6 @@
           "--use-persistent-shell",
           "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
         ],
-        "check_flakiness_for_new_tests": false,
         "ci_only": true,
         "isolate_name": "telemetry_perf_unittests_android_chrome",
         "isolate_profile_data": true,
