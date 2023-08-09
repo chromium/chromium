@@ -324,13 +324,13 @@ void FlossAdapterClient::Init(dbus::Bus* bus,
 
   pending_register_calls_ = 2;
 
-  CallAdapterMethod<Void>(
-      base::BindOnce(&FlossAdapterClient::OnRegisterCallbacks,
+  CallAdapterMethod<uint32_t>(
+      base::BindOnce(&FlossAdapterClient::OnRegisterCallback,
                      weak_ptr_factory_.GetWeakPtr()),
       adapter::kRegisterCallback, dbus::ObjectPath(exported_callback_path_));
 
-  CallAdapterMethod<Void>(
-      base::BindOnce(&FlossAdapterClient::OnRegisterCallbacks,
+  CallAdapterMethod<uint32_t>(
+      base::BindOnce(&FlossAdapterClient::OnRegisterConnectionCallback,
                      weak_ptr_factory_.GetWeakPtr()),
       adapter::kRegisterConnectionCallback,
       dbus::ObjectPath(exported_callback_path_));
@@ -687,10 +687,12 @@ void FlossAdapterClient::OnDiscoverableTimeout(DBusResult<uint32_t> ret) {
   }
 }
 
-void FlossAdapterClient::OnRegisterCallbacks(DBusResult<Void> ret) {
+void FlossAdapterClient::OnRegisterCallback(DBusResult<uint32_t> ret) {
   if (!ret.has_value()) {
     return;
   }
+
+  callback_id_ = *ret;
 
   if (pending_register_calls_ > 0) {
     pending_register_calls_--;
@@ -701,8 +703,44 @@ void FlossAdapterClient::OnRegisterCallbacks(DBusResult<Void> ret) {
   }
 }
 
+void FlossAdapterClient::OnRegisterConnectionCallback(
+    DBusResult<uint32_t> ret) {
+  if (!ret.has_value()) {
+    return;
+  }
+
+  connection_callback_id_ = *ret;
+
+  if (pending_register_calls_ > 0) {
+    pending_register_calls_--;
+
+    if (pending_register_calls_ == 0 && on_ready_) {
+      std::move(on_ready_).Run();
+    }
+  }
+}
+
+void FlossAdapterClient::OnUnregisterCallbacks(DBusResult<bool> ret) {
+  if (!ret.has_value() || *ret == false) {
+    LOG(WARNING) << __func__ << "Failed to unregister callback";
+  }
+}
+
 FlossAdapterClient::FlossAdapterClient() = default;
 FlossAdapterClient::~FlossAdapterClient() {
+  if (callback_id_) {
+    CallAdapterMethod<bool>(
+        base::BindOnce(&FlossAdapterClient::OnUnregisterCallbacks,
+                       weak_ptr_factory_.GetWeakPtr()),
+        adapter::kUnregisterCallback, callback_id_.value());
+  }
+  if (connection_callback_id_) {
+    CallAdapterMethod<bool>(
+        base::BindOnce(&FlossAdapterClient::OnUnregisterCallbacks,
+                       weak_ptr_factory_.GetWeakPtr()),
+        adapter::kUnregisterConnectionCallback,
+        connection_callback_id_.value());
+  }
   if (bus_) {
     bus_->UnregisterExportedObject(dbus::ObjectPath(exported_callback_path_));
   }

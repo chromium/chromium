@@ -204,6 +204,9 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdvertiserClient
   void CompleteRegisterCallback(dbus::Response* response,
                                 dbus::ErrorResponse* error_response);
 
+  // Completes the method call for UnregisterAdvertiserCallback.
+  void CompleteUnregisterCallback(DBusResult<bool> ret);
+
   // Completes the method call for |StartAdvertisingSet|.
   void CompleteStartAdvertisingSetCallback(
       StartSuccessCallback success_callback,

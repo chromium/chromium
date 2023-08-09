@@ -38,6 +38,8 @@ constexpr char kFakeStrReturn[] = "fake return";
 constexpr uint32_t kFakeU32Param = 30;
 constexpr char kFakeStrParam[] = "fake param";
 constexpr bool kFakeBoolParam = true;
+constexpr uint32_t kFakeCallbackId = 23;
+constexpr uint32_t kFakeConnectionCallbackId = 24;
 
 constexpr char kFakeDeviceAddr[] = "11:22:33:44:55:66";
 constexpr char kFakeDeviceName[] = "Some Device";
@@ -490,7 +492,36 @@ TEST_F(FlossAdapterClientTest, InitializesCorrectly) {
   EXPECT_CALL(*adapter_object_proxy_.get(),
               DoCallMethodWithErrorResponse(
                   HasMemberOf(adapter::kRegisterCallback), _, _))
-      .Times(1);
+      .WillOnce([](::dbus::MethodCall* method_call, int timeout_ms,
+                   ::dbus::ObjectProxy::ResponseOrErrorCallback* cb) {
+        dbus::MessageReader msg(method_call);
+        // D-Bus method call should have 1 parameter.
+        dbus::ObjectPath param1;
+        ASSERT_TRUE(msg.PopObjectPath(&param1));
+        EXPECT_FALSE(msg.HasMoreData());
+        // Create a fake response with uint32_t return value.
+        auto response = ::dbus::Response::CreateEmpty();
+        dbus::MessageWriter writer(response.get());
+        writer.AppendUint32(kFakeCallbackId);
+        std::move(*cb).Run(response.get(), /*err=*/nullptr);
+      });
+  EXPECT_CALL(*adapter_object_proxy_.get(),
+              DoCallMethodWithErrorResponse(
+                  HasMemberOf(adapter::kRegisterConnectionCallback), _, _))
+      .WillOnce([](::dbus::MethodCall* method_call, int timeout_ms,
+                   ::dbus::ObjectProxy::ResponseOrErrorCallback* cb) {
+        dbus::MessageReader msg(method_call);
+        // D-Bus method call should have 1 parameter.
+        dbus::ObjectPath param1;
+        ASSERT_TRUE(msg.PopObjectPath(&param1));
+        EXPECT_FALSE(msg.HasMoreData());
+        // Create a fake response with uint32_t return value.
+        auto response = ::dbus::Response::CreateEmpty();
+        dbus::MessageWriter writer(response.get());
+        writer.AppendUint32(kFakeConnectionCallbackId);
+        std::move(*cb).Run(response.get(), /*err=*/nullptr);
+      });
+
   client_->Init(bus_.get(), kAdapterInterface, adapter_index_,
                 base::DoNothing());
 
@@ -504,6 +535,32 @@ TEST_F(FlossAdapterClientTest, InitializesCorrectly) {
   // Make sure discoverable is initialized correctly
   EXPECT_EQ(test_observer.discoverable_changed_count_, 1);
   EXPECT_EQ(client_->GetDiscoverable(), adapter_discoverable_);
+
+  // Make sure to unregister callbacks when client is destroyed
+  EXPECT_CALL(*adapter_object_proxy_.get(),
+              DoCallMethodWithErrorResponse(
+                  HasMemberOf(adapter::kUnregisterCallback), _, _))
+      .WillOnce([](::dbus::MethodCall* method_call, int timeout_ms,
+                   ::dbus::ObjectProxy::ResponseOrErrorCallback* cb) {
+        dbus::MessageReader msg(method_call);
+        // D-Bus method call should have 1 parameter.
+        uint32_t param1;
+        ASSERT_TRUE(FlossDBusClient::ReadAllDBusParams(&msg, &param1));
+        EXPECT_EQ(kFakeCallbackId, param1);
+        EXPECT_FALSE(msg.HasMoreData());
+      });
+  EXPECT_CALL(*adapter_object_proxy_.get(),
+              DoCallMethodWithErrorResponse(
+                  HasMemberOf(adapter::kUnregisterConnectionCallback), _, _))
+      .WillOnce([](::dbus::MethodCall* method_call, int timeout_ms,
+                   ::dbus::ObjectProxy::ResponseOrErrorCallback* cb) {
+        dbus::MessageReader msg(method_call);
+        // D-Bus method call should have 1 parameter.
+        uint32_t param1;
+        ASSERT_TRUE(FlossDBusClient::ReadAllDBusParams(&msg, &param1));
+        EXPECT_EQ(kFakeConnectionCallbackId, param1);
+        EXPECT_FALSE(msg.HasMoreData());
+      });
 }
 
 TEST_F(FlossAdapterClientTest, HandlesAddressChanges) {

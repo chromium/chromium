@@ -71,7 +71,9 @@ extern DEVICE_BLUETOOTH_EXPORT const char kGetBondState[];
 extern DEVICE_BLUETOOTH_EXPORT const char kConnectAllEnabledProfiles[];
 extern DEVICE_BLUETOOTH_EXPORT const char kDisconnectAllEnabledProfiles[];
 extern DEVICE_BLUETOOTH_EXPORT const char kRegisterCallback[];
+extern DEVICE_BLUETOOTH_EXPORT const char kUnregisterCallback[];
 extern DEVICE_BLUETOOTH_EXPORT const char kRegisterConnectionCallback[];
+extern DEVICE_BLUETOOTH_EXPORT const char kUnregisterConnectionCallback[];
 extern DEVICE_BLUETOOTH_EXPORT const char kRegisterScanner[];
 extern DEVICE_BLUETOOTH_EXPORT const char kUnregisterScanner[];
 extern DEVICE_BLUETOOTH_EXPORT const char kRegisterScannerCallback[];
@@ -134,6 +136,7 @@ extern DEVICE_BLUETOOTH_EXPORT const char kOnDefaultAdapterChanged[];
 
 namespace socket_manager {
 extern DEVICE_BLUETOOTH_EXPORT const char kRegisterCallback[];
+extern DEVICE_BLUETOOTH_EXPORT const char kUnregisterCallback[];
 extern DEVICE_BLUETOOTH_EXPORT const char kListenUsingInsecureL2capChannel[];
 extern DEVICE_BLUETOOTH_EXPORT const char kListenUsingInsecureL2capLeChannel[];
 extern DEVICE_BLUETOOTH_EXPORT const char
@@ -224,6 +227,7 @@ extern DEVICE_BLUETOOTH_EXPORT const char kOnServerSubrateChange[];
    //
 namespace advertiser {
 extern DEVICE_BLUETOOTH_EXPORT const char kRegisterCallback[];
+extern DEVICE_BLUETOOTH_EXPORT const char kUnregisterCallback[];
 extern DEVICE_BLUETOOTH_EXPORT const char kStartAdvertisingSet[];
 extern DEVICE_BLUETOOTH_EXPORT const char kStopAdvertisingSet[];
 extern DEVICE_BLUETOOTH_EXPORT const char kGetOwnAddress[];
@@ -252,6 +256,7 @@ extern DEVICE_BLUETOOTH_EXPORT const char kOnPeriodicAdvertisingEnabled[];
 namespace battery_manager {
 extern DEVICE_BLUETOOTH_EXPORT const char kCallbackInterface[];
 extern DEVICE_BLUETOOTH_EXPORT const char kRegisterBatteryCallback[];
+extern DEVICE_BLUETOOTH_EXPORT const char kUnregisterBatteryCallback[];
 extern DEVICE_BLUETOOTH_EXPORT const char kGetBatteryInformation[];
 
 extern DEVICE_BLUETOOTH_EXPORT const char kOnBatteryInfoUpdated[];
@@ -796,8 +801,8 @@ class DEVICE_BLUETOOTH_EXPORT FlossDBusClient {
     dbus::ObjectProxy* object_proxy =
         bus->GetObjectProxy(service_name, object_path);
     if (!object_proxy) {
-      LOG(ERROR) << "Object proxy does not exist when trying to call "
-                 << method_name;
+      VLOG(1) << "Object proxy does not exist when trying to call "
+              << method_name;
       std::move(callback).Run(base::unexpected(
           Error(std::string(kErrorDBus), "Invalid object proxy")));
       return;

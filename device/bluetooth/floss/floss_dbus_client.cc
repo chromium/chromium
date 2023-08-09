@@ -68,7 +68,9 @@ const char kGetBondState[] = "GetBondState";
 const char kConnectAllEnabledProfiles[] = "ConnectAllEnabledProfiles";
 const char kDisconnectAllEnabledProfiles[] = "DisconnectAllEnabledProfiles";
 const char kRegisterCallback[] = "RegisterCallback";
+const char kUnregisterCallback[] = "UnregisterCallback";
 const char kRegisterConnectionCallback[] = "RegisterConnectionCallback";
+const char kUnregisterConnectionCallback[] = "UnregisterConnectionCallback";
 const char kRegisterScanner[] = "RegisterScanner";
 const char kUnregisterScanner[] = "UnregisterScanner";
 const char kRegisterScannerCallback[] = "RegisterScannerCallback";
@@ -131,6 +133,7 @@ const char kOnDefaultAdapterChanged[] = "OnDefaultAdapterChanged";
 
 namespace socket_manager {
 const char kRegisterCallback[] = "RegisterCallback";
+const char kUnregisterCallback[] = "UnregisterCallback";
 const char kListenUsingInsecureL2capChannel[] =
     "ListenUsingInsecureL2capChannel";
 const char kListenUsingInsecureL2capLeChannel[] =
@@ -229,6 +232,7 @@ const char kOnServerSubrateChange[] = "OnSubrateChange";
 
 namespace advertiser {
 const char kRegisterCallback[] = "RegisterAdvertiserCallback";
+const char kUnregisterCallback[] = "UnregisterAdvertiserCallback";
 const char kStartAdvertisingSet[] = "StartAdvertisingSet";
 const char kStopAdvertisingSet[] = "StopAdvertisingSet";
 const char kGetOwnAddress[] = "GetOwnAddress";
@@ -260,6 +264,7 @@ namespace battery_manager {
 const char kCallbackInterface[] =
     "org.chromium.bluetooth.BatteryManagerCallback";
 const char kRegisterBatteryCallback[] = "RegisterBatteryCallback";
+const char kUnregisterBatteryCallback[] = "UnregisterBatteryCallback";
 const char kGetBatteryInformation[] = "GetBatteryInformation";
 
 const char kOnBatteryInfoUpdated[] = "OnBatteryInfoUpdated";

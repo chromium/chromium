@@ -397,10 +397,14 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdapterClient : public FlossDBusClient {
   // Handle GetDiscoverableTimeout and cache the returned value.
   void OnDiscoverableTimeout(DBusResult<uint32_t> ret);
 
-  // Handle both |RegisterCallback| and |RegisterConnectionCallback| results.
-  // We discard the DBus return value in |RegisterConnectionCallback| because
-  // we only care that the call succeeded.
-  void OnRegisterCallbacks(DBusResult<Void> ret);
+  // Handle |RegisterCallback| result and store callback ID.
+  void OnRegisterCallback(DBusResult<uint32_t> ret);
+
+  // Handle |RegisterConnectionCallback| result and store callback ID.
+  void OnRegisterConnectionCallback(DBusResult<uint32_t> ret);
+
+  // Handle both |UnregisterCallback| and |UnregisterConnectionCallback|.
+  void OnUnregisterCallbacks(DBusResult<bool> ret);
 
   // List of observers interested in event notifications from this client.
   base::ObserverList<Observer> observers_;
@@ -452,6 +456,12 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdapterClient : public FlossDBusClient {
 
   // Number of callbacks pending registration before client is ready to use.
   int pending_register_calls_ = 0;
+
+  // Callback ID used for callbacks registered to this client.
+  absl::optional<uint32_t> callback_id_;
+
+  // Callback ID used for connection callbacks registered to this client.
+  absl::optional<uint32_t> connection_callback_id_;
 
   base::WeakPtrFactory<FlossAdapterClient> weak_ptr_factory_{this};
 };

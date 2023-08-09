@@ -289,6 +289,20 @@ TEST_F(FlossAdvertiserClientTest, StartAndStopAdvertisingSet) {
 
   DoOnAdvertisingSetStopped(method_handler_on_advertising_set_stopped, kAdvId1);
   run_loop2.Run();
+
+  // Expected call to UnregisterCallback when client is destroyed
+  EXPECT_CALL(*advclient_proxy_.get(),
+              DoCallMethodWithErrorResponse(
+                  HasMemberOf(advertiser::kUnregisterCallback), _, _))
+      .WillOnce([](::dbus::MethodCall* method_call, int timeout_ms,
+                   ::dbus::ObjectProxy::ResponseOrErrorCallback* cb) {
+        dbus::MessageReader msg(method_call);
+        // D-Bus method call should have 1 parameter.
+        uint32_t param1;
+        ASSERT_TRUE(FlossDBusClient::ReadAllDBusParams(&msg, &param1));
+        EXPECT_EQ(kCallbackId1, param1);
+        EXPECT_FALSE(msg.HasMoreData());
+      });
 }
 
 }  // namespace floss
