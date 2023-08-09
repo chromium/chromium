@@ -125,6 +125,10 @@ class MockPersonalDataManager : public TestPersonalDataManager {
   MockPersonalDataManager() = default;
   ~MockPersonalDataManager() override = default;
   MOCK_METHOD(void, OnUserAcceptedUpstreamOffer, (), (override));
+  MOCK_METHOD(void,
+              AddServerCvc,
+              (int64_t instrument_id, const std::u16string& cvc),
+              (override));
 };
 
 class MockAutofillClient : public TestAutofillClient {
@@ -5288,6 +5292,112 @@ TEST_F(CreditCardSaveManagerTest,
 
   EXPECT_FALSE(autofill_client_.ConfirmSaveCardLocallyWasCalled());
   EXPECT_FALSE(credit_card_save_manager_->CreditCardWasUploaded());
+}
+
+class SaveCvcTest : public CreditCardSaveManagerTest,
+                    public testing::WithParamInterface<std::tuple<bool, bool>> {
+ public:
+  SaveCvcTest() {
+    feature_list.InitWithFeatureState(
+        features::kAutofillEnableCvcStorageAndFilling,
+        IsSaveCvcFeatureEnabled());
+  }
+  // This bool indicates if save CVC storage flag is enabled.
+  bool IsSaveCvcFeatureEnabled() const { return std::get<0>(GetParam()); }
+  // This bool indicates if user has opted-in to the features on the settings
+  // page.
+  bool IsSaveCvcPrefEnabled() const { return std::get<1>(GetParam()); }
+
+ private:
+  base::test::ScopedFeatureList feature_list;
+};
+
+// Tests that server CVC is added to AutofillTable during credit card upload
+// save.
+TEST_P(SaveCvcTest, OnDidUploadCard_SaveServerCvc) {
+  prefs::SetPaymentCvcStorage(autofill_client_.GetPrefs(),
+                              IsSaveCvcPrefEnabled());
+  // Set up upload_request card.
+  CreditCard card = test::GetCreditCard();
+  const std::u16string kCvc = u"111";
+  card.set_cvc(kCvc);
+  credit_card_save_manager_->set_upload_request_card(card);
+
+  // Set up upload card response and upload.
+  const int64_t kInstrumentId = 12345L;
+  payments::PaymentsClient::UploadCardResponseDetails
+      upload_card_response_details;
+  upload_card_response_details.instrument_id = kInstrumentId;
+
+  // Confirm CVC is added to AutofillTable only if CVC storage feature and
+  // pref were enabled.
+  if (IsSaveCvcFeatureEnabled() && IsSaveCvcPrefEnabled()) {
+    EXPECT_CALL(personal_data(), AddServerCvc(kInstrumentId, kCvc));
+  } else {
+    EXPECT_CALL(personal_data(), AddServerCvc).Times(0);
+  }
+  credit_card_save_manager_->OnDidUploadCard(
+      AutofillClient::PaymentsRpcResult::kSuccess,
+      upload_card_response_details);
+}
+
+INSTANTIATE_TEST_SUITE_P(CreditCardSaveManagerTest,
+                         SaveCvcTest,
+                         testing::Combine(testing::Bool(), testing::Bool()));
+
+// Tests that server CVC is not added to AutofillTable during credit card upload
+// save if CVC was empty.
+TEST_F(CreditCardSaveManagerTest,
+       OnDidUploadCard_DoNotAddServerCvcIfCvcIsEmpty) {
+  // Set up the flags and prefs.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kAutofillEnableCvcStorageAndFilling);
+  prefs::SetPaymentCvcStorage(autofill_client_.GetPrefs(), true);
+
+  // Set up upload_request card with empty CVC.
+  CreditCard card = test::GetCreditCard();
+  card.set_cvc(u"");
+  credit_card_save_manager_->set_upload_request_card(card);
+
+  // Set up upload card response and upload.
+  payments::PaymentsClient::UploadCardResponseDetails
+      upload_card_response_details;
+  upload_card_response_details.instrument_id = 12345L;
+
+  // Confirm CVC is not added to AutofillTable if CVC was empty.
+  EXPECT_CALL(personal_data(), AddServerCvc).Times(0);
+
+  credit_card_save_manager_->OnDidUploadCard(
+      AutofillClient::PaymentsRpcResult::kSuccess,
+      upload_card_response_details);
+}
+
+// Tests that server CVC is not added to AutofillTable during credit card upload
+// save if instrument_id was empty.
+TEST_F(CreditCardSaveManagerTest,
+       OnDidUploadCard_DoNotAddServerCvcIfInstrumentIdIsEmpty) {
+  // Set up the flags and prefs.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kAutofillEnableCvcStorageAndFilling);
+  prefs::SetPaymentCvcStorage(autofill_client_.GetPrefs(), true);
+
+  // Set up upload_request card.
+  CreditCard card = test::GetCreditCard();
+  card.set_cvc(u"111");
+  credit_card_save_manager_->set_upload_request_card(card);
+
+  // Set up upload card response without instrument_id and upload.
+  payments::PaymentsClient::UploadCardResponseDetails
+      upload_card_response_details_without_instrument_id;
+
+  // Confirm CVC is not added to AutofillTable if instrument_id was empty.
+  EXPECT_CALL(personal_data(), AddServerCvc).Times(0);
+
+  credit_card_save_manager_->OnDidUploadCard(
+      AutofillClient::PaymentsRpcResult::kSuccess,
+      upload_card_response_details_without_instrument_id);
 }
 
 // Tests that the fields in the card are set correctly and virtual card
