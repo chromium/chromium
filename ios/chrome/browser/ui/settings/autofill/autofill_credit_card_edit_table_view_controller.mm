@@ -94,8 +94,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (void)editButtonPressed {
   // In the case of server cards, open the Payments editing page instead.
-  if (_creditCard.record_type() == autofill::CreditCard::FULL_SERVER_CARD ||
-      _creditCard.record_type() == autofill::CreditCard::MASKED_SERVER_CARD) {
+  if (_creditCard.record_type() ==
+          autofill::CreditCard::RecordType::kFullServerCard ||
+      _creditCard.record_type() ==
+          autofill::CreditCard::RecordType::kMaskedServerCard) {
     GURL paymentsURL = autofill::payments::GetManageInstrumentsUrl();
     OpenNewTabCommand* command =
         [OpenNewTabCommand commandWithURLFromChrome:paymentsURL];
@@ -169,7 +171,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
     [model addItem:item toSectionWithIdentifier:SectionIdentifierFields];
   }
 
-  if (_creditCard.record_type() == autofill::CreditCard::FULL_SERVER_CARD) {
+  if (_creditCard.record_type() ==
+      autofill::CreditCard::RecordType::kFullServerCard) {
     // Add CopiedToChrome cell in its own section.
     [model addSectionWithIdentifier:SectionIdentifierCopiedToChrome];
     CopiedToChromeItem* copiedToChromeItem =
@@ -341,7 +344,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
   _personalDataManager->ResetFullServerCard(_creditCard.guid());
 
   // Reset the copy of the card data used for display immediately.
-  _creditCard.set_record_type(autofill::CreditCard::MASKED_SERVER_CARD);
+  _creditCard.set_record_type(
+      autofill::CreditCard::RecordType::kMaskedServerCard);
   _creditCard.SetNumber(_creditCard.LastFourDigits());
   [self reloadData];
 }

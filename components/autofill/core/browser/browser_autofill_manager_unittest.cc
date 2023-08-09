@@ -654,7 +654,8 @@ class BrowserAutofillManagerTest : public testing::Test {
                             "4234567890123456",  // Visa
                             "04", "2999", "1");
     masked_server_card.set_guid(MakeGuid(7));
-    masked_server_card.set_record_type(CreditCard::MASKED_SERVER_CARD);
+    masked_server_card.set_record_type(
+        CreditCard::RecordType::kMaskedServerCard);
     personal_data().AddServerCreditCard(masked_server_card);
 
     CreditCard full_server_card;
@@ -662,7 +663,7 @@ class BrowserAutofillManagerTest : public testing::Test {
                             "5187654321098765",  // Mastercard
                             "10", "2998", "1");
     full_server_card.set_guid(MakeGuid(8));
-    full_server_card.set_record_type(CreditCard::FULL_SERVER_CARD);
+    full_server_card.set_record_type(CreditCard::RecordType::kFullServerCard);
     personal_data().AddServerCreditCard(full_server_card);
   }
 
@@ -674,7 +675,8 @@ class BrowserAutofillManagerTest : public testing::Test {
                             "4234567890123456",  // Visa
                             "04", "2999", "1");
     masked_server_card.set_guid(MakeGuid(7));
-    masked_server_card.set_record_type(CreditCard::MASKED_SERVER_CARD);
+    masked_server_card.set_record_type(
+        CreditCard::RecordType::kMaskedServerCard);
     personal_data().AddServerCreditCard(masked_server_card);
 
     CreditCard full_server_card;
@@ -682,7 +684,7 @@ class BrowserAutofillManagerTest : public testing::Test {
                             "5187654321098765",  // Mastercard
                             "10", "2998", "1");
     full_server_card.set_guid(MakeGuid(8));
-    full_server_card.set_record_type(CreditCard::FULL_SERVER_CARD);
+    full_server_card.set_record_type(CreditCard::RecordType::kFullServerCard);
     personal_data().AddServerCreditCard(full_server_card);
 
     CreditCard local_card;
@@ -690,7 +692,7 @@ class BrowserAutofillManagerTest : public testing::Test {
                             "4234567890123456",  // Visa
                             "04", "2999", "1");
     local_card.set_guid(MakeGuid(9));
-    local_card.set_record_type(CreditCard::LOCAL_CARD);
+    local_card.set_record_type(CreditCard::RecordType::kLocalCard);
     personal_data().AddCreditCard(local_card);
   }
 
@@ -702,7 +704,8 @@ class BrowserAutofillManagerTest : public testing::Test {
                             "4234567890123456",  // Visa
                             "04", "2999", "1");
     masked_server_card.set_guid(MakeGuid(7));
-    masked_server_card.set_record_type(CreditCard::MASKED_SERVER_CARD);
+    masked_server_card.set_record_type(
+        CreditCard::RecordType::kMaskedServerCard);
     personal_data().AddServerCreditCard(masked_server_card);
 
     CreditCard full_server_card;
@@ -710,7 +713,7 @@ class BrowserAutofillManagerTest : public testing::Test {
                             "5187654321098765",  // Mastercard
                             "10", "2998", "1");
     full_server_card.set_guid(MakeGuid(8));
-    full_server_card.set_record_type(CreditCard::FULL_SERVER_CARD);
+    full_server_card.set_record_type(CreditCard::RecordType::kFullServerCard);
     personal_data().AddServerCreditCard(full_server_card);
 
     CreditCard local_card;
@@ -718,7 +721,7 @@ class BrowserAutofillManagerTest : public testing::Test {
                             "4234567890121237",  // Visa
                             "04", "2999", "1");
     local_card.set_guid(MakeGuid(9));
-    local_card.set_record_type(CreditCard::LOCAL_CARD);
+    local_card.set_record_type(CreditCard::RecordType::kLocalCard);
     personal_data().AddCreditCard(local_card);
   }
 
@@ -899,7 +902,7 @@ class BrowserAutofillManagerTest : public testing::Test {
 
     CreateTestCreditCardFormData(form, true, false);
     FormsSeen({*form});
-    *card = CreditCard(CreditCard::MASKED_SERVER_CARD, "a123");
+    *card = CreditCard(CreditCard::RecordType::kMaskedServerCard, "a123");
     test::SetCreditCardInfo(card, "John Dillinger", "1881" /* Visa */, "01",
                             "2017", "1");
     card->SetNetworkForMaskedCard(kVisaCard);
@@ -2416,7 +2419,7 @@ TEST_F(BrowserAutofillManagerTest,
                           "4234567890123456",  // Visa
                           "04", "2999", "1");
   masked_server_card.set_guid(MakeGuid(7));
-  masked_server_card.set_record_type(CreditCard::MASKED_SERVER_CARD);
+  masked_server_card.set_record_type(CreditCard::RecordType::kMaskedServerCard);
   personal_data().AddServerCreditCard(masked_server_card);
   EXPECT_EQ(1U, personal_data().GetCreditCards().size());
 
@@ -9054,7 +9057,7 @@ TEST_F(BrowserAutofillManagerTest,
 
 TEST_F(BrowserAutofillManagerTest, GetCreditCardSuggestions_VirtualCard) {
   personal_data().ClearCreditCards();
-  CreditCard masked_server_card(CreditCard::MASKED_SERVER_CARD,
+  CreditCard masked_server_card(CreditCard::RecordType::kMaskedServerCard,
                                 /*server_id=*/"a123");
   test::SetCreditCardInfo(&masked_server_card, "Elvis Presley",
                           "4234567890123456",  // Visa
@@ -10715,7 +10718,7 @@ class BrowserAutofillManagerTestForVirtualCardOption
     // Add only one server card so the second suggestion (if any) must be the
     // "Use a virtual card number" option.
     personal_data().ClearCreditCards();
-    CreditCard masked_server_card(CreditCard::MASKED_SERVER_CARD,
+    CreditCard masked_server_card(CreditCard::RecordType::kMaskedServerCard,
                                   /*server_id=*/"a123");
     // TODO(crbug.com/1020740): Replace all the hard-coded expiration year in
     // this file with NextYear().
@@ -10925,7 +10928,7 @@ TEST_F(BrowserAutofillManagerTestForVirtualCardOption,
 
   // Adds another card which does not meet the requirements (has two cloud
   // tokens).
-  CreditCard masked_server_card(CreditCard::MASKED_SERVER_CARD,
+  CreditCard masked_server_card(CreditCard::RecordType::kMaskedServerCard,
                                 /*server_id=*/"a456");
   // TODO(crbug.com/1020740): Replace all the hard-coded expiration year in
   // this file with NextYear().
@@ -11164,7 +11167,8 @@ class BrowserAutofillManagerTestForSharingNickname
   }
 
   CreditCard GetServerCard() {
-    CreditCard full_server_card(CreditCard::FULL_SERVER_CARD, "c789");
+    CreditCard full_server_card(CreditCard::RecordType::kFullServerCard,
+                                "c789");
     test::SetCreditCardInfo(&full_server_card, "Clyde Barrow",
                             "378282246310005" /* American Express */, "04",
                             "2999", "1");

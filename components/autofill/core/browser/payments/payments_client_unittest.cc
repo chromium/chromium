@@ -335,7 +335,8 @@ class PaymentsClientTest : public testing::Test {
     if (options.use_cvc)
       request_details.user_response.cvc = base::ASCIIToUTF16(options.cvc);
     if (options.virtual_card) {
-      request_details.card.set_record_type(CreditCard::VIRTUAL_CARD);
+      request_details.card.set_record_type(
+          CreditCard::RecordType::kVirtualCard);
       request_details.last_committed_primary_main_frame_origin =
           GURL("https://www.example.com");
       if (options.use_cvc) {

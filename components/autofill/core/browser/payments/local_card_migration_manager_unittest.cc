@@ -143,7 +143,7 @@ class LocalCardMigrationManagerTest : public testing::Test {
     test::SetCreditCardInfo(&local_card, name_on_card, card_number,
                             expiration_month, expiration_year,
                             billing_address_id);
-    local_card.set_record_type(CreditCard::LOCAL_CARD);
+    local_card.set_record_type(CreditCard::RecordType::kLocalCard);
     local_card.set_guid(guid.AsLowercaseString());
     personal_data.AddCreditCard(local_card);
   }
@@ -258,7 +258,7 @@ class LocalCardMigrationManagerTest : public testing::Test {
 
     // Add a masked server credit card whose |TypeAndLastFourDigits| matches
     // what we will enter below.
-    CreditCard credit_card(CreditCard::MASKED_SERVER_CARD,
+    CreditCard credit_card(CreditCard::RecordType::kMaskedServerCard,
                            /*server_id=*/"a123");
     test::SetCreditCardInfo(&credit_card, "Jane Doe", "1111", "11",
                             test::NextYear().c_str(), "1");
@@ -288,7 +288,7 @@ class LocalCardMigrationManagerTest : public testing::Test {
 
     // Add a masked credit card whose |TypeAndLastFourDigits| matches what we
     // will enter below.
-    CreditCard credit_card(CreditCard::MASKED_SERVER_CARD,
+    CreditCard credit_card(CreditCard::RecordType::kMaskedServerCard,
                            /*server_id=*/"a123");
     test::SetCreditCardInfo(&credit_card, "Jane Doe", "1111", "11",
                             test::NextYear().c_str(), "1");
@@ -456,7 +456,7 @@ TEST_F(LocalCardMigrationManagerTest,
 
   // Add a masked server card whose |TypeAndLastFourDigits| matches a local
   // card.
-  CreditCard server_card(CreditCard::MASKED_SERVER_CARD, "a123");
+  CreditCard server_card(CreditCard::RecordType::kMaskedServerCard, "a123");
   test::SetCreditCardInfo(&server_card, "Jane Doe", "1111", "11",
                           test::NextYear().c_str(), "1");
   server_card.SetNetworkForMaskedCard(kVisaCard);
@@ -493,7 +493,7 @@ TEST_F(LocalCardMigrationManagerTest,
       std::make_unique<PaymentsCustomerData>(/*customer_id=*/"123456"));
 
   // Add a full server card whose number matches a local card.
-  CreditCard server_card(CreditCard::FULL_SERVER_CARD, "a123");
+  CreditCard server_card(CreditCard::RecordType::kFullServerCard, "a123");
   test::SetCreditCardInfo(&server_card, "Jane Doe", "4111111111111111", "11",
                           test::NextYear().c_str(), "1");
   personal_data().AddServerCreditCard(server_card);
@@ -1040,7 +1040,7 @@ TEST_F(
 
   // Add a masked server credit card whose |TypeAndLastFourDigits| matches what
   // we will enter below.
-  CreditCard credit_card(CreditCard::MASKED_SERVER_CARD, "a123");
+  CreditCard credit_card(CreditCard::RecordType::kMaskedServerCard, "a123");
   test::SetCreditCardInfo(&credit_card, "Jane Doe", "1111", "11",
                           test::NextYear().c_str(), "1");
   credit_card.SetNetworkForMaskedCard(kVisaCard);
@@ -1081,7 +1081,7 @@ TEST_F(
 
   // Add a masked server credit card whose |TypeAndLastFourDigits| matches what
   // we will enter below.
-  CreditCard credit_card(CreditCard::MASKED_SERVER_CARD, "a123");
+  CreditCard credit_card(CreditCard::RecordType::kMaskedServerCard, "a123");
   test::SetCreditCardInfo(&credit_card, "Jane Doe", "1111", "11",
                           test::NextYear().c_str(), "1");
   credit_card.SetNetworkForMaskedCard(kVisaCard);
@@ -1377,7 +1377,7 @@ TEST_F(LocalCardMigrationManagerTest,
 
   // Add a masked server credit card whose |TypeAndLastFourDigits| matches what
   // we will enter below.
-  CreditCard credit_card(CreditCard::MASKED_SERVER_CARD, "a123");
+  CreditCard credit_card(CreditCard::RecordType::kMaskedServerCard, "a123");
   test::SetCreditCardInfo(&credit_card, "Jane Doe", "1111", "11",
                           test::NextYear().c_str(), "1");
   credit_card.SetNetworkForMaskedCard(kVisaCard);
@@ -1421,7 +1421,7 @@ TEST_F(LocalCardMigrationManagerTest,
 
   // Add a masked server credit card whose |TypeAndLastFourDigits| matches what
   // we will enter below.
-  CreditCard credit_card(CreditCard::MASKED_SERVER_CARD, "a123");
+  CreditCard credit_card(CreditCard::RecordType::kMaskedServerCard, "a123");
   test::SetCreditCardInfo(&credit_card, "Jane Doe", "1111", "11",
                           test::NextYear().c_str(), "1");
   credit_card.SetNetworkForMaskedCard(kVisaCard);

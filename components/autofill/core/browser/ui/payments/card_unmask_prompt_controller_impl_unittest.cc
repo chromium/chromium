@@ -127,8 +127,8 @@ class CardUnmaskPromptControllerImplGenericTest {
   void ShowPrompt(const absl::optional<autofill::CardUnmaskChallengeOption>&
                       challenge_option = absl::nullopt) {
     card_.set_record_type(challenge_option.has_value()
-                              ? CreditCard::VIRTUAL_CARD
-                              : CreditCard::MASKED_SERVER_CARD);
+                              ? CreditCard::RecordType::kVirtualCard
+                              : CreditCard::RecordType::kMaskedServerCard);
 
     CardUnmaskPromptOptions card_unmask_prompt_options =
         CardUnmaskPromptOptions(challenge_option,
@@ -448,7 +448,7 @@ TEST_P(CardUnmaskPromptContentTest,
   // Test that if the network is not American Express and the challenge option
   // denotes that the security code is on the back of the card, its expected
   // length is 3.
-  card_.set_record_type(CreditCard::VIRTUAL_CARD);
+  card_.set_record_type(CreditCard::RecordType::kVirtualCard);
   ShowPrompt(test::GetCardUnmaskChallengeOptions(
       {CardUnmaskChallengeOptionType::kCvc})[0]);
   EXPECT_EQ(controller_->GetInstructionsMessage(),
@@ -472,7 +472,7 @@ TEST_P(
   // denotes that the security code is on the back of the card, its expected
   // length is still 3.
   card_ = test::GetMaskedServerCardAmex();
-  card_.set_record_type(CreditCard::VIRTUAL_CARD);
+  card_.set_record_type(CreditCard::RecordType::kVirtualCard);
   ShowPrompt(test::GetCardUnmaskChallengeOptions(
       {CardUnmaskChallengeOptionType::kCvc})[0]);
   EXPECT_EQ(controller_->GetInstructionsMessage(),

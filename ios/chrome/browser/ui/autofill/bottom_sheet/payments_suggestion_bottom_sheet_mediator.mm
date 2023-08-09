@@ -53,7 +53,8 @@
     self.cardNameAndLastFourDigits =
         base::SysUTF16ToNSString(creditCard->CardNameAndLastFourDigits());
     self.cardDetails = base::SysUTF16ToNSString(
-        (creditCard->record_type() == autofill::CreditCard::VIRTUAL_CARD)
+        (creditCard->record_type() ==
+         autofill::CreditCard::RecordType::kVirtualCard)
             ? l10n_util::GetStringUTF16(
                   IDS_AUTOFILL_VIRTUAL_CARD_SUGGESTION_OPTION_VALUE)
             : creditCard->AbbreviatedExpirationDateForDisplay(
@@ -101,7 +102,8 @@
 
   // Either prepend that the card is a virtual card OR append the expiration
   // date.
-  if (creditCard->record_type() == autofill::CreditCard::VIRTUAL_CARD) {
+  if (creditCard->record_type() ==
+      autofill::CreditCard::RecordType::kVirtualCard) {
     cardAccessibleName = [@[ self.cardDetails, cardAccessibleName ]
         componentsJoinedByString:@" "];
   } else {

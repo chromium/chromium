@@ -32,7 +32,8 @@ NSDateComponents* GetCreditCardExpirationDate(const CreditCard& credit_card) {
 }
 
 BOOL IsCreditCardLocal(const CreditCard& credit_card) {
-  return credit_card.record_type() == autofill::CreditCard::LOCAL_CARD;
+  return credit_card.record_type() ==
+         autofill::CreditCard::RecordType::kLocalCard;
 }
 
 }  // namespace autofill

@@ -62,7 +62,7 @@ void AddCreditCard(content::BrowserContext* browser_context,
   Profile* profile = Profile::FromBrowserContext(browser_context);
   autofill::PersonalDataManager* personal_data_manager =
       autofill::PersonalDataManagerFactory::GetForProfile(profile);
-  if (card.record_type() != autofill::CreditCard::LOCAL_CARD) {
+  if (card.record_type() != autofill::CreditCard::RecordType::kLocalCard) {
     personal_data_manager->AddServerCreditCardForTest(
         std::make_unique<autofill::CreditCard>(card));
     return;

@@ -310,13 +310,13 @@ bool IsSyncedWalletAddress(const AutofillProfile* profile) {
 
 bool IsSyncedWalletCard(const CreditCard* card) {
   switch (card->record_type()) {
-    case CreditCard::LOCAL_CARD:
+    case CreditCard::RecordType::kLocalCard:
       return false;
-    case CreditCard::MASKED_SERVER_CARD:
+    case CreditCard::RecordType::kMaskedServerCard:
       return true;
-    case CreditCard::FULL_SERVER_CARD:
+    case CreditCard::RecordType::kFullServerCard:
       return true;
-    case CreditCard::VIRTUAL_CARD:
+    case CreditCard::RecordType::kVirtualCard:
       return false;
   }
 }

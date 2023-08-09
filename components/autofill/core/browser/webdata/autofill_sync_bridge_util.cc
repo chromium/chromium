@@ -78,7 +78,7 @@ const char* CardNetworkFromWalletCardType(
 
 // Creates a CreditCard from the specified `card` specifics.
 CreditCard CardFromSpecifics(const sync_pb::WalletMaskedCreditCard& card) {
-  CreditCard result(CreditCard::MASKED_SERVER_CARD, card.id());
+  CreditCard result(CreditCard::RecordType::kMaskedServerCard, card.id());
   result.SetNumber(base::UTF8ToUTF16(card.last_four()));
   result.SetNetworkForMaskedCard(CardNetworkFromWalletCardType(card.type()));
   result.SetRawInfo(CREDIT_CARD_NAME_FULL,

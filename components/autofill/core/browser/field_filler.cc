@@ -948,7 +948,7 @@ std::u16string GetValueForVirtualCardPreview(const CreditCard& virtual_card,
                                              const std::string& app_locale,
                                              const AutofillField& field,
                                              std::string* failure_to_fill) {
-  DCHECK_EQ(virtual_card.record_type(), CreditCard::VIRTUAL_CARD);
+  DCHECK_EQ(virtual_card.record_type(), CreditCard::RecordType::kVirtualCard);
 
   ServerFieldType storable_type = field.Type().GetStorableType();
 
@@ -1000,7 +1000,7 @@ std::u16string FieldFiller::GetValueForFilling(
     const CreditCard* credit_card =
         absl::get<const CreditCard*>(profile_or_credit_card);
 
-    if (credit_card->record_type() == CreditCard::VIRTUAL_CARD &&
+    if (credit_card->record_type() == CreditCard::RecordType::kVirtualCard &&
         action_persistence == mojom::AutofillActionPersistence::kPreview) {
       value = GetValueForVirtualCardPreview(*credit_card, app_locale_, field,
                                             failure_to_fill);

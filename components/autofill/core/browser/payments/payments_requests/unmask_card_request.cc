@@ -182,7 +182,8 @@ UnmaskCardRequest::UnmaskCardRequest(
     : request_details_(request_details),
       full_sync_enabled_(full_sync_enabled),
       callback_(std::move(callback)) {
-  DCHECK_NE(CreditCard::LOCAL_CARD, request_details.card.record_type());
+  DCHECK_NE(CreditCard::RecordType::kLocalCard,
+            request_details.card.record_type());
 }
 
 UnmaskCardRequest::~UnmaskCardRequest() = default;
@@ -371,11 +372,12 @@ void UnmaskCardRequest::ParseResponse(const base::Value::Dict& response) {
   const std::string* flow_status = response.FindString("flow_status");
   response_details_.flow_status = flow_status ? *flow_status : std::string();
 
-  if (request_details_.card.record_type() == CreditCard::VIRTUAL_CARD) {
+  if (request_details_.card.record_type() ==
+      CreditCard::RecordType::kVirtualCard) {
     response_details_.card_type =
         AutofillClient::PaymentsRpcCardType::kVirtualCard;
   } else if (request_details_.card.record_type() ==
-             CreditCard::MASKED_SERVER_CARD) {
+             CreditCard::RecordType::kMaskedServerCard) {
     response_details_.card_type =
         AutofillClient::PaymentsRpcCardType::kServerCard;
   } else {
@@ -439,8 +441,10 @@ bool UnmaskCardRequest::IsRetryableFailure(const std::string& error_code) {
   // The additional case where this can be a retryable failure is only for
   // virtual cards, so if we are not in the virtual card unmasking case at this
   // point, return false.
-  if (request_details_.card.record_type() != CreditCard::VIRTUAL_CARD)
+  if (request_details_.card.record_type() !=
+      CreditCard::RecordType::kVirtualCard) {
     return false;
+  }
 
   // If a challenge option was not selected, we are not in the virtual card
   // unmasking case, so return false.

@@ -640,7 +640,7 @@ void BindLocalStoredCvcToStatement(const CreditCard& credit_card,
                                    const base::Time& modification_date,
                                    sql::Statement* s,
                                    const AutofillTableEncryptor& encryptor) {
-  CHECK(credit_card.record_type() == CreditCard::LOCAL_CARD);
+  CHECK(credit_card.record_type() == CreditCard::RecordType::kLocalCard);
   DCHECK(base::Uuid::ParseCaseInsensitive(credit_card.guid()).is_valid());
   int index = 0;
   s->BindString(index++, credit_card.guid());
@@ -2069,7 +2069,7 @@ bool AutofillTable::RemoveCreditCard(const std::string& guid) {
 }
 
 bool AutofillTable::AddFullServerCreditCard(const CreditCard& credit_card) {
-  DCHECK_EQ(CreditCard::FULL_SERVER_CARD, credit_card.record_type());
+  DCHECK_EQ(CreditCard::RecordType::kFullServerCard, credit_card.record_type());
   DCHECK(!credit_card.number().empty());
   DCHECK(!credit_card.server_id().empty());
 
@@ -2082,7 +2082,7 @@ bool AutofillTable::AddFullServerCreditCard(const CreditCard& credit_card) {
   DeleteFromMaskedCreditCards(credit_card.server_id());
 
   CreditCard masked(credit_card);
-  masked.set_record_type(CreditCard::MASKED_SERVER_CARD);
+  masked.set_record_type(CreditCard::RecordType::kMaskedServerCard);
   masked.SetNumber(credit_card.LastFourDigits());
   masked.RecordAndLogUse();
   DCHECK(!masked.network().empty());
@@ -2173,14 +2173,14 @@ bool AutofillTable::GetServerCreditCards(
     std::u16string full_card_number =
         UnencryptValueFromColumn(s, index++, *autofill_table_encryptor_);
     std::u16string last_four = s.ColumnString16(index++);
-    CreditCard::RecordType record_type = full_card_number.empty()
-                                             ? CreditCard::MASKED_SERVER_CARD
-                                             : CreditCard::FULL_SERVER_CARD;
+    CreditCard::RecordType record_type =
+        full_card_number.empty() ? CreditCard::RecordType::kMaskedServerCard
+                                 : CreditCard::RecordType::kFullServerCard;
     std::string server_id = s.ColumnString(index++);
     std::unique_ptr<CreditCard> card =
         std::make_unique<CreditCard>(record_type, server_id);
     card->SetRawInfo(CREDIT_CARD_NUMBER,
-                     record_type == CreditCard::MASKED_SERVER_CARD
+                     record_type == CreditCard::RecordType::kMaskedServerCard
                          ? last_four
                          : full_card_number);
     card->set_use_count(s.ColumnInt64(index++));
@@ -2190,7 +2190,7 @@ bool AutofillTable::GetServerCreditCards(
     card->set_modification_date(base::Time());
 
     std::string card_network = s.ColumnString(index++);
-    if (record_type == CreditCard::MASKED_SERVER_CARD) {
+    if (record_type == CreditCard::RecordType::kMaskedServerCard) {
       // The issuer network must be set after setting the number to override the
       // autodetected issuer network.
       card->SetNetworkForMaskedCard(card_network.c_str());
@@ -2255,7 +2255,7 @@ bool AutofillTable::UnmaskServerCreditCard(const CreditCard& masked,
   AddUnmaskedCreditCard(masked.server_id(), full_number);
 
   CreditCard unmasked = masked;
-  unmasked.set_record_type(CreditCard::FULL_SERVER_CARD);
+  unmasked.set_record_type(CreditCard::RecordType::kFullServerCard);
   unmasked.SetNumber(full_number);
   unmasked.RecordAndLogUse();
   UpdateServerCardMetadata(unmasked);
@@ -2339,7 +2339,7 @@ bool AutofillTable::AddServerCardMetadata(
 }
 
 bool AutofillTable::UpdateServerCardMetadata(const CreditCard& credit_card) {
-  DCHECK_NE(CreditCard::LOCAL_CARD, credit_card.record_type());
+  DCHECK_NE(CreditCard::RecordType::kLocalCard, credit_card.record_type());
 
   DeleteWhereColumnEq(db_, kServerCardMetadataTable, kId,
                       credit_card.server_id());
@@ -2504,7 +2504,7 @@ void AutofillTable::SetServerCardsData(
 
   int index;
   for (const CreditCard& card : credit_cards) {
-    DCHECK_EQ(CreditCard::MASKED_SERVER_CARD, card.record_type());
+    DCHECK_EQ(CreditCard::RecordType::kMaskedServerCard, card.record_type());
     index = 0;
     masked_insert.BindString(index++, card.server_id());
     masked_insert.BindString(index++, card.network());
@@ -3687,7 +3687,7 @@ void AutofillTable::AddMaskedCreditCards(
 
   int index;
   for (const CreditCard& card : credit_cards) {
-    DCHECK_EQ(CreditCard::MASKED_SERVER_CARD, card.record_type());
+    DCHECK_EQ(CreditCard::RecordType::kMaskedServerCard, card.record_type());
     index = 0;
     masked_insert.BindString(index++, card.server_id());
     masked_insert.BindString(index++, card.network());

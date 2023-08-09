@@ -191,7 +191,7 @@ void UpdateCardsBillingAddressReference(
     }
 
     if (was_modified) {
-      if (credit_card->record_type() == CreditCard::LOCAL_CARD) {
+      if (credit_card->record_type() == CreditCard::RecordType::kLocalCard) {
         backend->UpdateCreditCard(*credit_card, db);
       } else {
         backend->UpdateServerCardMetadata(*credit_card, db);

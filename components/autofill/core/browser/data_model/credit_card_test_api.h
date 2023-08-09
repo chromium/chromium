@@ -17,7 +17,8 @@ class CreditCardTestApi {
       : credit_card_(*credit_card) {}
 
   void set_network_for_virtual_card(base::StringPiece network) {
-    DCHECK_EQ(CreditCard::VIRTUAL_CARD, credit_card_->record_type());
+    DCHECK_EQ(CreditCard::RecordType::kVirtualCard,
+              credit_card_->record_type());
     credit_card_->network_ = std::string(network);
   }
 

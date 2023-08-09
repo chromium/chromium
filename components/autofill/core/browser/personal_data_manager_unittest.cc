@@ -220,7 +220,7 @@ class PersonalDataManagerHelper : public PersonalDataManagerTestBase {
                             "4234567890123456",  // Visa
                             "04", "2999", "1");
     masked_server_card.set_guid("00000000-0000-0000-0000-000000000007");
-    masked_server_card.set_record_type(CreditCard::FULL_SERVER_CARD);
+    masked_server_card.set_record_type(CreditCard::RecordType::kFullServerCard);
     masked_server_card.set_server_id("masked_id");
     masked_server_card.set_use_count(15);
     {
@@ -239,7 +239,7 @@ class PersonalDataManagerHelper : public PersonalDataManagerTestBase {
                             "5187654321098765",  // Mastercard
                             "10", "2998", "1");
     full_server_card.set_guid("00000000-0000-0000-0000-000000000008");
-    full_server_card.set_record_type(CreditCard::FULL_SERVER_CARD);
+    full_server_card.set_record_type(CreditCard::RecordType::kFullServerCard);
     full_server_card.set_server_id("full_id");
     full_server_card.set_use_count(10);
     personal_data_->AddFullServerCreditCard(full_server_card);
@@ -249,7 +249,7 @@ class PersonalDataManagerHelper : public PersonalDataManagerTestBase {
                             "4234567890123463",  // Visa
                             "08", "2999", "1");
     local_card.set_guid("00000000-0000-0000-0000-000000000009");
-    local_card.set_record_type(CreditCard::LOCAL_CARD);
+    local_card.set_record_type(CreditCard::RecordType::kLocalCard);
     local_card.set_use_count(5);
     {
       PersonalDataProfileTaskWaiter waiter(*personal_data_);
@@ -1190,7 +1190,7 @@ TEST_F(PersonalDataManagerTest, AddUpdateRemoveCreditCards) {
                           test::kEmptyOrigin);
   test::SetCreditCardInfo(&credit_card3, "Jane Doe",
                           "4111111111111111" /* Visa */, "04", "2999", "1");
-  credit_card3.set_record_type(CreditCard::FULL_SERVER_CARD);
+  credit_card3.set_record_type(CreditCard::RecordType::kFullServerCard);
   credit_card3.set_server_id("server_id");
 
   personal_data_->AddFullServerCreditCard(credit_card3);
@@ -1482,7 +1482,7 @@ TEST_F(PersonalDataManagerTest, KeepExistingLocalDataOnSignIn) {
                           "4234567890123463",  // Visa
                           "08", "2999", "1");
   local_card.set_guid("00000000-0000-0000-0000-000000000009");
-  local_card.set_record_type(CreditCard::LOCAL_CARD);
+  local_card.set_record_type(CreditCard::RecordType::kLocalCard);
   local_card.set_use_count(5);
   personal_data_->AddCreditCard(local_card);
   PersonalDataProfileTaskWaiter(*personal_data_).Wait();
@@ -2809,7 +2809,7 @@ TEST_F(PersonalDataManagerTest, GetProfileSuggestions_MobileShowAll) {
 TEST_F(PersonalDataManagerTest, IsKnownCard_MatchesMaskedServerCard) {
   // Add a masked server card.
   std::vector<CreditCard> server_cards;
-  server_cards.emplace_back(CreditCard::MASKED_SERVER_CARD, "b459");
+  server_cards.emplace_back(CreditCard::RecordType::kMaskedServerCard, "b459");
   test::SetCreditCardInfo(&server_cards.back(), "Emmet Dalton",
                           "2110" /* last 4 digits */, "12", "2999", "1");
   server_cards.back().SetNetworkForMaskedCard(kVisaCard);
@@ -2829,7 +2829,7 @@ TEST_F(PersonalDataManagerTest, IsKnownCard_MatchesMaskedServerCard) {
 TEST_F(PersonalDataManagerTest, IsKnownCard_MatchesFullServerCard) {
   // Add a full server card.
   std::vector<CreditCard> server_cards;
-  server_cards.emplace_back(CreditCard::FULL_SERVER_CARD, "b459");
+  server_cards.emplace_back(CreditCard::RecordType::kFullServerCard, "b459");
   test::SetCreditCardInfo(&server_cards.back(), "Emmet Dalton",
                           "4234567890122110" /* Visa */, "12", "2999", "1");
 
@@ -2902,7 +2902,7 @@ TEST_F(PersonalDataManagerTest, IsKnownCard_LastFourDoesNotMatch) {
 TEST_F(PersonalDataManagerTest, IsServerCard_DuplicateOfFullServerCard) {
   // Add a full server card.
   std::vector<CreditCard> server_cards;
-  server_cards.emplace_back(CreditCard::FULL_SERVER_CARD, "b459");
+  server_cards.emplace_back(CreditCard::RecordType::kFullServerCard, "b459");
   test::SetCreditCardInfo(&server_cards.back(), "Emmet Dalton",
                           "4234567890122110" /* Visa */, "12", "2999", "1");
 
@@ -2929,7 +2929,7 @@ TEST_F(PersonalDataManagerTest, IsServerCard_DuplicateOfFullServerCard) {
 TEST_F(PersonalDataManagerTest, IsServerCard_DuplicateOfMaskedServerCard) {
   // Add a masked server card.
   std::vector<CreditCard> server_cards;
-  server_cards.emplace_back(CreditCard::MASKED_SERVER_CARD, "b459");
+  server_cards.emplace_back(CreditCard::RecordType::kMaskedServerCard, "b459");
   test::SetCreditCardInfo(&server_cards.back(), "Emmet Dalton",
                           "2110" /* last 4 digits */, "12", "2999", "1");
   server_cards.back().SetNetworkForMaskedCard(kVisaCard);
@@ -2957,12 +2957,12 @@ TEST_F(PersonalDataManagerTest, IsServerCard_DuplicateOfMaskedServerCard) {
 TEST_F(PersonalDataManagerTest, IsServerCard_AlreadyServerCard) {
   std::vector<CreditCard> server_cards;
   // Create a full server card.
-  CreditCard full_server_card(CreditCard::FULL_SERVER_CARD, "c789");
+  CreditCard full_server_card(CreditCard::RecordType::kFullServerCard, "c789");
   test::SetCreditCardInfo(&full_server_card, "Homer Simpson",
                           "4234567890123456" /* Visa */, "01", "2999", "1");
   server_cards.push_back(full_server_card);
   // Create a masked server card.
-  CreditCard masked_card(CreditCard::MASKED_SERVER_CARD, "a123");
+  CreditCard masked_card(CreditCard::RecordType::kMaskedServerCard, "a123");
   test::SetCreditCardInfo(&masked_card, "Homer Simpson", "2110" /* Visa */,
                           "01", "2999", "1");
   masked_card.SetNetworkForMaskedCard(kVisaCard);
@@ -3021,14 +3021,14 @@ TEST_F(PersonalDataManagerTest,
 
   // Add some server cards.
   std::vector<CreditCard> server_cards;
-  server_cards.emplace_back(CreditCard::MASKED_SERVER_CARD, "b459");
+  server_cards.emplace_back(CreditCard::RecordType::kMaskedServerCard, "b459");
   test::SetCreditCardInfo(&server_cards.back(), "Emmet Dalton", "2110", "12",
                           "2999", "1");
   server_cards.back().set_use_count(2);
   server_cards.back().set_use_date(AutofillClock::Now() - base::Days(1));
   server_cards.back().SetNetworkForMaskedCard(kVisaCard);
 
-  server_cards.emplace_back(CreditCard::FULL_SERVER_CARD, "b460");
+  server_cards.emplace_back(CreditCard::RecordType::kFullServerCard, "b460");
   test::SetCreditCardInfo(&server_cards.back(), "Jesse James", "2109", "12",
                           "2999", "1");
   server_cards.back().set_use_count(6);
@@ -3066,14 +3066,14 @@ TEST_F(PersonalDataManagerTest,
 
   // Add some server cards.
   std::vector<CreditCard> server_cards;
-  server_cards.emplace_back(CreditCard::MASKED_SERVER_CARD, "b459");
+  server_cards.emplace_back(CreditCard::RecordType::kMaskedServerCard, "b459");
   test::SetCreditCardInfo(&server_cards.back(), "Emmet Dalton", "2110", "12",
                           "2999", "1");
   server_cards.back().set_use_count(2);
   server_cards.back().set_use_date(AutofillClock::Now() - base::Days(1));
   server_cards.back().SetNetworkForMaskedCard(kVisaCard);
 
-  server_cards.emplace_back(CreditCard::FULL_SERVER_CARD, "b460");
+  server_cards.emplace_back(CreditCard::RecordType::kFullServerCard, "b460");
   test::SetCreditCardInfo(&server_cards.back(), "Jesse James", "2109", "12",
                           "2999", "1");
   server_cards.back().set_use_count(6);
@@ -3105,14 +3105,14 @@ TEST_F(PersonalDataManagerTest,
 
   // Add some server cards.
   std::vector<CreditCard> server_cards;
-  server_cards.emplace_back(CreditCard::MASKED_SERVER_CARD, "b459");
+  server_cards.emplace_back(CreditCard::RecordType::kMaskedServerCard, "b459");
   test::SetCreditCardInfo(&server_cards.back(), "Emmet Dalton", "2110", "12",
                           "2999", "1");
   server_cards.back().set_use_count(2);
   server_cards.back().set_use_date(AutofillClock::Now() - base::Days(1));
   server_cards.back().SetNetworkForMaskedCard(kVisaCard);
 
-  server_cards.emplace_back(CreditCard::FULL_SERVER_CARD, "b460");
+  server_cards.emplace_back(CreditCard::RecordType::kFullServerCard, "b460");
   test::SetCreditCardInfo(&server_cards.back(), "Jesse James", "2109", "12",
                           "2999", "1");
   server_cards.back().set_use_count(6);
@@ -3171,7 +3171,7 @@ TEST_F(PersonalDataManagerTest, GetCreditCardsToSuggest_ServerDuplicates) {
   // This server card matches a local card, except the local card is missing the
   // number. This should count as a dupe and thus not be shown in the
   // suggestions since the locally saved card takes precedence.
-  server_cards.emplace_back(CreditCard::MASKED_SERVER_CARD, "a123");
+  server_cards.emplace_back(CreditCard::RecordType::kMaskedServerCard, "a123");
   test::SetCreditCardInfo(&server_cards.back(), "John Dillinger",
                           "3456" /* Visa */, "01", "2999", "1");
   server_cards.back().set_use_count(2);
@@ -3181,7 +3181,7 @@ TEST_F(PersonalDataManagerTest, GetCreditCardsToSuggest_ServerDuplicates) {
   // This unmasked server card is an exact dupe of a local card. Therefore only
   // this card should appear in the suggestions as full server cards have
   // precedence over local cards.
-  server_cards.emplace_back(CreditCard::FULL_SERVER_CARD, "c789");
+  server_cards.emplace_back(CreditCard::RecordType::kFullServerCard, "c789");
   test::SetCreditCardInfo(&server_cards.back(), "Clyde Barrow",
                           "378282246310005" /* American Express */, "04",
                           "2999", "1");
@@ -3204,9 +3204,12 @@ TEST_F(PersonalDataManagerTest, GetCreditCardsToSuggest_ServerDuplicates) {
             card_to_suggest[1]->GetRawInfo(CREDIT_CARD_NAME_FULL));
   EXPECT_EQ(u"Bonnie Parker",
             card_to_suggest[2]->GetRawInfo(CREDIT_CARD_NAME_FULL));
-  EXPECT_EQ(CreditCard::LOCAL_CARD, card_to_suggest[0]->record_type());
-  EXPECT_EQ(CreditCard::FULL_SERVER_CARD, card_to_suggest[1]->record_type());
-  EXPECT_EQ(CreditCard::LOCAL_CARD, card_to_suggest[2]->record_type());
+  EXPECT_EQ(CreditCard::RecordType::kLocalCard,
+            card_to_suggest[0]->record_type());
+  EXPECT_EQ(CreditCard::RecordType::kFullServerCard,
+            card_to_suggest[1]->record_type());
+  EXPECT_EQ(CreditCard::RecordType::kLocalCard,
+            card_to_suggest[2]->record_type());
 }
 
 // Tests that a full server card can be a dupe of more than one local card.
@@ -3218,7 +3221,7 @@ TEST_F(PersonalDataManagerTest,
   std::vector<CreditCard> server_cards;
   // This unmasked server card is an exact dupe of a local card. Therefore only
   // the local card should appear in the suggestions.
-  server_cards.emplace_back(CreditCard::FULL_SERVER_CARD, "c789");
+  server_cards.emplace_back(CreditCard::RecordType::kFullServerCard, "c789");
   test::SetCreditCardInfo(&server_cards.back(), "Clyde Barrow",
                           "378282246310005" /* American Express */, "04",
                           "2999", "1");
@@ -3263,7 +3266,7 @@ TEST_F(PersonalDataManagerTest,
   credit_cards.push_back(&local_card);
 
   // Create a full server card that is a duplicate of one of the local cards.
-  CreditCard full_server_card(CreditCard::FULL_SERVER_CARD, "c789");
+  CreditCard full_server_card(CreditCard::RecordType::kFullServerCard, "c789");
   test::SetCreditCardInfo(&full_server_card, "Homer Simpson",
                           "4234567890123456" /* Visa */, "01", "2999", "1");
   full_server_card.set_use_count(1);
@@ -3296,7 +3299,7 @@ TEST_F(PersonalDataManagerTest,
     credit_cards.push_back(&local_card);
 
     // Create a masked server card that is a duplicate of a local card.
-    CreditCard masked_card(CreditCard::MASKED_SERVER_CARD, "a123");
+    CreditCard masked_card(CreditCard::RecordType::kMaskedServerCard, "a123");
     test::SetCreditCardInfo(&masked_card, "Homer Simpson", "3456" /* Visa */,
                             "01", "2999", "1");
     masked_card.SetNetworkForMaskedCard(kVisaCard);
@@ -3319,7 +3322,7 @@ TEST_F(PersonalDataManagerTest, DedupeCreditCardToSuggest_FullServerAndMasked) {
   std::list<CreditCard*> credit_cards;
 
   // Create a full server card that is a duplicate of one of the local cards.
-  CreditCard full_server_card(CreditCard::FULL_SERVER_CARD, "c789");
+  CreditCard full_server_card(CreditCard::RecordType::kFullServerCard, "c789");
   test::SetCreditCardInfo(&full_server_card, "Homer Simpson",
                           "4234567890123456" /* Visa */, "01", "2999", "1");
   full_server_card.set_use_count(1);
@@ -3327,7 +3330,7 @@ TEST_F(PersonalDataManagerTest, DedupeCreditCardToSuggest_FullServerAndMasked) {
   credit_cards.push_back(&full_server_card);
 
   // Create a masked server card that is a duplicate of a local card.
-  CreditCard masked_card(CreditCard::MASKED_SERVER_CARD, "a123");
+  CreditCard masked_card(CreditCard::RecordType::kMaskedServerCard, "a123");
   test::SetCreditCardInfo(&masked_card, "Homer Simpson", "3456" /* Visa */,
                           "01", "2999", "1");
   masked_card.set_use_count(2);
@@ -3353,7 +3356,7 @@ TEST_F(PersonalDataManagerTest, DedupeCreditCardToSuggest_DifferentCards) {
   credit_cards.push_back(&local_card);
 
   // Create a masked server card that is different from the local card.
-  CreditCard masked_card(CreditCard::MASKED_SERVER_CARD, "b456");
+  CreditCard masked_card(CreditCard::RecordType::kMaskedServerCard, "b456");
   test::SetCreditCardInfo(&masked_card, "Homer Simpson", "0005", "12", "2999",
                           "1");
   masked_card.set_use_count(3);
@@ -3363,7 +3366,7 @@ TEST_F(PersonalDataManagerTest, DedupeCreditCardToSuggest_DifferentCards) {
 
   // Create a full server card that is slightly different of the two other
   // cards.
-  CreditCard full_server_card(CreditCard::FULL_SERVER_CARD, "c789");
+  CreditCard full_server_card(CreditCard::RecordType::kFullServerCard, "c789");
   test::SetCreditCardInfo(&full_server_card, "Homer Simpson",
                           "378282246310005" /* American Express */, "04",
                           "2999", "1");
@@ -3452,7 +3455,7 @@ TEST_F(PersonalDataManagerTest, RecordUseOf) {
 TEST_F(PersonalDataManagerTest, ClearAllServerData) {
   // Add a server card.
   std::vector<CreditCard> server_cards;
-  server_cards.emplace_back(CreditCard::MASKED_SERVER_CARD, "a123");
+  server_cards.emplace_back(CreditCard::RecordType::kMaskedServerCard, "a123");
   test::SetCreditCardInfo(&server_cards.back(), "John Dillinger",
                           "3456" /* Visa */, "01", "2999", "1");
   server_cards.back().SetNetworkForMaskedCard(kVisaCard);
@@ -3608,7 +3611,7 @@ TEST_F(PersonalDataManagerTest, RemoveByGUID_ResetsBillingAddress) {
   test::SetCreditCardInfo(&local_card0, "John Dillinger",
                           "4111111111111111" /* Visa */, "01", "2999",
                           profile0.guid());
-  CreditCard server_card0(CreditCard::FULL_SERVER_CARD, "c789");
+  CreditCard server_card0(CreditCard::RecordType::kFullServerCard, "c789");
   test::SetCreditCardInfo(&server_card0, "John Barrow",
                           "378282246310005" /* American Express */, "04",
                           "2999", profile0.guid());
@@ -3620,7 +3623,7 @@ TEST_F(PersonalDataManagerTest, RemoveByGUID_ResetsBillingAddress) {
   test::SetCreditCardInfo(&local_card1, "Seb Dillinger",
                           "4111111111111111" /* Visa */, "01", "2999",
                           profile1.guid());
-  CreditCard server_card1(CreditCard::FULL_SERVER_CARD, "c789");
+  CreditCard server_card1(CreditCard::RecordType::kFullServerCard, "c789");
   test::SetCreditCardInfo(&server_card1, "John Barrow",
                           "378282246310005" /* American Express */, "04",
                           "2999", profile1.guid());
@@ -3688,8 +3691,9 @@ TEST_F(PersonalDataManagerTest, LogStoredCreditCardMetrics) {
 
   // Create in-use and in-disuse cards of each record type.
   const std::vector<CreditCard::RecordType> record_types{
-      CreditCard::LOCAL_CARD, CreditCard::MASKED_SERVER_CARD,
-      CreditCard::FULL_SERVER_CARD};
+      CreditCard::RecordType::kLocalCard,
+      CreditCard::RecordType::kMaskedServerCard,
+      CreditCard::RecordType::kFullServerCard};
   for (auto record_type : record_types) {
     // Create a card that's still in active use.
     CreditCard card_in_use = test::GetRandomCreditCard(record_type);
@@ -3704,7 +3708,7 @@ TEST_F(PersonalDataManagerTest, LogStoredCreditCardMetrics) {
     card_in_disuse.set_use_count(10);
 
     // Add the cards to the personal data manager in the appropriate way.
-    if (record_type == CreditCard::LOCAL_CARD) {
+    if (record_type == CreditCard::RecordType::kLocalCard) {
       personal_data_->AddCreditCard(card_in_use);
       personal_data_->AddCreditCard(card_in_disuse);
     } else {
@@ -3807,7 +3811,8 @@ TEST_F(PersonalDataManagerTest, GetCreditCards_NotActiveSyncService) {
       personal_data_->GetServerCreditCards();
   EXPECT_EQ(2U, server_cards.size());
   for (CreditCard* card : server_cards)
-    EXPECT_TRUE(card->record_type() == CreditCard::MASKED_SERVER_CARD);
+    EXPECT_TRUE(card->record_type() ==
+                CreditCard::RecordType::kMaskedServerCard);
 
   // Call OnSyncShutdown to ensure removing observer added by
   // SetSyncServiceForTest.
@@ -3947,7 +3952,7 @@ TEST_F(PersonalDataManagerSyncTransportModeTest, SwitchServerStorages) {
                           "4234567890123456",  // Visa
                           "04", "2999", "1");
   server_card.set_guid("00000000-0000-0000-0000-000000000007");
-  server_card.set_record_type(CreditCard::FULL_SERVER_CARD);
+  server_card.set_record_type(CreditCard::RecordType::kFullServerCard);
   server_card.set_server_id("server_id");
   personal_data_->AddFullServerCreditCard(server_card);
   PersonalDataProfileTaskWaiter(*personal_data_).Wait();
@@ -3972,7 +3977,7 @@ TEST_F(PersonalDataManagerSyncTransportModeTest,
                           "4234567890123456",  // Visa
                           "04", "2999", "1");
   server_card.set_guid("00000000-0000-0000-0000-000000000007");
-  server_card.set_record_type(CreditCard::FULL_SERVER_CARD);
+  server_card.set_record_type(CreditCard::RecordType::kFullServerCard);
   server_card.set_server_id("server_id");
   personal_data_->AddFullServerCreditCard(server_card);
 
@@ -3994,7 +3999,7 @@ TEST_F(PersonalDataManagerSyncTransportModeTest,
                           "4234567890123463",  // Visa
                           "08", "2999", "1");
   local_card.set_guid("00000000-0000-0000-0000-000000000009");
-  local_card.set_record_type(CreditCard::LOCAL_CARD);
+  local_card.set_record_type(CreditCard::RecordType::kLocalCard);
   local_card.set_use_date(AutofillClock::Now() - base::Days(5));
   personal_data_->AddCreditCard(local_card);
 
@@ -4294,7 +4299,7 @@ TEST_F(PersonalDataManagerSyncTransportModeTest,
 
   // Set a server credit card.
   std::vector<CreditCard> server_cards;
-  server_cards.emplace_back(CreditCard::FULL_SERVER_CARD, "c789");
+  server_cards.emplace_back(CreditCard::RecordType::kFullServerCard, "c789");
   test::SetCreditCardInfo(&server_cards.back(), "Clyde Barrow",
                           "378282246310005" /* American Express */, "04",
                           "2999", "1");
@@ -4361,7 +4366,7 @@ TEST_F(PersonalDataManagerSyncTransportModeTest,
 
   // Set a server credit card.
   std::vector<CreditCard> server_cards;
-  server_cards.push_back(CreditCard(CreditCard::FULL_SERVER_CARD, "c789"));
+  server_cards.emplace_back(CreditCard::RecordType::kFullServerCard, "c789");
   test::SetCreditCardInfo(&server_cards.back(), "Clyde Barrow",
                           "378282246310005" /* American Express */, "04",
                           "2999", "1");

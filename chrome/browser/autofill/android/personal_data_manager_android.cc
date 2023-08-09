@@ -146,9 +146,9 @@ PersonalDataManagerAndroid::CreateJavaCreditCardFromNative(
   return Java_CreditCard_create(
       env, ConvertUTF8ToJavaString(env, card.guid()),
       ConvertUTF8ToJavaString(env, card.origin()),
-      card.record_type() == CreditCard::LOCAL_CARD,
-      card.record_type() == CreditCard::FULL_SERVER_CARD,
-      card.record_type() == CreditCard::VIRTUAL_CARD,
+      card.record_type() == CreditCard::RecordType::kLocalCard,
+      card.record_type() == CreditCard::RecordType::kFullServerCard,
+      card.record_type() == CreditCard::RecordType::kVirtualCard,
       ConvertUTF16ToJavaString(env, card.GetRawInfo(CREDIT_CARD_NAME_FULL)),
       ConvertUTF16ToJavaString(env, card.GetRawInfo(CREDIT_CARD_NUMBER)),
       ConvertUTF16ToJavaString(env, card.NetworkAndLastFourDigits()),
@@ -211,14 +211,14 @@ void PersonalDataManagerAndroid::PopulateNativeCreditCardFromJava(
     card->set_guid(guid);
 
   if (Java_CreditCard_getIsLocal(env, jcard)) {
-    card->set_record_type(CreditCard::LOCAL_CARD);
+    card->set_record_type(CreditCard::RecordType::kLocalCard);
   } else {
     if (Java_CreditCard_getIsCached(env, jcard)) {
-      card->set_record_type(CreditCard::FULL_SERVER_CARD);
+      card->set_record_type(CreditCard::RecordType::kFullServerCard);
     } else {
       // Native copies of virtual credit card objects should not be created.
       DCHECK(!Java_CreditCard_getIsVirtual(env, jcard));
-      card->set_record_type(CreditCard::MASKED_SERVER_CARD);
+      card->set_record_type(CreditCard::RecordType::kMaskedServerCard);
       card->SetNetworkForMaskedCard(
           data_util::GetIssuerNetworkForBasicCardIssuerNetwork(
               ConvertJavaStringToUTF8(
@@ -557,7 +557,7 @@ void PersonalDataManagerAndroid::AddServerCreditCardForTest(
     const base::android::JavaParamRef<jobject>& jcard) {
   std::unique_ptr<CreditCard> card = std::make_unique<CreditCard>();
   PopulateNativeCreditCardFromJava(jcard, env, card.get());
-  card->set_record_type(CreditCard::MASKED_SERVER_CARD);
+  card->set_record_type(CreditCard::RecordType::kMaskedServerCard);
   personal_data_manager_->AddServerCreditCardForTest(std::move(card));
   personal_data_manager_->NotifyPersonalDataObserver();
 }
@@ -570,7 +570,7 @@ void PersonalDataManagerAndroid::AddServerCreditCardForTestWithAdditionalFields(
     jint jcard_issuer) {
   std::unique_ptr<CreditCard> card = std::make_unique<CreditCard>();
   PopulateNativeCreditCardFromJava(jcard, env, card.get());
-  card->set_record_type(CreditCard::MASKED_SERVER_CARD);
+  card->set_record_type(CreditCard::RecordType::kMaskedServerCard);
   card->SetNickname(ConvertJavaStringToUTF16(jnickname));
   card->set_card_issuer(static_cast<CreditCard::Issuer>(jcard_issuer));
   personal_data_manager_->AddServerCreditCardForTest(std::move(card));

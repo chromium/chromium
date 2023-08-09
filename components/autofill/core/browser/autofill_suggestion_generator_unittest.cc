@@ -96,7 +96,7 @@ class AutofillSuggestionGeneratorTest : public testing::Test {
       const std::string& guid = "00000000-0000-0000-0000-000000000001",
       const std::string& server_id = "server_id1",
       int instrument_id = 1) {
-    CreditCard server_card(CreditCard::MASKED_SERVER_CARD, "a123");
+    CreditCard server_card(CreditCard::RecordType::kMaskedServerCard, "a123");
     test::SetCreditCardInfo(&server_card, "Elvis Presley", "1111" /* Visa */,
                             test::NextMonth().c_str(), test::NextYear().c_str(),
                             "1");
@@ -331,7 +331,7 @@ TEST_F(AutofillSuggestionGeneratorTest,
     for (auto it = all_card_ptrs.begin(); it < all_card_ptrs.end(); it++) {
       (*it)->SetExpirationYear(2001);
     }
-    cards[0]->set_record_type(CreditCard::MASKED_SERVER_CARD);
+    cards[0]->set_record_type(CreditCard::RecordType::kMaskedServerCard);
 
     // Filter the cards while capturing histograms.
     base::HistogramTester histogram_tester;

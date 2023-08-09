@@ -1554,7 +1554,7 @@ void AutofillMetrics::LogStoredCreditCardMetrics(
     UMA_HISTOGRAM_COUNTS_1000("Autofill.DaysSinceLastUse.StoredCreditCard",
                               days_since_last_use);
     switch (card->record_type()) {
-      case CreditCard::LOCAL_CARD:
+      case CreditCard::RecordType::kLocalCard:
         UMA_HISTOGRAM_COUNTS_1000(
             "Autofill.DaysSinceLastUse.StoredCreditCard.Local",
             days_since_last_use);
@@ -1563,7 +1563,7 @@ void AutofillMetrics::LogStoredCreditCardMetrics(
         if (card->HasNonEmptyValidNickname())
           num_local_cards_with_nickname += 1;
         break;
-      case CreditCard::MASKED_SERVER_CARD:
+      case CreditCard::RecordType::kMaskedServerCard:
         UMA_HISTOGRAM_COUNTS_1000(
             "Autofill.DaysSinceLastUse.StoredCreditCard.Server",
             days_since_last_use);
@@ -1575,7 +1575,7 @@ void AutofillMetrics::LogStoredCreditCardMetrics(
         if (card->HasNonEmptyValidNickname())
           num_masked_cards_with_nickname += 1;
         break;
-      case CreditCard::FULL_SERVER_CARD:
+      case CreditCard::RecordType::kFullServerCard:
         UMA_HISTOGRAM_COUNTS_1000(
             "Autofill.DaysSinceLastUse.StoredCreditCard.Server",
             days_since_last_use);
@@ -1585,7 +1585,7 @@ void AutofillMetrics::LogStoredCreditCardMetrics(
         num_unmasked_cards += 1;
         num_disused_unmasked_cards += disused_delta;
         break;
-      case CreditCard::VIRTUAL_CARD:
+      case CreditCard::RecordType::kVirtualCard:
         // This card type is not persisted in Chrome.
         NOTREACHED();
         break;
@@ -2321,11 +2321,15 @@ void AutofillMetrics::FormInteractionsUkmLogger::LogDidFillSuggestion(
   if (!CanLog())
     return;
 
+  bool is_for_credit_card =
+      absl::holds_alternative<CreditCard::RecordType>(record_type);
+
   ukm::builders::Autofill_SuggestionFilled(source_id_)
-      .SetRecordType(absl::visit(
-          [](auto value) { return base::to_underlying(value); }, record_type))
-      .SetIsForCreditCard(
-          absl::holds_alternative<CreditCard::RecordType>(record_type))
+      .SetRecordType(is_for_credit_card
+                         ? base::to_underlying(
+                               absl::get<CreditCard::RecordType>(record_type))
+                         : absl::get<AutofillProfile::RecordType>(record_type))
+      .SetIsForCreditCard(is_for_credit_card)
       .SetMillisecondsSinceFormParsed(
           MillisecondsSinceFormParsed(form.form_parsed_timestamp()))
       .SetFormSignature(HashFormSignature(form.form_signature()))
@@ -3236,12 +3240,12 @@ std::string AutofillMetrics::GetHistogramStringForCardType(
     }
   } else if (absl::holds_alternative<CreditCard::RecordType>(card_type)) {
     switch (absl::get<CreditCard::RecordType>(card_type)) {
-      case CreditCard::FULL_SERVER_CARD:
-      case CreditCard::MASKED_SERVER_CARD:
+      case CreditCard::RecordType::kFullServerCard:
+      case CreditCard::RecordType::kMaskedServerCard:
         return ".ServerCard";
-      case CreditCard::VIRTUAL_CARD:
+      case CreditCard::RecordType::kVirtualCard:
         return ".VirtualCard";
-      case CreditCard::LOCAL_CARD:
+      case CreditCard::RecordType::kLocalCard:
         // We do not offer CVC auth for local cards.
         NOTREACHED();
         break;

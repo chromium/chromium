@@ -43,7 +43,7 @@ void CreditCardCvcAuthenticator::Authenticate(
 
   CreditCard::RecordType card_record_type = card->record_type();
   autofill_metrics::LogCvcAuthAttempt(card_record_type);
-  if (card_record_type == CreditCard::VIRTUAL_CARD) {
+  if (card_record_type == CreditCard::RecordType::kVirtualCard) {
     // `vcn_context_token` and `challenge_option` are required for
     // `FullCardRequest::GetFullVirtualCardViaCVC()`, so DCHECK that they are
     // present. The caller of Authenticate() should ensure to always set these

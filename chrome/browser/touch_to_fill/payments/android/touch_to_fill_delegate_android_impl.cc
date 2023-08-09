@@ -118,8 +118,8 @@ TouchToFillDelegateAndroidImpl::DryRun(FormGlobalId form_id,
   }
 
   // If the card is enrolled into virtual card number, create a copy of the
-  // card with `CreditCard::VIRTUAL_CARD` as the record type, and insert it
-  // before the actual card.
+  // card with `CreditCard::RecordType::kVirtualCard` as the record type, and
+  // insert it before the actual card.
   std::vector<autofill::CreditCard> real_and_virtual_cards;
   for (const CreditCard& card : cards_to_suggest) {
     if (card.virtual_card_enrollment_state() ==

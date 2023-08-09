@@ -196,7 +196,7 @@ AutofillProfile CreateLocalProfileWithDetails(size_t use_count,
 CreditCard CreateLocalCreditCardWithDetails(size_t use_count,
                                             int64_t use_date) {
   CreditCard card;
-  DCHECK_EQ(card.record_type(), CreditCard::LOCAL_CARD);
+  DCHECK_EQ(card.record_type(), CreditCard::RecordType::kLocalCard);
   card.set_use_count(use_count);
   card.set_use_date(UseDateFromProtoValue(use_date));
   return card;

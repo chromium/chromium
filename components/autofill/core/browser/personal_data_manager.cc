@@ -88,22 +88,23 @@ namespace {
 // duplicates of each other.
 //
 // This function returns true in the following situations:
-// Case 1: `original_card` = LOCAL_CARD
-//         `duplicate_card` = MASKED_SERVER_CARD
+// Case 1: `original_card` = RecordType::kLocalCard
+//         `duplicate_card` = RecordType::kMaskedServerCard
 //         `should_suggest_server_cards_for_deduped_cards` = false
 //
-// Case 2: `original_card` = FULL_SERVER_CARD
-//         `duplicate_card` = LOCAL_CARD
+// Case 2: `original_card` = RecordType::kFullServerCard
+//         `duplicate_card` = RecordType::kLocalCard
 //         `should_suggest_server_cards_for_deduped_cards` = irrelevant
 //
-// Case 3: `original_card` = MASKED_SERVER_CARD
-//         `duplicate_card` = LOCAL_CARD
+// Case 3: `original_card` = RecordType::kMaskedServerCard
+//         `duplicate_card` = RecordType::kLocalCard
 //         `should_suggest_server_cards_for_deduped_cards` = true
 bool ShouldDedupeDuplicateCard(autofill::CreditCard* original_card,
                                autofill::CreditCard* duplicate_card) {
   // FULL_SERVER_CARDs have the highest priority and should never be removed
   // from the suggestion list.
-  if (duplicate_card->record_type() == autofill::CreditCard::FULL_SERVER_CARD) {
+  if (duplicate_card->record_type() ==
+      autofill::CreditCard::RecordType::kFullServerCard) {
     return false;
   }
   const bool should_suggest_server_cards_for_deduped_cards =
@@ -113,15 +114,18 @@ bool ShouldDedupeDuplicateCard(autofill::CreditCard* original_card,
   // Delete duplicated MASKED_SERVER_CARD if the original_card is a LOCAL_CARD
   // and we are NOT suggesting MASKED_SERVER_CARD for duplicates.
   if (duplicate_card->record_type() ==
-          autofill::CreditCard::MASKED_SERVER_CARD &&
-      original_card->record_type() == autofill::CreditCard::LOCAL_CARD &&
+          autofill::CreditCard::RecordType::kMaskedServerCard &&
+      original_card->record_type() ==
+          autofill::CreditCard::RecordType::kLocalCard &&
       !should_suggest_server_cards_for_deduped_cards) {
     return true;
   }
   // Delete duplicated LOCAL_CARD if the original_card is a FULL_SERVER_CARD
   // or we are suggesting MASKED_SERVER_CARD for duplicates.
-  if (duplicate_card->record_type() == autofill::CreditCard::LOCAL_CARD &&
-      (original_card->record_type() == autofill::CreditCard::FULL_SERVER_CARD ||
+  if (duplicate_card->record_type() ==
+          autofill::CreditCard::RecordType::kLocalCard &&
+      (original_card->record_type() ==
+           autofill::CreditCard::RecordType::kFullServerCard ||
        should_suggest_server_cards_for_deduped_cards)) {
     return true;
   }
@@ -770,7 +774,7 @@ void PersonalDataManager::RecordUseOf(
     if (credit_card) {
       credit_card->RecordAndLogUse();
 
-      if (credit_card->record_type() == CreditCard::LOCAL_CARD) {
+      if (credit_card->record_type() == CreditCard::RecordType::kLocalCard) {
         // Fail silently if there's no local database, because we need to
         // support this for tests.
         if (database_helper_->GetLocalDatabase()) {
@@ -1004,7 +1008,7 @@ void PersonalDataManager::DeleteLocalCreditCards(
 }
 
 void PersonalDataManager::UpdateCreditCard(const CreditCard& credit_card) {
-  DCHECK_EQ(CreditCard::LOCAL_CARD, credit_card.record_type());
+  DCHECK_EQ(CreditCard::RecordType::kLocalCard, credit_card.record_type());
   CreditCard* existing_credit_card = GetCreditCardByGUID(credit_card.guid());
   if (!existing_credit_card)
     return;
@@ -1033,7 +1037,7 @@ void PersonalDataManager::UpdateCreditCard(const CreditCard& credit_card) {
 
 void PersonalDataManager::AddFullServerCreditCard(
     const CreditCard& credit_card) {
-  DCHECK_EQ(CreditCard::FULL_SERVER_CARD, credit_card.record_type());
+  DCHECK_EQ(CreditCard::RecordType::kFullServerCard, credit_card.record_type());
   DCHECK(!credit_card.IsEmpty(app_locale_));
   DCHECK(!credit_card.server_id().empty());
   DCHECK(database_helper_->GetServerDatabase())
@@ -1053,7 +1057,7 @@ void PersonalDataManager::AddFullServerCreditCard(
 
 void PersonalDataManager::UpdateServerCreditCard(
     const CreditCard& credit_card) {
-  DCHECK_NE(CreditCard::LOCAL_CARD, credit_card.record_type());
+  DCHECK_NE(CreditCard::RecordType::kLocalCard, credit_card.record_type());
 
   if (!database_helper_->GetServerDatabase()) {
     return;
@@ -1072,7 +1076,8 @@ void PersonalDataManager::UpdateServerCreditCard(
 
   DCHECK_NE(existing_credit_card->record_type(), credit_card.record_type());
   DCHECK_EQ(existing_credit_card->Label(), credit_card.Label());
-  if (existing_credit_card->record_type() == CreditCard::MASKED_SERVER_CARD) {
+  if (existing_credit_card->record_type() ==
+      CreditCard::RecordType::kMaskedServerCard) {
     database_helper_->GetServerDatabase()->UnmaskServerCreditCard(
         credit_card, credit_card.number());
   } else {
@@ -1089,7 +1094,7 @@ void PersonalDataManager::UpdateServerCardsMetadata(
       << "Updating server card metadata without server storage.";
 
   for (const auto& credit_card : credit_cards) {
-    DCHECK_NE(CreditCard::LOCAL_CARD, credit_card.record_type());
+    DCHECK_NE(CreditCard::RecordType::kLocalCard, credit_card.record_type());
     database_helper_->GetServerDatabase()->UpdateServerCardMetadata(
         credit_card);
   }
@@ -1160,9 +1165,9 @@ void PersonalDataManager::ClearServerCvcs() {
 void PersonalDataManager::ResetFullServerCard(const std::string& guid) {
   for (const auto& card : server_credit_cards_) {
     if (card->guid() == guid) {
-      DCHECK_EQ(card->record_type(), CreditCard::FULL_SERVER_CARD);
+      DCHECK_EQ(card->record_type(), CreditCard::RecordType::kFullServerCard);
       CreditCard card_copy = *card;
-      card_copy.set_record_type(CreditCard::MASKED_SERVER_CARD);
+      card_copy.set_record_type(CreditCard::RecordType::kMaskedServerCard);
       card_copy.SetNumber(card->LastFourDigits());
       UpdateServerCreditCard(card_copy);
       break;
@@ -1172,9 +1177,9 @@ void PersonalDataManager::ResetFullServerCard(const std::string& guid) {
 
 void PersonalDataManager::ResetFullServerCards() {
   for (const auto& card : server_credit_cards_) {
-    if (card->record_type() == CreditCard::FULL_SERVER_CARD) {
+    if (card->record_type() == CreditCard::RecordType::kFullServerCard) {
       CreditCard card_copy = *card;
-      card_copy.set_record_type(CreditCard::MASKED_SERVER_CARD);
+      card_copy.set_record_type(CreditCard::RecordType::kMaskedServerCard);
       card_copy.SetNumber(card->LastFourDigits());
       UpdateServerCreditCard(card_copy);
     }
@@ -1249,7 +1254,7 @@ void PersonalDataManager::
     if (credit_card->billing_address_id() == guid) {
       credit_card->set_billing_address_id("");
 
-      if (credit_card->record_type() == CreditCard::LOCAL_CARD) {
+      if (credit_card->record_type() == CreditCard::RecordType::kLocalCard) {
         database_helper_->GetLocalDatabase()->UpdateCreditCard(*credit_card);
       } else {
         DCHECK(database_helper_->GetServerDatabase())
@@ -1458,11 +1463,11 @@ PersonalDataManager::GetActiveAutofillPromoCodeOffersForOrigin(
 }
 
 GURL PersonalDataManager::GetCardArtURL(const CreditCard& credit_card) const {
-  if (credit_card.record_type() == CreditCard::MASKED_SERVER_CARD) {
+  if (credit_card.record_type() == CreditCard::RecordType::kMaskedServerCard) {
     return credit_card.card_art_url();
   }
 
-  if (credit_card.record_type() == CreditCard::LOCAL_CARD) {
+  if (credit_card.record_type() == CreditCard::RecordType::kLocalCard) {
     const CreditCard* server_duplicate_card =
         GetServerCardForLocalCard(&credit_card);
     if (server_duplicate_card) {
@@ -1816,9 +1821,9 @@ const std::string& PersonalDataManager::GetCountryCodeForExperimentGroup()
 }
 
 // The priority ranking for deduping a duplicate card is:
-// 1. FULL_SERVER_CARD
-// 2. LOCAL_CARD
-// 3. MASKED_SERVER_CARD
+// 1. RecordType::kFullServerCard
+// 2. RecordType::kLocalCard
+// 3. RecordType::kMaskedServerCard
 // Note: 2 & 3 are swapped if experiment
 // kAutofillSuggestServerCardInsteadOfLocalCard is enabled.
 // static
@@ -1855,7 +1860,7 @@ bool PersonalDataManager::IsCardPresentAsBothLocalAndServerCards(
 const CreditCard* PersonalDataManager::GetServerCardForLocalCard(
     const CreditCard* local_card) const {
   DCHECK(local_card);
-  if (local_card->record_type() != CreditCard::LOCAL_CARD) {
+  if (local_card->record_type() != CreditCard::RecordType::kLocalCard) {
     return nullptr;
   }
 
@@ -2416,11 +2421,11 @@ bool PersonalDataManager::IsKnownCard(const CreditCard& credit_card) const {
   const auto masked_info = credit_card.NetworkAndLastFourDigits();
   for (const auto& card : server_credit_cards_) {
     switch (card->record_type()) {
-      case CreditCard::FULL_SERVER_CARD:
+      case CreditCard::RecordType::kFullServerCard:
         if (stripped_pan == CreditCard::StripSeparators(card->number()))
           return true;
         break;
-      case CreditCard::MASKED_SERVER_CARD:
+      case CreditCard::RecordType::kMaskedServerCard:
         if (masked_info == card->NetworkAndLastFourDigits())
           return true;
         break;
@@ -2434,8 +2439,9 @@ bool PersonalDataManager::IsKnownCard(const CreditCard& credit_card) const {
 
 bool PersonalDataManager::IsServerCard(const CreditCard* credit_card) const {
   // Check whether the current card itself is a server card.
-  if (credit_card->record_type() != CreditCard::LOCAL_CARD)
+  if (credit_card->record_type() != CreditCard::RecordType::kLocalCard) {
     return true;
+  }
 
   std::vector<CreditCard*> server_credit_cards = GetServerCreditCards();
   // Check whether the current card is already uploaded.

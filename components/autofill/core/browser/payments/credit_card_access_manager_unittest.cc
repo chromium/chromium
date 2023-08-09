@@ -251,7 +251,7 @@ class CreditCardAccessManagerTest : public testing::Test {
                             test::NextMonth().c_str(), test::NextYear().c_str(),
                             "1");
     local_card.set_guid(guid);
-    local_card.set_record_type(CreditCard::LOCAL_CARD);
+    local_card.set_record_type(CreditCard::RecordType::kLocalCard);
 
     personal_data().AddCreditCard(local_card);
   }
@@ -265,8 +265,9 @@ class CreditCardAccessManagerTest : public testing::Test {
                             test::NextMonth().c_str(), test::NextYear().c_str(),
                             "1");
     server_card.set_guid(guid);
-    server_card.set_record_type(masked ? CreditCard::MASKED_SERVER_CARD
-                                       : CreditCard::FULL_SERVER_CARD);
+    server_card.set_record_type(masked
+                                    ? CreditCard::RecordType::kMaskedServerCard
+                                    : CreditCard::RecordType::kFullServerCard);
     server_card.set_server_id(server_id);
     personal_data().AddServerCreditCard(server_card);
   }
@@ -439,7 +440,7 @@ class CreditCardAccessManagerTest : public testing::Test {
       int selected_index) {
     CreateServerCard(kTestGUID, kTestNumber, /*masked=*/false, kTestServerId);
     CreditCard* virtual_card = personal_data().GetCreditCardByGUID(kTestGUID);
-    virtual_card->set_record_type(CreditCard::VIRTUAL_CARD);
+    virtual_card->set_record_type(CreditCard::RecordType::kVirtualCard);
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
     fido_authenticator_->set_is_user_opted_in(
@@ -480,7 +481,7 @@ class CreditCardAccessManagerTest : public testing::Test {
       EXPECT_EQ(fido_authenticator_->card().number(),
                 base::UTF8ToUTF16(std::string(kTestNumber)));
       EXPECT_EQ(fido_authenticator_->card().record_type(),
-                CreditCard::VIRTUAL_CARD);
+                CreditCard::RecordType::kVirtualCard);
       ASSERT_TRUE(fido_authenticator_->context_token().has_value());
       EXPECT_EQ(fido_authenticator_->context_token().value(),
                 "fake_context_token");
@@ -504,7 +505,7 @@ class CreditCardAccessManagerTest : public testing::Test {
         payments::PaymentsClient::UnmaskRequestDetails* request_details =
             cvc_authenticator->GetFullCardRequest()->request_.get();
         EXPECT_EQ(request_details->card.record_type(),
-                  CreditCard::VIRTUAL_CARD);
+                  CreditCard::RecordType::kVirtualCard);
         EXPECT_EQ(request_details->card.number(),
                   base::UTF8ToUTF16(std::string(kTestNumber)));
         EXPECT_EQ(request_details->context_token, "fake_context_token");
@@ -546,7 +547,7 @@ class CreditCardAccessManagerTest : public testing::Test {
     EXPECT_EQ(otp_authenticator_->card().number(),
               base::UTF8ToUTF16(std::string(kTestNumber)));
     EXPECT_EQ(otp_authenticator_->card().record_type(),
-              CreditCard::VIRTUAL_CARD);
+              CreditCard::RecordType::kVirtualCard);
     EXPECT_EQ(otp_authenticator_->context_token(), "fake_context_token");
   }
 
@@ -727,7 +728,7 @@ TEST_P(CreditCardAccessManagerMandatoryReauthTest,
        MandatoryReauth_FetchVirtualCard) {
   CreateServerCard(kTestGUID, kTestNumber, /*masked=*/false, kTestServerId);
   CreditCard* virtual_card = personal_data().GetCreditCardByGUID(kTestGUID);
-  virtual_card->set_record_type(CreditCard::VIRTUAL_CARD);
+  virtual_card->set_record_type(CreditCard::RecordType::kVirtualCard);
 
   credit_card_access_manager_->FetchCreditCard(virtual_card,
                                                accessor_->GetWeakPtr());
@@ -2039,7 +2040,7 @@ class CreditCardAccessManagerBetterAuthOptInLogTest
         /*offer_fido_opt_in=*/UnmaskDetailsOfferFidoOptIn());
     card_ = personal_data().GetCreditCardByGUID(kTestGUID);
     if (IsVirtualCard()) {
-      card_->set_record_type(CreditCard::VIRTUAL_CARD);
+      card_->set_record_type(CreditCard::RecordType::kVirtualCard);
     }
     if (IsOptedIntoFido()) {
       // If user and device are already opted into FIDO, then add an eligible
@@ -2453,11 +2454,11 @@ TEST_F(CreditCardAccessManagerTest, FetchCreditCardUsesUnmaskedCardCache) {
   test::SetCreditCardInfo(&virtual_card, "Elvis Presley", kTestNumber,
                           test::NextMonth().c_str(), test::NextYear().c_str(),
                           "1");
-  virtual_card.set_record_type(CreditCard::VIRTUAL_CARD);
+  virtual_card.set_record_type(CreditCard::RecordType::kVirtualCard);
   credit_card_access_manager_->CacheUnmaskedCardInfo(virtual_card, kTestCvc16);
 
   // Mocks that user selects the virtual card option of the masked card.
-  masked_card->set_record_type(CreditCard::VIRTUAL_CARD);
+  masked_card->set_record_type(CreditCard::RecordType::kVirtualCard);
   credit_card_access_manager_->FetchCreditCard(masked_card,
                                                accessor_->GetWeakPtr());
 
@@ -2499,7 +2500,7 @@ TEST_F(CreditCardAccessManagerTest, IsCardPresentInUnmaskedCache) {
 TEST_F(CreditCardAccessManagerTest, IsVirtualCardPresentInUnmaskedCache) {
   CreateServerCard(kTestGUID, kTestNumber, /*masked=*/false, kTestServerId);
   CreditCard* unmasked_card = personal_data().GetCreditCardByGUID(kTestGUID);
-  unmasked_card->set_record_type(CreditCard::VIRTUAL_CARD);
+  unmasked_card->set_record_type(CreditCard::RecordType::kVirtualCard);
 
   // Add the virtual card to the cache.
   credit_card_access_manager_->CacheUnmaskedCardInfo(*unmasked_card,
@@ -2514,7 +2515,7 @@ TEST_F(CreditCardAccessManagerTest, RiskBasedVirtualCardUnmasking_Success) {
   base::HistogramTester histogram_tester;
   CreateServerCard(kTestGUID, kTestNumber, /*masked=*/false, kTestServerId);
   CreditCard* virtual_card = personal_data().GetCreditCardByGUID(kTestGUID);
-  virtual_card->set_record_type(CreditCard::VIRTUAL_CARD);
+  virtual_card->set_record_type(CreditCard::RecordType::kVirtualCard);
 
   credit_card_access_manager_->FetchCreditCard(virtual_card,
                                                accessor_->GetWeakPtr());
@@ -2724,7 +2725,7 @@ TEST_F(CreditCardAccessManagerTest,
   base::HistogramTester histogram_tester;
   CreateServerCard(kTestGUID, kTestNumber, /*masked=*/false, kTestServerId);
   CreditCard* virtual_card = personal_data().GetCreditCardByGUID(kTestGUID);
-  virtual_card->set_record_type(CreditCard::VIRTUAL_CARD);
+  virtual_card->set_record_type(CreditCard::RecordType::kVirtualCard);
   // TODO(crbug.com/1249665): Switch to SetUserVerifiable after moving all
   // is_user_veriable_ related logic from CreditCardAccessManager to
   // CreditCardFidoAuthenticator.
@@ -2752,7 +2753,7 @@ TEST_F(CreditCardAccessManagerTest,
   EXPECT_EQ(fido_authenticator_->card().number(),
             base::UTF8ToUTF16(std::string(kTestNumber)));
   EXPECT_EQ(fido_authenticator_->card().record_type(),
-            CreditCard::VIRTUAL_CARD);
+            CreditCard::RecordType::kVirtualCard);
   ASSERT_TRUE(fido_authenticator_->context_token().has_value());
   EXPECT_EQ(fido_authenticator_->context_token().value(), "fake_context_token");
 
@@ -2781,7 +2782,7 @@ TEST_F(
   base::HistogramTester histogram_tester;
   CreateServerCard(kTestGUID, kTestNumber, /*masked=*/false, kTestServerId);
   CreditCard* virtual_card = personal_data().GetCreditCardByGUID(kTestGUID);
-  virtual_card->set_record_type(CreditCard::VIRTUAL_CARD);
+  virtual_card->set_record_type(CreditCard::RecordType::kVirtualCard);
   // TODO(crbug.com/1249665): Switch to SetUserVerifiable after moving all
   // is_user_veriable_ related logic from CreditCardAccessManager to
   // CreditCardFidoAuthenticator.
@@ -2814,7 +2815,7 @@ TEST_F(
   EXPECT_EQ(fido_authenticator_->card().number(),
             base::UTF8ToUTF16(std::string(kTestNumber)));
   EXPECT_EQ(fido_authenticator_->card().record_type(),
-            CreditCard::VIRTUAL_CARD);
+            CreditCard::RecordType::kVirtualCard);
   ASSERT_TRUE(fido_authenticator_->context_token().has_value());
   EXPECT_EQ(fido_authenticator_->context_token().value(), "fake_context_token");
 
@@ -2905,7 +2906,7 @@ TEST_F(
   base::HistogramTester histogram_tester;
   CreateServerCard(kTestGUID, kTestNumber, /*masked=*/false, kTestServerId);
   CreditCard* virtual_card = personal_data().GetCreditCardByGUID(kTestGUID);
-  virtual_card->set_record_type(CreditCard::VIRTUAL_CARD);
+  virtual_card->set_record_type(CreditCard::RecordType::kVirtualCard);
   // TODO(crbug.com/1249665): Switch to SetUserVerifiable after moving all
   // is_user_veriable_ related logic from CreditCardAccessManager to
   // CreditCardFidoAuthenticator.
@@ -2952,7 +2953,7 @@ TEST_F(CreditCardAccessManagerTest,
   base::HistogramTester histogram_tester;
   CreateServerCard(kTestGUID, kTestNumber, /*masked=*/false, kTestServerId);
   CreditCard* virtual_card = personal_data().GetCreditCardByGUID(kTestGUID);
-  virtual_card->set_record_type(CreditCard::VIRTUAL_CARD);
+  virtual_card->set_record_type(CreditCard::RecordType::kVirtualCard);
   // TODO(crbug.com/1249665): Switch to SetUserVerifiable after moving all
   // |is_user_verifiable_| related logic from CreditCardAccessManager to
   // CreditCardFidoAuthenticator.
@@ -2998,7 +2999,7 @@ TEST_F(CreditCardAccessManagerTest,
   base::HistogramTester histogram_tester;
   CreateServerCard(kTestGUID, kTestNumber, /*masked=*/false, kTestServerId);
   CreditCard* virtual_card = personal_data().GetCreditCardByGUID(kTestGUID);
-  virtual_card->set_record_type(CreditCard::VIRTUAL_CARD);
+  virtual_card->set_record_type(CreditCard::RecordType::kVirtualCard);
   // TODO(crbug.com/1249665): Switch to SetUserVerifiable after moving all
   // is_user_veriable_ related logic from CreditCardAccessManager to
   // CreditCardFidoAuthenticator.
@@ -3043,7 +3044,7 @@ TEST_F(CreditCardAccessManagerTest,
   base::HistogramTester histogram_tester;
   CreateServerCard(kTestGUID, kTestNumber, /*masked=*/false, kTestServerId);
   CreditCard* virtual_card = personal_data().GetCreditCardByGUID(kTestGUID);
-  virtual_card->set_record_type(CreditCard::VIRTUAL_CARD);
+  virtual_card->set_record_type(CreditCard::RecordType::kVirtualCard);
   credit_card_access_manager_->FetchCreditCard(virtual_card,
                                                accessor_->GetWeakPtr());
 
@@ -3077,7 +3078,7 @@ TEST_F(CreditCardAccessManagerTest,
   base::HistogramTester histogram_tester;
   CreateServerCard(kTestGUID, kTestNumber, /*masked=*/false, kTestServerId);
   CreditCard* virtual_card = personal_data().GetCreditCardByGUID(kTestGUID);
-  virtual_card->set_record_type(CreditCard::VIRTUAL_CARD);
+  virtual_card->set_record_type(CreditCard::RecordType::kVirtualCard);
   // TODO(crbug.com/1249665): Switch to SetUserVerifiable after moving all
   // is_user_veriable_ related logic from CreditCardAccessManager to
   // CreditCardFidoAuthenticator.
@@ -3157,7 +3158,7 @@ TEST_P(CreditCardAccessManagerCardMetadataTest, MetadataSignal) {
   base::test::ScopedFeatureList metadata_feature_list;
   CreateServerCard(kTestGUID, kTestNumber, /*masked=*/false, kTestServerId);
   CreditCard* virtual_card = personal_data().GetCreditCardByGUID(kTestGUID);
-  virtual_card->set_record_type(CreditCard::VIRTUAL_CARD);
+  virtual_card->set_record_type(CreditCard::RecordType::kVirtualCard);
   if (MetadataEnabled()) {
     metadata_feature_list.InitWithFeatures(
         /*enabled_features=*/{features::kAutofillEnableCardProductName,

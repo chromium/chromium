@@ -1007,7 +1007,7 @@ TEST_F(FastCheckoutClientImplTest,
 TEST_F(FastCheckoutClientImplTest, OnFullCardRequestFailed_StopsRun) {
   autofill::FormStructure* credit_card_form =
       AddFormToAutofillManagerCache(SetUpCreditCardForm());
-  auto card_type = autofill::CreditCard::RecordType::FULL_SERVER_CARD;
+  auto card_type = autofill::CreditCard::RecordType::kFullServerCard;
   auto failure_type =
       autofill::payments::FullCardRequest::FailureType::GENERIC_FAILURE;
   StartRunAndSelectOptions({credit_card_form->form_signature()});

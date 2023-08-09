@@ -85,8 +85,9 @@ base::android::ScopedJavaLocalRef<jobject> CreateFastCheckoutCreditCard(
   return Java_FastCheckoutCreditCard_Constructor(
       env, ConvertUTF8ToJavaString(env, credit_card.guid()),
       ConvertUTF8ToJavaString(env, credit_card.origin()),
-      credit_card.record_type() == autofill::CreditCard::LOCAL_CARD,
-      credit_card.record_type() == autofill::CreditCard::FULL_SERVER_CARD,
+      credit_card.record_type() == autofill::CreditCard::RecordType::kLocalCard,
+      credit_card.record_type() ==
+          autofill::CreditCard::RecordType::kFullServerCard,
       ConvertUTF16ToJavaString(
           env, credit_card.GetRawInfo(autofill::CREDIT_CARD_NAME_FULL)),
       ConvertUTF16ToJavaString(
@@ -176,12 +177,14 @@ std::unique_ptr<autofill::CreditCard> CreateFastCheckoutCreditCardFromJava(
   }
 
   if (Java_FastCheckoutCreditCard_getIsLocal(env, jcredit_card)) {
-    credit_card->set_record_type(autofill::CreditCard::LOCAL_CARD);
+    credit_card->set_record_type(autofill::CreditCard::RecordType::kLocalCard);
   } else {
     if (Java_FastCheckoutCreditCard_getIsCached(env, jcredit_card)) {
-      credit_card->set_record_type(autofill::CreditCard::FULL_SERVER_CARD);
+      credit_card->set_record_type(
+          autofill::CreditCard::RecordType::kFullServerCard);
     } else {
-      credit_card->set_record_type(autofill::CreditCard::MASKED_SERVER_CARD);
+      credit_card->set_record_type(
+          autofill::CreditCard::RecordType::kMaskedServerCard);
       credit_card->SetNetworkForMaskedCard(
           autofill::data_util::GetIssuerNetworkForBasicCardIssuerNetwork(
               ConvertJavaStringToUTF8(

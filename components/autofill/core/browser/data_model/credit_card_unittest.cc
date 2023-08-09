@@ -36,10 +36,11 @@ using base::UTF8ToUTF16;
 
 namespace autofill {
 
-const CreditCard::RecordType LOCAL_CARD = CreditCard::LOCAL_CARD;
+const CreditCard::RecordType LOCAL_CARD = CreditCard::RecordType::kLocalCard;
 const CreditCard::RecordType MASKED_SERVER_CARD =
-    CreditCard::MASKED_SERVER_CARD;
-const CreditCard::RecordType FULL_SERVER_CARD = CreditCard::FULL_SERVER_CARD;
+    CreditCard::RecordType::kMaskedServerCard;
+const CreditCard::RecordType FULL_SERVER_CARD =
+    CreditCard::RecordType::kFullServerCard;
 
 namespace {
 
@@ -773,8 +774,10 @@ TEST_P(IsLocalOrServerDuplicateOfTest, IsLocalOrServerDuplicateOf) {
       test_case.second_card_exp_mo, test_case.second_card_exp_yr,
       test_case.second_billing_address_id);
 
-  if (test_case.second_card_record_type == CreditCard::MASKED_SERVER_CARD)
+  if (test_case.second_card_record_type ==
+      CreditCard::RecordType::kMaskedServerCard) {
     b.SetNetworkForMaskedCard(test_case.second_card_issuer_network);
+  }
 
   EXPECT_EQ(test_case.is_local_or_server_duplicate,
             a.IsLocalOrServerDuplicateOf(b))
@@ -836,18 +839,18 @@ TEST(CreditCardTest, MatchingCardDetails) {
   EXPECT_TRUE(b.MatchingCardDetails(a));
 
   // Cards with the same number are the same.
-  a.set_record_type(CreditCard::LOCAL_CARD);
+  a.set_record_type(CreditCard::RecordType::kLocalCard);
   a.SetRawInfo(CREDIT_CARD_NUMBER, u"4111111111111111");
-  b.set_record_type(CreditCard::LOCAL_CARD);
+  b.set_record_type(CreditCard::RecordType::kLocalCard);
   b.SetRawInfo(CREDIT_CARD_NUMBER, u"4111111111111111");
   EXPECT_TRUE(a.MatchingCardDetails(b));
   EXPECT_TRUE(b.MatchingCardDetails(a));
 
   // Local cards with different overall numbers shouldn't match even if the last
   // four digits are the same.
-  a.set_record_type(CreditCard::LOCAL_CARD);
+  a.set_record_type(CreditCard::RecordType::kLocalCard);
   a.SetRawInfo(CREDIT_CARD_NUMBER, u"4111111111111111");
-  b.set_record_type(CreditCard::LOCAL_CARD);
+  b.set_record_type(CreditCard::RecordType::kLocalCard);
   b.SetRawInfo(CREDIT_CARD_NUMBER, u"4111222222221111");
   EXPECT_FALSE(a.MatchingCardDetails(b));
   EXPECT_FALSE(b.MatchingCardDetails(a));
@@ -855,38 +858,38 @@ TEST(CreditCardTest, MatchingCardDetails) {
   // When one card is a full server card, the other is a local card, and the
   // cards have different overall numbers but the same last four digits, they
   // should not match.
-  a.set_record_type(CreditCard::FULL_SERVER_CARD);
+  a.set_record_type(CreditCard::RecordType::kFullServerCard);
   a.SetRawInfo(CREDIT_CARD_NUMBER, u"4111111111111111");
-  b.set_record_type(CreditCard::LOCAL_CARD);
+  b.set_record_type(CreditCard::RecordType::kLocalCard);
   b.SetRawInfo(CREDIT_CARD_NUMBER, u"4111222222221111");
   EXPECT_FALSE(a.MatchingCardDetails(b));
   EXPECT_FALSE(b.MatchingCardDetails(a));
 
   // When one card is a masked server card, the other is a local card, and the
   // cards have the same last four digits, they should match.
-  a.set_record_type(CreditCard::MASKED_SERVER_CARD);
+  a.set_record_type(CreditCard::RecordType::kMaskedServerCard);
   a.SetRawInfo(CREDIT_CARD_NUMBER, u"4111111111111111");
-  b.set_record_type(CreditCard::LOCAL_CARD);
+  b.set_record_type(CreditCard::RecordType::kLocalCard);
   b.SetRawInfo(CREDIT_CARD_NUMBER, u"4331111111111111");
   EXPECT_TRUE(a.MatchingCardDetails(b));
   EXPECT_TRUE(b.MatchingCardDetails(a));
 
   // When one card is a masked server card, the other is a full server card, and
   // the cards have the same last four digits, they should match.
-  a.set_record_type(CreditCard::MASKED_SERVER_CARD);
+  a.set_record_type(CreditCard::RecordType::kMaskedServerCard);
   a.SetRawInfo(CREDIT_CARD_NUMBER, u"4111111111111111");
-  b.set_record_type(CreditCard::FULL_SERVER_CARD);
+  b.set_record_type(CreditCard::RecordType::kFullServerCard);
   b.SetRawInfo(CREDIT_CARD_NUMBER, u"4331111111111111");
   EXPECT_TRUE(a.MatchingCardDetails(b));
   EXPECT_TRUE(b.MatchingCardDetails(a));
 
   // If one card is masked, then partial or missing expiration date information
   // should not prevent the function from returning true.
-  a.set_record_type(CreditCard::MASKED_SERVER_CARD);
+  a.set_record_type(CreditCard::RecordType::kMaskedServerCard);
   a.SetRawInfo(CREDIT_CARD_NUMBER, u"4111111111111111");
   a.SetRawInfo(CREDIT_CARD_EXP_MONTH, u"01");
   a.SetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, u"2025");
-  b.set_record_type(CreditCard::LOCAL_CARD);
+  b.set_record_type(CreditCard::RecordType::kLocalCard);
   b.SetRawInfo(CREDIT_CARD_NUMBER, u"4111111111111111");
   b.SetRawInfo(CREDIT_CARD_EXP_MONTH, u"");
   b.SetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, u"");
@@ -895,11 +898,11 @@ TEST(CreditCardTest, MatchingCardDetails) {
 
   // If one card is masked, then non-matching expiration months should cause the
   // function to return false.
-  a.set_record_type(CreditCard::MASKED_SERVER_CARD);
+  a.set_record_type(CreditCard::RecordType::kMaskedServerCard);
   a.SetRawInfo(CREDIT_CARD_NUMBER, u"4111111111111111");
   a.SetRawInfo(CREDIT_CARD_EXP_MONTH, u"01");
   a.SetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, u"");
-  b.set_record_type(CreditCard::LOCAL_CARD);
+  b.set_record_type(CreditCard::RecordType::kLocalCard);
   b.SetRawInfo(CREDIT_CARD_NUMBER, u"4111111111111111");
   b.SetRawInfo(CREDIT_CARD_EXP_MONTH, u"03");
   b.SetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, u"");
@@ -908,11 +911,11 @@ TEST(CreditCardTest, MatchingCardDetails) {
 
   // If one card is masked, then non-matching expiration years should cause the
   // function to return false.
-  a.set_record_type(CreditCard::MASKED_SERVER_CARD);
+  a.set_record_type(CreditCard::RecordType::kMaskedServerCard);
   a.SetRawInfo(CREDIT_CARD_NUMBER, u"4111111111111111");
   a.SetRawInfo(CREDIT_CARD_EXP_MONTH, u"");
   a.SetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, u"2025");
-  b.set_record_type(CreditCard::LOCAL_CARD);
+  b.set_record_type(CreditCard::RecordType::kLocalCard);
   b.SetRawInfo(CREDIT_CARD_NUMBER, u"4111111111111111");
   b.SetRawInfo(CREDIT_CARD_EXP_MONTH, u"");
   b.SetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, u"2026");
@@ -1635,8 +1638,8 @@ const CreditCardMatchingTypesCase kCreditCardMatchingTypesTestCases[] = {
      "2020",
      MASKED_SERVER_CARD,
      {CREDIT_CARD_NUMBER}},
-    {"4111111111111111", "01", "2020", CreditCard::MASKED_SERVER_CARD,
-     ServerFieldTypeSet()},
+    {"4111111111111111", "01", "2020",
+     CreditCard::RecordType::kMaskedServerCard, ServerFieldTypeSet()},
     // Same value will not match a local card or full server card since we
     // have the full number for those. However the full number will.
     {"1881", "01", "2020", LOCAL_CARD, ServerFieldTypeSet()},
@@ -2188,41 +2191,44 @@ INSTANTIATE_TEST_SUITE_P(
     ShouldUpdateExpirationTest,
     testing::Values(
         // Cards that expired last year should always be updated.
-        ShouldUpdateExpirationTestCase{true, -kOneYear, CreditCard::LOCAL_CARD},
         ShouldUpdateExpirationTestCase{true, -kOneYear,
-                                       CreditCard::FULL_SERVER_CARD},
+                                       CreditCard::RecordType::kLocalCard},
         ShouldUpdateExpirationTestCase{true, -kOneYear,
-                                       CreditCard::MASKED_SERVER_CARD},
+                                       CreditCard::RecordType::kFullServerCard},
+        ShouldUpdateExpirationTestCase{
+            true, -kOneYear, CreditCard::RecordType::kMaskedServerCard},
 
         // Cards that expired last month should always be updated.
         ShouldUpdateExpirationTestCase{true, -kOneMonth,
-                                       CreditCard::LOCAL_CARD},
+                                       CreditCard::RecordType::kLocalCard},
         ShouldUpdateExpirationTestCase{true, -kOneMonth,
-                                       CreditCard::FULL_SERVER_CARD},
-        ShouldUpdateExpirationTestCase{true, -kOneMonth,
-                                       CreditCard::MASKED_SERVER_CARD},
+                                       CreditCard::RecordType::kFullServerCard},
+        ShouldUpdateExpirationTestCase{
+            true, -kOneMonth, CreditCard::RecordType::kMaskedServerCard},
 
         // Cards that expire this month should not be updated.
-        ShouldUpdateExpirationTestCase{false, kCurrent, CreditCard::LOCAL_CARD},
         ShouldUpdateExpirationTestCase{false, kCurrent,
-                                       CreditCard::FULL_SERVER_CARD},
+                                       CreditCard::RecordType::kLocalCard},
         ShouldUpdateExpirationTestCase{false, kCurrent,
-                                       CreditCard::MASKED_SERVER_CARD},
+                                       CreditCard::RecordType::kFullServerCard},
+        ShouldUpdateExpirationTestCase{
+            false, kCurrent, CreditCard::RecordType::kMaskedServerCard},
 
         // Cards that expire next month should not be updated.
         ShouldUpdateExpirationTestCase{false, kOneMonth,
-                                       CreditCard::LOCAL_CARD},
+                                       CreditCard::RecordType::kLocalCard},
+        ShouldUpdateExpirationTestCase{
+            false, kOneMonth, CreditCard::RecordType::kMaskedServerCard},
         ShouldUpdateExpirationTestCase{false, kOneMonth,
-                                       CreditCard::MASKED_SERVER_CARD},
-        ShouldUpdateExpirationTestCase{false, kOneMonth,
-                                       CreditCard::FULL_SERVER_CARD},
+                                       CreditCard::RecordType::kFullServerCard},
 
         // Cards that expire next year should not be updated.
-        ShouldUpdateExpirationTestCase{false, kOneYear, CreditCard::LOCAL_CARD},
         ShouldUpdateExpirationTestCase{false, kOneYear,
-                                       CreditCard::MASKED_SERVER_CARD},
-        ShouldUpdateExpirationTestCase{false, kOneYear,
-                                       CreditCard::FULL_SERVER_CARD}));
+                                       CreditCard::RecordType::kLocalCard},
+        ShouldUpdateExpirationTestCase{
+            false, kOneYear, CreditCard::RecordType::kMaskedServerCard},
+        ShouldUpdateExpirationTestCase{
+            false, kOneYear, CreditCard::RecordType::kFullServerCard}));
 
 #if BUILDFLAG(IS_ANDROID)
 TEST(CreditCardTestForKeyboardAccessory, GetObfuscatedStringForCardDigits) {

@@ -342,11 +342,12 @@ void PersonalDataManagerCleaner::UpdateCardsBillingAddressReference(
 
     // If the card was modified, apply the changes to the database.
     if (was_modified) {
-      if (credit_card->record_type() == CreditCard::LOCAL_CARD)
+      if (credit_card->record_type() == CreditCard::RecordType::kLocalCard) {
         personal_data_manager_->GetLocalDatabase()->UpdateCreditCard(
             *credit_card);
-      else
+      } else {
         server_cards_to_be_updated.push_back(*credit_card);
+      }
     }
   }
 

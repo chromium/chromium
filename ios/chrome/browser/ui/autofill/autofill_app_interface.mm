@@ -435,7 +435,7 @@ class SaveCardInfobarEGTestHelper
   autofill::PersonalDataManager* personalDataManager =
       [self personalDataManager];
   autofill::CreditCard card = autofill::test::GetMaskedServerCard();
-  DCHECK(card.record_type() != autofill::CreditCard::LOCAL_CARD);
+  DCHECK(card.record_type() != autofill::CreditCard::RecordType::kLocalCard);
 
   personalDataManager->AddServerCreditCardForTest(
       std::make_unique<autofill::CreditCard>(card));

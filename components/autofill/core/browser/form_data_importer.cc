@@ -897,7 +897,7 @@ absl::optional<CreditCard> FormDataImporter::TryMatchingExistingServerCard(
       return absl::nullopt;
     }
 
-    if (server_card->record_type() == CreditCard::FULL_SERVER_CARD) {
+    if (server_card->record_type() == CreditCard::RecordType::kFullServerCard) {
       AutofillMetrics::LogSubmittedServerCardExpirationStatusMetric(
           server_card->HasSameExpirationDateAs(candidate)
               ? AutofillMetrics::FULL_SERVER_CARD_EXPIRATION_DATE_MATCHED

@@ -742,7 +742,7 @@ void CreditCardFidoAuthenticator::HandleGetAssertionSuccess(
           autofill_client_->GetPersonalDataManager());
 
       absl::optional<GURL> last_committed_primary_main_frame_origin;
-      if (card_->record_type() == CreditCard::VIRTUAL_CARD &&
+      if (card_->record_type() == CreditCard::RecordType::kVirtualCard &&
           autofill_client_->GetLastCommittedPrimaryMainFrameURL().is_valid()) {
         last_committed_primary_main_frame_origin =
             autofill_client_->GetLastCommittedPrimaryMainFrameURL()

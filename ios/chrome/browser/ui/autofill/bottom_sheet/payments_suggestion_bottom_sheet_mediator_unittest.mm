@@ -83,7 +83,7 @@ class PaymentsSuggestionBottomSheetMediatorTest : public PlatformTest {
       std::string number = kTestNumber,
       int64_t instrument_id = 0,
       autofill::CreditCard::RecordType record_type =
-          autofill::CreditCard::MASKED_SERVER_CARD) {
+          autofill::CreditCard::RecordType::kMaskedServerCard) {
     autofill::CreditCard card = autofill::CreditCard();
     autofill::test::SetCreditCardInfo(&card, "Jane Doe", number.c_str(),
                                       autofill::test::NextMonth().c_str(),
@@ -114,7 +114,7 @@ class PaymentsSuggestionBottomSheetMediatorTest : public PlatformTest {
   void CreateMediatorWithLocalCardOnlySuggestions() {
     CreateMediator();
     CreateCreditCard(kTestGuid.value(), kTestNumber, 0,
-                     autofill::CreditCard::LOCAL_CARD);
+                     autofill::CreditCard::RecordType::kLocalCard);
     personal_data_manager_->SetSyncingForTest(true);
   }
 

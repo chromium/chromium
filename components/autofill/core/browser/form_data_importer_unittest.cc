@@ -1836,7 +1836,7 @@ TEST_P(FormDataImporterTest,
        ExtractCreditCard_DuplicateServerCards_ExtractMaskedCard) {
   // Add a masked server card.
   std::vector<CreditCard> server_cards;
-  server_cards.push_back(CreditCard(CreditCard::MASKED_SERVER_CARD, "a123"));
+  server_cards.emplace_back(CreditCard::RecordType::kMaskedServerCard, "a123");
   test::SetCreditCardInfo(&server_cards.back(), "John Dillinger",
                           "1111" /* Visa */, "01", "2999", "");
   server_cards.back().SetNetworkForMaskedCard(kVisaCard);
@@ -1855,7 +1855,7 @@ TEST_P(FormDataImporterTest,
       ExtractCreditCard(form_structure);
   EXPECT_TRUE(extracted_credit_card);
   ASSERT_TRUE(extracted_credit_card.value().record_type() ==
-              CreditCard::MASKED_SERVER_CARD);
+              CreditCard::RecordType::kMaskedServerCard);
 }
 
 // Tests that a credit card is extracted when it matches a full server
@@ -1864,7 +1864,7 @@ TEST_P(FormDataImporterTest,
        ExtractCreditCard_DuplicateServerCards_ExtractFullCard) {
   // Add a full server card.
   std::vector<CreditCard> server_cards;
-  server_cards.push_back(CreditCard(CreditCard::FULL_SERVER_CARD, "c789"));
+  server_cards.emplace_back(CreditCard::RecordType::kFullServerCard, "c789");
   test::SetCreditCardInfo(&server_cards.back(), "Clyde Barrow",
                           "378282246310005" /* American Express */, "04",
                           "2999", "");  // Imported cards have no billing info.
@@ -1883,7 +1883,7 @@ TEST_P(FormDataImporterTest,
       ExtractCreditCard(form_structure);
   EXPECT_TRUE(extracted_credit_card);
   EXPECT_EQ(extracted_credit_card.value().record_type(),
-            CreditCard::RecordType::FULL_SERVER_CARD);
+            CreditCard::RecordType::kFullServerCard);
 }
 
 TEST_P(FormDataImporterTest, ExtractCreditCard_SameCreditCardWithConflict) {
@@ -2364,7 +2364,7 @@ TEST_P(FormDataImporterTest,
        ExtractFormData_ExtractCreditCardRecordType_MaskedServerCard) {
   // Add a masked server card.
   std::vector<CreditCard> server_cards;
-  server_cards.push_back(CreditCard(CreditCard::MASKED_SERVER_CARD, "a123"));
+  server_cards.emplace_back(CreditCard::RecordType::kMaskedServerCard, "a123");
   test::SetCreditCardInfo(&server_cards.back(), "Biggie Smalls",
                           "1111" /* Visa */, "01", "2999", "");
   server_cards.back().SetNetworkForMaskedCard(kVisaCard);
@@ -2393,7 +2393,7 @@ TEST_P(FormDataImporterTest,
        ExtractFormData_ExtractCreditCardRecordType_FullServerCard) {
   // Add a full server card.
   std::vector<CreditCard> server_cards;
-  server_cards.push_back(CreditCard(CreditCard::FULL_SERVER_CARD, "c789"));
+  server_cards.emplace_back(CreditCard::RecordType::kFullServerCard, "c789");
   test::SetCreditCardInfo(&server_cards.back(), "Biggie Smalls",
                           "378282246310005" /* American Express */, "04",
                           "2999", "1");
@@ -2518,7 +2518,7 @@ TEST_P(FormDataImporterTest,
       features::kAutofillOfferToSaveCardWithSameLastFour);
   // Add a valid server card.
   std::vector<CreditCard> server_cards;
-  server_cards.emplace_back(CreditCard::FULL_SERVER_CARD, "a123");
+  server_cards.emplace_back(CreditCard::RecordType::kFullServerCard, "a123");
   test::SetCreditCardInfo(&server_cards.back(), "John Dillinger",
                           "4111 1111 1111 1111" /* Visa */, "01", "2999", "");
   SetServerCreditCardAndWait(server_cards);
@@ -2550,7 +2550,7 @@ TEST_P(
   feature_list.InitAndEnableFeature(
       features::kAutofillOfferToSaveCardWithSameLastFour);
   std::vector<CreditCard> server_cards;
-  server_cards.emplace_back(CreditCard::MASKED_SERVER_CARD, "a123");
+  server_cards.emplace_back(CreditCard::RecordType::kMaskedServerCard, "a123");
   test::SetCreditCardInfo(&server_cards.back(), "John Dillinger",
                           "1111" /* Visa */, "01", "2999", "");
   server_cards.back().SetNetworkForMaskedCard(kVisaCard);
@@ -2592,12 +2592,12 @@ TEST_P(
   feature_list.InitAndEnableFeature(
       features::kAutofillOfferToSaveCardWithSameLastFour);
   std::vector<CreditCard> server_cards;
-  server_cards.emplace_back(CreditCard::MASKED_SERVER_CARD, "a123");
+  server_cards.emplace_back(CreditCard::RecordType::kMaskedServerCard, "a123");
   test::SetCreditCardInfo(&server_cards.back(), "John Dillinger",
                           "1111" /* Visa */, "01", "2111", "");
   server_cards.back().SetNetworkForMaskedCard(kVisaCard);
 
-  server_cards.emplace_back(CreditCard::MASKED_SERVER_CARD, "a124");
+  server_cards.emplace_back(CreditCard::RecordType::kMaskedServerCard, "a124");
   test::SetCreditCardInfo(&server_cards.back(), "John Dillinger",
                           "1111" /* Visa */, "02", "2112", "");
   server_cards.back().SetNetworkForMaskedCard(kVisaCard);
@@ -2665,12 +2665,12 @@ TEST_P(
       features::kAutofillOfferToSaveCardWithSameLastFour);
   // Add two masked server card.
   std::vector<CreditCard> server_cards;
-  server_cards.emplace_back(CreditCard::MASKED_SERVER_CARD, "a123");
+  server_cards.emplace_back(CreditCard::RecordType::kMaskedServerCard, "a123");
   test::SetCreditCardInfo(&server_cards.back(), "John Dillinger",
                           "1111" /* Visa */, "01", "2999", "");
   server_cards.back().SetNetworkForMaskedCard(kVisaCard);
 
-  server_cards.emplace_back(CreditCard::MASKED_SERVER_CARD, "a123");
+  server_cards.emplace_back(CreditCard::RecordType::kMaskedServerCard, "a123");
   test::SetCreditCardInfo(&server_cards.back(), "John Dillinger",
                           "1111" /* Visa */, "04", "2999", "");
   server_cards.back().SetNetworkForMaskedCard(kVisaCard);
@@ -2980,12 +2980,12 @@ TEST_P(FormDataImporterTest, ExtractFormData_AddressCreditCardDisabled) {
 
 TEST_P(FormDataImporterTest, DuplicateMaskedServerCard) {
   std::vector<CreditCard> server_cards;
-  server_cards.push_back(CreditCard(CreditCard::MASKED_SERVER_CARD, "a123"));
+  server_cards.emplace_back(CreditCard::RecordType::kMaskedServerCard, "a123");
   test::SetCreditCardInfo(&server_cards.back(), "John Dillinger",
                           "1881" /* Visa */, "01", "2999", "");
   server_cards.back().SetNetworkForMaskedCard(kVisaCard);
 
-  server_cards.push_back(CreditCard(CreditCard::FULL_SERVER_CARD, "c789"));
+  server_cards.emplace_back(CreditCard::RecordType::kFullServerCard, "c789");
   test::SetCreditCardInfo(&server_cards.back(), "Clyde Barrow",
                           "378282246310005" /* American Express */, "04",
                           "2999", "");
@@ -3066,12 +3066,12 @@ TEST_P(FormDataImporterTest,
 TEST_P(FormDataImporterTest,
        DuplicateFullServerCardWhileContainingLocalCardCopies) {
   std::vector<CreditCard> server_cards;
-  server_cards.push_back(CreditCard(CreditCard::MASKED_SERVER_CARD, "a123"));
+  server_cards.emplace_back(CreditCard::RecordType::kMaskedServerCard, "a123");
   test::SetCreditCardInfo(&server_cards.back(), "John Dillinger",
                           "1881" /* Visa */, "01", "2999", "1");
   server_cards.back().SetNetworkForMaskedCard(kVisaCard);
 
-  server_cards.push_back(CreditCard(CreditCard::FULL_SERVER_CARD, "c789"));
+  server_cards.emplace_back(CreditCard::RecordType::kFullServerCard, "c789");
   test::SetCreditCardInfo(&server_cards.back(), "Clyde Barrow",
                           "378282246310005" /* American Express */, "04",
                           "2999", "1");
@@ -3088,7 +3088,7 @@ TEST_P(FormDataImporterTest,
     test::SetCreditCardInfo(&local_card, "Clyde Barrow",
                             "378282246310005" /* American Express */, "05",
                             "2999", "1");
-    local_card.set_record_type(CreditCard::RecordType::LOCAL_CARD);
+    local_card.set_record_type(CreditCard::RecordType::kLocalCard);
     personal_data_manager_->AddCreditCard(local_card);
   }
 
@@ -3116,12 +3116,12 @@ TEST_P(FormDataImporterTest,
   // Ensure that we imported the server version of the card, not the local
   // version.
   ASSERT_TRUE(extracted_data.extracted_credit_card->record_type() ==
-              CreditCard::FULL_SERVER_CARD);
+              CreditCard::RecordType::kFullServerCard);
 
   // Check that both of the local cards we have added were updated.
   int matched_local_cards = 0;
   for (const CreditCard* card : personal_data_manager_->GetCreditCards()) {
-    if (card->record_type() == CreditCard::RecordType::LOCAL_CARD) {
+    if (card->record_type() == CreditCard::RecordType::kLocalCard) {
       matched_local_cards++;
       EXPECT_EQ(card->expiration_month(), 4);
     }
@@ -3132,7 +3132,7 @@ TEST_P(FormDataImporterTest,
 TEST_P(FormDataImporterTest,
        Metrics_SubmittedServerCardExpirationStatus_FullServerCardMatch) {
   std::vector<CreditCard> server_cards;
-  server_cards.push_back(CreditCard(CreditCard::FULL_SERVER_CARD, "c789"));
+  server_cards.emplace_back(CreditCard::RecordType::kFullServerCard, "c789");
   test::SetCreditCardInfo(&server_cards.back(), "Clyde Barrow",
                           "4444333322221111" /* Visa */, "04", "2111", "1");
 
@@ -3167,7 +3167,7 @@ TEST_P(FormDataImporterTest,
 TEST_P(FormDataImporterTest,
        Metrics_SubmittedServerCardExpirationStatus_EmptyExpirationMonth) {
   std::vector<CreditCard> server_cards;
-  server_cards.push_back(CreditCard(CreditCard::FULL_SERVER_CARD, "c789"));
+  server_cards.emplace_back(CreditCard::RecordType::kFullServerCard, "c789");
   test::SetCreditCardInfo(&server_cards.back(), "Clyde Barrow",
                           "4444333322221111" /* Visa */, "04", "2111", "1");
 
@@ -3198,7 +3198,7 @@ TEST_P(FormDataImporterTest,
 TEST_P(FormDataImporterTest,
        Metrics_SubmittedServerCardExpirationStatus_EmptyExpirationYear) {
   std::vector<CreditCard> server_cards;
-  server_cards.push_back(CreditCard(CreditCard::FULL_SERVER_CARD, "c789"));
+  server_cards.emplace_back(CreditCard::RecordType::kFullServerCard, "c789");
   test::SetCreditCardInfo(&server_cards.back(), "Clyde Barrow",
                           "4444333322221111" /* Visa */, "04", "2111", "1");
 
@@ -3230,7 +3230,7 @@ TEST_P(
     FormDataImporterTest,
     Metrics_SubmittedDifferentServerCardExpirationStatus_EmptyExpirationYear) {
   std::vector<CreditCard> server_cards;
-  server_cards.push_back(CreditCard(CreditCard::FULL_SERVER_CARD, "c789"));
+  server_cards.emplace_back(CreditCard::RecordType::kFullServerCard, "c789");
   test::SetCreditCardInfo(&server_cards.back(), "Clyde Barrow",
                           "4111111111111111" /* Visa */, "04", "2111", "1");
 
@@ -3259,7 +3259,7 @@ TEST_P(
 TEST_P(FormDataImporterTest,
        Metrics_SubmittedServerCardExpirationStatus_FullServerCardMismatch) {
   std::vector<CreditCard> server_cards;
-  server_cards.push_back(CreditCard(CreditCard::FULL_SERVER_CARD, "c789"));
+  server_cards.emplace_back(CreditCard::RecordType::kFullServerCard, "c789");
   test::SetCreditCardInfo(&server_cards.back(), "Clyde Barrow",
                           "4444333322221111" /* Visa */, "04", "2111", "1");
 
@@ -3293,7 +3293,7 @@ TEST_P(FormDataImporterTest,
 TEST_P(FormDataImporterTest,
        Metrics_SubmittedServerCardExpirationStatus_MaskedServerCardMatch) {
   std::vector<CreditCard> server_cards;
-  server_cards.push_back(CreditCard(CreditCard::MASKED_SERVER_CARD, "a123"));
+  server_cards.emplace_back(CreditCard::RecordType::kMaskedServerCard, "a123");
   test::SetCreditCardInfo(&server_cards.back(), "John Dillinger",
                           "1111" /* Visa */, "01", "2111", "");
   server_cards.back().SetNetworkForMaskedCard(kVisaCard);
@@ -3327,7 +3327,7 @@ TEST_P(FormDataImporterTest,
 TEST_P(FormDataImporterTest,
        Metrics_SubmittedServerCardExpirationStatus_MaskedServerCardMismatch) {
   std::vector<CreditCard> server_cards;
-  server_cards.push_back(CreditCard(CreditCard::MASKED_SERVER_CARD, "a123"));
+  server_cards.emplace_back(CreditCard::RecordType::kMaskedServerCard, "a123");
   test::SetCreditCardInfo(&server_cards.back(), "John Dillinger",
                           "1111" /* Visa */, "01", "2111", "");
   server_cards.back().SetNetworkForMaskedCard(kVisaCard);

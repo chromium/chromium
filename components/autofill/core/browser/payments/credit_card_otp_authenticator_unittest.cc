@@ -60,7 +60,7 @@ class CreditCardOtpAuthenticatorTestBase : public testing::Test {
         std::make_unique<CreditCardOtpAuthenticator>(&autofill_client_);
 
     card_ = test::GetMaskedServerCard();
-    card_.set_record_type(CreditCard::VIRTUAL_CARD);
+    card_.set_record_type(CreditCard::RecordType::kVirtualCard);
   }
 
   void TearDown() override {

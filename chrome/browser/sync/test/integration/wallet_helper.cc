@@ -402,7 +402,7 @@ sync_pb::SyncEntity CreateDefaultSyncPaymentsCustomerData() {
 }
 
 CreditCard GetDefaultCreditCard() {
-  CreditCard card(CreditCard::MASKED_SERVER_CARD, kDefaultCardID);
+  CreditCard card(CreditCard::RecordType::kMaskedServerCard, kDefaultCardID);
   card.SetExpirationMonth(kDefaultCardExpMonth);
   card.SetExpirationYear(kDefaultCardExpYear);
   card.SetNumber(kDefaultCardLastFour16);
@@ -477,7 +477,7 @@ sync_pb::SyncEntity CreateDefaultSyncCreditCardCloudTokenData() {
 }
 
 void ExpectDefaultCreditCardValues(const CreditCard& card) {
-  EXPECT_EQ(CreditCard::MASKED_SERVER_CARD, card.record_type());
+  EXPECT_EQ(CreditCard::RecordType::kMaskedServerCard, card.record_type());
   EXPECT_EQ(kDefaultCardID, card.server_id());
   EXPECT_EQ(kDefaultCardLastFour16, card.LastFourDigits());
   EXPECT_EQ(autofill::kAmericanExpressCard, card.network());

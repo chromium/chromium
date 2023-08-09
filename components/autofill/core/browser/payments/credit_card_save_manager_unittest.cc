@@ -3268,7 +3268,7 @@ TEST_F(CreditCardSaveManagerTest, DuplicateMaskedCreditCard_NoUpload) {
 
   // Add a masked credit card whose |TypeAndLastFourDigits| matches what we will
   // enter below.
-  CreditCard credit_card(CreditCard::MASKED_SERVER_CARD, "a123");
+  CreditCard credit_card(CreditCard::RecordType::kMaskedServerCard, "a123");
   test::SetCreditCardInfo(&credit_card, "Jane Doe", "1111",
                           test::NextMonth().c_str(), test::NextYear().c_str(),
                           "1");
@@ -4232,7 +4232,7 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_UploadOfLocalCard) {
   test::SetCreditCardInfo(&local_card, "Jane Doe", "4111111111111111",
                           test::NextMonth().c_str(), test::NextYear().c_str(),
                           "1");
-  local_card.set_record_type(CreditCard::LOCAL_CARD);
+  local_card.set_record_type(CreditCard::RecordType::kLocalCard);
   personal_data().AddCreditCard(local_card);
 
   // Create, fill and submit an address form in order to establish a recent
@@ -4328,7 +4328,7 @@ TEST_F(CreditCardSaveManagerTest,
   test::SetCreditCardInfo(&local_card, "Jane Doe", "4111111111111111",
                           test::NextMonth().c_str(), test::NextYear().c_str(),
                           "1");
-  local_card.set_record_type(CreditCard::LOCAL_CARD);
+  local_card.set_record_type(CreditCard::RecordType::kLocalCard);
   personal_data().AddCreditCard(local_card);
 
   // Create, fill and submit an address form in order to establish a recent
@@ -5096,7 +5096,7 @@ TEST_F(CreditCardSaveManagerTest, LocalSaveNotOfferedForSavedUnsupportedCard) {
   test::SetCreditCardInfo(&local_card, "Jane Doe", "5454545454545454",
                           test::NextMonth().c_str(), test::NextYear().c_str(),
                           "1");
-  local_card.set_record_type(CreditCard::LOCAL_CARD);
+  local_card.set_record_type(CreditCard::RecordType::kLocalCard);
   personal_data().AddCreditCard(local_card);
 
   // Edit the data, and submit.
@@ -5227,7 +5227,7 @@ TEST_F(CreditCardSaveManagerTest, ExistingServerCard_DifferentExpiration) {
   ManuallyFillAddressForm("Jane", "Doe", "77401", "US", &address_form);
   FormSubmitted(address_form);
 
-  CreditCard card(CreditCard::MASKED_SERVER_CARD, "a123");
+  CreditCard card(CreditCard::RecordType::kMaskedServerCard, "a123");
   test::SetCreditCardInfo(&card, "John Dillinger", "1111" /* Visa */, "01",
                           "2999", "");
   card.SetNetworkForMaskedCard(kVisaCard);
@@ -5271,7 +5271,7 @@ TEST_F(CreditCardSaveManagerTest,
   ManuallyFillAddressForm("Jane", "Doe", "77401", "US", &address_form);
   FormSubmitted(address_form);
 
-  CreditCard card(CreditCard::MASKED_SERVER_CARD, "a123");
+  CreditCard card(CreditCard::RecordType::kMaskedServerCard, "a123");
   test::SetCreditCardInfo(&card, "John Dillinger", "1111" /* Visa */, "01",
                           "2999", "");
   card.SetNetworkForMaskedCard(kVisaCard);

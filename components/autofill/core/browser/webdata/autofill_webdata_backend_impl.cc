@@ -617,7 +617,7 @@ WebDatabase::State AutofillWebDataBackendImpl::UpdateServerCardMetadata(
     const CreditCard& card,
     WebDatabase* db) {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
-  DCHECK_NE(CreditCard::LOCAL_CARD, card.record_type());
+  DCHECK_NE(CreditCard::RecordType::kLocalCard, card.record_type());
   if (!AutofillTable::FromWebDatabase(db)->UpdateServerCardMetadata(card)) {
     ReportResult(Result::kUpdateServerCardMetadata_Failure);
     return WebDatabase::COMMIT_NOT_NEEDED;

@@ -1389,7 +1389,7 @@ void BrowserAutofillManager::FillOrPreviewCreditCardForm(
   bool is_preview =
       action_persistence != mojom::AutofillActionPersistence::kFill;
   bool is_virtual_card_standalone_cvc =
-      credit_card->record_type() == CreditCard::VIRTUAL_CARD &&
+      credit_card->record_type() == CreditCard::RecordType::kVirtualCard &&
       (autofill_field->Type().GetStorableType() ==
        CREDIT_CARD_STANDALONE_VERIFICATION_CODE);
   bool should_fetch_card =
@@ -1544,7 +1544,7 @@ void BrowserAutofillManager::FillOrPreviewVirtualCardInformation(
       client().GetPersonalDataManager()->GetCreditCardByGUID(guid);
   if (credit_card) {
     CreditCard copy = *credit_card;
-    copy.set_record_type(CreditCard::VIRTUAL_CARD);
+    copy.set_record_type(CreditCard::RecordType::kVirtualCard);
     FillOrPreviewCreditCardForm(action_persistence, form, field, &copy,
                                 trigger_source);
   }
@@ -2015,7 +2015,7 @@ void BrowserAutofillManager::OnCreditCardFetched(CreditCardFetchResult result,
 
   // If synced down card is a virtual card, let the client know so that it can
   // show the UI to help user to manually fill the form, if needed.
-  if (credit_card->record_type() == CreditCard::VIRTUAL_CARD) {
+  if (credit_card->record_type() == CreditCard::RecordType::kVirtualCard) {
     DCHECK(!cvc.empty());
 
     VirtualCardManualFallbackBubbleOptions options;
@@ -2036,8 +2036,8 @@ void BrowserAutofillManager::OnCreditCardFetched(CreditCardFetchResult result,
                          cvc,
                          fetched_credit_card_trigger_source_.value_or(
                              AutofillTriggerSource::kCreditCardCvcPopup));
-  if (credit_card->record_type() == CreditCard::FULL_SERVER_CARD ||
-      credit_card->record_type() == CreditCard::VIRTUAL_CARD) {
+  if (credit_card->record_type() == CreditCard::RecordType::kFullServerCard ||
+      credit_card->record_type() == CreditCard::RecordType::kVirtualCard) {
     credit_card_access_manager_->CacheUnmaskedCardInfo(*credit_card, cvc);
   }
 }

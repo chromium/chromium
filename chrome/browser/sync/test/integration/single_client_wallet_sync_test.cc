@@ -758,7 +758,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest,
   std::vector<CreditCard*> cards = pdm->GetCreditCards();
   ASSERT_EQ(1uL, cards.size());
   EXPECT_EQ(u"0001", cards[0]->LastFourDigits());
-  EXPECT_EQ(CreditCard::MASKED_SERVER_CARD, cards[0]->record_type());
+  EXPECT_EQ(CreditCard::RecordType::kMaskedServerCard, cards[0]->record_type());
 
   // Unmask the card (the full card number has to start with "34" to match the
   // type of the masked card which is by default AMEX in the tests).
@@ -777,7 +777,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest,
   cards = pdm->GetCreditCards();
   ASSERT_EQ(1uL, cards.size());
   EXPECT_EQ(u"0001", cards[0]->LastFourDigits());
-  EXPECT_EQ(CreditCard::FULL_SERVER_CARD, cards[0]->record_type());
+  EXPECT_EQ(CreditCard::RecordType::kFullServerCard, cards[0]->record_type());
   EXPECT_EQ("different", pdm->GetPaymentsCustomerData()->customer_id);
 }
 
@@ -867,7 +867,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest,
   ASSERT_NE(nullptr, pdm);
 
   // Add a server credit card on the client.
-  CreditCard credit_card(CreditCard::MASKED_SERVER_CARD, "a123");
+  CreditCard credit_card(CreditCard::RecordType::kMaskedServerCard, "a123");
   std::vector<CreditCard> credit_cards = {credit_card};
   wallet_helper::SetServerCreditCards(0, credit_cards);
 
@@ -950,7 +950,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest,
   wallet_helper::SetServerProfiles(0, client_profiles);
 
   // Add a server credit card on the client.
-  CreditCard credit_card(CreditCard::MASKED_SERVER_CARD, "a123");
+  CreditCard credit_card(CreditCard::RecordType::kMaskedServerCard, "a123");
   std::vector<CreditCard> credit_cards = {credit_card};
   wallet_helper::SetServerCreditCards(0, credit_cards);
 

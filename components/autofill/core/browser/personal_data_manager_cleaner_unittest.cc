@@ -837,14 +837,14 @@ TEST_F(PersonalDataManagerCleanerTest,
   // Create a unmasked server card expired 400 days ago, and last used 400
   // days ago.
   // It is expected to remain because we do not delete server cards.
-  CreditCard credit_card5(CreditCard::FULL_SERVER_CARD, "c789");
+  CreditCard credit_card5(CreditCard::RecordType::kFullServerCard, "c789");
   test::SetCreditCardInfo(&credit_card5, "Emma", "4234567890123456" /* Visa */,
                           "04", "1999", "1");
   credit_card5.set_use_date(now - base::Days(400));
 
   // Create masked server card expired 400 days ago, and last used 400 days ago.
   // It is expected to remain because we do not delete server cards.
-  CreditCard credit_card6(CreditCard::MASKED_SERVER_CARD, "c987");
+  CreditCard credit_card6(CreditCard::RecordType::kMaskedServerCard, "c987");
   test::SetCreditCardInfo(&credit_card6, "Frank", "6543", "01", "1998", "1");
   credit_card6.set_use_date(now - base::Days(400));
   credit_card6.SetNetworkForMaskedCard(kVisaCard);

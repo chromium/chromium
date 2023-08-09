@@ -75,7 +75,7 @@ class AutofillOfferManagerTest : public testing::Test {
                             "1");
     card.set_guid(guid);
     card.set_instrument_id(instrument_id);
-    card.set_record_type(CreditCard::MASKED_SERVER_CARD);
+    card.set_record_type(CreditCard::RecordType::kMaskedServerCard);
 
     personal_data_manager_.AddServerCreditCard(card);
     return card;

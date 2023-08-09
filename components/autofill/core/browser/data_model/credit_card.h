@@ -36,23 +36,23 @@ std::u16string GetObfuscatedStringForCardDigits(const std::u16string& digits,
 // A form group that stores card information.
 class CreditCard : public AutofillDataModel {
  public:
-  enum RecordType {
+  enum class RecordType {
     // A card with a complete number managed by Chrome (and not representing
     // something on the server).
-    LOCAL_CARD,
+    kLocalCard,
 
     // A card from Wallet with masked information. Such cards will only have
     // the last 4 digits of the card number, and require an extra download to
-    // convert to a FULL_SERVER_CARD.
-    MASKED_SERVER_CARD,
+    // convert to a kFullServerCard.
+    kMaskedServerCard,
 
     // A card from the Wallet server with full information store locally. This
     // card is not locally editable.
-    FULL_SERVER_CARD,
+    kFullServerCard,
 
     // A card generated from a server card by the card issuer. This card is not
     // persisted in Chrome.
-    VIRTUAL_CARD,
+    kVirtualCard,
   };
 
   // The Issuer for the card. This must stay in sync with the proto enum in
@@ -95,15 +95,15 @@ class CreditCard : public AutofillDataModel {
   };
 
   // Creates a copy of the passed in credit card, and sets its `record_type` to
-  // `CreditCard::VIRTUAL_CARD`. This is used to differentiate virtual cards
-  // from their real counterpart on the UI layer.
+  // `CreditCard::RecordType::kVirtualCard`. This is used to differentiate
+  // virtual cards from their real counterpart on the UI layer.
   static CreditCard CreateVirtualCard(const CreditCard& card);
 
   // Creates a copy of the passed in credit card, and sets its `record_type` to
-  // `CreditCard::VIRTUAL_CARD`. This is used to differentiate virtual cards
-  // from their real counterpart on the UI layer. In addition, a suffix is added
-  // to the guid which also helps differentiate the virtual card from their real
-  // counterpart.
+  // `CreditCard::RecordType::kVirtualCard`. This is used to differentiate
+  // virtual cards from their real counterpart on the UI layer. In addition, a
+  // suffix is added to the guid which also helps differentiate the virtual card
+  // from their real counterpart.
   static std::unique_ptr<CreditCard> CreateVirtualCardWithGuidSuffix(
       const CreditCard& card);
 
@@ -115,12 +115,12 @@ class CreditCard : public AutofillDataModel {
 
   CreditCard(const std::string& guid, const std::string& origin);
 
-  // Creates a server card. The type must be MASKED_SERVER_CARD or
-  // FULL_SERVER_CARD.
+  // Creates a server card. The type must be RecordType::kMaskedServerCard or
+  // RecordType::kFullServerCard.
   CreditCard(RecordType type, const std::string& server_id);
 
   // Creates a server card with non-legacy instrument id. The type must be
-  // MASKED_SERVER_CARD or FULL_SERVER_CARD.
+  // RecordType::kMaskedServerCard or RecordType::kFullServerCard.
   CreditCard(RecordType type, int64_t instrument_id);
 
   CreditCard();
