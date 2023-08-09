@@ -27,7 +27,7 @@ const CGFloat kAccessorySymbolSize = 22;
   NSLayoutConstraint* _heightConstraint;
 
   // List of password sharing recipients that the user can pick from.
-  NSArray<RecipientInfo*>* _recipients;
+  NSArray<RecipientInfoForIOSDisplay*>* _recipients;
 }
 
 @end

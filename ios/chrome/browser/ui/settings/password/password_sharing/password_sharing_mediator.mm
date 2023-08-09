@@ -13,6 +13,7 @@
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 
 using password_manager::FetchFamilyMembersRequestStatus;
+using password_manager::RecipientInfo;
 
 @interface PasswordSharingMediator () {
   std::unique_ptr<password_manager::RecipientsFetcher> _recipientsFetcher;
@@ -48,15 +49,17 @@ using password_manager::FetchFamilyMembersRequestStatus;
 
 #pragma mark - Private methods
 
-- (void)onFetchFamilyMembers:
-            (std::vector<password_manager::RecipientInfo>)familyMembers
+- (void)onFetchFamilyMembers:(std::vector<RecipientInfo>)familyMembers
                   withStatus:(FetchFamilyMembersRequestStatus)status {
-  NSMutableArray<RecipientInfo*>* recipients = [NSMutableArray array];
-  for (const password_manager::RecipientInfo& familyMember : familyMembers) {
-    [recipients
-        addObject:[[RecipientInfo alloc] initWithRecipientInfo:familyMember]];
+  NSMutableArray<RecipientInfoForIOSDisplay*>* familyMembersForIOSDisplay =
+      [NSMutableArray array];
+  for (const RecipientInfo& familyMember : familyMembers) {
+    [familyMembersForIOSDisplay
+        addObject:[[RecipientInfoForIOSDisplay alloc]
+                      initWithRecipientInfo:familyMember]];
   }
-  [self.delegate onFetchFamilyMembers:recipients withStatus:status];
+  [self.delegate onFetchFamilyMembers:familyMembersForIOSDisplay
+                           withStatus:status];
 }
 
 @end

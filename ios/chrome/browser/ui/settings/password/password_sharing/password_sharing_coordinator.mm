@@ -85,7 +85,8 @@ using password_manager::FetchFamilyMembersRequestStatus;
 
 #pragma mark - PasswordSharingMediatorDelegate
 
-- (void)onFetchFamilyMembers:(NSArray<RecipientInfo*>*)familyMembers
+- (void)onFetchFamilyMembers:
+            (NSArray<RecipientInfoForIOSDisplay*>*)familyMembers
                   withStatus:(const FetchFamilyMembersRequestStatus&)status {
   // TODO(crbug.com/1463882): Add handling multiple credential groups.
   switch (status) {

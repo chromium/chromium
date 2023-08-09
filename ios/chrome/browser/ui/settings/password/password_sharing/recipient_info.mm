@@ -7,7 +7,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/password_manager/core/browser/sharing/recipients_fetcher.h"
 
-@implementation RecipientInfo
+@implementation RecipientInfoForIOSDisplay
 
 - (instancetype)initWithRecipientInfo:
     (const password_manager::RecipientInfo&)recipient {

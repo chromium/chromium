@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_SHARING_PASSWORD_SHARING_MEDIATOR_DELEGATE_H_
 #define IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_SHARING_PASSWORD_SHARING_MEDIATOR_DELEGATE_H_
 
-@class RecipientInfo;
+@class RecipientInfoForIOSDisplay;
 
 namespace password_manager {
 enum class FetchFamilyMembersRequestStatus;
@@ -15,7 +15,8 @@ enum class FetchFamilyMembersRequestStatus;
 @protocol PasswordSharingMediatorDelegate
 
 // Called after the recipients fetcher API returned a result.
-- (void)onFetchFamilyMembers:(NSArray<RecipientInfo*>*)familyMembers
+- (void)onFetchFamilyMembers:
+            (NSArray<RecipientInfoForIOSDisplay*>*)familyMembers
                   withStatus:
                       (const password_manager::FetchFamilyMembersRequestStatus&)
                           status;

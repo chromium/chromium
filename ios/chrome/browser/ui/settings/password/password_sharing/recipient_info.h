@@ -13,7 +13,7 @@ struct RecipientInfo;
 
 // Object which is used by `FamilyPickerViewController` to show information
 // about the potential password sharing recipient of the user.
-@interface RecipientInfo : NSObject
+@interface RecipientInfoForIOSDisplay : NSObject
 
 // Full name of the recipient.
 @property(nonatomic, copy) NSString* fullName;
