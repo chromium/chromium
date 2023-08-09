@@ -102,7 +102,8 @@ public class ExportDeletionDialogFragment extends DialogFragment implements Pass
     }
 
     private void showProgressBar() {
-        NonCancelableProgressBar progressBarDialogFragment = new NonCancelableProgressBar();
+        NonCancelableProgressBar progressBarDialogFragment = new NonCancelableProgressBar(
+                R.string.exported_passwords_deletion_in_progress_title);
         mProgressBarManager.showWithDelay(
                 progressBarDialogFragment, mFragmentManager, PROGRESS_BAR_DELAY_MS);
     }
