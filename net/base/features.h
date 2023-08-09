@@ -318,10 +318,6 @@ NET_EXPORT BASE_DECLARE_FEATURE(kNoncedPartitionedCookies);
 // and '\n' as invalid and reject the cookie.
 NET_EXPORT BASE_DECLARE_FEATURE(kBlockTruncatedCookies);
 
-// When enabled, cookies cannot have an expiry date further than 400 days in the
-// future.
-NET_EXPORT BASE_DECLARE_FEATURE(kClampCookieExpiryTo400Days);
-
 // Controls whether static key pinning is enforced.
 NET_EXPORT BASE_DECLARE_FEATURE(kStaticKeyPinningEnforcement);
 

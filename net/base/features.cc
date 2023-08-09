@@ -263,10 +263,6 @@ BASE_FEATURE(kBlockTruncatedCookies,
              "BlockTruncatedCookies",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kClampCookieExpiryTo400Days,
-             "ClampCookieExpiryTo400Days",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kStaticKeyPinningEnforcement,
              "StaticKeyPinningEnforcement",
              base::FEATURE_ENABLED_BY_DEFAULT);

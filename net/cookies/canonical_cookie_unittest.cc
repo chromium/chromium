@@ -49,28 +49,6 @@ using testing::Eq;
 using testing::Not;
 using testing::Property;
 
-// Tests which use this class verify the expiry date clamping behavior when
-// kClampCookieExpiryTo400Days is enabled. This caps expiry dates on new/updated
-// cookies to max of 400 days, but does not affect previously stored cookies.
-class CanonicalCookieWithClampingTest
-    : public testing::Test,
-      public testing::WithParamInterface<bool> {
- public:
-  CanonicalCookieWithClampingTest() {
-    scoped_feature_list_.InitWithFeatureState(
-        features::kClampCookieExpiryTo400Days,
-        IsClampCookieExpiryTo400DaysEnabled());
-  }
-  bool IsClampCookieExpiryTo400DaysEnabled() { return GetParam(); }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(/* no label */,
-                         CanonicalCookieWithClampingTest,
-                         testing::Bool());
-
 TEST(CanonicalCookieTest, Constructor) {
   base::Time current_time = base::Time::Now();
 
@@ -839,7 +817,7 @@ TEST(CanonicalCookieTest, CreateWithPartitioned_Localhost) {
   EXPECT_EQ(CookieSameSite::UNSPECIFIED, cookie->SameSite());
 }
 
-TEST_P(CanonicalCookieWithClampingTest, CreateWithMaxAge) {
+TEST(CanonicalCookieTest, CreateWithMaxAge) {
   GURL url("http://www.example.com/test/foo.html");
   base::Time creation_time = base::Time::Now();
   absl::optional<base::Time> server_time = absl::nullopt;
@@ -916,11 +894,7 @@ TEST_P(CanonicalCookieWithClampingTest, CreateWithMaxAge) {
   EXPECT_TRUE(cookie.get());
   EXPECT_TRUE(cookie->IsPersistent());
   EXPECT_FALSE(cookie->IsExpired(creation_time));
-  if (IsClampCookieExpiryTo400DaysEnabled()) {
-    EXPECT_EQ(creation_time + base::Days(400), cookie->ExpiryDate());
-  } else {
-    EXPECT_EQ(base::Time::Max(), cookie->ExpiryDate());
-  }
+  EXPECT_EQ(creation_time + base::Days(400), cookie->ExpiryDate());
   EXPECT_TRUE(cookie->IsCanonical());
 
   // Underflow max-age should be clipped.
@@ -938,7 +912,7 @@ TEST_P(CanonicalCookieWithClampingTest, CreateWithMaxAge) {
   EXPECT_TRUE(cookie->IsCanonical());
 }
 
-TEST_P(CanonicalCookieWithClampingTest, CreateWithExpires) {
+TEST(CanonicalCookieTest, CreateWithExpires) {
   GURL url("http://www.example.com/test/foo.html");
   base::Time creation_time = base::Time::Now();
   absl::optional<base::Time> server_time = absl::nullopt;
@@ -975,14 +949,9 @@ TEST_P(CanonicalCookieWithClampingTest, CreateWithExpires) {
   EXPECT_TRUE(cookie.get());
   EXPECT_TRUE(cookie->IsPersistent());
   EXPECT_FALSE(cookie->IsExpired(creation_time));
-  if (IsClampCookieExpiryTo400DaysEnabled()) {
-    EXPECT_TRUE(
-        (cookie->ExpiryDate() - creation_time - base::Days(400)).magnitude() <
-        base::Seconds(1));
-  } else {
-    EXPECT_TRUE((future_date - cookie->ExpiryDate()).magnitude() <
-                base::Seconds(1));
-  }
+  EXPECT_TRUE(
+      (cookie->ExpiryDate() - creation_time - base::Days(400)).magnitude() <
+      base::Seconds(1));
   EXPECT_TRUE(cookie->IsCanonical());
 
   // Expires in the far future using CreateUnsafeCookieForTesting.
@@ -996,11 +965,7 @@ TEST_P(CanonicalCookieWithClampingTest, CreateWithExpires) {
   EXPECT_FALSE(cookie->IsExpired(creation_time));
   EXPECT_EQ(base::Time::Max(), cookie->ExpiryDate());
   EXPECT_EQ(base::Time(), cookie->LastUpdateDate());
-  if (IsClampCookieExpiryTo400DaysEnabled()) {
-    EXPECT_FALSE(cookie->IsCanonical());
-  } else {
-    EXPECT_TRUE(cookie->IsCanonical());
-  }
+  EXPECT_FALSE(cookie->IsCanonical());
 
   // Expires in the far future using FromStorage.
   cookie = CanonicalCookie::FromStorage(
@@ -1014,11 +979,7 @@ TEST_P(CanonicalCookieWithClampingTest, CreateWithExpires) {
   EXPECT_FALSE(cookie->IsExpired(creation_time));
   EXPECT_EQ(base::Time::Max(), cookie->ExpiryDate());
   EXPECT_EQ(base::Time(), cookie->LastUpdateDate());
-  if (IsClampCookieExpiryTo400DaysEnabled()) {
-    EXPECT_FALSE(cookie->IsCanonical());
-  } else {
-    EXPECT_TRUE(cookie->IsCanonical());
-  }
+  EXPECT_FALSE(cookie->IsCanonical());
 }
 
 TEST(CanonicalCookieTest, EmptyExpiry) {
@@ -1055,7 +1016,7 @@ TEST(CanonicalCookieTest, EmptyExpiry) {
   EXPECT_EQ(base::Time(), cookie->ExpiryDate());
 }
 
-TEST_P(CanonicalCookieWithClampingTest, CreateWithLastUpdate) {
+TEST(CanonicalCookieTest, CreateWithLastUpdate) {
   GURL url("http://www.example.com/test/foo.html");
   base::Time creation_time = base::Time::Now() - base::Days(1);
   base::Time last_update_time = base::Time::Now() - base::Hours(1);

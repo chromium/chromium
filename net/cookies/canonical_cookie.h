@@ -396,7 +396,7 @@ class NET_EXPORT CanonicalCookie {
                                     const base::Time& server_time);
 
   // Per rfc6265bis the maximum expiry date is no further than 400 days in the
-  // future. Clamping only occurs when kClampCookieExpiryTo400Days is enabled.
+  // future.
   static base::Time ValidateAndAdjustExpiryDate(
       const base::Time& expiry_date,
       const base::Time& creation_date);

@@ -6533,33 +6533,11 @@ TEST_F(CookieMonsterTest, FilterCookiesWithOptionsWarnShadowingDomains) {
   reset();
 }
 
-// Tests which use this class verify the expiry date clamping behavior when
-// kClampCookieExpiryTo400Days is enabled. This caps expiry dates on new/updated
-// cookies to max of 400 days, but does not affect previously stored cookies.
-class CookieMonsterWithClampingTest : public CookieMonsterTest,
-                                      public testing::WithParamInterface<bool> {
- public:
-  CookieMonsterWithClampingTest() {
-    scoped_feature_list_.InitWithFeatureState(
-        features::kClampCookieExpiryTo400Days,
-        IsClampCookieExpiryTo400DaysEnabled());
-  }
-  bool IsClampCookieExpiryTo400DaysEnabled() { return GetParam(); }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(/* no label */,
-                         CookieMonsterWithClampingTest,
-                         testing::Bool());
-
 // This test sets a cookie (only checked using IsCanonicalForFromStorage)
 // that's 300 days old and expires in 800 days. It checks that this cookie was
 // stored, and then update it. It checks that the updated cookie has the
-// creation and expiry dates expected given whether or not clamping is on.
-TEST_P(CookieMonsterWithClampingTest,
-       FromStorageCookieCreated300DaysAgoThenUpdatedNow) {
+// creation and expiry dates expected.
+TEST_F(CookieMonsterTest, FromStorageCookieCreated300DaysAgoThenUpdatedNow) {
   auto store = base::MakeRefCounted<FlushablePersistentStore>();
   auto cookie_monster =
       std::make_unique<CookieMonster>(store.get(), net::NetLog::Get());
@@ -6592,29 +6570,17 @@ TEST_P(CookieMonsterWithClampingTest,
           CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT, true,
           absl::nullopt),
       https_www_foo_.url(), false));
-
-  if (IsClampCookieExpiryTo400DaysEnabled()) {
-    // The clamped update should retain the original creation date, but have
-    // a clamped expiry date.
-    EXPECT_THAT(
-        GetAllCookies(cookie_monster.get()),
-        ElementsAre(MatchesCookieNameValueCreationExpiry(
-            "A", "B", original_creation, new_creation + base::Days(400))));
-  } else {
-    // The unclamped update should retain the original creation date and have
-    // an unclamped expiry date.
-    EXPECT_THAT(GetAllCookies(cookie_monster.get()),
-                ElementsAre(MatchesCookieNameValueCreationExpiry(
-                    "A", "B", original_creation, new_expiry)));
-  }
+  EXPECT_THAT(
+      GetAllCookies(cookie_monster.get()),
+      ElementsAre(MatchesCookieNameValueCreationExpiry(
+          "A", "B", original_creation, new_creation + base::Days(400))));
 }
 
 // This test sets a cookie (only checked using IsCanonicalForFromStorage)
 // that's 500 days old and expires in 800 days. It checks that this cookie was
 // stored, and then update it. It checks that the updated cookie has the
-// creation and expiry dates expected given whether or not clamping is on.
-TEST_P(CookieMonsterWithClampingTest,
-       FromStorageCookieCreated500DaysAgoThenUpdatedNow) {
+// creation and expiry dates expected.
+TEST_F(CookieMonsterTest, FromStorageCookieCreated500DaysAgoThenUpdatedNow) {
   auto store = base::MakeRefCounted<FlushablePersistentStore>();
   auto cookie_monster =
       std::make_unique<CookieMonster>(store.get(), net::NetLog::Get());
@@ -6647,29 +6613,17 @@ TEST_P(CookieMonsterWithClampingTest,
           CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT, true,
           absl::nullopt),
       https_www_foo_.url(), false));
-
-  if (IsClampCookieExpiryTo400DaysEnabled()) {
-    // The clamped update should retain the original creation date, but have
-    // a clamped expiry date.
-    EXPECT_THAT(
-        GetAllCookies(cookie_monster.get()),
-        ElementsAre(MatchesCookieNameValueCreationExpiry(
-            "A", "B", original_creation, new_creation + base::Days(400))));
-  } else {
-    // The unclamped update should retain the original creation date and have
-    // an unclamped expiry date.
-    EXPECT_THAT(GetAllCookies(cookie_monster.get()),
-                ElementsAre(MatchesCookieNameValueCreationExpiry(
-                    "A", "B", original_creation, new_expiry)));
-  }
+  EXPECT_THAT(
+      GetAllCookies(cookie_monster.get()),
+      ElementsAre(MatchesCookieNameValueCreationExpiry(
+          "A", "B", original_creation, new_creation + base::Days(400))));
 }
 
 // This test sets a cookie (checked using IsCanonical) that's 300 days old and
 // expires in 800 days. It checks that this cookie was stored, and then update
 // it. It checks that the updated cookie has the creation and expiry dates
-// expected given whether or not clamping is on.
-TEST_P(CookieMonsterWithClampingTest,
-       SanitizedCookieCreated300DaysAgoThenUpdatedNow) {
+// expected.
+TEST_F(CookieMonsterTest, SanitizedCookieCreated300DaysAgoThenUpdatedNow) {
   auto store = base::MakeRefCounted<FlushablePersistentStore>();
   auto cookie_monster =
       std::make_unique<CookieMonster>(store.get(), net::NetLog::Get());
@@ -6687,19 +6641,10 @@ TEST_P(CookieMonsterWithClampingTest,
           CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT, true,
           absl::nullopt),
       https_www_foo_.url(), false));
-
-  if (IsClampCookieExpiryTo400DaysEnabled()) {
-    // The clamped set should have a clamped expiry date.
-    EXPECT_THAT(
-        GetAllCookies(cookie_monster.get()),
-        ElementsAre(MatchesCookieNameValueCreationExpiry(
-            "A", "B", original_creation, original_creation + base::Days(400))));
-  } else {
-    // The unclamped set should have an unclamped expiry date.
-    EXPECT_THAT(GetAllCookies(cookie_monster.get()),
-                ElementsAre(MatchesCookieNameValueCreationExpiry(
-                    "A", "B", original_creation, original_expiry)));
-  }
+  EXPECT_THAT(
+      GetAllCookies(cookie_monster.get()),
+      ElementsAre(MatchesCookieNameValueCreationExpiry(
+          "A", "B", original_creation, original_creation + base::Days(400))));
 
   // Update the cookie without bypassing clamping.
   base::Time new_creation = base::Time::Now();
@@ -6712,29 +6657,17 @@ TEST_P(CookieMonsterWithClampingTest,
           CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT, true,
           absl::nullopt),
       https_www_foo_.url(), false));
-
-  if (IsClampCookieExpiryTo400DaysEnabled()) {
-    // The clamped update should retain the original creation date, but have
-    // a clamped expiry date.
-    EXPECT_THAT(
-        GetAllCookies(cookie_monster.get()),
-        ElementsAre(MatchesCookieNameValueCreationExpiry(
-            "A", "B", original_creation, new_creation + base::Days(400))));
-  } else {
-    // The unclamped update should retain the original creation date and have
-    // an unclamped expiry date.
-    EXPECT_THAT(GetAllCookies(cookie_monster.get()),
-                ElementsAre(MatchesCookieNameValueCreationExpiry(
-                    "A", "B", original_creation, new_expiry)));
-  }
+  EXPECT_THAT(
+      GetAllCookies(cookie_monster.get()),
+      ElementsAre(MatchesCookieNameValueCreationExpiry(
+          "A", "B", original_creation, new_creation + base::Days(400))));
 }
 
 // This test sets a cookie (checked using IsCanonical) that's 500 days old and
 // expires in 800 days. It checks that this cookie was stored, and then update
 // it. It checks that the updated cookie has the creation and expiry dates
-// expected given whether or not clamping is on.
-TEST_P(CookieMonsterWithClampingTest,
-       SanitizedCookieCreated500DaysAgoThenUpdatedNow) {
+// expected.
+TEST_F(CookieMonsterTest, SanitizedCookieCreated500DaysAgoThenUpdatedNow) {
   auto store = base::MakeRefCounted<FlushablePersistentStore>();
   auto cookie_monster =
       std::make_unique<CookieMonster>(store.get(), net::NetLog::Get());
@@ -6752,16 +6685,7 @@ TEST_P(CookieMonsterWithClampingTest,
           CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT, true,
           absl::nullopt),
       https_www_foo_.url(), false));
-
-  if (IsClampCookieExpiryTo400DaysEnabled()) {
-    // The clamped set should result in no stored cookie.
-    EXPECT_TRUE(GetAllCookies(cookie_monster.get()).empty());
-  } else {
-    // The unclamped set should have an unclamped expiry date.
-    EXPECT_THAT(GetAllCookies(cookie_monster.get()),
-                ElementsAre(MatchesCookieNameValueCreationExpiry(
-                    "A", "B", original_creation, original_expiry)));
-  }
+  EXPECT_TRUE(GetAllCookies(cookie_monster.get()).empty());
 
   // Update the cookie without bypassing clamping.
   base::Time new_creation = base::Time::Now();
@@ -6774,21 +6698,9 @@ TEST_P(CookieMonsterWithClampingTest,
           CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT, true,
           absl::nullopt),
       https_www_foo_.url(), false));
-
-  // The clamped one has the new creation date as the old cookie was expired.
-  if (IsClampCookieExpiryTo400DaysEnabled()) {
-    // The clamped update was really a set as the old cookie expired, so it has
-    // the new creation date and a clamped expiry date.
-    EXPECT_THAT(GetAllCookies(cookie_monster.get()),
-                ElementsAre(MatchesCookieNameValueCreationExpiry(
-                    "A", "B", new_creation, new_creation + base::Days(400))));
-  } else {
-    // The unclamped update should retain the original creation date and have
-    // an unclamped expiry date.
-    EXPECT_THAT(GetAllCookies(cookie_monster.get()),
-                ElementsAre(MatchesCookieNameValueCreationExpiry(
-                    "A", "B", original_creation, new_expiry)));
-  }
+  EXPECT_THAT(GetAllCookies(cookie_monster.get()),
+              ElementsAre(MatchesCookieNameValueCreationExpiry(
+                  "A", "B", new_creation, new_creation + base::Days(400))));
 }
 
 }  // namespace net
