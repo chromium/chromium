@@ -8,8 +8,6 @@
 
 #include "base/functional/bind.h"
 #include "net/base/net_errors.h"
-#include "net/http/http_network_session.h"
-#include "net/http/http_transaction_factory.h"
 #include "net/log/net_log_with_source.h"
 #include "net/proxy_resolution/configured_proxy_resolution_service.h"
 #include "net/proxy_resolution/proxy_resolution_request.h"
