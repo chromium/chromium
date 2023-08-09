@@ -13,33 +13,33 @@ namespace WTF {
 template<typename T> class RefCounted { };
 
 template<typename T> class RawPtr {
-public:
-    operator T*() const { return 0; }
-    T* operator->() const { return 0; }
+ public:
+  operator T*() const { return 0; }
+  T* operator->() const { return 0; }
 };
 
 template<typename T> class scoped_refptr {
-public:
-    ~scoped_refptr() { }
-    operator T*() const { return 0; }
-    T* operator->() const { return 0; }
+ public:
+  ~scoped_refptr() {}
+  operator T*() const { return 0; }
+  T* operator->() const { return 0; }
 };
 
 template<typename T> class WeakPtr {
-public:
-    ~WeakPtr() { }
-    operator T*() const { return 0; }
-    T* operator->() const { return 0; }
+ public:
+  ~WeakPtr() {}
+  operator T*() const { return 0; }
+  T* operator->() const { return 0; }
 };
 
-class DefaultAllocator {
-public:
-    static const bool isGarbageCollected = false;
+class PartitionAllocator {
+ public:
+  static const bool isGarbageCollected = false;
 };
 
 template <typename T,
           size_t inlineCapacity = 0,
-          typename Allocator = DefaultAllocator>
+          typename Allocator = PartitionAllocator>
 class Vector {
  public:
   using iterator = T*;
@@ -55,7 +55,7 @@ class Vector {
 
 template <typename T,
           size_t inlineCapacity = 0,
-          typename Allocator = DefaultAllocator>
+          typename Allocator = PartitionAllocator>
 class Deque {
  public:
   using iterator = T*;
@@ -67,9 +67,8 @@ class Deque {
 };
 
 template <typename ValueArg,
-          typename HashArg = void,
           typename TraitsArg = void,
-          typename Allocator = DefaultAllocator>
+          typename Allocator = PartitionAllocator>
 class HashSet {
  public:
   typedef ValueArg* iterator;
@@ -82,7 +81,7 @@ class HashSet {
 
 template <typename ValueArg,
           typename TraitsArg = void,
-          typename Allocator = DefaultAllocator>
+          typename Allocator = PartitionAllocator>
 class LinkedHashSet {
  public:
   typedef ValueArg* iterator;
@@ -94,9 +93,8 @@ class LinkedHashSet {
 };
 
 template <typename ValueArg,
-          typename HashArg = void,
           typename TraitsArg = void,
-          typename Allocator = DefaultAllocator>
+          typename Allocator = PartitionAllocator>
 class HashCountedSet {
  public:
   ~HashCountedSet() {}
@@ -104,10 +102,9 @@ class HashCountedSet {
 
 template <typename KeyArg,
           typename MappedArg,
-          typename HashArg = void,
           typename KeyTraitsArg = void,
           typename MappedTraitsArg = void,
-          typename Allocator = DefaultAllocator>
+          typename Allocator = PartitionAllocator>
 class HashMap {
  public:
   typedef MappedArg* iterator;
@@ -128,10 +125,10 @@ namespace std {
 namespace std {
 
 template<typename T> class unique_ptr {
-public:
-    ~unique_ptr() { }
-    operator T*() const { return 0; }
-    T* operator->() const { return 0; }
+ public:
+  ~unique_ptr() {}
+  operator T*() const { return 0; }
+  T* operator->() const { return 0; }
 };
 
 template <typename T, typename... Args>
@@ -141,10 +138,18 @@ unique_ptr<T> make_unique(Args&&... args) {
 
 template <typename Key>
 class set {};
+template <typename Key>
+class unordered_set {};
 template <typename Key, typename Value>
 class map {};
+template <typename Key, typename Value>
+class unordered_map {};
 template <typename Elem>
 class vector {};
+template <typename Elem, size_t N>
+class array {};
+template <typename T1, typename T2>
+class pair {};
 
 }  // namespace std
 
@@ -180,12 +185,14 @@ class Visitor {
 
 namespace internal {
 class WriteBarrierPolicyImpl;
+class NoWriteBarrierPolicyImpl;
 class CheckingPolicyImpl;
 class StorateTypeImpl;
 class LocationPolicyImpl;
 
 class StrongMemberTag;
 class WeakMemberTag;
+class UntracedMemberTag;
 
 template <typename StorageType>
 class MemberBase {};
@@ -272,6 +279,13 @@ using WeakMember = internal::BasicMember<T,
                                          internal::StorateTypeImpl>;
 
 template <typename T>
+using UntracedMember = internal::BasicMember<T,
+                                             internal::UntracedMemberTag,
+                                             internal::NoWriteBarrierPolicyImpl,
+                                             internal::CheckingPolicyImpl,
+                                             internal::StorateTypeImpl>;
+
+template <typename T>
 using Persistent = internal::BasicPersistent<T,
                                              internal::StrongPersistentPolicy,
                                              internal::LocationPolicyImpl,
@@ -318,6 +332,8 @@ template <typename T>
 using Member = cppgc::Member<T>;
 template <typename T>
 using WeakMember = cppgc::WeakMember<T>;
+template <typename T>
+using UntracedMember = cppgc::UntracedMember<T>;
 template <typename T>
 using Persistent = cppgc::Persistent<T>;
 template <typename T>
@@ -373,7 +389,7 @@ class HeapDeque : public GarbageCollected<HeapDeque<T, inlineCapacity>>,
 
 template <typename T>
 class HeapHashSet : public GarbageCollected<HeapHashSet<T>>,
-                    public HashSet<T, void, void, HeapAllocator> {};
+                    public HashSet<T, void, HeapAllocator> {};
 
 template <typename T>
 class HeapLinkedHashSet : public GarbageCollected<HeapLinkedHashSet<T>>,
@@ -381,12 +397,11 @@ class HeapLinkedHashSet : public GarbageCollected<HeapLinkedHashSet<T>>,
 
 template <typename T>
 class HeapHashCountedSet : public GarbageCollected<HeapHashCountedSet<T>>,
-                           public HashCountedSet<T, void, void, HeapAllocator> {
-};
+                           public HashCountedSet<T, void, HeapAllocator> {};
 
 template <typename K, typename V>
 class HeapHashMap : public GarbageCollected<HeapHashMap<K, V>>,
-                    public HashMap<K, V, void, void, void, HeapAllocator> {};
+                    public HashMap<K, V, void, void, HeapAllocator> {};
 
 template<typename T>
 struct TraceIfNeeded {

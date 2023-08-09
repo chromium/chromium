@@ -143,7 +143,7 @@ void BlinkGCPluginConsumer::HandleTranslationUnit(ASTContext& context) {
     json_ = 0;
   }
 
-  FindBadPatterns(context, reporter_, options_);
+  FindBadPatterns(context, reporter_, cache_, options_);
 }
 
 void BlinkGCPluginConsumer::ParseFunctionTemplates(TranslationUnitDecl* decl) {

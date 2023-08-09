@@ -11,6 +11,7 @@ namespace {
 void FreeMethod() {
   Member<HeapObject> strong;
   WeakMember<HeapObject> weak;
+  UntracedMember<HeapObject> untraced;
   Member<HeapObject>* ptr;
   Member<HeapObject>& ref = strong;
 }

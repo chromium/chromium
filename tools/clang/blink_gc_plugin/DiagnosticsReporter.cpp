@@ -200,7 +200,16 @@ const char kOptionalNewExprUsedWithGC[] =
 
 const char kVariantUsedWithGC[] =
     "[blink-gc] Disallowed construction of %0 found; %1 is a garbage-collected "
-    "type. absl::variant cannot hold garbage-collected objects.";
+    "type. Variant cannot hold garbage-collected objects.";
+
+const char kCollectionOfGced[] =
+    "[blink-gc] Disallowed collection %0 found; %1 is a "
+    "garbage-collected "
+    "type. Use heap collections to hold garbage-collected objects.";
+
+const char kCollectionOfMembers[] =
+    "[blink-gc] Disallowed collection %0 found; %1 is a "
+    "Member type. Use heap collections to hold Members.";
 
 } // namespace
 
@@ -328,6 +337,10 @@ DiagnosticsReporter::DiagnosticsReporter(
       diagnostic_.getCustomDiagID(getErrorLevel(), kOptionalNewExprUsedWithGC);
   diag_variant_used_with_gc_ =
       diagnostic_.getCustomDiagID(getErrorLevel(), kVariantUsedWithGC);
+  diag_collection_of_gced_ =
+      diagnostic_.getCustomDiagID(getErrorLevel(), kCollectionOfGced);
+  diag_collection_of_members_ =
+      diagnostic_.getCustomDiagID(getErrorLevel(), kCollectionOfMembers);
 }
 
 bool DiagnosticsReporter::hasErrorOccurred() const
@@ -705,6 +718,38 @@ void DiagnosticsReporter::VariantUsedWithGC(
     const clang::CXXRecordDecl* gc_type) {
   ReportDiagnostic(expr->getBeginLoc(), diag_variant_used_with_gc_)
       << variant << gc_type << expr->getSourceRange();
+}
+
+void DiagnosticsReporter::CollectionOfGCed(
+    const clang::Decl* decl,
+    const clang::CXXRecordDecl* collection,
+    const clang::CXXRecordDecl* gc_type) {
+  ReportDiagnostic(decl->getBeginLoc(), diag_collection_of_gced_)
+      << collection << gc_type << decl->getSourceRange();
+}
+
+void DiagnosticsReporter::CollectionOfGCed(
+    const clang::Expr* expr,
+    const clang::CXXRecordDecl* collection,
+    const clang::CXXRecordDecl* gc_type) {
+  ReportDiagnostic(expr->getBeginLoc(), diag_collection_of_gced_)
+      << collection << gc_type << expr->getSourceRange();
+}
+
+void DiagnosticsReporter::CollectionOfMembers(
+    const clang::Decl* decl,
+    const clang::CXXRecordDecl* collection,
+    const clang::CXXRecordDecl* member) {
+  ReportDiagnostic(decl->getBeginLoc(), diag_collection_of_members_)
+      << collection << member << decl->getSourceRange();
+}
+
+void DiagnosticsReporter::CollectionOfMembers(
+    const clang::Expr* expr,
+    const clang::CXXRecordDecl* collection,
+    const clang::CXXRecordDecl* member) {
+  ReportDiagnostic(expr->getBeginLoc(), diag_collection_of_members_)
+      << collection << member << expr->getSourceRange();
 }
 
 void DiagnosticsReporter::MemberOnStack(const clang::VarDecl* var) {

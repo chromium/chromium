@@ -8,6 +8,7 @@
 #include "BlinkGCPluginOptions.h"
 #include "Config.h"
 #include "DiagnosticsReporter.h"
+#include "RecordInfo.h"
 
 #include <algorithm>
 #include "clang/AST/ASTContext.h"
@@ -28,9 +29,18 @@ TypeMatcher GarbageCollectedType() {
                hasCanonicalType(arrayType(hasElementType(has_gc_base))));
 }
 
-auto MemberType() {
-  return hasType(hasCanonicalType(hasDeclaration(cxxRecordDecl(
-      isSameOrDerivedFrom(hasName("::cppgc::internal::BasicMember"))))));
+TypeMatcher MemberType() {
+  auto has_member_base = hasCanonicalType(hasDeclaration(
+      classTemplateSpecializationDecl(
+          hasName("::cppgc::internal::BasicMember"),
+          hasAnyTemplateArgument(
+              refersToType(hasCanonicalType(hasDeclaration(anyOf(
+                  cxxRecordDecl(hasName("::cppgc::internal::StrongMemberTag")),
+                  cxxRecordDecl(
+                      hasName("::cppgc::internal::WeakMemberTag"))))))))
+          .bind("member")));
+  return anyOf(has_member_base,
+               hasCanonicalType(arrayType(hasElementType(has_member_base))));
 }
 
 class UniquePtrGarbageCollectedMatcher : public MatchFinder::MatchCallback {
@@ -73,9 +83,11 @@ class OptionalGarbageCollectedMatcher : public MatchFinder::MatchCallback {
     // template argument is known to refer to a garbage-collected type.
     auto optional_type = hasType(
         classTemplateSpecializationDecl(
-            hasName("::absl::optional"),
+            hasAnyName("::absl::optional", "::std::optional"),
             hasTemplateArgument(0, refersToType(GarbageCollectedType())))
             .bind("optional"));
+    // Only check fields. Optional variables on stack will be found by
+    // conservative stack scanning.
     auto optional_field = fieldDecl(optional_type).bind("bad_field");
     auto optional_new_expression =
         cxxNewExpr(has(cxxConstructExpr(optional_type))).bind("bad_new");
@@ -97,6 +109,115 @@ class OptionalGarbageCollectedMatcher : public MatchFinder::MatchCallback {
 
  private:
   DiagnosticsReporter& diagnostics_;
+};
+
+bool IsArrayOnStack(const clang::CXXRecordDecl* collection,
+                    const clang::Decl* decl,
+                    RecordCache& record_cache) {
+  if (collection->getNameAsString() != "array") {
+    return false;
+  }
+  if (dyn_cast<const clang::VarDecl>(decl)) {
+    return true;
+  }
+  const clang::FieldDecl* field_decl = dyn_cast<const clang::FieldDecl>(decl);
+  assert(field_decl);
+  const clang::CXXRecordDecl* parent_decl =
+      dyn_cast<const clang::CXXRecordDecl>(field_decl->getParent());
+  assert(parent_decl);
+  return record_cache.Lookup(parent_decl)->IsStackAllocated();
+}
+
+class CollectionOfGarbageCollectedMatcher : public MatchFinder::MatchCallback {
+ public:
+  explicit CollectionOfGarbageCollectedMatcher(DiagnosticsReporter& diagnostics,
+                                               RecordCache& record_cache)
+      : diagnostics_(diagnostics), record_cache_(record_cache) {}
+
+  void Register(MatchFinder& match_finder) {
+    auto gced_ptr_or_ref = anyOf(
+        GarbageCollectedType(), pointerType(pointee(GarbageCollectedType())),
+        referenceType(pointee(GarbageCollectedType())));
+    auto gced_ptr_ref_or_pair =
+        anyOf(gced_ptr_or_ref,
+              hasCanonicalType(hasDeclaration((classTemplateSpecializationDecl(
+                  hasName("::std::pair"),
+                  hasAnyTemplateArgument(refersToType(gced_ptr_or_ref)))))));
+    auto member_ptr_or_ref =
+        anyOf(MemberType(), pointerType(pointee(MemberType())),
+              referenceType(pointee(MemberType())));
+    auto member_ptr_ref_or_pair =
+        anyOf(member_ptr_or_ref,
+              hasCanonicalType(hasDeclaration((classTemplateSpecializationDecl(
+                  hasName("::std::pair"),
+                  hasAnyTemplateArgument(refersToType(member_ptr_or_ref)))))));
+    auto gced_or_member = anyOf(gced_ptr_ref_or_pair, member_ptr_ref_or_pair);
+    auto has_wtf_collection_name = hasAnyName(
+        "::WTF::Vector", "::WTF::Deque", "::WTF::HashSet",
+        "::WTF::LinkedHashSet", "::WTF::HashCountedSet", "::WTF::HashMap");
+    auto has_std_collection_name =
+        hasAnyName("::std::vector", "::std::map", "::std::unordered_map",
+                   "::std::set", "::std::unordered_set", "::std::array");
+    auto partition_allocator = hasCanonicalType(
+        hasDeclaration(cxxRecordDecl(hasName("::WTF::PartitionAllocator"))));
+    auto wtf_collection_decl =
+        classTemplateSpecializationDecl(
+            has_wtf_collection_name,
+            hasAnyTemplateArgument(refersToType(gced_or_member)),
+            hasAnyTemplateArgument(refersToType(partition_allocator)))
+            .bind("collection");
+    auto std_collection_decl =
+        classTemplateSpecializationDecl(
+            has_std_collection_name,
+            hasAnyTemplateArgument(refersToType(gced_or_member)))
+            .bind("collection");
+    auto any_collection = hasType(hasCanonicalType(
+        hasDeclaration(anyOf(wtf_collection_decl, std_collection_decl))));
+    auto collection_field = fieldDecl(any_collection).bind("bad_decl");
+    auto collection_var = varDecl(any_collection).bind("bad_decl");
+    auto collection_new_expression =
+        cxxNewExpr(has(cxxConstructExpr(any_collection))).bind("bad_new");
+    match_finder.addDynamicMatcher(collection_field, this);
+    match_finder.addDynamicMatcher(collection_var, this);
+    match_finder.addDynamicMatcher(collection_new_expression, this);
+  }
+
+  void run(const MatchFinder::MatchResult& result) override {
+    auto* collection =
+        result.Nodes.getNodeAs<clang::CXXRecordDecl>("collection");
+    auto* gc_type = result.Nodes.getNodeAs<clang::CXXRecordDecl>("gctype");
+    auto* member = result.Nodes.getNodeAs<clang::CXXRecordDecl>("member");
+    assert(gc_type || member);
+    if (auto* bad_decl = result.Nodes.getNodeAs<clang::Decl>("bad_decl")) {
+      if (Config::IsIgnoreAnnotated(bad_decl)) {
+        return;
+      }
+      if (IsArrayOnStack(collection, bad_decl, record_cache_)) {
+        // std::array on stack is allowed since all references would be found by
+        // conservative stack scanning.
+        return;
+      }
+      if (gc_type) {
+        diagnostics_.CollectionOfGCed(bad_decl, collection, gc_type);
+      } else {
+        assert(member);
+        diagnostics_.CollectionOfMembers(bad_decl, collection, member);
+      }
+    } else {
+      auto* bad_new = result.Nodes.getNodeAs<clang::Expr>("bad_new");
+      assert(bad_new);
+      if (gc_type) {
+        diagnostics_.CollectionOfGCed(bad_new, collection, gc_type);
+      } else {
+        assert(member);
+        diagnostics_.CollectionOfMembers(bad_new, collection, member);
+      }
+    }
+  }
+
+ private:
+  DiagnosticsReporter& diagnostics_;
+  RecordCache& record_cache_;
 };
 
 // For the absl::variant checker, we need to match the inside of a variadic
@@ -140,7 +261,7 @@ class VariantGarbageCollectedMatcher : public MatchFinder::MatchCallback {
         cxxConstructExpr(
             hasDeclaration(cxxConstructorDecl(
                 ofClass(classTemplateSpecializationDecl(
-                            hasName("::absl::variant"),
+                            hasAnyName("::absl::variant", "::std::variant"),
                             hasAnyTemplateArgument(parameterPackHasAnyElement(
                                 refersToType(GarbageCollectedType()))))
                             .bind("variant")))))
@@ -165,12 +286,13 @@ class MemberOnStackMatcher : public MatchFinder::MatchCallback {
       : diagnostics_(diagnostics) {}
 
   void Register(MatchFinder& match_finder) {
-    auto class_member_variable_matcher = varDecl(MemberType()).bind("member");
+    auto class_member_variable_matcher =
+        varDecl(hasType(MemberType())).bind("var");
     match_finder.addDynamicMatcher(class_member_variable_matcher, this);
   }
 
   void run(const MatchFinder::MatchResult& result) override {
-    auto* member = result.Nodes.getNodeAs<clang::VarDecl>("member");
+    auto* member = result.Nodes.getNodeAs<clang::VarDecl>("var");
     if (Config::IsIgnoreAnnotated(member))
       return;
     diagnostics_.MemberOnStack(member);
@@ -243,7 +365,7 @@ class PaddingInGCedMatcher : public MatchFinder::MatchCallback {
 
   void Register(MatchFinder& match_finder) {
     auto member_field_matcher =
-        cxxRecordDecl(has(fieldDecl(MemberType()).bind("member")),
+        cxxRecordDecl(has(fieldDecl(hasType(MemberType())).bind("field")),
                       isDisallowedNewClass())
             .bind("record");
     match_finder.addMatcher(member_field_matcher, this);
@@ -254,9 +376,10 @@ class PaddingInGCedMatcher : public MatchFinder::MatchCallback {
     if (class_decl->isDependentType() || class_decl->isUnion())
       return;
 
-    if (auto* member_decl = result.Nodes.getNodeAs<clang::FieldDecl>("member");
-        member_decl && Config::IsIgnoreAnnotated(member_decl))
+    if (auto* member_decl = result.Nodes.getNodeAs<clang::FieldDecl>("field");
+        member_decl && Config::IsIgnoreAnnotated(member_decl)) {
       return;
+    }
 
     if (auto* cxx_record_decl =
             clang::dyn_cast<clang::CXXRecordDecl>(class_decl)) {
@@ -312,10 +435,19 @@ class PaddingInGCedMatcher : public MatchFinder::MatchCallback {
   DiagnosticsReporter& diagnostics_;
 };
 
+bool IsInPdfiumFolder(const clang::ASTContext& ast_context) {
+  const clang::SourceManager& source_manager = ast_context.getSourceManager();
+  clang::StringRef filename =
+      source_manager.getFileEntryForID(source_manager.getMainFileID())
+          ->getName();
+  return filename.contains("/pdfium/");
+}
+
 }  // namespace
 
 void FindBadPatterns(clang::ASTContext& ast_context,
                      DiagnosticsReporter& diagnostics,
+                     RecordCache& record_cache,
                      const BlinkGCPluginOptions& options) {
   MatchFinder match_finder;
 
@@ -324,6 +456,14 @@ void FindBadPatterns(clang::ASTContext& ast_context,
 
   OptionalGarbageCollectedMatcher optional_gc(diagnostics);
   optional_gc.Register(match_finder);
+
+  CollectionOfGarbageCollectedMatcher collection_of_gc(diagnostics,
+                                                       record_cache);
+  if (options.enable_off_heap_collections_of_gced_check &&
+      (options.enable_off_heap_collections_of_gced_check_pdfium ||
+       !IsInPdfiumFolder(ast_context))) {
+    collection_of_gc.Register(match_finder);
+  }
 
   VariantGarbageCollectedMatcher variant_gc(diagnostics);
   variant_gc.Register(match_finder);
