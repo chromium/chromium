@@ -1464,16 +1464,10 @@
     "platforms": ["Linux", "Mac", "Win"],
     "owners": ["behamilton@google.com", "caraitto@chromium.org", "pauljensen@chromium.org", "mmenke@chromium.org", "morlovich@chromium.org", "qingxinwu@google.com"],
     "bases": [
-      "external/wpt/fledge/tentative/round-a-value.https.sub.window.js",
-      "http/tests/inspector-protocol/target/auto-attach-auction-worklet.js",
-      "http/tests/inspector-protocol/target/target-auction-worklet.js",
-      "http/tests/inspector-protocol/timeline/auction-worklet.js",
-      "http/tests/inspector-protocol/timeline/auction-worklet-network.js",
-      "http/tests/inspector-protocol/timeline/auction-worklet-frame.js",
-      "http/tests/inspector-protocol/storage/interest-groups.js"
+      "external/wpt/fledge/tentative/round-a-value.https.sub.window.js"
     ],
     "args": [
-      "--enable-features=InterestGroupStorage,AdInterestGroupAPI,Fledge,FledgeBiddingAndAuctionServer,PrivacySandboxAdsAPIsOverride,FencedFrames:implementation_type/mparch,FencedFramesAPIChanges,FencedFramesDefaultMode,FledgeRounding:fledge_bid_reporting_bits/8/fledge_score_reporting_bits/8/fledge_ad_cost_reporting_bits/8"
+      "--enable-features=InterestGroupStorage,PrivacySandboxAdsAPIsOverride,FencedFrames:implementation_type/mparch,FledgeRounding:fledge_bid_reporting_bits/8/fledge_score_reporting_bits/8/fledge_ad_cost_reporting_bits/8"
     ],
     "expires": "Dec 1, 2023"
   },
