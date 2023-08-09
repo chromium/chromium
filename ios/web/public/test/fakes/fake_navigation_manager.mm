@@ -7,18 +7,9 @@
 
 namespace web {
 
-FakeNavigationManager::FakeNavigationManager()
-    : items_index_(-1),
-      pending_item_(nullptr),
-      pending_item_index_(-1),
-      last_committed_item_(nullptr),
-      visible_item_(nullptr),
-      browser_state_(nullptr),
-      load_url_with_params_was_called_(false),
-      load_if_necessary_was_called_(false),
-      reload_was_called_(false) {}
+FakeNavigationManager::FakeNavigationManager() = default;
 
-FakeNavigationManager::~FakeNavigationManager() {}
+FakeNavigationManager::~FakeNavigationManager() = default;
 
 BrowserState* FakeNavigationManager::GetBrowserState() const {
   return browser_state_;
@@ -167,7 +158,7 @@ void FakeNavigationManager::Restore(
 }
 
 bool FakeNavigationManager::IsRestoreSessionInProgress() const {
-  return false;
+  return restore_session_in_progress_;
 }
 
 void FakeNavigationManager::AddRestoreCompletionCallback(
@@ -187,6 +178,10 @@ void FakeNavigationManager::AddItem(const GURL& url,
 
 void FakeNavigationManager::SetBrowserState(web::BrowserState* browser_state) {
   browser_state_ = browser_state;
+}
+
+void FakeNavigationManager::SetIsRestoreSessionInProgress(bool in_progress) {
+  restore_session_in_progress_ = in_progress;
 }
 
 bool FakeNavigationManager::LoadURLWithParamsWasCalled() {
