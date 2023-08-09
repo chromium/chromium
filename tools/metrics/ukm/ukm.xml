@@ -12253,12 +12253,12 @@ be describing additional metrics about the same event.
   <owner>huitingyu@google.com</owner>
   <summary>
     Logged when the current page has a valid parcel tracking number in the HTML
-    of the initial page load. As a privacy measure, 80% of logs when a parcel is
-    detected are randomized.
+    of the initial page load.
   </summary>
   <metric name="ParcelCarrier" enum="IOSParcelCarrier">
     <summary>
-      The parcel carrier for the parcel number detected.
+      The parcel carrier for the parcel number detected. As a privacy measure,
+      80% of the time when the event occurs, a random enum value is assigned.
     </summary>
     <aggregation>
       <history>
