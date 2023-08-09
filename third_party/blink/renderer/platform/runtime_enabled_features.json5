@@ -3533,12 +3533,6 @@
       base_feature: "none",
     },
     {
-      name: "ThirdPartyCookiesUserBypass",
-      status: "experimental",
-      base_feature: "none",
-      browser_process_read_write_access: true,
-    },
-    {
       // Support for the timeline-scope property.
       //
       // https://drafts.csswg.org/scroll-animations-1/#timeline-scope

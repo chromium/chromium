@@ -15,19 +15,16 @@ namespace net {
 enum class CookieSettingOverride {
   kMinValue = 0,
 
-  // When specified, the user has indicated to force allowing third-party
-  // cookies.
-  kForceThirdPartyByUser = kMinValue,
   // When specified, third-party cookies may be allowed based on existence of
   // TopLevelStorageAccess grants.
-  kTopLevelStorageAccessGrantEligible = 1,
+  kTopLevelStorageAccessGrantEligible = kMinValue,
   // When present, the caller may use an existing Storage Access API grant (if
   // a matching grant exists) to access third-party cookies. Otherwise, Storage
   // Access API grants do not apply.
-  kStorageAccessGrantEligible = 2,
+  kStorageAccessGrantEligible = 1,
   // When present, 3PCD support settings (ContentSettingsType::TPCD_SUPPORT)
   // will be respected.
-  k3pcdSupport = 3,
+  k3pcdSupport = 2,
   kMaxValue = k3pcdSupport,
 };
 

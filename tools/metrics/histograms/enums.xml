@@ -101785,7 +101785,8 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="1" label="Storage access allowed"/>
   <int value="2" label="Access grant used to allow access"/>
   <int value="3"
-      label="Storage access allowed by force-allowed third-party-cookies"/>
+      label="Storage access allowed by force-allowed third-party-cookies
+             (deprecated)"/>
   <int value="4"
       label="Storage access allowed by the top-level version of the API"/>
   <int value="5" label="Storage access allowed by 3PCD setting"/>
