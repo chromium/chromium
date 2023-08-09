@@ -25,6 +25,7 @@
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
+#include "base/trace_event/trace_event.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
@@ -239,7 +240,12 @@ class SystemTrayClientImpl::EnterpriseAccountObserver
   }
 
   // session_manager::SessionManagerObserver:
-  void OnSessionStateChanged() override { UpdateProfile(); }
+  void OnSessionStateChanged() override {
+    TRACE_EVENT0("ui",
+                 "SystemTrayClientImpl::EnterpriseAccountObserver::"
+                 "OnSessionStateChanged");
+    UpdateProfile();
+  }
 
   // policy::CloudPolicyStore::Observer
   void OnStoreLoaded(policy::CloudPolicyStore* store) override {

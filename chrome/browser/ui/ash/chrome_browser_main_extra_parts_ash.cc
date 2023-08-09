@@ -17,6 +17,7 @@
 #include "ash/system/video_conference/video_conference_tray_controller.h"
 #include "base/command_line.h"
 #include "base/scoped_observation.h"
+#include "base/trace_event/trace_event.h"
 #include "chrome/browser/ash/app_list/app_list_client_impl.h"
 #include "chrome/browser/ash/arc/util/arc_window_watcher.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
@@ -119,6 +120,8 @@ class ChromeShelfControllerInitializer
 
   // session_manager::SessionManagerObserver:
   void OnSessionStateChanged() override {
+    TRACE_EVENT0("ui",
+                 "ChromeShelfControllerInitializer::OnSessionStateChanged");
     DCHECK(!chrome_shelf_controller_);
     DCHECK(!ChromeShelfController::instance());
 

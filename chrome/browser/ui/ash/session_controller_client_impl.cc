@@ -16,6 +16,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
@@ -503,6 +504,7 @@ void SessionControllerClientImpl::DoCycleActiveUser(
 }
 
 void SessionControllerClientImpl::OnSessionStateChanged() {
+  TRACE_EVENT0("ui", "SessionControllerClientImpl::OnSessionStateChanged");
   if (SessionManager::Get()->session_state() == SessionState::ACTIVE) {
     // The active user should not be pending when the session becomes active.
     DCHECK(pending_users_.find(

@@ -233,6 +233,7 @@ void AppAccessNotifier::OnAppCapabilityAccessCacheWillBeDestroyed(
 //
 
 void AppAccessNotifier::OnSessionStateChanged() {
+  TRACE_EVENT0("ui", "AppAccessNotifier::OnSessionStateChanged");
   session_manager::SessionState state =
       session_manager::SessionManager::Get()->session_state();
   if (state == session_manager::SessionState::ACTIVE) {
