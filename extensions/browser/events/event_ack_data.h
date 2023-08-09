@@ -52,6 +52,20 @@ class EventAckData {
  private:
   // Information about an unacked event.
   struct EventInfo {
+    EventInfo(const base::Uuid& request_uuid,
+              int render_process_id,
+              bool start_ok,
+              base::TimeTicks dispatch_start_time,
+              EventDispatchSource dispatch_source)
+        : request_uuid(request_uuid),
+          render_process_id(render_process_id),
+          start_ok(start_ok),
+          dispatch_start_time(dispatch_start_time),
+          dispatch_source(dispatch_source) {}
+    EventInfo(const EventInfo&) = delete;
+    EventInfo(EventInfo&&) = default;
+    EventInfo& operator=(const EventInfo&) = delete;
+
     // Uuid of the Service Worker's external request for the event.
     base::Uuid request_uuid;
     // RenderProcessHost id.
