@@ -519,6 +519,10 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
    'os_a11y_page/switch_access_action_assignment_dialog_test.js',
  ],
  [
+   'OsA11yPageSwitchAccessSetupGuideDialog',
+   'os_a11y_page/switch_access_setup_guide_dialog_test.js'
+ ],
+ [
    'OsA11yPageSwitchAccessSubpage', 'os_a11y_page/switch_access_subpage_test.js'
  ],
  [
@@ -795,7 +799,6 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
    'SettingsSchedulerSlider',
    'settings_scheduler_slider/settings_scheduler_slider_test.js'
  ],
- ['SwitchAccessSetupGuideDialog', 'switch_access_setup_guide_dialog_test.js'],
  [
    'SystemPreferencesPage',
    'system_preferences_page/system_preferences_page_test.js',

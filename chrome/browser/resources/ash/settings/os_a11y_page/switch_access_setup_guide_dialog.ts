@@ -137,7 +137,7 @@ const SetupPageList: {[key in SetupPageId]?: SetupPage} = {
   },
 };
 
-interface SettingsSwitchAccessSetupGuideDialogElement {
+export interface SettingsSwitchAccessSetupGuideDialogElement {
   $: {
     chooseSwitchCount: HTMLElement,
     closingInstructions: HTMLElement,
@@ -150,7 +150,7 @@ interface SettingsSwitchAccessSetupGuideDialogElement {
 const SettingsSwitchAccessSetupGuideDialogElementBase =
     PrefsMixin(I18nMixin(PolymerElement));
 
-class SettingsSwitchAccessSetupGuideDialogElement extends
+export class SettingsSwitchAccessSetupGuideDialogElement extends
     SettingsSwitchAccessSetupGuideDialogElementBase {
   static get is() {
     return 'settings-switch-access-setup-guide-dialog';
