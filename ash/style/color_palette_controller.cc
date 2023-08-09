@@ -199,8 +199,8 @@ class ColorPaletteControllerImpl : public ColorPaletteController,
     pref_service->SetInteger(prefs::kDynamicColorColorScheme,
                              static_cast<int>(scheme));
     NotifyObservers(GetColorPaletteSeed(account_id));
-    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE, std::move(on_complete), base::Milliseconds(100));
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(on_complete));
   }
 
   void SetStaticColor(SkColor seed_color,
@@ -218,8 +218,8 @@ class ColorPaletteControllerImpl : public ColorPaletteController,
                              static_cast<int>(ColorScheme::kStatic));
     pref_service->SetUint64(prefs::kDynamicColorSeedColor, seed_color);
     NotifyObservers(GetColorPaletteSeed(account_id));
-    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE, std::move(on_complete), base::Milliseconds(100));
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(on_complete));
   }
 
   absl::optional<ColorPaletteSeed> GetColorPaletteSeed(
