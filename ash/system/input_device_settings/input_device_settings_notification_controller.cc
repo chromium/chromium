@@ -348,6 +348,11 @@ void InputDeviceSettingsNotificationController::
                     num_notifications_remaining - 1);
   const auto notification_id =
       GetRightClickNotificationId(blocked_modifier, active_modifier);
+  message_center::RichNotificationData rich_notification_data;
+  rich_notification_data.buttons.emplace_back(
+      l10n_util::GetStringUTF16(IDS_ASH_DEVICE_SETTINGS_EDIT_SHORTCUT_BUTTON));
+  rich_notification_data.buttons.emplace_back(
+      l10n_util::GetStringUTF16(IDS_ASH_DEVICE_SETTINGS_LEARN_MORE_BUTTON));
   auto notification = CreateSystemNotificationPtr(
       message_center::NOTIFICATION_TYPE_SIMPLE, notification_id,
       GetRightClickRewriteNotificationTitle(active_modifier),
@@ -357,7 +362,7 @@ void InputDeviceSettingsNotificationController::
       message_center::NotifierId(
           message_center::NotifierType::SYSTEM_COMPONENT, kNotifierId,
           NotificationCatalogName::kEventRewriterDeprecation),
-      message_center::RichNotificationData(),
+      rich_notification_data,
       base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
           base::BindRepeating(&InputDeviceSettingsNotificationController::
                                   HandleRightClickNotificationClicked,
