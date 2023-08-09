@@ -317,7 +317,8 @@ void FetchManifestAndInstallCommand::OnDidPerformInstallableCheck(
     // primary key. The only thing that identifies a shortcut is the start URL,
     // which is always set to the current page.
     *web_app_info_ = WebAppInstallInfo::CreateInstallInfoForCreateShortcut(
-        web_contents_->GetLastCommittedURL(), *web_app_info_);
+        web_contents_->GetLastCommittedURL(), web_contents_->GetTitle(),
+        *web_app_info_);
   }
 
   base::flat_set<GURL> icon_urls = GetValidIconUrlsToDownload(*web_app_info_);

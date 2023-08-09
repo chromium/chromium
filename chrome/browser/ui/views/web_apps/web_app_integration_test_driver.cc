@@ -335,7 +335,7 @@ base::flat_map<Site, SiteConfig> g_site_configs = {
           "/webapps_integration/standalone/not_start_url/basic.html",
       .relative_manifest_id =
           "webapps_integration/standalone/not_start_url/basic.html",
-      .app_name = "Site A",
+      .app_name = "Not Start URL",
       .wco_not_enabled_title = u"Not Start URL",
       .icon_color = SK_ColorGREEN}},
     {Site::kScreenshots,

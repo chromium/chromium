@@ -253,10 +253,11 @@ namespace web_app {
 // static
 WebAppInstallInfo WebAppInstallInfo::CreateInstallInfoForCreateShortcut(
     const GURL& document_url,
+    const std::u16string& document_title,
     const WebAppInstallInfo& other) {
   WebAppInstallInfo create_shortcut_info(
       web_app::GenerateManifestIdFromStartUrlOnly(document_url));
-  create_shortcut_info.title = other.title;
+  create_shortcut_info.title = document_title;
   create_shortcut_info.description = other.description;
   create_shortcut_info.start_url = document_url;
   create_shortcut_info.manifest_url = other.manifest_url;
