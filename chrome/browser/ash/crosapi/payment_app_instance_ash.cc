@@ -49,20 +49,19 @@ void PaymentAppInstanceAsh::BindReceiver(
   receivers_.Add(this, std::move(receiver));
 }
 
-void PaymentAppInstanceAsh::Initialize() {
-  Profile* profile = ProfileManager::GetPrimaryUserProfile();
-  // This method would be called on the crosapi binding, which could happen
-  // more than one times if Lacros instance is created more than one times
-  // (e.g. crash and restart).
+void PaymentAppInstanceAsh::Initialize(Profile* profile) {
+  CHECK(profile);
+  // This method is called during crosapi binding, which could happen more than
+  // once if Lacros instance is created more than once (e.g. crash and restart).
   if (profile_observation_.IsObservingSource(profile)) {
+    VLOG(1) << "PaymentAppInstanceAsh is already initialized. Skip init.";
     return;
   }
   profile_observation_.Observe(profile);
   payment_app_service_ =
       arc::ArcPaymentAppBridge::GetForBrowserContext(profile);
-  instance_registry_ = &apps::AppServiceProxyFactory::GetForProfile(
-                            ProfileManager::GetPrimaryUserProfile())
-                            ->InstanceRegistry();
+  instance_registry_ =
+      &apps::AppServiceProxyFactory::GetForProfile(profile)->InstanceRegistry();
 }
 
 void PaymentAppInstanceAsh::IsPaymentImplemented(

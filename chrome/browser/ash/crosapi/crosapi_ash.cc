@@ -6,7 +6,6 @@
 
 #include <memory>
 #include <utility>
-#include <vector>
 
 #include "ash/public/ash_interfaces.h"
 #include "base/dcheck_is_on.h"
@@ -715,7 +714,8 @@ void CrosapiAsh::BindParentAccess(
 void CrosapiAsh::BindPaymentAppInstance(
     mojo::PendingReceiver<chromeos::payments::mojom::PaymentAppInstance>
         receiver) {
-  payment_app_instance_ash_->Initialize();
+  Profile* profile = ProfileManager::GetPrimaryUserProfile();
+  payment_app_instance_ash_->Initialize(profile);
   payment_app_instance_ash_->BindReceiver(std::move(receiver));
 }
 

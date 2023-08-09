@@ -40,9 +40,8 @@ class PaymentAppInstanceAsh
       mojo::PendingReceiver<chromeos::payments::mojom::PaymentAppInstance>
           receiver);
 
-  // Initialize the instance. Should only be called when
-  // ProfileManager::GetPrimaryUserProfile() is ready to use.
-  void Initialize();
+  // Initialize the instance. Should only be called with a valid profile.
+  void Initialize(Profile* profile);
 
   // mojom::PaymentAppInstance:
   void IsPaymentImplemented(const std::string& package_name,

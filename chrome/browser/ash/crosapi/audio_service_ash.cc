@@ -54,9 +54,9 @@ AudioServiceAsh::AudioServiceAsh() = default;
 AudioServiceAsh::~AudioServiceAsh() = default;
 
 void AudioServiceAsh::Initialize(Profile* profile) {
-  DCHECK(profile);
+  CHECK(profile);
   if (stable_id_calculator_) {
-    LOG(WARNING) << "AudioServiceAsh is already initialized. Skip init.";
+    VLOG(1) << "AudioServiceAsh is already initialized. Skip init.";
     return;
   }
 
