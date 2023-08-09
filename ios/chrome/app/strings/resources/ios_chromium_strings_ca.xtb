@@ -50,7 +50,7 @@
 <translation id="3567399274263440288">Per treure el màxim profit de Chromium, inicia-hi la sessió amb el teu Compte de Google.</translation>
 <translation id="3639997914391704523">Chromium pot comprovar les teves contrasenyes quan inicies la sessió amb el Compte de Google.</translation>
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> ha utilitzat Chromium en aquest dispositiu i hi ha deixat adreces d'interès, contrasenyes i altres opcions de configuració.</translation>
-<translation id="3661862315467204831">Obre la configuració de Chromium a iOS, toca Aplicació de navegador predeterminada i selecciona Chromium.</translation>
+<translation id="3661862315467204831">Obre la configuració de Chromium a iOS, toca App de navegació per omissió i selecciona Chromium.</translation>
 <translation id="372658070733623520">Per utilitzar i desar les dades de Chromium al teu Compte de Google, verifica la teva identitat.</translation>
 <translation id="3805899903892079518">Chromium no té accés als vostres vídeos o fotos. Permeteu-li l'accés a iOS, a Configuració &gt; Privadesa &gt; Fotos.</translation>
 <translation id="3827545470516145620">Tindràs protecció de seguretat estàndard en aquest dispositiu</translation>
@@ -88,7 +88,7 @@
 <translation id="61109258320235597">Per utilitzar i desar les dades de Chromium al teu Compte de Google, introdueix la frase de contrasenya.</translation>
 <translation id="6119647025869519954">Per establir Chromium com a navegador predeterminat:
 1. Obre Configuració.
-2. Toca Aplicació de navegador predeterminada.
+2. Toca App de navegació per omissió.
 3. Selecciona Chromium.</translation>
 <translation id="6247557882553405851">Gestor de contrasenyes de Google</translation>
 <translation id="6268381023930128611">Voleu tancar la sessió de Chromium?</translation>
@@ -109,7 +109,7 @@
 <translation id="7208566199746267865">Per ajudar-te a estalviar temps, Chromium connecta els teus comptes al web. Pots afegir o suprimir comptes a Configuració.</translation>
 <translation id="725427773388857052">Chromium pot ajudar a protegir-te de violacions de les dades, de llocs web no segurs i més.</translation>
 <translation id="7269362888766543920">Alguns complements fan que Chromium es bloquegi. Prova de desinstal·lar-los.</translation>
-<translation id="7313655110045230863">Per establir Chromium com a navegador predeterminat, obre Configuració. Toca Aplicació de navegador predeterminada i, tot seguit, selecciona Chromium.</translation>
+<translation id="7313655110045230863">Per establir Chromium com a navegador predeterminat, obre Configuració. Toca App de navegació per omissió i, tot seguit, selecciona Chromium.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">Les dades seleccionades s'han suprimit de Chromium i dels dispositius sincronitzats. És possible que el teu compte de Google tingui altres formes de l'historial de navegació a history.google.com, com ara les cerques i l'activitat d'altres serveis de Google.</translation>
 <translation id="7395825497086981028">La contrasenya es desarà al gestor de contrasenyes per a <ph name="EMAIL" />.</translation>
