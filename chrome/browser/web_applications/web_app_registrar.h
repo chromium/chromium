@@ -228,7 +228,7 @@ class WebAppRegistrar : public ProfileManagerObserver {
   // Returns the start_url with launch_query_params appended to the end if any.
   GURL GetAppLaunchUrl(const AppId& app_id) const;
 
-  // TODO(crbug.com/910016): Replace uses of this with GetAppScope().
+  // TODO(crbug.com/1469482): Replace uses of this with GetAppScope().
   absl::optional<GURL> GetAppScopeInternal(const AppId& app_id) const;
 
   DisplayMode GetAppDisplayMode(const AppId& app_id) const;

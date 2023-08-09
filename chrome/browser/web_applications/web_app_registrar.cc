@@ -395,7 +395,7 @@ absl::optional<AppId> WebAppRegistrar::FindAppWithUrlInScope(
   bool best_app_is_shortcut = true;
 
   for (const AppId& app_id : GetAppIdsForAppSet(GetApps())) {
-    // TODO(crbug.com/910016): Treat shortcuts as PWAs.
+    // TODO(crbug.com/1469482): Consider treating shortcuts differently to PWAs.
     bool app_is_shortcut = IsShortcutApp(app_id);
     if (app_is_shortcut && !best_app_is_shortcut)
       continue;
@@ -460,7 +460,7 @@ absl::optional<AppId> WebAppRegistrar::FindInstalledAppWithUrlInScope(
   bool best_app_is_shortcut = true;
 
   for (const AppId& app_id : GetAppIds()) {
-    // TODO(crbug.com/910016): Treat shortcuts as PWAs.
+    // TODO(crbug.com/1469482): Consider treating shortcuts differently to PWAs.
     bool app_is_shortcut = IsShortcutApp(app_id);
     if (app_is_shortcut && !best_app_is_shortcut) {
       continue;
@@ -509,8 +509,8 @@ bool WebAppRegistrar::IsNonLocallyInstalledAppWithUrlInScope(
 }
 
 bool WebAppRegistrar::IsShortcutApp(const AppId& app_id) const {
-  // TODO (crbug/910016): Make app scope always return a value and record this
-  //  distinction in some other way.
+  // TODO(crbug.com/1469482): Record shortcut distinction explicitly instead of
+  // using scope.
   return !GetAppScopeInternal(app_id).has_value();
 }
 
@@ -1144,7 +1144,8 @@ absl::optional<GURL> WebAppRegistrar::GetAppScopeInternal(
   if (!web_app)
     return absl::nullopt;
 
-  // TODO(crbug.com/910016): Treat shortcuts as PWAs.
+  // TODO(crbug.com/1469482): Record shortcut distinction explicitly instead of
+  // using scope.
   // Shortcuts on the WebApp system have empty scopes, while the implementation
   // of IsShortcutApp just checks if the scope is |absl::nullopt|, so make sure
   // we return |absl::nullopt| rather than an empty scope.
