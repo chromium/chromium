@@ -86,7 +86,7 @@ Fragment BlockAllocatorPool::Allocate() {
       FragmentDescriptor descriptor(
           entry->buffer_id, checked_cast<uint32_t>(offset),
           checked_cast<uint32_t>(allocator.block_size()));
-      return Fragment(descriptor, block);
+      return Fragment::FromDescriptorUnsafe(descriptor, block);
     }
 
     // Allocation from the active allocator failed. Try another if available.

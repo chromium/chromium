@@ -14,20 +14,31 @@
 
 namespace ipcz {
 
+class DriverMemoryMapping;
+
 // Represents a span of memory located within the shared memory regions owned by
 // a NodeLinkMemory, via BufferPool. This is essentially a FragmentDescriptor
 // plus the actual mapped address of the given buffer and offset.
 struct Fragment {
   constexpr Fragment() = default;
 
-  // Constructs a new Fragment over `descriptor`, mapped to `address`. If
-  // `address` is null, the Fragment is considered "pending" -- it has a
-  // potentially valid descriptor, but could not be resolved to a mapped address
-  // yet (e.g. because the relevant BufferPool doesn't have the identified
-  // buffer mapped yet.)
-  Fragment(const FragmentDescriptor& descriptor, void* address);
   Fragment(const Fragment&);
   Fragment& operator=(const Fragment&);
+
+  // Returns a new concrete Fragment corresponding to `descriptor` within the
+  // context of `mapping`. This validates that the fragment's bounds fall within
+  // the bounds of `mapping`. If `descriptor` was null or validation fails, this
+  // returns a null Fragment.
+  static Fragment MappedFromDescriptor(const FragmentDescriptor& descriptor,
+                                       DriverMemoryMapping& mapping);
+
+  // Returns a pending Fragment corresponding to `descriptor`.
+  static Fragment PendingFromDescriptor(const FragmentDescriptor& descriptor);
+
+  // Returns a Fragment corresponding to `descriptor`, with the starting address
+  // already mapped to `address`.
+  static Fragment FromDescriptorUnsafe(const FragmentDescriptor& descriptor,
+                                       void* address);
 
   // A null fragment is a fragment with a null descriptor, meaning it does not
   // reference a valid buffer ID.
@@ -66,6 +77,13 @@ struct Fragment {
   }
 
  private:
+  // Constructs a new Fragment over `descriptor`, mapped to `address`. If
+  // `address` is null, the Fragment is considered "pending" -- it has a
+  // potentially valid descriptor, but could not be resolved to a mapped address
+  // yet (e.g. because the relevant BufferPool doesn't have the identified
+  // buffer mapped yet.)
+  Fragment(const FragmentDescriptor& descriptor, void* address);
+
   FragmentDescriptor descriptor_;
 
   // The actual mapped address corresponding to `descriptor_`.
