@@ -57,8 +57,11 @@ TracingObserverProto::TracingObserverProto() = default;
 TracingObserverProto::~TracingObserverProto() = default;
 
 void TracingObserverProto::ResetForTesting() {
-  GetInstance()->~TracingObserverProto();
-  new (GetInstance()) TracingObserverProto;
+  // Running NoDestructor::get() after destroying its contents leads to errors
+  // on CFI bots. So we save the pointer before destruction.
+  TracingObserverProto* instance = GetInstance();
+  instance->~TracingObserverProto();
+  new (instance) TracingObserverProto;
 }
 
 bool TracingObserverProto::AddChromeDumpToTraceIfEnabled(
