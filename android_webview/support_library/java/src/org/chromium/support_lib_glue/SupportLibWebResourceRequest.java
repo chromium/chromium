@@ -7,6 +7,7 @@ package org.chromium.support_lib_glue;
 import static org.chromium.support_lib_glue.SupportLibWebViewChromiumFactory.recordApiCall;
 
 import org.chromium.android_webview.AwContentsClient.AwWebResourceRequest;
+import org.chromium.android_webview.common.Lifetime;
 import org.chromium.base.TraceEvent;
 import org.chromium.support_lib_boundary.WebResourceRequestBoundaryInterface;
 import org.chromium.support_lib_glue.SupportLibWebViewChromiumFactory.ApiCall;
@@ -14,6 +15,7 @@ import org.chromium.support_lib_glue.SupportLibWebViewChromiumFactory.ApiCall;
 /**
  * Adapter between AwWebResourceRequest and WebResourceRequestBoundaryInterface.
  */
+@Lifetime.Temporary
 public class SupportLibWebResourceRequest implements WebResourceRequestBoundaryInterface {
     private final AwWebResourceRequest mAwRequest;
 

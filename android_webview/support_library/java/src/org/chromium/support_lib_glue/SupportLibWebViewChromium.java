@@ -16,6 +16,7 @@ import com.android.webview.chromium.SharedWebViewRendererClientAdapter;
 import com.android.webview.chromium.WebkitToSharedGlueConverter;
 
 import org.chromium.android_webview.AwContents;
+import org.chromium.android_webview.common.Lifetime;
 import org.chromium.base.TraceEvent;
 import org.chromium.support_lib_boundary.VisualStateCallbackBoundaryInterface;
 import org.chromium.support_lib_boundary.WebMessageBoundaryInterface;
@@ -31,6 +32,7 @@ import java.lang.reflect.InvocationHandler;
  * A new instance of this class is created transiently for every shared library
  * WebViewCompat call. Do not store state here.
  */
+@Lifetime.Temporary
 class SupportLibWebViewChromium implements WebViewProviderBoundaryInterface {
     private final WebView mWebView;
     private final SharedWebViewChromium mSharedWebViewChromium;

@@ -50,6 +50,8 @@ class PermissionRequestHandler;
 // construction. A native instance is only bound to at most one Java peer over
 // its entire lifetime - see Init() and SetPendingWebContentsForPopup() for the
 // construction points, and SetJavaPeers() where these paths join.
+//
+// Lifetime: WebView
 class AwContents : public FindHelper::Listener,
                    public IconHelper::Listener,
                    public AwRenderViewHostExtClient,

@@ -8,6 +8,7 @@ import static org.chromium.support_lib_glue.SupportLibWebViewChromiumFactory.rec
 
 import android.os.Handler;
 
+import org.chromium.android_webview.common.Lifetime;
 import org.chromium.base.TraceEvent;
 import org.chromium.content_public.browser.MessagePayload;
 import org.chromium.content_public.browser.MessagePort;
@@ -22,6 +23,7 @@ import java.lang.reflect.InvocationHandler;
 /**
  * Adapter between WebMessagePortBoundaryInterface and MessagePort.
  */
+@Lifetime.Temporary
 class SupportLibWebMessagePortAdapter implements WebMessagePortBoundaryInterface {
     private MessagePort mPort;
 

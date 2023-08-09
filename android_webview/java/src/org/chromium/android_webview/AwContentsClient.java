@@ -23,6 +23,7 @@ import android.webkit.WebChromeClient;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.chromium.android_webview.common.Lifetime;
 import org.chromium.android_webview.permission.AwPermissionRequest;
 import org.chromium.android_webview.safe_browsing.AwSafeBrowsingResponse;
 import org.chromium.base.Callback;
@@ -46,6 +47,7 @@ import java.util.regex.Pattern;
  * new abstract methods that the our own client must implement.
  * i.e.: all methods in this class should either be final, or abstract.
  */
+@Lifetime.WebView
 public abstract class AwContentsClient {
     private static final String TAG = "AwContentsClient";
     private final AwContentsClientCallbackHelper mCallbackHelper;

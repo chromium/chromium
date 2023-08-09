@@ -11,6 +11,7 @@ import android.annotation.SuppressLint;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.chromium.android_webview.common.Lifetime;
 import org.chromium.base.TraceEvent;
 import org.chromium.content_public.browser.MessagePayload;
 import org.chromium.support_lib_boundary.WebMessageBoundaryInterface;
@@ -24,6 +25,7 @@ import java.lang.reflect.InvocationHandler;
 /**
  * Adapter between WebMessagePayloadBoundaryInterface and MessagePayload in content/.
  */
+@Lifetime.Temporary
 class SupportLibWebMessagePayloadAdapter implements WebMessagePayloadBoundaryInterface {
     private final MessagePayload mMessagePayload;
 

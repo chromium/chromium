@@ -9,6 +9,7 @@ import android.webkit.WebView;
 
 import org.chromium.android_webview.JsReplyProxy;
 import org.chromium.android_webview.WebMessageListener;
+import org.chromium.android_webview.common.Lifetime;
 import org.chromium.base.Log;
 import org.chromium.content_public.browser.MessagePayload;
 import org.chromium.content_public.browser.MessagePayloadType;
@@ -26,6 +27,7 @@ import java.lang.reflect.Proxy;
  * A new instance of this class is created transiently for every shared library WebViewCompat call.
  * Do not store state here.
  */
+@Lifetime.Temporary
 class SupportLibWebMessageListenerAdapter implements WebMessageListener {
     private static final String TAG = "WebMsgLtrAdptr";
 

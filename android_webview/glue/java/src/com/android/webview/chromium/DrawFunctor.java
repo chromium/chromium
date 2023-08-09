@@ -4,8 +4,10 @@
 
 package com.android.webview.chromium;
 
+import org.chromium.android_webview.common.Lifetime;
 import org.chromium.build.annotations.UsedByReflection;
 
+@Lifetime.Singleton
 class DrawFunctor {
     public static long getDrawFnFunctionTable() {
         return nativeGetFunctionTable();
