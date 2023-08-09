@@ -9,9 +9,11 @@
 #include <string>
 #include <tuple>
 
+#include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/sequence_checker.h"
@@ -193,7 +195,10 @@ class TestFuture {
       return true;
     }
 
-    run_loop_->Run();
+    // Wait for the value to arrive.
+    RunLoop loop;
+    AutoReset<RepeatingClosure> quit_loop(&ready_signal_, loop.QuitClosure());
+    loop.Run();
 
     return IsReady();
   }
@@ -312,7 +317,8 @@ class TestFuture {
            "consume the stored value by calling `Take()` or `Clear()`";
 
     values_ = std::make_tuple(std::forward<Types>(values)...);
-    run_loop_->Quit();
+
+    ready_signal_.Run();
   }
 
   // Clears the future, allowing it to be reused and accept a new value.
@@ -377,14 +383,13 @@ class TestFuture {
     bool success = Wait();
     DCHECK(success) << "Waiting for value timed out.";
 
-    run_loop_ = std::make_unique<RunLoop>();
     return std::exchange(values_, {}).value();
   }
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  std::unique_ptr<RunLoop> run_loop_ GUARDED_BY_CONTEXT(sequence_checker_) =
-      std::make_unique<RunLoop>();
+  base::RepeatingClosure ready_signal_ GUARDED_BY_CONTEXT(sequence_checker_) =
+      base::DoNothing();
 
   absl::optional<TupleType> values_ GUARDED_BY_CONTEXT(sequence_checker_);
 

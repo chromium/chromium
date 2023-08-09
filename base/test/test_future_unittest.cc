@@ -417,4 +417,20 @@ TEST_F(TestFutureWithoutValuesTest, GetShouldUnblockWhenCallbackIsInvoked) {
   EXPECT_TRUE(future.IsReady());
 }
 
+TEST(TestFutureWithoutSingleThreadTaskEnvironment,
+     CanCreateTestFutureBeforeTaskEnvironment) {
+  TestFuture<AnyType> future;
+
+  // If we come here the test passes, since it means we can create a
+  // `TestFuture` without having a `TaskEnvironment`.
+}
+
+TEST(TestFutureWithoutSingleThreadTaskEnvironment,
+     WaitShouldDcheckWithoutTaskEnvironment) {
+  TestFuture<AnyType> future;
+
+  EXPECT_CHECK_DEATH_WITH((void)future.Wait(),
+                          "requires a single-threaded context");
+}
+
 }  // namespace base::test
