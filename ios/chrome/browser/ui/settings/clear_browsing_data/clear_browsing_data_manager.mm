@@ -411,11 +411,6 @@ UIImage* SymbolForItemType(ClearBrowsingDataItemType itemType) {
   syncer::SyncService* syncService = [self syncService];
   [self addSavedSiteDataSectionWithModel:model];
 
-  // If not syncing, no need to continue with profile syncing.
-  if (![self identityManager]->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
-    return;
-  }
-
   history::WebHistoryService* historyService =
       ios::WebHistoryServiceFactory::GetForBrowserState(_browserState);
 

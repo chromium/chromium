@@ -57,7 +57,7 @@ void ShouldShowNoticeAboutOtherFormsOfBrowsingHistory(
     const syncer::SyncService* sync_service,
     history::WebHistoryService* history_service,
     base::OnceCallback<void(bool)> callback) {
-  if (!sync_service || !sync_service->IsSyncFeatureActive() ||
+  if (!sync_service ||
       !sync_service->GetActiveDataTypes().Has(
           syncer::HISTORY_DELETE_DIRECTIVES) ||
       sync_service->GetUserSettings()->IsUsingExplicitPassphrase() ||
@@ -100,7 +100,7 @@ void ShouldPopupDialogAboutOtherFormsOfBrowsingHistory(
     history::WebHistoryService* history_service,
     version_info::Channel channel,
     base::OnceCallback<void(bool)> callback) {
-  if (!sync_service || !sync_service->IsSyncFeatureActive() ||
+  if (!sync_service ||
       !sync_service->GetActiveDataTypes().Has(
           syncer::HISTORY_DELETE_DIRECTIVES) ||
       sync_service->GetUserSettings()->IsUsingExplicitPassphrase() ||
