@@ -1129,6 +1129,9 @@ component("base") {
       "test/clang_profiling.cc",
       "test/clang_profiling.h",
     ]
+    if (is_android) {
+      sources += [ "test/clang_profiling_android.cc" ]
+    }
   }
 
   # Allow more direct string conversions on platforms with native utf8
@@ -4165,6 +4168,12 @@ if (is_android || is_robolectric) {
       "android/java/src/org/chromium/base/task/TaskRunnerImpl.java",
     ]
 
+    if (use_clang_profiling) {
+      sources += [
+        "test/android/javatests/src/org/chromium/base/test/ClangProfiler.java",
+      ]
+    }
+
     public_deps = [
       ":android_runtime_jni_headers",
       ":android_runtime_unchecked_jni_headers",
@@ -4396,6 +4405,14 @@ if (is_android) {
       "android/java/src/org/chromium/base/task/ThreadPoolTaskExecutor.java",
       "android/java/src/org/chromium/base/task/UiThreadTaskExecutor.java",
     ]
+
+    if (use_clang_profiling) {
+      sources += [
+        "test/android/javatests/src/org/chromium/base/test/ClangProfiler.java",
+      ]
+    } else {
+      sources += [ "test/android/javatests/src/stub/org/chromium/base/test/ClangProfiler.java" ]
+    }
 
     if (!is_cronet_build) {
       sources += [ "android/java/src/org/chromium/base/IntentUtils.java" ]

@@ -10,6 +10,7 @@ import("//build/config/android/jni.gni")
 import("//build/config/clang/clang.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/coverage/coverage.gni")
+import("//build/config/profiling/profiling.gni")
 import("//build/config/python.gni")
 import("//build/config/rts.gni")
 import("//build/config/sanitizers/sanitizers.gni")
@@ -2144,6 +2145,11 @@ if (enable_java_templates && is_android) {
       if (defined(testonly) && testonly) {
         defines += [ "_IS_FOR_TEST" ]
       }
+
+      if (defined(invoker.write_clang_profiling_data) &&
+          invoker.write_clang_profiling_data) {
+        defines += [ "_WRITE_CLANG_PROFILING_DATA" ]
+      }
     }
   }
 
@@ -2813,6 +2819,8 @@ if (enable_java_templates && is_android) {
         assertions_implicitly_enabled = _assertions_implicitly_enabled
         enable_multidex = _enable_multidex
         is_incremental_install = _incremental_apk
+        write_clang_profiling_data =
+            use_clang_coverage && _generate_native_libraries_java
         if (defined(invoker.build_config_include_product_version_resource) &&
             invoker.build_config_include_product_version_resource) {
           resources_version_variable =

@@ -21,6 +21,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.SystemClock;
+import android.system.Os;
 import android.text.TextUtils;
 
 import androidx.core.content.ContextCompat;
@@ -83,6 +84,8 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
             "org.chromium.base.test.BaseChromiumAndroidJUnitRunner.TestListPackage";
     private static final String IS_UNIT_TEST_FLAG =
             "org.chromium.base.test.BaseChromiumAndroidJUnitRunner.IsUnitTest";
+    private static final String EXTRA_CLANG_COVERAGE_DEVICE_FILE =
+            "org.chromium.base.test.BaseChromiumAndroidJUnitRunner.ClangCoverageDeviceFile";
     /**
      * This flag is supported by AndroidJUnitRunner.
      *
@@ -208,6 +211,7 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
             // androidx.test.
             System.setProperty("org.mockito.android.target",
                     InstrumentationRegistry.getTargetContext().getCacheDir().getPath());
+            setClangCoverageEnvIfEnabled();
             super.onStart();
         }
     }
@@ -589,6 +593,7 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
         }
 
         try {
+            writeClangCoverageProfileIfEnabled();
             getTargetContext().getSystemService(JobScheduler.class).cancelAll();
             checkOrDeleteOnDiskSharedPreferences(true);
             UmaRecorderHolder.resetForTesting();
@@ -826,6 +831,31 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
 
             errorMsg += "Files:\n * " + TextUtils.join("\n * ", badFiles);
             throw new AssertionError(errorMsg);
+        }
+    }
+
+    /**
+     * Configure the required environment variable if Clang coverage argument exists.
+     */
+    private void setClangCoverageEnvIfEnabled() {
+        String clangProfileFile =
+                InstrumentationRegistry.getArguments().getString(EXTRA_CLANG_COVERAGE_DEVICE_FILE);
+        if (clangProfileFile != null) {
+            try {
+                Os.setenv("LLVM_PROFILE_FILE", clangProfileFile, /*override*/ true);
+            } catch (Exception e) {
+                Log.w(TAG, "failed to set LLVM_PROFILE_FILE", e);
+            }
+        }
+    }
+
+    /**
+     * Invoke __llvm_profile_dump() to write raw clang coverage profile to device.
+     * Noop if the required build flag is not set.
+     */
+    private void writeClangCoverageProfileIfEnabled() {
+        if (BuildConfig.WRITE_CLANG_PROFILING_DATA && LibraryLoader.getInstance().isInitialized()) {
+            ClangProfiler.writeClangProfilingProfile();
         }
     }
 }

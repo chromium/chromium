@@ -1460,6 +1460,7 @@ zip("jar_cronet_sample_source") {
 jar_src("jar_cronet_impl_native_java_source") {
   src_search_dirs = [
     "//base/android/java/src",
+    "//base/test/android/javatests/src/stub",
     "//build/android/java/src",
     "//components/cronet/android/java/src",
     "//net/android/java/src",

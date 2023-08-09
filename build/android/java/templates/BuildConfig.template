@@ -92,4 +92,10 @@ public class BuildConfig {
 #else
     public static MAYBE_FINAL boolean IS_FOR_TEST MAYBE_FALSE;
 #endif
+
+#if defined(_WRITE_CLANG_PROFILING_DATA)
+    public static MAYBE_FINAL boolean WRITE_CLANG_PROFILING_DATA = true;
+#else
+    public static MAYBE_FINAL boolean WRITE_CLANG_PROFILING_DATA MAYBE_FALSE;
+#endif
 }
