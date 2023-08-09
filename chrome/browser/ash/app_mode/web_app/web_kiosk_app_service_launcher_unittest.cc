@@ -316,8 +316,8 @@ TEST_F(WebKioskAppServiceLauncherTest, FullFlowNotInstalled) {
   // App isn't always ready by the time it's being launched. Therefore we
   // check the total count of kLaunchAppReadinessUMA instead of individual
   // cases.
-  histogram.ExpectTotalCount(KioskAppServiceLauncher::kLaunchAppReadinessUMA,
-                             1);
+  histogram.ExpectTotalCount(
+      chromeos::KioskAppServiceLauncher::kLaunchAppReadinessUMA, 1);
   histogram.ExpectUniqueSample(
       WebKioskAppServiceLauncher::kWebAppInstallResultUMA,
       webapps::InstallResultCode::kSuccessNewInstall, 1);
@@ -334,8 +334,8 @@ TEST_F(WebKioskAppServiceLauncherTest, FullFlowAlreadyInstalled) {
   // App isn't always ready by the time it's being launched. Therefore we
   // check the total count of kLaunchAppReadinessUMA instead of individual
   // cases.
-  histogram.ExpectTotalCount(KioskAppServiceLauncher::kLaunchAppReadinessUMA,
-                             1);
+  histogram.ExpectTotalCount(
+      chromeos::KioskAppServiceLauncher::kLaunchAppReadinessUMA, 1);
   histogram.ExpectTotalCount(
       WebKioskAppServiceLauncher::kWebAppInstallResultUMA, 0);
 }
@@ -357,8 +357,8 @@ TEST_F(WebKioskAppServiceLauncherTest, FullFlowPlaceholderReplaced) {
   // App isn't always ready by the time it's being launched. Therefore we
   // check the total count of kLaunchAppReadinessUMA instead of individual
   // cases.
-  histogram.ExpectTotalCount(KioskAppServiceLauncher::kLaunchAppReadinessUMA,
-                             1);
+  histogram.ExpectTotalCount(
+      chromeos::KioskAppServiceLauncher::kLaunchAppReadinessUMA, 1);
   histogram.ExpectUniqueSample(
       WebKioskAppServiceLauncher::kWebAppInstallResultUMA,
       webapps::InstallResultCode::kSuccessNewInstall, 1);

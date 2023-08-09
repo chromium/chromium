@@ -24,7 +24,7 @@ class WebAppRegistrar;
 class WebAppProvider;
 }  // namespace web_app
 
-namespace ash {
+namespace chromeos {
 
 // Class to encapsulate logic to control the browser UI for web Kiosk apps. It
 // displays a fullscreen browser without tab strip and navigation bar. Therefore
@@ -68,6 +68,6 @@ class WebKioskBrowserControllerBase : public web_app::AppBrowserController {
   mutable absl::optional<ui::ImageModel> app_icon_;
 };
 
-}  // namespace ash
+}  // namespace chromeos
 
 #endif  // CHROME_BROWSER_CHROMEOS_APP_MODE_WEB_KIOSK_BROWSER_CONTROLLER_BASE_H_

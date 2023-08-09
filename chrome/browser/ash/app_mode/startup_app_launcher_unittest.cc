@@ -637,8 +637,8 @@ class StartupAppLauncherNoCreateTest
   void CreateAndInitializeKioskAppsProviders(TestKioskLoaderVisitor* visitor) {
     primary_app_provider_ = std::make_unique<extensions::ExternalProviderImpl>(
         visitor,
-        base::MakeRefCounted<KioskAppExternalLoader>(
-            KioskAppExternalLoader::AppClass::kPrimary),
+        base::MakeRefCounted<chromeos::KioskAppExternalLoader>(
+            chromeos::KioskAppExternalLoader::AppClass::kPrimary),
         profile(), ManifestLocation::kExternalPolicy,
         ManifestLocation::kInvalidLocation, extensions::Extension::NO_FLAGS);
     InitializeKioskAppsProvider(primary_app_provider_.get());
@@ -646,8 +646,8 @@ class StartupAppLauncherNoCreateTest
     secondary_apps_provider_ =
         std::make_unique<extensions::ExternalProviderImpl>(
             visitor,
-            base::MakeRefCounted<KioskAppExternalLoader>(
-                KioskAppExternalLoader::AppClass::kSecondary),
+            base::MakeRefCounted<chromeos::KioskAppExternalLoader>(
+                chromeos::KioskAppExternalLoader::AppClass::kSecondary),
             profile(), ManifestLocation::kExternalPref,
             ManifestLocation::kExternalPrefDownload,
             extensions::Extension::NO_FLAGS);

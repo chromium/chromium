@@ -30,6 +30,9 @@
 #include "chromeos/crosapi/mojom/chrome_app_kiosk_service.mojom.h"
 #include "components/crx_file/id_util.h"
 
+using chromeos::ChromeKioskAppInstaller;
+using chromeos::ChromeKioskAppLauncher;
+
 namespace ash {
 
 namespace {

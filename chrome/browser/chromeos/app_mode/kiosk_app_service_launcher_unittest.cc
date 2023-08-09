@@ -21,7 +21,7 @@
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-namespace ash {
+namespace chromeos {
 
 namespace {
 
@@ -34,7 +34,9 @@ class FakePublisher final : public apps::AppPublisher {
  public:
   FakePublisher(apps::AppServiceProxy* proxy, apps::AppType app_type)
       : AppPublisher(proxy) {
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
     RegisterPublisher(app_type);
+#endif
   }
 
   MOCK_METHOD4(Launch,
@@ -164,4 +166,4 @@ TEST_F(KioskAppServiceLauncherTest, ShouldLaunchIfAppReady) {
                                apps::Readiness::kReady, 1);
 }
 
-}  // namespace ash
+}  // namespace chromeos

@@ -19,7 +19,7 @@
 
 class Profile;
 
-namespace ash {
+namespace chromeos {
 
 class ChromeKioskAppInstaller
     : private extensions::InstallObserver,
@@ -101,6 +101,6 @@ class ChromeKioskAppInstaller
   base::WeakPtrFactory<ChromeKioskAppInstaller> weak_ptr_factory_{this};
 };
 
-}  // namespace ash
+}  // namespace chromeos
 
 #endif  // CHROME_BROWSER_CHROMEOS_APP_MODE_CHROME_KIOSK_APP_INSTALLER_H_

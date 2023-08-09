@@ -25,7 +25,7 @@ KioskTroubleshootingControllerAsh::KioskTroubleshootingControllerAsh(
 }
 
 KioskTroubleshootingControllerAsh::~KioskTroubleshootingControllerAsh() {
-  Shell::Get()->accelerator_controller()->UnregisterAll(this);
+  ash::Shell::Get()->accelerator_controller()->UnregisterAll(this);
 }
 
 bool KioskTroubleshootingControllerAsh::AcceleratorPressed(
@@ -42,22 +42,22 @@ bool KioskTroubleshootingControllerAsh::AcceleratorPressed(
 
   switch (it->second) {
     case TroubleshootingAcceleratorAction::NEW_WINDOW:
-      accelerators::NewWindow();
+      ash::accelerators::NewWindow();
       return true;
     case TroubleshootingAcceleratorAction::SWITCH_WINDOWS_FORWARD:
-      accelerators::CycleForwardMru(/*same_app_only=*/false);
+      ash::accelerators::CycleForwardMru(/*same_app_only=*/false);
       return true;
     case TroubleshootingAcceleratorAction::SWITCH_WINDOWS_BACKWARD:
-      accelerators::CycleBackwardMru(/*same_app_only=*/false);
+      ash::accelerators::CycleBackwardMru(/*same_app_only=*/false);
       return true;
     case TroubleshootingAcceleratorAction::SHOW_TASK_MANAGER:
-      accelerators::ShowTaskManager();
+      ash::accelerators::ShowTaskManager();
       return true;
     case TroubleshootingAcceleratorAction::OPEN_FEEDBACK_PAGE:
-      accelerators::OpenFeedbackPage();
+      ash::accelerators::OpenFeedbackPage();
       return true;
     case TroubleshootingAcceleratorAction::TOGGLE_OVERVIEW:
-      accelerators::ToggleOverview();
+      ash::accelerators::ToggleOverview();
       return true;
   }
 
@@ -97,7 +97,8 @@ void KioskTroubleshootingControllerAsh::RegisterTroubleshootingAccelerators() {
   accelerators_with_actions_.insert(
       {ui::Accelerator(ui::VKEY_MEDIA_LAUNCH_APP1, ui::EF_NONE),
        TroubleshootingAcceleratorAction::TOGGLE_OVERVIEW});
-  Shell::Get()->accelerator_controller()->Register(GetAllAccelerators(), this);
+  ash::Shell::Get()->accelerator_controller()->Register(GetAllAccelerators(),
+                                                        this);
 }
 
 std::vector<ui::Accelerator>

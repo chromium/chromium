@@ -71,7 +71,8 @@ void WebKioskAppServiceLauncher::RemoveObserver(
 void WebKioskAppServiceLauncher::Initialize() {
   DCHECK(!app_service_launcher_);
 
-  app_service_launcher_ = std::make_unique<KioskAppServiceLauncher>(profile_);
+  app_service_launcher_ =
+      std::make_unique<chromeos::KioskAppServiceLauncher>(profile_);
   app_service_launcher_->EnsureAppTypeInitialized(
       apps::AppType::kWeb,
       base::BindOnce(&WebKioskAppServiceLauncher::OnWebAppInitialized,

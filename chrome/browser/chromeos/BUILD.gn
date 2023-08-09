@@ -463,6 +463,7 @@ source_set("unit_tests") {
 
   sources = [
     "app_mode/chrome_kiosk_external_loader_broker_unittest.cc",
+    "app_mode/kiosk_app_service_launcher_unittest.cc",
     "app_mode/kiosk_browser_session_unittest.cc",
     "app_mode/kiosk_policies_unittest.cc",
     "arc/arc_external_protocol_dialog_unittest.cc",
@@ -507,6 +508,7 @@ source_set("unit_tests") {
     "//chrome/app:generated_resources",
     "//chrome/browser",
     "//chrome/browser:browser_process",
+    "//chrome/browser/apps/app_service:test_support",
     "//chrome/browser/enterprise/data_controls:data_controls",
     "//chrome/browser/extensions",
     "//chrome/browser/profiles:profile",
@@ -568,7 +570,6 @@ source_set("unit_tests") {
   if (is_chromeos_ash) {
     sources += [
       "app_mode/chrome_kiosk_app_launcher_unittest.cc",
-      "app_mode/kiosk_app_service_launcher_unittest.cc",
       "extensions/login_screen/login/cleanup/extension_cleanup_handler_unittest.cc",
       "extensions/login_screen/login/cleanup/lacros_cleanup_handler_unittest.cc",
       "extensions/login_screen/login/cleanup/print_jobs_cleanup_handler_unittest.cc",
@@ -581,7 +582,6 @@ source_set("unit_tests") {
     deps += [
       "//ash:test_support",
       "//ash/constants",
-      "//chrome/browser/apps/app_service:test_support",
       "//chrome/browser/ash",
       "//chrome/browser/ash:test_support",
       "//chrome/browser/ash/crosapi",

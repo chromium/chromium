@@ -16,7 +16,7 @@
 #include "extensions/common/file_util.h"
 #include "extensions/common/manifest_handlers/kiosk_mode_info.h"
 
-namespace ash {
+namespace chromeos {
 
 namespace {
 
@@ -34,7 +34,7 @@ ChromeKioskAppInstaller::ChromeKioskAppInstaller(
     const AppInstallParams& install_data)
     : profile_(profile), primary_app_install_data_(install_data) {}
 
-ChromeKioskAppInstaller::~ChromeKioskAppInstaller() {}
+ChromeKioskAppInstaller::~ChromeKioskAppInstaller() = default;
 
 void ChromeKioskAppInstaller::BeginInstall(InstallCallback callback) {
   DCHECK(!install_complete_);
@@ -321,4 +321,4 @@ bool ChromeKioskAppInstaller::DidPrimaryOrSecondaryAppFailedToInstall(
   return false;
 }
 
-}  // namespace ash
+}  // namespace chromeos

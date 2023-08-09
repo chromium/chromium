@@ -12,7 +12,7 @@
 #include "base/values.h"
 #include "chrome/browser/chromeos/app_mode/chrome_kiosk_external_loader_broker.h"
 
-namespace ash {
+namespace chromeos {
 
 KioskAppExternalLoader::KioskAppExternalLoader(AppClass app_class)
     : app_class_(app_class) {}
@@ -56,4 +56,4 @@ void KioskAppExternalLoader::SendPrefs(base::Value::Dict prefs) {
   }
 }
 
-}  // namespace ash
+}  // namespace chromeos

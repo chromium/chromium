@@ -16,7 +16,7 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/updater/extension_downloader.h"
 
-namespace ash {
+namespace chromeos {
 
 StartupAppLauncherUpdateChecker::StartupAppLauncherUpdateChecker(
     Profile* profile)
@@ -67,4 +67,4 @@ void StartupAppLauncherUpdateChecker::OnExtensionUpdaterDone() {
   std::move(callback_).Run(update_found_);
 }
 
-}  // namespace ash
+}  // namespace chromeos

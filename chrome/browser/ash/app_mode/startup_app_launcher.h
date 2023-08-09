@@ -60,10 +60,11 @@ class StartupAppLauncher : public KioskAppLauncher,
   void BeginInstall();
   void InstallAppInAsh();
   void InstallAppInLacros();
-  void OnInstallComplete(ChromeKioskAppInstaller::InstallResult result);
+  void OnInstallComplete(
+      chromeos::ChromeKioskAppInstaller::InstallResult result);
   void OnInstallSuccess();
 
-  void OnLaunchComplete(ChromeKioskAppLauncher::LaunchResult result);
+  void OnLaunchComplete(chromeos::ChromeKioskAppLauncher::LaunchResult result);
 
   void OnLaunchSuccess();
   void OnLaunchFailure(KioskAppLaunchError::Error error);
@@ -83,8 +84,8 @@ class StartupAppLauncher : public KioskAppLauncher,
   LaunchState state_ = LaunchState::kNotStarted;
 
   KioskAppLauncher::ObserverList observers_;
-  std::unique_ptr<ChromeKioskAppInstaller> installer_;
-  std::unique_ptr<ChromeKioskAppLauncher> launcher_;
+  std::unique_ptr<chromeos::ChromeKioskAppInstaller> installer_;
+  std::unique_ptr<chromeos::ChromeKioskAppLauncher> launcher_;
 
   base::ScopedObservation<KioskAppManagerBase, KioskAppManagerObserver>
       kiosk_app_manager_observation_{this};

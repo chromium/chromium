@@ -11,7 +11,7 @@
 #include "chrome/browser/chromeos/app_mode/chrome_kiosk_external_loader_broker.h"
 #include "chrome/browser/extensions/external_loader.h"
 
-namespace ash {
+namespace chromeos {
 
 // An extensions::ExternalLoader that loads apps and extensions for a kiosk
 // session. It is used to either load primary kiosk app, or secondary kiosk
@@ -57,6 +57,6 @@ class KioskAppExternalLoader : public extensions::ExternalLoader {
   base::WeakPtrFactory<KioskAppExternalLoader> weak_ptr_factory_{this};
 };
 
-}  // namespace ash
+}  // namespace chromeos
 
 #endif  // CHROME_BROWSER_CHROMEOS_APP_MODE_KIOSK_APP_EXTERNAL_LOADER_H_

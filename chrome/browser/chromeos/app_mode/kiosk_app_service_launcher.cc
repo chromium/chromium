@@ -19,7 +19,7 @@
 #include "components/services/app_service/public/cpp/app_update.h"
 #include "components/services/app_service/public/cpp/instance.h"
 
-namespace ash {
+namespace chromeos {
 
 KioskAppServiceLauncher::KioskAppServiceLauncher(Profile* profile) {
   app_service_ = apps::AppServiceProxyFactory::GetForProfile(profile);
@@ -153,4 +153,4 @@ void KioskAppServiceLauncher::OnAppLaunched(apps::LaunchResult&& result) {
   }
 }
 
-}  // namespace ash
+}  // namespace chromeos

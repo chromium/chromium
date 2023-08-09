@@ -747,7 +747,7 @@ KioskAppManager::KioskAppManager() {
 }
 
 KioskAppManager::~KioskAppManager() {
-  ChromeKioskExternalLoaderBroker::Shutdown();
+  chromeos::ChromeKioskExternalLoaderBroker::Shutdown();
   observers_.Clear();
   g_test_overrides = nullptr;
   g_kiosk_app_manager = nullptr;

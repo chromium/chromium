@@ -15,7 +15,7 @@ namespace base {
 class Version;
 }
 
-namespace ash {
+namespace chromeos {
 
 // Used by StartupAppLauncher to check for available extension updates for
 // extensions other than the primary kiosk app - in particular for the secondary
@@ -54,6 +54,6 @@ class StartupAppLauncherUpdateChecker {
   base::WeakPtrFactory<StartupAppLauncherUpdateChecker> weak_ptr_factory_{this};
 };
 
-}  // namespace ash
+}  // namespace chromeos
 
 #endif  // CHROME_BROWSER_CHROMEOS_APP_MODE_STARTUP_APP_LAUNCHER_UPDATE_CHECKER_H_

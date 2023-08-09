@@ -21,7 +21,7 @@
 #include "components/services/app_service/public/cpp/instance_registry.h"
 #endif
 
-namespace ash {
+namespace chromeos {
 
 // This class launches a Kiosk app with the following steps:
 // 1. Checks if the app is ready to be launched. If not then observes the
@@ -113,6 +113,6 @@ class KioskAppServiceLauncher :
   base::WeakPtrFactory<KioskAppServiceLauncher> weak_ptr_factory_{this};
 };
 
-}  // namespace ash
+}  // namespace chromeos
 
 #endif  // CHROME_BROWSER_CHROMEOS_APP_MODE_KIOSK_APP_SERVICE_LAUNCHER_H_
