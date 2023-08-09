@@ -977,11 +977,9 @@ public class CronetHttpURLConnectionTest {
         assertThrows(IOException.class, urlConnection::getResponseCode);
         assertThrows(IOException.class, urlConnection::getResponseMessage);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            Map<String, List<String>> headers = urlConnection.getHeaderFields();
-            assertThat(headers).isNotNull();
-            assertThat(headers).isEmpty();
-        }
+        Map<String, List<String>> headers = urlConnection.getHeaderFields();
+        assertThat(headers).isNotNull();
+        assertThat(headers).isEmpty();
         // Skip getHeaderFields(), since it can return null or an empty map.
         assertThat(urlConnection.getHeaderField("foo")).isNull();
         assertThat(urlConnection.getHeaderFieldKey(0)).isNull();

@@ -5,11 +5,8 @@
 package org.chromium.cronet_sample_apk;
 
 import android.app.Application;
-import android.content.Context;
-import android.os.Build;
 
 import androidx.annotation.OptIn;
-import androidx.multidex.MultiDex;
 
 import org.chromium.net.ConnectionMigrationOptions;
 import org.chromium.net.CronetEngine;
@@ -21,14 +18,6 @@ import org.chromium.net.QuicOptions;
  */
 public class CronetSampleApplication extends Application {
     private CronetEngine mCronetEngine;
-    @Override
-    protected void attachBaseContext(Context base) {
-        super.attachBaseContext(base);
-        // install multidex for Kitkat - crbug/1393424
-        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT) {
-            MultiDex.install(this);
-        }
-    }
 
     @Override
     public void onCreate() {
