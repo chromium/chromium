@@ -650,7 +650,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.TabDragging.DragAmongTabsPresentationTime" units="ms"
-    expires_after="2023-12-07">
+    expires_after="2024-02-05">
   <owner>robliao@chromium.org</owner>
   <owner>yuhengh@chromium.org</owner>
   <summary>
@@ -683,7 +683,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.TabDragging.PresentationTimeMax" units="ms"
-    expires_after="2023-12-07">
+    expires_after="2024-02-05">
   <owner>robliao@chromium.org</owner>
   <owner>yuhengh@chromium.org</owner>
   <summary>
