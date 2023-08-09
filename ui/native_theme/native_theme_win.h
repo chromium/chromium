@@ -195,8 +195,10 @@ class NATIVE_THEME_EXPORT NativeThemeWin : public NativeTheme,
   HANDLE GetThemeHandle(ThemeName theme_name) const;
 
   void RegisterThemeRegkeyObserver();
+  void RegisterColorFilteringRegkeyObserver();
   void UpdateDarkModeStatus();
   void UpdatePrefersReducedTransparency();
+  void UpdateInvertedColors();
 
   // True if Windows supports dark mode. This does NOT indicate whether the
   // system is in dark mode, only that it is supported by this version of
@@ -205,6 +207,9 @@ class NATIVE_THEME_EXPORT NativeThemeWin : public NativeTheme,
 
   // Dark Mode/Transparency registry key.
   base::win::RegKey hkcu_themes_regkey_;
+
+  // Inverted colors registry key
+  base::win::RegKey hkcu_color_filtering_regkey_;
 
   // A cache of open theme handles.
   mutable HANDLE theme_handles_[LAST];

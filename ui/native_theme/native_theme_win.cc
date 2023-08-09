@@ -153,6 +153,14 @@ base::win::RegKey OpenThemeRegKey(REGSAM access) {
   return hkcu_themes_regkey;
 }
 
+base::win::RegKey OpenColorFilteringRegKey(REGSAM access) {
+  base::win::RegKey hkcu_color_filtering_regkey;
+  // Validity is checked at time-of-use.
+  (void)hkcu_color_filtering_regkey.Open(
+      HKEY_CURRENT_USER, L"Software\\Microsoft\\ColorFiltering", access);
+  return hkcu_color_filtering_regkey;
+}
+
 }  // namespace
 
 namespace ui {
@@ -304,6 +312,12 @@ NativeThemeWin::NativeThemeWin(bool configure_web_instance,
       UpdatePrefersReducedTransparency();
       RegisterThemeRegkeyObserver();
     }
+  }
+  hkcu_color_filtering_regkey_ =
+      OpenColorFilteringRegKey(KEY_READ | KEY_NOTIFY);
+  if (hkcu_color_filtering_regkey_.Valid()) {
+    UpdateInvertedColors();
+    RegisterColorFilteringRegkeyObserver();
   }
   if (!IsForcedHighContrast()) {
     set_forced_colors(IsUsingHighContrastThemeInternal());
@@ -1589,6 +1603,18 @@ void NativeThemeWin::RegisterThemeRegkeyObserver() {
       base::Unretained(this)));
 }
 
+void NativeThemeWin::RegisterColorFilteringRegkeyObserver() {
+  DCHECK(hkcu_color_filtering_regkey_.Valid());
+  hkcu_color_filtering_regkey_.StartWatching(base::BindOnce(
+      [](NativeThemeWin* native_theme) {
+        native_theme->UpdateInvertedColors();
+        // RegKey::StartWatching only provides one notification. Reregistration
+        // is required to get future notifications.
+        native_theme->RegisterColorFilteringRegkeyObserver();
+      },
+      base::Unretained(this)));
+}
+
 void NativeThemeWin::UpdateDarkModeStatus() {
   bool dark_mode_enabled = false;
   if (hkcu_themes_regkey_.Valid()) {
@@ -1612,6 +1638,28 @@ void NativeThemeWin::UpdatePrefersReducedTransparency() {
     prefers_reduced_transparency = (enable_transparency == 0);
   }
   set_prefers_reduced_transparency(prefers_reduced_transparency);
+  CloseHandlesInternal();
+  NotifyOnNativeThemeUpdated();
+}
+
+void NativeThemeWin::UpdateInvertedColors() {
+  bool inverted_colors = false;
+  if (hkcu_color_filtering_regkey_.Valid()) {
+    DWORD active = 0;
+    hkcu_color_filtering_regkey_.ReadValueDW(L"Active", &active);
+    if (active == 1) {
+    // 0 = Greyscale
+    // 1 = Invert
+    // 2 = Greyscale Inverted
+    // 3 = Deuteranopia
+    // 4 = Protanopia
+    // 5 = Tritanopia
+    DWORD filter_type = 0;
+    hkcu_color_filtering_regkey_.ReadValueDW(L"FilterType", &filter_type);
+    inverted_colors = (filter_type == 1);
+    }
+  }
+  set_inverted_colors(inverted_colors);
   CloseHandlesInternal();
   NotifyOnNativeThemeUpdated();
 }
