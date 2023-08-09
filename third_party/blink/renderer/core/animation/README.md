@@ -275,7 +275,7 @@ The web animation model can be further broken down into two sub-models:
 
 2. An 'animation model' which converts the progress to property values.
 
-![](https://w3.org/TR/web-animations-1/img/timing-and-animation-models.svg)
+![](https://www.w3.org/TR/web-animations-1/images/timing-and-animation-models.svg)
 
 The division of responsibilities can best be illustrated through an example.
 Consider the following:
