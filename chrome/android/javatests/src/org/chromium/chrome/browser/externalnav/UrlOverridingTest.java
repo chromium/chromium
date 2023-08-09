@@ -572,7 +572,7 @@ public class UrlOverridingTest {
             }
             if (expectedFinalUrl == null) return;
             Criteria.checkThat(latestTab.getUrl().getSpec(), Matchers.is(expectedFinalUrl));
-        });
+        }, 10000L, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
 
         if (createsNewTab && shouldLaunchExternalIntent) {
             try {
