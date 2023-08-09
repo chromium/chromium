@@ -58,7 +58,7 @@ using base::UserMetricsAction;
                                         animated:YES
                                       completion:nil];
 
-  if (IsDefaultBrowserVideoPromoHalfscreenEnabled()) {
+  if (self.isHalfScreen) {
     self.halfScreenPromoCoordinator = [[HalfScreenPromoCoordinator alloc]
         initWithBaseNavigationController:self.navigationController
                                  browser:self.browser];

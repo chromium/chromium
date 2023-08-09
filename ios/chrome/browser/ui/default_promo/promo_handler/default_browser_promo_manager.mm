@@ -77,18 +77,11 @@
     return;
   }
 
-  feature_engagement::Tracker* tracker =
-      feature_engagement::TrackerFactory::GetForBrowserState(browserState);
-
   // Video promo takes priority over other default browser promos.
-  if (IsDefaultBrowserVideoPromoEnabled() && tracker &&
-      IsVideoPromoEligibleUser(tracker)) {
-    if (tracker->ShouldTriggerHelpUI(
-            feature_engagement::
-                kIPHiOSDefaultBrowserVideoPromoTriggerFeature)) {
-      [self showPromo:DefaultPromoTypeVideo];
-      return;
-    }
+  BOOL isDBVideoPromoEnabled =
+      IsDBVideoPromoHalfscreenEnabled() || IsDBVideoPromoFullscreenEnabled();
+  if (isDBVideoPromoEnabled && [self willShowVideoPromo]) {
+    return;
   }
 
   BOOL isSignedIn = [self isSignedIn];
@@ -114,6 +107,16 @@
   // is eligible for a tailored promo.
   if (IsDefaultBrowserPromoGenericTailoredTrainEnabled()) {
     [self hidePromo];
+    return;
+  }
+
+  // When the default browser video promo with generic triggering conditions is
+  // enabled, the generic default btowser promo is replaced with the video
+  // promo.
+  BOOL isDBVideoPromoWithGenericEnabled =
+      IsDBVideoPromoWithGenericFullscreenEnabled() ||
+      IsDBVideoPromoWithGenericHalfscreenEnabled();
+  if (isDBVideoPromoWithGenericEnabled && [self willShowVideoPromo]) {
     return;
   }
 
@@ -189,6 +192,9 @@
           initWithBaseViewController:self.baseViewController
                              browser:self.browser];
   self.videoDefaultPromoCoordinator.handler = self;
+  self.videoDefaultPromoCoordinator.isHalfScreen =
+      IsDBVideoPromoHalfscreenEnabled() ||
+      IsDBVideoPromoWithGenericHalfscreenEnabled();
   [self.videoDefaultPromoCoordinator start];
 }
 
@@ -208,6 +214,21 @@
                             type:type];
   self.tailoredPromoCoordinator.handler = self;
   [self.tailoredPromoCoordinator start];
+}
+
+- (BOOL)willShowVideoPromo {
+  feature_engagement::Tracker* tracker =
+      feature_engagement::TrackerFactory::GetForBrowserState(
+          self.browser->GetBrowserState());
+  if (tracker && IsVideoPromoEligibleUser(tracker)) {
+    if (tracker->ShouldTriggerHelpUI(
+            feature_engagement::
+                kIPHiOSDefaultBrowserVideoPromoTriggerFeature)) {
+      [self showPromo:DefaultPromoTypeVideo];
+      return true;
+    }
+  }
+  return false;
 }
 
 @end
