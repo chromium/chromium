@@ -27,9 +27,6 @@ ViewShadow::~ViewShadow() {
 }
 
 void ViewShadow::SetRoundedCornerRadius(int corner_radius) {
-  if (!view_)
-    return;
-  view_->layer()->SetRoundedCornerRadius(gfx::RoundedCornersF(corner_radius));
   shadow_->SetRoundedCornerRadius(corner_radius);
 }
 

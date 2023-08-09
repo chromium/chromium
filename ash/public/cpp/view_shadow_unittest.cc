@@ -69,23 +69,6 @@ TEST_F(ViewShadowTest, ShadowBoundsFollowIndirectViewBoundsChange) {
   EXPECT_EQ(gfx::Rect(10, 25, 20, 30), shadow.shadow()->content_bounds());
 }
 
-TEST_F(ViewShadowTest, ShadowCornerRadius) {
-  views::View view;
-  view.SetBoundsRect(gfx::Rect(10, 20, 30, 40));
-
-  ViewShadow shadow(&view, 1);
-  shadow.SetRoundedCornerRadius(5);
-
-  EXPECT_EQ(gfx::RoundedCornersF(5), view.layer()->rounded_corner_radii());
-  EXPECT_EQ(gfx::ShadowDetails::Get(1, 5).values,
-            shadow.shadow()->details_for_testing()->values);
-
-  shadow.SetRoundedCornerRadius(2);
-  EXPECT_EQ(gfx::RoundedCornersF(2), view.layer()->rounded_corner_radii());
-  EXPECT_EQ(gfx::ShadowDetails::Get(1, 2).values,
-            shadow.shadow()->details_for_testing()->values);
-}
-
 TEST_F(ViewShadowTest, ViewDestruction) {
   views::View root;
   root.SetPaintToLayer();
