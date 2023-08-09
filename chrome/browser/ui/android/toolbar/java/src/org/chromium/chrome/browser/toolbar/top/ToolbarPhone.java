@@ -1821,6 +1821,15 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
 
     @Override
     public void setTabSwitcherMode(boolean inTabSwitcherMode) {
+        // This method is only used for grid tab switcher with the start surface disabled. When
+        // start surface is enabled, omnibox state is updated in onStartSurfaceStateChanged(), which
+        // is always called before setTabSwitcherMode(), so skip here.
+        if (getToolbarDataProvider().shouldShowLocationBarInOverviewMode()) {
+            // Prevent pressing the tab switcher button until after transition finishes.
+            mToggleTabStackButton.setClickable(false);
+            return;
+        }
+
         // If setting tab switcher mode to true and the browser is already animating or in the tab
         // switcher skip.
         if (inTabSwitcherMode
