@@ -9,6 +9,7 @@
 #include "base/files/file.h"
 #include "base/functional/bind.h"
 #include "base/i18n/message_formatter.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/timer/elapsed_timer.h"
 #include "chrome/browser/ash/file_manager/copy_or_move_io_task.h"
@@ -294,6 +295,9 @@ void OneDriveUploadHandler::ShowIOTaskError(
       error_message = GetGenericErrorMessage();
   }
 
+  base::UmaHistogramExactLinear(
+      copy ? kOneDriveCopyErrorMetricName : kOneDriveMoveErrorMetricName,
+      -file_error, -base::File::FILE_ERROR_MAX);
   OnEndUpload(base::unexpected(error_message), upload_result);
 }
 

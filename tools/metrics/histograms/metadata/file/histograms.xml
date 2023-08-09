@@ -1093,6 +1093,30 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram
+    name="FileBrowser.OfficeFiles.Open.IOTaskError.{ProviderName}.{Transfer}"
+    enum="PlatformFileError" expires_after="M124">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Chrome OS File Browser: Records the error during upload in the &quot;upload
+    and open&quot; workflow for Office files. This metric should add up to the
+    sum of FileBrowser.OfficeFiles.Open.UploadResult.* where the result is a
+    copy or move operation error (IO task errors).
+  </summary>
+  <token key="ProviderName">
+    <variant name="GoogleDrive"
+        summary="The file must be transferred to Google Drive"/>
+    <variant name="OneDrive"
+        summary="The file must be transferred to Microsoft OneDrive"/>
+  </token>
+  <token key="Transfer">
+    <variant name="Copy"
+        summary="The files have been copied to {ProviderName}"/>
+    <variant name="Move" summary="The files have been moved to {ProviderName}"/>
+  </token>
+</histogram>
+
 <histogram name="FileBrowser.OfficeFiles.Open.SourceVolume.{CloudProvider}"
     enum="OfficeFilesSourceVolume" expires_after="M124">
   <owner>austinct@chromium.org</owner>

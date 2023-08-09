@@ -8,6 +8,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/i18n/message_formatter.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
@@ -426,6 +427,9 @@ void DriveUploadHandler::ShowIOTaskError(
       error_message = GetGenericErrorMessage();
   }
 
+  base::UmaHistogramExactLinear(
+      copy ? kGoogleDriveCopyErrorMetricName : kGoogleDriveMoveErrorMetricName,
+      -file_error, -base::File::FILE_ERROR_MAX);
   OnEndCopy(GURL(), upload_result, error_message);
 }
 
