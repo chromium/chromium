@@ -45,6 +45,11 @@ bool PrefersReducedTransparency() {
 bool IsHighContrast() {
   return NSWorkspace.sharedWorkspace.accessibilityDisplayShouldIncreaseContrast;
 }
+
+bool InvertedColors() {
+  return NSWorkspace.sharedWorkspace.accessibilityDisplayShouldInvertColors;
+}
+
 }  // namespace
 
 // Helper object to respond to light mode/dark mode changeovers.
@@ -523,6 +528,7 @@ NativeThemeMac::NativeThemeMac(bool configure_web_instance,
     InitializeDarkModeStateAndObserver();
 
   set_prefers_reduced_transparency(PrefersReducedTransparency());
+  set_inverted_colors(InvertedColors());
   if (!IsForcedHighContrast()) {
     SetPreferredContrast(CalculatePreferredContrast());
   }
@@ -539,6 +545,7 @@ NativeThemeMac::NativeThemeMac(bool configure_web_instance,
                     }
                     theme->set_prefers_reduced_transparency(
                         PrefersReducedTransparency());
+                    theme->set_inverted_colors(InvertedColors());
                     theme->NotifyOnNativeThemeUpdated();
                   }];
 
@@ -584,6 +591,7 @@ void NativeThemeMac::ConfigureWebInstance() {
   web_instance->set_preferred_color_scheme(CalculatePreferredColorScheme());
   web_instance->SetPreferredContrast(CalculatePreferredContrast());
   web_instance->set_prefers_reduced_transparency(PrefersReducedTransparency());
+  web_instance->set_inverted_colors(InvertedColors());
 
   // Add the web native theme as an observer to stay in sync with color scheme
   // changes.
