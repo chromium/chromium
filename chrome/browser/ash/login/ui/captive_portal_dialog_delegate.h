@@ -70,11 +70,14 @@ class CaptivePortalDialogDelegate
 
   base::WeakPtr<CaptivePortalDialogDelegate> GetWeakPtr();
 
-  views::Widget* widget_for_test() { return widget_; }
+  views::Widget* widget_for_test() { return widget_.get(); }
   content::WebContents* web_contents_for_test() { return web_contents_; }
 
  private:
-  raw_ptr<views::Widget, ExperimentalAsh> widget_ = nullptr;
+  // This was changed from a `raw_ptr` to a `WeakPtr` as mitigation of
+  // b/292447218.
+  base::WeakPtr<views::Widget> widget_ = nullptr;
+
   raw_ptr<views::WebDialogView, ExperimentalAsh> view_ = nullptr;
   raw_ptr<views::WebDialogView, ExperimentalAsh> host_view_ = nullptr;
   raw_ptr<content::WebContents, ExperimentalAsh> web_contents_ = nullptr;
