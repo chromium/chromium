@@ -33,7 +33,7 @@ std::string GetPlusAddressSuffixForEtldPlusOne(std::string etld_plus_one) {
 PlusAddressService::PlusAddressService() = default;
 PlusAddressService::~PlusAddressService() = default;
 
-bool PlusAddressService::SupportsPlusAddresses() {
+bool PlusAddressService::SupportsPlusAddresses(url::Origin origin) {
   return base::FeatureList::IsEnabled(plus_addresses::kFeature);
 }
 
@@ -71,5 +71,10 @@ void PlusAddressService::OfferPlusAddressCreation(
                     "@test.example"});
   SavePlusAddress(origin, result);
   std::move(callback).Run(result);
+}
+
+std::u16string PlusAddressService::GetCreateSuggestionLabel() {
+  // TODO(crbug.com/1467623): use standard `l10n_util::GetStringUTF16`.
+  return u"Lorem Ipsum";
 }
 }  // namespace plus_addresses

@@ -56,7 +56,8 @@ TEST_F(PlusAddressServiceTest, DefaultSupportsPlusAddressesState) {
   // Without explicit enablement of the feature, the `SupportsPlusAddresses`
   // function should return `false`.
   PlusAddressService service;
-  EXPECT_FALSE(service.SupportsPlusAddresses());
+  EXPECT_FALSE(service.SupportsPlusAddresses(
+      url::Origin::Create(GURL("https://test.example"))));
 }
 
 TEST_F(PlusAddressServiceTest, FeatureEnabled) {
@@ -66,7 +67,8 @@ TEST_F(PlusAddressServiceTest, FeatureEnabled) {
   // With the flag set, the URL should be filtered.
   scoped_feature_list.InitAndEnableFeature(plus_addresses::kFeature);
   PlusAddressService service;
-  EXPECT_TRUE(service.SupportsPlusAddresses());
+  EXPECT_TRUE(service.SupportsPlusAddresses(
+      url::Origin::Create(GURL("https://test.example"))));
 }
 
 TEST_F(PlusAddressServiceTest, FeatureExplicitlyDisabled) {
@@ -76,7 +78,8 @@ TEST_F(PlusAddressServiceTest, FeatureExplicitlyDisabled) {
   // With the flag set, the URL should be filtered.
   scoped_feature_list.InitAndDisableFeature(plus_addresses::kFeature);
   PlusAddressService service;
-  EXPECT_FALSE(service.SupportsPlusAddresses());
+  EXPECT_FALSE(service.SupportsPlusAddresses(
+      url::Origin::Create(GURL("https://test.example"))));
 }
 
 TEST_F(PlusAddressServiceTest, OfferPlusAddressCreation) {

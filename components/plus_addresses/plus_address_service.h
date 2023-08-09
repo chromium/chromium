@@ -32,8 +32,12 @@ class PlusAddressService : public KeyedService {
 
   // Returns `true` when plus addresses are supported. Currently requires only
   // that the `kPlusAddressesEnabled` base::Feature is enabled.
+  // Virtual to allow overriding the behavior in tests. This allows external
+  // tests (e.g., those in autofill that depend on this class) to substitute
+  // their own behavior.
   // TODO(crbug.com/1467623): also take signin state into account.
-  bool SupportsPlusAddresses();
+  // TODO(crbug.com/1467623): react to `origin` parameter.
+  virtual bool SupportsPlusAddresses(url::Origin origin);
   // Get a plus address, if one exists, for the passed-in origin. Note that all
   // plus address activity is scoped to eTLD+1. This class owns the conversion
   // of `origin` to its eTLD+1 form.
@@ -48,8 +52,17 @@ class PlusAddressService : public KeyedService {
   // address being created on their behalf, calling `PlusAddressCallback` on
   // confirmation. For now, however, simply generates a fake plus address and
   // runs `callback` with it immediately.
-  void OfferPlusAddressCreation(url::Origin origin,
-                                PlusAddressCallback callback);
+  // Virtual to allow overriding the behavior in tests. This is a
+  // future-proofing mechanism for when UI elements (and possibly other side
+  // effects) are added. This way, the tests external to this directory can stay
+  // the same.
+  virtual void OfferPlusAddressCreation(url::Origin origin,
+                                        PlusAddressCallback callback);
+
+  // The label for an autofill suggestion offering to create a new plus address.
+  // While only debatably relevant to this class, this function allows for
+  // further decoupling of PlusAddress generation and autofill.
+  std::u16string GetCreateSuggestionLabel();
 
  private:
   // The user's existing set of plus addresses, scoped to facets.
