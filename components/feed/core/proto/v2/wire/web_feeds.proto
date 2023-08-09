@@ -21,6 +21,7 @@ enum WebFeedChangeReason {
   IN_FEED_RECOMMENDATION = 4;
   BACK_OF_CARD_UNFOLLOW = 5;
   RECOMMENDATION_WEB_PAGE_ACCELERATOR = 6;
+  SINGLE_WEB_FEED = 7;
 }
 message WebFeed {
   enum State {
