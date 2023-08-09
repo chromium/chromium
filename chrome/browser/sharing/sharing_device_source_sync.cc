@@ -12,6 +12,7 @@
 #include "base/functional/callback.h"
 #include "base/stl_util.h"
 #include "base/task/thread_pool.h"
+#include "base/trace_event/trace_event.h"
 #include "chrome/browser/sharing/features.h"
 #include "chrome/browser/sharing/proto/sharing_message.pb.h"
 #include "chrome/browser/sharing/sharing_constants.h"
@@ -108,6 +109,7 @@ bool SharingDeviceSourceSync::IsReady() {
 }
 
 void SharingDeviceSourceSync::OnDeviceInfoChange() {
+  TRACE_EVENT0("sharing", "SharingDeviceSourceSync::OnDeviceInfoChange");
   if (device_info_tracker_->IsSyncing())
     device_info_tracker_->RemoveObserver(this);
   MaybeRunReadyCallbacks();
