@@ -64,7 +64,7 @@ CSSValue* StyleImageSet::ComputedCSSValue(const ComputedStyle& style,
 }
 
 bool StyleImageSet::CanRender() const {
-  return !best_fit_image_ || best_fit_image_->CanRender();
+  return best_fit_image_ && best_fit_image_->CanRender();
 }
 
 bool StyleImageSet::IsLoaded() const {
