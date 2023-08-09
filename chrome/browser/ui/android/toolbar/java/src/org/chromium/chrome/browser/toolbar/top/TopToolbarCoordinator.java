@@ -124,7 +124,6 @@ public class TopToolbarCoordinator implements Toolbar {
      * Creates a new {@link TopToolbarCoordinator}.
      * @param controlContainer The {@link ToolbarControlContainer} for the containing activity.
      * @param toolbarStub The stub for the tab switcher mode toolbar.
-     * @param fullscreenToolbarStub The stub for the fullscreen tab switcher mode toolbar.
      * @param toolbarLayout The {@link ToolbarLayout}.
      * @param toolbarDataProvider The provider for toolbar data.
      * @param tabController The controller that handles interactions with the tab.
@@ -171,9 +170,9 @@ public class TopToolbarCoordinator implements Toolbar {
      *        the logo should be shown in Start surface content.
      */
     public TopToolbarCoordinator(ToolbarControlContainer controlContainer, ViewStub toolbarStub,
-            ViewStub fullscreenToolbarStub, ToolbarLayout toolbarLayout,
-            ToolbarDataProvider toolbarDataProvider, ToolbarTabController tabController,
-            UserEducationHelper userEducationHelper, List<ButtonDataProvider> buttonDataProviders,
+            ToolbarLayout toolbarLayout, ToolbarDataProvider toolbarDataProvider,
+            ToolbarTabController tabController, UserEducationHelper userEducationHelper,
+            List<ButtonDataProvider> buttonDataProviders,
             OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier,
             ThemeColorProvider normalThemeColorProvider,
             ThemeColorProvider overviewThemeColorProvider,
@@ -219,10 +218,10 @@ public class TopToolbarCoordinator implements Toolbar {
                     mToolbarColorObserverManager);
         } else if (mToolbarLayout instanceof ToolbarPhone
                 || mToolbarLayout instanceof ToolbarTablet) {
-            mTabSwitcherModeCoordinator = new TabSwitcherModeTTCoordinator(toolbarStub,
-                    fullscreenToolbarStub, overviewModeMenuButtonCoordinator,
-                    isGridTabSwitcherEnabled, isTabToGtsAnimationEnabled,
-                    isIncognitoModeEnabledSupplier, mToolbarColorObserverManager);
+            mTabSwitcherModeCoordinator =
+                    new TabSwitcherModeTTCoordinator(toolbarStub, overviewModeMenuButtonCoordinator,
+                            isGridTabSwitcherEnabled, isTabToGtsAnimationEnabled,
+                            isIncognitoModeEnabledSupplier, mToolbarColorObserverManager);
         }
         controlContainer.setPostInitializationDependencies(this, initializeWithIncognitoColors,
                 constraintsSupplier, toolbarDataProvider::getTab, compositorInMotionSupplier,

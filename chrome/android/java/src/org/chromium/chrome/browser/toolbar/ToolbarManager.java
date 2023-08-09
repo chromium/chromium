@@ -1126,11 +1126,10 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             Callback<LoadUrlParams> logoClickedCallback,
             ObservableSupplier<Integer> constraintsSupplier) {
         ViewStub tabSwitcherToolbarStub = mActivity.findViewById(R.id.tab_switcher_toolbar_stub);
-        ViewStub tabSwitcherFullscreenToolbarStub = null;
 
         // clang-format off
         TopToolbarCoordinator toolbar = new TopToolbarCoordinator(controlContainer,
-                tabSwitcherToolbarStub, tabSwitcherFullscreenToolbarStub, toolbarLayout,
+                tabSwitcherToolbarStub, toolbarLayout,
                 mLocationBarModel, mToolbarTabController,
                 new UserEducationHelper(mActivity, mHandler), buttonDataProviders,
                 mLayoutStateProviderSupplier, browsingModeThemeColorProvider,

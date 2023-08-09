@@ -53,12 +53,10 @@ class TabSwitcherModeTTCoordinator {
     private final TopToolbarInteractabilityManager mTopToolbarInteractabilityManager;
 
     TabSwitcherModeTTCoordinator(ViewStub tabSwitcherToolbarStub,
-            ViewStub tabSwitcherFullscreenToolbarStub, MenuButtonCoordinator menuButtonCoordinator,
-            boolean isGridTabSwitcherEnabled, boolean isTabToGtsAnimationEnabled,
-            BooleanSupplier isIncognitoModeEnabledSupplier,
+            MenuButtonCoordinator menuButtonCoordinator, boolean isGridTabSwitcherEnabled,
+            boolean isTabToGtsAnimationEnabled, BooleanSupplier isIncognitoModeEnabledSupplier,
             ToolbarColorObserverManager toolbarColorObserverManager) {
         mTabSwitcherToolbarStub = tabSwitcherToolbarStub;
-        mTabSwitcherFullscreenToolbarStub = tabSwitcherFullscreenToolbarStub;
         mMenuButtonCoordinator = menuButtonCoordinator;
         mIsGridTabSwitcherEnabled = isGridTabSwitcherEnabled;
         mIsTabToGtsAnimationEnabled = isTabToGtsAnimationEnabled;
