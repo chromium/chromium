@@ -19,6 +19,7 @@
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "chrome/browser/ash/login/login_constants.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/reauth_stats.h"
@@ -102,6 +103,7 @@ void OfflineSigninLimiter::Shutdown() {
 }
 
 void OfflineSigninLimiter::OnSessionStateChanged() {
+  TRACE_EVENT0("login", "OfflineSigninLimiter::OnSessionStateChanged");
   if (!session_manager::SessionManager::Get()->IsScreenLocked())
     UpdateLimit();
   else
