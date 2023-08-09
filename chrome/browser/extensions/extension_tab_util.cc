@@ -16,6 +16,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/types/expected_macros.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/api/tab_groups/tab_groups_util.h"
 #include "chrome/browser/extensions/api/tabs/tabs_constants.h"
@@ -241,12 +242,9 @@ base::expected<base::Value::Dict, std::string> ExtensionTabUtil::OpenTab(
 
   GURL url(chrome::kChromeUINewTabURL);
   if (params.url) {
-    auto result = ExtensionTabUtil::PrepareURLForNavigation(
-        *params.url, function->extension(), function->browser_context());
-    if (!result.has_value()) {
-      return base::unexpected(result.error());
-    }
-    url = std::move(*result);
+    ASSIGN_OR_RETURN(url, ExtensionTabUtil::PrepareURLForNavigation(
+                              *params.url, function->extension(),
+                              function->browser_context()));
   }
 
   // Default to foreground for the new tab. The presence of 'active' property

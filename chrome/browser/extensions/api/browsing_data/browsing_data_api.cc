@@ -312,18 +312,16 @@ ExtensionFunction::ResponseAction BrowsingDataRemoverFunction::Run() {
 
   if (origins) {
     OriginParsingResult result = ParseOrigins(*origins);
-    if (result.has_value()) {
-      origins_ = std::move(*result);
-    } else {
+    if (!result.has_value()) {
       return RespondNow(std::move(result.error()));
     }
+    origins_ = std::move(*result);
   } else if (exclude_origins) {
     OriginParsingResult result = ParseOrigins(*exclude_origins);
-    if (result.has_value()) {
-      origins_ = std::move(*result);
-    } else {
+    if (!result.has_value()) {
       return RespondNow(std::move(result.error()));
     }
+    origins_ = std::move(*result);
   }
   mode_ = origins ? content::BrowsingDataFilterBuilder::Mode::kDelete
                   : content::BrowsingDataFilterBuilder::Mode::kPreserve;
