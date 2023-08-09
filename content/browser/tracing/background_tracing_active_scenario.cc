@@ -285,6 +285,7 @@ bool BackgroundTracingActiveScenario::StartTracing() {
   DCHECK_NE(config_->tracing_mode(), BackgroundTracingConfigImpl::SYSTEM);
   TraceConfig chrome_config = config_->GetTraceConfig();
 
+#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   // If the tracing controller is tracing, i.e. DevTools or about://tracing,
   // we don't start background tracing to not interfere with the user activity.
   if (TracingControllerImpl::GetInstance()->IsTracing()) {
@@ -292,6 +293,7 @@ bool BackgroundTracingActiveScenario::StartTracing() {
     AbortScenario();
     return false;
   }
+#endif
 
   // Activate the categories immediately. StartTracing eventually does this
   // itself, but asynchronously via Mojo, and in the meantime events will be
