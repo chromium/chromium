@@ -1464,18 +1464,20 @@ Permissions you've already given to websites and apps may apply to this account.
         Share a Chromium tab
       </message>
       <!-- Idle timeout bubble. -->
-      <message name="IDS_IDLE_BUBBLE_TITLE_CLOSE" desc="Title of a bubble that informs the user that Chrome closed automatically, because they were away from the computer for X minutes.">
-        Chromium was automatically closed
-      </message>
-      <message name="IDS_IDLE_BUBBLE_BODY_CLOSE_AND_CLEAR" desc="Body of a bubble that informs the user that Chromium closed + cleared data automatically, because they were away from the computer for X minutes.">
-        Your organization closes Chromium when it isn't used for <ph name="TIMEOUT_DURATION">$1<ex>30 minutes</ex></ph>. Browsing data was deleted. This could include history, autofill, and downloads.
-      </message>
-      <message name="IDS_IDLE_BUBBLE_BODY_CLEAR" desc="Body of a bubble that informs the user that Chromium cleared data automatically, because they were away from the computer for X minutes.">
-        Your organization deletes Chromium data when it isn't used for <ph name="TIMEOUT_DURATION">$1<ex>30 minutes</ex></ph>. This could include history, autofill, and downloads.
-      </message>
-      <message name="IDS_IDLE_BUBBLE_BODY_CLOSE" desc="Body of a bubble that informs the user that Chromium closed automatically, because they were away from the computer for X minutes.">
-        Your organization closes Chromium when it isn't used for <ph name="TIMEOUT_DURATION">$1<ex>30 minutes</ex></ph>.
-      </message>
+      <if expr="toolkit_views">
+        <message name="IDS_IDLE_BUBBLE_TITLE_CLOSE" desc="Title of a bubble that informs the user that Chrome closed automatically, because they were away from the computer for X minutes.">
+          Chromium was automatically closed
+        </message>
+        <message name="IDS_IDLE_BUBBLE_BODY_CLOSE_AND_CLEAR" desc="Body of a bubble that informs the user that Chromium closed + cleared data automatically, because they were away from the computer for X minutes.">
+          Your organization closes Chromium when it isn't used for <ph name="TIMEOUT_DURATION">$1<ex>30 minutes</ex></ph>. Browsing data was deleted. This could include history, autofill, and downloads.
+        </message>
+        <message name="IDS_IDLE_BUBBLE_BODY_CLEAR" desc="Body of a bubble that informs the user that Chromium cleared data automatically, because they were away from the computer for X minutes.">
+          Your organization deletes Chromium data when it isn't used for <ph name="TIMEOUT_DURATION">$1<ex>30 minutes</ex></ph>. This could include history, autofill, and downloads.
+        </message>
+        <message name="IDS_IDLE_BUBBLE_BODY_CLOSE" desc="Body of a bubble that informs the user that Chromium closed automatically, because they were away from the computer for X minutes.">
+          Your organization closes Chromium when it isn't used for <ph name="TIMEOUT_DURATION">$1<ex>30 minutes</ex></ph>.
+        </message>
+      </if>
       <!-- Idle timeout dialog. -->
       <if expr="not is_android and not is_chromeos">
         <message name="IDS_IDLE_TIMEOUT_CLOSE_TITLE" desc="Title of the Idle Timeout dialog, warning the user that their windows are about to close.">
