@@ -57,9 +57,8 @@ const SkScalar kScrollRadius =
 // static
 NativeTheme* NativeTheme::GetInstanceForWeb() {
 #if BUILDFLAG(IS_WIN)
-  if (IsFluentScrollbarEnabled() && !IsOverlayScrollbarEnabled()) {
+  if (IsFluentScrollbarEnabled())
     return NativeThemeFluent::web_instance();
-  }
 #endif  // BUILDFLAG(IS_WIN)
   return NativeThemeAura::web_instance();
 }
