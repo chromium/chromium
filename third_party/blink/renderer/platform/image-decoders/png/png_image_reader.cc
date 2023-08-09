@@ -96,11 +96,13 @@ PNGImageReader::PNGImageReader(PNGImageDecoder* decoder,
       ignore_animation_(false) {
   png_ = png_create_read_struct(PNG_LIBPNG_VER_STRING, nullptr, pngFailed,
                                 nullptr);
-  // Configure the PNG encoder to always keep the cICP chunk if present.
-  // TODO(veluca): when libpng starts supporting cICP chunks explicitly, remove
-  // this code.
-  png_set_keep_unknown_chunks(png_, PNG_HANDLE_CHUNK_ALWAYS,
-                              reinterpret_cast<const png_byte*>("cICP"), 1);
+  // Configure the PNG encoder to always keep the cICP, cLLi and mDCv chunks if
+  // present.
+  // TODO(veluca): when libpng starts supporting cICP/cLLi chunks explicitly,
+  // remove this code.
+  png_set_keep_unknown_chunks(
+      png_, PNG_HANDLE_CHUNK_ALWAYS,
+      reinterpret_cast<const png_byte*>("cICP\0cLLi\0mDCv"), 3);
   info_ = png_create_info_struct(png_);
   png_set_progressive_read_fn(png_, decoder_, nullptr, pngRowAvailable,
                               pngFrameComplete);
@@ -674,7 +676,7 @@ bool PNGImageReader::ParseSize(const FastSharedBufferReader& reader) {
     } else {
       auto is_necessary_ancillary = [](const png_byte* chunk) {
         for (const char* tag :
-             {"tRNS", "cHRM", "iCCP", "sRGB", "gAMA", "cICP"}) {
+             {"tRNS", "cHRM", "iCCP", "sRGB", "gAMA", "cICP", "cLLi", "mDCv"}) {
           if (IsChunk(chunk, tag)) {
             return true;
           }

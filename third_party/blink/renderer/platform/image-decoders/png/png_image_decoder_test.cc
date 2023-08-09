@@ -1524,6 +1524,37 @@ TEST(PNGTests, cicp) {
   EXPECT_TRUE(skcms_TransferFunction_isPQish(&png_profile->trc[0].parametric));
 }
 
+TEST(PNGTests, HDRMetadata) {
+  const char* png_file = "/images/resources/cicp_pq.png";
+  scoped_refptr<SharedBuffer> data = ReadFile(png_file);
+  ASSERT_TRUE(data);
+
+  auto decoder = CreatePNGDecoder();
+  decoder->SetData(data.get(), true);
+  auto* frame = decoder->DecodeFrameBufferAtIndex(0);
+  ASSERT_TRUE(frame);
+  ASSERT_FALSE(decoder->Failed());
+  const absl::optional<gfx::HDRMetadata> hdr_metadata =
+      decoder->GetHDRMetadata();
+  ASSERT_TRUE(hdr_metadata);
+
+  ASSERT_TRUE(hdr_metadata->cta_861_3);
+  EXPECT_EQ(hdr_metadata->cta_861_3->max_content_light_level, 4000u);
+  EXPECT_EQ(hdr_metadata->cta_861_3->max_frame_average_light_level, 2627u);
+
+  ASSERT_TRUE(hdr_metadata->smpte_st_2086);
+  EXPECT_FLOAT_EQ(hdr_metadata->smpte_st_2086->primaries.fRX, .680f);
+  EXPECT_FLOAT_EQ(hdr_metadata->smpte_st_2086->primaries.fRY, .320f);
+  EXPECT_FLOAT_EQ(hdr_metadata->smpte_st_2086->primaries.fGX, .265f);
+  EXPECT_FLOAT_EQ(hdr_metadata->smpte_st_2086->primaries.fGY, .690f);
+  EXPECT_FLOAT_EQ(hdr_metadata->smpte_st_2086->primaries.fBX, .150f);
+  EXPECT_FLOAT_EQ(hdr_metadata->smpte_st_2086->primaries.fBY, .060f);
+  EXPECT_FLOAT_EQ(hdr_metadata->smpte_st_2086->primaries.fWX, .3127f);
+  EXPECT_FLOAT_EQ(hdr_metadata->smpte_st_2086->primaries.fWY, .3290f);
+  EXPECT_FLOAT_EQ(hdr_metadata->smpte_st_2086->luminance_max, 5000.f);
+  EXPECT_FLOAT_EQ(hdr_metadata->smpte_st_2086->luminance_min, .01f);
+}
+
 TEST(AnimatedPNGTests, TrnsMeansAlpha) {
   const char* png_file =
       "/images/resources/"
