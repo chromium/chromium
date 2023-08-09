@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/views/title_origin_label.h"
 
 #include "ui/base/ui_base_features.h"
-#include "ui/views/accessibility/view_accessibility.h"
 
 std::unique_ptr<views::Label> CreateTitleOriginLabel(
     const std::u16string& text) {
