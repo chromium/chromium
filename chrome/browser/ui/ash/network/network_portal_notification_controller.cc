@@ -20,6 +20,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/trace_event/trace_event.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ash/mobile/mobile_activator.h"
 #include "chrome/browser/notifications/notification_handler.h"
@@ -201,6 +202,8 @@ void NetworkPortalNotificationController::OnShuttingDown() {
 }
 
 void NetworkPortalNotificationController::OnSessionStateChanged() {
+  TRACE_EVENT0("ui",
+               "NetworkPortalNotificationController::OnSessionStateChanged");
   session_manager::SessionState state =
       session_manager::SessionManager::Get()->session_state();
   if (state == session_manager::SessionState::LOCKED) {
