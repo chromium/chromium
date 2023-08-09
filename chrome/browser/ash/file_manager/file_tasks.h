@@ -126,14 +126,16 @@ class PrefRegistrySyncable;
 
 namespace file_manager::file_tasks {
 
-extern const char kActionIdView[];
-extern const char kActionIdSend[];
-extern const char kActionIdSendMultiple[];
-extern const char kActionIdWebDriveOfficeWord[];
-extern const char kActionIdWebDriveOfficeExcel[];
-extern const char kActionIdWebDriveOfficePowerPoint[];
-extern const char kActionIdOpenInOffice[];
-extern const char kActionIdOpenWeb[];
+constexpr char kActionIdView[] = "view";
+constexpr char kActionIdSend[] = "send";
+constexpr char kActionIdSendMultiple[] = "send_multiple";
+constexpr char kActionIdQuickOffice[] = "qo_documents";
+constexpr char kActionIdWebDriveOfficeWord[] = "open-web-drive-office-word";
+constexpr char kActionIdWebDriveOfficeExcel[] = "open-web-drive-office-excel";
+constexpr char kActionIdWebDriveOfficePowerPoint[] =
+    "open-web-drive-office-powerpoint";
+constexpr char kActionIdOpenInOffice[] = "open-in-office";
+constexpr char kActionIdOpenWeb[] = "OPEN_WEB";
 
 // Task types as explained in the comment above. Search for <task-type>.
 enum TaskType {
@@ -454,10 +456,6 @@ bool IsHtmlFile(const base::FilePath& path);
 
 // Returns whether |path| is a MS Office file according to its extension.
 bool IsOfficeFile(const base::FilePath& path);
-
-// Files encrypted with Google Drive CSE have a specific MIME type; this helper
-// returns whether the given MIME type denotes such a file.
-bool IsEncryptedMimeType(std::string mime_type);
 
 // Returns the group of extensions we consider to be 'Word', 'Excel' or
 // 'PowerPoint' files for the purpose of setting preferences. The extensions
