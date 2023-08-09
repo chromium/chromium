@@ -1,0 +1,12 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("safety_check") {
+  sources = [
+    "safety_check_state.h",
+    "safety_check_state.mm",
+  ]
+  deps = [ "//ios/chrome/browser/safety_check:constants" ]
+  frameworks = [ "UIKit.framework" ]
+}
