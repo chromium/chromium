@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/gtest_prod_util.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "url/gurl.h"
@@ -38,6 +39,8 @@ class ExpsRegistrationSuccessObserver
       const ExpsRegistrationSuccessObserver&) = delete;
 
  protected:
+  // Called on every page load. Determines and shows IPH if the conditions are
+  // met.
   void MaybeShowIPH();
   virtual void ShowIPH();
   virtual bool IsSearchInCompanionSidePanelSupported();
@@ -46,22 +49,23 @@ class ExpsRegistrationSuccessObserver
  private:
   friend class content::WebContentsUserData<ExpsRegistrationSuccessObserver>;
 
+  FRIEND_TEST_ALL_PREFIXES(ExpsRegistrationSuccessObserverTest, MatchURL);
+
   // content::WebContentsObserver overrides.
   void PrimaryPageChanged(content::Page& page) override;
 
-  // Called on every page load. Determines and shows IPH if the conditions are
-  // met.
-
-  // Whether the current URL is blocklisted from showing IPH.
-  bool IsUrlBlockListedForIPH(const GURL& url);
+  // Whether the given `url` starts with with one of the url patterns in
+  // `url_patterns`.
+  bool DoesUrlMatchPatternsInList(const GURL& url,
+                                  const std::vector<std::string>& url_patterns);
 
   // The list of URLs to search for a match that represents exps registration
   // success.
-  std::vector<GURL> urls_to_match_against_;
+  std::vector<std::string> exps_registration_success_url_patterns_;
 
   // The list of blocklisted URLs to search for a match for which IPH isn't
   // shown.
-  std::vector<GURL> blocklisted_iph_urls_to_match_against_;
+  std::vector<std::string> blocklisted_iph_url_patterns_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

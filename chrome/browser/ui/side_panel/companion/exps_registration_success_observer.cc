@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/side_panel/companion/exps_registration_success_observer.h"
 
 #include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "chrome/browser/companion/core/constants.h"
 #include "chrome/browser/companion/core/features.h"
 #include "chrome/browser/companion/core/utils.h"
@@ -29,14 +30,14 @@ ExpsRegistrationSuccessObserver::ExpsRegistrationSuccessObserver(
       base::SplitString(companion::GetExpsRegistrationSuccessPageURLs(), ",",
                         base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   for (const auto& url_string : url_strings_to_match) {
-    urls_to_match_against_.emplace_back(url_string);
+    exps_registration_success_url_patterns_.emplace_back(url_string);
   }
 
   const auto& blocklisted_url_strings_to_match =
       base::SplitString(companion::GetCompanionIPHBlocklistedPageURLs(), ",",
                         base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   for (const auto& url_string : blocklisted_url_strings_to_match) {
-    blocklisted_iph_urls_to_match_against_.emplace_back(url_string);
+    blocklisted_iph_url_patterns_.emplace_back(url_string);
   }
 }
 
@@ -52,16 +53,10 @@ void ExpsRegistrationSuccessObserver::PrimaryPageChanged(content::Page& page) {
   if (pref_service()->GetBoolean(kHasNavigatedToExpsSuccessPage)) {
     return;
   }
-  bool matches_exps_url = false;
-  const GURL& url = page.GetMainDocument().GetLastCommittedURL();
-  for (const auto& url_to_match : urls_to_match_against_) {
-    if (url == url_to_match) {
-      matches_exps_url = true;
-      break;
-    }
-  }
 
-  if (!matches_exps_url) {
+  const GURL& url = page.GetMainDocument().GetLastCommittedURL();
+  if (!DoesUrlMatchPatternsInList(url,
+                                  exps_registration_success_url_patterns_)) {
     return;
   }
 
@@ -83,7 +78,7 @@ void ExpsRegistrationSuccessObserver::MaybeShowIPH() {
     return;
   }
 
-  if (IsUrlBlockListedForIPH(url)) {
+  if (DoesUrlMatchPatternsInList(url, blocklisted_iph_url_patterns_)) {
     return;
   }
 
@@ -118,9 +113,15 @@ bool ExpsRegistrationSuccessObserver::IsSearchInCompanionSidePanelSupported() {
       chrome::FindBrowserWithWebContents(web_contents()));
 }
 
-bool ExpsRegistrationSuccessObserver::IsUrlBlockListedForIPH(const GURL& url) {
-  for (const auto& url_to_match : blocklisted_iph_urls_to_match_against_) {
-    if (url == url_to_match) {
+bool ExpsRegistrationSuccessObserver::DoesUrlMatchPatternsInList(
+    const GURL& url,
+    const std::vector<std::string>& url_patterns) {
+  if (!url.is_valid()) {
+    return false;
+  }
+
+  for (const auto& url_pattern : url_patterns) {
+    if (base::StartsWith(url.spec(), url_pattern)) {
       return true;
     }
   }
