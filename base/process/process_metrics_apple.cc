@@ -206,8 +206,25 @@ bool GetSystemMemoryInfo(SystemMemoryInfoKB* meminfo) {
 #else
   static_assert(PAGE_SIZE % 1024 == 0, "Invalid page size");
 #endif
-  meminfo->free = saturated_cast<int>(
-      PAGE_SIZE / 1024 * (vm_info.free_count - vm_info.speculative_count));
+
+  if (vm_info.speculative_count <= vm_info.free_count) {
+    meminfo->free = saturated_cast<int>(
+        PAGE_SIZE / 1024 * (vm_info.free_count - vm_info.speculative_count));
+  } else {
+    // Inside the `host_statistics64` call above, `speculative_count` is
+    // computed later than `free_count`, so these values are snapshots of two
+    // (slightly) different points in time. As a result, it is possible for
+    // `speculative_count` to have increased significantly since `free_count`
+    // was computed, even to a point where `speculative_count` is greater than
+    // the computed value of `free_count`. See
+    // https://github.com/apple-oss-distributions/xnu/blob/aca3beaa3dfbd42498b42c5e5ce20a938e6554e5/osfmk/kern/host.c#L788
+    // In this case, 0 is the best approximation for `meminfo->free`. This is
+    // inexact, but even in the case where `speculative_count` is less than
+    // `free_count`, the computed `meminfo->free` will only be an approximation
+    // given that the two inputs come from different points in time.
+    meminfo->free = 0;
+  }
+
   meminfo->speculative =
       saturated_cast<int>(PAGE_SIZE / 1024 * vm_info.speculative_count);
   meminfo->file_backed =
