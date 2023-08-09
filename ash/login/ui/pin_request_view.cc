@@ -152,13 +152,6 @@ PinRequestViewState PinRequestView::TestApi::state() const {
   return view_->state_;
 }
 
-// static
-SkColor PinRequestView::GetChildUserDialogColor(bool using_blur) {
-  return AshColorProvider::Get()->GetBaseLayerColor(
-      using_blur ? AshColorProvider::BaseLayerType::kTransparent80
-                 : AshColorProvider::BaseLayerType::kOpaque);
-}
-
 // TODO(crbug.com/1061008): Make dialog look good on small screens with high
 // zoom factor.
 PinRequestView::PinRequestView(PinRequest request, Delegate* delegate)
@@ -187,23 +180,23 @@ PinRequestView::PinRequestView(PinRequest request, Delegate* delegate)
   layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
   SetLayoutManager(std::move(layout));
+  SetPaintToLayer();
+  layer()->SetBackgroundBlur(ShelfConfig::Get()->shelf_blur_radius());
+  ui::ColorId background_color_id =
+      is_jelly ? cros_tokens::kCrosSysSystemBaseElevated
+               : static_cast<ui::ColorId>(kColorAshShieldAndBase80);
+  SetBackground(views::CreateThemedRoundedRectBackground(
+      background_color_id, kPinRequestViewRoundedCornerRadiusDp));
 
   if (is_jelly) {
-    SetBackground(views::CreateThemedRoundedRectBackground(
-        cros_tokens::kCrosSysSystemBaseElevated,
-        kPinRequestViewRoundedCornerRadiusDp));
     SetBorder(std::make_unique<views::HighlightBorder>(
         kPinRequestViewRoundedCornerRadiusDp,
         views::HighlightBorder::Type::kHighlightBorder1));
     shadow_ = SystemShadow::CreateShadowOnNinePatchLayerForView(
         this, SystemShadow::Type::kElevation12);
-  } else {
-    SetPaintToLayer();
-    layer()->SetFillsBoundsOpaquely(false);
-    layer()->SetRoundedCornerRadius(
-        gfx::RoundedCornersF(kPinRequestViewRoundedCornerRadiusDp));
-    layer()->SetBackgroundBlur(ShelfConfig::Get()->shelf_blur_radius());
+    shadow_->SetRoundedCornerRadius(kPinRequestViewRoundedCornerRadiusDp);
   }
+
   const int child_view_width =
       kPinRequestViewWidthDp - 2 * kPinRequestViewMainHorizontalInsetDp;
 
@@ -425,16 +418,6 @@ PinRequestView::PinRequestView(PinRequest request, Delegate* delegate)
 }
 
 PinRequestView::~PinRequestView() = default;
-
-void PinRequestView::OnPaint(gfx::Canvas* canvas) {
-  views::View::OnPaint(canvas);
-
-  cc::PaintFlags flags;
-  flags.setStyle(cc::PaintFlags::kFill_Style);
-  flags.setColor(GetChildUserDialogColor(true));
-  canvas->DrawRoundRect(GetContentsBounds(),
-                        kPinRequestViewRoundedCornerRadiusDp, flags);
-}
 
 void PinRequestView::RequestFocus() {
   access_code_view_->RequestFocus();

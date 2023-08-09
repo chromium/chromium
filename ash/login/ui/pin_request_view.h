@@ -116,11 +116,6 @@ class ASH_EXPORT PinRequestView : public views::DialogDelegateView,
     const raw_ptr<PinRequestView, ExperimentalAsh> view_;
   };
 
-  // Returns color used for dialog and UI elements specific for child user.
-  // |using_blur| should be true if the UI element is using background blur
-  // (color transparency depends on it).
-  static SkColor GetChildUserDialogColor(bool using_blur);
-
   // Creates pin request view that will enable the user to enter a pin.
   // |request| is used to configure callbacks and UI details.
   PinRequestView(PinRequest request, Delegate* delegate);
@@ -131,7 +126,6 @@ class ASH_EXPORT PinRequestView : public views::DialogDelegateView,
   ~PinRequestView() override;
 
   // views::View:
-  void OnPaint(gfx::Canvas* canvas) override;
   void RequestFocus() override;
   gfx::Size CalculatePreferredSize() const override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
