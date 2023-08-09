@@ -38,7 +38,7 @@
   } else {
     [cell updatePaddingForDetailText:NO];
   }
-  cell.statusTextLabel.text = self.statusText;
+  [cell setStatusText:self.statusText];
   if (self.accessibilityHint) {
     cell.customizedAccessibilityHint = self.accessibilityHint;
   }
