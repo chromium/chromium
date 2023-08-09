@@ -6,4 +6,7 @@ specific_include_rules = {
   "tts_client_impl.cc": [
     "+content/public/browser/tts_controller.h",
   ],
+  "accessibility_service_client_browsertest.cc": [
+    "+third_party/skia/include/core/SkColor.h",
+  ],
 }

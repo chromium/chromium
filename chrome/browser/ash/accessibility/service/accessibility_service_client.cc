@@ -10,14 +10,15 @@
 #include "base/uuid.h"
 #include "chrome/browser/accessibility/service/accessibility_service_router.h"
 #include "chrome/browser/accessibility/service/accessibility_service_router_factory.h"
+#include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/service/accessibility_service_devtools_delegate.h"
 #include "chrome/browser/ash/accessibility/service/automation_client_impl.h"
 #include "chrome/browser/ash/accessibility/service/tts_client_impl.h"
+#include "chrome/browser/ash/accessibility/service/user_interface_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
-#include "services/accessibility/public/mojom/accessibility_service.mojom-shared.h"
 #include "services/accessibility/public/mojom/accessibility_service.mojom.h"
 
 namespace ash {
@@ -37,6 +38,11 @@ void AccessibilityServiceClient::BindAutomation(
 void AccessibilityServiceClient::BindTts(
     mojo::PendingReceiver<ax::mojom::Tts> tts_receiver) {
   tts_client_->Bind(std::move(tts_receiver));
+}
+
+void AccessibilityServiceClient::BindUserInterface(
+    mojo::PendingReceiver<ax::mojom::UserInterface> ui_receiver) {
+  user_interface_client_->Bind(std::move(ui_receiver));
 }
 
 void AccessibilityServiceClient::SetProfile(content::BrowserContext* profile) {
@@ -89,6 +95,7 @@ void AccessibilityServiceClient::Reset() {
   automation_client_.reset();
   tts_client_.reset();
   devtools_agent_hosts_.clear();
+  user_interface_client_.reset();
 }
 
 void AccessibilityServiceClient::EnableAssistiveTechnology(
@@ -103,8 +110,10 @@ void AccessibilityServiceClient::EnableAssistiveTechnology(
     return;
   } else if (enabled && iter == enabled_features_.end()) {
     enabled_features_.push_back(type);
+    AccessibilityManager::Get()->InitializeFocusRings(type);
   } else if (!enabled && iter != enabled_features_.end()) {
     enabled_features_.erase(iter);
+    AccessibilityManager::Get()->RemoveFocusRings(type);
   }
 
   if (!enabled && !at_controller_.is_bound()) {
@@ -147,6 +156,7 @@ void AccessibilityServiceClient::LaunchAccessibilityServiceAndBind() {
 
   automation_client_ = std::make_unique<AutomationClientImpl>();
   tts_client_ = std::make_unique<TtsClientImpl>(profile_);
+  user_interface_client_ = std::make_unique<UserInterfaceImpl>();
 
   router->BindAssistiveTechnologyController(
       at_controller_.BindNewPipeAndPassReceiver(), enabled_features_);

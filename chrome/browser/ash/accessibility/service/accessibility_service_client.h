@@ -8,19 +8,22 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "content/public/browser/devtools_agent_host.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/accessibility/public/mojom/accessibility_service.mojom.h"
+#include "services/accessibility/public/mojom/tts.mojom-forward.h"
+#include "services/accessibility/public/mojom/user_interface.mojom-forward.h"
 
 namespace content {
 class BrowserContext;
+class DevToolsAgentHost;
 }
 
 namespace ash {
 class AutomationClientImpl;
 class TtsClientImpl;
+class UserInterfaceImpl;
 
 // The AccessibilityServiceClient in the Browser process interacts with the
 // AccessibilityService process over mojom. It is responsible for communicating
@@ -37,11 +40,13 @@ class AccessibilityServiceClient
   ~AccessibilityServiceClient() override;
 
   // ax::mojom::AccessibilityServiceClient:
-  void BindTts(mojo::PendingReceiver<ax::mojom::Tts> tts_receiver) override;
   void BindAutomation(
       mojo::PendingAssociatedRemote<ax::mojom::Automation> automation,
       mojo::PendingReceiver<ax::mojom::AutomationClient> automation_client)
       override;
+  void BindTts(mojo::PendingReceiver<ax::mojom::Tts> tts_receiver) override;
+  void BindUserInterface(
+      mojo::PendingReceiver<ax::mojom::UserInterface> ui_receiver) override;
 
   void SetProfile(content::BrowserContext* profile);
 
@@ -75,6 +80,7 @@ class AccessibilityServiceClient
 
   std::unique_ptr<AutomationClientImpl> automation_client_;
   std::unique_ptr<TtsClientImpl> tts_client_;
+  std::unique_ptr<UserInterfaceImpl> user_interface_client_;
 
   // Track the currently enabled features in case we disconnect from the service
   // and need to reconnect, for example when the profile changes.

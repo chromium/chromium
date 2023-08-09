@@ -14,6 +14,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/accessibility/public/mojom/accessibility_service.mojom.h"
+#include "services/accessibility/public/mojom/user_interface.mojom-forward.h"
 
 namespace ax {
 
@@ -41,14 +42,16 @@ class AssistiveTechnologyControllerImpl
       mojo::PendingRemote<mojom::AccessibilityServiceClient>
           accessibility_client_remote);
 
-  // Called by AutomationInternalBindings owned by a V8 instance
-  // to request binding of mojo interfaces in the OS.
+  // Called by a bindings class owned by a V8 instance to request binding of
+  // mojo interfaces in the OS.
   // mojom::AccessibilityServiceClient:
-  void BindTts(mojo::PendingReceiver<mojom::Tts> tts_receiver) override;
   void BindAutomation(
       mojo::PendingAssociatedRemote<mojom::Automation> automation,
       mojo::PendingReceiver<mojom::AutomationClient> automation_client)
       override;
+  void BindTts(mojo::PendingReceiver<mojom::Tts> tts_receiver) override;
+  void BindUserInterface(mojo::PendingReceiver<mojom::UserInterface>
+                             user_interface_receiver) override;
 
   // mojom::AssistiveTechnologyController:
   void EnableAssistiveTechnology(

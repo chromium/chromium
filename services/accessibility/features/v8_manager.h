@@ -6,6 +6,7 @@
 #define SERVICES_ACCESSIBILITY_FEATURES_V8_MANAGER_H_
 
 #include <memory>
+#include <vector>
 
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -21,7 +22,6 @@
 #include "services/accessibility/public/mojom/automation.mojom-forward.h"
 #include "v8/include/v8-context.h"
 #include "v8/include/v8-local-handle.h"
-#include "v8/include/v8-value.h"
 
 namespace v8 {
 class Isolate;
@@ -59,7 +59,8 @@ class V8Environment : public BindingsIsolateHolder {
   V8Environment(const V8Environment&) = delete;
   V8Environment& operator=(const V8Environment&) = delete;
 
-  // All of the APIs should be installed before adding V8 bindings.
+  // All of the APIs needed for this V8Manager (based on the AT type) should be
+  // installed before adding V8 bindings.
   void InstallAutomation(
       mojo::PendingAssociatedReceiver<mojom::Automation> automation,
       mojo::PendingRemote<mojom::AutomationClient> automation_client);
@@ -117,6 +118,8 @@ class V8Manager {
       mojo::PendingAssociatedReceiver<mojom::Automation> automation,
       mojo::PendingRemote<mojom::AutomationClient> automation_client);
   void ConfigureTts(mojom::AccessibilityServiceClient* ax_service_client);
+  void ConfigureUserInterface(
+      mojom::AccessibilityServiceClient* ax_service_client);
 
   void FinishContextSetUp();
 
