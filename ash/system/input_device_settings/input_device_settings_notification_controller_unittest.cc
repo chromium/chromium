@@ -225,8 +225,8 @@ TEST_F(InputDeviceSettingsNotificationControllerTest,
       "delete_six_pack_rewrite_blocked_by_setting_1"));
 
   controller()->NotifySixPackRewriteBlockedBySetting(
-      ui::VKEY_INSERT, ui::mojom::SixPackShortcutModifier::kAlt,
-      ui::mojom::SixPackShortcutModifier::kSearch,
+      ui::VKEY_INSERT, ui::mojom::SixPackShortcutModifier::kSearch,
+      ui::mojom::SixPackShortcutModifier::kNone,
       /*device_id=*/1);
   EXPECT_EQ(expected_notification_count++,
             message_center()->NotificationCount());

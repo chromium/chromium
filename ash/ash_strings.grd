@@ -6981,26 +6981,69 @@ To shut down the device, press and hold the power button on the device again.
       <message name="IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_RIGHT_CLICK_DISABLED" desc="The message shown to notify a user that the shortcut used to simulate a right-click using touchpad and keyboard is disabled.">
         The right-click shortcut is currently off
       </message>
-      <message name="IDS_ASH_DEVICE_SETTINGS_SIX_PACK_KEY_INSERT" translateable="false" desc="Label for the Insert 6-pack key.">
+      <message name="IDS_ASH_DEVICE_SETTINGS_SIX_PACK_KEY_INSERT" desc="Label for the Insert 6-pack key.">
         insert
       </message>
-      <message name="IDS_ASH_DEVICE_SETTINGS_SIX_PACK_KEY_HOME" translateable="false" desc="Label for the Home 6-pack key.">
+      <message name="IDS_ASH_DEVICE_SETTINGS_SIX_PACK_KEY_HOME" desc="Label for the Home 6-pack key.">
         home
       </message>
-      <message name="IDS_ASH_DEVICE_SETTINGS_SIX_PACK_KEY_END" translateable="false" desc="Label for the End 6-pack key.">
+      <message name="IDS_ASH_DEVICE_SETTINGS_SIX_PACK_KEY_END" desc="Label for the End 6-pack key.">
         end
       </message>
-      <message name="IDS_ASH_DEVICE_SETTINGS_SIX_PACK_KEY_PAGE_UP" translateable="false" desc="Label for the PageUp 6-pack key.">
+      <message name="IDS_ASH_DEVICE_SETTINGS_SIX_PACK_KEY_PAGE_UP" desc="Label for the PageUp 6-pack key.">
         page up
       </message>
-      <message name="IDS_ASH_DEVICE_SETTINGS_SIX_PACK_KEY_PAGE_DOWN" translateable="false" desc="Label for the PageDown 6-pack key.">
+      <message name="IDS_ASH_DEVICE_SETTINGS_SIX_PACK_KEY_PAGE_DOWN" desc="Label for the PageDown 6-pack key.">
         page down
       </message>
-      <message name="IDS_ASH_DEVICE_SETTINGS_SIX_PACK_KEY_DELETE" translateable="false" desc="Label for the Delete 6-pack key.">
+      <message name="IDS_ASH_DEVICE_SETTINGS_SIX_PACK_KEY_DELETE" desc="Label for the Delete 6-pack key.">
         delete
       </message>
-      <message name="IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_SIX_PACK_KEY" translateable="false" desc="">
-        The keyboard shortcut to use the <ph name="SIX_PACK_KEY_NAME">$1<ex>Delete</ex></ph> key has changed, visit device settings to configure the shortcut.
+      <message name="IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_SIX_PACK_SHORTCUT_DISABLED" desc="">
+        The <ph name="SIX_PACK_KEY_NAME">$1<ex>delete</ex></ph> shortcut is currently off
+      </message>
+      <message name="IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_SIX_PACK_KEY" desc="">
+        The <ph name="SIX_PACK_KEY_NAME">$1<ex>delete</ex></ph> shortcut is updated to <ph name="NEW_SHORTCUT">$2<ex>search + backspace</ex></ph> from <ph name="OLD_SHORTCUT">$3<ex>alt + backspace</ex></ph>
+      </message>
+      <message name="IDS_ASH_SETTINGS_SIX_PACK_KEY_DELETE_ALT" desc="In the keyboard settings subpage, the dropdown list item for the alt + backspace option.">
+        alt + backspace
+      </message>
+      <message name="IDS_ASH_SETTINGS_SIX_PACK_KEY_DELETE_SEARCH" desc="In the keyboard settings subpage, the dropdown list item for the search + backspace option.">
+        <ph name="LAUNCHER_KEY_NAME">$1<ex>launcher</ex></ph> + backspace
+      </message>
+      <message name="IDS_ASH_SETTINGS_SIX_PACK_KEY_HOME_ALT" desc="In the keyboard settings subpage, the dropdown list item for the alt + backspace option.">
+        ctrl + alt + up arrow
+      </message>
+      <message name="IDS_ASH_SETTINGS_SIX_PACK_KEY_HOME_SEARCH" desc="In the keyboard settings subpage, the dropdown list item for the alt + backspace option.">
+        <ph name="LAUNCHER_KEY_NAME">$1<ex>launcher</ex></ph> + left arrow
+      </message>
+      <message name="IDS_ASH_SETTINGS_SIX_PACK_KEY_END_ALT" desc="In the keyboard settings subpage, the dropdown list item for the alt + backspace option.">
+        ctrl + alt + down arrow
+      </message>
+      <message name="IDS_ASH_SETTINGS_SIX_PACK_KEY_END_SEARCH" desc="In the keyboard settings subpage, the dropdown list item for the alt + backspace option.">
+        <ph name="LAUNCHER_KEY_NAME">$1<ex>launcher</ex></ph> + right arrow
+      </message>
+      <message name="IDS_ASH_SETTINGS_SIX_PACK_KEY_PAGE_DOWN_ALT" desc="In the keyboard settings subpage, the dropdown list item for the alt + backspace option.">
+        alt + down arrow
+      </message>
+      <message name="IDS_ASH_SETTINGS_SIX_PACK_KEY_PAGE_DOWN_SEARCH" desc="In the keyboard settings subpage, the dropdown list item for the alt + backspace option.">
+        <ph name="LAUNCHER_KEY_NAME">$1<ex>launcher</ex></ph> + down arrow
+      </message>
+      <message name="IDS_ASH_SETTINGS_SIX_PACK_KEY_PAGE_UP_ALT" desc="In the keyboard settings subpage, the dropdown list item for the alt + backspace option.">
+        alt + up arrow
+      </message>
+      <message name="IDS_ASH_SETTINGS_SIX_PACK_KEY_PAGE_UP_SEARCH" desc="In the keyboard settings subpage, the dropdown list item for the alt + backspace option.">
+        <ph name="LAUNCHER_KEY_NAME">$1<ex>launcher</ex></ph> + up arrow
+      </message>
+      <!-- Modifier key names -->
+      <message name="IDS_ASH_SETTINGS_SHORTCUT_MODIFIER_LAUNCHER" desc="Name of the [Launcher] key. This key has a different name and keyboard glyph/icon depending on the device. This is the string for when it is called Launcher and has a circle/launcher icon.">
+        launcher
+      </message>
+      <message name="IDS_ASH_SETTINGS_SHORTCUT_MODIFIER_SEARCH" desc="Name of the [Search] key. This key has a different name and keyboard glyph/icon depending on the device. This is the string for when it is called Search and has a magnifier icon.">
+        search
+      </message>
+      <message name="IDS_ASH_SETTINGS_SHORTCUT_NOTIFICATION_TITLE" desc="Title for shortcut notifications.">
+        Keyboard shortcut has changed
       </message>
       <message name="IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_RIGHT_CLICK_TITLE" desc="Title for the right-click shortcut changed notification.">
         Keyboard shortcut has changed

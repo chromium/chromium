@@ -39,6 +39,26 @@ namespace {
 using SimulateRightClickModifier = ui::mojom::SimulateRightClickModifier;
 using SixPackShortcutModifier = ui::mojom::SixPackShortcutModifier;
 
+// Maps a six pack key to the search/alt shortcut strings.
+static constexpr auto kSixPackNotificationsMap =
+    base::MakeFixedFlatMap<ui::KeyboardCode, std::array<int, 2>>({
+        {ui::KeyboardCode::VKEY_DELETE,
+         {IDS_ASH_SETTINGS_SIX_PACK_KEY_DELETE_ALT,
+          IDS_ASH_SETTINGS_SIX_PACK_KEY_DELETE_SEARCH}},
+        {ui::KeyboardCode::VKEY_HOME,
+         {IDS_ASH_SETTINGS_SIX_PACK_KEY_HOME_ALT,
+          IDS_ASH_SETTINGS_SIX_PACK_KEY_HOME_SEARCH}},
+        {ui::KeyboardCode::VKEY_END,
+         {IDS_ASH_SETTINGS_SIX_PACK_KEY_END_ALT,
+          IDS_ASH_SETTINGS_SIX_PACK_KEY_END_SEARCH}},
+        {ui::KeyboardCode::VKEY_NEXT,
+         {IDS_ASH_SETTINGS_SIX_PACK_KEY_PAGE_DOWN_ALT,
+          IDS_ASH_SETTINGS_SIX_PACK_KEY_PAGE_DOWN_SEARCH}},
+        {ui::KeyboardCode::VKEY_PRIOR,
+         {IDS_ASH_SETTINGS_SIX_PACK_KEY_PAGE_UP_ALT,
+          IDS_ASH_SETTINGS_SIX_PACK_KEY_PAGE_UP_SEARCH}},
+    });
+
 constexpr auto kSixPackKeyToPrefName =
     base::MakeFixedFlatMap<ui::KeyboardCode, const char*>({
         {ui::KeyboardCode::VKEY_DELETE,
@@ -78,6 +98,10 @@ const char kDelimiter[] = "_";
 
 bool IsRightClickRewriteDisabled(SimulateRightClickModifier active_modifier) {
   return active_modifier == SimulateRightClickModifier::kNone;
+}
+
+bool IsSixPackShortcutDisabled(SixPackShortcutModifier active_modifier) {
+  return active_modifier == SixPackShortcutModifier::kNone;
 }
 
 std::u16string GetRightClickRewriteNotificationMessage(
@@ -183,6 +207,44 @@ std::u16string GetSixPackKeyName(ui::KeyboardCode key_code) {
     default:
       NOTREACHED_NORETURN();
   }
+}
+
+std::u16string GetSixPackShortcut(ui::KeyboardCode key_code,
+                                  SixPackShortcutModifier modifier) {
+  CHECK(modifier != SixPackShortcutModifier::kNone);
+  int message_id =
+      kSixPackNotificationsMap.at(key_code)[static_cast<int>(modifier) - 1];
+
+  if (modifier == SixPackShortcutModifier::kSearch) {
+    const int launcher_key_name_id =
+        Shell::Get()->keyboard_capability()->HasLauncherButtonOnAnyKeyboard()
+            ? IDS_ASH_SETTINGS_SHORTCUT_MODIFIER_LAUNCHER
+            : IDS_ASH_SETTINGS_SHORTCUT_MODIFIER_SEARCH;
+    const std::u16string launcher_key_name =
+        l10n_util::GetStringUTF16(launcher_key_name_id);
+    return l10n_util::GetStringFUTF16(message_id, launcher_key_name);
+  }
+  return l10n_util::GetStringUTF16(message_id);
+}
+
+std::u16string GetSixPackNotificationMessage(
+    ui::KeyboardCode key_code,
+    SixPackShortcutModifier blocked_modifier,
+    SixPackShortcutModifier active_modifier) {
+  const auto six_pack_key_name = GetSixPackKeyName(key_code);
+  if (IsSixPackShortcutDisabled(active_modifier)) {
+    return l10n_util::GetStringFUTF16(
+        IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_SIX_PACK_SHORTCUT_DISABLED,
+        six_pack_key_name);
+  }
+
+  // There's only one active shortcut for the "Insert" six pack key.
+  CHECK(key_code != ui::KeyboardCode::VKEY_INSERT);
+  const auto new_shortcut = GetSixPackShortcut(key_code, active_modifier);
+  const auto old_shortcut = GetSixPackShortcut(key_code, blocked_modifier);
+  return l10n_util::GetStringFUTF16(
+      IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_SIX_PACK_KEY, six_pack_key_name,
+      new_shortcut, old_shortcut);
 }
 
 std::string GetSixPackNotificationId(ui::KeyboardCode key_code, int device_id) {
@@ -339,10 +401,9 @@ void InputDeviceSettingsNotificationController::
   auto notification = CreateSystemNotificationPtr(
       message_center::NOTIFICATION_TYPE_SIMPLE,
       GetSixPackNotificationId(key_code, device_id),
-      l10n_util::GetStringUTF16(IDS_DEPRECATED_SHORTCUT_TITLE),
-      l10n_util::GetStringFUTF16(
-          IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_SIX_PACK_KEY,
-          GetSixPackKeyName(key_code)),
+      l10n_util::GetStringUTF16(IDS_ASH_SETTINGS_SHORTCUT_NOTIFICATION_TITLE),
+      GetSixPackNotificationMessage(key_code, blocked_modifier,
+                                    active_modifier),
       std::u16string(), GURL(),
       message_center::NotifierId(
           message_center::NotifierType::SYSTEM_COMPONENT, kNotifierId,
