@@ -130,7 +130,7 @@ TEST_F(ChromeLabsButtonTest, ShowAndHideChromeLabsBubbleOnPress) {
   EXPECT_TRUE(coordinator->BubbleExists());
 
   views::test::WidgetDestroyedWaiter destroyed_waiter(
-      coordinator->GetChromeLabsBubbleViewForTesting()->GetWidget());
+      coordinator->GetChromeLabsBubbleView()->GetWidget());
   test_api.NotifyClick(e);
   destroyed_waiter.Wait();
   EXPECT_FALSE(coordinator->BubbleExists());

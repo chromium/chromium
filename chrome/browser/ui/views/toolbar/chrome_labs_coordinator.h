@@ -12,13 +12,14 @@
 #include "components/flags_ui/flags_state.h"
 #include "components/flags_ui/flags_storage.h"
 #include "ui/views/view_observer.h"
+#include "ui/views/view_tracker.h"
 
 class Browser;
 class ChromeLabsButton;
 class ChromeLabsBubbleView;
 class ChromeLabsViewController;
 
-class ChromeLabsCoordinator : public views::ViewObserver {
+class ChromeLabsCoordinator {
  public:
   enum class ShowUserType {
     // The default user type that accounts for most users.
@@ -31,7 +32,7 @@ class ChromeLabsCoordinator : public views::ViewObserver {
   ChromeLabsCoordinator(ChromeLabsButton* anchor_view,
                         Browser* browser,
                         const ChromeLabsModel* model);
-  ~ChromeLabsCoordinator() override;
+  ~ChromeLabsCoordinator();
 
   bool BubbleExists();
 
@@ -42,9 +43,7 @@ class ChromeLabsCoordinator : public views::ViewObserver {
   // Toggles the visibility of the bubble.
   void ShowOrHide();
 
-  ChromeLabsBubbleView* GetChromeLabsBubbleViewForTesting() {
-    return chrome_labs_bubble_view_;
-  }
+  ChromeLabsBubbleView* GetChromeLabsBubbleView();
 
   flags_ui::FlagsState* GetFlagsStateForTesting() { return flags_state_; }
 
@@ -59,9 +58,6 @@ class ChromeLabsCoordinator : public views::ViewObserver {
 #endif
 
  private:
-  // views::ViewObserver
-  void OnViewIsDeleting(views::View* observed_view) override;
-
   raw_ptr<ChromeLabsButton, DanglingUntriaged> anchor_view_;
   raw_ptr<Browser, DanglingUntriaged> browser_;
   raw_ptr<const ChromeLabsModel, AcrossTasksDanglingUntriaged>
@@ -72,6 +68,7 @@ class ChromeLabsCoordinator : public views::ViewObserver {
   std::unique_ptr<flags_ui::FlagsStorage> flags_storage_;
   raw_ptr<flags_ui::FlagsState, DanglingUntriaged> flags_state_;
   std::unique_ptr<ChromeLabsViewController> controller_;
+  views::ViewTracker chrome_labs_bubble_view_tracker_;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   bool is_waiting_to_show_ = false;
   bool should_circumvent_device_check_for_testing_ = false;
