@@ -40,7 +40,7 @@ import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.content_public.browser.WebContents;
 
 /**
- * Unit tests for ChromeSurveyController.java.
+ * Unit tests for {@link ChromeSurveyController} and {@link SurveyThrottler}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
@@ -48,7 +48,7 @@ public class ChromeSurveyControllerTest {
     private static final String TEST_SURVEY_TRIGGER_ID = "foobar";
 
     private TestChromeSurveyController mTestController;
-    private RiggedSurveyController mRiggedController;
+    private RiggedSurveyThrottler mRiggedThrottler;
     private SharedPreferencesManager mSharedPreferences;
 
     @Rule
@@ -227,48 +227,48 @@ public class ChromeSurveyControllerTest {
     @Test
     public void testEligibilityFirstRun() {
         FirstRunStatus.setFirstRunTriggered(true);
-        mRiggedController = new RiggedSurveyController(0, 1, 10);
-        Assert.assertFalse("Random selection should be false",
-                mRiggedController.isRandomlySelectedForSurvey());
+        mRiggedThrottler = new RiggedSurveyThrottler(0, 1, 10);
+        Assert.assertFalse(
+                "Random selection should be false", mRiggedThrottler.isRandomlySelectedForSurvey());
         verifyFilteringResultRecorded(FilteringResult.FIRST_TIME_USER, 1);
     }
 
     @Test
     public void testEligibilityRolledYesterday() {
-        mRiggedController = new RiggedSurveyController(0, 5, 10);
+        mRiggedThrottler = new RiggedSurveyThrottler(0, 5, 10);
         mSharedPreferences.writeInt(ChromePreferenceKeys.SURVEY_DATE_LAST_ROLLED, 4);
         Assert.assertTrue(
-                "Random selection should be true", mRiggedController.isRandomlySelectedForSurvey());
+                "Random selection should be true", mRiggedThrottler.isRandomlySelectedForSurvey());
         verifyFilteringResultRecorded(FilteringResult.USER_SELECTED_FOR_SURVEY, 1);
     }
 
     @Test
     public void testEligibilityRollingTwiceSameDay() {
-        mRiggedController = new RiggedSurveyController(0, 5, 10);
+        mRiggedThrottler = new RiggedSurveyThrottler(0, 5, 10);
         mSharedPreferences.writeInt(ChromePreferenceKeys.SURVEY_DATE_LAST_ROLLED, 5);
-        Assert.assertFalse("Random selection should be false",
-                mRiggedController.isRandomlySelectedForSurvey());
+        Assert.assertFalse(
+                "Random selection should be false", mRiggedThrottler.isRandomlySelectedForSurvey());
         verifyFilteringResultRecorded(FilteringResult.USER_ALREADY_SAMPLED_TODAY, 1);
     }
 
     @Test
     public void testEligibilityFirstTimeRollingQualifies() {
-        mRiggedController = new RiggedSurveyController(0, 5, 10);
+        mRiggedThrottler = new RiggedSurveyThrottler(0, 5, 10);
         Assert.assertFalse(
                 mSharedPreferences.contains(ChromePreferenceKeys.SURVEY_DATE_LAST_ROLLED));
         Assert.assertTrue(
-                "Random selection should be true", mRiggedController.isRandomlySelectedForSurvey());
+                "Random selection should be true", mRiggedThrottler.isRandomlySelectedForSurvey());
         Assert.assertEquals("Numbers should match", 5,
                 mSharedPreferences.readInt(ChromePreferenceKeys.SURVEY_DATE_LAST_ROLLED, -1));
     }
 
     @Test
     public void testEligibilityFirstTimeRollingDoesNotQualify() {
-        mRiggedController = new RiggedSurveyController(5, 1, 10);
+        mRiggedThrottler = new RiggedSurveyThrottler(5, 1, 10);
         Assert.assertFalse(
                 mSharedPreferences.contains(ChromePreferenceKeys.SURVEY_DATE_LAST_ROLLED));
-        Assert.assertFalse("Random selection should be false",
-                mRiggedController.isRandomlySelectedForSurvey());
+        Assert.assertFalse(
+                "Random selection should be false", mRiggedThrottler.isRandomlySelectedForSurvey());
         Assert.assertEquals("Numbers should match", 1,
                 mSharedPreferences.readInt(ChromePreferenceKeys.SURVEY_DATE_LAST_ROLLED, -1));
         verifyFilteringResultRecorded(FilteringResult.ROLLED_NON_ZERO_NUMBER, 1);
@@ -276,11 +276,11 @@ public class ChromeSurveyControllerTest {
 
     @Test
     public void testEligibilityNoMaxNumber() {
-        mRiggedController = new RiggedSurveyController(0, 1, -1);
+        mRiggedThrottler = new RiggedSurveyThrottler(0, 1, -1);
         Assert.assertFalse(
                 mSharedPreferences.contains(ChromePreferenceKeys.SURVEY_DATE_LAST_ROLLED));
-        Assert.assertFalse("Random selection should be false",
-                mRiggedController.isRandomlySelectedForSurvey());
+        Assert.assertFalse(
+                "Random selection should be false", mRiggedThrottler.isRandomlySelectedForSurvey());
         Assert.assertFalse(
                 mSharedPreferences.contains(ChromePreferenceKeys.SURVEY_DATE_LAST_ROLLED));
         verifyFilteringResultRecorded(FilteringResult.MAX_NUMBER_MISSING, 1);
@@ -294,16 +294,14 @@ public class ChromeSurveyControllerTest {
     }
 
     /** Test class used to test the rate limiting logic for {@link ChromeSurveyController} */
-    class RiggedSurveyController extends ChromeSurveyController {
+    class RiggedSurveyThrottler extends SurveyThrottler {
         private int mRandomNumberToReturn;
         private int mDayOfYear;
-        private int mMaxNumber;
 
-        RiggedSurveyController(int randomNumberToReturn, int dayOfYear, int maxNumber) {
-            super(TEST_SURVEY_TRIGGER_ID, null, null, null);
+        RiggedSurveyThrottler(int randomNumberToReturn, int dayOfYear, int maxNumber) {
+            super(maxNumber);
             mRandomNumberToReturn = randomNumberToReturn;
             mDayOfYear = dayOfYear;
-            mMaxNumber = maxNumber;
         }
 
         @Override
@@ -314,11 +312,6 @@ public class ChromeSurveyControllerTest {
         @Override
         int getDayOfYear() {
             return mDayOfYear;
-        }
-
-        @Override
-        int getMaxNumber() {
-            return mMaxNumber;
         }
     }
 
