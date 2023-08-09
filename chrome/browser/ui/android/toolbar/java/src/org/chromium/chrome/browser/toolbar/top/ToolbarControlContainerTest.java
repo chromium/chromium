@@ -6,8 +6,8 @@ package org.chromium.chrome.browser.toolbar.top;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
 import android.view.View;
@@ -18,7 +18,6 @@ import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.shadows.ShadowLooper;
@@ -27,7 +26,6 @@ import org.chromium.base.FeatureList;
 import org.chromium.base.FeatureList.TestValues;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.UmaRecorderHolder;
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
@@ -52,7 +50,7 @@ import org.chromium.chrome.test.util.browser.Features.JUnitProcessor;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BooleanSupplier;
 
-/** Unit tests for ToolbarControlContainer. */
+/** Unit tests for {@link ToolbarControlContainer}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures(ChromeFeatureList.SUPPRESS_TOOLBAR_CAPTURES)
 public class ToolbarControlContainerTest {
@@ -81,7 +79,8 @@ public class ToolbarControlContainerTest {
             new ObservableSupplierImpl<>();
     private final BrowserStateBrowserControlsVisibilityDelegate
             mBrowserStateBrowserControlsVisibilityDelegate =
-                    new BrowserStateBrowserControlsVisibilityDelegate(initBooleanSupplier(false));
+                    new BrowserStateBrowserControlsVisibilityDelegate(
+                            new ObservableSupplierImpl<>(false));
     private final AtomicInteger mOnResourceRequestedCount = new AtomicInteger();
 
     private boolean mIsVisible;
@@ -92,15 +91,6 @@ public class ToolbarControlContainerTest {
             new ObservableSupplierImpl<>();
     private final OneshotSupplierImpl<LayoutStateProvider> mLayoutStateProviderSupplier =
             new OneshotSupplierImpl<>();
-
-    /**
-     * Returns an initialized ObservableSupplier<Boolean>, otherwise not possible to init inline.
-     */
-    private static ObservableSupplier<Boolean> initBooleanSupplier(boolean value) {
-        ObservableSupplierImpl<Boolean> supplier = new ObservableSupplierImpl<>();
-        supplier.set(value);
-        return supplier;
-    }
 
     private ToolbarViewResourceAdapter makeAdapter() {
         return new ToolbarViewResourceAdapter(mToolbarContainer, false) {
@@ -133,7 +123,7 @@ public class ToolbarControlContainerTest {
     }
 
     private void changeInMotion(boolean inMotion, boolean expectResourceRequested) {
-        assertFalse(inMotion == mCompositorInMotionSupplier.get());
+        assertNotEquals(inMotion, mCompositorInMotionSupplier.get().booleanValue());
         int requestCount = mOnResourceRequestedCount.get();
         mCompositorInMotionSupplier.set(inMotion);
         ShadowLooper.idleMainLooper();
@@ -148,7 +138,6 @@ public class ToolbarControlContainerTest {
 
     @Before
     public void before() {
-        MockitoAnnotations.initMocks(this);
         mJniMocker.mock(ResourceFactoryJni.TEST_HOOKS, mResourceFactoryJni);
         UmaRecorderHolder.resetForTesting();
         when(mToolbarContainer.getWidth()).thenReturn(1);
@@ -329,7 +318,7 @@ public class ToolbarControlContainerTest {
 
     @Test
     public void testIsDirty_InMotion2() {
-        ToolbarViewResourceAdapter adapter = makeAndInitAdapter();
+        makeAndInitAdapter();
         // Unfortunately this gets emitted once during initialization and we cannot easily reset.
         assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting("Android.TopToolbar.InMotionStage",
@@ -375,7 +364,7 @@ public class ToolbarControlContainerTest {
     @DisableFeatures(ChromeFeatureList.RECORD_SUPPRESSION_METRICS)
     public void testIsDirty_InMotion2_NoMetrics() {
         assertFalse(ToolbarFeatures.shouldRecordSuppressionMetrics());
-        ToolbarViewResourceAdapter adapter = makeAndInitAdapter();
+        makeAndInitAdapter();
 
         when(mToolbar.isReadyForTextureCapture())
                 .thenReturn(CaptureReadinessResult.readyWithSnapshotDifference(
@@ -409,11 +398,10 @@ public class ToolbarControlContainerTest {
 
     @Test
     public void testInMotion_viewNotVisible() {
-        ToolbarViewResourceAdapter adapter = makeAndInitAdapter();
-        doReturn(CaptureReadinessResult.readyWithSnapshotDifference(
-                         ToolbarSnapshotDifference.URL_TEXT))
-                .when(mToolbar)
-                .isReadyForTextureCapture();
+        makeAndInitAdapter();
+        when(mToolbar.isReadyForTextureCapture())
+                .thenReturn(CaptureReadinessResult.readyWithSnapshotDifference(
+                        ToolbarSnapshotDifference.URL_TEXT));
         mIsVisible = false;
 
         changeInMotion(true, false);
@@ -423,12 +411,11 @@ public class ToolbarControlContainerTest {
     public void testIsDirty_InMotionAndToolbarSwipe() {
         ToolbarViewResourceAdapter adapter = makeAndInitAdapter();
         changeInMotion(true, false);
-        doReturn(CaptureReadinessResult.readyWithSnapshotDifference(
-                         ToolbarSnapshotDifference.URL_TEXT))
-                .when(mToolbar)
-                .isReadyForTextureCapture();
+        when(mToolbar.isReadyForTextureCapture())
+                .thenReturn(CaptureReadinessResult.readyWithSnapshotDifference(
+                        ToolbarSnapshotDifference.URL_TEXT));
         adapter.forceInvalidate();
-        doReturn(LayoutType.BROWSING).when(mLayoutStateProvider).getActiveLayoutType();
+        when(mLayoutStateProvider.getActiveLayoutType()).thenReturn(LayoutType.BROWSING);
         mLayoutStateProviderSupplier.set(mLayoutStateProvider);
         // The supplier posts the notification so idle to let it through.
         ShadowLooper.idleMainLooper();
@@ -436,7 +423,7 @@ public class ToolbarControlContainerTest {
         assertFalse(adapter.isDirty());
 
         // TOOLBAR_SWIPE should bypass the in motion check and return dirty.
-        doReturn(LayoutType.TOOLBAR_SWIPE).when(mLayoutStateProvider).getActiveLayoutType();
+        when(mLayoutStateProvider.getActiveLayoutType()).thenReturn(LayoutType.TOOLBAR_SWIPE);
 
         assertTrue(adapter.isDirty());
     }
@@ -452,10 +439,10 @@ public class ToolbarControlContainerTest {
         when(mFullscreenManager.getPersistentFullscreenMode()).thenReturn(true);
 
         ToolbarViewResourceAdapter adapter = makeAndInitAdapter();
-        doReturn(CaptureReadinessResult.readyWithSnapshotDifference(
-                         ToolbarSnapshotDifference.URL_TEXT))
-                .when(mToolbar)
-                .isReadyForTextureCapture();
+
+        when(mToolbar.isReadyForTextureCapture())
+                .thenReturn(CaptureReadinessResult.readyWithSnapshotDifference(
+                        ToolbarSnapshotDifference.URL_TEXT));
 
         assertFalse(adapter.isDirty());
         assertEquals(1,
