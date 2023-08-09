@@ -649,21 +649,12 @@
 
   // Requests feeds here if the correct flags and prefs are enabled.
   if ([self shouldFeedBeVisible]) {
-    if ([self isFollowingFeedAvailable]) {
-      switch (self.selectedFeed) {
-        case FeedTypeDiscover:
-          self.feedViewController = [self.componentFactory
-                   discoverFeedForBrowser:self.browser
-              viewControllerConfiguration:[self
-                                              feedViewControllerConfiguration]];
-          break;
-        case FeedTypeFollowing:
-          self.feedViewController = [self.componentFactory
-                  followingFeedForBrowser:self.browser
-              viewControllerConfiguration:[self feedViewControllerConfiguration]
-                                 sortType:self.followingFeedSortType];
-          break;
-      }
+    if ([self isFollowingFeedAvailable] &&
+        self.selectedFeed == FeedTypeFollowing) {
+      self.feedViewController = [self.componentFactory
+              followingFeedForBrowser:self.browser
+          viewControllerConfiguration:[self feedViewControllerConfiguration]
+                             sortType:self.followingFeedSortType];
     } else {
       self.feedViewController = [self.componentFactory
                discoverFeedForBrowser:self.browser

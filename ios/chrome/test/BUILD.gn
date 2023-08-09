@@ -68,6 +68,7 @@ source_set("test_support") {
     "//components/prefs",
     "//components/prefs:test_support",
     "//components/safe_browsing/core/common",
+    "//components/variations/service",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/content_settings",
     "//ios/chrome/browser/policy:policy",
