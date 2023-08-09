@@ -33,12 +33,6 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
       const base::android::JavaRef<jobject>& jcard,
       JNIEnv* env,
       CreditCard* card);
-  static base::android::ScopedJavaLocalRef<jobject> CreateJavaProfileFromNative(
-      JNIEnv* env,
-      const AutofillProfile& profile);
-  static AutofillProfile CreateNativeProfileFromJava(
-      const base::android::JavaParamRef<jobject>& jprofile,
-      JNIEnv* env);
 
   // Returns true if personal data manager has loaded the initial data.
   jboolean IsDataLoaded(
@@ -87,14 +81,15 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
   base::android::ScopedJavaLocalRef<jstring> SetProfile(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& unused_obj,
-      const base::android::JavaParamRef<jobject>& jprofile);
-
+      const base::android::JavaParamRef<jobject>& jprofile,
+      const base::android::JavaParamRef<jstring>& jguid);
   // Adds or modifies a profile like SetProfile interface if |jprofile| is
   // local. Otherwise it creates a local copy of it.
   base::android::ScopedJavaLocalRef<jstring> SetProfileToLocal(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& unused_obj,
-      const base::android::JavaParamRef<jobject>& jprofile);
+      const base::android::JavaParamRef<jobject>& jprofile,
+      const base::android::JavaParamRef<jstring>& jguid);
 
   // Gets the labels for all known profiles. These labels are useful for
   // distinguishing the profiles from one another.

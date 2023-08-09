@@ -46,6 +46,7 @@ include_rules = [
   "+components/account_manager_core",
   "+components/app_restore",
   "+components/assist_ranker",
+  "+components/autofill/android",
   "+components/autofill/content/browser",
   "+components/autofill/content/common",
   "+components/autofill/core/browser",

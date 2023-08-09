@@ -19,6 +19,7 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
@@ -214,8 +215,9 @@ TEST_F(SaveUpdateAddressProfilePromptControllerTest,
       Run(AutofillClient::SaveAddressProfileOfferUserDecision::kEditAccepted,
           edited_profile));
   base::android::ScopedJavaLocalRef<jobject> edited_profile_java =
-      PersonalDataManagerAndroid::CreateJavaProfileFromNative(env_,
-                                                              edited_profile);
+      edited_profile.CreateJavaObject(
+          g_browser_process->GetApplicationLocale());
+
   controller_->OnUserEdited(
       env_, mock_caller_,
       base::android::JavaParamRef<jobject>(env_, edited_profile_java.obj()));

@@ -22,6 +22,10 @@
 #include "components/autofill/core/browser/data_model/phone_number.h"
 #include "components/autofill/core/browser/profile_token_quality.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/scoped_java_ref.h"
+#endif
+
 namespace autofill {
 
 class AutofillProfileComparator;
@@ -44,7 +48,7 @@ class AutofillProfile : public AutofillDataModel {
   };
 
   // Describes where the profile is stored and how it is synced.
-  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.autofill
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.autofill
   enum class Source {
     // Not synced at all or synced through the `AutofillProfileSyncBridge`. This
     // corresponds to profiles that local to Autofill only.
@@ -73,6 +77,18 @@ class AutofillProfile : public AutofillDataModel {
   ~AutofillProfile() override;
 
   AutofillProfile& operator=(const AutofillProfile& profile);
+
+  // Android/Java API.
+#if BUILDFLAG(IS_ANDROID)
+  // Create a new Java AutofillProfile instance.
+  base::android::ScopedJavaLocalRef<jobject> CreateJavaObject(
+      const std::string& app_locale) const;
+
+  // Given a Java AutofillProfile object, create an equivalent C++ instance.
+  static AutofillProfile CreateFromJavaObject(
+      const base::android::JavaParamRef<jobject>& jprofile,
+      const std::string& app_locale);
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // AutofillDataModel:
   AutofillMetadata GetMetadata() const override;

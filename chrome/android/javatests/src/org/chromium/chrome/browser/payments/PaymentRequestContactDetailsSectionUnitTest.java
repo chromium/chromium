@@ -15,10 +15,10 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.autofill.AutofillAddress;
-import org.chromium.chrome.browser.autofill.AutofillProfile;
 import org.chromium.chrome.browser.payments.ui.ContactDetailsSection;
 import org.chromium.chrome.browser.payments.ui.SectionInformation;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
+import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.components.autofill.EditableOption;
 
 import java.util.ArrayList;

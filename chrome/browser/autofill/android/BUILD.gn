@@ -7,8 +7,6 @@ import("//build/config/android/rules.gni")
 java_cpp_enum("autofill_generated_enums") {
   sources = [
     "//chrome/browser/android/preferences/autofill/autofill_profile_bridge.h",
-    "//components/autofill/core/browser/data_model/autofill_profile.h",
-    "//components/autofill/core/browser/data_model/autofill_structured_address_component.h",
   ]
 }
 
@@ -99,6 +97,8 @@ android_library("java") {
     "//url:gurl_java",
   ]
 
+  public_deps = [ "//components/autofill/android:autofill_java" ]
+
   srcjar_deps = [
     ":autofill_generated_enums",
     ":jni_headers",
@@ -118,7 +118,6 @@ android_library("bottom_sheet_utils_java") {
 
 generate_jni("jni_headers") {
   sources = [
-    "java/src/org/chromium/chrome/browser/autofill/AutofillProfile.java",
     "java/src/org/chromium/chrome/browser/autofill/AutofillProfileBridge.java",
     "java/src/org/chromium/chrome/browser/autofill/PersonalDataManager.java",
     "java/src/org/chromium/chrome/browser/autofill/PhoneNumberUtil.java",

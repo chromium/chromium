@@ -17,7 +17,7 @@ import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.autofill.AutofillProfile;
+import org.chromium.components.autofill.AutofillProfile;
 
 /**
  * Unit tests for the AutofillContact class.

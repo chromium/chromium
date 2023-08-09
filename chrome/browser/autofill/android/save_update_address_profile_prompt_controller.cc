@@ -245,8 +245,8 @@ void SaveUpdateAddressProfilePromptController::OnUserEdited(
     const base::android::JavaParamRef<jobject>& obj,
     const base::android::JavaParamRef<jobject>& jprofile) {
   had_user_interaction_ = true;
-  AutofillProfile edited_profile =
-      PersonalDataManagerAndroid::CreateNativeProfileFromJava(jprofile, env);
+  AutofillProfile edited_profile = AutofillProfile::CreateFromJavaObject(
+      jprofile, g_browser_process->GetApplicationLocale());
   profile_ = edited_profile;
   RunSaveAddressProfileCallback(
       AutofillClient::SaveAddressProfileOfferUserDecision::kEditAccepted);

@@ -48,6 +48,7 @@ robolectric_library("junit") {
     "//chrome/android:chrome_java",
     "//chrome/browser/autofill/android:java",
     "//chrome/browser/profiles/android:java",
+    "//components/autofill/android:main_autofill_java",
     "//components/payments/content/android:java",
     "//components/payments/content/android:junit_test_support",
     "//components/payments/content/android:service_java",

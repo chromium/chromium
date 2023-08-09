@@ -82,7 +82,7 @@ public class PersonalDataManager {
          * @param profile The profile with the normalized address.
          */
         @CalledByNative("NormalizedAddressRequestDelegate")
-        void onAddressNormalized(AutofillProfile profile);
+        void onAddressNormalized(org.chromium.components.autofill.AutofillProfile profile);
 
         /**
          * Called when the address could not be normalized.
@@ -90,7 +90,7 @@ public class PersonalDataManager {
          * @param profile The non normalized profile.
          */
         @CalledByNative("NormalizedAddressRequestDelegate")
-        void onCouldNotNormalize(AutofillProfile profile);
+        void onCouldNotNormalize(org.chromium.components.autofill.AutofillProfile profile);
     }
 
     /**
@@ -494,8 +494,9 @@ public class PersonalDataManager {
             String[] profileLabels, String[] profileGUIDs) {
         ArrayList<AutofillProfile> profiles = new ArrayList<AutofillProfile>(profileGUIDs.length);
         for (int i = 0; i < profileGUIDs.length; i++) {
-            AutofillProfile profile = PersonalDataManagerJni.get().getProfileByGUID(
-                    mPersonalDataManagerAndroid, PersonalDataManager.this, profileGUIDs[i]);
+            AutofillProfile profile = new AutofillProfile(
+                    PersonalDataManagerJni.get().getProfileByGUID(mPersonalDataManagerAndroid,
+                            PersonalDataManager.this, profileGUIDs[i]));
             profile.setLabel(profileLabels[i]);
             profiles.add(profile);
         }
@@ -505,8 +506,8 @@ public class PersonalDataManager {
 
     public AutofillProfile getProfile(String guid) {
         ThreadUtils.assertOnUiThread();
-        return PersonalDataManagerJni.get().getProfileByGUID(
-                mPersonalDataManagerAndroid, PersonalDataManager.this, guid);
+        return new AutofillProfile(PersonalDataManagerJni.get().getProfileByGUID(
+                mPersonalDataManagerAndroid, PersonalDataManager.this, guid));
     }
 
     public void deleteProfile(String guid) {
@@ -515,16 +516,16 @@ public class PersonalDataManager {
                 mPersonalDataManagerAndroid, PersonalDataManager.this, guid);
     }
 
-    public String setProfile(AutofillProfile profile) {
+    public String setProfile(org.chromium.components.autofill.AutofillProfile profile) {
         ThreadUtils.assertOnUiThread();
         return PersonalDataManagerJni.get().setProfile(
-                mPersonalDataManagerAndroid, PersonalDataManager.this, profile);
+                mPersonalDataManagerAndroid, PersonalDataManager.this, profile, profile.getGUID());
     }
 
-    public String setProfileToLocal(AutofillProfile profile) {
+    public String setProfileToLocal(org.chromium.components.autofill.AutofillProfile profile) {
         ThreadUtils.assertOnUiThread();
         return PersonalDataManagerJni.get().setProfileToLocal(
-                mPersonalDataManagerAndroid, PersonalDataManager.this, profile);
+                mPersonalDataManagerAndroid, PersonalDataManager.this, profile, profile.getGUID());
     }
 
     /**
@@ -613,17 +614,20 @@ public class PersonalDataManager {
                 mPersonalDataManagerAndroid, PersonalDataManager.this, guid);
     }
 
-    public String getShippingAddressLabelWithCountryForPaymentRequest(AutofillProfile profile) {
+    public String getShippingAddressLabelWithCountryForPaymentRequest(
+            org.chromium.components.autofill.AutofillProfile profile) {
         return PersonalDataManagerJni.get().getShippingAddressLabelWithCountryForPaymentRequest(
                 mPersonalDataManagerAndroid, PersonalDataManager.this, profile);
     }
 
-    public String getShippingAddressLabelWithoutCountryForPaymentRequest(AutofillProfile profile) {
+    public String getShippingAddressLabelWithoutCountryForPaymentRequest(
+            org.chromium.components.autofill.AutofillProfile profile) {
         return PersonalDataManagerJni.get().getShippingAddressLabelWithoutCountryForPaymentRequest(
                 mPersonalDataManagerAndroid, PersonalDataManager.this, profile);
     }
 
-    public String getBillingAddressLabelForPaymentRequest(AutofillProfile profile) {
+    public String getBillingAddressLabelForPaymentRequest(
+            org.chromium.components.autofill.AutofillProfile profile) {
         return PersonalDataManagerJni.get().getBillingAddressLabelForPaymentRequest(
                 mPersonalDataManagerAndroid, PersonalDataManager.this, profile);
     }
@@ -792,8 +796,8 @@ public class PersonalDataManager {
      * @param profile The profile to normalize.
      * @param delegate The object requesting the normalization.
      */
-    public void normalizeAddress(
-            AutofillProfile profile, NormalizedAddressRequestDelegate delegate) {
+    public void normalizeAddress(org.chromium.components.autofill.AutofillProfile profile,
+            NormalizedAddressRequestDelegate delegate) {
         ThreadUtils.assertOnUiThread();
         PersonalDataManagerJni.get().startAddressNormalization(mPersonalDataManagerAndroid,
                 PersonalDataManager.this, profile, sRequestTimeoutSeconds, delegate);
@@ -1014,24 +1018,25 @@ public class PersonalDataManager {
         String[] getProfileLabelsToSuggest(long nativePersonalDataManagerAndroid,
                 PersonalDataManager caller, boolean includeNameInLabel,
                 boolean includeOrganizationInLabel, boolean includeCountryInLabel);
-        AutofillProfile getProfileByGUID(
+        org.chromium.components.autofill.AutofillProfile getProfileByGUID(
                 long nativePersonalDataManagerAndroid, PersonalDataManager caller, String guid);
         boolean isEligibleForAddressAccountStorage(
                 long nativePersonalDataManagerAndroid, PersonalDataManager caller);
         boolean isCountryEligibleForAccountStorage(long nativePersonalDataManagerAndroid,
                 PersonalDataManager caller, String countryCode);
         String setProfile(long nativePersonalDataManagerAndroid, PersonalDataManager caller,
-                AutofillProfile profile);
+                org.chromium.components.autofill.AutofillProfile profile, String guid);
         String setProfileToLocal(long nativePersonalDataManagerAndroid, PersonalDataManager caller,
-                AutofillProfile profile);
+                org.chromium.components.autofill.AutofillProfile profile, String guid);
         String getShippingAddressLabelWithCountryForPaymentRequest(
                 long nativePersonalDataManagerAndroid, PersonalDataManager caller,
-                AutofillProfile profile);
+                org.chromium.components.autofill.AutofillProfile profile);
         String getShippingAddressLabelWithoutCountryForPaymentRequest(
                 long nativePersonalDataManagerAndroid, PersonalDataManager caller,
-                AutofillProfile profile);
+                org.chromium.components.autofill.AutofillProfile profile);
         String getBillingAddressLabelForPaymentRequest(long nativePersonalDataManagerAndroid,
-                PersonalDataManager caller, AutofillProfile profile);
+                PersonalDataManager caller,
+                org.chromium.components.autofill.AutofillProfile profile);
         String[] getCreditCardGUIDsForSettings(
                 long nativePersonalDataManagerAndroid, PersonalDataManager caller);
         String[] getCreditCardGUIDsToSuggest(
@@ -1081,7 +1086,8 @@ public class PersonalDataManager {
         void loadRulesForSubKeys(long nativePersonalDataManagerAndroid, PersonalDataManager caller,
                 String regionCode);
         void startAddressNormalization(long nativePersonalDataManagerAndroid,
-                PersonalDataManager caller, AutofillProfile profile, int timeoutSeconds,
+                PersonalDataManager caller,
+                org.chromium.components.autofill.AutofillProfile profile, int timeoutSeconds,
                 NormalizedAddressRequestDelegate delegate);
         void startRegionSubKeysRequest(long nativePersonalDataManagerAndroid,
                 PersonalDataManager caller, String regionCode, int timeoutSeconds,

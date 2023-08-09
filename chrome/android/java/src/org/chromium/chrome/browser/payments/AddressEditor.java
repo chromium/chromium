@@ -38,7 +38,6 @@ import org.chromium.base.Callback;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AddressValidationType;
 import org.chromium.chrome.browser.autofill.AutofillAddress;
-import org.chromium.chrome.browser.autofill.AutofillProfile;
 import org.chromium.chrome.browser.autofill.AutofillProfileBridge;
 import org.chromium.chrome.browser.autofill.AutofillProfileBridge.AutofillAddressUiComponent;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
@@ -49,6 +48,7 @@ import org.chromium.chrome.browser.autofill.editors.EditorDialogViewBinder;
 import org.chromium.chrome.browser.autofill.editors.EditorFieldValidator;
 import org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldItem;
 import org.chromium.chrome.browser.autofill.editors.EditorProperties.ItemType;
+import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.components.autofill.ServerFieldType;
 import org.chromium.payments.mojom.AddressErrors;
 import org.chromium.ui.modelutil.ListModel;
@@ -341,7 +341,8 @@ public class AddressEditor
     private void commitChanges(AutofillProfile profile) {
         // Clear field values that change among countries so that invisible fields
         // do not get forwarded to the backend.
-        profile.resetDynamicFields();
+        profile.removeAllDataExceptGivenFields(
+                new HashSet<>(AutofillProfileBridge.getStaticEditorFields()));
         // Country code and phone number are always required and are always collected from the
         // editor model.
         profile.setInfo(ServerFieldType.ADDRESS_HOME_COUNTRY, mCountryField.get(VALUE));

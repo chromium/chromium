@@ -659,6 +659,7 @@ static_library("browser") {
 
   if (is_android) {
     deps += [
+      "//components/autofill/android:main_autofill_jni_headers",
       "//components/autofill/android:payments_jni_headers",
       "//components/messages/android:feature_flags",
     ]

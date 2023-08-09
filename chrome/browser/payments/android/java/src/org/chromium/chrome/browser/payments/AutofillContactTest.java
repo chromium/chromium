@@ -20,7 +20,7 @@ import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRule;
-import org.chromium.chrome.browser.autofill.AutofillProfile;
+import org.chromium.components.autofill.AutofillProfile;
 
 import java.util.Arrays;
 import java.util.Collection;

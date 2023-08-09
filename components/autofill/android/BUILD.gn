@@ -130,6 +130,8 @@ android_resources("autofill_java_resources") {
 
 java_cpp_enum("autofill_core_browser_java_enums") {
   sources = [
+    "../core/browser/data_model/autofill_profile.h",
+    "../core/browser/data_model/autofill_structured_address_component.h",
     "../core/browser/data_model/credit_card.h",
     "../core/browser/field_types.h",
     "../core/browser/metrics/payments/mandatory_reauth_metrics.h",
@@ -157,6 +159,7 @@ android_library("main_autofill_java") {
   deps = [
     ":autofill_java_resources",
     ":payments_autofill_java",
+    "//base:jni_java",
     "//content/public/android:content_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
@@ -168,10 +171,16 @@ android_library("main_autofill_java") {
     "java/src/org/chromium/components/autofill/AutofillDelegate.java",
     "java/src/org/chromium/components/autofill/AutofillDropdownAdapter.java",
     "java/src/org/chromium/components/autofill/AutofillPopup.java",
+    "java/src/org/chromium/components/autofill/AutofillProfile.java",
     "java/src/org/chromium/components/autofill/AutofillSuggestion.java",
   ]
   srcjar_deps = [ ":autofill_core_browser_java_enums" ]
   resources_package = "org.chromium.components.autofill"
+}
+
+generate_jni("main_autofill_jni_headers") {
+  sources = [ "java/src/org/chromium/components/autofill/AutofillProfile.java" ]
+  deps = [ "//base:jni_java" ]
 }
 
 # A minimal library used to expose autofill features to webview.
