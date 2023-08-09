@@ -68,7 +68,7 @@ public class TabSwitcherLayout extends Layout {
     private static final String TAG = "TSLayout";
 
     // Duration of the transition animation
-    public static final long ZOOMING_DURATION = 300;
+    public static final long ZOOMING_DURATION = 325;
     private static final int TRANSLATE_DURATION_MS = 300;
     private static final int BACKGROUND_FADING_DURATION_MS = 150;
     private static final int SCRIM_FADE_DURATION_MS = 350;
@@ -472,13 +472,13 @@ public class TabSwitcherLayout extends Layout {
 
         animationList.add(CompositorAnimator.ofWritableFloatPropertyKey(handler, sourceLayoutTab,
                 LayoutTab.SCALE, scaleStartValueSupplier, scaleEndValueSupplier, ZOOMING_DURATION,
-                Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR));
+                Interpolators.EMPHASIZED));
         animationList.add(CompositorAnimator.ofWritableFloatPropertyKey(handler, sourceLayoutTab,
                 LayoutTab.X, xStartValueSupplier, xEndValueSupplier, ZOOMING_DURATION,
-                Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR));
+                Interpolators.EMPHASIZED));
         animationList.add(CompositorAnimator.ofWritableFloatPropertyKey(handler, sourceLayoutTab,
                 LayoutTab.Y, yStartValueSupplier, yEndValueSupplier, ZOOMING_DURATION,
-                Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR));
+                Interpolators.EMPHASIZED));
         // TODO(crbug.com/964406): when shrinking to the bottom row, bottom of the tab goes up and
         // down, making the "create group" visible for a while.
         animationList.add(CompositorAnimator.ofWritableFloatPropertyKey(handler, sourceLayoutTab,
@@ -492,7 +492,7 @@ public class TabSwitcherLayout extends Layout {
         CompositorAnimator backgroundAlpha =
                 CompositorAnimator.ofFloat(handler, 0f, 1f, BACKGROUND_FADING_DURATION_MS,
                         animator -> mBackgroundAlpha = animator.getAnimatedValue());
-        backgroundAlpha.setInterpolator(Interpolators.FAST_OUT_LINEAR_IN_INTERPOLATOR);
+        backgroundAlpha.setInterpolator(Interpolators.EMPHASIZED);
         animationList.add(backgroundAlpha);
 
         mTabToSwitcherAnimation = new AnimatorSet();
@@ -541,13 +541,12 @@ public class TabSwitcherLayout extends Layout {
         // Zoom in the source tab
         animationList.add(CompositorAnimator.ofWritableFloatPropertyKey(handler, sourceLayoutTab,
                 LayoutTab.SCALE, source.width() / (getWidth() * mDpToPx), 1, ZOOMING_DURATION,
-                Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR));
+                Interpolators.EMPHASIZED));
+        animationList.add(
+                CompositorAnimator.ofWritableFloatPropertyKey(handler, sourceLayoutTab, LayoutTab.X,
+                        source.left / mDpToPx, 0f, ZOOMING_DURATION, Interpolators.EMPHASIZED));
         animationList.add(CompositorAnimator.ofWritableFloatPropertyKey(handler, sourceLayoutTab,
-                LayoutTab.X, source.left / mDpToPx, 0f, ZOOMING_DURATION,
-                Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR));
-        animationList.add(CompositorAnimator.ofWritableFloatPropertyKey(handler, sourceLayoutTab,
-                LayoutTab.Y, source.top / mDpToPx, 0f, ZOOMING_DURATION,
-                Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR));
+                LayoutTab.Y, source.top / mDpToPx, 0f, ZOOMING_DURATION, Interpolators.EMPHASIZED));
         // TODO(crbug.com/964406): when shrinking to the bottom row, bottom of the tab goes up and
         // down, making the "create group" visible for a while.
         animationList.add(CompositorAnimator.ofWritableFloatPropertyKey(handler, sourceLayoutTab,
@@ -557,12 +556,12 @@ public class TabSwitcherLayout extends Layout {
                                         getContext(), mBrowserControlsStateProvider),
                         sourceLayoutTab.getUnclampedOriginalContentHeight()),
                 sourceLayoutTab.getUnclampedOriginalContentHeight(), ZOOMING_DURATION,
-                Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR));
+                Interpolators.EMPHASIZED));
 
         CompositorAnimator backgroundAlpha =
                 CompositorAnimator.ofFloat(handler, 1f, 0f, BACKGROUND_FADING_DURATION_MS,
                         animator -> mBackgroundAlpha = animator.getAnimatedValue());
-        backgroundAlpha.setInterpolator(Interpolators.FAST_OUT_LINEAR_IN_INTERPOLATOR);
+        backgroundAlpha.setInterpolator(Interpolators.EMPHASIZED);
         animationList.add(backgroundAlpha);
 
         mTabToSwitcherAnimation = new AnimatorSet();
