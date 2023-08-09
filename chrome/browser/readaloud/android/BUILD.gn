@@ -9,9 +9,14 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/readaloud/ReadAloudController.java",
     "java/src/org/chromium/chrome/browser/readaloud/ReadAloudFeatures.java",
     "java/src/org/chromium/chrome/browser/readaloud/ReadAloudToolbarButtonController.java",
+    "java/src/org/chromium/chrome/browser/readaloud/miniplayer/MiniPlayerCoordinator.java",
+    "java/src/org/chromium/chrome/browser/readaloud/miniplayer/MiniPlayerMediator.java",
+    "java/src/org/chromium/chrome/browser/readaloud/miniplayer/MiniPlayerProperties.java",
+    "java/src/org/chromium/chrome/browser/readaloud/miniplayer/MiniPlayerViewBinder.java",
   ]
   deps = [
     ":hooks_java",
+    ":java_resources",
     "//base:base_java",
     "//chrome/android:chrome_app_java_resources",
     "//chrome/browser/flags:java",
@@ -31,6 +36,13 @@ android_library("java") {
     "//url:gurl_java",
   ]
   resources_package = "org.chromium.chrome.browser.readaloud"
+}
+
+android_resources("java_resources") {
+  sources = [
+    "java/res/drawable/baseline_close_24.xml",
+    "java/res/layout/readaloud_mini_player_layout.xml",
+  ]
 }
 
 android_library("hooks_java") {
@@ -61,10 +73,13 @@ robolectric_library("junit") {
   sources = [
     "java/src/org/chromium/chrome/browser/readaloud/ReadAloudControllerUnitTest.java",
     "java/src/org/chromium/chrome/browser/readaloud/ReadAloudToolbarButtonControllerUnitTest.java",
+    "java/src/org/chromium/chrome/browser/readaloud/miniplayer/MiniPlayerCoordinatorUnitTest.java",
+    "java/src/org/chromium/chrome/browser/readaloud/miniplayer/MiniPlayerMediatorUnitTest.java",
   ]
   deps = [
     ":hooks_java",
     ":java",
+    ":java_resources",
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
@@ -78,8 +93,12 @@ robolectric_library("junit") {
     "//chrome/test/android:chrome_java_unit_test_support",
     "//components/feature_engagement/public:public_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_test_core_java",
+    "//third_party/androidx:androidx_test_ext_junit_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
+    "//ui/android:ui_java",
+    "//ui/android:ui_java_test_support",
     "//url:gurl_java",
     "//url:gurl_junit_test_support",
   ]

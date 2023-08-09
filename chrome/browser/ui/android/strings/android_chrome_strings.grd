@@ -5864,6 +5864,11 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_PLEASE_WAIT_PROGRESS_MESSAGE" desc='Message on the progress dialog used when waiting for an operation to complete.'>
         Please wait…
       </message>
+
+      <!-- Read Aloud player strings -->
+      <message name="IDS_READALOUD_CLOSE_PLAYER_BUTTON_CONTENT_DESCRIPTION" desc="Accessibility string for the button that closes the Read Aloud player.">
+        Tap to close Read Aloud.
+      </message>
     </messages>
   </release>
 </grit>

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/readaloud_mini_player"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="start|bottom"
+    android:orientation="horizontal"
+    android:paddingVertical="14dp"
+    android:paddingHorizontal="16dp"
+    android:animateLayoutChanges="true"
+    android:visibility="gone"
+    android:background="@macro/toolbar_background_primary">
+    <FrameLayout
+        android:id="@+id/filler"
+        android:layout_weight="1"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" />
+    <ImageView
+        android:id="@+id/readaloud_mini_player_close_button"
+        android:src="@drawable/baseline_close_24"
+        android:contentDescription="@string/readaloud_close_player_button_content_description"
+        android:layout_weight="0"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:scaleType="fitCenter"
+        android:layout_gravity="end" />
+</LinearLayout>

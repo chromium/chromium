@@ -15,6 +15,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
+import android.view.ViewStub;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -61,6 +62,8 @@ public class ReadAloudControllerUnitTest {
     Context mContext;
     @Mock
     private ReadAloudReadabilityHooksImpl mHooksImpl;
+    @Mock
+    private ViewStub mViewStub;
 
     MockTabModelSelector mTabModelSelector;
 
@@ -83,7 +86,7 @@ public class ReadAloudControllerUnitTest {
         when(mHooksImpl.isEnabled()).thenReturn(true);
         ReadAloudController.setReadabilityHooks(mHooksImpl);
         mController = new ReadAloudController(
-                mContext, mMockProfileSupplier, mTabModelSelector.getModel(false));
+                mContext, mMockProfileSupplier, mTabModelSelector.getModel(false), mViewStub);
 
         mTab = (MockTab) mTabModelSelector.getCurrentTab();
         mTab.setGurlOverrideForTesting(sTestGURL);

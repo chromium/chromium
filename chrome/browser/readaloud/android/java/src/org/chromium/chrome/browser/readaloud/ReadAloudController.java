@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.readaloud;
 
 import android.content.Context;
+import android.view.ViewStub;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -13,6 +14,7 @@ import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.readaloud.miniplayer.MiniPlayerCoordinator;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -36,6 +38,8 @@ public class ReadAloudController {
     private final Map<String, Boolean> mTimepointsSupportedMap = new HashMap<>();
     private final HashSet<String> mPendingRequests = new HashSet<>();
     private final TabModel mTabModel;
+    private final ViewStub mMiniPlayerStub;
+    private final MiniPlayerCoordinator mMiniPlayerCoordinator;
     private TabModelTabObserver mTabObserver;
 
     private final ReadAloudReadabilityHooks mReadabilityHooks;
@@ -67,13 +71,15 @@ public class ReadAloudController {
                 }
             };
 
-    public ReadAloudController(
-            Context context, ObservableSupplier<Profile> profileSupplier, TabModel tabModel) {
+    public ReadAloudController(Context context, ObservableSupplier<Profile> profileSupplier,
+            TabModel tabModel, ViewStub miniPlayerStub) {
         mProfileSupplier = profileSupplier;
         mTabModel = tabModel;
+        mMiniPlayerStub = miniPlayerStub;
         mReadabilityHooks = sReadabilityHooksForTesting != null
                 ? sReadabilityHooksForTesting
                 : new ReadAloudReadabilityHooksImpl(context, /* apiKeyOverride= */ null);
+        mMiniPlayerCoordinator = new MiniPlayerCoordinator(miniPlayerStub);
         if (mReadabilityHooks.isEnabled()) {
             mTabObserver = new TabModelTabObserver(mTabModel) {
                 @Override

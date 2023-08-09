@@ -149,6 +149,14 @@ found in the LICENSE file.
             android:layout="@layout/status_indicator_container" />
 
         <ViewStub
+            android:id="@+id/readaloud_mini_player_stub"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start|bottom"
+            android:inflatedId="@+id/readaloud_mini_player"
+            android:layout="@layout/readaloud_mini_player_layout" />
+
+        <ViewStub
             android:id="@+id/page_insights_hub_container_stub"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
