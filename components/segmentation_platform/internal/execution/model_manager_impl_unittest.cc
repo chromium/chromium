@@ -93,7 +93,7 @@ class ModelManagerTest : public testing::Test {
     segment_database_ = std::make_unique<test::TestSegmentInfoDatabase>();
     signal_database_ = std::make_unique<MockSignalDatabase>();
     clock_.SetNow(base::Time::Now());
-    // Initialize DB and default models with 1 respectively.
+    // Initialize DB and default models.
     model_provider_data_.segments_supporting_default_model = {
         kSearchUserSegmentId};
     default_model_manager_ = std::make_unique<DefaultModelManager>(
@@ -114,6 +114,7 @@ class ModelManagerTest : public testing::Test {
     model_manager_ = std::make_unique<ModelManagerImpl>(
         segment_ids, &model_provider_factory_, &clock_, segment_database_.get(),
         default_model_manager_.get(), callback);
+    model_manager_->Initialize();
   }
 
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
@@ -306,11 +307,8 @@ TEST_F(ModelManagerTest,
   EXPECT_TRUE(segment_info.prediction_result().result().size() == 0);
 }
 
-// TODO(ritikagup) : Update this test to test the OnSegmentationModelUpdated
-// flow for default models, once default model runs the callback for it.
 TEST_F(ModelManagerTest, DatabaseUpdateForDefaultModel) {
   auto segment_id = SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SEARCH_USER;
-
   // Fill in old data for default model in the SegmentInfo database.
   segment_database_->SetBucketDuration(
       segment_id, 456, proto::TimeUnit::MONTH,
@@ -354,6 +352,25 @@ TEST_F(ModelManagerTest, DatabaseUpdateForDefaultModel) {
                 .input_features(0)
                 .uma_feature()
                 .aggregation());
+
+  CreateModelManager({segment_id}, base::DoNothing());
+
+  // Also verify that the database has been updated.
+  base::MockCallback<SegmentInfoDatabase::SegmentInfoCallback> db_callback_2;
+  absl::optional<proto::SegmentInfo> segment_info_from_db_2;
+  EXPECT_CALL(db_callback_2, Run(_))
+      .WillOnce(SaveArg<0>(&segment_info_from_db_2));
+  segment_database_->GetSegmentInfo(segment_id,
+                                    proto::ModelSource::DEFAULT_MODEL_SOURCE,
+                                    db_callback_2.Get());
+  EXPECT_TRUE(segment_info_from_db_2.has_value());
+  EXPECT_EQ(segment_id, segment_info_from_db_2->segment_id());
+  EXPECT_EQ(clock_.Now().ToDeltaSinceWindowsEpoch().InSeconds(),
+            segment_info_from_db_2->model_update_time_s());
+
+  // The metadata should have been updated.
+  EXPECT_EQ(proto::TimeUnit::DAY,
+            segment_info_from_db_2->model_metadata().time_unit());
 }
 
 }  // namespace segmentation_platform

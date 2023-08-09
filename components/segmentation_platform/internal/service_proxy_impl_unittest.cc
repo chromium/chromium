@@ -71,6 +71,11 @@ class MockModelManager : public ModelManager {
   MOCK_METHOD(ModelProvider*,
               GetModelProvider,
               (proto::SegmentId segment_id, proto::ModelSource model_source));
+  MOCK_METHOD(void, Initialize, ());
+  MOCK_METHOD(
+      void,
+      SetSegmentationModelUpdatedCallbackForTesting,
+      (ModelManager::SegmentationModelUpdatedCallback model_updated_callback));
 };
 
 }  // namespace
@@ -158,6 +163,7 @@ class ServiceProxyImplTest : public testing::Test,
 
   std::unique_ptr<test::TestSegmentInfoDatabase> segment_db_;
   TestModelProviderFactory::Data data_;
+  std::unique_ptr<MockModelManager> mock_model_manager_;
   ExecutionService execution_;
   std::unique_ptr<TestModelProviderFactory> test_model_factory_;
   std::unique_ptr<DefaultModelManager> default_manager_;
@@ -259,9 +265,9 @@ TEST_F(ServiceProxyImplTest, ExecuteModel) {
 
   auto scheduler_moved = std::make_unique<MockModelExecutionScheduler>();
   MockModelExecutionScheduler* scheduler = scheduler_moved.get();
-  auto model_manager = std::make_unique<MockModelManager>();
+  mock_model_manager_ = std::make_unique<MockModelManager>();
   execution_.InitForTesting(nullptr, nullptr, std::move(scheduler_moved),
-                            std::move(model_manager));
+                            mock_model_manager_.get());
 
   // Scheduler is not set, ExecuteModel() will do nothing.
   EXPECT_CALL(*scheduler, RequestModelExecution(_)).Times(0);

@@ -34,7 +34,8 @@ StorageService::StorageService(
     UkmDataManager* ukm_data_manager,
     std::vector<std::unique_ptr<Config>> configs,
     ModelProviderFactory* model_provider_factory,
-    PrefService* profile_prefs)
+    PrefService* profile_prefs,
+    ModelManager::SegmentationModelUpdatedCallback model_updated_callback)
     : StorageService(
           db_provider->GetDB<proto::SegmentInfo>(
               leveldb_proto::ProtoDbType::SEGMENT_INFO_DATABASE,
@@ -52,7 +53,8 @@ StorageService::StorageService(
           ukm_data_manager,
           std::move(configs),
           model_provider_factory,
-          profile_prefs) {}
+          profile_prefs,
+          model_updated_callback) {}
 
 StorageService::StorageService(
     std::unique_ptr<leveldb_proto::ProtoDatabase<proto::SegmentInfo>>
@@ -64,7 +66,8 @@ StorageService::StorageService(
     UkmDataManager* ukm_data_manager,
     std::vector<std::unique_ptr<Config>> configs,
     ModelProviderFactory* model_provider_factory,
-    PrefService* profile_prefs)
+    PrefService* profile_prefs,
+    ModelManager::SegmentationModelUpdatedCallback model_updated_callback)
     : config_holder_(std::make_unique<ConfigHolder>(std::move(configs))),
       cached_result_provider_(
           std::make_unique<CachedResultProvider>(profile_prefs,
@@ -72,10 +75,6 @@ StorageService::StorageService(
       cached_result_writer_(std::make_unique<CachedResultWriter>(
           std::make_unique<ClientResultPrefs>(profile_prefs),
           clock)),
-
-      default_model_manager_(std::make_unique<DefaultModelManager>(
-          model_provider_factory,
-          config_holder_->all_segment_ids())),
       segment_info_database_(std::make_unique<SegmentInfoDatabase>(
           std::move(segment_db),
           std::make_unique<SegmentInfoCache>())),
@@ -84,6 +83,16 @@ StorageService::StorageService(
       signal_storage_config_(std::make_unique<SignalStorageConfig>(
           std::move(signal_storage_config_db),
           clock)),
+      default_model_manager_(std::make_unique<DefaultModelManager>(
+          model_provider_factory,
+          config_holder_->all_segment_ids())),
+      model_manager_(
+          std::make_unique<ModelManagerImpl>(config_holder_->all_segment_ids(),
+                                             model_provider_factory,
+                                             clock,
+                                             segment_info_database_.get(),
+                                             default_model_manager_.get(),
+                                             model_updated_callback)),
       ukm_data_manager_(ukm_data_manager),
       database_maintenance_(std::make_unique<DatabaseMaintenanceImpl>(
           config_holder_->all_segment_ids(),
@@ -101,13 +110,15 @@ StorageService::StorageService(
     std::unique_ptr<SignalDatabase> signal_database,
     std::unique_ptr<SignalStorageConfig> signal_storage_config,
     std::unique_ptr<DefaultModelManager> default_model_manager,
+    std::unique_ptr<ModelManager> model_manager,
     std::unique_ptr<ConfigHolder> config_holder,
     UkmDataManager* ukm_data_manager)
     : config_holder_(std::move(config_holder)),
-      default_model_manager_(std::move(default_model_manager)),
       segment_info_database_(std::move(segment_info_database)),
       signal_database_(std::move(signal_database)),
       signal_storage_config_(std::move(signal_storage_config)),
+      default_model_manager_(std::move(default_model_manager)),
+      model_manager_(std::move(model_manager)),
       ukm_data_manager_(ukm_data_manager) {}
 
 StorageService::~StorageService() {
@@ -152,6 +163,7 @@ bool StorageService::IsInitializationFinished() const {
 void StorageService::MaybeFinishInitialization() {
   if (!IsInitializationFinished())
     return;
+  model_manager_->Initialize();
   std::move(init_callback_)
       .Run(*segment_info_database_initialized_ &&
            *signal_database_initialized_ &&

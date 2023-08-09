@@ -67,6 +67,10 @@ SegmentationPlatformServiceImpl::SegmentationPlatformServiceImpl(
   if (init_params->storage_service) {
     // Test only:
     storage_service_ = std::move(init_params->storage_service);
+    storage_service_->model_manager()
+        ->SetSegmentationModelUpdatedCallbackForTesting(base::BindRepeating(
+            &SegmentationPlatformServiceImpl::OnSegmentationModelUpdated,
+            weak_ptr_factory_.GetWeakPtr()));
   } else {
     DCHECK(model_provider_factory_ && init_params->db_provider);
     DCHECK(!init_params->storage_dir.empty() && init_params->ukm_data_manager);
@@ -74,7 +78,10 @@ SegmentationPlatformServiceImpl::SegmentationPlatformServiceImpl(
         init_params->storage_dir, init_params->db_provider,
         init_params->task_runner, init_params->clock,
         init_params->ukm_data_manager, std::move(init_params->configs),
-        model_provider_factory_.get(), profile_prefs_);
+        model_provider_factory_.get(), profile_prefs_,
+        base::BindRepeating(
+            &SegmentationPlatformServiceImpl::OnSegmentationModelUpdated,
+            weak_ptr_factory_.GetWeakPtr()));
   }
 
   const auto* config_holder = storage_service_->config_holder();
@@ -246,12 +253,9 @@ void SegmentationPlatformServiceImpl::OnDatabaseInitialized(bool success) {
     observers.push_back(key_and_selector.second.get());
   observers.push_back(proxy_.get());
   execution_service_.Initialize(
-      storage_service_.get(), &signal_handler_, clock_,
-      base::BindRepeating(
-          &SegmentationPlatformServiceImpl::OnSegmentationModelUpdated,
-          weak_ptr_factory_.GetWeakPtr()),
-      task_runner_, config_holder->all_segment_ids(),
-      model_provider_factory_.get(), std::move(observers), platform_options_,
+      storage_service_.get(), &signal_handler_, clock_, task_runner_,
+      config_holder->all_segment_ids(), model_provider_factory_.get(),
+      std::move(observers), platform_options_,
       std::move(input_delegate_holder_), &config_holder->configs(),
       profile_prefs_, storage_service_->cached_result_provider());
 
@@ -286,6 +290,7 @@ void SegmentationPlatformServiceImpl::OnDatabaseInitialized(bool success) {
 
 void SegmentationPlatformServiceImpl::OnSegmentationModelUpdated(
     proto::SegmentInfo segment_info) {
+  CHECK(IsPlatformInitialized());
   DCHECK(metadata_utils::ValidateSegmentInfoMetadataAndFeatures(segment_info) ==
          metadata_utils::ValidationResult::kValidationSuccess);
 

@@ -30,8 +30,14 @@ class ModelManager {
   using SegmentationModelUpdatedCallback =
       base::RepeatingCallback<void(proto::SegmentInfo)>;
 
+  virtual void Initialize() = 0;
+
   virtual ModelProvider* GetModelProvider(proto::SegmentId segment_id,
                                           proto::ModelSource model_source) = 0;
+
+  // For tests:
+  virtual void SetSegmentationModelUpdatedCallbackForTesting(
+      SegmentationModelUpdatedCallback model_updated_callback) = 0;
 
  protected:
   ModelManager() = default;

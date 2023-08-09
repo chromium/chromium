@@ -74,6 +74,11 @@ class MockModelManager : public ModelManager {
   MOCK_METHOD(ModelProvider*,
               GetModelProvider,
               (proto::SegmentId segment_id, proto::ModelSource model_source));
+  MOCK_METHOD(void, Initialize, ());
+  MOCK_METHOD(
+      void,
+      SetSegmentationModelUpdatedCallbackForTesting,
+      (ModelManager::SegmentationModelUpdatedCallback model_updated_callback));
 };
 
 }  // namespace
@@ -92,12 +97,11 @@ class SegmentResultProviderTest : public testing::Test {
     auto query_processor =
         std::make_unique<processing::MockFeatureListQueryProcessor>();
     mock_query_processor_ = query_processor.get();
-    auto moved_model_manager = std::make_unique<MockModelManager>();
-    mock_execution_manager_ = moved_model_manager.get();
+    mock_model_manager_ = std::make_unique<MockModelManager>();
     execution_service_->InitForTesting(
         std::move(query_processor),
         std::make_unique<ModelExecutorImpl>(&clock_, mock_query_processor_),
-        nullptr, std::move(moved_model_manager));
+        nullptr, mock_model_manager_.get());
     score_provider_ = SegmentResultProvider::Create(
         segment_database_.get(), &signal_storage_config_,
         default_manager_.get(), execution_service_.get(), &clock_,
@@ -176,7 +180,7 @@ class SegmentResultProviderTest : public testing::Test {
   MockSignalDatabase signal_database_;
   raw_ptr<processing::MockFeatureListQueryProcessor, DanglingUntriaged>
       mock_query_processor_ = nullptr;
-  raw_ptr<MockModelManager, DanglingUntriaged> mock_execution_manager_;
+  std::unique_ptr<MockModelManager> mock_model_manager_;
   SignalHandler signal_handler_;
   std::unique_ptr<DefaultModelManager> default_manager_;
   std::unique_ptr<ExecutionService> execution_service_;
@@ -229,7 +233,7 @@ TEST_F(SegmentResultProviderTest, GetFromModelExecutionFailed) {
 
   // No model available to execute.
   EXPECT_CALL(
-      *mock_execution_manager_,
+      *mock_model_manager_,
       GetModelProvider(kTestSegment, proto::ModelSource::SERVER_MODEL_SOURCE))
       .WillOnce(Return(nullptr));
   ExpectSegmentResultOnGet(
@@ -240,7 +244,7 @@ TEST_F(SegmentResultProviderTest, GetFromModelExecutionFailed) {
   // Feature processing failed.
   TestModelProvider provider(kTestSegment);
   EXPECT_CALL(
-      *mock_execution_manager_,
+      *mock_model_manager_,
       GetModelProvider(kTestSegment, proto::ModelSource::SERVER_MODEL_SOURCE))
       .WillOnce(Return(&provider));
   EXPECT_CALL(*mock_query_processor_, ProcessFeatureList(_, _, _, _, _, _, _))
@@ -262,7 +266,7 @@ TEST_F(SegmentResultProviderTest, GetFromModel) {
 
   TestModelProvider provider(kTestSegment);
   EXPECT_CALL(
-      *mock_execution_manager_,
+      *mock_model_manager_,
       GetModelProvider(kTestSegment, proto::ModelSource::SERVER_MODEL_SOURCE))
       .WillOnce(Return(&provider));
   EXPECT_CALL(*mock_query_processor_, ProcessFeatureList(_, _, _, _, _, _, _))

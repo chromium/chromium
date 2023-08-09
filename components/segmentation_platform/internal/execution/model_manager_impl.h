@@ -45,15 +45,22 @@ class ModelManagerImpl : public ModelManager {
       SegmentInfoDatabase* segment_database,
       DefaultModelManager* default_model_manager,
       const SegmentationModelUpdatedCallback& model_updated_callback);
+
   ~ModelManagerImpl() override;
 
   // Disallow copy/assign.
   ModelManagerImpl(const ModelManagerImpl&) = delete;
   ModelManagerImpl& operator=(const ModelManagerImpl&) = delete;
 
+  void Initialize() override;
+
   // ModelManager override:
   ModelProvider* GetModelProvider(proto::SegmentId segment_id,
                                   proto::ModelSource model_source) override;
+
+  void SetSegmentationModelUpdatedCallbackForTesting(
+      ModelManager::SegmentationModelUpdatedCallback model_updated_callback)
+      override;
 
  private:
   friend class SegmentationPlatformServiceImplTest;
@@ -84,10 +91,15 @@ class ModelManagerImpl : public ModelManager {
   void OnUpdatedSegmentInfoStored(proto::SegmentInfo segment_info,
                                   bool success);
 
+  const base::flat_set<SegmentId>& segment_ids_;
+
   // All the relevant handlers for each of the segments.
   std::map<std::pair<SegmentId, proto::ModelSource>,
            std::unique_ptr<ModelProvider>>
       model_providers_;
+
+  // Creates model provider.
+  const raw_ptr<ModelProviderFactory> model_provider_factory_;
 
   // Used to access the current time.
   raw_ptr<base::Clock> clock_;

@@ -38,14 +38,18 @@ ModelManagerImpl::ModelManagerImpl(
     SegmentInfoDatabase* segment_database,
     DefaultModelManager* default_model_manager,
     const SegmentationModelUpdatedCallback& model_updated_callback)
-    : clock_(clock),
+    : segment_ids_(segment_ids),
+      model_provider_factory_(model_provider_factory),
+      clock_(clock),
       segment_database_(segment_database),
       default_model_manager_(default_model_manager),
-      model_updated_callback_(model_updated_callback) {
-  for (SegmentId segment_id : segment_ids) {
+      model_updated_callback_(model_updated_callback) {}
+
+void ModelManagerImpl::Initialize() {
+  for (SegmentId segment_id : segment_ids_) {
     // Server models
     std::unique_ptr<ModelProvider> provider =
-        model_provider_factory->CreateProvider(segment_id);
+        model_provider_factory_->CreateProvider(segment_id);
     provider->InitAndFetchModel(base::BindRepeating(
         &ModelManagerImpl::OnSegmentationModelUpdated,
         weak_ptr_factory_.GetWeakPtr(), ModelSource::SERVER_MODEL_SOURCE));
@@ -54,15 +58,16 @@ ModelManagerImpl::ModelManagerImpl(
         std::move(provider));
 
     // Default models
-    ModelProvider* default_provider =
+    auto* default_provider =
         default_model_manager_->GetDefaultProvider(segment_id);
-    if (!provider) {
+    if (!default_provider) {
       continue;
     }
-    // TODO(ritikagup): Change use of InitAndFetch() to GetModelConfig().
-    default_provider->InitAndFetchModel(base::BindRepeating(
-        &ModelManagerImpl::OnSegmentationModelUpdated,
-        weak_ptr_factory_.GetWeakPtr(), ModelSource::DEFAULT_MODEL_SOURCE));
+    std::unique_ptr<DefaultModelProvider::ModelConfig> model_config =
+        default_provider->GetModelConfig();
+    OnSegmentationModelUpdated(ModelSource::DEFAULT_MODEL_SOURCE, segment_id,
+                               model_config->metadata,
+                               model_config->model_version);
   }
 }
 
@@ -79,6 +84,11 @@ ModelProvider* ModelManagerImpl::GetModelProvider(
   auto it = model_providers_.find(std::make_pair(segment_id, model_source));
   DCHECK(it != model_providers_.end());
   return it->second.get();
+}
+
+void ModelManagerImpl::SetSegmentationModelUpdatedCallbackForTesting(
+    ModelManager::SegmentationModelUpdatedCallback model_updated_callback) {
+  model_updated_callback_ = model_updated_callback;
 }
 
 void ModelManagerImpl::OnSegmentationModelUpdated(

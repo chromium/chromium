@@ -14,6 +14,7 @@
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/segmentation_platform/internal/constants.h"
@@ -269,6 +270,10 @@ class SegmentationPlatformServiceImplTest
                         SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE);
     AssertCachedSegment(kTestSegmentationKey2, false);
     AssertCachedSegment(kTestSegmentationKey3, false);
+
+    ASSERT_TRUE(
+        model_provider_data_.default_provider_metadata.count(
+            SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHOPPING_USER) == 1);
   }
 
   void FailInitializationFlow() {

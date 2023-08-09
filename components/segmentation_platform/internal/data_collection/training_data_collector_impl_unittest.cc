@@ -73,6 +73,20 @@ constexpr DecisionType kOnDemandDecisionType =
 constexpr DecisionType kPeriodicDecisionType =
     proto::TrainingOutputs::TriggerConfig::PERIODIC;
 
+class MockModelManager : public ModelManager {
+ public:
+  MOCK_METHOD(ModelProvider*,
+              GetModelProvider,
+              (proto::SegmentId segment_id, proto::ModelSource model_source));
+
+  MOCK_METHOD(void, Initialize, ());
+
+  MOCK_METHOD(
+      void,
+      SetSegmentationModelUpdatedCallbackForTesting,
+      (ModelManager::SegmentationModelUpdatedCallback model_updated_callback));
+};
+
 class TrainingDataCollectorImplTest : public ::testing::Test {
  public:
   TrainingDataCollectorImplTest()
@@ -160,12 +174,12 @@ class TrainingDataCollectorImplTest : public ::testing::Test {
     CachedResultWriter(std::make_unique<ClientResultPrefs>(&prefs_), &clock_)
         .UpdatePrefsIfExpired(configs_[1].get(), client_2_result,
                               PlatformOptions::CreateDefault());
-
     storage_service_ = std::make_unique<StorageService>(
         std::move(test_segment_info_db), nullptr,
         std::move(signal_storage_config),
         std::make_unique<DefaultModelManager>(nullptr,
                                               base::flat_set<SegmentId>()),
+        std::make_unique<MockModelManager>(),
         std::make_unique<ConfigHolder>(std::move(configs_)),
         &ukm_data_manager_);
 

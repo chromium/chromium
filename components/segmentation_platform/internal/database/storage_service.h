@@ -15,6 +15,8 @@
 #include "components/segmentation_platform/internal/database/cached_result_provider.h"
 #include "components/segmentation_platform/internal/database/cached_result_writer.h"
 #include "components/segmentation_platform/internal/database/config_holder.h"
+#include "components/segmentation_platform/internal/execution/model_manager.h"
+#include "components/segmentation_platform/internal/execution/model_manager_impl.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -40,6 +42,7 @@ class SignalStorageConfigs;
 
 class DatabaseMaintenanceImpl;
 class DefaultModelManager;
+class ModelManager;
 class ModelProviderFactory;
 class SegmentInfoDatabase;
 class SignalDatabase;
@@ -65,14 +68,16 @@ enum class ServiceStatus {
 // Owns and manages all the storage databases for the platform.
 class StorageService {
  public:
-  StorageService(const base::FilePath& storage_dir,
-                 leveldb_proto::ProtoDatabaseProvider* db_provider,
-                 scoped_refptr<base::SequencedTaskRunner> task_runner,
-                 base::Clock* clock,
-                 UkmDataManager* ukm_data_manager,
-                 std::vector<std::unique_ptr<Config>> configs,
-                 ModelProviderFactory* model_provider_factory,
-                 PrefService* profile_prefs);
+  StorageService(
+      const base::FilePath& storage_dir,
+      leveldb_proto::ProtoDatabaseProvider* db_provider,
+      scoped_refptr<base::SequencedTaskRunner> task_runner,
+      base::Clock* clock,
+      UkmDataManager* ukm_data_manager,
+      std::vector<std::unique_ptr<Config>> configs,
+      ModelProviderFactory* model_provider_factory,
+      PrefService* profile_prefs,
+      ModelManager::SegmentationModelUpdatedCallback model_updated_callback);
 
   // For tests:
   StorageService(
@@ -86,13 +91,15 @@ class StorageService {
       UkmDataManager* ukm_data_manager,
       std::vector<std::unique_ptr<Config>> configs,
       ModelProviderFactory* model_provider_factory,
-      PrefService* profile_prefs);
+      PrefService* profile_prefs,
+      ModelManager::SegmentationModelUpdatedCallback model_updated_callback);
 
   // For tests:
   StorageService(std::unique_ptr<SegmentInfoDatabase> segment_info_database,
                  std::unique_ptr<SignalDatabase> signal_database,
                  std::unique_ptr<SignalStorageConfig> signal_storage_config,
                  std::unique_ptr<DefaultModelManager> default_model_manager,
+                 std::unique_ptr<ModelManager> model_manager,
                  std::unique_ptr<ConfigHolder> config_holder,
                  UkmDataManager* ukm_data_manager);
 
@@ -128,6 +135,11 @@ class StorageService {
     return default_model_manager_.get();
   }
 
+  ModelManager* model_manager() {
+    DCHECK(model_manager_);
+    return model_manager_.get();
+  }
+
   SegmentInfoDatabase* segment_info_database() {
     return segment_info_database_.get();
   }
@@ -156,13 +168,15 @@ class StorageService {
   // Writes to result cache.
   std::unique_ptr<CachedResultWriter> cached_result_writer_;
 
-  // Default models.
-  std::unique_ptr<DefaultModelManager> default_model_manager_;
-
   // Databases.
   std::unique_ptr<SegmentInfoDatabase> segment_info_database_;
   std::unique_ptr<SignalDatabase> signal_database_;
   std::unique_ptr<SignalStorageConfig> signal_storage_config_;
+
+  // Default models.
+  std::unique_ptr<DefaultModelManager> default_model_manager_;
+  // Provides provider for default and server models.
+  std::unique_ptr<ModelManager> model_manager_;
 
   // The data manager is owned by the database client and is guaranteed to be
   // kept alive until all profiles (keyed services) are destroyed. Refer to the

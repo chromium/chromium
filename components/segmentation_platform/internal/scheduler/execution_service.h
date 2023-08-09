@@ -47,13 +47,12 @@ class ExecutionService {
       std::unique_ptr<processing::FeatureListQueryProcessor> feature_processor,
       std::unique_ptr<ModelExecutor> executor,
       std::unique_ptr<ModelExecutionScheduler> scheduler,
-      std::unique_ptr<ModelManager> execution_manager);
+      ModelManager* model_manager);
 
   void Initialize(
       StorageService* storage_service,
       SignalHandler* signal_handler,
       base::Clock* clock,
-      ModelManager::SegmentationModelUpdatedCallback callback,
       scoped_refptr<base::SequencedTaskRunner> task_runner,
       const base::flat_set<SegmentId>& all_segment_ids,
       ModelProviderFactory* model_provider_factory,
@@ -108,8 +107,9 @@ class ExecutionService {
   // Utility to execute model and return result.
   std::unique_ptr<ModelExecutor> model_executor_;
 
+  // TODO(ritikagup) : Remoove this and use model manager from storage service.
   // Model execution.
-  std::unique_ptr<ModelManager> model_manager_;
+  raw_ptr<ModelManager> model_manager_;
 
   // Model execution scheduling logic.
   std::unique_ptr<ModelExecutionScheduler> model_execution_scheduler_;
