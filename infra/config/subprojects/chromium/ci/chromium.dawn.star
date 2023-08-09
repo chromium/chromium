@@ -615,8 +615,39 @@ ci.thin_tester(
 )
 
 ci.gpu.windows_builder(
-    name = "Dawn Win10 x64 ASAN Release",
+    name = "Dawn Win10 x64 ASAN Builder",
+    # One build every 2 hours.
+    schedule = "0 */2 * * *",
     builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "dawn_top_of_tree",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.WIN,
+        ),
+        build_gs_bucket = "chromium-dawn-archive",
+    ),
+    console_view_entry = consoles.console_view_entry(
+        category = "ToT|Windows|ASAN|Builder",
+        short_name = "x64",
+    ),
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
+)
+
+ci.thin_tester(
+    name = "Dawn Win10 x64 ASAN Release (Intel)",
+    triggered_by = ["ci/Dawn Win10 x64 ASAN Builder"],
+    builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
             config = "chromium",
             apply_configs = [
@@ -636,13 +667,38 @@ ci.gpu.windows_builder(
         run_tests_serially = True,
     ),
     console_view_entry = consoles.console_view_entry(
-        category = "ToT|Windows|ASAN",
+        category = "ToT|Windows|ASAN|Intel",
         short_name = "x64",
     ),
-    # Serially executed tests + ASAN = more than the default timeout needed in
-    # order to prevent build timeouts.
-    execution_timeout = 6 * time.hour,
-    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
+)
+
+ci.thin_tester(
+    name = "Dawn Win10 x64 ASAN Release (NVIDIA)",
+    triggered_by = ["ci/Dawn Win10 x64 ASAN Builder"],
+    builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.TEST,
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "dawn_top_of_tree",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.WIN,
+        ),
+        build_gs_bucket = "chromium-dawn-archive",
+        run_tests_serially = True,
+    ),
+    console_view_entry = consoles.console_view_entry(
+        category = "ToT|Windows|ASAN|Nvidia",
+        short_name = "x64",
+    ),
 )
 
 ci.gpu.windows_builder(
