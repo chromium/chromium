@@ -547,6 +547,16 @@ TEST_P(SharedDictionaryManagerTest, WriterForUseAsDictionaryHeader) {
 
       // Unsupported `algorithms` value. We only support sha-256.
       {"match=\"test\", algorithms=(sha-512)", false},
+
+      // We support `raw` type.
+      {"match=\"test\", type=raw", true},
+      {"match=\"test\", type=(raw)", true},
+      // The type must be a token.
+      {"match=\"test\", type=\"raw\"", false},
+      // We only support `raw` type.
+      {"match=\"test\", type=other", false},
+      // We don't support multiple types.
+      {"match=\"test\", type=(raw,rawx)", false},
   };
   for (const auto& testcase : kTestCases) {
     SCOPED_TRACE(base::StringPrintf("header_string: %s",

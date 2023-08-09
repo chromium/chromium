@@ -5,6 +5,7 @@
 #include "services/network/shared_dictionary/shared_dictionary_storage.h"
 
 #include <algorithm>
+#include <string_view>
 
 #include "base/feature_list.h"
 #include "base/strings/pattern.h"
@@ -24,19 +25,24 @@ namespace network {
 
 namespace {
 
+constexpr std::string_view kDefaultTypeRaw = "raw";
+
 class UseAsDictionaryHeaderInfo {
  public:
   UseAsDictionaryHeaderInfo(std::string match,
                             absl::optional<base::TimeDelta> expiration,
-                            absl::optional<std::vector<std::string>> algorithms)
+                            absl::optional<std::vector<std::string>> algorithms,
+                            std::string type)
       : match(std::move(match)),
         expiration(expiration),
-        algorithms(std::move(algorithms)) {}
+        algorithms(std::move(algorithms)),
+        type(std::move(type)) {}
   ~UseAsDictionaryHeaderInfo() = default;
 
   std::string match;
   absl::optional<base::TimeDelta> expiration;
   absl::optional<std::vector<std::string>> algorithms;
+  std::string type;
 };
 
 absl::optional<UseAsDictionaryHeaderInfo> ParseUseAsDictionaryHeaderInfo(
@@ -56,6 +62,7 @@ absl::optional<UseAsDictionaryHeaderInfo> ParseUseAsDictionaryHeaderInfo(
   absl::optional<std::string> match_value;
   absl::optional<base::TimeDelta> expires_value;
   absl::optional<std::vector<std::string>> algorithms_value;
+  std::string type_value = std::string(kDefaultTypeRaw);
   for (const auto& entry : dictionary.value()) {
     if (entry.first == shared_dictionary::kOptionNameMatch) {
       if ((entry.second.member.size() != 1u) ||
@@ -79,13 +86,19 @@ absl::optional<UseAsDictionaryHeaderInfo> ParseUseAsDictionaryHeaderInfo(
         tmp_vec.push_back(algorithms_item.item.GetString());
       }
       algorithms_value = std::move(tmp_vec);
+    } else if (entry.first == shared_dictionary::kOptionNameType) {
+      if ((entry.second.member.size() != 1u) ||
+          !entry.second.member.front().item.is_token()) {
+        return absl::nullopt;
+      }
+      type_value = entry.second.member.front().item.GetString();
     }
   }
   if (!match_value) {
     return absl::nullopt;
   }
   return UseAsDictionaryHeaderInfo(*match_value, std::move(expires_value),
-                                   std::move(algorithms_value));
+                                   std::move(algorithms_value), type_value);
 }
 
 }  // namespace
@@ -126,6 +139,10 @@ SharedDictionaryStorage::MaybeCreateWriter(
                   "sha-256") == info->algorithms->end()) {
       return nullptr;
     }
+  }
+  if (info->type != kDefaultTypeRaw) {
+    // Currently we only support `raw` type.
+    return nullptr;
   }
   // Do not write an existing shared dictionary from the HTTP caches to the
   // shared dictionary storage. Note that IsAlreadyRegistered() can return false

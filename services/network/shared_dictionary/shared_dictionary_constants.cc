@@ -25,6 +25,7 @@ const char kUseAsDictionaryHeaderName[] = "use-as-dictionary";
 const char kOptionNameMatch[] = "match";
 const char kOptionNameExpires[] = "expires";
 const char kOptionNameAlgorithms[] = "algorithms";
+const char kOptionNameType[] = "type";
 
 size_t GetDictionarySizeLimit() {
   return g_dictionary_size_limit;
