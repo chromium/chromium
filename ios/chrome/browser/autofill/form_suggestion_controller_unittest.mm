@@ -168,6 +168,7 @@ class FormSuggestionControllerTest : public PlatformTest {
   }
 
   void TearDown() override {
+    [accessory_mediator_ disconnect];
     [suggestion_controller_ detachFromWebState];
     PlatformTest::TearDown();
   }

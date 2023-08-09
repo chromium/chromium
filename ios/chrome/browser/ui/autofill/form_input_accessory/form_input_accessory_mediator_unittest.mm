@@ -57,6 +57,12 @@ class FormInputAccessoryMediatorTest : public PlatformTest {
                                         securityAlertHandler:nil
                                       reauthenticationModule:nil];
   }
+
+  void TearDown() override {
+    [mediator_ disconnect];
+    PlatformTest::TearDown();
+  }
+
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<web::FakeWebState> test_web_state_;
   std::unique_ptr<web::FakeWebFrame> main_frame_;

@@ -368,6 +368,7 @@ void AutofillControllerTest::SetUp() {
 }
 
 void AutofillControllerTest::TearDown() {
+  [accessory_mediator_ disconnect];
   [suggestion_controller_ detachFromWebState];
 
   web::test::WaitForBackgroundTasks();

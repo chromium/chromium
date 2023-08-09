@@ -210,7 +210,11 @@ using base::UmaHistogramEnumeration;
 }
 
 - (void)dealloc {
-  [self disconnect];
+  // TODO(crbug.com/1454777)
+  DUMP_WILL_BE_CHECK(!_formActivityObserverBridge.get());
+  DUMP_WILL_BE_CHECK(!_personalDataManager);
+  DUMP_WILL_BE_CHECK(!_webState);
+  DUMP_WILL_BE_CHECK(!_webStateList);
 }
 
 - (void)disconnect {
@@ -218,6 +222,7 @@ using base::UmaHistogramEnumeration;
   if (_personalDataManager && _personalDataManagerObserver.get()) {
     _personalDataManager->RemoveObserver(_personalDataManagerObserver.get());
     _personalDataManagerObserver.reset();
+    _personalDataManager = nullptr;
   }
   if (_webState) {
     _webState->RemoveObserver(_webStateObserverBridge.get());

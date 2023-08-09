@@ -283,6 +283,11 @@ class PasswordControllerTest : public PlatformTest {
     }
   }
 
+  void TearDown() override {
+    [accessoryMediator_ disconnect];
+    PlatformTest::TearDown();
+  }
+
   bool SetUpUniqueIDs() {
     autofill::FormUtilJavaScriptFeature* feature =
         autofill::FormUtilJavaScriptFeature::GetInstance();
