@@ -5,8 +5,7 @@
 import 'chrome://os-settings/os_settings.js';
 
 import {AccountManagerBrowserProxy, AccountManagerBrowserProxyImpl} from 'chrome://os-settings/lazy_load.js';
-import {OsSettingsPeoplePageElement, OsSettingsRoutes, PageStatus, ProfileInfoBrowserProxy, ProfileInfoBrowserProxyImpl, Router, routes, settingMojom, SyncBrowserProxy, SyncBrowserProxyImpl} from 'chrome://os-settings/os_settings.js';
-import {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import {CrIconButtonElement, OsSettingsPeoplePageElement, OsSettingsRoutes, PageStatus, ProfileInfoBrowserProxy, ProfileInfoBrowserProxyImpl, Router, routes, settingMojom, SyncBrowserProxy, SyncBrowserProxyImpl} from 'chrome://os-settings/os_settings.js';
 import {CrRadioGroupElement} from 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
