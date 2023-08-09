@@ -182,12 +182,12 @@ views::Widget::InitParams AccessCodeCastDialog::CreateParams(
     AccessCodeCastDialogMode dialog_mode) {
   views::Widget::InitParams params;
   params.remove_standard_frame = true;
-  // Use the corner radius which matches style based on the appropriate mode.
-  params.corner_radius =
-      (dialog_mode == AccessCodeCastDialogMode::kBrowserStandard)
-          ? views::LayoutProvider::Get()->GetCornerRadiusMetric(
-                views::Emphasis::kMedium)
-          : kSystemDialogCornerRadiusDp;
+  // If we are acting as a system dialog, use the appropriate corner radius.
+  // Otherwise, the widget will default to the correct value for browser
+  // dialogs.
+  if (dialog_mode == AccessCodeCastDialogMode::kSystem) {
+    params.corner_radius = kSystemDialogCornerRadiusDp;
+  }
   params.type = views::Widget::InitParams::Type::TYPE_BUBBLE;
   // Make sure the dialog border is rendered correctly
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
