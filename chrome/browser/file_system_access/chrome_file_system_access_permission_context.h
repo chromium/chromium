@@ -217,6 +217,29 @@ class ChromeFileSystemAccessPermissionContext
 
  private:
   class PermissionGrantImpl;
+
+  // This value should not be stored, and should only be used to check the
+  // state of persisted grants, using the `GetPersistedGrantState()` method.
+  enum class PersistedGrantState {
+    // Represents a grant that was granted access on previous visit.
+    // Extended Permissions is not enabled for the given origin.
+    kDormant,
+    // Represents a grant that "shadows" an active grant for the
+    // current visit. Extended permissions is not enabled for the
+    // given origin. Shadow grants can be used to auto-grant
+    // permission requests. May have active grants that are GRANTED.
+    kShadow,
+    // Represents a grant that persists across multiple visits.
+    // The user has enabled Extended Permissions for the given
+    // origin via the Restore Prompt or by installing a PWA. Can be
+    // used to auto-grant permission requests.
+    kExtended,
+  };
+
+  // Retrieve the persisted grant state for all persisted grants for a given
+  // origin.
+  PersistedGrantState GetPersistedGrantState(const url::Origin& origin) const;
+
   void PermissionGrantDestroyed(PermissionGrantImpl* grant);
 
   // Checks whether the file or directory at `path` corresponds to a directory
@@ -267,7 +290,7 @@ class ChromeFileSystemAccessPermissionContext
                              HandleType handle_type,
                              GrantType grant_type);
 
-  bool HasGrantedActiveGrant(const url::Origin& origin);
+  bool HasGrantedActiveGrant(const url::Origin& origin) const;
 
   // Similar to GetGrantedObjects() but returns only extended grants.
   std::vector<std::unique_ptr<Object>> GetExtendedPersistedObjects(

@@ -1197,13 +1197,12 @@ ChromeFileSystemAccessPermissionContext::GetExtendedPersistedObjects(
     const url::Origin& origin) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (OriginHasExtendedPermission(origin)) {
+  if (GetPersistedGrantState(origin) == PersistedGrantState::kExtended) {
     // When the origin has extended permission enabled, all permissions objects
     // represent extended grants.
     return ObjectPermissionContextBase::GetGrantedObjects(origin);
   }
 
-  // Return an empty vector since objects represent dormant grants.
   return {};
 }
 
@@ -1211,11 +1210,7 @@ ChromeFileSystemAccessPermissionContext::GetExtendedPersistedObjects(
 std::vector<std::unique_ptr<permissions::ObjectPermissionContextBase::Object>>
 ChromeFileSystemAccessPermissionContext::GetDormantPersistedObjects(
     const url::Origin& origin) {
-  // TODO(crbug.com/1011533): Update this check to cover the scenario where
-  // granted active grants are destroyed during a session, and as a result,
-  // persisted grants that should be considered "shadow" grants will instead be
-  // considered "dormant".
-  if (!OriginHasExtendedPermission(origin) && !HasGrantedActiveGrant(origin)) {
+  if (GetPersistedGrantState(origin) == PersistedGrantState::kDormant) {
     return ObjectPermissionContextBase::GetGrantedObjects(origin);
   }
   return {};
@@ -1937,6 +1932,8 @@ bool ChromeFileSystemAccessPermissionContext::AncestorHasActivePermission(
 
 // TODO(crbug.com/1373962): Remove `kFileSystemAccessPersistentPermissions`
 // feature flag checks before launch.
+// TODO(crbug.com/1011533): Add checks for `PersistentPermissionPref` value
+// once implemented.
 bool ChromeFileSystemAccessPermissionContext::OriginHasExtendedPermission(
     const url::Origin& origin) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -2057,12 +2054,12 @@ bool ChromeFileSystemAccessPermissionContext::HasExtendedPermission(
 
 // Determines if a given origin has active grants.
 bool ChromeFileSystemAccessPermissionContext::HasGrantedActiveGrant(
-    const url::Origin& origin) {
+    const url::Origin& origin) const {
   auto origin_it = active_permissions_map_.find(origin);
   if (origin_it == active_permissions_map_.end()) {
     return false;
   }
-  OriginState& origin_state = origin_it->second;
+  const OriginState& origin_state = origin_it->second;
   return (base::ranges::any_of(origin_state.read_grants,
                                [&](const auto& grant) {
                                  return grant.second->GetStatus() ==
@@ -2076,6 +2073,23 @@ bool ChromeFileSystemAccessPermissionContext::HasGrantedActiveGrant(
                                })
 
   );
+}
+
+ChromeFileSystemAccessPermissionContext::PersistedGrantState
+ChromeFileSystemAccessPermissionContext::GetPersistedGrantState(
+    const url::Origin& origin) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (OriginHasExtendedPermission(origin)) {
+    return PersistedGrantState::kExtended;
+  }
+
+  // TODO(crbug.com/1011533): Add check for the bit that will store whether
+  // the persisted grants are not dormant, and are the latest grants from
+  // this session (either shadow or extended, once it is implemented.
+  if (!HasGrantedActiveGrant(origin)) {
+    return PersistedGrantState::kDormant;
+  }
+  return PersistedGrantState::kShadow;
 }
 
 void ChromeFileSystemAccessPermissionContext::PermissionGrantDestroyed(
