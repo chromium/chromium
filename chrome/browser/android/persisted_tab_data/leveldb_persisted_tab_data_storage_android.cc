@@ -37,6 +37,10 @@ const std::string GetKey(int tab_id, const char* data_id) {
   return base::StringPrintf("%d-%s", tab_id, data_id);
 }
 
+const std::string GetKeyAll(int tab_id) {
+  return base::StringPrintf("%d-", tab_id);
+}
+
 }  // namespace
 
 LevelDBPersistedTabDataStorageAndroid::
@@ -65,6 +69,11 @@ void LevelDBPersistedTabDataStorageAndroid::Restore(
 void LevelDBPersistedTabDataStorageAndroid::Remove(int tab_id,
                                                    const char* data_id) {
   proto_db_->DeleteContentWithPrefix(GetKey(tab_id, data_id),
+                                     base::BindOnce(&OnUpdateCallback));
+}
+
+void LevelDBPersistedTabDataStorageAndroid::RemoveAll(int tab_id) {
+  proto_db_->DeleteContentWithPrefix(GetKeyAll(tab_id),
                                      base::BindOnce(&OnUpdateCallback));
 }
 
