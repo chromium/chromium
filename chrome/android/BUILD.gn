@@ -820,7 +820,6 @@ if (current_toolchain == default_toolchain) {
   java_cpp_enum("chrome_vr_android_java_enums_srcjar") {
     sources = [
       "//chrome/browser/android/vr/vrcore_install_helper.h",
-      "//chrome/browser/vr/text_edit_action.h",
       "//chrome/browser/vr/ui_test_input.h",
     ]
   }

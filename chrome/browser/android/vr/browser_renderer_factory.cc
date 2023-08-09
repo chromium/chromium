@@ -14,7 +14,6 @@
 #include "chrome/browser/android/vr/ui_factory.h"
 #include "chrome/browser/android/vr/vr_gl_thread.h"
 #include "chrome/browser/vr/browser_renderer.h"
-#include "chrome/browser/vr/sounds_manager_audio_delegate.h"
 #include "chrome/browser/vr/ui_interface.h"
 
 namespace {

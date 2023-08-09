@@ -31,32 +31,19 @@ class MockUi : public UiInterface {
   }
   SchedulerUiInterface* GetSchedulerUiPtr() override { return nullptr; }
   MOCK_METHOD0(OnGlInitialized, void());
-  MOCK_METHOD4(SetAlertDialogEnabled,
-               void(bool, PlatformUiInputDelegate*, float, float));
-  MOCK_METHOD4(SetContentOverlayAlertDialogEnabled,
-               void(bool, PlatformUiInputDelegate*, float, float));
   MOCK_METHOD0(OnPause, void());
-  void OnControllersUpdated(const std::vector<ControllerModel>&,
-                            const ReticleModel&) override {}
   void OnProjMatrixChanged(const gfx::Transform&) override {}
   MOCK_METHOD2(GetTargetPointForTesting,
                gfx::Point3F(UserFriendlyElementName,
                             const gfx::PointF& position));
   MOCK_METHOD1(GetElementVisibilityForTesting, bool(UserFriendlyElementName));
-  MOCK_METHOD1(SetUiInputManagerForTesting, void(bool));
-  MOCK_METHOD0(IsContentVisibleAndOpaque, bool());
-  MOCK_METHOD1(SetContentUsesQuadLayer, void(bool));
   MOCK_METHOD2(OnBeginFrame, bool(base::TimeTicks, const gfx::Transform&));
   MOCK_CONST_METHOD0(SceneHasDirtyTextures, bool());
   MOCK_METHOD0(UpdateSceneTextures, void());
   MOCK_METHOD1(Draw, void(const RenderInfo&));
-  MOCK_METHOD3(DrawContent, void(const float (&)[16], float, float));
   MOCK_METHOD2(DrawWebXr, void(int, const float (&)[16]));
   MOCK_METHOD1(DrawWebVrOverlayForeground, void(const RenderInfo&));
   MOCK_METHOD0(HasWebXrOverlayElementsToDraw, bool());
-  MOCK_METHOD4(
-      HandleInput,
-      void(base::TimeTicks, const RenderInfo&, ReticleModel*, InputEventList*));
   MOCK_METHOD1(HandleMenuButtonEvents, void(InputEventList*));
   FovRectangles GetMinimalFovForWebXrOverlayElements(const gfx::Transform&,
                                                      const FovRectangle&,
@@ -198,12 +185,10 @@ TEST_F(BrowserRendererTest, DrawWebXrFrameNoOverlay) {
       EXPECT_CALL(*input_delegate_, UpdateController(_, _, _)).Times(0);
   EXPECT_CALL(*input_delegate_, GetGestures(_)).Times(0);
   EXPECT_CALL(*input_delegate_, GetControllerModel(_)).Times(0);
-  EXPECT_CALL(*ui_, HandleInput(_, _, _, _)).Times(0);
   EXPECT_CALL(*ui_, HandleMenuButtonEvents(_)).Times(0);
 
   EXPECT_CALL(*ui_, OnBeginFrame(_, _)).Times(1).InSequence(s);
   EXPECT_CALL(*ui_, Draw(_)).Times(0);
-  EXPECT_CALL(*ui_, DrawContent(_, _, _)).Times(0);
   EXPECT_CALL(*ui_, DrawWebXr(_, _)).Times(1).InSequence(s);
   EXPECT_CALL(*ui_, DrawWebVrOverlayForeground(_)).Times(0);
   EXPECT_CALL(*scheduler_delegate_, SubmitDrawnFrame(kWebXrFrame, _))
@@ -226,12 +211,10 @@ TEST_F(BrowserRendererTest, DrawWebXrFrameWithOverlay) {
       EXPECT_CALL(*input_delegate_, UpdateController(_, _, _)).Times(0);
   EXPECT_CALL(*input_delegate_, GetGestures(_)).Times(0);
   EXPECT_CALL(*input_delegate_, GetControllerModel(_)).Times(0);
-  EXPECT_CALL(*ui_, HandleInput(_, _, _, _)).Times(0);
   EXPECT_CALL(*ui_, HandleMenuButtonEvents(_)).Times(0);
 
   EXPECT_CALL(*ui_, OnBeginFrame(_, _)).Times(1).InSequence(s);
   EXPECT_CALL(*ui_, Draw(_)).Times(0);
-  EXPECT_CALL(*ui_, DrawContent(_, _, _)).Times(0);
   EXPECT_CALL(*ui_, DrawWebXr(_, _)).Times(1).InSequence(s);
   EXPECT_CALL(*ui_, DrawWebVrOverlayForeground(_)).Times(1).InSequence(s);
   EXPECT_CALL(*scheduler_delegate_, SubmitDrawnFrame(kWebXrFrame, _))
@@ -252,7 +235,6 @@ TEST_F(BrowserRendererTest, ProcessControllerInputForWebXr) {
           .InSequence(s);
   EXPECT_CALL(*input_delegate_, GetGestures(_)).Times(1).InSequence(s);
   EXPECT_CALL(*input_delegate_, GetControllerModel(_)).Times(0);
-  EXPECT_CALL(*ui_, HandleInput(_, _, _, _)).Times(0);
   EXPECT_CALL(*ui_, HandleMenuButtonEvents(_)).Times(1).InSequence(s);
 
   browser_renderer->ProcessControllerInputForWebXr(gfx::Transform(),

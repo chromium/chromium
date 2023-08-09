@@ -389,14 +389,8 @@ class ElementEventHandlers {
     EventHandlers event_handlers;
     event_handlers.hover_enter = base::BindRepeating(
         &ElementEventHandlers::HandleHoverEnter, base::Unretained(this));
-    event_handlers.hover_move = base::BindRepeating(
-        &ElementEventHandlers::HandleHoverMove, base::Unretained(this));
     event_handlers.hover_leave = base::BindRepeating(
         &ElementEventHandlers::HandleHoverLeave, base::Unretained(this));
-    event_handlers.button_down = base::BindRepeating(
-        &ElementEventHandlers::HandleButtonDown, base::Unretained(this));
-    event_handlers.button_up = base::BindRepeating(
-        &ElementEventHandlers::HandleButtonUp, base::Unretained(this));
     element->set_event_handlers(event_handlers);
   }
 
@@ -406,32 +400,17 @@ class ElementEventHandlers {
   void HandleHoverEnter() { hover_enter_ = true; }
   bool hover_enter_called() { return hover_enter_; }
 
-  void HandleHoverMove(const gfx::PointF& position) { hover_move_ = true; }
-  bool hover_move_called() { return hover_move_; }
-
   void HandleHoverLeave() { hover_leave_ = true; }
   bool hover_leave_called() { return hover_leave_; }
 
-  void HandleButtonDown() { button_down_ = true; }
-  bool button_down_called() { return button_down_; }
-
-  void HandleButtonUp() { button_up_ = true; }
-  bool button_up_called() { return button_up_; }
-
   void ExpectCalled(bool called) {
     EXPECT_EQ(hover_enter_called(), called);
-    EXPECT_EQ(hover_move_called(), called);
     EXPECT_EQ(hover_leave_called(), called);
-    EXPECT_EQ(button_down_called(), called);
-    EXPECT_EQ(button_up_called(), called);
   }
 
  private:
   bool hover_enter_ = false;
-  bool hover_move_ = false;
   bool hover_leave_ = false;
-  bool button_up_ = false;
-  bool button_down_ = false;
 };
 
 TEST(UiElement, CoordinatedVisibilityTransitions) {
@@ -498,20 +477,14 @@ TEST(UiElement, EventBubbling) {
 
   // Events on grand_child don't bubble up the parent chain.
   grand_child_ptr->OnHoverEnter(gfx::PointF(), base::TimeTicks());
-  grand_child_ptr->OnHoverMove(gfx::PointF(), base::TimeTicks());
   grand_child_ptr->OnHoverLeave(base::TimeTicks());
-  grand_child_ptr->OnButtonDown(gfx::PointF(), base::TimeTicks());
-  grand_child_ptr->OnButtonUp(gfx::PointF(), base::TimeTicks());
   child_handlers.ExpectCalled(false);
   element_handlers.ExpectCalled(false);
 
   // Events on grand_child bubble up the parent chain.
   grand_child_ptr->set_bubble_events(true);
   grand_child_ptr->OnHoverEnter(gfx::PointF(), base::TimeTicks());
-  grand_child_ptr->OnHoverMove(gfx::PointF(), base::TimeTicks());
   grand_child_ptr->OnHoverLeave(base::TimeTicks());
-  grand_child_ptr->OnButtonDown(gfx::PointF(), base::TimeTicks());
-  grand_child_ptr->OnButtonUp(gfx::PointF(), base::TimeTicks());
   child_handlers.ExpectCalled(true);
   // Events don't bubble to element since it doesn't have the bubble_events bit
   // set.

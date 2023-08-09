@@ -27,8 +27,7 @@ class Rect;
 // desired.
 class VR_UI_EXPORT Button : public UiElement {
  public:
-  explicit Button(base::RepeatingCallback<void()> click_handler,
-                  AudioDelegate* audio_delegate);
+  explicit Button(base::RepeatingCallback<void()> click_handler);
 
   Button(const Button&) = delete;
   Button& operator=(const Button&) = delete;
@@ -51,8 +50,6 @@ class VR_UI_EXPORT Button : public UiElement {
   // will never have to change the button hover offset from the default and this
   // method and the associated field can be removed.
   void set_hover_offset(float hover_offset) { hover_offset_ = hover_offset; }
-
-  void set_disabled_sounds(const Sounds& sounds) { disabled_sounds_ = sounds; }
 
   bool hovered() const { return hovered_; }
   bool down() const { return down_; }
@@ -81,8 +78,6 @@ class VR_UI_EXPORT Button : public UiElement {
 
   virtual void OnSetColors(const ButtonColors& colors);
 
-  const Sounds& GetSounds() const override;
-
   bool down_ = false;
   bool hovered_ = false;
   bool pressed_ = false;
@@ -92,7 +87,6 @@ class VR_UI_EXPORT Button : public UiElement {
   float hover_offset_;
   raw_ptr<Rect> background_;
   raw_ptr<UiElement> hit_plane_;
-  Sounds disabled_sounds_;
 };
 
 }  // namespace vr

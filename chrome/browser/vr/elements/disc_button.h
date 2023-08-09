@@ -20,8 +20,7 @@ class VectorIcon;
 class VR_UI_EXPORT DiscButton : public VectorIconButton {
  public:
   DiscButton(base::RepeatingCallback<void()> click_handler,
-             const gfx::VectorIcon& icon,
-             AudioDelegate* audio_delegate);
+             const gfx::VectorIcon& icon);
 
   DiscButton(const DiscButton&) = delete;
   DiscButton& operator=(const DiscButton&) = delete;

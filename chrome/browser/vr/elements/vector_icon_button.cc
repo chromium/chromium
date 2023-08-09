@@ -22,10 +22,8 @@ constexpr float kDefaultIconScaleFactor = 0.5f;
 
 VectorIconButton::VectorIconButton(
     base::RepeatingCallback<void()> click_handler,
-    const gfx::VectorIcon& icon,
-    AudioDelegate* audio_delegate)
-    : Button(click_handler, audio_delegate),
-      icon_scale_factor_(kDefaultIconScaleFactor) {
+    const gfx::VectorIcon& icon)
+    : Button(click_handler), icon_scale_factor_(kDefaultIconScaleFactor) {
   auto vector_icon = std::make_unique<VectorIcon>(512);
   vector_icon->SetType(kTypeButtonForeground);
   vector_icon->SetIcon(icon);

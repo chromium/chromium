@@ -8,11 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
-#include "chrome/browser/vr/audio_delegate.h"
 #include "chrome/browser/vr/browser_renderer.h"
-#include "chrome/browser/vr/content_input_delegate.h"
-#include "chrome/browser/vr/model/location_bar_state.h"
-#include "chrome/browser/vr/text_input_delegate.h"
 #include "chrome/browser/vr/ui.h"
 #include "chrome/browser/vr/ui_browser_interface.h"
 #include "chrome/browser/vr/ui_initial_state.h"
@@ -82,10 +78,6 @@ void VRBrowserRendererThreadWin::SetDefaultXrViews(
       default_views_.push_back(view.Clone());
     }
   }
-}
-
-void VRBrowserRendererThreadWin::SetLocationInfo(GURL gurl) {
-  gurl_ = gurl;
 }
 
 void VRBrowserRendererThreadWin::SetWebXrPresenting(bool presenting) {
@@ -290,16 +282,6 @@ void VRBrowserRendererThreadWin::StartOverlay() {
   ui_ = static_cast<BrowserUiInterface*>(ui.get());
   ui_->SetWebVrMode(true);
   scheduler_ui_ = static_cast<UiInterface*>(ui.get())->GetSchedulerUiPtr();
-
-  if (gurl_.is_valid()) {
-    // TODO(https://crbug.com/905375): Set more of this state.  Only the GURL is
-    // currently used, so its the only thing we are setting correctly. See
-    // VRUiHostImpl::SetLocationInfoOnUi also.
-    LocationBarState state(gurl_, security_state::SecurityLevel::SECURE,
-                           nullptr /* vector icon */, true /* display url */,
-                           false /* offline */);
-    ui_->SetLocationBarState(state);
-  }
 
   // Create the delegates, and keep raw pointers to them.  They are owned by
   // browser_renderer_.

@@ -10,17 +10,15 @@
 #include "base/version.h"
 #include "build/build_config.h"
 #include "chrome/browser/vr/elements/button.h"
-#include "chrome/browser/vr/elements/content_element.h"
 #include "chrome/browser/vr/elements/disc_button.h"
 #include "chrome/browser/vr/elements/indicator_spec.h"
 #include "chrome/browser/vr/elements/rect.h"
-#include "chrome/browser/vr/elements/repositioner.h"
 #include "chrome/browser/vr/elements/ui_element.h"
 #include "chrome/browser/vr/elements/ui_element_name.h"
 #include "chrome/browser/vr/elements/vector_icon.h"
+#include "chrome/browser/vr/input_event.h"
 #include "chrome/browser/vr/model/assets.h"
 #include "chrome/browser/vr/model/model.h"
-#include "chrome/browser/vr/speech_recognizer.h"
 #include "chrome/browser/vr/target_property.h"
 #include "chrome/browser/vr/test/animation_utils.h"
 #include "chrome/browser/vr/test/constants.h"
@@ -29,7 +27,6 @@
 #include "chrome/browser/vr/ui_renderer.h"
 #include "chrome/browser/vr/ui_scene.h"
 #include "chrome/browser/vr/ui_scene_constants.h"
-#include "components/omnibox/browser/autocomplete_match.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/test/geometry_util.h"
@@ -40,34 +37,8 @@ namespace {
 const std::set<UiElementName> kFloorCeilingBackgroundElements = {
     kSolidBackground, kCeiling, kFloor,
 };
-const std::set<UiElementName> kElementsVisibleInBrowsing = {
-    kSolidBackground,
-    kCeiling,
-    kFloor,
-    kContentFrame,
-    kContentFrameHitPlane,
-    kContentQuad,
-    kBackplane,
-    kUrlBar,
-    kUrlBarBackButton,
-    kUrlBarLeftSeparator,
-    kUrlBarOriginRegion,
-    kUrlBarSecurityButton,
-    kUrlBarUrlText,
-    kUrlBarRightSeparator,
-    kUrlBarOverflowButton,
-    kController,
-    kLaser,
-    kControllerTouchpadButton,
-    kControllerAppButton,
-    kControllerHomeButton,
-    kControllerBatteryDot0,
-    kControllerBatteryDot1,
-    kControllerBatteryDot2,
-    kControllerBatteryDot3,
-    kControllerBatteryDot4,
-    kIndicatorBackplane,
-};
+const std::set<UiElementName> kElementsVisibleInBrowsing = {kSolidBackground,
+                                                            kCeiling, kFloor};
 const std::set<UiElementName> kElementsVisibleWithExitWarning = {
     kScreenDimmer, kExitWarningBackground, kExitWarningText};
 const std::set<UiElementName> kElementsVisibleWithVoiceSearch = {
@@ -193,57 +164,6 @@ TEST_F(UiTest, CaptureToasts) {
   }
 }
 
-TEST_F(UiTest, UiUpdatesForIncognito) {
-  CreateScene(kNotInWebVr);
-  auto browser_ui = ui_->GetBrowserUiWeakPtr();
-
-  // Hold onto the background color to make sure it changes.
-  SkColor initial_background = SK_ColorBLACK;
-  GetBackgroundColor(&initial_background);
-  EXPECT_EQ(
-      ColorScheme::GetColorScheme(ColorScheme::kModeNormal).world_background,
-      initial_background);
-  browser_ui->SetFullscreen(true);
-
-  // Make sure background has changed for fullscreen.
-  SkColor fullscreen_background = SK_ColorBLACK;
-  GetBackgroundColor(&fullscreen_background);
-  EXPECT_EQ(ColorScheme::GetColorScheme(ColorScheme::kModeFullscreen)
-                .world_background,
-            fullscreen_background);
-
-  model_->incognito = true;
-  // Make sure background remains fullscreen colored.
-  SkColor incognito_background = SK_ColorBLACK;
-  GetBackgroundColor(&incognito_background);
-  EXPECT_EQ(ColorScheme::GetColorScheme(ColorScheme::kModeFullscreen)
-                .world_background,
-            incognito_background);
-
-  model_->incognito = false;
-  SkColor no_longer_incognito_background = SK_ColorBLACK;
-  GetBackgroundColor(&no_longer_incognito_background);
-  EXPECT_EQ(fullscreen_background, no_longer_incognito_background);
-
-  browser_ui->SetFullscreen(false);
-  SkColor no_longer_fullscreen_background = SK_ColorBLACK;
-  GetBackgroundColor(&no_longer_fullscreen_background);
-  EXPECT_EQ(initial_background, no_longer_fullscreen_background);
-
-  // Incognito, but not fullscreen, should show incognito colors.
-  model_->incognito = true;
-  SkColor incognito_again_background = SK_ColorBLACK;
-  GetBackgroundColor(&incognito_again_background);
-  EXPECT_EQ(
-      ColorScheme::GetColorScheme(ColorScheme::kModeIncognito).world_background,
-      incognito_again_background);
-
-  model_->incognito = false;
-  SkColor no_longer_incognito_again_background = SK_ColorBLACK;
-  GetBackgroundColor(&no_longer_incognito_again_background);
-  EXPECT_EQ(initial_background, no_longer_incognito_again_background);
-}
-
 TEST_F(UiTest, UiModeWebVr) {
   CreateScene(kNotInWebVr);
   auto browser_ui = ui_->GetBrowserUiWeakPtr();
@@ -262,19 +182,6 @@ TEST_F(UiTest, UiModeWebVr) {
   EXPECT_EQ(model_->ui_modes.size(), 1u);
   EXPECT_EQ(model_->ui_modes.back(), kModeBrowsing);
   VerifyOnlyElementsVisible("Browsing after WebVR", kElementsVisibleInBrowsing);
-}
-
-TEST_F(UiTest, HostedUiInWebVr) {
-  CreateScene(kInWebVr);
-  VerifyVisibility({kWebVrHostedUi, kWebVrFloor}, false);
-
-  ui_->SetAlertDialogEnabled(true, nullptr, 0, 0);
-  AdvanceFrame();
-  VerifyVisibility({kWebVrHostedUi, kWebVrBackground, kWebVrFloor}, true);
-
-  ui_->SetAlertDialogEnabled(false, nullptr, 0, 0);
-  AdvanceFrame();
-  VerifyVisibility({kWebVrHostedUi, kWebVrFloor}, false);
 }
 
 TEST_F(UiTest, UiUpdatesForWebVR) {
@@ -404,49 +311,6 @@ TEST_F(UiTest, ExitPresentAndFullscreenOnMenuButtonClick) {
       std::make_unique<InputEvent>(InputEvent::kMenuButtonClicked));
   ui_->HandleMenuButtonEvents(&events);
   base::RunLoop().RunUntilIdle();
-}
-
-TEST_F(UiTest, ResetRepositioner) {
-  CreateScene(kNotInWebVr);
-
-  Repositioner* repositioner = static_cast<Repositioner*>(
-      scene_->GetUiElementByName(k2dBrowsingRepositioner));
-
-  AdvanceFrame();
-  gfx::Transform original = repositioner->world_space_transform();
-
-  repositioner->set_laser_direction(kForwardVector);
-  repositioner->SetEnabled(true);
-  repositioner->set_laser_direction({1, 0, 0});
-  AdvanceFrame();
-
-  EXPECT_NE(original, repositioner->world_space_transform());
-  repositioner->SetEnabled(false);
-
-  model_->mutable_primary_controller().recentered = true;
-
-  AdvanceFrame();
-  EXPECT_TRANSFORM_NEAR(original, repositioner->world_space_transform(), 1e-20);
-}
-
-TEST_F(UiTest, RepositionHostedUi) {
-  CreateScene(kNotInWebVr);
-
-  Repositioner* repositioner = static_cast<Repositioner*>(
-      scene_->GetUiElementByName(k2dBrowsingRepositioner));
-  UiElement* hosted_ui = scene_->GetUiElementByName(k2dBrowsingHostedUi);
-
-  model_->hosted_platform_ui.hosted_ui_enabled = true;
-  AdvanceFrame();
-  gfx::Transform original = hosted_ui->world_space_transform();
-
-  repositioner->set_laser_direction(kForwardVector);
-  repositioner->SetEnabled(true);
-  repositioner->set_laser_direction({0, 1, 0});
-  AdvanceFrame();
-
-  EXPECT_NE(original, hosted_ui->world_space_transform());
-  repositioner->SetEnabled(false);
 }
 
 // Ensures that permissions do not appear after showing hosted UI.

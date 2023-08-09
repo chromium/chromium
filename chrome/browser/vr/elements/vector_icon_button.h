@@ -21,8 +21,7 @@ class VectorIcon;
 class VR_UI_EXPORT VectorIconButton : public Button {
  public:
   VectorIconButton(base::RepeatingCallback<void()> click_handler,
-                   const gfx::VectorIcon& icon,
-                   AudioDelegate* audio_delegate);
+                   const gfx::VectorIcon& icon);
 
   VectorIconButton(const VectorIconButton&) = delete;
   VectorIconButton& operator=(const VectorIconButton&) = delete;

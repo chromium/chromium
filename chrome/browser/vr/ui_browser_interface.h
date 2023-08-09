@@ -5,21 +5,11 @@
 #ifndef CHROME_BROWSER_VR_UI_BROWSER_INTERFACE_H_
 #define CHROME_BROWSER_VR_UI_BROWSER_INTERFACE_H_
 
-#include "chrome/browser/vr/exit_vr_prompt_choice.h"
-#include "chrome/browser/vr/model/omnibox_suggestions.h"
-#include "chrome/browser/vr/ui_unsupported_mode.h"
 #include "chrome/browser/vr/vr_base_export.h"
 #include "ui/gfx/geometry/size_f.h"
 #include "url/gurl.h"
 
 namespace vr {
-
-// A actions which can trigger the navigate function.
-enum NavigationMethod {
-  kOmniboxUrlEntry,
-  kOmniboxSuggestionSelected,
-  kVoiceSearch,
-};
 
 // An interface for the VR UI to communicate with VrShell. Many of the functions
 // in this interface are proxies to methods on VrShell.

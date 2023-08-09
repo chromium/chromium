@@ -35,7 +35,6 @@ class VR_EXPORT VRBrowserRendererThreadWin {
   ~VRBrowserRendererThreadWin();
 
   void SetDefaultXrViews(const std::vector<device::mojom::XRViewPtr>& views);
-  void SetLocationInfo(GURL gurl);
   void SetWebXrPresenting(bool presenting);
   void SetFramesThrottled(bool throttled);
 
@@ -105,7 +104,6 @@ class VR_EXPORT VRBrowserRendererThreadWin {
   // Owned by vr_ui_host:
   raw_ptr<device::mojom::XRCompositorHost> compositor_;
 
-  GURL gurl_;
   DrawState draw_state_;
   bool started_ = false;
   bool webxr_presenting_ = false;

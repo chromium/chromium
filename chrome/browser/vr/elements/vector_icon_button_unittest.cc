@@ -13,7 +13,7 @@ namespace vr {
 
 TEST(VectorIconButton, CornerRadiiOnResize) {
   VectorIconButton button(base::RepeatingCallback<void()>(),
-                          vector_icons::kMicIcon, nullptr);
+                          vector_icons::kMicIcon);
   button.SetSize(1.0f, 1.0f);
   button.SetCornerRadius(0.25f);
 

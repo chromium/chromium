@@ -10,7 +10,7 @@ namespace vr {
 
 TEST(Button, Hover) {
   base::RepeatingCallback<void()> callback;
-  Button button(callback, nullptr);
+  Button button(callback);
   button.set_hover_offset(0.0f);
   button.SetSize(1.0f, 1.0f);
 

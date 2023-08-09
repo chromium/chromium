@@ -297,21 +297,6 @@ void VRUiHostImpl::StopUiRendering() {
   ui_rendering_thread_ = nullptr;
 }
 
-void VRUiHostImpl::SetLocationInfoOnUi() {
-  GURL gurl;
-  if (web_contents_) {
-    content::NavigationEntry* entry =
-        web_contents_->GetController().GetVisibleEntry();
-    if (entry) {
-      gurl = entry->GetVirtualURL();
-    }
-  }
-  // TODO(https://crbug.com/905375): The below call should eventually be
-  // rewritten to take a LocationBarState and not just GURL. See
-  // VRBrowserRendererThreadWin::StartOverlay() also.
-  ui_rendering_thread_->SetLocationInfo(gurl);
-}
-
 void VRUiHostImpl::OnPromptAdded() {
   ShowExternalNotificationPrompt();
 }
@@ -333,8 +318,6 @@ void VRUiHostImpl::ShowExternalNotificationPrompt() {
     DVLOG(1) << __func__ << ": no ui_rendering_thread_";
     return;
   }
-
-  SetLocationInfoOnUi();
 
   if (indicators_visible_) {
     indicators_visible_ = false;

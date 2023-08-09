@@ -15,7 +15,6 @@
 #include "chrome/browser/vr/input_event.h"
 #include "chrome/browser/vr/model/controller_model.h"
 #include "chrome/browser/vr/model/reticle_model.h"
-#include "chrome/browser/vr/platform_ui_input_delegate.h"
 #include "chrome/browser/vr/render_info.h"
 #include "chrome/browser/vr/scheduler_delegate.h"
 #include "chrome/browser/vr/ui_interface.h"

@@ -29,7 +29,6 @@ UiElementRenderer::UiElementRenderer(bool use_gl) {
   Init();
   BaseQuadRenderer::CreateBuffers();
   TexturedQuadRenderer::CreateBuffers();
-  Stars::Renderer::CreateBuffers();
 }
 
 UiElementRenderer::~UiElementRenderer() = default;
@@ -47,7 +46,6 @@ void UiElementRenderer::Init() {
   controller_renderer_ = std::make_unique<Controller::Renderer>();
   gradient_grid_renderer_ = std::make_unique<Grid::Renderer>();
   shadow_renderer_ = std::make_unique<Shadow::Renderer>();
-  stars_renderer_ = std::make_unique<Stars::Renderer>();
   background_renderer_ = std::make_unique<Background::Renderer>();
 }
 
@@ -153,14 +151,6 @@ void UiElementRenderer::DrawShadow(const gfx::Transform& model_view_proj_matrix,
   FlushIfNecessary(shadow_renderer_.get());
   shadow_renderer_->Draw(model_view_proj_matrix, element_size, x_padding,
                          y_padding, y_offset, color, opacity, corner_radius);
-}
-
-void UiElementRenderer::DrawStars(
-    float t,
-    const gfx::Transform& model_view_proj_matrix) {
-  TRACE_EVENT0("gpu", "UiElementRenderer::DrawStars");
-  FlushIfNecessary(stars_renderer_.get());
-  stars_renderer_->Draw(t, model_view_proj_matrix);
 }
 
 void UiElementRenderer::DrawBackground(

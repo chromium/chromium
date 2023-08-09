@@ -15,8 +15,7 @@ constexpr float kTextPaddingRatio = 0.7f;
 
 }  // namespace
 
-TextButton::TextButton(float text_size, AudioDelegate* audio_delegate)
-    : Button(base::DoNothing(), audio_delegate) {
+TextButton::TextButton(float text_size) : Button(base::DoNothing()) {
   set_hover_offset(0.0f);
   set_bounds_contain_children(true);
 

@@ -97,10 +97,6 @@ void UiTest::CreateScene(InWebVr in_web_vr) {
   CreateScene(state);
 }
 
-void UiTest::SetIncognito(bool incognito) {
-  model_->incognito = incognito;
-}
-
 bool UiTest::IsVisible(UiElementName name) const {
   OnBeginFrame();
   UiElement* element = scene_->GetUiElementByName(name);

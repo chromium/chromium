@@ -93,7 +93,6 @@ class VRUiHostImpl : public content::VrUiHost,
 
   void ShowExternalNotificationPrompt();
   void RemoveHeadsetNotificationPrompt();
-  void SetLocationInfoOnUi();
 
   void InitCapturingStates();
   void PollCapturingState();

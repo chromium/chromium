@@ -18,8 +18,7 @@
 namespace vr {
 
 TEST(DiscButton, HoverTest) {
-  DiscButton button(base::RepeatingCallback<void()>(), vector_icons::kMicIcon,
-                    nullptr);
+  DiscButton button(base::RepeatingCallback<void()>(), vector_icons::kMicIcon);
   button.SetSize(1.0f, 1.0f);
   button.set_hover_offset(0.5f);
 
@@ -40,8 +39,7 @@ TEST(DiscButton, HoverTest) {
 }
 
 TEST(DiscButton, SizePropagatesToSubElements) {
-  DiscButton button(base::RepeatingCallback<void()>(), vector_icons::kMicIcon,
-                    nullptr);
+  DiscButton button(base::RepeatingCallback<void()>(), vector_icons::kMicIcon);
   gfx::SizeF size(1000.0f, 1000.0f);
   gfx::SizeF icon_size = size;
   icon_size.Scale(0.5f);
@@ -65,8 +63,7 @@ TEST(DiscButton, SizePropagatesToSubElements) {
 }
 
 TEST(DiscButton, DrawPhasePropagatesToSubElements) {
-  DiscButton button(base::RepeatingCallback<void()>(), vector_icons::kMicIcon,
-                    nullptr);
+  DiscButton button(base::RepeatingCallback<void()>(), vector_icons::kMicIcon);
   button.SetDrawPhase(kPhaseOverlayForeground);
 
   for (auto& child : button.children()) {
@@ -75,8 +72,7 @@ TEST(DiscButton, DrawPhasePropagatesToSubElements) {
 }
 
 TEST(DiscButton, NamePropagatesToSubElements) {
-  DiscButton button(base::RepeatingCallback<void()>(), vector_icons::kMicIcon,
-                    nullptr);
+  DiscButton button(base::RepeatingCallback<void()>(), vector_icons::kMicIcon);
   button.SetName(kCloseButton);
 
   for (auto& child : button.children()) {

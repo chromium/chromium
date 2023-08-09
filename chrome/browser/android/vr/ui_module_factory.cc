@@ -10,8 +10,6 @@
 
 #include "base/android/bundle_utils.h"
 #include "base/memory/ptr_util.h"
-#include "chrome/browser/vr/audio_delegate.h"
-#include "chrome/browser/vr/text_input_delegate.h"
 #include "chrome/browser/vr/ui_interface.h"
 
 namespace vr {

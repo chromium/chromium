@@ -16,7 +16,7 @@ namespace vr {
 // TextButton is a Button that sizes itself to a supplied text string.
 class TextButton : public Button {
  public:
-  TextButton(float text_height, AudioDelegate* audio_delegate);
+  explicit TextButton(float text_height);
 
   TextButton(const TextButton&) = delete;
   TextButton& operator=(const TextButton&) = delete;
