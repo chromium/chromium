@@ -324,7 +324,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Discod.AutoWbBwUtilization" units="%"
-    expires_after="2023-09-01">
+    expires_after="2024-08-07">
   <owner>dlunev@chromium.org</owner>
   <owner>chromeos-storage@google.com</owner>
   <summary>
@@ -335,7 +335,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Discod.AutoWbOnCycles" units="cycles"
-    expires_after="2023-09-01">
+    expires_after="2024-08-07">
   <owner>dlunev@chromium.org</owner>
   <owner>chromeos-storage@google.com</owner>
   <summary>
@@ -345,7 +345,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Discod.BurstResult" enum="DiscodBurstResult"
-    expires_after="2023-09-01">
+    expires_after="2024-08-07">
   <owner>dlunev@chromium.org</owner>
   <owner>chromeos-storage@google.com</owner>
   <summary>
@@ -355,7 +355,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Discod.ExplicitWbBwUtilization" units="%"
-    expires_after="2023-09-01">
+    expires_after="2024-08-07">
   <owner>dlunev@chromium.org</owner>
   <owner>chromeos-storage@google.com</owner>
   <summary>
@@ -366,7 +366,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Discod.ExplicitWbOnCycles" units="cycles"
-    expires_after="2023-09-01">
+    expires_after="2024-08-07">
   <owner>dlunev@chromium.org</owner>
   <owner>chromeos-storage@google.com</owner>
   <summary>
@@ -446,7 +446,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Emmc.LifeUsed" enum="EmmcLifeUsed"
-    expires_after="2023-09-12">
+    expires_after="2024-08-07">
   <owner>gwendal@google.com</owner>
   <owner>chromeos-storage@google.com</owner>
   <summary>
@@ -482,7 +482,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.FileSystem.ErrorCount" units="errors"
-    expires_after="2023-09-01">
+    expires_after="2024-08-07">
   <owner>gwendal@google.com</owner>
   <owner>chromeos-storage@google.com</owner>
   <summary>
@@ -492,7 +492,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.FileSystem.FsckNeeded" enum="Boolean"
-    expires_after="2023-09-01">
+    expires_after="2024-08-07">
   <owner>gwendal@google.com</owner>
   <owner>chromeos-storage@google.com</owner>
   <summary>
@@ -503,7 +503,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.FileSystem.RecoveryNeeded" enum="Boolean"
-    expires_after="2023-09-01">
+    expires_after="2024-08-07">
   <owner>gwendal@google.com</owner>
   <owner>chromeos-storage@google.com</owner>
   <summary>
@@ -1563,7 +1563,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.ReadSectorsLong" units="sectors per second"
-    expires_after="2023-09-01">
+    expires_after="2024-08-07">
   <owner>gwendal@google.com</owner>
   <owner>chromeos-storage@google.com</owner>
   <summary>
@@ -1573,7 +1573,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.ReadSectorsShort" units="sectors per second"
-    expires_after="2023-09-04">
+    expires_after="2024-08-07">
   <owner>gwendal@google.com</owner>
   <owner>chromeos-storage@google.com</owner>
   <summary>
@@ -1583,7 +1583,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.SATA.AvailableReservedSpace" units="%"
-    expires_after="2023-09-08">
+    expires_after="2024-08-07">
   <owner>asavery@chromium.org</owner>
   <owner>gwendal@chromium.org</owner>
   <owner>chromeos-storage@google.com</owner>
@@ -1594,7 +1594,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.SATA.LogicalSectorsRead" units="512-byte sectors"
-    expires_after="2023-09-08">
+    expires_after="2024-08-07">
   <owner>asavery@chromium.org</owner>
   <owner>gwendal@chromium.org</owner>
   <owner>chromeos-storage@google.com</owner>
@@ -1605,7 +1605,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.SATA.LogicalSectorsWritten" units="512-byte sectors"
-    expires_after="2023-09-08">
+    expires_after="2024-08-07">
   <owner>asavery@chromium.org</owner>
   <owner>gwendal@chromium.org</owner>
   <owner>chromeos-storage@google.com</owner>
@@ -1616,7 +1616,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.SATA.PercentageUsed" units="%"
-    expires_after="2023-09-08">
+    expires_after="2024-08-07">
   <owner>asavery@chromium.org</owner>
   <owner>gwendal@chromium.org</owner>
   <owner>chromeos-storage@google.com</owner>
@@ -1636,7 +1636,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.SmartUncorrectableErrors" units="units"
-    expires_after="2023-09-08">
+    expires_after="2024-08-07">
   <owner>gwendal@google.com</owner>
   <owner>chromeos-storage@google.com</owner>
   <summary>Uncorrectable disk errors (SMART 187), sent at boot.</summary>
@@ -1667,7 +1667,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.StatefulFreeSpace" units="MB"
-    expires_after="2023-09-21">
+    expires_after="2024-08-07">
   <owner>asavery@chromium.org</owner>
   <owner>gwendal@chromium.org</owner>
   <owner>chromeos-storage@google.com</owner>
@@ -1677,7 +1677,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.StatefulLifetimeWrites" units="GiB"
-    expires_after="2023-10-07">
+    expires_after="2024-08-07">
   <owner>asavery@chromium.org</owner>
   <owner>gwendal@chromium.org</owner>
   <owner>chromeos-storage@google.com</owner>
@@ -1687,7 +1687,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.StatefulTrim.TimeBetweenTrim" units="hours"
-    expires_after="2022-10-21">
+    expires_after="2024-08-07">
   <owner>asavery@chromium.org</owner>
   <owner>gwendal@chromium.org</owner>
   <owner>chromeos-storage@google.com</owner>
@@ -1697,11 +1697,13 @@ chromium-metrics-reviews@google.com.
     but a trim is only triggered if the previous run was interrupted, the amount
     of writes since the last trim is greater than X% of the remaining space in
     stateful or we have not trimmed in 7 days. Reported at most once a day.
+    Warning: this histogram was expired from 2022-10-21 to 2023-08-10; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="Platform.StatefulTrim.TrimmedAmount" units="MiB"
-    expires_after="2022-10-21">
+    expires_after="2024-08-07">
   <owner>asavery@chromium.org</owner>
   <owner>gwendal@chromium.org</owner>
   <owner>chromeos-storage@google.com</owner>
@@ -1711,6 +1713,8 @@ chromium-metrics-reviews@google.com.
     trim is only triggered if the previous run was interrupted, the amount of
     writes since the last trim is greater than X% of the remaining space in
     stateful or we have not trimmed in 7 days. Reported at most once a day.
+    Warning: this histogram was expired from 2022-10-21 to 2023-08-10; data may
+    be missing.
   </summary>
 </histogram>
 
@@ -1766,7 +1770,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Storage.Ufs.LifeUsed" enum="EmmcLifeUsed"
-    expires_after="2023-09-21">
+    expires_after="2024-08-07">
   <owner>asavery@chromium.org</owner>
   <owner>gwendal@chromium.org</owner>
   <owner>chromeos-storage@google.com</owner>
