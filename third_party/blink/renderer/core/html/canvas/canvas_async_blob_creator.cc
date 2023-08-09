@@ -323,12 +323,11 @@ void CanvasAsyncBlobCreator::ScheduleAsyncBlobCreation(const double& quality) {
 
       // TODO(crbug.com/1370013): Use CrossThreadHandle.
       worker_pool::PostTask(
-          FROM_HERE,
-          CrossThreadBindOnce(
-              &CanvasAsyncBlobCreator::EncodeImageOnEncoderThread,
-              WrapCrossThreadPersistent(this), parent_frame_task_runner_,
-              skia_image_, ImageDataBuffer::Create(src_data_), mime_type_,
-              quality));
+          FROM_HERE, CrossThreadBindOnce(
+                         &CanvasAsyncBlobCreator::EncodeImageOnEncoderThread,
+                         MakeCrossThreadHandle(this), parent_frame_task_runner_,
+                         skia_image_, ImageDataBuffer::Create(src_data_),
+                         mime_type_, quality));
     }
   } else {
     // Progressive encoding case, see (1) in function comment.
@@ -522,6 +521,7 @@ void CanvasAsyncBlobCreator::CreateNullAndReturnResult() {
 // Note that we keep `skia_image` around just to ensure that `data_buffer`
 // (which contains a raw pointer to `skia_image`'s pixels') stays valid.
 void CanvasAsyncBlobCreator::EncodeImageOnEncoderThread(
+    CrossThreadHandle<CanvasAsyncBlobCreator> cross_thread_handle,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     sk_sp<SkImage> skia_image,
     std::unique_ptr<ImageDataBuffer> data_buffer,
@@ -531,19 +531,18 @@ void CanvasAsyncBlobCreator::EncodeImageOnEncoderThread(
   Vector<unsigned char> encoded_image;
   if (!EncodeImage(std::move(data_buffer), mime_type, quality,
                    &encoded_image)) {
-    // TODO(crbug.com/1370013): Use CrossThreadHandle.
     PostCrossThreadTask(
         *task_runner, FROM_HERE,
-        CrossThreadBindOnce(&CanvasAsyncBlobCreator::CreateNullAndReturnResult,
-                            WrapCrossThreadPersistent(this)));
+        CrossThreadBindOnce(
+            &CanvasAsyncBlobCreator::CreateNullAndReturnResult,
+            MakeUnwrappingCrossThreadHandle(cross_thread_handle)));
     return;
   }
 
-  // TODO(crbug.com/1370013): Use CrossThreadHandle.
   PostCrossThreadTask(
       *task_runner, FROM_HERE,
       CrossThreadBindOnce(&CanvasAsyncBlobCreator::CreateBlobAndReturnResult,
-                          WrapCrossThreadPersistent(this),
+                          MakeUnwrappingCrossThreadHandle(cross_thread_handle),
                           std::move(encoded_image)));
 }
 
