@@ -268,6 +268,8 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 
   self.viewController = nil;
   [self.mediator disconnect];
+  self.mediator.templateURLService = nil;
+  self.mediator.consumer = nil;
   self.mediator = nil;
   [self.steadyViewMediator disconnect];
   self.steadyViewMediator.webStateList = nullptr;

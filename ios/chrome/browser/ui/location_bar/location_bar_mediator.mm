@@ -70,11 +70,16 @@
 }
 
 - (void)setTemplateURLService:(TemplateURLService*)templateURLService {
+  if (templateURLService) {
+    self.searchEngineSupportsSearchByImage =
+        search_engines::SupportsSearchByImage(templateURLService);
+    _searchEngineObserver =
+        std::make_unique<SearchEngineObserverBridge>(self, templateURLService);
+  } else {
+    self.searchEngineSupportsSearchByImage = NO;
+    _searchEngineObserver.reset();
+  }
   _templateURLService = templateURLService;
-  self.searchEngineSupportsSearchByImage =
-      search_engines::SupportsSearchByImage(templateURLService);
-  _searchEngineObserver =
-      std::make_unique<SearchEngineObserverBridge>(self, templateURLService);
 }
 
 - (void)setSearchEngineSupportsSearchByImage:
