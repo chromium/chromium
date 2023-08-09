@@ -2,7 +2,6 @@
   :host {
     --grid-gap: 8px;
     height: 410px;
-    width: 100%;
   }
 
   :host([images-enabled_]:not([format='wide'])) {
@@ -26,7 +25,8 @@
     display: grid;
     grid-gap: var(--grid-gap);
     grid-template: repeat(7, 1fr) / repeat(2, 1fr);
-    height: 100%;
+    height: calc(100% - 16px);
+    padding: 8px;
   }
 
   :host([images-enabled_]:not([format='wide'])) #layout {
@@ -70,6 +70,15 @@
     grid-row: 1 / 5;
   }
 
+  .related-search:hover {
+    background: var(--color-sys-state-hover-on-subtle);
+  }
+
+  .related-search:active,
+  :host-context(.focus-outline-visible) .related-search:focus {
+    background-color: var(--color-new-tab-page-active-background);
+  }
+
   #first-related-search {
     border-radius: var(--ntp-module-item-border-radius)
       var(--ntp-module-item-border-radius) 0 0;
@@ -77,7 +86,7 @@
 
   #related-searches-divider {
     border-bottom: 1px solid
-        var(--color-new-tab-page-history-clusters-module-item-background);
+        var(--color-new-tab-page-module-background);
     left: 16px;
     position: absolute;
     right: 16px;
@@ -86,7 +95,7 @@
 
   #last-related-search {
     border-radius: 0 0 var(--ntp-module-item-border-radius)
-      var(--ntp-module-item-border-radius);
+        var(--ntp-module-item-border-radius);
   }
 
   #related-searches {
@@ -130,7 +139,8 @@
   <template is="dom-if" if="[[shouldShowCartTile_(cart)]]" restamp>
     <ntp-history-clusters-cart-tile-v2
         id="last-tile" cart="[[cart]]"
-        on-click="onCartTileClick_" on-aux-click="onCartTileClick_">
+        on-click="onCartTileClick_" on-aux-click="onCartTileClick_"
+        format="[[format]]">
     </ntp-history-clusters-cart-tile-v2>
   </template>
   <template is="dom-if" if="[[!shouldShowCartTile_(cart)]]" restamp>
@@ -141,12 +151,12 @@
   </template>
   <div id="related-searches">
     <ntp-history-clusters-suggest-tile-v2 id="first-related-search"
-      related-search="[[cluster.relatedSearches.0]]"
-      on-click="onSuggestTileClick_" on-aux-click="onSuggestTileClick_">
+        class="related-search" related-search="[[cluster.relatedSearches.0]]"
+        on-click="onSuggestTileClick_" on-aux-click="onSuggestTileClick_">
     </ntp-history-clusters-suggest-tile-v2>
     <div id="related-searches-divider"></div>
     <ntp-history-clusters-suggest-tile-v2 id="last-related-search"
-        related-search="[[cluster.relatedSearches.1]]"
+        class="related-search" related-search="[[cluster.relatedSearches.1]]"
         on-click="onSuggestTileClick_" on-aux-click="onSuggestTileClick_">
     </ntp-history-clusters-suggest-tile-v2>
   </div>

@@ -1,6 +1,6 @@
 <style include="history-clusters-shared-style">
   :host {
-    background: var(--color-new-tab-page-module-background);
+    background: var(--color-new-tab-page-module-item-background);
     border-radius: var(--ntp-module-item-border-radius);
     display: inline-flex;
     height: 100%;
@@ -12,6 +12,16 @@
   a:hover,
   a:active {
     text-decoration: none;
+  }
+
+  a:hover {
+    background-color: var(--color-sys-state-hover-on-subtle);
+    border-radius: var(--ntp-module-item-border-radius);
+  }
+
+  a:active {
+    background-color: var(--color-new-tab-page-active-background);
+    border-radius: var(--ntp-module-item-border-radius);
   }
 
   :host-context(.focus-outline-visible) :focus,
@@ -46,6 +56,7 @@
 
   /*TODO: mfacey: Fix label size */
   #label {
+    color: white;
     margin-top: 12px;
     max-width: 100px;
   }
@@ -102,12 +113,17 @@
 
   #title {
     -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
     color: var(--color-new-tab-page-primary-foreground);
     display: -webkit-box;
     font-size: var(--ntp-module-text-size);
     line-height: 20px;
     margin: 16px 16px 4px 16px;
     white-space: initial;
+  }
+
+  :host([format='narrow'][show-discount-chip_]) #title {
+    -webkit-line-clamp: 1;
   }
 
   :host([format='wide']) #title {
@@ -125,7 +141,7 @@
     display: flex;
     flex-wrap: wrap;
     gap: 4px;
-    margin-inline-start: 16px;
+    margin-inline: 16px;
   }
 
   #discountChip {

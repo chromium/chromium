@@ -26,10 +26,22 @@ export class CartTileModuleElementV2 extends I18nMixin
       /* The cart to display. */
       cart: Object,
 
+      format: {
+        type: String,
+        value: 'narrow',
+        reflectToAttribute: true,
+      },
+
       /* The label of the tile in a11y mode. */
       tileLabel_: {
         type: String,
         computed: `computeTileLabel_(cart)`,
+      },
+
+      showDiscountChip_: {
+        type: Boolean,
+        computed: `computeShowDiscountChip_(cart)`,
+        reflectToAttribute: true,
       },
     };
   }
@@ -93,6 +105,10 @@ export class CartTileModuleElementV2 extends I18nMixin
           'modulesJourneysCartTileLabelPlural', productCount, discountText,
           merchantName, merchantDomain, relativeDate);
     }
+  }
+
+  private computeShowDiscountChip_(): boolean {
+    return !!this.cart.discountText;
   }
 }
 
