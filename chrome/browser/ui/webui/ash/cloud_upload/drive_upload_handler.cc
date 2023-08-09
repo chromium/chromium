@@ -428,6 +428,7 @@ void DriveUploadHandler::ShowIOTaskError(
       } else {
         upload_result = OfficeFilesUploadResult::kMoveOperationError;
       }
+      LOG(ERROR) << "IO Task error";
       error_message = GetGenericErrorMessage();
   }
 
@@ -513,10 +514,12 @@ void DriveUploadHandler::OnError(const drivefs::mojom::DriveError& error) {
                       IDS_OFFICE_CLOUD_PROVIDER_GOOGLE_DRIVE_SHORT))));
       break;
     case drivefs::mojom::DriveError::Type::kPinningFailedDiskFull:
+      LOG(ERROR) << "Pinning failed, disk full";
       OnEndCopy(GURL(), OfficeFilesUploadResult::kPinningFailedDiskFull,
                 GetGenericErrorMessage());
       break;
     default:
+      LOG(ERROR) << "Cloud error";
       OnEndCopy(GURL(), OfficeFilesUploadResult::kCloudError,
                 GetGenericErrorMessage());
   }
@@ -525,6 +528,7 @@ void DriveUploadHandler::OnError(const drivefs::mojom::DriveError& error) {
 void DriveUploadHandler::OnDriveConnectionStatusChanged(
     drive::util::ConnectionStatusType status) {
   if (status != drive::util::DRIVE_CONNECTED) {
+    LOG(ERROR) << "Lost connection to Drive during upload";
     OnEndCopy(GURL(), OfficeFilesUploadResult::kNoConnection,
               GetGenericErrorMessage());
   }
