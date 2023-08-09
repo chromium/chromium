@@ -1081,6 +1081,11 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest,
   EXPECT_TRUE(registrar().IsTabbedWindowModeEnabled(app_id));
 
   EXPECT_TRUE(app_browser->app_controller()->ShouldHideNewTabButton());
+
+  WebAppMenuModel model(nullptr, app_browser);
+  model.Init();
+  // Check menu does not contain 'New Tab'.
+  EXPECT_FALSE(model.GetIndexOfCommandId(IDC_NEW_TAB).has_value());
 }
 
 // Tests that middle clicking links to the home tab, opens the link in the home

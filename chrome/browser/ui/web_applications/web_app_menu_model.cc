@@ -134,12 +134,14 @@ void WebAppMenuModel::Build() {
 
   AddSeparator(ui::NORMAL_SEPARATOR);
 
-  if (IsCommandIdEnabled(kExtensionsMenuCommandId))
+  if (IsCommandIdEnabled(kExtensionsMenuCommandId)) {
     AddItemWithStringId(kExtensionsMenuCommandId, IDS_SHOW_EXTENSIONS);
+    AddSeparator(ui::NORMAL_SEPARATOR);
+  }
 
   if (browser()->app_controller() &&
-      browser()->app_controller()->has_tab_strip()) {
-    AddSeparator(ui::NORMAL_SEPARATOR);
+      browser()->app_controller()->has_tab_strip() &&
+      !browser()->app_controller()->ShouldHideNewTabButton()) {
     AddItemWithStringId(IDC_NEW_TAB, IDS_NEW_TAB);
   }
   AddItemWithStringId(IDC_COPY_URL, IDS_COPY_URL);
