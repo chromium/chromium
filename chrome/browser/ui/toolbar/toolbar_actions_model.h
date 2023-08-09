@@ -91,6 +91,9 @@ class ToolbarActionsModel : public extensions::ExtensionActionAPI::Observer,
   // Convenience function to get the ToolbarActionsModel for a Profile.
   static ToolbarActionsModel* Get(Profile* profile);
 
+  // Returns whether actions can be shown in the toolbar for `browser`.
+  static bool CanShowActionsInToolbar(const Browser& browser);
+
   // Adds or removes an observer.
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);

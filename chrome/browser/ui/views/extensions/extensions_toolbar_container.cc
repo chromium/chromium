@@ -330,8 +330,8 @@ void ExtensionsToolbarContainer::UpdateIconVisibility(
     action_view->ClearProperty(views::kFlexBehaviorKey);
   }
 
-  if (must_show ||
-      (CanShowActionsInToolbar() && model_->IsActionPinned(extension_id))) {
+  if (must_show || (ToolbarActionsModel::CanShowActionsInToolbar(*browser_) &&
+                    model_->IsActionPinned(extension_id))) {
     GetAnimatingLayoutManager()->FadeIn(action_view);
   } else {
     GetAnimatingLayoutManager()->FadeOut(action_view);
@@ -401,11 +401,6 @@ void ExtensionsToolbarContainer::OnContextMenuClosed() {
     extension_with_open_context_menu_id_.reset();
     UpdateIconVisibility(extension_with_open_context_menu.value());
   }
-}
-
-bool ExtensionsToolbarContainer::CanShowActionsInToolbar() const {
-  // Pinning extensions is not available in PWAs.
-  return !browser_->app_controller();
 }
 
 bool ExtensionsToolbarContainer::IsActionVisibleOnToolbar(
@@ -690,7 +685,7 @@ void ExtensionsToolbarContainer::CreateActionForId(
       ExtensionActionViewController::Create(action_id, browser_, this));
   auto icon = std::make_unique<ToolbarActionView>(actions_.back().get(), this);
   // Set visibility before adding to prevent extraneous animation.
-  icon->SetVisible(CanShowActionsInToolbar() &&
+  icon->SetVisible(ToolbarActionsModel::CanShowActionsInToolbar(*browser_) &&
                    model_->IsActionPinned(action_id));
   views::FocusRing::Get(icon.get())->SetOutsetFocusRingDisabled(true);
   ObserveButton(icon.get());
@@ -750,7 +745,8 @@ bool ExtensionsToolbarContainer::CanStartDragForView(View* sender,
   // We don't allow dragging if the container isn't in the toolbar, or if
   // the profile is incognito (to avoid changing state from an incognito
   // window).
-  if (!CanShowActionsInToolbar() || browser_->profile()->IsOffTheRecord()) {
+  if (!ToolbarActionsModel::CanShowActionsInToolbar(*browser_) ||
+      browser_->profile()->IsOffTheRecord()) {
     return false;
   }
 
