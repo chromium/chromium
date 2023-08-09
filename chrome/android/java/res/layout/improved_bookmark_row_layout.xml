@@ -13,7 +13,7 @@ found in the LICENSE file.
     android:gravity="center_vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingStart="16dp"
+    android:layout_marginStart="@dimen/improved_bookmark_row_start_margin"
     android:paddingVertical="8dp"
     android:background="@drawable/rounded_rectangle_surface_0">
 

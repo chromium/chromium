@@ -30,6 +30,7 @@ import org.chromium.components.browser_ui.widget.selectable_list.SelectableListU
 /**
  * Common logic for improved bookmark and folder rows.
  */
+// TODO(crbug.com/): Make selection delegate optional for this class.
 public class ImprovedBookmarkRow extends SelectableItemViewBase<BookmarkId> {
     private ViewGroup mContainer;
     // The start image view which is shows the favicon.
@@ -58,7 +59,7 @@ public class ImprovedBookmarkRow extends SelectableItemViewBase<BookmarkId> {
      * @param context The calling context, usually the parent view.
      * @param isVisual Whether the visual row should be used.
      */
-    protected static ImprovedBookmarkRow buildView(Context context, boolean isVisual) {
+    public static ImprovedBookmarkRow buildView(Context context, boolean isVisual) {
         ImprovedBookmarkRow row = new ImprovedBookmarkRow(context, null);
         row.setLayoutParams(new FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));

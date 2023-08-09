@@ -11,8 +11,8 @@ import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Binds model properties to view methods for ImprovedBookmarkRow. */
-class ImprovedBookmarkRowViewBinder {
-    static void bind(PropertyModel model, View view, PropertyKey key) {
+public class ImprovedBookmarkRowViewBinder {
+    public static void bind(PropertyModel model, View view, PropertyKey key) {
         ImprovedBookmarkRow row = (ImprovedBookmarkRow) view;
         if (key == ImprovedBookmarkRowProperties.TITLE) {
             row.setTitle(model.get(ImprovedBookmarkRowProperties.TITLE));

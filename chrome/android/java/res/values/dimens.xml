@@ -245,6 +245,8 @@ found in the LICENSE file.
     <dimen name="improved_bookmark_icon_radius">24dp</dimen>
     <dimen name="add_new_folder_dialog_horizontal_margin">22dp</dimen>
     <dimen name="bookmark_folder_picker_button_container_height">54dp</dimen>
+    <dimen name="improved_bookmark_row_start_margin">16dp</dimen>
+    <dimen name="improved_bookmark_row_start_negative_margin">-16dp</dimen>
 
     <!-- Improved bookamrk save flow properties-->
     <dimen name="improved_bookmark_save_flow_outer_radius">8dp</dimen>

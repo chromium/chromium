@@ -15,13 +15,6 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 /** View binder for the folder picker activity. */
 public class BookmarkFolderPickerViewBinder {
-    public static void bindFolderRow(PropertyModel model, View view, PropertyKey key) {
-        if (key == BookmarkFolderPickerRowProperties.ROW_COORDINATOR) {
-            model.get(BookmarkFolderPickerRowProperties.ROW_COORDINATOR)
-                    .setView((ImprovedBookmarkFolderSelectRow) view);
-        }
-    }
-
     public static void bind(PropertyModel model, View view, PropertyKey key) {
         if (key == BookmarkFolderPickerProperties.TOOLBAR_TITLE) {
             Toolbar toolbar = view.findViewById(R.id.toolbar);

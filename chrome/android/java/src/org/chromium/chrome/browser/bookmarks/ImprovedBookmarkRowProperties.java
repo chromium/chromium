@@ -21,7 +21,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** Responsible for hosting properties of the improved bookmark row. */
-class ImprovedBookmarkRowProperties {
+public class ImprovedBookmarkRowProperties {
     @IntDef({ImageVisibility.DRAWABLE, ImageVisibility.FOLDER_DRAWABLE, ImageVisibility.MENU})
     @Retention(RetentionPolicy.SOURCE)
     public @interface ImageVisibility {
@@ -33,35 +33,41 @@ class ImprovedBookmarkRowProperties {
         int MENU = 2;
     }
 
-    static final WritableObjectPropertyKey<String> TITLE = new WritableObjectPropertyKey<>();
-    static final WritableObjectPropertyKey<String> DESCRIPTION = new WritableObjectPropertyKey<>();
-    static final WritableBooleanPropertyKey DESCRIPTION_VISIBLE = new WritableBooleanPropertyKey();
-    static final WritableIntPropertyKey START_IMAGE_VISIBILITY = new WritableIntPropertyKey();
+    public static final WritableObjectPropertyKey<String> TITLE = new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<String> DESCRIPTION =
+            new WritableObjectPropertyKey<>();
+    public static final WritableBooleanPropertyKey DESCRIPTION_VISIBLE =
+            new WritableBooleanPropertyKey();
+    public static final WritableIntPropertyKey START_IMAGE_VISIBILITY =
+            new WritableIntPropertyKey();
     // Sets the background color for the start image.
-    static final WritableIntPropertyKey START_AREA_BACKGROUND_COLOR = new WritableIntPropertyKey();
+    public static final WritableIntPropertyKey START_AREA_BACKGROUND_COLOR =
+            new WritableIntPropertyKey();
     // Sets the tint color for the start image.
-    static final WritableObjectPropertyKey<ColorStateList> START_ICON_TINT =
+    public static final WritableObjectPropertyKey<ColorStateList> START_ICON_TINT =
             new WritableObjectPropertyKey<>();
-    static final WritableObjectPropertyKey<Drawable> START_ICON_DRAWABLE =
+    public static final WritableObjectPropertyKey<Drawable> START_ICON_DRAWABLE =
             new WritableObjectPropertyKey<>();
-    static final WritableObjectPropertyKey<View> ACCESSORY_VIEW = new WritableObjectPropertyKey<>();
-    static final WritableObjectPropertyKey<ListMenuButtonDelegate> LIST_MENU_BUTTON_DELEGATE =
+    public static final WritableObjectPropertyKey<View> ACCESSORY_VIEW =
             new WritableObjectPropertyKey<>();
-    static final WritableObjectPropertyKey<Runnable> POPUP_LISTENER =
+    public static final WritableObjectPropertyKey<ListMenuButtonDelegate>
+            LIST_MENU_BUTTON_DELEGATE = new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<Runnable> POPUP_LISTENER =
             new WritableObjectPropertyKey<>();
-    static final WritableBooleanPropertyKey SELECTED = new WritableBooleanPropertyKey();
-    static final WritableBooleanPropertyKey SELECTION_ACTIVE = new WritableBooleanPropertyKey();
-    static final WritableBooleanPropertyKey DRAG_ENABLED = new WritableBooleanPropertyKey();
-    static final WritableBooleanPropertyKey EDITABLE = new WritableBooleanPropertyKey();
-    static final WritableObjectPropertyKey<View.OnClickListener> ROW_CLICK_LISTENER =
+    public static final WritableBooleanPropertyKey SELECTED = new WritableBooleanPropertyKey();
+    public static final WritableBooleanPropertyKey SELECTION_ACTIVE =
+            new WritableBooleanPropertyKey();
+    public static final WritableBooleanPropertyKey DRAG_ENABLED = new WritableBooleanPropertyKey();
+    public static final WritableBooleanPropertyKey EDITABLE = new WritableBooleanPropertyKey();
+    public static final WritableObjectPropertyKey<View.OnClickListener> ROW_CLICK_LISTENER =
             new WritableObjectPropertyKey<>();
 
-    static final WritableIntPropertyKey END_IMAGE_VISIBILITY = new WritableIntPropertyKey();
-    static final WritableIntPropertyKey END_IMAGE_RES = new WritableIntPropertyKey();
+    public static final WritableIntPropertyKey END_IMAGE_VISIBILITY = new WritableIntPropertyKey();
+    public static final WritableIntPropertyKey END_IMAGE_RES = new WritableIntPropertyKey();
 
-    static final WritableObjectPropertyKey<ShoppingAccessoryCoordinator>
+    public static final WritableObjectPropertyKey<ShoppingAccessoryCoordinator>
             SHOPPING_ACCESSORY_COORDINATOR = new WritableObjectPropertyKey<>();
-    static final WritableObjectPropertyKey<ImprovedBookmarkFolderViewCoordinator>
+    public static final WritableObjectPropertyKey<ImprovedBookmarkFolderViewCoordinator>
             FOLDER_COORDINATOR = new WritableObjectPropertyKey<>();
 
     private static final PropertyKey[] IMPROVED_BOOKAMRK_ROW_PROPERTIES = {TITLE, DESCRIPTION,
@@ -70,6 +76,6 @@ class ImprovedBookmarkRowProperties {
             POPUP_LISTENER, SELECTED, SELECTION_ACTIVE, DRAG_ENABLED, EDITABLE, ROW_CLICK_LISTENER,
             SHOPPING_ACCESSORY_COORDINATOR, FOLDER_COORDINATOR, END_IMAGE_VISIBILITY,
             END_IMAGE_RES};
-    static final PropertyKey[] ALL_KEYS = PropertyModel.concatKeys(
+    public static final PropertyKey[] ALL_KEYS = PropertyModel.concatKeys(
             BookmarkManagerProperties.ALL_KEYS, IMPROVED_BOOKAMRK_ROW_PROPERTIES);
 }

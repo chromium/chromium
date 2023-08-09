@@ -20,8 +20,12 @@ import org.chromium.chrome.browser.bookmarks.BookmarkAddNewFolderCoordinator;
 import org.chromium.chrome.browser.bookmarks.BookmarkFolderPickerCoordinator;
 import org.chromium.chrome.browser.bookmarks.BookmarkImageFetcher;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
+import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
 import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
+import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkRowCoordinator;
+import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
+import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
@@ -73,8 +77,13 @@ public class BookmarkFolderPickerActivity extends SynchronousInitializationActiv
                 new BookmarkAddNewFolderCoordinator(this,
                         new ModalDialogManager(new AppModalPresenter(this), ModalDialogType.APP),
                         mBookmarkModel);
+        BookmarkUiPrefs bookmarkUiPrefs =
+                new BookmarkUiPrefs(SharedPreferencesManager.getInstance());
         mCoordinator = new BookmarkFolderPickerCoordinator(this, mBookmarkModel,
-                mBookmarkImageFetcher, mBookmarkIds, this::finish, addNewFolderCoordinator);
+                mBookmarkImageFetcher, mBookmarkIds, this::finish, addNewFolderCoordinator,
+                bookmarkUiPrefs,
+                new ImprovedBookmarkRowCoordinator(this, mBookmarkImageFetcher, mBookmarkModel,
+                        bookmarkUiPrefs, ShoppingServiceFactory.getForProfile(profile)));
 
         if (BackPressManager.isSecondaryActivityEnabled()) {
             BackPressHelper.create(this, getOnBackPressedDispatcher(), mCoordinator,

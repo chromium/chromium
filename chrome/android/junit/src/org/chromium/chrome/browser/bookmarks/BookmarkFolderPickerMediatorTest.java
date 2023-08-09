@@ -42,6 +42,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.bookmarks.BookmarkType;
+import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
@@ -117,6 +118,8 @@ public class BookmarkFolderPickerMediatorTest {
     private MenuItem mMenuItem;
     @Mock
     private BookmarkAddNewFolderCoordinator mAddNewFolderCoordinator;
+    @Mock
+    private ShoppingService mShoppingService;
 
     private Activity mActivity;
     private BookmarkFolderPickerMediator mMediator;
@@ -192,22 +195,24 @@ public class BookmarkFolderPickerMediatorTest {
 
         mMediator = new BookmarkFolderPickerMediator(mActivity, mBookmarkModel,
                 mBookmarkImageFetcher, Arrays.asList(mUserBookmarkId), mFinishRunnable,
-                mBookmarkUiPrefs, mModel, mModelList, mAddNewFolderCoordinator);
+                mBookmarkUiPrefs, mModel, mModelList, mAddNewFolderCoordinator,
+                new ImprovedBookmarkRowCoordinator(mActivity, mBookmarkImageFetcher, mBookmarkModel,
+                        mBookmarkUiPrefs, mShoppingService));
     }
 
     @Test
     public void testMoveFolder() {
         mMediator = new BookmarkFolderPickerMediator(mActivity, mBookmarkModel,
                 mBookmarkImageFetcher, Arrays.asList(mUserFolderId), mFinishRunnable,
-                mBookmarkUiPrefs, mModel, mModelList, mAddNewFolderCoordinator);
+                mBookmarkUiPrefs, mModel, mModelList, mAddNewFolderCoordinator,
+                new ImprovedBookmarkRowCoordinator(mActivity, mBookmarkImageFetcher, mBookmarkModel,
+                        mBookmarkUiPrefs, mShoppingService));
         mMediator.populateFoldersForParentId(mMobileFolderId);
 
         // Check that the UserFolder isn't a row since it should be filtered out because it's the
         // same as the bookmark being moved.
         for (ListItem item : mModelList) {
-            assertNotEquals(mUserFolderId,
-                    item.model.get(BookmarkFolderPickerRowProperties.ROW_COORDINATOR)
-                            .getBookmarkIdForTesting());
+            assertNotEquals(mUserFolderId, item.model.get(BookmarkManagerProperties.BOOKMARK_ID));
         }
     }
 

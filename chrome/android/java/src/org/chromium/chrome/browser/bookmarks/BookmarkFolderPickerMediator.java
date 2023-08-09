@@ -11,6 +11,7 @@ import android.view.MenuItem;
 import android.view.View;
 
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkRowProperties.ImageVisibility;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.ui.UiUtils;
@@ -49,6 +50,7 @@ class BookmarkFolderPickerMediator {
     private final Runnable mFinishRunnable;
     private final BookmarkQueryHandler mQueryHandler;
     private final BookmarkAddNewFolderCoordinator mAddNewFolderCoordinator;
+    private final ImprovedBookmarkRowCoordinator mImprovedBookmarkRowCoordinator;
 
     private boolean mMovingAtLeastOneFolder;
     private boolean mMovingAtLeastOneBookmark;
@@ -58,7 +60,8 @@ class BookmarkFolderPickerMediator {
     BookmarkFolderPickerMediator(Context context, BookmarkModel bookmarkModel,
             BookmarkImageFetcher bookmarkImageFetcher, List<BookmarkId> bookmarkIds,
             Runnable finishRunnable, BookmarkUiPrefs bookmarkUiPrefs, PropertyModel model,
-            ModelList modelList, BookmarkAddNewFolderCoordinator addNewFolderCoordinator) {
+            ModelList modelList, BookmarkAddNewFolderCoordinator addNewFolderCoordinator,
+            ImprovedBookmarkRowCoordinator improvedBookmarkRowCoordinator) {
         mContext = context;
         mBookmarkModel = bookmarkModel;
         mBookmarkModel.addObserver(mBookmarkModelObserver);
@@ -69,6 +72,7 @@ class BookmarkFolderPickerMediator {
         mModel = model;
         mModelList = modelList;
         mAddNewFolderCoordinator = addNewFolderCoordinator;
+        mImprovedBookmarkRowCoordinator = improvedBookmarkRowCoordinator;
 
         mInitialParentId = mBookmarkIds.size() == 1
                 ? mBookmarkModel.getBookmarkById(mBookmarkIds.get(0)).getParentId()
@@ -131,16 +135,20 @@ class BookmarkFolderPickerMediator {
         }
     }
 
-    ListItem createFolderPickerRow(BookmarkItem item) {
-        PropertyModel model =
-                new PropertyModel.Builder(BookmarkFolderPickerRowProperties.ALL_KEYS)
-                        .with(BookmarkFolderPickerRowProperties.ROW_COORDINATOR,
-                                new ImprovedBookmarkFolderSelectRowCoordinator(mContext,
-                                        mBookmarkImageFetcher, mBookmarkModel,
-                                        () -> { populateFoldersForParentId(item.getId()); }))
-                        .build();
-        model.get(BookmarkFolderPickerRowProperties.ROW_COORDINATOR).setBookmarkId(item.getId());
-        return new ListItem(FOLDER_ROW, model);
+    ListItem createFolderPickerRow(BookmarkItem bookmarkItem) {
+        BookmarkId bookmarkId = bookmarkItem.getId();
+
+        PropertyModel propertyModel =
+                mImprovedBookmarkRowCoordinator.createBasePropertyModel(bookmarkId);
+
+        propertyModel.set(
+                ImprovedBookmarkRowProperties.END_IMAGE_RES, R.drawable.outline_chevron_right_24dp);
+        propertyModel.set(
+                ImprovedBookmarkRowProperties.END_IMAGE_VISIBILITY, ImageVisibility.DRAWABLE);
+        propertyModel.set(ImprovedBookmarkRowProperties.ROW_CLICK_LISTENER,
+                (v) -> { populateFoldersForParentId(bookmarkId); });
+
+        return new ListItem(FOLDER_ROW, propertyModel);
     }
 
     void updateToolbarTitleForCurrentParent() {
