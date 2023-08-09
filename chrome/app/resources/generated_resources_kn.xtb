@@ -2527,7 +2527,7 @@
 <translation id="3117362587799608430">ಡಾಕ್ ಸಂಪೂರ್ಣವಾಗಿ ಹೊಂದಿಕೆಯಾಗುವುದಿಲ್ಲ</translation>
 <translation id="3117791853215125017">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> ಗಳನ್ನು <ph name="DEVICE_NAME" /> ಗೆ ಕಳುಹಿಸಲು ವಿಫಲವಾಗಿದೆ}one{<ph name="ATTACHMENTS" /> ಗಳನ್ನು <ph name="DEVICE_NAME" /> ಗೆ ಕಳುಹಿಸಲು ವಿಫಲವಾಗಿದೆ}other{<ph name="ATTACHMENTS" /> ಗಳನ್ನು <ph name="DEVICE_NAME" /> ಗೆ ಕಳುಹಿಸಲು ವಿಫಲವಾಗಿದೆ}}</translation>
 <translation id="3118319026408854581"><ph name="PRODUCT_NAME" /> ಸಹಾಯ</translation>
-<translation id="3119948370277171654">ನೀವು ಯಾವ ವಿಷಯ/URL ಅನ್ನು ಬಿತ್ತರಿಸುತ್ತಿರುವಿರಿ?</translation>
+<translation id="3119948370277171654">ನೀವು ಯಾವ ಕಂಟೆಂಟ್‌/URL ಅನ್ನು ಬಿತ್ತರಿಸುತ್ತಿರುವಿರಿ?</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122496702278727796">ಡೇಟಾ ಡೈರೆಕ್ಟರಿ ರಚಿಸಲು ವಿಫಲವಾಗಿದೆ</translation>
 <translation id="3124111068741548686">ಬಳಕೆದಾರರ ನಿರ್ವಹಣೆಗಳು</translation>
