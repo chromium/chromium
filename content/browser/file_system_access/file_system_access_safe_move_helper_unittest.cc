@@ -79,6 +79,7 @@ class TestFileSystemBackend : public storage::TestFileSystemBackend {
       : storage::TestFileSystemBackend(task_runner, base_path) {}
 
   std::unique_ptr<storage::FileSystemOperation> CreateFileSystemOperation(
+      storage::OperationType type,
       const storage::FileSystemURL& url,
       storage::FileSystemContext* context,
       base::File::Error* error_code) const override {
@@ -86,7 +87,7 @@ class TestFileSystemBackend : public storage::TestFileSystemBackend {
       std::move(operation_created_callback_).Run(url);
     }
     return storage::TestFileSystemBackend::CreateFileSystemOperation(
-        url, context, error_code);
+        type, url, context, error_code);
   }
 
   void SetOperationCreatedCallback(

@@ -104,11 +104,13 @@ IsolatedFileSystemBackend::GetCopyOrMoveFileValidatorFactory(
 
 std::unique_ptr<FileSystemOperation>
 IsolatedFileSystemBackend::CreateFileSystemOperation(
+    OperationType type,
     const FileSystemURL& url,
     FileSystemContext* context,
     base::File::Error* error_code) const {
   return FileSystemOperation::Create(
-      url, context, std::make_unique<FileSystemOperationContext>(context));
+      type, url, context,
+      std::make_unique<FileSystemOperationContext>(context));
 }
 
 bool IsolatedFileSystemBackend::SupportsStreaming(

@@ -719,7 +719,8 @@ FileSystemContext::QuotaManagedStorageTypes() {
 }
 
 std::unique_ptr<FileSystemOperation>
-FileSystemContext::CreateFileSystemOperation(const FileSystemURL& url,
+FileSystemContext::CreateFileSystemOperation(OperationType type,
+                                             const FileSystemURL& url,
                                              base::File::Error* error_code) {
   if (!url.is_valid()) {
     if (error_code)
@@ -736,7 +737,7 @@ FileSystemContext::CreateFileSystemOperation(const FileSystemURL& url,
 
   base::File::Error fs_error = base::File::FILE_OK;
   std::unique_ptr<FileSystemOperation> operation =
-      backend->CreateFileSystemOperation(url, this, &fs_error);
+      backend->CreateFileSystemOperation(type, url, this, &fs_error);
 
   if (error_code)
     *error_code = fs_error;

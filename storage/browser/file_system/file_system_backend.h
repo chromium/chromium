@@ -38,6 +38,8 @@ class FileSystemOperation;
 class FileSystemQuotaUtil;
 class WatcherManager;
 
+enum class OperationType;
+
 // Callback to take GURL.
 using URLCallback = base::OnceCallback<void(const GURL& url)>;
 
@@ -101,6 +103,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemBackend {
   // This method is usually dispatched by
   // FileSystemContext::CreateFileSystemOperation.
   virtual std::unique_ptr<FileSystemOperation> CreateFileSystemOperation(
+      OperationType type,
       const FileSystemURL& url,
       FileSystemContext* context,
       base::File::Error* error_code) const = 0;

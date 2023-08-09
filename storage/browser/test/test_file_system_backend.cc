@@ -183,6 +183,7 @@ void TestFileSystemBackend::InitializeCopyOrMoveFileValidatorFactory(
 
 std::unique_ptr<FileSystemOperation>
 TestFileSystemBackend::CreateFileSystemOperation(
+    OperationType type,
     const FileSystemURL& url,
     FileSystemContext* context,
     base::File::Error* error_code) const {
@@ -190,7 +191,7 @@ TestFileSystemBackend::CreateFileSystemOperation(
       std::make_unique<FileSystemOperationContext>(context));
   operation_context->set_update_observers(*GetUpdateObservers(url.type()));
   operation_context->set_change_observers(*GetChangeObservers(url.type()));
-  return FileSystemOperation::Create(url, context,
+  return FileSystemOperation::Create(type, url, context,
                                      std::move(operation_context));
 }
 

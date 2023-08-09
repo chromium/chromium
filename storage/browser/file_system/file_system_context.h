@@ -74,6 +74,8 @@ class SandboxFileSystemBackendDelegate;
 class SpecialStoragePolicy;
 class WatcherManager;
 
+enum class OperationType;
+
 struct BucketInfo;
 struct FileSystemInfo;
 
@@ -374,6 +376,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemContext
   //
   // Called by FileSystemOperationRunner.
   std::unique_ptr<FileSystemOperation> CreateFileSystemOperation(
+      OperationType type,
       const FileSystemURL& url,
       base::File::Error* error_code);
 
