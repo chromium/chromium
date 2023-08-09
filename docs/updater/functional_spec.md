@@ -663,12 +663,35 @@ treating "x64" the same as "x86_64".
 For more information, see the
 [protocol document](protocol_3_1.md#update-checks-body-update-check-response-objects-update-check-response-3).
 
-### MSI installers
+### MSI installers (work in progress)
 
-MSI installers are currently built only for legacy Omaha 3. The updater handles
-handoffs from legacy Omaha 3 pertaining to offline and MSI installers. MSI
-installers package an offline installer, and otherwise function just like the
-offline installer.
+MSI installers package an offline/standalone installer, and can be built using
+[msi_from_standalone.py](https://source.chromium.org/chromium/chromium/src/+/main:chrome/updater/win/signing/msi_from_standalone.py)
+
+`msi_from_standalone.py` builds an MSI around the supplied standalone installer.
+This MSI installer is intended to enable enterprise installation scenarios while
+being as close to a normal install as possible.
+
+This method only works for application installers that do not use MSI.
+
+For example, to create `GoogleChromeBetaStandaloneEnterprise.msi` from
+`ChromeBetaOfflineSetup.exe`:
+```
+python3 chrome/updater/win/signing/msi_from_standalone.py
+    --candle_path ../third_party/wix/v3_8_1128/files/candle.exe
+    --light_path ../third_party/wix/v3_8_1128/files/light.exe
+    --product_name "Google Chrome Beta"
+    --product_version "110.0.5478.0"
+    --appid "{8237E44A-0054-442C-B6B6-EA0509993955}"
+    --product_custom_params "&brand=GCEA"
+    --product_uninstaller_additional_args=--force-uninstall
+    --product_installer_data "%7B%22dis%22%3A%7B%22msi%22%3Atrue%7D%7D"
+    --standalone_installer_path ChromeBetaOfflineSetup.exe
+    --custom_action_dll_path out/Default/msi_custom_action.dll
+    --msi_base_name GoogleChromeBetaStandaloneEnterprise
+    --enterprise_installer_dir chrome/updater/win/signing
+    --output_dir out/Default
+```
 
 ### Enterprise Enrollment
 The updater may be enrolled with a particular enterprise. Enrollment is
