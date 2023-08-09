@@ -145,6 +145,8 @@ void ThemeServiceFactory::RegisterProfilePrefs(
   registry->RegisterBooleanPref(
       prefs::kGrayscaleThemeEnabled, false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  registry->RegisterBooleanPref(prefs::kBrowserFollowsSystemThemeColors,
+                                BUILDFLAG(IS_CHROMEOS));
 }
 
 bool ThemeServiceFactory::ServiceIsCreatedWithBrowserContext() const {

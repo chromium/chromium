@@ -1349,6 +1349,10 @@ inline constexpr char kUserColor[] = "browser.theme.user_color";
 extern inline constexpr char kBrowserColorVariant[] =
     "browser.theme.color_variant";
 
+// Boolean pref tracking whether chrome follows the system's color theme.
+extern inline constexpr char kBrowserFollowsSystemThemeColors[] =
+    "browser.theme.follows_system_colors";
+
 // Boolean pref tracking whether the grayscale theme has been enabled.
 inline constexpr char kGrayscaleThemeEnabled[] = "browser.theme.is_grayscale";
 

@@ -810,6 +810,14 @@ TEST_F(ThemeServiceTest, ThemeResetClearsUserColor) {
   EXPECT_EQ(absl::nullopt, theme_service_->GetUserColor());
 }
 
+TEST_F(ThemeServiceTest, IsBaseline) {
+  theme_service_->SetUserColor(SK_ColorGREEN);
+  EXPECT_FALSE(theme_service_->GetIsBaseline());
+
+  theme_service_->SetUserColor(absl::nullopt);
+  EXPECT_TRUE(theme_service_->GetIsBaseline());
+}
+
 TEST_F(ThemeServiceTest, IsGrayscale) {
   // Default should be false.
   EXPECT_FALSE(theme_service_->GetIsGrayscale());
@@ -877,6 +885,39 @@ TEST_F(ThemeServiceTest, ThemeResetClearsBrowserColorVariant) {
   theme_service_->SetIsGrayscale(true);
   EXPECT_EQ(theme_service_->GetBrowserColorVariant(),
             ui::mojom::BrowserColorVariant::kSystem);
+}
+
+TEST_F(ThemeServiceTest, UseDeviceTheme_DefaultValue) {
+  EXPECT_EQ(BUILDFLAG(IS_CHROMEOS), theme_service_->UsingDeviceTheme());
+}
+
+#if BUILDFLAG(IS_CHROMEOS)
+// Verify that if uses device theme is unset and the user has a chosen color,
+// they retain their chosen color.
+TEST_F(ThemeServiceTest, UseDeviceTheme_DisabledByUserColor) {
+  theme_service_->SetUserColor(SK_ColorGREEN);
+  EXPECT_FALSE(theme_service_->UsingDeviceTheme());
+}
+
+// Verify that if the user has a theme loaded via extension and uses device
+// theme is unset, they retain the extension.
+TEST_F(ThemeServiceTest, UseDeviceTheme_DisabledByExtension) {
+  ThemeScoper scoper = LoadUnpackedTheme();
+  EXPECT_FALSE(theme_service_->UsingDeviceTheme());
+}
+
+// Verify that if uses device theme has been set by the user, it is still
+// true even if the user has a color from a different device.
+TEST_F(ThemeServiceTest, UseDeviceTheme_ExplicitlyTrue) {
+  theme_service_->UseDeviceTheme(true);
+  theme_service_->SetUserColor(SK_ColorGREEN);
+  EXPECT_TRUE(theme_service_->UsingDeviceTheme());
+}
+#endif  // IS_CHROMEOS
+
+TEST_F(ThemeServiceTest, SetUseDeviceTheme) {
+  theme_service_->UseDeviceTheme(false);
+  EXPECT_FALSE(theme_service_->UsingDeviceTheme());
 }
 
 class BrowserColorSchemeTest : public ThemeServiceTest,
