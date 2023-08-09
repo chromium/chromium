@@ -49,6 +49,20 @@ struct SellerCapabilities {
   bool allows_latency_stats = false;
 };
 
+// Controls fields sent for Bidding and Auction API server-side auctions.
+struct AuctionServerRequestFlags {
+  // If true, the ads and componentAds fields from the interest group are
+  // omitted in the auction request. The ad render ID (or the full ad if
+  // `include_full_ads` is also specified) would still be sent as part of the
+  // `prevWins` field.
+  bool omit_ads = false;
+  // If true, the full ad object (including adRenderId) will be sent to the
+  // auction server instead of just the ad render ID in all places where an ad
+  // render ID would appear (currently just the ads, componentAds and prevWins
+  // fields).
+  bool include_full_ads = false;
+};
+
 // Interest group description, passed to JoinInterestGroup(). If an entry keyed
 // by (owner, name) already exists, we "merge" by overwriting specified fields,
 // leaving other existing fields intact.
@@ -123,6 +137,7 @@ struct InterestGroup {
   array<InterestGroupAd>? ad_components;
   map<string, AdSize>? ad_sizes;
   map<string, array<string>>? size_groups;
+  AuctionServerRequestFlags auction_server_request_flags;
 };
 
 // Packages the details necessary for the browser process to retrieve a

@@ -1242,7 +1242,8 @@ TEST_F(AdAuctionServiceImplTest, UpdateAllUpdatableFields) {
                   "allowedReportingOrigins": ["https://ignored.test"]
                  }],
 "adSizes": {"size_new": {"width": "300px", "height": "150px"}},
-"sizeGroups": {"group_new": ["size_new"]}
+"sizeGroups": {"group_new": ["size_new"]},
+"auctionServerRequestFlags": ["omit-ads", "include-full-ads"]
 })",
                          kOriginStringA, kOriginStringA, kOriginStringA,
                          kOriginStringA, kOriginStringA, kOriginStringA));
@@ -1384,6 +1385,10 @@ TEST_F(AdAuctionServiceImplTest, UpdateAllUpdatableFields) {
   ASSERT_TRUE(group.size_groups.has_value());
   ASSERT_EQ(group.size_groups->size(), 1u);
   EXPECT_EQ(group.size_groups->at("group_new")[0], "size_new");
+  EXPECT_TRUE(group.auction_server_request_flags.Has(
+      blink::AuctionServerRequestFlagsEnum::kOmitAds));
+  EXPECT_TRUE(group.auction_server_request_flags.Has(
+      blink::AuctionServerRequestFlagsEnum::kIncludeFullAds));
 }
 
 // Only set the ads field -- the other fields shouldn't be changed.

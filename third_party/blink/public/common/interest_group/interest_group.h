@@ -16,6 +16,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/interest_group/ad_display_size.h"
+#include "third_party/blink/public/common/interest_group/auction_server_request_flags.h"
 #include "third_party/blink/public/common/interest_group/seller_capabilities.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom-shared.h"
 #include "url/gurl.h"
@@ -105,7 +106,8 @@ struct BLINK_COMMON_EXPORT InterestGroup {
       absl::optional<std::vector<InterestGroup::Ad>> ad_components,
       absl::optional<base::flat_map<std::string, blink::AdSize>> ad_sizes,
       absl::optional<base::flat_map<std::string, std::vector<std::string>>>
-          size_groups);
+          size_groups,
+      AuctionServerRequestFlags auction_server_request_flags);
 
   ~InterestGroup();
 
@@ -144,7 +146,9 @@ struct BLINK_COMMON_EXPORT InterestGroup {
   absl::optional<base::flat_map<std::string, std::vector<std::string>>>
       size_groups;
 
-  static_assert(__LINE__ == 147, R"(
+  AuctionServerRequestFlags auction_server_request_flags;
+
+  static_assert(__LINE__ == 151, R"(
 If modifying InterestGroup fields, make sure to also modify:
 
 * IsValid(), EstimateSize(), and IsEqualForTesting() in this class

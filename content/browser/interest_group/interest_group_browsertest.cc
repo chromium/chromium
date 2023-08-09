@@ -257,6 +257,18 @@ base::Value::Dict SizeGroupsToDict(
   return dict;
 }
 
+base::Value::List AuctionServerRequestFlagsToList(
+    const blink::AuctionServerRequestFlags& flags) {
+  base::Value::List result;
+  if (flags.Has(blink::AuctionServerRequestFlagsEnum::kOmitAds)) {
+    result.Append("omit-ads");
+  }
+  if (flags.Has(blink::AuctionServerRequestFlagsEnum::kIncludeFullAds)) {
+    result.Append("include-full-ads");
+  }
+  return result;
+}
+
 bool IsErrorMessage(const content::WebContentsConsoleObserver::Message& msg) {
   return msg.log_level == blink::mojom::ConsoleMessageLevel::kError;
 }
@@ -770,6 +782,11 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
     if (group.size_groups) {
       dict.Set("sizeGroups", SizeGroupsToDict(*group.size_groups));
     }
+    if (!group.auction_server_request_flags.Empty()) {
+      dict.Set(
+          "auctionServerRequestFlags",
+          AuctionServerRequestFlagsToList(group.auction_server_request_flags));
+    }
     switch (group.execution_mode) {
       case blink::InterestGroup::ExecutionMode::kCompatibilityMode:
         dict.Set("executionMode", "compatibility");
@@ -1006,7 +1023,7 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
             /*user_bidding_signals=*/absl::nullopt, std::move(ads),
             std::move(ad_components),
             /*ad_sizes=*/{},
-            /*size_groups=*/{}),
+            /*size_groups=*/{}, /*auction_server_request_flags=*/{}),
         execution_target);
   }
 
@@ -3058,6 +3075,32 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   EXPECT_EQ(group.size_groups->size(), 1u);
   ASSERT_EQ(group.size_groups->at("group_1").size(), 1u);
   ASSERT_EQ(group.size_groups->at("group_1").at(0), "size_1");
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
+                       JoinInterestGroupWithAuctionServerRequestFlags) {
+  GURL url = https_server_->GetURL("a.test", "/echo");
+  auto origin = url::Origin::Create(url);
+  std::string origin_string = origin.Serialize();
+  ASSERT_TRUE(NavigateToURL(shell(), url));
+
+  EXPECT_EQ(kSuccess,
+            JoinInterestGroupAndVerify(
+                blink::TestInterestGroupBuilder(
+                    /*owner=*/origin,
+                    /*name=*/"cars")
+                    .SetAuctionServerRequestFlags(
+                        {blink::AuctionServerRequestFlagsEnum::kOmitAds,
+                         blink::AuctionServerRequestFlagsEnum::kIncludeFullAds})
+                    .Build()));
+
+  std::vector<StorageInterestGroup> groups = GetInterestGroupsForOwner(origin);
+  ASSERT_EQ(groups.size(), 1u);
+  const blink::InterestGroup& group = groups[0].interest_group;
+  EXPECT_TRUE(group.auction_server_request_flags.Has(
+      blink::AuctionServerRequestFlagsEnum::kOmitAds));
+  EXPECT_TRUE(group.auction_server_request_flags.Has(
+      blink::AuctionServerRequestFlagsEnum::kIncludeFullAds));
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
@@ -9936,7 +9979,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, ValidateWorkletParameters) {
           {{{GURL("https://example.com/render-component"),
              /*metadata=*/absl::nullopt}}},
           /*ad_sizes=*/{},
-          /*size_groups=*/{})));
+          /*size_groups=*/{}, /*auction_server_request_flags=*/{})));
 
   // For `directFromSellerSignals` to work, we need to navigate to a page that
   // declares the subresource bundle resources we pass to those fields.
@@ -10071,7 +10114,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
           {{{GURL("https://example.com/render-component"),
              /*metadata=*/absl::nullopt}}},
           /*ad_sizes=*/{},
-          /*size_groups=*/{})));
+          /*size_groups=*/{}, /*auction_server_request_flags=*/{})));
 
   // For `directFromSellerSignals` to work, we need to navigate to a page that
   // declares the subresource bundle resources we pass to those fields.
@@ -10222,7 +10265,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
             {{{GURL("https://example.com/render-component"),
                /*metadata=*/absl::nullopt}}},
             /*ad_sizes=*/{},
-            /*size_groups=*/{})));
+            /*size_groups=*/{}, /*auction_server_request_flags=*/{})));
 
     // For `directFromSellerSignals` to work, we need to navigate to a page that
     // declares the subresource bundle resources we pass to those fields.
@@ -10428,7 +10471,7 @@ IN_PROC_BROWSER_TEST_F(
             {{{GURL("https://example.com/render-component"),
                /*metadata=*/absl::nullopt}}},
             /*ad_sizes=*/{},
-            /*size_groups=*/{})));
+            /*size_groups=*/{}, /*auction_server_request_flags=*/{})));
 
     // For `directFromSellerSignals` to work, we need to navigate to a page that
     // declares the subresource bundle resources we pass to those fields.
@@ -10634,7 +10677,7 @@ IN_PROC_BROWSER_TEST_F(
             {{{GURL("https://example.com/render-component"),
                /*metadata=*/absl::nullopt}}},
             /*ad_sizes=*/{},
-            /*size_groups=*/{})));
+            /*size_groups=*/{}, /*auction_server_request_flags=*/{})));
 
     // For `directFromSellerSignals` to work, we need to navigate to a page that
     // declares the subresource bundle resources we pass to those fields.
@@ -11557,7 +11600,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, Update) {
              R"({"ad":"metadata","here":[1,2,3]})"}}},
           /*ad_components=*/absl::nullopt,
           /*ad_sizes=*/{},
-          /*size_groups=*/{})));
+          /*size_groups=*/{}, /*auction_server_request_flags=*/{})));
 
   EXPECT_EQ("done", UpdateInterestGroupsInJS());
 
@@ -11645,7 +11688,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, DeprecatedDailyUpdateUrl) {
              R"({"ad":"metadata","here":[1,2,3]})"}}},
           /*ad_components=*/absl::nullopt,
           /*ad_sizes=*/{},
-          /*size_groups=*/{})));
+          /*size_groups=*/{}, /*auction_server_request_flags=*/{})));
 
   EXPECT_EQ("done", UpdateInterestGroupsInJS());
 
@@ -11736,7 +11779,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
              R"({"ad":"metadata","here":[1,2,3]})"}}},
           /*ad_components=*/absl::nullopt,
           /*ad_sizes=*/{},
-          /*size_groups=*/{})));
+          /*size_groups=*/{}, /*auction_server_request_flags=*/{})));
 
   EXPECT_EQ("done", UpdateInterestGroupsInJS());
 
@@ -11813,7 +11856,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
              R"({"ad":"metadata","here":[1,2,3]})"}}},
           /*ad_components=*/absl::nullopt,
           /*ad_sizes=*/{},
-          /*size_groups=*/{})));
+          /*size_groups=*/{}, /*auction_server_request_flags=*/{})));
 
   EXPECT_EQ("done", UpdateInterestGroupsInJS());
 

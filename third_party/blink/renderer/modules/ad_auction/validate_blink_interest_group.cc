@@ -135,6 +135,8 @@ size_t EstimateBlinkInterestGroupSize(
       }
     }
   }
+  constexpr size_t kAuctionServerRequestFlagsSize = 4;
+  size += kAuctionServerRequestFlagsSize;
 
   return size;
 }

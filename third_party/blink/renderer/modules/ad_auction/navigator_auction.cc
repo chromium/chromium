@@ -863,6 +863,27 @@ bool CopySizeGroupsFromIdlToMojo(const ExecutionContext& context,
   return true;
 }
 
+bool CopyAuctionServerRequestFlagsFromIdlToMojo(
+    const ExecutionContext& execution_context,
+    ExceptionState& exception_state,
+    const AuctionAdInterestGroup& input,
+    mojom::blink::InterestGroup& output) {
+  output.auction_server_request_flags =
+      mojom::blink::AuctionServerRequestFlags::New();
+  if (!input.hasAuctionServerRequestFlags()) {
+    return true;
+  }
+
+  for (const String& flag : input.auctionServerRequestFlags()) {
+    if (flag == "omit-ads") {
+      output.auction_server_request_flags->omit_ads = true;
+    } else if (flag == "include-full-ads") {
+      output.auction_server_request_flags->include_full_ads = true;
+    }
+  }
+  return true;
+}
+
 // createAdRequest copy functions.
 bool CopyAdRequestUrlFromIdlToMojo(const ExecutionContext& context,
                                    ExceptionState& exception_state,
@@ -2886,6 +2907,10 @@ ScriptPromise NavigatorAuction::joinAdInterestGroup(
   }
   if (!CopySizeGroupsFromIdlToMojo(*context, *script_state, exception_state,
                                    *group, *mojo_group)) {
+    return ScriptPromise();
+  }
+  if (!CopyAuctionServerRequestFlagsFromIdlToMojo(*context, exception_state,
+                                                  *group, *mojo_group)) {
     return ScriptPromise();
   }
 

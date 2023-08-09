@@ -96,6 +96,8 @@ class ValidateBlinkInterestGroupTest : public testing::Test {
     blink_interest_group->name = kName;
     blink_interest_group->all_sellers_capabilities =
         mojom::blink::SellerCapabilities::New();
+    blink_interest_group->auction_server_request_flags =
+        mojom::blink::AuctionServerRequestFlags::New();
     return blink_interest_group;
   }
 
@@ -157,6 +159,9 @@ class ValidateBlinkInterestGroupTest : public testing::Test {
     blink_interest_group->ad_components->push_back(
         std::move(mojo_ad_component2));
 
+    blink_interest_group->auction_server_request_flags =
+        mojom::blink::AuctionServerRequestFlags::New();
+    blink_interest_group->auction_server_request_flags->omit_ads = true;
     return blink_interest_group;
   }
 
@@ -801,7 +806,7 @@ TEST_F(ValidateBlinkInterestGroupTest, TooLargeAds) {
   mojom::blink::InterestGroupPtr blink_interest_group =
       CreateMinimalInterestGroup();
   blink_interest_group->name =
-      WTF::String("paddingTo1048576" + std::string(24, 'P'));
+      WTF::String("paddingTo1048576" + std::string(20, 'P'));
   blink_interest_group->ad_components.emplace();
   for (int i = 0; i < 13980; ++i) {
     // Each ad component is 75 bytes.
@@ -819,7 +824,7 @@ TEST_F(ValidateBlinkInterestGroupTest, TooLargeAds) {
       /*expected_error=*/"interest groups must be less than 1048576 bytes");
 
   // Almost too big should still work.
-  blink_interest_group->ad_components->resize(681);
+  blink_interest_group->ad_components->resize(13979);
 
   ExpectInterestGroupIsValid(blink_interest_group);
 }

@@ -395,4 +395,22 @@ TEST(InterestGroupMojomTraitsTest, SerializeAndDeserializeSizeGroups) {
   SerializeAndDeserializeAndCompare(interest_group);
 }
 
+TEST(InterestGroupMojomTraitsTest,
+     SerializeAndDeserializeAuctionServerRequestFlags) {
+  InterestGroup interest_group = CreateInterestGroup();
+
+  interest_group.auction_server_request_flags = {
+      blink::AuctionServerRequestFlagsEnum::kIncludeFullAds};
+  SerializeAndDeserializeAndCompare(interest_group);
+
+  interest_group.auction_server_request_flags = {
+      blink::AuctionServerRequestFlagsEnum::kOmitAds};
+  SerializeAndDeserializeAndCompare(interest_group);
+
+  interest_group.auction_server_request_flags = {
+      blink::AuctionServerRequestFlagsEnum::kOmitAds,
+      blink::AuctionServerRequestFlagsEnum::kIncludeFullAds};
+  SerializeAndDeserializeAndCompare(interest_group);
+}
+
 }  // namespace blink

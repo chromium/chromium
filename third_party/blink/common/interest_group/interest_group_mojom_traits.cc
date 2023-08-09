@@ -37,6 +37,19 @@ bool StructTraits<blink::mojom::SellerCapabilitiesDataView,
   return true;
 }
 
+bool StructTraits<blink::mojom::AuctionServerRequestFlagsDataView,
+                  blink::AuctionServerRequestFlags>::
+    Read(blink::mojom::AuctionServerRequestFlagsDataView data,
+         blink::AuctionServerRequestFlags* out) {
+  if (data.omit_ads()) {
+    out->Put(blink::AuctionServerRequestFlagsEnum::kOmitAds);
+  }
+  if (data.include_full_ads()) {
+    out->Put(blink::AuctionServerRequestFlagsEnum::kIncludeFullAds);
+  }
+  return true;
+}
+
 bool StructTraits<blink::mojom::InterestGroupDataView, blink::InterestGroup>::
     Read(blink::mojom::InterestGroupDataView data, blink::InterestGroup* out) {
   out->priority = data.priority();
@@ -57,7 +70,8 @@ bool StructTraits<blink::mojom::InterestGroupDataView, blink::InterestGroup>::
       !data.ReadUserBiddingSignals(&out->user_bidding_signals) ||
       !data.ReadAds(&out->ads) || !data.ReadAdComponents(&out->ad_components) ||
       !data.ReadAdSizes(&out->ad_sizes) ||
-      !data.ReadSizeGroups(&out->size_groups)) {
+      !data.ReadSizeGroups(&out->size_groups) ||
+      !data.ReadAuctionServerRequestFlags(&out->auction_server_request_flags)) {
     return false;
   }
   return out->IsValid();

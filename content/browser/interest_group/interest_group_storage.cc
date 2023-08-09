@@ -69,6 +69,7 @@ const base::FilePath::CharType kDatabasePath[] =
 // Version 9 - 2022/07 - crrev.com/c/3780305
 // Version 10 - 2022/08 - crrev.com/c/3818142
 // Version 13 - 2023/01 - crrev.com/c/4167800
+// Version 14 - 2023/08 - crrev.com/c/4739632
 //
 // Version 1 adds a table for interest groups.
 // Version 2 adds a column for rate limiting interest group updates.
@@ -83,11 +84,12 @@ const base::FilePath::CharType kDatabasePath[] =
 // Version 11 adds priority vector support and time a group was joined.
 // Version 12 adds seller capabilities fields.
 // Version 13 adds ad size-related fields (ad_sizes & size_groups).
-const int kCurrentVersionNumber = 13;
+// Version 14 adds auction server request flags.
+const int kCurrentVersionNumber = 14;
 
 // Earliest version of the code which can use a |kCurrentVersionNumber|
 // database without failing.
-const int kCompatibleVersionNumber = 13;
+const int kCompatibleVersionNumber = 14;
 
 // Latest version of the database that cannot be upgraded to
 // |kCurrentVersionNumber| without razing the database.
@@ -406,6 +408,17 @@ DeserializeSellerCapabilitiesMap(const std::string& serialized) {
   return result;
 }
 
+int64_t Serialize(blink::AuctionServerRequestFlags flags) {
+  // Supporting 64 or more auction server request flags will require a different
+  // serialization format. That check is done in EnumSet at compile time, so we
+  // don't need to duplicate it here.
+  return flags.ToEnumBitmask();
+}
+blink::AuctionServerRequestFlags DeserializeAuctionServerRequestFlags(
+    int64_t serialized) {
+  return blink::AuctionServerRequestFlags::FromEnumBitmask(serialized);
+}
+
 StorageInterestGroup::KAnonymityData DefaultKAnonymityData(
     const std::string& key) {
   return {key, /*is_k_anonymous=*/false, /*last_updated=*/base::Time::Min()};
@@ -491,7 +504,7 @@ bool CreateInterestGroupIndices(sql::Database& db) {
 
 // Initializes the tables, returning true on success.
 // The tables cannot exist when calling this function.
-bool CreateV13Schema(sql::Database& db) {
+bool CreateV14Schema(sql::Database& db) {
   // IMPORTANT: If you add or remove fields, you need to update
   // `ClearExcessiveStorage()` to consider the size of added/removed fields for
   // storage usage calculations.
@@ -528,6 +541,7 @@ bool CreateV13Schema(sql::Database& db) {
         "ad_components TEXT NOT NULL,"
         "ad_sizes TEXT NOT NULL,"
         "size_groups TEXT NOT NULL,"
+        "auction_server_request_flags INTEGER NOT NULL,"
       "PRIMARY KEY(owner,name))";
   // clang-format on
   if (!db.Execute(kInterestGroupTableSql))
@@ -613,6 +627,94 @@ bool CreateV13Schema(sql::Database& db) {
     return false;
 
   return true;
+}
+
+bool UpgradeV13SchemaToV14(sql::Database& db, sql::MetaTable& meta_table) {
+  static const char kInterestGroupTableSql[] =
+      // clang-format off
+      "CREATE TABLE new_interest_groups("
+        "expiration INTEGER NOT NULL,"
+        "last_updated INTEGER NOT NULL,"
+        "next_update_after INTEGER NOT NULL,"
+        "owner TEXT NOT NULL,"
+        "joining_origin TEXT NOT NULL,"
+        "exact_join_time INTEGER NOT NULL,"
+        "name TEXT NOT NULL,"
+        "priority DOUBLE NOT NULL,"
+        "enable_bidding_signals_prioritization INTEGER NOT NULL,"
+        "priority_vector TEXT NOT NULL,"
+        "priority_signals_overrides TEXT NOT NULL,"
+        "seller_capabilities TEXT NOT NULL,"
+        "all_sellers_capabilities INTEGER NOT NULL,"
+        "execution_mode INTEGER NOT NULL,"
+        "joining_url TEXT NOT NULL,"
+        "bidding_url TEXT NOT NULL,"
+        "bidding_wasm_helper_url TEXT NOT NULL,"
+        "update_url TEXT NOT NULL,"
+        "trusted_bidding_signals_url TEXT NOT NULL,"
+        "trusted_bidding_signals_keys TEXT NOT NULL,"
+        "user_bidding_signals TEXT,"
+        "ads TEXT NOT NULL,"
+        "ad_components TEXT NOT NULL,"
+        "ad_sizes TEXT NOT NULL,"
+        "size_groups TEXT NOT NULL,"
+        "auction_server_request_flags INTEGER NOT NULL,"
+      "PRIMARY KEY(owner,name))";
+  // clang-format on
+  if (!db.Execute(kInterestGroupTableSql)) {
+    return false;
+  }
+
+  static const char kCopyInterestGroupTableSql[] =
+      // clang-format off
+      "INSERT INTO new_interest_groups "
+      "SELECT expiration,"
+             "last_updated,"
+             "next_update_after,"
+             "owner,"
+             "joining_origin,"
+             "exact_join_time,"
+             "name,"
+             "priority,"
+             "enable_bidding_signals_prioritization,"
+             "priority_vector,"
+             "priority_signals_overrides,"
+             "seller_capabilities,"
+             "all_sellers_capabilities,"
+             "execution_mode,"
+             "joining_url,"
+             "bidding_url,"
+             "bidding_wasm_helper_url,"
+             "update_url,"
+             "trusted_bidding_signals_url,"
+             "trusted_bidding_signals_keys,"
+             "user_bidding_signals,"
+             "ads,"
+             "ad_components,"
+             "ad_sizes,"
+             "size_groups,"
+             "0 " // auction_server_request_flags
+      "FROM interest_groups";
+  // clang-format on
+  if (!db.Execute(kCopyInterestGroupTableSql)) {
+    return false;
+  }
+
+  static const char kDropInterestGroupTableSql[] = "DROP TABLE interest_groups";
+  if (!db.Execute(kDropInterestGroupTableSql)) {
+    return false;
+  }
+
+  static const char kRenameInterestGroupTableSql[] =
+      // clang-format off
+      "ALTER TABLE new_interest_groups "
+      "RENAME TO interest_groups";
+  // clang-format on
+  if (!db.Execute(kRenameInterestGroupTableSql)) {
+    return false;
+  }
+
+  return CreateInterestGroupIndices(db);
 }
 
 bool UpgradeV12SchemaToV13(sql::Database& db, sql::MetaTable& meta_table) {
@@ -1177,7 +1279,8 @@ bool DoLoadInterestGroup(sql::Database& db,
           "ads,"
           "ad_components,"
           "ad_sizes,"
-          "size_groups "
+          "size_groups,"
+          "auction_server_request_flags "
         "FROM interest_groups "
         "WHERE owner = ? AND name = ? "));
   // clang-format on
@@ -1226,7 +1329,8 @@ bool DoLoadInterestGroup(sql::Database& db,
       load.ColumnString(18), /*for_components=*/true);
   group.ad_sizes = DeserializeStringSizeMap(load.ColumnString(19));
   group.size_groups = DeserializeStringStringVectorMap(load.ColumnString(20));
-
+  group.auction_server_request_flags =
+      DeserializeAuctionServerRequestFlags(load.ColumnInt64(21));
   return true;
 }
 
@@ -1346,8 +1450,9 @@ bool DoJoinInterestGroup(sql::Database& db,
             "ads,"
             "ad_components,"
             "ad_sizes,"
-            "size_groups) "
-          "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"));
+            "size_groups,"
+            "auction_server_request_flags) "
+          "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"));
 
   // clang-format on
   if (!join_group.is_valid())
@@ -1382,6 +1487,7 @@ bool DoJoinInterestGroup(sql::Database& db,
   join_group.BindString(22, Serialize(data.ad_components));
   join_group.BindString(23, Serialize(data.ad_sizes));
   join_group.BindString(24, Serialize(data.size_groups));
+  join_group.BindInt64(25, Serialize(data.auction_server_request_flags));
 
   if (!join_group.Run())
     return false;
@@ -1416,7 +1522,8 @@ bool DoStoreInterestGroupUpdate(sql::Database& db,
             "ads=?,"
             "ad_components=?,"
             "ad_sizes=?,"
-            "size_groups=? "
+            "size_groups=?,"
+            "auction_server_request_flags=? "
           "WHERE owner=? AND name=?"));
 
   // clang-format on
@@ -1443,8 +1550,9 @@ bool DoStoreInterestGroupUpdate(sql::Database& db,
   store_group.BindString(15, Serialize(group.ad_components));
   store_group.BindString(16, Serialize(group.ad_sizes));
   store_group.BindString(17, Serialize(group.size_groups));
-  store_group.BindString(18, Serialize(group.owner));
-  store_group.BindString(19, group.name);
+  store_group.BindInt64(18, Serialize(group.auction_server_request_flags));
+  store_group.BindString(19, Serialize(group.owner));
+  store_group.BindString(20, group.name);
 
   return store_group.Run();
 }
@@ -1522,6 +1630,10 @@ bool DoUpdateInterestGroup(sql::Database& db,
   }
   if (update.size_groups) {
     stored_group.size_groups = std::move(update.size_groups);
+  }
+  if (update.auction_server_request_flags) {
+    stored_group.auction_server_request_flags =
+        *update.auction_server_request_flags;
   }
 
   if (!stored_group.IsValid()) {
@@ -2397,7 +2509,7 @@ bool ClearExcessiveStorage(sql::Database& db, size_t max_owner_storage_size) {
               "LENGTH(interest_groups.ad_components)+"
               "LENGTH(interest_groups.ad_sizes)+"
               "LENGTH(interest_groups.size_groups)+"
-              "36) "  // other fields are fixed at 36 bytes
+              "40) "  // other fields are fixed at 40 bytes
             "AS cum_size "
         "FROM interest_groups "
         "ORDER BY owner, expiration DESC"
@@ -2610,7 +2722,7 @@ bool InterestGroupStorage::InitializeSchema() {
     return false;
 
   if (new_db)
-    return CreateV13Schema(*db_);
+    return CreateV14Schema(*db_);
 
   const int db_version = meta_table.GetVersionNumber();
 
@@ -2656,6 +2768,11 @@ bool InterestGroupStorage::InitializeSchema() {
         ABSL_FALLTHROUGH_INTENDED;
       case 12:
         if (!UpgradeV12SchemaToV13(*db_, meta_table)) {
+          return false;
+        }
+        ABSL_FALLTHROUGH_INTENDED;
+      case 13:
+        if (!UpgradeV13SchemaToV14(*db_, meta_table)) {
           return false;
         }
 

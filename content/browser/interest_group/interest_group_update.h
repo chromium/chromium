@@ -51,6 +51,7 @@ struct CONTENT_EXPORT InterestGroupUpdate {
   absl::optional<base::flat_map<std::string, blink::AdSize>> ad_sizes;
   absl::optional<base::flat_map<std::string, std::vector<std::string>>>
       size_groups;
+  absl::optional<blink::AuctionServerRequestFlags> auction_server_request_flags;
 };
 
 }  // namespace content

@@ -143,7 +143,10 @@ class InterestGroupStorageTest : public testing::Test {
         /*size_groups=*/
         {{{"group_1", std::vector<std::string>{"size_1"}},
           {"group_2", std::vector<std::string>{"size_1", "size_2"}},
-          {"group_3", std::vector<std::string>{"size_3"}}}});
+          {"group_3", std::vector<std::string>{"size_3"}}}},
+        /*auction_server_request_flags=*/
+        {blink::AuctionServerRequestFlagsEnum::kOmitAds,
+         blink::AuctionServerRequestFlagsEnum::kIncludeFullAds});
     std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
 
     storage->JoinInterestGroup(partial, partial_origin.GetURL());

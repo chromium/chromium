@@ -419,6 +419,33 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
   return true;
 }
 
+[[nodiscard]] bool TryToCopyAuctionServerRequestFlags(
+    const base::Value::Dict& dict,
+    InterestGroupUpdate& interest_group_update) {
+  const base::Value::List* maybe_flags =
+      dict.FindList("auctionServerRequestFlags");
+  if (!maybe_flags) {
+    return true;
+  }
+  blink::AuctionServerRequestFlags auction_server_request_flags;
+  for (const base::Value& maybe_flag : *maybe_flags) {
+    if (!maybe_flag.is_string()) {
+      return false;
+    }
+    const std::string& flag = maybe_flag.GetString();
+    if (flag == "omit-ads") {
+      auction_server_request_flags.Put(
+          blink::AuctionServerRequestFlagsEnum::kOmitAds);
+    } else if (flag == "include-full-ads") {
+      auction_server_request_flags.Put(
+          blink::AuctionServerRequestFlagsEnum::kIncludeFullAds);
+    }
+  }
+  interest_group_update.auction_server_request_flags =
+      auction_server_request_flags;
+  return true;
+}
+
 absl::optional<InterestGroupUpdate> ParseUpdateJson(
     const blink::InterestGroupKey& group_key,
     const data_decoder::DataDecoder::ValueOrError& result) {
@@ -529,6 +556,9 @@ absl::optional<InterestGroupUpdate> ParseUpdateJson(
     return absl::nullopt;
   }
   if (!TryToCopySizeGroups(*dict, interest_group_update)) {
+    return absl::nullopt;
+  }
+  if (!TryToCopyAuctionServerRequestFlags(*dict, interest_group_update)) {
     return absl::nullopt;
   }
   return interest_group_update;
