@@ -24,6 +24,7 @@ group("provider_api") {
     "//ios/public/provider/chrome/browser/overrides:overrides_api",
     "//ios/public/provider/chrome/browser/partial_translate:partial_translate_api",
     "//ios/public/provider/chrome/browser/password_auto_fill:password_auto_fill_api",
+    "//ios/public/provider/chrome/browser/photos:photos_api",
     "//ios/public/provider/chrome/browser/push_notification:push_notification_api",
     "//ios/public/provider/chrome/browser/risk_data:risk_data_api",
     "//ios/public/provider/chrome/browser/signin:signin_error_api",

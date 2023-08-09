@@ -25,6 +25,7 @@ group("providers") {
     "//ios/chrome/test/providers/overrides",
     "//ios/chrome/test/providers/partial_translate",
     "//ios/chrome/test/providers/password_auto_fill",
+    "//ios/chrome/test/providers/photos",
     "//ios/chrome/test/providers/primes",
     "//ios/chrome/test/providers/push_notification",
     "//ios/chrome/test/providers/risk_data",
