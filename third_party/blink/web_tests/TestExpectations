@@ -578,7 +578,6 @@ crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-opacity-1b.html [ 
 crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-opacity-1d.html [ Failure ]
 crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-opacity-1e.html [ Failure ]
 crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-origin-1.html [ Failure ]
-crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-origin-2.html [ Failure ]
 crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-origin-3.html [ Failure ]
 crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-position-1a.html [ Failure ]
 crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-position-1b.html [ Failure ]

@@ -9,7 +9,6 @@ FAIL e.style['mask'] = "repeat-y" should set the property value assert_not_equal
 FAIL e.style['mask'] = "border-box" should set the property value assert_not_equals: property should be set got disallowed value ""
 FAIL e.style['mask'] = "linear-gradient(to left bottom, red, blue) padding-box" should set the property value assert_not_equals: property should be set got disallowed value ""
 FAIL e.style['mask'] = "content-box" should set the property value assert_not_equals: property should be set got disallowed value ""
-FAIL e.style['mask'] = "margin-box" should set the property value assert_not_equals: property should be set got disallowed value ""
 FAIL e.style['mask'] = "url(\"https://web-platform.test/\") fill-box" should set the property value assert_not_equals: property should be set got disallowed value ""
 FAIL e.style['mask'] = "linear-gradient(to left bottom, red, blue) stroke-box" should set the property value assert_not_equals: property should be set got disallowed value ""
 FAIL e.style['mask'] = "view-box" should set the property value assert_not_equals: property should be set got disallowed value ""
