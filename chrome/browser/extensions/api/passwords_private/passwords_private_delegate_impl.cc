@@ -23,6 +23,7 @@
 #include "chrome/browser/password_manager/account_password_store_factory.h"
 #include "chrome/browser/password_manager/affiliation_service_factory.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
+#include "chrome/browser/password_manager/password_sender_service_factory.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -52,6 +53,7 @@
 #include "components/password_manager/core/browser/password_manager_features_util.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
+#include "components/password_manager/core/browser/sharing/password_sender_service.h"
 #include "components/password_manager/core/browser/sharing/recipients_fetcher_impl.h"
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -703,9 +705,25 @@ void PasswordsPrivateDelegateImpl::FetchFamilyMembers(
 void PasswordsPrivateDelegateImpl::SharePassword(
     int id,
     const ShareRecipients& recipients) {
-  // TODO(crbug/1445526): Get corresponding password forms for the id.
-  // TODO(crbug/1445526): Call PasswordSenderService.
-  return;
+  const CredentialUIEntry* entry = credential_id_generator_.TryGetKey(id);
+  if (!entry) {
+    return;
+  }
+
+  std::vector<password_manager::PasswordForm> corresponding_credentials =
+      saved_passwords_presenter_.GetCorrespondingPasswordForms(*entry);
+  if (corresponding_credentials.empty()) {
+    return;
+  }
+
+  password_manager::PasswordSenderService* password_sender_service =
+      PasswordSenderServiceFactory::GetForProfile(profile_);
+  for (const api::passwords_private::RecipientInfo& recipient_info :
+       recipients) {
+    // TODO(crbug/1445526): Populate other fields from the `recipient_info`.
+    password_sender_service->SendPasswords(corresponding_credentials,
+                                           {.user_id = recipient_info.user_id});
+  }
 }
 
 void PasswordsPrivateDelegateImpl::ImportPasswords(

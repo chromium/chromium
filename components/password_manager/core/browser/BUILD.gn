@@ -566,6 +566,8 @@ static_library("test_support") {
     "mock_webauthn_credentials_delegate.h",
     "password_manager_test_utils.cc",
     "password_manager_test_utils.h",
+    "sharing/mock_password_sender_service.cc",
+    "sharing/mock_password_sender_service.h",
     "stub_credentials_filter.cc",
     "stub_credentials_filter.h",
     "stub_form_saver.cc",
