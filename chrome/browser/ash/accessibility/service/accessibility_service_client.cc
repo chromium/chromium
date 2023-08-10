@@ -158,10 +158,11 @@ void AccessibilityServiceClient::LaunchAccessibilityServiceAndBind() {
   tts_client_ = std::make_unique<TtsClientImpl>(profile_);
   user_interface_client_ = std::make_unique<UserInterfaceImpl>();
 
-  router->BindAssistiveTechnologyController(
-      at_controller_.BindNewPipeAndPassReceiver(), enabled_features_);
+  // Bind the AXServiceClient before enabling features.
   router->BindAccessibilityServiceClient(
       service_client_.BindNewPipeAndPassRemote());
+  router->BindAssistiveTechnologyController(
+      at_controller_.BindNewPipeAndPassReceiver(), enabled_features_);
   // Create agent host for all enabled features.
   for (auto& type : enabled_features_) {
     CreateDevToolsAgentHost(type);
