@@ -67,9 +67,8 @@ bool PopulateMojoEnumValueIfValid(int possible_enum, T* valid_enum_out) {
 }
 
 std::string CreatePayload(ash::cros_healthd::mojom::RoutineUpdatePtr update) {
-  base::Value::Dict root_dict;
-  root_dict.Set(kProgressPercentFieldName,
-                static_cast<int>(update->progress_percent));
+  auto root_dict = base::Value::Dict().Set(
+      kProgressPercentFieldName, static_cast<int>(update->progress_percent));
   if (update->output.is_valid()) {
     // TODO(crbug.com/1056323): Serialize update->output. For now, set a dummy
     // value.
@@ -80,16 +79,16 @@ std::string CreatePayload(ash::cros_healthd::mojom::RoutineUpdatePtr update) {
   if (routine_update_union->is_noninteractive_update()) {
     const auto& noninteractive_update =
         routine_update_union->get_noninteractive_update();
-    base::Value::Dict noninteractive_dict;
-    noninteractive_dict.Set(kStatusFieldName,
-                            static_cast<int>(noninteractive_update->status));
-    noninteractive_dict.Set(kStatusMessageFieldName,
-                            std::move(noninteractive_update->status_message));
+    auto noninteractive_dict =
+        base::Value::Dict()
+            .Set(kStatusFieldName,
+                 static_cast<int>(noninteractive_update->status))
+            .Set(kStatusMessageFieldName,
+                 std::move(noninteractive_update->status_message));
     root_dict.Set(kNonInteractiveUpdateFieldName,
                   std::move(noninteractive_dict));
   } else if (routine_update_union->is_interactive_update()) {
-    base::Value::Dict interactive_dict;
-    interactive_dict.Set(
+    auto interactive_dict = base::Value::Dict().Set(
         kUserMessageFieldName,
         static_cast<int>(
             routine_update_union->get_interactive_update()->user_message));

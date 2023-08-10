@@ -36,8 +36,7 @@ em::RemoteCommand GenerateSetVolumeCommandProto(base::TimeDelta age_of_command,
   command_proto.set_command_id(kUniqueID);
   command_proto.set_age_of_command(age_of_command.InMilliseconds());
   std::string payload;
-  base::Value::Dict root_dict;
-  root_dict.Set(kVolumeFieldName, volume);
+  auto root_dict = base::Value::Dict().Set(kVolumeFieldName, volume);
   base::JSONWriter::Write(root_dict, &payload);
   command_proto.set_payload(payload);
   return command_proto;

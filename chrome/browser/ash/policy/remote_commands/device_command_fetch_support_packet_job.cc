@@ -144,10 +144,11 @@ std::string ErrorsToString(const std::set<SupportToolError>& errors) {
 std::string GetUploadParameters(
     const base::FilePath& filename,
     policy::RemoteCommandJob::UniqueIDType command_id) {
-  base::Value::Dict upload_parameters_dict;
-  upload_parameters_dict.Set(kFilenameKey, filename.BaseName().value().c_str());
-  upload_parameters_dict.Set(kCommandIdKey, base::NumberToString(command_id));
-  upload_parameters_dict.Set(kFileTypeKey, kSupportFileType);
+  auto upload_parameters_dict =
+      base::Value::Dict()
+          .Set(kFilenameKey, filename.BaseName().value())
+          .Set(kCommandIdKey, base::NumberToString(command_id))
+          .Set(kFileTypeKey, kSupportFileType);
   std::string json;
   base::JSONWriter::Write(upload_parameters_dict, &json);
   return base::StringPrintf("%s\n%s", json.c_str(), kContentTypeJson);
