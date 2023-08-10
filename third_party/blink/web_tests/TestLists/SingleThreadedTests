@@ -1832,6 +1832,10 @@ virtual/gpu/fast/canvas/downsample-quality.html
 virtual/hidpi/fast/scrolling/scrollbars/dsf-ready/mouse-interactions-dsf-2.html
 virtual/main-thread-clip-path-animation/http/tests/devtools/animation/animation-web-anim-negative-start-time.js
 virtual/main-threaded-percent-based-scrolling/fast/scrolling/no-hover-during-scroll.html
+virtual/main-threaded-percent-based-scrolling/virtual/percent-based-scrolling/max-percent-delta-cross-origin-iframes.html
+virtual/main-threaded-percent-based-scrolling/virtual/percent-based-scrolling/max-percent-delta-page-zoom.html
+virtual/main-threaded-percent-based-scrolling/virtual/percent-based-scrolling/max-percent-delta-pinch-zoom.html
+virtual/main-threaded-percent-based-scrolling/virtual/percent-based-scrolling/max-percent-delta.html
 virtual/netinfo-constant-type/netinfo/multiple-frames.html
 virtual/no-alloc-direct-call/fast/canvas/canvas-drawImage-video-imageSmoothingEnabled.html
 virtual/oopr-canvas2d/fast/canvas/OffscreenCanvas-placeholder-image-source-with-worker.html
@@ -2001,6 +2005,9 @@ virtual/prefer_compositing_to_lcd_text/compositing/overflow/siblings-with-border
 virtual/prefer_compositing_to_lcd_text/scrollbars/custom-scrollbar-changing-style-relayout-div-body-scrollablearea.html
 virtual/prefer_compositing_to_lcd_text/scrollbars/overlay-scrollbar-inline-block-over-child-layer.html
 virtual/prefetch/http/tests/inspector-protocol/prefetch/request-will-be-sent.https.js
+virtual/reduce-accept-language/http/tests/inspector-protocol/network/get-response-body.js
+virtual/reduce-accept-language/http/tests/inspector-protocol/network/multiple-redirects-extrainfo.js
+virtual/reduce-accept-language/http/tests/inspector-protocol/network/raw-headers-after-navigation.js
 virtual/scalefactor150/fast/hidpi/static/calendar-picker-appearance.html
 virtual/scalefactor150/fast/hidpi/static/data-suggestion-picker-appearance.html
 virtual/scalefactor150/fast/hidpi/static/pointerevents/pointerevent_touch-adjustment_click_target.html
