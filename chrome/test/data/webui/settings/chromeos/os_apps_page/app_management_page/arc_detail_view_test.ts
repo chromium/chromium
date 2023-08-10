@@ -5,12 +5,11 @@
 import 'chrome://os-settings/lazy_load.js';
 
 import {AppManagementArcDetailViewElement} from 'chrome://os-settings/lazy_load.js';
-import {AppManagementStore, updateSelectedAppId} from 'chrome://os-settings/os_settings.js';
+import {AppManagementStore, CrToggleElement, updateSelectedAppId} from 'chrome://os-settings/os_settings.js';
 import {AppType, PermissionType, TriState} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {PermissionTypeIndex} from 'chrome://resources/cr_components/app_management/permission_constants.js';
 import {createBoolPermission, createTriStatePermission} from 'chrome://resources/cr_components/app_management/permission_util.js';
 import {getPermissionValueBool} from 'chrome://resources/cr_components/app_management/util.js';
-import {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';

@@ -5,8 +5,8 @@
 import 'chrome://os-settings/lazy_load.js';
 
 import {NetworkAlwaysOnVpnElement} from 'chrome://os-settings/lazy_load.js';
+import {CrToggleElement} from 'chrome://os-settings/os_settings.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
-import {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {AlwaysOnVpnMode} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';

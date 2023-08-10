@@ -5,12 +5,11 @@
 import 'chrome://os-settings/lazy_load.js';
 
 import {AppManagementPinToShelfItemElement, AppManagementPwaDetailViewElement, AppManagementSubAppsItemElement} from 'chrome://os-settings/lazy_load.js';
-import {AppManagementStore, updateSelectedAppId, updateSubAppToParentAppId} from 'chrome://os-settings/os_settings.js';
+import {AppManagementStore, CrToggleElement, updateSelectedAppId, updateSubAppToParentAppId} from 'chrome://os-settings/os_settings.js';
 import {App, InstallReason} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {PermissionTypeIndex} from 'chrome://resources/cr_components/app_management/permission_constants.js';
 import {AppManagementToggleRowElement} from 'chrome://resources/cr_components/app_management/toggle_row.js';
 import {convertOptionalBoolToBool, getPermissionValueBool} from 'chrome://resources/cr_components/app_management/util.js';
-import {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {FakePageHandler} from '../../app_management/fake_page_handler.js';
