@@ -8,6 +8,7 @@
 
 #include "base/containers/adapters.h"
 #include "base/functional/callback_helpers.h"
+#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
@@ -187,6 +188,7 @@ bool TaskManagerView::ExecuteWindowsCommand(int command_id) {
 }
 
 ui::ImageModel TaskManagerView::GetWindowIcon() {
+  TRACE_EVENT0("ui", "TaskManagerView::GetWindowIcon");
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // TODO(crbug.com/1162514): Move apps::CreateStandardIconImage to some
   // where lower in the stack.

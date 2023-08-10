@@ -16,6 +16,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/trace_event/trace_event.h"
 #include "base/uuid.h"
 #include "components/saved_tab_groups/saved_tab_group.h"
 #include "components/saved_tab_groups/saved_tab_group_model.h"
@@ -487,6 +488,7 @@ void SavedTabGroupSyncBridge::OnReadAllMetadata(
     std::unique_ptr<syncer::ModelTypeStore::RecordList> entries,
     const absl::optional<syncer::ModelError>& error,
     std::unique_ptr<syncer::MetadataBatch> metadata_batch) {
+  TRACE_EVENT0("ui", "SavedTabGroupSyncBridge::OnReadAllMetadata");
   if (error) {
     change_processor()->ReportError({FROM_HERE, "Failed to read metadata."});
     return;
