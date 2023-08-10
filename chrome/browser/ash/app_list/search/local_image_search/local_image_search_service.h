@@ -32,6 +32,9 @@ class LocalImageSearchService : public KeyedService {
               base::OnceCallback<void(const std::vector<FileSearchResult>&)>
                   callback) const;
 
+  // Inserts the given image info into the annotation storage.
+  void Insert(const ImageInfo& image_info);
+
  private:
   base::SequenceBound<AnnotationStorage> annotation_storage_;
 };

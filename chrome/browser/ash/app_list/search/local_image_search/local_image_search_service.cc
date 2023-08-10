@@ -69,4 +69,9 @@ void LocalImageSearchService::Search(
       .Then(std::move(callback));
 }
 
+void LocalImageSearchService::Insert(const ImageInfo& image_info) {
+  annotation_storage_.AsyncCall(&AnnotationStorage::Insert)
+      .WithArgs(image_info);
+}
+
 }  // namespace app_list

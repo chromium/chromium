@@ -57,6 +57,9 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
 #include "chrome/browser/ash/app_list/search/chrome_search_result.h"
+#include "chrome/browser/ash/app_list/search/local_image_search/local_image_search_service.h"
+#include "chrome/browser/ash/app_list/search/local_image_search/local_image_search_service_factory.h"
+#include "chrome/browser/ash/app_list/search/search_features.h"
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_util.h"
 #include "chrome/browser/ash/arc/fileapi/arc_media_view_util.h"
 #include "chrome/browser/ash/base/locale_util.h"
@@ -1085,6 +1088,10 @@ class DownloadsTestVolume : public LocalTestVolume {
   // rolled out.
   base::FilePath base_path() const { return root_path().Append("Downloads"); }
 
+  base::FilePath GetFilePath(const std::string relative_path) const {
+    return base_path().Append(relative_path);
+  }
+
   bool Mount(Profile* profile) override {
     if (!CreateRootDirectory(profile)) {
       return false;
@@ -1095,7 +1102,7 @@ class DownloadsTestVolume : public LocalTestVolume {
   }
 
   void CreateEntry(const AddEntriesMessage::TestEntryInfo& entry) override {
-    base::FilePath target_path = base_path().Append(entry.target_path);
+    base::FilePath target_path = GetFilePath(entry.target_path);
     CreateEntryImpl(entry, target_path);
   }
 
@@ -2203,6 +2210,16 @@ void FileManagerBrowserTestBase::SetUpCommandLine(
     enabled_features.push_back(ash::features::kFilesSearchV2);
   } else {
     disabled_features.push_back(ash::features::kFilesSearchV2);
+  }
+
+  if (options.enable_image_content_search) {
+    enabled_features.push_back(search_features::kLauncherImageSearch);
+    enabled_features.push_back(search_features::kLauncherImageSearchIca);
+    enabled_features.push_back(search_features::kLauncherImageSearchOcr);
+  } else {
+    disabled_features.push_back(search_features::kLauncherImageSearch);
+    disabled_features.push_back(search_features::kLauncherImageSearchIca);
+    disabled_features.push_back(search_features::kLauncherImageSearchOcr);
   }
 
   if (options.enable_os_feedback) {
@@ -3726,6 +3743,23 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
     ash::ShillServiceClient::Get()->GetTestInterface()->ClearServices();
     content::NetworkConnectionChangeSimulator().SetConnectionType(
         network::mojom::ConnectionType::CONNECTION_NONE);
+    return;
+  }
+
+  if (name == "setupImageTerms") {
+    const std::string* path = value.FindString("path");
+    ASSERT_TRUE(path) << "Missing file path for setupImageTerms";
+    const std::string* terms = value.FindString("terms");
+    ASSERT_TRUE(terms) << "Missing terms for setupImageTerms";
+
+    base::FilePath file_path = local_volume_->GetFilePath(*path);
+    std::vector<std::string> tokens = base::SplitString(
+        *terms, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+    std::set<std::string> unique_terms(tokens.begin(), tokens.end());
+    app_list::ImageInfo image_info(unique_terms, file_path, base::Time::Now(),
+                                   false);
+    app_list::LocalImageSearchServiceFactory::GetForBrowserContext(profile())
+        ->Insert(image_info);
     return;
   }
 
