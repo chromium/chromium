@@ -16,12 +16,23 @@ public interface ReadAloudPlaybackHooks {
 
     /**
      * Request playback for the given URL.
+     * TODO(basiaz): delete after the other method is implemented in clank.
      *
-     * @param url Page URL.
-     * @param dateModifiedMsSinceEpoch Page's dateModified attribute in terms of milliseconds since
-     *         Unix epoch. Pass current time if dateModified isn't available.
-     * @param callback Called when request finishes or fails.
+     * @param url                      Page URL.
+     * @param dateModifiedMsSinceEpoch Page's dateModified attribute in terms of
+     *                                 milliseconds since
+     *                                 Unix epoch. Pass current time if dateModified
+     *                                 isn't available.
+     * @param callback                 Called when request finishes or fails.
      */
     default void createPlayback(
             String url, long dateModifiedMsSinceEpoch, CreatePlaybackCallback callback) {}
+
+    /**
+     * Request playback for the given config.
+     *
+     * @param playbackArgs Encapsulates the info about requested playback.
+     * @param callback     Called when request finishes or fails.
+     */
+    default void createPlayback(PlaybackArgs playbackArgs, CreatePlaybackCallback callback) {}
 }
