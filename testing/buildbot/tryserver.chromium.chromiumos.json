@@ -9,7 +9,7 @@
       {
         "bucket": "chromiumos-image-archive",
         "cros_board": "volteer",
-        "cros_img": "volteer-public/R117-15564.0.0",
+        "cros_img": "volteer-public/R118-15574.0.0",
         "dut_pool": "chromium",
         "name": "lacros_all_tast_tests VOLTEER_PUBLIC_LKGM",
         "public_builder": "cros_test_platform_public",
@@ -29,7 +29,7 @@
       {
         "bucket": "chromiumos-image-archive",
         "cros_board": "volteer",
-        "cros_img": "volteer-public/R117-15552.0.0",
+        "cros_img": "volteer-public/R117-15563.0.0",
         "dut_pool": "chromium",
         "name": "lacros_all_tast_tests VOLTEER_PUBLIC_DEV",
         "public_builder": "cros_test_platform_public",
@@ -49,7 +49,7 @@
       {
         "bucket": "chromiumos-image-archive",
         "cros_board": "volteer",
-        "cros_img": "volteer-public/R115-15474.21.0",
+        "cros_img": "volteer-public/R116-15509.50.0",
         "dut_pool": "chromium",
         "name": "lacros_all_tast_tests VOLTEER_PUBLIC_BETA",
         "public_builder": "cros_test_platform_public",
@@ -69,7 +69,7 @@
       {
         "bucket": "chromiumos-image-archive",
         "cros_board": "volteer",
-        "cros_img": "volteer-public/R114-15437.57.0",
+        "cros_img": "volteer-public/R115-15474.70.0",
         "dut_pool": "chromium",
         "name": "lacros_all_tast_tests VOLTEER_PUBLIC_STABLE",
         "public_builder": "cros_test_platform_public",

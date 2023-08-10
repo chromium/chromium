@@ -372,7 +372,7 @@
     'identifier': 'BRYA_RELEASE_LKGM',
     'skylab': {
       'cros_board': 'brya',
-      'cros_img': 'brya-release/R117-15564.0.0',
+      'cros_img': 'brya-release/R118-15574.0.0',
       'autotest_name': 'tast.chrome-from-gcs',
       'shards': 10,
     },
@@ -381,7 +381,7 @@
     'identifier': 'DEDEDE_RELEASE_LKGM',
     'skylab': {
       'cros_board': 'dedede',
-      'cros_img': 'dedede-release/R117-15564.0.0',
+      'cros_img': 'dedede-release/R118-15574.0.0',
       'autotest_name': 'tast.lacros-from-gcs',
     },
   },
@@ -389,28 +389,28 @@
     'identifier': 'DEDEDE_RELEASE_DEV',
     'skylab': {
       'cros_board': 'dedede',
-      'cros_img': 'dedede-release/R116-15501.0.0',
+      'cros_img': 'dedede-release/R117-15552.0.0',
     },
   },
   'CROS_DEDEDE_RELEASE_BETA': {
     'identifier': 'DEDEDE_RELEASE_BETA',
     'skylab': {
       'cros_board': 'dedede',
-      'cros_img': 'dedede-release/R115-15474.23.0',
+      'cros_img': 'dedede-release/R116-15509.50.0',
     },
   },
   'CROS_DEDEDE_RELEASE_STABLE': {
     'identifier': 'DEDEDE_RELEASE_STABLE',
     'skylab': {
       'cros_board': 'dedede',
-      'cros_img': 'dedede-release/R114-15437.57.0',
+      'cros_img': 'dedede-release/R115-15474.70.0',
     },
   },
   'CROS_EVE_RELEASE_LKGM': {
     'identifier': 'EVE_RELEASE_LKGM',
     'skylab': {
       'cros_board': 'eve',
-      'cros_img': 'eve-release/R117-15564.0.0',
+      'cros_img': 'eve-release/R118-15574.0.0',
       'autotest_name': 'tast.lacros-from-gcs',
     },
   },
@@ -418,28 +418,28 @@
     'identifier': 'EVE_RELEASE_DEV',
     'skylab': {
       'cros_board': 'eve',
-      'cros_img': 'eve-release/R116-15501.0.0',
+      'cros_img': 'eve-release/R117-15563.0.0',
     },
   },
   'CROS_EVE_RELEASE_BETA': {
     'identifier': 'EVE_RELEASE_BETA',
     'skylab': {
       'cros_board': 'eve',
-      'cros_img': 'eve-release/R115-15474.21.0',
+      'cros_img': 'eve-release/R116-15509.50.0',
     },
   },
   'CROS_EVE_RELEASE_STABLE': {
     'identifier': 'EVE_RELEASE_STABLE',
     'skylab': {
       'cros_board': 'eve',
-      'cros_img': 'eve-release/R114-15437.57.0',
+      'cros_img': 'eve-release/R115-15474.70.0',
     },
   },
   'CROS_EVE_PUBLIC_LKGM': {
     'identifier': 'EVE_PUBLIC_LKGM',
     'skylab': {
       'cros_board': 'eve',
-      'cros_img': 'eve-public/R117-15564.0.0',
+      'cros_img': 'eve-public/R118-15574.0.0',
       'bucket': 'chromiumos-image-archive',
       'dut_pool': 'chromium',
       'public_builder': 'cros_test_platform_public',
@@ -450,28 +450,28 @@
     'identifier': 'HANA_RELEASE_LKGM',
     'skylab': {
       'cros_board': 'hana',
-      'cros_img': 'hana-release/R117-15564.0.0',
+      'cros_img': 'hana-release/R118-15574.0.0',
     },
   },
   'CROS_HANA_RELEASE_DEV': {
     'identifier': 'HANA_RELEASE_DEV',
     'skylab': {
       'cros_board': 'hana',
-      'cros_img': 'hana-release/R116-15501.0.0',
+      'cros_img': 'hana-release/R117-15563.0.0',
     },
   },
   'CROS_HANA_RELEASE_BETA': {
     'identifier': 'HANA_RELEASE_BETA',
     'skylab': {
       'cros_board': 'hana',
-      'cros_img': 'hana-release/R115-15474.21.0',
+      'cros_img': 'hana-release/R116-15509.50.0',
     },
   },
   'CROS_HANA_RELEASE_STABLE': {
     'identifier': 'HANA_RELEASE_STABLE',
     'skylab': {
       'cros_board': 'hana',
-      'cros_img': 'hana-release/R114-15437.57.0',
+      'cros_img': 'hana-release/R115-15474.70.0',
     },
   },
   'CROS_JACUZZI_RELEASE_LKGM': {
@@ -534,7 +534,7 @@
     'identifier': 'KEVIN64_PUBLIC_LKGM',
     'skylab': {
       'cros_board': 'kevin',
-      'cros_img': 'kevin64-public/R117-15511.0.0',
+      'cros_img': 'kevin64-public/R118-15574.0.0',
       'bucket': 'chromiumos-image-archive',
     },
   },
@@ -550,7 +550,7 @@
     'identifier': 'OCTOPUS_PUBLIC_LKGM',
     'skylab': {
       'cros_board': 'octopus',
-      'cros_img': 'octopus-public/R117-15564.0.0',
+      'cros_img': 'octopus-public/R118-15574.0.0',
       'bucket': 'chromiumos-image-archive',
     },
   },
@@ -558,7 +558,7 @@
     'identifier': 'OCTOPUS_RELEASE_CHROME_FROM_TLS_LKGM',
     'skylab': {
       'cros_board': 'octopus',
-      'cros_img': 'octopus-release/R117-15564.0.0',
+      'cros_img': 'octopus-release/R118-15574.0.0',
       'autotest_name': 'tast.chrome-from-gcs',
       'shards': 10,
     },
@@ -567,35 +567,35 @@
     'identifier': 'OCTOPUS_RELEASE_LKGM',
     'skylab': {
       'cros_board': 'octopus',
-      'cros_img': 'octopus-release/R117-15564.0.0',
+      'cros_img': 'octopus-release/R118-15574.0.0',
     },
   },
   'CROS_OCTOPUS_RELEASE_DEV': {
     'identifier': 'OCTOPUS_RELEASE_DEV',
     'skylab': {
       'cros_board': 'octopus',
-      'cros_img': 'octopus-release/R116-15501.0.0',
+      'cros_img': 'octopus-release/R117-15563.0.0',
     },
   },
   'CROS_OCTOPUS_RELEASE_BETA': {
     'identifier': 'OCTOPUS_RELEASE_BETA',
     'skylab': {
       'cros_board': 'octopus',
-      'cros_img': 'octopus-release/R115-15474.21.0',
+      'cros_img': 'octopus-release/R116-15509.50.0',
     },
   },
   'CROS_OCTOPUS_RELEASE_STABLE': {
     'identifier': 'OCTOPUS_RELEASE_STABLE',
     'skylab': {
       'cros_board': 'octopus',
-      'cros_img': 'octopus-release/R114-15437.57.0',
+      'cros_img': 'octopus-release/R115-15474.70.0',
     },
   },
   'CROS_STRONGBAD_RELEASE_LKGM': {
     'identifier': 'STRONGBAD_RELEASE_LKGM',
     'skylab': {
       'cros_board': 'strongbad',
-      'cros_img': 'strongbad-release/R117-15564.0.0',
+      'cros_img': 'strongbad-release/R118-15574.0.0',
       'autotest_name': 'tast.lacros-from-gcs',
     },
   },
@@ -603,28 +603,28 @@
     'identifier': 'strongbad_RELEASE_DEV',
     'skylab': {
       'cros_board': 'strongbad',
-      'cros_img': 'strongbad-release/R116-15501.0.0',
+      'cros_img': 'strongbad-release/R117-15563.0.0',
     },
   },
   'CROS_STRONGBAD_RELEASE_BETA': {
     'identifier': 'STRONGBAD_RELEASE_BETA',
     'skylab': {
       'cros_board': 'strongbad',
-      'cros_img': 'strongbad-release/R115-15474.21.0',
+      'cros_img': 'strongbad-release/R116-15509.50.0',
     },
   },
   'CROS_STRONGBAD_RELEASE_STABLE': {
     'identifier': 'STRONGBAD_RELEASE_STABLE',
     'skylab': {
       'cros_board': 'strongbad',
-      'cros_img': 'strongbad-release/R114-15437.57.0',
+      'cros_img': 'strongbad-release/R115-15474.70.0',
     },
   },
   'CROS_TROGDOR_RELEASE_ASH_LKGM': {
     'identifier': 'TROGDOR_RELEASE_LKGM',
     'skylab': {
       'cros_board': 'trogdor',
-      'cros_img': 'trogdor-release/R117-15564.0.0',
+      'cros_img': 'trogdor-release/R118-15574.0.0',
       'autotest_name': 'tast.chrome-from-gcs',
       'shards': 10,
     },
@@ -633,7 +633,7 @@
     'identifier': 'VOLTEER_PUBLIC_LKGM',
     'skylab': {
       'cros_board': 'volteer',
-      'cros_img': 'volteer-public/R117-15564.0.0',
+      'cros_img': 'volteer-public/R118-15574.0.0',
       'bucket': 'chromiumos-image-archive',
       'dut_pool': 'chromium',
       'public_builder': 'cros_test_platform_public',
@@ -644,7 +644,7 @@
     'identifier': 'VOLTEER_PUBLIC_DEV',
     'skylab': {
       'cros_board': 'volteer',
-      'cros_img': 'volteer-public/R117-15552.0.0',
+      'cros_img': 'volteer-public/R117-15563.0.0',
       'bucket': 'chromiumos-image-archive',
       'dut_pool': 'chromium',
       'public_builder': 'cros_test_platform_public',
@@ -655,7 +655,7 @@
     'identifier': 'VOLTEER_PUBLIC_BETA',
     'skylab': {
       'cros_board': 'volteer',
-      'cros_img': 'volteer-public/R115-15474.21.0',
+      'cros_img': 'volteer-public/R116-15509.50.0',
       'bucket': 'chromiumos-image-archive',
       'dut_pool': 'chromium',
       'public_builder': 'cros_test_platform_public',
@@ -666,7 +666,7 @@
     'identifier': 'VOLTEER_PUBLIC_STABLE',
     'skylab': {
       'cros_board': 'volteer',
-      'cros_img': 'volteer-public/R114-15437.57.0',
+      'cros_img': 'volteer-public/R115-15474.70.0',
       'bucket': 'chromiumos-image-archive',
       'dut_pool': 'chromium',
       'public_builder': 'cros_test_platform_public',
@@ -677,7 +677,7 @@
     'identifier': 'VOLTEER_RELEASE_LKGM',
     'skylab': {
       'cros_board': 'volteer',
-      'cros_img': 'volteer-release/R117-15564.0.0',
+      'cros_img': 'volteer-release/R118-15574.0.0',
       'autotest_name': 'tast.chrome-from-gcs',
       'shards': 10,
     },

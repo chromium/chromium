@@ -43163,7 +43163,7 @@
       {
         "bucket": "chromiumos-image-archive",
         "cros_board": "octopus",
-        "cros_img": "octopus-public/R117-15564.0.0",
+        "cros_img": "octopus-public/R118-15574.0.0",
         "name": "lacros_all_tast_tests OCTOPUS_PUBLIC_LKGM",
         "resultdb": {
           "enable": true,
@@ -43180,7 +43180,7 @@
       {
         "bucket": "chromiumos-image-archive",
         "cros_board": "eve",
-        "cros_img": "eve-public/R117-15564.0.0",
+        "cros_img": "eve-public/R118-15574.0.0",
         "dut_pool": "chromium",
         "name": "lacros_all_tast_tests EVE_PUBLIC_LKGM",
         "public_builder": "cros_test_platform_public",
@@ -43224,7 +43224,7 @@
       {
         "bucket": "chromiumos-image-archive",
         "cros_board": "kevin",
-        "cros_img": "kevin64-public/R117-15511.0.0",
+        "cros_img": "kevin64-public/R118-15574.0.0",
         "name": "lacros_all_tast_tests KEVIN64_PUBLIC_LKGM",
         "resultdb": {
           "enable": true,
@@ -43284,7 +43284,7 @@
       {
         "bucket": "chromiumos-image-archive",
         "cros_board": "kevin",
-        "cros_img": "kevin64-public/R117-15511.0.0",
+        "cros_img": "kevin64-public/R118-15574.0.0",
         "name": "lacros_all_tast_tests KEVIN64_PUBLIC_LKGM",
         "resultdb": {
           "enable": true,
