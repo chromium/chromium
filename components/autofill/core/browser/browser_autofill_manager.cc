@@ -3466,9 +3466,23 @@ void BrowserAutofillManager::GetAvailableSuggestions(
       context->form_structure->ShouldBeParsed();
 
   if (!ShouldShowSuggestionsForAutocompleteUnrecognizedFields(trigger_source) &&
-      context->focused_field &&
+      got_autofillable_form &&
       context->focused_field->ShouldSuppressSuggestionsAndFillingByDefault()) {
-    context->suppress_reason = SuppressReason::kAutocompleteUnrecognized;
+    // Pre-`AutofillPredictionsForAutocompleteUnrecognized`, autocomplete
+    // suggestions were shown if all types of the form were suppressed or
+    // unknown. If at least a single field had predictions (and the form was
+    // thus considered autofillable), autocomplete suggestions were suppressed
+    // for fields with a suppressed prediction.
+    // To retain this behavior, the `suppress_reason` is only set if the form
+    // contains a field that triggers (non-fallback) suggestions.
+    // By not setting it, the autocomplete suggestion logic downstream is
+    // triggered, since no Autofill `suggestions` are available.
+    if (!base::ranges::all_of(*context->form_structure, [](const auto& field) {
+          return field->ShouldSuppressSuggestionsAndFillingByDefault() ||
+                 field->Type().GetStorableType() == UNKNOWN_TYPE;
+        })) {
+      context->suppress_reason = SuppressReason::kAutocompleteUnrecognized;
+    }
     suggestions->clear();
     return;
   }
