@@ -145,7 +145,7 @@ def generate_name_based_guid(namespace, name):
              md5_hex_digits[9], ''.join(md5_hex_digits[10:])))
 
 
-def optional_switch(key, value):
+def optional_flag(key, value):
     return (f'-d{key}={value}', ) if value else ()
 
 
@@ -171,31 +171,34 @@ def get_wix_candle_flags(
         architecture=None):
     """Generate the proper set of defines for WiX Candle usage."""
     flags = [
-        '-dProductName=' + product_name,
-        '-dProductNameLegalIdentifier=' + product_name_legal_identifier,
-        '-dProductVersion=' + msi_product_version,
-        '-dProductOriginalVersionString=' + product_version,
-        '-dProductBuildYear=' + str(date.today().year), '-dProductGuid=' +
-        appid, *optional_switch('CompanyName', company_name),
-        *optional_switch('MsiInstallerCADll', custom_action_dll_path),
-        *optional_switch('ProductUninstallerAdditionalArgs',
-                         product_uninstaller_additional_args),
-        *optional_switch('MsiProductId', msi_product_id),
-        *optional_switch('MsiUpgradeCode', msi_upgradecode_guid),
-        *optional_switch('ProductCustomParams', "%s" % product_custom_params),
-        *optional_switch('StandaloneInstallerPath', standalone_installer_path),
-        *optional_switch('GoogleUpdateMetainstallerPath',
-                         "%s" % metainstaller_path),
-        *optional_switch('ProductInstallerInstallCommand',
-                         product_installer_install_command),
-        *optional_switch('ProductInstallerDisableUpdateRegistrationArg',
-                         product_installer_disable_update_registration_arg),
-        *optional_switch('ProductInstallerPath', product_installer_path),
-        *optional_switch(
+        *optional_flag('ProductName', product_name),
+        *optional_flag('ProductNameLegalIdentifier',
+                       product_name_legal_identifier),
+        *optional_flag('ProductVersion', msi_product_version),
+        *optional_flag('ProductOriginalVersionString', product_version),
+        *optional_flag('ProductBuildYear', str(date.today().year)),
+        *optional_flag('ProductGuid', appid),
+        *optional_flag('CompanyName', company_name),
+        *optional_flag('MsiInstallerCADll', custom_action_dll_path),
+        *optional_flag('ProductUninstallerAdditionalArgs',
+                       product_uninstaller_additional_args),
+        *optional_flag('MsiProductId', msi_product_id),
+        *optional_flag('MsiUpgradeCode', msi_upgradecode_guid),
+        *optional_flag('ProductCustomParams', "%s" % product_custom_params),
+        *optional_flag('StandaloneInstallerPath', standalone_installer_path),
+        *optional_flag('GoogleUpdateMetainstallerPath',
+                       "%s" % metainstaller_path),
+        *optional_flag('ProductInstallerInstallCommand',
+                       product_installer_install_command),
+        *optional_flag('ProductInstallerDisableUpdateRegistrationArg',
+                       product_installer_disable_update_registration_arg),
+        *optional_flag('ProductInstallerPath', product_installer_path),
+        *optional_flag(
             'ProductInstallerData',
-            product_installer_data.replace(
-                '==MSI-PRODUCT-ID==', msi_product_id) if product_installer_data
-            else None), *optional_switch('ProductIcon', product_icon_path)
+            product_installer_data.replace('==MSI-PRODUCT-ID==',
+                                           msi_product_id)
+            if product_installer_data else None),
+        *optional_flag('ProductIcon', product_icon_path),
     ]
 
     if architecture:
