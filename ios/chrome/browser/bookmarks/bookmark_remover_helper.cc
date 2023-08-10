@@ -31,14 +31,14 @@ void BookmarkRemoverHelper::BookmarkModelLoaded(
     bookmarks::BookmarkModel* bookmark_model,
     bool) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  bookmark_model->RemoveObserver(this);
+  local_or_syncable_bookmark_model_observation_.Reset();
   BookmarksRemoved(::RemoveAllUserBookmarksIOS(browser_state_));
 }
 
 void BookmarkRemoverHelper::BookmarkModelBeingDeleted(
     bookmarks::BookmarkModel* bookmark_model) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  bookmark_model->RemoveObserver(this);
+  local_or_syncable_bookmark_model_observation_.Reset();
   BookmarksRemoved(false);
 }
 
@@ -59,7 +59,7 @@ void BookmarkRemoverHelper::RemoveAllUserBookmarksIOS(Callback completion) {
     BookmarksRemoved(::RemoveAllUserBookmarksIOS(browser_state_));
   } else {
     // Wait for the BookmarkModel to finish loading before deleting entries.
-    bookmark_model->AddObserver(this);
+    local_or_syncable_bookmark_model_observation_.Observe(bookmark_model);
   }
 }
 

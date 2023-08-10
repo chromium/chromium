@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_BOOKMARKS_BOOKMARK_REMOVER_HELPER_H_
 
 #include "base/functional/callback.h"
+#include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "components/bookmarks/browser/base_bookmark_model_observer.h"
 
@@ -47,6 +48,9 @@ class BookmarkRemoverHelper : public bookmarks::BaseBookmarkModelObserver {
 
   Callback completion_;
   ChromeBrowserState* browser_state_ = nullptr;
+  base::ScopedObservation<bookmarks::BookmarkModel,
+                          bookmarks::BaseBookmarkModelObserver>
+      local_or_syncable_bookmark_model_observation_{this};
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
