@@ -13,6 +13,7 @@
 #include "base/scoped_observation.h"
 #include "chromeos/components/firewall_hole/firewall_hole.h"
 #include "extensions/browser/app_window/app_window_registry.h"
+#include "extensions/common/extension_id.h"
 
 namespace content {
 class BrowserContext;
@@ -29,7 +30,7 @@ class AppFirewallHole {
  public:
   ~AppFirewallHole();
 
-  const std::string& extension_id() const { return extension_id_; }
+  const ExtensionId& extension_id() const { return extension_id_; }
 
  private:
   friend class AppFirewallHoleManager;
@@ -45,7 +46,7 @@ class AppFirewallHole {
 
   chromeos::FirewallHole::PortType type_;
   uint16_t port_;
-  std::string extension_id_;
+  ExtensionId extension_id_;
   bool app_visible_ = false;
 
   base::WeakPtr<AppFirewallHoleManager> manager_;
