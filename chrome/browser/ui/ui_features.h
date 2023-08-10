@@ -127,6 +127,8 @@ extern const char kTabHoverCardImagesCrossfadePreviewAtParameterName[];
 // typically when there are less than 5 or 6 tabs in a browser window.
 extern const char kTabHoverCardAdditionalMaxWidthDelay[];
 
+BASE_DECLARE_FEATURE(kTabOrganization);
+
 BASE_DECLARE_FEATURE(kTabSearchChevronIcon);
 
 BASE_DECLARE_FEATURE(kTabSearchFeedback);
