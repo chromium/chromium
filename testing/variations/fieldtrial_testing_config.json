@@ -5783,6 +5783,27 @@
             ]
         }
     ],
+    "EnableProtoApiForClassifyUrl": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20230801",
+                    "enable_features": [
+                        "EnableProtoApiForClassifyUrl"
+                    ]
+                }
+            ]
+        }
+    ],
     "EnableShoppingListDesktop": [
         {
             "platforms": [

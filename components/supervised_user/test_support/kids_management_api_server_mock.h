@@ -5,11 +5,16 @@
 #ifndef COMPONENTS_SUPERVISED_USER_TEST_SUPPORT_KIDS_MANAGEMENT_API_SERVER_MOCK_H_
 #define COMPONENTS_SUPERVISED_USER_TEST_SUPPORT_KIDS_MANAGEMENT_API_SERVER_MOCK_H_
 
+#include <deque>
 #include <memory>
 
+#include "base/callback_list.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/test/scoped_feature_list.h"
+#include "components/supervised_user/core/browser/fetcher_config.h"
+#include "components/supervised_user/core/browser/proto/kidschromemanagement_messages.pb.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
@@ -27,14 +32,46 @@ void SetHttpEndpointsForKidsManagementApis(
 // serve as request handlers for the net::test_server::EmbeddedTestServer.
 class KidsManagementApiServerMock {
  public:
+  using RequestMonitor = void(base::StringPiece, base::StringPiece);
+
+  KidsManagementApiServerMock();
+  KidsManagementApiServerMock(KidsManagementApiServerMock&& other) = delete;
+  KidsManagementApiServerMock& operator=(KidsManagementApiServerMock&& other) =
+      delete;
+  ~KidsManagementApiServerMock();
   // Installs this mock on a given Embedded Test Server. The server must outlive
   // this instance and must not be started prior to calling this method.
+  // Caution: installed handlers are executed until one matches the request.
+
   void InstallOn(
       base::raw_ptr<net::test_server::EmbeddedTestServer> test_server_);
+  base::CallbackListSubscription Subscribe(
+      base::RepeatingCallback<RequestMonitor> monitor);
 
+  // Number of requests to ClassifyUrl endpoint must strictly match the number
+  // of queued classifications.
+  void QueueAllowedUrlClassification();
+  void QueueRestrictedUrlClassification();
+
+ private:
+  void QueueUrlClassification(
+      kids_chrome_management::ClassifyUrlResponse::DisplayClassification
+          display_classification);
+  // Api handler for /kidsmanagement/v1/people/me:classifyUrl
+  std::unique_ptr<net::test_server::HttpResponse> ClassifyUrl(
+      const net::test_server::HttpRequest& request);
   // Api handler for /kidsmanagement/v1/families/mine/members
   std::unique_ptr<net::test_server::HttpResponse> ListFamilyMembers(
       const net::test_server::HttpRequest& request);
+
+  void RequestMonitorDispatcher(const net::test_server::HttpRequest& request);
+
+  base::RepeatingCallbackList<RequestMonitor> request_monitors_;
+
+  // Queue of pending classifications for
+  // /kidsmanagement/v1/people/me:classifyUrl
+  std::deque<kids_chrome_management::ClassifyUrlResponse::DisplayClassification>
+      classifications_;
 };
 
 }  // namespace supervised_user
