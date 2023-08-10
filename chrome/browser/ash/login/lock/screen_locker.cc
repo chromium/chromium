@@ -22,6 +22,7 @@
 #include "base/task/current_thread.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/login/hats_unlock_survey_trigger.h"
 #include "chrome/browser/ash/login/helper.h"
@@ -123,6 +124,7 @@ class ScreenLockObserver : public SessionManagerClient::StubDelegate,
 
   // session_manager::SessionManagerObserver:
   void OnSessionStateChanged() override {
+    TRACE_EVENT0("login", "ScreenLockObserver::OnSessionStateChanged");
     // Only set MarkStrongAuth for the first time session becomes active, which
     // is when user first sign-in.
     // For unlocking case which state changes from active->lock->active, it

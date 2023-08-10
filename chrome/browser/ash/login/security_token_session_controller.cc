@@ -17,6 +17,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "base/trace_event/trace_event.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/login/lock/screen_locker.h"
 #include "chrome/browser/browser_process.h"
@@ -254,6 +255,8 @@ void SecurityTokenSessionController::OnCertificatesUpdated(
 }
 
 void SecurityTokenSessionController::OnSessionStateChanged() {
+  TRACE_EVENT0("login",
+               "SecurityTokenSessionController::OnSessionStateChanged");
   if (session_manager_->session_state() ==
       session_manager::SessionState::LOCKED) {
     had_lock_screen_transition_ = true;

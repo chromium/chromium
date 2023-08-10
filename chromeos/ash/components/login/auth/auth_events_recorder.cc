@@ -16,6 +16,7 @@
 #include "base/metrics/user_metrics_action.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
+#include "base/trace_event/trace_event.h"
 #include "chromeos/ash/components/cryptohome/auth_factor.h"
 #include "chromeos/ash/components/login/auth/public/auth_failure.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
@@ -430,6 +431,7 @@ std::string AuthEventsRecorder::GetAuthEventsLog() {
 }
 
 void AuthEventsRecorder::OnSessionStateChanged() {
+  TRACE_EVENT0("login", "AuthEventsRecorder::OnSessionStateChanged");
   session_manager::SessionState session_state =
       session_manager::SessionManager::Get()->session_state();
   static crash_reporter::CrashKeyString<kMaxSessionStateCrashKeyLength> key(
