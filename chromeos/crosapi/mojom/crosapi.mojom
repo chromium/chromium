@@ -1298,7 +1298,7 @@ struct BrowserInitParams {
   // support this feature, the default value of false maintains pre-existing
   // behavior.
   [MinVersion=48]
-  bool do_not_mux_extension_app_ids@48;
+  bool REMOVED_48@48;
 
   // When this flag is set to true, Lacros tts support feature will be enabled.
   [MinVersion=49]
@@ -1514,7 +1514,7 @@ struct BrowserPostLoginParams {
   // list feature. This parameter is structured so that if ash is too old to
   // support this feature, the default value of false maintains pre-existing
   // behavior.
-  bool do_not_mux_extension_app_ids@17;
+  bool REMOVED_17@17;
 
   // When this flag is set to true, Lacros tts support feature will be enabled.
   bool enable_lacros_tts_support@18;

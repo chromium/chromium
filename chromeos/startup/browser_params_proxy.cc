@@ -258,13 +258,6 @@ bool BrowserParamsProxy::IsCurrentUserEphemeral() const {
   return BrowserInitParams::Get()->is_current_user_ephemeral;
 }
 
-bool BrowserParamsProxy::DoNotMuxExtensionAppIds() const {
-  if (IsLaunchedWithPostLoginParams()) {
-    return BrowserPostLoginParams::Get()->do_not_mux_extension_app_ids;
-  }
-  return BrowserInitParams::Get()->do_not_mux_extension_app_ids;
-}
-
 bool BrowserParamsProxy::EnableLacrosTtsSupport() const {
   if (IsLaunchedWithPostLoginParams()) {
     return BrowserPostLoginParams::Get()->enable_lacros_tts_support;

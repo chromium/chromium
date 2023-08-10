@@ -697,10 +697,6 @@ void InjectBrowserPostLoginParams(BrowserParams* params,
 
   params->is_current_user_device_owner = GetIsCurrentUserOwner();
   params->is_current_user_ephemeral = IsCurrentUserEphemeral();
-  // TODO(crbug.com/1468140): Deprecate |do_not_mux_extension_app_ids| after
-  // the change for removing extension id muxing code is landed and runs without
-  // any regressions.
-  params->do_not_mux_extension_app_ids = true;
   params->enable_lacros_tts_support =
       tts_crosapi_util::ShouldEnableLacrosTtsSupport();
 }

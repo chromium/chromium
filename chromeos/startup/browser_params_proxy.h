@@ -112,8 +112,6 @@ class COMPONENT_EXPORT(CHROMEOS_STARTUP) BrowserParamsProxy {
 
   bool IsCurrentUserEphemeral() const;
 
-  bool DoNotMuxExtensionAppIds() const;
-
   bool EnableLacrosTtsSupport() const;
 
   crosapi::mojom::BrowserInitParams::LacrosSelection LacrosSelection() const;
