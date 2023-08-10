@@ -34,6 +34,7 @@
 #include "base/strings/string_piece_forward.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "base/version.h"
 #include "chrome/browser/ash/system_web_apps/apps/camera_app/camera_system_web_app_info.h"
 #include "chrome/browser/ash/system_web_apps/apps/connectivity_diagnostics_system_web_app_info.h"
@@ -319,6 +320,7 @@ void SystemWebAppManager::ScheduleStart() {
 }
 
 void SystemWebAppManager::Start() {
+  TRACE_EVENT0("ui", "SystemWebAppManager::Start");
   DCHECK(provider_->is_registry_ready());
 
   // `Start` can be called multiple times in tests.
