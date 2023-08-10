@@ -31,10 +31,29 @@ def _find_src_root() -> str:
 # src folder since there may not be source code at all, but it's expected to
 # have folders like third_party/fuchsia-sdk in it.
 DIR_SRC_ROOT = os.path.abspath(_find_src_root())
-IMAGES_ROOT = os.path.join(DIR_SRC_ROOT, 'third_party', 'fuchsia-sdk',
-                           'images')
+
+
+def _find_fuchsia_images_root() -> str:
+    """Define the root of the fuchsia images."""
+    if os.environ.get('FUCHSIA_IMAGES_ROOT'):
+        return os.environ['FUCHSIA_IMAGES_ROOT']
+    return os.path.join(DIR_SRC_ROOT, 'third_party', 'fuchsia-sdk', 'images')
+
+
+IMAGES_ROOT = os.path.abspath(_find_fuchsia_images_root())
+
 REPO_ALIAS = 'fuchsia.com'
-SDK_ROOT = os.path.join(DIR_SRC_ROOT, 'third_party', 'fuchsia-sdk', 'sdk')
+
+
+def _find_fuchsia_sdk_root() -> str:
+    """Define the root of the fuchsia sdk."""
+    if os.environ.get('FUCHSIA_SDK_ROOT'):
+        return os.environ['FUCHSIA_SDK_ROOT']
+    return os.path.join(DIR_SRC_ROOT, 'third_party', 'fuchsia-sdk', 'sdk')
+
+
+SDK_ROOT = os.path.abspath(_find_fuchsia_sdk_root())
+
 SDK_TOOLS_DIR = os.path.join(SDK_ROOT, 'tools', get_host_arch())
 _FFX_TOOL = os.path.join(SDK_TOOLS_DIR, 'ffx')
 
