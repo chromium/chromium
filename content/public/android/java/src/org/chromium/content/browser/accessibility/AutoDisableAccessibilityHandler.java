@@ -64,8 +64,7 @@ public class AutoDisableAccessibilityHandler {
     /**
      * Helper method to notify Client and reset local state when the timer has expired.
      */
-    @VisibleForTesting()
-    public void notifyDisable() {
+    private void notifyDisable() {
         mClient.onDisabled();
         mHasPendingTimer = false;
     }

@@ -49,14 +49,6 @@ import static org.chromium.content.browser.accessibility.AccessibilityContentShe
 import static org.chromium.content.browser.accessibility.AccessibilityContentShellTestUtils.sRangeInfoMatcher;
 import static org.chromium.content.browser.accessibility.AccessibilityContentShellTestUtils.sTextMatcher;
 import static org.chromium.content.browser.accessibility.AccessibilityContentShellTestUtils.sViewIdResourceNameMatcher;
-import static org.chromium.content.browser.accessibility.AccessibilityHistogramRecorder.AUTO_DISABLE_ACCESSIBILITY_DISABLED_TIME_INITIAL;
-import static org.chromium.content.browser.accessibility.AccessibilityHistogramRecorder.AUTO_DISABLE_ACCESSIBILITY_DISABLED_TIME_SUCCESSIVE;
-import static org.chromium.content.browser.accessibility.AccessibilityHistogramRecorder.AUTO_DISABLE_ACCESSIBILITY_DISABLE_METHOD_CALLED_INITIAL;
-import static org.chromium.content.browser.accessibility.AccessibilityHistogramRecorder.AUTO_DISABLE_ACCESSIBILITY_DISABLE_METHOD_CALLED_SUCCESSIVE;
-import static org.chromium.content.browser.accessibility.AccessibilityHistogramRecorder.AUTO_DISABLE_ACCESSIBILITY_ENABLED_TIME_INITIAL;
-import static org.chromium.content.browser.accessibility.AccessibilityHistogramRecorder.AUTO_DISABLE_ACCESSIBILITY_ENABLED_TIME_SUCCESSIVE;
-import static org.chromium.content.browser.accessibility.AccessibilityHistogramRecorder.AUTO_DISABLE_ACCESSIBILITY_REENABLE_METHOD_CALLED_INITIAL;
-import static org.chromium.content.browser.accessibility.AccessibilityHistogramRecorder.AUTO_DISABLE_ACCESSIBILITY_REENABLE_METHOD_CALLED_SUCCESSIVE;
 import static org.chromium.content.browser.accessibility.AccessibilityHistogramRecorder.CACHE_MAX_NODES_HISTOGRAM;
 import static org.chromium.content.browser.accessibility.AccessibilityHistogramRecorder.CACHE_PERCENTAGE_RETRIEVED_FROM_CACHE_HISTOGRAM;
 import static org.chromium.content.browser.accessibility.AccessibilityHistogramRecorder.EVENTS_DROPPED_HISTOGRAM;
@@ -68,7 +60,6 @@ import static org.chromium.content.browser.accessibility.AccessibilityHistogramR
 import static org.chromium.content.browser.accessibility.AccessibilityHistogramRecorder.PERCENTAGE_DROPPED_HISTOGRAM_AXMODE_BASIC;
 import static org.chromium.content.browser.accessibility.AccessibilityHistogramRecorder.PERCENTAGE_DROPPED_HISTOGRAM_AXMODE_COMPLETE;
 import static org.chromium.content.browser.accessibility.AccessibilityHistogramRecorder.PERCENTAGE_DROPPED_HISTOGRAM_AXMODE_FORM_CONTROLS;
-import static org.chromium.content.browser.accessibility.AccessibilityHistogramRecorder.USAGE_ACCESSIBILITY_ALWAYS_ON_TIME;
 import static org.chromium.content.browser.accessibility.AccessibilityHistogramRecorder.USAGE_FOREGROUND_TIME;
 import static org.chromium.content.browser.accessibility.AccessibilityHistogramRecorder.USAGE_NATIVE_INITIALIZED_TIME;
 import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRAS_DATA_REQUEST_IMAGE_DATA_KEY;
@@ -673,103 +664,6 @@ public class WebContentsAccessibilityTest {
 
         mActivityTestRule.mWcax.forceRecordUsageUMAHistogramsForTesting();
 
-        histogramWatcher.assertExpected();
-    }
-
-    /**
-     * Test that UMA histograms are recorded when an instance has disabled/re-enabled accessibility
-     * with the Auto-disable Accessibility feature.
-     */
-    @Test
-    @SmallTest
-    public void testUMAHistograms_AutoDisableAccessibilityV2() throws Throwable {
-        setupTestWithHTML("<p>This is a test</p>");
-        waitForNodeMatching(sTextMatcher, "This is a test");
-
-        FeatureList.setTestFeatures(AUTO_DISABLE_V2_ON);
-
-        // The test suite always initializes native, so first we will disable it manually.
-        var histogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectAnyRecord(AUTO_DISABLE_ACCESSIBILITY_ENABLED_TIME_INITIAL)
-                        .expectAnyRecord(AUTO_DISABLE_ACCESSIBILITY_DISABLE_METHOD_CALLED_INITIAL)
-                        .expectAnyRecord(USAGE_NATIVE_INITIALIZED_TIME)
-                        .expectNoRecords(USAGE_ACCESSIBILITY_ALWAYS_ON_TIME)
-                        .expectNoRecords(AUTO_DISABLE_ACCESSIBILITY_ENABLED_TIME_SUCCESSIVE)
-                        .expectNoRecords(
-                                AUTO_DISABLE_ACCESSIBILITY_DISABLE_METHOD_CALLED_SUCCESSIVE)
-                        .expectNoRecords(USAGE_FOREGROUND_TIME)
-                        .build();
-
-        // The test suite always initializes native, so mock a call to disable accessibility. We
-        // must update AccessibilityState to ensure the AXMode is propagated through to C++.
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mActivityTestRule.mWcax.forceAutoDisableAccessibilityForTesting();
-            AccessibilityState.setIsAnyAccessibilityServiceEnabledForTesting(false);
-            AccessibilityState.setIsScreenReaderEnabledForTesting(false);
-        });
-
-        // Assert that we record initial enabled time and that disabled was called once.
-        histogramWatcher.assertExpected();
-
-        histogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectAnyRecord(AUTO_DISABLE_ACCESSIBILITY_DISABLED_TIME_INITIAL)
-                        .expectAnyRecord(AUTO_DISABLE_ACCESSIBILITY_REENABLE_METHOD_CALLED_INITIAL)
-                        .expectNoRecords(USAGE_FOREGROUND_TIME)
-                        .expectNoRecords(USAGE_NATIVE_INITIALIZED_TIME)
-                        .expectNoRecords(USAGE_ACCESSIBILITY_ALWAYS_ON_TIME)
-                        .expectNoRecords(AUTO_DISABLE_ACCESSIBILITY_DISABLED_TIME_SUCCESSIVE)
-                        .expectNoRecords(
-                                AUTO_DISABLE_ACCESSIBILITY_REENABLE_METHOD_CALLED_SUCCESSIVE)
-                        .build();
-
-        // To re-enable native accessibility, we need to make a request from the framework.
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            AccessibilityState.setIsScreenReaderEnabledForTesting(true);
-            AccessibilityState.setIsAnyAccessibilityServiceEnabledForTesting(true);
-            mActivityTestRule.mWcax.getAccessibilityNodeProvider();
-        });
-
-        // Assert that we record initial disabled time and that re-enabled was called once.
-        histogramWatcher.assertExpected();
-
-        // We can disable accessibility again, and see entries in the 'successive' histograms.
-        histogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectNoRecords(AUTO_DISABLE_ACCESSIBILITY_ENABLED_TIME_INITIAL)
-                        .expectNoRecords(AUTO_DISABLE_ACCESSIBILITY_DISABLE_METHOD_CALLED_INITIAL)
-                        .expectAnyRecord(USAGE_NATIVE_INITIALIZED_TIME)
-                        .expectNoRecords(USAGE_ACCESSIBILITY_ALWAYS_ON_TIME)
-                        .expectAnyRecord(AUTO_DISABLE_ACCESSIBILITY_ENABLED_TIME_SUCCESSIVE)
-                        .expectAnyRecord(
-                                AUTO_DISABLE_ACCESSIBILITY_DISABLE_METHOD_CALLED_SUCCESSIVE)
-                        .expectNoRecords(USAGE_FOREGROUND_TIME)
-                        .build();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mActivityTestRule.mWcax.forceAutoDisableAccessibilityForTesting();
-            AccessibilityState.setIsScreenReaderEnabledForTesting(false);
-            AccessibilityState.setIsAnyAccessibilityServiceEnabledForTesting(false);
-        });
-        histogramWatcher.assertExpected();
-
-        // Finally re-enable accessibility again to verify 'successive' histograms.
-        histogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectNoRecords(AUTO_DISABLE_ACCESSIBILITY_DISABLED_TIME_INITIAL)
-                        .expectNoRecords(AUTO_DISABLE_ACCESSIBILITY_REENABLE_METHOD_CALLED_INITIAL)
-                        .expectNoRecords(USAGE_FOREGROUND_TIME)
-                        .expectNoRecords(USAGE_NATIVE_INITIALIZED_TIME)
-                        .expectNoRecords(USAGE_ACCESSIBILITY_ALWAYS_ON_TIME)
-                        .expectAnyRecord(AUTO_DISABLE_ACCESSIBILITY_DISABLED_TIME_SUCCESSIVE)
-                        .expectAnyRecord(
-                                AUTO_DISABLE_ACCESSIBILITY_REENABLE_METHOD_CALLED_SUCCESSIVE)
-                        .build();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            AccessibilityState.setIsScreenReaderEnabledForTesting(true);
-            AccessibilityState.setIsAnyAccessibilityServiceEnabledForTesting(true);
-            mActivityTestRule.mWcax.getAccessibilityNodeProvider();
-        });
         histogramWatcher.assertExpected();
     }
 
