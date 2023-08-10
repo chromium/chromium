@@ -44,7 +44,8 @@ class GpuKillBackgroundTest : public ContentBrowserTest {
   scoped_refptr<gpu::GpuChannelHost> gpu_channel_host_;
 };
 
-IN_PROC_BROWSER_TEST_F(GpuKillBackgroundTest, Simple) {
+// TODO(crbug.com/1471932): Flaky.
+IN_PROC_BROWSER_TEST_F(GpuKillBackgroundTest, DISABLED_Simple) {
   ASSERT_FALSE(IsChannelEstablished());
 
   gpu_channel_host_ = GpuBrowsertestEstablishGpuChannelSyncRunLoop();
