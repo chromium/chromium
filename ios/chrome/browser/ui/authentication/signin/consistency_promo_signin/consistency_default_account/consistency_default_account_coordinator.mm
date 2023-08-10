@@ -46,7 +46,9 @@
   ChromeBrowserState* browserState = self.browser->GetBrowserState();
   self.mediator = [[ConsistencyDefaultAccountMediator alloc]
       initWithAccountManagerService:ChromeAccountManagerServiceFactory::
-                                        GetForBrowserState(browserState)];
+                                        GetForBrowserState(browserState)
+                        syncService:SyncServiceFactory::GetForBrowserState(
+                                        browserState)];
   self.mediator.delegate = self;
   self.defaultAccountViewController =
       [[ConsistencyDefaultAccountViewController alloc]

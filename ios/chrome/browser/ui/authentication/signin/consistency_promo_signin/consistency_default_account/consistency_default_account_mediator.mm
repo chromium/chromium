@@ -6,6 +6,9 @@
 
 #import <UIKit/UIKit.h>
 
+#import "components/sync/base/user_selectable_type.h"
+#import "components/sync/service/sync_service.h"
+#import "components/sync/service/sync_user_settings.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_observer_bridge.h"
@@ -20,16 +23,20 @@
 
 @property(nonatomic, strong) UIImage* avatar;
 @property(nonatomic, assign) ChromeAccountManagerService* accountManagerService;
+@property(nonatomic, assign) syncer::SyncService* syncService;
 
 @end
 
 @implementation ConsistencyDefaultAccountMediator
 
 - (instancetype)initWithAccountManagerService:
-    (ChromeAccountManagerService*)accountManagerService {
+                    (ChromeAccountManagerService*)accountManagerService
+                                  syncService:
+                                      (syncer::SyncService*)syncService {
   if (self = [super init]) {
     DCHECK(accountManagerService);
     _accountManagerService = accountManagerService;
+    _syncService = syncService;
     _accountManagerServiceObserver =
         std::make_unique<ChromeAccountManagerServiceObserverBridge>(
             self, _accountManagerService);
@@ -50,6 +57,20 @@
 
 - (void)setConsumer:(id<ConsistencyDefaultAccountConsumer>)consumer {
   _consumer = consumer;
+
+  syncer::UserSelectableTypeSet disabledTypes;
+  syncer::SyncUserSettings* syncSettings = _syncService->GetUserSettings();
+  for (syncer::UserSelectableType type :
+       syncSettings->GetRegisteredSelectableTypes()) {
+    if (syncSettings->IsTypeManagedByPolicy(type)) {
+      disabledTypes.Put(type);
+    }
+  }
+  [_consumer setSyncTypesDisabledByPolicy:disabledTypes];
+  [_consumer setSyncTransportDisabledByPolicy:
+                 _syncService->HasDisableReason(
+                     syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY)];
+
   [self selectSelectedIdentity];
 }
 
