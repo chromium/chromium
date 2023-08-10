@@ -3374,9 +3374,6 @@ Try to use a unique password for every site.
       <message name="IDS_IOS_SAVE_PASSWORD_TO_ACCOUNT_STORE" desc="Action button to save password in google account. [iOS only]" meaning="User wants to move password from local device to google account storage.">
         Save in Account
       </message>
-      <message name="IDS_IOS_AUTH_TO_SAVE_PASSWORD_TO_ACCOUNT_STORE" desc="Auth reason to save password in google account. [iOS only]" meaning="Auth when user wants to move a password to their google account storage from local device storage.">
-        Save password in your Google Account
-      </message>
       <message name="IDS_IOS_SAVE_PASSWORD_TO_ACCOUNT_STORE_DESCRIPTION" desc="Description of save password in google account action. [iOS only]" meaning="Telling user that current password is in local device store and suggesting moving it to their google account store.">
         This password is saved only to this device. To use it on your other devices, save it in your Google Account, <ph name="EMAIL">$1<ex>johndoe@gmail.com</ex></ph>.
       </message>
@@ -3598,9 +3595,6 @@ Try to use a unique password for every site.
       </message>
       <message name="IDS_IOS_SETTINGS_SET_UP_SCREENLOCK_CONTENT" desc="Message informing the user that in order to view or copy the password, a screen lock needs to be set up on the device. This is shown as an alert message after the user tries to view or copy the password from a settings page. [Length: about two lines]">
         To see passwords, you must first set a passcode on your device.
-      </message>
-      <message name="IDS_IOS_SETTINGS_SET_UP_SCREENLOCK_CONTENT_FOR_MOVE_TO_ACCOUNT" desc="Message informing the user that in order to move a local-only password to their account, a screen lock needs to be set up on the device. [Length: about two lines]">
-        To save this password in your account, you must first set a passcode on your device.
       </message>
       <message name="IDS_IOS_SETTINGS_SET_UP_SCREENLOCK_LEARN_HOW" desc="The label of the 'Learn how' button of the alert informing the user that in order to view or copy the password, a screen lock needs to be set up on the device. The button leads to a help article on how to set up a device lock.">
         Learn How

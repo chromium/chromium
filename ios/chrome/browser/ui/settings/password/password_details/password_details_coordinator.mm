@@ -184,13 +184,11 @@
   [self.delegate passwordDetailsCoordinatorDidRemove:self];
 }
 
-- (void)showPasscodeDialogForReason:(PasscodeDialogReason)reason {
+- (void)showPasscodeDialog {
   NSString* title =
       l10n_util::GetNSString(IDS_IOS_SETTINGS_SET_UP_SCREENLOCK_TITLE);
-  NSString* message = l10n_util::GetNSString(
-      reason == PasscodeDialogReasonShowPassword
-          ? IDS_IOS_SETTINGS_SET_UP_SCREENLOCK_CONTENT
-          : IDS_IOS_SETTINGS_SET_UP_SCREENLOCK_CONTENT_FOR_MOVE_TO_ACCOUNT);
+  NSString* message =
+      l10n_util::GetNSString(IDS_IOS_SETTINGS_SET_UP_SCREENLOCK_CONTENT);
   self.alertCoordinator =
       [[AlertCoordinator alloc] initWithBaseViewController:self.viewController
                                                    browser:self.browser

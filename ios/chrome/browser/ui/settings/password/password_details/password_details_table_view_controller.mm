@@ -596,7 +596,7 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
       if (!self.tableView.editing) {
         UITableViewCell* cell =
             [self.tableView cellForRowAtIndexPath:indexPath];
-        [self didTapMoveButton:cell atPasswordIndex:indexPath.section];
+        [self moveCredentialToAccountStore:indexPath.section anchorView:cell];
         [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
       }
       break;
@@ -905,7 +905,7 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
                                  handler:showPasswordHandler];
   } else {
     DCHECK(self.handler);
-    [self.handler showPasscodeDialogForReason:PasscodeDialogReasonShowPassword];
+    [self.handler showPasscodeDialog];
   }
 }
 
@@ -1447,42 +1447,6 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
   [self.handler
       showPasswordDeleteDialogWithPasswordDetails:self.passwords[passwordIndex]
                                        anchorView:cell];
-}
-
-- (void)didTapMoveButton:(UITableViewCell*)cell
-         atPasswordIndex:(int)passwordIndex {
-  [self setOrExtendAuthValidityTimer];
-
-  // With password notes feature enabled the authentication happens during
-  // navigation from the password list view to the password details view.
-  if (IsPasswordNotesWithBackupEnabled()) {
-    [self moveCredentialToAccountStore:passwordIndex anchorView:cell];
-    return;
-  }
-
-  if (![self.reauthModule canAttemptReauth]) {
-    [self.handler
-        showPasscodeDialogForReason:PasscodeDialogReasonMovePasswordToAccount];
-    return;
-  }
-  __weak __typeof(self) weakSelf = self;
-  void (^movePasswordHandler)(ReauthenticationResult) =
-      ^(ReauthenticationResult result) {
-        PasswordDetailsTableViewController* strongSelf = weakSelf;
-        if (!strongSelf) {
-          return;
-        }
-        if (result == ReauthenticationResult::kFailure) {
-          return;
-        }
-
-        [self moveCredentialToAccountStore:passwordIndex anchorView:cell];
-      };
-  [self.reauthModule
-      attemptReauthWithLocalizedReason:
-          l10n_util::GetNSString(IDS_IOS_AUTH_TO_SAVE_PASSWORD_TO_ACCOUNT_STORE)
-                  canReusePreviousAuth:YES
-                               handler:movePasswordHandler];
 }
 
 - (void)dismissView {
