@@ -433,7 +433,7 @@ std::unique_ptr<SharedImageBacking> CompoundImageBacking::CreateSharedMemory(
 
   const gfx::Size plane_size = GetPlaneSize(plane, size);
   const auto plane_format =
-      viz::GetSharedImageFormat(GetPlaneBufferFormat(plane, format));
+      viz::GetSinglePlaneSharedImageFormat(GetPlaneBufferFormat(plane, format));
 
   auto shm_backing = std::make_unique<SharedMemoryImageBacking>(
       mailbox, plane_format, plane_size, color_space, surface_origin,

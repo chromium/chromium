@@ -3646,7 +3646,7 @@ void SkiaRenderer::PrepareRenderPassOverlay(
 
     // For bypassed render pass, we use the same format and color space for the
     // framebuffer.
-    buffer_format = GetSharedImageFormat(reshape_buffer_format());
+    buffer_format = GetSinglePlaneSharedImageFormat(reshape_buffer_format());
     color_space = reshape_color_space();
   } else {
     // A real render pass that was turned into an image

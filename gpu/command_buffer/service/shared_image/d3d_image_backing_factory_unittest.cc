@@ -1169,7 +1169,7 @@ void D3DImageBackingFactoryTest::RunCreateSharedImageFromHandleTest(
     DXGI_FORMAT dxgi_format) {
   auto mailbox = Mailbox::GenerateForSharedImage();
   const auto buffer_format = gfx::BufferFormat::RGBA_8888;
-  const auto format = viz::GetSharedImageFormat(buffer_format);
+  const auto format = viz::GetSinglePlaneSharedImageFormat(buffer_format);
   const gfx::Size size(1, 1);
   const auto plane = gfx::BufferPlane::DEFAULT;
   const auto color_space = gfx::ColorSpace::CreateSRGB();

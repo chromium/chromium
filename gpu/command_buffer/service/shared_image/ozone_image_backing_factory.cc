@@ -198,8 +198,8 @@ std::unique_ptr<SharedImageBacking> OzoneImageBackingFactory::CreateSharedImage(
   }
 
   const gfx::Size plane_size = gpu::GetPlaneSize(plane, size);
-  const auto plane_format =
-      viz::GetSharedImageFormat(GetPlaneBufferFormat(plane, buffer_format));
+  const auto plane_format = viz::GetSinglePlaneSharedImageFormat(
+      GetPlaneBufferFormat(plane, buffer_format));
   auto backing = std::make_unique<OzoneImageBacking>(
       mailbox, plane_format, plane, plane_size, color_space, surface_origin,
       alpha_type, usage, shared_context_state_.get(), std::move(pixmap),

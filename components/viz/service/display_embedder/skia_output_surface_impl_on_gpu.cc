@@ -2571,7 +2571,7 @@ void SkiaOutputSurfaceImplOnGpu::CreateSolidColorSharedImage(
                                           ->GetPreferredFormatForSolidColor();
   if (preferred_solid_color_format)
     solid_color_image_format_ =
-        GetSharedImageFormat(preferred_solid_color_format.value());
+        GetSinglePlaneSharedImageFormat(preferred_solid_color_format.value());
 #endif
   DCHECK(solid_color_image_format_ == SinglePlaneFormat::kRGBA_8888 ||
          solid_color_image_format_ == SinglePlaneFormat::kBGRA_8888);

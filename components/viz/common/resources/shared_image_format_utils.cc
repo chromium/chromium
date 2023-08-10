@@ -308,7 +308,7 @@ gfx::BufferFormat SinglePlaneSharedImageFormatToBufferFormat(
   }
 }
 
-SharedImageFormat GetSharedImageFormat(gfx::BufferFormat format) {
+SharedImageFormat GetSinglePlaneSharedImageFormat(gfx::BufferFormat format) {
   switch (format) {
     case gfx::BufferFormat::BGRA_8888:
       return SinglePlaneFormat::kBGRA_8888;

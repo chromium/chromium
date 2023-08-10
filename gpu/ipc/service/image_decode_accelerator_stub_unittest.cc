@@ -180,8 +180,8 @@ class TestSharedImageBackingFactory : public SharedImageBackingFactory {
       uint32_t usage,
       std::string debug_label) override {
     auto test_image_backing = std::make_unique<TestImageBacking>(
-        mailbox, viz::GetSharedImageFormat(format), size, color_space,
-        surface_origin, alpha_type, usage, 0);
+        mailbox, viz::GetSinglePlaneSharedImageFormat(format), size,
+        color_space, surface_origin, alpha_type, usage, 0);
 
     // If the backing is not cleared, SkiaImageRepresentation errors out
     // when trying to create the scoped read access.

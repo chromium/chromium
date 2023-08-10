@@ -189,7 +189,8 @@ ExternalVkImageBackingFactory::CreateSharedImage(
     LOG(ERROR) << "Invalid plane";
     return nullptr;
   }
-  return CreateSharedImage(mailbox, viz::GetSharedImageFormat(buffer_format),
+  return CreateSharedImage(mailbox,
+                           viz::GetSinglePlaneSharedImageFormat(buffer_format),
                            size, color_space, surface_origin, alpha_type, usage,
                            debug_label, std::move(handle));
 }

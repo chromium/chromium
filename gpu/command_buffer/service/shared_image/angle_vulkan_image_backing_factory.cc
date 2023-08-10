@@ -137,7 +137,8 @@ AngleVulkanImageBackingFactory::CreateSharedImage(
     SkAlphaType alpha_type,
     uint32_t usage,
     std::string debug_label) {
-  return CreateSharedImage(mailbox, viz::GetSharedImageFormat(buffer_format),
+  return CreateSharedImage(mailbox,
+                           viz::GetSinglePlaneSharedImageFormat(buffer_format),
                            size, color_space, surface_origin, alpha_type, usage,
                            debug_label, std::move(handle));
 }

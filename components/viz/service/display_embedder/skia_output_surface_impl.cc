@@ -381,7 +381,7 @@ void SkiaOutputSurfaceImpl::Reshape(const ReshapeParams& params) {
          params.alpha_type == kOpaque_SkAlphaType);
 
   size_ = params.size;
-  format_ = GetSharedImageFormat(params.format);
+  format_ = GetSinglePlaneSharedImageFormat(params.format);
   alpha_type_ = params.alpha_type;
 
   const auto format_index = static_cast<int>(params.format);

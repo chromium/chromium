@@ -126,7 +126,8 @@ IOSurfaceImageBackingFactory::IOSurfaceImageBackingFactory(
       progress_reporter_(progress_reporter) {
   for (gfx::BufferFormat buffer_format : gpu_memory_buffer_formats_) {
     // Add supported single-plane formats.
-    viz::SharedImageFormat format = viz::GetSharedImageFormat(buffer_format);
+    viz::SharedImageFormat format =
+        viz::GetSinglePlaneSharedImageFormat(buffer_format);
     if (IsFormatSupported(format)) {
       supported_formats_.insert(format);
     }
@@ -213,7 +214,7 @@ IOSurfaceImageBackingFactory::CreateSharedImage(
   }
 
   const uint32_t io_surface_plane = GetPlaneIndex(plane, buffer_format);
-  auto format = viz::GetSharedImageFormat(buffer_format);
+  auto format = viz::GetSinglePlaneSharedImageFormat(buffer_format);
   // Format cannot be using external sampling due to checks in
   // `IsPlaneValidForGpuMemoryBufferFormat`.
   if (format.IsLegacyMultiplanar()) {
@@ -437,7 +438,7 @@ IOSurfaceImageBackingFactory::CreateSharedImageGMBs(
 
   if (is_plane_format) {
     const gfx::Size plane_size = gpu::GetPlaneSize(buffer_plane, size);
-    auto plane_format = viz::GetSharedImageFormat(
+    auto plane_format = viz::GetSinglePlaneSharedImageFormat(
         GetPlaneBufferFormat(buffer_plane, buffer_format));
     return std::make_unique<IOSurfaceImageBacking>(
         io_surface, io_surface_plane, io_surface_id, mailbox, plane_format,

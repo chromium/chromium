@@ -232,7 +232,8 @@ void ArcScreenCaptureSession::SetOutputBuffer(
       stride * kBytesPerPixel, 0, stride * kBytesPerPixel * size_.height(),
       std::move(platform_file));
 
-  viz::SharedImageFormat si_format = viz::GetSharedImageFormat(buffer_format);
+  viz::SharedImageFormat si_format =
+      viz::GetSinglePlaneSharedImageFormat(buffer_format);
   CHECK(!si_format.IsLegacyMultiplanar());
 
   gpu::Mailbox mailbox =

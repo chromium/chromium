@@ -90,7 +90,8 @@ VideoFrameResourceType ExternalResourceTypeForHardwarePlanes(
         VideoPixelFormatToGfxBufferFormat(format);
     DCHECK(buffer_format.has_value());
     if (frame.shared_image_format_type() == SharedImageFormatType::kLegacy) {
-      si_formats[0] = viz::GetSharedImageFormat(buffer_format.value());
+      si_formats[0] =
+          viz::GetSinglePlaneSharedImageFormat(buffer_format.value());
     } else {
 #if BUILDFLAG(IS_OZONE)
       CHECK_EQ(frame.shared_image_format_type(),
