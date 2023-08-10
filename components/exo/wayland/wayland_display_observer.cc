@@ -143,7 +143,14 @@ void WaylandDisplayHandler::OnXdgOutputCreated(
   if (!display::Screen::GetScreen()->GetDisplayWithDisplayId(id(), &display)) {
     return;
   }
-  OnDisplayMetricsChanged(display, 0xFFFFFFFF);
+
+  if (SendXdgOutputMetrics(display, 0xFFFFFFFF)) {
+    if (wl_resource_get_version(output_resource_) >=
+        WL_OUTPUT_DONE_SINCE_VERSION) {
+      wl_output_send_done(output_resource_);
+    }
+    wl_client_flush(wl_resource_get_client(output_resource_));
+  }
 }
 
 void WaylandDisplayHandler::UnsetXdgOutputResource() {
@@ -197,44 +204,66 @@ bool WaylandDisplayHandler::SendDisplayMetrics(const display::Display& display,
   // changes, bounds always changes. (new primary should have had non
   // 0,0 origin).
   // Only exception is when switching to newly connected primary with
-  // the same bounds. This happens whenyou're in docked mode, suspend,
+  // the same bounds. This happens when you're in docked mode, suspend,
   // unplug the display, then resume to the internal display which has
   // the same resolution. Since metrics does not change, there is no need
   // to notify clients.
-  if (!(changed_metrics &
-        (DISPLAY_METRIC_BOUNDS | DISPLAY_METRIC_DEVICE_SCALE_FACTOR |
-         DISPLAY_METRIC_ROTATION))) {
+
+  const OutputMetrics output_metrics(display);
+  bool result = false;
+
+  if (changed_metrics & (DISPLAY_METRIC_BOUNDS | DISPLAY_METRIC_ROTATION |
+                         DISPLAY_METRIC_REFRESH_RATE)) {
+    wl_output_send_geometry(
+        output_resource_, output_metrics.origin.x(), output_metrics.origin.y(),
+        output_metrics.physical_size_mm.width(),
+        output_metrics.physical_size_mm.height(), output_metrics.subpixel,
+        output_metrics.make.c_str(), output_metrics.model.c_str(),
+        output_metrics.panel_transform);
+    wl_output_send_mode(output_resource_, output_metrics.mode_flags,
+                        output_metrics.physical_size_px.width(),
+                        output_metrics.physical_size_px.height(),
+                        output_metrics.refresh_mhz);
+    result = true;
+  }
+
+  if (changed_metrics & DISPLAY_METRIC_DEVICE_SCALE_FACTOR) {
+    if (wl_resource_get_version(output_resource_) >=
+        WL_OUTPUT_SCALE_SINCE_VERSION) {
+      wl_output_send_scale(output_resource_, output_metrics.scale);
+      result = true;
+    }
+  }
+
+  if (SendXdgOutputMetrics(display, changed_metrics)) {
+    result = true;
+  }
+
+  return result;
+}
+
+bool WaylandDisplayHandler::SendXdgOutputMetrics(
+    const display::Display& display,
+    uint32_t changed_metrics) {
+  if (!xdg_output_resource_) {
     return false;
   }
 
   const OutputMetrics output_metrics(display);
+  bool result = false;
 
-  wl_output_send_geometry(
-      output_resource_, output_metrics.origin.x(), output_metrics.origin.y(),
-      output_metrics.physical_size_mm.width(),
-      output_metrics.physical_size_mm.height(), output_metrics.subpixel,
-      output_metrics.make.c_str(), output_metrics.model.c_str(),
-      output_metrics.panel_transform);
-  wl_output_send_mode(output_resource_, output_metrics.mode_flags,
-                      output_metrics.physical_size_px.width(),
-                      output_metrics.physical_size_px.height(),
-                      output_metrics.refresh_mhz);
-
-  if (xdg_output_resource_) {
+  if (changed_metrics & (DISPLAY_METRIC_BOUNDS | DISPLAY_METRIC_ROTATION |
+                         DISPLAY_METRIC_DEVICE_SCALE_FACTOR)) {
     XdgOutputSendLogicalPosition(output_metrics.logical_origin);
     XdgOutputSendLogicalSize(output_metrics.logical_size);
     XdgOutputSendDescription(output_metrics.description);
     if (wl_resource_get_version(xdg_output_resource_) < 3) {
       zxdg_output_v1_send_done(xdg_output_resource_);
     }
-  } else {
-    if (wl_resource_get_version(output_resource_) >=
-        WL_OUTPUT_SCALE_SINCE_VERSION) {
-      wl_output_send_scale(output_resource_, output_metrics.scale);
-    }
+    result = true;
   }
 
-  return true;
+  return result;
 }
 
 void WaylandDisplayHandler::SendActiveDisplay() {

@@ -101,6 +101,11 @@ class WaylandDisplayHandler : public display::DisplayObserver,
   void SendActiveDisplay() override;
   void OnOutputDestroyed() override;
 
+  // Returns |true| if any metrics were send to the client and a "done" event is
+  // required, |false| otherwise.
+  bool SendXdgOutputMetrics(const display::Display& display,
+                            uint32_t changed_metrics);
+
   // ShellObserver:
   void OnDisplayForNewWindowsChanged() override;
 
