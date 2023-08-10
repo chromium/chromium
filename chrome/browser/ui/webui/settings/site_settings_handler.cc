@@ -2537,6 +2537,14 @@ void SiteSettingsHandler::ClearAllSitesMapForTesting() {
   all_sites_map_.clear();
 }
 
+CookiesTreeModel* SiteSettingsHandler::GetCookiesTreeModelForTesting() {
+  return cookies_tree_model_.get();
+}
+
+BrowsingDataModel* SiteSettingsHandler::GetBrowsingDataModelForTesting() {
+  return browsing_data_model_.get();
+}
+
 void SiteSettingsHandler::SendCookieSettingDescription() {
   FireWebUIListener("cookieSettingDescriptionChanged",
                     base::Value(GetCookieSettingDescription(profile_)));

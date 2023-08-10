@@ -958,7 +958,7 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
   std::vector<CookieTreeNode*> GetHostNodes(GURL url) {
     std::vector<CookieTreeNode*> nodes;
     for (const auto& host_node :
-         handler()->cookies_tree_model_->GetRoot()->children()) {
+         handler()->GetCookiesTreeModelForTesting()->GetRoot()->children()) {
       if (host_node->GetDetailedInfo().origin.GetURL() == url) {
         nodes.push_back(host_node.get());
       }
@@ -5391,8 +5391,10 @@ TEST_F(SiteSettingsHandlerUsbTest, HandleSetOriginPermissionsPolicyOnly) {
 TEST_F(SiteSettingsHandlerTest, HandleClearSiteGroupDataAndCookies) {
   SetupModels();
 
-  EXPECT_EQ(28u,
-            handler()->cookies_tree_model_->GetRoot()->GetTotalNodeCount());
+  EXPECT_EQ(28u, handler()
+                     ->GetCookiesTreeModelForTesting()
+                     ->GetRoot()
+                     ->GetTotalNodeCount());
 
   auto verify_site_group = [](const base::Value& site_group,
                               std::string expected_etld_plus1) {
@@ -5432,8 +5434,10 @@ TEST_F(SiteSettingsHandlerTest, HandleClearSiteGroupDataAndCookies) {
     }
   }
 
-  EXPECT_EQ(19u,
-            handler()->cookies_tree_model_->GetRoot()->GetTotalNodeCount());
+  EXPECT_EQ(19u, handler()
+                     ->GetCookiesTreeModelForTesting()
+                     ->GetRoot()
+                     ->GetTotalNodeCount());
 
   storage_and_cookie_list = GetOnStorageFetchedSentList();
   EXPECT_EQ(4U, storage_and_cookie_list.size());
@@ -5445,8 +5449,10 @@ TEST_F(SiteSettingsHandlerTest, HandleClearSiteGroupDataAndCookies) {
 
   handler()->HandleClearSiteGroupDataAndCookies(args);
 
-  EXPECT_EQ(14u,
-            handler()->cookies_tree_model_->GetRoot()->GetTotalNodeCount());
+  EXPECT_EQ(14u, handler()
+                     ->GetCookiesTreeModelForTesting()
+                     ->GetRoot()
+                     ->GetTotalNodeCount());
 
   storage_and_cookie_list = GetOnStorageFetchedSentList();
   EXPECT_EQ(2U, storage_and_cookie_list.size());
@@ -5459,7 +5465,7 @@ TEST_F(SiteSettingsHandlerTest, HandleClearSiteGroupDataAndCookies) {
   // No nodes representing storage partitioned on google.com.au should be
   // present.
   for (const auto& host_node :
-       handler()->cookies_tree_model_->GetRoot()->children()) {
+       handler()->GetCookiesTreeModelForTesting()->GetRoot()->children()) {
     for (const auto& storage_node : host_node->children()) {
       if (storage_node->GetDetailedInfo().node_type !=
           CookieTreeNode::DetailedInfo::TYPE_COOKIES) {
@@ -5491,18 +5497,22 @@ TEST_F(SiteSettingsHandlerTest, HandleClearSiteGroupDataAndCookies) {
 TEST_P(SiteSettingsHandlerTest, HandleClearUnpartitionedUsage) {
   SetupModels();
 
-  EXPECT_EQ(28u,
-            handler()->cookies_tree_model_->GetRoot()->GetTotalNodeCount());
-  EXPECT_EQ(2, std::distance(handler()->browsing_data_model_->begin(),
-                             handler()->browsing_data_model_->end()));
+  EXPECT_EQ(28u, handler()
+                     ->GetCookiesTreeModelForTesting()
+                     ->GetRoot()
+                     ->GetTotalNodeCount());
+  EXPECT_EQ(2,
+            std::distance(handler()->GetBrowsingDataModelForTesting()->begin(),
+                          handler()->GetBrowsingDataModelForTesting()->end()));
 
   base::Value::List args;
   args.Append(GetParam() ? "https://www.example.com/"
                          : "http://www.example.com/");
   handler()->HandleClearUnpartitionedUsage(args);
 
-  EXPECT_EQ(2, std::distance(handler()->browsing_data_model_->begin(),
-                             handler()->browsing_data_model_->end()));
+  EXPECT_EQ(2,
+            std::distance(handler()->GetBrowsingDataModelForTesting()->begin(),
+                          handler()->GetBrowsingDataModelForTesting()->end()));
 
   // Confirm that only the unpartitioned items for example.com have been
   // cleared.
@@ -5542,8 +5552,9 @@ TEST_P(SiteSettingsHandlerTest, HandleClearUnpartitionedUsage) {
   args.Append("https://www.google.com/");
   handler()->HandleClearUnpartitionedUsage(args);
 
-  EXPECT_EQ(1, std::distance(handler()->browsing_data_model_->begin(),
-                             handler()->browsing_data_model_->end()));
+  EXPECT_EQ(1,
+            std::distance(handler()->GetBrowsingDataModelForTesting()->begin(),
+                          handler()->GetBrowsingDataModelForTesting()->end()));
 
 // Clearing Site Specific Media Licenses Tests
 #if BUILDFLAG(IS_WIN)
@@ -5749,10 +5760,14 @@ TEST_F(SiteSettingsHandlerTest, HandleClearPartitionedUsage) {
   // Confirm that removing unpartitioned storage correctly removes the
   // appropriate nodes.
   SetupModels();
-  EXPECT_EQ(28u,
-            handler()->cookies_tree_model_->GetRoot()->GetTotalNodeCount());
-  EXPECT_EQ(2, std::distance(handler()->browsing_data_model_->begin(),
-                             handler()->browsing_data_model_->end()));
+
+  EXPECT_EQ(28u, handler()
+                     ->GetCookiesTreeModelForTesting()
+                     ->GetRoot()
+                     ->GetTotalNodeCount());
+  EXPECT_EQ(2,
+            std::distance(handler()->GetBrowsingDataModelForTesting()->begin(),
+                          handler()->GetBrowsingDataModelForTesting()->end()));
 
   base::Value::List args;
   args.Append("https://www.example.com/");
@@ -5788,8 +5803,9 @@ TEST_F(SiteSettingsHandlerTest, HandleClearPartitionedUsage) {
   // Should not have affected the browsing data model.
   // TODO(crbug.com/1271155): Update when partitioned storage is represented
   // by the browsing data model.
-  EXPECT_EQ(2, std::distance(handler()->browsing_data_model_->begin(),
-                             handler()->browsing_data_model_->end()));
+  EXPECT_EQ(2,
+            std::distance(handler()->GetBrowsingDataModelForTesting()->begin(),
+                          handler()->GetBrowsingDataModelForTesting()->end()));
 }
 
 TEST_F(SiteSettingsHandlerTest, CookieSettingDescription) {
@@ -5931,10 +5947,13 @@ TEST_F(SiteSettingsHandlerTest, HandleGetUsageInfo) {
   // Confirm that usage info only returns unpartitioned storage.
   SetupModels();
 
-  EXPECT_EQ(28u,
-            handler()->cookies_tree_model_->GetRoot()->GetTotalNodeCount());
-  EXPECT_EQ(2, std::distance(handler()->browsing_data_model_->begin(),
-                             handler()->browsing_data_model_->end()));
+  EXPECT_EQ(28u, handler()
+                     ->GetCookiesTreeModelForTesting()
+                     ->GetRoot()
+                     ->GetTotalNodeCount());
+  EXPECT_EQ(2,
+            std::distance(handler()->GetBrowsingDataModelForTesting()->begin(),
+                          handler()->GetBrowsingDataModelForTesting()->end()));
 
   base::Value::List args;
   args.Append("http://www.example.com");
