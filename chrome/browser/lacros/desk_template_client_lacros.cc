@@ -5,6 +5,7 @@
 #include "chrome/browser/lacros/desk_template_client_lacros.h"
 
 #include "base/ranges/algorithm.h"
+#include "base/trace_event/trace_event.h"
 #include "chrome/browser/apps/icon_standardizer.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -66,6 +67,7 @@ bool ValidateTabRange(const tab_groups::TabGroupInfo& group_info,
 void ImageResultToImageSkia(
     base::OnceCallback<void(const gfx::ImageSkia&)> callback,
     const favicon_base::FaviconRawBitmapResult& result) {
+  TRACE_EVENT0("ui", "desk_template_client_lacros::ImageResultToImageSkia");
   if (!result.is_valid()) {
     std::move(callback).Run(gfx::ImageSkia());
     return;
