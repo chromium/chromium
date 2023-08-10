@@ -5,6 +5,9 @@
 let e = i.contentDocument.createElement("embed");
 i.contentDocument.body.appendChild(e);
 i.remove();
-e.tryToGetAnAttribute; // This should not crash.
+
+// These should not crash.
+e.tryToGetAnAttribute;
+e.tryToSetAnAttribute = "foo";
 </script>
 </body>
