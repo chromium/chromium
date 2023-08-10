@@ -11,8 +11,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.test.filters.MediumTest;
-
 import androidx.test.filters.SmallTest;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -25,6 +25,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerFactory;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
@@ -126,7 +127,8 @@ public class PageInsightsSheetContentTest {
 
     @Test
     @SmallTest
-    public void childPageRendered(){
+    @DisabledTest(message = "https://crbug.com/1472037")
+    public void childPageRendered() {
         mSheetContent.renderChildPage();
         assertEquals(View.GONE,
             getToolbarViewById(R.id.page_insights_main_header).getVisibility());
