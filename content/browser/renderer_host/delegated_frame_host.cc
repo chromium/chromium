@@ -261,7 +261,7 @@ void DelegatedFrameHost::EmbedSurface(
   pre_navigation_local_surface_id_ = viz::LocalSurfaceId();
 
   // Navigations performed while hidden delay embedding until transitioning to
-  // becoming visible. So we may not have a valid surace when DidNavigate is
+  // becoming visible. So we may not have a valid surface when DidNavigate is
   // called. Cache the first surface here so we have the correct oldest surface
   // to fallback to.
   if (!first_local_surface_id_after_navigation_.is_valid())
@@ -617,6 +617,13 @@ void DelegatedFrameHost::TakeFallbackContentFrom(DelegatedFrameHost* other) {
   } else {
     desired_fallback = *other_fallback;
   }
+
+  // If we explicitly tell a BFCached View and its `DelegatedFrameHost` to use
+  // a specific fallback, discard the preserved fallback for BFCache. During the
+  // BFCache activation (`EmbedSurface`) we will be using the
+  // `desired_fallback` instead of `bfcache_fallback_`.
+  bfcache_fallback_ =
+      viz::ParentLocalSurfaceIdAllocator::InvalidLocalSurfaceId();
 
   if (!HasPrimarySurface()) {
     client_->DelegatedFrameHostGetLayer()->SetShowSurface(

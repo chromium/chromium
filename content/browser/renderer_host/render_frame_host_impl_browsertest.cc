@@ -43,6 +43,7 @@
 #include "content/browser/renderer_host/runtime_feature_state_controller_impl.h"
 #include "content/browser/sms/test/mock_sms_provider.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "content/browser/web_contents/web_contents_view.h"
 #include "content/common/content_navigation_policy.h"
 #include "content/common/features.h"
 #include "content/common/frame_messages.mojom.h"
@@ -112,6 +113,7 @@
 #include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/mojom/browser_interface_broker.mojom-test-utils.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-test-utils.h"
+#include "ui/snapshot/snapshot.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 #include "url/url_canon.h"
@@ -8065,6 +8067,87 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTestWithBFCache,
   RenderWidgetHostImpl* rwhi_a =
       RenderWidgetHostImpl::From(rfh_a->GetView()->GetRenderWidgetHost());
   EXPECT_TRUE(rwhi_a->IsContentRenderingTimeoutRunning());
+}
+
+namespace {
+class RenderFrameHostImplBrowserTestWithBFCacheAndViewTransition
+    : public RenderFrameHostImplBrowserTestWithBFCache {
+ public:
+  RenderFrameHostImplBrowserTestWithBFCacheAndViewTransition() {
+    std::vector<base::test::FeatureRefAndParams> enabled_features =
+        GetDefaultEnabledBackForwardCacheFeaturesForTesting(
+            /*ignore_outstanding_network_request=*/false);
+    enabled_features.push_back(
+        {blink::features::kViewTransitionOnNavigation, {{}}});
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        enabled_features,
+        GetDefaultDisabledBackForwardCacheFeaturesForTesting());
+
+    EnablePixelOutput();
+  }
+  ~RenderFrameHostImplBrowserTestWithBFCacheAndViewTransition() override =
+      default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+void AssertBitmapOfColor(const SkBitmap& bitmap, SkColor color) {
+  for (int r = 0; r < bitmap.height(); ++r) {
+    for (int c = 0; c < bitmap.width(); ++c) {
+// TODO(https://crbug.com/1452223): Re-enable the color comparison for Mac.
+#if !BUILDFLAG(IS_MAC)
+      ASSERT_EQ(bitmap.getColor(c, r), color);
+#endif
+    }
+  }
+}
+}  // namespace
+
+// https://crbug.com/1415340: For a page with ViewTransition being restored from
+// BFCache, we explicitly set its fallback surface to the current View to avoid
+// visual glitches.
+//
+// TODO(https://crbug.com/1472026): Investigate and re-enable.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_NewContentTimeoutIsSetWhenLeavingBFCacheWithViewTransition \
+  DISABLED_NewContentTimeoutIsSetWhenLeavingBFCacheWithViewTransition
+#else
+#define MAYBE_NewContentTimeoutIsSetWhenLeavingBFCacheWithViewTransition \
+  NewContentTimeoutIsSetWhenLeavingBFCacheWithViewTransition
+#endif
+IN_PROC_BROWSER_TEST_F(
+    RenderFrameHostImplBrowserTestWithBFCacheAndViewTransition,
+    MAYBE_NewContentTimeoutIsSetWhenLeavingBFCacheWithViewTransition) {
+  // "red_jank_second_pageshow.html" janks the renderer on the second pageshow
+  // event.
+  const GURL url_red(embedded_test_server()->GetURL(
+      "a.com", "/view_transitions/red_jank_second_pageshow.html"));
+  const GURL url_green(
+      embedded_test_server()->GetURL("a.com", "/view_transitions/green.html"));
+
+  // Navigate to Red.
+  ASSERT_TRUE(NavigateToURL(shell(), url_red));
+  RenderFrameHostWrapper rfh_red(web_contents()->GetPrimaryMainFrame());
+
+  // Navigate to Green.
+  ASSERT_TRUE(NavigateToURL(shell(), url_green));
+  ASSERT_FALSE(rfh_red.IsDestroyed());
+  ASSERT_TRUE(
+      static_cast<RenderFrameHostImpl*>(rfh_red.get())->IsInBackForwardCache());
+
+  // Navigate back to Red.
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  ASSERT_EQ(rfh_red.get(), web_contents()->GetPrimaryMainFrame());
+
+  RenderWidgetHostImpl* rwhi_red =
+      RenderWidgetHostImpl::From(rfh_red->GetView()->GetRenderWidgetHost());
+  ASSERT_TRUE(rwhi_red->IsContentRenderingTimeoutRunning());
+
+  gfx::Image screenshot;
+  ui::GrabViewSnapshot(web_contents()->GetView()->GetNativeView(),
+                       gfx::Rect(web_contents()->GetSize()), &screenshot);
+  AssertBitmapOfColor(screenshot.AsBitmap(), SK_ColorGREEN);
 }
 
 // Tests that when a RenderFrameHost is stored in BFCache, that the visibility

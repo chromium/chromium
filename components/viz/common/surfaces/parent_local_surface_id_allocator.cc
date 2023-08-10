@@ -63,8 +63,12 @@ bool ParentLocalSurfaceIdAllocator::UpdateFromChild(
   return true;
 }
 
-void ParentLocalSurfaceIdAllocator::Invalidate() {
+void ParentLocalSurfaceIdAllocator::Invalidate(
+    bool also_invalidate_allocation_group) {
   is_invalid_ = true;
+  if (also_invalidate_allocation_group) {
+    current_local_surface_id_.embed_token_ = base::UnguessableToken::Create();
+  }
 }
 
 void ParentLocalSurfaceIdAllocator::GenerateId() {

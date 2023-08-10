@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="view-transition" content="same-origin">
+  <script>
+    let firstPageShow = true;
+    window.addEventListener("pageshow", () => {
+      if (firstPageShow) {
+        firstPageShow = false;
+        return;
+      }
+      let start = performance.now();
+      while (performance.now() < start + 4000);
+    });
+  </script>
+</head>
+<body style="background-color:#FF0000"></body>
+</html>

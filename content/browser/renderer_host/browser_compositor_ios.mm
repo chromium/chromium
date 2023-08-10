@@ -394,6 +394,11 @@ ui::Compositor* BrowserCompositorIOS::GetCompositor() const {
   return compositor_.get();
 }
 
+void BrowserCompositorIOS::InvalidateSurfaceAllocationGroup() {
+  local_surface_id_allocator_.Invalidate(
+      /*also_invalidate_allocation_group=*/true);
+}
+
 cc::DeadlinePolicy BrowserCompositorIOS::GetDeadlinePolicy(
     bool is_resize) const {
   // Determined empirically for smoothness. Don't wait for non-resize frames,

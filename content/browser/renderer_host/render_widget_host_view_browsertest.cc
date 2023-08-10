@@ -602,6 +602,9 @@ IN_PROC_BROWSER_TEST_F(BFCachedRenderWidgetHostViewBrowserTest,
   // Navitate to title2.html. Title1.html is in the BFCache.
   ASSERT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/title2.html")));
+  const auto primary_id_for_title2 = GetCurrentSurfaceIdOnDelegatedFrameHost(
+      shell()->web_contents()->GetPrimaryMainFrame()->GetView());
+
   ASSERT_TRUE(
       static_cast<RenderFrameHostImpl*>(rfh1.get())->IsInBackForwardCache());
   // `rfh1` is placed into BFCache. The LocalSurfaceId is preserved.
@@ -630,10 +633,19 @@ IN_PROC_BROWSER_TEST_F(BFCachedRenderWidgetHostViewBrowserTest,
   //   `DelegatedFrameHost::WasShown()` with a new `LocalSurfaceId`.
   ASSERT_TRUE(id_after_restore.IsNewerThan(id_after_cached));
 
-  // The last primary ID after the page before it entered BFCache now serves as
-  // the fallback surface.
   const auto fallback_after_restore = GetFallbackSurfaceId(rfh1->GetView());
-  ASSERT_EQ(fallback_after_restore, id_after_cached);
+  if (viz::FrameEvictionManager::GetInstance()->GetMaxNumberOfSavedFrames() >
+      1u) {
+    // The last primary ID after the page before it entered BFCache now serves
+    // as the fallback surface.
+    ASSERT_EQ(fallback_after_restore, id_after_cached);
+  } else {
+    // If we can only have one frame at a time, the navigation from title1.html
+    // to title2.html will evict the surfaces of title1.html. When we restore
+    // title1.html from the BFCache, it will take the primary ID of title2.html
+    // as the fallback.
+    ASSERT_EQ(fallback_after_restore, primary_id_for_title2.ToSmallestId());
+  }
 }
 
 // Same as the above test, except we resize the viewport while the page is in
@@ -724,6 +736,9 @@ IN_PROC_BROWSER_TEST_F(BFCachedRenderWidgetHostViewBrowserTest,
   // Navitate to title2.html. Title1.html is in the BFCache.
   ASSERT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/title2.html")));
+  const auto primary_id_for_title2 = GetCurrentSurfaceIdOnDelegatedFrameHost(
+      shell()->web_contents()->GetPrimaryMainFrame()->GetView());
+
   ASSERT_TRUE(
       static_cast<RenderFrameHostImpl*>(rfh1.get())->IsInBackForwardCache());
   // `rfh1` is placed into BFCache. The LocalSurfaceId is preserved.
@@ -758,10 +773,20 @@ IN_PROC_BROWSER_TEST_F(BFCachedRenderWidgetHostViewBrowserTest,
   ASSERT_TRUE(id_after_restore.is_valid());
   const auto fallback_after_restore = GetFallbackSurfaceId(rfh1->GetView());
 
-  // The expectation is the same as if the no-op resize isn't called - the last
-  // primary ID after the page before it entered BFCache now serves as the
-  // fallback surface.
-  ASSERT_EQ(fallback_after_restore, id_after_cached);
+  if (viz::FrameEvictionManager::GetInstance()->GetMaxNumberOfSavedFrames() >
+      1u) {
+    // The expectation is the same as if the no-op resize isn't called - the
+    // last
+    // primary ID after the page before it entered BFCache now serves as the
+    // fallback surface.
+    ASSERT_EQ(fallback_after_restore, id_after_cached);
+  } else {
+    // If we can only have one frame at a time, the navigation from title1.html
+    // to title2.html will evict the surfaces of title1.html. When we restore
+    // title1.html from the BFCache, it will take the primary ID of title2.html
+    // as the fallback.
+    ASSERT_EQ(fallback_after_restore, primary_id_for_title2.ToSmallestId());
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(BFCachedRenderWidgetHostViewBrowserTest,

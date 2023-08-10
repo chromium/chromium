@@ -812,6 +812,12 @@ bool RenderWidgetHostViewChildFrame::IsRenderWidgetHostViewChildFrame() {
   return true;
 }
 
+void RenderWidgetHostViewChildFrame::
+    InvalidateLocalSurfaceIdAndAllocationGroup() {
+  // This should only be handled by the top frame.
+  NOTREACHED();
+}
+
 #if BUILDFLAG(IS_MAC)
 void RenderWidgetHostViewChildFrame::SetActive(bool active) {}
 

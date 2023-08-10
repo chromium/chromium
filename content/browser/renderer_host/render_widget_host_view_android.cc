@@ -3233,6 +3233,11 @@ void RenderWidgetHostViewAndroid::SetHasPersistentVideo(
   screen_state_change_handler_.SetHasPersistentVideo(has_persistent_video);
 }
 
+void RenderWidgetHostViewAndroid::InvalidateLocalSurfaceIdAndAllocationGroup() {
+  local_surface_id_allocator_.Invalidate(
+      /*also_invalidate_allocation_group=*/true);
+}
+
 void RenderWidgetHostViewAndroid::HandleSwipeToMoveCursorGestureAck(
     const blink::WebGestureEvent& event) {
   if (!touch_selection_controller_ || !selection_popup_controller_) {

@@ -82,6 +82,7 @@ class CONTENT_EXPORT RenderWidgetHostViewIOS
   void TakeFallbackContentFrom(RenderWidgetHostView* view) override;
   std::unique_ptr<SyntheticGestureTarget> CreateSyntheticGestureTarget()
       override;
+  void InvalidateLocalSurfaceIdAndAllocationGroup() override;
   void ClearFallbackSurfaceForCommitPending() override;
   void ResetFallbackToFirstNavigationSurface() override;
   viz::FrameSinkId GetRootFrameSinkId() override;

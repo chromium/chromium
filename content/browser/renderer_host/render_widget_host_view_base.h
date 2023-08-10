@@ -274,6 +274,11 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView {
       const gfx::Rect& focused_edit_bounds,
       const gfx::Rect& caret_bounds) {}
 
+  // Invalidates the `viz::SurfaceAllocationGroup` of this View. Also
+  // invalidates `viz::SurfaceId` of it. This should be used when no previous
+  // frame drawn by this view is preferred as a fallback.
+  virtual void InvalidateLocalSurfaceIdAndAllocationGroup() = 0;
+
   // This method will clear any cached fallback surface. For use in response to
   // a CommitPending where there is no content for TakeFallbackContentFrom.
   virtual void ClearFallbackSurfaceForCommitPending() {}

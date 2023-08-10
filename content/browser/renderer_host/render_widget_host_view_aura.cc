@@ -3002,6 +3002,10 @@ void RenderWidgetHostViewAura::SetLastPointerType(
   last_pointer_type_ = last_pointer_type;
 }
 
+void RenderWidgetHostViewAura::InvalidateLocalSurfaceIdAndAllocationGroup() {
+  window_->InvalidateLocalSurfaceId(/*also_invalidate_allocation_group=*/true);
+}
+
 void RenderWidgetHostViewAura::InvalidateLocalSurfaceIdOnEviction() {
   window_->InvalidateLocalSurfaceId();
 }

@@ -429,6 +429,45 @@ void UpdateProcessReusePolicyForProcessPerSiteWithMainFrameThreshold(
           REUSE_PENDING_OR_COMMITTED_SITE_WITH_MAIN_FRAME_THRESHOLD);
 }
 
+// Prepares the View and the DelegatedFrameHost when the page is restored from
+// BackForwardCache with a ViewTransition (VT) on it.
+void PrepareViewTransitionForBFCacheActivation(
+    RenderFrameHostImpl* rfh_to_show) {
+  // https://crbug.com/1415340: The View that's about to be restored from
+  // BFCache has the fallback surface set to the last surface drawn before the
+  // page entered the BFCache. If the ViewTransition's animation is delayed
+  // (e.g., a renderer slow to produce a new frame), the last surface will be
+  // embedded and displayed first. We will be showing the fallback surface
+  // first, then then VT aimation, causing a visual glitch.
+  //
+  // To address this:
+  // 1. We force a new allocation group of the browser's `viz::LocalSurfaceId`
+  //    allocator. This arg ensures Viz doesn't draw any cached frames produced
+  //    by this restored page by changing its allocation group.
+  // 2. With a VT, we let BFCache-restored View always steal the
+  //    fallback surface from the current View, and let the BFCached
+  //    View's fallback content persist after `Show()`.
+
+  auto* rwhv_base =
+      static_cast<RenderWidgetHostViewBase*>(rfh_to_show->GetView());
+
+  // Invalidates the current allocation group. For the next surface embedding,
+  // the browser will be using a fresh allocation group, yet to be registered
+  // with Viz.
+  rwhv_base->InvalidateLocalSurfaceIdAndAllocationGroup();
+
+  // Clears the fallback Surface so later on this BFCached new
+  // View/DelegatedFrameHost with VT can take the fallback from the old page.
+  rwhv_base->ClearFallbackSurfaceForCommitPending();
+
+  // Marks the View/DelegatedFrameHost as evicted. This forces this new View to
+  // take a fallback from the old page. If there isn't a fallback surface,
+  // `ClearFallbackSurfaceForCommitPending` won't trigger an eviction. In such
+  // cases we explicitly mark the View as evicted to force the View to take a
+  // fallback. This seems to occur on Mac's content_shell.
+  rwhv_base->set_is_evicted();
+}
+
 }  // namespace
 
 RenderFrameHostManager::IsSameSiteGetter::IsSameSiteGetter()
@@ -4413,6 +4452,9 @@ void RenderFrameHostManager::CommitPending(
         if (&*rvh == current_frame_host()->GetRenderViewHost()) {
           page_restore_params->view_transition_state =
               pending_stored_page->TakeViewTransitionState();
+          if (page_restore_params->view_transition_state.has_value()) {
+            PrepareViewTransitionForBFCacheActivation(current_frame_host());
+          }
         }
         rvh->LeaveBackForwardCache(std::move(page_restore_params));
       }

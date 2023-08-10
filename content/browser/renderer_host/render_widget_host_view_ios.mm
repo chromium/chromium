@@ -652,6 +652,10 @@ void RenderWidgetHostViewIOS::OnDidUpdateVisualPropertiesComplete(
       metadata.local_surface_id.value_or(viz::LocalSurfaceId()));
 }
 
+void RenderWidgetHostViewIOS::InvalidateLocalSurfaceIdAndAllocationGroup() {
+  browser_compositor_->InvalidateSurfaceAllocationGroup();
+}
+
 void RenderWidgetHostViewIOS::ClearFallbackSurfaceForCommitPending() {
   browser_compositor_->GetDelegatedFrameHost()
       ->ClearFallbackSurfaceForCommitPending();

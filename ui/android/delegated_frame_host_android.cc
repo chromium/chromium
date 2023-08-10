@@ -478,16 +478,15 @@ void DelegatedFrameHostAndroid::TakeFallbackContentFrom(
   if (HasFallbackSurface() || !other->HasPrimarySurface())
     return;
 
-  const viz::SurfaceId& other_primary = other->content_layer_->surface_id();
-  const absl::optional<viz::SurfaceId>& other_fallback =
-      other->content_layer_->oldest_acceptable_fallback();
-  viz::SurfaceId desired_fallback;
-  if (!other->HasFallbackSurface() ||
-      !other_primary.IsSameOrNewerThan(*other_fallback)) {
-    desired_fallback = other_primary.ToSmallestId();
-  } else {
-    desired_fallback = *other_fallback;
-  }
+  // If we explicitly tell a BFCached View and its `DelegatedFrameHostAndroid`
+  // to use a specific fallback, discard the preserved fallback for BFCache.
+  // During the BFCache activation (`EmbedSurface`) we will be using the primary
+  // surface's smallest ID as the fallback.
+  bfcache_fallback_ =
+      viz::ParentLocalSurfaceIdAllocator::InvalidLocalSurfaceId();
+
+  // TODO(https://crbug.com/1471665): Investigate why on Android we use the
+  // primary ID unconditionally, which is different on `DelegatedFrameHost`.
   content_layer_->SetOldestAcceptableFallback(
       other->content_layer_->surface_id().ToSmallestId());
 }

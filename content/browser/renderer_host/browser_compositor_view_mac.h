@@ -141,6 +141,8 @@ class CONTENT_EXPORT BrowserCompositorMac : public DelegatedFrameHostClient,
 
   ui::Compositor* GetCompositor() const;
 
+  void InvalidateSurfaceAllocationGroup();
+
  private:
   // ui::LayerObserver implementation:
   void LayerDestroyed(ui::Layer* layer) override;

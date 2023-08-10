@@ -409,6 +409,11 @@ ui::Compositor* BrowserCompositorMac::GetCompositor() const {
   return nullptr;
 }
 
+void BrowserCompositorMac::InvalidateSurfaceAllocationGroup() {
+  dfh_local_surface_id_allocator_.Invalidate(
+      /*also_invalidate_allocation_group=*/true);
+}
+
 cc::DeadlinePolicy BrowserCompositorMac::GetDeadlinePolicy(
     bool is_resize) const {
   // Determined empirically for smoothness. Don't wait for non-resize frames,

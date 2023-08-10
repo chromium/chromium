@@ -129,6 +129,7 @@ class TestRenderWidgetHostView : public RenderWidgetHostViewBase,
       override;
   ui::Compositor* GetCompositor() override;
   CursorManager* GetCursorManager() override;
+  void InvalidateLocalSurfaceIdAndAllocationGroup() override {}
 
   bool is_showing() const { return is_showing_; }
   bool is_occluded() const { return is_occluded_; }
