@@ -15,9 +15,20 @@ enum class SafetyCheckItemLayoutType;
 // (Magic Stack) module.
 @interface SafetyCheckItemView : UIView
 
-// Initialize a SafetyCheckItemView with the given `itemType` and `layoutType`.
+// Convenience initializer for creating a SafetyCheckItemView with the given
+// `itemType` and `layoutType`, but without specific insecure credentials
+// information.
 - (instancetype)initWithItemType:(SafetyCheckItemType)itemType
                    andLayoutType:(SafetyCheckItemLayoutType)layoutType;
+
+// Initialize a SafetyCheckItemView with the given `itemType`, `layoutType`,
+// `weakPasswordsCount`, `reusedPasswordsCount`, and
+// `compromisedPasswordsCount`.
+- (instancetype)initWithItemType:(SafetyCheckItemType)itemType
+                   andLayoutType:(SafetyCheckItemLayoutType)layoutType
+           andWeakPasswordsCount:(NSInteger)weakPasswordsCount
+         andReusedPasswordsCount:(NSInteger)reusedPasswordsCount
+    andCompromisedPasswordsCount:(NSInteger)compromisedPasswordsCount;
 
 @end
 

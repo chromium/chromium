@@ -4,15 +4,22 @@
 
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_item_view.h"
 
+#import "base/strings/string_number_conversions.h"
+#import "components/version_info/version_info.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_item_icon.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/types.h"
+#import "ios/chrome/common/channel_info.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/dynamic_type_util.h"
+#import "ios/chrome/grit/ios_chromium_strings.h"
+#import "ios/chrome/grit/ios_google_chrome_strings.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util.h"
 
 namespace {
 
@@ -56,6 +63,29 @@ UIImageView* CheckmarkIcon() {
   return icon;
 }
 
+// Returns the number of password issue types found given
+// `weak_passwords_count`, `reused_passwords_count`, and
+// `compromised_passwords_count`.
+int PasswordIssuesTypeCount(NSInteger weak_passwords_count,
+                            NSInteger reused_passwords_count,
+                            NSInteger compromised_passwords_count) {
+  int count = 0;
+
+  if (weak_passwords_count > 0) {
+    count++;
+  }
+
+  if (reused_passwords_count > 0) {
+    count++;
+  }
+
+  if (compromised_passwords_count > 0) {
+    count++;
+  }
+
+  return count;
+}
+
 }  // namespace
 
 @implementation SafetyCheckItemView {
@@ -63,13 +93,36 @@ UIImageView* CheckmarkIcon() {
   SafetyCheckItemType _itemType;
   // The item layout type.
   SafetyCheckItemLayoutType _layoutType;
+  // The number of weak passwords found by the Password check.
+  NSInteger _weakPasswordsCount;
+  // The number of reused passwords found by the Password check.
+  NSInteger _reusedPasswordsCount;
+  // The number of compromised passwords found by the Password check.
+  NSInteger _compromisedPasswordsCount;
 }
 
 - (instancetype)initWithItemType:(SafetyCheckItemType)itemType
                    andLayoutType:(SafetyCheckItemLayoutType)layoutType {
+  self = [self initWithItemType:itemType
+                     andLayoutType:layoutType
+             andWeakPasswordsCount:0
+           andReusedPasswordsCount:0
+      andCompromisedPasswordsCount:0];
+
+  return self;
+}
+
+- (instancetype)initWithItemType:(SafetyCheckItemType)itemType
+                   andLayoutType:(SafetyCheckItemLayoutType)layoutType
+           andWeakPasswordsCount:(NSInteger)weakPasswordsCount
+         andReusedPasswordsCount:(NSInteger)reusedPasswordsCount
+    andCompromisedPasswordsCount:(NSInteger)compromisedPasswordsCount {
   if (self = [super init]) {
     _itemType = itemType;
     _layoutType = layoutType;
+    _weakPasswordsCount = weakPasswordsCount;
+    _reusedPasswordsCount = reusedPasswordsCount;
+    _compromisedPasswordsCount = compromisedPasswordsCount;
   }
 
   return self;
@@ -228,8 +281,7 @@ UIImageView* CheckmarkIcon() {
     (SafetyCheckItemLayoutType)layoutType {
   UILabel* label = [[UILabel alloc] init];
 
-  // NOTE: In subsequent CL, `label.text` will come from `ios_strings`.
-  label.text = @"Title";
+  label.text = [self titleText];
   label.translatesAutoresizingMaskIntoConstraints = NO;
   label.numberOfLines = 0;
   label.lineBreakMode = NSLineBreakByWordWrapping;
@@ -243,12 +295,30 @@ UIImageView* CheckmarkIcon() {
   return label;
 }
 
+- (NSString*)titleText {
+  switch (_itemType) {
+    case SafetyCheckItemType::kAllSafe:
+      return l10n_util::GetNSString(IDS_IOS_SAFETY_CHECK_TITLE_ALL_SAFE);
+    case SafetyCheckItemType::kRunning:
+      return l10n_util::GetNSString(IDS_IOS_SAFETY_CHECK_RUNNING);
+    case SafetyCheckItemType::kUpdateChrome:
+      return l10n_util::GetNSString(IDS_IOS_SAFETY_CHECK_TITLE_UPDATE_CHROME);
+    case SafetyCheckItemType::kPassword:
+      return l10n_util::GetNSString(IDS_IOS_SAFETY_CHECK_TITLE_PASSWORD);
+    case SafetyCheckItemType::kSafeBrowsing:
+      return l10n_util::GetNSString(IDS_IOS_SAFETY_CHECK_TITLE_SAFE_BROWSING);
+    case SafetyCheckItemType::kDefault:
+      return l10n_util::GetNSString(IDS_IOS_SAFETY_CHECK_TITLE_DEFAULT);
+  }
+}
+
 // Creates the description label.
 - (UILabel*)createDescriptionLabel {
   UILabel* label = [[UILabel alloc] init];
 
-  // NOTE: In subsequent CL, `label.text` will come from `ios_strings`.
-  label.text = @"Description";
+  label.text = _layoutType == SafetyCheckItemLayoutType::kHero
+                   ? [self descriptionText]
+                   : [self compactDescriptionText];
   label.numberOfLines = 2;
   label.lineBreakMode = NSLineBreakByTruncatingTail;
   label.font = [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
@@ -256,6 +326,154 @@ UIImageView* CheckmarkIcon() {
   label.textColor = [UIColor colorNamed:kTextSecondaryColor];
 
   return label;
+}
+
+- (NSString*)descriptionText {
+  switch (_itemType) {
+    case SafetyCheckItemType::kAllSafe:
+      return l10n_util::GetNSString(IDS_IOS_SAFETY_CHECK_DESCRIPTION_ALL_SAFE);
+    case SafetyCheckItemType::kRunning:
+      // The running state has no description text.
+      return @"";
+    case SafetyCheckItemType::kUpdateChrome:
+      return [self updateChromeItemDescriptionText];
+    case SafetyCheckItemType::kPassword:
+      return [self passwordItemDescriptionText];
+    case SafetyCheckItemType::kSafeBrowsing:
+      return l10n_util::GetNSString(
+          IDS_IOS_SAFETY_CHECK_DESCRIPTION_SAFE_BROWSING);
+    case SafetyCheckItemType::kDefault:
+      return l10n_util::GetNSString(IDS_IOS_SAFETY_CHECK_DESCRIPTION_DEFAULT);
+  }
+}
+
+- (NSString*)updateChromeItemDescriptionText {
+  switch (::GetChannel()) {
+    case version_info::Channel::STABLE:
+    case version_info::Channel::DEV:
+      return l10n_util::GetNSString(
+          IDS_IOS_SAFETY_CHECK_DESCRIPTION_UPDATE_CHROME);
+    case version_info::Channel::BETA:
+      return l10n_util::GetNSString(
+          IDS_IOS_SETTINGS_SAFETY_CHECK_UPDATES_CHANNEL_BETA_DESC);
+    case version_info::Channel::CANARY:
+      return l10n_util::GetNSString(
+          IDS_IOS_SETTINGS_SAFETY_CHECK_UPDATES_CHANNEL_CANARY_DESC);
+    default:
+      return l10n_util::GetNSString(
+          IDS_IOS_SAFETY_CHECK_DESCRIPTION_UPDATE_CHROME);
+  }
+}
+
+- (NSString*)passwordItemDescriptionText {
+  int passwordIssueTypeCount = PasswordIssuesTypeCount(
+      _weakPasswordsCount, _reusedPasswordsCount, _compromisedPasswordsCount);
+
+  if (passwordIssueTypeCount > 1) {
+    return l10n_util::GetNSString(
+        IDS_IOS_SAFETY_CHECK_DESCRIPTION_MULTIPLE_PASSWORD_ISSUES);
+  }
+
+  if (_weakPasswordsCount > 1) {
+    return l10n_util::GetNSStringF(
+        IDS_IOS_SAFETY_CHECK_DESCRIPTION_MULTIPLE_WEAK_PASSWORDS,
+        base::NumberToString16(_weakPasswordsCount));
+  }
+
+  if (_weakPasswordsCount == 1) {
+    return l10n_util::GetNSString(
+        IDS_IOS_SAFETY_CHECK_DESCRIPTION_WEAK_PASSWORD);
+  }
+
+  if (_reusedPasswordsCount > 1) {
+    return l10n_util::GetNSStringF(
+        IDS_IOS_SAFETY_CHECK_DESCRIPTION_MULTIPLE_REUSED_PASSWORDS,
+        base::NumberToString16(_reusedPasswordsCount));
+  }
+
+  if (_reusedPasswordsCount == 1) {
+    return l10n_util::GetNSString(
+        IDS_IOS_SAFETY_CHECK_DESCRIPTION_REUSED_PASSWORD);
+  }
+
+  if (_compromisedPasswordsCount > 1) {
+    return l10n_util::GetNSStringF(
+        IDS_IOS_SAFETY_CHECK_DESCRIPTION_MULTIPLE_COMPROMISED_PASSWORDS,
+        base::NumberToString16(_compromisedPasswordsCount));
+  }
+
+  if (_compromisedPasswordsCount == 1) {
+    return l10n_util::GetNSString(
+        IDS_IOS_SAFETY_CHECK_DESCRIPTION_COMPROMISED_PASSWORD);
+  }
+
+  return l10n_util::GetNSString(
+      IDS_IOS_SAFETY_CHECK_COMPACT_DESCRIPTION_MULTIPLE_PASSWORD_ISSUES);
+}
+
+- (NSString*)compactDescriptionText {
+  switch (_itemType) {
+    case SafetyCheckItemType::kAllSafe:
+      return l10n_util::GetNSString(IDS_IOS_SAFETY_CHECK_DESCRIPTION_ALL_SAFE);
+    case SafetyCheckItemType::kRunning:
+      // The running state has no description text.
+      return @"";
+    case SafetyCheckItemType::kUpdateChrome:
+      return [self updateChromeItemCompactDescriptionText];
+    case SafetyCheckItemType::kPassword:
+      return [self passwordItemCompactDescriptionText];
+    case SafetyCheckItemType::kSafeBrowsing:
+      return l10n_util::GetNSString(
+          IDS_IOS_SAFETY_CHECK_COMPACT_DESCRIPTION_SAFE_BROWSING);
+    case SafetyCheckItemType::kDefault:
+      return l10n_util::GetNSString(IDS_IOS_SAFETY_CHECK_TITLE_DEFAULT);
+  }
+}
+
+- (NSString*)updateChromeItemCompactDescriptionText {
+  switch (::GetChannel()) {
+    case version_info::Channel::STABLE:
+    case version_info::Channel::DEV:
+      return l10n_util::GetNSString(
+          IDS_IOS_SAFETY_CHECK_COMPACT_DESCRIPTION_UPDATE_CHROME);
+    case version_info::Channel::BETA:
+      return l10n_util::GetNSString(
+          IDS_IOS_SETTINGS_SAFETY_CHECK_UPDATES_CHANNEL_BETA_DESC);
+    case version_info::Channel::CANARY:
+      return l10n_util::GetNSString(
+          IDS_IOS_SETTINGS_SAFETY_CHECK_UPDATES_CHANNEL_CANARY_DESC);
+    default:
+      return l10n_util::GetNSString(
+          IDS_IOS_SAFETY_CHECK_COMPACT_DESCRIPTION_UPDATE_CHROME);
+  }
+}
+
+- (NSString*)passwordItemCompactDescriptionText {
+  int passwordIssueTypeCount = PasswordIssuesTypeCount(
+      _weakPasswordsCount, _reusedPasswordsCount, _compromisedPasswordsCount);
+
+  if (passwordIssueTypeCount > 1) {
+    return l10n_util::GetNSString(
+        IDS_IOS_SAFETY_CHECK_COMPACT_DESCRIPTION_MULTIPLE_PASSWORD_ISSUES);
+  }
+
+  if (_weakPasswordsCount >= 1) {
+    return l10n_util::GetNSString(
+        IDS_IOS_SAFETY_CHECK_COMPACT_DESCRIPTION_WEAK_PASSWORD);
+  }
+
+  if (_reusedPasswordsCount >= 1) {
+    return l10n_util::GetNSString(
+        IDS_IOS_SAFETY_CHECK_COMPACT_DESCRIPTION_REUSED_PASSWORD);
+  }
+
+  if (_compromisedPasswordsCount >= 1) {
+    return l10n_util::GetNSString(
+        IDS_IOS_SAFETY_CHECK_COMPACT_DESCRIPTION_COMPROMISED_PASSWORD);
+  }
+
+  return l10n_util::GetNSString(
+      IDS_IOS_SAFETY_CHECK_COMPACT_DESCRIPTION_MULTIPLE_PASSWORD_ISSUES);
 }
 
 - (NSString*)accessibilityIdentifierForItemType:(SafetyCheckItemType)itemType {

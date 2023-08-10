@@ -14,13 +14,18 @@ source_set("safety_check") {
   ]
   deps = [
     ":constants",
+    "//base",
+    "//components/version_info",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/safety_check:constants",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/common",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/table_view:cells_constants",
     "//ios/chrome/common/ui/util",
     "//ios/chrome/common/ui/util:dynamic_type_util",
+    "//ui/base:base",
   ]
   frameworks = [ "UIKit.framework" ]
 }

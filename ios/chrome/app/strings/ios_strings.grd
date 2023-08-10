@@ -5070,6 +5070,75 @@ Your data was encrypted with your passphrase on <ph name="TIME">$2<ex>Sept 1, 20
       <message name="IDS_IOS_UNO_UPGRADE_PROMO_SIGNIN_SUBTITLE" desc="This string is on a sign-in page, shown several weeks after the user has installed Chrome. It explains the overarching user benefit of signing in (access to bookmarks, passwords, history, settings, etc.). We want users to understand why signing in is beneficial, and click 'Continue as name' to sign in to their Google Account. The tone should be informative and lightweight.">
         Get your bookmarks, passwords, and more on all your devices.
       </message>
+      <message name="IDS_IOS_SAFETY_CHECK_TITLE_ALL_SAFE" desc="Tag label title displayed for the Safety Check module in the Magic Stack when there are no Safety Check issue found. [iOS only]">
+        Your Browser Looks Good
+      </message>
+      <message name="IDS_IOS_SAFETY_CHECK_DESCRIPTION_ALL_SAFE" desc="Tag label description displayed for the Safety Check module in the Magic Stack when there are no Safety Check issue found. [iOS only]">
+        Safety Check didn't find any security issues for you to fix.
+      </message>
+      <message name="IDS_IOS_SAFETY_CHECK_RUNNING" desc="Tag label title displayed for the Safety Check module in the Magic Stack when the Safety Check is running. [iOS only]">
+        Safety Check is running…
+      </message>
+      <message name="IDS_IOS_SAFETY_CHECK_TITLE_UPDATE_CHROME" desc="Tag label title displayed for the Safety Check module in the Magic Stack when the Update Chrome check finds an issue. [iOS only]">
+        Update Your Browser
+      </message>
+      <message name="IDS_IOS_SAFETY_CHECK_DESCRIPTION_UPDATE_CHROME" desc="Tag label description displayed for the Safety Check module in the Magic Stack when the Update Chrome check finds an issue. [iOS only]">
+        Chrome is out of date, update to the latest version to stay secure.
+      </message>
+      <message name="IDS_IOS_SAFETY_CHECK_COMPACT_DESCRIPTION_UPDATE_CHROME" desc="Tag label description displayed for the Safety Check module in the Magic Stack when the Update Chrome check finds an issue. [iOS only]">
+        Your Chrome is out of date.
+      </message>
+      <message name="IDS_IOS_SAFETY_CHECK_TITLE_PASSWORD" desc="Tag label title displayed for the Safety Check module in the Magic Stack when the Password check finds an issue. [iOS only]">
+        Change Your Passwords
+      </message>
+      <message name="IDS_IOS_SAFETY_CHECK_DESCRIPTION_COMPROMISED_PASSWORD" desc="Tag label description displayed for the Safety Check module in the Magic Stack when the Password check finds a compromised password issue. [iOS only]">
+        You have 1 compromised password. Fix it now to stay safe.
+      </message>
+      <message name="IDS_IOS_SAFETY_CHECK_COMPACT_DESCRIPTION_COMPROMISED_PASSWORD" desc="Tag label description displayed for the Safety Check module in the Magic Stack when the Password check finds a compromised password issue. [iOS only]">
+        You have compromised passwords.
+      </message>
+      <message name="IDS_IOS_SAFETY_CHECK_DESCRIPTION_REUSED_PASSWORD" desc="Tag label description displayed for the Safety Check module in the Magic Stack when the Password check finds a reused password issue. [iOS only]">
+        You have 1 reused password. Fix it now to stay safe.
+      </message>
+      <message name="IDS_IOS_SAFETY_CHECK_COMPACT_DESCRIPTION_REUSED_PASSWORD" desc="Tag label description displayed for the Safety Check module in the Magic Stack when the Password check finds a reused password issue. [iOS only]">
+        You have reused passwords.
+      </message>
+      <message name="IDS_IOS_SAFETY_CHECK_DESCRIPTION_WEAK_PASSWORD" desc="Tag label description displayed for the Safety Check module in the Magic Stack when the Password check finds a weak password issue. [iOS only]">
+        You have 1 weak password. Fix it now to stay safe.
+      </message>
+      <message name="IDS_IOS_SAFETY_CHECK_COMPACT_DESCRIPTION_WEAK_PASSWORD" desc="Tag label description displayed for the Safety Check module in the Magic Stack when the Password check finds a weak password issue. [iOS only]">
+        You have weak passwords.
+      </message>
+      <message name="IDS_IOS_SAFETY_CHECK_DESCRIPTION_MULTIPLE_COMPROMISED_PASSWORDS" desc="Tag label description displayed for the Safety Check module in the Magic Stack when the Password check finds multiple compromised passwords. [iOS only]">
+        You have <ph name="NUMBER_OF_PASSWORDS">$1<ex>2</ex></ph> compromised passwords that could put your security at risk.
+      </message>
+      <message name="IDS_IOS_SAFETY_CHECK_DESCRIPTION_MULTIPLE_REUSED_PASSWORDS" desc="Tag label description displayed for the Safety Check module in the Magic Stack when the Password check finds multiple reused passwords. [iOS only]">
+        You have <ph name="NUMBER_OF_PASSWORDS">$1<ex>2</ex></ph> reused passwords that could put your security at risk.
+      </message>
+      <message name="IDS_IOS_SAFETY_CHECK_DESCRIPTION_MULTIPLE_WEAK_PASSWORDS" desc="Tag label description displayed for the Safety Check module in the Magic Stack when the Password check finds multiple weak passwords. [iOS only]">
+        You have <ph name="NUMBER_OF_PASSWORDS">$1<ex>2</ex></ph> weak passwords that could put your security at risk.
+      </message>
+      <message name="IDS_IOS_SAFETY_CHECK_DESCRIPTION_MULTIPLE_PASSWORD_ISSUES" desc="Tag label description displayed for the Safety Check module in the Magic Stack when the Password check finds multiple password issues of different type (e.g. compromised, reused, weak). [iOS only]">
+        You have several password issues that could put your security at risk.
+      </message>
+      <message name="IDS_IOS_SAFETY_CHECK_COMPACT_DESCRIPTION_MULTIPLE_PASSWORD_ISSUES" desc="Tag label description displayed for the Safety Check module in the Magic Stack when the Password check finds multiple password issues of different type (e.g. compromised, reused, weak). [iOS only]">
+        You have several password issues.
+      </message>
+      <message name="IDS_IOS_SAFETY_CHECK_TITLE_SAFE_BROWSING" desc="Tag label title displayed for the Safety Check module in the Magic Stack when the Safe Browsing check finds an issue. [iOS only]">
+        Add Browsing Protection
+      </message>
+      <message name="IDS_IOS_SAFETY_CHECK_DESCRIPTION_SAFE_BROWSING" desc="Tag label description displayed for the Safety Check module in the Magic Stack when the Safe Browsing check finds an issue. [iOS only]">
+        Get protection from dangerous sites, downloads, and extensions.
+      </message>
+      <message name="IDS_IOS_SAFETY_CHECK_COMPACT_DESCRIPTION_SAFE_BROWSING" desc="Tag label description displayed for the Safety Check module in the Magic Stack when the Safe Browsing check finds an issue. [iOS only]">
+        Get protection from dangerous sites.
+      </message>
+      <message name="IDS_IOS_SAFETY_CHECK_TITLE_DEFAULT" desc="Tag label title displayed for the Safety Check module in the Magic Stack when the Safety Check has not been run yet. [iOS only]">
+        Run Safety Check
+      </message>
+      <message name="IDS_IOS_SAFETY_CHECK_DESCRIPTION_DEFAULT" desc="Tag label description displayed for the Safety Check module in the Magic Stack when the Safety Check has not been run yet. [iOS only]">
+        Stay safe from data breaches, unsafe websites and more.
+      </message>
     </messages>
   </release>
 </grit>
