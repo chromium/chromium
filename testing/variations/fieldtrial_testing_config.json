@@ -15849,6 +15849,7 @@
     "V8SingleThreadedGCInBackground": [
         {
             "platforms": [
+                "android",
                 "chromeos",
                 "chromeos_lacros",
                 "fuchsia",
