@@ -588,6 +588,9 @@ struct MLConfig {
   // If true, runs batch ML scoring of URL candidates.
   bool ml_batch_url_scoring{false};
 
+  // If true, runs sync batch ML scoring of URL candidates.
+  bool ml_sync_batch_url_scoring{false};
+
   // If true, runs the ML scoring model but does not assign new relevance scores
   // to the URL suggestions and does not rerank them.
   // Equivalent to OmniboxFieldTrial::kMlUrlScoringCounterfactual.
@@ -658,8 +661,10 @@ bool AreScoringSignalsAnnotatorsEnabled();
 // URL suggestions and reranks them.
 bool IsMlUrlScoringEnabled();
 
-// Whether batch ML url scoring is enabled.
-bool IsMlBatchUrlScoringEnabled();
+// If enabled, runs synchronous batch ML scoring to assign new relevance scores
+// to the URL suggestions received in the sync pass of autocomplete and reranks
+// them.
+bool IsMlSyncBatchUrlScoringEnabled();
 
 // If true, runs the ML scoring model but does not assign new relevance scores
 // to URL suggestions.

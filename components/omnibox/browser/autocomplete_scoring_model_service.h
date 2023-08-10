@@ -61,6 +61,13 @@ class AutocompleteScoringModelService : public KeyedService {
       const std::vector<std::string>& stripped_destination_urls,
       BatchResultCallback batch_result_callback);
 
+  // Synchronous batch scoring. Returns a vector of batch results.
+  // Returns an empty vector if model is not available or the input signals are
+  // invalid.
+  virtual std::vector<Result> BatchScoreAutocompleteUrlMatchesSync(
+      const std::vector<const ScoringSignals*>& batch_scoring_signals,
+      const std::vector<std::string>& stripped_destination_urls);
+
  private:
   // Returns whether the scoring model is enabled and loaded.
   bool UrlScoringModelAvailable();
@@ -74,6 +81,12 @@ class AutocompleteScoringModelService : public KeyedService {
 
   void ProcessBatchModelOutput(
       BatchResultCallback batch_result_callback,
+      const std::vector<std::string>& stripped_destination_urls,
+      const std::vector<absl::optional<ModelOutput>>& batch_model_output);
+
+  // Extracts model output values and associates them with the stripped
+  // destination urls.
+  std::vector<Result> GetBatchResultFromModelOutput(
       const std::vector<std::string>& stripped_destination_urls,
       const std::vector<absl::optional<ModelOutput>>& batch_model_output);
 

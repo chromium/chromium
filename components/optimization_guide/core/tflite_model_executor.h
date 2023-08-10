@@ -107,6 +107,9 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputType> {
     optimization_target_ = optimization_target;
     execution_task_runner_ = execution_task_runner;
     reply_task_runner_ = reply_task_runner;
+    model_loading_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
+        {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
+
     if (features::IsModelExecutionWatchdogEnabled()) {
       // The sequence |watchdog_sequence| is used to run watchdog's task. The
       // watchdog must be deleted on that sequence to guarantee that pending
@@ -144,13 +147,13 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputType> {
     histogram->Add(true);
 
     if (!should_unload_model_on_complete_) {
-      ExecutionStatus out_status;
-      LoadModelFile(&out_status);
+      // Preload model without callback.
+      LoadModelFile(base::DoNothingAs<void(ExecutionStatus)>());
     }
   }
 
   // Calling this method allows the default model loading/unloading behavior to
-  // be overridden. Setting this to true will cause the model to remain loaded
+  // be overridden. Setting this to false will cause the model to remain loaded
   // afterwards a model execution (e.g.: "OnComplete"), until |UnloadModel| is
   // called. False is the default behavior (see class comment).
   void SetShouldUnloadModelOnComplete(
@@ -194,8 +197,9 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputType> {
     SendForBatchExecution(std::move(adapted_callback), start_time, {input});
   }
 
-  // Starts the execution of the model. When complete, |callback_on_complete|
-  // will be run via |reply_task_runner_| with the outputs of the model.
+  // Starts the batch execution of the model. When complete,
+  // |callback_on_complete| will be run via |reply_task_runner_| with the
+  // outputs of the model.
   void SendForBatchExecution(
       BatchExecutionCallback callback_on_complete,
       base::TimeTicks start_time,
@@ -213,90 +217,46 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputType> {
                 optimization_target_),
         task_scheduling_latency);
 
+    // Load the model file in the background thread if not loaded yet, and
+    // then batch execute the loaded model on the execution thread.
+    LoadModelFileAndBatchExecute(std::move(callback_on_complete), inputs);
+  }
+
+  // Starts the synchronous execution of the model. Returns model outputs.
+  // Model needs to be loaded. Synchronous calls do not load or unload model.
+  std::vector<absl::optional<OutputType>> SendForBatchExecutionSync(
+      ModelExecutor<OutputType, InputType>::ConstRefInputVector inputs)
+      override {
+    DCHECK(execution_task_runner_->RunsTasksInCurrentSequence());
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
     std::vector<absl::optional<OutputType>> outputs;
     outputs.reserve(inputs.size());
-
-    // Attempt to load the model file if it isn't loaded yet, fail if loading is
-    // unsuccessful or no model is available to load.
-    ExecutionStatus load_status = ExecutionStatus::kUnknown;
-    if (!loaded_model_ && !LoadModelFile(&load_status)) {
-      // Some error status is expected, and derived classes should have set the
-      // status.
-      DCHECK_NE(load_status, ExecutionStatus::kUnknown);
-      DCHECK_NE(load_status, ExecutionStatus::kSuccess);
-
+    // If the model isn't loaded yet, return null results.
+    if (!loaded_model_) {
       for (size_t i = 0; i < inputs.size(); i++) {
         outputs.push_back(absl::nullopt);
-        // If the model fails to load in a batch context, this status would not
+        // If the model is not loaded in a batch context, this status would not
         // get recorded the same number of times as it would in success. Thus,
         // increment the bucket |inputs.size()| number of times to keep metrics
         // sane.
         ScopedExecutionStatusResultRecorder status_recorder(
             optimization_target_);
-        status_recorder.set_status(load_status);
+        status_recorder.set_status(
+            ExecutionStatus::kErrorModelFileNotAvailable);
       }
-
-      reply_task_runner_->PostTask(
-          FROM_HERE, base::BindOnce(std::move(callback_on_complete), outputs));
-      return;
+      return outputs;
     }
 
-    if (last_execution_time_) {
-      // The max of this histogram is 3m since only the distribution and count
-      // of smaller values is important.
-      base::UmaHistogramMediumTimes(
-          "OptimizationGuide.ModelExecutor.TimeSincePreviousRun." +
-              GetStringNameForOptimizationTarget(optimization_target_),
-          base::TimeTicks::Now() - *last_execution_time_);
-    }
-    last_execution_time_ = base::TimeTicks::Now();
-
-    DCHECK(loaded_model_);
-
-    for (const InputType& input : inputs) {
-      ScopedExecutionStatusResultRecorder status_recorder(optimization_target_);
-      // IMPORTANT: Once the arm method is called, disarm must be called when
-      // the model execution finishes. Do NOT early-return in this next block.
-      if (watchdog_) {
-        watchdog_->ArmWithTask(MakeCancelClosure());
-      }
-      {
-        TRACE_EVENT1("browser", "OptGuideModelExecutor::Execute",
-                     "OptimizationTarget",
-                     optimization_guide::GetStringNameForOptimizationTarget(
-                         optimization_target_));
-        base::ElapsedThreadTimer execution_timer;
-        base::TimeTicks execute_start_time = base::TimeTicks::Now();
-        absl::optional<OutputType> output = Execute(
-            loaded_model_.get(), status_recorder.mutable_status(), input);
-        DCHECK_NE(status_recorder.status(), ExecutionStatus::kUnknown);
-        outputs.push_back(output);
-
-        // The max of this histogram is 1 hour because we want to understand
-        // tail behavior and catch long running model executions.
-        base::UmaHistogramLongTimes(
-            "OptimizationGuide.ModelExecutor.ExecutionLatency." +
-                GetStringNameForOptimizationTarget(optimization_target_),
-            base::TimeTicks::Now() - execute_start_time);
-        base::UmaHistogramLongTimes(
-            "OptimizationGuide.ModelExecutor.ExecutionThreadTime." +
-                GetStringNameForOptimizationTarget(optimization_target_),
-            execution_timer.Elapsed());
-        base::UmaHistogramMicrosecondsTimes(
-            "OptimizationGuide.ModelExecutor.ExecutionThreadTimeMicroseconds." +
-                GetStringNameForOptimizationTarget(optimization_target_),
-            execution_timer.Elapsed());
-      }
-      if (watchdog_) {
-        watchdog_->DisarmOnExecutionComplete();
-      }
-    }
-
-    DCHECK(callback_on_complete);
-    reply_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback_on_complete), outputs));
-
+    BatchExecuteLoadedModel(inputs, &outputs);
     OnExecutionComplete();
+    return outputs;
+  }
+
+  // IMPORTANT: These WeakPointers must only be dereferenced on the
+  // |execution_task_runner| thread.
+  base::WeakPtr<TFLiteModelExecutor> GetWeakPtrForExecutionThread() {
+    return execution_sequence_weak_ptr_factory_.GetWeakPtr();
   }
 
   TFLiteModelExecutor(const TFLiteModelExecutor&) = delete;
@@ -319,9 +279,10 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputType> {
       ExecutionStatus* out_status) = 0;
 
  private:
-  // A true return value indicates the model was loaded successfully, false
-  // otherwise.
-  bool LoadModelFile(ExecutionStatus* out_status) {
+  // Loads the model file in the background thread, and calls a callback on
+  // model file loaded in memory on the model execution thread.
+  void LoadModelFile(
+      base::OnceCallback<void(ExecutionStatus)> model_loaded_callback) {
     TRACE_EVENT1("browser", "OptGuideModelExecutor::LoadModelFile",
                  "OptimizationTarget",
                  optimization_guide::GetStringNameForOptimizationTarget(
@@ -336,31 +297,64 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputType> {
             GetStringNameForOptimizationTarget(optimization_target_),
         !!model_file_path_);
 
-    if (!model_file_path_) {
-      *out_status = ExecutionStatus::kErrorModelFileNotAvailable;
-      return false;
+    // Run the slower model loading file I/O task on the background thread to
+    // avoid blocking the main thread, e.g., the UI thread.
+    model_loading_task_runner_->PostTaskAndReplyWithResult(
+        FROM_HERE,
+        // Anomynous model file loading function to be called on the background
+        // thread, which returns the memory-mapped model file or nullptr if
+        // failed to load.
+        base::BindOnce(
+            [](const absl::optional<base::FilePath> model_file_path,
+               proto::OptimizationTarget optimization_target)
+                -> std::pair<ExecutionStatus,
+                             std::unique_ptr<base::MemoryMappedFile>> {
+              base::TimeTicks loading_start_time = base::TimeTicks::Now();
+              if (!model_file_path) {
+                return std::make_pair(
+                    ExecutionStatus::kErrorModelFileNotAvailable, nullptr);
+              }
+
+              std::unique_ptr<base::MemoryMappedFile> model_fb =
+                  std::make_unique<base::MemoryMappedFile>();
+              if (!model_fb->Initialize(*model_file_path)) {
+                return std::make_pair(ExecutionStatus::kErrorModelFileNotValid,
+                                      nullptr);
+              }
+
+              // We only want to record successful loading times.
+              base::UmaHistogramTimes(
+                  "OptimizationGuide.ModelExecutor.ModelLoadingDuration2." +
+                      optimization_guide::GetStringNameForOptimizationTarget(
+                          optimization_target),
+                  base::TimeTicks::Now() - loading_start_time);
+
+              return std::make_pair(ExecutionStatus::kSuccess,
+                                    std::move(model_fb));
+            },
+            model_file_path_, optimization_target_),
+        base::BindOnce(&TFLiteModelExecutor::OnModelFileLoadedInMemory,
+                       GetWeakPtrForExecutionThread(),
+                       std::move(model_loaded_callback)));
+  }
+
+  // Called on model file loaded in memory. Builds the model execution task from
+  // the memory-mapped file, and calls `model_loaded_callback`.
+  void OnModelFileLoadedInMemory(
+      base::OnceCallback<void(ExecutionStatus)> model_loaded_callback,
+      std::pair<ExecutionStatus, std::unique_ptr<base::MemoryMappedFile>>
+          status_and_model_fb) {
+    DCHECK(execution_task_runner_->RunsTasksInCurrentSequence());
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    auto status = status_and_model_fb.first;
+    auto model_fb = std::move(status_and_model_fb.second);
+    if (!model_fb) {
+      std::move(model_loaded_callback).Run(status);
+      return;
     }
 
-    base::TimeTicks loading_start_time = base::TimeTicks::Now();
-
-    std::unique_ptr<base::MemoryMappedFile> model_fb =
-        std::make_unique<base::MemoryMappedFile>();
-    if (!model_fb->Initialize(*model_file_path_)) {
-      *out_status = ExecutionStatus::kErrorModelFileNotValid;
-      return false;
-    }
-    model_fb_ = std::move(model_fb);
-
-    loaded_model_ = BuildModelExecutionTask(model_fb_.get(), out_status);
-
-    if (!!loaded_model_) {
-      // We only want to record successful loading times.
-      base::UmaHistogramTimes(
-          "OptimizationGuide.ModelExecutor.ModelLoadingDuration2." +
-              optimization_guide::GetStringNameForOptimizationTarget(
-                  optimization_target_),
-          base::TimeTicks::Now() - loading_start_time);
-    }
+    ExecutionStatus out_status;
+    loaded_model_ = BuildModelExecutionTask(model_fb.get(), &out_status);
 
     // Local histogram used in integration testing.
     base::BooleanHistogram::FactoryGet(
@@ -370,7 +364,120 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputType> {
         base::Histogram::kNoFlags)
         ->Add(!!loaded_model_);
 
-    return !!loaded_model_;
+    std::move(model_loaded_callback).Run(out_status);
+  }
+
+  // Loads the model file if not loaded yet on the background thread, and batch
+  // executes it on the model execution thread.
+  void LoadModelFileAndBatchExecute(
+      BatchExecutionCallback callback_on_complete,
+      ModelExecutor<OutputType, InputType>::ConstRefInputVector inputs) {
+    DCHECK(execution_task_runner_->RunsTasksInCurrentSequence());
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    if (!loaded_model_) {
+      LoadModelFile(base::BindOnce(
+          &TFLiteModelExecutor::BatchExecuteLoadedModelAndRunCallback,
+          GetWeakPtrForExecutionThread(), std::move(callback_on_complete),
+          inputs));
+    } else {
+      BatchExecuteLoadedModelAndRunCallback(std::move(callback_on_complete),
+                                            inputs, ExecutionStatus::kSuccess);
+    }
+  }
+
+  // Batch executes the loaded model for inputs.
+  void BatchExecuteLoadedModel(
+      ModelExecutor<OutputType, InputType>::ConstRefInputVector inputs,
+      std::vector<absl::optional<OutputType>>* outputs) {
+    DCHECK(execution_task_runner_->RunsTasksInCurrentSequence());
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    DCHECK(loaded_model_);
+
+    if (last_execution_time_) {
+      // The max of this histogram is 3m since only the distribution and count
+      // of smaller values is important.
+      base::UmaHistogramMediumTimes(
+          "OptimizationGuide.ModelExecutor.TimeSincePreviousRun." +
+              GetStringNameForOptimizationTarget(optimization_target_),
+          base::TimeTicks::Now() - *last_execution_time_);
+    }
+    last_execution_time_ = base::TimeTicks::Now();
+
+    for (const InputType& input : inputs) {
+      ScopedExecutionStatusResultRecorder status_recorder(optimization_target_);
+      // IMPORTANT: Once the arm method is called, disarm must be called when
+      // the model execution finishes. Do NOT early-return in this next block.
+      if (watchdog_) {
+        watchdog_->ArmWithTask(MakeCancelClosure());
+      }
+      {
+        TRACE_EVENT1("browser", "OptGuideModelExecutor::Execute",
+                     "OptimizationTarget",
+                     optimization_guide::GetStringNameForOptimizationTarget(
+                         optimization_target_));
+        base::ElapsedThreadTimer execution_timer;
+        base::ElapsedTimer elapsed_timer;
+        absl::optional<OutputType> output = Execute(
+            loaded_model_.get(), status_recorder.mutable_status(), input);
+        DCHECK_NE(status_recorder.status(), ExecutionStatus::kUnknown);
+        outputs->push_back(output);
+
+        // The max of this histogram is 1 hour because we want to understand
+        // tail behavior and catch long running model executions.
+        base::UmaHistogramLongTimes(
+            "OptimizationGuide.ModelExecutor.ExecutionLatency." +
+                GetStringNameForOptimizationTarget(optimization_target_),
+            elapsed_timer.Elapsed());
+        base::UmaHistogramLongTimes(
+            "OptimizationGuide.ModelExecutor.ExecutionThreadTime." +
+                GetStringNameForOptimizationTarget(optimization_target_),
+            execution_timer.Elapsed());
+        base::UmaHistogramMicrosecondsTimes(
+            "OptimizationGuide.ModelExecutor.ExecutionThreadTimeMicroseconds." +
+                GetStringNameForOptimizationTarget(optimization_target_),
+            execution_timer.Elapsed());
+      }
+      if (watchdog_) {
+        watchdog_->DisarmOnExecutionComplete();
+      }
+    }
+  }
+
+  // Batch executes the loaded model and runs callback on the reply thread.
+  // Unloads the model if needed.
+  void BatchExecuteLoadedModelAndRunCallback(
+      BatchExecutionCallback callback_on_complete,
+      ModelExecutor<OutputType, InputType>::ConstRefInputVector inputs,
+      ExecutionStatus execution_status) {
+    DCHECK(execution_task_runner_->RunsTasksInCurrentSequence());
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    std::vector<absl::optional<OutputType>> outputs;
+    outputs.reserve(inputs.size());
+    if (!loaded_model_) {
+      for (size_t i = 0; i < inputs.size(); i++) {
+        outputs.push_back(absl::nullopt);
+        // If the model fails to load in a batch context, this status would not
+        // get recorded the same number of times as it would in success. Thus,
+        // increment the bucket |inputs.size()| number of times to keep metrics
+        // sane.
+        ScopedExecutionStatusResultRecorder status_recorder(
+            optimization_target_);
+        status_recorder.set_status(execution_status);
+      }
+
+      reply_task_runner_->PostTask(
+          FROM_HERE, base::BindOnce(std::move(callback_on_complete), outputs));
+      return;
+    }
+
+    BatchExecuteLoadedModel(inputs, &outputs);
+    DCHECK(callback_on_complete);
+    reply_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback_on_complete), outputs));
+
+    OnExecutionComplete();
   }
 
   void OnExecutionComplete() {
@@ -402,9 +509,15 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputType> {
   std::unique_ptr<ModelExecutionTimeoutWatchdog, base::OnTaskRunnerDeleter>
       watchdog_;
 
+  // Main thread for model execution. For synchronous model execution, this
+  // needs to be the same caller thread.
   scoped_refptr<base::SequencedTaskRunner> execution_task_runner_;
 
+  // Arbitrary thread for running reply tasks.
   scoped_refptr<base::SequencedTaskRunner> reply_task_runner_;
+
+  // Background thread for model loading file I/O.
+  scoped_refptr<base::SequencedTaskRunner> model_loading_task_runner_;
 
   // The time that the model was last executed. Logged in metrics for the second
   // and following runs.
@@ -429,6 +542,9 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputType> {
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);
+
+  base::WeakPtrFactory<TFLiteModelExecutor>
+      execution_sequence_weak_ptr_factory_{this};
 };
 
 }  // namespace optimization_guide

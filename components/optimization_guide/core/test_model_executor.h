@@ -40,6 +40,9 @@ class TestModelExecutor
       BatchExecutionCallback callback_on_complete,
       base::TimeTicks start_time,
       const std::vector<std::vector<float>>& args) override;
+
+  std::vector<absl::optional<std::vector<float>>> SendForBatchExecutionSync(
+      const std::vector<std::vector<float>>& args) override;
 };
 
 }  // namespace optimization_guide

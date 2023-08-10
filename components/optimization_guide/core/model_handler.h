@@ -16,6 +16,7 @@
 #include "base/task/cancelable_task_tracker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "components/optimization_guide/core/model_executor.h"
 #include "components/optimization_guide/core/model_util.h"
 #include "components/optimization_guide/core/optimization_guide_model_provider.h"
@@ -153,6 +154,19 @@ class ModelHandler : public OptimizationTargetModelObserver {
 
     tracker->PostTask(model_executor_task_runner_.get(), FROM_HERE,
                       GetBatchExecutionTask(std::move(callback), batch_input));
+  }
+
+  // Runs synchronous batch model execution.
+  // Returns batch model outputs.
+  std::vector<absl::optional<OutputType>> BatchExecuteModelWithInputSync(
+      typename ModelExecutor<OutputType, InputType>::ConstRefInputVector
+          inputs) {
+    base::ElapsedTimer timer;
+    auto batch_model_outputs =
+        model_executor_->SendForBatchExecutionSync(inputs);
+    RecordTaskExecutionLatency(optimization_target_,
+                               /*execution_time=*/timer.Elapsed());
+    return batch_model_outputs;
   }
 
   void SetShouldUnloadModelOnComplete(bool should_auto_unload) {
