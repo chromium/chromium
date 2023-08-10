@@ -139,7 +139,11 @@ ScrollTimeline::TimelineState ScrollTimeline::ComputeTimelineState() const {
   current_offset = std::abs(current_offset);
 
   CalculateOffsets(scrollable_area, physical_orientation, &state);
-  DCHECK(state.scroll_offsets);
+  if (!state.scroll_offsets) {
+    // Scroll Offsets may be null if the type of subject element is not
+    // supported.
+    return state;
+  }
 
   state.zoom = layout_box->StyleRef().EffectiveZoom();
   // Timeline is inactive unless the scroll offset range is positive.

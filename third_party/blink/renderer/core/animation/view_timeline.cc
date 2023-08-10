@@ -313,10 +313,14 @@ void ViewTimeline::CalculateOffsets(PaintLayerScrollableArea* scrollable_area,
   DCHECK(subject());
 
   absl::optional<gfx::SizeF> subject_size = SubjectSize();
+  if (!subject_size) {
+    // Subject size may be null if the type of subject element is not supported.
+    return;
+  }
+
   absl::optional<gfx::PointF> subject_position =
       SubjectPosition(state->resolved_source);
   DCHECK(subject_position);
-  DCHECK(subject_size);
 
   // TODO(crbug.com/1448801): Handle nested sticky elements.
   double target_offset = physical_orientation == kHorizontalScroll
@@ -519,7 +523,6 @@ absl::optional<gfx::SizeF> ViewTimeline::SubjectSize() const {
     return gfx::SizeF(rect.Width().ToDouble(), rect.Height().ToDouble());
   }
 
-  NOTREACHED();
   return absl::nullopt;
 }
 
