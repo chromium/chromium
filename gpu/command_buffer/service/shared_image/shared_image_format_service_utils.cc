@@ -280,7 +280,7 @@ VkFormat ToVkFormat(viz::SharedImageFormat format, int plane_index) {
     return plane_index == 0 ? VK_FORMAT_R16_UNORM : VK_FORMAT_R16G16_UNORM;
   }
 
-  NOTREACHED();
+  NOTREACHED() << "Unsupported format: " << format.ToString();
   return VK_FORMAT_UNDEFINED;
 }
 #endif
@@ -310,7 +310,7 @@ wgpu::TextureFormat ToDawnFormat(viz::SharedImageFormat format) {
   // TODO(crbug.com/1175525): Add R8BG8A8Triplanar420Unorm format for dawn.
   // TODO(crbug.com/1445450): Add support for other multiplane formats.
 
-  NOTREACHED();
+  NOTREACHED() << "Unsupported format: " << format.ToString();
   return wgpu::TextureFormat::Undefined;
 }
 
