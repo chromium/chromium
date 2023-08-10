@@ -346,12 +346,17 @@ void IntroHandler::HandleInitializeMainView(const base::Value::List& args) {
 
 void IntroHandler::HandleSetAsDefaultBrowser(const base::Value::List& args) {
   CHECK(args.empty());
-  std::move(default_browser_callback_).Run(DefaultBrowserChoice::kSetAsDefault);
+  if (default_browser_callback_) {
+    std::move(default_browser_callback_)
+        .Run(DefaultBrowserChoice::kSetAsDefault);
+  }
 }
 
 void IntroHandler::HandleSkipDefaultBrowser(const base::Value::List& args) {
   CHECK(args.empty());
-  std::move(default_browser_callback_).Run(DefaultBrowserChoice::kSkip);
+  if (default_browser_callback_) {
+    std::move(default_browser_callback_).Run(DefaultBrowserChoice::kSkip);
+  }
 }
 
 void IntroHandler::ResetDefaultBrowserButtons() {
