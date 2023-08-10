@@ -95,19 +95,20 @@ section below).
 
 gclient doesn't provide a way to delete dependencies. You can delete dependency
 by manually editing DEPS file. If git submodules are used, you will also need to
-remove gitlink entry:
+remove it from git:
 
 ```
-git update-index --remove --force-remove {dependency}
+git rm {dependency}
 ```
 
 or using the example from the previous section:
 
 ```
-git update-index --remove --force-remove third_party/boringssl/src
+git rm third_party/boringssl/src
 ```
 
-Once git-update-index is executed, you can proceed with committing your change.
+Once git-rm is executed, you can proceed with committing your change. You should
+see change in DEPS, .gitmodule and {dependency}.
 
 ## Regenerating git submodules
 
