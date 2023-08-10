@@ -78,6 +78,7 @@ class SupervisedUserURLFilterTest : public MixinBasedInProcessBrowserTest {
         {supervised_user::kFilterWebsitesForSupervisedUsersOnDesktopAndIOS,
          supervised_user::kSupervisedPrefsControlledBySupervisedStore},
         {features::kHttpsUpgrades});
+    supervision_mixin_.InitFeatures();
   }
   ~SupervisedUserURLFilterTest() override = default;
 
