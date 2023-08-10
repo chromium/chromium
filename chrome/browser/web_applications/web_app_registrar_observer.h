@@ -62,6 +62,11 @@ class WebAppRegistrarObserver : public base::CheckedObserver {
 
   virtual void OnAlwaysShowToolbarInFullscreenChanged(const AppId& app_id,
                                                       bool show) {}
+
+  // Called after the user link capturing preferences have been modified from
+  // various Chrome surfaces.
+  virtual void OnWebAppUserLinkCapturingPreferencesChanged(const AppId& app_id,
+                                                           bool is_preferred) {}
 };
 
 }  // namespace web_app

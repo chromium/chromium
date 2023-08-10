@@ -434,6 +434,11 @@ class WebAppRegistrar : public ProfileManagerObserver {
       RunOnOsLoginMode run_on_os_login_mode);
   void NotifyWebAppSettingsPolicyChanged();
 
+#if !BUILDFLAG(IS_CHROMEOS)
+  void NotifyWebAppUserLinkCapturingPreferencesChanged(const AppId& app_id,
+                                                       bool is_preferred);
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
   // ProfileManagerObserver:
   void OnProfileMarkedForPermanentDeletion(
       Profile* profile_to_be_deleted) override;

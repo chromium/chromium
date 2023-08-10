@@ -31,6 +31,8 @@
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_prefs_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_registrar_observer.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
@@ -231,7 +233,7 @@ AppManagementPageHandler::AppManagementPageHandler(
   preferred_apps_list_handle_observer_.Observe(&proxy->PreferredAppsList());
 
   // On Chrome OS, file handler updates are already plumbed through
-  // `OnAppUpdate()` since the change will also affect the intent filters.
+  // App Service since the change will also affect the intent filters.
   // There's no need to update twice.
 #if !BUILDFLAG(IS_CHROMEOS)
   auto* provider = web_app::WebAppProvider::GetForWebApps(profile_);
@@ -516,6 +518,14 @@ void AppManagementPageHandler::OnAppRegistrarDestroyed() {
   registrar_observation_.Reset();
 }
 
+#if !BUILDFLAG(IS_CHROMEOS)
+void AppManagementPageHandler::OnWebAppUserLinkCapturingPreferencesChanged(
+    const web_app::AppId& app_id,
+    bool is_preferred) {
+  OnPreferredAppChanged(app_id, is_preferred);
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
 app_management::mojom::AppPtr AppManagementPageHandler::CreateUIAppPtr(
     const apps::AppUpdate& update) {
   auto app = app_management::mojom::App::New();
@@ -759,11 +769,17 @@ void AppManagementPageHandler::MakeAppPreferredAndResetOthers(
     return;
   }
 
-  web_app::ScopedRegistryUpdate update = lock.sync_bridge().BeginUpdate();
+  // TODO(b/273830801): Automatically call observers when changes are committed
+  //  to the web_app DB.
   for (const web_app::AppId& id : lock.registrar().GetAppIds()) {
     if (id == app_id) {
-      web_app::WebApp* app_to_update = update->UpdateApp(id);
-      app_to_update->SetIsUserSelectedAppForSupportedLinks(set_to_preferred);
+      {
+        web_app::ScopedRegistryUpdate update = lock.sync_bridge().BeginUpdate();
+        web_app::WebApp* app_to_update = update->UpdateApp(app_id);
+        app_to_update->SetIsUserSelectedAppForSupportedLinks(set_to_preferred);
+      }
+      lock.registrar().NotifyWebAppUserLinkCapturingPreferencesChanged(
+          app_id, set_to_preferred);
     } else {
       // For all other app_ids, if one is already set as the preferred, reset
       // all other apps in the registry if they were previously set to be a
@@ -771,9 +787,15 @@ void AppManagementPageHandler::MakeAppPreferredAndResetOthers(
       // prefixes.
       if (set_to_preferred && lock.registrar().CapturesLinksInScope(id) &&
           lock.registrar().AppScopesMatchForUserLinkCapturing(app_id, id)) {
-        web_app::WebApp* app_to_update = update->UpdateApp(id);
-        app_to_update->SetIsUserSelectedAppForSupportedLinks(
-            /*is_user_selected_app_for_capturing_links=*/false);
+        {
+          web_app::ScopedRegistryUpdate update =
+              lock.sync_bridge().BeginUpdate();
+          web_app::WebApp* app_to_update = update->UpdateApp(id);
+          app_to_update->SetIsUserSelectedAppForSupportedLinks(
+              /*is_user_selected_app_for_capturing_links=*/false);
+        }
+        lock.registrar().NotifyWebAppUserLinkCapturingPreferencesChanged(
+            id, /*is_preferred=*/false);
       }
     }
   }

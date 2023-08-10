@@ -232,6 +232,16 @@ void WebAppRegistrar::NotifyWebAppSettingsPolicyChanged() {
   }
 }
 
+#if !BUILDFLAG(IS_CHROMEOS)
+void WebAppRegistrar::NotifyWebAppUserLinkCapturingPreferencesChanged(
+    const AppId& app_id,
+    bool is_preferred) {
+  for (WebAppRegistrarObserver& observer : observers_) {
+    observer.OnWebAppUserLinkCapturingPreferencesChanged(app_id, is_preferred);
+  }
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
 base::flat_map<AppId, base::flat_set<GURL>>
 WebAppRegistrar::GetExternallyInstalledApps(
     ExternalInstallSource install_source) const {
