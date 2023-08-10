@@ -6623,3 +6623,6 @@ crbug.com/626703 virtual/orb-v02/external/wpt/fetch/api/basic/request-forbidden-
 crbug.com/1471020 http/tests/devtools/network/request-name-path.js [ Failure Pass ]
 
 [ Linux ] storage/websql/open-database-utf8-name.html [ Pass Timeout ] # flaky
+
+# Gardner 2023-08-10
+crbug.com/1459188 [ Linux ] inspector-protocol/input/dispatchMouseEvent-dragging.js [ Failure Pass ]
