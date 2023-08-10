@@ -1238,14 +1238,9 @@ void WallpaperControllerImpl::ShowUserWallpaper(
     return;
   }
 
-  base::FilePath wallpaper_path;
-  if (info.type == WallpaperType::kDevice) {
-    DCHECK(!device_policy_wallpaper_path_.empty());
-    wallpaper_path = device_policy_wallpaper_path_;
-  } else {
-    std::string sub_dir = GetCustomWallpaperSubdirForCurrentResolution();
-    wallpaper_path = GetCustomWallpaperDir(sub_dir).Append(info.location);
-  }
+  std::string sub_dir = GetCustomWallpaperSubdirForCurrentResolution();
+  base::FilePath wallpaper_path =
+      GetCustomWallpaperDir(sub_dir).Append(info.location);
 
   CustomWallpaperMap::iterator it = wallpaper_cache_map_.find(account_id);
   // Do not try to load the wallpaper if the path is the same, since loading
