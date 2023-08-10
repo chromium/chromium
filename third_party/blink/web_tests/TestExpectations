@@ -6621,3 +6621,5 @@ crbug.com/626703 external/wpt/html/semantics/scripting-1/the-script-element/json
 crbug.com/626703 virtual/orb-v02/external/wpt/fetch/api/basic/request-forbidden-headers.any.serviceworker.html [ Failure Pass ]
 
 crbug.com/1471020 http/tests/devtools/network/request-name-path.js [ Failure Pass ]
+
+[ Linux ] storage/websql/open-database-utf8-name.html [ Pass Timeout ] # flaky
