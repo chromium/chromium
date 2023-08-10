@@ -86,10 +86,6 @@ class Product:
         """Path to the default webdriver binary, if available."""
         return None
 
-    @property
-    def default_binary(self):
-        return None
-
 
 class Chrome(Product):
     name = 'chrome'
@@ -98,20 +94,11 @@ class Chrome(Product):
         """Product-specific wptrunner parameters needed to run tests."""
         return {
             **super().product_specific_options(),
-            'binary': self.default_binary,
-            'webdriver_binary': self.default_webdriver_binary,
+            'binary':
+            self._port.path_to_driver(),
+            'webdriver_binary':
+            self.default_webdriver_binary,
         }
-
-    @property
-    def default_binary(self):
-        binary_path = 'chrome'
-        if self._host.platform.is_win():
-            binary_path += '.exe'
-        elif self._host.platform.is_mac():
-            binary_path = self._host.filesystem.join('Chromium.app',
-                                                     'Contents', 'MacOS',
-                                                     'Chromium')
-        return self._port.build_path(binary_path)
 
     @property
     def default_webdriver_binary(self):
@@ -129,19 +116,9 @@ class ContentShell(Product):
         """Product-specific wptrunner parameters needed to run tests."""
         return {
             **super().product_specific_options(),
-            'binary': self.default_binary,
+            'binary':
+            self._port.path_to_driver(),
         }
-
-    @property
-    def default_binary(self):
-        binary_path = 'content_shell'
-        if self._host.platform.is_win():
-            binary_path += '.exe'
-        elif self._host.platform.is_mac():
-            binary_path = self._host.filesystem.join('Content Shell.app',
-                                                     'Contents', 'MacOS',
-                                                     'Content Shell')
-        return self._port.build_path(binary_path)
 
 
 class ChromeiOS(Product):

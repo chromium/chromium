@@ -137,6 +137,8 @@ class WPTAdapter:
         cls._ensure_value(options, 'wpt_only', True)
         cls._ensure_value(options, 'no_virtual_tests', True)
         port = host.port_factory.get(port_name, options)
+        if options.product == 'chrome':
+            port.set_option_default('driver_name', port.CHROME_NAME)
         product = make_product(port, options)
         return WPTAdapter(product, port, options, tests)
 
@@ -644,7 +646,7 @@ def parse_arguments(argv):
     # server and therefore should never be started in `--no-headless` mode.
     # Conversely, the default headless mode should always start Xvfb.
     options.use_xvfb = options.headless
-    return (options, args)
+    return options, args
 
 
 def main(argv) -> int:

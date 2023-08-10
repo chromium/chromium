@@ -72,10 +72,10 @@ class MacPortTest(port_testcase.PortTestCase):
 
     def test_driver_name_option(self):
         self.assertTrue(
-            self.make_port()._path_to_driver().endswith('Content Shell'))
+            self.make_port().path_to_driver().endswith('Content Shell'))
         port = self.make_port(
             options=optparse.Values(dict(driver_name='OtherDriver')))
-        self.assertTrue(port._path_to_driver().endswith('OtherDriver'))  # pylint: disable=protected-access
+        self.assertTrue(port.path_to_driver().endswith('OtherDriver'))
 
     def test_path_to_image_diff(self):
         self.assertEqual(self.make_port()._path_to_image_diff(),

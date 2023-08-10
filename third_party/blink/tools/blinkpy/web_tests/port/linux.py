@@ -304,7 +304,3 @@ class LinuxPort(base.Port):
                 _log.warn('Xvfb stderr:  %s', line)
             self.host.filesystem.remove(self._xvfb_stderr.name)
         self._xvfb_stdout = self._xvfb_stderr = self._xvfb_process = None
-
-    def _path_to_driver(self, target=None):
-        binary_name = self.driver_name()
-        return self._build_path_with_target(target, binary_name)

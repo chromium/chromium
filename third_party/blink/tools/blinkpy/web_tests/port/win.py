@@ -236,13 +236,13 @@ class WinPort(base.Port):
         return self._filesystem.join(self.apache_config_directory(),
                                      'win-httpd.conf')
 
+    def path_to_driver(self, target=None):
+        binary_name = '%s.exe' % self.driver_name()
+        return self.build_path(binary_name, target=target)
+
     #
     # PROTECTED ROUTINES
     #
-
-    def _path_to_driver(self, target=None):
-        binary_name = '%s.exe' % self.driver_name()
-        return self._build_path_with_target(target, binary_name)
 
     def _path_to_image_diff(self):
         binary_name = 'image_diff.exe'

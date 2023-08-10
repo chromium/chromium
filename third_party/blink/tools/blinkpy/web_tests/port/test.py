@@ -761,7 +761,7 @@ class TestPort(Port):
                 crash_logs[cp[0]] = (b'delayed crash log', '/tmp')
         return crash_logs
 
-    def _path_to_driver(self, target=None):
+    def path_to_driver(self, target=None):
         # This routine shouldn't normally be called, but it is called by
         # the mock_drt Driver. We return something, but make sure it's useless.
         return 'MOCK _path_to_driver'
@@ -929,8 +929,11 @@ class TestDriver(Driver):
         self.pid = 0
 
     def cmd_line(self, per_test_args):
-        return [self._port._path_to_driver()] + \
-            self._port.get_option('additional_driver_flag', []) + per_test_args
+        return [
+            self._port.path_to_driver(),
+            *self._port.get_option('additional_driver_flag', []),
+            *per_test_args,
+        ]
 
     def run_test(self, driver_input):
         if not self.started:

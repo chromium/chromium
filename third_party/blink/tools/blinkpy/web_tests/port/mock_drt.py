@@ -87,7 +87,7 @@ class MockDRTPort(object):
         driver = self.__delegate_driver_class()(self, worker_number,
                                                 no_timeout)
         driver.cmd_line = self._overriding_cmd_line(
-            driver.cmd_line, self.__delegate._path_to_driver(), sys.executable,
+            driver.cmd_line, self.__delegate.path_to_driver(), sys.executable,
             path_to_this_file, self.__delegate.name())
         return driver
 

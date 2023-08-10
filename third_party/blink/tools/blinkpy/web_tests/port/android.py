@@ -470,7 +470,7 @@ class AndroidPort(base.Port):
             device_path = lambda *p: posixpath.join(
                 self._driver_details.device_directory(), *p)
 
-            device.Install(self._path_to_driver())
+            device.Install(self.path_to_driver())
 
             # Build up a list of what we want to push, including:
             host_device_tuples = []
@@ -601,8 +601,8 @@ class AndroidPort(base.Port):
     def build_path(self, *comps):
         return self._local_port.build_path(*comps)
 
-    def _build_path_with_target(self, target, *comps):
-        return self._local_port._build_path_with_target(target, *comps)
+    def build_path(self, *comps, target=None):
+        return self._local_port.build_path(*comps, target=target)
 
     def path_to_apache(self):
         return self._local_port.path_to_apache()
@@ -610,9 +610,8 @@ class AndroidPort(base.Port):
     def path_to_apache_config_file(self):
         return self._local_port.path_to_apache_config_file()
 
-    def _path_to_driver(self, target=None):
-        return self._build_path_with_target(target,
-                                            self._driver_details.apk_name())
+    def path_to_driver(self, target=None):
+        return self.build_path(self._driver_details.apk_name(), target=target)
 
     def _path_to_image_diff(self):
         return self._local_port._path_to_image_diff()
@@ -811,7 +810,7 @@ class ChromiumAndroidDriver(driver.Driver):
             kallsyms_path = self._update_kallsyms_cache(symfs_path)
             # FIXME: We should pass this some sort of "Bridge" object abstraction around ADB instead of a path/device pair.
             self._profiler = AndroidPerf(self._port.host,
-                                         self._port._path_to_driver(),
+                                         self._port.path_to_driver(),
                                          self._port.artifacts_directory(),
                                          self._device, symfs_path,
                                          kallsyms_path)

@@ -54,6 +54,7 @@ class MacPort(base.Port):
     FALLBACK_PATHS['mac10.15'] = ['mac-mac10.15'] + FALLBACK_PATHS['mac11']
 
     CONTENT_SHELL_NAME = 'Content Shell'
+    CHROME_NAME = 'Chromium'
 
     BUILD_REQUIREMENTS_URL = 'https://chromium.googlesource.com/chromium/src/+/main/docs/mac_build_instructions.md'
 
@@ -112,8 +113,9 @@ class MacPort(base.Port):
         config_file_basename = 'apache2-httpd-%s-php7.conf' % (self._apache_version(),)
         return self._filesystem.join(self.apache_config_directory(), config_file_basename)
 
-    def _path_to_driver(self, target=None):
-        return self._build_path_with_target(target,
-                                            self.driver_name() + '.app',
-                                            'Contents', 'MacOS',
-                                            self.driver_name())
+    def path_to_driver(self, target=None):
+        return self.build_path(self.driver_name() + '.app',
+                               'Contents',
+                               'MacOS',
+                               self.driver_name(),
+                               target=target)

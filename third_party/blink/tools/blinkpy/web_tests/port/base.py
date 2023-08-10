@@ -42,7 +42,7 @@ import tempfile
 from collections import defaultdict
 from copy import deepcopy
 from datetime import datetime
-from typing import Set
+from typing import Optional, Set
 
 import six
 from six.moves import zip_longest
@@ -148,6 +148,7 @@ class Port(object):
     ALL_BUILD_TYPES = ('debug', 'release')
 
     CONTENT_SHELL_NAME = 'content_shell'
+    CHROME_NAME = 'chrome'
 
     # Update the first line in third_party/blink/web_tests/TestExpectations and
     # the documentation in docs/testing/web_test_expectations.md when this list
@@ -527,7 +528,7 @@ class Port(object):
         return True
 
     def check_build(self, needs_http, printer):
-        if not self._check_file_exists(self._path_to_driver(), 'test driver'):
+        if not self._check_file_exists(self.path_to_driver(), 'test driver'):
             return exit_codes.UNEXPECTED_ERROR_EXIT_STATUS
 
         if not self._check_driver_build_up_to_date(
@@ -1717,7 +1718,7 @@ class Port(object):
     def setup_test_run(self):
         """Performs port-specific work at the beginning of a test run."""
         # Delete the disk cache if any to ensure a clean test run.
-        dump_render_tree_binary_path = self._path_to_driver()
+        dump_render_tree_binary_path = self.path_to_driver()
         cachedir = self._filesystem.dirname(dump_render_tree_binary_path)
         cachedir = self._filesystem.join(cachedir, 'cache')
         if self._filesystem.exists(cachedir):
@@ -2253,9 +2254,9 @@ class Port(object):
         # future.
         return 'apache2-httpd-' + self._apache_version() + '-php7.conf'
 
-    def _path_to_driver(self, target=None):
+    def path_to_driver(self, target=None):
         """Returns the full path to the test driver."""
-        return self.build_path(target, self.driver_name())
+        return self.build_path(self.driver_name(), target=target)
 
     def _path_to_image_diff(self):
         """Returns the full path to the image_diff binary, or None if it is not available.
@@ -2607,8 +2608,8 @@ class Port(object):
 
     @memoized
     def _get_blocked_tests_for_threaded_compositing_testing(self):
-        path = self._filesystem.join(self.web_tests_dir(),
-                                     'TestLists/SingleThreadedTests')
+        path = self._filesystem.join(self.web_tests_dir(), 'TestLists',
+                                     'SingleThreadedTests')
         return set(self._filesystem.read_text_file(path).split('\n'))
 
     def _should_run_single_threaded(self, test_name):
@@ -2632,15 +2633,12 @@ class Port(object):
 
         return False
 
-    def build_path(self, *comps):
+    def build_path(self, *comps: str, target: Optional[str] = None):
         """Returns a path from the build directory."""
-        return self._build_path_with_target(self._options.target, *comps)
-
-    def _build_path_with_target(self, target, *comps):
-        target = target or self.get_option('target')
         return self._filesystem.join(
             self._path_from_chromium_base(),
-            self.get_option('build_directory') or 'out', target, *comps)
+            self.get_option('build_directory') or 'out', target
+            or self._options.target, *comps)
 
     def _check_driver_build_up_to_date(self, target):
         # FIXME: We should probably get rid of this check altogether as it has
@@ -2651,8 +2649,8 @@ class Port(object):
             return True
 
         try:
-            debug_path = self._path_to_driver('Debug')
-            release_path = self._path_to_driver('Release')
+            debug_path = self.path_to_driver('Debug')
+            release_path = self.path_to_driver('Release')
 
             debug_mtime = self._filesystem.mtime(debug_path)
             release_mtime = self._filesystem.mtime(release_path)
