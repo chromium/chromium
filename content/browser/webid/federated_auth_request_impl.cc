@@ -1368,7 +1368,7 @@ void FederatedAuthRequestImpl::HandleAccountsFetchFailure(
                      weak_ptr_factory_.GetWeakPtr(),
                      FederatedAuthRequestResult::kError,
                      TokenStatus::kNotSignedInWithIdp,
-                     /*should_delay_callback=*/true),
+                     /*should_delay_callback=*/false),
       base::BindOnce(&FederatedAuthRequestImpl::ShowModalDialog,
                      weak_ptr_factory_.GetWeakPtr(),
                      idp_info->metadata.idp_signin_url));
