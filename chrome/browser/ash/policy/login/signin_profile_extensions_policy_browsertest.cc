@@ -37,6 +37,7 @@
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/browser/update_observer.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/common/mojom/view_type.mojom.h"
@@ -131,7 +132,7 @@ class ExtensionInstallErrorObserver final {
   }
 
   const raw_ptr<const Profile, ExperimentalAsh> profile_;
-  const std::string extension_id_;
+  const extensions::ExtensionId extension_id_;
   content::WindowedNotificationObserver notification_observer_;
 };
 
@@ -180,7 +181,7 @@ class ExtensionUpdateAvailabilityObserver final
 
  private:
   const raw_ptr<Profile, ExperimentalAsh> profile_;
-  const std::string extension_id_;
+  const extensions::ExtensionId extension_id_;
   const base::Version awaited_version_;
   base::RunLoop run_loop_;
 };
