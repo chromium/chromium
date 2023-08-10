@@ -111,14 +111,14 @@ class PdfAccessibilityTree : public content::PluginAXTreeSource,
     void SetScreenAIAnnotatorForTesting(
         mojo::PendingRemote<screen_ai::mojom::ScreenAIAnnotator>
             screen_ai_annotator);
-    void SetPagesPerBatchForTesting(int32_t pages_per_batch) {
+    void SetPagesPerBatchForTesting(uint32_t pages_per_batch) {
       pages_per_batch_ = pages_per_batch;
     }
 
    private:
     // TODO(crbug.com/1443341): Increase initial value after batching issue is
     // fixed.
-    int32_t pages_per_batch_ = 1u;
+    uint32_t pages_per_batch_ = 1u;
 
     void OcrNextImage();
     void ReceiveOcrResultsForImage(PdfOcrRequest request,

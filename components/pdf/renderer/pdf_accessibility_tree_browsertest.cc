@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/containers/queue.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/path_service.h"
@@ -16,8 +15,6 @@
 #include "content/public/renderer/render_accessibility.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/test/render_view_test.h"
-#include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "pdf/accessibility_structs.h"
 #include "pdf/pdf_accessibility_action_handler.h"
 #include "pdf/pdf_features.h"
@@ -35,6 +32,8 @@
 #include "ui/gfx/geometry/rect_f.h"
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+#include <tuple>
+
 #include "base/containers/queue.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -233,12 +232,12 @@ class TestPdfAccessibilityTree : public PdfAccessibilityTree {
     tree_updates_.push_back(tree_updates);
   }
 
-  void CreateFakeOCRService() {
+  void CreateFakeOCRService(uint32_t pages_per_batch) {
     CreateOcrService();
     fake_annotator_ = std::make_unique<FakeScreenAIAnnotator>();
     ocr_service_for_testing()->SetScreenAIAnnotatorForTesting(
         fake_annotator_->BindNewPipeAndPassRemote());
-    ocr_service_for_testing()->SetPagesPerBatchForTesting(20);
+    ocr_service_for_testing()->SetPagesPerBatchForTesting(pages_per_batch);
   }
 
  private:
@@ -251,7 +250,9 @@ class TestPdfAccessibilityTree : public PdfAccessibilityTree {
 
 class PdfAccessibilityTreeTest : public content::RenderViewTest {
  public:
-  PdfAccessibilityTreeTest() {}
+  PdfAccessibilityTreeTest() = default;
+  PdfAccessibilityTreeTest(const PdfAccessibilityTreeTest&) = delete;
+  PdfAccessibilityTreeTest& operator=(const PdfAccessibilityTreeTest&) = delete;
   ~PdfAccessibilityTreeTest() override = default;
 
   void SetUp() override {
@@ -280,7 +281,7 @@ class PdfAccessibilityTreeTest : public content::RenderViewTest {
   }
 
  protected:
-  chrome_pdf::AccessibilityImageInfo CreateMockImage() {
+  chrome_pdf::AccessibilityImageInfo CreateMockInaccessibleImage() {
     chrome_pdf::AccessibilityImageInfo image;
     image.alt_text = "";
     image.bounds = gfx::RectF(0.0f, 0.0f, 1.0f, 1.0f);
@@ -2245,6 +2246,9 @@ TEST_F(PdfAccessibilityTreeTest, TestShowContextMenuAction) {
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 TEST_F(PdfAccessibilityTreeTest, TestTransformFromOnOcrDataReceived) {
   // Enable feature flag.
+  //
+  // TODO(crbug.com/1443341): This should be moved to the test fixture's
+  // constructor per the `ScopedFeatureList` implementation notes.
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(::features::kPdfOcr);
 
@@ -2412,51 +2416,79 @@ TEST_F(PdfAccessibilityTreeTest, TestTransformFromOnOcrDataReceived) {
   CompareRect(kExpectedTextBoundRelativeToTreeBounds2, bounds);
 }
 
-TEST_F(PdfAccessibilityTreeTest, TestPdfOcrService) {
-  base::test::ScopedFeatureList scoped_feature_list(::features::kPdfOcr);
+class PdfOcrServiceTest
+    : public PdfAccessibilityTreeTest,
+      public testing::WithParamInterface<
+          std::tuple</* is_ocr_service_started_before_pdf_loads */ bool,
+                     /* page_count */ uint32_t>> {
+ public:
+  PdfOcrServiceTest() : feature_list_(::features::kPdfOcr) {}
+  PdfOcrServiceTest(const PdfOcrServiceTest&) = delete;
+  PdfOcrServiceTest& operator=(const PdfOcrServiceTest&) = delete;
+  ~PdfOcrServiceTest() override = default;
 
-  // Create a PDF with 5 pages.
-  doc_info_.page_count = 5;
-  doc_info_.text_accessible = true;
-  doc_info_.text_copyable = true;
-
-  chrome_pdf::AccessibilityImageInfo image = CreateMockImage();
-  page_objects_.images.push_back(image);
-
-  content::RenderFrame* render_frame = GetMainRenderFrame();
-  ASSERT_TRUE(render_frame);
-  render_frame->SetAccessibilityModeForTest(ui::AXMode::kWebContents);
-  ASSERT_TRUE(render_frame->GetRenderAccessibility());
-
-  TestPdfAccessibilityActionHandler action_handler;
-  TestPdfAccessibilityTree pdf_accessibility_tree(render_frame,
-                                                  &action_handler);
-
-  pdf_accessibility_tree.SetAccessibilityViewportInfo(viewport_info_);
-  pdf_accessibility_tree.SetAccessibilityDocInfo(doc_info_);
-  ASSERT_EQ(0u, text_runs_.size())
-      << "OcrService won't run unless the PDF has no accessible text in it.";
-  ASSERT_EQ(0u, chars_.size())
-      << "OcrService won't run unless the PDF has no accessible text in it.";
-  for (uint32_t i = 0; i < doc_info_.page_count; ++i) {
-    page_info_.page_index = i;
-    // All pages are identical.
-    pdf_accessibility_tree.SetAccessibilityPageInfo(page_info_, text_runs_,
-                                                    chars_, page_objects_);
+ protected:
+  void SetUp() override {
+    PdfAccessibilityTreeTest::SetUp();
+    content::RenderFrame* render_frame = GetMainRenderFrame();
+    ASSERT_NE(nullptr, render_frame);
+    render_frame->SetAccessibilityModeForTest(ui::AXMode::kWebContents);
+    ASSERT_NE(nullptr, render_frame->GetRenderAccessibility());
+    TestPdfAccessibilityActionHandler action_handler;
+    pdf_accessibility_tree_ = std::make_unique<TestPdfAccessibilityTree>(
+        render_frame, &action_handler);
   }
-  WaitForThreadTasks();
 
-  const ui::AXTree& ax_tree_in_pdf = pdf_accessibility_tree.tree_for_testing();
-  ui::AXNode* root_node = ax_tree_in_pdf.root();
-  ASSERT_NE(nullptr, root_node);
-  ASSERT_EQ(ax::mojom::Role::kPdfRoot, root_node->GetRole());
-  uint32_t pages_plus_status_node_count = doc_info_.page_count + 1u;
-  ASSERT_EQ(pages_plus_status_node_count, root_node->children().size());
+  TestPdfAccessibilityTree* GetPdfAccessibilityTree() const {
+    return pdf_accessibility_tree_.get();
+  }
 
-  pdf_accessibility_tree.CreateFakeOCRService();
+  void CreateInaccessiblePdfAndOcrService(
+      uint32_t page_count,
+      bool is_ocr_service_started_before_pdf_loads,
+      uint32_t pages_per_batch) {
+    ASSERT_TRUE(pdf_accessibility_tree_);
+    doc_info_.page_count = page_count;
+    doc_info_.text_accessible = true;
+    doc_info_.text_copyable = true;
 
-  for (uint32_t i = 0; i < doc_info_.page_count; ++i) {
-    ui::AXNode* page_node = root_node->children()[i + 1];
+    chrome_pdf::AccessibilityImageInfo image = CreateMockInaccessibleImage();
+    ASSERT_EQ(0u, image.text_run_index)
+        << "Images should not be anchored to any `TextRunInfo` for the "
+           "`PdfOcrService` to work with them.";
+    // Each page has two images in it.
+    page_objects_.images.push_back(image);
+    page_objects_.images.push_back(image);
+
+    if (is_ocr_service_started_before_pdf_loads) {
+      pdf_accessibility_tree_->CreateFakeOCRService(pages_per_batch);
+      ASSERT_NE(nullptr, pdf_accessibility_tree_->ocr_service_for_testing());
+    }
+
+    pdf_accessibility_tree_->SetAccessibilityDocInfo(doc_info_);
+    pdf_accessibility_tree_->SetAccessibilityViewportInfo(viewport_info_);
+    ASSERT_EQ(0u, text_runs_.size())
+        << "OcrService won't run unless the PDF has no accessible text in it.";
+    ASSERT_EQ(0u, chars_.size())
+        << "OcrService won't run unless the PDF has no accessible text in it.";
+    for (uint32_t i = 0; i < doc_info_.page_count; ++i) {
+      page_info_.page_index = i;
+      // All pages are identical.
+      pdf_accessibility_tree_->SetAccessibilityPageInfo(page_info_, text_runs_,
+                                                        chars_, page_objects_);
+    }
+    WaitForThreadTasks();
+
+    const ui::AXTree& ax_tree_in_pdf =
+        pdf_accessibility_tree_->tree_for_testing();
+
+    ui::AXNode* root_node = ax_tree_in_pdf.root();
+    ASSERT_NE(nullptr, root_node);
+    ASSERT_EQ(ax::mojom::Role::kPdfRoot, root_node->GetRole());
+    uint32_t pages_plus_status_node_count = doc_info_.page_count + 1u;
+    ASSERT_EQ(pages_plus_status_node_count, root_node->children().size());
+
+    ui::AXNode* page_node = root_node->children()[1];
     ASSERT_NE(nullptr, page_node);
     ASSERT_EQ(ax::mojom::Role::kRegion, page_node->GetRole());
     ASSERT_EQ(1u, page_node->children().size());
@@ -2464,115 +2496,76 @@ TEST_F(PdfAccessibilityTreeTest, TestPdfOcrService) {
     ui::AXNode* paragraph_node = page_node->children()[0];
     ASSERT_NE(nullptr, paragraph_node);
     ASSERT_EQ(ax::mojom::Role::kParagraph, paragraph_node->GetRole());
-    ASSERT_EQ(1u, paragraph_node->children().size());
+    ASSERT_EQ(2u, paragraph_node->children().size());
 
-    ui::AXNode* image_node = paragraph_node->children()[0];
-    ASSERT_NE(nullptr, image_node);
-    ASSERT_EQ(ax::mojom::Role::kImage, image_node->GetRole());
-    ASSERT_EQ(0u, image_node->children().size());
+    ui::AXNode* image1_node = paragraph_node->children()[0];
+    ASSERT_NE(nullptr, image1_node);
+    ASSERT_EQ(ax::mojom::Role::kImage, image1_node->GetRole());
+    ASSERT_EQ(0u, image1_node->children().size());
 
-    base::queue<PdfAccessibilityTree::PdfOcrRequest> requests;
-    requests.emplace(image_node->id(), image, paragraph_node->id());
-    pdf_accessibility_tree.ocr_service_for_testing()->OcrPage(requests);
-    WaitForThreadTasks();
+    ui::AXNode* image2_node = paragraph_node->children()[1];
+    ASSERT_NE(nullptr, image2_node);
+    ASSERT_EQ(ax::mojom::Role::kImage, image2_node->GetRole());
+    ASSERT_EQ(0u, image2_node->children().size());
+
+    if (!is_ocr_service_started_before_pdf_loads) {
+      pdf_accessibility_tree_->CreateFakeOCRService(pages_per_batch);
+      ASSERT_NE(nullptr, pdf_accessibility_tree_->ocr_service_for_testing());
+    }
   }
 
-  ASSERT_EQ(1u, pdf_accessibility_tree.GetTreeUpdates().size());
-  ASSERT_EQ(doc_info_.page_count,
-            pdf_accessibility_tree.GetTreeUpdates()[0].size());
-  for (uint32_t i = 0; i < doc_info_.page_count; ++i) {
-    EXPECT_EQ(pdf_accessibility_tree.GetTreeUpdates()[0][i].ToString(),
-              "AXTreeUpdate: root id -1\n"
-              "id=-1 staticText name=Testing (0, 0)-(0, 0)\n");
-  }
-}
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  std::unique_ptr<TestPdfAccessibilityTree> pdf_accessibility_tree_;
+};
 
-TEST_F(PdfAccessibilityTreeTest, TestPdfOcrServicePageBatching) {
-  base::test::ScopedFeatureList scoped_feature_list(::features::kPdfOcr);
+// TODO(crbug.com/1443341): Add test for end result on a non-synthetic
+// multi-page PDF.
+TEST_P(PdfOcrServiceTest, PageBatching) {
+  constexpr uint32_t kPagesPerBatch = 20u;
+  bool is_ocr_service_started_before_pdf_loads;
+  uint32_t page_count;
+  std::tie(is_ocr_service_started_before_pdf_loads, page_count) = GetParam();
+  ASSERT_NO_FATAL_FAILURE(CreateInaccessiblePdfAndOcrService(
+      page_count, is_ocr_service_started_before_pdf_loads, kPagesPerBatch));
+  const uint32_t kBatchCount = (page_count / kPagesPerBatch) +
+                               ((page_count % kPagesPerBatch == 0u) ? 0u : 1u);
 
-  // Create a PDF with 105 pages containing 2 images per page.
-  doc_info_.page_count = 105;
-  uint32_t kBatchSize = 20u;
-  uint32_t kBatchCount = (doc_info_.page_count / kBatchSize) + 1u;
-  doc_info_.text_accessible = true;
-  doc_info_.text_copyable = true;
-
-  chrome_pdf::AccessibilityImageInfo image = CreateMockImage();
-  ASSERT_EQ(0u, image.text_run_index)
-      << "Images should not be anchored to any `TextRunInfo` for the "
-         "`PdfOcrService` to work with them.";
-  page_objects_.images.push_back(image);
-  page_objects_.images.push_back(image);
-
-  content::RenderFrame* render_frame = GetMainRenderFrame();
-  ASSERT_TRUE(render_frame);
-  render_frame->SetAccessibilityModeForTest(ui::AXMode::kWebContents);
-  ASSERT_TRUE(render_frame->GetRenderAccessibility());
-
-  TestPdfAccessibilityActionHandler action_handler;
-  TestPdfAccessibilityTree pdf_accessibility_tree(render_frame,
-                                                  &action_handler);
-
-  pdf_accessibility_tree.SetAccessibilityDocInfo(doc_info_);
-  pdf_accessibility_tree.SetAccessibilityViewportInfo(viewport_info_);
-  ASSERT_EQ(0u, text_runs_.size())
-      << "OcrService won't run unless the PDF has no accessible text in it.";
-  ASSERT_EQ(0u, chars_.size())
-      << "OcrService won't run unless the PDF has no accessible text in it.";
-  for (uint32_t i = 0; i < doc_info_.page_count; ++i) {
-    page_info_.page_index = i;
-    // All pages are identical.
-    pdf_accessibility_tree.SetAccessibilityPageInfo(page_info_, text_runs_,
-                                                    chars_, page_objects_);
-  }
-  WaitForThreadTasks();
-
-  const ui::AXTree& ax_tree_in_pdf = pdf_accessibility_tree.tree_for_testing();
-  ui::AXNode* root_node = ax_tree_in_pdf.root();
-  ASSERT_NE(nullptr, root_node);
-  ASSERT_EQ(ax::mojom::Role::kPdfRoot, root_node->GetRole());
-  uint32_t pages_plus_status_node_count = doc_info_.page_count + 1u;
-  ASSERT_EQ(pages_plus_status_node_count, root_node->children().size());
-
-  ui::AXNode* page_node = root_node->children()[1];
-  ASSERT_NE(nullptr, page_node);
-  ASSERT_EQ(ax::mojom::Role::kRegion, page_node->GetRole());
-  ASSERT_EQ(1u, page_node->children().size());
-
-  ui::AXNode* paragraph_node = page_node->children()[0];
-  ASSERT_NE(nullptr, paragraph_node);
-  ASSERT_EQ(ax::mojom::Role::kParagraph, paragraph_node->GetRole());
-  ASSERT_EQ(2u, paragraph_node->children().size());
-
-  ui::AXNode* image1_node = paragraph_node->children()[0];
-  ASSERT_NE(nullptr, image1_node);
-  ASSERT_EQ(ax::mojom::Role::kImage, image1_node->GetRole());
-  ASSERT_EQ(0u, image1_node->children().size());
-
-  ui::AXNode* image2_node = paragraph_node->children()[1];
-  ASSERT_NE(nullptr, image2_node);
-  ASSERT_EQ(ax::mojom::Role::kImage, image2_node->GetRole());
-  ASSERT_EQ(0u, image2_node->children().size());
-
-  pdf_accessibility_tree.CreateFakeOCRService();
-
-  const auto& tree_updates = pdf_accessibility_tree.GetTreeUpdates();
-  for (uint32_t i = 0; i < doc_info_.page_count; ++i) {
-    base::queue<PdfAccessibilityTree::PdfOcrRequest> requests;
-    requests.emplace(image1_node->id(), image, paragraph_node->id());
-    requests.emplace(image2_node->id(), image, paragraph_node->id());
-    pdf_accessibility_tree.ocr_service_for_testing()->OcrPage(
-        std::move(requests));
+  for (uint32_t i = 0; i < page_count; ++i) {
+    if (!is_ocr_service_started_before_pdf_loads) {
+      const ui::AXTree& ax_tree_in_pdf =
+          GetPdfAccessibilityTree()->tree_for_testing();
+      ui::AXNode* root_node = ax_tree_in_pdf.root();
+      ui::AXNode* page_node = root_node->children()[i + 1];
+      ASSERT_NE(nullptr, page_node);
+      ui::AXNode* paragraph_node = page_node->children()[0];
+      ASSERT_NE(nullptr, paragraph_node);
+      ui::AXNode* image1_node = paragraph_node->children()[0];
+      ASSERT_NE(nullptr, image1_node);
+      ui::AXNode* image2_node = paragraph_node->children()[1];
+      ASSERT_NE(nullptr, image2_node);
+      base::queue<PdfAccessibilityTree::PdfOcrRequest> requests;
+      requests.emplace(image1_node->id(), CreateMockInaccessibleImage(),
+                       paragraph_node->id());
+      requests.emplace(image2_node->id(), CreateMockInaccessibleImage(),
+                       paragraph_node->id());
+      GetPdfAccessibilityTree()->ocr_service_for_testing()->OcrPage(requests);
+    }
 
     // Each page has two images.
     WaitForThreadTasks();
     WaitForThreadTasks();
   }
 
+  const auto& tree_updates = GetPdfAccessibilityTree()->GetTreeUpdates();
   ASSERT_EQ(kBatchCount, tree_updates.size());
   for (uint32_t i = 0; i < tree_updates.size(); ++i) {
     const std::vector<ui::AXTreeUpdate>& page_tree_updates = tree_updates[i];
-    if (i == 0) {  // First batch.
+    if (page_count % kPagesPerBatch != 0u && i == 0) {
+      // The first batch should have the remaining pages that cannot be
+      // processed by the rest of the batches because they are full. By design,
+      // this is always set to 5u in the instantiation of these parameterized
+      // tests.
       ASSERT_EQ(10u, page_tree_updates.size())
           << "There should be five pages in the first batch with two images "
              "per page, because we first process the remaining pages after "
@@ -2583,12 +2576,14 @@ TEST_F(PdfAccessibilityTreeTest, TestPdfOcrServicePageBatching) {
                   "AXTreeUpdate: root id -1\n"
                   "id=-1 staticText name=Testing (0, 0)-(0, 0)\n");
       }
-    } else {  // Remaining batches.
-      ASSERT_EQ(40u, page_tree_updates.size())
+    } else {
+      // All other batches should be full, i.e., their page count should equal
+      // the number of pages allowed in each batch.
+      ASSERT_EQ(kPagesPerBatch * 2u, page_tree_updates.size())
           << "There should be 20 pages in the remaining batches, with two "
              "images per page.";
 
-      for (uint32_t j = 0; j < 40u; ++j) {
+      for (uint32_t j = 0; j < kPagesPerBatch * 2u; ++j) {
         EXPECT_EQ(page_tree_updates[j].ToString(),
                   "AXTreeUpdate: root id -1\n"
                   "id=-1 staticText name=Testing (0, 0)-(0, 0)\n");
@@ -2597,106 +2592,76 @@ TEST_F(PdfAccessibilityTreeTest, TestPdfOcrServicePageBatching) {
   }
 }
 
-// The tests are run twice: once with PDF OCR being enabled before opening a PDF
-// and once with PDF OCR being enabled after opening a PDF.
-class PdfOcrMetricsTest : public PdfAccessibilityTreeTest,
-                          public testing::WithParamInterface<bool> {
- public:
-  PdfOcrMetricsTest() : feature_list_(::features::kPdfOcr) {}
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(All, PdfOcrMetricsTest, ::testing::Bool());
-
-TEST_P(PdfOcrMetricsTest, TestUMAMetricsWithPdfOcrOnBeforeOrAfterOpeningPDF) {
-  bool enable_pdf_ocr_before_opening_pdf = GetParam();
-
-  // Create a PDF with 5 pages.
-  doc_info_.page_count = 5;
-  doc_info_.text_accessible = true;
-  doc_info_.text_copyable = true;
-
-  chrome_pdf::AccessibilityImageInfo image = CreateMockImage();
-  page_objects_.images.push_back(image);
-
+TEST_P(PdfOcrServiceTest, UMAMetrics) {
+  constexpr uint32_t kPagesPerBatch = 1u;
   base::HistogramTester histograms;
-  content::RenderFrame* render_frame = GetMainRenderFrame();
-  ASSERT_TRUE(render_frame);
-  render_frame->SetAccessibilityModeForTest(ui::AXMode::kWebContents);
-  ASSERT_TRUE(render_frame->GetRenderAccessibility());
+  bool is_ocr_service_started_before_pdf_loads;
+  uint32_t page_count;
+  std::tie(is_ocr_service_started_before_pdf_loads, page_count) = GetParam();
+  ASSERT_NO_FATAL_FAILURE(CreateInaccessiblePdfAndOcrService(
+      page_count, is_ocr_service_started_before_pdf_loads, kPagesPerBatch));
 
-  TestPdfAccessibilityActionHandler action_handler;
-  TestPdfAccessibilityTree pdf_accessibility_tree(render_frame,
-                                                  &action_handler);
-
-  if (enable_pdf_ocr_before_opening_pdf) {
-    pdf_accessibility_tree.CreateFakeOCRService();
-  }
-
-  pdf_accessibility_tree.SetAccessibilityViewportInfo(viewport_info_);
-  pdf_accessibility_tree.SetAccessibilityDocInfo(doc_info_);
-  for (uint32_t i = 0; i < doc_info_.page_count; ++i) {
-    page_info_.page_index = i;
-    // All pages are identical.
-    pdf_accessibility_tree.SetAccessibilityPageInfo(page_info_, text_runs_,
-                                                    chars_, page_objects_);
-  }
-  WaitForThreadTasks();
-
-  const ui::AXTree& ax_tree_in_pdf = pdf_accessibility_tree.tree_for_testing();
-  ui::AXNode* root_node = ax_tree_in_pdf.root();
-  ASSERT_NE(nullptr, root_node);
-  uint32_t pages_plus_status_node_count = doc_info_.page_count + 1u;
-  ASSERT_EQ(pages_plus_status_node_count, root_node->children().size());
-
-  if (!enable_pdf_ocr_before_opening_pdf) {
-    pdf_accessibility_tree.CreateFakeOCRService();
-  }
-
-  for (uint32_t i = 0; i < doc_info_.page_count; ++i) {
-    ui::AXNode* page_node = root_node->children()[i + 1];
-    ASSERT_NE(nullptr, page_node);
-    ui::AXNode* paragraph_node = page_node->children()[0];
-    ASSERT_NE(nullptr, paragraph_node);
-
-    if (!enable_pdf_ocr_before_opening_pdf) {
-      ui::AXNode* image_node = paragraph_node->children()[0];
-      ASSERT_NE(nullptr, image_node);
+  for (uint32_t i = 0; i < page_count; ++i) {
+    if (!is_ocr_service_started_before_pdf_loads) {
+      const ui::AXTree& ax_tree_in_pdf =
+          GetPdfAccessibilityTree()->tree_for_testing();
+      ui::AXNode* root_node = ax_tree_in_pdf.root();
+      ui::AXNode* page_node = root_node->children()[i + 1];
+      ASSERT_NE(nullptr, page_node);
+      ui::AXNode* paragraph_node = page_node->children()[0];
+      ASSERT_NE(nullptr, paragraph_node);
+      ui::AXNode* image1_node = paragraph_node->children()[0];
+      ASSERT_NE(nullptr, image1_node);
+      ui::AXNode* image2_node = paragraph_node->children()[0];
+      ASSERT_NE(nullptr, image2_node);
       base::queue<PdfAccessibilityTree::PdfOcrRequest> requests;
-      requests.emplace(image_node->id(), image, paragraph_node->id());
-      pdf_accessibility_tree.ocr_service_for_testing()->OcrPage(requests);
+      requests.emplace(image1_node->id(), CreateMockInaccessibleImage(),
+                       paragraph_node->id());
+      requests.emplace(image2_node->id(), CreateMockInaccessibleImage(),
+                       paragraph_node->id());
+      GetPdfAccessibilityTree()->ocr_service_for_testing()->OcrPage(requests);
     }
 
+    // Each page has two images.
+    WaitForThreadTasks();  // Each page has two images.
     WaitForThreadTasks();
   }
 
-  ASSERT_EQ(1u, pdf_accessibility_tree.GetTreeUpdates().size());
-  ASSERT_EQ(doc_info_.page_count,
-            pdf_accessibility_tree.GetTreeUpdates()[0].size());
+  ASSERT_EQ(GetPdfAccessibilityTree()->GetTreeUpdates().size(), page_count);
+  for (uint32_t i = 0; i < page_count; ++i) {
+    // There are two mock images per page.
+    ASSERT_EQ(GetPdfAccessibilityTree()->GetTreeUpdates()[i].size(), 2u);
+  }
 
   histograms.ExpectBucketCount(
       "Accessibility.PdfOcr.ActiveWhenInaccessiblePdfOpened",
-      enable_pdf_ocr_before_opening_pdf,
+      is_ocr_service_started_before_pdf_loads,
       /*expected_count=*/1);
   histograms.ExpectTotalCount(
       "Accessibility.PdfOcr.ActiveWhenInaccessiblePdfOpened",
       /*expected_count=*/1);
 
+  // There are two mock images per page.
   histograms.ExpectBucketCount("Accessibility.PdfOcr.PDFImages",
                                PdfOcrRequestStatus::kRequested,
-                               /*expected_count=*/5);
+                               /*expected_count=*/page_count * 2);
   histograms.ExpectBucketCount("Accessibility.PdfOcr.PDFImages",
                                PdfOcrRequestStatus::kPerformed,
-                               /*expected_count=*/5);
+                               /*expected_count=*/page_count * 2);
   histograms.ExpectTotalCount("Accessibility.PdfOcr.PDFImages",
-                              /*expected_count=*/10);
+                              /*expected_count=*/page_count * 4);
 }
-#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
-// TODO(crbug.com/1443341): Add test for different batch sizes.
-// TODO(crbug.com/1443341): Add test for end result on a non-synthetic
-// multi-page PDF.
+// 5 = smaller than the batch size, 105 = larger than the batch size
+// with fewer remaining pages in the first batch, 280 = greater than the
+// batch size by a lot and no remaining pages in the first batch.
+INSTANTIATE_TEST_SUITE_P(
+    PdfOcrServiceTests,
+    PdfOcrServiceTest,
+    testing::Combine(
+        /* is_ocr_service_started_before_pdf_loads */ testing::Bool(),
+        /* page_count */ testing::Values(5u, 105u, 280u)));
+
+#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
 }  // namespace pdf
