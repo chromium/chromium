@@ -16,16 +16,16 @@
 #include "components/prefs/pref_service.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_sdk_manager.h"  // nogncheck
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#endif
+#endif  // BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
 
 namespace enterprise_connectors {
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
 namespace {
 
 static constexpr enterprise_connectors::AnalysisConnector
@@ -36,7 +36,7 @@ static constexpr enterprise_connectors::AnalysisConnector
 };
 
 }  // namespace
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#endif  // BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
 
 ConnectorsManager::ConnectorsManager(
     std::unique_ptr<BrowserCrashEventRouter> browser_crash_event_router,
@@ -51,25 +51,25 @@ ConnectorsManager::ConnectorsManager(
   DCHECK(browser_crash_event_router_) << "Crash event router is null";
   DCHECK(extension_install_event_router_) << "Extension event router is null";
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
   // Start observing tab strip models for all browsers.
   BrowserList* browser_list = BrowserList::GetInstance();
   for (Browser* browser : *browser_list) {
     OnBrowserAdded(browser);
   }
   browser_list->AddObserver(this);
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#endif  // BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
 
   if (observe_prefs) {
     StartObservingPrefs(pref_service);
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
     MaybeCloseLocalContentAnalysisAgentConnection();
 #endif
   }
   extension_install_event_router_->StartObserving();
 }
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
 ConnectorsManager::~ConnectorsManager() {
   BrowserList* browser_list = BrowserList::GetInstance();
   browser_list->RemoveObserver(this);
@@ -79,7 +79,7 @@ ConnectorsManager::~ConnectorsManager() {
 }
 #else
 ConnectorsManager::~ConnectorsManager() = default;
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#endif  // BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
 
 bool ConnectorsManager::IsConnectorEnabled(AnalysisConnector connector) const {
   if (analysis_connector_settings_.count(connector) == 0 &&
@@ -99,7 +99,7 @@ bool ConnectorsManager::IsConnectorEnabled(AnalysisConnector connector) const {
          base::FeatureList::IsEnabled(kLocalContentAnalysisEnabled);
 }
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
 bool ConnectorsManager::IsConnectorEnabledForLocalAgent(
     AnalysisConnector connector) const {
   if (!IsConnectorEnabled(connector)) {
@@ -107,7 +107,7 @@ bool ConnectorsManager::IsConnectorEnabledForLocalAgent(
   }
   return analysis_connector_settings_.at(connector)[0].is_local_analysis();
 }
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#endif  // BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
 
 bool ConnectorsManager::IsConnectorEnabled(ReportingConnector connector) const {
   if (reporting_connector_settings_.count(connector) == 1)
@@ -178,7 +178,7 @@ absl::optional<AnalysisSettings> ConnectorsManager::GetAnalysisSettings(
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
 void ConnectorsManager::OnBrowserAdded(Browser* browser) {
   browser->tab_strip_model()->AddObserver(this);
 }
@@ -208,7 +208,7 @@ void ConnectorsManager::OnTabStripModelChanged(
         {configs[0]->local_path, configs[0]->user_specific});
   }
 }
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#endif  // BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
 
 absl::optional<AnalysisSettings>
 ConnectorsManager::GetAnalysisSettingsFromConnectorPolicy(
@@ -241,7 +241,7 @@ void ConnectorsManager::CacheAnalysisConnectorPolicy(
         service_settings, *service_provider_config_);
 }
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
 void ConnectorsManager::MaybeCloseLocalContentAnalysisAgentConnection() {
   for (auto connector : kLocalAnalysisConnectors) {
     if (IsConnectorEnabledForLocalAgent(connector)) {
@@ -253,11 +253,11 @@ void ConnectorsManager::MaybeCloseLocalContentAnalysisAgentConnection() {
   // Delete connection with local agents when no access point is enabled.
   ContentAnalysisSdkManager::Get()->ResetAllClients();
 }
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#endif  // BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
 
 void ConnectorsManager::OnPrefChanged(AnalysisConnector connector) {
   CacheAnalysisConnectorPolicy(connector);
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
   MaybeCloseLocalContentAnalysisAgentConnection();
 #endif
 }

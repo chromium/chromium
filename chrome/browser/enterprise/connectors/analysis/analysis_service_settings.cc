@@ -8,6 +8,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/service_provider_config.h"
+#include "components/enterprise/buildflags/buildflags.h"
 #include "components/url_matcher/url_util.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -146,7 +147,7 @@ AnalysisServiceSettings::AnalysisServiceSettings(
   const char* verification_key = kKeyLinuxVerification;
 #endif
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
   const base::Value::Dict& dict = settings_value.GetDict();
   const base::Value::List* signatures =
       dict.FindListByDottedPath(verification_key);

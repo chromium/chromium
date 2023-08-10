@@ -39,6 +39,7 @@
 #include "chrome/browser/safe_browsing/cloud_content_scanning/file_analysis_request.h"
 #include "chrome/browser/safe_browsing/download_protection/check_client_download_request.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/enterprise/buildflags/buildflags.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/policy/core/common/chrome_schema.h"
 #include "components/prefs/pref_service.h"
@@ -52,7 +53,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_types.h"
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_sdk_manager.h"  // nogncheck
 #endif
 
@@ -559,7 +560,7 @@ void ContentAnalysisDelegate::PageRequestCallback(
 bool ContentAnalysisDelegate::UploadData() {
   upload_start_time_ = base::TimeTicks::Now();
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
   // If this is a local content analysis, check if the local agent is ready.
   // If not, abort early.  This is to prevent doing a lot of work, like reading
   // files into memory or calcuating SHA256 hashes and prevent a flash of the

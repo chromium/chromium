@@ -24,6 +24,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/enterprise/buildflags/buildflags.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/test/browser_task_environment.h"
@@ -35,7 +36,7 @@
 #include "chrome/browser/enterprise/connectors/analysis/source_destination_test_util.h"
 #endif
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
 #include "chrome/browser/enterprise/connectors/analysis/fake_content_analysis_sdk_manager.h"  // nogncheck
 #endif
 
@@ -918,7 +919,7 @@ INSTANTIATE_TEST_SUITE_P(ConnectorsManagerReportingTest,
                          ConnectorsManagerReportingTest,
                          testing::ValuesIn(kAllReportingConnectors));
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
 class ConnectorsManagerLocalAnalysisConnectorTest
     : public ConnectorsManagerTest,
       public testing::WithParamInterface<AnalysisConnector> {
@@ -1005,6 +1006,6 @@ TEST_P(ConnectorsManagerLocalAnalysisConnectorTest, DynamicPolicies) {
 INSTANTIATE_TEST_SUITE_P(ConnectorsManagerLocalAnalysisConnectorTest,
                          ConnectorsManagerLocalAnalysisConnectorTest,
                          testing::ValuesIn(kAllAnalysisConnectors));
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#endif  // BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
 
 }  // namespace enterprise_connectors

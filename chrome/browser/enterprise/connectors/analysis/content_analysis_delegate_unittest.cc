@@ -34,6 +34,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/enterprise/buildflags/buildflags.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/prefs/testing_pref_service.h"
@@ -44,7 +45,7 @@
 #include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
 #include "chrome/browser/enterprise/connectors/analysis/fake_content_analysis_sdk_manager.h"  // nogncheck
 #endif
 
@@ -1448,7 +1449,7 @@ class ContentAnalysisDelegateResultHandlingTest
  protected:
   ScopedSetDMToken scoped_dm_token_{
       policy::DMToken::CreateValidToken(kDmToken)};
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
   // This installs a fake SDK manager that creates fake SDK clients when
   // its GetClient() method is called. This is needed so that calls to
   // ContentAnalysisSdkManager::Get()->GetClient() do not fail.
@@ -1459,7 +1460,7 @@ class ContentAnalysisDelegateResultHandlingTest
 TEST_P(ContentAnalysisDelegateResultHandlingTest, Test) {
   // This is not a desktop platform don't try the non-cloud case since it
   // is not supported.
-#if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_LINUX)
+#if !BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
   if (!is_cloud())
     return;
 #endif
