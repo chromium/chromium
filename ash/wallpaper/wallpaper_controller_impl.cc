@@ -104,10 +104,6 @@ constexpr base::TimeDelta kWallpaperReloadDelay = base::Milliseconds(100);
 // How long to wait for resizing of the the wallpaper.
 constexpr base::TimeDelta kCompositorLockTimeout = base::Milliseconds(750);
 
-// Duration of the cross fade animation when loading wallpaper.
-constexpr base::TimeDelta kWallpaperLoadAnimationDuration =
-    base::Milliseconds(250);
-
 // The color of the wallpaper if no other wallpaper images are available.
 constexpr SkColor kDefaultWallpaperColor = SK_ColorGRAY;
 
@@ -1753,38 +1749,20 @@ void WallpaperControllerImpl::UpdateWallpaperForRootWindow(
     bool lock_state_changed,
     bool new_root) {
   DCHECK_EQ(WALLPAPER_IMAGE, wallpaper_mode_);
-
   auto* wallpaper_widget_controller =
       RootWindowController::ForWindow(root_window)
           ->wallpaper_widget_controller();
-  float blur = wallpaper_widget_controller->GetWallpaperBlur();
-
   if (lock_state_changed || new_root) {
-    const bool should_wallpaper_blur_for_lock_state =
-        Shell::Get()->session_controller()->IsUserSessionBlocked() &&
-        blur_manager_->IsBlurAllowedForLockState(GetWallpaperType());
-    if (IsWallpaperBlurredForLockState() !=
-        should_wallpaper_blur_for_lock_state) {
-      blur_manager_->set_is_wallpaper_blurred_for_lock_state(
-          should_wallpaper_blur_for_lock_state);
-      for (auto& observer : observers_)
-        observer.OnWallpaperBlurChanged();
-    }
-    const int container_id = GetWallpaperContainerId();
-    wallpaper_widget_controller->Reparent(container_id);
-
-    if (IsOobeWallpaper()) {
-      blur = wallpaper_constants::kOobeBlur;
-    } else {
-      blur = should_wallpaper_blur_for_lock_state
-                 ? wallpaper_constants::kLockLoginBlur
-                 : wallpaper_constants::kClear;
+    wallpaper_widget_controller->Reparent(GetWallpaperContainerId());
+  }
+  wallpaper_widget_controller->wallpaper_view()->ClearCachedImage();
+  const bool changed = blur_manager_->UpdateBlurForRootWindow(
+      root_window, lock_state_changed, new_root, GetWallpaperType());
+  if (changed) {
+    for (auto& observer : observers_) {
+      observer.OnWallpaperBlurChanged();
     }
   }
-
-  wallpaper_widget_controller->wallpaper_view()->ClearCachedImage();
-  wallpaper_widget_controller->SetWallpaperBlur(
-      blur, new_root ? base::TimeDelta() : kWallpaperLoadAnimationDuration);
 }
 
 void WallpaperControllerImpl::UpdateWallpaperForAllRootWindows(

@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
+#include "ash/root_window_controller.h"
 
 namespace ash {
 
@@ -43,9 +44,10 @@ class ASH_EXPORT WallpaperBlurManager {
     return is_wallpaper_blurred_for_lock_state_;
   }
 
-  void set_is_wallpaper_blurred_for_lock_state(bool blur) {
-    is_wallpaper_blurred_for_lock_state_ = blur;
-  }
+  bool UpdateBlurForRootWindow(aura::Window* root_window,
+                               bool lock_state_changed,
+                               bool new_root,
+                               WallpaperType wallpaper_type);
 
   // Make pixel testing more reliable by allowing wallpaper blur.
   void set_allow_blur_for_testing() { allow_blur_for_testing_ = true; }
