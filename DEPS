@@ -4072,7 +4072,7 @@ deps = {
 
   'src/chrome/browser/resources/chromeos/quickoffice': {
       'url': Var('chrome_git') + '/quickoffice/crx.git' + '@' +
-        'b469688ba88433c572ff6ebcc215a67889fadb36',
+        'bde98615a9809b5a7fbc70faa8df8994471e852d',
       'condition': '(checkout_chromeos or checkout_linux) and checkout_src_internal',
   },
 
