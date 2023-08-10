@@ -444,6 +444,13 @@ TEST_F(VideoDecoderTest, DecodeAndOutputAllFrames) {
   tvp->Play();
   EXPECT_TRUE(tvp->WaitForEvent(DecoderListener::Event::kDecoderBufferAccepted,
                                 /*times=*/g_env->Video()->NumFrames()));
+
+  // This is a hack to allow Qualcomm devices (e.g. trogdor) to flush the pipes
+  // after the last resolution change event that comes out when running the
+  // resolution_change_500frames.vp9.ivf sequence. It should be fixed but since
+  // a new V4L2StatefulVideoDecoder backend is in the making, let's just leave
+  // the hack. See b/294611425.
+  base::PlatformThread::Sleep(base::Milliseconds(100));
 }
 #endif
 
