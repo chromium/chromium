@@ -14,9 +14,6 @@
       "position": [482, 3],
       "bounds": [1, 16],
       "contentsOpaque": true,
-      "invalidations": [
-        [0, 0, 1, 16]
-      ],
       "transform": 2
     },
     {

@@ -7,6 +7,8 @@
   height: 40px;
   margin: 10px;
   background: blue;
+  border: 1px solid blue;
+  box-sizing: border-box;
 }
 </style>
 <div id="target1"></div>
@@ -26,6 +28,7 @@ function repaintTest() {
     internals.simulateRasterUnderInvalidations(true);
   document.querySelectorAll('[id^="target"]').forEach(function(e) {
     e.style.background = 'green';
+    e.style.borderColor = 'green';
   });
   runAfterLayoutAndPaint(function() {
     if (window.internals)

@@ -1,7 +1,7 @@
 {
   "layers": [
     {
-      "name": "Scrolling background of LayoutView #document",
+      "name": "Scrolling background of LayoutNGView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
@@ -13,10 +13,7 @@
       "name": "Caret",
       "position": [39, 75],
       "bounds": [1, 18],
-      "contentsOpaque": true,
-      "invalidations": [
-        [0, 0, 1, 18]
-      ]
+      "contentsOpaque": true
     }
   ]
 }

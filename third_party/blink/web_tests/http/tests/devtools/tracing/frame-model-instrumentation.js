@@ -6,6 +6,7 @@ import {TestRunner} from 'test_runner';
 import {PerformanceTestRunner} from 'performance_test_runner';
 
 (async function() {
+  await TestRunner.loadHTML('ABC');
   await TestRunner.loadLegacyModule('timeline');
   await TestRunner.showPanel('timeline');
   await TestRunner.evaluateInPagePromise(`

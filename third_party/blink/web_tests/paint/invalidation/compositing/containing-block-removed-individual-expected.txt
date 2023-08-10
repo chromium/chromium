@@ -2,7 +2,7 @@ CONSOLE MESSAGE: debug
 {
   "layers": [
     {
-      "name": "Scrolling background of LayoutView #document",
+      "name": "Scrolling background of LayoutNGView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -12,9 +12,6 @@ CONSOLE MESSAGE: debug
       "bounds": [100, 100],
       "contentsOpaque": true,
       "backgroundColor": "#0000FF",
-      "invalidations": [
-        [50, 50, 75, 75]
-      ],
       "transform": 1
     },
     {
@@ -22,10 +19,7 @@ CONSOLE MESSAGE: debug
       "position": [50, 50],
       "bounds": [75, 75],
       "contentsOpaque": true,
-      "backgroundColor": "#008000",
-      "invalidations": [
-        [0, 0, 75, 75]
-      ]
+      "backgroundColor": "#008000"
     }
   ],
   "transforms": [

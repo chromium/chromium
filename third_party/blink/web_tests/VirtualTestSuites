@@ -2045,14 +2045,15 @@
     "expires": "Jul 1, 2023"
   },
   {
-    "prefix": "solid-color-layers",
+    "prefix": "disable-solid-color-layers",
+    "owners": ["wangxianzhu@chromium.org"],
     "platforms": ["Linux"],
     "bases": [
       "compositing",
       "paint/invalidation/compositing"
     ],
-    "args": ["--enable-blink-features=SolidColorLayers"],
-    "expires": "Jul 1, 2023"
+    "args": ["--disable-features=SolidColorLayers"],
+    "expires": "Oct 1, 2023"
   },
   {
     "prefix": "webcodecs-without-task-runner-with-custom-deleter",

@@ -37,9 +37,6 @@
       "bounds": [100, 1000],
       "contentsOpaque": true,
       "backgroundColor": "#FF0000",
-      "invalidations": [
-        [0, 0, 100, 1000]
-      ],
       "transform": 1
     }
   ],

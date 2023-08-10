@@ -15,10 +15,7 @@
       "name": "Caret",
       "position": [30, 44],
       "bounds": [1, 18],
-      "contentsOpaque": true,
-      "invalidations": [
-        [0, 0, 1, 18]
-      ]
+      "contentsOpaque": true
     },
     {
       "name": "LayoutNGBlockFlow HTML",
