@@ -18,6 +18,9 @@ namespace fido::icloud_keychain {
 // the lifetime of the process.
 COMPONENT_EXPORT(DEVICE_FIDO) bool IsSupported();
 
+// IsICloudDriveSyncing returns true if iCloud Drive is available.
+COMPONENT_EXPORT(DEVICE_FIDO) bool IsICloudDriveEnabled();
+
 // NewDiscovery returns a discovery that will immediately find an iCloud
 // Keychain authenticator. It is only valid to call this if `IsSupported`
 // returned true. It takes an `NSWindow*` to indicate the window which the

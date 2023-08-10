@@ -58,7 +58,8 @@ class COMPONENT_EXPORT(DEVICE_FIDO) GetAssertionRequestHandler
  public:
   using CompletionCallback = base::OnceCallback<void(
       GetAssertionStatus,
-      absl::optional<std::vector<AuthenticatorGetAssertionResponse>>)>;
+      absl::optional<std::vector<AuthenticatorGetAssertionResponse>>,
+      FidoAuthenticator* authenticator)>;
 
   GetAssertionRequestHandler(
       FidoDiscoveryFactory* fido_discovery_factory,

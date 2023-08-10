@@ -11,6 +11,7 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
@@ -275,6 +276,10 @@ void AuthenticatorRequestDialogModel::StartFlow(
   started_ = true;
   transport_availability_ = std::move(transport_availability);
   use_conditional_mediation_ = use_conditional_mediation;
+
+#if BUILDFLAG(IS_MAC)
+  RecordMacOsStartedHistogram();
+#endif
 
   PopulateMechanisms();
   priority_mechanism_index_ = IndexOfPriorityMechanism();
@@ -978,6 +983,83 @@ std::vector<std::string> AuthenticatorRequestDialogModel::paired_phone_names()
   names.erase(std::unique(names.begin(), names.end()), names.end());
   return names;
 }
+
+#if BUILDFLAG(IS_MAC)
+
+// This enum is used in a histogram. Never change assigned values and only add
+// new entries at the end.
+enum class MacOsHistogramValues {
+  kStartedCreateForProfileAuthenticatorICloudDriveEnabled = 0,
+  kStartedCreateForProfileAuthenticatorICloudDriveDisabled = 1,
+  kStartedCreateForICloudKeychainICloudDriveEnabled = 2,
+  kStartedCreateForICloudKeychainICloudDriveDisabled = 3,
+
+  kSuccessfulCreateForProfileAuthenticatorICloudDriveEnabled = 4,
+  kSuccessfulCreateForProfileAuthenticatorICloudDriveDisabled = 5,
+  kSuccessfulCreateForICloudKeychainICloudDriveEnabled = 6,
+  kSuccessfulCreateForICloudKeychainICloudDriveDisabled = 7,
+
+  kStartedGetOnlyProfileAuthenticatorRecognised = 8,
+  kStartedGetOnlyICloudKeychainRecognised = 9,
+  kStartedGetBothRecognised = 10,
+
+  kSuccessfulGetFromProfileAuthenticator = 11,
+  kSuccessfulGetFromICloudKeychain = 12,
+  kMaxValue = kSuccessfulGetFromICloudKeychain,
+};
+
+void AuthenticatorRequestDialogModel::RecordMacOsStartedHistogram() {
+  if (is_non_webauthn_request_ || relying_party_id_ == "google.com") {
+    return;
+  }
+
+  absl::optional<MacOsHistogramValues> v;
+  if (transport_availability_.request_type ==
+          device::FidoRequestType::kMakeCredential &&
+      transport_availability_.make_credential_attachment.has_value() &&
+      *transport_availability_.make_credential_attachment ==
+          device::AuthenticatorAttachment::kPlatform) {
+    v = transport_availability_.has_icloud_drive_enabled
+            ? MacOsHistogramValues::
+                  kStartedCreateForProfileAuthenticatorICloudDriveEnabled
+            : MacOsHistogramValues::
+                  kStartedCreateForProfileAuthenticatorICloudDriveDisabled;
+  } else if (transport_availability_.request_type ==
+                 device::FidoRequestType::kGetAssertion &&
+             !use_conditional_mediation_ &&
+             transport_availability_.has_platform_authenticator_credential ==
+                 device::FidoRequestHandlerBase::RecognizedCredential::
+                     kHasRecognizedCredential) {
+    v = MacOsHistogramValues::kStartedGetOnlyProfileAuthenticatorRecognised;
+  }
+
+  if (v) {
+    base::UmaHistogramEnumeration(
+        "WebAuthentication.MacOS.PlatformAuthenticatorAction", *v);
+    did_record_macos_start_histogram_ = true;
+  }
+}
+
+void AuthenticatorRequestDialogModel::RecordMacOsSuccessHistogram(
+    device::FidoRequestType request_type,
+    device::AuthenticatorType authenticator_type) {
+  if (!did_record_macos_start_histogram_) {
+    return;
+  }
+
+  absl::optional<MacOsHistogramValues> v;
+  if (authenticator_type == device::AuthenticatorType::kTouchID) {
+    v = MacOsHistogramValues::kSuccessfulGetFromProfileAuthenticator;
+  } else if (authenticator_type == device::AuthenticatorType::kICloudKeychain) {
+    v = MacOsHistogramValues::kSuccessfulGetFromICloudKeychain;
+  }
+
+  if (v) {
+    base::UmaHistogramEnumeration(
+        "WebAuthentication.MacOS.PlatformAuthenticatorAction", *v);
+  }
+}
+#endif
 
 base::WeakPtr<AuthenticatorRequestDialogModel>
 AuthenticatorRequestDialogModel::GetWeakPtr() {

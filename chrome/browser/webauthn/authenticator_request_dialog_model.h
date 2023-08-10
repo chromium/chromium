@@ -594,6 +594,10 @@ class AuthenticatorRequestDialogModel {
     return transport_availability_.resident_key_requirement;
   }
 
+  void set_is_non_webauthn_request(bool is_non_webauthn_request) {
+    is_non_webauthn_request_ = is_non_webauthn_request;
+  }
+
   void set_cable_transport_info(
       absl::optional<bool> extension_is_v2,
       std::vector<std::unique_ptr<device::cablev2::Pairing>> paired_phones,
@@ -622,6 +626,12 @@ class AuthenticatorRequestDialogModel {
   }
 
   bool offer_try_again_in_ui() const { return offer_try_again_in_ui_; }
+
+#if BUILDFLAG(IS_MAC)
+  void RecordMacOsStartedHistogram();
+  void RecordMacOsSuccessHistogram(device::FidoRequestType,
+                                   device::AuthenticatorType);
+#endif
 
   base::WeakPtr<AuthenticatorRequestDialogModel> GetWeakPtr();
 
@@ -719,6 +729,10 @@ class AuthenticatorRequestDialogModel {
 
   // The current step of the request UX flow that is currently shown.
   Step current_step_ = Step::kNotStarted;
+
+  // is_non_webauthn_request_ is true if the current request came from Secure
+  // Payment Confirmation, or from credit-card autofill.
+  bool is_non_webauthn_request_ = false;
 
   // started_ records whether |StartFlow| has been called.
   bool started_ = false;
@@ -827,6 +841,13 @@ class AuthenticatorRequestDialogModel {
   // For MakeCredential requests, the PublicKeyCredentialUserEntity associated
   // with the request.
   device::PublicKeyCredentialUserEntity user_entity_;
+
+#if BUILDFLAG(IS_MAC)
+  // did_record_macos_start_histogram_ is set to true if a histogram record of
+  // starting the current request was made. Any later successful completion will
+  // only be recorded if a start event was recorded first.
+  bool did_record_macos_start_histogram_ = false;
+#endif
 
   base::WeakPtrFactory<AuthenticatorRequestDialogModel> weak_factory_{this};
 };

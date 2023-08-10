@@ -158,6 +158,9 @@ class ChromeAuthenticatorRequestDelegate
       AccountPreselectedCallback account_preselected_callback,
       device::FidoRequestHandlerBase::RequestCallback request_callback,
       base::RepeatingClosure bluetooth_adapter_power_on_callback) override;
+  void OnTransactionSuccessful(RequestSource request_source,
+                               device::FidoRequestType,
+                               device::AuthenticatorType) override;
   void ShouldReturnAttestation(
       const std::string& relying_party_id,
       const device::FidoAuthenticator* authenticator,
@@ -166,6 +169,7 @@ class ChromeAuthenticatorRequestDelegate
   void ConfigureDiscoveries(
       const url::Origin& origin,
       const std::string& rp_id,
+      RequestSource request_source,
       device::FidoRequestType request_type,
       absl::optional<device::ResidentKeyRequirement> resident_key_requirement,
       base::span<const device::CableDiscoveryData> pairings_from_extension,

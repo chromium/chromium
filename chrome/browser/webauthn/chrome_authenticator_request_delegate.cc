@@ -122,6 +122,7 @@ bool IsOriginListedInEnterpriseAttestationSwitch(
 #if BUILDFLAG(IS_MAC)
 const char kWebAuthnTouchIdMetadataSecretPrefName[] =
     "webauthn.touchid.metadata_secret";
+const char kWebAuthnTouchIdLastUsed[] = "webauthn.touchid.last_used";
 #endif
 
 // CableLinkingEventHandler handles linking information sent by caBLEv2
@@ -398,6 +399,7 @@ void ChromeAuthenticatorRequestDelegate::RegisterProfilePrefs(
 #if BUILDFLAG(IS_MAC)
   registry->RegisterStringPref(kWebAuthnTouchIdMetadataSecretPrefName,
                                std::string());
+  registry->RegisterStringPref(kWebAuthnTouchIdLastUsed, std::string());
 #endif
   cablev2::RegisterProfilePrefs(registry);
 }
@@ -496,6 +498,28 @@ bool ChromeAuthenticatorRequestDelegate::DoesBlockRequestOnFailure(
   return true;
 }
 
+void ChromeAuthenticatorRequestDelegate::OnTransactionSuccessful(
+    RequestSource request_source,
+    device::FidoRequestType request_type,
+    device::AuthenticatorType authenticator_type) {
+#if BUILDFLAG(IS_MAC)
+  if (request_source != RequestSource::kWebAuthentication ||
+      authenticator_type != device::AuthenticatorType::kTouchID) {
+    return;
+  }
+
+  base::Time::Exploded exploded;
+  base::Time::Now().UTCExplode(&exploded);
+  Profile::FromBrowserContext(GetBrowserContext())
+      ->GetPrefs()
+      ->SetString(kWebAuthnTouchIdLastUsed,
+                  base::StringPrintf("%04d-%02d-%02d", exploded.year,
+                                     exploded.month, exploded.day_of_month));
+
+  dialog_model_->RecordMacOsSuccessHistogram(request_type, authenticator_type);
+#endif
+}
+
 void ChromeAuthenticatorRequestDelegate::RegisterActionCallbacks(
     base::OnceClosure cancel_callback,
     base::RepeatingClosure start_over_callback,
@@ -556,6 +580,7 @@ void ChromeAuthenticatorRequestDelegate::ShouldReturnAttestation(
 void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
     const url::Origin& origin,
     const std::string& rp_id,
+    RequestSource request_source,
     device::FidoRequestType request_type,
     absl::optional<device::ResidentKeyRequirement> resident_key_requirement,
     base::span<const device::CableDiscoveryData> pairings_from_extension,
@@ -714,6 +739,9 @@ void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
     ConfigureEnclaveDiscovery(rp_id, discovery_factory);
   }
 #endif
+
+  dialog_model_->set_is_non_webauthn_request(request_source !=
+                                             RequestSource::kWebAuthentication);
 }
 
 void ChromeAuthenticatorRequestDelegate::SelectAccount(

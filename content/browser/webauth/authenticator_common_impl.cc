@@ -493,6 +493,9 @@ struct AuthenticatorCommonImpl::RequestState {
   // no_cable_linking requests that both QR-linked and pre-linked phones be
   // ignored for this request.
   bool no_cable_linking = false;
+  // is_payment_request indicates that the current request is Secure Payment
+  // Confirmation-related.
+  bool is_payment_request = false;
 
   base::flat_set<RequestExtension> requested_extensions;
 
@@ -504,12 +507,16 @@ struct AuthenticatorCommonImpl::RequestState {
 // static
 std::unique_ptr<AuthenticatorCommon> AuthenticatorCommon::Create(
     RenderFrameHost* render_frame_host) {
-  return std::make_unique<AuthenticatorCommonImpl>(render_frame_host);
+  return std::make_unique<AuthenticatorCommonImpl>(
+      render_frame_host,
+      AuthenticatorCommonImpl::ServingRequestsFor::kInternalUses);
 }
 
 AuthenticatorCommonImpl::AuthenticatorCommonImpl(
-    RenderFrameHost* render_frame_host)
+    RenderFrameHost* render_frame_host,
+    ServingRequestsFor serving_requests_for)
     : render_frame_host_id_(render_frame_host->GetGlobalId()),
+      serving_requests_for_(serving_requests_for),
       security_checker_(static_cast<RenderFrameHostImpl*>(render_frame_host)
                             ->GetWebAuthRequestSecurityChecker()) {
   // Disable the back-forward cache for any document that makes WebAuthn
@@ -552,7 +559,7 @@ void AuthenticatorCommonImpl::StartMakeCredentialRequest(
 
   discovery_factory()->no_cable_linking = req_state_->no_cable_linking;
   req_state_->request_delegate->ConfigureDiscoveries(
-      req_state_->caller_origin, req_state_->relying_party_id,
+      req_state_->caller_origin, req_state_->relying_party_id, RequestSource(),
       device::FidoRequestType::kMakeCredential,
       req_state_->make_credential_options->resident_key,
       base::span<const device::CableDiscoveryData>(), discovery_factory());
@@ -601,7 +608,7 @@ void AuthenticatorCommonImpl::StartGetAssertionRequest(
     cable_pairings = *req_state_->ctap_get_assertion_request->cable_extension;
   }
   req_state_->request_delegate->ConfigureDiscoveries(
-      req_state_->caller_origin, req_state_->relying_party_id,
+      req_state_->caller_origin, req_state_->relying_party_id, RequestSource(),
       device::FidoRequestType::kGetAssertion,
       /*resident_key_requirement=*/absl::nullopt, cable_pairings,
       discovery_factory());
@@ -664,6 +671,7 @@ void AuthenticatorCommonImpl::MakeCredential(
   req_state_ = std::make_unique<RequestState>();
 
   req_state_->make_credential_response_callback = std::move(callback);
+  req_state_->is_payment_request = options->is_payment_credential_creation;
 
   // TODO(crbug.com/1459443): remove this and everything else from
   // the CL that added it if this is unused by June 2024.
@@ -987,6 +995,7 @@ void AuthenticatorCommonImpl::GetAssertion(
   req_state_ = std::make_unique<RequestState>();
 
   req_state_->get_assertion_response_callback = std::move(callback);
+  req_state_->is_payment_request = !payment_options.is_null();
 
   // TODO(crbug.com/1459443): remove this and everything else from
   // the CL that added it if this is unused by June 2024.
@@ -1496,6 +1505,10 @@ void AuthenticatorCommonImpl::OnRegisterResponse(
   DCHECK(response_data.has_value());
   DCHECK(authenticator);
 
+  req_state_->request_delegate->OnTransactionSuccessful(
+      RequestSource(), device::FidoRequestType::kMakeCredential,
+      authenticator->GetType());
+
   absl::optional<device::FidoTransportProtocol> transport =
       authenticator->AuthenticatorTransport();
   bool is_transport_used_internal = false;
@@ -1632,7 +1645,8 @@ void AuthenticatorCommonImpl::OnRegisterResponseAttestationDecided(
 void AuthenticatorCommonImpl::OnSignResponse(
     device::GetAssertionStatus status_code,
     absl::optional<std::vector<device::AuthenticatorGetAssertionResponse>>
-        response_data) {
+        response_data,
+    device::FidoAuthenticator* authenticator) {
   DCHECK(!response_data || !response_data->empty());  // empty vector is invalid
   if (!req_state_->request_handler) {
     // Either the callback was called immediately and
@@ -1708,6 +1722,10 @@ void AuthenticatorCommonImpl::OnSignResponse(
 
   DCHECK_EQ(status_code, device::GetAssertionStatus::kSuccess);
   DCHECK(response_data.has_value());
+
+  req_state_->request_delegate->OnTransactionSuccessful(
+      RequestSource(), device::FidoRequestType::kGetAssertion,
+      authenticator->GetType());
 
   // Show an account picker for discoverable credential requests (empty allow
   // lists). Responses with a single credential are considered pre-selected if
@@ -2177,6 +2195,18 @@ RenderFrameHost* AuthenticatorCommonImpl::GetRenderFrameHost() const {
   RenderFrameHost* ret = RenderFrameHost::FromID(render_frame_host_id_);
   DCHECK(ret);
   return ret;
+}
+
+AuthenticatorRequestClientDelegate::RequestSource
+AuthenticatorCommonImpl::RequestSource() const {
+  if (serving_requests_for_ == ServingRequestsFor::kInternalUses) {
+    return AuthenticatorRequestClientDelegate::RequestSource::kInternal;
+  }
+  if (req_state_->is_payment_request) {
+    return AuthenticatorRequestClientDelegate::RequestSource::
+        kSecurePaymentConfirmation;
+  }
+  return AuthenticatorRequestClientDelegate::RequestSource::kWebAuthentication;
 }
 
 BrowserContext* AuthenticatorCommonImpl::GetBrowserContext() const {
