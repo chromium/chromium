@@ -196,6 +196,7 @@
         },
       },
       'viz_unittests': {},
+      'webengine_support_instrumentation_test_apk': {},
       'webview_instrumentation_test_apk': {
         'swarming': {
           'shards': 7,
@@ -1133,6 +1134,13 @@
         'remove_mixins': [
           'nougat-x86-emulator',
         ],
+      },
+      'weblayer_junit_tests': {
+        'remove_mixins': [
+          'nougat-x86-emulator',
+        ],
+        # Experimental until we're sure these are stable.
+        'experiment_percentage': 100
       },
     },
 
@@ -5680,6 +5688,11 @@
       'web_engine_unittests': {},
     },
 
+    'webengine_android_gtests': {
+      'webengine_support_instrumentation_test_apk': {},
+      'weblayer_browsertests': {},
+    },
+
     'webrtc_chromium_baremetal_gtests': {
       # Run capture unittests on bots that have real webcams.
       'capture_unittests': {
@@ -6180,6 +6193,7 @@
       'linux_flavor_specific_chromium_gtests',
       'vr_android_specific_chromium_tests',
       'vr_platform_specific_chromium_gtests',
+      'webengine_android_gtests',
     ],
 
     'android_nougat_emulator_gtests': [
@@ -6192,6 +6206,7 @@
       'chromium_gtests_for_devices_with_graphical_output',
       'linux_flavor_specific_chromium_gtests',
       'system_webview_shell_instrumentation_tests', # Not an experimental test
+      'webengine_android_gtests',
       'webview_cts_tests_gtest',
       'webview_ui_instrumentation_tests',
     ],
@@ -6217,6 +6232,7 @@
       'chrome_public_tests',
       'vr_android_specific_chromium_tests',
       'webview_ui_instrumentation_tests',
+      'webengine_android_gtests',
     ],
 
     'android_pie_gtests': [
@@ -6243,6 +6259,7 @@
       'system_webview_shell_instrumentation_tests', # Not an experimental test
       'webview_cts_tests_gtest',
       'webview_ui_instrumentation_tests',
+      'webengine_android_gtests',
     ],
 
     'android_pie_rel_gtests': [
@@ -6261,6 +6278,7 @@
     #   'vr_platform_specific_chromium_gtests',
       'webview_64_cts_tests_gtest',
       'webview_ui_instrumentation_tests',
+      'webengine_android_gtests',
     ],
 
     'bfcache_android_gtests': [
@@ -7152,6 +7170,7 @@
       'chromium_gtests_for_devices_with_graphical_output': {},
       'linux_flavor_specific_chromium_gtests': {},
       'system_webview_shell_instrumentation_tests': {}, # Not an experimental test
+      'webengine_android_gtests': {},
       'webview_trichrome_cts_tests': {
         'variants': [
           'WEBVIEW_TRICHROME_FULL_CTS_TESTS',
@@ -7178,6 +7197,7 @@
       'linux_flavor_specific_chromium_gtests': {},
       'minidump_uploader_tests': {},
       'system_webview_shell_instrumentation_tests': {}, # Not an experimental test
+      'webengine_android_gtests': {},
       'webview_trichrome_64_cts_tests': {
         'variants': [
           'WEBVIEW_TRICHROME_FULL_CTS_TESTS',
@@ -7196,6 +7216,7 @@
       'chromium_gtests_for_devices_with_graphical_output': {},
       'linux_flavor_specific_chromium_gtests': {},
       'system_webview_shell_instrumentation_tests': {}, # Not an experimental test
+      'webengine_android_gtests': {},
       'webview_ui_instrumentation_tests': {},
     },
 
