@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
 #include "third_party/blink/renderer/core/dom/document_part_root.h"
 #include "third_party/blink/renderer/core/dom/node_cloning_data.h"
+#include "third_party/blink/renderer/core/dom/node_move_scope.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 
 namespace blink {
@@ -53,6 +54,7 @@ PartRootUnion* ChildNodePart::clone(ExceptionState& exception_state) {
   // Since we're only cloning a part of the tree, not including this
   // ChildNodePart's `root`, we use a temporary DocumentFragment and its
   // PartRoot during the clone.
+  DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
   if (!IsValid()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
@@ -82,10 +84,11 @@ PartRootUnion* ChildNodePart::clone(ExceptionState& exception_state) {
     node = node->nextSibling();
     CHECK(node) << "IsValid should detect invalid siblings";
   }
+  NodeMoveScope node_move_scope(*new_parent,
+                                NodeMoveScopeType::kAppendAfterAllChildren);
   data.Finalize();
   ChildNodePart* part_root =
       static_cast<ChildNodePart*>(data.ClonedPartRootFor(*this));
-  part_root->CachePartOrderAfterClone();
   return PartRoot::GetUnionFromPartRoot(part_root);
 }
 

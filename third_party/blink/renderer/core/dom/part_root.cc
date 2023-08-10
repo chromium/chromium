@@ -4,161 +4,62 @@
 
 #include "third_party/blink/renderer/core/dom/part_root.h"
 
+#include "base/containers/contains.h"
 #include "third_party/blink/renderer/core/dom/child_node_part.h"
 #include "third_party/blink/renderer/core/dom/container_node.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_part_root.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
+#include "third_party/blink/renderer/core/dom/node_move_scope.h"
+#include "third_party/blink/renderer/core/dom/node_traversal.h"
 #include "third_party/blink/renderer/core/dom/part.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_deque.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
 void PartRoot::Trace(Visitor* visitor) const {
-  visitor->Trace(parts_unordered_);
   visitor->Trace(cached_ordered_parts_);
 }
 
 void PartRoot::AddPart(Part& new_part) {
-  // DCHECK because this will be slow.
-  DCHECK(!parts_unordered_.Contains(&new_part));
-  parts_unordered_.insert(&new_part);
-  MarkPartsDirty();
-}
-
-void PartRoot::RemovePart(Part& part) {
-  DCHECK(parts_unordered_.Contains(&part));
-  parts_unordered_.erase(&part);
-  MarkPartsDirty();
-}
-
-namespace {
-
-Node* LowestCommonAncestor(Node* a,
-                           int a_depth,
-                           Node* b,
-                           int b_depth,
-                           int& lca_depth) {
-  CHECK(a && b);
-  CHECK_GE(a_depth, 0);
-  CHECK_GE(b_depth, 0);
-  if (a == b) {
-    return a;
+  if (cached_parts_list_dirty_) {
+    return;
   }
-  while (a_depth > b_depth) {
-    a = a->parentNode();
-    CHECK(a) << "a should be connected";
-    --a_depth;
-  }
-  while (b_depth > a_depth) {
-    b = b->parentNode();
-    CHECK(b) << "b should be connected";
-    --b_depth;
-  }
-  while (a != b) {
-    a = a->parentNode();
-    b = b->parentNode();
-    --a_depth;
-    CHECK(a && b) << "a and b should be in the same tree";
-  }
-  lca_depth = a_depth;
-  CHECK_GE(lca_depth, 0);
-  return a;
-}
-
-using NodesToParts =
-    HeapHashMap<Member<Node>, Member<HeapVector<Member<Part>>>>;
-
-// TODO(crbug.com/1453291) This routine is a performance-sensitive one, and
-// is where speed matters for the DOM Parts API. The current algorithm is:
-//  - Find the LCA of all of the nodes that need an update, and then walk the
-//    entire tree under the LCA. That should be O(k*log(n) + n) where n is the
-//    number of nodes in the sub-tree (assuming rough tree symmetry), and k is
-//    the number of parts.
-// This approach was selected primarily for simplicity.
-//
-// A few alternative approaches might be:
-//  - Loop through the parts, and do some sort of binary insertion sort using
-//    something like `compareDocumentPosition`. That should be
-//    O((m+log(n)) * log(k) * k), where m is the average fan-out of the tree.
-//  - Implement a sort algorithm based on the internals of
-//    `compareDocumentPosition`, maintaining the ancestor chain for each node
-//    (and a progress marker within it) during the entire sort, and doing a
-//    sort-of-quicksort-like splitting whenever there are branches in the
-//    ancestor chain.
-//  - (Orthogonal) Convert cached_parts_list_dirty_ to a "range" of dirty
-//    parts within the sorted parts list. Then you only need to rebuild that
-//    chunk of parts and not all of them. You can maintain this during Node
-//    insertions and removals by just expanding the range accordingly.
-// It might be worthwhile to switch between these approaches depending on the
-// sizes of things, or add additional algorithms.
-HeapVector<Member<Part>> SortPartsInTreeOrder(
-    NodesToParts unordered_nodes_to_parts) {
-  HeapVector<Member<Part>> ordered_parts;
-  if (unordered_nodes_to_parts.empty()) {
-    return ordered_parts;
-  }
-  // First find the lowest common ancestor of all of the nodes.
-  int lca_depth = -1;
-  Node* lca = nullptr;
-  for (auto& entry : unordered_nodes_to_parts) {
-    Node* node = entry.key;
-    int node_depth = 0;
-    Node* walk = node;
-    while (walk) {
-      ++node_depth;
-      walk = walk->parentNode();
-    }
-    if (!lca) {
-      lca_depth = node_depth;
-      lca = node;
+  if (NodeMoveScope::AllMovedPartsWereClean()) {
+    DCHECK(!base::Contains(cached_ordered_parts_, &new_part));
+    if (NodeMoveScope::IsPrepend()) {
+      cached_ordered_parts_.push_front(&new_part);
     } else {
-      lca = LowestCommonAncestor(lca, lca_depth, node, node_depth, lca_depth);
+      cached_ordered_parts_.push_back(&new_part);
     }
+  } else {
+    cached_ordered_parts_.clear();
+    cached_parts_list_dirty_ = true;
   }
-
-  // Then traverse the tree under the LCA and add parts in the order they're
-  // found in the tree, and for the same Node, in the order they were
-  // constructed.
-  for (auto& child : NodeTraversal::InclusiveDescendantsOf(*lca)) {
-    auto it = unordered_nodes_to_parts.find(&child);
-    if (it != unordered_nodes_to_parts.end()) {
-      for (auto& part : *it->value) {
-        ordered_parts.push_back(part);
-      }
-    }
-  }
-  return ordered_parts;
 }
 
-}  // namespace
-
-const DocumentPartRoot* PartRoot::GetDocumentPartRoot() {
-  const PartRoot* root = this;
-  const PartRoot* next;
-  while ((next = root->GetParentPartRoot())) {
-    root = next;
+// If we're removing the first Part in the cached part list, then just remove
+// that Part and keep the parts list clean. Otherwise mark it dirty and clear
+// the cached list.
+// TODO(crbug.com/1453291) The above case happens when we're moving the entire
+// tree that contains Parts, or the *first* part of the tree that contains
+// Parts. If we're moving the *last* part of the tree, it would be possible
+// to detect that situation and remove parts from the end of the parts list.
+// The tricky bit there is that we need to know that we're
+// doing that, and we only know it's true when we get to the last removal
+// and we've removed the entire end of the list of parts.
+void PartRoot::RemovePart(Part& part) {
+  if (cached_parts_list_dirty_) {
+    return;
   }
-  return static_cast<const DocumentPartRoot*>(root);
-}
-
-void PartRoot::CachePartOrderAfterClone() {
-#if DCHECK_IS_ON()
-  {
-    // This will set cached_ordered_parts_ as a side effect, but we'll reset it
-    // again below anyway.
-    auto correct_parts_order = getParts();
-    DCHECK_EQ(correct_parts_order.size(), parts_unordered_.size());
-    auto unordered_iter = parts_unordered_.begin();
-    for (auto& correct : correct_parts_order) {
-      DCHECK_EQ(*unordered_iter, correct);
-      ++unordered_iter;
-    }
+  DCHECK(!cached_ordered_parts_.empty());
+  if (NodeMoveScope::InScope() && cached_ordered_parts_.front() == &part) {
+    cached_ordered_parts_.pop_front();
+  } else {
+    cached_ordered_parts_.clear();
+    cached_parts_list_dirty_ = true;
   }
-#endif
-  cached_ordered_parts_ =
-      *MakeGarbageCollected<HeapVector<Member<Part>>>(parts_unordered_);
-  cached_parts_list_dirty_ = false;
 }
 
 // |getParts| must always return the contained parts list subject to these
@@ -170,40 +71,81 @@ void PartRoot::CachePartOrderAfterClone() {
 //     Element of the DocumentPartRoot are not returned.
 //  3. parts referring to invalid parts are not returned. For example, a
 //     ChildNodePart whose previous_node comes after its next_node.
-HeapVector<Member<Part>> PartRoot::RebuildPartsList() {
-  CHECK(cached_parts_list_dirty_);
-  NodesToParts unordered_nodes_to_parts;
-  const DocumentPartRoot* root = GetDocumentPartRoot();
-  if (!root) {
-    return HeapVector<Member<Part>>();
+// To rebuild the parts list, we simply traverse the entire tree under the
+// PartRoot (from FirstIncludedChildNode to LastIncludedChildNode), and collect
+// any Parts we find. If we find a ChildNodePart (or other PartRoot), we ignore
+// Parts until we exit the Partroot.
+// TODO(crbug.com/1453291) Future optimization: just skip the Node
+// traversal directly to the LastIncludedChildNode and avoid looping through
+// the descendants.)
+HeapDeque<Member<Part>>& PartRoot::RebuildPartsList() {
+  DCHECK(cached_parts_list_dirty_);
+
+  auto& ordered_parts = *MakeGarbageCollected<HeapDeque<Member<Part>>>();
+
+  // Then traverse the tree under the root container and add parts in the order
+  // they're found in the tree, and for the same Node, in the order they were
+  // constructed.
+  Node* child = FirstIncludedChildNode();
+  Node* last_child = LastIncludedChildNode();
+  if (!child || !last_child) {
+    return ordered_parts;
   }
-  Document& root_document = root->GetDocument();
-  for (Part* part : parts_unordered_) {
-    if (!part->IsValid() || part->GetDocument() != root_document) {
-      continue;
+  bool done = false;
+  Part* inside_sub_root = nullptr;
+  while (!done) {
+    for (auto& descendant : NodeTraversal::InclusiveDescendantsOf(*child)) {
+      if (auto* parts = descendant.GetDOMParts()) {
+        for (Part* part : *parts) {
+          PartRoot* part_root = part->GetAsPartRoot();
+          if (part_root == this) {
+            // Skip the PartRoot itself.
+            continue;
+          }
+          if (inside_sub_root) {
+            if (inside_sub_root == part) {
+              // We just exited the other side of the ChildNodePart.
+              DCHECK_EQ(part_root->LastIncludedChildNode(), &descendant);
+              inside_sub_root = nullptr;
+            }
+            continue;
+          }
+          if (part->NodeToSortBy() != descendant) {
+            continue;
+          }
+          if (!part->IsValid()) {
+            continue;
+          }
+          DCHECK(!base::Contains(ordered_parts, part));
+          ordered_parts.push_back(part);
+          if (!inside_sub_root && part_root) {
+            // We just entered a PartRoot - ignore further parts until we
+            // traverse the end node of this PartRoot.
+            inside_sub_root = part;
+          }
+        }
+      }
     }
-    Node* node = part->NodeToSortBy();
-    if (!root->rootContainer()->contains(node)) {
-      continue;
-    }
-    DCHECK_EQ(part->root()->GetDocumentPartRoot(), root);
-    CHECK_EQ(node->GetDocument(), root_document);
-    auto result = unordered_nodes_to_parts.insert(node, nullptr);
-    if (result.is_new_entry) {
-      result.stored_value->value =
-          MakeGarbageCollected<HeapVector<Member<Part>>>();
-    }
-    result.stored_value->value->push_back(part);
+    done = child == last_child;
+    child = child->nextSibling();
   }
-  return SortPartsInTreeOrder(unordered_nodes_to_parts);
+  return ordered_parts;
 }
 
-HeapVector<Member<Part>> PartRoot::getParts() {
+HeapVector<Member<Part>>& PartRoot::getParts() {
   if (cached_parts_list_dirty_) {
     cached_ordered_parts_ = RebuildPartsList();
     cached_parts_list_dirty_ = false;
   }
-  return cached_ordered_parts_;
+  // TODO(crbug.com/1453291) It would help to be able to directly return
+  // HeapDeque for sequences-valued IDL return values. Add an overload of
+  // bindings::ToV8HelperSequence(). In profiles, this call takes significant
+  // time.
+  auto& returned_vector = *MakeGarbageCollected<HeapVector<Member<Part>>>();
+  for (auto part : cached_ordered_parts_) {
+    returned_vector.push_back(part);
+  }
+  return returned_vector;
 }
 
 // static

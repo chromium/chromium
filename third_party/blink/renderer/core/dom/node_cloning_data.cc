@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/dom/node_cloning_data.h"
+#include "third_party/blink/renderer/core/dom/node_move_scope.h"
 
 namespace blink {
 
@@ -15,6 +16,7 @@ void NodeCloningData::Finalize() {
     return;
   }
   DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
+  DCHECK(NodeMoveScope::InScope());
   for (auto part : part_queue_) {
     if (!part->IsValid()) {
       // Only valid parts are cloned.

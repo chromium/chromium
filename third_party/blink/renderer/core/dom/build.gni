@@ -212,6 +212,8 @@ blink_core_sources_dom = [
   "node_list.h",
   "node_lists_node_data.cc",
   "node_lists_node_data.h",
+  "node_move_scope.cc",
+  "node_move_scope.h",
   "node_part.cc",
   "node_part.h",
   "node_rare_data.cc",

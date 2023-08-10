@@ -51,8 +51,14 @@ class CORE_EXPORT ChildNodePart : public Part, public PartRoot {
   bool IsValid() const override;
   Node* NodeToSortBy() const override;
   Part* ClonePart(NodeCloningData&) const override;
+  PartRoot* GetAsPartRoot() const override {
+    return const_cast<ChildNodePart*>(this);
+  }
+
   Document& GetDocument() const override;
   bool IsDocumentPartRoot() const override { return false; }
+  Node* FirstIncludedChildNode() const override { return previous_sibling_; }
+  Node* LastIncludedChildNode() const override { return next_sibling_; }
 
   // ChildNodePart API
   void disconnect() override;

@@ -30,11 +30,12 @@ class CORE_EXPORT Part : public ScriptWrappable {
   virtual bool IsValid() const { return root_ && !disconnected_; }
   virtual Node* NodeToSortBy() const = 0;
   virtual Part* ClonePart(NodeCloningData&) const = 0;
+  virtual PartRoot* GetAsPartRoot() const { return nullptr; }
   PartRoot* root() const { return root_; }
   void MoveToRoot(PartRoot* new_root);
   virtual Document& GetDocument() const = 0;
-  void PartDisconnected();
-  void PartConnected(ContainerNode& insertion_point);
+  void PartDisconnected(Node& node);
+  void PartConnected(Node& node, ContainerNode& insertion_point);
 
   // Part API
   V8UnionChildNodePartOrDocumentPartRoot* rootForBindings() const;

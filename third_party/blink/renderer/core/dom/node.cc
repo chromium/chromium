@@ -2241,7 +2241,7 @@ void Node::UpdateForRemovedDOMParts(ContainerNode& insertion_point) {
   }
   if (auto* parts = GetDOMParts()) {
     for (Part* part : *parts) {
-      part->PartDisconnected();
+      part->PartDisconnected(*this);
     }
   }
 }
@@ -2252,7 +2252,7 @@ void Node::UpdateForInsertedDOMParts(ContainerNode& insertion_point) {
   }
   if (auto* parts = GetDOMParts()) {
     for (Part* part : *parts) {
-      part->PartConnected(insertion_point);
+      part->PartConnected(*this, insertion_point);
     }
   }
 }

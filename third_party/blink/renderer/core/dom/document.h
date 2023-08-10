@@ -202,6 +202,7 @@ class Location;
 class MediaQueryListListener;
 class MediaQueryMatcher;
 class NodeIterator;
+class NodeMoveScopeItem;
 class NthIndexCache;
 class Page;
 class PendingAnimations;
@@ -1556,6 +1557,12 @@ class CORE_EXPORT Document : public ContainerNode,
     return *worklet_animation_controller_;
   }
 
+  // This uses an inline capacity of 2: typically there is only one scope active
+  // in a Document, but in some cases there will be a ShadowRoot being
+  // constructed, bringing the total to 2.
+  using NodeMoveScopeItemSet = HeapVector<Member<NodeMoveScopeItem>, 2>;
+  NodeMoveScopeItemSet& NodeMoveScopeItems() { return node_move_scope_items_; }
+
   void AttachCompositorTimeline(cc::AnimationTimeline*) const;
 
   enum class TopLayerReason {
@@ -2552,6 +2559,8 @@ class CORE_EXPORT Document : public ContainerNode,
   Member<DocumentTimeline> timeline_;
   Member<PendingAnimations> pending_animations_;
   Member<WorkletAnimationController> worklet_animation_controller_;
+
+  NodeMoveScopeItemSet node_move_scope_items_;
 
   Member<Document> template_document_;
   Member<Document> template_document_host_;

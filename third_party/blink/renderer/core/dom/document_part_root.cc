@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/dom/node_cloning_data.h"
+#include "third_party/blink/renderer/core/dom/node_move_scope.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -32,11 +33,13 @@ PartRootUnion* DocumentPartRoot::clone(ExceptionState&) {
   if (!clone) {
     return nullptr;
   }
-  DocumentPartRoot* part_root =
+  DocumentPartRoot* new_part_root =
       clone->IsDocumentNode() ? &To<Document>(clone)->getPartRoot()
                               : &To<DocumentFragment>(clone)->getPartRoot();
-  part_root->CachePartOrderAfterClone();
-  return PartRoot::GetUnionFromPartRoot(part_root);
+  NodeMoveScope node_move_scope(*clone,
+                                NodeMoveScopeType::kAppendAfterAllChildren);
+  data.Finalize();
+  return PartRoot::GetUnionFromPartRoot(new_part_root);
 }
 
 }  // namespace blink

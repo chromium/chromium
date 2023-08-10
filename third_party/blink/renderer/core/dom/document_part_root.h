@@ -29,6 +29,13 @@ class CORE_EXPORT DocumentPartRoot : public ScriptWrappable, public PartRoot {
     return root_container_->GetDocument();
   }
   bool IsDocumentPartRoot() const override { return true; }
+  Node* FirstIncludedChildNode() const override {
+    return root_container_->firstChild();
+  }
+  Node* LastIncludedChildNode() const override {
+    return root_container_->lastChild();
+  }
+
   void Trace(Visitor*) const override;
 
   // PartRoot API
