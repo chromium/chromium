@@ -61,7 +61,7 @@ class NotificationTrampoline {
   NotificationTrampoline();
   ~NotificationTrampoline();
 
-  base::ObserverList<CookieNotificationObserver>::Unchecked observer_list_;
+  base::ObserverList<CookieNotificationObserver> observer_list_;
 
   static NotificationTrampoline* g_notification_trampoline;
 };

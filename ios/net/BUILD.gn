@@ -31,6 +31,8 @@ source_set("net") {
     "cookies/cookie_cache.h",
     "cookies/cookie_creation_time_manager.h",
     "cookies/cookie_creation_time_manager.mm",
+    "cookies/cookie_notification_observer.h",
+    "cookies/cookie_notification_observer.mm",
     "cookies/cookie_store_ios.h",
     "cookies/cookie_store_ios.mm",
     "cookies/cookie_store_ios_client.h",
