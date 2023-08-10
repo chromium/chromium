@@ -580,10 +580,10 @@ size_t V4L2StatefulVideoDecoder::GetNumberOfReferenceFrames() {
   VLOG(2) << "Driver wants: " << ctrl.value
           << " CAPTURE buffers. We'll use: " << num_codec_reference_frames;
 
-  // Verify |num_codec_reference_frames| has a reasonable value. Anecdotally 16
-  // is the largest amount of reference frames seen, on an ITU-T H.264 test
-  // vector (CAPCM*1_Sand_E.h264).
-  CHECK_LE(num_codec_reference_frames, 16u);
+  // Verify |num_codec_reference_frames| has a reasonable value. Anecdotally 18
+  // is the largest amount of reference frames seen, on some ITU-T H.264 test
+  // vectors (e.g. CABA1_SVA_B.h264).
+  CHECK_LE(num_codec_reference_frames, 18u);
 
   return num_codec_reference_frames;
 }
