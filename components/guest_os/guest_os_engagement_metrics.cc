@@ -12,6 +12,7 @@
 #include "base/system/sys_info.h"
 #include "base/time/default_clock.h"
 #include "base/time/default_tick_clock.h"
+#include "base/trace_event/trace_event.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/dbus/power_manager/idle.pb.h"
 #include "components/exo/wm_helper.h"
@@ -118,6 +119,7 @@ void GuestOsEngagementMetrics::OnWindowActivated(
 }
 
 void GuestOsEngagementMetrics::OnSessionStateChanged() {
+  TRACE_EVENT0("login", "GuestOsEngagementMetrics::OnSessionStateChanged");
   UpdateEngagementTime();
   session_active_ = session_manager::SessionManager::Get()->session_state() ==
                     session_manager::SessionState::ACTIVE;
