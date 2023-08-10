@@ -19,9 +19,11 @@ import {LogType, type LoggerFn} from './log.js';
 import type {Result} from './result.js';
 
 export class ProcessingQueue<T> {
+  static readonly LOGGER_PREFIX = `${LogType.debug}:queue` as const;
+
   readonly #logger?: LoggerFn;
   readonly #processor: (arg: T) => Promise<void>;
-  readonly #queue: Promise<Result<T>>[] = [];
+  readonly #queue: [Promise<Result<T>>, string][] = [];
 
   // Flag to keep only 1 active processor.
   #isProcessing = false;
@@ -31,8 +33,8 @@ export class ProcessingQueue<T> {
     this.#logger = logger;
   }
 
-  add(entry: Promise<Result<T>>) {
-    this.#queue.push(entry);
+  add(entry: Promise<Result<T>>, name: string) {
+    this.#queue.push([entry, name]);
     // No need in waiting. Just initialise processor if needed.
     void this.#processIfNeeded();
   }
@@ -43,13 +45,19 @@ export class ProcessingQueue<T> {
     }
     this.#isProcessing = true;
     while (this.#queue.length > 0) {
-      const entryPromise = this.#queue.shift();
+      const arrayEntry = this.#queue.shift();
+      if (!arrayEntry) {
+        continue;
+      }
+      const [entryPromise, name] = arrayEntry;
+      this.#logger?.(ProcessingQueue.LOGGER_PREFIX, 'Processing event:', name);
+
       if (entryPromise !== undefined) {
         await entryPromise
           .then((entry) => {
             if (entry.kind === 'error') {
               this.#logger?.(
-                LogType.debug,
+                LogType.debugError,
                 'Event threw before sending:',
                 entry.error
               );
@@ -57,8 +65,12 @@ export class ProcessingQueue<T> {
             }
             return this.#processor(entry.value);
           })
-          .catch((e) => {
-            this.#logger?.(LogType.debug, 'Event was not processed:', e);
+          .catch((error) => {
+            this.#logger?.(
+              LogType.debugError,
+              'Event was not processed:',
+              error
+            );
           });
       }
     }

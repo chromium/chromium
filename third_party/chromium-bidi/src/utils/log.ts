@@ -20,6 +20,7 @@ export enum LogType {
   bidi = 'bidi',
   cdp = 'cdp',
   debug = 'debug',
+  debugError = 'debug:error',
   // keep-sorted end
 }
 

@@ -73,7 +73,8 @@ void (async () => {
   bidiServer.emitOutgoingMessage(
     OutgoingBidiMessage.createResolved({
       launched: true,
-    })
+    }),
+    'launched'
   );
 })();
 

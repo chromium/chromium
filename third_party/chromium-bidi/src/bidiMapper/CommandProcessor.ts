@@ -40,11 +40,18 @@ import {ScriptProcessor} from './domains/script/ScriptProcessor.js';
 import type {RealmStorage} from './domains/script/realmStorage.js';
 import {SessionProcessor} from './domains/session/SessionProcessor.js';
 
-type CommandProcessorEvents = {
-  response: Promise<Result<OutgoingBidiMessage>>;
+export const enum CommandProcessorEvents {
+  Response = 'response',
+}
+
+type CommandProcessorEventsMap = {
+  [CommandProcessorEvents.Response]: {
+    message: Promise<Result<OutgoingBidiMessage>>;
+    event: string;
+  };
 };
 
-export class CommandProcessor extends EventEmitter<CommandProcessorEvents> {
+export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
   // keep-sorted start
   #browserProcessor: BrowserProcessor;
   #browsingContextProcessor: BrowsingContextProcessor;
@@ -241,33 +248,33 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEvents> {
         result,
       } satisfies ChromiumBidi.CommandResponse;
 
-      this.emit(
-        'response',
-        OutgoingBidiMessage.createResolved(response, command.channel)
-      );
+      this.emit(CommandProcessorEvents.Response, {
+        message: OutgoingBidiMessage.createResolved(response, command.channel),
+        event: command.method,
+      });
     } catch (e) {
       if (e instanceof Exception) {
         const errorResponse = e;
-        this.emit(
-          'response',
-          OutgoingBidiMessage.createResolved(
+        this.emit(CommandProcessorEvents.Response, {
+          message: OutgoingBidiMessage.createResolved(
             errorResponse.toErrorResponse(command.id),
             command.channel
-          )
-        );
+          ),
+          event: command.method,
+        });
       } else {
         const error = e as Error;
         this.#logger?.(LogType.bidi, error);
-        this.emit(
-          'response',
-          OutgoingBidiMessage.createResolved(
+        this.emit(CommandProcessorEvents.Response, {
+          message: OutgoingBidiMessage.createResolved(
             new UnknownErrorException(
               error.message,
               error.stack
             ).toErrorResponse(command.id),
             command.channel
-          )
-        );
+          ),
+          event: command.method,
+        });
       }
     }
   }

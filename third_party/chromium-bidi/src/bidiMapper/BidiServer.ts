@@ -24,7 +24,7 @@ import type {Result} from '../utils/result.js';
 
 import type {IBidiParser} from './BidiParser.js';
 import type {IBidiTransport} from './BidiTransport.js';
-import {CommandProcessor} from './CommandProcessor.js';
+import {CommandProcessor, CommandProcessorEvents} from './CommandProcessor.js';
 import type {OutgoingBidiMessage} from './OutgoingBidiMessage.js';
 import {BrowsingContextStorage} from './domains/context/browsingContextStorage.js';
 import {EventManager} from './domains/events/EventManager.js';
@@ -82,9 +82,9 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
       this.#logger
     );
     this.#commandProcessor.on(
-      'response',
-      (response: Promise<Result<OutgoingBidiMessage>>) => {
-        this.emitOutgoingMessage(response);
+      CommandProcessorEvents.Response,
+      ({message, event}) => {
+        this.emitOutgoingMessage(message, event);
       }
     );
   }
@@ -123,9 +123,10 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
    * Sends BiDi message.
    */
   emitOutgoingMessage(
-    messageEntry: Promise<Result<OutgoingBidiMessage>>
+    messageEntry: Promise<Result<OutgoingBidiMessage>>,
+    event: string
   ): void {
-    this.#messageQueue.add(messageEntry);
+    this.#messageQueue.add(messageEntry, event);
   }
 
   close() {

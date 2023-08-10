@@ -134,7 +134,8 @@ export class EventManager {
     // Send events to channels in the subscription priority.
     for (const channel of sortedChannels) {
       this.#bidiServer.emitOutgoingMessage(
-        OutgoingBidiMessage.createFromPromise(event, channel)
+        OutgoingBidiMessage.createFromPromise(event, channel),
+        eventName
       );
       this.#markEventSent(eventWrapper, channel, eventName);
     }
@@ -167,7 +168,8 @@ export class EventManager {
         )) {
           // The order of the events is important.
           this.#bidiServer.emitOutgoingMessage(
-            OutgoingBidiMessage.createFromPromise(eventWrapper.event, channel)
+            OutgoingBidiMessage.createFromPromise(eventWrapper.event, channel),
+            eventName
           );
           this.#markEventSent(eventWrapper, channel, eventName);
         }
