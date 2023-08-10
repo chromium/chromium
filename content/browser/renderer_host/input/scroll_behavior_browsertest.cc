@@ -366,8 +366,16 @@ IN_PROC_BROWSER_TEST_P(ScrollBehaviorBrowserTest,
   ValueHoldsAt(scroll_top_script, 0);
 }
 
+// Disabled for flakiness on Mac (crbug.com/1462985).
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_InstantScriptScrollAdjustsSmoothWheelScroll \
+  DISABLED_InstantScriptScrollAdjustsSmoothWheelScroll
+#else
+#define MAYBE_InstantScriptScrollAdjustsSmoothWheelScroll \
+  InstantScriptScrollAdjustsSmoothWheelScroll
+#endif
 IN_PROC_BROWSER_TEST_P(ScrollBehaviorBrowserTestWithPercentBasedScrolling,
-                       InstantScriptScrollAdjustsSmoothWheelScroll) {
+                       MAYBE_InstantScriptScrollAdjustsSmoothWheelScroll) {
   RunTestInstantScriptScrollAdjustsSmoothWheelScroll();
 }
 
