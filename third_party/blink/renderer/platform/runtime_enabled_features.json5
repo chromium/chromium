@@ -804,7 +804,7 @@
     },
     {
       name: "CSSCapFontUnits",
-      status: "experimental",
+      status: "stable",
     },
     {
       // Support case-sensitive attribute selector modifier
