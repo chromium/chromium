@@ -18,6 +18,7 @@
 #include "base/functional/overloaded.h"
 #include "base/pickle.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/trace_event/trace_event.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_version.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
@@ -1692,6 +1693,7 @@ void WebAppDatabase::OnAllMetadataRead(
     RegistryOpenedCallback callback,
     const absl::optional<syncer::ModelError>& error,
     std::unique_ptr<syncer::MetadataBatch> metadata_batch) {
+  TRACE_EVENT0("ui", "WebAppDatabase::OnAllMetadataRead");
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (error) {
     error_callback_.Run(*error);

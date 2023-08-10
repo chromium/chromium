@@ -6,6 +6,7 @@
 
 #include <sstream>
 
+#include "base/trace_event/trace_event.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "ui/gfx/skia_util.h"
@@ -224,6 +225,7 @@ void WebAppShortcutsMenuItemInfo::SetShortcutIconInfosForPurpose(
 }
 
 base::Value WebAppShortcutsMenuItemInfo::AsDebugValue() const {
+  TRACE_EVENT0("ui", "WebAppShortcutsMenuItemInfo::AsDebugValue");
   base::Value::Dict root;
 
   root.Set("name", name);
