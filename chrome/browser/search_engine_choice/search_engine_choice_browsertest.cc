@@ -94,6 +94,9 @@ class SearchEngineChoiceBrowserTest : public InProcessBrowserTest {
 
   void SetUpInProcessBrowserTestFixture() override {
     InProcessBrowserTest::SetUpInProcessBrowserTestFixture();
+    SearchEngineChoiceServiceFactory::ScopedChromeBuildOverrideForTesting(
+        /*force_chrome_build=*/true);
+
     create_services_subscription_ =
         BrowserContextDependencyManager::GetInstance()
             ->RegisterCreateServicesCallbackForTesting(

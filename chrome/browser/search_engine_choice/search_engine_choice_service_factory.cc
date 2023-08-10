@@ -5,6 +5,8 @@
 #include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
 
 #include "base/check_deref.h"
+#include "base/check_is_test.h"
+#include "build/branding_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_service.h"
@@ -15,6 +17,16 @@
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chromeos/components/kiosk/kiosk_utils.h"
 #endif
+
+namespace {
+// Stores whether this is a Google Chrome-branded build.
+bool g_is_chrome_build =
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    true;
+#else
+    false;
+#endif
+}  // namespace
 
 SearchEngineChoiceServiceFactory::SearchEngineChoiceServiceFactory()
     : ProfileKeyedServiceFactory(
@@ -39,6 +51,14 @@ SearchEngineChoiceService* SearchEngineChoiceServiceFactory::GetForProfile(
       GetInstance()->GetServiceForBrowserContext(profile, true));
 }
 
+// static
+base::AutoReset<bool>
+SearchEngineChoiceServiceFactory::ScopedChromeBuildOverrideForTesting(
+    bool force_chrome_build) {
+  CHECK_IS_TEST();
+  return base::AutoReset<bool>(&g_is_chrome_build, force_chrome_build);
+}
+
 bool SearchEngineChoiceServiceFactory::IsProfileEligibleForChoiceScreen(
     const policy::PolicyService& policy_service,
     Profile& profile) const {
@@ -48,7 +68,7 @@ bool SearchEngineChoiceServiceFactory::IsProfileEligibleForChoiceScreen(
 
   bool is_regular_profile = profile.IsRegularProfile();
 #if BUILDFLAG(IS_CHROMEOS)
-  is_regular_profile &= !profiles::IsPublicSession() &&
+  is_regular_profile &= !profiles::IsManagedGuestSession() &&
                         !chromeos::IsKioskSession() &&
                         !profiles::IsChromeAppKioskSession();
 #endif
@@ -64,6 +84,9 @@ bool SearchEngineChoiceServiceFactory::IsProfileEligibleForChoiceScreen(
 
 KeyedService* SearchEngineChoiceServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
+  if (!g_is_chrome_build) {
+    return nullptr;
+  }
   auto& profile = CHECK_DEREF(Profile::FromBrowserContext(context));
 
   if (!IsProfileEligibleForChoiceScreen(
