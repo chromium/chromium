@@ -12,9 +12,22 @@
     @property --registered-prop {
       inherits: false;
       initial-value: red;
+      syntax: "<length>";
+    }
+    @property --registered-prop {
+      inherits: false;
+      initial-value: red;
       syntax: "<color>";
     }
     </style>
+    <script>
+    CSS.registerProperty({
+      name: '--js-prop',
+      inherits: false,
+      initialValue: 'red',
+      syntax: '<color>',
+    });
+    </script>
     <div id="target">
       Text
     </div>
@@ -50,6 +63,9 @@
   const parsedOk =
       properties.map(({name, parsedOk}) => ({name, parsedOk})).toSorted();
   testRunner.log(parsedOk);
+
+  testRunner.log(result.cssPropertyRegistrations);
+  testRunner.log(result.cssPropertyRules);
 
   testRunner.completeTest();
 });

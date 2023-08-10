@@ -1830,6 +1830,28 @@ experimental domain CSS
       # List of keyframes.
       array of CSSKeyframeRule keyframes
 
+  # Representation of a custom property registration through CSS.registerProperty
+  type CSSPropertyRegistration extends object
+    properties
+      string propertyName
+      optional Value initialValue
+      boolean inherits
+      string syntax
+
+
+  # CSS property at-rule representation.
+  type CSSPropertyRule extends object
+    properties
+      # The css style sheet identifier (absent for user agent stylesheet and user-specified
+      # stylesheet rules) this rule came from.
+      optional StyleSheetId styleSheetId
+      # Parent stylesheet's origin.
+      StyleSheetOrigin origin
+      # Associated property name.
+      Value propertyName
+      # Associated style declaration.
+      CSSStyle style
+
   # CSS keyframe rule representation.
   type CSSKeyframeRule extends object
     properties
@@ -1957,6 +1979,10 @@ experimental domain CSS
       optional array of CSSKeyframesRule cssKeyframesRules
       # A list of CSS position fallbacks matching this node.
       optional array of CSSPositionFallbackRule cssPositionFallbackRules
+      # A list of CSS at-property rules matching this node.
+      optional array of CSSPropertyRule cssPropertyRules
+      # A list of CSS property registrations matching this node.
+      optional array of CSSPropertyRegistration cssPropertyRegistrations
       # Id of the first parent element that does not have display: contents.
       experimental optional DOM.NodeId parentLayoutNodeId
 

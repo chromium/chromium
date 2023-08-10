@@ -48,6 +48,7 @@
 #include "third_party/blink/renderer/core/css/css_position_fallback_rule.h"
 #include "third_party/blink/renderer/core/css/css_property_name.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
+#include "third_party/blink/renderer/core/css/css_property_rule.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/css/css_rule.h"
 #include "third_party/blink/renderer/core/css/css_rule_list.h"
@@ -994,6 +995,9 @@ protocol::Response InspectorCSSAgent::getMatchedStylesForNode(
         css_keyframes_rules,
     Maybe<protocol::Array<protocol::CSS::CSSPositionFallbackRule>>*
         css_position_fallback_rules,
+    Maybe<protocol::Array<protocol::CSS::CSSPropertyRule>>* css_property_rules,
+    Maybe<protocol::Array<protocol::CSS::CSSPropertyRegistration>>*
+        css_property_registrations,
     Maybe<int>* parentLayoutNodeId) {
   protocol::Response response = AssertEnabled();
   if (!response.IsSuccess())
@@ -1114,6 +1118,8 @@ protocol::Response InspectorCSSAgent::getMatchedStylesForNode(
         std::move(inherited_pseudo_element_matches));
   }
 
+  std::tie(*css_property_rules, *css_property_registrations) =
+      CustomPropertiesForNode(element);
   *css_position_fallback_rules = PositionFallbackRulesForNode(element);
 
   auto* parentLayoutNode = LayoutTreeBuilderTraversal::LayoutParent(*element);
@@ -1249,6 +1255,95 @@ InspectorCSSAgent::PositionFallbackRulesForNode(Element* element) {
           .build());
 
   return css_position_fallback_rules;
+}
+
+template <class CSSRuleCollection>
+static CSSPropertyRule* FindPropertyRule(CSSRuleCollection* css_rules,
+                                         StyleRuleProperty* property_rule) {
+  if (!css_rules) {
+    return nullptr;
+  }
+
+  CSSPropertyRule* result = nullptr;
+  for (unsigned j = 0; j < css_rules->length() && !result; ++j) {
+    CSSRule* css_rule = css_rules->item(j);
+    if (auto* css_style_rule = DynamicTo<CSSPropertyRule>(css_rule)) {
+      if (css_style_rule->Property() == property_rule)
+        result = css_style_rule;
+    } else if (auto* css_import_rule = DynamicTo<CSSImportRule>(css_rule)) {
+      result = FindPropertyRule(css_import_rule->styleSheet(), property_rule);
+    } else {
+      result = FindPropertyRule(css_rule->cssRules(), property_rule);
+    }
+  }
+  return result;
+}
+
+std::unique_ptr<protocol::CSS::CSSPropertyRegistration>
+BuildObjectForPropertyRegistration(const AtomicString& name,
+                                   const PropertyRegistration& registration) {
+  auto css_property_registration =
+      protocol::CSS::CSSPropertyRegistration::create()
+          .setPropertyName(name)
+          .setInherits(registration.Inherits())
+          .setSyntax(registration.Syntax().ToString())
+          .build();
+  if (registration.Initial()) {
+    css_property_registration->setInitialValue(
+        protocol::CSS::Value::create()
+            .setText(registration.Initial()->CssText())
+            .build());
+  }
+  return css_property_registration;
+}
+
+std::pair<
+    std::unique_ptr<protocol::Array<protocol::CSS::CSSPropertyRule>>,
+    std::unique_ptr<protocol::Array<protocol::CSS::CSSPropertyRegistration>>>
+InspectorCSSAgent::CustomPropertiesForNode(Element* element) {
+  auto result = std::make_pair(
+      std::make_unique<protocol::Array<protocol::CSS::CSSPropertyRule>>(),
+      std::make_unique<
+          protocol::Array<protocol::CSS::CSSPropertyRegistration>>());
+  Document& document = element->GetDocument();
+  DCHECK(!document.NeedsLayoutTreeUpdateForNode(*element));
+
+  const ComputedStyle* style = element->EnsureComputedStyle();
+  if (!style /*|| !style->HasVariableReference()*/)
+    return result;
+
+  for (const AtomicString& var_name : style->GetVariableNames()) {
+    const auto* registration =
+        PropertyRegistration::From(document.GetExecutionContext(), var_name);
+    if (!registration) {
+      continue;
+    }
+
+    if (StyleRuleProperty* rule = registration->PropertyRule()) {
+      // Find CSSOM wrapper.
+      CSSPropertyRule* property_rule = nullptr;
+      for (CSSStyleSheet* style_sheet :
+           *document_to_css_style_sheets_.at(&document)) {
+        property_rule = FindPropertyRule(style_sheet, rule);
+        if (property_rule)
+          break;
+      }
+      if (property_rule) {
+        // @property
+        InspectorStyleSheet* inspector_style_sheet =
+            BindStyleSheet(property_rule->parentStyleSheet());
+        result.first->push_back(
+            inspector_style_sheet->BuildObjectForPropertyRule(property_rule));
+      }
+      // If the property_rule wasn't found, just ignore ignore it.
+    } else {
+      // CSS.registerProperty
+      result.second->push_back(
+          BuildObjectForPropertyRegistration(var_name, *registration));
+    }
+  }
+
+  return result;
 }
 
 CSSKeyframesRule*

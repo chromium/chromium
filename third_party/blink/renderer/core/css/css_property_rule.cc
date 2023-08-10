@@ -54,6 +54,10 @@ void CSSPropertyRule::Reattach(StyleRuleBase* rule) {
   property_rule_ = To<StyleRuleProperty>(rule);
 }
 
+StyleRuleProperty* CSSPropertyRule::Property() const {
+  return property_rule_.Get();
+}
+
 String CSSPropertyRule::name() const {
   return property_rule_->GetName();
 }
@@ -87,8 +91,19 @@ String CSSPropertyRule::initialValue() const {
   return g_null_atom;
 }
 
+CSSStyleDeclaration* CSSPropertyRule::Style() const {
+  if (!properties_cssom_wrapper_) {
+    properties_cssom_wrapper_ =
+        MakeGarbageCollected<StyleRuleCSSStyleDeclaration>(
+            property_rule_->MutableProperties(),
+            const_cast<CSSPropertyRule*>(this));
+  }
+  return properties_cssom_wrapper_.Get();
+}
+
 void CSSPropertyRule::Trace(Visitor* visitor) const {
   visitor->Trace(property_rule_);
+  visitor->Trace(properties_cssom_wrapper_);
   CSSRule::Trace(visitor);
 }
 

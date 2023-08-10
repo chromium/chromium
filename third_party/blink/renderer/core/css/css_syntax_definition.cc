@@ -140,11 +140,12 @@ CSSSyntaxDefinition CSSSyntaxDefinition::IsolatedCopy() const {
         syntax_component.GetType(), syntax_component.GetString(),
         syntax_component.GetRepeat()));
   }
-  return CSSSyntaxDefinition(std::move(syntax_components_copy));
+  return CSSSyntaxDefinition(std::move(syntax_components_copy), original_text_);
 }
 
-CSSSyntaxDefinition::CSSSyntaxDefinition(Vector<CSSSyntaxComponent> components)
-    : syntax_components_(std::move(components)) {
+CSSSyntaxDefinition::CSSSyntaxDefinition(Vector<CSSSyntaxComponent> components,
+                                         const String& original_text)
+    : syntax_components_(std::move(components)), original_text_(original_text) {
   DCHECK(syntax_components_.size());
 }
 
@@ -152,7 +153,11 @@ CSSSyntaxDefinition CSSSyntaxDefinition::CreateUniversal() {
   Vector<CSSSyntaxComponent> components;
   components.push_back(CSSSyntaxComponent(
       CSSSyntaxType::kTokenStream, g_empty_string, CSSSyntaxRepeat::kNone));
-  return CSSSyntaxDefinition(std::move(components));
+  return CSSSyntaxDefinition(std::move(components), {});
+}
+
+String CSSSyntaxDefinition::ToString() const {
+  return IsUniversal() ? String("*") : original_text_;
 }
 
 }  // namespace blink

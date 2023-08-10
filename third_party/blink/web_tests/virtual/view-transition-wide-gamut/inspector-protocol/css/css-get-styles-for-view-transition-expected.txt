@@ -6,6 +6,10 @@ The test verifies functionality of querying style information for view-transitio
         ]
         cssPositionFallbackRules : [
         ]
+        cssPropertyRegistrations : [
+        ]
+        cssPropertyRules : [
+        ]
         inherited : [
         ]
         inheritedPseudoElements : [

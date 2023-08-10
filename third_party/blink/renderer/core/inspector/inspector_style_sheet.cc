@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/core/css/css_media_rule.h"
 #include "third_party/blink/renderer/core/css/css_position_fallback_rule.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
+#include "third_party/blink/renderer/core/css/css_property_rule.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/css/css_rule_list.h"
 #include "third_party/blink/renderer/core/css/css_scope_rule.h"
@@ -2051,6 +2052,25 @@ InspectorStyleSheet::BuildObjectForTryRule(CSSTryRule* try_rule) {
   if (CanBind(origin_) && !Id().empty()) {
     result->setStyleSheetId(Id());
   }
+  return result;
+}
+
+std::unique_ptr<protocol::CSS::CSSPropertyRule>
+InspectorStyleSheet::BuildObjectForPropertyRule(
+    CSSPropertyRule* property_rule) {
+  std::unique_ptr<protocol::CSS::Value> name_text =
+      protocol::CSS::Value::create().setText(property_rule->name()).build();
+  CSSRuleSourceData* source_data = SourceDataForRule(property_rule);
+  if (source_data)
+    name_text->setRange(BuildSourceRangeObject(source_data->rule_header_range));
+  std::unique_ptr<protocol::CSS::CSSPropertyRule> result =
+      protocol::CSS::CSSPropertyRule::create()
+          .setPropertyName(std::move(name_text))
+          .setOrigin(origin_)
+          .setStyle(BuildObjectForStyle(property_rule->Style()))
+          .build();
+  if (CanBind(origin_) && !Id().empty())
+    result->setStyleSheetId(Id());
   return result;
 }
 

@@ -164,6 +164,8 @@ class CORE_EXPORT InspectorCSSAgent final
           protocol::Array<protocol::CSS::InheritedPseudoElementMatches>>*,
       protocol::Maybe<protocol::Array<protocol::CSS::CSSKeyframesRule>>*,
       protocol::Maybe<protocol::Array<protocol::CSS::CSSPositionFallbackRule>>*,
+      protocol::Maybe<protocol::Array<protocol::CSS::CSSPropertyRule>>*,
+      protocol::Maybe<protocol::Array<protocol::CSS::CSSPropertyRegistration>>*,
       protocol::Maybe<int>*) override;
   protocol::Response getInlineStylesForNode(
       int node_id,
@@ -330,6 +332,11 @@ class CORE_EXPORT InspectorCSSAgent final
 
   std::unique_ptr<protocol::Array<protocol::CSS::CSSPositionFallbackRule>>
   PositionFallbackRulesForNode(Element* element);
+
+  std::pair<
+      std::unique_ptr<protocol::Array<protocol::CSS::CSSPropertyRule>>,
+      std::unique_ptr<protocol::Array<protocol::CSS::CSSPropertyRegistration>>>
+  CustomPropertiesForNode(Element* element);
 
   // If the |animating_element| is a pseudo element, then |element| is a
   // reference to its originating DOM element.
