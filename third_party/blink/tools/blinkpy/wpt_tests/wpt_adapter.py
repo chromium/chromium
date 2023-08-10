@@ -269,11 +269,14 @@ class WPTAdapter:
         runner_options.binary_args.extend([
             '--host-resolver-rules='
             'MAP nonexistent.*.test ~NOTFOUND, MAP *.test 127.0.0.1',
-            '--enable-experimental-web-platform-features',
-            '--enable-blink-features=MojoJS,MojoJSTest',
-            '--enable-blink-test-features',
             '--disable-field-trial-config',
         ])
+
+        if self.options.product != 'content_shell':
+            # `content_shell --run-web-tests` already enables "test" and
+            # "experimental" features.
+            runner_options.binary_args.append('--enable-blink-test-features')
+        # Implicitly pass `--enable-blink-features=MojoJS,MojoJSTest` to Chrome.
         runner_options.mojojs_path = self.port.generated_sources_directory()
 
         # TODO: RWT has subtle control on how tests are retried. For example
