@@ -1272,10 +1272,17 @@ void WebGPUDecoderImpl::RequestDeviceImpl(
   DCHECK_EQ(desc.nextInChain, nullptr);
 
   std::vector<wgpu::FeatureName> required_features;
+
+#ifdef WGPU_BREAKING_CHANGE_COUNT_RENAME
+  if (desc.requiredFeatureCount) {
+    size_t requiredFeatureCount = desc.requiredFeatureCount;
+#else
   if (desc.requiredFeaturesCount) {
+    size_t requiredFeatureCount = desc.requiredFeaturesCount;
+#endif
     required_features = {
         desc.requiredFeatures,
-        desc.requiredFeatures + desc.requiredFeaturesCount,
+        desc.requiredFeatures + requiredFeatureCount,
     };
 
     // Check that no disallowed features were requested. They should be hidden
@@ -1301,7 +1308,11 @@ void WebGPUDecoderImpl::RequestDeviceImpl(
   }
 
   desc.requiredFeatures = required_features.data();
+#ifdef WGPU_BREAKING_CHANGE_COUNT_RENAME
+  desc.requiredFeatureCount = required_features.size();
+#else
   desc.requiredFeaturesCount = required_features.size();
+#endif
 
   // If a new toggle is added here, ForceDawnTogglesForWebGPU() which collects
   // info for about:gpu should be updated as well.
@@ -1326,11 +1337,21 @@ void WebGPUDecoderImpl::RequestDeviceImpl(
     require_device_disabled_toggles.push_back(toggles.c_str());
   }
   dawn_device_toggles.enabledToggles = require_device_enabled_toggles.data();
+#ifdef WGPU_BREAKING_CHANGE_COUNT_RENAME
+  dawn_device_toggles.enabledToggleCount =
+      require_device_enabled_toggles.size();
+#else
   dawn_device_toggles.enabledTogglesCount =
       require_device_enabled_toggles.size();
+#endif
   dawn_device_toggles.disabledToggles = require_device_disabled_toggles.data();
+#ifdef WGPU_BREAKING_CHANGE_COUNT_RENAME
+  dawn_device_toggles.disabledToggleCount =
+      require_device_disabled_toggles.size();
+#else
   dawn_device_toggles.disabledTogglesCount =
       require_device_disabled_toggles.size();
+#endif
   ChainStruct(desc, &dawn_device_toggles);
 
   // Dawn caching isolation key information needs to be passed per device. If an
@@ -1398,9 +1419,15 @@ struct WGPUDeviceDescriptorDeepCopy : WGPUDeviceDescriptor {
       label = device_label_.c_str();
     }
     if (desc.requiredFeatures) {
+#ifdef WGPU_BREAKING_CHANGE_COUNT_RENAME
+      required_features_ = std::vector<WGPUFeatureName>(
+          desc.requiredFeatures,
+          desc.requiredFeatures + desc.requiredFeatureCount);
+#else
       required_features_ = std::vector<WGPUFeatureName>(
           desc.requiredFeatures,
           desc.requiredFeatures + desc.requiredFeaturesCount);
+#endif
       requiredFeatures = required_features_.data();
     }
     if (desc.requiredLimits) {
@@ -1515,12 +1542,22 @@ wgpu::Adapter WebGPUDecoderImpl::CreatePreferredAdapter(
     require_adapter_disabled_toggles.push_back(toggles.c_str());
   }
   dawn_adapter_toggles.enabledToggles = require_adapter_enabled_toggles.data();
+#ifdef WGPU_BREAKING_CHANGE_COUNT_RENAME
+  dawn_adapter_toggles.enabledToggleCount =
+      require_adapter_enabled_toggles.size();
+#else
   dawn_adapter_toggles.enabledTogglesCount =
       require_adapter_enabled_toggles.size();
+#endif
   dawn_adapter_toggles.disabledToggles =
       require_adapter_disabled_toggles.data();
+#ifdef WGPU_BREAKING_CHANGE_COUNT_RENAME
+  dawn_adapter_toggles.disabledToggleCount =
+      require_adapter_disabled_toggles.size();
+#else
   dawn_adapter_toggles.disabledTogglesCount =
       require_adapter_disabled_toggles.size();
+#endif
   ChainStruct(adapter_options, &dawn_adapter_toggles);
 
 #if BUILDFLAG(IS_WIN)

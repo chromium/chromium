@@ -27,8 +27,12 @@ GPUQuerySet* GPUQuerySet::Create(GPUDevice* device,
     pipeline_statistics = AsDawnEnum<WGPUPipelineStatisticName>(
         webgpu_desc->pipelineStatistics());
     dawn_desc.pipelineStatistics = pipeline_statistics.get();
+#ifdef WGPU_BREAKING_CHANGE_COUNT_RENAME
+    dawn_desc.pipelineStatisticCount = webgpu_desc->pipelineStatistics().size();
+#else
     dawn_desc.pipelineStatisticsCount =
         webgpu_desc->pipelineStatistics().size();
+#endif
   }
 
   std::string label;

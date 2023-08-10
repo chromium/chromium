@@ -187,7 +187,11 @@ TEST_F(IOSurfaceImageBackingFactoryTest, Dawn_SkiaGL) {
   // internal methods that would need specific usages.
   wgpu::FeatureName dawn_internal_usage = wgpu::FeatureName::DawnInternalUsages;
   wgpu::DeviceDescriptor device_descriptor;
+#ifdef WGPU_BREAKING_CHANGE_COUNT_RENAME
+  device_descriptor.requiredFeatureCount = 1;
+#else
   device_descriptor.requiredFeaturesCount = 1;
+#endif
   device_descriptor.requiredFeatures = &dawn_internal_usage;
 
   wgpu::Device device =
@@ -328,7 +332,11 @@ TEST_F(IOSurfaceImageBackingFactoryTest, GL_Dawn_Skia_UnclearTexture) {
   // internal methods that would need specific usages.
   wgpu::FeatureName dawn_internal_usage = wgpu::FeatureName::DawnInternalUsages;
   wgpu::DeviceDescriptor device_descriptor;
+#ifdef WGPU_BREAKING_CHANGE_COUNT_RENAME
+  device_descriptor.requiredFeatureCount = 1;
+#else
   device_descriptor.requiredFeaturesCount = 1;
+#endif
   device_descriptor.requiredFeatures = &dawn_internal_usage;
 
   wgpu::Device device =
@@ -415,7 +423,11 @@ TEST_F(IOSurfaceImageBackingFactoryTest, UnclearDawn_SkiaFails) {
   // internal methods that would need specific usages.
   wgpu::FeatureName dawn_internal_usage = wgpu::FeatureName::DawnInternalUsages;
   wgpu::DeviceDescriptor device_descriptor;
+#ifdef WGPU_BREAKING_CHANGE_COUNT_RENAME
+  device_descriptor.requiredFeatureCount = 1;
+#else
   device_descriptor.requiredFeaturesCount = 1;
+#endif
   device_descriptor.requiredFeatures = &dawn_internal_usage;
 
   wgpu::Device device =

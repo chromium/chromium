@@ -271,7 +271,11 @@ ScriptPromise GPUAdapter::requestDevice(ScriptState* script_state,
     required_features.AppendRange(required_features_set.begin(),
                                   required_features_set.end());
     dawn_desc.requiredFeatures = required_features.data();
+#ifdef WGPU_BREAKING_CHANGE_COUNT_RENAME
+    dawn_desc.requiredFeatureCount = required_features.size();
+#else
     dawn_desc.requiredFeaturesCount = required_features.size();
+#endif
   }
 
   auto* callback = BindWGPUOnceCallback(

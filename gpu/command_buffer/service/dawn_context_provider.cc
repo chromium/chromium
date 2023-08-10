@@ -165,7 +165,11 @@ bool DawnContextProvider::Initialize(CacheBlobCallback callback) {
   enabled_toggles.push_back("skip_validation");
 #endif
   toggles_desc.enabledToggles = enabled_toggles.data();
+#ifdef WGPU_BREAKING_CHANGE_COUNT_RENAME
+  toggles_desc.enabledToggleCount = enabled_toggles.size();
+#else
   toggles_desc.enabledTogglesCount = enabled_toggles.size();
+#endif
 
   wgpu::DeviceDescriptor descriptor;
   descriptor.nextInChain = &toggles_desc;
@@ -207,7 +211,11 @@ bool DawnContextProvider::Initialize(CacheBlobCallback callback) {
   }
 
   descriptor.requiredFeatures = features.data();
+#ifdef WGPU_BREAKING_CHANGE_COUNT_RENAME
+  descriptor.requiredFeatureCount = std::size(features);
+#else
   descriptor.requiredFeaturesCount = std::size(features);
+#endif
 
   wgpu::Device device = adapter.CreateDevice(&descriptor);
   if (!device) {
