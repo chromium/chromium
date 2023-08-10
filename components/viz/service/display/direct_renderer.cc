@@ -43,33 +43,6 @@
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/transform_util.h"
 
-namespace {
-
-// Returns the bounding box that contains the specified rounded corner.
-gfx::RectF ComputeRoundedCornerBoundingBox(const gfx::RRectF& rrect,
-                                           const gfx::RRectF::Corner corner) {
-  auto radii = rrect.GetCornerRadii(corner);
-  gfx::RectF bounding_box(radii.x(), radii.y());
-  switch (corner) {
-    case gfx::RRectF::Corner::kUpperLeft:
-      bounding_box.Offset(rrect.rect().x(), rrect.rect().y());
-      break;
-    case gfx::RRectF::Corner::kUpperRight:
-      bounding_box.Offset(rrect.rect().right() - radii.x(), rrect.rect().y());
-      break;
-    case gfx::RRectF::Corner::kLowerRight:
-      bounding_box.Offset(rrect.rect().right() - radii.x(),
-                          rrect.rect().bottom() - radii.y());
-      break;
-    case gfx::RRectF::Corner::kLowerLeft:
-      bounding_box.Offset(rrect.rect().x(), rrect.rect().bottom() - radii.y());
-      break;
-  }
-  return bounding_box;
-}
-
-}  // namespace
-
 namespace viz {
 
 DirectRenderer::DrawingFrame::DrawingFrame() = default;
@@ -1104,8 +1077,7 @@ bool DirectRenderer::ShouldApplyRoundedCorner(const DrawQuad* quad) const {
       gfx::RRectF::Corner::kUpperLeft, gfx::RRectF::Corner::kUpperRight,
       gfx::RRectF::Corner::kLowerRight, gfx::RRectF::Corner::kLowerLeft};
   for (auto c : corners) {
-    if (ComputeRoundedCornerBoundingBox(rounded_corner_bounds, c)
-            .Intersects(target_quad)) {
+    if (rounded_corner_bounds.CornerBoundingRect(c).Intersects(target_quad)) {
       return true;
     }
   }
