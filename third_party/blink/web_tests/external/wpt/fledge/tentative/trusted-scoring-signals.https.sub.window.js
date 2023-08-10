@@ -42,9 +42,9 @@ async function runTrustedScoringSignalsDataVersionTest(
                       throw "Bad browserSignals.dataVersion"`,
               reportWin:
                   `if (browserSignals.dataVersion !== undefined)
-                     sendReportTo('${createSellerReportUrl(uuid, 'error')}');
+                     sendReportTo('${createSellerReportUrl(uuid, '1-error')}');
                    else
-                     sendReportTo('${createSellerReportUrl(uuid)}');` }),
+                     sendReportTo('${createSellerReportUrl(uuid, '1')}');`}),
       ads: [{renderUrl: renderURL}]};
   await joinInterestGroup(test, uuid, interestGroupOverrides);
 
@@ -55,14 +55,14 @@ async function runTrustedScoringSignalsDataVersionTest(
               `if (!(${check})) return false;`,
           reportResult:
               `if (!(${check}))
-                 sendReportTo('${createSellerReportUrl(uuid, 'error')}')
-               sendReportTo('${createSellerReportUrl(uuid)}')`,
+                 sendReportTo('${createSellerReportUrl(uuid, '2-error')}')
+               sendReportTo('${createSellerReportUrl(uuid, '2')}')`,
         }),
         trustedScoringSignalsUrl: TRUSTED_SCORING_SIGNALS_URL
   }
   await runBasicFledgeAuctionAndNavigate(test, uuid, auctionConfigOverrides);
   await waitForObservedRequests(
-      uuid, [createBidderReportUrl(uuid), createSellerReportUrl(uuid)]);
+      uuid, [createSellerReportUrl(uuid, '1'), createSellerReportUrl(uuid, '2')]);
 }
 
 // Creates a render URL that, when sent to the trusted-scoring-signals.py,
@@ -79,13 +79,13 @@ function createScoringSignalsRenderUrlWithBody(uuid, responseBody) {
 
 promise_test(async test => {
   const uuid = generateUuid(test);
-  const decsionLogicScriptUrl = createDecisionScriptUrl(
+  const decisionLogicScriptUrl = createDecisionScriptUrl(
       uuid,
       { scoreAd: 'if (trustedScoringSignals !== null) throw "error";'});
   await runBasicFledgeTestExpectingWinner(
       test,
       { uuid: uuid,
-        auctionConfigOverrides: { decisionLogicUrl: decsionLogicScriptUrl }
+        auctionConfigOverrides: { decisionLogicUrl: decisionLogicScriptUrl }
       });
 }, 'No trustedScoringSignalsUrl.');
 
@@ -299,47 +299,47 @@ promise_test(async test => {
 promise_test(async test => {
   const uuid = generateUuid(test);
   const renderURL = createRenderUrl(uuid);
-  await runTrustedScoringSignalsTest(
+  await runTrustedScoringSignalsDataVersionTest(
       test, uuid, renderURL,
       'browserSignals.dataVersion === undefined');
-}, 'Trusted scoring signals response has no data-version.');
+}, 'Trusted scoring signals response has no Data-Version.');
 
 promise_test(async test => {
   const uuid = generateUuid(test);
   const renderURL = createRenderUrl(uuid, /*script=*/null, 'data-version:3');
-  await runTrustedScoringSignalsTest(
+  await runTrustedScoringSignalsDataVersionTest(
       test, uuid, renderURL,
       'browserSignals.dataVersion === 3');
-}, 'Trusted scoring signals response has valid data-version.');
+}, 'Trusted scoring signals response has valid Data-Version.');
 
 promise_test(async test => {
   const uuid = generateUuid(test);
   const renderURL = createRenderUrl(uuid, /*script=*/null, 'data-version:0');
-  await runTrustedScoringSignalsTest(
+  await runTrustedScoringSignalsDataVersionTest(
       test, uuid, renderURL,
       'browserSignals.dataVersion === 0');
-}, 'Trusted scoring signals response has min data-version.');
+}, 'Trusted scoring signals response has min Data-Version.');
 
 promise_test(async test => {
   const uuid = generateUuid(test);
   const renderURL = createRenderUrl(uuid, /*script=*/null, 'data-version:4294967295');
-  await runTrustedScoringSignalsTest(
+  await runTrustedScoringSignalsDataVersionTest(
       test, uuid, renderURL,
       'browserSignals.dataVersion === 4294967295');
-}, 'Trusted scoring signals response has max data-version.');
+}, 'Trusted scoring signals response has max Data-Version.');
 
 promise_test(async test => {
   const uuid = generateUuid(test);
   const renderURL = createRenderUrl(uuid, /*script=*/null, 'data-version:4294967296');
-  await runTrustedScoringSignalsTest(
+  await runTrustedScoringSignalsDataVersionTest(
       test, uuid, renderURL,
       'browserSignals.dataVersion === undefined');
-}, 'Trusted scoring signals response has too large data-version.');
+}, 'Trusted scoring signals response has too large Data-Version.');
 
 promise_test(async test => {
   const uuid = generateUuid(test);
   const renderURL = createRenderUrl(uuid, /*script=*/null, 'data-version:03');
-  await runTrustedScoringSignalsTest(
+  await runTrustedScoringSignalsDataVersionTest(
       test, uuid, renderURL,
       'browserSignals.dataVersion === undefined');
 }, 'Trusted scoring signals response has data-version with leading 0.');
@@ -347,39 +347,39 @@ promise_test(async test => {
 promise_test(async test => {
   const uuid = generateUuid(test);
   const renderURL = createRenderUrl(uuid, /*script=*/null, 'data-version:-1');
-  await runTrustedScoringSignalsTest(
+  await runTrustedScoringSignalsDataVersionTest(
       test, uuid, renderURL,
       'browserSignals.dataVersion === undefined');
-}, 'Trusted scoring signals response has negative data-version.');
+}, 'Trusted scoring signals response has negative Data-Version.');
 
 promise_test(async test => {
   const uuid = generateUuid(test);
   const renderURL = createRenderUrl(uuid, /*script=*/null, 'data-version:1.3');
-  await runTrustedScoringSignalsTest(
+  await runTrustedScoringSignalsDataVersionTest(
       test, uuid, renderURL,
       'browserSignals.dataVersion === undefined');
-}, 'Trusted scoring signals response has decimal in data-version.');
+}, 'Trusted scoring signals response has decimal in Data-Version.');
 
 promise_test(async test => {
   const uuid = generateUuid(test);
   const renderURL = createRenderUrl(uuid, /*script=*/null, 'data-version:2 2');
-  await runTrustedScoringSignalsTest(
+  await runTrustedScoringSignalsDataVersionTest(
       test, uuid, renderURL,
       'browserSignals.dataVersion === undefined');
-}, 'Trusted scoring signals response has space in data-version.');
+}, 'Trusted scoring signals response has space in Data-Version.');
 
 promise_test(async test => {
   const uuid = generateUuid(test);
   const renderURL = createRenderUrl(uuid, /*script=*/null, 'data-version:0x4');
-  await runTrustedScoringSignalsTest(
+  await runTrustedScoringSignalsDataVersionTest(
       test, uuid, renderURL,
       'browserSignals.dataVersion === undefined');
-}, 'Trusted scoring signals response has space hax data-version.');
+}, 'Trusted scoring signals response has hex Data-Version.');
 
 promise_test(async test => {
   const uuid = generateUuid(test);
   const renderURL = createRenderUrl(uuid, /*script=*/null, 'data-version:3,replace-body:');
-  await runTrustedScoringSignalsTest(
+  await runTrustedScoringSignalsDataVersionTest(
       test, uuid, renderURL,
       'browserSignals.dataVersion === undefined');
 }, 'Trusted scoring signals response has data-version and empty body.');
@@ -387,7 +387,7 @@ promise_test(async test => {
 promise_test(async test => {
   const uuid = generateUuid(test);
   const renderURL = createRenderUrl(uuid, /*script=*/null, 'data-version:3,replace-body:[]');
-  await runTrustedScoringSignalsTest(
+  await runTrustedScoringSignalsDataVersionTest(
       test, uuid, renderURL,
       'browserSignals.dataVersion === undefined');
 }, 'Trusted scoring signals response has data-version and JSON array body.');
@@ -395,7 +395,7 @@ promise_test(async test => {
 promise_test(async test => {
   const uuid = generateUuid(test);
   const renderURL = createRenderUrl(uuid, /*script=*/null, 'data-version:3,replace-body:{} {}');
-  await runTrustedScoringSignalsTest(
+  await runTrustedScoringSignalsDataVersionTest(
       test, uuid, renderURL,
       'browserSignals.dataVersion === undefined');
 }, 'Trusted scoring signals response has data-version and double JSON object body.');
@@ -403,7 +403,7 @@ promise_test(async test => {
 promise_test(async test => {
   const uuid = generateUuid(test);
   const renderURL = createRenderUrl(uuid, /*script=*/null, 'data-version:3,replace-body:{}');
-  await runTrustedScoringSignalsTest(
+  await runTrustedScoringSignalsDataVersionTest(
       test, uuid, renderURL,
       'browserSignals.dataVersion === 3');
 }, 'Trusted scoring signals response has data-version and no renderURLs.');
