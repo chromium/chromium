@@ -185,6 +185,21 @@ bool HasNewPasswordVote(const FormPredictions& form) {
                               &PasswordFieldPrediction::type);
 }
 
+// Returns true iff `form` is not recognized as a password form by the renderer,
+// but contains either a field for a username first flow, a password reset flow,
+// or a clear-text password field.
+bool IsRelevantForPasswordManagerButNotRecognizedByRenderer(
+    const FormData& form,
+    const FormPredictions& form_predictions) {
+  if (util::IsRendererRecognizedCredentialForm(form)) {
+    return false;
+  }
+  // It is relevant for PWM if it either contains a field for a username
+  // first flow or a clear-text password field.
+  return HasSingleUsernameVote(form_predictions) ||
+         HasNewPasswordVote(form_predictions);
+}
+
 bool IsMutedInsecureCredential(const PasswordForm* credential,
                                InsecureType insecure_type) {
   auto it = credential->password_issues.find(insecure_type);
@@ -1198,55 +1213,49 @@ void PasswordManager::ProcessAutofillPredictions(
   }
 
   for (const FormData* form : forms) {
-    // `driver` might be null in tests.
-    int driver_id = driver ? driver->GetId() : 0;
-    predictions_[CalculateFormSignature(*form)] =
-        ConvertToFormPredictions(driver_id, *form, predictions);
-  }
-
-  // Create form managers for non-password forms if `predictions_` has evidence
-  // that these forms are password related.
-  for (const FormData* form : forms) {
     if (logger) {
       logger->LogFormDataWithServerPredictions(
           Logger::STRING_SERVER_PREDICTIONS, *form, predictions);
     }
 
-    // If the renderer recognizes `form` as a credential form, then we will be
-    // informed about this form via `OnFormsParsed()` and `OnFormsSeen()`.
-    if (util::IsRendererRecognizedCredentialForm(*form)) {
-      continue;
-    }
+    // `driver` might be null in tests.
+    int driver_id = driver ? driver->GetId() : 0;
+    const FormPredictions& form_predictions =
+        predictions_
+            .insert_or_assign(
+                CalculateFormSignature(*form),
+                ConvertToFormPredictions(driver_id, *form, predictions))
+            .first->second;
+    PasswordFormManager* manager =
+        GetMatchedManager(driver, form->global_id().renderer_id);
 
-    const FormPredictions* form_predictions =
-        &predictions_[CalculateFormSignature(*form)];
-    // Do not skip the form if it either contains a field for the Username
-    // first flow or a clear-text password field.
-    if (!(HasSingleUsernameVote(*form_predictions) ||
-          HasNewPasswordVote(*form_predictions))) {
-      continue;
-    }
-
-    if (PasswordFormManager* manager =
-            GetMatchedManager(driver, form->global_id().renderer_id)) {
-      if (!HasObservedFormChanged(*form, *manager)) {
+    if (!manager) {
+      // If the renderer recognizes `form` as a credential form, then we will
+      // be informed about this form via `OnFormsParsed()` and `OnFormsSeen()`.
+      if (!IsRelevantForPasswordManagerButNotRecognizedByRenderer(
+              *form, form_predictions)) {
         continue;
       }
+      // Otherwise, create it and use predictions (which may trigger filling).
+      manager = CreateFormManager(driver, *form);
+      manager->ProcessServerPredictions(predictions_);
+      continue;
+    }
 
-      // If the observed form has changed, update the manager and trigger
-      // filling.
+    // If the observed form has changed and is not recognized by the renderer,
+    // update the manager and trigger filling.
+    if (IsRelevantForPasswordManagerButNotRecognizedByRenderer(
+            *form, form_predictions) &&
+        HasObservedFormChanged(*form, *manager)) {
       manager->UpdateFormManagerWithFormChanges(*form, predictions_);
       manager->Fill();
       continue;
     }
 
-    CreateFormManager(driver, *form);
+    // Otherwise, just process predictions (which may also trigger filling).
+    manager->ProcessServerPredictions(predictions_);
   }
 
-  // TODO(crbug.com/1468274): Avoid the loop over all managers - only update the
-  // ones affected. Calling twice is a no-op, but still one that can be avoided.
-  for (auto& manager : form_managers_)
-    manager->ProcessServerPredictions(predictions_);
 
   PasswordGenerationFrameHelper* password_generation_manager =
       driver ? driver->GetPasswordGenerationHelper() : nullptr;
