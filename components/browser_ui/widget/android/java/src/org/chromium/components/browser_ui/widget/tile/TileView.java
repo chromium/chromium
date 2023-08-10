@@ -29,9 +29,9 @@ public class TileView extends FrameLayout {
     private ImageView mBadgeView;
     private TextView mTitleView;
     private Runnable mOnFocusViaSelectionListener;
-    private ImageView mIconView;
     private RoundedCornerOutlineProvider mRoundingOutline;
-    private View mIconBackgroundView;
+    protected ImageView mIconView;
+    protected View mIconBackgroundView;
 
     /**
      * Constructor for inflating from XML.
@@ -102,17 +102,6 @@ public class TileView extends FrameLayout {
         mTitleView.setText(title);
     }
 
-    /**
-     * Returns the ImageView for the icon.
-     * This method is only to allow legacy code to continue to work. New code should not use this
-     * method.
-     * TODO(crbug.com/1179455): Clean up all usages and remove this method.
-     */
-    @Deprecated
-    public ImageView getIconView() {
-        return mIconView;
-    }
-
     /** Specify the handler that will be invoked when this tile is highlighted by the user. */
     void setOnFocusViaSelectionListener(Runnable listener) {
         mOnFocusViaSelectionListener = listener;
@@ -131,10 +120,6 @@ public class TileView extends FrameLayout {
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     public @NonNull TextView getTitleView() {
         return mTitleView;
-    }
-
-    protected View getIconBackgroundView() {
-        return mIconBackgroundView;
     }
 
     @Override

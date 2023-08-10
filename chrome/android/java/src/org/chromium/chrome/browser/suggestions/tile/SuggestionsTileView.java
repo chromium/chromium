@@ -68,7 +68,7 @@ public class SuggestionsTileView extends TileView {
     }
 
     protected void setIconViewLayoutParams(Tile tile) {
-        MarginLayoutParams params = (MarginLayoutParams) getIconView().getLayoutParams();
+        MarginLayoutParams params = (MarginLayoutParams) mIconView.getLayoutParams();
         Resources resources = getResources();
         if (tile.getType() == TileVisualType.ICON_COLOR
                 || tile.getType() == TileVisualType.ICON_DEFAULT) {
@@ -82,7 +82,7 @@ public class SuggestionsTileView extends TileView {
             params.topMargin =
                     resources.getDimensionPixelSize(R.dimen.tile_view_icon_margin_top_modern);
         }
-        getIconView().setLayoutParams(params);
+        mIconView.setLayoutParams(params);
     }
 
     /** Updates the margin of the title in the tile element for polishing purposes. */
@@ -99,7 +99,7 @@ public class SuggestionsTileView extends TileView {
     private void setTileViewIconBackground() {
         if (!ChromeFeatureList.sSurfacePolish.isEnabled()) return;
 
-        getIconBackgroundView().setBackground(
+        mIconBackgroundView.setBackground(
                 AppCompatResources.getDrawable(getContext(), R.drawable.oval_surface_3));
     }
 }
