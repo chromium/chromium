@@ -59,6 +59,12 @@ export class SettingsSafetyHubPageElement extends
         type: Boolean,
         value: false,
       },
+
+      showNoRecommendationsState_: {
+        type: Boolean,
+        computed:
+            'computeShowNoRecommendationsState_(showUnusedSitePermissions_.*)',
+      },
     };
   }
 
@@ -66,6 +72,7 @@ export class SettingsSafetyHubPageElement extends
   private versionCardData_: CardInfo;
   private safeBrowsingCardData_: CardInfo;
   private showUnusedSitePermissions_: boolean;
+  private showNoRecommendationsState_: boolean;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -131,6 +138,10 @@ export class SettingsSafetyHubPageElement extends
     // there is no item on the list but the list was shown before.
     this.showUnusedSitePermissions_ =
         permissions.length > 0 || this.showUnusedSitePermissions_;
+  }
+
+  private computeShowNoRecommendationsState_(): boolean {
+    return !this.showUnusedSitePermissions_;
   }
 }
 

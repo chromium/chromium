@@ -89,8 +89,7 @@ suite('CrSettingsSafetyHubUnusedSitePermissionsTest', function() {
   }
 
   function getSiteList(): NodeListOf<HTMLElement> {
-    return testElement.$.module.shadowRoot!.querySelectorAll(
-        '.site-list .site-entry')!;
+    return testElement.$.module.shadowRoot!.querySelectorAll('.site-entry')!;
   }
 
   async function createPage() {
@@ -292,9 +291,6 @@ suite('CrSettingsSafetyHubUnusedSitePermissionsTest', function() {
     // Check header string for completion case.
     webUIListenerCallback(SafetyHubEvent.UNUSED_PERMISSIONS_MAYBE_CHANGED, []);
     await flushTasks();
-
-    entries = getSiteList();
-    assertEquals(0, entries.length);
 
     const expectedCompletionHeader =
         testElement.i18n('safetyCheckUnusedSitePermissionsDoneLabel');

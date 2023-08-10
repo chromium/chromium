@@ -2527,6 +2527,10 @@ void AddSafetyHubStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_SAFETY_HUB_PAGE_MODULE_SECTION_HEADER},
       {"safetyHubPageUserEduSectionHeader",
        IDS_SETTINGS_SAFETY_HUB_PAGE_USER_EDU_SECTION_HEADER},
+      {"safetyHubEmptyStateModuleHeader",
+       IDS_SETTINGS_SAFETY_HUB_EMPTY_STATE_MODULE_HEADER},
+      {"safetyHubEmptyStateModuleSubheader",
+       IDS_SETTINGS_SAFETY_HUB_EMPTY_STATE_MODULE_SUBHEADER},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 }

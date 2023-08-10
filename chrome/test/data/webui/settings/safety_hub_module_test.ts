@@ -6,9 +6,10 @@
 import 'chrome://settings/lazy_load.js';
 
 import {SettingsSafetyHubModuleElement} from 'chrome://settings/lazy_load.js';
-import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {isVisible} from 'chrome://webui-test/test_util.js';
 // clang-format on
 
 suite('SafetyHubModule', function() {
@@ -46,7 +47,6 @@ suite('SafetyHubModule', function() {
       assertEquals(text, element.textContent!.trim());
     }
 
-
     assertTextContent('#header', headerText);
     assertTextContent('#subheader', subheaderText);
   });
@@ -72,8 +72,12 @@ suite('SafetyHubModule', function() {
   });
 
   test('testItemList', function() {
+    // Check the item list is filled with the data.
     testElement.sites = mockData;
     flush();
+
+    assertTrue(isVisible(testElement.shadowRoot!.querySelector('#line')));
+    assertTrue(isVisible(testElement.shadowRoot!.querySelector('#siteList')));
 
     const entries = getEntries();
     assertEquals(entries.length, mockData.length);
@@ -88,5 +92,12 @@ suite('SafetyHubModule', function() {
           mockData[i]!.detail,
           entries[i]!.querySelector('.cr-secondary-text')!.textContent!.trim());
     }
+
+    // Check the item list and line is hidden when there is no item.
+    testElement.sites = [];
+    flush();
+
+    assertFalse(isVisible(testElement.shadowRoot!.querySelector('#line')));
+    assertFalse(isVisible(testElement.shadowRoot!.querySelector('#siteList')));
   });
 });

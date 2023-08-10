@@ -1,28 +1,29 @@
 <style include="cr-shared-style settings-shared">
+  :host {
+    padding: 8px 16px;
+  }
+
   #header-wrapper {
     align-items: center;
     display: flex;
   }
 
   #header-text-wrapper {
+    flex-direction: column;
     flex: 1;
+    margin-inline-end: 16px;
   }
 
-  #header {
-    /* Should be 15px when html font-size is 16px */
-    font-size: 0.9375rem;
-  }
-
-  #subheader {
+  #header, #subheader, .display-name {
      /* Should be 13px when html font-size is 16px */
     font-size: 0.8125rem;
   }
 
-  .site-list {
-    margin-inline-start: 48px;
+  #header {
+    font-weight: 500;
   }
 
-  .site-list .list-item {
+  .list-item {
     --cr-icon-button-margin-end: initial;
   }
 
@@ -31,16 +32,20 @@
     max-width: 100%;
   }
 
-  site-favicon {
-    padding-inline-end: 24px;
+  site-favicon, #header-icon {
+    padding-inline-end: 16px;
   }
 
-  #bulk-action-button {
-    margin-inline-start: auto;
+  #line {
+    height: 1px;
+    background-color: var(--google-grey-300);
+    flex: 1;
+    margin-top: 16px;
   }
 </style>
 
 <div id="header-wrapper">
+  <iron-icon id="header-icon" icon="cr:error"></iron-icon>
   <div id="header-text-wrapper">
     <div id="header">[[header]]</div>
     <div id="subheader" class="cr-secondary-text">[[subheader]]</div>
@@ -49,17 +54,20 @@
 </div>
 <!-- TODO(crbug.com/1443466): Consider replacing the list with <slot>
   depending on the finialized designs. -->
-<div class="site-list">
-  <template is="dom-repeat" items="[[sites]]">
-    <div class="list-item site-entry">
-      <site-favicon url="[[item.origin]]"></site-favicon>
-      <div class="display-name cr-padded-text">
-        <div class="site-representation">[[item.origin]]</div>
-        <div class="cr-secondary-text">[[item.detail]]</div>
+<template is="dom-if" if="[[sites.length]]">
+  <div id="line"></div>
+  <div id="siteList">
+    <template is="dom-repeat" items="[[sites]]">
+      <div class="list-item site-entry">
+        <site-favicon url="[[item.origin]]"></site-favicon>
+        <div class="display-name cr-padded-text">
+          <div class="site-representation">[[item.origin]]</div>
+          <div class="cr-secondary-text">[[item.detail]]</div>
+        </div>
+        <cr-icon-button iron-icon="[[buttonIcon]]"
+            on-click="onItemButtonClick_" actionable>
+        </cr-icon-button>
       </div>
-      <cr-icon-button iron-icon="[[buttonIcon]]"
-          on-click="onItemButtonClick_" actionable>
-      </cr-icon-button>
-    </div>
-  </template>
-</div>
+    </template>
+  </div>
+</template>

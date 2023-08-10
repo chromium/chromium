@@ -4648,6 +4648,7 @@
   </message>
 
   <!-- Safety Hub -->
+  <!-- TODO(crbug/1443466): Change all strings to translatable once it's final. -->
   <message name="IDS_SETTINGS_SAFETY_HUB" desc="Name of a page in settings that gives users an overview over their safety status and where users can take action to improve their safety.">
     Safety Hub
   </message>
@@ -4662,5 +4663,8 @@
   </message>
   <message name="IDS_SETTINGS_SAFETY_HUB_PAGE_USER_EDU_SECTION_HEADER" desc="The title of the last section in the Safety Hub page. The 'Safety tips' section shows three safety related features to provide user education on how Chrome keeps the user safe.">
     Safety tips
+  </message>
+  <message name="IDS_SETTINGS_SAFETY_HUB_EMPTY_STATE_MODULE_HEADER" translateable="false" desc="The header of the 'Empty State Module' in the Safety Hub page. The 'Empty State Module' is visible if there is no safety recommendation.">
+    Nothing else needs your attention right now
   </message>
 </grit-part>

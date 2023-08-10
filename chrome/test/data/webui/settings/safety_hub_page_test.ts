@@ -37,6 +37,23 @@ suite('SafetyHubPage', function() {
     return flushTasks();
   });
 
+  test('No Recommendation State Visibility', async function() {
+    // The element is visible when there is nothing to review.
+    assertTrue(isChildVisible(testElement, '#emptyStateModule'));
+
+    // The element becomes hidden if the is any module that needs attention.
+    webUIListenerCallback(
+        SafetyHubEvent.UNUSED_PERMISSIONS_MAYBE_CHANGED,
+        unusedSitePermissionMockData);
+    await flushTasks();
+    assertFalse(isChildVisible(testElement, '#emptyStateModule'));
+
+    // Once hidden, it remains hidden as other modules are visible.
+    webUIListenerCallback(SafetyHubEvent.UNUSED_PERMISSIONS_MAYBE_CHANGED, []);
+    await flushTasks();
+    assertFalse(isChildVisible(testElement, '#emptyStateModule'));
+  });
+
   test('Unused Site Permissions Module Visibility', async function() {
     // The element is not visible when there is nothing to review.
     safetyHubBrowserProxy.setUnusedSitePermissions([]);

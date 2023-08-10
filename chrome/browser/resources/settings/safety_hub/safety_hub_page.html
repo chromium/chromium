@@ -51,7 +51,6 @@
       data="[[safeBrowsingCardData_]]" on-click="onSafeBrowsingClick_">
   </settings-safety-hub-card>
 </div>
-
 <div class="section-header cr-secondary-text">
   $i18n{safetyHubPageModuleSectionHeader}
 </div>
@@ -59,7 +58,12 @@
   <settings-safety-hub-unused-site-permissions class="module box">
   </settings-safety-hub-unused-site-permissions>
 </template>
-
+<template is="dom-if" if="[[showNoRecommendationsState_]]">
+  <settings-safety-hub-module id="emptyStateModule" class="module box"
+    header="$i18n{safetyHubEmptyStateModuleHeader}"
+    subheader="$i18n{safetyHubEmptyStateModuleSubheader}">
+  </settings-safety-hub-module>
+</template>
 <div class="section-header cr-secondary-text">
   $i18n{safetyHubPageUserEduSectionHeader}
 </div>
