@@ -12,6 +12,7 @@ namespace {
 
 // Constants related to icon sizing.
 constexpr CGFloat kIconSize = 22;
+constexpr CGFloat kIconContainerSize = 30;
 constexpr CGFloat kIconSquareContainerRadius = 7;
 // NOTE: The Safety Check (Magic Stack) module uses a slightly larger version of
 // the SF Symbols Password icon in its design.
@@ -75,7 +76,7 @@ UIView* IconInSquareContainer(UIImageView* icon, NSString* containerColor) {
   AddSameCenterConstraints(icon, square_view);
 
   [NSLayoutConstraint activateConstraints:@[
-    [square_view.widthAnchor constraintEqualToConstant:kIconSize],
+    [square_view.widthAnchor constraintEqualToConstant:kIconContainerSize],
     [square_view.heightAnchor constraintEqualToAnchor:square_view.widthAnchor],
   ]];
 
