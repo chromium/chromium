@@ -31,6 +31,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/features/behavior_feature.h"
 #include "extensions/common/features/feature.h"
 #include "extensions/common/features/feature_provider.h"
@@ -193,7 +194,7 @@ class ExtensionPlatformKeysService::GenerateKeyTask : public Task {
   };
 
   GenerateKeyTask(platform_keys::TokenId token_id,
-                  std::string extension_id,
+                  extensions::ExtensionId extension_id,
                   GenerateKeyCallback callback,
                   ExtensionPlatformKeysService* service)
       : token_id_(token_id),
@@ -218,7 +219,7 @@ class ExtensionPlatformKeysService::GenerateKeyTask : public Task {
 
   platform_keys::TokenId token_id_;
   std::vector<uint8_t> public_key_spki_der_;
-  const std::string extension_id_;
+  const extensions::ExtensionId extension_id_;
   GenerateKeyCallback callback_;
   std::unique_ptr<platform_keys::ExtensionKeyPermissionsService>
       extension_key_permissions_service_;
@@ -570,7 +571,7 @@ class ExtensionPlatformKeysService::SignTask : public Task {
   const std::vector<uint8_t> public_key_spki_der_;
 
   KeystoreSigningScheme signing_scheme_;
-  const std::string extension_id_;
+  const extensions::ExtensionId extension_id_;
   SignCallback callback_;
   std::unique_ptr<platform_keys::ExtensionKeyPermissionsService>
       extension_key_permissions_service_;
@@ -874,7 +875,7 @@ class ExtensionPlatformKeysService::SelectTask : public Task {
   platform_keys::ClientCertificateRequest request_;
   std::unique_ptr<net::CertificateList> input_client_certificates_;
   const bool interactive_;
-  const std::string extension_id_;
+  const extensions::ExtensionId extension_id_;
   SelectCertificatesCallback callback_;
   const raw_ptr<content::WebContents> web_contents_;
   std::unique_ptr<platform_keys::ExtensionKeyPermissionsService>
