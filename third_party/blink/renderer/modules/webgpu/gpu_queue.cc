@@ -15,12 +15,14 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_image_copy_image_bitmap.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_image_copy_texture.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_image_copy_texture_tagged.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_union_htmlcanvaselement_htmlvideoelement_imagebitmap_offscreencanvas_videoframe.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_htmlcanvaselement_htmlimageelement_htmlvideoelement_imagebitmap_imagedata_offscreencanvas_videoframe.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context_host.h"
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
+#include "third_party/blink/renderer/core/html/canvas/image_data.h"
 #include "third_party/blink/renderer/core/html/canvas/predefined_color_space.h"
+#include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
 #include "third_party/blink/renderer/core/offscreencanvas/offscreen_canvas.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
@@ -34,6 +36,8 @@
 #include "third_party/blink/renderer/modules/webgpu/texture_utils.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_mailbox_texture.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
+#include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
+#include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
@@ -85,11 +89,31 @@ uint64_t AlignBytesPerRow(uint64_t bytesPerRow) {
 
 struct ExternalSource {
   ExternalTextureSource external_texture_source;
-  scoped_refptr<Image> image = nullptr;
+  scoped_refptr<StaticBitmapImage> image = nullptr;
   uint32_t width = 0;
   uint32_t height = 0;
   bool valid = false;
 };
+
+// TODO(crbug.com/1471372): Avoid extra copy.
+scoped_refptr<StaticBitmapImage> GetImageFromImageData(
+    const ImageData* image_data) {
+  SkPixmap image_data_pixmap = image_data->GetSkPixmap();
+  SkImageInfo info = image_data_pixmap.info().makeColorType(kN32_SkColorType);
+  size_t image_pixels_size = info.computeMinByteSize();
+  if (SkImageInfo::ByteSizeOverflowed(image_pixels_size)) {
+    return nullptr;
+  }
+  sk_sp<SkData> image_pixels = TryAllocateSkData(image_pixels_size);
+  if (!image_pixels) {
+    return nullptr;
+  }
+  if (!image_data_pixmap.readPixels(info, image_pixels->writable_data(),
+                                    info.minRowBytes(), 0, 0)) {
+    return nullptr;
+  }
+  return StaticBitmapImage::Create(std::move(image_pixels), info);
+}
 
 ExternalSource GetExternalSourceFromExternalImage(
     const V8GPUImageCopyExternalImageSource* external_image,
@@ -131,6 +155,22 @@ ExternalSource GetExternalSourceFromExternalImage(
       break;
     case V8GPUImageCopyExternalImageSource::ContentType::kImageBitmap:
       canvas_image_source = external_image->GetAsImageBitmap();
+      break;
+    case V8GPUImageCopyExternalImageSource::ContentType::kImageData: {
+      auto image = GetImageFromImageData(external_image->GetAsImageData());
+      if (!image) {
+        exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                          "Cannot get image.");
+        return external_source;
+      }
+      external_source.image = image;
+      external_source.width = static_cast<uint32_t>(image->width());
+      external_source.height = static_cast<uint32_t>(image->height());
+      external_source.valid = true;
+      return external_source;
+    }
+    case V8GPUImageCopyExternalImageSource::ContentType::kHTMLImageElement:
+      canvas_image_source = external_image->GetAsHTMLImageElement();
       break;
     case V8GPUImageCopyExternalImageSource::ContentType::kOffscreenCanvas:
       canvas_image_source = external_image->GetAsOffscreenCanvas();
@@ -187,7 +227,7 @@ ExternalSource GetExternalSourceFromExternalImage(
   // This will help combine more transforms (e.g. flipY, color-space)
   // into a single blit.
   SourceImageStatus source_image_status = kInvalidSourceImageStatus;
-  auto image = canvas_image_source->GetSourceImageForCanvas(
+  auto image_for_canvas = canvas_image_source->GetSourceImageForCanvas(
       CanvasResourceProvider::FlushReason::kWebGPUExternalImage,
       &source_image_status, image_size, kDontChangeAlpha);
   if (source_image_status != kNormalSourceImageStatus) {
@@ -196,9 +236,20 @@ ExternalSource GetExternalSourceFromExternalImage(
     return external_source;
   }
 
-  external_source.image = image;
-  external_source.width = static_cast<uint32_t>(image->width());
-  external_source.height = static_cast<uint32_t>(image->height());
+  // TODO(crbug.com/1471372): It would be better if GetSourceImageForCanvas()
+  // would always return a StaticBitmapImage.
+  if (auto* image = DynamicTo<StaticBitmapImage>(image_for_canvas.get())) {
+    external_source.image = image;
+  } else {
+    PaintImage paint_image = image_for_canvas->PaintImageForCurrentFrame();
+    if (!paint_image) {
+      return external_source;
+    }
+    external_source.image = StaticBitmapImage::Create(std::move(paint_image));
+  }
+  external_source.width = static_cast<uint32_t>(external_source.image->width());
+  external_source.height =
+      static_cast<uint32_t>(external_source.image->height());
   external_source.valid = true;
 
   return external_source;
@@ -604,13 +655,10 @@ void GPUQueue::copyExternalImageToTexture(
     return;
   }
 
-  scoped_refptr<StaticBitmapImage> static_bitmap_image =
-      DynamicTo<StaticBitmapImage>(source.image.get());
-  DCHECK(static_bitmap_image);
-  if (!CopyFromCanvasSourceImage(
-          static_bitmap_image.get(), origin_in_external_image, dawn_copy_size,
-          dawn_destination, destination->premultipliedAlpha(), color_space,
-          copyImage->flipY())) {
+  if (!CopyFromCanvasSourceImage(source.image.get(), origin_in_external_image,
+                                 dawn_copy_size, dawn_destination,
+                                 destination->premultipliedAlpha(), color_space,
+                                 copyImage->flipY())) {
     exception_state.ThrowTypeError(
         "Failed to copy content from external image.");
     return;
