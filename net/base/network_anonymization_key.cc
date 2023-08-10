@@ -161,7 +161,8 @@ bool NetworkAnonymizationKey::FromValue(
 
   // Check top_level_site is valid for any key scheme
   absl::optional<SchemefulSite> top_frame_site =
-      SchemefulSite::DeserializeWithNonce(list[0].GetString());
+      SchemefulSite::DeserializeWithNonce(
+          base::PassKey<NetworkAnonymizationKey>(), list[0].GetString());
   if (!top_frame_site) {
     return false;
   }
@@ -180,7 +181,8 @@ std::string NetworkAnonymizationKey::GetSiteDebugString(
 
 absl::optional<std::string> NetworkAnonymizationKey::SerializeSiteWithNonce(
     const SchemefulSite& site) {
-  return *(const_cast<SchemefulSite&>(site).SerializeWithNonce());
+  return *(const_cast<SchemefulSite&>(site).SerializeWithNonce(
+      base::PassKey<NetworkAnonymizationKey>()));
 }
 
 // static

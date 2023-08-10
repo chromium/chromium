@@ -2427,7 +2427,8 @@ void CookieMonster::RecordPeriodicFirstPartySetsStats(
           DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
           if (!site.has_registrable_domain_or_host())
             return acc;
-          return acc + cookies_.count(site.registrable_domain_or_host());
+          return acc + cookies_.count(site.registrable_domain_or_host(
+                           base::PassKey<CookieMonster>()));
         });
     base::UmaHistogramCustomCounts("Cookie.PerFirstPartySetCount", sample, 0,
                                    4000, 50);
