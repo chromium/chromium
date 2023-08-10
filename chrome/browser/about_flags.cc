@@ -498,6 +498,17 @@ const FeatureEntry::FeatureParam
 const FeatureEntry::FeatureParam
     kCCTRealTimeEngagementSignalsParamFakeValues[] = {{"real_values", "false"}};
 
+const FeatureEntry::FeatureParam
+    kCCTPageInsightsHubAutotriggerDurationTesting[] = {
+        {"page_insights_can_autotrigger_after_end", "2000"}  // 2s
+};
+
+const FeatureEntry::FeatureVariation
+    kCCTPageInsightsHubAutotriggerDurationVariations[] = {
+        {"with fast peek trigger",
+         kCCTPageInsightsHubAutotriggerDurationTesting,
+         std::size(kCCTPageInsightsHubAutotriggerDurationTesting), nullptr}};
+
 const FeatureEntry::FeatureVariation kCCTRealTimeEngagementSignalsVariations[] =
     {{"Send real values", kCCTRealTimeEngagementSignalsParamRealValues,
       std::size(kCCTRealTimeEngagementSignalsParamRealValues), nullptr},
@@ -7134,12 +7145,13 @@ const FeatureEntry kFeatureEntries[] = {
 #if BUILDFLAG(IS_ANDROID)
     {"cct-page-insights-hub", flag_descriptions::kCCTPageInsightsHubName,
      flag_descriptions::kCCTPageInsightsHubDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kCCTPageInsightsHub)},
-
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         chrome::android::kCCTPageInsightsHub,
+         kCCTPageInsightsHubAutotriggerDurationVariations,
+         "CCTPageInsightsHubAutotriggerDuration")},
     {"cct-prevent-touches", flag_descriptions::kCCTPreventTouchesName,
      flag_descriptions::kCCTPreventTouchesDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kCCTPreventTouches)},
-
     {"cct-resizable-90-maximum-height",
      flag_descriptions::kCCTResizable90MaximumHeightName,
      flag_descriptions::kCCTResizable90MaximumHeightDescription, kOsAndroid,

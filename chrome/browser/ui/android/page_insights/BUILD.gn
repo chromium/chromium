@@ -60,6 +60,7 @@ android_resources("java_resources") {
 robolectric_library("junit") {
   sources = [
     "java/src/org/chromium/chrome/browser/page_insights/PageInsightsActivatorUnitTest.java",
+    "java/src/org/chromium/chrome/browser/page_insights/PageInsightsMediatorTest.java",
     "java/src/org/chromium/chrome/browser/page_insights/PageInsightsSwaaCheckerUnitTest.java",
   ]
   deps = [
@@ -69,10 +70,15 @@ robolectric_library("junit") {
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//base:jni_java",
+    "//chrome/browser/browser_controls/android:java",
+    "//chrome/browser/flags:java",
     "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/signin/services/android:java",
     "//chrome/browser/sync/android:java",
+    "//chrome/browser/tab:java",
+    "//components/browser_ui/bottomsheet/android:java",
+    "//components/browser_ui/bottomsheet/android:manager_java",
     "//components/sync/android:sync_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit",
