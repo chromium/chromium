@@ -7,6 +7,7 @@
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
+#include "base/threading/scoped_thread_priority.h"
 #include "base/win/com_init_util.h"
 #include "base/win/core_winrt_util.h"
 #include "base/win/hstring_reference.h"
@@ -37,6 +38,7 @@ class PenIdStatics {
     if (skip_initialization_) {
       return;
     }
+    SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY();
     base::win::AssertComInitialized();
     base::win::RoGetActivationFactory(
         base::win::HStringReference(
