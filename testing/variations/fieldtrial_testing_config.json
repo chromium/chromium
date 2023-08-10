@@ -6918,6 +6918,28 @@
             ]
         }
     ],
+    "HappinessTrackingBorealisGames": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "prob": "0.10",
+                        "survey_cycle_length": "7",
+                        "survey_start_date_ms": "1684386279365",
+                        "trigger_id": "KiAbogQzG0jBnuKU19R0RhWzttj4"
+                    },
+                    "enable_features": [
+                        "HappinessTrackingBorealisGames"
+                    ]
+                }
+            ]
+        }
+    ],
     "HappinessTrackingMediaAppPdf": [
         {
             "platforms": [
