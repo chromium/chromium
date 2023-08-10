@@ -76,12 +76,4 @@ void SensitivityPersistedTabDataAndroid::OnPageContentAnnotated(
   set_is_sensitive(result.GetContentVisibilityScore() < 0.5);
 }
 
-void SensitivityPersistedTabDataAndroid::ExistsForTesting(
-    TabAndroid* tab_android,
-    base::OnceCallback<void(bool)> exists_callback) {
-  PersistedTabDataAndroid::ExistsForTesting(
-      tab_android, SensitivityPersistedTabDataAndroid::UserDataKey(),
-      std::move(exists_callback));
-}
-
 TAB_ANDROID_USER_DATA_KEY_IMPL(SensitivityPersistedTabDataAndroid)

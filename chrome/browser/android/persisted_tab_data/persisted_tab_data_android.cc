@@ -4,11 +4,9 @@
 
 #include "chrome/browser/android/persisted_tab_data/persisted_tab_data_android.h"
 
-#include "base/no_destructor.h"
 #include "chrome/browser/android/persisted_tab_data/persisted_tab_data_config_android.h"
 #include "chrome/browser/android/persisted_tab_data/persisted_tab_data_storage_android.h"
 #include "chrome/browser/android/tab_android.h"
-#include "chrome/browser/tab/jni_headers/PersistedTabData_jni.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "content/public/browser/browser_thread.h"
@@ -107,71 +105,9 @@ void PersistedTabDataAndroid::Remove() {
   persisted_tab_data_storage_android_->Remove(tab_id_, data_id_);
 }
 
-void PersistedTabDataAndroid::RemoveAll(int tab_id, Profile* profile) {
-  std::unique_ptr<std::vector<PersistedTabDataStorageAndroid*>> storage =
-      PersistedTabDataConfigAndroid::GetAllStorage(profile);
-  for (PersistedTabDataStorageAndroid* persisted_tab_data_storage_android :
-       *storage) {
-    persisted_tab_data_storage_android->RemoveAll(tab_id);
-  }
-}
-
-void PersistedTabDataAndroid::OnTabClose(TabAndroid* tab_android) {
-  // TODO(b/295219049) cleanup orphaned data
-  Profile* profile = GetProfile(tab_android);
-  if (!profile || profile->IsOffTheRecord()) {
-    return;
-  }
-  PersistedTabDataAndroid::RemoveAll(tab_android->GetAndroidId(), profile);
-}
-
-void PersistedTabDataAndroid::ExistsForTesting(
-    TabAndroid* tab_android,
-    const void* user_data_key,
-    base::OnceCallback<void(bool)> exists_callback) {
-  std::unique_ptr<PersistedTabDataConfigAndroid>
-      persisted_tab_data_config_android = PersistedTabDataConfigAndroid::Get(
-          user_data_key, GetProfile(tab_android));
-  persisted_tab_data_config_android->persisted_tab_data_storage_android()
-      ->Restore(tab_android->GetAndroidId(),
-                persisted_tab_data_config_android->data_id(),
-                base::BindOnce(
-                    [](base::OnceCallback<void(bool)> exists_callback,
-                       const std::vector<uint8_t>& data) {
-                      content::GetUIThreadTaskRunner({})->PostTask(
-                          FROM_HERE, base::BindOnce(std::move(exists_callback),
-                                                    !data.empty()));
-                    },
-                    std::move(exists_callback)));
-}
-
 Profile* PersistedTabDataAndroid::GetProfile(TabAndroid* tab_android) {
-  if (tab_android->GetProfile()) {
-    return tab_android->GetProfile();
-  }
   TabModel* tab_model = TabModelList::GetTabModelForTabAndroid(tab_android);
-  if (tab_model) {
-    return tab_model->GetProfile();
-  }
-  return nullptr;
-}
-
-class PersistedTabDataAndroidHelper {
- private:
-  friend void ::JNI_PersistedTabData_OnTabClose(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& j_tab);
-
-  static void OnTabClose(TabAndroid* tab_android) {
-    PersistedTabDataAndroid::OnTabClose(tab_android);
-  }
-};
-
-static void JNI_PersistedTabData_OnTabClose(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& j_tab) {
-  TabAndroid* tab_android = TabAndroid::GetNativeTab(env, j_tab);
-  PersistedTabDataAndroidHelper::OnTabClose(tab_android);
+  return tab_model->GetProfile();
 }
 
 TAB_ANDROID_USER_DATA_KEY_IMPL(PersistedTabDataAndroid)

@@ -1071,12 +1071,7 @@ if (is_android) {
       "../browser/android/customtabs/custom_tabs_browsertest.cc",
       "../browser/android/customtabs/tab_interaction_recorder_browsertest.cc",
       "../browser/android/historical_tab_saver_browsertest.cc",
-      "../browser/android/persisted_tab_data/persisted_tab_data_android_browsertest.cc",
       "../browser/android/persisted_tab_data/sensitivity_persisted_tab_data_android_browsertest.cc",
-      "../browser/android/persisted_tab_data/test/bar_persisted_tab_data.cc",
-      "../browser/android/persisted_tab_data/test/bar_persisted_tab_data.h",
-      "../browser/android/persisted_tab_data/test/foo_persisted_tab_data.cc",
-      "../browser/android/persisted_tab_data/test/foo_persisted_tab_data.h",
       "../browser/android/webapk/webapk_icon_hasher_browsertest.cc",
       "../browser/banners/android/ambient_badge_manager_browsertest.cc",
       "../browser/browsing_data/access_context_audit_browsertest.cc",
@@ -1134,7 +1129,6 @@ if (is_android) {
     ]
 
     deps += [
-      ":persisted_tab_data_test_proto",
       "//components/autofill/content/browser:test_support",
       "//components/back_forward_cache:back_forward_cache",
       "//components/browsing_data/core:core",
@@ -1228,13 +1222,6 @@ if (is_android) {
         "//chrome/android/modules/dev_ui/provider:java",
       ]
     }
-  }
-
-  proto_library("persisted_tab_data_test_proto") {
-    sources = [
-      "../browser/android/persisted_tab_data/test/bar.proto",
-      "../browser/android/persisted_tab_data/test/foo.proto",
-    ]
   }
 
   test("android_sync_integration_tests") {

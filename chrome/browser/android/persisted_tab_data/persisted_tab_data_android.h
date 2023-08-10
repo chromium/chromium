@@ -10,9 +10,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/android/tab_android_user_data.h"
-#include "chrome/browser/profiles/profile_manager.h"
 
-class PersistedTabDataAndroidHelper;
 class PersistedTabDataStorageAndroid;
 class TabAndroid;
 
@@ -52,23 +50,9 @@ class PersistedTabDataAndroid
   // destroyed)
   void Remove();
 
-  // Remove all PersistedTabDataAndroid entries stored for |tab_id| related
-  // to a given |profile|.
-  static void RemoveAll(int tab_id, Profile* profile);
-
-  // Determines if PersistedTabDataAndroid exists for the corresponding
-  // |tab_android| and |user_data_key|. Returns true/false in
-  // |exists_callback|.
-  static void ExistsForTesting(TabAndroid* tab_android,
-                               const void* user_data_key,
-                               base::OnceCallback<void(bool)> exists_callback);
-
  private:
-  friend class PersistedTabDataAndroidBrowserTest;
   friend class TabAndroidUserData<PersistedTabDataAndroid>;
-  friend class SensitivityPersistedTabDataAndroid;
   friend class SensitivityPersistedTabDataAndroidBrowserTest;
-  friend class PersistedTabDataAndroidHelper;
 
   // Storage implementation for PersistedTabData (currently only LevelDB is
   // supported) However, support may be added for other storage modes (e.g.
@@ -79,9 +63,6 @@ class PersistedTabDataAndroid
   raw_ptr<const char> data_id_;
 
   int tab_id_;
-
-  // Called when a Tab is closed.
-  static void OnTabClose(TabAndroid* tab_android);
 
   static Profile* GetProfile(TabAndroid* tab_android);
 
