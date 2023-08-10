@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/containers/circular_deque.h"
 #include "base/functional/bind.h"
@@ -85,6 +86,8 @@ void PowerMessageHandler::RegisterMessages() {
 
 void PowerMessageHandler::OnGetBatteryChargeData(
     const base::Value::List& args) {
+  CHECK_EQ(1u, args.size());
+
   AllowJavascript();
 
   const base::circular_deque<PowerDataCollector::PowerSupplySample>&
@@ -111,6 +114,8 @@ void PowerMessageHandler::OnGetBatteryChargeData(
 }
 
 void PowerMessageHandler::OnGetCpuIdleData(const base::Value::List& args) {
+  CHECK_EQ(1u, args.size());
+
   AllowJavascript();
 
   const CpuDataCollector& cpu_data_collector =
@@ -133,6 +138,8 @@ void PowerMessageHandler::OnGetCpuIdleData(const base::Value::List& args) {
 }
 
 void PowerMessageHandler::OnGetCpuFreqData(const base::Value::List& args) {
+  CHECK_EQ(1u, args.size());
+
   AllowJavascript();
 
   const CpuDataCollector& cpu_data_collector =
