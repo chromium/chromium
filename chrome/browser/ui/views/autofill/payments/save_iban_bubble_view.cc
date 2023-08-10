@@ -139,9 +139,9 @@ void SaveIbanBubbleView::CreateMainContentView() {
 
   iban_value_and_toggle_ =
       AddChildView(std::make_unique<ObscurableLabelWithToggleButton>(
-          controller_->GetIBAN().GetIdentifierStringForAutofillDisplay(
+          controller_->GetIban().GetIdentifierStringForAutofillDisplay(
               /*is_value_masked=*/true),
-          controller_->GetIBAN().GetIdentifierStringForAutofillDisplay(
+          controller_->GetIban().GetIdentifierStringForAutofillDisplay(
               /*is_value_masked=*/false),
           l10n_util::GetStringUTF16(IDS_MANAGE_IBAN_VALUE_SHOW_VALUE),
           l10n_util::GetStringUTF16(IDS_MANAGE_IBAN_VALUE_HIDE_VALUE)));

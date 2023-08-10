@@ -571,7 +571,7 @@ class BrowserAutofillManagerTest : public testing::Test {
         /*pref_service=*/autofill_client_.GetPrefs(),
         /*is_off_the_record=*/false);
     iban_manager_ =
-        std::make_unique<NiceMock<MockIBANManager>>(&personal_data());
+        std::make_unique<NiceMock<MockIbanManager>>(&personal_data());
     merchant_promo_code_manager_ =
         std::make_unique<NiceMock<MockMerchantPromoCodeManager>>();
     merchant_promo_code_manager_->Init(&personal_data(),
@@ -1196,7 +1196,7 @@ class BrowserAutofillManagerTest : public testing::Test {
   scoped_refptr<AutofillWebDataService> database_;
   raw_ptr<MockAutofillDownloadManager> download_manager_;
   std::unique_ptr<MockAutocompleteHistoryManager> autocomplete_history_manager_;
-  std::unique_ptr<MockIBANManager> iban_manager_;
+  std::unique_ptr<MockIbanManager> iban_manager_;
   std::unique_ptr<MockMerchantPromoCodeManager> merchant_promo_code_manager_;
   raw_ptr<MockSingleFieldFormFillRouter, DanglingUntriaged>
       single_field_form_fill_router_;

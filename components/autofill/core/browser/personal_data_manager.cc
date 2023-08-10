@@ -921,9 +921,10 @@ void PersonalDataManager::MigrateProfileToAccount(
   AddProfile(account_profile);
 }
 
-std::string PersonalDataManager::AddIBAN(const IBAN& iban) {
-  if (!IsAutofillIBANEnabled())
+std::string PersonalDataManager::AddIban(const Iban& iban) {
+  if (!IsAutofillIbanEnabled()) {
     return std::string();
+  }
 
   // Sets the `kAutofillHasSeenIban` pref to true indicating that the user has
   // added an IBAN via Chrome payment settings page or accepted the save-IBAN
@@ -942,27 +943,27 @@ std::string PersonalDataManager::AddIBAN(const IBAN& iban) {
   // same value and nickname as `iban`, because we do not want to add two IBANs
   // with the exact same data.
   if (base::ranges::any_of(
-          local_ibans_, [&iban](const std::unique_ptr<IBAN>& iban_from_list) {
+          local_ibans_, [&iban](const std::unique_ptr<Iban>& iban_from_list) {
             return iban.value().compare(iban_from_list->value()) == 0 &&
                    iban.nickname().compare(iban_from_list->nickname());
           })) {
     return std::string();
   }
 
-  // Add the new iban to the web database.
-  database_helper_->GetLocalDatabase()->AddIBAN(iban);
+  // Add the new IBAN to the web database.
+  database_helper_->GetLocalDatabase()->AddIban(iban);
 
   // Refresh our local cache and send notifications to observers.
   Refresh();
   return iban.guid();
 }
 
-std::string PersonalDataManager::UpdateIBAN(const IBAN& iban) {
+std::string PersonalDataManager::UpdateIban(const Iban& iban) {
   if (!database_helper_->GetLocalDatabase())
     return std::string();
 
   // Make the update.
-  database_helper_->GetLocalDatabase()->UpdateIBAN(iban);
+  database_helper_->GetLocalDatabase()->UpdateIban(iban);
 
   // Refresh our local cache and send notifications to observers.
   Refresh();
@@ -1275,7 +1276,7 @@ void PersonalDataManager::RemoveByGUID(const std::string& guid) {
     // Refresh our local cache and send notifications to observers.
     Refresh();
   } else if (FindByGUID(local_ibans_, guid)) {
-    database_helper_->GetLocalDatabase()->RemoveIBAN(guid);
+    database_helper_->GetLocalDatabase()->RemoveIban(guid);
     // Refresh our local cache and send notifications to observers.
     Refresh();
   } else {
@@ -1283,8 +1284,8 @@ void PersonalDataManager::RemoveByGUID(const std::string& guid) {
   }
 }
 
-IBAN* PersonalDataManager::GetIBANByGUID(const std::string& guid) {
-  const std::vector<IBAN*>& ibans = GetLocalIBANs();
+Iban* PersonalDataManager::GetIbanByGUID(const std::string& guid) {
+  const std::vector<Iban*>& ibans = GetLocalIbans();
   auto iter = FindElementByGUID(ibans, guid);
   return iter != ibans.end() ? *iter : nullptr;
 }
@@ -1408,8 +1409,8 @@ std::vector<CreditCard*> PersonalDataManager::GetCreditCards() const {
   return result;
 }
 
-std::vector<IBAN*> PersonalDataManager::GetLocalIBANs() const {
-  std::vector<IBAN*> result;
+std::vector<Iban*> PersonalDataManager::GetLocalIbans() const {
+  std::vector<Iban*> result;
   result.reserve(local_ibans_.size());
   for (const auto& iban : local_ibans_) {
     result.push_back(iban.get());
@@ -1531,7 +1532,7 @@ void PersonalDataManager::Refresh() {
   LoadProfiles();
   LoadCreditCards();
   LoadCreditCardCloudTokenData();
-  LoadIBANs();
+  LoadIbans();
   LoadPaymentsCustomerData();
   LoadUpiIds();
   LoadAutofillOffers();
@@ -1684,7 +1685,7 @@ const std::vector<CreditCard*> PersonalDataManager::GetCreditCardsToSuggest()
 
 bool PersonalDataManager::IsAutofillEnabled() const {
   return IsAutofillProfileEnabled() || IsAutofillCreditCardEnabled() ||
-         IsAutofillIBANEnabled();
+         IsAutofillIbanEnabled();
 }
 
 bool PersonalDataManager::IsAutofillProfileEnabled() const {
@@ -1703,8 +1704,8 @@ void PersonalDataManager::SetAutofillHasSeenIban() {
   prefs::SetAutofillHasSeenIban(pref_service_);
 }
 
-bool PersonalDataManager::IsAutofillIBANEnabled() const {
-  return prefs::IsAutofillIBANEnabled(pref_service_);
+bool PersonalDataManager::IsAutofillIbanEnabled() const {
+  return prefs::IsAutofillIbanEnabled(pref_service_);
 }
 
 bool PersonalDataManager::IsAutofillWalletImportEnabled() const {
@@ -2191,7 +2192,7 @@ void PersonalDataManager::LoadCreditCardCloudTokenData() {
       database_helper_->GetServerDatabase()->GetCreditCardCloudTokenData(this);
 }
 
-void PersonalDataManager::LoadIBANs() {
+void PersonalDataManager::LoadIbans() {
   if (!database_helper_->GetLocalDatabase()) {
     NOTREACHED();
     return;
@@ -2199,7 +2200,7 @@ void PersonalDataManager::LoadIBANs() {
 
   CancelPendingLocalQuery(&pending_ibans_query_);
 
-  pending_ibans_query_ = database_helper_->GetLocalDatabase()->GetIBANs(this);
+  pending_ibans_query_ = database_helper_->GetLocalDatabase()->GetIbans(this);
 }
 
 void PersonalDataManager::LoadUpiIds() {
@@ -2284,9 +2285,9 @@ std::string PersonalDataManager::OnAcceptedLocalCreditCardSave(
   return SaveImportedCreditCard(imported_card);
 }
 
-std::string PersonalDataManager::OnAcceptedLocalIBANSave(IBAN& imported_iban) {
+std::string PersonalDataManager::OnAcceptedLocalIbanSave(Iban& imported_iban) {
   DCHECK(!imported_iban.value().empty());
-  return SaveImportedIBAN(imported_iban);
+  return SaveImportedIban(imported_iban);
 }
 
 void PersonalDataManager::SetSyncService(syncer::SyncService* sync_service) {
@@ -2338,20 +2339,20 @@ std::string PersonalDataManager::SaveImportedCreditCard(
   return guid;
 }
 
-std::string PersonalDataManager::SaveImportedIBAN(IBAN& imported_iban) {
-  // If an existing IBAN is found, call `UpdateIBAN()`, otherwise, `AddIBAN()`.
+std::string PersonalDataManager::SaveImportedIban(Iban& imported_iban) {
+  // If an existing IBAN is found, call `UpdateIban()`, otherwise, `AddIban()`.
   // `local_ibans_` will be in sync with the local web database as of
-  // `Refresh()` which will be called by both `UpdateIBAN()` and `AddIBAN()`.
+  // `Refresh()` which will be called by both `UpdateIban()` and `AddIban()`.
   for (auto& iban : local_ibans_) {
     if (iban->value().compare(imported_iban.value()) == 0) {
       // Set the GUID of the IBAN to the one that matches it in
-      // `local_ibans_` so that UpdateIBAN() will be able to update the
+      // `local_ibans_` so that UpdateIban() will be able to update the
       // specific IBAN.
       imported_iban.set_guid(iban->guid());
-      return UpdateIBAN(imported_iban);
+      return UpdateIban(imported_iban);
     }
   }
-  return AddIBAN(imported_iban);
+  return AddIban(imported_iban);
 }
 
 void PersonalDataManager::LogStoredDataMetrics() const {

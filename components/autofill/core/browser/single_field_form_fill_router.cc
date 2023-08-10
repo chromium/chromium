@@ -11,7 +11,7 @@ namespace autofill {
 
 SingleFieldFormFillRouter::SingleFieldFormFillRouter(
     AutocompleteHistoryManager* autocomplete_history_manager,
-    IBANManager* iban_manager,
+    IbanManager* iban_manager,
     MerchantPromoCodeManager* merchant_promo_code_manager)
     : autocomplete_history_manager_(autocomplete_history_manager->GetWeakPtr()),
       iban_manager_(iban_manager ? iban_manager->GetWeakPtr() : nullptr),

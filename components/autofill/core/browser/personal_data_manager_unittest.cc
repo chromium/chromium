@@ -980,82 +980,82 @@ TEST_F(PersonalDataManagerTest,
 }
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
 
-TEST_F(PersonalDataManagerTest, NoIBANsAddedIfDisabled) {
-  prefs::SetAutofillIBANEnabled(prefs_.get(), false);
-  personal_data_->AddIBAN(autofill::test::GetIBAN());
-  personal_data_->AddIBAN(autofill::test::GetIBAN2());
+TEST_F(PersonalDataManagerTest, NoIbansAddedIfDisabled) {
+  prefs::SetAutofillIbanEnabled(prefs_.get(), false);
+  personal_data_->AddIban(autofill::test::GetIban());
+  personal_data_->AddIban(autofill::test::GetIban2());
 
-  EXPECT_EQ(0U, personal_data_->GetLocalIBANs().size());
+  EXPECT_EQ(0U, personal_data_->GetLocalIbans().size());
 }
 
 TEST_F(PersonalDataManagerTest, AddingIbanUpdatesPref) {
-  prefs::SetAutofillIBANEnabled(prefs_.get(), true);
+  prefs::SetAutofillIbanEnabled(prefs_.get(), true);
   // The pref should always start disabled.
   ASSERT_FALSE(personal_data_->IsAutofillHasSeenIbanPrefEnabled());
-  IBAN iban = test::GetIBAN();
+  Iban iban = test::GetIban();
 
-  personal_data_->AddIBAN(iban);
+  personal_data_->AddIban(iban);
   PersonalDataProfileTaskWaiter(*personal_data_).Wait();
   // Adding an IBAN permanently enables the pref.
   EXPECT_TRUE(personal_data_->IsAutofillHasSeenIbanPrefEnabled());
 }
 
-TEST_F(PersonalDataManagerTest, AddUpdateRemoveIBANs) {
-  prefs::SetAutofillIBANEnabled(prefs_.get(), true);
-  IBAN iban0 = autofill::test::GetIBAN();
+TEST_F(PersonalDataManagerTest, AddUpdateRemoveIbans) {
+  prefs::SetAutofillIbanEnabled(prefs_.get(), true);
+  Iban iban0 = autofill::test::GetIban();
 
-  IBAN iban1 = autofill::test::GetIBAN2();
+  Iban iban1 = autofill::test::GetIban2();
   iban1.set_nickname(u"Nickname 1");
 
-  IBAN iban1_1 = iban1;
+  Iban iban1_1 = iban1;
   iban1_1.set_nickname(u"Nickname 1_1");
 
-  IBAN iban2 = autofill::test::GetIBANWithoutNickname();
+  Iban iban2 = autofill::test::GetIbanWithoutNickname();
   iban2.set_nickname(u"Nickname 2");
 
   // Add two test IBANs to the database. `iban1_1` has the same value
   // as `iban1` but with a different nickname. Verify that only `iban1` is
   // added.
-  personal_data_->AddIBAN(iban0);
+  personal_data_->AddIban(iban0);
   PersonalDataProfileTaskWaiter(*personal_data_).Wait();
 
-  personal_data_->AddIBAN(iban1);
+  personal_data_->AddIban(iban1);
   PersonalDataProfileTaskWaiter(*personal_data_).Wait();
 
-  personal_data_->AddIBAN(iban1_1);
+  personal_data_->AddIban(iban1_1);
 
-  std::vector<IBAN*> ibans;
+  std::vector<Iban*> ibans;
   ibans.push_back(&iban0);
   ibans.push_back(&iban1);
-  ExpectSameElements(ibans, personal_data_->GetLocalIBANs());
+  ExpectSameElements(ibans, personal_data_->GetLocalIbans());
 
   // `iban1_2` has the same fields as `iban1_1`, verify that `iban1_2` is
   // not added.
-  IBAN iban1_2 = iban1_1;
-  personal_data_->AddIBAN(iban1_1);
-  ExpectSameElements(ibans, personal_data_->GetLocalIBANs());
+  Iban iban1_2 = iban1_1;
+  personal_data_->AddIban(iban1_1);
+  ExpectSameElements(ibans, personal_data_->GetLocalIbans());
 
-  // Update IBAN0, remove IBAN1, and add IBAN2.
+  // Update iban0, remove iban1, and add iban2.
   iban0.set_nickname(u"Nickname new 0");
   iban0.SetRawInfo(IBAN_VALUE, u"GB98 MIDL 0700 9312 3456 78");
-  personal_data_->UpdateIBAN(iban0);
+  personal_data_->UpdateIban(iban0);
   RemoveByGUIDFromPersonalDataManager(iban1.guid());
-  personal_data_->AddIBAN(iban2);
+  personal_data_->AddIban(iban2);
 
   PersonalDataProfileTaskWaiter(*personal_data_).Wait();
 
   ibans.clear();
   ibans.push_back(&iban0);
   ibans.push_back(&iban2);
-  ExpectSameElements(ibans, personal_data_->GetLocalIBANs());
+  ExpectSameElements(ibans, personal_data_->GetLocalIbans());
 
   // Verify that a duplicate IBAN should not be added.
-  IBAN iban0_dup = iban0;
-  personal_data_->AddIBAN(iban0_dup);
+  Iban iban0_dup = iban0;
+  personal_data_->AddIban(iban0_dup);
   ibans.clear();
   ibans.push_back(&iban0);
   ibans.push_back(&iban2);
-  ExpectSameElements(ibans, personal_data_->GetLocalIBANs());
+  ExpectSameElements(ibans, personal_data_->GetLocalIbans());
 
   // Reset the PersonalDataManager. This tests that the personal data was saved
   // to the web database, and that we can load the IBANs from the web database.
@@ -1065,68 +1065,68 @@ TEST_F(PersonalDataManagerTest, AddUpdateRemoveIBANs) {
   ibans.clear();
   ibans.push_back(&iban0);
   ibans.push_back(&iban2);
-  ExpectSameElements(ibans, personal_data_->GetLocalIBANs());
+  ExpectSameElements(ibans, personal_data_->GetLocalIbans());
 }
 
 // Ensure that new IBANs can be updated and saved via
-// `OnAcceptedLocalIBANSave()`.
-TEST_F(PersonalDataManagerTest, OnAcceptedLocalIBANSave) {
-  prefs::SetAutofillIBANEnabled(prefs_.get(), true);
+// `OnAcceptedLocalIbanSave()`.
+TEST_F(PersonalDataManagerTest, OnAcceptedLocalIbanSave) {
+  prefs::SetAutofillIbanEnabled(prefs_.get(), true);
 
   // Start with a new IBAN.
-  IBAN iban0 = autofill::test::GetIBAN();
+  Iban iban0 = autofill::test::GetIban();
   // Add the IBAN to the database.
-  personal_data_->OnAcceptedLocalIBANSave(iban0);
+  personal_data_->OnAcceptedLocalIbanSave(iban0);
 
   // Make sure everything is set up correctly.
   PersonalDataProfileTaskWaiter(*personal_data_).Wait();
-  EXPECT_EQ(1U, personal_data_->GetLocalIBANs().size());
+  EXPECT_EQ(1U, personal_data_->GetLocalIbans().size());
 
-  // Creates a new IBAN and call `OnAcceptedLocalIBANSave()` and verify that
+  // Creates a new IBAN and call `OnAcceptedLocalIbanSave()` and verify that
   // the new IBAN is saved.
-  IBAN iban1 = autofill::test::GetIBAN2();
-  personal_data_->OnAcceptedLocalIBANSave(iban1);
+  Iban iban1 = autofill::test::GetIban2();
+  personal_data_->OnAcceptedLocalIbanSave(iban1);
   PersonalDataProfileTaskWaiter(*personal_data_).Wait();
 
   // Expect that the new IBAN is added.
-  ASSERT_EQ(2U, personal_data_->GetLocalIBANs().size());
+  ASSERT_EQ(2U, personal_data_->GetLocalIbans().size());
 
-  std::vector<IBAN*> ibans;
+  std::vector<Iban*> ibans;
   ibans.push_back(&iban0);
   ibans.push_back(&iban1);
   // Verify that we've loaded the IBAN from the web database.
-  ExpectSameElements(ibans, personal_data_->GetLocalIBANs());
+  ExpectSameElements(ibans, personal_data_->GetLocalIbans());
 
   // Creates a new `iban2` which has the same value as `iban0` but with
-  // different nickname and call `OnAcceptedLocalIBANSave()`.
-  IBAN iban2 = iban0;
+  // different nickname and call `OnAcceptedLocalIbanSave()`.
+  Iban iban2 = iban0;
   iban2.set_nickname(u"Nickname 2");
-  personal_data_->OnAcceptedLocalIBANSave(iban2);
+  personal_data_->OnAcceptedLocalIbanSave(iban2);
   PersonalDataProfileTaskWaiter(*personal_data_).Wait();
-  // Updates the nickname for `iban1` and call `OnAcceptedLocalIBANSave()`.
+  // Updates the nickname for `iban1` and call `OnAcceptedLocalIbanSave()`.
   iban1.set_nickname(u"Nickname 1 updated");
-  personal_data_->OnAcceptedLocalIBANSave(iban1);
+  personal_data_->OnAcceptedLocalIbanSave(iban1);
   PersonalDataProfileTaskWaiter(*personal_data_).Wait();
 
   ibans.clear();
   ibans.push_back(&iban1);
   ibans.push_back(&iban2);
   // Expect that the existing IBANs are updated.
-  ASSERT_EQ(2U, personal_data_->GetLocalIBANs().size());
+  ASSERT_EQ(2U, personal_data_->GetLocalIbans().size());
 
   // Verify that we've loaded the IBANs from the web database.
-  ExpectSameElements(ibans, personal_data_->GetLocalIBANs());
+  ExpectSameElements(ibans, personal_data_->GetLocalIbans());
 
-  // Call `OnAcceptedLocalIBANSave()` with the same iban1, verify that nothing
+  // Call `OnAcceptedLocalIbanSave()` with the same iban1, verify that nothing
   // changes.
-  personal_data_->OnAcceptedLocalIBANSave(iban1);
-  ExpectSameElements(ibans, personal_data_->GetLocalIBANs());
+  personal_data_->OnAcceptedLocalIbanSave(iban1);
+  ExpectSameElements(ibans, personal_data_->GetLocalIbans());
 
   // Reset the PersonalDataManager. This tests that the IBANs are persisted
   // in the local web database even if the browser is re-loaded, ensuring that
   // the user can load the IBANs from the local web database on browser startup.
   ResetPersonalDataManager();
-  ExpectSameElements(ibans, personal_data_->GetLocalIBANs());
+  ExpectSameElements(ibans, personal_data_->GetLocalIbans());
 }
 
 TEST_F(PersonalDataManagerTest, AddUpdateRemoveCreditCards) {
@@ -1984,7 +1984,7 @@ TEST_F(PersonalDataManagerTest, DefaultCountryCodeIsCached) {
   // profiles.
   prefs::SetAutofillProfileEnabled(prefs_.get(), false);
   prefs::SetAutofillCreditCardEnabled(prefs_.get(), false);
-  prefs::SetAutofillIBANEnabled(prefs_.get(), false);
+  prefs::SetAutofillIbanEnabled(prefs_.get(), false);
   PersonalDataProfileTaskWaiter(*personal_data_).Wait();
   EXPECT_EQ(default_country,
             personal_data_->GetDefaultCountryCodeForNewAddress());

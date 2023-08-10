@@ -174,8 +174,8 @@ class MockAutofillClient : public autofill::AutofillClient {
                MigrationDeleteCardCallback),
               (override));
   MOCK_METHOD(void,
-              ConfirmSaveIBANLocally,
-              (const autofill::IBAN&, bool, LocalSaveIBANPromptCallback),
+              ConfirmSaveIbanLocally,
+              (const autofill::Iban&, bool, LocalSaveIbanPromptCallback),
               (override));
   MOCK_METHOD(void,
               ShowWebauthnOfferDialog,

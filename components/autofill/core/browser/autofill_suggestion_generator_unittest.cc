@@ -637,25 +637,25 @@ TEST_F(AutofillSuggestionGeneratorTest,
       suggestion_generator()->ShouldShowVirtualCardOption(&local_card));
 }
 
-TEST_F(AutofillSuggestionGeneratorTest, GetIBANSuggestions) {
+TEST_F(AutofillSuggestionGeneratorTest, GetIbanSuggestions) {
   SetUpIbanImageResources();
 
-  auto MakeIBAN = [](const std::u16string& value,
+  auto MakeIban = [](const std::u16string& value,
                      const std::u16string& nickname) {
-    IBAN iban(base::Uuid::GenerateRandomV4().AsLowercaseString());
+    Iban iban(base::Uuid::GenerateRandomV4().AsLowercaseString());
     iban.set_value(value);
     if (!nickname.empty())
       iban.set_nickname(nickname);
     return iban;
   };
-  IBAN iban0 = MakeIBAN(u"CH56 0483 5012 3456 7800 9", u"My doctor's IBAN");
-  IBAN iban1 = MakeIBAN(u"DE91 1000 0000 0123 4567 89", u"My brother's IBAN");
-  IBAN iban2 =
-      MakeIBAN(u"GR96 0810 0010 0000 0123 4567 890", u"My teacher's IBAN");
-  IBAN iban3 = MakeIBAN(u"PK70 BANK 0000 1234 5678 9000", u"");
+  Iban iban0 = MakeIban(u"CH56 0483 5012 3456 7800 9", u"My doctor's IBAN");
+  Iban iban1 = MakeIban(u"DE91 1000 0000 0123 4567 89", u"My brother's IBAN");
+  Iban iban2 =
+      MakeIban(u"GR96 0810 0010 0000 0123 4567 890", u"My teacher's IBAN");
+  Iban iban3 = MakeIban(u"PK70 BANK 0000 1234 5678 9000", u"");
 
   std::vector<Suggestion> iban_suggestions =
-      AutofillSuggestionGenerator::GetSuggestionsForIBANs(
+      AutofillSuggestionGenerator::GetSuggestionsForIbans(
           {&iban0, &iban1, &iban2, &iban3});
 
   // There are 6 suggestions, 4 for IBAN suggestions, followed by a separator,

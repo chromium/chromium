@@ -126,16 +126,16 @@ void ManageSavedIbanBubbleView::Init() {
 
   iban_value_and_toggle_ =
       AddChildView(std::make_unique<ObscurableLabelWithToggleButton>(
-          controller_->GetIBAN().GetIdentifierStringForAutofillDisplay(
+          controller_->GetIban().GetIdentifierStringForAutofillDisplay(
               /*is_value_masked=*/true),
-          controller_->GetIBAN().GetIdentifierStringForAutofillDisplay(
+          controller_->GetIban().GetIdentifierStringForAutofillDisplay(
               /*is_value_masked=*/false),
           l10n_util::GetStringUTF16(IDS_MANAGE_IBAN_VALUE_SHOW_VALUE),
           l10n_util::GetStringUTF16(IDS_MANAGE_IBAN_VALUE_HIDE_VALUE)));
 
   // Nickname label row will be added if a nickname was saved in the IBAN save
   // bubble, which is displayed previously in the flow.
-  if (!controller_->GetIBAN().nickname().empty()) {
+  if (!controller_->GetIban().nickname().empty()) {
     layout
         ->AddPaddingRow(views::TableLayout::kFixedSize,
                         ChromeLayoutProvider::Get()->GetDistanceMetric(
@@ -148,7 +148,7 @@ void ManageSavedIbanBubbleView::Init() {
     // TODO(crbug.com/1349109): Revisit how the nickname will be shown if it's
     // too long.
     nickname_label_ = AddChildView(std::make_unique<views::Label>(
-        controller_->GetIBAN().nickname(),
+        controller_->GetIban().nickname(),
         views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_PRIMARY));
     nickname_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   }

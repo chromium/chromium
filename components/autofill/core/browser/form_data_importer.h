@@ -93,7 +93,7 @@ class FormDataImporter : public PersonalDataManagerObserver {
       const FormStructure& form);
 
   // Tries to initiate the saving of `iban_import_candidate` if applicable.
-  bool ProcessIBANImportCandidate(const IBAN& iban_import_candidate);
+  bool ProcessIbanImportCandidate(const Iban& iban_import_candidate);
 
   // Cache the last four of the fetched virtual card so we don't offer saving
   // them.
@@ -138,7 +138,7 @@ class FormDataImporter : public PersonalDataManagerObserver {
     credit_card_import_type_ = credit_card_import_type;
   }
 
-  IBANSaveManager* iban_save_manager_for_testing() {
+  IbanSaveManager* iban_save_manager_for_testing() {
     return iban_save_manager_.get();
   }
 
@@ -173,7 +173,7 @@ class FormDataImporter : public PersonalDataManagerObserver {
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   void set_iban_save_manager_for_testing(
-      std::unique_ptr<IBANSaveManager> iban_save_manager) {
+      std::unique_ptr<IbanSaveManager> iban_save_manager) {
     iban_save_manager_ = std::move(iban_save_manager);
   }
   void set_local_card_migration_manager_for_testing(
@@ -226,7 +226,7 @@ class FormDataImporter : public PersonalDataManagerObserver {
         address_profile_import_candidates;
     // IBAN extracted from the form, which is a candidate for importing. Present
     // if an IBAN is found in the form.
-    absl::optional<IBAN> iban_import_candidate;
+    absl::optional<Iban> iban_import_candidate;
     // Present if a UPI (Unified Payment Interface) ID is found in the form.
     absl::optional<std::string> extracted_upi_id;
   };
@@ -299,7 +299,7 @@ class FormDataImporter : public PersonalDataManagerObserver {
       const CreditCard& candidate);
 
   // Returns the extracted IBAN from the `form` if it is a new IBAN.
-  absl::optional<IBAN> ExtractIBAN(const FormStructure& form);
+  absl::optional<Iban> ExtractIban(const FormStructure& form);
 
   // Tries to initiate the saving of the `extracted_credit_card` if applicable.
   // `submitted_form` is the form from which the card was
@@ -323,7 +323,7 @@ class FormDataImporter : public PersonalDataManagerObserver {
       bool allow_prompt = true);
 
   // Helper function which extracts the IBAN from the form structure.
-  IBAN ExtractIBANFromForm(const FormStructure& form);
+  Iban ExtractIbanFromForm(const FormStructure& form);
 
   // Go through the `form` fields and find a UPI ID to extract. The return value
   // will be empty if no UPI ID was found.
@@ -377,7 +377,7 @@ class FormDataImporter : public PersonalDataManagerObserver {
   std::unique_ptr<AddressProfileSaveManager> address_profile_save_manager_;
 
   // Responsible for managing IBAN save flows.
-  std::unique_ptr<IBANSaveManager> iban_save_manager_;
+  std::unique_ptr<IbanSaveManager> iban_save_manager_;
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // Responsible for migrating locally saved credit cards to Google Pay.

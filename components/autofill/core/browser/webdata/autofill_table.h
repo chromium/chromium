@@ -41,7 +41,7 @@ class AutofillTableTest;
 class CreditCard;
 struct CreditCardCloudTokenData;
 struct FormFieldData;
-class IBAN;
+class Iban;
 struct PaymentsCustomerData;
 class VirtualCardUsageData;
 // Helper struct to better group server cvc related variables for better
@@ -678,20 +678,20 @@ class AutofillTable : public WebDatabaseTable,
   void SetServerProfiles(const std::vector<AutofillProfile>& profiles);
 
   // Records a single IBAN in the iban table.
-  bool AddIBAN(const IBAN& iban);
+  bool AddIban(const Iban& iban);
 
   // Updates the database values for the specified IBAN.
-  bool UpdateIBAN(const IBAN& iban);
+  bool UpdateIban(const Iban& iban);
 
   // Removes a row from the ibans table. |guid| is the identifier of the
   // IBAN to remove.
-  bool RemoveIBAN(const std::string& guid);
+  bool RemoveIban(const std::string& guid);
 
   // Retrieves an IBAN with the given |guid|.
-  std::unique_ptr<IBAN> GetIBAN(const std::string& guid);
+  std::unique_ptr<Iban> GetIban(const std::string& guid);
 
   // Retrieves the local IBANs in the database.
-  bool GetIBANs(std::vector<std::unique_ptr<IBAN>>* ibans);
+  bool GetIbans(std::vector<std::unique_ptr<Iban>>* ibans);
 
   // Records a single credit card in the credit_cards table.
   bool AddCreditCard(const CreditCard& credit_card);
@@ -885,8 +885,8 @@ class AutofillTable : public WebDatabaseTable,
   bool MigrateToVersion101RemoveCreditCardArtImageTable();
   bool MigrateToVersion102AddAutofillBirthdatesTable();
   bool MigrateToVersion104AddProductDescriptionColumn();
-  bool MigrateToVersion105AddAutofillIBANTable();
-  bool MigrateToVersion106RecreateAutofillIBANTable();
+  bool MigrateToVersion105AddAutofillIbanTable();
+  bool MigrateToVersion106RecreateAutofillIbanTable();
   bool MigrateToVersion107AddContactInfoTables();
   bool MigrateToVersion108AddCardIssuerIdColumn();
   bool MigrateToVersion109AddVirtualCardUsageDataTable();
@@ -997,7 +997,7 @@ class AutofillTable : public WebDatabaseTable,
 
   bool InitMainTable();
   bool InitCreditCardsTable();
-  bool InitIBANsTable();
+  bool InitIbansTable();
   bool InitLegacyProfilesTable();
   bool InitLegacyProfileAddressesTable();
   bool InitLegacyProfileNamesTable();

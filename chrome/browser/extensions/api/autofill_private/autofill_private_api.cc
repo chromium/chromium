@@ -438,7 +438,7 @@ ExtensionFunction::ResponseAction AutofillPrivateRemoveEntryFunction::Run() {
   if (!personal_data || !personal_data->IsDataLoaded())
     return RespondNow(Error(kErrorDataUnavailable));
 
-  if (personal_data->GetIBANByGUID(parameters->guid)) {
+  if (personal_data->GetIbanByGUID(parameters->guid)) {
     base::RecordAction(base::UserMetricsAction("AutofillIbanDeleted"));
   }
 
@@ -588,16 +588,16 @@ ExtensionFunction::ResponseAction AutofillPrivateSaveIbanFunction::Run() {
   // the Chrome payment settings page. Otherwise, leaving it blank creates a new
   // IBAN.
   std::string guid = iban_entry->guid ? *iban_entry->guid : "";
-  const autofill::IBAN* existing_iban = nullptr;
+  const autofill::Iban* existing_iban = nullptr;
   if (!guid.empty()) {
-    existing_iban = personal_data->GetIBANByGUID(guid);
+    existing_iban = personal_data->GetIbanByGUID(guid);
     if (!existing_iban)
       return RespondNow(Error(kErrorDataUnavailable));
   }
-  autofill::IBAN iban =
+  autofill::Iban iban =
       existing_iban
           ? *existing_iban
-          : autofill::IBAN(base::Uuid::GenerateRandomV4().AsLowercaseString());
+          : autofill::Iban(base::Uuid::GenerateRandomV4().AsLowercaseString());
 
   iban.SetRawInfo(autofill::IBAN_VALUE, base::UTF8ToUTF16(*iban_entry->value));
 
@@ -605,7 +605,7 @@ ExtensionFunction::ResponseAction AutofillPrivateSaveIbanFunction::Run() {
     iban.set_nickname(base::UTF8ToUTF16(*iban_entry->nickname));
 
   if (guid.empty()) {
-    personal_data->AddIBAN(iban);
+    personal_data->AddIban(iban);
     base::RecordAction(base::UserMetricsAction("AutofillIbanAdded"));
     if (!iban.nickname().empty()) {
       base::RecordAction(
@@ -615,7 +615,7 @@ ExtensionFunction::ResponseAction AutofillPrivateSaveIbanFunction::Run() {
   }
 
   if (existing_iban->Compare(iban) != 0) {
-    personal_data->UpdateIBAN(iban);
+    personal_data->UpdateIban(iban);
     base::RecordAction(base::UserMetricsAction("AutofillIbanEdited"));
     // Record when nickname is updated.
     if (existing_iban->nickname() != iban.nickname()) {
@@ -651,7 +651,7 @@ ExtensionFunction::ResponseAction AutofillPrivateIsValidIbanFunction::Run() {
       api::autofill_private::IsValidIban::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(parameters);
   return RespondNow(WithArguments(
-      autofill::IBAN::IsValid(base::UTF8ToUTF16(parameters->iban_value))));
+      autofill::Iban::IsValid(base::UTF8ToUTF16(parameters->iban_value))));
 }
 
 ////////////////////////////////////////////////////////////////////////////////

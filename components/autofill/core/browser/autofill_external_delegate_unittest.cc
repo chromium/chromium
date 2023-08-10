@@ -962,7 +962,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
   std::u16string unmasked_iban_value = u"IE12 BOFI 9000 0112 3456 78";
   EXPECT_CALL(*autofill_driver_,
               RendererShouldFillFieldWithValue(field_id_, unmasked_iban_value));
-  EXPECT_CALL(*autofill_client_.GetMockIBANManager(),
+  EXPECT_CALL(*autofill_client_.GetMockIbanManager(),
               OnSingleFieldSuggestionSelected(masked_iban_value,
                                               PopupItemId::kIbanEntry));
 

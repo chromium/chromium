@@ -140,14 +140,14 @@ void SetProfileCategory(
 std::string GetStrippedValue(const char* value);
 
 // Returns an IBAN full of dummy info.
-IBAN GetIBAN();
+Iban GetIban();
 
 // Returns an IBAN full of dummy info, different to the above.
-IBAN GetIBAN2();
+Iban GetIban2();
 
 // Returns an IBAN full of dummy info, different to the above and without
 // nickname.
-IBAN GetIBANWithoutNickname();
+Iban GetIbanWithoutNickname();
 
 // Returns a credit card full of dummy info.
 CreditCard GetCreditCard();

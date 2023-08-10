@@ -280,7 +280,7 @@ bool ShouldShowIbanOnSettingsPage(const std::string& user_country_code,
   }
 
   std::string country_code = base::ToUpperASCII(user_country_code);
-  return IBAN::IsIbanApplicableInCountry(user_country_code) ||
+  return Iban::IsIbanApplicableInCountry(user_country_code) ||
          prefs::HasSeenIban(pref_service);
 }
 

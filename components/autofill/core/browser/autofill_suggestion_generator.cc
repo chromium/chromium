@@ -331,11 +331,11 @@ std::vector<CreditCard> AutofillSuggestionGenerator::GetOrderedCardsToSuggest(
 }
 
 // static
-std::vector<Suggestion> AutofillSuggestionGenerator::GetSuggestionsForIBANs(
-    const std::vector<const IBAN*>& ibans) {
+std::vector<Suggestion> AutofillSuggestionGenerator::GetSuggestionsForIbans(
+    const std::vector<const Iban*>& ibans) {
   std::vector<Suggestion> suggestions;
   suggestions.reserve(ibans.size() + 2);
-  for (const IBAN* iban : ibans) {
+  for (const Iban* iban : ibans) {
     Suggestion& suggestion = suggestions.emplace_back(iban->value());
     suggestion.custom_icon =
         ui::ResourceBundle::GetSharedInstance().GetImageNamed(

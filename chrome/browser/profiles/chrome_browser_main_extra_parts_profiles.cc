@@ -564,7 +564,7 @@ void ChromeBrowserMainExtraPartsProfiles::
   autofill::AutofillLogRouterFactory::GetInstance();
   autofill::AutofillOfferManagerFactory::GetInstance();
   autofill::AutofillOptimizationGuideFactory::GetInstance();
-  autofill::IBANManagerFactory::GetInstance();
+  autofill::IbanManagerFactory::GetInstance();
   autofill::MerchantPromoCodeManagerFactory::GetInstance();
   autofill::PersonalDataManagerFactory::GetInstance();
 #if BUILDFLAG(IS_ANDROID)

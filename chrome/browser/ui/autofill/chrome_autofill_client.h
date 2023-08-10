@@ -105,7 +105,7 @@ class ChromeAutofillClient : public ContentAutofillClient,
   AutofillOptimizationGuide* GetAutofillOptimizationGuide() const override;
   PersonalDataManager* GetPersonalDataManager() override;
   AutocompleteHistoryManager* GetAutocompleteHistoryManager() override;
-  IBANManager* GetIBANManager() override;
+  IbanManager* GetIbanManager() override;
   MerchantPromoCodeManager* GetMerchantPromoCodeManager() override;
   CreditCardCvcAuthenticator* GetCvcAuthenticator() override;
   CreditCardOtpAuthenticator* GetOtpAuthenticator() override;
@@ -177,9 +177,9 @@ class ChromeAutofillClient : public ContentAutofillClient,
       const std::u16string& tip_message,
       const std::vector<MigratableCreditCard>& migratable_credit_cards,
       MigrationDeleteCardCallback delete_local_card_callback) override;
-  void ConfirmSaveIBANLocally(const IBAN& iban,
+  void ConfirmSaveIbanLocally(const Iban& iban,
                               bool should_show_prompt,
-                              LocalSaveIBANPromptCallback callback) override;
+                              LocalSaveIbanPromptCallback callback) override;
   void ShowWebauthnOfferDialog(
       WebauthnDialogCallback offer_dialog_callback) override;
   void ShowWebauthnVerifyPendingDialog(

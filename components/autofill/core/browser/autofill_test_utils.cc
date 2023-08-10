@@ -318,22 +318,22 @@ std::string GetStrippedValue(const char* value) {
   return base::UTF16ToUTF8(stripped_value);
 }
 
-IBAN GetIBAN() {
-  IBAN iban(base::Uuid::GenerateRandomV4().AsLowercaseString());
+Iban GetIban() {
+  Iban iban(base::Uuid::GenerateRandomV4().AsLowercaseString());
   iban.set_value(base::UTF8ToUTF16(std::string(kIbanValue)));
   iban.set_nickname(u"Nickname for Iban");
   return iban;
 }
 
-IBAN GetIBAN2() {
-  IBAN iban;
+Iban GetIban2() {
+  Iban iban;
   iban.set_value(base::UTF8ToUTF16(std::string(kIbanValue_1)));
   iban.set_nickname(u"My doctor's IBAN");
   return iban;
 }
 
-IBAN GetIBANWithoutNickname() {
-  IBAN iban;
+Iban GetIbanWithoutNickname() {
+  Iban iban;
   iban.set_value(base::UTF8ToUTF16(std::string(kIbanValue_2)));
   return iban;
 }

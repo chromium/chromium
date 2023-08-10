@@ -8,7 +8,7 @@ namespace autofill {
 
 MockSingleFieldFormFillRouter::MockSingleFieldFormFillRouter(
     AutocompleteHistoryManager* autocomplete_history_manager,
-    IBANManager* iban_manager,
+    IbanManager* iban_manager,
     MerchantPromoCodeManager* merchant_promo_code_manager)
     : SingleFieldFormFillRouter(autocomplete_history_manager,
                                 iban_manager,

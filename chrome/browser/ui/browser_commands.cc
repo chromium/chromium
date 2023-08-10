@@ -1428,7 +1428,7 @@ void SaveCreditCard(Browser* browser) {
   controller->ReshowBubble();
 }
 
-void SaveIBAN(Browser* browser) {
+void SaveIban(Browser* browser) {
   WebContents* web_contents =
       browser->tab_strip_model()->GetActiveWebContents();
   autofill::IbanBubbleControllerImpl* controller =

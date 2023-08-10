@@ -602,7 +602,7 @@ inline constexpr char16_t kUPIVirtualPaymentAddressRe[] =
 
 // Used to match the HTML name and label for International Bank Account Number
 // (IBAN).
-inline constexpr char16_t kIBANRe[] =
+inline constexpr char16_t kIbanRe[] =
     u"(\\biban(\\b|_)|international bank account number)";
 
 // Used to match field value that might be an International Bank Account Number.

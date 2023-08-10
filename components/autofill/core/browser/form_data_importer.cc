@@ -155,7 +155,7 @@ FormDataImporter::FormDataImporter(AutofillClient* client,
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
       iban_save_manager_(
           base::FeatureList::IsEnabled(features::kAutofillFillIbanFields)
-              ? std::make_unique<IBANSaveManager>(client)
+              ? std::make_unique<IbanSaveManager>(client)
               : nullptr),
       local_card_migration_manager_(
           std::make_unique<LocalCardMigrationManager>(client,
@@ -219,7 +219,7 @@ void FormDataImporter::ImportAndProcessFormData(
   if (extracted_data.iban_import_candidate.has_value() &&
       payment_methods_autofill_enabled) {
     iban_prompt_potentially_shown =
-        ProcessIBANImportCandidate(*extracted_data.iban_import_candidate);
+        ProcessIbanImportCandidate(*extracted_data.iban_import_candidate);
   }
 
   // If a prompt for credit cards or IBANs is potentially shown, do not allow
@@ -304,7 +304,7 @@ FormDataImporter::ExtractedFormData FormDataImporter::ExtractFormData(
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   if (base::FeatureList::IsEnabled(features::kAutofillFillIbanFields) &&
       payment_methods_autofill_enabled) {
-    extracted_form_data.iban_import_candidate = ExtractIBAN(submitted_form);
+    extracted_form_data.iban_import_candidate = ExtractIban(submitted_form);
   }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
@@ -808,12 +808,12 @@ bool FormDataImporter::ProcessExtractedCreditCard(
   return false;
 }
 
-bool FormDataImporter::ProcessIBANImportCandidate(
-    const IBAN& iban_import_candidate) {
+bool FormDataImporter::ProcessIbanImportCandidate(
+    const Iban& iban_import_candidate) {
   if (!iban_save_manager_)
     return false;
 
-  return iban_save_manager_->AttemptToOfferIBANLocalSave(iban_import_candidate);
+  return iban_save_manager_->AttemptToOfferIbanLocalSave(iban_import_candidate);
 }
 
 absl::optional<CreditCard> FormDataImporter::ExtractCreditCard(
@@ -947,8 +947,8 @@ absl::optional<CreditCard> FormDataImporter::TryMatchingExistingServerCard(
   return candidate;
 }
 
-absl::optional<IBAN> FormDataImporter::ExtractIBAN(const FormStructure& form) {
-  IBAN candidate_iban = ExtractIBANFromForm(form);
+absl::optional<Iban> FormDataImporter::ExtractIban(const FormStructure& form) {
+  Iban candidate_iban = ExtractIbanFromForm(form);
   if (candidate_iban.value().empty())
     return absl::nullopt;
 
@@ -960,7 +960,7 @@ absl::optional<IBAN> FormDataImporter::ExtractIBAN(const FormStructure& form) {
   personal_data_manager_->SetAutofillHasSeenIban();
 
   bool found_existing_local_iban = base::ranges::any_of(
-      personal_data_manager_->GetLocalIBANs(), [&](const auto& iban) {
+      personal_data_manager_->GetLocalIbans(), [&](const auto& iban) {
         return iban->value() == candidate_iban.value();
       });
 
@@ -1031,8 +1031,8 @@ FormDataImporter::ExtractCreditCardFromForm(const FormStructure& form) {
   return result;
 }
 
-IBAN FormDataImporter::ExtractIBANFromForm(const FormStructure& form) {
-  IBAN candidate_iban;
+Iban FormDataImporter::ExtractIbanFromForm(const FormStructure& form) {
+  Iban candidate_iban;
 
   for (const auto& field : form) {
     if (!field->IsFieldFillable() || field->value.empty()) {
@@ -1041,7 +1041,7 @@ IBAN FormDataImporter::ExtractIBANFromForm(const FormStructure& form) {
 
     AutofillType field_type = field->Type();
     if (field_type.GetStorableType() == IBAN_VALUE &&
-        IBAN::IsValid(field->value)) {
+        Iban::IsValid(field->value)) {
       candidate_iban.SetInfo(field_type, field->value, app_locale_);
       break;
     }

@@ -14,12 +14,12 @@
 
 namespace autofill {
 
-IBANManager::IBANManager(PersonalDataManager* personal_data_manager)
+IbanManager::IbanManager(PersonalDataManager* personal_data_manager)
     : personal_data_manager_(personal_data_manager) {}
 
-IBANManager::~IBANManager() = default;
+IbanManager::~IbanManager() = default;
 
-bool IBANManager::OnGetSingleFieldSuggestions(
+bool IbanManager::OnGetSingleFieldSuggestions(
     AutofillSuggestionTriggerSource trigger_source,
     const FormFieldData& field,
     const AutofillClient& client,
@@ -48,28 +48,28 @@ bool IBANManager::OnGetSingleFieldSuggestions(
     return false;
   }
 
-  std::vector<IBAN*> ibans = personal_data_manager_->GetLocalIBANs();
+  std::vector<Iban*> ibans = personal_data_manager_->GetLocalIbans();
   if (!ibans.empty()) {
     // Rank the IBANs by ranking score (see AutoFillDataModel for details).
     base::Time comparison_time = AutofillClock::Now();
     if (ibans.size() > 1) {
       base::ranges::sort(
-          ibans, [comparison_time](const IBAN* iban0, const IBAN* iban1) {
+          ibans, [comparison_time](const Iban* iban0, const Iban* iban1) {
             return iban0->HasGreaterRankingThan(iban1, comparison_time);
           });
     }
-    SendIBANSuggestions(ibans, QueryHandler(field.global_id(), trigger_source,
+    SendIbanSuggestions(ibans, QueryHandler(field.global_id(), trigger_source,
                                             field.value, handler));
     return true;
   }
   return false;
 }
 
-base::WeakPtr<IBANManager> IBANManager::GetWeakPtr() {
+base::WeakPtr<IbanManager> IbanManager::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-void IBANManager::UmaRecorder::OnIbanSuggestionsShown(
+void IbanManager::UmaRecorder::OnIbanSuggestionsShown(
     FieldGlobalId field_global_id) {
   // Log metrics related to the IBAN-related suggestions in the popup.
   autofill_metrics::LogIndividualIbanSuggestionsEvent(
@@ -82,7 +82,7 @@ void IBANManager::UmaRecorder::OnIbanSuggestionsShown(
   most_recent_suggestions_shown_field_global_id_ = field_global_id;
 }
 
-void IBANManager::UmaRecorder::OnIbanSuggestionSelected() {
+void IbanManager::UmaRecorder::OnIbanSuggestionSelected() {
   // We log every time the IBAN suggestion is selected.
   autofill_metrics::LogIndividualIbanSuggestionsEvent(
       autofill_metrics::IbanSuggestionsEvent::kIbanSuggestionSelected);
@@ -96,7 +96,7 @@ void IBANManager::UmaRecorder::OnIbanSuggestionSelected() {
       most_recent_suggestions_shown_field_global_id_;
 }
 
-void IBANManager::SendIBANSuggestions(const std::vector<IBAN*>& ibans,
+void IbanManager::SendIbanSuggestions(const std::vector<Iban*>& ibans,
                                       const QueryHandler& query_handler) {
   if (!query_handler.handler_) {
     // Either the handler has been destroyed, or it is invalid.
@@ -109,7 +109,7 @@ void IBANManager::SendIBANSuggestions(const std::vector<IBAN*>& ibans,
   // the value with the full IBAN value. However, once we land
   // MASKED_SERVER_IBANs and Chrome doesn't know the whole value, we'll have
   // check 'prefix'(E.g., the first ~5 characters).
-  if (base::Contains(ibans, query_handler.prefix_, &IBAN::value)) {
+  if (base::Contains(ibans, query_handler.prefix_, &Iban::value)) {
     // Return empty suggestions to query handler. This will result in no
     // suggestions being displayed.
     query_handler.handler_->OnSuggestionsReturned(
@@ -118,7 +118,7 @@ void IBANManager::SendIBANSuggestions(const std::vector<IBAN*>& ibans,
   }
 
   // Only return IBAN-based suggestions whose prefix match `prefix_`.
-  std::vector<const IBAN*> suggested_ibans;
+  std::vector<const Iban*> suggested_ibans;
   suggested_ibans.reserve(ibans.size());
   for (const auto* iban : ibans) {
     if (base::StartsWith(iban->value(), query_handler.prefix_)) {
@@ -133,12 +133,12 @@ void IBANManager::SendIBANSuggestions(const std::vector<IBAN*>& ibans,
   // Return suggestions to query handler.
   query_handler.handler_->OnSuggestionsReturned(
       query_handler.field_id_, query_handler.trigger_source_,
-      AutofillSuggestionGenerator::GetSuggestionsForIBANs(suggested_ibans));
+      AutofillSuggestionGenerator::GetSuggestionsForIbans(suggested_ibans));
 
   uma_recorder_.OnIbanSuggestionsShown(query_handler.field_id_);
 }
 
-void IBANManager::OnSingleFieldSuggestionSelected(const std::u16string& value,
+void IbanManager::OnSingleFieldSuggestionSelected(const std::u16string& value,
                                                   PopupItemId popup_item_id) {
   uma_recorder_.OnIbanSuggestionSelected();
 }

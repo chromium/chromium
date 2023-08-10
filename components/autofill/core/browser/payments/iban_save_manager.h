@@ -14,11 +14,11 @@
 
 namespace autofill {
 
-class IBANSaveStrikeDatabase;
+class IbanSaveStrikeDatabase;
 
 // Decides whether an IBAN local save should be offered and handles the workflow
 // for local saves.
-class IBANSaveManager {
+class IbanSaveManager {
  public:
   // An observer class used by browsertests that gets notified whenever
   // particular actions occur.
@@ -30,10 +30,10 @@ class IBANSaveManager {
     virtual void OnDeclineSaveIbanComplete() {}
   };
 
-  explicit IBANSaveManager(AutofillClient* client);
-  IBANSaveManager(const IBANSaveManager&) = delete;
-  IBANSaveManager& operator=(const IBANSaveManager&) = delete;
-  virtual ~IBANSaveManager();
+  explicit IbanSaveManager(AutofillClient* client);
+  IbanSaveManager(const IbanSaveManager&) = delete;
+  IbanSaveManager& operator=(const IbanSaveManager&) = delete;
+  virtual ~IbanSaveManager();
 
   // Return the first half of hashed IBAN value.
   static std::string GetPartialIbanHashString(const std::string& value);
@@ -43,18 +43,18 @@ class IBANSaveManager {
   // Note that on desktop if this returns false, the show save prompt will not
   // be popped up but the omnibox icon still will be shown so the user can
   // trigger the save prompt manually.
-  [[nodiscard]] bool AttemptToOfferIBANLocalSave(
-      const IBAN& iban_import_candidate);
+  [[nodiscard]] bool AttemptToOfferIbanLocalSave(
+      const Iban& iban_import_candidate);
 
   void OnUserDidDecideOnLocalSaveForTesting(
-      AutofillClient::SaveIBANOfferUserDecision user_decision,
+      AutofillClient::SaveIbanOfferUserDecision user_decision,
       const absl::optional<std::u16string>& nickname = absl::nullopt) {
     OnUserDidDecideOnLocalSave(user_decision, nickname);
   }
 
-  // Returns the IBANSaveStrikeDatabase for `client_`.
-  IBANSaveStrikeDatabase* GetIBANSaveStrikeDatabaseForTesting() {
-    return GetIBANSaveStrikeDatabase();
+  // Returns the IbanSaveStrikeDatabase for `client_`.
+  IbanSaveStrikeDatabase* GetIbanSaveStrikeDatabaseForTesting() {
+    return GetIbanSaveStrikeDatabase();
   }
 
   void SetEventObserverForTesting(ObserverForTest* observer) {
@@ -62,30 +62,30 @@ class IBANSaveManager {
   }
 
  private:
-  // Returns the IBANSaveStrikeDatabase for `client_`;
-  IBANSaveStrikeDatabase* GetIBANSaveStrikeDatabase();
+  // Returns the IbanSaveStrikeDatabase for `client_`;
+  IbanSaveStrikeDatabase* GetIbanSaveStrikeDatabase();
 
   // Called once the user makes a decision with respect to the local IBAN
   // offer-to-save-prompt. `nickname` is the nickname for the IBAN, which should
   // only be provided in the kAccepted case if the user entered a nickname.
   void OnUserDidDecideOnLocalSave(
-      AutofillClient::SaveIBANOfferUserDecision user_decision,
+      AutofillClient::SaveIbanOfferUserDecision user_decision,
       const absl::optional<std::u16string>& nickname = absl::nullopt);
 
   // The IBAN to be saved if local IBAN save is accepted. It will be set if
   // imported IBAN is not empty.
-  IBAN iban_save_candidate_;
+  Iban iban_save_candidate_;
 
   // The associated autofill client. Weak reference.
   const raw_ptr<AutofillClient> client_;
 
   // StrikeDatabase used to check whether to offer to save the IBAN or not.
-  std::unique_ptr<IBANSaveStrikeDatabase> iban_save_strike_database_;
+  std::unique_ptr<IbanSaveStrikeDatabase> iban_save_strike_database_;
 
   // May be null.
   raw_ptr<ObserverForTest> observer_for_testing_ = nullptr;
 
-  base::WeakPtrFactory<IBANSaveManager> weak_ptr_factory_{this};
+  base::WeakPtrFactory<IbanSaveManager> weak_ptr_factory_{this};
 };
 
 }  // namespace autofill

@@ -218,12 +218,12 @@ ChromeAutofillClient::GetAutocompleteHistoryManager() {
   return AutocompleteHistoryManagerFactory::GetForProfile(profile);
 }
 
-IBANManager* ChromeAutofillClient::GetIBANManager() {
+IbanManager* ChromeAutofillClient::GetIbanManager() {
   if (!base::FeatureList::IsEnabled(features::kAutofillFillIbanFields))
     return nullptr;
   Profile* profile =
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
-  return IBANManagerFactory::GetForProfile(profile);
+  return IbanManagerFactory::GetForProfile(profile);
 }
 
 MerchantPromoCodeManager* ChromeAutofillClient::GetMerchantPromoCodeManager() {
@@ -636,10 +636,10 @@ void ChromeAutofillClient::ShowLocalCardMigrationResults(
                                    delete_local_card_callback);
 }
 
-void ChromeAutofillClient::ConfirmSaveIBANLocally(
-    const IBAN& iban,
+void ChromeAutofillClient::ConfirmSaveIbanLocally(
+    const Iban& iban,
     bool should_show_prompt,
-    LocalSaveIBANPromptCallback callback) {
+    LocalSaveIbanPromptCallback callback) {
   // Do lazy initialization of IbanBubbleControllerImpl.
   IbanBubbleControllerImpl::CreateForWebContents(web_contents());
   IbanBubbleControllerImpl::FromWebContents(web_contents())

@@ -26,7 +26,7 @@ class SingleFieldFormFillRouter : public SingleFieldFormFiller {
  public:
   explicit SingleFieldFormFillRouter(
       AutocompleteHistoryManager* autocomplete_history_manager,
-      IBANManager* iban_manager,
+      IbanManager* iban_manager,
       MerchantPromoCodeManager* merchant_promo_code_manager);
   ~SingleFieldFormFillRouter() override;
   SingleFieldFormFillRouter(const SingleFieldFormFillRouter&) = delete;
@@ -66,7 +66,7 @@ class SingleFieldFormFillRouter : public SingleFieldFormFiller {
   base::WeakPtr<AutocompleteHistoryManager> autocomplete_history_manager_;
 
   // Handles autofilling IBAN fields (can be null for unsupported platforms).
-  base::WeakPtr<IBANManager> iban_manager_;
+  base::WeakPtr<IbanManager> iban_manager_;
 
   // Handles autofilling merchant promo code fields (can be null for unsupported
   // platforms).

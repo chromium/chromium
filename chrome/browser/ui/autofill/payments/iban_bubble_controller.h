@@ -14,7 +14,7 @@
 namespace autofill {
 
 class AutofillBubbleBase;
-class IBAN;
+class Iban;
 enum class IbanBubbleType;
 
 // Interface that exposes controller functionality to save and manage IBAN
@@ -40,7 +40,7 @@ class IbanBubbleController {
 
   // Returns the IBAN that will be saved in save bubble view or the IBAN that
   // has been saved in manage bubble view.
-  virtual const IBAN& GetIBAN() const = 0;
+  virtual const Iban& GetIban() const = 0;
 
   virtual AutofillBubbleBase* GetPaymentBubbleView() const = 0;
 

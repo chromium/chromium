@@ -114,7 +114,7 @@ class FormField {
   static constexpr float kBaseAddressParserScore = 1.1f;
   static constexpr float kBaseBirthdateParserScore = 1.05f;
   static constexpr float kBaseCreditCardParserScore = 1.0f;
-  static constexpr float kBaseIBANParserScore = 0.975f;
+  static constexpr float kBaseIbanParserScore = 0.975f;
   static constexpr float kBasePriceParserScore = 0.95f;
   static constexpr float kBaseNameParserScore = 0.9f;
   static constexpr float kBaseMerchantPromoCodeParserScore = 0.85f;

@@ -200,9 +200,9 @@ class PersonalDataManager : public KeyedService,
   // or an empty string otherwise.
   // Called when the user accepts the prompt to save the IBAN locally.
   // The function will sets the GUID of `imported_iban` to the one that matches
-  // it in `local_ibans_` so that UpdateIBAN() will be able to update the
+  // it in `local_ibans_` so that UpdateIban() will be able to update the
   // specific IBAN.
-  std::string OnAcceptedLocalIBANSave(IBAN& imported_iban);
+  std::string OnAcceptedLocalIbanSave(Iban& imported_iban);
 
   // Triggered when the user accepts saving a UPI ID. Stores the |upi_id| to
   // the database.
@@ -248,14 +248,14 @@ class PersonalDataManager : public KeyedService,
   // 1) IBAN saving must be enabled.
   // 2) No IBAN exists in `local_ibans_` which has the same guid as`iban`.
   // 3) Local database is available.
-  virtual std::string AddIBAN(const IBAN& iban);
+  virtual std::string AddIban(const Iban& iban);
 
   // Updates `iban` which already exists in the web database. This can only
   // be used on local ibans. Returns the guid of `iban` if the update is
   // successful, or an empty string otherwise.
   // This method assumes an IBAN exists; if not, it will be handled gracefully
   // by webdata backend.
-  virtual std::string UpdateIBAN(const IBAN& iban);
+  virtual std::string UpdateIban(const Iban& iban);
 
   // Adds |credit_card| to the web database as a local card.
   virtual void AddCreditCard(const CreditCard& credit_card);
@@ -300,7 +300,7 @@ class PersonalDataManager : public KeyedService,
   // Sets a server credit card for test.
   void AddServerCreditCardForTest(std::unique_ptr<CreditCard> credit_card);
 
-  void AddIBANForTest(std::unique_ptr<IBAN> iban) {
+  void AddIbanForTest(std::unique_ptr<Iban> iban) {
     local_ibans_.push_back(std::move(iban));
   }
 
@@ -315,9 +315,9 @@ class PersonalDataManager : public KeyedService,
   // TODO(1426498): rewrite tests that rely on this method to use Init instead.
   void SetSyncServiceForTest(syncer::SyncService* sync_service);
 
-  // Returns the iban with the specified |guid|, or nullptr if there is no iban
+  // Returns the IBAN with the specified |guid|, or nullptr if there is no IBAN
   // with the specified |guid|.
-  virtual IBAN* GetIBANByGUID(const std::string& guid);
+  virtual Iban* GetIbanByGUID(const std::string& guid);
 
   // Returns the credit card with the specified |guid|, or nullptr if there is
   // no credit card with the specified |guid|.
@@ -365,7 +365,7 @@ class PersonalDataManager : public KeyedService,
   virtual std::vector<CreditCard*> GetCreditCards() const;
 
   // Returns local IBANs.
-  virtual std::vector<IBAN*> GetLocalIBANs() const;
+  virtual std::vector<Iban*> GetLocalIbans() const;
 
   // Returns the Payments customer data. Returns nullptr if no data is present.
   virtual PaymentsCustomerData* GetPaymentsCustomerData() const;
@@ -551,8 +551,8 @@ class PersonalDataManager : public KeyedService,
   // Sets the value of the kAutofillHasSeenIban pref to true.
   void SetAutofillHasSeenIban();
 
-  // Returns the value of the AutofillIBANEnabled pref.
-  virtual bool IsAutofillIBANEnabled() const;
+  // Returns the value of the AutofillIbanEnabled pref.
+  virtual bool IsAutofillIbanEnabled() const;
 
   // Returns whether sync's integration with payments is on.
   virtual bool IsAutofillWalletImportEnabled() const;
@@ -752,7 +752,7 @@ class PersonalDataManager : public KeyedService,
   virtual void LoadCreditCardCloudTokenData();
 
   // Loads the saved IBANs from the web database.
-  virtual void LoadIBANs();
+  virtual void LoadIbans();
 
   // Loads the payments customer data from the web database.
   virtual void LoadPaymentsCustomerData();
@@ -828,8 +828,8 @@ class PersonalDataManager : public KeyedService,
   std::vector<std::unique_ptr<CreditCard>> local_credit_cards_;
   std::vector<std::unique_ptr<CreditCard>> server_credit_cards_;
 
-  // Cached versions of the local Ibans.
-  std::vector<std::unique_ptr<IBAN>> local_ibans_;
+  // Cached versions of the local IBANs.
+  std::vector<std::unique_ptr<Iban>> local_ibans_;
 
   // Cached UPI IDs.
   std::vector<std::string> upi_ids_;
@@ -888,7 +888,7 @@ class PersonalDataManager : public KeyedService,
 
   // Saves `imported_iban` to the WebDB if it exists. Returns the guid of
   // the new or updated IBAN, or an empty string if no IBAN was saved.
-  std::string SaveImportedIBAN(IBAN& imported_iban);
+  std::string SaveImportedIban(Iban& imported_iban);
 
   // Finds the country code that occurs most frequently among all profiles.
   // Prefers verified profiles over unverified ones.

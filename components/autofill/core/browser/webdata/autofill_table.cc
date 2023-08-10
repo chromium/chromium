@@ -222,7 +222,7 @@ constexpr std::string_view kServerCardMetadataTable = "server_card_metadata";
 // kUseDate = "use_date"
 // kBillingAddressId = "billing_address_id"
 
-constexpr std::string_view kIBANsTable = "ibans";
+constexpr std::string_view kIbansTable = "ibans";
 // kGuid = "guid"
 // kUseCount = "use_count"
 // kUseDate = "use_date"
@@ -658,7 +658,7 @@ void BindServerCvcToStatement(const ServerCvc& server_cvc,
   s->BindInt64(index++, server_cvc.last_updated_timestamp.ToTimeT());
 }
 
-void BindIBANToStatement(const IBAN& iban,
+void BindIbanToStatement(const Iban& iban,
                          sql::Statement* s,
                          const AutofillTableEncryptor& encryptor) {
   DCHECK(base::Uuid::ParseCaseInsensitive(iban.guid()).is_valid());
@@ -751,10 +751,10 @@ std::unique_ptr<ServerCvc> ServerCvcFromStatement(
       .last_updated_timestamp = base::Time::FromTimeT(s.ColumnInt64(2))});
 }
 
-std::unique_ptr<IBAN> IBANFromStatement(
+std::unique_ptr<Iban> IbanFromStatement(
     sql::Statement& s,
     const AutofillTableEncryptor& encryptor) {
-  auto iban = std::make_unique<IBAN>();
+  auto iban = std::make_unique<Iban>();
 
   int index = 0;
   iban->set_guid(s.ColumnString(index++));
@@ -1155,7 +1155,7 @@ WebDatabaseTable::TypeKey AutofillTable::GetTypeKey() const {
 }
 
 bool AutofillTable::CreateTablesIfNecessary() {
-  return InitMainTable() && InitCreditCardsTable() && InitIBANsTable() &&
+  return InitMainTable() && InitCreditCardsTable() && InitIbansTable() &&
          InitMaskedCreditCardsTable() && InitUnmaskedCreditCardsTable() &&
          InitServerCardMetadataTable() && InitServerAddressesTable() &&
          InitServerAddressMetadataTable() && InitAutofillSyncMetadataTable() &&
@@ -1242,10 +1242,10 @@ bool AutofillTable::MigrateToVersion(int version,
       return MigrateToVersion104AddProductDescriptionColumn();
     case 105:
       *update_compatible_version = false;
-      return MigrateToVersion105AddAutofillIBANTable();
+      return MigrateToVersion105AddAutofillIbanTable();
     case 106:
       *update_compatible_version = true;
-      return MigrateToVersion106RecreateAutofillIBANTable();
+      return MigrateToVersion106RecreateAutofillIbanTable();
     case 107:
       *update_compatible_version = false;
       return MigrateToVersion107AddContactInfoTables();
@@ -1916,11 +1916,11 @@ void AutofillTable::SetServerProfiles(
   SetServerProfilesAndMetadata(profiles, /*update_metadata=*/true);
 }
 
-bool AutofillTable::AddIBAN(const IBAN& iban) {
+bool AutofillTable::AddIban(const Iban& iban) {
   sql::Statement s;
-  InsertBuilder(db_, s, kIBANsTable,
+  InsertBuilder(db_, s, kIbansTable,
                 {kGuid, kUseCount, kUseDate, kValueEncrypted, kNickname});
-  BindIBANToStatement(iban, &s, *autofill_table_encryptor_);
+  BindIbanToStatement(iban, &s, *autofill_table_encryptor_);
   if (!s.Run())
     return false;
 
@@ -1928,10 +1928,10 @@ bool AutofillTable::AddIBAN(const IBAN& iban) {
   return true;
 }
 
-bool AutofillTable::UpdateIBAN(const IBAN& iban) {
+bool AutofillTable::UpdateIban(const Iban& iban) {
   DCHECK(base::Uuid::ParseCaseInsensitive(iban.guid()).is_valid());
 
-  std::unique_ptr<IBAN> old_iban = GetIBAN(iban.guid());
+  std::unique_ptr<Iban> old_iban = GetIban(iban.guid());
   if (!old_iban) {
     return false;
   }
@@ -1941,25 +1941,25 @@ bool AutofillTable::UpdateIBAN(const IBAN& iban) {
   }
 
   sql::Statement s;
-  UpdateBuilder(db_, s, kIBANsTable,
+  UpdateBuilder(db_, s, kIbansTable,
                 {kGuid, kUseCount, kUseDate, kValueEncrypted, kNickname},
                 "guid=?1");
-  BindIBANToStatement(iban, &s, *autofill_table_encryptor_);
+  BindIbanToStatement(iban, &s, *autofill_table_encryptor_);
 
   bool result = s.Run();
   DCHECK_GT(db_->GetLastChangeCount(), 0);
   return result;
 }
 
-bool AutofillTable::RemoveIBAN(const std::string& guid) {
+bool AutofillTable::RemoveIban(const std::string& guid) {
   DCHECK(base::Uuid::ParseCaseInsensitive(guid).is_valid());
-  return DeleteWhereColumnEq(db_, kIBANsTable, kGuid, guid);
+  return DeleteWhereColumnEq(db_, kIbansTable, kGuid, guid);
 }
 
-std::unique_ptr<IBAN> AutofillTable::GetIBAN(const std::string& guid) {
+std::unique_ptr<Iban> AutofillTable::GetIban(const std::string& guid) {
   DCHECK(base::Uuid::ParseCaseInsensitive(guid).is_valid());
   sql::Statement s;
-  SelectBuilder(db_, s, kIBANsTable,
+  SelectBuilder(db_, s, kIbansTable,
                 {kGuid, kUseCount, kUseDate, kValueEncrypted, kNickname},
                 "WHERE guid = ?");
   s.BindString(0, guid);
@@ -1967,19 +1967,19 @@ std::unique_ptr<IBAN> AutofillTable::GetIBAN(const std::string& guid) {
   if (!s.Step())
     return nullptr;
 
-  return IBANFromStatement(s, *autofill_table_encryptor_);
+  return IbanFromStatement(s, *autofill_table_encryptor_);
 }
 
-bool AutofillTable::GetIBANs(std::vector<std::unique_ptr<IBAN>>* ibans) {
+bool AutofillTable::GetIbans(std::vector<std::unique_ptr<Iban>>* ibans) {
   DCHECK(ibans);
   ibans->clear();
 
   sql::Statement s;
-  SelectBuilder(db_, s, kIBANsTable, {kGuid}, "ORDER BY use_date DESC, guid");
+  SelectBuilder(db_, s, kIbansTable, {kGuid}, "ORDER BY use_date DESC, guid");
 
   while (s.Step()) {
     std::string guid = s.ColumnString(0);
-    std::unique_ptr<IBAN> iban = GetIBAN(guid);
+    std::unique_ptr<Iban> iban = GetIban(guid);
     if (!iban)
       return false;
     ibans->push_back(std::move(iban));
@@ -3319,8 +3319,8 @@ bool AutofillTable::MigrateToVersion104AddProductDescriptionColumn() {
   return transaction.Commit();
 }
 
-bool AutofillTable::MigrateToVersion105AddAutofillIBANTable() {
-  return CreateTable(db_, kIBANsTable,
+bool AutofillTable::MigrateToVersion105AddAutofillIbanTable() {
+  return CreateTable(db_, kIbansTable,
                      {{kGuid, "VARCHAR"},
                       {kUseCount, "INTEGER NOT NULL DEFAULT 0"},
                       {kUseDate, "INTEGER NOT NULL DEFAULT 0"},
@@ -3328,10 +3328,10 @@ bool AutofillTable::MigrateToVersion105AddAutofillIBANTable() {
                       {kNickname, "VARCHAR"}});
 }
 
-bool AutofillTable::MigrateToVersion106RecreateAutofillIBANTable() {
+bool AutofillTable::MigrateToVersion106RecreateAutofillIbanTable() {
   sql::Transaction transaction(db_);
-  return transaction.Begin() && DropTable(db_, kIBANsTable) &&
-         CreateTable(db_, kIBANsTable,
+  return transaction.Begin() && DropTable(db_, kIbansTable) &&
+         CreateTable(db_, kIbansTable,
                      {{kGuid, "VARCHAR PRIMARY KEY"},
                       {kUseCount, "INTEGER NOT NULL DEFAULT 0"},
                       {kUseDate, "INTEGER NOT NULL DEFAULT 0"},
@@ -3459,7 +3459,7 @@ bool AutofillTable::MigrateToVersion115EncryptIbanValue() {
     return false;
   }
   sql::Statement s;
-  SelectBuilder(db_, s, kIBANsTable, {kGuid, kValue});
+  SelectBuilder(db_, s, kIbansTable, {kGuid, kValue});
   std::vector<std::pair<std::string, std::u16string>> iban_guid_to_value_pairs;
   while (s.Step()) {
     iban_guid_to_value_pairs.emplace_back(s.ColumnString(0),
@@ -3470,7 +3470,7 @@ bool AutofillTable::MigrateToVersion115EncryptIbanValue() {
   }
 
   for (const auto& [guid, value] : iban_guid_to_value_pairs) {
-    UpdateBuilder(db_, s, kIBANsTable, {kGuid, kValue}, "guid=?1");
+    UpdateBuilder(db_, s, kIbansTable, {kGuid, kValue}, "guid=?1");
     int index = 0;
     s.BindString(index++, guid);
     BindEncryptedValueToColumn(&s, index++, value, *autofill_table_encryptor_);
@@ -3480,7 +3480,7 @@ bool AutofillTable::MigrateToVersion115EncryptIbanValue() {
   }
 
   return db_->Execute(
-             base::StrCat({"ALTER TABLE ", kIBANsTable, " RENAME COLUMN ",
+             base::StrCat({"ALTER TABLE ", kIbansTable, " RENAME COLUMN ",
                            kValue, " TO ", kValueEncrypted})
                  .c_str()) &&
          transaction.Commit();
@@ -3771,8 +3771,8 @@ bool AutofillTable::InitCreditCardsTable() {
                                  {kNickname, "VARCHAR"}});
 }
 
-bool AutofillTable::InitIBANsTable() {
-  return CreateTableIfNotExists(db_, kIBANsTable,
+bool AutofillTable::InitIbansTable() {
+  return CreateTableIfNotExists(db_, kIbansTable,
                                 {{kGuid, "VARCHAR PRIMARY KEY"},
                                  {kUseCount, "INTEGER NOT NULL DEFAULT 0"},
                                  {kUseDate, "INTEGER NOT NULL DEFAULT 0"},

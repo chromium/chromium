@@ -19,9 +19,9 @@
 
 namespace autofill {
 
-class IBANSaveManagerTest : public testing::Test {
+class IbanSaveManagerTest : public testing::Test {
  public:
-  IBANSaveManagerTest() {
+  IbanSaveManagerTest() {
     autofill_client_.SetPrefs(test::PrefServiceForTesting());
     autofill_client_.set_personal_data_manager(
         std::make_unique<TestPersonalDataManager>());
@@ -29,7 +29,7 @@ class IBANSaveManagerTest : public testing::Test {
         std::make_unique<TestStrikeDatabase>();
     strike_database_ = test_strike_database.get();
     autofill_client_.set_test_strike_database(std::move(test_strike_database));
-    prefs::SetAutofillIBANEnabled(autofill_client_.GetPrefs(), true);
+    prefs::SetAutofillIbanEnabled(autofill_client_.GetPrefs(), true);
     personal_data().Init(/*profile_database=*/nullptr,
                          /*account_database=*/nullptr,
                          /*pref_service=*/autofill_client_.GetPrefs(),
@@ -39,10 +39,10 @@ class IBANSaveManagerTest : public testing::Test {
                          /*sync_service=*/nullptr,
                          /*strike_database=*/nullptr,
                          /*image_fetcher=*/nullptr);
-    iban_save_manager_ = std::make_unique<IBANSaveManager>(&autofill_client_);
+    iban_save_manager_ = std::make_unique<IbanSaveManager>(&autofill_client_);
   }
 
-  IBANSaveManager& GetIBANSaveManager() { return *iban_save_manager_; }
+  IbanSaveManager& GetIbanSaveManager() { return *iban_save_manager_; }
 
  protected:
   TestPersonalDataManager& personal_data() {
@@ -54,101 +54,101 @@ class IBANSaveManagerTest : public testing::Test {
   test::AutofillUnitTestEnvironment autofill_test_environment_;
   TestAutofillClient autofill_client_;
 
-  std::unique_ptr<IBANSaveManager> iban_save_manager_;
+  std::unique_ptr<IbanSaveManager> iban_save_manager_;
   raw_ptr<TestStrikeDatabase> strike_database_;
 };
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-TEST_F(IBANSaveManagerTest, AttemptToOfferIBANLocalSave_ValidIBAN) {
-  EXPECT_TRUE(GetIBANSaveManager().AttemptToOfferIBANLocalSave(
-      autofill::test::GetIBAN()));
+TEST_F(IbanSaveManagerTest, AttemptToOfferIbanLocalSave_ValidIban) {
+  EXPECT_TRUE(GetIbanSaveManager().AttemptToOfferIbanLocalSave(
+      autofill::test::GetIban()));
 }
 
-TEST_F(IBANSaveManagerTest, OnUserDidDecideOnLocalSave_Accepted) {
-  IBAN iban = autofill::test::GetIBAN();
-  EXPECT_TRUE(GetIBANSaveManager().AttemptToOfferIBANLocalSave(iban));
+TEST_F(IbanSaveManagerTest, OnUserDidDecideOnLocalSave_Accepted) {
+  Iban iban = autofill::test::GetIban();
+  EXPECT_TRUE(GetIbanSaveManager().AttemptToOfferIbanLocalSave(iban));
 
-  GetIBANSaveManager().OnUserDidDecideOnLocalSaveForTesting(
-      AutofillClient::SaveIBANOfferUserDecision::kAccepted,
+  GetIbanSaveManager().OnUserDidDecideOnLocalSaveForTesting(
+      AutofillClient::SaveIbanOfferUserDecision::kAccepted,
       u"  My teacher's IBAN ");
-  const std::vector<IBAN*> ibans = personal_data().GetLocalIBANs();
+  const std::vector<Iban*> ibans = personal_data().GetLocalIbans();
 
   // Verify IBAN has been successfully updated with the new nickname on accept.
   EXPECT_EQ(ibans.size(), 1U);
-  GetIBANSaveManager().OnUserDidDecideOnLocalSaveForTesting(
-      AutofillClient::SaveIBANOfferUserDecision::kAccepted,
+  GetIbanSaveManager().OnUserDidDecideOnLocalSaveForTesting(
+      AutofillClient::SaveIbanOfferUserDecision::kAccepted,
       u"  My teacher's IBAN ");
   EXPECT_EQ(ibans[0]->value(), iban.value());
 }
 
-TEST_F(IBANSaveManagerTest, OnUserDidDecideOnLocalSave_Declined) {
-  EXPECT_TRUE(iban_save_manager_->AttemptToOfferIBANLocalSave(
-      autofill::test::GetIBAN()));
-  EXPECT_TRUE(personal_data().GetLocalIBANs().empty());
+TEST_F(IbanSaveManagerTest, OnUserDidDecideOnLocalSave_Declined) {
+  EXPECT_TRUE(iban_save_manager_->AttemptToOfferIbanLocalSave(
+      autofill::test::GetIban()));
+  EXPECT_TRUE(personal_data().GetLocalIbans().empty());
 
-  GetIBANSaveManager().OnUserDidDecideOnLocalSaveForTesting(
-      AutofillClient::SaveIBANOfferUserDecision::kDeclined);
-  const std::vector<IBAN*> ibans = personal_data().GetLocalIBANs();
+  GetIbanSaveManager().OnUserDidDecideOnLocalSaveForTesting(
+      AutofillClient::SaveIbanOfferUserDecision::kDeclined);
+  const std::vector<Iban*> ibans = personal_data().GetLocalIbans();
 
-  EXPECT_TRUE(personal_data().GetLocalIBANs().empty());
+  EXPECT_TRUE(personal_data().GetLocalIbans().empty());
 }
 
-TEST_F(IBANSaveManagerTest, OnUserDidDecideOnLocalSave_Ignored) {
-  EXPECT_TRUE(iban_save_manager_->AttemptToOfferIBANLocalSave(
-      autofill::test::GetIBAN()));
-  EXPECT_TRUE(personal_data().GetLocalIBANs().empty());
+TEST_F(IbanSaveManagerTest, OnUserDidDecideOnLocalSave_Ignored) {
+  EXPECT_TRUE(iban_save_manager_->AttemptToOfferIbanLocalSave(
+      autofill::test::GetIban()));
+  EXPECT_TRUE(personal_data().GetLocalIbans().empty());
 
-  GetIBANSaveManager().OnUserDidDecideOnLocalSaveForTesting(
-      AutofillClient::SaveIBANOfferUserDecision::kIgnored);
-  const std::vector<IBAN*> ibans = personal_data().GetLocalIBANs();
+  GetIbanSaveManager().OnUserDidDecideOnLocalSaveForTesting(
+      AutofillClient::SaveIbanOfferUserDecision::kIgnored);
+  const std::vector<Iban*> ibans = personal_data().GetLocalIbans();
 
-  EXPECT_TRUE(personal_data().GetLocalIBANs().empty());
+  EXPECT_TRUE(personal_data().GetLocalIbans().empty());
 }
 
-TEST_F(IBANSaveManagerTest, LocallySaveIBAN_NotEnoughStrikesShouldOfferToSave) {
-  IBAN iban = autofill::test::GetIBAN();
+TEST_F(IbanSaveManagerTest, LocallySaveIban_NotEnoughStrikesShouldOfferToSave) {
+  Iban iban = autofill::test::GetIban();
   const std::string partial_iban_hash =
-      IBANSaveManager::GetPartialIbanHashString(
+      IbanSaveManager::GetPartialIbanHashString(
           base::UTF16ToUTF8(iban.value()));
 
-  IBANSaveStrikeDatabase iban_save_strike_database(strike_database_);
+  IbanSaveStrikeDatabase iban_save_strike_database(strike_database_);
   iban_save_strike_database.AddStrike(partial_iban_hash);
 
   // Verify `kIbanValue` has been successfully added to the strike database.
   EXPECT_EQ(1, iban_save_strike_database.GetStrikes(partial_iban_hash));
-  EXPECT_TRUE(GetIBANSaveManager().AttemptToOfferIBANLocalSave(iban));
+  EXPECT_TRUE(GetIbanSaveManager().AttemptToOfferIbanLocalSave(iban));
 }
 
-TEST_F(IBANSaveManagerTest, LocallySaveIBAN_MaxStrikesShouldNotOfferToSave) {
-  IBAN iban = autofill::test::GetIBAN();
+TEST_F(IbanSaveManagerTest, LocallySaveIban_MaxStrikesShouldNotOfferToSave) {
+  Iban iban = autofill::test::GetIban();
   const std::string partial_iban_hash =
-      IBANSaveManager::GetPartialIbanHashString(
+      IbanSaveManager::GetPartialIbanHashString(
           base::UTF16ToUTF8(iban.value()));
-  IBANSaveStrikeDatabase iban_save_strike_database(strike_database_);
+  IbanSaveStrikeDatabase iban_save_strike_database(strike_database_);
   iban_save_strike_database.AddStrikes(
       iban_save_strike_database.GetMaxStrikesLimit(), partial_iban_hash);
 
   EXPECT_EQ(iban_save_strike_database.GetMaxStrikesLimit(),
             iban_save_strike_database.GetStrikes(partial_iban_hash));
-  EXPECT_FALSE(GetIBANSaveManager().AttemptToOfferIBANLocalSave(iban));
+  EXPECT_FALSE(GetIbanSaveManager().AttemptToOfferIbanLocalSave(iban));
 }
 
-TEST_F(IBANSaveManagerTest, OnUserDidDecideOnLocalSave_Accepted_ClearsStrikes) {
-  IBAN iban = autofill::test::GetIBAN();
+TEST_F(IbanSaveManagerTest, OnUserDidDecideOnLocalSave_Accepted_ClearsStrikes) {
+  Iban iban = autofill::test::GetIban();
   const std::string partial_iban_hash =
-      IBANSaveManager::GetPartialIbanHashString(
+      IbanSaveManager::GetPartialIbanHashString(
           base::UTF16ToUTF8(iban.value()));
 
-  EXPECT_TRUE(GetIBANSaveManager().AttemptToOfferIBANLocalSave(iban));
+  EXPECT_TRUE(GetIbanSaveManager().AttemptToOfferIbanLocalSave(iban));
 
-  IBANSaveStrikeDatabase iban_save_strike_database(strike_database_);
+  IbanSaveStrikeDatabase iban_save_strike_database(strike_database_);
   iban_save_strike_database.AddStrike(partial_iban_hash);
 
   // Verify partial hashed value of `partial_iban_hash` has been
   // successfully added to the strike database.
   EXPECT_EQ(1, iban_save_strike_database.GetStrikes(partial_iban_hash));
-  GetIBANSaveManager().OnUserDidDecideOnLocalSaveForTesting(
-      AutofillClient::SaveIBANOfferUserDecision::kAccepted,
+  GetIbanSaveManager().OnUserDidDecideOnLocalSaveForTesting(
+      AutofillClient::SaveIbanOfferUserDecision::kAccepted,
       u"My teacher's IBAN");
 
   // Verify partial hashed value of `partial_iban_hash` has been
@@ -156,20 +156,20 @@ TEST_F(IBANSaveManagerTest, OnUserDidDecideOnLocalSave_Accepted_ClearsStrikes) {
   EXPECT_EQ(0, iban_save_strike_database.GetStrikes(partial_iban_hash));
 }
 
-TEST_F(IBANSaveManagerTest, OnUserDidDecideOnLocalSave_Declined_AddsStrike) {
-  IBAN iban = autofill::test::GetIBAN();
+TEST_F(IbanSaveManagerTest, OnUserDidDecideOnLocalSave_Declined_AddsStrike) {
+  Iban iban = autofill::test::GetIban();
   const std::string partial_iban_hash =
-      IBANSaveManager::GetPartialIbanHashString(
+      IbanSaveManager::GetPartialIbanHashString(
           base::UTF16ToUTF8(iban.value()));
 
-  EXPECT_TRUE(GetIBANSaveManager().AttemptToOfferIBANLocalSave(iban));
+  EXPECT_TRUE(GetIbanSaveManager().AttemptToOfferIbanLocalSave(iban));
 
-  IBANSaveStrikeDatabase iban_save_strike_database(strike_database_);
+  IbanSaveStrikeDatabase iban_save_strike_database(strike_database_);
 
   EXPECT_EQ(0, iban_save_strike_database.GetStrikes(partial_iban_hash));
 
-  GetIBANSaveManager().OnUserDidDecideOnLocalSaveForTesting(
-      AutofillClient::SaveIBANOfferUserDecision::kDeclined,
+  GetIbanSaveManager().OnUserDidDecideOnLocalSaveForTesting(
+      AutofillClient::SaveIbanOfferUserDecision::kDeclined,
       u"My teacher's IBAN");
 
   // Verify partial hashed value of `partial_iban_hash` has been
@@ -177,20 +177,20 @@ TEST_F(IBANSaveManagerTest, OnUserDidDecideOnLocalSave_Declined_AddsStrike) {
   EXPECT_EQ(1, iban_save_strike_database.GetStrikes(partial_iban_hash));
 }
 
-TEST_F(IBANSaveManagerTest, OnUserDidDecideOnLocalSave_Ignored_AddsStrike) {
-  IBAN iban = autofill::test::GetIBAN();
+TEST_F(IbanSaveManagerTest, OnUserDidDecideOnLocalSave_Ignored_AddsStrike) {
+  Iban iban = autofill::test::GetIban();
   const std::string partial_iban_hash =
-      IBANSaveManager::GetPartialIbanHashString(
+      IbanSaveManager::GetPartialIbanHashString(
           base::UTF16ToUTF8(iban.value()));
 
-  EXPECT_TRUE(GetIBANSaveManager().AttemptToOfferIBANLocalSave(iban));
+  EXPECT_TRUE(GetIbanSaveManager().AttemptToOfferIbanLocalSave(iban));
 
-  IBANSaveStrikeDatabase iban_save_strike_database(strike_database_);
+  IbanSaveStrikeDatabase iban_save_strike_database(strike_database_);
 
   EXPECT_EQ(0, iban_save_strike_database.GetStrikes(partial_iban_hash));
 
-  GetIBANSaveManager().OnUserDidDecideOnLocalSaveForTesting(
-      AutofillClient::SaveIBANOfferUserDecision::kDeclined,
+  GetIbanSaveManager().OnUserDidDecideOnLocalSaveForTesting(
+      AutofillClient::SaveIbanOfferUserDecision::kDeclined,
       u"My teacher's IBAN");
 
   // Verify partial hashed value of `partial_iban_hash` has been
@@ -198,45 +198,45 @@ TEST_F(IBANSaveManagerTest, OnUserDidDecideOnLocalSave_Ignored_AddsStrike) {
   EXPECT_EQ(1, iban_save_strike_database.GetStrikes(partial_iban_hash));
 }
 
-TEST_F(IBANSaveManagerTest, LocallySaveIBAN_AttemptToOfferIBANLocalSave) {
-  EXPECT_TRUE(GetIBANSaveManager().AttemptToOfferIBANLocalSave(
-      autofill::test::GetIBAN()));
-  EXPECT_TRUE(autofill_client_.ConfirmSaveIBANLocallyWasCalled());
+TEST_F(IbanSaveManagerTest, LocallySaveIban_AttemptToOfferIbanLocalSave) {
+  EXPECT_TRUE(GetIbanSaveManager().AttemptToOfferIbanLocalSave(
+      autofill::test::GetIban()));
+  EXPECT_TRUE(autofill_client_.ConfirmSaveIbanLocallyWasCalled());
 }
 
-TEST_F(IBANSaveManagerTest,
-       LocallySaveIBAN_MaxStrikesShouldNotOfferToSave_Metrics) {
+TEST_F(IbanSaveManagerTest,
+       LocallySaveIban_MaxStrikesShouldNotOfferToSave_Metrics) {
   base::HistogramTester histogram_tester;
-  IBAN iban(base::Uuid::GenerateRandomV4().AsLowercaseString());
+  Iban iban(base::Uuid::GenerateRandomV4().AsLowercaseString());
   iban.set_value(base::UTF8ToUTF16(std::string(test::kIbanValue)));
-  IBANSaveStrikeDatabase iban_save_strike_database(strike_database_);
+  IbanSaveStrikeDatabase iban_save_strike_database(strike_database_);
   iban_save_strike_database.AddStrikes(
       iban_save_strike_database.GetMaxStrikesLimit(),
-      IBANSaveManager::GetPartialIbanHashString(
+      IbanSaveManager::GetPartialIbanHashString(
           test::GetStrippedValue(test::kIbanValue)));
 
   EXPECT_EQ(iban_save_strike_database.GetMaxStrikesLimit(),
             iban_save_strike_database.GetStrikes(
-                IBANSaveManager::GetPartialIbanHashString(
+                IbanSaveManager::GetPartialIbanHashString(
                     test::GetStrippedValue(test::kIbanValue))));
-  EXPECT_FALSE(GetIBANSaveManager().AttemptToOfferIBANLocalSave(iban));
+  EXPECT_FALSE(GetIbanSaveManager().AttemptToOfferIbanLocalSave(iban));
   histogram_tester.ExpectBucketCount(
       "Autofill.StrikeDatabase.IbanSaveNotOfferedDueToMaxStrikes",
       AutofillMetrics::SaveTypeMetric::LOCAL, 1);
 }
 
-TEST_F(IBANSaveManagerTest, StrikesPresentWhenIBANSaved_Local) {
+TEST_F(IbanSaveManagerTest, StrikesPresentWhenIbanSaved_Local) {
   base::HistogramTester histogram_tester;
-  IBAN iban(base::Uuid::GenerateRandomV4().AsLowercaseString());
+  Iban iban(base::Uuid::GenerateRandomV4().AsLowercaseString());
   iban.set_value(base::UTF8ToUTF16(std::string(test::kIbanValue)));
-  IBANSaveStrikeDatabase iban_save_strike_database(strike_database_);
-  iban_save_strike_database.AddStrike(IBANSaveManager::GetPartialIbanHashString(
+  IbanSaveStrikeDatabase iban_save_strike_database(strike_database_);
+  iban_save_strike_database.AddStrike(IbanSaveManager::GetPartialIbanHashString(
       test::GetStrippedValue(test::kIbanValue)));
 
-  EXPECT_TRUE(GetIBANSaveManager().AttemptToOfferIBANLocalSave(
-      autofill::test::GetIBAN()));
-  GetIBANSaveManager().OnUserDidDecideOnLocalSaveForTesting(
-      AutofillClient::SaveIBANOfferUserDecision::kAccepted,
+  EXPECT_TRUE(GetIbanSaveManager().AttemptToOfferIbanLocalSave(
+      autofill::test::GetIban()));
+  GetIbanSaveManager().OnUserDidDecideOnLocalSaveForTesting(
+      AutofillClient::SaveIbanOfferUserDecision::kAccepted,
       u"My teacher's IBAN");
 
   histogram_tester.ExpectBucketCount(

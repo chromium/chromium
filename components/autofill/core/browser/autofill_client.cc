@@ -58,7 +58,7 @@ AutofillOptimizationGuide* AutofillClient::GetAutofillOptimizationGuide()
   return nullptr;
 }
 
-IBANManager* AutofillClient::GetIBANManager() {
+IbanManager* AutofillClient::GetIbanManager() {
   return nullptr;
 }
 
@@ -69,7 +69,7 @@ MerchantPromoCodeManager* AutofillClient::GetMerchantPromoCodeManager() {
 std::unique_ptr<SingleFieldFormFillRouter>
 AutofillClient::CreateSingleFieldFormFillRouter() {
   return std::make_unique<SingleFieldFormFillRouter>(
-      GetAutocompleteHistoryManager(), GetIBANManager(),
+      GetAutocompleteHistoryManager(), GetIbanManager(),
       GetMerchantPromoCodeManager());
 }
 

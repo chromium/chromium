@@ -35,7 +35,7 @@ class AutofillWebDataBackendImpl;
 class AutofillWebDataServiceObserverOnDBSequence;
 class AutofillWebDataServiceObserverOnUISequence;
 class CreditCard;
-class IBAN;
+class Iban;
 
 // API for Autofill web data.
 class AutofillWebDataService : public WebDataServiceBase {
@@ -119,20 +119,20 @@ class AutofillWebDataService : public WebDataServiceBase {
           change_cb);
 
   // Schedules a task to add IBAN to the web database.
-  void AddIBAN(const IBAN& iban);
+  void AddIban(const Iban& iban);
 
   // Initiates the request for local IBANs. The method
   // OnWebDataServiceRequestDone of |consumer| gets called when the request is
   // finished, with the IBAN included in the argument |result|. The consumer
   // owns the IBAN.
-  WebDataServiceBase::Handle GetIBANs(WebDataServiceConsumer* consumer);
+  WebDataServiceBase::Handle GetIbans(WebDataServiceConsumer* consumer);
 
   // Schedules a task to update iban in the web database.
-  void UpdateIBAN(const IBAN& iban);
+  void UpdateIban(const Iban& iban);
 
   // Schedules a task to remove an IBAN from the web database.
   // |guid| is the identifier of the IBAN to remove.
-  void RemoveIBAN(const std::string& guid);
+  void RemoveIban(const std::string& guid);
 
   // Schedules a task to add credit card to the web database.
   void AddCreditCard(const CreditCard& credit_card);

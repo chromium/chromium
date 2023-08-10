@@ -215,29 +215,29 @@ void AutofillWebDataService::AddFullServerCreditCard(
                      autofill_backend_, credit_card));
 }
 
-void AutofillWebDataService::AddIBAN(const IBAN& iban) {
+void AutofillWebDataService::AddIban(const Iban& iban) {
   wdbs_->ScheduleDBTask(FROM_HERE,
-                        base::BindOnce(&AutofillWebDataBackendImpl::AddIBAN,
+                        base::BindOnce(&AutofillWebDataBackendImpl::AddIban,
                                        autofill_backend_, iban));
 }
 
-WebDataServiceBase::Handle AutofillWebDataService::GetIBANs(
+WebDataServiceBase::Handle AutofillWebDataService::GetIbans(
     WebDataServiceConsumer* consumer) {
   return wdbs_->ScheduleDBTaskWithResult(
       FROM_HERE,
-      base::BindOnce(&AutofillWebDataBackendImpl::GetIBANs, autofill_backend_),
+      base::BindOnce(&AutofillWebDataBackendImpl::GetIbans, autofill_backend_),
       consumer);
 }
 
-void AutofillWebDataService::UpdateIBAN(const IBAN& iban) {
+void AutofillWebDataService::UpdateIban(const Iban& iban) {
   wdbs_->ScheduleDBTask(FROM_HERE,
-                        base::BindOnce(&AutofillWebDataBackendImpl::UpdateIBAN,
+                        base::BindOnce(&AutofillWebDataBackendImpl::UpdateIban,
                                        autofill_backend_, iban));
 }
 
-void AutofillWebDataService::RemoveIBAN(const std::string& guid) {
+void AutofillWebDataService::RemoveIban(const std::string& guid) {
   wdbs_->ScheduleDBTask(FROM_HERE,
-                        base::BindOnce(&AutofillWebDataBackendImpl::RemoveIBAN,
+                        base::BindOnce(&AutofillWebDataBackendImpl::RemoveIban,
                                        autofill_backend_, guid));
 }
 

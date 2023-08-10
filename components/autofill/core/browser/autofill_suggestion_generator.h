@@ -34,7 +34,7 @@ class AutofillType;
 class CreditCard;
 struct FormFieldData;
 class FormStructure;
-class IBAN;
+class Iban;
 class PersonalDataManager;
 
 // Helper class to generate Autofill suggestions, such as for credit card and
@@ -100,8 +100,8 @@ class AutofillSuggestionGenerator {
       bool suppress_disused_cards);
 
   // Generates suggestions for all available IBANs.
-  static std::vector<Suggestion> GetSuggestionsForIBANs(
-      const std::vector<const IBAN*>& ibans);
+  static std::vector<Suggestion> GetSuggestionsForIbans(
+      const std::vector<const Iban*>& ibans);
 
   // Converts the vector of promo code offers that is passed in to a vector of
   // suggestions that can be displayed to the user for a promo code field.

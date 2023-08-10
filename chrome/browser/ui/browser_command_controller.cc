@@ -623,7 +623,7 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
       SaveCreditCard(browser_);
       break;
     case IDC_SAVE_IBAN_FOR_PAGE:
-      SaveIBAN(browser_);
+      SaveIban(browser_);
       break;
     case IDC_AUTOFILL_MANDATORY_REAUTH:
       ShowMandatoryReauthOptInPrompt(browser_);

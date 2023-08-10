@@ -221,7 +221,7 @@ void FormField::ParseSingleFieldForms(
 
   // IBAN pass.
   if (base::FeatureList::IsEnabled(features::kAutofillParseIBANFields)) {
-    ParseFormFieldsPass(IBANField::Parse, processed_fields, field_candidates,
+    ParseFormFieldsPass(IbanField::Parse, processed_fields, field_candidates,
                         page_language, pattern_source, log_manager);
   }
 }

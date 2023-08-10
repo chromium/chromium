@@ -176,26 +176,26 @@ constexpr char16_t kCapitalizedIbanPattern[] =
 constexpr char16_t kEllipsisOneDot = u'\u2022';
 constexpr char16_t kEllipsisOneSpace = u'\u2006';
 
-IBAN::IBAN(const std::string& guid) : AutofillDataModel(guid) {}
+Iban::Iban(const std::string& guid) : AutofillDataModel(guid) {}
 
-IBAN::IBAN() : IBAN(base::Uuid::GenerateRandomV4().AsLowercaseString()) {}
+Iban::Iban() : Iban(base::Uuid::GenerateRandomV4().AsLowercaseString()) {}
 
-IBAN::IBAN(const IBAN& iban) : IBAN() {
+Iban::Iban(const Iban& iban) : Iban() {
   operator=(iban);
 }
 
-IBAN::~IBAN() = default;
+Iban::~Iban() = default;
 
-IBAN& IBAN::operator=(const IBAN& iban) = default;
+Iban& Iban::operator=(const Iban& iban) = default;
 
-AutofillMetadata IBAN::GetMetadata() const {
+AutofillMetadata Iban::GetMetadata() const {
   AutofillMetadata metadata = AutofillDataModel::GetMetadata();
   metadata.id = guid();
   return metadata;
 }
 
 // static
-bool IBAN::IsValid(const std::u16string& value) {
+bool Iban::IsValid(const std::u16string& value) {
   std::u16string iban_value = RemoveIbanSeparators(value);
   iban_value = base::i18n::ToUpper(iban_value);
   // IBANs must be at least 16 digits and at most 33 digits long.
@@ -221,21 +221,21 @@ bool IBAN::IsValid(const std::u16string& value) {
 }
 
 // static
-bool IBAN::IsIbanApplicableInCountry(const std::string& country_code) {
+bool Iban::IsIbanApplicableInCountry(const std::string& country_code) {
   auto* it = kCountryToIbanLength.find(country_code);
   return it != kCountryToIbanLength.end();
 }
 
-bool IBAN::SetMetadata(const AutofillMetadata& metadata) {
+bool Iban::SetMetadata(const AutofillMetadata& metadata) {
   // Make sure the ids match.
   return metadata.id != guid() && AutofillDataModel::SetMetadata(metadata);
 }
 
-bool IBAN::IsDeletable() const {
+bool Iban::IsDeletable() const {
   return false;
 }
 
-std::u16string IBAN::GetRawInfo(ServerFieldType type) const {
+std::u16string Iban::GetRawInfo(ServerFieldType type) const {
   if (type == IBAN_VALUE) {
     return value_;
   }
@@ -244,7 +244,7 @@ std::u16string IBAN::GetRawInfo(ServerFieldType type) const {
   return std::u16string();
 }
 
-void IBAN::SetRawInfoWithVerificationStatus(ServerFieldType type,
+void Iban::SetRawInfoWithVerificationStatus(ServerFieldType type,
                                             const std::u16string& value,
                                             VerificationStatus status) {
   if (type == IBAN_VALUE) {
@@ -254,17 +254,17 @@ void IBAN::SetRawInfoWithVerificationStatus(ServerFieldType type,
   }
 }
 
-void IBAN::GetSupportedTypes(ServerFieldTypeSet* supported_types) const {
+void Iban::GetSupportedTypes(ServerFieldTypeSet* supported_types) const {
   supported_types->insert(IBAN_VALUE);
 }
 
-bool IBAN::IsEmpty(const std::string& app_locale) const {
+bool Iban::IsEmpty(const std::string& app_locale) const {
   ServerFieldTypeSet types;
   GetNonEmptyTypes(app_locale, &types);
   return types.empty();
 }
 
-int IBAN::Compare(const IBAN& iban) const {
+int Iban::Compare(const Iban& iban) const {
   int comparison = server_id_.compare(iban.server_id_);
   if (comparison != 0) {
     return comparison;
@@ -278,15 +278,15 @@ int IBAN::Compare(const IBAN& iban) const {
   return value_.compare(iban.value_);
 }
 
-bool IBAN::operator==(const IBAN& iban) const {
+bool Iban::operator==(const Iban& iban) const {
   return guid() == iban.guid() && Compare(iban) == 0;
 }
 
-bool IBAN::operator!=(const IBAN& iban) const {
+bool Iban::operator!=(const Iban& iban) const {
   return !operator==(iban);
 }
 
-void IBAN::set_value(const std::u16string& value) {
+void Iban::set_value(const std::u16string& value) {
   if (!IsValid(value)) {
     return;
   }
@@ -294,7 +294,7 @@ void IBAN::set_value(const std::u16string& value) {
   value_ = RemoveIbanSeparators(value);
 }
 
-void IBAN::set_nickname(const std::u16string& nickname) {
+void Iban::set_nickname(const std::u16string& nickname) {
   // First replace all tabs and newlines with whitespaces and store it as
   // |nickname_|.
   base::ReplaceChars(nickname, u"\t\r\n", u" ", &nickname_);
@@ -306,7 +306,7 @@ void IBAN::set_nickname(const std::u16string& nickname) {
                                /*trim_sequences_with_line_breaks=*/true);
 }
 
-std::u16string IBAN::GetIdentifierStringForAutofillDisplay(
+std::u16string Iban::GetIdentifierStringForAutofillDisplay(
     bool is_value_masked) const {
   DCHECK(!value_.empty());
   const std::u16string stripped_value = GetStrippedValue();
@@ -328,7 +328,7 @@ std::u16string IBAN::GetIdentifierStringForAutofillDisplay(
   return output;
 }
 
-std::u16string IBAN::GetStrippedValue() const {
+std::u16string Iban::GetStrippedValue() const {
   return value_;
 }
 

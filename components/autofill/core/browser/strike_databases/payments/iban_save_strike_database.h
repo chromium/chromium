@@ -11,10 +11,10 @@
 namespace autofill {
 
 // Implementation of StrikeDatabaseIntegratorBase for IBAN save strike check.
-// Owned by IBANSaveManager.
-class IBANSaveStrikeDatabase : public StrikeDatabaseIntegratorBase {
+// Owned by IbanSaveManager.
+class IbanSaveStrikeDatabase : public StrikeDatabaseIntegratorBase {
  public:
-  explicit IBANSaveStrikeDatabase(StrikeDatabase* strike_database);
+  explicit IbanSaveStrikeDatabase(StrikeDatabase* strike_database);
 
   std::string GetProjectPrefix() const override;
   int GetMaxStrikesLimit() const override;

@@ -684,15 +684,15 @@ class FormDataImporterTestBase {
   // Convenience wrapper that calls
   // `FormDataImporter::ExtractFormData()` and subsequently
   // processes the candidates for IBAN import candidate. Returns the result of
-  // `FormDataImporter::ProcessIBANImportCandidate()`.
-  bool ExtractFormDataAndProcessIBANCandidates(
+  // `FormDataImporter::ProcessIbanImportCandidate()`.
+  bool ExtractFormDataAndProcessIbanCandidates(
       const FormStructure& form,
       bool profile_autofill_enabled,
       bool payment_methods_autofill_enabled) {
     ExtractedFormData extracted_data = form_data_importer().ExtractFormData(
         form, profile_autofill_enabled, payment_methods_autofill_enabled);
     return extracted_data.iban_import_candidate &&
-           form_data_importer().ProcessIBANImportCandidate(
+           form_data_importer().ProcessIbanImportCandidate(
                extracted_data.iban_import_candidate.value());
   }
 
@@ -2868,13 +2868,13 @@ TEST_P(FormDataImporterTest,
 }
 
 TEST_P(FormDataImporterTest, ExtractFormData_ImportIbanRecordType_LocalIban) {
-  IBAN iban;
+  Iban iban;
   iban.set_value(base::UTF8ToUTF16(std::string(test::kIbanValue)));
-  personal_data_manager_->AddIBAN(iban);
+  personal_data_manager_->AddIban(iban);
 
   WaitForOnPersonalDataChanged();
 
-  const std::vector<IBAN*>& results = personal_data_manager_->GetLocalIBANs();
+  const std::vector<Iban*>& results = personal_data_manager_->GetLocalIbans();
   ASSERT_EQ(1U, results.size());
   EXPECT_THAT(*results[0], ComparesEqual(iban));
 
@@ -3786,16 +3786,16 @@ TEST_P(FormDataImporterTest, SkipAutocompleteUnrecognizedFields) {
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 TEST_P(FormDataImporterTest,
-       ProcessIBANImportCandidate_ShouldOfferLocalSave_NewIBAN) {
-  IBAN iban_import_candidate = test::GetIBAN();
+       ProcessIbanImportCandidate_ShouldOfferLocalSave_NewIban) {
+  Iban iban_import_candidate = test::GetIban();
 
   EXPECT_EQ(
       base::FeatureList::IsEnabled(features::kAutofillFillIbanFields),
-      form_data_importer().ProcessIBANImportCandidate(iban_import_candidate));
+      form_data_importer().ProcessIbanImportCandidate(iban_import_candidate));
 }
 
 TEST_P(FormDataImporterTest,
-       ExtractFormData_ProcessIBANImportCandidate_NoIban) {
+       ExtractFormData_ProcessIbanImportCandidate_NoIban) {
   // Simulate a form submission with a new IBAN.
   FormData form;
   form.url = GURL("https://www.foo.com");
@@ -3805,14 +3805,14 @@ TEST_P(FormDataImporterTest,
   FormStructure form_structure(form);
   form_structure.DetermineHeuristicTypes(nullptr, nullptr);
 
-  ASSERT_FALSE(ExtractFormDataAndProcessIBANCandidates(
+  ASSERT_FALSE(ExtractFormDataAndProcessIbanCandidates(
       form_structure, /*profile_autofill_enabled=*/true,
       /*payment_methods_autofill_enabled=*/true));
 }
 
 TEST_P(
     FormDataImporterTest,
-    ExtractFormData_ProcessIBANImportCandidate_PaymentMethodsSettingDisabled) {
+    ExtractFormData_ProcessIbanImportCandidate_PaymentMethodsSettingDisabled) {
   // Simulate a form submission with a new IBAN.
   FormData form;
   form.url = GURL("https://www.foo.com");
@@ -3822,13 +3822,13 @@ TEST_P(
   FormStructure form_structure(form);
   form_structure.DetermineHeuristicTypes(nullptr, nullptr);
 
-  ASSERT_FALSE(ExtractFormDataAndProcessIBANCandidates(
+  ASSERT_FALSE(ExtractFormDataAndProcessIbanCandidates(
       form_structure, /*profile_autofill_enabled=*/true,
       /*payment_methods_autofill_enabled=*/false));
 }
 
 TEST_P(FormDataImporterTest,
-       ExtractFormData_ProcessIBANImportCandidate_NewIban) {
+       ExtractFormData_ProcessIbanImportCandidate_NewIban) {
   // Simulate a form submission with a new IBAN.
   FormData form;
   form.url = GURL("https://www.foo.com");
@@ -3839,16 +3839,16 @@ TEST_P(FormDataImporterTest,
   form_structure.DetermineHeuristicTypes(nullptr, nullptr);
 
   ASSERT_EQ(base::FeatureList::IsEnabled(features::kAutofillFillIbanFields),
-            ExtractFormDataAndProcessIBANCandidates(
+            ExtractFormDataAndProcessIbanCandidates(
                 form_structure, /*profile_autofill_enabled=*/true,
                 /*payment_methods_autofill_enabled=*/true));
 }
 
 TEST_P(FormDataImporterTest,
-       ExtractFormData_ProcessIBANImportCandidate_LocalIban) {
-  IBAN iban;
+       ExtractFormData_ProcessIbanImportCandidate_LocalIban) {
+  Iban iban;
   iban.set_value(base::UTF8ToUTF16(std::string(test::kIbanValue)));
-  personal_data_manager_->AddIBAN(iban);
+  personal_data_manager_->AddIban(iban);
 
   WaitForOnPersonalDataChanged();
   // Simulate a form submission with a new IBAN.
@@ -3860,19 +3860,19 @@ TEST_P(FormDataImporterTest,
   FormStructure form_structure(form);
   form_structure.DetermineHeuristicTypes(nullptr, nullptr);
 
-  ASSERT_FALSE(ExtractFormDataAndProcessIBANCandidates(
+  ASSERT_FALSE(ExtractFormDataAndProcessIbanCandidates(
       form_structure, /*profile_autofill_enabled=*/true,
       /*payment_methods_autofill_enabled=*/true));
 }
 
 TEST_P(FormDataImporterTest,
-       ExtractFormData_ProcessIBANImportCandidate_MaxStrikes) {
-  IBANSaveStrikeDatabase iban_save_strike_database =
-      IBANSaveStrikeDatabase(autofill_client_->GetStrikeDatabase());
+       ExtractFormData_ProcessIbanImportCandidate_MaxStrikes) {
+  IbanSaveStrikeDatabase iban_save_strike_database =
+      IbanSaveStrikeDatabase(autofill_client_->GetStrikeDatabase());
 
   iban_save_strike_database.AddStrikes(
       iban_save_strike_database.GetMaxStrikesLimit(),
-      IBANSaveManager::GetPartialIbanHashString(
+      IbanSaveManager::GetPartialIbanHashString(
           test::GetStrippedValue(test::kIbanValue)));
 
   // Simulate a form submission with a new IBAN.
@@ -3884,7 +3884,7 @@ TEST_P(FormDataImporterTest,
   FormStructure form_structure(form);
   form_structure.DetermineHeuristicTypes(nullptr, nullptr);
 
-  ASSERT_FALSE(ExtractFormDataAndProcessIBANCandidates(
+  ASSERT_FALSE(ExtractFormDataAndProcessIbanCandidates(
       form_structure, /*profile_autofill_enabled=*/true,
       /*payment_methods_autofill_enabled=*/true));
 }

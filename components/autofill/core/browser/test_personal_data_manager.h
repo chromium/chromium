@@ -53,7 +53,7 @@ class TestPersonalDataManager : public PersonalDataManager {
   void RemoveByGUID(const std::string& guid) override;
   bool IsEligibleForAddressAccountStorage() const override;
   void AddCreditCard(const CreditCard& credit_card) override;
-  std::string AddIBAN(const IBAN& iban) override;
+  std::string AddIban(const Iban& iban) override;
   void DeleteLocalCreditCards(const std::vector<CreditCard>& cards) override;
   void UpdateCreditCard(const CreditCard& credit_card) override;
   void AddFullServerCreditCard(const CreditCard& credit_card) override;
@@ -65,7 +65,7 @@ class TestPersonalDataManager : public PersonalDataManager {
   void LoadProfiles() override;
   void LoadCreditCards() override;
   void LoadCreditCardCloudTokenData() override;
-  void LoadIBANs() override;
+  void LoadIbans() override;
   void LoadUpiIds() override;
   bool IsAutofillProfileEnabled() const override;
   bool IsAutofillCreditCardEnabled() const override;

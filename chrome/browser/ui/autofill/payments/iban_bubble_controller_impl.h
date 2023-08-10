@@ -42,9 +42,9 @@ class IbanBubbleControllerImpl
   // `save_iban_prompt_callback` will be invoked once the user makes a decision
   // with respect to the offer-to-save prompt.
   void OfferLocalSave(
-      const IBAN& iban,
+      const Iban& iban,
       bool should_show_prompt,
-      AutofillClient::LocalSaveIBANPromptCallback save_iban_prompt_callback);
+      AutofillClient::LocalSaveIbanPromptCallback save_iban_prompt_callback);
 
   // No-op if the bubble is already shown, otherwise, shows the bubble.
   void ReshowBubble();
@@ -53,7 +53,7 @@ class IbanBubbleControllerImpl
   std::u16string GetWindowTitle() const override;
   std::u16string GetAcceptButtonText() const override;
   std::u16string GetDeclineButtonText() const override;
-  const IBAN& GetIBAN() const override;
+  const Iban& GetIban() const override;
 
   void OnAcceptButton(const std::u16string& nickname) override;
   void OnManageSavedIbanExtraButtonClicked() override;
@@ -106,13 +106,13 @@ class IbanBubbleControllerImpl
 
   // Callback to run once the user makes a decision with respect to the local
   // IBAN offer-to-save prompt.
-  AutofillClient::LocalSaveIBANPromptCallback local_save_iban_prompt_callback_;
+  AutofillClient::LocalSaveIbanPromptCallback local_save_iban_prompt_callback_;
 
   // Whether the bubble is shown after user interacted with the omnibox icon.
   bool is_reshow_ = false;
 
   // Contains the details of the IBAN that will be saved if the user accepts.
-  IBAN iban_;
+  Iban iban_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

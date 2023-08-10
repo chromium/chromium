@@ -257,7 +257,7 @@ autofill_private::CreditCardEntry CreditCardToCreditCardEntry(
 }
 
 autofill_private::IbanEntry IbanToIbanEntry(
-    const autofill::IBAN& iban,
+    const autofill::Iban& iban,
     const autofill::PersonalDataManager& personal_data) {
   autofill_private::IbanEntry iban_entry;
 
@@ -329,8 +329,9 @@ CreditCardEntryList GenerateCreditCardList(
 IbanEntryList GenerateIbanList(
     const autofill::PersonalDataManager& personal_data) {
   IbanEntryList list;
-  for (const autofill::IBAN* iban : personal_data.GetLocalIBANs())
+  for (const autofill::Iban* iban : personal_data.GetLocalIbans()) {
     list.push_back(IbanToIbanEntry(*iban, personal_data));
+  }
 
   return list;
 }
