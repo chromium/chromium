@@ -9,6 +9,7 @@
 #include "base/containers/contains.h"
 #include "base/observer_list.h"
 #include "build/chromeos_buildflags.h"
+#include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
 
 namespace apps {
 
@@ -25,6 +26,7 @@ AppRegistryCache::~AppRegistryCache() {
     obs.OnAppRegistryCacheWillBeDestroyed(this);
   }
   DCHECK(observers_.empty());
+  AppRegistryCacheWrapper::Get().RemoveAppRegistryCache(this);
 }
 
 void AppRegistryCache::AddObserver(Observer* observer) {

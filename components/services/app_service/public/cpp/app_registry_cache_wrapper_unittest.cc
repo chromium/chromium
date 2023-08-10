@@ -93,4 +93,17 @@ TEST_F(AppRegistryCacheWrapperTest, MultipleAccounts) {
       AppRegistryCacheWrapper::Get().GetAppRegistryCache(account_id_2()));
 }
 
+TEST_F(AppRegistryCacheWrapperTest, RegistryCacheRemovedIfFreed) {
+  auto cache = std::make_unique<AppRegistryCache>();
+  cache->SetAccountId(account_id_1());
+
+  AppRegistryCacheWrapper::Get().AddAppRegistryCache(account_id_1(),
+                                                     cache.get());
+
+  cache.reset();
+
+  EXPECT_EQ(AppRegistryCacheWrapper::Get().GetAppRegistryCache(account_id_1()),
+            nullptr);
+}
+
 }  // namespace apps
