@@ -156,6 +156,8 @@ public class ExternalNavigationHandlerTest {
     private static final String WEBAPK_PACKAGE_NAME = WEBAPK_PACKAGE_PREFIX + ".template";
     private static final String INVALID_WEBAPK_PACKAGE_NAME = WEBAPK_PACKAGE_PREFIX + ".invalid";
 
+    private static final String SELF_SCHEME = "selfscheme";
+
     @Rule
     public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
@@ -2622,6 +2624,20 @@ public class ExternalNavigationHandlerTest {
                 .expecting(OverrideUrlLoadingResultType.NO_OVERRIDE, IGNORE);
     }
 
+    @Test
+    @SmallTest
+    // Tests googlechrome:// URLs.
+    public void testSelfSchemeUrl() {
+        mUrlHandler.mResolveInfoContainsSelf = true;
+
+        checkUrl(SELF_SCHEME + ExternalNavigationHandler.SELF_SCHEME_NAVIGATE_PREFIX
+                        + "https://www.example.com/",
+                redirectHandlerForLinkClick())
+                .withHasUserGesture(true)
+                .expecting(OverrideUrlLoadingResultType.OVERRIDE_WITH_NAVIGATE_TAB, IGNORE);
+        Assert.assertEquals("https://www.example.com/", mUrlHandler.mNewUrlAfterClobbering);
+    }
+
     private static List<ResolveInfo> makeResolveInfos(ResolveInfo... infos) {
         return Arrays.asList(infos);
     }
@@ -2810,7 +2826,8 @@ public class ExternalNavigationHandlerTest {
             List<ResolveInfo> list = new ArrayList<>();
             String dataString = intent.getDataString();
             if (intent.getScheme() != null) {
-                if (dataString.startsWith("http://") || dataString.startsWith("https://")) {
+                if (dataString.startsWith("http://") || dataString.startsWith("https://")
+                        || intent.getScheme().equals(SELF_SCHEME)) {
                     list.add(newResolveInfo(SELF_PACKAGE_NAME));
                 }
                 for (IntentActivity intentActivity : mIntentActivities) {
@@ -2968,6 +2985,11 @@ public class ExternalNavigationHandlerTest {
         @Override
         public boolean shouldEmbedderInitiatedNavigationsStayInBrowser() {
             return mShouldEmbedderInitiatedNavigationsStayInBrowser;
+        }
+
+        @Override
+        public String getSelfScheme() {
+            return SELF_SCHEME;
         }
 
         public void reset() {

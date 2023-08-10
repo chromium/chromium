@@ -60,6 +60,7 @@ import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.webapps.WebappTestHelper;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.external_intents.ExternalNavigationHandler;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -274,8 +275,9 @@ public class IntentHandlerUnitTest {
     public void testAcceptedGoogleChromeSchemeNavigateUrls() {
         String[] expectedAccepts = new String[VALID_HTTP_AND_HTTPS_URLS.length];
         for (int i = 0; i < VALID_HTTP_AND_HTTPS_URLS.length; ++i) {
-            expectedAccepts[i] =
-                    IntentHandler.GOOGLECHROME_NAVIGATE_PREFIX + VALID_HTTP_AND_HTTPS_URLS[i];
+            expectedAccepts[i] = IntentHandler.GOOGLECHROME_SCHEME
+                    + ExternalNavigationHandler.SELF_SCHEME_NAVIGATE_PREFIX
+                    + VALID_HTTP_AND_HTTPS_URLS[i];
         }
         processUrls(expectedAccepts, true);
     }
@@ -287,8 +289,9 @@ public class IntentHandlerUnitTest {
         // Test all of the rejected URLs after prepending googlechrome://navigate?url.
         String[] expectedRejections = new String[REJECTED_INTENT_URLS.length];
         for (int i = 0; i < REJECTED_INTENT_URLS.length; ++i) {
-            expectedRejections[i] =
-                    IntentHandler.GOOGLECHROME_NAVIGATE_PREFIX + REJECTED_INTENT_URLS[i];
+            expectedRejections[i] = IntentHandler.GOOGLECHROME_SCHEME
+                    + ExternalNavigationHandler.SELF_SCHEME_NAVIGATE_PREFIX
+                    + REJECTED_INTENT_URLS[i];
         }
         processUrls(expectedRejections, false);
     }

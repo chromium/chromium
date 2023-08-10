@@ -78,6 +78,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 /**
@@ -116,6 +117,9 @@ public class ExternalNavigationHandler {
     // referrer field passed to the market:// URL in the case where the app is not present.
     @VisibleForTesting
     static final String EXTRA_MARKET_REFERRER = "market_referrer";
+
+    /** Schemes used by web pages to start up the current browser without an explicit Intent. */
+    public static final String SELF_SCHEME_NAVIGATE_PREFIX = "://navigate?url=";
 
     // A mask of flags that are safe for untrusted content to use when starting an Activity.
     // This list is not exhaustive and flags not listed here are not necessarily unsafe.
@@ -1234,14 +1238,14 @@ public class ExternalNavigationHandler {
 
         ActivityInfo info = resolveActivity.get().activityInfo;
         if (info != null && mDelegate.getContext().getPackageName().equals(info.packageName)) {
-            if (debug()) Log.i(TAG, "Subframe navigation to self.");
+            if (debug()) Log.i(TAG, "Navigation to self.");
             return true;
         }
 
         // We don't want the user seeing the chooser and choosing the browser, but resolving to
         // another app is fine.
         if (resolvesToChooser(resolveActivity.get(), resolvingInfos)) {
-            if (debug()) Log.i(TAG, "Subframe navigation to chooser including self.");
+            if (debug()) Log.i(TAG, "Navigation to chooser including self.");
             return true;
         }
         return false;
@@ -1576,11 +1580,18 @@ public class ExternalNavigationHandler {
         boolean incomingIntentRedirect = isIncomingIntentRedirect(params);
         boolean isExternalProtocol = !UrlUtilities.isAcceptedScheme(params.getUrl());
 
-        GURL intentDataUrl = new GURL(targetIntent.getDataString());
+        GURL intentTargetUrl = new GURL(targetIntent.getDataString());
+        // Unpack schemes targeting the current browser.
+        String selfScheme = mDelegate.getSelfScheme();
+        if (selfScheme != null && intentTargetUrl.getScheme().equals(selfScheme)) {
+            intentTargetUrl =
+                    new GURL(getUrlFromSelfSchemeUrl(selfScheme, intentTargetUrl.getSpec()));
+        }
+
         // intent: URLs are considered an external protocol, but may still contain a Data URI that
         // this app does support, and may still end up launching this app.
         boolean isIntentWithSupportedProtocol = UrlUtilities.hasIntentScheme(params.getUrl())
-                && UrlUtilities.isAcceptedScheme(intentDataUrl);
+                && UrlUtilities.isAcceptedScheme(intentTargetUrl);
 
         // Needs to be checked first as a failure for this reason is persisted through the
         // navigation chain, and other failures should not cause this check to be skipped.
@@ -1668,7 +1679,7 @@ public class ExternalNavigationHandler {
 
         ResolveActivitySupplier resolveActivity = new ResolveActivitySupplier(targetIntent);
         if (isNavigationToSelf(params, resolvingInfos, resolveActivity, isExternalProtocol)) {
-            return OverrideUrlLoadingResult.forNavigateTab(intentDataUrl, params);
+            return OverrideUrlLoadingResult.forNavigateTab(intentTargetUrl, params);
         }
 
         boolean hasSpecializedHandler = countSpecializedHandlers(resolvingInfos.get()) > 0;
@@ -1694,8 +1705,8 @@ public class ExternalNavigationHandler {
         prepareExternalIntent(targetIntent, params, resolvingInfos.get());
 
         if (params.isIncognito()) {
-            return handleIncognitoIntent(
-                    params, targetIntent, intentDataUrl, resolvingInfos.get(), browserFallbackUrl);
+            return handleIncognitoIntent(params, targetIntent, intentTargetUrl,
+                    resolvingInfos.get(), browserFallbackUrl);
         }
 
         if (launchWebApkIfSoleIntentHandler(resolvingInfos, targetIntent, params)) {
@@ -1710,7 +1721,7 @@ public class ExternalNavigationHandler {
                     isIntentWithSupportedProtocol, resolveActivity, intentHasExtras);
 
             if (shouldAvoidShowingDisambiguationPrompt(
-                        isExternalProtocol, intentDataUrl, resolvingInfos, resolveActivity)) {
+                        isExternalProtocol, intentTargetUrl, resolvingInfos, resolveActivity)) {
                 return OverrideUrlLoadingResult.forNoOverride();
             }
             if (navigationChainResult == NavigationChainResult.REQUIRES_PROMPT) {
@@ -1720,7 +1731,7 @@ public class ExternalNavigationHandler {
         }
 
         return startActivity(targetIntent, requiresIntentChooser, resolvingInfos, resolveActivity,
-                browserFallbackUrl, intentDataUrl, params);
+                browserFallbackUrl, intentTargetUrl, params);
     }
 
     // https://crbug.com/1249964
@@ -1740,7 +1751,7 @@ public class ExternalNavigationHandler {
     }
 
     private boolean shouldAvoidShowingDisambiguationPrompt(boolean isExternalProtocol,
-            GURL intentDataUrl, QueryIntentActivitiesSupplier resolvingInfosSupplier,
+            GURL intentTargetUrl, QueryIntentActivitiesSupplier resolvingInfosSupplier,
             ResolveActivitySupplier resolveActivitySupplier) {
         // For navigations Chrome can't handle, it's fine to show the disambiguation dialog
         // regardless of the embedder's preference.
@@ -1748,7 +1759,7 @@ public class ExternalNavigationHandler {
 
         // Don't bother performing the package manager checks if the delegate is fine with the
         // disambiguation prompt.
-        if (!mDelegate.shouldAvoidDisambiguationDialog(intentDataUrl)) return false;
+        if (!mDelegate.shouldAvoidDisambiguationDialog(intentTargetUrl)) return false;
 
         ResolveInfo resolveActivity = resolveActivitySupplier.get();
 
@@ -1760,7 +1771,7 @@ public class ExternalNavigationHandler {
     }
 
     private OverrideUrlLoadingResult handleIncognitoIntent(ExternalNavigationParams params,
-            Intent targetIntent, GURL intentDataUrl, List<ResolveInfo> resolvingInfos,
+            Intent targetIntent, GURL intentTargetUrl, List<ResolveInfo> resolvingInfos,
             GURL browserFallbackUrl) {
         boolean intentTargetedToApp = mDelegate.willAppHandleIntent(targetIntent);
 
@@ -1768,8 +1779,8 @@ public class ExternalNavigationHandler {
         // If we can handle the intent, then fall back to handling the target URL instead of
         // the fallbackUrl if the user decides not to leave incognito.
         if (resolveInfoContainsSelf(resolvingInfos)) {
-            GURL targetUrl =
-                    UrlUtilities.hasIntentScheme(params.getUrl()) ? intentDataUrl : params.getUrl();
+            GURL targetUrl = UrlUtilities.hasIntentScheme(params.getUrl()) ? intentTargetUrl
+                                                                           : params.getUrl();
             // Make sure the browser can handle this URL, in case the Intent targeted a
             // non-browser component for this app.
             if (UrlUtilities.isAcceptedScheme(targetUrl)) fallbackUrl = targetUrl;
@@ -2065,13 +2076,13 @@ public class ExternalNavigationHandler {
      * @param resolvingInfos The queryIntentActivities |intent| matches against.
      * @param resolveActivity The resolving Activity |intent| matches against.
      * @param browserFallbackUrl The fallback URL if the user chooses not to leave this app.
-     * @param intentDataUrl The URL |intent| is targeting.
+     * @param intentTargetUrl The URL |intent| is targeting.
      * @param params The ExternalNavigationParams for the navigation.
      * @returns The OverrideUrlLoadingResult for starting (or not starting) the Activity.
      */
     protected OverrideUrlLoadingResult startActivity(Intent intent, boolean requiresIntentChooser,
             QueryIntentActivitiesSupplier resolvingInfos, ResolveActivitySupplier resolveActivity,
-            GURL browserFallbackUrl, GURL intentDataUrl, ExternalNavigationParams params) {
+            GURL browserFallbackUrl, GURL intentTargetUrl, ExternalNavigationParams params) {
         // Only touches disk on Kitkat. See http://crbug.com/617725 for more context.
         StrictMode.ThreadPolicy oldPolicy = StrictMode.allowThreadDiskWrites();
         try {
@@ -2083,7 +2094,7 @@ public class ExternalNavigationHandler {
             }
             if (requiresIntentChooser) {
                 return startActivityWithChooser(intent, resolvingInfos, resolveActivity,
-                        browserFallbackUrl, intentDataUrl, params, context);
+                        browserFallbackUrl, intentTargetUrl, params, context);
             }
             return doStartActivity(intent, context);
         } catch (SecurityException e) {
@@ -2124,7 +2135,7 @@ public class ExternalNavigationHandler {
     @SuppressWarnings({"UseCompatLoadingForDrawables", "DiscouragedApi"})
     private OverrideUrlLoadingResult startActivityWithChooser(final Intent intent,
             QueryIntentActivitiesSupplier resolvingInfos, ResolveActivitySupplier resolveActivity,
-            GURL browserFallbackUrl, GURL intentDataUrl, final ExternalNavigationParams params,
+            GURL browserFallbackUrl, GURL intentTargetUrl, final ExternalNavigationParams params,
             Context context) {
         ResolveInfo intentResolveInfo = resolveActivity.get();
         // If this is null, then the intent was only previously matching
@@ -2205,9 +2216,9 @@ public class ExternalNavigationHandler {
                             // was trying to load in a browser seems like the better choice and
                             // matches what would have happened had the regular chooser dialog shown
                             // up and the user selected this app.
-                            if (UrlUtilities.isAcceptedScheme(intentDataUrl)) {
-                                callback.onResult(
-                                        AsyncActionTakenParams.forNavigate(intentDataUrl, params));
+                            if (UrlUtilities.isAcceptedScheme(intentTargetUrl)) {
+                                callback.onResult(AsyncActionTakenParams.forNavigate(
+                                        intentTargetUrl, params));
                             } else if (!browserFallbackUrl.isEmpty()) {
                                 callback.onResult(AsyncActionTakenParams.forNavigate(
                                         browserFallbackUrl, params));
@@ -2503,5 +2514,66 @@ public class ExternalNavigationHandler {
             }
         }
         return false;
+    }
+
+    /**
+     * Adjusts the URL to account for the googlechrome:// scheme.
+     * Currently, its only use is to handle navigations, only http and https URL is allowed.
+     * @param url URL to be processed
+     * @return The string with the scheme and prefixes chopped off, if a valid prefix was used.
+     *         Otherwise returns null.
+     */
+    public static String getUrlFromSelfSchemeUrl(String selfScheme, String url) {
+        String prefix = selfScheme + SELF_SCHEME_NAVIGATE_PREFIX;
+        if (url.toLowerCase(Locale.US).startsWith(prefix)) {
+            String parsedUrl = url.substring(prefix.length());
+            if (!TextUtils.isEmpty(parsedUrl)) {
+                String scheme = getSanitizedUrlScheme(parsedUrl);
+                if (scheme == null) {
+                    // If no scheme, assuming this is an http url.
+                    parsedUrl = UrlConstants.HTTP_URL_PREFIX + parsedUrl;
+                }
+            }
+            if (UrlUtilities.isHttpOrHttps(parsedUrl)) return parsedUrl;
+        }
+
+        return null;
+    }
+
+    /**
+     * Parses the scheme out of the URL if possible, trimming and getting rid of unsafe characters.
+     * This is useful for determining if a URL has a sneaky, unsafe scheme, e.g. "java  script" or
+     * "j$a$r". See: http://crbug.com/248398
+     * @return The sanitized URL scheme or null if no scheme is specified.
+     */
+    public static String getSanitizedUrlScheme(String url) {
+        if (url == null) {
+            return null;
+        }
+
+        int colonIdx = url.indexOf(":");
+        if (colonIdx < 0) {
+            // No scheme specified for the url
+            return null;
+        }
+
+        String scheme = url.substring(0, colonIdx).toLowerCase(Locale.US).trim();
+
+        // Check for the presence of and get rid of all non-alphanumeric characters in the scheme,
+        // except dash, plus and period. Those are the only valid scheme chars:
+        // https://tools.ietf.org/html/rfc3986#section-3.1
+        boolean nonAlphaNum = false;
+        for (int i = 0; i < scheme.length(); i++) {
+            char ch = scheme.charAt(i);
+            if (!Character.isLetterOrDigit(ch) && ch != '-' && ch != '+' && ch != '.') {
+                nonAlphaNum = true;
+                break;
+            }
+        }
+
+        if (nonAlphaNum) {
+            scheme = scheme.replaceAll("[^a-z0-9.+-]", "");
+        }
+        return scheme;
     }
 }
