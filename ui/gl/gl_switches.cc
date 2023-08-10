@@ -191,6 +191,11 @@ BASE_FEATURE(kDCompTripleBufferVideoSwapChain,
              "DCompTripleBufferVideoSwapChain",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables incremental update of dcomp visual tree.
+BASE_FEATURE(kDCompVisualTreeOptimization,
+             "DCompVisualTreeOptimization",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Use presentation feedback event queries (must be enabled) to limit latency.
 BASE_FEATURE(kDirectCompositionLowLatencyPresentation,
              "DirectCompositionLowLatencyPresentation",

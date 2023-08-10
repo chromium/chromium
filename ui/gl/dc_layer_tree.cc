@@ -8,6 +8,7 @@
 
 #include <utility>
 
+#include "base/check_is_test.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -37,11 +38,6 @@ bool NeedSwapChainPresenter(const DCLayerOverlayParams* overlay) {
          DCLayerOverlayType::kDCompVisualContent;
 }
 
-// TODO(http://crbug.com/1380822): Implement dcomp visual tree optimization.
-BASE_FEATURE(kDCVisualTreeOptimization,
-             "DCVisualTreeOptimization",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 D2D_MATRIX_3X2_F TransformToD2D_MATRIX_3X2_F(const gfx::Transform& transform) {
   DCHECK(transform.IsFlat());
   // D2D_MATRIX_3x2_F is row-major.
@@ -56,6 +52,19 @@ D2D_MATRIX_3X2_F TransformToD2D_MATRIX_3X2_F(const gfx::Transform& transform) {
 // background fill, so 1x1 is fine.
 constexpr gfx::Size kSolidColorSurfaceSize = gfx::Size(1, 1);
 
+#if DCHECK_IS_ON()
+bool VisualTreeValid(
+    std::vector<absl::optional<size_t>>& subtree_index_to_overlay,
+    const std::vector<bool>& prev_subtree_is_attached_to_root) {
+  for (size_t i = 0; i < subtree_index_to_overlay.size(); i++) {
+    // Unused subtrees must be removed from the root.
+    if (!subtree_index_to_overlay[i] && prev_subtree_is_attached_to_root[i]) {
+      return false;
+    }
+  }
+  return true;
+}
+#endif  // DCHECK_IS_ON()
 }  // namespace
 
 VideoProcessorWrapper::VideoProcessorWrapper() = default;
@@ -599,9 +608,11 @@ DCLayerTree::VisualTree::VisualTree(DCLayerTree* dc_layer_tree)
 
 DCLayerTree::VisualTree::~VisualTree() = default;
 
-bool DCLayerTree::VisualTree::UpdateTree(
+bool DCLayerTree::VisualTree::BuildTreeDefault(
     const std::vector<std::unique_ptr<DCLayerOverlayParams>>& overlays,
     bool needs_rebuild_visual_tree) {
+  DCHECK(!base::FeatureList::IsEnabled(features::kDCompVisualTreeOptimization));
+  CHECK(subtree_map_.empty());
   // Grow or shrink list of visual subtrees to match pending overlays.
   size_t old_visual_subtrees_size = visual_subtrees_.size();
   if (old_visual_subtrees_size != overlays.size()) {
@@ -729,6 +740,327 @@ bool DCLayerTree::VisualTree::UpdateTree(
     }
   }
   return true;
+}
+
+bool DCLayerTree::VisualTree::BuildTreeOptimized(
+    const std::vector<std::unique_ptr<DCLayerOverlayParams>>& overlays,
+    bool needs_rebuild_visual_tree) {
+  DCHECK(base::FeatureList::IsEnabled(features::kDCompVisualTreeOptimization));
+  // For optimized tree |needs_rebuild_visual_tree| means that we may need to
+  // add/re-add a delegated ink visual into the root surface's visual.
+  // TODO(http://crbug.com/1380822): Clean up needs_rebuild_visual_tree
+  // and use dedicated add_delegated_ink_visual flag instead.
+  const bool add_delegated_ink_visual = needs_rebuild_visual_tree;
+
+  // Index into the subtree from the previous frame that is being reused in the
+  // current frame for the given overlay index.
+  // |overlay_index_to_reused_subtree| has an entry for every overlay in the
+  // current frame. Each entry indexes into |visual_subtrees_|, which are the
+  // subtrees for the previous frame. Initialized with absl::nullopt,
+  // meaning not reused.
+  std::vector<absl::optional<size_t>> overlay_index_to_reused_subtree(
+      overlays.size(), absl::nullopt);
+
+  // Index into the current frame overlay that uses the subtree of the previous
+  // frame for the given subtree index. |subtree_index_to_overlay| has an entry
+  // for every subtree in the previous frame. Each entry indexes into |overlays|
+  // of the current frame. Initialized with absl::nullopt, meaning the subtree
+  // is not being reused in the current frame.
+  std::vector<absl::optional<size_t>> subtree_index_to_overlay(
+      visual_subtrees_.size(), absl::nullopt);
+
+  // |visual_subtrees| will become |visual_subtrees_| of the current frame;
+  std::vector<std::unique_ptr<VisualSubtree>> visual_subtrees;
+  visual_subtrees.resize(overlays.size());
+
+  // Populate the map with visual content and assign matching subtrees to the
+  // overlays.
+  VisualSubtreeMap subtree_map = BuildMapAndAssignMatchingSubtrees(
+      overlays, visual_subtrees, overlay_index_to_reused_subtree,
+      subtree_index_to_overlay);
+
+  // Assign unused subtrees to the overlays that don't have a match.
+  const size_t first_prev_frame_subtree_unused_index =
+      ReuseUnmatchedSubtrees(visual_subtrees, overlay_index_to_reused_subtree,
+                             subtree_index_to_overlay);
+
+  // Status for each subtree of the previous frame if it's attached to the root.
+  // Initialized with true, meaning attached.
+  std::vector<bool> prev_subtree_is_attached_to_root(visual_subtrees_.size(),
+                                                     true);
+
+  bool needs_commit = DetachUnusedSubtreesFromRoot(
+      first_prev_frame_subtree_unused_index, prev_subtree_is_attached_to_root);
+
+  // Remove unused subtrees from the root that need repositioning.
+  needs_commit |= DetachReusedSubtreesThatNeedRepositioningFromRoot(
+      visual_subtrees, overlay_index_to_reused_subtree,
+      subtree_index_to_overlay, prev_subtree_is_attached_to_root);
+
+#if DCHECK_IS_ON()
+  VisualTreeValid(subtree_index_to_overlay, prev_subtree_is_attached_to_root);
+#endif  // DCHECK_IS_ON()
+
+  // Visual for root surface. Cache it to add DelegatedInk visual if needed.
+  Microsoft::WRL::ComPtr<IDCompositionVisual2> root_surface_visual;
+  IDCompositionVisual2* left_sibling_visual = nullptr;
+
+  // This loop walks the overlays and builds or updates the visual subtree for
+  // each overlay. |left_sibling_visual| is required to properly stack visual
+  // subtrees that are detached from the root visual.
+  for (unsigned int i = 0; i < overlays.size(); i++) {
+    const bool is_root_plane = overlays[i]->z_order == 0;
+    if (!is_root_plane && overlays[i]->overlay_image) {
+      TRACE_EVENT2(
+          "gpu", "DCLayerTree::VisualTree::UpdateOverlay", "image_type",
+          DCLayerOverlayTypeToString(overlays[i]->overlay_image->type()),
+          "size", overlays[i]->content_rect.size().ToString());
+    }
+
+    bool subtree_attached_to_root = false;
+    if (visual_subtrees[i]) {
+      DCHECK(overlay_index_to_reused_subtree[i]);
+      subtree_attached_to_root =
+          prev_subtree_is_attached_to_root[overlay_index_to_reused_subtree[i]
+                                               .value()];
+    } else {
+      // This overlay does not reuse a subtree from the previous frame.
+      // Instantiate a new one.
+      visual_subtrees[i] = std::make_unique<VisualSubtree>();
+    }
+
+    const uint64_t dcomp_surface_serial =
+        overlays[i]->overlay_image.has_value()
+            ? overlays[i]->overlay_image->dcomp_surface_serial()
+            : 0;
+    const gfx::Size image_size = overlays[i]->overlay_image.has_value()
+                                     ? overlays[i]->overlay_image->size()
+                                     : gfx::Size();
+
+    Microsoft::WRL::ComPtr<IDCompositionSurface> solid_white_surface;
+    if (overlays[i]->background_color) {
+      solid_white_surface = dc_layer_tree_->GetOrCreateSolidWhiteTexture();
+      if (!solid_white_surface) {
+        DLOG(ERROR) << "Could not get solid color surface.";
+        // TODO(http://crbug.com/1380822): Refactor to remove early exits. They
+        // may leave visual_subtrees_ corrupted.
+        return false;
+      }
+    }
+
+    VisualSubtree* visual_subtree = visual_subtrees[i].get();
+    visual_subtree->set_z_order(overlays[i]->z_order);
+    IUnknown* dcomp_visual_content =
+        overlays[i]->overlay_image
+            ? overlays[i]->overlay_image->dcomp_visual_content()
+            : nullptr;
+
+    needs_commit |= visual_subtrees[i]->Update(
+        dc_layer_tree_->dcomp_device_.Get(), dcomp_visual_content,
+        dcomp_surface_serial, image_size, overlays[i]->content_rect,
+        std::move(solid_white_surface),
+        overlays[i]->background_color.value_or(SkColors::kTransparent),
+        overlays[i]->quad_rect, overlays[i]->nearest_neighbor_filter,
+        overlays[i]->transform, overlays[i]->rounded_corner_bounds,
+        overlays[i]->opacity, overlays[i]->clip_rect);
+
+    if (!subtree_attached_to_root) {
+      HRESULT hr = dc_layer_tree_->dcomp_root_visual_.Get()->AddVisual(
+          visual_subtree->container_visual(), TRUE, left_sibling_visual);
+      CHECK_EQ(hr, S_OK);
+      needs_commit = true;
+    }
+    left_sibling_visual = visual_subtree->container_visual();
+
+    // Zero z_order represents root layer.
+    if (visual_subtree->z_order() == 0) {
+      // Verify we have single root visual layer.
+      DCHECK(!root_surface_visual);
+      root_surface_visual = visual_subtree->content_visual();
+    }
+  }
+
+  // Update subtree_map_ and visual_subtrees_ with new values.
+  subtree_map_ = std::move(subtree_map);
+  visual_subtrees_ = std::move(visual_subtrees);
+
+  if (add_delegated_ink_visual) {
+    needs_commit |= dc_layer_tree_->AddDelegatedInkVisualToTreeIfNeeded(
+        root_surface_visual.Get());
+  }
+  if (needs_commit) {
+    TRACE_EVENT0("gpu", "DCLayerTree::CommitAndClearPendingOverlays::Commit");
+    HRESULT hr = dc_layer_tree_->dcomp_device_->Commit();
+    if (FAILED(hr)) {
+      DLOG(ERROR) << "Commit failed with error 0x" << std::hex << hr;
+      return false;
+    }
+  }
+  return true;
+}
+
+DCLayerTree::VisualTree::VisualSubtreeMap
+DCLayerTree::VisualTree::BuildMapAndAssignMatchingSubtrees(
+    const std::vector<std::unique_ptr<DCLayerOverlayParams>>& overlays,
+    std::vector<std::unique_ptr<VisualSubtree>>& new_visual_subtrees,
+    std::vector<absl::optional<size_t>>& overlay_index_to_reused_subtree,
+    std::vector<absl::optional<size_t>>& subtree_index_to_overlay) {
+  CHECK_EQ(overlay_index_to_reused_subtree.size(), overlays.size());
+  CHECK_EQ(new_visual_subtrees.size(), overlays.size());
+  CHECK_EQ(subtree_index_to_overlay.size(), visual_subtrees_.size());
+
+  // Contains {visual content, overlay index} pairs for this frame overlays.
+  // This structure has entries for overlays that have visual content.
+  // No entry is inserted for the overlays with no visual content.
+  std::vector<std::pair<raw_ptr<IUnknown>, size_t>> map_results;
+  // For each overlay populate |map_results| with visual content and indices
+  // of overlays from this frame and find the matching subtree from the
+  // previous frame.
+  for (size_t i = 0; i < overlays.size(); i++) {
+    if (!overlays[i]->overlay_image) {
+      continue;
+    }
+    IUnknown* dcomp_visual_content =
+        overlays[i]->overlay_image->dcomp_visual_content();
+    if (!dcomp_visual_content) {
+      continue;
+    }
+    map_results.emplace_back(dcomp_visual_content, i);
+
+    // Find matching visual content from the previous frame.
+    auto it = subtree_map_.find(dcomp_visual_content);
+    if (it == subtree_map_.end()) {
+      continue;
+    }
+    size_t matched_index = it->second;
+    if (visual_subtrees_[matched_index]) {
+      // Assign the matched index to the corresponding overlay.
+      overlay_index_to_reused_subtree[i] = matched_index;
+      // Assign overlay index to the matched subtree.
+      subtree_index_to_overlay[matched_index] = i;
+      // Move visual subtree from the old subtrees to new subtrees.
+      new_visual_subtrees[i] = std::move(visual_subtrees_[matched_index]);
+    }
+  }
+  // This converts to a flat_map on returning. We're doing this on purpose to
+  // go from O(N^2) to O(N*logN) for building the map.
+  return map_results;
+}
+
+size_t DCLayerTree::VisualTree::ReuseUnmatchedSubtrees(
+    std::vector<std::unique_ptr<VisualSubtree>>& new_visual_subtrees,
+    std::vector<absl::optional<size_t>>& overlay_index_to_reused_subtree,
+    std::vector<absl::optional<size_t>>& subtree_index_to_overlay) {
+  CHECK_EQ(new_visual_subtrees.size(), overlay_index_to_reused_subtree.size());
+  CHECK_EQ(subtree_index_to_overlay.size(), visual_subtrees_.size());
+
+  // No further actions are needed if the previous frame is empty.
+  if (visual_subtrees_.empty()) {
+    return 0;
+  }
+  // Index into |visual_subtrees_|.
+  size_t prev_frame_subtree_index = 0;
+  // Assign unused subtrees from previous frames to overlays that don't have
+  // a match.
+  for (size_t i = 0; i < new_visual_subtrees.size() &&
+                     prev_frame_subtree_index < visual_subtrees_.size();
+       i++) {
+    if (new_visual_subtrees[i]) {
+      // Skip overlay that has a match.
+      continue;
+    }
+    // Find next unused subtree and assign it to the overlay at index |i|.
+    for (; prev_frame_subtree_index < visual_subtrees_.size();
+         prev_frame_subtree_index++) {
+      if (!visual_subtrees_[prev_frame_subtree_index]) {
+        continue;
+      }
+      // Assign the found index to the corresponding overlay.
+      overlay_index_to_reused_subtree[i] = prev_frame_subtree_index;
+      // Assign the overlay index to the found subtree.
+      subtree_index_to_overlay[prev_frame_subtree_index] = i;
+      // Move visual subtree from the old subtrees to new subtrees.
+      new_visual_subtrees[i] =
+          std::move(visual_subtrees_[prev_frame_subtree_index]);
+      prev_frame_subtree_index++;
+      break;
+    }
+  }
+  return prev_frame_subtree_index;
+}
+
+bool DCLayerTree::VisualTree::DetachUnusedSubtreesFromRoot(
+    size_t first_prev_frame_subtree_unused_index,
+    std::vector<bool>& prev_subtree_is_attached_to_root) {
+  CHECK_EQ(prev_subtree_is_attached_to_root.size(), visual_subtrees_.size());
+  bool needs_commit = false;
+  // Detach the remaining unused subtrees from the root.
+  for (size_t i = first_prev_frame_subtree_unused_index;
+       i < visual_subtrees_.size(); i++) {
+    if (!visual_subtrees_[i]) {
+      continue;
+    }
+    DetachSubtreeFromRoot(visual_subtrees_[i].get());
+    prev_subtree_is_attached_to_root[i] = false;
+    needs_commit = true;
+  }
+  return needs_commit;
+}
+
+bool DCLayerTree::VisualTree::DetachReusedSubtreesThatNeedRepositioningFromRoot(
+    const std::vector<std::unique_ptr<VisualSubtree>>& new_visual_subtrees,
+    const std::vector<absl::optional<size_t>>& overlay_index_to_reused_subtree,
+    const std::vector<absl::optional<size_t>>& subtree_index_to_overlay,
+    std::vector<bool>& prev_subtree_is_attached_to_root) {
+  CHECK_EQ(new_visual_subtrees.size(), overlay_index_to_reused_subtree.size());
+  CHECK_EQ(subtree_index_to_overlay.size(), visual_subtrees_.size());
+  CHECK_EQ(prev_subtree_is_attached_to_root.size(), visual_subtrees_.size());
+
+  // No further actions are needed if the previous frame is empty.
+  if (visual_subtrees_.empty()) {
+    return false;
+  }
+  bool needs_commit = false;
+  // Index into |visual_subtrees_|.
+  size_t prev_frame_subtree_index = 0;
+  // This loop walks the overlay indices and detaches from the root any
+  // subtrees that need repositioning in the current frame.
+  for (size_t i = 0; i < overlay_index_to_reused_subtree.size(); i++) {
+    if (!overlay_index_to_reused_subtree[i]) {
+      continue;
+    }
+    size_t reused_subtree_index = overlay_index_to_reused_subtree[i].value();
+    DCHECK_EQ(i, subtree_index_to_overlay[reused_subtree_index].value());
+    // If the overlay at index |i| has a match, detach from the root any
+    // subtrees that appear before the matching subtree and the previous match.
+    for (; prev_frame_subtree_index < reused_subtree_index;
+         prev_frame_subtree_index++) {
+      if (!prev_subtree_is_attached_to_root[prev_frame_subtree_index]) {
+        continue;
+      }
+      VisualSubtree* subtree =
+          new_visual_subtrees[subtree_index_to_overlay[prev_frame_subtree_index]
+                                  .value()]
+              .get();
+      DetachSubtreeFromRoot(subtree);
+      prev_subtree_is_attached_to_root[prev_frame_subtree_index] = false;
+      needs_commit = true;
+    }
+    if (reused_subtree_index == prev_frame_subtree_index) {
+      ++prev_frame_subtree_index;
+    }
+#if DCHECK_IS_ON()
+    new_visual_subtrees[i]->attached_to_root_from_previous_frame_ =
+        prev_subtree_is_attached_to_root[reused_subtree_index];
+#endif  // DCHECK_IS_ON()
+  }
+  return needs_commit;
+}
+
+void DCLayerTree::VisualTree::DetachSubtreeFromRoot(VisualSubtree* subtree) {
+  HRESULT hr = dc_layer_tree_->dcomp_root_visual_.Get()->RemoveVisual(
+      subtree->container_visual());
+  CHECK_EQ(hr, S_OK);
 }
 
 void DCLayerTree::VisualTree::GetSwapChainVisualInfoForTesting(
@@ -882,33 +1214,19 @@ bool DCLayerTree::CommitAndClearPendingOverlays(
 bool DCLayerTree::BuildVisualTreeHelper(
     const std::vector<std::unique_ptr<DCLayerOverlayParams>>& overlays,
     bool needs_rebuild_visual_tree) {
-  // TODO(http://crbug.com/1380822): Enable optimization when delegated ink
-  // trails is active.
-  bool use_visual_tree_optimization =
-      base::FeatureList::IsEnabled(kDCVisualTreeOptimization) &&
-      !ink_renderer_->HasBeenInitialized();
-
-  // Optimized and not optimized trees are incompatible and cannot be reused
-  // for incremental updates. Rebuild visual tree if switching between optimized
-  // and not optimized trees or vice versa. It will be removed once delegated
-  // ink trails work with optimized DCOMP trees.
-  if (visual_tree_ &&
-      use_visual_tree_optimization != visual_tree_->tree_optimized()) {
-    visual_tree_ = nullptr;
-  }
-
-  // TODO(http://crbug.com/1380822): Implement tree optimization where the
-  // tree is built incrementally and does not require full rebuild.
-  if (use_visual_tree_optimization) {
-    NOTREACHED();
-    return false;
-  }
+  const bool use_visual_tree_optimization =
+      base::FeatureList::IsEnabled(features::kDCompVisualTreeOptimization);
 
   if (!visual_tree_) {
     visual_tree_ = std::make_unique<VisualTree>(this);
   }
 
-  return visual_tree_->UpdateTree(overlays, needs_rebuild_visual_tree);
+  if (use_visual_tree_optimization) {
+    return visual_tree_->BuildTreeOptimized(overlays,
+                                            needs_rebuild_visual_tree);
+  } else {
+    return visual_tree_->BuildTreeDefault(overlays, needs_rebuild_visual_tree);
+  }
 }
 
 bool DCLayerTree::ScheduleDCLayer(
@@ -916,6 +1234,18 @@ bool DCLayerTree::ScheduleDCLayer(
   pending_overlays_.push_back(std::move(params));
   return true;
 }
+
+#if DCHECK_IS_ON()
+bool DCLayerTree::GetAttachedToRootFromPreviousFrameForTesting(
+    size_t index) const {
+  CHECK_IS_TEST();
+  return visual_tree_
+             ? visual_tree_
+                   ->GetAttachedToRootFromPreviousFrameForTesting(  // IN-TEST
+                       index)
+             : false;
+}
+#endif  // DCHECK_IS_ON()
 
 void DCLayerTree::SetFrameRate(float frame_rate) {
   frame_rate_ = frame_rate;
@@ -931,7 +1261,7 @@ bool DCLayerTree::InitializeInkRenderer() {
   return ink_renderer_->Initialize(dcomp_device_, root_swap_chain_);
 }
 
-void DCLayerTree::AddDelegatedInkVisualToTreeIfNeeded(
+bool DCLayerTree::AddDelegatedInkVisualToTreeIfNeeded(
     IDCompositionVisual2* root_surface_visual) {
   // Only add the ink visual to the tree if it has already been initialized.
   // It will only have been initialized if delegated ink has been used, so
@@ -940,13 +1270,13 @@ void DCLayerTree::AddDelegatedInkVisualToTreeIfNeeded(
   // changed the ink visual and delegated ink object can be updated
   // accordingly.
   if (!ink_renderer_->HasBeenInitialized()) {
-    return;
+    return false;
   }
 
   // Reinitialize the ink renderer in case the root swap chain or dcomp
   // device changed since initialization.
   if (!InitializeInkRenderer()) {
-    return;
+    return false;
   }
 
   DCHECK(SupportsDelegatedInk());
@@ -954,6 +1284,7 @@ void DCLayerTree::AddDelegatedInkVisualToTreeIfNeeded(
   // Adding the ink visual to a new visual tree invalidates all previously set
   // properties. Therefore, force update.
   ink_renderer_->SetNeedsDcompPropertiesUpdate();
+  return true;
 }
 
 void DCLayerTree::SetDelegatedInkTrailStartPoint(

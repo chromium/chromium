@@ -91,6 +91,7 @@ namespace features {
 GL_EXPORT BASE_DECLARE_FEATURE(kDCompDebugVisualization);
 GL_EXPORT BASE_DECLARE_FEATURE(kDCompTripleBufferRootSwapChain);
 GL_EXPORT BASE_DECLARE_FEATURE(kDCompTripleBufferVideoSwapChain);
+GL_EXPORT BASE_DECLARE_FEATURE(kDCompVisualTreeOptimization);
 GL_EXPORT BASE_DECLARE_FEATURE(kDirectCompositionGpuVSync);
 GL_EXPORT BASE_DECLARE_FEATURE(kDirectCompositionLowLatencyPresentation);
 GL_EXPORT BASE_DECLARE_FEATURE(kDirectCompositionVerifyDrawOffset);
