@@ -12,7 +12,7 @@ Design doc: https://docs.google.com/document/d/1W3V81l94slAC_rPcTKWXgv3YxRxtlSIA
 from collections import defaultdict
 import logging
 import re
-from typing import Optional
+from typing import NamedTuple, Optional
 
 from blinkpy.common.net.luci_auth import LuciAuth
 from blinkpy.common.path_finder import PathFinder
@@ -26,7 +26,8 @@ _log = logging.getLogger(__name__)
 GITHUB_COMMIT_PREFIX = WPT_GH_URL + 'commit/'
 SHORT_GERRIT_PREFIX = 'https://crrev.com/c/'
 
-class ImportNotifier(object):
+
+class ImportNotifier:
     def __init__(self, host, chromium_git, local_wpt):
         self.host = host
         self.git = chromium_git
@@ -120,11 +121,8 @@ class ImportNotifier(object):
             for baseline in changed_baselines:
                 if self.more_failures_in_baseline(baseline):
                     self.new_failures_by_directory[directory].append(
-                        TestFailure(
-                            TestFailure.BASELINE_CHANGE,
-                            test_name,
-                            baseline_path=baseline,
-                            gerrit_url_with_ps=gerrit_url_with_ps))
+                        TestFailure.from_baseline(test_name, baseline,
+                                                  gerrit_url_with_ps))
 
     def more_failures_in_baseline(self, baseline):
         """Determines if a testharness.js baseline file has new failures.
@@ -166,10 +164,8 @@ class ImportNotifier(object):
 
             for expectation_line in expectation_lines:
                 self.new_failures_by_directory[directory].append(
-                    TestFailure(
-                        TestFailure.NEW_EXPECTATION,
-                        test_name,
-                        expectation_line=expectation_line))
+                    TestFailure.from_expectation_line(test_name,
+                                                      expectation_line))
 
     def create_bugs_from_new_failures(self, wpt_revision_start,
                                       wpt_revision_end, gerrit_url):
@@ -215,9 +211,8 @@ class ImportNotifier(object):
             prologue = ('WPT import {} introduced new failures in {}:\n\n'
                         'List of new failures:\n'.format(
                             gerrit_url, directory))
-            failure_list = ''
-            for failure in failures:
-                failure_list += str(failure) + '\n'
+            failure_list = ''.join(f'{failure.message}\n'
+                                   for failure in failures)
 
             expectations_statement = (
                 '\nExpectations or baseline files [0] have been automatically '
@@ -325,59 +320,24 @@ class ImportNotifier(object):
         return self._monorail_api(access_token=token)
 
 
-class TestFailure(object):
+class TestFailure(NamedTuple):
     """A simple abstraction of a new test failure for the notifier."""
+    message: str
+    test: str
 
-    # Failure types:
-    BASELINE_CHANGE = 1
-    NEW_EXPECTATION = 2
-
-    def __init__(self,
-                 failure_type,
-                 test_name,
-                 expectation_line='',
-                 baseline_path='',
-                 gerrit_url_with_ps=''):
-        if failure_type == self.BASELINE_CHANGE:
-            assert baseline_path and gerrit_url_with_ps
-        else:
-            assert failure_type == self.NEW_EXPECTATION
-            assert expectation_line
-
-        self.failure_type = failure_type
-        self.test_name = test_name
-        self.expectation_line = expectation_line
-        self.baseline_path = baseline_path
-        self.gerrit_url_with_ps = gerrit_url_with_ps
-
-    def __str__(self):
-        if self.failure_type == self.BASELINE_CHANGE:
-            return self._format_baseline_change()
-        else:
-            return self._format_new_expectation()
-
-    def __eq__(self, other):
-        return (self.failure_type == other.failure_type
-                and self.test_name == other.test_name
-                and self.expectation_line == other.expectation_line
-                and self.baseline_path == other.baseline_path
-                and self.gerrit_url_with_ps == other.gerrit_url_with_ps)
-
-    def _format_baseline_change(self):
-        assert self.failure_type == self.BASELINE_CHANGE
-        result = ''
-        # TODO(robertma): Is there any better way than using regexp?
-        platform = re.search(r'/platform/([^/]+)/', self.baseline_path)
+    @classmethod
+    def from_baseline(cls, test: str, baseline_path: str,
+                      gerrit_url_with_ps: str) -> 'TestFailure':
+        message = ''
+        platform = re.search(r'/platform/([^/]+)/', baseline_path)
         if platform:
-            result += '[ {} ] '.format(platform.group(1).capitalize())
-        result += '{} new failing tests: {}{}'.format(
-            self.test_name, self.gerrit_url_with_ps, self.baseline_path)
-        return result
+            message += '[ {} ] '.format(platform.group(1).capitalize())
+        message += f'{test} new failing tests: '
+        message += gerrit_url_with_ps + baseline_path
+        return cls(message, test)
 
-    def _format_new_expectation(self):
-        assert self.failure_type == self.NEW_EXPECTATION
-        # TODO(robertma): Are there saner ways to remove the link to the umbrella bug?
-        line = self.expectation_line
+    @classmethod
+    def from_expectation_line(cls, test: str, line: str) -> 'TestFailure':
         if line.startswith(WPTExpectationsUpdater.UMBRELLA_BUG):
             line = line[len(WPTExpectationsUpdater.UMBRELLA_BUG):].lstrip()
-        return line
+        return cls(line, test)

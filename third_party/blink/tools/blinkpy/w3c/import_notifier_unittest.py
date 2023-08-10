@@ -180,14 +180,12 @@ class ImportNotifierTest(unittest.TestCase):
         self.assertEqual(
             self.notifier.new_failures_by_directory, {
                 'external/wpt/foo': [
-                    TestFailure(
-                        TestFailure.BASELINE_CHANGE,
+                    TestFailure.from_baseline(
                         'external/wpt/foo/bar.html',
                         baseline_path=RELATIVE_WEB_TESTS +
                         'external/wpt/foo/bar-expected.txt',
                         gerrit_url_with_ps=gerrit_url_with_ps),
-                    TestFailure(
-                        TestFailure.BASELINE_CHANGE,
+                    TestFailure.from_baseline(
                         'external/wpt/foo/bar.html',
                         baseline_path=RELATIVE_WEB_TESTS +
                         'platform/linux/external/wpt/foo/bar-expected.txt',
@@ -208,16 +206,12 @@ class ImportNotifierTest(unittest.TestCase):
         self.assertEqual(
             self.notifier.new_failures_by_directory, {
                 'external/wpt/foo': [
-                    TestFailure(
-                        TestFailure.NEW_EXPECTATION,
+                    TestFailure.from_expectation_line(
                         'external/wpt/foo/bar.html',
-                        expectation_line=
                         'crbug.com/12345 [ Linux ] external/wpt/foo/bar.html [ Fail ]'
                     ),
-                    TestFailure(
-                        TestFailure.NEW_EXPECTATION,
+                    TestFailure.from_expectation_line(
                         'external/wpt/foo/bar.html',
-                        expectation_line=
                         'crbug.com/12345 [ Win ] external/wpt/foo/bar.html [ Timeout ]'
                     ),
                 ]
@@ -287,17 +281,13 @@ class ImportNotifierTest(unittest.TestCase):
 
         self.notifier.new_failures_by_directory = {
             'external/wpt/foo': [
-                TestFailure(
-                    TestFailure.NEW_EXPECTATION,
+                TestFailure.from_expectation_line(
                     'external/wpt/foo/baz.html',
-                    expectation_line=
                     'crbug.com/12345 external/wpt/foo/baz.html [ Fail ]')
             ],
             'external/wpt/bar': [
-                TestFailure(
-                    TestFailure.NEW_EXPECTATION,
+                TestFailure.from_expectation_line(
                     'external/wpt/bar/baz.html',
-                    expectation_line=
                     'crbug.com/12345 external/wpt/bar/baz.html [ Fail ]')
             ]
         }
@@ -314,13 +304,15 @@ class ImportNotifierTest(unittest.TestCase):
             bugs[0].body['summary'],
             '[WPT] New failures introduced in external/wpt/foo by import https://crrev.com/c/12345'
         )
+        self.assertIn('crbug.com/12345 external/wpt/foo/baz.html [ Fail ]',
+                      bugs[0].body['description'].splitlines())
 
     def test_file_bug_without_owners(self):
         """A bug should be filed, even without OWNERS next to DIR_METADATA."""
         self.notifier.new_failures_by_directory = {
             'external/wpt/foo': [
-                TestFailure(
-                    TestFailure.NEW_EXPECTATION, 'external/wpt/foo/baz.html',
+                TestFailure.from_expectation_line(
+                    'external/wpt/foo/baz.html',
                     'crbug.com/12345 external/wpt/foo/baz.html [ Fail ]'),
             ],
         }
@@ -362,44 +354,37 @@ class ImportNotifierTest(unittest.TestCase):
 
 class TestFailureTest(unittest.TestCase):
     def test_test_failure_to_str_baseline_change(self):
-        failure = TestFailure(
-            TestFailure.BASELINE_CHANGE,
+        failure = TestFailure.from_baseline(
             'external/wpt/foo/bar.html',
             baseline_path=RELATIVE_WEB_TESTS +
             'external/wpt/foo/bar-expected.txt',
             gerrit_url_with_ps='https://crrev.com/c/12345/3/')
         self.assertEqual(
-            str(failure),
+            failure.message,
             'external/wpt/foo/bar.html new failing tests: https://crrev.com/c/12345/3/'
             + RELATIVE_WEB_TESTS + 'external/wpt/foo/bar-expected.txt')
 
-        platform_failure = TestFailure(
-            TestFailure.BASELINE_CHANGE,
+        platform_failure = TestFailure.from_baseline(
             'external/wpt/foo/bar.html',
             baseline_path=RELATIVE_WEB_TESTS +
             'platform/linux/external/wpt/foo/bar-expected.txt',
             gerrit_url_with_ps='https://crrev.com/c/12345/3/')
         self.assertEqual(
-            str(platform_failure),
+            platform_failure.message,
             '[ Linux ] external/wpt/foo/bar.html new failing tests: https://crrev.com/c/12345/3/'
             + RELATIVE_WEB_TESTS +
             'platform/linux/external/wpt/foo/bar-expected.txt')
 
     def test_test_failure_to_str_new_expectation(self):
-        failure = TestFailure(
-            TestFailure.NEW_EXPECTATION,
+        failure = TestFailure.from_expectation_line(
             'external/wpt/foo/bar.html',
-            expectation_line=
             'crbug.com/12345 [ Linux ] external/wpt/foo/bar.html [ Fail ]')
         self.assertEqual(
-            str(failure),
+            failure.message,
             'crbug.com/12345 [ Linux ] external/wpt/foo/bar.html [ Fail ]')
 
-        failure_with_umbrella_bug = TestFailure(
-            TestFailure.NEW_EXPECTATION,
+        failure_with_umbrella_bug = TestFailure.from_expectation_line(
             'external/wpt/foo/bar.html',
-            expectation_line=UMBRELLA_BUG +
-            ' external/wpt/foo/bar.html [ Fail ]')
-        self.assertEqual(
-            str(failure_with_umbrella_bug),
-            'external/wpt/foo/bar.html [ Fail ]')
+            UMBRELLA_BUG + ' external/wpt/foo/bar.html [ Fail ]')
+        self.assertEqual(failure_with_umbrella_bug.message,
+                         'external/wpt/foo/bar.html [ Fail ]')
