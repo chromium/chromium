@@ -1247,11 +1247,13 @@ void WallpaperControllerImpl::ShowUserWallpaper(
   base::FilePath wallpaper_path =
       GetCustomWallpaperDir(sub_dir).Append(info.location);
 
-  CustomWallpaperMap::iterator it = wallpaper_cache_map_.find(account_id);
   // Do not try to load the wallpaper if the path is the same, since loading
   // could still be in progress. We ignore the existence of the image.
-  if (it != wallpaper_cache_map_.end() && it->second.first == wallpaper_path)
+  base::FilePath cached_wallpaper_path;
+  if (GetPathFromCache(account_id, &cached_wallpaper_path) &&
+      cached_wallpaper_path == wallpaper_path) {
     return;
+  }
 
   // Set the new path and reset the existing image - the image will be
   // added once it becomes available.
@@ -1324,8 +1326,7 @@ void WallpaperControllerImpl::RemoveOverrideWallpaper() {
 void WallpaperControllerImpl::RemoveUserWallpaper(
     const AccountId& account_id,
     base::OnceClosure on_removed) {
-  if (base::Contains(wallpaper_cache_map_, account_id))
-    wallpaper_cache_map_.erase(account_id);
+  wallpaper_cache_map_.erase(account_id);
   pref_manager_->RemoveUserWallpaperInfo(account_id);
   RemoveUserWallpaperImpl(account_id, std::move(on_removed));
 }
