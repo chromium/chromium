@@ -104,7 +104,7 @@ class ScopedAddListenerObserver : public EventRouter::Observer {
   }
 
  private:
-  const std::string extension_id_;
+  const ExtensionId extension_id_;
   base::OnceClosure callback_;
   const raw_ptr<EventRouter, ExperimentalAsh> event_router_;
 };
