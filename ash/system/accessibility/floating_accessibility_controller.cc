@@ -163,7 +163,6 @@ void FloatingAccessibilityController::OnDetailedMenuEnabled(bool enabled) {
     Shell::Get()
         ->accessibility_controller()
         ->UpdateAutoclickMenuBoundsIfNeeded();
-    bubble_view_->GetFocusManager()->ClearFocus();
   }
 }
 

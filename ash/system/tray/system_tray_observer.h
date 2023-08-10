@@ -29,9 +29,6 @@ class ASH_EXPORT SystemTrayObserver {
   // when the bubble shows/hides.
   virtual void OnTrayBubbleBoundsChanged(TrayBubbleView* tray_bubble) {}
 
-  // Called when the IME Menu Tray Bubble is shown.
-  virtual void OnImeMenuTrayBubbleShown() {}
-
  protected:
   virtual ~SystemTrayObserver() = default;
 };
