@@ -9,16 +9,16 @@
 
 #include "base/memory/scoped_refptr.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_favicon_data_source.h"
-#include "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/ui/settings/password/password_manager_view_controller_delegate.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 
 class FaviconLoader;
 class IOSChromePasswordCheckManager;
 @protocol PasswordsConsumer;
+class PrefService;
 
-namespace password_manager {
-struct CredentialUIEntry;
+namespace syncer {
+class SyncService;
 }
 
 // This mediator fetches and organises the passwords for its consumer.
@@ -31,6 +31,7 @@ struct CredentialUIEntry;
                         passwordCheckManager
                                faviconLoader:(FaviconLoader*)faviconLoader
                                  syncService:(syncer::SyncService*)syncService
+                                 prefService:(PrefService*)prefService
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

@@ -175,7 +175,8 @@ using password_manager::WarningType;
                                        GetForBrowserState(browserState)
                      faviconLoader:faviconLoader
                        syncService:SyncServiceFactory::GetForBrowserState(
-                                       browserState)];
+                                       browserState)
+                       prefService:browserState->GetPrefs()];
   self.reauthModule = password_manager::BuildReauthenticationModule(
       /*successfulReauthTimeAccessor=*/self.mediator);
   ChromeAccountManagerService* accountManagerService =

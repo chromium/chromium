@@ -34,6 +34,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller_test.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
+#import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_check_item.h"
 #import "ios/chrome/browser/ui/settings/password/password_manager_view_controller+private.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_consumer.h"
@@ -119,7 +120,8 @@ class PasswordManagerViewControllerTest : public ChromeTableViewControllerTest {
                        faviconLoader:IOSChromeFaviconLoaderFactory::
                                          GetForBrowserState(browserState)
                          syncService:SyncServiceFactory::GetForBrowserState(
-                                         browserState)];
+                                         browserState)
+                         prefService:browserState->GetPrefs()];
     mediator_.encryptionState = OnDeviceEncryptionStateNotShown;
 
     // Inject some fake passwords to pass the loading state.

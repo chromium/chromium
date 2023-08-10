@@ -28,6 +28,7 @@
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller_test.h"
 #import "ios/chrome/browser/sync/sync_observer_bridge.h"
+#import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_consumer.h"
 #import "ios/chrome/browser/ui/settings/utils/password_auto_fill_status_observer.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -135,7 +136,8 @@ class PasswordsMediatorTest : public BlockCleanupTest {
                                          GetForBrowserState(
                                              browser_state_.get())
                          syncService:SyncServiceFactory::GetForBrowserState(
-                                         browser_state_.get())];
+                                         browser_state_.get())
+                         prefService:browser_state_->GetPrefs()];
     mediator_.consumer = consumer_;
   }
 
