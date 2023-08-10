@@ -31,6 +31,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdownEmbedder.OmniboxAlignment;
 import org.chromium.chrome.test.util.browser.Features;
@@ -93,6 +94,7 @@ public class OmniboxSuggestionsDropdownEmbedderImplTest {
     }
 
     @Test
+    @DisabledTest(message = "https://crbug.com/1471093")
     public void testWindowAttachment() {
         verify(mAnchorView, never()).addOnLayoutChangeListener(mImpl);
         verify(mHorizontalAlignmentView, never()).addOnLayoutChangeListener(mImpl);
