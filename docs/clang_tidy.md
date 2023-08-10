@@ -69,13 +69,13 @@ solutions = [
 Your next run of `gclient runhooks` should cause clang-tidy to be synced.
 
 To run clang-tidy across all of Chromium, you'll need a checkout of Chromium's
-[build/](https://chromium.googlesource.com/chromium/tools/build) repository.
+[tools/build/](https://chromium.googlesource.com/chromium/tools/build) repository.
 Once you have that and a Chromium `out/` dir with an `args.gn`, running
 clang-tidy across all of Chromium is a single command:
 
 ```
 $ cd ${chromium}/src
-$ ${chromium_build}/recipes/recipe_modules/tricium_clang_tidy/resources/tricium_clang_tidy_script.py \
+$ ${chromium_tools_build}/recipes/recipe_modules/tricium_clang_tidy/resources/tricium_clang_tidy_script.py \
     --base_path $PWD \
     --out_dir out/Linux \
     --findings_file all_findings.json \
