@@ -493,7 +493,6 @@ public class StartSurfaceTest {
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
 
     @EnableFeatures({ChromeFeatureList.START_SURFACE_RETURN_TIME + "<Study",
-            ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID,
             ChromeFeatureList.START_SURFACE_ANDROID + "<Study"})
     @CommandLineFlags.Add({START_SURFACE_TEST_BASE_PARAMS
                     + "open_ntp_instead_of_start/false/open_start_as_homepage/true",
@@ -511,7 +510,6 @@ public class StartSurfaceTest {
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
     // clang-format off
     @EnableFeatures({ChromeFeatureList.START_SURFACE_RETURN_TIME + "<Study",
-        ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID,
         ChromeFeatureList.START_SURFACE_ANDROID + "<Study"})
     @CommandLineFlags.Add({START_SURFACE_TEST_SINGLE_ENABLED_PARAMS,
         // Disable feed placeholder animation because it causes waitForDeferredStartup() to time

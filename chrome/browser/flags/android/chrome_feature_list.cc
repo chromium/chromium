@@ -312,7 +312,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kTabStripRedesign,
     &kTabletToolbarReordering,
     &kTabStripStartupRefactoring,
-    &kTabGridLayoutAndroid,
     &kTabToGTSAnimation,
     &kTestDefaultDisabled,
     &kTestDefaultEnabled,
@@ -619,7 +618,6 @@ BASE_FEATURE(kCCTResourcePrefetch,
 BASE_FEATURE(kCCTTextFragmentLookupApiEnabled,
              "CCTTextFragmentLookupApiEnabled",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
 
 BASE_FEATURE(kCCTToolbarCustomizations,
              "CCTToolbarCustomizations",
@@ -1026,10 +1024,6 @@ BASE_FEATURE(kTabGroupsContinuationAndroid,
 
 BASE_FEATURE(kTabGroupsForTablets,
              "TabGroupsForTablets",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kTabGridLayoutAndroid,
-             "TabGridLayoutAndroid",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTabStripRedesign,

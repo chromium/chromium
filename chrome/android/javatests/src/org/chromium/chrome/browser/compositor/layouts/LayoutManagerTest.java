@@ -422,7 +422,6 @@ public class LayoutManagerTest implements MockTabModelDelegate {
     @Features.DisableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID})
     public void testStartSurfaceLayout_Disabled_LowEndPhone() throws Exception {
         // clang-format on
-        ChromeFeatureList.sTabGridLayoutAndroid.setForTesting(true);
         launchAndVerifyOverviewListLayout();
 
         TabUiTestHelper.finishActivity(mActivityTestRule.getActivity());
@@ -469,11 +468,6 @@ public class LayoutManagerTest implements MockTabModelDelegate {
             ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID})
     public void testTabSwitcherLayout_Enabled_HighEndPhone() throws Exception {
         // clang-format on
-        ChromeFeatureList.sTabGridLayoutAndroid.setForTesting(true);
-        verifyTabSwitcherLayoutEnable(TabListCoordinator.TabListMode.GRID);
-
-        TabUiTestHelper.finishActivity(mActivityTestRule.getActivity());
-        ChromeFeatureList.sTabGridLayoutAndroid.setForTesting(false);
         verifyTabSwitcherLayoutEnable(TabListCoordinator.TabListMode.GRID);
 
         // Verify accessibility
@@ -552,7 +546,6 @@ public class LayoutManagerTest implements MockTabModelDelegate {
     @MediumTest
     @DisableIf.Build(sdk_is_greater_than = N_MR1, message = "crbug.com/1139943")
     @DisabledTest(message = "crbug.com/1216438") // Failures on N.
-    @Features.EnableFeatures({ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID})
     public void testLayoutObserverNotification_ShowAndHide_TabSwitcher() throws TimeoutException {
         LayoutObserverCallbackHelper startedShowingCallback = new LayoutObserverCallbackHelper();
         LayoutObserverCallbackHelper finishedShowingCallback = new LayoutObserverCallbackHelper();
@@ -764,7 +757,6 @@ public class LayoutManagerTest implements MockTabModelDelegate {
 
     @After
     public void tearDown() {
-        ChromeFeatureList.sTabGridLayoutAndroid.setForTesting(null);
         ChromeFeatureList.sTabGroupsAndroid.setForTesting(null);
         setAccessibilityEnabledForTesting(null);
         CachedFeatureFlags.resetFlagsForTesting();

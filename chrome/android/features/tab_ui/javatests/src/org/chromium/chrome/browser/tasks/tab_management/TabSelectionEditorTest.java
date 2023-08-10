@@ -1516,12 +1516,7 @@ public class TabSelectionEditorTest {
     // This is a regression test for crbug.com/1132478.
     @Test
     @MediumTest
-    // clang-format off
-    @EnableFeatures({ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID + "<Study"})
-    @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
-            "force-fieldtrial-params=Study.Group:enable_launch_polish/true"})
     public void testTabSelectionEditorContentDescription() {
-        // clang-format on
         prepareBlankTab(2, false);
         List<Tab> tabs = getTabsInCurrentTabModel();
         showSelectionEditor(tabs);
@@ -1549,12 +1544,7 @@ public class TabSelectionEditorTest {
 
     @Test
     @MediumTest
-    // clang-format off
-    @EnableFeatures({ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID + "<Study"})
-    @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
-        "force-fieldtrial-params=Study.Group:enable_launch_polish/true"})
     public void testEditorHideCorrectly() {
-        // clang-format on
         prepareBlankTab(2, false);
         List<Tab> tabs = getTabsInCurrentTabModel();
         showSelectionEditor(tabs);

@@ -49,12 +49,10 @@ public class AdaptiveToolbarTest {
 
     @After
     public void tearDown() {
-        ChromeFeatureList.sTabGridLayoutAndroid.setForTesting(null);
         ActivityTestUtils.clearActivityOrientation(mActivityTestRule.getActivity());
     }
 
-    private void setupFlagsAndLaunchActivity(boolean isGridTabSwitcherEnabled) {
-        ChromeFeatureList.sTabGridLayoutAndroid.setForTesting(isGridTabSwitcherEnabled);
+    private void setupAndLaunchActivity() {
         mActivityTestRule.startMainActivityOnBlankPage();
         CriteriaHelper.pollUiThread(
                 mActivityTestRule.getActivity().getTabModelSelector()::isTabStateInitialized);
@@ -62,11 +60,9 @@ public class AdaptiveToolbarTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures(
-            {ChromeFeatureList.TAB_GROUPS_ANDROID, ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID})
-    public void
-    testTopToolbar() {
-        setupFlagsAndLaunchActivity(true);
+    @Features.EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID})
+    public void testTopToolbar() {
+        setupAndLaunchActivity();
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         TabUiTestHelper.verifyTabSwitcherLayoutType(mActivityTestRule.getActivity());
         enterTabSwitcher(cta);
@@ -87,12 +83,10 @@ public class AdaptiveToolbarTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures(
-            {ChromeFeatureList.TAB_GROUPS_ANDROID, ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID})
-    public void
-    testTopToolbar_IncognitoDisabled() {
+    @Features.EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID})
+    public void testTopToolbar_IncognitoDisabled() {
         IncognitoUtils.setEnabledForTesting(false);
-        setupFlagsAndLaunchActivity(true);
+        setupAndLaunchActivity();
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         TabUiTestHelper.verifyTabSwitcherLayoutType(cta);
         enterTabSwitcher(cta);

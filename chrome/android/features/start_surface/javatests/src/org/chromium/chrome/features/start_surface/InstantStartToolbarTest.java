@@ -62,8 +62,7 @@ import java.io.IOException;
 @CommandLineFlags.
     Add({ChromeSwitches.DISABLE_NATIVE_INITIALIZATION, ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
     "force-fieldtrials=Study/Group"})
-@EnableFeatures({ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID,
-    ChromeFeatureList.START_SURFACE_RETURN_TIME + "<Study,",
+@EnableFeatures({ChromeFeatureList.START_SURFACE_RETURN_TIME + "<Study,",
     ChromeFeatureList.START_SURFACE_ANDROID + "<Study", ChromeFeatureList.INSTANT_START})
 @Restriction({Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE,
     UiRestriction.RESTRICTION_TYPE_PHONE})

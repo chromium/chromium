@@ -38,7 +38,6 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.START_SURFACE_REFACTOR;
-import static org.chromium.chrome.browser.flags.ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.TAB_GROUPS_ANDROID;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.TAB_GROUPS_FOR_TABLETS;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.addBlankTabs;
@@ -152,7 +151,7 @@ import java.util.concurrent.ExecutionException;
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Restriction({Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE})
-@Features.EnableFeatures({TAB_GRID_LAYOUT_ANDROID, TAB_GROUPS_ANDROID,
+@Features.EnableFeatures({TAB_GROUPS_ANDROID,
     TAB_GROUPS_FOR_TABLETS, START_SURFACE_REFACTOR})
 @Batch(Batch.PER_CLASS)
 public class TabGridDialogTest {

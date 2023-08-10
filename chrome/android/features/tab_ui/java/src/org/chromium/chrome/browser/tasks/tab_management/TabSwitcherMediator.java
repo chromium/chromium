@@ -32,7 +32,6 @@ import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.StrictModeContext;
-import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -86,10 +85,7 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
                                      TabSwitcherCustomViewManager.Delegate, BackPressHandler {
     private static final String TAG = "TabSwitcherMediator";
 
-    /** Field trial parameter for the {@link TabListRecyclerView} cleanup delay. */
-    private static final String SOFT_CLEANUP_DELAY_PARAM = "soft-cleanup-delay";
     private static final int DEFAULT_SOFT_CLEANUP_DELAY_MS = 3_000;
-    private static final String CLEANUP_DELAY_PARAM = "cleanup-delay";
     private static final int DEFAULT_CLEANUP_DELAY_MS = 30_000;
 
     private final Handler mHandler;
@@ -592,13 +588,8 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
 
     private int getSoftCleanupDelay() {
         if (mSoftCleanupDelayMsForTesting != null) return mSoftCleanupDelayMsForTesting;
-        if (!LibraryLoader.getInstance().isInitialized()) {
-            return 0;
-        }
 
-        return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
-                ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID, SOFT_CLEANUP_DELAY_PARAM,
-                DEFAULT_SOFT_CLEANUP_DELAY_MS);
+        return DEFAULT_SOFT_CLEANUP_DELAY_MS;
     }
 
     int getCleanupDelayForTesting() {
@@ -607,13 +598,8 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
 
     private int getCleanupDelay() {
         if (mCleanupDelayMsForTesting != null) return mCleanupDelayMsForTesting;
-        if (!LibraryLoader.getInstance().isInitialized()) {
-            return 0;
-        }
 
-        return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
-                ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID, CLEANUP_DELAY_PARAM,
-                DEFAULT_CLEANUP_DELAY_MS);
+        return DEFAULT_CLEANUP_DELAY_MS;
     }
 
     private void setVisibility(boolean isVisible) {

@@ -24,7 +24,6 @@ import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import static org.chromium.chrome.browser.flags.ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.TAB_GROUPS_ANDROID;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.clickFirstCardFromTabSwitcher;
@@ -90,7 +89,7 @@ import java.util.concurrent.atomic.AtomicReference;
 // clang-format off
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-@Features.EnableFeatures({TAB_GRID_LAYOUT_ANDROID, TAB_GROUPS_ANDROID,
+@Features.EnableFeatures({TAB_GROUPS_ANDROID,
     TAB_GROUPS_CONTINUATION_ANDROID})
 @Batch(Batch.PER_CLASS)
 public class TabGroupUiTest {

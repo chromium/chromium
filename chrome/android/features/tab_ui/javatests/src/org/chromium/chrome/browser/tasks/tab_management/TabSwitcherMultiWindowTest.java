@@ -60,7 +60,6 @@ import org.chromium.ui.test.util.UiRestriction;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
         ChromeSwitches.DISABLE_TAB_MERGING_FOR_TESTING})
 @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
-@Features.EnableFeatures({ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID})
 @Batch(Batch.PER_CLASS)
 public class TabSwitcherMultiWindowTest {
     // clang-format on

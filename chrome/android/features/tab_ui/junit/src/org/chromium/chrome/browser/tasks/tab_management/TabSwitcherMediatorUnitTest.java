@@ -91,7 +91,7 @@ import java.util.List;
 @LooperMode(LooperMode.Mode.LEGACY)
 @DisableFeatures(
         {ChromeFeatureList.START_SURFACE_RETURN_TIME, ChromeFeatureList.START_SURFACE_ANDROID})
-@EnableFeatures({ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID, ChromeFeatureList.TAB_TO_GTS_ANIMATION})
+@EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION})
 public class TabSwitcherMediatorUnitTest {
     @Rule
     public TestRule mProcessor = new Features.JUnitProcessor();

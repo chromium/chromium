@@ -151,16 +151,13 @@ import java.util.concurrent.atomic.AtomicReference;
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
         "force-fieldtrials=Study/Group"})
-@EnableFeatures({
-        ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID + "<Study",
-        ChromeFeatureList.EMPTY_STATES})
+@EnableFeatures({ChromeFeatureList.EMPTY_STATES})
 @Restriction(
         {UiRestriction.RESTRICTION_TYPE_PHONE, Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE})
 public class TabSwitcherAndStartSurfaceLayoutTest {
     // clang-format on
     private static final String BASE_PARAMS = "force-fieldtrial-params="
-            + "Study.Group:soft-cleanup-delay/0/cleanup-delay/0/skip-slow-zooming/false"
-            + "/zooming-min-memory-mb/512";
+            + "Study.Group:skip-slow-zooming/false/zooming-min-memory-mb/512";
 
     private static final String TEST_URL = "/chrome/test/data/android/google.html";
 
@@ -444,8 +441,8 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     testTabToGridFromLiveTab(boolean isStartSurfaceRefactorEnabled) throws InterruptedException {
         assertFalse(
                 TabUiFeatureUtilities.isTabToGtsAnimationEnabled(mActivityTestRule.getActivity()));
-        assertEquals(0, mTabListDelegate.getSoftCleanupDelayForTesting());
-        assertEquals(0, mTabListDelegate.getCleanupDelayForTesting());
+        assertEquals(3_000, mTabListDelegate.getSoftCleanupDelayForTesting());
+        assertEquals(30_000, mTabListDelegate.getCleanupDelayForTesting());
 
         prepareTabs(2, 0, NTP_URL);
         testTabToGrid(mUrl);
@@ -470,7 +467,6 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @MediumTest
     @UseMethodParameter(RefactorTestParams.class)
     @DisableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION)
-    @CommandLineFlags.Add({BASE_PARAMS + "/soft-cleanup-delay/2000/cleanup-delay/10000"})
     @DisableIf.Build(message = "https://crbug.com/1365708", supported_abis_includes = "x86",
             sdk_is_greater_than = O_MR1, sdk_is_less_than = Q)
     public void
@@ -478,8 +474,8 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
             throws InterruptedException {
         assertFalse(
                 TabUiFeatureUtilities.isTabToGtsAnimationEnabled(mActivityTestRule.getActivity()));
-        assertEquals(2000, mTabListDelegate.getSoftCleanupDelayForTesting());
-        assertEquals(10000, mTabListDelegate.getCleanupDelayForTesting());
+        assertEquals(3_000, mTabListDelegate.getSoftCleanupDelayForTesting());
+        assertEquals(30_000, mTabListDelegate.getCleanupDelayForTesting());
 
         prepareTabs(2, 0, NTP_URL);
         testTabToGrid(mUrl);
@@ -489,7 +485,7 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @MediumTest
     @UseMethodParameter(RefactorTestParams.class)
     @EnableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study")
-    @CommandLineFlags.Add({BASE_PARAMS + "/soft-cleanup-delay/2000/cleanup-delay/10000"})
+    @CommandLineFlags.Add({BASE_PARAMS})
     @DisabledTest(message = "https://crbug.com/1207875")
     public void testTabToGridFromLiveTabWarmAnimation(boolean isStartSurfaceRefactorEnabled)
             throws InterruptedException {
@@ -503,13 +499,12 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @MediumTest
     @UseMethodParameter(RefactorTestParams.class)
     @DisableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION)
-    @CommandLineFlags.Add({BASE_PARAMS + "/cleanup-delay/10000"})
     public void testTabToGridFromLiveTabSoft(boolean isStartSurfaceRefactorEnabled)
             throws InterruptedException {
         assertFalse(
                 TabUiFeatureUtilities.isTabToGtsAnimationEnabled(mActivityTestRule.getActivity()));
-        assertEquals(0, mTabListDelegate.getSoftCleanupDelayForTesting());
-        assertEquals(10000, mTabListDelegate.getCleanupDelayForTesting());
+        assertEquals(3_000, mTabListDelegate.getSoftCleanupDelayForTesting());
+        assertEquals(30_000, mTabListDelegate.getCleanupDelayForTesting());
 
         prepareTabs(2, 0, NTP_URL);
         testTabToGrid(mUrl);
@@ -519,7 +514,7 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @MediumTest
     @UseMethodParameter(RefactorTestParams.class)
     @EnableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study")
-    @CommandLineFlags.Add({BASE_PARAMS + "/cleanup-delay/10000"})
+    @CommandLineFlags.Add({BASE_PARAMS})
     @DisabledTest(message = "https://crbug.com/1272561")
     public void testTabToGridFromLiveTabSoftAnimation(boolean isStartSurfaceRefactorEnabled)
             throws InterruptedException {
@@ -795,7 +790,7 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @MediumTest
     @UseMethodParameter(RefactorTestParams.class)
     @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
-    @CommandLineFlags.Add({BASE_PARAMS + "/soft-cleanup-delay/2000/cleanup-delay/10000"})
+    @CommandLineFlags.Add({BASE_PARAMS})
     @DisabledTest(message = "crbug.com/1130830")
     public void testInvisibleTabsDontFetchWarm(boolean isStartSurfaceRefactorEnabled)
             throws InterruptedException {
@@ -822,7 +817,7 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @MediumTest
     @UseMethodParameter(RefactorTestParams.class)
     @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
-    @CommandLineFlags.Add({BASE_PARAMS + "/cleanup-delay/10000"})
+    @CommandLineFlags.Add({BASE_PARAMS})
     @DisabledTest(message = "crbug.com/1130830")
     public void testInvisibleTabsDontFetchSoft(boolean isStartSurfaceRefactorEnabled)
             throws InterruptedException {
@@ -1003,8 +998,7 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @EnableFeatures({ChromeFeatureList.CLOSE_TAB_SUGGESTIONS + "<Study",
             ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
     @CommandLineFlags.Add({BASE_PARAMS + "/baseline_tab_suggestions/true" +
-            "/baseline_close_tab_suggestions/true/min_time_between_prefetches/0/"
-        + "soft-cleanup-delay/2000/cleanup-delay/10000"})
+            "/baseline_close_tab_suggestions/true/min_time_between_prefetches/0"})
     @DisabledTest(message = "https://crbug.com/1458026 for RefactorDisabled")
     public void testTabSuggestionMessageCard_dismiss(boolean isStartSurfaceRefactorEnable)
             throws InterruptedException {
@@ -1041,8 +1035,7 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @EnableFeatures({ChromeFeatureList.CLOSE_TAB_SUGGESTIONS + "<Study",
             ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
     @CommandLineFlags.Add({BASE_PARAMS + "/baseline_tab_suggestions/true" +
-            "/baseline_close_tab_suggestions/true/min_time_between_prefetches/0"
-        + "/soft-cleanup-delay/2000/cleanup-delay/10000"})
+            "/baseline_close_tab_suggestions/true/min_time_between_prefetches/0"})
     @DisabledTest(message = "https://crbug.com/1447282 for refactor disabled case.")
     public void testTabSuggestionMessageCard_review(boolean isStartSurfaceRefactorEnable)
             throws InterruptedException {
@@ -1111,8 +1104,7 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @EnableFeatures({ChromeFeatureList.CLOSE_TAB_SUGGESTIONS + "<Study",
             ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
     @CommandLineFlags.Add({BASE_PARAMS + "/baseline_tab_suggestions/true" +
-            "/baseline_close_tab_suggestions/true/min_time_between_prefetches/0/"
-        + "soft-cleanup-delay/2000/cleanup-delay/10000"})
+            "/baseline_close_tab_suggestions/true/min_time_between_prefetches/0"})
     @DisabledTest(message = "https://crbug.com/1311825")
     public void testTabSuggestionMessageCardDismissAfterTabClosing(
             boolean isStartSurfaceRefactorEnabled) throws InterruptedException {
@@ -1148,8 +1140,7 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @EnableFeatures({ChromeFeatureList.CLOSE_TAB_SUGGESTIONS + "<Study",
             ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
     @CommandLineFlags.Add({BASE_PARAMS + "/baseline_tab_suggestions/true" +
-            "/baseline_close_tab_suggestions/true/min_time_between_prefetches/0/"
-        + "soft-cleanup-delay/2000/cleanup-delay/10000"})
+            "/baseline_close_tab_suggestions/true/min_time_between_prefetches/0"})
     @DisabledTest(message = "https://crbug.com/1326533")
     public void testTabSuggestionMessageCard_orientation(boolean isStartSurfaceRefactorEnabled)
             throws InterruptedException {
@@ -1587,8 +1578,7 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
             ChromeFeatureList.CLOSE_TAB_SUGGESTIONS + "<Study"})
     @DisableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION})
     @CommandLineFlags.Add({BASE_PARAMS + "/baseline_tab_suggestions/true" +
-            "/baseline_close_tab_suggestions/true/min_time_between_prefetches/0" +
-            "/soft-cleanup-delay/2000/cleanup-delay/10000"})
+            "/baseline_close_tab_suggestions/true/min_time_between_prefetches/0"})
     @DisabledTest(message = "https://crbug.com/1449985")
     public void testTabGroupManualSelection_AfterReviewTabSuggestion(
             boolean isStartSurfaceRefactorEnable) throws InterruptedException {
@@ -1670,8 +1660,7 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @MediumTest
     @UseMethodParameter(RefactorTestParams.class)
     // clang-format off
-    @EnableFeatures({ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID,
-            ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
+    @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
     public void testTabGroupNotFormDuringRestore(boolean isStartSurfaceRefactorEnabled)
             throws Exception {
         // clang-format on

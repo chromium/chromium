@@ -448,7 +448,6 @@ public abstract class ChromeFeatureList {
             "SyncEnableContactInfoDataTypeInTransportMode";
     public static final String TAB_DRAG_DROP_ANDROID = "TabDragDropAndroid";
     public static final String TAB_ENGAGEMENT_REPORTING_ANDROID = "TabEngagementReportingAndroid";
-    public static final String TAB_GRID_LAYOUT_ANDROID = "TabGridLayoutAndroid";
     public static final String TAB_GROUPS_ANDROID = "TabGroupsAndroid";
     public static final String TAB_GROUPS_CONTINUATION_ANDROID = "TabGroupsContinuationAndroid";
     public static final String TAB_GROUPS_FOR_TABLETS = "TabGroupsForTablets";
@@ -595,8 +594,6 @@ public abstract class ChromeFeatureList {
             true);
     public static final CachedFlag sTabDragDropAndroid =
             new CachedFlag(TAB_DRAG_DROP_ANDROID, false);
-    public static final CachedFlag sTabGridLayoutAndroid = new CachedFlag(TAB_GRID_LAYOUT_ANDROID,
-            ChromePreferenceKeys.FLAGS_CACHED_GRID_TAB_SWITCHER_ENABLED, true);
     public static final CachedFlag sTabGroupsAndroid = new CachedFlag(
             TAB_GROUPS_ANDROID, ChromePreferenceKeys.FLAGS_CACHED_TAB_GROUPS_ANDROID_ENABLED, true);
     public static final CachedFlag sTabGroupsContinuationAndroid =
@@ -677,7 +674,6 @@ public abstract class ChromeFeatureList {
         sSurfacePolish,
         sSwapPixelFormatToFixConvertFromTranslucent,
         sTabDragDropAndroid,
-        sTabGridLayoutAndroid,
         sTabGroupsAndroid,
         sTabGroupsContinuationAndroid,
         sTabGroupsForTablets,

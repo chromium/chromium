@@ -64,7 +64,6 @@ import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
  * Tests for {@link TabListRecyclerView} and {@link TabListContainerViewBinder}
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@Features.EnableFeatures({ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID})
 @Batch(Batch.PER_CLASS)
 public class TabListContainerViewBinderTest extends BlankUiTestActivityTestCase {
     /**

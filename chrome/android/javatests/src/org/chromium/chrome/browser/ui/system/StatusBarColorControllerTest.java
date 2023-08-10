@@ -65,7 +65,6 @@ import java.util.concurrent.TimeoutException;
 @Batch(Batch.PER_CLASS)
 // clang-format off
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@Features.EnableFeatures({ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID})
 public class StatusBarColorControllerTest {
     // clang-format on
     @ClassRule
