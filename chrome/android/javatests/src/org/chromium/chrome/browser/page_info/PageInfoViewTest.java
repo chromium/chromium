@@ -24,7 +24,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import org.chromium.base.test.util.DisabledTest;
 
 import static org.chromium.base.test.util.Batch.PER_CLASS;
 import static org.chromium.components.content_settings.PrefNames.COOKIE_CONTROLS_MODE;
@@ -570,8 +569,8 @@ public class PageInfoViewTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @DisabledTest(message = "Flaky - https://crbug.com/1469675")
-    public void testShowCookiesSubpage() throws IOException {
+    @Features.DisableFeatures(PageInfoFeatures.USER_BYPASS_UI_NAME)
+    public void testShowCookiesSubpageUserBypassOff() throws IOException {
         setThirdPartyCookieBlocking(CookieControlsMode.BLOCK_THIRD_PARTY);
         loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
         onView(withId(R.id.page_info_cookies_row)).perform(click());
@@ -582,7 +581,32 @@ public class PageInfoViewTest {
             assertTrue(UserPrefs.get(Profile.getLastUsedRegularProfile())
                                .getBoolean(IN_CONTEXT_COOKIE_CONTROLS_OPENED));
         });
-        mRenderTestRule.render(getPageInfoView(), "PageInfo_CookiesSubpage");
+        mRenderTestRule.render(getPageInfoView(), "PageInfo_CookiesSubpage_Flag_Off");
+    }
+
+    /**
+     * Tests the cookies page of the PageInfo UI with the Cookie Controls UI enabled.
+     */
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    @Features.EnableFeatures(PageInfoFeatures.USER_BYPASS_UI_NAME)
+    public void testShowCookiesSubpageUserBypassOn() throws IOException {
+        setThirdPartyCookieBlocking(CookieControlsMode.BLOCK_THIRD_PARTY);
+        loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
+        onView(withId(R.id.page_info_cookies_row)).perform(click());
+        onViewWaiting(allOf(
+                withText(containsString("Cookies and other site data are used")), isDisplayed()));
+        // Verify that the pref was recorded successfully.
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            assertTrue(UserPrefs.get(Profile.getLastUsedRegularProfile())
+                               .getBoolean(IN_CONTEXT_COOKIE_CONTROLS_OPENED));
+        });
+        mRenderTestRule.render(getPageInfoView(), "PageInfo_CookiesSubpage_Toggle_Off");
+        // Check that the cookie toggle is displayed and try clicking it.
+        onViewWaiting(allOf(withText(containsString("Third-party cookies")), isDisplayed()));
+        onView(withText(containsString("Third-party cookies"))).perform(click());
+        mRenderTestRule.render(getPageInfoView(), "PageInfo_CookiesSubpage_Toggle_On");
     }
 
     /**
