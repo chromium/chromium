@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Action} from 'chrome://resources/ash/common/store/store.js';
+import {Action} from 'chrome://resources/js/store_ts.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {DefaultUserImage, UserImage, UserInfo} from '../../personalization_app.mojom-webui.js';
@@ -24,10 +24,11 @@ export type UserActions = SetIsCameraPresentAction|SetUserImageAction|
     SetDefaultUserImagesAction|SetUserInfoAction|SetProfileImageAction|
     SetUserImageIsEnterpriseManagedAction;
 
-export type SetIsCameraPresentAction = Action&{
-  name: UserActionName.SET_IS_CAMERA_PRESENT,
-  isCameraPresent: boolean,
-};
+export interface SetIsCameraPresentAction extends Action {
+  name: UserActionName.SET_IS_CAMERA_PRESENT;
+  isCameraPresent: boolean;
+}
+
 
 export function setIsCameraPresentAction(isCameraPresent: boolean):
     SetIsCameraPresentAction {
@@ -37,19 +38,21 @@ export function setIsCameraPresentAction(isCameraPresent: boolean):
   };
 }
 
-export type SetUserImageAction = Action&{
-  name: UserActionName.SET_USER_IMAGE,
-  image: UserImage,
-};
+export interface SetUserImageAction extends Action {
+  name: UserActionName.SET_USER_IMAGE;
+  image: UserImage;
+}
+
 
 export function setUserImageAction(image: UserImage): SetUserImageAction {
   return {name: UserActionName.SET_USER_IMAGE, image};
 }
 
-export type SetDefaultUserImagesAction = Action&{
-  name: UserActionName.SET_DEFAULT_USER_IMAGES,
-  defaultUserImages: DefaultUserImage[],
-};
+export interface SetDefaultUserImagesAction extends Action {
+  name: UserActionName.SET_DEFAULT_USER_IMAGES;
+  defaultUserImages: DefaultUserImage[];
+}
+
 
 export function setDefaultUserImagesAction(
     defaultUserImages: DefaultUserImage[]): SetDefaultUserImagesAction {
@@ -59,10 +62,11 @@ export function setDefaultUserImagesAction(
   };
 }
 
-export type SetUserInfoAction = Action&{
-  name: UserActionName.SET_USER_INFO,
-  user_info: UserInfo,
-};
+export interface SetUserInfoAction extends Action {
+  name: UserActionName.SET_USER_INFO;
+  user_info: UserInfo;
+}
+
 
 /**
  * Notify that the app has finished loading user info. Will be called with null
@@ -75,10 +79,11 @@ export function setUserInfoAction(userInfo: UserInfo): SetUserInfoAction {
   };
 }
 
-export type SetProfileImageAction = Action&{
-  name: UserActionName.SET_PROFILE_IMAGE,
-  profileImage: Url,
-};
+export interface SetProfileImageAction extends Action {
+  name: UserActionName.SET_PROFILE_IMAGE;
+  profileImage: Url;
+}
+
 
 export function setProfileImageAction(profileImage: Url):
     SetProfileImageAction {
@@ -88,10 +93,11 @@ export function setProfileImageAction(profileImage: Url):
   };
 }
 
-export type SetUserImageIsEnterpriseManagedAction = Action&{
-  name: UserActionName.SET_USER_IMAGE_IS_ENTERPRISE_MANAGED,
-  isEnterpriseManaged: boolean,
-};
+export interface SetUserImageIsEnterpriseManagedAction extends Action {
+  name: UserActionName.SET_USER_IMAGE_IS_ENTERPRISE_MANAGED;
+  isEnterpriseManaged: boolean;
+}
+
 
 export function setUserImageIsEnterpriseManagedAction(
     isEnterpriseManaged: boolean): SetUserImageIsEnterpriseManagedAction {

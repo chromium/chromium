@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Action} from 'chrome://resources/ash/common/store/store.js';
+import {Action} from 'chrome://resources/js/store_ts.js';
 import {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
 
 import {CurrentBacklightState} from '../../personalization_app.mojom-webui.js';
@@ -20,20 +20,23 @@ export enum KeyboardBacklightActionName {
 export type KeyboardBacklightActions = SetCurrentBacklightStateAction|
     SetShouldShowNudgeAction|SetWallpaperColorAction;
 
-export type SetCurrentBacklightStateAction = Action&{
-  name: KeyboardBacklightActionName.SET_CURRENT_BACKLIGHT_STATE,
-  currentBacklightState: CurrentBacklightState,
-};
+export interface SetCurrentBacklightStateAction extends Action {
+  name: KeyboardBacklightActionName.SET_CURRENT_BACKLIGHT_STATE;
+  currentBacklightState: CurrentBacklightState;
+}
 
-export type SetShouldShowNudgeAction = Action&{
-  name: KeyboardBacklightActionName.SET_SHOULD_SHOW_NUDGE,
-  shouldShowNudge: boolean,
-};
 
-export type SetWallpaperColorAction = Action&{
-  name: KeyboardBacklightActionName.SET_WALLPAPER_COLOR,
-  wallpaperColor: SkColor,
-};
+export interface SetShouldShowNudgeAction extends Action {
+  name: KeyboardBacklightActionName.SET_SHOULD_SHOW_NUDGE;
+  shouldShowNudge: boolean;
+}
+
+
+export interface SetWallpaperColorAction extends Action {
+  name: KeyboardBacklightActionName.SET_WALLPAPER_COLOR;
+  wallpaperColor: SkColor;
+}
+
 
 /**
  * Sets the current value of the backlight state.
