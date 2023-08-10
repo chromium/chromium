@@ -861,6 +861,7 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
     }
   }
   [self.consumer setMagicStackOrder:magicStackOrder];
+  [self.feedDelegate contentSuggestionsWasUpdated];
 }
 
 - (void)addSetUpListToMagicStackOrder:(NSMutableArray*)order {

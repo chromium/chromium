@@ -7,6 +7,7 @@
 #import "base/mac/foundation_util.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
+#import "components/segmentation_platform/public/features.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/drag_and_drop/url_drag_drop_handler.h"
 #import "ios/chrome/browser/ntp/set_up_list_item.h"
@@ -412,7 +413,11 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
   CHECK([order count] > 0);
   _magicStackRankReceived = YES;
   _magicStackModuleOrder = [order mutableCopy];
-  if (self.viewLoaded) {
+  if (self.viewLoaded &&
+      base::FeatureList::IsEnabled(segmentation_platform::features::
+                                       kSegmentationPlatformIosModuleRanker)) {
+    // Magic Stack order is only passed to the VC late when fetching it from the
+    // Segmentation Platform
     [self createMagicStack];
     [self.view setNeedsLayout];
     [self.view layoutIfNeeded];
