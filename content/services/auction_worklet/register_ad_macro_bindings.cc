@@ -12,7 +12,7 @@
 #include "base/functional/bind.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
-#include "gin/converter.h"
+#include "content/services/auction_worklet/webidl_compat.h"
 #include "third_party/blink/public/common/features.h"
 #include "v8/include/v8-exception.h"
 #include "v8/include/v8-external.h"
@@ -54,15 +54,16 @@ void RegisterAdMacroBindings::RegisterAdMacro(
       v8::External::Cast(*args.Data())->Value());
   AuctionV8Helper* v8_helper = bindings->v8_helper_;
 
+  AuctionV8Helper::TimeLimitScope time_limit_scope(v8_helper->GetTimeLimit());
+  ArgsConverter args_converter(v8_helper, time_limit_scope,
+                               "registerAdMacro(): ", &args,
+                               /*min_required_args=*/2);
+
   std::string macro_name;
   std::string macro_value;
-  // Any additional arguments are ignored.
-  if (args.Length() < 2 || args[0].IsEmpty() || args[1].IsEmpty() ||
-      !gin::ConvertFromV8(v8_helper->isolate(), args[0], &macro_name) ||
-      !gin::ConvertFromV8(v8_helper->isolate(), args[1], &macro_value)) {
-    args.GetIsolate()->ThrowException(
-        v8::Exception::TypeError(v8_helper->CreateStringFromLiteral(
-            "registerAdMacro requires 2 string parameters")));
+  if (!args_converter.ConvertArg(0, "macroName", macro_name) ||
+      !args_converter.ConvertArg(1, "macroValue", macro_value)) {
+    args_converter.TakeStatus().PropagateErrorsToV8(v8_helper);
     return;
   }
 

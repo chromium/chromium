@@ -8938,6 +8938,17 @@ TEST_F(BidderWorkletAdMacroReportingEnabledTest, ReportWinRegisterAdMacro) {
       /*expected_report_url =*/absl::nullopt, /*expected_ad_beacon_map=*/{},
       {{"campaign", "111"}});
 
+  // Type conversions happen.
+  RunReportWinWithFunctionBodyExpectingResult(
+      R"(registerAdMacro('campaign', 111);)",
+      /*expected_report_url =*/absl::nullopt, /*expected_ad_beacon_map=*/{},
+      {{"campaign", "111"}});
+
+  RunReportWinWithFunctionBodyExpectingResult(
+      R"(registerAdMacro(null, 234);)",
+      /*expected_report_url =*/absl::nullopt, /*expected_ad_beacon_map=*/{},
+      {{"null", "234"}});
+
   // Key is case sensitive.
   RunReportWinWithFunctionBodyExpectingResult(
       R"(registerAdMacro('campaign', '111');
@@ -8970,7 +8981,7 @@ TEST_F(BidderWorkletAdMacroReportingEnabledTest, ReportWinRegisterAdMacro) {
   // If the error is caught, do not clear other successful calls data.
   RunReportWinWithFunctionBodyExpectingResult(
       R"(registerAdMacro('campaign', '111');
-        try { registerAdMacro('campaign', 123) }
+        try { registerAdMacro('campaign', {toString: {}}) }
         catch (e) {}
         registerAdMacro('publisher', 'abc');)",
       /*expected_report_url=*/absl::nullopt,
@@ -8980,26 +8991,33 @@ TEST_F(BidderWorkletAdMacroReportingEnabledTest, ReportWinRegisterAdMacro) {
 
 TEST_F(BidderWorkletAdMacroReportingEnabledTest,
        ReportWinRegisterAdMacroInvalidArgs) {
-  std::vector<std::string> kTestCases = {
+  struct TestCase {
+    const char* call;
+    const char* expected_error;
+  } kTestCases[] = {
       // Less than 2 parameters.
-      R"(registerAdMacro();)",
-      R"(registerAdMacro('123');)",
+      {R"(registerAdMacro();)",
+       "https://url.test/:11 Uncaught TypeError: registerAdMacro(): at least 2 "
+       "argument(s) are required."},
+      {R"(registerAdMacro('123');)",
+       "https://url.test/:11 Uncaught TypeError: registerAdMacro(): at least 2 "
+       "argument(s) are required."},
       // Invalid first argument.
-      R"(registerAdMacro(123, '456');)",
-      R"(registerAdMacro(null, '456');)",
+      {R"(registerAdMacro({toString:{}}, '456');)",
+       "https://url.test/:11 Uncaught TypeError: Cannot convert object to "
+       "primitive value."},
       // Invalid second argument.
-      R"(registerAdMacro('123', 456);)",
-      R"(registerAdMacro('123', null);)",
+      {R"(registerAdMacro('123', {toString:{}});)",
+       "https://url.test/:11 Uncaught TypeError: Cannot convert object to "
+       "primitive value."},
   };
   for (const auto& test_case : kTestCases) {
     RunReportWinWithFunctionBodyExpectingResult(
-        test_case,
+        test_case.call,
         /*expected_report_url=*/absl::nullopt,
         /*expected_ad_beacon_map=*/{},
         /*expected_ad_macro_map=*/{},
-        /*expected_pa_requests=*/{},
-        {"https://url.test/:11 Uncaught TypeError: registerAdMacro requires 2 "
-         "string parameters."});
+        /*expected_pa_requests=*/{}, {test_case.expected_error});
   }
 }
 
