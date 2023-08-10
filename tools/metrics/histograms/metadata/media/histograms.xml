@@ -6352,7 +6352,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MediaRouter.Cast.PendingUserAuthLatency" units="s"
-    expires_after="2023-08-20">
+    expires_after="2024-08-20">
   <owner>ahmedmoussa@google.com</owner>
   <owner>takumif@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
@@ -6365,7 +6365,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MediaRouter.Cast.UserPromptWhenLaunchingCast"
-    enum="MediaRouterUserPromptWhenLaunchingCast" expires_after="2023-08-20">
+    enum="MediaRouterUserPromptWhenLaunchingCast" expires_after="2024-08-20">
   <owner>ahmedmoussa@google.com</owner>
   <owner>takumif@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
