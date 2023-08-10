@@ -45,7 +45,18 @@ CanvasRenderingContext::CanvasRenderingContext(
       host_(host),
       color_params_(attrs.color_space, attrs.pixel_format, attrs.alpha),
       creation_attributes_(attrs),
-      canvas_rendering_type_(canvas_rendering_API) {}
+      canvas_rendering_type_(canvas_rendering_API) {
+  // The following check is for investigating crbug.com/1470622
+  // If the crash stops happening in CanvasRenderingContext2D::
+  // GetOrCreatePaintCanvas(), and starts happening here instead,
+  // then we'll know that the bug is related to creation and the
+  // new crash reports pointing to this location will provide more
+  // actionable feedback on how to fix the issue. If the crash
+  // continues to happen at the old location, then we'll know that
+  // the problem has to do with a pre-finalizer being called
+  // prematurely.
+  CHECK(host_);
+}
 
 SkColorInfo CanvasRenderingContext::CanvasRenderingContextSkColorInfo() const {
   return SkColorInfo(kN32_SkColorType, kPremul_SkAlphaType,
