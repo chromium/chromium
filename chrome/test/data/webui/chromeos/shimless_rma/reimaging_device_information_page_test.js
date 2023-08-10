@@ -109,7 +109,7 @@ suite('reimagingDeviceInformationPageTest', function() {
     return flushTasks();
   }
 
-  test('ReimagingDeviceInformationPageInitializes', async () => {
+  test('PageInitializes', async () => {
     initializeReimagingDeviceInformationPage();
     await initializeComponent();
     await waitAfterNextRender(component);
@@ -139,7 +139,7 @@ suite('reimagingDeviceInformationPageTest', function() {
     assertTrue(resetSkuComponent.disabled);
   });
 
-  test('ReimagingDeviceInformationPageNextReturnsInformation', async () => {
+  test('NextReturnsInformation', async () => {
     const resolver = new PromiseResolver();
     initializeReimagingDeviceInformationPage();
     await initializeComponent();
@@ -193,7 +193,7 @@ suite('reimagingDeviceInformationPageTest', function() {
     assertDeepEquals(expectedResult, savedResult);
   });
 
-  test('ReimagingDeviceInformationPageModifySerialNumberAndReset', async () => {
+  test('ModifySerialNumberAndReset', async () => {
     initializeReimagingDeviceInformationPage();
     await initializeComponent();
 
@@ -216,7 +216,7 @@ suite('reimagingDeviceInformationPageTest', function() {
     assertTrue(resetSerialNumberComponent.disabled);
   });
 
-  test('ReimagingDeviceInformationPageInputsDisabled', async () => {
+  test('InputsDisabled', async () => {
     initializeReimagingDeviceInformationPage();
     await initializeComponent();
 
@@ -244,8 +244,7 @@ suite('reimagingDeviceInformationPageTest', function() {
   });
 
   test(
-      'ReimagingDeviceInformationPageModifyDramPartNumberAndReset',
-      async () => {
+      'ModifyDramPartNumberAndReset', async () => {
         initializeReimagingDeviceInformationPage();
         await initializeComponent();
 
@@ -269,8 +268,7 @@ suite('reimagingDeviceInformationPageTest', function() {
       });
 
   test(
-      'ReimagingDeviceInformationPageSerialNumberUpdatesNextDisable',
-      async () => {
+      'SerialNumberUpdatesNextDisable', async () => {
         const resolver = new PromiseResolver();
         initializeReimagingDeviceInformationPage();
         await initializeComponent();
@@ -297,7 +295,7 @@ suite('reimagingDeviceInformationPageTest', function() {
         assertFalse(disableNextButton);
       });
 
-  test('ReimagingDeviceInformationPageRegionUpdatesNextDisable', async () => {
+  test('RegionUpdatesNextDisable', async () => {
     const resolver = new PromiseResolver();
     initializeReimagingDeviceInformationPage();
     await initializeComponent();
@@ -330,7 +328,7 @@ suite('reimagingDeviceInformationPageTest', function() {
     assertFalse(disableNextButton);
   });
 
-  test('ReimagingDeviceInformationPageSkuUpdatesNextDisable', async () => {
+  test('SkuUpdatesNextDisable', async () => {
     const resolver = new PromiseResolver();
     initializeReimagingDeviceInformationPage();
     await initializeComponent();
@@ -363,8 +361,7 @@ suite('reimagingDeviceInformationPageTest', function() {
   });
 
   test(
-      'ReimagingDeviceInformationPageDramPartNumberDoesNotUpdateNextDisable',
-      async () => {
+      'DramPartNumberDoesNotUpdateNextDisable', async () => {
         const resolver = new PromiseResolver();
         initializeReimagingDeviceInformationPage();
         await initializeComponent();
@@ -390,8 +387,7 @@ suite('reimagingDeviceInformationPageTest', function() {
       });
 
   test(
-      'ReimagingDeviceInformationPage_NextButtonState_IsChassisBranded',
-      async () => {
+      'NextButtonState_IsChassisBranded', async () => {
         // Set the compliance check flag so that the additional questions show
         // up.
         loadTimeData.overrideValues({complianceCheckEnabled: true});
@@ -443,8 +439,7 @@ suite('reimagingDeviceInformationPageTest', function() {
       });
 
   test(
-      'ReimagingDeviceInformationPage_NextButtonState_HwComplianceVersion',
-      async () => {
+      'NextButtonState_HwComplianceVersion', async () => {
         // Set the compliance check flag so that the additional questions show
         // up.
         loadTimeData.overrideValues({complianceCheckEnabled: true});
@@ -539,29 +534,25 @@ suite('reimagingDeviceInformationPageTest', function() {
   }
 
   test(
-      'ReimagingDeviceInformationPage_NextButtonState_QuestionsNotShown_Unsupported',
-      async () => {
+      'NextButtonState_QuestionsNotShown_Unsupported', async () => {
         await expectComplianceQuestionsToNotAffectNextButtonState(
             FeatureLevel.kRmadFeatureLevelUnsupported);
       });
 
   test(
-      'ReimagingDeviceInformationPage_NextButtonState_QuestionsNotShown_FeatureLevel0',
-      async () => {
+      'NextButtonState_QuestionsNotShown_FeatureLevel0', async () => {
         await expectComplianceQuestionsToNotAffectNextButtonState(
             FeatureLevel.kRmadFeatureLevel0);
       });
 
   test(
-      'ReimagingDeviceInformationPage_NextButtonState_QuestionsNotShown_FeatureLevel1',
-      async () => {
+      'NextButtonState_QuestionsNotShown_FeatureLevel1', async () => {
         await expectComplianceQuestionsToNotAffectNextButtonState(
             FeatureLevel.kRmadFeatureLevel1);
       });
 
   test(
-      'ReimagingDeviceInformationPage_ResultsForComplianceCheckQuestions',
-      async () => {
+      'ResultsForComplianceCheckQuestions', async () => {
         // Set the compliance check flag so that the additional questions show
         // up.
         loadTimeData.overrideValues({complianceCheckEnabled: true});
@@ -620,7 +611,7 @@ suite('reimagingDeviceInformationPageTest', function() {
       });
 
 
-  test('ReimagingDeviceInformationPage_ComplianceCheckDisabled', async () => {
+  test('ComplianceCheckDisabled', async () => {
     loadTimeData.overrideValues({complianceCheckEnabled: false});
 
     initializeReimagingDeviceInformationPage();
@@ -649,8 +640,7 @@ suite('reimagingDeviceInformationPageTest', function() {
   });
 
   test(
-      'ReimagingDeviceInformationPage_ComplianceCheckEnabled_Unsupported',
-      async () => {
+      'ComplianceCheckEnabled_Unsupported', async () => {
         loadTimeData.overrideValues({complianceCheckEnabled: true});
 
         initializeReimagingDeviceInformationPage();
@@ -669,8 +659,7 @@ suite('reimagingDeviceInformationPageTest', function() {
       });
 
   test(
-      'ReimagingDeviceInformationPage_ComplianceCheckEnabled_Unknown',
-      async () => {
+      'ComplianceCheckEnabled_Unknown', async () => {
         loadTimeData.overrideValues({complianceCheckEnabled: true});
 
         initializeReimagingDeviceInformationPage();
@@ -689,8 +678,7 @@ suite('reimagingDeviceInformationPageTest', function() {
       });
 
   test(
-      'ReimagingDeviceInformationPage_ComplianceCheckEnabled_Level0',
-      async () => {
+      'ComplianceCheckEnabled_Level0', async () => {
         loadTimeData.overrideValues({complianceCheckEnabled: true});
 
         initializeReimagingDeviceInformationPage();
@@ -716,8 +704,7 @@ suite('reimagingDeviceInformationPageTest', function() {
       });
 
   test(
-      'ReimagingDeviceInformationPage_ComplianceCheckEnabled_Level1',
-      async () => {
+      'ComplianceCheckEnabled_Level1', async () => {
         loadTimeData.overrideValues({complianceCheckEnabled: true});
 
         initializeReimagingDeviceInformationPage();
