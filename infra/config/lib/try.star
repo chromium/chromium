@@ -211,7 +211,7 @@ def try_builder(
           chrome-luci-data.gpu_try_test_results
     """
     if not branches.matches(branch_selector):
-        return
+        return None
 
     experiments = experiments or {}
 
@@ -295,7 +295,7 @@ def try_builder(
 
     # Define the builder first so that any validation of luci.builder arguments
     # (e.g. bucket) occurs before we try to use it
-    builders.builder(
+    ret = builders.builder(
         name = name,
         branch_selector = branch_selector,
         list_view = list_view,
@@ -329,6 +329,8 @@ def try_builder(
             cq_group = cq_group,
             includable_only = True,
         )
+
+    return ret
 
 def _orchestrator_builder(
         *,
@@ -392,10 +394,10 @@ def _orchestrator_builder(
     kwargs.setdefault("ssd", None)
 
     ret = try_.builder(name = name, **kwargs)
+    if ret:
+        bucket = defaults.get_value_from_kwargs("bucket", kwargs)
 
-    bucket = defaults.get_value_from_kwargs("bucket", kwargs)
-
-    register_orchestrator(bucket, name, builder_group, compilator)
+        register_orchestrator(bucket, name, builder_group, compilator)
 
     return ret
 
@@ -435,10 +437,10 @@ def _compilator_builder(*, name, **kwargs):
     kwargs.setdefault("ssd", True)
 
     ret = try_.builder(name = name, **kwargs)
+    if ret:
+        bucket = defaults.get_value_from_kwargs("bucket", kwargs)
 
-    bucket = defaults.get_value_from_kwargs("bucket", kwargs)
-
-    register_compilator(bucket, name)
+        register_compilator(bucket, name)
 
     return ret
 
