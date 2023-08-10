@@ -2942,9 +2942,6 @@ extern const char kUseXpsForPrintingFromPdfDescription[];
 
 #if BUILDFLAG(IS_MAC)
 
-extern const char kBiometricAuthenticationInSettingsName[];
-extern const char kBiometricAuthenticationInSettingsDescription[];
-
 extern const char kCr2023MacFontSmoothingName[];
 extern const char kCr2023MacFontSmoothingDescription[];
 
@@ -2984,9 +2981,6 @@ extern const char kUseAngleName[];
 
 extern const char kUseAngleDefault[];
 extern const char kUseAngleGL[];
-
-extern const char kBiometricAuthenticationForFillingName[];
-extern const char kBiometricAuthenticationForFillingDescription[];
 
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 

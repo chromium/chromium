@@ -829,19 +829,9 @@
     "expiry_milestone": 115
   },
   {
-    "name": "biometric-authentication-for-filling",
-    "owners": ["vsemeniuk@google.com", "vasilii"],
-    "expiry_milestone": 117
-  },
-  {
-    "name": "biometric-authentication-in-settings",
-    "owners": ["vsemeniuk@google.com", "vasilii"],
-    "expiry_milestone": 117
-  },
-  {
     "name": "biometric-reauth-password-filling",
-    "owners": [ "ioanap", "vsemeniuk@google.com" ],
-    "expiry_milestone": 117
+    "owners": [ "ioanap", "izuzic@google.com"],
+    "expiry_milestone": 120
   },
   {
     "name": "block-insecure-private-network-requests",
@@ -3225,11 +3215,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "enable-password-grouping",
-    "owners": [ "veronguyen", "vsemeniuk", "tmartino" ],
-    "expiry_milestone": 112
-  },
-  {
     "name": "enable-passwords-account-storage",
     "owners": [ "victorvianna", "chrome-sync-dev+finch@google.com" ],
     "expiry_milestone": 121
@@ -4427,7 +4412,7 @@
   {
     "name": "filling-across-grouped-sites",
     "owners": ["vsemeniuk@google.com", "vasilii", "shaikhitdin@google.com"],
-    "expiry_milestone": 117
+    "expiry_milestone": 120
   },
   {
     "name": "firmware-update-jelly",
@@ -5024,11 +5009,6 @@
   {
     "name": "ios-password-checkup",
     "owners": ["noemies", "eic", "bling-integrations-team@google.com"],
-    "expiry_milestone": 117
-  },
-  {
-    "name": "ios-password-manager-cross-origin-iframe-support",
-    "owners": ["kazinova@google.com", "vsemeniuk@google.com", "chrome-password-manager-team@google.com"],
     "expiry_milestone": 117
   },
   {

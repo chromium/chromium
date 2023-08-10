@@ -5099,11 +5099,6 @@ const char kUseXpsForPrintingFromPdfDescription[] =
 
 #if BUILDFLAG(IS_MAC)
 
-const char kBiometricAuthenticationInSettingsName[] =
-    "Biometric authentication in settings";
-const char kBiometricAuthenticationInSettingsDescription[] =
-    "Enables biometric authentication in settings to view/edit/copy a password";
-
 const char kCr2023MacFontSmoothingName[] =
     "Chrome Refresh 2023 Mac Font Smoothing";
 const char kCr2023MacFontSmoothingDescription[] =
@@ -5165,10 +5160,6 @@ const char kUseAngleName[] = "Choose ANGLE graphics backend";
 const char kUseAngleDefault[] = "Default";
 const char kUseAngleGL[] = "OpenGL";
 
-const char kBiometricAuthenticationForFillingName[] =
-    "Biometric authentication reauth before filling";
-const char kBiometricAuthenticationForFillingDescription[] =
-    "Enables biometric authentication before filling form data";
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
 // ChromeOS -------------------------------------------------------------------
