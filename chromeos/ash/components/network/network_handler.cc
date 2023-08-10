@@ -4,6 +4,8 @@
 
 #include "chromeos/ash/components/network/network_handler.h"
 
+#include <memory>
+
 #include "ash/constants/ash_features.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chromeos/ash/components/network/auto_connect_handler.h"
@@ -48,6 +50,7 @@
 #include "chromeos/ash/components/network/proxy/ui_proxy_config_service.h"
 #include "chromeos/ash/components/network/stub_cellular_networks_provider.h"
 #include "chromeos/ash/components/network/technology_state_controller.h"
+#include "chromeos/ash/components/network/text_message_provider.h"
 
 namespace ash {
 
@@ -96,6 +99,9 @@ NetworkHandler::NetworkHandler()
   network_activation_handler_.reset(new NetworkActivationHandlerImpl());
   prohibited_technologies_handler_.reset(new ProhibitedTechnologiesHandler());
   network_sms_handler_.reset(new NetworkSmsHandler());
+  if (features::IsSuppressTextMessagesEnabled()) {
+    text_message_provider_.reset(new TextMessageProvider());
+  }
   geolocation_handler_.reset(new GeolocationHandler());
 }
 
@@ -190,6 +196,9 @@ void NetworkHandler::Init() {
       managed_network_configuration_handler_.get(),
       network_state_handler_.get(), technology_state_controller_.get());
   network_sms_handler_->Init();
+  if (features::IsSuppressTextMessagesEnabled()) {
+    text_message_provider_->Init(network_sms_handler_.get());
+  }
   geolocation_handler_->Init();
 }
 
@@ -358,6 +367,10 @@ NetworkMetadataStore* NetworkHandler::network_metadata_store() {
 
 NetworkSmsHandler* NetworkHandler::network_sms_handler() {
   return network_sms_handler_.get();
+}
+
+TextMessageProvider* NetworkHandler::text_message_provider() {
+  return text_message_provider_.get();
 }
 
 GeolocationHandler* NetworkHandler::geolocation_handler() {

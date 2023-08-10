@@ -200,6 +200,8 @@ component("network") {
     "technology_state_controller.h",
     "tether_constants.cc",
     "tether_constants.h",
+    "text_message_provider.cc",
+    "text_message_provider.h",
   ]
 }
 
@@ -345,5 +347,6 @@ source_set("unit_tests") {
     "stub_cellular_networks_provider_unittest.cc",
     "system_token_cert_db_storage_unittest.cc",
     "technology_state_controller_unittest.cc",
+    "text_message_provider_unittest.cc",
   ]
 }

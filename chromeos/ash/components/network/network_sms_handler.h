@@ -14,6 +14,7 @@
 #include "base/observer_list.h"
 #include "base/values.h"
 #include "chromeos/ash/components/dbus/shill/shill_property_changed_observer.h"
+#include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/dbus/common/dbus_method_call_status.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -29,9 +30,9 @@ struct COMPONENT_EXPORT(CHROMEOS_NETWORK) TextMessageData {
   TextMessageData& operator=(TextMessageData&& other) = delete;
   ~TextMessageData();
 
-  absl::optional<const std::string> number;
-  absl::optional<const std::string> text;
-  absl::optional<const std::string> timestamp;
+  absl::optional<std::string> number;
+  absl::optional<std::string> text;
+  absl::optional<std::string> timestamp;
 };
 
 // Class to watch sms without Libcros.
@@ -74,6 +75,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkSmsHandler
  private:
   friend class NetworkHandler;
   friend class NetworkSmsHandlerTest;
+  friend class TextMessageProviderTest;
 
   class NetworkSmsDeviceHandler;
   class ModemManagerNetworkSmsDeviceHandler;

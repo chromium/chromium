@@ -54,6 +54,7 @@ class NetworkSmsHandler;
 class ProhibitedTechnologiesHandler;
 class StubCellularNetworksProvider;
 class TechnologyStateController;
+class TextMessageProvider;
 class UIProxyConfigService;
 class VpnNetworkMetricsHelper;
 
@@ -134,6 +135,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkHandler {
   GeolocationHandler* geolocation_handler();
   ProhibitedTechnologiesHandler* prohibited_technologies_handler();
   TechnologyStateController* technology_state_controller();
+  TextMessageProvider* text_message_provider();
 
  private:
   friend class ConnectionInfoMetricsLoggerTest;
@@ -188,6 +190,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkHandler {
   std::unique_ptr<ProhibitedTechnologiesHandler>
       prohibited_technologies_handler_;
   std::unique_ptr<NetworkSmsHandler> network_sms_handler_;
+  std::unique_ptr<TextMessageProvider> text_message_provider_;
   std::unique_ptr<GeolocationHandler> geolocation_handler_;
   std::unique_ptr<UIProxyConfigService> ui_proxy_config_service_;
   std::unique_ptr<NetworkMetadataStore> network_metadata_store_;
