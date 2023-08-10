@@ -108,6 +108,10 @@ class MediaButton : public views::ImageButton {
         icon_size_);
   }
 
+  void UpdateText(int tooltip_text_id) {
+    SetTooltipText(l10n_util::GetStringUTF16(tooltip_text_id));
+  }
+
  private:
   const int icon_size_;
   const ui::ColorId foreground_color_id_;
@@ -271,7 +275,7 @@ MediaNotificationViewAshImpl::MediaNotificationViewAshImpl(
     start_casting_button_ = CreateMediaButton(
         controls_row, kNotMediaActionButtonId,
         media_message_center::kMediaCastStartIcon,
-        IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_START_CASTING);
+        IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_SHOW_DEVICE_LIST);
     start_casting_button_->SetCallback(base::BindRepeating(
         &MediaNotificationViewAshImpl::StartCastingButtonPressed,
         base::Unretained(this)));
@@ -541,9 +545,17 @@ void MediaNotificationViewAshImpl::UpdateCastingState() {
     // Use the ink drop color as the button background if user clicks the button
     // to show devices.
     views::InkDrop::Get(start_casting_button_)->GetInkDrop()->SnapToActivated();
+
+    // Indicate the user can hide the device list.
+    start_casting_button_->UpdateText(
+        IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_HIDE_DEVICE_LIST);
   } else {
     // Hide the ink drop color if user clicks the button to hide devices.
     views::InkDrop::Get(start_casting_button_)->GetInkDrop()->SnapToHidden();
+
+    // Indicate the user can show the device list.
+    start_casting_button_->UpdateText(
+        IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_SHOW_DEVICE_LIST);
   }
   device_selector_view_separator_->SetVisible(is_expanded);
 }

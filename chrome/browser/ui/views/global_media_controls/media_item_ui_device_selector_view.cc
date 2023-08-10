@@ -291,8 +291,14 @@ void MediaItemUIDeviceSelectorView::ShowDevices() {
   DCHECK(!is_expanded_);
   is_expanded_ = true;
   NotifyAccessibilityEvent(ax::mojom::Event::kExpandedChanged, true);
-  GetViewAccessibility().AnnounceText(
-      l10n_util::GetStringUTF16(IDS_GLOBAL_MEDIA_CONTROLS_SHOW_DEVICE_LIST));
+
+  // When this device selector view is used on Chrome OS ash with
+  // media::kGlobalMediaControlsCrOSUpdatedUI enabled, accessibility text will
+  // be handled by MediaNotificationViewAshImpl instead of here.
+  if (!media_color_theme_.has_value()) {
+    GetViewAccessibility().AnnounceText(
+        l10n_util::GetStringUTF16(IDS_GLOBAL_MEDIA_CONTROLS_SHOW_DEVICE_LIST));
+  }
 
   if (!have_devices_been_shown_) {
     base::UmaHistogramExactLinear(
@@ -311,8 +317,14 @@ void MediaItemUIDeviceSelectorView::HideDevices() {
   DCHECK(is_expanded_);
   is_expanded_ = false;
   NotifyAccessibilityEvent(ax::mojom::Event::kExpandedChanged, true);
-  GetViewAccessibility().AnnounceText(
-      l10n_util::GetStringUTF16(IDS_GLOBAL_MEDIA_CONTROLS_HIDE_DEVICE_LIST));
+
+  // When this device selector view is used on Chrome OS ash with
+  // media::kGlobalMediaControlsCrOSUpdatedUI enabled, accessibility text will
+  // be handled by MediaNotificationViewAshImpl instead of here.
+  if (!media_color_theme_.has_value()) {
+    GetViewAccessibility().AnnounceText(
+        l10n_util::GetStringUTF16(IDS_GLOBAL_MEDIA_CONTROLS_HIDE_DEVICE_LIST));
+  }
 
   device_entry_views_container_->SetVisible(false);
   PreferredSizeChanged();

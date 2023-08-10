@@ -30,8 +30,11 @@
   <message name="IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_UNMUTE" desc="The button to trigger media playback to unmute.">
     Unmute
   </message>
-  <message name="IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_START_CASTING" desc="The button to trigger media start casting to another device.">
-    Start casting
+  <message name="IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_SHOW_DEVICE_LIST" desc="The button to show the device list for casting media.">
+    Show device list for casting
+  </message>
+  <message name="IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_HIDE_DEVICE_LIST" desc="The button to hide the device list for casting media.">
+    Hide device list for casting
   </message>
   <message name="IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_STOP_CASTING" desc="The button to trigger media stop casting to another device.">
     Stop casting
