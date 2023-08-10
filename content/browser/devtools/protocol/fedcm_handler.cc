@@ -25,6 +25,8 @@ FedCm::DialogType ConvertDialogType(
       return FedCm::DialogTypeEnum::AccountChooser;
     case content::FederatedAuthRequestImpl::kAutoReauth:
       return FedCm::DialogTypeEnum::AutoReauthn;
+    case content::FederatedAuthRequestImpl::kConfirmIdpSignin:
+      return FedCm::DialogTypeEnum::ConfirmIdpSignin;
   }
 }
 }  // namespace
@@ -61,7 +63,8 @@ DispatchResponse FedCmHandler::Enable(Maybe<bool> in_disableRejectionDelay) {
   // OnDialogShown should have been called previously if was_enabled is true.
   // This could happen if FedCmHandler::Enable was called to enable/disable the
   // rejection delay.
-  if (!was_enabled && auth_request && GetIdentityProviderData(auth_request)) {
+  if (!was_enabled && auth_request &&
+      auth_request->GetDialogType() != FederatedAuthRequestImpl::kNone) {
     OnDialogShown();
   }
 
@@ -84,8 +87,7 @@ void FedCmHandler::OnDialogShown() {
 
   auto* auth_request = GetFederatedAuthRequest();
   const auto* idp_data = GetIdentityProviderData(auth_request);
-  DCHECK(idp_data);
-  DCHECK(!idp_data->empty());
+  // idp_data can be empty if this is an IDP Signin Confirmation dialog.
 
   // We flatten the two-level IDP->account list into a single
   // list of accounts because:
@@ -100,41 +102,43 @@ void FedCmHandler::OnDialogShown() {
   // The idpConfigUrl field allows callers to identify which IDP an account
   // belongs to.
   auto accounts = std::make_unique<Array<FedCm::Account>>();
-  for (const auto& data : *idp_data) {
-    for (const IdentityRequestAccount& account : data.accounts) {
-      FedCm::LoginState login_state;
-      absl::optional<std::string> tos_url;
-      absl::optional<std::string> pp_url;
-      switch (*account.login_state) {
-        case IdentityRequestAccount::LoginState::kSignUp:
-          login_state = FedCm::LoginStateEnum::SignUp;
-          // Because TOS and PP URLs are only used when the login state is
-          // sign up, we only populate them in that case.
-          pp_url = data.client_metadata.privacy_policy_url.spec();
-          tos_url = data.client_metadata.terms_of_service_url.spec();
-          break;
-        case IdentityRequestAccount::LoginState::kSignIn:
-          login_state = FedCm::LoginStateEnum::SignIn;
-          break;
+  if (idp_data) {
+    for (const auto& data : *idp_data) {
+      for (const IdentityRequestAccount& account : data.accounts) {
+        FedCm::LoginState login_state;
+        absl::optional<std::string> tos_url;
+        absl::optional<std::string> pp_url;
+        switch (*account.login_state) {
+          case IdentityRequestAccount::LoginState::kSignUp:
+            login_state = FedCm::LoginStateEnum::SignUp;
+            // Because TOS and PP URLs are only used when the login state is
+            // sign up, we only populate them in that case.
+            pp_url = data.client_metadata.privacy_policy_url.spec();
+            tos_url = data.client_metadata.terms_of_service_url.spec();
+            break;
+          case IdentityRequestAccount::LoginState::kSignIn:
+            login_state = FedCm::LoginStateEnum::SignIn;
+            break;
+        }
+        std::unique_ptr<FedCm::Account> entry =
+            FedCm::Account::Create()
+                .SetAccountId(account.id)
+                .SetEmail(account.email)
+                .SetName(account.name)
+                .SetGivenName(account.given_name)
+                .SetPictureUrl(account.picture.spec())
+                .SetIdpConfigUrl(data.idp_metadata.config_url.spec())
+                .SetIdpSigninUrl(data.idp_metadata.idp_signin_url.spec())
+                .SetLoginState(login_state)
+                .Build();
+        if (pp_url) {
+          entry->SetPrivacyPolicyUrl(*pp_url);
+        }
+        if (tos_url) {
+          entry->SetTermsOfServiceUrl(*tos_url);
+        }
+        accounts->push_back(std::move(entry));
       }
-      std::unique_ptr<FedCm::Account> entry =
-          FedCm::Account::Create()
-              .SetAccountId(account.id)
-              .SetEmail(account.email)
-              .SetName(account.name)
-              .SetGivenName(account.given_name)
-              .SetPictureUrl(account.picture.spec())
-              .SetIdpConfigUrl(data.idp_metadata.config_url.spec())
-              .SetIdpSigninUrl(data.idp_metadata.idp_signin_url.spec())
-              .SetLoginState(login_state)
-              .Build();
-      if (pp_url) {
-        entry->SetPrivacyPolicyUrl(*pp_url);
-      }
-      if (tos_url) {
-        entry->SetTermsOfServiceUrl(*tos_url);
-      }
-      accounts->push_back(std::move(entry));
     }
   }
   IdentityRequestDialogController* dialog = auth_request->GetDialogController();
@@ -186,6 +190,16 @@ DispatchResponse FedCmHandler::DismissDialog(const String& in_dialogId,
   }
 
   auto* auth_request = GetFederatedAuthRequest();
+  if (!auth_request){
+    return DispatchResponse::ServerError(
+        "dismissDialog called while no FedCm dialog is shown");
+  }
+
+  FederatedAuthRequestImpl::DialogType type = auth_request->GetDialogType();
+  if (type == FederatedAuthRequestImpl::kConfirmIdpSignin) {
+    auth_request->DismissConfirmIdpSigninDialogForDevtools();
+    return DispatchResponse::Success();
+  }
   const auto* idp_data = GetIdentityProviderData(auth_request);
   if (!idp_data) {
     return DispatchResponse::ServerError(

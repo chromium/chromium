@@ -1277,7 +1277,7 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
                      weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&FederatedAuthRequestImpl::OnDialogDismissed,
                      weak_ptr_factory_.GetWeakPtr()));
-  devtools_instrumentation::OnFedCmAccountsDialogShown(&render_frame_host());
+  devtools_instrumentation::OnFedCmDialogShown(&render_frame_host());
 
   if (dialog_type_ != kAutoReauth) {
     // We omit recording the accounts dialog shown metric for auto re-authn
@@ -1366,6 +1366,7 @@ void FederatedAuthRequestImpl::HandleAccountsFetchFailure(
   // If IdP sign-in status mismatch dialog is already visible, calling
   // ShowFailureDialog() a 2nd time should notify the user that sign-in
   // failed.
+  dialog_type_ = kConfirmIdpSignin;
   request_dialog_controller_->ShowFailureDialog(
       GetTopFrameOriginForDisplay(GetEmbeddingOrigin()), iframe_for_display,
       FormatOriginForDisplay(idp_origin), idp_info->rp_context,
@@ -1380,6 +1381,7 @@ void FederatedAuthRequestImpl::HandleAccountsFetchFailure(
                      idp_info->metadata.idp_signin_url));
   fedcm_metrics_->RecordMismatchDialogShown();
   mismatch_dialog_shown_time_ = base::TimeTicks::Now();
+  devtools_instrumentation::OnFedCmDialogShown(&render_frame_host());
 }
 
 void FederatedAuthRequestImpl::CloseModalDialogView() {
@@ -1650,6 +1652,11 @@ void FederatedAuthRequestImpl::OnDialogDismissed(
 }
 
 void FederatedAuthRequestImpl::ShowModalDialog(const GURL& url) {
+  // Reset dialog type since we are not showing a fedcm dialog while the
+  // popup window is open.
+  // TODO(cbiesinger): Should this return a special dialog type?
+  dialog_type_ = kNone;
+
   WebContents* web_contents = request_dialog_controller_->ShowModalDialog(
       url, base::BindOnce(&FederatedAuthRequestImpl::OnDialogDismissed,
                           weak_ptr_factory_.GetWeakPtr()));
@@ -2164,6 +2171,14 @@ void FederatedAuthRequestImpl::DismissAccountsDialogForDevtools(
           ? IdentityRequestDialogController::DismissReason::kCloseButton
           : IdentityRequestDialogController::DismissReason::kOther;
   OnDialogDismissed(reason);
+}
+
+void FederatedAuthRequestImpl::DismissConfirmIdpSigninDialogForDevtools() {
+  // These values match what HandleAccountsFetchFailure passes.
+  OnDismissFailureDialog(
+      FederatedAuthRequestResult::kError, TokenStatus::kNotSignedInWithIdp,
+      /*should_delay_callback=*/true,
+      IdentityRequestDialogController::DismissReason::kOther);
 }
 
 bool FederatedAuthRequestImpl::GetSingleReturningAccount(

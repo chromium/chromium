@@ -5,6 +5,8 @@
 [
   ImplementedAs=InternalsFedCm
 ] partial interface Internals {
+  [CallWith=ScriptState] Promise<DOMString> getFedCmDialogType();
   [CallWith=ScriptState] Promise<DOMString> getFedCmTitle();
   [CallWith=ScriptState, RaisesException] Promise<void> selectFedCmAccount(long accountIndex);
+  [CallWith=ScriptState] Promise<void> dismissFedCmDialog();
 };

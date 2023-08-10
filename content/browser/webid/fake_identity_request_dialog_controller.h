@@ -31,6 +31,14 @@ class CONTENT_EXPORT FakeIdentityRequestDialogController
       AccountSelectionCallback on_selected,
       DismissCallback dismmiss_callback) override;
 
+  void ShowFailureDialog(const std::string& top_frame_for_display,
+                         const absl::optional<std::string>& iframe_for_display,
+                         const std::string& idp_for_display,
+                         const blink::mojom::RpContext& rp_context,
+                         const IdentityProviderMetadata& idp_metadata,
+                         DismissCallback dismiss_callback,
+                         SigninToIdPCallback signin_callback) override;
+
   std::string GetTitle() const override;
 
   content::WebContents* ShowModalDialog(

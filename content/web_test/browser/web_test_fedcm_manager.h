@@ -24,10 +24,14 @@ class WebTestFedCmManager
   ~WebTestFedCmManager() override;
 
   // blink::test::mojom::FederatedAuthRequestAutomation
+  void GetDialogType(
+      blink::test::mojom::FederatedAuthRequestAutomation::GetDialogTypeCallback)
+      override;
   void GetFedCmDialogTitle(blink::test::mojom::FederatedAuthRequestAutomation::
                                GetFedCmDialogTitleCallback) override;
   void SelectFedCmAccount(uint32_t account_index,
                           SelectFedCmAccountCallback) override;
+  void DismissFedCmDialog(DismissFedCmDialogCallback) override;
 
  private:
   base::WeakPtr<RenderFrameHostImpl> render_frame_host_;

@@ -18,6 +18,44 @@ WebTestFedCmManager::WebTestFedCmManager(RenderFrameHost* render_frame_host)
 
 WebTestFedCmManager::~WebTestFedCmManager() = default;
 
+void WebTestFedCmManager::GetDialogType(
+    blink::test::mojom::FederatedAuthRequestAutomation::GetDialogTypeCallback
+        callback) {
+  if (!render_frame_host_) {
+    std::move(callback).Run(absl::nullopt);
+    return;
+  }
+  FederatedAuthRequestPageData* page_data =
+      PageUserData<FederatedAuthRequestPageData>::GetForPage(
+          render_frame_host_->GetPage());
+  if (!page_data) {
+    std::move(callback).Run(absl::nullopt);
+    return;
+  }
+  FederatedAuthRequestImpl* auth_request =
+      page_data->PendingWebIdentityRequest();
+  if (!auth_request) {
+    std::move(callback).Run(absl::nullopt);
+    return;
+  }
+  std::string type_string;
+  switch (auth_request->GetDialogType()) {
+    case FederatedAuthRequestImpl::kNone:
+      std::move(callback).Run(absl::nullopt);
+      return;
+    case FederatedAuthRequestImpl::kSelectAccount:
+      type_string = "AccountChooser";
+      break;
+    case FederatedAuthRequestImpl::kAutoReauth:
+      type_string = "AutoReauthn";
+      break;
+    case FederatedAuthRequestImpl::kConfirmIdpSignin:
+      type_string = "ConfirmIdpSignin";
+      break;
+  };
+  std::move(callback).Run(type_string);
+}
+
 void WebTestFedCmManager::GetFedCmDialogTitle(
     blink::test::mojom::FederatedAuthRequestAutomation::
         GetFedCmDialogTitleCallback callback) {
@@ -86,6 +124,41 @@ void WebTestFedCmManager::SelectFedCmAccount(
     }
   }
   std::move(callback).Run(false);
+}
+
+void WebTestFedCmManager::DismissFedCmDialog(
+    DismissFedCmDialogCallback callback) {
+  if (!render_frame_host_) {
+    std::move(callback).Run(false);
+    return;
+  }
+  FederatedAuthRequestPageData* page_data =
+      PageUserData<FederatedAuthRequestPageData>::GetForPage(
+          render_frame_host_->GetPage());
+  if (!page_data) {
+    std::move(callback).Run(false);
+    return;
+  }
+  FederatedAuthRequestImpl* auth_request =
+      page_data->PendingWebIdentityRequest();
+  if (!auth_request) {
+    std::move(callback).Run(false);
+    return;
+  }
+  switch (auth_request->GetDialogType()) {
+    case FederatedAuthRequestImpl::kNone:
+      std::move(callback).Run(false);
+      return;
+    case FederatedAuthRequestImpl::kSelectAccount:
+    case FederatedAuthRequestImpl::kAutoReauth:
+      auth_request->DismissAccountsDialogForDevtools(false);
+      std::move(callback).Run(true);
+      return;
+    case FederatedAuthRequestImpl::kConfirmIdpSignin:
+      auth_request->DismissConfirmIdpSigninDialogForDevtools();
+      std::move(callback).Run(true);
+      return;
+  }
 }
 
 }  // namespace content

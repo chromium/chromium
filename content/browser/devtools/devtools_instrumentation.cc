@@ -2094,7 +2094,7 @@ void WillShowFedCmDialog(RenderFrameHost* render_frame_host, bool* intercept) {
   DispatchToAgents(ftn, &protocol::FedCmHandler::WillShowDialog, intercept);
 }
 
-void OnFedCmAccountsDialogShown(RenderFrameHost* render_frame_host) {
+void OnFedCmDialogShown(RenderFrameHost* render_frame_host) {
   FrameTreeNode* ftn = FrameTreeNode::From(render_frame_host);
   if (!ftn) {
     return;

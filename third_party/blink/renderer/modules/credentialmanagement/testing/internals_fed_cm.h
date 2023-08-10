@@ -18,11 +18,13 @@ class InternalsFedCm {
   STATIC_ONLY(InternalsFedCm);
 
  public:
+  static ScriptPromise getFedCmDialogType(ScriptState*, Internals&);
   static ScriptPromise getFedCmTitle(ScriptState*, Internals&);
   static ScriptPromise selectFedCmAccount(ScriptState*,
                                           Internals&,
                                           int account_index,
                                           ExceptionState&);
+  static ScriptPromise dismissFedCmDialog(ScriptState*, Internals&);
 };
 
 }  // namespace blink

@@ -407,7 +407,7 @@ void WillSendFedCmRequest(RenderFrameHost* render_frame_host,
                           bool* intercept,
                           bool* disable_delay);
 void WillShowFedCmDialog(RenderFrameHost* render_frame_host, bool* intercept);
-void OnFedCmAccountsDialogShown(RenderFrameHost* render_frame_host);
+void OnFedCmDialogShown(RenderFrameHost* render_frame_host);
 
 // Handles dev tools integration for fenced frame reporting beacons. Used in
 // `FencedFrameReporter`.

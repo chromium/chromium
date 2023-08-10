@@ -526,12 +526,20 @@
     }
   };
 
+  window.test_driver_internal.get_fedcm_dialog_type = async function() {
+    return internals.getFedCmDialogType();
+  }
+
   window.test_driver_internal.get_fedcm_dialog_title = async function() {
     return internals.getFedCmTitle();
   }
 
   window.test_driver_internal.select_fedcm_account = async function(account_index) {
     return internals.selectFedCmAccount(account_index);
+  }
+
+  window.test_driver_internal.cancel_fedcm_dialog = async function() {
+    return internals.dismissFedCmDialog();
   }
 
   // Enable automation so we don't wait for user input on unimplemented APIs

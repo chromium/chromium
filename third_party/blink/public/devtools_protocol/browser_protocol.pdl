@@ -11398,6 +11398,7 @@ experimental domain FedCm
     enum
       AccountChooser
       AutoReauthn
+      ConfirmIdpSignin
 
   # Corresponds to IdentityRequestAccount
   type Account extends object

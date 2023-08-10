@@ -141,12 +141,13 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
     return idp_data_for_display_;
   }
 
-  enum DialogType { kNone, kSelectAccount, kAutoReauth };
+  enum DialogType { kNone, kSelectAccount, kAutoReauth, kConfirmIdpSignin };
   DialogType GetDialogType() const { return dialog_type_; }
 
   void AcceptAccountsDialogForDevtools(const GURL& config_url,
                                        const IdentityRequestAccount& account);
   void DismissAccountsDialogForDevtools(bool should_embargo);
+  void DismissConfirmIdpSigninDialogForDevtools();
 
   // Check if the scope of the request allows the browser to mediate
   // or delegate (to the IdP) the authorization.
