@@ -3214,20 +3214,10 @@ void CrostiniManager::OnLxdContainerStarting(
                << " reason: " << signal.failure_reason();
   }
 
-  const auto& os_release = signal.has_os_release()
-                               ? signal.os_release()
-                               : *GetContainerOsRelease(container_id);
-  ContainerOsVersion version = VersionFromOsRelease(os_release);
-
-  bool is_garcon_required =
-      !CrostiniFeatures::Get()->IsMultiContainerAllowed(profile_) ||
-      (version != ContainerOsVersion::kOtherOs &&
-       version != ContainerOsVersion::kUnknown);
-
   bool running =
       guest_os::GuestOsSessionTracker::GetForProfile(profile_)->IsRunning(
           container_id);
-  if (result == CrostiniResult::SUCCESS && !running && is_garcon_required) {
+  if (result == CrostiniResult::SUCCESS && !running) {
     VLOG(1) << "Awaiting ContainerStarted signal from Garcon, did not yet have "
                "information for container "
             << container_id.container_name;
