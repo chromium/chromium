@@ -11,6 +11,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/extensions/extension_message_bubble_controller.h"
+#include "extensions/common/extension_id.h"
 
 namespace extensions {
 
@@ -52,7 +53,7 @@ class ProxyOverriddenBubbleDelegate
   raw_ptr<Profile> profile_;
 
   // The ID of the extension we are showing the bubble for.
-  std::string extension_id_;
+  ExtensionId extension_id_;
 };
 
 }  // namespace extensions

@@ -11,6 +11,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/mojom/manifest.mojom-shared.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -124,7 +125,7 @@ class ChromeTestExtensionLoader {
   base::ScopedTempDir temp_dir_;
 
   // The extension id of the loaded extension.
-  std::string extension_id_;
+  ExtensionId extension_id_;
 
   // A provided PEM path to use. If not provided, a temporary one will be
   // created.

@@ -55,7 +55,7 @@ class DisableExtensionBrowserTest : public ExtensionBrowserTest {
   }
 
   scoped_refptr<const Extension> extension_;
-  std::string extension_id_;
+  ExtensionId extension_id_;
   GURL extension_resource_url_;
   raw_ptr<ExtensionRegistry, DanglingUntriaged> registry_;
   raw_ptr<ExtensionPrefs, DanglingUntriaged> prefs_;
