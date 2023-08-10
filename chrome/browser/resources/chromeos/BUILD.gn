@@ -38,6 +38,7 @@ group("resources") {
     "password_change:resources",
     "remote_maintenance_curtain:resources",
     "sensor_info:resources",
+    "status_area_tester:resources",
     "supervision:resources",
     "vc_tray_tester:resources",
   ]

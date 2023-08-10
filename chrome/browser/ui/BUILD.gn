@@ -3116,6 +3116,8 @@ static_library("ui") {
       "webui/ash/smb_shares/smb_share_dialog.h",
       "webui/ash/smb_shares/smb_shares_localized_strings_provider.cc",
       "webui/ash/smb_shares/smb_shares_localized_strings_provider.h",
+      "webui/ash/status_area_tester/status_area_tester_ui.cc",
+      "webui/ash/status_area_tester/status_area_tester_ui.h",
       "webui/ash/sync/os_sync_handler.cc",
       "webui/ash/sync/os_sync_handler.h",
       "webui/ash/sys_internals/sys_internals_message_handler.cc",

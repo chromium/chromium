@@ -280,6 +280,7 @@ template("chrome_extra_paks") {
         "$root_gen_dir/chrome/password_change_resources.pak",
         "$root_gen_dir/chrome/remote_maintenance_curtain_resources.pak",
         "$root_gen_dir/chrome/sensor_info_resources.pak",
+        "$root_gen_dir/chrome/status_area_tester_resources.pak",
         "$root_gen_dir/chrome/supervision_resources.pak",
         "$root_gen_dir/chrome/vc_tray_tester_resources.pak",
         "$root_gen_dir/chromeos/ash/ash_resources.pak",
