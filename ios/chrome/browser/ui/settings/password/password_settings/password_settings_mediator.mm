@@ -308,6 +308,9 @@ using password_manager::prefs::kCredentialsEnableService;
 }
 
 - (PasswordSettingsAccountStorageState)computeAccountStorageState {
+  // TODO(crbug.com/1462858): Delete the usage of IsSyncFeatureEnabled() after
+  // Phase 2 on iOS is launched. See ConsentLevel::kSync documentation for
+  // details.
   if (_syncService->GetAccountInfo().IsEmpty() ||
       _syncService->IsSyncFeatureEnabled() ||
       base::FeatureList::IsEnabled(
