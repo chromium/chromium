@@ -56,7 +56,6 @@
 #include "extensions/test/test_extension_dir.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
-#include "third_party/blink/public/common/features.h"
 #include "url/origin.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -782,9 +781,9 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest, ExtensionProcessReuse) {
   }
 }
 
-// Test that navigations to blob: and filesystem: URLs with extension origins
-// are disallowed when initiated from non-extension processes.  See
-// https://crbug.com/645028 and https://crbug.com/644426.
+// Test that navigations to blob: URLs with extension origins are disallowed
+// when initiated from non-extension processes.  See https://crbug.com/645028
+// and https://crbug.com/644426.
 IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
                        NestedURLNavigationsToExtensionBlocked) {
   // Disabling web security is necessary to test the browser enforcement;
@@ -839,10 +838,6 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
   EXPECT_TRUE(policy->CanRequestURL(main_frame->GetProcess()->GetID(),
                                     extension_blob_url));
   EXPECT_TRUE(policy->CanRequestURL(extension_frame->GetProcess()->GetID(),
-                                    extension_file_system_url));
-  EXPECT_TRUE(policy->CanRequestURL(main_frame->GetProcess()->GetID(),
-                                    extension_file_system_url));
-  EXPECT_TRUE(policy->CanRequestURL(extension_frame->GetProcess()->GetID(),
                                     extension_url));
   EXPECT_TRUE(
       policy->CanRequestURL(main_frame->GetProcess()->GetID(), extension_url));
@@ -851,10 +846,6 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
                                    extension_blob_url));
   EXPECT_FALSE(policy->CanCommitURL(main_frame->GetProcess()->GetID(),
                                     extension_blob_url));
-  EXPECT_TRUE(policy->CanCommitURL(extension_frame->GetProcess()->GetID(),
-                                   extension_file_system_url));
-  EXPECT_FALSE(policy->CanCommitURL(main_frame->GetProcess()->GetID(),
-                                    extension_file_system_url));
   EXPECT_TRUE(policy->CanCommitURL(extension_frame->GetProcess()->GetID(),
                                    extension_url));
   EXPECT_FALSE(
@@ -873,64 +864,51 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
   url::Origin extension_origin(extension_frame->GetLastCommittedOrigin());
   GURL blob_url(CreateBlobURL(extension_frame, "foo"));
   EXPECT_EQ(extension_origin, url::Origin::Create(blob_url));
-  GURL filesystem_url(CreateFileSystemURL(extension_frame, "foo"));
-  EXPECT_EQ(extension_origin, url::Origin::Create(filesystem_url));
+  ;
 
-  // Navigate the popup to each nested URL with extension origin.
-  GURL nested_urls[] = {blob_url, filesystem_url};
-  // TODO(https://crbug.com/1332598): Remove filesystem: test branch entirely
-  // when filesystem: navigation is removed for good.
-  size_t nested_url_count =
-      base::FeatureList::IsEnabled(blink::features::kFileSystemUrlNavigation)
-          ? 2
-          : 1;
-  for (size_t i = 0; i < nested_url_count; i++) {
-    EXPECT_TRUE(
-        ExecJs(popup, "location.href = '" + nested_urls[i].spec() + "';"));
+  // Navigate the popup to each nested Blob URL with extension origin.
+  EXPECT_TRUE(ExecJs(popup, "location.href = '" + blob_url.spec() + "';"));
 
-    // If a navigation was started, wait for it to finish.  This can't just use
-    // a TestNavigationObserver, since after https://crbug.com/811558 blob: and
-    // filesystem: navigations have different failure modes: blob URLs will be
-    // blocked on the browser side, and filesystem URLs on the renderer side,
-    // without notifying the browser.  Since these navigations are scheduled in
-    // Blink, run a dummy script on the renderer to ensure that the navigation,
-    // if started, has made it to the browser process before we call
-    // WaitForLoadStop().
-    EXPECT_TRUE(ExecJs(popup, "true"));
-    EXPECT_TRUE(content::WaitForLoadStop(popup));
+  // If a navigation was started, wait for it to finish.  This can't just use
+  // a TestNavigationObserver, since after https://crbug.com/811558 blob: and
+  // filesystem: navigations have different failure modes: blob URLs will be
+  // blocked on the browser side, and filesystem URLs on the renderer side,
+  // without notifying the browser.  Since these navigations are scheduled in
+  // Blink, run a dummy script on the renderer to ensure that the navigation,
+  // if started, has made it to the browser process before we call
+  // WaitForLoadStop().
+  EXPECT_TRUE(ExecJs(popup, "true"));
+  EXPECT_TRUE(content::WaitForLoadStop(popup));
 
-    // This is a top-level navigation that should be blocked since it
-    // originates from a non-extension process.  Ensure that the error page
-    // doesn't commit an extension URL or origin.
-    EXPECT_NE(nested_urls[i], popup->GetLastCommittedURL());
-    EXPECT_FALSE(extension_origin.IsSameOriginWith(
-        popup->GetPrimaryMainFrame()->GetLastCommittedOrigin()));
-    EXPECT_NE("foo", GetTextContent(popup->GetPrimaryMainFrame()));
+  // This is a top-level navigation that should be blocked since it
+  // originates from a non-extension process.  Ensure that the error page
+  // doesn't commit an extension URL or origin.
+  EXPECT_NE(blob_url, popup->GetLastCommittedURL());
+  EXPECT_FALSE(extension_origin.IsSameOriginWith(
+      popup->GetPrimaryMainFrame()->GetLastCommittedOrigin()));
+  EXPECT_NE("foo", GetTextContent(popup->GetPrimaryMainFrame()));
 
-    EXPECT_EQ(1u, pm->GetRenderFrameHostsForExtension(extension->id()).size());
-    EXPECT_EQ(1u, pm->GetAllFrames().size());
-  }
+  EXPECT_EQ(1u, pm->GetRenderFrameHostsForExtension(extension->id()).size());
+  EXPECT_EQ(1u, pm->GetAllFrames().size());
 
   // Close the popup.  It won't be needed anymore, and bringing the original
   // page back into foreground makes the remainder of this test a bit faster.
   popup->Close();
 
-  // Navigate second subframe to each nested URL from the main frame (i.e.,
-  // from non-extension process).  These should be canceled.
-  for (size_t i = 0; i < nested_url_count; i++) {
-    EXPECT_TRUE(content::NavigateIframeToURL(tab, "frame2", nested_urls[i]));
-    content::RenderFrameHost* second_frame = ChildFrameAt(main_frame, 1);
+  // Navigate second subframe to each nested blob: URL from the main frame
+  // (i.e., from non-extension process).  These should be canceled.
+  EXPECT_TRUE(content::NavigateIframeToURL(tab, "frame2", blob_url));
+  content::RenderFrameHost* second_frame = ChildFrameAt(main_frame, 1);
 
-    EXPECT_NE(nested_urls[i], second_frame->GetLastCommittedURL());
-    EXPECT_FALSE(extension_origin.IsSameOriginWith(
-        second_frame->GetLastCommittedOrigin()));
-    EXPECT_NE("foo", GetTextContent(second_frame));
-    EXPECT_EQ(1u, pm->GetRenderFrameHostsForExtension(extension->id()).size());
-    EXPECT_EQ(1u, pm->GetAllFrames().size());
+  EXPECT_NE(blob_url, second_frame->GetLastCommittedURL());
+  EXPECT_FALSE(extension_origin.IsSameOriginWith(
+      second_frame->GetLastCommittedOrigin()));
+  EXPECT_NE("foo", GetTextContent(second_frame));
+  EXPECT_EQ(1u, pm->GetRenderFrameHostsForExtension(extension->id()).size());
+  EXPECT_EQ(1u, pm->GetAllFrames().size());
 
-    EXPECT_TRUE(
-        content::NavigateIframeToURL(tab, "frame2", GURL(url::kAboutBlankURL)));
-  }
+  EXPECT_TRUE(
+      content::NavigateIframeToURL(tab, "frame2", GURL(url::kAboutBlankURL)));
 }
 
 // Check that browser-side restrictions on extension blob URLs allow
@@ -1005,9 +983,9 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
   EXPECT_EQ(1u, pm->GetAllFrames().size());
 }
 
-// Test that navigations to blob: and filesystem: URLs with extension origins
-// are disallowed in subframes when initiated from non-extension processes, even
-// when the main frame lies about its origin.  See https://crbug.com/836858.
+// Test that navigations to blob: URLs with extension origins  are disallowed
+// in subframes when initiated from non-extension processes, even when the main
+// frame lies about its origin.  See https://crbug.com/836858.
 IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
                        NestedURLNavigationsToExtensionBlockedInSubframe) {
   // Disabling web security is necessary to test the browser enforcement;
@@ -1055,27 +1033,19 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
 
   // Navigate second subframe to each nested URL from the main frame (i.e.,
   // from non-extension process).  These should be canceled.
-  GURL nested_urls[] = {blob_url, filesystem_url};
-  // TODO(https://crbug.com/1332598): Remove filesystem: test branch entirely
-  // when filesystem: navigation is removed for good.
-  size_t nested_url_count =
-      base::FeatureList::IsEnabled(blink::features::kFileSystemUrlNavigation)
-          ? 2
-          : 1;
-  for (size_t i = 0; i < nested_url_count; i++) {
-    EXPECT_TRUE(content::NavigateIframeToURL(tab, "frame2", nested_urls[i]));
-    content::RenderFrameHost* second_frame = ChildFrameAt(main_frame, 1);
 
-    EXPECT_NE(nested_urls[i], second_frame->GetLastCommittedURL());
-    EXPECT_FALSE(extension_origin.IsSameOriginWith(
-        second_frame->GetLastCommittedOrigin()));
-    EXPECT_NE("foo", GetTextContent(second_frame));
-    EXPECT_EQ(1u, pm->GetRenderFrameHostsForExtension(extension->id()).size());
-    EXPECT_EQ(1u, pm->GetAllFrames().size());
+  EXPECT_TRUE(content::NavigateIframeToURL(tab, "frame2", blob_url));
+  content::RenderFrameHost* second_frame = ChildFrameAt(main_frame, 1);
 
-    EXPECT_TRUE(
-        content::NavigateIframeToURL(tab, "frame2", GURL(url::kAboutBlankURL)));
-  }
+  EXPECT_NE(blob_url, second_frame->GetLastCommittedURL());
+  EXPECT_FALSE(extension_origin.IsSameOriginWith(
+      second_frame->GetLastCommittedOrigin()));
+  EXPECT_NE("foo", GetTextContent(second_frame));
+  EXPECT_EQ(1u, pm->GetRenderFrameHostsForExtension(extension->id()).size());
+  EXPECT_EQ(1u, pm->GetAllFrames().size());
+
+  EXPECT_TRUE(
+      content::NavigateIframeToURL(tab, "frame2", GURL(url::kAboutBlankURL)));
 }
 
 // Test that navigations to blob: and filesystem: URLs with extension origins
@@ -1103,27 +1073,16 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
   url::Origin extension_origin(main_frame->GetLastCommittedOrigin());
   GURL blob_url(CreateBlobURL(main_frame, "foo"));
   EXPECT_EQ(extension_origin, url::Origin::Create(blob_url));
-  GURL filesystem_url(CreateFileSystemURL(main_frame, "foo"));
-  EXPECT_EQ(extension_origin, url::Origin::Create(filesystem_url));
 
-  // From the main frame, navigate its subframe to each nested URL.  This
+  // From the main frame, navigate its subframe to each blob: URL.  This
   // should be allowed and should stay in the extension process.
-  GURL nested_urls[] = {blob_url, filesystem_url};
-  // TODO(https://crbug.com/1332598): Remove filesystem: test branch entirely
-  // when filesystem: navigation is removed for good.
-  size_t nested_url_count =
-      base::FeatureList::IsEnabled(blink::features::kFileSystemUrlNavigation)
-          ? 2
-          : 1;
-  for (size_t i = 0; i < nested_url_count; i++) {
-    EXPECT_TRUE(content::NavigateIframeToURL(tab, "frame0", nested_urls[i]));
-    content::RenderFrameHost* child = ChildFrameAt(main_frame, 0);
-    EXPECT_EQ(nested_urls[i], child->GetLastCommittedURL());
-    EXPECT_EQ(extension_origin, child->GetLastCommittedOrigin());
-    EXPECT_EQ("foo", GetTextContent(child));
-    EXPECT_EQ(2u, pm->GetRenderFrameHostsForExtension(extension->id()).size());
-    EXPECT_EQ(2u, pm->GetAllFrames().size());
-  }
+  EXPECT_TRUE(content::NavigateIframeToURL(tab, "frame0", blob_url));
+  content::RenderFrameHost* child = ChildFrameAt(main_frame, 0);
+  EXPECT_EQ(blob_url, child->GetLastCommittedURL());
+  EXPECT_EQ(extension_origin, child->GetLastCommittedOrigin());
+  EXPECT_EQ("foo", GetTextContent(child));
+  EXPECT_EQ(2u, pm->GetRenderFrameHostsForExtension(extension->id()).size());
+  EXPECT_EQ(2u, pm->GetAllFrames().size());
 
   // From the main frame, create a blank popup and navigate it to the nested
   // blob URL. This should also be allowed, since the navigation originated from
@@ -1134,43 +1093,16 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
     EXPECT_NE(popup, tab);
 
     content::TestNavigationObserver observer(popup);
-    EXPECT_TRUE(
-        ExecJs(popup, "location.href = '" + nested_urls[0].spec() + "';"));
+    EXPECT_TRUE(ExecJs(popup, "location.href = '" + blob_url.spec() + "';"));
     observer.Wait();
 
-    EXPECT_EQ(nested_urls[0], popup->GetLastCommittedURL());
+    EXPECT_EQ(blob_url, popup->GetLastCommittedURL());
     EXPECT_EQ(extension_origin,
               popup->GetPrimaryMainFrame()->GetLastCommittedOrigin());
     EXPECT_EQ("foo", GetTextContent(popup->GetPrimaryMainFrame()));
 
     EXPECT_EQ(3u, pm->GetRenderFrameHostsForExtension(extension->id()).size());
     EXPECT_EQ(3u, pm->GetAllFrames().size());
-  }
-
-  // Same as above, but renderers cannot navigate top frame to filesystem URLs.
-  // So this will result in a console message.
-  {
-    content::WebContents* popup =
-        OpenPopup(main_frame, GURL(url::kAboutBlankURL));
-    EXPECT_NE(popup, tab);
-
-    content::WebContentsConsoleObserver console_observer(popup);
-    console_observer.SetPattern("Not allowed to navigate to*");
-    EXPECT_TRUE(
-        ExecJs(popup, "location.href = '" + nested_urls[1].spec() + "';"));
-    ASSERT_TRUE(console_observer.Wait());
-
-    // about:blank URLs can be modified by their opener. In that case their
-    // effective origin changes to that of the opener, but the page URL remains
-    // about:blank. Here the popup is being modified by the extension page,
-    // so it's origin will change to the extension URL.
-    EXPECT_EQ(GURL(url::kAboutBlankURL), popup->GetLastCommittedURL());
-    EXPECT_EQ(extension_origin,
-              popup->GetPrimaryMainFrame()->GetLastCommittedOrigin());
-    EXPECT_EQ(std::string(), GetTextContent(popup->GetPrimaryMainFrame()));
-
-    EXPECT_EQ(4u, pm->GetRenderFrameHostsForExtension(extension->id()).size());
-    EXPECT_EQ(4u, pm->GetAllFrames().size());
   }
 }
 
