@@ -73,6 +73,7 @@ body {
   display: flex;
   flex: auto;
   flex-direction: column;
+  overflow: hidden;
 }
 
 /* Directory tree at the left. */
@@ -383,7 +384,7 @@ body[type='open-multi-file'].check-select .dialog-header {
 }
 
 .dialog-header > .spacer {
-  flex: 1 0 48px;
+  flex: 1 0 8px;
 }
 
 .dialog-header cr-button {

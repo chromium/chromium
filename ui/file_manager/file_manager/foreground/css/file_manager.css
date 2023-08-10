@@ -71,6 +71,7 @@ body {
   display: flex;
   flex: auto;
   flex-direction: column;
+  overflow: hidden;
 }
 
 /* Directory tree at the left. */
