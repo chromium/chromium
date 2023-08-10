@@ -412,8 +412,9 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
      ],
    },
  ],
- // TODO(b/208932892): Re-enable once flakiness is fixed.
- // ['MultideviceFeatureItem', 'multidevice_feature_item_tests.js'],
+ [
+   'MultideviceFeatureItem', 'multidevice_page/multidevice_feature_item_test.js'
+ ],
  ['MultidevicePage', 'multidevice_page/multidevice_page_tests.js'],
  [
    'MultidevicePageMultideviceFeatureItem',
