@@ -78,6 +78,12 @@ const std::string kDupeItemId() {
 const std::string kParentId() {
   return GenerateId("parent_id");
 }
+const std::string kEmptyPromisePackageId() {
+  return GenerateId("empty_package_id");
+}
+const std::string kEmptyPromisePackageUnsetId() {
+  return GenerateId("unset_package_id");
+}
 
 syncer::SyncDataList CreateBadAppRemoteData(const std::string& id) {
   syncer::SyncDataList sync_list;
@@ -118,10 +124,26 @@ syncer::SyncDataList CreateBadAppRemoteData(const std::string& id) {
                                           "ordinal", "pinordinal"));
   sync_list.push_back(CreateAppRemoteData(kUnset, "item_name", kParentId(),
                                           "ordinal", "pinordinal"));
-  // All fields empty.
-  sync_list.push_back(CreateAppRemoteData("", "", "", "", ""));
+  // Empty promise_package_id.
   sync_list.push_back(
-      CreateAppRemoteData(kUnset, kUnset, kUnset, kUnset, kUnset));
+      CreateAppRemoteData(id == kDefault ? kEmptyPromisePackageId() : id,
+                          "item_name", kParentId(), "ordinal", "pinordinal",
+                          sync_pb::AppListSpecifics_AppListItemType_TYPE_APP,
+                          /*is_user_pinned=*/false, /*promise_package_id=*/""));
+  sync_list.push_back(CreateAppRemoteData(
+      id == kDefault ? kEmptyPromisePackageUnsetId() : id, "item_name",
+      kParentId(), "ordinal", "pinordinal",
+      sync_pb::AppListSpecifics_AppListItemType_TYPE_APP,
+      /*is_user_pinned=*/false, /*promise_package_id=*/kUnset));
+
+  // All fields empty.
+  sync_list.push_back(CreateAppRemoteData(
+      "", "", "", "", "", sync_pb::AppListSpecifics_AppListItemType_TYPE_APP,
+      absl::nullopt, ""));
+  sync_list.push_back(
+      CreateAppRemoteData(kUnset, kUnset, kUnset, kUnset, kUnset,
+                          sync_pb::AppListSpecifics_AppListItemType_TYPE_APP,
+                          absl::nullopt, kUnset));
 
   return sync_list;
 }
@@ -578,12 +600,14 @@ TEST_F(AppListSyncableServiceTest, InitialMerge) {
   const std::string kItemId2 = GenerateId("item_id2");
 
   syncer::SyncDataList sync_list;
-  sync_list.push_back(CreateAppRemoteData(kItemId1, "item_name1",
-                                          GenerateId("parent_id1"), "ordinal",
-                                          "pinordinal"));
-  sync_list.push_back(CreateAppRemoteData(kItemId2, "item_name2",
-                                          GenerateId("parent_id2"), "ordinal",
-                                          "pinordinal"));
+  sync_list.push_back(CreateAppRemoteData(
+      kItemId1, "item_name1", GenerateId("parent_id1"), "ordinal", "pinordinal",
+      sync_pb::AppListSpecifics_AppListItemType_TYPE_APP, absl::nullopt,
+      "promise_package_id1"));
+  sync_list.push_back(CreateAppRemoteData(
+      kItemId2, "item_name2", GenerateId("parent_id2"), "ordinal", "pinordinal",
+      sync_pb::AppListSpecifics_AppListItemType_TYPE_APP, absl::nullopt,
+      "promise_package_id2"));
 
   app_list_syncable_service()->MergeDataAndStartSyncing(
       syncer::APP_LIST, sync_list,
@@ -596,6 +620,7 @@ TEST_F(AppListSyncableServiceTest, InitialMerge) {
   EXPECT_EQ("ordinal", GetSyncItem(kItemId1)->item_ordinal.ToDebugString());
   EXPECT_EQ("pinordinal",
             GetSyncItem(kItemId1)->item_pin_ordinal.ToDebugString());
+  EXPECT_EQ("promise_package_id1", GetSyncItem(kItemId1)->promise_package_id);
 
   ASSERT_TRUE(GetSyncItem(kItemId2));
   EXPECT_EQ("item_name2", GetSyncItem(kItemId2)->item_name);
@@ -603,6 +628,7 @@ TEST_F(AppListSyncableServiceTest, InitialMerge) {
   EXPECT_EQ("ordinal", GetSyncItem(kItemId2)->item_ordinal.ToDebugString());
   EXPECT_EQ("pinordinal",
             GetSyncItem(kItemId2)->item_pin_ordinal.ToDebugString());
+  EXPECT_EQ("promise_package_id2", GetSyncItem(kItemId2)->promise_package_id);
 }
 
 class AppListInternalAppSyncableServiceTest
@@ -666,6 +692,14 @@ TEST_F(AppListSyncableServiceTest, InitialMerge_BadData) {
   // Duplicate item_id overrides previous.
   ASSERT_TRUE(GetSyncItem(kDupeItemId()));
   EXPECT_EQ("item_name_dupe", GetSyncItem(kDupeItemId())->item_name);
+
+  // Empty promise_package_id.
+  ASSERT_TRUE(GetSyncItem(kEmptyPromisePackageId()));
+  EXPECT_TRUE(
+      GetSyncItem(kEmptyPromisePackageId())->promise_package_id.empty());
+  EXPECT_TRUE(GetSyncItem(kEmptyPromisePackageUnsetId()));
+  EXPECT_TRUE(
+      GetSyncItem(kEmptyPromisePackageUnsetId())->promise_package_id.empty());
 }
 
 TEST_F(AppListSyncableServiceTest, InitialMergeAndUpdate) {
@@ -675,8 +709,10 @@ TEST_F(AppListSyncableServiceTest, InitialMergeAndUpdate) {
   const std::string kItemId2 = GenerateId("item_id2");
 
   syncer::SyncDataList sync_list;
-  sync_list.push_back(CreateAppRemoteData(kItemId1, "item_name1", kParentId(),
-                                          "ordinal", "pinordinal"));
+  sync_list.push_back(CreateAppRemoteData(
+      kItemId1, "item_name1", kParentId(), "ordinal", "pinordinal",
+      sync_pb::AppListSpecifics_AppListItemType_TYPE_APP, absl::nullopt,
+      "promise_package_id1"));
   sync_list.push_back(CreateAppRemoteData(kItemId2, "item_name2", kParentId(),
                                           "ordinal", "pinordinal"));
 
@@ -696,13 +732,13 @@ TEST_F(AppListSyncableServiceTest, InitialMergeAndUpdate) {
       CreateAppRemoteData(kItemId1, "item_name1x", GenerateId("parent_id1x"),
                           "ordinalx", "pinordinalx",
                           sync_pb::AppListSpecifics_AppListItemType_TYPE_APP,
-                          /*is_user_pinned=*/true)));
+                          /*is_user_pinned=*/true, "promise_package_id1x")));
   change_list.push_back(syncer::SyncChange(
       FROM_HERE, syncer::SyncChange::ACTION_UPDATE,
       CreateAppRemoteData(kItemId2, "item_name2x", GenerateId("parent_id2x"),
                           "ordinalx", "pinordinalx",
                           sync_pb::AppListSpecifics_AppListItemType_TYPE_APP,
-                          /*is_user_pinned=*/false)));
+                          /*is_user_pinned=*/false, "promise_package_id2")));
 
   app_list_syncable_service()->ProcessSyncChanges(base::Location(),
                                                   change_list);
@@ -716,6 +752,8 @@ TEST_F(AppListSyncableServiceTest, InitialMergeAndUpdate) {
             GetSyncItem(kItemId1)->item_pin_ordinal.ToDebugString());
   EXPECT_TRUE(GetSyncItem(kItemId1)->is_user_pinned.has_value());
   EXPECT_TRUE(*GetSyncItem(kItemId1)->is_user_pinned);
+  EXPECT_FALSE(GetSyncItem(kItemId1)->promise_package_id.empty());
+  EXPECT_EQ("promise_package_id1x", GetSyncItem(kItemId1)->promise_package_id);
 
   ASSERT_TRUE(GetSyncItem(kItemId2));
   EXPECT_EQ("item_name2x", GetSyncItem(kItemId2)->item_name);
@@ -725,14 +763,18 @@ TEST_F(AppListSyncableServiceTest, InitialMergeAndUpdate) {
             GetSyncItem(kItemId2)->item_pin_ordinal.ToDebugString());
   EXPECT_TRUE(GetSyncItem(kItemId2)->is_user_pinned.has_value());
   EXPECT_FALSE(*GetSyncItem(kItemId2)->is_user_pinned);
+  EXPECT_FALSE(GetSyncItem(kItemId2)->promise_package_id.empty());
+  EXPECT_EQ("promise_package_id2", GetSyncItem(kItemId2)->promise_package_id);
 }
 
 TEST_F(AppListSyncableServiceTest, InitialMergeAndUpdate_BadData) {
   const std::string kItemId = GenerateId("item_id");
 
   syncer::SyncDataList sync_list;
-  sync_list.push_back(CreateAppRemoteData(kItemId, "item_name", kParentId(),
-                                          "ordinal", "pinordinal"));
+  sync_list.push_back(CreateAppRemoteData(
+      kItemId, "item_name", kParentId(), "ordinal", "pinordinal",
+      sync_pb::AppListSpecifics_AppListItemType_TYPE_APP,
+      /*is_user_pinned=*/false, "promise_package_id"));
 
   app_list_syncable_service()->MergeDataAndStartSyncing(
       syncer::APP_LIST, sync_list,

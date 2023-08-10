@@ -86,6 +86,7 @@ constexpr char kBackgroundColorKey[] = "background_color";
 constexpr char kHueKey[] = "hue";
 constexpr char kEmptyItemOrdinalFixable[] = "empty_item_ordinal_fixable";
 constexpr char kIsUserPinned[] = "is_user_pinned";
+constexpr char kPromisePackageIdKey[] = "promise_package_id";
 
 void GetSyncSpecificsFromSyncItem(const AppListSyncableService::SyncItem* item,
                                   sync_pb::AppListSpecifics* specifics) {
@@ -93,6 +94,7 @@ void GetSyncSpecificsFromSyncItem(const AppListSyncableService::SyncItem* item,
   specifics->set_item_id(item->item_id);
   specifics->set_item_type(item->item_type);
   specifics->set_item_name(item->item_name);
+  specifics->set_promise_package_id(item->promise_package_id);
   specifics->set_parent_id(item->parent_id);
   specifics->set_item_ordinal(item->item_ordinal.IsValid()
                                   ? item->item_ordinal.ToInternalValue()
@@ -188,6 +190,9 @@ void UpdateSyncItemInLocalStorage(
                                    prefs::kAppListLocalState);
   base::Value::Dict* dict_item = pref_update->EnsureDict(sync_item->item_id);
   dict_item->Set(kNameKey, sync_item->item_name);
+  dict_item->Set(kPromisePackageIdKey, !sync_item->promise_package_id.empty()
+                                           ? sync_item->promise_package_id
+                                           : std::string());
   dict_item->Set(kParentIdKey, sync_item->parent_id);
   dict_item->Set(kPositionKey, sync_item->item_ordinal.IsValid()
                                    ? sync_item->item_ordinal.ToInternalValue()
@@ -467,6 +472,13 @@ void AppListSyncableService::InitFromLocalStorage() {
     if (maybe_item_name)
       sync_item->item_name = *maybe_item_name;
     const std::string* maybe_parent_id = item_dict->FindString(kParentIdKey);
+
+    const std::string* maybe_promise_package_id =
+        item_dict->FindString(kPromisePackageIdKey);
+    if (maybe_promise_package_id && !maybe_promise_package_id->empty()) {
+      sync_item->promise_package_id = *maybe_promise_package_id;
+    }
+
     if (maybe_parent_id)
       sync_item->parent_id = *maybe_parent_id;
 
@@ -611,6 +623,7 @@ bool AppListSyncableService::TransferItemAttributes(
 
   auto attributes = std::make_unique<SyncItem>(
       from_app_id, sync_pb::AppListSpecifics::TYPE_APP);
+  attributes->promise_package_id = from_item->promise_package_id;
   attributes->parent_id = from_item->parent_id;
   attributes->item_ordinal = from_item->item_ordinal;
   attributes->item_pin_ordinal = from_item->item_pin_ordinal;
@@ -642,6 +655,7 @@ void AppListSyncableService::ApplyAppAttributes(
 
   HandleUpdateStarted();
 
+  item->promise_package_id = attributes->promise_package_id;
   item->parent_id = attributes->parent_id;
   item->item_ordinal = attributes->item_ordinal;
   item->item_pin_ordinal = attributes->item_pin_ordinal;
@@ -1573,6 +1587,9 @@ std::string AppListSyncableService::SyncItem::ToString() const {
     res += " [" + item_ordinal.ToDebugString() + "]";
   } else {
     res += " { " + item_name + " }";
+    if (!promise_package_id.empty()) {
+      res += " { " + promise_package_id + " }";
+    }
     res += " [" + item_ordinal.ToDebugString() + "]";
     if (!parent_id.empty()) {
       res += " <" + parent_id.substr(0, 8) + ">";
@@ -1657,6 +1674,9 @@ void AppListSyncableService::UpdateSyncItemFromSync(
   DCHECK_EQ(item->item_id, specifics.item_id());
   item->item_type = specifics.item_type();
   item->item_name = specifics.item_name();
+  if (specifics.has_promise_package_id()) {
+    item->promise_package_id = specifics.promise_package_id();
+  }
 
   // Ignore update to put item into the OEM folder in case app is not OEM.
   // This can happen when app is installed on several devices where app is OEM
@@ -1717,6 +1737,10 @@ bool AppListSyncableService::UpdateSyncItemFromAppItem(
   }
   if (sync_item->item_name != app_item->name()) {
     sync_item->item_name = app_item->name();
+    changed = true;
+  }
+  if (sync_item->promise_package_id != app_item->promise_package_id()) {
+    sync_item->promise_package_id = app_item->promise_package_id();
     changed = true;
   }
   if (!sync_item->item_ordinal.IsValid() ||

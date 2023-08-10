@@ -100,4 +100,9 @@ message AppListSpecifics {
   //    and then additionally specified in PinnedLauncherApps, this value will
   //    be set to true.
   optional bool is_user_pinned = 9;
+
+  // Identifier for the app package of the item. Package Ids are stable and
+  // globally unique across app platforms, whereas App Id stored in item_id is
+  // not.
+  optional string promise_package_id = 10;
 }

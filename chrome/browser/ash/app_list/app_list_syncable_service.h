@@ -68,6 +68,7 @@ class AppListSyncableService : public syncer::SyncableService,
     const std::string item_id;
     sync_pb::AppListSpecifics::AppListItemType item_type;
     std::string item_name;
+    std::string promise_package_id;
     std::string parent_id;
     syncer::StringOrdinal item_ordinal;
     syncer::StringOrdinal item_pin_ordinal;

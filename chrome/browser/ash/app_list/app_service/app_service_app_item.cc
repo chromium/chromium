@@ -123,6 +123,15 @@ AppServiceAppItem::AppServiceAppItem(
     }
   }
 
+  if (!app_update.PublisherId().empty() &&
+      (app_update.AppType() == apps::AppType::kArc ||
+       app_update.AppType() == apps::AppType::kWeb)) {
+    std::string package_id =
+        apps::PackageId(app_update.AppType(), app_update.PublisherId())
+            .ToString();
+    SetPromisePackageId(package_id);
+  }
+
   const bool is_new_install = !sync_item && IsNewInstall(app_update);
   DVLOG(1) << "New AppServiceAppItem is_new_install " << is_new_install
            << " from update " << app_update;

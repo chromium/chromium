@@ -206,6 +206,11 @@ void ChromeAppListItem::SetName(const std::string& name) {
     model_updater()->SetItemName(id(), name);
 }
 
+void ChromeAppListItem::SetPromisePackageId(
+    const std::string& promise_package_id) {
+  metadata_->promise_package_id = promise_package_id;
+}
+
 void ChromeAppListItem::SetPosition(const syncer::StringOrdinal& position) {
   metadata_->position = position;
 }

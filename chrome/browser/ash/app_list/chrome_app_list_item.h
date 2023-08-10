@@ -59,6 +59,9 @@ class ChromeAppListItem {
   static gfx::ImageSkia CreateDisabledIcon(const gfx::ImageSkia& icon);
 
   const std::string& id() const { return metadata_->id; }
+  const std::string& promise_package_id() const {
+    return metadata_->promise_package_id;
+  }
   const std::string& folder_id() const { return metadata_->folder_id; }
   const syncer::StringOrdinal& position() const { return metadata_->position; }
   const std::string& name() const { return metadata_->name; }
@@ -140,6 +143,7 @@ class ChromeAppListItem {
   AppListControllerDelegate* GetController();
 
   void SetName(const std::string& name);
+  void SetPromisePackageId(const std::string& promise_package_id);
   void SetPosition(const syncer::StringOrdinal& position);
 
   void set_model_updater(AppListModelUpdater* model_updater) {

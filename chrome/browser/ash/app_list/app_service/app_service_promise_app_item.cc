@@ -27,6 +27,8 @@ AppServicePromiseAppItem::AppServicePromiseAppItem(
   status_ = update.Status();
   InitializeItem(update);
 
+  SetPromisePackageId(update.PackageId().ToString());
+
   // Promise icons should not be synced as they are transient and only present
   // during app installations.
   SetIsEphemeral(true);
