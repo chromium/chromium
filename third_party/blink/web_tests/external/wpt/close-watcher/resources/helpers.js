@@ -1,11 +1,26 @@
-window.createRecordingCloseWatcher = (t, events, name, type) => {
+window.createRecordingCloseWatcher = (t, events, name, type, parent) => {
   let watcher = null;
   if (type === 'dialog') {
     watcher = document.createElement('dialog');
     watcher.textContent = 'hello world';
     t.add_cleanup(() => watcher.remove());
-    document.body.appendChild(watcher);
+    if (parent) {
+      parent.appendChild(watcher);
+    } else {
+      document.body.appendChild(watcher);
+    }
     watcher.showModal();
+  } else if (type === 'popover') {
+    watcher = document.createElement('div');
+    watcher.setAttribute('popover', 'auto');
+    watcher.textContent = 'hello world';
+    t.add_cleanup(() => watcher.remove());
+    if (parent) {
+      parent.appendChild(watcher);
+    } else {
+      document.body.appendChild(watcher);
+    }
+    watcher.showPopover();
   } else {
     watcher = new CloseWatcher();
     t.add_cleanup(() => watcher.destroy());
@@ -19,7 +34,7 @@ window.createRecordingCloseWatcher = (t, events, name, type) => {
 };
 
 window.createBlessedRecordingCloseWatcher = async (t, events, name, type, dialog) => {
-  return dialogResilientBless(dialog, () => createRecordingCloseWatcher(t, events, name, type));
+  return dialogResilientBless(dialog, () => createRecordingCloseWatcher(t, events, name, type, dialog));
 };
 
 window.sendEscKey = () => {
@@ -40,7 +55,7 @@ window.sendCloseRequest = window.sendEscKey;
 // This function is a version of test_driver.bless which works on dialog elements:
 // https://github.com/web-platform-tests/wpt/issues/41218
 window.dialogResilientBless = async (watcher, fn) => {
-  if (watcher instanceof HTMLDialogElement) {
+  if (watcher instanceof HTMLElement) {
     const button = document.createElement('button');
     watcher.appendChild(button);
     await test_driver.click(button);
