@@ -50,6 +50,9 @@ ASH_EXPORT bool ShouldShowLandscape(const views::Widget* widget);
 // Returns true if |view| or any of its descendant views HasFocus.
 ASH_EXPORT bool HasFocusInAnyChildView(views::View* view);
 
+ASH_EXPORT bool IsDescendantView(views::View& descendant,
+                                 views::View& ancestor);
+
 // Creates a standard text label for use in the login bubbles.
 // If |view_defining_max_width| is set, we allow the label to have multiple
 // lines and we set its maximum width to the preferred width of

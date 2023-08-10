@@ -99,6 +99,11 @@ class LoginBubbleHandler : public ui::EventHandler {
       return;
     }
 
+    views::View* anchor = bubble_->GetAnchorView();
+    if (anchor && login_views_utils::HasFocusInAnyChildView(anchor)) {
+      return;
+    }
+
     if (!bubble_->is_persistent()) {
       bubble_->Hide();
     }

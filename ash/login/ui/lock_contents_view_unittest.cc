@@ -1003,11 +1003,6 @@ TEST_F(LockContentsViewUnitTest, ShowErrorBubbleOnAuthFailure) {
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(test_api.auth_error_bubble()->GetVisible());
-
-  // The error bubble is expected to close on a user action - e.g. if they start
-  // typing the password again.
-  PressAndReleaseKey(ui::KeyboardCode::VKEY_B);
-  EXPECT_FALSE(test_api.auth_error_bubble()->GetVisible());
 }
 
 TEST_F(LockContentsViewUnitTest, AuthErrorLockscreenLearnMoreButton) {
@@ -1558,12 +1553,11 @@ TEST_F(LockContentsViewUnitTest, AuthErrorDoesNotRemoveDetachableBaseError) {
   EXPECT_TRUE(test_api.auth_error_bubble()->GetVisible());
   EXPECT_TRUE(test_api.detachable_base_error_bubble()->GetVisible());
 
-  // User action, like pressing a key should close the auth error bubble, but
-  // not the detachable base error bubble.
+  // User action, like pressing a key, should not close the detachable base
+  // error bubble.
   PressAndReleaseKey(ui::KeyboardCode::VKEY_A);
 
   EXPECT_TRUE(test_api.detachable_base_error_bubble()->GetVisible());
-  EXPECT_FALSE(test_api.auth_error_bubble()->GetVisible());
 }
 
 TEST_F(LockContentsViewKeyboardUnitTest, SwitchPinAndVirtualKeyboard) {

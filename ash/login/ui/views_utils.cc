@@ -108,6 +108,17 @@ bool HasFocusInAnyChildView(views::View* view) {
   return search == view;
 }
 
+bool IsDescendantView(views::View& descendant, views::View& ancestor) {
+  views::View* desc = &descendant;
+  do {
+    if (desc == &ancestor) {
+      return true;
+    }
+    desc = desc->parent();
+  } while (desc != nullptr);
+  return false;
+}
+
 std::unique_ptr<views::Label> CreateUnthemedBubbleLabel(
     const std::u16string& message,
     views::View* view_defining_max_width,

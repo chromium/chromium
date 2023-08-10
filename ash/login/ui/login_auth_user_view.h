@@ -208,6 +208,7 @@ class ASH_EXPORT LoginAuthUserView : public NonAccessibleView {
   base::WeakPtr<views::View> GetActiveInputView();
   LoginPasswordView* password_view() { return password_view_; }
   LoginUserView* user_view() { return user_view_; }
+  views::Button* pin_password_toggle() { return pin_password_toggle_; }
 
   // views::View:
   gfx::Size CalculatePreferredSize() const override;

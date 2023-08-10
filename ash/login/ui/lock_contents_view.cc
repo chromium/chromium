@@ -441,6 +441,13 @@ LockContentsView::~LockContentsView() {
   }
 
   chromeos::PowerManagerClient::Get()->RemoveObserver(this);
+
+  if (widget_) {
+    views::FocusManager* focus_manager = widget_->GetFocusManager();
+    if (focus_manager) {
+      focus_manager->RemoveFocusChangeListener(this);
+    }
+  }
 }
 
 void LockContentsView::FocusNextUser() {
@@ -594,10 +601,30 @@ void LockContentsView::Layout() {
 void LockContentsView::AddedToWidget() {
   DoLayout();
 
+  views::Widget* widget = GetWidget();
+  CHECK(widget);
+  widget_ = widget->GetWeakPtr();
+
+  views::FocusManager* focus_manager = widget->GetFocusManager();
+  if (focus_manager) {
+    focus_manager->AddFocusChangeListener(this);
+  }
+
   // Focus the primary user when showing the UI. This will focus the password.
   if (primary_big_view_) {
     primary_big_view_->RequestFocus();
   }
+}
+
+void LockContentsView::RemovedFromWidget() {
+  if (!widget_) {
+    return;
+  }
+  views::FocusManager* focus_manager = widget_->GetFocusManager();
+  if (focus_manager) {
+    focus_manager->RemoveFocusChangeListener(this);
+  }
+  widget_ = nullptr;
 }
 
 void LockContentsView::OnFocus() {
@@ -1538,6 +1565,74 @@ void LockContentsView::CreateMediaControlsLayout() {
       &LockContentsView::SetMediaControlsSpacing, base::Unretained(this)));
 
   Layout();
+}
+
+void LockContentsView::OnWillChangeFocus(View* focused_before,
+                                         View* focused_now) {}
+
+void LockContentsView::OnDidChangeFocus(View* focused_before,
+                                        View* focused_now) {
+  if (!focused_before || !focused_now) {
+    return;
+  }
+
+  if (!auth_error_bubble_ || !auth_error_bubble_->GetVisible()) {
+    return;
+  }
+  views::View* anchor = auth_error_bubble_->GetAnchorView();
+  if (!anchor) {
+    return;
+  }
+
+  if (!widget_) {
+    LOG(ERROR) << "Focus change event without widget";
+    return;
+  }
+  views::FocusManager* focus_manager = widget_->GetFocusManager();
+  if (!focus_manager) {
+    LOG(ERROR) << "Widget misses FocusManager";
+    return;
+  }
+
+  if (focus_manager->focus_change_reason() !=
+      views::FocusManager::FocusChangeReason::kFocusTraversal) {
+    return;
+  }
+
+  const bool before_in_anchor =
+      login_views_utils::IsDescendantView(*focused_before, *anchor);
+  if (!before_in_anchor) {
+    return;
+  }
+
+  LoginBigUserView* big_user = CurrentBigUserView();
+  if (!big_user) {
+    return;
+  }
+  LoginAuthUserView* auth_user = big_user->auth_user();
+  if (!auth_user) {
+    return;
+  }
+  LoginUserView* user_view = auth_user->user_view();
+  if (!user_view) {
+    return;
+  }
+
+  views::View* dropdown_button = user_view->GetDropdownButton();
+  const bool now_in_dropdown_button =
+      dropdown_button &&
+      login_views_utils::IsDescendantView(*focused_now, *dropdown_button);
+
+  views::View* pin_password_toggle = auth_user->pin_password_toggle();
+  const bool now_in_pin_password_toggle =
+      pin_password_toggle &&
+      login_views_utils::IsDescendantView(*focused_now, *pin_password_toggle);
+
+  if (!now_in_dropdown_button && !now_in_pin_password_toggle) {
+    return;
+  }
+
+  FocusFirstOrLastFocusableChild(auth_error_bubble_.get(), /*reverse=*/false);
 }
 
 void LockContentsView::CreateLowDensityLayout(
