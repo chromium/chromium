@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -22,6 +23,8 @@
 #include "third_party/blink/public/common/features.h"
 
 namespace autofill {
+
+class ScopedAutofillManagersObservation;
 
 namespace {
 
@@ -247,6 +250,19 @@ void ContentAutofillDriverFactory::OnVisibilityChanged(
   if (visibility == content::Visibility::HIDDEN) {
     client_->HideAutofillPopup(PopupHidingReason::kTabGone);
   }
+}
+
+std::vector<ContentAutofillDriver*>
+ContentAutofillDriverFactory::GetExistingDrivers(
+    base::PassKey<ScopedAutofillManagersObservation>) {
+  std::vector<ContentAutofillDriver*> drivers;
+  drivers.reserve(driver_map_.size());
+  for (const std::pair<content::RenderFrameHost*,
+                       std::unique_ptr<ContentAutofillDriver>>& entry :
+       driver_map_) {
+    drivers.push_back(entry.second.get());
+  }
+  return drivers;
 }
 
 }  // namespace autofill

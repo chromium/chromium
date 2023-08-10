@@ -14,6 +14,7 @@
 #include "components/autofill/core/browser/autofill_manager.h"
 #include "components/autofill/core/browser/autofill_manager_test_api.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/mock_autofill_manager_observer.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_autofill_driver.h"
 #include "components/autofill/core/browser/test_autofill_manager_waiter.h"
@@ -199,102 +200,6 @@ class MockAutofillManager : public AutofillManager {
   base::WeakPtrFactory<MockAutofillManager> weak_ptr_factory_{this};
 };
 
-class MockAutofillObserver : public AutofillManager::Observer {
- public:
-  MockAutofillObserver() = default;
-  MockAutofillObserver(const MockAutofillObserver&) = delete;
-  MockAutofillObserver& operator=(const MockAutofillObserver&) = delete;
-  ~MockAutofillObserver() override = default;
-
-  MOCK_METHOD(void, OnAutofillManagerDestroyed, (AutofillManager&), (override));
-  MOCK_METHOD(void, OnAutofillManagerReset, (AutofillManager&), (override));
-
-  MOCK_METHOD(void, OnBeforeLanguageDetermined, (AutofillManager&), (override));
-  MOCK_METHOD(void, OnAfterLanguageDetermined, (AutofillManager&), (override));
-
-  MOCK_METHOD(void,
-              OnBeforeFormsSeen,
-              (AutofillManager&, base::span<const FormGlobalId>),
-              (override));
-  MOCK_METHOD(void,
-              OnAfterFormsSeen,
-              (AutofillManager&, base::span<const FormGlobalId>),
-              (override));
-
-  MOCK_METHOD(void,
-              OnBeforeTextFieldDidChange,
-              (AutofillManager&, FormGlobalId, FieldGlobalId),
-              (override));
-  MOCK_METHOD(void,
-              OnAfterTextFieldDidChange,
-              (AutofillManager&, FormGlobalId, FieldGlobalId),
-              (override));
-
-  MOCK_METHOD(void,
-              OnBeforeTextFieldDidScroll,
-              (AutofillManager&, FormGlobalId, FieldGlobalId),
-              (override));
-  MOCK_METHOD(void,
-              OnAfterTextFieldDidScroll,
-              (AutofillManager&, FormGlobalId, FieldGlobalId),
-              (override));
-
-  MOCK_METHOD(void,
-              OnBeforeSelectControlDidChange,
-              (AutofillManager&, FormGlobalId, FieldGlobalId),
-              (override));
-  MOCK_METHOD(void,
-              OnAfterSelectControlDidChange,
-              (AutofillManager&, FormGlobalId, FieldGlobalId),
-              (override));
-
-  MOCK_METHOD(void,
-              OnBeforeDidFillAutofillFormData,
-              (AutofillManager&, FormGlobalId),
-              (override));
-  MOCK_METHOD(void,
-              OnAfterDidFillAutofillFormData,
-              (AutofillManager&, FormGlobalId),
-              (override));
-
-  MOCK_METHOD(void,
-              OnBeforeAskForValuesToFill,
-              (AutofillManager&, FormGlobalId, FieldGlobalId),
-              (override));
-  MOCK_METHOD(void,
-              OnAfterAskForValuesToFill,
-              (AutofillManager&, FormGlobalId, FieldGlobalId),
-              (override));
-
-  MOCK_METHOD(void,
-              OnBeforeJavaScriptChangedAutofilledValue,
-              (AutofillManager&, FormGlobalId, FieldGlobalId),
-              (override));
-  MOCK_METHOD(void,
-              OnAfterJavaScriptChangedAutofilledValue,
-              (AutofillManager&, FormGlobalId, FieldGlobalId),
-              (override));
-
-  MOCK_METHOD(void,
-              OnBeforeLoadedServerPredictions,
-              (AutofillManager&),
-              (override));
-  MOCK_METHOD(void,
-              OnAfterLoadedServerPredictions,
-              (AutofillManager&),
-              (override));
-
-  MOCK_METHOD(void,
-              OnFieldTypesDetermined,
-              (AutofillManager&, FormGlobalId, FieldTypeSource),
-              (override));
-
-  MOCK_METHOD(void,
-              OnFormSubmitted,
-              (AutofillManager&, FormGlobalId),
-              (override));
-};
-
 // Creates a vector of test forms which differ in their FormGlobalIds
 // and FieldGlobalIds.
 std::vector<FormData> CreateTestForms(size_t num_forms) {
@@ -385,7 +290,7 @@ class AutofillManagerTest : public testing::Test {
   NiceMock<MockAutofillClient> client_;
   std::unique_ptr<MockAutofillDriver> driver_;
   std::unique_ptr<MockAutofillManager> manager_;
-  MockAutofillObserver observer_;
+  MockAutofillManagerObserver observer_;
 };
 
 // The test parameter sets the number of forms to be generated.
@@ -469,9 +374,9 @@ TEST_F(AutofillManagerTest, ObserverReceiveCalls) {
   auto ff = Eq(field.global_id());
   auto heuristics = Eq(FieldTypeSource::kHeuristicsOrAutocomplete);
 
-  MockAutofillObserver observer;
-  base::ScopedObservation<AutofillManager, MockAutofillObserver> observation{
-      &observer};
+  MockAutofillManagerObserver observer;
+  base::ScopedObservation<AutofillManager, MockAutofillManagerObserver>
+      observation{&observer};
   observation.Observe(manager_.get());
 
   // This test should have no unexpected calls of observer events.

@@ -23,6 +23,8 @@ static_library("browser") {
     "form_forest_util_inl.h",
     "risk/fingerprint.cc",
     "risk/fingerprint.h",
+    "scoped_autofill_managers_observation.cc",
+    "scoped_autofill_managers_observation.h",
   ]
 
   public_deps = [
@@ -110,6 +112,7 @@ source_set("unit_tests") {
     "content_autofill_driver_factory_unittest.cc",
     "content_autofill_driver_unittest.cc",
     "form_forest_unittest.cc",
+    "scoped_autofill_managers_observation_unittest.cc",
   ]
 
   deps = [

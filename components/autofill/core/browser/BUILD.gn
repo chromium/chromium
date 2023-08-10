@@ -734,6 +734,8 @@ static_library("test_support") {
     "metrics/ukm_metrics_test_utils.h",
     "mock_autocomplete_history_manager.cc",
     "mock_autocomplete_history_manager.h",
+    "mock_autofill_manager_observer.cc",
+    "mock_autofill_manager_observer.h",
     "mock_autofill_optimization_guide.cc",
     "mock_autofill_optimization_guide.h",
     "mock_iban_manager.cc",
