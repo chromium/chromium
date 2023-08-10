@@ -326,6 +326,14 @@ void RecordNegotiatedWebTransportVersion(
       "Net.WebTransport.NegotiatedWebTransportVersion", negotiated);
 }
 
+void AdjustSendAlgorithm(quic::QuicConnection& connection) {
+  if (!base::FeatureList::IsEnabled(features::kWebTransportCongestionControl)) {
+    return;
+  }
+  connection.sent_packet_manager().SetSendAlgorithm(
+      features::kWebTransportCongestionControlAlgorithm.Get());
+}
+
 }  // namespace
 
 DedicatedWebTransportHttp3Client::DedicatedWebTransportHttp3Client(
@@ -596,6 +604,7 @@ void DedicatedWebTransportHttp3Client::CreateConnection() {
   event_logger_ = std::make_unique<QuicEventLogger>(session_.get(), net_log_);
   connection_->set_debug_visitor(event_logger_.get());
   connection_->set_creator_debug_delegate(event_logger_.get());
+  AdjustSendAlgorithm(*connection_);
 
   session_->Initialize();
   packet_reader_->StartReading();
