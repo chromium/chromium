@@ -1555,6 +1555,21 @@ wgpu::Adapter WebGPUDecoderImpl::CreatePreferredAdapter(
   ChainStruct(adapter_options, &adapter_options_luid);
 #endif
 
+#if BUILDFLAG(USE_DAWN) && BUILDFLAG(DAWN_ENABLE_BACKEND_OPENGLES)
+  dawn::native::opengl::RequestAdapterOptionsGetGLProc
+      adapter_options_get_gl_proc = {};
+  adapter_options_get_gl_proc.getProc =
+      reinterpret_cast<void* (*)(const char*)>(gl::GetGLProcAddress);
+  gl::GLDisplayEGL* gl_display = gl::GLSurfaceEGL::GetGLDisplayEGL();
+  if (gl_display) {
+    adapter_options_get_gl_proc.display = gl_display->GetDisplay();
+  } else {
+    adapter_options_get_gl_proc.display = EGL_NO_DISPLAY;
+  }
+
+  ChainStruct(adapter_options, &adapter_options_get_gl_proc);
+#endif
+
   // Build a list of backend types we will search for, in order of preference.
   std::vector<wgpu::BackendType> backend_types;
   switch (use_webgpu_adapter_) {
