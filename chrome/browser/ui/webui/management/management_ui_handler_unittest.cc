@@ -21,11 +21,16 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ash/policy/remote_commands/fake_start_crd_session_job_delegate.h"
 #include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"
+#include "chrome/browser/enterprise/reporting/prefs.h"
 #include "chrome/browser/policy/dm_token_utils.h"
+#include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/ui/webui/management/management_ui_handler.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
+#include "components/enterprise/browser/reporting/common_pref_names.h"
+#include "components/enterprise/browser/reporting/real_time_report_type.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/cloud/dm_token.h"
@@ -37,9 +42,14 @@
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_ui.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_web_ui.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -69,8 +79,6 @@
 #include "chrome/browser/net/secure_dns_config.h"
 #include "chrome/browser/net/stub_resolver_config_reader.h"
 #include "chrome/browser/net/system_network_context_manager.h"
-#include "chrome/browser/prefs/browser_prefs.h"
-#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/dbus/shill/shill_service_client.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
@@ -82,18 +90,15 @@
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/account_id/account_id.h"
-#include "components/enterprise/browser/reporting/common_pref_names.h"
 #include "components/onc/onc_pref_names.h"
 #include "components/policy/core/common/cloud/cloud_external_data_manager.h"
 #include "components/policy/core/common/cloud/mock_cloud_external_data_manager.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_store.h"
 #include "components/policy/core/common/cloud/mock_signing_service.h"
-#include "components/prefs/testing_pref_service.h"
 #include "components/proxy_config/pref_proxy_config_tracker_impl.h"
 #include "components/proxy_config/proxy_config_dictionary.h"
 #include "components/proxy_config/proxy_config_pref_names.h"
-#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -216,8 +221,11 @@ class TestDeviceCloudPolicyManagerAsh
 class TestManagementUIHandler : public ManagementUIHandler {
  public:
   TestManagementUIHandler() = default;
-  explicit TestManagementUIHandler(policy::PolicyService* policy_service)
-      : policy_service_(policy_service) {}
+  explicit TestManagementUIHandler(policy::PolicyService* policy_service,
+                                   content::WebUI* web_ui)
+      : policy_service_(policy_service) {
+    set_web_ui(web_ui);
+  }
 
   ~TestManagementUIHandler() override = default;
 
@@ -229,7 +237,7 @@ class TestManagementUIHandler : public ManagementUIHandler {
     return GetContextualManagedData(profile);
   }
 
-  base::Value::List GetExtensionReportingInfo(bool can_collect_signals = true) {
+  base::Value::List GetReportingInfo(bool can_collect_signals = true) {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
     EXPECT_CALL(mock_user_permission_service_, CanCollectSignals())
         .WillOnce(
@@ -290,16 +298,15 @@ class ManagementUIHandlerTests : public TestingBaseClass {
  public:
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ManagementUIHandlerTests()
-      : TestingBaseClass(),
-        device_domain_(u"devicedomain.com"),
+      : device_domain_(u"devicedomain.com"),
         task_runner_(base::MakeRefCounted<base::TestSimpleTaskRunner>()),
         state_keys_broker_(&session_manager_client_),
-        handler_(&policy_service_) {
+        handler_(&policy_service_, &web_ui_) {
     ON_CALL(policy_service_, GetPolicies(_))
         .WillByDefault(ReturnRef(empty_policy_map_));
   }
 #else
-  ManagementUIHandlerTests() : TestingBaseClass(), handler_(&policy_service_) {
+  ManagementUIHandlerTests() : handler_(&policy_service_, &web_ui_) {
     ON_CALL(policy_service_, GetPolicies(_))
         .WillByDefault(ReturnRef(empty_policy_map_));
   }
@@ -391,6 +398,7 @@ class ManagementUIHandlerTests : public TestingBaseClass {
     std::string device_domain;
     base::FilePath crostini_ansible_playbook_filepath;
     bool insights_extension_enabled;
+    bool legacy_tech_reporting_enabled;
     base::Value::List report_app_inventory;
     base::Value::List report_app_usage;
   };
@@ -420,10 +428,22 @@ class ManagementUIHandlerTests : public TestingBaseClass {
     setup_config_.insights_extension_enabled = false;
     setup_config_.report_app_inventory = base::Value::List();
     setup_config_.report_app_usage = base::Value::List();
+    setup_config_.legacy_tech_reporting_enabled = false;
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+  void SetUpLocalState() {
+    RegisterLocalState(local_state_.registry());
+    TestingBrowserProcess::GetGlobal()->SetLocalState(&local_state_);
+  }
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+  void SetUp() override { SetUpLocalState(); }
+  void TearDown() override {
+    TestingBrowserProcess::GetGlobal()->SetLocalState(nullptr);
+  }
+#else
   void SetUp() override {
+    SetUpLocalState();
     install_attributes_ = std::make_unique<ash::ScopedStubInstallAttributes>(
         ash::StubInstallAttributes::CreateUnset());
     DeviceSettingsTestBase::SetUp();
@@ -445,20 +465,17 @@ class ManagementUIHandlerTests : public TestingBaseClass {
   }
   void TearDown() override {
     network_handler_test_helper_.reset();
-    profile_.reset();
     TestingBrowserProcess::GetGlobal()->SetLocalState(nullptr);
     DeviceSettingsTestBase::TearDown();
   }
 
   void SetUpConnectManager() {
-    RegisterLocalState(local_state_.registry());
     std::unique_ptr<policy::DeviceCloudPolicyStoreAsh> store =
         std::make_unique<policy::DeviceCloudPolicyStoreAsh>(
             device_settings_service_.get(), install_attributes_->Get(),
             base::SingleThreadTaskRunner::GetCurrentDefault());
     manager_ = std::make_unique<TestDeviceCloudPolicyManagerAsh>(
         std::move(store), &state_keys_broker_);
-    TestingBrowserProcess::GetGlobal()->SetLocalState(&local_state_);
     manager_.get()->Initialize(&local_state_);
   }
 
@@ -490,6 +507,13 @@ class ManagementUIHandlerTests : public TestingBaseClass {
         GetTestConfig().crostini_report_usage);
     local_state_.SetBoolean(enterprise_reporting::kCloudReportingEnabled,
                             GetTestConfig().cloud_reporting_enabled);
+    if (GetTestConfig().legacy_tech_reporting_enabled) {
+      base::Value::List allowlist;
+      allowlist.Append(base::Value("www.example.com"));
+      profile_->GetTestingPrefService()->SetManagedPref(
+          enterprise_reporting::kCloudLegacyTechReportAllowlist,
+          std::make_unique<base::Value>(std::move(allowlist)));
+    }
 
     profile_->GetPrefs()->SetFilePath(
         crostini::prefs::kCrostiniAnsiblePlaybookFilePath,
@@ -529,6 +553,9 @@ class ManagementUIHandlerTests : public TestingBaseClass {
       builder.OverridePolicyConnectorIsManagedForTesting(true);
     }
     profile_ = builder.Build();
+    web_contents_ = content::WebContents::Create(
+        content::WebContents::CreateParams(profile_.get()));
+    web_ui_.set_web_contents(web_contents_.get());
     handler_.SetAccountManagedForTesting(GetTestConfig().managed_account);
     handler_.SetDeviceManagedForTesting(GetTestConfig().managed_device);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -625,12 +652,12 @@ class ManagementUIHandlerTests : public TestingBaseClass {
   policy::PolicyMap empty_policy_map_;
   std::u16string device_domain_;
   ContextualManagementSourceUpdate extracted_;
+  TestingPrefServiceSimple local_state_;
+  TestingPrefServiceSimple user_prefs_;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<ash::NetworkHandlerTestHelper> network_handler_test_helper_;
   std::unique_ptr<ash::ScopedStubInstallAttributes> install_attributes_;
   std::unique_ptr<crostini::FakeCrostiniFeatures> crostini_features_;
-  TestingPrefServiceSimple local_state_;
-  TestingPrefServiceSimple user_prefs_;
   std::unique_ptr<StubResolverConfigReader> stub_resolver_config_reader_;
   std::unique_ptr<TestDeviceCloudPolicyManagerAsh> manager_;
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
@@ -639,8 +666,10 @@ class ManagementUIHandlerTests : public TestingBaseClass {
   ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
 #else
   content::BrowserTaskEnvironment task_environment_;
-  std::unique_ptr<TestingProfile> profile_;
 #endif
+  std::unique_ptr<TestingProfile> profile_;
+  content::TestWebUI web_ui_;
+  std::unique_ptr<content::WebContents> web_contents_;
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   chromeos::ScopedLacrosServiceTestHelper scoped_lacros_test_helper_;
@@ -1149,6 +1178,14 @@ TEST_F(ManagementUIHandlerTests, AllDisabledDeviceReportingInfo) {
   ASSERT_PRED_FORMAT2(ReportingElementsToBeEQ, info, expected_elements);
 }
 
+TEST_F(ManagementUIHandlerTests, alldisableddevicereportinginfo) {
+  ResetTestConfig(false);
+  const base::Value::List info = SetUpForReportingInfo();
+  const std::map<std::string, std::string> expected_elements = {};
+
+  ASSERT_PRED_FORMAT2(ReportingElementsToBeEQ, info, expected_elements);
+}
+
 TEST_F(ManagementUIHandlerTests,
        DeviceReportingInfoWhenInsightsExtensionEnabled) {
   ResetTestConfig(false);
@@ -1214,6 +1251,16 @@ TEST_F(ManagementUIHandlerTests, ReportAppUsage) {
   const base::Value::List info = SetUpForReportingInfo();
   const std::map<std::string, std::string> expected_elements = {
       {kManagementReportAppInfoAndActivity, "app info and activity"}};
+
+  ASSERT_PRED_FORMAT2(ReportingElementsToBeEQ, info, expected_elements);
+}
+
+TEST_F(ManagementUIHandlerTests, ReportLegacyTechReport) {
+  ResetTestConfig(false);
+  GetTestConfig().legacy_tech_reporting_enabled = true;
+  const base::Value::List info = SetUpForReportingInfo();
+  const std::map<std::string, std::string> expected_elements = {
+      {kManagementLegacyTechReport, "legacy-tech"}};
 
   ASSERT_PRED_FORMAT2(ReportingElementsToBeEQ, info, expected_elements);
 }
@@ -1328,18 +1375,18 @@ TEST_F(ManagementUIHandlerTests, HideProxyServerDisclosureForDirectProxy) {
 #endif
 
 TEST_F(ManagementUIHandlerTests, ExtensionReportingInfoNoPolicySetNoMessage) {
+  SetUpProfileAndHandler();
   auto reporting_info =
-      handler_.GetExtensionReportingInfo(/*can_collect_signals=*/false);
+      handler_.GetReportingInfo(/*can_collect_signals=*/false);
   EXPECT_EQ(reporting_info.size(), 0u);
 }
 
 TEST_F(ManagementUIHandlerTests, CloudReportingPolicy) {
-  policy::PolicyMap chrome_policies;
-  const policy::PolicyNamespace chrome_policies_namespace =
-      policy::PolicyNamespace(policy::POLICY_DOMAIN_CHROME, std::string());
+  policy::PolicyMap policies;
   EXPECT_CALL(policy_service_, GetPolicies(_))
-      .WillRepeatedly(ReturnRef(chrome_policies));
-  SetPolicyValue(policy::key::kCloudReportingEnabled, true, chrome_policies);
+      .WillRepeatedly(ReturnRef(policies));
+  local_state_.SetBoolean(enterprise_reporting::kCloudReportingEnabled, true);
+  SetUpProfileAndHandler();
 
   std::set<std::string> expected_messages = {
       kManagementExtensionReportMachineName, kManagementExtensionReportUsername,
@@ -1348,32 +1395,53 @@ TEST_F(ManagementUIHandlerTests, CloudReportingPolicy) {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   expected_messages.insert(kManagementDeviceSignalsDisclosure);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  ASSERT_PRED_FORMAT2(MessagesToBeEQ, handler_.GetExtensionReportingInfo(),
+
+  ASSERT_PRED_FORMAT2(MessagesToBeEQ, handler_.GetReportingInfo(),
                       expected_messages);
 }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 TEST_F(ManagementUIHandlerTests,
        CloudReportingPolicyWithoutDeviceSignalsConsent) {
-  policy::PolicyMap chrome_policies;
-  const policy::PolicyNamespace chrome_policies_namespace =
-      policy::PolicyNamespace(policy::POLICY_DOMAIN_CHROME, std::string());
+  SetUpProfileAndHandler();
+  policy::PolicyMap policies;
   EXPECT_CALL(policy_service_, GetPolicies(_))
-      .WillRepeatedly(ReturnRef(chrome_policies));
-  SetPolicyValue(policy::key::kCloudReportingEnabled, true, chrome_policies);
+      .WillRepeatedly(ReturnRef(policies));
+  local_state_.SetBoolean(enterprise_reporting::kCloudReportingEnabled, true);
 
   std::set<std::string> expected_messages = {
       kManagementExtensionReportMachineName, kManagementExtensionReportUsername,
       kManagementExtensionReportVersion,
       kManagementExtensionReportExtensionsPlugin};
-  ASSERT_PRED_FORMAT2(
-      MessagesToBeEQ,
-      handler_.GetExtensionReportingInfo(/*can_collect_signals=*/false),
-      expected_messages);
+  ASSERT_PRED_FORMAT2(MessagesToBeEQ,
+                      handler_.GetReportingInfo(/*can_collect_signals=*/false),
+                      expected_messages);
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
+TEST_F(ManagementUIHandlerTests, LegacyTechReport) {
+  policy::PolicyMap policies;
+  EXPECT_CALL(policy_service_, GetPolicies(_))
+      .WillRepeatedly(ReturnRef(policies));
+  SetUpProfileAndHandler();
+
+  base::Value::List allowlist;
+  allowlist.Append(base::Value("www.example.com"));
+  profile_->GetTestingPrefService()->SetManagedPref(
+      enterprise_reporting::kCloudLegacyTechReportAllowlist,
+      std::make_unique<base::Value>(std::move(allowlist)));
+
+  std::set<std::string> expected_messages = {kManagementLegacyTechReport};
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  expected_messages.insert(kManagementDeviceSignalsDisclosure);
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
+  ASSERT_PRED_FORMAT2(MessagesToBeEQ, handler_.GetReportingInfo(),
+                      expected_messages);
+}
+
 TEST_F(ManagementUIHandlerTests, ExtensionReportingInfoPoliciesMerge) {
+  SetUpProfileAndHandler();
   policy::PolicyMap on_prem_reporting_extension_beta_policies;
   policy::PolicyMap on_prem_reporting_extension_stable_policies;
 
@@ -1409,12 +1477,7 @@ TEST_F(ManagementUIHandlerTests, ExtensionReportingInfoPoliciesMerge) {
   EXPECT_CALL(policy_service_,
               GetPolicies(on_prem_reporting_extension_beta_policy_namespace))
       .WillOnce(ReturnRef(on_prem_reporting_extension_beta_policies));
-  policy::PolicyMap chrome_policies;
-  EXPECT_CALL(policy_service_,
-              GetPolicies(policy::PolicyNamespace(policy::POLICY_DOMAIN_CHROME,
-                                                  std::string())))
-      .WillOnce(ReturnRef(chrome_policies));
-  SetPolicyValue(policy::key::kCloudReportingEnabled, true, chrome_policies);
+  local_state_.SetBoolean(enterprise_reporting::kCloudReportingEnabled, true);
 
   std::set<std::string> expected_messages = {
       kManagementExtensionReportMachineNameAddress,
@@ -1422,12 +1485,12 @@ TEST_F(ManagementUIHandlerTests, ExtensionReportingInfoPoliciesMerge) {
       kManagementExtensionReportVersion,
       kManagementExtensionReportExtensionsPlugin,
       kManagementExtensionReportUserBrowsingData,
-      kManagementExtensionReportPerfCrash};
+      kManagementExtensionReportPerfCrash,
+      kManagementLegacyTechReport};
 
-  ASSERT_PRED_FORMAT2(
-      MessagesToBeEQ,
-      handler_.GetExtensionReportingInfo(/*can_collect_signals=*/false),
-      expected_messages);
+  ASSERT_PRED_FORMAT2(MessagesToBeEQ,
+                      handler_.GetReportingInfo(/*can_collect_signals=*/false),
+                      expected_messages);
 }
 
 TEST_F(ManagementUIHandlerTests, ManagedWebsitiesInfoNoPolicySet) {

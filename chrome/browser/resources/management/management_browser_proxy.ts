@@ -22,6 +22,7 @@ export enum ReportingType {
   USER = 'user',
   USER_ACTIVITY = 'user-activity',
   EXTENSIONS = 'extensions',
+  LEGACY_TECH = 'legacy-tech',
 }
 
 export interface BrowserReportingResponse {
@@ -78,6 +79,7 @@ export enum DeviceReportingType {
   LOGIN_LOGOUT = 'login-logout',
   CRD_SESSIONS = 'crd sessions',
   PERIPHERALS = 'peripherals',
+  LEGACY_TECH = 'legacy-tech',
 }
 
 
