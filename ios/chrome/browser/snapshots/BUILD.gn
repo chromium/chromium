@@ -8,7 +8,6 @@ source_set("snapshots") {
     "snapshot_cache.h",
     "snapshot_cache_internal.h",
     "snapshot_cache_observer.h",
-    "snapshot_cache_web_state_list_observer.h",
     "snapshot_generator_delegate.h",
     "snapshot_lru_cache.h",
     "snapshot_tab_helper.h",
@@ -17,7 +16,6 @@ source_set("snapshots") {
   sources = [
     "snapshot_browser_agent.mm",
     "snapshot_cache.mm",
-    "snapshot_cache_web_state_list_observer.mm",
     "snapshot_generator.h",
     "snapshot_generator.mm",
     "snapshot_lru_cache.mm",
