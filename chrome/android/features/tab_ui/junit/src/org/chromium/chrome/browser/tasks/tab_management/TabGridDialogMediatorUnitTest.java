@@ -69,6 +69,7 @@ import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.KeyboardVisibilityDelegate;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
@@ -269,13 +270,20 @@ public class TabGridDialogMediatorUnitTest {
 
         View.OnClickListener listener = mModel.get(TabGridPanelProperties.ADD_CLICK_LISTENER);
         listener.onClick(mView);
+        if (!DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity)) {
+            verify(mDialogController).resetWithListOfTabs(null);
+        }
 
         assertThat(mModel.get(TabGridPanelProperties.ANIMATION_SOURCE_VIEW), equalTo(null));
         assertFalse(mModel.get(TabGridPanelProperties.IS_DIALOG_VISIBLE));
 
         // Simulate the animation finishing.
         mModel.get(TabGridPanelProperties.VISIBILITY_LISTENER).finishedHidingDialogView();
-        verify(mDialogController).resetWithListOfTabs(null);
+        if (!DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity)) {
+            verify(mDialogController, times(2)).resetWithListOfTabs(null);
+        } else {
+            verify(mDialogController).resetWithListOfTabs(null);
+        }
         verify(mTabCreator)
                 .createNewTab(
                         isA(LoadUrlParams.class), eq(TabLaunchType.FROM_TAB_GROUP_UI), eq(mTab1));

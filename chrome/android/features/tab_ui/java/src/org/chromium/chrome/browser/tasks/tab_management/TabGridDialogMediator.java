@@ -43,6 +43,7 @@ import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.KeyboardVisibilityDelegate;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.text.EmptyTextWatcher;
 
@@ -561,6 +562,13 @@ public class TabGridDialogMediator
             // Tab.INVALID_TAB_ID.
             Tab currentTab = mTabModelSelector.getTabById(mCurrentTabId);
             hideDialog(false);
+
+            // Reset the list of tabs so the new tab doesn't appear on the dialog before the
+            // animation.
+            if (!DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)) {
+                mDialogController.resetWithListOfTabs(null);
+            }
+
             if (currentTab == null) {
                 mTabCreatorManager.getTabCreator(mTabModelSelector.isIncognitoSelected())
                         .launchNTP();
