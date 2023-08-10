@@ -167,6 +167,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Borealis.Install.OverallTime" units="ms"
     expires_after="2024-02-05">
+<!-- NB: deprecated; remove instead of extending its expiry date -->
+
   <owner>danielng@google.com</owner>
   <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
   <summary>
@@ -175,6 +177,24 @@ chromium-metrics-reviews@google.com.
     ends when the install completes successfully, at which point this metric is
     recorded. Note that retries are considered as their own individual
     installation attempts.
+
+    Deprecated; prefer Borealis.Install.OverallTime2.
+  </summary>
+</histogram>
+
+<histogram name="Borealis.Install.OverallTime2" units="ms"
+    expires_after="2024-08-09">
+  <owner>danielng@google.com</owner>
+  <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    Time taken for a successful installation. An install starts when the
+    &quot;install&quot; or &quot;retry&quot; installer buttons are clicked and
+    ends when the install completes successfully, at which point this metric is
+    recorded. Note that retries are considered as their own individual
+    installation attempts.
+
+    (Same as Borealis.Install.OverallTime but with larger bucket sizes.)
   </summary>
 </histogram>
 
@@ -254,11 +274,26 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Borealis.Startup.OverallTime" units="ms"
     expires_after="2023-12-10">
+<!-- NB: deprecated; remove instead of extending its expiry date -->
+
   <owner>danielng@google.com</owner>
   <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
   <summary>
     Recording the time taken for each successful attempt to start Borealis (via
+    the UI). Deprecated; prefer Borealis.Startup.OverallTime2.
+  </summary>
+</histogram>
+
+<histogram name="Borealis.Startup.OverallTime2" units="ms"
+    expires_after="2024-08-09">
+  <owner>danielng@google.com</owner>
+  <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    Recording the time taken for each successful attempt to start Borealis (via
     the UI).
+
+    (Same as Borealis.Startup.OverallTime but with larger bucket sizes.)
   </summary>
 </histogram>
 
