@@ -6098,33 +6098,10 @@
     },
     {
       name: "white-space",
-      property_methods: ["CSSValueFromComputedStyleInternal"],
-      independent: false,  // Actually true, but setting it to false saves a precious bit in ComputedStyleBase.
-      inherited: true,
-      // This property is "keyword" but use "primitive" to use `EWhiteSpace` defined manually.
-      field_template: "primitive",
-      // The values are stored in `white-space-collapse` and `text-wrap` by
-      // `computed_style_custom_functions` even when `CSSWhiteSpaceShorthand`
-      // is off, but give 1 bit to it because `field_size` can't be zero.
-      field_size: 1,
-      include_paths: ["third_party/blink/renderer/core/css/white_space.h"],
-      keywords: [
-        "normal", "pre", "pre-wrap", "pre-line", "nowrap", "break-spaces"
-      ],
-      computed_style_custom_functions: ["getter", "setter", "resetter"],
-      typedom_types: ["Keyword"],
-      default_value: "EWhiteSpace::kNormal",
-      valid_for_cue: true,
-      valid_for_marker: true,
-    },
-    {
-      name: "-alternative-white-space",
-      alternative_of: "white-space",
       longhands: [
         "white-space-collapse", "text-wrap"
       ],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
-      runtime_flag: "CSSWhiteSpaceShorthand",
     },
     {
       name: "white-space-collapse",
@@ -6139,7 +6116,6 @@
       typedom_types: ["Keyword"],
       valid_for_cue: true,
       valid_for_marker: true,
-      runtime_flag: "CSSWhiteSpaceShorthand",
     },
     {
       name: "text-wrap",

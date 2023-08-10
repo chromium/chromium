@@ -3862,7 +3862,7 @@ const CSSValue* Toggle::CSSValueFromComputedStyleInternal(
   return toggle_root;
 }
 
-bool AlternativeWhiteSpace::ParseShorthand(
+bool WhiteSpace::ParseShorthand(
     bool important,
     CSSParserTokenRange& range,
     const CSSParserContext& context,
@@ -3901,10 +3901,10 @@ bool AlternativeWhiteSpace::ParseShorthand(
 
   // Consume multi-value syntax if the first identifier is not pre-defined.
   return css_parsing_utils::ConsumeShorthandGreedilyViaLonghands(
-      alternativeWhiteSpaceShorthand(), important, context, range, properties);
+      whiteSpaceShorthand(), important, context, range, properties);
 }
 
-const CSSValue* AlternativeWhiteSpace::CSSValueFromComputedStyleInternal(
+const CSSValue* WhiteSpace::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject* layout_object,
     bool allow_visited_style) const {

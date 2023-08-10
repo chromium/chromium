@@ -400,7 +400,7 @@ static bool AllowInitialInShorthand(CSSPropertyID property_id) {
     case CSSPropertyID::kTextEmphasis:
     case CSSPropertyID::kWebkitMask:
     case CSSPropertyID::kWebkitTextStroke:
-    case CSSPropertyID::kAlternativeWhiteSpace:
+    case CSSPropertyID::kWhiteSpace:
       return true;
     default:
       return false;
@@ -682,7 +682,7 @@ String StylePropertySerializer::SerializeShorthand(
     }
     case CSSPropertyID::kViewTimeline:
       return ViewTimelineValue();
-    case CSSPropertyID::kAlternativeWhiteSpace:
+    case CSSPropertyID::kWhiteSpace:
       return WhiteSpaceValue();
     case CSSPropertyID::kGridColumnGap:
     case CSSPropertyID::kGridGap:
@@ -2285,8 +2285,6 @@ bool StylePropertySerializer::IsValidToggleShorthand(
 }
 
 String StylePropertySerializer::WhiteSpaceValue() const {
-  DCHECK(RuntimeEnabledFeatures::CSSWhiteSpaceShorthandEnabled());
-
   const CSSValue* collapse_value =
       property_set_.GetPropertyCSSValue(GetCSSPropertyWhiteSpaceCollapse());
   const CSSValue* wrap_value =

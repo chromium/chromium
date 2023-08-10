@@ -44,15 +44,10 @@ void HTMLPreElement::CollectStyleForPresentationAttribute(
     const AtomicString& value,
     MutableCSSPropertyValueSet* style) {
   if (name == html_names::kWrapAttr) {
-    if (!RuntimeEnabledFeatures::CSSWhiteSpaceShorthandEnabled()) {
-      style->SetLonghandProperty(CSSPropertyID::kWhiteSpace,
-                                 CSSValueID::kPreWrap);
-    } else {
-      // Longhands of `white-space: pre-wrap`.
-      style->SetLonghandProperty(CSSPropertyID::kWhiteSpaceCollapse,
-                                 CSSValueID::kPreserve);
-      style->SetLonghandProperty(CSSPropertyID::kTextWrap, CSSValueID::kWrap);
-    }
+    // Longhands of `white-space: pre-wrap`.
+    style->SetLonghandProperty(CSSPropertyID::kWhiteSpaceCollapse,
+                               CSSValueID::kPreserve);
+    style->SetLonghandProperty(CSSPropertyID::kTextWrap, CSSValueID::kWrap);
   } else {
     HTMLElement::CollectStyleForPresentationAttribute(name, value, style);
   }

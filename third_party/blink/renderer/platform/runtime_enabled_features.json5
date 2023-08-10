@@ -1115,13 +1115,11 @@
     {
       name: "CSSTextWrapBalanceByScore",
       status: "stable",
-      depends_on: ["CSSWhiteSpaceShorthand"],
     },
     // `text-wrap: pretty`. crbug.com/1432798
     {
       name: "CSSTextWrapPretty",
       status: "stable",
-      depends_on: ["CSSWhiteSpaceShorthand"],
     },
     // Support for CSS Toggles, https://tabatkins.github.io/css-toggle/
     {
@@ -1203,11 +1201,6 @@
       name: "CSSViewportUnits4",
       status: "stable",
       base_feature: "none",
-    },
-    // `white-space` as a shorthand. crbug.com/1417543
-    {
-      name: "CSSWhiteSpaceShorthand",
-      status: "stable",
     },
     {
       // https://html.spec.whatwg.org/#dom-customelementregistry-getname

@@ -448,8 +448,7 @@ void MutableCSSPropertyValueSet::SetProperty(CSSPropertyID property_id,
                                              const CSSValue& value,
                                              bool important) {
   DCHECK_NE(property_id, CSSPropertyID::kVariable);
-  DCHECK(!RuntimeEnabledFeatures::CSSWhiteSpaceShorthandEnabled() ||
-         property_id != CSSPropertyID::kWhiteSpace);
+  DCHECK_NE(property_id, CSSPropertyID::kWhiteSpace);
   StylePropertyShorthand shorthand = shorthandForProperty(property_id);
   if (!shorthand.length()) {
     SetLonghandProperty(
@@ -460,7 +459,7 @@ void MutableCSSPropertyValueSet::SetProperty(CSSPropertyID property_id,
   RemovePropertiesInSet(shorthand.properties(), shorthand.length());
 
   // The simple shorthand expansion below doesn't work for `white-space`.
-  DCHECK_NE(property_id, CSSPropertyID::kAlternativeWhiteSpace);
+  DCHECK_NE(property_id, CSSPropertyID::kWhiteSpace);
   for (unsigned i = 0; i < shorthand.length(); ++i) {
     CSSPropertyName longhand_name(shorthand.properties()[i]->PropertyID());
     property_vector_.push_back(
@@ -498,8 +497,6 @@ MutableCSSPropertyValueSet::SetLonghandProperty(CSSPropertyValue property) {
   const CSSPropertyID id = property.Id();
   DCHECK_EQ(shorthandForProperty(id).length(), 0u)
       << CSSProperty::Get(id).GetPropertyNameString() << " is a shorthand";
-  DCHECK(!RuntimeEnabledFeatures::CSSWhiteSpaceShorthandEnabled() ||
-         id != CSSPropertyID::kWhiteSpace);
   CSSPropertyValue* to_replace;
   if (id == CSSPropertyID::kVariable) {
     to_replace = const_cast<CSSPropertyValue*>(
@@ -525,8 +522,6 @@ void MutableCSSPropertyValueSet::SetLonghandProperty(CSSPropertyID property_id,
   DCHECK_EQ(shorthandForProperty(property_id).length(), 0u)
       << CSSProperty::Get(property_id).GetPropertyNameString()
       << " is a shorthand";
-  DCHECK(!RuntimeEnabledFeatures::CSSWhiteSpaceShorthandEnabled() ||
-         property_id != CSSPropertyID::kWhiteSpace);
   CSSPropertyValue* to_replace = FindInsertionPointForID(property_id);
   if (to_replace) {
     *to_replace = CSSPropertyValue(CSSPropertyName(property_id), value);

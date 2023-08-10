@@ -1532,10 +1532,6 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
       return value_id == CSSValueID::kDisc || value_id == CSSValueID::kCircle ||
              value_id == CSSValueID::kSquare || value_id == CSSValueID::kNone;
     case CSSPropertyID::kTextWrap:
-      if (!RuntimeEnabledFeatures::CSSWhiteSpaceShorthandEnabled()) {
-        return value_id == CSSValueID::kWrap ||
-               value_id == CSSValueID::kBalance;
-      }
       if (!RuntimeEnabledFeatures::CSSTextWrapPrettyEnabled()) {
         return value_id == CSSValueID::kWrap ||
                value_id == CSSValueID::kNowrap ||
@@ -1582,15 +1578,7 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
              value_id == CSSValueID::kLrTb || value_id == CSSValueID::kRlTb ||
              value_id == CSSValueID::kTbRl || value_id == CSSValueID::kLr ||
              value_id == CSSValueID::kRl || value_id == CSSValueID::kTb;
-    case CSSPropertyID::kWhiteSpace:
-      DCHECK(!RuntimeEnabledFeatures::CSSWhiteSpaceShorthandEnabled());
-      return value_id == CSSValueID::kNormal || value_id == CSSValueID::kPre ||
-             value_id == CSSValueID::kPreWrap ||
-             value_id == CSSValueID::kPreLine ||
-             value_id == CSSValueID::kNowrap ||
-             value_id == CSSValueID::kBreakSpaces;
     case CSSPropertyID::kWhiteSpaceCollapse:
-      DCHECK(RuntimeEnabledFeatures::CSSWhiteSpaceShorthandEnabled());
       return value_id == CSSValueID::kCollapse ||
              value_id == CSSValueID::kPreserve ||
              value_id == CSSValueID::kPreserveBreaks ||
@@ -1745,7 +1733,6 @@ CSSBitset CSSParserFastPaths::handled_by_keyword_fast_paths_properties_{{
     CSSPropertyID::kWebkitUserModify,
     CSSPropertyID::kUserSelect,
     CSSPropertyID::kWebkitWritingMode,
-    CSSPropertyID::kWhiteSpace,  // TODO(crbug.com/1417543): Remove when done.
     CSSPropertyID::kWhiteSpaceCollapse,
     CSSPropertyID::kWordBreak,
     CSSPropertyID::kWritingMode,

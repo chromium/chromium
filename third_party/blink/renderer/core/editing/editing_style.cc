@@ -100,7 +100,10 @@ static const CSSPropertyID kStaticEditingProperties[] = {
     CSSPropertyID::kWebkitTextFillColor,
     CSSPropertyID::kWebkitTextStrokeColor,
     CSSPropertyID::kWebkitTextStrokeWidth,
-    CSSPropertyID::kCaretColor};
+    CSSPropertyID::kCaretColor,
+    CSSPropertyID::kTextWrap,
+    CSSPropertyID::kWhiteSpaceCollapse,
+};
 
 enum EditingPropertiesType {
   kOnlyInheritableEditingProperties,
@@ -115,14 +118,6 @@ static const Vector<const CSSProperty*>& AllEditingProperties(
     CSSProperty::FilterWebExposedCSSPropertiesIntoVector(
         execution_context, kStaticEditingProperties,
         std::size(kStaticEditingProperties), properties);
-    // TODO(crbug.com/1417543): Move to `kStaticEditingProperties` when removing
-    // the runtime switch.
-    if (RuntimeEnabledFeatures::CSSWhiteSpaceShorthandEnabled()) {
-      properties.push_back(&GetCSSPropertyWhiteSpaceCollapse());
-      properties.push_back(&GetCSSPropertyTextWrap());
-    } else {
-      properties.push_back(&GetCSSPropertyWhiteSpace());
-    }
   }
   return properties;
 }
@@ -1054,12 +1049,10 @@ bool EditingStyle::ConflictsWithInlineStyleOfElement(
     // e-mail, etc., `white-space` is more interoperable when
     // `white-space-collapse` is not broadly supported. See crbug.com/1417543
     // and `editing/pasteboard/pasting-tabs.html`.
-    DCHECK_NE(property_id, CSSPropertyID::kAlternativeWhiteSpace);
+    DCHECK_NE(property_id, CSSPropertyID::kWhiteSpace);
     const bool is_whitespace_property =
-        RuntimeEnabledFeatures::CSSWhiteSpaceShorthandEnabled()
-            ? property_id == CSSPropertyID::kWhiteSpaceCollapse ||
-                  property_id == CSSPropertyID::kTextWrap
-            : property_id == CSSPropertyID::kWhiteSpace;
+        property_id == CSSPropertyID::kWhiteSpaceCollapse ||
+        property_id == CSSPropertyID::kTextWrap;
     if (is_whitespace_property && IsTabHTMLSpanElement(element)) {
       continue;
     }

@@ -2222,14 +2222,6 @@ void CSSAnimations::CalculateTransitionUpdateForPropertyHandle(
     return;
   }
 
-  if (RuntimeEnabledFeatures::CSSWhiteSpaceShorthandEnabled() &&
-      property.GetCSSProperty().PropertyID() == CSSPropertyID::kWhiteSpace) {
-    // When CSSWhiteSpaceShorthand is enabled white-space is a shorthand, so we
-    // shouldn't transition it. Otherwise, we will hit the DCHECK in
-    // WhiteSpace::CSSValueFromComputedStyleInternal.
-    return;
-  }
-
   const RunningTransition* interrupted_transition = nullptr;
   if (state.active_transitions) {
     TransitionMap::const_iterator active_transition_iter =

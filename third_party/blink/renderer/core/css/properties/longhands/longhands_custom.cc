@@ -10130,14 +10130,6 @@ const CSSValue* WebkitWritingMode::CSSValueFromComputedStyleInternal(
   return CSSIdentifierValue::Create(style.GetWritingMode());
 }
 
-const CSSValue* WhiteSpace::CSSValueFromComputedStyleInternal(
-    const ComputedStyle& style,
-    const LayoutObject*,
-    bool allow_visited_style) const {
-  DCHECK(!RuntimeEnabledFeatures::CSSWhiteSpaceShorthandEnabled());
-  return CSSIdentifierValue::Create(style.WhiteSpace());
-}
-
 // Longhands for `white-space`: `white-space-collapse` and `text-wrap`.
 const CSSValue* WhiteSpaceCollapse::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
