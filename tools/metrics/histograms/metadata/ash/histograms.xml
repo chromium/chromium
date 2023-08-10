@@ -930,26 +930,26 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Ash.BrowserDataMigrator.DryRunExtraDiskSpaceOccupiedByMove.LowDiskUser"
+    name="Ash.BrowserDataMigrator.DryRunExtraDiskSpaceOccupiedByMove.LowDiskUser2"
     units="MB" expires_after="M121">
   <owner>ythjkt@chromium.org</owner>
   <owner>hidehiko@chromium.org</owner>
   <summary>
     The size of data that will be created due to profile migration.
 
-    Only collected for users that cannot secure 1GB extra space buffer for
+    Only collected for users that cannot secure 100MB extra space buffer for
     profile migration.
   </summary>
 </histogram>
 
-<histogram name="Ash.BrowserDataMigrator.DryRunFreeDiskSpace.LowDiskUser"
+<histogram name="Ash.BrowserDataMigrator.DryRunFreeDiskSpace.LowDiskUser2"
     units="MB" expires_after="M121">
   <owner>ythjkt@chromium.org</owner>
   <owner>hidehiko@chromium.org</owner>
   <summary>
     Free disk space available under profile directory.
 
-    Only collected for users that cannot secure 1GB extra space buffer for
+    Only collected for users that cannot secure 100MB extra space buffer for
     profile migration.
   </summary>
 </histogram>
@@ -965,7 +965,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Ash.BrowserDataMigrator.DryRunFreeDiskSpaceAfterDelete.LowDiskUser"
+    name="Ash.BrowserDataMigrator.DryRunFreeDiskSpaceAfterDelete.LowDiskUser2"
     units="MB" expires_after="M121">
   <owner>ythjkt@chromium.org</owner>
   <owner>hidehiko@chromium.org</owner>
@@ -973,7 +973,7 @@ chromium-metrics-reviews@google.com.
     Free disk space available under profile directory after deleting deletable
     items.
 
-    Only collected for users that cannot secure 1GB extra space buffer for
+    Only collected for users that cannot secure 100MB extra space buffer for
     profile migration.
   </summary>
 </histogram>
@@ -1002,14 +1002,14 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Ash.BrowserDataMigrator.DryRunMyFilesDirSize.LowDiskUser"
+<histogram name="Ash.BrowserDataMigrator.DryRunMyFilesDirSize.LowDiskUser2"
     units="MB" expires_after="M121">
   <owner>ythjkt@chromium.org</owner>
   <owner>hidehiko@chromium.org</owner>
   <summary>
     The total size of data inside the 'MyFiles' directory.
 
-    Only collected for users that cannot secure 1GB extra space buffer for
+    Only collected for users that cannot secure 100MB extra space buffer for
     profile migration.
   </summary>
 </histogram>
@@ -1026,14 +1026,14 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Ash.BrowserDataMigrator.DryRunProfileDirSize.LowDiskUser"
+<histogram name="Ash.BrowserDataMigrator.DryRunProfileDirSize.LowDiskUser2"
     units="MB" expires_after="M121">
   <owner>ythjkt@chromium.org</owner>
   <owner>hidehiko@chromium.org</owner>
   <summary>
     The total size of data inside the profile directory.
 
-    Only collected for users that cannot secure 1GB extra space buffer for
+    Only collected for users that cannot secure 100MB extra space buffer for
     profile migration.
   </summary>
 </histogram>
