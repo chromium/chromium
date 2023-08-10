@@ -39,7 +39,12 @@ ui::EventDispatchDetails AutoclickDragEventRewriter::RewriteEvent(
       ui::ET_MOUSE_DRAGGED, mouse_event->location(),
       mouse_event->root_location(), mouse_event->time_stamp(), flags,
       mouse_event->changed_button_flags(), mouse_event->pointer_details());
+  SetEventTarget(rewritten_event, event.target());
   return SendEventFinally(continuation, &rewritten_event);
+}
+
+bool AutoclickDragEventRewriter::SupportsNonRootLocation() const {
+  return true;
 }
 
 }  // namespace ash
