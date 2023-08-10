@@ -64,6 +64,8 @@ copy("signing") {
     "$root_out_dir/tag.exe",
     "//chrome/tools/build/win/resedit.py",
     "//third_party/lzma_sdk/bin/win64/7zr.exe",
+    "signing/enterprise_standalone_installer.wxs.xml",
+    "signing/msi_from_standalone.py",
     "signing/sign.py",
   ]
 
