@@ -395,33 +395,43 @@ export class SettingsSiteSettingsPageElement extends
       lists_: {
         type: Object,
         value: function() {
+          // Move `BACKGROUND_SYNC` to the sixth position under the fold if
+          // `STORAGE_ACCESS` is present.
+          const enablePermissionStorageAccessApi =
+              loadTimeData.getBoolean('enablePermissionStorageAccessApi');
+          const basic = enablePermissionStorageAccessApi ? Id.STORAGE_ACCESS :
+                                                           Id.BACKGROUND_SYNC;
+          const advanced: ContentSettingsTypes[] =
+              enablePermissionStorageAccessApi ? [Id.BACKGROUND_SYNC] : [];
+
           return {
             permissionsBasic: buildItemListFromIds([
               Id.GEOLOCATION,
               Id.CAMERA,
               Id.MIC,
               Id.NOTIFICATIONS,
-              Id.BACKGROUND_SYNC,
-              Id.STORAGE_ACCESS,
+              basic,
             ]),
             permissionsAdvanced: buildItemListFromIds([
-              Id.SENSORS,
-              Id.AUTOMATIC_DOWNLOADS,
-              Id.PROTOCOL_HANDLERS,
-              Id.MIDI_DEVICES,
-              Id.USB_DEVICES,
-              Id.SERIAL_PORTS,
-              Id.BLUETOOTH_DEVICES,
-              Id.FILE_SYSTEM_WRITE,
-              Id.HID_DEVICES,
-              Id.CLIPBOARD,
-              Id.PAYMENT_HANDLER,
-              Id.BLUETOOTH_SCANNING,
-              Id.AR,
-              Id.VR,
-              Id.IDLE_DETECTION,
-              Id.WINDOW_MANAGEMENT,
-              Id.LOCAL_FONTS,
+              ...advanced,
+              ...[Id.SENSORS,
+                  Id.AUTOMATIC_DOWNLOADS,
+                  Id.PROTOCOL_HANDLERS,
+                  Id.MIDI_DEVICES,
+                  Id.USB_DEVICES,
+                  Id.SERIAL_PORTS,
+                  Id.BLUETOOTH_DEVICES,
+                  Id.FILE_SYSTEM_WRITE,
+                  Id.HID_DEVICES,
+                  Id.CLIPBOARD,
+                  Id.PAYMENT_HANDLER,
+                  Id.BLUETOOTH_SCANNING,
+                  Id.AR,
+                  Id.VR,
+                  Id.IDLE_DETECTION,
+                  Id.WINDOW_MANAGEMENT,
+                  Id.LOCAL_FONTS,
+          ],
             ]),
             contentBasic: buildItemListFromIds([
               Id.COOKIES,
