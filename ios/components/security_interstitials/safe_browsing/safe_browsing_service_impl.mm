@@ -57,7 +57,13 @@ void StartSafeBrowsingDBManagerInternal(
 
 }  // namespace
 
-SafeBrowsingServiceImpl::SafeBrowsingServiceImpl() = default;
+SafeBrowsingServiceImpl::SafeBrowsingServiceImpl() {
+  url_loader_factory_pending_reciever_ =
+      url_loader_factory_.BindNewPipeAndPassReceiver();
+  shared_url_loader_factory_ =
+      base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+          url_loader_factory_.get());
+}
 
 SafeBrowsingServiceImpl::~SafeBrowsingServiceImpl() = default;
 
@@ -96,11 +102,8 @@ void SafeBrowsingServiceImpl::Initialize(
   url_loader_factory_params->process_id = network::mojom::kBrowserProcessId;
   url_loader_factory_params->is_corb_enabled = false;
   network_context_client_->CreateURLLoaderFactory(
-      url_loader_factory_.BindNewPipeAndPassReceiver(),
+      std::move(url_loader_factory_pending_reciever_),
       std::move(url_loader_factory_params));
-  shared_url_loader_factory_ =
-      base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-          url_loader_factory_.get());
 
   // Watch for changes to the Safe Browsing opt-out preference.
   pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
