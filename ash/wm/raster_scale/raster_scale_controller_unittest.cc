@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/wm/raster_scale_controller.h"
+#include "ash/wm/raster_scale/raster_scale_controller.h"
 
 #include <vector>
 

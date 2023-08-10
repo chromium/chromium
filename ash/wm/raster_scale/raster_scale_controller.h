@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_WM_RASTER_SCALE_CONTROLLER_H_
-#define ASH_WM_RASTER_SCALE_CONTROLLER_H_
+#ifndef ASH_WM_RASTER_SCALE_RASTER_SCALE_CONTROLLER_H_
+#define ASH_WM_RASTER_SCALE_RASTER_SCALE_CONTROLLER_H_
 
 #include <memory>
 #include <vector>
@@ -45,6 +45,8 @@ class ASH_EXPORT ScopedSetRasterScale : public aura::WindowObserver {
   ScopedSetRasterScale& operator=(const ScopedSetRasterScale&) = delete;
   ~ScopedSetRasterScale() override;
 
+  float raster_scale() const { return raster_scale_; }
+
   void UpdateScale(float raster_scale);
 
   static void SetOrUpdateRasterScale(aura::Window* window,
@@ -75,6 +77,12 @@ class ASH_EXPORT RasterScaleController : public aura::WindowObserver {
   RasterScaleController(const RasterScaleController&) = delete;
   RasterScaleController& operator=(const RasterScaleController&) = delete;
   ~RasterScaleController() override;
+
+  // Computes the appropriate raster scale given a transform. Normally we expect
+  // x and y scaling to be the same, but in case they are not, this takes the
+  // larger of the two as the raster scale, to make sure that the scale along
+  // that axis is rasterised at a high enough scale.
+  static float RasterScaleFromTransform(const gfx::Transform& transform);
 
   // Adds a raster scale to be tracked for a window. The kRasterScale property
   // for this window will be set to the largest raster scale currently active,
@@ -115,4 +123,4 @@ class ASH_EXPORT RasterScaleController : public aura::WindowObserver {
 
 }  // namespace ash
 
-#endif  // ASH_WM_RASTER_SCALE_CONTROLLER_H_
+#endif  // ASH_WM_RASTER_SCALE_RASTER_SCALE_CONTROLLER_H_

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/wm/raster_scale_controller.h"
+#include "ash/wm/raster_scale/raster_scale_controller.h"
 
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
@@ -69,6 +69,12 @@ ScopedPauseRasterScaleUpdates::~ScopedPauseRasterScaleUpdates() {
 RasterScaleController::RasterScaleController() = default;
 RasterScaleController::~RasterScaleController() = default;
 
+float RasterScaleController::RasterScaleFromTransform(
+    const gfx::Transform& transform) {
+  const auto scale_2d = transform.To2dScale();
+  return std::max(scale_2d.x(), scale_2d.y());
+}
+
 void RasterScaleController::PushRasterScale(aura::Window* window,
                                             float raster_scale) {
   if (!windows_observation_.IsObservingSource(window)) {
@@ -76,7 +82,6 @@ void RasterScaleController::PushRasterScale(aura::Window* window,
   }
 
   window_scales_[window].push_back(raster_scale);
-
   MaybeSetRasterScale(window);
 }
 
