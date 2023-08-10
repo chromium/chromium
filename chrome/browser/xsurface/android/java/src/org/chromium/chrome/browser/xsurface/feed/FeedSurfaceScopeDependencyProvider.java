@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.xsurface.feed;
 
 import android.graphics.Rect;
 
+import org.chromium.chrome.browser.xsurface.LoggingParameters;
 import org.chromium.chrome.browser.xsurface.SurfaceHeaderOffsetObserver;
 import org.chromium.chrome.browser.xsurface.SurfaceScopeDependencyProvider;
 
@@ -130,4 +131,10 @@ public interface FeedSurfaceScopeDependencyProvider extends SurfaceScopeDependen
      * @param observer An Object returned by |addHeaderOffsetObserver|.
      */
     default void removeHeaderOffsetObserver(SurfaceHeaderOffsetObserver observer) {}
+
+    /**
+     * Stores a view FeedAction for eventual upload. 'data' is a serialized FeedAction protobuf
+     * message.
+     */
+    default void processViewAction(byte[] data, LoggingParameters loggingParameters) {}
 }

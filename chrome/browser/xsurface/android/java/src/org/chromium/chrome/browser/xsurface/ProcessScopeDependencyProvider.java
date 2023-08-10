@@ -180,6 +180,7 @@ public interface ProcessScopeDependencyProvider {
      * Stores a view FeedAction for eventual upload. 'data' is a serialized FeedAction protobuf
      * message.
      */
+    @Deprecated
     default void processViewAction(byte[] data, LoggingParameters loggingParameters) {}
 
     /**
