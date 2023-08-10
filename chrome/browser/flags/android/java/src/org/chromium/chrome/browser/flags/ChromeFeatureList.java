@@ -549,6 +549,8 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sExperimentsForAgsa = new CachedFlag(EXPERIMENTS_FOR_AGSA, true);
     public static final CachedFlag sFeedLoadingPlaceholder =
             new CachedFlag(FEED_LOADING_PLACEHOLDER, false);
+    public static final CachedFlag sFriendlierSafeBrowsingSettingsStandardProtection =
+            new CachedFlag(FRIENDLIER_SAFE_BROWSING_SETTINGS_STANDARD_PROTECTION, false);
     public static final CachedFlag sFoldableJankFix = new CachedFlag(FOLDABLE_JANK_FIX, true);
     public static final CachedFlag sGridTabSwitcherLandscapeAspectRatioPhones =
             new CachedFlag(GRID_TAB_SWITCHER_LANDSCAPE_ASPECT_RATIO_PHONES, false);
@@ -648,6 +650,7 @@ public abstract class ChromeFeatureList {
         sEarlyLibraryLoad,
         sEmptyStates,
         sFeedLoadingPlaceholder,
+        sFriendlierSafeBrowsingSettingsStandardProtection,
         sFoldableJankFix,
         sGridTabSwitcherLandscapeAspectRatioPhones,
         sIncognitoReauthenticationForAndroid,

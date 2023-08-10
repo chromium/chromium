@@ -4,12 +4,14 @@
 
 package org.chromium.chrome.browser.privacy_guide;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.os.Bundle;
+import android.view.View;
 
 import androidx.fragment.app.testing.FragmentScenario;
 
@@ -17,6 +19,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
@@ -26,10 +29,15 @@ import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.UserActionTester;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridge;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridgeJni;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
+import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionAndAuxButton;
 
 /**
@@ -42,6 +50,8 @@ public class SafeBrowsingFragmentTest {
     public JniMocker mMocker = new JniMocker();
     @Rule
     public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule
+    public TestRule mProcessor = new Features.JUnitProcessor();
 
     @Mock
     private SafeBrowsingBridge.Natives mNativeMock;
@@ -51,6 +61,7 @@ public class SafeBrowsingFragmentTest {
     private FragmentScenario mScenario;
     private RadioButtonWithDescriptionAndAuxButton mEnhancedProtectionButton;
     private RadioButtonWithDescriptionAndAuxButton mStandardProtectionButton;
+    private RadioButtonWithDescription mStandardProtectionButtonFriendlier;
     private final UserActionTester mActionTester = new UserActionTester();
 
     @Before
@@ -72,6 +83,8 @@ public class SafeBrowsingFragmentTest {
                 SafeBrowsingFragment.class, Bundle.EMPTY, R.style.Theme_MaterialComponents);
         mScenario.onFragment(fragment -> {
             mEnhancedProtectionButton = fragment.getView().findViewById(R.id.enhanced_option);
+            mStandardProtectionButtonFriendlier =
+                    fragment.getView().findViewById(R.id.standard_option_friendlier);
             mStandardProtectionButton = fragment.getView().findViewById(R.id.standard_option);
             ((SafeBrowsingFragment) fragment)
                     .setBottomSheetControllerSupplier(mBottomSheetControllerSupplier);
@@ -125,5 +138,37 @@ public class SafeBrowsingFragmentTest {
         mStandardProtectionButton.performClick();
         assertTrue(mActionTester.getActions().contains(
                 "Settings.PrivacyGuide.ChangeSafeBrowsingStandard"));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.FRIENDLIER_SAFE_BROWSING_SETTINGS_STANDARD_PROTECTION)
+    public void testIsSBStandardFriendlierVisibleWhenInit() {
+        initFragmentWithSBState(SafeBrowsingState.STANDARD_PROTECTION);
+        assertEquals(View.GONE, mStandardProtectionButton.getVisibility());
+        assertFalse(mStandardProtectionButton.isChecked());
+        assertEquals(View.VISIBLE, mStandardProtectionButtonFriendlier.getVisibility());
+        assertTrue(mStandardProtectionButtonFriendlier.isChecked());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.FRIENDLIER_SAFE_BROWSING_SETTINGS_STANDARD_PROTECTION)
+    public void testSelectStandardFriendlierFromEnhanced() {
+        initFragmentWithSBState(SafeBrowsingState.ENHANCED_PROTECTION);
+        assertFalse(mStandardProtectionButtonFriendlier.isChecked());
+        mStandardProtectionButtonFriendlier.performClick();
+        assertTrue(mStandardProtectionButtonFriendlier.isChecked());
+        verify(mNativeMock).setSafeBrowsingState(SafeBrowsingState.STANDARD_PROTECTION);
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.FRIENDLIER_SAFE_BROWSING_SETTINGS_STANDARD_PROTECTION)
+    public void testInitWhenSBStandardAndFriendlierIsOff() {
+        initFragmentWithSBState(SafeBrowsingState.STANDARD_PROTECTION);
+        assertFalse(mEnhancedProtectionButton.isChecked());
+
+        assertEquals(View.VISIBLE, mStandardProtectionButton.getVisibility());
+        assertTrue(mStandardProtectionButton.isChecked());
+        assertEquals(View.GONE, mStandardProtectionButtonFriendlier.getVisibility());
+        assertFalse(mStandardProtectionButtonFriendlier.isChecked());
     }
 }
