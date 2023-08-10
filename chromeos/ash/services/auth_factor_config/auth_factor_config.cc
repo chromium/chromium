@@ -4,20 +4,29 @@
 
 #include "chromeos/ash/services/auth_factor_config/auth_factor_config.h"
 
+#include <memory>
+
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "chromeos/ash/components/cryptohome/auth_factor.h"
+#include "chromeos/ash/components/login/auth/public/auth_factors_configuration.h"
+#include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "chromeos/ash/components/osauth/public/auth_session_storage.h"
 #include "chromeos/ash/services/auth_factor_config/auth_factor_config_utils.h"
 #include "components/prefs/pref_service.h"
+#include "components/user_manager/user_directory_integrity_manager.h"
 #include "components/user_manager/user_manager.h"
 
 namespace ash::auth {
 
 AuthFactorConfig::AuthFactorConfig(
-    QuickUnlockStorageDelegate* quick_unlock_storage)
+    QuickUnlockStorageDelegate* quick_unlock_storage,
+    PrefService* local_state)
     : quick_unlock_storage_(quick_unlock_storage),
+      local_state_(local_state),
       auth_factor_editor_(UserDataAuthClient::Get()) {
-  DCHECK(quick_unlock_storage_);
+  CHECK(quick_unlock_storage_);
+  CHECK(local_state_);
 }
 
 AuthFactorConfig::~AuthFactorConfig() = default;
@@ -343,6 +352,11 @@ void AuthFactorConfig::OnGetAuthFactorsConfiguration(
     const std::string& auth_token,
     std::unique_ptr<UserContext> context,
     absl::optional<AuthenticationError> error) {
+  bool has_knowledge_factor =
+      context->GetAuthFactorsConfiguration().HasConfiguredFactor(
+          cryptohome::AuthFactorType::kPassword) ||
+      context->GetAuthFactorsConfiguration().HasConfiguredFactor(
+          cryptohome::AuthFactorType::kPin);
   if (ash::features::ShouldUseAuthSessionStorage()) {
     ash::AuthSessionStorage::Get()->Return(auth_token, std::move(context));
   }
@@ -355,6 +369,10 @@ void AuthFactorConfig::OnGetAuthFactorsConfiguration(
   if (!ash::features::ShouldUseAuthSessionStorage()) {
     const auto* user = ::user_manager::UserManager::Get()->GetPrimaryUser();
     quick_unlock_storage_->SetUserContext(user, std::move(context));
+  }
+
+  if (has_knowledge_factor) {
+    user_manager::UserDirectoryIntegrityManager(local_state_).ClearPrefs();
   }
 
   std::move(callback).Run(mojom::ConfigureResult::kSuccess);

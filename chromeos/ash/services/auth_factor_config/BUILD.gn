@@ -25,6 +25,7 @@ static_library("auth_factor_config") {
 
   deps = [
     "//ash/constants",
+    "//chrome/browser:browser_process",
     "//chromeos/ash/components/cryptohome",
     "//chromeos/ash/components/login/auth",
     "//chromeos/ash/components/osauth/public",
