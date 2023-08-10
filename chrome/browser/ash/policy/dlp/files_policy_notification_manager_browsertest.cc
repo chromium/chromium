@@ -8,6 +8,7 @@
 #include <string>
 #include <tuple>
 
+#include "ash/webui/file_manager/file_manager_ui.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
@@ -287,9 +288,10 @@ IN_PROC_BROWSER_TEST_P(NonIOWarningBrowserTest, SingleFileOKContinues) {
   EXPECT_FALSE(bridge_->GetDisplayedNotification(kNotificationId).has_value());
 }
 
-// Tests that clicking the OK button on a warning notification for multiple
-// files shows a dialog instead of continuing the action and always opens the
-// Files app. Timing out the warning closes the dialogs and cancels the task.
+// This is a test for b/277594200. Tests that clicking the OK button on a
+// warning notification for multiple files shows a dialog instead of continuing
+// the action and always opens the Files app. Timing out the warning closes the
+// dialogs and cancels the task.
 IN_PROC_BROWSER_TEST_P(NonIOWarningBrowserTest, MultiFileOKShowsDialog) {
   auto action = GetParam();
   std::vector<base::FilePath> warning_files;
@@ -301,7 +303,20 @@ IN_PROC_BROWSER_TEST_P(NonIOWarningBrowserTest, MultiFileOKShowsDialog) {
                        std::vector<DlpConfidentialFile>(
                            {warning_files.begin(), warning_files.end()}),
                        action, testing::NotNull(), testing::Eq(absl::nullopt)))
-      .Times(2);
+      .Times(2)
+      .WillRepeatedly([](OnDlpRestrictionCheckedCallback callback,
+                         const std::vector<DlpConfidentialFile>& files,
+                         dlp::FileAction file_action,
+                         gfx::NativeWindow modal_parent,
+                         absl::optional<DlpFileDestination> destination) {
+        views::Widget* widget = views::DialogDelegate::CreateDialogWidget(
+            std::make_unique<FilesPolicyWarnDialog>(std::move(callback), files,
+                                                    file_action, modal_parent,
+                                                    destination),
+            /*context=*/nullptr, modal_parent);
+        widget->Show();
+        return widget;
+      });
 
   // No Files app opened.
   ASSERT_FALSE(FindFilesApp());
@@ -319,8 +334,8 @@ IN_PROC_BROWSER_TEST_P(NonIOWarningBrowserTest, MultiFileOKShowsDialog) {
   bridge_->Click(kNotificationId, NotificationButton::OK);
 
   // Check that a new Files app is opened.
-  Browser* first_app = ui_test_utils::WaitForBrowserToOpen();
-  ASSERT_EQ(first_app, FindFilesApp());
+  ui_test_utils::WaitForBrowserToOpen();
+  ASSERT_EQ(ash::file_manager::FileManagerUI::GetNumInstances(), 1);
 
   // The notification should be closed.
   EXPECT_FALSE(bridge_->GetDisplayedNotification(kNotificationId).has_value());
@@ -335,9 +350,8 @@ IN_PROC_BROWSER_TEST_P(NonIOWarningBrowserTest, MultiFileOKShowsDialog) {
   bridge_->Click(second_notification, NotificationButton::OK);
 
   // Check that a new Files app is opened.
-  Browser* second_app = ui_test_utils::WaitForBrowserToOpen();
-  ASSERT_EQ(second_app, FindFilesApp());
-  EXPECT_NE(first_app, second_app);
+  ui_test_utils::WaitForBrowserToOpen();
+  ASSERT_EQ(ash::file_manager::FileManagerUI::GetNumInstances(), 2);
 
   // Skip the warning timeout. The callback will only be invoked when the
   // warnings time out.

@@ -886,7 +886,7 @@ void FilesPolicyNotificationManager::LaunchFilesApp(
                                ash::SystemWebAppType::FILE_MANAGER, params);
 }
 
-void FilesPolicyNotificationManager::OnBrowserSetLastActive(Browser* browser) {
+void FilesPolicyNotificationManager::OnBrowserAdded(Browser* browser) {
   if (!ash::IsBrowserForSystemWebApp(browser,
                                      ash::SystemWebAppType::FILE_MANAGER)) {
     LOG(WARNING) << "Browser did not match Files app";

@@ -304,7 +304,7 @@ class FilesPolicyNotificationManager
   // BrowserListObserver overrides:
   // Called when opening a new Files App window to use as the modal parent for a
   // FilesPolicyDialog.
-  void OnBrowserSetLastActive(Browser* browser) override;
+  void OnBrowserAdded(Browser* browser) override;
 
   // file_manager::io_task::IOTaskController::Observer overrides:
   void OnIOTaskStatus(
