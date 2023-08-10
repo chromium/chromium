@@ -248,17 +248,6 @@ const FeatureEntry::FeatureVariation kDefaultBrowserVideoPromoVariations[] = {
 };
 
 const FeatureEntry::FeatureParam
-    kDefaultBrowserTriggerCriteriaExperimentParamOptions[] = {
-        {kDefaultBrowserTriggerOnOmniboxCopyPaste, "true"}};
-const FeatureEntry::FeatureVariation
-    kDefaultBrowserTriggerCriteriaExperimentParams[] = {
-        {"Trigger on omnibox copy-paste",
-         kDefaultBrowserTriggerCriteriaExperimentParamOptions,
-         std::size(kDefaultBrowserTriggerCriteriaExperimentParamOptions),
-         nullptr},
-};
-
-const FeatureEntry::FeatureParam
     kAutofillUseMobileLabelDisambiguationShowAll[] = {
         {autofill::features::kAutofillUseMobileLabelDisambiguationParameterName,
          autofill::features::
@@ -1269,10 +1258,11 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDefaultBrowserTriggerCriteriaExperimentName,
      flag_descriptions::kDefaultBrowserTriggerCriteriaExperimentDescription,
      flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         kDefaultBrowserTriggerCriteriaExperiment,
-         kDefaultBrowserTriggerCriteriaExperimentParams,
-         "DefaultBrowserTriggerCriteriaExperimentParams")},
+     FEATURE_VALUE_TYPE(kDefaultBrowserTriggerCriteriaExperiment)},
+    {"fullscreen-promo-on-omnibox-copy-paste",
+     flag_descriptions::kFullScreenPromoOnOmniboxCopyPasteName,
+     flag_descriptions::kFullScreenPromoOnOmniboxCopyPasteDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kFullScreenPromoOnOmniboxCopyPaste)},
 #if BUILDFLAG(IOS_BACKGROUND_MODE_ENABLED)
     {"feed-background-refresh-ios",
      flag_descriptions::kFeedBackgroundRefreshName,

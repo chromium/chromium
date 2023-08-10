@@ -263,11 +263,6 @@ extern const char kDefaultBrowserPromoForceShowPromoDescription[];
 extern const char kDefaultBrowserTriggerCriteriaExperimentName[];
 extern const char kDefaultBrowserTriggerCriteriaExperimentDescription[];
 
-// Title and description for default browser promo trigger criteria experiment
-// param.
-extern const char kDefaultBrowserTriggerOnOmniboxCopyPasteName[];
-extern const char kDefaultBrowserTriggerOnOmniboxCopyPasteDescription[];
-
 // Title and description for the flag to enable the flag that skips the
 // triggering criteria default browser promo skip.
 extern const char kDefaultBrowserVideoPromoName[];
@@ -456,6 +451,11 @@ extern const char kFeedInvisibleForegroundRefreshDescription[];
 // Title and description for the flag to trigger the startup sign-in promo.
 extern const char kForceStartupSigninPromoName[];
 extern const char kForceStartupSigninPromoDescription[];
+
+// Title and description for the flag to enable default browser full-screen
+// promo on omnibox copy-paste.
+extern const char kFullScreenPromoOnOmniboxCopyPasteName[];
+extern const char kFullScreenPromoOnOmniboxCopyPasteDescription[];
 
 // Title and description for the flag to enable skipping the internal impression
 // limits of the Fullscreen Promos Manager.

@@ -662,10 +662,8 @@ bool IsDefaultBrowserPromoOnlyGenericArmTrain() {
          DefaultBrowserPromoGenericTailoredArm::kOnlyGeneric;
 }
 
-bool ShouldTriggerDefaultBrowserPromoOnOmniboxCopyPaste() {
-  return base::GetFieldTrialParamByFeatureAsBool(
-      kDefaultBrowserTriggerCriteriaExperiment,
-      kDefaultBrowserTriggerOnOmniboxCopyPaste, false);
+bool IsFullScreenPromoOnOmniboxCopyPasteEnabled() {
+  return base::FeatureList::IsEnabled(kFullScreenPromoOnOmniboxCopyPaste);
 }
 
 bool IsDBVideoPromoHalfscreenEnabled() {
@@ -973,11 +971,16 @@ bool ShouldRegisterPromoWithPromoManager(bool is_signed_in,
     return NO;
   }
 
-  // If in trigger criteria experiment, then show default browser promo if the
-  // promo show reason matches the experiment group.
+  // Consider showing full-screen promo on omnibox copy-paste event iff
+  // corresponding experiment is enabled.
+  if (IsFullScreenPromoOnOmniboxCopyPasteEnabled() != is_omnibox_copy_paste) {
+    return NO;
+  }
+
+  // If in trigger criteria experiment, then show default browser promo skipping
+  // further checks.
   if (IsDefaultBrowserTriggerCriteraExperimentEnabled()) {
-    return ShouldTriggerDefaultBrowserPromoOnOmniboxCopyPaste() ==
-           is_omnibox_copy_paste;
+    return YES;
   }
 
   // Consider showing the default browser promo if (1) the user has not seen a

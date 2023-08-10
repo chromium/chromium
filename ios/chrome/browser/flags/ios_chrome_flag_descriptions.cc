@@ -320,12 +320,6 @@ const char kDefaultBrowserTriggerCriteriaExperimentDescription[] =
     "When enabled, default browser promo will be displayed to user without "
     "matching all the trigger criteria.";
 
-const char kDefaultBrowserTriggerOnOmniboxCopyPasteName[] =
-    "Trigger promo on omnibox copy-paste";
-const char kDefaultBrowserTriggerOnOmniboxCopyPasteDescription[] =
-    "When enabled promo will be displayed on omnibox copy-paste event instead "
-    "of on chrome launch";
-
 const char kDefaultBrowserVideoPromoName[] =
     "Enable default browser video promo";
 const char kDefaultBrowserVideoPromoDescription[] =
@@ -543,6 +537,12 @@ const char kForceStartupSigninPromoName[] = "Display the startup sign-in promo";
 const char kForceStartupSigninPromoDescription[] =
     "When enabled, the startup sign-in promo is always displayed when starting "
     "Chrome.";
+
+const char kFullScreenPromoOnOmniboxCopyPasteName[] =
+    "Trigger Default Browser full-screen promo on omnibox copy-paste";
+const char kFullScreenPromoOnOmniboxCopyPasteDescription[] =
+    "When enabled full-screen promo will be displayed on omnibox copy-paste "
+    "event";
 
 const char kFullscreenPromosManagerSkipInternalLimitsName[] =
     "Fullscreen Promos Manager (Skip internal Impression Limits)";

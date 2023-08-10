@@ -193,9 +193,9 @@ bool IsDefaultBrowserPromoGenericTailoredTrainEnabled();
 // tailored experiment is enabled.
 bool IsDefaultBrowserPromoOnlyGenericArmTrain();
 
-// Returns true if Default Browser promo should be triggered on omnibox
-// copy-paste.
-bool ShouldTriggerDefaultBrowserPromoOnOmniboxCopyPaste();
+// Returns true if default Browser full-screen promo should be shown on omnibox
+// copy-paste instead of non-modal promo.
+bool IsFullScreenPromoOnOmniboxCopyPasteEnabled();
 
 // Returns true if the user has interacted with the Fullscreen Promo previously.
 // Returns false otherwise.

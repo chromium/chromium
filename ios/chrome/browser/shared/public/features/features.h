@@ -220,10 +220,9 @@ BASE_DECLARE_FEATURE(kHideSettingsSyncPromo);
 // promo.
 BASE_DECLARE_FEATURE(kDefaultBrowserTriggerCriteriaExperiment);
 
-// Param for default browser promo trigger criteria experiment representing
-// whether promos should be displayed on omnbibox copy-paste event or on chrome
-// launch by default.
-extern const char kDefaultBrowserTriggerOnOmniboxCopyPaste[];
+// Feature flag to show default browser full-screen promo on omnbibox copy-paste
+// event.
+BASE_DECLARE_FEATURE(kFullScreenPromoOnOmniboxCopyPaste);
 
 // Feature flag to try using the page theme color in the toolbar
 BASE_DECLARE_FEATURE(kThemeColorInToolbar);
