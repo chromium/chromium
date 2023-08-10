@@ -7,6 +7,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
@@ -162,7 +163,6 @@ const char RealtimeReportingClient::kKeyProfileUserName[] = "profileUserName";
 RealtimeReportingClient::RealtimeReportingClient(
     content::BrowserContext* context)
     : context_(context) {
-  event_router_ = extensions::EventRouter::Get(context_);
   identity_manager_ = IdentityManagerFactory::GetForProfile(
       Profile::FromBrowserContext(context_));
 }

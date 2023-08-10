@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
@@ -25,20 +24,12 @@ namespace content {
 class BrowserContext;
 }
 
-namespace extensions {
-class EventRouter;
-}
-
 namespace signin {
 class IdentityManager;
 }
 
 namespace policy {
 class DeviceManagementService;
-}
-
-namespace safe_browsing {
-enum class DeepScanAccessPoint;
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -171,7 +162,6 @@ class RealtimeReportingClient : public KeyedService,
   raw_ptr<content::BrowserContext> context_;
   raw_ptr<signin::IdentityManager, DanglingUntriaged> identity_manager_ =
       nullptr;
-  raw_ptr<extensions::EventRouter> event_router_ = nullptr;
 
   // The cloud policy clients used to upload browser events and profile events
   // to the cloud. These clients are never used to fetch policies. These
