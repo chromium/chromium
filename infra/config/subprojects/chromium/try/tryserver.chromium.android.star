@@ -68,10 +68,6 @@ try_.orchestrator_builder(
             condition = builder_config.rts_condition.QUICK_RUN_ONLY,
         ),
     ),
-    # TODO(crbug.com/1456545) - _with_resultdb should be deprecated in favor for
-    # the original property once all builders have migrated.
-    # check_for_flakiness = True,
-    check_for_flakiness_with_resultdb = True,
     compilator = "android-12-x64-rel-compilator",
     coverage_test_types = ["unit", "overall"],
     experiments = {
@@ -88,10 +84,6 @@ try_.orchestrator_builder(
 try_.compilator_builder(
     name = "android-12-x64-rel-compilator",
     branch_selector = branches.selector.ANDROID_BRANCHES,
-    # TODO(crbug.com/1456545) - _with_resultdb should be deprecated in favor for
-    # the original property once all builders have migrated.
-    # check_for_flakiness = True,
-    check_for_flakiness_with_resultdb = True,
     main_list_view = "try",
 )
 
@@ -157,10 +149,6 @@ try_.orchestrator_builder(
             condition = builder_config.rts_condition.QUICK_RUN_ONLY,
         ),
     ),
-    # TODO(crbug.com/1456545) - _with_resultdb should be deprecated in favor for
-    # the original property once all builders have migrated.
-    # check_for_flakiness = True,
-    check_for_flakiness_with_resultdb = True,
     compilator = "android-arm64-rel-compilator",
     coverage_test_types = ["unit", "overall"],
     experiments = {
@@ -177,10 +165,6 @@ try_.orchestrator_builder(
 try_.compilator_builder(
     name = "android-arm64-rel-compilator",
     branch_selector = branches.selector.ANDROID_BRANCHES,
-    # TODO(crbug.com/1456545) - _with_resultdb should be deprecated in favor for
-    # the original property once all builders have migrated.
-    # check_for_flakiness = True,
-    check_for_flakiness_with_resultdb = True,
     main_list_view = "try",
 )
 
@@ -200,10 +184,6 @@ try_.orchestrator_builder(
             condition = builder_config.rts_condition.QUICK_RUN_ONLY,
         ),
     ),
-    # TODO(crbug.com/1456545) - _with_resultdb should be deprecated in favor for
-    # the original property once all builders have migrated.
-    # check_for_flakiness = True,
-    check_for_flakiness_with_resultdb = True,
     compilator = "android-arm64-siso-rel-compilator",
     coverage_test_types = ["unit", "overall"],
     experiments = {
@@ -219,10 +199,6 @@ try_.orchestrator_builder(
 
 try_.compilator_builder(
     name = "android-arm64-siso-rel-compilator",
-    # TODO(crbug.com/1456545) - _with_resultdb should be deprecated in favor for
-    # the original property once all builders have migrated.
-    # check_for_flakiness = True,
-    check_for_flakiness_with_resultdb = True,
     main_list_view = "try",
     siso_enabled = True,
 )
@@ -369,10 +345,6 @@ try_.builder(
         "ci/android-cronet-x86-dbg",
         "ci/android-cronet-x86-dbg-10-tests",
     ],
-    # TODO(crbug.com/1456545) - _with_resultdb should be deprecated in favor for
-    # the original property once all builders have migrated.
-    # check_for_flakiness = True,
-    check_for_flakiness_with_resultdb = True,
     main_list_view = "try",
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
     tryjob = try_.job(
@@ -458,10 +430,6 @@ try_.orchestrator_builder(
             condition = builder_config.rts_condition.QUICK_RUN_ONLY,
         ),
     ),
-    # TODO(crbug.com/1456545) - _with_resultdb should be deprecated in favor for
-    # the original property once all builders have migrated.
-    # check_for_flakiness = True,
-    check_for_flakiness_with_resultdb = True,
     compilator = "android-nougat-x86-siso-rel-compilator",
     coverage_test_types = ["unit", "overall"],
     experiments = {
@@ -479,10 +447,6 @@ try_.orchestrator_builder(
 try_.compilator_builder(
     name = "android-nougat-x86-siso-rel-compilator",
     cores = 64,
-    # TODO(crbug.com/1456545) - _with_resultdb should be deprecated in favor for
-    # the original property once all builders have migrated.
-    # check_for_flakiness = True,
-    check_for_flakiness_with_resultdb = True,
     main_list_view = "try",
     siso_enabled = True,
 )
@@ -498,10 +462,6 @@ try_.orchestrator_builder(
             condition = builder_config.rts_condition.QUICK_RUN_ONLY,
         ),
     ),
-    # TODO(crbug.com/1456545) - _with_resultdb should be deprecated in favor for
-    # the original property once all builders have migrated.
-    # check_for_flakiness = True,
-    check_for_flakiness_with_resultdb = True,
     compilator = "android-nougat-x86-rel-compilator",
     coverage_test_types = ["unit", "overall"],
     experiments = {
@@ -520,10 +480,6 @@ try_.compilator_builder(
     name = "android-nougat-x86-rel-compilator",
     branch_selector = branches.selector.ANDROID_BRANCHES,
     cores = 64 if settings.is_main else 32,
-    # TODO(crbug.com/1456545) - _with_resultdb should be deprecated in favor for
-    # the original property once all builders have migrated.
-    # check_for_flakiness = True,
-    check_for_flakiness_with_resultdb = True,
     main_list_view = "try",
 )
 
@@ -560,10 +516,6 @@ try_.builder(
     ],
     builderless = False,
     cores = 16,
-    # TODO(crbug.com/1456545) - _with_resultdb should be deprecated in favor for
-    # the original property once all builders have migrated.
-    # check_for_flakiness = True,
-    check_for_flakiness_with_resultdb = True,
     main_list_view = "try",
     tryjob = try_.job(
         location_filters = [
@@ -843,10 +795,6 @@ try_.gpu.optional_tests_builder(
     try_settings = builder_config.try_settings(
         retry_failed_shards = False,
     ),
-    # TODO(crbug.com/1456545) - _with_resultdb should be deprecated in favor for
-    # the original property once all builders have migrated.
-    # check_for_flakiness = True,
-    check_for_flakiness_with_resultdb = True,
     main_list_view = "try",
     tryjob = try_.job(
         location_filters = [
@@ -889,10 +837,6 @@ try_.gpu.optional_tests_builder(
     try_settings = builder_config.try_settings(
         retry_failed_shards = False,
     ),
-    # TODO(crbug.com/1456545) - _with_resultdb should be deprecated in favor for
-    # the original property once all builders have migrated.
-    # check_for_flakiness = True,
-    check_for_flakiness_with_resultdb = True,
     main_list_view = "try",
     tryjob = try_.job(
         location_filters = [

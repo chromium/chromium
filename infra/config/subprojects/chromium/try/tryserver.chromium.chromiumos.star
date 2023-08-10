@@ -59,10 +59,6 @@ try_.orchestrator_builder(
     name = "chromeos-amd64-generic-rel",
     branch_selector = branches.selector.CROS_LTS_BRANCHES,
     mirrors = ["ci/chromeos-amd64-generic-rel"],
-    # TODO(crbug.com/1456545) - _with_resultdb should be deprecated in favor for
-    # the original property once all builders have migrated.
-    # check_for_flakiness = True,
-    check_for_flakiness_with_resultdb = True,
     compilator = "chromeos-amd64-generic-rel-compilator",
     experiments = {
         # go/nplus1shardsproposal
@@ -79,10 +75,6 @@ try_.compilator_builder(
     name = "chromeos-amd64-generic-rel-compilator",
     branch_selector = branches.selector.CROS_LTS_BRANCHES,
     cores = "8|16",
-    # TODO(crbug.com/1456545) - _with_resultdb should be deprecated in favor for
-    # the original property once all builders have migrated.
-    # check_for_flakiness = True,
-    check_for_flakiness_with_resultdb = True,
     main_list_view = "try",
 )
 
@@ -95,10 +87,6 @@ try_.orchestrator_builder(
         include_all_triggered_testers = True,
         is_compile_only = True,
     ),
-    # TODO(crbug.com/1456545) - _with_resultdb should be deprecated in favor for
-    # the original property once all builders have migrated.
-    # check_for_flakiness = True,
-    check_for_flakiness_with_resultdb = True,
     compilator = "chromeos-amd64-generic-siso-rel-compilator",
     experiments = {
         # go/nplus1shardsproposal
@@ -114,10 +102,6 @@ try_.orchestrator_builder(
 
 try_.compilator_builder(
     name = "chromeos-amd64-generic-siso-rel-compilator",
-    # TODO(crbug.com/1456545) - _with_resultdb should be deprecated in favor for
-    # the original property once all builders have migrated.
-    # check_for_flakiness = True,
-    check_for_flakiness_with_resultdb = True,
     main_list_view = "try",
     siso_enabled = True,
 )
@@ -289,10 +273,6 @@ try_.orchestrator_builder(
     mirrors = [
         "ci/linux-chromeos-rel",
     ],
-    # TODO(crbug.com/1456545) - _with_resultdb should be deprecated in favor for
-    # the original property once all builders have migrated.
-    # check_for_flakiness = True,
-    check_for_flakiness_with_resultdb = True,
     compilator = "linux-chromeos-rel-compilator",
     coverage_test_types = ["unit", "overall"],
     experiments = {
@@ -310,10 +290,6 @@ try_.orchestrator_builder(
 try_.compilator_builder(
     name = "linux-chromeos-rel-compilator",
     branch_selector = branches.selector.CROS_LTS_BRANCHES,
-    # TODO(crbug.com/1456545) - _with_resultdb should be deprecated in favor for
-    # the original property once all builders have migrated.
-    # check_for_flakiness = True,
-    check_for_flakiness_with_resultdb = True,
     main_list_view = "try",
 )
 
@@ -328,10 +304,6 @@ try_.orchestrator_builder(
         include_all_triggered_testers = True,
         is_compile_only = True,
     ),
-    # TODO(crbug.com/1456545) - _with_resultdb should be deprecated in favor for
-    # the original property once all builders have migrated.
-    # check_for_flakiness = True,
-    check_for_flakiness_with_resultdb = True,
     compilator = "linux-chromeos-siso-rel-compilator",
     coverage_test_types = ["unit", "overall"],
     experiments = {
@@ -348,10 +320,6 @@ try_.orchestrator_builder(
 
 try_.compilator_builder(
     name = "linux-chromeos-siso-rel-compilator",
-    # TODO(crbug.com/1456545) - _with_resultdb should be deprecated in favor for
-    # the original property once all builders have migrated.
-    # check_for_flakiness = True,
-    check_for_flakiness_with_resultdb = True,
     main_list_view = "try",
     siso_enabled = True,
 )
@@ -371,10 +339,6 @@ try_.orchestrator_builder(
         "ci/linux-lacros-builder-rel",
         "ci/linux-lacros-tester-rel",
     ],
-    # TODO(crbug.com/1456545) - _with_resultdb should be deprecated in favor for
-    # the original property once all builders have migrated.
-    # check_for_flakiness = True,
-    check_for_flakiness_with_resultdb = True,
     compilator = "linux-lacros-rel-compilator",
     coverage_test_types = ["unit", "overall"],
     main_list_view = "try",
@@ -389,10 +353,6 @@ try_.compilator_builder(
     name = "linux-lacros-rel-compilator",
     branch_selector = branches.selector.CROS_BRANCHES,
     cores = 32,
-    # TODO(crbug.com/1456545) - _with_resultdb should be deprecated in favor for
-    # the original property once all builders have migrated.
-    # check_for_flakiness = True,
-    check_for_flakiness_with_resultdb = True,
     main_list_view = "try",
 )
 
@@ -408,10 +368,6 @@ try_.orchestrator_builder(
         include_all_triggered_testers = True,
         is_compile_only = True,
     ),
-    # TODO(crbug.com/1456545) - _with_resultdb should be deprecated in favor for
-    # the original property once all builders have migrated.
-    # check_for_flakiness = True,
-    check_for_flakiness_with_resultdb = True,
     compilator = "linux-lacros-siso-rel-compilator",
     coverage_test_types = ["unit", "overall"],
     main_list_view = "try",
@@ -425,10 +381,6 @@ try_.orchestrator_builder(
 try_.compilator_builder(
     name = "linux-lacros-siso-rel-compilator",
     cores = 32,
-    # TODO(crbug.com/1456545) - _with_resultdb should be deprecated in favor for
-    # the original property once all builders have migrated.
-    # check_for_flakiness = True,
-    check_for_flakiness_with_resultdb = True,
     main_list_view = "try",
     siso_enabled = True,
 )
