@@ -19728,28 +19728,6 @@
       },
       {
         "policies": {
-          "LacrosAvailability": "side_by_side"
-        },
-        "prefs": {
-          "lacros_launch_switch": {
-            "location": "local_state",
-            "value": 2
-          }
-        }
-      },
-      {
-        "policies": {
-          "LacrosAvailability": "lacros_primary"
-        },
-        "prefs": {
-          "lacros_launch_switch": {
-            "location": "local_state",
-            "value": 3
-          }
-        }
-      },
-      {
-        "policies": {
           "LacrosAvailability": "lacros_only"
         },
         "prefs": {

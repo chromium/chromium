@@ -288,8 +288,6 @@ namespace autotestPrivate {
   // A mapping of crosapi::browser_util::LacrosMode
   enum LacrosMode {
     Disabled,
-    SideBySide,
-    Primary,
     Only
   };
 

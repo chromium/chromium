@@ -232,25 +232,6 @@ TEST_F(BrowserUtilTest, IsLacrosEnabledForMigrationBeforePolicyInit) {
       user, browser_util::PolicyInitState::kBeforeInit));
 }
 
-TEST_F(BrowserUtilTest, LacrosCrosTeamRollout) {
-  AddRegularUser("user@google.com");
-  {
-    ScopedLacrosAvailabilityCache cache(LacrosAvailability::kSideBySide);
-    EXPECT_EQ(browser_util::GetCachedLacrosAvailabilityForTesting(),
-              LacrosAvailability::kSideBySide);
-  }
-
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {}, {ash::standalone_browser::kLacrosGooglePolicyRollout});
-
-  {
-    ScopedLacrosAvailabilityCache cache(LacrosAvailability::kSideBySide);
-    EXPECT_EQ(browser_util::GetCachedLacrosAvailabilityForTesting(),
-              LacrosAvailability::kUserChoice);
-  }
-}
-
 TEST_F(BrowserUtilTest, LacrosEnabled) {
   AddRegularUser("user@test.com");
 
@@ -268,14 +249,6 @@ TEST_F(BrowserUtilTest, ManagedAccountLacros) {
 
   {
     ScopedLacrosAvailabilityCache cache(LacrosAvailability::kLacrosDisallowed);
-    EXPECT_FALSE(browser_util::IsLacrosEnabled());
-  }
-  {
-    ScopedLacrosAvailabilityCache cache(LacrosAvailability::kSideBySide);
-    EXPECT_FALSE(browser_util::IsLacrosEnabled());
-  }
-  {
-    ScopedLacrosAvailabilityCache cache(LacrosAvailability::kLacrosPrimary);
     EXPECT_FALSE(browser_util::IsLacrosEnabled());
   }
   {
@@ -334,26 +307,6 @@ TEST_F(BrowserUtilTest, AshWebBrowserEnabled) {
   }
 
   // Lacros is allowed and enabled by policy.
-  {
-    ScopedLacrosAvailabilityCache cache(LacrosAvailability::kSideBySide);
-
-    EXPECT_FALSE(browser_util::IsLacrosAllowedToBeEnabled());
-    EXPECT_FALSE(browser_util::IsLacrosEnabled());
-    EXPECT_TRUE(browser_util::IsAshWebBrowserEnabled());
-    EXPECT_TRUE(browser_util::IsAshWebBrowserEnabledForMigration(
-        user, browser_util::PolicyInitState::kAfterInit));
-  }
-  {
-    ScopedLacrosAvailabilityCache cache(LacrosAvailability::kLacrosPrimary);
-
-    EXPECT_FALSE(browser_util::IsLacrosAllowedToBeEnabled());
-    EXPECT_FALSE(browser_util::IsLacrosEnabled());
-    EXPECT_TRUE(browser_util::IsAshWebBrowserEnabled());
-    EXPECT_TRUE(browser_util::IsAshWebBrowserEnabledForMigration(
-        user, browser_util::PolicyInitState::kAfterInit));
-  }
-
-  // Lacros is allowed and enabled by policy, regardless of SxS/Primary.
   {
     ScopedLacrosAvailabilityCache cache(LacrosAvailability::kLacrosOnly);
 
@@ -415,7 +368,7 @@ TEST_F(BrowserUtilTest, IsAshWebBrowserDisabledByFlags) {
       user, browser_util::PolicyInitState::kAfterInit));
 }
 
-TEST_F(BrowserUtilTest, LacrosPrimaryOrOnlyBrowserByFlags) {
+TEST_F(BrowserUtilTest, LacrosOnlyBrowserByFlags) {
   AddRegularUser("user@test.com");
   const user_manager::User* const user =
       ash::ProfileHelper::Get()->GetUserByProfile(&testing_profile_);
@@ -469,30 +422,6 @@ TEST_F(BrowserUtilTest, ManagedAccountLacrosPrimary) {
 
   {
     ScopedLacrosAvailabilityCache cache(LacrosAvailability::kLacrosDisallowed);
-    EXPECT_FALSE(browser_util::IsLacrosPrimaryBrowserAllowed());
-    EXPECT_FALSE(browser_util::IsLacrosPrimaryBrowserAllowedForMigration(
-        user, browser_util::GetCachedLacrosAvailabilityForTesting()));
-    EXPECT_FALSE(browser_util::IsLacrosPrimaryBrowser());
-    EXPECT_FALSE(browser_util::IsLacrosPrimaryBrowserForMigration(
-        user, browser_util::PolicyInitState::kAfterInit));
-    EXPECT_EQ(browser_util::LacrosMode::kDisabled,
-              browser_util::GetLacrosMode());
-  }
-
-  {
-    ScopedLacrosAvailabilityCache cache(LacrosAvailability::kSideBySide);
-    EXPECT_FALSE(browser_util::IsLacrosPrimaryBrowserAllowed());
-    EXPECT_FALSE(browser_util::IsLacrosPrimaryBrowserAllowedForMigration(
-        user, browser_util::GetCachedLacrosAvailabilityForTesting()));
-    EXPECT_FALSE(browser_util::IsLacrosPrimaryBrowser());
-    EXPECT_FALSE(browser_util::IsLacrosPrimaryBrowserForMigration(
-        user, browser_util::PolicyInitState::kAfterInit));
-    EXPECT_EQ(browser_util::LacrosMode::kDisabled,
-              browser_util::GetLacrosMode());
-  }
-
-  {
-    ScopedLacrosAvailabilityCache cache(LacrosAvailability::kLacrosPrimary);
     EXPECT_FALSE(browser_util::IsLacrosPrimaryBrowserAllowed());
     EXPECT_FALSE(browser_util::IsLacrosPrimaryBrowserAllowedForMigration(
         user, browser_util::GetCachedLacrosAvailabilityForTesting()));
@@ -869,9 +798,8 @@ TEST_F(BrowserUtilTest, GetLacrosLaunchSwitchSourceNonGoogle) {
   }
 
   // Otherwise, the LaunchSwitch is set by the policy.
-  for (const auto launch_switch :
-       {LacrosAvailability::kLacrosDisallowed, LacrosAvailability::kSideBySide,
-        LacrosAvailability::kLacrosPrimary, LacrosAvailability::kLacrosOnly}) {
+  for (const auto launch_switch : {LacrosAvailability::kLacrosDisallowed,
+                                   LacrosAvailability::kLacrosOnly}) {
     ScopedLacrosAvailabilityCache cache(launch_switch);
     EXPECT_EQ(LacrosLaunchSwitchSource::kForcedByPolicy,
               browser_util::GetLacrosLaunchSwitchSource())

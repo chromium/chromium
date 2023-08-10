@@ -136,14 +136,10 @@ enum class MigrationStatus {
 // which can be influenced by multiple factors such as flags,
 // while LacrosAvailability describes the policy that dictates how
 // Lacros is supposed to be launched.
+// Values 1 and 2 were removed and should not be reused.
 enum class LacrosMode {
   // Indicates that Lacros is disabled. Ash is the only browser.
   kDisabled = 0,
-  // Indicates that Lacros is enabled but Ash browser is the
-  // primary browser.
-  kSideBySide = 1,
-  // Indicates that Lacros is the primary browser. Ash is also available.
-  kPrimary = 2,
   // Indicates that Lacros is the only available browser.
   kOnly = 3,
 };
@@ -178,8 +174,6 @@ extern const char kLacrosAvailabilityPolicyInternalName[];
 extern const char kLacrosAvailabilityPolicySwitch[];
 extern const char kLacrosAvailabilityPolicyUserChoice[];
 extern const char kLacrosAvailabilityPolicyLacrosDisabled[];
-extern const char kLacrosAvailabilityPolicySideBySide[];
-extern const char kLacrosAvailabilityPolicyLacrosPrimary[];
 extern const char kLacrosAvailabilityPolicyLacrosOnly[];
 
 // The internal name in about_flags.cc for the `LacrosDataBackwardMigrationMode`

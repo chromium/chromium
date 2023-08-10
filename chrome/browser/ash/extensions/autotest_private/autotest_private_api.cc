@@ -2069,10 +2069,6 @@ AutotestPrivateGetLacrosInfoFunction::ToLacrosMode(
   switch (lacrosMode) {
     case crosapi::browser_util::LacrosMode::kDisabled:
       return api::autotest_private::LacrosMode::kDisabled;
-    case crosapi::browser_util::LacrosMode::kSideBySide:
-      return api::autotest_private::LacrosMode::kSideBySide;
-    case crosapi::browser_util::LacrosMode::kPrimary:
-      return api::autotest_private::LacrosMode::kPrimary;
     case crosapi::browser_util::LacrosMode::kOnly:
       return api::autotest_private::LacrosMode::kOnly;
   }

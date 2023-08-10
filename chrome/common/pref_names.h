@@ -3698,9 +3698,8 @@ inline constexpr char kShowCaretBrowsingDialog[] =
 // LacrosAvailability policy and can have one of the following values:
 // 0: User choice (default value).
 // 1: Lacros is disallowed.
-// 2: Lacros is enabled but not the pimary browser.
-// 3: Lacros is enabled as the primary browser.
 // 4: Lacros is the only available browser.
+// Values 2 and 3 were removed and should not be reused.
 inline constexpr char kLacrosLaunchSwitch[] = "lacros_launch_switch";
 
 // Enum pref indicating which Lacros browser to launch: rootfs or stateful. It

@@ -213,8 +213,6 @@ bool IsLacrosAllowedInternal(const User* user,
 
   switch (lacros_availability) {
     case LacrosAvailability::kLacrosDisallowed:
-    case LacrosAvailability::kSideBySide:
-    case LacrosAvailability::kLacrosPrimary:
       return false;
     case LacrosAvailability::kUserChoice:
     case LacrosAvailability::kLacrosOnly:
@@ -252,9 +250,6 @@ LacrosMode GetLacrosModeInternal(const User* user,
     case LacrosAvailability::kLacrosDisallowed:
       NOTREACHED();  // Guarded by IsLacrosAllowedInternal.
       return LacrosMode::kDisabled;
-    case LacrosAvailability::kSideBySide:
-    case LacrosAvailability::kLacrosPrimary:
-      return LacrosMode::kDisabled;
     case LacrosAvailability::kLacrosOnly:
       return LacrosMode::kOnly;
   }
@@ -274,8 +269,6 @@ bool IsLacrosEnabledInternal(const User* user,
   switch (mode) {
     case LacrosMode::kDisabled:
       return false;
-    case LacrosMode::kSideBySide:
-    case LacrosMode::kPrimary:
     case LacrosMode::kOnly:
       return true;
   }
@@ -288,9 +281,7 @@ bool IsLacrosPrimaryBrowserInternal(const User* user,
       GetLacrosModeInternal(user, lacros_availability, check_migration_status);
   switch (mode) {
     case LacrosMode::kDisabled:
-    case LacrosMode::kSideBySide:
       return false;
-    case LacrosMode::kPrimary:
     case LacrosMode::kOnly:
       return true;
   }
@@ -304,8 +295,6 @@ bool IsAshWebBrowserEnabledInternal(const User* user,
       GetLacrosModeInternal(user, lacros_availability, check_migration_status);
   switch (mode) {
     case LacrosMode::kDisabled:
-    case LacrosMode::kSideBySide:
-    case LacrosMode::kPrimary:
       return true;
     case LacrosMode::kOnly:
       return false;
@@ -420,8 +409,6 @@ const char kLacrosAvailabilityPolicyInternalName[] =
 const char kLacrosAvailabilityPolicySwitch[] = "lacros-availability-policy";
 const char kLacrosAvailabilityPolicyUserChoice[] = "user_choice";
 const char kLacrosAvailabilityPolicyLacrosDisabled[] = "lacros_disabled";
-const char kLacrosAvailabilityPolicySideBySide[] = "side_by_side";
-const char kLacrosAvailabilityPolicyLacrosPrimary[] = "lacros_primary";
 const char kLacrosAvailabilityPolicyLacrosOnly[] = "lacros_only";
 
 const char kLaunchOnLoginPref[] = "lacros.launch_on_login";
