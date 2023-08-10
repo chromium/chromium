@@ -30,6 +30,8 @@ found in the LICENSE file.
         android:layout_marginHorizontal="@dimen/message_icon_margin"
         android:layout_width="wrap_content"
         android:layout_height="@dimen/message_icon_size"
+        android:scaleType="fitCenter"
+        android:adjustViewBounds="true"
         android:importantForAccessibility="no" />
 
     <LinearLayout
