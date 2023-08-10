@@ -372,12 +372,16 @@ bool IsPatternValidForType(const std::string& pattern_string,
   return true;
 }
 
-void UpdateDataFromModel(SiteSettingsHandler::AllSitesMap* all_sites_map,
-                         std::map<url::Origin, int64_t>* origin_size_map,
-                         const url::Origin& origin,
-                         int64_t size) {
+void UpdateDataFromModel(
+    SiteSettingsHandler::AllSitesMap* all_sites_map,
+    std::map<url::Origin, int64_t>* origin_size_map,
+    const url::Origin& origin,
+    int64_t size,
+    absl::optional<GroupingKey> partition_grouping_key = absl::nullopt) {
   UpdateDataForOrigin(origin, size, origin_size_map);
-  InsertOriginIntoGroup(all_sites_map, origin);
+  InsertOriginIntoGroup(all_sites_map, origin,
+                        /*is_origin_with_cookies=*/false,
+                        partition_grouping_key);
 }
 
 void LogAllSitesAction(AllSitesAction2 action) {
@@ -1011,6 +1015,8 @@ void SiteSettingsHandler::OnGetUsageInfo() {
     if (!entry.Matches(usage_origin)) {
       continue;
     }
+    // TODO(crbug.com/1468277): Step 5 - Check if the entry is backed by a
+    // StorageKey and count the size if the top-site matches too.
     size += entry.data_details->storage_size;
   }
 
@@ -1167,6 +1173,8 @@ void SiteSettingsHandler::HandleClearUnpartitionedUsage(
   RemoveNonTreeModelData(affected_origins);
 }
 
+// TODO(crbug.com/1468277): Step 5 - Handle clearing partitioned entries as
+// well where origin matches the top-site in the browsing data model.
 void SiteSettingsHandler::HandleClearPartitionedUsage(
     const base::Value::List& args) {
   CHECK_EQ(2U, args.size());
@@ -2305,8 +2313,19 @@ void SiteSettingsHandler::GetOriginStorage(
                          },
                          [](const url::Origin& origin) { return origin; }},
         *entry.data_owner);
+
+    // If the storage is backed by a StorageKey we need to ensure the grouping
+    // key matches the top-site and doesn't default to the origin in the UI.
+    absl::optional<GroupingKey> partition_grouping_key = absl::nullopt;
+    const blink::StorageKey* storage_key =
+        absl::get_if<blink::StorageKey>(&entry.data_key.get());
+    if (storage_key != nullptr && storage_key->IsThirdPartyContext()) {
+      partition_grouping_key = GroupingKey::Create(
+          url::Origin::Create(GURL(storage_key->top_level_site().Serialize())));
+    }
     UpdateDataFromModel(all_sites_map, origin_size_map, origin,
-                        entry.data_details->storage_size);
+                        entry.data_details->storage_size,
+                        partition_grouping_key);
   }
 }
 

@@ -920,6 +920,14 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
       models.browsing_data_model->AddBrowsingData(
           url::Origin::Create(GURL("https://www.google.com")),
           BrowsingDataModel::StorageType::kTrustTokens, 50000000000);
+      models.browsing_data_model->AddBrowsingData(
+          blink::StorageKey::Create(
+              url::Origin::Create(GURL("https://google.com/")),
+              net::SchemefulSite(
+                  url::Origin::Create(GURL("https://www.example.com/"))),
+              blink::mojom::AncestorChainBit::kCrossSite,
+              /*third_party_partitioning_allowed=*/true),
+          BrowsingDataModel::StorageType::kQuotaStorage, 100);
     }));
   }
 
@@ -1561,10 +1569,10 @@ TEST_F(SiteSettingsHandlerTest, OnStorageFetched) {
 
     const base::Value::List* origin_list = site_group.FindList("origins");
     ASSERT_TRUE(origin_list);
-    // There will be 2 origins in this case. Cookie node with url
+    // There will be 3 origins in this case. Cookie node with url
     // http://www.example.com/ will be treat as https://www.example.com/ because
     // this url existed in the storage nodes.
-    EXPECT_EQ(2U, origin_list->size());
+    EXPECT_EQ(3U, origin_list->size());
 
     const base::Value::Dict& origin_info_0 = (*origin_list)[0].GetDict();
 
@@ -1573,16 +1581,27 @@ TEST_F(SiteSettingsHandlerTest, OnStorageFetched) {
     EXPECT_EQ(0, origin_info_0.FindDouble("engagement"));
     EXPECT_EQ(0, origin_info_0.FindDouble("usage"));
     EXPECT_EQ(1, origin_info_0.FindDouble("numCookies"));
+    EXPECT_FALSE(origin_info_0.FindBool("isPartitioned").value_or(false));
 
     const base::Value::Dict& origin_info_1 = (*origin_list)[1].GetDict();
+
+    EXPECT_EQ("https://google.com/",
+              CHECK_DEREF(origin_info_1.FindString("origin")));
+    EXPECT_EQ(0, origin_info_1.FindDouble("engagement"));
+    EXPECT_EQ(0, origin_info_1.FindDouble("usage"));
+    EXPECT_EQ(0, origin_info_1.FindDouble("numCookies"));
+    EXPECT_TRUE(origin_info_1.FindBool("isPartitioned").value_or(false));
+
+    const base::Value::Dict& origin_info_2 = (*origin_list)[2].GetDict();
 
     // Even though in the cookies the scheme is http, it still stored as https
     // because there is https data stored.
     EXPECT_EQ("https://www.example.com/",
-              CHECK_DEREF(origin_info_1.FindString("origin")));
-    EXPECT_EQ(0, origin_info_1.FindDouble("engagement"));
-    EXPECT_EQ(2, origin_info_1.FindDouble("usage"));
-    EXPECT_EQ(1, origin_info_1.FindDouble("numCookies"));
+              CHECK_DEREF(origin_info_2.FindString("origin")));
+    EXPECT_EQ(0, origin_info_2.FindDouble("engagement"));
+    EXPECT_EQ(2, origin_info_2.FindDouble("usage"));
+    EXPECT_EQ(1, origin_info_2.FindDouble("numCookies"));
+    EXPECT_FALSE(origin_info_2.FindBool("isPartitioned").value_or(false));
   }
 
   {
@@ -5417,8 +5436,9 @@ TEST_F(SiteSettingsHandlerTest, HandleClearSiteGroupDataAndCookies) {
             handler()->cookies_tree_model_->GetRoot()->GetTotalNodeCount());
 
   storage_and_cookie_list = GetOnStorageFetchedSentList();
-  EXPECT_EQ(3U, storage_and_cookie_list.size());
-  verify_site_group(storage_and_cookie_list[0], "google.com");
+  EXPECT_EQ(4U, storage_and_cookie_list.size());
+  verify_site_group(storage_and_cookie_list[0], "example.com");
+  verify_site_group(storage_and_cookie_list[1], "google.com");
 
   args.clear();
   args.Append(GroupingKey::CreateFromEtldPlus1("google.com").Serialize());
@@ -5473,7 +5493,7 @@ TEST_P(SiteSettingsHandlerTest, HandleClearUnpartitionedUsage) {
 
   EXPECT_EQ(28u,
             handler()->cookies_tree_model_->GetRoot()->GetTotalNodeCount());
-  EXPECT_EQ(1, std::distance(handler()->browsing_data_model_->begin(),
+  EXPECT_EQ(2, std::distance(handler()->browsing_data_model_->begin(),
                              handler()->browsing_data_model_->end()));
 
   base::Value::List args;
@@ -5481,7 +5501,7 @@ TEST_P(SiteSettingsHandlerTest, HandleClearUnpartitionedUsage) {
                          : "http://www.example.com/");
   handler()->HandleClearUnpartitionedUsage(args);
 
-  EXPECT_EQ(1, std::distance(handler()->browsing_data_model_->begin(),
+  EXPECT_EQ(2, std::distance(handler()->browsing_data_model_->begin(),
                              handler()->browsing_data_model_->end()));
 
   // Confirm that only the unpartitioned items for example.com have been
@@ -5522,7 +5542,7 @@ TEST_P(SiteSettingsHandlerTest, HandleClearUnpartitionedUsage) {
   args.Append("https://www.google.com/");
   handler()->HandleClearUnpartitionedUsage(args);
 
-  EXPECT_EQ(0, std::distance(handler()->browsing_data_model_->begin(),
+  EXPECT_EQ(1, std::distance(handler()->browsing_data_model_->begin(),
                              handler()->browsing_data_model_->end()));
 
 // Clearing Site Specific Media Licenses Tests
@@ -5731,7 +5751,7 @@ TEST_F(SiteSettingsHandlerTest, HandleClearPartitionedUsage) {
   SetupModels();
   EXPECT_EQ(28u,
             handler()->cookies_tree_model_->GetRoot()->GetTotalNodeCount());
-  EXPECT_EQ(1, std::distance(handler()->browsing_data_model_->begin(),
+  EXPECT_EQ(2, std::distance(handler()->browsing_data_model_->begin(),
                              handler()->browsing_data_model_->end()));
 
   base::Value::List args;
@@ -5768,7 +5788,7 @@ TEST_F(SiteSettingsHandlerTest, HandleClearPartitionedUsage) {
   // Should not have affected the browsing data model.
   // TODO(crbug.com/1271155): Update when partitioned storage is represented
   // by the browsing data model.
-  EXPECT_EQ(1, std::distance(handler()->browsing_data_model_->begin(),
+  EXPECT_EQ(2, std::distance(handler()->browsing_data_model_->begin(),
                              handler()->browsing_data_model_->end()));
 }
 
@@ -5913,7 +5933,7 @@ TEST_F(SiteSettingsHandlerTest, HandleGetUsageInfo) {
 
   EXPECT_EQ(28u,
             handler()->cookies_tree_model_->GetRoot()->GetTotalNodeCount());
-  EXPECT_EQ(1, std::distance(handler()->browsing_data_model_->begin(),
+  EXPECT_EQ(2, std::distance(handler()->browsing_data_model_->begin(),
                              handler()->browsing_data_model_->end()));
 
   base::Value::List args;
@@ -5934,7 +5954,7 @@ TEST_F(SiteSettingsHandlerTest, HandleGetUsageInfo) {
   args.Append("http://google.com");
   handler()->HandleFetchUsageTotal(args);
   handler()->ServicePendingRequests();
-  ValidateUsageInfo("http://google.com", "", "2 cookies",
+  ValidateUsageInfo("http://google.com", "100 B", "2 cookies",
                     "2 sites in google.com's group", false);
 
   args.clear();
