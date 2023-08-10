@@ -1,4 +1,2 @@
-monorail {
-  component: "Services>SignIn"
-}
-team_email: "chrome-signin@chromium.org"
+mixins: "//components/signin/COMMON_METADATA"
+os: ANDROID
