@@ -114,7 +114,7 @@ class EnableViaDialogFlow : public ExtensionEnableFlowDelegate {
   raw_ptr<ExtensionService> service_;
   raw_ptr<ExtensionRegistry> registry_;
   raw_ptr<Profile> profile_;
-  std::string extension_id_;
+  extensions::ExtensionId extension_id_;
   base::OnceClosure callback_;
   std::unique_ptr<ExtensionEnableFlow> flow_;
 };
