@@ -1344,14 +1344,6 @@ void AutofillAgent::HandleFocusChangeComplete() {
         focused_element.To<WebFormControlElement>();
     if (form_util::IsTextAreaElementOrTextInput(focused_form_control_element)) {
       FormControlElementClicked(focused_form_control_element);
-    } else if (IsKeyboardAccessoryEnabled()) {
-      if (auto* autofill_driver = unsafe_autofill_driver()) {
-        autofill_driver->HidePopup();
-      }
-    }
-  } else if (IsKeyboardAccessoryEnabled()) {
-    if (auto* autofill_driver = unsafe_autofill_driver()) {
-      autofill_driver->HidePopup();
     }
   }
 
