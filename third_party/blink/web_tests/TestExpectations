@@ -6630,9 +6630,3 @@ crbug.com/626703 external/wpt/html/semantics/scripting-1/the-script-element/json
 crbug.com/626703 virtual/orb-v02/external/wpt/fetch/api/basic/request-forbidden-headers.any.serviceworker.html [ Failure Pass ]
 
 crbug.com/1471020 http/tests/devtools/network/request-name-path.js [ Failure Pass ]
-
-# Disable the following tests to land and reenable after the land.
-crbug.com/1471336 http/tests/devtools/application-panel/resources-panel-on-navigation.js [ Failure Pass ]
-crbug.com/1471336 http/tests/devtools/application-panel/resources-panel-resource-preview.js [ Failure Pass ]
-crbug.com/1471336 http/tests/devtools/application-panel/resources-panel-selection-on-reload.js [ Failure Pass ]
-crbug.com/1471336 http/tests/devtools/application-panel/resources-panel-websql.js [ Failure Pass ]
