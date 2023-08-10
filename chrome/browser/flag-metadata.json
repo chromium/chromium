@@ -1626,7 +1626,7 @@
   {
     "name": "devtools-tab-target",
     "owners": [ "dsv", "caseq" ],
-    "expiry_milestone": 118
+    "expiry_milestone": 125
   },
   {
     "name": "diagnostics-app-jelly",
