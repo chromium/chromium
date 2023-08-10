@@ -1269,11 +1269,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "content-suggestions-ui-module-refresh",
-    "owners": [ "thegreenfrog@google.com", "bling-flags@google.com" ],
-    "expiry_milestone": 112
-  },
-  {
     "name": "context-menu-google-lens-search-optimizations",
     "owners": [ "apalanki@google.com", "lens-chrome@google.com" ],
     "expiry_milestone": 114
@@ -4990,11 +4985,6 @@
     "name": "ios-magic-stack-segmentation-ranking",
     "owners": [ "thegreenfrog@google.com", "ritikagup@google.com" ],
     "expiry_milestone": 121
-  },
-  {
-    "name": "ios-new-tab-page-retention",
-    "owners": ["bwwilliams", "guiperez", "bling-flags@google.com"],
-    "expiry_milestone": 120
   },
   {
     "name": "ios-password-auth-on-entry",
