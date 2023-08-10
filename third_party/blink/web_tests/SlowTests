@@ -791,7 +791,6 @@ crbug.com/874695 [ Mac12-arm64 Release ] virtual/threaded/http/tests/devtools/tr
 crbug.com/874695 [ Mac13 ] virtual/threaded/http/tests/devtools/tracing/timeline-paint/paint-profiler-update.js [ Slow ]
 crbug.com/874695 [ Mac13-arm64 ] virtual/threaded/http/tests/devtools/tracing/timeline-paint/paint-profiler-update.js [ Slow ]
 crbug.com/874695 [ Release Win ] virtual/threaded/http/tests/devtools/tracing/timeline-paint/paint-profiler-update.js [ Slow ]
-crbug.com/874695 virtual/threaded/http/tests/devtools/tracing/timeline-script-parse.js [ Slow ]
 crbug.com/874695 [ Debug Linux ] virtual/threaded/synthetic_gestures/synthetic-pinch-zoom-gesture-touchpad-zoom-in-slow.html [ Slow ]
 crbug.com/874695 [ Release ] virtual/threaded/synthetic_gestures/synthetic-pinch-zoom-gesture-touchpad-zoom-in-slow.html [ Slow ]
 crbug.com/874695 [ Linux Release ] virtual/threaded/synthetic_gestures/synthetic-pinch-zoom-gesture-touchscreen-zoom-in-slow-desktop.html [ Slow ]

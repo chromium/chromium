@@ -4050,9 +4050,6 @@ crbug.com/981267 http/tests/devtools/persistence/persistence-move-breakpoints-on
 # TODO(crbug.com/980588): reenable once WPT is fixed
 crbug.com/980588 external/wpt/screen-orientation/lock-unlock-check.html [ Failure Pass ]
 
-# Sheriff 2019-07-26
-crbug.com/959129 http/tests/devtools/tracing/timeline-script-parse.js [ Failure Pass ]
-
 # WebRTC tests that fails (by timing out) because `getSynchronizationSources()`
 # on the audio side needs a hardware sink for the returned dictionary entries to
 # get updated.
