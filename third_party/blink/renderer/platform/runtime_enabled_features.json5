@@ -3024,6 +3024,10 @@
       status: "experimental",
     },
     {
+      name: "RTCEncodedFrameSetMetadata",
+      status: "experimental",
+    },
+    {
       name: "RTCEncodedVideoFrameAdditionalMetadata",
       status: "experimental",
     },
