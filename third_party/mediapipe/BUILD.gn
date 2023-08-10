@@ -21,34 +21,16 @@ config("mediapipe_config") {
 
 config("mediapipe_flags") {
   cflags = [
-    # These frequently happen when moving from Google internal code to OSS.
-    "-Wno-unused-function",
-
     # MediaPipe's CHECK macros are redefined from absl's.
     "-Wno-macro-redefined",
 
     # TODO(b/283522287): Upstream or patch these.
-    "-Wno-ignored-qualifiers",
-    "-Wno-sign-compare",
-    "-Wundefined-var-template",
     "-Wno-range-loop-bind-reference",
-    "-Wno-deprecated-declarations",
-    "-Wno-undefined-var-template",
   ]
 
   defines = [
     "MEDIAPIPE_DISABLE_GPU=1",
     "MEDIAPIPE_PROTO_LITE=1",
-  ]
-}
-
-# These warnings are present in headers so they get triggered in chromium cc
-# files. This is a public config below just to fix the errors while their fixes
-# are upstreamed or patched.
-config("mediapipe_header_flags_need_to_upstream") {
-  cflags = [
-    "-Wno-macro-redefined",
-    "-Wno-implicit-const-int-float-conversion",
   ]
 }
 
@@ -593,9 +575,6 @@ tflite_group("mediapipe") {
   public_configs = [
     ":mediapipe_config",
     ":mediapipe_flags",
-
-    # TODO(b/283522287): Remove this.
-    ":mediapipe_header_flags_need_to_upstream",
   ]
 
   conditional_public_deps = [
