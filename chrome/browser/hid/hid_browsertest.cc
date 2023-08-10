@@ -260,16 +260,6 @@ class WebHidExtensionBrowserTest : public extensions::ExtensionBrowserTest {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 };
 
-// Test fixture with kEnableWebHidOnExtensionServiceWorker enabled.
-class WebHidExtensionFeatureEnabledBrowserTest
-    : public WebHidExtensionBrowserTest {
- public:
-  WebHidExtensionFeatureEnabledBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kEnableWebHidOnExtensionServiceWorker}, {});
-  }
-};
-
 // Test fixture with kEnableWebHidOnExtensionServiceWorker disabled.
 class WebHidExtensionFeatureDisabledBrowserTest
     : public WebHidExtensionBrowserTest {
@@ -279,24 +269,6 @@ class WebHidExtensionFeatureDisabledBrowserTest
         {}, {features::kEnableWebHidOnExtensionServiceWorker});
   }
 };
-
-IN_PROC_BROWSER_TEST_F(WebHidExtensionBrowserTest, FeatureDefaultDisabled) {
-  extensions::TestExtensionDir test_dir;
-
-  constexpr char kBackgroundJs[] = R"(
-    chrome.test.sendMessage("ready", async () => {
-      try {
-        chrome.test.assertEq(navigator.hid, undefined);
-        chrome.test.notifyPass();
-
-      } catch (e) {
-        chrome.test.fail(e.name + ':' + e.message);
-      }
-    });
-  )";
-
-  LoadExtensionAndRunTest(kBackgroundJs);
-}
 
 IN_PROC_BROWSER_TEST_F(WebHidExtensionFeatureDisabledBrowserTest,
                        FeatureDisabled) {
@@ -317,7 +289,7 @@ IN_PROC_BROWSER_TEST_F(WebHidExtensionFeatureDisabledBrowserTest,
   LoadExtensionAndRunTest(kBackgroundJs);
 }
 
-IN_PROC_BROWSER_TEST_F(WebHidExtensionFeatureEnabledBrowserTest, GetDevices) {
+IN_PROC_BROWSER_TEST_F(WebHidExtensionBrowserTest, GetDevices) {
   extensions::TestExtensionDir test_dir;
 
   auto device = CreateTestDeviceWithInputAndOutputReports();
@@ -338,8 +310,7 @@ IN_PROC_BROWSER_TEST_F(WebHidExtensionFeatureEnabledBrowserTest, GetDevices) {
   LoadExtensionAndRunTest(kBackgroundJs);
 }
 
-IN_PROC_BROWSER_TEST_F(WebHidExtensionFeatureEnabledBrowserTest,
-                       RequestDevice) {
+IN_PROC_BROWSER_TEST_F(WebHidExtensionBrowserTest, RequestDevice) {
   extensions::TestExtensionDir test_dir;
 
   constexpr char kBackgroundJs[] = R"(
@@ -356,8 +327,7 @@ IN_PROC_BROWSER_TEST_F(WebHidExtensionFeatureEnabledBrowserTest,
   LoadExtensionAndRunTest(kBackgroundJs);
 }
 
-IN_PROC_BROWSER_TEST_F(WebHidExtensionFeatureEnabledBrowserTest,
-                       HidConnectionTracker) {
+IN_PROC_BROWSER_TEST_F(WebHidExtensionBrowserTest, HidConnectionTracker) {
   auto device = CreateTestDeviceWithInputAndOutputReports();
   hid_manager()->AddDevice(std::move(device));
 
