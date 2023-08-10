@@ -468,17 +468,13 @@ absl::optional<TabStrip> ProtoToTabStrip(proto::TabStrip tab_strip_proto) {
     tab_strip.home_tab = std::move(home_tab_params);
   }
 
-  if (tab_strip_proto.has_new_tab_button_visibility()) {
-    tab_strip.new_tab_button =
-        ProtoToTabStripVisibility(tab_strip_proto.new_tab_button_visibility());
-  } else {
-    blink::Manifest::NewTabButtonParams new_tab_button_params;
-    if (tab_strip_proto.new_tab_button_params().has_url()) {
-      new_tab_button_params.url =
-          GURL(tab_strip_proto.new_tab_button_params().url());
-    }
-    tab_strip.new_tab_button = new_tab_button_params;
+  blink::Manifest::NewTabButtonParams new_tab_button_params;
+  if (tab_strip_proto.new_tab_button_params().has_url()) {
+    new_tab_button_params.url =
+        GURL(tab_strip_proto.new_tab_button_params().url());
   }
+  tab_strip.new_tab_button = new_tab_button_params;
+
   return tab_strip;
 }
 

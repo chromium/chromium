@@ -194,8 +194,7 @@ class BLINK_COMMON_EXPORT Manifest {
 
     using Visibility = blink::mojom::TabStripMemberVisibility;
     using HomeTab = absl::variant<Visibility, blink::Manifest::HomeTabParams>;
-    using NewTabButton =
-        absl::variant<Visibility, blink::Manifest::NewTabButtonParams>;
+    using NewTabButton = blink::Manifest::NewTabButtonParams;
 
     HomeTab home_tab;
     NewTabButton new_tab_button;

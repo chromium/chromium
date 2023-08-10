@@ -845,19 +845,11 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
       }
     }
 
-    if (absl::holds_alternative<TabStrip::Visibility>(
-            tab_strip.new_tab_button)) {
-      mutable_tab_strip->set_new_tab_button_visibility(
-          TabStripVisibilityToProto(absl::get<TabStrip::Visibility>(
-              web_app.tab_strip().value().new_tab_button)));
-    } else {
-      auto* mutable_new_tab_button_params =
-          mutable_tab_strip->mutable_new_tab_button_params();
-      absl::optional<GURL> url = absl::get<blink::Manifest::NewTabButtonParams>(
-                                     tab_strip.new_tab_button)
-                                     .url;
-      if (url)
-        mutable_new_tab_button_params->set_url(url.value().spec());
+    auto* mutable_new_tab_button_params =
+        mutable_tab_strip->mutable_new_tab_button_params();
+    absl::optional<GURL> url = tab_strip.new_tab_button.url;
+    if (url) {
+      mutable_new_tab_button_params->set_url(url.value().spec());
     }
   }
 

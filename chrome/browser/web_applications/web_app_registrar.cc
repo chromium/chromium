@@ -566,18 +566,14 @@ GURL WebAppRegistrar::GetAppNewTabUrl(const AppId& app_id) const {
     if (!web_app)
       return GURL::EmptyGURL();
 
-    if (web_app->tab_strip() &&
-        absl::holds_alternative<blink::Manifest::NewTabButtonParams>(
-            web_app->tab_strip().value().new_tab_button)) {
+    if (web_app->tab_strip()) {
       absl::optional<GURL> url =
-          absl::get<blink::Manifest::NewTabButtonParams>(
-              web_app->tab_strip().value().new_tab_button)
-              .url;
+          web_app->tab_strip().value().new_tab_button.url;
       if (url.has_value())
         return url.value();
     }
   }
-  // Apps with new_tab_button.url set to 'auto' will use the start URL.
+  // Apps that don't set a new_tab_button.url will use the start URL.
   return GetAppStartUrl(app_id);
 }
 

@@ -1065,7 +1065,6 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest_TabStrip) {
   {
     TabStrip tab_strip;
     tab_strip.home_tab = TabStrip::Visibility::kAbsent;
-    tab_strip.new_tab_button = TabStrip::Visibility::kAuto;
     manifest.tab_strip = std::move(tab_strip);
 
     const GURL kAppManifestUrl("http://www.chromium.org/manifest.json");
@@ -1075,9 +1074,7 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest_TabStrip) {
     EXPECT_EQ(absl::get<TabStrip::Visibility>(
                   web_app_info.tab_strip.value().home_tab),
               TabStrip::Visibility::kAbsent);
-    EXPECT_EQ(absl::get<TabStrip::Visibility>(
-                  web_app_info.tab_strip.value().new_tab_button),
-              TabStrip::Visibility::kAuto);
+    EXPECT_FALSE(web_app_info.tab_strip.value().new_tab_button.url.has_value());
   }
 
   {
@@ -1109,9 +1106,7 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest_TabStrip) {
                   .icons[0]
                   .src,
               kAppIcon);
-    EXPECT_EQ(absl::get<blink::Manifest::NewTabButtonParams>(
-                  web_app_info.tab_strip.value().new_tab_button)
-                  .url,
+    EXPECT_EQ(web_app_info.tab_strip.value().new_tab_button.url,
               GURL("https://www.example.com/"));
   }
 }

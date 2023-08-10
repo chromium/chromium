@@ -1359,11 +1359,7 @@ TEST_F(WebAppRegistrarTest_TabStrip, TabbedAppAutoNewTabUrl) {
   auto web_app = test::CreateWebApp(GURL("https://example.com/path"));
   AppId app_id = web_app->app_id();
 
-  TabStrip tab_strip;
-  tab_strip.new_tab_button = TabStrip::Visibility::kAuto;
-
   web_app->SetDisplayMode(DisplayMode::kTabbed);
-  web_app->SetTabStrip(tab_strip);
   RegisterApp(std::move(web_app));
 
   EXPECT_EQ(registrar().GetAppNewTabUrl(app_id),

@@ -285,27 +285,6 @@ struct BLINK_COMMON_EXPORT UnionTraits<blink::mojom::HomeTabUnionDataView,
 };
 
 template <>
-struct BLINK_COMMON_EXPORT
-    UnionTraits<blink::mojom::NewTabButtonUnionDataView,
-                ::blink::Manifest::TabStrip::NewTabButton> {
-  static blink::mojom::NewTabButtonUnionDataView::Tag GetTag(
-      const ::blink::Manifest::TabStrip::NewTabButton& value);
-
-  static ::blink::mojom::TabStripMemberVisibility visibility(
-      const ::blink::Manifest::TabStrip::NewTabButton& value) {
-    return absl::get<blink::mojom::TabStripMemberVisibility>(value);
-  }
-
-  static const ::blink::Manifest::NewTabButtonParams& params(
-      const ::blink::Manifest::TabStrip::NewTabButton& value) {
-    return absl::get<blink::Manifest::NewTabButtonParams>(value);
-  }
-
-  static bool Read(blink::mojom::NewTabButtonUnionDataView data,
-                   ::blink::Manifest::TabStrip::NewTabButton* out);
-};
-
-template <>
 struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::ManifestTabStripDataView,
                                         ::blink::Manifest::TabStrip> {
   static const ::blink::Manifest::TabStrip::HomeTab& home_tab(

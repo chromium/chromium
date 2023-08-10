@@ -364,7 +364,7 @@ struct ManifestUserPreferenceOverrides {
 // Structure representing customizations to the tab strip.
 struct ManifestTabStrip {
   HomeTabUnion home_tab;
-  NewTabButtonUnion new_tab_button;
+  NewTabButtonParams new_tab_button;
 };
 
 // Represents whether a particular tab strip customization is present or not.
@@ -377,11 +377,6 @@ enum TabStripMemberVisibility {
 union HomeTabUnion {
   TabStripMemberVisibility visibility;
   HomeTabParams params;
-};
-
-union NewTabButtonUnion {
-  TabStripMemberVisibility visibility;
-  NewTabButtonParams params;
 };
 
 // Structure representing the home tab customization to the tab strip.

@@ -876,17 +876,13 @@ std::unique_ptr<WebApp> CreateRandomWebApp(CreateRandomWebAppParams params) {
           random.next_enum<blink::mojom::TabStripMemberVisibility>();
     }
 
+    blink::Manifest::NewTabButtonParams new_tab_button_params;
     if (random.next_bool()) {
-      blink::Manifest::NewTabButtonParams new_tab_button_params;
-      if (random.next_bool()) {
-        new_tab_button_params.url = scope.Resolve(
-            "new_tab_button_url" + base::NumberToString(random.next_uint()));
-      }
-      tab_strip.new_tab_button = new_tab_button_params;
-    } else {
-      tab_strip.new_tab_button =
-          random.next_enum<blink::mojom::TabStripMemberVisibility>();
+      new_tab_button_params.url = scope.Resolve(
+          "new_tab_button_url" + base::NumberToString(random.next_uint()));
     }
+    tab_strip.new_tab_button = new_tab_button_params;
+
     app->SetTabStrip(std::move(tab_strip));
   }
 

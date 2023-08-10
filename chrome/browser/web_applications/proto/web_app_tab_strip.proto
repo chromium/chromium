@@ -29,10 +29,9 @@ message TabStrip {
     ABSENT = 1;
   }
 
-  oneof new_tab_button {
-    Visibility new_tab_button_visibility = 1;
-    NewTabButtonParams new_tab_button_params = 2;
-  }
+  reserved 1;
+  reserved "new_tab_button_visibility";
+  optional NewTabButtonParams new_tab_button_params = 2;
 
   oneof home_tab {
     Visibility home_tab_visibility = 3;

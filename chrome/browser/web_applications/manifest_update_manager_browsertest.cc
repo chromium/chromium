@@ -4928,9 +4928,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest_TabStrip,
 
   EXPECT_TRUE(web_app->tab_strip().has_value());
   EXPECT_EQ(http_server_.GetURL("/new-tab-url"),
-            absl::get<blink::Manifest::NewTabButtonParams>(
-                web_app->tab_strip().value().new_tab_button)
-                .url);
+            web_app->tab_strip().value().new_tab_button.url);
   EXPECT_EQ(absl::get<blink::Manifest::HomeTabParams>(
                 web_app->tab_strip().value().home_tab)
                 .scope_patterns.size(),
@@ -4961,9 +4959,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest_TabStrip,
   const WebApp* web_app = GetProvider().registrar_unsafe().GetAppById(app_id);
   EXPECT_TRUE(web_app->tab_strip().has_value());
   EXPECT_EQ(http_server_.GetURL("/new-tab-url"),
-            absl::get<blink::Manifest::NewTabButtonParams>(
-                web_app->tab_strip().value().new_tab_button)
-                .url);
+            web_app->tab_strip().value().new_tab_button.url);
   EXPECT_TRUE(absl::holds_alternative<blink::Manifest::HomeTabParams>(
       web_app->tab_strip().value().home_tab));
 
@@ -4974,9 +4970,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest_TabStrip,
                                       ManifestUpdateResult::kAppUpToDate, 1);
   EXPECT_TRUE(web_app->tab_strip().has_value());
   EXPECT_EQ(http_server_.GetURL("/new-tab-url"),
-            absl::get<blink::Manifest::NewTabButtonParams>(
-                web_app->tab_strip().value().new_tab_button)
-                .url);
+            web_app->tab_strip().value().new_tab_button.url);
   EXPECT_TRUE(absl::holds_alternative<blink::Manifest::HomeTabParams>(
       web_app->tab_strip().value().home_tab));
 }
@@ -5006,9 +5000,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest_TabStrip,
   // URL parsed relative to manifest URL, which is in /banners/.
   EXPECT_TRUE(web_app->tab_strip().has_value());
   EXPECT_EQ(http_server_.GetURL("/banners/old-relative-url"),
-            absl::get<blink::Manifest::NewTabButtonParams>(
-                web_app->tab_strip().value().new_tab_button)
-                .url);
+            web_app->tab_strip().value().new_tab_button.url);
 
   OverrideManifest(kTabStripManifestTemplate,
                    {"/new-tab-url", kInstallableIconList});
@@ -5018,9 +5010,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest_TabStrip,
                                       ManifestUpdateResult::kAppUpdated, 1);
   EXPECT_TRUE(web_app->tab_strip().has_value());
   EXPECT_EQ(http_server_.GetURL("/new-tab-url"),
-            absl::get<blink::Manifest::NewTabButtonParams>(
-                web_app->tab_strip().value().new_tab_button)
-                .url);
+            web_app->tab_strip().value().new_tab_button.url);
 }
 
 IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest_TabStrip,
@@ -5058,9 +5048,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest_TabStrip,
   const WebApp* web_app = GetProvider().registrar_unsafe().GetAppById(app_id);
   EXPECT_TRUE(web_app->tab_strip().has_value());
   EXPECT_EQ(http_server_.GetURL("/new-tab-url"),
-            absl::get<blink::Manifest::NewTabButtonParams>(
-                web_app->tab_strip().value().new_tab_button)
-                .url);
+            web_app->tab_strip().value().new_tab_button.url);
   EXPECT_TRUE(absl::holds_alternative<blink::Manifest::HomeTabParams>(
       web_app->tab_strip().value().home_tab));
 
