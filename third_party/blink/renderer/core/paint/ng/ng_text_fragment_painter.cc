@@ -398,22 +398,6 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
   }
 
   if (UNLIKELY(text_item.IsSymbolMarker())) {
-    if (!RuntimeEnabledFeatures::CSSDisplayMultipleValuesEnabled() &&
-        !IsA<LayoutCounter>(layout_object)) {
-      // The NGInlineItem of marker might be Split(). To avoid calling
-      // PaintSymbol multiple times, only call it the first time. For an
-      // outside marker, this is when StartOffset is 0. But for an inside
-      // marker, the first StartOffset can be greater due to leading bidi
-      // control characters like U+202A/U+202B, U+202D/U+202E, U+2066/U+2067
-      // or U+2068.
-      DCHECK_LT(fragment_paint_info.from, fragment_paint_info.text.length());
-      for (unsigned i = 0; i < fragment_paint_info.from; ++i) {
-        if (!Character::IsBidiControl(
-                fragment_paint_info.text.CodepointAt(i))) {
-          return;
-        }
-      }
-    }
     PaintSymbol(layout_object, style, physical_box.size, paint_info,
                 physical_box.offset);
     return;

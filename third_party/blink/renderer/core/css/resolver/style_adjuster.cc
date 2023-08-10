@@ -157,8 +157,6 @@ bool ElementForcesStackingContext(Element* element) {
 static EDisplay EquivalentBlockDisplay(EDisplay display) {
   switch (display) {
     case EDisplay::kFlowRootListItem:
-      DCHECK(RuntimeEnabledFeatures::CSSDisplayMultipleValuesEnabled());
-      [[fallthrough]];
     case EDisplay::kBlock:
     case EDisplay::kTable:
     case EDisplay::kWebkitBox:
@@ -182,10 +180,8 @@ static EDisplay EquivalentBlockDisplay(EDisplay display) {
     case EDisplay::kInlineLayoutCustom:
       return EDisplay::kLayoutCustom;
     case EDisplay::kInlineListItem:
-      DCHECK(RuntimeEnabledFeatures::CSSDisplayMultipleValuesEnabled());
       return EDisplay::kListItem;
     case EDisplay::kInlineFlowRootListItem:
-      DCHECK(RuntimeEnabledFeatures::CSSDisplayMultipleValuesEnabled());
       return EDisplay::kFlowRootListItem;
 
     case EDisplay::kContents:
