@@ -50,6 +50,7 @@
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
+#include "extensions/common/extension_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/accessibility_features.h"
@@ -281,7 +282,7 @@ IN_PROC_BROWSER_TEST_F(WelcomeScreenBrowserTest,
   test::OobeJS().TapOnPath(
       {"connect", "welcomeScreen", "languageSelectionButton"});
 
-  std::string extension_id_prefix =
+  extensions::ExtensionId extension_id_prefix =
       std::string("_comp_ime_") + extension_ime_util::kXkbExtensionId;
 
   test::OobeJS().SelectElementInPath(extension_id_prefix + "xkb:us:intl:eng",
