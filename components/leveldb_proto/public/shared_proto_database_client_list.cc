@@ -112,6 +112,10 @@ std::string SharedProtoDatabaseClientList::ProtoDbTypeToString(
       return "WebrtcVideoStatsDB";
     case ProtoDbType::PERSISTENT_ORIGIN_TRIALS:
       return "PersistentOriginTrials";
+    case ProtoDbType::NEARBY_PRESENCE_PUBLIC_CREDENTIAL_DATABASE:
+      return "NearbyPresencePublicCredentialDatabase";
+    case ProtoDbType::NEARBY_PRESENCE_PRIVATE_CREDENTIAL_DATABASE:
+      return "NearbyPresencePrivateCredentialDatabase";
     case ProtoDbType::LAST:
       NOTREACHED();
       return std::string();
