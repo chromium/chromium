@@ -52,6 +52,15 @@ void TabMenuModel::BuildForWebApp(TabStripModel* tab_strip, int index) {
   AddItemWithStringId(TabStripModel::CommandReload, IDS_TAB_CXMENU_RELOAD);
   AddItemWithStringId(TabStripModel::CommandGoBack, IDS_CONTENT_CONTEXT_BACK);
 
+  if (!web_app::IsPinnedHomeTab(tab_strip, index) &&
+      (!web_app::HasPinnedHomeTab(tab_strip) ||
+       *tab_strip->selection_model().selected_indices().begin() != 0)) {
+    int num_tabs = tab_strip->selection_model().selected_indices().size();
+    AddItem(TabStripModel::CommandMoveTabsToNewWindow,
+            l10n_util::GetPluralStringFUTF16(
+                IDS_TAB_CXMENU_MOVE_TABS_TO_NEW_WINDOW, num_tabs));
+  }
+
   AddSeparator(ui::NORMAL_SEPARATOR);
 
   if (!web_app::IsPinnedHomeTab(tab_strip, index)) {

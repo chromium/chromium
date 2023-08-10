@@ -97,6 +97,8 @@
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
+#include "chrome/browser/ui/web_applications/web_app_tabbed_utils.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -1039,6 +1041,13 @@ void MoveActiveTabToNewWindow(Browser* browser) {
 }
 bool CanMoveTabsToNewWindow(Browser* browser,
                             const std::vector<int>& tab_indices) {
+  if (browser->is_type_app()) {
+    for (int index : tab_indices) {
+      if (web_app::IsPinnedHomeTab(browser->tab_strip_model(), index)) {
+        return false;
+      }
+    }
+  }
   return browser->tab_strip_model()->count() >
          static_cast<int>(tab_indices.size());
 }
@@ -1049,8 +1058,17 @@ void MoveTabsToNewWindow(Browser* browser,
   if (tab_indices.empty())
     return;
 
-  Browser* new_browser =
-      Browser::Create(Browser::CreateParams(browser->profile(), true));
+  Browser* new_browser;
+  if (browser->is_type_app() && browser->app_controller()->has_tab_strip()) {
+    new_browser = Browser::Create(Browser::CreateParams::CreateForApp(
+        browser->app_name(), browser->is_trusted_source(), gfx::Rect(),
+        browser->profile(), true));
+    web_app::MaybeAddPinnedHomeTab(new_browser,
+                                   new_browser->app_controller()->app_id());
+  } else {
+    new_browser =
+        Browser::Create(Browser::CreateParams(browser->profile(), true));
+  }
 
   if (group.has_value()) {
     SavedTabGroupKeyedService* const service =

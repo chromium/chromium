@@ -275,7 +275,7 @@ TEST_F(TabMenuModelTest, TabbedWebApp) {
 
   // When adding/removing a menu item, either update this count and add it to
   // the list below or disable it for tabbed web apps.
-  EXPECT_EQ(model.GetItemCount(), 6u);
+  EXPECT_EQ(model.GetItemCount(), 7u);
 
   EXPECT_TRUE(
       model.GetIndexOfCommandId(TabStripModel::CommandCopyURL).has_value());
@@ -283,8 +283,11 @@ TEST_F(TabMenuModelTest, TabbedWebApp) {
       model.GetIndexOfCommandId(TabStripModel::CommandReload).has_value());
   EXPECT_TRUE(
       model.GetIndexOfCommandId(TabStripModel::CommandGoBack).has_value());
+  EXPECT_TRUE(
+      model.GetIndexOfCommandId(TabStripModel::CommandMoveTabsToNewWindow)
+          .has_value());
 
-  EXPECT_EQ(model.GetTypeAt(3), ui::MenuModel::TYPE_SEPARATOR);
+  EXPECT_EQ(model.GetTypeAt(4), ui::MenuModel::TYPE_SEPARATOR);
 
   EXPECT_TRUE(
       model.GetIndexOfCommandId(TabStripModel::CommandCloseTab).has_value());
@@ -321,13 +324,19 @@ TEST_F(TabMenuModelTest, TabbedWebAppHomeTab) {
       home_tab_model.GetIndexOfCommandId(TabStripModel::CommandCloseAllTabs)
           .has_value());
 
-  chrome::NewTab(browser());
+  strip.AppendWebContents(
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr),
+      true);
+  EXPECT_EQ(strip.count(), 2);
+  EXPECT_FALSE(strip.IsTabSelected(0));
+  EXPECT_TRUE(strip.IsTabSelected(1));
+
   TabMenuModel regular_tab_model(
       &delegate_, browser()->tab_menu_model_delegate(), &strip, 1);
 
   // When adding/removing a menu item, either update this count and add it to
   // the list below or disable it for tabbed web apps.
-  EXPECT_EQ(regular_tab_model.GetItemCount(), 7u);
+  EXPECT_EQ(regular_tab_model.GetItemCount(), 8u);
 
   EXPECT_TRUE(
       regular_tab_model.GetIndexOfCommandId(TabStripModel::CommandCopyURL)
@@ -338,8 +347,12 @@ TEST_F(TabMenuModelTest, TabbedWebAppHomeTab) {
   EXPECT_TRUE(
       regular_tab_model.GetIndexOfCommandId(TabStripModel::CommandGoBack)
           .has_value());
+  EXPECT_TRUE(
+      regular_tab_model
+          .GetIndexOfCommandId(TabStripModel::CommandMoveTabsToNewWindow)
+          .has_value());
 
-  EXPECT_EQ(regular_tab_model.GetTypeAt(3), ui::MenuModel::TYPE_SEPARATOR);
+  EXPECT_EQ(regular_tab_model.GetTypeAt(4), ui::MenuModel::TYPE_SEPARATOR);
 
   EXPECT_TRUE(
       regular_tab_model.GetIndexOfCommandId(TabStripModel::CommandCloseTab)

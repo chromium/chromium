@@ -618,6 +618,34 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, WebAppMenuModelNonTabbedApp) {
   EXPECT_FALSE(model.GetIndexOfCommandId(IDC_NEW_TAB).has_value());
 }
 
+IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, MoveTabsToNewWindow) {
+  GURL start_url =
+      embedded_test_server()->GetURL("/web_apps/tab_strip_customizations.html");
+  AppId app_id = InstallTestWebApp(start_url);
+  Browser* app_browser = LaunchWebAppBrowser(app_id);
+
+  chrome::NewTab(app_browser);
+
+  size_t initial_browser_count = BrowserList::GetInstance()->size();
+
+  chrome::MoveTabsToNewWindow(app_browser, {1});
+
+  EXPECT_EQ(initial_browser_count + 1, BrowserList::GetInstance()->size());
+
+  // Check that the tab made it to a new window.
+  Browser* new_browser = BrowserList::GetInstance()->GetLastActive();
+  EXPECT_NE(app_browser, new_browser);
+  EXPECT_TRUE(AppBrowserController::IsForWebApp(new_browser, app_id));
+
+  // Check the new browser contains the moved tab and a pinned home tab.
+  EXPECT_EQ(new_browser->tab_strip_model()->count(), 2);
+  EXPECT_TRUE(new_browser->tab_strip_model()->IsTabPinned(0));
+  EXPECT_EQ(
+      new_browser->tab_strip_model()->GetWebContentsAt(0)->GetVisibleURL(),
+      start_url);
+  EXPECT_EQ(new_browser->tab_strip_model()->active_index(), 1);
+}
+
 IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest,
                        OnlyNavigateHomeTabIfDifferentUrl) {
   GURL start_url =
