@@ -48,7 +48,7 @@ struct COMPONENT_EXPORT(UI_BASE_IME_ASH) ComponentExtensionIME {
 // This class manages component extension input method.
 class COMPONENT_EXPORT(UI_BASE_IME_ASH) ComponentExtensionIMEManager {
  public:
-  ComponentExtensionIMEManager(
+  explicit ComponentExtensionIMEManager(
       std::unique_ptr<ComponentExtensionIMEManagerDelegate> delegate);
 
   ComponentExtensionIMEManager(const ComponentExtensionIMEManager&) = delete;
