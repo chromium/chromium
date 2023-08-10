@@ -6664,6 +6664,7 @@ if (use_fuzzing_engine_with_lpm) {
       "//base",
       "//base:i18n",
       "//chrome/browser",
+      "//chrome/browser/ash:test_support",
       "//components/exo/wayland:ui_controls_protocol_stub",
       "//components/policy/proto",
     ]
