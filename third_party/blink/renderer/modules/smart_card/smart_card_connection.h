@@ -68,7 +68,8 @@ class SmartCardConnection final : public ScriptWrappable,
   void Trace(Visitor*) const override;
 
  private:
-  bool EnsureNoOperationInProgress(ExceptionState& exception_state) const;
+  void SetOperationInProgress(ScriptPromiseResolver*);
+  void ClearOperationInProgress(ScriptPromiseResolver*);
   bool EnsureConnection(ExceptionState& exception_state) const;
   void OnDisconnectDone(ScriptPromiseResolver* resolver,
                         device::mojom::blink::SmartCardResultPtr result);

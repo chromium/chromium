@@ -386,7 +386,8 @@ IN_PROC_BROWSER_TEST_F(SmartCardTest, ConcurrentDisconnect) {
 
   EXPECT_EQ(
       "second disconnect: InvalidStateError, Failed to execute 'disconnect' on "
-      "'SmartCardConnection': An operation is in progress.",
+      "'SmartCardConnection': An operation is already in progress in this "
+      "smart card context.",
       EvalJs(shell(), R"(
     (async () => {
       let context = await navigator.smartCard.establishContext();
@@ -1191,6 +1192,142 @@ IN_PROC_BROWSER_TEST_F(SmartCardTest, OngoingTransmitOnTransactionReturn) {
         return `startTransaction: ${e.name}, ${e.message}`;
       }
       return "ok";
+    })())"));
+}
+
+IN_PROC_BROWSER_TEST_F(SmartCardTest,
+                       ContextOperationBlocksConnectionOperation) {
+  ASSERT_TRUE(NavigateToURL(shell(), GetIsolatedContextUrl()));
+
+  MockSmartCardContextFactory& mock_context_factory =
+      GetFakeSmartCardDelegate().mock_context_factory;
+  StrictMock<MockSmartCardConnection> mock_connection;
+  mojo::Receiver<SmartCardConnection> connection_receiver(&mock_connection);
+
+  TestFuture<SmartCardContext::ListReadersCallback> list_readers_callback;
+
+  {
+    InSequence s;
+
+    mock_context_factory.ExpectConnectFakeReaderSharedT1(connection_receiver);
+
+    EXPECT_CALL(mock_context_factory, ListReaders(_))
+        .WillOnce([&list_readers_callback](
+                      SmartCardContext::ListReadersCallback callback) {
+          // Don't respond immediately.
+          list_readers_callback.SetValue(std::move(callback));
+        });
+  }
+
+  EXPECT_EQ(
+      "control: InvalidStateError, Failed to execute 'control' on "
+      "'SmartCardConnection': An operation is already in progress in this "
+      "smart card context.",
+      EvalJs(shell(), R"(
+    (async () => {
+      let context = await navigator.smartCard.establishContext();
+
+      let connection =
+        (await context.connect("Fake reader", "shared",
+          {preferredProtocols: ["t1"]})).connection;
+
+      let listReadersPromise = context.listReaders();
+
+      try {
+        let data = new Uint8Array([0x03, 0x02, 0x01]);
+        await connection.control(42, data);
+      } catch (e) {
+        return `control: ${e.name}, ${e.message}`;
+      }
+
+      await listReadersPromise;
+
+      return `ok`;
+    })())"));
+
+  // Let context.listReaders() conclude
+  std::vector<std::string> readers{"Fake reader"};
+  auto result = device::mojom::SmartCardListReadersResult::NewReaders(readers);
+  list_readers_callback.Take().Run(std::move(result));
+}
+
+IN_PROC_BROWSER_TEST_F(SmartCardTest, ConnectionDiesWithOperationInProgress) {
+  ASSERT_TRUE(NavigateToURL(shell(), GetIsolatedContextUrl()));
+
+  MockSmartCardContextFactory& mock_context_factory =
+      GetFakeSmartCardDelegate().mock_context_factory;
+  StrictMock<MockSmartCardConnection> mock_connection;
+  mojo::Receiver<SmartCardConnection> connection_receiver(&mock_connection);
+
+  {
+    InSequence s;
+
+    mock_context_factory.ExpectConnectFakeReaderSharedT1(connection_receiver);
+
+    EXPECT_CALL(mock_connection, Control(42, _, _))
+        .WillOnce([&connection_receiver](
+                      uint32_t control_code, const std::vector<uint8_t>& data,
+                      SmartCardConnection::ControlCallback callback) {
+          connection_receiver.reset();
+        });
+  }
+
+  EXPECT_EQ(
+      "control: InvalidStateError, Failed to execute 'control' on "
+      "'SmartCardConnection': Is disconnected.",
+      EvalJs(shell(), R"(
+    (async () => {
+      let context = await navigator.smartCard.establishContext();
+
+      let connection =
+        (await context.connect("Fake reader", "shared",
+          {preferredProtocols: ["t1"]})).connection;
+
+      try {
+        let data = new Uint8Array([0x03, 0x02, 0x01]);
+        await connection.control(42, data);
+      } catch (e) {
+        return `control: ${e.name}, ${e.message}`;
+      }
+    })())"));
+}
+
+IN_PROC_BROWSER_TEST_F(SmartCardTest, ContextDiesConnectionStays) {
+  ASSERT_TRUE(NavigateToURL(shell(), GetIsolatedContextUrl()));
+
+  MockSmartCardContextFactory& mock_context_factory =
+      GetFakeSmartCardDelegate().mock_context_factory;
+  StrictMock<MockSmartCardConnection> mock_connection;
+  mojo::Receiver<SmartCardConnection> connection_receiver(&mock_connection);
+
+  {
+    InSequence s;
+
+    mock_context_factory.ExpectConnectFakeReaderSharedT1(connection_receiver);
+
+    EXPECT_CALL(mock_connection, Control(42, _, _))
+        .WillOnce([&mock_context_factory](
+                      uint32_t control_code, const std::vector<uint8_t>& data,
+                      SmartCardConnection::ControlCallback callback) {
+          mock_context_factory.ClearContextReceivers();
+          std::move(callback).Run(
+              device::mojom::SmartCardDataResult::NewData({12u, 34u}));
+        });
+  }
+
+  EXPECT_EQ("response: 12,34", EvalJs(shell(), R"(
+    (async () => {
+      let context = await navigator.smartCard.establishContext();
+
+      let connection =
+        (await context.connect("Fake reader", "shared",
+          {preferredProtocols: ["t1"]})).connection;
+
+      let data = new Uint8Array([0x03, 0x02, 0x01]);
+      let response = await connection.control(42, data);
+
+      let responseString = new Uint8Array(response).toString();
+      return `response: ${responseString}`;
     })())"));
 }
 

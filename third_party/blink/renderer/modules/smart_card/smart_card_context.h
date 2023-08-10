@@ -53,9 +53,26 @@ class SmartCardContext final : public ScriptWrappable,
   // Called by SmartCardCancelAlgorithm
   void Cancel();
 
- private:
-  void CloseMojoConnection();
+  ////
+  // Called also by SmartCardConnection instances in this context.
+
   bool EnsureNoOperationInProgress(ExceptionState& exception_state) const;
+
+  void SetConnectionOperationInProgress(ScriptPromiseResolver*);
+  void ClearConnectionOperationInProgress(ScriptPromiseResolver*);
+
+  bool IsOperationInProgress() const;
+
+ private:
+  // Sets the PC/SC operation that is in progress in this context.
+  // CHECKs that there was no operation in progress.
+  void SetOperationInProgress(ScriptPromiseResolver*);
+
+  // Clears the operation in progress.
+  // CHECKs that the given operation matches the one set to be in progress.
+  void ClearOperationInProgress(ScriptPromiseResolver*);
+
+  void CloseMojoConnection();
   bool EnsureMojoConnection(ExceptionState& exception_state) const;
   void OnListReadersDone(ScriptPromiseResolver* resolver,
                          device::mojom::blink::SmartCardListReadersResultPtr);
@@ -71,6 +88,9 @@ class SmartCardContext final : public ScriptWrappable,
   HeapMojoRemote<device::mojom::blink::SmartCardContext> scard_context_;
   // The currently ongoing request, if any.
   Member<ScriptPromiseResolver> request_;
+
+  // Whether request_ comes from a blink::SmartCardConnection.
+  bool is_connection_request_ = false;
 };
 }  // namespace blink
 
