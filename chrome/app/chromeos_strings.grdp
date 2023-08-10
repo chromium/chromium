@@ -7233,7 +7233,7 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
     Can't resume previous session
   </message>
   <message name="IDS_FLOATING_WORKSPACE_ERROR_MESSAGE" desc="Message for Floating Workspace notification when there is an sync service error or timeout.">
-    Something went wrong. Open the windows manuallly instead.
+    Something went wrong. Open the windows manually instead.
   </message>
   <message name="IDS_FLOATING_WORKSPACE_DISPLAY_SOURCE" desc="This is the string shown as the display source of the notification to notify user about floating workspace status.">
     ChromeOS

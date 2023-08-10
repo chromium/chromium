@@ -562,6 +562,7 @@ bool FloatingWorkspaceService::IsCurrentDeskSameAsPrevious(
 
 void FloatingWorkspaceService::HandleTemplateLaunchErrors(
     DesksClient::DeskActionError error) {
+  SendNotification(kNotificationForSyncErrorOrTimeOut);
   switch (error) {
     case DesksClient::DeskActionError::kUnknownError:
       floating_workspace_metrics_util::
