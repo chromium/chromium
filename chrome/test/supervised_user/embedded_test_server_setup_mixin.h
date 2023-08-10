@@ -56,8 +56,6 @@ class EmbeddedTestServerSetupMixin : public InProcessBrowserTestMixin {
   void TearDownOnMainThread() override;
   void SetUpOnMainThread() override;
 
-  KidsManagementApiServerMock& GetApiMock();
-
   // See SupervisionMixin::InitFeatures.
   void InitFeatures();
 

@@ -57,8 +57,6 @@ EmbeddedTestServerSetupMixin::~EmbeddedTestServerSetupMixin() = default;
 void EmbeddedTestServerSetupMixin::SetUp() {
   api_mock_.InstallOn(embedded_test_server_);
   CHECK(embedded_test_server_->InitializeAndListen());
-  LOG(INFO) << "Kids management server is up and running on "
-            << embedded_test_server_->host_port_pair().ToString();
 }
 
 void EmbeddedTestServerSetupMixin::SetUpCommandLine(
@@ -76,10 +74,6 @@ void EmbeddedTestServerSetupMixin::SetUpCommandLine(
   command_line->AppendSwitchASCII(
       network::switches::kHostResolverRules,
       base::JoinString(base::span<std::string>(resolver_rules), ", "));
-  LOG(INFO) << "Following hosts will be mapped to kids management server: ";
-  for (const std::string& rule : resolver_rules) {
-    LOG(INFO) << "\t" << rule;
-  }
 }
 
 void EmbeddedTestServerSetupMixin::SetUpOnMainThread() {
@@ -90,12 +84,9 @@ void EmbeddedTestServerSetupMixin::TearDownOnMainThread() {
   CHECK(embedded_test_server_->ShutdownAndWaitUntilComplete());
 }
 
-KidsManagementApiServerMock& EmbeddedTestServerSetupMixin::GetApiMock() {
-  return api_mock_;
-}
-
 void EmbeddedTestServerSetupMixin::InitFeatures() {
   SetHttpEndpointsForKidsManagementApis(feature_list_,
                                         kKidsManagementServiceEndpoint);
 }
+
 }  // namespace supervised_user

@@ -109,10 +109,6 @@ class SupervisionMixin : public InProcessBrowserTestMixin {
   // enabled by calling ScopedFeatureList::Init*() methods, expose this as well.
   void InitFeatures();
 
-  EmbeddedTestServerSetupMixin& embedded_test_server_setup_mixin() {
-    return *embedded_test_server_setup_mixin_;
-  }
-
  private:
   void SetUpTestServer();
   void SetUpIdentityTestEnvironment();

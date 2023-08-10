@@ -60,7 +60,6 @@
 #include "chrome/common/chrome_render_frame.mojom.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/base/search_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/guest_view/browser/guest_view_manager_delegate.h"
@@ -112,6 +111,7 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "pdf/buildflags.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/test/test_url_loader_factory.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -134,10 +134,7 @@
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
-#include "chrome/test/supervised_user/embedded_test_server_setup_mixin.h"
-#include "chrome/test/supervised_user/supervision_mixin.h"
 #include "components/supervised_user/core/browser/kids_chrome_management_client.h"
-#include "components/supervised_user/core/browser/proto/kidschromemanagement_messages.pb.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #include "components/supervised_user/core/common/features.h"
@@ -174,15 +171,9 @@ namespace {
 const char kAppUrl1[] = "https://www.google.com/";
 const char kAppUrl2[] = "https://docs.google.com/";
 
-class AllowPreCommitInputFlagMixin : public InProcessBrowserTestMixin {
+class ContextMenuBrowserTest : public InProcessBrowserTest {
  public:
-  AllowPreCommitInputFlagMixin() = delete;
-  explicit AllowPreCommitInputFlagMixin(InProcessBrowserTestMixinHost& host)
-      : InProcessBrowserTestMixin(&host) {}
-  AllowPreCommitInputFlagMixin(const AllowPreCommitInputFlagMixin&) = delete;
-  AllowPreCommitInputFlagMixin& operator=(const AllowPreCommitInputFlagMixin&) =
-      delete;
-  ~AllowPreCommitInputFlagMixin() override = default;
+  ContextMenuBrowserTest() {}
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     // Tests in this suite make use of documents with no significant
@@ -190,9 +181,7 @@ class AllowPreCommitInputFlagMixin : public InProcessBrowserTestMixin {
     // unless we allow it.
     command_line->AppendSwitch(blink::switches::kAllowPreCommitInput);
   }
-};
 
-class ContextMenuBrowserTest : public MixinBasedInProcessBrowserTest {
  protected:
   std::unique_ptr<TestRenderViewContextMenu> CreateContextMenuMediaTypeNone(
       const GURL& unfiltered_url,
@@ -408,7 +397,6 @@ class ContextMenuBrowserTest : public MixinBasedInProcessBrowserTest {
  private:
   web_app::OsIntegrationManager::ScopedSuppressForTesting os_hooks_suppress_;
   base::test::ScopedFeatureList scoped_feature_list_{features::kReadAnything};
-  AllowPreCommitInputFlagMixin allow_pre_commit_input_flag_mixin_{mixin_host_};
 };
 
 class ContextMenuWithProfileLinksBrowserTest : public ContextMenuBrowserTest {
@@ -592,37 +580,45 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 class ContextMenuForSupervisedUsersBrowserTest : public ContextMenuBrowserTest {
  public:
-  ContextMenuForSupervisedUsersBrowserTest() {
-    supervision_mixin_.InitFeatures();
-  };
+  ContextMenuForSupervisedUsersBrowserTest() = default;
+  void SetUpOnMainThread() override {
+    ContextMenuBrowserTest::SetUpOnMainThread();
+    // Set up child user profile.
+    Profile* profile = browser()->profile();
+    profile->GetPrefs()->SetString(prefs::kSupervisedUserId,
+                                   supervised_user::kChildAccountSUID);
+  }
 
   supervised_user::SupervisedUserService* GetSupervisedUserService() {
     return SupervisedUserServiceFactory::GetForProfile(browser()->profile());
   }
 
- protected:
-  // Supervision mixin hooks kids management api (including ClassifyUrl) onto
-  // given embedded test server. This server is run in separate process and is
-  // responding to all requests as configured in this mixin.
-  // MUST be declared after scoped_feature_list_ due to Init/dtor order.
-  supervised_user::SupervisionMixin supervision_mixin_{
-      mixin_host_,
-      this,
-      embedded_test_server(),
-      {
-          .sign_in_mode =
-              supervised_user::SupervisionMixin::SignInMode::kSupervised,
-      }};
+  void InitAsyncURLCheckerWithClassification(
+      safe_search_api::ClientClassification classification) {
+    test_client_ =
+        std::make_unique<kids_management::KidsChromeManagementClientForTesting>(
+            base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+                &test_url_loader_factory_),
+            IdentityManagerFactory::GetForProfile(browser()->profile()));
+    test_client_->SetResponseWithError(
+        kids_management::BuildResponseProto(classification),
+        KidsChromeManagementClient::ErrorCode::kSuccess);
+    GetSupervisedUserService()->GetURLFilter()->InitAsyncURLChecker(
+        test_client_.get());
+  }
+
+ private:
+  std::unique_ptr<kids_management::KidsChromeManagementClientForTesting>
+      test_client_;
+  network::TestURLLoaderFactory test_url_loader_factory_;
 };
 
 class ContextMenuWithoutFilteringForSupervisedUsersBrowserTest
     : public ContextMenuForSupervisedUsersBrowserTest {
  public:
   ContextMenuWithoutFilteringForSupervisedUsersBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{supervised_user::kEnableProtoApiForClassifyUrl},
-        /*disabled_features=*/{
-            supervised_user::kFilterWebsitesForSupervisedUsersOnDesktopAndIOS});
+    scoped_feature_list_.InitAndDisableFeature(
+        supervised_user::kFilterWebsitesForSupervisedUsersOnDesktopAndIOS);
   }
 
  private:
@@ -657,16 +653,12 @@ IN_PROC_BROWSER_TEST_F(
     SaveLinkAsEntryIsDisabledForUrlsBlockedByAsyncCheckerForChild) {
   ContextMenuWaiter menu_observer;
 
+  InitAsyncURLCheckerWithClassification(
+      safe_search_api::ClientClassification::kRestricted);
+
   base::RunLoop().RunUntilIdle();
 
-  if (GetSupervisedUserService()->IsURLFilteringEnabled()) {
-    supervision_mixin_.embedded_test_server_setup_mixin()
-        .GetApiMock()
-        .QueueUrlClassification(
-            kids_chrome_management::ClassifyUrlResponse::RESTRICTED);
-  }
-
-  ASSERT_TRUE(embedded_test_server()->Started());
+  ASSERT_TRUE(embedded_test_server()->Start());
   GURL url(embedded_test_server()->GetURL("/download-anchor-same-origin.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
@@ -711,16 +703,12 @@ IN_PROC_BROWSER_TEST_F(
     SaveLinkAsEntryIsEnabledForUrlsAllowedByAsyncCheckerForChild) {
   ContextMenuWaiter menu_observer;
 
-  if (GetSupervisedUserService()->IsURLFilteringEnabled()) {
-    supervision_mixin_.embedded_test_server_setup_mixin()
-        .GetApiMock()
-        .QueueUrlClassification(
-            kids_chrome_management::ClassifyUrlResponse::ALLOWED);
-  }
+  InitAsyncURLCheckerWithClassification(
+      safe_search_api::ClientClassification::kAllowed);
 
   base::RunLoop().RunUntilIdle();
 
-  ASSERT_TRUE(embedded_test_server()->Started());
+  ASSERT_TRUE(embedded_test_server()->Start());
   GURL url(embedded_test_server()->GetURL("/download-anchor-same-origin.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
@@ -753,17 +741,9 @@ IN_PROC_BROWSER_TEST_F(
 
 class ContextMenuWithFilteringForSupervisedUsersBrowserTest
     : public ContextMenuForSupervisedUsersBrowserTest {
- public:
-  ContextMenuWithFilteringForSupervisedUsersBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/
-        {supervised_user::kEnableProtoApiForClassifyUrl,
-         supervised_user::kFilterWebsitesForSupervisedUsersOnDesktopAndIOS},
-        /*disabled_features=*/{});
-  }
-
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      supervised_user::kFilterWebsitesForSupervisedUsersOnDesktopAndIOS};
 };
 
 IN_PROC_BROWSER_TEST_F(
@@ -771,6 +751,8 @@ IN_PROC_BROWSER_TEST_F(
     SaveLinkAsEntryIsDisabledForUrlsNotAccessibleForChildWithFiltering) {
   // Set up child user profile.
   Profile* profile = browser()->profile();
+  browser()->profile()->GetPrefs()->SetString(
+      prefs::kSupervisedUserId, supervised_user::kChildAccountSUID);
 
   // Block access to http://www.google.com/ in the URL filter.
   supervised_user::SupervisedUserService* supervised_user_service =
@@ -796,13 +778,12 @@ IN_PROC_BROWSER_TEST_F(
     SaveLinkAsEntryIsDisabledForUrlsBlockedByAsyncCheckerForChild) {
   ContextMenuWaiter menu_observer;
 
-  supervision_mixin_.embedded_test_server_setup_mixin()
-      .GetApiMock()
-      .QueueUrlClassification(
-          kids_chrome_management::ClassifyUrlResponse::RESTRICTED);
+  InitAsyncURLCheckerWithClassification(
+      safe_search_api::ClientClassification::kRestricted);
+
   base::RunLoop().RunUntilIdle();
 
-  ASSERT_TRUE(embedded_test_server()->Started());
+  ASSERT_TRUE(embedded_test_server()->Start());
   GURL url(embedded_test_server()->GetURL("/download-anchor-same-origin.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
@@ -838,14 +819,12 @@ IN_PROC_BROWSER_TEST_F(
     SaveLinkAsEntryIsEnabledForUrlsAllowedByAsyncCheckerForChild) {
   ContextMenuWaiter menu_observer;
 
-  supervision_mixin_.embedded_test_server_setup_mixin()
-      .GetApiMock()
-      .QueueUrlClassification(
-          kids_chrome_management::ClassifyUrlResponse::ALLOWED);
+  InitAsyncURLCheckerWithClassification(
+      safe_search_api::ClientClassification::kAllowed);
 
   base::RunLoop().RunUntilIdle();
 
-  ASSERT_TRUE(embedded_test_server()->Started());
+  ASSERT_TRUE(embedded_test_server()->Start());
   GURL url(embedded_test_server()->GetURL("/download-anchor-same-origin.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
