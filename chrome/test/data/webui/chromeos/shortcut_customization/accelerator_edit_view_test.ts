@@ -218,7 +218,8 @@ suite('acceleratorEditViewTest', function() {
 
     // Input hint message should be shown.
     const expectedHintMessage =
-        'Press 1-4 modifiers and 1 other key on your keyboard';
+        'Press 1-4 modifiers and 1 other key on your keyboard. To exit ' +
+        'editing mode, press alt + esc.';
     const statusMessageElement = strictQuery(
         '#acceleratorInfoText', editViewElement!.shadowRoot, HTMLDivElement);
     assertEquals(expectedHintMessage, statusMessageElement.textContent!.trim());

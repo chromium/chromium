@@ -173,7 +173,8 @@ suite('acceleratorEditDialogTest', function() {
     const acceleratorElements =
         dialog.querySelectorAll('accelerator-edit-view');
     const expectedHintMessage =
-        'Press 1-4 modifiers and 1 other key on your keyboard';
+        'Press 1-4 modifiers and 1 other key on your keyboard. To exit ' +
+        'editing mode, press alt + esc.';
     const statusMessageElement = strictQuery(
         '#acceleratorInfoText', acceleratorElements[0]!.shadowRoot,
         HTMLDivElement);

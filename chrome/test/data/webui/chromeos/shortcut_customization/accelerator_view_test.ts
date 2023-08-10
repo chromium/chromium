@@ -17,7 +17,7 @@ import {InputKeyElement, KeyInputState} from 'chrome://shortcut-customization/js
 import {setShortcutProviderForTesting} from 'chrome://shortcut-customization/js/mojo_interface_provider.js';
 import {AcceleratorConfigResult, AcceleratorSource, LayoutStyle, Modifier} from 'chrome://shortcut-customization/js/shortcut_types.js';
 import {AcceleratorResultData} from 'chrome://shortcut-customization/mojom-webui/ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom-webui.js';
-import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
@@ -562,5 +562,88 @@ suite('acceleratorViewTest', function() {
     const regex = /^meta (search|launcher)$/;
     assertTrue(!!viewContainer.ariaLabel);
     assertTrue(regex.test(viewContainer.ariaLabel));
+  });
+
+  test('CancelInputWithShortcut', async () => {
+    viewElement = initAcceleratorViewElement();
+    await flushTasks();
+
+    const acceleratorInfo = createStandardAcceleratorInfo(
+        Modifier.ALT,
+        /*key=*/ 221,
+        /*keyDisplay=*/ ']');
+
+    viewElement.acceleratorInfo = acceleratorInfo;
+    viewElement.source = AcceleratorSource.kAsh;
+    viewElement.action = 1;
+    // Enable the edit view.
+    viewElement.viewState = ViewState.EDIT;
+
+    await flush();
+
+    // Assert that this is in the EDIT state.
+    assertEquals(ViewState.EDIT, viewElement.viewState);
+
+    let ctrlKey = getInputKey('#ctrlKey');
+    let altKey = getInputKey('#altKey');
+    let shiftKey = getInputKey('#shiftKey');
+    let metaKey = getInputKey('#searchKey');
+    let pendingKey = getInputKey('#pendingKey');
+
+    // By default, no keys should be registered.
+    assertEquals(KeyInputState.NOT_SELECTED, ctrlKey.keyState);
+    assertEquals(KeyInputState.NOT_SELECTED, altKey.keyState);
+    assertEquals(KeyInputState.NOT_SELECTED, shiftKey.keyState);
+    assertEquals(KeyInputState.NOT_SELECTED, metaKey.keyState);
+    assertEquals(KeyInputState.NOT_SELECTED, pendingKey.keyState);
+    assertEquals('key', pendingKey.key);
+
+    // Simulate Alt.
+    viewElement.dispatchEvent(new KeyboardEvent('keydown', {
+      key: 'Alt',
+      keyCode: 18,
+      code: 'Alt',
+      ctrlKey: false,
+      altKey: true,
+      shiftKey: false,
+      metaKey: false,
+    }));
+
+    await flush();
+
+    assertEquals(KeyInputState.NOT_SELECTED, ctrlKey.keyState);
+    assertEquals(KeyInputState.MODIFIER_SELECTED, altKey.keyState);
+    assertEquals(KeyInputState.NOT_SELECTED, shiftKey.keyState);
+    assertEquals(KeyInputState.NOT_SELECTED, metaKey.keyState);
+    assertEquals(KeyInputState.NOT_SELECTED, pendingKey.keyState);
+
+    // Now press Escape.
+    viewElement.dispatchEvent(new KeyboardEvent('keydown', {
+      key: 'Escape',
+      keyCode: 27,
+      code: 'Escape',
+      ctrlKey: false,
+      altKey: true,
+      shiftKey: false,
+      metaKey: false,
+    }));
+
+    await flush();
+    ctrlKey = getInputKey('#ctrlKey');
+    altKey = getInputKey('#altKey');
+    shiftKey = getInputKey('#shiftKey');
+    metaKey = getInputKey('#searchKey');
+    pendingKey = getInputKey('#pendingKey');
+
+    assertEquals(KeyInputState.NOT_SELECTED, ctrlKey.keyState);
+    assertEquals(KeyInputState.MODIFIER_SELECTED, altKey.keyState);
+    assertEquals(KeyInputState.NOT_SELECTED, shiftKey.keyState);
+    assertEquals(KeyInputState.NOT_SELECTED, metaKey.keyState);
+    assertEquals(KeyInputState.NOT_SELECTED, pendingKey.keyState);
+
+    // Expect that press Alt + Esc will cancel the edit state.
+    assertEquals(ViewState.VIEW, viewElement.viewState);
+    assertFalse(viewElement.hasError);
+    assertEquals('', viewElement.statusMessage);
   });
 });

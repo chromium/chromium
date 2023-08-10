@@ -46,6 +46,8 @@ export enum ViewState {
 // change to the backend.
 const kAnimationTimeoutMs: number = 300;
 
+const kEscapeKey: number = 27;  // Keycode for VKEY_ESCAPE
+
 /**
  * @fileoverview
  * 'accelerator-view' is wrapper component for an accelerator. It maintains both
@@ -261,10 +263,18 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
       this.hasError = false;
     }
 
+    const pendingAccelerator = this.keystrokeToAccelerator(e);
+    // Alt + Esc will exit input handling immediately.
+    if (pendingAccelerator.modifiers === Modifier.ALT &&
+        pendingAccelerator.keyCode === kEscapeKey) {
+      this.endCapture(/*shouldDelay=*/ false);
+      return;
+    }
+
     // Add the key pressed to pendingAccelerator.
     this.set(
         'pendingAcceleratorInfo.layoutProperties.standardAccelerator.accelerator',
-        this.keystrokeToAccelerator(e));
+        pendingAccelerator);
 
     if (this.isModifierKey(e)) {
       // Reset the keyDisplay property if the key is a modifier.
