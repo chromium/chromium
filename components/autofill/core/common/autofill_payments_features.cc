@@ -84,7 +84,7 @@ BASE_FEATURE(kAutofillEnableFpanRiskBasedAuthentication,
 // use-case, so that IBAN autofill is not offered on websites that are blocked.
 BASE_FEATURE(kAutofillEnableIbanClientSideUrlFiltering,
              "AutofillEnableIbanClientSideUrlFiltering",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, enable manual falling component for virtual cards on Android.
 BASE_FEATURE(kAutofillEnableManualFallbackForVirtualCards,
@@ -198,7 +198,7 @@ BASE_FEATURE(kAutofillEnforceDelaysInStrikeDatabase,
 // Number) fields when data is available.
 BASE_FEATURE(kAutofillFillIbanFields,
              "AutofillFillIbanFields",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, Autofill will attempt to fill merchant promo/coupon/gift code
 // fields when data is available.
@@ -224,7 +224,7 @@ BASE_FEATURE(kAutofillOfferToSaveCardWithSameLastFour,
 // (IBAN) fields when parsing forms.
 BASE_FEATURE(kAutofillParseIBANFields,
              "AutofillParseIBANFields",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, Autofill will attempt to find standalone CVC fields for VCN
 // card on file when parsing forms.
