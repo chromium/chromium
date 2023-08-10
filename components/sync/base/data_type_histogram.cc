@@ -70,4 +70,9 @@ void SyncRecordModelTypeEntitySizeHistogram(ModelType model_type,
   base::UmaHistogramCounts100000(full_histogram_name, bytes);
 }
 
+void SyncRecordModelClearedOnceHistogram(ModelType model_type) {
+  base::UmaHistogramEnumeration("Sync.ModelTypeClearedOnce",
+                                ModelTypeHistogramValue(model_type));
+}
+
 }  // namespace syncer

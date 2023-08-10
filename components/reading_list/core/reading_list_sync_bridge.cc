@@ -12,6 +12,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/time/clock.h"
 #include "components/reading_list/core/reading_list_model_impl.h"
+#include "components/sync/base/data_type_histogram.h"
 #include "components/sync/model/entity_change.h"
 #include "components/sync/model/in_memory_metadata_change_list.h"
 #include "components/sync/model/metadata_batch.h"
@@ -329,6 +330,7 @@ void ReadingListSyncBridge::ApplyDisableSyncChanges(
       break;
     case syncer::WipeModelUponSyncDisabledBehavior::kOnceIfTrackingMetadata:
       CHECK_EQ(storage_type_for_uma_, syncer::StorageType::kUnspecified);
+      syncer::SyncRecordModelClearedOnceHistogram(syncer::READING_LIST);
       wipe_model_upon_sync_disabled_behavior_ =
           syncer::WipeModelUponSyncDisabledBehavior::kNever;
       // `wipe_model_upon_sync_disabled_behavior_` being set to

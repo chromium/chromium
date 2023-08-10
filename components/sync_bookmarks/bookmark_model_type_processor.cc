@@ -19,7 +19,6 @@
 #include "build/build_config.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
-#include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/data_type_histogram.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
@@ -834,6 +833,7 @@ void BookmarkModelTypeProcessor::TriggerWipeModelUponSyncDisabledBehavior() {
     case syncer::WipeModelUponSyncDisabledBehavior::kOnceIfTrackingMetadata:
       // Do it this time, but switch to kNever so it doesn't trigger next
       // time.
+      syncer::SyncRecordModelClearedOnceHistogram(syncer::BOOKMARKS);
       wipe_model_upon_sync_disabled_behavior_ =
           syncer::WipeModelUponSyncDisabledBehavior::kNever;
       [[fallthrough]];
