@@ -37,7 +37,6 @@ class ASH_EXPORT SearchResultPageView : public AppListPage {
   const char* GetClassName() const override;
   gfx::Size CalculatePreferredSize() const override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
-  void OnThemeChanged() override;
 
   // AppListPage overrides:
   void OnHidden() override;

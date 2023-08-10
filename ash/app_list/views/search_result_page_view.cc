@@ -14,6 +14,7 @@
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/search_box/search_box_constants.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/style/system_shadow.h"
 #include "base/functional/bind.h"
 #include "base/time/time.h"
@@ -92,7 +93,7 @@ SearchResultPageView::SearchResultPageView() {
   // Hides this view behind the search box by using the same color and
   // background border corner radius. All child views' background should be
   // set transparent so that the rounded corner is not overwritten.
-  SetBackground(views::CreateSolidBackground(SK_ColorTRANSPARENT));
+  SetBackground(views::CreateThemedSolidBackground(kColorAshShieldAndBase80));
   layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
   layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
   layer()->SetRoundedCornerRadius(
@@ -147,16 +148,6 @@ void SearchResultPageView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
   // This allows content to properly follow target bounds when screen
   // rotates.
   layer()->SetClipRect(gfx::Rect());
-}
-
-void SearchResultPageView::OnThemeChanged() {
-  GetBackground()->SetNativeControlColor(
-      ColorProvider::Get()->GetBaseLayerColor(
-          ColorProvider::BaseLayerType::kTransparent80));
-
-  // SchedulePaint() marks the entire SearchResultPageView's bounds as dirty.
-  SchedulePaint();
-  AppListPage::OnThemeChanged();
 }
 
 void SearchResultPageView::UpdateForNewSearch() {

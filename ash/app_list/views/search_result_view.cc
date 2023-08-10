@@ -27,7 +27,6 @@
 #include "ash/public/cpp/ash_typography.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
-#include "ash/style/ash_color_provider.h"
 #include "ash/style/typography.h"
 #include "base/functional/bind.h"
 #include "base/i18n/number_formatting.h"
@@ -37,6 +36,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
@@ -903,11 +903,13 @@ void SearchResultView::UpdateBadgeIcon() {
     return;
   }
 
+  const auto* color_provider = GetColorProvider();
   gfx::ImageSkia badge_icon_skia =
-      result()->badge_icon().Rasterize(GetColorProvider());
+      result()->badge_icon().Rasterize(color_provider);
 
   if (result()->use_badge_icon_background()) {
-    badge_icon_skia = CreateIconWithCircleBackground(badge_icon_skia);
+    badge_icon_skia =
+        CreateIconWithCircleBackground(badge_icon_skia, color_provider);
   }
 
   gfx::ImageSkia resized_badge_icon(
