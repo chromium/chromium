@@ -3,8 +3,9 @@
 // found in the LICENSE file.
 
 import {TestRunner} from 'test_runner';
-import {ApplicationTestRunner} from 'application_test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
+
+import * as Workspace from 'devtools/models/workspace/workspace.js';
 
 (async function() {
   TestRunner.addResult(`Tests single resource search in inspector page agent.\n`);
@@ -24,12 +25,12 @@ import {SourcesTestRunner} from 'sources_test_runner';
 
   var query = 'color: blue';
   TestRunner.addResult('\nSearching for: "' + query + '"');
-  var searchConfig = new Search.SearchConfig(query, true /* ignoreCase */, false /* isRegex */);
+  var searchConfig = new Workspace.SearchConfig.SearchConfig(query, true /* ignoreCase */, false /* isRegex */);
   await new Promise(x => SourcesTestRunner.runSearchAndDumpResults(scope, searchConfig, x));
 
   var query = 'window.foo';
   TestRunner.addResult('\nSearching for: "' + query + '"');
-  var searchConfig = new Search.SearchConfig(query, true /* ignoreCase */, false /* isRegex */);
+  var searchConfig = new Workspace.SearchConfig.SearchConfig(query, true /* ignoreCase */, false /* isRegex */);
   await new Promise(x => SourcesTestRunner.runSearchAndDumpResults(scope, searchConfig, x));
 
   TestRunner.completeTest();
