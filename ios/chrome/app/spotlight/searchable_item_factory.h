@@ -33,7 +33,8 @@ class GURL;
 @property(nonatomic, assign) BOOL useTitleInIdentifiers;
 
 // Fetch a favicon for a given URL and creates a searchable item that points to
-// URLToRefresh and have a given title.
+// URLToRefresh and have a given title. The URL should be valid and the
+// title should not be empty.
 - (void)generateSearchableItem:(const GURL&)URLToRefresh
                          title:(NSString*)title
             additionalKeywords:(NSArray<NSString*>*)keywords
