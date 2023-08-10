@@ -105,6 +105,8 @@ class CORE_EXPORT LayoutSVGRoot final : public LayoutReplaced {
     NOT_DESTROYED();
     return local_to_border_box_transform_;
   }
+  gfx::RectF ViewBoxRect() const;
+  gfx::SizeF ViewportSize() const;
 
   void RecalcVisualOverflow() override;
 

@@ -52,7 +52,6 @@ class SVGSVGElement final : public SVGGraphicsElement,
 
   absl::optional<float> IntrinsicWidth() const;
   absl::optional<float> IntrinsicHeight() const;
-  gfx::SizeF CurrentViewportSize() const;
   gfx::RectF CurrentViewBoxRect() const;
   bool HasEmptyViewBox() const;
   const SVGPreserveAspectRatio* CurrentPreserveAspectRatio() const;

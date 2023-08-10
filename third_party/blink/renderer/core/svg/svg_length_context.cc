@@ -29,9 +29,11 @@
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
+#include "third_party/blink/renderer/core/layout/svg/layout_svg_hidden_container.h"
+#include "third_party/blink/renderer/core/layout/svg/layout_svg_root.h"
+#include "third_party/blink/renderer/core/layout/svg/layout_svg_viewport_container.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/svg/svg_length.h"
-#include "third_party/blink/renderer/core/svg/svg_svg_element.h"
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
 #include "third_party/blink/renderer/platform/geometry/length_point.h"
 #include "ui/gfx/geometry/size_f.h"
@@ -155,7 +157,8 @@ gfx::RectF SVGLengthContext::ResolveRectangle(const SVGElement* context,
     gfx::SizeF viewport_size_for_resolve;
     if (size.Width().IsPercentOrCalc() || size.Height().IsPercentOrCalc() ||
         point.X().IsPercentOrCalc() || point.Y().IsPercentOrCalc()) {
-      viewport_size_for_resolve = SVGLengthContext(context).ResolveViewport();
+      viewport_size_for_resolve =
+          SVGViewportResolver(*context).ResolveViewport();
     }
     // Resolve the Lengths to user units.
     resolved_rect =
@@ -170,8 +173,8 @@ gfx::Vector2dF SVGLengthContext::ResolveLengthPair(
     const Length& y_length,
     const ComputedStyle& style) const {
   gfx::SizeF viewport_size;
-  if (x_length.IsPercentOrCalc() || y_length.IsPercentOrCalc()) {
-    viewport_size = ResolveViewport();
+  if ((x_length.IsPercentOrCalc() || y_length.IsPercentOrCalc()) && context_) {
+    viewport_size = SVGViewportResolver(*context_).ResolveViewport();
     // If either |x_length| or |y_length| is 'auto', set that viewport dimension
     // to zero so that the corresponding Length resolves to zero. This matches
     // the behavior of ValueForLength() below.
@@ -213,7 +216,9 @@ float SVGLengthContext::ValueForLength(const Length& length,
                                        SVGLengthMode mode) const {
   // The viewport will be unaffected by zoom.
   const float dimension =
-      length.IsPercentOrCalc() ? ViewportDimension(mode) : 0;
+      length.IsPercentOrCalc() && context_
+          ? SVGViewportResolver(*context_).ViewportDimension(mode)
+          : 0;
   return ValueForLength(length, zoom, dimension);
 }
 
@@ -265,7 +270,9 @@ double SVGLengthContext::ConvertValueToUserUnitsUnclamped(
   }
   // Handle the percentage unit.
   if (from_unit == CSSPrimitiveValue::UnitType::kPercentage) {
-    return value * ViewportDimension(mode) / 100;
+    const float dimension =
+        SVGViewportResolver(*context_).ViewportDimension(mode);
+    return value * dimension / 100;
   }
   // For remaining units, just instantiate a CSSToLengthConversionData object
   // and use that for resolving.
@@ -319,7 +326,8 @@ float SVGLengthContext::ConvertValueFromUserUnits(
   }
   // Handle the percentage unit.
   if (to_unit == CSSPrimitiveValue::UnitType::kPercentage) {
-    const float dimension = ViewportDimension(mode);
+    const float dimension =
+        SVGViewportResolver(*context_).ViewportDimension(mode);
     if (!dimension) {
       return 0;
     }
@@ -341,28 +349,45 @@ float SVGLengthContext::ConvertValueFromUserUnits(
   return ClampTo<float>(value / reference);
 }
 
-gfx::SizeF SVGLengthContext::ResolveViewport() const {
-  if (!context_) {
+SVGViewportResolver::SVGViewportResolver(const SVGElement& context)
+    : SVGViewportResolver(context.GetLayoutObject()) {}
+
+gfx::SizeF SVGViewportResolver::ResolveViewport() const {
+  if (!context_object_) {
     return gfx::SizeF();
   }
   // Root <svg> element lengths are resolved against the top level viewport.
-  if (context_->IsOutermostSVGSVGElement()) {
-    return To<SVGSVGElement>(context_)->CurrentViewportSize();
+  if (auto* svg_root = DynamicTo<LayoutSVGRoot>(*context_object_)) {
+    return svg_root->ViewportSize();
   }
-  // Take size from nearest viewport element.
-  SVGElement* viewport_element = context_->viewportElement();
-  const auto* svg = DynamicTo<SVGSVGElement>(viewport_element);
-  if (!svg) {
-    return gfx::SizeF();
+  // Find the nearest viewport object and get the relevant viewport size.
+  for (const LayoutObject* object = context_object_->Parent(); object;
+       object = object->Parent()) {
+    if (auto* outer_svg = DynamicTo<LayoutSVGRoot>(*object)) {
+      gfx::SizeF viewbox_size = outer_svg->ViewBoxRect().size();
+      if (!viewbox_size.IsEmpty()) {
+        return viewbox_size;
+      }
+      return outer_svg->ViewportSize();
+    }
+    if (auto* inner_svg = DynamicTo<LayoutSVGViewportContainer>(*object)) {
+      gfx::SizeF viewbox_size = inner_svg->ViewBoxRect().size();
+      if (!viewbox_size.IsEmpty()) {
+        return viewbox_size;
+      }
+      return inner_svg->Viewport().size();
+    }
+    if (auto* hidden_container = DynamicTo<LayoutSVGHiddenContainer>(*object)) {
+      if (IsA<SVGSymbolElement>(*hidden_container->GetElement())) {
+        return gfx::SizeF();
+      }
+    }
   }
-  gfx::SizeF viewport_size = svg->CurrentViewBoxRect().size();
-  if (viewport_size.IsEmpty()) {
-    viewport_size = svg->CurrentViewportSize();
-  }
-  return viewport_size;
+  NOTREACHED();
+  return gfx::SizeF();
 }
 
-float SVGLengthContext::ViewportDimension(SVGLengthMode mode) const {
+float SVGViewportResolver::ViewportDimension(SVGLengthMode mode) const {
   gfx::SizeF viewport_size = ResolveViewport();
   switch (mode) {
     case SVGLengthMode::kWidth:

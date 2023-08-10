@@ -453,6 +453,16 @@ AffineTransform LayoutSVGRoot::LocalToSVGParentTransform() const {
          local_to_border_box_transform_;
 }
 
+gfx::RectF LayoutSVGRoot::ViewBoxRect() const {
+  return To<SVGSVGElement>(*GetNode()).CurrentViewBoxRect();
+}
+
+gfx::SizeF LayoutSVGRoot::ViewportSize() const {
+  const PhysicalSize& viewport_size = PhysicalContentBoxRectFromNG().size;
+  const float zoom = StyleRef().EffectiveZoom();
+  return gfx::SizeF(viewport_size.width / zoom, viewport_size.height / zoom);
+}
+
 // This method expects local CSS box coordinates.
 // Callers with local SVG viewport coordinates should first apply the
 // localToBorderBoxTransform to convert from SVG viewport coordinates to local

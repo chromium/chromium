@@ -69,6 +69,14 @@ class LayoutSVGHiddenContainer : public LayoutSVGContainer {
                    const PhysicalOffset& accumulated_offset,
                    HitTestPhase) final;
 };
+
+template <>
+struct DowncastTraits<LayoutSVGHiddenContainer> {
+  static bool AllowFrom(const LayoutObject& object) {
+    return object.IsSVGHiddenContainer();
+  }
+};
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_SVG_LAYOUT_SVG_HIDDEN_CONTAINER_H_

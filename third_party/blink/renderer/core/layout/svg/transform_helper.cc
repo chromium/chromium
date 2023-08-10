@@ -124,9 +124,8 @@ gfx::RectF TransformHelper::ComputeReferenceBox(
       reference_box = layout_object.StrokeBoundingBox();
       break;
     case ETransformBox::kViewBox: {
-      SVGLengthContext length_context(
-          DynamicTo<SVGElement>(layout_object.GetNode()));
-      reference_box.set_size(length_context.ResolveViewport());
+      const SVGViewportResolver viewport_resolver(layout_object);
+      reference_box.set_size(viewport_resolver.ResolveViewport());
       break;
     }
   }

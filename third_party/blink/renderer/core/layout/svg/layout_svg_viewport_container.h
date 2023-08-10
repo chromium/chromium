@@ -53,6 +53,7 @@ class LayoutSVGViewportContainer final : public LayoutSVGContainer {
     NOT_DESTROYED();
     return local_to_parent_transform_;
   }
+  gfx::RectF ViewBoxRect() const;
 
  private:
   bool IsOfType(LayoutObjectType type) const override {

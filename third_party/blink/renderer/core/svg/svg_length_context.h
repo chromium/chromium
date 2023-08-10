@@ -86,8 +86,6 @@ class CORE_EXPORT SVGLengthContext {
                               const ComputedStyle&,
                               float dimension);
 
-  gfx::SizeF ResolveViewport() const;
-  float ViewportDimension(SVGLengthMode) const;
   float ResolveValue(const CSSPrimitiveValue&, SVGLengthMode) const;
 
  private:
@@ -100,6 +98,23 @@ class CORE_EXPORT SVGLengthContext {
       CSSPrimitiveValue::UnitType from_unit) const;
 
   const SVGElement* context_;
+};
+
+class SVGViewportResolver {
+  STACK_ALLOCATED();
+
+ public:
+  explicit SVGViewportResolver(const LayoutObject* context)
+      : context_object_(context) {}
+  explicit SVGViewportResolver(const LayoutObject& context)
+      : context_object_(&context) {}
+  explicit SVGViewportResolver(const SVGElement& context);
+
+  gfx::SizeF ResolveViewport() const;
+  float ViewportDimension(SVGLengthMode) const;
+
+ private:
+  const LayoutObject* context_object_;
 };
 
 class SVGLengthConversionData : public CSSToLengthConversionData {

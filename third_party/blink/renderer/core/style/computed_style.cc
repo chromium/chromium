@@ -1425,8 +1425,7 @@ gfx::RectF GetReferenceBox(const LayoutBox* box, CoordBox coord_box) {
     if (const LayoutBlock* containing_block = box->ContainingBlock()) {
       // In SVG contexts, all values behave as view-box.
       if (box->IsSVG()) {
-        return gfx::RectF(
-            SVGLengthContext(To<SVGElement>(box->GetNode())).ResolveViewport());
+        return gfx::RectF(SVGViewportResolver(*box).ResolveViewport());
       }
       // https://drafts.csswg.org/css-box-4/#typedef-coord-box
       switch (coord_box) {

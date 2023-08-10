@@ -459,13 +459,19 @@ SVGTransformTearOff* SVGSVGElement::createSVGTransformFromMatrix(
 
 AffineTransform SVGSVGElement::LocalCoordinateSpaceTransform(
     CTMScope mode) const {
+  const LayoutObject* layout_object = GetLayoutObject();
+  gfx::SizeF viewport_size;
   AffineTransform transform;
   if (!IsOutermostSVGSVGElement()) {
     SVGLengthContext length_context(this);
     transform.Translate(x_->CurrentValue()->Value(length_context),
                         y_->CurrentValue()->Value(length_context));
-  } else if (mode == kScreenScope) {
-    if (LayoutObject* layout_object = GetLayoutObject()) {
+    if (layout_object) {
+      viewport_size =
+          To<LayoutSVGViewportContainer>(*layout_object).Viewport().size();
+    }
+  } else if (layout_object) {
+    if (mode == kScreenScope) {
       gfx::Transform matrix;
       // Adjust for the zoom level factored into CSS coordinates (WK bug
       // #96361).
@@ -486,9 +492,11 @@ AffineTransform SVGSVGElement::LocalCoordinateSpaceTransform(
       // (4x4 matrix.)
       return AffineTransform::FromTransform(matrix);
     }
+    viewport_size = To<LayoutSVGRoot>(*layout_object).ViewportSize();
   }
-  if (!HasEmptyViewBox())
-    transform.PreConcat(ViewBoxToViewTransform(CurrentViewportSize()));
+  if (!HasEmptyViewBox()) {
+    transform.PreConcat(ViewBoxToViewTransform(viewport_size));
+  }
   return transform;
 }
 
@@ -622,24 +630,6 @@ const SVGPreserveAspectRatio* SVGSVGElement::CurrentPreserveAspectRatio()
     return synthesized_par;
   }
   return preserveAspectRatio()->CurrentValue();
-}
-
-gfx::SizeF SVGSVGElement::CurrentViewportSize() const {
-  const LayoutObject* layout_object = GetLayoutObject();
-  if (!layout_object)
-    return gfx::SizeF();
-
-  if (layout_object->IsSVGRoot()) {
-    PhysicalRect content_rect =
-        To<LayoutSVGRoot>(layout_object)->PhysicalContentBoxRectFromNG();
-    float zoom = layout_object->StyleRef().EffectiveZoom();
-    return gfx::SizeF(content_rect.size.width / zoom,
-                      content_rect.size.height / zoom);
-  }
-
-  gfx::RectF viewport_rect =
-      To<LayoutSVGViewportContainer>(GetLayoutObject())->Viewport();
-  return viewport_rect.size();
 }
 
 absl::optional<float> SVGSVGElement::IntrinsicWidth() const {

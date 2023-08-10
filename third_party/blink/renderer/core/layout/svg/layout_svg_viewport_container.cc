@@ -68,6 +68,10 @@ SVGTransformChange LayoutSVGViewportContainer::UpdateLocalTransform(
   return change_detector.ComputeChange(local_to_parent_transform_);
 }
 
+gfx::RectF LayoutSVGViewportContainer::ViewBoxRect() const {
+  return To<SVGSVGElement>(*GetElement()).CurrentViewBoxRect();
+}
+
 bool LayoutSVGViewportContainer::NodeAtPoint(
     HitTestResult& result,
     const HitTestLocation& hit_test_location,
