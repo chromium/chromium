@@ -4055,7 +4055,7 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20221231",
+                    "name": "Enabled_3",
                     "enable_features": [
                         "CrOSLateBootAudioHFPMicSR"
                     ]
