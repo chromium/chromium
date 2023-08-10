@@ -459,9 +459,8 @@ class ScreenMac : public Screen {
     }
     // In theory, this should not be reached, but in practice, on Catalina, it
     // has been observed that -[NSScreen screens] changes before any
-    // notifications are received.
-    // https://crbug.com/1021340.
-    DLOG(ERROR) << "Value of -[NSScreen screens] changed before notification.";
+    // notifications are received. See crbug.com/1021340 and crbug.com/1352564
+    DISPLAY_LOG(DEBUG) << "-[NSScreen screens] changed before notification.";
     return BuildDisplayForScreen(screen).display;
   }
 
