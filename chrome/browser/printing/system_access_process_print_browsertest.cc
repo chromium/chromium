@@ -1167,14 +1167,8 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessServicePrintBrowserTest,
   EXPECT_EQ(print_job_destruction_count(), 1);
 }
 
-// TODO(crbug.com/1384459): Flaky on MSan builds.
-#if defined(MEMORY_SANITIZER)
-#define MAYBE_StartPrintingFails DISABLED_StartPrintingFails
-#else
-#define MAYBE_StartPrintingFails StartPrintingFails
-#endif
 IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
-                       MAYBE_StartPrintingFails) {
+                       StartPrintingFails) {
   AddPrinter("printer1");
   SetPrinterNameForSubsequentContexts("printer1");
   PrimeForErrorsInNewDocument();
