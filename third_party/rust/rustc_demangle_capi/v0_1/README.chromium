@@ -1,0 +1,9 @@
+Name: rustc-demangle-capi
+URL: https://crates.io/crates/rustc-demangle-capi
+Description: C API for the `rustc-demangle` crate
+
+Version: 0.1.0
+Security Critical: no
+Shipped: no
+License: Apache 2.0
+Revision: f540792067ab84d0f47164b29d7db5c7ba3b367d

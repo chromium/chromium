@@ -58,6 +58,7 @@ syn = {version = "1", features = ["full"]}
 read-fonts = "0.10"
 font-types = "0.3"
 skrifa = "0.9"
+rustc-demangle-capi = "0.1"
 
 [dependencies.serde_json_lenient]
 version = "0.1"

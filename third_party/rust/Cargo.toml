@@ -31,6 +31,7 @@ rand_pcg = "0.3"
 read-fonts = "0.10"
 regex = "1"
 rstest_reuse = "0.5"
+rustc-demangle-capi = "0.1"
 semver = "1"
 serde = "1"
 serde_json = "1"
@@ -265,6 +266,14 @@ package = "rstest_reuse"
 [patch.crates-io.rstest_v0_17]
 path = "rstest/v0_17/crate"
 package = "rstest"
+
+[patch.crates-io.rustc-demangle-capi_v0_1]
+path = "rustc_demangle_capi/v0_1/crate"
+package = "rustc-demangle-capi"
+
+[patch.crates-io.rustc-demangle_v0_1]
+path = "rustc_demangle/v0_1/crate"
+package = "rustc-demangle"
 
 [patch.crates-io.rustc_version_v0_4]
 path = "rustc_version/v0_4/crate"

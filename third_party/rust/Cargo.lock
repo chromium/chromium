@@ -92,6 +92,7 @@ dependencies = [
  "regex",
  "rstest",
  "rstest_reuse",
+ "rustc-demangle-capi",
  "rustversion",
  "semver",
  "serde",
@@ -391,6 +392,17 @@ dependencies = [
  "rand",
  "rustc_version",
  "syn",
+]
+
+[[package]]
+name = "rustc-demangle"
+version = "0.1.23"
+
+[[package]]
+name = "rustc-demangle-capi"
+version = "0.1.0"
+dependencies = [
+ "rustc-demangle",
 ]
 
 [[package]]
