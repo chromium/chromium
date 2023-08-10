@@ -591,11 +591,22 @@ TEST_P(NetworkIconTest, DefaultNetworkVpnBadge) {
   SetServiceProperty(wifi1_path(), shill::kSignalStrengthProperty,
                      base::Value(45));
 
-  // With Ethernet and WiFi connected, the default icon should be empty.
+  // Gets the benchmark ethernet images.
+  NetworkStatePropertiesPtr reference_eth = CreateStandaloneNetworkProperties(
+      "reference_eth", NetworkType::kEthernet, ConnectionStateType::kOnline, 0);
+  gfx::Image reference_eth_unbadged = GetImageForNonVirtualNetwork(
+      reference_eth.get(), false /* show_vpn_badge */);
+  gfx::Image reference_eth_badged = GetImageForNonVirtualNetwork(
+      reference_eth.get(), true /* show_vpn_badge */);
+
+  // With Ethernet and WiFi connected, the default icon should be the Ethernet
+  // icon.
   bool animating = false;
   gfx::ImageSkia default_image = GetDefaultNetworkImage(icon_type_, &animating);
-  ASSERT_TRUE(default_image.isNull());
+  ASSERT_FALSE(default_image.isNull());
   EXPECT_FALSE(animating);
+  EXPECT_TRUE(gfx::test::AreImagesEqual(gfx::Image(default_image),
+                                        reference_eth_unbadged));
 
   // Add a connected VPN.
   std::string vpn_path = ConfigureService(
@@ -606,13 +617,6 @@ TEST_P(NetworkIconTest, DefaultNetworkVpnBadge) {
   default_image = GetDefaultNetworkImage(icon_type_, &animating);
   ASSERT_FALSE(default_image.isNull());
   EXPECT_FALSE(animating);
-
-  NetworkStatePropertiesPtr reference_eth = CreateStandaloneNetworkProperties(
-      "reference_eth", NetworkType::kEthernet, ConnectionStateType::kOnline, 0);
-  gfx::Image reference_eth_unbadged = GetImageForNonVirtualNetwork(
-      reference_eth.get(), false /* show_vpn_badge */);
-  gfx::Image reference_eth_badged = GetImageForNonVirtualNetwork(
-      reference_eth.get(), true /* show_vpn_badge */);
 
   EXPECT_FALSE(gfx::test::AreImagesEqual(gfx::Image(default_image),
                                          reference_eth_unbadged));
