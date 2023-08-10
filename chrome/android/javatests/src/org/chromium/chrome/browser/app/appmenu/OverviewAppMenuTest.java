@@ -59,8 +59,10 @@ public class OverviewAppMenuTest {
     @SmallTest
     @Feature({"Browser", "Main"})
     @Features.EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID})
-    @Features.DisableFeatures({ChromeFeatureList.START_SURFACE_ANDROID})
-    public void testAllMenuItemsWithoutStartSurface() throws Exception {
+    @Features.DisableFeatures(
+            {ChromeFeatureList.START_SURFACE_ANDROID, ChromeFeatureList.QUICK_DELETE_FOR_ANDROID})
+    public void
+    testAllMenuItemsWithoutStartSurface() throws Exception {
         openTabSwitcher();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             AppMenuTestSupport.showAppMenu(mActivityTestRule.getAppMenuCoordinator(), null, false);
@@ -89,6 +91,7 @@ public class OverviewAppMenuTest {
     @Feature({"Browser", "Main"})
     @Features.
     EnableFeatures({ChromeFeatureList.START_SURFACE_ANDROID, ChromeFeatureList.TAB_GROUPS_ANDROID})
+    @Features.DisableFeatures({ChromeFeatureList.QUICK_DELETE_FOR_ANDROID})
     public void testAllMenuItemsWithStartSurface() throws Exception {
         openTabSwitcher();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
@@ -96,6 +99,20 @@ public class OverviewAppMenuTest {
         });
 
         verifyTabSwitcherMenu();
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Browser", "Main"})
+    @Features.EnableFeatures({ChromeFeatureList.QUICK_DELETE_FOR_ANDROID})
+    public void testQuickDeleteMenuItem_Shown() throws Exception {
+        openTabSwitcher();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            AppMenuTestSupport.showAppMenu(mActivityTestRule.getAppMenuCoordinator(), null, false);
+        });
+
+        assertNotNull(AppMenuTestSupport.getMenuItemPropertyModel(
+                mActivityTestRule.getAppMenuCoordinator(), R.id.quick_delete_menu_id));
     }
 
     @Test

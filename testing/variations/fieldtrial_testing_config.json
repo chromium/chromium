@@ -12353,6 +12353,21 @@
             ]
         }
     ],
+    "QuickDeleteForAndroid": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "QuickDeleteForAndroid"
+                    ]
+                }
+            ]
+        }
+    ],
     "RawDrawAndDrDc": [
         {
             "platforms": [
