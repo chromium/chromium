@@ -12,23 +12,19 @@
 #include <memory>
 #include <sstream>
 #include <string>
-#include <type_traits>
 #include <utility>
 #include <vector>
 
 #include "ash/constants/ash_features.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
-#include "base/format_macros.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
 #include "base/strings/pattern.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"
@@ -43,7 +39,6 @@
 #include "chrome/browser/file_util_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/common/url_constants.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/services/file_util/public/cpp/zip_file_creator.h"
 #include "chromeos/ash/components/drivefs/drivefs_pin_manager.h"
@@ -53,7 +48,6 @@
 #include "components/drive/drive_pref_names.h"
 #include "components/drive/event_logger.h"
 #include "components/prefs/pref_service.h"
-#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"

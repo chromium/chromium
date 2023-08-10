@@ -6,7 +6,6 @@
 
 #include <cstdint>
 #include <memory>
-#include <set>
 #include <string>
 #include <utility>
 #include <vector>
@@ -71,19 +70,15 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/user_manager/user.h"
-#include "components/version_info/version_info.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/network_service_instance.h"
-#include "content/public/common/user_agent.h"
 #include "google_apis/common/auth_service.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "net/traffic_annotation/network_traffic_annotation.h"
-#include "services/device/public/mojom/wake_lock_provider.mojom.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "storage/browser/file_system/external_mount_points.h"

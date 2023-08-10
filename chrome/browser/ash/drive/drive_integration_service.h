@@ -6,11 +6,9 @@
 #define CHROME_BROWSER_ASH_DRIVE_DRIVE_INTEGRATION_SERVICE_H_
 
 #include <memory>
-#include <set>
 #include <string>
 #include <vector>
 
-#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -25,7 +23,6 @@
 #include "chromeos/ash/components/drivefs/drivefs_pin_manager.h"
 #include "chromeos/ash/components/drivefs/sync_status_tracker.h"
 #include "chromeos/crosapi/mojom/drive_integration_service.mojom.h"
-#include "components/drive/drive_notification_observer.h"
 #include "components/drive/file_errors.h"
 #include "components/drive/file_system_core_util.h"
 #include "components/keyed_service/core/keyed_service.h"
