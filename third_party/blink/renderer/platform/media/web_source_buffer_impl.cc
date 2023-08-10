@@ -247,11 +247,11 @@ void WebSourceBufferImpl::RemovedFromMediaSource() {
 
 WebMediaPlayer::TrackType mediaTrackTypeToBlink(media::MediaTrack::Type type) {
   switch (type) {
-    case media::MediaTrack::Audio:
+    case media::MediaTrack::Type::kAudio:
       return WebMediaPlayer::kAudioTrack;
-    case media::MediaTrack::Text:
+    case media::MediaTrack::Type::kText:
       return WebMediaPlayer::kTextTrack;
-    case media::MediaTrack::Video:
+    case media::MediaTrack::Type::kVideo:
       return WebMediaPlayer::kVideoTrack;
   }
   NOTREACHED();

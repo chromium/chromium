@@ -93,11 +93,11 @@ class WebMStreamParserTest : public testing::Test {
     size_t video_config_count = 0;
     DCHECK(tracks.get());
     for (const auto& track : tracks->tracks()) {
-      if (track->type() == MediaTrack::Audio) {
+      if (track->type() == MediaTrack::Type::kAudio) {
         audio_config_count++;
         continue;
       }
-      if (track->type() == MediaTrack::Video) {
+      if (track->type() == MediaTrack::Type::kVideo) {
         video_config_count++;
       }
     }
@@ -132,14 +132,14 @@ TEST_F(WebMStreamParserTest, VerifyMediaTrackMetadata) {
   EXPECT_EQ(media_tracks_->tracks().size(), 2u);
 
   const MediaTrack& video_track = *(media_tracks_->tracks()[0]);
-  EXPECT_EQ(video_track.type(), MediaTrack::Video);
+  EXPECT_EQ(video_track.type(), MediaTrack::Type::kVideo);
   EXPECT_EQ(video_track.bytestream_track_id(), 1);
   EXPECT_EQ(video_track.kind().value(), "main");
   EXPECT_EQ(video_track.label().value(), "");
   EXPECT_EQ(video_track.language().value(), "und");
 
   const MediaTrack& audio_track = *(media_tracks_->tracks()[1]);
-  EXPECT_EQ(audio_track.type(), MediaTrack::Audio);
+  EXPECT_EQ(audio_track.type(), MediaTrack::Type::kAudio);
   EXPECT_EQ(audio_track.bytestream_track_id(), 2);
   EXPECT_EQ(audio_track.kind().value(), "main");
   EXPECT_EQ(audio_track.label().value(), "");
@@ -155,7 +155,7 @@ TEST_F(WebMStreamParserTest, VerifyDetectedTrack_AudioOnly) {
   params.detected_text_track_count = 0;
   ParseWebMFile("bear-320x240-audio-only.webm", params);
   EXPECT_EQ(media_tracks_->tracks().size(), 1u);
-  EXPECT_EQ(media_tracks_->tracks()[0]->type(), MediaTrack::Audio);
+  EXPECT_EQ(media_tracks_->tracks()[0]->type(), MediaTrack::Type::kAudio);
 }
 
 TEST_F(WebMStreamParserTest, VerifyDetectedTrack_VideoOnly) {
@@ -165,7 +165,7 @@ TEST_F(WebMStreamParserTest, VerifyDetectedTrack_VideoOnly) {
   params.detected_text_track_count = 0;
   ParseWebMFile("bear-320x240-video-only.webm", params);
   EXPECT_EQ(media_tracks_->tracks().size(), 1u);
-  EXPECT_EQ(media_tracks_->tracks()[0]->type(), MediaTrack::Video);
+  EXPECT_EQ(media_tracks_->tracks()[0]->type(), MediaTrack::Type::kVideo);
 }
 
 TEST_F(WebMStreamParserTest, VerifyDetectedTracks_AVText) {
@@ -177,8 +177,8 @@ TEST_F(WebMStreamParserTest, VerifyDetectedTracks_AVText) {
   params.detected_text_track_count = 1;
   ParseWebMFile("bear-vp8-webvtt.webm", params);
   EXPECT_EQ(media_tracks_->tracks().size(), 2u);
-  EXPECT_EQ(media_tracks_->tracks()[0]->type(), MediaTrack::Video);
-  EXPECT_EQ(media_tracks_->tracks()[1]->type(), MediaTrack::Audio);
+  EXPECT_EQ(media_tracks_->tracks()[0]->type(), MediaTrack::Type::kVideo);
+  EXPECT_EQ(media_tracks_->tracks()[1]->type(), MediaTrack::Type::kAudio);
 }
 
 TEST_F(WebMStreamParserTest, ColourElement) {
@@ -192,7 +192,7 @@ TEST_F(WebMStreamParserTest, ColourElement) {
   EXPECT_EQ(media_tracks_->tracks().size(), 1u);
 
   const auto& video_track = media_tracks_->tracks()[0];
-  EXPECT_EQ(video_track->type(), MediaTrack::Video);
+  EXPECT_EQ(video_track->type(), MediaTrack::Type::kVideo);
 
   const VideoDecoderConfig& video_config =
       media_tracks_->getVideoConfig(video_track->bytestream_track_id());
@@ -233,7 +233,7 @@ TEST_F(WebMStreamParserTest, ColourElementWithUnspecifiedRange) {
   EXPECT_EQ(media_tracks_->tracks().size(), 1u);
 
   const auto& video_track = media_tracks_->tracks()[0];
-  EXPECT_EQ(video_track->type(), MediaTrack::Video);
+  EXPECT_EQ(video_track->type(), MediaTrack::Type::kVideo);
 
   const VideoDecoderConfig& video_config =
       media_tracks_->getVideoConfig(video_track->bytestream_track_id());
@@ -256,6 +256,6 @@ TEST_F(WebMStreamParserTest, ParseVideoWithSphericalMetadata) {
   EXPECT_EQ(media_tracks_->tracks().size(), 1u);
 
   const auto& video_track = media_tracks_->tracks()[0];
-  EXPECT_EQ(video_track->type(), MediaTrack::Video);
+  EXPECT_EQ(video_track->type(), MediaTrack::Type::kVideo);
 }
 }  // namespace media

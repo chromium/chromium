@@ -26,7 +26,7 @@ MediaTrack* MediaTracks::AddAudioTrack(
   DCHECK(config.IsValidConfig());
   CHECK(audio_configs_.find(bytestream_track_id) == audio_configs_.end());
   std::unique_ptr<MediaTrack> track = std::make_unique<MediaTrack>(
-      MediaTrack::Audio, bytestream_track_id, kind, label, language);
+      MediaTrack::Type::kAudio, bytestream_track_id, kind, label, language);
   MediaTrack* track_ptr = track.get();
   tracks_.push_back(std::move(track));
   audio_configs_[bytestream_track_id] = config;
@@ -42,7 +42,7 @@ MediaTrack* MediaTracks::AddVideoTrack(
   DCHECK(config.IsValidConfig());
   CHECK(video_configs_.find(bytestream_track_id) == video_configs_.end());
   std::unique_ptr<MediaTrack> track = std::make_unique<MediaTrack>(
-      MediaTrack::Video, bytestream_track_id, kind, label, language);
+      MediaTrack::Type::kVideo, bytestream_track_id, kind, label, language);
   MediaTrack* track_ptr = track.get();
   tracks_.push_back(std::move(track));
   video_configs_[bytestream_track_id] = config;

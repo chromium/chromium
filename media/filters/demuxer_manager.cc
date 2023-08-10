@@ -705,11 +705,11 @@ void DemuxerManager::OnFFmpegMediaTracksUpdated(
   bool is_first_audio_track = true;
   bool is_first_video_track = true;
   for (const auto& track : tracks->tracks()) {
-    if (track->type() == MediaTrack::Audio) {
+    if (track->type() == MediaTrack::Type::kAudio) {
       client_->AddAudioTrack(track->id().value(), track->label().value(),
                              track->language().value(), is_first_audio_track);
       is_first_audio_track = false;
-    } else if (track->type() == MediaTrack::Video) {
+    } else if (track->type() == MediaTrack::Type::kVideo) {
       client_->AddVideoTrack(track->id().value(), track->label().value(),
                              track->language().value(), is_first_video_track);
       is_first_video_track = false;

@@ -152,7 +152,7 @@ class MP4StreamParserTest : public testing::Test {
     DVLOG(1) << "NewConfigF: got " << tracks->tracks().size() << " tracks";
     for (const auto& track : tracks->tracks()) {
       const auto& track_id = track->bytestream_track_id();
-      if (track->type() == MediaTrack::Audio) {
+      if (track->type() == MediaTrack::Type::kAudio) {
         audio_track_id_ = track_id;
         audio_decoder_config_ = tracks->getAudioConfig(track_id);
         DVLOG(1) << "track_id=" << track_id << " audio config="
@@ -160,7 +160,7 @@ class MP4StreamParserTest : public testing::Test {
                          ? audio_decoder_config_.AsHumanReadableString()
                          : "INVALID");
         audio_config_count++;
-      } else if (track->type() == MediaTrack::Video) {
+      } else if (track->type() == MediaTrack::Type::kVideo) {
         video_track_id_ = track_id;
         video_decoder_config_ = tracks->getVideoConfig(track_id);
         DVLOG(1) << "track_id=" << track_id << " video config="
@@ -839,14 +839,14 @@ TEST_F(MP4StreamParserTest, MediaTrackInfoSourcing) {
 
   EXPECT_EQ(media_tracks_->tracks().size(), 2u);
   const MediaTrack& video_track = *(media_tracks_->tracks()[0]);
-  EXPECT_EQ(video_track.type(), MediaTrack::Video);
+  EXPECT_EQ(video_track.type(), MediaTrack::Type::kVideo);
   EXPECT_EQ(video_track.bytestream_track_id(), 1);
   EXPECT_EQ(video_track.kind().value(), "main");
   EXPECT_EQ(video_track.label().value(), "VideoHandler");
   EXPECT_EQ(video_track.language().value(), "und");
 
   const MediaTrack& audio_track = *(media_tracks_->tracks()[1]);
-  EXPECT_EQ(audio_track.type(), MediaTrack::Audio);
+  EXPECT_EQ(audio_track.type(), MediaTrack::Type::kAudio);
   EXPECT_EQ(audio_track.bytestream_track_id(), 2);
   EXPECT_EQ(audio_track.kind().value(), "main");
   EXPECT_EQ(audio_track.label().value(), "SoundHandler");
@@ -877,28 +877,28 @@ TEST_F(MP4StreamParserTest, MultiTrackFile) {
   EXPECT_EQ(media_tracks_->tracks().size(), 4u);
 
   const MediaTrack& video_track1 = *(media_tracks_->tracks()[0]);
-  EXPECT_EQ(video_track1.type(), MediaTrack::Video);
+  EXPECT_EQ(video_track1.type(), MediaTrack::Type::kVideo);
   EXPECT_EQ(video_track1.bytestream_track_id(), 1);
   EXPECT_EQ(video_track1.kind().value(), "main");
   EXPECT_EQ(video_track1.label().value(), "VideoHandler");
   EXPECT_EQ(video_track1.language().value(), "und");
 
   const MediaTrack& audio_track1 = *(media_tracks_->tracks()[1]);
-  EXPECT_EQ(audio_track1.type(), MediaTrack::Audio);
+  EXPECT_EQ(audio_track1.type(), MediaTrack::Type::kAudio);
   EXPECT_EQ(audio_track1.bytestream_track_id(), 2);
   EXPECT_EQ(audio_track1.kind().value(), "main");
   EXPECT_EQ(audio_track1.label().value(), "SoundHandler");
   EXPECT_EQ(audio_track1.language().value(), "und");
 
   const MediaTrack& video_track2 = *(media_tracks_->tracks()[2]);
-  EXPECT_EQ(video_track2.type(), MediaTrack::Video);
+  EXPECT_EQ(video_track2.type(), MediaTrack::Type::kVideo);
   EXPECT_EQ(video_track2.bytestream_track_id(), 3);
   EXPECT_EQ(video_track2.kind().value(), "");
   EXPECT_EQ(video_track2.label().value(), "VideoHandler");
   EXPECT_EQ(video_track2.language().value(), "und");
 
   const MediaTrack& audio_track2 = *(media_tracks_->tracks()[3]);
-  EXPECT_EQ(audio_track2.type(), MediaTrack::Audio);
+  EXPECT_EQ(audio_track2.type(), MediaTrack::Type::kAudio);
   EXPECT_EQ(audio_track2.bytestream_track_id(), 4);
   EXPECT_EQ(audio_track2.kind().value(), "");
   EXPECT_EQ(audio_track2.label().value(), "SoundHandler");

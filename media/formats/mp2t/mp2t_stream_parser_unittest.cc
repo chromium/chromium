@@ -20,6 +20,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "crypto/openssl_util.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/decoder_buffer.h"
@@ -257,19 +258,20 @@ class Mp2tStreamParserTest : public testing::Test {
     size_t video_track_count = 0;
     for (const auto& track : tracks->tracks()) {
       const auto& track_id = track->bytestream_track_id();
-      if (track->type() == MediaTrack::Audio) {
+      if (track->type() == MediaTrack::Type::kAudio) {
         audio_track_id_ = track_id;
         audio_track_count++;
         EXPECT_TRUE(tracks->getAudioConfig(track_id).IsValidConfig());
         current_audio_config_ = tracks->getAudioConfig(track_id);
-      } else if (track->type() == MediaTrack::Video) {
+      } else if (track->type() == MediaTrack::Type::kVideo) {
         video_track_id_ = track_id;
         video_track_count++;
         EXPECT_TRUE(tracks->getVideoConfig(track_id).IsValidConfig());
         current_video_config_ = tracks->getVideoConfig(track_id);
       } else {
         // Unexpected track type.
-        LOG(ERROR) << "Unexpected track type " << track->type();
+        LOG(ERROR) << "Unexpected track type "
+                   << base::to_underlying(track->type());
         EXPECT_TRUE(false);
       }
     }
