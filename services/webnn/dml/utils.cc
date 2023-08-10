@@ -81,4 +81,33 @@ ComPtr<ID3D12Device> GetD3D12Device(IDMLDevice* dml_device) {
   return d3d12_device;
 }
 
+DML_FEATURE_LEVEL GetMaxSupportedDMLFeatureLevel(IDMLDevice* dml_device) {
+  CHECK(dml_device);
+
+  // WebNN targets DirectML version 1.6 or DML_FEATURE_LEVEL_4_0.
+  // So query all levels up to DML_FEATURE_LEVEL_4_0. This allows
+  // downlevel hardware to still run unit-tests that may only require a lower
+  // level.
+  DML_FEATURE_LEVEL feature_levels_requested[] = {
+      DML_FEATURE_LEVEL_1_0, DML_FEATURE_LEVEL_2_0, DML_FEATURE_LEVEL_2_1,
+      DML_FEATURE_LEVEL_3_0, DML_FEATURE_LEVEL_3_1, DML_FEATURE_LEVEL_4_0};
+
+  DML_FEATURE_QUERY_FEATURE_LEVELS feature_levels_query = {
+      std::size(feature_levels_requested), feature_levels_requested};
+
+  // DML_FEATURE_FEATURE_LEVELS was introduced in DirectML version 1.1
+  // and is not supported by DirectML version 1.0 which uses
+  // DML_FEATURE_LEVEL_1_0.
+  // https://learn.microsoft.com/en-us/windows/ai/directml/dml-feature-level-history
+  DML_FEATURE_DATA_FEATURE_LEVELS feature_levels_supported = {};
+  if (FAILED(dml_device->CheckFeatureSupport(
+          DML_FEATURE_FEATURE_LEVELS, sizeof(feature_levels_query),
+          &feature_levels_query, sizeof(feature_levels_supported),
+          &feature_levels_supported))) {
+    return DML_FEATURE_LEVEL_1_0;
+  }
+
+  return feature_levels_supported.MaxSupportedFeatureLevel;
+}
+
 }  // namespace webnn::dml

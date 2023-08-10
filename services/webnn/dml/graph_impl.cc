@@ -151,6 +151,97 @@ void CreateNodeOutputForReshape(const IdToOperandMap& id_to_operand_map,
   id_to_node_output_map[output_id] = std::move(reshaped_input_node_output);
 }
 
+// Creates a DirectML operator for the WebNN general matrix multiplication
+// (GEMM) of the expression alpha * A * B + beta * C.
+bool CreateOperatorNodeForGemm(const IdToOperandMap& id_to_operand_map,
+                               const OperatorPtr& operation,
+                               GraphBuilder& graph_builder,
+                               IdToNodeOutputMap& id_to_node_output_map) {
+  uint64_t input_a_id = operation->input_operands[0];
+  uint64_t input_b_id = operation->input_operands[1];
+
+  const auto input_a_node_output_iterator =
+      id_to_node_output_map.find(input_a_id);
+  CHECK(input_a_node_output_iterator != id_to_node_output_map.end());
+
+  const auto input_b_node_output_iterator =
+      id_to_node_output_map.find(input_b_id);
+  CHECK(input_b_node_output_iterator != id_to_node_output_map.end());
+
+  NodeOutputInfo input_a_node_output = input_a_node_output_iterator->second;
+  TensorDesc input_a_tensor_desc =
+      graph_builder.GetNodeOutput(input_a_node_output).tensor_desc;
+
+  NodeOutputInfo input_b_node_output = input_b_node_output_iterator->second;
+  TensorDesc input_b_tensor_desc =
+      graph_builder.GetNodeOutput(input_b_node_output).tensor_desc;
+
+  uint64_t output_id = operation->output_operands[0];
+  const OperandPtr& output_operand = id_to_operand_map.at(output_id);
+  TensorDesc output_tensor_desc(GetTensorDataType(output_operand->data_type),
+                                output_operand->dimensions);
+
+  absl::optional<TensorDesc> input_c_tensor_desc = absl::nullopt;
+  auto& gemm_attributes = operation->attributes->get_gemm();
+
+  auto& c_operand_id = gemm_attributes->c_operand_id;
+  if (c_operand_id) {
+    uint64_t input_c_id = c_operand_id.value();
+
+    const auto input_c_node_output_iterator =
+        id_to_node_output_map.find(input_c_id);
+    CHECK(input_c_node_output_iterator != id_to_node_output_map.end());
+
+    NodeOutputInfo input_c_node_output_info =
+        input_c_node_output_iterator->second;
+    input_c_tensor_desc =
+        graph_builder.GetNodeOutput(input_c_node_output_info).tensor_desc;
+
+    // TODO(crbug.com/1471201): Support broadcasting for C.
+    auto input_c_shape = input_c_tensor_desc->GetDimensions();
+    if (input_c_shape.size() < 2) {
+      return false;
+    }
+
+    auto output_shape = output_tensor_desc.GetDimensions();
+    CHECK_EQ(output_shape.size(), input_c_shape.size());
+
+    if (output_shape[0] != input_c_shape[0] ||
+        output_shape[1] != input_c_shape[1]) {
+      return false;
+    }
+  }
+
+  DML_GEMM_OPERATOR_DESC gemm_operator_desc{
+      .ATensor = &input_a_tensor_desc.GetDMLTensorDesc(),
+      .BTensor = &input_b_tensor_desc.GetDMLTensorDesc(),
+      .CTensor = (input_c_tensor_desc.has_value())
+                     ? &input_c_tensor_desc->GetDMLTensorDesc()
+                     : nullptr,
+      .OutputTensor = &output_tensor_desc.GetDMLTensorDesc(),
+      .TransA = (gemm_attributes->a_transpose) ? DML_MATRIX_TRANSFORM_TRANSPOSE
+                                               : DML_MATRIX_TRANSFORM_NONE,
+      .TransB = (gemm_attributes->b_transpose) ? DML_MATRIX_TRANSFORM_TRANSPOSE
+                                               : DML_MATRIX_TRANSFORM_NONE,
+      .Alpha = gemm_attributes->alpha,
+      .Beta = gemm_attributes->beta,
+      .FusedActivation = nullptr,  // Not supported
+  };
+
+  NodeInfo gemm_node_info = graph_builder.CreateOperatorNode(
+      DML_OPERATOR_GEMM, &gemm_operator_desc,
+      {input_a_node_output, input_b_node_output});
+  if (gemm_node_info.type == NodeInfo::Type::kInvalid) {
+    return false;
+  }
+
+  NodeOutputInfo gemm_output = graph_builder.CreateNodeOutput(
+      gemm_node_info, std::move(output_tensor_desc));
+  id_to_node_output_map[output_id] = std::move(gemm_output);
+
+  return true;
+}
+
 }  // namespace
 
 GraphImpl::GraphImpl(std::unique_ptr<CommandRecorder> command_recorder,
@@ -193,6 +284,9 @@ void GraphImpl::CreateAndBuild(
 
   // Add operations.
   for (auto& operation : graph_info->operators) {
+    // For operators that deal with DML API, there is a chance that operator
+    // creation will fail.
+    bool is_create_successful = true;
     switch (operation->kind) {
       case Operator::Kind::kRelu: {
         CreateOperatorNodeForRelu(id_to_operand_map, operation, graph_builder,
@@ -204,12 +298,20 @@ void GraphImpl::CreateAndBuild(
                                    id_to_node_output_map);
         break;
       }
+      case Operator::Kind::kGemm: {
+        is_create_successful = CreateOperatorNodeForGemm(
+            id_to_operand_map, operation, graph_builder, id_to_node_output_map);
+        break;
+      }
       default:
         DLOG(ERROR) << "This operator kind (" +
                            OpKindToString(operation->kind) +
                            ") is not supported.";
-        std::move(callback).Run(mojo::NullRemote());
-        return;
+        is_create_successful = false;
+    }
+    if (!is_create_successful) {
+      std::move(callback).Run(mojo::NullRemote());
+      return;
     }
   }
 

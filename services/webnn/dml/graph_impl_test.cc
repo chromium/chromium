@@ -13,6 +13,7 @@
 #include "services/webnn/dml/command_recorder.h"
 #include "services/webnn/dml/graph_impl.h"
 #include "services/webnn/dml/test_base.h"
+#include "services/webnn/dml/utils.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
 #include "services/webnn/webnn_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -203,6 +204,95 @@ TEST_F(WebNNGraphDMLImplTest, BuildGraphWithTwoOutputs) {
       "output2", {1, 2, 3, 4}, mojom::Operand::DataType::kFloat32);
   builder.BuildOperator(mojom::Operator::Kind::kRelu, {input_operand_id},
                         {output2_operand_id});
+  EXPECT_TRUE(CreateAndBuildGraph(builder.GetGraphInfo()));
+}
+
+// Test building a DML graph with single operator gemm.
+TEST_F(WebNNGraphDMLImplTest, BuildSingleOperatorGemm) {
+  // DML_GEMM_OPERATOR_DESC support for 2 dimensions was introduced in
+  // DML_FEATURE_LEVEL_4_0.
+  SKIP_TEST_IF(GetMaxSupportedDMLFeatureLevel(adapter_->dml_device()) <
+               DML_FEATURE_LEVEL_4_0);
+  // Build the mojom graph info.
+  GraphInfoBuilder builder;
+  uint64_t input_a_operand_id =
+      builder.BuildInput("input_a", {2, 2}, mojom::Operand::DataType::kFloat32);
+  uint64_t input_b_operand_id =
+      builder.BuildInput("input_b", {2, 2}, mojom::Operand::DataType::kFloat32);
+  uint64_t output_operand_id =
+      builder.BuildOutput("output", {2, 2}, mojom::Operand::DataType::kFloat32);
+  mojom::GemmAttributesPtr attributes = mojom::GemmAttributes::New();
+  builder.BuildOperator(
+      mojom::Operator::Kind::kGemm, {input_a_operand_id, input_b_operand_id},
+      {output_operand_id},
+      mojom::OperatorAttributes::NewGemm(std::move(attributes)));
+  EXPECT_TRUE(CreateAndBuildGraph(builder.GetGraphInfo()));
+}
+
+// Test building a DML graph with single operator gemm but with a third input.
+TEST_F(WebNNGraphDMLImplTest, BuildSingleOperatorGemmWithThirdInput) {
+  // DML_GEMM_OPERATOR_DESC support for 2 dimensions was introduced in
+  // DML_FEATURE_LEVEL_4_0.
+  SKIP_TEST_IF(GetMaxSupportedDMLFeatureLevel(adapter_->dml_device()) <
+               DML_FEATURE_LEVEL_4_0);
+  // Build the mojom graph info.
+  GraphInfoBuilder builder;
+  uint64_t input_a_operand_id =
+      builder.BuildInput("input_a", {2, 2}, mojom::Operand::DataType::kFloat16);
+  uint64_t input_b_operand_id =
+      builder.BuildInput("input_b", {2, 2}, mojom::Operand::DataType::kFloat16);
+  uint64_t output_operand_id =
+      builder.BuildOutput("output", {2, 2}, mojom::Operand::DataType::kFloat16);
+  mojom::GemmAttributesPtr attributes = mojom::GemmAttributes::New();
+  attributes->c_operand_id =
+      builder.BuildInput("c", {2, 2}, mojom::Operand::DataType::kFloat16);
+  attributes->alpha = 1.0f;
+  attributes->beta = 0.0f;
+  attributes->a_transpose = true;
+  attributes->b_transpose = true;
+  builder.BuildOperator(
+      mojom::Operator::Kind::kGemm, {input_a_operand_id, input_b_operand_id},
+      {output_operand_id},
+      mojom::OperatorAttributes::NewGemm(std::move(attributes)));
+  EXPECT_TRUE(CreateAndBuildGraph(builder.GetGraphInfo()));
+}
+
+// Test building a DML graph with three gemm operations.
+//    [input] [input] [input] [input]
+//           \    /     \    /
+//            gemm       gemm
+//                \      /
+//                  gemm
+TEST_F(WebNNGraphDMLImplTest, BuildMultipleOperatorGemm) {
+  // DML_GEMM_OPERATOR_DESC support for 2 dimensions was introduced in
+  // DML_FEATURE_LEVEL_4_0.
+  SKIP_TEST_IF(GetMaxSupportedDMLFeatureLevel(adapter_->dml_device()) <
+               DML_FEATURE_LEVEL_4_0);
+  SKIP_TEST_IF(!is_compile_graph_supported_);
+  // Build the mojom graph info.
+  GraphInfoBuilder builder;
+  uint64_t input_a_operand_id =
+      builder.BuildInput("input_a", {2, 2}, mojom::Operand::DataType::kFloat32);
+  uint64_t input_b_operand_id =
+      builder.BuildInput("input_b", {2, 2}, mojom::Operand::DataType::kFloat32);
+  uint64_t output_1_operand_id = builder.BuildOutput(
+      "output_1", {2, 2}, mojom::Operand::DataType::kFloat32);
+  builder.BuildOperator(
+      mojom::Operator::Kind::kGemm, {input_a_operand_id, input_b_operand_id},
+      {output_1_operand_id},
+      mojom::OperatorAttributes::NewGemm(mojom::GemmAttributes::New()));
+  uint64_t output_2_operand_id = builder.BuildOutput(
+      "output_2", {2, 2}, mojom::Operand::DataType::kFloat32);
+  builder.BuildOperator(
+      mojom::Operator::Kind::kGemm, {input_a_operand_id, input_b_operand_id},
+      {output_2_operand_id},
+      mojom::OperatorAttributes::NewGemm(mojom::GemmAttributes::New()));
+  uint64_t output_3_operand_id = builder.BuildOutput(
+      "output_3", {2, 2}, mojom::Operand::DataType::kFloat32);
+  builder.BuildOperator(
+      mojom::Operator::Kind::kGemm, {output_1_operand_id, output_2_operand_id},
+      {output_3_operand_id},
+      mojom::OperatorAttributes::NewGemm(mojom::GemmAttributes::New()));
   EXPECT_TRUE(CreateAndBuildGraph(builder.GetGraphInfo()));
 }
 

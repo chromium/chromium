@@ -24,6 +24,9 @@ uint64_t CalculateDMLBufferTensorSize(
 // Gets the ID3D12Device used to create the IDMLDevice.
 ComPtr<ID3D12Device> GetD3D12Device(IDMLDevice* dml_device);
 
+// Returns the maximum feature level supported by the DML device.
+DML_FEATURE_LEVEL GetMaxSupportedDMLFeatureLevel(IDMLDevice* dml_device);
+
 }  // namespace webnn::dml
 
 #endif  // SERVICES_WEBNN_DML_UTILS_H_
