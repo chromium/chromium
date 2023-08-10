@@ -8,7 +8,11 @@
 
 namespace policy {
 
-DlpFilesTestBase::DlpFilesTestBase() = default;
+DlpFilesTestBase::DlpFilesTestBase()
+    : task_environment_(std::make_unique<content::BrowserTaskEnvironment>()) {}
+DlpFilesTestBase::DlpFilesTestBase(
+    std::unique_ptr<content::BrowserTaskEnvironment> task_environment)
+    : task_environment_(std::move(task_environment)) {}
 DlpFilesTestBase::~DlpFilesTestBase() = default;
 
 void DlpFilesTestBase::SetUp() {

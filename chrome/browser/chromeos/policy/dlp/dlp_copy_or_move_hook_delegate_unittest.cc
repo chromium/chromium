@@ -11,7 +11,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
@@ -19,17 +18,12 @@
 #include "base/test/test_future.h"
 #include "base/threading/thread_checker.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_files_controller.h"
-#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
-#include "chrome/browser/chromeos/policy/dlp/test/mock_dlp_rules_manager.h"
-#include "chrome/test/base/testing_browser_process.h"
-#include "chrome/test/base/testing_profile.h"
-#include "chrome/test/base/testing_profile_manager.h"
+#include "chrome/browser/chromeos/policy/dlp/test/dlp_files_test_base.h"
 #include "chromeos/dbus/dlp/dlp_client.h"
 #include "components/file_access/scoped_file_access.h"
 #include "components/file_access/scoped_file_access_copy.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/user_manager/scoped_user_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -39,18 +33,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#endif
-
 namespace policy {
-namespace {
-
-constexpr char kEmailId[] = "test@example.com";
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-constexpr char kGaiaId[] = "12345";
-#endif
-}  // namespace
 
 class MockController : public DlpFilesController {
  public:
@@ -70,72 +53,32 @@ class MockController : public DlpFilesController {
               (override));
 };
 
-class DlpCopyOrMoveHookDelegateTest : public testing::Test {
- public:
-  void SetUp() override {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    scoped_profile_ = std::make_unique<TestingProfile>();
-    profile_ = scoped_profile_.get();
-    AccountId account_id = AccountId::FromUserEmailGaiaId(kEmailId, kGaiaId);
-    profile_->SetIsNewProfile(true);
-    user_manager::User* user =
-        user_manager_->AddUserWithAffiliationAndTypeAndProfile(
-            account_id, /*is_affiliated=*/false,
-            user_manager::USER_TYPE_REGULAR, profile_);
-    user_manager_->UserLoggedIn(account_id, user->username_hash(),
-                                /*browser_restart=*/false,
-                                /*is_child=*/false);
-    user_manager_->SimulateUserProfileLoad(account_id);
-#else
-    ASSERT_TRUE(profile_manager_.SetUp());
-    profile_ = profile_manager_.CreateTestingProfile(kEmailId, true);
-#endif
-
-    policy::DlpRulesManagerFactory::GetInstance()->SetTestingFactory(
-        profile_,
-        base::BindRepeating(&DlpCopyOrMoveHookDelegateTest::SetDlpRulesManager,
-                            base::Unretained(this)));
-    ASSERT_TRUE(policy::DlpRulesManagerFactory::GetForPrimaryProfile());
-  }
-
-  std::unique_ptr<KeyedService> SetDlpRulesManager(
-      content::BrowserContext* context) {
-    auto dlp_rules_manager = std::make_unique<MockDlpRulesManager>();
-    manager_ = dlp_rules_manager.get();
-    controller_ = std::make_unique<MockController>(*dlp_rules_manager);
-    return dlp_rules_manager;
-  }
-
+class DlpCopyOrMoveHookDelegateTest : public DlpFilesTestBase {
  protected:
+  DlpCopyOrMoveHookDelegateTest()
+      : DlpFilesTestBase(std::make_unique<content::BrowserTaskEnvironment>(
+            content::BrowserTaskEnvironment::ThreadPoolExecutionMode::QUEUED,
+            content::BrowserTaskEnvironment::REAL_IO_THREAD)) {}
+  ~DlpCopyOrMoveHookDelegateTest() override = default;
+
+  void SetUp() override {
+    DlpFilesTestBase::SetUp();
+    controller_ = std::make_unique<MockController>(*rules_manager_);
+  }
+
   absl::flat_hash_map<std::pair<base::FilePath, base::FilePath>,
                       std::unique_ptr<file_access::ScopedFileAccess>>&
   GetAccessMap() {
     return hook_->current_access_map_;
   }
 
-  content::BrowserTaskEnvironment task_environment_{
-      content::BrowserTaskEnvironment::ThreadPoolExecutionMode::QUEUED,
-      content::BrowserTaskEnvironment::REAL_IO_THREAD};
-  raw_ptr<MockDlpRulesManager, ExperimentalAsh> manager_;
   std::unique_ptr<DlpCopyOrMoveHookDelegate> hook_{
       std::make_unique<DlpCopyOrMoveHookDelegate>()};
   const storage::FileSystemURL source =
       storage::FileSystemURL::CreateForTest(GURL("source"));
   const storage::FileSystemURL destination =
       storage::FileSystemURL::CreateForTest(GURL("destination"));
-  std::unique_ptr<MockDlpRulesManager> scoped_manager;
 
-  raw_ptr<TestingProfile, DanglingUntriaged> profile_;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  std::unique_ptr<TestingProfile> scoped_profile_;
-  raw_ptr<ash::FakeChromeUserManager, ExperimentalAsh> user_manager_{
-      new ash::FakeChromeUserManager()};
-  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_{
-      std::make_unique<user_manager::ScopedUserManager>(
-          base::WrapUnique(user_manager_.get()))};
-#else
-  TestingProfileManager profile_manager_{TestingBrowserProcess::GetGlobal()};
-#endif
   std::unique_ptr<MockController> controller_;
 };
 
@@ -145,7 +88,7 @@ TEST_F(DlpCopyOrMoveHookDelegateTest, OnBeginProcessFileAllow) {
   base::MockCallback<base::OnceCallback<void()>> destructor_continuation;
   EXPECT_CALL(destructor_continuation, Run)
       .WillOnce([&continuation_run_loop]() { continuation_run_loop.Quit(); });
-  EXPECT_CALL(*manager_, GetDlpFilesController)
+  EXPECT_CALL(*rules_manager_, GetDlpFilesController)
       .WillOnce(testing::Return(controller_.get()));
 
   EXPECT_CALL(*controller_, RequestCopyAccess(source, destination,
@@ -179,7 +122,7 @@ TEST_F(DlpCopyOrMoveHookDelegateTest, OnBeginProcessFileAllow) {
 }
 
 TEST_F(DlpCopyOrMoveHookDelegateTest, OnBeginProcessFileDeny) {
-  EXPECT_CALL(*manager_, GetDlpFilesController)
+  EXPECT_CALL(*rules_manager_, GetDlpFilesController)
       .WillOnce(testing::Return(controller_.get()));
 
   EXPECT_CALL(*controller_, RequestCopyAccess(source, destination,
@@ -211,7 +154,7 @@ TEST_F(DlpCopyOrMoveHookDelegateTest, OnBeginProcessFileAllowHookDestruct) {
   base::MockCallback<base::OnceCallback<void()>> destructor_continuation;
   EXPECT_CALL(destructor_continuation, Run)
       .WillOnce([&continuation_run_loop]() { continuation_run_loop.Quit(); });
-  EXPECT_CALL(*manager_, GetDlpFilesController)
+  EXPECT_CALL(*rules_manager_, GetDlpFilesController)
       .WillOnce(testing::Return(controller_.get()));
 
   EXPECT_CALL(*controller_, RequestCopyAccess(source, destination,
@@ -269,7 +212,7 @@ TEST_F(DlpCopyOrMoveHookDelegateTest, OnBeginProcessFileNoManager) {
 }
 
 TEST_F(DlpCopyOrMoveHookDelegateTest, OnBeginProcessFileNoController) {
-  EXPECT_CALL(*manager_, GetDlpFilesController)
+  EXPECT_CALL(*rules_manager_, GetDlpFilesController)
       .WillOnce(testing::Return(nullptr));
   auto task_runner = content::GetIOThreadTaskRunner({});
   base::RunLoop status_callback_run_loop;

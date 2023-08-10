@@ -31,6 +31,8 @@ class DlpFilesTestBase : public testing::Test {
 
  protected:
   DlpFilesTestBase();
+  DlpFilesTestBase(
+      std::unique_ptr<content::BrowserTaskEnvironment> task_environment);
   ~DlpFilesTestBase() override;
 
   void SetUp() override;
@@ -39,7 +41,7 @@ class DlpFilesTestBase : public testing::Test {
   std::unique_ptr<KeyedService> SetDlpRulesManager(
       content::BrowserContext* context);
 
-  content::BrowserTaskEnvironment task_environment_;
+  std::unique_ptr<content::BrowserTaskEnvironment> task_environment_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<TestingProfile> scoped_profile_;
