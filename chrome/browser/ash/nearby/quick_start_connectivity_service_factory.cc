@@ -5,7 +5,7 @@
 #include "chrome/browser/ash/nearby/quick_start_connectivity_service_factory.h"
 
 #include "chrome/browser/ash/nearby/nearby_process_manager_factory.h"
-#include "chrome/browser/ash/nearby/quick_start_connectivity_service.h"
+#include "chrome/browser/ash/nearby/quick_start_connectivity_service_impl.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 
@@ -54,8 +54,9 @@ KeyedService* QuickStartConnectivityServiceFactory::BuildServiceInstanceFor(
     // profile is the one that is used in OOBE.
     //
     // Note: the NearbyProcessManager* fetched here is bound to the lifetime of
-    // the profile and is guaranteed to outlive QuickStartConnectivityService.
-    return new QuickStartConnectivityService(
+    // the profile and is guaranteed to outlive
+    // QuickStartConnectivityServiceImpl.
+    return new QuickStartConnectivityServiceImpl(
         nearby::NearbyProcessManagerFactory::GetForProfile(profile));
   }
 

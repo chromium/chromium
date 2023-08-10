@@ -6,6 +6,8 @@ assert(is_chromeos, "Nearby Share is CrOS only")
 
 static_library("cpp") {
   sources = [
+    "fake_nearby_connections_manager.cc",
+    "fake_nearby_connections_manager.h",
     "nearby_connection.h",
     "nearby_connections_manager.cc",
     "nearby_connections_manager.h",

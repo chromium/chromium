@@ -12,6 +12,7 @@ source_set("connectivity") {
     "//base",
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/login/oobe_quick_start:oobe_quick_start_pref_names",
+    "//chrome/browser/ash/nearby:quick_start_connectivity_service",
     "//chrome/browser/nearby_sharing/public/cpp",
     "//chromeos/ash/components/quick_start",
     "//chromeos/ash/services/nearby/public/cpp",
@@ -53,6 +54,7 @@ source_set("test_support") {
   public_deps = [ ":connectivity" ]
   deps = [
     "//base",
+    "//chrome/browser/ash/nearby:quick_start_connectivity_service",
     "//chrome/browser/nearby_sharing/public/cpp",
     "//chrome/test:test_support",
     "//chromeos/ash/components/quick_start:test_support",

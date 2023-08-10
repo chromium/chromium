@@ -21,12 +21,13 @@
 #include "chrome/browser/ash/login/oobe_quick_start/second_device_auth_broker.h"
 #include "chrome/browser/nearby_sharing/public/cpp/nearby_connections_manager.h"
 #include "chromeos/ash/components/quick_start/types.h"
-#include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder.mojom.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace ash::quick_start {
+
+class QuickStartConnectivityService;
 
 class TargetDeviceBootstrapController
     : public TargetDeviceConnectionBroker::ConnectionLifecycleListener {
@@ -93,8 +94,7 @@ class TargetDeviceBootstrapController
       std::unique_ptr<SecondDeviceAuthBroker> auth_broker,
       std::unique_ptr<AccessibilityManagerWrapper>
           accessibility_manager_wrapper,
-      base::WeakPtr<NearbyConnectionsManager> nearby_connections_manager,
-      mojo::SharedRemote<mojom::QuickStartDecoder> quick_start_decoder);
+      QuickStartConnectivityService* quick_start_connectivity_service);
   TargetDeviceBootstrapController(TargetDeviceBootstrapController&) = delete;
   TargetDeviceBootstrapController& operator=(TargetDeviceBootstrapController&) =
       delete;

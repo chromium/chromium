@@ -32,7 +32,6 @@ static_library("quick_start") {
 }
 
 source_set("test_support") {
-  testonly = true
   public_deps = [ ":quick_start" ]
   deps = [
     "//base",
@@ -42,7 +41,6 @@ source_set("test_support") {
     "//crypto",
     "//mojo/public/cpp/bindings:bindings",
     "//sandbox/policy",
-    "//testing/gtest",
     "//url",
   ]
   sources = [

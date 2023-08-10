@@ -24,3 +24,14 @@ source_set("bluetooth_adapter_manager") {
     "//mojo/public/cpp/bindings",
   ]
 }
+
+source_set("quick_start_connectivity_service") {
+  sources = [ "quick_start_connectivity_service.h" ]
+
+  deps = [
+    "//base",
+    "//chromeos/ash/services/nearby/public/mojom",
+    "//components/keyed_service/core",
+    "//mojo/public/cpp/bindings",
+  ]
+}

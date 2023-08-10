@@ -7,7 +7,6 @@
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom-forward.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom-shared.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom.h"
-#include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash::quick_start {
 
@@ -60,7 +59,6 @@ void FakeQuickStartDecoder::DecodeUserVerificationResult(
 void FakeQuickStartDecoder::DecodeGetAssertionResponse(
     const absl::optional<std::vector<uint8_t>>& data,
     DecodeGetAssertionResponseCallback callback) {
-  EXPECT_EQ(expected_data_, data);
   if (error_.has_value()) {
     std::move(callback).Run(nullptr, error_);
   }

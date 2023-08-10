@@ -20,7 +20,7 @@ class FakeNearbyConnection;
 
 namespace ash::quick_start {
 
-class FakeQuickStartDecoder;
+class QuickStartConnectivityService;
 
 class FakeTargetDeviceConnectionBroker : public TargetDeviceConnectionBroker {
  public:
@@ -48,14 +48,14 @@ class FakeTargetDeviceConnectionBroker : public TargetDeviceConnectionBroker {
 
     // TargetDeviceConnectionBrokerFactory:
     std::unique_ptr<TargetDeviceConnectionBroker> CreateInstance(
-        base::WeakPtr<NearbyConnectionsManager> nearby_connections_manager,
-        mojo::SharedRemote<mojom::QuickStartDecoder> quick_start_decoder)
+        QuickStartConnectivityService* quick_start_connectivity_service)
         override;
 
     std::vector<FakeTargetDeviceConnectionBroker*> instances_;
   };
 
-  FakeTargetDeviceConnectionBroker();
+  explicit FakeTargetDeviceConnectionBroker(
+      QuickStartConnectivityService* quick_start_connectivity_service);
   FakeTargetDeviceConnectionBroker(FakeTargetDeviceConnectionBroker&) = delete;
   FakeTargetDeviceConnectionBroker& operator=(
       FakeTargetDeviceConnectionBroker&) = delete;
@@ -119,8 +119,8 @@ class FakeTargetDeviceConnectionBroker : public TargetDeviceConnectionBroker {
       FeatureSupportStatus::kSupported;
   ResultCallback on_start_advertising_callback_;
   base::OnceClosure on_stop_advertising_callback_;
+  raw_ptr<QuickStartConnectivityService> quick_start_connectivity_service_;
   std::unique_ptr<FakeNearbyConnection> fake_nearby_connection_;
-  std::unique_ptr<FakeQuickStartDecoder> fake_quick_start_decoder_;
   std::unique_ptr<FakeConnection> connection_;
 
   RandomSessionId random_session_id_;

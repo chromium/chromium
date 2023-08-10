@@ -17,6 +17,8 @@
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/fast_pair_advertiser.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/random_session_id.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker.h"
+#include "chrome/browser/ash/nearby/quick_start_connectivity_service.h"
+#include "chrome/browser/nearby_sharing/public/cpp/nearby_connections_manager.h"
 #include "chromeos/ash/components/quick_start/logging.h"
 #include "chromeos/ash/components/quick_start/quick_start_metrics.h"
 #include "device/bluetooth/bluetooth_adapter.h"
@@ -127,13 +129,11 @@ TargetDeviceConnectionBrokerImpl::BluetoothAdapterFactoryWrapper*
 
 TargetDeviceConnectionBrokerImpl::TargetDeviceConnectionBrokerImpl(
     SessionContext session_context,
-    base::WeakPtr<NearbyConnectionsManager> nearby_connections_manager,
-    std::unique_ptr<Connection::Factory> connection_factory,
-    mojo::SharedRemote<mojom::QuickStartDecoder> quick_start_decoder)
+    QuickStartConnectivityService* quick_start_connectivity_service,
+    std::unique_ptr<Connection::Factory> connection_factory)
     : session_context_(session_context),
-      nearby_connections_manager_(nearby_connections_manager),
-      connection_factory_(std::move(connection_factory)),
-      quick_start_decoder_(std::move(quick_start_decoder)) {
+      quick_start_connectivity_service_(quick_start_connectivity_service),
+      connection_factory_(std::move(connection_factory)) {
   is_resume_after_update_ = session_context_.is_resume_after_update();
   GetBluetoothAdapter();
 }
@@ -332,41 +332,28 @@ std::vector<uint8_t> TargetDeviceConnectionBrokerImpl::GenerateEndpointInfo()
 
 void TargetDeviceConnectionBrokerImpl::StartNearbyConnectionsAdvertising(
     ResultCallback callback) {
-  if (!nearby_connections_manager_) {
-    QS_LOG(ERROR)
-        << "NearbyConnectionsManager is null, cannot start Nearby Connections "
-           "advertising.";
-    std::move(callback).Run(/*success=*/false);
-    return;
-  }
-
+  CHECK(quick_start_connectivity_service_);
   QS_LOG(INFO) << "Starting Nearby Connections Advertising";
   // TODO(b/234655072): PowerLevel::kHighPower implies using Bluetooth classic,
   // but we should also advertise over BLE. Nearby Connections does not yet
   // support BLE as an upgrade medium, so Quick Start over BLE is planned for
   // post-launch.
-  nearby_connections_manager_->StartAdvertising(
-      GenerateEndpointInfo(), /*listener=*/this, PowerLevel::kHighPower,
-      DataUsage::kOffline,
-      base::BindOnce(&TargetDeviceConnectionBrokerImpl::
-                         OnStartNearbyConnectionsAdvertising,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  quick_start_connectivity_service_->GetNearbyConnectionsManager()
+      ->StartAdvertising(
+          GenerateEndpointInfo(), /*listener=*/this, PowerLevel::kHighPower,
+          DataUsage::kOffline,
+          base::BindOnce(&TargetDeviceConnectionBrokerImpl::
+                             OnStartNearbyConnectionsAdvertising,
+                         weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void TargetDeviceConnectionBrokerImpl::StopNearbyConnectionsAdvertising(
     base::OnceClosure callback) {
-  if (!nearby_connections_manager_) {
-    QS_LOG(ERROR)
-        << "NearbyConnectionsManager is null, cannot stop Nearby Connections "
-           "advertising.";
-    std::move(callback).Run();
-    return;
-  }
-
   QS_LOG(INFO) << "Stopping Nearby Connections Advertising";
-  nearby_connections_manager_->StopAdvertising(base::BindOnce(
-      &TargetDeviceConnectionBrokerImpl::OnStopNearbyConnectionsAdvertising,
-      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  quick_start_connectivity_service_->GetNearbyConnectionsManager()
+      ->StopAdvertising(base::BindOnce(
+          &TargetDeviceConnectionBrokerImpl::OnStopNearbyConnectionsAdvertising,
+          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void TargetDeviceConnectionBrokerImpl::OnStartNearbyConnectionsAdvertising(
@@ -416,7 +403,8 @@ void TargetDeviceConnectionBrokerImpl::OnIncomingConnectionInitiated(
   CHECK(connection_lifecycle_listener_);
   if (use_pin_authentication_) {
     absl::optional<std::string> auth_token =
-        nearby_connections_manager_->GetAuthenticationToken(endpoint_id);
+        quick_start_connectivity_service_->GetNearbyConnectionsManager()
+            ->GetAuthenticationToken(endpoint_id);
     CHECK(auth_token);
     std::string pin = DerivePin(*auth_token);
     QS_LOG(INFO) << "Incoming Nearby Connection Initiated: pin=" << pin;
@@ -440,7 +428,8 @@ void TargetDeviceConnectionBrokerImpl::OnIncomingConnectionAccepted(
 
   // TODO(b/234655072): Handle Connection Closed in the Connection Broker
   connection_ = connection_factory_->Create(
-      nearby_connection, session_context_, quick_start_decoder_,
+      nearby_connection, session_context_,
+      quick_start_connectivity_service_->GetQuickStartDecoder(),
       base::BindOnce(&TargetDeviceConnectionBrokerImpl::OnConnectionClosed,
                      weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(
@@ -454,7 +443,8 @@ void TargetDeviceConnectionBrokerImpl::OnIncomingConnectionAccepted(
   } else {
     QS_LOG(INFO) << "Initiating cryptographic handshake.";
     absl::optional<std::string> auth_token =
-        nearby_connections_manager_->GetAuthenticationToken(endpoint_id);
+        quick_start_connectivity_service_->GetNearbyConnectionsManager()
+            ->GetAuthenticationToken(endpoint_id);
     CHECK(auth_token);
     quick_start_metrics::RecordHandshakeStarted(/*handshake_started=*/true);
     connection_->InitiateHandshake(

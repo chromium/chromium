@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_NEARBY_SHARING_FAKE_NEARBY_CONNECTIONS_MANAGER_H_
-#define CHROME_BROWSER_NEARBY_SHARING_FAKE_NEARBY_CONNECTIONS_MANAGER_H_
+#ifndef CHROME_BROWSER_NEARBY_SHARING_PUBLIC_CPP_FAKE_NEARBY_CONNECTIONS_MANAGER_H_
+#define CHROME_BROWSER_NEARBY_SHARING_PUBLIC_CPP_FAKE_NEARBY_CONNECTIONS_MANAGER_H_
 
 #include <memory>
 #include <set>
@@ -164,4 +164,4 @@ class FakeNearbyConnectionsManager
   base::WeakPtrFactory<FakeNearbyConnectionsManager> weak_ptr_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_NEARBY_SHARING_FAKE_NEARBY_CONNECTIONS_MANAGER_H_
+#endif  // CHROME_BROWSER_NEARBY_SHARING_PUBLIC_CPP_FAKE_NEARBY_CONNECTIONS_MANAGER_H_

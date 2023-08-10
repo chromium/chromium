@@ -763,19 +763,17 @@ LoginDisplayHostCommon::GetQuickStartBootstrapController() {
   CHECK(wizard_context_->quick_start_enabled);
   if (!bootstrap_controller_) {
     Profile* profile = ProfileManager::GetActiveUserProfile();
-    DCHECK(profile);
+    CHECK(profile);
 
     quick_start::QuickStartConnectivityService* service =
         quick_start::QuickStartConnectivityServiceFactory::GetForProfile(
             profile);
-    DCHECK(service);
+    CHECK(service);
 
     bootstrap_controller_ =
         std::make_unique<ash::quick_start::TargetDeviceBootstrapController>(
             CreateSecondDeviceAuthBroker(),
-            std::make_unique<AccessibilityManagerWrapper>(),
-            service->GetNearbyConnectionsManager(),
-            service->GetQuickStartDecoder());
+            std::make_unique<AccessibilityManagerWrapper>(), service);
   }
   return bootstrap_controller_->GetAsWeakPtrForClient();
 }

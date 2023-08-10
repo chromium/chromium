@@ -13,13 +13,13 @@
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/session_context.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker.h"
 #include "chrome/browser/nearby_sharing/public/cpp/nearby_connections_manager.h"
-#include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder.mojom.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
 
 namespace ash::quick_start {
 
 class FastPairAdvertiser;
+class QuickStartConnectivityService;
 
 class TargetDeviceConnectionBrokerImpl
     : public TargetDeviceConnectionBroker,
@@ -51,9 +51,8 @@ class TargetDeviceConnectionBrokerImpl
 
   TargetDeviceConnectionBrokerImpl(
       SessionContext session_context,
-      base::WeakPtr<NearbyConnectionsManager> nearby_connections_manager,
-      std::unique_ptr<Connection::Factory> connection_factory,
-      mojo::SharedRemote<mojom::QuickStartDecoder> quick_start_decoder);
+      QuickStartConnectivityService* quick_start_connectivity_service,
+      std::unique_ptr<Connection::Factory> connection_factory);
   TargetDeviceConnectionBrokerImpl(TargetDeviceConnectionBrokerImpl&) = delete;
   TargetDeviceConnectionBrokerImpl& operator=(
       TargetDeviceConnectionBrokerImpl&) = delete;
@@ -118,11 +117,10 @@ class TargetDeviceConnectionBrokerImpl
   SessionContext session_context_;
   std::unique_ptr<FastPairAdvertiser> fast_pair_advertiser_;
 
-  base::WeakPtr<NearbyConnectionsManager> nearby_connections_manager_;
+  raw_ptr<QuickStartConnectivityService> quick_start_connectivity_service_;
   std::unique_ptr<Connection::Factory> connection_factory_;
   std::unique_ptr<Connection> connection_;
 
-  mojo::SharedRemote<mojom::QuickStartDecoder> quick_start_decoder_;
   bool is_resume_after_update_;
 
   base::OneShotTimer
