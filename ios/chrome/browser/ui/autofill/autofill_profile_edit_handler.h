@@ -52,6 +52,9 @@
 // Setter called only for the migration prompt view.
 - (BOOL)setMigrationPrompt:(BOOL)migrationPrompt;
 
+// Setter called for the migration of an incomplete profile via the settings.
+- (void)setMoveToAccountFromSettings:(BOOL)moveToAccountFromSettings;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_PROFILE_EDIT_HANDLER_H_

@@ -767,7 +767,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   return IsEligibleForMigrationToAccount(*_personalDataManager, profile) &&
          base::FeatureList::IsEnabled(
              syncer::kSyncEnableContactInfoDataTypeInTransportMode) &&
-         self.userEmail != nil && IsMinimumAddress(profile);
+         self.userEmail != nil;
 }
 
 @end

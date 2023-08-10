@@ -86,11 +86,17 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 // If YES, denotes that the view is laid out for the migration prompt.
 @property(nonatomic, assign) BOOL migrationPrompt;
 
+// Denotes that the views are laid out to migrate an incomplete profile to
+// account from the settings.
+@property(nonatomic, assign) BOOL moveToAccountFromSettings;
+
 @end
 
 @implementation AutofillProfileEditTableViewController {
   NSString* _userEmail;
 }
+
+@synthesize moveToAccountFromSettings = _moveToAccountFromSettings;
 
 #pragma mark - Initialization
 
@@ -108,6 +114,7 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
     _requiredFieldsWithEmptyValue = [[NSMutableSet<NSString*> alloc] init];
     _controller = controller;
     _settingsView = settingsView;
+    _moveToAccountFromSettings = NO;
   }
 
   return self;
@@ -293,6 +300,17 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
   return [self isItemTypeTextEditCell:itemType];
 }
 
+- (void)setMoveToAccountFromSettings:(BOOL)moveToAccountFromSettings {
+  if (_moveToAccountFromSettings == moveToAccountFromSettings) {
+    return;
+  }
+
+  _moveToAccountFromSettings = moveToAccountFromSettings;
+  if (moveToAccountFromSettings) {
+    [self findRequiredFieldsWithEmptyValues];
+  }
+}
+
 #pragma mark - TableViewTextEditItemDelegate
 
 - (void)tableViewItemDidBeginEditing:(TableViewTextEditItem*)tableViewItem {
@@ -300,7 +318,8 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 }
 
 - (void)tableViewItemDidChange:(TableViewTextEditItem*)tableViewItem {
-  if ((self.accountProfile || self.migrationPrompt)) {
+  if ((self.accountProfile || self.migrationPrompt ||
+       self.moveToAccountFromSettings)) {
     [self computeErrorIfRequiredTextField:tableViewItem];
     if (self.settingsView) {
       [self updateDoneButtonStatus];
@@ -319,31 +338,7 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 
 - (void)didSelectCountry:(NSString*)country {
   self.homeAddressCountry = country;
-
-  [self.requiredFieldsWithEmptyValue removeAllObjects];
-  for (TableViewItem* item in [self.controller.tableViewModel
-           itemsInSectionWithIdentifier:
-               AutofillProfileDetailsSectionIdentifierFields]) {
-    if (item.type == AutofillProfileDetailsItemTypeCountry) {
-      TableViewMultiDetailTextItem* multiDetailTextItem =
-          base::mac::ObjCCastStrict<TableViewMultiDetailTextItem>(item);
-      multiDetailTextItem.trailingDetailText = self.homeAddressCountry;
-    } else if ([self isItemTypeTextEditCell:item.type]) {
-      // No requirement checks for local profiles.
-      if (self.accountProfile || self.migrationPrompt) {
-        TableViewTextEditItem* tableViewTextEditItem =
-            base::mac::ObjCCastStrict<TableViewTextEditItem>(item);
-        [self computeErrorIfRequiredTextField:tableViewTextEditItem];
-      }
-    }
-    [self.controller reconfigureCellsForItems:@[ item ]];
-  }
-
-  if (self.settingsView) {
-    [self updateDoneButtonStatus];
-  } else {
-    [self updateSaveButtonStatus];
-  }
+  [self findRequiredFieldsWithEmptyValues];
 }
 
 #pragma mark - Actions
@@ -648,6 +643,10 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
     (AutofillProfileDetailsItemType)itemType {
   DCHECK([self isItemTypeRequiredField:itemType]);
 
+  if (self.moveToAccountFromSettings) {
+    return NO;
+  }
+
   return [self.delegate
       fieldValueEmptyOnProfileLoadForType:
           [self serverFieldTypeCorrespondingToRequiredItemType:itemType]];
@@ -755,9 +754,11 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 // Returns the footer message.
 - (NSString*)footerMessage {
   CHECK([_userEmail length] > 0);
-  return l10n_util::GetNSStringF(
-      IDS_IOS_SETTINGS_AUTOFILL_ACCOUNT_ADDRESS_FOOTER_TEXT,
-      base::SysNSStringToUTF16(_userEmail));
+  return self.moveToAccountFromSettings
+             ? @""
+             : l10n_util::GetNSStringF(
+                   IDS_IOS_SETTINGS_AUTOFILL_ACCOUNT_ADDRESS_FOOTER_TEXT,
+                   base::SysNSStringToUTF16(_userEmail));
 }
 
 // Returns the error message combined with footer.
@@ -813,6 +814,36 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
       break;
   }
   return NO;
+}
+
+// Recomputes the required fields that are empty.
+- (void)findRequiredFieldsWithEmptyValues {
+  [self.requiredFieldsWithEmptyValue removeAllObjects];
+  for (TableViewItem* item in [self.controller.tableViewModel
+           itemsInSectionWithIdentifier:
+               AutofillProfileDetailsSectionIdentifierFields]) {
+    if (item.type == AutofillProfileDetailsItemTypeCountry) {
+      TableViewMultiDetailTextItem* multiDetailTextItem =
+          base::mac::ObjCCastStrict<TableViewMultiDetailTextItem>(item);
+      multiDetailTextItem.trailingDetailText = self.homeAddressCountry;
+    } else if ([self isItemTypeTextEditCell:item.type]) {
+      // No requirement checks for local profiles.
+      if (self.accountProfile || self.migrationPrompt ||
+          self.moveToAccountFromSettings) {
+        TableViewTextEditItem* tableViewTextEditItem =
+            base::mac::ObjCCastStrict<TableViewTextEditItem>(item);
+        [self computeErrorIfRequiredTextField:tableViewTextEditItem];
+      }
+    }
+  }
+
+  [self reconfigureCells];
+
+  if (self.settingsView) {
+    [self updateDoneButtonStatus];
+  } else {
+    [self updateSaveButtonStatus];
+  }
 }
 
 @end

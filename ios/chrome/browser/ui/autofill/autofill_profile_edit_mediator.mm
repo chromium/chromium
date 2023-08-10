@@ -121,6 +121,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (void)didTapMigrateToAccountButton {
   _personalDataManager->MigrateProfileToAccount(*_autofillProfile);
+
+  // Push the saved profile data to the consumer.
+  [self sendAutofillProfileDataToConsumer];
 }
 
 #pragma mark - AutofillProfileEditTableViewControllerDelegate
