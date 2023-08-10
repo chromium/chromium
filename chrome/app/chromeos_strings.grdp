@@ -6416,6 +6416,9 @@ You can manage this account’s settings by installing the Family Link app on yo
   <message name="IDS_PARENT_ACCESS_PAGE_TITLE" desc="Title for the ChromeOS Parent Access screen.">
     Parent Access
   </message>
+  <message name="IDS_PARENT_ACCESS_CLOSE_BUTTON_TITLE" desc="Title for the ChromeOS Parent Access Widget close button.">
+    Close
+  </message>
   <message name="IDS_PARENT_ACCESS_LOCAL_WEB_APPROVALS_AFTER_TITLE" desc="Title for the local web approvals dialog.">
     Approve web request?
   </message>

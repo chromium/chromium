@@ -74,6 +74,8 @@ void ParentAccessUI::SetUpResources() {
   source->AddResourcePath("parent_access_controller.js",
                           IDR_PARENT_ACCESS_CONTROLLER_JS);
   source->AddResourcePath("parent_access_app.js", IDR_PARENT_ACCESS_APP_JS);
+  source->AddResourcePath("parent_access_template.js",
+                          IDR_PARENT_ACCESS_TEMPLATE_JS);
   source->AddResourcePath("parent_access_ui.js", IDR_PARENT_ACCESS_UI_JS);
   source->AddResourcePath("parent_access_ui_handler.js",
                           IDR_PARENT_ACCESS_UI_HANDLER_JS);
@@ -94,6 +96,9 @@ void ParentAccessUI::SetUpResources() {
                           IDR_PARENT_ACCESS_BEFORE_JS);
   source->AddResourcePath("parent_access_disabled.js",
                           IDR_PARENT_ACCESS_DISABLED_JS);
+  source->AddResourcePath("parent_access_error.js", IDR_PARENT_ACCESS_ERROR_JS);
+  source->AddResourcePath("parent_access_offline.js",
+                          IDR_PARENT_ACCESS_OFFLINE_JS);
   source->AddResourcePath("parent_access_ui.mojom-webui.js",
                           IDR_PARENT_ACCESS_UI_MOJOM_WEBUI_JS);
   source->AddResourcePath("webview_manager.js",
@@ -113,6 +118,7 @@ void ParentAccessUI::SetUpResources() {
 
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"pageTitle", IDS_PARENT_ACCESS_PAGE_TITLE},
+      {"closeButtonTitle", IDS_PARENT_ACCESS_CLOSE_BUTTON_TITLE},
       {"approveButtonText", IDS_PARENT_ACCESS_AFTER_APPROVE_BUTTON},
       {"denyButtonText", IDS_PARENT_ACCESS_AFTER_DENY_BUTTON},
       {"askInPersonButtonText", IDS_PARENT_ACCESS_ASK_IN_PERSON_BUTTON},

@@ -4,7 +4,6 @@
   }
 
   #before-screen {
-    background-color: var(--cros-bg-color-elevation-1);
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
@@ -27,16 +26,20 @@
   }
 </style>
 
-<div id="before-screen">
-  <picture>
-    <source srcset="images/request_approval_dark.svg"
-        media="(prefers-color-scheme: dark)">
-    <img src="images/request_approval.svg" id="illustration" alt="">
-  </picture>
-  <div id="before-screen-body" aria-live="polite"></div>
-  <div id="before-screen-buttons">
-    <cr-button class="action-button" on-click="showParentAccessUI_">
-      $i18n{askInPersonButtonText}
-    </cr-button>
-  </div>
-</div>
+<parent-access-template>
+  <span slot="main">
+    <div id="before-screen">
+      <picture>
+        <source srcset="images/request_approval_dark.svg"
+            media="(prefers-color-scheme: dark)">
+        <img src="images/request_approval.svg" id="illustration" alt="">
+      </picture>
+      <div id="before-screen-body" aria-live="polite"></div>
+      <div id="before-screen-buttons">
+        <cr-button class="action-button" on-click="showParentAccessUI_">
+          $i18n{askInPersonButtonText}
+        </cr-button>
+      </div>
+    </div>
+  </span>
+</parent-access-template>

@@ -201,10 +201,13 @@
         <include name="IDR_ADD_SUPERVISION_MOJOM_WEBUI_JS" file="${root_gen_dir}\mojom-webui\chrome\browser\ui\webui\ash\add_supervision\add_supervision.mojom-webui.js" use_base_dir="false" type="BINDATA" />
         <include name="IDR_PARENT_ACCESS_HTML" file="resources\chromeos\parent_access\parent_access.html" type="chrome_html" />
         <include name="IDR_PARENT_ACCESS_APP_JS" file="${root_gen_dir}\chrome\browser\resources\chromeos\parent_access\parent_access_app.js" use_base_dir="false" type="BINDATA" />
+        <include name="IDR_PARENT_ACCESS_TEMPLATE_JS" file="${root_gen_dir}\chrome\browser\resources\chromeos\parent_access\parent_access_template.js" use_base_dir="false" type="BINDATA" />
         <include name="IDR_PARENT_ACCESS_UI_JS" file="${root_gen_dir}\chrome\browser\resources\chromeos\parent_access\parent_access_ui.js" use_base_dir="false" type="BINDATA" />
         <include name="IDR_PARENT_ACCESS_AFTER_JS" file="${root_gen_dir}\chrome\browser\resources\chromeos\parent_access\parent_access_after.js" use_base_dir="false" type="BINDATA" />
         <include name="IDR_PARENT_ACCESS_BEFORE_JS" file="${root_gen_dir}\chrome\browser\resources\chromeos\parent_access\parent_access_before.js" use_base_dir="false" type="BINDATA" />
         <include name="IDR_PARENT_ACCESS_DISABLED_JS" file="${root_gen_dir}\chrome\browser\resources\chromeos\parent_access\parent_access_disabled.js" use_base_dir="false" type="BINDATA" />
+        <include name="IDR_PARENT_ACCESS_ERROR_JS" file="${root_gen_dir}\chrome\browser\resources\chromeos\parent_access\parent_access_error.js" use_base_dir="false" type="BINDATA" />
+        <include name="IDR_PARENT_ACCESS_OFFLINE_JS" file="${root_gen_dir}\chrome\browser\resources\chromeos\parent_access\parent_access_offline.js" use_base_dir="false" type="BINDATA" />
         <include name="IDR_PARENT_ACCESS_WEBVIEW_MANAGER_JS" file="resources\chromeos\parent_access\webview_manager.js" type="BINDATA" />
         <include name="IDR_PARENT_ACCESS_UTILS_JS" file="resources\chromeos\parent_access\utils.js" type="BINDATA" />
         <include name="IDR_LOCAL_WEB_APPROVALS_AFTER_JS" file="${root_gen_dir}\chrome\browser\resources\chromeos\parent_access\flows\local_web_approvals_after.js" use_base_dir="false" type="BINDATA" />
