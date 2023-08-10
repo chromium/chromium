@@ -30,6 +30,10 @@ const GURL GetFrenchUrl() {
 
 #pragma mark - Setup and Teardown
 
+- (void)clearBookmarks {
+  EG_TEST_HELPER_ASSERT_NO_ERROR([BookmarkEarlGreyAppInterface clearBookmarks]);
+}
+
 - (void)clearBookmarksPositionCache {
   [BookmarkEarlGreyAppInterface clearBookmarksPositionCache];
 }

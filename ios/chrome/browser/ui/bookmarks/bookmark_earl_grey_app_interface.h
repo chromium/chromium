@@ -16,6 +16,10 @@ enum class StorageType;
 // compiled into the app binary and can be called from either app or test code.
 @interface BookmarkEarlGreyAppInterface : NSObject
 
+// Clears bookmarks. If not succeed returns an NSError indicating  why the
+// operation failed, otherwise nil.
++ (NSError*)clearBookmarks;
+
 // Clear Bookmarks top most row position cache.
 + (void)clearBookmarksPositionCache;
 

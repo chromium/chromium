@@ -1265,10 +1265,6 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   [ChromeEarlGreyAppInterface addBookmarkWithSyncPassphrase:syncPassphrase];
 }
 
-- (void)clearBookmarks {
-  EG_TEST_HELPER_ASSERT_NO_ERROR([ChromeEarlGreyAppInterface clearBookmarks]);
-}
-
 - (base::Value)evaluateJavaScript:(NSString*)javaScript {
   JavaScriptExecutionResult* result =
       [ChromeEarlGreyAppInterface executeJavaScript:javaScript];

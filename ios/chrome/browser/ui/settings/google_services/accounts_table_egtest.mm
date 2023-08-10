@@ -48,7 +48,7 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
 
 - (void)tearDown {
   [BookmarkEarlGrey waitForBookmarkModelsLoaded];
-  [ChromeEarlGrey clearBookmarks];
+  [BookmarkEarlGrey clearBookmarks];
   [BookmarkEarlGrey clearBookmarksPositionCache];
 
   [ChromeEarlGrey clearSyncServerData];
@@ -59,7 +59,7 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
   [super setUp];
 
   [BookmarkEarlGrey waitForBookmarkModelsLoaded];
-  [ChromeEarlGrey clearBookmarks];
+  [BookmarkEarlGrey clearBookmarks];
   GREYAssertEqual(
       [ChromeEarlGrey numberOfSyncEntitiesWithType:syncer::BOOKMARKS], 0,
       @"No bookmarks should exist before tests start.");

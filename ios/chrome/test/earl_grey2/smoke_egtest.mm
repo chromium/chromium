@@ -151,7 +151,7 @@
 // Tests bookmark converted helpers in chrome_earl_grey.h.
 - (void)testBookmarkHelpers {
   [BookmarkEarlGrey waitForBookmarkModelsLoaded];
-  [ChromeEarlGrey clearBookmarks];
+  [BookmarkEarlGrey clearBookmarks];
 }
 
 // Tests helpers involving fake sync servers and autofill profiles in

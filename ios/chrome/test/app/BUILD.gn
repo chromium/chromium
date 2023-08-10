@@ -5,8 +5,6 @@
 source_set("test_support") {
   testonly = true
   sources = [
-    "bookmarks_test_util.h",
-    "bookmarks_test_util.mm",
     "browsing_data_test_util.h",
     "browsing_data_test_util.mm",
     "chrome_test_util.h",

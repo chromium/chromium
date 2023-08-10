@@ -92,13 +92,13 @@ using chrome_test_util::SecondarySignInButton;
   [super setUp];
 
   [BookmarkEarlGrey waitForBookmarkModelsLoaded];
-  [ChromeEarlGrey clearBookmarks];
+  [BookmarkEarlGrey clearBookmarks];
 }
 
 // Tear down called once per test.
 - (void)tearDown {
   [super tearDown];
-  [ChromeEarlGrey clearBookmarks];
+  [BookmarkEarlGrey clearBookmarks];
   [BookmarkEarlGrey clearBookmarksPositionCache];
   [PolicyAppInterface clearPolicies];
 }

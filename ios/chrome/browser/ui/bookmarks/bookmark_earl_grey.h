@@ -33,6 +33,10 @@ const GURL GetFrenchUrl();
 
 #pragma mark - Setup and Teardown
 
+// Clears bookmarks if any bookmark still presents. A GREYAssert is induced if
+// bookmarks can not be cleared.
+- (void)clearBookmarks;
+
 // Clear Bookmarks top most row position cache.
 - (void)clearBookmarksPositionCache;
 

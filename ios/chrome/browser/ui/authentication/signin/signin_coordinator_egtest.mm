@@ -221,7 +221,7 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
   // in recent tabs.
   [ChromeEarlGrey clearBrowsingHistory];
   [BookmarkEarlGrey waitForBookmarkModelsLoaded];
-  [ChromeEarlGrey clearBookmarks];
+  [BookmarkEarlGrey clearBookmarks];
   GREYAssertNil([MetricsAppInterface setupHistogramTester],
                 @"Failed to set up histogram tester.");
   // TODO(crbug.com/1450472): Remove when kHideSettingsSyncPromo is launched.

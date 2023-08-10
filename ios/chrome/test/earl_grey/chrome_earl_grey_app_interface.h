@@ -328,12 +328,6 @@
 // Stops any pending navigations in all WebStates which are loading.
 + (void)stopAllWebStatesLoading;
 
-#pragma mark - Bookmarks Utilities (EG2)
-
-// Clears bookmarks. If not succeed returns an NSError indicating  why the
-// operation failed, otherwise nil.
-+ (NSError*)clearBookmarks;
-
 #pragma mark - URL Utilities (EG2)
 
 // Returns the title string to be used for a page with `URL` if that page

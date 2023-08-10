@@ -115,7 +115,7 @@ using chrome_test_util::SettingsDoneButton;
 // shown.
 - (void)testKeyboardCommandsNotRegistered_AddBookmarkPresented {
   [BookmarkEarlGrey waitForBookmarkModelsLoaded];
-  [ChromeEarlGrey clearBookmarks];
+  [BookmarkEarlGrey clearBookmarks];
 
   // Load a webpage because the NTP is not always bookmarkable.
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");

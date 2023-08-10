@@ -63,13 +63,13 @@ id<GREYMatcher> AddBookmarkButton() {
   [super setUp];
 
   [BookmarkEarlGrey waitForBookmarkModelsLoaded];
-  [ChromeEarlGrey clearBookmarks];
+  [BookmarkEarlGrey clearBookmarks];
   [BookmarkEarlGrey clearBookmarksPositionCache];
 }
 
 // Tear down called once per test.
 - (void)tearDown {
-  [ChromeEarlGrey clearBookmarks];
+  [BookmarkEarlGrey clearBookmarks];
   [BookmarkEarlGrey clearBookmarksPositionCache];
   [super tearDown];
 }

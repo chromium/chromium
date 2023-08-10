@@ -10,6 +10,7 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/prefs/pref_service.h"
+#include "ios/chrome/browser/bookmarks/account_bookmark_model_factory.h"
 #include "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_model_factory.h"
 #include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -37,11 +38,10 @@ bookmarks::BookmarkModel* GetBookmarkModelForType(
 
 const int64_t kLastUsedBookmarkFolderNone = -1;
 
-bool RemoveAllUserBookmarksIOS(ChromeBrowserState* browser_state) {
-  BookmarkModel* bookmark_model =
-      ios::LocalOrSyncableBookmarkModelFactory::GetForBrowserState(
-          browser_state);
-
+// Removes all user bookmarks. Requires
+// bookmark model to be loaded.
+// Return true if the bookmarks were successfully removed and false otherwise.
+bool RemoveAllUserBookmarksIOS(BookmarkModel* bookmark_model) {
   if (!bookmark_model->loaded())
     return false;
 
@@ -53,7 +53,23 @@ bool RemoveAllUserBookmarksIOS(ChromeBrowserState* browser_state) {
     if (!child->children().empty())
       return false;
   }
+  return true;
+}
 
+bool RemoveAllUserBookmarksIOS(ChromeBrowserState* browser_state) {
+  BookmarkModel* local_or_syncable_bookmark_model =
+      ios::LocalOrSyncableBookmarkModelFactory::GetForBrowserState(
+          browser_state);
+  BookmarkModel* account_bookmark_model =
+      ios::AccountBookmarkModelFactory::GetForBrowserState(browser_state);
+  if (!RemoveAllUserBookmarksIOS(local_or_syncable_bookmark_model)) {
+    return false;
+  }
+  if (account_bookmark_model) {
+    if (!RemoveAllUserBookmarksIOS(account_bookmark_model)) {
+      return false;
+    }
+  }
   ResetLastUsedBookmarkFolder(browser_state->GetPrefs());
   return true;
 }

@@ -58,7 +58,6 @@
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/feature_flags.h"
 #import "ios/chrome/browser/unified_consent/unified_consent_service_factory.h"
 #import "ios/chrome/browser/web/web_navigation_browser_agent.h"
-#import "ios/chrome/test/app/bookmarks_test_util.h"
 #import "ios/chrome/test/app/browsing_data_test_util.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "ios/chrome/test/app/navigation_test_util.h"
@@ -777,17 +776,6 @@ NSString* SerializedValue(const base::Value* value) {
       web_state->Stop();
     }
   }
-}
-
-#pragma mark - Bookmarks Utilities (EG2)
-
-+ (NSError*)clearBookmarks {
-  bool success = chrome_test_util::ClearBookmarks();
-  if (!success) {
-    return testing::NSErrorWithLocalizedDescription(
-        @"Not all bookmarks were removed.");
-  }
-  return nil;
 }
 
 #pragma mark - URL Utilities (EG2)

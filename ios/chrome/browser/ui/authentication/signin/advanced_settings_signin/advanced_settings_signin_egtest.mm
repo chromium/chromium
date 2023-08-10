@@ -92,14 +92,14 @@ void WaitForSettingDoneButton() {
   [super setUp];
 
   [BookmarkEarlGrey waitForBookmarkModelsLoaded];
-  [ChromeEarlGrey clearBookmarks];
+  [BookmarkEarlGrey clearBookmarks];
   // TODO(crbug.com/1450472): Remove when kHideSettingsSyncPromo is launched.
   [SigninSettingsAppInterface setSettingsSigninPromoDisplayedCount:INT_MAX];
 }
 
 - (void)tearDown {
   [super tearDown];
-  [ChromeEarlGrey clearBookmarks];
+  [BookmarkEarlGrey clearBookmarks];
   [BookmarkEarlGrey clearBookmarksPositionCache];
 }
 

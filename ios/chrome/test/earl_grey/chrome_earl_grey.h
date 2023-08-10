@@ -630,12 +630,6 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // `ForceRelaunchByKilling.
 - (void)clearAllWebStateBrowsingData:(AppLaunchConfiguration)config;
 
-#pragma mark - Bookmarks Utilities (EG2)
-
-// Clears bookmarks if any bookmark still presents. A GREYAssert is induced if
-// bookmarks can not be cleared.
-- (void)clearBookmarks;
-
 #pragma mark - URL Utilities (EG2)
 
 // Returns the title string to be used for a page with `URL` if that page
