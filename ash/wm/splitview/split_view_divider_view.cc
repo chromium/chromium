@@ -147,14 +147,6 @@ void SplitViewDividerView::Layout() {
   }
 }
 
-void SplitViewDividerView::OnThemeChanged() {
-  views::View::OnThemeChanged();
-
-  background()->SetNativeControlColor(
-      AshColorProvider::Get()->GetBaseLayerColor(
-          AshColorProvider::BaseLayerType::kOpaque));
-}
-
 void SplitViewDividerView::OnMouseEntered(const ui::MouseEvent& event) {
   gfx::Point screen_location = event.location();
   ConvertPointToScreen(this, &screen_location);
