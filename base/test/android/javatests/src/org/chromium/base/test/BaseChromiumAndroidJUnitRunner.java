@@ -347,6 +347,7 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
         final List<String> mIncludedPrefixes = new ArrayList<String>();
         final List<DexFile> mDexFiles;
         boolean mHasClassList;
+        private ClassLoader mClassLoader = DexFileTestRequestBuilder.class.getClassLoader();
 
         DexFileTestRequestBuilder(Instrumentation instr, Bundle bundle, List<DexFile> dexFiles) {
             super(instr, bundle);
@@ -381,6 +382,12 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
         public TestRequestBuilder addTestMethod(String testClassName, String testMethodName) {
             mHasClassList = true;
             return super.addTestMethod(testClassName, testMethodName);
+        }
+
+        @Override
+        public TestRequestBuilder setClassLoader(ClassLoader loader) {
+            mClassLoader = loader;
+            return super.setClassLoader(loader);
         }
 
         @Override
@@ -427,7 +434,7 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
                         // android-kitkat-arm-rel from 41s -> 23s.
                         continue;
                     }
-                    if (!className.contains("$") && checkIfTest(className)) {
+                    if (!className.contains("$") && checkIfTest(className, mClassLoader)) {
                         addTestClass(className);
                     }
                 }
@@ -496,24 +503,20 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
         }
     }
 
-    private static boolean checkIfTest(String className) {
-        Class<?> loadedClass = tryLoadClass(className);
+    private static boolean checkIfTest(String className, ClassLoader classLoader) {
+        Class<?> loadedClass = tryLoadClass(className, classLoader);
         if (loadedClass != null && isTestClass(loadedClass)) {
             return true;
         }
         return false;
     }
 
-    private static Class<?> tryLoadClass(String className) {
+    private static Class<?> tryLoadClass(String className, ClassLoader classLoader) {
         try {
-            return Class.forName(
-                    className, false, BaseChromiumAndroidJUnitRunner.class.getClassLoader());
-        } catch (NoClassDefFoundError e) {
-            // Do nothing.
-        } catch (ClassNotFoundException e) {
-            // Do nothing.
+            return Class.forName(className, false, classLoader);
+        } catch (NoClassDefFoundError | ClassNotFoundException e) {
+            return null;
         }
-        return null;
     }
 
     // Copied from android.support.test.runner code.
