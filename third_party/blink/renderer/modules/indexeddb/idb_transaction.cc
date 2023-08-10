@@ -402,20 +402,15 @@ void IDBTransaction::EnqueueResult(
 }
 
 void IDBTransaction::OnResultReady() {
-#if DCHECK_IS_ON()
-  // Re-entrancy would be bad.
-  DCHECK(!handling_ready_);
+  // Re-entrancy can occur when sending a result causes the transaction to
+  // abort, which cancels loading on other pending results.
+  if (handling_ready_) {
+    return;
+  }
   base::AutoReset reset(&handling_ready_, true);
-#endif
 
-  while (!result_queue_.empty()) {
-    IDBRequestQueueItem* result = result_queue_.front().get();
-    CHECK(result);
-    if (!result->IsReady())
-      break;
-
-    result->SendResult();
-    result_queue_.pop_front();
+  while (!result_queue_.empty() && result_queue_.front()->IsReady()) {
+    result_queue_.TakeFirst()->SendResult();
   }
 }
 
