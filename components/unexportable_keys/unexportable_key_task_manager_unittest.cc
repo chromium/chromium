@@ -4,6 +4,7 @@
 
 #include "components/unexportable_keys/unexportable_key_task_manager.h"
 
+#include "base/test/gmock_expected_support.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/token.h"
@@ -15,6 +16,7 @@
 #include "crypto/scoped_mock_unexportable_key_provider.h"
 #include "crypto/signature_verifier.h"
 #include "crypto/unexportable_key.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
@@ -58,8 +60,7 @@ TEST_F(UnexportableKeyTaskManagerTest, GenerateKeyAsync) {
   EXPECT_FALSE(future.IsReady());
   RunBackgroundTasks();
   EXPECT_TRUE(future.IsReady());
-  ASSERT_TRUE(future.Get().has_value());
-  EXPECT_NE(future.Get().value(), nullptr);
+  EXPECT_THAT(future.Get(), base::test::ValueIs(::testing::NotNull()));
 }
 
 TEST_F(UnexportableKeyTaskManagerTest,
@@ -101,9 +102,8 @@ TEST_F(UnexportableKeyTaskManagerTest, FromWrappedKeyAsync) {
       supported_algorithm, BackgroundTaskPriority::kBestEffort,
       generate_key_future.GetCallback());
   RunBackgroundTasks();
-  ASSERT_TRUE(generate_key_future.Get().has_value());
-  scoped_refptr<RefCountedUnexportableSigningKey> key =
-      generate_key_future.Get().value();
+  ASSERT_OK_AND_ASSIGN(scoped_refptr<RefCountedUnexportableSigningKey> key,
+                       generate_key_future.Get());
   std::vector<uint8_t> wrapped_key = key->key().GetWrappedKey();
 
   // Second, unwrap the newly generated key.
@@ -116,8 +116,7 @@ TEST_F(UnexportableKeyTaskManagerTest, FromWrappedKeyAsync) {
   EXPECT_FALSE(unwrap_key_future.IsReady());
   RunBackgroundTasks();
   EXPECT_TRUE(unwrap_key_future.IsReady());
-  ASSERT_TRUE(unwrap_key_future.Get().has_value());
-  auto unwrapped_key = unwrap_key_future.Get().value();
+  ASSERT_OK_AND_ASSIGN(auto unwrapped_key, unwrap_key_future.Get());
   EXPECT_NE(unwrapped_key, nullptr);
   // New key should have a unique ID.
   EXPECT_NE(unwrapped_key->id(), key->id());
@@ -149,9 +148,8 @@ TEST_F(UnexportableKeyTaskManagerTest,
       supported_algorithm, BackgroundTaskPriority::kBestEffort,
       generate_key_future.GetCallback());
   RunBackgroundTasks();
-  ASSERT_TRUE(generate_key_future.Get().has_value());
-  scoped_refptr<RefCountedUnexportableSigningKey> key =
-      generate_key_future.Get().value();
+  ASSERT_OK_AND_ASSIGN(scoped_refptr<RefCountedUnexportableSigningKey> key,
+                       generate_key_future.Get());
   std::vector<uint8_t> wrapped_key = key->key().GetWrappedKey();
 
   // Second, emulate the key provider being not available and check that
@@ -176,8 +174,7 @@ TEST_F(UnexportableKeyTaskManagerTest, SignAsync) {
       supported_algorithm, BackgroundTaskPriority::kBestEffort,
       generate_key_future.GetCallback());
   RunBackgroundTasks();
-  ASSERT_TRUE(generate_key_future.Get().has_value());
-  auto key = generate_key_future.Get().value();
+  ASSERT_OK_AND_ASSIGN(auto key, generate_key_future.Get());
 
   // Second, sign some data with the key.
   base::test::TestFuture<ServiceErrorOr<std::vector<uint8_t>>> sign_future;
@@ -187,12 +184,11 @@ TEST_F(UnexportableKeyTaskManagerTest, SignAsync) {
   EXPECT_FALSE(sign_future.IsReady());
   RunBackgroundTasks();
   EXPECT_TRUE(sign_future.IsReady());
-  const auto& signed_data = sign_future.Get();
-  ASSERT_TRUE(signed_data.has_value());
+  ASSERT_OK_AND_ASSIGN(const auto signed_data, sign_future.Get());
 
   // Also verify that the signature was generated correctly.
   crypto::SignatureVerifier verifier;
-  ASSERT_TRUE(verifier.VerifyInit(key->key().Algorithm(), signed_data.value(),
+  ASSERT_TRUE(verifier.VerifyInit(key->key().Algorithm(), signed_data,
                                   key->key().GetSubjectPublicKeyInfo()));
   verifier.VerifyUpdate(data);
   EXPECT_TRUE(verifier.VerifyFinal());
