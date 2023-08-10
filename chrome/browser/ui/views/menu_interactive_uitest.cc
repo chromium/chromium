@@ -103,6 +103,11 @@ class MenuControllerUITest : public InProcessBrowserTest {
     run_loop.RunUntilIdle();
   }
 
+  void TearDownOnMainThread() override {
+    menu_runner_.reset();
+    menu_delegate_.reset();
+  }
+
  protected:
   raw_ptr<MenuItemView, DanglingUntriaged> first_item_ = nullptr;
   std::unique_ptr<MenuRunner> menu_runner_;
