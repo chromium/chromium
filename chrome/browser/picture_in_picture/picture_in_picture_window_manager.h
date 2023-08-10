@@ -7,6 +7,8 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/picture_in_picture_window_options/picture_in_picture_window_options.mojom.h"
@@ -28,6 +30,12 @@ class Display;
 // instances regardless of the number of windows, tabs, profiles, etc.
 class PictureInPictureWindowManager {
  public:
+  // Observer for PictureInPictureWindowManager events.
+  class Observer : public base::CheckedObserver {
+   public:
+    virtual void OnEnterPictureInPicture() {}
+  };
+
   // Returns the singleton instance.
   static PictureInPictureWindowManager* GetInstance();
 
@@ -116,6 +124,11 @@ class PictureInPictureWindowManager {
   // Used for Document picture-in-picture windows only.
   static gfx::Size GetMaximumWindowSize(const display::Display& display);
 
+  void AddObserver(Observer* observer) { observers_.AddObserver(observer); }
+  void RemoveObserver(Observer* observer) {
+    observers_.RemoveObserver(observer);
+  }
+
  private:
   friend struct base::DefaultSingletonTraits<PictureInPictureWindowManager>;
   class VideoWebContentsObserver;
@@ -141,6 +154,13 @@ class PictureInPictureWindowManager {
   // This is suffixed with "Internal" to keep consistency with the method above.
   void CloseWindowInternal();
 
+  template <typename Functor>
+  void NotifyObservers(const Functor& functor) {
+    for (Observer& observer : observers_) {
+      base::invoke(functor, observer);
+    }
+  }
+
 #if !BUILDFLAG(IS_ANDROID)
   // Called when the document PiP parent web contents is being destroyed.
   void DocumentWebContentsDestroyed();
@@ -148,6 +168,9 @@ class PictureInPictureWindowManager {
 
   PictureInPictureWindowManager();
   ~PictureInPictureWindowManager();
+
+  // Observers that listen to updates of this instance.
+  base::ObserverList<Observer> observers_;
 
   std::unique_ptr<VideoWebContentsObserver> video_web_contents_observer_;
 #if !BUILDFLAG(IS_ANDROID)

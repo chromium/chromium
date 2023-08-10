@@ -109,6 +109,8 @@ void PictureInPictureWindowManager::EnterDocumentPictureInPicture(
   // Show the new window. As a side effect, this also first closes any
   // pre-existing PictureInPictureWindowController's window (if any).
   EnterPictureInPictureWithController(controller);
+
+  NotifyObservers(&Observer::OnEnterPictureInPicture);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -128,6 +130,7 @@ PictureInPictureWindowManager::EnterVideoPictureInPicture(
     CreateWindowInternal(web_contents);
   }
 
+  NotifyObservers(&Observer::OnEnterPictureInPicture);
   return content::PictureInPictureResult::kSuccess;
 }
 
