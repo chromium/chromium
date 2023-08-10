@@ -445,7 +445,10 @@ group("empty_group") {
 }
 
 generate_jni("common_jni") {
-  sources = [ "java/src/org/chromium/android_webview/common/AwResource.java" ]
+  sources = [
+    "java/src/org/chromium/android_webview/common/AwResource.java",
+    "java/src/org/chromium/android_webview/common/origin_trial/DisableOriginTrialsSafeModeUtils.java",
+  ]
 }
 
 generate_jni("browser_jni_headers") {
@@ -607,6 +610,7 @@ android_library("browser_java") {
   deps = [
     ":common_aidl_java",
     ":common_java",
+    ":common_origin_trials_java",
     ":common_platform_services_java",
     ":common_variations_java",
     ":crash_client_java",
@@ -720,6 +724,20 @@ android_library("crash_client_java") {
   srcjar_deps = [ ":crash_client_jni" ]
 
   deps = [
+    "//base:base_java",
+    "//base:jni_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+  ]
+}
+
+android_library("common_origin_trials_java") {
+  sources = [
+    "java/src/org/chromium/android_webview/common/origin_trial/DisableOriginTrialsSafeModeAction.java",
+    "java/src/org/chromium/android_webview/common/origin_trial/DisableOriginTrialsSafeModeUtils.java",
+  ]
+
+  deps = [
+    ":common_java",
     "//base:base_java",
     "//base:jni_java",
     "//third_party/androidx:androidx_annotation_annotation_java",

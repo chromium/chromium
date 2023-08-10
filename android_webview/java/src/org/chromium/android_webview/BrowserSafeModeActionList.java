@@ -8,6 +8,7 @@ import org.chromium.android_webview.autofill.AndroidAutofillSafeModeAction;
 import org.chromium.android_webview.autofill.ChromeAutocompleteSafeModeAction;
 import org.chromium.android_webview.common.Lifetime;
 import org.chromium.android_webview.common.SafeModeAction;
+import org.chromium.android_webview.common.origin_trial.DisableOriginTrialsSafeModeAction;
 import org.chromium.android_webview.safe_browsing.AwSafeBrowsingSafeModeAction;
 import org.chromium.android_webview.variations.FastVariationsSeedSafeModeAction;
 import org.chromium.android_webview.variations.VariationsSeedSafeModeAction;
@@ -30,5 +31,6 @@ public final class BrowserSafeModeActionList {
             new NoopSafeModeAction(),
             new FastVariationsSeedSafeModeAction(),
             new AwSafeBrowsingSafeModeAction(),
+            new DisableOriginTrialsSafeModeAction(),
     };
 }

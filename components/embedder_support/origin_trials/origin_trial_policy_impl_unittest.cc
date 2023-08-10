@@ -254,6 +254,17 @@ TEST_F(OriginTrialPolicyImplTest, DisableThreeTokens) {
   EXPECT_TRUE(manager()->IsTokenDisabled(token3_signature_));
 }
 
+TEST_F(OriginTrialPolicyImplTest, AllNonDeprecationTrialsAreDisabledByFlag) {
+  const char kFrobulateThirdPartyTrialName[] = "FrobulateThirdParty";
+  const char kFrobulateDeprecationTrialName[] = "FrobulateDeprecation";
+  EXPECT_FALSE(manager()->GetAllowOnlyDeprecationTrials());
+  EXPECT_FALSE(manager()->IsFeatureDisabled(kFrobulateThirdPartyTrialName));
+  EXPECT_FALSE(manager()->IsFeatureDisabled(kFrobulateDeprecationTrialName));
+  manager()->SetAllowOnlyDeprecationTrials(true);
+  EXPECT_TRUE(manager()->IsFeatureDisabled(kFrobulateThirdPartyTrialName));
+  EXPECT_FALSE(manager()->IsFeatureDisabled(kFrobulateDeprecationTrialName));
+}
+
 TEST_F(OriginTrialPolicyImplTest, DisableFeatureForUser) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(

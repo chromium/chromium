@@ -37,13 +37,18 @@ class OriginTrialPolicyImpl : public blink::OriginTrialPolicy {
   bool SetPublicKeysFromASCIIString(const std::string& ascii_public_key);
   bool SetDisabledFeatures(const std::string& disabled_feature_list);
   bool SetDisabledTokens(const std::vector<std::string>& tokens);
-
+  // Disabling deprecation trial could cause potential breakage. This
+  // function allow embedder to safely disable all trials with
+  // new/experimental features. By default all trials are allowed to run.
+  void SetAllowOnlyDeprecationTrials(bool allow_only_deprecation_trials);
+  bool GetAllowOnlyDeprecationTrials() const;
   const std::set<std::string>* GetDisabledTokensForTesting() const override;
 
  private:
   std::vector<blink::OriginTrialPublicKey> public_keys_;
   std::set<std::string> disabled_features_;
   std::set<std::string> disabled_tokens_;
+  bool allow_only_deprecation_trials_ = false;
 };
 
 }  // namespace embedder_support

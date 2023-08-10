@@ -74,6 +74,15 @@ bool origin_trials::IsTrialEnabledForBrowserProcessReadAccess(base::StringPiece 
   return base::Contains(kEnabledForBrowserProcessReadWriteAccess, trial_name);
 }
 
+bool origin_trials::IsDeprecationTrial(base::StringPiece trial_name) {
+  for (auto feature : FeaturesForTrial(trial_name)) {
+    if (GetTrialType(feature) == OriginTrialType::kDeprecation) {
+      return true;
+    }
+  }
+  return false;
+}
+
 OriginTrialType origin_trials::GetTrialType(OriginTrialFeature feature) {
   switch (feature) {
     {% for feature in origin_trial_features if feature.origin_trial_type %}
