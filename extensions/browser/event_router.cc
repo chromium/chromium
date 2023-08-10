@@ -213,7 +213,6 @@ std::string EventRouter::GetBaseEventName(const std::string& full_event_name) {
   return full_event_name.substr(0, slash_sep);
 }
 
-// static
 void EventRouter::DispatchEventToSender(
     content::RenderProcessHost* rph,
     content::BrowserContext* browser_context,
@@ -227,12 +226,6 @@ void EventRouter::DispatchEventToSender(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   int event_id = g_extension_event_id.GetNext();
 
-  if (!ExtensionsBrowserClient::Get()->IsValidContext(browser_context)) {
-    return;
-  }
-
-  EventRouter* event_router = EventRouter::Get(browser_context);
-  CHECK(event_router);
   auto* registry = ExtensionRegistry::Get(browser_context);
   CHECK(registry);
   const Extension* extension =
@@ -241,20 +234,20 @@ void EventRouter::DispatchEventToSender(
   // this means we aren't dispatching an event to an extension so the metric
   // wouldn't be relevant anyways (e.g. would go to a web page or webUI).
   if (extension) {
-    event_router->IncrementInFlightEvents(
+    IncrementInFlightEvents(
         browser_context, rph, extension, event_id, event_name,
         // Currently this arg is not used for metrics recording since we do not
         // include events from EventDispatchSource::kDispatchEventToSender.
         /*dispatch_start_time=*/base::TimeTicks::Now(),
         service_worker_version_id, EventDispatchSource::kDispatchEventToSender);
-    event_router->ReportEvent(histogram_value, extension,
-                              /*did_enqueue=*/false);
+    ReportEvent(histogram_value, extension,
+                /*did_enqueue=*/false);
   }
-  event_router->ObserveProcess(rph);
-  event_router->DispatchExtensionMessage(
-      rph, worker_thread_id, browser_context, extension_id, event_id,
-      event_name, std::move(event_args), UserGestureState::USER_GESTURE_UNKNOWN,
-      std::move(info));
+  ObserveProcess(rph);
+  DispatchExtensionMessage(rph, worker_thread_id, browser_context, extension_id,
+                           event_id, event_name, std::move(event_args),
+                           UserGestureState::USER_GESTURE_UNKNOWN,
+                           std::move(info));
 }
 
 // static.

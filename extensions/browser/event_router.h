@@ -129,15 +129,17 @@ class EventRouter : public KeyedService,
   // methods BroadcastEvent or DispatchEventToExtension.
   // Note that this method will dispatch the event with
   // UserGestureState:USER_GESTURE_UNKNOWN.
-  static void DispatchEventToSender(content::RenderProcessHost* rph,
-                                    content::BrowserContext* browser_context,
-                                    const std::string& extension_id,
-                                    events::HistogramValue histogram_value,
-                                    const std::string& event_name,
-                                    int worker_thread_id,
-                                    int64_t service_worker_version_id,
-                                    base::Value::List event_args,
-                                    mojom::EventFilteringInfoPtr info);
+  // Note: `browser_context` may differ from `browser_context_` since the
+  // `EventRouter` is shared between on- and off-the-record contexts.
+  void DispatchEventToSender(content::RenderProcessHost* rph,
+                             content::BrowserContext* browser_context,
+                             const std::string& extension_id,
+                             events::HistogramValue histogram_value,
+                             const std::string& event_name,
+                             int worker_thread_id,
+                             int64_t service_worker_version_id,
+                             base::Value::List event_args,
+                             mojom::EventFilteringInfoPtr info);
 
   // Returns false when the event is scoped to a context and the listening
   // extension does not have access to events from that context.
@@ -492,16 +494,6 @@ class EventRouter : public KeyedService,
   void RouteDispatchEvent(content::RenderProcessHost* rph,
                           mojom::DispatchEventParamsPtr params,
                           base::Value::List event_args);
-
-  // static
-  static void DoDispatchEventToSenderBookkeeping(
-      content::BrowserContext* context,
-      const std::string& extension_id,
-      int event_id,
-      int render_process_id,
-      int64_t service_worker_version_id,
-      events::HistogramValue histogram_value,
-      const std::string& event_name);
 
   void DispatchPendingEvent(
       std::unique_ptr<Event> event,
