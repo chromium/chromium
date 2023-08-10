@@ -33,8 +33,7 @@ export class PolicyTestRowElement extends CustomElement {
   // Event listener function for changing the input type when a policy name is
   // selected.
   private changeInputTypeEvent_(event: Event) {
-    const inputElement: HTMLInputElement = event.target! as HTMLInputElement;
-    this.changeInputType_(inputElement);
+    this.changeInputType_(event.target! as HTMLInputElement);
   }
 
   private changeInputType_(nameInput: HTMLInputElement) {
@@ -43,7 +42,6 @@ export class PolicyTestRowElement extends CustomElement {
       this.setInErrorState_(nameInput);
       return;
     }
-
     const newValueType = this.policyNamesToTypes_[nameInput.value];
     const inputElement = this.getRequiredElement<HTMLInputElement>('.value');
     const inputElementCell = inputElement.parentNode! as HTMLElement;
@@ -336,12 +334,8 @@ export class PolicyTestRowElement extends CustomElement {
   // Class method for returning the level, source or scope set in this
   // row.
   getPolicyAttribute(attributeName: string): string {
-    const inputElement: HTMLSelectElement =
-        this.getRequiredElement<HTMLSelectElement>(`.${attributeName}`);
-    if (inputElement.options[inputElement.selectedIndex]!.hidden) {
-      this.setInErrorState_(inputElement);
-    }
-    return inputElement.value;
+    return this.getRequiredElement<HTMLSelectElement>(`.${attributeName}`)
+        .value;
   }
 
   // Class method for returning the string value of the given attribute in this
