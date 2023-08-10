@@ -9780,6 +9780,8 @@ if (!is_android) {
       "base/web_ui_mocha_browser_test.h",
       "base/web_ui_test_data_source.cc",
       "base/web_ui_test_data_source.h",
+      "interaction/feature_engagement_initialized_observer.cc",
+      "interaction/feature_engagement_initialized_observer.h",
       "interaction/interaction_test_util_browser.cc",
       "interaction/interaction_test_util_browser.h",
       "interaction/interactive_browser_test.cc",
