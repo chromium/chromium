@@ -394,5 +394,8 @@ tast_disabled_tests_from_lacros_all = [
   # https://b/294268366
   "ui.ForceRegion.lacros",
 
+  # https://crbug.com/1470305
+  "inputs.VirtualKeyboardTypingOmnibox.a11y_lacros",
+
   # THIS IS THE LACROS LIST, SCROLL UP FOR CHROME/CHROMEOS.
 ]
