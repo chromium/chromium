@@ -293,7 +293,8 @@ class PageSpecificSiteDataDialogModelDelegate : public ui::DialogModelDelegate {
     // `base::DoNothing` callback.
     // TODO(crbug.com/1394352): Future tests will need to know when the deletion
     // is completed, this will require a callback to be passed here.
-
+    // TODO(crbug.com/1468277): Step 7 - This needs to be updated to clear
+    // browsing data where the top-site on a StorageKey matches `origin`.
     allowed_browsing_data_model()->RemoveBrowsingData(origin.host(),
                                                       base::DoNothing());
     blocked_browsing_data_model()->RemoveBrowsingData(origin.host(),
@@ -339,7 +340,9 @@ class PageSpecificSiteDataDialogModelDelegate : public ui::DialogModelDelegate {
     }
   }
 
-  // TODO(crbug.com/1405808): Add an end-to-end browser test for this.
+  // TODO(crbug.com/1468277): Step 7 - This function is a shim that clears
+  // partitioned storage as though it were unpartitioned to keep the UI working.
+  // The need for it will go away when Step 7 is completed.
   void DeletePartitionedStorage(const url::Origin& origin) {
     Profile* profile =
         Profile::FromBrowserContext(web_contents_->GetBrowserContext());
@@ -390,9 +393,13 @@ class PageSpecificSiteDataDialogModelDelegate : public ui::DialogModelDelegate {
 
   bool IsBrowsingDataEntryViewFullyPartitioned(
       const BrowsingDataModel::BrowsingDataEntryView& entry) {
-    // TODO(crbug.com/1378703): Implement showing partitioned state from
-    // BrowsingDataModel.
-    return false;
+    // We consider the browsing data entry view to be fully partitioned if the
+    // storage is backed by a StorageKey and the StorageKey is third-party.
+    // Unlike for cookies, we can be sure that given context is partitioned if
+    // its storage keys are as that determines the scope of access.
+    const blink::StorageKey* storage_key =
+        absl::get_if<blink::StorageKey>(&entry.data_key.get());
+    return storage_key != nullptr && storage_key->IsThirdPartyContext();
   }
 
   bool IsCookieTreeNodeFullyPartitioned(CookieTreeNode* node) {
