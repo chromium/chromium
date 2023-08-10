@@ -1094,6 +1094,10 @@ chromium-metrics-reviews@google.com.
     instantiated the modules. Only logged on the 1P NTP. Note that even if the
     user has Google as their default search engine, Incognito and Guest mode
     NTPs are not considered 1P and don't log this histogram.
+
+    Note: In M110, the output of the metric was accidentally modified to record
+    all modules whose descriptors where loaded. This was subsequently corrected
+    in M114.
   </summary>
 </histogram>
 
