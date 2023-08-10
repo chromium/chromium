@@ -10,7 +10,6 @@
 #include "base/files/file_path.h"
 #include "components/keyed_service/core/simple_factory_key.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/browser/content_browser_client.h"
 
 namespace chromecast {
 namespace shell {

@@ -6,10 +6,11 @@
 #define CONTENT_BROWSER_RENDERER_HOST_POLICY_CONTAINER_HOST_H_
 
 #include <iosfwd>
+#include <memory>
+#include <vector>
 
 #include "content/browser/child_process_host_impl.h"
 #include "content/common/content_export.h"
-#include "content/public/browser/content_browser_client.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
@@ -25,6 +26,8 @@
 #include "url/gurl.h"
 
 namespace content {
+
+class ContentBrowserClient;
 
 // The contents of a PolicyContainerHost.
 struct CONTENT_EXPORT PolicyContainerPolicies {

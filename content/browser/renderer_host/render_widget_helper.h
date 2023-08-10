@@ -15,7 +15,6 @@
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/global_request_id.h"
 #include "content/public/common/widget_type.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"

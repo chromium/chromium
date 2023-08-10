@@ -12,6 +12,7 @@
 #include "ash/public/cpp/style/dark_light_mode_controller.h"
 #include "ash/public/cpp/system_notification_builder.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
+#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/i18n/time_formatting.h"
 #include "base/time/default_clock.h"

@@ -28,6 +28,7 @@
 #include "content/public/browser/web_contents.h"
 #include "media/cdm/win/media_foundation_cdm.h"
 #include "media/mojo/mojom/cdm_document_service.mojom.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"

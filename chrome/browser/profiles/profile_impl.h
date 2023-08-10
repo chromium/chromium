@@ -25,7 +25,6 @@
 #include "chrome/common/buildflags.h"
 #include "components/keyed_service/core/simple_factory_key.h"
 #include "components/prefs/pref_change_registrar.h"
-#include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/host_zoom_map.h"
 #include "extensions/buildflags/buildflags.h"
 

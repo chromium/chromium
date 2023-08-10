@@ -20,6 +20,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/features_generated.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 namespace {
 constexpr char kHostA[] = "a.test";
