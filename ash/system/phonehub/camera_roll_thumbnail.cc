@@ -5,6 +5,7 @@
 #include "ash/system/phonehub/camera_roll_thumbnail.h"
 
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
 #include "base/functional/bind.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
@@ -13,6 +14,7 @@
 #include "third_party/skia/include/core/SkRRect.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/highlight_path_generator.h"
 
@@ -75,8 +77,7 @@ void CameraRollThumbnail::PaintButtonContents(gfx::Canvas* canvas) {
   if (video_type_) {
     cc::PaintFlags flags;
     flags.setAntiAlias(true);
-    flags.setColor(color_provider->GetBaseLayerColor(
-        AshColorProvider::BaseLayerType::kTransparent80));
+    flags.setColor(GetColorProvider()->GetColor(kColorAshShieldAndBase80));
     flags.setStyle(cc::PaintFlags::kFill_Style);
     canvas->DrawCircle(kCameraRollThumbnailVideoCircleOrigin,
                        kCameraRollThumbnailVideoCircleRadius, flags);

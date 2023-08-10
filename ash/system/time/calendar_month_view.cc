@@ -8,6 +8,7 @@
 #include "ash/public/cpp/ash_typography.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/typography.h"
 #include "ash/system/model/system_tray_model.h"
@@ -25,6 +26,8 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
 #include "ui/events/event.h"
 #include "ui/gfx/canvas.h"
@@ -438,15 +441,14 @@ void CalendarDateCellView::MaybeDrawEventsIndicator(gfx::Canvas* canvas) {
     return;
   }
 
-  const SkColor jelly_color = GetColorProvider()->GetColor(
+  const auto* color_provider = GetColorProvider();
+  const SkColor jelly_color = color_provider->GetColor(
       is_today_ ? cros_tokens::kCrosSysSystemOnPrimaryContainer
                 : cros_tokens::kCrosSysOnSurface);
   const SkColor indicator_color =
       features::IsCalendarJellyEnabled() ? jelly_color
-      : is_today_ ? AshColorProvider::Get()->GetBaseLayerColor(
-                        AshColorProvider::BaseLayerType::kTransparent90)
-                  : AshColorProvider::Get()->GetControlsLayerColor(
-                        AshColorProvider::ControlsLayerType::kFocusRingColor);
+      : is_today_ ? color_provider->GetColor(kColorAshShieldAndBase90)
+                  : color_provider->GetColor(ui::kColorAshFocusRing);
 
   const float indicator_radius = is_selected_ ? kEventsPresentRoundedRadius * 2
                                               : kEventsPresentRoundedRadius;
