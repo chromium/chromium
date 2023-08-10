@@ -41,6 +41,7 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "base/notreached.h"
 #include "third_party/protobuf/src/google/protobuf/descriptor.h"
 #include "third_party/protobuf/src/google/protobuf/message.h"
@@ -278,8 +279,7 @@ Converter::Converter(const Converter& other) {}
 
 std::string Converter::FieldToFlattenableName(
     const std::string& field_name) const {
-  CHECK(kFieldToFlattenableName.find(field_name) !=
-        kFieldToFlattenableName.end());
+  CHECK(base::Contains(kFieldToFlattenableName, field_name));
 
   return kFieldToFlattenableName.at(field_name);
 }
@@ -2333,9 +2333,7 @@ bool Converter::IsBlacklisted(const std::string& field_name) const {
   // Don't blacklist misbehaving flattenables.
   return false;
 #else
-
-  return kMisbehavedFlattenableBlacklist.find(field_name) !=
-         kMisbehavedFlattenableBlacklist.end();
+  return base::Contains(kMisbehavedFlattenableBlacklist, field_name);
 #endif  // AVOID_MISBEHAVIOR
 }
 }  // namespace skia_image_filter_proto_converter

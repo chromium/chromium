@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "testing/perf/perf_test.h"
@@ -20,7 +21,7 @@ static const base::NoDestructor<std::vector<std::string>> kInvalidCharacters{
 
 void CheckForInvalidCharacters(const std::string& str) {
   for (const auto& invalid : *kInvalidCharacters) {
-    CHECK(str.find(invalid) == std::string::npos)
+    CHECK(!base::Contains(str, invalid))
         << "Given invalid character for perf names '" << invalid << "'";
   }
 }
