@@ -189,7 +189,7 @@ void PermissionToggleRowView::UpdateUiOnPermissionChanged() {
 
   // Update toggle state if it is used.
   if (toggle_button_) {
-    toggle_button_->SetIsOn(PageInfoUI::IsToggleOn(permission_));
+    toggle_button_->AnimateIsOn(PageInfoUI::IsToggleOn(permission_));
   }
 
   // Reset |state_label_|, readd it after if needed.
