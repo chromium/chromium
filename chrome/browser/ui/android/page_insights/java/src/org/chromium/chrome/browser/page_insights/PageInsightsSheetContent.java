@@ -8,10 +8,12 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.FrameLayout;
 
 import androidx.annotation.Nullable;
 
+import androidx.annotation.VisibleForTesting;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 
 public class PageInsightsSheetContent implements BottomSheetContent {
@@ -27,7 +29,10 @@ public class PageInsightsSheetContent implements BottomSheetContent {
      */
     public PageInsightsSheetContent(Context context) {
         mToolbarView = (ViewGroup) LayoutInflater.from(context).inflate(
-                R.layout.page_insights_sheet_toolbar, null);
+            R.layout.page_insights_sheet_toolbar, null);
+        mToolbarView
+            .findViewById(R.id.page_insights_back_button)
+            .setOnClickListener((view)-> onBackButtonPressed());
         mSheetContentView = new FrameLayout(context);
     }
 
@@ -115,5 +120,25 @@ public class PageInsightsSheetContent implements BottomSheetContent {
     @Override
     public int getSheetClosedAccessibilityStringId() {
         return R.string.page_insights_sheet_closed;
+    }
+
+    private void onBackButtonPressed(){
+        mToolbarView.findViewById(R.id.page_insights_main_header).setVisibility(View.VISIBLE);
+        mToolbarView.findViewById(R.id.page_insights_child_page_header).setVisibility(View.GONE);
+    }
+
+    // TODO(kamalchoudhury): Update the function to fetch the title from child page once data
+    // fetching from server is finalized.
+    private String getChildSheetTitle() {
+        return "Places on this page";
+    }
+
+    // TODO(kamalchoudhury): Update the function once data fetching from server is finalized.
+    @VisibleForTesting
+    public void renderChildPage(){
+        TextView childTitle = mToolbarView.findViewById(R.id.page_insights_child_title);
+        childTitle.setText(getChildSheetTitle());
+        mToolbarView.findViewById(R.id.page_insights_main_header).setVisibility(View.GONE);
+        mToolbarView.findViewById(R.id.page_insights_child_page_header).setVisibility(View.VISIBLE);
     }
 }

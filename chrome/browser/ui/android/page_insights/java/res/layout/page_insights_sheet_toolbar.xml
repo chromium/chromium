@@ -24,7 +24,7 @@ found in the LICENSE file.
         android:src="@drawable/drag_handlebar" />
 
     <org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables
-        android:id="@+id/page_insights_header"
+        android:id="@+id/page_insights_main_header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
@@ -33,5 +33,35 @@ found in the LICENSE file.
         android:drawablePadding="@dimen/page_insights_title_margin"
         android:text="@string/page_insights_hub_title_text"
         android:textAppearance="@style/TextAppearance.Headline2.Primary.Baseline" />
+
+    <LinearLayout
+        android:id="@+id/page_insights_child_page_header"
+        android:layout_width="match_parent"
+        android:layout_height="35dp"
+        android:orientation="horizontal"
+        android:importantForAccessibility="no"
+        android:visibility="gone">
+
+        <ImageButton
+            android:id="@+id/page_insights_back_button"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:paddingVertical="10dp"
+            android:paddingHorizontal="15dp"
+            android:src="@drawable/ic_arrow_back_24dp"
+            app:tint="@color/default_icon_color_baseline"
+            android:background="@android:color/transparent"
+            android:importantForAccessibility="yes"
+            android:contentDescription="@string/page_insights_back_button_description"/>
+
+        <TextView
+            android:id="@+id/page_insights_child_title"
+            android:layout_width="wrap_content"
+            android:layout_height="35dp"
+            android:paddingVertical="3dp"
+            android:paddingHorizontal="5dp"
+            android:textAppearance="@style/TextAppearance.TextAccentLarge.Primary.Baseline"/>
+
+    </LinearLayout>
 
 </LinearLayout>

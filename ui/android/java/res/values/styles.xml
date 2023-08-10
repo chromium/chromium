@@ -99,6 +99,9 @@ found in the LICENSE file.
     <style name="TextAppearance.TextLarge">
         <item name="android:textSize">@dimen/text_size_large</item>
     </style>
+    <style name="TextAppearance.TextAccentLarge" parent="TextAppearance.TextLarge">
+        <item name="android:fontFamily">@font/accent_font</item>
+    </style>
     <style name="TextAppearance.TextMediumThick" parent="TextAppearance.RobotoMediumStyle">
         <item name="android:textSize">@dimen/text_size_medium</item>
     </style>
@@ -234,7 +237,7 @@ found in the LICENSE file.
         <item name="android:textColor">@color/default_text_color_on_accent1_baseline_list</item>
     </style>
     <style name="TextAppearance.MenuChip.Text.Blue" parent="TextAppearance.Button.Text.Blue">
-       <item name="android:textSize">@dimen/text_size_small</item>
+        <item name="android:textSize">@dimen/text_size_small</item>
     </style>
 
     <!-- Blue Non Adaptive button text styles -->
@@ -284,6 +287,10 @@ found in the LICENSE file.
         <item name="android:textColor">@color/default_text_color_list_baseline</item>
     </style>
 
+    <style name="TextAppearance.TextAccentLarge.Primary.Baseline" parent="TextAppearance.TextAccentLarge">
+        <item name="android:textColor">@color/default_text_color_list_baseline</item>
+    </style>
+
     <style name="TextAppearance.TextMediumThick.Primary.Baseline" parent="TextAppearance.TextMediumThick">
         <item name="android:textColor">@color/default_text_color_list_baseline</item>
     </style>
@@ -318,14 +325,14 @@ found in the LICENSE file.
 
     <!-- Dividers -->
     <style name="HorizontalDivider"
-           tools:ignore="UnusedResources">
+        tools:ignore="UnusedResources">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">@dimen/divider_height</item>
         <item name="android:background">?android:attr/listDivider</item>
         <item name="android:importantForAccessibility">no</item>
     </style>
     <style name="VerticalDivider"
-           tools:ignore="UnusedResources">
+        tools:ignore="UnusedResources">
         <item name="android:layout_width">@dimen/divider_height</item>
         <item name="android:layout_height">match_parent</item>
         <item name="android:background">?android:attr/listDivider</item>
