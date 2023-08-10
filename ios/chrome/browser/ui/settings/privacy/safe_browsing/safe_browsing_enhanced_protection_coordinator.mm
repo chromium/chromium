@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/settings/privacy/safe_browsing/safe_browsing_enhanced_protection_coordinator.h"
 
 #import "base/mac/foundation_util.h"
+#import "components/safe_browsing/core/common/features.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -46,8 +47,14 @@
 }
 
 - (void)start {
-  self.viewController = [[SafeBrowsingEnhancedProtectionViewController alloc]
-      initWithStyle:ChromeTableViewStyle()];
+  if (base::FeatureList::IsEnabled(
+          safe_browsing::kFriendlierSafeBrowsingSettingsEnhancedProtection)) {
+    self.viewController = [[SafeBrowsingEnhancedProtectionViewController alloc]
+        initWithStyle:UITableViewStyleGrouped];
+  } else {
+    self.viewController = [[SafeBrowsingEnhancedProtectionViewController alloc]
+        initWithStyle:ChromeTableViewStyle()];
+  }
   self.viewController.presentationDelegate = self;
 
   self.viewController.dispatcher = static_cast<

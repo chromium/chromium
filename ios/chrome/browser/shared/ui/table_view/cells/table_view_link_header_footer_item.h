@@ -36,6 +36,10 @@
 // [UIColor colorNamed:kTextSecondaryColor].
 @property(nonatomic, strong) UIColor* textColor;
 
+// If true, aligns the header/footer with the section items by ensure that there
+// are leading/trailing margins. By default, this is false.
+@property(nonatomic, assign) BOOL forceIndents;
+
 @end
 
 // UITableViewHeaderFooterView subclass containing a single UITextView. The text
@@ -53,6 +57,10 @@
 // Sets the `text` displayed by this cell. If the `text` contains a link, the
 // link is appropriately colored. The text is coolored with `color`.
 - (void)setText:(NSString*)text withColor:(UIColor*)color;
+
+// If forceIndents is YES, activates the constraint to align the header/footer
+// with section items.
+- (void)setForceIndents:(BOOL)forceIndents;
 
 @end
 

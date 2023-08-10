@@ -406,6 +406,7 @@ const CGFloat kSymbolSize = 20;
     enhancedProtectionFooterItem.urls = urls;
     enhancedProtectionFooterItem.accessibilityIdentifier =
         kSafeBrowsingEnhancedProtectionTableViewFooterId;
+    enhancedProtectionFooterItem.forceIndents = YES;
     _safeBrowsingEnhancedProtectionFooterItem = enhancedProtectionFooterItem;
   }
 
@@ -418,6 +419,7 @@ const CGFloat kSymbolSize = 20;
           initWithType:ItemTypeEnhancedProtectionFirstHeader];
   firstHeaderItem.text = l10n_util::GetNSString(
       IDS_IOS_SAFE_BROWSING_ENHANCED_PROTECTION_WHEN_ON_HEADER);
+  firstHeaderItem.forceIndents = YES;
   firstHeaderItem.accessibilityIdentifier =
       kSafeBrowsingEnhancedProtectionTableViewFirstHeaderId;
 
@@ -430,6 +432,7 @@ const CGFloat kSymbolSize = 20;
           initWithType:ItemTypeEnhancedProtectionSecondHeader];
   secondHeaderItem.text = l10n_util::GetNSString(
       IDS_IOS_SAFE_BROWSING_ENHANCED_PROTECTION_THINGS_TO_CONSIDER_HEADER);
+  secondHeaderItem.forceIndents = YES;
   secondHeaderItem.accessibilityIdentifier =
       kSafeBrowsingEnhancedProtectionTableViewSecondHeaderId;
 

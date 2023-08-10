@@ -15,6 +15,13 @@
 #import "ios/chrome/common/ui/util/text_view_util.h"
 #import "net/base/mac/url_conversions.h"
 
+namespace {
+
+// Horizontal padding used to align the header/footer with the section items.
+const CGFloat kHorizontalSpacingToAlignWithItems = 16.0;
+
+}  // namespace
+
 @implementation TableViewTextHeaderFooterItem
 
 - (instancetype)initWithType:(NSInteger)type {
@@ -43,6 +50,11 @@
   if ([self.URLs count] != 0) {
     headerFooter.URLs = self.URLs;
   }
+
+  if (self.forceIndents) {
+    [headerFooter setForceIndents:YES];
+  }
+
   [headerFooter setSubtitle:self.subtitle];
   headerFooter.textLabel.text = self.text;
   headerFooter.textLabel.accessibilityTraits = UIAccessibilityTraitHeader;
@@ -58,7 +70,12 @@
 
 @end
 
-@implementation TableViewTextHeaderFooterView
+@implementation TableViewTextHeaderFooterView {
+  // Leading constaint for item.
+  NSLayoutConstraint* leadingAnchorConstraint_;
+  // Trailing constraint for item.
+  NSLayoutConstraint* trailingAnchorConstraint_;
+}
 @synthesize subtitleView = _subtitleView;
 @synthesize textLabel = _textLabel;
 
@@ -118,14 +135,14 @@
         constraintEqualToAnchor:self.contentView.bottomAnchor
                        constant:-kTableViewVerticalSpacing];
     bottomAnchorConstraint.priority = UILayoutPriorityDefaultHigh;
-    NSLayoutConstraint* leadingAnchorConstraint = [containerView.leadingAnchor
+    leadingAnchorConstraint_ = [containerView.leadingAnchor
         constraintEqualToAnchor:self.contentView.leadingAnchor
                        constant:HorizontalPadding()];
-    leadingAnchorConstraint.priority = UILayoutPriorityDefaultHigh;
-    NSLayoutConstraint* trailingAnchorConstraint = [containerView.trailingAnchor
+    leadingAnchorConstraint_.priority = UILayoutPriorityDefaultHigh;
+    trailingAnchorConstraint_ = [containerView.trailingAnchor
         constraintEqualToAnchor:self.contentView.trailingAnchor
                        constant:-HorizontalPadding()];
-    trailingAnchorConstraint.priority = UILayoutPriorityDefaultHigh;
+    trailingAnchorConstraint_.priority = UILayoutPriorityDefaultHigh;
 
     // Set and activate constraints.
     [NSLayoutConstraint activateConstraints:@[
@@ -133,8 +150,8 @@
       heightConstraint,
       topAnchorConstraint,
       bottomAnchorConstraint,
-      leadingAnchorConstraint,
-      trailingAnchorConstraint,
+      leadingAnchorConstraint_,
+      trailingAnchorConstraint_,
       [containerView.centerYAnchor
           constraintEqualToAnchor:self.contentView.centerYAnchor],
       // Vertical StackView Constraints.
@@ -155,6 +172,7 @@
   self.subtitleView.text = nil;
   self.delegate = nil;
   self.URLs = @[];
+  self.forceIndents = NO;
 }
 
 #pragma mark - Properties
@@ -190,6 +208,13 @@
   }
 
   self.subtitleView.attributedText = attributedText;
+}
+
+- (void)setForceIndents:(BOOL)forceIndents {
+  leadingAnchorConstraint_.constant =
+      forceIndents ? kHorizontalSpacingToAlignWithItems : HorizontalPadding();
+  trailingAnchorConstraint_.constant =
+      forceIndents ? -kHorizontalSpacingToAlignWithItems : -HorizontalPadding();
 }
 
 #pragma mark - UITextViewDelegate
