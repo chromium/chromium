@@ -465,9 +465,7 @@ public class FeedV2NewTabPageTest {
     @Test
     @MediumTest
     @Feature({"NewTabPage"})
-    @CommandLineFlags.Add({"enable-features=" + ChromeFeatureList.SURFACE_POLISH + "<Study",
-            "force-fieldtrials=Study/Group",
-            "force-fieldtrial-params=Study.Group:polish_omnibox_size/true"})
+    @Features.EnableFeatures(ChromeFeatureList.SURFACE_POLISH)
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
     @DisabledTest(message = "crbug.com/1467377")
     // clang-format off

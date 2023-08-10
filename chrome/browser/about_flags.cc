@@ -2450,33 +2450,16 @@ const FeatureEntry::FeatureVariation kStartSurfaceAndroidVariations[] = {
      std::size(kStartSurfaceAndroid_SingleSurface), nullptr},
 };
 
-const FeatureEntry::FeatureParam kSurfacePolish_polish_omnibox_size[] = {
-    {"polish_omnibox_size", "true"},
-    {"polish_omnibox_color", "false"}};
-
-const FeatureEntry::FeatureParam
-    kSurfacePolish_polish_omnibox_size_and_color[] = {
-        {"polish_omnibox_size", "true"},
-        {"polish_omnibox_color", "true"}};
-
-const FeatureEntry::FeatureParam kSurfacePolish_polish_single_tab_card[] = {
-    {"polish_omnibox_size", "true"},
-    {"polish_omnibox_color", "true"},
-    {"polish_single_tab_card", "true"}};
+const FeatureEntry::FeatureParam kSurfacePolish_polish_omnibox_color[] = {
+    {"polish_omnibox_color", "true"}};
 
 const FeatureEntry::FeatureParam kSurfacePolish_use_magic_space[] = {
-    {"polish_omnibox_size", "true"},
     {"polish_omnibox_color", "true"},
     {"use_magic_space", "true"}};
 
 const FeatureEntry::FeatureVariation kSurfacePolishVariations[] = {
-    {"Polish omnibox size", kSurfacePolish_polish_omnibox_size,
-     std::size(kSurfacePolish_polish_omnibox_size), nullptr},
-    {"Polish omnibox size and color",
-     kSurfacePolish_polish_omnibox_size_and_color,
-     std::size(kSurfacePolish_polish_omnibox_size_and_color), nullptr},
-    {"Polish single tab card", kSurfacePolish_polish_single_tab_card,
-     std::size(kSurfacePolish_polish_single_tab_card), nullptr},
+    {"Polish omnibox color", kSurfacePolish_polish_omnibox_color,
+     std::size(kSurfacePolish_polish_omnibox_color), nullptr},
     {"Use magic space", kSurfacePolish_use_magic_space,
      std::size(kSurfacePolish_use_magic_space), nullptr},
 };

@@ -190,15 +190,13 @@ public class NewTabPageLayout extends LinearLayout {
      * @param windowAndroid An instance of a {@link WindowAndroid}
      * @param isNtpAsHomeSurfaceEnabled {@code true} if the NTP is showing as the home surface.
      * @param isSurfacePolishEnabled {@code true} if the NTP surface is polished.
-     * @param isSurfacePolishOmniboxSizeEnabled {@code true} if the NTP surface is polished
-     *          and the omnibox size is changed.
      */
     public void initialize(NewTabPageManager manager, Activity activity, Delegate tileGroupDelegate,
             boolean searchProviderHasLogo, boolean searchProviderIsGoogle,
             FeedSurfaceScrollDelegate scrollDelegate, TouchEnabledDelegate touchEnabledDelegate,
             UiConfig uiConfig, ActivityLifecycleDispatcher lifecycleDispatcher, NewTabPageUma uma,
             boolean isIncognito, WindowAndroid windowAndroid, boolean isNtpAsHomeSurfaceEnabled,
-            boolean isSurfacePolishEnabled, boolean isSurfacePolishOmniboxSizeEnabled) {
+            boolean isSurfacePolishEnabled) {
         TraceEvent.begin(TAG + ".initialize()");
         mScrollDelegate = scrollDelegate;
         mManager = manager;
@@ -214,7 +212,7 @@ public class NewTabPageLayout extends LinearLayout {
         mSearchBoxCoordinator = new SearchBoxCoordinator(getContext(), this);
         mSearchBoxCoordinator.initialize(lifecycleDispatcher, mIsIncognito, mWindowAndroid);
         if (!DeviceFormFactor.isNonMultiDisplayContextOnTablet(activity)) {
-            if (isSurfacePolishEnabled && isSurfacePolishOmniboxSizeEnabled) {
+            if (isSurfacePolishEnabled) {
                 int searchBoxHeightPolish =
                         getResources().getDimensionPixelSize(R.dimen.ntp_search_box_height_polish);
                 mSearchBoxCoordinator.getView().getLayoutParams().height = searchBoxHeightPolish;

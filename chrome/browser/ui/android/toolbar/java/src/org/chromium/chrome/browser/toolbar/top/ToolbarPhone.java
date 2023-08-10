@@ -82,7 +82,6 @@ import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.chrome.browser.util.BrowserUiUtils.HostSurface;
 import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNTP;
-import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
@@ -1261,8 +1260,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
                     locationBarTranslationY);
             float urlExpansionFractionComplement = 1.f - mUrlExpansionFraction;
             int verticalInset;
-            if (ChromeFeatureList.sSurfacePolish.isEnabled()
-                    && StartSurfaceConfiguration.SURFACE_POLISH_OMNIBOX_SIZE.getValue()) {
+            if (ChromeFeatureList.sSurfacePolish.isEnabled()) {
                 verticalInset = (int) (((float) (getResources().getDimensionPixelSize(
                                                          R.dimen.modern_toolbar_background_size)
                                                 - getResources().getDimensionPixelSize(

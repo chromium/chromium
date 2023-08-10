@@ -30,7 +30,6 @@ import org.chromium.chrome.browser.tasks.pseudotab.TabAttributeCache;
 import org.chromium.chrome.browser.tasks.tab_management.TabListFaviconProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherCustomViewManager;
-import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -312,7 +311,6 @@ public class SingleTabSwitcherCoordinator implements TabSwitcher {
     }
 
     private boolean isSurfacePolishEnabled() {
-        return ChromeFeatureList.sSurfacePolish.isEnabled()
-                && StartSurfaceConfiguration.SURFACE_POLISH_SINGLE_TAB_CARD.getValue();
+        return ChromeFeatureList.sSurfacePolish.isEnabled();
     }
 }
