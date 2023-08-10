@@ -6002,6 +6002,25 @@
             ]
         }
     ],
+    "ExtensionSafetyCheck": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20230809",
+                    "enable_features": [
+                        "SafetyCheckExtensions"
+                    ]
+                }
+            ]
+        }
+    ],
     "FastCheckout": [
         {
             "platforms": [
