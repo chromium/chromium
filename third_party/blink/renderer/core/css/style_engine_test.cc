@@ -63,6 +63,7 @@
 #include "third_party/blink/renderer/core/layout/layout_text_fragment.h"
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
 #include "third_party/blink/renderer/core/layout/list_marker.h"
+#include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/page/page_animator.h"
 #include "third_party/blink/renderer/core/page/viewport_description.h"
 #include "third_party/blink/renderer/core/testing/color_scheme_helper.h"
@@ -5747,6 +5748,49 @@ TEST_F(StyleEngineSimTest, ResizeWithBlockingSheetTransition) {
 
   css_request.Start();
   WebView().MainFrameWidget()->Resize(gfx::Size(800, 800));
+
+  css_request.Complete(R"CSS(
+    #trans { color: green; }
+  )CSS");
+
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+
+  Element* trans = GetDocument().getElementById(AtomicString("trans"));
+  ASSERT_TRUE(trans);
+
+  // Completing the linked stylesheet should not start a transition since the
+  // sheet is render-blocking.
+  EXPECT_EQ(
+      trans->ComputedStyleRef().VisitedDependentColor(GetCSSPropertyColor()),
+      Color::FromRGB(0, 128, 0));
+}
+
+TEST_F(StyleEngineSimTest, FocusWithBlockingSheetTransition) {
+  WebView().MainFrameWidget()->Resize(gfx::Size(500, 500));
+
+  SimRequest html_request("https://example.com/test.html", "text/html");
+  SimSubresourceRequest css_request("https://example.com/slow.css", "text/css");
+
+  LoadURL("https://example.com/test.html");
+  html_request.Complete(R"HTML(
+      <!DOCTYPE html>
+      <style>
+        #trans {
+          transition-duration: 30s;
+          color: red;
+        }
+      </style>
+      <link rel="stylesheet" href="slow.css">
+      <div id="trans"></div>
+  )HTML");
+
+  css_request.Start();
+
+  GetDocument().GetPage()->GetFocusController().SetActive(true);
+  GetDocument().GetPage()->GetFocusController().SetFocused(true);
+  GetDocument().GetPage()->GetFocusController().SetFocusedFrame(
+      GetDocument().GetFrame());
 
   css_request.Complete(R"CSS(
     #trans { color: green; }

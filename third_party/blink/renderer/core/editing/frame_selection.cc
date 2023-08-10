@@ -898,21 +898,26 @@ void FrameSelection::FocusedOrActiveStateChanged() {
   // Trigger style invalidation from the focused element. Even though
   // the focused element hasn't changed, the evaluation of focus pseudo
   // selectors are dependent on whether the frame is focused and active.
-  if (Element* element = GetDocument().FocusedElement())
+  if (Element* element = GetDocument().FocusedElement()) {
     element->FocusStateChanged();
+  }
 
+  if (!GetDocument().HaveRenderBlockingStylesheetsLoaded()) {
+    return;
+  }
   GetDocument().UpdateStyleAndLayoutTree();
 
   // Because LayoutObject::selectionBackgroundColor() and
   // LayoutObject::selectionForegroundColor() check if the frame is active,
   // we have to update places those colors were painted.
-  auto* view = GetDocument().GetLayoutView();
-  if (view)
+  if (LayoutView* view = GetDocument().GetLayoutView()) {
     layout_selection_->InvalidatePaintForSelection();
+  }
 
   // Caret appears in the active frame.
-  if (active_and_focused)
+  if (active_and_focused) {
     SetSelectionFromNone();
+  }
   frame_caret_->SetCaretEnabled(active_and_focused);
 
   // Update for caps lock state
@@ -971,8 +976,10 @@ static bool IsFrameElement(const Node* n) {
 
 void FrameSelection::SetFocusedNodeIfNeeded() {
   if (ComputeVisibleSelectionInDOMTreeDeprecated().IsNone() ||
-      !FrameIsFocused())
+      !FrameIsFocused() ||
+      !GetDocument().HaveRenderBlockingStylesheetsLoaded()) {
     return;
+  }
 
   if (Element* target =
           ComputeVisibleSelectionInDOMTreeDeprecated().RootEditableElement()) {
