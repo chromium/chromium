@@ -240,6 +240,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/overscroll_actions:unit_tests",
     "//ios/chrome/browser/passwords:unit_tests",
     "//ios/chrome/browser/permissions:unit_tests",
+    "//ios/chrome/browser/photos:unit_tests",
     "//ios/chrome/browser/policy:unit_tests",
     "//ios/chrome/browser/prerender:unit_tests",
     "//ios/chrome/browser/promos_manager:unit_tests",

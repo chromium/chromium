@@ -63,7 +63,10 @@ source_set("test_support") {
     "test_chrome_browser_state_manager.h",
   ]
 
-  public_deps = [ ":browser_state" ]
+  public_deps = [
+    ":browser_state",
+    "//base",
+  ]
 
   deps = [
     "//base",
