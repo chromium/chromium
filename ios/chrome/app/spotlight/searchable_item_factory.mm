@@ -114,12 +114,10 @@ UIImage* GetFallbackImageWithStringAndColor(NSString* string,
                          title:(NSString*)title
             additionalKeywords:(NSArray<NSString*>*)keywords
              completionHandler:(void (^)(CSSearchableItem*))completionHandler {
-  if (!URLToRefresh.is_valid()) {
+  if (!URLToRefresh.is_valid() || ![title length]) {
     return;
   }
-  // As the following code is executed in the background, adding a DCHECK here
-  // to analyse (crbug.com/1469801).
-  DCHECK(title);
+
   __weak SearchableItemFactory* weakSelf = self;
   _largeIconService->GetLargeIconRawBitmapOrFallbackStyleForPageUrl(
       URLToRefresh, kMinIconSize * [UIScreen mainScreen].scale,
