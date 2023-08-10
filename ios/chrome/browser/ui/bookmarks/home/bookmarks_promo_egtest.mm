@@ -12,6 +12,7 @@
 #import "components/policy/core/common/policy_loader_ios_constants.h"
 #import "components/policy/policy_constants.h"
 #import "components/sync/base/features.h"
+#import "components/sync/base/user_selectable_type.h"
 #import "ios/chrome/browser/policy/policy_app_interface.h"
 #import "ios/chrome/browser/policy/policy_earl_grey_utils.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
@@ -19,6 +20,7 @@
 #import "ios/chrome/browser/ui/authentication/authentication_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
+#import "ios/chrome/browser/ui/authentication/signin_earl_grey_app_interface.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/authentication/signin_matchers.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_earl_grey.h"
@@ -487,6 +489,11 @@ using chrome_test_util::SecondarySignInButton;
 - (void)testNoSyncPromoIfSyncToSigninEnabled {
   FakeSystemIdentity* fakeIdentity1 = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity1 enableSync:NO];
+  // By default, `signinWithFakeIdentity` above enables bookmarks data type, so
+  // turn it off to ensure that the sync promo isn't ever shown.
+  [SigninEarlGreyAppInterface
+      setSelectedType:(syncer::UserSelectableType::kBookmarks)
+              enabled:NO];
   [BookmarkEarlGreyUI openBookmarks];
   [SigninEarlGreyUI verifySigninPromoNotVisible];
 }
