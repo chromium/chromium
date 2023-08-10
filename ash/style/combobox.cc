@@ -256,6 +256,11 @@ bool Combobox::IsMenuRunning() const {
   return !!menu_;
 }
 
+void Combobox::SetCallback(PressedCallback callback) {
+  NOTREACHED() << "Clients shouldn't modify this. Maybe you want to use "
+                  "SetSelectionChangedCallback?";
+}
+
 void Combobox::OnBoundsChanged(const gfx::Rect& previous_bounds) {
   // Move menu with combobox accordingly.
   if (menu_) {
@@ -350,8 +355,8 @@ void Combobox::OnComboboxModelChanged(ui::ComboboxModel* model) {
 
 void Combobox::OnComboboxModelDestroying(ui::ComboboxModel* model) {
   CloseDropDownMenu();
-  owned_model_.reset();
   model_ = nullptr;
+  observation_.Reset();
 }
 
 BEGIN_METADATA(Combobox, views::Button)

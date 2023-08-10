@@ -30,22 +30,23 @@ class ASH_EXPORT Combobox : public views::Button,
  public:
   METADATA_HEADER(Combobox);
 
-  // |model| is owned by the combobox when using this constructor.
+  // `model` is owned by the combobox when using this constructor.
   explicit Combobox(std::unique_ptr<ui::ComboboxModel> model);
-  // |model| is not owned by the combobox when using this constructor.
+  // `model` is not owned by the combobox when using this constructor.
   explicit Combobox(ui::ComboboxModel* model);
   Combobox(const Combobox&) = delete;
   Combobox& operator=(const Combobox&) = delete;
   ~Combobox() override;
 
-  // Sets the callback that is invoked when the selected item changes.
+  // Sets the callback that is invoked when the selected item changes. Note that
+  // this works same as `views::Combobox::SetCallback`.
   void SetSelectionChangedCallback(base::RepeatingClosure callback);
 
   // Gets/Sets the selected index.
   absl::optional<size_t> GetSelectedIndex() const { return selected_index_; }
   void SetSelectedIndex(absl::optional<size_t> index);
 
-  // Looks for the first occurrence of |value| in |model()|. If found, selects
+  // Looks for the first occurrence of `value` in `model_`. If found, selects
   // the found index and returns true. Otherwise simply noops and returns false.
   bool SelectValue(const std::u16string& value);
 
@@ -53,6 +54,7 @@ class ASH_EXPORT Combobox : public views::Button,
   bool IsMenuRunning() const;
 
   // views::Button:
+  void SetCallback(PressedCallback callback) override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
 
  private:
