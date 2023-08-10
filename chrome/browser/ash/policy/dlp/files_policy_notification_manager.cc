@@ -608,7 +608,6 @@ void FilesPolicyNotificationManager::FileTaskInfo::AddWidget(
 
 void FilesPolicyNotificationManager::FileTaskInfo::CloseWidget() {
   if (!widget_) {
-    CHECK_IS_TEST();
     return;
   }
   widget_observation_.Reset();
