@@ -21,7 +21,6 @@
 #import "base/task/thread_pool.h"
 #import "base/threading/scoped_blocking_call.h"
 #import "base/time/time.h"
-#import "ios/chrome/browser/sessions/scene_util.h"
 #import "ios/chrome/browser/sessions/session_ios.h"
 #import "ios/chrome/browser/sessions/session_ios_factory.h"
 #import "ios/chrome/browser/sessions/session_window_ios.h"
@@ -32,6 +31,13 @@
 namespace {
 const NSTimeInterval kSaveDelay = 2.5;     // Value taken from Desktop Chrome.
 NSString* const kRootObjectKey = @"root";  // Key for the root object.
+
+// Directory containing session files.
+const base::FilePath::CharType kSessions[] = FILE_PATH_LITERAL("Sessions");
+
+// Name of the file storing the list of tabs.
+const base::FilePath::CharType kSessionFileName[] =
+    FILE_PATH_LITERAL("session.plist");
 }
 
 @implementation NSKeyedUnarchiver (CrLegacySessionCompatibility)
@@ -165,7 +171,7 @@ NSString* const kRootObjectKey = @"root";  // Key for the root object.
 - (void)deleteAllSessionFilesInDirectory:(const base::FilePath&)directory
                               completion:(base::OnceClosure)callback {
   NSString* sessionsDirectory =
-      base::mac::FilePathToNSString(SessionsDirectoryForDirectory(directory));
+      base::mac::FilePathToNSString(directory.Append(kSessions));
   NSArray<NSString*>* allSessionIDs = [[NSFileManager defaultManager]
       contentsOfDirectoryAtPath:sessionsDirectory
                           error:nil];
@@ -191,7 +197,9 @@ NSString* const kRootObjectKey = @"root";  // Key for the root object.
                            directory:(const base::FilePath&)directory {
   DCHECK(sessionID.length != 0);
   return base::mac::FilePathToNSString(
-      SessionPathForDirectory(directory, sessionID, kSessionFileName));
+      directory.Append(kSessions)
+          .Append(base::SysNSStringToUTF8(sessionID))
+          .Append(kSessionFileName));
 }
 
 + (NSString*)filePathForTabID:(NSString*)tabID

@@ -56,6 +56,7 @@ source_set("scene") {
 
   deps = [
     ":scene_state_browser_agent",
+    ":scene_util",
     "//base",
     "//components/autofill/core/browser",
     "//components/breadcrumbs/core",
@@ -100,7 +101,6 @@ source_set("scene") {
     "//ios/chrome/browser/promos_manager:factory",
     "//ios/chrome/browser/promos_manager:features",
     "//ios/chrome/browser/screenshot",
-    "//ios/chrome/browser/sessions:scene_util",
     "//ios/chrome/browser/sessions:session_saving",
     "//ios/chrome/browser/sessions:session_service",
     "//ios/chrome/browser/shared/coordinator/default_browser_promo",
@@ -174,6 +174,24 @@ source_set("scene") {
   frameworks = [ "UIKit.framework" ]
 }
 
+source_set("scene_util") {
+  sources = [
+    "scene_util.h",
+    "scene_util.mm",
+  ]
+  deps = [ "//base" ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("scene_util_test_support") {
+  testonly = true
+  sources = [
+    "scene_util_test_support.h",
+    "scene_util_test_support.mm",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
 source_set("scene_state_browser_agent") {
   sources = [
     "scene_state_browser_agent.h",
@@ -189,14 +207,18 @@ source_set("unit_tests") {
   sources = [
     "scene_controller_unittest.mm",
     "scene_state_browser_agent_unittest.mm",
+    "scene_util_unittest.mm",
   ]
   deps = [
     ":scene_state_browser_agent",
     ":scene_state_header",
+    ":scene_util",
+    ":scene_util_test_support",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/web/public/test",
     "//testing/gtest",
+    "//third_party/ocmock",
   ]
 }

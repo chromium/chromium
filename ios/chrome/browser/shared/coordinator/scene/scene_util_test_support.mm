@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/sessions/scene_util_test_support.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_util_test_support.h"
 
 @interface FakeSceneSession : NSObject
 
