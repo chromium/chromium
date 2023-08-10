@@ -12,13 +12,19 @@ ChromeVoxLiveRegionsTest = class extends ChromeVoxE2ETest {
   async setUpDeferred() {
     await super.setUpDeferred();
 
-    // Alphabetical based on file path.
-    await importModule(
-        'ChromeVoxState', '/chromevox/background/chromevox_state.js');
-    await importModule('LiveRegions', '/chromevox/background/live_regions.js');
-    await importModule('Output', '/chromevox/background/output/output.js');
-    await importModule('QueueMode', '/chromevox/common/tts_types.js');
+    await Promise.all([
+      // Alphabetical based on file path.
+      importModule(
+          'ChromeVoxState', '/chromevox/background/chromevox_state.js'),
+      importModule(
+          'DesktopAutomationInterface',
+          '/chromevox/background/event/desktop_automation_interface.js'),
+      importModule('LiveRegions', '/chromevox/background/live_regions.js'),
+      importModule('Output', '/chromevox/background/output/output.js'),
+      importModule('QueueMode', '/chromevox/common/tts_types.js'),
+    ]);
 
+    globalThis.EventType = chrome.automation.EventType;
     globalThis.RoleType = chrome.automation.RoleType;
     globalThis.TreeChangeType = chrome.automation.TreeChangeType;
   }
@@ -397,5 +403,42 @@ AX_TEST_F(
           .expectSpeech('hello')
           .call(button.doDefault.bind(button))
           .expectSpeech('there');
+      await mockFeedback.replay();
+    });
+
+AX_TEST_F(
+    'ChromeVoxLiveRegionsTest', 'AnnounceDesktopLiveRegionChanged',
+    async function() {
+      const mockFeedback = this.createMockFeedback();
+      await this.runWithLoadedTree(``);
+
+      const fakeEvent = containerLiveStatus => {
+        return {
+          target: {
+            containerLiveStatus,
+            name: containerLiveStatus,
+            root: this.desktop_,
+            children: [],
+            standardActions: [],
+            htmlAttributes: {},
+            state: {},
+            unclippedLocation: {},
+            addEventListener() {},
+            makeVisible() {},
+            removeEventListener() {},
+            setAccessibilityFocus() {},
+          },
+          type: EventType.LIVE_REGION_CHANGED,
+        };
+      };
+
+      const onLiveRegionChanged = status => () =>
+          DesktopAutomationInterface.instance.onLiveRegionChanged(
+              fakeEvent(status));
+
+      mockFeedback.call(onLiveRegionChanged('assertive'))
+          .expectSpeechWithQueueMode('assertive', QueueMode.CATEGORY_FLUSH)
+          .call(onLiveRegionChanged('polite'))
+          .expectSpeechWithQueueMode('polite', QueueMode.QUEUE);
       await mockFeedback.replay();
     });
