@@ -2382,11 +2382,11 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
 
   ASSERT_NO_FATAL_FAILURE(LoadExtensionWithRules(
       rules_1, "extension_1", {URLPattern::kAllUrlsPattern}));
-  const std::string extension_id_1 = last_loaded_extension_id();
+  const ExtensionId extension_id_1 = last_loaded_extension_id();
 
   ASSERT_NO_FATAL_FAILURE(LoadExtensionWithRules(
       rules_2, "extension_2", {URLPattern::kAllUrlsPattern}));
-  const std::string extension_id_2 = last_loaded_extension_id();
+  const ExtensionId extension_id_2 = last_loaded_extension_id();
 
   auto get_manifest_url = [](const ExtensionId& extension_id) {
     return GURL(base::StringPrintf("%s://%s/manifest.json",
