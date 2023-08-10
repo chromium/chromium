@@ -21,6 +21,7 @@
 #include "extensions/browser/deferred_start_render_host.h"
 #include "extensions/browser/extension_function_dispatcher.h"
 #include "extensions/browser/extension_registry_observer.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/mojom/view_type.mojom.h"
 #include "extensions/common/stack_frame.h"
 
@@ -70,7 +71,7 @@ class ExtensionHost : public DeferredStartRenderHost,
   // This may be null if the extension has been or is being unloaded.
   const Extension* extension() const { return extension_; }
 
-  const std::string& extension_id() const { return extension_id_; }
+  const ExtensionId& extension_id() const { return extension_id_; }
   content::WebContents* host_contents() const { return host_contents_.get(); }
   content::RenderFrameHost* main_frame_host() const { return main_frame_host_; }
   content::RenderProcessHost* render_process_host() const;
@@ -216,7 +217,7 @@ class ExtensionHost : public DeferredStartRenderHost,
   raw_ptr<const Extension> extension_;
 
   // Id of extension that we're hosting in this view.
-  const std::string extension_id_;
+  const ExtensionId extension_id_;
 
   // The browser context that this host is tied to.
   raw_ptr<content::BrowserContext> browser_context_;

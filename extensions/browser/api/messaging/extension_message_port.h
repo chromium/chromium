@@ -19,6 +19,7 @@
 #include "extensions/browser/api/messaging/message_port.h"
 #include "extensions/browser/service_worker/worker_id.h"
 #include "extensions/common/api/messaging/port_id.h"
+#include "extensions/common/extension_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
@@ -158,7 +159,7 @@ class ExtensionMessagePort : public MessagePort {
   base::WeakPtr<ChannelDelegate> weak_channel_delegate_;
 
   const PortId port_id_;
-  std::string extension_id_;
+  ExtensionId extension_id_;
   raw_ptr<content::BrowserContext> browser_context_ = nullptr;
 
   // Whether this port corresponds to *all* extension contexts. Should only be

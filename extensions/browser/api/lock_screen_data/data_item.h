@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
+#include "extensions/common/extension_id.h"
 
 namespace content {
 class BrowserContext;
@@ -102,7 +103,7 @@ class DataItem {
 
   const std::string& id() const { return id_; }
 
-  const std::string& extension_id() const { return extension_id_; }
+  const ExtensionId& extension_id() const { return extension_id_; }
 
  private:
   // Internal callback for write operations - wraps |callback| to ensure
@@ -120,7 +121,7 @@ class DataItem {
   std::string id_;
 
   // The ID of the extension that owns the data item.
-  std::string extension_id_;
+  ExtensionId extension_id_;
 
   raw_ptr<content::BrowserContext, ExperimentalAsh> context_;
 

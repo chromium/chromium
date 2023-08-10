@@ -77,7 +77,7 @@ class Warning {
   WarningType warning_type() const { return type_; }
 
   // Returns the id of the extension for which this warning is valid.
-  const std::string& extension_id() const { return extension_id_; }
+  const ExtensionId& extension_id() const { return extension_id_; }
 
   // Returns a localized warning message.
   std::string GetLocalizedMessage(const ExtensionSet* extensions) const;
@@ -88,12 +88,12 @@ class Warning {
   // others. The |message_id| refers to an IDS_ string ID. The
   // |message_parameters| are filled into the message template.
   Warning(WarningType type,
-                   const std::string& extension_id,
-                   int message_id,
-                   const std::vector<std::string>& message_parameters);
+          const ExtensionId& extension_id,
+          int message_id,
+          const std::vector<std::string>& message_parameters);
 
   WarningType type_;
-  std::string extension_id_;
+  ExtensionId extension_id_;
   // IDS_* resource ID.
   int message_id_;
   // Parameters to be filled into the string identified by |message_id_|.

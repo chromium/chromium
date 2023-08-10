@@ -11,6 +11,7 @@
 #include "base/scoped_observation.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
+#include "extensions/common/extension_id.h"
 
 namespace extensions {
 
@@ -75,7 +76,7 @@ class TestExtensionRegistryObserver : public ExtensionRegistryObserver {
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       extension_registry_observation_{this};
 
-  std::string extension_id_;
+  ExtensionId extension_id_;
 };
 
 }  // namespace extensions

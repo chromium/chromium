@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/manifest_handler.h"
 #include "third_party/skia/include/core/SkColor.h"
 
@@ -27,7 +28,7 @@ class MimeTypesHandler {
   ~MimeTypesHandler();
 
   // extension id
-  std::string extension_id() const { return extension_id_; }
+  extensions::ExtensionId extension_id() const { return extension_id_; }
   void set_extension_id(const std::string& extension_id) {
     extension_id_ = extension_id;
   }
@@ -60,7 +61,7 @@ class MimeTypesHandler {
  private:
   // The id for the extension this action belongs to (as defined in the
   // extension manifest).
-  std::string extension_id_;
+  extensions::ExtensionId extension_id_;
 
   // A list of MIME type filters.
   std::set<std::string> mime_type_set_;

@@ -206,7 +206,7 @@ class ItemRegistry {
     return result;
   }
 
-  const std::string extension_id_;
+  const ExtensionId extension_id_;
   // Whether data item registration should succeed.
   bool allow_new_ = true;
   // Whether data item retrievals should fail.

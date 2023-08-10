@@ -14,6 +14,7 @@
 #include "base/values.h"
 #include "extensions/common/api/extension_action/action_info.h"
 #include "extensions/common/constants.h"
+#include "extensions/common/extension_id.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/image/image.h"
 
@@ -66,7 +67,7 @@ class ExtensionAction {
   ~ExtensionAction();
 
   // extension id
-  const std::string& extension_id() const { return extension_id_; }
+  const ExtensionId& extension_id() const { return extension_id_; }
 
   // What kind of action is this?
   ActionInfo::Type action_type() const { return action_type_; }
@@ -274,7 +275,7 @@ class ExtensionAction {
 
   // The id for the extension this action belongs to (as defined in the
   // extension manifest).
-  const std::string extension_id_;
+  const ExtensionId extension_id_;
 
   // The name of the extension.
   const std::string extension_name_;

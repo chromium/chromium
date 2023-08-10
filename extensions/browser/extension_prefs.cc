@@ -46,6 +46,7 @@
 #include "extensions/common/api/types.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_features.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_handlers/app_display_info.h"
 #include "extensions/common/permissions/permission_set.h"
@@ -337,7 +338,7 @@ class ScopedExtensionPrefUpdate : public prefs::ScopedDictionaryPrefUpdate {
   }
 
  private:
-  const std::string extension_id_;
+  const ExtensionId extension_id_;
 };
 
 // Whether SetAlertSystemFirstRun() should always return true, so that alerts
