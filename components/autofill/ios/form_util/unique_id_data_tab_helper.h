@@ -5,9 +5,10 @@
 #ifndef COMPONENTS_AUTOFILL_IOS_FORM_UTIL_UNIQUE_ID_DATA_TAB_HELPER_H_
 #define COMPONENTS_AUTOFILL_IOS_FORM_UTIL_UNIQUE_ID_DATA_TAB_HELPER_H_
 
-#include "base/memory/ref_counted_memory.h"
-#include "components/autofill/core/common/field_data_manager.h"
-#include "ios/web/public/web_state_observer.h"
+#import "base/memory/ref_counted_memory.h"
+#import "base/scoped_observation.h"
+#import "components/autofill/core/common/field_data_manager.h"
+#import "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
 
 // Class binding a unique renderer IDs data to a WebState.
@@ -36,6 +37,9 @@ class UniqueIDDataTabHelper
   void WebStateDestroyed(web::WebState* web_state) override;
 
   uint32_t next_available_renderer_id_ = 1;
+
+  base::ScopedObservation<web::WebState, web::WebStateObserver>
+      web_state_observation_{this};
 
   // Maps UniqueFieldId of an input element to the pair of:
   // 1) The most recent text that user typed or PasswordManager autofilled in

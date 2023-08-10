@@ -21,11 +21,11 @@ UniqueIDDataTabHelper::GetFieldDataManager() {
 
 UniqueIDDataTabHelper::UniqueIDDataTabHelper(web::WebState* web_state) {
   field_data_manager_ = base::MakeRefCounted<autofill::FieldDataManager>();
-  web_state->AddObserver(this);
+  web_state_observation_.Observe(web_state);
 }
 
 void UniqueIDDataTabHelper::WebStateDestroyed(web::WebState* web_state) {
-  web_state->RemoveObserver(this);
+  web_state_observation_.Reset();
 }
 
 WEB_STATE_USER_DATA_KEY_IMPL(UniqueIDDataTabHelper)
