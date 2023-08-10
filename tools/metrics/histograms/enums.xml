@@ -37200,6 +37200,7 @@ Called by update_extension_histograms.py.-->
   <int value="1809" label="DEVELOPERPRIVATE_REMOVEMULTIPLEEXTENSIONS"/>
   <int value="1810" label="PASSWORDSPRIVATE_SHAREPASSWORD"/>
   <int value="1811" label="AUTOFILLPRIVATE_CHECKIFDEVICEAUTHAVAILABLE"/>
+  <int value="1812" label="OS_DIAGNOSTICS_RUNBLUETOOTHDISCOVERYROUTINE"/>
 </enum>
 
 <enum name="ExtensionIconState">

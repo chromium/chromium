@@ -119,6 +119,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
         crosapi::DiagnosticsRoutineEnum::kUfsLifetime,
         crosapi::DiagnosticsRoutineEnum::kPowerButton,
         crosapi::DiagnosticsRoutineEnum::kAudioDriver,
+        crosapi::DiagnosticsRoutineEnum::kBluetoothDiscovery,
     });
 
     SetServiceForTesting(std::move(fake_service_impl));
@@ -158,7 +159,8 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
               "bluetooth_power",
               "ufs_lifetime",
               "power_button",
-              "audio_driver"
+              "audio_driver",
+              "bluetooth_discovery"
             ]
           }, response);
         chrome.test.succeed();
@@ -461,6 +463,22 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
         const response =
           await chrome.os.diagnostics.runBatteryHealthRoutine();
         chrome.test.assertEq({id: 0, status: "ready"}, response);
+        chrome.test.succeed();
+      }
+    ]);
+  )");
+}
+
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
+                       RunBluetoothDiscoveryRoutineWithoutFeatureFlagFail) {
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      function runBluetoothDiscoveryRoutineNotWorking() {
+        chrome.test.assertThrows(() => {
+          chrome.os.diagnostics.runBluetoothDiscoveryRoutine();
+        }, [],
+          'chrome.os.diagnostics.runBluetoothDiscoveryRoutine is not a function'
+        );
         chrome.test.succeed();
       }
     ]);
@@ -1216,8 +1234,52 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
   )");
 }
 
-class BlockedTelemetryExtensionDiagnosticsApiBrowserTest
+class PendingApprovalTelemetryExtensionDiagnosticsApiBrowserTest
     : public TelemetryExtensionDiagnosticsApiBrowserTest {
+ public:
+  PendingApprovalTelemetryExtensionDiagnosticsApiBrowserTest() {
+    feature_list_.InitAndEnableFeature(
+        extensions_features::kTelemetryExtensionPendingApprovalApi);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    PendingApprovalTelemetryExtensionDiagnosticsApiBrowserTest,
+    RunBluetoothDiscoveryRoutineWithFeatureFlagSuccess) {
+  // Configure FakeDiagnosticsService.
+  {
+    auto expected_response = crosapi::DiagnosticsRunRoutineResponse::New();
+    expected_response->id = 0;
+    expected_response->status = crosapi::DiagnosticsRoutineStatusEnum::kReady;
+
+    // Set the return value for a call to RunBluetoothDiscoveryRoutine.
+    auto fake_service_impl = std::make_unique<FakeDiagnosticsService>();
+    fake_service_impl->SetRunRoutineResponse(std::move(expected_response));
+
+    // Set the expected called routine.
+    fake_service_impl->SetExpectedLastCalledRoutine(
+        crosapi::DiagnosticsRoutineEnum::kBluetoothDiscovery);
+
+    SetServiceForTesting(std::move(fake_service_impl));
+  }
+
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      async function runBluetoothDiscoveryRoutine() {
+        const response =
+          await chrome.os.diagnostics.runBluetoothDiscoveryRoutine();
+        chrome.test.assertEq({id: 0, status: "ready"}, response);
+        chrome.test.succeed();
+      }
+    ]);
+  )");
+}
+
+class BlockedTelemetryExtensionDiagnosticsApiBrowserTest
+    : public PendingApprovalTelemetryExtensionDiagnosticsApiBrowserTest {
  public:
   BlockedTelemetryExtensionDiagnosticsApiBrowserTest() = default;
 
@@ -1244,6 +1306,22 @@ IN_PROC_BROWSER_TEST_F(BlockedTelemetryExtensionDiagnosticsApiBrowserTest,
           chrome.os.diagnostics.runBluetoothPowerRoutine();
         }, [],
           'chrome.os.diagnostics.runBluetoothPowerRoutine is not a function'
+        );
+        chrome.test.succeed();
+      }
+    ]);
+  )");
+}
+
+IN_PROC_BROWSER_TEST_F(BlockedTelemetryExtensionDiagnosticsApiBrowserTest,
+                       RunBluetoothDiscoveryRoutineFromBlockedExtensionFail) {
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      function runBluetoothDiscoveryRoutineNotWorking() {
+        chrome.test.assertThrows(() => {
+          chrome.os.diagnostics.runBluetoothDiscoveryRoutine();
+        }, [],
+          'chrome.os.diagnostics.runBluetoothDiscoveryRoutine is not a function'
         );
         chrome.test.succeed();
       }

@@ -72,6 +72,8 @@ class DiagnosticsServiceAsh : public crosapi::mojom::DiagnosticsService {
       RunBatteryDischargeRoutineCallback callback) override;
   void RunBatteryHealthRoutine(
       RunBatteryHealthRoutineCallback callback) override;
+  void RunBluetoothDiscoveryRoutine(
+      RunBluetoothDiscoveryRoutineCallback) override;
   void RunBluetoothPowerRoutine(RunBluetoothPowerRoutineCallback) override;
   void RunCpuCacheRoutine(uint32_t length_seconds,
                           RunCpuCacheRoutineCallback callback) override;

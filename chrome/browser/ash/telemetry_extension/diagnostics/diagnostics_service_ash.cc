@@ -182,6 +182,18 @@ void DiagnosticsServiceAsh::RunBatteryHealthRoutine(
       std::move(callback)));
 }
 
+void DiagnosticsServiceAsh::RunBluetoothDiscoveryRoutine(
+    RunBluetoothDiscoveryRoutineCallback callback) {
+  GetService()->RunBluetoothDiscoveryRoutine(base::BindOnce(
+      [](crosapi::mojom::DiagnosticsService::
+             RunBluetoothDiscoveryRoutineCallback callback,
+         cros_healthd::mojom::RunRoutineResponsePtr ptr) {
+        std::move(callback).Run(
+            converters::diagnostics::ConvertDiagnosticsPtr(std::move(ptr)));
+      },
+      std::move(callback)));
+}
+
 void DiagnosticsServiceAsh::RunBluetoothPowerRoutine(
     RunBluetoothPowerRoutineCallback callback) {
   GetService()->RunBluetoothPowerRoutine(base::BindOnce(

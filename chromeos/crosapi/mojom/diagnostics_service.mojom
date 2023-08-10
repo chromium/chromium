@@ -18,8 +18,8 @@ import "chromeos/crosapi/mojom/nullable_primitives.mojom";
 
 // Interface for exposing diagnostics service. Implemented in ash-chrome.
 //
-// Next version: 6
-// Next ID: 28
+// Next version: 7
+// Next ID: 29
 [Stable, Uuid="14bc6194-c059-4048-9bea-ca6823eeda82",
 RenamedFrom="ash.health.mojom.DiagnosticsService"]
 interface DiagnosticsService {
@@ -438,12 +438,25 @@ interface DiagnosticsService {
   //                routine.
   [MinVersion=5] RunAudioDriverRoutine@27()
       => (DiagnosticsRunRoutineResponse response);
+
+  // Requests that the BluetoothDiscovery routine is created and started on the
+  // platform. This routine checks whether the Bluetooth adapter can start/stop
+  // discovery mode and the discovering status is consistent in both HCI and
+  // D-Bus levels.
+  // The availability of this routine can be determined by checking that
+  // kBluetoothDiscovery is returned by GetAvailableRoutines.
+  //
+  // The response:
+  // * |response| - contains a unique identifier and status for the created
+  //                routine.
+  [MinVersion=6] RunBluetoothDiscoveryRoutine@28()
+      => (DiagnosticsRunRoutineResponse response);
 };
 
 // Enumeration of each of the diagnostics routines the platform may support.
 //
-// Next version: 5
-// Next ID: 28
+// Next version: 6
+// Next ID: 29
 [Stable, Extensible, RenamedFrom="ash.health.mojom.DiagnosticRoutineEnum"]
 enum DiagnosticsRoutineEnum {
   [Default] kUnknown = 15,
@@ -474,6 +487,7 @@ enum DiagnosticsRoutineEnum {
   [MinVersion=2] kUfsLifetime = 25,
   [MinVersion=3] kPowerButton = 26,
   [MinVersion=4] kAudioDriver = 27,
+  [MinVersion=5] kBluetoothDiscovery = 28,
 };
 
 // Enumeration of each of the possible statuses for a diagnostics routine.

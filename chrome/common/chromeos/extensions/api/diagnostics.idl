@@ -39,7 +39,8 @@ namespace os.diagnostics {
     bluetooth_power,
     ufs_lifetime,
     power_button,
-    audio_driver
+    audio_driver,
+    bluetooth_discovery
   };
 
   enum RoutineStatus {
@@ -180,6 +181,8 @@ namespace os.diagnostics {
                                                               RunRoutineCallback callback);
 
     [supportsPromises] static void runBatteryHealthRoutine(RunRoutineCallback callback);
+
+    [supportsPromises] static void runBluetoothDiscoveryRoutine(RunRoutineCallback callback);
 
     [supportsPromises] static void runBluetoothPowerRoutine(RunRoutineCallback callback);
 

@@ -102,6 +102,9 @@ bool ConvertMojoRoutine(crosapi::DiagnosticsRoutineEnum in,
     case crosapi::DiagnosticsRoutineEnum::kAudioDriver:
       *out = cx_diag::RoutineType::kAudioDriver;
       return true;
+    case crosapi::DiagnosticsRoutineEnum::kBluetoothDiscovery:
+      *out = cx_diag::RoutineType::kBluetoothDiscovery;
+      return true;
     case crosapi::DiagnosticsRoutineEnum::kUnknown:
       return false;
   }
