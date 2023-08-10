@@ -551,6 +551,8 @@ void PageHandler::Navigate(const std::string& url,
   else
     type = ui::PAGE_TRANSITION_TYPED;
 
+  type = ui::PageTransitionFromInt(type | ui::PAGE_TRANSITION_FROM_API);
+
   std::string out_frame_id =
       frame_id.value_or(host_->devtools_frame_token().ToString());
   FrameTreeNode* frame_tree_node = FrameTreeNodeFromDevToolsFrameToken(

@@ -1,0 +1,4 @@
+Tests that Page.navigate triggers Page.navigatedWithinDocument when navigating to the same fragment
+Page.navigatedWithinDocument #1
+Page.navigatedWithinDocument #2
+
