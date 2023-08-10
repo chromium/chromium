@@ -115,7 +115,7 @@ public class ReadAloudControllerUnitTest {
     private void checkURLNotReadAloudSupported(GURL url) {
         mTab.setGurlOverrideForTesting(url);
 
-        mController.getTabModelTabObserver().onPageLoadStarted(mTab, mTab.getUrl());
+        mController.maybeCheckReadability(mTab.getUrl());
 
         verify(mHooksImpl, never())
                 .isPageReadable(Mockito.anyString(),
@@ -134,8 +134,8 @@ public class ReadAloudControllerUnitTest {
     }
 
     @Test
-    public void checkReadabilityOnPageLoad_success() {
-        mController.getTabModelTabObserver().onPageLoadStarted(mTab, sTestGURL);
+    public void checkReadability_success() {
+        mController.maybeCheckReadability(sTestGURL);
 
         verify(mHooksImpl, times(1))
                 .isPageReadable(eq(sTestGURL.getSpec()), mCallbackCaptor.capture());
@@ -146,9 +146,7 @@ public class ReadAloudControllerUnitTest {
         assertFalse(mController.timepointsSupported(mTab));
 
         // now check that the second time the same url loads we don't resend a request
-        mTab = (MockTab) mTabModelSelector.getModel(false).getTabAt(1);
-        mTab.setGurlOverrideForTesting(sTestGURL);
-        mController.getTabModelTabObserver().onPageLoadStarted(mTab, sTestGURL);
+        mController.maybeCheckReadability(sTestGURL);
 
         verify(mHooksImpl, times(1))
                 .isPageReadable(Mockito.anyString(),
@@ -156,19 +154,17 @@ public class ReadAloudControllerUnitTest {
     }
 
     @Test
-    public void checkReadabilityOnPageLoad_onlyOnePendingRequest() {
-        mController.getTabModelTabObserver().onPageLoadStarted(mTab, sTestGURL);
-        mController.getTabModelTabObserver().onPageLoadStarted(mTab, sTestGURL);
-        mController.getTabModelTabObserver().onPageLoadStarted(mTab, sTestGURL);
-        mController.getTabModelTabObserver().onPageLoadStarted(mTab, sTestGURL);
+    public void checkReadability_onlyOnePendingRequest() {
+        mController.maybeCheckReadability(sTestGURL);
+        mController.maybeCheckReadability(sTestGURL);
+        mController.maybeCheckReadability(sTestGURL);
 
-        verify(mHooksImpl, times(1))
-                .isPageReadable(eq(sTestGURL.getSpec()), mCallbackCaptor.capture());
+        verify(mHooksImpl, times(1)).isPageReadable(Mockito.anyString(), mCallbackCaptor.capture());
     }
 
     @Test
-    public void checkReadabilityOnPageLoad_failure() {
-        mController.getTabModelTabObserver().onPageLoadStarted(mTab, sTestGURL);
+    public void checkReadability_failure() {
+        mController.maybeCheckReadability(sTestGURL);
 
         verify(mHooksImpl, times(1))
                 .isPageReadable(eq(sTestGURL.getSpec()), mCallbackCaptor.capture());
@@ -180,9 +176,7 @@ public class ReadAloudControllerUnitTest {
         assertFalse(mController.timepointsSupported(mTab));
 
         // now check that the second time the same url loads we will resend a request
-        mTab = (MockTab) mTabModelSelector.getModel(false).getTabAt(1);
-        mTab.setGurlOverrideForTesting(sTestGURL);
-        mController.getTabModelTabObserver().onPageLoadStarted(mTab, sTestGURL);
+        mController.maybeCheckReadability(sTestGURL);
 
         verify(mHooksImpl, times(2))
                 .isPageReadable(Mockito.anyString(),
@@ -191,7 +185,7 @@ public class ReadAloudControllerUnitTest {
 
     @Test
     public void testReactingtoMSBBChange() {
-        mController.getTabModelTabObserver().onPageLoadStarted(mTab, sTestGURL);
+        mController.maybeCheckReadability(sTestGURL);
 
         verify(mHooksImpl, times(1))
                 .isPageReadable(eq(sTestGURL.getSpec()), mCallbackCaptor.capture());
@@ -199,8 +193,7 @@ public class ReadAloudControllerUnitTest {
         // Disable MSBB. Sending requests to Google servers no longer allowed but using
         // previous results is ok.
         UnifiedConsentServiceBridge.setUrlKeyedAnonymizedDataCollectionEnabled(false);
-        mController.getTabModelTabObserver().onPageLoadStarted(
-                mTab, JUnitTestGURLs.getGURL(JUnitTestGURLs.GOOGLE_URL_CAT));
+        mController.maybeCheckReadability(JUnitTestGURLs.getGURL(JUnitTestGURLs.GOOGLE_URL_CAT));
 
         verify(mHooksImpl, times(1))
                 .isPageReadable(Mockito.anyString(),

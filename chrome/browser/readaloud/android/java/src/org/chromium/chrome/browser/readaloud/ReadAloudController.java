@@ -85,24 +85,35 @@ public class ReadAloudController {
                 @Override
                 public void onPageLoadStarted(Tab tab, GURL url) {
                     Log.i(TAG, "onPageLoad called for %s", url.getPossiblyInvalidSpec());
-                    if (!isURLReadAloudSupported(url)) {
-                        return;
-                    }
-                    String urlSpec = url.getSpec();
-                    if (mReadabilityMap.containsKey(urlSpec)
-                            || mPendingRequests.contains(urlSpec)) {
-                        return;
-                    }
+                    maybeCheckReadability(url);
+                }
 
-                    if (!isAvailable()) {
-                        return;
-                    }
-
-                    mPendingRequests.add(urlSpec);
-                    mReadabilityHooks.isPageReadable(urlSpec, mReadabilityCallback);
+                @Override
+                protected void onTabSelected(Tab tab) {
+                    Log.i(TAG, "onTabSelected called for" + tab.getUrl().getPossiblyInvalidSpec());
+                    super.onTabSelected(tab);
+                    maybeCheckReadability(tab.getUrl());
                 }
             };
         }
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    public void maybeCheckReadability(GURL url) {
+        if (!isURLReadAloudSupported(url)) {
+            return;
+        }
+        String urlSpec = url.getSpec();
+        if (mReadabilityMap.containsKey(urlSpec) || mPendingRequests.contains(urlSpec)) {
+            return;
+        }
+
+        if (!isAvailable()) {
+            return;
+        }
+
+        mPendingRequests.add(urlSpec);
+        mReadabilityHooks.isPageReadable(urlSpec, mReadabilityCallback);
     }
 
     /**
@@ -176,10 +187,5 @@ public class ReadAloudController {
     public static void setReadabilityHooks(ReadAloudReadabilityHooks hooks) {
         sReadabilityHooksForTesting = hooks;
         ResettersForTesting.register(() -> sReadabilityHooksForTesting = null);
-    }
-
-    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-    public TabModelTabObserver getTabModelTabObserver() {
-        return mTabObserver;
     }
 }

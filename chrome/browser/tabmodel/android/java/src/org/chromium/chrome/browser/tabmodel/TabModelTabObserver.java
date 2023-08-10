@@ -31,19 +31,22 @@ public class TabModelTabObserver extends EmptyTabObserver {
         mTabModelObserver = new TabModelObserver() {
             @Override
             public void didSelectTab(Tab tab, @TabSelectionType int type, int lastId) {
-                tab.addObserver(TabModelTabObserver.this);
+                onTabSelected(tab);
             }
 
             @Override
             public void tabClosureCommitted(Tab tab) {
                 tab.removeObserver(TabModelTabObserver.this);
             }
+
+            @Override
+            public void restoreCompleted() {
+                maybeCallOnTabSelected();
+            }
         };
 
         mTabModel.addObserver(mTabModelObserver);
-        if (mTabModel.index() != TabList.INVALID_TAB_INDEX) {
-            mTabModel.getTabAt(mTabModel.index()).addObserver(this);
-        }
+        maybeCallOnTabSelected();
     }
 
     /**
@@ -54,6 +57,17 @@ public class TabModelTabObserver extends EmptyTabObserver {
         int tabCount = mTabModel.getCount();
         for (int i = 0; i < tabCount; i++) {
             mTabModel.getTabAt(i).removeObserver(this);
+        }
+    }
+
+    /* Called when a tab in a model is selected or restored. */
+    protected void onTabSelected(Tab tab) {
+        tab.addObserver(TabModelTabObserver.this);
+    };
+
+    private void maybeCallOnTabSelected() {
+        if (mTabModel.index() != TabList.INVALID_TAB_INDEX) {
+            onTabSelected(mTabModel.getTabAt(mTabModel.index()));
         }
     }
 }
