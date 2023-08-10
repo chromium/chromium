@@ -25,6 +25,7 @@ class FileManagerSystemAppDelegate : public ash::SystemWebAppDelegate {
   bool ShouldShowNewWindowMenuOption() const override;
   bool IsAppEnabled() const override;
   std::vector<std::string> GetAppIdsToUninstallAndReplace() const override;
+  gfx::Size GetMinimumWindowSize() const override;
 };
 
 // Return a WebAppInstallInfo used to install the app.
