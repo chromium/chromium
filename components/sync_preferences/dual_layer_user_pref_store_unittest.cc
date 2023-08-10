@@ -883,6 +883,54 @@ TEST_F(DualLayerUserPrefStoreTest, ShouldCommitPendingWritesForBothStores) {
   EXPECT_TRUE(account_store()->committed());
 }
 
+// Tests that notifications are not sent out if the same value already exists in
+// the local store, i.e. the effective value is unchanged.
+TEST_F(
+    DualLayerUserPrefStoreTest,
+    ShouldNotNotifyIfEffectiveValueIsUnchangedUponSetValueInAccountStoreOnly) {
+  store()->GetLocalPrefStore()->SetValueSilently(kPrefName,
+                                                 base::Value("value"), 0);
+
+  testing::StrictMock<MockPrefStoreObserver> observer;
+  store()->AddObserver(&observer);
+
+  testing::StrictMock<MockPrefStoreObserver> account_store_observer;
+  store()->GetAccountPrefStore()->AddObserver(&account_store_observer);
+
+  // Effective value in the dual pref store is unchanged, so there shouldn't be
+  // any calls to the observer.
+  EXPECT_CALL(observer, OnPrefValueChanged).Times(0);
+  // Since a new pref is added to the account store, its observers are still
+  // notified.
+  EXPECT_CALL(account_store_observer, OnPrefValueChanged);
+
+  store()->SetValueInAccountStoreOnly(kPrefName, base::Value("value"), 0);
+
+  store()->GetAccountPrefStore()->RemoveObserver(&account_store_observer);
+  store()->RemoveObserver(&observer);
+}
+
+TEST_F(DualLayerUserPrefStoreTest,
+       ShouldNotifyIfEffectiveValueChangesUponSetValueInAccountStoreOnly) {
+  store()->GetLocalPrefStore()->SetValueSilently(kPrefName,
+                                                 base::Value("value"), 0);
+
+  testing::StrictMock<MockPrefStoreObserver> observer;
+  store()->AddObserver(&observer);
+
+  testing::StrictMock<MockPrefStoreObserver> account_store_observer;
+  store()->GetAccountPrefStore()->AddObserver(&account_store_observer);
+
+  // Effective value is changing, so observers should be notified.
+  EXPECT_CALL(observer, OnPrefValueChanged);
+  EXPECT_CALL(account_store_observer, OnPrefValueChanged);
+
+  store()->SetValueInAccountStoreOnly(kPrefName, base::Value("new value"), 0);
+
+  store()->GetAccountPrefStore()->RemoveObserver(&account_store_observer);
+  store()->RemoveObserver(&observer);
+}
+
 class DualLayerUserPrefStoreTestForTypes
     : public DualLayerUserPrefStoreTestBase {
  public:

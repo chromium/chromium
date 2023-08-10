@@ -746,4 +746,23 @@ void DualLayerUserPrefStore::OnSyncShutdown(syncer::SyncService* sync_service) {
   sync_service->RemoveObserver(this);
 }
 
+void DualLayerUserPrefStore::SetValueInAccountStoreOnly(const std::string& key,
+                                                        base::Value value,
+                                                        uint32_t flags) {
+  const base::Value* initial_value = nullptr;
+  // Only notify if the effective value actually changes.
+  bool should_notify =
+      !GetValue(key, &initial_value) || (*initial_value != value);
+  {
+    base::AutoReset<bool> setting_prefs(&is_setting_prefs_, true);
+    account_pref_store_->SetValue(key, std::move(value), flags);
+  }
+
+  if (should_notify) {
+    for (PrefStore::Observer& observer : observers_) {
+      observer.OnPrefValueChanged(key);
+    }
+  }
+}
+
 }  // namespace sync_preferences

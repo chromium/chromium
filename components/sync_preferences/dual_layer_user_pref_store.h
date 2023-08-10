@@ -56,6 +56,18 @@ class DualLayerUserPrefStore : public PersistentPrefStore,
   // storage. This should be called when a data type stops syncing.
   void DisableTypeAndClearAccountStore(syncer::ModelType model_type);
 
+  // Sets value for preference `key` only in the account store. This is meant
+  // for use by sync components (specifically PrefModelAssociator) to insert
+  // value in the account store directly but only leads to notifications for
+  // DualLayerUserPrefStore observers if the effective value changes.
+  // Note: This does not do any merge/unmerge and does not check whether the
+  // pref `key` is syncable.
+  // TODO(crbug.com/1470161): Implement a better way to handle this usage by the
+  // sync components.
+  void SetValueInAccountStoreOnly(const std::string& key,
+                                  base::Value value,
+                                  uint32_t flags);
+
   void OnSyncServiceInitialized(syncer::SyncService* sync_service);
 
   scoped_refptr<PersistentPrefStore> GetLocalPrefStore();
