@@ -309,7 +309,7 @@ struct TextAutoSpaceTextData {
 
 } text_auto_space_test_data[] = {
     {u"Abcあああ", {2}},
-    {u"ああ123ああ", {1, 4}},
+    {u"ああ123あああ", {1, 4}},
     {u"ああ123ああ", {1, 4, 10}},
     {u"ああ123ああ", {0, 1, 2, 3, 4, 5, 6, 10}},
 };
@@ -320,6 +320,29 @@ INSTANTIATE_TEST_SUITE_P(ShapeResultTest,
                          TextAutoSpaceResultText,
                          testing::ValuesIn(text_auto_space_test_data));
 
+Vector<float> RecordPositionBeforeApplyingSpacing(ShapeResult* result,
+                                                  wtf_size_t size) {
+  Vector<float> before_adding_spacing(size);
+  std::generate(before_adding_spacing.begin(), before_adding_spacing.end(),
+                [&, i = 0]() mutable {
+                  float position = result->PositionForOffset(i);
+                  i++;
+                  return position;
+                });
+  return before_adding_spacing;
+}
+
+Vector<OffsetWithSpacing, 16> RecordExpectedSpacing(
+    const std::vector<wtf_size_t>& offsets_data) {
+  Vector<OffsetWithSpacing, 16> offsets(offsets_data.size());
+  std::generate_n(offsets.begin(), offsets_data.size(), [&, i = -1]() mutable {
+    ++i;
+    return OffsetWithSpacing{.offset = offsets_data[i],
+                             .spacing = static_cast<float>(0.1 * (i + 1))};
+  });
+  return offsets;
+}
+
 // Tests the spacing should be appended at the correct positions.
 TEST_P(TextAutoSpaceResultText, AddAutoSpacingToIdeograph) {
   const auto& test_data = GetParam();
@@ -329,21 +352,10 @@ TEST_P(TextAutoSpaceResultText, AddAutoSpacingToIdeograph) {
 
   // Record the position before applying text-autospace, and fill the spacing
   // widths with different values.
-  Vector<float> before_adding_spacing(string.length());
-  std::generate(before_adding_spacing.begin(), before_adding_spacing.end(),
-                [&, i = 0]() mutable {
-                  float offset = result->PositionForOffset(i);
-                  i++;
-                  return offset;
-                });
-  Vector<OffsetWithSpacing, 16> offsets(test_data.offsets.size());
-  std::generate_n(
-      offsets.begin(), test_data.offsets.size(), [&, i = -1]() mutable {
-        ++i;
-        return OffsetWithSpacing{.offset = test_data.offsets[i],
-                                 .spacing = static_cast<float>(0.1 * i)};
-      });
-
+  Vector<float> before_adding_spacing =
+      RecordPositionBeforeApplyingSpacing(result.get(), string.length());
+  Vector<OffsetWithSpacing, 16> offsets =
+      RecordExpectedSpacing(test_data.offsets);
   result->ApplyTextAutoSpacing(offsets);
   float accumulated_spacing = 0.0;
   for (wtf_size_t i = 0, j = 0; i < string.length(); i++) {
@@ -354,6 +366,33 @@ TEST_P(TextAutoSpaceResultText, AddAutoSpacingToIdeograph) {
       accumulated_spacing += offsets[j].spacing;
       j++;
     }
+  }
+}
+
+// Tests the spacing should be appended at the correct positions.
+TEST_P(TextAutoSpaceResultText, AddAutoSpacingToIdeographRTL) {
+  const auto& test_data = GetParam();
+  String string(test_data.string);
+  HarfBuzzShaper shaper(string);
+  scoped_refptr<ShapeResult> result = shaper.Shape(&font, TextDirection::kRtl);
+
+  // Record the position before applying text-autospace, and fill the spacing
+  // widths with different values.
+  Vector<float> before_adding_spacing =
+      RecordPositionBeforeApplyingSpacing(result.get(), string.length());
+  Vector<OffsetWithSpacing, 16> offsets =
+      RecordExpectedSpacing(test_data.offsets);
+  result->ApplyTextAutoSpacing(offsets);
+  float accumulated_spacing = 0.0;
+
+  for (wtf_size_t i = string.length(), j = offsets.size(); i >= 1; i--) {
+    if (j > 0 && offsets[j - 1].offset == i - 1) {
+      accumulated_spacing += offsets[j - 1].spacing;
+      j--;
+    }
+    EXPECT_NEAR(accumulated_spacing,
+                result->PositionForOffset(i - 1) - before_adding_spacing[i - 1],
+                /* abs_error= */ 1e-5);
   }
 }
 

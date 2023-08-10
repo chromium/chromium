@@ -958,17 +958,28 @@ scoped_refptr<ShapeResult> ShapeResult::ApplySpacingToCopy(
 void ShapeResult::ApplyTextAutoSpacing(
     const Vector<OffsetWithSpacing, 16>& offsets_with_spacing) {
   DCHECK(offsets_with_spacing.size());
+  if (LIKELY(IsLtr())) {
+    ApplyTextAutoSpacingCore(offsets_with_spacing.begin(),
+                             offsets_with_spacing.end());
+  } else {
+    ApplyTextAutoSpacingCore(offsets_with_spacing.rbegin(),
+                             offsets_with_spacing.rend());
+  }
+}
+
+template <class Iterator>
+void ShapeResult::ApplyTextAutoSpacingCore(Iterator offset_begin,
+                                           Iterator offset_end) {
+  DCHECK(offset_begin != offset_end);
   float total_space = 0.0;
-  wtf_size_t current_offset_index = 0;
-  // TODO(crbug.com/1463890): Implement and test the RTL case.
+  Iterator current_offset = offset_begin;
   for (auto& run : runs_) {
     if (!run) {
       continue;
     }
     float total_space_for_run = 0;
-    for (wtf_size_t i = 0; i < run->glyph_data_.size() &&
-                           current_offset_index < offsets_with_spacing.size();
-         i++) {
+    for (wtf_size_t i = 0;
+         i < run->glyph_data_.size() && current_offset != offset_end; i++) {
       HarfBuzzRunGlyphData& glyph_data = run->glyph_data_[i];
 
       // Skip if it's not a grapheme cluster boundary. Set it to UNLIKELY, since
@@ -979,12 +990,10 @@ void ShapeResult::ApplyTextAutoSpacing(
         continue;
       }
       if (glyph_data.character_index + run->start_index_ ==
-          offsets_with_spacing[current_offset_index].offset) {
-        glyph_data.advance +=
-            offsets_with_spacing[current_offset_index].spacing;
-        total_space_for_run +=
-            offsets_with_spacing[current_offset_index].spacing;
-        current_offset_index++;
+          current_offset->offset) {
+        glyph_data.advance += current_offset->spacing;
+        total_space_for_run += current_offset->spacing;
+        current_offset++;
       }
     }
     run->width_ += total_space_for_run;

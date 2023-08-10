@@ -547,6 +547,12 @@ class PLATFORM_EXPORT ShapeResult : public RefCounted<ShapeResult> {
                          GlyphCallback,
                          void* context,
                          const RunInfo& run) const;
+
+  // Internal implementation of `ApplyTextAutoSpacing`. The iterator can be
+  // Vector::iterator or Vector::reverse_iterator, depending on the text
+  // direction.
+  template <class Iterator>
+  void ApplyTextAutoSpacingCore(Iterator offset_begin, Iterator offset_end);
 };
 
 PLATFORM_EXPORT std::ostream& operator<<(std::ostream&, const ShapeResult&);
