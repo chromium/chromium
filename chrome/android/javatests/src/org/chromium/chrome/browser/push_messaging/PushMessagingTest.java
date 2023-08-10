@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.push_messaging;
 
 import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 
-import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.os.Bundle;
 import android.util.Pair;
@@ -50,11 +49,9 @@ import java.util.concurrent.TimeoutException;
 /**
  * Instrumentation tests for the Push API and the integration with the Notifications API on Android.
  */
-// TODO(mvanouwerkerk): remove @SuppressLint once crbug.com/501900 is fixed.
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Features.DisableFeatures({ChromeFeatureList.PUSH_MESSAGING_DISALLOW_SENDER_IDS})
-@SuppressLint("NewApi")
 public class PushMessagingTest implements PushMessagingServiceObserver.Listener {
     @Rule
     public EmbeddedTestServerRule mEmbeddedTestServerRule = new EmbeddedTestServerRule();
