@@ -1960,8 +1960,6 @@
           'skia_gold_test',
           'chrome-refresh-2023',
         ],
-        'experiment_percentage': 100,
-        'ci_only': True,
       },
       'cr23_pixel_interactive_ui_tests': {
         'args': [
@@ -1977,8 +1975,6 @@
           'skia_gold_test',
           'chrome-refresh-2023',
         ],
-        'experiment_percentage': 100,
-        'ci_only': True,
       },
     },
 
