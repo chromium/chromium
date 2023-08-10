@@ -70,6 +70,7 @@ using ::chromeos::network_config::mojom::NetworkFilter;
 using ::chromeos::network_config::mojom::NetworkStatePropertiesPtr;
 using ::chromeos::network_config::mojom::NetworkType;
 using DelegateObserver = ::scalable_iph::ScalableIphDelegate::Observer;
+using DelegateSessionState = ::scalable_iph::ScalableIphDelegate::SessionState;
 using Action = ::scalable_iph::ScalableIphDelegate::Action;
 using NotificationParams =
     ::scalable_iph::ScalableIphDelegate::NotificationParams;
@@ -231,6 +232,18 @@ class ScalableIphNotificationDelegate
   std::string notification_id_;
   Action action_;
 };
+
+DelegateSessionState GetDelegateSessionState(
+    session_manager::SessionState state) {
+  switch (state) {
+    case session_manager::SessionState::ACTIVE:
+      return DelegateSessionState::kActive;
+    case session_manager::SessionState::LOCKED:
+      return DelegateSessionState::kLocked;
+    default:
+      return DelegateSessionState::kOther;
+  }
+}
 
 }  // namespace
 
@@ -472,8 +485,9 @@ void ScalableIphDelegateImpl::OnShellDestroying() {
   shell_observer_.Reset();
 }
 
-void ScalableIphDelegateImpl::OnLockStateChanged(bool locked) {
-  NotifyLockStateChanged(locked);
+void ScalableIphDelegateImpl::OnSessionStateChanged(
+    session_manager::SessionState state) {
+  NotifySessionStateChanged(GetDelegateSessionState(state));
 }
 
 void ScalableIphDelegateImpl::SuspendDone(base::TimeDelta sleep_duration) {
@@ -515,9 +529,10 @@ void ScalableIphDelegateImpl::OnNetworkStateList(
   SetHasOnlineNetwork(HasOnlineNetwork(networks));
 }
 
-void ScalableIphDelegateImpl::NotifyLockStateChanged(bool locked) {
+void ScalableIphDelegateImpl::NotifySessionStateChanged(
+    DelegateSessionState session_state) {
   for (DelegateObserver& observer : observers_) {
-    observer.OnLockStateChanged(locked);
+    observer.OnSessionStateChanged(session_state);
   }
 }
 

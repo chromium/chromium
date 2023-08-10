@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/scalable_iph/customizable_test_env_browser_test_base.h"
 
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
+#include "chrome/browser/ash/login/test/profile_prepared_waiter.h"
 #include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
@@ -71,6 +72,9 @@ CustomizableTestEnvBrowserTestBase::TestEnvironment::GenerateTestName(
       break;
     case UserSessionType::kManaged:
       test_name += "_MANAGED";
+      break;
+    case UserSessionType::kRegularWithOobe:
+      test_name += "_REGULAR_OOBE";
       break;
   }
   return test_name;
@@ -139,6 +143,12 @@ void CustomizableTestEnvBrowserTestBase::SetUp() {
             logged_in_user_mixin_->GetAccountId().GetUserEmail());
       owner_user_email_ = kOwnerEmail;
       break;
+    case UserSessionType::kRegularWithOobe:
+      logged_in_user_mixin_ = std::make_unique<ash::LoggedInUserMixin>(
+          &mixin_host_, ash::LoggedInUserMixin::LogInType::kRegular,
+          embedded_test_server(), this, /*should_launch_browser=*/false,
+          /*account_id=*/absl::nullopt, /*include_initial_user=*/false);
+      break;
   }
 
   if (!owner_user_email_.empty()) {
@@ -151,7 +161,19 @@ void CustomizableTestEnvBrowserTestBase::SetUp() {
 
 void CustomizableTestEnvBrowserTestBase::SetUpOnMainThread() {
   if (logged_in_user_mixin_) {
-    logged_in_user_mixin_->LogInUser();
+    if (test_environment_.user_session_type() ==
+        UserSessionType::kRegularWithOobe) {
+      // For WithOobe session type, we don't wait an active session but a
+      // profile creation.
+      test::ProfilePreparedWaiter profile_prepared_waiter(
+          logged_in_user_mixin_->GetAccountId());
+      logged_in_user_mixin_->LogInUser(/*issue_any_scope_token=*/false,
+                                       /*wait_for_active_session=*/false);
+      profile_prepared_waiter.Wait();
+    } else {
+      // `LoggedInUserMixin::LogInUser` waits an active session by default.
+      logged_in_user_mixin_->LogInUser();
+    }
   }
 
   MixinBasedInProcessBrowserTest::SetUpOnMainThread();
@@ -163,6 +185,12 @@ void CustomizableTestEnvBrowserTestBase::SetTestEnvironment(
                             "after the SetUp call.";
 
   test_environment_ = test_environment;
+}
+
+LoginManagerMixin* CustomizableTestEnvBrowserTestBase::GetLoginManagerMixin() {
+  CHECK(logged_in_user_mixin_)
+      << "LoggedInUserMixin is not set up in the current test environment";
+  return logged_in_user_mixin_->GetLoginManagerMixin();
 }
 
 }  // namespace ash

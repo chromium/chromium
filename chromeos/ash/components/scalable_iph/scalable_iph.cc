@@ -368,17 +368,39 @@ void ScalableIph::OnConnectionChanged(bool online) {
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void ScalableIph::OnLockStateChanged(bool locked) {
-  DCHECK_NE(locked_, locked);
-  locked_ = locked;
+void ScalableIph::OnSessionStateChanged(
+    ScalableIphDelegate::SessionState session_state) {
+  if (session_state_ == session_state) {
+    // Note that `OnSessionStateChanged` can be called more than once with the
+    // same `session_state` as `session_manager::SessionState` does not map to
+    // `ScalableIphDelegate::SessionState` with a 1:1 mapping, e.g.
+    // `ScalableIphDelegate::SessionState::kOther` is mapped to several states
+    // of `session_manager::SessionState`.
+    return;
+  }
 
-  if (!locked_) {
+  const bool unlocked =
+      session_state_ == ScalableIphDelegate::SessionState::kLocked &&
+      session_state != ScalableIphDelegate::SessionState::kLocked;
+
+  session_state_ = session_state;
+
+  if (unlocked) {
     RecordEvent(Event::kUnlocked);
+  }
+
+  if (session_state_ == ScalableIphDelegate::SessionState::kActive) {
+    // Run conditions check as an IPH might be shown after a login.
+    tracker_->AddOnInitializedCallback(
+        base::BindOnce(&ScalableIph::CheckTriggerConditionsOnInitSuccess,
+                       weak_ptr_factory_.GetWeakPtr()));
   }
 }
 
 void ScalableIph::OnSuspendDoneWithoutLockScreen() {
-  DCHECK(!locked_);
+  DCHECK(session_state_ != ScalableIphDelegate::SessionState::kLocked)
+      << "OnSuspendDoneWithoutLockScreen should never be called with a lock "
+         "screen";
   RecordEvent(Event::kUnlocked);
 }
 
@@ -447,8 +469,9 @@ void ScalableIph::EnsureTimerStarted() {
 }
 
 void ScalableIph::RecordTimeTickEvent() {
-  // Do not record timer event when device is locked.
-  if (locked_) {
+  // Do not record timer event outside of an active session, e.g. OOBE, lock
+  // screen.
+  if (session_state_ != ScalableIphDelegate::SessionState::kActive) {
     return;
   }
 
@@ -493,6 +516,10 @@ void ScalableIph::CheckTriggerConditions() {
   // false. It can become a difficult to notice/debug bug if we accidentally
   // introduce a code path where we call it before initialization.
   DCHECK(tracker_->IsInitialized());
+
+  if (session_state_ != ScalableIphDelegate::SessionState::kActive) {
+    return;
+  }
 
   for (const base::Feature* feature : GetFeatureList()) {
     if (!base::FeatureList::IsEnabled(*feature)) {

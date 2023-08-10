@@ -9,6 +9,7 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/login/lock/screen_locker_tester.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
+#include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/scalable_iph/customizable_test_env_browser_test_base.h"
 #include "chrome/browser/ash/scalable_iph/scalable_iph_browser_test_base.h"
 #include "chrome/browser/scalable_iph/scalable_iph_factory.h"
@@ -54,6 +55,15 @@ void SendSuspendDone() {
       power_manager::SuspendImminent::IDLE);
   chromeos::FakePowerManagerClient::Get()->SendSuspendDone();
 }
+
+class ScalableIphBrowserTestOobe : public ScalableIphBrowserTest {
+ public:
+  ScalableIphBrowserTestOobe() {
+    SetTestEnvironment(TestEnvironment(
+        ash::DeviceStateMixin::State::BEFORE_OOBE,
+        CustomizableTestEnvBrowserTestBase::UserSessionType::kRegularWithOobe));
+  }
+};
 
 class ScalableIphBrowserTestVersionNumberNoValue
     : public ScalableIphBrowserTest {
@@ -462,6 +472,26 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTest, AppListShown) {
   ash::AppListController* app_list_controller = ash::AppListController::Get();
   CHECK(app_list_controller);
   app_list_controller->ShowAppList(ash::AppListShowSource::kSearchKey);
+}
+
+IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestOobe, SessionState) {
+  EnableTestIphFeature();
+
+  // Confirm that no trigger condition check should happen during OOBE.
+  EXPECT_CALL(*mock_tracker(),
+              ShouldTriggerHelpUI(::testing::Ref(TestIphFeature())))
+      .Times(0);
+  TriggerConditionsCheckWithAFakeEvent(
+      scalable_iph::ScalableIph::Event::kFiveMinTick);
+  testing::Mock::VerifyAndClearExpectations(mock_tracker());
+
+  // Confirm that a trigger condition check happens immediately after OOBE.
+  EXPECT_CALL(*mock_tracker(),
+              ShouldTriggerHelpUI(::testing::Ref(TestIphFeature())))
+      .Times(1);
+  ash::WizardController::default_controller()->SkipPostLoginScreensForTesting();
+  GetLoginManagerMixin()->WaitForActiveSession();
+  testing::Mock::VerifyAndClearExpectations(mock_tracker());
 }
 
 IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestVersionNumberNoValue, NoValue) {

@@ -62,7 +62,7 @@ class ScalableIphDelegateImpl
   void OnShellDestroying() override;
 
   // SessionObserver:
-  void OnLockStateChanged(bool locked) override;
+  void OnSessionStateChanged(session_manager::SessionState state) override;
 
   // chromeos::PowerManagerClient::Observer:
   void SuspendDone(base::TimeDelta sleep_duration) override;
@@ -76,7 +76,8 @@ class ScalableIphDelegateImpl
   void OnNetworkStateList(
       std::vector<chromeos::network_config::mojom::NetworkStatePropertiesPtr>
           networks);
-  void NotifyLockStateChanged(bool locked);
+  void NotifySessionStateChanged(
+      ::scalable_iph::ScalableIphDelegate::SessionState session_state);
   void NotifySuspendDoneWithoutLockScreen();
   void OnNudgeButtonClicked(const std::string& bubble_id,
                             scalable_iph::ScalableIphDelegate::Action action);
