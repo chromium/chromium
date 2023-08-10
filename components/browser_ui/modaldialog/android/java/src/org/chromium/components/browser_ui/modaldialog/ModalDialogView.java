@@ -433,9 +433,7 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
     }
 
     private boolean isButtonTapProtectionEnabled() {
-        return sEnableButtonTapProtection
-                && ModalDialogFeatureList.isEnabled(
-                        ModalDialogFeatureList.MODALDIALOG_BUTTON_PROTECTION);
+        return sEnableButtonTapProtection;
     }
 
     public static void overrideEnableButtonTapProtectionForTesting(boolean enable) {

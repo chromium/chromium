@@ -716,7 +716,6 @@ source_set("weblayer_lib_base") {
       "//components/browser_ui/accessibility/android",
       "//components/browser_ui/client_certificate/android",
       "//components/browser_ui/contacts_picker/android",
-      "//components/browser_ui/modaldialog/android",
       "//components/browser_ui/photo_picker/android",
       "//components/browser_ui/share/android",
       "//components/browser_ui/site_settings/android",

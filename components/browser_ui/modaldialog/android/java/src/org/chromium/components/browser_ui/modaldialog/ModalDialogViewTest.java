@@ -50,7 +50,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.FakeTimeTestRule;
-import org.chromium.base.FeatureList;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
@@ -62,8 +61,6 @@ import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.DisableAnimationsTestRule;
-
-import java.util.Map;
 
 /**
  * Tests for {@link ModalDialogView}.
@@ -484,8 +481,6 @@ public class ModalDialogViewTest {
     @MediumTest
     @Feature({"ModalDialog"})
     public void testButtonTapProtection() {
-        FeatureList.setTestFeatures(
-                Map.of(ModalDialogFeatureList.MODALDIALOG_BUTTON_PROTECTION, true));
         final var callbackHelper = new CallbackHelper();
         var controller = new ModalDialogProperties.Controller() {
             @Override
