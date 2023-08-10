@@ -13614,6 +13614,16 @@ Called by update_bad_message_reasons.py.-->
   <int value="3" label="Unknown"/>
 </enum>
 
+<enum name="BorealisAudioPath">
+  <summary>
+    These values describe the audio path in Borealis VM. They are used for both
+    input and output.
+  </summary>
+  <int value="0" label="Proton - ALSA"/>
+  <int value="1" label="PulseAudio"/>
+  <int value="2" label="PipeWire"/>
+</enum>
+
 <enum name="BorealisInstallResult">
   <int value="0" label="Success"/>
   <int value="1" label="User cancelled installation"/>

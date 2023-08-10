@@ -22,6 +22,21 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<histogram name="Borealis.Audio.UsedPath.{Direction}" enum="BorealisAudioPath"
+    expires_after="2024-01-14">
+  <owner>normanbt@google.com</owner>
+  <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
+  <summary>
+    Record the usage of each audio path. The value will be incremented if the
+    path is open during the check period, which is once every 5 minutes, when
+    Borealis VM is running.
+  </summary>
+  <token key="Direction">
+    <variant name="Input"/>
+    <variant name="Output"/>
+  </token>
+</histogram>
+
 <histogram name="Borealis.Audio.UsedSubdevices" units="count"
     expires_after="2024-01-14">
   <owner>normanbt@google.com</owner>
