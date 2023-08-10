@@ -4,18 +4,28 @@
 
   async function navigateAndGetResponse() {
     dp.Page.navigate({url: testRunner.url('resources/cached.php')});
-    const [responseReceived, responseReceivedExtraInfo] = await Promise.all([
+    const responseReceivedExtraInfoEvents = [];
+    dp.Network.onResponseReceivedExtraInfo(event => {
+      responseReceivedExtraInfoEvents.push(event);
+    });
+    const [responseReceived] = await Promise.all([
       dp.Network.onceResponseReceived(),
-      dp.Network.onceResponseReceivedExtraInfo(),
       dp.Network.onceLoadingFinished()]
     );
     const response = responseReceived.params;
+    if (response.hasExtraInfo && responseReceivedExtraInfoEvents.length > 1) {
+      testRunner.fail(`More than one ResponseReceivedExtraInfo events received.`);
+    }
+    if (response.hasExtraInfo && !responseReceivedExtraInfoEvents.length) {
+      await dp.Network.onceResponseReceivedExtraInfo();
+    }
+    const [responseReceivedExtraInfo] = responseReceivedExtraInfoEvents;
     const content = (await dp.Network.getResponseBody({requestId: response.requestId})).result.body;
     if (typeof content != 'string' || !content.startsWith('<html>'))
       testRunner.fail(`Invalid response: ${content}`);
     return {
       status: response.response.status,
-      extraInfoStatus: responseReceivedExtraInfo.params.statusCode,
+      extraInfoStatus: responseReceivedExtraInfo?.params.statusCode,
       content: content
     };
   }
