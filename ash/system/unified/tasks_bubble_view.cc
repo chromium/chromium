@@ -163,9 +163,11 @@ void TasksBubbleView::InitViews(ui::ListModel<GlanceablesTaskList>* task_list) {
       &TasksBubbleView::SelectedTasksListChanged, base::Unretained(this)));
   task_list_combo_box_view_->SetSelectedIndex(0);
 
-  list_footer_view_ = AddChildView(
-      std::make_unique<GlanceablesListFooterView>(base::BindRepeating(
-          &TasksBubbleView::ActionButtonPressed, base::Unretained(this))));
+  list_footer_view_ = AddChildView(std::make_unique<GlanceablesListFooterView>(
+      l10n_util::GetStringUTF16(
+          IDS_GLANCEABLES_TASKS_SEE_ALL_BUTTON_ACCESSIBLE_NAME),
+      base::BindRepeating(&TasksBubbleView::ActionButtonPressed,
+                          base::Unretained(this))));
   list_footer_view_->SetID(
       base::to_underlying(GlanceablesViewId::kTasksBubbleListFooter));
 

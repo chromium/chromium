@@ -16,17 +16,15 @@
 #include "ash/glanceables/glanceables_v2_controller.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/style/typography.h"
 #include "base/functional/bind.h"
-#include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "base/types/cxx23_to_underlying.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/combobox_model.h"
 #include "ui/base/models/image_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
-#include "ui/compositor/layer.h"
-#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
@@ -111,9 +109,11 @@ ClassroomBubbleBaseView::ClassroomBubbleBaseView(
               GlanceablesViewId::kClassroomBubbleEmptyListLabel))
           .Build());
 
-  list_footer_view_ = AddChildView(
-      std::make_unique<GlanceablesListFooterView>(base::BindRepeating(
-          &ClassroomBubbleBaseView::OnSeeAllPressed, base::Unretained(this))));
+  list_footer_view_ = AddChildView(std::make_unique<GlanceablesListFooterView>(
+      l10n_util::GetStringUTF16(
+          IDS_GLANCEABLES_CLASSROOM_SEE_ALL_BUTTON_ACCESSIBLE_NAME),
+      base::BindRepeating(&ClassroomBubbleBaseView::OnSeeAllPressed,
+                          base::Unretained(this))));
   list_footer_view_->SetID(
       base::to_underlying(GlanceablesViewId::kClassroomBubbleListFooter));
 }
