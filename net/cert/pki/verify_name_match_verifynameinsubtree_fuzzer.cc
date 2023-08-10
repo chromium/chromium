@@ -24,8 +24,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   std::vector<uint8_t> second_part =
       fuzzed_data.ConsumeRemainingBytes<uint8_t>();
 
-  net::der::Input in1(first_part.data(), first_part.size());
-  net::der::Input in2(second_part.data(), second_part.size());
+  net::der::Input in1(first_part);
+  net::der::Input in2(second_part);
   bool match = net::VerifyNameInSubtree(in1, in2);
   bool reverse_order_match = net::VerifyNameInSubtree(in2, in1);
   // If both InSubtree matches are true, then in1 == in2 (modulo normalization).

@@ -388,7 +388,7 @@ void CertGenerator::GenerateCert() {
     std::string oid_str = GetString();
     std::string value = GetString();
     bool critical = GetBool();
-    cert_builder_->SetExtension(net::der::Input(&oid_str), std::move(value),
+    cert_builder_->SetExtension(net::der::Input(oid_str), std::move(value),
                                 critical);
   }
   if (GetBool()) {

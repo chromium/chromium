@@ -13,7 +13,6 @@
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/run_loop.h"
 #include "net/cert/pem.h"
 #include "net/cert/pki/cert_errors.h"
 #include "net/cert/pki/parse_certificate.h"
@@ -64,7 +63,7 @@ class NSSTempCertsCacheChromeOSTest : public testing::Test {
   // certificate data buffer. The caller must pass a buffer in
   // |cert_contents_buffer| and ensure to only use *|out_subject| while
   // *|cert_contents_buffer| is in scope.
-  // Note: This funcion uses ASSERT_ macros, so the caller must verify for
+  // Note: This function uses ASSERT_ macros, so the caller must verify for
   // failures after it returns.
   void GetCertificateSubjectDN(const base::FilePath& pem_cert_file,
                                std::string* cert_contents_buffer,
@@ -84,7 +83,7 @@ class NSSTempCertsCacheChromeOSTest : public testing::Test {
     net::der::BitString signature_value;
     net::CertErrors errors;
     ASSERT_TRUE(net::ParseCertificate(
-        net::der::Input(cert_contents_buffer), &tbs_certificate_tlv,
+        net::der::Input(*cert_contents_buffer), &tbs_certificate_tlv,
         &signature_algorithm_tlv, &signature_value, &errors));
 
     net::ParsedTbsCertificate tbs;

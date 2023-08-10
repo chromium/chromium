@@ -201,7 +201,7 @@ TEST(ParseNameTest, InvalidNameExtraData) {
   ASSERT_TRUE(
       LoadTestData("invalid", "AttributeTypeAndValue", "extradata", &invalid));
   RDNSequence atv;
-  ASSERT_FALSE(ParseName(SequenceValueFromString(&invalid), &atv));
+  ASSERT_FALSE(ParseName(SequenceValueFromString(invalid), &atv));
 }
 
 TEST(ParseNameTest, InvalidNameEmpty) {
@@ -209,7 +209,7 @@ TEST(ParseNameTest, InvalidNameEmpty) {
   ASSERT_TRUE(
       LoadTestData("invalid", "AttributeTypeAndValue", "empty", &invalid));
   RDNSequence atv;
-  ASSERT_FALSE(ParseName(SequenceValueFromString(&invalid), &atv));
+  ASSERT_FALSE(ParseName(SequenceValueFromString(invalid), &atv));
 }
 
 TEST(ParseNameTest, InvalidNameBadType) {
@@ -217,7 +217,7 @@ TEST(ParseNameTest, InvalidNameBadType) {
   ASSERT_TRUE(LoadTestData("invalid", "AttributeTypeAndValue",
                            "badAttributeType", &invalid));
   RDNSequence atv;
-  ASSERT_FALSE(ParseName(SequenceValueFromString(&invalid), &atv));
+  ASSERT_FALSE(ParseName(SequenceValueFromString(invalid), &atv));
 }
 
 TEST(ParseNameTest, InvalidNameNotSequence) {
@@ -225,21 +225,21 @@ TEST(ParseNameTest, InvalidNameNotSequence) {
   ASSERT_TRUE(LoadTestData("invalid", "AttributeTypeAndValue", "setNotSequence",
                            &invalid));
   RDNSequence atv;
-  ASSERT_FALSE(ParseName(SequenceValueFromString(&invalid), &atv));
+  ASSERT_FALSE(ParseName(SequenceValueFromString(invalid), &atv));
 }
 
 TEST(ParseNameTest, InvalidNameNotSet) {
   std::string invalid;
   ASSERT_TRUE(LoadTestData("invalid", "RDN", "sequenceInsteadOfSet", &invalid));
   RDNSequence atv;
-  ASSERT_FALSE(ParseName(SequenceValueFromString(&invalid), &atv));
+  ASSERT_FALSE(ParseName(SequenceValueFromString(invalid), &atv));
 }
 
 TEST(ParseNameTest, InvalidNameEmptyRdn) {
   std::string invalid;
   ASSERT_TRUE(LoadTestData("invalid", "RDN", "empty", &invalid));
   RDNSequence atv;
-  ASSERT_FALSE(ParseName(SequenceValueFromString(&invalid), &atv));
+  ASSERT_FALSE(ParseName(SequenceValueFromString(invalid), &atv));
 }
 
 TEST(ParseNameTest, RFC2253FormatBasic) {

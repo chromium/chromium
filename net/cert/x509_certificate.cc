@@ -119,9 +119,8 @@ bssl::UniquePtr<CRYPTO_BUFFER> CreateCertBufferFromBytesWithSanityCheck(
   der::BitString signature_value;
   // Do a bare minimum of DER parsing here to see if the input looks
   // certificate-ish.
-  if (!ParseCertificate(der::Input(data.data(), data.size()),
-                        &tbs_certificate_tlv, &signature_algorithm_tlv,
-                        &signature_value, nullptr)) {
+  if (!ParseCertificate(der::Input(data), &tbs_certificate_tlv,
+                        &signature_algorithm_tlv, &signature_value, nullptr)) {
     return nullptr;
   }
   return x509_util::CreateCryptoBuffer(data);
@@ -416,7 +415,7 @@ bool X509Certificate::IsIssuedByEncoded(
   for (const auto& raw_issuer : valid_issuers) {
     der::Input issuer_value;
     std::string normalized_issuer;
-    if (!ParseSequenceValue(der::Input(&raw_issuer), &issuer_value) ||
+    if (!ParseSequenceValue(der::Input(raw_issuer), &issuer_value) ||
         !NormalizeName(issuer_value, &normalized_issuer, &errors)) {
       continue;
     }

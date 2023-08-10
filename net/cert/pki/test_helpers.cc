@@ -110,7 +110,7 @@ void PrintTo(const Input& data, ::std::ostream* os) {
 
 }  // namespace der
 
-der::Input SequenceValueFromString(const std::string* s) {
+der::Input SequenceValueFromString(std::string_view s) {
   der::Parser parser((der::Input(s)));
   der::Input data;
   if (!parser.ReadTag(der::kSequence, &data)) {
@@ -284,7 +284,7 @@ bool ReadVerifyCertChainTestFromFile(const std::string& file_path_ascii,
       if (value == "DEFAULT") {
         value = "211005120000Z";
       }
-      if (!der::ParseUTCTime(der::Input(&value), &test->time)) {
+      if (!der::ParseUTCTime(der::Input(value), &test->time)) {
         ADD_FAILURE() << "Failed parsing UTC time";
         return false;
       }

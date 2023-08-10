@@ -38,11 +38,11 @@ void ReadTestCase(const char* file_name,
   ASSERT_TRUE(ReadTestDataFromPemFile(path, mappings));
 
   absl::optional<SignatureAlgorithm> sigalg_opt =
-      ParseSignatureAlgorithm(der::Input(&algorithm_str));
+      ParseSignatureAlgorithm(der::Input(algorithm_str));
   ASSERT_TRUE(sigalg_opt);
   *signature_algorithm = *sigalg_opt;
 
-  ASSERT_TRUE(ParsePublicKey(der::Input(&public_key_str), public_key));
+  ASSERT_TRUE(ParsePublicKey(der::Input(public_key_str), public_key));
 }
 
 class SimplePathBuilderDelegate1024SuccessTest

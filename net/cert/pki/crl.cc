@@ -467,8 +467,9 @@ CRLRevocationStatus CheckCRL(std::string_view raw_crl,
   std::string normalized_crl_issuer;
   if (!NormalizeNameTLV(tbs_cert_list.issuer_tlv, &normalized_crl_issuer))
     return CRLRevocationStatus::UNKNOWN;
-  if (der::Input(&normalized_crl_issuer) != target_cert->normalized_issuer())
+  if (der::Input(normalized_crl_issuer) != target_cert->normalized_issuer()) {
     return CRLRevocationStatus::UNKNOWN;
+  }
 
   if (tbs_cert_list.crl_extensions_tlv.has_value()) {
     std::map<der::Input, ParsedExtension> extensions;
@@ -584,8 +585,10 @@ CRLRevocationStatus CheckCRL(std::string_view raw_crl,
     //
     // As the |issuer_cert| is from the already validated chain, it is already
     // known to chain to the same trust anchor as the target certificate.
-    if (der::Input(&normalized_crl_issuer) != issuer_cert->normalized_subject())
+    if (der::Input(normalized_crl_issuer) !=
+        issuer_cert->normalized_subject()) {
       continue;
+    }
 
     // 6.3.3 (f) If a key usage extension is present in the CRL issuer's
     //           certificate, verify that the cRLSign bit is set.

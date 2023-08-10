@@ -174,8 +174,7 @@ TEST_P(CheckOCSPTest, FromFile) {
   std::vector<uint8_t> encoded_request;
   ASSERT_TRUE(CreateOCSPRequest(cert.get(), issuer.get(), &encoded_request));
 
-  EXPECT_EQ(der::Input(encoded_request.data(), encoded_request.size()),
-            der::Input(&request_data));
+  EXPECT_EQ(der::Input(encoded_request), der::Input(request_data));
 }
 
 std::string_view kGetURLTestParams[] = {

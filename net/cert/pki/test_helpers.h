@@ -9,6 +9,7 @@
 
 #include <ostream>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "net/cert/pki/parsed_certificate.h"
@@ -33,7 +34,7 @@ void PrintTo(const Input& data, ::std::ostream* os);
 //
 // The returned der::Input() is only valid so long as the input string is alive
 // and is not mutated.
-der::Input SequenceValueFromString(const std::string* s);
+der::Input SequenceValueFromString(std::string_view s);
 
 // Helper structure that maps a PEM block header (for instance "CERTIFICATE") to
 // the destination where the value for that block should be written.

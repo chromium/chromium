@@ -937,7 +937,7 @@ std::string CertBuilder::GetSubjectKeyIdentifier() {
 
   auto& extension_value = extensions_[ski_oid];
   der::Input ski_value;
-  if (!ParseSubjectKeyIdentifier(der::Input(&extension_value.value),
+  if (!ParseSubjectKeyIdentifier(der::Input(extension_value.value),
                                  &ski_value)) {
     return std::string();
   }
@@ -948,7 +948,7 @@ bool CertBuilder::GetValidity(base::Time* not_before,
                               base::Time* not_after) const {
   der::GeneralizedTime not_before_generalized_time;
   der::GeneralizedTime not_after_generalized_time;
-  if (!ParseValidity(der::Input(&validity_tlv_), &not_before_generalized_time,
+  if (!ParseValidity(der::Input(validity_tlv_), &not_before_generalized_time,
                      &not_after_generalized_time) ||
       !GeneralizedTimeToTime(not_before_generalized_time, not_before) ||
       !GeneralizedTimeToTime(not_after_generalized_time, not_after)) {

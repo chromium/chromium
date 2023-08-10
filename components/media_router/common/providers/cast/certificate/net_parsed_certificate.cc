@@ -186,12 +186,11 @@ bool NetParsedCertificate::VerifySignedData(
 }
 
 bool NetParsedCertificate::HasPolicyOid(const openscreen::ByteView& oid) const {
-  net::der::Input net_oid(oid.data(), oid.size());
   if (!cert_->has_policy_oids()) {
     return false;
   }
   const std::vector<net::der::Input>& policies = cert_->policy_oids();
-  return base::Contains(policies, net_oid);
+  return base::Contains(policies, net::der::Input(oid));
 }
 
 void NetParsedCertificate::SetNotBeforeTimeForTesting(time_t not_before) {

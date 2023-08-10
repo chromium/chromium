@@ -1552,8 +1552,7 @@ std::string ProcessIDN(const std::string& input) {
 
 std::string ProcessRawSubjectPublicKeyInfo(base::span<const uint8_t> spki_der) {
   bssl::UniquePtr<EVP_PKEY> public_key;
-  if (!net::ParsePublicKey(net::der::Input(spki_der.data(), spki_der.size()),
-                           &public_key)) {
+  if (!net::ParsePublicKey(net::der::Input(spki_der), &public_key)) {
     return std::string();
   }
   switch (EVP_PKEY_id(public_key.get())) {
@@ -1579,9 +1578,9 @@ std::string ProcessRawSubjectPublicKeyInfo(base::span<const uint8_t> spki_der) {
 
   net::der::Input unused_algorithm_tlv;
   net::der::Input subject_public_key_value;
-  if (!ParseSubjectPublicKeyInfo(
-          net::der::Input(spki_der.data(), spki_der.size()),
-          &unused_algorithm_tlv, &subject_public_key_value)) {
+  if (!ParseSubjectPublicKeyInfo(net::der::Input(spki_der),
+                                 &unused_algorithm_tlv,
+                                 &subject_public_key_value)) {
     return std::string();
   }
   return ProcessRawBytes(subject_public_key_value);

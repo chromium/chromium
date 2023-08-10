@@ -108,7 +108,7 @@ class NET_EXPORT ParsedCertificate {
   // Sequence tag). This is guaranteed to be valid DER, though the contents of
   // unhandled string types are treated as raw bytes.
   der::Input normalized_subject() const {
-    return der::Input(&normalized_subject_);
+    return der::Input(normalized_subject_);
   }
   // Returns the DER-encoded raw issuer value (including the outer sequence
   // tag). This is guaranteed to be valid DER, though the contents of unhandled
@@ -118,7 +118,7 @@ class NET_EXPORT ParsedCertificate {
   // Sequence tag). This is guaranteed to be valid DER, though the contents of
   // unhandled string types are treated as raw bytes.
   der::Input normalized_issuer() const {
-    return der::Input(&normalized_issuer_);
+    return der::Input(normalized_issuer_);
   }
 
   // Returns true if the certificate has a BasicConstraints extension.

@@ -78,8 +78,9 @@ bool EVRootCAMetadata::HasEVPolicyOID(const SHA256HashValue& fingerprint,
   if (iter == ev_policy_.end())
     return false;
   for (const std::string& ev_oid : iter->second) {
-    if (der::Input(&ev_oid) == policy_oid)
+    if (der::Input(ev_oid) == policy_oid) {
       return true;
+    }
   }
   return false;
 }

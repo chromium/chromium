@@ -71,20 +71,20 @@ class VerifyNameMatchSimpleTest
 TEST_P(VerifyNameMatchSimpleTest, ExactEquality) {
   std::string der;
   ASSERT_TRUE(LoadTestData("ascii", value_type(), suffix(), &der));
-  EXPECT_TRUE(VerifyNameMatch(SequenceValueFromString(&der),
-                              SequenceValueFromString(&der)));
+  EXPECT_TRUE(VerifyNameMatch(SequenceValueFromString(der),
+                              SequenceValueFromString(der)));
 
   std::string der_extra_attr;
   ASSERT_TRUE(LoadTestData("ascii", value_type(), suffix() + "-extra_attr",
                            &der_extra_attr));
-  EXPECT_TRUE(VerifyNameMatch(SequenceValueFromString(&der_extra_attr),
-                              SequenceValueFromString(&der_extra_attr)));
+  EXPECT_TRUE(VerifyNameMatch(SequenceValueFromString(der_extra_attr),
+                              SequenceValueFromString(der_extra_attr)));
 
   std::string der_extra_rdn;
   ASSERT_TRUE(LoadTestData("ascii", value_type(), suffix() + "-extra_rdn",
                            &der_extra_rdn));
-  EXPECT_TRUE(VerifyNameMatch(SequenceValueFromString(&der_extra_rdn),
-                              SequenceValueFromString(&der_extra_rdn)));
+  EXPECT_TRUE(VerifyNameMatch(SequenceValueFromString(der_extra_rdn),
+                              SequenceValueFromString(der_extra_rdn)));
 }
 
 // Ensure that a Name does not match another Name which is exactly the same but
@@ -95,10 +95,10 @@ TEST_P(VerifyNameMatchSimpleTest, ExtraAttrDoesNotMatch) {
   std::string der_extra_attr;
   ASSERT_TRUE(LoadTestData("ascii", value_type(), suffix() + "-extra_attr",
                            &der_extra_attr));
-  EXPECT_FALSE(VerifyNameMatch(SequenceValueFromString(&der),
-                               SequenceValueFromString(&der_extra_attr)));
-  EXPECT_FALSE(VerifyNameMatch(SequenceValueFromString(&der_extra_attr),
-                               SequenceValueFromString(&der)));
+  EXPECT_FALSE(VerifyNameMatch(SequenceValueFromString(der),
+                               SequenceValueFromString(der_extra_attr)));
+  EXPECT_FALSE(VerifyNameMatch(SequenceValueFromString(der_extra_attr),
+                               SequenceValueFromString(der)));
 }
 
 // Ensure that a Name does not match another Name which has the same number of
@@ -111,13 +111,13 @@ TEST_P(VerifyNameMatchSimpleTest, DupeAttrDoesNotMatch) {
   std::string der_extra_attr;
   ASSERT_TRUE(LoadTestData("ascii", value_type(), suffix() + "-extra_attr",
                            &der_extra_attr));
-  EXPECT_FALSE(VerifyNameMatch(SequenceValueFromString(&der_dupe_attr),
-                               SequenceValueFromString(&der_extra_attr)));
-  EXPECT_FALSE(VerifyNameMatch(SequenceValueFromString(&der_extra_attr),
-                               SequenceValueFromString(&der_dupe_attr)));
+  EXPECT_FALSE(VerifyNameMatch(SequenceValueFromString(der_dupe_attr),
+                               SequenceValueFromString(der_extra_attr)));
+  EXPECT_FALSE(VerifyNameMatch(SequenceValueFromString(der_extra_attr),
+                               SequenceValueFromString(der_dupe_attr)));
   // However, the name with a dupe attribute should match itself.
-  EXPECT_TRUE(VerifyNameMatch(SequenceValueFromString(&der_dupe_attr),
-                              SequenceValueFromString(&der_dupe_attr)));
+  EXPECT_TRUE(VerifyNameMatch(SequenceValueFromString(der_dupe_attr),
+                              SequenceValueFromString(der_dupe_attr)));
 }
 
 // Ensure that a Name does not match another Name which is exactly the same but
@@ -128,10 +128,10 @@ TEST_P(VerifyNameMatchSimpleTest, ExtraRdnDoesNotMatch) {
   std::string der_extra_rdn;
   ASSERT_TRUE(LoadTestData("ascii", value_type(), suffix() + "-extra_rdn",
                            &der_extra_rdn));
-  EXPECT_FALSE(VerifyNameMatch(SequenceValueFromString(&der),
-                               SequenceValueFromString(&der_extra_rdn)));
-  EXPECT_FALSE(VerifyNameMatch(SequenceValueFromString(&der_extra_rdn),
-                               SequenceValueFromString(&der)));
+  EXPECT_FALSE(VerifyNameMatch(SequenceValueFromString(der),
+                               SequenceValueFromString(der_extra_rdn)));
+  EXPECT_FALSE(VerifyNameMatch(SequenceValueFromString(der_extra_rdn),
+                               SequenceValueFromString(der)));
 }
 
 // Runs VerifyNameMatchSimpleTest for all combinations of value_type and and
@@ -156,11 +156,11 @@ TEST_P(VerifyNameMatchNormalizationTest, CaseInsensitivity) {
   std::string case_swap;
   ASSERT_TRUE(LoadTestData("ascii", value_type(), "case_swap", &case_swap));
   EXPECT_EQ(expected_result(),
-            VerifyNameMatch(SequenceValueFromString(&normal),
-                            SequenceValueFromString(&case_swap)));
+            VerifyNameMatch(SequenceValueFromString(normal),
+                            SequenceValueFromString(case_swap)));
   EXPECT_EQ(expected_result(),
-            VerifyNameMatch(SequenceValueFromString(&case_swap),
-                            SequenceValueFromString(&normal)));
+            VerifyNameMatch(SequenceValueFromString(case_swap),
+                            SequenceValueFromString(normal)));
 }
 
 // Verify matching folds whitespace (for the types which currently support
@@ -172,11 +172,11 @@ TEST_P(VerifyNameMatchNormalizationTest, CollapseWhitespace) {
   ASSERT_TRUE(
       LoadTestData("ascii", value_type(), "extra_whitespace", &whitespace));
   EXPECT_EQ(expected_result(),
-            VerifyNameMatch(SequenceValueFromString(&normal),
-                            SequenceValueFromString(&whitespace)));
+            VerifyNameMatch(SequenceValueFromString(normal),
+                            SequenceValueFromString(whitespace)));
   EXPECT_EQ(expected_result(),
-            VerifyNameMatch(SequenceValueFromString(&whitespace),
-                            SequenceValueFromString(&normal)));
+            VerifyNameMatch(SequenceValueFromString(whitespace),
+                            SequenceValueFromString(normal)));
 }
 
 // Runs VerifyNameMatchNormalizationTest for each (expected_result, value_type)
@@ -207,11 +207,11 @@ TEST_P(VerifyNameMatchDifferingTypesTest, NormalizableTypesAreEqual) {
   std::string der_2;
   ASSERT_TRUE(LoadTestData("ascii", value_type_2(), "unmangled", &der_2));
   if (TypesAreComparable(value_type_1(), value_type_2())) {
-    EXPECT_TRUE(VerifyNameMatch(SequenceValueFromString(&der_1),
-                                SequenceValueFromString(&der_2)));
+    EXPECT_TRUE(VerifyNameMatch(SequenceValueFromString(der_1),
+                                SequenceValueFromString(der_2)));
   } else {
-    EXPECT_FALSE(VerifyNameMatch(SequenceValueFromString(&der_1),
-                                 SequenceValueFromString(&der_2)));
+    EXPECT_FALSE(VerifyNameMatch(SequenceValueFromString(der_1),
+                                 SequenceValueFromString(der_2)));
   }
 }
 
@@ -234,37 +234,37 @@ TEST_P(VerifyNameMatchDifferingTypesTest, NormalizableTypesInSubtrees) {
                            &der_2_extra_attr));
 
   if (TypesAreComparable(value_type_1(), value_type_2())) {
-    EXPECT_TRUE(VerifyNameInSubtree(SequenceValueFromString(&der_1),
-                                    SequenceValueFromString(&der_2)));
-    EXPECT_TRUE(VerifyNameInSubtree(SequenceValueFromString(&der_2),
-                                    SequenceValueFromString(&der_1)));
-    EXPECT_TRUE(VerifyNameInSubtree(SequenceValueFromString(&der_1_extra_rdn),
-                                    SequenceValueFromString(&der_2)));
-    EXPECT_TRUE(VerifyNameInSubtree(SequenceValueFromString(&der_2_extra_rdn),
-                                    SequenceValueFromString(&der_1)));
+    EXPECT_TRUE(VerifyNameInSubtree(SequenceValueFromString(der_1),
+                                    SequenceValueFromString(der_2)));
+    EXPECT_TRUE(VerifyNameInSubtree(SequenceValueFromString(der_2),
+                                    SequenceValueFromString(der_1)));
+    EXPECT_TRUE(VerifyNameInSubtree(SequenceValueFromString(der_1_extra_rdn),
+                                    SequenceValueFromString(der_2)));
+    EXPECT_TRUE(VerifyNameInSubtree(SequenceValueFromString(der_2_extra_rdn),
+                                    SequenceValueFromString(der_1)));
   } else {
-    EXPECT_FALSE(VerifyNameInSubtree(SequenceValueFromString(&der_1),
-                                     SequenceValueFromString(&der_2)));
-    EXPECT_FALSE(VerifyNameInSubtree(SequenceValueFromString(&der_2),
-                                     SequenceValueFromString(&der_1)));
-    EXPECT_FALSE(VerifyNameInSubtree(SequenceValueFromString(&der_1_extra_rdn),
-                                     SequenceValueFromString(&der_2)));
-    EXPECT_FALSE(VerifyNameInSubtree(SequenceValueFromString(&der_2_extra_rdn),
-                                     SequenceValueFromString(&der_1)));
+    EXPECT_FALSE(VerifyNameInSubtree(SequenceValueFromString(der_1),
+                                     SequenceValueFromString(der_2)));
+    EXPECT_FALSE(VerifyNameInSubtree(SequenceValueFromString(der_2),
+                                     SequenceValueFromString(der_1)));
+    EXPECT_FALSE(VerifyNameInSubtree(SequenceValueFromString(der_1_extra_rdn),
+                                     SequenceValueFromString(der_2)));
+    EXPECT_FALSE(VerifyNameInSubtree(SequenceValueFromString(der_2_extra_rdn),
+                                     SequenceValueFromString(der_1)));
   }
 
-  EXPECT_FALSE(VerifyNameInSubtree(SequenceValueFromString(&der_1),
-                                   SequenceValueFromString(&der_2_extra_rdn)));
-  EXPECT_FALSE(VerifyNameInSubtree(SequenceValueFromString(&der_2),
-                                   SequenceValueFromString(&der_1_extra_rdn)));
-  EXPECT_FALSE(VerifyNameInSubtree(SequenceValueFromString(&der_1_extra_attr),
-                                   SequenceValueFromString(&der_2)));
-  EXPECT_FALSE(VerifyNameInSubtree(SequenceValueFromString(&der_2_extra_attr),
-                                   SequenceValueFromString(&der_1)));
-  EXPECT_FALSE(VerifyNameInSubtree(SequenceValueFromString(&der_1),
-                                   SequenceValueFromString(&der_2_extra_attr)));
-  EXPECT_FALSE(VerifyNameInSubtree(SequenceValueFromString(&der_2),
-                                   SequenceValueFromString(&der_1_extra_attr)));
+  EXPECT_FALSE(VerifyNameInSubtree(SequenceValueFromString(der_1),
+                                   SequenceValueFromString(der_2_extra_rdn)));
+  EXPECT_FALSE(VerifyNameInSubtree(SequenceValueFromString(der_2),
+                                   SequenceValueFromString(der_1_extra_rdn)));
+  EXPECT_FALSE(VerifyNameInSubtree(SequenceValueFromString(der_1_extra_attr),
+                                   SequenceValueFromString(der_2)));
+  EXPECT_FALSE(VerifyNameInSubtree(SequenceValueFromString(der_2_extra_attr),
+                                   SequenceValueFromString(der_1)));
+  EXPECT_FALSE(VerifyNameInSubtree(SequenceValueFromString(der_1),
+                                   SequenceValueFromString(der_2_extra_attr)));
+  EXPECT_FALSE(VerifyNameInSubtree(SequenceValueFromString(der_2),
+                                   SequenceValueFromString(der_1_extra_attr)));
 }
 
 // Runs VerifyNameMatchDifferingTypesTest for all combinations of value types in
@@ -293,8 +293,8 @@ TEST_P(VerifyNameMatchUnicodeConversionTest, UnicodeConversionsAreEqual) {
   ASSERT_TRUE(LoadTestData(prefix(), value_type_1(), "unmangled", &der_1));
   std::string der_2;
   ASSERT_TRUE(LoadTestData(prefix(), value_type_2(), "unmangled", &der_2));
-  EXPECT_TRUE(VerifyNameMatch(SequenceValueFromString(&der_1),
-                              SequenceValueFromString(&der_2)));
+  EXPECT_TRUE(VerifyNameMatch(SequenceValueFromString(der_1),
+                              SequenceValueFromString(der_2)));
 }
 
 // Runs VerifyNameMatchUnicodeConversionTest with prefix="unicode_bmp" for all
@@ -351,12 +351,12 @@ TEST(VerifyNameMatchInvalidDataTest, FailOnInvalidPrintableStringChars) {
     }
     der.replace(replace_location, 1, 1, c);
     // Verification should fail due to the invalid character.
-    EXPECT_FALSE(VerifyNameMatch(SequenceValueFromString(&der),
-                                 SequenceValueFromString(&der)));
+    EXPECT_FALSE(VerifyNameMatch(SequenceValueFromString(der),
+                                 SequenceValueFromString(der)));
     std::string normalized_der;
     CertErrors errors;
     EXPECT_FALSE(
-        NormalizeName(SequenceValueFromString(&der), &normalized_der, &errors));
+        NormalizeName(SequenceValueFromString(der), &normalized_der, &errors));
   }
 }
 
@@ -371,11 +371,11 @@ TEST(VerifyNameMatchInvalidDataTest, FailOnInvalidIA5StringChars) {
     SCOPED_TRACE(c);
     der.replace(replace_location, 1, 1, c);
     bool expected_result = (c <= 127);
-    EXPECT_EQ(expected_result, VerifyNameMatch(SequenceValueFromString(&der),
-                                               SequenceValueFromString(&der)));
+    EXPECT_EQ(expected_result, VerifyNameMatch(SequenceValueFromString(der),
+                                               SequenceValueFromString(der)));
     std::string normalized_der;
     CertErrors errors;
-    EXPECT_EQ(expected_result, NormalizeName(SequenceValueFromString(&der),
+    EXPECT_EQ(expected_result, NormalizeName(SequenceValueFromString(der),
                                              &normalized_der, &errors));
   }
 }
@@ -386,11 +386,11 @@ TEST(VerifyNameMatchInvalidDataTest, FailOnAttributeTypeAndValueExtraData) {
       LoadTestData("invalid", "AttributeTypeAndValue", "extradata", &invalid));
   // Verification should fail due to extra element in AttributeTypeAndValue
   // sequence.
-  EXPECT_FALSE(VerifyNameMatch(SequenceValueFromString(&invalid),
-                               SequenceValueFromString(&invalid)));
+  EXPECT_FALSE(VerifyNameMatch(SequenceValueFromString(invalid),
+                               SequenceValueFromString(invalid)));
   std::string normalized_der;
   CertErrors errors;
-  EXPECT_FALSE(NormalizeName(SequenceValueFromString(&invalid), &normalized_der,
+  EXPECT_FALSE(NormalizeName(SequenceValueFromString(invalid), &normalized_der,
                              &errors));
 }
 
@@ -400,11 +400,11 @@ TEST(VerifyNameMatchInvalidDataTest, FailOnAttributeTypeAndValueShort) {
                            &invalid));
   // Verification should fail due to AttributeTypeAndValue sequence having only
   // one element.
-  EXPECT_FALSE(VerifyNameMatch(SequenceValueFromString(&invalid),
-                               SequenceValueFromString(&invalid)));
+  EXPECT_FALSE(VerifyNameMatch(SequenceValueFromString(invalid),
+                               SequenceValueFromString(invalid)));
   std::string normalized_der;
   CertErrors errors;
-  EXPECT_FALSE(NormalizeName(SequenceValueFromString(&invalid), &normalized_der,
+  EXPECT_FALSE(NormalizeName(SequenceValueFromString(invalid), &normalized_der,
                              &errors));
 }
 
@@ -413,11 +413,11 @@ TEST(VerifyNameMatchInvalidDataTest, FailOnAttributeTypeAndValueEmpty) {
   ASSERT_TRUE(
       LoadTestData("invalid", "AttributeTypeAndValue", "empty", &invalid));
   // Verification should fail due to empty AttributeTypeAndValue sequence.
-  EXPECT_FALSE(VerifyNameMatch(SequenceValueFromString(&invalid),
-                               SequenceValueFromString(&invalid)));
+  EXPECT_FALSE(VerifyNameMatch(SequenceValueFromString(invalid),
+                               SequenceValueFromString(invalid)));
   std::string normalized_der;
   CertErrors errors;
-  EXPECT_FALSE(NormalizeName(SequenceValueFromString(&invalid), &normalized_der,
+  EXPECT_FALSE(NormalizeName(SequenceValueFromString(invalid), &normalized_der,
                              &errors));
 }
 
@@ -426,11 +426,11 @@ TEST(VerifyNameMatchInvalidDataTest, FailOnBadAttributeType) {
   ASSERT_TRUE(LoadTestData("invalid", "AttributeTypeAndValue",
                            "badAttributeType", &invalid));
   // Verification should fail due to Attribute Type not being an OID.
-  EXPECT_FALSE(VerifyNameMatch(SequenceValueFromString(&invalid),
-                               SequenceValueFromString(&invalid)));
+  EXPECT_FALSE(VerifyNameMatch(SequenceValueFromString(invalid),
+                               SequenceValueFromString(invalid)));
   std::string normalized_der;
   CertErrors errors;
-  EXPECT_FALSE(NormalizeName(SequenceValueFromString(&invalid), &normalized_der,
+  EXPECT_FALSE(NormalizeName(SequenceValueFromString(invalid), &normalized_der,
                              &errors));
 }
 
@@ -440,11 +440,11 @@ TEST(VerifyNameMatchInvalidDataTest, FailOnAttributeTypeAndValueNotSequence) {
                            &invalid));
   // Verification should fail due to AttributeTypeAndValue being a Set instead
   // of a Sequence.
-  EXPECT_FALSE(VerifyNameMatch(SequenceValueFromString(&invalid),
-                               SequenceValueFromString(&invalid)));
+  EXPECT_FALSE(VerifyNameMatch(SequenceValueFromString(invalid),
+                               SequenceValueFromString(invalid)));
   std::string normalized_der;
   CertErrors errors;
-  EXPECT_FALSE(NormalizeName(SequenceValueFromString(&invalid), &normalized_der,
+  EXPECT_FALSE(NormalizeName(SequenceValueFromString(invalid), &normalized_der,
                              &errors));
 }
 
@@ -452,11 +452,11 @@ TEST(VerifyNameMatchInvalidDataTest, FailOnRdnNotSet) {
   std::string invalid;
   ASSERT_TRUE(LoadTestData("invalid", "RDN", "sequenceInsteadOfSet", &invalid));
   // Verification should fail due to RDN being a Sequence instead of a Set.
-  EXPECT_FALSE(VerifyNameMatch(SequenceValueFromString(&invalid),
-                               SequenceValueFromString(&invalid)));
+  EXPECT_FALSE(VerifyNameMatch(SequenceValueFromString(invalid),
+                               SequenceValueFromString(invalid)));
   std::string normalized_der;
   CertErrors errors;
-  EXPECT_FALSE(NormalizeName(SequenceValueFromString(&invalid), &normalized_der,
+  EXPECT_FALSE(NormalizeName(SequenceValueFromString(invalid), &normalized_der,
                              &errors));
 }
 
@@ -464,11 +464,11 @@ TEST(VerifyNameMatchInvalidDataTest, FailOnEmptyRdn) {
   std::string invalid;
   ASSERT_TRUE(LoadTestData("invalid", "RDN", "empty", &invalid));
   // Verification should fail due to RDN having zero AttributeTypeAndValues.
-  EXPECT_FALSE(VerifyNameMatch(SequenceValueFromString(&invalid),
-                               SequenceValueFromString(&invalid)));
+  EXPECT_FALSE(VerifyNameMatch(SequenceValueFromString(invalid),
+                               SequenceValueFromString(invalid)));
   std::string normalized_der;
   CertErrors errors;
-  EXPECT_FALSE(NormalizeName(SequenceValueFromString(&invalid), &normalized_der,
+  EXPECT_FALSE(NormalizeName(SequenceValueFromString(invalid), &normalized_der,
                              &errors));
 }
 
@@ -484,11 +484,11 @@ TEST(VerifyNameMatchInvalidDataTest, FailOnBmpStringSurrogates) {
   std::string invalid =
       normal.replace(replace_location, 4, std::string("\xd8\x35\xdc\x00", 4));
   // Verification should fail due to the invalid codepoints.
-  EXPECT_FALSE(VerifyNameMatch(SequenceValueFromString(&invalid),
-                               SequenceValueFromString(&invalid)));
+  EXPECT_FALSE(VerifyNameMatch(SequenceValueFromString(invalid),
+                               SequenceValueFromString(invalid)));
   std::string normalized_der;
   CertErrors errors;
-  EXPECT_FALSE(NormalizeName(SequenceValueFromString(&invalid), &normalized_der,
+  EXPECT_FALSE(NormalizeName(SequenceValueFromString(invalid), &normalized_der,
                              &errors));
 }
 
@@ -496,23 +496,23 @@ TEST(VerifyNameMatchTest, EmptyNameMatching) {
   std::string empty;
   ASSERT_TRUE(LoadTestData("valid", "Name", "empty", &empty));
   // Empty names are equal.
-  EXPECT_TRUE(VerifyNameMatch(SequenceValueFromString(&empty),
-                              SequenceValueFromString(&empty)));
+  EXPECT_TRUE(VerifyNameMatch(SequenceValueFromString(empty),
+                              SequenceValueFromString(empty)));
   // An empty name normalized is unchanged.
   std::string normalized_empty_der;
   CertErrors errors;
-  EXPECT_TRUE(NormalizeName(SequenceValueFromString(&empty),
+  EXPECT_TRUE(NormalizeName(SequenceValueFromString(empty),
                             &normalized_empty_der, &errors));
-  EXPECT_EQ(SequenceValueFromString(&empty), der::Input(&normalized_empty_der));
+  EXPECT_EQ(SequenceValueFromString(empty), der::Input(normalized_empty_der));
 
   // An empty name is not equal to non-empty name.
   std::string non_empty;
   ASSERT_TRUE(
       LoadTestData("ascii", "PRINTABLESTRING", "unmangled", &non_empty));
-  EXPECT_FALSE(VerifyNameMatch(SequenceValueFromString(&empty),
-                               SequenceValueFromString(&non_empty)));
-  EXPECT_FALSE(VerifyNameMatch(SequenceValueFromString(&non_empty),
-                               SequenceValueFromString(&empty)));
+  EXPECT_FALSE(VerifyNameMatch(SequenceValueFromString(empty),
+                               SequenceValueFromString(non_empty)));
+  EXPECT_FALSE(VerifyNameMatch(SequenceValueFromString(non_empty),
+                               SequenceValueFromString(empty)));
 }
 
 // Matching should succeed when the RDNs are sorted differently but are still
@@ -522,10 +522,10 @@ TEST(VerifyNameMatchRDNSorting, Simple) {
   ASSERT_TRUE(LoadTestData("ascii", "PRINTABLESTRING", "rdn_sorting_1", &a));
   std::string b;
   ASSERT_TRUE(LoadTestData("ascii", "PRINTABLESTRING", "rdn_sorting_2", &b));
-  EXPECT_TRUE(VerifyNameMatch(SequenceValueFromString(&a),
-                              SequenceValueFromString(&b)));
-  EXPECT_TRUE(VerifyNameMatch(SequenceValueFromString(&b),
-                              SequenceValueFromString(&a)));
+  EXPECT_TRUE(
+      VerifyNameMatch(SequenceValueFromString(a), SequenceValueFromString(b)));
+  EXPECT_TRUE(
+      VerifyNameMatch(SequenceValueFromString(b), SequenceValueFromString(a)));
 }
 
 // Matching should succeed when the RDNs are sorted differently but are still
@@ -536,10 +536,10 @@ TEST(VerifyNameMatchRDNSorting, DuplicateTypes) {
   ASSERT_TRUE(LoadTestData("ascii", "mixed", "rdn_dupetype_sorting_1", &a));
   std::string b;
   ASSERT_TRUE(LoadTestData("ascii", "mixed", "rdn_dupetype_sorting_2", &b));
-  EXPECT_TRUE(VerifyNameMatch(SequenceValueFromString(&a),
-                              SequenceValueFromString(&b)));
-  EXPECT_TRUE(VerifyNameMatch(SequenceValueFromString(&b),
-                              SequenceValueFromString(&a)));
+  EXPECT_TRUE(
+      VerifyNameMatch(SequenceValueFromString(a), SequenceValueFromString(b)));
+  EXPECT_TRUE(
+      VerifyNameMatch(SequenceValueFromString(b), SequenceValueFromString(a)));
 }
 
 TEST(VerifyNameInSubtreeInvalidDataTest, FailOnEmptyRdn) {
@@ -549,12 +549,12 @@ TEST(VerifyNameInSubtreeInvalidDataTest, FailOnEmptyRdn) {
   ASSERT_TRUE(LoadTestData("invalid", "RDN", "empty", &invalid));
   // For both |name| and |parent|, a RelativeDistinguishedName must have at
   // least one AttributeTypeAndValue.
-  EXPECT_FALSE(VerifyNameInSubtree(SequenceValueFromString(&valid),
-                                   SequenceValueFromString(&invalid)));
-  EXPECT_FALSE(VerifyNameInSubtree(SequenceValueFromString(&invalid),
-                                   SequenceValueFromString(&valid)));
-  EXPECT_FALSE(VerifyNameInSubtree(SequenceValueFromString(&invalid),
-                                   SequenceValueFromString(&invalid)));
+  EXPECT_FALSE(VerifyNameInSubtree(SequenceValueFromString(valid),
+                                   SequenceValueFromString(invalid)));
+  EXPECT_FALSE(VerifyNameInSubtree(SequenceValueFromString(invalid),
+                                   SequenceValueFromString(valid)));
+  EXPECT_FALSE(VerifyNameInSubtree(SequenceValueFromString(invalid),
+                                   SequenceValueFromString(invalid)));
 }
 
 TEST(VerifyNameInSubtreeTest, EmptyNameMatching) {
@@ -564,14 +564,14 @@ TEST(VerifyNameInSubtreeTest, EmptyNameMatching) {
   ASSERT_TRUE(
       LoadTestData("ascii", "PRINTABLESTRING", "unmangled", &non_empty));
   // Empty name is in the subtree defined by empty name.
-  EXPECT_TRUE(VerifyNameInSubtree(SequenceValueFromString(&empty),
-                                  SequenceValueFromString(&empty)));
+  EXPECT_TRUE(VerifyNameInSubtree(SequenceValueFromString(empty),
+                                  SequenceValueFromString(empty)));
   // Any non-empty name is in the subtree defined by empty name.
-  EXPECT_TRUE(VerifyNameInSubtree(SequenceValueFromString(&non_empty),
-                                  SequenceValueFromString(&empty)));
+  EXPECT_TRUE(VerifyNameInSubtree(SequenceValueFromString(non_empty),
+                                  SequenceValueFromString(empty)));
   // Empty name is not in the subtree defined by non-empty name.
-  EXPECT_FALSE(VerifyNameInSubtree(SequenceValueFromString(&empty),
-                                   SequenceValueFromString(&non_empty)));
+  EXPECT_FALSE(VerifyNameInSubtree(SequenceValueFromString(empty),
+                                   SequenceValueFromString(non_empty)));
 }
 
 // Verify that the normalized output matches the pre-generated expected value
@@ -587,14 +587,14 @@ TEST(NameNormalizationTest, TestEverything) {
   ASSERT_TRUE(LoadTestData("unicode", "mixed", "unnormalized", &raw_der));
   std::string normalized_der;
   CertErrors errors;
-  ASSERT_TRUE(NormalizeName(SequenceValueFromString(&raw_der), &normalized_der,
+  ASSERT_TRUE(NormalizeName(SequenceValueFromString(raw_der), &normalized_der,
                             &errors));
-  EXPECT_EQ(SequenceValueFromString(&expected_normalized_der),
-            der::Input(&normalized_der));
+  EXPECT_EQ(SequenceValueFromString(expected_normalized_der),
+            der::Input(normalized_der));
   // Re-normalizing an already normalized Name should not change it.
   std::string renormalized_der;
   ASSERT_TRUE(
-      NormalizeName(der::Input(&normalized_der), &renormalized_der, &errors));
+      NormalizeName(der::Input(normalized_der), &renormalized_der, &errors));
   EXPECT_EQ(normalized_der, renormalized_der);
 }
 
@@ -605,9 +605,9 @@ TEST(NameNormalizationTest, NormalizeCustom) {
 
   std::string normalized_der;
   CertErrors errors;
-  ASSERT_TRUE(NormalizeName(SequenceValueFromString(&raw_der), &normalized_der,
+  ASSERT_TRUE(NormalizeName(SequenceValueFromString(raw_der), &normalized_der,
                             &errors));
-  EXPECT_EQ(SequenceValueFromString(&raw_der), der::Input(&normalized_der));
+  EXPECT_EQ(SequenceValueFromString(raw_der), der::Input(normalized_der));
 }
 
 }  // namespace net

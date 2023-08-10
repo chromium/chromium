@@ -154,7 +154,7 @@ struct CertEquals {
 //  Certificate must be DER encoded, while PFX may be BER encoded.
 //  Therefore PFX can be distingushed by checking if the file starts with an
 //  indefinite SEQUENCE, or a definite SEQUENCE { INTEGER,  ... }.
-bool CouldBePFX(const std::string& data) {
+bool CouldBePFX(std::string_view data) {
   if (data.size() < 4)
     return false;
 
@@ -164,7 +164,7 @@ bool CouldBePFX(const std::string& data) {
 
   // If the SEQUENCE is definite length, it can be parsed through the version
   // tag using DER parser, since INTEGER must be definite length, even in BER.
-  net::der::Parser parser((net::der::Input(&data)));
+  net::der::Parser parser((net::der::Input(data)));
   net::der::Parser sequence_parser;
   if (!parser.ReadSequence(&sequence_parser))
     return false;
