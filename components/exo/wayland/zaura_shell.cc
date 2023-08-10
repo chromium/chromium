@@ -1199,15 +1199,19 @@ class WaylandAuraShell : public ash::DesksController::Observer,
   // Overridden from ash::TabletModeObserver:
   void OnTabletModeStarted() override {
     if (wl_resource_get_version(aura_shell_resource_) >=
-        ZAURA_SHELL_LAYOUT_MODE_SINCE_VERSION)
+        ZAURA_SHELL_LAYOUT_MODE_SINCE_VERSION) {
       zaura_shell_send_layout_mode(aura_shell_resource_,
                                    ZAURA_SHELL_LAYOUT_MODE_TABLET);
+      wl_client_flush(wl_resource_get_client(aura_shell_resource_));
+    }
   }
   void OnTabletModeEnding() override {
     if (wl_resource_get_version(aura_shell_resource_) >=
-        ZAURA_SHELL_LAYOUT_MODE_SINCE_VERSION)
+        ZAURA_SHELL_LAYOUT_MODE_SINCE_VERSION) {
       zaura_shell_send_layout_mode(aura_shell_resource_,
                                    ZAURA_SHELL_LAYOUT_MODE_WINDOWED);
+      wl_client_flush(wl_resource_get_client(aura_shell_resource_));
+    }
   }
   void OnTabletModeEnded() override {}
 
