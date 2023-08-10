@@ -11,7 +11,6 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/scoped_run_loop_timeout.h"
 #include "base/time/time.h"
 #include "content/browser/media/session/media_session_player_observer.h"
 #include "content/browser/media/session/mock_media_session_service_impl.h"
@@ -246,14 +245,6 @@ class MediaSessionImplServiceRoutingTest
   std::set<MediaSessionAction> actions_;
 
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  // Many of these tests rely on waiting for metadata/actions/etc from the Media
-  // Session. This means if one fails it doesn't fail until the RunLoop times
-  // out. Since these are unit tests, we can assume that if we don't get the
-  // actions for a short time we're going to fail, so no need to wait for the
-  // standard longer timeout.
-  base::test::ScopedRunLoopTimeout run_loop_timeout_{FROM_HERE,
-                                                     base::Seconds(3)};
 };
 
 TEST_F(MediaSessionImplServiceRoutingTest, NoFrameProducesAudio) {
