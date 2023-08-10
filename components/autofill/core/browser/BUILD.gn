@@ -6,6 +6,7 @@ import("//build/buildflag_header.gni")
 import("//build/config/chrome_build.gni")
 import("//build/config/features.gni")
 import("//chrome/version.gni")
+import("//components/optimization_guide/features.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//tools/grit/grit_rule.gni")
 if (is_android) {
@@ -324,8 +325,6 @@ static_library("browser") {
     "metrics/stored_profile_metrics.h",
     "metrics/suggestions_list_metrics.cc",
     "metrics/suggestions_list_metrics.h",
-    "ml_model/autofill_model_vectorizer.cc",
-    "ml_model/autofill_model_vectorizer.h",
     "payments/account_info_getter.h",
     "payments/autofill_error_dialog_context.cc",
     "payments/autofill_error_dialog_context.h",
@@ -578,6 +577,15 @@ static_library("browser") {
     ]
   }
 
+  if (build_with_tflite_lib) {
+    sources += [
+      "ml_model/autofill_model_executor.cc",
+      "ml_model/autofill_model_executor.h",
+      "ml_model/autofill_model_vectorizer.cc",
+      "ml_model/autofill_model_vectorizer.h",
+    ]
+  }
+
   defines = [ "CHROME_VERSION_MAJOR=" + chrome_version_major ]
 
   configs += [ "//build/config:precompiled_headers" ]
@@ -601,6 +609,16 @@ static_library("browser") {
     "//ui/gfx/range",
     "//url",
   ]
+
+  if (build_with_tflite_lib) {
+    public_deps += [
+      "//third_party/tflite",
+      "//third_party/tflite:tflite_public_headers",
+      "//third_party/tflite_support",
+      "//third_party/tflite_support:tflite_support_proto",
+    ]
+  }
+
   deps = [
     ":autofill_address_rewriter_resources",
     ":buildflags",
@@ -892,6 +910,7 @@ bundle_data("unit_tests_bundle_data") {
     "//components/test/data/autofill/merge/output/singlemerge.out",
     "//components/test/data/autofill/merge/output/streetaddress.out",
     "//components/test/data/autofill/merge/output/validation.out",
+    "//components/test/data/autofill/ml_model/autofill_model_baseline.tflite",
     "//components/test/data/autofill/ml_model/dictionary_test.txt",
   ]
   outputs = [ "{{bundle_resources_dir}}/" +
@@ -1001,7 +1020,6 @@ source_set("unit_tests") {
     "metrics/shadow_prediction_metrics_unittest.cc",
     "metrics/stored_profile_metrics_unittest.cc",
     "metrics/suggestions_list_metrics_unittest.cc",
-    "ml_model/autofill_model_vectorizer_unittest.cc",
     "payments/autofill_offer_manager_unittest.cc",
     "payments/credit_card_access_manager_unittest.cc",
     "payments/credit_card_cvc_authenticator_unittest.cc",
@@ -1097,6 +1115,13 @@ source_set("unit_tests") {
       "ui/contact_form_label_formatter_unittest.cc",
       "ui/label_formatter_unittest.cc",
       "ui/label_formatter_utils_unittest.cc",
+    ]
+  }
+
+  if (build_with_tflite_lib) {
+    sources += [
+      "ml_model/autofill_model_executor_unittest.cc",
+      "ml_model/autofill_model_vectorizer_unittest.cc",
     ]
   }
 

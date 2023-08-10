@@ -1,5 +1,8 @@
 
 [UNK]
+name
+address
+code
 number
 city
 last
@@ -7,5 +10,3 @@ first
 zip
 card
 phone
-state
-line

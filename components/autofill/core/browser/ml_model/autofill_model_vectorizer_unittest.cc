@@ -33,9 +33,9 @@ class AutofillModelVectorizerTest : public testing::Test {
 };
 
 TEST_F(AutofillModelVectorizerTest, VectorizerIsInitialized) {
-  auto model_tokenizer =
+  auto model_vectorizer =
       AutofillModelVectorizer::CreateVectorizer(dictionary_path_);
-  EXPECT_NE(model_tokenizer, nullptr);
+  EXPECT_NE(model_vectorizer, nullptr);
 }
 
 // Initialize vectorizer with a path that does not exist.
@@ -45,41 +45,41 @@ TEST_F(AutofillModelVectorizerTest, WrongDictionaryPath) {
 }
 
 TEST_F(AutofillModelVectorizerTest, TokensMappedCorrectly) {
-  auto model_tokenizer =
+  auto model_vectorizer =
       AutofillModelVectorizer::CreateVectorizer(dictionary_path_);
-  EXPECT_EQ(model_tokenizer->GetDictionarySize(), 11u);
-  EXPECT_EQ(model_tokenizer->TokenToId(u"first"), TokenId(5));
+  EXPECT_EQ(model_vectorizer->GetDictionarySize(), 12u);
+  EXPECT_EQ(model_vectorizer->TokenToId(u"first"), TokenId(8));
 }
 
 // Tests that words out of vocabulary return 1.
 TEST_F(AutofillModelVectorizerTest, WordOutOfVocab) {
-  auto model_tokenizer =
+  auto model_vectorizer =
       AutofillModelVectorizer::CreateVectorizer(dictionary_path_);
-  EXPECT_EQ(model_tokenizer->TokenToId(u"address"), TokenId(1));
+  EXPECT_EQ(model_vectorizer->TokenToId(u"address"), TokenId(3));
 }
 
 // Tests that empty strings return 0 for padding.
 TEST_F(AutofillModelVectorizerTest, EmptyToken) {
-  auto model_tokenizer =
+  auto model_vectorizer =
       AutofillModelVectorizer::CreateVectorizer(dictionary_path_);
-  EXPECT_EQ(model_tokenizer->TokenToId(u""), TokenId(0));
+  EXPECT_EQ(model_vectorizer->TokenToId(u""), TokenId(0));
 }
 
 TEST_F(AutofillModelVectorizerTest, InputVectorizedCorrectly) {
-  auto model_tokenizer =
+  auto model_vectorizer =
       AutofillModelVectorizer::CreateVectorizer(dictionary_path_);
-  EXPECT_THAT(model_tokenizer->Vectorize(u"Phone 'number"),
-              testing::ElementsAre(TokenId(8), TokenId(2), TokenId(0),
+  EXPECT_THAT(model_vectorizer->Vectorize(u"Phone 'number"),
+              testing::ElementsAre(TokenId(11), TokenId(5), TokenId(0),
                                    TokenId(0), TokenId(0)));
 }
 
 // If a field label has more than one consecutive whitespace, they
 // should all be removed without any empty strings.
 TEST_F(AutofillModelVectorizerTest, InputHasMoreThanOneWhitespace) {
-  auto model_tokenizer =
+  auto model_vectorizer =
       AutofillModelVectorizer::CreateVectorizer(dictionary_path_);
-  EXPECT_THAT(model_tokenizer->Vectorize(u"Phone   &number  "),
-              testing::ElementsAre(TokenId(8), TokenId(2), TokenId(0),
+  EXPECT_THAT(model_vectorizer->Vectorize(u"Phone   &number  "),
+              testing::ElementsAre(TokenId(11), TokenId(5), TokenId(0),
                                    TokenId(0), TokenId(0)));
 }
 
@@ -87,12 +87,12 @@ TEST_F(AutofillModelVectorizerTest, InputHasMoreThanOneWhitespace) {
 // only the first kOutputSequenceLength many words should be used and the
 // rest are ignored.
 TEST_F(AutofillModelVectorizerTest, InputHasMoreWordsThanOutputSequenceLength) {
-  auto model_tokenizer =
+  auto model_vectorizer =
       AutofillModelVectorizer::CreateVectorizer(dictionary_path_);
   EXPECT_THAT(
-      model_tokenizer->Vectorize(u"City Number Phone Address Card Last Zip "),
-      testing::ElementsAre(TokenId(3), TokenId(2), TokenId(8), TokenId(1),
-                           TokenId(7)));
+      model_vectorizer->Vectorize(u"City Number Phone Address Card Last Zip "),
+      testing::ElementsAre(TokenId(6), TokenId(5), TokenId(11), TokenId(3),
+                           TokenId(10)));
 }
 
 }  // namespace autofill
