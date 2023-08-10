@@ -683,50 +683,9 @@ void UiSceneCreator::CreateWebVrTimeoutScreen() {
   timeout_text->SetFieldWidth(kTimeoutMessageTextWidthDMM);
   timeout_text->set_hit_testable(true);
 
-#if !BUILDFLAG(IS_WIN)
-  auto button_scaler =
-      std::make_unique<ScaledDepthAdjuster>(kTimeoutButtonDepthOffset);
-
-  auto button =
-      Create<DiscButton>(kWebVrTimeoutMessageButton, kPhaseForeground,
-                         base::BindRepeating(&UiBrowserInterface::ExitPresent,
-                                             base::Unretained(browser_)),
-                         vector_icons::kCloseRoundedIcon);
-  button->SetVisible(false);
-  button->SetTranslate(0, -kTimeoutMessageTextWidthDMM, 0);
-  button->SetRotate(1, 0, 0, kTimeoutButtonRotationRad);
-  button->SetTransitionedProperties({OPACITY});
-  button->SetSize(kWebVrTimeoutMessageButtonDiameterDMM,
-                  kWebVrTimeoutMessageButtonDiameterDMM);
-  VR_BIND_VISIBILITY(button, model->web_vr.state == kWebVrTimedOut);
-  VR_BIND_BUTTON_COLORS(model_, button.get(), &ColorScheme::disc_button_colors,
-                        &DiscButton::SetButtonColors);
-
-  auto timeout_button_text =
-      Create<Text>(kWebVrTimeoutMessageButtonText, kPhaseForeground,
-                   kTimeoutMessageTextFontHeightDMM);
-
-  // Disc-style button text is not uppercase. See https://crbug.com/787654.
-  timeout_button_text->SetText(
-      l10n_util::GetStringUTF16(IDS_VR_WEB_VR_EXIT_BUTTON_LABEL));
-  timeout_button_text->SetColor(model_->color_scheme().web_vr_timeout_spinner);
-  timeout_button_text->SetFieldWidth(kTimeoutButtonTextWidthDMM);
-  timeout_button_text->set_contributes_to_parent_bounds(false);
-  timeout_button_text->set_y_anchoring(BOTTOM);
-  timeout_button_text->SetTranslate(0, -kTimeoutButtonTextVerticalOffsetDMM, 0);
-  timeout_button_text->set_hit_testable(true);
-
-  button->AddChild(std::move(timeout_button_text));
-  button_scaler->AddChild(std::move(button));
-#endif  // !BUILDFLAG(IS_WIN)
-
   timeout_layout->AddChild(std::move(timeout_icon));
   timeout_layout->AddChild(std::move(timeout_text));
   timeout_message->AddChild(std::move(timeout_layout));
-
-#if !BUILDFLAG(IS_WIN)
-  timeout_message->AddChild(std::move(button_scaler));
-#endif  // !BUILDFLAG(IS_WIN)
 
   scaler->AddChild(std::move(timeout_message));
   scaler->AddChild(std::move(spinner));

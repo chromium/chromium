@@ -241,19 +241,10 @@ TEST_F(UiTest, WebVrTimeout) {
   model_->web_vr.state = kWebVrAwaitingFirstFrame;
 
   RunForMs(500);
-  // On Windows, the timeout message button is not shown.
-#if !BUILDFLAG(IS_WIN)
-  VerifyVisibility(
-      {kWebVrTimeoutSpinner, kWebVrTimeoutMessage, kWebVrTimeoutMessageLayout,
-       kWebVrTimeoutMessageIcon, kWebVrTimeoutMessageText,
-       kWebVrTimeoutMessageButton, kWebVrTimeoutMessageButtonText},
-      false);
-#else
   VerifyVisibility(
       {kWebVrTimeoutSpinner, kWebVrTimeoutMessage, kWebVrTimeoutMessageLayout,
        kWebVrTimeoutMessageIcon, kWebVrTimeoutMessageText},
       false);
-#endif  // !BUILDFLAG(IS_WIN)
   VerifyVisibility(
       {
           kWebVrBackground,
@@ -262,17 +253,9 @@ TEST_F(UiTest, WebVrTimeout) {
 
   model_->web_vr.state = kWebVrTimeoutImminent;
   RunForMs(500);
-  // On Windows, the timeout message button is not shown.
-#if !BUILDFLAG(IS_WIN)
-  VerifyVisibility({kWebVrTimeoutMessage, kWebVrTimeoutMessageLayout,
-                    kWebVrTimeoutMessageIcon, kWebVrTimeoutMessageText,
-                    kWebVrTimeoutMessageButton, kWebVrTimeoutMessageButtonText},
-                   false);
-#else
   VerifyVisibility({kWebVrTimeoutMessage, kWebVrTimeoutMessageLayout,
                     kWebVrTimeoutMessageIcon, kWebVrTimeoutMessageText},
                    false);
-#endif  // !BUILDFLAG(IS_WIN)
   VerifyVisibility(
       {
           kWebVrTimeoutSpinner, kWebVrBackground,
@@ -286,19 +269,10 @@ TEST_F(UiTest, WebVrTimeout) {
           kWebVrTimeoutSpinner,
       },
       false);
-// On Windows, the timeout message button is not shown.
-#if !BUILDFLAG(IS_WIN)
-  VerifyVisibility(
-      {kWebVrBackground, kWebVrTimeoutMessage, kWebVrTimeoutMessageLayout,
-       kWebVrTimeoutMessageIcon, kWebVrTimeoutMessageText,
-       kWebVrTimeoutMessageButton, kWebVrTimeoutMessageButtonText},
-      true);
-#else
   VerifyVisibility(
       {kWebVrBackground, kWebVrTimeoutMessage, kWebVrTimeoutMessageLayout,
        kWebVrTimeoutMessageIcon, kWebVrTimeoutMessageText},
       true);
-#endif  // !BUILDFLAG(IS_WIN)
 }
 
 TEST_F(UiTest, ExitPresentAndFullscreenOnMenuButtonClick) {
