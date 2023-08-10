@@ -395,6 +395,11 @@ builder.
   * [`//components/headless/.+`](https://cs.chromium.org/chromium/src/components/headless/)
   * [`//headless/.+`](https://cs.chromium.org/chromium/src/headless/)
 
+* [linux-js-coverage-rel](https://ci.chromium.org/p/chromium/builders/try/linux-js-coverage-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-js-coverage-rel""))
+
+  Location filters:
+  * [`//.*\.(js|ts)`](https://cs.chromium.org/search?q=+file:.*\.(js|ts))
+
 * [linux-perfetto-rel](https://ci.chromium.org/p/chromium/builders/try/linux-perfetto-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-perfetto-rel""))
 
   Location filters:
@@ -582,12 +587,6 @@ as required builders.
 
 * [linux-chromeos-siso-rel](https://ci.chromium.org/p/chromium/builders/try/linux-chromeos-siso-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-chromeos-siso-rel""))
   * Experiment percentage: 20.0
-
-* [linux-js-coverage-rel](https://ci.chromium.org/p/chromium/builders/try/linux-js-coverage-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-js-coverage-rel""))
-  * Experiment percentage: 50.0
-
-  Location filters:
-  * [`//.*\.(js|ts)`](https://cs.chromium.org/search?q=+file:.*\.(js|ts))
 
 * [linux-lacros-siso-rel](https://ci.chromium.org/p/chromium/builders/try/linux-lacros-siso-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-lacros-siso-rel""))
   * Experiment percentage: 20.0
