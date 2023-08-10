@@ -3,9 +3,7 @@
 // found in the LICENSE file.
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
-// <if expr="is_chromeos">
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-// </if>
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -13,7 +11,7 @@ import {BackgroundGraphicsModeRestriction, Policies} from '../native_layer.js';
 // <if expr="is_chromeos">
 import {ColorModeRestriction, DuplexModeRestriction, PinModeRestriction} from '../native_layer.js';
 // </if>
-import {CapabilityWithReset, Cdd, CddCapabilities, ColorOption, DpiOption, DuplexOption, MediaSizeOption} from './cdd.js';
+import {CapabilityWithReset, Cdd, CddCapabilities, ColorOption, DpiOption, DuplexOption, MediaSizeOption, MediaTypeOption} from './cdd.js';
 import {Destination, DestinationOrigin, GooglePromotedDestinationId, PrinterType, RecentDestination} from './destination.js';
 import {DocumentSettings} from './document_info.js';
 import {CustomMarginsOrientation, Margins, MarginsSetting, MarginsType} from './margins.js';
@@ -48,6 +46,7 @@ export interface Settings {
   color: Setting;
   customMargins: Setting;
   mediaSize: Setting;
+  mediaType: Setting;
   margins: Setting;
   dpi: Setting;
   scaling: Setting;
@@ -74,6 +73,7 @@ export interface SerializedSettings {
   recentDestinations?: RecentDestination[];
   dpi?: DpiOption;
   mediaSize?: MediaSizeOption;
+  mediaType?: MediaTypeOption;
   marginsType?: MarginsType;
   customMargins?: MarginsSetting;
   isColorEnabled?: boolean;
@@ -162,6 +162,7 @@ export interface Ticket {
   scalingType: ScalingType;
   shouldPrintBackgrounds: boolean;
   shouldPrintSelectionOnly: boolean;
+  mediaType?: string;
   advancedSettings?: object;
   capabilities?: string;
   marginsCustom?: MarginsSetting;
@@ -233,6 +234,7 @@ const STICKY_SETTING_NAMES: string[] = [
   'layout',
   'margins',
   'mediaSize',
+  'mediaType',
   'scaling',
   'scalingType',
   'scalingTypePdf',
@@ -372,6 +374,16 @@ export class PrintPreviewModelElement extends PolymerElement {
               setFromUi: false,
               key: 'mediaSize',
               updatesPreview: true,
+            },
+            mediaType: {
+              value: '',
+              unavailableValue: '',
+              valid: true,
+              available: false,
+              setByPolicy: false,
+              setFromUi: false,
+              key: 'mediaType',
+              updatesPreview: false,
             },
             margins: {
               value: MarginsType.DEFAULT,
@@ -828,6 +840,11 @@ export class PrintPreviewModelElement extends PolymerElement {
         'mediaSize.available',
         !!caps && !!caps.media_size && !knownSizeToSaveAsPdf);
     this.setSettingPath_(
+        'mediaType.available',
+        loadTimeData.getBoolean('isBorderlessPrintingEnabled') && !!caps &&
+            !!caps.media_type && !!caps.media_type.option &&
+            caps.media_type.option.length > 1);
+    this.setSettingPath_(
         'dpi.available',
         !this.documentSettings.isFromArc && !!caps && !!caps.dpi &&
             !!caps.dpi.option && caps.dpi.option.length > 1);
@@ -978,6 +995,27 @@ export class PrintPreviewModelElement extends PolymerElement {
         });
       }
       this.setSetting('mediaSize', matchingOption || defaultOption, true);
+    }
+
+    if (this.settings.mediaType.available) {
+      const defaultOption =
+          caps!.media_type!.option.find(o => !!o.is_default) ||
+          caps!.media_type!.option[0];
+      let matchingOption = null;
+      if (this.settings.mediaType.setFromUi) {
+        const currentMediaType = this.getSettingValue('mediaType');
+        matchingOption = caps!.media_type!.option.find(o => {
+          return o.vendor_id === currentMediaType.vendor_id;
+        });
+      }
+      this.setSetting('mediaType', matchingOption || defaultOption, true);
+    } else if (
+        caps && caps.media_type && caps.media_type.option &&
+        caps.media_type.option.length > 0) {
+      const unavailableValue =
+          caps!.media_type!.option.find(o => !!o.is_default) ||
+          caps!.media_type!.option[0];
+      this.setSettingPath_('mediaType.unavailableValue', unavailableValue);
     }
 
     if (this.settings.dpi.available) {
@@ -1465,6 +1503,14 @@ export class PrintPreviewModelElement extends PolymerElement {
       }
     }
 
+    if (this.settings.mediaType.available) {
+      assert(loadTimeData.getBoolean('isBorderlessPrintingEnabled'));
+      const cddDefault = this.getResetValue_(caps['media_type']!);
+      if (cddDefault) {
+        this.set('settings.mediaType.value', cddDefault);
+      }
+    }
+
     if (this.settings.color.available) {
       const cddDefault = this.getResetValue_(caps['color']!) as ColorOption;
       if (cddDefault) {
@@ -1588,6 +1634,7 @@ export class PrintPreviewModelElement extends PolymerElement {
         'scalingType';
     const ticket: PrintTicket = {
       mediaSize: this.getSettingValue('mediaSize') as MediaSizeValue,
+      mediaType: this.getSettingValue('mediaType')?.vendor_id,
       pageCount: this.getSettingValue('pages').length,
       landscape: this.getSettingValue('layout'),
       color: destination.getNativeColorModel(

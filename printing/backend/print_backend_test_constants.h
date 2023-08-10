@@ -61,6 +61,15 @@ inline const PrinterSemanticCapsAndDefaults::Paper kPaperCustom{
     /*printable_area_um=*/gfx::Rect(0, 0, 2540, 5080),
     /*max_height_um=*/20000};
 
+inline const PrinterSemanticCapsAndDefaults::MediaType kMediaTypePlain{
+    /*display_name=*/"Plain Paper",
+    /*vendor_id=*/"stationery",
+};
+inline const PrinterSemanticCapsAndDefaults::MediaType kMediaTypePhoto{
+    /*display_name=*/"Photo Paper",
+    /*vendor_id=*/"photographic",
+};
+
 #if BUILDFLAG(IS_CHROMEOS)
 inline const AdvancedCapability kAdvancedCapability1(
     /*name=*/"advanced_cap_bool",
@@ -129,6 +138,10 @@ inline constexpr gfx::Size kDpi1200(1200, 1200);
 inline constexpr gfx::Size kDpi1200x600(1200, 600);
 inline const std::vector<gfx::Size> kDpis{kDpi600, kDpi1200, kDpi1200x600};
 inline constexpr gfx::Size kDefaultDpi = kDpi600;
+inline const PrinterSemanticCapsAndDefaults::MediaTypes kMediaTypes{
+    kMediaTypePlain, kMediaTypePhoto};
+inline const PrinterSemanticCapsAndDefaults::MediaType kDefaultMediaType =
+    kMediaTypePlain;
 #if BUILDFLAG(IS_CHROMEOS)
 inline constexpr bool kPinSupported = true;
 #endif

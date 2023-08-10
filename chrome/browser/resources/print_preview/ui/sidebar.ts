@@ -15,6 +15,7 @@ import './duplex_settings.js';
 import './header.js';
 import './layout_settings.js';
 import './media_size_settings.js';
+import './media_type_settings.js';
 import './margins_settings.js';
 import './more_settings.js';
 import './other_options_settings.js';

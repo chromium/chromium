@@ -54,6 +54,7 @@ struct PrintSettings {
   mojo_base.mojom.String16 device_name;
   RequestedMedia requested_media;
   PageSetup page_setup_device_units;
+  string media_type;
   gfx.mojom.Size dpi;
   double scale_factor;
   bool rasterize_pdf;

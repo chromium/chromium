@@ -186,6 +186,7 @@ void AddPrintPreviewStrings(content::WebUIDataSource* source) {
     {"managedSettings", IDS_PRINT_PREVIEW_MANAGED_SETTINGS_TEXT},
     {"marginsLabel", IDS_PRINT_PREVIEW_MARGINS_LABEL},
     {"mediaSizeLabel", IDS_PRINT_PREVIEW_MEDIA_SIZE_LABEL},
+    {"mediaTypeLabel", IDS_PRINT_PREVIEW_MEDIA_TYPE_LABEL},
     {"minimumMargins", IDS_PRINT_PREVIEW_MINIMUM_MARGINS},
     {"moreOptionsLabel", IDS_MORE_OPTIONS_LABEL},
     {"newShowAdvancedOptions", IDS_PRINT_PREVIEW_NEW_SHOW_ADVANCED_OPTIONS},
@@ -329,6 +330,14 @@ void AddPrintPreviewFlags(content::WebUIDataSource* source, Profile* profile) {
 
   source->AddBoolean("isEnterpriseManaged",
                      policy::IsDeviceEnterpriseManaged());
+
+#if BUILDFLAG(IS_CHROMEOS)
+  source->AddBoolean(
+      "isBorderlessPrintingEnabled",
+      base::FeatureList::IsEnabled(features::kEnableBorderlessPrinting));
+#else
+  source->AddBoolean("isBorderlessPrintingEnabled", false);
+#endif
 }
 
 void SetupPrintPreviewPlugin(content::WebUIDataSource* source) {

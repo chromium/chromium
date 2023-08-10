@@ -269,6 +269,11 @@ std::unique_ptr<PrintSettings> PrintSettingsFromJobSettings(
   }
   settings->set_requested_media(requested_media);
 
+  const std::string* media_type = job_settings.FindString(kSettingMediaType);
+  if (media_type && !media_type->empty()) {
+    settings->set_media_type(*media_type);
+  }
+
   settings->set_ranges(GetPageRangesFromJobSettings(job_settings));
 
   absl::optional<bool> is_modifiable =

@@ -205,6 +205,11 @@ bool PrinterSemanticCapsAndDefaults::Paper::IsSizeWithinBounds(
          other_um.height() <= max_height_um_;
 }
 
+bool PrinterSemanticCapsAndDefaults::MediaType::operator==(
+    const PrinterSemanticCapsAndDefaults::MediaType& other) const {
+  return display_name == other.display_name && vendor_id == other.vendor_id;
+}
+
 PrinterSemanticCapsAndDefaults::PrinterSemanticCapsAndDefaults() = default;
 
 PrinterSemanticCapsAndDefaults::PrinterSemanticCapsAndDefaults(

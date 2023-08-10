@@ -154,6 +154,15 @@ bool StructTraits<printing::mojom::PaperDataView,
   return true;
 }
 
+// static
+bool StructTraits<printing::mojom::MediaTypeDataView,
+                  printing::PrinterSemanticCapsAndDefaults::MediaType>::
+    Read(printing::mojom::MediaTypeDataView data,
+         printing::PrinterSemanticCapsAndDefaults::MediaType* out) {
+  return data.ReadDisplayName(&out->display_name) &&
+         data.ReadVendorId(&out->vendor_id);
+}
+
 #if BUILDFLAG(IS_CHROMEOS)
 // static
 printing::mojom::AdvancedCapabilityType
@@ -242,6 +251,11 @@ bool StructTraits<printing::mojom::PrinterSemanticCapsAndDefaultsDataView,
                   printing::PrinterSemanticCapsAndDefaults>::
     Read(printing::mojom::PrinterSemanticCapsAndDefaultsDataView data,
          printing::PrinterSemanticCapsAndDefaults* out) {
+  absl::optional<printing::PrinterSemanticCapsAndDefaults::MediaTypes>
+      media_types;
+  absl::optional<printing::PrinterSemanticCapsAndDefaults::MediaType>
+      default_media_type;
+
   out->collate_capable = data.collate_capable();
   out->collate_default = data.collate_default();
   out->copies_max = data.copies_max();
@@ -327,6 +341,19 @@ bool StructTraits<printing::mojom::PrinterSemanticCapsAndDefaultsDataView,
     }
   }
 #endif
+
+  if (!data.ReadMediaTypes(&media_types) ||
+      !data.ReadDefaultMediaType(&default_media_type)) {
+    return false;
+  }
+
+  if (media_types.has_value()) {
+    out->media_types = media_types.value();
+  }
+  if (default_media_type.has_value()) {
+    out->default_media_type = default_media_type.value();
+  }
+
   return true;
 }
 

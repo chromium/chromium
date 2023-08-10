@@ -356,6 +356,56 @@ PrinterSemanticCapsAndDefaults::Papers SupportedPapers(
   return parsed_papers;
 }
 
+// Initializes `printer_info->media_types` with available media types and
+// `printer_info->default_media_type` with default media type provided by
+// `printer`.
+void ExtractMediaTypes(const CupsOptionProvider& printer,
+                       PrinterSemanticCapsAndDefaults* printer_info) {
+  std::vector<base::StringPiece> names =
+      printer.GetSupportedOptionValueStrings(kIppMediaType);
+  if (names.empty()) {
+    return;
+  }
+  printer_info->media_types.reserve(names.size());
+
+  for (base::StringPiece vendor_id : names) {
+    PrinterSemanticCapsAndDefaults::MediaType type;
+    type.vendor_id = std::string(vendor_id);
+
+    // This name will be overwritten by its Chromium localization if it's a
+    // standard IPP media type. But for non-standard types, the only
+    // human-readable name available is this one from the driver (or
+    // driverless printer).
+    const char* display_name = printer.GetLocalizedOptionValueName(
+        kIppMediaType, type.vendor_id.c_str());
+    if (display_name) {
+      type.display_name = display_name;
+    } else {
+      type.display_name = std::string(vendor_id);
+    }
+
+    printer_info->media_types.push_back(type);
+  }
+
+  // Set default media type, or use the first in the list if unavailable.
+  DCHECK(!printer_info->media_types.empty());
+  printer_info->default_media_type = printer_info->media_types[0];
+  ipp_t* media_col_default =
+      ippGetCollection(printer.GetDefaultOptionValue(kIppMediaCol), 0);
+  const char* media_type_default = ippGetString(
+      ippFindAttribute(media_col_default, "media-type", IPP_TAG_KEYWORD), 0,
+      nullptr);
+  if (media_type_default) {
+    // Don't set the "default" media type if it isn't in the list of supported
+    // media types for some reason.
+    for (const auto& media_type : printer_info->media_types) {
+      if (media_type.vendor_id == media_type_default) {
+        printer_info->default_media_type = media_type;
+      }
+    }
+  }
+}
+
 bool CollateCapable(const CupsOptionProvider& printer) {
   std::vector<base::StringPiece> values =
       printer.GetSupportedOptionValueStrings(kIppCollate);
@@ -481,6 +531,7 @@ void CapsAndDefaultsFromPrinter(const CupsPrinter& printer,
   ExtractColor(printer, printer_info);
   ExtractDuplexModes(printer, printer_info);
   ExtractResolutions(printer, printer_info);
+  ExtractMediaTypes(printer, printer_info);
 }
 
 gfx::Rect GetPrintableAreaForSize(const CupsPrinter& printer,

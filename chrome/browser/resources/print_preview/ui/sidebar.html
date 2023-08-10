@@ -85,6 +85,11 @@
         hidden$="[[!settings.mediaSize.available]]"
         class="settings-section">
     </print-preview-media-size-settings>
+    <print-preview-media-type-settings settings="[[settings]]" state="[[state]]"
+        capability="[[destination.capabilities.printer.media_type]]"
+        disabled="[[controlsDisabled_]]"
+        hidden$="[[!settings.mediaType.available]]" class="settings-section">
+    </print-preview-media-type-settings>
     <print-preview-pages-per-sheet-settings settings="[[settings]]"
         disabled="[[controlsDisabled_]]"
         hidden$="[[!settings.pagesPerSheet.available]]"

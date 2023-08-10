@@ -32,6 +32,15 @@ struct Paper {
   [MinVersion=2] int32 max_height_um;
 };
 
+// Media type used by printer semantic capabilities and defaults.
+// Corresponds to `printing::PrinterSemanticCapsAndDefaults::MediaType` in
+// printing/backend/print_backend.h.
+[Stable]
+struct MediaType {
+  string display_name;
+  string vendor_id;
+};
+
 // An advanced capability value for ChromeOS printing.
 // Paper used by printer semantic capabilities and defaults.
 // Corresponds to `printing::AdvancedCapabilityValue` in
@@ -112,4 +121,9 @@ struct PrinterSemanticCapsAndDefaults {
   // Null if printer doesn't have this capability.
   [EnableIf=is_win, MinVersion=1]
   PageOutputQuality? page_output_quality;
+
+  [MinVersion=2]
+  array<MediaType>? media_types;  // Allowed to be empty.
+  [MinVersion=2]
+  MediaType? default_media_type;
 };

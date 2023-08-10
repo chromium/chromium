@@ -128,6 +128,9 @@ constexpr mojom::DuplexMode kPrintSettingsDuplexMode2 =
 constexpr gfx::Size kPrintSettingsDpi1(600, 600);
 constexpr gfx::Size kPrintSettingsDpi2(1200, 600);
 
+const char kPrintSettingsMediaTypeEmpty[] = "";
+const char kPrintSettingsMediaTypePlain[] = "stationery";
+
 constexpr double kPrintSettingsScaleFactor1 = 1.0;
 constexpr double kPrintSettingsScaleFactor2 = 1.25;
 
@@ -199,6 +202,7 @@ PrintSettings GenerateSamplePrintSettingsDefaultMargins() {
   settings.set_duplex_mode(kPrintSettingsDuplexMode1);
   settings.set_dpi(
       kPrintSettingsDpi1.width());  // Same resolution for both axes.
+  settings.set_media_type(kPrintSettingsMediaTypeEmpty);
   settings.set_scale_factor(kPrintSettingsScaleFactor1);
   settings.set_rasterize_pdf(kPrintSettingsRasterizePdf1);
   settings.SetOrientation(kPrintSettingsLandscape1);
@@ -230,6 +234,7 @@ PrintSettings GenerateSamplePrintSettingsCustomMarginsWithParams(
   settings.set_color(kPrintSettingsColorModel2);
   settings.set_duplex_mode(kPrintSettingsDuplexMode2);
   settings.set_dpi_xy(kPrintSettingsDpi2.width(), kPrintSettingsDpi2.height());
+  settings.set_media_type(kPrintSettingsMediaTypePlain);
   settings.set_scale_factor(kPrintSettingsScaleFactor2);
   settings.set_rasterize_pdf(kPrintSettingsRasterizePdf2);
   settings.SetOrientation(kPrintSettingsLandscape2);

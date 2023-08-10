@@ -107,6 +107,14 @@ export type MediaSizeCapability = {
   option: MediaSizeOption[],
 }&CapabilityWithReset;
 
+export type MediaTypeOption = {
+  vendor_id: string,
+}&SelectOption;
+
+export type MediaTypeCapability = {
+  option: MediaTypeOption[],
+}&CapabilityWithReset;
+
 export type DpiOption = {
   vendor_id?: string, horizontal_dpi: number, vertical_dpi: number,
 }&OptionWithDefault;
@@ -133,6 +141,7 @@ export interface CddCapabilities {
   duplex?: DuplexCapability;
   page_orientation?: PageOrientationCapability;
   media_size?: MediaSizeCapability;
+  media_type?: MediaTypeCapability;
   dpi?: DpiCapability;
   // <if expr="is_chromeos">
   pin?: PinCapability;

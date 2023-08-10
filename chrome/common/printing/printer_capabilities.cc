@@ -26,22 +26,20 @@
 #include "components/crash/core/common/crash_keys.h"
 #include "components/device_event_log/device_event_log.h"
 #include "components/printing/common/cloud_print_cdd_conversion.h"
+#include "components/strings/grit/components_strings.h"
 #include "printing/backend/print_backend.h"
 #include "printing/backend/print_backend_consts.h"
 #include "printing/mojom/print.mojom.h"
 #include "printing/print_job_constants.h"
+#include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/strings/grit/components_strings.h"
-#include "ui/base/l10n/l10n_util.h"
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/common/printing/ipp_l10n.h"
-#include "components/strings/grit/components_strings.h"
-#include "ui/base/l10n/l10n_util.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(PRINT_MEDIA_L10N_ENABLED)
@@ -89,6 +87,18 @@ void PopulateAndSortAllPaperNames(PrinterSemanticCapsAndDefaults& info) {
 #endif  // BUILDFLAG(PRINT_MEDIA_L10N_ENABLED)
 
 #if BUILDFLAG(IS_CHROMEOS)
+void PopulateMediaTypeLocalization(
+    PrinterSemanticCapsAndDefaults::MediaTypes& media_types) {
+  auto& l10n_map = CapabilityLocalizationMap();
+  for (auto& value : media_types) {
+    auto value_it =
+        l10n_map.find(base::StrCat({"media-type/", value.vendor_id}));
+    if (value_it != l10n_map.end()) {
+      value.display_name = l10n_util::GetStringUTF8(value_it->second);
+    }
+  }
+}
+
 void PopulateAdvancedCapsLocalization(
     std::vector<AdvancedCapability>* advanced_capabilities) {
   auto& l10n_map = CapabilityLocalizationMap();
@@ -131,6 +141,8 @@ base::Value AssemblePrinterCapabilities(const std::string& device_name,
 #endif  // BUILDFLAG(PRINT_MEDIA_L10N_ENABLED)
 
 #if BUILDFLAG(IS_CHROMEOS)
+  PopulateMediaTypeLocalization(caps->media_types);
+
   if (!has_secure_protocol)
     caps->pin_supported = false;
 

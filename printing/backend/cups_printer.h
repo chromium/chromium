@@ -46,6 +46,12 @@ class COMPONENT_EXPORT(PRINT_BACKEND) CupsOptionProvider {
   // Returns the IPP "media-col-database" attribute for this printer.
   // ipp_attribute_t* is owned by CupsOptionProvider.
   virtual ipp_attribute_t* GetMediaColDatabase() const = 0;
+
+  // Returns the human-readable display name for an option value. Used to get
+  // fallback display names for non-standard values that Chromium doesn't have
+  // built-in localizations for.
+  virtual const char* GetLocalizedOptionValueName(const char* option_name,
+                                                  const char* value) const = 0;
 };
 
 // Represents a CUPS printer.

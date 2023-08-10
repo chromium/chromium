@@ -1621,6 +1621,17 @@ TEST_F('PrintPreviewMediaSizeSettingsTest', 'All', function() {
   mocha.run();
 });
 
+var PrintPreviewMediaTypeSettingsTest = class extends PrintPreviewTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://print/test_loader.html?module=print_preview/media_type_settings_test.js';
+  }
+};
+
+TEST_F('PrintPreviewMediaTypeSettingsTest', 'All', function() {
+  mocha.run();
+});
+
 var PrintPreviewDpiSettingsTest = class extends PrintPreviewTest {
   /** @override */
   get browsePreload() {

@@ -40,6 +40,9 @@ MATCHER(EqualsMediaColEntry, "") {
 
 class MockCupsPrinterWithMarginsAndAttributes : public MockCupsPrinter {
  public:
+  // name and value of IPP attribute; needed to fetch localized display name
+  using LocalizationKey = std::pair<base::StringPiece, base::StringPiece>;
+
   MockCupsPrinterWithMarginsAndAttributes() = default;
   ~MockCupsPrinterWithMarginsAndAttributes() override = default;
 
@@ -90,12 +93,27 @@ class MockCupsPrinterWithMarginsAndAttributes : public MockCupsPrinter {
     return false;
   }
 
+  const char* GetLocalizedOptionValueName(const char* option_name,
+                                          const char* value) const override {
+    LocalizationKey key = {option_name, value};
+    auto localized_name = localized_strings_.find(key);
+    if (localized_name == localized_strings_.end()) {
+      return nullptr;
+    }
+    return localized_name->second.c_str();
+  }
+
   void SetSupportedOptions(base::StringPiece name, ipp_attribute_t* attribute) {
     supported_attributes_[name] = attribute;
   }
 
   void SetOptionDefault(base::StringPiece name, ipp_attribute_t* attribute) {
     default_attributes_[name] = attribute;
+  }
+
+  void SetLocalizedOptionValueNames(
+      std::map<LocalizationKey, std::string> strings) {
+    localized_strings_ = std::move(strings);
   }
 
   void SetMediaColDatabase(ipp_attribute_t* attribute) {
@@ -105,6 +123,7 @@ class MockCupsPrinterWithMarginsAndAttributes : public MockCupsPrinter {
  private:
   std::map<base::StringPiece, ipp_attribute_t*> supported_attributes_;
   std::map<base::StringPiece, ipp_attribute_t*> default_attributes_;
+  std::map<LocalizationKey, std::string> localized_strings_;
   raw_ptr<ipp_attribute_t, DanglingUntriaged> media_col_database_;
 };
 
@@ -395,6 +414,51 @@ TEST_F(PrintBackendCupsIppHelperTest, DuplexNotSupported) {
   EXPECT_THAT(caps.duplex_modes,
               testing::UnorderedElementsAre(mojom::DuplexMode::kSimplex));
   EXPECT_EQ(mojom::DuplexMode::kSimplex, caps.duplex_default);
+}
+
+TEST_F(PrintBackendCupsIppHelperTest, MediaTypes) {
+  printer_->SetSupportedOptions(
+      "media-type",
+      MakeStringCollection(
+          ipp_, {"stationery", "custom-1", "photographic-glossy", "custom-2"}));
+  printer_->SetOptionDefault("media-type", MakeString(ipp_, "stationery"));
+
+  // set mock display names that would be read from the printer's strings file
+  // (printer-strings-uri)
+  printer_->SetLocalizedOptionValueNames({
+      {{"media-type", "stationery"}, "Plain Paper"},
+      {{"media-type", "custom-2"}, "Custom Two"},
+  });
+
+  PrinterSemanticCapsAndDefaults caps;
+  CapsAndDefaultsFromPrinter(*printer_, &caps);
+
+  EXPECT_EQ(caps.default_media_type.vendor_id, "stationery");
+  ASSERT_EQ(caps.media_types.size(), 4U);
+  EXPECT_EQ(caps.media_types[0].vendor_id, "stationery");
+  EXPECT_EQ(caps.media_types[0].display_name, "Plain Paper");
+  EXPECT_EQ(caps.media_types[1].vendor_id, "custom-1");
+  EXPECT_EQ(caps.media_types[1].display_name, "custom-1");
+  EXPECT_EQ(caps.media_types[2].vendor_id, "photographic-glossy");
+  EXPECT_EQ(caps.media_types[2].display_name, "photographic-glossy");
+  EXPECT_EQ(caps.media_types[3].vendor_id, "custom-2");
+  EXPECT_EQ(caps.media_types[3].display_name, "Custom Two");
+}
+
+TEST_F(PrintBackendCupsIppHelperTest, DefaultMediaTypeNotSupported) {
+  printer_->SetSupportedOptions(
+      "media-type",
+      MakeStringCollection(ipp_, {"stationery", "photographic-glossy"}));
+  printer_->SetOptionDefault("media-type",
+                             MakeString(ipp_, "not-actually-supported"));
+
+  PrinterSemanticCapsAndDefaults caps;
+  CapsAndDefaultsFromPrinter(*printer_, &caps);
+
+  EXPECT_EQ(caps.default_media_type.vendor_id, "stationery");
+  ASSERT_EQ(caps.media_types.size(), 2U);
+  EXPECT_EQ(caps.media_types[0].vendor_id, "stationery");
+  EXPECT_EQ(caps.media_types[1].vendor_id, "photographic-glossy");
 }
 
 TEST_F(PrintBackendCupsIppHelperTest, A4PaperSupported) {

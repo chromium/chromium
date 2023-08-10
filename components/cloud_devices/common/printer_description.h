@@ -566,6 +566,20 @@ struct Interval {
 
 typedef std::vector<Interval> PageRange;
 
+struct MediaType {
+  MediaType();
+  MediaType(const std::string& vendor_id,
+            const std::string& custom_display_name);
+
+  bool operator==(const MediaType& other) const;
+  bool operator!=(const MediaType& other) const { return !(*this == other); }
+
+  bool IsValid() const;
+
+  std::string vendor_id;
+  std::string custom_display_name;
+};
+
 class ContentTypeTraits;
 class PwgRasterConfigTraits;
 class VendorCapabilityTraits;
@@ -576,6 +590,7 @@ class MarginsTraits;
 class DpiTraits;
 class FitToPageTraits;
 class MediaTraits;
+class MediaTypeTraits;
 class PageRangeTraits;
 class CollateTraits;
 class CopiesCapabilityTraits;
@@ -595,6 +610,7 @@ typedef SelectionCapability<Margins, MarginsTraits> MarginsCapability;
 typedef SelectionCapability<Dpi, DpiTraits> DpiCapability;
 typedef SelectionCapability<FitToPageType, FitToPageTraits> FitToPageCapability;
 typedef SelectionCapability<Media, MediaTraits> MediaCapability;
+typedef SelectionCapability<MediaType, MediaTypeTraits> MediaTypeCapability;
 typedef ValueCapability<Copies, class CopiesCapabilityTraits> CopiesCapability;
 typedef EmptyCapability<class PageRangeTraits> PageRangeCapability;
 typedef BooleanCapability<class CollateTraits> CollateCapability;

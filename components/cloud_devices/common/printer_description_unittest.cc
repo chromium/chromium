@@ -160,6 +160,18 @@ const char kCdd[] = R"(
             "vendor_id": "FEED"
           } ]
         },
+        "media_type": {
+          "option": [ {
+            "custom_display_name": "Plain Paper",
+            "vendor_id": "stationery",
+            "is_default": true
+          }, {
+            "custom_display_name": "Photo Paper",
+            "vendor_id": "photographic"
+          }, {
+            "vendor_id": "stationery-lightweight"
+          } ]
+        },
         "collate": {
           "default": false
         },
@@ -731,6 +743,7 @@ TEST(PrinterDescriptionTest, CddInit) {
   DpiCapability dpi;
   FitToPageCapability fit_to_page;
   MediaCapability media;
+  MediaTypeCapability media_type;
   CopiesCapability copies;
   PageRangeCapability page_range;
   CollateCapability collate;
@@ -747,6 +760,7 @@ TEST(PrinterDescriptionTest, CddInit) {
   EXPECT_FALSE(fit_to_page.LoadFrom(description));
   EXPECT_FALSE(page_range.LoadFrom(description));
   EXPECT_FALSE(media.LoadFrom(description));
+  EXPECT_FALSE(media_type.LoadFrom(description));
   EXPECT_FALSE(collate.LoadFrom(description));
   EXPECT_FALSE(reverse.LoadFrom(description));
   EXPECT_FALSE(media.LoadFrom(description));
@@ -774,6 +788,7 @@ TEST(PrinterDescriptionTest, CddSetAll) {
   DpiCapability dpi;
   FitToPageCapability fit_to_page;
   MediaCapability media;
+  MediaTypeCapability media_type;
   CopiesCapability copies;
   PageRangeCapability page_range;
   CollateCapability collate;
@@ -835,6 +850,10 @@ TEST(PrinterDescriptionTest, CddSetAll) {
                       .WithMaxHeight(9999)
                       .Build());
 
+  media_type.AddDefaultOption(MediaType("stationery", "Plain Paper"), true);
+  media_type.AddOption(MediaType("photographic", "Photo Paper"));
+  media_type.AddOption(MediaType("stationery-lightweight", ""));
+
   collate.set_default_value(false);
   reverse.set_default_value(true);
 
@@ -848,6 +867,7 @@ TEST(PrinterDescriptionTest, CddSetAll) {
   fit_to_page.SaveTo(&description);
   page_range.SaveTo(&description);
   media.SaveTo(&description);
+  media_type.SaveTo(&description);
   collate.SaveTo(&description);
   reverse.SaveTo(&description);
   pwg_raster_config.SaveTo(&description);
@@ -1275,6 +1295,7 @@ TEST(PrinterDescriptionTest, CddGetAll) {
   DpiCapability dpi;
   FitToPageCapability fit_to_page;
   MediaCapability media;
+  MediaTypeCapability media_type;
   CopiesCapability copies;
   PageRangeCapability page_range;
   CollateCapability collate;
@@ -1290,6 +1311,7 @@ TEST(PrinterDescriptionTest, CddGetAll) {
   EXPECT_TRUE(fit_to_page.LoadFrom(description));
   EXPECT_TRUE(page_range.LoadFrom(description));
   EXPECT_TRUE(media.LoadFrom(description));
+  EXPECT_TRUE(media_type.LoadFrom(description));
   EXPECT_TRUE(collate.LoadFrom(description));
   EXPECT_TRUE(reverse.LoadFrom(description));
   EXPECT_TRUE(pwg_raster_config.LoadFrom(description));
@@ -1358,6 +1380,9 @@ TEST(PrinterDescriptionTest, CddGetAll) {
                                  .WithMaxHeight(9999)
                                  .Build()));
   EXPECT_EQ(default_media, media.GetDefault());
+
+  EXPECT_TRUE(media_type.Contains(MediaType("stationery", "Plain Paper")));
+  EXPECT_TRUE(media_type.Contains(MediaType("photographic", "Photo Paper")));
 
   EXPECT_FALSE(collate.default_value());
   EXPECT_TRUE(reverse.default_value());

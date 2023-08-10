@@ -240,6 +240,8 @@ TEST(PrintBackendMojomTraitsTest,
   EXPECT_TRUE(kDefaultPaper == output.default_paper);
   EXPECT_EQ(kDpis, output.dpis);
   EXPECT_EQ(kDefaultDpi, output.default_dpi);
+  EXPECT_EQ(kMediaTypes, output.media_types);
+  EXPECT_EQ(kDefaultMediaType, output.default_media_type);
 #if BUILDFLAG(IS_CHROMEOS)
   EXPECT_EQ(kPinSupported, output.pin_supported);
   EXPECT_EQ(kAdvancedCapabilities, output.advanced_capabilities);
@@ -308,6 +310,22 @@ TEST(PrintBackendMojomTraitsTest,
               mojom::PrinterSemanticCapsAndDefaults>(input, output));
 
   EXPECT_EQ(kEmptyPapers, output.papers);
+}
+
+TEST(PrintBackendMojomTraitsTest,
+     TestSerializeAndDeserializePrinterSemanticCapsAndDefaultsEmptyMediaTypes) {
+  PrinterSemanticCapsAndDefaults input =
+      GenerateSamplePrinterSemanticCapsAndDefaults({});
+  PrinterSemanticCapsAndDefaults output;
+
+  // Override sample with empty `media_types`.
+  const PrinterSemanticCapsAndDefaults::MediaTypes kEmptyMediaTypes;
+  input.media_types.clear();
+
+  EXPECT_TRUE(mojo::test::SerializeAndDeserialize<
+              mojom::PrinterSemanticCapsAndDefaults>(input, output));
+
+  EXPECT_EQ(kEmptyMediaTypes, output.media_types);
 }
 
 TEST(

@@ -126,6 +126,12 @@ bool StructTraits<
     return false;
   out->set_page_setup_device_units(page_setup);
 
+  std::string media_type;
+  if (!data.ReadMediaType(&media_type)) {
+    return false;
+  }
+  out->set_media_type(media_type);
+
   gfx::Size dpi;
   if (!data.ReadDpi(&dpi))
     return false;

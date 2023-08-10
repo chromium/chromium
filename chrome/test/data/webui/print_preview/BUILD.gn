@@ -28,6 +28,7 @@ build_webui_tests("build") {
     "layout_settings_test.ts",
     "margins_settings_test.ts",
     "media_size_settings_test.ts",
+    "media_type_settings_test.ts",
     "model_settings_availability_test.ts",
     "model_settings_policy_test.ts",
     "model_test.ts",

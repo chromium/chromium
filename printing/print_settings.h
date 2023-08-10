@@ -135,6 +135,11 @@ class COMPONENT_EXPORT(PRINTING) PrintSettings {
   }
   const std::u16string& device_name() const { return device_name_; }
 
+  void set_media_type(const std::string& media_type) {
+    media_type_ = media_type;
+  }
+  const std::string& media_type() const { return media_type_; }
+
   void set_dpi(int dpi) { dpi_ = gfx::Size(dpi, dpi); }
   void set_dpi_xy(int dpi_horizontal, int dpi_vertical) {
     dpi_ = gfx::Size(dpi_horizontal, dpi_vertical);
@@ -346,6 +351,9 @@ class COMPONENT_EXPORT(PRINTING) PrintSettings {
 
   // Page setup in device units.
   PageSetup page_setup_device_units_;
+
+  // Media type requested by the user.
+  std::string media_type_;
 
   // Printer's device effective dots per inch in both axes. The two values will
   // generally be identical. However, on Windows, there are a few rare printers

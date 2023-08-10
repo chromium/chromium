@@ -58,6 +58,7 @@ extern constexpr char kOptionDuplex[] = "duplex";
 extern constexpr char kOptionFitToPage[] = "fit_to_page";
 extern constexpr char kOptionMargins[] = "margins";
 extern constexpr char kOptionMediaSize[] = "media_size";
+extern constexpr char kOptionMediaType[] = "media_type";
 extern constexpr char kOptionPageOrientation[] = "page_orientation";
 extern constexpr char kOptionPageRange[] = "page_range";
 extern constexpr char kOptionReverse[] = "reverse_order";
@@ -1058,6 +1059,18 @@ bool Interval::operator==(const Interval& other) const {
   return start == other.start && end == other.end;
 }
 
+MediaType::MediaType() = default;
+
+MediaType::MediaType(const std::string& vendor_id,
+                     const std::string& custom_display_name)
+    : vendor_id(vendor_id), custom_display_name(custom_display_name) {}
+
+bool MediaType::operator==(const MediaType& other) const = default;
+
+bool MediaType::IsValid() const {
+  return !vendor_id.empty();
+}
+
 template <const char* kName>
 class ItemsTraits {
  public:
@@ -1505,6 +1518,32 @@ class MediaTraits : public ItemsTraits<kOptionMediaSize> {
   }
 };
 
+class MediaTypeTraits : public ItemsTraits<kOptionMediaType> {
+ public:
+  static bool IsValid(const MediaType& option) { return option.IsValid(); }
+
+  static bool Load(const base::Value::Dict& dict, MediaType* option) {
+    const std::string* vendor_id = dict.FindString(kKeyVendorId);
+    if (!vendor_id) {
+      return false;
+    }
+    option->vendor_id = *vendor_id;
+    const std::string* custom_display_name =
+        dict.FindString(kKeyCustomDisplayName);
+    if (custom_display_name) {
+      option->custom_display_name = *custom_display_name;
+    }
+    return true;
+  }
+
+  static void Save(const MediaType& option, base::Value::Dict* dict) {
+    dict->Set(kKeyVendorId, option.vendor_id);
+    if (!option.custom_display_name.empty()) {
+      dict->Set(kKeyCustomDisplayName, option.custom_display_name);
+    }
+  }
+};
+
 class CollateTraits : public NoValueValidation,
                       public ItemsTraits<kOptionCollate> {
  public:
@@ -1600,6 +1639,8 @@ template class SelectionCapability<printer::Dpi, printer::DpiTraits>;
 template class SelectionCapability<printer::FitToPageType,
                                    printer::FitToPageTraits>;
 template class SelectionCapability<printer::Media, printer::MediaTraits>;
+template class SelectionCapability<printer::MediaType,
+                                   printer::MediaTypeTraits>;
 template class ValueCapability<printer::Copies,
                                printer::CopiesCapabilityTraits>;
 template class EmptyCapability<printer::PageRangeTraits>;
