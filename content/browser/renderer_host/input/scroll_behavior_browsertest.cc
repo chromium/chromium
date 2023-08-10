@@ -336,7 +336,7 @@ class ScrollBehaviorBrowserTestWithPercentBasedScrolling
 INSTANTIATE_TEST_SUITE_P(All, ScrollBehaviorBrowserTest, ::testing::Bool());
 INSTANTIATE_TEST_SUITE_P(All,
                          ScrollBehaviorBrowserTestWithPercentBasedScrolling,
-                         ::testing::Values(true));
+                         ::testing::Values(false));
 
 // This tests that a in-progress smooth scroll on an overflow:scroll element
 // stops when interrupted by an instant scroll.
