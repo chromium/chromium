@@ -32,7 +32,6 @@
 #include "base/i18n/time_formatting.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -47,7 +46,6 @@
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
-#include "ui/views/highlight_border.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/metadata/view_factory_internal.h"
 #include "ui/views/view.h"
@@ -130,11 +128,6 @@ SavedDeskItemView::SavedDeskItemView(std::unique_ptr<DeskTemplate> saved_desk)
       .SetUseDefaultFillLayout(true)
       .SetAccessibleName(saved_desk_name)
       .SetCallback(std::move(launch_template_callback))
-      .SetBorder(std::make_unique<views::HighlightBorder>(
-          kSaveDeskCornerRadius,
-          chromeos::features::IsJellyrollEnabled()
-              ? views::HighlightBorder::Type::kHighlightBorderOnShadow
-              : views::HighlightBorder::Type::kHighlightBorder1))
       .AddChildren(
           views::Builder<View>()
               .CopyAddressTo(&background_view)
