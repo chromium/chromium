@@ -11,6 +11,7 @@
 #include "base/command_line.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
+#include "base/trace_event/trace_event.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ash/app_restore/app_restore_arc_task_handler.h"
 #include "chrome/browser/ash/app_restore/full_restore_app_launch_handler.h"
@@ -116,6 +117,7 @@ bool MaybeCreateFullRestoreServiceForLacros() {
 
 // static
 FullRestoreService* FullRestoreService::GetForProfile(Profile* profile) {
+  TRACE_EVENT0("ui", "FullRestoreService::GetForProfile");
   return static_cast<FullRestoreService*>(
       FullRestoreServiceFactory::GetInstance()->GetForProfile(profile));
 }
@@ -257,6 +259,7 @@ void FullRestoreService::OnTransitionedToNewActiveUser(Profile* profile) {
 }
 
 void FullRestoreService::LaunchBrowserWhenReady() {
+  TRACE_EVENT0("ui", "FullRestoreService::LaunchBrowserWhenReady");
   if (!g_restore_for_testing || !app_launch_handler_)
     return;
 

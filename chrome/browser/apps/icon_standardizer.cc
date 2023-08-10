@@ -4,6 +4,7 @@
 
 #include "chrome/browser/apps/icon_standardizer.h"
 
+#include "base/trace_event/trace_event.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkMaskFilter.h"
 #include "ui/gfx/image/image_skia.h"
@@ -38,6 +39,7 @@ float GetDistanceBetweenPoints(gfx::PointF first_point,
 // Returns the distance for the farthest visible pixel away from the center of
 // the icon.
 float GetFarthestVisiblePointFromCenter(const SkBitmap& bitmap) {
+  TRACE_EVENT0("ui", "apps::GetFarthestVisiblePointFromCenter");
   int width = bitmap.width();
   int height = bitmap.height();
 
@@ -91,6 +93,7 @@ float GetFarthestVisiblePointFromCenter(const SkBitmap& bitmap) {
 }
 
 bool IsIconRepCircleShaped(const gfx::ImageSkiaRep& rep) {
+  TRACE_EVENT0("ui", "apps::IsIconRepCircleShaped");
   SkBitmap bitmap(rep.GetBitmap());
   int width = bitmap.width();
   int height = bitmap.height();
@@ -185,6 +188,7 @@ bool IsIconRepCircleShaped(const gfx::ImageSkiaRep& rep) {
 absl::optional<gfx::ImageSkiaRep> StandardizeSizeOfImageRep(
     const gfx::ImageSkiaRep& rep,
     float scale) {
+  TRACE_EVENT0("ui", "apps::StandardizeSizeOfImageRep");
   SkBitmap unscaled_bitmap(rep.GetBitmap());
   int width = unscaled_bitmap.width();
   int height = unscaled_bitmap.height();
@@ -209,6 +213,7 @@ absl::optional<gfx::ImageSkiaRep> StandardizeSizeOfImageRep(
 // Returns an image with equal width and height. If necessary, padding is
 // added to ensure the width and height are equal.
 gfx::ImageSkia StandardizeSize(const gfx::ImageSkia& image) {
+  TRACE_EVENT0("ui", "apps::StandardizeSize");
   gfx::ImageSkia final_image;
 
   for (gfx::ImageSkiaRep rep : image.image_reps()) {
@@ -229,6 +234,7 @@ gfx::ImageSkia StandardizeSize(const gfx::ImageSkia& image) {
 absl::optional<gfx::ImageSkiaRep> CreateStandardIconImageRep(
     const gfx::ImageSkiaRep& base_rep,
     float scale) {
+  TRACE_EVENT0("ui", "apps::CreateStandardIconImageRep");
   absl::optional<gfx::ImageSkiaRep> resized_image_skia_rep =
       StandardizeSizeOfImageRep(base_rep, scale);
   const gfx::ImageSkiaRep& standard_size_rep =
@@ -329,6 +335,7 @@ absl::optional<gfx::ImageSkiaRep> CreateStandardIconImageRep(
 }
 
 gfx::ImageSkia CreateStandardIconImage(const gfx::ImageSkia& image) {
+  TRACE_EVENT0("ui", "apps::CreateStandardIconImage");
   gfx::ImageSkia final_image;
   gfx::ImageSkia standard_size_image = StandardizeSize(image);
 
