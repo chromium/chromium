@@ -83,6 +83,9 @@ protocol::String BuildCookieExclusionReason(
       return protocol::Audits::CookieExclusionReasonEnum::ExcludeSameSiteStrict;
     case blink::mojom::blink::CookieExclusionReason::kExcludeDomainNonASCII:
       return protocol::Audits::CookieExclusionReasonEnum::ExcludeDomainNonASCII;
+    case blink::mojom::blink::CookieExclusionReason::kExcludeThirdPartyPhaseout:
+      return protocol::Audits::CookieExclusionReasonEnum::
+          ExcludeThirdPartyPhaseout;
   }
 }
 

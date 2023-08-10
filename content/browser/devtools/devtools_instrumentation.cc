@@ -1498,6 +1498,11 @@ std::unique_ptr<protocol::Array<protocol::String>> BuildExclusionReasons(
         protocol::Audits::CookieExclusionReasonEnum::
             ExcludeThirdPartyCookieBlockedInFirstPartySet);
   }
+  if (status.HasExclusionReason(
+          net::CookieInclusionStatus::EXCLUDE_THIRD_PARTY_PHASEOUT)) {
+    exclusion_reasons->push_back(
+        protocol::Audits::CookieExclusionReasonEnum::ExcludeThirdPartyPhaseout);
+  }
 
   return exclusion_reasons;
 }

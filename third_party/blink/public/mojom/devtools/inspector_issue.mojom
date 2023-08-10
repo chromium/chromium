@@ -145,6 +145,7 @@ enum CookieExclusionReason {
   kExcludeSameSiteLax,
   kExcludeSameSiteStrict,
   kExcludeDomainNonASCII,
+  kExcludeThirdPartyPhaseout,
 };
 
 // Reasons to warn about a cookie, see net/cookies/cookie_inclusion_status.h
