@@ -153,7 +153,7 @@ def __step_config(ctx, step_config):
     # New rules to convert commands calling rewrapper to use reproxy instead.
     new_rules = [
         # mojo/mojom_bindings_generator will not always have rewrapper args.
-        # Use this rule for commands with rewrapper args, the native remote rule is converted above.
+        # First add this rule for commands with rewrapper args. The native remote rule for non-rewrapper invocations is converted automatically below.
         {
             "name": "mojo/mojom_bindings_generator_rewrapper",
             "action": "mojom_(.*_)?__generator",
@@ -223,9 +223,12 @@ def __step_config(ctx, step_config):
             new_rules.insert(0, new_rule)
             continue
 
-        # Other rules where it's enough to only convert native remote config to reproxy config.
+        # Add non-remote rules as-is.
         if not rule.get("remote"):
+            new_rules.append(rule)
             continue
+
+        # Finally handle remaining remote rules. It's assumed it is enough to only convert native remote config to reproxy config.
         platform_ref = rule.get("platform_ref")
         if platform_ref:
             platform = step_config["platforms"].get(platform_ref)
