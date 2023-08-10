@@ -286,14 +286,12 @@ cast_test_group("cast_tests") {
       } else {
         # Disable ProcessMetricsTest.GetNumberOfThreads (b/15610509)
         # Disable ProcessUtilTest.* (need to define OS_ANDROID)
-        # Disable StackContainer.BufferAlignment (don't support 16-byte alignment)
         # Disable SystemMetrics2Test.GetSystemMemoryInfo (buffers>0 can't be guaranteed)
         # Disable PostTasksViaTaskRunner/* to green up devices (b/62246873)
         # Disable WorkerDetaches to green up devices (b/62246873)
         gtest_excludes += [
           "ProcessMetricsTest.GetNumberOfThreads",
           "ProcessUtilTest.*",
-          "StackContainer.BufferAlignment",
           "SystemMetrics2Test.GetSystemMemoryInfo",
           "OneTraitsExecutionModePair/ThreadPoolImplTest.PostTasksViaTaskRunner/*",
           "TaskSchedulerWorkerTest.WorkerDetaches",
