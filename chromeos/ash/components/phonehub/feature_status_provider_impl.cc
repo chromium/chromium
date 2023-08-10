@@ -11,6 +11,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/trace_event/trace_event.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/components/multidevice/remote_device_ref.h"
 #include "chromeos/ash/components/multidevice/software_feature.h"
@@ -220,10 +221,12 @@ void FeatureStatusProviderImpl::OnConnectionStatusChanged() {
 }
 
 void FeatureStatusProviderImpl::OnSessionStateChanged() {
+  TRACE_EVENT0("login", "FeatureStatusProviderImpl::OnSessionStateChanged");
   UpdateStatus();
 }
 
 void FeatureStatusProviderImpl::UpdateStatus() {
+  TRACE_EVENT0("ui", "FeatureStatusProviderImpl::UpdateStatus");
   DCHECK(status_.has_value());
 
   FeatureStatus computed_status = ComputeStatus();
