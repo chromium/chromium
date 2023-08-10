@@ -354,8 +354,11 @@ class BASE_EXPORT PersistentMemoryAllocator {
   // The |sync| parameter indicates if this call should block until the flush
   // is complete but is only advisory and may or may not have an effect
   // depending on the capabilities of the OS. Synchronous flushes are allowed
-  // only from theads that are allowed to do I/O but since |sync| is only
+  // only from threads that are allowed to do I/O but since |sync| is only
   // advisory, all flushes should be done on IO-capable threads.
+  // TODO: Since |sync| is ignored on Windows, consider making it re-post on a
+  // background thread with |sync| set to true so that |sync| is not just
+  // advisory.
   void Flush(bool sync);
 
   // Direct access to underlying memory segment. If the segment is shared

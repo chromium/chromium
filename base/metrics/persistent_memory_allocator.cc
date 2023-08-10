@@ -962,8 +962,8 @@ PersistentMemoryAllocator::GetBlock(Reference ref,
 void PersistentMemoryAllocator::FlushPartial(size_t length, bool sync) {
   // Generally there is nothing to do as every write is done through volatile
   // memory with atomic instructions to guarantee consistency. This (virtual)
-  // method exists so that derivced classes can do special things, such as
-  // tell the OS to write changes to disk now rather than when convenient.
+  // method exists so that derived classes can do special things, such as tell
+  // the OS to write changes to disk now rather than when convenient.
 }
 
 void PersistentMemoryAllocator::RecordError(int error) const {

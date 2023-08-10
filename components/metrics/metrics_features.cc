@@ -45,4 +45,8 @@ BASE_FEATURE(kMetricsServiceAsyncIndependentLogs,
              "MetricsServiceAsyncIndependentLogs",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kFlushPersistentSystemProfileOnWrite,
+             "FlushPersistentSystemProfileOnWrite",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace metrics::features

@@ -378,6 +378,9 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(MetricsFeatures.RESTORE_UMA_CLIENT_ID_INDEPENDENT_LOGS,
                     "Controls whether independent logs from PMA files will use the embedded "
                             + "client uuid as the log's client ID."),
+            Flag.baseFeature(MetricsFeatures.FLUSH_PERSISTENT_SYSTEM_PROFILE_ON_WRITE,
+                    "Controls whether to schedule a flush of persistent histogram memory "
+                            + "immediately after writing a system profile to it."),
             Flag.baseFeature(ContentFeatures.MAIN_THREAD_COMPOSITING_PRIORITY,
                     "When enabled runs the main thread at compositing priority."),
             Flag.baseFeature(ContentFeatures.REDUCE_SUBRESOURCE_RESPONSE_STARTED_IPC,

@@ -58,6 +58,10 @@ extern const base::FeatureParam<bool> kDeregisterSequenced;
 // logs asynchronously.
 BASE_DECLARE_FEATURE(kMetricsServiceAsyncIndependentLogs);
 
+// Determines whether to schedule a flush of persistent histogram memory
+// immediately after writing a system profile to it.
+BASE_DECLARE_FEATURE(kFlushPersistentSystemProfileOnWrite);
+
 }  // namespace metrics::features
 
 #endif  // COMPONENTS_METRICS_METRICS_FEATURES_H_

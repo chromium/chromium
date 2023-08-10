@@ -1436,6 +1436,33 @@ void MetricsService::RecordCurrentEnvironment(MetricsLog* log, bool complete) {
 
   SetPersistentSystemProfile(serialized_proto, complete);
   client_->OnEnvironmentUpdate(&serialized_proto);
+
+  // The call to SetPersistentSystemProfile() above will have written the
+  // current system profile to persistent memory. Because it may span over
+  // multiple pages, it is possible that the system profile may become corrupted
+  // if only certain pages were flushed to disk. For example, say we overwrite
+  // the persistent memory's system profile with a newer one, and that it spans
+  // over two pages. Then, the OS flushes the second page, but not the first
+  // page. If the device is shut down unexpectedly, e.g. due to a power outage,
+  // then the first page will contain the beginning of the old system profile,
+  // while the second page will contain the ending of the new system profile,
+  // resulting in an unparsable system profile and rendering the whole file
+  // useless. So, manually schedule a flush every time we overwrite the system
+  // profile with a new one to ensure we don't ever get a corrupted one.
+  if (base::FeatureList::IsEnabled(
+          features::kFlushPersistentSystemProfileOnWrite)) {
+    base::ThreadPool::PostTask(
+        FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
+        base::BindOnce([]() {
+          if (auto* allocator = base::GlobalHistogramAllocator::Get()) {
+            // Ideally, we'd just call Flush() with the |sync| parameter set to
+            // false on the main thread, but Windows does not support async
+            // flushing, so do this synchronously on a background thread
+            // instead.
+            allocator->memory_allocator()->Flush(/*sync=*/true);
+          }
+        }));
+  }
 }
 
 void MetricsService::PrepareProviderMetricsLogDone(
