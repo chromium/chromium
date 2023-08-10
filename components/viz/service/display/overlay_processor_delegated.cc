@@ -202,6 +202,21 @@ bool OverlayProcessorDelegated::AttemptWithStrategies(
         DBG_DRAW_RECT("delegated.overlay.aggregated", candidate.display_rect);
       } else {
         DBG_DRAW_RECT("delegated.overlay.candidate", candidate.display_rect);
+
+        if (!candidate.rounded_corners.IsEmpty()) {
+          DBG_DRAW_RECT_OPT("delegated.overlay.candidate_rounded_corners",
+                            DBG_OPT_BLUE, candidate.rounded_corners.rect());
+
+          using Corner = gfx::RRectF::Corner;
+          const Corner corners[] = {Corner::kUpperLeft, Corner::kUpperRight,
+                                    Corner::kLowerRight, Corner::kLowerLeft};
+          for (auto corner : corners) {
+            auto corner_rect =
+                candidate.rounded_corners.CornerBoundingRect(corner);
+            DBG_DRAW_RECT_OPT("delegated.overlay.candidate_rounded_corners",
+                              DBG_OPT_RED, corner_rect);
+          }
+        }
       }
       candidates->push_back(candidate);
     } else if (candidate_status ==
