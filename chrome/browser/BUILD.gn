@@ -2544,7 +2544,6 @@ static_library("browser") {
       "search_engine_choice/search_engine_choice_service_factory.cc",
       "search_engine_choice/search_engine_choice_service_factory.h",
     ]
-    deps += [ "//chrome/browser/ui/webui/search_engine_choice:mojo_bindings" ]
   }
 
   if (is_linux || is_chromeos) {
