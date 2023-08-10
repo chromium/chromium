@@ -412,6 +412,44 @@ TEST(FirstPartySetParser, TruncatesSubdomain_AssociatedSite) {
            IsEmpty()));
 }
 
+TEST(FirstPartySetParser, TruncatesSubdomain_NondisjointSets) {
+  net::SchemefulSite example(GURL("https://example.test"));
+  net::SchemefulSite example2(GURL("https://example2.test"));
+  net::SchemefulSite aaaa(GURL("https://aaaa.test"));
+  net::SchemefulSite bbbb(GURL("https://bbbb.test"));
+  net::SchemefulSite cccc(GURL("https://cccc.test"));
+
+  // These sets are disjoint iff aaaa.test is on the Public Suffix List. Since
+  // that invariant is not under the control of whatever provides the
+  // First-Party Sets data, the whole list of sets should not be invalidated if
+  // that invariant fails as a result of PSL changes.
+  //
+  // (But if the sets are nondisjoint for reasons unrelated to the PSL, then the
+  // whole list should be considered invalid; see other test cases.)
+  EXPECT_THAT(
+      ParseSets(R"({"primary": "https://example.test", )"
+                R"("associatedSites": [)"
+                R"("https://subdomain.aaaa.test", "https://bbbb.test"]})"
+                "\n"
+                R"({"primary": "https://example2.test", )"
+                R"("associatedSites": [)"
+                R"("https://subdomain2.aaaa.test", "https://cccc.test"]})"),
+      Pair(UnorderedElementsAre(
+               Pair(example,
+                    net::FirstPartySetEntry(example, net::SiteType::kPrimary,
+                                            absl::nullopt)),
+               Pair(aaaa, net::FirstPartySetEntry(
+                              example, net::SiteType::kAssociated, 0)),
+               Pair(bbbb, net::FirstPartySetEntry(
+                              example, net::SiteType::kAssociated, 1)),
+               Pair(example2,
+                    net::FirstPartySetEntry(example2, net::SiteType::kPrimary,
+                                            absl::nullopt)),
+               Pair(cccc, net::FirstPartySetEntry(
+                              example2, net::SiteType::kAssociated, 1))),
+           IsEmpty()));
+}
+
 TEST(FirstPartySetParser, AcceptsMultipleSets) {
   base::HistogramTester histogram_tester;
   net::SchemefulSite foo(GURL("https://foo.test"));

@@ -46,15 +46,19 @@ using SetsMap = FirstPartySetParser::SetsMap;
 // Class representing the results of validating a given site.
 class ValidateSiteResult {
  public:
-  explicit ValidateSiteResult(net::SchemefulSite site)
-      : ValidateSiteResult(std::move(site), absl::nullopt) {}
+  ValidateSiteResult(net::SchemefulSite site, bool modified_host)
+      : ValidateSiteResult(std::move(site),
+                           absl::nullopt,
+                           /*modified_host=*/modified_host) {}
 
   explicit ValidateSiteResult(ParseErrorType error_type)
-      : ValidateSiteResult(absl::nullopt, error_type) {}
+      : ValidateSiteResult(absl::nullopt, error_type, /*modified_host=*/false) {
+  }
 
   ValidateSiteResult(net::SchemefulSite site, ParseErrorType error_type)
       : ValidateSiteResult(absl::make_optional(std::move(site)),
-                           absl::make_optional(error_type)) {
+                           absl::make_optional(error_type),
+                           /*modified_host=*/false) {
     // If we have both a site and an error, the error must be because the site
     // didn't have a registerable domain (but we were still able to parse it).
     CHECK_EQ(error_type_.value(), ParseErrorType::kInvalidDomain);
@@ -65,14 +69,19 @@ class ValidateSiteResult {
 
   const net::SchemefulSite& site() const { return site_.value(); }
   ParseErrorType error_type() const { return error_type_.value(); }
+  bool modified_host() const { return modified_host_; }
 
  private:
   ValidateSiteResult(absl::optional<net::SchemefulSite> site,
-                     absl::optional<ParseErrorType> error_type)
-      : site_(std::move(site)), error_type_(error_type) {}
+                     absl::optional<ParseErrorType> error_type,
+                     bool modified_host)
+      : site_(std::move(site)),
+        error_type_(error_type),
+        modified_host_(modified_host) {}
 
   const absl::optional<net::SchemefulSite> site_ = absl::nullopt;
   const absl::optional<ParseErrorType> error_type_ = absl::nullopt;
+  const bool modified_host_ = false;
 };
 
 bool IsFatalError(ParseErrorType error_type) {
@@ -124,7 +133,8 @@ ValidateSiteResult Canonicalize(base::StringPiece origin_string,
                               ParseErrorType::kInvalidDomain);
   }
 
-  return ValidateSiteResult(std::move(site).value());
+  bool modified_host = origin.host() != site->GetURL().host();
+  return ValidateSiteResult(std::move(site).value(), modified_host);
 }
 
 // Struct to hold metadata describing a particular "subset" during parsing.
@@ -166,10 +176,22 @@ ValidateSiteResult ParseSiteAndValidate(
     if (base::Contains(
             set_entries, site,
             &std::pair<net::SchemefulSite, net::FirstPartySetEntry>::first)) {
+      if (result.modified_host()) {
+        // If the set repeats this site because the PSL caused us to modify this
+        // site's host, we drop this site.
+        return ValidateSiteResult(result.site(),
+                                  ParseErrorType::kInvalidDomain);
+      }
       return ValidateSiteResult(ParseErrorType::kRepeatedDomain);
     }
 
     if (other_sets_sites.contains(site)) {
+      if (result.modified_host()) {
+        // If the sets are nondisjoint because the PSL caused us to modify this
+        // site's host, we drop this site.
+        return ValidateSiteResult(result.site(),
+                                  ParseErrorType::kInvalidDomain);
+      }
       return ValidateSiteResult(ParseErrorType::kNonDisjointSets);
     }
   }
