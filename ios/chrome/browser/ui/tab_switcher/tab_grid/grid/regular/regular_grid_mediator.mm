@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/snapshots/snapshot_browser_agent.h"
 #import "ios/chrome/browser/tabs/features.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_toolbars_configuration_provider.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_toolbars_mutator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_metrics.h"
@@ -82,7 +83,6 @@
   _closedSessionWindow = nil;
   [self removeEntriesFromTabRestoreService];
   _syncedClosedTabsCount = 0;
-
 }
 
 - (void)discardSavedClosedItems {
@@ -102,6 +102,7 @@
         base::UserMetricsAction("MobileTabGridSelectRegularPanel"));
 
     [self configureToolbarsButtons];
+    [self notifyConsumerAboutChanges];
   }
   // TODO(crbug.com/1457146): Implement.
 }
@@ -109,23 +110,21 @@
 #pragma mark - Parent's function
 
 - (void)configureToolbarsButtons {
-  TabGridToolbarsConfiguration* containedGridToolbarsConfiguration =
-      [self.containedGridToolbarsProvider toolbarsConfiguration];
-
   TabGridToolbarsConfiguration* toolbarsConfiguration =
       [[TabGridToolbarsConfiguration alloc] init];
-  BOOL onlyPinnedTabs = self.webStateList->GetIndexOfFirstNonPinnedWebState() ==
-                        self.webStateList->count();
-  BOOL tabsInRegularGrid = !self.webStateList->empty() && !onlyPinnedTabs;
-  toolbarsConfiguration.closeAllButton =
-      tabsInRegularGrid || containedGridToolbarsConfiguration.closeAllButton;
+
+  toolbarsConfiguration.closeAllButton = [self canCloseAll];
   toolbarsConfiguration.doneButton = YES;
   toolbarsConfiguration.searchButton = YES;
-  toolbarsConfiguration.selectTabsButton = tabsInRegularGrid;
-  toolbarsConfiguration.undoButton =
-      _closedSessionWindow || containedGridToolbarsConfiguration.undoButton;
+  toolbarsConfiguration.selectTabsButton = [self isTabsInGrid];
+  toolbarsConfiguration.undoButton = [self canUndo];
 
   [self.toolbarsMutator setToolbarConfiguration:toolbarsConfiguration];
+}
+
+- (void)notifyConsumerAboutChanges {
+  [self.gridConsumer setItemsCanBeRestored:[self canUndo]];
+  [self.gridConsumer setItemsCanBeClosed:[self canCloseAll]];
 }
 
 #pragma mark - Private
@@ -146,6 +145,31 @@
   for (const SessionID sessionID : identifiers) {
     self.tabRestoreService->RemoveTabEntryById(sessionID);
   }
+}
+
+// YES if there are tabs that can be closed.
+- (BOOL)canCloseAll {
+  TabGridToolbarsConfiguration* containedGridToolbarsConfiguration =
+      [self.containedGridToolbarsProvider toolbarsConfiguration];
+
+  return
+      [self isTabsInGrid] || containedGridToolbarsConfiguration.closeAllButton;
+}
+
+// YES if there are tabs that can be restored.
+- (BOOL)canUndo {
+  TabGridToolbarsConfiguration* containedGridToolbarsConfiguration =
+      [self.containedGridToolbarsProvider toolbarsConfiguration];
+
+  return _closedSessionWindow || containedGridToolbarsConfiguration.undoButton;
+}
+
+// YES if there are tabs in regular grid only (not pinned, not in inactive tabs,
+// etc.).
+- (BOOL)isTabsInGrid {
+  BOOL onlyPinnedTabs = self.webStateList->GetIndexOfFirstNonPinnedWebState() ==
+                        self.webStateList->count();
+  return !self.webStateList->empty() && !onlyPinnedTabs;
 }
 
 @end

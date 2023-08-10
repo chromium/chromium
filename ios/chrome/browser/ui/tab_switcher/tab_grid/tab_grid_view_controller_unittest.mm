@@ -225,6 +225,9 @@ TEST_F(TabGridViewControllerTest, CanPerform_CloseAllAndUndo) {
   IncognitoGridMediator* incognitoMediator = [[IncognitoGridMediator alloc]
       initWithConsumer:view_controller_.incognitoTabsConsumer];
   [incognitoMediator setBrowser:browser_.get()];
+  // TODO(crbug.com/1457146): The consumer should be incognito tabs view
+  // controller.
+  incognitoMediator.gridConsumer = view_controller_;
   view_controller_.incognitoTabsDelegate = incognitoMediator;
   [view_controller_.incognitoTabsDelegate addNewItem];
   EXPECT_TRUE(CanPerform(@"keyCommand_closeAll"));

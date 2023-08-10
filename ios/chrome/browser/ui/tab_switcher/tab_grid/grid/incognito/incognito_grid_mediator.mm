@@ -9,6 +9,7 @@
 #import "base/metrics/user_metrics_action.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/snapshots/snapshot_browser_agent.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_toolbars_mutator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_metrics.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_configuration.h"
@@ -48,6 +49,7 @@
         base::UserMetricsAction("MobileTabGridSelectIncognitoPanel"));
 
     [self configureToolbarsButtons];
+    [self notifyConsumerAboutChanges];
   }
   // TODO(crbug.com/1457146): Implement.
 }
@@ -62,6 +64,11 @@
   toolbarsConfiguration.searchButton = YES;
   toolbarsConfiguration.selectTabsButton = !self.webStateList->empty();
   [self.toolbarsMutator setToolbarConfiguration:toolbarsConfiguration];
+}
+
+- (void)notifyConsumerAboutChanges {
+  [self.gridConsumer setItemsCanBeRestored:NO];
+  [self.gridConsumer setItemsCanBeClosed:!self.webStateList->empty()];
 }
 
 @end

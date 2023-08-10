@@ -745,6 +745,9 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 
   self.regularTabsMediator.browser = _regularBrowser;
   self.regularTabsMediator.delegate = self;
+  // TODO(crbug.com/1457146): The consumer should be regular tabs view
+  // controller.
+  self.regularTabsMediator.gridConsumer = self.baseViewController;
   if (regularBrowserState) {
     self.regularTabsMediator.tabRestoreService =
         IOSChromeTabRestoreServiceFactory::GetForBrowserState(
@@ -774,6 +777,9 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
       initWithConsumer:baseViewController.incognitoTabsConsumer];
   self.incognitoTabsMediator.browser = _incognitoBrowser;
   self.incognitoTabsMediator.delegate = self;
+  // TODO(crbug.com/1457146): The consumer should be incognito tabs view
+  // controller.
+  self.incognitoTabsMediator.gridConsumer = self.baseViewController;
 
   baseViewController.regularTabsDelegate = self.regularTabsMediator;
   baseViewController.incognitoTabsDelegate = self.incognitoTabsMediator;
@@ -851,6 +857,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
                                                  syncService:service
                                                  browserList:browserList];
   self.remoteTabsMediator.consumer = baseViewController.remoteTabsConsumer;
+  self.remoteTabsMediator.gridConsumer = self.baseViewController;
   baseViewController.remoteTabsViewController.imageDataSource =
       self.remoteTabsMediator;
   baseViewController.remoteTabsViewController.delegate =

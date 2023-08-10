@@ -53,6 +53,7 @@
 #import "ios/chrome/browser/ui/menu/action_factory.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_collection_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_collection_drag_drop_metrics.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_mediator_delegate.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_context_menu/tab_item.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_metrics.h"
@@ -333,6 +334,7 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
   // Update toolbar's buttons as the number of tabs changed so the options
   // changed (ex: No tabs selection when the grid is empty).
   [self configureToolbarsButtons];
+  [self notifyConsumerAboutChanges];
 }
 
 - (void)webStateListWillBeginBatchOperation:(WebStateList*)webStateList {
@@ -348,6 +350,7 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
   // Update toolbar's buttons as the number of tabs have probably changed so the
   // options changed (ex: "Undo" may be available now).
   [self configureToolbarsButtons];
+  [self notifyConsumerAboutChanges];
 }
 
 #pragma mark - CRWWebStateObserver
@@ -1052,6 +1055,10 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
 }
 
 - (void)configureToolbarsButtons {
+  NOTREACHED_NORETURN() << "Should be implemented in a subclass.";
+}
+
+- (void)notifyConsumerAboutChanges {
   NOTREACHED_NORETURN() << "Should be implemented in a subclass.";
 }
 

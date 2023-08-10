@@ -8,6 +8,7 @@ source_set("grid") {
     "base_grid_mediator.mm",
   ]
   deps = [
+    ":grid_consumer",
     ":grid_mediator_delegate",
     ":grid_ui",
     "//base",
@@ -129,6 +130,12 @@ source_set("grid_toolbars_configuration_provider") {
 
 source_set("grid_toolbars_mutator") {
   sources = [ "grid_toolbars_mutator.h" ]
+
+  deps = [ "//base" ]
+}
+
+source_set("grid_consumer") {
+  sources = [ "grid_consumer.h" ]
 
   deps = [ "//base" ]
 }

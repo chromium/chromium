@@ -18,8 +18,10 @@ source_set("regular") {
     "//ios/chrome/browser/tabs:features",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid:tab_grid_metrics",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_consumer",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_toolbars_configuration_provider",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_toolbars_mutator",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_ui",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars",
     "//ios/chrome/browser/web_state_list",
   ]

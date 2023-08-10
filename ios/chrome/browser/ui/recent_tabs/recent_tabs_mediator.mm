@@ -30,6 +30,7 @@
 #import "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_consumer.h"
 #import "ios/chrome/browser/ui/recent_tabs/sessions_sync_user_state.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_toolbars_mutator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_configuration.h"
 #import "ios/chrome/common/ui/favicon/favicon_constants.h"
@@ -315,6 +316,8 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
     LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeAllTabs);
 
     [self configureToolbarsButtons];
+    [self.gridConsumer setItemsCanBeRestored:NO];
+    [self.gridConsumer setItemsCanBeClosed:NO];
   }
   // TODO(crbug.com/1457146): Implement.
 }

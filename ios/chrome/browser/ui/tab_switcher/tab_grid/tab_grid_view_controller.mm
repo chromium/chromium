@@ -173,6 +173,9 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   BOOL _idleRecentTabs;
 
   TabGridPage _activePageWhenAppear;
+
+  BOOL _itemsCanBeRestored;
+  BOOL _itemsCanBeClosed;
 }
 
 // TabGridPaging property.
@@ -2507,6 +2510,16 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   }
 }
 
+#pragma mark - GridConsumer
+
+- (void)setItemsCanBeRestored:(BOOL)itemsCanBeRestored {
+  _itemsCanBeRestored = itemsCanBeRestored;
+}
+
+- (void)setItemsCanBeClosed:(BOOL)itemsCanBeClosed {
+  _itemsCanBeClosed = itemsCanBeClosed;
+}
+
 #pragma mark - UIResponder Helper
 
 // Returns YES if "close all" can be performed. Conditions are:
@@ -2514,17 +2527,12 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 // * There are tabs to close in the current page,
 // * Not in an undo scenario.
 - (BOOL)canCloseAllTab {
-  return self.viewVisible && ((self.currentPage == TabGridPageIncognitoTabs &&
-                               !self.incognitoTabsViewController.gridEmpty) ||
-                              (self.currentPage == TabGridPageRegularTabs &&
-                               !self.regularTabsViewController.gridEmpty &&
-                               !self.undoCloseAllAvailable));
+  return self.viewVisible && _itemsCanBeClosed;
 }
 
 // Returns YES if "undo" the close all action can be performed.
 - (BOOL)canUndoCloseAllTab {
-  return self.viewVisible && self.currentPage == TabGridPageRegularTabs &&
-         self.undoCloseAllAvailable;
+  return self.viewVisible && _itemsCanBeRestored;
 }
 
 #pragma mark - UIResponder

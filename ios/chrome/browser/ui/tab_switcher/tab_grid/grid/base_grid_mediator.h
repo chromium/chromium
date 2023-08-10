@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_page_mutator.h"
 
 class Browser;
+@protocol GridConsumer;
 @protocol GridMediatorDelegate;
 @protocol GridToolbarsConfigurationProvider;
 @protocol GridToolbarsMutator;
@@ -31,6 +32,8 @@ class WebStateList;
 @property(nonatomic, weak) id<GridMediatorDelegate> delegate;
 // Mutator to handle toolbars modification.
 @property(nonatomic, weak) id<GridToolbarsMutator> toolbarsMutator;
+// Consumer to reflect model modification to UI layer.
+@property(nonatomic, weak) id<GridConsumer> gridConsumer;
 // The list from the browser.
 @property(nonatomic, assign) WebStateList* webStateList;
 // Contained grid which provides tab grid toolbar configuration.
@@ -41,9 +44,16 @@ class WebStateList;
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
+@end
+
+@interface BaseGridMediator (Subclassing)
+
 // Called when toolbars should be updated. This function should be implemented
 // in a subclass.
 - (void)configureToolbarsButtons;
+// Called when the consumer should be updated. This function should be
+// implemented in a subclass.
+- (void)notifyConsumerAboutChanges;
 
 @end
 
