@@ -2551,7 +2551,8 @@ TEST_P(VisualViewportTest, PaintScrollbar) {
 
   auto check_scrollbar = [](const cc::Layer* scrollbar, float scale) {
     EXPECT_TRUE(scrollbar->draws_content());
-    EXPECT_FALSE(scrollbar->HitTestable());
+    EXPECT_EQ(cc::HitTestOpaqueness::kTransparent,
+              scrollbar->hit_test_opaqueness());
     EXPECT_TRUE(scrollbar->IsScrollbarLayerForTesting());
     EXPECT_EQ(
         cc::ScrollbarOrientation::VERTICAL,

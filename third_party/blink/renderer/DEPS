@@ -76,6 +76,7 @@ include_rules = [
     "+base/types/pass_key.h",
     "+base/types/strong_alias.h",
     "+build",
+    "+cc/input/hit_test_opaqueness.h",
     "+cc/paint",
     "+components/crash/core/common/crash_key.h",
     "+net/base/features.h",

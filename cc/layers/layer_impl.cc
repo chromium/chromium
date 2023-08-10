@@ -69,7 +69,6 @@ LayerImpl::LayerImpl(LayerTreeImpl* tree_impl,
       should_check_backface_visibility_(false),
       draws_content_(false),
       contributes_to_drawn_render_surface_(false),
-      hit_testable_(false),
       is_inner_viewport_scroll_layer_(false),
       background_color_(SkColors::kTransparent),
       safe_opaque_background_color_(SkColors::kTransparent),
@@ -389,7 +388,7 @@ void LayerImpl::PushPropertiesTo(LayerImpl* layer) {
   layer->may_contain_video_ = may_contain_video_;
   layer->should_check_backface_visibility_ = should_check_backface_visibility_;
   layer->draws_content_ = draws_content_;
-  layer->hit_testable_ = hit_testable_;
+  layer->hit_test_opaqueness_ = hit_test_opaqueness_;
   layer->touch_action_region_ = touch_action_region_;
   layer->all_touch_action_regions_ = ClonePtr(all_touch_action_regions_);
   layer->background_color_ = background_color_;
@@ -547,26 +546,32 @@ void LayerImpl::SetDrawsContent(bool draws_content) {
   NoteLayerPropertyChanged();
 }
 
-void LayerImpl::SetHitTestable(bool should_hit_test) {
-  if (hit_testable_ == should_hit_test)
+void LayerImpl::SetHitTestOpaqueness(HitTestOpaqueness opaqueness) {
+  if (hit_test_opaqueness_ == opaqueness) {
     return;
+  }
 
-  hit_testable_ = should_hit_test;
+  hit_test_opaqueness_ = opaqueness;
   NoteLayerPropertyChanged();
 }
 
 bool LayerImpl::HitTestable() const {
   EffectTree& effect_tree = GetEffectTree();
-  bool should_hit_test = hit_testable_;
   // TODO(sunxd): remove or refactor SetHideLayerAndSubtree, or move this logic
   // to subclasses of Layer. See https://crbug.com/595843 and
   // https://crbug.com/931865.
   // The bit |subtree_hidden| can only be true for ui::Layers. Other layers are
   // not supposed to set this bit.
-  if (effect_tree.Node(effect_tree_index())) {
-    should_hit_test &= !effect_tree.Node(effect_tree_index())->subtree_hidden;
+  if (const EffectNode* node = effect_tree.Node(effect_tree_index())) {
+    if (node->subtree_hidden) {
+      return false;
+    }
   }
-  return should_hit_test;
+  return hit_test_opaqueness_ != HitTestOpaqueness::kTransparent;
+}
+
+bool LayerImpl::OpaqueToHitTest() const {
+  return HitTestable() && hit_test_opaqueness_ == HitTestOpaqueness::kOpaque;
 }
 
 void LayerImpl::SetBackgroundColor(SkColor4f background_color) {
@@ -716,6 +721,7 @@ void LayerImpl::AsValueInto(base::trace_event::TracedValue* state) const {
   state->EndArray();
 
   state->SetBoolean("hit_testable", HitTestable());
+  state->SetBoolean("opaque_to_hit_test", OpaqueToHitTest());
   state->SetBoolean("contents_opaque", contents_opaque());
 
   if (debug_info_) {

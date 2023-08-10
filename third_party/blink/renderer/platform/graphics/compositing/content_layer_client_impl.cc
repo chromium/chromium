@@ -125,7 +125,12 @@ void ContentLayerClientImpl::UpdateCcPictureLayer(
   cc_display_item_list_->Finalize();
 
   cc_picture_layer_->SetBounds(layer_bounds);
-  cc_picture_layer_->SetHitTestable(true);
+  if (RuntimeEnabledFeatures::HitTestOpaquenessEnabled()) {
+    cc_picture_layer_->SetHitTestOpaqueness(
+        pending_layer.GetHitTestOpaqueness());
+  } else {
+    cc_picture_layer_->SetHitTestable(true);
+  }
   cc_picture_layer_->SetIsDrawable(pending_layer.DrawsContent());
 
   cc_picture_layer_->SetBackgroundColor(pending_layer.ComputeBackgroundColor());

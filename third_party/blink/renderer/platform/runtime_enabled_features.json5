@@ -1917,6 +1917,9 @@
       base_feature: "none",
     },
     {
+      name: "HitTestOpaqueness",
+    },
+    {
       name: "HrefTranslate",
       depends_on: ["TranslateService"],
       origin_trial_feature_name: "HrefTranslate",

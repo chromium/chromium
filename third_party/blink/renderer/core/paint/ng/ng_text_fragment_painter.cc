@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/core/paint/ng/ng_inline_paint_context.h"
 #include "third_party/blink/renderer/core/paint/ng/ng_text_decoration_painter.h"
 #include "third_party/blink/renderer/core/paint/ng/ng_text_painter.h"
+#include "third_party/blink/renderer/core/paint/object_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_auto_dark_mode.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/selection_bounds_recorder.h"
@@ -248,22 +249,6 @@ void NGTextFragmentPainter::PaintSymbol(const LayoutObject* layout_object,
   }
 }
 
-bool NGTextFragmentPainter::ShouldRecordHitTestData(
-    const PaintInfo& paint_info) const {
-  // Hit test data are only needed for compositing.
-  if (paint_info.ShouldOmitCompositingInfo()) {
-    return false;
-  }
-
-  // We need to record hit test data for a text fragment when an ancestor
-  // inline element has special hit test situations. Touch action doesn't apply
-  // to non-replaced inline elements so we don't need to check it here.
-  // TODO(crbug.com/1413877): Handle pointer-events.
-  return cursor_.CurrentItem()
-      ->GetLayoutObject()
-      ->InsideBlockingWheelEventHandler();
-}
-
 void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
                                   const PhysicalOffset& paint_offset) {
   const auto& text_item = *cursor_.CurrentItem();
@@ -297,11 +282,11 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
     LayoutNGTextCombine::AssertStyleIsValid(style);
 #endif
 
-  if (ShouldRecordHitTestData(paint_info)) {
-    paint_info.context.GetPaintController().RecordHitTestData(
-        *text_item.GetDisplayItemClient(), ToPixelSnappedRect(physical_box),
-        layout_object->EffectiveAllowedTouchAction(),
-        layout_object->InsideBlockingWheelEventHandler());
+  ObjectPainter object_painter(*layout_object);
+  if (object_painter.ShouldRecordSpecialHitTestData(paint_info)) {
+    object_painter.RecordHitTestData(paint_info,
+                                     ToPixelSnappedRect(physical_box),
+                                     *text_item.GetDisplayItemClient());
   }
 
   // Determine whether or not we’ll need a writing-mode rotation, but don’t

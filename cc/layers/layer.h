@@ -21,6 +21,7 @@
 #include "cc/base/region.h"
 #include "cc/benchmarks/micro_benchmark.h"
 #include "cc/cc_export.h"
+#include "cc/input/hit_test_opaqueness.h"
 #include "cc/input/scroll_snap_data.h"
 #include "cc/layers/layer_collections.h"
 #include "cc/layers/touch_action_region.h"
@@ -405,9 +406,13 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
     return inputs_.Read(*this).contents_opaque_for_text;
   }
 
-  // Set or get whether this layer should be a hit test target
-  void SetHitTestable(bool should_hit_test);
-  virtual bool HitTestable() const;
+  void SetHitTestOpaqueness(HitTestOpaqueness opaqueness);
+  // For callers that don't know the HitTestOpaqueness::kOpaque concept.
+  void SetHitTestable(bool hit_testable);
+  HitTestOpaqueness hit_test_opaqueness() const {
+    return static_cast<HitTestOpaqueness>(
+        inputs_.Read(*this).hit_test_opaqueness);
+  }
 
   // For layer tree mode only.
   // Set or get the transform to be used when compositing this layer into its
@@ -1001,8 +1006,8 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
 
     gfx::Size bounds;
 
-    // Hit testing depends on this bit.
-    bool hit_testable : 1;
+    HitTestOpaqueness hit_test_opaqueness = HitTestOpaqueness::kTransparent;
+
     bool contents_opaque : 1;
     bool contents_opaque_for_text : 1;
     bool is_drawable : 1;

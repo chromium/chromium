@@ -570,27 +570,10 @@ void NGBoxFragmentPainter::RecordScrollHitTestData(
 
 bool NGBoxFragmentPainter::ShouldRecordHitTestData(
     const PaintInfo& paint_info) {
-  if (paint_info.IsPaintingBackgroundInContentsSpace() &&
-      PhysicalFragment().EffectiveAllowedTouchAction() == TouchAction::kAuto &&
-      !PhysicalFragment().InsideBlockingWheelEventHandler()) {
-    return false;
-  }
-
-  // Hit test data are only needed for compositing. This flag is used for for
-  // printing and drag images which do not need hit testing.
-  if (paint_info.ShouldOmitCompositingInfo())
-    return false;
-
-  // If an object is not visible, it does not participate in hit testing.
-  if (PhysicalFragment().Style().Visibility() != EVisibility::kVisible)
-    return false;
-
+  // Some conditions are checked in ObjectPainter::RecordHitTestData().
   // Table rows/sections do not participate in hit testing.
-  if (PhysicalFragment().IsTableNGRow() ||
-      PhysicalFragment().IsTableNGSection())
-    return false;
-
-  return true;
+  return !PhysicalFragment().IsTableNGRow() &&
+         !PhysicalFragment().IsTableNGSection();
 }
 
 void NGBoxFragmentPainter::PaintObject(
@@ -1069,10 +1052,9 @@ void NGBoxFragmentPainter::PaintBoxDecorationBackground(
   }
 
   if (ShouldRecordHitTestData(paint_info)) {
-    paint_info.context.GetPaintController().RecordHitTestData(
-        *background_client, ToPixelSnappedRect(paint_rect),
-        PhysicalFragment().EffectiveAllowedTouchAction(),
-        PhysicalFragment().InsideBlockingWheelEventHandler());
+    ObjectPainter(layout_object)
+        .RecordHitTestData(paint_info, ToPixelSnappedRect(paint_rect),
+                           *background_client);
   }
 
   Element* element = DynamicTo<Element>(layout_object.GetNode());
@@ -1582,10 +1564,9 @@ inline void NGBoxFragmentPainter::PaintLineBox(
   ScopedDisplayItemFragment display_item_fragment(paint_info.context,
                                                   line_fragment_id);
   if (ShouldRecordHitTestData(paint_info)) {
-    paint_info.context.GetPaintController().RecordHitTestData(
-        display_item_client, ToPixelSnappedRect(border_box),
-        PhysicalFragment().EffectiveAllowedTouchAction(),
-        PhysicalFragment().InsideBlockingWheelEventHandler());
+    ObjectPainter(*PhysicalFragment().GetLayoutObject())
+        .RecordHitTestData(paint_info, ToPixelSnappedRect(border_box),
+                           display_item_client);
   }
 
   Element* element = DynamicTo<Element>(line_box_fragment.GetNode());

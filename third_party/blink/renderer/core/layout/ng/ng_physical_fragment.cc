@@ -662,16 +662,6 @@ void NGPhysicalFragment::AdjustScrollableOverflowForPropagation(
   }
 }
 
-TouchAction NGPhysicalFragment::EffectiveAllowedTouchAction() const {
-  DCHECK(layout_object_);
-  return layout_object_->EffectiveAllowedTouchAction();
-}
-
-bool NGPhysicalFragment::InsideBlockingWheelEventHandler() const {
-  DCHECK(layout_object_);
-  return layout_object_->InsideBlockingWheelEventHandler();
-}
-
 LogicalRect NGPhysicalFragment::ConvertChildToLogical(
     const PhysicalRect& physical_rect) const {
   return WritingModeConverter(Style().GetWritingDirection(), Size())

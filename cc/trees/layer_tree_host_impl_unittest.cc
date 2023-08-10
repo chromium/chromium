@@ -534,7 +534,7 @@ class LayerTreeHostImplTest : public testing::Test,
     auto* squash2 = AddLayer<LayerImpl>(layer_tree_impl);
     squash2->SetBounds(gfx::Size(140, 300));
     squash2->SetDrawsContent(true);
-    squash2->SetHitTestable(true);
+    squash2->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
     CopyProperties(scroll, squash2);
     squash2->SetOffsetToTransformParent(gfx::Vector2dF(220, 300));
 
@@ -552,10 +552,10 @@ class LayerTreeHostImplTest : public testing::Test,
       CreateEffectNode(squash1).opacity = 0.0f;
       // The transparent layer should still participate in hit testing even
       // through it does not draw content.
-      squash1->SetHitTestable(true);
+      squash1->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
     } else {
       squash1->SetDrawsContent(true);
-      squash1->SetHitTestable(true);
+      squash1->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
     }
 
     UpdateDrawProperties(layer_tree_impl);
@@ -600,7 +600,7 @@ class LayerTreeHostImplTest : public testing::Test,
     layer->SetElementId(LayerIdToElementIdForTesting(layer->id()));
     layer->SetDrawsContent(true);
     layer->SetBounds(content_size);
-    layer->SetHitTestable(true);
+    layer->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
     CopyProperties(container, layer);
     CreateTransformNode(layer);
     CreateScrollNode(layer, scroll_container_bounds);
@@ -636,7 +636,7 @@ class LayerTreeHostImplTest : public testing::Test,
   void SetupScrollbarLayer(LayerImpl* scroll_layer,
                            PaintedScrollbarLayerImpl* scrollbar) {
     SetupScrollbarLayerCommon(scroll_layer, scrollbar);
-    scrollbar->SetHitTestable(true);
+    scrollbar->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
     CreateEffectNode(scrollbar).opacity = 1;
   }
 
@@ -1084,7 +1084,7 @@ TEST_F(LayerTreeHostImplTest, ScrollDeltaTreeButNoChanges) {
 TEST_F(LayerTreeHostImplTest, ScrollDeltaRepeatedScrolls) {
   gfx::PointF scroll_offset(20, 30);
   auto* root = SetupDefaultRootLayer(gfx::Size(110, 110));
-  root->SetHitTestable(true);
+  root->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
   CreateScrollNode(root, gfx::Size(10, 10));
   root->layer_tree_impl()
       ->property_trees()
@@ -1144,7 +1144,7 @@ TEST_F(LayerTreeHostImplTest, SyncedScrollAbortedCommit) {
   auto* root = SetupDefaultRootLayer(gfx::Size(110, 110));
   auto& scroll_tree =
       root->layer_tree_impl()->property_trees()->scroll_tree_mutable();
-  root->SetHitTestable(true);
+  root->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
   std::unique_ptr<AnimationHost> main_thread_animation_host(
       AnimationHost::CreateForTesting(ThreadInstance::MAIN));
 
@@ -1684,7 +1684,7 @@ TEST_F(LayerTreeHostImplTest, ScrolledOverlappingDrawnScrollbarLayer) {
   LayerImpl* squash = AddLayer();
   squash->SetBounds(gfx::Size(140, 300));
   squash->SetDrawsContent(true);
-  squash->SetHitTestable(true);
+  squash->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
   CopyProperties(scroll, squash);
   squash->SetOffsetToTransformParent(gfx::Vector2dF(220, 0));
 
@@ -1898,7 +1898,7 @@ TEST_F(LayerTreeHostImplTest, NonFastScrollRegionInNonScrollingRoot) {
   auto AddNewLayer = [&]() {
     LayerImpl* layer = AddLayer();
     layer->SetBounds(gfx::Size(50, 50));
-    layer->SetHitTestable(true);
+    layer->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
     CopyProperties(root_layer, layer);
     return layer;
   };
@@ -1997,7 +1997,7 @@ TEST_F(LayerTreeHostImplTest, LayerOverlapsNonFastScrollableRegionInLayer) {
   auto* layer_b = AddLayer<LayerImpl>(host_impl_->active_tree());
   layer_b->SetBounds(gfx::Size(50, 100));
   layer_b->SetDrawsContent(true);
-  layer_b->SetHitTestable(true);
+  layer_b->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
   CopyProperties(outer_scroll, layer_b);
   layer_b->SetOffsetToTransformParent(gfx::Vector2dF(50, 0));
   layer_b->SetNonFastScrollableRegion(gfx::Rect(0, 0, 50, 100));
@@ -2025,7 +2025,7 @@ TEST_F(LayerTreeHostImplTest, LayerOverlapsNonFastScrollableRegionInLayer) {
   auto* layer_c = AddLayer<LayerImpl>(host_impl_->active_tree());
   layer_c->SetBounds(gfx::Size(50, 50));
   layer_c->SetDrawsContent(true);
-  layer_c->SetHitTestable(true);
+  layer_c->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
   CopyProperties(outer_scroll, layer_c);
   layer_c->SetOffsetToTransformParent(gfx::Vector2dF(25, 25));
 
@@ -2113,7 +2113,7 @@ TEST_F(LayerTreeHostImplTest,
   auto* layer_b = AddLayer<LayerImpl>(host_impl_->active_tree());
   layer_b->SetBounds(gfx::Size(50, 100));
   layer_b->SetDrawsContent(true);
-  layer_b->SetHitTestable(true);
+  layer_b->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
   CopyProperties(outer_scroll, layer_b);
   layer_b->SetOffsetToTransformParent(gfx::Vector2dF(50, 0));
 
@@ -2142,7 +2142,7 @@ TEST_F(LayerTreeHostImplTest,
   auto* layer_c = AddLayer<LayerImpl>(host_impl_->active_tree());
   layer_c->SetBounds(gfx::Size(50, 50));
   layer_c->SetDrawsContent(true);
-  layer_c->SetHitTestable(true);
+  layer_c->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
   CopyProperties(layer_a, layer_c);
   layer_c->SetOffsetToTransformParent(gfx::Vector2dF(25, 25));
 
@@ -2220,7 +2220,7 @@ TEST_F(LayerTreeHostImplTest,
   auto* layer_b = AddLayer<LayerImpl>(host_impl_->active_tree());
   layer_b->SetBounds(gfx::Size(50, 100));
   layer_b->SetDrawsContent(true);
-  layer_b->SetHitTestable(true);
+  layer_b->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
   CopyProperties(outer_scroll, layer_b);
   layer_b->SetOffsetToTransformParent(gfx::Vector2dF(50, 0));
   layer_b->SetNonFastScrollableRegion(gfx::Rect(0, 0, 50, 100));
@@ -2248,7 +2248,7 @@ TEST_F(LayerTreeHostImplTest,
   auto* layer_c = AddLayer<LayerImpl>(host_impl_->active_tree());
   layer_c->SetBounds(gfx::Size(50, 50));
   layer_c->SetDrawsContent(true);
-  layer_c->SetHitTestable(true);
+  layer_c->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
   CopyProperties(inner_scroll, layer_c);
   layer_c->SetOffsetToTransformParent(gfx::Vector2dF(25, 25));
 
@@ -2323,7 +2323,7 @@ TEST_F(LayerTreeHostImplTest, FixedLayerOverNonFixedLayer) {
   auto* layer_b = AddLayer<LayerImpl>(host_impl_->active_tree());
   layer_b->SetBounds(gfx::Size(50, 100));
   layer_b->SetDrawsContent(true);
-  layer_b->SetHitTestable(true);
+  layer_b->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
   CopyProperties(outer_scroll, layer_b);
   layer_b->SetOffsetToTransformParent(gfx::Vector2dF(50, 0));
 
@@ -2332,7 +2332,7 @@ TEST_F(LayerTreeHostImplTest, FixedLayerOverNonFixedLayer) {
   auto* layer_c = AddLayer<LayerImpl>(host_impl_->active_tree());
   layer_c->SetBounds(gfx::Size(50, 50));
   layer_c->SetDrawsContent(true);
-  layer_c->SetHitTestable(true);
+  layer_c->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
   CopyProperties(inner_scroll, layer_c);
   layer_c->SetOffsetToTransformParent(gfx::Vector2dF(25, 25));
 
@@ -3519,7 +3519,7 @@ TEST_F(LayerTreeHostImplTest, CurrentScrollCheckerboardsDueToNoRecording) {
   CopyProperties(inner_scroll_layer, scroll_layer);
   scroll_layer->SetBounds(gfx::Size(500, 500));
   scroll_layer->SetDrawsContent(true);
-  scroll_layer->SetHitTestable(false);
+  scroll_layer->SetHitTestOpaqueness(HitTestOpaqueness::kTransparent);
   host_impl_->active_tree()->SetElementIdsForTesting();
 
   UpdateDrawProperties(host_impl_->active_tree());
@@ -3681,7 +3681,7 @@ TEST_F(LayerTreeHostImplTest, ViewportScrollbarGeometry) {
 
   LayerImpl* scroll = OuterViewportScrollLayer();
   ASSERT_EQ(GetScrollNode(scroll)->container_bounds, outer_viewport_size);
-  scroll->SetHitTestable(true);
+  scroll->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
   ClipNode* outer_clip = host_impl_->active_tree()->OuterViewportClipNode();
   ASSERT_EQ(gfx::SizeF(outer_viewport_size), outer_clip->clip.size());
 
@@ -7403,7 +7403,7 @@ TEST_F(LayerTreeHostImplBrowserControlsTest,
   LayerImpl* outer_viewport_scroll_layer = OuterViewportScrollLayer();
   LayerImpl* child = AddLayer();
 
-  child->SetHitTestable(true);
+  child->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
   child->SetElementId(LayerIdToElementIdForTesting(child->id()));
   child->SetBounds(sub_content_size);
   child->SetDrawsContent(true);
@@ -11750,7 +11750,7 @@ TEST_F(LayerTreeHostImplTest, ScrollHitTestIsNotReliable) {
 
   LayerImpl* occluder_layer = AddLayer();
   occluder_layer->SetDrawsContent(true);
-  occluder_layer->SetHitTestable(true);
+  occluder_layer->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
   occluder_layer->SetBounds(content_size);
 
   // The parent of the occluder is *above* the scroller.
@@ -11791,7 +11791,7 @@ TEST_F(LayerTreeHostImplTest, ScrollHitTestAncestorMismatch) {
 
   LayerImpl* occluder_layer = AddLayer();
   occluder_layer->SetDrawsContent(true);
-  occluder_layer->SetHitTestable(true);
+  occluder_layer->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
   occluder_layer->SetBounds(content_size);
   CopyProperties(child_scroll, occluder_layer);
   occluder_layer->SetOffsetToTransformParent(gfx::Vector2dF(-10, -10));
@@ -13647,7 +13647,7 @@ TEST_F(LayerTreeHostImplTest, FadedOutPaintedOverlayScrollbarHitTest) {
   auto* scrollbar = AddLayer<PaintedOverlayScrollbarLayerImpl>(
       layer_tree_impl, ScrollbarOrientation::VERTICAL, false);
   SetupScrollbarLayerCommon(scroll_layer, scrollbar);
-  scrollbar->SetHitTestable(true);
+  scrollbar->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
 
   const gfx::Size scrollbar_size = gfx::Size(15, 600);
   scrollbar->SetBounds(scrollbar_size);
@@ -13713,7 +13713,7 @@ TEST_F(LayerTreeHostImplTest, ScrollOnLargeThumb) {
   auto* scrollbar = AddLayer<PaintedScrollbarLayerImpl>(
       layer_tree_impl, ScrollbarOrientation::VERTICAL, false, true);
   SetupScrollbarLayerCommon(scroll_layer, scrollbar);
-  scrollbar->SetHitTestable(true);
+  scrollbar->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
 
   const gfx::Size scrollbar_size = gfx::Size(15, 600);
   scrollbar->SetBounds(scrollbar_size);
@@ -13771,7 +13771,7 @@ TEST_F(LayerTreeHostImplTest, AutoscrollOnDeletedScrollbar) {
   auto* scrollbar = AddLayer<PaintedScrollbarLayerImpl>(
       layer_tree_impl, ScrollbarOrientation::VERTICAL, false, true);
   SetupScrollbarLayerCommon(scroll_layer, scrollbar);
-  scrollbar->SetHitTestable(true);
+  scrollbar->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
 
   const gfx::Size scrollbar_size = gfx::Size(15, 600);
   scrollbar->SetBounds(scrollbar_size);
@@ -13870,7 +13870,7 @@ TEST_F(LayerTreeHostImplTest, PointerMoveOutOfSequence) {
   auto* scrollbar = AddLayer<PaintedScrollbarLayerImpl>(
       layer_tree_impl, ScrollbarOrientation::VERTICAL, false, true);
   SetupScrollbarLayerCommon(scroll_layer, scrollbar);
-  scrollbar->SetHitTestable(true);
+  scrollbar->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
 
   const gfx::Size scrollbar_size = gfx::Size(15, 600);
   scrollbar->SetBounds(scrollbar_size);
@@ -13943,7 +13943,7 @@ TEST_F(LayerTreeHostImplTest, FadedOutPaintedScrollbarHitTest) {
   auto* scrollbar = AddLayer<PaintedScrollbarLayerImpl>(
       layer_tree_impl, ScrollbarOrientation::VERTICAL, false, true);
   SetupScrollbarLayerCommon(scroll_layer, scrollbar);
-  scrollbar->SetHitTestable(true);
+  scrollbar->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
 
   const gfx::Size scrollbar_size = gfx::Size(15, 600);
   scrollbar->SetBounds(scrollbar_size);
@@ -16857,17 +16857,17 @@ TEST_F(HitTestRegionListGeneratingLayerTreeHostImplTest, BuildHitTestData) {
   gfx::Transform rotate;
   rotate.Rotate(45);
   surface_child1->SetDrawsContent(true);
-  surface_child1->SetHitTestable(true);
+  surface_child1->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
   surface_child1->SetSurfaceHitTestable(true);
 
   surface_child2->SetBounds(gfx::Size(100, 100));
   surface_child2->SetDrawsContent(true);
-  surface_child2->SetHitTestable(true);
+  surface_child2->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
   surface_child2->SetSurfaceHitTestable(true);
 
   overlapping_layer->SetBounds(gfx::Size(200, 200));
   overlapping_layer->SetDrawsContent(true);
-  overlapping_layer->SetHitTestable(true);
+  overlapping_layer->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
 
   viz::LocalSurfaceId child_local_surface_id(2,
                                              base::UnguessableToken::Create());
@@ -16954,14 +16954,14 @@ TEST_F(HitTestRegionListGeneratingLayerTreeHostImplTest, PointerEvents) {
 
   surface_child1->SetBounds(gfx::Size(100, 100));
   surface_child1->SetDrawsContent(true);
-  surface_child1->SetHitTestable(true);
+  surface_child1->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
   surface_child1->SetSurfaceHitTestable(true);
   surface_child1->SetHasPointerEventsNone(false);
   CopyProperties(root, surface_child1);
 
   surface_child2->SetBounds(gfx::Size(100, 100));
   surface_child2->SetDrawsContent(true);
-  surface_child2->SetHitTestable(true);
+  surface_child2->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
   surface_child2->SetSurfaceHitTestable(false);
   surface_child2->SetHasPointerEventsNone(true);
   CopyProperties(root, surface_child2);
@@ -17019,7 +17019,7 @@ TEST_F(HitTestRegionListGeneratingLayerTreeHostImplTest, ComplexPage) {
 
   surface_child->SetBounds(gfx::Size(100, 100));
   surface_child->SetDrawsContent(true);
-  surface_child->SetHitTestable(true);
+  surface_child->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
   surface_child->SetSurfaceHitTestable(true);
   surface_child->SetHasPointerEventsNone(false);
 
@@ -17037,7 +17037,7 @@ TEST_F(HitTestRegionListGeneratingLayerTreeHostImplTest, ComplexPage) {
     LayerImpl* layer = AddLayer();
     layer->SetBounds(gfx::Size(1, 1));
     layer->SetDrawsContent(true);
-    layer->SetHitTestable(true);
+    layer->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
     CopyProperties(root, layer);
   }
 
@@ -17088,7 +17088,7 @@ TEST_F(HitTestRegionListGeneratingLayerTreeHostImplTest, InvalidFrameSinkId) {
 
   surface_child1->SetBounds(gfx::Size(100, 100));
   surface_child1->SetDrawsContent(true);
-  surface_child1->SetHitTestable(true);
+  surface_child1->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
   surface_child1->SetSurfaceHitTestable(true);
   surface_child1->SetHasPointerEventsNone(false);
   CopyProperties(root, surface_child1);
@@ -17104,7 +17104,7 @@ TEST_F(HitTestRegionListGeneratingLayerTreeHostImplTest, InvalidFrameSinkId) {
 
   surface_child2->SetBounds(gfx::Size(50, 50));
   surface_child2->SetDrawsContent(true);
-  surface_child2->SetHitTestable(true);
+  surface_child2->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
   surface_child2->SetSurfaceHitTestable(true);
   surface_child2->SetHasPointerEventsNone(false);
   CopyProperties(root, surface_child2);
@@ -17568,7 +17568,7 @@ class UnifiedScrollingTest : public LayerTreeHostImplTest {
     LayerImpl* squashing_layer = AddLayer();
     squashing_layer->SetBounds(gfx::Size(100, 100));
     squashing_layer->SetDrawsContent(true);
-    squashing_layer->SetHitTestable(true);
+    squashing_layer->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
     CopyProperties(OuterViewportScrollLayer(), squashing_layer);
     UpdateDrawProperties(host_impl_->active_tree());
   }
@@ -17793,11 +17793,11 @@ TEST_F(UnifiedScrollingTest, MainThreadHitTestScrollNodeNotFound) {
   CreateUncompositedScrollerAndNonFastScrollableRegion();
 
   {
-    ElementId kUnknown(42);
-    DCHECK(!GetPropertyTrees()->scroll_tree().FindNodeFromElementId(kUnknown));
+    ElementId kMixed(42);
+    DCHECK(!GetPropertyTrees()->scroll_tree().FindNodeFromElementId(kMixed));
 
     ScrollStatus status = ScrollBegin(gfx::Vector2d(0, 10));
-    status = ContinuedScrollBegin(kUnknown);
+    status = ContinuedScrollBegin(kMixed);
     EXPECT_EQ(ScrollThread::SCROLL_IGNORED, status.thread);
     EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
               status.main_thread_scrolling_reasons);
@@ -18053,7 +18053,7 @@ TEST_F(LayerTreeHostImplTest, FrameElementIdHitTestSimple) {
   LayerImpl* frame_layer = AddLayer();
   frame_layer->SetBounds(gfx::Size(50, 50));
   frame_layer->SetDrawsContent(true);
-  frame_layer->SetHitTestable(true);
+  frame_layer->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
   CopyProperties(root_layer(), frame_layer);
   CreateTransformNode(frame_layer).visible_frame_element_id = ElementId(0x10);
 
@@ -18068,7 +18068,7 @@ TEST_F(LayerTreeHostImplTest, FrameElementIdHitTestInheritance) {
 
   LayerImpl* frame_layer = AddLayer();
   frame_layer->SetBounds(gfx::Size(50, 50));
-  frame_layer->SetHitTestable(true);
+  frame_layer->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
   CopyProperties(root_layer(), frame_layer);
   CreateTransformNode(frame_layer, root_layer()->transform_tree_index())
       .visible_frame_element_id = ElementId(0x20);
@@ -18077,7 +18077,7 @@ TEST_F(LayerTreeHostImplTest, FrameElementIdHitTestInheritance) {
   // layer as a parent.
   LayerImpl* child_layer = AddLayer();
   child_layer->SetBounds(gfx::Size(50, 50));
-  child_layer->SetHitTestable(true);
+  child_layer->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
   CopyProperties(root_layer(), child_layer);
   auto& child_node =
       CreateTransformNode(child_layer, frame_layer->transform_tree_index());
@@ -18101,13 +18101,13 @@ TEST_F(LayerTreeHostImplTest, FrameElementIdHitTestOverlap) {
 
   LayerImpl* frame_layer = AddLayer();
   frame_layer->SetBounds(gfx::Size(50, 50));
-  frame_layer->SetHitTestable(true);
+  frame_layer->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
   CopyProperties(root_layer(), frame_layer);
   CreateTransformNode(frame_layer).visible_frame_element_id = ElementId(0x10);
 
   LayerImpl* occluding_frame_layer = AddLayer();
   occluding_frame_layer->SetBounds(gfx::Size(50, 50));
-  occluding_frame_layer->SetHitTestable(true);
+  occluding_frame_layer->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
   CopyProperties(root_layer(), occluding_frame_layer);
   auto& occluding_frame_node = CreateTransformNode(
       occluding_frame_layer, frame_layer->transform_tree_index());
@@ -18130,13 +18130,13 @@ TEST_F(LayerTreeHostImplTest, FrameElementIdHitTestOverlapSimpleClip) {
 
   LayerImpl* frame_layer = AddLayer();
   frame_layer->SetBounds(gfx::Size(50, 50));
-  frame_layer->SetHitTestable(true);
+  frame_layer->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
   CopyProperties(root_layer(), frame_layer);
   CreateTransformNode(frame_layer).visible_frame_element_id = ElementId(0x10);
 
   LayerImpl* clipped_frame_layer = AddLayer();
   clipped_frame_layer->SetBounds(gfx::Size(50, 50));
-  clipped_frame_layer->SetHitTestable(true);
+  clipped_frame_layer->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
   CopyProperties(root_layer(), clipped_frame_layer);
   CreateTransformNode(clipped_frame_layer).visible_frame_element_id =
       ElementId(0x20);
@@ -18158,13 +18158,13 @@ TEST_F(LayerTreeHostImplTest, FrameElementIdHitTestOverlapRoundedCorners) {
 
   LayerImpl* frame_layer = AddLayer();
   frame_layer->SetBounds(gfx::Size(50, 50));
-  frame_layer->SetHitTestable(true);
+  frame_layer->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
   CopyProperties(root_layer(), frame_layer);
   CreateTransformNode(frame_layer).visible_frame_element_id = ElementId(0x10);
 
   LayerImpl* rounded_frame_layer = AddLayer();
   rounded_frame_layer->SetBounds(gfx::Size(50, 50));
-  rounded_frame_layer->SetHitTestable(true);
+  rounded_frame_layer->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
   CopyProperties(root_layer(), rounded_frame_layer);
   CreateTransformNode(rounded_frame_layer, frame_layer->transform_tree_index())
       .visible_frame_element_id = ElementId(0x20);
@@ -18188,14 +18188,14 @@ TEST_F(LayerTreeHostImplTest, FrameElementIdHitTestOverlapSibling) {
 
   LayerImpl* frame_layer = AddLayer();
   frame_layer->SetBounds(gfx::Size(50, 50));
-  frame_layer->SetHitTestable(true);
+  frame_layer->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
   CopyProperties(root_layer(), frame_layer);
   CreateTransformNode(frame_layer, root_layer()->transform_tree_index())
       .visible_frame_element_id = ElementId(0x20);
 
   LayerImpl* sibling_frame_layer = AddLayer();
   sibling_frame_layer->SetBounds(gfx::Size(50, 50));
-  sibling_frame_layer->SetHitTestable(true);
+  sibling_frame_layer->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
   CopyProperties(root_layer(), sibling_frame_layer);
   CreateTransformNode(sibling_frame_layer, root_layer()->transform_tree_index())
       .visible_frame_element_id = ElementId(0x30);

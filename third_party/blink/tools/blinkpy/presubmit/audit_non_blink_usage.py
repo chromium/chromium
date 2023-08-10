@@ -461,6 +461,7 @@ _CONFIG = [
             'cc::BrowserControlsState',
             'cc::EventListenerClass',
             'cc::EventListenerProperties',
+            'cc::HitTestOpaqueness',
 
             # Animation
             'cc::AnimationHost',

@@ -617,6 +617,86 @@ TEST_P(CompositingTest, FullPACUpdateOnScrollWithSyntheticClipAcrossScroller) {
   EXPECT_TRUE(paint_artifact_compositor()->NeedsUpdate());
 }
 
+TEST_P(CompositingTest, HitTestOpaqueness) {
+  if (!RuntimeEnabledFeatures::HitTestOpaquenessEnabled()) {
+    return;
+  }
+
+  InitializeWithHTML(*WebView()->MainFrameImpl()->GetFrame(), R"HTML(
+    <div id="transparent" style="pointer-events: none; will-change: transform">
+      Transparent
+    </div>
+
+    <!-- Transparent parent with a small opaque child. -->
+    <div id="mixed1" style="pointer-events: none; will-change: transform;
+                            width: 200px; height: 50px">
+      Transparent parent
+      <div style="pointer-events: auto">Opaque child</div>
+    </div>
+    <!-- Layer with mixed opaque areas and transparent gaps. -->
+    <div id="mixed2" style="will-change: transform; width: 0">
+      <div style="margin: 10px; width: 200px; height: 50px">Opaque child1</div>
+      <div style="margin: 10px; width: 200px; height: 50px">Opaque child2</div>
+    </div>
+    <div id="mixed3" style="will-change: transform; border-radius: 10px;
+                            width: 50px; height: 50px">
+    </div>
+
+    <div id="opaque1" style="will-change: transform; width: 50px; height: 50px">
+       Opaque
+    </div>
+    <!-- Two adjacent opaque children fills the layer, making the layer
+         opaque. -->
+    <div id="opaque2" style="will-change: transform; width: 0">
+      <div style="width: 100px; height: 50px">Opaque child1</div>
+      <div style="width: 100px; height: 50px">Opaque child2</div>
+    </div>
+    <!-- Child pointer-events:none doesn't affect opaqueness of parent. -->
+    <div id="opaque3"
+         style="will-change: transform; width: 100px; height: 100px">
+      <div style="width: 50px; height: 50px; pointer-events: none"></div>
+    </div>
+    <!-- An opaque child fills the transparent parent, making the layer
+         opaque. -->
+    <div id="opaque4" style="will-change: transform; pointer-events: none">
+      <div style="height: 50px; pointer-events: auto"></div>
+    </div>
+    <!-- An opaque child fills the mixed layer, making the layer opaque. -->
+    <div id="opaque5" style="will-change: transform; border-radius: 10px;
+                             width: 50px; height; 50px">
+      <div style="height: 50px"></div>
+    </div>
+  )HTML");
+
+  EXPECT_EQ(cc::HitTestOpaqueness::kTransparent,
+            CcLayersByDOMElementId(RootCcLayer(), "transparent")[0]
+                ->hit_test_opaqueness());
+  EXPECT_EQ(cc::HitTestOpaqueness::kMixed,
+            CcLayersByDOMElementId(RootCcLayer(), "mixed1")[0]
+                ->hit_test_opaqueness());
+  EXPECT_EQ(cc::HitTestOpaqueness::kMixed,
+            CcLayersByDOMElementId(RootCcLayer(), "mixed2")[0]
+                ->hit_test_opaqueness());
+  EXPECT_EQ(cc::HitTestOpaqueness::kMixed,
+            CcLayersByDOMElementId(RootCcLayer(), "mixed3")[0]
+                ->hit_test_opaqueness());
+  EXPECT_EQ(cc::HitTestOpaqueness::kOpaque,
+            CcLayersByDOMElementId(RootCcLayer(), "opaque1")[0]
+                ->hit_test_opaqueness());
+  EXPECT_EQ(cc::HitTestOpaqueness::kOpaque,
+            CcLayersByDOMElementId(RootCcLayer(), "opaque2")[0]
+                ->hit_test_opaqueness());
+  EXPECT_EQ(cc::HitTestOpaqueness::kOpaque,
+            CcLayersByDOMElementId(RootCcLayer(), "opaque3")[0]
+                ->hit_test_opaqueness());
+  EXPECT_EQ(cc::HitTestOpaqueness::kOpaque,
+            CcLayersByDOMElementId(RootCcLayer(), "opaque4")[0]
+                ->hit_test_opaqueness());
+  EXPECT_EQ(cc::HitTestOpaqueness::kOpaque,
+            CcLayersByDOMElementId(RootCcLayer(), "opaque5")[0]
+                ->hit_test_opaqueness());
+}
+
 class CompositingSimTest : public PaintTestConfigurations, public SimTest {
  public:
   void InitializeWithHTML(const String& html) {

@@ -80,12 +80,6 @@ bool SolidColorScrollbarLayer::OpacityCanAnimateOnImplThread() const {
   return true;
 }
 
-bool SolidColorScrollbarLayer::HitTestable() const {
-  // Android scrollbars can't be interacted with by user input. They should
-  // avoid hit testing so we don't enter any scrollbar scrolling code paths.
-  return false;
-}
-
 ScrollbarLayerBase::ScrollbarLayerType
 SolidColorScrollbarLayer::GetScrollbarLayerType() const {
   return kSolidColor;

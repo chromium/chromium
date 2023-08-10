@@ -10,6 +10,7 @@
 
 #include "base/check_op.h"
 #include "base/dcheck_is_on.h"
+#include "cc/input/hit_test_opaqueness.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item_client.h"
@@ -69,6 +70,7 @@ struct PLATFORM_EXPORT PaintChunk {
         drawable_bounds(other.drawable_bounds),
         rect_known_to_be_opaque(other.rect_known_to_be_opaque),
         raster_effect_outset(other.raster_effect_outset),
+        hit_test_opaqueness(other.hit_test_opaqueness),
         text_known_to_be_on_opaque_background(
             other.text_known_to_be_on_opaque_background),
         has_text(other.has_text),
@@ -171,6 +173,9 @@ struct PLATFORM_EXPORT PaintChunk {
   // is the maximum DisplayItemClient::VisualRectOutsetForRasterEffects() of
   // all clients of items in this chunk.
   RasterEffectOutset raster_effect_outset = RasterEffectOutset::kNone;
+
+  cc::HitTestOpaqueness hit_test_opaqueness =
+      cc::HitTestOpaqueness::kTransparent;
 
   // True if all text is known to be on top of opaque backgrounds or there is
   // not text. Though in theory the value doesn't matter when there is no text,

@@ -22,6 +22,7 @@
 #include "cc/base/synced_property.h"
 #include "cc/cc_export.h"
 #include "cc/debug/layer_tree_debug_state.h"
+#include "cc/input/hit_test_opaqueness.h"
 #include "cc/input/input_handler.h"
 #include "cc/layers/draw_mode.h"
 #include "cc/layers/draw_properties.h"
@@ -160,9 +161,9 @@ class CC_EXPORT LayerImpl {
   void SetDrawsContent(bool draws_content);
   bool draws_content() const { return draws_content_; }
 
-  // Make the layer hit testable.
-  void SetHitTestable(bool should_hit_test);
+  void SetHitTestOpaqueness(HitTestOpaqueness opaqueness);
   bool HitTestable() const;
+  bool OpaqueToHitTest() const;
 
   void SetBackgroundColor(SkColor4f background_color);
   SkColor4f background_color() const { return background_color_; }
@@ -534,11 +535,9 @@ class CC_EXPORT LayerImpl {
   bool draws_content_ : 1;
   bool contributes_to_drawn_render_surface_ : 1;
 
-  // Tracks if this layer should participate in hit testing.
-  bool hit_testable_ : 1;
-
   bool is_inner_viewport_scroll_layer_ : 1;
 
+  HitTestOpaqueness hit_test_opaqueness_ = HitTestOpaqueness::kTransparent;
   TouchActionRegion touch_action_region_;
 
   SkColor4f background_color_;

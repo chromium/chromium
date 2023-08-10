@@ -81,6 +81,11 @@ void PaintChunker::AppendByMoving(PaintChunk&& chunk) {
   chunks_->emplace_back(next_chunk_begin_index, std::move(chunk));
 }
 
+bool PaintChunker::WillCreateNewChunk() const {
+  return will_force_new_chunk_ ||
+         current_properties_ != chunks_->back().properties;
+}
+
 bool PaintChunker::EnsureCurrentChunk(const PaintChunk::Id& id,
                                       const DisplayItemClient& client) {
 #if DCHECK_IS_ON()
@@ -92,8 +97,7 @@ bool PaintChunker::EnsureCurrentChunk(const PaintChunk::Id& id,
   DCHECK(current_properties_.IsInitialized());
 #endif
 
-  if (WillForceNewChunk() ||
-      current_properties_ != chunks_->back().properties) {
+  if (WillCreateNewChunk()) {
     if (!next_chunk_id_) {
       next_chunk_id_.emplace(id, client);
     }
@@ -122,7 +126,9 @@ bool PaintChunker::IncrementDisplayItemIndex(const DisplayItemClient& client,
   auto& chunk = chunks_->back();
   chunk.end_index++;
 
-  chunk.bounds.Union(item.VisualRect());
+  // Normally the display item's visual rect should be covered by previous
+  // hit test rects, or it's treated as not hit-testable.
+  UnionBounds(item.VisualRect(), cc::HitTestOpaqueness::kTransparent);
   if (item.DrawsContent())
     chunk.drawable_bounds.Union(item.VisualRect());
 
@@ -161,14 +167,16 @@ bool PaintChunker::IncrementDisplayItemIndex(const DisplayItemClient& client,
   return created_new_chunk;
 }
 
-bool PaintChunker::AddHitTestDataToCurrentChunk(const PaintChunk::Id& id,
-                                                const DisplayItemClient& client,
-                                                const gfx::Rect& rect,
-                                                TouchAction touch_action,
-                                                bool blocking_wheel) {
+bool PaintChunker::AddHitTestDataToCurrentChunk(
+    const PaintChunk::Id& id,
+    const DisplayItemClient& client,
+    const gfx::Rect& rect,
+    TouchAction touch_action,
+    bool blocking_wheel,
+    cc::HitTestOpaqueness hit_test_opaqueness) {
   bool created_new_chunk = EnsureCurrentChunk(id, client);
+  UnionBounds(rect, hit_test_opaqueness);
   auto& chunk = chunks_->back();
-  chunk.bounds.Union(rect);
   if (touch_action != TouchAction::kAuto) {
     auto& touch_action_rects = chunk.EnsureHitTestData().touch_action_rects;
     if (touch_action_rects.empty() ||
@@ -184,6 +192,15 @@ bool PaintChunker::AddHitTestDataToCurrentChunk(const PaintChunk::Id& id,
     }
   }
   return created_new_chunk;
+}
+
+bool PaintChunker::CurrentChunkIsNonEmptyAndTransparentToHitTest() const {
+  if (WillCreateNewChunk()) {
+    return false;
+  }
+  const auto& chunk = chunks_->back();
+  return !chunk.bounds.IsEmpty() &&
+         chunk.hit_test_opaqueness == cc::HitTestOpaqueness::kTransparent;
 }
 
 bool PaintChunker::AddRegionCaptureDataToCurrentChunk(
@@ -285,11 +302,22 @@ void PaintChunker::CreateScrollHitTestChunk(
   DCHECK(created_new_chunk);
 
   auto& chunk = chunks_->back();
-  chunk.bounds.Union(rect);
+  // Assume all scroll hit tests are opaque to hit test.
+  // TODO(crbug.com/1470484): Consider rounded corners for opaqueness of
+  // scroll hit test.
+  UnionBounds(rect, cc::HitTestOpaqueness::kOpaque);
   auto& hit_test_data = chunk.EnsureHitTestData();
   hit_test_data.scroll_translation = scroll_translation;
   hit_test_data.scroll_hit_test_rect = rect;
   SetWillForceNewChunk(true);
+}
+
+void PaintChunker::UnionBounds(const gfx::Rect& rect,
+                               cc::HitTestOpaqueness hit_test_opaqueness) {
+  auto& chunk = chunks_->back();
+  chunk.hit_test_opaqueness = cc::UnionHitTestOpaqueness(
+      chunk.bounds, chunk.hit_test_opaqueness, rect, hit_test_opaqueness);
+  chunk.bounds.Union(rect);
 }
 
 void PaintChunker::ProcessBackgroundColorCandidate(const DisplayItem& item) {

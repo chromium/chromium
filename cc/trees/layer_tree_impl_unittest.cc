@@ -70,7 +70,7 @@ class LayerTreeImplTest : public LayerTreeImplTestBase, public testing::Test {
       translate_z.Translate3d(0, 0, top_depth);
       top_->SetBounds(bounds);
       top_->SetDrawsContent(true);
-      top_->SetHitTestable(true);
+      top_->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
 
       CopyProperties(root_layer(), top_);
       auto& transform_node = CreateTransformNode(top_);
@@ -82,7 +82,7 @@ class LayerTreeImplTest : public LayerTreeImplTestBase, public testing::Test {
       translate_z.Translate3d(0, 0, left_child_depth);
       left_child_->SetBounds(bounds);
       left_child_->SetDrawsContent(true);
-      left_child_->SetHitTestable(true);
+      left_child_->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
 
       CopyProperties(top_, left_child_);
       auto& transform_node = CreateTransformNode(left_child_);
@@ -95,7 +95,7 @@ class LayerTreeImplTest : public LayerTreeImplTestBase, public testing::Test {
       translate_z.Translate3d(0, 0, right_child_depth);
       right_child_->SetBounds(bounds);
       right_child_->SetDrawsContent(true);
-      right_child_->SetHitTestable(true);
+      right_child_->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
 
       CopyProperties(top_, right_child_);
       auto& transform_node = CreateTransformNode(right_child_);
@@ -128,7 +128,7 @@ TEST_F(LayerTreeImplTest, HitTestingForSingleLayer) {
   LayerImpl* root = root_layer();
   root->SetBounds(bounds);
   root->SetDrawsContent(true);
-  root->SetHitTestable(true);
+  root->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
 
   host_impl().active_tree()->SetDeviceViewportRect(gfx::Rect(root->bounds()));
   UpdateDrawProperties(host_impl().active_tree());
@@ -168,7 +168,7 @@ TEST_F(LayerTreeImplTest, UpdateViewportAndHitTest) {
   LayerImpl* root = root_layer();
   root->SetBounds(bounds);
   root->SetDrawsContent(true);
-  root->SetHitTestable(true);
+  root->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
 
   host_impl().active_tree()->SetDeviceViewportRect(gfx::Rect(root->bounds()));
   UpdateDrawProperties(host_impl().active_tree());
@@ -191,13 +191,13 @@ TEST_F(LayerTreeImplTest, HitTestingForSingleLayerAndHud) {
   LayerImpl* root = root_layer();
   root->SetBounds(gfx::Size(100, 100));
   root->SetDrawsContent(true);
-  root->SetHitTestable(true);
+  root->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
 
   // Create hud and add it as a child of root.
   auto* hud = AddLayer<HeadsUpDisplayLayerImpl>();
   hud->SetBounds(gfx::Size(200, 200));
   hud->SetDrawsContent(true);
-  hud->SetHitTestable(true);
+  hud->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
 
   host_impl().active_tree()->SetDeviceViewportRect(gfx::Rect(hud->bounds()));
   host_impl().active_tree()->set_hud_layer(hud);
@@ -247,7 +247,7 @@ TEST_F(LayerTreeImplTest, HitTestingForUninvertibleTransform) {
   LayerImpl* layer = AddLayer<LayerImpl>();
   layer->SetBounds(gfx::Size(100, 100));
   layer->SetDrawsContent(true);
-  layer->SetHitTestable(true);
+  layer->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
   root->SetBounds(layer->bounds());
   CopyProperties(root, layer);
   CreateTransformNode(layer).local = uninvertible_transform;
@@ -303,7 +303,7 @@ TEST_F(LayerTreeImplTest, HitTestingForSinglePositionedLayer) {
   LayerImpl* test_layer = AddLayer<LayerImpl>();
   test_layer->SetBounds(gfx::Size(100, 100));
   test_layer->SetDrawsContent(true);
-  test_layer->SetHitTestable(true);
+  test_layer->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
   CopyProperties(root_layer(), test_layer);
   test_layer->SetOffsetToTransformParent(gfx::Vector2dF(50.f, 50.f));
 
@@ -353,7 +353,7 @@ TEST_F(LayerTreeImplTest, HitTestingForSingleRotatedLayer) {
   LayerImpl* layer = AddLayer<LayerImpl>();
   layer->SetBounds(gfx::Size(100, 100));
   layer->SetDrawsContent(true);
-  layer->SetHitTestable(true);
+  layer->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
   root->SetBounds(layer->bounds());
   CopyProperties(root, layer);
   CreateTransformNode(layer).local = rotation45_degrees_about_center;
@@ -428,7 +428,7 @@ TEST_F(LayerTreeImplTest, HitTestingClipNodeDifferentTransformAndTargetIds) {
   LayerImpl* test = AddLayer<LayerImpl>();
   test->SetBounds(gfx::Size(100, 100));
   test->SetDrawsContent(true);
-  test->SetHitTestable(true);
+  test->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
   CopyProperties(clip, test);
 
   host_impl().active_tree()->SetDeviceViewportRect(gfx::Rect(root->bounds()));
@@ -454,14 +454,14 @@ TEST_F(LayerTreeImplTest, HitTestingSiblings) {
   LayerImpl* child1 = AddLayer<LayerImpl>();
   child1->SetBounds(gfx::Size(25, 25));
   child1->SetDrawsContent(true);
-  child1->SetHitTestable(true);
+  child1->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
   CopyProperties(root, child1);
   CreateClipNode(child1);
 
   LayerImpl* child2 = AddLayer<LayerImpl>();
   child2->SetBounds(gfx::Size(75, 75));
   child2->SetDrawsContent(true);
-  child2->SetHitTestable(true);
+  child2->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
   CopyProperties(root, child2);
   CreateClipNode(child2);
 
@@ -491,7 +491,7 @@ TEST_F(LayerTreeImplTest, HitTestingForSinglePerspectiveLayer) {
   LayerImpl* layer = AddLayer<LayerImpl>();
   layer->SetBounds(gfx::Size(100, 100));
   layer->SetDrawsContent(true);
-  layer->SetHitTestable(true);
+  layer->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
   root->SetBounds(layer->bounds());
   CopyProperties(root, layer);
   CreateTransformNode(layer).local =
@@ -547,7 +547,7 @@ TEST_F(LayerTreeImplTest, HitTestingForSimpleClippedLayer) {
   LayerImpl* child = AddLayer<LayerImpl>();
   child->SetBounds(gfx::Size(300, 300));
   child->SetDrawsContent(true);
-  child->SetHitTestable(true);
+  child->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
   CopyProperties(clipping_layer, child);
   child->SetOffsetToTransformParent(gfx::Vector2dF(-50.f, -50.f));
 
@@ -636,7 +636,7 @@ TEST_F(LayerTreeImplTest, HitTestingForMultiClippedRotatedLayer) {
   rotated_leaf_transform.Translate(-50.0, -50.0);
   rotated_leaf->SetBounds(gfx::Size(100, 100));
   rotated_leaf->SetDrawsContent(true);
-  rotated_leaf->SetHitTestable(true);
+  rotated_leaf->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
   CopyProperties(grand_child, rotated_leaf);
   CreateTransformNode(rotated_leaf).local = rotated_leaf_transform;
 
@@ -706,7 +706,7 @@ TEST_F(LayerTreeImplTest, HitTestingForNonClippingIntermediateLayer) {
   LayerImpl* child = AddLayer<LayerImpl>();
   child->SetBounds(gfx::Size(20, 20));
   child->SetDrawsContent(true);
-  child->SetHitTestable(true);
+  child->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
   CopyProperties(intermediate_layer, child);
   child->SetOffsetToTransformParent(gfx::Vector2dF(70.f, 70.f));
 
@@ -745,7 +745,7 @@ TEST_F(LayerTreeImplTest, HitTestingForMultipleLayers) {
   LayerImpl* root = root_layer();
   root->SetBounds(gfx::Size(100, 100));
   root->SetDrawsContent(true);
-  root->SetHitTestable(true);
+  root->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
 
   // child1 and child2 are initialized to overlap between x=50 and x=60.
   // grand_child is set to overlap both child1 and child2 between y=50 and
@@ -756,7 +756,7 @@ TEST_F(LayerTreeImplTest, HitTestingForMultipleLayers) {
   LayerImpl* child1 = AddLayer<LayerImpl>();
   child1->SetBounds(gfx::Size(50, 50));
   child1->SetDrawsContent(true);
-  child1->SetHitTestable(true);
+  child1->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
   CopyProperties(root, child1);
   child1->SetOffsetToTransformParent(gfx::Vector2dF(10.f, 10.f));
 
@@ -766,7 +766,7 @@ TEST_F(LayerTreeImplTest, HitTestingForMultipleLayers) {
   LayerImpl* grand_child1 = AddLayer<LayerImpl>();
   grand_child1->SetBounds(gfx::Size(100, 50));
   grand_child1->SetDrawsContent(true);
-  grand_child1->SetHitTestable(true);
+  grand_child1->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
   CopyProperties(child1, grand_child1);
   grand_child1->SetOffsetToTransformParent(
       gfx::Vector2dF(0.f, 40.f) + child1->offset_to_transform_parent());
@@ -774,7 +774,7 @@ TEST_F(LayerTreeImplTest, HitTestingForMultipleLayers) {
   LayerImpl* child2 = AddLayer<LayerImpl>();
   child2->SetBounds(gfx::Size(50, 50));
   child2->SetDrawsContent(true);
-  child2->SetHitTestable(true);
+  child2->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
   CopyProperties(root, child2);
   child2->SetOffsetToTransformParent(gfx::Vector2dF(50.f, 10.f));
 
@@ -871,7 +871,7 @@ TEST_F(LayerTreeImplTest, HitTestingForMultipleLayersAtVaryingDepths) {
   LayerImpl* root = root_layer();
   root->SetBounds(gfx::Size(100, 100));
   root->SetDrawsContent(true);
-  root->SetHitTestable(true);
+  root->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
   GetTransformNode(root)->flattens_inherited_transform = false;
   GetTransformNode(root)->sorting_context_id = 1;
 
@@ -884,7 +884,7 @@ TEST_F(LayerTreeImplTest, HitTestingForMultipleLayersAtVaryingDepths) {
   LayerImpl* child1 = AddLayer<LayerImpl>();
   child1->SetBounds(gfx::Size(50, 50));
   child1->SetDrawsContent(true);
-  child1->SetHitTestable(true);
+  child1->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
   CopyProperties(root, child1);
   auto& child1_transform_node = CreateTransformNode(child1);
   child1_transform_node.post_translation = gfx::Vector2dF(10.f, 10.f);
@@ -897,7 +897,7 @@ TEST_F(LayerTreeImplTest, HitTestingForMultipleLayersAtVaryingDepths) {
   LayerImpl* grand_child1 = AddLayer<LayerImpl>();
   grand_child1->SetBounds(gfx::Size(100, 50));
   grand_child1->SetDrawsContent(true);
-  grand_child1->SetHitTestable(true);
+  grand_child1->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
   CopyProperties(child1, grand_child1);
   auto& grand_child1_transform_node = CreateTransformNode(grand_child1);
   grand_child1_transform_node.post_translation = gfx::Vector2dF(0.f, 40.f);
@@ -908,7 +908,7 @@ TEST_F(LayerTreeImplTest, HitTestingForMultipleLayersAtVaryingDepths) {
   gfx::Transform translate_z;
   translate_z.Translate3d(0, 0, 10.f);
   child2->SetDrawsContent(true);
-  child2->SetHitTestable(true);
+  child2->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
   CopyProperties(root, child2);
   auto& child2_transform_node = CreateTransformNode(child2);
   child2_transform_node.local = translate_z;
@@ -972,12 +972,12 @@ TEST_F(LayerTreeImplTest, HitTestingRespectsClipParents) {
   LayerImpl* root = root_layer();
   root->SetBounds(gfx::Size(100, 100));
   root->SetDrawsContent(true);
-  root->SetHitTestable(true);
+  root->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
 
   LayerImpl* child = AddLayer<LayerImpl>();
   child->SetBounds(gfx::Size(1, 1));
   child->SetDrawsContent(true);
-  child->SetHitTestable(true);
+  child->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
   CopyProperties(root, child);
   child->SetOffsetToTransformParent(gfx::Vector2dF(10.f, 10.f));
   CreateClipNode(child);
@@ -985,14 +985,14 @@ TEST_F(LayerTreeImplTest, HitTestingRespectsClipParents) {
   LayerImpl* scroll_child = AddLayer<LayerImpl>();
   scroll_child->SetBounds(gfx::Size(200, 200));
   scroll_child->SetDrawsContent(true);
-  scroll_child->SetHitTestable(true);
+  scroll_child->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
   CopyProperties(root, scroll_child);
   scroll_child->SetClipTreeIndex(child->clip_tree_index());
 
   LayerImpl* grand_child = AddLayer<LayerImpl>();
   grand_child->SetBounds(gfx::Size(200, 200));
   grand_child->SetDrawsContent(true);
-  grand_child->SetHitTestable(true);
+  grand_child->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
   CopyProperties(scroll_child, grand_child);
   CreateEffectNode(grand_child).render_surface_reason =
       RenderSurfaceReason::kTest;
@@ -1016,7 +1016,7 @@ TEST_F(LayerTreeImplTest, HitTestingForMultipleLayerLists) {
   LayerImpl* root = root_layer();
   root->SetBounds(gfx::Size(100, 100));
   root->SetDrawsContent(true);
-  root->SetHitTestable(true);
+  root->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
 
   // child 1 and child2 are initialized to overlap between x=50 and x=60.
   // grand_child is set to overlap both child1 and child2 between y=50 and
@@ -1027,7 +1027,7 @@ TEST_F(LayerTreeImplTest, HitTestingForMultipleLayerLists) {
   LayerImpl* child1 = AddLayer<LayerImpl>();
   child1->SetBounds(gfx::Size(50, 50));
   child1->SetDrawsContent(true);
-  child1->SetHitTestable(true);
+  child1->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
   CopyProperties(root, child1);
   CreateTransformNode(child1).post_translation = gfx::Vector2dF(10.f, 10.f);
   CreateEffectNode(child1).render_surface_reason = RenderSurfaceReason::kTest;
@@ -1038,7 +1038,7 @@ TEST_F(LayerTreeImplTest, HitTestingForMultipleLayerLists) {
   LayerImpl* grand_child1 = AddLayer<LayerImpl>();
   grand_child1->SetBounds(gfx::Size(100, 50));
   grand_child1->SetDrawsContent(true);
-  grand_child1->SetHitTestable(true);
+  grand_child1->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
   CopyProperties(child1, grand_child1);
   CreateTransformNode(grand_child1).post_translation =
       gfx::Vector2dF(0.f, 40.f);
@@ -1048,7 +1048,7 @@ TEST_F(LayerTreeImplTest, HitTestingForMultipleLayerLists) {
   LayerImpl* child2 = AddLayer<LayerImpl>();
   child2->SetBounds(gfx::Size(50, 50));
   child2->SetDrawsContent(true);
-  child2->SetHitTestable(true);
+  child2->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
   CopyProperties(root, child2);
   CreateTransformNode(child2).post_translation = gfx::Vector2dF(50.f, 10.f);
   CreateEffectNode(child2).render_surface_reason = RenderSurfaceReason::kTest;
@@ -1125,7 +1125,7 @@ TEST_F(LayerTreeImplTest, HitCheckingTouchHandlerRegionsForSingleLayer) {
   LayerImpl* root = root_layer();
   root->SetBounds(gfx::Size(100, 100));
   root->SetDrawsContent(true);
-  root->SetHitTestable(true);
+  root->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
 
   host_impl().active_tree()->SetDeviceViewportRect(gfx::Rect(root->bounds()));
   UpdateDrawProperties(host_impl().active_tree());
@@ -1202,7 +1202,7 @@ TEST_F(LayerTreeImplTest,
   LayerImpl* layer = AddLayer<LayerImpl>();
   layer->SetBounds(gfx::Size(100, 100));
   layer->SetDrawsContent(true);
-  layer->SetHitTestable(true);
+  layer->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
   layer->SetTouchActionRegion(touch_action_region);
   root->SetBounds(layer->bounds());
   CopyProperties(root, layer);
@@ -1272,7 +1272,7 @@ TEST_F(LayerTreeImplTest,
   LayerImpl* test_layer = AddLayer<LayerImpl>();
   test_layer->SetBounds(gfx::Size(100, 100));
   test_layer->SetDrawsContent(true);
-  test_layer->SetHitTestable(true);
+  test_layer->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
   test_layer->SetTouchActionRegion(touch_action_region);
   CopyProperties(root_layer(), test_layer);
   test_layer->SetOffsetToTransformParent(gfx::Vector2dF(50.f, 50.f));
@@ -1342,7 +1342,7 @@ TEST_F(LayerTreeImplTest,
   LayerImpl* test_layer = AddLayer<LayerImpl>();
   test_layer->SetBounds(gfx::Size(50, 50));
   test_layer->SetDrawsContent(true);
-  test_layer->SetHitTestable(true);
+  test_layer->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
   test_layer->SetTouchActionRegion(touch_action_region);
   CopyProperties(page_scale_layer, test_layer);
   test_layer->SetOffsetToTransformParent(gfx::Vector2dF(25.f, 25.f));
@@ -1482,7 +1482,7 @@ TEST_F(LayerTreeImplTest, HitCheckingTouchHandlerRegionsForSimpleClippedLayer) {
   LayerImpl* child = AddLayer<LayerImpl>();
   child->SetBounds(gfx::Size(300, 300));
   child->SetDrawsContent(true);
-  child->SetHitTestable(true);
+  child->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
   child->SetTouchActionRegion(touch_action_region);
   CopyProperties(clipping_layer, child);
   child->SetOffsetToTransformParent(
@@ -1564,7 +1564,7 @@ TEST_F(LayerTreeImplTest,
   LayerImpl* child = AddLayer<LayerImpl>();
   child->SetBounds(gfx::Size(300, 300));
   child->SetDrawsContent(true);
-  child->SetHitTestable(true);
+  child->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
   child->SetTouchActionRegion(touch_action_region);
   CopyProperties(clipping_layer, child);
   child->SetOffsetToTransformParent(
@@ -1619,7 +1619,7 @@ TEST_F(LayerTreeImplTest, HitCheckingTouchHandlerOverlappingRegions) {
   // the layer is located.
   touch_layer->SetBounds(gfx::Size(50, 50));
   touch_layer->SetDrawsContent(true);
-  touch_layer->SetHitTestable(true);
+  touch_layer->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
   TouchActionRegion touch_action_region;
   touch_action_region.Union(TouchAction::kNone, gfx::Rect(0, 0, 50, 50));
   touch_layer->SetTouchActionRegion(touch_action_region);
@@ -1630,7 +1630,7 @@ TEST_F(LayerTreeImplTest, HitCheckingTouchHandlerOverlappingRegions) {
   // the layer is located.
   notouch_layer->SetBounds(gfx::Size(50, 50));
   notouch_layer->SetDrawsContent(true);
-  notouch_layer->SetHitTestable(true);
+  notouch_layer->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
   CopyProperties(root, notouch_layer);
   notouch_layer->SetOffsetToTransformParent(gfx::Vector2dF(0, 25));
 
@@ -1680,14 +1680,14 @@ TEST_F(LayerTreeImplTest, HitTestingTouchHandlerRegionsForLayerThatIsNotDrawn) {
   LayerImpl* root = root_layer();
   root->SetBounds(gfx::Size(100, 100));
   root->SetDrawsContent(true);
-  root->SetHitTestable(true);
+  root->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
 
   TouchActionRegion touch_action_region;
   touch_action_region.Union(TouchAction::kNone, gfx::Rect(10, 10, 30, 30));
   LayerImpl* test_layer = AddLayer<LayerImpl>();
   test_layer->SetBounds(gfx::Size(50, 50));
   test_layer->SetDrawsContent(false);
-  test_layer->SetHitTestable(false);
+  test_layer->SetHitTestOpaqueness(HitTestOpaqueness::kTransparent);
   test_layer->SetTouchActionRegion(touch_action_region);
   CopyProperties(root, test_layer);
 
@@ -2269,7 +2269,7 @@ TEST_F(LayerTreeImplTest, HitTestingCorrectLayerWheelListener) {
     translate_z.Translate3d(0, 0, 10);
     top->SetBounds(gfx::Size(100, 100));
     top->SetDrawsContent(true);
-    top->SetHitTestable(true);
+    top->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
     CopyProperties(root, top);
     CreateTransformNode(top).local = translate_z;
   }
@@ -2278,7 +2278,7 @@ TEST_F(LayerTreeImplTest, HitTestingCorrectLayerWheelListener) {
     translate_z.Translate3d(0, 0, 10);
     left_child->SetBounds(gfx::Size(100, 100));
     left_child->SetDrawsContent(true);
-    left_child->SetHitTestable(true);
+    left_child->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
     CopyProperties(top, left_child);
     CreateTransformNode(left_child).local = translate_z;
   }

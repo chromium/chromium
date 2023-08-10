@@ -11,6 +11,7 @@
 #include "base/check_op.h"
 #include "base/dcheck_is_on.h"
 #include "base/memory/ptr_util.h"
+#include "cc/input/hit_test_opaqueness.h"
 #include "cc/input/layer_selection_bound.h"
 #include "cc/paint/element_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -109,7 +110,6 @@ class PLATFORM_EXPORT PaintController {
   void SetWillForceNewChunk(bool force) {
     paint_chunker_.SetWillForceNewChunk(force);
   }
-  bool WillForceNewChunk() const { return paint_chunker_.WillForceNewChunk(); }
   void SetCurrentEffectivelyInvisible(bool invisible) {
     paint_chunker_.SetCurrentEffectivelyInvisible(invisible);
   }
@@ -118,10 +118,14 @@ class PLATFORM_EXPORT PaintController {
   }
   void EnsureChunk();
 
+  bool CurrentChunkIsNonEmptyAndTransparentToHitTest() const {
+    return paint_chunker_.CurrentChunkIsNonEmptyAndTransparentToHitTest();
+  }
   void RecordHitTestData(const DisplayItemClient&,
                          const gfx::Rect&,
                          TouchAction,
-                         bool);
+                         bool blocking_wheel,
+                         cc::HitTestOpaqueness);
 
   void RecordRegionCaptureData(const DisplayItemClient& client,
                                const RegionCaptureCropId& crop_id,

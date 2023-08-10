@@ -141,8 +141,10 @@ void ReplacedPainter::Paint(const PaintInfo& paint_info) {
       if (layout_replaced_.DrawsBackgroundOntoContentLayer()) {
         // If the background paints into the content layer, we can skip painting
         // the background but still need to paint the hit test rects.
-        BoxPainter(layout_replaced_)
-            .RecordHitTestData(local_paint_info, border_rect, layout_replaced_);
+        ObjectPainter(layout_replaced_)
+            .RecordHitTestData(local_paint_info,
+                               ToPixelSnappedRect(border_rect),
+                               layout_replaced_);
         BoxPainter(layout_replaced_)
             .RecordRegionCaptureData(local_paint_info, border_rect,
                                      layout_replaced_);
@@ -356,8 +358,9 @@ void ReplacedPainter::PaintBoxDecorationBackground(
         visual_rect, paint_rect, *background_client);
   }
 
-  BoxPainter(layout_replaced_)
-      .RecordHitTestData(paint_info, paint_rect, *background_client);
+  ObjectPainter(layout_replaced_)
+      .RecordHitTestData(paint_info, ToPixelSnappedRect(paint_rect),
+                         *background_client);
   BoxPainter(layout_replaced_)
       .RecordRegionCaptureData(paint_info, paint_rect, *background_client);
 

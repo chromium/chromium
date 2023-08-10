@@ -23,6 +23,7 @@ enum {
   kUsedColorSchemeRootScrollbars = 1 << 3,
   kFluentScrollbar = 1 << 4,
   kSparseObjectPaintProperties = 1 << 5,
+  kHitTestOpaqueness = 1 << 6,
 };
 
 class PaintTestConfigurations
@@ -31,7 +32,8 @@ class PaintTestConfigurations
       private ScopedSolidColorLayersForTest,
       private ScopedCompositeScrollAfterPaintForTest,
       private ScopedUsedColorSchemeRootScrollbarsForTest,
-      private ScopedSparseObjectPaintPropertiesForTest {
+      private ScopedSparseObjectPaintPropertiesForTest,
+      private ScopedHitTestOpaquenessForTest {
  public:
   PaintTestConfigurations()
       : ScopedPaintUnderInvalidationCheckingForTest(GetParam() &
@@ -42,7 +44,8 @@ class PaintTestConfigurations
         ScopedUsedColorSchemeRootScrollbarsForTest(
             GetParam() & kUsedColorSchemeRootScrollbars),
         ScopedSparseObjectPaintPropertiesForTest(GetParam() &
-                                                 kSparseObjectPaintProperties) {
+                                                 kSparseObjectPaintProperties),
+        ScopedHitTestOpaquenessForTest(GetParam() & kHitTestOpaqueness) {
     std::vector<base::test::FeatureRef> enabled_features = {};
     std::vector<base::test::FeatureRef> disabled_features = {};
     if (GetParam() & kFluentScrollbar) {
@@ -75,7 +78,7 @@ class PaintTestConfigurations
 //  }
 #define PAINT_TEST_SUITE_P_VALUES                   \
   0, kSolidColorLayers, kCompositeScrollAfterPaint, \
-      kUsedColorSchemeRootScrollbars, kFluentScrollbar
+      kUsedColorSchemeRootScrollbars, kFluentScrollbar, kHitTestOpaqueness
 
 #define INSTANTIATE_PAINT_TEST_SUITE_P(test_class) \
   INSTANTIATE_TEST_SUITE_P(All, test_class,        \

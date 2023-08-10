@@ -477,13 +477,6 @@ class CORE_EXPORT NGPhysicalFragment
       TextHeightType height_type,
       PhysicalRect* overflow) const;
 
-  // The allowed touch action is the union of the effective touch action
-  // (from style) and blocking touch event handlers.
-  TouchAction EffectiveAllowedTouchAction() const;
-
-  // Returns if this fragment is inside a non-passive wheel event handler.
-  bool InsideBlockingWheelEventHandler() const;
-
   // Helper functions to convert between |PhysicalRect| and |LogicalRect| of a
   // child.
   LogicalRect ConvertChildToLogical(const PhysicalRect& physical_rect) const;

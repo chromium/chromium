@@ -1250,7 +1250,10 @@ TEST_P(PaintArtifactCompositorTest, ScrollHitTestLayerOrder) {
   ASSERT_EQ(scroll.GetCompositorElementId(), scroll_node->element_id);
   EXPECT_EQ(scroll.GetCompositorElementId(),
             ScrollableLayerAt(0)->element_id());
-  EXPECT_TRUE(ScrollableLayerAt(0)->HitTestable());
+  EXPECT_EQ(RuntimeEnabledFeatures::HitTestOpaquenessEnabled()
+                ? cc::HitTestOpaqueness::kOpaque
+                : cc::HitTestOpaqueness::kMixed,
+            ScrollableLayerAt(0)->hit_test_opaqueness());
 
   // The second content layer should appear after the first.
   EXPECT_LT(LayerIndex(ScrollableLayerAt(0)),
@@ -1297,8 +1300,14 @@ TEST_P(PaintArtifactCompositorTest, NestedScrollableLayerOrder) {
   EXPECT_LT(LayerIndex(ScrollableLayerAt(1)),
             LayerIndex(NonScrollableLayerAt(0)));
 
-  EXPECT_TRUE(ScrollableLayerAt(0)->HitTestable());
-  EXPECT_TRUE(ScrollableLayerAt(1)->HitTestable());
+  auto expected_hit_test_opaqueness =
+      RuntimeEnabledFeatures::HitTestOpaquenessEnabled()
+          ? cc::HitTestOpaqueness::kOpaque
+          : cc::HitTestOpaqueness::kMixed;
+  EXPECT_EQ(expected_hit_test_opaqueness,
+            ScrollableLayerAt(0)->hit_test_opaqueness());
+  EXPECT_EQ(expected_hit_test_opaqueness,
+            ScrollableLayerAt(1)->hit_test_opaqueness());
 }
 
 TEST_P(PaintArtifactCompositorTest, AncestorScrollNodes) {
@@ -2912,7 +2921,7 @@ TEST_P(PaintArtifactCompositorTest, SynthesizedClipRotatedNotSupported) {
 
   EXPECT_EQ(SynthesizedClipLayerAt(0), clip_mask0);
   EXPECT_TRUE(clip_mask0->draws_content());
-  EXPECT_TRUE(clip_mask0->HitTestable());
+  EXPECT_EQ(cc::HitTestOpaqueness::kMixed, clip_mask0->hit_test_opaqueness());
   EXPECT_EQ(gfx::Size(306, 206), clip_mask0->bounds());
   EXPECT_EQ(gfx::Vector2dF(47, 47), clip_mask0->offset_to_transform_parent());
   // c1 should be applied in the clip mask layer.
@@ -3006,7 +3015,7 @@ TEST_P(PaintArtifactCompositorTest,
 
   EXPECT_EQ(SynthesizedClipLayerAt(0), clip_mask0);
   EXPECT_TRUE(clip_mask0->draws_content());
-  EXPECT_TRUE(clip_mask0->HitTestable());
+  EXPECT_EQ(cc::HitTestOpaqueness::kMixed, clip_mask0->hit_test_opaqueness());
   EXPECT_EQ(gfx::Size(304, 204), clip_mask0->bounds());
   EXPECT_EQ(gfx::Vector2dF(48, 48), clip_mask0->offset_to_transform_parent());
   EXPECT_EQ(c0_id, clip_mask0->clip_tree_index());

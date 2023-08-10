@@ -47,7 +47,8 @@ PendingLayer::PendingLayer(scoped_refptr<const PaintArtifact> artifact,
       is_solid_color_(first_chunk.background_color.is_solid_color),
       chunks_(std::move(artifact), first_chunk),
       property_tree_state_(
-          first_chunk.properties.GetPropertyTreeState().Unalias()) {
+          first_chunk.properties.GetPropertyTreeState().Unalias()),
+      hit_test_opaqueness_(first_chunk.hit_test_opaqueness) {
   DCHECK(!ChunkRequiresOwnLayer() || first_chunk.size() <= 1u);
   // Though text_known_to_be_on_opaque_background is only meaningful when
   // has_text is true, we expect text_known_to_be_on_opaque_background to be
@@ -121,6 +122,8 @@ std::unique_ptr<JSONObject> PendingLayer::ToJSON() const {
   result->SetArray("paint_chunks", chunks_.ToJSON());
   result->SetBoolean("draws_content", DrawsContent());
   result->SetBoolean("is_solid_color", is_solid_color_);
+  result->SetString("hit_test_opaqueness",
+                    cc::HitTestOpaquenessToString(hit_test_opaqueness_));
   return result;
 }
 
@@ -186,7 +189,8 @@ bool PendingLayer::CanMerge(
     gfx::RectF& merged_bounds,
     PropertyTreeState& merged_state,
     gfx::RectF& merged_rect_known_to_be_opaque,
-    bool& merged_text_known_to_be_on_opaque_background) const {
+    bool& merged_text_known_to_be_on_opaque_background,
+    cc::HitTestOpaqueness& merged_hit_test_opaqueness) const {
   absl::optional<PropertyTreeState> optional_merged_state =
       CanUpcastWith(guest, guest.GetPropertyTreeState(), is_composited_scroll);
   if (!optional_merged_state) {
@@ -208,6 +212,9 @@ bool PendingLayer::CanMerge(
       rect_known_to_be_opaque_ == bounds_) {
     merged_bounds = merged_rect_known_to_be_opaque = bounds_;
     merged_text_known_to_be_on_opaque_background = true;
+    merged_hit_test_opaqueness = cc::UnionHitTestOpaqueness(
+        gfx::ToRoundedRect(bounds_), hit_test_opaqueness_,
+        gfx::ToRoundedRect(guest.bounds_), guest.hit_test_opaqueness_);
     return true;
   }
 
@@ -274,6 +281,20 @@ bool PendingLayer::CanMerge(
     }
   }
 
+  cc::HitTestOpaqueness home_hit_test_opaqueness = hit_test_opaqueness_;
+  if (home_hit_test_opaqueness == cc::HitTestOpaqueness::kOpaque &&
+      !new_home_bounds.IsTight()) {
+    home_hit_test_opaqueness = cc::HitTestOpaqueness::kMixed;
+  }
+  cc::HitTestOpaqueness guest_hit_test_opaqueness = guest.hit_test_opaqueness_;
+  if (guest_hit_test_opaqueness == cc::HitTestOpaqueness::kOpaque &&
+      !new_guest_bounds.IsTight()) {
+    guest_hit_test_opaqueness = cc::HitTestOpaqueness::kMixed;
+  }
+  merged_hit_test_opaqueness = cc::UnionHitTestOpaqueness(
+      gfx::ToRoundedRect(new_home_bounds.Rect()), home_hit_test_opaqueness,
+      gfx::ToRoundedRect(new_guest_bounds.Rect()), guest_hit_test_opaqueness);
+
   // GeometryMapper::LocalToAncestorVisualRect can introduce floating-point
   // error to the bounds. Integral bounds are important for reducing
   // blurriness (see: PendingLayer::LayerOffset) so preserve that here.
@@ -289,10 +310,13 @@ bool PendingLayer::Merge(const PendingLayer& guest,
   PropertyTreeState merged_state = PropertyTreeState::Uninitialized();
   gfx::RectF merged_rect_known_to_be_opaque;
   bool merged_text_known_to_be_on_opaque_background = false;
+  cc::HitTestOpaqueness merged_hit_test_opaqueness =
+      cc::HitTestOpaqueness::kMixed;
 
   if (!CanMerge(guest, lcd_text_preference, is_composited_scroll, merged_bounds,
                 merged_state, merged_rect_known_to_be_opaque,
-                merged_text_known_to_be_on_opaque_background)) {
+                merged_text_known_to_be_on_opaque_background,
+                merged_hit_test_opaqueness)) {
     return false;
   }
 
@@ -307,6 +331,7 @@ bool PendingLayer::Merge(const PendingLayer& guest,
   is_solid_color_ = false;
   change_of_decomposited_transforms_ = std::max(
       ChangeOfDecompositedTransforms(), guest.ChangeOfDecompositedTransforms());
+  hit_test_opaqueness_ = merged_hit_test_opaqueness;
   return true;
 }
 
@@ -500,9 +525,14 @@ void PendingLayer::UpdateScrollHitTestLayer(PendingLayer* old_pending_layer) {
   } else {
     cc_layer_ = cc::Layer::Create();
     cc_layer_->SetElementId(scroll_node.GetCompositorElementId());
-    cc_layer_->SetHitTestable(true);
+    if (!RuntimeEnabledFeatures::HitTestOpaquenessEnabled()) {
+      cc_layer_->SetHitTestable(true);
+    }
   }
 
+  if (RuntimeEnabledFeatures::HitTestOpaquenessEnabled()) {
+    cc_layer_->SetHitTestOpaqueness(hit_test_opaqueness_);
+  }
   cc_layer_->SetOffsetToTransformParent(
       gfx::Vector2dF(scroll_node.ContainerRect().OffsetFromOrigin()));
   // TODO(pdr): The scroll layer's bounds are currently set to the clipped
@@ -570,7 +600,11 @@ void PendingLayer::UpdateSolidColorLayer(PendingLayer* old_pending_layer) {
   }
   cc_layer_->SetOffsetToTransformParent(LayerOffset());
   cc_layer_->SetBounds(LayerBounds());
-  cc_layer_->SetHitTestable(true);
+  if (!RuntimeEnabledFeatures::HitTestOpaquenessEnabled()) {
+    cc_layer_->SetHitTestOpaqueness(hit_test_opaqueness_);
+  } else {
+    cc_layer_->SetHitTestable(true);
+  }
   DCHECK(FirstPaintChunk().background_color.is_solid_color);
   cc_layer_->SetBackgroundColor(FirstPaintChunk().background_color.color);
   cc_layer_->SetIsDrawable(draws_content_);
