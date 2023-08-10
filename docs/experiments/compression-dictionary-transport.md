@@ -116,6 +116,12 @@ details):
   - Currently Chrome only supports `sha-256`. So if this field is set but it
     doesn't contain `sha-256`, Chrome doesn't register the response as a
     dictionary.
+- **type**
+  - Dictionary format.
+  - This field is optional and defaults to `raw`.
+  - Currently Chrome only supports `raw`. So if this field is set but it is not
+    `raw`, Chrome doesn't register the response as a dictionary. This logic of
+    checking **type** was [introduced at M118][type-option-cl].
 
 Note: These options fields are expected to change when we officially launch this
 feature, depending on the outcome of [the spec discussion][httpbis-draft].
@@ -181,3 +187,4 @@ There are a few demo sites that you can use to test the feature:
 [third-party-ot-dd]: https://docs.google.com/document/d/1xALH9W7rWmX0FpjudhDeS2TNTEOXuPn4Tlc9VmuPdHA/edit#heading=h.bvw2lcb2dczg
 [httpbis-draft]: https://datatracker.ietf.org/doc/draft-meenan-httpbis-compression-dictionary/
 [net-internals-sd]: chrome://net-internals/#sharedDictionary
+[type-option-cl]: https://chromiumdash.appspot.com/commit/169031f4af2cbdc529f48160f1df20b4ca8b6cc1
