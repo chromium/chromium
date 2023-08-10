@@ -21,7 +21,8 @@ import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route, Router, routes} from '../router.js';
 
 import {getTemplate} from './customize_pen_buttons_subpage.html.js';
-import {GraphicsTablet} from './input_device_settings_types.js';
+import {getInputDeviceSettingsProvider} from './input_device_mojo_interface_provider.js';
+import {ActionChoice, GraphicsTablet, InputDeviceSettingsProviderInterface} from './input_device_settings_types.js';
 
 const SettingsCustomizePenButtonsSubpageElementBase =
     RouteObserverMixin(I18nMixin(PolymerElement));
@@ -56,6 +57,9 @@ export class SettingsCustomizePenButtonsSubpageElement extends
 
   selectedTablet: GraphicsTablet;
   graphicsTablets: GraphicsTablet[];
+  private buttonActionList_: ActionChoice[];
+  private inputDeviceSettingsProvider_: InputDeviceSettingsProviderInterface =
+      getInputDeviceSettingsProvider();
 
   override currentRouteChanged(route: Route): void {
     // Does not apply to this page.
@@ -73,11 +77,19 @@ export class SettingsCustomizePenButtonsSubpageElement extends
    * Get the pen to display according to the graphicsTabletId in the url
    * query, initializing the page and pref with the graphics tablet data.
    */
-  private initializePen(): void {
-    const graphicsTabletId = this.getGraphicsTabletIdFromUrl();
+  private async initializePen(): Promise<void> {
+    const tabletId = this.getGraphicsTabletIdFromUrl();
+
+    // TODO(yyhyyh@): Remove the if condition after getActions functions is
+    // added in the mojo.
+    if (this.inputDeviceSettingsProvider_
+            .getActionsForGraphicsTabletButtonCustomization) {
+      this.buttonActionList_ =
+          await this.inputDeviceSettingsProvider_
+              .getActionsForGraphicsTabletButtonCustomization();
+    }
     const searchedGraphicsTablet = this.graphicsTablets.find(
-        (graphicsTablet: GraphicsTablet) =>
-            graphicsTablet.id === graphicsTabletId);
+        (graphicsTablet: GraphicsTablet) => graphicsTablet.id === tabletId);
     this.selectedTablet = castExists(searchedGraphicsTablet);
   }
 

@@ -142,6 +142,8 @@ interface FakeInputDeviceSettingsProviderInterface extends
   setMouseSettings(id: number, settings: MouseSettings): void;
   setTouchpadSettings(id: number, settings: TouchpadSettings): void;
   setPointingStickSettings(id: number, settings: PointingStickSettings): void;
+  getActionsForMouseButtonCustomization(): Promise<ActionChoice[]>;
+  getActionsForGraphicsTabletButtonCustomization(): Promise<ActionChoice[]>;
 }
 
 // Type alias to enable use of in-progress InputDeviceSettingsProvider api.

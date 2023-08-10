@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 import {SettingsCustomizePenButtonsSubpageElement} from 'chrome://os-settings/lazy_load.js';
-import {fakeGraphicsTablets, GraphicsTablet, Router, routes} from 'chrome://os-settings/os_settings.js';
-import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {fakeGraphicsTabletButtonActions, fakeGraphicsTablets, GraphicsTablet, Router, routes, setupFakeInputDeviceSettingsProvider} from 'chrome://os-settings/os_settings.js';
+import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 suite('<settings-customize-pen-buttons-subpage>', () => {
@@ -13,6 +13,7 @@ suite('<settings-customize-pen-buttons-subpage>', () => {
   setup(async () => {
     page = document.createElement('settings-customize-pen-buttons-subpage');
     page.graphicsTablets = fakeGraphicsTablets;
+    setupFakeInputDeviceSettingsProvider();
     // Set the current route with mouseId as search param and notify
     // the observer to update mouse settings.
     const url = new URLSearchParams(
@@ -40,5 +41,15 @@ suite('<settings-customize-pen-buttons-subpage>', () => {
     page.graphicsTablets = [fakeGraphicsTablets[1]!];
     await flushTasks();
     assertEquals(Router.getInstance().currentRoute, routes.DEVICE);
+  });
+
+  test('button action list fetched from provider', async () => {
+    const graphicsTablet: GraphicsTablet = page.selectedTablet;
+    assertTrue(!!graphicsTablet);
+    assertEquals(graphicsTablet.id, fakeGraphicsTablets[0]!.id);
+
+    const buttonActionList = page.get('buttonActionList_');
+    const expectedActionList = fakeGraphicsTabletButtonActions;
+    assertDeepEquals(buttonActionList, expectedActionList);
   });
 });

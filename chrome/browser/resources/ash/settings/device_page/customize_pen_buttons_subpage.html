@@ -16,7 +16,11 @@
 <div class="subsection">
   <template is="dom-repeat"
       items="[[selectedTablet.settings.penButtonRemappings]]"
-      as="remapping">
-    <div>[[remapping.name]]</div>
+      index-as="index">
+    <customize-button-row
+        button-remapping-list="[[selectedTablet.settings.penButtonRemappings]]"
+        remapping-index="[[index]]"
+        action-list$="[[buttonActionList_]]">
+    </customize-button-row>
   </template>
 </div>

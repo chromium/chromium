@@ -23,7 +23,7 @@ import {microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer
 import {cast} from '../assert_extras.js';
 
 import {getTemplate} from './customize_button_row.html.js';
-import {ButtonRemapping} from './input_device_settings_types.js';
+import {ActionChoice, ButtonRemapping} from './input_device_settings_types.js';
 
 const NO_REMAPPING_OPTION_LABEL = 'none';
 const KEY_COMBINATION_OPTION_LABEL = 'key combination';
@@ -68,6 +68,11 @@ export class CustomizeButtonRowElement extends CustomizeButtonRowElementBase {
         },
       },
 
+      actionList: {
+        type: Array,
+        observer: 'setUpButtonMapTargets_',
+      },
+
       removeTopBorder: {
         type: Boolean,
         reflectToAttribute: true,
@@ -102,6 +107,7 @@ export class CustomizeButtonRowElement extends CustomizeButtonRowElementBase {
 
   buttonRemappingList: ButtonRemapping[];
   remappingIndex: number;
+  actionList: ActionChoice[];
   private buttonRemapping_: ButtonRemapping;
   private buttonMapTargets_: DropdownMenuOptionList;
   private fakePref_: chrome.settingsPrivate.PrefObject;
@@ -112,26 +118,18 @@ export class CustomizeButtonRowElement extends CustomizeButtonRowElementBase {
    * Populate dropdown menu choices.
    */
   private setUpButtonMapTargets_(): void {
+    this.buttonMapTargets_ = [];
+    if (!this.actionList) {
+      return;
+    }
     // TODO(yyhyyh@): Get buttonMapTargets_ from provider in customization
     // pages, and pass it as a value instead of creating fake data here.
-    this.buttonMapTargets_ = [
-      {
-        value: '0',
-        name: 'Brightness Down',
-      },
-      {
-        value: '1',
-        name: 'Brightness Up',
-      },
-      {
-        value: '2',
-        name: 'Back',
-      },
-      {
-        value: '3',
-        name: 'Forward',
-      },
-    ];
+    for (const actionChoice of this.actionList) {
+      this.buttonMapTargets_.push({
+        value: actionChoice.actionId.toString(),
+        name: actionChoice.name,
+      });
+    }
   }
 
   /**
@@ -165,7 +163,8 @@ export class CustomizeButtonRowElement extends CustomizeButtonRowElementBase {
       });
 
       microTask.run(() => {
-        dropdown.value = option === undefined ? 'None' : originalAction;
+        dropdown.value =
+            option === undefined ? NO_REMAPPING_OPTION_LABEL : originalAction;
       });
     }
   }
