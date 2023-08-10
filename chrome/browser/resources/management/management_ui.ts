@@ -196,7 +196,6 @@ class ManagementUiElement extends ManagementUiElementBase {
       [ReportingType.USER]: 3,
       [ReportingType.USER_ACTIVITY]: 4,
       [ReportingType.DEVICE]: 5,
-      [ReportingType.LEGACY_TECH]: 6,
     };
 
     this.browserReportingInfo_ =
@@ -315,8 +314,6 @@ class ManagementUiElement extends ManagementUiElementBase {
         return 'management:timelapse';
       case DeviceReportingType.PERIPHERALS:
         return 'management:usb';
-      case DeviceReportingType.LEGACY_TECH:
-        return 'management:legacy-tech';
       default:
         return 'cr:computer';
     }
@@ -368,8 +365,6 @@ class ManagementUiElement extends ManagementUiElementBase {
         return 'management:account-circle';
       case ReportingType.USER_ACTIVITY:
         return 'management:public';
-      case ReportingType.LEGACY_TECH:
-        return 'management:legacy-tech';
       default:
         return 'cr:security';
     }
