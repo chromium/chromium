@@ -78,6 +78,7 @@ class HistoryClustersPageHandlerV2Test : public BrowserWithTestWindowTest {
   }
 
   void TearDown() override {
+    handler_.reset();
     web_contents_.reset();
     BrowserWithTestWindowTest::TearDown();
   }
