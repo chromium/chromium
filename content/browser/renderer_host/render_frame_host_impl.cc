@@ -6576,19 +6576,24 @@ void RenderFrameHostImpl::FullscreenStateChanged(
 }
 
 #if defined(USE_AURA)
-void RenderFrameHostImpl::Maximize() {
+bool RenderFrameHostImpl::CanUseWindowingControls() {
   if (!base::FeatureList::IsEnabled(
           blink::features::kDesktopPWAsAdditionalWindowingControls)) {
-    mojo::ReportBadMessage(
-        "window.maximize called without the feature enabled.");
-    return;
+    mojo::ReportBadMessage("API called without the feature enabled.");
+    return false;
   }
   if (!IsInPrimaryMainFrame()) {
-    mojo::ReportBadMessage(
-        "window.maximize called from a non-primary-main frame.");
-    return;
+    mojo::ReportBadMessage("API called from a non-primary-main frame.");
+    return false;
   }
   if (!IsActive()) {
+    return false;
+  }
+  return true;
+}
+
+void RenderFrameHostImpl::Maximize() {
+  if (!CanUseWindowingControls()) {
     return;
   }
 
@@ -6596,18 +6601,7 @@ void RenderFrameHostImpl::Maximize() {
 }
 
 void RenderFrameHostImpl::Minimize() {
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kDesktopPWAsAdditionalWindowingControls)) {
-    mojo::ReportBadMessage(
-        "window.minimize called without the feature enabled.");
-    return;
-  }
-  if (!IsInPrimaryMainFrame()) {
-    mojo::ReportBadMessage(
-        "window.minimize called from a non-primary-main frame.");
-    return;
-  }
-  if (!IsActive()) {
+  if (!CanUseWindowingControls()) {
     return;
   }
 
@@ -6615,18 +6609,7 @@ void RenderFrameHostImpl::Minimize() {
 }
 
 void RenderFrameHostImpl::Restore() {
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kDesktopPWAsAdditionalWindowingControls)) {
-    mojo::ReportBadMessage(
-        "window.restore called without the feature enabled.");
-    return;
-  }
-  if (!IsInPrimaryMainFrame()) {
-    mojo::ReportBadMessage(
-        "window.restore called from a non-primary-main frame.");
-    return;
-  }
-  if (!IsActive()) {
+  if (!CanUseWindowingControls()) {
     return;
   }
 
