@@ -26,6 +26,11 @@ class PlatformFunctions {
     return d3d12_create_device_proc_;
   }
 
+  using D3d12GetDebugInterfaceProc = PFN_D3D12_GET_DEBUG_INTERFACE;
+  D3d12GetDebugInterfaceProc d3d12_get_debug_interface_proc() const {
+    return d3d12_get_debug_interface_proc_;
+  }
+
   using DmlCreateDeviceProc = decltype(DMLCreateDevice)*;
   DmlCreateDeviceProc dml_create_device_proc() const {
     return dml_create_device_proc_;
@@ -41,6 +46,7 @@ class PlatformFunctions {
   // D3D12
   base::ScopedNativeLibrary d3d12_library_;
   D3d12CreateDeviceProc d3d12_create_device_proc_;
+  D3d12GetDebugInterfaceProc d3d12_get_debug_interface_proc_;
   // DirectML
   base::ScopedNativeLibrary dml_library_;
   DmlCreateDeviceProc dml_create_device_proc_;

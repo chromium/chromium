@@ -24,6 +24,14 @@ PlatformFunctions::PlatformFunctions() {
     return;
   }
 
+  D3d12GetDebugInterfaceProc d3d12_get_debug_interface_proc =
+      reinterpret_cast<D3d12GetDebugInterfaceProc>(
+          d3d12_library.GetFunctionPointer("D3D12GetDebugInterface"));
+  if (!d3d12_get_debug_interface_proc) {
+    DLOG(ERROR) << "Failed to get D3D12GetDebugInterface function.";
+    return;
+  }
+
   // DirectML
   base::ScopedNativeLibrary dml_library(
       std::move(base::LoadSystemLibrary(L"directml.dll")));
@@ -42,6 +50,7 @@ PlatformFunctions::PlatformFunctions() {
   // D3D12
   d3d12_library_ = std::move(d3d12_library);
   d3d12_create_device_proc_ = std::move(d3d12_create_device_proc);
+  d3d12_get_debug_interface_proc_ = std::move(d3d12_get_debug_interface_proc);
   // DirectML
   dml_library_ = std::move(dml_library);
   dml_create_device_proc_ = std::move(dml_create_device_proc);
@@ -58,7 +67,8 @@ PlatformFunctions* PlatformFunctions::GetInstance() {
 }
 
 bool PlatformFunctions::AllFunctionsLoaded() {
-  return d3d12_create_device_proc_ && dml_create_device_proc_;
+  return d3d12_create_device_proc_ && dml_create_device_proc_ &&
+         d3d12_get_debug_interface_proc_;
 }
 
 }  // namespace webnn::dml

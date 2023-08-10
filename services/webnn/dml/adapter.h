@@ -46,6 +46,12 @@ class Adapter final : public base::RefCounted<Adapter> {
 
   CommandQueue* command_queue() const { return command_queue_.get(); }
 
+  // Enable the debug layer (requires the Graphics Tools "optional feature").
+  // Must be called prior to Adapter::GetInstance() since the D3D12 device must
+  // be created after the debug layer is enabled.
+  // TODO(crbug.com/1273291): move this once adapter enumeration is implemented.
+  static void EnableDebugLayerForTesting();
+
  private:
   FRIEND_TEST_ALL_PREFIXES(WebNNAdapterTest, CreateAdapterFromAngle);
   FRIEND_TEST_ALL_PREFIXES(WebNNAdapterTest, GetInstance);
@@ -63,6 +69,8 @@ class Adapter final : public base::RefCounted<Adapter> {
   ComPtr<ID3D12Device> d3d12_device_;
   ComPtr<IDMLDevice> dml_device_;
   scoped_refptr<CommandQueue> command_queue_;
+
+  static bool is_debug_layer_enabled_;
 
   static Adapter* instance_;
 };

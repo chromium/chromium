@@ -28,6 +28,7 @@ class WebNNGraphBuilderTest : public TestBase {
 void WebNNGraphBuilderTest::SetUp() {
   SKIP_TEST_IF(!UseGPUInTests());
   ASSERT_TRUE(InitializeGLDisplay());
+  Adapter::EnableDebugLayerForTesting();
   scoped_refptr<Adapter> adapter = Adapter::GetInstance();
   ASSERT_NE(adapter.get(), nullptr);
   dml_device_ = adapter->dml_device();

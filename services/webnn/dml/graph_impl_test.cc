@@ -34,6 +34,7 @@ class WebNNGraphDMLImplTest : public TestBase {
 void WebNNGraphDMLImplTest::SetUp() {
   SKIP_TEST_IF(!UseGPUInTests());
   ASSERT_TRUE(InitializeGLDisplay());
+  Adapter::EnableDebugLayerForTesting();
   adapter_ = Adapter::GetInstance();
   ASSERT_NE(adapter_.get(), nullptr);
   IDMLDevice* dml_device = adapter_->dml_device();
