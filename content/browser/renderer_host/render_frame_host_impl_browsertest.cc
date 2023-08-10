@@ -5897,20 +5897,20 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
             root_frame_host()->GetWebExposedIsolationLevel());
 }
 
-namespace {
-const char kAppHost[] = "app.com";
-const char kNonAppHost[] = "non-app.com";
-}  // namespace
-
-class IsolatedWebAppContentBrowserClient
+class IsolatedApplicationContentBrowserClient
     : public ContentBrowserTestContentBrowserClient {
  public:
-  IsolatedWebAppContentBrowserClient() = default;
+  explicit IsolatedApplicationContentBrowserClient(
+      const std::string& isolated_application_host)
+      : isolated_application_host_(isolated_application_host) {}
 
   bool ShouldUrlUseApplicationIsolationLevel(BrowserContext* browser_context,
                                              const GURL& url) override {
-    return url.host() == kAppHost;
+    return url.host() == isolated_application_host_;
   }
+
+ private:
+  std::string isolated_application_host_;
 };
 
 class RenderFrameHostImplBrowserTestWithRestrictedApis
@@ -5935,54 +5935,137 @@ class RenderFrameHostImplBrowserTestWithRestrictedApis
  protected:
   void SetUpOnMainThread() override {
     RenderFrameHostImplBrowserTest::SetUpOnMainThread();
+
     mock_cert_verifier_.mock_cert_verifier()->set_default_result(net::OK);
     https_server()->ServeFilesFromSourceDirectory(GetTestDataFilePath());
     net::test_server::RegisterDefaultHandlers(https_server());
     ASSERT_TRUE(https_server()->Start());
-    test_client_ = std::make_unique<IsolatedWebAppContentBrowserClient>();
-  }
-
-  void TearDownOnMainThread() override {
-    RenderFrameHostImplBrowserTest::TearDownOnMainThread();
-    test_client_.reset();
   }
 
  private:
-  std::unique_ptr<IsolatedWebAppContentBrowserClient> test_client_;
   ContentMockCertVerifier mock_cert_verifier_;
 };
 
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTestWithRestrictedApis,
                        GetWebExposedIsolationLevel) {
+  std::string app_host = "app.com";
+  IsolatedApplicationContentBrowserClient client(app_host);
+
   // Not isolated:
+  std::string non_app_host = "nonapp.com";
   TestNavigationObserver navigation_observer(web_contents());
-  shell()->LoadURL(https_server()->GetURL(kNonAppHost, "/empty.html"));
+  shell()->LoadURL(https_server()->GetURL(non_app_host, "/empty.html"));
   navigation_observer.Wait();
 
   EXPECT_TRUE(navigation_observer.last_navigation_succeeded());
   EXPECT_EQ(WebExposedIsolationLevel::kNotIsolated,
+            root_frame_host()->GetProcess()->GetWebExposedIsolationLevel());
+  EXPECT_EQ(WebExposedIsolationLevel::kNotIsolated,
             root_frame_host()->GetWebExposedIsolationLevel());
+  EXPECT_EQ(false, EvalJs(root_frame_host(), "self.crossOriginIsolated"));
 
   // Cross-Origin Isolated:
-  EXPECT_TRUE(NavigateToURL(
-      shell(),
-      https_server()->GetURL(kNonAppHost,
+  GURL non_app_url =
+      https_server()->GetURL(non_app_host,
                              "/set-header?"
                              "Cross-Origin-Opener-Policy: same-origin&"
-                             "Cross-Origin-Embedder-Policy: require-corp")));
+                             "Cross-Origin-Embedder-Policy: require-corp&"
+                             "Cross-Origin-Resource-Policy: cross-origin");
+  EXPECT_TRUE(NavigateToURL(shell(), non_app_url));
   EXPECT_EQ(WebExposedIsolationLevel::kMaybeIsolated,
+            root_frame_host()->GetProcess()->GetWebExposedIsolationLevel());
+  EXPECT_EQ(WebExposedIsolationLevel::kIsolated,
             root_frame_host()->GetWebExposedIsolationLevel());
+  EXPECT_EQ(true, EvalJs(root_frame_host(), "self.crossOriginIsolated"));
+
+  // Permission delegated Cross-Origin Isolated child frame:
+  std::string create_iframe = R"(
+    new Promise(resolve => {
+      const iframe = document.createElement('iframe');
+      iframe.src = $1;
+      iframe.allow = $2;
+      iframe.addEventListener('load', () => resolve(true));
+      document.body.appendChild(iframe);
+    });
+  )";
+  EXPECT_TRUE(ExecJs(shell(), JsReplace(create_iframe, non_app_url, "")));
+  RenderFrameHost* non_app_child_frame = ChildFrameAt(root_frame_host(), 0);
+  EXPECT_EQ(WebExposedIsolationLevel::kMaybeIsolated,
+            non_app_child_frame->GetProcess()->GetWebExposedIsolationLevel());
+  EXPECT_EQ(WebExposedIsolationLevel::kIsolated,
+            non_app_child_frame->GetWebExposedIsolationLevel());
+  EXPECT_EQ(true, EvalJs(non_app_child_frame, "self.crossOriginIsolated"));
+
+  // Non permission delegated Cross-Origin Isolated child frame:
+  EXPECT_TRUE(ExecJs(shell(), JsReplace(create_iframe, non_app_url,
+                                        "cross-origin-isolated 'none'")));
+  non_app_child_frame = ChildFrameAt(root_frame_host(), 1);
+  EXPECT_EQ(WebExposedIsolationLevel::kMaybeIsolated,
+            non_app_child_frame->GetProcess()->GetWebExposedIsolationLevel());
+  EXPECT_EQ(WebExposedIsolationLevel::kNotIsolated,
+            non_app_child_frame->GetWebExposedIsolationLevel());
+  EXPECT_EQ(false, EvalJs(non_app_child_frame, "self.crossOriginIsolated"));
 
   // Isolated Application:
+  GURL app_url =
+      https_server()->GetURL(app_host,
+                             "/set-header?"
+                             "Cross-Origin-Opener-Policy: same-origin&"
+                             "Cross-Origin-Embedder-Policy: require-corp&"
+                             "Cross-Origin-Resource-Policy: same-origin");
   Shell* app_shell = shell()->CreateNewWindow(
       web_contents()->GetController().GetBrowserContext(), GURL(),
       /*site_instance=*/nullptr, gfx::Size());
-  EXPECT_TRUE(NavigateToURL(app_shell,
-                            https_server()->GetURL(kAppHost, "/empty.html")));
+  EXPECT_TRUE(NavigateToURL(app_shell, app_url));
+  RenderFrameHost* app_frame = app_shell->web_contents()->GetPrimaryMainFrame();
   EXPECT_EQ(WebExposedIsolationLevel::kMaybeIsolatedApplication,
-            app_shell->web_contents()
-                ->GetPrimaryMainFrame()
-                ->GetWebExposedIsolationLevel());
+            app_frame->GetProcess()->GetWebExposedIsolationLevel());
+  EXPECT_EQ(WebExposedIsolationLevel::kIsolatedApplication,
+            app_frame->GetWebExposedIsolationLevel());
+  EXPECT_EQ(true, EvalJs(app_frame, "self.crossOriginIsolated"));
+
+  // Permission delegated same-origin Isolated Application child frame:
+  EXPECT_TRUE(ExecJs(
+      app_shell, JsReplace(create_iframe, app_url, "cross-origin-isolated")));
+  RenderFrameHost* app_child_frame = ChildFrameAt(app_frame, 0);
+  EXPECT_EQ(WebExposedIsolationLevel::kMaybeIsolatedApplication,
+            app_child_frame->GetProcess()->GetWebExposedIsolationLevel());
+  EXPECT_EQ(WebExposedIsolationLevel::kIsolatedApplication,
+            app_child_frame->GetWebExposedIsolationLevel());
+  EXPECT_EQ(true, EvalJs(app_child_frame, "self.crossOriginIsolated"));
+
+  // Non permission delegated same-origin Isolated Application child frame:
+  EXPECT_TRUE(ExecJs(app_shell, JsReplace(create_iframe, app_url,
+                                          "cross-origin-isolated 'none'")));
+  app_child_frame = ChildFrameAt(app_frame, 1);
+  EXPECT_EQ(WebExposedIsolationLevel::kMaybeIsolatedApplication,
+            app_child_frame->GetProcess()->GetWebExposedIsolationLevel());
+  EXPECT_EQ(WebExposedIsolationLevel::kNotIsolated,
+            app_child_frame->GetWebExposedIsolationLevel());
+  EXPECT_EQ(false, EvalJs(app_child_frame, "self.crossOriginIsolated"));
+
+  // Permission delegated cross-origin Isolated Application child frame:
+  // The frame's WebExposedIsolationLevel isn't "isolated application" despite
+  // being delegated the "cross-origin-isolated" permission because that
+  // isolation level can only be delegated to same-origin child frames.
+  EXPECT_TRUE(ExecJs(app_shell, JsReplace(create_iframe, non_app_url,
+                                          "cross-origin-isolated")));
+  non_app_child_frame = ChildFrameAt(app_frame, 2);
+  EXPECT_EQ(WebExposedIsolationLevel::kMaybeIsolated,
+            non_app_child_frame->GetProcess()->GetWebExposedIsolationLevel());
+  EXPECT_EQ(WebExposedIsolationLevel::kIsolated,
+            non_app_child_frame->GetWebExposedIsolationLevel());
+  EXPECT_EQ(true, EvalJs(non_app_child_frame, "self.crossOriginIsolated"));
+
+  // Non permission delegated cross-origin Isolated Application child frame:
+  EXPECT_TRUE(ExecJs(app_shell, JsReplace(create_iframe, non_app_url,
+                                          "cross-origin-isolated 'none'")));
+  non_app_child_frame = ChildFrameAt(app_frame, 3);
+  EXPECT_EQ(WebExposedIsolationLevel::kMaybeIsolated,
+            non_app_child_frame->GetProcess()->GetWebExposedIsolationLevel());
+  EXPECT_EQ(WebExposedIsolationLevel::kNotIsolated,
+            non_app_child_frame->GetWebExposedIsolationLevel());
+  EXPECT_EQ(false, EvalJs(non_app_child_frame, "self.crossOriginIsolated"));
 }
 
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,

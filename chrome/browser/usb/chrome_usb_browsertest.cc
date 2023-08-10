@@ -77,6 +77,7 @@ using ::content::JsReplace;
 using ::extensions::Extension;
 using ::testing::Return;
 
+constexpr uint8_t kUsbPrinterClass = 7;
 constexpr char kNonAppHost[] = "nonapp.com";
 constexpr char kNonAppHost2[] = "nonapp2.com";
 constexpr char OpenAndClaimDeviceScript[] = R"((async () => {
@@ -526,7 +527,8 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUsbBrowserTest, ClaimInterface) {
                                            *smart_card_device_info);
 
   const uint16_t kPrinterProductId = 0x5678;
-  auto fake_printer_device_info = CreateUsbDevice(0x7, kPrinterProductId);
+  auto fake_printer_device_info =
+      CreateUsbDevice(kUsbPrinterClass, kPrinterProductId);
   auto printer_device_info =
       device_manager().AddDevice(std::move(fake_printer_device_info));
   chooser_context()->GrantDevicePermission(
@@ -557,9 +559,10 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUsbBrowserTest, ClaimInterface) {
 
   EXPECT_EQ("Success", EvalJs(delegated_non_app_iframe,
                               JsReplace(kClaimInterface, kPrinterProductId)));
-  // TODO(b/280497768): This should fail with a "protected class" error.
-  EXPECT_EQ("Success", EvalJs(delegated_non_app_iframe,
-                              JsReplace(kClaimInterface, kSmartCardProductId)));
+  EXPECT_THAT(
+      EvalJs(delegated_non_app_iframe,
+             JsReplace(kClaimInterface, kSmartCardProductId)),
+      FailedWithSubstr("requested interface implements a protected class"));
 }
 
 class IsolatedWebAppPermissionsPolicyBrowserTest
@@ -664,7 +667,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppPermissionsPolicyBrowserTest,
   web_app::CreateIframe(app_frame, "child", non_app_url, permissions_policy);
   auto* iframe = ChildFrameAt(app_frame, 0);
 
-  auto fake_device_info = CreateUsbDevice(device::mojom::kUsbSmartCardClass);
+  auto fake_device_info = CreateUsbDevice(kUsbPrinterClass);
   auto device_info = device_manager().AddDevice(std::move(fake_device_info));
   chooser_context()->GrantDevicePermission(app_frame->GetLastCommittedOrigin(),
                                            *device_info);
@@ -733,7 +736,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppPermissionsPolicyBrowserTest,
   web_app::CreateIframe(app_frame, "child", non_app_url, permissions_policy);
   auto* iframe = ChildFrameAt(app_frame, 0);
 
-  auto fake_device_info = CreateUsbDevice(device::mojom::kUsbSmartCardClass);
+  auto fake_device_info = CreateUsbDevice(kUsbPrinterClass);
   auto device_info = device_manager().AddDevice(std::move(fake_device_info));
   chooser_context()->GrantDevicePermission(app_frame->GetLastCommittedOrigin(),
                                            *device_info);
@@ -842,7 +845,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppPermissionsPolicyBrowserTest,
   web_app::CreateIframe(app_frame, "child", app_url, permissions_policy);
   auto* iframe = ChildFrameAt(app_frame, 0);
 
-  auto fake_device_info = CreateUsbDevice(device::mojom::kUsbSmartCardClass);
+  auto fake_device_info = CreateUsbDevice(kUsbPrinterClass);
   auto device_info = device_manager().AddDevice(std::move(fake_device_info));
   chooser_context()->GrantDevicePermission(app_frame->GetLastCommittedOrigin(),
                                            *device_info);

@@ -3379,14 +3379,16 @@ void RenderProcessHostImpl::NotifyRendererOfLockedStateUpdate() {
     return;
 
   GetRendererInterface()->SetIsCrossOriginIsolated(
-      process_lock.GetWebExposedIsolationInfo().is_isolated());
+      process_lock.GetWebExposedIsolationLevel() >=
+      WebExposedIsolationLevel::kMaybeIsolated);
 
   bool is_isolated_context_allowed_by_embedder =
       GetContentClient()->browser()->IsIsolatedContextAllowedForUrl(
           GetBrowserContext(), process_lock.lock_url());
 
   GetRendererInterface()->SetIsIsolatedContext(
-      process_lock.GetWebExposedIsolationInfo().is_isolated_application() ||
+      process_lock.GetWebExposedIsolationLevel() >=
+          WebExposedIsolationLevel::kMaybeIsolatedApplication ||
       is_isolated_context_allowed_by_embedder);
 
   if (!process_lock.IsASiteOrOrigin())
@@ -5182,17 +5184,7 @@ size_t RenderProcessHost::GetActiveViewCount() {
 }
 
 WebExposedIsolationLevel RenderProcessHost::GetWebExposedIsolationLevel() {
-  WebExposedIsolationInfo info = GetProcessLock().GetWebExposedIsolationInfo();
-  if (info.is_isolated_application()) {
-    // TODO(crbug.com/1159832): Check the document policy once it's available to
-    // find out if this process is actually isolated.
-    return WebExposedIsolationLevel::kMaybeIsolatedApplication;
-  } else if (info.is_isolated()) {
-    // TODO(crbug.com/1159832): Check the document policy once it's available to
-    // find out if this process is actually isolated.
-    return WebExposedIsolationLevel::kMaybeIsolated;
-  }
-  return WebExposedIsolationLevel::kNotIsolated;
+  return GetProcessLock().GetWebExposedIsolationLevel();
 }
 
 void RenderProcessHost::PostTaskWhenProcessIsReady(base::OnceClosure task) {

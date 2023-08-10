@@ -674,9 +674,28 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
   // any RenderViewHosts that are swapped out.
   size_t GetActiveViewCount();
 
-  // Returns the isolation level of the RenderProcessHost's ProcessLock. We
-  // do not return the ProcessLock or WebExposedIsolationInfo because those
-  // are not exposed outside of //content for now.
+  // Returns the cross-origin isolation mode used by content in this process.
+  //
+  // This returns the kMaybe* enum values because it can't take Permissions
+  // Policy into account. A frame's isolation capability may be kNotIsolated
+  // even if it is running in a kMaybeIsolated process if the
+  // "cross-origin-isolated" feature was not delegated to the frame. Because
+  // of this, not all frames or workers in the same process will share the same
+  // isolation capability.
+  //
+  // Additionally, unlike WebExposedIsolationInfo, this is not guaranteed to be
+  // the same for all processes in a BrowsingInstance; content that is
+  // cross-origin to a kMaybeIsolatedApplication main frame will return
+  // kMaybeIsolated, as the application isolation level cannot be inherited
+  // cross-origin.
+  //
+  // RenderFrameHost::GetWebExposedIsolationLevel() should typically be used
+  // instead of this function if running in the context a frame so that
+  // Permissions Policy can be taken into account. This function should be used
+  // in contexts that don't have an associated frame like shared/service
+  // workers. Once Permissions Policy applies to workers, a worker-specific
+  // API to access isolation capability may need to be introduced which should
+  // be used instead of this.
   WebExposedIsolationLevel GetWebExposedIsolationLevel();
 
   // Posts |task|, if this RenderProcessHost is ready or when it becomes ready

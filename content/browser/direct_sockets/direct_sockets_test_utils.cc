@@ -172,15 +172,18 @@ absl::optional<blink::ParsedPermissionsPolicy>
 IsolatedWebAppContentBrowserClient::GetPermissionsPolicyForIsolatedWebApp(
     content::BrowserContext* browser_context,
     const url::Origin& app_origin) {
-  blink::ParsedPermissionsPolicy out;
-  blink::ParsedPermissionsPolicyDeclaration decl(
-      blink::mojom::PermissionsPolicyFeature::kDirectSockets,
-      /*allowed_origins=*/
-      {*blink::OriginWithPossibleWildcards::FromOrigin(app_origin)},
+  blink::ParsedPermissionsPolicyDeclaration coi_decl(
+      blink::mojom::PermissionsPolicyFeature::kCrossOriginIsolated,
+      /*allowed_origins=*/{},
       /*self_if_matches=*/absl::nullopt,
+      /*matches_all_origins=*/true, /*matches_opaque_src=*/false);
+
+  blink::ParsedPermissionsPolicyDeclaration sockets_decl(
+      blink::mojom::PermissionsPolicyFeature::kDirectSockets,
+      /*allowed_origins=*/{},
+      /*self_if_matches=*/app_origin,
       /*matches_all_origins=*/false, /*matches_opaque_src=*/false);
-  out.push_back(decl);
-  return out;
+  return {{coi_decl, sockets_decl}};
 }
 
 // misc

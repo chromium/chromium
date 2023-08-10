@@ -46,6 +46,7 @@ using device::mojom::SmartCardSuccess;
 using device::mojom::SmartCardTransaction;
 using ::testing::_;
 using testing::Exactly;
+using testing::HasSubstr;
 using testing::InSequence;
 using testing::StrictMock;
 
@@ -298,14 +299,17 @@ absl::optional<blink::ParsedPermissionsPolicy>
 SmartCardTestContentBrowserClient::GetPermissionsPolicyForIsolatedWebApp(
     content::BrowserContext* browser_context,
     const url::Origin& app_origin) {
-  blink::ParsedPermissionsPolicy out;
-  blink::ParsedPermissionsPolicyDeclaration decl(
+  blink::ParsedPermissionsPolicyDeclaration coi_decl(
+      blink::mojom::PermissionsPolicyFeature::kCrossOriginIsolated,
+      /*allowed_origins=*/{},
+      /*self_if_matches=*/absl::nullopt, /*matches_all_origins=*/true,
+      /*matches_opaque_src=*/false);
+  blink::ParsedPermissionsPolicyDeclaration smart_card_decl(
       blink::mojom::PermissionsPolicyFeature::kSmartCard,
       /*allowed_origins=*/{},
       /*self_if_matches=*/app_origin, /*matches_all_origins=*/false,
       /*matches_opaque_src=*/false);
-  out.push_back(decl);
-  return out;
+  return {{coi_decl, smart_card_decl}};
 }
 
 mojo::PendingRemote<device::mojom::SmartCardContextFactory>
@@ -1329,6 +1333,36 @@ IN_PROC_BROWSER_TEST_F(SmartCardTest, ContextDiesConnectionStays) {
       let responseString = new Uint8Array(response).toString();
       return `response: ${responseString}`;
     })())"));
+}
+
+// A ContentBrowserClient that grants Isolated Web Apps the "smart-card"
+// permission, but not "cross-origin-isolated", which should result in Smart
+// Cards being disabled.
+class NoCoiPermissionSmartCardTestContentBrowserClient
+    : public SmartCardTestContentBrowserClient {
+ public:
+  absl::optional<blink::ParsedPermissionsPolicy>
+  GetPermissionsPolicyForIsolatedWebApp(
+      content::BrowserContext* browser_context,
+      const url::Origin& app_origin) override {
+    return {{blink::ParsedPermissionsPolicyDeclaration(
+        blink::mojom::PermissionsPolicyFeature::kSmartCard,
+        /*allowed_origins=*/{},
+        /*self_if_matches=*/app_origin,
+        /*matches_all_origins=*/false, /*matches_opaque_src=*/false)}};
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(SmartCardTest, NoCoiPermission) {
+  NoCoiPermissionSmartCardTestContentBrowserClient client;
+  client.SetSmartCardDelegate(std::make_unique<FakeSmartCardDelegate>());
+
+  ASSERT_TRUE(NavigateToURL(shell(), GetIsolatedContextUrl()));
+
+  EXPECT_EQ(false, EvalJs(shell(), "self.crossOriginIsolated"));
+  EXPECT_THAT(
+      EvalJs(shell(), "navigator.smartCard.establishContext()").error,
+      HasSubstr("Frame is not sufficiently isolated to use smart cards."));
 }
 
 }  // namespace content
