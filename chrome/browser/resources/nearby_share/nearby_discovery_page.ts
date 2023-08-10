@@ -360,7 +360,12 @@ export class NearbyDiscoveryPageElement extends NearbyDiscoveryPageElementBase {
    * @param index in |shareTargets_| and also the dom-repeat list.
    */
   private focusShareTarget_(index: number) {
-    const container = this.shadowRoot!.querySelector('.device-list-container');
+    let container;
+    if (this.isSelfShareEnabled) {
+      container = this.shadowRoot!.querySelector('#deviceLists');
+    } else {
+      container = this.shadowRoot!.querySelector('.device-list-container');
+    }
     assert(container);
     const nearbyDeviceElements = container.querySelectorAll('nearby-device');
 
@@ -390,7 +395,7 @@ export class NearbyDiscoveryPageElement extends NearbyDiscoveryPageElementBase {
     }
 
     this.selectedShareTarget = shareTarget;
-    const selector = this.shadowRoot!.querySelector<ArraySelector>('#selector');
+    const selector = this.shadowRoot!.querySelector<ArraySelector>('.selector');
     assert(selector);
     selector.select(this.selectedShareTarget);
   }
@@ -404,38 +409,40 @@ export class NearbyDiscoveryPageElement extends NearbyDiscoveryPageElementBase {
   }
 
   private onShareTargetDiscovered_(shareTarget: ShareTarget) {
-    const shareTargetId = tokenToString(shareTarget.id);
     assert(this.shareTargetMap_);
-    if (!this.shareTargetMap_.has(shareTargetId)) {
-      if (this.isSelfShareEnabled) {
-        if (shareTarget.forSelfShare) {
-          this.push('selfShareTargets_', shareTarget);
-        } else {
-          this.push('nonSelfShareTargets_', shareTarget);
-        }
-        this.shareTargets_ =
-            this.selfShareTargets_.concat(this.nonSelfShareTargets_);
+    if (this.isSelfShareEnabled) {
+      if (shareTarget.forSelfShare) {
+        this.updateShareTargetList_(
+            this.selfShareTargets_, 'selfShareTargets_', shareTarget);
       } else {
-        this.push('shareTargets_', shareTarget);
+        this.updateShareTargetList_(
+            this.nonSelfShareTargets_, 'nonSelfShareTargets_', shareTarget);
       }
-
+      this.shareTargets_ =
+          this.selfShareTargets_.concat(this.nonSelfShareTargets_);
     } else {
-      const index = this.shareTargets_.findIndex(
+      this.updateShareTargetList_(
+          this.shareTargets_, 'shareTargets_', shareTarget);
+    }
+    this.shareTargetMap_.set(tokenToString(shareTarget.id), shareTarget);
+  }
+
+  private updateShareTargetList_(
+      shareTargetList: ShareTarget[], shareTargetListString: string,
+      shareTarget: ShareTarget) {
+    assert(this.shareTargetMap_);
+    if (this.shareTargetMap_.has(tokenToString(shareTarget.id))) {
+      const index = shareTargetList.findIndex(
           (target) => tokensEqual(target.id, shareTarget.id));
       assert(index !== -1);
-      this.splice('shareTargets_', index, 1, shareTarget);
+      this.splice(shareTargetListString, index, 1, shareTarget);
       this.updateSelectedShareTarget_(shareTarget.id, shareTarget);
+    } else {
+      this.push(shareTargetListString, shareTarget);
     }
-    this.shareTargetMap_.set(shareTargetId, shareTarget);
   }
 
   private onShareTargetLost_(shareTarget: ShareTarget) {
-    // Remove target from `shareTargets_`.
-    const shareTargetsIdx = this.shareTargets_.findIndex(
-        (target) => tokensEqual(target.id, shareTarget.id));
-    assert(shareTargetsIdx !== -1);
-    this.splice('shareTargets_', shareTargetsIdx, 1);
-
     if (this.isSelfShareEnabled) {
       if (shareTarget.forSelfShare) {
         // Remove target from `selfShareTargets_`.
@@ -450,6 +457,16 @@ export class NearbyDiscoveryPageElement extends NearbyDiscoveryPageElementBase {
         assert(index !== -1);
         this.splice('nonSelfShareTargets_', index, 1);
       }
+
+      this.set(
+          'shareTargets_',
+          this.selfShareTargets_.concat(this.nonSelfShareTargets_));
+    } else {
+      // Remove target from `shareTargets_`.
+      const shareTargetsIdx = this.shareTargets_.findIndex(
+          (target) => tokensEqual(target.id, shareTarget.id));
+      assert(shareTargetsIdx !== -1);
+      this.splice('shareTargets_', shareTargetsIdx, 1);
     }
 
     assert(this.shareTargetMap_);
@@ -490,7 +507,7 @@ export class NearbyDiscoveryPageElement extends NearbyDiscoveryPageElementBase {
       return;
     }
 
-    const selector = this.shadowRoot!.querySelector<ArraySelector>('#selector');
+    const selector = this.shadowRoot!.querySelector<ArraySelector>('.selector');
     assert(selector);
     this.selectedShareTarget = selector.selectedItem as (ShareTarget | null);
   }
@@ -512,7 +529,7 @@ export class NearbyDiscoveryPageElement extends NearbyDiscoveryPageElementBase {
         tokensEqual(this.selectedShareTarget.id, id)) {
       this.selectedShareTarget = shareTarget;
       const selector =
-          this.shadowRoot!.querySelector<ArraySelector>('#selector');
+          this.shadowRoot!.querySelector<ArraySelector>('.selector');
       assert(selector);
       selector.select(this.selectedShareTarget);
     }
@@ -526,10 +543,28 @@ export class NearbyDiscoveryPageElement extends NearbyDiscoveryPageElementBase {
    * so users will not navigate to by tab.
    */
   private getTabIndexOfShareTarget_(shareTarget: ShareTarget|null): string {
-    if ((!this.selectedShareTarget && shareTarget === this.shareTargets_[0]) ||
-        (shareTarget === this.selectedShareTarget)) {
+    if (this.selectedShareTarget && shareTarget === this.selectedShareTarget) {
       return '0';
     }
+
+    if (this.isSelfShareEnabled) {
+      if (this.selfShareTargets_.length !== 0 &&
+          shareTarget === this.selfShareTargets_[0]) {
+        return '0';
+      }
+
+      if (this.nonSelfShareTargets_.length !== 0 &&
+          shareTarget === this.nonSelfShareTargets_[0]) {
+        return '0';
+      }
+
+      return '-1';
+    }
+
+    if (shareTarget === this.shareTargets_[0]) {
+      return '0';
+    }
+
     return '-1';
   }
 
@@ -598,6 +633,13 @@ export class NearbyDiscoveryPageElement extends NearbyDiscoveryPageElementBase {
   private getAnimationUrl_(): string {
     return this.isDarkModeActive_ ? PULSE_ANIMATION_URL_DARK :
                                     PULSE_ANIMATION_URL_LIGHT;
+  }
+
+  /**
+   * Returns a boolean indicating whether to show Self Share UI.
+   */
+  private showSelfShareUi_(): boolean {
+    return this.isSelfShareEnabled;
   }
 }
 
