@@ -70,14 +70,24 @@ std::string GetFirstSegmentFromDomain(const std::string& domain) {
 }  // namespace
 
 // The list of countries for which the credit card upload save feature is fully
-// launched. Last updated M75.
+// launched. Last updated M118.
 const char* const kAutofillUpstreamLaunchedCountries[] = {
-    "AD", "AE", "AF", "AG", "AT", "AU", "BB", "BE", "BG", "BM", "BR", "BS",
-    "CA", "CH", "CR", "CY", "CZ", "DE", "DK", "EE", "ES", "FI", "FR", "GB",
-    "GF", "GI", "GL", "GP", "GR", "GU", "HK", "HR", "HU", "IE", "IL", "IS",
-    "IT", "JP", "KY", "LC", "LT", "LU", "LV", "ME", "MK", "MO", "MQ", "MT",
-    "NC", "NL", "NO", "NZ", "PA", "PL", "PR", "PT", "RE", "RO", "RU", "SE",
-    "SG", "SI", "SK", "TH", "TR", "TT", "TW", "UA", "US", "VI", "VN", "ZA"};
+    "AD", "AE", "AF", "AG", "AI", "AL", "AO", "AR", "AS", "AT", "AU", "AW",
+    "AZ", "BA", "BB", "BE", "BF", "BG", "BH", "BJ", "BM", "BN", "BR", "BS",
+    "BT", "BW", "BZ", "CA", "CD", "CF", "CG", "CH", "CI", "CK", "CL", "CM",
+    "CO", "CR", "CV", "CX", "CY", "CZ", "DE", "DJ", "DK", "DM", "DO", "EC",
+    "EE", "EH", "ER", "ES", "FI", "FJ", "FK", "FM", "FO", "FR", "GA", "GB",
+    "GD", "GE", "GF", "GH", "GI", "GL", "GM", "GN", "GP", "GQ", "GR", "GT",
+    "GU", "GW", "GY", "HK", "HN", "HR", "HT", "HU", "IE", "IL", "IO", "IS",
+    "IT", "JP", "KE", "KH", "KI", "KM", "KN", "KW", "KY", "KZ", "LA", "LC",
+    "LI", "LK", "LR", "LS", "LT", "LU", "LV", "MC", "MD", "ME", "MG", "MH",
+    "MK", "ML", "MN", "MO", "MP", "MQ", "MR", "MS", "MT", "MU", "MW", "MX",
+    "MY", "MZ", "NA", "NC", "NE", "NF", "NG", "NI", "NL", "NO", "NR", "NZ",
+    "OM", "PA", "PE", "PF", "PG", "PH", "PL", "PM", "PR", "PT", "PW", "PY",
+    "QA", "RE", "RO", "RU", "SB", "SC", "SE", "SG", "SI", "SJ", "SK", "SL",
+    "SM", "SN", "SR", "ST", "SV", "SZ", "TC", "TD", "TG", "TH", "TL", "TM",
+    "TO", "TR", "TT", "TV", "TW", "TZ", "UA", "UG", "US", "UY", "VC", "VE",
+    "VG", "VI", "VN", "VU", "WS", "YT", "ZA", "ZM", "ZW"};
 
 // The list of supported additional email domains for credit card upload if the
 // AutofillUpstreamAllowAdditionalEmailDomains flag is enabled. Specifically
