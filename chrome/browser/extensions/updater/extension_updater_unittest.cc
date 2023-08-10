@@ -426,14 +426,14 @@ class ServiceForDownloadTests : public MockService {
     return &corrupted_extension_reinstaller_;
   }
 
-  const std::string& extension_id() const { return extension_id_; }
+  const ExtensionId& extension_id() const { return extension_id_; }
   const base::FilePath& install_path() const { return install_path_; }
 
  private:
   // Hold the set of ids that CreateUpdateInstaller() returns.
   std::map<std::string, scoped_refptr<CrxInstaller>> fake_crx_installers_;
 
-  std::string extension_id_;
+  ExtensionId extension_id_;
   base::FilePath install_path_;
   GURL download_url_;
 };
