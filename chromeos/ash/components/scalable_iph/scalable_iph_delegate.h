@@ -80,6 +80,7 @@ class ScalableIphDelegate {
     std::string text;
     BubbleIcon icon = BubbleIcon::kNoIcon;
     Button button;
+    std::string anchor_view_app_id;
 
     bool operator==(const BubbleParams& params) const = default;
   };

@@ -182,11 +182,15 @@ UiType ParseUiType(const base::Feature& feature) {
   CHECK(ui_type == kCustomUiTypeValueNotification ||
         ui_type == kCustomUiTypeValueBubble ||
         ui_type == kCustomUiTypeValueNone);
+
   if (ui_type == kCustomUiTypeValueNotification) {
     return UiType::kNotification;
-  } else if (ui_type == kCustomUiTypeValueBubble) {
+  }
+
+  if (ui_type == kCustomUiTypeValueBubble) {
     return UiType::kBubble;
   }
+
   return UiType::kNone;
 }
 
@@ -307,6 +311,8 @@ BubbleParams ParseBubbleParams(const base::Feature& feature) {
 
   auto icon_string = GetParamValue(feature, kCustomBubbleIconParamName);
   param.icon = ParseBubbleIcon(icon_string);
+  param.anchor_view_app_id =
+      GetParamValue(feature, kCustomBubbleAnchorViewAppIdParamName);
 
   return param;
 }

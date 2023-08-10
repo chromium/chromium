@@ -15,8 +15,12 @@
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/public/cpp/system/anchored_nudge_data.h"
 #include "ash/public/cpp/system/anchored_nudge_manager.h"
+#include "ash/root_window_controller.h"
 #include "ash/scalable_iph/wallpaper_ash_notification_view.h"
 #include "ash/session/session_controller_impl.h"
+#include "ash/shelf/hotseat_widget.h"
+#include "ash/shelf/shelf_app_button.h"
+#include "ash/shelf/shelf_view.h"
 #include "ash/shell.h"
 #include "ash/system/message_center/message_view_factory.h"
 #include "ash/webui/grit/ash_print_management_resources.h"
@@ -292,9 +296,30 @@ void ScalableIphDelegateImpl::ShowBubble(
   bubble_id_ = params.bubble_id;
   bubble_iph_session_ = std::move(iph_session);
 
+  ShelfAppButton* anchor_view = nullptr;
+  if (!params.anchor_view_app_id.empty()) {
+    // In the case that the specified app ID cannot be found on the shelf,
+    // the nudge will not be anchored and will show in the bottom left
+    // default position instead.
+    anchor_view =
+        Shell::GetPrimaryRootWindowController()
+            ->shelf()
+            ->hotseat_widget()
+            ->GetShelfView()
+            ->GetShelfAppButton(ash::ShelfID(params.anchor_view_app_id));
+  }
+
   ash::AnchoredNudgeData nudge_data(
       params.bubble_id, NudgeCatalogName::kScalableIphBubble,
-      base::UTF8ToUTF16(params.text), /*anchor_view=*/nullptr);
+      base::UTF8ToUTF16(params.text), /*anchor_view=*/anchor_view);
+
+  // Currently, the help app on the shelf is the only view to which a bubble
+  // will be anchored to. Therefore, if the anchor_view is non-null, the
+  // nudge should be anchored to shelf. Once bubbles fully support anchor views,
+  // this behavior may change.
+  if (anchor_view) {
+    nudge_data.anchored_to_shelf = true;
+  }
 
   if (!params.button.text.empty()) {
     nudge_data.first_button_text = base::UTF8ToUTF16(params.button.text);
@@ -322,7 +347,6 @@ void ScalableIphDelegateImpl::ShowBubble(
 void ScalableIphDelegateImpl::ShowNotification(
     const NotificationParams& params,
     std::unique_ptr<scalable_iph::IphSession> iph_session) {
-  // TODO(b/284158831): Add implementation.
   std::string notification_source_name = kNotificationSourceName;
   std::string notification_title = params.title;
   std::string notification_text = params.text;
