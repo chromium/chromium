@@ -1579,14 +1579,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Omnibox.SearchEngineType" enum="OmniboxSearchEngineType"
-    expires_after="2023-12-24">
+<histogram name="Omnibox.SearchEngineType{Population}"
+    enum="OmniboxSearchEngineType" expires_after="2024-08-08">
   <owner>jdonnelly@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>
   <summary>
     The type of search engine associated with a match opened from the omnibox.
+
+    {Population}
   </summary>
+  <token key="Population">
+    <variant name="" summary="Reported for all users."/>
+    <variant name=".SetByEnterprisePolicy"
+        summary="Reported for users with DSP set by Enterprise policy."/>
+  </token>
 </histogram>
 
 <histogram
