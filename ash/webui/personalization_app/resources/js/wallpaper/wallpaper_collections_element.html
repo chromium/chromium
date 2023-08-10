@@ -116,6 +116,7 @@
 </template>
 <main aria-label="$i18n{wallpaperCollections}" hidden$="[[hasError_]]">
   <iron-list aria-setsize$="[[tiles_.length]]"
+      id="grid"
       grid
       items="[[tiles_]]"
       role="listbox">

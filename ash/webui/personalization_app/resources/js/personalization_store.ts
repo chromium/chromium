@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {ListPropertyUpdateMixin, ListPropertyUpdateMixinInterface} from 'chrome://resources/cr_elements/list_property_update_mixin.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {ListPropertyUpdateMixin} from 'chrome://resources/cr_elements/list_property_update_mixin.js';
 import {Store} from 'chrome://resources/js/store_ts.js';
-import {IronResizableBehavior} from 'chrome://resources/polymer/v3_0/iron-resizable-behavior/iron-resizable-behavior.js';
-import {dedupingMixin, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {dedupingMixin, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Actions} from './personalization_actions.js';
 import {reduce} from './personalization_reducers.js';
@@ -143,15 +142,8 @@ const PersonalizationStoreClientMixin = dedupingMixin(
     });
 
 /**
- * TODO(b/294895874) move IronResizableBehavior only to elements that need it.
  * A base class for Personalization App polymer elements to access useful
  * utilities like i18n and store client methods.
  */
-export const WithPersonalizationStore =
-    mixinBehaviors(
-        [IronResizableBehavior],
-        I18nMixin(ListPropertyUpdateMixin(
-            PersonalizationStoreClientMixin(PolymerElement)))) as
-    Constructor<IronResizableBehavior&I18nMixinInterface&
-                ListPropertyUpdateMixinInterface&
-                PersonalizationStoreClientMixinInterface&PolymerElement>;
+export const WithPersonalizationStore = I18nMixin(
+    ListPropertyUpdateMixin(PersonalizationStoreClientMixin(PolymerElement)));

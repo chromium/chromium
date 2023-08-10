@@ -18,6 +18,7 @@ import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
+import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import {afterNextRender} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {GooglePhotosEnablementState, WallpaperCollection, WallpaperImage} from '../../personalization_app.mojom-webui.js';
@@ -213,6 +214,12 @@ function getTemporaryBackdropCollectionId(index: number) {
 
 function isTimeOfDay({id}: WallpaperCollection|Tile): boolean {
   return id === loadTimeData.getString('timeOfDayWallpaperCollectionId');
+}
+
+export interface WallpaperCollections {
+  $: {
+    grid: IronListElement,
+  };
 }
 
 export class WallpaperCollections extends WithPersonalizationStore {
@@ -414,7 +421,7 @@ export class WallpaperCollections extends WithPersonalizationStore {
     if (!hidden) {
       document.title = this.i18n('wallpaperLabel');
     }
-    afterNextRender(this, () => this.notifyResize());
+    afterNextRender(this, () => this.$.grid.fire('iron-resize'));
   }
 
   /**
