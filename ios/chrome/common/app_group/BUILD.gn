@@ -37,6 +37,10 @@ source_set("helper") {
   deps = [
     "//base",
     "//ios/chrome/common:ios_app_bundle_id_prefix_buildflags",
+
+    # TODO(crbug.com/1471650): Remove this once AppStore stops blocking
+    # __availability_version_check.
+    "//ios/chrome/common:os_version_check",
   ]
 }
 

@@ -35,6 +35,12 @@ source_set("button_config") {
   frameworks = [ "UIKit.framework" ]
 }
 
+# TODO(crbug.com/1471650): Remove this once AppStore stops blocking
+# __availability_version_check.
+source_set("os_version_check") {
+  sources = [ "third_party/compiler-rt/os_version_check.c" ]
+}
+
 source_set("constants") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
