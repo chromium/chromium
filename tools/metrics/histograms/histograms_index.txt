@@ -141,6 +141,7 @@ tools/metrics/histograms/metadata/tab/histograms.xml
 tools/metrics/histograms/metadata/translate/histograms.xml
 tools/metrics/histograms/metadata/trusted_vault/histograms.xml
 tools/metrics/histograms/metadata/ukm/histograms.xml
+tools/metrics/histograms/metadata/uma/enums.xml
 tools/metrics/histograms/metadata/uma/histograms.xml
 tools/metrics/histograms/metadata/update_engine/histograms.xml
 tools/metrics/histograms/metadata/v8/histograms.xml

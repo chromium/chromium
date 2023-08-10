@@ -1,0 +1,10 @@
+<histogram-configuration>
+<enums>
+
+<enum name="Enum_B">
+  <int value="5" label="five"/>
+  <int value="6" label="six"/>
+</enum>
+
+</enums>
+</histogram-configuration>

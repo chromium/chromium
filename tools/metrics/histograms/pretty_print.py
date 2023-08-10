@@ -192,7 +192,7 @@ def main():
 
   status = 0
   if 'enums.xml' in args.filepath:
-    status = presubmit_util.DoPresubmit(sys.argv, 'enums.xml',
+    status = presubmit_util.DoPresubmit(sys.argv, args.filepath,
                                         'enums.before.pretty-print.xml',
                                         PrettyPrintEnums)
 

@@ -154,15 +154,8 @@ def ExtractEnumsFromXmlTree(tree):
   enums = {}
   have_errors = False
 
-  last_name = None
   for enum in xml_utils.IterElementsWithTag(tree, 'enum'):
     name = enum.getAttribute('name')
-    if last_name is not None and name.lower() < last_name.lower():
-      logging.error('Enums %s and %s are not in alphabetical order', last_name,
-                    name)
-      have_errors = True
-    last_name = name
-
     if name in enums:
       logging.error('Duplicate enum %s', name)
       have_errors = True
@@ -461,14 +454,8 @@ def _ExtractHistogramsFromXmlTree(tree, enums):
   variants_dict, variants_errors = _ExtractVariantsFromXmlTree(tree)
   have_errors = have_errors or variants_errors
 
-  last_name = None
   for histogram in xml_utils.IterElementsWithTag(tree, 'histogram'):
     name = histogram.getAttribute('name')
-    if last_name is not None and name.lower() < last_name.lower():
-      logging.error('Histograms %s and %s are not in alphabetical order',
-                    last_name, name)
-      have_errors = True
-    last_name = name
     if name in histograms:
       logging.error('Duplicate histogram definition %s', name)
       have_errors = True
@@ -637,19 +624,6 @@ def _UpdateHistogramsWithSuffixes(tree, histograms):
   suffix_tag = 'suffix'
   with_tag = 'with-suffix'
 
-  # Verify order of histogram_suffixes fields first.
-  last_name = None
-
-  for histogram_suffixes in xml_utils.IterElementsWithTag(tree,
-                                                          histogram_suffix_tag,
-                                                          depth=1):
-    name = histogram_suffixes.getAttribute('name')
-    if last_name is not None and name.lower() < last_name.lower():
-      logging.error('histogram_suffixes %s and %s are not in alphabetical '
-                    'order', last_name, name)
-      have_errors = True
-    last_name = name
-
   # histogram_suffixes can depend on other histogram_suffixes, so we need to be
   # careful. Make a temporary copy of the list of histogram_suffixes to use as a
   # queue. histogram_suffixes whose dependencies have not yet been processed
@@ -704,22 +678,15 @@ def _UpdateHistogramsWithSuffixes(tree, histograms):
     # Find owners list under current histogram_suffixes tag.
     owners, _ = _ExtractOwners(histogram_suffixes)
 
-    last_histogram_name = None
     for affected_histogram in affected_histograms:
-      histogram_name = affected_histogram.getAttribute('name')
-      if (last_histogram_name is not None and
-          histogram_name.lower() < last_histogram_name.lower()):
-        logging.error('Affected histograms %s and %s of histogram_suffixes %s '
-                      'are not in alphabetical order', last_histogram_name,
-                      histogram_name, name)
-        have_errors = True
-      last_histogram_name = histogram_name
       with_suffixes = list(
           xml_utils.IterElementsWithTag(affected_histogram, with_tag, 1))
       if with_suffixes:
         suffixes_to_add = with_suffixes
       else:
         suffixes_to_add = suffix_nodes
+
+      histogram_name = affected_histogram.getAttribute('name')
       for suffix in suffixes_to_add:
         suffix_name = suffix.getAttribute('name')
         try:

@@ -9533,15 +9533,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PrefService.PersistentLogRecallProtobufs"
-    enum="PersistedLogsLogReadStatus" expires_after="M77">
-  <obsolete>
-    Expired in M77, later removed.
-  </obsolete>
-  <owner>holte@chromium.org</owner>
-  <summary>The status when loading PersistedLogs from Prefs.</summary>
-</histogram>
-
 <histogram name="PrefService.ReadError" enum="PrefServiceReadError"
     expires_after="M81">
   <owner>csharp@chromium.org</owner>
@@ -9883,69 +9874,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the number of visible notifications for a Service Worker when it
     receives a push message. Counted and recorded after handling the push event.
-  </summary>
-</histogram>
-
-<histogram name="Rappor.DailyEvent.IntervalType" enum="DailyEventIntervalType"
-    expires_after="M85">
-  <obsolete>
-    Removed in M90
-  </obsolete>
-  <owner>holte@chromium.org</owner>
-  <summary>Counts how often daily interval events were fired.</summary>
-</histogram>
-
-<histogram name="Rappor.DiscardReason" enum="RapporDiscardReason"
-    expires_after="M77">
-  <obsolete>
-    Removed in M90
-  </obsolete>
-  <owner>holte@chromium.org</owner>
-  <summary>
-    For each Rappor log that is discarded, the reason that it was discarded.
-  </summary>
-</histogram>
-
-<histogram name="Rappor.FailedUploadErrorCode" enum="NetErrorCodes"
-    expires_after="M77">
-  <obsolete>
-    Removed in M90
-  </obsolete>
-  <owner>holte@chromium.org</owner>
-  <summary>Net error codes for failed Rappor uploads.</summary>
-</histogram>
-
-<histogram name="Rappor.LoadCohortResult" enum="RapporLoadResultType"
-    expires_after="M77">
-  <obsolete>
-    Removed in M90
-  </obsolete>
-  <owner>holte@chromium.org</owner>
-  <summary>
-    Success or errors encountered when loading Rappor cohort pref.
-  </summary>
-</histogram>
-
-<histogram name="Rappor.LoadSecretResult" enum="RapporLoadResultType"
-    expires_after="M77">
-  <obsolete>
-    Removed in M90
-  </obsolete>
-  <owner>holte@chromium.org</owner>
-  <summary>
-    Success or errors encountered when loading Rappor secret pref.
-  </summary>
-</histogram>
-
-<histogram name="Rappor.UploadResponseCode" enum="HttpResponseCode"
-    expires_after="M77">
-  <obsolete>
-    Removed in M90
-  </obsolete>
-  <owner>holte@chromium.org</owner>
-  <summary>
-    For each upload to the Rappor server, log the response received from the
-    server.
   </summary>
 </histogram>
 

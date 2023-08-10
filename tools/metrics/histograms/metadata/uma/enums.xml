@@ -1,0 +1,432 @@
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+
+This file describes the enumerations referenced by entries in histograms.xml for
+this directory. Some enums may instead be listed in the central enums.xml file
+at src/tools/metrics/histograms/enums.xml when multiple files use them.
+
+For best practices on writing enumerations descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Enum-Histograms
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<!-- Enum types -->
+
+<enums>
+
+<enum name="AntiVirusMetricsProviderResult">
+  <int value="0" label="RESULT_SUCCESS"/>
+  <int value="1" label="RESULT_GENERIC_FAILURE"/>
+  <int value="2" label="RESULT_FAILED_TO_INITIALIZE_COM"/>
+  <int value="3" label="RESULT_FAILED_TO_CREATE_INSTANCE"/>
+  <int value="4" label="RESULT_FAILED_TO_INITIALIZE_PRODUCT_LIST"/>
+  <int value="5" label="RESULT_FAILED_TO_GET_PRODUCT_COUNT"/>
+  <int value="6" label="RESULT_FAILED_TO_GET_ITEM"/>
+  <int value="7" label="RESULT_FAILED_TO_GET_PRODUCT_STATE"/>
+  <int value="8" label="RESULT_PRODUCT_STATE_INVALID"/>
+  <int value="9" label="RESULT_FAILED_TO_GET_PRODUCT_NAME"/>
+  <int value="10" label="RESULT_FAILED_TO_GET_REMEDIATION_PATH"/>
+  <int value="11" label="RESULT_FAILED_TO_CONNECT_TO_WMI"/>
+  <int value="12" label="RESULT_FAILED_TO_SET_SECURITY_BLANKET"/>
+  <int value="13" label="RESULT_FAILED_TO_EXEC_WMI_QUERY"/>
+  <int value="14" label="RESULT_FAILED_TO_ITERATE_RESULTS"/>
+  <int value="15" label="RESULT_WSC_NOT_AVAILABLE"/>
+</enum>
+
+<enum name="BooleanNoisedAgeOver21Under85">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Noised age between 21 and 85 inclusive"/>
+</enum>
+
+<enum name="ChromeActivityCounter">
+  <summary>
+    Encodes the number of times onPreCreate and onResume were called when a
+    foreground session is ended in the native C++ code. The counts are capped at
+    3.
+  </summary>
+  <int value="0" label="p0r0"/>
+  <int value="1" label="p0r1"/>
+  <int value="2" label="p0r2"/>
+  <int value="3" label="p0r3+"/>
+  <int value="4" label="p1r0"/>
+  <int value="5" label="p1r1"/>
+  <int value="6" label="p1r2"/>
+  <int value="7" label="p1r3+"/>
+  <int value="8" label="p2r0"/>
+  <int value="9" label="p2r1"/>
+  <int value="10" label="p2r2"/>
+  <int value="11" label="p2r3+"/>
+  <int value="12" label="p3+r0"/>
+  <int value="13" label="p3+r1"/>
+  <int value="14" label="p3+r2"/>
+  <int value="15" label="p3+r3+"/>
+</enum>
+
+<enum name="ClientIdSource">
+  <int value="0" label="Cached id matches local state"/>
+  <int value="1" label="From local state"/>
+  <int value="2" label="From backup"/>
+  <int value="3" label="New"/>
+  <int value="4" label="From provisional id"/>
+  <int value="5" label="From external"/>
+</enum>
+
+<enum name="FileMetricsProviderAccessResult">
+  <int value="0" label="File was mapped."/>
+  <int value="1" label="File doesn't exist."/>
+  <int value="2" label="File not modified."/>
+  <int value="3" label="File is invalid (e.g. directory or zero-size)."/>
+  <int value="4" label="File could not be memory-mapped by system."/>
+  <int value="5" label="File has invalid contents."/>
+  <int value="6" label="File could not be exclusively opened."/>
+  <int value="7" label="File contents internally deleted."/>
+  <int value="8" label="File processing was postponed due to filtering."/>
+  <int value="9" label="File was skipped/deleted due to filtering."/>
+  <int value="10" label="File was older than maximum allowed age."/>
+  <int value="11" label="File made for too many files in the directory."/>
+  <int value="12" label="File made for too many bytes in the directory."/>
+  <int value="13" label="File was skipped because it belongs to this process."/>
+  <int value="14" label="File did not have required embedded profile."/>
+  <int value="15" label="File had internal data corruption."/>
+  <int value="16" label="File was not writable when it should be."/>
+</enum>
+
+<enum name="HistogramNameHash">
+  <summary>
+    These numbers are the lower 32 bits of the hash of the metric name.
+  </summary>
+  <int value="-2140283801" label="Blink.UseCounter.Features"/>
+  <int value="-2055973512" label="Login.ConsumerNewUsersAllowed"/>
+  <int value="-2048378466" label="Sqlite.Vfs_Events"/>
+  <int value="-2021219906"
+      label="DataUse.MessageSize.AllServices.Downstream.Foreground.NotCellular"/>
+  <int value="-1978833012" label="DevTools.ActionTaken"/>
+  <int value="-1972896220"
+      label="V8.GC.Event.MainThread.Full.Incremental.Sweep.Cpp"/>
+  <int value="-1952208361"
+      label="Autofill.FieldPredictionQuality.ByFieldType.Overall"/>
+  <int value="-1910305783"
+      label="Navigation.StartToCommit.SameProcess.NewNavigation"/>
+  <int value="-1777783591"
+      label="Autofill.FieldPredictionQuality.ByFieldType.Server.NoSubmission"/>
+  <int value="-1724216561"
+      label="Extensions.Functions.SucceededTime.LessThan1ms"/>
+  <int value="-1620411628"
+      label="DataUse.MessageSize.AllServices.Downstream.Unknown.NotCellular"/>
+  <int value="-1607339868"
+      label="DataUse.MessageSize.AllServices.Upstream.Unknown.NotCellular"/>
+  <int value="-1561887015" label="MediaRouter.Cast.Channel.Error"/>
+  <int value="-1554891874"
+      label="PageLoad.PageTiming.NavigationToFailedProvisionalLoad"/>
+  <int value="-1459119846"
+      label="ServiceWorkerCache.Cache.Scheduler.QueueLength"/>
+  <int value="-1433928548" label="WebCore.FindInPage.TaskDuration"/>
+  <int value="-1419490329" label="ActivityTracker.Record.Event"/>
+  <int value="-1390672863"
+      label="DataUse.MessageSize.AllServices.Upstream.Background.NotCellular"/>
+  <int value="-1363801537" label="Crashpad.CrashUpload.Skipped"/>
+  <int value="-1345388508" label="Renderer4.IdealContentsScale"/>
+  <int value="-1321341911"
+      label="DataUse.BackgroundToDataRecievedPerByte.User"/>
+  <int value="-1286300074"
+      label="Network.Shill.Wifi.ExpiredLeaseLengthSeconds"/>
+  <int value="-1277093818"
+      label="Net.URLLoaderThrottleExecutionTime.WillStartRequest"/>
+  <int value="-1267842531"
+      label="PasswordManager.BulkCheck.PasswordCheckReferrer"/>
+  <int value="-1189959109" label="RendererScheduler.TaskCountPerQueueType"/>
+  <int value="-1096730224" label="Crashpad.CrashReportPending"/>
+  <int value="-1026485441"
+      label="UMA.PersistentAllocator.CrashpadMetrics.Errors"/>
+  <int value="-983723378" label="RendererScheduler.TaskDurationPerThreadType"/>
+  <int value="-968816650"
+      label="PasswordManager.Android.PasswordExceptionEntry.Website"/>
+  <int value="-919977005" label="DevTools.DeveloperResourceLoaded"/>
+  <int value="-855312845"
+      label="Net.URLLoaderThrottleExecutionTime.WillProcessResponse"/>
+  <int value="-847447887"
+      label="DataUse.MessageSize.AllServices.Upstream.Foreground.NotCellular"/>
+  <int value="-763978419"
+      label="DocumentEventTiming.BeforeUnloadDialogDuration.ByNavigation"/>
+  <int value="-742109866" label="Stability.BrowserExitCodes"/>
+  <int value="-703422025"
+      label="Scheduler.Experimental.Renderer.TotalTime.Wall.MainThread.Negative"/>
+  <int value="-657514887" label="DataUse.MessageSize.AllServices"/>
+  <int value="-535820174"
+      label="DataUse.MessageSize.AllServices.Downstream.Background.NotCellular"/>
+  <int value="-445016785" label="Crashpad.ExceptionEncountered"/>
+  <int value="-436781330"
+      label="Net.URLLoaderThrottleExecutionTime.BeforeWillProcessResponse"/>
+  <int value="-424393552" label="DirectWrite.Fonts.Gfx.InitializeLoopCount"/>
+  <int value="-412157817"
+      label="Autofill.FieldPredictionQuality.ByFieldType.Server"/>
+  <int value="-404962476" label="Blink.ForcedStyleAndLayout.UpdateTime"/>
+  <int value="-355731177" label="UMA.SamplingRatePerMille"/>
+  <int value="-343220158" label="Compositing.Renderer.LayersUpdateTime"/>
+  <int value="-334673303"
+      label="UMA.PersistentAllocator.BrowserMetrics.Errors"/>
+  <int value="-297026085" label="Crashpad.ExceptionCode.Win"/>
+  <int value="-141990989" label="DataUse.AllServices.Background"/>
+  <int value="-132932440" label="DataUse.ContentType.Services"/>
+  <int value="-94832417" label="Crashpad.CrashReportSize"/>
+  <int value="-48200749" label="DiskCache.0.TotalIOTime"/>
+  <int value="0" label="Missing hash value"/>
+  <int value="19727358" label="DataUse.BytesReceived2.Delegate"/>
+  <int value="37726187" label="BlinkGC.CommittedSize"/>
+  <int value="54100976" label="Extensions.BadMessageFunctionName"/>
+  <int value="61486329" label="RendererScheduler.TaskCountPerFrameType"/>
+  <int value="76333534" label="WorkerThread.Task.Time"/>
+  <int value="149985012"
+      label="DataUse.MessageSize.AllServices.Upstream.Unknown.Cellular"/>
+  <int value="182499697" label="DevTools.PanelShown"/>
+  <int value="192918458"
+      label="DataUse.MessageSize.AllServices.Downstream.Unknown.Cellular"/>
+  <int value="294030175"
+      label="V8.GC.Event.MainThread.Full.Incremental.Cpp (deprecated)"/>
+  <int value="410893025" label="Crashpad.CrashUpload.AttemptSuccessful"/>
+  <int value="424952287"
+      label="Network.Shill.Wifi.LinkMonitorResponseTimeSample"/>
+  <int value="433324211" label="Extensions.FunctionCalls"/>
+  <int value="480662546" label="ActivityTracker.CollectCrash.Event"/>
+  <int value="488535034"
+      label="Android.WebView.ComponentUpdater.CPSDirectorySize"/>
+  <int value="513321612"
+      label="V8.GC.Event.MainThread.Full.Incremental.Mark.Cpp"/>
+  <int value="536258327" label="Blink.UseCounter.SVGImage.Features"/>
+  <int value="560548778"
+      label="Autofill.FieldPredictionQuality.ByFieldType.Server.BasedOnAutocomplete"/>
+  <int value="627537023"
+      label="Android.WebView.ComponentUpdater.CUSDirectorySize"/>
+  <int value="628921860"
+      label="Network.Shill.Ethernet.LinkMonitorResponseTimeSample"/>
+  <int value="657786774" label="PartitionAlloc.CommittedSize"/>
+  <int value="662206917"
+      label="Network.Shill.Ethernet.ExpiredLeaseLengthSeconds"/>
+  <int value="705114606"
+      label="PasswordManager.Android.PasswordCredentialEntry.Website"/>
+  <int value="757405826"
+      label="DataUse.MessageSize.AllServices.Upstream.Foreground.Cellular"/>
+  <int value="759446272"
+      label="RendererScheduler.QueueingDurationPerQueueType.Input"/>
+  <int value="761823979" label="Crashpad.HandlerLifetimeMilestone"/>
+  <int value="873338882"
+      label="Autofill.FieldPredictionQuality.ByFieldType.Heuristic"/>
+  <int value="902803399"
+      label="UMA.PersistentAllocator.CrashpadMetrics.UsedPct"/>
+  <int value="910415681" label="DevTools.ExperimentEnabledAtLaunch"/>
+  <int value="1096524200" label="DevTools.IssueCreated"/>
+  <int value="1120293692" label="DocumentEventTiming.BeforeUnloadDuration"/>
+  <int value="1126499749"
+      label="Autofill.FieldPredictionQuality.ByFieldType.Overall.NoSubmission"/>
+  <int value="1193017729" label="Compositing.ResourcePoolMemoryUsage.Renderer"/>
+  <int value="1225311979" label="Blink.UseCounter.Extensions.Features"/>
+  <int value="1241018167"
+      label="UMA.PersistentHistograms.HistogramsInStartupFile"/>
+  <int value="1260803669" label="UMA.PersistentHistograms.InitResult"/>
+  <int value="1264664660" label="DataUse.PageTransition.UserTraffic"/>
+  <int value="1295093746" label="Net.SSL_Connection_Latency_TLS13Experiment"/>
+  <int value="1370064090"
+      label="DataUse.MessageSize.AllServices.Upstream.Background.Cellular"/>
+  <int value="1386149670" label="Navigation.StartToCommit.NewNavigation"/>
+  <int value="1404054418" label="DevTools.DeveloperResourceScheme"/>
+  <int value="1425303622"
+      label="Android.WebView.ComponentUpdater.UpdateJobDuration"/>
+  <int value="1441867637"
+      label="Android.WebView.ComponentUpdater.UpdateJobFilesChanged"/>
+  <int value="1488162221" label="Blink.UseCounter.File.Features"/>
+  <int value="1507345292"
+      label="Autofill.FieldPredictionQuality.ByFieldType.Heuristic.BasedOnAutocomplete"/>
+  <int value="1514844119" label="DataUse.Sync.Upload.Bytes"/>
+  <int value="1525608243"
+      label="PasswordManager.Android.PasswordCredentialEntry.Username"/>
+  <int value="1535329700" label="Blink.Style.UpdateTime.PreFCP"/>
+  <int value="1596011936"
+      label="Compositing.Renderer.LayerUpdateSkippedDueToBackface"/>
+  <int value="1632894016"
+      label="Autofill.FieldPredictionQuality.ByFieldType.Heuristic.NoSubmission"/>
+  <int value="1716628481" label="ActivityTracker.CollectCrash.Status"/>
+  <int value="1721222685" label="Blink.UseCounter.MainFrame.Features"/>
+  <int value="1753226325"
+      label="DataUse.MessageSize.AllServices.Downstream.Foreground.Cellular"/>
+  <int value="1857977303"
+      label="TaskQueueSelector.TaskServicedPerSelectorLogic"/>
+  <int value="1864392953" label="AsyncDNS.HostsNotifyInterval"/>
+  <int value="1880204153"
+      label="Scheduler.Experimental.Renderer.TotalTime.Wall.MainThread.Positive"/>
+  <int value="1902443515"
+      label="Android.WebView.ComponentUpdater.GetFilesResult"/>
+  <int value="1977321258"
+      label="DataUse.MessageSize.AllServices.Downstream.Background.Cellular"/>
+  <int value="2006926569" label="Arc.OOMKills.Score"/>
+  <int value="2050720559" label="LocalStorage.MojoTimeToPrime"/>
+  <int value="2057863428"
+      label="UMA.PersistentAllocator.BrowserMetrics.UsedPct"/>
+  <int value="2147480259" label="Sqlite.Vfs_Fetch"/>
+</enum>
+
+<enum name="MetricsReportingChange">
+  <int value="0" label="Error">
+    Error occurred while updating MetricsReporting
+  </int>
+  <int value="1" label="Disabled successfully"/>
+  <int value="2" label="Enabled successfully"/>
+</enum>
+
+<enum name="NegativeSampleReason">
+  <int value="0" label="Histogram had logged value but no active sample."/>
+  <int value="1" label="Histogram active sample less than logged value."/>
+  <int value="2" label="Histogram added a negative count during iteration."/>
+  <int value="3"
+      label="Histogram added negative count that caused negative value."/>
+  <int value="4"
+      label="Histogram active sample overflowed and became negative."/>
+  <int value="5" label="Histogram accumulated a negative count."/>
+  <int value="6"
+      label="Histogram accumulated a negative count that caused a negative
+             value."/>
+  <int value="7"
+      label="Histogram active sample was negative after accumulation
+             (deprecated)."/>
+  <int value="8"
+      label="Histogram active sample wrapped 2^31 during accumulation."/>
+</enum>
+
+<enum name="PersistentAllocatorErrors">
+  <int value="1" label="Allocator memory is corrupt (set only once)"/>
+</enum>
+
+<enum name="PersistentHistogramsInitResult">
+  <int value="0" label="Local-Memory Success"/>
+  <int value="1" label="Local-Memory Failure"/>
+  <int value="2" label="Mapped-File Success"/>
+  <int value="3" label="Mapped-File Failure"/>
+  <int value="4" label="Mapped-File Already Exists"/>
+  <int value="5" label="No Spare File"/>
+  <int value="6" label="Could Not Create Upload Directory"/>
+</enum>
+
+<enum name="PerUserDaemonStoreFail">
+  <int value="0" label="Failed disabling consent in daemon store"/>
+  <int value="1" label="Failed enabling consent in daemon store"/>
+  <int value="2" label="Failed writing boot-collector consent"/>
+  <int value="3" label="Failed deleting boot-collector consent"/>
+  <int value="4" label="Write attempted to daemon store and boot-collector"/>
+  <int value="5" label="Delete boot-collector file succeeded"/>
+</enum>
+
+<enum name="PerUserIdType">
+  <int value="0" label="Client ID"/>
+  <int value="1" label="User ID"/>
+</enum>
+
+<enum name="PerUserLogStoreState">
+  <int value="0" label="Set post-sending logs state"/>
+  <int value="1" label="Set pre-sending logs state"/>
+  <int value="2" label="Unset post-sending logs state"/>
+  <int value="3" label="Unset pre-sending logs state"/>
+</enum>
+
+<enum name="StartupVisibility">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Background"/>
+  <int value="2" label="Foreground"/>
+</enum>
+
+<enum name="StructuredMetricsEventRecordingState2">
+  <int value="0" label="Recorded"/>
+  <int value="1" label="Provider uninitialized"/>
+  <int value="2" label="Recording disabled"/>
+  <int value="3" label="Provider missing"/>
+  <int value="4" label="Project disallowed"/>
+  <int value="5" label="Max proto size exceeded"/>
+</enum>
+
+<enum name="StructuredMetricsInternalError2">
+  <int value="0" label="Missing key (deprecated)"/>
+  <int value="1" label="Wrong key length"/>
+  <int value="2" label="Missing last rotation"/>
+  <int value="3" label="Missing rotation period"/>
+  <int value="4" label="Failed uint conversion"/>
+  <int value="5" label="Failed key read error"/>
+  <int value="6" label="Failed key parse error"/>
+  <int value="7" label="Failed key write error"/>
+  <int value="8" label="Failed key serialization"/>
+  <int value="9" label="Failed event read error"/>
+  <int value="10" label="Failed event parse error"/>
+  <int value="11" label="Failed event write error"/>
+  <int value="12" label="Failed event serialization"/>
+  <int value="13" label="Uninitialized recorder"/>
+  <int value="14" label="Invalid event parsed"/>
+</enum>
+
+<enum name="StructuredMetricsKeyValidationState">
+  <int value="0" label="Valid"/>
+  <int value="1" label="Created"/>
+  <int value="2" label="Rotated"/>
+</enum>
+
+<enum name="UmaChildPingStatus">
+  <int value="0" label="BROWSER_SENT_IPC"/>
+  <int value="1" label="CHILD_RECEIVED_IPC"/>
+  <int value="2" label="BROWSER_REPLY_CALLBACK"/>
+</enum>
+
+<enum name="UmaCleanExitConsistency">
+  <obsolete>
+    Deprecated 07/2021 in favor of UmaCleanExitConsistency2. Version 2 re-orders
+    and adds new buckets to support measuring the frequency with which the Local
+    State data is missing.
+  </obsolete>
+  <int value="0" label="Dirty/Dirty (Registry/Local State)"/>
+  <int value="1" label="Dirty/Clean (Registry/Local State)"/>
+  <int value="2" label="Clean/Dirty (Registry/Local State)"/>
+  <int value="3" label="Clean/Clean (Registry/Local State)"/>
+  <int value="4" label="Missing/Dirty (Registry/Local State)"/>
+  <int value="5" label="Missing/Clean (Registry/Local State)"/>
+</enum>
+
+<enum name="UmaCleanExitConsistency3">
+  <int value="0" label="Clean/Clean (Beacon File/Platform Specific)"/>
+  <int value="1" label="Clean/Dirty (Beacon File/Platform Specific)"/>
+  <int value="2" label="Clean/Missing (Beacon File/Platform Specific)"/>
+  <int value="3" label="Dirty/Clean (Beacon File/Platform Specific)"/>
+  <int value="4" label="Dirty/Dirty (Beacon File/Platform Specific)"/>
+  <int value="5" label="Dirty/Missing (Beacon File/Platform Specific)"/>
+  <int value="6" label="Missing/Clean (Beacon File/Platform Specific)"/>
+  <int value="7" label="Missing/Dirty (Beacon File/Platform Specific)"/>
+  <int value="8" label="Missing/Missing (Beacon File/Platform Specific)"/>
+</enum>
+
+<enum name="UmaEntropySourceType">
+  <int value="0" label="No entropy source (never hit)"/>
+  <int value="1" label="Low Entropy Source"/>
+  <int value="2" label="High Entropy Source"/>
+</enum>
+
+<enum name="UmaInitSequence">
+  <int value="0" label="Timer fired first"/>
+  <int value="1" label="Init task completed first"/>
+</enum>
+
+<enum name="UmaMachineIdState">
+  <int value="0" label="ID generation failed"/>
+  <int value="1" label="No stored value"/>
+  <int value="2" label="Machine ID changed"/>
+  <int value="3" label="Machine ID unchanged"/>
+</enum>
+
+</enums>
+
+</histogram-configuration>
