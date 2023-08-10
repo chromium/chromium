@@ -32,6 +32,88 @@ bool IsClosingFlagSet(int flagset, WebStateList::ClosingFlags flag) {
 
 }  // namespace
 
+// Used as a parameter in DetachWebStateAtImpl(). There are 3 situations of
+// detaching a WebState:
+// 1. a WebState is detached.
+// 2. a WebState is detached and closed.
+// 3. multiple WebStates are detached and closed.
+// Detaching(), Closing() and ClosingWithUpdateActiveWebState() are
+// corresponded, respectively.
+class WebStateList::DetachParams {
+ public:
+  static DetachParams Detaching();
+  static DetachParams Closing(bool is_user_action);
+  static DetachParams ClosingWithUpdateActiveWebState(
+      bool is_user_action,
+      web::WebState* old_active_web_state);
+
+  bool is_closing() const { return is_closing_; }
+  bool is_user_action() const { return is_user_action_; }
+
+  web::WebState* SelectOldActiveWebState(
+      bool is_active_web_state_detached,
+      web::WebState* detached_web_state,
+      web::WebState* current_active_web_state) const;
+
+ private:
+  DetachParams(bool is_closing,
+               bool is_user_action,
+               bool should_use_old_active_web_state,
+               web::WebState* old_active_web_state);
+
+  const bool is_closing_;
+  const bool is_user_action_;
+  const bool should_use_old_active_web_state_;
+  web::WebState* old_active_web_state_;
+};
+
+WebStateList::DetachParams::DetachParams(bool is_closing,
+                                         bool is_user_action,
+                                         bool should_use_old_active_web_state,
+                                         web::WebState* old_active_web_state)
+    : is_closing_(is_closing),
+      is_user_action_(is_user_action),
+      should_use_old_active_web_state_(should_use_old_active_web_state),
+      old_active_web_state_(old_active_web_state) {}
+
+WebStateList::DetachParams WebStateList::DetachParams::Detaching() {
+  return WebStateList::DetachParams(/*is_closing=*/false,
+                                    /*is_user_action=*/false,
+                                    /*should_use_old_active_web_state=*/false,
+                                    /*old_active_web_state=*/nullptr);
+}
+
+WebStateList::DetachParams WebStateList::DetachParams::Closing(
+    bool is_user_action) {
+  return WebStateList::DetachParams(/*is_closing=*/true, is_user_action,
+                                    /*should_use_old_active_web_state=*/false,
+                                    /*old_active_web_state=*/nullptr);
+}
+
+WebStateList::DetachParams
+WebStateList::DetachParams::ClosingWithUpdateActiveWebState(
+    bool is_user_action,
+    web::WebState* old_active_web_state) {
+  return WebStateList::DetachParams(/*is_closing=*/true, is_user_action,
+                                    /*should_use_old_active_web_state=*/true,
+                                    old_active_web_state);
+}
+
+web::WebState* WebStateList::DetachParams::SelectOldActiveWebState(
+    bool is_active_web_state_detached,
+    web::WebState* detached_web_state,
+    web::WebState* current_active_web_state) const {
+  if (should_use_old_active_web_state_) {
+    return old_active_web_state_;
+  }
+
+  if (is_active_web_state_detached) {
+    return detached_web_state;
+  }
+
+  return current_active_web_state;
+}
+
 // Wrapper around a WebState stored in a WebStateList.
 class WebStateList::WebStateWrapper {
  public:
@@ -277,18 +359,17 @@ std::unique_ptr<web::WebState> WebStateList::ReplaceWebStateAt(
 std::unique_ptr<web::WebState> WebStateList::DetachWebStateAt(int index) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto lock = LockForMutation();
-  return DetachWebStateAtImpl(index, /*is_closing=*/false,
-                              /*is_user_action=*/false,
-                              /*use_old_active_web_state=*/false,
-                              /*old_active_web_state=*/nullptr);
+  return DetachWebStateAtImpl(index, DetachParams::Detaching());
 }
 
 void WebStateList::CloseWebStateAt(int index, int close_flags) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto lock = LockForMutation();
-  return CloseWebStateAtImpl(index, close_flags,
-                             /*use_old_active_web_state=*/false,
-                             /*old_active_web_state=*/nullptr);
+  const bool is_user_action = IsClosingFlagSet(close_flags, CLOSE_USER_ACTION);
+  std::unique_ptr<web::WebState> detached_web_state =
+      DetachWebStateAtImpl(index, DetachParams::Closing(is_user_action));
+
+  // Dropping detached_web_state will destroy it.
 }
 
 void WebStateList::CloseAllWebStates(int close_flags) {
@@ -479,34 +560,23 @@ std::unique_ptr<web::WebState> WebStateList::ReplaceWebStateAtImpl(
 
 std::unique_ptr<web::WebState> WebStateList::DetachWebStateAtImpl(
     int index,
-    bool is_closing,
-    bool is_user_action,
-    bool use_old_active_web_state,
-    web::WebState* old_active_web_state) {
+    const DetachParams& params) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(locked_);
   DCHECK(ContainsIndex(index));
-  // TODO(crbug.com/1471032): Simplify parameters.
-  // `old_active_web_state` is passed when multiple WebStates are closed and the
-  // active index is updated if necessary before here. So `is_closing` should be
-  // true and `index` should not be equal to the current active index when
-  // `old_active_web_state` is not nullptr.
-  DCHECK(!old_active_web_state || is_closing);
-  DCHECK(!old_active_web_state || (index != active_index_));
 
   const bool is_active_web_state_detached = (index == active_index_);
   web::WebState* web_state = web_state_wrappers_[index]->web_state();
-  const WebStateListChangeDetach detach_change(web_state, is_closing,
-                                               is_user_action);
+  const WebStateListChangeDetach detach_change(web_state, params.is_closing(),
+                                               params.is_user_action());
   {
     // A new active WebState is null because WebStateList is not updated at this
     // point and the new active WebState is not determined yet.
     const WebStateListStatus status = {
         .index = index,
         .pinned_state_change = false,
-        .old_active_web_state = use_old_active_web_state ? old_active_web_state
-                                : is_active_web_state_detached ? web_state
-                                                               : nullptr,
+        .old_active_web_state = params.SelectOldActiveWebState(
+            is_active_web_state_detached, web_state, nullptr),
         .new_active_web_state = nullptr};
     for (auto& observer : observers_) {
       observer.WebStateListWillChange(this, detach_change, status);
@@ -538,30 +608,14 @@ std::unique_ptr<web::WebState> WebStateList::DetachWebStateAtImpl(
   const WebStateListStatus status = {
       .index = index,
       .pinned_state_change = false,
-      .old_active_web_state = use_old_active_web_state ? old_active_web_state
-                              : is_active_web_state_detached
-                                  ? web_state
-                                  : GetActiveWebState(),
+      .old_active_web_state = params.SelectOldActiveWebState(
+          is_active_web_state_detached, web_state, GetActiveWebState()),
       .new_active_web_state = GetActiveWebState()};
   for (auto& observer : observers_) {
     observer.WebStateListDidChange(this, detach_change, status);
   }
 
   return detached_web_state;
-}
-
-void WebStateList::CloseWebStateAtImpl(int index,
-                                       int close_flags,
-                                       bool use_old_active_web_state,
-                                       web::WebState* old_active_web_state) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(locked_);
-  const bool is_user_action = IsClosingFlagSet(close_flags, CLOSE_USER_ACTION);
-  std::unique_ptr<web::WebState> detached_web_state =
-      DetachWebStateAtImpl(index, /*is_closing=*/true, is_user_action,
-                           use_old_active_web_state, old_active_web_state);
-
-  // Dropping detached_web_state will destroy it.
 }
 
 void WebStateList::CloseAllWebStatesAfterIndex(int start_index,
@@ -598,21 +652,23 @@ void WebStateList::CloseAllWebStatesAfterIndexImpl(int start_index,
         WebStateListRemovingIndexes(std::move(removing_indexes)));
   }
 
+  const bool is_user_action = IsClosingFlagSet(close_flags, CLOSE_USER_ACTION);
   if (new_active_index != active_index_) {
     web::WebState* old_active_web_state = GetActiveWebState();
     SetActiveIndex(new_active_index);
 
     // Notify the event to the observers that a WebState is detached and an
     // active WebState is updated as well.
-    CloseWebStateAtImpl(count() - 1, close_flags,
-                        /*use_old_active_web_state=*/true,
-                        old_active_web_state);
+    std::unique_ptr<web::WebState> detached_web_state = DetachWebStateAtImpl(
+        count() - 1, DetachParams::ClosingWithUpdateActiveWebState(
+                         is_user_action, old_active_web_state));
+    // Dropping detached_web_state will destroy it.
   }
 
   while (count() > start_index) {
-    CloseWebStateAtImpl(count() - 1, close_flags,
-                        /*use_old_active_web_state=*/false,
-                        /*old_active_web_state=*/nullptr);
+    std::unique_ptr<web::WebState> detached_web_state = DetachWebStateAtImpl(
+        count() - 1, DetachParams::Closing(is_user_action));
+    // Dropping detached_web_state will destroy it.
   }
 }
 

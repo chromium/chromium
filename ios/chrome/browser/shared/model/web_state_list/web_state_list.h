@@ -22,7 +22,7 @@ struct WebStateOpener;
 
 namespace web {
 class WebState;
-}
+}  // namespace web
 
 // Manages a list of WebStates.
 //
@@ -210,6 +210,7 @@ class WebStateList {
   static const int kInvalidIndex = -1;
 
  private:
+  class DetachParams;
   class WebStateWrapper;
 
   // Locks the WebStateList for mutation. This methods checks that the list is
@@ -250,21 +251,7 @@ class WebStateList {
   // Assumes that the WebStateList is locked.
   std::unique_ptr<web::WebState> DetachWebStateAtImpl(
       int index,
-      bool is_closing,
-      bool is_user_action,
-      bool use_old_active_web_state,
-      web::WebState* old_active_web_state);
-
-  // Closes and destroys the WebState at the specified index. The `close_flags`
-  // is a bitwise combination of ClosingFlags values. Use `old_active_web_state`
-  // as a value in WebStateListStatus if the `use_old_active_web_state` flag is
-  // true.
-  //
-  // Assumes that the WebStateList is locked.
-  void CloseWebStateAtImpl(int index,
-                           int close_flags,
-                           bool use_old_active_web_state,
-                           web::WebState* old_active_web_state);
+      const DetachParams& params);
 
   // Closes and destroys all WebStates after `start_index`. The `close_flags`
   // is a bitwise combination of ClosingFlags values. WebStateList is locked
