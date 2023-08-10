@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/no_destructor.h"
+#include "base/trace_event/trace_event.h"
 #include "chrome/grit/component_extension_resources.h"
 #include "content/public/browser/browser_thread.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
@@ -90,6 +91,7 @@ IconDecodeRequest::~IconDecodeRequest() = default;
 
 void IconDecodeRequest::StartWithOptions(
     const std::vector<uint8_t>& image_data) {
+  TRACE_EVENT0("ui", "IconDecodeRequest::StartWithOptions");
   if (disable_safe_decoding_for_testing) {
     if (image_data.empty()) {
       OnDecodeImageFailed();
@@ -110,6 +112,7 @@ void IconDecodeRequest::StartWithOptions(
 }
 
 void IconDecodeRequest::OnImageDecoded(const SkBitmap& bitmap) {
+  TRACE_EVENT0("ui", "IconDecodeRequest::OnImageDecoded");
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   const gfx::ImageSkia icon(
       std::make_unique<IconSource>(bitmap, dimension_dip_),
@@ -119,6 +122,7 @@ void IconDecodeRequest::OnImageDecoded(const SkBitmap& bitmap) {
 }
 
 void IconDecodeRequest::OnDecodeImageFailed() {
+  TRACE_EVENT0("ui", "IconDecodeRequest::OnDecodeImageFailed");
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DLOG(ERROR) << "Failed to decode an icon image.";
   OnImageDecoded(SkBitmap());
