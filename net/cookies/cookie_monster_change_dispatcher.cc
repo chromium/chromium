@@ -100,11 +100,7 @@ void CookieMonsterChangeDispatcher::Subscription::DispatchChange(
       }
     }
   }
-
-  // TODO(mmenke, pwnall): Run callbacks synchronously?
-  task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&Subscription::DoDispatchChange,
-                                weak_ptr_factory_.GetWeakPtr(), change));
+  Subscription::DoDispatchChange(change);
 }
 
 void CookieMonsterChangeDispatcher::Subscription::DoDispatchChange(

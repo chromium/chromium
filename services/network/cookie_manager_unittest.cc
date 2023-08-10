@@ -2307,11 +2307,8 @@ TEST_F(CookieManagerTest, AddCookieChangeListener) {
           net::COOKIE_PRIORITY_MEDIUM, /*same_party=*/false),
       "https", true);
 
-  // Expect asynchrony
-  EXPECT_EQ(0u, listener.observed_changes().size());
-
-  // Expect to observe a cookie change.
-  listener.WaitForChange();
+  // Expect synchronous notifications.
+  EXPECT_EQ(1u, listener.observed_changes().size());
   std::vector<net::CookieChangeInfo> observed_changes =
       listener.observed_changes();
   ASSERT_EQ(1u, observed_changes.size());
@@ -2362,10 +2359,8 @@ TEST_F(CookieManagerTest, AddGlobalChangeListener) {
           net::COOKIE_PRIORITY_MEDIUM, /*same_party=*/false),
       "https", true);
 
-  // Expect asynchrony
-  EXPECT_EQ(0u, listener.observed_changes().size());
-
-  base::RunLoop().RunUntilIdle();
+  // Expect synchronous notifications.
+  EXPECT_EQ(1u, listener.observed_changes().size());
   std::vector<net::CookieChangeInfo> observed_changes =
       listener.observed_changes();
   ASSERT_EQ(1u, observed_changes.size());
@@ -2450,13 +2445,9 @@ TEST_F(CookieManagerTest, ListenerDestroyed) {
           net::COOKIE_PRIORITY_MEDIUM, /*same_party=*/false),
       "https", true);
 
-  EXPECT_EQ(0u, listener1->observed_changes().size());
-  EXPECT_EQ(0u, listener2->observed_changes().size());
-
-  listener1->WaitForChange();
   EXPECT_EQ(1u, listener1->observed_changes().size());
   listener1->ClearObservedChanges();
-  listener2->WaitForChange();
+
   EXPECT_EQ(1u, listener2->observed_changes().size());
   listener2->ClearObservedChanges();
   EXPECT_EQ(2u, service()->GetListenersRegisteredForTesting());
