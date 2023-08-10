@@ -509,11 +509,6 @@ ClientSidePhishingModelOptimizationGuide::GetImageEmbeddingModel() const {
   return *image_embedding_model_;
 }
 
-bool ClientSidePhishingModelOptimizationGuide::HasImageEmbeddingModel() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return !!image_embedding_model_;
-}
-
 CSDModelTypeOptimizationGuide
 ClientSidePhishingModelOptimizationGuide::GetModelType() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

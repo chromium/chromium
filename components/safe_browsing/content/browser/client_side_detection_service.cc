@@ -488,8 +488,11 @@ const std::string& ClientSideDetectionService::GetModelStr() {
 CSDModelType ClientSideDetectionService::GetModelType() {
   if (base::FeatureList::IsEnabled(
           kClientSideDetectionModelOptimizationGuide)) {
-    return static_cast<CSDModelType>(
-        client_side_phishing_model_optimization_guide_->GetModelType());
+    return client_side_phishing_model_optimization_guide_
+               ? static_cast<CSDModelType>(
+                     client_side_phishing_model_optimization_guide_
+                         ->GetModelType())
+               : CSDModelType::kNone;
   }
 
   return ClientSidePhishingModel::GetInstance()->GetModelType();
@@ -523,15 +526,11 @@ const base::File& ClientSideDetectionService::GetImageEmbeddingModel() {
       ->GetImageEmbeddingModel();
 }
 
-bool ClientSideDetectionService::HasImageEmbeddingModel() {
-  return client_side_phishing_model_optimization_guide_
-      ->HasImageEmbeddingModel();
-}
-
 bool ClientSideDetectionService::
     IsModelMetadataImageEmbeddingVersionMatching() {
-  return client_side_phishing_model_optimization_guide_
-      ->IsModelMetadataImageEmbeddingVersionMatching();
+  return client_side_phishing_model_optimization_guide_ &&
+         client_side_phishing_model_optimization_guide_
+             ->IsModelMetadataImageEmbeddingVersionMatching();
 }
 
 void ClientSideDetectionService::SetURLLoaderFactoryForTesting(
@@ -561,8 +560,9 @@ void ClientSideDetectionService::SetPhishingModel(
       if (delegate_ && delegate_->GetPrefs() &&
           IsEnhancedProtectionEnabled(*delegate_->GetPrefs()) &&
           base::FeatureList::IsEnabled(
-              kClientSideDetectionModelImageEmbedder) &&
-          HasImageEmbeddingModel()) {
+              kClientSideDetectionModelOptimizationGuide) &&
+          base::FeatureList::IsEnabled(
+              kClientSideDetectionModelImageEmbedder)) {
         if (IsModelMetadataImageEmbeddingVersionMatching()) {
           base::UmaHistogramBoolean(
               "SBClientPhishing.ImageEmbeddingModelVersionMatch", true);

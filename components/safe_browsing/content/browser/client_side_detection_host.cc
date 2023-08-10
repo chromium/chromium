@@ -628,9 +628,10 @@ void ClientSideDetectionHost::PhishingDetectionDone(
           &token);
     }
 
-    if (base::FeatureList::IsEnabled(kClientSideDetectionModelImageEmbedder) &&
+    if (base::FeatureList::IsEnabled(
+            kClientSideDetectionModelOptimizationGuide) &&
+        base::FeatureList::IsEnabled(kClientSideDetectionModelImageEmbedder) &&
         IsEnhancedProtectionEnabled(*delegate_->GetPrefs()) &&
-        csd_service_->HasImageEmbeddingModel() &&
         csd_service_->IsModelMetadataImageEmbeddingVersionMatching()) {
       content::RenderFrameHost* rfh = web_contents()->GetPrimaryMainFrame();
 

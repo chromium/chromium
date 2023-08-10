@@ -167,8 +167,6 @@ class ClientSideDetectionService
   // can override it.
   virtual const base::File& GetImageEmbeddingModel();
 
-  virtual bool HasImageEmbeddingModel();
-
   virtual bool IsModelMetadataImageEmbeddingVersionMatching();
 
   // Returns the visual TFLite model thresholds from the model class

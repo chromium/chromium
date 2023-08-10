@@ -89,8 +89,6 @@ class ClientSidePhishingModelOptimizationGuide
 
   const base::File& GetImageEmbeddingModel() const;
 
-  bool HasImageEmbeddingModel();
-
   bool IsModelMetadataImageEmbeddingVersionMatching();
 
   // Overrides the model string for use in tests.
