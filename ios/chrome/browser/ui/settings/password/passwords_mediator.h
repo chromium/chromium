@@ -16,7 +16,6 @@
 class FaviconLoader;
 class IOSChromePasswordCheckManager;
 @protocol PasswordsConsumer;
-class SyncSetupService;
 
 namespace password_manager {
 struct CredentialUIEntry;
@@ -30,7 +29,6 @@ struct CredentialUIEntry;
 - (instancetype)initWithPasswordCheckManager:
                     (scoped_refptr<IOSChromePasswordCheckManager>)
                         passwordCheckManager
-                            syncSetupService:(SyncSetupService*)syncSetupService
                                faviconLoader:(FaviconLoader*)faviconLoader
                                  syncService:(syncer::SyncService*)syncService
     NS_DESIGNATED_INITIALIZER;

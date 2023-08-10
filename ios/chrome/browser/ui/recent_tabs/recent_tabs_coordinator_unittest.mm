@@ -175,8 +175,6 @@ class RecentTabsTableCoordinatorTest : public BlockCleanupTest {
     SyncSetupServiceMock* syncSetupService = static_cast<SyncSetupServiceMock*>(
         SyncSetupServiceFactory::GetForBrowserState(
             chrome_browser_state_.get()));
-    ON_CALL(*syncSetupService, IsSyncFeatureEnabled())
-        .WillByDefault(Return(syncEnabled));
     ON_CALL(*syncSetupService,
             IsDataTypePreferred(syncer::UserSelectableType::kTabs))
         .WillByDefault(Return(true));

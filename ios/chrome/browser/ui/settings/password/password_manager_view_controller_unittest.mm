@@ -116,7 +116,6 @@ class PasswordManagerViewControllerTest : public ChromeTableViewControllerTest {
     mediator_ = [[TestPasswordsMediator alloc]
         initWithPasswordCheckManager:IOSChromePasswordCheckManagerFactory::
                                          GetForBrowserState(browserState)
-                    syncSetupService:nil
                        faviconLoader:IOSChromeFaviconLoaderFactory::
                                          GetForBrowserState(browserState)
                          syncService:SyncServiceFactory::GetForBrowserState(

@@ -28,8 +28,6 @@
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller_test.h"
 #import "ios/chrome/browser/sync/sync_observer_bridge.h"
-#import "ios/chrome/browser/sync/sync_setup_service_factory.h"
-#import "ios/chrome/browser/sync/sync_setup_service_mock.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_consumer.h"
 #import "ios/chrome/browser/ui/settings/utils/password_auto_fill_status_observer.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -109,9 +107,6 @@ class PasswordsMediatorTest : public BlockCleanupTest {
     BlockCleanupTest::SetUp();
     TestChromeBrowserState::Builder builder;
     builder.AddTestingFactory(
-        SyncSetupServiceFactory::GetInstance(),
-        base::BindRepeating(&SyncSetupServiceMock::CreateKeyedService));
-    builder.AddTestingFactory(
         IOSChromePasswordStoreFactory::GetInstance(),
         base::BindRepeating(
             &password_manager::BuildPasswordStore<web::BrowserState,
@@ -136,17 +131,12 @@ class PasswordsMediatorTest : public BlockCleanupTest {
 
     mediator_ = [[PasswordsMediator alloc]
         initWithPasswordCheckManager:password_check_
-                    syncSetupService:syncService()
                        faviconLoader:IOSChromeFaviconLoaderFactory::
                                          GetForBrowserState(
                                              browser_state_.get())
                          syncService:SyncServiceFactory::GetForBrowserState(
                                          browser_state_.get())];
     mediator_.consumer = consumer_;
-  }
-
-  SyncSetupService* syncService() {
-    return SyncSetupServiceFactory::GetForBrowserState(browser_state_.get());
   }
 
   PasswordsMediator* mediator() { return mediator_; }

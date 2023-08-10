@@ -38,10 +38,6 @@ void SyncSetupService::SetSyncEverythingEnabled(bool sync_all) {
       sync_all, sync_service_->GetUserSettings()->GetSelectedTypes());
 }
 
-bool SyncSetupService::IsSyncFeatureEnabled() const {
-  return sync_service_->IsSyncFeatureEnabled();
-}
-
 bool SyncSetupService::IsEncryptEverythingEnabled() const {
   return sync_service_->GetUserSettings()->IsEncryptEverythingEnabled();
 }

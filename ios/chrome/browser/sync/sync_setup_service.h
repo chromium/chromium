@@ -29,11 +29,6 @@ class SyncSetupService : public KeyedService {
 
   ~SyncSetupService() override;
 
-  // Returns whether all conditions are satisfied for Sync-the-feature to start.
-  // This means that there is a Sync-consented account, no disable reasons, and
-  // first-time Sync setup has been completed by the user.
-  virtual bool IsSyncFeatureEnabled() const;
-
   // Returns whether the given datatype has been enabled for sync and its
   // initialization is complete (SyncEngineHost::OnEngineInitialized has been
   // called).

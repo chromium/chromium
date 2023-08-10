@@ -41,9 +41,6 @@ using password_manager::features::IsPasswordCheckupEnabled;
   // The service responsible for password check feature.
   scoped_refptr<IOSChromePasswordCheckManager> _passwordCheckManager;
 
-  // Service to check if passwords are synced.
-  raw_ptr<SyncSetupService> _syncSetupService;
-
   raw_ptr<password_manager::SavedPasswordsPresenter> _savedPasswordsPresenter;
 
   // A helper object for passing data about changes in password check status
@@ -82,7 +79,6 @@ using password_manager::features::IsPasswordCheckupEnabled;
 - (instancetype)initWithPasswordCheckManager:
                     (scoped_refptr<IOSChromePasswordCheckManager>)
                         passwordCheckManager
-                            syncSetupService:(SyncSetupService*)syncSetupService
                                faviconLoader:(FaviconLoader*)faviconLoader
                                  syncService:(syncer::SyncService*)syncService {
   self = [super init];
@@ -91,8 +87,6 @@ using password_manager::features::IsPasswordCheckupEnabled;
     _faviconLoader = faviconLoader;
 
     _syncObserver = std::make_unique<SyncObserverBridge>(self, syncService);
-
-    _syncSetupService = syncSetupService;
 
     _passwordCheckManager = passwordCheckManager;
     _savedPasswordsPresenter =
@@ -128,7 +122,6 @@ using password_manager::features::IsPasswordCheckupEnabled;
   _passwordsPresenterObserver.reset();
   _passwordCheckObserver.reset();
   _passwordCheckManager.reset();
-  _syncSetupService = nullptr;
   _savedPasswordsPresenter = nullptr;
   _faviconLoader = nullptr;
   _syncService = nullptr;
@@ -358,8 +351,8 @@ using password_manager::features::IsPasswordCheckupEnabled;
 
 // Compute whether user is capable to run password check in Google Account.
 - (BOOL)canUseAccountPasswordCheckup {
-  return _syncSetupService->IsSyncFeatureEnabled() &&
-         !_syncSetupService->IsEncryptEverythingEnabled();
+  return _syncService->IsSyncFeatureEnabled() &&
+         !_syncService->GetUserSettings()->IsEncryptEverythingEnabled();
 }
 
 #pragma mark - SavedPasswordsPresenterObserver
