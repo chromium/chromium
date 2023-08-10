@@ -31,8 +31,6 @@ void FakeIntentHelperHost::FactoryResetArc() {}
 void FakeIntentHelperHost::OpenWallpaperPicker() {}
 void FakeIntentHelperHost::OpenVolumeControl() {}
 void FakeIntentHelperHost::OnOpenWebApp(const std::string& url) {}
-void FakeIntentHelperHost::RecordShareFilesMetricsDeprecated(
-    mojom::ShareFiles flag) {}
 void FakeIntentHelperHost::LaunchCameraApp(uint32_t intent_id,
                                            arc::mojom::CameraIntentMode mode,
                                            bool should_handle_result,

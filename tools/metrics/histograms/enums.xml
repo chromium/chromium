@@ -4884,6 +4884,9 @@ Unknown properties are collapsed to zero. -->
 </enum>
 
 <enum name="ArcShareFilesOnExit">
+  <obsolete>
+    Removed in M118.
+  </obsolete>
   <summary>
     Describes whether Share files feature on ARC is correctly exiting or not
   </summary>

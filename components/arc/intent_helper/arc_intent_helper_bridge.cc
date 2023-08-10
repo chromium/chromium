@@ -235,15 +235,6 @@ void ArcIntentHelperBridge::OnOpenWebApp(const std::string& url) {
     g_open_url_delegate->OpenWebAppFromArc(gurl);
 }
 
-// TODO(b/200873831): Delete this anytime on 2022.
-void ArcIntentHelperBridge::RecordShareFilesMetricsDeprecated(
-    mojom::ShareFiles flag) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  // Record metrics coming from ARC, these are related Share files feature
-  // stability.
-  LOG(ERROR) << "Arc.ShareFilesOnExit is deprecated, erasing incoming";
-}
-
 void ArcIntentHelperBridge::LaunchCameraApp(uint32_t intent_id,
                                             arc::mojom::CameraIntentMode mode,
                                             bool should_handle_result,

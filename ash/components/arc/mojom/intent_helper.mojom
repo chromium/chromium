@@ -24,28 +24,6 @@ enum PatternType {
   [MinVersion=51, Default] kUnknown = -1,
 };
 
-[Extensible]
-enum ShareFiles {
-  // 0 and 3: capture that everything went great, the files were copied.
-  SINGLE_FILE_SUCCESS = 0,
-  // 1 and 4: Whenever we fail to copy, we try to delete the partially copied
-  // files, if the backroll goes well we call this entry.
-  SINGLE_FILE_BACKROLLED = 1,
-  // 2 and 5: Whenever we are unable to backroll because something else went
-  // wrong, we place this error on the MISC_ERROR bin. (it could have been a bad
-  // file descriptor, or just a read/write error)
-  SINGLE_FILE_MISC_ERROR = 2,
-  MULTIPLE_FILES_SUCCESS = 3,
-  MULTIPLE_FILES_BACKROLLED = 4,
-  MULTIPLE_FILES_MISC_ERROR = 5,
-  // This records a faulty response from DocumentsUI, since our implementation
-  // relies on DocumentsUI, sometimes it may return a bad response that we
-  // cannot process (e.g. for a single file DocumentsUI is in charge of creating
-  // the new file where we will copy, if it fails it can send us a bad response
-  // or maybe DocumentsUI is not returning the expected flags).
-  BAD_RESPONSE_FROM_DOCUMENTS_UI = 6,
-};
-
 struct PatternMatcher {
   string pattern;
   PatternType type;
@@ -331,9 +309,6 @@ interface IntentHelperHost {
   // Opens the specified URL as a web app if it is installed. Otherwise falls
   // back to the behaviour of OnOpenUrl. |url| must have a HTTPS scheme.
   [MinVersion=23] OnOpenWebApp@8(string url);
-
-  // Records Sharing files feature's metrics via Chrome.
-  [MinVersion=24] RecordShareFilesMetricsDeprecated@9(ShareFiles flag);
 
   // Does a reset of ARC; this wipes /data, and then re-calls on OOBE for
   // account binding to happen again, as if the user just went through OOBE.
