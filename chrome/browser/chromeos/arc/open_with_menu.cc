@@ -105,18 +105,22 @@ void OpenWithMenu::ModelChanged(const std::vector<LinkHandlerInfo>& handlers) {
     const auto it = handlers_.find(command_id);
     if (command_id == submenu_parent_id) {
       // Show the submenu parent.
-      proxy_->UpdateMenuItem(command_id, true, false, more_apps_label_);
+      proxy_->UpdateMenuItem(command_id, /*enabled=*/true, /*hidden=*/false,
+                             /*title=*/more_apps_label_);
     } else if (it == handlers_.end()) {
       // Hide the menu or submenu parent.
-      proxy_->UpdateMenuItem(command_id, false, true, std::u16string());
+      proxy_->UpdateMenuItem(command_id, /*enabled=*/false, /*hidden=*/true,
+                             /*title=*/std::u16string());
     } else {
       // Update the menu with the new model.
       const std::u16string label = l10n_util::GetStringFUTF16(
           IDS_CONTENT_CONTEXT_OPEN_WITH_APP, it->second.name);
-      proxy_->UpdateMenuItem(command_id, true, false, label);
-      if (!it->second.icon.IsEmpty())
+      proxy_->UpdateMenuItem(command_id, /*enabled=*/true, /*hidden=*/false,
+                             label);
+      if (!it->second.icon.IsEmpty()) {
         proxy_->UpdateMenuIcon(command_id,
                                ui::ImageModel::FromImage(it->second.icon));
+      }
     }
   }
 }
@@ -138,14 +142,14 @@ void OpenWithMenu::AddPlaceholderItems(RenderViewContextMenuProxy* proxy,
   for (int i = 0; i < kNumSubMenuCommands; ++i) {
     const int command_id =
         IDC_CONTENT_CONTEXT_OPEN_WITH1 + kNumMainMenuCommands + i;
-    submenu->AddItem(command_id, std::u16string());
+    submenu->AddItem(command_id, /*title=*/std::u16string());
   }
   int command_id;
   for (int i = 0; i < kNumMainMenuCommands - 1; ++i) {
     command_id = IDC_CONTENT_CONTEXT_OPEN_WITH1 + i;
-    proxy->AddMenuItem(command_id, std::u16string());
+    proxy->AddMenuItem(command_id, /*title=*/std::u16string());
   }
-  proxy->AddSubMenu(++command_id, std::u16string(), submenu);
+  proxy->AddSubMenu(++command_id, /*label=*/std::u16string(), submenu);
 }
 
 std::pair<OpenWithMenu::HandlerMap, int> OpenWithMenu::BuildHandlersMap(

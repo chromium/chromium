@@ -68,14 +68,14 @@ class OpenWithMenu : public RenderViewContextMenuObserver,
       const std::vector<LinkHandlerInfo>& handlers);
 
  private:
-  // Adds placeholder items and the |submenu| to the |proxy|.
+  // Adds placeholder items and the `submenu` to the `proxy`.
   static void AddPlaceholderItems(RenderViewContextMenuProxy* proxy,
                                   ui::SimpleMenuModel* submenu);
 
-  // Converts |handlers| into HandlerMap which is a map from a command ID to a
+  // Converts `handlers` into HandlerMap which is a map from a command ID to a
   // LinkHandlerInfo and returns the map. Also returns a command id for the
   // parent of the submenu. When the submenu is not needed, the function
-  // returns |kInvalidCommandId|.
+  // returns `kInvalidCommandId`.
   static std::pair<OpenWithMenu::HandlerMap, int> BuildHandlersMap(
       const std::vector<LinkHandlerInfo>& handlers);
 
