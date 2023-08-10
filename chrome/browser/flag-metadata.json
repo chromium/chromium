@@ -7434,7 +7434,7 @@
       "sauski@google.com",
       "chrome-privacy-controls@google.com"
     ],
-    "expiry_milestone": 117
+    "expiry_milestone": 125
   },
   {
     "name": "site-instance-groups-for-data-urls",
