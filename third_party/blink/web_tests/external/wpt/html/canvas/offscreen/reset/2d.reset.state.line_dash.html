@@ -20,12 +20,10 @@ t.step(function() {
   var canvas = new OffscreenCanvas(100, 50);
   var ctx = canvas.getContext('2d');
 
-  const default_value = ctx.getLineDash();
-
   ctx.setLineDash([1, 2]);
 
   ctx.reset();
-  _assert(ctx.getLineDash() == default_value, "ctx.getLineDash() == default_value");
+  _assert(ctx.getLineDash().length == 0, "ctx.getLineDash().length == 0");
   t.done();
 
 });

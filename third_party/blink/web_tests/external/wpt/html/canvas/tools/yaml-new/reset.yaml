@@ -135,12 +135,10 @@
 - name: 2d.reset.state.transformation_matrix
   desc: check that the state is reset
   code: |
-    const default_value = ctx.getTransform();
-
     ctx.scale(2, 2);
 
     ctx.reset();
-    @assert ctx.getTransform() == default_value;
+    @assert ctx.getTransform().isIdentity;
 
 - name: 2d.reset.state.clip
   desc: check that the clip is reset
@@ -161,9 +159,7 @@
 - name: 2d.reset.state.line_dash
   desc: check that the line dash is reset
   code: |
-    const default_value = ctx.getLineDash();
-
     ctx.setLineDash([1, 2]);
 
     ctx.reset();
-    @assert ctx.getLineDash() == default_value;
+    @assert ctx.getLineDash().length == 0;

@@ -19,12 +19,10 @@
 var t = async_test("check that the state is reset");
 _addTest(function(canvas, ctx) {
 
-  const default_value = ctx.getTransform();
-
   ctx.scale(2, 2);
 
   ctx.reset();
-  _assert(ctx.getTransform() == default_value, "ctx.getTransform() == default_value");
+  _assert(ctx.getTransform().isIdentity, "ctx.getTransform().isIdentity");
 
 });
 </script>

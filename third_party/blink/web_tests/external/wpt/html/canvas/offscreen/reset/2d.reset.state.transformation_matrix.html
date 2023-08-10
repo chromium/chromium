@@ -20,12 +20,10 @@ t.step(function() {
   var canvas = new OffscreenCanvas(100, 50);
   var ctx = canvas.getContext('2d');
 
-  const default_value = ctx.getTransform();
-
   ctx.scale(2, 2);
 
   ctx.reset();
-  _assert(ctx.getTransform() == default_value, "ctx.getTransform() == default_value");
+  _assert(ctx.getTransform().isIdentity, "ctx.getTransform().isIdentity");
   t.done();
 
 });

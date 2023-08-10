@@ -19,12 +19,10 @@
 var t = async_test("check that the line dash is reset");
 _addTest(function(canvas, ctx) {
 
-  const default_value = ctx.getLineDash();
-
   ctx.setLineDash([1, 2]);
 
   ctx.reset();
-  _assert(ctx.getLineDash() == default_value, "ctx.getLineDash() == default_value");
+  _assert(ctx.getLineDash().length == 0, "ctx.getLineDash().length == 0");
 
 });
 </script>
