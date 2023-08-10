@@ -127,7 +127,6 @@ export class OsSettingsA11yPageElement extends OsSettingsA11yPageElementBase {
   currentRoute: Route;
   private browserProxy_: OsA11yPageBrowserProxy;
   private hasScreenReader_: boolean;
-  private isAccessibilityOSSettingsVisibilityEnabled_: boolean;
   private isGuest_: boolean;
   private isKioskModeActive_: boolean;
   private section_: Section;

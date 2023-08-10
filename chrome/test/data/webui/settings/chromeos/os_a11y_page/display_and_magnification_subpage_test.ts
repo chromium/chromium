@@ -33,8 +33,6 @@ suite('<settings-display-and-magnification-subpage>', () => {
   }
 
   setup(() => {
-    loadTimeData.overrideValues(
-        {isAccessibilityOSSettingsVisibilityEnabled: true});
     Router.getInstance().navigateTo(routes.A11Y_DISPLAY_AND_MAGNIFICATION);
   });
 

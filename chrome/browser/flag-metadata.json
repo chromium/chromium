@@ -1984,11 +1984,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "enable-accessibility-os-settings-visibility",
-    "owners": [ "josiahk", "//ui/accessibility/OWNERS" ],
-    "expiry_milestone": 110
-  },
-  {
     "name": "enable-accessibility-page-zoom",
     "owners": [ "mschillaci", "aldietz", "//ui/accessibility/OWNERS" ],
     "expiry_milestone": 130
