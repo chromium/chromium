@@ -64,19 +64,9 @@ id<GREYMatcher> GetContinueButtonWithIdentityMatcher(
   NSString* buttonTitle = l10n_util::GetNSStringF(
       IDS_IOS_FIRST_RUN_SIGNIN_CONTINUE_AS,
       base::SysNSStringToUTF16(fakeIdentity.userGivenName));
+  id<GREYMatcher> matcher = grey_allOf(grey_accessibilityLabel(buttonTitle),
+                                       grey_sufficientlyVisible(), nil);
 
-  // TODO(crbug.com/1418068): Simplify after minimum version required is >=
-  // iOS 15.
-  id<GREYMatcher> matcher = nil;
-  if (base::ios::IsRunningOnIOS15OrLater() &&
-      [ChromeEarlGrey isUIButtonConfigurationEnabled]) {
-    matcher = grey_allOf(grey_kindOfClassName(@"UILabel"),
-                         grey_accessibilityLabel(buttonTitle),
-                         grey_sufficientlyVisible(), nil);
-  } else {
-    matcher = grey_allOf(grey_accessibilityLabel(buttonTitle),
-                         grey_sufficientlyVisible(), nil);
-  }
   return matcher;
 }
 

@@ -103,26 +103,12 @@ id<GREYMatcher> GetSyncSettings() {
 
 // Dismiss default browser promo.
 void DismissDefaultBrowserPromo() {
-  id<GREYMatcher> buttonMatcher = nil;
-
-  // TODO(crbug.com/1418068): Simplify after minimum version required is >=
-  // iOS 15.
-  if (base::ios::IsRunningOnIOS15OrLater() &&
-      [ChromeEarlGrey isUIButtonConfigurationEnabled]) {
-    buttonMatcher = grey_allOf(
-        grey_ancestor(grey_accessibilityID(
-            first_run::kFirstRunDefaultBrowserScreenAccessibilityIdentifier)),
-        grey_accessibilityLabel(l10n_util::GetNSString(
-            IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SECONDARY_ACTION)),
-        grey_kindOfClassName(@"UILabel"), nil);
-  } else {
-    buttonMatcher = grey_allOf(
-        grey_ancestor(grey_accessibilityID(
-            first_run::kFirstRunDefaultBrowserScreenAccessibilityIdentifier)),
-        grey_accessibilityLabel(l10n_util::GetNSString(
-            IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SECONDARY_ACTION)),
-        nil);
-  }
+  id<GREYMatcher> buttonMatcher = grey_allOf(
+      grey_ancestor(grey_accessibilityID(
+          first_run::kFirstRunDefaultBrowserScreenAccessibilityIdentifier)),
+      grey_accessibilityLabel(l10n_util::GetNSString(
+          IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SECONDARY_ACTION)),
+      nil);
 
   [[[EarlGrey selectElementWithMatcher:buttonMatcher]
       assertWithMatcher:grey_notNil()] performAction:grey_tap()];
