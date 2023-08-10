@@ -1171,6 +1171,16 @@ targets.mixin(
     name = "oreo_fleet",
     swarming = targets.swarming(
         dimensions = {
+            "device_os": "OPR4.170623.020",
+            "device_os_flavor": "google",
+        },
+    ),
+)
+
+targets.mixin(
+    name = "oreo_mr1_fleet",
+    swarming = targets.swarming(
+        dimensions = {
             "device_os": "OPM4.171019.021.P2",
             "device_os_flavor": "google",
         },

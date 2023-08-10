@@ -111,8 +111,11 @@ crbug.com/1302427 [ fuchsia fuchsia-board-qemu-x64 ] ExpectedColor_MediaRecorder
 
 crbug.com/1469270 [ bigsur nvidia-0xfe9 angle-opengl ] ExpectedColor_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ RetryOnFailure ]
 
+
 crbug.com/1469875 [ mac graphite-enabled ] ExpectedColor_MediaRecorderFromVideoElement [ Failure ]
 crbug.com/1469875 [ mac graphite-enabled ] ExpectedColor_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
+
+crbug.com/1470381 [ android-oreo android-nexus-5x ] ExpectedColor_maps [ Failure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #

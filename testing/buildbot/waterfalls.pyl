@@ -540,7 +540,7 @@
       'Android WebView O (dbg)': {
         'mixins': [
           'has_native_resultdb_integration',
-          'oreo_fleet',
+          'oreo_mr1_fleet',
           'walleye',
         ],
         'test_suites': {
@@ -628,7 +628,7 @@
         },
         'mixins': [
           'has_native_resultdb_integration',
-          'oreo_fleet',
+          'oreo_mr1_fleet',
           'walleye',
         ],
       },
@@ -4292,7 +4292,7 @@
         'skip_merge_script': True,
         'mixins': [
           'has_native_resultdb_integration',
-          'nougat',
+          'oreo_fleet',
           'bullhead',
         ],
         'test_suites': {

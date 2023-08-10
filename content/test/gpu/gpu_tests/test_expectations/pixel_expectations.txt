@@ -307,9 +307,8 @@ crbug.com/1176918 [ android android-pixel-4 android-webview-instrumentation rend
 crbug.com/1230619 [ android-chromium android-pie android-pixel-2 angle-disabled no-clang-coverage no-passthrough qualcomm renderer-skia-gl target-cpu-32 ] Pixel_WebGLFloat [ Failure ]
 crbug.com/1230619 [ android-chromium android-pixel-6 android-t angle-disabled arm no-clang-coverage no-passthrough renderer-skia-vulkan target-cpu-64 ] Pixel_WebGLFloat [ Failure ]
 crbug.com/1230619 [ android-chromium android-s angle-disabled no-clang-coverage no-passthrough renderer-skia-gl target-cpu-32 ] Pixel_WebGLFloat [ Failure ]
-crbug.com/1230619 [ android-nexus-5x android-nougat android-webview-instrumentation angle-opengles no-clang-coverage no-passthrough qualcomm renderer-skia-gl target-cpu-64 ] Pixel_WebGLFloat [ Failure ]
+crbug.com/1230619 [ android-nexus-5x android android-webview-instrumentation ] Pixel_WebGLFloat [ Failure ]
 crbug.com/1230619 [ android-chromium android-pixel-4 android-r angle-disabled no-clang-coverage no-passthrough qualcomm renderer-skia-gl target-cpu-32 ] Pixel_WebGLFloat [ Failure ]
-
 
 # Failing likely due to protected memory, but cause TBD.
 crbug.com/1420067 [ fuchsia fuchsia-board-astro ] Pixel_Video* [ Failure ]

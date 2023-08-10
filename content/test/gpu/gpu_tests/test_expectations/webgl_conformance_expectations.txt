@@ -544,7 +544,7 @@ crbug.com/angleproject/5038 [ android-pie android-shield-android-tv no-passthrou
 
 # Was too difficult to suppress these failures on individual bots.
 crbug.com/1165751 [ android-nougat ] conformance/glsl/bugs/vector-matrix-constructor-scalarization.html [ Failure ]
-
+crbug.com/1470376 [ android-oreo ] conformance/glsl/bugs/vector-matrix-constructor-scalarization.html [ Failure ]
 
 # These video tests are flakey on many configurations.
 crbug.com/1347077 [ android-nexus-5x android-nougat angle-opengles passthrough qualcomm renderer-skia-gl target-cpu-64 ] conformance/textures/misc/video-rotation.html [ Failure ]
@@ -560,6 +560,9 @@ crbug.com/1056830 [ android android-nexus-5x ] conformance/extensions/webgl-comp
 crbug.com/1122644 [ android android-nexus-5x angle-opengles passthrough ] conformance/textures/misc/texture-upload-size.html [ Failure ]
 # Flakily returning RGBA(0,0,0,0) for pixels in video related tests
 crbug.com/1295370 [ android android-nexus-5x passthrough ] conformance/textures/video/* [ Failure ]
+
+# Fails on android oreo
+crbug.com/1470373 [ android-oreo android-nexus-5x passthrough ] conformance/textures/misc/video-rotation.html [ Failure ]
 
 ## Android NVIDIA Shield TV ##
 
