@@ -297,12 +297,6 @@ class PrintViewManagerBase : public PrintManager, public PrintJob::Observer {
 #endif
                           int cookie,
                           PrinterHandler::PrintCallback callback);
-
-  // Runs `callback` with `params` to reply to UpdatePrintSettings().
-  void UpdatePrintSettingsReply(
-      mojom::PrintManagerHost::UpdatePrintSettingsCallback callback,
-      mojom::PrintPagesParamsPtr params,
-      bool canceled);
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
 
   // Runs `callback` with `params` to reply to GetDefaultPrintSettings().
