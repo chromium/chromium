@@ -1045,7 +1045,8 @@ TEST_F(SavedDeskTest, SaveDeskButtonHighlight) {
 
 // Tests that the save desk as template button and save for later button are
 // enabled and disabled as expected based on the number of saved desk entries.
-TEST_F(SavedDeskTest, SaveDeskButtonsEnabledDisabled) {
+// Disabled for being flaky: crbug.com/1472035
+TEST_F(SavedDeskTest, DISABLED_SaveDeskButtonsEnabledDisabled) {
   // Prepare the test environment, like creating an app window which should be
   // supported.
   auto no_app_id_window = CreateAppWindow();
