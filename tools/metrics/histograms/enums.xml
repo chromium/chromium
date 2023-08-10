@@ -60833,6 +60833,7 @@ from previous Chrome versions.
   <int value="-1694900665" label="HandwritingGestureEditing:enabled"/>
   <int value="-1693498375" label="CdmFactoryDaemon:enabled"/>
   <int value="-1693140558" label="FiltersInRecentsV2:disabled"/>
+  <int value="-1692974246" label="FilesGoogleDriveSettingsPage:enabled"/>
   <int value="-1692973133" label="VmStatusPage:disabled"/>
   <int value="-1692967465"
       label="ContextMenuPerformanceInfoAndRemoteHintFetching:enabled"/>
@@ -61559,6 +61560,7 @@ from previous Chrome versions.
       label="OmniboxMostVisitedTilesTitleWrapAround:enabled"/>
   <int value="-1338306372" label="BrowserTouchBar:enabled"/>
   <int value="-1338237485" label="HardwareSecureDecryptionExperiment:disabled"/>
+  <int value="-1337433513" label="FilesGoogleDriveSettingsPage:disabled"/>
   <int value="-1337185440" label="enable-webvr"/>
   <int value="-1336110789" label="CastMediaRouteProvider:disabled"/>
   <int value="-1335017208" label="KeyboardLockAPI:enabled"/>

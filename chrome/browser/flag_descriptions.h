@@ -3575,6 +3575,9 @@ extern const char kFilesSinglePartitionFormatDescription[];
 extern const char kFilesTrashDriveName[];
 extern const char kFilesTrashDriveDescription[];
 
+extern const char kFilesGoogleDriveSettingsPageName[];
+extern const char kFilesGoogleDriveSettingsPageDescription[];
+
 extern const char kFirmwareUpdateJellyName[];
 extern const char kFirmwareUpdateJellyDescription[];
 

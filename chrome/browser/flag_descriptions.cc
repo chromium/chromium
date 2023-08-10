@@ -6229,6 +6229,11 @@ const char kFilesTrashDriveName[] = "Enable Files Trash for Drive.";
 const char kFilesTrashDriveDescription[] =
     "Enable trash for Drive volume in Files App.";
 
+const char kFilesGoogleDriveSettingsPageName[] =
+    "Enable Google Drive settings page";
+const char kFilesGoogleDriveSettingsPageDescription[] =
+    "Enable a new page for the Google Drive settings.";
+
 const char kFirmwareUpdateJellyName[] =
     "Enable jelly colors for the Firmware Update App";
 const char kFirmwareUpdateJellyDescription[] =
