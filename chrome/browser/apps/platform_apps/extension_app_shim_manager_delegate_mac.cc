@@ -38,6 +38,7 @@
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/constants.h"
+#include "extensions/common/extension_id.h"
 
 using extensions::AppWindowRegistry;
 using extensions::Extension;
@@ -56,7 +57,7 @@ typedef AppWindowRegistry::AppWindowList AppWindowList;
 class EnableViaPrompt : public ExtensionEnableFlowDelegate {
  public:
   EnableViaPrompt(Profile* profile,
-                  const std::string& extension_id,
+                  const extensions::ExtensionId& extension_id,
                   base::OnceCallback<void()> callback)
       : profile_(profile),
         extension_id_(extension_id),
@@ -78,13 +79,14 @@ class EnableViaPrompt : public ExtensionEnableFlowDelegate {
   void ExtensionEnableFlowAborted(bool user_initiated) override { delete this; }
 
   raw_ptr<Profile> profile_;
-  std::string extension_id_;
+  extensions::ExtensionId extension_id_;
   base::OnceCallback<void()> callback_;
   std::unique_ptr<ExtensionEnableFlow> flow_;
 };
 
-const Extension* MaybeGetAppExtension(content::BrowserContext* context,
-                                      const std::string& extension_id) {
+const Extension* MaybeGetAppExtension(
+    content::BrowserContext* context,
+    const extensions::ExtensionId& extension_id) {
   if (!context)
     return nullptr;
 
