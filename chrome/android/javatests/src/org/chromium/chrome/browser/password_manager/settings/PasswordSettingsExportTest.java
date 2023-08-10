@@ -263,6 +263,7 @@ public class PasswordSettingsExportTest {
     @Test
     @SmallTest
     @Feature({"Preferences"})
+    @DisabledTest(message = "crbug.com/1471922")
     public void testExportFlowWithNoScreenLockRecordsMetrics() {
         mTestHelper.setPasswordSource(
                 new SavedPasswordEntry("https://example.com", "test user", "password"));
