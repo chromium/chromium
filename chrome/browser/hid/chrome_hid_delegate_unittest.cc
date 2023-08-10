@@ -1033,13 +1033,11 @@ class ChromeHidDelegateServiceWorkerTest
 };
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-class DisableWebHidOnExtensionServiceWorkerHelper {
+class EnableWebHidOnExtensionServiceWorkerHelper {
  public:
-  DisableWebHidOnExtensionServiceWorkerHelper() {
+  EnableWebHidOnExtensionServiceWorkerHelper() {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{},
-        /*disabled_features=*/{
-            features::kEnableWebHidOnExtensionServiceWorker});
+        {features::kEnableWebHidOnExtensionServiceWorker}, {});
   }
 
  private:
@@ -1049,44 +1047,34 @@ class DisableWebHidOnExtensionServiceWorkerHelper {
 class ChromeHidDelegateExtensionServiceWorkerTest
     : public ChromeHidDelegateServiceWorkerTestBase {
  public:
-  ChromeHidDelegateExtensionServiceWorkerTest() {
-    supports_hid_connection_tracker_ = true;
-  }
   // ChromeHidTestHelper
   void SetUpOriginUrl() override { SetUpExtensionOriginUrl(); }
 };
 
-class ChromeHidDelegateExtensionServiceWorkerFeatureDisabledTest
+class ChromeHidDelegateExtensionServiceWorkerFeatureEnabledTest
     : public ChromeHidDelegateExtensionServiceWorkerTest,
-      public DisableWebHidOnExtensionServiceWorkerHelper {
+      public EnableWebHidOnExtensionServiceWorkerHelper {
  public:
-  ChromeHidDelegateExtensionServiceWorkerFeatureDisabledTest() {
-    // There is no hid connection tracker activity when
-    // features::kEnableWebHidOnExtensionServiceWorker is disabled.
-    supports_hid_connection_tracker_ = false;
+  ChromeHidDelegateExtensionServiceWorkerFeatureEnabledTest() {
+    supports_hid_connection_tracker_ = true;
   }
 };
+
+class ChromeHidDelegateServiceWorkerTestFeatureEnabledTest
+    : public ChromeHidDelegateServiceWorkerTest,
+      public EnableWebHidOnExtensionServiceWorkerHelper {};
 
 class ChromeHidDelegateExtensionRenderFrameTest
     : public ChromeHidDelegateRenderFrameTestBase {
  public:
-  ChromeHidDelegateExtensionRenderFrameTest() {
-    supports_hid_connection_tracker_ = true;
-  }
   // ChromeHidTestHelper
   void SetUpOriginUrl() override { SetUpExtensionOriginUrl(); }
 };
 
-class ChromeHidDelegateExtensionRenderFrameFeatureDisabledTest
+class ChromeHidDelegateExtensionRenderFrameFeatureEnabledTest
     : public ChromeHidDelegateExtensionRenderFrameTest,
-      public DisableWebHidOnExtensionServiceWorkerHelper {
- public:
-  ChromeHidDelegateExtensionRenderFrameFeatureDisabledTest() {
-    supports_hid_connection_tracker_ = false;
-  }
-  // ChromeHidTestHelper
-  void SetUpOriginUrl() override { SetUpExtensionOriginUrl(); }
-};
+      public EnableWebHidOnExtensionServiceWorkerHelper {};
+
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 }  // namespace
@@ -1124,12 +1112,16 @@ TEST_F(ChromeHidDelegateRenderFrameTest, ConnectAndNavigateCrossDocument) {
   TestConnectAndNavigateCrossDocument(web_contents());
 }
 
-TEST_F(ChromeHidDelegateExtensionServiceWorkerFeatureDisabledTest,
-       HidServiceNotConnected) {
+TEST_F(ChromeHidDelegateExtensionServiceWorkerTest, HidServiceNotConnected) {
   TestHidServiceNotConnected();
 }
 
 TEST_F(ChromeHidDelegateServiceWorkerTest, HidServiceNotConnected) {
+  TestHidServiceNotConnected();
+}
+
+TEST_F(ChromeHidDelegateServiceWorkerTestFeatureEnabledTest,
+       HidServiceNotConnected) {
   TestHidServiceNotConnected();
 }
 
@@ -1173,37 +1165,43 @@ TEST_F(ChromeHidDelegateExtensionRenderFrameTest,
   TestConnectAndNavigateCrossDocument(web_contents());
 }
 
-TEST_F(ChromeHidDelegateExtensionRenderFrameFeatureDisabledTest,
+TEST_F(ChromeHidDelegateExtensionRenderFrameTest,
        ConnectionTrackerOpenDeviceNoIndicatorNoNotification) {
   TestConnectionTrackerOpenDeviceNoConnectionCountUpdate();
 }
 
-TEST_F(ChromeHidDelegateExtensionServiceWorkerTest, AddChangeRemoveDevice) {
+TEST_F(ChromeHidDelegateExtensionServiceWorkerFeatureEnabledTest,
+       AddChangeRemoveDevice) {
   TestAddChangeRemoveDevice();
 }
 
-TEST_F(ChromeHidDelegateExtensionServiceWorkerTest, NoPermissionDevice) {
+TEST_F(ChromeHidDelegateExtensionServiceWorkerFeatureEnabledTest,
+       NoPermissionDevice) {
   TestNoPermissionDevice();
 }
 
-TEST_F(ChromeHidDelegateExtensionServiceWorkerTest, ReconnectHidService) {
+TEST_F(ChromeHidDelegateExtensionServiceWorkerFeatureEnabledTest,
+       ReconnectHidService) {
   TestReconnectHidService();
 }
 
-TEST_F(ChromeHidDelegateExtensionServiceWorkerTest, RevokeDevicePermission) {
+TEST_F(ChromeHidDelegateExtensionServiceWorkerFeatureEnabledTest,
+       RevokeDevicePermission) {
   TestRevokeDevicePermission();
 }
 
-TEST_F(ChromeHidDelegateExtensionServiceWorkerTest,
+TEST_F(ChromeHidDelegateExtensionServiceWorkerFeatureEnabledTest,
        RevokeDevicePermissionEphemeral) {
   TestRevokeDevicePermissionEphemeral();
 }
 
-TEST_F(ChromeHidDelegateExtensionServiceWorkerTest, ConnectAndDisconnect) {
+TEST_F(ChromeHidDelegateExtensionServiceWorkerFeatureEnabledTest,
+       ConnectAndDisconnect) {
   TestConnectAndDisconnect(/*web_contents=*/nullptr);
 }
 
-TEST_F(ChromeHidDelegateExtensionServiceWorkerTest, ConnectAndRemove) {
+TEST_F(ChromeHidDelegateExtensionServiceWorkerFeatureEnabledTest,
+       ConnectAndRemove) {
   TestConnectAndRemove(/*web_contents=*/nullptr);
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
