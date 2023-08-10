@@ -173,4 +173,36 @@ TEST_F(ExpsRegistrationSuccessObserverTest,
       pref_service_.GetBoolean(companion::kHasNavigatedToExpsSuccessPage));
 }
 
+TEST_F(ExpsRegistrationSuccessObserverTest, MatchURL) {
+  std::vector<std::string> url_patterns;
+  url_patterns.emplace_back("https://labs.google.com/search/experiment");
+  url_patterns.emplace_back("https://labs.google.com/search/otherexperiment");
+
+  // Empty URL.
+  EXPECT_FALSE(
+      exps_observer_->DoesUrlMatchPatternsInList(GURL(), url_patterns));
+  EXPECT_FALSE(exps_observer_->DoesUrlMatchPatternsInList(
+      GURL("http://example.com"), url_patterns));
+
+  // Valid URLs.
+  EXPECT_TRUE(exps_observer_->DoesUrlMatchPatternsInList(
+      GURL("https://labs.google.com/search/experiment"), url_patterns));
+  EXPECT_TRUE(exps_observer_->DoesUrlMatchPatternsInList(
+      GURL("https://labs.google.com/search/experiment?q=some_val"),
+      url_patterns));
+  EXPECT_TRUE(exps_observer_->DoesUrlMatchPatternsInList(
+      GURL("https://labs.google.com/search/experiment#fragment1"),
+      url_patterns));
+  EXPECT_TRUE(exps_observer_->DoesUrlMatchPatternsInList(
+      GURL("https://labs.google.com/search/experiment/v3"), url_patterns));
+  EXPECT_TRUE(exps_observer_->DoesUrlMatchPatternsInList(
+      GURL("https://labs.google.com/search/experiment2"), url_patterns));
+
+  // Valid URLs matching pattern 2.
+  EXPECT_TRUE(exps_observer_->DoesUrlMatchPatternsInList(
+      GURL("https://labs.google.com/search/otherexperiment"), url_patterns));
+  EXPECT_TRUE(exps_observer_->DoesUrlMatchPatternsInList(
+      GURL("https://labs.google.com/search/otherexperiment/v3"), url_patterns));
+}
+
 }  // namespace companion
