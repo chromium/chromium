@@ -150,8 +150,13 @@ class PreconnectListener
 class NavigationEarlyHintsTest : public ContentBrowserTest {
  public:
   NavigationEarlyHintsTest() {
-    feature_list_.InitAndEnableFeature(
-        net::features::kSplitCacheByNetworkIsolationKey);
+    // QUIC Simple test server does not support connection migration, see
+    // crbug/1471898 for more information.
+    feature_list_.InitWithFeatures(
+        std::vector<base::test::FeatureRef>{
+            net::features::kSplitCacheByNetworkIsolationKey},
+        std::vector<base::test::FeatureRef>{
+            net::features::kMigrateSessionsOnNetworkChangeV2});
   }
   ~NavigationEarlyHintsTest() override = default;
 

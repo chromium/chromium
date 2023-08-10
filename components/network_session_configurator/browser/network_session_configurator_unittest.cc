@@ -81,7 +81,11 @@ TEST_F(NetworkSessionConfiguratorTest, Defaults) {
   EXPECT_EQ(base::Seconds(quic::kInitialIdleTimeoutSecs),
             quic_params_.max_idle_time_before_crypto_handshake);
   EXPECT_FALSE(quic_params_.estimate_initial_rtt);
+#if BUILDFLAG(IS_ANDROID)
+  EXPECT_TRUE(quic_params_.migrate_sessions_on_network_change_v2);
+#else   // !BUILDFLAG(IS_ANDROID)
   EXPECT_FALSE(quic_params_.migrate_sessions_on_network_change_v2);
+#endif  // BUILDFLAG(IS_ANDROID)
   EXPECT_FALSE(quic_params_.migrate_sessions_early_v2);
   EXPECT_FALSE(quic_params_.retry_on_alternate_network_before_handshake);
   EXPECT_FALSE(quic_params_.migrate_idle_sessions);
