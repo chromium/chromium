@@ -48,8 +48,9 @@ class CORE_EXPORT SnapCoordinator final
 
   // Calculate the SnapAreaData for the specific snap area in its snap
   // container.
-  cc::SnapAreaData CalculateSnapAreaData(const LayoutBox& snap_area,
-                                         const LayoutBox& snap_container);
+  static cc::SnapAreaData CalculateSnapAreaData(
+      const LayoutBox& snap_area,
+      const LayoutBox& snap_container);
 
   bool AnySnapContainerDataNeedsUpdate() const {
     return any_snap_container_data_needs_update_;
@@ -62,7 +63,7 @@ class CORE_EXPORT SnapCoordinator final
   // by the style/layout change.
   void UpdateAllSnapContainerDataIfNeeded();
 
-  void UpdateSnapContainerData(LayoutBox&);
+  static void UpdateSnapContainerData(LayoutBox&);
 
 #ifndef NDEBUG
   void ShowSnapAreaMap();

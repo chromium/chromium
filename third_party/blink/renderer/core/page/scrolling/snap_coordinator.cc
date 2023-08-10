@@ -218,6 +218,7 @@ void SnapCoordinator::UpdateAllSnapContainerDataIfNeeded() {
   SetAnySnapContainerDataNeedsUpdate(false);
 }
 
+// static
 void SnapCoordinator::UpdateSnapContainerData(LayoutBox& snap_container) {
   ScrollableArea* scrollable_area =
       ScrollableArea::GetForScrolling(&snap_container);
@@ -238,8 +239,6 @@ void SnapCoordinator::UpdateSnapContainerData(LayoutBox& snap_container) {
   }
 
   cc::SnapContainerData snap_container_data(snap_type);
-
-  DCHECK(snap_containers_.Contains(&snap_container));
 
   gfx::PointF max_position = scrollable_area->ScrollOffsetToPosition(
       scrollable_area->MaximumScrollOffset());
@@ -369,6 +368,7 @@ static cc::ScrollSnapAlign GetPhysicalAlignment(
   return adjusted_alignment;
 }
 
+// static
 cc::SnapAreaData SnapCoordinator::CalculateSnapAreaData(
     const LayoutBox& snap_area,
     const LayoutBox& snap_container) {
