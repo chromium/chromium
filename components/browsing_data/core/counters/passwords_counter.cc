@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "components/browsing_data/core/pref_names.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
@@ -82,6 +83,10 @@ class PasswordStoreFetcher
   int num_passwords_ = 0;
   std::vector<std::string> domain_examples_;
 
+  base::ScopedObservation<password_manager::PasswordStoreInterface,
+                          password_manager::PasswordStoreInterface::Observer>
+      password_store_interface_observation_{this};
+
   base::WeakPtrFactory<PasswordStoreFetcher> weak_ptr_factory_{this};
 };
 
@@ -90,13 +95,10 @@ PasswordStoreFetcher::PasswordStoreFetcher(
     base::RepeatingClosure logins_changed_closure)
     : store_(store), logins_changed_closure_(logins_changed_closure) {
   if (store_)
-    store_->AddObserver(this);
+    password_store_interface_observation_.Observe(store_.get());
 }
 
-PasswordStoreFetcher::~PasswordStoreFetcher() {
-  if (store_)
-    store_->RemoveObserver(this);
-}
+PasswordStoreFetcher::~PasswordStoreFetcher() = default;
 
 void PasswordStoreFetcher::OnLoginsChanged(
     password_manager::PasswordStoreInterface* /*store*/,
