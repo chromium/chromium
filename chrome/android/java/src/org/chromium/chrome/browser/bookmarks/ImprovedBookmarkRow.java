@@ -51,6 +51,7 @@ public class ImprovedBookmarkRow extends SelectableItemViewBase<BookmarkId> {
 
     private boolean mDragEnabled;
     private boolean mBookmarkIdEditable;
+    private boolean mMoreButtonVisible;
 
     private Runnable mOpenBookmarkCallback;
 
@@ -196,7 +197,9 @@ public class ImprovedBookmarkRow extends SelectableItemViewBase<BookmarkId> {
     }
 
     void setEndMenuVisible(boolean visible) {
+        mMoreButtonVisible = visible;
         mMoreButton.setVisibility(visible ? View.VISIBLE : View.GONE);
+        updateView(false);
     }
 
     void setEndImageRes(int res) {
@@ -212,7 +215,7 @@ public class ImprovedBookmarkRow extends SelectableItemViewBase<BookmarkId> {
                                                   : R.drawable.rounded_rectangle_surface_0);
 
         boolean checkVisible = selected;
-        boolean moreVisible = !selected && mBookmarkIdEditable;
+        boolean moreVisible = mMoreButtonVisible && !selected && mBookmarkIdEditable;
         mCheckImageView.setVisibility(checkVisible ? View.VISIBLE : View.GONE);
         mMoreButton.setVisibility(moreVisible ? View.VISIBLE : View.GONE);
     }
