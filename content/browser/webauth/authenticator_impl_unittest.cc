@@ -7192,7 +7192,9 @@ class ResidentKeyTestAuthenticatorRequestDelegate
           info.recognized_credentials, *config_.preselected_credential_id,
           &device::DiscoverableCredentialMetadata::cred_id));
       std::move(account_preselected_callback_)
-          .Run(*config_.preselected_credential_id);
+          .Run(device::PublicKeyCredentialDescriptor(
+              device::CredentialType::kPublicKey,
+              *config_.preselected_credential_id));
       request_callback_.Run(*config_.preselected_authenticator_id);
     }
   }

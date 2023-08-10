@@ -43,6 +43,7 @@
 #include "device/fido/fido_transport_protocol.h"
 #include "device/fido/fido_types.h"
 #include "device/fido/pin.h"
+#include "device/fido/public_key_credential_descriptor.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -820,7 +821,11 @@ void AuthenticatorRequestDialogModel::OnAccountPreselected(
       << base::HexEncode(credential_id);
   const device::AuthenticatorType source = cred->source;
   DCHECK(account_preselected_callback_);
-  account_preselected_callback_.Run(cred->cred_id);
+  account_preselected_callback_.Run(device::PublicKeyCredentialDescriptor(
+      device::CredentialType::kPublicKey, cred->cred_id,
+      {cred->source == device::AuthenticatorType::kPhone
+           ? AuthenticatorTransport::kHybrid
+           : AuthenticatorTransport::kInternal}));
   ephemeral_state_.creds_.clear();
   if (source == device::AuthenticatorType::kPhone) {
     ContactPrioritySyncedPhone();

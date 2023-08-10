@@ -15,8 +15,10 @@
 #include "content/public/browser/web_authentication_request_proxy.h"
 #include "device/fido/authenticator_get_assertion_response.h"
 #include "device/fido/cable/cable_discovery_data.h"
+#include "device/fido/discoverable_credential_metadata.h"
 #include "device/fido/fido_request_handler_base.h"
 #include "device/fido/fido_transport_protocol.h"
+#include "device/fido/public_key_credential_descriptor.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -180,7 +182,7 @@ class CONTENT_EXPORT AuthenticatorRequestClientDelegate
     : public device::FidoRequestHandlerBase::Observer {
  public:
   using AccountPreselectedCallback =
-      base::RepeatingCallback<void(std::vector<uint8_t> credential_id)>;
+      base::RepeatingCallback<void(device::PublicKeyCredentialDescriptor)>;
 
   // Failure reasons that might be of interest to the user, so the embedder may
   // decide to inform the user.

@@ -22,6 +22,7 @@
 #include "content/public/test/web_contents_tester.h"
 #include "device/fido/discoverable_credential_metadata.h"
 #include "device/fido/fido_parsing_utils.h"
+#include "device/fido/public_key_credential_descriptor.h"
 #include "device/fido/public_key_credential_user_entity.h"
 #include "device/fido/test_callback_receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -218,9 +219,9 @@ TEST_F(ChromeWebAuthnCredentialsDelegateTest, SelectCredential) {
 
 #if !BUILDFLAG(IS_ANDROID)
   base::RunLoop run_loop;
-  dialog_model()->SetAccountPreselectedCallback(
-      base::BindLambdaForTesting([&](std::vector<uint8_t> credential_id) {
-        EXPECT_THAT(credential_id, testing::ElementsAreArray(kCredId2));
+  dialog_model()->SetAccountPreselectedCallback(base::BindLambdaForTesting(
+      [&](device::PublicKeyCredentialDescriptor cred) {
+        EXPECT_THAT(cred.id, testing::ElementsAreArray(kCredId2));
         run_loop.Quit();
       }));
 #endif

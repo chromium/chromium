@@ -7,7 +7,6 @@
 
 #include <memory>
 #include <set>
-#include <string>
 #include <vector>
 
 #include "base/functional/callback.h"
@@ -19,6 +18,7 @@
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_request_handler_base.h"
 #include "device/fido/fido_transport_protocol.h"
+#include "device/fido/public_key_credential_descriptor.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
@@ -76,8 +76,8 @@ class COMPONENT_EXPORT(DEVICE_FIDO) GetAssertionRequestHandler
   ~GetAssertionRequestHandler() override;
 
   // Filters the allow list of the get assertion request to the given
-  // |credential_id|. This is only valid to call for empty allow list requests.
-  void PreselectAccount(std::vector<uint8_t> credential_id);
+  // |credential|.
+  void PreselectAccount(PublicKeyCredentialDescriptor credential);
 
   base::WeakPtr<GetAssertionRequestHandler> GetWeakPtr();
 
@@ -150,10 +150,9 @@ class COMPONENT_EXPORT(DEVICE_FIDO) GetAssertionRequestHandler
       auth_token_requester_map_;
 
   // preselected_credential_ is set when the UI invokes `PreselectAccount()`. It
-  // contains the ID of a platform authenticator credential chosen by the user
-  // during a resident key request prior to dispatching to that platform
-  // authenticator.
-  absl::optional<std::vector<uint8_t>> preselected_credential_;
+  // contains the credential chosen by the user during a request prior to
+  // dispatching to the authenticator.
+  absl::optional<PublicKeyCredentialDescriptor> preselected_credential_;
 
   SEQUENCE_CHECKER(my_sequence_checker_);
   base::WeakPtrFactory<GetAssertionRequestHandler> weak_factory_{this};

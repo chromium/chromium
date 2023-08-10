@@ -36,6 +36,7 @@
 #include "device/fido/fido_request_handler_base.h"
 #include "device/fido/fido_transport_protocol.h"
 #include "device/fido/fido_types.h"
+#include "device/fido/public_key_credential_descriptor.h"
 #include "device/fido/public_key_credential_user_entity.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -1278,8 +1279,8 @@ TEST_F(AuthenticatorRequestDialogModelTest,
 
   int preselect_num_called = 0;
   model.SetAccountPreselectedCallback(base::BindRepeating(
-      [](int* i, std::vector<uint8_t> credential_id) {
-        EXPECT_EQ(credential_id, std::vector<uint8_t>({1, 2, 3, 4}));
+      [](int* i, device::PublicKeyCredentialDescriptor cred) {
+        EXPECT_EQ(cred.id, std::vector<uint8_t>({1, 2, 3, 4}));
         ++(*i);
       },
       &preselect_num_called));
@@ -1312,8 +1313,8 @@ TEST_F(AuthenticatorRequestDialogModelTest, ConditionalUIRecognizedCredential) {
   AuthenticatorRequestDialogModel model(main_rfh());
   int preselect_num_called = 0;
   model.SetAccountPreselectedCallback(base::BindRepeating(
-      [](int* i, std::vector<uint8_t> credential_id) {
-        EXPECT_EQ(credential_id, std::vector<uint8_t>({0}));
+      [](int* i, device::PublicKeyCredentialDescriptor cred) {
+        EXPECT_EQ(cred.id, std::vector<uint8_t>({0}));
         ++(*i);
       },
       &preselect_num_called));
@@ -1537,8 +1538,8 @@ TEST_F(AuthenticatorRequestDialogModelTest, PreSelectWithEmptyAllowList) {
   AuthenticatorRequestDialogModel model(main_rfh());
   int preselect_num_called = 0;
   model.SetAccountPreselectedCallback(base::BindLambdaForTesting(
-      [&preselect_num_called](std::vector<uint8_t> credential_id) {
-        EXPECT_EQ(credential_id, std::vector<uint8_t>({0}));
+      [&preselect_num_called](device::PublicKeyCredentialDescriptor cred) {
+        EXPECT_EQ(cred.id, std::vector<uint8_t>({0}));
         ++preselect_num_called;
       }));
   int request_num_called = 0;
@@ -1773,7 +1774,7 @@ TEST_F(ListPasskeysFromSyncTest, MechanismsFromUserAccounts) {
   model.set_cable_transport_info(
       /*extension_is_v2=*/absl::nullopt, std::move(phones),
       contact_phone_callback.Callback(), absl::nullopt);
-  RepeatingValueCallbackReceiver<std::vector<uint8_t>>
+  RepeatingValueCallbackReceiver<device::PublicKeyCredentialDescriptor>
       account_preselected_callback;
   model.SetAccountPreselectedCallback(account_preselected_callback.Callback());
 
@@ -1796,7 +1797,11 @@ TEST_F(ListPasskeysFromSyncTest, MechanismsFromUserAccounts) {
   EXPECT_EQ(mech1.description, u"Use device sign-in");
   EXPECT_EQ(mech1.icon, vector_icons::kPasskeyIcon);
   mech1.callback.Run();
-  EXPECT_EQ(account_preselected_callback.WaitForResult(), kCred1.cred_id);
+  device::PublicKeyCredentialDescriptor result =
+      account_preselected_callback.WaitForResult();
+  EXPECT_EQ(result.id, kCred1.cred_id);
+  EXPECT_THAT(result.transports,
+              testing::ElementsAre(device::FidoTransportProtocol::kInternal));
   EXPECT_EQ(request_callback.WaitForResult(), kLocalAuthenticatorId);
 
   // Reset the model as if the user had cancelled out of the operation.
@@ -1813,7 +1818,10 @@ TEST_F(ListPasskeysFromSyncTest, MechanismsFromUserAccounts) {
   EXPECT_EQ(mech2.description, u"Use device sign-in");
   EXPECT_EQ(mech2.icon, vector_icons::kPasskeyIcon);
   mech2.callback.Run();
-  EXPECT_EQ(account_preselected_callback.WaitForResult(), kCred2.cred_id);
+  result = account_preselected_callback.WaitForResult();
+  EXPECT_EQ(result.id, kCred2.cred_id);
+  EXPECT_THAT(result.transports,
+              testing::ElementsAre(device::FidoTransportProtocol::kInternal));
   EXPECT_EQ(request_callback.WaitForResult(), kLocalAuthenticatorId);
 
   // Reset the model as if the user had cancelled out of the operation.
@@ -1830,6 +1838,9 @@ TEST_F(ListPasskeysFromSyncTest, MechanismsFromUserAccounts) {
   EXPECT_EQ(mech3.description, u"Use \"Phone from sync\" (UNTRANSLATED)");
   EXPECT_EQ(mech3.icon, kSmartphoneIcon);
   mech3.callback.Run();
-  EXPECT_EQ(account_preselected_callback.WaitForResult(), kPhoneCred1.cred_id);
+  result = account_preselected_callback.WaitForResult();
+  EXPECT_EQ(result.id, kPhoneCred1.cred_id);
+  EXPECT_THAT(result.transports,
+              testing::ElementsAre(device::FidoTransportProtocol::kHybrid));
   EXPECT_TRUE(contact_phone_callback.WaitForResult());
 }

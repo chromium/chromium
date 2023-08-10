@@ -418,15 +418,14 @@ GetAssertionRequestHandler::GetAssertionRequestHandler(
 GetAssertionRequestHandler::~GetAssertionRequestHandler() = default;
 
 void GetAssertionRequestHandler::PreselectAccount(
-    std::vector<uint8_t> credential_id) {
+    PublicKeyCredentialDescriptor credential) {
   DCHECK(!preselected_credential_);
-  DCHECK(
-      request_.allow_list.empty() ||
-      std::any_of(request_.allow_list.begin(), request_.allow_list.end(),
-                  [credential_id](const PublicKeyCredentialDescriptor& desc) {
-                    return desc.id == credential_id;
-                  }));
-  preselected_credential_ = std::move(credential_id);
+  DCHECK(request_.allow_list.empty() ||
+         std::any_of(request_.allow_list.begin(), request_.allow_list.end(),
+                     [&credential](const PublicKeyCredentialDescriptor& desc) {
+                       return desc.id == credential.id;
+                     }));
+  preselected_credential_ = std::move(credential);
 }
 
 base::WeakPtr<GetAssertionRequestHandler>
@@ -521,14 +520,7 @@ void GetAssertionRequestHandler::DispatchRequest(
   }
 
   if (preselected_credential_) {
-    DCHECK(request_.allow_list.empty() ||
-           std::any_of(request_.allow_list.begin(), request_.allow_list.end(),
-                       [this](const PublicKeyCredentialDescriptor& desc) {
-                         return desc.id == preselected_credential_;
-                       }));
-    request.allow_list = {PublicKeyCredentialDescriptor(
-        CredentialType::kPublicKey, *preselected_credential_,
-        {FidoTransportProtocol::kInternal})};
+    request.allow_list = {*preselected_credential_};
   }
 
   ReportGetAssertionRequestTransport(authenticator);
@@ -797,7 +789,7 @@ void GetAssertionRequestHandler::HandleResponse(
     // selection dialog by setting the `userSelected` flag.
     DCHECK_EQ(responses.size(), 1u);
     DCHECK(responses.at(0).credential &&
-           responses.at(0).credential->id == preselected_credential_);
+           responses.at(0).credential->id == preselected_credential_->id);
     responses.at(0).user_selected = true;
   }
 
