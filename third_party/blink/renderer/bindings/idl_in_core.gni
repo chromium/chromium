@@ -751,7 +751,6 @@ static_idl_files_in_core = [
   "//third_party/blink/renderer/core/workers/worklet_options.idl",
   "//third_party/blink/renderer/core/xml/document_xpath_evaluator.idl",
   "//third_party/blink/renderer/core/xml/dom_parser.idl",
-  "//third_party/blink/renderer/core/xml/native_xpath_ns_resolver.idl",
   "//third_party/blink/renderer/core/xml/parse_from_string_options.idl",
   "//third_party/blink/renderer/core/xml/xml_serializer.idl",
   "//third_party/blink/renderer/core/xml/xpath_evaluator.idl",

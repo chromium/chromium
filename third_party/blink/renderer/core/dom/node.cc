@@ -1929,16 +1929,14 @@ const AtomicString& Node::lookupNamespaceURI(
     case kElementNode: {
       const auto& element = To<Element>(*this);
 
-      if (RuntimeEnabledFeatures::NodeAsNSResolverEnabled()) {
-        // 1. If prefix is "xml", then return the XML namespace.
-        if (prefix == g_xml_atom) {
-          return xml_names::kNamespaceURI;
-        }
+      // 1. If prefix is "xml", then return the XML namespace.
+      if (prefix == g_xml_atom) {
+        return xml_names::kNamespaceURI;
+      }
 
-        // 2. If prefix is "xmlns", then return the XMLNS namespace.
-        if (prefix == g_xmlns_atom) {
-          return xmlns_names::kNamespaceURI;
-        }
+      // 2. If prefix is "xmlns", then return the XMLNS namespace.
+      if (prefix == g_xmlns_atom) {
+        return xmlns_names::kNamespaceURI;
       }
 
       // 3. If its namespace is not null and its namespace prefix is prefix,

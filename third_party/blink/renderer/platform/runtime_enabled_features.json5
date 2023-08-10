@@ -2355,10 +2355,6 @@
       base_feature: "none",
     },
     {
-      name: "NodeAsNSResolver",
-      status: "stable",
-    },
-    {
       name: "NoIdleEncodingForWebTests",
       status: "test",
       base_feature: "none",

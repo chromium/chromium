@@ -3812,7 +3812,7 @@ enum WebFeature {
   kCSSColorColorSpecifiedSpace = 4472,
   kCSSColorLabOklab = 4473,
   kCSSColorLchOklch = 4474,
-  kCreateNSResolverWithNonElements2 = 4475,
+  kOBSOLETE_CreateNSResolverWithNonElements2 = 4475,
   kGetDisplayMediaWithPreferCurrentTabTrue = 4476,
   kFencedFrameConfigAttribute = 4477,
   kURLSearchParams_Has_Delete_MultipleArguments = 4478,
