@@ -63,6 +63,7 @@
     "gtest_tests": [
       {
         "args": [
+          "--enable-features=NetworkServiceOutOfProcessMemoryThreshold:network_service_oop_threshold_mb/1077",
           "--disable-features=NetworkServiceInProcess2",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",

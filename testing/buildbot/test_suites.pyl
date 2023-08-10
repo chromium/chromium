@@ -5059,6 +5059,7 @@
     'oop_network_service_tests': {
       'oop_network_service_content_browsertests': {
         'args': [
+          '--enable-features=NetworkServiceOutOfProcessMemoryThreshold:network_service_oop_threshold_mb/1077',
           '--disable-features=NetworkServiceInProcess2',
         ],
         'swarming': {
