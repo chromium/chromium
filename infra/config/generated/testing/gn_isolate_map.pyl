@@ -1442,7 +1442,7 @@
   },
   "remoting_unittests": {
     "label": "//remoting:remoting_unittests",
-    "type": "console_test_launcher",
+    "type": "windowed_test_launcher",
   },
   "resource_sizes_chromecast": {
     "label": "//chromecast:resource_sizes_chromecast",

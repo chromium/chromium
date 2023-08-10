@@ -900,15 +900,19 @@ source_set("unit_tests") {
   if (is_chromeos_ash) {
     sources += [
       "desktop_display_info_loader_chromeos_unittest.cc",
+      "input_injector_chromeos_unittest.cc",
       "it2me/it2me_confirmation_dialog_chromeos_unittest.cc",
     ]
     deps += [
+      "//ash:test_support",
+      "//chromeos/ash/components:test_support",
       "//components/user_manager:test_support",
       "//remoting/host/chromeos",
       "//remoting/host/chromeos:features",
       "//remoting/host/chromeos:reporter_unit_tests",
       "//remoting/host/chromeos:unit_tests",
       "//ui/message_center:test_support",
+      "//ui/ozone",
     ]
   }
 

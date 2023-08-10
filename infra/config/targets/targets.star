@@ -1766,7 +1766,7 @@ targets.compile_target(
     label = "//remoting/host:host",
 )
 
-targets.console_test_launcher(
+targets.windowed_test_launcher(
     name = "remoting_unittests",
     label = "//remoting:remoting_unittests",
 )

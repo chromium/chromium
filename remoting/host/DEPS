@@ -37,9 +37,12 @@ include_rules = [
 
 specific_include_rules = {
   ".*unittest\.cc": [
+    "+chromeos/ash/components/test",
     "+mojo/core/test",
+    "+ui/display/manager",
+    "+ui/display/test",
   ],
-  ".*chromeos\.cc": [
+  ".*chromeos.*\.cc": [
     "+ui/ozone/public",
   ],
   ".*wayland.*\.(h|cc)": [
