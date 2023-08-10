@@ -38,11 +38,13 @@ import androidx.core.view.inputmethod.EditorInfoCompat;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
+import org.chromium.base.MathUtils;
 import org.chromium.base.SysUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.compat.ApiHelperForO;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.MutableFlagWithSafeDefault;
@@ -873,12 +875,15 @@ public abstract class UrlBar extends AutocompleteEditText {
                         finalVisibleCharIndex = textLayout.getOffsetForHorizontal(0, measuredWidth);
                     }
 
+                    int finalVisibleCharIndexExclusive =
+                            Math.min(finalVisibleCharIndex + 1, urlTextLength);
+
                     BidiFormatter bidi = new BidiFormatter.Builder()
                                                  .setTextDirectionHeuristic(
                                                          TextDirectionHeuristicsCompat.ANYRTL_LTR)
                                                  .build();
-                    boolean visibleUrlContainsRtl = bidi.isRtl(
-                            url.subSequence(0, Math.min(finalVisibleCharIndex + 1, urlTextLength)));
+                    boolean visibleUrlContainsRtl =
+                            bidi.isRtl(url.subSequence(0, finalVisibleCharIndexExclusive));
                     if (visibleUrlContainsRtl) {
                         // getOffsetForAdvance does not calculate the correct index if there is RTL
                         // text before finalVisibleCharIndex, so clear the visible text hint. If RTL
@@ -886,9 +891,15 @@ public abstract class UrlBar extends AutocompleteEditText {
                         // the hint.
                         mVisibleTextPrefixHint = null;
                     } else {
-                        assert finalVisibleCharIndex
-                                == textLayout.getOffsetForHorizontal(0, measuredWidth)
-                            : getWrongIndexErrorMessage(finalVisibleCharIndex);
+                        if (BuildConfig.ENABLE_ASSERTS) {
+                            float horizontal =
+                                    textLayout.getPrimaryHorizontal(finalVisibleCharIndexExclusive);
+                            float width = (float) measuredWidth;
+
+                            assert MathUtils.areFloatsEqual(horizontal, width)
+                                    || horizontal > width
+                                : getWrongIndexErrorMessage(finalVisibleCharIndex);
+                        }
 
                         // To avoid issues where a small portion of the character following
                         // finalVisibleCharIndex is visible on screen, be more conservative and
@@ -897,8 +908,7 @@ public abstract class UrlBar extends AutocompleteEditText {
                         // screen. By extending the offset by an additional character, the risk is
                         // of having visual artifacts from the subsequence character on screen is
                         // mitigated.
-                        mVisibleTextPrefixHint = url.subSequence(
-                                0, Math.min(finalVisibleCharIndex + 1, urlTextLength));
+                        mVisibleTextPrefixHint = url.subSequence(0, finalVisibleCharIndexExclusive);
                     }
                 }
             }
