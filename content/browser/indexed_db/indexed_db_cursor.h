@@ -9,6 +9,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/indexed_db/indexed_db_backing_store.h"
 #include "content/browser/indexed_db/indexed_db_database.h"
@@ -21,31 +22,31 @@ struct BucketLocator;
 
 namespace content {
 
-class IndexedDBCursor {
+class IndexedDBCursor : public blink::mojom::IDBCursor {
  public:
-  IndexedDBCursor(std::unique_ptr<IndexedDBBackingStore::Cursor> cursor,
-                  indexed_db::CursorType cursor_type,
-                  blink::mojom::IDBTaskType task_type,
-                  base::WeakPtr<IndexedDBTransaction> transaction);
+  // Creates a new self-owned instance and binds to `pending_remote`.
+  static IndexedDBCursor* CreateAndBind(
+      std::unique_ptr<IndexedDBBackingStore::Cursor> cursor,
+      indexed_db::CursorType cursor_type,
+      blink::mojom::IDBTaskType task_type,
+      IndexedDBDispatcherHost& dispatcher_host,
+      base::WeakPtr<IndexedDBTransaction> transaction,
+      mojo::PendingAssociatedRemote<blink::mojom::IDBCursor>& pending_remote);
+
+  ~IndexedDBCursor() override;
 
   IndexedDBCursor(const IndexedDBCursor&) = delete;
   IndexedDBCursor& operator=(const IndexedDBCursor&) = delete;
 
-  ~IndexedDBCursor();
-
+  // blink::mojom::IDBCursor implementation
   void Advance(uint32_t count,
-               base::WeakPtr<IndexedDBDispatcherHost> dispatcher_host,
-               blink::mojom::IDBCursor::AdvanceCallback callback);
-  void Continue(base::WeakPtr<IndexedDBDispatcherHost> dispatcher_host,
-                std::unique_ptr<blink::IndexedDBKey> key,
-                std::unique_ptr<blink::IndexedDBKey> primary_key,
-                blink::mojom::IDBCursor::CursorContinueCallback callback);
-  void PrefetchContinue(base::WeakPtr<IndexedDBDispatcherHost> dispatcher_host,
-                        int number_to_fetch,
-                        blink::mojom::IDBCursor::PrefetchCallback callback);
-  leveldb::Status PrefetchReset(int used_prefetches, int unused_prefetches);
-
-  void OnRemoveBinding(base::OnceClosure remove_binding_cb);
+               blink::mojom::IDBCursor::AdvanceCallback callback) override;
+  void Continue(const blink::IndexedDBKey& key,
+                const blink::IndexedDBKey& primary_key,
+                blink::mojom::IDBCursor::ContinueCallback callback) override;
+  void Prefetch(int32_t count,
+                blink::mojom::IDBCursor::PrefetchCallback callback) override;
+  void PrefetchReset(int32_t used_prefetches) override;
 
   const blink::IndexedDBKey& key() const { return cursor_->key(); }
   const blink::IndexedDBKey& primary_key() const {
@@ -56,29 +57,29 @@ class IndexedDBCursor {
                                                          : cursor_->value();
   }
 
-  // RemoveBinding() removes the mojo cursor binding, which owns
-  // |IndexedDBCursor|, so calls to this function will delete |this|.
-  void RemoveBinding();
   void Close();
 
-  leveldb::Status CursorContinueOperation(
-      base::WeakPtr<IndexedDBDispatcherHost> dispatcher_host,
+ private:
+  IndexedDBCursor(std::unique_ptr<IndexedDBBackingStore::Cursor> cursor,
+                  indexed_db::CursorType cursor_type,
+                  blink::mojom::IDBTaskType task_type,
+                  IndexedDBDispatcherHost& dispatcher_host,
+                  base::WeakPtr<IndexedDBTransaction> transaction);
+
+  leveldb::Status ContinueOperation(
       std::unique_ptr<blink::IndexedDBKey> key,
       std::unique_ptr<blink::IndexedDBKey> primary_key,
-      blink::mojom::IDBCursor::CursorContinueCallback callback,
+      blink::mojom::IDBCursor::ContinueCallback callback,
       IndexedDBTransaction* transaction);
-  leveldb::Status CursorAdvanceOperation(
+  leveldb::Status AdvanceOperation(
       uint32_t count,
-      base::WeakPtr<IndexedDBDispatcherHost> dispatcher_host,
       blink::mojom::IDBCursor::AdvanceCallback callback,
       IndexedDBTransaction* transaction);
-  leveldb::Status CursorPrefetchIterationOperation(
-      base::WeakPtr<IndexedDBDispatcherHost> dispatcher_host,
+  leveldb::Status PrefetchIterationOperation(
       int number_to_fetch,
       blink::mojom::IDBCursor::PrefetchCallback callback,
       IndexedDBTransaction* transaction);
 
- private:
   const storage::BucketLocator bucket_locator_;
   blink::mojom::IDBTaskType task_type_;
   indexed_db::CursorType cursor_type_;
@@ -86,14 +87,16 @@ class IndexedDBCursor {
   // We rely on the transaction calling Close() to clear this.
   base::WeakPtr<IndexedDBTransaction> transaction_;
 
+  raw_ptr<IndexedDBDispatcherHost> dispatcher_host_;
+
   // Must be destroyed before transaction_.
   std::unique_ptr<IndexedDBBackingStore::Cursor> cursor_;
   // Must be destroyed before transaction_.
   std::unique_ptr<IndexedDBBackingStore::Cursor> saved_cursor_;
 
-  base::OnceClosure remove_binding_cb_;
+  bool closed_ = false;
 
-  bool closed_;
+  mojo::AssociatedReceiver<blink::mojom::IDBCursor> receiver_{this};
 
   base::WeakPtrFactory<IndexedDBCursor> ptr_factory_{this};
 };

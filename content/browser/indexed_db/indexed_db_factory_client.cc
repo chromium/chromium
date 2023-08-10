@@ -13,7 +13,6 @@
 #include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
-#include "content/browser/indexed_db/cursor_impl.h"
 #include "content/browser/indexed_db/database_impl.h"
 #include "content/browser/indexed_db/indexed_db_connection.h"
 #include "content/browser/indexed_db/indexed_db_context_impl.h"

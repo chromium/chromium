@@ -35,7 +35,6 @@ class TaskRunner;
 
 namespace content {
 class IndexedDBContextImpl;
-class IndexedDBCursor;
 class IndexedDBDataItemReader;
 
 // All calls but the constructor (including destruction) must
@@ -78,11 +77,6 @@ class CONTENT_EXPORT IndexedDBDispatcherHost : public blink::mojom::IDBFactory {
   void AddReceiver(
       ReceiverContext context,
       mojo::PendingReceiver<blink::mojom::IDBFactory> pending_receiver);
-
-  mojo::PendingAssociatedRemote<blink::mojom::IDBCursor> CreateCursorBinding(
-      const storage::BucketLocator& bucket_locator,
-      std::unique_ptr<IndexedDBCursor> cursor);
-  void RemoveCursorBinding(mojo::ReceiverId receiver_id);
 
   // A shortcut for accessing our context.
   IndexedDBContextImpl* context() const { return indexed_db_context_; }
@@ -145,7 +139,6 @@ class CONTENT_EXPORT IndexedDBDispatcherHost : public blink::mojom::IDBFactory {
   mojo::ReceiverSet<blink::mojom::IDBFactory,
                     IndexedDBDispatcherHost::ReceiverContext>
       receivers_;
-  mojo::UniqueAssociatedReceiverSet<blink::mojom::IDBCursor> cursor_receivers_;
 
   std::map<base::FilePath, std::unique_ptr<IndexedDBDataItemReader>>
       file_reader_map_;

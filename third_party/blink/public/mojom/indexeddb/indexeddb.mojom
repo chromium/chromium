@@ -270,7 +270,7 @@ union IDBCursorResult {
   IDBCursorValue values;
 };
 
-// Advance(), CursorContinue(), and Prefetch() can call its return callback in
+// Advance(), Continue(), and Prefetch() can call its return callback in
 // one of 3 ways:
 // * with |error| set and |value| unset, if an error occurs
 // * with |error| unset and |value| set, under normal operation
@@ -278,9 +278,9 @@ union IDBCursorResult {
 //   of the source being iterated is reached
 interface IDBCursor {
   Advance(uint32 count) => (IDBCursorResult result);
-  CursorContinue(IDBKey key, IDBKey primary_key) => (IDBCursorResult result);
+  Continue(IDBKey key, IDBKey primary_key) => (IDBCursorResult result);
   Prefetch(int32 count) => (IDBCursorResult result);
-  PrefetchReset(int32 used_prefetches, int32 unused_prefetches);
+  PrefetchReset(int32 used_prefetches);
 };
 
 union IDBTransactionPutResult {

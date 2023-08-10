@@ -20,11 +20,9 @@
 #include "base/uuid.h"
 #include "build/build_config.h"
 #include "components/services/storage/filesystem_proxy_factory.h"
-#include "content/browser/indexed_db/cursor_impl.h"
 #include "content/browser/indexed_db/file_stream_reader_to_data_pipe.h"
 #include "content/browser/indexed_db/indexed_db_connection.h"
 #include "content/browser/indexed_db/indexed_db_context_impl.h"
-#include "content/browser/indexed_db/indexed_db_cursor.h"
 #include "content/browser/indexed_db/indexed_db_database_callbacks.h"
 #include "content/browser/indexed_db/indexed_db_factory.h"
 #include "content/browser/indexed_db/indexed_db_factory_client.h"
@@ -201,28 +199,6 @@ void IndexedDBDispatcherHost::AddReceiver(
   DCHECK(IDBTaskRunner()->RunsTasksInCurrentSequence());
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   receivers_.Add(this, std::move(pending_receiver), std::move(context));
-}
-
-mojo::PendingAssociatedRemote<blink::mojom::IDBCursor>
-IndexedDBDispatcherHost::CreateCursorBinding(
-    const storage::BucketLocator& bucket_locator,
-    std::unique_ptr<IndexedDBCursor> cursor) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto cursor_impl = std::make_unique<CursorImpl>(
-      std::move(cursor), bucket_locator, this, IDBTaskRunner());
-  auto* cursor_impl_ptr = cursor_impl.get();
-  mojo::PendingAssociatedRemote<blink::mojom::IDBCursor> remote;
-  mojo::ReceiverId receiver_id = cursor_receivers_.Add(
-      std::move(cursor_impl), remote.InitWithNewEndpointAndPassReceiver());
-  cursor_impl_ptr->OnRemoveBinding(
-      base::BindOnce(&IndexedDBDispatcherHost::RemoveCursorBinding,
-                     weak_factory_.GetWeakPtr(), receiver_id));
-  return remote;
-}
-
-void IndexedDBDispatcherHost::RemoveCursorBinding(
-    mojo::ReceiverId receiver_id) {
-  cursor_receivers_.Remove(receiver_id);
 }
 
 storage::mojom::BlobStorageContext*

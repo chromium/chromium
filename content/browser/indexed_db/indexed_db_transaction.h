@@ -205,7 +205,6 @@ class CONTENT_EXPORT IndexedDBTransaction {
   leveldb::Status BlobWriteComplete(
       BlobWriteResult result,
       storage::mojom::WriteBlobToFileResult error);
-  void CloseOpenCursorBindings();
   void CloseOpenCursors();
   leveldb::Status CommitPhaseTwo();
   void Timeout();

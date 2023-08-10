@@ -95,7 +95,7 @@ void WebIDBCursor::CursorContinue(const IDBKey* key,
 
   // Reset all cursor prefetch caches except for this cursor.
   IndexedDBDispatcher::ResetCursorPrefetchCaches(transaction_id_, this);
-  cursor_->CursorContinue(
+  cursor_->Continue(
       IDBKey::Clone(key), IDBKey::Clone(primary_key),
       WTF::BindOnce(&WebIDBCursor::AdvanceCallback, WTF::Unretained(this),
                     WrapWeakPersistent(request)));
@@ -220,7 +220,7 @@ void WebIDBCursor::ResetPrefetchCache() {
   }
 
   // Reset the back-end cursor.
-  cursor_->PrefetchReset(used_prefetches_, prefetch_keys_.size());
+  cursor_->PrefetchReset(used_prefetches_);
 
   // Reset the prefetch cache.
   prefetch_keys_.clear();

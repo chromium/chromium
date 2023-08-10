@@ -1035,8 +1035,6 @@ source_set("browser") {
     "idle/idle_manager_impl.h",
     "image_capture/image_capture_impl.cc",
     "image_capture/image_capture_impl.h",
-    "indexed_db/cursor_impl.cc",
-    "indexed_db/cursor_impl.h",
     "indexed_db/database_impl.cc",
     "indexed_db/database_impl.h",
     "indexed_db/file_stream_reader_to_data_pipe.cc",

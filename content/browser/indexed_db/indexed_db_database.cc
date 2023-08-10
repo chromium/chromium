@@ -30,7 +30,6 @@
 #include "components/services/storage/indexed_db/scopes/leveldb_scopes.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_database.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_transaction.h"
-#include "content/browser/indexed_db/cursor_impl.h"
 #include "content/browser/indexed_db/indexed_db_bucket_state_handle.h"
 #include "content/browser/indexed_db/indexed_db_callback_helpers.h"
 #include "content/browser/indexed_db/indexed_db_class_factory.h"
@@ -1354,17 +1353,17 @@ Status IndexedDBDatabase::OpenCursorOperation(
     return s;
   }
 
-  std::unique_ptr<IndexedDBCursor> cursor = std::make_unique<IndexedDBCursor>(
+  mojo::PendingAssociatedRemote<blink::mojom::IDBCursor> pending_remote;
+  IndexedDBCursor* cursor = IndexedDBCursor::CreateAndBind(
       std::move(backing_store_cursor), params->cursor_type, params->task_type,
-      transaction->AsWeakPtr());
-  IndexedDBCursor* cursor_ptr = cursor.get();
-  transaction->RegisterOpenCursor(cursor_ptr);
+      *dispatcher_host, transaction->AsWeakPtr(), pending_remote);
+  transaction->RegisterOpenCursor(cursor);
 
   blink::mojom::IDBValuePtr mojo_value;
   std::vector<IndexedDBExternalObject> external_objects;
-  if (cursor_ptr->Value()) {
-    mojo_value = IndexedDBValue::ConvertAndEraseValue(cursor_ptr->Value());
-    external_objects.swap(cursor_ptr->Value()->external_objects);
+  if (cursor->Value()) {
+    mojo_value = IndexedDBValue::ConvertAndEraseValue(cursor->Value());
+    external_objects.swap(cursor->Value()->external_objects);
   }
 
   if (mojo_value) {
@@ -1375,9 +1374,7 @@ Status IndexedDBDatabase::OpenCursorOperation(
   std::move(params->callback)
       .Run(blink::mojom::IDBDatabaseOpenCursorResult::NewValue(
           blink::mojom::IDBDatabaseOpenCursorValue::New(
-              dispatcher_host->CreateCursorBinding(bucket_locator,
-                                                   std::move(cursor)),
-              cursor_ptr->key(), cursor_ptr->primary_key(),
+              std::move(pending_remote), cursor->key(), cursor->primary_key(),
               std::move(mojo_value))));
   return s;
 }
