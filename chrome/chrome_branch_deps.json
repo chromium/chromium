@@ -12,6 +12,5 @@
   "src:src/third_party/pdfium": "refs/heads/chromium/5938",
   "src:src/third_party/skia": "refs/heads/chrome/m117",
   "src:src/third_party/vulkan-deps": "refs/heads/chromium/5938",
-  "src:src/third_party/webrtc": "refs/branch-heads/5938",
-  "src:src/v8": "refs/heads/chromium/5938"
+  "src:src/third_party/webrtc": "refs/branch-heads/5938"
 }
