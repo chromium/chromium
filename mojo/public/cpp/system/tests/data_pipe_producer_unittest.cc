@@ -321,5 +321,40 @@ TEST_F(DataPipeProducerTest, HugeFile) {
   EXPECT_EQ(1, observer_data.done_called);
 }
 
+// Simulate abnormal situations, such as changing the file size between
+// obtaining the file size and actually reading the file
+TEST_F(DataPipeProducerTest, WriteLengthGreaterThanFile) {
+  const std::string kTestStringFragment = "Hello, world!";
+  constexpr size_t kNumRepetitions = 10;
+  std::string test_string;
+  for (size_t i = 0; i < kNumRepetitions; ++i) {
+    test_string += kTestStringFragment;
+  }
+
+  uint64_t file_size = kNumRepetitions * kTestStringFragment.size() *
+                       sizeof(kTestStringFragment[0]);
+  uint64_t write_file_size = file_size + 10;
+  base::FilePath path = CreateTempFileWithContents(test_string);
+
+  base::RunLoop loop;
+  ScopedDataPipeProducerHandle producer_handle;
+  ScopedDataPipeConsumerHandle consumer_handle;
+  ASSERT_EQ(CreateDataPipe(16, producer_handle, consumer_handle),
+            MOJO_RESULT_OK);
+  DataPipeReader reader(std::move(consumer_handle), 16, loop.QuitClosure());
+
+  base::File file(path, base::File::FLAG_OPEN | base::File::FLAG_READ);
+  DataPipeObserverData observer_data;
+  auto observer = std::make_unique<TestObserver>(&observer_data);
+  WriteFromFileThenCloseWriter(
+      std::make_unique<DataPipeProducer>(std::move(producer_handle)),
+      std::move(observer), std::move(file), write_file_size);
+  loop.Run();
+
+  EXPECT_EQ(test_string, reader.data());
+  EXPECT_EQ(0, observer_data.num_read_errors);
+  EXPECT_EQ(test_string.size(), observer_data.bytes_read);
+  EXPECT_EQ(1, observer_data.done_called);
+}
 }  // namespace
 }  // namespace mojo
