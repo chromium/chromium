@@ -13253,6 +13253,21 @@
             ]
         }
     ],
+    "ScreenCaptureKitMacWindow": [
+        {
+            "platforms": [
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20230810",
+                    "enable_features": [
+                        "ScreenCaptureKitMacWindow"
+                    ]
+                }
+            ]
+        }
+    ],
     "ScreenTimeIntegration": [
         {
             "platforms": [
