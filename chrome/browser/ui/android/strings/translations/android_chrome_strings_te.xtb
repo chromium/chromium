@@ -229,6 +229,7 @@
 <translation id="2278052315791335171">ఈ పాస్‌వర్డ్‌ను తొలగించడం వలన <ph name="SITE" />లో మీ ఖాతా తొలగించబడదు</translation>
 <translation id="2286841657746966508">బిల్లింగ్ అడ్రస్‌</translation>
 <translation id="228704530595896923">షేరింగ్ ఆప్షన్‌ల లిస్ట్.</translation>
+<translation id="2297822946037605517">ఈ పేజీని షేర్ చేయండి</translation>
 <translation id="230115972905494466">అనుకూల పరికరాలు ఏవీ కనుగొనబడలేదు</translation>
 <translation id="2318045970523081853">కాల్ చేయడానికి నొక్కండి</translation>
 <translation id="2321086116217818302">పాస్‌వర్డ్‌లను సిద్ధం చేస్తోంది…</translation>
@@ -306,7 +307,6 @@
 <translation id="2656405586795711023">వెబ్ యాప్‌లు</translation>
 <translation id="2669454659051515572">డౌన్‌లోడ్ చేసిన ఫైల్స్‌ను ఈ పరికరాన్ని ఉపయోగించే ఎవరైనా చూడగలరు</translation>
 <translation id="2702516483241149200">కొత్తది: ఈ టెక్స్ట్‌కు స్క్రోల్ చేసే లింక్‌ను షేర్ చేయండి</translation>
-<translation id="2707726405694321444">పేజీని రిఫ్రెష్ చేయండి</translation>
 <translation id="271033894570825754">కొత్తది</translation>
 <translation id="2711073837061989559">ట్రయల్స్</translation>
 <translation id="2718352093833049315">Wi-Fiలో మాత్రమే</translation>
@@ -708,6 +708,7 @@
 
 ఈ సెట్టింగ్‌ని మార్చడం కోసం, <ph name="BEGIN_LINK" />సింక్‌ను రీసెట్ చేయండి<ph name="END_LINK" /></translation>
 <translation id="4807098396393229769">కార్డ్‌పై పేరు</translation>
+<translation id="480990236307250886">హోమ్ పేజీని తెరువు</translation>
 <translation id="481574578487123132">లింక్ చేయబడిన పరికరాలు</translation>
 <translation id="4826163340425232009">సైన్ ఇన్ చేయదగిన దిగువున ఉన్న షీట్.</translation>
 <translation id="4834007576107377210">వర్తిస్తే, మీ సెర్చ్ హిస్టరీని తొలగించడానికి మీ సెర్చ్ ఇంజిన్ సూచనలను చూడండి</translation>
@@ -832,7 +833,6 @@
 <translation id="5444999712122199445">సైట్‌కు తిరిగి వెళ్లండి</translation>
 <translation id="544776284582297024">ఒకే సమయంలో ట్యాబ్‍లను తెరిచి వేర్వేరు పేజీలను సందర్శించడానికి, ట్యాబ్‍లను తెరువు బటన్‍ను ట్యాప్ చేయండి</translation>
 <translation id="5454166040603940656"><ph name="PROVIDER" />తో</translation>
-<translation id="5456381639095306749">పేజీని డౌన్‌లోడ్ చేయండి</translation>
 <translation id="5458366071038729214">మీరు ఫాలో అయ్యే సైట్‌లు ఇక్కడ కనిపిస్తాయి</translation>
 <translation id="5468068603361015296">మీరు ఏదేమైనా <ph name="FILE_NAME" />ను డౌన్‌లోడ్ చేయాలనుకుంటున్నారా?</translation>
 <translation id="548278423535722844">మ్యాప్స్ యాప్‌లో తెరువు</translation>
@@ -1173,6 +1173,7 @@
 <translation id="7196215469483532480">గోప్యతా గైడ్ వివరణ షీట్ ఫుల్-స్క్రీన్‌లో తెరవబడింది</translation>
 <translation id="7207760545532569765">బ్యాక్‌గ్రౌండ్ ట్యాబ్‌లుగా <ph name="TAB_COUNT" />ట్యాబ్‌లను రీస్టోర్ చేయండి.</translation>
 <translation id="7217781228893594884">మీరు Chrome నుండి నిష్క్రమించినప్పుడు అజ్ఞాత ట్యాబ్‌లు లాక్ అవుతాయి</translation>
+<translation id="7221869452894271364">ఈ పేజీని మళ్లీ లోడ్ చేయి</translation>
 <translation id="7222235798733126207">సైట్‌ల మధ్య పరిమిత షేరింగ్</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 డౌన్‌లోడ్ పెండింగ్‌లో ఉంది}other{# డౌన్‌లోడ్‌లు పెండింగ్‌లో ఉన్నాయి}}</translation>
 <translation id="72415438529550637">పాస్‌వర్డ్ సూచన మూసివేయబడింది.</translation>
@@ -1576,7 +1577,6 @@
 <translation id="926205370408745186">డిజిటల్ సంక్షేమం నుండి మీ Chrome యాక్టివిటీని తీసివేస్తుంది</translation>
 <translation id="927968626442779827">Google Chromeలోని లైట్ మోడ్‌ను ఉపయోగించండి</translation>
 <translation id="928550791203542716"><ph name="SITE_NAME" />ను ఫాలో చేస్తున్నారు</translation>
-<translation id="932327136139879170">హోమ్</translation>
 <translation id="938850635132480979">ఎర్రర్: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">రహస్య పదబంధాన్ని నమోదు చేయండి</translation>
 <translation id="952301137339791907">పేజీ గణాంకాలకు సంబంధించి దిగువున ఉన్న షీట్ తెరవబడింది</translation>

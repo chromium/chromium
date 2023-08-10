@@ -1204,9 +1204,6 @@
       如果不設定這項政策或設為空白清單，受管理的裝置將無法使用任何快速解鎖模式。
 
       這項政策已遭淘汰，請改用 <ph name="QUICK_UNLOCK_MODE_ALLOW_LIST_POLICY_NAME" /></translation>
-<translation id="2033784678146670379">如果將這項政策設為啟用，使用者可運用 <ph name="PRODUCT_OS_NAME" />裝置的硬體，透過 <ph name="ENTERPRISE_PLATFORM_KEYS_API" /> 的 <ph name="CHALLENGE_USER_KEY_FUNCTION" />，從遠端向隱私權憑證授權單位認證身分。
-
-      如果將這項政策設為停用或不設定，將導致 API 呼叫失敗，並收到錯誤代碼。</translation>
 <translation id="2036522553891755455">如果將這項政策設為啟用，共用檔案搜尋功能 (在 <ph name="PRODUCT_NAME" />上為「網路檔案共用」功能) 會使用 <ph name="NETBIOS_PROTOCOL" /> 搜尋網路上的共用檔案。如果設為停用，共用檔案搜尋功能就不會使用這項通訊協定搜尋共用檔案。
       如果不設定這項政策，系統預設會為受管理的使用者停用此通訊協定，其他使用者則會設為啟用。</translation>
 <translation id="2039801473506609891">在非預設連接埠停用 HTTP/0.9 支援功能</translation>

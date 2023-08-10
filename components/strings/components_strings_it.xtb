@@ -1836,7 +1836,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4901778704868714008">Salva…</translation>
 <translation id="4901952598169637881">Scarpe casual</translation>
 <translation id="4905659621780993806">L'amministratore riavvierà il tuo dispositivo automaticamente alle ore <ph name="TIME" /> del giorno <ph name="DATE" />. Salva gli eventuali elementi aperti prima che il dispositivo si riavvii.</translation>
-<translation id="4907289208610706508">Destinazione</translation>
 <translation id="4913987521957242411">Perforatura in alto a sinistra</translation>
 <translation id="4917064667437236721">Cilindro per imaging</translation>
 <translation id="4918221908152712722">Installa <ph name="APP_NAME" /> (non è richiesto alcun download)</translation>
@@ -2676,6 +2675,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6702919718839027939">Presentazione</translation>
 <translation id="6704458454638854812">La proprietà "custom_size" è impostata, il nome previsto è "custom".</translation>
 <translation id="6706005862292023715">Trattamenti per finestre e tendaggi</translation>
+<translation id="6706210727756204531">Ambito</translation>
 <translation id="6709133671862442373">Notizie</translation>
 <translation id="6709888928011386878">Strumenti musicali</translation>
 <translation id="6710213216561001401">Precedente</translation>

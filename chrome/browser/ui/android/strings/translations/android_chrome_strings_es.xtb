@@ -229,6 +229,7 @@ Si eliminas tu historial de navegación (entero o de un sitio en concreto), tamb
 <translation id="2278052315791335171">Al eliminar esta contraseña, no se eliminará tu cuenta de <ph name="SITE" /></translation>
 <translation id="2286841657746966508">Dirección de facturación</translation>
 <translation id="228704530595896923">Lista de opciones para compartir.</translation>
+<translation id="2297822946037605517">Compartir esta página</translation>
 <translation id="230115972905494466">No se han podido encontrar dispositivos compatibles</translation>
 <translation id="2318045970523081853">Toca para llamar</translation>
 <translation id="2321086116217818302">Preparando contraseñas…</translation>
@@ -306,7 +307,6 @@ Los tokens de confianza mejoran la privacidad en la Web y no se pueden usar para
 <translation id="2656405586795711023">Aplicaciones web</translation>
 <translation id="2669454659051515572">Cualquier persona que use este dispositivo puede ver los archivos descargados</translation>
 <translation id="2702516483241149200">Nuevo: Comparte un enlace que vaya directamente a este texto</translation>
-<translation id="2707726405694321444">Actualizar página</translation>
 <translation id="271033894570825754">Nuevo</translation>
 <translation id="2711073837061989559">Pruebas</translation>
 <translation id="2718352093833049315">Solo en Wi-Fi</translation>
@@ -708,6 +708,7 @@ Es posible que tu cuenta de Google tenga otros tipos de historial de navegación
 
 Para cambiar esta opción, <ph name="BEGIN_LINK" />restablece la sincronización<ph name="END_LINK" />.</translation>
 <translation id="4807098396393229769">Titular de la tarjeta</translation>
+<translation id="480990236307250886">Abrir la página principal</translation>
 <translation id="481574578487123132">Dispositivos vinculados</translation>
 <translation id="4826163340425232009">Hoja inferior de inicio de sesión.</translation>
 <translation id="4834007576107377210">Consulta las instrucciones de tu buscador para eliminar tu historial de búsqueda si hace falta</translation>
@@ -832,7 +833,6 @@ Para cambiar esta opción, <ph name="BEGIN_LINK" />restablece la sincronización
 <translation id="5444999712122199445">Volver al sitio</translation>
 <translation id="544776284582297024">Para abrir pestañas y visitar varias páginas al mismo tiempo, toca el botón "pestañas abiertas"</translation>
 <translation id="5454166040603940656">con <ph name="PROVIDER" /></translation>
-<translation id="5456381639095306749">Descargar página</translation>
 <translation id="5458366071038729214">Los sitios que sigas aparecerán aquí</translation>
 <translation id="5468068603361015296">¿Quieres descargar <ph name="FILE_NAME" /> de todos modos?</translation>
 <translation id="548278423535722844">Abrirla en una aplicación de mapas</translation>
@@ -1173,6 +1173,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="7196215469483532480">Explicación de la guía de privacidad abierta a altura completa</translation>
 <translation id="7207760545532569765">Restaurar <ph name="TAB_COUNT" /> pestañas como nuevas pestañas en segundo plano.</translation>
 <translation id="7217781228893594884">Las pestañas de incógnito se bloquearán cuando salgas de Chrome</translation>
+<translation id="7221869452894271364">Cargar página de nuevo</translation>
 <translation id="7222235798733126207">Limitación de lo que se comparte entre sitios</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 descarga pendiente}other{# descargas pendientes}}</translation>
 <translation id="72415438529550637">La sugerencia de contraseña está cerrada.</translation>
@@ -1576,7 +1577,6 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="926205370408745186">Eliminar tu actividad de Chrome de Bienestar digital</translation>
 <translation id="927968626442779827">Usa el modo básico en Google Chrome</translation>
 <translation id="928550791203542716">Ahora sigues a <ph name="SITE_NAME" /></translation>
-<translation id="932327136139879170">Página principal</translation>
 <translation id="938850635132480979">Error: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">Introducir frase de contraseña</translation>
 <translation id="952301137339791907">La hoja inferior de métricas de la página está abierta</translation>

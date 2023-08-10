@@ -1840,7 +1840,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4901778704868714008">Guardar…</translation>
 <translation id="4901952598169637881">Calzado informal</translation>
 <translation id="4905659621780993806">El administrador reiniciará el dispositivo el <ph name="DATE" /> a las <ph name="TIME" />. Guarda los elementos abiertos antes de reiniciar el dispositivo.</translation>
-<translation id="4907289208610706508">Objetivo</translation>
 <translation id="4913987521957242411">Perforación en la esquina superior izquierda</translation>
 <translation id="4917064667437236721">Cilindro de impresión</translation>
 <translation id="4918221908152712722">Instala <ph name="APP_NAME" /> (no es necesario que descargues la app)</translation>
@@ -2681,6 +2680,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6702919718839027939">Presente</translation>
 <translation id="6704458454638854812">Se estableció la propiedad "custom_size", se esperaba el nombre "custom".</translation>
 <translation id="6706005862292023715">Cortinas y tratamientos de ventana</translation>
+<translation id="6706210727756204531">Alcance</translation>
 <translation id="6709133671862442373">Noticias</translation>
 <translation id="6709888928011386878">Instrumentos musicales</translation>
 <translation id="6710213216561001401">Anterior</translation>

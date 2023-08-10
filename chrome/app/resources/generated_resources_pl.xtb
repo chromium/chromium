@@ -4116,7 +4116,6 @@ Mogą one obejmować informacje o zainstalowanym oprogramowaniu, plikach, przeg
 <translation id="4361142739114356624">Klucz prywatny tego certyfikatu klienta jest nieprawidłowy lub nie istnieje</translation>
 <translation id="4361745360460842907">Otwórz jako kartę</translation>
 <translation id="4362675504017386626"><ph name="ACCOUNT_EMAIL" /> jest domyślnym kontem na urządzeniu <ph name="DEVICE_TYPE" /></translation>
-<translation id="4363215264289239958">Aplikacje Bruschetta</translation>
 <translation id="4363262124589131906">Nowe pliki na Moim dysku przestaną synchronizować się automatycznie z tym Chromebookiem</translation>
 <translation id="4363771538994847871">Nie wykryto żadnego urządzenia Cast. Potrzebujesz pomocy?</translation>
 <translation id="4364327530094270451">Melon</translation>
@@ -4703,6 +4702,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="4849517651082200438">Nie instaluj</translation>
 <translation id="485053257961878904">Nie udało się skonfigurować synchronizacji powiadomień</translation>
 <translation id="4850548109381269495">Na obu urządzeniach sprawdź połączenie z internetem i włącz Bluetooth. Następnie spróbuj ponownie.</translation>
+<translation id="4850669014075537160">Przewijanie</translation>
 <translation id="4850886885716139402">Widok</translation>
 <translation id="485088796993065002">Strony mogą odtwarzać dźwięk na potrzeby odtwarzania muzyki, filmów i innych multimediów</translation>
 <translation id="4852916668365817106">Kolor kursora myszy</translation>

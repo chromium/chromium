@@ -1839,7 +1839,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="4901778704868714008">Kaydet...</translation>
 <translation id="4901952598169637881">Gündelik Ayakkabılar</translation>
 <translation id="4905659621780993806">Yöneticiniz cihazınızı <ph name="DATE" /> tarihinde saat <ph name="TIME" /> olunca otomatik olarak yeniden başlatacak. Cihazınız yeniden başlatılmadan önce tüm açık öğeleri kaydedin.</translation>
-<translation id="4907289208610706508">Hedef</translation>
 <translation id="4913987521957242411">Sol üstte delik</translation>
 <translation id="4917064667437236721">Görüntüleme Silindiri</translation>
 <translation id="4918221908152712722"><ph name="APP_NAME" /> uygulamasını yükleyin (indirmek gerekmez)</translation>
@@ -2680,6 +2679,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6702919718839027939">Sunum</translation>
 <translation id="6704458454638854812">"custom_size" özelliği ayarlandı ve adın "custom" olması bekleniyor.</translation>
 <translation id="6706005862292023715">Perdeler ve Pencere Uygulamaları</translation>
+<translation id="6706210727756204531">Kapsam</translation>
 <translation id="6709133671862442373">Haberler</translation>
 <translation id="6709888928011386878">Müzik aletleri</translation>
 <translation id="6710213216561001401">Önceki</translation>

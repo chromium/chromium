@@ -1843,7 +1843,6 @@
 <translation id="4901778704868714008">حفظ...</translation>
 <translation id="4901952598169637881">أحذية غير رسمية</translation>
 <translation id="4905659621780993806">سيعيد المشرف تشغيل الجهاز تلقائيًا عند الساعة <ph name="TIME" /> في <ph name="DATE" />. عليك حفظ أي نوافذ مفتوحة قبل إعادة تشغيل الجهاز.</translation>
-<translation id="4907289208610706508">الهدف</translation>
 <translation id="4913987521957242411">عمل ثقب أعلى اليسار</translation>
 <translation id="4917064667437236721">أسطوانة تصوير</translation>
 <translation id="4918221908152712722">تثبيت <ph name="APP_NAME" /> (لا يتطلَّب تنزيلاً)</translation>
@@ -2684,6 +2683,7 @@
 <translation id="6702919718839027939">وضع العرض التقديمي</translation>
 <translation id="6704458454638854812">‏تم ضبط السمة "custom_size"، واسمها المتوقع هو "custom".</translation>
 <translation id="6706005862292023715">إصلاح ستائر ونوافذ</translation>
+<translation id="6706210727756204531">النطاق</translation>
 <translation id="6709133671862442373">الأخبار</translation>
 <translation id="6709888928011386878">آلات موسيقية</translation>
 <translation id="6710213216561001401">السابق</translation>

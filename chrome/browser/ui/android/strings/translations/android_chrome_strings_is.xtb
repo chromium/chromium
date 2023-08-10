@@ -229,6 +229,7 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="2278052315791335171">Reikningnum þínum á <ph name="SITE" /> verður ekki eytt þó að þessu aðgangsorði verði eytt</translation>
 <translation id="2286841657746966508">Heimilisfang greiðanda</translation>
 <translation id="228704530595896923">Listi yfir deilingarvalkosti.</translation>
+<translation id="2297822946037605517">Deila þessari síðu</translation>
 <translation id="230115972905494466">Engin samhæf tæki fundust</translation>
 <translation id="2318045970523081853">Ýttu til að hringja</translation>
 <translation id="2321086116217818302">Undirbýr aðgangsorð…</translation>
@@ -306,7 +307,6 @@ Traustslyklar bæta persónuvernd á netinu og ekki er hægt að nota þá til a
 <translation id="2656405586795711023">Vefforrit</translation>
 <translation id="2669454659051515572">Allir sem nota þetta tæki geta séð sóttar skrár</translation>
 <translation id="2702516483241149200">Nýtt: Deildu tengli sem flettir að þessum texta</translation>
-<translation id="2707726405694321444">Endurnýja síðu</translation>
 <translation id="271033894570825754">Nýtt</translation>
 <translation id="2711073837061989559">Prufuútgáfur</translation>
 <translation id="2718352093833049315">Aðeins um Wi-Fi</translation>
@@ -708,6 +708,7 @@ Google reikningurinn þinn kann að vera með annars konar vefskoðunarferil, sv
 
 Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />endurstilla samstillingu<ph name="END_LINK" /></translation>
 <translation id="4807098396393229769">Nafn á korti</translation>
+<translation id="480990236307250886">Opna heimasíðuna</translation>
 <translation id="481574578487123132">Tengd tæki</translation>
 <translation id="4826163340425232009">Innskráningarblað neðst.</translation>
 <translation id="4834007576107377210">Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það á við</translation>
@@ -832,7 +833,6 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />endurstilla sam
 <translation id="5444999712122199445">Fara aftur á vefsvæði</translation>
 <translation id="544776284582297024">Ýttu á hnappinn „Opna flipa“ til að opna flipa og skoða mismunandi síður samtímis</translation>
 <translation id="5454166040603940656">hjá <ph name="PROVIDER" /></translation>
-<translation id="5456381639095306749">Sækja síðu</translation>
 <translation id="5458366071038729214">Hér birtast vefsvæði sem þú fylgir</translation>
 <translation id="5468068603361015296">Viltu samt sem áður að sækja <ph name="FILE_NAME" />?</translation>
 <translation id="548278423535722844">Opna í kortaforriti</translation>
@@ -1173,6 +1173,7 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="7196215469483532480">Útskýring á leiðbeiningum um persónuvernd opnuð á öllum skjánum</translation>
 <translation id="7207760545532569765">Endurheimta <ph name="TAB_COUNT" /> flipa sem nýja bakgrunnsflipa.</translation>
 <translation id="7217781228893594884">Huliðsflipum verður læst þegar þú lokar Chrome</translation>
+<translation id="7221869452894271364">Endurhlaða þessa síðu</translation>
 <translation id="7222235798733126207">Takmörkuð deiling milli vefsvæða</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{Ein skrá bíður niðurhals}one{# skrá bíður niðurhals}other{# skrár bíða niðurhals}}</translation>
 <translation id="72415438529550637">Tillögu að aðgangsorði lokað.</translation>
@@ -1576,7 +1577,6 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="926205370408745186">Fjarlægja það sem þú gerir í Chrome úr stafrænni vellíðan</translation>
 <translation id="927968626442779827">Nota Léttútgáfu í Google Chrome</translation>
 <translation id="928550791203542716">Fylgist með <ph name="SITE_NAME" /></translation>
-<translation id="932327136139879170">Heim</translation>
 <translation id="938850635132480979">Villa: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">Sláðu inn aðgangsorð</translation>
 <translation id="952301137339791907">Blað neðst með síðuinnsýn er opið.</translation>

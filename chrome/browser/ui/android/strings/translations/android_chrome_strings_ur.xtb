@@ -229,6 +229,7 @@
 <translation id="2278052315791335171">اس پاس ورڈ کو حذف کرنے سے آپ کا اکاؤنٹ <ph name="SITE" /> سے حذف نہیں ہوگا</translation>
 <translation id="2286841657746966508">بلنگ پتہ</translation>
 <translation id="228704530595896923">اشتراک کرنے کے اختیارات کی فہرست۔</translation>
+<translation id="2297822946037605517">اس صفحہ کا اشتراک کریں</translation>
 <translation id="230115972905494466">کوئی مطابقت پذیر آلہ نہیں ملا</translation>
 <translation id="2318045970523081853">کال کرنے کے لیے تھپتھپائیں</translation>
 <translation id="2321086116217818302">پاس ورڈز تیار کیے جا رہے ہيں…</translation>
@@ -306,7 +307,6 @@
 <translation id="2656405586795711023">ویب ایپس</translation>
 <translation id="2669454659051515572">اس آلے کا استعمال کرنے والا کوئی بھی شخص ڈاؤن لوڈ کردہ فائلز کو دیکھ سکتا ہے</translation>
 <translation id="2702516483241149200">نیا: اس ٹیکسٹ کو اسکرول کرنے والے لنک کا اشتراک کریں</translation>
-<translation id="2707726405694321444">صفحہ ریفریش کریں</translation>
 <translation id="271033894570825754">نیا</translation>
 <translation id="2711073837061989559">ٹرائلز</translation>
 <translation id="2718352093833049315">‏صرف Wi-Fi پر</translation>
@@ -708,6 +708,7 @@
 
 اس ترتیب کو تبدیل کرنے کیلئے، <ph name="BEGIN_LINK" />مطابقت پذیری کو دوبارہ ترتیب دیں<ph name="END_LINK" /></translation>
 <translation id="4807098396393229769">کارڈ پر نام</translation>
+<translation id="480990236307250886">ہوم صفحہ کھولیں</translation>
 <translation id="481574578487123132">لنک کردہ آلات</translation>
 <translation id="4826163340425232009">سائن ان کرنے کے لیے نیچے کی شیٹ۔</translation>
 <translation id="4834007576107377210">اگر قابل اطلاق ہو تو اپنی تلاش کی سرگزشت کو حذف کرنے کیلئے اپنے سرچ انجن کی ہدایات دیکھیں</translation>
@@ -832,7 +833,6 @@
 <translation id="5444999712122199445">سائٹ پر واپس جائیں</translation>
 <translation id="544776284582297024">ٹیبز کو کھولنے اور ایک ہی وقت میں مختلف صفحات ملاحظہ کرنے کے لئے، ٹیبز بٹن کھولیں پر تھپتھپائیں</translation>
 <translation id="5454166040603940656"><ph name="PROVIDER" /> کے ساتھ</translation>
-<translation id="5456381639095306749">صفحہ ڈاؤن لوڈ کریں</translation>
 <translation id="5458366071038729214">آپ جن سائٹس کی پیروی کرتے ہیں وہ آپ کو یہاں ملیں گی</translation>
 <translation id="5468068603361015296">کیا آپ بہر صورت <ph name="FILE_NAME" /> کو ڈاؤن لوڈ کرنا چاہتے ہیں؟</translation>
 <translation id="548278423535722844">نقشہ کی ایپ میں کھولیں</translation>
@@ -1173,6 +1173,7 @@
 <translation id="7196215469483532480">رازداری کی گائیڈ کی وضاحت سے متعلق معلومات مکمل اونچائی پر کھلی ہوئی ہے</translation>
 <translation id="7207760545532569765"><ph name="TAB_COUNT" /> ٹیبز کو پس منظر کے نئے ٹیبز کے بطور بحال کریں۔</translation>
 <translation id="7217781228893594884">‏آپ کے Chrome چھوڑنے پر پوشیدگی ٹیبز مقفل ہو جائیں گی</translation>
+<translation id="7221869452894271364">یہ صفحہ دوبارہ لوڈ کریں</translation>
 <translation id="7222235798733126207">سائٹس کے درمیان محدود اشتراک</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 ڈاؤن لوڈ زير التوا ہے}other{# ڈاؤن لوڈز زير التوا ہیں}}</translation>
 <translation id="72415438529550637">پاس ورڈ کی تجویز بند ہے۔</translation>
@@ -1576,7 +1577,6 @@
 <translation id="926205370408745186">‏ڈیجیٹل فلاح و بہبود سے اپنی Chrome کی سرگرمی ہٹائیں</translation>
 <translation id="927968626442779827">‏Google Chrome پر لائٹ موڈ کا استعمال کریں</translation>
 <translation id="928550791203542716"><ph name="SITE_NAME" /> کی پیروی کی جا رہی ہے</translation>
-<translation id="932327136139879170">ھوم</translation>
 <translation id="938850635132480979">خرابی: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">پاس فریز درج کریں</translation>
 <translation id="952301137339791907">صفحہ کی بصیرتوں کی نیچے کی شیٹ کھلی ہے</translation>

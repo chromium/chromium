@@ -229,6 +229,7 @@
 <translation id="2278052315791335171">حذف این گذرواژه باعث حذف شدن حساب شما در <ph name="SITE" /> نخواهد شد</translation>
 <translation id="2286841657746966508">آدرس ارسال صورتحساب</translation>
 <translation id="228704530595896923">فهرست گزینه‌های هم‌رسانی.</translation>
+<translation id="2297822946037605517">اشتراک‌گذاری این صفحه</translation>
 <translation id="230115972905494466">هیچ دستگاه سازگاری پیدا نشد</translation>
 <translation id="2318045970523081853">برای برقراری تماس، ضربه بزنید.</translation>
 <translation id="2321086116217818302">درحال آماده‌سازی گذرواژه‌ها…</translation>
@@ -306,7 +307,6 @@
 <translation id="2656405586795711023">برنامه‌های وب</translation>
 <translation id="2669454659051515572">همه افرادی که از این دستگاه استفاده می‌کنند می‌توانند فایل‌های بارگیری‌شده را ببینند</translation>
 <translation id="2702516483241149200">جدید: هم‌رسانی پیوندی که به این نوشتار پیمایش می‌کند</translation>
-<translation id="2707726405694321444">بازآوری صفحه</translation>
 <translation id="271033894570825754">جدید</translation>
 <translation id="2711073837061989559">دوره‌های آزمایشی</translation>
 <translation id="2718352093833049315">‏فقط در Wi-Fi</translation>
@@ -708,6 +708,7 @@
 
 برای تغییر این تنظیم، <ph name="BEGIN_LINK" />همگام‌سازی را بازنشانی کنید<ph name="END_LINK" /></translation>
 <translation id="4807098396393229769">نام روی کارت</translation>
+<translation id="480990236307250886">باز کردن صفحه اصلی</translation>
 <translation id="481574578487123132">دستگاه‌های پیوندشده</translation>
 <translation id="4826163340425232009">برگ زیرین ورود به سیستم.</translation>
 <translation id="4834007576107377210">برای اینکه سابقه جستجویتان را درصورت امکان حذف کنید، به دستورالعمل‌های موتور جستجو مراجعه کنید</translation>
@@ -832,7 +833,6 @@
 <translation id="5444999712122199445">برگشتن به سایت</translation>
 <translation id="544776284582297024">برای باز کردن برگه‌ها و بازدید هم‌زمان از صفحه‌های مختلف، روی دکمه «بازکردن برگه‌ها» ضربه بزنید</translation>
 <translation id="5454166040603940656">با <ph name="PROVIDER" /></translation>
-<translation id="5456381639095306749">بارگیری صفحه</translation>
 <translation id="5458366071038729214">سایت‌هایی را که دنبال می‌کنید اینجا پیدا خواهید کرد</translation>
 <translation id="5468068603361015296">می‌خواهید <ph name="FILE_NAME" /> درهرصورت بارگیری شود؟</translation>
 <translation id="548278423535722844">‏باز کردن در برنامه Maps</translation>
@@ -1173,6 +1173,7 @@
 <translation id="7196215469483532480">شرح «راهنمای حریم خصوصی» به‌صورت کامل باز شده است</translation>
 <translation id="7207760545532569765">بازیابی <ph name="TAB_COUNT" /> برگه به‌عنوان برگه‌های جدید پس‌زمینه.</translation>
 <translation id="7217781228893594884">‏پس‌از خروج از Chrome، برگه‌های ناشناس قفل خواهد شد</translation>
+<translation id="7221869452894271364">بار کردن مجدد این صفحه</translation>
 <translation id="7222235798733126207">هم‌رسانی محدود میان سایت‌ها</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{۱ بارگیری در انتظار}one{# بارگیری در انتظار}other{# بارگیری در انتظار}}</translation>
 <translation id="72415438529550637">پیشنهاد گذرواژه بسته شد.</translation>
@@ -1576,7 +1577,6 @@
 <translation id="926205370408745186">‏فعالیت Chrome شما از «آسایش دیجیتالی» برداشته شود</translation>
 <translation id="927968626442779827">‏استفاده از «حالت ساده» در Google Chrome</translation>
 <translation id="928550791203542716"><ph name="SITE_NAME" /> را دنبال می‌کنید</translation>
-<translation id="932327136139879170">منزل</translation>
 <translation id="938850635132480979">خطا: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">گذرعبارت را وارد کنید</translation>
 <translation id="952301137339791907">برگ زیرین اطلاعات آماری صفحه باز شده است</translation>

@@ -4130,7 +4130,6 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="4361142739114356624">A chave privada para este certificado de cliente está em falta ou é inválida</translation>
 <translation id="4361745360460842907">Abrir como separador</translation>
 <translation id="4362675504017386626"><ph name="ACCOUNT_EMAIL" /> é a conta predefinida no seu dispositivo <ph name="DEVICE_TYPE" /></translation>
-<translation id="4363215264289239958">Apps Bruschetta</translation>
 <translation id="4363262124589131906">Os novos ficheiros em O meu disco vão deixar de ser sincronizados automaticamente com este Chromebook</translation>
 <translation id="4363771538994847871">Não foi encontrado nenhum destino do Cast. Precisa de ajuda?</translation>
 <translation id="4364327530094270451">Melão</translation>
@@ -4717,6 +4716,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="4849517651082200438">Não instalar</translation>
 <translation id="485053257961878904">Não foi possível configurar a sincronização de notificações</translation>
 <translation id="4850548109381269495">Em ambos os dispositivos, verifique a sua ligação à Internet e ative o Bluetooth. Em seguida, tente novamente.</translation>
+<translation id="4850669014075537160">Deslocamento</translation>
 <translation id="4850886885716139402">Ver</translation>
 <translation id="485088796993065002">Os sites podem reproduzir som para fornecer áudio para músicas, vídeos e outros conteúdos multimédia.</translation>
 <translation id="4852916668365817106">Cor do rato</translation>

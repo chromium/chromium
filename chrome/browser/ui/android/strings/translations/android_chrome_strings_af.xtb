@@ -229,6 +229,7 @@ Wanneer jy jou blaaigeskiedenis uitvee — alles of vir ’n spesifieke werf —
 <translation id="2278052315791335171">Jou rekening op <ph name="SITE" /> sal nie uitgevee word as hierdie wagwoord uitgevee word nie</translation>
 <translation id="2286841657746966508">Faktureringadres</translation>
 <translation id="228704530595896923">Lys deelopsies.</translation>
+<translation id="2297822946037605517">Deel hierdie bladsy</translation>
 <translation id="230115972905494466">Geen versoenbare toestelle gekry nie</translation>
 <translation id="2318045970523081853">Tik om 'n oproep te maak</translation>
 <translation id="2321086116217818302">Maak tans wagwoorde gereed …</translation>
@@ -306,7 +307,6 @@ Privaatstatustoken verbeter privaatheid op die web en kan nie gebruik word om ui
 <translation id="2656405586795711023">Webprogramme</translation>
 <translation id="2669454659051515572">Enigiemand wat hierdie toestel gebruik, kan afgelaaide lêers sien</translation>
 <translation id="2702516483241149200">Nuut: Deel 'n skakel wat na hierdie teks toe rollees</translation>
-<translation id="2707726405694321444">Herlaai bladsy</translation>
 <translation id="271033894570825754">Nuut</translation>
 <translation id="2711073837061989559">Proeflopies</translation>
 <translation id="2718352093833049315">Net met Wi-Fi</translation>
@@ -708,6 +708,7 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 
 <ph name="BEGIN_LINK" />Stel sinkronisering terug<ph name="END_LINK" /> om hierdie instelling te verander</translation>
 <translation id="4807098396393229769">Naam op kaart</translation>
+<translation id="480990236307250886">Maak die tuisblad oop</translation>
 <translation id="481574578487123132">Gekoppelde toestelle</translation>
 <translation id="4826163340425232009">Aanmelding se onderste blad.</translation>
 <translation id="4834007576107377210">Sien soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodig</translation>
@@ -832,7 +833,6 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="5444999712122199445">Gaan terug na werf</translation>
 <translation id="544776284582297024">Tik op die Maak Oortjies Oop-knoppie om oortjies oop te maak en verskillende bladsye op dieselfde tyd te besoek</translation>
 <translation id="5454166040603940656">met <ph name="PROVIDER" /></translation>
-<translation id="5456381639095306749">Laai bladsy af</translation>
 <translation id="5458366071038729214">Jy sal werwe wat jy volg hier kry</translation>
 <translation id="5468068603361015296">Wil jy <ph name="FILE_NAME" /> in elk geval aflaai?</translation>
 <translation id="548278423535722844">Maak in kaarteprogram oop</translation>
@@ -1173,6 +1173,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="7196215469483532480">Privaatheidgidsverduideliking is teen volle hoogte oopgemaak</translation>
 <translation id="7207760545532569765">Stel <ph name="TAB_COUNT" /> oortjies as nuwe agtergrondoortjies terug.</translation>
 <translation id="7217781228893594884">Incognito-oortjies sal gesluit word wanneer jy Chrome verlaat</translation>
+<translation id="7221869452894271364">Herlaai hierdie bladsy</translation>
 <translation id="7222235798733126207">Beperkte deling tussen werwe</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 aflaai hangende}other{# aflaaie hangende}}</translation>
 <translation id="72415438529550637">Wagwoordvoorstel is toe.</translation>
@@ -1576,7 +1577,6 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="926205370408745186">Verwyder jou Chrome-aktiwiteit van Digitale Welstand</translation>
 <translation id="927968626442779827">Gebruik Ligte Modus op Google Chrome</translation>
 <translation id="928550791203542716">Volg tans <ph name="SITE_NAME" /></translation>
-<translation id="932327136139879170">Tuis</translation>
 <translation id="938850635132480979">Fout: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">Tik wagfrase in</translation>
 <translation id="952301137339791907">Bladinsigte se onderste blad is oopgemaak</translation>

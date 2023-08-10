@@ -229,6 +229,7 @@
 <translation id="2278052315791335171">এই পাসওয়ার্ডটি মুছে দিলেও, <ph name="SITE" />-এ আপনার অ্যাকাউন্ট মুছে যাবে না</translation>
 <translation id="2286841657746966508">বিলিং ঠিকানা</translation>
 <translation id="228704530595896923">শেয়ার করার বিকল্পের তালিকা।</translation>
+<translation id="2297822946037605517">এই পৃষ্ঠাটি শেয়ার করুন</translation>
 <translation id="230115972905494466">উপযুক্ত ডিভাইস খুঁজে পাওয়া যায়নি</translation>
 <translation id="2318045970523081853">কল করতে ট্যাপ করুন</translation>
 <translation id="2321086116217818302">পাসওয়ার্ড তৈরি করা হচ্ছে…</translation>
@@ -306,7 +307,6 @@
 <translation id="2656405586795711023">ওয়েব অ্যাপ</translation>
 <translation id="2669454659051515572">এই ডিভাইস ব্যবহার করছেন এমন যেকেউ ডাউনলোড করা ফাইলগুলি দেখতে পারবেন</translation>
 <translation id="2702516483241149200">নতুন: এই টেক্সট পর্যন্ত স্ক্রোল করতে পারে এমন লিঙ্ক শেয়ার করুন</translation>
-<translation id="2707726405694321444">পৃষ্ঠা রিফ্রেশ করুন</translation>
 <translation id="271033894570825754">নতুন</translation>
 <translation id="2711073837061989559">ট্রায়াল</translation>
 <translation id="2718352093833049315">শুধুমাত্র ওয়াই-ফাই এ</translation>
@@ -710,6 +710,7 @@
 
 <ph name="BEGIN_LINK" />রিসেট সিঙ্ক<ph name="END_LINK" /> থেকে এই সেটিং পরিবর্তন করুন</translation>
 <translation id="4807098396393229769">কার্ডে থাকা নাম</translation>
+<translation id="480990236307250886">হোম পৃষ্ঠাটি খুলুন</translation>
 <translation id="481574578487123132">লিঙ্ক করা ডিভাইস</translation>
 <translation id="4826163340425232009">স্ক্রিনের নিচে অ্যাটাচ করা শিটে সাইন-ইন করুন।</translation>
 <translation id="4834007576107377210">এক্ষেত্রে প্রযোজ্য হলে, আপনার সার্চ ইতিহাস মুছতে সার্চ ইঞ্জিনের নির্দেশাবলী দেখুন।</translation>
@@ -834,7 +835,6 @@
 <translation id="5444999712122199445">সাইটে ফিরে যান</translation>
 <translation id="544776284582297024">ট্যাব খুলে বিভিন্ন পৃষ্ঠা একইসাথে ব্রাউজ করার জন্য 'ট্যাব খুলুন' বোতাম টিপুন</translation>
 <translation id="5454166040603940656"><ph name="PROVIDER" /> সহ</translation>
-<translation id="5456381639095306749">পৃষ্ঠা ডাউনলোড করুন</translation>
 <translation id="5458366071038729214">যেসব সাইট ফলো করছেন সেগুলো এখানে দেখতে পাবেন</translation>
 <translation id="5468068603361015296">আপনি কি তবুও <ph name="FILE_NAME" /> ডাউনলোড করতে চান?</translation>
 <translation id="548278423535722844">ম্যাপ অ্যাপ্লিকেশানে খুলুন</translation>
@@ -1175,6 +1175,7 @@
 <translation id="7196215469483532480">গোপনীয়তা সম্পর্কিত গাইডের ব্যাখ্যা সম্পূর্ণ স্ক্রিন জুড়ে খুলেছে</translation>
 <translation id="7207760545532569765">নতুন ব্যাকগ্রাউন্ড ট্যাব হিসেবে <ph name="TAB_COUNT" />টি ট্যাব ফিরিয়ে আনুন।</translation>
 <translation id="7217781228893594884">আপনি Chrome থেকে বেরিয়ে আসলে ছদ্মবেশী ট্যাব লক হয়ে যাবে</translation>
+<translation id="7221869452894271364">এই পৃষ্ঠাটি রিলোড করুন</translation>
 <translation id="7222235798733126207">সাইটের মধ্যে শেয়ারিং সীমিত</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{১টি ডাউনলোড বাকি আছে}one{#টি ডাউনলোড বাকি আছে}other{#টি ডাউনলোড বাকি আছে}}</translation>
 <translation id="72415438529550637">পাসওয়ার্ড সাজেশন দেওয়ার সুবিধা বন্ধ করা আছে।</translation>
@@ -1578,7 +1579,6 @@
 <translation id="926205370408745186">ডিজিটাল ওয়েলবিং থেকে আপনার Chrome অ্যাক্টিভিটি সরিয়ে দিন</translation>
 <translation id="927968626442779827">Google Chrome-এ 'লাইট' মোড ব্যবহার করুন</translation>
 <translation id="928550791203542716"><ph name="SITE_NAME" /> অনুসরণ করা হচ্ছে</translation>
-<translation id="932327136139879170">হোম</translation>
 <translation id="938850635132480979">ত্রুটি: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">পাসফ্রেজ প্রবেশ করান</translation>
 <translation id="952301137339791907">পেজ ইনসাইট স্ক্রিনের নিচে অ্যাটাচ করা শিট খোলা আছে</translation>

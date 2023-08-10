@@ -1367,6 +1367,7 @@ Mới cài đặt</translation>
 <translation id="6912901278692845878">Tìm hiểu nhanh</translation>
 <translation id="6919251195245069855">Không nhận dạng được thẻ thông minh của bạn. Vui lòng thử lại.</translation>
 <translation id="6920245099716267363">Bật/tắt điểm phát sóng. Điểm phát sóng đang bật, có 1 thiết bị đã kết nối.</translation>
+<translation id="692135145298539227">xoá</translation>
 <translation id="6931576957638141829">Lưu vào</translation>
 <translation id="6942518653766415536">Trình đơn định dạng bản ghi</translation>
 <translation id="6945221475159498467">Chọn</translation>
@@ -1678,6 +1679,7 @@ Mới cài đặt</translation>
 <translation id="8315514906653279104">Đang bật...</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363">Đã chọn cửa sổ <ph name="WINDOW_TITLE" /></translation>
+<translation id="8349826889576450703">trình khởi chạy</translation>
 <translation id="8349964124165471584">Mở đường liên kết trong cửa sổ mới</translation>
 <translation id="8351131234907093545">Tạo ghi chú</translation>
 <translation id="8367948981300340152">Đang sử dụng <ph name="CAPTURE_MEDIUM" />.</translation>

@@ -401,6 +401,7 @@
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押すと、Google アカウントで情報、プライバシー、セキュリティを管理します</translation>
+<translation id="1793631236004319016">前回の使用: <ph name="NUM_HOURS_MINUTES_SECONDS" />前</translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。複数の操作が可能で、Tab キーを押すと操作が切り替わります</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">仮想カードの詳細</translation>
@@ -934,6 +935,7 @@
 <translation id="299990983510665749">ハッチバック</translation>
 <translation id="3002501248619246229">給紙トレイのメディアを確認してください</translation>
 <translation id="3005723025932146533">保存済みのコピーを表示</translation>
+<translation id="300580149047131921">最近使用した権限</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キーを押して操作オプションを参照し、Enter キーを押すと、選択した操作を実行できます。</translation>
 <translation id="3013291976881901233">MIDI デバイス</translation>
 <translation id="3014553260345122294">ビジネス ニュース</translation>
@@ -1837,7 +1839,6 @@
 <translation id="4901778704868714008">保存...</translation>
 <translation id="4901952598169637881">カジュアル シューズ</translation>
 <translation id="4905659621780993806">デバイスは <ph name="DATE" /> <ph name="TIME" /> に管理者によって自動的に再起動されます。デバイスが再起動される前に、開いているすべてのアイテムを保存してください。</translation>
-<translation id="4907289208610706508">対象</translation>
 <translation id="4913987521957242411">パンチ（左上）</translation>
 <translation id="4917064667437236721">イメージング シリンダー</translation>
 <translation id="4918221908152712722"><ph name="APP_NAME" /> をインストール（ダウンロードは不要です）</translation>
@@ -2661,6 +2662,7 @@
 <translation id="6671169470640320959">自動車ローン</translation>
 <translation id="6671697161687535275">Chromium から候補を削除してもよろしいですか？</translation>
 <translation id="6677351035258626477">ファストフード</translation>
+<translation id="6681790815630918386">CVC を保存しました</translation>
 <translation id="6683022854667115063">ヘッドフォン</translation>
 <translation id="6683717648675961851">求人情報</translation>
 <translation id="6687230248707087982">封筒（無地）</translation>
@@ -2677,6 +2679,7 @@
 <translation id="6702919718839027939">プレゼンテーション</translation>
 <translation id="6704458454638854812">プロパティ「custom_size」が設定されているため、名前は「custom」である必要があります。</translation>
 <translation id="6706005862292023715">カーテン、窓装飾品</translation>
+<translation id="6706210727756204531">範囲</translation>
 <translation id="6709133671862442373">ニュース</translation>
 <translation id="6709888928011386878">楽器</translation>
 <translation id="6710213216561001401">前へ</translation>
@@ -3466,6 +3469,7 @@
 <translation id="830498451218851433">2 つ折り</translation>
 <translation id="8308653357438598313">ライブ動画ストリーミング</translation>
 <translation id="8311895354659782580">不動産情報</translation>
+<translation id="8316555157357957253">現在使用中</translation>
 <translation id="8317570861267063617">購入手続きをスムーズに行うには、このカードの CVC をデバイスに保存してください</translation>
 <translation id="8319269383395457801">住宅販売</translation>
 <translation id="831997045666694187">夕方</translation>

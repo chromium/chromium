@@ -229,6 +229,7 @@
 <translation id="2278052315791335171">刪除此密碼不會刪除您在 <ph name="SITE" /> 的帳戶</translation>
 <translation id="2286841657746966508">帳單地址</translation>
 <translation id="228704530595896923">分享選項清單。</translation>
+<translation id="2297822946037605517">分享此頁面</translation>
 <translation id="230115972905494466">找不到兼容的裝置</translation>
 <translation id="2318045970523081853">輕按即可撥打電話</translation>
 <translation id="2321086116217818302">正在準備密碼…</translation>
@@ -306,7 +307,6 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="2656405586795711023">網絡應用程式</translation>
 <translation id="2669454659051515572">此裝置的所有使用者都能看到已下載的檔案</translation>
 <translation id="2702516483241149200">新功能：分享捲動至此段文字的連結</translation>
-<translation id="2707726405694321444">重新整理網頁</translation>
 <translation id="271033894570825754">全新</translation>
 <translation id="2711073837061989559">試用功能</translation>
 <translation id="2718352093833049315">僅限 Wi-Fi 連線時</translation>
@@ -708,6 +708,7 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 
 如要變更此設定，請<ph name="BEGIN_LINK" />重設同步功能<ph name="END_LINK" /></translation>
 <translation id="4807098396393229769">信用卡持有人姓名</translation>
+<translation id="480990236307250886">開啟首頁</translation>
 <translation id="481574578487123132">連結的裝置</translation>
 <translation id="4826163340425232009">登入頁底面板。</translation>
 <translation id="4834007576107377210">同時建議您查看搜尋引擎的搜尋記錄刪除指示 (如有)</translation>
@@ -832,7 +833,6 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="5444999712122199445">返回網站</translation>
 <translation id="544776284582297024">如要同時開啟分頁和瀏覽不同網頁，請輕按開啟分頁按鈕</translation>
 <translation id="5454166040603940656">與 <ph name="PROVIDER" /></translation>
-<translation id="5456381639095306749">下載網頁</translation>
 <translation id="5458366071038729214">您可在此找到您追蹤的網站</translation>
 <translation id="5468068603361015296">仍要下載「<ph name="FILE_NAME" />」嗎？</translation>
 <translation id="548278423535722844">在地圖應用程式中開啟</translation>
@@ -1173,6 +1173,7 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="7196215469483532480">私隱權指南說明宜家顯示喺成個畫面</translation>
 <translation id="7207760545532569765">還原 <ph name="TAB_COUNT" /> 個分頁做新嘅背景分頁群組。</translation>
 <translation id="7217781228893594884">當您離開 Chrome 時，無痕式分頁將會鎖定</translation>
+<translation id="7221869452894271364">重新載入這個網頁</translation>
 <translation id="7222235798733126207">限制網站共用</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 項下載操作尚待處理}other{# 項下載操作尚待處理}}</translation>
 <translation id="72415438529550637">閂咗密碼建議功能。</translation>
@@ -1576,7 +1577,6 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="926205370408745186">從「健康數碼生活」中移除您的 Chrome 活動記錄</translation>
 <translation id="927968626442779827">使用 Google Chrome 的「精簡模式」</translation>
 <translation id="928550791203542716">正在追蹤「<ph name="SITE_NAME" />」</translation>
-<translation id="932327136139879170">首頁</translation>
 <translation id="938850635132480979">錯誤：<ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">請輸入複雜密碼</translation>
 <translation id="952301137339791907">開咗頁面分析資料頁底面板</translation>

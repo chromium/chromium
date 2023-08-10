@@ -1223,9 +1223,6 @@ Chính sách này sẽ không có hiệu lực khi bạn đặt chính sách <ph
       Nếu bạn không đặt hoặc đặt chính sách này thành danh sách trống, thì người dùng sẽ không thể sử dụng chế độ mở khóa nhanh nào cho các thiết bị được quản lý.
 
       Chính sách này không còn dùng nữa, vui lòng sử dụng <ph name="QUICK_UNLOCK_MODE_ALLOW_LIST_POLICY_NAME" /></translation>
-<translation id="2033784678146670379">Việc đặt chính sách này thành Bật sẽ cho phép người dùng sử dụng phần cứng trên các thiết bị <ph name="PRODUCT_OS_NAME" /> để chứng thực từ xa danh tính của phần cứng đó theo CA về quyền riêng tư qua <ph name="ENTERPRISE_PLATFORM_KEYS_API" /> bằng <ph name="CHALLENGE_USER_KEY_FUNCTION" />.
-
-      Nếu bạn đặt thành Tắt hoặc không đặt chính sách này, thì các lệnh gọi đến API sẽ không thực hiện được kèm theo mã lỗi.</translation>
 <translation id="2036522553891755455">Nếu bạn đặt chính sách này thành Bật, tính năng khám phá lượt chia sẻ (tính năng Chia sẻ tệp trong mạng của <ph name="PRODUCT_NAME" />) sẽ sử dụng <ph name="NETBIOS_PROTOCOL" /> để khám phá các lượt chia sẻ trên mạng. Nếu bạn đặt chính sách thành Tắt, tính năng khám phá lượt chia sẻ sẽ không sử dụng giao thức này để khám phá các lượt chia sẻ.
 
       Nếu bạn không đặt chính sách này, chế độ mặc định sẽ là tắt đối với người dùng được quản lý và bật đối với người dùng khác.</translation>

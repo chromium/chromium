@@ -229,6 +229,7 @@ Když smažete historii prohlížení (celou nebo na určitém webu), smažou se
 <translation id="2278052315791335171">Odstraněním tohoto hesla nesmažete svůj účet na webu <ph name="SITE" /></translation>
 <translation id="2286841657746966508">Fakturační adresa</translation>
 <translation id="228704530595896923">Seznam možností sdílení.</translation>
+<translation id="2297822946037605517">Sdílet tuto stránku</translation>
 <translation id="230115972905494466">Nebyla nalezena žádná kompatibilní zařízení</translation>
 <translation id="2318045970523081853">Klepnutím zahájíte hovor</translation>
 <translation id="2321086116217818302">Příprava hesel…</translation>
@@ -306,7 +307,6 @@ Tokeny soukromého stavu zvyšují ochranu soukromí na webu a nelze pomocí ni
 <translation id="2656405586795711023">Webové aplikace</translation>
 <translation id="2669454659051515572">Stažené soubory může vidět kdokoli, kdo používá tohle zařízení</translation>
 <translation id="2702516483241149200">Nové: Sdílení odkazu, který obsah posune na tento text</translation>
-<translation id="2707726405694321444">Obnovit stránku</translation>
 <translation id="271033894570825754">Nové</translation>
 <translation id="2711073837061989559">Zkušební funkce</translation>
 <translation id="2718352093833049315">Pouze v sítích Wi-Fi</translation>
@@ -708,6 +708,7 @@ Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> moh
 
 Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<ph name="END_LINK" />.</translation>
 <translation id="4807098396393229769">Jméno na kartě</translation>
+<translation id="480990236307250886">Otevřít domovskou stránku</translation>
 <translation id="481574578487123132">Propojená zařízení</translation>
 <translation id="4826163340425232009">Spodní tabulka s přihlášením.</translation>
 <translation id="4834007576107377210">Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud je k dispozici)</translation>
@@ -832,7 +833,6 @@ Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<
 <translation id="5444999712122199445">Zpět na web</translation>
 <translation id="544776284582297024">Pokud chcete otevřít karty a prohlížet si několik různých stránek najednou, klepněte na tlačítko otevření karet</translation>
 <translation id="5454166040603940656">(<ph name="PROVIDER" />)</translation>
-<translation id="5456381639095306749">Stáhnout stránku</translation>
 <translation id="5458366071038729214">Zde najdete weby, které sledujete</translation>
 <translation id="5468068603361015296">Chcete soubor <ph name="FILE_NAME" /> přesto stáhnout?</translation>
 <translation id="548278423535722844">Otevřít v mapové aplikaci</translation>
@@ -1173,6 +1173,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="7196215469483532480">Vysvětlení průvodce ochranou soukromí otevřené na plnou výšku</translation>
 <translation id="7207760545532569765">Obnovit <ph name="TAB_COUNT" /> karet jako nové karty na pozadí.</translation>
 <translation id="7217781228893594884">Když Chrome opustíte, anonymní karty se uzamknou</translation>
+<translation id="7221869452894271364">Načíst tuto stránku znovu</translation>
 <translation id="7222235798733126207">Omezené sdílení mezi weby</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 nevyřízené stahování}few{# nevyřízená stahování}many{# nevyřízeného stahování}other{# nevyřízených stahování}}</translation>
 <translation id="72415438529550637">Návrh hesla je zavřen.</translation>
@@ -1576,7 +1577,6 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="926205370408745186">Odstranit vaši aktivitu v Chromu z digitální rovnováhy</translation>
 <translation id="927968626442779827">Používejte v prohlížeči Google Chrome zjednodušený režim</translation>
 <translation id="928550791203542716">Sledujete <ph name="SITE_NAME" /></translation>
-<translation id="932327136139879170">Domovská stránka</translation>
 <translation id="938850635132480979">Chyba: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">Zadat heslovou frázi</translation>
 <translation id="952301137339791907">Spodní tabulka se statistikami stránky je otevřená</translation>

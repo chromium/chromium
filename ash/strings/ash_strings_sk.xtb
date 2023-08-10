@@ -352,7 +352,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="2531025035050312891">zariadenie je pomalé</translation>
 <translation id="2531107890083353124">Pri presúvaní karty stlačte <ph name="KEY_ONE" /></translation>
 <translation id="254900897760075745">Skopírovanie vybraného obsahu do schránky</translation>
-<translation id="2549711466868162843">Zlepšiť osvetlenie</translation>
+<translation id="2549711466868162843">Zlepšenie osvetlenia</translation>
 <translation id="2549985041256363841">Spustiť zaznamenávanie</translation>
 <translation id="255671100581129685">Asistent Google nie je k dispozícii vo verejnej relácii.</translation>
 <translation id="256712445991462162">ukotvená lupa</translation>
@@ -1367,6 +1367,7 @@ Nová inštalácia</translation>
 <translation id="6912901278692845878">Rýchla prehliadka</translation>
 <translation id="6919251195245069855">Inteligentnú kartu sa nepodarilo rozpoznať. Skúste to znova.</translation>
 <translation id="6920245099716267363">Prepnúť hotspot Hotspot je zapnutý, je pripojené jedno zariadenie.</translation>
+<translation id="692135145298539227">odstrániť</translation>
 <translation id="6931576957638141829">Uložiť do</translation>
 <translation id="6942518653766415536">Ponuka formátu nahrávky</translation>
 <translation id="6945221475159498467">Vybrať</translation>
@@ -1678,6 +1679,7 @@ Ak chcete zariadenie vypnúť, znova pridržte jeho vypínač.</translation>
 <translation id="8315514906653279104">Zapína sa…</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363">Bolo vybrané okno <ph name="WINDOW_TITLE" /></translation>
+<translation id="8349826889576450703">spúšťač</translation>
 <translation id="8349964124165471584">Otvorenie odkazu v novom okne</translation>
 <translation id="8351131234907093545">Vytvoriť poznámku</translation>
 <translation id="8367948981300340152"><ph name="CAPTURE_MEDIUM" /> sa používa.</translation>

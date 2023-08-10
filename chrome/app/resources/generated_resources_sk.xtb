@@ -4131,7 +4131,6 @@ Môže to zahŕňať informácie o nainštalovanom softvéri, súboroch, prehli
 <translation id="4361142739114356624">Súkromný kľúč pre tento klientsky certifikát chýba alebo je neplatný</translation>
 <translation id="4361745360460842907">Otvoriť ako kartu</translation>
 <translation id="4362675504017386626"><ph name="ACCOUNT_EMAIL" /> je predvolený účet vo vašom zariadení (<ph name="DEVICE_TYPE" />).</translation>
-<translation id="4363215264289239958">Aplikácie pre počítač Bruschetta</translation>
 <translation id="4363262124589131906">Nové súbory v sekcii Môj disk sa automaticky prestanú synchronizovať s týmto Chromebookom</translation>
 <translation id="4363771538994847871">Nenašli sa žiadne ciele prenosu. Potrebujete pomoc?</translation>
 <translation id="4364327530094270451">Dyňa</translation>
@@ -4718,6 +4717,7 @@ Ak chcete zobrazenie oddialiť, stlačte Ctrl + Alt + zníženie jasu.</translat
 <translation id="4849517651082200438">Neinštalovať</translation>
 <translation id="485053257961878904">Nepodarilo sa nastaviť synchronizáciu upozornení</translation>
 <translation id="4850548109381269495">V oboch zariadeniach skontrolujte internetové pripojenie a zapnite rozhranie Bluetooth. Potom to skúste znova.</translation>
+<translation id="4850669014075537160">Posúvanie</translation>
 <translation id="4850886885716139402">Zobraziť</translation>
 <translation id="485088796993065002">Weby môžu prehrávať zvuk na poskytnutie zvukovej stopy hudby, videí a ďalších médií</translation>
 <translation id="4852916668365817106">Farba myši</translation>

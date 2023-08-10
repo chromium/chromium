@@ -229,6 +229,7 @@
 <translation id="2278052315791335171">આ પાસવર્ડ ડિલીટ કરવાથી <ph name="SITE" /> પરનું તમારું એકાઉન્ટ ડિલીટ થશે નહીં</translation>
 <translation id="2286841657746966508">બિલિંગ સરનામું</translation>
 <translation id="228704530595896923">શેરિંગના વિકલ્પોની સૂચિ.</translation>
+<translation id="2297822946037605517">આ પેજ શેર કરો</translation>
 <translation id="230115972905494466">કોઈ સુસંગત ઉપકરણો મળ્યા નથી</translation>
 <translation id="2318045970523081853">કૉલ કરવા માટે ટૅપ કરો</translation>
 <translation id="2321086116217818302">પાસવર્ડ તૈયાર કરી રહ્યાં છીએ…</translation>
@@ -306,7 +307,6 @@
 <translation id="2656405586795711023">વેબ ઍપ</translation>
 <translation id="2669454659051515572">આ ડિવાઇસનો ઉપયોગ કરનારી કોઈપણ વ્યક્તિ ડાઉનલોડ કરેલી ફાઇલો જોઈ શકે છે</translation>
 <translation id="2702516483241149200">નવું: આ ટેક્સ્ટ પર સ્ક્રોલ કરતી હોય એવી કોઈ લિંક શેર કરો</translation>
-<translation id="2707726405694321444">પેજ રિફ્રેશ કરો</translation>
 <translation id="271033894570825754">નવું</translation>
 <translation id="2711073837061989559">અજમાયશો</translation>
 <translation id="2718352093833049315">ફક્ત વાઇ-ફાઇ પર</translation>
@@ -708,6 +708,7 @@
 
 આ સેટિંગ બદલવા માટે, <ph name="BEGIN_LINK" />સિંકને રીસેટ કરો<ph name="END_LINK" /></translation>
 <translation id="4807098396393229769">કાર્ડ પરનું નામ</translation>
+<translation id="480990236307250886">હોમ પેજ ખોલો</translation>
 <translation id="481574578487123132">લિંક કરેલા ડિવાઇસ</translation>
 <translation id="4826163340425232009">સાઇન ઇન કરવા માટેની બોટમ શીટ.</translation>
 <translation id="4834007576107377210">તમારા શોધ ઇતિહાસને ડિલીટ કરવા માટે, તમારા શોધ એન્જિનની સૂચનાઓ જુઓ, જો લાગુ થતી હોય તો</translation>
@@ -832,7 +833,6 @@
 <translation id="5444999712122199445">સાઇટ પર પાછા ફરો</translation>
 <translation id="544776284582297024">ટૅબ ખોલી અને વિવિધ પેજની એક સાથે મુલાકાત લેવા માટે, ટૅબ ખોલો બટન પર ટૅપ કરો</translation>
 <translation id="5454166040603940656"><ph name="PROVIDER" /> સાથે</translation>
-<translation id="5456381639095306749">પેજ ડાઉનલોડ કરો</translation>
 <translation id="5458366071038729214">તમે જે સાઇટ ફૉલો કરશો, તે અહીં દેખાશે</translation>
 <translation id="5468068603361015296">શું તમે તેમ છતાં <ph name="FILE_NAME" /> ડાઉનલોડ કરવા માગો છો?</translation>
 <translation id="548278423535722844">નકશા અ‍ૅપ્લિકેશનમાં ખોલો</translation>
@@ -1173,6 +1173,7 @@
 <translation id="7196215469483532480">પ્રાઇવસી સંબંધિત માર્ગદર્શિકાની સમજૂતી પૂરી ઊંચાઈ સુધી ખોલી છે</translation>
 <translation id="7207760545532569765"><ph name="TAB_COUNT" /> ટૅબને નવી બૅકગ્રાઉન્ડ ટૅબ તરીકે રિસ્ટોર કરો.</translation>
 <translation id="7217781228893594884">જ્યારે તમે Chrome છોડશો, ત્યારે છૂપી ટૅબ લૉક થઈ જશે</translation>
+<translation id="7221869452894271364">આ પેજને ફરીથી લોડ કરો</translation>
 <translation id="7222235798733126207">સાઇટ વચ્ચે મર્યાદિત શેરિંગ</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 ડાઉનલોડ બાકી}one{# ડાઉનલોડ બાકી}other{# ડાઉનલોડ બાકી}}</translation>
 <translation id="72415438529550637">પાસવર્ડ સૂચવવાની સુવિધા બંધ છે.</translation>
@@ -1576,7 +1577,6 @@
 <translation id="926205370408745186">ડિજિટલ લાઇફસ્ટાઇલમાંથી તમારી Chromeની પ્રવૃત્તિને કેવી રીતે કાઢવી</translation>
 <translation id="927968626442779827">Google Chrome પર લાઇટ મોડનો ઉપયોગ કરો</translation>
 <translation id="928550791203542716"><ph name="SITE_NAME" /> ફૉલો કરી રહ્યાં છીએ</translation>
-<translation id="932327136139879170">હોમ</translation>
 <translation id="938850635132480979">ભૂલ: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">પાસફ્રેઝ દાખલ કરો</translation>
 <translation id="952301137339791907">પેજ જાણકારીઓની બોટમ શીટ ખુલ્લી છે</translation>

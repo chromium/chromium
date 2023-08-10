@@ -1217,9 +1217,6 @@ Dit beleid heeft geen effect als het beleid <ph name="DEVICE_SCREENSAVER_LOGIN_S
       Als je het beleid niet instelt of instelt op een lege lijst, zijn er geen standen voor snel ontgrendelen beschikbaar voor beheerde apparaten.
 
       Dit beleid is verouderd. Gebruik in plaats daarvan <ph name="QUICK_UNLOCK_MODE_ALLOW_LIST_POLICY_NAME" />.</translation>
-<translation id="2033784678146670379">Als je het beleid toepast, kunnen gebruikers de hardware op <ph name="PRODUCT_OS_NAME" />-apparaten gebruiken om de identiteit ervan extern te bewijzen aan de privacy-CA via de <ph name="ENTERPRISE_PLATFORM_KEYS_API" /> met <ph name="CHALLENGE_USER_KEY_FUNCTION" />.
-
-      Als je het beleid niet toepast of niet instelt, mislukken de aanroepen van de API en wordt er een foutcode getoond.</translation>
 <translation id="2036522553891755455">Als je het beleid toepast, wordt voor het ontdekken van fileshares (de functie Network File Shares van <ph name="PRODUCT_NAME" />) <ph name="NETBIOS_PROTOCOL" /> gebruikt om fileshares in het netwerk te ontdekken. Als je het beleid niet toepast, wordt dit protocol niet gebruikt om fileshares te ontdekken.
 
       Als je dit beleid niet instelt, staat dit gedrag standaard uit voor beheerde gebruikers en aan voor andere gebruikers.</translation>

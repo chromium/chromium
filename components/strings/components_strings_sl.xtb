@@ -1839,7 +1839,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4901778704868714008">Shrani ...</translation>
 <translation id="4901952598169637881">Obutev za prosti čas</translation>
 <translation id="4905659621780993806">Skrbnik bo napravo samodejno znova zagnal ob <ph name="TIME" /> dne <ph name="DATE" />. Preden se naprava znova zažene, shranite odprte elemente.</translation>
-<translation id="4907289208610706508">Cilj</translation>
 <translation id="4913987521957242411">Luknjanje zgoraj levo</translation>
 <translation id="4917064667437236721">Imaging Cylinder</translation>
 <translation id="4918221908152712722">Namestite <ph name="APP_NAME" /> (prenos ni potreben)</translation>
@@ -2680,6 +2679,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6702919718839027939">Predstavitev</translation>
 <translation id="6704458454638854812">Nastavljena je lastnost »custom_size«; pričakovano ime je »custom«.</translation>
 <translation id="6706005862292023715">Zavese in senčila</translation>
+<translation id="6706210727756204531">Obseg</translation>
 <translation id="6709133671862442373">Novice</translation>
 <translation id="6709888928011386878">Glasbila</translation>
 <translation id="6710213216561001401">Prejšnji</translation>

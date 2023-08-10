@@ -175,6 +175,7 @@
 <translation id="4002066346123236978">Título</translation>
 <translation id="4008040567710660924">Permita cookies de um site específico.</translation>
 <translation id="4046123991198612571">Próxima faixa</translation>
+<translation id="4053720452172726777">Personalizar e controlar o Google Chrome</translation>
 <translation id="4149994727733219643">Versão simplificada das páginas da Web</translation>
 <translation id="4151930093518524179">Zoom padrão</translation>
 <translation id="4165986682804962316">Configurações do site</translation>
@@ -253,7 +254,6 @@
 <translation id="5545693483061321551">Os sites não podem usar seus cookies para ver sua atividade de navegação em diferentes páginas, por exemplo, para personalizar anúncios. Os recursos de alguns sites podem não funcionar.</translation>
 <translation id="5553374991681107062">Mais recentes</translation>
 <translation id="5556459405103347317">Recarregar</translation>
-<translation id="5596627076506792578">Mais opções</translation>
 <translation id="5649053991847567735">Downloads automáticos</translation>
 <translation id="5668404140385795438">Aplicar zoom mesmo que o site tente impedir</translation>
 <translation id="5677928146339483299">Bloqueado</translation>
@@ -308,7 +308,7 @@
 <translation id="6500423977866688905">Quando a janela estiver estreita, solicite a visualização para dispositivos móveis</translation>
 <translation id="6527303717912515753">Compartilhar</translation>
 <translation id="652937045869844725">Permita cookies de terceiros. Isso significa menos proteção, mas os recursos do site têm mais chances de funcionar</translation>
-<translation id="6545864417968258051">Verificação de Bluetooth</translation>
+<translation id="6545864417968258051">Busca por Bluetooth</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{Bloqueadas: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e mais <ph name="NUM_MORE" />}one{Bloqueadas: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e mais <ph name="NUM_MORE" />}other{Bloqueadas: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e mais <ph name="NUM_MORE" />}}</translation>
 <translation id="6554732001434021288">Última visita: <ph name="NUM_DAYS" /> dias atrás</translation>
 <translation id="6561560012278703671">Usar mensagens mais silenciosas (bloqueia notificações que interrompem você)</translation>

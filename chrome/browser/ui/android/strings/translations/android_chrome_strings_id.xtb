@@ -229,6 +229,7 @@ Jika Anda menghapus histori penjelajahan, baik semua histori maupun histori untu
 <translation id="2278052315791335171">Menghapus sandi ini tidak akan menghapus akun Anda di <ph name="SITE" /></translation>
 <translation id="2286841657746966508">Alamat penagihan</translation>
 <translation id="228704530595896923">Daftar opsi berbagi.</translation>
+<translation id="2297822946037605517">Bagikan halaman ini</translation>
 <translation id="230115972905494466">Tidak ada perangkat yang kompatibel</translation>
 <translation id="2318045970523081853">Ketuk untuk melakukan panggilan</translation>
 <translation id="2321086116217818302">Mempersiapkan sandi…</translation>
@@ -306,7 +307,6 @@ Private state token meningkatkan privasi di web dan tidak dapat digunakan untuk 
 <translation id="2656405586795711023">Aplikasi web</translation>
 <translation id="2669454659051515572">Siapa pun yang menggunakan perangkat ini dapat melihat file yang didownload</translation>
 <translation id="2702516483241149200">Baru: bagikan link yang mengarah ke teks ini</translation>
-<translation id="2707726405694321444">Segarkan halaman</translation>
 <translation id="271033894570825754">Baru</translation>
 <translation id="2711073837061989559">Uji coba</translation>
 <translation id="2718352093833049315">Hanya melalui Wi-Fi</translation>
@@ -708,6 +708,7 @@ Akun Google Anda mungkin memiliki bentuk histori penjelajahan lain seperti penel
 
 Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />reset sinkronisasi<ph name="END_LINK" /></translation>
 <translation id="4807098396393229769">Nama di kartu</translation>
+<translation id="480990236307250886">Buka beranda</translation>
 <translation id="481574578487123132">Perangkat tertaut</translation>
 <translation id="4826163340425232009">Sheet bawah untuk tombol login.</translation>
 <translation id="4834007576107377210">Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memungkinkan</translation>
@@ -832,7 +833,6 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />reset sinkronisasi<ph name="
 <translation id="5444999712122199445">Kembali ke situs</translation>
 <translation id="544776284582297024">Untuk membuka tab dan mengunjungi halaman yang berbeda secara bersamaan, ketuk tombol tab terbuka</translation>
 <translation id="5454166040603940656">dengan <ph name="PROVIDER" /></translation>
-<translation id="5456381639095306749">Download halaman</translation>
 <translation id="5458366071038729214">Anda akan menemukan situs yang Anda ikuti di sini</translation>
 <translation id="5468068603361015296">Ingin tetap mendownload <ph name="FILE_NAME" />?</translation>
 <translation id="548278423535722844">Buka di aplikasi peta</translation>
@@ -1173,6 +1173,7 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="7196215469483532480">Penjelasan panduan privasi terbuka sepenuhnya</translation>
 <translation id="7207760545532569765">Pulihkan <ph name="TAB_COUNT" /> tab sebagai grup tab latar belakang baru.</translation>
 <translation id="7217781228893594884">Tab Samaran akan dikunci saat Anda menutup Chrome</translation>
+<translation id="7221869452894271364">Muat ulang halaman ini</translation>
 <translation id="7222235798733126207">Berbagi antar-situs dibatasi</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 download tertunda}other{# download tertunda}}</translation>
 <translation id="72415438529550637">Saran sandi ditutup.</translation>
@@ -1576,7 +1577,6 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="926205370408745186">Hapus aktivitas Chrome Anda dari Kesehatan Digital</translation>
 <translation id="927968626442779827">Gunakan Mode Ringan di Google Chrome</translation>
 <translation id="928550791203542716">Mengikuti <ph name="SITE_NAME" /></translation>
-<translation id="932327136139879170">Beranda</translation>
 <translation id="938850635132480979">Kesalahan: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">Masukkan frasa sandi</translation>
 <translation id="952301137339791907">Sheet bawah analisis halaman dibuka</translation>

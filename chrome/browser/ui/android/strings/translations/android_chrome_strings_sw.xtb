@@ -229,6 +229,7 @@ Unapofuta historia yako ya kuvinjari — yote au kwa tovuti mahususi — unafuta
 <translation id="2278052315791335171">Hatua ya kufuta nenosiri hili haitafuta akaunti yako kwenye <ph name="SITE" /></translation>
 <translation id="2286841657746966508">Anwani ya kutoza</translation>
 <translation id="228704530595896923">Orodha ya chaguo za kushiriki.</translation>
+<translation id="2297822946037605517">Shiriki ukurasa huu</translation>
 <translation id="230115972905494466">Haikupata vifaa vyovyote vinavyooana</translation>
 <translation id="2318045970523081853">Gusa ili upige simu</translation>
 <translation id="2321086116217818302">Inatayarisha manenosiri…</translation>
@@ -306,7 +307,6 @@ Tokeni za hali ya faragha zinaboresha faragha kwenye wavuti na haziwezi kutumiwa
 <translation id="2656405586795711023">Programu za wavuti</translation>
 <translation id="2669454659051515572">Mtu yeyote anayetumia kifaa hiki anaweza kuona faili zilizopakuliwa</translation>
 <translation id="2702516483241149200">Mpya: shiriki kiungo kinachoenda kwenye maandishi haya</translation>
-<translation id="2707726405694321444">Onyesha upya ukurasa</translation>
 <translation id="271033894570825754">Mpya</translation>
 <translation id="2711073837061989559">Majaribio</translation>
 <translation id="2718352093833049315">Kwenye Wi-Fi pekee</translation>
@@ -708,6 +708,7 @@ Huenda akaunti yako ya Google ina aina nyingine za historia ya kuvinjari kama vi
 
 Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />fanya usawazishaji upya<ph name="END_LINK" /></translation>
 <translation id="4807098396393229769">Jina kwenye kadi</translation>
+<translation id="480990236307250886">Fungua ukurasa wa kwanza</translation>
 <translation id="481574578487123132">Vifaa vilivyounganishwa</translation>
 <translation id="4826163340425232009">Safu ya chini ya kuingia katika akaunti.</translation>
 <translation id="4834007576107377210">Angalia maagizo ya mtambo wako wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta historia ya mambo uliyotafuta</translation>
@@ -832,7 +833,6 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />fanya usawazishaji upya<p
 <translation id="5444999712122199445">Rudi kwenye tovuti</translation>
 <translation id="544776284582297024">Ili ufungue vichupo na utembelee kurasa mbalimbali kwa wakati mmoja, gusa kitufe cha 'vichupo vilivyofunguliwa'</translation>
 <translation id="5454166040603940656">na <ph name="PROVIDER" /></translation>
-<translation id="5456381639095306749">Pakua ukurasa</translation>
 <translation id="5458366071038729214">Utapata tovuti unazofuatilia hapa</translation>
 <translation id="5468068603361015296">Je, ungependa kupakia <ph name="FILE_NAME" /> licha ya hayo?</translation>
 <translation id="548278423535722844">Fungua katika programu ya ramani</translation>
@@ -1173,6 +1173,7 @@ Kwa mfano, baadhi ya tovuti zinaweza kujibu ombi hili kwa kukuonyesha matangazo 
 <translation id="7196215469483532480">Maelezo kuhusu mwongozo wa faragha yamefunguliwa kwenye skrini nzima</translation>
 <translation id="7207760545532569765">Rejesha vichupo <ph name="TAB_COUNT" /> viwe vichupo vipya vinavyofanya kazi chinichini.</translation>
 <translation id="7217781228893594884">Vichupo fiche vitafungwa utakapoondoka kwenye Chrome</translation>
+<translation id="7221869452894271364">Pakia ukurasa huu upya</translation>
 <translation id="7222235798733126207">Ushiriki uliodhibitiwa kati ya tovuti</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{Inasubiri kupakua faili 1}other{Inasubri kupakua faili #}}</translation>
 <translation id="72415438529550637">Pendekezo la nenosiri limefungwa.</translation>
@@ -1576,7 +1577,6 @@ Kwa mfano, baadhi ya tovuti zinaweza kujibu ombi hili kwa kukuonyesha matangazo 
 <translation id="926205370408745186">Ondoa shughuli zako za Chrome kwenye mpango wa Nidhamu Dijitali</translation>
 <translation id="927968626442779827">Tumia Hali Nyepesi kwenye Google Chrome</translation>
 <translation id="928550791203542716">Unafuatilia <ph name="SITE_NAME" /></translation>
-<translation id="932327136139879170">Mwanzo</translation>
 <translation id="938850635132480979">Hitilafu: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">Ingiza kaulisiri</translation>
 <translation id="952301137339791907">Safu ya chini ya maarifa ya ukurasa imefunguliwa</translation>

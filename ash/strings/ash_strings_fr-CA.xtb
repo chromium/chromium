@@ -1367,6 +1367,7 @@ Nouvelle installation</translation>
 <translation id="6912901278692845878">Présentation rapide</translation>
 <translation id="6919251195245069855">Votre carte à puce n'a pas été reconnue. Réessayez.</translation>
 <translation id="6920245099716267363">Désactiver le point d'accès sans fil. Point d'accès sans fil activé, 1 appareil connecté.</translation>
+<translation id="692135145298539227">supprimer</translation>
 <translation id="6931576957638141829">Enregistrer dans</translation>
 <translation id="6942518653766415536">Menu du format d'enregistrement</translation>
 <translation id="6945221475159498467">Sélectionner</translation>
@@ -1678,6 +1679,7 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="8315514906653279104">Activation en cours…</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" /> <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363">Fenêtre <ph name="WINDOW_TITLE" /> sélectionnée</translation>
+<translation id="8349826889576450703">lanceur d'applications</translation>
 <translation id="8349964124165471584">Ouvrir le lien dans une nouvelle fenêtre</translation>
 <translation id="8351131234907093545">Créer une note</translation>
 <translation id="8367948981300340152"><ph name="CAPTURE_MEDIUM" /> en cours d'utilisation.</translation>

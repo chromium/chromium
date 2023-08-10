@@ -4144,7 +4144,6 @@ Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặ
 <translation id="4361142739114356624">Khóa cá nhân cho chứng chỉ ứng dụng này còn thiếu hoặc không hợp lệ</translation>
 <translation id="4361745360460842907">Mở dưới dạng thẻ</translation>
 <translation id="4362675504017386626"><ph name="ACCOUNT_EMAIL" /> là tài khoản mặc định trên <ph name="DEVICE_TYPE" /> của bạn</translation>
-<translation id="4363215264289239958">Ứng dụng Bruschetta</translation>
 <translation id="4363262124589131906">Các tệp mới trong Drive của tôi sẽ tự động dừng đồng bộ hoá với Chromebook này</translation>
 <translation id="4363771538994847871">Không tìm thấy đích Truyền nào. Bạn cần trợ giúp?</translation>
 <translation id="4364327530094270451">Quả dưa</translation>
@@ -4732,6 +4731,7 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="4849517651082200438">Không cài đặt</translation>
 <translation id="485053257961878904">Không thể thiết lập tính năng đồng bộ hóa thông báo</translation>
 <translation id="4850548109381269495">Hãy kiểm tra kết nối Internet và bật Bluetooth trên cả hai thiết bị. Sau đó, hãy thử lại.</translation>
+<translation id="4850669014075537160">Cuộn</translation>
 <translation id="4850886885716139402">Xem</translation>
 <translation id="485088796993065002">Các trang web có thể phát âm thanh để cung cấp âm thanh cho nhạc, video và nội dung nghe nhìn khác</translation>
 <translation id="4852916668365817106">Màu chuột</translation>

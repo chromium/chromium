@@ -229,6 +229,7 @@ Lorsque vous supprimez votre historique de navigation (entièrement ou pour un s
 <translation id="2278052315791335171">La suppression de ce mot de passe n'entraînera pas celle de votre compte sur <ph name="SITE" /></translation>
 <translation id="2286841657746966508">Adresse de facturation</translation>
 <translation id="228704530595896923">Liste des options de partage.</translation>
+<translation id="2297822946037605517">Partager cette page</translation>
 <translation id="230115972905494466">Aucun appareil compatible détecté</translation>
 <translation id="2318045970523081853">Appuyer pour passer un appel</translation>
 <translation id="2321086116217818302">Préparation des mots de passe…</translation>
@@ -306,7 +307,6 @@ Les jetons d'état privés améliorent la confidentialité sur le Web et ne peuv
 <translation id="2656405586795711023">Applications Web</translation>
 <translation id="2669454659051515572">Toute personne utilisant cet appareil peut voir les fichiers téléchargés</translation>
 <translation id="2702516483241149200">Nouveau : partagez un lien vers ce texte</translation>
-<translation id="2707726405694321444">Actualiser la page</translation>
 <translation id="271033894570825754">Nouveau</translation>
 <translation id="2711073837061989559">Essais</translation>
 <translation id="2718352093833049315">Wi-Fi uniquement</translation>
@@ -708,6 +708,7 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 
 Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchronisation<ph name="END_LINK" /></translation>
 <translation id="4807098396393229769">Titulaire de la carte</translation>
+<translation id="480990236307250886">Ouvrir la page d'accueil</translation>
 <translation id="481574578487123132">Appareils associés</translation>
 <translation id="4826163340425232009">Bottom sheet de connexion.</translation>
 <translation id="4834007576107377210">Lisez les instructions du moteur de recherche pour supprimer l'historique de vos recherches, si besoin</translation>
@@ -832,7 +833,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5444999712122199445">Revenir au site</translation>
 <translation id="544776284582297024">Pour ouvrir des onglets et consulter plusieurs pages en même temps, appuyez sur le bouton "Onglets ouverts"</translation>
 <translation id="5454166040603940656">avec <ph name="PROVIDER" /></translation>
-<translation id="5456381639095306749">Télécharger la page</translation>
 <translation id="5458366071038729214">Les sites que vous suivez s'afficheront ici</translation>
 <translation id="5468068603361015296">Voulez-vous quand même télécharger <ph name="FILE_NAME" /> ?</translation>
 <translation id="548278423535722844">Ouvrir dans une application de plans</translation>
@@ -1173,6 +1173,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="7196215469483532480">Explications du Guide sur la confidentialité ouvertes à pleine hauteur</translation>
 <translation id="7207760545532569765">Restaurer <ph name="TAB_COUNT" /> onglets en tant que nouveaux onglet en arrière-plan.</translation>
 <translation id="7217781228893594884">Les onglets de navigation privée seront verrouillés lorsque vous quitterez Chrome</translation>
+<translation id="7221869452894271364">Actualiser cette page</translation>
 <translation id="7222235798733126207">Partage limité entre les sites</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 téléchargement en attente}one{# téléchargement en attente}other{# téléchargements en attente}}</translation>
 <translation id="72415438529550637">La suggestion de mot de passe est fermée.</translation>
@@ -1576,7 +1577,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="926205370408745186">Supprimer votre activité Chrome de Bien-être numérique</translation>
 <translation id="927968626442779827">Utilisez le mode simplifié dans Google Chrome</translation>
 <translation id="928550791203542716">Vous suivez <ph name="SITE_NAME" /></translation>
-<translation id="932327136139879170">Accueil</translation>
 <translation id="938850635132480979">Erreur <ph name="ERROR_CODE" />.</translation>
 <translation id="939598580284253335">Saisir la phrase secrète</translation>
 <translation id="952301137339791907">La bottom sheet des insights sur la page est ouverte</translation>

@@ -229,6 +229,7 @@ Kun poistat selaushistorian (kokonaan tai vain tietyn sivuston osalta), poistat 
 <translation id="2278052315791335171">Vaikka poistat salasanan, tiliäsi (<ph name="SITE" />) ei poisteta</translation>
 <translation id="2286841657746966508">Laskutusosoite</translation>
 <translation id="228704530595896923">Jakamisvaihtoehtojen lista.</translation>
+<translation id="2297822946037605517">Jaa tämä sivu</translation>
 <translation id="230115972905494466">Yhteensopivia laitteita ei löytynyt.</translation>
 <translation id="2318045970523081853">Soita napauttamalla</translation>
 <translation id="2321086116217818302">Valmistellaan salasanoja…</translation>
@@ -306,7 +307,6 @@ Yksityiset tilamerkit parantavat yksityisyyttä verkossa, eikä sinua voi tunnis
 <translation id="2656405586795711023">Verkkosovellukset</translation>
 <translation id="2669454659051515572">Kaikki tämän laitteen käyttäjät voivat nähdä ladatut tiedostot</translation>
 <translation id="2702516483241149200">Uutta: jaa linkki, joka vie tähän tekstiin</translation>
-<translation id="2707726405694321444">Päivitä sivu</translation>
 <translation id="271033894570825754">Uusi</translation>
 <translation id="2711073837061989559">Kokeilut</translation>
 <translation id="2718352093833049315">Vain Wi-Fillä</translation>
@@ -708,6 +708,7 @@ Google-tililläsi voi olla muita selaushistoriatietoja, kuten hakuja ja toiminta
 
 Jos haluat muokata asetusta, <ph name="BEGIN_LINK" />nollaa synkronointi<ph name="END_LINK" />.</translation>
 <translation id="4807098396393229769">Kortissa oleva nimi</translation>
+<translation id="480990236307250886">Avaa oma etusivu</translation>
 <translation id="481574578487123132">Linkitetyt laitteet</translation>
 <translation id="4826163340425232009">Kirjautumispaneeli.</translation>
 <translation id="4834007576107377210">Katso tarvittaessa hakukoneen ohjeet hakuhistorian poistamiselle</translation>
@@ -832,7 +833,6 @@ Jos haluat muokata asetusta, <ph name="BEGIN_LINK" />nollaa synkronointi<ph name
 <translation id="5444999712122199445">Palaa sivustolle</translation>
 <translation id="544776284582297024">Välilehtipainikkeella voit avata välilehtiä ja selata useita sivuja yhtä aikaa.</translation>
 <translation id="5454166040603940656">palvelulla <ph name="PROVIDER" /></translation>
-<translation id="5456381639095306749">Lataa sivu</translation>
 <translation id="5458366071038729214">Löydät seuraamasi sivustot täältä</translation>
 <translation id="5468068603361015296">Ladataanko <ph name="FILE_NAME" /> silti?</translation>
 <translation id="548278423535722844">Avaa karttasovelluksessa</translation>
@@ -1173,6 +1173,7 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="7196215469483532480">Yksityisyysoppaan selitys kokonaan avattuna</translation>
 <translation id="7207760545532569765">Palauta <ph name="TAB_COUNT" /> välilehteä uusina taustavälilehtinä.</translation>
 <translation id="7217781228893594884">Incognito-välilehdet lukitaan, kun poistut Chromesta</translation>
+<translation id="7221869452894271364">Lataa tämä sivu uudelleen</translation>
 <translation id="7222235798733126207">Rajoitettu sivustojen välinen jakaminen</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 lataus odottaa}other{# latausta odottaa}}</translation>
 <translation id="72415438529550637">Salasanaehdotus on suljettu.</translation>
@@ -1576,7 +1577,6 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="926205370408745186">Poista Chrome-toimintasi Digitaalisesta hyvinvoinnista</translation>
 <translation id="927968626442779827">Käytä Yksinkertaistettua tilaa Google Chromessa</translation>
 <translation id="928550791203542716"><ph name="SITE_NAME" /> seurannassa</translation>
-<translation id="932327136139879170">Etusivu</translation>
 <translation id="938850635132480979">(Virhe: <ph name="ERROR_CODE" />)</translation>
 <translation id="939598580284253335">Anna tunnuslause</translation>
 <translation id="952301137339791907">Sivun tietojen alapaneeli on avattu</translation>

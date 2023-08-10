@@ -229,6 +229,7 @@ Wenn du deinen Browserverlauf löschst – entweder komplett oder für eine bes
 <translation id="2278052315791335171">Durch das Entfernen dieses Passworts wird dein Konto auf <ph name="SITE" /> nicht gelöscht</translation>
 <translation id="2286841657746966508">Rechnungsadresse</translation>
 <translation id="228704530595896923">Liste der Freigabeoptionen.</translation>
+<translation id="2297822946037605517">Seite teilen</translation>
 <translation id="230115972905494466">Keine kompatiblen Geräte gefunden</translation>
 <translation id="2318045970523081853">Zum Anrufen tippen</translation>
 <translation id="2321086116217818302">Passwörter werden zum Exportieren vorbereitet…</translation>
@@ -306,7 +307,6 @@ Private State Tokens verbessern den Datenschutz im Web und können nicht dazu ve
 <translation id="2656405586795711023">Web-Apps</translation>
 <translation id="2669454659051515572">Alle Personen, die dieses Gerät nutzen, können heruntergeladene Dateien sehen</translation>
 <translation id="2702516483241149200">Neu: Link teilen, der direkt zu diesem Text führt</translation>
-<translation id="2707726405694321444">Seite aktualisieren</translation>
 <translation id="271033894570825754">Neu</translation>
 <translation id="2711073837061989559">Tests</translation>
 <translation id="2718352093833049315">Nur bei WLAN</translation>
@@ -708,6 +708,7 @@ Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 
 Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />setze die Synchronisierung zurück<ph name="END_LINK" /></translation>
 <translation id="4807098396393229769">Name auf Karte</translation>
+<translation id="480990236307250886">Startseite öffnen</translation>
 <translation id="481574578487123132">Verknüpfte Geräte</translation>
 <translation id="4826163340425232009">Ansicht zum Anmelden am unteren Rand.</translation>
 <translation id="4834007576107377210">Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deiner Suchmaschine</translation>
@@ -832,7 +833,6 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />setze die S
 <translation id="5444999712122199445">Zurück zur Website</translation>
 <translation id="544776284582297024">Auf die Schaltfläche "Tabs öffnen" tippen, um Tabs zu öffnen und mehrere Seiten gleichzeitig zu besuchen</translation>
 <translation id="5454166040603940656">mit <ph name="PROVIDER" /></translation>
-<translation id="5456381639095306749">Seite herunterladen</translation>
 <translation id="5458366071038729214">Hier erscheinen Websites, denen du folgst</translation>
 <translation id="5468068603361015296">Möchtest du <ph name="FILE_NAME" /> trotzdem herunterladen?</translation>
 <translation id="548278423535722844">In einer Karten-App öffnen</translation>
@@ -1173,6 +1173,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="7196215469483532480">Erläuterungen zum Datenschutz-Leitfaden sind vollständig geöffnet</translation>
 <translation id="7207760545532569765"><ph name="TAB_COUNT" /> Tabs als neue Tabs im Hintergrund wiederherstellen.</translation>
 <translation id="7217781228893594884">Inkognitotabs werden gesperrt, wenn du Chrome schließt</translation>
+<translation id="7221869452894271364">Diese Seite neu laden</translation>
 <translation id="7222235798733126207">Eingeschränkte Datenweitergabe zwischen Websites</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 Download ausstehend}other{# Downloads ausstehend}}</translation>
 <translation id="72415438529550637">Passwortvorschlag geschlossen.</translation>
@@ -1576,7 +1577,6 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="926205370408745186">Chrome-Aktivitäten aus Digital Wellbeing entfernen</translation>
 <translation id="927968626442779827">Verwende den Lite-Modus in Google Chrome</translation>
 <translation id="928550791203542716">Du folgst „<ph name="SITE_NAME" />“</translation>
-<translation id="932327136139879170">Startseite</translation>
 <translation id="938850635132480979">Fehler: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">Passphrase eingeben</translation>
 <translation id="952301137339791907">Die Ansicht am unteren Rand mit den Seitenstatistiken ist geöffnet</translation>

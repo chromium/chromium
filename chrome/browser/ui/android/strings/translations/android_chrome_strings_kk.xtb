@@ -229,6 +229,7 @@
 <translation id="2278052315791335171">Құпия сөзді жойсаңыз да, <ph name="SITE" /> сайтындағы аккаунтыңыз жойылмайды.</translation>
 <translation id="2286841657746966508">Төлем мекенжайы</translation>
 <translation id="228704530595896923">Бөлісу опцияларының тізімі.</translation>
+<translation id="2297822946037605517">Осы бетті бөлісу</translation>
 <translation id="230115972905494466">Үйлесімді құрылғылар табылмады</translation>
 <translation id="2318045970523081853">Қоңырау шалу үшін түртіңіз.</translation>
 <translation id="2321086116217818302">Құпия сөздер дайындалуда…</translation>
@@ -306,7 +307,6 @@
 <translation id="2656405586795711023">Веб-қолданбалар</translation>
 <translation id="2669454659051515572">Осы құрылғыны пайдаланатын кез келген адам жүктеп алынған файлдарды көре алады.</translation>
 <translation id="2702516483241149200">Жаңа: осы мәтінге бағыттайтын сілтемені бөлісу</translation>
-<translation id="2707726405694321444">Бетті жаңарту</translation>
 <translation id="271033894570825754">Жаңа</translation>
 <translation id="2711073837061989559">Сынақ нұсқалары</translation>
 <translation id="2718352093833049315">Тек Wi-Fi</translation>
@@ -708,6 +708,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 
 Бұл параметрді өзгерту үшін <ph name="BEGIN_LINK" />синхрондауды бастапқы күйіне қайтарыңыз<ph name="END_LINK" /></translation>
 <translation id="4807098396393229769">Картадағы ат</translation>
+<translation id="480990236307250886">Негізгі бетті ашу</translation>
 <translation id="481574578487123132">Байланыстырылған құрылғылар</translation>
 <translation id="4826163340425232009">Аккаунтқа кіру төменгі парақшасы.</translation>
 <translation id="4834007576107377210">Қажет болса, іздеу жүйесіндегі іздеу тарихын жою туралы нұсқауларды қараңыз.</translation>
@@ -832,7 +833,6 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="5444999712122199445">Сайтқа оралу</translation>
 <translation id="544776284582297024">Бір уақытта қойындыларды ашып, неше түрлі беттерге кіру үшін "ашық қойындылар" түймесін басыңыз.</translation>
 <translation id="5454166040603940656"><ph name="PROVIDER" /> провайдерімен</translation>
-<translation id="5456381639095306749">Жүктеп алу беті</translation>
 <translation id="5458366071038729214">Жазылған сайттарыңыз осы жерде көрсетіледі.</translation>
 <translation id="5468068603361015296"><ph name="FILE_NAME" /> файлын сонда да жүктеп алғыңыз келе ме?</translation>
 <translation id="548278423535722844">Maps қолданбасында ашу</translation>
@@ -1173,6 +1173,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="7196215469483532480">Құпиялық нұсқаулығы туралы түсіндірме толық ашылды.</translation>
 <translation id="7207760545532569765"><ph name="TAB_COUNT" /> қойындыны жаңа фондық қойындылар ретінде қалпына келтіру.</translation>
 <translation id="7217781228893594884">Инкогнито қойындылары Chrome-нан шыққан кезде құлыпталады.</translation>
+<translation id="7221869452894271364">Бұл бетті қайта жүктеу</translation>
 <translation id="7222235798733126207">Сайттар арасында бөлісуді шектеу</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 файл жүктеп алынуы керек}other{# файл жүктеп алынуы керек}}</translation>
 <translation id="72415438529550637">Құпия сөз ұсынысы жабық.</translation>
@@ -1576,7 +1577,6 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="926205370408745186">Digital Wellbeing функциясынан Chrome браузерін пайдалану деректерін өшіру</translation>
 <translation id="927968626442779827">Google Chrome браузерінде Lite режимін пайдаланыңыз.</translation>
 <translation id="928550791203542716"><ph name="SITE_NAME" /> сайтына жазылғансыз.</translation>
-<translation id="932327136139879170">Негізгі бет</translation>
 <translation id="938850635132480979">Қате: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">Құпия фразаны енгізу</translation>
 <translation id="952301137339791907">Бет статистикасының төменгі парақшасы ашылды</translation>

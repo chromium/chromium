@@ -1835,7 +1835,6 @@
 <translation id="4901778704868714008">保存…</translation>
 <translation id="4901952598169637881">休闲鞋</translation>
 <translation id="4905659621780993806">您的管理员将于 <ph name="DATE" /><ph name="TIME" /> 自动重启您的设备。请在设备重启前保存所有已打开的内容。</translation>
-<translation id="4907289208610706508">目标</translation>
 <translation id="4913987521957242411">打孔（左上角）</translation>
 <translation id="4917064667437236721">成像滚筒</translation>
 <translation id="4918221908152712722">安装<ph name="APP_NAME" />（不需要下载）</translation>
@@ -2675,6 +2674,7 @@
 <translation id="6702919718839027939">演示</translation>
 <translation id="6704458454638854812">已设置“custom_size”属性，但名称本应为“custom”。</translation>
 <translation id="6706005862292023715">窗帘与窗饰</translation>
+<translation id="6706210727756204531">范围</translation>
 <translation id="6709133671862442373">资讯</translation>
 <translation id="6709888928011386878">乐器</translation>
 <translation id="6710213216561001401">上一项</translation>

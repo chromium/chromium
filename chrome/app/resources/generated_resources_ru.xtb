@@ -4131,7 +4131,6 @@
 <translation id="4361142739114356624">Закрытый ключ для клиентского сертификата отсутствует или недействителен</translation>
 <translation id="4361745360460842907">Открыть во вкладке</translation>
 <translation id="4362675504017386626"><ph name="ACCOUNT_EMAIL" /> – аккаунт по умолчанию на устройстве <ph name="DEVICE_TYPE" />.</translation>
-<translation id="4363215264289239958">Приложения Bruschetta</translation>
 <translation id="4363262124589131906">Новые файлы в разделе "Мой диск" перестанут автоматически синхронизироваться с этим устройством Chromebook.</translation>
 <translation id="4363771538994847871">Нет устройств для трансляции. Нужна помощь?</translation>
 <translation id="4364327530094270451">Дыня</translation>
@@ -4718,6 +4717,7 @@
 <translation id="4849517651082200438">Не устанавливать</translation>
 <translation id="485053257961878904">Не удалось настроить синхронизацию уведомлений</translation>
 <translation id="4850548109381269495">Убедитесь, что оба устройства подключены к интернету, включите Bluetooth и повторите попытку.</translation>
+<translation id="4850669014075537160">Прокрутка</translation>
 <translation id="4850886885716139402">Посмотреть</translation>
 <translation id="485088796993065002">Сайты могут воспроизводить звук при проигрывании музыки, видео и другого медиаконтента.</translation>
 <translation id="4852916668365817106">Цвет курсора</translation>

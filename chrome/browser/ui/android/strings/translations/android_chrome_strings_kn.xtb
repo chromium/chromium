@@ -229,6 +229,7 @@
 <translation id="2278052315791335171">ಈ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಅಳಿಸುವುದರಿಂದ <ph name="SITE" /> ನಲ್ಲಿ ನಿಮ್ಮ ಖಾತೆಯನ್ನು ಅಳಿಸಲಾಗುವುದಿಲ್ಲ</translation>
 <translation id="2286841657746966508">ಬಿಲ್ಲಿಂಗ್ ವಿಳಾಸ</translation>
 <translation id="228704530595896923">ಹಂಚಿಕೊಳ್ಳುವ ಆಯ್ಕೆಗಳ ಪಟ್ಟಿ.</translation>
+<translation id="2297822946037605517">ಈ ಪುಟವನ್ನು ಹಂಚಿ</translation>
 <translation id="230115972905494466">ಯಾವುದೇ ಹೊಂದಾಣಿಕೆಯಾಗುವ ಸಾಧನಗಳು ಕಂಡುಬಂದಿಲ್ಲ</translation>
 <translation id="2318045970523081853">ಕರೆ ಮಾಡಲು ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
 <translation id="2321086116217818302">ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಸಿದ್ಧಪಡಿಸಲಾಗುತ್ತಿದೆ…</translation>
@@ -306,7 +307,6 @@
 <translation id="2656405586795711023">ವೆಬ್‌ ಆ್ಯಪ್‌ಗಳು</translation>
 <translation id="2669454659051515572">ಈ ಸಾಧನವನ್ನು ಬಳಸುವ ಯಾರಾದರೂ ಡೌನ್‌ಲೋಡ್ ಮಾಡಿರುವ ಫೈಲ್‌ಗಳನ್ನು ನೋಡಬಹುದು</translation>
 <translation id="2702516483241149200">ಹೊಸ ಫೀಚರ್: ಈ ಪಠ್ಯಕ್ಕೆ ಸ್ಕ್ರಾಲ್ ಆಗುವ ಲಿಂಕ್ ಅನ್ನು ಹಂಚಿಕೊಳ್ಳಿ</translation>
-<translation id="2707726405694321444">ಪುಟವನ್ನು ರಿಫ್ರೆಶ್ ಮಾಡಿ</translation>
 <translation id="271033894570825754">ಹೊಸತು</translation>
 <translation id="2711073837061989559">ಪ್ರಯೋಗಗಳು</translation>
 <translation id="2718352093833049315">ಕೇವಲ ವೈ-ಫೈ ಮಾತ್ರ</translation>
@@ -707,6 +707,7 @@
 
 ಈ ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ಬದಲಾಯಿಸಲು, <ph name="BEGIN_LINK" />ಸಿಂಕ್ ಅನ್ನು ಮರುಹೊಂದಿಸಿ<ph name="END_LINK" /></translation>
 <translation id="4807098396393229769">ಕಾರ್ಡ್‌ನಲ್ಲಿರುವ ಹೆಸರು</translation>
+<translation id="480990236307250886">ಹೋಮ್ ತೆರೆಯಿರಿ</translation>
 <translation id="481574578487123132">ಲಿಂಕ್ ಮಾಡಿದ ಸಾಧನಗಳು</translation>
 <translation id="4826163340425232009">ಸೈನ್ ಇನ್ ಮಾಡುವ ಕೆಳಭಾಗದ ಶೀಟ್.</translation>
 <translation id="4834007576107377210">ಅನ್ವಯಿಸಿದರೆ, ನಿಮ್ಮ ಹುಡುಕಾಟ ಇತಿಹಾಸವನ್ನು ಅಳಿಸಲು ನಿಮ್ಮ ಹುಡುಕಾಟ ಎಂಜಿನ್‌ನ ಸೂಚನೆಗಳನ್ನು ನೋಡಿ</translation>
@@ -831,7 +832,6 @@
 <translation id="5444999712122199445">ಸೈಟ್‌ಗೆ ಹಿಂತಿರುಗಿ</translation>
 <translation id="544776284582297024">ಟ್ಯಾಬ್‌ಗಳನ್ನು ತೆರೆಯಲು ಮತ್ತು ಒಂದೇ ಸಮಯದಲ್ಲಿ ವಿಭಿನ್ನ ಪುಟಗಳಿಗೆ ಭೇಟಿ ನೀಡಲು, ಟ್ಯಾಬ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ ಬಟನ್ ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
 <translation id="5454166040603940656"><ph name="PROVIDER" /> ಜೊತೆಗೆ</translation>
-<translation id="5456381639095306749">ಪುಟ ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ</translation>
 <translation id="5458366071038729214">ನೀವು ಫಾಲೋ ಮಾಡುವ ಸೈಟ್‌ಗಳನ್ನು ಇಲ್ಲಿ ಹುಡುಕಬಹುದು</translation>
 <translation id="5468068603361015296">ಹೇಗಿದ್ದರೂ <ph name="FILE_NAME" /> ಅನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಲು ನೀವು ಬಯಸುವಿರಾ?</translation>
 <translation id="548278423535722844">ನಕ್ಷೆಗಳ ಅಪ್ಲಿಕೇಶನ್‌ನಲ್ಲಿ ತೆರೆಯಿರಿ</translation>
@@ -1172,6 +1172,7 @@
 <translation id="7196215469483532480">ಗೌಪ್ಯತೆ ಮಾರ್ಗಸೂಚಿಗಳು ಪೂರ್ಣ ಎತ್ತರದಲ್ಲಿ ತೆರೆಯಲಾಗಿದೆ</translation>
 <translation id="7207760545532569765">ಹೊಸ ಹಿನ್ನೆಲೆ ಟ್ಯಾಬ್‌ಗಳ ರೀತಿ <ph name="TAB_COUNT" /> ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮರುಸ್ಥಾಪಿಸಿ.</translation>
 <translation id="7217781228893594884">ನೀವು Chrome ನಿಂದ ನಿರ್ಗಮಿಸಿದಾಗ ಅಜ್ಞಾತ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಲಾಕ್ ಮಾಡಲಾಗುತ್ತದೆ</translation>
+<translation id="7221869452894271364">ಈ ಪುಟವನ್ನು ರೀಲೋಡ್ ಮಾಡಿ</translation>
 <translation id="7222235798733126207">ಸೈಟ್‌ಗಳ ನಡುವೆ ಸೀಮಿತ ಹಂಚಿಕೊಳ್ಳುವಿಕೆ</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 ಡೌನ್‌ಲೋಡ್ ಬಾಕಿ ಉಳಿದಿದೆ}one{# ಡೌನ್‌ಲೋಡ್‌ಗಳು ಬಾಕಿ ಉಳಿದಿವೆ}other{# ಡೌನ್‌ಲೋಡ್‌ಗಳು ಬಾಕಿ ಉಳಿದಿವೆ}}</translation>
 <translation id="72415438529550637">ಪಾಸ್‌ವರ್ಡ್ ಸಲಹೆಯನ್ನು ಮುಚ್ಚಲಾಗಿದೆ.</translation>
@@ -1575,7 +1576,6 @@
 <translation id="926205370408745186">ಡಿಜಿಟಲ್ ಯೋಗಕ್ಷೇಮದಿಂದ ನಿಮ್ಮ Chrome ಚಟುವಟಿಕೆಯನ್ನು ತೆಗೆದುಹಾಕಿ</translation>
 <translation id="927968626442779827">Google Chrome ನಲ್ಲಿ ಲೈಟ್ ಮೋಡ್ ಬಳಸಿ</translation>
 <translation id="928550791203542716"><ph name="SITE_NAME" /> ಅನ್ನು ಫಾಲೋ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
-<translation id="932327136139879170">ಹೋಮ್</translation>
 <translation id="938850635132480979">ದೋಷ: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">ಪಾಸ್‌ಫ್ರೇಸ್ ಅನ್ನು ನಮೂದಿಸಿ</translation>
 <translation id="952301137339791907">ಪುಟದ ಒಳನೋಟಗಳ ಕೆಳಭಾಗದ ಶೀಟ್ ಅನ್ನು ತೆರೆಯಲಾಗಿದೆ</translation>

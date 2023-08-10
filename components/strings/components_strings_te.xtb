@@ -1841,7 +1841,6 @@
 <translation id="4901778704868714008">సేవ్ చేయండి...</translation>
 <translation id="4901952598169637881">సాధారణ షూస్</translation>
 <translation id="4905659621780993806">మీ అడ్మినిస్ట్రేటర్ మీ పరికరాన్ని <ph name="DATE" />న <ph name="TIME" />కు ఆటోమేటిక్‌గా రీస్టార్ట్ చేస్తారు. మీ పరికరం రీస్టార్ట్ కావడానికి ముందే, తెరిచి ఉన్న ఐటెమ్‌లు ఏవైనా ఉంటే, వాటిని సేవ్ చేయండి.</translation>
-<translation id="4907289208610706508">టార్గెట్</translation>
 <translation id="4913987521957242411">ఎడమవైపు ఎగువ భాగంలో రంధ్రాలు</translation>
 <translation id="4917064667437236721">ఇమేజింగ్ సిలిండర్</translation>
 <translation id="4918221908152712722"><ph name="APP_NAME" />ను ఇన్‌స్టాల్ చేయండి (డౌన్‌లోడ్ చేయాల్సిన అవసరం లేదు)</translation>
@@ -2682,6 +2681,7 @@
 <translation id="6702919718839027939">పిన్ చేయండి</translation>
 <translation id="6704458454638854812">ప్రాపర్టీ "custom_size" సెట్ చేయబడింది, పేరు "అనుకూలం" అవ్వవచ్చని ఊహించాము.</translation>
 <translation id="6706005862292023715">కర్టెయిన్‌లు &amp; కిటికీలకు సంబంధించిన అలంకరణ</translation>
+<translation id="6706210727756204531">పరిధి</translation>
 <translation id="6709133671862442373">News</translation>
 <translation id="6709888928011386878">సంగీత వాయిద్యాలు</translation>
 <translation id="6710213216561001401">మునుపటి</translation>

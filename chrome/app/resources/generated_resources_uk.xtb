@@ -4147,7 +4147,6 @@
 <translation id="4361142739114356624">Секретний ключ цього сертифіката клієнта відсутній або недійсний</translation>
 <translation id="4361745360460842907">Відкрити як вкладку</translation>
 <translation id="4362675504017386626"><ph name="ACCOUNT_EMAIL" /> є обліковим записом за умовчанням на вашому пристрої <ph name="DEVICE_TYPE" /></translation>
-<translation id="4363215264289239958">Додатки Bruschetta</translation>
 <translation id="4363262124589131906">Нові файли з папки "Мій диск" більше не синхронізуватимуться з Chromebook автоматично</translation>
 <translation id="4363771538994847871">Немає пристроїв для трансляції. Потрібна допомога?</translation>
 <translation id="4364327530094270451">Диня</translation>
@@ -4735,6 +4734,7 @@
 <translation id="4849517651082200438">Не встановлювати</translation>
 <translation id="485053257961878904">Не вдалося налаштувати синхронізацію сповіщень</translation>
 <translation id="4850548109381269495">Перевірте інтернет-з’єднання на обох пристроях і ввімкніть Bluetooth. Потім повторіть спробу.</translation>
+<translation id="4850669014075537160">Прокручування</translation>
 <translation id="4850886885716139402">Перегляд</translation>
 <translation id="485088796993065002">Сайти можуть відтворювати звук, щоб транслювати аудіо з музики, відео й іншого медіаконтенту</translation>
 <translation id="4852916668365817106">Колір курсора миші</translation>

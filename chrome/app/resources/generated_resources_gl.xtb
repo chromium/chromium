@@ -4131,7 +4131,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4361142739114356624">Falta a clave privada para este certificado de cliente ou non é válida</translation>
 <translation id="4361745360460842907">Abrir como pestana</translation>
 <translation id="4362675504017386626"><ph name="ACCOUNT_EMAIL" /> é a conta predeterminada no teu dispositivo <ph name="DEVICE_TYPE" /></translation>
-<translation id="4363215264289239958">Aplicacións de Bruschetta</translation>
 <translation id="4363262124589131906">Os ficheiros novos de A miña unidade deixarán de sincronizarse automaticamente con este Chromebook</translation>
 <translation id="4363771538994847871">Non se atopou ningún destino de Cast. Necesitas axuda?</translation>
 <translation id="4364327530094270451">Melón</translation>
@@ -4718,6 +4717,7 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="4849517651082200438">Non instalar</translation>
 <translation id="485053257961878904">Non se puido configurar a sincronización das notificacións</translation>
 <translation id="4850548109381269495">Comproba a túa conexión a Internet nos dous dispositivos e activa o Bluetooth. Despois, téntao de novo.</translation>
+<translation id="4850669014075537160">Desprazamento</translation>
 <translation id="4850886885716139402">Vista</translation>
 <translation id="485088796993065002">Os sitios poderían reproducir o audio do contido multimedia (música, vídeos…)</translation>
 <translation id="4852916668365817106">Cor do rato</translation>

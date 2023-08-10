@@ -229,6 +229,7 @@ Når du sletter nettleserloggen, enten det er hele loggen eller bare loggen for 
 <translation id="2278052315791335171">Sletting av dette passordet sletter ikke kontoen din på <ph name="SITE" /></translation>
 <translation id="2286841657746966508">Faktureringsadresse</translation>
 <translation id="228704530595896923">Liste over delingsalternativer.</translation>
+<translation id="2297822946037605517">Del denne siden</translation>
 <translation id="230115972905494466">Fant ingen kompatible enheter</translation>
 <translation id="2318045970523081853">Trykk for å ringe</translation>
 <translation id="2321086116217818302">Klargjør passordene …</translation>
@@ -306,7 +307,6 @@ Med private tilstandstokener får du bedre personvern på nettet, og de kan ikke
 <translation id="2656405586795711023">Nettprogrammer</translation>
 <translation id="2669454659051515572">Alle som bruker denne enheten, kan se nedlastede filer</translation>
 <translation id="2702516483241149200">Ny: del en link som ruller til denne teksten</translation>
-<translation id="2707726405694321444">Last inn siden på nytt</translation>
 <translation id="271033894570825754">Ny</translation>
 <translation id="2711073837061989559">Prøveprosjekter</translation>
 <translation id="2718352093833049315">Bare når Wifi er på</translation>
@@ -708,6 +708,7 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 
 For å endre denne innstillingen, <ph name="BEGIN_LINK" />tilbakestill synkroniseringen<ph name="END_LINK" /></translation>
 <translation id="4807098396393229769">Navn som er oppført på kortet</translation>
+<translation id="480990236307250886">Åpne startsiden</translation>
 <translation id="481574578487123132">Tilknyttede enheter</translation>
 <translation id="4826163340425232009">Påloggingsfeltet nederst.</translation>
 <translation id="4834007576107377210">Se eventuelt instruksjonene fra søkemotoren din om hvordan du sletter søkeloggen din</translation>
@@ -832,7 +833,6 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />tilbakestill synkronis
 <translation id="5444999712122199445">Gå tilbake til nettstedet</translation>
 <translation id="544776284582297024">For å åpne faner og besøke ulike sider samtidig, trykk på åpne faner-knappen</translation>
 <translation id="5454166040603940656">med <ph name="PROVIDER" /></translation>
-<translation id="5456381639095306749">Last ned siden</translation>
 <translation id="5458366071038729214">Her finner du nettsteder du følger</translation>
 <translation id="5468068603361015296">Vil du laste ned <ph name="FILE_NAME" /> likevel?</translation>
 <translation id="548278423535722844">Åpne i en kartapp</translation>
@@ -1173,6 +1173,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="7196215469483532480">Forklaringen til personvernveiledningen er åpnet i full høyde</translation>
 <translation id="7207760545532569765">Gjenopprett <ph name="TAB_COUNT" /> faner som nye bakgrunnsfaner.</translation>
 <translation id="7217781228893594884">Inkognitofaner blir låst når du forlater Chrome</translation>
+<translation id="7221869452894271364">Last inn denne siden på nytt</translation>
 <translation id="7222235798733126207">Begrenset deling mellom nettsteder</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 nedlasting venter}other{# nedlastinger venter}}</translation>
 <translation id="72415438529550637">Passordforslaget er lukket.</translation>
@@ -1576,7 +1577,6 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="926205370408745186">Fjerne Chrome-aktiviteten din fra Digital balanse</translation>
 <translation id="927968626442779827">Bruk forenklet modus i Google Chrome</translation>
 <translation id="928550791203542716">Følger <ph name="SITE_NAME" /></translation>
-<translation id="932327136139879170">Gå til startsiden</translation>
 <translation id="938850635132480979">Feil: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">Angi en passordfrase</translation>
 <translation id="952301137339791907">Sidestatistikkfeltet nederst er åpnet</translation>

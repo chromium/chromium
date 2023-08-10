@@ -1367,6 +1367,7 @@
 <translation id="6912901278692845878">Короткий огляд</translation>
 <translation id="6919251195245069855">Не вдається розпізнати розумну картку. Повторіть спробу.</translation>
 <translation id="6920245099716267363">Увімкнути/вимкнути точку доступу. Точку доступу ввімкнено. До неї підключено 1 пристрій.</translation>
+<translation id="692135145298539227">видалити</translation>
 <translation id="6931576957638141829">Зберегти в</translation>
 <translation id="6942518653766415536">Меню форматів запису</translation>
 <translation id="6945221475159498467">Вибрати</translation>
@@ -1678,6 +1679,7 @@
 <translation id="8315514906653279104">Увімкнення…</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" /> <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363">Вибрано вікно "<ph name="WINDOW_TITLE" />"</translation>
+<translation id="8349826889576450703">панель запуску</translation>
 <translation id="8349964124165471584">Відкрити посилання в новому вікні</translation>
 <translation id="8351131234907093545">Створити нотатку</translation>
 <translation id="8367948981300340152">Використовується <ph name="CAPTURE_MEDIUM" />.</translation>

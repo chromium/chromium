@@ -4140,7 +4140,6 @@ Tällaisia tietoja voivat olla esimerkiksi asennetut ohjelmistot, tiedostot, sel
 <translation id="4361142739114356624">Tämän käyttöoikeusvarmenteen yksityinen avain puuttuu tai on virheellinen.</translation>
 <translation id="4361745360460842907">Avaa välilehdellä</translation>
 <translation id="4362675504017386626"><ph name="ACCOUNT_EMAIL" /> on oletustili: <ph name="DEVICE_TYPE" /></translation>
-<translation id="4363215264289239958">Bruschetta-sovellukset</translation>
 <translation id="4363262124589131906">Omassa Drivessa olevia uusia tiedostoja ei enää synkronoida automaattisesti tähän Chromebookiin</translation>
 <translation id="4363771538994847871">Cast-kohteita ei löytynyt. Tarvitsetko apua?</translation>
 <translation id="4364327530094270451">Meloni</translation>
@@ -4728,6 +4727,7 @@ Loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="4849517651082200438">Älä asenna</translation>
 <translation id="485053257961878904">Ilmoitusten synkronointia ei voitu ottaa käyttöön</translation>
 <translation id="4850548109381269495">Tarkista internetyhteys ja laita Bluetooth päälle molemmilla laitteilla. Yritä sitten uudelleen.</translation>
+<translation id="4850669014075537160">Vieritys</translation>
 <translation id="4850886885716139402">Näytä</translation>
 <translation id="485088796993065002">Sivustot voivat toistaa ääntä musiikin, videoiden tai muun median yhteydessä</translation>
 <translation id="4852916668365817106">Hiiren väri</translation>

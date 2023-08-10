@@ -4141,7 +4141,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4361142739114356624">Частният ключ за този клиентски сертификат липсва или е невалиден</translation>
 <translation id="4361745360460842907">Отваряне като раздел</translation>
 <translation id="4362675504017386626"><ph name="ACCOUNT_EMAIL" /> е стандартният профил на вашия <ph name="DEVICE_TYPE" /></translation>
-<translation id="4363215264289239958">Приложения за Bruschetta</translation>
 <translation id="4363262124589131906">Новите файлове в „Моят диск“ ще спрат да се синхронизират автоматично с този Chromebook</translation>
 <translation id="4363771538994847871">Няма намерени местоназначения за Cast. Нуждаете ли се от помощ?</translation>
 <translation id="4364327530094270451">Пъпеш</translation>
@@ -4729,6 +4728,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4849517651082200438">Да не се инсталира</translation>
 <translation id="485053257961878904">Синхронизирането на известията не бе настроено</translation>
 <translation id="4850548109381269495">Проверете връзката си с интернет и включете Bluetooth и на двете устройства. След това опитайте отново.</translation>
+<translation id="4850669014075537160">Превъртане</translation>
 <translation id="4850886885716139402">Изглед</translation>
 <translation id="485088796993065002">Сайтовете може да възпроизвеждат звук, за да осигурят аудио за музика, видеоклипове и друго мултимедийно съдържание</translation>
 <translation id="4852916668365817106">Цвят на курсора на мишката</translation>

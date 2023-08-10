@@ -229,6 +229,7 @@ Când ștergi istoricul de navigare (în întregime sau pentru un anumit site), 
 <translation id="2278052315791335171">Prin ștergerea acestei parole, nu va fi șters și contul de pe <ph name="SITE" /></translation>
 <translation id="2286841657746966508">Adresa de facturare</translation>
 <translation id="228704530595896923">Lista cu opțiuni de permitere a accesului.</translation>
+<translation id="2297822946037605517">Distribuiți această pagină</translation>
 <translation id="230115972905494466">Nu s-au găsit dispozitive compatibile</translation>
 <translation id="2318045970523081853">Atinge pentru a apela</translation>
 <translation id="2321086116217818302">Se pregătesc parolele…</translation>
@@ -306,7 +307,6 @@ Indicativele de stare private îmbunătățesc confidențialitatea pe web și nu
 <translation id="2656405586795711023">Aplicații web</translation>
 <translation id="2669454659051515572">Oricine folosește acest dispozitiv poate să vadă fișierele descărcate</translation>
 <translation id="2702516483241149200">Nou: distribuie un link care derulează la acest text</translation>
-<translation id="2707726405694321444">Actualizează pagina</translation>
 <translation id="271033894570825754">Nou</translation>
 <translation id="2711073837061989559">Versiuni de încercare</translation>
 <translation id="2718352093833049315">Numai prin Wi-Fi</translation>
@@ -708,6 +708,7 @@ Contul Google poate să ofere alte forme ale istoricului de navigare, cum ar fi 
 
 Pentru a modifica această setare, <ph name="BEGIN_LINK" />resetează sincronizarea<ph name="END_LINK" /></translation>
 <translation id="4807098396393229769">Numele de pe card</translation>
+<translation id="480990236307250886">Deschide pagina de pornire</translation>
 <translation id="481574578487123132">Dispozitive conectate</translation>
 <translation id="4826163340425232009">Foaia de conectare din partea de jos.</translation>
 <translation id="4834007576107377210">Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căutărilor, dacă este cazul</translation>
@@ -832,7 +833,6 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />resetează sincroniza
 <translation id="5444999712122199445">Revino pe site</translation>
 <translation id="544776284582297024">Pentru a deschide file și a accesa pagini diferite în același timp, atinge butonul Deschide file</translation>
 <translation id="5454166040603940656">cu <ph name="PROVIDER" /></translation>
-<translation id="5456381639095306749">Descarcă pagina</translation>
 <translation id="5458366071038729214">Aici vei vedea site-urile pe care le urmărești</translation>
 <translation id="5468068603361015296">Vrei să descarci oricum <ph name="FILE_NAME" />?</translation>
 <translation id="548278423535722844">Deschide în aplicația Maps</translation>
@@ -1173,6 +1173,7 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="7196215469483532480">Prezentare a Ghidului privind confidențialitatea, deschisă la înălțimea completă</translation>
 <translation id="7207760545532569765">Restabilește <ph name="TAB_COUNT" /> file ca noi file din fundal.</translation>
 <translation id="7217781228893594884">Filele incognito vor fi blocate când ieși din Chrome</translation>
+<translation id="7221869452894271364">Reîncarcă această pagină</translation>
 <translation id="7222235798733126207">Transfer limitat între site-uri</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{O descărcare în așteptare}few{# descărcări în așteptare}other{# de descărcări în așteptare}}</translation>
 <translation id="72415438529550637">Sugestia de parolă se închide.</translation>
@@ -1576,7 +1577,6 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="926205370408745186">Elimină activitatea în Chrome din Bunăstarea digitală</translation>
 <translation id="927968626442779827">Folosește modul Lite în Google Chrome</translation>
 <translation id="928550791203542716">Urmărești <ph name="SITE_NAME" /></translation>
-<translation id="932327136139879170">Pagina de pornire</translation>
 <translation id="938850635132480979">Eroare: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">Introdu expresia de acces</translation>
 <translation id="952301137339791907">Foaia paginii Statistici din partea de jos este deschisă</translation>

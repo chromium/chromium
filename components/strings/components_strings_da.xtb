@@ -1839,7 +1839,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="4901778704868714008">Gem...</translation>
 <translation id="4901952598169637881">Fritidssko</translation>
 <translation id="4905659621780993806">Din administrator genstarter automatisk din enhed <ph name="TIME" /> <ph name="DATE" />. Gem eventuelle åbne elementer, inden din enhed genstarter.</translation>
-<translation id="4907289208610706508">Mål</translation>
 <translation id="4913987521957242411">Hul øverst til venstre</translation>
 <translation id="4917064667437236721">Billedtromle</translation>
 <translation id="4918221908152712722">Installer <ph name="APP_NAME" /> (kræver ikke download)</translation>
@@ -2680,6 +2679,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6702919718839027939">Præsenter</translation>
 <translation id="6704458454638854812">Egenskaben "custom_size" er angivet. Det forventede navn er "custom".</translation>
 <translation id="6706005862292023715">Gardiner, persienner m.m.</translation>
+<translation id="6706210727756204531">Omfang</translation>
 <translation id="6709133671862442373">Nyheder</translation>
 <translation id="6709888928011386878">Musikinstrumenter</translation>
 <translation id="6710213216561001401">Forrige</translation>

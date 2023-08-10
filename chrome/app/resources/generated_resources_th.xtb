@@ -4129,7 +4129,6 @@
 <translation id="4361142739114356624">คีย์ส่วนตัวของใบรับรองไคลเอ็นต์นี้หายไปหรือไม่ถูกต้อง</translation>
 <translation id="4361745360460842907">เปิดเป็นแท็บ</translation>
 <translation id="4362675504017386626"><ph name="ACCOUNT_EMAIL" /> เป็นบัญชีเริ่มต้นใน <ph name="DEVICE_TYPE" /> ของคุณ</translation>
-<translation id="4363215264289239958">แอป Bruschetta</translation>
 <translation id="4363262124589131906">ไฟล์ใหม่ใน "ไดรฟ์ของฉัน" จะหยุดการซิงค์กับ Chromebook เครื่องนี้โดยอัตโนมัติ</translation>
 <translation id="4363771538994847871">ไม่พบปลายทางการแคสต์ ต้องการความช่วยเหลือไหม</translation>
 <translation id="4364327530094270451">เมลอน</translation>
@@ -4716,6 +4715,7 @@
 <translation id="4849517651082200438">ไม่ต้องติดตั้ง</translation>
 <translation id="485053257961878904">ตั้งค่าการซิงค์การแจ้งเตือนไม่สำเร็จ</translation>
 <translation id="4850548109381269495">ตรวจสอบการเชื่อมต่ออินเทอร์เน็ตในอุปกรณ์ทั้ง 2 เครื่องแล้วเปิดบลูทูธ จากนั้นลองอีกครั้ง</translation>
+<translation id="4850669014075537160">การเลื่อน</translation>
 <translation id="4850886885716139402">มุมมอง</translation>
 <translation id="485088796993065002">เว็บไซต์อาจเล่นเสียงเพื่อให้บริการเสียงสำหรับเพลง วิดีโอ และสื่ออื่นๆ</translation>
 <translation id="4852916668365817106">สีของเมาส์</translation>

@@ -1837,7 +1837,6 @@
 <translation id="4901778704868714008">सेभ गर्नुहोस्...</translation>
 <translation id="4901952598169637881">क्याजुअल जुत्ता</translation>
 <translation id="4905659621780993806">तपाईंका एड्मिनले तपाईंको डिभाइस <ph name="DATE" /> का दिन <ph name="TIME" /> बजे रिस्टार्ट गर्ने छन्। तपाईंको डिभाइस रिस्टार्ट हुनुअघि खोलिएका सबै वस्तु सेभ गर्नुहोस्।</translation>
-<translation id="4907289208610706508">लक्ष्य</translation>
 <translation id="4913987521957242411">सिरानको बायाँपट्टि प्वाल</translation>
 <translation id="4917064667437236721">इमेजिङ सिलिन्डर</translation>
 <translation id="4918221908152712722"><ph name="APP_NAME" /> स्थापना गर्नुहोस् (डाउनलोड गरिराख्नु पर्दैन)</translation>
@@ -2678,6 +2677,7 @@
 <translation id="6702919718839027939">प्रस्तुति दिनुहोस्</translation>
 <translation id="6704458454638854812">प्रोपर्टी "custom_size" सेट गरिएको छ र यसको नाम "कस्टम" राखिएको हुनु पर्छ।</translation>
 <translation id="6706005862292023715">पर्दा तथा झ्याल मर्मत गर्ने सेवा</translation>
+<translation id="6706210727756204531">स्कोप</translation>
 <translation id="6709133671862442373">समाचार</translation>
 <translation id="6709888928011386878">बाजाहरू</translation>
 <translation id="6710213216561001401">अघिल्लो</translation>

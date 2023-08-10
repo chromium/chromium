@@ -1367,6 +1367,7 @@ Naujas įdiegimas</translation>
 <translation id="6912901278692845878">Greita apžvalga</translation>
 <translation id="6919251195245069855">Nepavyko atpažinti išmaniosios kortelės. Bandykite dar kartą.</translation>
 <translation id="6920245099716267363">Perjungti viešosios interneto prieigos tašką. Viešosios interneto prieigos taškas įjungtas, prijungtas vienas įrenginys.</translation>
+<translation id="692135145298539227">ištrinti</translation>
 <translation id="6931576957638141829">Išsaugoti į</translation>
 <translation id="6942518653766415536">Įrašo formato meniu</translation>
 <translation id="6945221475159498467">Pasirinkti</translation>
@@ -1678,6 +1679,7 @@ Jei norite išjungti įrenginį, dar kartą paspauskite ir palaikykite įrengini
 <translation id="8315514906653279104">Įjungiama...</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363">Pasirinktas langas „<ph name="WINDOW_TITLE" />“</translation>
+<translation id="8349826889576450703">paleidimo priemonė</translation>
 <translation id="8349964124165471584">Atidaryti nuorodą naujame lange</translation>
 <translation id="8351131234907093545">Sukurti užrašą</translation>
 <translation id="8367948981300340152">Naudojama: <ph name="CAPTURE_MEDIUM" />.</translation>

@@ -229,6 +229,7 @@ Cando eliminas o teu historial de navegación (completo ou dun sitio en concreto
 <translation id="2278052315791335171">Ao eliminar este contrasinal non se eliminará a túa conta de <ph name="SITE" /></translation>
 <translation id="2286841657746966508">Enderezo de facturación</translation>
 <translation id="228704530595896923">Lista de opcións para compartir.</translation>
+<translation id="2297822946037605517">Compartir esta páxina</translation>
 <translation id="230115972905494466">Non se atoparon dispositivos compatibles</translation>
 <translation id="2318045970523081853">Toca para chamar</translation>
 <translation id="2321086116217818302">Preparando contrasinais…</translation>
@@ -306,7 +307,6 @@ Os tokens de estado privado melloran a privacidade na Web e non se poden usar pa
 <translation id="2656405586795711023">Aplicacións web</translation>
 <translation id="2669454659051515572">Calquera que use este dispositivo pode ver os ficheiros descargados</translation>
 <translation id="2702516483241149200">Novidade: Comparte unha ligazón que leve directamente a este texto</translation>
-<translation id="2707726405694321444">Actualiza páxina</translation>
 <translation id="271033894570825754">Novo</translation>
 <translation id="2711073837061989559">Probas</translation>
 <translation id="2718352093833049315">Só con wifi</translation>
@@ -708,6 +708,7 @@ Os tokens de estado privado melloran a privacidade na Web e non se poden usar pa
 
 Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />restablecer a sincronización<ph name="END_LINK" /></translation>
 <translation id="4807098396393229769">Nome que aparece na tarxeta</translation>
+<translation id="480990236307250886">Abre a páxina de inicio</translation>
 <translation id="481574578487123132">Dispositivos vinculados</translation>
 <translation id="4826163340425232009">Panel inferior de inicio de sesión.</translation>
 <translation id="4834007576107377210">En caso aplicable, consulta as instrucións do teu motor de busca para eliminar o historial de busca</translation>
@@ -832,7 +833,6 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="5444999712122199445">Volver ao sitio</translation>
 <translation id="544776284582297024">Para abrir pestanas e visitar distintas páxinas ao mesmo tempo, toca o botón de pestanas abertas</translation>
 <translation id="5454166040603940656">con <ph name="PROVIDER" /></translation>
-<translation id="5456381639095306749">Descargar páxina</translation>
 <translation id="5458366071038729214">Aquí atoparás os sitios que segues</translation>
 <translation id="5468068603361015296">Queres descargar <ph name="FILE_NAME" /> de todas as formas?</translation>
 <translation id="548278423535722844">Abrir na aplicación de mapas</translation>
@@ -1173,6 +1173,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="7196215469483532480">A explicación sobre a Guía de privacidade está aberta a pantalla completa</translation>
 <translation id="7207760545532569765">Restablecer <ph name="TAB_COUNT" /> pestanas como novas pestanas en segundo plano.</translation>
 <translation id="7217781228893594884">As pestanas do modo de incógnito bloquearanse cando saias de Chrome</translation>
+<translation id="7221869452894271364">Volver cargar esta páxina</translation>
 <translation id="7222235798733126207">Uso compartido limitado entre sitios</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 descarga pendente}other{# descargas pendentes}}</translation>
 <translation id="72415438529550637">A suxestión de contrasinal está pechada.</translation>
@@ -1576,7 +1577,6 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="926205370408745186">Quitar a túa actividade de Chrome de Benestar dixital</translation>
 <translation id="927968626442779827">Usa o modo básico en Google Chrome</translation>
 <translation id="928550791203542716">Comezaches a seguir <ph name="SITE_NAME" /></translation>
-<translation id="932327136139879170">Inicio</translation>
 <translation id="938850635132480979">Erro: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">Introducir frase de acceso</translation>
 <translation id="952301137339791907">O panel inferior de estatísticas da páxina está aberto</translation>

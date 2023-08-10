@@ -229,6 +229,7 @@
 <translation id="2278052315791335171">מחיקת הסיסמה הזו לא תגרום למחיקת החשבון שלך באתר <ph name="SITE" />.</translation>
 <translation id="2286841657746966508">כתובת לחיוב</translation>
 <translation id="228704530595896923">רשימת אפשרויות השיתוף.</translation>
+<translation id="2297822946037605517">שתף דף זה</translation>
 <translation id="230115972905494466">לא נמצאו מכשירים תואמים</translation>
 <translation id="2318045970523081853">יש להקיש כדי להתקשר</translation>
 <translation id="2321086116217818302">המערכת מכינה את הסיסמאות…</translation>
@@ -306,7 +307,6 @@
 <translation id="2656405586795711023">אפליקציות אינטרנט</translation>
 <translation id="2669454659051515572">כל מי שמשתמש במכשיר הזה יכול לראות את הקבצים שהורדו</translation>
 <translation id="2702516483241149200">חדש: ניתן לשתף קישור שגולל לטקסט הזה</translation>
-<translation id="2707726405694321444">רענון הדף</translation>
 <translation id="271033894570825754">חדש</translation>
 <translation id="2711073837061989559">תקופות ניסיון</translation>
 <translation id="2718352093833049315">‏רק ב-Wi-Fi</translation>
@@ -708,6 +708,7 @@
 
 כדי לשנות את ההגדרה הזו צריך <ph name="BEGIN_LINK" />לאפס את הסנכרון<ph name="END_LINK" /></translation>
 <translation id="4807098396393229769">שם על הכרטיס</translation>
+<translation id="480990236307250886">פתיחת דף הבית</translation>
 <translation id="481574578487123132">מכשירים מקושרים</translation>
 <translation id="4826163340425232009">גיליון תחתון של כניסה.</translation>
 <translation id="4834007576107377210">ניתן לעיין בהוראות של מנוע החיפוש שמשמש אותך לגבי מחיקת היסטוריית החיפושים, אם רלוונטי</translation>
@@ -832,7 +833,6 @@
 <translation id="5444999712122199445">חזרה לאתר</translation>
 <translation id="544776284582297024">כדי לפתוח כרטיסיות ולהיכנס לדפים שונים בו-זמנית, יש להקיש על לחצן הכרטיסיות הפתוחות</translation>
 <translation id="5454166040603940656">עם <ph name="PROVIDER" /></translation>
-<translation id="5456381639095306749">הורדת דף זה</translation>
 <translation id="5458366071038729214">כאן יוצגו האתרים שיתווספו למעקב</translation>
 <translation id="5468068603361015296">רוצה להוריד את <ph name="FILE_NAME" /> בכל זאת?</translation>
 <translation id="548278423535722844">פתיחה באפליקציית מפות</translation>
@@ -1173,6 +1173,7 @@
 <translation id="7196215469483532480">ההסבר על המדריך בנושא פרטיות נפתח בגובה מלא</translation>
 <translation id="7207760545532569765">שחזור של <ph name="TAB_COUNT" /> כרטיסיות ככרטיסיות חדשות ברקע.</translation>
 <translation id="7217781228893594884">‏כרטיסיות פרטיות ננעלות כשסוגרים את Chrome</translation>
+<translation id="7221869452894271364">רענון הדף</translation>
 <translation id="7222235798733126207">הגבלה על השיתוף בין אתרים</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{הורדה אחת בהמתנה}one{# הורדות בהמתנה}two{# הורדות בהמתנה}other{# הורדות בהמתנה}}</translation>
 <translation id="72415438529550637">ההצעה לסיסמה נסגרה.</translation>
@@ -1576,7 +1577,6 @@
 <translation id="926205370408745186">‏הסרת הפעילות שלך ב-Chrome מ'שימוש חכם בדיגיטל'.</translation>
 <translation id="927968626442779827">‏כדאי להשתמש במצב הטעינה המהירה ב-Google Chrome</translation>
 <translation id="928550791203542716">האתר <ph name="SITE_NAME" /> נמצא במעקב</translation>
-<translation id="932327136139879170">בית</translation>
 <translation id="938850635132480979">שגיאה: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">הזנת ביטוי סיסמה</translation>
 <translation id="952301137339791907">הגיליון התחתון של התובנות לגבי הדף פתוח</translation>

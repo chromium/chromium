@@ -229,6 +229,7 @@ Khi xoá nhật ký duyệt web (tất cả hoặc một trang cụ thể), bạ
 <translation id="2278052315791335171">Thao tác xóa mật khẩu này sẽ không xóa tài khoản của bạn trên <ph name="SITE" /></translation>
 <translation id="2286841657746966508">Địa chỉ thanh toán</translation>
 <translation id="228704530595896923">Danh sách các lựa chọn chia sẻ.</translation>
+<translation id="2297822946037605517">Chia sẻ trang này</translation>
 <translation id="230115972905494466">Không tìm thấy thiết bị tương thích</translation>
 <translation id="2318045970523081853">Nhấn để gọi điện</translation>
 <translation id="2321086116217818302">Đang chuẩn bị mật khẩu…</translation>
@@ -306,7 +307,6 @@ Mã thông báo trạng thái riêng tư giúp cải thiện quyền riêng tư
 <translation id="2656405586795711023">Ứng dụng web</translation>
 <translation id="2669454659051515572">Bất cứ ai sử dụng thiết bị này đều có thể xem các tệp đã tải xuống</translation>
 <translation id="2702516483241149200">Mới: chia sẻ một đường liên kết dẫn tới văn bản này</translation>
-<translation id="2707726405694321444">Làm mới trang</translation>
 <translation id="271033894570825754">Mới</translation>
 <translation id="2711073837061989559">Bản dùng thử</translation>
 <translation id="2718352093833049315">Chỉ qua Wi-Fi</translation>
@@ -708,6 +708,7 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 
 Để thay đổi tùy chọn cài đặt này, hãy <ph name="BEGIN_LINK" />đặt lại tính năng đồng bộ hóa<ph name="END_LINK" /></translation>
 <translation id="4807098396393229769">Tên trên thẻ</translation>
+<translation id="480990236307250886">Mở trang chủ</translation>
 <translation id="481574578487123132">Thiết bị đã liên kết</translation>
 <translation id="4826163340425232009">Bảng đăng nhập ở dưới cùng.</translation>
 <translation id="4834007576107377210">Để xóa nhật ký tìm kiếm, hãy xem hướng dẫn của công cụ tìm kiếm của bạn (nếu có)</translation>
@@ -832,7 +833,6 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="5444999712122199445">Quay lại trang web</translation>
 <translation id="544776284582297024">Để mở các thẻ và truy cập cùng lúc vào nhiều trang, hãy nhấn vào nút mở thẻ</translation>
 <translation id="5454166040603940656">với <ph name="PROVIDER" /></translation>
-<translation id="5456381639095306749">Tải trang xuống</translation>
 <translation id="5458366071038729214">Bạn sẽ thấy các trang web mình theo dõi tại đây</translation>
 <translation id="5468068603361015296">Bạn vẫn muốn tải <ph name="FILE_NAME" /> xuống?</translation>
 <translation id="548278423535722844">Mở trong ứng dụng bản đồ</translation>
@@ -1173,6 +1173,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="7196215469483532480">Đã mở nội dung giải thích hướng dẫn về quyền riêng tư trên toàn màn hình</translation>
 <translation id="7207760545532569765">Khôi phục <ph name="TAB_COUNT" /> thẻ dưới dạng các thẻ nền mới.</translation>
 <translation id="7217781228893594884">Các thẻ ẩn danh sẽ bị khoá khi bạn rời khỏi Chrome</translation>
+<translation id="7221869452894271364">Tải lại trang này</translation>
 <translation id="7222235798733126207">Giới hạn hoạt động chia sẻ giữa các trang</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 tệp đang chờ tải xuống}other{# tệp đang chờ tải xuống}}</translation>
 <translation id="72415438529550637">Nội dung đề xuất mật khẩu đã đóng.</translation>
@@ -1576,7 +1577,6 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="926205370408745186">Xóa hoạt động của bạn trên Chrome khỏi Digital Wellbeing</translation>
 <translation id="927968626442779827">Dùng Chế độ thu gọn trên Google Chrome</translation>
 <translation id="928550791203542716">Đang theo dõi <ph name="SITE_NAME" /></translation>
-<translation id="932327136139879170">Trang chủ</translation>
 <translation id="938850635132480979">Lỗi: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">Nhập cụm mật khẩu</translation>
 <translation id="952301137339791907">Đã mở bảng thông tin chi tiết về trang ở dưới cùng</translation>

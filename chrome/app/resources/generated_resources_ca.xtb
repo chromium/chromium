@@ -4128,7 +4128,6 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador i d
 <translation id="4361142739114356624">Falta la clau privada d'aquest certificat del client o no és vàlida</translation>
 <translation id="4361745360460842907">Obre-ho com a pestanya</translation>
 <translation id="4362675504017386626"><ph name="ACCOUNT_EMAIL" /> és el compte predeterminat al teu <ph name="DEVICE_TYPE" /></translation>
-<translation id="4363215264289239958">Aplicacions de Bruschetta</translation>
 <translation id="4363262124589131906">Els fitxers nous de La meva unitat deixaran de sincronitzar-se automàticament amb aquest Chromebook</translation>
 <translation id="4363771538994847871">No s'ha trobat cap destinació per a Cast. Necessites ajuda?</translation>
 <translation id="4364327530094270451">Meló</translation>
@@ -4715,6 +4714,7 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="4849517651082200438">No instal·lis</translation>
 <translation id="485053257961878904">No s'ha pogut configurar la sincronització de notificacions</translation>
 <translation id="4850548109381269495">Als dos dispositius, comprova la connexió a Internet i activa el Bluetooth. Després, torna-ho a provar.</translation>
+<translation id="4850669014075537160">Desplaçament</translation>
 <translation id="4850886885716139402">Mostra</translation>
 <translation id="485088796993065002">És possible que els llocs web reprodueixin so per proporcionar àudio per a música, vídeos i altres continguts multimèdia</translation>
 <translation id="4852916668365817106">Color del ratolí</translation>

@@ -229,6 +229,7 @@ Kad izbrišete svoju povijest pregledavanja, bilo svu ili za određenu web-lokac
 <translation id="2278052315791335171">Brisanjem zaporke neće se izbrisati vaš račun na <ph name="SITE" /></translation>
 <translation id="2286841657746966508">Adresa za naplatu</translation>
 <translation id="228704530595896923">Popis opcija za dijeljenje.</translation>
+<translation id="2297822946037605517">Dijeli ovu stranicu</translation>
 <translation id="230115972905494466">Nije pronađen nijedan kompatibilni uređaj</translation>
 <translation id="2318045970523081853">Dodirnite da biste uputili poziv</translation>
 <translation id="2321086116217818302">Priprema zaporki…</translation>
@@ -306,7 +307,6 @@ Privatne oznake poboljšavaju privatnost na webu i ne mogu se upotrebljavati da 
 <translation id="2656405586795711023">Web-aplikacije</translation>
 <translation id="2669454659051515572">Svi koji upotrebljavaju ovaj uređaj mogu vidjeti preuzete datoteke</translation>
 <translation id="2702516483241149200">Novo: dijelite vezu koja se pomiče na ovaj tekst</translation>
-<translation id="2707726405694321444">Osvježavanje stranice</translation>
 <translation id="271033894570825754">Novo</translation>
 <translation id="2711073837061989559">Probe</translation>
 <translation id="2718352093833049315">Samo na Wi-Fiju</translation>
@@ -708,6 +708,7 @@ Vaš Google račun može sadržavati druge oblike povijesti pregledavanja, na pr
 
 Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />poništite sinkronizaciju<ph name="END_LINK" /></translation>
 <translation id="4807098396393229769">Ime na kartici</translation>
+<translation id="480990236307250886">Otvori početnu stranicu</translation>
 <translation id="481574578487123132">Povezani uređaji</translation>
 <translation id="4826163340425232009">Donja tablica za prijavu.</translation>
 <translation id="4834007576107377210">Potražite upute za svoju tražilicu da biste saznali kako izbrisati svoju povijest pretraživanja, ako je primjenjivo</translation>
@@ -832,7 +833,6 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />poništite sinkronizac
 <translation id="5444999712122199445">Natrag na web-lokaciju</translation>
 <translation id="544776284582297024">Da biste otvorili kartice i istovremeno posjetili različite stranice, dodirnite gumb za otvorene kartice</translation>
 <translation id="5454166040603940656">uz <ph name="PROVIDER" /></translation>
-<translation id="5456381639095306749">Preuzmi stranicu</translation>
 <translation id="5458366071038729214">Ovdje ćete pronaći stranice koje pratite</translation>
 <translation id="5468068603361015296">Želite li ipak preuzeti datoteku <ph name="FILE_NAME" />?</translation>
 <translation id="548278423535722844">Otvori u aplikaciji za karte</translation>
@@ -1173,6 +1173,7 @@ Na primjer, neke web-lokacije na taj zahtjev mogu odgovoriti tako da vam prikaž
 <translation id="7196215469483532480">Objašnjenje vodiča za privatnost otvoreno u punoj visini</translation>
 <translation id="7207760545532569765">Vratite <ph name="TAB_COUNT" /> kartica kao nove pozadinske kartice.</translation>
 <translation id="7217781228893594884">Anonimne kartice zaključat će se kada napustite Chrome</translation>
+<translation id="7221869452894271364">Ponovno učitaj ovu stranicu</translation>
 <translation id="7222235798733126207">Ograničeno dijeljenje između web-lokacija</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 preuzimanje na čekanju}one{# preuzimanje na čekanju}few{# preuzimanja na čekanju}other{# preuzimanja na čekanju}}</translation>
 <translation id="72415438529550637">Prijedlog zaporke je zatvoren.</translation>
@@ -1576,7 +1577,6 @@ Na primjer, neke web-lokacije na taj zahtjev mogu odgovoriti tako da vam prikaž
 <translation id="926205370408745186">Uklanjanje vaše aktivnosti u Chromeu iz Digitalne ravnoteže</translation>
 <translation id="927968626442779827">Koristite Jednostavni način na Google Chromeu</translation>
 <translation id="928550791203542716">Praćenje web-lokacije <ph name="SITE_NAME" /></translation>
-<translation id="932327136139879170">Početna stranica</translation>
 <translation id="938850635132480979">Pogreška: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">Unesite zaporku</translation>
 <translation id="952301137339791907">Otvorena je donja tablica uvida u stranicu</translation>

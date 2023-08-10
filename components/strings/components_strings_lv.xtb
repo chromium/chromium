@@ -1838,7 +1838,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="4901778704868714008">Saglabāt...</translation>
 <translation id="4901952598169637881">Ikdienas apavi</translation>
 <translation id="4905659621780993806">Jūsu administrators automātiski restartēs jūsu ierīci plkst. <ph name="TIME" /> šādā datumā: <ph name="DATE" />. Saglabājiet visus atvērtos failus, pirms ierīce tiek restartēta.</translation>
-<translation id="4907289208610706508">Mērķis</translation>
 <translation id="4913987521957242411">Caurums augšējā kreisajā malā</translation>
 <translation id="4917064667437236721">Attēlveidošanas cilindrs</translation>
 <translation id="4918221908152712722">Instalējiet lietotni <ph name="APP_NAME" /> (nav nepieciešama lejupielāde)</translation>
@@ -2679,6 +2678,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="6702919718839027939">Prezentācija</translation>
 <translation id="6704458454638854812">Parametrs “custom_size” ir iestatīts, paredzētajam nosaukumam ir jābūt “custom”.</translation>
 <translation id="6706005862292023715">Aizkari un logu dekori</translation>
+<translation id="6706210727756204531">Tvērums</translation>
 <translation id="6709133671862442373">Ziņas</translation>
 <translation id="6709888928011386878">Mūzikas instrumenti</translation>
 <translation id="6710213216561001401">Iepriekšējais</translation>

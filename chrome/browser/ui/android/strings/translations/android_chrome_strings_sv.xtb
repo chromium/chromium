@@ -229,6 +229,7 @@ När du raderar webbhistoriken, oavsett om det är all historik eller bara för 
 <translation id="2278052315791335171">Att ta bort det här lösenordet innebär inte att ditt konto på <ph name="SITE" /> raderas</translation>
 <translation id="2286841657746966508">Faktureringsadress</translation>
 <translation id="228704530595896923">Lista över delningsalternativ.</translation>
+<translation id="2297822946037605517">Dela den här sidan</translation>
 <translation id="230115972905494466">Inga kompatibla enheter hittades</translation>
 <translation id="2318045970523081853">Tryck för att ringa</translation>
 <translation id="2321086116217818302">Lösenorden förbereds …</translation>
@@ -306,7 +307,6 @@ Med förtroendetoken förbättras integriteten på webben. De kan inte användas
 <translation id="2656405586795711023">Webbappar</translation>
 <translation id="2669454659051515572">Alla som använder enheten kan se nedladdade filer</translation>
 <translation id="2702516483241149200">Nyhet: dela en länk som scrollar fram till den här texten</translation>
-<translation id="2707726405694321444">Uppdatera sidan</translation>
 <translation id="271033894570825754">Ny</translation>
 <translation id="2711073837061989559">Provversioner</translation>
 <translation id="2718352093833049315">Endast på wifi</translation>
@@ -709,6 +709,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 
 <ph name="BEGIN_LINK" />Återställ synkroniseringen<ph name="END_LINK" /> om du vill ändra den här inställningen.</translation>
 <translation id="4807098396393229769">Namn på kort</translation>
+<translation id="480990236307250886">Öppna startsidan</translation>
 <translation id="481574578487123132">Länkade enheter</translation>
 <translation id="4826163340425232009">Ark för inloggning på nedre delen av skärmen.</translation>
 <translation id="4834007576107377210">Visa sökmotorns anvisningar för att radera sökhistoriken om tillämpligt</translation>
@@ -833,7 +834,6 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="5444999712122199445">Gå tillbaka till webbplatsen</translation>
 <translation id="544776284582297024">Tryck på Öppna flikar om du vill öppna flikar och besöka olika sidor samtidigt</translation>
 <translation id="5454166040603940656">med <ph name="PROVIDER" /></translation>
-<translation id="5456381639095306749">Ladda ned sida</translation>
 <translation id="5458366071038729214">Här hittar du webbplatser som du följer</translation>
 <translation id="5468068603361015296">Vill du ladda ned <ph name="FILE_NAME" /> ändå?</translation>
 <translation id="548278423535722844">Öppna i kartapp</translation>
@@ -1174,6 +1174,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="7196215469483532480">Förklaringen till integritetsguiden har öppnats över hela skärmen</translation>
 <translation id="7207760545532569765">Återställ <ph name="TAB_COUNT" /> flikar som nya flikar i bakgrunden.</translation>
 <translation id="7217781228893594884">Inkognitoflikar låses när du lämnar Chrome</translation>
+<translation id="7221869452894271364">Hämta sidan igen</translation>
 <translation id="7222235798733126207">Begränsad delning mellan webbplatser</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 nedladdning väntar}other{# nedladdningar väntar}}</translation>
 <translation id="72415438529550637">Lösenordsförslaget har stängts.</translation>
@@ -1577,7 +1578,6 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="926205370408745186">Ta bort din aktivitet i Chrome från Digitalt välmående</translation>
 <translation id="927968626442779827">Använd begränsat läge i Google Chrome</translation>
 <translation id="928550791203542716">Följer <ph name="SITE_NAME" /></translation>
-<translation id="932327136139879170">Startsida</translation>
 <translation id="938850635132480979">Fel: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">Ange lösenfras</translation>
 <translation id="952301137339791907">Arket för sidinsikter på nedre delen av skärmen har öppnats</translation>

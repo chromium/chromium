@@ -229,6 +229,7 @@ Apabila anda memadamkan sejarah penyemakan imbas anda — semua atau untuk laman
 <translation id="2278052315791335171">Pemadaman kata laluan ini tidak akan memadamkan akaun anda pada <ph name="SITE" /></translation>
 <translation id="2286841657746966508">Alamat pengebilan</translation>
 <translation id="228704530595896923">Senarai pilihan perkongsian.</translation>
+<translation id="2297822946037605517">Kongsi halaman ini</translation>
 <translation id="230115972905494466">Tiada peranti yang serasi ditemui</translation>
 <translation id="2318045970523081853">Ketik untuk membuat panggilan</translation>
 <translation id="2321086116217818302">Menyediakan kata laluan…</translation>
@@ -306,7 +307,6 @@ Token keadaan sulit meningkatkan privasi pada web dan tidak boleh digunakan untu
 <translation id="2656405586795711023">Apl web</translation>
 <translation id="2669454659051515572">Sesiapa sahaja yang menggunakan peranti ini dapat melihat fail yang dimuat turun</translation>
 <translation id="2702516483241149200">Baharu: kongsi pautan yang menatal ke teks ini</translation>
-<translation id="2707726405694321444">Muat semula halaman</translation>
 <translation id="271033894570825754">Baharu</translation>
 <translation id="2711073837061989559">Percubaan</translation>
 <translation id="2718352093833049315">Hanya pada Wi-Fi</translation>
@@ -708,6 +708,7 @@ Akaun Google anda mungkin mempunyai sejarah penyemakan imbas dalam bentuk lain s
 
 Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />tetapkan semula penyegerakan<ph name="END_LINK" /></translation>
 <translation id="4807098396393229769">Nama pada kad</translation>
+<translation id="480990236307250886">Buka halaman utama</translation>
 <translation id="481574578487123132">Peranti terpaut</translation>
 <translation id="4826163340425232009">Helaian bawah log masuk.</translation>
 <translation id="4834007576107377210">Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berkenaan</translation>
@@ -832,7 +833,6 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />tetapkan semula penyegerakan<
 <translation id="5444999712122199445">Kembali ke laman</translation>
 <translation id="544776284582297024">Untuk membuka tab dan melawat halaman yang berlainan pada masa yang sama, ketik butang buka tab</translation>
 <translation id="5454166040603940656">dengan <ph name="PROVIDER" /></translation>
-<translation id="5456381639095306749">Muat turun halaman</translation>
 <translation id="5458366071038729214">Anda akan menemukan laman yang anda ikuti di sini</translation>
 <translation id="5468068603361015296">Adakah anda mahu memuat turun <ph name="FILE_NAME" /> juga?</translation>
 <translation id="548278423535722844">Buka dalam apl peta</translation>
@@ -1173,6 +1173,7 @@ Sebagai contoh, sesetengah laman web mungkin memberi respons kepada permintaan i
 <translation id="7196215469483532480">Penjelasan panduan privasi dibuka pada ketinggian penuh</translation>
 <translation id="7207760545532569765">Pulihkan <ph name="TAB_COUNT" /> tab sebagai tab latar baharu.</translation>
 <translation id="7217781228893594884">Tab inkognito akan dikunci apabila anda meninggalkan Chrome</translation>
+<translation id="7221869452894271364">Muatkan semula halaman ini</translation>
 <translation id="7222235798733126207">Perkongsian terhad antara laman</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 muat turun belum selesai}other{# muat turun belum selesai}}</translation>
 <translation id="72415438529550637">Cadangan kata laluan telah ditutup.</translation>
@@ -1576,7 +1577,6 @@ Sebagai contoh, sesetengah laman web mungkin memberi respons kepada permintaan i
 <translation id="926205370408745186">Alih keluar aktiviti Chrome anda daripada Kesejahteraan Digital</translation>
 <translation id="927968626442779827">Gunakan mod Ringkas pada Google Chrome</translation>
 <translation id="928550791203542716">Mengikuti <ph name="SITE_NAME" /></translation>
-<translation id="932327136139879170">Laman Utama</translation>
 <translation id="938850635132480979">Ralat: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">Masukkan frasa laluan</translation>
 <translation id="952301137339791907">Helaian bawah cerapan halaman dibuka</translation>

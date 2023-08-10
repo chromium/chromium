@@ -1835,7 +1835,6 @@
 <translation id="4901778704868714008">Yadda saxlayın...</translation>
 <translation id="4901952598169637881">Gündəlik ayaqqabılar</translation>
 <translation id="4905659621780993806">Administrator cihazınızı bu vaxt avtomatik olaraq yenidən başladacaq: <ph name="TIME" />, <ph name="DATE" /> Cihazınız yenidən başlamazdan əvvəl hər hansı açıq elementləri yadda saxlayın.</translation>
-<translation id="4907289208610706508">Hədəf</translation>
 <translation id="4913987521957242411">Yuxarı soldan deşik açın</translation>
 <translation id="4917064667437236721">Görüntüləmə silindri</translation>
 <translation id="4918221908152712722"><ph name="APP_NAME" /> tətbiqini quraşdırın (endirmək tələb edilmir)</translation>
@@ -2676,6 +2675,7 @@
 <translation id="6702919718839027939">Təqdim edin</translation>
 <translation id="6704458454638854812">"Fərdi_ölçü" xüsusiyyəti ayarlanıb, ad "fərdi" olmalıdır.</translation>
 <translation id="6706005862292023715">Pərdə və pəncərə aksesuarları</translation>
+<translation id="6706210727756204531">Çərçivə</translation>
 <translation id="6709133671862442373">Xəbərlər</translation>
 <translation id="6709888928011386878">Musiqi alətləri</translation>
 <translation id="6710213216561001401">Əvvəlki</translation>

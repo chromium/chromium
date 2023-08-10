@@ -1211,9 +1211,6 @@ Diese Richtlinie wird nicht angewendet, wenn die Richtlinie <ph name="DEVICE_SCR
       Wenn diese Richtlinie nicht konfiguriert oder eine leere Liste festgelegt ist, stehen auf verwalteten Geräten keine Modi für das schnelle Entsperren zur Verfügung.
 
       Diese Richtlinie wurde eingestellt. Bitte verwende stattdessen die Richtlinie „<ph name="QUICK_UNLOCK_MODE_ALLOW_LIST_POLICY_NAME" />“.</translation>
-<translation id="2033784678146670379">Wenn diese Richtlinie aktiviert wird, ist die Remote-Attestierung der Identität gegenüber der Datenschutz-Zertifizierungsstelle anhand der Hardware von <ph name="PRODUCT_OS_NAME" />-Geräten möglich. Dies geschieht mithilfe der Funktion „<ph name="CHALLENGE_USER_KEY_FUNCTION" />“ über die <ph name="ENTERPRISE_PLATFORM_KEYS_API" />.
-
-      Wenn die Richtlinie deaktiviert ist oder nicht konfiguriert wird, schlagen API-Aufrufe fehl und ein Fehlercode wird angezeigt.</translation>
 <translation id="2036522553891755455">Wenn die Richtlinie aktiviert ist, verwendet die Freigabeerkennung, also die Funktion zur Netzwerkfreigabe für <ph name="PRODUCT_NAME" />, das <ph name="NETBIOS_PROTOCOL" />, um Dateifreigaben im Netzwerk zu erkennen. Wenn die Richtlinie deaktiviert ist, kann die Freigabeerkennung dieses Protokoll nicht verwenden, um Freigaben zu erkennen.
 
       Ist sie nicht konfiguriert, wird dieses Verhalten für verwaltete Nutzer standardmäßig deaktiviert und für andere Nutzer hingegen aktiviert.</translation>

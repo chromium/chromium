@@ -229,6 +229,7 @@ Als je je browsegeschiedenis verwijdert (alles of alleen de geschiedenis voor ee
 <translation id="2278052315791335171">Als je dit wachtwoord verwijdert, wordt je account op <ph name="SITE" /> niet verwijderd</translation>
 <translation id="2286841657746966508">Factuuradres</translation>
 <translation id="228704530595896923">Lijst met deelopties.</translation>
+<translation id="2297822946037605517">Deze pagina delen</translation>
 <translation id="230115972905494466">Geen geschikte apparaten gevonden</translation>
 <translation id="2318045970523081853">Tik om te bellen</translation>
 <translation id="2321086116217818302">Wachtwoorden voorbereiden…</translation>
@@ -306,7 +307,6 @@ Privéstatustokens verbeteren de privacy op het web en kunnen niet worden gebrui
 <translation id="2656405586795711023">Web-apps</translation>
 <translation id="2669454659051515572">Iedereen die dit apparaat gebruikt, kan gedownloade bestanden zien</translation>
 <translation id="2702516483241149200">Nieuw: deel een link die rechtstreeks naar deze tekst scrollt</translation>
-<translation id="2707726405694321444">Pagina vernieuwen</translation>
 <translation id="271033894570825754">Nieuw</translation>
 <translation id="2711073837061989559">Proeven</translation>
 <translation id="2718352093833049315">Alleen via wifi</translation>
@@ -708,6 +708,7 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 
 <ph name="BEGIN_LINK" />Reset de synchronisatie<ph name="END_LINK" /> als je deze instelling wilt wijzigen.</translation>
 <translation id="4807098396393229769">Naam op pas</translation>
+<translation id="480990236307250886">Open de homepage</translation>
 <translation id="481574578487123132">Gekoppelde apparaten</translation>
 <translation id="4826163340425232009">Inlogblad onderaan.</translation>
 <translation id="4834007576107377210">Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschiedenis (indien van toepassing)</translation>
@@ -832,7 +833,6 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="5444999712122199445">Terug naar site</translation>
 <translation id="544776284582297024">Tik op de knop voor geopende tabbladen om tabbladen te openen en tegelijkertijd verschillende pagina's te bezoeken</translation>
 <translation id="5454166040603940656">met <ph name="PROVIDER" /></translation>
-<translation id="5456381639095306749">Pagina downloaden</translation>
 <translation id="5458366071038729214">Hier vind je de sites die je volgt</translation>
 <translation id="5468068603361015296">Wil je <ph name="FILE_NAME" /> toch downloaden?</translation>
 <translation id="548278423535722844">Openen in app voor passen</translation>
@@ -1173,6 +1173,7 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="7196215469483532480">Uitleg over privacygids is op volledige hoogte geopend</translation>
 <translation id="7207760545532569765"><ph name="TAB_COUNT" /> tabbladen herstellen als nieuwe tabbladen op de achtergrond.</translation>
 <translation id="7217781228893594884">Incognitotabbladen worden vergrendeld als je Chrome verlaat</translation>
+<translation id="7221869452894271364">Deze pagina opnieuw laden</translation>
 <translation id="7222235798733126207">Beperkt delen tussen sites</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 download in behandeling}other{# downloads in behandeling}}</translation>
 <translation id="72415438529550637">Wachtwoordsuggestie is gesloten.</translation>
@@ -1576,7 +1577,6 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="926205370408745186">Je Chrome-activiteit verwijderen uit Digitaal welzijn</translation>
 <translation id="927968626442779827">Lite-versie van Google Chrome gebruiken</translation>
 <translation id="928550791203542716"><ph name="SITE_NAME" /> volgen</translation>
-<translation id="932327136139879170">Homepage</translation>
 <translation id="938850635132480979">Fout: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">Wachtwoordzin opgeven</translation>
 <translation id="952301137339791907">Blad onderaan met pagina-inzichten is geopend</translation>

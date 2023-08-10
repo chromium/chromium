@@ -229,6 +229,7 @@
 <translation id="2278052315791335171">ການລຶບລະຫັດຜ່ານນີ້ຈະບໍ່ລຶບບັນຊີຂອງທ່ານຢູ່ <ph name="SITE" /> ອອກ</translation>
 <translation id="2286841657746966508">ທີ່ຢູ່ການຮຽກເກັບເງິນ</translation>
 <translation id="228704530595896923">ລາຍຊື່ຂອງຕົວເລືອກການແບ່ງປັນ.</translation>
+<translation id="2297822946037605517">ແບ່ງປັນໜ້ານີ້</translation>
 <translation id="230115972905494466">ບໍ່ພົບອຸປະກອນທີ່ເຂົ້າກັນໄດ້</translation>
 <translation id="2318045970523081853">ແຕະເພື່ອໂທອອກ</translation>
 <translation id="2321086116217818302">ກຳລັງກະກຽມລະຫັດຜ່ານ…</translation>
@@ -306,7 +307,6 @@
 <translation id="2656405586795711023">ເວັບແອັບ</translation>
 <translation id="2669454659051515572">ໃຜກໍຕາມທີ່ໃຊ້ອຸປະກອນນີ້ຈະສາມາດເບິ່ງເຫັນໄຟລ໌ທີ່ດາວໂຫຼດແລ້ວໄດ້</translation>
 <translation id="2702516483241149200">ໃໝ່: ແບ່ງປັນລິ້ງທີ່ເລື່ອນຫາຂໍ້ຄວາມນີ້</translation>
-<translation id="2707726405694321444">ຣີ​ເຟ​ຣ​ຊຫນ້າ</translation>
 <translation id="271033894570825754">ໃຫມ່</translation>
 <translation id="2711073837061989559">ການທົດລອງໃຊ້</translation>
 <translation id="2718352093833049315">​ສະເພາະ Wi​-Fi ເທົ່ານັ້ນ</translation>
@@ -708,6 +708,7 @@
 
 ເພື່ອປ່ຽນການຕັ້ງຄ່ານີ້, ກະລຸນາ <ph name="BEGIN_LINK" />ຣີເຊັດການຊິິ້ງຂໍ້ມູນ<ph name="END_LINK" /></translation>
 <translation id="4807098396393229769">ຊື່​ຢູ່ໃນ​ບັດ</translation>
+<translation id="480990236307250886">ເປີດໜ້າຫຼັກ</translation>
 <translation id="481574578487123132">ອຸປະກອນທີ່ລິ້ງແລ້ວ</translation>
 <translation id="4826163340425232009">ຊີດລຸ່ມສຸດຂອງການເຂົ້າສູ່ລະບົບ.</translation>
 <translation id="4834007576107377210">ກະລຸນາອ່ານຄຳແນະນຳຂອງໂປຣແກຣມຊອກຫາຂອງທ່ານສຳລັບວິທີການລຶບປະຫວັດການຊອກຫາ, ຖ້າມີ</translation>
@@ -832,7 +833,6 @@
 <translation id="5444999712122199445">ກັບຄືນໄປຫາເວັບໄຊ</translation>
 <translation id="544776284582297024">ເພື່ອເປີດແຖບ ແລະ ເຂົ້າເບິ່ງໜ້າຕ່າງໆໃນເວລາດຽວກັນ, ກະລຸນາແຕະປຸ່ມເປີດແຖບ</translation>
 <translation id="5454166040603940656">ກັບ <ph name="PROVIDER" /></translation>
-<translation id="5456381639095306749">ໜ້າການດາວໂຫຼດ</translation>
 <translation id="5458366071038729214">ທ່ານຈະພົບເວັບໄຊທີ່ທ່ານຕິດຕາມຢູ່ບ່ອນນີ້</translation>
 <translation id="5468068603361015296">ທ່ານຕ້ອງການຢືນຢັນການດາວໂຫຼດ <ph name="FILE_NAME" /> ບໍ?</translation>
 <translation id="548278423535722844">ເປີດໃນແອັບແຜນທີ່</translation>
@@ -1173,6 +1173,7 @@
 <translation id="7196215469483532480">ເປີດຄຳອະທິບາຍຄູ່ມືຄວາມເປັນສ່ວນຕົວແບບເຕັມຄວາມສູງແລ້ວ</translation>
 <translation id="7207760545532569765">ກູ້ຄືນ <ph name="TAB_COUNT" /> ແຖບເປັນກຸ່ມແຖບໃນພື້ນຫຼັງໃໝ່.</translation>
 <translation id="7217781228893594884">ແຖບ​ບໍ່ເປີດເຜີຍຕົວຕົນຈະຖືກລັອກເມື່ອທ່ານອອກ Chrome</translation>
+<translation id="7221869452894271364">​ໂຫຼດ​ຫນ້າ​ນີ້ຄືນອີກ</translation>
 <translation id="7222235798733126207">ການແບ່ງປັນທີ່ຈຳກັດລະຫວ່າງເວັບໄຊ</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 ການດາວໂຫຼດຍັງຄ້າງຢູ່}other{# ການດາວໂຫຼດຍັງຄ້າງຢູ່}}</translation>
 <translation id="72415438529550637">ການແນະນຳລະຫັດຜ່ານປິດຢູ່.</translation>
@@ -1576,7 +1577,6 @@
 <translation id="926205370408745186">ລຶບການເຄື່ອນໄຫວໃນ Chrome ຂອງທ່ານອອກຈາກ Digital Wellbeing</translation>
 <translation id="927968626442779827">ໃຊ້ໂໝດ Lite ໃນ Google Chrome</translation>
 <translation id="928550791203542716">ກຳລັງຕິດຕາມ <ph name="SITE_NAME" /></translation>
-<translation id="932327136139879170">ບ້ານ</translation>
 <translation id="938850635132480979">ຜິດພາດ: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">ປ້ອນວະລີຜ່ານໃສ່</translation>
 <translation id="952301137339791907">ຊີດລຸ່ມສຸດຂໍ້ມູນເຈາະເລິກຂອງໜ້າແມ່ນເປີດຢູ່</translation>

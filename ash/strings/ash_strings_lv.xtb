@@ -352,7 +352,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="2531025035050312891">lēna ierīces darbība</translation>
 <translation id="2531107890083353124">Velkot cilni, nospiediet <ph name="KEY_ONE" /></translation>
 <translation id="254900897760075745">Kopēt atlasīto saturu starpliktuvē</translation>
-<translation id="2549711466868162843">Uzlabot apgaismojumu</translation>
+<translation id="2549711466868162843">Apgaismojuma uzlabošana</translation>
 <translation id="2549985041256363841">Sākt ierakstīšanu</translation>
 <translation id="255671100581129685">Google asistents nav pieejams publiskā sesijā.</translation>
 <translation id="256712445991462162">dokota lupa</translation>
@@ -1367,6 +1367,7 @@ Jauna instalācija</translation>
 <translation id="6912901278692845878">Īss ceļvedis</translation>
 <translation id="6919251195245069855">Nevarēja atpazīt jūsu viedkarti. Mēģiniet vēlreiz.</translation>
 <translation id="6920245099716267363">Tīklāja pārslēgšana. Tīklājs ir ieslēgts. Savienojums izveidots ar vienu ierīci.</translation>
+<translation id="692135145298539227">dzēst</translation>
 <translation id="6931576957638141829">Saglabāt šeit:</translation>
 <translation id="6942518653766415536">Ierakstīšanas formāta izvēlne</translation>
 <translation id="6945221475159498467">Atlasīt</translation>
@@ -1678,6 +1679,7 @@ Lai izslēgtu ierīci, vēlreiz nospiediet un turiet ierīces barošanas pogu.</
 <translation id="8315514906653279104">Notiek ieslēgšana…</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363">Atlasīts logs “<ph name="WINDOW_TITLE" />”</translation>
+<translation id="8349826889576450703">palaišanas programma</translation>
 <translation id="8349964124165471584">Atvērt saiti jaunā logā</translation>
 <translation id="8351131234907093545">Izveidot piezīmi</translation>
 <translation id="8367948981300340152">Šī ierīce tiek izmantota: <ph name="CAPTURE_MEDIUM" />.</translation>

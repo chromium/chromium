@@ -229,6 +229,7 @@
 <translation id="2278052315791335171">비밀번호를 삭제해도 <ph name="SITE" /> 계정은 삭제되지 않습니다.</translation>
 <translation id="2286841657746966508">결제주소</translation>
 <translation id="228704530595896923">공유 옵션 목록입니다.</translation>
+<translation id="2297822946037605517">이 페이지 공유</translation>
 <translation id="230115972905494466">호환되는 기기 없음</translation>
 <translation id="2318045970523081853">탭하여 전화 걸기</translation>
 <translation id="2321086116217818302">비밀번호 준비 중…</translation>
@@ -306,7 +307,6 @@
 <translation id="2656405586795711023">웹 앱</translation>
 <translation id="2669454659051515572">이 기기를 사용하는 누구나 다운로드된 파일을 볼 수 있습니다.</translation>
 <translation id="2702516483241149200">신규: 이 텍스트로 스크롤하는 링크 공유하기</translation>
-<translation id="2707726405694321444">페이지 새로고침</translation>
 <translation id="271033894570825754">New</translation>
 <translation id="2711073837061989559">체험판</translation>
 <translation id="2718352093833049315">Wi-Fi 연결 시</translation>
@@ -708,6 +708,7 @@
 
 이 설정을 변경하려면 <ph name="BEGIN_LINK" />동기화를 재설정<ph name="END_LINK" />하세요.</translation>
 <translation id="4807098396393229769">카드 명의</translation>
+<translation id="480990236307250886">홈페이지 열기</translation>
 <translation id="481574578487123132">연결된 기기</translation>
 <translation id="4826163340425232009">로그인 하단 시트입니다.</translation>
 <translation id="4834007576107377210">Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진의 검색 기록 삭제 안내를 확인하세요.</translation>
@@ -832,7 +833,6 @@
 <translation id="5444999712122199445">사이트로 돌아가기</translation>
 <translation id="544776284582297024">탭을 열어 동시에 여러 페이지를 방문하려면 탭 열기 버튼 탭하기</translation>
 <translation id="5454166040603940656">제공업체: <ph name="PROVIDER" /></translation>
-<translation id="5456381639095306749">다운로드 페이지</translation>
 <translation id="5458366071038729214">팔로우하는 사이트가 여기에 표시됩니다</translation>
 <translation id="5468068603361015296">그래도 <ph name="FILE_NAME" /> 파일을 다운로드하시겠습니까?</translation>
 <translation id="548278423535722844">지도 앱에서 열기</translation>
@@ -1173,6 +1173,7 @@
 <translation id="7196215469483532480">개인 정보 보호 가이드 설명이 전체 높이로 열림</translation>
 <translation id="7207760545532569765">탭 <ph name="TAB_COUNT" />개를 새 백그라운드 탭으로 복원합니다.</translation>
 <translation id="7217781228893594884">Chrome을 종료하면 시크릿 탭이 잠깁니다.</translation>
+<translation id="7221869452894271364">페이지 새로고침</translation>
 <translation id="7222235798733126207">사이트 간 공유 제한</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{다운로드 1개 대기 중}other{다운로드 #개 대기 중}}</translation>
 <translation id="72415438529550637">비밀번호 추천이 종료되었습니다.</translation>
@@ -1576,7 +1577,6 @@
 <translation id="926205370408745186">디지털 웰빙에서 Chrome 활동 삭제</translation>
 <translation id="927968626442779827">Chrome에서 라이트 모드를 사용하세요.</translation>
 <translation id="928550791203542716"><ph name="SITE_NAME" /> 사이트를 팔로우했습니다.</translation>
-<translation id="932327136139879170">홈</translation>
 <translation id="938850635132480979">오류: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">암호 입력</translation>
 <translation id="952301137339791907">페이지 통계 하단 시트가 열림</translation>

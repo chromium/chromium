@@ -1839,7 +1839,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="4901778704868714008">Enregistrer…</translation>
 <translation id="4901952598169637881">Chaussures décontractées</translation>
 <translation id="4905659621780993806">L'administrateur redémarrera votre appareil automatiquement le <ph name="DATE" /> à <ph name="TIME" />. Enregistrez tous les éléments ouverts avant que votre appareil ne redémarre.</translation>
-<translation id="4907289208610706508">Cible</translation>
 <translation id="4913987521957242411">Perforation en haut à gauche</translation>
 <translation id="4917064667437236721">Cylindre d'impression</translation>
 <translation id="4918221908152712722">Installer <ph name="APP_NAME" /> (aucun téléchargement requis)</translation>
@@ -2680,6 +2679,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="6702919718839027939">Présenter</translation>
 <translation id="6704458454638854812">La propriété "custom_size" étant définie, le nom attendu est "custom".</translation>
 <translation id="6706005862292023715">Rideaux et habillages de fenêtres</translation>
+<translation id="6706210727756204531">Portée</translation>
 <translation id="6709133671862442373">Actualités</translation>
 <translation id="6709888928011386878">Instruments de musique</translation>
 <translation id="6710213216561001401">Précédent</translation>

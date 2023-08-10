@@ -229,6 +229,7 @@ Quando elimina o seu histórico de navegação, todo ou de um site específico, 
 <translation id="2278052315791335171">Eliminar esta palavra-passe não elimina a sua conta em <ph name="SITE" />.</translation>
 <translation id="2286841657746966508">Endereço de faturação</translation>
 <translation id="228704530595896923">Lista de opções de partilha.</translation>
+<translation id="2297822946037605517">Partilhar esta página</translation>
 <translation id="230115972905494466">Não foram encontrados dispositivos compatíveis.</translation>
 <translation id="2318045970523081853">Toque para efetuar uma chamada</translation>
 <translation id="2321086116217818302">A preparar palavras-passe…</translation>
@@ -306,7 +307,6 @@ Os símbolos de estado privado melhoram a privacidade na Web e não podem ser us
 <translation id="2656405586795711023">Apps para a Web</translation>
 <translation id="2669454659051515572">Qualquer pessoa que use este dispositivo pode ver os ficheiros transferidos</translation>
 <translation id="2702516483241149200">Novo: partilhe um link que se desloca para este texto</translation>
-<translation id="2707726405694321444">Atualizar página</translation>
 <translation id="271033894570825754">Novo</translation>
 <translation id="2711073837061989559">Avaliações</translation>
 <translation id="2718352093833049315">Apenas em Wi-Fi</translation>
@@ -708,6 +708,7 @@ A sua Conta Google pode ter outras formas do histórico de navegação, como pes
 
 Para alterar esta definição, <ph name="BEGIN_LINK" />reponha a sincronização<ph name="END_LINK" />.</translation>
 <translation id="4807098396393229769">Nome no cartão</translation>
+<translation id="480990236307250886">Abrir a página de início</translation>
 <translation id="481574578487123132">Dispositivos associados</translation>
 <translation id="4826163340425232009">Secção inferior de início de sessão.</translation>
 <translation id="4834007576107377210">Se aplicável, consulte as instruções do motor de pesquisa para eliminar o histórico de pesquisas</translation>
@@ -832,7 +833,6 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />reponha a sincronização
 <translation id="5444999712122199445">Voltar ao site</translation>
 <translation id="544776284582297024">Para abrir separadores e visitar várias páginas em simultâneo, toque no botão Abrir separadores.</translation>
 <translation id="5454166040603940656">com <ph name="PROVIDER" /></translation>
-<translation id="5456381639095306749">Transferir página</translation>
 <translation id="5458366071038729214">Encontrará os sites que segue aqui</translation>
 <translation id="5468068603361015296">Quer transferir <ph name="FILE_NAME" /> mesmo assim?</translation>
 <translation id="548278423535722844">Abrir na aplicação de mapas</translation>
@@ -1173,6 +1173,7 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="7196215469483532480">Explicação do guia de privacidade aberta à altura total</translation>
 <translation id="7207760545532569765">Restaure <ph name="TAB_COUNT" /> separadores como novos separadores em segundo plano.</translation>
 <translation id="7217781228893594884">Os separadores de navegação anónima serão bloqueados quando sair do Chrome</translation>
+<translation id="7221869452894271364">Recarregar esta página</translation>
 <translation id="7222235798733126207">Partilha limitada entre sites</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 transferência pendente}other{# transferências pendentes}}</translation>
 <translation id="72415438529550637">A sugestão de palavra-passe está fechada.</translation>
@@ -1576,7 +1577,6 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="926205370408745186">Remova a atividade do Chrome do Bem-estar digital</translation>
 <translation id="927968626442779827">Utilize o Modo Lite no Google Chrome.</translation>
 <translation id="928550791203542716">A seguir <ph name="SITE_NAME" /></translation>
-<translation id="932327136139879170">Página inicial</translation>
 <translation id="938850635132480979">Erro: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">Introduzir frase de acesso</translation>
 <translation id="952301137339791907">A secção inferior das estatísticas da página está aberta</translation>

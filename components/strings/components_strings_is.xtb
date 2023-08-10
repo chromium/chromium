@@ -1839,7 +1839,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="4901778704868714008">Vista...</translation>
 <translation id="4901952598169637881">Hversdagsskór</translation>
 <translation id="4905659621780993806">Stjórnandinn mun endurræsa tækið þitt sjálfkrafa kl. <ph name="TIME" /> <ph name="DATE" />. Vistaðu opin atriði áður en tækið verður endurræst.</translation>
-<translation id="4907289208610706508">Gildissvið</translation>
 <translation id="4913987521957242411">Hefti efst vinstra megin</translation>
 <translation id="4917064667437236721">Myndhermingarhólkur</translation>
 <translation id="4918221908152712722">Settu upp <ph name="APP_NAME" /> (ekkert niðurhal)</translation>
@@ -2680,6 +2679,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="6702919718839027939">Kynna</translation>
 <translation id="6704458454638854812">Eiginleikinn „custom size" er valinn, búist er við heitinu „custom“.</translation>
 <translation id="6706005862292023715">Gluggatjöld og gluggaþjónusta</translation>
+<translation id="6706210727756204531">Umfang</translation>
 <translation id="6709133671862442373">Fréttir</translation>
 <translation id="6709888928011386878">Hljóðfæri</translation>
 <translation id="6710213216561001401">Til baka</translation>

@@ -229,6 +229,7 @@
 <translation id="2278052315791335171">การลบรหัสผ่านนี้จะไม่ลบบัญชีของคุณใน <ph name="SITE" /></translation>
 <translation id="2286841657746966508">ที่อยู่สำหรับเรียกเก็บเงิน</translation>
 <translation id="228704530595896923">รายการตัวเลือกการแชร์</translation>
+<translation id="2297822946037605517">แชร์หน้าเว็บนี้</translation>
 <translation id="230115972905494466">ไม่พบอุปกรณ์ที่เข้ากันได้</translation>
 <translation id="2318045970523081853">แตะเพื่อโทร</translation>
 <translation id="2321086116217818302">กำลังเตรียมรหัสผ่าน…</translation>
@@ -306,7 +307,6 @@
 <translation id="2656405586795711023">เว็บแอป</translation>
 <translation id="2669454659051515572">ใครก็ตามที่ใช้อุปกรณ์นี้จะเห็นไฟล์ที่ดาวน์โหลด</translation>
 <translation id="2702516483241149200">ใหม่: แชร์ลิงก์ที่เลื่อนมายังข้อความนี้</translation>
-<translation id="2707726405694321444">รีเฟรชหน้า</translation>
 <translation id="271033894570825754">ใหม่</translation>
 <translation id="2711073837061989559">การทดลองใช้</translation>
 <translation id="2718352093833049315">Wi-Fi เท่านั้น</translation>
@@ -708,6 +708,7 @@
 
 หากต้องการเปลี่ยนแปลงการตั้งค่านี้ ให้<ph name="BEGIN_LINK" />รีเซ็ตการซิงค์<ph name="END_LINK" /></translation>
 <translation id="4807098396393229769">ชื่อบนบัตร</translation>
+<translation id="480990236307250886">เปิดหน้าแรก</translation>
 <translation id="481574578487123132">อุปกรณ์ที่ลิงก์</translation>
 <translation id="4826163340425232009">Bottom Sheet การลงชื่อเข้าใช้</translation>
 <translation id="4834007576107377210">ดูวิธีลบประวัติการค้นหา (หากมี) ของเครื่องมือค้นหาที่คุณใช้</translation>
@@ -832,7 +833,6 @@
 <translation id="5444999712122199445">กลับไปที่เว็บไซต์</translation>
 <translation id="544776284582297024">หากต้องการเปิดแท็บและเข้าชมหน้าต่างๆ ในเวลาเดียวกัน ให้แตะปุ่มเปิดแท็บ</translation>
 <translation id="5454166040603940656">กับ <ph name="PROVIDER" /></translation>
-<translation id="5456381639095306749">ดาวน์โหลดหน้า</translation>
 <translation id="5458366071038729214">คุณจะเห็นเว็บไซต์ที่ติดตามที่นี่</translation>
 <translation id="5468068603361015296">คุณต้องการดาวน์โหลด <ph name="FILE_NAME" /> ต่อไปไหม</translation>
 <translation id="548278423535722844">เปิดในแอปแผนที่</translation>
@@ -1173,6 +1173,7 @@
 <translation id="7196215469483532480">คำอธิบายคู่มือความเป็นส่วนตัวเปิดแบบเต็มหน้า</translation>
 <translation id="7207760545532569765">คืนค่า <ph name="TAB_COUNT" /> แท็บเป็นแท็บใหม่ในเบื้องหลัง</translation>
 <translation id="7217781228893594884">แท็บที่ไม่ระบุตัวตนจะล็อกเมื่อคุณออกจาก Chrome</translation>
+<translation id="7221869452894271364">โหลดหน้านี้ใหม่</translation>
 <translation id="7222235798733126207">การแชร์ที่จำกัดระหว่างเว็บไซต์</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{ดาวน์โหลดรอดำเนินการ 1 รายการ}other{ดาวน์โหลดรอดำเนินการ # รายการ}}</translation>
 <translation id="72415438529550637">คําแนะนํารหัสผ่านปิดอยู่</translation>
@@ -1576,7 +1577,6 @@
 <translation id="926205370408745186">นำกิจกรรม Chrome ออกจากไลฟ์สไตล์ดิจิทัล</translation>
 <translation id="927968626442779827">ใช้โหมด Lite ใน Google Chrome</translation>
 <translation id="928550791203542716">กำลังติดตาม <ph name="SITE_NAME" /></translation>
-<translation id="932327136139879170">หน้าแรก</translation>
 <translation id="938850635132480979">ข้อผิดพลาด: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">ป้อนข้อความรหัสผ่าน</translation>
 <translation id="952301137339791907">Bottom Sheet ข้อมูลเชิงลึกของหน้าเปิดอยู่</translation>

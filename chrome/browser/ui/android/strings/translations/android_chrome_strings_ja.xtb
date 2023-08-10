@@ -230,6 +230,7 @@
 <translation id="2278052315791335171">このパスワードを削除しても、<ph name="SITE" /> のアカウントは削除されません</translation>
 <translation id="2286841657746966508">請求先住所</translation>
 <translation id="228704530595896923">共有オプションのリストです。</translation>
+<translation id="2297822946037605517">このページを共有</translation>
 <translation id="230115972905494466">対応デバイスが見つかりませんでした</translation>
 <translation id="2318045970523081853">タップして電話をかける</translation>
 <translation id="2321086116217818302">パスワードを準備しています…</translation>
@@ -307,7 +308,6 @@
 <translation id="2656405586795711023">ウェブアプリ</translation>
 <translation id="2669454659051515572">ダウンロードしたファイルは、このデバイスを使用するすべてのユーザーが確認できます</translation>
 <translation id="2702516483241149200">新規: このテキストにスクロールするリンクを共有できます</translation>
-<translation id="2707726405694321444">ページを更新</translation>
 <translation id="271033894570825754">New</translation>
 <translation id="2711073837061989559">試用版</translation>
 <translation id="2718352093833049315">Wi-Fi接続時のみ</translation>
@@ -709,6 +709,7 @@
 
 この設定を変更する場合は<ph name="BEGIN_LINK" />同期をリセット<ph name="END_LINK" />してください</translation>
 <translation id="4807098396393229769">カード名義人（半角英文字）</translation>
+<translation id="480990236307250886">ホームページを開く</translation>
 <translation id="481574578487123132">リンクしたデバイス</translation>
 <translation id="4826163340425232009">ログインのボトムシート。</translation>
 <translation id="4834007576107377210">検索履歴を削除する場合は、お使いの検索エンジンの手順をご確認ください（該当する場合）</translation>
@@ -833,7 +834,6 @@
 <translation id="5444999712122199445">サイトに戻ってください</translation>
 <translation id="544776284582297024">タブを開いて複数のページに同時にアクセスするには、タブを開くボタンをタップします</translation>
 <translation id="5454166040603940656">- <ph name="PROVIDER" /></translation>
-<translation id="5456381639095306749">ページをダウンロード</translation>
 <translation id="5458366071038729214">フォローしたサイトがここに表示されます</translation>
 <translation id="5468068603361015296"><ph name="FILE_NAME" /> のダウンロードを続行しますか？</translation>
 <translation id="548278423535722844">マップアプリで開く</translation>
@@ -1174,6 +1174,7 @@
 <translation id="7196215469483532480">プライバシー ガイドの説明が画面全体に表示されています</translation>
 <translation id="7207760545532569765"><ph name="TAB_COUNT" /> 個のタブを新しいバックグラウンドのタブとして復元します。</translation>
 <translation id="7217781228893594884">シークレット タブは Chrome を終了するときにロックされます</translation>
+<translation id="7221869452894271364">このページを再読み込みします</translation>
 <translation id="7222235798733126207">サイト間での共有の制限</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 件のダウンロードが保留中です}other{# 件のダウンロードが保留中です}}</translation>
 <translation id="72415438529550637">パスワードの候補が閉じられています。</translation>
@@ -1578,7 +1579,6 @@
 <translation id="926205370408745186">Chrome のアクティビティを Digital Wellbeing から削除</translation>
 <translation id="927968626442779827">Google Chrome のライトモードをご活用ください</translation>
 <translation id="928550791203542716"><ph name="SITE_NAME" /> をフォローしました</translation>
-<translation id="932327136139879170">ホーム</translation>
 <translation id="938850635132480979">エラー: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">パスフレーズを入力</translation>
 <translation id="952301137339791907">ページの関連情報のボトムシートは開いています</translation>

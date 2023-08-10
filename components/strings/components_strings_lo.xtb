@@ -1839,7 +1839,6 @@
 <translation id="4901778704868714008">ບັນທຶກ...</translation>
 <translation id="4901952598169637881">ເກີບໃສ່ສະບາຍ</translation>
 <translation id="4905659621780993806">ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານຈະຣີສະຕາດອຸປະກອນຂອງທ່ານໂດຍອັດຕະໂນມັດເວລາ <ph name="TIME" /> ໃນ <ph name="DATE" />. ກະລຸນາບັນທຶກລາຍການທີ່ເປີດໄວ້ກ່ອນອຸປະກອນຂອງທ່ານຈະຣີສະຕາດ.</translation>
-<translation id="4907289208610706508">ເປົ້າໝາຍ</translation>
 <translation id="4913987521957242411">ເຈາະຮູຢູ່ເທິງສຸດເບື້ອງຊ້າຍ</translation>
 <translation id="4917064667437236721">ກະບອກຮູບພາບ</translation>
 <translation id="4918221908152712722">ຕິດຕັ້ງ <ph name="APP_NAME" /> (ບໍ່ຈໍາເປັນຕ້ອງດາວໂຫຼດ)</translation>
@@ -2680,6 +2679,7 @@
 <translation id="6702919718839027939">ປັດຈຸບັນ</translation>
 <translation id="6704458454638854812">ຕັ້ງຄ່າຄຸນສົມບັດ "custom_size" ແລ້ວ, ຊື່ທີ່ຄາດຄະເນໄວ້ຈະເປັນ "ກໍານົດເອງ".</translation>
 <translation id="6706005862292023715">ການຮັກສາຜ້າກັ້ງ ແລະ ປ່ອງຢ້ຽມ</translation>
+<translation id="6706210727756204531">ຂອບເຂດ</translation>
 <translation id="6709133671862442373">ຂ່າວ</translation>
 <translation id="6709888928011386878">ອຸປະກອນເຄື່ອງດົນຕີ</translation>
 <translation id="6710213216561001401">ຜ່ານມາ</translation>

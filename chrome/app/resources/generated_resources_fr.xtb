@@ -4130,7 +4130,6 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="4361142739114356624">La clé privée de ce certificat client est manquante ou incorrecte</translation>
 <translation id="4361745360460842907">Ouvrir dans un onglet</translation>
 <translation id="4362675504017386626"><ph name="ACCOUNT_EMAIL" /> est le compte par défaut sur votre <ph name="DEVICE_TYPE" /></translation>
-<translation id="4363215264289239958">Applis Bruschetta</translation>
 <translation id="4363262124589131906">Les nouveaux fichiers de Mon Drive ne se synchroniseront plus automatiquement avec ce Chromebook</translation>
 <translation id="4363771538994847871">Aucune destination Cast trouvée. Besoin d'aide?</translation>
 <translation id="4364327530094270451">Melon</translation>
@@ -4717,6 +4716,7 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="4849517651082200438">Ne pas installer</translation>
 <translation id="485053257961878904">Impossible de configurer la synchronisation des notifications</translation>
 <translation id="4850548109381269495">Vérifiez votre connexion Internet et activez le Bluetooth sur les deux appareils, puis réessayez.</translation>
+<translation id="4850669014075537160">Défilement</translation>
 <translation id="4850886885716139402">Afficher</translation>
 <translation id="485088796993065002">Le son des sites est activé pour qu'ils puissent diffuser le son de la musique, des vidéos et d'autres contenus multimédias</translation>
 <translation id="4852916668365817106">Couleur du curseur</translation>

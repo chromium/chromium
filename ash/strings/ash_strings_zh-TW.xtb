@@ -1363,6 +1363,7 @@
 <translation id="6912901278692845878">快速導覽</translation>
 <translation id="6919251195245069855">無法辨識你的智慧型卡片，請再試一次。</translation>
 <translation id="6920245099716267363">切換無線基地台。無線基地台已開啟，有 1 部裝置已連線。</translation>
+<translation id="692135145298539227">刪除</translation>
 <translation id="6931576957638141829">儲存至</translation>
 <translation id="6942518653766415536">錄製內容格式選單</translation>
 <translation id="6945221475159498467">選取</translation>
@@ -1674,6 +1675,7 @@
 <translation id="8315514906653279104">啟用中...</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363">已選取「<ph name="WINDOW_TITLE" />」視窗</translation>
+<translation id="8349826889576450703">啟動器</translation>
 <translation id="8349964124165471584">在新視窗中開啟連結</translation>
 <translation id="8351131234907093545">寫筆記</translation>
 <translation id="8367948981300340152"><ph name="CAPTURE_MEDIUM" />使用中。</translation>

@@ -229,6 +229,7 @@
 <translation id="2278052315791335171">Η κατάργηση αυτού του κωδικού πρόσβασης δεν θα διαγράψει τον λογαριασμό σας στον ιστότοπο <ph name="SITE" /></translation>
 <translation id="2286841657746966508">Διεύθυνση τιμολόγησης</translation>
 <translation id="228704530595896923">Λίστα επιλογών κοινοποίησης</translation>
+<translation id="2297822946037605517">Κοινή χρήση αυτής της σελίδας</translation>
 <translation id="230115972905494466">Δεν βρέθηκαν συμβατές συσκευές</translation>
 <translation id="2318045970523081853">Πατήστε για πραγματοποίηση κλήσης</translation>
 <translation id="2321086116217818302">Προετοιμασία κωδικών πρόσβασης…</translation>
@@ -306,7 +307,6 @@
 <translation id="2656405586795711023">Εφαρμογές ιστού</translation>
 <translation id="2669454659051515572">Όλοι όσοι χρησιμοποιούν αυτήν τη συσκευή θα μπορούν να βλέπουν τα αρχεία που έχετε κατεβάσει</translation>
 <translation id="2702516483241149200">Νέο: Κοινοποιήστε έναν σύνδεσμο που κάνει κύλιση σε αυτό το κείμενο</translation>
-<translation id="2707726405694321444">Ανανέωση σελίδας</translation>
 <translation id="271033894570825754">Νέο</translation>
 <translation id="2711073837061989559">Δοκιμές</translation>
 <translation id="2718352093833049315">Μόνο σε Wi-Fi</translation>
@@ -708,6 +708,7 @@
 
 Για να αλλάξετε αυτήν τη ρύθμιση, <ph name="BEGIN_LINK" />επαναφέρετε τον συγχρονισμό<ph name="END_LINK" /></translation>
 <translation id="4807098396393229769">Όνομα στην κάρτα</translation>
+<translation id="480990236307250886">Άνοιγμα της αρχικής σελίδας</translation>
 <translation id="481574578487123132">Συνδεδεμένες συσκευές</translation>
 <translation id="4826163340425232009">Φύλλο κάτω μέρους για σύνδεση.</translation>
 <translation id="4834007576107377210">Ανατρέξτε στις οδηγίες της μηχανής αναζήτησης για τη διαγραφή του ιστορικού αναζήτησης, εάν υπάρχουν.</translation>
@@ -832,7 +833,6 @@
 <translation id="5444999712122199445">Επιστροφή στον ιστότοπο</translation>
 <translation id="544776284582297024">Για να ανοίξετε καρτέλες και να επισκεφτείτε διαφορετικές σελίδες ταυτόχρονα, πατήστε το κουμπί Άνοιγμα καρτελών.</translation>
 <translation id="5454166040603940656">με <ph name="PROVIDER" /></translation>
-<translation id="5456381639095306749">Λήψη σελίδας</translation>
 <translation id="5458366071038729214">Εδώ θα βρίσκετε τους ιστοτόπους που ακολουθείτε.</translation>
 <translation id="5468068603361015296">Θέλετε να κατεβάσετε ούτως ή άλλως το αρχείο <ph name="FILE_NAME" />;</translation>
 <translation id="548278423535722844">Άνοιγμα σε εφαρμογή χαρτών</translation>
@@ -1173,6 +1173,7 @@
 <translation id="7196215469483532480">Η επεξήγηση Οδηγού απορρήτου άνοιξε σε πλήρες ύψος.</translation>
 <translation id="7207760545532569765">Επαναφέρετε <ph name="TAB_COUNT" /> καρτέλες ως νέες καρτέλες στο παρασκήνιο.</translation>
 <translation id="7217781228893594884">Οι καρτέλες ανώνυμης περιήγησης θα κλειδώνουν όταν αποχωρείτε από το Chrome</translation>
+<translation id="7221869452894271364">Επαναφόρτωση αυτής της σελίδας</translation>
 <translation id="7222235798733126207">Περιορισμένη κοινοποίηση μεταξύ ιστοτόπων</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 λήψη σε εκκρεμότητα}other{# λήψεις σε εκκρεμότητα}}</translation>
 <translation id="72415438529550637">Η πρόταση κωδικού πρόσβασης έκλεισε.</translation>
@@ -1576,7 +1577,6 @@
 <translation id="926205370408745186">Κατάργηση της δραστηριότητάς σας στο Chrome από το Digital Wellbeing</translation>
 <translation id="927968626442779827">Χρησιμοποιήστε τη λειτουργία Lite στο Google Chrome.</translation>
 <translation id="928550791203542716">Παρακολούθηση <ph name="SITE_NAME" /></translation>
-<translation id="932327136139879170">Αρχική σελίδα</translation>
 <translation id="938850635132480979">Σφάλμα: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">Εισαγωγή φράσης πρόσβασης</translation>
 <translation id="952301137339791907">Το φύλλο κάτω μέρους των insight σελίδας είναι ανοιχτό</translation>

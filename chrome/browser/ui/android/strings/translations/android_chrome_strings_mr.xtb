@@ -229,6 +229,7 @@
 <translation id="2278052315791335171">हा पासवर्ड हटवल्यामुळे तुमचे <ph name="SITE" /> वरील खाते हटवले जाणार नाही</translation>
 <translation id="2286841657746966508">बिलिंग पत्ता</translation>
 <translation id="228704530595896923">शेअरिंग पर्यायांची सूची.</translation>
+<translation id="2297822946037605517">हे पेज शेअर करा</translation>
 <translation id="230115972905494466">कोणतीही कंपॅटिबल डिव्हाइस आढळली नाहीत</translation>
 <translation id="2318045970523081853">कॉल करण्यासाठी टॅप करा</translation>
 <translation id="2321086116217818302">पासवर्ड तयार करत आहे…</translation>
@@ -306,7 +307,6 @@
 <translation id="2656405586795711023">वेब अ‍ॅप्स</translation>
 <translation id="2669454659051515572">हे डिव्हाइस वापरणारे कोणीही डाउनलोड केलेल्या फाइल पाहू शकते</translation>
 <translation id="2702516483241149200">नवीन: या मजकुरापर्यंत स्क्रोल करणारी लिंक शेअर करा</translation>
-<translation id="2707726405694321444">पेज रिफ्रेश करा</translation>
 <translation id="271033894570825754">नवीन</translation>
 <translation id="2711073837061989559">चाचण्या</translation>
 <translation id="2718352093833049315">केवळ वाय-फाय वर</translation>
@@ -708,6 +708,7 @@
 
 हे सेटिंग बदलण्यासाठी, <ph name="BEGIN_LINK" />सिंक रीसेट करा<ph name="END_LINK" /></translation>
 <translation id="4807098396393229769">कार्डवरील नाव</translation>
+<translation id="480990236307250886">होम पेज उघडा</translation>
 <translation id="481574578487123132">लिंक केलेली डिव्हाइस</translation>
 <translation id="4826163340425232009">तळाशी असलेल्या शीटमध्ये साइन इन करा.</translation>
 <translation id="4834007576107377210">लागू असल्यास, तुमचा शोध इतिहास हटवण्यासाठी, तुमच्या शोध इंजीनच्या सूचना पहा</translation>
@@ -832,7 +833,6 @@
 <translation id="5444999712122199445">साइटवर परत जा</translation>
 <translation id="544776284582297024">टॅब उघडण्यासाठी आणि एकाच वेळी वेगवेगळ्या पेजना भेट देण्यासाठी, टॅब उघडा बटणावर टॅप करा</translation>
 <translation id="5454166040603940656"><ph name="PROVIDER" /> सह</translation>
-<translation id="5456381639095306749">पेज डाउनलोड करा</translation>
 <translation id="5458366071038729214">तुम्ही फॉलो करत असलेल्या साइट तुम्हाला येथे दिसतील</translation>
 <translation id="5468068603361015296">तुम्हाला तरीही <ph name="FILE_NAME" /> डाउनलोड करायची आहे का?</translation>
 <translation id="548278423535722844">नकाशे ॲपमध्ये उघडा</translation>
@@ -1173,6 +1173,7 @@
 <translation id="7196215469483532480">गोपनीयता मार्गदर्शक स्पष्टीकरण पूर्ण उंचीवर उघडले आहे</translation>
 <translation id="7207760545532569765">नवीन बॅकग्राउंड टॅब गट म्हणून <ph name="TAB_COUNT" /> टॅब रिस्टोअर करा.</translation>
 <translation id="7217781228893594884">तुम्ही Chrome मधून बाहेर पडता, तेव्हा गुप्त टॅब लॉक केले जातील</translation>
+<translation id="7221869452894271364">हे पेज रीलोड करा</translation>
 <translation id="7222235798733126207">साइटदरम्यान मर्यादित शेअरिंग</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{एक डाउनलोड बाकी आहे}other{# डाउनलोड बाकी आहेत}}</translation>
 <translation id="72415438529550637">पासवर्डसंबंधित सूचना बंद आहे.</translation>
@@ -1576,7 +1577,6 @@
 <translation id="926205370408745186">Digital wellbeing वरून तुमची Chrome ॲक्टिव्हिटी काढून टाका</translation>
 <translation id="927968626442779827">Google Chrome वर लाइट मोड वापरा</translation>
 <translation id="928550791203542716"><ph name="SITE_NAME" /> ला फॉलो करत आहे</translation>
-<translation id="932327136139879170">होम</translation>
 <translation id="938850635132480979">एरर: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">सांकेतिक पासफ्रेझ एंटर करा</translation>
 <translation id="952301137339791907">तळाशी असलेली पेजच्या इनसाइटची शीट सुरू केली आहे</translation>

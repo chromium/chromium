@@ -4127,7 +4127,6 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="4361142739114356624">Çelësi privat për këtë "Certifikatë të klientit" mungon ose është i pavlefshëm</translation>
 <translation id="4361745360460842907">Hape si skedë</translation>
 <translation id="4362675504017386626"><ph name="ACCOUNT_EMAIL" /> është llogaria e parazgjedhur në pajisjen tënde <ph name="DEVICE_TYPE" /></translation>
-<translation id="4363215264289239958">Aplikacionet e Bruschetta</translation>
 <translation id="4363262124589131906">Skedarët e rinj te "Disku im" nuk do të sinkronizohen më automatikisht në këtë Chromebook</translation>
 <translation id="4363771538994847871">Nuk u gjetën pajisje për të transmetuar me Cast. Ke nevojë për ndihmë?</translation>
 <translation id="4364327530094270451">Pjepër</translation>
@@ -4714,6 +4713,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="4849517651082200438">Mos e instalo</translation>
 <translation id="485053257961878904">Sinkronizimi i njoftimeve nuk mund të konfigurohej</translation>
 <translation id="4850548109381269495">Kontrollo lidhjen e internetit dhe aktivizo Bluetooth-in në të dyja pajisjet. Më pas provo përsëri.</translation>
+<translation id="4850669014075537160">Lëvizja</translation>
 <translation id="4850886885716139402">Pamja</translation>
 <translation id="485088796993065002">Sajtet mund të luajnë tinguj për të siguruar audion për muzikën, videot dhe media të tjera</translation>
 <translation id="4852916668365817106">Ngjyra e kursorit të miut</translation>

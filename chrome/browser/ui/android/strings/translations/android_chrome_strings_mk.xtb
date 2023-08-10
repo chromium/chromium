@@ -229,6 +229,7 @@
 <translation id="2278052315791335171">Со бришењето на лозинкава нема да се избрише вашата сметка на <ph name="SITE" /></translation>
 <translation id="2286841657746966508">Адреса за наплата</translation>
 <translation id="228704530595896923">Список со опции за споделување.</translation>
+<translation id="2297822946037605517">Споделете ја страницава</translation>
 <translation id="230115972905494466">Не се најдени компатибилни уреди</translation>
 <translation id="2318045970523081853">Допрете за да остварите повик</translation>
 <translation id="2321086116217818302">Се подготвуваат лозинките…</translation>
@@ -306,7 +307,6 @@
 <translation id="2656405586795711023">Веб-апликации</translation>
 <translation id="2669454659051515572">Сите кои го користат уредов може да ги видат преземените датотеки</translation>
 <translation id="2702516483241149200">Ново: споделете линк што ќе ве одведе до текстов со лизгање</translation>
-<translation id="2707726405694321444">Освежи ја страницата</translation>
 <translation id="271033894570825754">Ново</translation>
 <translation id="2711073837061989559">Пробни периоди</translation>
 <translation id="2718352093833049315">Само преку Wi-Fi</translation>
@@ -708,6 +708,7 @@
 
 За да ја промените поставкава, <ph name="BEGIN_LINK" />ресетирајте ја синхронизацијата<ph name="END_LINK" /></translation>
 <translation id="4807098396393229769">Име на картичка</translation>
+<translation id="480990236307250886">Отвори ја почетната страница</translation>
 <translation id="481574578487123132">Поврзани уреди</translation>
 <translation id="4826163340425232009">Долен лист за најавување.</translation>
 <translation id="4834007576107377210">Погледнете го упатството на пребарувачот за бришење на историјата на пребарување доколку е применливо</translation>
@@ -832,7 +833,6 @@
 <translation id="5444999712122199445">Вратете се на сајтот</translation>
 <translation id="544776284582297024">За да отворате картички и да посетувате различни страници во исто време, допрете го копчето за отворање картички</translation>
 <translation id="5454166040603940656">со <ph name="PROVIDER" /></translation>
-<translation id="5456381639095306749">Преземете ја страницата</translation>
 <translation id="5458366071038729214">Сајтовите што ги следите ќе ги најдете тука</translation>
 <translation id="5468068603361015296">Дали сепак сакате да ја преземете <ph name="FILE_NAME" />?</translation>
 <translation id="548278423535722844">Отвори во апликацијата „Карти“</translation>
@@ -1173,6 +1173,7 @@
 <translation id="7196215469483532480">Објаснувањето за водичот за приватност е отворено на цел екран</translation>
 <translation id="7207760545532569765">Врати <ph name="TAB_COUNT" /> картички како нова заднинска група картички.</translation>
 <translation id="7217781228893594884">Картичките „Инкогнито“ ќе се заклучат кога ќе излезете од Chrome</translation>
+<translation id="7221869452894271364">Пак вчитај страница</translation>
 <translation id="7222235798733126207">Ограничено споделување меѓу сајтовите</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 преземање чека на ред}one{# преземање чека на ред}other{# преземања чекаат на ред}}</translation>
 <translation id="72415438529550637">Предлогот за лозинка е затворен.</translation>
@@ -1576,7 +1577,6 @@
 <translation id="926205370408745186">Отстранете ја вашата активност на Chrome од „Дигитална благосостојба“</translation>
 <translation id="927968626442779827">Користете „Лесен режим“ на Google Chrome</translation>
 <translation id="928550791203542716">Се следи <ph name="SITE_NAME" /></translation>
-<translation id="932327136139879170">Дома</translation>
 <translation id="938850635132480979">Грешка: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">Внеси пристапна фраза</translation>
 <translation id="952301137339791907">Долниот лист со увиди за страницата е отворен</translation>

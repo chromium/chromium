@@ -229,6 +229,7 @@
 <translation id="2278052315791335171">Якщо видалити цей пароль, ваш обліковий запис на сайті <ph name="SITE" /> залишиться</translation>
 <translation id="2286841657746966508">Розрахункова адреса</translation>
 <translation id="228704530595896923">Список параметрів спільного доступу.</translation>
+<translation id="2297822946037605517">Поділитися цією сторінкою</translation>
 <translation id="230115972905494466">Сумісних пристроїв не знайдено</translation>
 <translation id="2318045970523081853">Натисніть, щоб зателефонувати</translation>
 <translation id="2321086116217818302">Готуються паролі…</translation>
@@ -306,7 +307,6 @@
 <translation id="2656405586795711023">Веб-додатки</translation>
 <translation id="2669454659051515572">Усі користувачі цього пристрою можуть бачити завантажені файли</translation>
 <translation id="2702516483241149200">Новинка! Діліться посиланням, яке прокручує сторінку до цього тексту</translation>
-<translation id="2707726405694321444">Оновити сторінку</translation>
 <translation id="271033894570825754">Новий</translation>
 <translation id="2711073837061989559">Пробні версії функцій</translation>
 <translation id="2718352093833049315">Лише у Wi-Fi</translation>
@@ -708,6 +708,7 @@
 
 Щоб змінити це налаштування, <ph name="BEGIN_LINK" />скиньте параметри синхронізації<ph name="END_LINK" /></translation>
 <translation id="4807098396393229769">Ім'я на картці</translation>
+<translation id="480990236307250886">Перейти на головну сторінку</translation>
 <translation id="481574578487123132">Зв’язані пристрої</translation>
 <translation id="4826163340425232009">Нижній екран для входу.</translation>
 <translation id="4834007576107377210">Перегляньте вказівки пошукової системи щодо того, як видалити історію пошуку (якщо вона є)</translation>
@@ -832,7 +833,6 @@
 <translation id="5444999712122199445">Повернутися на сайт</translation>
 <translation id="544776284582297024">Щоб відкривати різні вкладки й одночасно переглядати кілька сторінок, натисніть кнопку відкритих вкладок</translation>
 <translation id="5454166040603940656">за допомогою <ph name="PROVIDER" /></translation>
-<translation id="5456381639095306749">Завантажити сторінку</translation>
 <translation id="5458366071038729214">Тут відображатимуться сайти, на які ви підпишетеся</translation>
 <translation id="5468068603361015296">Усе одно завантажити файл "<ph name="FILE_NAME" />"?</translation>
 <translation id="548278423535722844">Відкрити в додатку Карти</translation>
@@ -1173,6 +1173,7 @@
 <translation id="7196215469483532480">Пояснення про посібник щодо конфіденційності відкрито на всю висоту</translation>
 <translation id="7207760545532569765">Відновити вкладки (<ph name="TAB_COUNT" />) як нові фонові вкладки.</translation>
 <translation id="7217781228893594884">Анонімні вкладки блокуватимуться після закриття Chrome</translation>
+<translation id="7221869452894271364">Перезавантажити цю сторінку</translation>
 <translation id="7222235798733126207">Обмежений обмін даними між сайтами</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{Очікується 1 завантаження}one{Очікується # завантаження}few{Очікується # завантаження}many{Очікується # завантажень}other{Очікується # завантаження}}</translation>
 <translation id="72415438529550637">Пропозицію пароля закрито.</translation>
@@ -1576,7 +1577,6 @@
 <translation id="926205370408745186">Видалити активність у Chrome із Цифрового добробуту</translation>
 <translation id="927968626442779827">Користуйтеся спрощеним режимом у Google Chrome</translation>
 <translation id="928550791203542716">Ви підписалися на сайт <ph name="SITE_NAME" /></translation>
-<translation id="932327136139879170">Домашня сторінка</translation>
 <translation id="938850635132480979">Помилка: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">Ввести парольну фразу</translation>
 <translation id="952301137339791907">Нижній екран зі статистикою сторінки відкрито</translation>

@@ -229,6 +229,7 @@
 <translation id="2278052315791335171">ଏହି ପାସୱାର୍ଡ ଡିଲିଟ୍ କରିବା ଫଳରେ <ph name="SITE" />ରେ ଥିବା ଆପଣଙ୍କ ଆକାଉଣ୍ଟ ଡିଲିଟ୍ ହେବ ନାହିଁ</translation>
 <translation id="2286841657746966508">ବିଲିଂ ଠିକଣା</translation>
 <translation id="228704530595896923">ସେୟାରିଂ ବିକଳ୍ପଗୁଡ଼ିକର ତାଲିକା।</translation>
+<translation id="2297822946037605517">ଏହି ପୃଷ୍ଠାକୁ ସେୟାର୍ କରନ୍ତୁ</translation>
 <translation id="230115972905494466">କୌଣସି ସୁସଙ୍ଗତ ଡିଭାଇସ୍ ମିଳିଲା ନାହିଁ।</translation>
 <translation id="2318045970523081853">କଲ୍ କରିବାକୁ ଟାପ୍ କରନ୍ତୁ</translation>
 <translation id="2321086116217818302">ପାସ୍‌ୱାର୍ଡଗୁଡ଼ିକ ପ୍ରସ୍ତୁତ ହେଉଛି…</translation>
@@ -306,7 +307,6 @@
 <translation id="2656405586795711023">ୱେବ୍ ଆପଗୁଡ଼ିକ</translation>
 <translation id="2669454659051515572">ଏହି ଡିଭାଇସକୁ ବ୍ୟବହାର କରୁଥିବା ଯେ କୌଣସି ବ୍ୟକ୍ତି ଡାଉନଲୋଡ କରାଯାଇଥିବା ଫାଇଲଗୁଡ଼ିକୁ ଦେଖିପାରିବେ</translation>
 <translation id="2702516483241149200">ନୂଆ: ଏହି ଟେକ୍ସଟକୁ ସ୍କ୍ରୋଲ୍ କରୁଥିବା ଏକ ଲିଙ୍କ୍ ସେୟାର୍ କରନ୍ତୁ</translation>
-<translation id="2707726405694321444">ପୃଷ୍ଠା ରିଫ୍ରେସ୍ କରନ୍ତୁ</translation>
 <translation id="271033894570825754">ନୂଆ</translation>
 <translation id="2711073837061989559">ଟ୍ରାଏଲଗୁଡ଼ିକ</translation>
 <translation id="2718352093833049315">କେବଳ ୱାଇ-ଫାଇରେ</translation>
@@ -707,6 +707,7 @@
 
 ଏହି ସେଟିଂ ପରିବର୍ତ୍ତନ କରିବାକୁ, <ph name="BEGIN_LINK" />ସିଙ୍କ୍‌ ରିସେଟ୍‍ କରନ୍ତୁ<ph name="END_LINK" /></translation>
 <translation id="4807098396393229769">କାର୍ଡରେ ଥିବା ନାମ</translation>
+<translation id="480990236307250886">ମୂଳପୃଷ୍ଠାଟି ଖୋଲନ୍ତୁ</translation>
 <translation id="481574578487123132">ଲିଙ୍କ କରାଯାଇଥିବା ଡିଭାଇସଗୁଡ଼ିକ</translation>
 <translation id="4826163340425232009">ସାଇନ ଇନ ବଟମ ସିଟ।</translation>
 <translation id="4834007576107377210">ଯଦି ଲାଗୁ ହୁଏ, ଆପଣଙ୍କ ସନ୍ଧାନ ଇତିହାସ ଡିଲିଟ୍ କରିବାକୁ ଆପଣଙ୍କ ସନ୍ଧାନ ଇଞ୍ଜିନର ନିର୍ଦ୍ଦେଶଗୁଡ଼ିକୁ ଦେଖନ୍ତୁ</translation>
@@ -831,7 +832,6 @@
 <translation id="5444999712122199445">ସାଇଟକୁ ଫେରନ୍ତୁ</translation>
 <translation id="544776284582297024">ଟାବଗୁଡ଼ିକୁ ଖୋଲିବାକୁ ଏବଂ ଏକା ସମୟରେ ବିଭିନ୍ନ ପୃଷ୍ଠାକୁ ଭିଜିଟ୍ କରିବାକୁ, "ଟାବଗୁଡ଼ିକ ଖୋଲନ୍ତୁ" ବଟନରେ ଟାପ୍ କରନ୍ତୁ</translation>
 <translation id="5454166040603940656"><ph name="PROVIDER" />ଙ୍କ ସହିତ</translation>
-<translation id="5456381639095306749">ପୃଷ୍ଠା ଡାଉନ୍‌ଲୋଡ୍ କରନ୍ତୁ</translation>
 <translation id="5458366071038729214">ଆପଣ ଅନୁସରଣ କରୁଥିବା ସାଇଟଗୁଡ଼ିକୁ ଏଠାରେ ଦେଖିବେ</translation>
 <translation id="5468068603361015296">ଆପଣ ଯେ କୌଣସି ମତେ <ph name="FILE_NAME" />କୁ ଡାଉନଲୋଡ୍ କରିବାକୁ ଚାହାଁନ୍ତି କି?</translation>
 <translation id="548278423535722844">ମ୍ୟାପ୍ସ ଆପ୍‌ରେ ଖୋଲନ୍ତୁ</translation>
@@ -1172,6 +1172,7 @@
 <translation id="7196215469483532480">ଗୋପନୀୟତା ଗାଇଡର ବ୍ୟାଖ୍ୟା ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନରେ ଖୋଲିଛି</translation>
 <translation id="7207760545532569765"><ph name="TAB_COUNT" />ଟି ଟାବକୁ ନୂଆ ପୃଷ୍ଠପଟ ଟାବଗୁଡ଼ିକ ଭାବେ ରିଷ୍ଟୋର କରନ୍ତୁ।</translation>
 <translation id="7217781228893594884">ଆପଣ Chromeରୁ ବାହାରି ଯିବା ସମୟରେ ଇନକଗ୍ନିଟୋ ଟାବଗୁଡ଼ିକ ଲକ ହୋଇଯିବ</translation>
+<translation id="7221869452894271364">ଏହି ପୃଷ୍ଠାଟି ପୁନଃଲୋଡ୍ କରନ୍ତୁ</translation>
 <translation id="7222235798733126207">ସାଇଟଗୁଡ଼ିକ ମଧ୍ୟରେ ସୀମିତ ସେୟାରିଂ</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1ଟି ଡାଉନଲୋଡ୍ ବାକି ଅଛି}other{#ଟି ଡାଉନଲୋଡ୍ ବାକି ଅଛି}}</translation>
 <translation id="72415438529550637">ପାସୱାର୍ଡ ପରାମର୍ଶକୁ ବନ୍ଦ କରାଯାଇଛି।</translation>
@@ -1575,7 +1576,6 @@
 <translation id="926205370408745186">ଡିଜିଟାଲ୍ ୱେଲ୍‍ବିଂରୁ ଆପଣଙ୍କର Chrome କାର୍ଯ୍ୟକଳାପଗୁଡ଼ିକୁ କାଢ଼ନ୍ତୁ</translation>
 <translation id="927968626442779827">Google Chromeରେ ଲାଇଟ୍ ମୋଡ୍ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="928550791203542716"><ph name="SITE_NAME" />କୁ ଅନୁସରଣ କରାଯାଉଛି</translation>
-<translation id="932327136139879170">Home</translation>
 <translation id="938850635132480979">ତ୍ରୁଟି: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">ପାସ୍‌-ଫ୍ରେଜ୍ ଲେଖନ୍ତୁ</translation>
 <translation id="952301137339791907">ପୃଷ୍ଠା ଇନସାଇଟ୍ସ ବଟମ ସିଟ ଖୋଲା ଅଛି</translation>

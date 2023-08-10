@@ -229,6 +229,7 @@
 <translation id="2278052315791335171">ამ პაროლის წაშლის შემთხვევაში თქვენი ანგარიში <ph name="SITE" />-ზე არ წაიშლება</translation>
 <translation id="2286841657746966508">ბილინგის მისამართი</translation>
 <translation id="228704530595896923">გაზიარების ვარიანტების სია.</translation>
+<translation id="2297822946037605517">ამ გვერდის გაზიარება</translation>
 <translation id="230115972905494466">თავსებადი მოწყობილობები ვერ მოიძებნა</translation>
 <translation id="2318045970523081853">შეეხეთ ზარის განსახორციელებლად</translation>
 <translation id="2321086116217818302">მიმდინარეობს პაროლების მომზადება…</translation>
@@ -306,7 +307,6 @@
 <translation id="2656405586795711023">ვებ-აპები</translation>
 <translation id="2669454659051515572">ჩამოტვირთული ფაილების ნახვას შეძლებს ამ მოწყობილობის ნებისმიერი მომხმარებელი</translation>
 <translation id="2702516483241149200">სიახლე: გააზიარეთ ბმული, რომელიც ამ ტექსტზე გადავა</translation>
-<translation id="2707726405694321444">გვერდის განახლება</translation>
 <translation id="271033894570825754">ახალი</translation>
 <translation id="2711073837061989559">ცდები</translation>
 <translation id="2718352093833049315">მხოლოდ Wi-Fi-ით</translation>
@@ -708,6 +708,7 @@
 
 ამ პარამეტრის შესაცვლელად საჭიროა <ph name="BEGIN_LINK" />სინქრონიზაციის გადაყენება<ph name="END_LINK" /></translation>
 <translation id="4807098396393229769">სახელი ბარათზე</translation>
+<translation id="480990236307250886">გახსენით საწყისი გვერდი</translation>
 <translation id="481574578487123132">მიბმული მოწყობილობები</translation>
 <translation id="4826163340425232009">სისტემაში შესვლის ქვედა ფურცელი.</translation>
 <translation id="4834007576107377210">გაეცანით თქვენი საძიებო სისტემის ინსტრუქციას იმის თაობაზე, როგორ წაშალოთ თქვენი ძიების ისტორია, თუ ეს შესაძლებელია</translation>
@@ -832,7 +833,6 @@
 <translation id="5444999712122199445">საიტზე დაბრუნება</translation>
 <translation id="544776284582297024">ჩანართების გასახსნელად და ერთდროულად სხვადასხვა გვერდის მოსანახულებლად შეეხეთ ჩანართების გახსნის ღილაკს</translation>
 <translation id="5454166040603940656"><ph name="PROVIDER" />-ით</translation>
-<translation id="5456381639095306749">გვერდის ჩამოტვირთვა</translation>
 <translation id="5458366071038729214">აქ იპოვით საიტებს, რომლებსაც თვალს ადევნებთ</translation>
 <translation id="5468068603361015296">მაინც გსურთ, ჩამოტვირთოთ <ph name="FILE_NAME" />?</translation>
 <translation id="548278423535722844">რუკების აპში გახსნა</translation>
@@ -1173,6 +1173,7 @@
 <translation id="7196215469483532480">კონფიდენციალურობის სახელმძღვანელოს განმარტება გახსნილია სრულ სიმაღლეზე</translation>
 <translation id="7207760545532569765">ჩანართების (<ph name="TAB_COUNT" />), როგორც ფონური რეჟიმის ჩანართების ახალი ჯგუფის აღდგენა.</translation>
 <translation id="7217781228893594884">ინკოგნიტო ჩანართები ჩაიკეტება, როცა Chrome-იდან გახვალთ</translation>
+<translation id="7221869452894271364">ამ გვერდის ხელახლა ჩატვირთვა</translation>
 <translation id="7222235798733126207">საიტებს შორის შეზღუდული გაზიარება</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 ჩამოტვირთვა მოლოდინის რეჟიმშია}other{# ჩამოტვირთვა მოლოდინის რეჟიმშია}}</translation>
 <translation id="72415438529550637">პაროლის შემოთავაზება დახურულია.</translation>
@@ -1576,7 +1577,6 @@
 <translation id="926205370408745186">ციფრული კომფორტიდან Chrome-ში თქვენი აქტივობის ამოშლა</translation>
 <translation id="927968626442779827">გამოიყენეთ Lite რეჟიმი Google Chrome-ში</translation>
 <translation id="928550791203542716"><ph name="SITE_NAME" /> თვალმიდევნებულია</translation>
-<translation id="932327136139879170">საწყისი გვერდი</translation>
 <translation id="938850635132480979">შეცდომა: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">შეიყვანეთ საიდუმლო ფრაზა</translation>
 <translation id="952301137339791907">გვერდის ანალიზის ქვედა ფურცელი გახსნილია</translation>

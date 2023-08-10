@@ -229,6 +229,7 @@
 <translation id="2278052315791335171">Изтриването на тази парола няма да премахне профила ви за <ph name="SITE" /></translation>
 <translation id="2286841657746966508">Адрес за фактуриране</translation>
 <translation id="228704530595896923">Списък с опции за споделяне.</translation>
+<translation id="2297822946037605517">Споделяне на тази страница</translation>
 <translation id="230115972905494466">Няма намерени съвместими устройства</translation>
 <translation id="2318045970523081853">Докоснете за извършване на обаждане</translation>
 <translation id="2321086116217818302">Паролите се подготвят…</translation>
@@ -306,7 +307,6 @@
 <translation id="2656405586795711023">Уеб приложения</translation>
 <translation id="2669454659051515572">Всеки, който използва това устройство, може да преглежда изтеглените файлове</translation>
 <translation id="2702516483241149200">Ново: споделяне на връзка, която превърта до този текст</translation>
-<translation id="2707726405694321444">Опресняване на страницата</translation>
 <translation id="271033894570825754">Създаване</translation>
 <translation id="2711073837061989559">Експерименти</translation>
 <translation id="2718352093833049315">Само при Wi-Fi</translation>
@@ -708,6 +708,7 @@
 
 За да промените тази настройка, <ph name="BEGIN_LINK" />нулирайте синхронизирането<ph name="END_LINK" /></translation>
 <translation id="4807098396393229769">Име върху картата</translation>
+<translation id="480990236307250886">Отваряне на началната страница</translation>
 <translation id="481574578487123132">Свързани устройства</translation>
 <translation id="4826163340425232009">Долен лист за вход в профила.</translation>
 <translation id="4834007576107377210">Вижте инструкциите на търсещата си машина относно изтриването на историята на търсенията ви (ако е приложимо)</translation>
@@ -832,7 +833,6 @@
 <translation id="5444999712122199445">Назад към сайта</translation>
 <translation id="544776284582297024">За да отваряте раздели и да посещавате различни страници едновременно, докоснете бутона за отворени раздели</translation>
 <translation id="5454166040603940656">с/ъс <ph name="PROVIDER" /></translation>
-<translation id="5456381639095306749">Изтегляне на страницата</translation>
 <translation id="5458366071038729214">Тук ще виждате сайтовете, които следите</translation>
 <translation id="5468068603361015296">Искате ли да изтеглите <ph name="FILE_NAME" /> въпреки това?</translation>
 <translation id="548278423535722844">Отваряне в приложение за карти</translation>
@@ -1173,6 +1173,7 @@
 <translation id="7196215469483532480">Обяснението на ръководството за поверителност е отворено на пълната височина</translation>
 <translation id="7207760545532569765">Възстановяване на <ph name="TAB_COUNT" /> раздела като нови на заден план.</translation>
 <translation id="7217781228893594884">Разделите в режим „инкогнито“ ще бъдат заключени, когато излезете от Chrome</translation>
+<translation id="7221869452894271364">Зарежда повторно тази страница</translation>
 <translation id="7222235798733126207">Ограничено споделяне между сайтовете</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{Предстои 1 изтегляне}other{Предстоят # изтегляния}}</translation>
 <translation id="72415438529550637">Долният лист с предложение за парола е затворен.</translation>
@@ -1576,7 +1577,6 @@
 <translation id="926205370408745186">Премахване на активността ви в Chrome от „Дигитално благополучие“</translation>
 <translation id="927968626442779827">Използване на олекотения режим в Google Chrome</translation>
 <translation id="928550791203542716">Следвате <ph name="SITE_NAME" /></translation>
-<translation id="932327136139879170">Начална страница</translation>
 <translation id="938850635132480979">Грешка: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">Въведете пропуск</translation>
 <translation id="952301137339791907">Долният лист със статистически данни за страницата е отворен</translation>

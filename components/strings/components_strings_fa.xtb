@@ -1070,7 +1070,7 @@
 <translation id="3299098170013242198">‏Windows Hello برای پر کردن گذرواژه‌ها روشن است</translation>
 <translation id="3303176609391916566">۴۲ × ۳۰ اینچ</translation>
 <translation id="3303855915957856445">هیچ نتیجه‌ای برای جستجو یافت نشد</translation>
-<translation id="3304073249511302126">اسکن کردن بلوتوث</translation>
+<translation id="3304073249511302126">اسکن دستگاه‌های بلوتوث</translation>
 <translation id="3304777285002411338">A2x3</translation>
 <translation id="33073482541490531">گذرواژه‌ای که اکنون استفاده کردید در سرقت اطلاعات شبکه پیدا شده است. «مدیر گذرواژه» توصیه می‌کند این گذرواژه را همین‌حالا تغییر دهید.</translation>
 <translation id="3307649904964670439">‏دکمه «سفارشی کردن Chrome»؛ برای سفارشی کردن ظاهر مرورگر، آن را فعال کنید</translation>
@@ -1839,7 +1839,6 @@
 <translation id="4901778704868714008">ذخیره...</translation>
 <translation id="4901952598169637881">کفش‌های غیررسمی</translation>
 <translation id="4905659621780993806">سرپرستْ دستگاهتان را ساعت <ph name="TIME" /> روز <ph name="DATE" /> به‌طور خودکار بازراه‌اندازی خواهد کرد. قبل‌از بازراه‌اندازی دستگاه، موارد باز را ذخیره کنید.</translation>
-<translation id="4907289208610706508">هدف</translation>
 <translation id="4913987521957242411">سوراخ سمت راست بالا</translation>
 <translation id="4917064667437236721">سیلندر تصویرسازی</translation>
 <translation id="4918221908152712722">نصب <ph name="APP_NAME" /> (بارگیری لازم نیست)</translation>
@@ -2680,6 +2679,7 @@
 <translation id="6702919718839027939">ارائه کردن</translation>
 <translation id="6704458454638854812">‏خصوصیت «custom_size» تنظیم شده است، انتظار می‌رود نام آن «custom» باشد.</translation>
 <translation id="6706005862292023715">پرده و تزئینات پنجره</translation>
+<translation id="6706210727756204531">حوزه</translation>
 <translation id="6709133671862442373">اخبار</translation>
 <translation id="6709888928011386878">آلات موسیقی</translation>
 <translation id="6710213216561001401">قبلی</translation>

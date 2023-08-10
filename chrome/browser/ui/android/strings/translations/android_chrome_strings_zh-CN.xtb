@@ -229,6 +229,7 @@
 <translation id="2278052315791335171">删除此密码不会删除您在 <ph name="SITE" /> 上的帐号</translation>
 <translation id="2286841657746966508">帐单邮寄地址</translation>
 <translation id="228704530595896923">分享选项列表。</translation>
+<translation id="2297822946037605517">分享此页</translation>
 <translation id="230115972905494466">未找到任何兼容设备</translation>
 <translation id="2318045970523081853">点按即可拨打电话</translation>
 <translation id="2321086116217818302">正在准备密码…</translation>
@@ -306,7 +307,6 @@
 <translation id="2656405586795711023">Web 应用</translation>
 <translation id="2669454659051515572">任何使用此设备的用户都能看到已下载的文件</translation>
 <translation id="2702516483241149200">新功能：可分享能够定位到此文本的链接</translation>
-<translation id="2707726405694321444">刷新网页</translation>
 <translation id="271033894570825754">新</translation>
 <translation id="2711073837061989559">试用版</translation>
 <translation id="2718352093833049315">仅限使用 Wi-Fi 时</translation>
@@ -708,6 +708,7 @@
 
 要更改此设置，请<ph name="BEGIN_LINK" />重置同步设置<ph name="END_LINK" /></translation>
 <translation id="4807098396393229769">持卡人姓名</translation>
+<translation id="480990236307250886">打开主页</translation>
 <translation id="481574578487123132">已关联的设备</translation>
 <translation id="4826163340425232009">用于进行登录的底部工作表。</translation>
 <translation id="4834007576107377210">查看您所用搜索引擎的说明，了解如何删除您的搜索记录（若适用）</translation>
@@ -832,7 +833,6 @@
 <translation id="5444999712122199445">返回网站</translation>
 <translation id="544776284582297024">若要打开多个标签页并同时访问不同网页，请点按“打开的标签页”按钮</translation>
 <translation id="5454166040603940656">提供方：<ph name="PROVIDER" /></translation>
-<translation id="5456381639095306749">下载网页</translation>
 <translation id="5458366071038729214">您会在此处看到自己已关注的网站</translation>
 <translation id="5468068603361015296">您仍要下载 <ph name="FILE_NAME" /> 吗？</translation>
 <translation id="548278423535722844">在地图应用中打开</translation>
@@ -1173,6 +1173,7 @@
 <translation id="7196215469483532480">隐私保护指南说明已全屏打开</translation>
 <translation id="7207760545532569765">将 <ph name="TAB_COUNT" /> 个标签页恢复为新的背景标签页。</translation>
 <translation id="7217781228893594884">当您退出 Chrome 时，无痕式标签页将被锁定</translation>
+<translation id="7221869452894271364">重新加载此页</translation>
 <translation id="7222235798733126207">受限的网站间共享</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{有 1 项下载尚待处理}other{有 # 项下载尚待处理}}</translation>
 <translation id="72415438529550637">已关闭密码建议。</translation>
@@ -1576,7 +1577,6 @@
 <translation id="926205370408745186">从“数字健康”应用中移除您的 Chrome 活动记录</translation>
 <translation id="927968626442779827">使用 Google Chrome 的精简模式</translation>
 <translation id="928550791203542716">已关注<ph name="SITE_NAME" /></translation>
-<translation id="932327136139879170">首页</translation>
 <translation id="938850635132480979">错误：<ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">请输入密码</translation>
 <translation id="952301137339791907">显示网页数据洞见的底部工作表已打开</translation>

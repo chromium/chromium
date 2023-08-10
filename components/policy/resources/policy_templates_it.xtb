@@ -1212,9 +1212,6 @@ Questo criterio non avrà alcun effetto se il criterio <ph name="DEVICE_SCREENSA
       Se il criterio non viene configurato o se viene impostato su un elenco vuoto, non saranno disponibili modalità di sblocco rapido per i dispositivi gestiti.
 
       Questo criterio è deprecato. Usa il criterio <ph name="QUICK_UNLOCK_MODE_ALLOW_LIST_POLICY_NAME" />.</translation>
-<translation id="2033784678146670379">Se il criterio viene impostato su Attivato, gli utenti possono utilizzare l'hardware sui dispositivi <ph name="PRODUCT_OS_NAME" /> per attestare da remoto la propria identità all'autorità di certificazione della privacy tramite <ph name="ENTERPRISE_PLATFORM_KEYS_API" /> usando la funzione <ph name="CHALLENGE_USER_KEY_FUNCTION" />.
-
-      Se viene impostato su Disattivato o se non viene configurato, le chiamate all'API non vengono eseguite correttamente e viene visualizzato un codice di errore.</translation>
 <translation id="2036522553891755455">Se il criterio viene impostato su Attivato, il rilevamento delle condivisioni (la funzionalità Condivisione file di rete di <ph name="PRODUCT_NAME" />) utilizza il protocollo <ph name="NETBIOS_PROTOCOL" /> per rilevare le condivisioni sulla rete. Se viene impostato su Disattivato, il rilevamento delle condivisioni non utilizza il protocollo per rilevare le condivisioni.
 
       Se non viene configurato, il comportamento predefinito è off per gli utenti gestiti e on per gli altri utenti.</translation>

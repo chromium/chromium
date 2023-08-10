@@ -229,6 +229,7 @@ Kui kustutate oma sirvimisajaloo – kogu ajaloo või konkreetse saidi ajaloo �
 <translation id="2278052315791335171">Selle parooli kustutamisel ei kustutata teie kontot saidil <ph name="SITE" /></translation>
 <translation id="2286841657746966508">Arveldusaadress</translation>
 <translation id="228704530595896923">Jagamisvalikute loend.</translation>
+<translation id="2297822946037605517">Jaga seda lehte</translation>
 <translation id="230115972905494466">Ühilduvaid seadmeid ei leitud</translation>
 <translation id="2318045970523081853">Puudutage helistamiseks</translation>
 <translation id="2321086116217818302">Paroolide ettevalmistamine …</translation>
@@ -306,7 +307,6 @@ Privaatse oleku märgid täiustavad veebis privaatsust ja neid ei saa kasutada t
 <translation id="2656405586795711023">Veebirakendused</translation>
 <translation id="2669454659051515572">Kõik inimesed, kes seda seadet kasutavad, näevad allalaaditud faile</translation>
 <translation id="2702516483241149200">Uus: jagage linki, millega keritakse selle teksti juurde</translation>
-<translation id="2707726405694321444">Lehe värskendamine</translation>
 <translation id="271033894570825754">Uus</translation>
 <translation id="2711073837061989559">Prooviversioonid</translation>
 <translation id="2718352093833049315">Ainult WiFi-ga</translation>
@@ -708,6 +708,7 @@ Veebisaidil <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 
 
 Seade muutmiseks <ph name="BEGIN_LINK" />lähtestage sünkroonimine<ph name="END_LINK" /></translation>
 <translation id="4807098396393229769">Kaardil olev nimi</translation>
+<translation id="480990236307250886">Ava avaleht</translation>
 <translation id="481574578487123132">Lingitud seadmed</translation>
 <translation id="4826163340425232009">Sisselogimise alumine leht.</translation>
 <translation id="4834007576107377210">Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on asjakohane</translation>
@@ -832,7 +833,6 @@ Seade muutmiseks <ph name="BEGIN_LINK" />lähtestage sünkroonimine<ph name="END
 <translation id="5444999712122199445">Tagasi saidile</translation>
 <translation id="544776284582297024">Vahelehtede avamiseks ja eri lehtede samal ajal külastamiseks puudutage avatud vahelehtede nuppu</translation>
 <translation id="5454166040603940656">teenusepakkujaga <ph name="PROVIDER" /></translation>
-<translation id="5456381639095306749">Laadi leht alla</translation>
 <translation id="5458366071038729214">Jälgitavad saidid leiate siit</translation>
 <translation id="5468068603361015296">Kas soovite faili <ph name="FILE_NAME" /> ikkagi alla laadida?</translation>
 <translation id="548278423535722844">Avage kaardirakenduses</translation>
@@ -1173,6 +1173,7 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="7196215469483532480">Privaatsusjuhendi selgitus on avatud täiskõrgusel</translation>
 <translation id="7207760545532569765"><ph name="TAB_COUNT" /> vahelehe taastamine uute taustal olevate vahelehtedena.</translation>
 <translation id="7217781228893594884">Chrome'ist lahkumisel lukustatakse inkognito vahelehed</translation>
+<translation id="7221869452894271364">Laadi see lehekülg uuesti</translation>
 <translation id="7222235798733126207">Piiratud jagamine saitide vahel</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 allalaadimine on ootel}other{# allalaadimist on ootel}}</translation>
 <translation id="72415438529550637">Parooli soovitus on suletud.</translation>
@@ -1576,7 +1577,6 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="926205370408745186">Chrome'i tegevuste eemaldamine teenusest Digitaalne heaolu</translation>
 <translation id="927968626442779827">Kasutage Google Chrome'is lihtsustatud režiimi</translation>
 <translation id="928550791203542716">Jälgitakse saiti <ph name="SITE_NAME" /></translation>
-<translation id="932327136139879170">Kodu</translation>
 <translation id="938850635132480979">Viga: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">Sisesta parool</translation>
 <translation id="952301137339791907">Lehe statistika alumine leht on avatud</translation>

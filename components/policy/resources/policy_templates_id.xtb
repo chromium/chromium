@@ -1229,9 +1229,6 @@ Kebijakan ini tidak akan berpengaruh jika kebijakan <ph name="DEVICE_SCREENSAVER
       Jika kebijakan tidak disetel atau disetel ke daftar kosong, tidak akan ada mode buka kunci cepat yang tersedia bagi perangkat terkelola.
 
       Kebijakan ini tidak digunakan lagi. Sebagai gantinya, gunakan <ph name="QUICK_UNLOCK_MODE_ALLOW_LIST_POLICY_NAME" /></translation>
-<translation id="2033784678146670379">Jika kebijakan disetel ke Aktif, pengguna akan dapat menggunakan hardware di perangkat <ph name="PRODUCT_OS_NAME" /> untuk mengesahkan identitasnya dari jarak jauh ke CA privasi melalui <ph name="ENTERPRISE_PLATFORM_KEYS_API" /> menggunakan <ph name="CHALLENGE_USER_KEY_FUNCTION" />.
-
-      Jika kebijakan disetel ke Nonaktif atau tidak disetel, panggilan ke API akan gagal dan disertai kode error.</translation>
 <translation id="2036522553891755455">Jika kebijakan disetel ke Aktif, penemuan berbagi (fitur Berbagi File Jaringan untuk <ph name="PRODUCT_NAME" />) akan menggunakan <ph name="NETBIOS_PROTOCOL" /> untuk menemukan berbagi di jaringan. Jika kebijakan disetel ke Nonaktif, penemuan berbagi tidak akan menggunakan protokol ini untuk menemukan berbagi.
 
       Jika kebijakan tidak disetel, perilaku default akan dinonaktifkan bagi pengguna terkelola dan aktif bagi pengguna lainnya.</translation>

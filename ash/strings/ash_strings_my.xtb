@@ -352,7 +352,7 @@
 <translation id="2531025035050312891">စက်နှေး</translation>
 <translation id="2531107890083353124">တဘ်ကို ဖိဆွဲနေစဉ် <ph name="KEY_ONE" /> ကို နှိပ်ပါ</translation>
 <translation id="254900897760075745">ရွေးထားသောအကြောင်းအရာကို ကလစ်ဘုတ်သို့ မိတ္တူကူးရန်</translation>
-<translation id="2549711466868162843">အလင်း ပိုကောင်းမွန်စေရန်</translation>
+<translation id="2549711466868162843">မီးရောင်မွမ်းမံခြင်း</translation>
 <translation id="2549985041256363841">စတင်ရိုက်ကူးရန်</translation>
 <translation id="255671100581129685">အများသုံးစက်ရှင်တွင် Google Assistant အသုံးပြု၍ မရပါ။</translation>
 <translation id="256712445991462162">နေရာချထားသည့် မှန်ဘီလူး</translation>
@@ -1367,6 +1367,7 @@
 <translation id="6912901278692845878">အမြန် ကြည့်ရှုရန်</translation>
 <translation id="6919251195245069855">သင့်အဆင့်မြင့်ကတ်ကို ဖတ်၍မရပါ။ ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="6920245099716267363">ဟော့စပေါ့ ဖွင့်/ပိတ်လုပ်သည်။ ဟော့စပေါ့ ဖွင့်ထားပြီး စက် ၁ ခု ချိတ်ဆက်ထားသည်။</translation>
+<translation id="692135145298539227">ဖျက်ရန်</translation>
 <translation id="6931576957638141829">သိမ်းမည့်နေရာ</translation>
 <translation id="6942518653766415536">မှတ်တမ်းတင်သည့် ဖော်မက်မီနူး</translation>
 <translation id="6945221475159498467">ရွေးရန်</translation>
@@ -1678,6 +1679,7 @@
 <translation id="8315514906653279104">ဖွင့်နေသည်...</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> ဝင်းဒိုးကို ရွေးထားသည်</translation>
+<translation id="8349826889576450703">Launcher</translation>
 <translation id="8349964124165471584">ဝင်းဒိုးအသစ်တွင် လင့်ခ်ဖွင့်ရန်</translation>
 <translation id="8351131234907093545">မှတ်စုရေးရန်</translation>
 <translation id="8367948981300340152"><ph name="CAPTURE_MEDIUM" /> ကို သုံးနေသည်။</translation>

@@ -229,6 +229,7 @@
 <translation id="2278052315791335171">ഈ പാസ്‌വേഡ് ഇല്ലാതാക്കുന്നത് <ph name="SITE" /> -ലെ നിങ്ങളുടെ അക്കൗണ്ട് ഇല്ലാതാക്കില്ല</translation>
 <translation id="2286841657746966508">ബില്ലിംഗ് വിലാസം</translation>
 <translation id="228704530595896923">പങ്കിടൽ ഓപ്ഷനുകളുടെ ലിസ്റ്റ്.</translation>
+<translation id="2297822946037605517">ഈ പേജ് പങ്കിടുക</translation>
 <translation id="230115972905494466">അനുയോജ്യമായ ഉപകരണങ്ങളൊന്നും കണ്ടെത്തിയില്ല</translation>
 <translation id="2318045970523081853">കോൾ ചെയ്യാൻ ടാപ്പ് ചെയ്യുക</translation>
 <translation id="2321086116217818302">പാസ്‍വേഡുകൾ തയ്യാറാക്കുന്നു…</translation>
@@ -306,7 +307,6 @@
 <translation id="2656405586795711023">വെബ് ആപ്പുകൾ</translation>
 <translation id="2669454659051515572">ഡൗൺലോഡ് ചെയ്യുന്ന ഫയലുകൾ ഈ ഉപകരണം ഉപയോഗിക്കുന്ന എല്ലാവർക്കും കാണാനാകും</translation>
 <translation id="2702516483241149200">പുതിയത്: ഈ ടെക്സ്റ്റിലേക്ക് സ്ക്രോൾ ചെയ്യുന്ന ഒരു ലിങ്ക് പങ്കിടുക</translation>
-<translation id="2707726405694321444">പേജ് റീഫ്രഷ് ചെയ്യുക</translation>
 <translation id="271033894570825754">പുതിയത്</translation>
 <translation id="2711073837061989559">ട്രയലുകൾ</translation>
 <translation id="2718352093833049315">Wi-Fi യിൽ മാത്രം</translation>
@@ -708,6 +708,7 @@
 
 ഈ ക്രമീകരണം മാറ്റാൻ, <ph name="BEGIN_LINK" />സമന്വയം പുനഃക്രമീകരിക്കുക<ph name="END_LINK" /></translation>
 <translation id="4807098396393229769">കാര്‍‌ഡിലെ നാമം</translation>
+<translation id="480990236307250886">ഹോംപേജ് തുറക്കുക</translation>
 <translation id="481574578487123132">ലിങ്ക് ചെയ്‌ത ഉപകരണങ്ങൾ</translation>
 <translation id="4826163340425232009">സൈൻ ഇൻ ചെയ്യാനുള്ള ബോട്ടം ഷീറ്റ്.</translation>
 <translation id="4834007576107377210">ബാധകമെങ്കിൽ, നിങ്ങളുടെ തിരയൽ ചരിത്രം ഇല്ലാതാക്കാനുള്ള തിരയൽ യന്ത്രത്തിന്റെ നിർദ്ദേശങ്ങൾ കാണുക</translation>
@@ -832,7 +833,6 @@
 <translation id="5444999712122199445">സൈറ്റിലേക്ക് മടങ്ങുക</translation>
 <translation id="544776284582297024">ടാബുകൾ തുറക്കാനും ഒരേ സമയം വ്യത്യസ്‌ത പേജുകൾ സന്ദർശിക്കാനും 'തുറന്നിരിക്കുന്ന ടാബുകൾ' ബട്ടൺ ടാപ്പ് ചെയ്യുക</translation>
 <translation id="5454166040603940656"><ph name="PROVIDER" /> എന്നതിനൊപ്പം</translation>
-<translation id="5456381639095306749">പേജ് ഡൗൺലോഡ് ചെയ്യുക</translation>
 <translation id="5458366071038729214">നിങ്ങൾ പിന്തുടരുന്ന സൈറ്റുകൾ ഇവിടെ കാണാം</translation>
 <translation id="5468068603361015296">നിങ്ങൾക്ക് എന്തായാലും <ph name="FILE_NAME" /> ഡൗൺലോഡ് ചെയ്യണോ?</translation>
 <translation id="548278423535722844">മാപ്‌സ് ആപ്പിൽ തുറക്കുക</translation>
@@ -1173,6 +1173,7 @@
 <translation id="7196215469483532480">സ്വകാര്യതാ ഗൈഡിന്റെ വിശദീകരണം മുഴുവൻ ഉയരത്തിൽ തുറന്നു</translation>
 <translation id="7207760545532569765">പുതിയ പശ്ചാത്തല ടാബുകളായി <ph name="TAB_COUNT" /> ടാബുകൾ പുനഃസ്ഥാപിക്കുക.</translation>
 <translation id="7217781228893594884">നിങ്ങൾ Chrome-ൽ നിന്ന് പുറത്തുകടക്കുമ്പോൾ അദൃശ്യ ടാബുകൾ ലോക്ക് ചെയ്യും</translation>
+<translation id="7221869452894271364">ഈ പേജ് വീണ്ടും ലോഡ് ചെയ്യുക</translation>
 <translation id="7222235798733126207">സൈറ്റുകൾക്കിടയിൽ പരിമിതമായ പങ്കിടൽ</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{ഒരു ഡൗൺലോഡ് തീർച്ചപ്പെടുത്തിയിട്ടില്ല}other{# ഡൗൺലോഡുകൾ തീർച്ചപ്പെടുത്തിയിട്ടില്ല}}</translation>
 <translation id="72415438529550637">പാസവേഡ് നിർദ്ദേശം അടച്ചു.</translation>
@@ -1576,7 +1577,6 @@
 <translation id="926205370408745186">ഡിജിറ്റൽ ആരോഗ്യത്തിൽ നിന്ന് നിങ്ങളുടെ Chrome ആക്റ്റിവിറ്റി നീക്കം ചെയ്യുക</translation>
 <translation id="927968626442779827">Google Chrome-ൽ ലൈറ്റ് മോഡ് ഉപയോഗിക്കൂ</translation>
 <translation id="928550791203542716"><ph name="SITE_NAME" /> പിന്തുടരുന്നു</translation>
-<translation id="932327136139879170">ഹോം</translation>
 <translation id="938850635132480979">പിശക്: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">പാസ്ഫ്രെയ്‍സ് നല്‍കുക</translation>
 <translation id="952301137339791907">പേജ് ഉൾക്കാഴ്‌ചകളുടെ ബോട്ടം ഷീറ്റ് തുറന്നു</translation>

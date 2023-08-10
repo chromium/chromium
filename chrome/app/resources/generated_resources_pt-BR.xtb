@@ -4145,7 +4145,6 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="4361142739114356624">A chave particular desse certificado do cliente está ausente ou é inválida</translation>
 <translation id="4361745360460842907">Abrir como guia</translation>
 <translation id="4362675504017386626"><ph name="ACCOUNT_EMAIL" /> é a conta padrão do dispositivo <ph name="DEVICE_TYPE" /></translation>
-<translation id="4363215264289239958">Apps da Bruschetta</translation>
 <translation id="4363262124589131906">Os novos arquivos da seção Meu Drive deixarão de ser sincronizados automaticamente com este Chromebook</translation>
 <translation id="4363771538994847871">Nenhum destino do Google Cast encontrado. Precisa de ajuda?</translation>
 <translation id="4364327530094270451">Melão</translation>
@@ -4733,6 +4732,7 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="4849517651082200438">Não instalar</translation>
 <translation id="485053257961878904">Não foi possível configurar a sincronização de notificações</translation>
 <translation id="4850548109381269495">Nos dois dispositivos, verifique sua conexão com a Internet e ative o Bluetooth. Em seguida, tente novamente.</translation>
+<translation id="4850669014075537160">Rolagem</translation>
 <translation id="4850886885716139402">Ver</translation>
 <translation id="485088796993065002">Os sites podem tocar sons para oferecer áudio de músicas, vídeos e outras mídias</translation>
 <translation id="4852916668365817106">Cor do mouse</translation>

@@ -352,7 +352,7 @@
 <translation id="2531025035050312891">デバイスの動作が遅い</translation>
 <translation id="2531107890083353124">タブをドラッグしながら、<ph name="KEY_ONE" /> キーを押す</translation>
 <translation id="254900897760075745">選択した内容をクリップボードにコピーする</translation>
-<translation id="2549711466868162843">明るさを調整</translation>
+<translation id="2549711466868162843">明るさ補正</translation>
 <translation id="2549985041256363841">撮影を開始</translation>
 <translation id="255671100581129685">Google アシスタントは、公開セッションではご利用いただけません。</translation>
 <translation id="256712445991462162">ドッキング拡大鏡</translation>
@@ -1367,6 +1367,7 @@
 <translation id="6912901278692845878">クイックツアー</translation>
 <translation id="6919251195245069855">スマートカードを認識できませんでした。もう一度お試しください。</translation>
 <translation id="6920245099716267363">アクセス ポイントを切り替えます。アクセス ポイントはオンです。1 台のデバイスが接続されています。</translation>
+<translation id="692135145298539227">削除</translation>
 <translation id="6931576957638141829">保存先</translation>
 <translation id="6942518653766415536">録画形式メニュー</translation>
 <translation id="6945221475159498467">選択</translation>
@@ -1679,6 +1680,7 @@
 <translation id="8315514906653279104">オンにしています...</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> ウィンドウが選択されています</translation>
+<translation id="8349826889576450703">ランチャー</translation>
 <translation id="8349964124165471584">新しいウィンドウでリンクを開く</translation>
 <translation id="8351131234907093545">メモを作成</translation>
 <translation id="8367948981300340152"><ph name="CAPTURE_MEDIUM" /> を使用中です。</translation>

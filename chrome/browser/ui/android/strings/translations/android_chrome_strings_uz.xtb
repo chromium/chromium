@@ -229,6 +229,7 @@ Barcha yoki ayrim saytlar uchun — ochilgan sahifalar tarixi oʻchirilganida �
 <translation id="2278052315791335171">Bu parol olib tashlangani bilan <ph name="SITE" /> hisobingiz oʻchib ketmaydi</translation>
 <translation id="2286841657746966508">To‘lov manzili</translation>
 <translation id="228704530595896923">Ruxsat parametrlari roʻyxati.</translation>
+<translation id="2297822946037605517">Bu sahifani ulashish</translation>
 <translation id="230115972905494466">Mos qurilmalar topilmadi</translation>
 <translation id="2318045970523081853">Chaqirish uchun bosing</translation>
 <translation id="2321086116217818302">Parollar tayyorlanmoqda…</translation>
@@ -306,7 +307,6 @@ Ishonch tokenlari Internetdagi maxfiylikni oshiradi va shaxsiy maʼlumotlaringiz
 <translation id="2656405586795711023">Veb-ilovalar</translation>
 <translation id="2669454659051515572">Bu qurilmaning barcha foydalanuvchilar yuklab olingan fayllarni koʻra oladi</translation>
 <translation id="2702516483241149200">Yangi: bu matnga varaqlaydigan havolani ulashing</translation>
-<translation id="2707726405694321444">Sahifani yangilash</translation>
 <translation id="271033894570825754">Yangi</translation>
 <translation id="2711073837061989559">Sinovlar</translation>
 <translation id="2718352093833049315">Faqat Wi-Fi orqali</translation>
@@ -708,6 +708,7 @@ Google hisobingiz orqali amalga oshirgan qidiruvlaringiz, brauzer tarixi va bosh
 
 Bu sozlamani almashtirish uchun <ph name="BEGIN_LINK" />sinxronizatsiyani tiklang<ph name="END_LINK" /></translation>
 <translation id="4807098396393229769">Karta egasining ismi</translation>
+<translation id="480990236307250886">Bosh sahifani ochish</translation>
 <translation id="481574578487123132">Ulangan qurilmalar</translation>
 <translation id="4826163340425232009">Quyi ekrandagi kirish oynasi.</translation>
 <translation id="4834007576107377210">Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi qidiruv tizimi darsligini ochish</translation>
@@ -832,7 +833,6 @@ Bu sozlamani almashtirish uchun <ph name="BEGIN_LINK" />sinxronizatsiyani tiklan
 <translation id="5444999712122199445">Saytga qaytish</translation>
 <translation id="544776284582297024">Bir vaqtda varaqlar ochish va turli sahifalarga tashrif buyurish uchun varaqlarni ochish tugmasini bosing</translation>
 <translation id="5454166040603940656"><ph name="PROVIDER" /> yordamida</translation>
-<translation id="5456381639095306749">Sahifani yuklab olish</translation>
 <translation id="5458366071038729214">Kuzatuvdagi saytlaringiz shu yerda chiqadi</translation>
 <translation id="5468068603361015296"><ph name="FILE_NAME" /> fayli baribir yuklab olinsinmi?</translation>
 <translation id="548278423535722844">Xaritalar ilovasida ochish</translation>
@@ -1173,6 +1173,7 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="7196215469483532480">Maxfiylik qoʻllanmasi bildirgisi toʻliq hajmda ochildi</translation>
 <translation id="7207760545532569765"><ph name="TAB_COUNT" /> ta varaqni fondagi varaqlar sifatida tiklash.</translation>
 <translation id="7217781228893594884">Chrome brauzeridan chiqib ketganingizda Inkognito varaqlar qulflanadi</translation>
+<translation id="7221869452894271364">Bu sahifani yangilash</translation>
 <translation id="7222235798733126207">Saytlararo axborot ulashuvi cheklovi</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 ta fayl yuklab olinishi kutilmoqda...}other{# ta fayl yuklab olinishi kutilmoqda...}}</translation>
 <translation id="72415438529550637">Parol taklifi yopildi.</translation>
@@ -1576,7 +1577,6 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="926205370408745186">Chrome amallarini Raqamli qulaylikdan olib tashlash</translation>
 <translation id="927968626442779827">Google Chrome brauzerida Lite rejimidan foydalanish</translation>
 <translation id="928550791203542716"><ph name="SITE_NAME" /> endi kuzatuvingizda</translation>
-<translation id="932327136139879170">Bosh sahifa</translation>
 <translation id="938850635132480979">Xato: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">Kodli iborani kiriting</translation>
 <translation id="952301137339791907">Quyi ekranda sahifa statistikasi ochildi</translation>

@@ -229,6 +229,7 @@ Kada izbrišete istoriju pregledanja – svu ili za određeni sajt – brišete 
 <translation id="2278052315791335171">Brisanjem ove lozinke nećete izbrisati nalog na <ph name="SITE" /></translation>
 <translation id="2286841657746966508">Adresa za naplatu</translation>
 <translation id="228704530595896923">Lista opcija za deljenje.</translation>
+<translation id="2297822946037605517">Deli ovu stranicu</translation>
 <translation id="230115972905494466">Nije pronađen nijedan kompatibilan uređaj</translation>
 <translation id="2318045970523081853">Dodirnite da biste uputili poziv</translation>
 <translation id="2321086116217818302">Pripremaju se lozinke...</translation>
@@ -306,7 +307,6 @@ Privatni tokeni za stanje poboljšavaju privatnost na vebu i ne mogu da se koris
 <translation id="2656405586795711023">Veb-aplikacije</translation>
 <translation id="2669454659051515572">Svako ko koristi ovaj uređaj može da vidi preuzete fajlove</translation>
 <translation id="2702516483241149200">Novo: Delite link koji skroluje do ovog teksta</translation>
-<translation id="2707726405694321444">Osveži stranicu</translation>
 <translation id="271033894570825754">Novo</translation>
 <translation id="2711073837061989559">Probe</translation>
 <translation id="2718352093833049315">Samo na WiFi-ju</translation>
@@ -708,6 +708,7 @@ Google nalog možda ima druge oblike istorije pregledanja, poput pretraga i akti
 
 Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />resetujte sinhronizaciju<ph name="END_LINK" /></translation>
 <translation id="4807098396393229769">Ime i prezime na kartici</translation>
+<translation id="480990236307250886">Otvori početnu stranicu</translation>
 <translation id="481574578487123132">Povezani uređaji</translation>
 <translation id="4826163340425232009">Donja tabela za prijavljivanje.</translation>
 <translation id="4834007576107377210">Pogledajte uputstva pretraživača za brisanje istorije pretrage ako je to primenjivo</translation>
@@ -832,7 +833,6 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />resetujte sinhroniz
 <translation id="5444999712122199445">Nazad na sajt</translation>
 <translation id="544776284582297024">Da biste otvarali kartice i istovremeno posećivali različite stranice, dodirnite dugme Otvori kartice</translation>
 <translation id="5454166040603940656">sa dobavljačem <ph name="PROVIDER" /></translation>
-<translation id="5456381639095306749">Preuzmi stranicu</translation>
 <translation id="5458366071038729214">Ovde ćete pronaći sajtove koje pratite</translation>
 <translation id="5468068603361015296">Da li ipak želite da preuzmete fajl <ph name="FILE_NAME" />?</translation>
 <translation id="548278423535722844">Otvorite u aplikaciji za mape</translation>
@@ -1173,6 +1173,7 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="7196215469483532480">Objašnjenje vodiča za privatnost otvoreno je na celom ekranu</translation>
 <translation id="7207760545532569765">Vratite kartice (<ph name="TAB_COUNT" />) kao nove kartice u pozadini.</translation>
 <translation id="7217781228893594884">Kartice bez arhiviranja će se zaključati kada napustite Chrome</translation>
+<translation id="7221869452894271364">Ponovo učitajte ovu stranicu</translation>
 <translation id="7222235798733126207">Ograničeno deljenje između sajtova</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 preuzimanje na čekanju}one{# preuzimanje na čekanju}few{# preuzimanja na čekanju}other{# preuzimanja na čekanju}}</translation>
 <translation id="72415438529550637">Predlog lozinke je zatvoren.</translation>
@@ -1576,7 +1577,6 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="926205370408745186">Uklonite Chrome aktivnosti iz Digitalnog blagostanja</translation>
 <translation id="927968626442779827">Koristite Lite režim u Google Chrome-u</translation>
 <translation id="928550791203542716">Pratite <ph name="SITE_NAME" /></translation>
-<translation id="932327136139879170">Početna</translation>
 <translation id="938850635132480979">Greška: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">Unesite pristupnu frazu</translation>
 <translation id="952301137339791907">Donja tabela sa uvidima u stranicu je otvorena</translation>

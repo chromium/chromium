@@ -229,6 +229,7 @@ Belirli bir siteye ait veya tüm tarama geçmişinizi sildiğinizde bununla ili�
 <translation id="2278052315791335171">Bu şifre silindiğinde <ph name="SITE" /> üzerindeki hesabınız silinmez</translation>
 <translation id="2286841657746966508">Fatura adresi</translation>
 <translation id="228704530595896923">Paylaşım seçenekleri listesi.</translation>
+<translation id="2297822946037605517">Bu sayfayı paylaş</translation>
 <translation id="230115972905494466">Uyumlu cihaz bulunamadı</translation>
 <translation id="2318045970523081853">Aramak için dokunun</translation>
 <translation id="2321086116217818302">Şifreler hazırlanıyor…</translation>
@@ -306,7 +307,6 @@ Gizlilik jetonları, web'deki gizliliği artırırken kim olduğunuzu bulmak iç
 <translation id="2656405586795711023">Web uygulamaları</translation>
 <translation id="2669454659051515572">Bu cihazı kullanan herkes indirilen dosyaları görebilir</translation>
 <translation id="2702516483241149200">Yeni: bu metne kaydıran bir bağlantı paylaşın</translation>
-<translation id="2707726405694321444">Sayfayı yenile</translation>
 <translation id="271033894570825754">Yeni</translation>
 <translation id="2711073837061989559">Denemeler</translation>
 <translation id="2718352093833049315">Yaln. Kablosuzda</translation>
@@ -708,6 +708,7 @@ Diğer Google hizmetlerinden yapılan aramalar ve etkinlikler gibi Google hesab�
 
 Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />senkronizasyonu sıfırlayın<ph name="END_LINK" /></translation>
 <translation id="4807098396393229769">Kartın üzerindeki ad</translation>
+<translation id="480990236307250886">Ana sayfayı aç</translation>
 <translation id="481574578487123132">Bağlı cihazlar</translation>
 <translation id="4826163340425232009">Oturum açma alt sayfası.</translation>
 <translation id="4834007576107377210">Arama geçmişinizi silmek için arama motorunuzun bununla ilgili talimatlarını (varsa) inceleyin</translation>
@@ -832,7 +833,6 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />senkronizasyonu sıfırlay
 <translation id="5444999712122199445">Siteye geri dönün.</translation>
 <translation id="544776284582297024">Aynı anda birden fazla sekme açıp farklı sayfaları ziyaret etmek için açık sekme düğmesine dokunun</translation>
 <translation id="5454166040603940656"><ph name="PROVIDER" /> ile</translation>
-<translation id="5456381639095306749">Sayfayı indir</translation>
 <translation id="5458366071038729214">Takip ettiğiniz siteleri burada bulursunuz</translation>
 <translation id="5468068603361015296"><ph name="FILE_NAME" /> dosyasını yine de indirmek istiyor musunuz?</translation>
 <translation id="548278423535722844">Haritalar uygulamasında aç</translation>
@@ -1173,6 +1173,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />senkronizasyonu sıfırlay
 <translation id="7196215469483532480">Gizlilik kılavuzu açıklaması tam ekranda açıldı</translation>
 <translation id="7207760545532569765"><ph name="TAB_COUNT" /> sekmeyi, yeni arka plan sekmeleri olarak geri yükleyin.</translation>
 <translation id="7217781228893594884">Chrome'dan ayrıldığınızda gizli sekmeler kilitlenir</translation>
+<translation id="7221869452894271364">Bu sayfayı yeniden yükle</translation>
 <translation id="7222235798733126207">Siteler arasında kısıtlı paylaşım</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 indirme işlemi beklemede}other{# indirme işlemi beklemede}}</translation>
 <translation id="72415438529550637">Şifre önerisi kapatıldı.</translation>
@@ -1576,7 +1577,6 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />senkronizasyonu sıfırlay
 <translation id="926205370408745186">Chrome etkinliğinizi Dijital Denge'den kaldırma</translation>
 <translation id="927968626442779827">Google Chrome'da Basit modu kullanın</translation>
 <translation id="928550791203542716"><ph name="SITE_NAME" /> takip ediliyor</translation>
-<translation id="932327136139879170">Ana Sayfa</translation>
 <translation id="938850635132480979">Hata: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">Parolayı girin</translation>
 <translation id="952301137339791907">Sayfa analizleri alt sayfası açıldı</translation>

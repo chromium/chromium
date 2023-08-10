@@ -4144,7 +4144,6 @@ Detta kan omfatta information om installerad programvara, filer, webbläsaren oc
 <translation id="4361142739114356624">Det här klientcertifikatets privata nyckel saknas eller är tom</translation>
 <translation id="4361745360460842907">Öppna som en flik</translation>
 <translation id="4362675504017386626"><ph name="ACCOUNT_EMAIL" /> är standardkontot på din <ph name="DEVICE_TYPE" /></translation>
-<translation id="4363215264289239958">Bruschetta-appar</translation>
 <translation id="4363262124589131906">Nya filer på Min enhet synkroniseras inte längre med denna Chromebook</translation>
 <translation id="4363771538994847871">Ingen Cast-destination hittades. Behöver du hjälp?</translation>
 <translation id="4364327530094270451">Melon</translation>
@@ -4732,6 +4731,7 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="4849517651082200438">Installera inte</translation>
 <translation id="485053257961878904">Det gick inte att konfigurera synkronisering av aviseringar</translation>
 <translation id="4850548109381269495">Kontrollera internetanslutningen och aktivera Bluetooth på båda enheterna. Försök sedan igen.</translation>
+<translation id="4850669014075537160">Rullning</translation>
 <translation id="4850886885716139402">Visa</translation>
 <translation id="485088796993065002">Webbplatser med ljud brukar ha det så att du ska kunna lyssna på musik, ljudspåret i en video eller dylikt</translation>
 <translation id="4852916668365817106">Musfärg</translation>

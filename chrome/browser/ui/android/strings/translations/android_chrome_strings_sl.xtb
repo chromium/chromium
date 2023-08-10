@@ -229,6 +229,7 @@ Ko za vsa spletna mesta ali za določeno spletno mesto izbrišete zgodovino brsk
 <translation id="2278052315791335171">Če izbrišete to geslo, ne izbrišete računa na <ph name="SITE" />.</translation>
 <translation id="2286841657746966508">Naslov za obračun storitev</translation>
 <translation id="228704530595896923">Seznam možnosti deljenja z drugimi.</translation>
+<translation id="2297822946037605517">Skupna raba te strani</translation>
 <translation id="230115972905494466">Ni združljivih naprav</translation>
 <translation id="2318045970523081853">Dotaknite se, če želite klicati</translation>
 <translation id="2321086116217818302">Pripravljanje gesel …</translation>
@@ -306,7 +307,6 @@ Zasebni žetoni stanja izboljšujejo zaupanje v spletu in jih ni mogoče uporabi
 <translation id="2656405586795711023">Spletni programi</translation>
 <translation id="2669454659051515572">Prenesene datoteke lahko vidijo vsi, ki uporabljajo to napravo.</translation>
 <translation id="2702516483241149200">Novo: Delite povezavo, ki se pomakne do tega besedila.</translation>
-<translation id="2707726405694321444">Osveži stran</translation>
 <translation id="271033894570825754">Novo</translation>
 <translation id="2711073837061989559">Preizkusi</translation>
 <translation id="2718352093833049315">Samo v omrežju Wi-Fi</translation>
@@ -708,6 +708,7 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 
 Če želite spremeniti to nastavitev, <ph name="BEGIN_LINK" />ponastavite sinhronizacijo<ph name="END_LINK" /></translation>
 <translation id="4807098396393229769">Ime na kartici</translation>
+<translation id="480990236307250886">Odpri domačo stran</translation>
 <translation id="481574578487123132">Povezane naprave</translation>
 <translation id="4826163340425232009">Razdelek na dnu zaslona za prijavo.</translation>
 <translation id="4834007576107377210">Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo.</translation>
@@ -832,7 +833,6 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 <translation id="5444999712122199445">Nazaj na spletno mesto</translation>
 <translation id="544776284582297024">Če želite hkrati odpreti zavihke in obiskati različne strani, se dotaknite gumba za odprte zavihke</translation>
 <translation id="5454166040603940656">pri ponudniku <ph name="PROVIDER" /></translation>
-<translation id="5456381639095306749">Prenos strani</translation>
 <translation id="5458366071038729214">Tukaj boste našli spletna mesta, ki jih spremljate.</translation>
 <translation id="5468068603361015296">Ali želite vseeno prenesti <ph name="FILE_NAME" />?</translation>
 <translation id="548278423535722844">Odpiranje v aplikaciji z zemljevidi</translation>
@@ -1173,6 +1173,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="7196215469483532480">Pojasnilo glede vodnika po zasebnosti se je odprlo pri polni višini</translation>
 <translation id="7207760545532569765">Obnovitev zavihkov (<ph name="TAB_COUNT" />) kot novih zavihkov v ozadju.</translation>
 <translation id="7217781228893594884">Ko zaprete Chrome, se anonimni zavihki zaklenejo.</translation>
+<translation id="7221869452894271364">Ponovno naložite to stran</translation>
 <translation id="7222235798733126207">Omejeno deljenje med spletnimi mesti</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 prenos na čakanju}one{# prenos na čakanju}two{# prenosa na čakanju}few{# prenosi na čakanju}other{# prenosov na čakanju}}</translation>
 <translation id="72415438529550637">Predlog gesla je zaprt.</translation>
@@ -1576,7 +1577,6 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="926205370408745186">Odstranitev dejavnosti v Chromu iz Digitalne dobrobiti</translation>
 <translation id="927968626442779827">Uporabite lahki način v Google Chromu</translation>
 <translation id="928550791203542716">Spremljate <ph name="SITE_NAME" /></translation>
-<translation id="932327136139879170">Domov</translation>
 <translation id="938850635132480979">Napaka: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">Vnesite geslo</translation>
 <translation id="952301137339791907">Razdelek na dnu zaslona s podrobnimi podatki o strani je odprt</translation>

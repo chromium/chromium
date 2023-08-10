@@ -1367,6 +1367,7 @@
 <translation id="6912901278692845878">Бърза обиколка</translation>
 <translation id="6919251195245069855">Смарткартата ви не бе разпозната. Опитайте отново.</translation>
 <translation id="6920245099716267363">Превключване на точката за достъп. Тя е включена, има 1 свързано устройство.</translation>
+<translation id="692135145298539227">изтриване</translation>
 <translation id="6931576957638141829">Запазване във</translation>
 <translation id="6942518653766415536">Меню за формата на записа</translation>
 <translation id="6945221475159498467">Избиране</translation>
@@ -1678,6 +1679,7 @@
 <translation id="8315514906653279104">Включва се...</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363">Избран е прозорецът <ph name="WINDOW_TITLE" /></translation>
+<translation id="8349826889576450703">стартов панел</translation>
 <translation id="8349964124165471584">Отваряне на връзката в нов прозорец</translation>
 <translation id="8351131234907093545">Създаване на бележка</translation>
 <translation id="8367948981300340152"><ph name="CAPTURE_MEDIUM" /> се използва.</translation>

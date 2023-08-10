@@ -1839,7 +1839,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="4901778704868714008">Desa...</translation>
 <translation id="4901952598169637881">Sabates de carrer</translation>
 <translation id="4905659621780993806">L'administrador reiniciarà automàticament el dispositiu el dia <ph name="DATE" /> a les <ph name="TIME" />. Abans no es reiniciï, desa tots els elements oberts.</translation>
-<translation id="4907289208610706508">Objectiu</translation>
 <translation id="4913987521957242411">Encunyació a la part superior esquerra</translation>
 <translation id="4917064667437236721">Cilindre d'imatges</translation>
 <translation id="4918221908152712722">Instal·la l'aplicació <ph name="APP_NAME" /> (no cal que la baixis)</translation>
@@ -2680,6 +2679,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6702919718839027939">Presenta</translation>
 <translation id="6704458454638854812">S'ha establert la propietat "custom_size" i s'espera que el nom sigui "custom".</translation>
 <translation id="6706005862292023715">Cortines i persianes</translation>
+<translation id="6706210727756204531">Abast</translation>
 <translation id="6709133671862442373">Notícies</translation>
 <translation id="6709888928011386878">Instruments musicals</translation>
 <translation id="6710213216561001401">Anterior</translation>

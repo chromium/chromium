@@ -1216,9 +1216,6 @@ Esta política no tendrá ningún efecto si se asigna el valor false a la polít
       Si esta política no se define o se le asigna una lista vacía, no habrá ningún modo de desbloqueo rápido disponible para los dispositivos administrados.
 
       Esta política está obsoleta. Usa la política <ph name="QUICK_UNLOCK_MODE_ALLOW_LIST_POLICY_NAME" /> en su lugar</translation>
-<translation id="2033784678146670379">Si se habilita esta política, se permitirá que los usuarios usen el hardware en dispositivos <ph name="PRODUCT_OS_NAME" /> para atestar su identidad de forma remota ante la entidad emisora de certificados de privacidad a través de la <ph name="ENTERPRISE_PLATFORM_KEYS_API" /> con <ph name="CHALLENGE_USER_KEY_FUNCTION" />.
-
-      Si se inhabilita esta política o no se le asigna ningún valor, no se podrán realizar llamadas a la API y se mostrará un código de error.</translation>
 <translation id="2036522553891755455">Si se habilita esta política, la búsqueda de sistemas de archivos compartidos (la función de sistemas de archivos compartidos en red de <ph name="PRODUCT_NAME" />) usará el <ph name="NETBIOS_PROTOCOL" /> para buscar sistemas en la red. Si se inhabilita, la búsqueda de sistemas de archivos compartidos no usará ese protocolo para buscar sistemas de archivos compartidos en la red.
 
       Si no se asigna ningún valor a esta política, el comportamiento estará inhabilitado para los usuarios gestionados y habilitado para el resto de los usuarios de forma predeterminada.</translation>

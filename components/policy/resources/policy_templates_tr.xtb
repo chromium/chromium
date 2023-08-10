@@ -1217,9 +1217,6 @@ Geçerli değerler, 1 saniye ile 9.999 saniye aralığındadır. Politika ayarla
       Politika ayarlanmaz veya boş listeye ayarlanırsa yönetilen cihazlarda hızlı kilit açma modları kullanılamaz.
 
       Bu politika kullanımdan kaldırıldı, lütfen bunun yerine <ph name="QUICK_UNLOCK_MODE_ALLOW_LIST_POLICY_NAME" /> politikasını kullanın</translation>
-<translation id="2033784678146670379">Politika, Etkin değerine ayarlanırsa kullanıcıların, <ph name="CHALLENGE_USER_KEY_FUNCTION" /> kullanarak <ph name="ENTERPRISE_PLATFORM_KEYS_API" /> aracılığıyla cihaz kimliğini gizlilik CA'sına uzaktan onaylatmak için <ph name="PRODUCT_OS_NAME" /> cihazlarda donanım kullanmalarına izin verilir.
-
-      Politikanın, Devre Dışı değerine ayarlanması veya ayarlanmadan bırakılması, API'ye yapılan çağrıların bir hata koduyla başarısız olmasına neden olur.</translation>
 <translation id="2036522553891755455">Politika, Etkin değerine ayarlanırsa paylaşım keşfi (<ph name="PRODUCT_NAME" /> için Ağ Üzerinde Dosya Paylaşımı özelliği), ağdaki paylaşımları keşfetmek için <ph name="NETBIOS_PROTOCOL" /> politikasını kullanır. Politika, Devre Dışı değerine ayarlanırsa paylaşım keşfi, paylaşımları keşfetmek için bu protokolü kullanmaz.
 
       Politika ayarlanmadan bırakılırsa paylaşım keşfi, varsayılan olarak yönetilen kullanıcılar için devre dışı bırakılır, diğer kullanıcılar için etkinleştirilir.</translation>

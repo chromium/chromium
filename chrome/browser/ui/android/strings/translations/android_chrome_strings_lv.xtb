@@ -229,6 +229,7 @@ Dzēšot pārlūkošanas vēsturi (visu vai konkrētas vietnes vēsturi), tiek d
 <translation id="2278052315791335171">Izdzēšot šo paroli, netiks dzēsts jūsu konts vietnē <ph name="SITE" />.</translation>
 <translation id="2286841657746966508">Norēķinu adrese</translation>
 <translation id="228704530595896923">Kopīgošanas opciju saraksts.</translation>
+<translation id="2297822946037605517">Kopīgot šo lapu</translation>
 <translation id="230115972905494466">Netika atrastas saderīgas ierīces.</translation>
 <translation id="2318045970523081853">Pieskarieties, lai zvanītu</translation>
 <translation id="2321086116217818302">Notiek paroļu sagatavošana…</translation>
@@ -306,7 +307,6 @@ Privātā stāvokļa pilnvaras uzlabo konfidencialitāti tīmeklī. Tās nevar i
 <translation id="2656405586795711023">Tīmekļa lietotnes</translation>
 <translation id="2669454659051515572">Lejupielādētie faili ir redzami visiem šīs ierīces lietotājiem.</translation>
 <translation id="2702516483241149200">Jaunums: varat kopīgot saiti uz šo tekstu</translation>
-<translation id="2707726405694321444">Atsvaidzināt lapu</translation>
 <translation id="271033894570825754">Jauns</translation>
 <translation id="2711073837061989559">Izmēģinājuma versijas</translation>
 <translation id="2718352093833049315">Tikai Wi-Fi</translation>
@@ -708,6 +708,7 @@ Jūsu Google kontam vietnē <ph name="BEGIN_LINK" />myactivity.google.com<ph nam
 
 Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />atiestatiet sinhronizāciju<ph name="END_LINK" /></translation>
 <translation id="4807098396393229769">Vārds uz kartes</translation>
+<translation id="480990236307250886">Atvērt sākumlapu</translation>
 <translation id="481574578487123132">Saistītās ierīces</translation>
 <translation id="4826163340425232009">Pierakstīšanās ekrāna apakšdaļas lapa.</translation>
 <translation id="4834007576107377210">Skatiet savas meklētājprogrammas norādījumus par meklēšanas vēstures dzēšanu, ja tādi ir pieejami.</translation>
@@ -832,7 +833,6 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />atiestatiet sinhronizāci
 <translation id="5444999712122199445">Atgriezieties vietnē.</translation>
 <translation id="544776284582297024">Lai atvērtu cilnes un vienlaikus apmeklētu vairākas lapas, pieskarieties pogai “atvērt cilnes”</translation>
 <translation id="5454166040603940656">izmantojot <ph name="PROVIDER" /></translation>
-<translation id="5456381639095306749">Lejupielādēt lapu</translation>
 <translation id="5458366071038729214">Šeit būs redzamas vietnes, kurām sekojat</translation>
 <translation id="5468068603361015296">Vai tomēr vēlaties lejupielādēt failu “<ph name="FILE_NAME" />”?</translation>
 <translation id="548278423535722844">Atvērt karšu lietotnē</translation>
@@ -1173,6 +1173,7 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="7196215469483532480">Paskaidrojums par konfidencialitātes ceļvedi ir atvērts pilna ekrāna augstumā</translation>
 <translation id="7207760545532569765">Atjaunot cilnes kā jaunas fona cilnes. Ciļņu skaits ir <ph name="TAB_COUNT" />.</translation>
 <translation id="7217781228893594884">Aizverot pārlūku Chrome, inkognito režīma cilnes tiks bloķētas.</translation>
+<translation id="7221869452894271364">Pārlādēt šo lapu</translation>
 <translation id="7222235798733126207">Ierobežota datu kopīgošana starp vietnēm</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{Tiek gaidīta 1 lejupielāde}zero{Tiek gaidītas # lejupielādes}one{Tiek gaidīta # lejupielāde}other{Tiek gaidītas # lejupielādes}}</translation>
 <translation id="72415438529550637">Paroles ieteikums ir aizvērts.</translation>
@@ -1576,7 +1577,6 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="926205370408745186">Chrome darbību noņemšana no Digitālās labjutības</translation>
 <translation id="927968626442779827">Izmantojiet Google Chrome vienkāršoto režīmu.</translation>
 <translation id="928550791203542716">Jūs sekojat vietnei <ph name="SITE_NAME" />.</translation>
-<translation id="932327136139879170">Sākums</translation>
 <translation id="938850635132480979">Kļūda: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">Ievadiet ieejas frāzi</translation>
 <translation id="952301137339791907">Lapas ieskatu ekrāna apakšdaļas lapa ir atvērta</translation>

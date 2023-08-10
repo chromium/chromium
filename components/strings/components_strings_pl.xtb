@@ -1839,7 +1839,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4901778704868714008">Zapisz...</translation>
 <translation id="4901952598169637881">Obuwie codzienne</translation>
 <translation id="4905659621780993806">Administrator automatycznie uruchomi Twoje urządzenie ponownie <ph name="DATE" /> o <ph name="TIME" />. Zanim to się stanie, zapisz wszystkie otwarte elementy.</translation>
-<translation id="4907289208610706508">Cel</translation>
 <translation id="4913987521957242411">Otwór w lewym górnym rogu</translation>
 <translation id="4917064667437236721">Cylinder obrazujący</translation>
 <translation id="4918221908152712722">Zainstaluj aplikację <ph name="APP_NAME" /> (nie wymaga pobrania)</translation>
@@ -2680,6 +2679,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6702919718839027939">Tryb prezentacji</translation>
 <translation id="6704458454638854812">Właściwość „custom_size” jest ustawiona. Oczekiwana nazwa to „custom”.</translation>
 <translation id="6706005862292023715">Zasłony i dekoracja okien</translation>
+<translation id="6706210727756204531">Zakres</translation>
 <translation id="6709133671862442373">Wiadomości</translation>
 <translation id="6709888928011386878">Instrumenty muzyczne</translation>
 <translation id="6710213216561001401">Poprzedni</translation>

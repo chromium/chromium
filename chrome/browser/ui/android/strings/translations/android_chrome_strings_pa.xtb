@@ -229,6 +229,7 @@
 <translation id="2278052315791335171">ਇਸ ਪਾਸਵਰਡ ਨੂੰ ਮਿਟਾਉਣ ਨਾਲ <ph name="SITE" /> 'ਤੇ ਤੁਹਾਡੇ ਖਾਤੇ ਨੂੰ ਮਿਟਾਇਆ ਨਹੀਂ ਜਾਵੇਗਾ</translation>
 <translation id="2286841657746966508">ਬਿਲਿੰਗ ਪਤਾ</translation>
 <translation id="228704530595896923">ਸਾਂਝਾਕਰਨ ਵਿਕਲਪਾਂ ਦੀ ਸੂਚੀ।</translation>
+<translation id="2297822946037605517">ਇਹ ਪੰਨਾ ਸਾਂਝਾ ਕਰੋ</translation>
 <translation id="230115972905494466">ਕੋਈ ਅਨੁਰੂਪ ਡੀਵਾਈਸ ਨਹੀਂ ਮਿਲੇ</translation>
 <translation id="2318045970523081853">ਕਾਲ ਕਰਨ ਲਈ ਟੈਪ ਕਰੋ</translation>
 <translation id="2321086116217818302">ਪਾਸਵਰਡ ਤਿਆਰ ਕੀਤੇ ਜਾ ਰਹੇ ਹਨ…</translation>
@@ -306,7 +307,6 @@
 <translation id="2656405586795711023">ਵੈੱਬ ਐਪਾਂ</translation>
 <translation id="2669454659051515572">ਇਸ ਡੀਵਾਈਸ ਦੀ ਵਰਤੋਂ ਕਰਨ ਵਾਲਾ ਕੋਈ ਵੀ ਵਿਅਕਤੀ ਡਾਊਨਲੋਡ ਕੀਤੀਆਂ ਗਈਆਂ ਫ਼ਾਈਲਾਂ ਨੂੰ ਦੇਖ ਸਕਦਾ ਹੈ</translation>
 <translation id="2702516483241149200">ਨਵਾਂ: ਇਸ ਲਿਖਤ ਤੱਕ ਸਕ੍ਰੋਲ ਕਰਨ ਵਾਲਾ ਲਿੰਕ ਸਾਂਝਾ ਕਰੋ</translation>
-<translation id="2707726405694321444">ਪੰਨੇ ਰਿਫ੍ਰੈਸ਼ ਕਰੋ</translation>
 <translation id="271033894570825754">ਨਵਾਂ</translation>
 <translation id="2711073837061989559">ਪਰਖਾਂ</translation>
 <translation id="2718352093833049315">ਕੇਵਲ ਵਾਈ-ਫਾਈ 'ਤੇ</translation>
@@ -708,6 +708,7 @@
 
 ਇਸ ਸੈਟਿੰਗ ਨੂੰ ਬਦਲਣ ਲਈ, <ph name="BEGIN_LINK" />ਸਿੰਕ ਨੂੰ ਰੀਸੈੱਟ ਕਰੋ<ph name="END_LINK" /></translation>
 <translation id="4807098396393229769">ਕਾਰਡ ਤੇ ਨਾਮ</translation>
+<translation id="480990236307250886">ਹੋਮ ਪੇਜ ਖੋਲ੍ਹੋ</translation>
 <translation id="481574578487123132">ਲਿੰਕ ਕੀਤੇ ਡੀਵਾਈਸ</translation>
 <translation id="4826163340425232009">ਸਾਈਨ-ਇਨ ਕਰਨ ਲਈ ਹੇਠਲੀ ਸ਼ੀਟ।</translation>
 <translation id="4834007576107377210">ਲਾਗੂ ਹੋਣ 'ਤੇ, ਆਪਣਾ ਖੋਜ ਇਤਿਹਾਸ ਮਿਟਾਉਣ ਲਈ ਆਪਣੇ ਖੋਜ ਇੰਜਣ ਦੀਆਂ ਹਿਦਾਇਤਾਂ ਦੇਖੋ</translation>
@@ -832,7 +833,6 @@
 <translation id="5444999712122199445">ਸਾਈਟ 'ਤੇ ਵਾਪਸ ਜਾਓ</translation>
 <translation id="544776284582297024">ਟੈਬਾਂ ਨੂੰ ਖੋਲ੍ਹਣ ਅਤੇ ਇੱਕੋ ਵੇਲੇ ਵੱਖ-ਵੱਖ ਪੰਨਿਆਂ 'ਤੇ ਜਾਣ ਲਈ, 'ਟੈਬਾਂ ਖੋਲ੍ਹੋ' ਬਟਨ 'ਤੇ ਟੈਪ ਕਰੋ</translation>
 <translation id="5454166040603940656"><ph name="PROVIDER" /> ਨਾਲ</translation>
-<translation id="5456381639095306749">ਪੰਨਾ ਡਾਊਨਲੋਡ ਕਰੋ</translation>
 <translation id="5458366071038729214">ਤੁਹਾਡੇ ਵੱਲੋਂ ਅਨੁਸਰਣ ਕੀਤੀਆਂ ਸਾਈਟਾਂ ਤੁਹਾਨੂੰ ਇੱਥੇ ਦਿਸਣਗੀਆਂ</translation>
 <translation id="5468068603361015296">ਕੀ ਤੁਸੀਂ ਫਿਰ ਵੀ <ph name="FILE_NAME" /> ਨੂੰ ਡਾਊਨਲੋਡ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
 <translation id="548278423535722844">'ਨਕਸ਼ੇ ਐਪ' ਵਿੱਚ ਖੋਲ੍ਹੋ</translation>
@@ -1173,6 +1173,7 @@
 <translation id="7196215469483532480">ਪਰਦੇਦਾਰੀ ਗਾਈਡ ਵਿਆਖਿਆ ਨੂੰ ਪੂਰੀ ਸ੍ਰਕੀਨ 'ਤੇ ਖੋਲ੍ਹਿਆ ਗਿਆ</translation>
 <translation id="7207760545532569765"><ph name="TAB_COUNT" /> ਟੈਬਾਂ ਨੂੰ ਨਵੇਂ ਬੈਕਗ੍ਰਾਊਂਡ ਟੈਬਾਂ ਵਜੋਂ ਮੁੜ-ਬਹਾਲ ਕਰੋ।</translation>
 <translation id="7217781228893594884">ਤੁਹਾਡੇ Chrome ਤੋਂ ਬਾਹਰ ਨਿਕਲਣ 'ਤੇ ਇਨਕੋਗਨਿਟੋ ਟੈਬਾਂ ਲਾਕ ਹੋ ਜਾਣਗੀਆਂ</translation>
+<translation id="7221869452894271364">ਇਹ ਪੰਨਾ ਰੀਲੋਡ ਕਰੋ</translation>
 <translation id="7222235798733126207">ਸਾਈਟਾਂ ਵਿਚਕਾਰ ਸੀਮਤ ਸਾਂਝਾਕਰਨ</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 ਡਾਊਨਲੋਡ ਵਿਚਾਰ-ਅਧੀਨ ਹੈ}one{# ਡਾਊਨਲੋਡ ਵਿਚਾਰ-ਅਧੀਨ ਹੈ}other{# ਡਾਊਨਲੋਡ ਵਿਚਾਰ-ਅਧੀਨ ਹਨ}}</translation>
 <translation id="72415438529550637">ਪਾਸਵਰਡ ਸੰਬੰਧੀ ਸੁਝਾਅ ਬੰਦ ਹੈ।</translation>
@@ -1576,7 +1577,6 @@
 <translation id="926205370408745186">ਡਿਜੀਟਲ ਜੀਵਨਸ਼ੈਲੀ ਤੋਂ ਆਪਣੀ Chrome ਸਰਗਰਮੀ ਹਟਾਓ</translation>
 <translation id="927968626442779827">Google Chrome 'ਤੇ ਲਾਈਟ ਮੋਡ ਵਰਤੋ</translation>
 <translation id="928550791203542716"><ph name="SITE_NAME" /> ਦਾ ਅਨੁਸਰਣ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
-<translation id="932327136139879170">ਹੋਮ</translation>
 <translation id="938850635132480979">ਗੜਬੜ: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">ਪਾਸਫਰੇਜ਼ ਦਾਖਲ ਕਰੋ</translation>
 <translation id="952301137339791907">ਪੰਨੇ ਦੀਆਂ ਅੰਦਰੂਨੀ-ਝਾਤਾਂ ਵਾਲੀ ਹੇਠਲੀ ਸ਼ੀਟ ਖੁੱਲ੍ਹੀ ਹੈ</translation>

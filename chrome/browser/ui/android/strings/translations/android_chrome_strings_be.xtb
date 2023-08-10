@@ -229,6 +229,7 @@
 <translation id="2278052315791335171">Пры выдаленні гэтага пароля ўліковы запіс на сайце <ph name="SITE" /> не выдаліцца</translation>
 <translation id="2286841657746966508">Адрас для выстаўлення рахункаў</translation>
 <translation id="228704530595896923">Спіс варыянтаў абагульвання.</translation>
+<translation id="2297822946037605517">Абагуліць гэту старонку</translation>
 <translation id="230115972905494466">Сумяшчальныя прылады не знойдзены</translation>
 <translation id="2318045970523081853">Націсніце, каб зрабіць выклік</translation>
 <translation id="2321086116217818302">Ідзе падрыхтоўка пароляў…</translation>
@@ -306,7 +307,6 @@
 <translation id="2656405586795711023">Вэб-праграмы</translation>
 <translation id="2669454659051515572">Усе, хто карыстаецца гэтай прыладай, могуць бачыць спампаваныя файлы</translation>
 <translation id="2702516483241149200">Навінка: абагульце спасылку, пры выкарыстанні якой старонка прагартаецца гэтага фрагмента тэксту</translation>
-<translation id="2707726405694321444">Абнавіць старонку</translation>
 <translation id="271033894570825754">Новае</translation>
 <translation id="2711073837061989559">Пробныя версіі функцый</translation>
 <translation id="2718352093833049315">Толькі па Wi-Fi</translation>
@@ -707,6 +707,7 @@
 
 Каб змяніць гэту наладу, <ph name="BEGIN_LINK" />скіньце налады сінхранізацыі<ph name="END_LINK" /></translation>
 <translation id="4807098396393229769">Імя на картцы</translation>
+<translation id="480990236307250886">Адкрыць галоўную старонку</translation>
 <translation id="481574578487123132">Звязаныя прылады</translation>
 <translation id="4826163340425232009">Ніжні аркуш са спісам даступных для выбару ўліковых запісаў.</translation>
 <translation id="4834007576107377210">Каб выдаліць гісторыю пошуку, выканайце інструкцыі вашай пошукавай сістэмы (калі яны даступныя)</translation>
@@ -831,7 +832,6 @@
 <translation id="5444999712122199445">Вярнуцца на сайт</translation>
 <translation id="544776284582297024">Каб праглядаць некалькі старонак адначасова, націсніце кнопку "Адкрыць укладкі"</translation>
 <translation id="5454166040603940656">крыніца: <ph name="PROVIDER" /></translation>
-<translation id="5456381639095306749">Спампаваць старонку</translation>
 <translation id="5458366071038729214">Тут будуць паказвацца сайты, на якія вы падпішацеся</translation>
 <translation id="5468068603361015296">Усё роўна спампаваць файл "<ph name="FILE_NAME" />"?</translation>
 <translation id="548278423535722844">Адкрыць у праграме карт</translation>
@@ -1172,6 +1172,7 @@
 <translation id="7196215469483532480">Тлумачэнні адносна дапаможніка па прыватнасці разгорнуты на ўвесь экран</translation>
 <translation id="7207760545532569765">Аднавіць некалькі (<ph name="TAB_COUNT" />) укладак як новую фонавую групу ўкладак.</translation>
 <translation id="7217781228893594884">Пры закрыцці Chrome укладкі ў рэжыме інкогніта будуць блакіравацца</translation>
+<translation id="7221869452894271364">Перазагрузіце старонку</translation>
 <translation id="7222235798733126207">Абмежаваны абмен данымі паміж сайтамі</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{Чакаецца 1 спампоўка}one{Чакаецца # спампоўка}few{Чакаецца # спампоўкі}many{Чакаецца # спамповак}other{Чакаецца # спампоўкі}}</translation>
 <translation id="72415438529550637">Прапанова пароля закрыта.</translation>
@@ -1575,7 +1576,6 @@
 <translation id="926205370408745186">Выдаліць дзеянні ў Chrome са службы лічбавага камфорту</translation>
 <translation id="927968626442779827">Выкарыстоўвайце Google Chrome, уключыўшы спрошчаны рэжым</translation>
 <translation id="928550791203542716"><ph name="SITE_NAME" />: вы падпісаны</translation>
-<translation id="932327136139879170">Галоўная старонка</translation>
 <translation id="938850635132480979">Памылка: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">Увядзіце фразу-пароль</translation>
 <translation id="952301137339791907">Ніжні аркуш статыстыкі старонкі адкрыты</translation>

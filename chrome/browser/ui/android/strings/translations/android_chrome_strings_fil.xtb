@@ -229,6 +229,7 @@ Kapag na-delete mo ang iyong history ng pag-browse — lahat o para sa isang par
 <translation id="2278052315791335171">Kapag na-delete ang password na ito, hindi ide-delete ang iyong account sa <ph name="SITE" /></translation>
 <translation id="2286841657746966508">Billing address</translation>
 <translation id="228704530595896923">Listahan ng mga opsyon sa pagbabahagi</translation>
+<translation id="2297822946037605517">Ibahagi ang pahinang ito</translation>
 <translation id="230115972905494466">Walang nahanap na tugmang device</translation>
 <translation id="2318045970523081853">I-tap para tumawag</translation>
 <translation id="2321086116217818302">Inihahanda ang mga password…</translation>
@@ -306,7 +307,6 @@ Pinapahusay ng mga private state token ang privacy sa web at hindi magagamit ang
 <translation id="2656405586795711023">Mga web app</translation>
 <translation id="2669454659051515572">Makikita ng sinumang gumagamit ng device na ito ang mga na-download na file</translation>
 <translation id="2702516483241149200">Bago: magbahagi ng link na nagso-scroll papunta sa text na ito</translation>
-<translation id="2707726405694321444">I-refresh ang page</translation>
 <translation id="271033894570825754">Bago</translation>
 <translation id="2711073837061989559">Mga Trial</translation>
 <translation id="2718352093833049315">Sa Wi-Fi lang</translation>
@@ -708,6 +708,7 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 
 Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-reset ang pag-sync<ph name="END_LINK" /></translation>
 <translation id="4807098396393229769">Pangalang makikita sa card</translation>
+<translation id="480990236307250886">Buksan ang home page</translation>
 <translation id="481574578487123132">Mga naka-link na device</translation>
 <translation id="4826163340425232009">Bottom sheet sa pag-sign in.</translation>
 <translation id="4834007576107377210">Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa history ng paghahanap mo, kung naaangkop</translation>
@@ -832,7 +833,6 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-reset ang pag-sync<ph
 <translation id="5444999712122199445">Bumalik sa site</translation>
 <translation id="544776284582297024">Para magbukas ng mga tab at bisitahin ang iba't ibang page nang sabay-sabay, i-tap ang button na magbukas ng mga tab</translation>
 <translation id="5454166040603940656">sa <ph name="PROVIDER" /></translation>
-<translation id="5456381639095306749">I-download ang page</translation>
 <translation id="5458366071038729214">Makikita mo ang mga site na sinusubaybayan mo rito</translation>
 <translation id="5468068603361015296">Gusto mo bang i-download pa rin ang <ph name="FILE_NAME" />?</translation>
 <translation id="548278423535722844">Buksan sa app na mga mapa</translation>
@@ -1173,6 +1173,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="7196215469483532480">Nakabukas nang buo ang paliwanag sa gabay sa privacy</translation>
 <translation id="7207760545532569765">I-restore ang <ph name="TAB_COUNT" /> (na) tab bilang mga bagong background na tab.</translation>
 <translation id="7217781228893594884">Ila-lock ang mga tab na incognito kapag umalis ka sa Chrome</translation>
+<translation id="7221869452894271364">I-reload ang page na ito</translation>
 <translation id="7222235798733126207">Limitadong pagbabahagi sa pagitan ng mga site</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{Nakabinbin ang 1 pag-download}one{Nakabinbin ang # pag-download}other{Nakabinbin ang # na pag-download}}</translation>
 <translation id="72415438529550637">Nakasara ang mungkahi sa password.</translation>
@@ -1576,7 +1577,6 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="926205370408745186">Alisin sa Digital Wellness ang iyong aktibidad sa Chrome</translation>
 <translation id="927968626442779827">Gamitin ang Lite mode sa Google Chrome</translation>
 <translation id="928550791203542716">Sinusubaybayan ang <ph name="SITE_NAME" /></translation>
-<translation id="932327136139879170">Home</translation>
 <translation id="938850635132480979">Error: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">Ilagay ang passphrase</translation>
 <translation id="952301137339791907">Nakabukas ang bottom sheet ng mga insight ng page</translation>

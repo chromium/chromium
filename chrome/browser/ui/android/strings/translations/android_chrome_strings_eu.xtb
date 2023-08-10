@@ -229,6 +229,7 @@ Arakatze-historia ezabatzen duzunean (osorik nahiz webgune zehatz bat), neurketa
 <translation id="2278052315791335171">Pasahitza ezabatzen baduzu ere, ez da ezabatuko <ph name="SITE" /> webguneko kontua</translation>
 <translation id="2286841657746966508">Fakturazio-helbidea</translation>
 <translation id="228704530595896923">Partekatze-aukeren zerrenda.</translation>
+<translation id="2297822946037605517">Partekatu orria</translation>
 <translation id="230115972905494466">Ez da aurkitu gailu bateragarririk</translation>
 <translation id="2318045970523081853">Sakatu hau dei bat egiteko</translation>
 <translation id="2321086116217818302">Pasahitzak prestatzen…</translation>
@@ -306,7 +307,6 @@ Egoeraren token pribatuek sareko pribatutasuna hobetzen dute eta ezin dira erabi
 <translation id="2656405586795711023">Sareko aplikazioak</translation>
 <translation id="2669454659051515572">Gailu hau darabilen edonork ikus ditzake deskargatutako fitxategiak</translation>
 <translation id="2702516483241149200">Berria: partekatu testu honetan gora eta behera egiteko esteka bat</translation>
-<translation id="2707726405694321444">Freskatu orria</translation>
 <translation id="271033894570825754">Berria</translation>
 <translation id="2711073837061989559">Probak</translation>
 <translation id="2718352093833049315">Wifi bidez soilik</translation>
@@ -708,6 +708,7 @@ Baliteke Google-ko kontuak arakatze-historiako bestelako datu batzuk (adibidez, 
 
 Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="END_LINK" />.</translation>
 <translation id="4807098396393229769">Txartelean ageri den izena</translation>
+<translation id="480990236307250886">Ireki orri nagusia</translation>
 <translation id="481574578487123132">Lotutako gailuak</translation>
 <translation id="4826163340425232009">Pantailaren behealdean ainguratutako orria, saioa hasteko balio duena.</translation>
 <translation id="4834007576107377210">Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzeari buruzko informazio gehiago lortzeko</translation>
@@ -832,7 +833,6 @@ Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="E
 <translation id="5444999712122199445">Itzuli webgunera</translation>
 <translation id="544776284582297024">Fitxak ireki eta aldi berean webgune bat baino gehiago ikusteko, sakatu irekitako fitxen botoia</translation>
 <translation id="5454166040603940656">Hornitzailea: <ph name="PROVIDER" /></translation>
-<translation id="5456381639095306749">Deskargatu orria</translation>
 <translation id="5458366071038729214">Jarraitzaile zaituzten webguneak aurkituko dituzu hemen</translation>
 <translation id="5468068603361015296"><ph name="FILE_NAME" /> deskargatu nahi duzu halere?</translation>
 <translation id="548278423535722844">Ireki mapa-aplikazio batean</translation>
@@ -1173,6 +1173,7 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="7196215469483532480">Pribatutasun-gidaren azalpena altuera osoan irekita dago</translation>
 <translation id="7207760545532569765">Leheneratu <ph name="TAB_COUNT" /> fitxa atzeko planoko fitxa gisa.</translation>
 <translation id="7217781228893594884">Ezkutuko moduko fitxak blokeatu egingo dira Chrome-tik irteten zarenean</translation>
+<translation id="7221869452894271364">Kargatu berriro orri hau</translation>
 <translation id="7222235798733126207">Webguneen artean informazioa partekatzeko aukera mugatua</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{Bat deskargatzeko zain}other{# deskargatzeko zain}}</translation>
 <translation id="72415438529550637">Pasahitzaren iradokizuna itxi da.</translation>
@@ -1576,7 +1577,6 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="926205370408745186">Kendu Chrome-ko jarduerak Ongizate digitala programatik</translation>
 <translation id="927968626442779827">Erabili oinarrizko modua Google Chrome-n</translation>
 <translation id="928550791203542716"><ph name="SITE_NAME" /> webguneari jarraitzen</translation>
-<translation id="932327136139879170">Hasiera</translation>
 <translation id="938850635132480979">Errorea: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">Idatzi pasaesaldia</translation>
 <translation id="952301137339791907">Pantailaren behealdean ainguratutako orria, orriaren estatistikak dituena, irekita dago</translation>

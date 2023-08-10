@@ -4118,7 +4118,6 @@
 <translation id="4361142739114356624">缺少此客户端证书的私钥，或私钥无效</translation>
 <translation id="4361745360460842907">作为标签页打开</translation>
 <translation id="4362675504017386626"><ph name="ACCOUNT_EMAIL" /> 是您 <ph name="DEVICE_TYPE" /> 上的默认帐号</translation>
-<translation id="4363215264289239958">Bruschetta 应用</translation>
 <translation id="4363262124589131906">您在“我的云端硬盘”中保存的新文件将停止自动同步到此 Chromebook</translation>
 <translation id="4363771538994847871">找不到投放目标。需要帮助吗？</translation>
 <translation id="4364327530094270451">甜瓜</translation>
@@ -4705,6 +4704,7 @@
 <translation id="4849517651082200438">不安装</translation>
 <translation id="485053257961878904">无法设置通知同步</translation>
 <translation id="4850548109381269495">在这两台设备上，检查您的互联网连接并开启蓝牙。然后，再试一次。</translation>
+<translation id="4850669014075537160">滚动</translation>
 <translation id="4850886885716139402">视图</translation>
 <translation id="485088796993065002">网站可能会播放声音来为音乐、视频和其他媒体提供音频</translation>
 <translation id="4852916668365817106">鼠标光标颜色</translation>

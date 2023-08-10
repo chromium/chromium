@@ -229,6 +229,7 @@ Pan fyddwch yn dileu eich hanes pori — y cyfan neu ar gyfer gwefan benodol —
 <translation id="2278052315791335171">Ni fydd dileu'r cyfrinair hwn yn dileu'ch cyfrif ar <ph name="SITE" /></translation>
 <translation id="2286841657746966508">Cyfeiriad bilio</translation>
 <translation id="228704530595896923">Rhestr o ddewisiadau rhannu.</translation>
+<translation id="2297822946037605517">Rhannu'r dudalen hon</translation>
 <translation id="230115972905494466">Heb ganfod unrhyw ddyfeisiau cydnaws</translation>
 <translation id="2318045970523081853">Tapiwch i wneud galwad</translation>
 <translation id="2321086116217818302">Wrthi'n paratoi cyfrineiriau…</translation>
@@ -306,7 +307,6 @@ Mae tocynnau ymddiriedaeth yn gwella eich preifatrwydd ar y we ac ni ellir eu de
 <translation id="2656405586795711023">Apiau gwe</translation>
 <translation id="2669454659051515572">Gall unrhyw un sy'n defnyddio'r ddyfais hon weld ffeiliau sydd wedi'u lawrlwytho</translation>
 <translation id="2702516483241149200">Newydd: gallwch rannu dolen sy'n sgrolio i'r testun hwn</translation>
-<translation id="2707726405694321444">Ail-lwytho'r dudalen</translation>
 <translation id="271033894570825754">Newydd</translation>
 <translation id="2711073837061989559">Profion</translation>
 <translation id="2718352093833049315">Dim ond ar Wi-Fi</translation>
@@ -707,6 +707,7 @@ Mae'n bosib y bydd gan eich cyfrif Google fathau eraill o hanes pori megis chwil
 
 I newid y gosodiad hwn, <ph name="BEGIN_LINK" />ailosodwch gysoni<ph name="END_LINK" /></translation>
 <translation id="4807098396393229769">Enw ar y cerdyn</translation>
+<translation id="480990236307250886">Agor y dudalen hafan</translation>
 <translation id="481574578487123132">Dyfeisiau cysylltiedig</translation>
 <translation id="4826163340425232009">Dalen waelod mewngofnodi.</translation>
 <translation id="4834007576107377210">Gweld cyfarwyddiadau eich peiriant chwilio er mwyn dileu eich hanes chwilio, os yw'n berthnasol</translation>
@@ -831,7 +832,6 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />ailosodwch gysoni<ph name="END_L
 <translation id="5444999712122199445">Mynd yn ôl i'r wefan</translation>
 <translation id="544776284582297024">I agor tabiau ac i fynd i wahanol dudalennau ar yr un pryd, tapiwch y botwm tabiau sydd ar agor</translation>
 <translation id="5454166040603940656">gyda <ph name="PROVIDER" /></translation>
-<translation id="5456381639095306749">Tudalen lawrlwytho</translation>
 <translation id="5458366071038729214">Byddwch yn gweld gwefannau rydych yn eu dilyn yma</translation>
 <translation id="5468068603361015296">Ydych chi am lawrlwytho <ph name="FILE_NAME" /> beth bynnag?</translation>
 <translation id="548278423535722844">Agor yn ap mapiau</translation>
@@ -1172,6 +1172,7 @@ Er enghraifft, gall rhai gwefannau ymateb i'r cais hwn drwy ddangos hysbysebion 
 <translation id="7196215469483532480">Esboniad canllaw preifatrwydd sydd wedi'i agor ar uchder llawn</translation>
 <translation id="7207760545532569765">Adfer <ph name="TAB_COUNT" /> o dabiau fel tabiau cefndirol newydd.</translation>
 <translation id="7217781228893594884">Bydd tabiau anhysbys yn cael eu cloi pan fyddwch yn gadael Chrome</translation>
+<translation id="7221869452894271364">Ail-lwytho'r dudalen hon</translation>
 <translation id="7222235798733126207">Rhannu cyfyngedig rhwng gwefannau</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{Mae 1 lawrlwythiad ar y gweill}zero{Mae # lawrlwythiad ar y gweill}two{Mae # lawrlwythiad ar y gweill}few{Mae # lawrlwythiad ar y gweill}many{Mae # lawrlwythiad ar y gweill}other{Mae # lawrlwythiad ar y gweill}}</translation>
 <translation id="72415438529550637">Mae'r awgrym cyfrinair ar gau.</translation>
@@ -1575,7 +1576,6 @@ Er enghraifft, gall rhai gwefannau ymateb i'r cais hwn drwy ddangos hysbysebion 
 <translation id="926205370408745186">Dileu'ch gweithgarwch Chrome o Digital Wellbeing</translation>
 <translation id="927968626442779827">Defnyddio'r modd Lite ar Google Chrome</translation>
 <translation id="928550791203542716">Yn dilyn <ph name="SITE_NAME" /></translation>
-<translation id="932327136139879170">Cartref</translation>
 <translation id="938850635132480979">Gwall: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">Rhowch gyfrinymadrodd</translation>
 <translation id="952301137339791907">Mae'r ddalen waelod mewnwelediadau tudalen ar agor</translation>

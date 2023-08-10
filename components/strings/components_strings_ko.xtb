@@ -1839,7 +1839,6 @@
 <translation id="4901778704868714008">저장...</translation>
 <translation id="4901952598169637881">캐주얼 신발</translation>
 <translation id="4905659621780993806">관리자가 <ph name="DATE" /> <ph name="TIME" />에 기기를 자동으로 다시 시작합니다. 기기가 다시 시작되기 전에 실행 중인 항목을 저장하세요.</translation>
-<translation id="4907289208610706508">대상</translation>
 <translation id="4913987521957242411">왼쪽 상단 펀칭</translation>
 <translation id="4917064667437236721">이미징 실린더</translation>
 <translation id="4918221908152712722"><ph name="APP_NAME" /> 설치(다운로드 필요 없음)</translation>
@@ -2680,6 +2679,7 @@
 <translation id="6702919718839027939">발표</translation>
 <translation id="6704458454638854812">'custom_size' 속성이 설정되어 있으므로 속성 이름이 'custom'이어야 합니다.</translation>
 <translation id="6706005862292023715">커튼 및 창문 장식</translation>
+<translation id="6706210727756204531">범위</translation>
 <translation id="6709133671862442373">뉴스</translation>
 <translation id="6709888928011386878">악기</translation>
 <translation id="6710213216561001401">이전</translation>

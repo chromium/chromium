@@ -229,6 +229,7 @@
 <translation id="2278052315791335171">Եթե հեռացնեք այս գաղտնաբառը, ձեր հաշիվը չի ջնջվի <ph name="SITE" /> կայքից։</translation>
 <translation id="2286841657746966508">Վճարային հասցե</translation>
 <translation id="228704530595896923">Կիսվելու տարբերակների ցանկը։</translation>
+<translation id="2297822946037605517">Կիսվել այս էջով</translation>
 <translation id="230115972905494466">Համատեղելի սարքեր չեն գտնվել</translation>
 <translation id="2318045970523081853">Հպեք՝ զանգելու համար</translation>
 <translation id="2321086116217818302">Արտահանման նախապատրաստում…</translation>
@@ -306,7 +307,6 @@
 <translation id="2656405586795711023">Վեբ հավելվածներ</translation>
 <translation id="2669454659051515572">Այս սարքն օգտագործող ցանկացած օգտատեր կարող է տեսնել ներբեռնված ֆայլերը</translation>
 <translation id="2702516483241149200">Նորույթ․ կիսվեք հղումով, որն ուղղորդում է դեպի այս տեքստ</translation>
-<translation id="2707726405694321444">Թարմացնել էջը</translation>
 <translation id="271033894570825754">New</translation>
 <translation id="2711073837061989559">Փորձնական տարբերակներ</translation>
 <translation id="2718352093833049315">Միայն Wi-Fi-ով</translation>
@@ -708,6 +708,7 @@
 
 Այս կարգավորումը փոփոխելու համար <ph name="BEGIN_LINK" />վերակայեք համաժամացումը<ph name="END_LINK" /></translation>
 <translation id="4807098396393229769">Քարտապանի անունը</translation>
+<translation id="480990236307250886">Բացել գլխավոր էջը</translation>
 <translation id="481574578487123132">Կապված սարքեր</translation>
 <translation id="4826163340425232009">Հաշիվ մտնելու ներքևի էկրան։</translation>
 <translation id="4834007576107377210">Որոնման պատմությունը ջնջելու համար դիտեք համապատասխան որոնողական համակարգի հրահանգները։</translation>
@@ -832,7 +833,6 @@
 <translation id="5444999712122199445">Վերադառնալ կայք</translation>
 <translation id="544776284582297024">Ներդիրներ բացելու և միաժամանակ մի քանի էջեր այցելելու համար սեղմեք «բաց ներդիրներ» կոճակը</translation>
 <translation id="5454166040603940656"><ph name="PROVIDER" />-ի հետ</translation>
-<translation id="5456381639095306749">Ներբեռնել էջը</translation>
 <translation id="5458366071038729214">Կայքերը, որոնց հետևում եք, կցուցադրվեն այստեղ</translation>
 <translation id="5468068603361015296">Միևնույն է ներբեռնե՞լ <ph name="FILE_NAME" /> ֆայլը։</translation>
 <translation id="548278423535722844">Բացեք Քարտեզներ հավելվածում</translation>
@@ -1173,6 +1173,7 @@
 <translation id="7196215469483532480">Տվյալների պաշտպանության ուղեցույցի մասին տեղեկությունները բացված են ամբողջությամբ</translation>
 <translation id="7207760545532569765">Վերականգնել <ph name="TAB_COUNT" /> ներդիրները որպես նոր ֆոնային ներդիրներ։</translation>
 <translation id="7217781228893594884">Ինկոգնիտո ներդիրները կկողպվեն, երբ դուք փակեք Chrome-ը</translation>
+<translation id="7221869452894271364">Վերաբեռնել այս էջը</translation>
 <translation id="7222235798733126207">Կայքերի միջև տվյալների սահմանափակ փոխանակում</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{Կնեռբեռնվի 1 ֆայլ}one{Կներբեռնվի # ֆայլ}other{Կներբեռնվի # ֆայլ}}</translation>
 <translation id="72415438529550637">Գաղտնաբառի առաջարկը փակված է։</translation>
@@ -1576,7 +1577,6 @@
 <translation id="926205370408745186">Հեռացրեք Chrome-ի պատմությունը Թվային բարեկեցությունից</translation>
 <translation id="927968626442779827">Փորձեք Lite ռեժիմը Google Chrome-ում</translation>
 <translation id="928550791203542716">Դուք բաժանորդագրվեցիք <ph name="SITE_NAME" /> կայքին</translation>
-<translation id="932327136139879170">Գլխավոր էջ</translation>
 <translation id="938850635132480979">Սխալ՝ <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">Մուտքագրեք անցաբառը</translation>
 <translation id="952301137339791907">Էջի վիճակագրության ներքևի էկրանը բացված է</translation>

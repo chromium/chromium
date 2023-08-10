@@ -229,6 +229,7 @@ Når du sletter din browserhistorik – det hele eller for et specifikt website 
 <translation id="2278052315791335171">Fjernelse af denne adgangskode sletter ikke din konto på <ph name="SITE" /></translation>
 <translation id="2286841657746966508">Faktureringsadresse</translation>
 <translation id="228704530595896923">Liste over delingsindstillinger.</translation>
+<translation id="2297822946037605517">Del denne side</translation>
 <translation id="230115972905494466">Der blev ikke fundet nogen kompatible enheder</translation>
 <translation id="2318045970523081853">Tryk for at ringe op</translation>
 <translation id="2321086116217818302">Forbereder adgangskoder…</translation>
@@ -306,7 +307,6 @@ Private state tokens forbedrer beskyttelsen af personlige oplysninger på nettet
 <translation id="2656405586795711023">Webapps</translation>
 <translation id="2669454659051515572">Alle, der bruger denne enhed, kan se downloadede filer</translation>
 <translation id="2702516483241149200">Nyhed: Del et link, der ruller til denne tekst</translation>
-<translation id="2707726405694321444">Opdater siden</translation>
 <translation id="271033894570825754">Nyt</translation>
 <translation id="2711073837061989559">Prøver</translation>
 <translation id="2718352093833049315">Kun på Wi-Fi</translation>
@@ -708,6 +708,7 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 
 Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille synkronisering<ph name="END_LINK" /></translation>
 <translation id="4807098396393229769">Navn på kort</translation>
+<translation id="480990236307250886">Åbn startsiden</translation>
 <translation id="481574578487123132">Tilknyttede enheder</translation>
 <translation id="4826163340425232009">Loginfeltet i bunden.</translation>
 <translation id="4834007576107377210">Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis det er relevant</translation>
@@ -832,7 +833,6 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="5444999712122199445">Gå tilbage til websitet</translation>
 <translation id="544776284582297024">Hvis du vil åbne faner og besøge forskellige sider på samme tid, skal du trykke på faneknappen</translation>
 <translation id="5454166040603940656">med <ph name="PROVIDER" /></translation>
-<translation id="5456381639095306749">Download siden</translation>
 <translation id="5458366071038729214">Du kan finde de websites, du følger, her</translation>
 <translation id="5468068603361015296">Vil du downloade <ph name="FILE_NAME" /> alligevel?</translation>
 <translation id="548278423535722844">Åbn i kortapp</translation>
@@ -1173,6 +1173,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="7196215469483532480">Beskrivelsen af Privatlivsguide er åbnet i fuld højde</translation>
 <translation id="7207760545532569765">Gendan <ph name="TAB_COUNT" /> faner som nye baggrundsfaner.</translation>
 <translation id="7217781228893594884">Inkognitofaner låses, når du lukker Chrome</translation>
+<translation id="7221869452894271364">Genindlæs denne side</translation>
 <translation id="7222235798733126207">Begrænset deling mellem websites</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 download afventer}one{# download afventer}other{# downloads afventer}}</translation>
 <translation id="72415438529550637">Adgangskodeforslaget er lukket.</translation>
@@ -1576,7 +1577,6 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="926205370408745186">Fjern din Chrome-aktivitet fra Digital balance</translation>
 <translation id="927968626442779827">Brug Lite-tilstand i Google Chrome</translation>
 <translation id="928550791203542716">Følger <ph name="SITE_NAME" /></translation>
-<translation id="932327136139879170">Start</translation>
 <translation id="938850635132480979">Fejl: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">Angiv adgangssætning</translation>
 <translation id="952301137339791907">Det nederste ark med sideindsigt er åbnet</translation>

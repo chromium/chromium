@@ -1367,6 +1367,7 @@
 <translation id="6912901278692845878">快速导览</translation>
 <translation id="6919251195245069855">无法识别您的智能卡，请重试。</translation>
 <translation id="6920245099716267363">开启/关闭热点。热点已开启，且已连接 1 部设备。</translation>
+<translation id="692135145298539227">删除</translation>
 <translation id="6931576957638141829">保存到</translation>
 <translation id="6942518653766415536">录制格式菜单</translation>
 <translation id="6945221475159498467">选择</translation>
@@ -1675,6 +1676,7 @@
 <translation id="8315514906653279104">正在开启…</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363">已选择‘<ph name="WINDOW_TITLE" />’窗口</translation>
+<translation id="8349826889576450703">启动器</translation>
 <translation id="8349964124165471584">在新窗口中打开链接</translation>
 <translation id="8351131234907093545">创建记事</translation>
 <translation id="8367948981300340152"><ph name="CAPTURE_MEDIUM" />正被使用。</translation>

@@ -229,6 +229,7 @@
 <translation id="2278052315791335171">Бул сырсөздү жок кылуу менен <ph name="SITE" /> аккаунтуңуз өчпөйт</translation>
 <translation id="2286841657746966508">Төлөмдүн дареги</translation>
 <translation id="228704530595896923">Бөлүшүү параметрлеринин тизмеси.</translation>
+<translation id="2297822946037605517">Бул баракты бөлүшүү</translation>
 <translation id="230115972905494466">Шайкеш түзмөктөр табылган жок</translation>
 <translation id="2318045970523081853">Чалуу үчүн басыңыз</translation>
 <translation id="2321086116217818302">Сырсөздөр даярдалууда…</translation>
@@ -302,7 +303,6 @@
 <translation id="2656405586795711023">Веб колдонмолор</translation>
 <translation id="2669454659051515572">Бул түзмөктү колдонгондордун баары жүктөлүп алынган файлдарды көрө алышат</translation>
 <translation id="2702516483241149200">Жаңы: Бул текстке сыдырылган шилтемени бөлүшө аласыз</translation>
-<translation id="2707726405694321444">Бетти жаңылоо</translation>
 <translation id="271033894570825754">Жаңы</translation>
 <translation id="2711073837061989559">Сыноо мезгилдери</translation>
 <translation id="2718352093833049315">Wi-Fi'да гана</translation>
@@ -700,6 +700,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 
 Бул параметрди өзгөртүү үчүн <ph name="BEGIN_LINK" />шайкештирүүнү баштапкы абалга келтириңиз<ph name="END_LINK" /></translation>
 <translation id="4807098396393229769">Картадагы ысым</translation>
+<translation id="480990236307250886">Башкы бетти ачуу</translation>
 <translation id="481574578487123132">Байланышкан түзмөктөр</translation>
 <translation id="4826163340425232009">Кирүү процессинин ылдыйкы экраны.</translation>
 <translation id="4834007576107377210">Издөө таржымалын өчүрүү үчүн, бар болсо, издөө каражатындагы нускамаларды караңыз</translation>
@@ -824,7 +825,6 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="5444999712122199445">Сайтка кайтуу</translation>
 <translation id="544776284582297024">Бир учурда бир нече өтмөктү ачып, бир нече баракка өтүү үчүн өтмөктөрдү ачуу баскычын басыңыз</translation>
 <translation id="5454166040603940656"><ph name="PROVIDER" /> менен</translation>
-<translation id="5456381639095306749">Баракты жүктөп алуу</translation>
 <translation id="5458366071038729214">Жазылган сайттарды ушул жерден табасыз</translation>
 <translation id="5468068603361015296"><ph name="FILE_NAME" /> файлы баары бир жүктөлүп алынсынбы?</translation>
 <translation id="548278423535722844">Карталар колдонмосунан ачыңыз</translation>
@@ -1165,6 +1165,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="7196215469483532480">Купуялык жетектемесинин түшүндүрмөсү толугу менен ачылды</translation>
 <translation id="7207760545532569765"><ph name="TAB_COUNT" /> өтмөктү фондогу жаңы өтмөктөр катары калыбына келтирүү.</translation>
 <translation id="7217781228893594884">Chrome'дон чыкканыңызда жашыруун өтмөктөр кулпуланат</translation>
+<translation id="7221869452894271364">Бул бетти кайра жүктөө</translation>
 <translation id="7222235798733126207">Сайттардын арасындагы бөлүшүү аракетин чектөө</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 жүктөп алуу күтүлүүдө}other{# жүктөп алуу күтүлүүдө}}</translation>
 <translation id="72415438529550637">Сырсөздү сунуштоо жабылды.</translation>
@@ -1568,7 +1569,6 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="926205370408745186">Chrome'ду колдонуу дайын-даректериңизди Санариптик бакубаттык кызматынан алып салыңыз</translation>
 <translation id="927968626442779827">Google Chrome'до Жөнөкөй режимди колдонуңуз</translation>
 <translation id="928550791203542716"><ph name="SITE_NAME" /> сайтына жазылгансыз</translation>
-<translation id="932327136139879170">Башкы</translation>
 <translation id="938850635132480979">Ката: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">Купуя сөз айкашын киргизиңиз</translation>
 <translation id="952301137339791907">Барактын статистикасынын ылдыйкы экраны ачылды</translation>

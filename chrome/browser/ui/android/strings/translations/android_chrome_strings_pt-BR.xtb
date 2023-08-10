@@ -229,6 +229,7 @@ Ao excluir todo o histórico de navegação ou apenas o de um site específico, 
 <translation id="2278052315791335171">A exclusão desta senha não excluirá a conta em <ph name="SITE" /></translation>
 <translation id="2286841657746966508">Endereço de faturamento</translation>
 <translation id="228704530595896923">Lista de opções de compartilhamento.</translation>
+<translation id="2297822946037605517">Compartilhar esta página</translation>
 <translation id="230115972905494466">Nenhum dispositivo compatível encontrado</translation>
 <translation id="2318045970523081853">Toque para ligar</translation>
 <translation id="2321086116217818302">Preparando senhas…</translation>
@@ -306,7 +307,6 @@ Os tokens de estado particular melhoram a privacidade na Web e não podem ser us
 <translation id="2656405586795711023">Apps da Web</translation>
 <translation id="2669454659051515572">Qualquer pessoa que use este dispositivo pode ver os arquivos transferidos por download</translation>
 <translation id="2702516483241149200">Novo: compartilhe um link para este texto</translation>
-<translation id="2707726405694321444">Atualizar página</translation>
 <translation id="271033894570825754">Novo</translation>
 <translation id="2711073837061989559">Testes</translation>
 <translation id="2718352093833049315">Apenas com Wi-Fi</translation>
@@ -709,6 +709,7 @@ Os tokens de estado particular melhoram a privacidade na Web e não podem ser us
 
 Para alterar essa configuração, <ph name="BEGIN_LINK" />redefina a sincronização<ph name="END_LINK" /></translation>
 <translation id="4807098396393229769">Nome no cartão de crédito</translation>
+<translation id="480990236307250886">Abrir a página inicial</translation>
 <translation id="481574578487123132">Dispositivos vinculados</translation>
 <translation id="4826163340425232009">Página inferior de login.</translation>
 <translation id="4834007576107377210">Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de pesquisa, se aplicável</translation>
@@ -833,7 +834,6 @@ Para alterar essa configuração, <ph name="BEGIN_LINK" />redefina a sincroniza�
 <translation id="5444999712122199445">Voltar para o site</translation>
 <translation id="544776284582297024">Para abrir guias e acessar páginas diferentes ao mesmo tempo, toque no botão "abrir guias"</translation>
 <translation id="5454166040603940656">com <ph name="PROVIDER" /></translation>
-<translation id="5456381639095306749">Fazer o download da página</translation>
 <translation id="5458366071038729214">Você verá os sites que você seguir aqui</translation>
 <translation id="5468068603361015296">Quer fazer o download de <ph name="FILE_NAME" /> mesmo assim?</translation>
 <translation id="548278423535722844">Abrir no app de mapa</translation>
@@ -1174,6 +1174,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="7196215469483532480">Explicação sobre o Guia de privacidade aberta no tamanho máximo</translation>
 <translation id="7207760545532569765">Restaurar <ph name="TAB_COUNT" /> guias como novas guias em segundo plano.</translation>
 <translation id="7217781228893594884">As guias anônimas vão ser bloqueadas quando você sair do Chrome</translation>
+<translation id="7221869452894271364">Recarregar esta página</translation>
 <translation id="7222235798733126207">Compartilhamento entre sites limitado</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 download pendente}one{# download pendente}other{# downloads pendentes}}</translation>
 <translation id="72415438529550637">A sugestão de senha está fechada.</translation>
@@ -1577,7 +1578,6 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="926205370408745186">Remover sua atividade do Chorme do Bem-estar digital</translation>
 <translation id="927968626442779827">Use o Modo Lite no Google Chrome</translation>
 <translation id="928550791203542716">Seguindo <ph name="SITE_NAME" /></translation>
-<translation id="932327136139879170">Início</translation>
 <translation id="938850635132480979">Erro: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">Inserir senha</translation>
 <translation id="952301137339791907">A página inferior de insights está aberta</translation>

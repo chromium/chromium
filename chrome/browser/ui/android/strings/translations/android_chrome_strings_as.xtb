@@ -229,6 +229,7 @@
 <translation id="2278052315791335171">এই পাছৱৰ্ডটো মচাৰ ফলত <ph name="SITE" />ত থকা আপোনাৰ একাউণ্টটো মচি পেলোৱা নহ’ব</translation>
 <translation id="2286841657746966508">বিলিঙৰ ঠিকনা</translation>
 <translation id="228704530595896923">শ্বেয়াৰ কৰাৰ বিকল্পৰ সূচী।</translation>
+<translation id="2297822946037605517">এই পৃষ্ঠাখন শ্বেয়াৰ কৰক</translation>
 <translation id="230115972905494466">খাপ খোৱা কোনো ডিভাইচ বিচাৰি পোৱা নগ’ল</translation>
 <translation id="2318045970523081853">কল কৰিবলৈ টিপক</translation>
 <translation id="2321086116217818302">পাছৱর্ড সাজু কৰি থকা হৈছে…</translation>
@@ -306,7 +307,6 @@
 <translation id="2656405586795711023">ৱেব এপ্‌সমূহ</translation>
 <translation id="2669454659051515572">এই ডিভাইচটো ব্যৱহাৰ কৰা যিকোনো লোকে ডাউনল’ড কৰা ফাইল চাব পাৰে</translation>
 <translation id="2702516483241149200">নতুন: এই পাঠটোলৈ স্ক্ৰ’ল কৰা এটা লিংক শ্বেয়াৰ কৰা</translation>
-<translation id="2707726405694321444">পৃষ্ঠাটো ৰিফ্ৰেশ্ব কৰক</translation>
 <translation id="271033894570825754">নতুন</translation>
 <translation id="2711073837061989559">ট্ৰায়েল</translation>
 <translation id="2718352093833049315">কেৱল ৱাই-ফাইত</translation>
@@ -707,6 +707,7 @@
 
 এই ছেটিংটো সলনি কৰিবলৈ <ph name="BEGIN_LINK" />ছিংক ৰিছেট কৰক<ph name="END_LINK" /></translation>
 <translation id="4807098396393229769">কার্ডত থকা নাম</translation>
+<translation id="480990236307250886">গৃহ পৃষ্ঠাটো খোলক</translation>
 <translation id="481574578487123132">লিংক কৰি থোৱা ডিভাইচ</translation>
 <translation id="4826163340425232009">ছাইন ইন কৰাৰ সুবিধা থকা তলৰ শ্বীট।</translation>
 <translation id="4834007576107377210">যদি প্ৰযোজ্য হয়, আপোনাৰ সন্ধানৰ ইতিহাস মচিবলৈ আপোনাৰ সন্ধানৰ ইঞ্জিনৰ নিৰ্দেশাৱলী চাওক</translation>
@@ -831,7 +832,6 @@
 <translation id="5444999712122199445">ছাইটলৈ উভতি যাওক</translation>
 <translation id="544776284582297024">একে সময়তে টেবসমূহ খুলিবলৈ আৰু বেলেগ বেলেগ পৃষ্ঠাসমূহলৈ যাবলৈ, টেবসমূহ খোলক বুটামটো টিপক</translation>
 <translation id="5454166040603940656"><ph name="PROVIDER" />ৰ সৈতে</translation>
-<translation id="5456381639095306749">পৃষ্ঠাটো ডাউনল'ড কৰক</translation>
 <translation id="5458366071038729214">আপুনি নিজে ফ'ল' কৰা ছাইটসমূহ ইয়াত বিচাৰি পাব</translation>
 <translation id="5468068603361015296">আপুনি তথাপি <ph name="FILE_NAME" /> ডাউনল’ড কৰিব বিচাৰেনে?</translation>
 <translation id="548278423535722844">maps এপত খোলক</translation>
@@ -1172,6 +1172,7 @@
 <translation id="7196215469483532480">পূৰ্ণ উচ্চতাত খোলা গোপনীয়তা সম্পৰ্কীয় নিৰ্দেশনাৰ ব্যাখ্যা</translation>
 <translation id="7207760545532569765"><ph name="TAB_COUNT" /> টা টেবক নতুন নেপথ্যৰ টেব হিচাপে পুনৰুদ্ধাৰ কৰক।</translation>
 <translation id="7217781228893594884">আপুনি Chromeৰ পৰা বাহিৰ ওলালে ইনক’গ্নিট’ টেবসমূহ লক কৰা হ’ব</translation>
+<translation id="7221869452894271364">এই পৃষ্ঠাটো পুনৰ ল'ড কৰক</translation>
 <translation id="7222235798733126207">ছাইটসমূহৰ মাজত শ্বেয়াৰ কৰাটো সীমিত</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{১ টা ডাউনল’ড বাকী আছে}one{# টা ডাউনল’ড বাকী আছে}other{# টা ডাউনল’ড বাকী আছে}}</translation>
 <translation id="72415438529550637">পাছৱৰ্ডৰ পৰামৰ্শ বন্ধ কৰা হৈছে।</translation>
@@ -1575,7 +1576,6 @@
 <translation id="926205370408745186">আপুনি Chromeত কৰা কাৰ্যকলাপ ডিজিটেল ৱেলবিইঙ-ৰ পৰা আঁতৰাওক</translation>
 <translation id="927968626442779827">Google Chromeত লাইট ম’ড ব্যৱহাৰ কৰক</translation>
 <translation id="928550791203542716"><ph name="SITE_NAME" /> ফ’ল’ কৰি থকা হৈছে</translation>
-<translation id="932327136139879170">গৃহ</translation>
 <translation id="938850635132480979">আসোঁৱাহ: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">পাছফ্ৰেজ দিয়ক</translation>
 <translation id="952301137339791907">পৃষ্ঠাৰ অন্তৰ্দৃষ্টি থকা তলৰ শ্বীটখন খোলা আছে</translation>

@@ -1070,7 +1070,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3299098170013242198">O Windows Hello está ativado para preencher senhas</translation>
 <translation id="3303176609391916566">30 x 42 pol.</translation>
 <translation id="3303855915957856445">Nenhum resultado de pesquisa encontrado</translation>
-<translation id="3304073249511302126">verificação de Bluetooth</translation>
+<translation id="3304073249511302126">busca por Bluetooth</translation>
 <translation id="3304777285002411338">A2x3</translation>
 <translation id="33073482541490531">A senha que você usou foi encontrada em uma violação de dados. O Gerenciador de senhas recomenda que você a mude imediatamente.</translation>
 <translation id="3307649904964670439">Botão "Personalizar o Chrome". Ative para personalizar a aparência do navegador</translation>
@@ -1839,7 +1839,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4901778704868714008">Salvar…</translation>
 <translation id="4901952598169637881">Sapatos casuais</translation>
 <translation id="4905659621780993806">O administrador vai reiniciar seu dispositivo automaticamente em <ph name="DATE" />, <ph name="TIME" />. Salve os itens abertos antes que o dispositivo seja reiniciado.</translation>
-<translation id="4907289208610706508">Destino</translation>
 <translation id="4913987521957242411">Perfuração na parte superior esquerda</translation>
 <translation id="4917064667437236721">Cilindro de imagem</translation>
 <translation id="4918221908152712722">Instale o <ph name="APP_NAME" /> (nenhum download é necessário)</translation>
@@ -2604,7 +2603,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6535751101619004418">Moedas e câmbio</translation>
 <translation id="6536221421038631327">A remoção de uma assinatura do Passpoint do <ph name="DEVICE_TYPE" /> também remove as redes associadas. Entre em contato com "<ph name="FRIENDLY_NAME" />" para fazer mudanças no seu plano de assinatura. <ph name="LEARN_MORE" /></translation>
 <translation id="6540534463546766581">Fundos mútuos</translation>
-<translation id="6545864417968258051">Verificação de Bluetooth</translation>
+<translation id="6545864417968258051">Busca por Bluetooth</translation>
 <translation id="6547208576736763147">Perfuração dupla no lado esquerdo</translation>
 <translation id="6549443526281184652">Trajes típicos</translation>
 <translation id="6551873053534932690">Salvar endereço na conta?</translation>
@@ -2680,6 +2679,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6702919718839027939">Apresentação</translation>
 <translation id="6704458454638854812">A propriedade "custom_size" está definida. O nome esperado é "custom".</translation>
 <translation id="6706005862292023715">Tratamentos para cortinas e janelas</translation>
+<translation id="6706210727756204531">Escopo</translation>
 <translation id="6709133671862442373">Notícias</translation>
 <translation id="6709888928011386878">Instrumentos musicais</translation>
 <translation id="6710213216561001401">Anterior</translation>
@@ -3315,7 +3315,7 @@ Mais detalhes:
 <translation id="8012647001091218357">Não foi possível contatar seus pais. Tente novamente.</translation>
 <translation id="8019861005170389898"><ph name="TRADITIONAL_TEXT" /> (<ph name="ADDITIONAL_TEXT" />)</translation>
 <translation id="8022542098135319050">Agências e serviços de viagem</translation>
-<translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Tab e depois Enter para definir o Chrome como o navegador padrão do sistema</translation>
+<translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Tab e depois Enter para definir o Chrome como navegador padrão do sistema.</translation>
 <translation id="8025119109950072390">Invasores nesse site podem induzir você a fazer algo perigoso, como instalar um software ou revelar suas informações pessoais (por exemplo, senhas, números de telefone ou cartões de crédito).</translation>
 <translation id="8026334261755873520">Remover dados de navegação</translation>
 <translation id="8027077570865220386">Bandeja 15</translation>

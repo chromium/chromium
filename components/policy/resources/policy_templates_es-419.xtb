@@ -1229,9 +1229,6 @@ Esta política no tendrá ningún efecto si estableces la política <ph name="DE
       Si no estableces la política o estableces una lista vacía, no habrá modos de desbloqueo rápido disponibles para los dispositivos administrados.
 
       Esta política dejó de estar disponible; usa <ph name="QUICK_UNLOCK_MODE_ALLOW_LIST_POLICY_NAME" /> en su lugar.</translation>
-<translation id="2033784678146670379">Si habilitas la política, los usuarios podrán utilizar el hardware de los dispositivos con <ph name="PRODUCT_OS_NAME" /> para certificar su identidad de forma remota ante la CA de privacidad mediante la función <ph name="CHALLENGE_USER_KEY_FUNCTION" /> de <ph name="ENTERPRISE_PLATFORM_KEYS_API" />.
-
-      Si la inhabilitas o no la estableces, fallarán las llamadas a la API y se mostrará un código de error.</translation>
 <translation id="2036522553891755455">Si habilitas la política, la detección de elementos compartidos (la función Network File Shares para <ph name="PRODUCT_NAME" />) usará el protocolo <ph name="NETBIOS_PROTOCOL" /> para detectar archivos compartidos en la red. Si la inhabilitas, la detección de elementos compartidos no utilizará este protocolo para detectar archivos compartidos.
 
       Si no la estableces, de forma predeterminada se desactivará para los usuarios administrados y se activará para los demás usuarios.</translation>

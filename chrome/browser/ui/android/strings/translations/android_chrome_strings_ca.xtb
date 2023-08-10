@@ -229,6 +229,7 @@ Quan suprimeixes l'historial de navegació (sigui per complet o un lloc web espe
 <translation id="2278052315791335171">Encara que suprimeixis aquesta contrasenya, no se suprimirà el teu compte a <ph name="SITE" /></translation>
 <translation id="2286841657746966508">Adreça de facturació</translation>
 <translation id="228704530595896923">Llista d'opcions de compartició.</translation>
+<translation id="2297822946037605517">Comparteix aquesta pàgina</translation>
 <translation id="230115972905494466">No s'ha trobat cap dispositiu compatible</translation>
 <translation id="2318045970523081853">Toca per fer una trucada</translation>
 <translation id="2321086116217818302">S'estan preparant les contrasenyes…</translation>
@@ -306,7 +307,6 @@ Els testimonis d'estat privat milloren la privadesa al web i no poden utilitzar-
 <translation id="2656405586795711023">Aplicacions web</translation>
 <translation id="2669454659051515572">Qualsevol persona que utilitzi aquest dispositiu pot veure els fitxers baixats</translation>
 <translation id="2702516483241149200">Nou: comparteix un enllaç que es desplaça fins a aquest text</translation>
-<translation id="2707726405694321444">Actualitza la pàgina</translation>
 <translation id="271033894570825754">Nou</translation>
 <translation id="2711073837061989559">Proves</translation>
 <translation id="2718352093833049315">Només amb Wi-Fi</translation>
@@ -708,6 +708,7 @@ Els testimonis d'estat privat milloren la privadesa al web i no poden utilitzar-
 
 Per canviar aquesta opció, <ph name="BEGIN_LINK" />restableix la sincronització<ph name="END_LINK" />.</translation>
 <translation id="4807098396393229769">Titular de la targeta</translation>
+<translation id="480990236307250886">Obre la pàgina d'inici</translation>
 <translation id="481574578487123132">Dispositius enllaçats</translation>
 <translation id="4826163340425232009">Full inferior d'inici de sessió.</translation>
 <translation id="4834007576107377210">Consulta les instruccions del teu motor de cerca per suprimir l'historial de cerques, si escau</translation>
@@ -832,7 +833,6 @@ Per canviar aquesta opció, <ph name="BEGIN_LINK" />restableix la sincronitzaci�
 <translation id="5444999712122199445">Torna al lloc web</translation>
 <translation id="544776284582297024">Per obrir pestanyes i visitar diverses pàgines al mateix temps, toca el botó de pestanyes obertes</translation>
 <translation id="5454166040603940656">amb <ph name="PROVIDER" /></translation>
-<translation id="5456381639095306749">Baixa la pàgina</translation>
 <translation id="5458366071038729214">Aquí veuràs els llocs web que segueixes</translation>
 <translation id="5468068603361015296">Vols baixar <ph name="FILE_NAME" /> igualment?</translation>
 <translation id="548278423535722844">Obre en una aplicació de mapes</translation>
@@ -1173,6 +1173,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="7196215469483532480">L'explicació de la guia de privadesa s'ha obert a alçada completa</translation>
 <translation id="7207760545532569765">Restaura <ph name="TAB_COUNT" /> pestanyes com noves pestanyes en segon pla.</translation>
 <translation id="7217781228893594884">Les pestanyes d'incògnit es bloquejaran quan surtis de Chrome</translation>
+<translation id="7221869452894271364">Torna a carregar aquesta pàgina</translation>
 <translation id="7222235798733126207">Compartició limitada entre llocs web</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 baixada pendent}other{# baixades pendents}}</translation>
 <translation id="72415438529550637">El suggeriment de contrasenya s'ha tancat.</translation>
@@ -1576,7 +1577,6 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="926205370408745186">Suprimeix l'activitat de Chrome de l'aplicació Benestar digital</translation>
 <translation id="927968626442779827">Utilitza el mode lleuger a Google Chrome</translation>
 <translation id="928550791203542716">Segueixes <ph name="SITE_NAME" /></translation>
-<translation id="932327136139879170">Inici</translation>
 <translation id="938850635132480979">Error: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">Introduïu la frase de contrasenya</translation>
 <translation id="952301137339791907">El full inferior d'estadístiques de la pàgina està obert</translation>

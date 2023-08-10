@@ -1226,9 +1226,6 @@ Esta política não terá efeito quando a <ph name="DEVICE_SCREENSAVER_LOGIN_SCR
       Se a política não for definida ou se ela for definida como uma lista vazia, nenhum modo de desbloqueio rápido estará disponível nos dispositivos gerenciados.
 
       Esta política está obsoleta. Use a <ph name="QUICK_UNLOCK_MODE_ALLOW_LIST_POLICY_NAME" />.</translation>
-<translation id="2033784678146670379">Se a política for definida como "Ativada", os usuários poderão usar o hardware de dispositivos <ph name="PRODUCT_OS_NAME" /> para fazer o atestado remoto da identidade para a Privacy CA usando a <ph name="CHALLENGE_USER_KEY_FUNCTION" /> com a <ph name="ENTERPRISE_PLATFORM_KEYS_API" />.
-
-      Se a política for definida como "Desativada" ou não for definida, as chamadas para a API falharão com um código de erro.</translation>
 <translation id="2036522553891755455">Se a política for definida como "Ativada", a detecção de compartilhamento de arquivos de rede do <ph name="PRODUCT_NAME" /> usará o <ph name="NETBIOS_PROTOCOL" /> para detectar compartilhamentos na rede. Se a política for definida como "Desativada", a detecção de compartilhamentos não usará esse protocolo.
 
       Se a política não for definida, o comportamento ficará desativado por padrão para usuários gerenciados e ativado para outros usuários.</translation>

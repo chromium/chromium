@@ -1367,6 +1367,7 @@
 <translation id="6912901278692845878">빠르게 둘러보기</translation>
 <translation id="6919251195245069855">스마트 카드를 인식할 수 없습니다. 다시 시도해 보세요.</translation>
 <translation id="6920245099716267363">핫스팟을 전환합니다. 핫스팟이 켜져 있으며 기기 1대가 연결되어 있습니다.</translation>
+<translation id="692135145298539227">삭제</translation>
 <translation id="6931576957638141829">저장 위치</translation>
 <translation id="6942518653766415536">녹화 형식 메뉴</translation>
 <translation id="6945221475159498467">선택</translation>
@@ -1678,6 +1679,7 @@
 <translation id="8315514906653279104">켜는 중...</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> 창 선택됨</translation>
+<translation id="8349826889576450703">런처</translation>
 <translation id="8349964124165471584">새 창에서 링크 열기</translation>
 <translation id="8351131234907093545">메모 만들기</translation>
 <translation id="8367948981300340152"><ph name="CAPTURE_MEDIUM" /> 앱을 사용 중입니다.</translation>

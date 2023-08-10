@@ -229,6 +229,7 @@ Az összes böngészési előzmény vagy csak adott webhely böngészési előzm
 <translation id="2278052315791335171">A jelszó eltávolításával nem törli fiókját a következő domainről: <ph name="SITE" />.</translation>
 <translation id="2286841657746966508">Számlázási cím</translation>
 <translation id="228704530595896923">A megosztási lehetőségek listája.</translation>
+<translation id="2297822946037605517">Az oldal megosztása</translation>
 <translation id="230115972905494466">Nem találhatók kompatibilis eszközök</translation>
 <translation id="2318045970523081853">Koppintson a hívás indításához</translation>
 <translation id="2321086116217818302">Jelszavak előkészítése…</translation>
@@ -306,7 +307,6 @@ A privát állapottokenek nagyobb fokú adatvédelmet biztosítanak az internete
 <translation id="2656405586795711023">Webalkalmazások</translation>
 <translation id="2669454659051515572">A letöltött fájlokat bárki láthatja, aki az eszközt használja</translation>
 <translation id="2702516483241149200">Új: az ehhez a szöveghez gördülő linket oszthat meg</translation>
-<translation id="2707726405694321444">Oldal frissítése</translation>
 <translation id="271033894570825754">Új</translation>
 <translation id="2711073837061989559">Próbaidőszakok</translation>
 <translation id="2718352093833049315">Csak Wi-Fi-n</translation>
@@ -708,6 +708,7 @@ Előfordulhat, hogy Google-fiókjában (a <ph name="BEGIN_LINK" />myactivity.goo
 
 A beállítás módosításához <ph name="BEGIN_LINK" />állítsa vissza a szinkronizálást<ph name="END_LINK" /></translation>
 <translation id="4807098396393229769">A kártyán feltüntetett név</translation>
+<translation id="480990236307250886">A kezdőoldal megnyitása</translation>
 <translation id="481574578487123132">Összekapcsolt eszközök</translation>
 <translation id="4826163340425232009">Bejelentkezési alsó lap.</translation>
 <translation id="4834007576107377210">A keresési előzmények törléséről a keresőmotorja útmutatójából tájékozódhat, ha van ilyen.</translation>
@@ -832,7 +833,6 @@ A beállítás módosításához <ph name="BEGIN_LINK" />állítsa vissza a szin
 <translation id="5444999712122199445">Vissza a webhelyre</translation>
 <translation id="544776284582297024">Ha egyidejűleg több lapot is megnyitna, és különböző oldalakat is felkeresne, koppintson a megnyitott lapok gombra</translation>
 <translation id="5454166040603940656"><ph name="PROVIDER" /> szolgáltatóval</translation>
-<translation id="5456381639095306749">Oldal letöltése</translation>
 <translation id="5458366071038729214">A követett webhelyeket itt láthatja majd</translation>
 <translation id="5468068603361015296">Mindenképpen le szeretné tölteni a következő fájlt: <ph name="FILE_NAME" />?</translation>
 <translation id="548278423535722844">Megnyitás térképalkalmazásban</translation>
@@ -1173,6 +1173,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="7196215469483532480">Az adatvédelmi útmutató magyarázata teljes magasságban van megnyitva</translation>
 <translation id="7207760545532569765"><ph name="TAB_COUNT" /> lap visszaállítása új háttérbeli lapokként.</translation>
 <translation id="7217781228893594884">Az inkognitó lapok a Chrome elhagyásakor zárolódnak</translation>
+<translation id="7221869452894271364">Az oldal újratöltése</translation>
 <translation id="7222235798733126207">Korlátozott megosztás a webhelyek között</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 letöltés függőben}other{# letöltés függőben}}</translation>
 <translation id="72415438529550637">A jelszójavaslat le van zárva.</translation>
@@ -1576,7 +1577,6 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="926205370408745186">Chrome-beli tevékenység eltávolítása a digitális jóllét funkcióból</translation>
 <translation id="927968626442779827">Használja az Egyszerűsített módot a Google Chrome-ban</translation>
 <translation id="928550791203542716">A(z) <ph name="SITE_NAME" /> webhely követve</translation>
-<translation id="932327136139879170">Főoldal</translation>
 <translation id="938850635132480979">Hiba: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">Összetett jelszó megadása</translation>
 <translation id="952301137339791907">Az oldalstatisztikák alsó lapja meg van nyitva</translation>

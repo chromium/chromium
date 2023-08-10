@@ -1367,6 +1367,7 @@ Uusi asennus</translation>
 <translation id="6912901278692845878">Pikaesittely</translation>
 <translation id="6919251195245069855">Älykorttia ei tunnistettu. Yritä uudelleen.</translation>
 <translation id="6920245099716267363">Laita hotspot päälle tai pois päältä. Hotspot on päällä ja siihen on yhdistetty yksi laite.</translation>
+<translation id="692135145298539227">poista</translation>
 <translation id="6931576957638141829">Tallennuspaikka:</translation>
 <translation id="6942518653766415536">Kuvataan muotovalikkoa</translation>
 <translation id="6945221475159498467">Valitse</translation>
@@ -1678,6 +1679,7 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="8315514906653279104">Laitetaan päälle…</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" /> <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> ‑ikkuna valittu</translation>
+<translation id="8349826889576450703">käynnistysohjelma</translation>
 <translation id="8349964124165471584">Avaa linkki uudessa ikkunassa</translation>
 <translation id="8351131234907093545">Luo muistiinpano</translation>
 <translation id="8367948981300340152"><ph name="CAPTURE_MEDIUM" /> käytössä.</translation>

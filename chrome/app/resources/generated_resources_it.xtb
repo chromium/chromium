@@ -4129,7 +4129,6 @@ Potrebbero essere incluse informazioni su software installati, file, browser e s
 <translation id="4361142739114356624">La chiave privata per il certificato client manca o non è valida</translation>
 <translation id="4361745360460842907">Apri in una scheda</translation>
 <translation id="4362675504017386626"><ph name="ACCOUNT_EMAIL" /> è l'account predefinito sul tuo <ph name="DEVICE_TYPE" /></translation>
-<translation id="4363215264289239958">App Bruschetta</translation>
 <translation id="4363262124589131906">La sincronizzazione automatica con questo Chromebook dei nuovi file in Il mio Drive verrà interrotta</translation>
 <translation id="4363771538994847871">Nessuna destinazione trovata per Cast. Hai bisogno di assistenza?</translation>
 <translation id="4364327530094270451">Melone</translation>
@@ -4716,6 +4715,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="4849517651082200438">Non installare</translation>
 <translation id="485053257961878904">Impossibile configurare la sincronizzazione delle notifiche</translation>
 <translation id="4850548109381269495">Controlla la connessione a internet su entrambi i dispositivi e attiva il Bluetooth. Quindi riprova.</translation>
+<translation id="4850669014075537160">Scorrimento</translation>
 <translation id="4850886885716139402">Visualizza</translation>
 <translation id="485088796993065002">I siti potrebbero riprodurre suoni per fornire audio per musica, video e altri contenuti multimediali</translation>
 <translation id="4852916668365817106">Colore del puntatore del mouse</translation>

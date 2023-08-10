@@ -229,6 +229,7 @@
 <translation id="2278052315791335171">ይህን የይለፍ ቃል መሰረዝ <ph name="SITE" /> ላይ መለያዎን አይሰርዘውም</translation>
 <translation id="2286841657746966508">የመላኪያ አድራሻ</translation>
 <translation id="228704530595896923">የማጋሪያ አማራጮች ዝርዝር።</translation>
+<translation id="2297822946037605517">ይህንን ገፅ ያጋሩ</translation>
 <translation id="230115972905494466">ምንም ተኳሃኝ መሣሪያዎች አልተገኙም</translation>
 <translation id="2318045970523081853">ጥሪ ለማድረግ መታ ያድርጉ</translation>
 <translation id="2321086116217818302">የይለፍ ቃላትን በማዘጋጀት ላይ…</translation>
@@ -306,7 +307,6 @@
 <translation id="2656405586795711023">የድር መተግበሪያዎች</translation>
 <translation id="2669454659051515572">ይህን መሣሪያ የሚጠቀም ማንኛውም ሰው የወረዱ ፋይሎችን መመልከት ይችላል</translation>
 <translation id="2702516483241149200">አዲስ፦ ወደዚህ ጽሁፍ የሚሸበለል አገናኝ ያጋሩ</translation>
-<translation id="2707726405694321444">ገጹን አድስ</translation>
 <translation id="271033894570825754">አዲስ</translation>
 <translation id="2711073837061989559">ሙከራዎች</translation>
 <translation id="2718352093833049315">በWi-Fi ላይ ብቻ</translation>
@@ -708,6 +708,7 @@
 
 ይህን ቅንብር ለመቀየር <ph name="BEGIN_LINK" />ስምረትን ዳግም ያስጀምሩ<ph name="END_LINK" /></translation>
 <translation id="4807098396393229769">በካርድ ላይ ያለ ስም</translation>
+<translation id="480990236307250886">መነሻ ገጹን ክፈት</translation>
 <translation id="481574578487123132">የተገናኙ መሣሪያዎች</translation>
 <translation id="4826163340425232009">የመግቢያ የግርጌ ሉህ።</translation>
 <translation id="4834007576107377210">ካለ የፍለጋ ታሪክዎን ለመሰረዝ የፍለጋ ፕሮግራምዎን መመሪያዎች ይመልከቱ</translation>
@@ -832,7 +833,6 @@
 <translation id="5444999712122199445">ወደ ጣቢያ ይመለሱ</translation>
 <translation id="544776284582297024">በተመሳሳዩ ጊዜ ትሮችን ለመክፈትና የተለያዩ ገጾችን ለመክፈት የትሮችን ክፈት አዝራሩን መታ ያድርጉ</translation>
 <translation id="5454166040603940656">ከ<ph name="PROVIDER" /> ጋር</translation>
-<translation id="5456381639095306749">ገፅ አውርድ</translation>
 <translation id="5458366071038729214">የሚከተሏቸውን ጣቢያዎች እዚህ ያገኛሉ</translation>
 <translation id="5468068603361015296">ለማንኛውም <ph name="FILE_NAME" />ን ማውረድ ይፈልጋሉ?</translation>
 <translation id="548278423535722844">በካርታዎች መተግበሪያ ውስጥ ይክፈቱ</translation>
@@ -1173,6 +1173,7 @@
 <translation id="7196215469483532480">የግላዊነት መመሪያ ማብራሪያ በሙሉ ቁመት ላይ ተከፍቷል</translation>
 <translation id="7207760545532569765"><ph name="TAB_COUNT" /> ትሮችን እንደ አዲስ የዳራ ትሮች ወደነበሩበት መልስ።</translation>
 <translation id="7217781228893594884">ከChrome ለቀው ሲወጡ ማንነት የማያሳውቁ ትሮች ይቆለፋሉ</translation>
+<translation id="7221869452894271364">ይህን ገፅ ዳግም ጫን</translation>
 <translation id="7222235798733126207">በጣቢያዎች መካከል የተገደበ ማጋራት</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 ውርድን በመጠባበቅ ላይ}one{# ውርዶችን በመጠባበቅ ላይ}other{# ውርዶችን በመጠባበቅ ላይ}}</translation>
 <translation id="72415438529550637">የይለፍ ቃል ጥቆማ ተዘግቷል።</translation>
@@ -1576,7 +1577,6 @@
 <translation id="926205370408745186">የChrome እንቅስቃሴዎን ከዲጂታል ብቁ መሆን ያስወግዱ</translation>
 <translation id="927968626442779827">በGoogle Chrome ላይ ቀላል ሁነታን ይጠቀሙ</translation>
 <translation id="928550791203542716"><ph name="SITE_NAME" />ን በመከተል ላይ</translation>
-<translation id="932327136139879170">መነሻ</translation>
 <translation id="938850635132480979">ስህተት፦ <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">የይለፍ ሐረግ ያስገቡ</translation>
 <translation id="952301137339791907">የገጽ ግንዛቤዎች የግርጌ ሉህ ተከፍቷል</translation>

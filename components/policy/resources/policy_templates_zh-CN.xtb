@@ -1209,9 +1209,6 @@
       如果此政策未设置或设为一个空列表，用户将无法在受管理的设备上使用任何快速解锁模式。
 
       此政策已被弃用，请改用 <ph name="QUICK_UNLOCK_MODE_ALLOW_LIST_POLICY_NAME" /></translation>
-<translation id="2033784678146670379">如果此政策已启用，用户便可使用 <ph name="PRODUCT_OS_NAME" />设备上的硬件，通过 <ph name="ENTERPRISE_PLATFORM_KEYS_API" /> 的 <ph name="CHALLENGE_USER_KEY_FUNCTION" /> 向隐私认证中心 (Privacy CA) 远程认证其身份。
-
-      如果此政策已停用或未设置，则会导致无法调用该 API 并返回错误代码。</translation>
 <translation id="2036522553891755455">如果此政策已启用，共享文件发现功能（<ph name="PRODUCT_NAME" />的网络文件共享功能）会使用 <ph name="NETBIOS_PROTOCOL" />来搜寻网络上的共享文件。如果此政策已停用，共享文件发现功能将不会使用此协议来搜寻共享文件。
 
       如果您未设置此政策，系统的默认行为就会是：为受管用户停用此政策，并为其他用户启用此政策。</translation>

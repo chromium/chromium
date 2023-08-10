@@ -229,6 +229,7 @@ When you delete your browsing history – all or for a specific site – you als
 <translation id="2278052315791335171">Deleting this password will not delete your account on <ph name="SITE" /></translation>
 <translation id="2286841657746966508">Billing address</translation>
 <translation id="228704530595896923">List of sharing options.</translation>
+<translation id="2297822946037605517">Share this page</translation>
 <translation id="230115972905494466">No compatible devices found</translation>
 <translation id="2318045970523081853">Tap to make call</translation>
 <translation id="2321086116217818302">Preparing passwords…</translation>
@@ -306,7 +307,6 @@ Private state tokens improve privacy on the web and can’t be used to find out 
 <translation id="2656405586795711023">Web apps</translation>
 <translation id="2669454659051515572">Anyone using this device can see downloaded files</translation>
 <translation id="2702516483241149200">New: Share a link that scrolls to this text</translation>
-<translation id="2707726405694321444">Refresh page</translation>
 <translation id="271033894570825754">New</translation>
 <translation id="2711073837061989559">Trials</translation>
 <translation id="2718352093833049315">Only on Wi-Fi</translation>
@@ -708,6 +708,7 @@ Your Google Account may have other forms of browsing history such as searches an
 
 To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" /></translation>
 <translation id="4807098396393229769">Name on card</translation>
+<translation id="480990236307250886">Open the homepage</translation>
 <translation id="481574578487123132">Linked devices</translation>
 <translation id="4826163340425232009">Sign-in bottom sheet.</translation>
 <translation id="4834007576107377210">See your search engine’s instructions for deleting your search history, if applicable</translation>
@@ -832,7 +833,6 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5444999712122199445">Go back to site</translation>
 <translation id="544776284582297024">To open tabs and visit different pages at the same time, tap the open tabs button</translation>
 <translation id="5454166040603940656">with <ph name="PROVIDER" /></translation>
-<translation id="5456381639095306749">Download page</translation>
 <translation id="5458366071038729214">You'll find the sites that you follow here</translation>
 <translation id="5468068603361015296">Do you want to download <ph name="FILE_NAME" /> anyway?</translation>
 <translation id="548278423535722844">Open in maps app</translation>
@@ -1173,6 +1173,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="7196215469483532480">Privacy guide explanation opened at full height</translation>
 <translation id="7207760545532569765">Restore <ph name="TAB_COUNT" /> tabs as new background tabs.</translation>
 <translation id="7217781228893594884">Incognito tabs will be locked when you leave Chrome</translation>
+<translation id="7221869452894271364">Reload this page</translation>
 <translation id="7222235798733126207">Limited sharing between sites</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 download pending}other{# downloads pending}}</translation>
 <translation id="72415438529550637">Password suggestion is closed.</translation>
@@ -1576,7 +1577,6 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="926205370408745186">Remove your Chrome activity from Digital Wellbeing</translation>
 <translation id="927968626442779827">Use lite mode on Google Chrome</translation>
 <translation id="928550791203542716">Following <ph name="SITE_NAME" /></translation>
-<translation id="932327136139879170">Home</translation>
 <translation id="938850635132480979">Error: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">Enter passphrase</translation>
 <translation id="952301137339791907">Page insights bottom sheet is opened</translation>

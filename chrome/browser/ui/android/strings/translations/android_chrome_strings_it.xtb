@@ -229,6 +229,7 @@ Quando elimini la cronologia di navigazione (l'intera cronologia o soltanto quel
 <translation id="2278052315791335171">L'eliminazione di questa password non comporta l'eliminazione del tuo account su <ph name="SITE" /></translation>
 <translation id="2286841657746966508">Indirizzo di fatturazione</translation>
 <translation id="228704530595896923">Elenco di opzioni di condivisione.</translation>
+<translation id="2297822946037605517">Condividi questa pagina</translation>
 <translation id="230115972905494466">Nessun dispositivo compatibile trovato</translation>
 <translation id="2318045970523081853">Tocca per chiamare</translation>
 <translation id="2321086116217818302">Preparazione delle password…</translation>
@@ -306,7 +307,6 @@ I token di stato privati migliorano la privacy sul web e non possono essere usat
 <translation id="2656405586795711023">App web</translation>
 <translation id="2669454659051515572">Tutte le persone che usano questo dispositivo possono vedere i file scaricati</translation>
 <translation id="2702516483241149200">Novità: condividi un link che scorre direttamente a questo testo</translation>
-<translation id="2707726405694321444">Aggiorna la pagina</translation>
 <translation id="271033894570825754">Nuovo</translation>
 <translation id="2711073837061989559">Prove</translation>
 <translation id="2718352093833049315">Solo su Wi-Fi</translation>
@@ -708,6 +708,7 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 
 Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincronizzazione<ph name="END_LINK" />.</translation>
 <translation id="4807098396393229769">Nome sulla carta di credito</translation>
+<translation id="480990236307250886">Apri pagina iniziale</translation>
 <translation id="481574578487123132">Dispositivi collegati</translation>
 <translation id="4826163340425232009">Riquadro inferiore di accesso.</translation>
 <translation id="4834007576107377210">Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia delle ricerche, se applicabile</translation>
@@ -832,7 +833,6 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="5444999712122199445">Torna al sito</translation>
 <translation id="544776284582297024">Per aprire più schede e visitare pagine diverse contemporaneamente, tocca il pulsante Schede aperte</translation>
 <translation id="5454166040603940656">con <ph name="PROVIDER" /></translation>
-<translation id="5456381639095306749">Scarica la pagina</translation>
 <translation id="5458366071038729214">Qui troverai i siti che segui</translation>
 <translation id="5468068603361015296">Vuoi comunque scaricare <ph name="FILE_NAME" />?</translation>
 <translation id="548278423535722844">Apri nell'app di mappe</translation>
@@ -1173,6 +1173,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="7196215469483532480">Spiegazione della Guida alla privacy aperta a schermo intero</translation>
 <translation id="7207760545532569765">Ripristina <ph name="TAB_COUNT" /> schede come nuove schede in background.</translation>
 <translation id="7217781228893594884">Le schede di navigazione in incognito verranno bloccate quando uscirai da Chrome</translation>
+<translation id="7221869452894271364">Ricarica questa pagina</translation>
 <translation id="7222235798733126207">Condivisione tra siti limitata</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 download in attesa}other{# download in attesa}}</translation>
 <translation id="72415438529550637">Il suggerimento per la password è chiuso.</translation>
@@ -1576,7 +1577,6 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="926205370408745186">Rimuovi la tua attività di Chrome da Benessere digitale</translation>
 <translation id="927968626442779827">Usa la modalità Lite su Google Chrome</translation>
 <translation id="928550791203542716">Stai seguendo <ph name="SITE_NAME" /></translation>
-<translation id="932327136139879170">Home page</translation>
 <translation id="938850635132480979">Errore: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">Inserisci passphrase</translation>
 <translation id="952301137339791907">Il riquadro inferiore Statistiche pagine è aperto</translation>

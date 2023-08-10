@@ -4129,7 +4129,6 @@ Puede tratarse de información sobre el software instalado, los archivos, tu nav
 <translation id="4361142739114356624">Falta la clave privada de este certificado de cliente o no es válida</translation>
 <translation id="4361745360460842907">Abrir como pestaña</translation>
 <translation id="4362675504017386626"><ph name="ACCOUNT_EMAIL" /> es la cuenta predeterminada de tu <ph name="DEVICE_TYPE" /></translation>
-<translation id="4363215264289239958">Aplicaciones de Bruschetta</translation>
 <translation id="4363262124589131906">Los archivos nuevos de Mi unidad dejarán de sincronizarse automáticamente con este Chromebook</translation>
 <translation id="4363771538994847871">No se han encontrado destinos para enviar contenido. ¿Necesitas ayuda?</translation>
 <translation id="4364327530094270451">Melón</translation>
@@ -4716,6 +4715,7 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="4849517651082200438">No instalar</translation>
 <translation id="485053257961878904">No se ha podido configurar la sincronización de notificaciones</translation>
 <translation id="4850548109381269495">En ambos dispositivos, comprueba tu conexión a Internet y activa el Bluetooth. Después, inténtalo de nuevo.</translation>
+<translation id="4850669014075537160">Desplazamiento</translation>
 <translation id="4850886885716139402">Ver</translation>
 <translation id="485088796993065002">Los sitios podrían reproducir sonidos para ofrecer el audio de música, vídeos y otro contenido multimedia.</translation>
 <translation id="4852916668365817106">Color del ratón</translation>

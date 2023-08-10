@@ -229,6 +229,7 @@
 <translation id="2278052315791335171">Энэ нууц үгийг устгаснаар таны бүртгэлийг <ph name="SITE" /> дээрээс устгахгүй</translation>
 <translation id="2286841657746966508">Тооцооны хаяг</translation>
 <translation id="228704530595896923">Хуваалцах сонголтын жагсаалт.</translation>
+<translation id="2297822946037605517">Энэ хуудсыг хуваалцах</translation>
 <translation id="230115972905494466">Тохирох төхөөрөмж олдсонгүй</translation>
 <translation id="2318045970523081853">Дуудлага хийхийн тулд товшино уу</translation>
 <translation id="2321086116217818302">Нууц үгийг бэлтгэж байна…</translation>
@@ -306,7 +307,6 @@
 <translation id="2656405586795711023">Веб программууд</translation>
 <translation id="2669454659051515572">Энэ төхөөрөмжийг ашиглаж байгаа дурын хүн татсан файлуудыг харах боломжтой</translation>
 <translation id="2702516483241149200">Шинэ: энэ текст рүү гүйлгэж очих холбоосыг хуваалцаарай</translation>
-<translation id="2707726405694321444">Хуудсыг дахин шинэчлэх</translation>
 <translation id="271033894570825754">Шинэ</translation>
 <translation id="2711073837061989559">Туршилтын хугацаа</translation>
 <translation id="2718352093833049315">Зөвхөн Wi-Fi-аар</translation>
@@ -707,6 +707,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="4802417911091824046">Нэвтрэх үгийн шифрлэлтэд Google Pay-н төлбөрийн хэрэгслүүд болон хаягуудыг агуулдаггүй.
 Энэ тохиргоог өөрчлөхийн тулд <ph name="BEGIN_LINK" />синкийг шинэчилнэ үү<ph name="END_LINK" /></translation>
 <translation id="4807098396393229769">Картан дээрх нэр</translation>
+<translation id="480990236307250886">Нүүр хуудсыг нээх</translation>
 <translation id="481574578487123132">Холбосон төхөөрөмжүүд</translation>
 <translation id="4826163340425232009">Нэвтрэх доод хүснэгт.</translation>
 <translation id="4834007576107377210">Хэрэв боломжтой бол хайлтын түүхээ устгахын тулд хайлтын системийн зааварчилгаагаа харна уу</translation>
@@ -831,7 +832,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="5444999712122199445">Сайт руу буцах</translation>
 <translation id="544776284582297024">Табуудыг нээн, өөр хуудаснуудад нэгэн зэрэг зочлохын тулд табуудыг нээх товчлуурыг товшино уу</translation>
 <translation id="5454166040603940656"><ph name="PROVIDER" />-тэй</translation>
-<translation id="5456381639095306749">Хуудсыг татах</translation>
 <translation id="5458366071038729214">Та дагадаг сайтуудаа эндээс олно</translation>
 <translation id="5468068603361015296">Та <ph name="FILE_NAME" />-г ямартай ч татахыг хүсэж байна уу?</translation>
 <translation id="548278423535722844">Газрын зургийн апп-д нээх</translation>
@@ -1172,6 +1172,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="7196215469483532480">Нууцлалын хөтчийн тайлбарыг бүтэн хэмжээгээр нээсэн</translation>
 <translation id="7207760545532569765"><ph name="TAB_COUNT" /> табыг шинэ дэвсгэр табаар сэргээнэ үү.</translation>
 <translation id="7217781228893594884">Таныг Chrome-с гарах үед нууцлалтай табуудыг түгжинэ</translation>
+<translation id="7221869452894271364">Энэ хуудсыг дахин ачаалла</translation>
 <translation id="7222235798733126207">Сайт хооронд хуваалцахыг хязгаарлаарай</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 таталт хүлээгдэж байна}other{# таталт хүлээгдэж байна}}</translation>
 <translation id="72415438529550637">Нууц үгний зөвлөмжийг хаасан.</translation>
@@ -1575,7 +1576,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="926205370408745186">Chrome-н үйл ажиллагаагаа Дижитал хэрэглээнээс устгах</translation>
 <translation id="927968626442779827">Google Chrome дээр Lite горимыг ашиглаарай</translation>
 <translation id="928550791203542716"><ph name="SITE_NAME" />-г дагаж байна</translation>
-<translation id="932327136139879170">Нүүр хуудас</translation>
 <translation id="938850635132480979">Алдаа: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">Нэвтрэх үгүүдийг оруулна уу</translation>
 <translation id="952301137339791907">Хуудасны статистикийн доод хүснэгтийг нээсэн</translation>

@@ -1839,7 +1839,6 @@
 <translation id="4901778704868714008">सेव करें...</translation>
 <translation id="4901952598169637881">कैज़ुअल जूते</translation>
 <translation id="4905659621780993806">आपका एडमिन <ph name="DATE" /> को <ph name="TIME" /> पर आपका डिवाइस अपने-आप रीस्टार्ट करेगा. डिवाइस के रीस्टार्ट होने से पहले, खुले हुए सभी आइटम सेव कर लें.</translation>
-<translation id="4907289208610706508">टारगेट</translation>
 <translation id="4913987521957242411">सबसे ऊपर बाईं ओर पंच</translation>
 <translation id="4917064667437236721">इमेजिंग सिलिंडर</translation>
 <translation id="4918221908152712722"><ph name="APP_NAME" /> इंस्टॉल करें (डाउनलोड करने की ज़रूरत नहीं है)</translation>
@@ -2680,6 +2679,7 @@
 <translation id="6702919718839027939">प्रज़ेंट</translation>
 <translation id="6704458454638854812">प्रॉपर्टी "custom_size" सेट है, लेकिन इसका नाम "custom" पर सेट होना चाहिए.</translation>
 <translation id="6706005862292023715">पर्दे और खिड़की लगाने की सेवाएं</translation>
+<translation id="6706210727756204531">दायरा</translation>
 <translation id="6709133671862442373">News</translation>
 <translation id="6709888928011386878">म्यूज़िकल इंस्ट्रुमेंट</translation>
 <translation id="6710213216561001401">पिछला</translation>

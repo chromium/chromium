@@ -4128,7 +4128,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4361142739114356624">De privésleutel voor dit clientcertificaat ontbreekt of is ongeldig</translation>
 <translation id="4361745360460842907">Openen als tabblad</translation>
 <translation id="4362675504017386626"><ph name="ACCOUNT_EMAIL" /> is het standaardaccount op je <ph name="DEVICE_TYPE" /></translation>
-<translation id="4363215264289239958">Bruschetta-apps</translation>
 <translation id="4363262124589131906">Nieuwe bestanden in Mijn Drive worden niet meer automatisch gesynchroniseerd met deze Chromebook</translation>
 <translation id="4363771538994847871">Er zijn geen Cast-bestemmingen gevonden. Hulp nodig?</translation>
 <translation id="4364327530094270451">Meloen</translation>
@@ -4714,6 +4713,7 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="4849517651082200438">Niet installeren</translation>
 <translation id="485053257961878904">Kan synchronisatie van meldingen niet instellen</translation>
 <translation id="4850548109381269495">Check op beide apparaten je internetverbinding en zet bluetooth aan. Probeer het daarna opnieuw.</translation>
+<translation id="4850669014075537160">Scrollen</translation>
 <translation id="4850886885716139402">Weergave</translation>
 <translation id="485088796993065002">Sites spelen mogelijk geluid af om audio te bieden voor muziek, video's en andere media</translation>
 <translation id="4852916668365817106">Muiskleur</translation>

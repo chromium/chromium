@@ -229,6 +229,7 @@
 <translation id="2278052315791335171">لن يؤدي حذف كلمة المرور هذه إلى حذف حسابك على <ph name="SITE" />.</translation>
 <translation id="2286841657746966508">عنوان الفاتورة</translation>
 <translation id="228704530595896923">قائمة خيارات المشاركة</translation>
+<translation id="2297822946037605517">مشاركة هذه الصفحة</translation>
 <translation id="230115972905494466">لم يتم العثور على أي أجهزة متوافقة</translation>
 <translation id="2318045970523081853">انقر لإجراء اتصال.</translation>
 <translation id="2321086116217818302">جارٍ تحضير كلمات المرور…</translation>
@@ -307,7 +308,6 @@
 <translation id="2656405586795711023">تطبيقات الويب</translation>
 <translation id="2669454659051515572">يمكن لأي شخص يستخدم هذا الجهاز الاطّلاع على الملفات التي تم تنزيلها.</translation>
 <translation id="2702516483241149200">ميزة جديدة: يمكنك مشاركة رابط يؤدي إلى هذا النص.</translation>
-<translation id="2707726405694321444">إعادة تحميل الصفحة</translation>
 <translation id="271033894570825754">جديد</translation>
 <translation id="2711073837061989559">الإصدارات التجريبية</translation>
 <translation id="2718352093833049315">‏باستخدام شبكة Wi-Fi فقط</translation>
@@ -710,6 +710,7 @@
 
 لتغيير هذا الإعداد، يُرجى <ph name="BEGIN_LINK" />إعادة ضبط المزامنة<ph name="END_LINK" /></translation>
 <translation id="4807098396393229769">الاسم كما على البطاقة</translation>
+<translation id="480990236307250886">فتح الصفحة الرئيسية</translation>
 <translation id="481574578487123132">الأجهزة المرتبطة</translation>
 <translation id="4826163340425232009">البطاقة السفلية لتسجيل الدخول</translation>
 <translation id="4834007576107377210">اطّلِع على تعليمات محرك البحث بشأن حذف سجلّ البحث، إن أمكن.</translation>
@@ -834,7 +835,6 @@
 <translation id="5444999712122199445">الرجوع إلى الموقع الإلكتروني</translation>
 <translation id="544776284582297024">لفتح علامات تبويب وزيارة صفحات مختلفة في آنٍ واحد، انقر على زر "علامات التبويب المفتوحة".</translation>
 <translation id="5454166040603940656">مع <ph name="PROVIDER" /></translation>
-<translation id="5456381639095306749">تنزيل الصفحة</translation>
 <translation id="5458366071038729214">تظهر هنا المواقع الإلكترونية التي تتابعها.</translation>
 <translation id="5468068603361015296">هل تريد تنزيل <ph name="FILE_NAME" /> على أي حال؟</translation>
 <translation id="548278423535722844">فتح في تطبيق الخرائط</translation>
@@ -1175,6 +1175,7 @@
 <translation id="7196215469483532480">تم فتح شرح دليل الخصوصية بطول الشاشة.</translation>
 <translation id="7207760545532569765">استعادة <ph name="TAB_COUNT" /> علامة تبويب كعلامات تبويب جديدة في الخلفية</translation>
 <translation id="7217781228893594884">‏سيتم قفل علامات التبويب في وضع التصفّح المتخفي عند إغلاق Chrome</translation>
+<translation id="7221869452894271364">إعادة تحميل هذه الصفحة</translation>
 <translation id="7222235798733126207">المشاركة المحدودة بين المواقع الإلكترونية</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{هناك تنزيل واحد مُعلَّق}zero{هناك # تنزيل مُعلَّق}two{هناك تنزيلان (#) مُعلَّقان}few{هناك # عمليات تنزيل مُعلَّقة}many{هناك # تنزيلًا مُعلَّقًا}other{هناك # تنزيل مُعلَّق}}</translation>
 <translation id="72415438529550637">تم إغلاق اقتراح كلمة المرور.</translation>
@@ -1578,7 +1579,6 @@
 <translation id="926205370408745186">‏إزالة نشاط Chrome من الرفاهية الرقمية</translation>
 <translation id="927968626442779827">‏استخدِم "الوضع البسيط" على Google Chrome.</translation>
 <translation id="928550791203542716">تتم متابعة "<ph name="SITE_NAME" />"</translation>
-<translation id="932327136139879170">الصفحة الرئيسية</translation>
 <translation id="938850635132480979">الخطأ: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">إدخال عبارة المرور</translation>
 <translation id="952301137339791907">تم فتح البطاقة السفلية لإحصاءات الصفحة.</translation>

@@ -1839,7 +1839,6 @@
 <translation id="4901778704868714008">සුරකින්න...</translation>
 <translation id="4901952598169637881">සාමාන්‍ය සපත්තු</translation>
 <translation id="4905659621780993806">ඔබගේ පරිපාලක ඔබගේ උපාංගය <ph name="DATE" /> <ph name="TIME" />ට ස්වයංක්‍රියව යළි ආරම්භ කරනු ඇත ඔබගේ උපාංගය යළි ආරම්භ කිරීමට පෙර කිනම් හෝ විවෘත අයිතම සුරකින්න.</translation>
-<translation id="4907289208610706508">ඉලක්කය</translation>
 <translation id="4913987521957242411">ඉහළ වමට අනින්න</translation>
 <translation id="4917064667437236721">මූර්තන සිලින්ඩරය</translation>
 <translation id="4918221908152712722"><ph name="APP_NAME" /> ස්ථාපනය කරන්න (බාගැනීමක් අවශ්‍ය නොවේ)</translation>
@@ -2680,6 +2679,7 @@
 <translation id="6702919718839027939">ඉදිරිපත් කරන්න</translation>
 <translation id="6704458454638854812">ගුණාංගය "custom_size" සකසා ඇත, අපේක්ෂිත නම "අභිරුචි" වේ.</translation>
 <translation id="6706005862292023715">තිර රෙදි සහ කවුළු පිළියම්</translation>
+<translation id="6706210727756204531">අවකාශය</translation>
 <translation id="6709133671862442373">පුවත්</translation>
 <translation id="6709888928011386878">සංගීත භාණ්ඩ</translation>
 <translation id="6710213216561001401">පෙර</translation>
