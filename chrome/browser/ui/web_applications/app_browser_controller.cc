@@ -9,6 +9,7 @@
 #include "base/strings/escape.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
@@ -581,6 +582,7 @@ void AppBrowserController::OnTabInserted(content::WebContents* contents) {
 void AppBrowserController::OnTabRemoved(content::WebContents* contents) {}
 
 ui::ImageModel AppBrowserController::GetFallbackAppIcon() const {
+  TRACE_EVENT0("ui", "TaskManagerView::GetFallbackAppIcon");
   gfx::ImageSkia page_icon = browser()->GetCurrentPageIcon().AsImageSkia();
   if (!page_icon.isNull()) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)

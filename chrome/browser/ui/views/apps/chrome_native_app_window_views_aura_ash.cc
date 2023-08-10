@@ -16,6 +16,7 @@
 #include "ash/public/cpp/window_properties.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/trace_event/trace_event.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/icon_standardizer.h"
@@ -147,6 +148,7 @@ ChromeNativeAppWindowViewsAuraAsh::CreateNonStandardAppFrame() {
 }
 
 ui::ImageModel ChromeNativeAppWindowViewsAuraAsh::GetWindowIcon() {
+  TRACE_EVENT0("ui", "ChromeNativeAppWindowViewsAuraAsh::GetWindowIcon");
   const ui::ImageModel& image = ChromeNativeAppWindowViews::GetWindowIcon();
   if (image.IsEmpty())
     return ui::ImageModel();
@@ -165,6 +167,7 @@ bool ChromeNativeAppWindowViewsAuraAsh::ShouldRemoveStandardFrame() {
 }
 
 void ChromeNativeAppWindowViewsAuraAsh::EnsureAppIconCreated() {
+  TRACE_EVENT0("ui", "ChromeNativeAppWindowViewsAuraAsh::EnsureAppIconCreated");
   LoadAppIcon(true /* allow_placeholder_icon */);
 }
 
@@ -548,6 +551,7 @@ void ChromeNativeAppWindowViewsAuraAsh::UpdateImmersiveMode() {
 }
 
 gfx::Image ChromeNativeAppWindowViewsAuraAsh::GetCustomImage() {
+  TRACE_EVENT0("ui", "ChromeNativeAppWindowViewsAuraAsh::GetCustomImage");
   gfx::Image image = ChromeNativeAppWindowViews::GetCustomImage();
   return !image.IsEmpty()
              ? gfx::Image(apps::CreateStandardIconImage(image.AsImageSkia()))
@@ -555,6 +559,7 @@ gfx::Image ChromeNativeAppWindowViewsAuraAsh::GetCustomImage() {
 }
 
 gfx::Image ChromeNativeAppWindowViewsAuraAsh::GetAppIconImage() {
+  TRACE_EVENT0("ui", "ChromeNativeAppWindowViewsAuraAsh::GetAppIconImage");
   if (!app_icon_image_skia_.isNull())
     return gfx::Image(app_icon_image_skia_);
 
@@ -563,6 +568,7 @@ gfx::Image ChromeNativeAppWindowViewsAuraAsh::GetAppIconImage() {
 
 void ChromeNativeAppWindowViewsAuraAsh::LoadAppIcon(
     bool allow_placeholder_icon) {
+  TRACE_EVENT0("ui", "ChromeNativeAppWindowViewsAuraAsh::LoadAppIcon");
   if (apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(
           Profile::FromBrowserContext(app_window()->browser_context()))) {
     apps::AppServiceProxy* proxy = apps::AppServiceProxyFactory::GetForProfile(
@@ -588,6 +594,7 @@ void ChromeNativeAppWindowViewsAuraAsh::LoadAppIcon(
 
 void ChromeNativeAppWindowViewsAuraAsh::OnLoadIcon(
     apps::IconValuePtr icon_value) {
+  TRACE_EVENT0("ui", "ChromeNativeAppWindowViewsAuraAsh::OnLoadIcon");
   if (!icon_value || icon_value->icon_type != apps::IconType::kStandard)
     return;
 
