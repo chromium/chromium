@@ -7,6 +7,7 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_piece.h"
+#include "extensions/common/extension_id.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/resource/resource_scale_factor.h"
 #include "ui/color/color_provider_key.h"
@@ -95,7 +96,7 @@ class CustomThemeSupplier
  private:
   friend class base::RefCountedThreadSafe<CustomThemeSupplier>;
 
-  std::string extension_id_;
+  extensions::ExtensionId extension_id_;
 };
 
 #endif  // CHROME_BROWSER_THEMES_CUSTOM_THEME_SUPPLIER_H_

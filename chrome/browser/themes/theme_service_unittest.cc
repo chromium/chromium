@@ -44,6 +44,7 @@
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/browser/uninstall_reason.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/mojom/themes.mojom.h"
 #include "ui/base/ui_base_features.h"
@@ -91,7 +92,7 @@ class ThemeScoper {
     }
   }
 
-  std::string extension_id() const { return extension_id_; }
+  extensions::ExtensionId extension_id() const { return extension_id_; }
   void set_extension_id(std::string extension_id) {
     extension_id_ = std::move(extension_id);
   }
@@ -104,7 +105,7 @@ class ThemeScoper {
  private:
   raw_ptr<extensions::ExtensionService> extension_service_ = nullptr;
   raw_ptr<extensions::ExtensionRegistry> extension_registry_ = nullptr;
-  std::string extension_id_;
+  extensions::ExtensionId extension_id_;
   base::ScopedTempDir temp_dir_;
 };
 
