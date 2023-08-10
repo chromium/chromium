@@ -30,7 +30,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionAuthTokenCacheImpl
   ~IpProtectionAuthTokenCacheImpl() override;
 
   // IpProtectionAuthTokenCache implementation.
-  void MayNeedAuthTokenSoon() override;
+  bool IsAuthTokenAvailable() override;
   absl::optional<network::mojom::BlindSignedAuthTokenPtr> GetAuthToken()
       override;
 
@@ -59,6 +59,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionAuthTokenCacheImpl
           tokens,
       absl::optional<base::Time> try_again_after);
   void MeasureTokenRates();
+  void MaybeRefillCache();
 
   // The last time token rates were measured and the counts since then.
   base::TimeTicks last_token_rate_measurement_;
@@ -80,7 +81,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionAuthTokenCacheImpl
   base::Time try_get_auth_tokens_after_;
 
   // A callback triggered when the asynchronous cache refill is complete, for
-  // use in testing `MayNeedAuthTokenSoon()`. Note that this won't be called
+  // use in testing `IsAuthTokenAvailable()`. Note that this won't be called
   // when using `FillCacheForTesting()`, which instead takes a callback as a
   // parameter.
   base::OnceCallback<void()> on_cache_refilled_;

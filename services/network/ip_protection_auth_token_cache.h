@@ -14,11 +14,7 @@ namespace network {
 // A cache for blind-signed auth tokens.
 //
 // There is no API to fill the cache - it is the implementation's responsibility
-// to do that itself. The `MayNeedAuthTokenSoon()` method provides a hint that a
-// `GetAuthToken()` call may occur in the near future, and allows
-// implementations time to refresh the cache if it has grown stale. Callers
-// should call `MayNeedAuthTokenSoon()` at least once for each call to
-// `GetAuthToken()`.
+// to do that itself.
 //
 // This class provides sync access to a token, returning nullopt if none is
 // available, thereby avoiding adding latency to proxied requests.
@@ -26,17 +22,16 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionAuthTokenCache {
  public:
   virtual ~IpProtectionAuthTokenCache() = default;
 
-  // Advise that a token will be required soon.
+  // Check whether tokens are available.
   //
-  // Prefer to send this signal as early as possible, as it may initiate Mojo
-  // IPCs and even communication with remote systems. This should be called
-  // at least once (but more than once is OK) per call to `GetAuthToken()`.
-  virtual void MayNeedAuthTokenSoon() = 0;
+  // This function is called on every URL load, so it should complete quickly.
+  virtual bool IsAuthTokenAvailable() = 0;
 
   // Get a token, if one is available.
   //
   // Returns `nullopt` if no token is available, whether for a transient or
-  // permanent reason.
+  // permanent reason. This method may return `nullopt` even if
+  // `IsAuthTokenAvailable()` recently returned `true`.
   virtual absl::optional<network::mojom::BlindSignedAuthTokenPtr>
   GetAuthToken() = 0;
 };

@@ -139,12 +139,12 @@ void NetworkServiceProxyDelegate::OnResolveProxy(
   if (IsForIpProtection()) {
     if (auth_token_cache_ && network_service_proxy_allow_list_ &&
         network_service_proxy_allow_list_->IsEnabled() &&
-        network_service_proxy_allow_list_->Matches(url, top_frame_url)) {
+        network_service_proxy_allow_list_->Matches(url, top_frame_url) &&
+        auth_token_cache_->IsAuthTokenAvailable()) {
       result->set_is_for_ip_protection(true);
-      auth_token_cache_->MayNeedAuthTokenSoon();
     } else {
       // Do not use the proxy if the request doesn't match the allow list or the
-      // token cache is not available.
+      // token cache is not available or does not have a token.
       return;
     }
   }

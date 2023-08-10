@@ -48,8 +48,17 @@ IpProtectionAuthTokenCacheImpl::IpProtectionAuthTokenCacheImpl(
 
 IpProtectionAuthTokenCacheImpl::~IpProtectionAuthTokenCacheImpl() = default;
 
-void IpProtectionAuthTokenCacheImpl::MayNeedAuthTokenSoon() {
+bool IpProtectionAuthTokenCacheImpl::IsAuthTokenAvailable() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Temporarily use this method as a signal to start refilling the cache.
+  // TODO: Prefill the cache.
+  MaybeRefillCache();
+
+  return cache_.size() > 0;
+}
+
+void IpProtectionAuthTokenCacheImpl::MaybeRefillCache() {
   if (currently_getting_ || !auth_token_getter_) {
     return;
   }

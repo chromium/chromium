@@ -130,10 +130,10 @@ class IpProtectionAuthTokenCacheImplTest : public testing::Test {
   base::HistogramTester histogram_tester_;
 };
 
-// `MayNeedAuthTokenSoon()` triggers a request for a single token, and once that
-// token is delivered, `GetAuthToken()` returns it. That token is only handed
-// out once, but a new token can be fetched.
-TEST_F(IpProtectionAuthTokenCacheImplTest, MayNeedAuthTokenSoon_Fills_Cache) {
+// `IsAuthTokenAvailable()` incidentally triggers a request for a single token,
+// and once that token is delivered, `GetAuthToken()` returns it. That token is
+// only handed out once, but a new token can be fetched.
+TEST_F(IpProtectionAuthTokenCacheImplTest, IsAuthTokenAvailable_Fills_Cache) {
   std::vector<network::mojom::BlindSignedAuthTokenPtr> tokens;
   tokens.emplace_back(
       network::mojom::BlindSignedAuthToken::New("token1", kFutureExpiration));
@@ -142,9 +142,12 @@ TEST_F(IpProtectionAuthTokenCacheImplTest, MayNeedAuthTokenSoon_Fills_Cache) {
   // Indicate that a token will be required soon.
   auth_token_cache_->SetOnCacheRefilledForTesting(
       task_environment_.QuitClosure());
-  auth_token_cache_->MayNeedAuthTokenSoon();
+  EXPECT_FALSE(auth_token_cache_->IsAuthTokenAvailable());
   task_environment_.RunUntilQuit();
   ASSERT_TRUE(mock_.GotAllExpectedTryGetAuthTokensCalls());
+
+  // Tokens are now available.
+  EXPECT_TRUE(auth_token_cache_->IsAuthTokenAvailable());
 
   // Get the single token in that batch.
   auto got_token = auth_token_cache_->GetAuthToken();
@@ -168,7 +171,7 @@ TEST_F(IpProtectionAuthTokenCacheImplTest, MayNeedAuthTokenSoon_Fills_Cache) {
 
   auth_token_cache_->SetOnCacheRefilledForTesting(
       task_environment_.QuitClosure());
-  auth_token_cache_->MayNeedAuthTokenSoon();
+  EXPECT_FALSE(auth_token_cache_->IsAuthTokenAvailable());
   task_environment_.RunUntilQuit();
 
   EXPECT_TRUE(mock_.GotAllExpectedTryGetAuthTokensCalls());
@@ -187,9 +190,9 @@ TEST_F(IpProtectionAuthTokenCacheImplTest, MayNeedAuthTokenSoon_Fills_Cache) {
   ExpectHistogramState(HistogramState{.success = 3, .failure = 2});
 }
 
-// `MayNeedAuthTokenSoon()` can be called repeatedly, and only gets one token
+// `IsAuthTokenAvailable()` can be called repeatedly, and only gets one token
 // batch.
-TEST_F(IpProtectionAuthTokenCacheImplTest, MayNeedAuthTokenSoon_Repeatedly) {
+TEST_F(IpProtectionAuthTokenCacheImplTest, IsAuthTokenAvailable_Repeatedly) {
   std::vector<network::mojom::BlindSignedAuthTokenPtr> tokens;
   for (int i = 0; i < kExpectedBatchSize; i++) {
     tokens.emplace_back(
@@ -199,23 +202,23 @@ TEST_F(IpProtectionAuthTokenCacheImplTest, MayNeedAuthTokenSoon_Repeatedly) {
 
   auth_token_cache_->SetOnCacheRefilledForTesting(
       task_environment_.QuitClosure());
-  auth_token_cache_->MayNeedAuthTokenSoon();
+  EXPECT_FALSE(auth_token_cache_->IsAuthTokenAvailable());
   task_environment_.RunUntilQuit();
-  auth_token_cache_->MayNeedAuthTokenSoon();
-  auth_token_cache_->MayNeedAuthTokenSoon();
+  EXPECT_TRUE(auth_token_cache_->IsAuthTokenAvailable());
+  EXPECT_TRUE(auth_token_cache_->IsAuthTokenAvailable());
 
   EXPECT_TRUE(mock_.GotAllExpectedTryGetAuthTokensCalls());
 }
 
 // If `TryGetAuthTokens()` returns an empty batch but not `nullopt`, the cache
 // size does not change.
-TEST_F(IpProtectionAuthTokenCacheImplTest, MayNeedAuthTokenSoon_EmptyBatch) {
+TEST_F(IpProtectionAuthTokenCacheImplTest, IsAuthTokenAvailable_EmptyBatch) {
   std::vector<network::mojom::BlindSignedAuthTokenPtr> tokens;
   mock_.ExpectTryGetAuthTokensCall(kExpectedBatchSize, std::move(tokens));
 
   auth_token_cache_->SetOnCacheRefilledForTesting(
       task_environment_.QuitClosure());
-  auth_token_cache_->MayNeedAuthTokenSoon();
+  EXPECT_FALSE(auth_token_cache_->IsAuthTokenAvailable());
   task_environment_.RunUntilQuit();
 
   EXPECT_TRUE(mock_.GotAllExpectedTryGetAuthTokensCalls());
@@ -223,16 +226,16 @@ TEST_F(IpProtectionAuthTokenCacheImplTest, MayNeedAuthTokenSoon_EmptyBatch) {
   ASSERT_FALSE(token);
 }
 
-// If `TryGetAuthTokens()` returns nullopt, `MayNeedAuthTokenSoon()` will not
+// If `TryGetAuthTokens()` returns nullopt, `IsAuthTokenAvailable()` will not
 // try again until `try_again_after`.
-TEST_F(IpProtectionAuthTokenCacheImplTest, MayNeedAuthTokenSoon_TryAgainAfter) {
+TEST_F(IpProtectionAuthTokenCacheImplTest, IsAuthTokenAvailable_TryAgainAfter) {
   const base::TimeDelta kBackoff = base::Seconds(10);
   mock_.ExpectTryGetAuthTokensCall(kExpectedBatchSize,
                                    base::Time::Now() + kBackoff);
 
   auth_token_cache_->SetOnCacheRefilledForTesting(
       task_environment_.QuitClosure());
-  auth_token_cache_->MayNeedAuthTokenSoon();
+  EXPECT_FALSE(auth_token_cache_->IsAuthTokenAvailable());
   task_environment_.RunUntilQuit();
   EXPECT_TRUE(mock_.GotAllExpectedTryGetAuthTokensCalls());
 
@@ -242,10 +245,10 @@ TEST_F(IpProtectionAuthTokenCacheImplTest, MayNeedAuthTokenSoon_TryAgainAfter) {
 
   // Additional calls do nothing and specifically do not trigger an "Unexpected
   // call to TryGetAuthTokens()" failure.
-  auth_token_cache_->MayNeedAuthTokenSoon();
-  auth_token_cache_->MayNeedAuthTokenSoon();
+  EXPECT_FALSE(auth_token_cache_->IsAuthTokenAvailable());
+  EXPECT_FALSE(auth_token_cache_->IsAuthTokenAvailable());
 
-  // After the backoff has elapsed, `MayNeedAuthTokenSoon()` triggers another
+  // After the backoff has elapsed, `IsAuthTokenAvailable()` triggers another
   // call to `TryGetAuthTokens()`.
   task_environment_.FastForwardBy(kBackoff);
   std::vector<network::mojom::BlindSignedAuthTokenPtr> tokens;
@@ -255,7 +258,7 @@ TEST_F(IpProtectionAuthTokenCacheImplTest, MayNeedAuthTokenSoon_TryAgainAfter) {
 
   auth_token_cache_->SetOnCacheRefilledForTesting(
       task_environment_.QuitClosure());
-  auth_token_cache_->MayNeedAuthTokenSoon();
+  EXPECT_FALSE(auth_token_cache_->IsAuthTokenAvailable());
   task_environment_.RunUntilQuit();
   EXPECT_TRUE(mock_.GotAllExpectedTryGetAuthTokensCalls());
 
@@ -280,7 +283,7 @@ TEST_F(IpProtectionAuthTokenCacheImplTest, SkipExpiredTokens) {
 
   auth_token_cache_->SetOnCacheRefilledForTesting(
       task_environment_.QuitClosure());
-  auth_token_cache_->MayNeedAuthTokenSoon();
+  EXPECT_FALSE(auth_token_cache_->IsAuthTokenAvailable());
   task_environment_.RunUntilQuit();
 
   auto got_token = auth_token_cache_->GetAuthToken();
@@ -289,19 +292,12 @@ TEST_F(IpProtectionAuthTokenCacheImplTest, SkipExpiredTokens) {
   ExpectHistogramState(HistogramState{.success = 1, .failure = 0});
 }
 
-// `GetAuthToken()` returns nothing if `MayNeedAuthTokenSoon()` is not called.
-TEST_F(IpProtectionAuthTokenCacheImplTest, GetToken_Returns_Nothing) {
-  auto token = auth_token_cache_->GetAuthToken();
-  ASSERT_FALSE(token);
-  ExpectHistogramState(HistogramState{.success = 0, .failure = 1});
-}
-
 // If the `IpProtectionAuthTokenGetter` is nullptr, no tokens are gotten,
 // but things don't crash.
 TEST_F(IpProtectionAuthTokenCacheImplTest, Null_Getter) {
   auto auth_token_cache = IpProtectionAuthTokenCacheImpl(
       mojo::PendingRemote<network::mojom::IpProtectionAuthTokenGetter>());
-  auth_token_cache.MayNeedAuthTokenSoon();
+  EXPECT_FALSE(auth_token_cache_->IsAuthTokenAvailable());
   auto token = auth_token_cache.GetAuthToken();
   ASSERT_FALSE(token);
   ExpectHistogramState(HistogramState{.success = 0, .failure = 1});
@@ -318,10 +314,10 @@ TEST_F(IpProtectionAuthTokenCacheImplTest, TokenSpendRate) {
   }
   mock_.ExpectTryGetAuthTokensCall(kExpectedBatchSize, std::move(tokens));
 
-  // Indicate that a token will be required soon.
+  // Fetch a batch of tokens.
   auth_token_cache_->SetOnCacheRefilledForTesting(
       task_environment_.QuitClosure());
-  auth_token_cache_->MayNeedAuthTokenSoon();
+  EXPECT_FALSE(auth_token_cache_->IsAuthTokenAvailable());
   task_environment_.RunUntilQuit();
   ASSERT_TRUE(mock_.GotAllExpectedTryGetAuthTokensCalls());
 
@@ -365,10 +361,10 @@ TEST_F(IpProtectionAuthTokenCacheImplTest, TokenExpirationRate) {
   }
   mock_.ExpectTryGetAuthTokensCall(kExpectedBatchSize, std::move(tokens));
 
-  // Indicate that a token will be required soon.
+  // Fetch a batch of tokens.
   auth_token_cache_->SetOnCacheRefilledForTesting(
       task_environment_.QuitClosure());
-  auth_token_cache_->MayNeedAuthTokenSoon();
+  EXPECT_FALSE(auth_token_cache_->IsAuthTokenAvailable());
   task_environment_.RunUntilQuit();
   ASSERT_TRUE(mock_.GotAllExpectedTryGetAuthTokensCalls());
 
