@@ -445,6 +445,8 @@ H266Parser::Result H266Parser::ParseProfileTierLevel(
 
   if (profile_tier_present) {
     READ_BITS_OR_RETURN(8, &profile_tier_level->ptl_num_sub_profiles);
+    IN_RANGE_OR_RETURN(profile_tier_level->ptl_num_sub_profiles, 0,
+                       kMaxSubProfiles);
     for (int i = 0; i < profile_tier_level->ptl_num_sub_profiles; i++) {
       // Reader does not support more than 31-bits, so we have to read twice.
       int general_sub_profile_idc_msb = 0, general_sub_profile_idc_lsb;
@@ -703,6 +705,8 @@ H266Parser::Result H266Parser::ParseVPS(int* vps_id) {
       memcpy(&vps->profile_tier_level[i].general_constraints_info,
              &vps->profile_tier_level[i - 1].general_constraints_info,
              sizeof(vps->profile_tier_level[i - 1].general_constraints_info));
+      LE_OR_RETURN(vps->profile_tier_level[i - 1].ptl_num_sub_profiles,
+                   kMaxSubProfiles);
       vps->profile_tier_level[i].ptl_num_sub_profiles =
           vps->profile_tier_level[i - 1].ptl_num_sub_profiles;
       memcpy(
@@ -1302,6 +1306,8 @@ H266Parser::Result H266Parser::ParseSPS(const H266NALU& nalu, int* sps_id) {
 
     int width_bits = base::bits::Log2Ceiling(tmp_width_val);
     int height_bits = base::bits::Log2Ceiling(tmp_height_val);
+    IN_RANGE_OR_RETURN(width_bits, 0, 31);
+    IN_RANGE_OR_RETURN(height_bits, 0, 31);
 
     if (sps->sps_num_subpics_minus1 > 0) {
       // For the 0-th subpicture, do not overlook sps_subpic_same_size_flag
@@ -1363,6 +1369,7 @@ H266Parser::Result H266Parser::ParseSPS(const H266NALU& nalu, int* sps_id) {
       } else {  // sps_subpic_same_size_flag = 1
         int num_subpic_cols = tmp_width_val / (sps->sps_subpic_width_minus1[0] +
                                                1);  // Equation 37
+        GT_OR_RETURN(num_subpic_cols, 0);
         for (int i = 1; i <= sps->sps_num_subpics_minus1; i++) {
           sps->sps_subpic_ctu_top_left_x[i] =
               (i % num_subpic_cols) * (sps->sps_subpic_width_minus1[0] + 1);
@@ -1586,6 +1593,8 @@ H266Parser::Result H266Parser::ParseSPS(const H266NALU& nalu, int* sps_id) {
       READ_UE_OR_RETURN(&sps->sps_num_points_in_qp_table_minus1[i]);
       IN_RANGE_OR_RETURN(sps->sps_num_points_in_qp_table_minus1[i], 0,
                          36 - sps->sps_qp_table_start_minus26[i]);
+      LE_OR_RETURN(sps->sps_num_points_in_qp_table_minus1[i],
+                   kMaxPointsInQpTable);
       for (int j = 0; j <= sps->sps_num_points_in_qp_table_minus1[i]; j++) {
         READ_UE_OR_RETURN(&sps->sps_delta_qp_in_val_minus1[i][j]);
         READ_UE_OR_RETURN(&sps->sps_delta_qp_diff_val[i][j]);
@@ -1621,6 +1630,10 @@ H266Parser::Result H266Parser::ParseSPS(const H266NALU& nalu, int* sps_id) {
     for (j = 0; j <= sps->sps_num_points_in_qp_table_minus1[i]; j++) {
       int sh = (sps->sps_delta_qp_in_val_minus1[i][j] + 1) >> 1;
       for (k = qp_in_val[i][j] + 1, m = 1; k <= qp_in_val[i][j + 1]; k++, m++) {
+        LE_OR_RETURN(j, kMaxPointsInQpTable - 1);
+        IN_RANGE_OR_RETURN(k + sps->qp_bd_offset, 0, kMaxPointsInQpTable - 1);
+        IN_RANGE_OR_RETURN(qp_in_val[i][j] + sps->qp_bd_offset, 0,
+                           kMaxPointsInQpTable - 1);
         sps->chroma_qp_table[i][k + sps->qp_bd_offset] =
             sps->chroma_qp_table[i][qp_in_val[i][j] + sps->qp_bd_offset] +
             ((qp_out_val[i][j + 1] - qp_out_val[i][j]) * m + sh) /
@@ -1629,6 +1642,7 @@ H266Parser::Result H266Parser::ParseSPS(const H266NALU& nalu, int* sps_id) {
     }
     for (k = qp_in_val[i][sps->sps_num_points_in_qp_table_minus1[i] + 1] + 1;
          k <= 63; k++) {
+      IN_RANGE_OR_RETURN(k + sps->qp_bd_offset, 0, kMaxPointsInQpTable - 1);
       sps->chroma_qp_table[i][k + sps->qp_bd_offset] =
           std::clamp(sps->chroma_qp_table[i][k + sps->qp_bd_offset - 1] + 1,
                      -sps->qp_bd_offset, 63);
@@ -4211,8 +4225,16 @@ H266Parser::Result H266Parser::ParseSliceHeader(
       READ_UE_OR_RETURN(&shdr->sh_entry_offset_len_minus1);
       IN_RANGE_OR_RETURN(shdr->sh_entry_offset_len_minus1, 0, 31);
       for (int i = 0; i < num_entry_points; i++) {
-        READ_BITS_OR_RETURN(shdr->sh_entry_offset_len_minus1 + 1,
-                            &shdr->sh_entry_point_offset_minus1[i]);
+        if (shdr->sh_entry_offset_len_minus1 == 31) {
+          int entry_offset_high16 = 0, entry_offset_low16 = 0;
+          READ_BITS_OR_RETURN(16, &entry_offset_high16);
+          READ_BITS_OR_RETURN(16, &entry_offset_low16);
+          shdr->sh_entry_point_offset_minus1[i] =
+              (entry_offset_high16 << 16) + entry_offset_low16;
+        } else {
+          READ_BITS_OR_RETURN(shdr->sh_entry_offset_len_minus1 + 1,
+                              &shdr->sh_entry_point_offset_minus1[i]);
+        }
       }
     }
   }
