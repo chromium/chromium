@@ -1486,20 +1486,18 @@ void ExtensionWebRequestEventRouter::DispatchEventToListeners(
 
     if (is_active) {
       DCHECK(render_process);
-      // TODO(devlin): Upgrade this to a CHECK().
-      if (ExtensionsBrowserClient::Get()->IsValidContext(browser_context)) {
-        // Active listeners use a bespoke dispatching mechanism.
-        // TODO(devlin): Now that the webRequest API is entirely handled on the
-        // UI thread (it used to be on the IO thread), can we just use the
-        // regular event dispatching code for this case, as well?
-        EventRouter::Get(id.browser_context)
-            ->DispatchEventToSender(
-                render_process, id.browser_context, listener->id.extension_id,
-                listener->histogram_value, listener->id.sub_event_name,
-                listener->id.worker_thread_id,
-                listener->id.service_worker_version_id,
-                std::move(args_filtered), mojom::EventFilteringInfo::New());
-      }
+      CHECK(ExtensionsBrowserClient::Get()->IsValidContext(browser_context));
+      // Active listeners use a bespoke dispatching mechanism.
+      // TODO(devlin): Now that the webRequest API is entirely handled on the
+      // UI thread (it used to be on the IO thread), can we just use the
+      // regular event dispatching code for this case, as well?
+      EventRouter::Get(id.browser_context)
+          ->DispatchEventToSender(
+              render_process, id.browser_context, listener->id.extension_id,
+              listener->histogram_value, listener->id.sub_event_name,
+              listener->id.worker_thread_id,
+              listener->id.service_worker_version_id, std::move(args_filtered),
+              mojom::EventFilteringInfo::New());
     } else {
       DCHECK_EQ(-1, id.service_worker_version_id);
       // In the event of a lazy listener, we go through normal extension
