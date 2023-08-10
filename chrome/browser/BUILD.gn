@@ -8426,7 +8426,6 @@ if (is_chromeos_ash) {
       ":browser",
       "//base",
       "//components/exo/wayland:ui_controls_protocol_stub",
-      "//components/exo/wayland:weston_test_stub",
       "//third_party/protobuf:protobuf_lite",
     ]
   }

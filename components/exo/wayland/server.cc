@@ -67,7 +67,6 @@
 #include "components/exo/wayland/wayland_display_output.h"
 #include "components/exo/wayland/wayland_dmabuf_feedback_manager.h"
 #include "components/exo/wayland/wayland_watcher.h"
-#include "components/exo/wayland/weston_test.h"
 #include "components/exo/wayland/wl_compositor.h"
 #include "components/exo/wayland/wl_data_device_manager.h"
 #include "components/exo/wayland/wl_output.h"
@@ -388,7 +387,6 @@ void Server::Initialize() {
   wl_global_create(wl_display_.get(), &zwp_idle_inhibit_manager_v1_interface, 1,
                    display_, bind_zwp_idle_inhibit_manager);
 
-  weston_test_holder_ = std::make_unique<WestonTest>(this);
   ui_controls_holder_ = std::make_unique<UiControls>(this);
 
   zcr_keyboard_extension_data_ =

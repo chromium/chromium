@@ -67,7 +67,6 @@ fuzzer_test("create_fnmatch_query_fuzzer") {
     "//base",
     "//chrome/browser",
     "//components/exo/wayland:ui_controls_protocol",
-    "//components/exo/wayland:weston_test",
   ]
 }
 ```

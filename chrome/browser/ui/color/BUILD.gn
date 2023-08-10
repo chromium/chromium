@@ -115,10 +115,7 @@ if (!is_ios && !is_android) {
       ]
     }
     if (is_chromeos_ash) {
-      deps += [
-        "//components/exo/wayland:ui_controls_protocol_stub",
-        "//components/exo/wayland:weston_test_stub",
-      ]
+      deps += [ "//components/exo/wayland:ui_controls_protocol_stub" ]
     }
   }
 }
