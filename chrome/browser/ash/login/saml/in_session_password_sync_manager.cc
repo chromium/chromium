@@ -9,6 +9,7 @@
 #include "base/check.h"
 #include "base/functional/callback_helpers.h"
 #include "base/time/default_clock.h"
+#include "base/trace_event/trace_event.h"
 #include "chrome/browser/ash/login/auth/chrome_safe_mode_delegate.h"
 #include "chrome/browser/ash/login/helper.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
@@ -98,6 +99,7 @@ void InSessionPasswordSyncManager::SetClockForTesting(
 void InSessionPasswordSyncManager::Shutdown() {}
 
 void InSessionPasswordSyncManager::OnSessionStateChanged() {
+  TRACE_EVENT0("login", "InSessionPasswordSyncManager::OnSessionStateChanged");
   if (!session_manager::SessionManager::Get()->IsScreenLocked()) {
     // We are unlocking the session, no further action required.
     return;
