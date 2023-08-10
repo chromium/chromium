@@ -28,10 +28,10 @@ namespace activity_services {
 
 ShareToData* ShareToDataForWebState(web::WebState* web_state,
                                     const GURL& share_url) {
-  DCHECK(web_state);
+  CHECK(web_state);
 
   BOOL is_original_title = NO;
-  DCHECK(web_state->GetNavigationManager());
+  CHECK(web_state->GetNavigationManager());
   web::NavigationItem* last_committed_item =
       web_state->GetNavigationManager()->GetLastCommittedItem();
   if (last_committed_item) {
@@ -42,8 +42,10 @@ ShareToData* ShareToDataForWebState(web::WebState* web_state,
       // If the original page title exists, it is expected to match the Tab's
       // title. If this ever changes, then a decision has to be made on which
       // one should be used for sharing.
-      DCHECK([tab_util::GetTabTitle(web_state)
-          isEqualToString:base::SysUTF16ToNSString(original_title)]);
+      CHECK([tab_util::GetTabTitle(web_state)
+          isEqualToString:base::SysUTF16ToNSString(original_title)])
+          << "Original title is'" << original_title << "' and tab's title is '"
+          << web_state->GetTitle() << "'";
       is_original_title = YES;
     }
   }
