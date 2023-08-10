@@ -1043,7 +1043,8 @@ bool content::IsNSRange(id value) {
   // dispatch the actual text that changed on the value changed notification.
   // We run this code on all macOS versions to get the highest test coverage.
   std::u16string oldValue = _oldValue;
-  std::u16string newValue = _owner->GetValueForControl();
+  std::u16string newValue = _owner->CreateTextPositionAt(0)->GetText(
+      ui::AXEmbeddedObjectBehavior::kSuppressCharacter);
   _oldValue = newValue;
   if (oldValue.empty() && newValue.empty())
     return content::AXTextEdit();

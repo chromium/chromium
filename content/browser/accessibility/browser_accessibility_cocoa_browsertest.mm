@@ -81,6 +81,11 @@ class BrowserAccessibilityCocoaBrowserTest : public ContentBrowserTest {
     return manager->GetUserInfoForSelectedTextChangedNotification();
   }
 
+  AXTextEdit GetTextEditForNodeId(int32_t id) {
+    auto* manager = static_cast<BrowserAccessibilityManagerMac*>(GetManager());
+    return manager->text_edits_[id];
+  }
+
  private:
   BrowserAccessibility* FindNodeInSubtree(BrowserAccessibility& node,
                                           ax::mojom::Role role) {
@@ -132,6 +137,85 @@ IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
   expected_string += base::NumberToString(ax_position->anchor_id());
   expected_string += " text_offset=1 affinity=downstream annotated_text=B<>";
   EXPECT_EQ(ax_position->ToString(), expected_string);
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
+                       AXTextMarkerForTextEditContentEditable) {
+  EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
+
+  AccessibilityNotificationWaiter waiter(shell()->web_contents(),
+                                         ui::kAXModeComplete,
+                                         ax::mojom::Event::kLoadComplete);
+  GURL url(R"HTML(data:text/html,
+                  <div id="editable" contenteditable="true" dir="auto">
+                    <p>One</p>
+                    <p>Two</p>
+                    <p><br></p>
+                    <p>Three</p>
+                    <p>Four</p>
+                    <p>Five</p>
+                  </div>)HTML");
+
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+  ASSERT_TRUE(waiter.WaitForNotification());
+
+  BrowserAccessibility* content_editable =
+      GetManager()->GetBrowserAccessibilityRoot()->PlatformGetChild(0);
+  ASSERT_NE(nullptr, content_editable);
+  EXPECT_TRUE(ExecJs(shell()->web_contents(),
+                     "document.querySelector('#editable').focus()"));
+  {
+    SimulateKeyPress(shell()->web_contents(), ui::DomKey::FromCharacter('B'),
+                     ui::DomCode::US_B, ui::VKEY_B, false, false, false, false);
+
+    AccessibilityNotificationWaiter value_waiter(
+        shell()->web_contents(), ui::kAXModeComplete,
+        ax::mojom::Event::kValueChanged);
+    ASSERT_TRUE(value_waiter.WaitForNotification());
+
+    AXTextEdit text_edit = GetTextEditForNodeId(content_editable->GetId());
+    EXPECT_NE(text_edit.edit_text_marker, nil);
+    EXPECT_EQ(u"", text_edit.deleted_text);
+    EXPECT_EQ(u"B", text_edit.inserted_text);
+
+    auto ax_position = ui::AXTextMarkerToAXPosition(text_edit.edit_text_marker);
+    std::string expected_string = "TextPosition anchor_id=";
+    expected_string += base::NumberToString(ax_position->anchor_id());
+    expected_string += " text_offset=0 affinity=downstream annotated_text=";
+    expected_string += "<B>OneTwo\nThreeFourFive";
+
+    EXPECT_EQ(ax_position->ToString(), expected_string);
+  }
+
+  // Move Cursor down to the fourth paragraph.
+  for (int i = 0; i < 4; ++i) {
+    SimulateKeyPressWithoutChar(shell()->web_contents(), ui::DomKey::ARROW_DOWN,
+                                ui::DomCode::ARROW_DOWN, ui::VKEY_DOWN,
+                                /*control=*/false, /*shift=*/false,
+                                /*alt=*/false,
+                                /*command=*/false);
+  }
+  {
+    SimulateKeyPress(shell()->web_contents(), ui::DomKey::FromCharacter('B'),
+                     ui::DomCode::US_B, ui::VKEY_B, false, false, false, false);
+
+    AccessibilityNotificationWaiter value_waiter(
+        shell()->web_contents(), ui::kAXModeComplete,
+        ax::mojom::Event::kValueChanged);
+    ASSERT_TRUE(value_waiter.WaitForNotification());
+
+    AXTextEdit text_edit = GetTextEditForNodeId(content_editable->GetId());
+    EXPECT_NE(text_edit.edit_text_marker, nil);
+    EXPECT_EQ(u"", text_edit.deleted_text);
+    EXPECT_EQ(u"B", text_edit.inserted_text);
+    auto ax_position = ui::AXTextMarkerToAXPosition(text_edit.edit_text_marker);
+    std::string expected_string = "TextPosition anchor_id=";
+    expected_string += base::NumberToString(ax_position->anchor_id());
+    expected_string += " text_offset=14 affinity=downstream annotated_text=";
+    expected_string += "BOneTwo\nThreeF<B>ourFive";
+
+    EXPECT_EQ(ax_position->ToString(), expected_string);
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
