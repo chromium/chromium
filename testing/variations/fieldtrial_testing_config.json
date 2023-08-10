@@ -2330,17 +2330,7 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_5_1_20230705",
-                    "params": {
-                        "image_count": "5",
-                        "tight_medium_limit": "1"
-                    },
-                    "enable_features": [
-                        "BoostImagePriority"
-                    ]
-                },
-                {
-                    "name": "Enabled_5_2_20230705",
+                    "name": "Enabled_5_2_20230808",
                     "params": {
                         "image_count": "5",
                         "tight_medium_limit": "2"

@@ -2156,16 +2156,6 @@
     "expires": "Dec 1, 2023"
   },
   {
-    "prefix": "boost-image-priority",
-    "platforms": ["Linux"],
-    "bases": [
-      "http/tests/devtools/network/resource-priority.js",
-      "http/tests/inspector-protocol/network/is-same-site.js",
-      "http/tests/priority-hints/image-initial-load.html"
-    ],
-    "args": ["--disable-features=BoostImagePriority"]
-  },
-  {
     "prefix": "clone-for-branch2-disabled",
     "platforms": ["Linux"],
     "bases": ["external/wpt/fetch/api/response"],

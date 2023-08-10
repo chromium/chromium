@@ -289,7 +289,7 @@ const base::FeatureParam<int> kBoostImagePriorityImageSize{&kBoostImagePriority,
 // Number of medium-priority requests to allow in tight-mode independent of the
 // total number of outstanding requests.
 const base::FeatureParam<int> kBoostImagePriorityTightMediumLimit{
-    &kBoostImagePriority, "tight_medium_limit", 1};
+    &kBoostImagePriority, "tight_medium_limit", 2};
 
 // https://github.com/patcg-individual-drafts/topics
 // Kill switch for the Topics API.
