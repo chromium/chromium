@@ -498,11 +498,9 @@ GPUSampler* GPUDevice::createSampler(const GPUSamplerDescriptor* descriptor) {
 }
 
 GPUExternalTexture* GPUDevice::importExternalTexture(
-    ScriptState* script_state,
     const GPUExternalTextureDescriptor* descriptor,
     ExceptionState& exception_state) {
-  return external_texture_cache_->Import(ExecutionContext::From(script_state),
-                                         descriptor, exception_state);
+  return external_texture_cache_->Import(descriptor, exception_state);
 }
 
 GPUBindGroup* GPUDevice::createBindGroup(

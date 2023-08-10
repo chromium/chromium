@@ -107,7 +107,6 @@ class GPUDevice final : public EventTarget,
   GPUSampler* createSampler(const GPUSamplerDescriptor* descriptor);
 
   GPUExternalTexture* importExternalTexture(
-      ScriptState* script_state,
       const GPUExternalTextureDescriptor* descriptor,
       ExceptionState& exception_state);
 

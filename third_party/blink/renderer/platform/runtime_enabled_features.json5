@@ -3975,13 +3975,6 @@
       public: true,
     },
     {
-      name: "WebGPUWebCodecs",
-      status: "stable",
-      public: true,
-      // Make the WebGPUDeveloperFeatures also enabled this feature.
-      implied_by: ["WebGPUDeveloperFeatures"],
-    },
-    {
       name: "WebHID",
       status: {"Android": "", "default": "stable"},
       base_feature: "none",

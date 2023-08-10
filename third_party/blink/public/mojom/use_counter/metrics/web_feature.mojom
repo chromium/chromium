@@ -3818,7 +3818,7 @@ enum WebFeature {
   kURLSearchParams_Has_Delete_MultipleArguments = 4478,
   kPaymentHandlerMinimalHeaderUX = 4479,
   kPopoverTypeHint = 4480,
-  kWebGPUWebCodecs = 4481,
+  kOBSOLETE_WebGPUWebCodecs = 4481,
   kRTCPeerConnectionLegacyGetStatsTrial = 4482,
   kExecutedEmptyJavaScriptURLFromFrame = 4483,
   kExecutedJavaScriptURLFromFrame = 4484,

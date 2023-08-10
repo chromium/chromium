@@ -20,7 +20,7 @@
     [RaisesException] GPUBuffer createBuffer(GPUBufferDescriptor descriptor);
     [RaisesException] GPUTexture createTexture(GPUTextureDescriptor descriptor);
     GPUSampler createSampler(optional GPUSamplerDescriptor descriptor = {});
-    [RaisesException, CallWith=ScriptState] GPUExternalTexture importExternalTexture(GPUExternalTextureDescriptor descriptor);
+    [RaisesException] GPUExternalTexture importExternalTexture(GPUExternalTextureDescriptor descriptor);
 
     [RaisesException] GPUBindGroup createBindGroup(GPUBindGroupDescriptor descriptor);
     [RaisesException] GPUBindGroupLayout createBindGroupLayout(GPUBindGroupLayoutDescriptor descriptor);

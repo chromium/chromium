@@ -23,18 +23,8 @@ ExternalTextureCache::ExternalTextureCache(GPUDevice* device)
     : device_(device) {}
 
 GPUExternalTexture* ExternalTextureCache::Import(
-    ExecutionContext* execution_context,
     const GPUExternalTextureDescriptor* descriptor,
     ExceptionState& exception_state) {
-  if (descriptor->source()->GetContentType() ==
-          V8UnionHTMLVideoElementOrVideoFrame::ContentType::kVideoFrame &&
-      !RuntimeEnabledFeatures::WebGPUWebCodecsEnabled(execution_context)) {
-    exception_state.ThrowTypeError(
-        "VideoFrame isn't supported for importExternalTexture. This feature "
-        "requires --enable-webgpu-developer-features");
-    return nullptr;
-  }
-
   // Ensure the GPUExternalTexture created from a destroyed GPUDevice will be
   // expired immediately.
   if (device()->destroyed()) {

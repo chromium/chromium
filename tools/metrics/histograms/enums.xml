@@ -43343,7 +43343,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4478" label="URLSearchParams_Has_Delete_MultipleArguments"/>
   <int value="4479" label="PaymentHandlerMinimalHeaderUX"/>
   <int value="4480" label="PopoverTypeHint"/>
-  <int value="4481" label="WebGPUWebCodecs"/>
+  <int value="4481" label="OBSOLETE_WebGPUWebCodecs"/>
   <int value="4482" label="RTCPeerConnectionLegacyGetStatsTrial"/>
   <int value="4483" label="ExecutedEmptyJavaScriptURLFromFrame"/>
   <int value="4484" label="ExecutedJavaScriptURLFromFrame"/>
