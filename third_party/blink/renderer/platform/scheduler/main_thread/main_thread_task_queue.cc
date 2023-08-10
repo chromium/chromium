@@ -62,6 +62,8 @@ QueueName MainThreadTaskQueue::NameForQueueType(
       return QueueName::V8_LOW_PRIORITY_TQ;
     case MainThreadTaskQueue::QueueType::kInput:
       return QueueName::INPUT_TQ;
+    case MainThreadTaskQueue::QueueType::kDetached:
+      return QueueName::DETACHED_TQ;
     case MainThreadTaskQueue::QueueType::kOther:
       return QueueName::OTHER_TQ;
     case MainThreadTaskQueue::QueueType::kWebScheduling:
@@ -99,6 +101,7 @@ bool MainThreadTaskQueue::IsPerFrameTaskQueue(
     case MainThreadTaskQueue::QueueType::kV8:
     case MainThreadTaskQueue::QueueType::kV8LowPriority:
     case MainThreadTaskQueue::QueueType::kInput:
+    case MainThreadTaskQueue::QueueType::kDetached:
     case MainThreadTaskQueue::QueueType::kNonWaking:
     case MainThreadTaskQueue::QueueType::kOther:
     case MainThreadTaskQueue::QueueType::kIPCTrackingForCachedPages:
@@ -163,7 +166,7 @@ void MainThreadTaskQueue::OnTaskStarted(
     const base::sequence_manager::Task& task,
     const base::sequence_manager::TaskQueue::TaskTiming& task_timing) {
   if (main_thread_scheduler_) {
-    main_thread_scheduler_->OnTaskStarted(*this, task, task_timing);
+    main_thread_scheduler_->OnTaskStarted(this, task, task_timing);
   }
 }
 
@@ -172,7 +175,8 @@ void MainThreadTaskQueue::OnTaskCompleted(
     TaskQueue::TaskTiming* task_timing,
     base::LazyNow* lazy_now) {
   if (main_thread_scheduler_) {
-    main_thread_scheduler_->OnTaskCompleted(*this, task, task_timing, lazy_now);
+    main_thread_scheduler_->OnTaskCompleted(weak_ptr_factory_.GetWeakPtr(),
+                                            task, task_timing, lazy_now);
   }
 }
 

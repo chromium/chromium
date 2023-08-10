@@ -77,7 +77,11 @@ class PLATFORM_EXPORT MainThreadTaskQueue
     // 17 : kIPC, obsolete
     kInput = 18,
 
-    // 19 : kDetached = 19, obsolete.
+    // Detached is used in histograms for tasks which are run after frame
+    // is detached and task queue is gracefully shutdown.
+    // TODO(altimin): Move to the top when histogram is renumbered.
+    kDetached = 19,
+
     // 20 : kCleanup, obsolete.
     // 21 : kWebSchedulingUserInteraction, obsolete.
     // 22 : kWebSchedulingBestEffort, obsolete.
