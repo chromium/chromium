@@ -4,20 +4,17 @@
 
 #include "components/viz/host/gpu_host_impl.h"
 
-#include <algorithm>
 #include <utility>
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/process/process_handle.h"
 #include "base/strings/strcat.h"
 #include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/task/thread_pool.h"
 #include "base/threading/thread_checker.h"
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
@@ -28,7 +25,6 @@
 #include "gpu/config/gpu_feature_info.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/config/gpu_info.h"
-#include "gpu/config/gpu_info_collector.h"
 #include "gpu/ipc/common/gpu_client_ids.h"
 #include "gpu/ipc/host/gpu_disk_cache.h"
 #include "mojo/public/cpp/bindings/sync_call_restrictions.h"
@@ -99,39 +95,6 @@ FontRenderParams& GetFontRenderParams() {
   return *instance;
 }
 
-#if BUILDFLAG(IS_WIN)
-// A small delay to avoid slowing down GPU process startup.
-constexpr base::TimeDelta kCollectGpuMemoryMetricsDelay = base::Seconds(10);
-
-// Whether to collect GPU memory metrics on process startup.
-BASE_FEATURE(kCollectGpuMemoryMetrics,
-             "CollectGpuMemoryMetrics",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-int GetMaxMemory(const gpu::DxDiagNode& node) {
-  int memory = 0;
-  auto it = node.values.find("szDisplayMemoryEnglish");
-  if (it != node.values.end()) {
-    base::StringToInt(it->second, &memory);
-  }
-
-  for (const auto& child : node.children) {
-    memory = std::max(memory, GetMaxMemory(child.second));
-  }
-  return memory;
-}
-
-void CollectGpuMemoryMetrics() {
-  gpu::DxDiagNode dx_diag_node;
-  gpu::GetDxDiagnostics(&dx_diag_node);
-
-  int gpu_memory = GetMaxMemory(dx_diag_node);
-  if (gpu_memory != 0) {
-    base::UmaHistogramMemoryLargeMB("GPU.Memory.Device", gpu_memory);
-  }
-}
-#endif
-
 }  // namespace
 
 GpuHostImpl::InitParams::InitParams() = default;
@@ -155,11 +118,6 @@ GpuHostImpl::GpuHostImpl(Delegate* delegate,
     viz_main_->CreateInfoCollectionGpuService(
         info_collection_gpu_service_remote_.BindNewPipeAndPassReceiver());
     return;
-  } else if (base::FeatureList::IsEnabled(kCollectGpuMemoryMetrics)) {
-    // If this is a normal GPU process, collect UMA metrics for device memory.
-    base::ThreadPool::CreateCOMSTATaskRunner({})->PostDelayedTask(
-        FROM_HERE, base::BindOnce(CollectGpuMemoryMetrics),
-        kCollectGpuMemoryMetricsDelay);
   }
 #endif
 
