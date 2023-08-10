@@ -285,7 +285,9 @@ void ArcGraphicsTracingHandler::OnWindowActivated(ActivationReason reason,
   arc_active_window_->AddPreTargetHandler(this);
 
   // Limit tracing by newly activated window.
-  tracing_time_min_ = SystemTicksNow();
+  if (tracing_active_) {
+    tracing_time_min_ = SystemTicksNow();
+  }
 }
 
 void ArcGraphicsTracingHandler::OnWindowPropertyChanged(aura::Window* window,

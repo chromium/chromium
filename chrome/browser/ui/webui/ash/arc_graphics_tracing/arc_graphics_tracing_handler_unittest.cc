@@ -256,6 +256,48 @@ TEST_F(ArcGraphicsTracingHandlerTest, FilterSystemTraceByTimestamp) {
   }
 }
 
+TEST_F(ArcGraphicsTracingHandlerTest, SwitchWindowDuringModelBuild) {
+  handler_->set_now(base::Time::FromJavaTime(1'600'044'440'000));
+  handler_->set_trace_time_base(base::Time::FromJavaTime(1'600'000'000'000));
+
+  auto arc_widget = CreateArcTaskWidget(22, "org.funstuff.client");
+  auto other_arc_widget = CreateArcTaskWidget(88, "net.differentapp");
+  arc_widget->Show();
+  SendStartStopKey();
+  handler_->StartTracingOnControllerRespond();
+
+  // Fast forward past the max tracing interval. This will stop the trace at the
+  // end of the fast-forward, which is 400ms after the timeout.
+  FastForwardClockAndTaskQueue(handler_->max_tracing_time() +
+                               base::Milliseconds(400));
+
+  // While model is being built, switch to the ARC window to change
+  // min_tracing_time_. This sets the min trace time to 300ms after the end of
+  // the trace.
+  FastForwardClockAndTaskQueue(base::Milliseconds(300));
+  other_arc_widget->Show();
+
+  // Pass results from trace controller to handler.
+  handler_->StopTracingOnControllerRespond(std::make_unique<std::string>(
+      "{\"traceEvents\":[],\"systemTraceEvents\":\""
+      // clang-format off
+      "          <idle>-0     [003] d..0 44442.000001: cpu_idle: state=0 cpu_id=3\n"
+      // clang-format on
+      "\"}"));
+
+  task_environment()->RunUntilIdle();
+
+  {
+    const auto& dict = web_ui_->call_data().back()->arg1()->GetDict();
+    const auto* events_by_cpu = dict.FindListByDottedPath("system.cpu");
+    ASSERT_TRUE(events_by_cpu);
+    ASSERT_EQ(4UL, events_by_cpu->size());
+
+    const auto& cpu_events = (*events_by_cpu)[3].GetList();
+    ASSERT_EQ(1UL, cpu_events.size()) << cpu_events;
+  }
+}
+
 }  // namespace
 
 }  // namespace ash
