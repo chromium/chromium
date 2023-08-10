@@ -152,6 +152,7 @@ TEST_F(FrameInfoHelperTest, TextureOwnerGuessCodedSize) {
       CreateBufferRenderer(kTestVisibleSize, texture_owner, kTestAlignment));
   EXPECT_EQ(last_frame_info_.coded_size, kTestCodedSize);
   Mock::VerifyAndClearExpectations(texture_owner.get());
+  EXPECT_FALSE(helper_->IsStalled());
 
   // When the size changes we should guess and `GetCodedSizeAndVisibleRect`
   // won't be called until the buffer is rendered.
@@ -166,6 +167,10 @@ TEST_F(FrameInfoHelperTest, TextureOwnerGuessCodedSize) {
                               buffer_renderer = std::move(br);
                               last_frame_info_ = info;
                             }));
+
+  // The helper should report that it's stalled while waiting for info.
+  EXPECT_TRUE(helper_->IsStalled());
+
   base::RunLoop().RunUntilIdle();
   ASSERT_TRUE(buffer_renderer);
   EXPECT_EQ(last_frame_info_.coded_size, kExpectedCodedSize);
@@ -174,12 +179,14 @@ TEST_F(FrameInfoHelperTest, TextureOwnerGuessCodedSize) {
   EXPECT_CALL(*texture_owner, GetCodedSizeAndVisibleRect(_, _, _)).Times(1);
   ASSERT_TRUE(buffer_renderer->RenderToFrontBuffer());
   base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(helper_->IsStalled());
   Mock::VerifyAndClearExpectations(texture_owner.get());
 
   // Calling GetFrameInfo again should just reuse the cached frame information.
   EXPECT_CALL(*texture_owner, GetCodedSizeAndVisibleRect(_, _, _)).Times(0);
   GetFrameInfo(CreateBufferRenderer(kTestVisibleSizeBig, texture_owner));
   EXPECT_EQ(last_frame_info_.coded_size, kExpectedCodedSize);
+  EXPECT_FALSE(helper_->IsStalled());
   Mock::VerifyAndClearExpectations(texture_owner.get());
 }
 
@@ -198,6 +205,7 @@ TEST_F(FrameInfoHelperTest, TextureOwnerGuessCodedSizeFailRender) {
   GetFrameInfo(
       CreateBufferRenderer(kTestVisibleSize, texture_owner, kTestAlignment));
   EXPECT_EQ(last_frame_info_.coded_size, kTestCodedSize);
+  EXPECT_FALSE(helper_->IsStalled());
   Mock::VerifyAndClearExpectations(texture_owner.get());
 
   // When the size changes we should guess and `GetCodedSizeAndVisibleRect`
@@ -213,6 +221,7 @@ TEST_F(FrameInfoHelperTest, TextureOwnerGuessCodedSizeFailRender) {
                               buffer_renderer = std::move(br);
                               last_frame_info_ = info;
                             }));
+  EXPECT_TRUE(helper_->IsStalled());
   base::RunLoop().RunUntilIdle();
   ASSERT_TRUE(buffer_renderer);
   EXPECT_EQ(last_frame_info_.coded_size, kExpectedCodedSize);
@@ -234,6 +243,8 @@ TEST_F(FrameInfoHelperTest, TextureOwnerGuessCodedSizeFailRender) {
   ASSERT_FALSE(buffer_renderer2);
   ASSERT_FALSE(called);
 
+  EXPECT_TRUE(helper_->IsStalled());
+
   // Failing the render should cause the next GetFrameInfo to be issued and it
   // should try to retrieve the real frame info as well.
   FailNextRender(buffer_renderer.get());
@@ -241,10 +252,13 @@ TEST_F(FrameInfoHelperTest, TextureOwnerGuessCodedSizeFailRender) {
   ASSERT_TRUE(buffer_renderer2);
   EXPECT_EQ(last_frame_info_.coded_size, kExpectedCodedSize);
 
+  EXPECT_TRUE(helper_->IsStalled());
+
   // Rendering the buffer should execute `GetCodedSizeAndVisibleRect`.
   EXPECT_CALL(*texture_owner, GetCodedSizeAndVisibleRect(_, _, _)).Times(1);
   ASSERT_TRUE(buffer_renderer2->RenderToFrontBuffer());
   base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(helper_->IsStalled());
 }
 
 TEST_F(FrameInfoHelperTest, TextureOwnerGuessedWrongCodedSize) {
@@ -262,12 +276,14 @@ TEST_F(FrameInfoHelperTest, TextureOwnerGuessedWrongCodedSize) {
   EXPECT_CALL(*texture_owner, GetCodedSizeAndVisibleRect(_, _, _)).Times(1);
   GetFrameInfo(
       CreateBufferRenderer(kTestVisibleSize, texture_owner, kTestAlignment));
+  EXPECT_FALSE(helper_->IsStalled());
   EXPECT_EQ(last_frame_info_.coded_size, kTestVisibleSize2);
   Mock::VerifyAndClearExpectations(texture_owner.get());
 
   // Subsequent size changes should take the non-guessing path.
   EXPECT_CALL(*texture_owner, GetCodedSizeAndVisibleRect(_, _, _)).Times(1);
   GetFrameInfo(CreateBufferRenderer(kTestVisibleSize2, texture_owner));
+  EXPECT_FALSE(helper_->IsStalled());
   EXPECT_EQ(last_frame_info_.coded_size, kTestVisibleSize2);
   Mock::VerifyAndClearExpectations(texture_owner.get());
 }

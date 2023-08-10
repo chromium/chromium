@@ -59,6 +59,10 @@ class MEDIA_GPU_EXPORT FrameInfoHelper {
       std::unique_ptr<CodecOutputBufferRenderer> buffer_renderer,
       FrameInfoReadyCB callback) = 0;
 
+  // Returns true if the FrameInfoHelper can't currently produce any more
+  // frames.
+  virtual bool IsStalled() const = 0;
+
  protected:
   FrameInfoHelper() = default;
 };

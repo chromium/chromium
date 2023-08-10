@@ -90,6 +90,7 @@ class MockVideoFrameFactory : public VideoFrameFactory {
   MOCK_METHOD1(MockRunAfterPendingVideoFrames,
                void(base::OnceClosure* closure));
   MOCK_METHOD0(CancelPendingCallbacks, void());
+  MOCK_CONST_METHOD0(IsStalled, bool());
 
   void SetSurfaceBundle(
       scoped_refptr<CodecSurfaceBundle> surface_bundle) override {
@@ -993,6 +994,15 @@ TEST_P(MediaCodecVideoDecoderTest, VideoFramesArePowerEfficient) {
 
   EXPECT_TRUE(!!most_recent_frame_);
   EXPECT_TRUE(most_recent_frame_->metadata().power_efficient);
+}
+
+TEST_P(MediaCodecVideoDecoderTest, CanReadWithoutStalling) {
+  InitializeFully_OneDecodePending(TestVideoConfig::Large(codec_));
+  ASSERT_TRUE(mcvd_);
+  EXPECT_CALL(*video_frame_factory_, IsStalled()).WillOnce(Return(true));
+  EXPECT_FALSE(mcvd_->CanReadWithoutStalling());
+  EXPECT_CALL(*video_frame_factory_, IsStalled()).WillOnce(Return(false));
+  EXPECT_TRUE(mcvd_->CanReadWithoutStalling());
 }
 
 TEST_P(MediaCodecVideoDecoderH264Test, CsdIsIncludedInCodecConfig) {

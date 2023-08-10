@@ -28,6 +28,7 @@
 
 using base::test::RunOnceCallback;
 using testing::_;
+using testing::Return;
 using testing::SaveArg;
 
 namespace gpu {
@@ -54,6 +55,8 @@ class MockFrameInfoHelper : public FrameInfoHelper,
 
     std::move(cb).Run(std::move(buffer_renderer), info);
   }
+
+  MOCK_CONST_METHOD0(IsStalled, bool());
 };
 
 class VideoFrameFactoryImplTest : public testing::Test {
@@ -67,6 +70,7 @@ class VideoFrameFactoryImplTest : public testing::Test {
     mre_manager_raw_ = mre_manager.get();
 
     auto info_helper = std::make_unique<MockFrameInfoHelper>();
+    info_helper_raw_ = info_helper.get();
 
     impl_ = std::make_unique<VideoFrameFactoryImpl>(
         task_runner_, gpu_preferences_, std::move(image_provider),
@@ -154,6 +158,7 @@ class VideoFrameFactoryImplTest : public testing::Test {
 
   raw_ptr<MockMaybeRenderEarlyManager> mre_manager_raw_ = nullptr;
   raw_ptr<MockSharedImageVideoProvider> image_provider_raw_ = nullptr;
+  raw_ptr<MockFrameInfoHelper> info_helper_raw_ = nullptr;
 
   // Most recently created CodecOutputBuffer.
   raw_ptr<CodecOutputBuffer> output_buffer_raw_ = nullptr;
@@ -264,4 +269,12 @@ TEST_F(VideoFrameFactoryImplTest,
   impl_ = nullptr;
   base::RunLoop().RunUntilIdle();
 }
+
+TEST_F(VideoFrameFactoryImplTest, IsStalled) {
+  EXPECT_CALL(*info_helper_raw_, IsStalled()).WillOnce(Return(false));
+  EXPECT_FALSE(impl_->IsStalled());
+  EXPECT_CALL(*info_helper_raw_, IsStalled()).WillOnce(Return(true));
+  EXPECT_TRUE(impl_->IsStalled());
+}
+
 }  // namespace media

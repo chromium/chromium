@@ -52,6 +52,8 @@ class FrameInfoHelperImpl : public FrameInfoHelper,
       ProcessRequestsQueue();
   }
 
+  bool IsStalled() const override { return waiting_for_real_frame_info_; }
+
  private:
   struct Request {
     std::unique_ptr<CodecOutputBufferRenderer> buffer_renderer;

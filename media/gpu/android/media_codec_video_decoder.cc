@@ -1289,8 +1289,11 @@ bool MediaCodecVideoDecoder::NeedsBitstreamConversion() const {
 
 bool MediaCodecVideoDecoder::CanReadWithoutStalling() const {
   // We should always be able to get at least two outputs, one in the front
-  // buffer slot and one in the back buffer slot.
-  return codec_ ? codec_->GetUnreleasedOutputBufferCount() < 2 : true;
+  // buffer slot and one in the back buffer slot unless we're waiting for
+  // rendering to happen.
+  const auto buffer_count =
+      codec_ ? codec_->GetUnreleasedOutputBufferCount() : 0;
+  return !video_frame_factory_->IsStalled() && buffer_count < 2;
 }
 
 int MediaCodecVideoDecoder::GetMaxDecodeRequests() const {
