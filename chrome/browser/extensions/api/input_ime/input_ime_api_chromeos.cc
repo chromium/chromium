@@ -854,7 +854,7 @@ class ImeObserverChromeOS
     }
   }
 
-  std::string extension_id_;
+  extensions::ExtensionId extension_id_;
   raw_ptr<Profile, DanglingUntriaged> profile_;
 };
 
