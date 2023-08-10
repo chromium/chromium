@@ -959,6 +959,15 @@ void DismissDefaultBrowserPromo() {
       selectElementWithMatcher:grey_accessibilityID(
                                    kHistorySyncViewAccessibilityIdentifier)]
       assertWithMatcher:grey_sufficientlyVisible()];
+  // Verify that the footer is shown without the user's email.
+  NSString* disclaimerText =
+      l10n_util::GetNSString(IDS_IOS_HISTORY_SYNC_FOOTER_WITHOUT_EMAIL);
+  [[self elementInteractionWithGreyMatcher:grey_allOf(
+                                               grey_text(disclaimerText),
+                                               grey_sufficientlyVisible(), nil)
+                      scrollViewIdentifier:
+                          kPromoStyleScrollViewAccessibilityIdentifier]
+      assertWithMatcher:grey_notNil()];
 }
 
 // Tests that the correct subtitle is shown in the FRE sign-in screen if the
@@ -1145,6 +1154,8 @@ void DismissDefaultBrowserPromo() {
           userBooleanPref:unified_consent::prefs::
                               kUrlKeyedAnonymizedDataCollectionEnabled],
       @"MSBB consent was not granted.");
+  // Verify that the identity is signed in.
+  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
 }
 
 // Tests that refusing History Sync keep the history syncdisabled, and does not
@@ -1186,6 +1197,8 @@ void DismissDefaultBrowserPromo() {
           userBooleanPref:unified_consent::prefs::
                               kUrlKeyedAnonymizedDataCollectionEnabled],
       @"MSBB consent should not be granted.");
+  // Verify that the identity is signed in.
+  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
 }
 
 // Tests that the History Sync Opt-In screen contains the avatar of the

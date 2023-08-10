@@ -12,6 +12,8 @@
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/base/features.h"
 #import "components/sync/base/user_selectable_type.h"
+#import "components/sync/service/sync_prefs.h"
+#import "components/unified_consent/pref_names.h"
 #import "ios/chrome/browser/policy/policy_app_interface.h"
 #import "ios/chrome/browser/policy/policy_earl_grey_utils.h"
 #import "ios/chrome/browser/policy/policy_util.h"
@@ -30,6 +32,7 @@
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_constants.h"
 #import "ios/chrome/browser/ui/tabs/tests/distant_tabs_app_interface.h"
 #import "ios/chrome/browser/ui/tabs/tests/fake_distant_tab.h"
+#import "ios/chrome/common/ui/promo_style/constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -104,6 +107,32 @@ GURL TestPageURL() {
   return web::test::HttpServer::MakeUrl(kURLOfTestPage);
 }
 
+// Returns matcher for the history sync screen primary action button.
+id<GREYMatcher> HistorySyncAcceptButtonMatcher() {
+  return grey_allOf(
+      grey_accessibilityID(kPromoStylePrimaryActionAccessibilityIdentifier),
+      grey_sufficientlyVisible(), nil);
+}
+
+// Returns matcher for the history sync screen secondary action button.
+id<GREYMatcher> HistorySyncDeclineButtonMatcher() {
+  return grey_allOf(
+      grey_accessibilityID(kPromoStyleSecondaryActionAccessibilityIdentifier),
+      grey_sufficientlyVisible(), nil);
+}
+
+// Returns matcher for the scrollview inside the history sync screen.
+id<GREYMatcher> HistorySyncScrollViewMatcher() {
+  return grey_allOf(
+      grey_accessibilityID(kPromoStyleScrollViewAccessibilityIdentifier),
+      grey_sufficientlyVisible(), nil);
+}
+
+// Returns matcher for search action inside the history sync screen scroll view.
+id<GREYAction> HistorySyncScrollSearchAction() {
+  return grey_scrollInDirection(kGREYDirectionDown, 200);
+}
+
 }  // namespace
 
 // Earl grey integration tests for Recent Tabs Panel Controller.
@@ -134,7 +163,12 @@ GURL TestPageURL() {
       [self isRunningTest:@selector
             (testShowPromoIfSignedOutAndNoAccounts_SyncToSigninEnabled)] ||
       [self isRunningTest:@selector
+            (testDelineHistorySyncIfSignedOut_SyncToSigninEnabled)] ||
+      [self isRunningTest:@selector
             (testShowPromoIfSignedInAndTabsDisabled_SyncToSigninEnabled)] ||
+      [self isRunningTest:@selector
+            (testDelineHistorySyncIfSignedInAndTabsDisabled_SyncToSigninEnabled
+                )] ||
       [self isRunningTest:@selector
             (testNoPromoIfSignedInAndTabsEnabled_SyncToSigninEnabled)]) {
     config.features_enabled.push_back(
@@ -259,27 +293,37 @@ GURL TestPageURL() {
       selectElementWithMatcher:grey_allOf(RecentTabsTable(),
                                           grey_sufficientlyVisible(), nil)]
       performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
-
+  // Sign in with fake identity.
   [SigninEarlGreyUI
       verifySigninPromoVisibleWithMode:SigninPromoViewModeNoAccounts
                            closeButton:NO];
 
   [[EarlGrey selectElementWithMatcher:PrimarySignInButton()]
       performAction:grey_tap()];
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentityForSSOAuthAddAccountFlow:fakeIdentity];
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   grey_accessibilityID(
+                                       kFakeAuthAddAccountButtonIdentifier),
+                                   grey_sufficientlyVisible(), nil)]
+      performAction:grey_tap()];
 
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kFakeAuthCancelButtonIdentifier)]
+  // Verify that the History Sync Opt-In screen is shown.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kHistorySyncViewAccessibilityIdentifier)]
       assertWithMatcher:grey_sufficientlyVisible()];
-
-  // TODO(crbug.com/1447014): Test signing in shows the history opt-in screen.
 }
 
 // Tests that a promo to sign in is shown to a signed out user who has device
 // accounts. Tapping the promo shows the sign-in sheet then the history opt-in.
 // kReplaceSyncPromosWithSignInPromos is enabled.
 - (void)testShowPromoIfSignedOutAndHasAccounts_SyncToSigninEnabled {
-  [SigninEarlGrey addFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
+  // Open recent tabs.
   OpenRecentTabsPanel();
   [[EarlGrey
       selectElementWithMatcher:grey_allOf(RecentTabsTable(),
@@ -289,16 +333,108 @@ GURL TestPageURL() {
   [SigninEarlGreyUI
       verifySigninPromoVisibleWithMode:SigninPromoViewModeSigninWithAccount
                            closeButton:NO];
-
+  // Tap on promo "Turn on" button.
   [[EarlGrey selectElementWithMatcher:PrimarySignInButton()]
       performAction:grey_tap()];
-
+  // Confirm sign in.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_allOf(grey_accessibilityID(
+                                kWebSigninPrimaryButtonAccessibilityIdentifier),
+                            grey_sufficientlyVisible(), nil)]
+      performAction:grey_tap()];
+  // Verify that the History Sync Opt-In screen is shown.
   [[EarlGrey
-      selectElementWithMatcher:
-          grey_accessibilityID(kWebSigninPrimaryButtonAccessibilityIdentifier)]
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kHistorySyncViewAccessibilityIdentifier)]
       assertWithMatcher:grey_sufficientlyVisible()];
+  // Verify that the footer is shown without the user's email.
+  NSString* disclaimerText =
+      l10n_util::GetNSString(IDS_IOS_HISTORY_SYNC_FOOTER_WITHOUT_EMAIL);
+  [[[EarlGrey
+      selectElementWithMatcher:grey_allOf(grey_text(disclaimerText),
+                                          grey_sufficientlyVisible(), nil)]
+         usingSearchAction:HistorySyncScrollSearchAction()
+      onElementWithMatcher:HistorySyncScrollViewMatcher()]
+      assertWithMatcher:grey_notNil()];
+  // Accept History Sync.
+  [[[EarlGrey selectElementWithMatcher:HistorySyncAcceptButtonMatcher()]
+         usingSearchAction:HistorySyncScrollSearchAction()
+      onElementWithMatcher:HistorySyncScrollViewMatcher()]
+      performAction:grey_tap()];
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:
+          grey_accessibilityID(kHistorySyncViewAccessibilityIdentifier)];
+  // Verify that the history sync is enabled.
+  GREYAssertTrue(
+      [SigninEarlGreyAppInterface
+          isSelectedTypeEnabled:syncer::UserSelectableType::kHistory],
+      @"History sync should be enabled.");
+  GREYAssertTrue([SigninEarlGreyAppInterface
+                     isSelectedTypeEnabled:syncer::UserSelectableType::kTabs],
+                 @"Tabs sync should be enabled.");
+  // TODO(crbug.com/1467853): Verify that sync consent is granted.
+  // Verify that MSBB consent is granted.
+  GREYAssertTrue(
+      [ChromeEarlGrey
+          userBooleanPref:unified_consent::prefs::
+                              kUrlKeyedAnonymizedDataCollectionEnabled],
+      @"MSBB consent was not granted.");
+  // Verify that the identity is signed in.
+  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
+}
 
-  // TODO(crbug.com/1447014): Test tapping shows the history opt-in screen.
+// Tests that for a signed out user, sign-in using the promo then decline
+// history sync promo signs the user out and does not enable history sync.
+// kReplaceSyncPromosWithSignInPromos is enabled.
+- (void)testDelineHistorySyncIfSignedOut_SyncToSigninEnabled {
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+
+  // Open Recent Tabs.
+  OpenRecentTabsPanel();
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(RecentTabsTable(),
+                                          grey_sufficientlyVisible(), nil)]
+      performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
+  // Tap on promo "Turn on" button.
+  [[EarlGrey selectElementWithMatcher:PrimarySignInButton()]
+      performAction:grey_tap()];
+  // Confirm sign in.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_allOf(grey_accessibilityID(
+                                kWebSigninPrimaryButtonAccessibilityIdentifier),
+                            grey_sufficientlyVisible(), nil)]
+      performAction:grey_tap()];
+  // Verify that the History Sync Opt-In screen is shown.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kHistorySyncViewAccessibilityIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  // Decline History Sync.
+  [[[EarlGrey selectElementWithMatcher:HistorySyncDeclineButtonMatcher()]
+         usingSearchAction:HistorySyncScrollSearchAction()
+      onElementWithMatcher:HistorySyncScrollViewMatcher()]
+      performAction:grey_tap()];
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:
+          grey_accessibilityID(kHistorySyncViewAccessibilityIdentifier)];
+  // Verify that the history sync is disabled.
+  GREYAssertFalse(
+      [SigninEarlGreyAppInterface
+          isSelectedTypeEnabled:syncer::UserSelectableType::kHistory],
+      @"History sync should be disabled.");
+  GREYAssertFalse([SigninEarlGreyAppInterface
+                      isSelectedTypeEnabled:syncer::UserSelectableType::kTabs],
+                  @"Tabs sync should be disabled.");
+  // TODO(crbug.com/1467853): Verify that sync consent is not granted.
+  // Verify that MSBB consent is not granted.
+  GREYAssertFalse(
+      [ChromeEarlGrey
+          userBooleanPref:unified_consent::prefs::
+                              kUrlKeyedAnonymizedDataCollectionEnabled],
+      @"MSBB consent should not be granted.");
+  // Verify that the identity is signed out.
+  [SigninEarlGrey verifySignedOut];
 }
 
 // Tests that no promo to sign-in + sync is shown to a user who is signed out
@@ -370,23 +506,116 @@ GURL TestPageURL() {
 // opted in yet.
 // kReplaceSyncPromosWithSignInPromos is enabled.
 - (void)testShowPromoIfSignedInAndTabsDisabled_SyncToSigninEnabled {
-  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
-                                enableSync:NO];
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:NO];
 
+  // Open Recent Tabs.
   OpenRecentTabsPanel();
   [[EarlGrey
       selectElementWithMatcher:grey_allOf(RecentTabsTable(),
                                           grey_sufficientlyVisible(), nil)]
       performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
-
+  // Tap on "Turn on" button.
   [[EarlGrey
       selectElementWithMatcher:
           grey_allOf(grey_accessibilityID(
                          kRecentTabsTabSyncOffButtonAccessibilityIdentifier),
-                     grey_accessibilityTrait(UIAccessibilityTraitButton), nil)]
+                     grey_accessibilityTrait(UIAccessibilityTraitButton),
+                     grey_sufficientlyVisible(), nil)]
+      performAction:grey_tap()];
+  // Verify that the History Sync Opt-In screen is shown.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kHistorySyncViewAccessibilityIdentifier)]
       assertWithMatcher:grey_sufficientlyVisible()];
+  // Verify that the footer is shown with the user's email.
+  NSString* disclaimerText =
+      l10n_util::GetNSStringF(IDS_IOS_HISTORY_SYNC_FOOTER_WITH_EMAIL,
+                              base::SysNSStringToUTF16(fakeIdentity.userEmail));
+  [[[EarlGrey
+      selectElementWithMatcher:grey_allOf(grey_text(disclaimerText),
+                                          grey_sufficientlyVisible(), nil)]
+         usingSearchAction:HistorySyncScrollSearchAction()
+      onElementWithMatcher:HistorySyncScrollViewMatcher()]
+      assertWithMatcher:grey_notNil()];
+  // Accept History Sync.
+  [[[EarlGrey selectElementWithMatcher:HistorySyncAcceptButtonMatcher()]
+         usingSearchAction:HistorySyncScrollSearchAction()
+      onElementWithMatcher:HistorySyncScrollViewMatcher()]
+      performAction:grey_tap()];
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:
+          grey_accessibilityID(kHistorySyncViewAccessibilityIdentifier)];
+  // Verify that the history sync is enabled.
+  GREYAssertTrue(
+      [SigninEarlGreyAppInterface
+          isSelectedTypeEnabled:syncer::UserSelectableType::kHistory],
+      @"History sync should be enabled.");
+  GREYAssertTrue([SigninEarlGreyAppInterface
+                     isSelectedTypeEnabled:syncer::UserSelectableType::kTabs],
+                 @"Tabs sync should be enabled.");
+  // TODO(crbug.com/1467853): Verify that sync consent is granted.
+  // Verify that MSBB consent is granted.
+  GREYAssertTrue(
+      [ChromeEarlGrey
+          userBooleanPref:unified_consent::prefs::
+                              kUrlKeyedAnonymizedDataCollectionEnabled],
+      @"MSBB consent was not granted.");
+  // Verify that the identity is signed in.
+  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
+}
 
-  // TODO(crbug.com/1447014): Test tapping shows history opt-in screen.
+// Tests that for a signed-in user, declining history sync does not sign the
+// user out and does not enable history sync.
+// kReplaceSyncPromosWithSignInPromos is enabled.
+- (void)testDelineHistorySyncIfSignedInAndTabsDisabled_SyncToSigninEnabled {
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:NO];
+
+  // Open Recent Tabs
+  OpenRecentTabsPanel();
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(RecentTabsTable(),
+                                          grey_sufficientlyVisible(), nil)]
+      performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
+  // Tap on "Turn on" button.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_allOf(grey_accessibilityID(
+                         kRecentTabsTabSyncOffButtonAccessibilityIdentifier),
+                     grey_accessibilityTrait(UIAccessibilityTraitButton),
+                     grey_sufficientlyVisible(), nil)]
+      performAction:grey_tap()];
+  // Verify that the History Sync Opt-In screen is shown.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kHistorySyncViewAccessibilityIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  // Decline History Sync.
+  [[[EarlGrey selectElementWithMatcher:HistorySyncDeclineButtonMatcher()]
+         usingSearchAction:HistorySyncScrollSearchAction()
+      onElementWithMatcher:HistorySyncScrollViewMatcher()]
+      performAction:grey_tap()];
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:
+          grey_accessibilityID(kHistorySyncViewAccessibilityIdentifier)];
+  // Verify that the history sync is disabled.
+  GREYAssertFalse(
+      [SigninEarlGreyAppInterface
+          isSelectedTypeEnabled:syncer::UserSelectableType::kHistory],
+      @"History sync should be disabled.");
+  GREYAssertFalse([SigninEarlGreyAppInterface
+                      isSelectedTypeEnabled:syncer::UserSelectableType::kTabs],
+                  @"Tabs sync should be disabled.");
+  // TODO(crbug.com/1467853): Verify that sync consent is not granted.
+  // Verify that MSBB consent is not granted.
+  GREYAssertFalse(
+      [ChromeEarlGrey
+          userBooleanPref:unified_consent::prefs::
+                              kUrlKeyedAnonymizedDataCollectionEnabled],
+      @"MSBB consent should not be granted.");
+  // Verify that the identity is still signed in.
+  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
 }
 
 // Tests no promo is shown to a signed-in user who has already opted in to
