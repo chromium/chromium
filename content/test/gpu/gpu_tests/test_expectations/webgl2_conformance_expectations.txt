@@ -151,7 +151,11 @@ crbug.com/1136205 [ chromeos ] conformance/textures/misc/video-rotation.html [ S
 crbug.com/1136205 [ fuchsia ] conformance/textures/misc/video-rotation.html [ Skip ]
 
 # Too slow (take about one hour to run)
-crbug.com/619403 deqp/functional/gles3/builtinprecision/* [ Skip ]
+# Currently commented out due to the tests not currently being found by the
+# parser due to being explicitly omitted in
+# deqp/functional/gles3/00_test_list.txt.
+# This expectation can be re-added when/if these tests are re-enabled.
+# crbug.com/619403 deqp/functional/gles3/builtinprecision/* [ Skip ]
 
 # Won't investigate failures on validating command decoder. Remove once it's unshipped.
 crbug.com/1237319 [ chromeos no-passthrough ] conformance2/textures/canvas_sub_rectangle/tex-3d-* [ Skip ]
