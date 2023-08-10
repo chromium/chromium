@@ -207,11 +207,7 @@ auto HasValue(base::StringPiece value) {
 class AutofillAcrossIframesTest : public InProcessBrowserTest {
  public:
   AutofillAcrossIframesTest()
-      : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kAutofillSharedAutofill},
-        /*disabled_features=*/{});
-  }
+      : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
@@ -353,7 +349,8 @@ class AutofillAcrossIframesTest : public InProcessBrowserTest {
   static constexpr const char* kMainHostname = kHostnames[0];
 
   test::AutofillBrowserTestEnvironment autofill_test_environment_;
-  base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedFeatureList feature_list_{
+      features::kAutofillSharedAutofill};
   net::EmbeddedTestServer https_server_;
   content::ContentMockCertVerifier cert_verifier_;
   // Maps relative paths to HTML content.

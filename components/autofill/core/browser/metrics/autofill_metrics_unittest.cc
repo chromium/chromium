@@ -7918,12 +7918,7 @@ class AutofillMetricsCrossFrameFormTest : public AutofillMetricsTest {
     std::u16string cvc;
   };
 
-  AutofillMetricsCrossFrameFormTest() {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {base::test::FeatureRefAndParams(features::kAutofillSharedAutofill,
-                                         {{"relax_shared_autofill", "true"}})},
-        {});
-  }
+  AutofillMetricsCrossFrameFormTest() = default;
   ~AutofillMetricsCrossFrameFormTest() override = default;
 
   void SetUp() override {
@@ -8027,7 +8022,6 @@ class AutofillMetricsCrossFrameFormTest : public AutofillMetricsTest {
     return *it;
   }
 
-  base::test::ScopedFeatureList scoped_feature_list_;
   FormData form_;
   CreditCardAndCvc credit_card_with_cvc_;
 };
