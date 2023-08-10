@@ -121,13 +121,8 @@ BASE_FEATURE(kPersonalizeFeedUnsignedUsers,
              "PersonalizeFeedUnsignedUsers",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kPersonalizeFeedNonSyncUsers,
-             "PersonalizeFeedNonSyncUsers",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
+// TODO(crbug.com/1205923): Remove this helper, directly use kSignin instead.
 signin::ConsentLevel GetConsentLevelNeededForPersonalizedFeed() {
-  if (!base::FeatureList::IsEnabled(kPersonalizeFeedNonSyncUsers))
-    return signin::ConsentLevel::kSync;
   return signin::ConsentLevel::kSignin;
 }
 

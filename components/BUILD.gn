@@ -362,7 +362,6 @@ test("components_unittests") {
       "//components/endpoint_fetcher:unit_tests",
       "//components/enterprise/content:unit_tests",
       "//components/favicon/content:unit_tests",
-      "//components/feed:unit_tests",
       "//components/file_access:unit_tests",
       "//components/gcm_driver/instance_id:unit_tests",
       "//components/heavy_ad_intervention:unit_tests",

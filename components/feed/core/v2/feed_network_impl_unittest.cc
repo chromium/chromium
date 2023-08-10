@@ -105,22 +105,6 @@ feedwire::UploadActionsResponse GetTestActionResponse() {
   return response;
 }
 
-void SetConsentLevelNeededForFeedPersonalization(
-    base::test::ScopedFeatureList& feature_list,
-    signin::ConsentLevel consent_level) {
-  std::vector<base::test::FeatureRef> enable_features, disable_features;
-  switch (consent_level) {
-    case signin::ConsentLevel::kSignin:
-      enable_features.push_back(kPersonalizeFeedNonSyncUsers);
-      break;
-    case signin::ConsentLevel::kSync:
-      disable_features.push_back(kPersonalizeFeedNonSyncUsers);
-      break;
-  }
-  feature_list.InitWithFeatures(std::move(enable_features),
-                                std::move(disable_features));
-}
-
 class TestDelegate : public FeedNetworkImpl::Delegate {
  public:
   explicit TestDelegate(signin::IdentityTestEnvironment* identity_test_env)
@@ -335,14 +319,11 @@ TEST_F(FeedNetworkTest, SendQueryRequestSendsValidRequest) {
 // RevokeSyncConsent() sometimes clears the account rather than just changing
 // the consent level so we may as well sign out and sign back in ourselves.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-TEST_F(FeedNetworkTest, SendQueryRequestPersonalized_AccountSignin_NeedSignin) {
-  // Request should be signed in if account consent level is kSignin and consent
-  // level needed for personalization is kSignin.
+TEST_F(FeedNetworkTest, SendQueryRequestPersonalized_AccountSignin) {
+  // Request should be signed in if account consent level is kSignin.
   identity_env()->ClearPrimaryAccount();
   SignIn(signin::ConsentLevel::kSignin);
   base::test::ScopedFeatureList feature_list;
-  SetConsentLevelNeededForFeedPersonalization(feature_list,
-                                              signin::ConsentLevel::kSignin);
 
   CallbackReceiver<QueryRequestResult> receiver;
 
@@ -369,39 +350,10 @@ TEST_F(FeedNetworkTest, SendQueryRequestPersonalized_AccountSignin_NeedSignin) {
       "ContentSuggestions.Feed.Network.ResponseStatus.FeedQuery", 200, 1);
 }
 
-TEST_F(FeedNetworkTest, SendQueryRequestPersonalized_AccountSignin_NeedSync) {
-  // Request should be "signed out" if account consent level is kSignin but
-  // consent level needed for personalization is kSync.
-  identity_env()->ClearPrimaryAccount();
-  SignIn(signin::ConsentLevel::kSignin);
-  base::test::ScopedFeatureList feature_list;
-  SetConsentLevelNeededForFeedPersonalization(feature_list,
-                                              signin::ConsentLevel::kSync);
-
-  CallbackReceiver<QueryRequestResult> receiver;
-  feed_network()->SendQueryRequest(NetworkRequestType::kFeedQuery,
-                                   GetTestFeedRequest(), AccountInfo{},
-                                   receiver.Bind());
-  network::ResourceRequest resource_request =
-      RespondToQueryRequest("", net::HTTP_OK);
-
-  EXPECT_EQ(
-      "https://www.google.com/httpservice/retry/TrellisClankService/"
-      "FeedQuery?reqpld=CAHCPgQSAggB&fmt=bin&hl=en&key=dummy_api_key",
-      resource_request.url);
-  EXPECT_EQ(AccountInfo{},
-            receiver.RunAndGetResult().response_info.account_info);
-  EXPECT_FALSE(resource_request.headers.HasHeader("Authorization"));
-}
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
-TEST_F(FeedNetworkTest, SendQueryRequestPersonalized_AccountSync_NeedSignin) {
-  // Request should be signed in if account consent level is kSync and consent
-  // level needed for personalization is kSignin.
-  base::test::ScopedFeatureList feature_list;
-  SetConsentLevelNeededForFeedPersonalization(feature_list,
-                                              signin::ConsentLevel::kSignin);
-
+TEST_F(FeedNetworkTest, SendQueryRequestPersonalized_AccountSync) {
+  // Request should be signed in if account consent level is kSync.
   CallbackReceiver<QueryRequestResult> receiver;
 
   feed_network()->SendQueryRequest(NetworkRequestType::kFeedQuery,

@@ -26,21 +26,3 @@ static_library("feature_list") {
     "//components/sync/base",
   ]
 }
-
-source_set("unit_tests") {
-  testonly = true
-  sources = [ "feed_feature_list_unittest.cc" ]
-  deps = [
-    ":feature_list",
-    "core/common:feed_core_common_unit_tests",
-    "core/v2:ios_shared_unit_tests",
-    "//base",
-    "//base/test:test_support",
-    "//components/signin/public/base",
-    "//components/sync/base",
-    "//testing/gtest",
-  ]
-  if (!is_ios) {
-    deps += [ "core/v2:core_unit_tests" ]
-  }
-}

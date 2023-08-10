@@ -100,9 +100,6 @@ std::string GetFeedReferrerUrl();
 // Personalize feed for unsigned users.
 BASE_DECLARE_FEATURE(kPersonalizeFeedUnsignedUsers);
 
-// Personalize feed for signed in users who haven't enabled sync.
-BASE_DECLARE_FEATURE(kPersonalizeFeedNonSyncUsers);
-
 // Returns the consent level needed to request a personalized feed.
 signin::ConsentLevel GetConsentLevelNeededForPersonalizedFeed();
 
