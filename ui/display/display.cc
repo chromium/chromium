@@ -170,7 +170,8 @@ Display::Display(int64_t id, const gfx::Rect& bounds)
     : id_(id),
       bounds_(bounds),
       work_area_(bounds),
-      device_scale_factor_(GetForcedDeviceScaleFactor()) {
+      device_scale_factor_(GetForcedDeviceScaleFactor()),
+      color_spaces_(new DisplayColorSpacesRef()) {
   // On Android we need to ensure the platform supports a color profile before
   // using it. Using a not supported profile can result in fatal errors in the
   // GPU process.
@@ -211,11 +212,11 @@ int Display::RotationAsDegree() const {
 }
 
 const gfx::DisplayColorSpaces& Display::GetColorSpaces() const {
-  return color_spaces_;
+  return color_spaces_->color_spaces();
 }
 
 void Display::SetColorSpaces(const gfx::DisplayColorSpaces& color_spaces) {
-  color_spaces_ = color_spaces;
+  color_spaces_ = new DisplayColorSpacesRef(color_spaces);
   if (color_spaces.SupportsHDR()) {
     color_depth_ = kHDR10BitsPerPixel;
     depth_per_component_ = kHDR10BitsPerComponent;
@@ -332,7 +333,8 @@ bool Display::operator==(const Display& rhs) const {
          rotation_ == rhs.rotation_ && touch_support_ == rhs.touch_support_ &&
          accelerometer_support_ == rhs.accelerometer_support_ &&
          maximum_cursor_size_ == rhs.maximum_cursor_size_ &&
-         GetColorSpaces() == rhs.GetColorSpaces() &&
+         (color_spaces_ == rhs.color_spaces_ ||
+          GetColorSpaces() == rhs.GetColorSpaces()) &&
          color_depth_ == rhs.color_depth_ &&
          depth_per_component_ == rhs.depth_per_component_ &&
          is_monochrome_ == rhs.is_monochrome_ &&
