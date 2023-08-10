@@ -38,18 +38,15 @@ namespace internal {
 // the IPC connection for parsing of the Signed Web Bundle.
 class SafeWebBundleParserConnection {
  public:
-  SafeWebBundleParserConnection(base::FilePath web_bundle_path,
-                                absl::optional<GURL> base_url);
-  ~SafeWebBundleParserConnection();
+  static base::expected<std::unique_ptr<SafeWebBundleParserConnection>,
+                        UnusableSwbnFileError>
+  CreateSafeWebBundleParserConnection(const base::File* web_bundle_file,
+                                      absl::optional<GURL> base_url);
 
-  using InitCompleteCallback = base::OnceCallback<void(
-      base::expected<void, UnusableSwbnFileError> status)>;
+  ~SafeWebBundleParserConnection();
 
   using ReconnectCompleteCallback =
       base::OnceCallback<void(base::expected<void, std::string> status)>;
-
-  // Please call this function before any other.
-  void Initialize(InitCompleteCallback init_complete_callback);
 
   // Subscribes the instance of this class on OnParserDisconnected
   // events.
@@ -66,7 +63,6 @@ class SafeWebBundleParserConnection {
   // So far it is better to leave these fields in such an ugly form
   // to pay attention to them in the nearest future.
   // TODO(peletskyi): Make proper encapsulation here.
-  std::unique_ptr<base::File> file_;
   std::unique_ptr<data_decoder::SafeWebBundleParser> parser_;
 
   // These fields we may not need after refactoring of the tests.
@@ -74,21 +70,18 @@ class SafeWebBundleParserConnection {
   absl::optional<base::File::Error> reconnection_file_error_for_testing_;
 
  private:
+  SafeWebBundleParserConnection(const base::File* web_bundle_file,
+                                absl::optional<GURL> base_url);
   enum class State {
-    kUninitialized,
-    kInitializing,
     kConnected,
     kDisconnected,
   };
 
-  void OnFileOpened(InitCompleteCallback init_complete_callback,
-                    std::unique_ptr<base::File> file);
-
   void OnParserDisconnected();
 
-  base::FilePath web_bundle_path_;
+  const raw_ref<const base::File> web_bundle_file_;
   absl::optional<GURL> base_url_;
-  State state_ = State::kUninitialized;
+  State state_ = State::kDisconnected;
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<SafeWebBundleParserConnection> weak_ptr_factory_{this};
@@ -275,10 +268,10 @@ class SignedWebBundleReader {
       std::unique_ptr<web_package::SignedWebBundleSignatureVerifier>
           signature_verifier);
 
-  void OnConnectionInitialized(
+  void OnFileOpened(
       IntegrityBlockReadResultCallback integrity_block_result_callback,
       ReadErrorCallback read_error_callback,
-      base::expected<void, UnusableSwbnFileError> init_status);
+      base::File file);
 
   void OnIntegrityBlockParsed(
       IntegrityBlockReadResultCallback integrity_block_result_callback,
@@ -345,6 +338,9 @@ class SignedWebBundleReader {
                         ResponseCallback>>
       pending_read_responses_;
 
+  base::FilePath web_bundle_path_;
+  absl::optional<GURL> base_url_;
+  absl::optional<base::File> file_;
   std::unique_ptr<internal::SafeWebBundleParserConnection> connection_;
 
   SEQUENCE_CHECKER(sequence_checker_);
@@ -378,10 +374,12 @@ class UnsecureReader {
   virtual void ReturnError(UnusableSwbnFileError error) = 0;
   virtual base::WeakPtr<UnsecureReader> GetWeakPtr() = 0;
 
-  void OnConnectionInitialized(
-      base::expected<void, UnusableSwbnFileError> init_status);
+  void OnFileOpened(base::File file);
 
-  internal::SafeWebBundleParserConnection connection_;
+  base::FilePath web_bundle_path_;
+  absl::optional<base::File> file_;
+  std::unique_ptr<internal::SafeWebBundleParserConnection> connection_;
+
   SEQUENCE_CHECKER(sequence_checker_);
 };
 
