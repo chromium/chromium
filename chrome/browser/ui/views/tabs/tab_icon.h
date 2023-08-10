@@ -9,6 +9,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ui/tabs/tab_network_state.h"
 #include "components/performance_manager/public/features.h"
+#include "ui/base/interaction/element_tracker.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/animation/linear_animation.h"
@@ -23,6 +24,8 @@ class TickClock;
 }
 
 struct TabRendererData;
+
+DECLARE_CUSTOM_ELEMENT_EVENT_TYPE(kDiscardAnimationFinishes);
 
 // View that displays the favicon, sad tab, throbber, and attention indicator
 // in a tab.
@@ -74,7 +77,6 @@ class TabIcon : public views::View, public views::AnimationDelegateViews {
   // strip in order to keep the throbbers in sync.
   void StepLoadingAnimation(const base::TimeDelta& elapsed_time);
 
-  gfx::LinearAnimation* GetTabDiscardAnimationForTesting();
   gfx::ImageSkia GetThemedIconForTesting() { return themed_favicon_; }
   bool GetActiveStateForTesting() { return is_active_tab_; }
 

@@ -7,6 +7,7 @@
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/default_tick_clock.h"
+#include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
 #include "cc/paint/paint_flags.h"
@@ -36,6 +37,7 @@
 #include "ui/resources/grit/ui_resources.h"
 #include "ui/views/border.h"
 #include "ui/views/cascading_property.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "url/gurl.h"
 
 namespace {
@@ -79,6 +81,8 @@ void PaintArc(gfx::Canvas* canvas,
   canvas->DrawPath(path, flags);
 }
 }  // namespace
+
+DEFINE_CUSTOM_ELEMENT_EVENT_TYPE(kDiscardAnimationFinishes);
 
 // Helper class that manages the favicon crash animation.
 class TabIcon::CrashAnimation : public gfx::LinearAnimation,
@@ -138,6 +142,7 @@ TabIcon::TabIcon()
 
   if (!gfx::Animation::ShouldRenderRichAnimation()) {
     tab_discard_animation_.SetDuration(base::TimeDelta());
+    favicon_size_animation_.SetSlideDuration(base::TimeDelta());
   }
 }
 
@@ -213,10 +218,6 @@ void TabIcon::StepLoadingAnimation(const base::TimeDelta& elapsed_time) {
     waiting_state_.elapsed_time = elapsed_time;
   if (GetShowingLoadingAnimation())
     SchedulePaint();
-}
-
-gfx::LinearAnimation* TabIcon::GetTabDiscardAnimationForTesting() {
-  return &tab_discard_animation_;
 }
 
 void TabIcon::OnPaint(gfx::Canvas* canvas) {
@@ -462,6 +463,14 @@ void TabIcon::MaybePaintFavicon(gfx::Canvas* canvas,
   canvas->DrawImageInt(icon, 0, 0, bounds.width(), bounds.height(), bounds.x(),
                        bounds.y(), bounds.width(), bounds.height(),
                        use_scale_filter, opacity_flag);
+
+  // Emits a custom event when the favicon finishes shrinking and the discard
+  // ring gets painted
+  if (favicon_size_animation_.GetCurrentValue() == 0.0 &&
+      tab_discard_animation_.GetCurrentValue() == 1.0) {
+    views::ElementTrackerViews::GetInstance()->NotifyCustomEvent(
+        kDiscardAnimationFinishes, this);
+  }
 }
 
 bool TabIcon::GetNonDefaultFavicon() const {
