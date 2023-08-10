@@ -8,18 +8,18 @@
 #include "base/task/sequenced_task_runner.h"
 #include "media/base/audio_decoder.h"
 #include "media/base/audio_encoder.h"
+#include "media/base/media_log.h"
 #include "media/base/media_switches.h"
 #include "media/gpu/chromeos/mailbox_video_frame_converter.h"
 #include "media/gpu/chromeos/platform_video_frame_pool.h"
 #include "media/gpu/chromeos/video_decoder_pipeline.h"
-#include "media/gpu/ipc/service/vda_video_decoder.h"
 
 namespace media {
 
 namespace {
 
 VideoDecoderType GetPreferredLinuxDecoderImplementation() {
-  // VaapiVideoDecoder flag is required for both VDA and VaapiVideoDecoder.
+  // VaapiVideoDecoder flag is required for VaapiVideoDecoder.
   if (!base::FeatureList::IsEnabled(kVaapiVideoDecodeLinux)) {
     return VideoDecoderType::kUnknown;
   }
@@ -50,7 +50,7 @@ std::vector<Fourcc> GetPreferredRenderableFourccs(
 VideoDecoderType GetActualPlatformDecoderImplementation(
     const gpu::GpuPreferences& gpu_preferences,
     const gpu::GPUInfo& gpu_info) {
-  // On linux, VDA and Vaapi have GL restrictions.
+  // On linux, Vaapi has GL restrictions.
   switch (GetPreferredLinuxDecoderImplementation()) {
     case VideoDecoderType::kUnknown:
       return VideoDecoderType::kUnknown;

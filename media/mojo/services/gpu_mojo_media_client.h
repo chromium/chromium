@@ -105,7 +105,7 @@ void NotifyPlatformDecoderSupport(
 #endif  // BUILDFLAG(USE_VAAPI) || BUILDFLAG(USE_V4L2_CODEC)
 
 // Queries the platform-specific VideoDecoder implementation for its
-// supported profiles. Many platforms fall back to use the VDAVideoDecoder
+// supported profiles. Some platforms fall back to use the VDAVideoDecoder
 // so that implementation is shared, and its supported configs can be
 // queries using the |get_vda_configs| callback.
 absl::optional<SupportedVideoDecoderConfigs>
