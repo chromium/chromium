@@ -150,11 +150,9 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
 }
 
 - (void)insertTextWhileEditing:(NSString*)text {
-  // This method should only be called while editing.
-  DCHECK([self isFirstResponder]);
-
-  if ([self markedTextRange] != nil)
+  if ([self markedTextRange] != nil) {
     [self unmarkText];
+  }
 
   NSRange selectedNSRange = [self selectedNSRange];
   if (!self.delegate || [self.delegate textField:self
