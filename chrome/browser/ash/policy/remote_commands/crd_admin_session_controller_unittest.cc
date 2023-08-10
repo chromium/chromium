@@ -6,7 +6,6 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ref.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
@@ -14,7 +13,6 @@
 #include "chromeos/crosapi/mojom/remoting.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "remoting/host/chromeos/features.h"
 #include "remoting/host/mojom/remote_support.mojom.h"
 #include "remoting/protocol/errors.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -32,7 +30,6 @@ using StartSupportSessionCallback =
     crosapi::mojom::Remoting::StartSupportSessionCallback;
 
 using base::test::TestFuture;
-using remoting::features::kEnableCrdAdminRemoteAccessV2;
 using remoting::mojom::StartSupportSessionResponse;
 using remoting::mojom::StartSupportSessionResponsePtr;
 using remoting::mojom::SupportHostObserver;
@@ -268,26 +265,15 @@ class CrdAdminSessionControllerTest : public testing::TestWithParam<bool> {
     return observer_.BindNewPipeAndPassReceiver();
   }
 
-  void DisableFeature(const base::Feature& feature) {
-    feature_.Reset();
-    feature_.InitAndDisableFeature(feature);
-  }
-
-  void EnableFeature(const base::Feature& feature) {
-    feature_.Reset();
-    feature_.InitAndEnableFeature(feature);
-  }
-
  private:
   base::test::SingleThreadTaskEnvironment environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   TestFuture<Response> result_;
   TestFuture<base::TimeDelta> session_finish_result_;
   mojo::Remote<SupportHostObserver> observer_;
-  testing::StrictMock<RemotingServiceMock> remoting_service_;
+  RemotingServiceMock remoting_service_;
   CrdAdminSessionController session_controller_{
       std::make_unique<RemotingServiceWrapper>(&remoting_service_)};
-  base::test::ScopedFeatureList feature_;
 };
 
 TEST_F(CrdAdminSessionControllerTest, ShouldPassOAuthTokenToRemotingService) {
@@ -532,14 +518,18 @@ TEST_F(CrdAdminSessionControllerTest,
        HasActiveSessionShouldBeTrueWhenASessionIsStarted) {
   EXPECT_FALSE(delegate().HasActiveSession());
 
-  StartCrdHostAndBindObserver();
+  delegate().StartCrdHostAndGetCode(SessionParameters{}, success_callback(),
+                                    error_callback(),
+                                    session_finished_callback());
 
   EXPECT_TRUE(delegate().HasActiveSession());
 }
 
 TEST_F(CrdAdminSessionControllerTest,
        TerminateSessionShouldTerminateTheActiveSession) {
-  StartCrdHostAndBindObserver();
+  delegate().StartCrdHostAndGetCode(SessionParameters{}, success_callback(),
+                                    error_callback(),
+                                    session_finished_callback());
   EXPECT_TRUE(delegate().HasActiveSession());
 
   TestFuture<void> terminate_session_future;
@@ -579,9 +569,7 @@ TEST_F(CrdAdminSessionControllerTest,
 }
 
 TEST_F(CrdAdminSessionControllerTest,
-       ShouldResumeReconnectableSessionDuringInitIfAvailable) {
-  EnableFeature(kEnableCrdAdminRemoteAccessV2);
-
+       ShouldResumeReconnectableSessionIfAvailable) {
   const remoting::SessionId kSessionId{123};
 
   // First we should query for the reconnectable session id.
@@ -596,7 +584,7 @@ TEST_F(CrdAdminSessionControllerTest,
       });
 
   TestFuture<void> done_signal;
-  session_controller().Init(done_signal.GetCallback());
+  delegate().TryToReconnect(done_signal.GetCallback());
   ASSERT_TRUE(done_signal.Wait());
 
   EXPECT_TRUE(delegate().HasActiveSession());
@@ -604,8 +592,6 @@ TEST_F(CrdAdminSessionControllerTest,
 
 TEST_F(CrdAdminSessionControllerTest,
        ShouldNotResumeReconnectableSessionIfUnavailable) {
-  EnableFeature(kEnableCrdAdminRemoteAccessV2);
-
   // First we return nullopt when we query for the reconnectable session id.
   EXPECT_CALL(remoting_service(), GetReconnectableSessionId)
       .WillOnce([&](auto callback) { std::move(callback).Run(absl::nullopt); });
@@ -614,21 +600,9 @@ TEST_F(CrdAdminSessionControllerTest,
   EXPECT_NO_CALLS(remoting_service(), ReconnectToSession);
 
   TestFuture<void> done_signal;
-  session_controller().Init(done_signal.GetCallback());
+  delegate().TryToReconnect(done_signal.GetCallback());
 
   // The `done_signal` should still be invoked.
-  ASSERT_TRUE(done_signal.Wait());
-}
-
-TEST_F(CrdAdminSessionControllerTest,
-       ShouldNotTryToResumeReconnectableSessionIfFeatureIsDisabled) {
-  DisableFeature(kEnableCrdAdminRemoteAccessV2);
-
-  EXPECT_NO_CALLS(remoting_service(), GetReconnectableSessionId);
-  EXPECT_NO_CALLS(remoting_service(), ReconnectToSession);
-
-  TestFuture<void> done_signal;
-  session_controller().Init(done_signal.GetCallback());
   ASSERT_TRUE(done_signal.Wait());
 }
 

@@ -286,8 +286,6 @@ void BrowserPolicyConnectorAsh::Init(
           std::make_unique<ScheduledTaskExecutorImpl>(
               DeviceScheduledRebootHandler::kRebootTimerTag),
           reboot_notifications_scheduler_.get());
-
-  crd_admin_session_controller_->Init();
 }
 
 void BrowserPolicyConnectorAsh::PreShutdown() {
