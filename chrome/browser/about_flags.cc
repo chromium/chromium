@@ -2128,9 +2128,10 @@ const FeatureEntry::FeatureVariation kNtpDriveModuleVariations[] = {
 };
 
 // History clusters fake data params are expressed as a comma separated tuple
-// consisting of a number of desired visits and the number of such visits to be
-// marked as having url keyed images. The number of visits must be greater than
-// or equal to the number of visits marked as having images.
+// consisting of a number desired clusters, a number of desired visits, and the
+// number of such visits to be marked as having url keyed images. The number of
+// visits must be greater than or equal to the number of visits marked as having
+// images.
 const FeatureEntry::FeatureParam
     kNtpHistoryClustersModuleFakeData2Visits2Images[] = {
         {ntp_features::kNtpHistoryClustersModuleDataParam, "1,2,2"}};
@@ -2146,6 +2147,9 @@ const FeatureEntry::FeatureParam kNtpHistoryClustersModuleV2TwoJourneys[] = {
     {ntp_features::kNtpHistoryClustersModuleDataParam, "2,2,2"}};
 const FeatureEntry::FeatureParam kNtpHistoryClustersModuleV2ThreeJourneys[] = {
     {ntp_features::kNtpHistoryClustersModuleDataParam, "3,2,2"}};
+const FeatureEntry::FeatureParam
+    kNtpHistoryClustersModuleV2ThreeJourneysTextOnly[] = {
+        {ntp_features::kNtpHistoryClustersModuleDataParam, "3,2,0"}};
 const FeatureEntry::FeatureVariation kNtpHistoryClustersModuleVariations[] = {
     {"- Fake Data - Layout 1", kNtpHistoryClustersModuleFakeData2Visits2Images,
      std::size(kNtpHistoryClustersModuleFakeData2Visits2Images), nullptr},
@@ -2159,6 +2163,9 @@ const FeatureEntry::FeatureVariation kNtpHistoryClustersModuleVariations[] = {
      std::size(kNtpHistoryClustersModuleV2TwoJourneys), nullptr},
     {"- v2 Fake Data - 3 Journeys", kNtpHistoryClustersModuleV2ThreeJourneys,
      std::size(kNtpHistoryClustersModuleV2ThreeJourneys), nullptr},
+    {"- v2 Fake Data - 3 Journeys - Text Only",
+     kNtpHistoryClustersModuleV2ThreeJourneysTextOnly,
+     std::size(kNtpHistoryClustersModuleV2ThreeJourneysTextOnly), nullptr},
 };
 
 const FeatureEntry::FeatureParam

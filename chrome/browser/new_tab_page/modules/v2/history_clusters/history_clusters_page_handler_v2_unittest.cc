@@ -144,18 +144,23 @@ TEST_F(HistoryClustersPageHandlerV2Test, GetClusters) {
         SampleCluster(i, /*srp_visits=*/1, /*non_srp_visits=*/2));
     ranking_signals[i] = HistoryClustersModuleRankingSignals();
   }
+  history_clusters::QueryClustersFilterParams filter_params;
   EXPECT_CALL(mock_history_clusters_module_service(),
               GetClusters(testing::_, testing::_, testing::_))
-      .WillOnce(testing::Invoke(
-          [&sample_clusters, &ranking_signals](
-              const history_clusters::QueryClustersFilterParams filter_params,
-              size_t min_required_related_searches,
-              base::OnceCallback<void(
-                  std::vector<history::Cluster>,
-                  base::flat_map<int64_t, HistoryClustersModuleRankingSignals>)>
-                  callback) {
-            std::move(callback).Run(sample_clusters, ranking_signals);
-          }));
+      .WillOnce(testing::DoAll(
+          testing::SaveArg<0>(&filter_params),
+          testing::Invoke(
+              [&sample_clusters, &ranking_signals](
+                  const history_clusters::QueryClustersFilterParams
+                      filter_params,
+                  size_t min_required_related_searches,
+                  base::OnceCallback<void(
+                      std::vector<history::Cluster>,
+                      base::flat_map<int64_t,
+                                     HistoryClustersModuleRankingSignals>)>
+                      callback) {
+                std::move(callback).Run(sample_clusters, ranking_signals);
+              })));
 
   std::vector<history_clusters::mojom::ClusterPtr> clusters_mojom;
   base::MockCallback<HistoryClustersPageHandlerV2::GetClustersCallback>
@@ -169,6 +174,7 @@ TEST_F(HistoryClustersPageHandlerV2Test, GetClusters) {
           }));
   handler().GetClusters(callback.Get());
 
+  EXPECT_EQ(filter_params.min_visits_with_images, 1);
   ASSERT_EQ(3u, clusters_mojom.size());
 
   for (unsigned int i = 0; i < kSampleClusterCount; i++) {
@@ -191,6 +197,40 @@ TEST_F(HistoryClustersPageHandlerV2Test, GetClusters) {
   auto entries = test_ukm_recorder.GetEntriesByName(
       ukm::builders::NewTabPage_HistoryClusters::kEntryName);
   ASSERT_EQ(entries.size(), 3u);
+}
+
+TEST_F(HistoryClustersPageHandlerV2Test, GetClustersTextOnlyLayout) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures(
+      /*enabled_features=*/{ntp_features::kNtpHistoryClustersModuleTextOnly},
+      /*disabled_features=*/{});
+
+  history_clusters::QueryClustersFilterParams filter_params;
+  EXPECT_CALL(mock_history_clusters_module_service(),
+              GetClusters(testing::_, testing::_, testing::_))
+      .WillOnce(testing::DoAll(
+          testing::SaveArg<0>(&filter_params),
+          testing::Invoke(
+              [](const history_clusters::QueryClustersFilterParams
+                     filter_params,
+                 size_t min_required_related_searches,
+                 base::OnceCallback<void(
+                     std::vector<history::Cluster>,
+                     base::flat_map<int64_t,
+                                    HistoryClustersModuleRankingSignals>)>
+                     callback) {
+                std::vector<history::Cluster> sample_clusters;
+                base::flat_map<int64_t, HistoryClustersModuleRankingSignals>
+                    ranking_signals;
+                std::move(callback).Run(sample_clusters, ranking_signals);
+              })));
+
+  base::MockCallback<HistoryClustersPageHandlerV2::GetClustersCallback>
+      callback;
+  EXPECT_CALL(callback, Run(testing::_)).Times(1);
+  handler().GetClusters(callback.Get());
+
+  EXPECT_EQ(filter_params.min_visits_with_images, 0);
 }
 
 TEST_F(HistoryClustersPageHandlerV2Test, GetFakeClusters) {

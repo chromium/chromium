@@ -131,11 +131,13 @@ void HistoryClustersPageHandlerV2::GetClusters(GetClustersCallback callback) {
     std::move(callback).Run({});
     return;
   }
-  // TODO(crbug.com/1462492): Minimum images to show filter value should default
-  // to zero when a text-only feature flag is enabled.
   history_clusters::QueryClustersFilterParams filter_params =
       CreateFilterParamsFromFeatureFlags(kMinRequiredVisits,
                                          kMinRequiredRelatedSearches);
+  if (base::FeatureList::IsEnabled(
+          ntp_features::kNtpHistoryClustersModuleTextOnly)) {
+    filter_params.min_visits_with_images = 0;
+  }
   history_clusters_module_service->GetClusters(
       filter_params, static_cast<size_t>(kMinRequiredRelatedSearches),
       base::BindOnce(&HistoryClustersPageHandlerV2::CallbackWithClusterData,
