@@ -32,6 +32,7 @@
 #include "content/public/browser/web_ui_message_handler.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class ExtensionEnableFlow;
@@ -276,7 +277,7 @@ class AppLauncherHandler
 
   // The id of the extension we are prompting the user about (either enable or
   // uninstall).
-  std::string extension_id_prompting_;
+  extensions::ExtensionId extension_id_prompting_;
 
   // When true, we ignore changes to the underlying data rather than immediately
   // refreshing. This is useful when making many batch updates to avoid flicker.
