@@ -885,6 +885,10 @@ crbug.com/711704 external/wpt/css/CSS2/floats/floats-rule3-outside-right-002.xht
 crbug.com/711704 external/wpt/css/CSS2/floats/floats-rule7-outside-left-001.xht [ Failure ]
 crbug.com/711704 external/wpt/css/CSS2/floats/floats-rule7-outside-right-001.xht [ Failure ]
 crbug.com/711704 external/wpt/css/CSS2/floats/floats-wrap-bfc-006.xht [ Failure ]
+crbug.com/1471807 external/wpt/css/CSS2/floats/floats-wrap-bfc-with-margin-006.tentative.html [ Failure ]
+crbug.com/1471807 external/wpt/css/CSS2/floats/floats-wrap-bfc-with-margin-007.tentative.html [ Failure ]
+crbug.com/1471807 external/wpt/css/CSS2/floats/floats-wrap-bfc-with-margin-008.tentative.html [ Failure ]
+crbug.com/1471807 external/wpt/css/CSS2/floats/floats-wrap-bfc-with-margin-009.tentative.html [ Failure ]
 
 crbug.com/711805 external/wpt/css/CSS2/positioning/position-relative-035.xht [ Failure ]
 
@@ -2737,10 +2741,6 @@ crbug.com/1359555 external/wpt/speculation-rules/prerender/workers.html [ Failur
 crbug.com/626703 external/wpt/css/css-fonts/parsing/font-variant-invalid.html [ Crash ]
 
 # ====== New tests from wpt-importer added here ======
-crbug.com/626703 external/wpt/css/CSS2/floats/floats-wrap-bfc-with-margin-006.tentative.html [ Failure ]
-crbug.com/626703 external/wpt/css/CSS2/floats/floats-wrap-bfc-with-margin-007.tentative.html [ Failure ]
-crbug.com/626703 external/wpt/css/CSS2/floats/floats-wrap-bfc-with-margin-008.tentative.html [ Failure ]
-crbug.com/626703 external/wpt/css/CSS2/floats/floats-wrap-bfc-with-margin-009.tentative.html [ Failure ]
 crbug.com/626703 [ Win10.20h2 ] external/wpt/css/css-contain/content-visibility/content-visibility-085.html [ Failure ]
 crbug.com/626703 [ Mac ] external/wpt/css/css-contain/content-visibility/content-visibility-085.html [ Failure ]
 crbug.com/626703 [ Linux ] external/wpt/css/css-contain/content-visibility/content-visibility-085.html [ Failure ]
