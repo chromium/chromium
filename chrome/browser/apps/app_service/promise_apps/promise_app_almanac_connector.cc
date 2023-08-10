@@ -124,17 +124,8 @@ void PromiseAppAlmanacConnector::OnGetPromiseAppResponse(
     std::unique_ptr<network::SimpleURLLoader> loader,
     GetPromiseAppCallback callback,
     std::unique_ptr<std::string> response_body) {
-  int response_code = 0;
-  if (loader->ResponseInfo()) {
-    response_code = loader->ResponseInfo()->headers->response_code();
-  }
-  const int net_error = loader->NetError();
-
-  // HTTP error codes in the 500-599 range represent server errors.
-  if (net_error != net::OK || (response_code >= 500 && response_code < 600)) {
-    LOG(ERROR) << "Server error. "
-               << "Response code: " << response_code
-               << ". Net error: " << net::ErrorToString(net_error);
+  if (HasDownloadError(loader->NetError(), loader->ResponseInfo(),
+                       response_body.get(), "promise app")) {
     std::move(callback).Run(absl::nullopt);
     return;
   }

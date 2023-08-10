@@ -10,11 +10,15 @@
 #include <string_view>
 
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
 namespace network {
 class SimpleURLLoader;
+namespace mojom {
+class URLResponseHead;
+}  // namespace mojom
 }  // namespace network
 
 namespace apps {
@@ -35,6 +39,17 @@ std::unique_ptr<network::SimpleURLLoader> GetAlmanacUrlLoader(
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
     const std::string& request_body,
     std::string_view endpoint_suffix);
+
+// Checks whether an error occurred during downloading and handles it. Logs the
+// error for the given endpoint. Adds the error to UMA if a histogram name is
+// specified. Note the response body can be empty even if no other error
+// occurred.
+bool HasDownloadError(
+    int net_error,
+    const network::mojom::URLResponseHead* response_info,
+    const std::string* response_body,
+    std::string_view endpoint,
+    const absl::optional<std::string>& histogram_name = absl::nullopt);
 }  // namespace apps
 
 #endif  // CHROME_BROWSER_APPS_ALMANAC_API_CLIENT_ALMANAC_API_UTIL_H_
