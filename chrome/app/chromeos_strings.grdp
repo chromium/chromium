@@ -5947,9 +5947,6 @@
   <message name="IDS_PLUGIN_VM_INSTALLER_DOWNLOAD_PROGRESS_MESSAGE" desc="Text of the Plugin VM installer during downloading Plugin VM image, showing download progress.">
     <ph name="DOWNLOADED_SIZE">$1<ex>1.2</ex></ph>/<ph name="DOWNLOAD_SIZE">$2<ex>3.4 GB</ex></ph>
   </message>
-  <message name="IDS_PLUGIN_VM_INSTALLER_DOWNLOAD_PROGRESS_WITHOUT_DOWNLOAD_SIZE_MESSAGE" desc="Text of the Plugin VM installer while downloading Plugin VM image, showing download progress when the full download size is not known.">
-    <ph name="DOWNLOADED_SIZE">$1<ex>1.2 GB</ex></ph>
-  </message>
   <message name="IDS_PLUGIN_VM_INSTALLER_CONTINUE_BUTTON" desc="Label for the button in the Plugin VM installer to continue installation.">
     Continue
   </message>
