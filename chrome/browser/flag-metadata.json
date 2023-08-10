@@ -4608,13 +4608,13 @@
   },
   {
     "name": "global-media-controls-cros-updated-ui",
-    "owners": [ "jazzhsu", "media-dev" ],
-    "expiry_milestone": 117
+    "owners": [ "yrw", "media-dev" ],
+    "expiry_milestone": 130
   },
   {
     "name": "global-media-controls-for-cast",
     "owners": [ "takumif", "openscreen-eng@google.com" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 130
   },
   {
     "name": "google-one-offer-files-banner",
