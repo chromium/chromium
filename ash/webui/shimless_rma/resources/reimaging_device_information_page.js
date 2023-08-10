@@ -56,7 +56,8 @@ export class ReimagingDeviceInformationPage extends
   static get observers() {
     return [
       'updateNextButtonDisabledState_(serialNumber_, skuIndex_, regionIndex_,' +
-          ' isChassisBranded_, hwComplianceVersion_, featureLevel_)',
+          ' whiteLabelIndex_, isChassisBranded_, hwComplianceVersion_,' +
+          ' featureLevel_)',
     ];
   }
 
@@ -244,7 +245,7 @@ export class ReimagingDeviceInformationPage extends
       return false;
     }
     return (this.serialNumber_ !== '') && (this.skuIndex_ >= 0) &&
-        (this.regionIndex_ >= 0);
+        (this.regionIndex_ >= 0) && (this.whiteLabelIndex_ >= 0);
   }
 
   /** @private */

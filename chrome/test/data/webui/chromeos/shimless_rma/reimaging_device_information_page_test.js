@@ -360,6 +360,35 @@ suite('reimagingDeviceInformationPageTest', function() {
     assertFalse(disableNextButton);
   });
 
+  test('WhiteLabelUpdatesNextDisable', async () => {
+    const resolver = new PromiseResolver();
+    initializeReimagingDeviceInformationPage();
+    await initializeComponent();
+    let disableNextButtonEventFired = false;
+    let disableNextButton = false;
+    component.addEventListener('disable-next-button', (e) => {
+      disableNextButtonEventFired = true;
+      disableNextButton = e.detail;
+    });
+
+    const whiteLabelSelectComponent =
+        component.shadowRoot.querySelector('#whiteLabelSelect');
+    whiteLabelSelectComponent.selectedIndex = -1;
+    suppressedComponentOnSelectedChange_(component);
+    await flushTasks();
+
+    assertTrue(disableNextButtonEventFired);
+    assertTrue(disableNextButton);
+
+    disableNextButtonEventFired = false;
+    whiteLabelSelectComponent.selectedIndex = 1;
+    suppressedComponentOnSelectedChange_(component);
+    await flushTasks();
+
+    assertTrue(disableNextButtonEventFired);
+    assertFalse(disableNextButton);
+  });
+
   test(
       'DramPartNumberDoesNotUpdateNextDisable', async () => {
         const resolver = new PromiseResolver();
