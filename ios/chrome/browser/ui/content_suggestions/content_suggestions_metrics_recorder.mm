@@ -56,7 +56,19 @@
       }
       break;
     }
-    case ContentSuggestionsModuleType::kShortcuts:
+    case ContentSuggestionsModuleType::kShortcuts: {
+      if (_localState) {
+        // Increment freshness pref since it is an impression of
+        // the latest Most Visited Sites as the top module.
+        int freshness_impression_count = _localState->GetInteger(
+            prefs::
+                kIosMagicStackSegmentationShortcutsImpressionsSinceFreshness);
+        _localState->SetInteger(
+            prefs::kIosMagicStackSegmentationShortcutsImpressionsSinceFreshness,
+            freshness_impression_count + 1);
+      }
+      break;
+    }
     case ContentSuggestionsModuleType::kSetUpListSync:
     case ContentSuggestionsModuleType::kSetUpListDefaultBrowser:
     case ContentSuggestionsModuleType::kSetUpListAutofill:

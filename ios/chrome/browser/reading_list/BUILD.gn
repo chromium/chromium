@@ -61,6 +61,7 @@ source_set("reading_list") {
     "//ios/chrome/browser/shared/ui/util:url_with_title",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/sync:model_type_store_service_factory",
+    "//ios/chrome/browser/ui/ntp/metrics:home_metrics",
     "//ios/chrome/common",
     "//ios/components/webui:url_constants",
     "//ios/third_party/material_components_ios",

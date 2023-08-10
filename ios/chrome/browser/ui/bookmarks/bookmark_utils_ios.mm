@@ -41,6 +41,7 @@
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/bookmarks/undo_manager_wrapper.h"
+#import "ios/chrome/browser/ui/ntp/metrics/home_metrics.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "third_party/skia/include/core/SkColor.h"
@@ -270,6 +271,7 @@ bool CreateOrUpdateBookmark(const BookmarkNode* node,
   bookmarks::BookmarkModel* folder_model =
       GetBookmarkModelForNode(folder, local_or_syncable_model, account_model);
   if (!node) {  // Create a new bookmark.
+    RecordModuleFreshnessSignal(ContentSuggestionsModuleType::kShortcuts);
     base::RecordAction(base::UserMetricsAction("BookmarkAdded"));
     node = folder_model->AddNewURL(folder, folder->children().size(),
                                    titleString, url);
@@ -347,6 +349,7 @@ MDCSnackbarMessage* CreateBookmarkAtPositionWithUndoToast(
       [[UndoManagerWrapper alloc] initWithBrowserState:browser_state];
   [wrapper startGroupingActions];
 
+  RecordModuleFreshnessSignal(ContentSuggestionsModuleType::kShortcuts);
   base::RecordAction(base::UserMetricsAction("BookmarkAdded"));
   bookmarks::BookmarkModel* folder_model =
       GetBookmarkModelForNode(folder, local_or_syncable_model, account_model);

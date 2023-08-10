@@ -159,7 +159,7 @@ source_set("omnibox_internal") {
     "//ios/chrome/browser/ui/lens:lens_entrypoint",
     "//ios/chrome/browser/ui/location_bar:constants",
     "//ios/chrome/browser/ui/main:default_browser_scene_agent",
-    "//ios/chrome/browser/ui/ntp/metrics",
+    "//ios/chrome/browser/ui/ntp/metrics:home_metrics",
     "//ios/chrome/browser/ui/omnibox/popup",
     "//ios/chrome/browser/ui/omnibox/popup:popup_ui_protocols",
     "//ios/chrome/browser/ui/orchestrator:orchestrator",

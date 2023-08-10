@@ -27,6 +27,7 @@
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/sync/sync_setup_service.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_utils_ios.h"
+#import "ios/chrome/browser/ui/ntp/metrics/home_metrics.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -98,6 +99,7 @@ using bookmarks::BookmarkNode;
 - (MDCSnackbarMessage*)addBookmarkWithTitle:(NSString*)title
                                         URL:(const GURL&)URL
                                  editAction:(void (^)())editAction {
+  RecordModuleFreshnessSignal(ContentSuggestionsModuleType::kShortcuts);
   base::RecordAction(base::UserMetricsAction("BookmarkAdded"));
   LogBookmarkUseForDefaultBrowserPromo();
 
@@ -142,6 +144,7 @@ using bookmarks::BookmarkNode;
   BookmarkModel* modelForFolder = bookmark_utils_ios::GetBookmarkModelForNode(
       folder, _localOrSyncableBookmarkModel.get(), _accountBookmarkModel.get());
   for (URLWithTitle* urlWithTitle in URLs) {
+    RecordModuleFreshnessSignal(ContentSuggestionsModuleType::kShortcuts);
     base::RecordAction(base::UserMetricsAction("BookmarkAdded"));
     modelForFolder->AddNewURL(folder, folder->children().size(),
                               base::SysNSStringToUTF16(urlWithTitle.title),
