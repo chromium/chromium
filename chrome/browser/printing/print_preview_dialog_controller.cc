@@ -386,14 +386,7 @@ void PrintPreviewDialogController::OnPreviewDialogNavigated(
       ui::PageTransitionCoreTypeIs(type, ui::PAGE_TRANSITION_AUTO_TOPLEVEL) &&
       !navigation_handle->IsSameDocument()) {
     SaveInitiatorTitle(preview_dialog);
-    return;
   }
-
-  // Cloud print sign-in causes a reload, but other cases should not be reached
-  // here.
-  DCHECK(ui::PageTransitionCoreTypeIs(type, ui::PAGE_TRANSITION_RELOAD));
-  DCHECK(
-      IsPrintPreviewURL(navigation_handle->GetPreviousPrimaryMainFrameURL()));
 }
 
 WebContents* PrintPreviewDialogController::CreatePrintPreviewDialog(
