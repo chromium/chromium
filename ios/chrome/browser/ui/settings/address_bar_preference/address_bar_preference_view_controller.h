@@ -6,13 +6,15 @@
 #define IOS_CHROME_BROWSER_UI_SETTINGS_ADDRESS_BAR_PREFERENCE_ADDRESS_BAR_PREFERENCE_VIEW_CONTROLLER_H_
 
 #import "ios/chrome/browser/ui/settings/address_bar_preference/address_bar_preference_consumer.h"
+#import "ios/chrome/browser/ui/settings/settings_controller_protocol.h"
 #import "ios/chrome/browser/ui/settings/settings_root_table_view_controller.h"
 
 @protocol AddressBarPreferenceServiceDelegate;
 
 // This class is the view controller for the address bar preference setting.
 @interface AddressBarPreferenceViewController
-    : SettingsRootTableViewController <AddressBarPreferenceConsumer>
+    : SettingsRootTableViewController <AddressBarPreferenceConsumer,
+                                       SettingsControllerProtocol>
 
 @property(nonatomic, weak) id<AddressBarPreferenceServiceDelegate>
     prefServiceDelegate;

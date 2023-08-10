@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/settings/address_bar_preference/address_bar_preference_view_controller.h"
 
+#import "base/metrics/user_metrics.h"
 #import "ios/chrome/browser/ui/settings/address_bar_preference/cells/address_bar_options_item.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -65,6 +66,16 @@ typedef NS_ENUM(NSInteger, ItemType) {
     _addressBarOptionsItem.bottomAddressBarOptionSelected = omniboxAtBottom;
     [self reconfigureCellsForItems:@[ _addressBarOptionsItem ]];
   }
+}
+
+#pragma mark - SettingsControllerProtocol
+
+- (void)reportDismissalUserAction {
+  base::RecordAction(base::UserMetricsAction("Settings.AddressBar.Dismissed"));
+}
+
+- (void)reportBackUserAction {
+  base::RecordAction(base::UserMetricsAction("Settings.AddressBar.Back"));
 }
 
 @end

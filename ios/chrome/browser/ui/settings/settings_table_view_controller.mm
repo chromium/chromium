@@ -1386,6 +1386,7 @@ UIImage* GetBrandedGoogleServicesSymbol() {
           initWithBrowserState:_browserState];
       break;
     case SettingsItemTypeAddressBar:
+      base::RecordAction(base::UserMetricsAction("Settings.AddressBar.Opened"));
       [self showAddressBarPreferenceSetting];
       break;
     case SettingsItemTypePasswords:
