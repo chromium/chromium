@@ -165,10 +165,12 @@ void AddSmartInputsStrings(content::WebUIDataSource* html_source,
       {"smartInputsTitle", IDS_SETTINGS_SUGGESTIONS_TITLE},
       {"emojiSuggestionTitle", IDS_SETTINGS_SUGGESTIONS_EMOJI_SUGGESTION_TITLE},
       {"emojiSuggestionDescription",
-       IDS_SETTINGS_SUGGESTIONS_EMOJI_SUGGESTION_DESCRIPTION},
-  };
+       IDS_SETTINGS_SUGGESTIONS_EMOJI_SUGGESTION_DESCRIPTION}};
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
+  // TODO: b/294962917 - Hook up with the EditorSwitch component instead of
+  // hard-coding "false".
+  html_source->AddBoolean("allowOrca", false);
   html_source->AddBoolean("allowEmojiSuggestion", is_emoji_suggestion_allowed);
 }
 

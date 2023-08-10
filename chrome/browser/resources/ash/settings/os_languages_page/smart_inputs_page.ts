@@ -53,6 +53,13 @@ export class OsSettingsSmartInputsPageElement extends
         },
       },
 
+      allowOrca_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('allowOrca');
+        },
+      },
+
       /**
        * Used by DeepLinkingMixin to focus this page's deep links.
        */
@@ -76,6 +83,7 @@ export class OsSettingsSmartInputsPageElement extends
 
   // loadTimeData flags.
   private allowEmojiSuggestion_: boolean;
+  private allowOrca_: boolean;
 
   override currentRouteChanged(route: Route): void {
     // Does not apply to this page.

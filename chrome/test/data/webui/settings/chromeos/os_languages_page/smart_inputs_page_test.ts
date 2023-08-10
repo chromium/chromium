@@ -62,4 +62,22 @@ suite('<os-settings-smart-inputs-page>', function() {
         deepLinkElement, getDeepActiveElement(),
         'Emoji suggestion toggle should be focused for settingId=1203.');
   });
+
+  suite('Orca setting toggle', () => {
+    test('should appear if allowOrca flag is true.', () => {
+      loadTimeData.overrideValues({
+        allowOrca: true,
+      });
+      createSmartInputsPage();
+      assert(smartInputsPage.shadowRoot!.querySelector('#orca'));
+    });
+
+    test('should be hidden if allowOrca flag is false.', () => {
+      loadTimeData.overrideValues({
+        allowOrca: false,
+      });
+      createSmartInputsPage();
+      assertEquals(null, smartInputsPage.shadowRoot!.querySelector('#orca'));
+    });
+  });
 });

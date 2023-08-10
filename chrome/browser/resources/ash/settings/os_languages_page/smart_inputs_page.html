@@ -21,6 +21,14 @@
 </style>
 
 <div route-path="default">
+  <template is="dom-if" if="[[allowOrca_]]">
+    <!-- b/294956432: Replace with the correct label and sub-label -->
+    <settings-toggle-button id="orca" class="hr"
+        pref="{{prefs.assistive_input.orca_enabled}}"
+        label="Copy Suggestions"
+        aria-label="Copy Suggestions">
+    </settings-toggle-button>
+  </template>
   <template is="dom-if" if="[[allowEmojiSuggestion_]]">
     <settings-toggle-button id="emojiSuggestion" class="hr"
         pref="{{prefs.assistive_input.emoji_suggestion_enabled}}"
