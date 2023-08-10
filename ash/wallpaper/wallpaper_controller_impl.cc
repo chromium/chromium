@@ -66,6 +66,7 @@
 #include "base/strings/string_piece_forward.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
@@ -1237,6 +1238,10 @@ void WallpaperControllerImpl::ShowUserWallpaper(
     SetWallpaperFromInfo(account_id, info);
     return;
   }
+
+  CHECK(info.type == WallpaperType::kCustomized ||
+        info.type == WallpaperType::kPolicy)
+      << " Got unhandled wallpaper type=" << base::to_underlying(info.type);
 
   std::string sub_dir = GetCustomWallpaperSubdirForCurrentResolution();
   base::FilePath wallpaper_path =
