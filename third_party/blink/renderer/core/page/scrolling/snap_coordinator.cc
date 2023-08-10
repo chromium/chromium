@@ -210,16 +210,6 @@ void SnapCoordinator::SnapAreaDidChange(LayoutBox& snap_area,
   }
 }
 
-void SnapCoordinator::ResnapAllContainersIfNeeded() {
-  for (const auto& container : snap_containers_) {
-    if (!container->GetScrollableArea()->NeedsResnap())
-      continue;
-
-    ScrollableArea::GetForScrolling(container)->SnapAfterLayout();
-    container->GetScrollableArea()->SetNeedsResnap(false);
-  }
-}
-
 void SnapCoordinator::UpdateAllSnapContainerDataIfNeeded() {
   for (const auto& container : snap_containers_) {
     if (container->GetScrollableArea()->SnapContainerDataNeedsUpdate())
@@ -238,91 +228,94 @@ void SnapCoordinator::UpdateSnapContainerData(LayoutBox& snap_container) {
   // Scrollers that don't have any snap areas assigned to them and don't snap
   // require no further processing. These are the most common types and thus
   // returning as early as possible ensures efficiency.
-  if (!old_snap_container_data && snap_type.is_none)
+  if (snap_type.is_none) {
+    // Clear the old data if needed.
+    if (old_snap_container_data) {
+      snap_container.SetNeedsPaintPropertyUpdate();
+      scrollable_area->SetSnapContainerData(absl::nullopt);
+    }
     return;
+  }
 
   cc::SnapContainerData snap_container_data(snap_type);
 
   DCHECK(snap_containers_.Contains(&snap_container));
 
-  // When snap type is 'none' we don't perform any snapping so there is no need
-  // to keep the area data up to date. So just update the type and skip updating
-  // areas as an optimization.
-  if (!snap_container_data.scroll_snap_type().is_none) {
-    gfx::PointF max_position = scrollable_area->ScrollOffsetToPosition(
-        scrollable_area->MaximumScrollOffset());
-    snap_container_data.set_max_position(max_position);
+  gfx::PointF max_position = scrollable_area->ScrollOffsetToPosition(
+      scrollable_area->MaximumScrollOffset());
+  snap_container_data.set_max_position(max_position);
 
-    // Scroll-padding represents inward offsets from the corresponding edge of
-    // the scrollport.
-    // https://drafts.csswg.org/css-scroll-snap-1/#scroll-padding Scrollport is
-    // the visual viewport of the scroll container (through which the scrollable
-    // overflow region can be viewed) coincides with its padding box.
-    // https://drafts.csswg.org/css-overflow-3/#scrollport. So we use the
-    // LayoutRect of the padding box here. The coordinate is relative to the
-    // container's border box.
-    PhysicalRect container_rect(snap_container.PhysicalPaddingBoxRect());
+  // Scroll-padding represents inward offsets from the corresponding edge of
+  // the scrollport.
+  // https://drafts.csswg.org/css-scroll-snap-1/#scroll-padding Scrollport is
+  // the visual viewport of the scroll container (through which the scrollable
+  // overflow region can be viewed) coincides with its padding box.
+  // https://drafts.csswg.org/css-overflow-3/#scrollport. So we use the
+  // LayoutRect of the padding box here. The coordinate is relative to the
+  // container's border box.
+  PhysicalRect container_rect(snap_container.PhysicalPaddingBoxRect());
 
-    const ComputedStyle* container_style = snap_container.Style();
-    // The percentage of scroll-padding is different from that of normal
-    // padding, as scroll-padding resolves the percentage against corresponding
-    // dimension of the scrollport[1], while the normal padding resolves that
-    // against "width".[2,3] We use MinimumValueForLength here to ensure kAuto
-    // is resolved to LayoutUnit() which is the correct behavior for padding.
-    //
-    // [1] https://drafts.csswg.org/css-scroll-snap-1/#scroll-padding
-    //     "relative to the corresponding dimension of the scroll container’s
-    //      scrollport"
-    // [2] https://drafts.csswg.org/css-box/#padding-props
-    // [3] See for example LayoutBoxModelObject::ComputedCSSPadding where it
-    //     uses |MinimumValueForLength| but against the "width".
-    container_rect.ContractEdges(
-        MinimumValueForLength(container_style->ScrollPaddingTop(),
-                              container_rect.Height()),
-        MinimumValueForLength(container_style->ScrollPaddingRight(),
-                              container_rect.Width()),
-        MinimumValueForLength(container_style->ScrollPaddingBottom(),
-                              container_rect.Height()),
-        MinimumValueForLength(container_style->ScrollPaddingLeft(),
-                              container_rect.Width()));
-    snap_container_data.set_rect(gfx::RectF(container_rect));
+  const ComputedStyle* container_style = snap_container.Style();
+  // The percentage of scroll-padding is different from that of normal
+  // padding, as scroll-padding resolves the percentage against corresponding
+  // dimension of the scrollport[1], while the normal padding resolves that
+  // against "width".[2,3] We use MinimumValueForLength here to ensure kAuto
+  // is resolved to LayoutUnit() which is the correct behavior for padding.
+  //
+  // [1] https://drafts.csswg.org/css-scroll-snap-1/#scroll-padding
+  //     "relative to the corresponding dimension of the scroll container’s
+  //      scrollport"
+  // [2] https://drafts.csswg.org/css-box/#padding-props
+  // [3] See for example LayoutBoxModelObject::ComputedCSSPadding where it
+  //     uses |MinimumValueForLength| but against the "width".
+  container_rect.ContractEdges(
+      MinimumValueForLength(container_style->ScrollPaddingTop(),
+                            container_rect.Height()),
+      MinimumValueForLength(container_style->ScrollPaddingRight(),
+                            container_rect.Width()),
+      MinimumValueForLength(container_style->ScrollPaddingBottom(),
+                            container_rect.Height()),
+      MinimumValueForLength(container_style->ScrollPaddingLeft(),
+                            container_rect.Width()));
+  snap_container_data.set_rect(gfx::RectF(container_rect));
 
-    if (snap_container_data.scroll_snap_type().strictness ==
-        cc::SnapStrictness::kProximity) {
-      PhysicalSize size = container_rect.size;
-      size.Scale(kProximityRatio);
-      gfx::PointF range(size.width.ToFloat(), size.height.ToFloat());
-      snap_container_data.set_proximity_range(range);
-    }
-
-    cc::TargetSnapAreaElementIds new_target_ids;
-    const cc::TargetSnapAreaElementIds old_target_ids =
-        old_snap_container_data
-            ? old_snap_container_data->GetTargetSnapAreaElementIds()
-            : cc::TargetSnapAreaElementIds();
-
-    if (SnapAreaSet* snap_areas = snap_container.SnapAreas()) {
-      for (const LayoutBox* snap_area : *snap_areas) {
-        cc::SnapAreaData snap_area_data =
-            CalculateSnapAreaData(*snap_area, snap_container);
-        // The target snap elements should be preserved in the new container
-        // only if the respective snap areas are still present.
-        if (old_target_ids.x == snap_area_data.element_id)
-          new_target_ids.x = old_target_ids.x;
-        if (old_target_ids.y == snap_area_data.element_id)
-          new_target_ids.y = old_target_ids.y;
-
-        snap_container_data.AddSnapAreaData(snap_area_data);
-      }
-    }
-    snap_container_data.SetTargetSnapAreaElementIds(new_target_ids);
+  if (snap_container_data.scroll_snap_type().strictness ==
+      cc::SnapStrictness::kProximity) {
+    PhysicalSize size = container_rect.size;
+    size.Scale(kProximityRatio);
+    gfx::PointF range(size.width.ToFloat(), size.height.ToFloat());
+    snap_container_data.set_proximity_range(range);
   }
+
+  cc::TargetSnapAreaElementIds new_target_ids;
+  const cc::TargetSnapAreaElementIds old_target_ids =
+      old_snap_container_data
+          ? old_snap_container_data->GetTargetSnapAreaElementIds()
+          : cc::TargetSnapAreaElementIds();
+
+  if (SnapAreaSet* snap_areas = snap_container.SnapAreas()) {
+    for (const LayoutBox* snap_area : *snap_areas) {
+      cc::SnapAreaData snap_area_data =
+          CalculateSnapAreaData(*snap_area, snap_container);
+      // The target snap elements should be preserved in the new container
+      // only if the respective snap areas are still present.
+      if (old_target_ids.x == snap_area_data.element_id) {
+        new_target_ids.x = old_target_ids.x;
+      }
+      if (old_target_ids.y == snap_area_data.element_id) {
+        new_target_ids.y = old_target_ids.y;
+      }
+
+      snap_container_data.AddSnapAreaData(snap_area_data);
+    }
+  }
+  snap_container_data.SetTargetSnapAreaElementIds(new_target_ids);
+
   if (!old_snap_container_data ||
       *old_snap_container_data != snap_container_data) {
     snap_container.SetNeedsPaintPropertyUpdate();
     scrollable_area->SetSnapContainerData(snap_container_data);
-    // If the snap container data changed then we need to resnap.
-    scrollable_area->SetNeedsResnap(true);
+    scrollable_area->SnapAfterLayout();
   }
 }
 

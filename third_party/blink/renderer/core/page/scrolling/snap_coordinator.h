@@ -62,11 +62,6 @@ class CORE_EXPORT SnapCoordinator final
   // by the style/layout change.
   void UpdateAllSnapContainerDataIfNeeded();
 
-  // Resnaps all snap containers to their current snap target, or to the
-  // closest snap point if there is no target (e.g. on the initial layout or if
-  // the previous snapped target was removed).
-  void ResnapAllContainersIfNeeded();
-
   void UpdateSnapContainerData(LayoutBox&);
 
 #ifndef NDEBUG

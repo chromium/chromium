@@ -8218,7 +8218,6 @@ void Document::PerformScrollSnappingTasks() {
   if (!snap_coordinator.AnySnapContainerDataNeedsUpdate())
     return;
   snap_coordinator.UpdateAllSnapContainerDataIfNeeded();
-  snap_coordinator.ResnapAllContainersIfNeeded();
 }
 
 void Document::UpdateHoverActiveState(bool is_active,

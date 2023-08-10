@@ -1917,14 +1917,6 @@ void PaintLayerScrollableArea::SetSnapContainerDataNeedsUpdate(
       .SetAnySnapContainerDataNeedsUpdate(true);
 }
 
-bool PaintLayerScrollableArea::NeedsResnap() const {
-  return RareData() ? RareData()->needs_resnap_ : false;
-}
-
-void PaintLayerScrollableArea::SetNeedsResnap(bool needs_resnap) {
-  EnsureRareData().needs_resnap_ = needs_resnap;
-}
-
 absl::optional<gfx::PointF>
 PaintLayerScrollableArea::GetSnapPositionAndSetTarget(
     const cc::SnapSelectionStrategy& strategy) {
