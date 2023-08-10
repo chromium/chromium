@@ -121,7 +121,8 @@ class GetLoginsHelper : public base::RefCounted<GetLoginsHelper> {
  public:
   GetLoginsHelper(PasswordFormDigest requested_digest,
                   PasswordStoreBackend* backend)
-      : requested_digest_(std::move(requested_digest)), backend_(backend) {}
+      : requested_digest_(std::move(requested_digest)),
+        backend_(backend->AsWeakPtr()) {}
 
   void Init(AffiliatedMatchHelper* affiliated_match_helper,
             LoginsOrErrorReply callback);
@@ -156,7 +157,7 @@ class GetLoginsHelper : public base::RefCounted<GetLoginsHelper> {
   // The group realms for 'requested_digest_'.
   base::flat_set<std::string> group_;
 
-  raw_ptr<PasswordStoreBackend, AcrossTasksDanglingUntriaged> backend_;
+  base::WeakPtr<PasswordStoreBackend> backend_;
 };
 
 void GetLoginsHelper::Init(AffiliatedMatchHelper* affiliated_match_helper,
@@ -195,6 +196,9 @@ void GetLoginsHelper::Init(AffiliatedMatchHelper* affiliated_match_helper,
 void GetLoginsHelper::OnPSLExtensionsReceived(
     base::RepeatingCallback<void(LoginsResultOrError)> forms_received_callback,
     const base::flat_set<std::string>& psl_extensions) {
+  if (!backend_) {
+    return;
+  }
   backend_->FillMatchingLoginsAsync(
       base::BindOnce(&ProccessExactAndPSLForms, requested_digest_,
                      psl_extensions)
@@ -206,6 +210,10 @@ void GetLoginsHelper::HandleAffiliationsAndGroupsReceived(
     base::RepeatingCallback<void(LoginsResultOrError)> forms_received_callback,
     std::vector<std::string> affiliated_realms,
     std::vector<std::string> grouped_realms) {
+  if (!backend_) {
+    return;
+  }
+
   affiliations_ = base::flat_set<std::string>(
       std::make_move_iterator(affiliated_realms.begin()),
       std::make_move_iterator(affiliated_realms.end()));

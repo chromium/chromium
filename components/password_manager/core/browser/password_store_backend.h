@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/weak_ptr.h"
 #include "components/password_manager/core/browser/password_form_digest.h"
 #include "components/password_manager/core/browser/password_store_backend_error.h"
 #include "components/password_manager/core/browser/password_store_change.h"
@@ -45,7 +46,8 @@ using LoginsOrErrorReply = base::OnceCallback<void(LoginsResultOrError)>;
 // Android, it sends requests to a service).
 // All methods are required to do their work asynchronously to prevent expensive
 // IO operation from possibly blocking the main thread.
-class PasswordStoreBackend {
+class PasswordStoreBackend
+    : public base::SupportsWeakPtr<PasswordStoreBackend> {
  public:
   using RemoteChangesReceived =
       base::RepeatingCallback<void(absl::optional<PasswordStoreChangeList>)>;
