@@ -1628,6 +1628,9 @@ extern const char kEnableOmniboxClientSearchPrefetchDescription[];
 extern const char kPrivacyGuideAndroidName[];
 extern const char kPrivacyGuideAndroidDescription[];
 
+extern const char kPrivacyGuide3Name[];
+extern const char kPrivacyGuide3Description[];
+
 extern const char kPrivacySandboxAdsAPIsOverrideName[];
 extern const char kPrivacySandboxAdsAPIsOverrideDescription[];
 
