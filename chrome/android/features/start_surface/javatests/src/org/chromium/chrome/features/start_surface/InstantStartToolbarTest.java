@@ -31,6 +31,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -161,6 +162,7 @@ public class InstantStartToolbarTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/1471244")
     @Feature({"RenderTest"})
     @CommandLineFlags.Add({INSTANT_START_TEST_BASE_PARAMS,
             ChromeSwitches.FORCE_UPDATE_MENU_UPDATE_TYPE + "=update_available"})
@@ -171,6 +173,7 @@ public class InstantStartToolbarTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/1471244")
     @Feature({"RenderTest"})
     @CommandLineFlags.Add({INSTANT_START_TEST_BASE_PARAMS,
             ChromeSwitches.FORCE_UPDATE_MENU_UPDATE_TYPE + "=unsupported_os_version"})
