@@ -29,13 +29,7 @@
     margin-inline-start: 0;
   }
 
-  #doneButton {
-    --cr-icon-image: url(chrome://resources/images/icon_checkmark.svg);
-  }
-
   #label-container {
-    -webkit-line-clamp: 2;
-    align-items: flex-end;
     color: var(--color-new-tab-page-primary-foreground);
     display: flex;
     font-size: 24px;
@@ -49,6 +43,16 @@
     background: var(--color-new-tab-page-module-item-background);
     border-radius: var(--ntp-module-item-border-radius);
     padding: 8px 16px;
+  }
+
+  h2 {
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    display: -webkit-box;
+    font-weight: inherit;
+    font-size: inherit;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   #suggestion-chip {
@@ -72,16 +76,14 @@
     header-text="[[i18n('modulesJourneysResumeJourney', '')]]"
     on-menu-button-click="onMenuButtonClick_"
     more-actions-text="[[i18n('modulesMoreActions', clusterLabel)]]">
-  <cr-icon-button id="doneButton" slot="title-actions">
-  </cr-icon-button>
 </ntp-module-header-v2>
 <div id="label-container">
-    <div id="label" hidden="[[suggestionChipHeaderEnabled_]]">
+    <h2 id="label" hidden="[[suggestionChipHeaderEnabled_]]">
       [[clusterLabel]]
-    </div>
+    </h2>
     <div id="suggestion-chip" hidden="[[!suggestionChipHeaderEnabled_]]">
       <div id="suggestion-chip-icon" class="cr-icon"></div>
-      <span id="suggestion-chip-label">[[clusterLabel]]</span>
+      <h2 id="suggestion-chip-label">[[clusterLabel]]</h2>
     </div>
 </div>
 
