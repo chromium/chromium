@@ -642,31 +642,13 @@ class ArcVmClientAdapter : public ArcClientAdapter,
 
     start_params_ = std::move(params);
 
-    std::deque<JobDesc> jobs{
-        // Note: the first Upstart job is a task, and the callback for the start
-        // request won't be called until the task finishes. When the callback is
-        // called with true, it is ensured that the per-board features files
-        // exist.
-        JobDesc{kArcVmPerBoardFeaturesJobName, UpstartOperation::JOB_START, {}},
-    };
-
-    for (const char* job : kArcVmUpstartJobsToBeStoppedOnRestart) {
-      jobs.emplace_back(job, UpstartOperation::JOB_STOP,
-                        std::vector<std::string>());
-    }
-
-    std::vector<std::string> environment;
-    if (start_params_.disable_ureadahead) {
-      environment.emplace_back("DISABLE_UREADAHEAD=1");
-    }
-    jobs.emplace_back(kArcVmPreLoginServicesJobName,
-                      UpstartOperation::JOB_START, std::move(environment));
-
-    ConfigureUpstartJobs(
-        std::move(jobs),
-        base::BindOnce(
-            &ArcVmClientAdapter::OnConfigureUpstartJobsOnStartMiniArc,
-            weak_factory_.GetWeakPtr(), std::move(callback)));
+    // Stop existing VM and Upstart jobs if any (e.g. in case of a chrome
+    // crash).
+    VLOG(2) << "Stopping existing VM if any";
+    EnsureStaleArcVmAndArcVmUpstartJobsStopped(
+        user_id_hash_,
+        base::BindOnce(&ArcVmClientAdapter::OnExistingVmStopped,
+                       weak_factory_.GetWeakPtr(), std::move(callback)));
   }
 
   void UpgradeArc(UpgradeParams params,
@@ -806,48 +788,40 @@ class ArcVmClientAdapter : public ArcClientAdapter,
                                 weak_factory_.GetWeakPtr()));
   }
 
+  void OnExistingVmStopped(chromeos::VoidDBusMethodCallback callback,
+                           bool stopped) {
+    if (!stopped) {
+      LOG(ERROR) << "Failed to stop existing ARCVM";
+      std::move(callback).Run(false);
+      return;
+    }
+
+    std::vector<std::string> environment;
+    if (start_params_.disable_ureadahead) {
+      environment.emplace_back("DISABLE_UREADAHEAD=1");
+    }
+    std::deque<JobDesc> jobs{
+        // Note: the first Upstart job is a task, and the callback for the start
+        // request won't be called until the task finishes. When the callback is
+        // called with true, it is ensured that the per-board features files
+        // exist.
+        JobDesc{kArcVmPerBoardFeaturesJobName, UpstartOperation::JOB_START, {}},
+        JobDesc{kArcVmPreLoginServicesJobName, UpstartOperation::JOB_START,
+                std::move(environment)},
+    };
+
+    ConfigureUpstartJobs(
+        std::move(jobs),
+        base::BindOnce(
+            &ArcVmClientAdapter::OnConfigureUpstartJobsOnStartMiniArc,
+            weak_factory_.GetWeakPtr(), std::move(callback)));
+  }
+
   void OnConfigureUpstartJobsOnStartMiniArc(
       chromeos::VoidDBusMethodCallback callback,
       bool result) {
     if (!result) {
       LOG(ERROR) << "ConfigureUpstartJobs (on starting mini ARCVM) failed";
-      std::move(callback).Run(false);
-      return;
-    }
-
-    VLOG(2) << "Waiting for Concierge to be available";
-    GetConciergeClient()->WaitForServiceToBeAvailable(
-        base::BindOnce(&ArcVmClientAdapter::OnConciergeAvailable,
-                       weak_factory_.GetWeakPtr(), std::move(callback)));
-  }
-
-  void OnConciergeAvailable(chromeos::VoidDBusMethodCallback callback,
-                            bool service_available) {
-    if (!service_available) {
-      LOG(ERROR) << "Failed to wait for Concierge to be available";
-      std::move(callback).Run(false);
-      return;
-    }
-
-    // Stop the existing VM if any (e.g. in case of a chrome crash).
-    VLOG(2) << "Stopping the existing VM if any.";
-    vm_tools::concierge::StopVmRequest request;
-    request.set_name(kArcVmName);
-    request.set_owner_id(user_id_hash_);
-    GetConciergeClient()->StopVm(
-        request,
-        base::BindOnce(&ArcVmClientAdapter::OnExistingVmStopped,
-                       weak_factory_.GetWeakPtr(), std::move(callback)));
-  }
-
-  void OnExistingVmStopped(
-      chromeos::VoidDBusMethodCallback callback,
-      absl::optional<vm_tools::concierge::StopVmResponse> reply) {
-    // reply->success() returns true even when there was no VM running.
-    if (!reply.has_value() || !reply->success()) {
-      LOG(ERROR) << "StopVm failed: "
-                 << (reply.has_value() ? reply->failure_reason()
-                                       : "No D-Bus response.");
       std::move(callback).Run(false);
       return;
     }

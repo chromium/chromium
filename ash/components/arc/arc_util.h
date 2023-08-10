@@ -16,6 +16,7 @@
 #include <vector>
 
 #include "ash/components/arc/session/arc_vm_data_migration_status.h"
+#include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "chromeos/dbus/common/dbus_method_call_status.h"
 
@@ -87,6 +88,31 @@ constexpr int kMaxArcVersion = 999;
 constexpr int kArcVmDataMigrationNumberOfDismissibleDays = 30;
 constexpr base::TimeDelta kArcVmDataMigrationDismissibleTimeDelta =
     base::Days(kArcVmDataMigrationNumberOfDismissibleDays);
+
+// Names of Upstart jobs that are managed in the ARCVM boot sequence.
+// The "_2d" in job names below corresponds to "-". Upstart escapes characters
+// that aren't valid in D-Bus object paths with underscore followed by its
+// ascii code in hex. So "arc_2dcreate_2ddata" becomes "arc-create-data".
+constexpr char kArcVmDataMigratorJobName[] = "arcvm_2ddata_2dmigrator";
+constexpr char kArcVmMediaSharingServicesJobName[] =
+    "arcvm_2dmedia_2dsharing_2dservices";
+constexpr const char kArcVmPerBoardFeaturesJobName[] =
+    "arcvm_2dper_2dboard_2dfeatures";
+constexpr char kArcVmPreLoginServicesJobName[] =
+    "arcvm_2dpre_2dlogin_2dservices";
+constexpr char kArcVmPostLoginServicesJobName[] =
+    "arcvm_2dpost_2dlogin_2dservices";
+constexpr char kArcVmPostVmStartServicesJobName[] =
+    "arcvm_2dpost_2dvm_2dstart_2dservices";
+
+// List of Upstart jobs that can outlive ARC sessions (e.g. after Chrome crash,
+// Chrome restart on a feature flag change) and thus should be stopped at the
+// beginning of the ARCVM boot sequence.
+constexpr std::array<const char*, 5> kArcVmUpstartJobsToBeStoppedOnRestart = {
+    kArcVmDataMigratorJobName,         kArcVmPreLoginServicesJobName,
+    kArcVmPostLoginServicesJobName,    kArcVmPostVmStartServicesJobName,
+    kArcVmMediaSharingServicesJobName,
+};
 
 // Returns true if ARC is installed and the current device is officially
 // supported to run ARC.
@@ -285,6 +311,18 @@ uint64_t GetRequiredFreeDiskSpaceForArcVmDataMigrationInBytes(
 // Returns true if ARC app permissions should be shown as read-only in the App
 // Management page.
 bool IsReadOnlyPermissionsEnabled();
+
+// Stops ARCVM instance and ARCVM Upstart jobs that can outlive ARC sessions
+// (e.g. after Chrome crash, Chrome restart on a feature flag change).
+// `user_id_hash` is the current user's ID hash (= ARCVM's owner ID).
+// `callback` is invoked with true when 1) StopJob() is called on each Upstart
+// job in `kArcVmUpstartJobsToBeStoppedOnRestart`, and 2) ARCVM is stopped (or
+// not running in the first place).
+using EnsureStaleArcVmAndArcVmUpstartJobsStoppedCallback =
+    base::OnceCallback<void(bool)>;
+void EnsureStaleArcVmAndArcVmUpstartJobsStopped(
+    const std::string& user_id_hash,
+    EnsureStaleArcVmAndArcVmUpstartJobsStoppedCallback callback);
 
 }  // namespace arc
 

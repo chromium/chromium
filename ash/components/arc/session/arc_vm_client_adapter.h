@@ -47,31 +47,6 @@ enum class ArcBinaryTranslationType {
 // 3328 is chosen because it's a rounded number (i.e. 3328 % 256 == 0).
 constexpr size_t k32bitVmRamMaxMib = 3328;
 
-// Names of Upstart jobs that are managed in the ARCVM boot sequence.
-// The "_2d" in job names below corresponds to "-". Upstart escapes characters
-// that aren't valid in D-Bus object paths with underscore followed by its
-// ascii code in hex. So "arc_2dcreate_2ddata" becomes "arc-create-data".
-constexpr char kArcVmDataMigratorJobName[] = "arcvm_2ddata_2dmigrator";
-constexpr char kArcVmMediaSharingServicesJobName[] =
-    "arcvm_2dmedia_2dsharing_2dservices";
-constexpr const char kArcVmPerBoardFeaturesJobName[] =
-    "arcvm_2dper_2dboard_2dfeatures";
-constexpr char kArcVmPreLoginServicesJobName[] =
-    "arcvm_2dpre_2dlogin_2dservices";
-constexpr char kArcVmPostLoginServicesJobName[] =
-    "arcvm_2dpost_2dlogin_2dservices";
-constexpr char kArcVmPostVmStartServicesJobName[] =
-    "arcvm_2dpost_2dvm_2dstart_2dservices";
-
-// List of Upstart jobs that can outlive ARC sessions (e.g. after Chrome crash,
-// Chrome restart on a feature flag change) and thus should be stopped at the
-// beginning of the ARCVM boot sequence.
-constexpr std::array<const char*, 5> kArcVmUpstartJobsToBeStoppedOnRestart = {
-    kArcVmDataMigratorJobName,         kArcVmPreLoginServicesJobName,
-    kArcVmPostLoginServicesJobName,    kArcVmPostVmStartServicesJobName,
-    kArcVmMediaSharingServicesJobName,
-};
-
 // For better unit-testing.
 class ArcVmClientAdapterDelegate {
  public:

@@ -10,7 +10,6 @@
 #include "ash/components/arc/mojom/volume_mounter.mojom.h"
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/components/arc/session/arc_service_manager.h"
-#include "ash/components/arc/session/arc_vm_client_adapter.h"
 #include "ash/components/arc/test/connection_holder_util.h"
 #include "ash/components/arc/test/fake_volume_mounter_instance.h"
 #include "ash/components/arc/test/test_browser_context.h"

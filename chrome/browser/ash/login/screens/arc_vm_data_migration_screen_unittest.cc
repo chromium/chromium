@@ -6,7 +6,6 @@
 
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/components/arc/arc_util.h"
-#include "ash/components/arc/session/arc_vm_client_adapter.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "base/memory/raw_ptr.h"
@@ -384,33 +383,8 @@ TEST_F(ArcVmDataMigrationScreenTest, ScreenLockIsDisabledWhileScreenIsShown) {
   EXPECT_FALSE(screen_->encountered_retriable_fatal_error());
 }
 
-TEST_F(ArcVmDataMigrationScreenTest, GetVmInfoFailureIsFatal) {
-  FakeConciergeClient::Get()->set_get_vm_info_response(absl::nullopt);
-
-  screen_->Show(wizard_context_.get());
-  task_environment()->RunUntilIdle();
-  EXPECT_TRUE(screen_->encountered_retriable_fatal_error());
-}
-
-TEST_F(ArcVmDataMigrationScreenTest, ArcVmNotRunning) {
-  auto* fake_concierge_client = FakeConciergeClient::Get();
-  vm_tools::concierge::GetVmInfoResponse get_vm_info_response;
-  // Unsuccessful response means that the VM is not running.
-  get_vm_info_response.set_success(false);
-  fake_concierge_client->set_get_vm_info_response(get_vm_info_response);
-
-  screen_->Show(wizard_context_.get());
-  task_environment()->RunUntilIdle();
-  EXPECT_EQ(view_->state(), ArcVmDataMigrationScreenView::UIState::kWelcome);
-  EXPECT_EQ(fake_concierge_client->stop_vm_call_count(), 0);
-  EXPECT_FALSE(screen_->encountered_retriable_fatal_error());
-}
-
 TEST_F(ArcVmDataMigrationScreenTest, StopArcVmFailureIsFatal) {
   auto* fake_concierge_client = FakeConciergeClient::Get();
-  vm_tools::concierge::GetVmInfoResponse get_vm_info_response;
-  get_vm_info_response.set_success(true);
-  fake_concierge_client->set_get_vm_info_response(get_vm_info_response);
   fake_concierge_client->set_stop_vm_response(absl::nullopt);
 
   screen_->Show(wizard_context_.get());
@@ -420,9 +394,6 @@ TEST_F(ArcVmDataMigrationScreenTest, StopArcVmFailureIsFatal) {
 
 TEST_F(ArcVmDataMigrationScreenTest, StopArcVmSuccess) {
   auto* fake_concierge_client = FakeConciergeClient::Get();
-  vm_tools::concierge::GetVmInfoResponse get_vm_info_response;
-  get_vm_info_response.set_success(true);
-  fake_concierge_client->set_get_vm_info_response(get_vm_info_response);
   vm_tools::concierge::StopVmResponse stop_vm_response;
   stop_vm_response.set_success(true);
   fake_concierge_client->set_stop_vm_response(stop_vm_response);
@@ -437,8 +408,7 @@ TEST_F(ArcVmDataMigrationScreenTest, StopArcVmSuccess) {
 
 // Tests that UpstartClient::StopJob() is called for each job to be stopped even
 // when it fails for some of them; we do not treat failures of StopJob() as
-// fatal because it returns an unsuccessful response when the target job is not
-// running.
+// fatal. See arc_util's ConfigureUpstartJobs().
 TEST_F(ArcVmDataMigrationScreenTest, StopArcUpstartJobs) {
   std::set<std::string> jobs_to_be_stopped(
       std::begin(arc::kArcVmUpstartJobsToBeStoppedOnRestart),
@@ -449,6 +419,7 @@ TEST_F(ArcVmDataMigrationScreenTest, StopArcUpstartJobs) {
         // Do not check the existence of the job in |job_to_be_stopped|, because
         // some jobs can be stopped multiple times.
         jobs_to_be_stopped.erase(job_name);
+        // Let StopJob() fail for some of the calls.
         return (jobs_to_be_stopped.size() % 2) == 0;
       }));
 
@@ -567,8 +538,8 @@ TEST_F(ArcVmDataMigrationScreenTest,
        SetupFailureIsTreatedAsMigrationFailureOnLoadingResumeScreen) {
   arc::SetArcVmDataMigrationStatus(profile_->GetPrefs(),
                                    arc::ArcVmDataMigrationStatus::kStarted);
-  // Assume that somehow Concierge cannot check whether ARCVM is running.
-  FakeConciergeClient::Get()->set_get_vm_info_response(absl::nullopt);
+  // Assume that ARCVM is running but cannot be stopped.
+  FakeConciergeClient::Get()->set_stop_vm_response(absl::nullopt);
 
   screen_->Show(wizard_context_.get());
   task_environment()->RunUntilIdle();

@@ -5053,15 +5053,16 @@ Unknown properties are collapsed to zero. -->
     The types of failures that can happen during the setup phase of the screen
     flow of ARCVM /data migration.
   </summary>
-  <int value="0" label="GetVmInfo request failed"/>
-  <int value="1" label="StopVm request failed"/>
-  <int value="2" label="Upstart jobs could not be stopped"/>
+  <int value="0" label="DEPRECATED: GetVmInfo request failed"/>
+  <int value="1" label="DEPRECATED: StopVm request failed"/>
+  <int value="2" label="DEPRECATED: Upstart jobs could not be stopped"/>
   <int value="3" label="GetFreeDiskSpace request failed"/>
   <int value="4" label="GetAndroidDataInfo request failed"/>
   <int value="5" label="CreateDiskImage request failed due to D-Bus error"/>
   <int value="6" label="CreateDiskImage request failed due to general error"/>
   <int value="7" label="ArcVmDataMigrator could not be started"/>
   <int value="8" label="StartMigration request failed"/>
+  <int value="9" label="ARCVM or ARCVM Upstart jobs could not be stopped"/>
 </enum>
 
 <enum name="ArcVmDataMigrationSetupResult">

@@ -24,6 +24,7 @@
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
+#include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/ash/components/dbus/upstart/upstart_client.h"
 #include "chromeos/version/version_loader.h"
@@ -95,6 +96,55 @@ int64_t GetRequiredDiskImageSizeForArcVmDataMigrationInBytes(
   // the guest's arc-mkfs-blk-data.
   constexpr uint64_t kReservedDiskSpaceInBytes = 128ULL << 20;
   return android_data_size_in_bytes * 11ULL / 10ULL + kReservedDiskSpaceInBytes;
+}
+
+void OnStaleArcVmStopped(
+    EnsureStaleArcVmAndArcVmUpstartJobsStoppedCallback callback,
+    absl::optional<vm_tools::concierge::StopVmResponse> response) {
+  // Successful response is returned even when the VM is not running. See
+  // Service::StopVm() in platform2/vm_tools/concierge/service.cc.
+  if (!response.has_value() || !response->success()) {
+    LOG(ERROR) << "StopVm failed: "
+               << (response.has_value() ? response->failure_reason()
+                                        : "No D-Bus response.");
+    std::move(callback).Run(false);
+    return;
+  }
+  std::move(callback).Run(true);
+}
+
+void OnConciergeServiceAvailable(
+    const std::string& user_id_hash,
+    EnsureStaleArcVmAndArcVmUpstartJobsStoppedCallback callback,
+    bool available) {
+  if (!available) {
+    LOG(ERROR) << "ConciergeService is not available";
+    std::move(callback).Run(false);
+    return;
+  }
+  vm_tools::concierge::StopVmRequest request;
+  request.set_name(kArcVmName);
+  request.set_owner_id(user_id_hash);
+  ash::ConciergeClient::Get()->StopVm(
+      request, base::BindOnce(&OnStaleArcVmStopped, std::move(callback)));
+}
+
+void OnStaleArcVmUpstartJobsStopped(
+    const std::string& user_id_hash,
+    EnsureStaleArcVmAndArcVmUpstartJobsStoppedCallback callback,
+    bool stopped) {
+  if (!stopped) {
+    LOG(ERROR) << "Failed to stop stale ARCVM Upstart jobs";
+    std::move(callback).Run(false);
+    return;
+  }
+  if (!ash::ConciergeClient::Get()) {
+    LOG(ERROR) << "ConciergeClient is not available";
+    std::move(callback).Run(false);
+    return;
+  }
+  ash::ConciergeClient::Get()->WaitForServiceToBeAvailable(base::BindOnce(
+      &OnConciergeServiceAvailable, user_id_hash, std::move(callback)));
 }
 
 }  // namespace
@@ -615,6 +665,21 @@ uint64_t GetRequiredFreeDiskSpaceForArcVmDataMigrationInBytes(
 bool IsReadOnlyPermissionsEnabled() {
   return base::FeatureList::IsEnabled(arc::kEnableReadOnlyPermissions) &&
          GetArcAndroidSdkVersionAsInt() >= kArcVersionT;
+}
+
+void EnsureStaleArcVmAndArcVmUpstartJobsStopped(
+    const std::string& user_id_hash,
+    EnsureStaleArcVmAndArcVmUpstartJobsStoppedCallback callback) {
+  // Stop stale Upstart jobs first. StopVm() is called after
+  // ConfigureUpstartJobs() is successfully finished.
+  std::deque<JobDesc> jobs;
+  for (const char* job : kArcVmUpstartJobsToBeStoppedOnRestart) {
+    jobs.emplace_back(job, UpstartOperation::JOB_STOP,
+                      std::vector<std::string>());
+  }
+  ConfigureUpstartJobs(std::move(jobs),
+                       base::BindOnce(&OnStaleArcVmUpstartJobsStopped,
+                                      user_id_hash, std::move(callback)));
 }
 
 }  // namespace arc

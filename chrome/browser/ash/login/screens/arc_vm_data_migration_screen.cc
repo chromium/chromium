@@ -4,12 +4,9 @@
 
 #include "chrome/browser/ash/login/screens/arc_vm_data_migration_screen.h"
 
-#include <deque>
-
 #include "ash/components/arc/arc_features.h"
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/components/arc/arc_util.h"
-#include "ash/components/arc/session/arc_vm_client_adapter.h"
 #include "ash/components/arc/session/arc_vm_data_migration_status.h"
 #include "ash/public/cpp/session/scoped_screen_lock_blocker.h"
 #include "ash/session/session_controller_impl.h"
@@ -257,7 +254,11 @@ void ArcVmDataMigrationScreen::ShowImpl() {
   }
 
   view_->Show();
-  StopArcVmInstanceAndArcUpstartJobs();
+  arc::EnsureStaleArcVmAndArcVmUpstartJobsStopped(
+      user_id_hash_,
+      base::BindOnce(
+          &ArcVmDataMigrationScreen::OnArcVmAndArcVmUpstartJobsStopped,
+          weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ArcVmDataMigrationScreen::HideImpl() {
@@ -285,79 +286,11 @@ void ArcVmDataMigrationScreen::OnUserAction(const base::Value::List& args) {
   }
 }
 
-void ArcVmDataMigrationScreen::StopArcVmInstanceAndArcUpstartJobs() {
-  DCHECK(ConciergeClient::Get());
-
-  // Check whether ARCVM is running. At this point ArcSessionManager is not
-  // initialized yet, but a stale ARCVM instance can be running.
-  vm_tools::concierge::GetVmInfoRequest request;
-  request.set_name(arc::kArcVmName);
-  request.set_owner_id(user_id_hash_);
-  ConciergeClient::Get()->GetVmInfo(
-      std::move(request),
-      base::BindOnce(&ArcVmDataMigrationScreen::OnGetVmInfoResponse,
-                     weak_ptr_factory_.GetWeakPtr()));
-}
-
-void ArcVmDataMigrationScreen::OnGetVmInfoResponse(
-    absl::optional<vm_tools::concierge::GetVmInfoResponse> response) {
-  if (!response.has_value()) {
-    LOG(ERROR) << "GetVmInfo for ARCVM failed: No D-Bus response";
-    HandleSetupFailure(ArcVmDataMigrationScreenSetupFailure::kGetVmInfoFailure);
-    return;
-  }
-
-  // Unsuccessful response means that ARCVM is not running, because concierge
-  // looks at the list of running VMs. See concierge's Service::GetVmInfo().
-  if (!response->success()) {
-    VLOG(1) << "ARCVM is not running";
-    StopArcUpstartJobs();
-    return;
-  }
-
-  // ARCVM is running. Send the StopVmRequest signal and wait for OnVmStopped()
-  // to be invoked.
-  VLOG(1) << "ARCVM is running. Sending StopVmRequest to concierge";
-  DCHECK(!concierge_observation_.IsObserving());
-  concierge_observation_.Observe(ConciergeClient::Get());
-  vm_tools::concierge::StopVmRequest request;
-  request.set_name(arc::kArcVmName);
-  request.set_owner_id(user_id_hash_);
-  ConciergeClient::Get()->StopVm(
-      std::move(request),
-      base::BindOnce(&ArcVmDataMigrationScreen::OnStopVmResponse,
-                     weak_ptr_factory_.GetWeakPtr()));
-}
-
-void ArcVmDataMigrationScreen::OnStopVmResponse(
-    absl::optional<vm_tools::concierge::StopVmResponse> response) {
-  if (!response.has_value() || !response->success()) {
-    LOG(ERROR) << "StopVm for ARCVM failed: "
-               << (response.has_value() ? response->failure_reason()
-                                        : "No D-Bus response");
-    concierge_observation_.Reset();
-    HandleSetupFailure(ArcVmDataMigrationScreenSetupFailure::kStopVmFailure);
-  }
-}
-
-void ArcVmDataMigrationScreen::StopArcUpstartJobs() {
-  std::deque<arc::JobDesc> jobs;
-  for (const char* job : arc::kArcVmUpstartJobsToBeStoppedOnRestart) {
-    jobs.emplace_back(job, arc::UpstartOperation::JOB_STOP,
-                      std::vector<std::string>());
-  }
-  arc::ConfigureUpstartJobs(
-      std::move(jobs),
-      base::BindOnce(&ArcVmDataMigrationScreen::OnArcUpstartJobsStopped,
-                     weak_ptr_factory_.GetWeakPtr()));
-}
-
-void ArcVmDataMigrationScreen::OnArcUpstartJobsStopped(bool result) {
-  // |result| is true when there are no stale Upstart jobs.
+void ArcVmDataMigrationScreen::OnArcVmAndArcVmUpstartJobsStopped(bool result) {
   if (!result) {
-    LOG(ERROR) << "Failed to stop ARC Upstart jobs";
-    HandleSetupFailure(
-        ArcVmDataMigrationScreenSetupFailure::kStopUpstartJobsFailure);
+    LOG(ERROR) << "Failed to stop ARCVM and ARCVM Upstart jobs";
+    HandleSetupFailure(ArcVmDataMigrationScreenSetupFailure::
+                           kStopArcVmAndArcVmUpstartJobsFailure);
     return;
   }
 
@@ -757,20 +690,6 @@ void ArcVmDataMigrationScreen::OnArcDataRemoved(bool success) {
                               arc::ArcVmDataMigrationStatus::kFinished);
   ReportEvent(ArcVmDataMigrationScreenEvent::kFailureScreenShown, resuming_);
   UpdateUIState(ArcVmDataMigrationScreenView::UIState::kFailure);
-}
-
-void ArcVmDataMigrationScreen::OnVmStarted(
-    const vm_tools::concierge::VmStartedSignal& signal) {}
-
-void ArcVmDataMigrationScreen::OnVmStopped(
-    const vm_tools::concierge::VmStoppedSignal& signal) {
-  if (signal.name() != arc::kArcVmName) {
-    return;
-  }
-
-  VLOG(1) << "ARCVM is stopped";
-  concierge_observation_.Reset();
-  StopArcUpstartJobs();
 }
 
 void ArcVmDataMigrationScreen::UpdateUIState(

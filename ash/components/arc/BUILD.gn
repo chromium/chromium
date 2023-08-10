@@ -224,6 +224,7 @@ static_library("arc_base_utils") {
     "//ash/public/cpp",
     "//base",
     "//chromeos/ash/components/dbus",
+    "//chromeos/ash/components/dbus/concierge:concierge",
     "//chromeos/ash/components/dbus/concierge:concierge_proto",
     "//chromeos/ash/components/dbus/debug_daemon",
     "//chromeos/ash/components/dbus/session_manager",
