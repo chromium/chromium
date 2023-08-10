@@ -729,8 +729,6 @@ crbug.com/1223542 [ chromeos chromeos-board-amd64-generic ] deqp/functional/gles
 
 
 
-
-
 crbug.com/1232106 [ chromeos chromeos-board-amd64-generic no-passthrough ] conformance/extensions/webgl-compressed-texture-astc.html [ Failure ]
 crbug.com/1232118 [ angle-opengles chromeos chromeos-board-amd64-generic passthrough ] conformance/uniforms/uniform-samplers-test.html [ Failure ]
 crbug.com/1238075 [ chromeos chromeos-board-amd64-generic ] conformance/rendering/gl-scissor-test.html [ Failure ]
@@ -753,6 +751,7 @@ crbug.com/angleproject/7904 [ chromeos chromeos-board-amd64-generic passthrough 
 
 crbug.com/angleproject/7904 [ chromeos lacros-chrome chromeos-board-octopus passthrough ] WebglExtension_WEBGL_clip_cull_distance [ Failure ]
 crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-octopus passthrough ] conformance2/textures/misc/immutable-tex-render-feedback.html [ Failure ]
+crbug.com/1471990 [ chromeos lacros-chrome chromeos-board-octopus passthrough ] conformance2/rendering/blitframebuffer-filter-outofbounds.html [ Failure ]
 
 crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] conformance/glsl/bugs/constant-precision-qualifier.html [ Failure ]
 crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] conformance/limits/gl-max-texture-dimensions.html [ Failure ]
