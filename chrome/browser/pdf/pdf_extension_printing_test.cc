@@ -284,6 +284,7 @@ class PDFExtensionBasicPrintingTest : public PDFExtensionPrintingTest {
   // PDFExtensionPrintingTest:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(switches::kDisablePrintPreview);
+    PDFExtensionPrintingTest::SetUpCommandLine(command_line);
   }
 };
 
