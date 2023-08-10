@@ -148,7 +148,8 @@ public class PasswordMigrationWarningView implements BottomSheetContent {
         if (mScreenType == ScreenType.INTRO_SCREEN) {
             String introScreenSubtitle =
                     mContext.getString(R.string.password_migration_warning_subtitle)
-                            .replace("%1$s", PasswordMigrationWarningUtil.getChannelString());
+                            .replace("%1$s",
+                                    PasswordMigrationWarningUtil.getChannelString(mContext));
             PasswordMigrationWarningIntroFragment introFragment =
                     new PasswordMigrationWarningIntroFragment(introScreenSubtitle,
                             ()
@@ -161,7 +162,8 @@ public class PasswordMigrationWarningView implements BottomSheetContent {
         } else if (mScreenType == ScreenType.OPTIONS_SCREEN) {
             String exportOptionSubtitle =
                     mContext.getString(R.string.password_migration_warning_password_export_subtitle)
-                            .replace("%1$s", PasswordMigrationWarningUtil.getChannelString());
+                            .replace("%1$s",
+                                    PasswordMigrationWarningUtil.getChannelString(mContext));
             PasswordMigrationWarningOptionsFragment optionsFragment =
                     new PasswordMigrationWarningOptionsFragment(exportOptionSubtitle,
                             mShouldOfferSync, mOnClickHandler,

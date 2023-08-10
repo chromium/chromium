@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.pwd_migration;
 
+import android.content.Context;
+
 import org.chromium.components.version_info.VersionInfo;
 
 /**
@@ -13,15 +15,15 @@ public class PasswordMigrationWarningUtil {
     /**
      * Returns the display name of the Chrome channel.
      */
-    public static String getChannelString() {
+    public static String getChannelString(Context context) {
         if (VersionInfo.isCanaryBuild()) {
-            return "Canary";
+            return context.getString(R.string.chrome_channel_name_canary);
         }
         if (VersionInfo.isDevBuild()) {
-            return "Dev";
+            return context.getString(R.string.chrome_channel_name_dev);
         }
         if (VersionInfo.isBetaBuild()) {
-            return "Beta";
+            return context.getString(R.string.chrome_channel_name_beta);
         }
         assert !VersionInfo.isStableBuild();
         return "";
