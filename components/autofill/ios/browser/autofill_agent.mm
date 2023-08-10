@@ -668,14 +668,14 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
           // On iOS, the keyboard accessory wants smaller icons than the default
           // 40x24 size, so we resize them to 32x20, if the provided icon is
           // larger than that.
-          constexpr CGSize kSuggestionIconSize(32, 20);
-          if (icon && (icon.size.width > kSuggestionIconSize.width)) {
-            UIGraphicsBeginImageContextWithOptions(kSuggestionIconSize, NO,
-                                                   0.0);
-            [icon drawInRect:CGRectMake(0, 0, kSuggestionIconSize.width,
-                                        kSuggestionIconSize.height)];
-            icon = UIGraphicsGetImageFromCurrentImageContext();
-            UIGraphicsEndImageContext();
+          constexpr CGFloat kSuggestionIconWidth = 32;
+          if (icon && (icon.size.width > kSuggestionIconWidth)) {
+            // For a simple image resize, we can keep the same underlying image
+            // and only adjust the ratio.
+            CGFloat ratio = icon.size.width / kSuggestionIconWidth;
+            icon = [UIImage imageWithCGImage:[icon CGImage]
+                                       scale:icon.scale * ratio
+                                 orientation:icon.imageOrientation];
           }
         } else if (!popup_suggestion.icon.empty()) {
           const int resourceID =
