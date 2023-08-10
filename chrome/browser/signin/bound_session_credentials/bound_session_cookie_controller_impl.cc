@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/time/time.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_observer.h"
@@ -31,18 +32,14 @@ BoundSessionCookieControllerImpl::BoundSessionCookieControllerImpl(
       storage_partition_(storage_partition),
       wait_for_network_callback_helper_(
           std::make_unique<WaitForNetworkCallbackHelperChrome>()) {
-  // TODO(b/273920907): Mark `wrapped_key` as non-optional when
-  // `BoundSessionCookieRefreshServiceImpl` uses only
-  // explicitly registered sessions.
+  CHECK(!registration_params.wrapped_key().empty());
   base::span<const uint8_t> wrapped_key =
       base::as_bytes(base::make_span(registration_params.wrapped_key()));
-  if (!wrapped_key.empty()) {
-    session_binding_helper_ = std::make_unique<SessionBindingHelper>(
-        key_service_.get(), wrapped_key, /*session_id=*/"");
-    // Preemptively load the binding key to speed up the generation of binding
-    // key assertion.
-    session_binding_helper_->MaybeLoadBindingKey();
-  }
+  session_binding_helper_ = std::make_unique<SessionBindingHelper>(
+      key_service_.get(), wrapped_key, /*session_id=*/"");
+  // Preemptively load the binding key to speed up the generation of binding
+  // key assertion.
+  session_binding_helper_->MaybeLoadBindingKey();
 }
 
 BoundSessionCookieControllerImpl::~BoundSessionCookieControllerImpl() {
