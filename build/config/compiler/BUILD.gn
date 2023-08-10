@@ -637,7 +637,7 @@ config("compiler") {
         cflags_cc += [ "-fno-trigraphs" ]
       }
     } else if (is_clang) {
-      if (use_cxx17) {
+      if (defined(use_cxx17) && use_cxx17) {
         cflags_cc += [ "-std=${standard_prefix}++17" ]
       } else {
         cflags_cc += [ "-std=${standard_prefix}++20" ]
@@ -649,7 +649,8 @@ config("compiler") {
     }
   } else if (is_win) {
     cflags_c += [ "/std:c11" ]
-    if (use_cxx17 || (!is_clang && defined(msvc_use_cxx17) && msvc_use_cxx17)) {
+    if ((defined(use_cxx17) && use_cxx17) ||
+        (!is_clang && defined(msvc_use_cxx17) && msvc_use_cxx17)) {
       cflags_cc += [ "/std:c++17" ]
     } else {
       cflags_cc += [ "/std:c++20" ]
@@ -662,7 +663,7 @@ config("compiler") {
     # clause, above.
     cflags_c += [ "-std=c11" ]
 
-    if (use_cxx17) {
+    if (defined(use_cxx17) && use_cxx17) {
       cflags_cc += [ "-std=c++17" ]
     } else {
       cflags_cc += [ "-std=c++20" ]
