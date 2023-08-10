@@ -11,7 +11,6 @@
 #include <cstdint>
 #include <iterator>
 #include <memory>
-#include <string>
 #include <utility>
 #include <vector>
 
@@ -35,9 +34,6 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/platform_thread.h"
 #include "base/values.h"
-#include "chrome/browser/ash/app_list/search/local_image_search/local_image_search_service.h"
-#include "chrome/browser/ash/app_list/search/local_image_search/local_image_search_service_factory.h"
-#include "chrome/browser/ash/app_list/search/search_features.h"
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_root.h"
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_root_map.h"
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_util.h"
@@ -95,7 +91,6 @@
 #include "content/public/common/url_constants.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_util.h"
-#include "private_api_file_system.h"
 #include "services/device/public/mojom/mtp_manager.mojom.h"
 #include "services/device/public/mojom/mtp_storage_info.mojom.h"
 #include "storage/browser/file_system/external_mount_points.h"
@@ -314,32 +309,6 @@ absl::optional<policy::Policy> ApiPolicyErrorTypeToChromeEnum(
   }
   NOTREACHED() << "Unknown policy error type " << type;
   return absl::nullopt;
-}
-
-// Handles a callback from the LocalImageSearchService. The job of this function
-// is to process the `matched` results and deliver them to the given callback.
-void OnImageSearchDone(
-    base::FilePath root_path,
-    base::Time modified_time,
-    size_t max_results,
-    FileManagerPrivateInternalSearchFilesFunction::OnResultsReadyCallback
-        callback,
-    const std::vector<app_list::FileSearchResult>& matched) {
-  std::vector<std::pair<base::FilePath, bool>> results;
-  for (const app_list::FileSearchResult& match : matched) {
-    DVLOG(1) << "File image search inspecting " << match.file_path;
-    if (!root_path.IsParent(match.file_path)) {
-      continue;
-    }
-    if (match.last_modified < modified_time) {
-      continue;
-    }
-    results.emplace_back(match.file_path, false);
-    if (results.size() >= max_results) {
-      break;
-    }
-  }
-  std::move(callback).Run(results);
 }
 
 }  // namespace
@@ -1465,15 +1434,8 @@ FileManagerPrivateInternalSearchFilesFunction::Run() {
     return RespondNow(Error("maxResults must be non-negative"));
   }
 
-  ash::RecentSource::FileType file_type;
-  if (!file_manager::util::ToRecentSourceFileType(search_params.category,
-                                                  &file_type)) {
-    return RespondNow(
-        Error("Cannot convert category * to file type",
-              api::file_manager_private::ToString(search_params.category)));
-  }
-
   base::FilePath root_path;
+
   Profile* profile = Profile::FromBrowserContext(browser_context());
   const std::string root_url = search_params.root_url.value_or("");
   if (root_url.empty()) {
@@ -1487,37 +1449,12 @@ FileManagerPrivateInternalSearchFilesFunction::Run() {
     root_path = url.path();
   }
 
-  size_t max_results =
-      base::internal::checked_cast<size_t>(search_params.max_results);
-  base::Time modified_time =
-      base::Time::FromJsTime(search_params.modified_timestamp);
+  ash::RecentSource::FileType file_type;
+  if (!file_manager::util::ToRecentSourceFileType(search_params.category,
+                                                  &file_type)) {
+    return RespondNow(Error("Cannot convert category to file type"));
+  }
 
-  // Barrier that collects results from the file search by name and image
-  // search by (query) terms. Explicitly waits for 2 tasks to complete.
-  auto barrier_callback = base::BarrierCallback<FileSearchResults>(
-      2,
-      base::BindOnce(
-          &FileManagerPrivateInternalSearchFilesFunction::OnSearchByPatternDone,
-          this));
-
-  RunFileSearchByName(profile, root_path, search_params.query, modified_time,
-                      file_type, max_results, barrier_callback);
-  RunImageSearchByQuery(root_path, search_params.query, modified_time,
-                        max_results, barrier_callback);
-
-  return RespondLater();
-}
-
-void FileManagerPrivateInternalSearchFilesFunction::RunFileSearchByName(
-    Profile* profile,
-    base::FilePath root_path,
-    const std::string& query,
-    base::Time modified_time,
-    ash::RecentSource::FileType file_type,
-    size_t max_results,
-    OnResultsReadyCallback callback) {
-  // If trash is enabled for the given profile, generate all trash paths that
-  // are to be excluded when searching for matching files.
   std::vector<base::FilePath> excluded_paths;
   if (file_manager::trash::IsTrashEnabledForProfile((profile))) {
     auto enabled_trash_locations =
@@ -1528,51 +1465,24 @@ void FileManagerPrivateInternalSearchFilesFunction::RunFileSearchByName(
           it.first.Append(it.second.relative_folder_path));
     }
   }
+
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(&SearchByPattern, root_path, excluded_paths, query,
-                     modified_time, file_type, max_results),
-      std::move(callback));
-}
+      base::BindOnce(
+          &SearchByPattern, root_path, excluded_paths, search_params.query,
+          base::Time::FromJsTime(search_params.modified_timestamp), file_type,
+          base::internal::checked_cast<size_t>(search_params.max_results)),
+      base::BindOnce(
+          &FileManagerPrivateInternalSearchFilesFunction::OnSearchByPatternDone,
+          this));
 
-void FileManagerPrivateInternalSearchFilesFunction::RunImageSearchByQuery(
-    base::FilePath root_path,
-    const std::string& query,
-    base::Time modified_time,
-    size_t max_results,
-    OnResultsReadyCallback callback) {
-  // If the feature is not enabled or the query is too short return empty match.
-  std::u16string q16 = base::UTF8ToUTF16(query);
-  if (!search_features::IsLauncherImageSearchEnabled() ||
-      app_list::IsQueryTooShort(q16)) {
-    std::move(callback).Run({});
-    return;
-  }
-
-  app_list::LocalImageSearchServiceFactory::GetForBrowserContext(
-      browser_context())
-      ->Search(q16, base::BindOnce(&OnImageSearchDone, root_path, modified_time,
-                                   max_results, std::move(callback)));
+  return RespondLater();
 }
 
 void FileManagerPrivateInternalSearchFilesFunction::OnSearchByPatternDone(
-    std::vector<FileSearchResults> all_results) {
-  // Remove duplicates as image search and name search do not interact with each
-  // other.
-  FileSearchResults unique_results;
-  std::set<base::FilePath> found;
-  for (const auto& results : all_results) {
-    for (const auto& [file_path, is_directory] : results) {
-      if (base::Contains(found, file_path)) {
-        continue;
-      }
-      found.insert(file_path);
-      unique_results.emplace_back(file_path, is_directory);
-    }
-  }
-
+    const std::vector<std::pair<base::FilePath, bool>>& results) {
   base::Value::List entries;
-  for (const auto& result : unique_results) {
+  for (const auto& result : results) {
     std::string mount_name;
     std::string file_system_name;
     std::string full_path;

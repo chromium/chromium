@@ -172,9 +172,6 @@ class FileManagerBrowserTestBase
     // Whether tests should enable V2 of search.
     bool enable_search_v2 = false;
 
-    // Whether tests should enable image content search.
-    bool enable_image_content_search = false;
-
     // Whether tests should enable OS Feedback.
     bool enable_os_feedback = false;
 

@@ -279,11 +279,6 @@ struct TestCase {
     return *this;
   }
 
-  TestCase& EnableImageContentSearch() {
-    options.enable_image_content_search = true;
-    return *this;
-  }
-
   std::string GetFullName() const {
     std::string full_name = name;
 
@@ -2447,10 +2442,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("searchDocumentsProviderWithRecencyOptions")
             .EnableGenericDocumentsProvider()
             .EnableSearchV2(),
-        TestCase("searchFileSystemProvider").EnableSearchV2(),
-        TestCase("searchImageByContent")
-            .EnableImageContentSearch()
-            .EnableSearchV2()
+        TestCase("searchFileSystemProvider").EnableSearchV2()
         // TODO(b/189173190): Enable
         // TestCase("searchQueryLaunchParam")
         ));
