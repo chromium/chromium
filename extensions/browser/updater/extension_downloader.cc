@@ -161,6 +161,38 @@ bool IncrementAuthUserIndex(GURL* url) {
   return true;
 }
 
+// This sanitizes update urls used to fetch update manifests for extensions.
+absl::optional<GURL> SanitizeUpdateURL(const std::string& extension_id,
+                                       const GURL& update_url) {
+  if (update_url.is_empty()) {
+    // Fill in default update URL.
+    return extension_urls::GetWebstoreUpdateUrl();
+  }
+
+  // Skip extensions with non-empty invalid update URLs.
+  if (!update_url.is_valid()) {
+    DLOG(WARNING) << "Extension " << extension_id << " has invalid update url "
+                  << update_url;
+    return absl::nullopt;
+  }
+
+  // Don't handle data URLs, since they don't support query parameters.
+  if (update_url.SchemeIs(url::kDataScheme)) {
+    DLOG(WARNING) << "Extension " << extension_id
+                  << " has unsupported data: URI scheme in update url "
+                  << update_url;
+    return absl::nullopt;
+  }
+
+  // Make sure we use SSL for store-hosted extensions.
+  if (extension_urls::IsWebstoreUpdateUrl(update_url) &&
+      !update_url.SchemeIsCryptographic()) {
+    return extension_urls::GetWebstoreUpdateUrl();
+  }
+
+  return update_url;
+}
+
 }  // namespace
 
 const char ExtensionDownloader::kUpdateInteractivityHeader[] =
@@ -381,19 +413,6 @@ ManifestFetchData* ExtensionDownloader::GetActiveManifestFetchForTesting() {
 }
 
 bool ExtensionDownloader::AddExtensionData(ExtensionDownloaderTask task) {
-  // Skip extensions with non-empty invalid update URLs.
-  if (!task.update_url.is_empty() && !task.update_url.is_valid()) {
-    DLOG(WARNING) << "Extension " << task.id << " has invalid update url "
-                  << task.update_url;
-    task.OnStageChanged(ExtensionDownloaderDelegate::Stage::FINISHED);
-    return false;
-  }
-
-  // Make sure we use SSL for store-hosted extensions.
-  if (extension_urls::IsWebstoreUpdateUrl(task.update_url) &&
-      !task.update_url.SchemeIsCryptographic())
-    task.update_url = extension_urls::GetWebstoreUpdateUrl();
-
   // Skip extensions with empty IDs.
   if (task.id.empty()) {
     DLOG(WARNING) << "Found extension with empty ID";
@@ -401,10 +420,13 @@ bool ExtensionDownloader::AddExtensionData(ExtensionDownloaderTask task) {
     return false;
   }
 
-  if (task.update_url.is_empty()) {
-    // Fill in default update URL.
-    task.update_url = extension_urls::GetWebstoreUpdateUrl();
+  absl::optional<GURL> sanitized_update_url =
+      SanitizeUpdateURL(task.id, task.update_url);
+  if (!sanitized_update_url) {
+    task.OnStageChanged(ExtensionDownloaderDelegate::Stage::FINISHED);
+    return false;
   }
+  task.update_url = *sanitized_update_url;
 
   DCHECK(!task.update_url.is_empty());
   DCHECK(task.update_url.is_valid());

@@ -430,6 +430,11 @@ TEST_F(ExtensionDownloaderTest, TestUpdateURLHandle) {
       CreateDownloaderTask(kTestExtensionId, GURL("http://?invalid=url")));
   EXPECT_EQ(0u, tasks.size());
 
+  // data: URL, shouldn't be added at all.
+  helper.downloader().AddPendingExtension(
+      CreateDownloaderTask(kTestExtensionId, GURL("data:,")));
+  EXPECT_EQ(0u, tasks.size());
+
   // Clear pending queue to check it.
   helper.downloader().StartAllPending(nullptr);
   // HTTP Webstore URL, should be replaced with HTTPS.
