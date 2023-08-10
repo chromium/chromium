@@ -239,21 +239,23 @@ void DriveOfflineSizeCalculator::PerformCalculation() {
     return;
   }
 
-  drive::DriveIntegrationService* integration_service =
-      drive::DriveIntegrationServiceFactory::FindForProfile(profile_);
-
-  if (!integration_service) {
-    NotifySizeCalculated(-1);
+  drive::DriveIntegrationService* const service =
+      drive::util::GetIntegrationServiceByProfile(profile_);
+  if (!service) {
+    NotifySizeCalculated(0);
     return;
   }
 
-  integration_service->GetTotalPinnedSize(
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+      base::BindOnce(&drive::util::ComputeDriveFsContentCacheSize,
+                     service->GetDriveFsContentCachePath()),
       base::BindOnce(&DriveOfflineSizeCalculator::OnGetOfflineItemsSize,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
 void DriveOfflineSizeCalculator::OnGetOfflineItemsSize(int64_t offline_bytes) {
-  NotifySizeCalculated(offline_bytes);
+  NotifySizeCalculated(offline_bytes > 0 ? offline_bytes : 0);
 }
 
 MyFilesSizeCalculator::MyFilesSizeCalculator(Profile* profile)

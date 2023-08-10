@@ -899,6 +899,10 @@ base::FilePath DriveIntegrationService::GetDriveFsLogPath() const {
   return GetDriveFsHost()->GetDataPath().Append("Logs/drivefs.txt");
 }
 
+base::FilePath DriveIntegrationService::GetDriveFsContentCachePath() const {
+  return GetDriveFsHost()->GetDataPath().Append("content_cache");
+}
+
 bool DriveIntegrationService::GetRelativeDrivePath(
     const base::FilePath& local_path,
     base::FilePath* drive_path) const {

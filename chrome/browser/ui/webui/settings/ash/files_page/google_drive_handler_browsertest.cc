@@ -5,12 +5,16 @@
 #include <initializer_list>
 
 #include "ash/constants/ash_features.h"
+#include "base/files/file_util.h"
+#include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/threading/thread_restrictions.h"
 #include "chrome/browser/ash/drive/drive_integration_service_browser_test_base.h"
+#include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -186,38 +190,31 @@ IN_PROC_BROWSER_TEST_F(GoogleDriveHandlerTest,
 
 IN_PROC_BROWSER_TEST_F(GoogleDriveHandlerTest,
                        TotalPinnedSizeUpdatesValueOnElement) {
-  SetUpSearchResultExpectations();
-
   // Mock no search results are returned (this avoids the call to
   // `CalculateRequiredSpace` from being ran here).
   fake_search_query_.SetSearchResults({});
-  ash::FakeSpacedClient::Get()->set_free_disk_space(1024 * 1024 * 1024);
+  ash::FakeSpacedClient::Get()->set_free_disk_space(int64_t(3) << 30);
 
-  int64_t pinned_size = 1024 * 1024;
-  auto* fake_drivefs = GetFakeDriveFsForProfile(browser()->profile());
-  EXPECT_CALL(*fake_drivefs, GetOfflineFilesSpaceUsage(_))
-      .WillRepeatedly(RunOnceCallback<0>(drive::FILE_ERROR_OK, pinned_size));
+  constexpr int file_size_in_bytes = 32;
+  auto* const service =
+      drive::util::GetIntegrationServiceByProfile(browser()->profile());
+  {
+    // Ensure the content cache directory exists.
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    ASSERT_TRUE(base::CreateDirectory(service->GetDriveFsContentCachePath()));
+  }
+  std::string foo_contents = base::RandBytesAsString(file_size_in_bytes);
+  const base::FilePath file_path =
+      service->GetDriveFsContentCachePath().Append("foo.txt");
+  {
+    // Create a file of 32 bytes in the content_cache directory.
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    ASSERT_TRUE(base::WriteFile(file_path, foo_contents));
+  }
 
   auto google_drive_settings = OpenGoogleDriveSettings();
   google_drive_settings.AssertBulkPinningPinnedSize(
-      FormatBytesToString(pinned_size));
-}
-
-IN_PROC_BROWSER_TEST_F(GoogleDriveHandlerTest,
-                       InvalidSizeUpdatesRemainingSizeToUnknown) {
-  SetUpSearchResultExpectations();
-
-  // Mock no search results are returned (this avoids the call to
-  // `CalculateRequiredSpace` from being ran here).
-  fake_search_query_.SetSearchResults({});
-  ash::FakeSpacedClient::Get()->set_free_disk_space(1024 * 1024 * 1024);
-
-  auto* fake_drivefs = GetFakeDriveFsForProfile(browser()->profile());
-  EXPECT_CALL(*fake_drivefs, GetOfflineFilesSpaceUsage(_))
-      .WillRepeatedly(RunOnceCallback<0>(drive::FILE_ERROR_OK, -1));
-
-  auto google_drive_settings = OpenGoogleDriveSettings();
-  google_drive_settings.AssertBulkPinningPinnedSize("unknown");
+      FormatBytesToString(file_size_in_bytes));
 }
 
 IN_PROC_BROWSER_TEST_F(GoogleDriveHandlerTest,
@@ -227,17 +224,7 @@ IN_PROC_BROWSER_TEST_F(GoogleDriveHandlerTest,
   // Mock no search results are returned (this avoids the call to
   // `CalculateRequiredSpace` from being ran here).
   fake_search_query_.SetSearchResults({});
-  ash::FakeSpacedClient::Get()->set_free_disk_space(1024 * 1024 * 1024);
-
-  int64_t pinned_size = 1024 * 1024;
-  auto* fake_drivefs = GetFakeDriveFsForProfile(browser()->profile());
-  {
-    InSequence s;
-    EXPECT_CALL(*fake_drivefs, GetOfflineFilesSpaceUsage(_))
-        .WillOnce(RunOnceCallback<0>(drive::FILE_ERROR_OK, pinned_size));
-    EXPECT_CALL(*fake_drivefs, GetOfflineFilesSpaceUsage(_))
-        .WillRepeatedly(RunOnceCallback<0>(drive::FILE_ERROR_OK, 0));
-  }
+  ash::FakeSpacedClient::Get()->set_free_disk_space(int64_t(3) << 30);
 
   auto google_drive_settings = OpenGoogleDriveSettings();
   google_drive_settings.ClickClearOfflineFilesAndAssertNewSize(

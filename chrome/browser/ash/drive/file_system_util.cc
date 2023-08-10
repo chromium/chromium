@@ -15,7 +15,9 @@
 #include "ash/constants/ash_switches.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/escape.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
@@ -181,6 +183,25 @@ bool IsPinnableGDocMimeType(const std::string& mime_type) {
   };
 
   return base::Contains(kPinnableGDocMimeTypes, mime_type);
+}
+
+int64_t ComputeDriveFsContentCacheSize(
+    const base::FilePath& content_cache_path) {
+  int64_t running_size = 0;
+  base::FileEnumerator file_iter(content_cache_path,
+                                 /*recursive=*/true,
+                                 base::FileEnumerator::FILES);
+  while (!file_iter.Next().empty()) {
+    const base::FileEnumerator::FileInfo& file_info = file_iter.GetInfo();
+
+    // Ignore the `chunks.db*` files when calculating the size of the content
+    // cache.
+    if (base::StartsWith(file_info.GetName().value(), "chunks.db")) {
+      continue;
+    }
+    running_size += file_info.GetSize();
+  }
+  return running_size;
 }
 
 }  // namespace drive::util

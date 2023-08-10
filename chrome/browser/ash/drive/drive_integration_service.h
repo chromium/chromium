@@ -166,6 +166,9 @@ class DriveIntegrationService : public KeyedService,
   // Returns the path of DriveFS log if enabled or empty path.
   base::FilePath GetDriveFsLogPath() const;
 
+  // Returns the path of the DriveFs content cache.
+  base::FilePath GetDriveFsContentCachePath() const;
+
   // Returns true if |local_path| resides inside |GetMountPointPath()|.
   // In this case |drive_path| will contain 'drive' path of this file, e.g.
   // reparented to the mount point.

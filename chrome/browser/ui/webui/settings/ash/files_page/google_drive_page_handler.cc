@@ -5,7 +5,10 @@
 #include "chrome/browser/ui/webui/settings/ash/files_page/google_drive_page_handler.h"
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ui/webui/settings/ash/files_page/mojom/google_drive_handler.mojom.h"
 #include "chromeos/ash/components/drivefs/drivefs_pin_manager.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
@@ -100,21 +103,21 @@ void GoogleDrivePageHandler::GetTotalPinnedSize(
     return;
   }
 
-  // If Drive crashes, this callback may not get invoked so in that instance
-  // ensure it gets invoked with "-1" to signal an error case.
-  auto on_total_pinned_size_callback =
-      mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-          base::BindOnce(&GoogleDrivePageHandler::OnGetTotalPinnedSize,
-                         weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
-          /*size=*/-1);
-  GetDriveService()->GetTotalPinnedSize(
-      std::move(on_total_pinned_size_callback));
+  const base::FilePath content_cache_path =
+      GetDriveService()->GetDriveFsContentCachePath();
+
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+      base::BindOnce(&drive::util::ComputeDriveFsContentCacheSize,
+                     content_cache_path),
+      base::BindOnce(&GoogleDrivePageHandler::OnGetTotalPinnedSize,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void GoogleDrivePageHandler::OnGetTotalPinnedSize(
     GetTotalPinnedSizeCallback callback,
     int64_t size) {
-  if (size == -1) {
+  if (size < 0) {
     std::move(callback).Run(absl::nullopt);
     return;
   }
