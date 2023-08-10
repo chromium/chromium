@@ -25,6 +25,7 @@
 #include "components/user_manager/common_types.h"
 #include "components/user_manager/known_user.h"
 #include "dbus/message.h"
+#include "extensions/common/extension_id.h"
 #include "net/base/net_errors.h"
 #include "third_party/boringssl/src/include/openssl/ssl.h"
 #include "third_party/cros_system_api/dbus/cryptohome/dbus-constants.h"
@@ -140,7 +141,7 @@ void HandleSignatureKeyChallenge(
   }
 
   std::vector<uint16_t> supported_ssl_algorithms;
-  std::string extension_id_ignored;
+  extensions::ExtensionId extension_id_ignored;
   if (!certificate_provider_service->LookUpSpki(
           challenge_request_data.public_key_spki_der(),
           &supported_ssl_algorithms, &extension_id_ignored)) {
