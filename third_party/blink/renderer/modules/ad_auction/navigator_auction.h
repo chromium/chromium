@@ -174,6 +174,10 @@ class MODULES_EXPORT NavigatorAuction final
   bool canLoadAdAuctionFencedFrame(ScriptState*);
   static bool canLoadAdAuctionFencedFrame(ScriptState*, Navigator&);
 
+  // Expose whether kFledgeEnforceKAnonymity feature is enabled or not.
+  static bool deprecatedRunAdAuctionEnforcesKAnonymity(ScriptState*,
+                                                       Navigator&);
+
   void Trace(Visitor* visitor) const override {
     visitor->Trace(ad_auction_service_);
     Supplement<Navigator>::Trace(visitor);

@@ -5,6 +5,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <cstddef>
 #include <sstream>
 #include <string>
 #include <tuple>
@@ -16,6 +17,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "base/json/json_reader.h"
@@ -85,6 +87,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/interest_group/ad_auction_constants.h"
 #include "third_party/blink/public/common/interest_group/ad_display_size_utils.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
@@ -15141,6 +15144,80 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, AuctionNonceIsValid) {
       https_server_->GetURL("a.test", "/interest_group/decision_logic.js"),
       auction_nonce);
   RunAuctionAndWaitForURLAndNavigateIframe(auction_config, ad_url);
+}
+
+class InterestGroupKAnonmityEnforcedBrowserTest
+    : public InterestGroupBrowserTest {
+ public:
+  InterestGroupKAnonmityEnforcedBrowserTest() {
+    feature_list_.InitWithFeatures({blink::features::kEnforceAnonymityExposure,
+                                    blink::features::kFledgeEnforceKAnonymity},
+                                   {});
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(InterestGroupKAnonmityEnforcedBrowserTest,
+                       DeprecatedKAnonEnforced) {
+  GURL url = https_server_->GetURL("a.test", "/echo");
+  ASSERT_TRUE(NavigateToURL(shell(), url));
+  std::string script = R"(
+(function() {
+  return navigator.deprecatedRunAdAuctionEnforcesKAnonymity;
+})())";
+
+  EXPECT_EQ(true, EvalJs(shell(), script).ExtractBool());
+}
+
+class InterestGroupKAnonmityNotEnforcedBrowserTest
+    : public InterestGroupBrowserTest {
+ public:
+  InterestGroupKAnonmityNotEnforcedBrowserTest() {
+    feature_list_.InitWithFeatures({blink::features::kEnforceAnonymityExposure},
+                                   {blink::features::kFledgeEnforceKAnonymity});
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(InterestGroupKAnonmityNotEnforcedBrowserTest,
+                       DeprecatedKAnonNotEnforced) {
+  GURL url = https_server_->GetURL("a.test", "/echo");
+  ASSERT_TRUE(NavigateToURL(shell(), url));
+  std::string script = R"(
+(function() {
+  return navigator.deprecatedRunAdAuctionEnforcesKAnonymity;
+})())";
+
+  EXPECT_EQ(false, EvalJs(shell(), script).ExtractBool());
+}
+
+class InterestGroupKAnonmityEnforceAnonymityExposureDisabledTest
+    : public InterestGroupBrowserTest {
+ public:
+  InterestGroupKAnonmityEnforceAnonymityExposureDisabledTest() {
+    feature_list_.InitWithFeatures(
+        {}, {blink::features::kEnforceAnonymityExposure});
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    InterestGroupKAnonmityEnforceAnonymityExposureDisabledTest,
+    EnforceAnonymityExposureDisabled) {
+  GURL url = https_server_->GetURL("a.test", "/echo");
+  ASSERT_TRUE(NavigateToURL(shell(), url));
+  std::string script = R"(
+(function() {
+  return navigator.deprecatedRunAdAuctionEnforcesKAnonymity;
+})())";
+
+  EXPECT_EQ(nullptr, EvalJs(shell(), script));
 }
 
 class InterestGroupBiddingAndAuctionServerRestrictedPermissionsPolicyBrowserTest

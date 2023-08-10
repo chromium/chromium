@@ -1463,6 +1463,10 @@
       status: "experimental",
     },
     {
+      name: "EnforceAnonymityExposure",
+      status: "stable",
+    },
+    {
       // Experiment with preventing some instances of mutation XSS
       // by escaping "<" and ">" in attribute values.
       // See: crbug.com/1175016

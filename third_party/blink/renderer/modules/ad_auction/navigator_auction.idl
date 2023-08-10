@@ -51,4 +51,7 @@ typedef (USVString or FencedFrameConfig) UrnOrConfig;
 
   [RuntimeEnabled=FencedFrames, CallWith=ScriptState]
   boolean canLoadAdAuctionFencedFrame();
+
+  [RuntimeEnabled=EnforceAnonymityExposure, CallWith=ScriptState]
+  readonly attribute boolean deprecatedRunAdAuctionEnforcesKAnonymity;
 };

@@ -3728,6 +3728,13 @@ bool NavigatorAuction::canLoadAdAuctionFencedFrame(ScriptState* script_state,
       .canLoadAdAuctionFencedFrame(script_state);
 }
 
+bool NavigatorAuction::deprecatedRunAdAuctionEnforcesKAnonymity(
+    ScriptState* script_state,
+    Navigator&) {
+  return base::FeatureList::IsEnabled(
+      blink::features::kFledgeEnforceKAnonymity);
+}
+
 ScriptPromise NavigatorAuction::getInterestGroupAdAuctionData(
     ScriptState* script_state,
     const AdAuctionDataConfig* config,
