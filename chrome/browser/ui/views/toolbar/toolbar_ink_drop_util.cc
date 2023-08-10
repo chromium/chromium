@@ -97,6 +97,12 @@ void ConfigureToolbarInkdropForRefresh2023(
     const ChromeColorIds ripple_color_id) {
   CHECK(features::IsChromeRefresh2023());
   views::InkDrop::Get(host)->SetLayerRegion(views::LayerRegion::kAbove);
+  CreateToolbarInkdropCallbacks(host, hover_color_id, ripple_color_id);
+}
+
+void CreateToolbarInkdropCallbacks(views::View* const host,
+                                   const ChromeColorIds hover_color_id,
+                                   const ChromeColorIds ripple_color_id) {
   views::InkDrop::Get(host)->SetCreateRippleCallback(base::BindRepeating(
       [](views::View* host, ChromeColorIds ripple_color_id)
           -> std::unique_ptr<views::InkDropRipple> {

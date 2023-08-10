@@ -33,4 +33,10 @@ void ConfigureToolbarInkdropForRefresh2023(views::View* host,
                                            ChromeColorIds hover_color_id,
                                            ChromeColorIds ripple_color_id);
 
+// Sets the highlight color callback and ripple color callback for the inkdrop
+// of the host.
+void CreateToolbarInkdropCallbacks(views::View* host,
+                                   ChromeColorIds hover_color_id,
+                                   ChromeColorIds ripple_color_id);
+
 #endif  // CHROME_BROWSER_UI_VIEWS_TOOLBAR_TOOLBAR_INK_DROP_UTIL_H_

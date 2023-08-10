@@ -38,6 +38,10 @@ TabStripControlButton::TabStripControlButton(TabStrip* tab_strip,
   SetFocusRingCornerRadius(28);
   SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
 
+  views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
+  if (features::IsChromeRefresh2023()) {
+    views::InkDrop::Get(this)->SetLayerRegion(views::LayerRegion::kAbove);
+  }
   UpdateInkDrop();
   views::FocusRing::Get(this)->SetColorId(kColorNewTabButtonFocusRing);
 }
@@ -70,10 +74,8 @@ void TabStripControlButton::UpdateInkDrop() {
     return;
   }
 
-  views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
-
   if (features::IsChromeRefresh2023()) {
-    return ConfigureToolbarInkdropForRefresh2023(
+    return CreateToolbarInkdropCallbacks(
         this, kColorTabStripControlButtonInkDrop,
         kColorTabStripControlButtonInkDropRipple);
 
