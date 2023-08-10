@@ -12,19 +12,11 @@
 // Consumer for consistency default account.
 @protocol ConsistencyDefaultAccountConsumer <NSObject>
 
-// Informs the consumer whether the sync-transport layer got completely nuked
-// by the SyncDisabled policy. Notice this is different from disabling all types
-// via the SyncTypesListDisabled policy. The latter maps to the
-// user-controllable toggles (syncer::UserSelectableType) but some functionality
-// isn't gated behind those toggles, e.g. send-tab-to-self. Those features would
-// be disabled by SyncDisabled but not SyncTypesListDisabled. All that to say:
-// this setter can't be bundled with setSyncTypesDisabledByPolicy below.
-- (void)setSyncTransportDisabledByPolicy:(BOOL)disabled;
+// Sets the label text. It's fine to pass nil if there's supposed to be none.
+- (void)setLabelText:(NSString*)text;
 
-// Informs the consumer whether individual sync types got disabled by the
-// SyncTypesListDisabled enterprise policy. See also the comment in
-// setSyncTransportDisabledByPolicy.
-- (void)setSyncTypesDisabledByPolicy:(syncer::UserSelectableTypeSet)types;
+// Sets the text in the button that aborts the flow.
+- (void)setSkipButtonText:(NSString*)text;
 
 // Updates the user information, and show the default account.
 - (void)showDefaultAccountWithFullName:(NSString*)fullName

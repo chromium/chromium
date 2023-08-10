@@ -14,10 +14,6 @@
 @class ConsistencyDefaultAccountViewController;
 @protocol ConsistencyLayoutDelegate;
 
-namespace signin_metrics {
-enum class AccessPoint : int;
-}
-
 // Delegate protocol for ConsistencyDefaultAccountViewController.
 @protocol ConsistencyDefaultAccountActionDelegate <NSObject>
 
@@ -41,8 +37,6 @@ enum class AccessPoint : int;
 @interface ConsistencyDefaultAccountViewController
     : UIViewController <ChildConsistencySheetViewController,
                         ConsistencyDefaultAccountConsumer>
-
-- (instancetype)initWithAccessPoint:(signin_metrics::AccessPoint)accessPoint;
 
 // Delegate for all the user actions.
 @property(nonatomic, weak) id<ConsistencyDefaultAccountActionDelegate>

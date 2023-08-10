@@ -48,11 +48,11 @@
       initWithAccountManagerService:ChromeAccountManagerServiceFactory::
                                         GetForBrowserState(browserState)
                         syncService:SyncServiceFactory::GetForBrowserState(
-                                        browserState)];
+                                        browserState)
+                        accessPoint:self.accessPoint];
   self.mediator.delegate = self;
   self.defaultAccountViewController =
-      [[ConsistencyDefaultAccountViewController alloc]
-          initWithAccessPoint:self.accessPoint];
+      [[ConsistencyDefaultAccountViewController alloc] init];
   self.mediator.consumer = self.defaultAccountViewController;
   self.defaultAccountViewController.actionDelegate = self;
   self.defaultAccountViewController.layoutDelegate = self.layoutDelegate;
