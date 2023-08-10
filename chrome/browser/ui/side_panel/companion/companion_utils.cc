@@ -14,12 +14,16 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/lens/lens_features.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
 
 namespace companion {
 
 bool IsCompanionFeatureEnabled() {
+  if (!base::FeatureList::IsEnabled(lens::features::kLensStandalone)) {
+    return false;
+  }
   return base::FeatureList::IsEnabled(
              features::internal::kSidePanelCompanion) ||
          base::FeatureList::IsEnabled(
