@@ -29,6 +29,7 @@
 #include "third_party/abseil-cpp/absl/strings/ascii.h"
 #include "third_party/blink/public/common/loader/resource_type_util.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 using extensions::PermissionsData;
 

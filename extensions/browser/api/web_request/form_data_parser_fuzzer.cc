@@ -12,7 +12,6 @@
 #include <fuzzer/FuzzedDataProvider.h>
 
 #include "base/logging.h"
-#include "base/strings/string_piece.h"
 #include "extensions/browser/api/web_request/form_data_parser.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_util.h"

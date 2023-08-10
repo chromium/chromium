@@ -5,7 +5,6 @@
 #ifndef EXTENSIONS_BROWSER_API_WEB_REQUEST_WEB_REQUEST_TIME_TRACKER_H_
 #define EXTENSIONS_BROWSER_API_WEB_REQUEST_WEB_REQUEST_TIME_TRACKER_H_
 
-#include <stddef.h>
 #include <stdint.h>
 
 #include <map>

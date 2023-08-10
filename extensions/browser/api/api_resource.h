@@ -6,7 +6,6 @@
 #define EXTENSIONS_BROWSER_API_API_RESOURCE_H_
 
 #include "content/public/browser/browser_thread.h"
-#include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
 
 namespace extensions {
