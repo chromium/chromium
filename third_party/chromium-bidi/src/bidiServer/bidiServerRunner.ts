@@ -53,9 +53,11 @@ export class BidiServerRunner {
   run(
     bidiPort: number,
     onNewBidiConnectionOpen: (
-      bidiServer: ITransport
+      bidiServer: ITransport,
+      args?: string[]
     ) => Promise<() => void> | (() => void)
   ) {
+    let jsonBody: any;
     const server = http.createServer(
       async (request: http.IncomingMessage, response: http.ServerResponse) => {
         debugInternal(
@@ -67,20 +69,30 @@ export class BidiServerRunner {
 
         // https://w3c.github.io/webdriver-bidi/#transport, step 2.
         if (request.url === '/session') {
-          response.writeHead(200, {
-            'Content-Type': 'application/json;charset=utf-8',
-            'Cache-Control': 'no-cache',
-          });
-          response.write(
-            JSON.stringify({
-              value: {
-                sessionId: '1',
-                capabilities: {
-                  webSocketUrl: `ws://localhost:${bidiPort}`,
-                },
-              },
+          const body: Uint8Array[] = [];
+          request
+            .on('data', (chunk) => {
+              body.push(chunk);
             })
-          );
+            .on('end', () => {
+              jsonBody = JSON.parse(Buffer.concat(body).toString());
+              response.writeHead(200, {
+                'Content-Type': 'application/json;charset=utf-8',
+                'Cache-Control': 'no-cache',
+              });
+              response.write(
+                JSON.stringify({
+                  value: {
+                    sessionId: '1',
+                    capabilities: {
+                      webSocketUrl: `ws://localhost:${bidiPort}`,
+                    },
+                  },
+                })
+              );
+              return response.end();
+            });
+          return;
         } else if (request.url.startsWith('/session')) {
           debugInternal(
             `Unknown session command ${
@@ -126,11 +138,16 @@ export class BidiServerRunner {
     });
 
     wsServer.on('request', async (request: websocket.request) => {
+      const chromeOptions =
+        jsonBody?.capabilities?.alwaysMatch?.['goog:chromeOptions'];
       debugInternal('new WS request received:', request.resourceURL.path);
 
       const bidiServer = new BidiServer();
 
-      const onBidiConnectionClosed = await onNewBidiConnectionOpen(bidiServer);
+      const onBidiConnectionClosed = await onNewBidiConnectionOpen(
+        bidiServer,
+        chromeOptions?.args
+      );
 
       const connection = request.accept();
 

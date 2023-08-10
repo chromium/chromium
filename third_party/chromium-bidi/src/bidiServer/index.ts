@@ -82,8 +82,14 @@ function parseArguments(): {
 
     debugInfo('Launching BiDi server...');
 
-    new BidiServerRunner().run(port, (bidiServer) => {
-      return onNewBidiConnectionOpen(channel, headless, bidiServer, verbose);
+    new BidiServerRunner().run(port, (bidiServer, chromeArgs) => {
+      return onNewBidiConnectionOpen(
+        channel,
+        headless,
+        bidiServer,
+        verbose,
+        chromeArgs
+      );
     });
     debugInfo('BiDi server launched');
   } catch (e) {
@@ -104,7 +110,8 @@ async function onNewBidiConnectionOpen(
   channel: ChromeReleaseChannel,
   headless: boolean,
   bidiTransport: ITransport,
-  verbose: boolean
+  verbose: boolean,
+  chromeArgs?: string[]
 ) {
   // 1. Launch the browser using @puppeteer/browsers.
   const profileDir = await mkdtemp(
@@ -127,6 +134,9 @@ async function onNewBidiConnectionOpen(
     '--use-mock-keychain',
     `--user-data-dir=${profileDir}`,
     // keep-sorted end
+    ...(chromeArgs
+      ? chromeArgs.filter((arg) => !arg.startsWith('--headless'))
+      : []),
     'about:blank',
   ];
 
