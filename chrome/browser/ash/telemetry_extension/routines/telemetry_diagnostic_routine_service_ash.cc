@@ -9,6 +9,7 @@
 
 #include "base/allocator/partition_allocator/pointers/raw_ptr.h"
 #include "base/functional/bind.h"
+#include "chrome/browser/ash/telemetry_extension/common/telemetry_extension_converters.h"
 #include "chrome/browser/ash/telemetry_extension/routines/routine_control.h"
 #include "chrome/browser/ash/telemetry_extension/routines/routine_converters.h"
 #include "chrome/browser/ash/telemetry_extension/routines/routine_events_forwarder.h"
@@ -121,6 +122,22 @@ void TelemetryDiagnosticsRoutineServiceAsh::CreateRoutine(
       ->CreateRoutine(
           converters::ConvertRoutinePtr(std::move(routine_argument)),
           std::move(cros_healthd_receiver), std::move(cros_healthd_observer));
+}
+
+void TelemetryDiagnosticsRoutineServiceAsh::IsRoutineArgumentSupported(
+    crosapi::TelemetryDiagnosticRoutineArgumentPtr arg,
+    IsRoutineArgumentSupportedCallback callback) {
+  cros_healthd::ServiceConnection::GetInstance()
+      ->GetRoutinesService()
+      ->IsRoutineArgumentSupported(
+          converters::ConvertRoutinePtr(std::move(arg)),
+          base::BindOnce(
+              [](IsRoutineArgumentSupportedCallback callback,
+                 healthd::SupportStatusPtr status) {
+                std::move(callback).Run(
+                    converters::ConvertCommonPtr(std::move(status)));
+              },
+              std::move(callback)));
 }
 
 void TelemetryDiagnosticsRoutineServiceAsh::OnConnectionClosed(

@@ -142,6 +142,11 @@ void FakeCrosHealthd::SetIsEventSupportedResponseForTesting(
   is_event_supported_response_.Swap(&result);
 }
 
+void FakeCrosHealthd::SetIsRoutineArgumentSupportedResponseForTesting(
+    mojom::SupportStatusPtr& result) {
+  is_routine_argument_supported_response_.Swap(&result);
+}
+
 void FakeCrosHealthd::FlushRoutineServiceForTesting() {
   routines_provider_.FlushForTesting();
 }
@@ -838,6 +843,12 @@ void FakeCrosHealthd::CreateRoutine(
   routine_controllers_.emplace(
       std::piecewise_construct, std::forward_as_tuple(argument->which()),
       std::forward_as_tuple(std::move(pending_receiver), std::move(observer)));
+}
+
+void FakeCrosHealthd::IsRoutineArgumentSupported(
+    mojom::RoutineArgumentPtr arg,
+    IsRoutineArgumentSupportedCallback callback) {
+  std::move(callback).Run(is_routine_argument_supported_response_->Clone());
 }
 
 }  // namespace ash::cros_healthd

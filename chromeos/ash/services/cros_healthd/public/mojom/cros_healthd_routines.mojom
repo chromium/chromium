@@ -15,7 +15,7 @@ import "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_exception.m
 
 // Routines interface exposed by the cros_healthd daemon.
 //
-// NextMinVersion: 2, NextIndex: 1
+// NextMinVersion: 3, NextIndex: 2
 [Stable]
 interface CrosHealthdRoutinesService {
   // Requests that a routine using the RoutineControl API is created on the
@@ -57,6 +57,18 @@ interface CrosHealthdRoutinesService {
   [MinVersion=1] CreateRoutine@0(RoutineArgument routine_argument,
       pending_receiver<RoutineControl> routine_receiver,
       pending_remote<RoutineObserver>? routine_observer);
+
+  // Checks whether a given `RoutineArgument` is supported.
+  //
+  // The request:
+  // * |routine_argument| - a `RoutineArgument` type that provides all the
+  //                        necessary parameters to create a particular type of
+  //                        routine.
+  //
+  // The response:
+  // * |status| - See the documentation of `SupportStatus`.
+  [MinVersion=2] IsRoutineArgumentSupported@1(
+      RoutineArgument routine_argument) => (SupportStatus status);
 };
 
 // Argument types for the possible routines the routine control API can create.

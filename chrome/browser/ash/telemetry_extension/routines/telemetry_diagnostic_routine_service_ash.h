@@ -63,6 +63,9 @@ class TelemetryDiagnosticsRoutineServiceAsh
           routine_receiver,
       mojo::PendingRemote<crosapi::mojom::TelemetryDiagnosticRoutineObserver>
           observer) override;
+  void IsRoutineArgumentSupported(
+      crosapi::mojom::TelemetryDiagnosticRoutineArgumentPtr arg,
+      IsRoutineArgumentSupportedCallback callback) override;
 
  private:
   // Called when a routine controller or observer connection is closed. This

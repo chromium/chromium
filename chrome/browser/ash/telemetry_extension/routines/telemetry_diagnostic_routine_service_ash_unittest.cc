@@ -13,8 +13,10 @@
 #include "base/test/test_future.h"
 #include "chromeos/ash/components/mojo_service_manager/fake_mojo_service_manager.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/fake_cros_healthd.h"
+#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_exception.mojom.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_routines.mojom.h"
 #include "chromeos/crosapi/mojom/telemetry_diagnostic_routine_service.mojom.h"
+#include "chromeos/crosapi/mojom/telemetry_extension_exception.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -112,6 +114,26 @@ TEST_F(TelemetryDiagnosticsRoutineServiceAshTest, CreateRoutine) {
   EXPECT_TRUE(
       cros_healthd::FakeCrosHealthd::Get()->GetRoutineControlForArgumentTag(
           healthd::RoutineArgument::Tag::kUnrecognizedArgument));
+}
+
+TEST_F(TelemetryDiagnosticsRoutineServiceAshTest, IsRoutineArgumentSupported) {
+  auto status = healthd::SupportStatus::NewSupported(healthd::Supported::New());
+  cros_healthd::FakeCrosHealthd::Get()
+      ->SetIsRoutineArgumentSupportedResponseForTesting(status);
+
+  auto arg =
+      crosapi::TelemetryDiagnosticRoutineArgument::NewUnrecognizedArgument(
+          true);
+  base::test::TestFuture<crosapi::TelemetryExtensionSupportStatusPtr> future;
+  routines_service()->IsRoutineArgumentSupported(std::move(arg),
+                                                 future.GetCallback());
+
+  FlushForTesting();
+
+  ASSERT_TRUE(future.Wait());
+  EXPECT_EQ(future.Take(),
+            crosapi::TelemetryExtensionSupportStatus::NewSupported(
+                crosapi::TelemetryExtensionSupported::New()));
 }
 
 TEST_F(TelemetryDiagnosticsRoutineServiceAshTest, StartRoutine) {

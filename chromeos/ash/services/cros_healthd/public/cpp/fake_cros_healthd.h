@@ -145,6 +145,10 @@ class FakeCrosHealthd final : public mojom::CrosHealthdDiagnosticsService,
   // Set the result for a call to `IsEventSupported`.
   void SetIsEventSupportedResponseForTesting(mojom::SupportStatusPtr& result);
 
+  // Set the result for a call to `IsRoutineArgumentSupported`.
+  void SetIsRoutineArgumentSupportedResponseForTesting(
+      mojom::SupportStatusPtr& result);
+
   // Flushes the service provider for routines.
   void FlushRoutineServiceForTesting();
 
@@ -357,6 +361,9 @@ class FakeCrosHealthd final : public mojom::CrosHealthdDiagnosticsService,
       mojom::RoutineArgumentPtr argument,
       mojo::PendingReceiver<mojom::RoutineControl> pending_receiver,
       mojo::PendingRemote<mojom::RoutineObserver> observer) override;
+  void IsRoutineArgumentSupported(
+      mojom::RoutineArgumentPtr arg,
+      IsRoutineArgumentSupportedCallback callback) override;
 
   // Used as the response to any GetAvailableRoutines IPCs received.
   std::vector<mojom::DiagnosticRoutineEnum> available_routines_;
@@ -371,6 +378,9 @@ class FakeCrosHealthd final : public mojom::CrosHealthdDiagnosticsService,
   mojom::TelemetryInfoPtr telemetry_response_info_{mojom::TelemetryInfo::New()};
   // Used as the response to any IsEventSupported IPCs received.
   mojom::SupportStatusPtr is_event_supported_response_{
+      mojom::SupportStatus::NewUnmappedUnionField(0)};
+  // Used as the response to any IsRoutineSupported IPCs received.
+  mojom::SupportStatusPtr is_routine_argument_supported_response_{
       mojom::SupportStatus::NewUnmappedUnionField(0)};
   // Used as the response to any ProbeProcessInfo IPCs received.
   mojom::ProcessResultPtr process_response_{

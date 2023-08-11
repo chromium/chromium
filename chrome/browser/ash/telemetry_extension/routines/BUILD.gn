@@ -20,6 +20,7 @@ source_set("routines") {
 
   deps = [
     "//base",
+    "//chrome/browser/ash/telemetry_extension/common",
     "//chromeos/ash/services/cros_healthd/public/cpp",
     "//chromeos/ash/services/cros_healthd/public/mojom",
     "//chromeos/crosapi/mojom",
