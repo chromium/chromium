@@ -467,9 +467,6 @@ export class AppElement extends AppElementBase {
                   'background-image-loaded',
                   this.backgroundImageLoadStart_ + duration);
             }
-          },
-          () => {
-            console.error('Failed to capture background image load time');
           });
     }
     FocusOutlineManager.forDocument(document);
