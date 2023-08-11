@@ -355,6 +355,50 @@ struct MEDIA_EXPORT MediaData : Box {
   std::vector<std::vector<uint8_t>> track_data;
 };
 
+// File Type (`ftyp`) box.
+struct MEDIA_EXPORT FileType : Box {
+  FileType();
+  ~FileType();
+  uint32_t major_brand;
+  uint32_t minor_version;
+  std::vector<uint32_t> compatible_brands;
+};
+
+// Movie Track Fragment Random Access Box Entry.
+struct TrackFragmentRandomAccessEntry {
+  base::TimeDelta time;
+  uint64_t moof_offset;
+  uint32_t traf_number;
+  uint32_t trun_number;
+  uint32_t sample_number;
+};
+
+// Movie Track Fragment Random Access Box (`tfra`) box.
+struct MEDIA_EXPORT TrackFragmentRandomAccess : FullBox {
+  TrackFragmentRandomAccess();
+  ~TrackFragmentRandomAccess();
+  TrackFragmentRandomAccess(const TrackFragmentRandomAccess&);
+  TrackFragmentRandomAccess& operator=(const TrackFragmentRandomAccess&);
+
+  uint32_t track_id;
+  std::vector<TrackFragmentRandomAccessEntry> entries;
+};
+
+// Movie Fragment Random Access Offset Box (`mfro`) box.
+struct MEDIA_EXPORT FragmentRandomAccessOffset : Box {
+  // It is `mfra` box size and should be located at the last of
+  // enclosing `mfra` box.
+};
+
+// Movie Fragment Random Access Box (`mfra`) box.
+struct MEDIA_EXPORT FragmentRandomAccess : Box {
+  FragmentRandomAccess();
+  ~FragmentRandomAccess();
+
+  std::vector<TrackFragmentRandomAccess> tracks;
+  FragmentRandomAccessOffset offset;
+};
+
 }  // namespace media::mp4::writable_boxes
 
 #endif  // MEDIA_FORMATS_MP4_WRITABLE_BOX_DEFINITIONS_H_

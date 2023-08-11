@@ -198,6 +198,16 @@ TEST(BoxByteStreamTest, EndBoxAndFlushDiff) {
       box_byte_stream.WriteU32(0);
       box_byte_stream.EndBox();
       EXPECT_EQ(box_byte_stream.GetSizeOffsetsForTesting().size(), 1u);
+
+      {
+        // <grand child 2 and the last box>
+        box_byte_stream.StartBox(mp4::FOURCC_MFRO);
+        EXPECT_EQ(box_byte_stream.GetSizeOffsetsForTesting().size(), 2u);
+        // It will have top box's total size.
+        box_byte_stream.WriteU32(box_byte_stream.size() + 4);
+        box_byte_stream.EndBox();
+        EXPECT_EQ(box_byte_stream.GetSizeOffsetsForTesting().size(), 1u);
+      }
     }
     box_byte_stream.EndBox();
     EXPECT_EQ(box_byte_stream.GetSizeOffsetsForTesting().size(), 0u);
@@ -208,8 +218,9 @@ TEST(BoxByteStreamTest, EndBoxAndFlushDiff) {
 
     uint32_t parent;
     uint32_t fourcc;
+    constexpr uint32_t kMoovTopBoxSize = 62u;
     reader.ReadU32(&parent);
-    EXPECT_EQ(50u, parent);
+    EXPECT_EQ(kMoovTopBoxSize, parent);
     reader.ReadU32(&fourcc);
     EXPECT_EQ(mp4::FOURCC_MOOV, fourcc);
     reader.Skip(8);
@@ -233,6 +244,17 @@ TEST(BoxByteStreamTest, EndBoxAndFlushDiff) {
     EXPECT_EQ(12u, child_2);
     reader.ReadU32(&fourcc);
     EXPECT_EQ(mp4::FOURCC_MVEX, fourcc);
+    reader.Skip(4);
+
+    uint32_t grand_child_2;
+    reader.ReadU32(&grand_child_2);
+    EXPECT_EQ(12u, grand_child_2);
+    reader.ReadU32(&fourcc);
+    EXPECT_EQ(mp4::FOURCC_MFRO, fourcc);
+
+    uint32_t field_top_box_size;
+    reader.ReadU32(&field_top_box_size);
+    EXPECT_EQ(kMoovTopBoxSize, field_top_box_size);
   }
 }
 

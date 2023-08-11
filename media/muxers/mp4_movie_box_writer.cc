@@ -50,6 +50,37 @@ void WriteLowHigh(BoxByteStream& writer, uint32_t value) {
 
 }  // namespace
 
+// Mp4FileTypeBoxWriter class.
+Mp4FileTypeBoxWriter::Mp4FileTypeBoxWriter(
+    const Mp4MuxerContext& context,
+    const mp4::writable_boxes::FileType& box)
+    : Mp4BoxWriter(context), box_(box) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
+
+Mp4FileTypeBoxWriter::~Mp4FileTypeBoxWriter() = default;
+
+void Mp4FileTypeBoxWriter::Write(BoxByteStream& writer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  writer.StartBox(mp4::FOURCC_FTYP);
+
+  writer.WriteU32(box_.major_brand);    // normal rate.
+  writer.WriteU32(box_.minor_version);  // normal rate.
+
+  // It should include at least of `avc1`.
+  CHECK_GE(box_.compatible_brands.size(), 1u);
+  CHECK(box_.compatible_brands.end() !=
+        std::find(box_.compatible_brands.begin(), box_.compatible_brands.end(),
+                  mp4::FOURCC_AVC1));
+
+  for (const uint32_t& brand : box_.compatible_brands) {
+    writer.WriteU32(brand);
+  }
+
+  writer.EndBox();
+}
+
 // Mp4MovieBoxWriter class.
 Mp4MovieBoxWriter::Mp4MovieBoxWriter(const Mp4MuxerContext& context,
                                      const mp4::writable_boxes::Movie& box)

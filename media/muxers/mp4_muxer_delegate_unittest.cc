@@ -8,6 +8,7 @@
 #include <cstddef>
 #include <vector>
 
+#include "base/big_endian.h"
 #include "base/files/file_path.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/path_service.h"
@@ -160,15 +161,15 @@ TEST_F(Mp4MuxerDelegateTest, AddVideoFrame) {
 
         ++(*callback_count);
         switch (*callback_count) {
-          case 1:
+          case 2:
             std::copy(mp4_data_string.begin(), mp4_data_string.end(),
                       std::back_inserter(*moov_written_data));
             break;
-          case 2:
+          case 3:
             std::copy(mp4_data_string.begin(), mp4_data_string.end(),
                       std::back_inserter(*first_moof_written_data));
             break;
-          case 3:
+          case 4:
             std::copy(mp4_data_string.begin(), mp4_data_string.end(),
                       std::back_inserter(*second_moof_written_data));
 
@@ -477,11 +478,11 @@ TEST_F(Mp4MuxerDelegateTest, AddAudioFrame) {
 
         ++(*callback_count);
         switch (*callback_count) {
-          case 1:
+          case 2:
             std::copy(mp4_data_string.begin(), mp4_data_string.end(),
                       std::back_inserter(*moov_written_data));
             break;
-          case 2:
+          case 3:
             std::copy(mp4_data_string.begin(), mp4_data_string.end(),
                       std::back_inserter(*first_moof_written_data));
             // Quit.
@@ -712,9 +713,10 @@ TEST_F(Mp4MuxerDelegateTest, AudioOnlyNewFragmentCreation) {
               case 1:
               case 2:
               case 3:
+              case 4:
                 // DO Nothing.
                 break;
-              case 4:
+              case 5:
                 std::copy(mp4_data_string.begin(), mp4_data_string.end(),
                           std::back_inserter(*third_moof_written_data));
 
@@ -845,13 +847,14 @@ TEST_F(Mp4MuxerDelegateTest, AudioAndVideoAddition) {
               case 1:
               case 2:
               case 3:
+              case 4:
                 // DO Nothing.
                 break;
-              case 4:
+              case 5:
                 std::copy(mp4_data_string.begin(), mp4_data_string.end(),
                           std::back_inserter(*third_moof_written_data));
                 break;
-              case 5:
+              case 6:
                 std::copy(mp4_data_string.begin(), mp4_data_string.end(),
                           std::back_inserter(*fourth_moof_written_data));
                 // Quit.
@@ -1013,6 +1016,190 @@ TEST_F(Mp4MuxerDelegateTest, AudioAndVideoAddition) {
   }
 }
 
+TEST_F(Mp4MuxerDelegateTest, MfraBoxOnAudioAndVideoAddition) {
+  // Add stream audio first and video.
+  media::AudioParameters params(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
+                                media::ChannelLayoutConfig::Stereo(),
+                                kAudioSampleRate, 1000);
+
+  base::MemoryMappedFile mapped_file_1;
+  LoadEncodedFile("aac-44100-packet-0", mapped_file_1);
+  base::StringPiece audio_stream(
+      reinterpret_cast<const char*>(mapped_file_1.data()),
+      mapped_file_1.length());
+
+  base::MemoryMappedFile mapped_file_2;
+  LoadEncodedFile("avc-bitstream-format-0.h264", mapped_file_2);
+  base::StringPiece video_stream(
+      reinterpret_cast<const char*>(mapped_file_1.data()),
+      mapped_file_1.length());
+
+  base::RunLoop run_loop;
+
+  std::vector<uint8_t> total_written_data;
+  std::vector<uint8_t> third_moof_written_data;
+  std::vector<uint8_t> fourth_moof_written_data;
+  std::vector<uint8_t> mfra_written_data;
+
+  int callback_count = 0;
+  Mp4MuxerDelegate delegate(
+      base::BindRepeating(
+          [](base::OnceClosure run_loop_quit,
+             std::vector<uint8_t>* total_written_data,
+             std::vector<uint8_t>* third_moof_written_data,
+             std::vector<uint8_t>* fourth_moof_written_data,
+             std::vector<uint8_t>* mfra_written_data, int* callback_count,
+             base::StringPiece mp4_data_string) {
+            std::copy(mp4_data_string.begin(), mp4_data_string.end(),
+                      std::back_inserter(*total_written_data));
+
+            ++(*callback_count);
+            switch (*callback_count) {
+              case 1:
+              case 2:
+              case 3:
+              case 4:
+                // DO Nothing.
+                break;
+              case 5:
+                std::copy(mp4_data_string.begin(), mp4_data_string.end(),
+                          std::back_inserter(*third_moof_written_data));
+                break;
+              case 6:
+                std::copy(mp4_data_string.begin(), mp4_data_string.end(),
+                          std::back_inserter(*fourth_moof_written_data));
+                break;
+              case 7:
+                std::copy(mp4_data_string.begin(), mp4_data_string.end(),
+                          std::back_inserter(*mfra_written_data));
+                // Quit.
+                std::move(run_loop_quit).Run();
+            }
+          },
+          run_loop.QuitClosure(), &total_written_data, &third_moof_written_data,
+          &fourth_moof_written_data, &mfra_written_data, &callback_count),
+      base::Milliseconds(300));
+
+  std::vector<uint8_t> code_description;
+  PopulateAacAdts(code_description);
+
+  base::TimeTicks base_time_ticks = base::TimeTicks::Now();
+  base::TimeDelta delta;
+
+  delegate.AddAudioFrame(params, audio_stream, code_description,
+                         base_time_ticks);
+  // Total count is 24, which will have 3 fragments and the last fragment
+  // has 4 samples.
+  constexpr int kMaxAudioSampleFragment = 23;
+
+  for (int i = 0; i < kMaxAudioSampleFragment; ++i) {
+    delta += base::Milliseconds(30);
+    delegate.AddAudioFrame(params, audio_stream, absl::nullopt,
+                           base_time_ticks + delta);
+  }
+
+  // video stream, third fragment.
+  std::vector<uint8_t> video_code_description;
+  PopulateAVCDecoderConfiguration(video_code_description);
+
+  media::Muxer::VideoParameters video_params(gfx::Size(kWidth, kHeight), 30,
+                                             media::VideoCodec::kH264,
+                                             gfx::ColorSpace());
+  delegate.AddVideoFrame(video_params, video_stream, video_code_description,
+                         base_time_ticks, true);
+  for (int i = 0; i < kMaxAudioSampleFragment; ++i) {
+    delta += base::Milliseconds(30);
+    delegate.AddAudioFrame(params, audio_stream, absl::nullopt,
+                           base_time_ticks + delta);
+  }
+
+  // video stream, fourth fragment.
+  delegate.AddVideoFrame(video_params, video_stream, video_code_description,
+                         base_time_ticks + base::Milliseconds(50), true);
+  delegate.AddAudioFrame(params, audio_stream, absl::nullopt,
+                         base_time_ticks + delta + base::Milliseconds(30));
+
+  // Write box data to the callback.
+  delegate.Flush();
+
+  run_loop.Run();
+
+  // Locates `mfra` box.
+  uint32_t mfra_box_size = 0;
+  for (int last_index = total_written_data.size() - 1, j = 0; j < 4; j++) {
+    mfra_box_size += (total_written_data[last_index - j] << (j * 8));
+  }
+
+  uint8_t* last_offset_of_mp4_file =
+      total_written_data.data() + total_written_data.size();
+  uint8_t* mfra_start_offset = last_offset_of_mp4_file - mfra_box_size;
+
+  // Locates the first and fourth `moof` boxes from the `mfra` box.
+  // compare the data.
+  constexpr uint32_t kMfraBoxSize = 8u;
+  constexpr uint32_t kFullBoxSize = 12u;
+  constexpr uint32_t kTfraBoxSize = 24u;
+  constexpr uint32_t kTfraEntrySize = 28u;
+
+  uint8_t* tfra_box_offset = mfra_start_offset + kMfraBoxSize;
+  uint8_t* track_id = tfra_box_offset + kFullBoxSize;
+  base::BigEndianReader big_endian_reader(track_id, 12);
+
+  uint32_t value;
+  big_endian_reader.ReadU32(&value);
+  EXPECT_EQ(value, 2u);  // video track id.
+
+  big_endian_reader.ReadU32(&value);
+  EXPECT_EQ(value, 63u);  // entry number size. 63 == 0x3f.
+
+  big_endian_reader.ReadU32(&value);
+  // The file has 4 fragments, but video samples exists only for
+  // 2 fragments so the `tfra` box has only 2 entries.
+  EXPECT_EQ(value, 2u);  // number of entries.
+
+  // Third entry.
+  uint8_t* third_tfra_entry = tfra_box_offset + kTfraBoxSize;
+  base::BigEndianReader big_endian_reader2(third_tfra_entry,
+                                           kTfraEntrySize * 2);
+  uint64_t time;
+  big_endian_reader2.ReadU64(&time);
+  EXPECT_EQ(time, 0u);  // time.
+
+  uint64_t third_moof_offset;
+  big_endian_reader2.ReadU64(&third_moof_offset);
+
+  big_endian_reader2.ReadU32(&value);
+  EXPECT_EQ(value, 1u);  // traf number.
+
+  big_endian_reader2.ReadU32(&value);
+  EXPECT_EQ(value, 1u);  // trun number.
+
+  big_endian_reader2.ReadU32(&value);
+  EXPECT_EQ(value, 1u);  // sample number.
+  EXPECT_TRUE(memcmp(&total_written_data[third_moof_offset],
+                     third_moof_written_data.data(),
+                     third_moof_written_data.size()) == 0);
+
+  // Fourth entry.
+  big_endian_reader2.ReadU64(&time);
+  EXPECT_NE(time, 0u);  // time.
+
+  uint64_t fourth_moof_offset;
+  big_endian_reader2.ReadU64(&fourth_moof_offset);
+
+  big_endian_reader2.ReadU32(&value);
+  EXPECT_EQ(value, 1u);  // traf number.
+
+  big_endian_reader2.ReadU32(&value);
+  EXPECT_EQ(value, 1u);  // trun number.
+
+  big_endian_reader2.ReadU32(&value);
+  EXPECT_EQ(value, 1u);  // sample number.
+  EXPECT_TRUE(memcmp(&total_written_data[fourth_moof_offset],
+                     fourth_moof_written_data.data(),
+                     fourth_moof_written_data.size()) == 0);
+}
+
 TEST_F(Mp4MuxerDelegateTest, VideoAndAudioAddition) {
   // Add stream with video first, and audio.
   media::AudioParameters params(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
@@ -1049,9 +1236,10 @@ TEST_F(Mp4MuxerDelegateTest, VideoAndAudioAddition) {
             ++(*callback_count);
             switch (*callback_count) {
               case 1:
+              case 2:
                 // Do nothing.
                 break;
-              case 2:
+              case 3:
                 std::copy(mp4_data_string.begin(), mp4_data_string.end(),
                           std::back_inserter(*first_moof_written_data));
                 // Quit.

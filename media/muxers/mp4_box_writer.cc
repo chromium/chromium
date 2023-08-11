@@ -16,14 +16,14 @@ Mp4BoxWriter::Mp4BoxWriter(const Mp4MuxerContext& context)
 
 Mp4BoxWriter::~Mp4BoxWriter() = default;
 
-void Mp4BoxWriter::WriteAndFlush() {
+size_t Mp4BoxWriter::WriteAndFlush() {
   // It will write itself as well as children boxes.
   BoxByteStream writer;
 
-  WriteAndFlush(writer);
+  return WriteAndFlush(writer);
 }
 
-void Mp4BoxWriter::WriteAndFlush(BoxByteStream& writer) {
+size_t Mp4BoxWriter::WriteAndFlush(BoxByteStream& writer) {
   DCHECK(!writer.has_open_boxes());
 
   // It will write to input writer as well as children boxes.
@@ -35,6 +35,8 @@ void Mp4BoxWriter::WriteAndFlush(BoxByteStream& writer) {
   // Write the entire boxes to the blob.
   context().GetOutputPositionTracker().WriteString(
       base::StringPiece(reinterpret_cast<char*>(buffer.data()), buffer.size()));
+
+  return buffer.size();
 }
 
 void Mp4BoxWriter::WriteChildren(BoxByteStream& writer) {

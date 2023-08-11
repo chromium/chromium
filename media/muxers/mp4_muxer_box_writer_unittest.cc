@@ -103,21 +103,24 @@ class Mp4MuxerBoxWriterTest : public testing::Test {
     CreateContext(std::move(tracker));
   }
 
-  void FlushAndWait(Mp4BoxWriter* box_writer) {
+  size_t FlushAndWait(Mp4BoxWriter* box_writer) {
     // Flush at requested.
-    box_writer->WriteAndFlush();
+    size_t written_size = box_writer->WriteAndFlush();
 
     // Wait for finishing flush of all boxes.
     run_loop_.Run();
+
+    return written_size;
   }
 
-  void FlushWithBoxWriterAndWait(Mp4BoxWriter* box_writer,
-                                 BoxByteStream& box_byte_stream) {
+  size_t FlushWithBoxWriterAndWait(Mp4BoxWriter* box_writer,
+                                   BoxByteStream& box_byte_stream) {
     // Flush at requested.
-    box_writer->WriteAndFlush(box_byte_stream);
+    size_t written_size = box_writer->WriteAndFlush(box_byte_stream);
 
     // Wait for finishing flush of all boxes.
     run_loop_.Run();
+    return written_size;
   }
 
  private:
@@ -970,6 +973,109 @@ TEST_F(Mp4MuxerBoxWriterTest, Mp4Fragments) {
   EXPECT_EQ(mp4::FOURCC_MDAT, mdat_reader->type());
   EXPECT_EQ(kVideoDataSize + kAudioDataSize + kBoxHeaderSize,
             mdat_reader->box_size());
+  // Once Flush, it needs to reset the internal objects of context and buffer.
+  Reset();
+}
+
+TEST_F(Mp4MuxerBoxWriterTest, Mp4FtypBox) {
+  // Tests `ftyp` box writer.
+  std::vector<uint8_t> written_data;
+  CreateContext(written_data);
+
+  mp4::writable_boxes::FileType mp4_file_type_box;
+
+  mp4_file_type_box.major_brand = mp4::FOURCC_MP41;
+  mp4_file_type_box.minor_version = 0;
+  mp4_file_type_box.compatible_brands.emplace_back(mp4::FOURCC_MP4A);
+  mp4_file_type_box.compatible_brands.emplace_back(mp4::FOURCC_AVC1);
+
+  // Flush at requested.
+  Mp4FileTypeBoxWriter box_writer(*context(), mp4_file_type_box);
+  FlushAndWait(&box_writer);
+
+  // Validation of the written boxes.
+
+  // `written_data` test.
+  std::unique_ptr<mp4::BoxReader> reader;
+  mp4::ParseResult result = mp4::BoxReader::ReadTopLevelBox(
+      written_data.data(), written_data.size(), nullptr, &reader);
+
+  EXPECT_EQ(result, mp4::ParseResult::kOk);
+  EXPECT_TRUE(reader);
+  EXPECT_EQ(mp4::FOURCC_FTYP, reader->type());
+
+  mp4::FileType file_type;
+  EXPECT_TRUE(file_type.Parse(reader.get()));
+  EXPECT_EQ(file_type.major_brand, mp4::FOURCC_MP41);
+  EXPECT_EQ(file_type.minor_version, 0u);
+
+  // Once Flush, it needs to reset the internal objects of context and buffer.
+  Reset();
+}
+
+TEST_F(Mp4MuxerBoxWriterTest, Mp4MfraBox) {
+  // Tests `mfra` box writer.
+  std::vector<uint8_t> written_data;
+  CreateContext(written_data);
+  context()->SetVideoIndex(1);
+
+  mp4::writable_boxes::TrackFragmentRandomAccess video_randome_access;
+  video_randome_access.track_id = 2;
+  mp4::writable_boxes::TrackFragmentRandomAccessEntry entry1;
+  entry1.moof_offset = 200;
+  entry1.time = base::Seconds(0);
+  entry1.traf_number = 1;
+  entry1.trun_number = 1;
+  entry1.sample_number = 1;
+  video_randome_access.entries.emplace_back(std::move(entry1));
+
+  mp4::writable_boxes::TrackFragmentRandomAccessEntry entry2;
+  entry2.moof_offset = 1000;
+  entry2.time = base::Seconds(3);
+  entry2.trun_number = 1;
+  entry2.sample_number = 1;
+  video_randome_access.entries.emplace_back(std::move(entry2));
+
+  mp4::writable_boxes::TrackFragmentRandomAccessEntry entry3;
+  entry3.moof_offset = 4000;
+  entry3.time = base::Seconds(6);
+  entry3.traf_number = 1;
+  entry3.trun_number = 1;
+  entry3.sample_number = 1;
+  video_randome_access.entries.emplace_back(std::move(entry3));
+
+  mp4::writable_boxes::FragmentRandomAccess frag_random_access;
+  // Add empty audio random access by its index position.
+  mp4::writable_boxes::TrackFragmentRandomAccess audio_randome_access;
+  frag_random_access.tracks.emplace_back(std::move(audio_randome_access));
+  frag_random_access.tracks.emplace_back(std::move(video_randome_access));
+
+  // Flush at requested.
+  Mp4FragmentRandomAccessBoxWriter box_writer(*context(), frag_random_access);
+  FlushAndWait(&box_writer);
+
+  // Validation of the written boxes.
+
+  // `written_data` test.
+
+  // Read from the `mfro` size value that will lead lead to point at
+  // the `mfra` box start offset.
+  uint32_t mfra_box_size = 0;
+  for (int last_index = written_data.size() - 1, j = 0; j < 4; j++) {
+    mfra_box_size += (written_data[last_index - j] << (j * 8));
+  }
+
+  uint8_t* last_offset_of_mp4_file = written_data.data() + written_data.size();
+
+  uint8_t* mfra_start_offset = last_offset_of_mp4_file - mfra_box_size;
+  std::unique_ptr<mp4::BoxReader> reader;
+  mp4::ParseResult result = mp4::BoxReader::ReadTopLevelBox(
+      mfra_start_offset, mfra_box_size, nullptr, &reader);
+
+  EXPECT_EQ(result, mp4::ParseResult::kOk);
+  EXPECT_TRUE(reader);
+  EXPECT_EQ(mp4::FOURCC_MFRA, reader->type());
+
   // Once Flush, it needs to reset the internal objects of context and buffer.
   Reset();
 }

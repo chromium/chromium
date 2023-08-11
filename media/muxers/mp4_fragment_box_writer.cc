@@ -286,4 +286,93 @@ void Mp4MediaDataBoxWriter::Write(BoxByteStream& writer) {
   writer.EndBox();
 }
 
+// Mp4FragmentRandomAccessBoxWriter (`mfra`) class.
+Mp4FragmentRandomAccessBoxWriter::Mp4FragmentRandomAccessBoxWriter(
+    const Mp4MuxerContext& context,
+    const mp4::writable_boxes::FragmentRandomAccess& box)
+    : Mp4BoxWriter(context), box_(box) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // It will add video track only because every sample are sync samples in the
+  // audio.
+  if (auto video_index = context.GetVideoIndex()) {
+    AddChildBox(std::make_unique<Mp4TrackFragmentRandomAccessBoxWriter>(
+        context, box_.tracks[*video_index]));
+  }
+
+  AddChildBox(
+      std::make_unique<Mp4FragmentRandomAccessOffsetBoxBoxWriter>(context));
+}
+
+Mp4FragmentRandomAccessBoxWriter::~Mp4FragmentRandomAccessBoxWriter() = default;
+
+void Mp4FragmentRandomAccessBoxWriter::Write(BoxByteStream& writer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  writer.StartBox(mp4::FOURCC_MFRA);
+
+  WriteChildren(writer);
+
+  writer.EndBox();
+}
+
+// Mp4TrackFragmentRandomAccessBoxWriter (`tfra`) class.
+Mp4TrackFragmentRandomAccessBoxWriter::Mp4TrackFragmentRandomAccessBoxWriter(
+    const Mp4MuxerContext& context,
+    const mp4::writable_boxes::TrackFragmentRandomAccess& box)
+    : Mp4BoxWriter(context), box_(box) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
+
+Mp4TrackFragmentRandomAccessBoxWriter::
+    ~Mp4TrackFragmentRandomAccessBoxWriter() = default;
+
+void Mp4TrackFragmentRandomAccessBoxWriter::Write(BoxByteStream& writer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  writer.StartFullBox(mp4::FOURCC_TFRA);
+
+  // `length_size_of_traf_num`, `length_size_of_trun_num` and
+  // `length_size_of_sample_num` size is 4 (uint32_t size).
+  constexpr uint32_t kLengthSizeOfEntries = 0x0000003F;
+
+  writer.WriteU32(box_.track_id);
+  writer.WriteU32(kLengthSizeOfEntries);
+  writer.WriteU32(box_.entries.size());
+
+  for (const mp4::writable_boxes::TrackFragmentRandomAccessEntry& entry :
+       box_.entries) {
+    // TODO(crbug.com://1471314): convert the presentation time based on
+    // the track's timescale.
+    writer.WriteU64(entry.time.InMilliseconds());
+    writer.WriteU64(entry.moof_offset);
+    writer.WriteU32(entry.traf_number);
+    writer.WriteU32(entry.trun_number);
+    writer.WriteU32(entry.sample_number);
+  }
+
+  writer.EndBox();
+}
+
+// Mp4FragmentRandomAccessOffsetBoxBoxWriter (`mfro`) class.
+Mp4FragmentRandomAccessOffsetBoxBoxWriter::
+    Mp4FragmentRandomAccessOffsetBoxBoxWriter(const Mp4MuxerContext& context)
+    : Mp4BoxWriter(context) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
+
+Mp4FragmentRandomAccessOffsetBoxBoxWriter::
+    ~Mp4FragmentRandomAccessOffsetBoxBoxWriter() = default;
+
+void Mp4FragmentRandomAccessOffsetBoxBoxWriter::Write(BoxByteStream& writer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  writer.StartFullBox(mp4::FOURCC_MFRO);
+
+  // `size` property of the `mfro` box is the total size of the `mfra` box.
+  writer.WriteU32(writer.size() + 4);
+
+  writer.EndBox();
+}
+
 }  // namespace media

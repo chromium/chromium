@@ -25,6 +25,11 @@ DECLARE_MP4_BOX_WRITER_CLASS(Mp4TrackFragmentRunBoxWriter,
                              mp4::writable_boxes::TrackFragmentRun);
 DECLARE_MP4_BOX_WRITER_CLASS(Mp4MediaDataBoxWriter,
                              mp4::writable_boxes::MediaData);
+DECLARE_MP4_BOX_WRITER_CLASS(Mp4FragmentRandomAccessBoxWriter,
+                             mp4::writable_boxes::FragmentRandomAccess);
+DECLARE_MP4_BOX_WRITER_CLASS(Mp4TrackFragmentRandomAccessBoxWriter,
+                             mp4::writable_boxes::TrackFragmentRandomAccess);
+DECLARE_MP4_BOX_WRITER_CLASS_NO_DATA(Mp4FragmentRandomAccessOffsetBoxBoxWriter);
 }  // namespace media
 
 #endif  // MEDIA_MUXERS_MP4_FRAGMENT_BOX_WRITER_H_
