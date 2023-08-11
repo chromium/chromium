@@ -292,6 +292,8 @@ extern const char kChromeUIAudioHost[];
 extern const char kChromeUIAudioURL[];
 extern const char kChromeUIBluetoothPairingHost[];
 extern const char kChromeUIBluetoothPairingURL[];
+extern const char kChromeUIBorealisInstallerHost[];
+extern const char kChromeUIBorealisInstallerUrl[];
 extern const char kChromeUICertificateManagerDialogURL[];
 extern const char kChromeUICertificateManagerHost[];
 extern const char kChromeUICloudUploadHost[];

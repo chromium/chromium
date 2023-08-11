@@ -18,6 +18,7 @@ group("resources") {
     "assistant_optin:resources",
     "audio:resources",
     "bluetooth_pairing_dialog:resources",
+    "borealis_installer:resources",
     "cloud_upload:resources",
     "desk_api:resources",
     "emoji_picker:resources",

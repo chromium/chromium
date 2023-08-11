@@ -255,6 +255,7 @@ template("chrome_extra_paks") {
         "$root_gen_dir/chrome/assistant_optin_resources.pak",
         "$root_gen_dir/chrome/audio_resources.pak",
         "$root_gen_dir/chrome/bluetooth_pairing_dialog_resources.pak",
+        "$root_gen_dir/chrome/borealis_installer_resources.pak",
         "$root_gen_dir/chrome/cloud_upload_resources.pak",
         "$root_gen_dir/chrome/cros_styles_resources.pak",
         "$root_gen_dir/chrome/desk_api_resources.pak",

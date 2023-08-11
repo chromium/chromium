@@ -452,6 +452,10 @@
     "META": {"sizes": {"includes": [10],}},
     "includes": [4040],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/borealis_installer/resources.grd": {
+    "META": {"sizes": {"includes": [10],}},
+    "includes": [4050],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/chromebox_for_meetings/resources.grd": {
     "META": {"sizes": {"includes": [5]}},
     "includes": [4060],

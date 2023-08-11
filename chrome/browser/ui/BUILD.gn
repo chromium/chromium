@@ -2776,6 +2776,8 @@ static_library("ui") {
       "webui/ash/bluetooth_pairing_dialog.h",
       "webui/ash/bluetooth_shared_load_time_data_provider.cc",
       "webui/ash/bluetooth_shared_load_time_data_provider.h",
+      "webui/ash/borealis_installer/borealis_installer_ui.cc",
+      "webui/ash/borealis_installer/borealis_installer_ui.h",
       "webui/ash/cellular_setup/cellular_setup_localized_strings_provider.cc",
       "webui/ash/cellular_setup/cellular_setup_localized_strings_provider.h",
       "webui/ash/cellular_setup/mobile_setup_dialog.cc",
