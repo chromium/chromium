@@ -123,6 +123,12 @@ bool IsOriginListedInEnterpriseAttestationSwitch(
 const char kWebAuthnTouchIdMetadataSecretPrefName[] =
     "webauthn.touchid.metadata_secret";
 const char kWebAuthnTouchIdLastUsed[] = "webauthn.touchid.last_used";
+
+// kMacOsRecentlyUsedMaxDays specifies how recently the macOS profile
+// authenticator must have been used (for the current profile) to be considered
+// "actively" used. Chrome may default to the profile authenticator in more
+// cases if it is being actively used.
+const int kMacOsRecentlyUsedMaxDays = 31;
 #endif
 
 // CableLinkingEventHandler handles linking information sent by caBLEv2
@@ -742,6 +748,22 @@ void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
 
   dialog_model_->set_is_non_webauthn_request(request_source !=
                                              RequestSource::kWebAuthentication);
+
+#if BUILDFLAG(IS_MAC)
+  if (base::FeatureList::IsEnabled(device::kWebAuthnICloudKeychain)) {
+    const std::string& last_used =
+        Profile::FromBrowserContext(GetBrowserContext())
+            ->GetPrefs()
+            ->GetString(kWebAuthnTouchIdLastUsed);
+    if (!last_used.empty()) {
+      const absl::optional<int> days =
+          DaysSinceDate(last_used, base::Time::Now());
+      if (days.has_value() && days.value() <= kMacOsRecentlyUsedMaxDays) {
+        dialog_model_->set_is_active_profile_authenticator_user(true);
+      }
+    }
+  }
+#endif
 }
 
 void ChromeAuthenticatorRequestDelegate::SelectAccount(
@@ -1046,5 +1068,32 @@ void ChromeAuthenticatorRequestDelegate::ConfigureEnclaveDiscovery(
   std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys =
       passkey_model->GetPasskeysForRelyingPartyId(rp_id);
   discovery_factory->SetEnclavePasskeys(std::move(passkeys));
+}
+#endif
+
+#if BUILDFLAG(IS_MAC)
+// static
+absl::optional<int> ChromeAuthenticatorRequestDelegate::DaysSinceDate(
+    const std::string& formatted_date,
+    const base::Time now) {
+  int year, month, day_of_month;
+  // sscanf will ignore trailing garbage, but we don't need to be strict here.
+  if (sscanf(formatted_date.c_str(), "%u-%u-%u", &year, &month,
+             &day_of_month) != 3) {
+    return absl::nullopt;
+  }
+
+  base::Time::Exploded exploded = {0};
+  exploded.year = year;
+  exploded.month = month;
+  exploded.day_of_month = day_of_month;
+
+  base::Time t;
+  if (!base::Time::FromUTCExploded(exploded, &t) || now < t) {
+    return absl::nullopt;
+  }
+
+  const base::TimeDelta difference = now - t;
+  return difference.InDays();
 }
 #endif

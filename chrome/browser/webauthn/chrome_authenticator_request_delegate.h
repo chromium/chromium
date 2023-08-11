@@ -221,12 +221,18 @@ class ChromeAuthenticatorRequestDelegate
   // "leaks" to be reported.
   void SetPassEmptyUsbDeviceManagerForTesting(bool value);
 
- private:
-  FRIEND_TEST_ALL_PREFIXES(ChromeAuthenticatorRequestDelegateTest,
-                           TestTransportPrefType);
-  FRIEND_TEST_ALL_PREFIXES(ChromeAuthenticatorRequestDelegateTest,
-                           TestPairedDeviceAddressPreference);
+#if BUILDFLAG(IS_MAC)
+  // DaysSinceDate returns the number of days between `formatted_date` (in ISO
+  // 8601 format) and `now`. It returns `nullopt` if `formatted_date` cannot be
+  // parsed or if it's in `now`s future.
+  //
+  // It does not parse `formatted_date` strictly and is intended for trusted
+  // inputs.
+  static absl::optional<int> DaysSinceDate(const std::string& formatted_date,
+                                           base::Time now);
+#endif
 
+ private:
   // GetRenderFrameHost returns a pointer to the RenderFrameHost that was given
   // to the constructor.
   content::RenderFrameHost* GetRenderFrameHost() const;

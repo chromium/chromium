@@ -631,6 +631,7 @@ class AuthenticatorRequestDialogModel {
   void RecordMacOsStartedHistogram();
   void RecordMacOsSuccessHistogram(device::FidoRequestType,
                                    device::AuthenticatorType);
+  void set_is_active_profile_authenticator_user(bool);
 #endif
 
   base::WeakPtr<AuthenticatorRequestDialogModel> GetWeakPtr();
@@ -847,6 +848,11 @@ class AuthenticatorRequestDialogModel {
   // starting the current request was made. Any later successful completion will
   // only be recorded if a start event was recorded first.
   bool did_record_macos_start_histogram_ = false;
+
+  // is_active_profile_authenticator_user_ is true if the current profile has
+  // recently used the platform authenticator on macOS that saves credentials
+  // into the profile.
+  bool is_active_profile_authenticator_user_ = false;
 #endif
 
   base::WeakPtrFactory<AuthenticatorRequestDialogModel> weak_factory_{this};

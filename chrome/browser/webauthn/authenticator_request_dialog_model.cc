@@ -1064,6 +1064,12 @@ void AuthenticatorRequestDialogModel::RecordMacOsSuccessHistogram(
         "WebAuthentication.MacOS.PlatformAuthenticatorAction", *v);
   }
 }
+
+void AuthenticatorRequestDialogModel::set_is_active_profile_authenticator_user(
+    bool is_active) {
+  is_active_profile_authenticator_user_ = is_active;
+}
+
 #endif
 
 base::WeakPtr<AuthenticatorRequestDialogModel>

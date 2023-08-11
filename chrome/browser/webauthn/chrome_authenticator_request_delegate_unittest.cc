@@ -739,6 +739,30 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest,
   EXPECT_EQ(
       32u, TouchIdMetadataSecret(delegate, other_browser_context.get()).size());
 }
+
+TEST_F(ChromeAuthenticatorRequestDelegateTest, DaysSinceDate) {
+  const base::Time now = base::Time::FromTimeT(1691188997);  // 2023-08-04
+  const struct {
+    char input[16];
+    absl::optional<int> expected_result;
+  } kTestCases[] = {
+      {"", absl::nullopt},          //
+      {"2023-08-", absl::nullopt},  //
+      {"2023-08-04", 0},            //
+      {"2023-08-03", 1},            //
+      {"2023-8-3", 1},              //
+      {"2023-07-04", 31},           //
+      {"2001-11-23", 7924},         //
+  };
+
+  for (const auto& test : kTestCases) {
+    SCOPED_TRACE(test.input);
+    const absl::optional<int> result =
+        ChromeAuthenticatorRequestDelegate::DaysSinceDate(test.input, now);
+    EXPECT_EQ(result, test.expected_result);
+  }
+}
+
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_WIN)
