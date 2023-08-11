@@ -141,7 +141,6 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
   self.imageHasFixedSize = YES;
   self.showsVerticalScrollIndicator = NO;
   self.showDismissBarButton = NO;
-  self.customSpacingAfterImage = 0;
   self.topAlignedLayout = YES;
   self.customScrollViewBottomInsets = 0;
   self.customGradientViewHeight = kCustomGradientViewHeight;
