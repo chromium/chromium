@@ -53,6 +53,8 @@ ProcessDiceHeaderDelegateImpl::Create(content::WebContents* web_contents) {
     access_point = tab_helper->signin_access_point();
     promo_action = tab_helper->signin_promo_action();
     reason = tab_helper->signin_reason();
+    // `show_signin_error_callback` may be null if the `DiceTabHelper` was reset
+    // after completion of a signin flow.
     show_signin_error_callback =
         std::move(tab_helper->GetShowSigninErrorCallback());
     if (is_sync_signin_tab) {
@@ -60,8 +62,11 @@ ProcessDiceHeaderDelegateImpl::Create(content::WebContents* web_contents) {
     }
   } else {
     access_point = signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN;
-    // If there is no `DiceTabHelper` default to the in-browser error callback.
-    // This callback does nothing if there is no browser open.
+  }
+
+  // If there is no active `DiceTabHelper`, default to the in-browser error
+  // callback. This callback does nothing if there is no browser open.
+  if (!show_signin_error_callback) {
     show_signin_error_callback =
         DiceTabHelper::GetShowSigninErrorCallbackForBrowser();
   }
@@ -107,6 +112,12 @@ bool ProcessDiceHeaderDelegateImpl::ShouldEnableSync() {
   if (!is_sync_signin_tab_) {
     VLOG(1)
         << "Do not start sync after web sign-in [not a Chrome sign-in tab].";
+    return false;
+  }
+
+  if (!enable_sync_callback_) {
+    VLOG(1)
+        << "Do not start sync after web sign-in [no sync flow in progress].";
     return false;
   }
 

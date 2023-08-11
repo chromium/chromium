@@ -276,6 +276,26 @@ TEST_F(ProcessDiceHeaderDelegateImplTest, NoRedirect) {
   EXPECT_FALSE(dice_tab_helper->IsSyncSigninInProgress());
 }
 
+// Check that a Dice header can still be processed in a reused tab.
+// Regression test for https://crbug.com/1471277
+TEST_F(ProcessDiceHeaderDelegateImplTest, TabReuse) {
+  // Complete a first signin flow.
+  std::unique_ptr<ProcessDiceHeaderDelegateImpl> delegate =
+      CreateDelegateAndNavigateToSignin(/*is_sync_signin_tab=*/true,
+                                        /*redirect_url=*/GURL());
+  delegate->EnableSync(account_id_);
+  EXPECT_TRUE(enable_sync_called_);
+  EXPECT_FALSE(show_error_called_);
+
+  // Receive another Dice header in the same tab.
+  enable_sync_called_ = false;
+  ProcessDiceHeaderDelegateImpl::Create(web_contents());
+  // Calling `EnableSync()` does nothing because the tab has already been used.
+  delegate->EnableSync(account_id_);
+  EXPECT_FALSE(enable_sync_called_);
+  EXPECT_FALSE(show_error_called_);
+}
+
 struct TestConfiguration {
   // Test setup.
   bool signed_in;   // User was already signed in at the start of the flow.
