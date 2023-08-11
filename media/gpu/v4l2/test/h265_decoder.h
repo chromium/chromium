@@ -200,6 +200,9 @@ class H265Decoder : public VideoDecoder {
 
   // If this is true, then the entire steam has been parsed.
   bool is_stream_over_ = false;
+
+  // Checks whether |OUTPUT_queue_| is newly created at the current frame.
+  bool is_OUTPUT_queue_new_ = true;
 };
 }  // namespace v4l2_test
 }  // namespace media

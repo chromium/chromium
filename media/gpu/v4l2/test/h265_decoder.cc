@@ -660,8 +660,15 @@ bool H265Decoder::StartNewFrame(const H265SliceHeader* slice_hdr) {
     curr_pic_->processed_ = true;
   }
 
+  struct v4l2_ext_control ctrls[] = {};
+  struct v4l2_ext_controls ext_ctrls = {
+      .count = (sizeof(ctrls) / sizeof(ctrls[0])), .controls = ctrls};
+
+  v4l2_ioctl_->SetExtCtrls(OUTPUT_queue_, &ext_ctrls, is_OUTPUT_queue_new_);
+
   // TODO(b/261127809): Implement submit frame meta data
   NOTIMPLEMENTED();
+
   return false;
 }
 
@@ -869,6 +876,11 @@ VideoDecoder::Result H265Decoder::DecodeNextFrame(const int frame_number,
   if (!parser_) {
     parser_ = std::make_unique<H265Parser>();
     parser_->SetStream(data_stream_->data(), data_stream_->length());
+  }
+
+  is_OUTPUT_queue_new_ = !OUTPUT_queue_;
+  if (!OUTPUT_queue_) {
+    CreateOUTPUTQueue(kDriverCodecFourcc);
   }
 
   // TODO(b/261127809): add a condition to check frames are ready for processing
