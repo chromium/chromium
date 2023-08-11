@@ -73,8 +73,9 @@
       // Should result in an event-level report and an aggregatable report
       // as the aggregatable report window was clamped to one hour.
       {
-        // 3,600,000 ms = 1 hour
-        "timestamp": "3600000",
+        // 3,599,999 ms = 1 hour - 1 ms offset to avoid falling outside the
+        // window
+        "timestamp": "3599999",
         "registration_request": {
           "attribution_src_url": "https://reporter.test/register-trigger",
           "destination_origin": "https://destination.test"
@@ -104,8 +105,8 @@
       // Should result in an event-level report, but not aggregatable report as
       // aggregatable report window has passed.
       {
-        // 3,600,001 ms = 1 hour + 1 ms
-        "timestamp": "3600001",
+        // 3,600,000 ms = 1 hour
+        "timestamp": "3600000",
         "registration_request": {
           "attribution_src_url": "https://reporter.test/register-trigger",
           "destination_origin": "https://destination.test"
@@ -137,9 +138,10 @@
       // Should result in an aggregatable report as the aggregatable report
       // window was not rounded.
       {
-        // 88,401,000 ms = 88,400 s (source's aggregatable_report_window) + 1 s
-        // (source's timestamp)
-        "timestamp": "88401000",
+        // 88,400,999 ms = 88,400 s (source's aggregatable_report_window) + 1 s
+        // (source's timestamp) - 1 ms offset to avoid falling outside the
+        // window
+        "timestamp": "88400999",
         "registration_request": {
           "attribution_src_url": "https://reporter2.test/register-trigger",
           "destination_origin": "https://destination.test"
@@ -235,8 +237,8 @@
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution",
          // 7,200,000 ms  = 3,600 s (clamped aggregatable_report_window)  + 1
-         // hour (base delay)
-        "report_time": "7200000"
+         // hour (base delay) - 1 ms offset
+        "report_time": "7199999"
       },
       {
         "payload": {
@@ -247,8 +249,8 @@
           } ]
        },
        // 90,000,000 ms  = 86,400 s (clamped aggregatable_report_window)  + 1
-       // hour (base delay) + 1s (source's timestamp)
-       "report_time": "92001000",
+       // hour (base delay) + 1s (source's timestamp) - 1 ms offset
+       "report_time": "92000999",
        "report_url": "https://reporter2.test/.well-known/attribution-reporting/report-aggregate-attribution"
       }
     ],
@@ -262,7 +264,7 @@
           },
           "type": "trigger-aggregate-report-window-passed"
        } ],
-       "report_time": "3600001",
+       "report_time": "3600000",
        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
       },
       {

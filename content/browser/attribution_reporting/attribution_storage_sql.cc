@@ -2923,7 +2923,7 @@ AttributionStorageSql::MaybeCreateAggregatableAttributionReport(
 
   const CommonSourceInfo& common_info = source.common_info();
 
-  if (attribution_info.time > source.aggregatable_report_window_time()) {
+  if (attribution_info.time >= source.aggregatable_report_window_time()) {
     return AggregatableResult::kReportWindowPassed;
   }
 
