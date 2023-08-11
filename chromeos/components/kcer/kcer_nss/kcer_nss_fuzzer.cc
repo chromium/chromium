@@ -456,7 +456,7 @@ void CertGenerator::GenerateCert() {
     std::vector<net::der::Input> purpose_oids;
     while (GetBool()) {
       memory_holder.push_back(GetString());
-      purpose_oids.emplace_back(&memory_holder.back());
+      purpose_oids.emplace_back(memory_holder.back());
     }
     if (!purpose_oids.empty()) {  // Empty not allowed.
       cert_builder_->SetExtendedKeyUsages(purpose_oids);
