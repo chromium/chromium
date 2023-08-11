@@ -497,6 +497,16 @@ bool PrefModelAssociator::SetPrefWithTypeCheck(const std::string& pref_name,
                   << "pref type: " << registered_type;
     return false;
   }
+  if (base::FeatureList::IsEnabled(syncer::kEnablePreferencesAccountStorage)) {
+    CHECK(dual_layer_user_prefs_);
+    // `dual_layer_user_prefs_->SetValueInAccountStoreOnly()` is almost
+    // equivalent to `user_prefs_->SetValue()` except that if the effective
+    // value of the pref for the `dual_layer_user_prefs_` is unchanged, no
+    // notifications are sent out to its observers.
+    dual_layer_user_prefs_->SetValueInAccountStoreOnly(
+        pref_name, new_value.Clone(), pref_service_->GetWriteFlags(pref_name));
+    return true;
+  }
   // Write directly to the user controlled value store, which is ignored if the
   // preference is controlled by a higher-priority layer (e.g. policy).
   user_prefs_->SetValue(pref_name, new_value.Clone(),

@@ -7,15 +7,21 @@
 #include <memory>
 #include <unordered_set>
 
+#include "base/json/json_string_value_serializer.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
+#include "components/prefs/mock_pref_change_callback.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/prefs/testing_pref_store.h"
 #include "components/sync/base/features.h"
+#include "components/sync/protocol/entity_specifics.pb.h"
+#include "components/sync/protocol/preference_specifics.pb.h"
+#include "components/sync/test/fake_sync_change_processor.h"
 #include "components/sync_preferences/pref_model_associator_client.h"
 #include "components/sync_preferences/pref_service_mock_factory.h"
 #include "components/sync_preferences/pref_service_syncable.h"
@@ -51,6 +57,21 @@ const std::unordered_map<std::string, SyncablePrefMetadata>
         {kStringOsPrefName, {0, syncer::OS_PREFERENCES, false}},
         {kStringOsPriorityPrefName,
          {0, syncer::OS_PRIORITY_PREFERENCES, false}}};
+
+// Creates SyncData for a remote pref change.
+syncer::SyncData CreateRemoteSyncData(const std::string& name,
+                                      base::ValueView value) {
+  std::string serialized;
+  JSONStringValueSerializer json(&serialized);
+  EXPECT_TRUE(json.Serialize(value));
+  sync_pb::EntitySpecifics specifics;
+  sync_pb::PreferenceSpecifics* pref_specifics = specifics.mutable_preference();
+  pref_specifics->set_name(name);
+  pref_specifics->set_value(serialized);
+  return syncer::SyncData::CreateRemoteData(
+      specifics, syncer::ClientTagHash::FromUnhashed(
+                     syncer::ModelType::PREFERENCES, name));
+}
 
 class TestPrefModelAssociatorClient : public PrefModelAssociatorClient {
  public:
@@ -694,6 +715,153 @@ TEST_F(SyncablePrefsDatabaseDeathTest,
           user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF),
       kExpectedErrorMessageHint);
 #endif
+}
+
+class PrefModelAssociatorWithPreferencesAccountStorageTest
+    : public testing::Test {
+ protected:
+  PrefModelAssociatorWithPreferencesAccountStorageTest()
+      : feature_list_(syncer::kEnablePreferencesAccountStorage),
+        pref_registry_(
+            base::MakeRefCounted<user_prefs::PrefRegistrySyncable>()),
+        local_pref_store_(base::MakeRefCounted<TestingPrefStore>()),
+        account_pref_store_(base::MakeRefCounted<TestingPrefStore>()) {
+    pref_registry_->RegisterStringPref(
+        kStringPrefName, std::string(),
+        user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+
+    PrefServiceMockFactory factory;
+    factory.SetPrefModelAssociatorClient(&client_);
+    factory.set_user_prefs(local_pref_store_);
+    factory.SetAccountPrefStore(account_pref_store_);
+    pref_service_ = factory.CreateSyncable(pref_registry_);
+    pref_model_associator_ = static_cast<PrefModelAssociator*>(
+        pref_service_->GetSyncableService(syncer::PREFERENCES));
+  }
+
+  void MergeDataAndStartSyncing(const syncer::SyncDataList& initial_data) {
+    auto error = pref_model_associator_->MergeDataAndStartSyncing(
+        syncer::PREFERENCES, initial_data,
+        std::make_unique<syncer::FakeSyncChangeProcessor>());
+    EXPECT_FALSE(error.has_value());
+  }
+
+  base::test::ScopedFeatureList feature_list_;
+
+  TestPrefModelAssociatorClient client_;
+  scoped_refptr<user_prefs::PrefRegistrySyncable> pref_registry_;
+  scoped_refptr<TestingPrefStore> local_pref_store_;
+  scoped_refptr<TestingPrefStore> account_pref_store_;
+  std::unique_ptr<PrefServiceSyncable> pref_service_;
+  raw_ptr<PrefModelAssociator> pref_model_associator_ = nullptr;
+};
+
+// Tests that no notification is issued if the effective value is unchanged upon
+// initial merge.
+TEST_F(PrefModelAssociatorWithPreferencesAccountStorageTest,
+       ShouldNotNotifyUponInitIfSameValueExistsInLocalStoreOnly) {
+  // Load value to local store before initial merge.
+  local_pref_store_->SetValue(kStringPrefName, base::Value("value"), 0);
+  ASSERT_EQ(pref_service_->GetString(kStringPrefName), "value");
+
+  // Listen to pref changes.
+  MockPrefChangeCallback observer(pref_service_.get());
+  PrefChangeRegistrar registrar;
+  registrar.Init(pref_service_.get());
+  registrar.Add(kStringPrefName, observer.GetCallback());
+
+  // No call should be made to the observer as the effective value of the pref
+  // is unchanged.
+  EXPECT_CALL(observer, OnPreferenceChanged).Times(0);
+
+  // Create initial sync data with the same pref value as that in the local
+  // store.
+  syncer::SyncDataList initial_data;
+  initial_data.push_back(
+      CreateRemoteSyncData(kStringPrefName, base::Value("value")));
+
+  MergeDataAndStartSyncing(initial_data);
+}
+
+// Tests that no notification is issued if the effective value is unchanged upon
+// initial merge.
+TEST_F(PrefModelAssociatorWithPreferencesAccountStorageTest,
+       ShouldNotNotifyUponInitIfSameValueExistsInAccountStoreOnly) {
+  // Load value to account store before initial merge.
+  account_pref_store_->SetValue(kStringPrefName, base::Value("value"), 0);
+  ASSERT_EQ(pref_service_->GetString(kStringPrefName), "value");
+
+  // Listen to pref changes.
+  MockPrefChangeCallback observer(pref_service_.get());
+  PrefChangeRegistrar registrar;
+  registrar.Init(pref_service_.get());
+  registrar.Add(kStringPrefName, observer.GetCallback());
+
+  // No call should be made to the observer as the effective value of the pref
+  // is unchanged.
+  EXPECT_CALL(observer, OnPreferenceChanged).Times(0);
+
+  // Create initial sync data with the same pref value as that in the local
+  // store.
+  syncer::SyncDataList initial_data;
+  initial_data.push_back(
+      CreateRemoteSyncData(kStringPrefName, base::Value("value")));
+
+  MergeDataAndStartSyncing(initial_data);
+}
+
+// Tests that notification is issued if the effective value changes upon
+// initial merge.
+TEST_F(PrefModelAssociatorWithPreferencesAccountStorageTest,
+       ShouldNotifyUponInitIfDifferentValueExistsInLocalStoreOnly) {
+  // Load value to local store before initial merge.
+  local_pref_store_->SetValue(kStringPrefName, base::Value("value"), 0);
+  ASSERT_EQ(pref_service_->GetString(kStringPrefName), "value");
+
+  // Listen to pref changes.
+  MockPrefChangeCallback observer(pref_service_.get());
+  PrefChangeRegistrar registrar;
+  registrar.Init(pref_service_.get());
+  registrar.Add(kStringPrefName, observer.GetCallback());
+
+  // Observer should get notified since the effective value changes.
+  EXPECT_CALL(observer, OnPreferenceChanged);
+
+  // Create initial sync data with a different pref value than that in the
+  // local store.
+  syncer::SyncDataList initial_data;
+  initial_data.push_back(
+      CreateRemoteSyncData(kStringPrefName, base::Value("new value")));
+
+  MergeDataAndStartSyncing(initial_data);
+  ASSERT_EQ(pref_service_->GetString(kStringPrefName), "new value");
+}
+
+// Tests that notification is issued if the effective value changes upon
+// initial merge.
+TEST_F(PrefModelAssociatorWithPreferencesAccountStorageTest,
+       ShouldNotifyUponInitIfDifferentValueExistsInAccountStoreOnly) {
+  // Load value to account store before initial merge.
+  account_pref_store_->SetValue(kStringPrefName, base::Value("value"), 0);
+  ASSERT_EQ(pref_service_->GetString(kStringPrefName), "value");
+
+  // Listen to pref changes.
+  MockPrefChangeCallback observer(pref_service_.get());
+  PrefChangeRegistrar registrar;
+  registrar.Init(pref_service_.get());
+  registrar.Add(kStringPrefName, observer.GetCallback());
+
+  // Observer should get notified since the effective value changes.
+  EXPECT_CALL(observer, OnPreferenceChanged);
+
+  // Create initial sync data with a different pref value than that in the
+  // local store.
+  syncer::SyncDataList initial_data;
+  initial_data.push_back(
+      CreateRemoteSyncData(kStringPrefName, base::Value("new value")));
+
+  MergeDataAndStartSyncing(initial_data);
+  ASSERT_EQ(pref_service_->GetString(kStringPrefName), "new value");
 }
 
 }  // namespace
