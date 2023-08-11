@@ -7,8 +7,12 @@
 #include <cstddef>
 #include <vector>
 
+#include "base/files/file_path.h"
+#include "base/files/scoped_temp_dir.h"
 #include "compression_utils_portable.h"
 #include "gtest.h"
+#include "third_party/zlib/contrib/minizip/unzip.h"
+#include "third_party/zlib/contrib/minizip/zip.h"
 #include "zlib.h"
 
 void TestPayloads(size_t input_size, zlib_internal::WrapperType type) {
@@ -1014,4 +1018,69 @@ TEST(ZlibTest, DeflateZFixedCorruption) {
   EXPECT_EQ(
       memcmp(zFixedCorruptionData, decompressed.data(), decompressed.size()),
       0);
+}
+
+TEST(ZlibTest, ZipFilenameCommentSize) {
+  // Check that minizip rejects zip member filenames or comments longer than
+  // the zip format can represent.
+
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath zip_file = temp_dir.GetPath().AppendASCII("crbug1470539.zip");
+
+  zipFile zf = zipOpen(zip_file.AsUTF8Unsafe().c_str(), APPEND_STATUS_CREATE);
+  ASSERT_NE(zf, nullptr);
+
+  // Adding a member with 2^16 byte filename is okay.
+  std::string long_filename(UINT16_MAX, 'a');
+  EXPECT_EQ(zipOpenNewFileInZip(zf, long_filename.c_str(), nullptr, nullptr, 0,
+                                nullptr, 0, nullptr, Z_DEFLATED,
+                                Z_DEFAULT_COMPRESSION),
+            ZIP_OK);
+  EXPECT_EQ(zipWriteInFileInZip(zf, "1", 1), ZIP_OK);
+  EXPECT_EQ(zipCloseFileInZip(zf), ZIP_OK);
+
+  // Adding a member with 2^16+1 byte filename is NOT okay.
+  std::string too_long_filename = long_filename + 'a';
+  EXPECT_EQ(zipOpenNewFileInZip(zf, too_long_filename.c_str(), nullptr, nullptr,
+                                0, nullptr, 0, nullptr, Z_DEFLATED,
+                                Z_DEFAULT_COMPRESSION),
+            ZIP_PARAMERROR);
+
+  // Adding a member with 2^16 byte comment is okay.
+  std::string long_comment(UINT16_MAX, 'x');
+  EXPECT_EQ(zipOpenNewFileInZip(zf, "x", nullptr, nullptr, 0, nullptr, 0,
+                                long_comment.c_str(), Z_DEFLATED,
+                                Z_DEFAULT_COMPRESSION),
+            ZIP_OK);
+  EXPECT_EQ(zipCloseFileInZip(zf), ZIP_OK);
+
+  // Adding a member with 2^16+1 byte comment is NOT okay.
+  std::string too_long_comment = long_comment + 'x';
+  EXPECT_EQ(zipOpenNewFileInZip(zf, "x", nullptr, nullptr, 0, nullptr, 0,
+                                too_long_comment.c_str(), Z_DEFLATED,
+                                Z_DEFAULT_COMPRESSION),
+            ZIP_PARAMERROR);
+
+  EXPECT_EQ(zipClose(zf, nullptr), ZIP_OK);
+
+  // Check that the long filename and comment members were successfully added.
+  unzFile uzf = unzOpen(zip_file.AsUTF8Unsafe().c_str());
+  ASSERT_NE(uzf, nullptr);
+  char buf[UINT16_MAX + 2];
+
+  ASSERT_EQ(unzGoToFirstFile(uzf), UNZ_OK);
+  ASSERT_EQ(unzGetCurrentFileInfo(uzf, nullptr, buf, sizeof(buf), nullptr, 0,
+                                  nullptr, 0),
+            UNZ_OK);
+  EXPECT_EQ(std::string(buf), long_filename);
+
+  ASSERT_EQ(unzGoToNextFile(uzf), UNZ_OK);
+  ASSERT_EQ(unzGetCurrentFileInfo(uzf, nullptr, nullptr, 0, nullptr, 0, buf,
+                                  sizeof(buf)),
+            UNZ_OK);
+  EXPECT_EQ(std::string(buf), long_comment);
+
+  EXPECT_EQ(unzGoToNextFile(uzf), UNZ_END_OF_LIST_OF_FILE);
+  EXPECT_EQ(unzClose(uzf), UNZ_OK);
 }
