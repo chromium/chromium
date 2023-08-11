@@ -592,7 +592,7 @@ BASE_FEATURE(kCryptAuthV2Enrollment,
 // cryptohome backend.
 BASE_FEATURE(kCryptohomeRecovery,
              "CryptohomeRecovery",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Deprecates Ctrl+Alt+/ as shortcut to open Keyboard shortcuts app, shows
 // a notification if that shortcut is pressed, and replaces that shortcut with
@@ -768,7 +768,7 @@ BASE_FEATURE(kEnableBackgroundBlur,
 // early in the sign-in flow, before loading Profile.
 BASE_FEATURE(kEnableEarlyPrefs,
              "EnableEarlyPrefs",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables external keyboard testers in the diagnostics app.
 BASE_FEATURE(kEnableExternalKeyboardsInDiagnostics,
