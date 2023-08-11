@@ -5,7 +5,7 @@ Crosier is a project for running GTest-based integration tests on a ChromeOS
 hardware Device Under Test (DUT) or in a ChromeOS Virtual Machine (VM). The idea
 is similar to interactive_ui_tests. A runner uses GTest to launch a full browser
 on DUT/VM, and the test body runs in the same process as the browser process.
-Utilily APIs will be provided so the test body can access Chrome classes and
+Utility APIs will be provided so the test body can access Chrome classes and
 objects like normal browser tests. The test can also access ChromeOS system
 services/daemons via utilities (D-Bus wrappers, shell commands, etc.).
 
