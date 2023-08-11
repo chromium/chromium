@@ -6,14 +6,11 @@ package org.chromium.chrome.browser.omnibox.status;
 
 import android.animation.Animator;
 import android.content.res.Resources;
-import android.os.Build;
-import android.os.Build.VERSION;
 import android.view.View;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-import androidx.appcompat.widget.TooltipCompat;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.OneshotSupplier;
@@ -128,12 +125,6 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
         updateVerboseStatusVisibility();
         mLocationBarDataProvider.addObserver(this);
         mStatusView.setBrowserControlsVisibilityDelegate(browserControlsVisibilityDelegate);
-
-        // Set tooltip text for location bar status icon.
-        if (getSecurityIconView() != null && VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            TooltipCompat.setTooltipText((View) getSecurityIconView(),
-                    mStatusView.getContext().getString(R.string.accessibility_menu_info));
-        }
     }
 
     /** Signals that native initialization has completed. */
