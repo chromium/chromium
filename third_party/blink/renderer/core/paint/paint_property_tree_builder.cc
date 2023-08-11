@@ -280,6 +280,7 @@ class FragmentPaintPropertyTreeBuilder {
   ALWAYS_INLINE void UpdateViewTransitionEffect();
   ALWAYS_INLINE void UpdateViewTransitionClip();
   ALWAYS_INLINE void UpdateEffect();
+  ALWAYS_INLINE void UpdateElementCaptureEffect();
   ALWAYS_INLINE void UpdateFilter();
   ALWAYS_INLINE void UpdateCssClip();
   ALWAYS_INLINE void UpdateClipPathClip();
@@ -578,7 +579,8 @@ static bool NeedsPaintOffsetTranslation(
     // and column spans.
     if (box_model.IsLayoutBlock() || object.IsLayoutReplaced() ||
         (direct_compositing_reasons &
-         CompositingReason::kViewTransitionElement)) {
+         CompositingReason::kViewTransitionElement) ||
+        (direct_compositing_reasons & CompositingReason::kElementCapture)) {
       return true;
     }
   }
@@ -1704,6 +1706,36 @@ void FragmentPaintPropertyTreeBuilder::UpdateEffect() {
   }
 }
 
+void FragmentPaintPropertyTreeBuilder::UpdateElementCaptureEffect() {
+  if (!NeedsPaintPropertyUpdate()) {
+    return;
+  }
+
+  if (!(full_context_.direct_compositing_reasons &
+        CompositingReason::kElementCapture)) {
+    OnClearEffect(properties_->ElementCaptureEffect());
+    return;
+  }
+
+  // If we have the correct compositing reason, we should be associated with a
+  // node. In the case we are not, the effect is no longer valid.
+  auto* element = DynamicTo<Element>(object_.GetNode());
+  CHECK(element && element->GetRegionCaptureCropId());
+  CHECK(context_.current.clip);
+  CHECK(context_.current.transform);
+  EffectPaintPropertyNode::State state;
+  state.direct_compositing_reasons = CompositingReason::kElementCapture;
+  state.local_transform_space = context_.current.transform;
+  state.output_clip = context_.current.clip;
+  state.element_capture_id = *element->GetRegionCaptureCropId();
+  state.compositor_element_id = CompositorElementIdFromUniqueObjectId(
+      object_.UniqueId(), CompositorElementIdNamespace::kElementCapture);
+
+  OnUpdateEffect(properties_->UpdateElementCaptureEffect(
+      *context_.current_effect, std::move(state), {}));
+  context_.current_effect = properties_->ElementCaptureEffect();
+}
+
 void FragmentPaintPropertyTreeBuilder::UpdateViewTransitionEffect() {
   if (NeedsPaintPropertyUpdate()) {
     if (full_context_.direct_compositing_reasons &
@@ -1772,8 +1804,9 @@ static bool IsClipPathDescendant(const LayoutObject& object) {
   // If the object itself is a resource container (root of a resource subtree)
   // it is not considered a clipPath descendant since it is independent of its
   // ancestors.
-  if (object.IsSVGResourceContainer())
+  if (object.IsSVGResourceContainer()) {
     return false;
+  }
   const LayoutObject* parent = object.Parent();
   while (parent) {
     if (parent->IsSVGResourceContainer()) {
@@ -1793,8 +1826,9 @@ static bool NeedsFilter(const LayoutObject& object,
 
   if (object.IsBoxModelObject() &&
       To<LayoutBoxModelObject>(object).HasLayer()) {
-    if (object.StyleRef().HasFilter() || object.HasReflection())
+    if (object.StyleRef().HasFilter() || object.HasReflection()) {
       return true;
+    }
   } else if (object.IsSVGChild() && !object.IsText() &&
              SVGResources::GetClient(object)) {
     if (object.StyleRef().HasFilter()) {
@@ -1812,8 +1846,9 @@ static void UpdateFilterEffect(const LayoutObject& object,
                                CompositorFilterOperations& filter) {
   if (object.HasLayer()) {
     // Try to use the cached filter.
-    if (effect_node)
+    if (effect_node) {
       filter = effect_node->Filter();
+    }
     PaintLayer* layer = To<LayoutBoxModelObject>(object).Layer();
 #if DCHECK_IS_ON()
     // We should have already updated the reference box.
@@ -3049,6 +3084,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateForSelf() {
       UpdateOffset();
       UpdateTransform();
     }
+    UpdateElementCaptureEffect();
     UpdateViewTransitionEffect();
     UpdateViewTransitionClip();
     UpdateClipPathClip();

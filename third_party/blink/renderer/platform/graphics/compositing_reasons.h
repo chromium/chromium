@@ -68,7 +68,7 @@ using CompositingReasons = uint64_t;
   V(ViewTransitionPseudoElement)                                               \
                                                                                \
   /* For composited scrolling. In CompositeScrollAfterPaint, this is           \
-     determined after paint. */                                                \
+                            determined after paint. */                         \
   V(OverflowScrolling)                                                         \
                                                                                \
   /* The following reasons are not used in paint properties, but are           \
@@ -85,7 +85,8 @@ using CompositingReasons = uint64_t;
   V(Scrollbar)                                                                 \
   V(LinkHighlight)                                                             \
   V(DevToolsOverlay)                                                           \
-  V(ViewTransitionContent)
+  V(ViewTransitionContent)                                                     \
+  V(ElementCapture)
 
 class PLATFORM_EXPORT CompositingReason {
   DISALLOW_NEW();
@@ -141,7 +142,7 @@ class PLATFORM_EXPORT CompositingReason {
     kDirectReasonsForEffectProperty =
         kActiveOpacityAnimation | kWillChangeOpacity | kBackdropFilter |
         kWillChangeBackdropFilter | kActiveBackdropFilterAnimation |
-        kViewTransitionPseudoElement | kTransform3DSceneLeaf,
+        kViewTransitionPseudoElement | kTransform3DSceneLeaf | kElementCapture,
     kDirectReasonsForFilterProperty =
         kActiveFilterAnimation | kWillChangeFilter,
     kDirectReasonsForBackdropFilter = kBackdropFilter |

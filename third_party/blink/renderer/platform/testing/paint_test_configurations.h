@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TESTING_PAINT_TEST_CONFIGURATIONS_H_
 
 #include <gtest/gtest.h>
+
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -24,6 +25,7 @@ enum {
   kFluentScrollbar = 1 << 4,
   kSparseObjectPaintProperties = 1 << 5,
   kHitTestOpaqueness = 1 << 6,
+  kElementCapture = 1 << 7,
 };
 
 class PaintTestConfigurations
@@ -33,7 +35,8 @@ class PaintTestConfigurations
       private ScopedCompositeScrollAfterPaintForTest,
       private ScopedUsedColorSchemeRootScrollbarsForTest,
       private ScopedSparseObjectPaintPropertiesForTest,
-      private ScopedHitTestOpaquenessForTest {
+      private ScopedHitTestOpaquenessForTest,
+      private ScopedElementCaptureForTest {
  public:
   PaintTestConfigurations()
       : ScopedPaintUnderInvalidationCheckingForTest(GetParam() &
@@ -45,7 +48,8 @@ class PaintTestConfigurations
             GetParam() & kUsedColorSchemeRootScrollbars),
         ScopedSparseObjectPaintPropertiesForTest(GetParam() &
                                                  kSparseObjectPaintProperties),
-        ScopedHitTestOpaquenessForTest(GetParam() & kHitTestOpaqueness) {
+        ScopedHitTestOpaquenessForTest(GetParam() & kHitTestOpaqueness),
+        ScopedElementCaptureForTest(GetParam() & kElementCapture) {
     std::vector<base::test::FeatureRef> enabled_features = {};
     std::vector<base::test::FeatureRef> disabled_features = {};
     if (GetParam() & kFluentScrollbar) {

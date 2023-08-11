@@ -108,22 +108,24 @@ class CORE_EXPORT ObjectPaintPropertiesImpl : public ObjectPaintProperties {
   ADD_TRANSFORM(ReplacedContentTransform, replaced_content_transform_);
   ADD_TRANSFORM(ScrollTranslation, scroll_translation_);
   using ScrollPaintPropertyNodeOrAlias = ScrollPaintPropertyNode;
-  ADD_NODE(Scroll, Scroll, scroll_);
   ADD_ALIAS_NODE(Transform, TransformIsolationNode, transform_isolation_node_);
+
+  ADD_NODE(Scroll, Scroll, scroll_);
 
   // Effect node implementations.
   bool HasEffectNode() const override {
     return effect_ || filter_ || vertical_scrollbar_effect_ ||
            horizontal_scrollbar_effect_ || scroll_corner_effect_ || mask_ ||
-           clip_path_mask_ || effect_isolation_node_;
+           clip_path_mask_ || element_capture_effect_ || effect_isolation_node_;
   }
+  ADD_EFFECT(ElementCaptureEffect, element_capture_effect_);
   ADD_EFFECT(Effect, effect_);
   ADD_EFFECT(Filter, filter_);
+  ADD_EFFECT(Mask, mask_);
+  ADD_EFFECT(ClipPathMask, clip_path_mask_);
   ADD_EFFECT(VerticalScrollbarEffect, vertical_scrollbar_effect_);
   ADD_EFFECT(HorizontalScrollbarEffect, horizontal_scrollbar_effect_);
   ADD_EFFECT(ScrollCornerEffect, scroll_corner_effect_);
-  ADD_EFFECT(Mask, mask_);
-  ADD_EFFECT(ClipPathMask, clip_path_mask_);
   ADD_ALIAS_NODE(Effect, EffectIsolationNode, effect_isolation_node_);
 
   // Clip node implementations.
@@ -132,15 +134,15 @@ class CORE_EXPORT ObjectPaintPropertiesImpl : public ObjectPaintProperties {
            mask_clip_ || css_clip_ || overflow_controls_clip_ ||
            inner_border_radius_clip_ || overflow_clip_ || clip_isolation_node_;
   }
-  ADD_CLIP(PixelMovingFilterClipExpander, pixel_moving_filter_clip_expander_);
   ADD_CLIP(ClipPathClip, clip_path_clip_);
   ADD_CLIP(MaskClip, mask_clip_);
   ADD_CLIP(CssClip, css_clip_);
-  ADD_CLIP(CssClipFixedPosition, css_clip_fixed_position_);
   ADD_CLIP(OverflowControlsClip, overflow_controls_clip_);
   ADD_CLIP(BackgroundClip, background_clip_);
+  ADD_CLIP(PixelMovingFilterClipExpander, pixel_moving_filter_clip_expander_);
   ADD_CLIP(InnerBorderRadiusClip, inner_border_radius_clip_);
   ADD_CLIP(OverflowClip, overflow_clip_);
+  ADD_CLIP(CssClipFixedPosition, css_clip_fixed_position_);
   ADD_ALIAS_NODE(Clip, ClipIsolationNode, clip_isolation_node_);
 
 #undef ADD_CLIP

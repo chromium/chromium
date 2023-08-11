@@ -136,7 +136,8 @@ INSTANTIATE_TEST_SUITE_P(All,
                          PaintPropertyTreeBuilderTest,
                          ::testing::Values(0,
                                            kUnderInvalidationChecking,
-                                           kSparseObjectPaintProperties));
+                                           kSparseObjectPaintProperties,
+                                           kElementCapture));
 
 TEST_P(PaintPropertyTreeBuilderTest, FixedPosition) {
   LoadTestData("fixed-position.html");
@@ -5569,6 +5570,46 @@ TEST_P(PaintPropertyTreeBuilderTest, SVGRootWithCSSMask) {
 
   const auto& root = *To<LayoutSVGRoot>(GetLayoutObjectByElementId("svg"));
   EXPECT_TRUE(root.FirstFragment().PaintProperties()->Mask());
+}
+
+TEST_P(PaintPropertyTreeBuilderTest, ElementCaptureEffectNode) {
+  // This test makes sure that an ElementCaptureEffect node is properly added
+  // when an element has a crop ID.
+  SetBodyInnerHTML(R"HTML(
+    <body id="body1">
+      <div id="div1" width="640" height="480"/>
+    </body>
+  )HTML");
+
+  Element* element = GetDocument().getElementById(AtomicString("div1"));
+  ASSERT_TRUE(element);
+
+  // As a plain div, the element shouldn't have a separate stacking context.
+  EXPECT_FALSE(element->GetLayoutObject()->HasLayer());
+  EXPECT_FALSE(element->GetLayoutObject()->IsStackingContext());
+  element->SetRegionCaptureCropId(
+      std::make_unique<RegionCaptureCropId>(base::Token::CreateRandom()));
+  UpdateAllLifecyclePhasesForTest();
+
+  // The element should now have a proper stacking context, assuming element
+  // capture is enabled.
+  if (RuntimeEnabledFeatures::ElementCaptureEnabled()) {
+    EXPECT_TRUE(element->GetLayoutObject()->HasLayer());
+    EXPECT_TRUE(element->GetLayoutObject()->IsStackingContext());
+  }
+
+  // If the feature is enabled, now that the div has a crop ID, it should have
+  // an element capture effect node. If the feature is not enabled, this element
+  // shouldn't have an element capture effect (and may or may not have paint
+  // properties at all).
+  const ObjectPaintProperties* paint_properties =
+      element->GetLayoutObject()->FirstFragment().PaintProperties();
+  EXPECT_EQ(RuntimeEnabledFeatures::ElementCaptureEnabled(),
+            paint_properties && paint_properties->ElementCaptureEffect());
+
+  // NOTE: we don't currently have a teardown path for element capture. Once an
+  // element is marked for capture it is marked for the rest of its lifetime.
+  // TODO(https://crbug.com/1472139): add a teardown path for element capture.
 }
 
 TEST_P(PaintPropertyTreeBuilderTest, ClearClipPathEffectNode) {

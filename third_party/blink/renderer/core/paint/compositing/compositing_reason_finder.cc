@@ -362,6 +362,13 @@ CompositingReasonFinder::DirectReasonsForPaintPropertiesExceptScrolling(
     }
   }
 
+  if (RuntimeEnabledFeatures::ElementCaptureEnabled()) {
+    auto* element = DynamicTo<Element>(object.GetNode());
+    if (element && element->GetRegionCaptureCropId()) {
+      reasons |= CompositingReason::kElementCapture;
+    }
+  }
+
   return reasons;
 }
 

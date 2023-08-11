@@ -4364,17 +4364,28 @@ void Element::SetNeedsCompositingUpdate() {
 void Element::SetRegionCaptureCropId(
     std::unique_ptr<RegionCaptureCropId> crop_id) {
   ElementRareDataVector& rare_data = EnsureElementRareData();
-
   CHECK(!rare_data.GetRegionCaptureCropId());
+
+  LayoutObject* layout_object = GetLayoutObject();
+  const bool should_force_stacking_context =
+      layout_object && !layout_object->IsStackingContext();
 
   // Propagate efficient form through the rendering pipeline.
   rare_data.SetRegionCaptureCropId(std::move(crop_id));
 
-  // The crop ID needs to be propagated to the paint system by the time that
-  // capture begins. The API requires the implementation to propagate the
-  // token right away, so we force invalidate here.
-  if (GetLayoutObject()) {
-    GetLayoutObject()->SetShouldDoFullPaintInvalidation();
+  if (layout_object) {
+    // If we forced a stacking context, we need to reattach to the layout tree.
+    // There is no corresponding style change.
+    if (RuntimeEnabledFeatures::ElementCaptureEnabled()) {
+      if (should_force_stacking_context) {
+        SetForceReattachLayoutTree();
+      }
+    }
+
+    // The crop ID needs to be propagated to the paint system by the time that
+    // capture begins. The API requires the implementation to propagate the
+    // token right away, so we force invalidate here.
+    layout_object->SetShouldDoFullPaintInvalidation();
   }
 }
 

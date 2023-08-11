@@ -311,9 +311,9 @@ const RegionCaptureCropId* ElementRareDataVector::GetRegionCaptureCropId()
 }
 void ElementRareDataVector::SetRegionCaptureCropId(
     std::unique_ptr<RegionCaptureCropId> crop_id) {
-  DCHECK(!GetRegionCaptureCropId());
-  DCHECK(crop_id);
-  DCHECK(!crop_id->value().is_zero());
+  CHECK(!GetRegionCaptureCropId());
+  CHECK(crop_id);
+  CHECK(!crop_id->value().is_zero());
   SetWrappedField<std::unique_ptr<RegionCaptureCropId>>(
       FieldId::kRegionCaptureCropId, std::move(crop_id));
 }

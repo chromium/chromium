@@ -104,6 +104,8 @@ constexpr ReasonAndDescription kReasonDescriptionMap[] = {
     {CompositingReason::kDevToolsOverlay, "Is DevTools overlay."},
     {CompositingReason::kViewTransitionContent,
      "The layer containing the contents of a view transition element."},
+    {CompositingReason::kElementCapture,
+     "This element is undergoing element-level capture."},
 };
 
 }  // anonymous namespace

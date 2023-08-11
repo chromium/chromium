@@ -109,28 +109,29 @@ class CORE_EXPORT ObjectPaintPropertiesSparse : public ObjectPaintProperties {
     kScroll = 12,
 
     // Effects
-    kEffect = 13,
-    kFilter = 14,
-    kMask = 15,
-    kClipPathMask = 16,
-    kVerticalScrollbarEffect = 17,
-    kHorizontalScrollbarEffect = 18,
-    kScrollCorner = 19,
-    kEffectAlias = 20,
+    kElementCaptureEffect = 13,
+    kEffect = 14,
+    kFilter = 15,
+    kMask = 16,
+    kClipPathMask = 17,
+    kVerticalScrollbarEffect = 18,
+    kHorizontalScrollbarEffect = 19,
+    kScrollCorner = 20,
+    kEffectAlias = 21,
     kFirstEffect = kEffect,
     kLastEffect = kEffectAlias,
 
     // Clips
-    kPixelMovingFilterClipExpander = 21,
     kClipPathClip = 22,
     kMaskClip = 23,
     kCssClip = 24,
-    kCssClipFixedPosition = 25,
-    kOverflowControlsClip = 26,
-    kBackgroundClip = 27,
+    kOverflowControlsClip = 25,
+    kBackgroundClip = 26,
+    kPixelMovingFilterClipExpander = 27,
     kInnerBorderRadiusClip = 28,
     kOverflowClip = 29,
-    kClipAlias = 30,
+    kCssClipFixedPosition = 30,
+    kClipAlias = 31,
     kFirstClip = kPixelMovingFilterClipExpander,
     kLastClip = kClipAlias,
 
@@ -163,17 +164,19 @@ class CORE_EXPORT ObjectPaintPropertiesSparse : public ObjectPaintProperties {
   ADD_TRANSFORM(ReplacedContentTransform, NodeId::kReplacedContentTransform)
   ADD_TRANSFORM(ScrollTranslation, NodeId::kScrollTranslation)
   using ScrollPaintPropertyNodeOrAlias = ScrollPaintPropertyNode;
-  ADD_NODE(Scroll, nodes_, Scroll, NodeId::kScroll)
   ADD_ALIAS_NODE(Transform,
                  nodes_,
                  TransformIsolationNode,
                  NodeId::kTransformAlias)
+
+  ADD_NODE(Scroll, nodes_, Scroll, NodeId::kScroll)
 
   // Effect node implementations.
   bool HasEffectNode() const override {
     return HasNodeTypeInRange(NodeId::kFirstEffect, NodeId::kLastEffect);
   }
 
+  ADD_EFFECT(ElementCaptureEffect, NodeId::kElementCaptureEffect)
   ADD_EFFECT(Effect, NodeId::kEffect)
   ADD_EFFECT(Filter, NodeId::kFilter)
   ADD_EFFECT(Mask, NodeId::kMask)
@@ -187,16 +190,16 @@ class CORE_EXPORT ObjectPaintPropertiesSparse : public ObjectPaintProperties {
   bool HasClipNode() const override {
     return HasNodeTypeInRange(NodeId::kFirstClip, NodeId::kLastClip);
   }
-  ADD_CLIP(PixelMovingFilterClipExpander,
-           NodeId::kPixelMovingFilterClipExpander)
   ADD_CLIP(ClipPathClip, NodeId::kClipPathClip)
   ADD_CLIP(MaskClip, NodeId::kMaskClip)
   ADD_CLIP(CssClip, NodeId::kCssClip)
-  ADD_CLIP(CssClipFixedPosition, NodeId::kCssClipFixedPosition)
   ADD_CLIP(OverflowControlsClip, NodeId::kOverflowControlsClip)
   ADD_CLIP(BackgroundClip, NodeId::kBackgroundClip)
+  ADD_CLIP(PixelMovingFilterClipExpander,
+           NodeId::kPixelMovingFilterClipExpander)
   ADD_CLIP(InnerBorderRadiusClip, NodeId::kInnerBorderRadiusClip)
   ADD_CLIP(OverflowClip, NodeId::kOverflowClip)
+  ADD_CLIP(CssClipFixedPosition, NodeId::kCssClipFixedPosition)
   ADD_ALIAS_NODE(Clip, nodes_, ClipIsolationNode, NodeId::kClipAlias)
 
 #undef ADD_CLIP

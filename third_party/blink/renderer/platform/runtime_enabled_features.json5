@@ -1457,6 +1457,9 @@
       status: "experimental",
     },
     {
+      name: "ElementCapture",
+    },
+    {
       name: "EnforceAnonymityExposure",
       status: "stable",
     },

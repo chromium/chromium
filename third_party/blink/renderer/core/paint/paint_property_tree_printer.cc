@@ -150,6 +150,7 @@ class PropertyTreePrinterTraits<EffectPaintPropertyNodeOrAlias> {
     printer.AddNode(properties.ScrollCornerEffect());
     printer.AddNode(properties.Mask());
     printer.AddNode(properties.ClipPathMask());
+    printer.AddNode(properties.ElementCaptureEffect());
     printer.AddNode(properties.EffectIsolationNode());
   }
 
@@ -269,6 +270,8 @@ void UpdateDebugNames(const LayoutObject& object,
   SetDebugName(properties.ScrollCornerEffect(), "ScrollCornerEffect", object);
   SetDebugName(properties.Mask(), "Mask", object);
   SetDebugName(properties.ClipPathMask(), "ClipPathMask", object);
+  SetDebugName(properties.ElementCaptureEffect(), "ElementCaptureEffect",
+               object);
   SetDebugName(properties.EffectIsolationNode(), "EffectIsolationNode", object);
 
   SetDebugName(properties.Scroll(), "Scroll", object);
