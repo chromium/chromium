@@ -7,8 +7,8 @@
 
 #include <vector>
 
-#include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
-#include "chrome/browser/ui/webui/settings/chromeos/constants/setting.mojom.h"
+#include "ash/webui/settings/public/constants/routes.mojom.h"
+#include "ash/webui/settings/public/constants/setting.mojom.h"
 
 namespace ash::settings {
 

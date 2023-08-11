@@ -140,8 +140,8 @@
 #include "url/url_constants.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/webui/settings/public/constants/routes.mojom.h"  // nogncheck
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
-#include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"  // nogncheck
 #endif
 
 #if defined(USE_AURA)

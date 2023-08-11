@@ -55,10 +55,10 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/webui/connectivity_diagnostics/url_constants.h"
+#include "ash/webui/settings/public/constants/routes.mojom.h"
+#include "ash/webui/settings/public/constants/routes_util.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
-#include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
-#include "chrome/browser/ui/webui/settings/chromeos/constants/routes_util.h"
 #else
 #include "chrome/browser/ui/signin_view_controller.h"
 #endif

@@ -8,6 +8,7 @@
 
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
+#include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "base/functional/bind.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
@@ -15,7 +16,6 @@
 #include "chrome/browser/notifications/system_notification_helper.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
-#include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/user_manager/user_manager.h"

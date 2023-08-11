@@ -6,11 +6,11 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
+#include "ash/webui/settings/public/constants/routes.mojom-forward.h"
 #include "base/strings/strcat.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
-#include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom-forward.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "url/gurl.h"
 

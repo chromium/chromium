@@ -6,6 +6,7 @@
 
 #include "ash/public/cpp/nearby_share_controller.h"
 #include "ash/public/cpp/session/session_controller.h"
+#include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "chrome/browser/nearby_sharing/nearby_sharing_service_factory.h"
@@ -13,7 +14,6 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/session_util.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
-#include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 
 namespace {
 

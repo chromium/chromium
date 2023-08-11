@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -41,7 +42,6 @@
 #include "chrome/browser/printing/prefs_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
-#include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/crosapi/mojom/local_printer.mojom.h"
 #include "chromeos/printing/ppd_provider.h"

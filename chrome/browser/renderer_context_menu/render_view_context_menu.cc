@@ -285,6 +285,7 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/clipboard_history_controller.h"
+#include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/intent_helper/arc_intent_helper_mojo_ash.h"
@@ -294,7 +295,6 @@
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
-#include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
 #include "ui/aura/window.h"
 #endif

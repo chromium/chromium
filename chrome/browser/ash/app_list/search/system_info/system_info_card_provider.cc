@@ -10,6 +10,7 @@
 #include <string>
 
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/webui/settings/public/constants/routes.mojom-forward.h"
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -24,7 +25,6 @@
 #include "chrome/browser/ash/app_list/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/webui/settings/ash/calculator/size_calculator.h"
 #include "chrome/browser/ui/webui/settings/ash/device_storage_util.h"
-#include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom-forward.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/string_matching/fuzzy_tokenized_string_match.h"

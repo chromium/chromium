@@ -6,8 +6,8 @@
 
 #include <sstream>
 
+#include "ash/webui/settings/public/constants/routes.mojom-shared.h"
 #include "base/containers/contains.h"
-#include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom-shared.h"
 #include "chrome/grit/generated_resources.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

@@ -6,8 +6,8 @@
 
 #include <sstream>
 
+#include "ash/webui/settings/public/constants/routes.mojom-shared.h"
 #include "chrome/browser/ui/webui/settings/ash/fake_os_settings_sections.h"
-#include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom-shared.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash::settings {

@@ -38,6 +38,7 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "chrome/browser/ash/account_manager/account_apps_availability.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
@@ -45,7 +46,6 @@
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/webui/ash/edu_account_login_handler.h"
 #include "chrome/browser/ui/webui/ash/edu_coexistence/edu_coexistence_login_handler.h"
-#include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/browser/ui/webui/signin/ash/inline_login_handler_impl.h"
 #include "chrome/grit/arc_account_picker_resources.h"
 #include "chrome/grit/arc_account_picker_resources_map.h"

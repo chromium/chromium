@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/settings/ash/search/search_handler.h"
 
+#include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
@@ -12,7 +13,6 @@
 #include "chrome/browser/ui/webui/settings/ash/fake_os_settings_sections.h"
 #include "chrome/browser/ui/webui/settings/ash/search/mojom/search.mojom.h"
 #include "chrome/browser/ui/webui/settings/ash/search/search_tag_registry.h"
-#include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/local_search_service/public/cpp/local_search_service_proxy.h"
 #include "mojo/public/cpp/bindings/remote.h"

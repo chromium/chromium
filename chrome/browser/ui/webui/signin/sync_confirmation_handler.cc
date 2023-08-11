@@ -31,8 +31,8 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "chrome/browser/lacros/lacros_url_handling.h"
-#include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/sync/base/features.h"
 #endif

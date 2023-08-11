@@ -68,11 +68,11 @@
 #include "ui/gfx/image/image.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "chrome/browser/lacros/account_manager/account_manager_util.h"
 #include "chrome/browser/lacros/account_manager/account_profile_mapper.h"
 #include "chrome/browser/lacros/identity_manager_lacros.h"
 #include "chrome/browser/lacros/lacros_url_handling.h"
-#include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chromeos/crosapi/mojom/login.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "components/account_manager_core/account.h"

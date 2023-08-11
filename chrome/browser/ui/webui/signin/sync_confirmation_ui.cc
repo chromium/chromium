@@ -53,7 +53,7 @@
 #include "ui/resources/grit/webui_resources.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
+#include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/sync/base/features.h"
 #include "components/sync/service/sync_prefs.h"

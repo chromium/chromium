@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -22,7 +23,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
-#include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chromeos/ash/components/dbus/kerberos/kerberos_client.h"

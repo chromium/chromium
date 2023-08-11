@@ -7,8 +7,8 @@
 
 #include <set>
 
+#include "ash/webui/settings/public/constants/setting.mojom.h"
 #include "base/time/time.h"
-#include "chrome/browser/ui/webui/settings/chromeos/constants/setting.mojom.h"
 #include "components/prefs/pref_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

@@ -9,9 +9,9 @@
 #include <vector>
 
 #include "ash/webui/eche_app_ui/eche_app_manager.h"
+#include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
 #include "chrome/browser/ui/webui/settings/ash/os_settings_section.h"
-#include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 
 class ArcAppListPrefs;
 class Profile;

@@ -5704,12 +5704,12 @@ static_library("browser") {
     ]
     deps += [
       "//ash/webui/projector_app/public/cpp",
+      "//ash/webui/settings/public/constants",
       "//chrome/browser/chromeos",
       "//chrome/browser/chromeos/drivefs",
       "//chrome/browser/chromeos/extensions/telemetry",
       "//chrome/browser/policy:onc",
       "//chrome/browser/ui/quick_answers",
-      "//chrome/browser/ui/webui/settings/chromeos/constants:mojom",
       "//chrome/browser/webshare:storage",
       "//chrome/common/chromeos/extensions",
       "//chromeos/components/cdm_factory_daemon:cdm_factory_daemon_browser",
