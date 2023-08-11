@@ -5121,6 +5121,9 @@ Your data was encrypted with your passphrase on <ph name="TIME">$2<ex>Sept 1, 20
       <message name="IDS_IOS_SAFETY_CHECK_DESCRIPTION_DEFAULT" desc="Tag label description displayed for the Safety Check module in the Magic Stack when the Safety Check has not been run yet. [iOS only]">
         Stay safe from data breaches, unsafe websites and more.
       </message>
+      <message name="IDS_IOS_SAFETY_CHECK_TITLE" desc="Tag label title displayed for the Safety Check module in the Magic Stack. [iOS only]">
+        Safety Check
+      </message>
     </messages>
   </release>
 </grit>

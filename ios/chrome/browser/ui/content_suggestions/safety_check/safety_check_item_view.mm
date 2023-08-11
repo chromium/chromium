@@ -224,9 +224,7 @@ int PasswordIssuesTypeCount(NSInteger weak_passwords_count,
 
   [self addSubview:contentStack];
 
-  if (_layoutType == SafetyCheckItemLayoutType::kCompact) {
-    AddSameConstraints(contentStack, self);
-  }
+  AddSameConstraints(contentStack, self);
 
   // Set up the tap gesture recognizer.
   _tapGestureRecognizer =

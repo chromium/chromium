@@ -74,6 +74,8 @@
     case ContentSuggestionsModuleType::kSetUpListAutofill:
     case ContentSuggestionsModuleType::kCompactedSetUpList:
     case ContentSuggestionsModuleType::kSetUpListAllSet:
+    case ContentSuggestionsModuleType::kSafetyCheck:
+    case ContentSuggestionsModuleType::kSafetyCheckMultiRow:
       break;
   }
   UMA_HISTOGRAM_ENUMERATION(kMagicStackTopModuleImpressionHistogram, type);

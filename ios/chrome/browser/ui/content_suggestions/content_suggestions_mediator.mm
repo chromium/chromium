@@ -820,6 +820,10 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
   [magicStackModules
       addObject:@(int(ContentSuggestionsModuleType::kShortcuts))];
 
+  if (IsSafetyCheckMagicStackEnabled()) {
+    [self addSafetyCheckToMagicStackOrder:magicStackModules];
+  }
+
   return magicStackModules;
 }
 
@@ -894,6 +898,17 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
       }
     }
   }
+}
+
+- (void)addSafetyCheckToMagicStackOrder:(NSMutableArray*)order {
+  CHECK(IsSafetyCheckMagicStackEnabled());
+
+  // TODO(crbug.com/1472382): In a follow-up CL, the module will be placed at
+  // different places in the Magic Stack depending on the Safety Check state(s).
+  // However, for now, the module will simply be inserted at the front of the
+  // Magic Stack.
+  [order insertObject:@(int(ContentSuggestionsModuleType::kSafetyCheck))
+              atIndex:0];
 }
 
 // Returns YES if the conditions are right to display the Set Up List.

@@ -63,6 +63,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_view_controller.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_view_controller_audience.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
+#import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_default_browser_promo_coordinator.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_default_browser_promo_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_show_more_view_controller.h"
@@ -97,6 +98,7 @@ BASE_FEATURE(kNoRecentTabIfNullWebState,
 @interface ContentSuggestionsCoordinator () <
     ContentSuggestionsMenuProvider,
     ContentSuggestionsViewControllerAudience,
+    SafetyCheckViewDelegate,
     SetUpListDefaultBrowserPromoCoordinatorDelegate,
     SetUpListViewDelegate>
 
@@ -246,6 +248,7 @@ BASE_FEATURE(kNoRecentTabIfNullWebState,
   self.contentSuggestionsMediator = nil;
   [self.contentSuggestionsMetricsRecorder disconnect];
   self.contentSuggestionsMetricsRecorder = nil;
+  self.contentSuggestionsViewController.audience = nil;
   self.contentSuggestionsViewController = nil;
   [self.sharingCoordinator stop];
   self.sharingCoordinator = nil;
@@ -396,6 +399,16 @@ BASE_FEATURE(kNoRecentTabIfNullWebState,
       [UIContextMenuConfiguration configurationWithIdentifier:nil
                                               previewProvider:nil
                                                actionProvider:actionProvider];
+}
+
+#pragma mark - SafetyCheckViewDelegate
+
+- (void)didSelectSafetyCheckItem:(SafetyCheckItemType)type {
+  // TODO(crbug.com/1472380): In a follow-up CL, different UI commands will be
+  // fired based on `type`. For now, though, tapping the Safety Check (Magic
+  // Stack) module will simply open the Safety Check modal view.
+  [HandlerForProtocol(self.browser->GetCommandDispatcher(), ApplicationCommands)
+      showSafetyCheckSettingsAndStartSafetyCheck];
 }
 
 #pragma mark - SetUpListViewDelegate

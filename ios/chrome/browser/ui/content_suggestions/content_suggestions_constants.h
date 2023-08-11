@@ -19,7 +19,9 @@ enum class ContentSuggestionsModuleType {
   kSetUpListAutofill = 4,
   kCompactedSetUpList = 5,
   kSetUpListAllSet = 6,
-  kMaxValue = kSetUpListAllSet,
+  kSafetyCheck = 7,
+  kSafetyCheckMultiRow = 8,
+  kMaxValue = kSafetyCheckMultiRow,
 };
 
 // Represents the content suggestions collection view.

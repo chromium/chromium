@@ -208,6 +208,9 @@ const CGFloat kTitleStackViewTrailingMargin = 16.0f;
     case ContentSuggestionsModuleType::kCompactedSetUpList:
     case ContentSuggestionsModuleType::kSetUpListAllSet:
       return l10n_util::GetNSString(IDS_IOS_SET_UP_LIST_TITLE);
+    case ContentSuggestionsModuleType::kSafetyCheck:
+    case ContentSuggestionsModuleType::kSafetyCheckMultiRow:
+      return l10n_util::GetNSString(IDS_IOS_SAFETY_CHECK_TITLE);
     default:
       NOTREACHED();
       return @"";
@@ -335,6 +338,7 @@ const CGFloat kTitleStackViewTrailingMargin = 16.0f;
     case ContentSuggestionsModuleType::kSetUpListDefaultBrowser:
     case ContentSuggestionsModuleType::kSetUpListAutofill:
     case ContentSuggestionsModuleType::kSetUpListAllSet:
+    case ContentSuggestionsModuleType::kSafetyCheckMultiRow:
       return YES;
     default:
       return NO;
