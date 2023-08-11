@@ -80,12 +80,26 @@ VisualSearchSuggestionsService::~VisualSearchSuggestionsService() {
 }
 
 void VisualSearchSuggestionsService::Shutdown() {
+  UnloadModelFile();
+}
+
+void VisualSearchSuggestionsService::UnloadModelFile() {
   if (model_file_) {
     // If the model file is already loaded, it should be closed on a
     // background thread.
     background_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&CloseModelFile, std::move(*model_file_)));
+    model_file_ = absl::nullopt;
   }
+}
+
+void VisualSearchSuggestionsService::NotifyModelUpdatesAndClear() {
+  for (auto& callback : model_callbacks_) {
+    std::move(callback).Run(
+        model_file_ ? model_file_->Duplicate() : base::File(),
+        GetModelSpec(model_metadata_));
+  }
+  model_callbacks_.clear();
 }
 
 void VisualSearchSuggestionsService::OnModelFileLoaded(base::File model_file) {
@@ -93,18 +107,9 @@ void VisualSearchSuggestionsService::OnModelFileLoaded(base::File model_file) {
     return;
   }
 
-  if (model_file_) {
-    // If the model file is already loaded, it should be closed on a
-    // background thread.
-    background_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&CloseModelFile, std::move(*model_file_)));
-  }
+  UnloadModelFile();
   model_file_ = std::move(model_file);
-  for (auto& callback : model_callbacks_) {
-    std::move(callback).Run(model_file_->Duplicate(),
-                            GetModelSpec(model_metadata_));
-  }
-  model_callbacks_.clear();
+  NotifyModelUpdatesAndClear();
 }
 
 void VisualSearchSuggestionsService::OnModelUpdated(
@@ -116,6 +121,8 @@ void VisualSearchSuggestionsService::OnModelUpdated(
     return;
   }
   if (!model_info.has_value()) {
+    UnloadModelFile();
+    NotifyModelUpdatesAndClear();
     return;
   }
 

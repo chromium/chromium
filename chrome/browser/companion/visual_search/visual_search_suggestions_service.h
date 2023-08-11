@@ -49,6 +49,12 @@ class VisualSearchSuggestionsService
   void SetModelUpdateCallback(ModelUpdateCallback callback);
 
  private:
+  // Unloads the model in background task.
+  void UnloadModelFile();
+
+  // Notifies the model update to observers, and clears the observer list.
+  void NotifyModelUpdatesAndClear();
+
   void OnModelFileLoaded(base::File model_file);
 
   // Maintain list of callbacks for observers of model updates.
