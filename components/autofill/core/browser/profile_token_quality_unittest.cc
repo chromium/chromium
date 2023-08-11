@@ -18,6 +18,7 @@
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/browser/profile_token_quality_test_api.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_autofill_driver.h"
 #include "components/autofill/core/browser/test_browser_autofill_manager.h"
@@ -107,7 +108,7 @@ TEST_F(ProfileTokenQualityTest, GetObservationTypesForFieldType) {
 
   EXPECT_TRUE(quality.GetObservationTypesForFieldType(NAME_FIRST).empty());
 
-  quality.AddObservationForTesting(NAME_FIRST, ObservationType::kAccepted);
+  test_api(quality).AddObservation(NAME_FIRST, ObservationType::kAccepted);
   EXPECT_THAT(quality.GetObservationTypesForFieldType(NAME_FIRST),
               UnorderedElementsAre(ObservationType::kAccepted));
   EXPECT_TRUE(quality.GetObservationTypesForFieldType(NAME_LAST).empty());
@@ -115,7 +116,7 @@ TEST_F(ProfileTokenQualityTest, GetObservationTypesForFieldType) {
   // Test that if more than `kMaxObservationsPerToken` observations are added,
   // only the first `kMaxObservationsPerToken` are returned.
   for (size_t i = 0; i < ProfileTokenQuality::kMaxObservationsPerToken; i++) {
-    quality.AddObservationForTesting(NAME_FIRST,
+    test_api(quality).AddObservation(NAME_FIRST,
                                      ObservationType::kEditedToSimilarValue);
   }
   EXPECT_THAT(quality.GetObservationTypesForFieldType(NAME_FIRST),

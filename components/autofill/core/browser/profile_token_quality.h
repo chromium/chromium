@@ -12,9 +12,9 @@
 #include <utility>
 #include <vector>
 
-#include "base/allocator/partition_allocator/pointers/raw_ptr.h"
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ref.h"
 #include "base/types/strong_alias.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/form_data.h"
@@ -129,9 +129,6 @@ class ProfileTokenQuality {
       const FormData& form_data,
       PersonalDataManager& pdm);
 
-  void AddObservationForTesting(ServerFieldType field_type,
-                                ObservationType observation_type);
-
   // Returns all `ObservationType`s available for the `type`. The resulting
   // vector has at most `kMaxNumberOfObservations` items. It is guaranteed that
   // no observation type is `kNone`.
@@ -142,7 +139,7 @@ class ProfileTokenQuality {
 
   void set_profile(AutofillProfile* profile) {
     CHECK(profile);
-    profile_ = profile;
+    profile_ = *profile;
   }
 
   // Copy the observations for the `type` from `other`.
@@ -162,6 +159,8 @@ class ProfileTokenQuality {
   }
 
  private:
+  friend class ProfileTokenQualityTestApi;
+
   // For every form and stored type, at most a single observation is stored
   // (among the `kMaxObservationsPerToken` observations stored in total).
   // To track for which forms an observation was already collected,
@@ -214,8 +213,8 @@ class ProfileTokenQuality {
       const std::vector<AutofillProfile*>& other_profiles,
       const std::string& app_locale) const;
 
-  // The profile for which observations are collected. Not null.
-  base::raw_ptr<AutofillProfile> profile_;
+  // The profile for which observations are collected.
+  base::raw_ref<AutofillProfile> profile_;
 
   // Maps from `AutofillTable::GetStoredTypesForAutofillProfile()` to the
   // observations for this stored type. The following invariants hold for the

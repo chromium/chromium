@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/containers/circular_deque.h"
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
@@ -194,9 +195,7 @@ ObservationType GetObservationTypeForEditedField(
 }  // namespace
 
 ProfileTokenQuality::ProfileTokenQuality(AutofillProfile* profile)
-    : profile_(profile) {
-  CHECK(profile);
-}
+    : profile_(CHECK_DEREF(profile)) {}
 
 ProfileTokenQuality::ProfileTokenQuality(const ProfileTokenQuality& other) =
     default;
@@ -274,12 +273,6 @@ void ProfileTokenQuality::SaveObservationsForFilledFormForAllSubmittedProfiles(
       // `AutofillTable` supports storing token quality.
     }
   }
-}
-
-void ProfileTokenQuality::AddObservationForTesting(
-    ServerFieldType field_type,
-    ObservationType observation_type) {
-  AddObservation(field_type, Observation{.type = observation_type});
 }
 
 std::vector<ObservationType>

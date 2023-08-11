@@ -21,6 +21,7 @@
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/profile_token_quality.h"
+#include "components/autofill/core/browser/profile_token_quality_test_api.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/browser/test_utils/test_profiles.h"
 #include "components/autofill/core/common/autofill_clock.h"
@@ -1093,15 +1094,15 @@ TEST(AutofillProfileTest, MergeDataFrom_TokenQuality) {
   // Set the same state for both profiles. Expect that a's quality will be kept.
   a.SetRawInfo(ADDRESS_HOME_STATE, u"TX");
   b.SetRawInfo(ADDRESS_HOME_STATE, u"TX");
-  a.token_quality().AddObservationForTesting(ADDRESS_HOME_STATE,
-                                             ObservationType::kAccepted);
-  b.token_quality().AddObservationForTesting(ADDRESS_HOME_STATE,
-                                             ObservationType::kEditedFallback);
+  test_api(a.token_quality())
+      .AddObservation(ADDRESS_HOME_STATE, ObservationType::kAccepted);
+  test_api(b.token_quality())
+      .AddObservation(ADDRESS_HOME_STATE, ObservationType::kEditedFallback);
 
   // Only set a city for b. Expect that its quality is carried over.
   b.SetRawInfo(ADDRESS_HOME_CITY, u"City");
-  b.token_quality().AddObservationForTesting(ADDRESS_HOME_CITY,
-                                             ObservationType::kAccepted);
+  test_api(b.token_quality())
+      .AddObservation(ADDRESS_HOME_CITY, ObservationType::kAccepted);
 
   // Finalize, merge and verify expectations.
   a.FinalizeAfterImport();
