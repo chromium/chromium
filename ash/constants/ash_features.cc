@@ -2429,7 +2429,7 @@ BASE_FEATURE(kSystemJapanesePhysicalTyping,
 // Android or linux apps).
 BASE_FEATURE(kSystemLiveCaption,
              "SystemLiveCaption",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 // Restricts the system live caption feature to the intended target population.
 BASE_FEATURE(kFeatureManagementSystemLiveCaption,
              "FeatureManagementSystemLiveCaption",
