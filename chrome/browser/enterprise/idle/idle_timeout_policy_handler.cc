@@ -280,6 +280,9 @@ bool IdleTimeoutActionsPolicyHandler::CheckPolicySettings(
   DCHECK(value);
   base::Value::List clear_data_actions;
   for (const base::Value& action : value->GetList()) {
+    if (!action.is_string()) {
+      continue;
+    }
     std::string clear_data_action =
         GetActionBrowsingDataTypeName(action.GetString());
     if (!clear_data_action.empty()) {
