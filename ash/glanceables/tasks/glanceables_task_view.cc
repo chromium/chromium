@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 
 #include "ash/glanceables/glanceables_v2_controller.h"
 #include "ash/glanceables/tasks/glanceables_tasks_client.h"
@@ -85,16 +86,19 @@ std::unique_ptr<views::ImageView> CreateSecondRowIcon(
 
 class GlanceablesTaskView::CheckButton : public views::ImageButton {
  public:
-  CheckButton(PressedCallback pressed_callback)
-      : views::ImageButton(pressed_callback) {
+  explicit CheckButton(PressedCallback pressed_callback)
+      : views::ImageButton(std::move(pressed_callback)) {
     SetAccessibleRole(ax::mojom::Role::kCheckBox);
-    // TODO(b/294681832): Finalize, and then localize strings.
-    SetAccessibleName(u"Mark completed");
     UpdateImage();
   }
 
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
     views::ImageButton::GetAccessibleNodeData(node_data);
+
+    node_data->SetName(l10n_util::GetStringUTF16(
+        checked_
+            ? IDS_GLANCEABLES_TASKS_TASK_ITEM_MARK_NOT_COMPLETED_ACCESSIBLE_NAME
+            : IDS_GLANCEABLES_TASKS_TASK_ITEM_MARK_COMPLETED_ACCESSIBLE_NAME));
 
     const ax::mojom::CheckedState checked_state =
         checked_ ? ax::mojom::CheckedState::kTrue
@@ -163,11 +167,14 @@ GlanceablesTaskView::GlanceablesTaskView(const std::string& task_list_id,
     tasks_details_view_->AddChildView(
         CreateSecondRowIcon(kGlanceablesTasksDueDateIcon));
 
+    const auto formatted_due_date = GetFormattedDueDate(task->due.value());
+    details.push_back(l10n_util::GetStringFUTF16(
+        IDS_GLANCEABLES_TASKS_TASK_ITEM_HAS_DUE_DATE_ACCESSIBLE_DESCRIPTION,
+        formatted_due_date));
+
     views::Label* due_date_label = SetupLabel(tasks_details_view_);
-    due_date_label->SetText(GetFormattedDueDate(task->due.value()));
+    due_date_label->SetText(formatted_due_date);
     due_date_label->SetProperty(views::kMarginsKey, kSecondRowItemsMargin);
-    // TODO(b/294681832): Finalize, and then localize strings.
-    details.push_back(u"Due " + GetFormattedDueDate(task->due.value()));
     due_date_label->SetFontList(
         TypographyProvider::Get()->ResolveTypographyToken(
             TypographyToken::kCrosAnnotation1));
@@ -182,15 +189,15 @@ GlanceablesTaskView::GlanceablesTaskView(const std::string& task_list_id,
   }
 
   if (task->has_subtasks) {
-    // TODO(b/294681832): Finalize, and then localize strings.
-    details.push_back(u"Has subtasks");
+    details.push_back(l10n_util::GetStringUTF16(
+        IDS_GLANCEABLES_TASKS_TASK_ITEM_HAS_SUBTASK_ACCESSIBLE_DESCRIPTION));
     tasks_details_view_->AddChildView(
         CreateSecondRowIcon(kGlanceablesSubtaskIcon));
   }
 
   if (task->has_notes) {
-    // TODO(b/294681832): Finalize, and then localize strings.
-    details.push_back(u"Has notes");
+    details.push_back(l10n_util::GetStringUTF16(
+        IDS_GLANCEABLES_TASKS_TASK_ITEM_HAS_DETAILS_ACCESSIBLE_DESCRIPTION));
     tasks_details_view_->AddChildView(
         CreateSecondRowIcon(kGlanceablesTasksNotesIcon));
   }
@@ -204,8 +211,14 @@ GlanceablesTaskView::GlanceablesTaskView(const std::string& task_list_id,
   button_->SetProperty(views::kMarginsKey, double_row ? kDoubleRowButtonMargin
                                                       : kSingleRowButtonMargin);
 
-  button_->SetAccessibleDescription(base::UTF8ToUTF16(task->title) + u", " +
-                                    base::JoinString(details, u", "));
+  auto a11y_description = base::UTF8ToUTF16(task->title);
+  if (!details.empty()) {
+    a11y_description += u". ";
+    a11y_description += l10n_util::GetStringFUTF16(
+        IDS_GLANCEABLES_TASKS_TASK_ITEM_METADATA_WRAPPER_ACCESSIBLE_DESCRIPTION,
+        base::JoinString(details, u", "));
+  }
+  button_->SetAccessibleDescription(a11y_description);
   button_->NotifyAccessibilityEvent(ax::mojom::Event::kTextChanged, true);
 }
 

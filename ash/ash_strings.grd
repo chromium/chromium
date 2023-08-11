@@ -6871,6 +6871,24 @@ New install
       <message name="IDS_GLANCEABLES_TASKS_SEE_ALL_BUTTON_ACCESSIBLE_NAME" desc="The glanceable displays tasks items fetched from Google Tasks API. Glanceables UI renders only limited number of items, the rest of them can be seen by clicking this button, which will open a corresponding website. This is the text announced by ChromeVox for this button.">
         See all tasks on Google tasks on web
       </message>
+      <message name="IDS_GLANCEABLES_TASKS_TASK_ITEM_HAS_DUE_DATE_ACCESSIBLE_DESCRIPTION" desc="The glanceable displays tasks items fetched from Google Tasks API. This text is the part of a11y description to announce that a task has attached due date as part of its metadata.">
+        due date <ph name="DUE_DATE">$1<ex>Wed, Aug 23</ex></ph>
+      </message>
+      <message name="IDS_GLANCEABLES_TASKS_TASK_ITEM_HAS_SUBTASK_ACCESSIBLE_DESCRIPTION" desc="The glanceable displays tasks items fetched from Google Tasks API. This text is the part of a11y description to announce that a task contains any number of subtasks.">
+        subtask
+      </message>
+      <message name="IDS_GLANCEABLES_TASKS_TASK_ITEM_HAS_DETAILS_ACCESSIBLE_DESCRIPTION" desc="The glanceable displays tasks items fetched from Google Tasks API. This text is the part of a11y description to announce that a task contains additional details.">
+        details
+      </message>
+      <message name="IDS_GLANCEABLES_TASKS_TASK_ITEM_METADATA_WRAPPER_ACCESSIBLE_DESCRIPTION" desc="The glanceable displays tasks items fetched from Google Tasks API. This is the wrapper text for the a11y description to announce that a task has additional metadata (due date, subtasks, details, etc.).">
+        This item has: <ph name="GLANCEABLES_TASK_ITEM_METADATA">$1<ex>due date Wed, Aug 23, subtask, details</ex></ph>.
+      </message>
+      <message name="IDS_GLANCEABLES_TASKS_TASK_ITEM_MARK_COMPLETED_ACCESSIBLE_NAME" desc="The glanceable displays tasks items fetched from Google Tasks API. This is the a11y name announced by ChromeVox for the checkbox button to mark a task as completed.">
+        Mark completed
+      </message>
+      <message name="IDS_GLANCEABLES_TASKS_TASK_ITEM_MARK_NOT_COMPLETED_ACCESSIBLE_NAME" desc="The glanceable displays tasks items fetched from Google Tasks API. This is the a11y name announced by ChromeVox for the checkbox button to mark a task as not completed.">
+        Mark as not completed
+      </message>
 
       <!-- Do Not Disturb notification -->
       <message name="IDS_ASH_DO_NOT_DISTURB_NOTIFICATION_TITLE" desc="Label used for the notification that shows up when the 'Do Not Disturb' feature is enabled.">
