@@ -21039,7 +21039,7 @@
           "--disable-features=BackForwardCache",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android24.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
         ],
         "merge": {
           "args": [
@@ -21066,13 +21066,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android24",
-              "path": ".android_emulator/generic_android24"
+              "name": "generic_android26",
+              "path": ".android_emulator/generic_android26"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android24"
+              "caches": "generic_android26"
             }
           },
           "output_links": [
@@ -21096,8 +21096,8 @@
           "--disable-features=BackForwardCache",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android24.textpb",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_n.content_browsertests.filter"
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_o.content_browsertests.filter"
         ],
         "merge": {
           "args": [
@@ -21124,13 +21124,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android24",
-              "path": ".android_emulator/generic_android24"
+              "name": "generic_android26",
+              "path": ".android_emulator/generic_android26"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android24"
+              "caches": "generic_android26"
             }
           },
           "output_links": [

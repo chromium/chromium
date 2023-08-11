@@ -726,7 +726,7 @@
       'android-bfcache-rel': {
         'mixins': [
           'has_native_resultdb_integration',
-          'nougat-x86-emulator',
+          'oreo-x86-emulator',
           'emulator-8-cores',
           'linux-jammy',
           'x86-64',
