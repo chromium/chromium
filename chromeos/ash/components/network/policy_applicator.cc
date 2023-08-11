@@ -239,7 +239,7 @@ void PolicyApplicator::GetEntryCallback(const std::string& entry_identifier,
           new_policy->FindString(::onc::network_config::kName);
       absl::optional<policy_util::SmdxActivationCode> activation_code =
           policy_util::GetSmdxActivationCodeFromONC(*new_policy);
-      if (was_managed && managed_cellular_pref_handler_ && iccid && name &&
+      if (managed_cellular_pref_handler_ && iccid && name &&
           activation_code.has_value()) {
         managed_cellular_pref_handler_->AddESimMetadata(*iccid, *name,
                                                         *activation_code);
