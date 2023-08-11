@@ -69,6 +69,7 @@
 #include "chrome/browser/ui/ash/vpn_list_forwarder.h"
 #include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
 #include "chrome/browser/ui/quick_answers/quick_answers_controller_impl.h"
+#include "chrome/browser/ui/views/editor_menu/editor_menu_controller_impl.h"
 #include "chrome/browser/ui/views/select_file_dialog_extension.h"
 #include "chrome/browser/ui/views/select_file_dialog_extension_factory.h"
 #include "chrome/browser/ui/views/tabs/tab_scrubber_chromeos.h"
@@ -341,6 +342,11 @@ void ChromeBrowserMainExtraPartsAsh::PostProfileInit(Profile* profile,
 
   // Initialize TabScrubberChromeOS after the Ash Shell has been initialized.
   TabScrubberChromeOS::GetInstance();
+
+  if (ash::features::IsOrcaEnabled()) {
+    editor_menu_controller_ =
+        std::make_unique<chromeos::editor_menu::EditorMenuControllerImpl>();
+  }
 }
 
 void ChromeBrowserMainExtraPartsAsh::PostBrowserStart() {
@@ -363,6 +369,7 @@ void ChromeBrowserMainExtraPartsAsh::PostMainMessageLoopRun() {
 
   night_light_client_.reset();
   mobile_data_notifications_.reset();
+  editor_menu_controller_.reset();
   chrome_shelf_controller_initializer_.reset();
   attestation_cleanup_manager_.reset();
   desks_client_.reset();

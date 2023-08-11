@@ -3674,6 +3674,7 @@ static_library("ui") {
       "//chrome/app:generated_resources",
       "//chrome/browser/chromeos",
       "//chrome/browser/metrics/structured:features",
+      "//chrome/browser/ui/views/editor_menu",
       "//chromeos/components/kiosk",
       "//chromeos/components/security_token_pin",
       "//chromeos/constants",
