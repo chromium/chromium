@@ -740,10 +740,6 @@ void UnifiedSystemTrayController::InitFeatureTiles() {
 
   create_tile(std::make_unique<NetworkFeaturePodController>(this),
               feature_pod_controllers_, tiles);
-  if (features::IsHotspotEnabled()) {
-    create_tile(std::make_unique<HotspotFeaturePodController>(this),
-                feature_pod_controllers_, tiles);
-  }
 
   // CaptureMode and QuietMode tiles will be compact if both are visible.
   bool capture_and_quiet_tiles_are_compact =
@@ -770,6 +766,10 @@ void UnifiedSystemTrayController::InitFeatureTiles() {
               cast_and_rotation_tiles_are_compact);
   create_tile(std::make_unique<AccessibilityFeaturePodController>(this),
               feature_pod_controllers_, tiles);
+  if (features::IsHotspotEnabled()) {
+    create_tile(std::make_unique<HotspotFeaturePodController>(this),
+                feature_pod_controllers_, tiles);
+  }
   if (base::FeatureList::IsEnabled(features::kFocusMode)) {
     create_tile(std::make_unique<FocusModeFeaturePodController>(this),
                 feature_pod_controllers_, tiles);
