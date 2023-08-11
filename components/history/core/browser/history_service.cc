@@ -462,6 +462,7 @@ void HistoryService::SetCanAddForeignVisitsToSegmentsOnBackend(
 }
 
 void HistoryService::OnDeviceInfoChange() {
+  TRACE_EVENT0("browser,startup", "HistoryService::OnDeviceInfoChange");
   CHECK(history::IsSyncSegmentsDataEnabled());
   CHECK(device_info_tracker_ != nullptr);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
