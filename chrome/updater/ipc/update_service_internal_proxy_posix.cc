@@ -103,7 +103,7 @@ void UpdateServiceInternalProxyImpl::Run(
   remote_->Run(base::BindOnce(
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(
           base::BindPostTaskToCurrentDefault(std::move(callback)),
-          kErrorMojoDisconnect),
+          kErrorIpcDisconnect),
       absl::nullopt));
 }
 
@@ -115,7 +115,7 @@ void UpdateServiceInternalProxyImpl::Hello(
   remote_->Hello(base::BindOnce(
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(
           base::BindPostTaskToCurrentDefault(std::move(callback)),
-          kErrorMojoDisconnect),
+          kErrorIpcDisconnect),
       absl::nullopt));
 }
 

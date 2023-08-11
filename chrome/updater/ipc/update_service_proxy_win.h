@@ -5,12 +5,15 @@
 #ifndef CHROME_UPDATER_IPC_UPDATE_SERVICE_PROXY_WIN_H_
 #define CHROME_UPDATER_IPC_UPDATE_SERVICE_PROXY_WIN_H_
 
+#include <windows.h>
+
 #include <string>
 #include <vector>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
+#include "base/types/expected.h"
 #include "chrome/updater/update_service.h"
 
 namespace base {
@@ -19,71 +22,77 @@ class Version;
 
 namespace updater {
 
+using RpcError = HRESULT;
+
 struct RegistrationRequest;
 enum class UpdaterScope;
-class UpdateServiceProxyImpl;
+class UpdateServiceProxyImplImpl;
 
 // All functions and callbacks must be called on the same sequence.
-class UpdateServiceProxy : public UpdateService {
+class UpdateServiceProxyImpl
+    : public base::RefCountedThreadSafe<UpdateServiceProxyImpl> {
  public:
-  explicit UpdateServiceProxy(UpdaterScope updater_scope);
+  explicit UpdateServiceProxyImpl(UpdaterScope updater_scope);
 
-  // Overrides for updater::UpdateService.
-  // UpdateServiceProxy will not be destroyed while these calls are
+  // UpdateServiceProxyImpl will not be destroyed while these calls are
   // outstanding; the caller need not retain a ref.
   void GetVersion(
-      base::OnceCallback<void(const base::Version&)> callback) override;
-  void FetchPolicies(base::OnceCallback<void(int)> callback) override;
-  void RegisterApp(const RegistrationRequest& request,
-                   base::OnceCallback<void(int)> callback) override;
+      base::OnceCallback<void(base::expected<base::Version, RpcError>)>
+          callback);
+  void FetchPolicies(
+      base::OnceCallback<void(base::expected<int, RpcError>)> callback);
+  void RegisterApp(
+      const RegistrationRequest& request,
+      base::OnceCallback<void(base::expected<int, RpcError>)> callback);
   void GetAppStates(
-      base::OnceCallback<void(const std::vector<AppState>&)>) override;
-  void RunPeriodicTasks(base::OnceClosure callback) override;
-  void CheckForUpdate(const std::string& app_id,
-                      Priority priority,
-                      PolicySameVersionUpdate policy_same_version_update,
-                      StateChangeCallback state_update,
-                      Callback callback) override;
-  void Update(const std::string& app_id,
-              const std::string& install_data_index,
-              Priority priority,
-              PolicySameVersionUpdate policy_same_version_update,
-              StateChangeCallback state_update,
-              Callback callback) override;
-  void UpdateAll(StateChangeCallback state_update, Callback callback) override;
-  void Install(const RegistrationRequest& registration,
-               const std::string& client_install_data,
-               const std::string& install_data_index,
-               Priority priority,
-               StateChangeCallback state_update,
-               Callback callback) override;
-  void CancelInstalls(const std::string& app_id) override;
-  void RunInstaller(const std::string& app_id,
-                    const base::FilePath& installer_path,
-                    const std::string& install_args,
-                    const std::string& install_data,
-                    const std::string& install_settings,
-                    StateChangeCallback state_update,
-                    Callback callback) override;
+      base::OnceCallback<void(
+          base::expected<std::vector<UpdateService::AppState>, RpcError>)>);
+  void RunPeriodicTasks(
+      base::OnceCallback<void(base::expected<int, RpcError>)> callback);
+  void CheckForUpdate(
+      const std::string& app_id,
+      UpdateService::Priority priority,
+      UpdateService::PolicySameVersionUpdate policy_same_version_update,
+      UpdateService::StateChangeCallback state_update,
+      base::OnceCallback<void(base::expected<UpdateService::Result, RpcError>)>
+          callback);
+  void Update(
+      const std::string& app_id,
+      const std::string& install_data_index,
+      UpdateService::Priority priority,
+      UpdateService::PolicySameVersionUpdate policy_same_version_update,
+      UpdateService::StateChangeCallback state_update,
+      base::OnceCallback<void(base::expected<UpdateService::Result, RpcError>)>
+          callback);
+  void UpdateAll(
+      UpdateService::StateChangeCallback state_update,
+      base::OnceCallback<void(base::expected<UpdateService::Result, RpcError>)>
+          callback);
+  void Install(
+      const RegistrationRequest& registration,
+      const std::string& client_install_data,
+      const std::string& install_data_index,
+      UpdateService::Priority priority,
+      UpdateService::StateChangeCallback state_update,
+      base::OnceCallback<void(base::expected<UpdateService::Result, RpcError>)>
+          callback);
+  void CancelInstalls(const std::string& app_id);
+  void RunInstaller(
+      const std::string& app_id,
+      const base::FilePath& installer_path,
+      const std::string& install_args,
+      const std::string& install_data,
+      const std::string& install_settings,
+      UpdateService::StateChangeCallback state_update,
+      base::OnceCallback<void(base::expected<UpdateService::Result, RpcError>)>
+          callback);
 
  private:
-  ~UpdateServiceProxy() override;
-
-  void GetVersionDone(base::OnceCallback<void(const base::Version&)> callback,
-                      const base::Version& result);
-  void FetchPoliciesDone(base::OnceCallback<void(int)> callback, int result);
-  void RegisterAppDone(base::OnceCallback<void(int)> callback, int result);
-  void GetAppStatesDone(base::OnceCallback<void(const std::vector<AppState>&)>,
-                        const std::vector<AppState>& results);
-  void RunPeriodicTasksDone(base::OnceClosure callback);
-  void CheckForUpdateDone(Callback callback, Result result);
-  void UpdateDone(Callback callback, Result result);
-  void UpdateAllDone(Callback callback, Result result);
-  void InstallDone(Callback callback, Result result);
-  void RunInstallerDone(Callback callback, Result result);
+  friend class base::RefCountedThreadSafe<UpdateServiceProxyImpl>;
+  ~UpdateServiceProxyImpl();
 
   SEQUENCE_CHECKER(sequence_checker_);
-  scoped_refptr<UpdateServiceProxyImpl> impl_;
+  scoped_refptr<UpdateServiceProxyImplImpl> impl_;
 };
 
 }  // namespace updater

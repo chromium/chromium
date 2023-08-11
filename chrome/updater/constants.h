@@ -367,7 +367,7 @@ inline constexpr int kErrorDMRegistrationFailed = 33;
 inline constexpr int kErrorFailedToInstallLegacyUpdater = 34;
 
 // A Mojo remote was unexpectedly disconnected.
-inline constexpr int kErrorMojoDisconnect = 35;
+inline constexpr int kErrorIpcDisconnect = 35;
 
 // Failed to copy the updater binary.
 inline constexpr int kErrorFailedToCopyBinary = 36;

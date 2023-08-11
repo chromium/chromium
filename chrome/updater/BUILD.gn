@@ -551,6 +551,8 @@ if (is_win || is_mac || is_linux) {
       "enum_traits.h",
       "ipc/ipc_support.cc",
       "ipc/ipc_support.h",
+      "ipc/update_service_proxy.cc",
+      "ipc/update_service_proxy.h",
       "registration_data.cc",
       "registration_data.h",
       "service_proxy_factory.h",
