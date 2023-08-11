@@ -2503,7 +2503,10 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
             .FeatureIds({"screenplay-a06f961a-17f5-4fbd-8285-49abb000dee1"}),
         TestCase("trashPermanentlyDelete"),
         TestCase("trashRestoreFromToast"),
+//TODO(crbug.com/1425820): Re-enable this test on ChromiumOS MSAN.
+#if !defined(MEMORY_SANITIZER)
         TestCase("trashRestoreFromToast").EnableCrosComponents(),
+#endif
         TestCase("trashRestoreFromTrash"),
         TestCase("trashRestoreFromTrashShortcut"),
         TestCase("trashEmptyTrash")
