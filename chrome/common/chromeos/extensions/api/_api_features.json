@@ -20,20 +20,6 @@
     ],
     "channel": "stable"
   },
-  "os.diagnostics.onRoutineInitialized": {
-    "dependencies": [
-      "permission:os.diagnostics"
-    ],
-    "contexts": [
-      "blessed_extension"
-    ],
-    "platforms": [
-      "chromeos",
-      "lacros"
-    ],
-    "feature_flag": "TelemetryExtensionPendingApprovalApi",
-    "channel": "stable"
-  },
   "os.diagnostics.runBluetoothDiscoveryRoutine": {
     "blocklist": [
       "E3303523BFFD1014D4A9D480D692C8B22BE6176B" // http://crbug.com/1255653

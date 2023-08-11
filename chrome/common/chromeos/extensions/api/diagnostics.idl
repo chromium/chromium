@@ -12,8 +12,6 @@ namespace os.diagnostics {
 // The documentation lives here: //docs/telemetry_extension/api_overview.md.
 // LINT.IfChange
 
-
-// ----------------- DIAGNOSTICS API V1 -----------------
   enum RoutineType {
     ac_power,
     battery_capacity,
@@ -165,12 +163,6 @@ namespace os.diagnostics {
 
   callback RunRoutineCallback = void (RunRoutineResponse response);
 
-  // ----------------- DIAGNOSTICS API V2 -----------------
-
-  dictionary RoutineInitializedInfo {
-    DOMString? uuid;
-  };
-
   interface Functions {
     [supportsPromises] static void getAvailableRoutines(GetAvailableRoutinesCallback callback);
 
@@ -240,12 +232,6 @@ namespace os.diagnostics {
 
     [supportsPromises] static void runAudioDriverRoutine(RunRoutineCallback callback);
   };
-
-  interface Events {
-    // Informs the extension that a routine was intitialized.
-    static void onRoutineInitialized(RoutineInitializedInfo initializedInfo);
-  };
-
   // LINT.ThenChange(//docs/telemetry_extension/api_overview.md)
   // The following is an empty definition, since the IDL compiler only accepts
   // comments over valid definitions.

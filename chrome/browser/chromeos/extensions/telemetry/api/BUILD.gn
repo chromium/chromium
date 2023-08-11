@@ -42,7 +42,6 @@ source_set("browser_tests") {
     "common:browser_tests",
     "diagnostics:browser_tests",
     "events:browser_tests",
-    "routines:browser_tests",
     "telemetry:browser_tests",
   ]
 }
