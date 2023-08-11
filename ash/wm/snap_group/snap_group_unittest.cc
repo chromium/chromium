@@ -28,6 +28,7 @@
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/splitview/split_view_divider.h"
 #include "ash/wm/splitview/split_view_divider_view.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "ash/wm/window_cycle/window_cycle_controller.h"
 #include "ash/wm/window_cycle/window_cycle_list.h"
@@ -37,6 +38,7 @@
 #include "ash/wm/workspace/multi_window_resize_controller.h"
 #include "ash/wm/workspace/workspace_event_handler.h"
 #include "ash/wm/workspace_controller_test_api.h"
+#include "base/check_op.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -129,6 +131,10 @@ void SwitchToTabletMode() {
   TabletModeControllerTestApi test_api;
   test_api.DetachAllMice();
   test_api.EnterTabletMode();
+}
+
+void ExitTabletMode() {
+  TabletModeControllerTestApi().LeaveTabletMode();
 }
 
 void WaitForSeconds(int seconds) {
@@ -373,6 +379,7 @@ class SnapGroupEntryPointArm1Test : public SnapGroupTest {
   void SnapTwoTestWindowsInArm1(aura::Window* window1,
                                 aura::Window* window2,
                                 bool horizontal = true) {
+    CHECK_NE(window1, window2);
     if (horizontal) {
       UpdateDisplay("800x600");
     } else {
@@ -1120,6 +1127,28 @@ TEST_F(SnapGroupEntryPointArm1Test, NoCrashWhenRemovingGroupInTabletMode) {
   EXPECT_FALSE(snap_group_controller->GetSnapGroupForGivenWindow(w2.get()));
   EXPECT_EQ(split_view_controller()->primary_window(), w1.get());
   EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+}
+
+// Tests that one snap group in clamshell will be converted to windows in tablet
+// split view. When converted back to clamshell, the snap group will be
+// restored.
+TEST_F(SnapGroupEntryPointArm1Test, ClamshellTabletTransitionWithOneSnapGroup) {
+  std::unique_ptr<aura::Window> window1(CreateTestWindowInShellWithId(0));
+  std::unique_ptr<aura::Window> window2(CreateTestWindowInShellWithId(1));
+  SnapTwoTestWindowsInArm1(window1.get(), window2.get(), /*horizontal=*/true);
+  EXPECT_TRUE(split_view_divider());
+
+  SwitchToTabletMode();
+  EXPECT_TRUE(split_view_divider());
+  EXPECT_EQ(0.5f, *WindowState::Get(window1.get())->snap_ratio());
+  EXPECT_EQ(0.5f, *WindowState::Get(window2.get())->snap_ratio());
+
+  ExitTabletMode();
+  EXPECT_TRUE(SnapGroupController::Get()->AreWindowsInSnapGroup(window1.get(),
+                                                                window2.get()));
+  EXPECT_EQ(0.5f, *WindowState::Get(window1.get())->snap_ratio());
+  EXPECT_EQ(0.5f, *WindowState::Get(window2.get())->snap_ratio());
+  EXPECT_TRUE(split_view_divider());
 }
 
 // Tests that the swap window source histogram is recorded correctly.

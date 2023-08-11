@@ -3,12 +3,9 @@
 // found in the LICENSE file.
 
 #include "ash/wm/tablet_mode/tablet_mode_window_manager.h"
-#include "base/memory/raw_ptr.h"
 
 #include <memory>
 
-#include "ash/constants/app_types.h"
-#include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/root_window_controller.h"
 #include "ash/scoped_animation_disabler.h"
@@ -19,6 +16,7 @@
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/overview/overview_utils.h"
+#include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/splitview/split_view_constants.h"
 #include "ash/wm/splitview/split_view_utils.h"
 #include "ash/wm/tablet_mode/scoped_skip_user_session_blocked_check.h"
@@ -32,13 +30,12 @@
 #include "ash/wm/workspace/backdrop_controller.h"
 #include "ash/wm/workspace/workspace_layout_manager.h"
 #include "ash/wm/workspace_controller.h"
-#include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/wm/features.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/compositor/layer.h"
-#include "ui/compositor/layer_animation_element.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/display/screen.h"
 
@@ -58,6 +55,38 @@ bool IsCarryOverCandidateForSplitView(
     aura::Window* root_window) {
   return windows.size() > i && windows[i]->GetRootWindow() == root_window &&
          SplitViewController::Get(root_window)->CanSnapWindow(windows[i]);
+}
+
+// When switching to clamshell mode if all the following
+// conditions are met:
+// 1. `InClamshellSplitViewMode()` returns true;
+// 2. Overview is either not active or empty;
+// 3. Two windows are not in a snap group.
+// This state will be out of the scope of the `SplitViewController` in clamshell
+// mode and we should end split view and end overview if any. For more details,
+// please refer to `split_view_controller.h`.
+void MaybeEndSplitViewAndOverview() {
+  Shell* shell = Shell::Get();
+  OverviewController* overview_controller = shell->overview_controller();
+  const bool empty_or_inactive_overview =
+      !overview_controller->InOverviewSession() ||
+      overview_controller->overview_session()->IsEmpty();
+  SplitViewController* split_view_controller =
+      SplitViewController::Get(Shell::GetPrimaryRootWindow());
+  SnapGroupController* snap_group_controller = SnapGroupController::Get();
+  auto* primary_window = split_view_controller->primary_window();
+  auto* secondary_window = split_view_controller->secondary_window();
+  const bool windows_in_snap_group =
+      snap_group_controller && primary_window && secondary_window &&
+      snap_group_controller->AreWindowsInSnapGroup(primary_window,
+                                                   secondary_window);
+
+  if (split_view_controller->InClamshellSplitViewMode() &&
+      empty_or_inactive_overview && !windows_in_snap_group) {
+    split_view_controller->EndSplitView(
+        SplitViewController::EndReason::kExitTabletMode);
+    overview_controller->EndOverview(OverviewEndAction::kSplitView);
+  }
 }
 
 // Snap the carry over windows into splitview mode at |divider_position|.
@@ -91,13 +120,11 @@ void DoSplitViewTransition(
   }
 
   // For clamshell split view mode, end splitview mode if we're in single
-  // split mode or both snapped mode (in both cases overview is not active).
+  // split mode or both snapped mode (in both cases overview is not active)
+  // except for the case when two windows are in a snap group.
   // TODO(xdai): Refactoring SplitViewController to make SplitViewController to
   // handle this case.
-  if (split_view_controller->InClamshellSplitViewMode() &&
-      !Shell::Get()->overview_controller()->InOverviewSession()) {
-    split_view_controller->EndSplitView();
-  }
+  MaybeEndSplitViewAndOverview();
 }
 
 void UpdateDeskContainersBackdrops() {
@@ -218,19 +245,11 @@ void TabletModeWindowManager::Shutdown() {
       GetCarryOverWindowsInSplitView(/*clamshell_to_tablet=*/false);
 
   // For case 2 and 3: End splitview mode for two snapped windows case or
-  // single split case to match the clamshell split view behavior. (there is
-  // no both snapped state or single split state in clamshell split view). The
-  // windows will still be kept snapped though.
-  if (split_view_controller->InSplitViewMode()) {
-    OverviewController* overview_controller =
-        Shell::Get()->overview_controller();
-    if (!overview_controller->InOverviewSession() ||
-        overview_controller->overview_session()->IsEmpty()) {
-      split_view_controller->EndSplitView(
-          SplitViewController::EndReason::kExitTabletMode);
-      overview_controller->EndOverview(OverviewEndAction::kSplitView);
-    }
-  }
+  // single split case to match the clamshell split view behavior except for the
+  // case when two windows are in a snap group. (there is no both snapped state
+  // or single split state in clamshell split view). The windows will still be
+  // kept snapped though.
+  MaybeEndSplitViewAndOverview();
 
   for (aura::Window* window : windows_to_track_)
     window->RemoveObserver(this);

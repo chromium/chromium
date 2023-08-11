@@ -523,8 +523,12 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   // Returns the closest fixed location for `divider_position_`.
   int GetClosestFixedDividerPosition();
 
-  // While the divider is animating to somewhere, stop it and shove it there.
+  // `StopSnapAnimation()` and notifies the `observers_` about the divider
+  // position change.
   void StopAndShoveAnimatedDivider();
+
+  // Stops the divider animation and updates the `divider_position_`.
+  void StopSnapAnimation();
 
   // Returns true if we should end split view after resizing, i.e. the
   // split view divider is at an edge of the work area.

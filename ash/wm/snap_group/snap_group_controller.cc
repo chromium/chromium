@@ -23,11 +23,13 @@ SnapGroupController* g_instance = nullptr;
 
 SnapGroupController::SnapGroupController() {
   Shell::Get()->overview_controller()->AddObserver(this);
+  TabletModeController::Get()->AddObserver(this);
   CHECK_EQ(g_instance, nullptr);
   g_instance = this;
 }
 
 SnapGroupController::~SnapGroupController() {
+  TabletModeController::Get()->RemoveObserver(this);
   Shell::Get()->overview_controller()->RemoveObserver(this);
   CHECK_EQ(g_instance, this);
   g_instance = nullptr;
@@ -156,9 +158,26 @@ bool SnapGroupController::IsArm2ManuallyLockEnabled() const {
 }
 
 void SnapGroupController::OnOverviewModeEnded() {
-  // Disallow overview to be shown on the other
-  // side of the screen when restoring the snapped state of the windows in a
-  // snap group.
+  RestoreSnapGroups();
+}
+
+void SnapGroupController::OnTabletModeEnding() {
+  RestoreSnapGroups();
+}
+
+aura::Window* SnapGroupController::RetrieveTheOtherWindowInSnapGroup(
+    aura::Window* window) const {
+  if (window_to_snap_group_map_.find(window) ==
+      window_to_snap_group_map_.end()) {
+    return nullptr;
+  }
+
+  SnapGroup* snap_group = window_to_snap_group_map_.find(window)->second;
+  return window == snap_group->window1() ? snap_group->window2()
+                                         : snap_group->window1();
+}
+
+void SnapGroupController::RestoreSnapGroups() {
   // TODO(b/286968669): Restore the snap ratio when snapping the windows in snap
   // group.
   // TODO(b/288335850): Currently `SplitViewController` only supports two
@@ -183,18 +202,6 @@ void SnapGroupController::OnOverviewModeEnded() {
     split_view_controller->SnapWindow(
         window2, SplitViewController::SnapPosition::kSecondary);
   }
-}
-
-aura::Window* SnapGroupController::RetrieveTheOtherWindowInSnapGroup(
-    aura::Window* window) const {
-  if (window_to_snap_group_map_.find(window) ==
-      window_to_snap_group_map_.end()) {
-    return nullptr;
-  }
-
-  SnapGroup* snap_group = window_to_snap_group_map_.find(window)->second;
-  return window == snap_group->window1() ? snap_group->window2()
-                                         : snap_group->window1();
 }
 
 }  // namespace ash
