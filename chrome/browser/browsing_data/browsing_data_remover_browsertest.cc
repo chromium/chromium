@@ -1400,8 +1400,15 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
   ExpectCookieTreeModelCount(0);
 }
 
+// TODO(crbug.com/1472412): Enable after fixing flakiness.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_MediaLicenseDeletionWithFilter \
+  DISABLED_MediaLicenseDeletionWithFilter
+#else
+#define MAYBE_MediaLicenseDeletionWithFilter MediaLicenseDeletionWithFilter
+#endif
 IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
-                       MediaLicenseDeletionWithFilter) {
+                       MAYBE_MediaLicenseDeletionWithFilter) {
   const std::string kMediaLicenseType = "MediaLicense";
 
   GURL url =
