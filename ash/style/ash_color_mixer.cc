@@ -675,7 +675,11 @@ void AddAshColorMixer(ui::ColorProvider* provider,
           ? static_cast<ui::ColorId>(cros_tokens::kCrosSysSystemBaseElevated)
           : kColorAshShieldAndBase80};
   mixer[ui::kColorAshSystemUIMenuIcon] = {kColorAshIconColorPrimary};
-  mixer[ui::kColorAshSystemUIMenuItemBackgroundSelected] = {kColorAshInkDrop};
+  mixer[ui::kColorAshSystemUIMenuItemBackgroundSelected] = {
+      is_jelly_enabled
+          ? static_cast<ui::ColorId>(cros_tokens::kCrosSysHoverOnSubtle)
+          : kColorAshInkDrop};
+
   mixer[ui::kColorAshSystemUIMenuSeparator] = {kColorAshSeparatorColor};
 
   mixer[kColorAshDialogBackgroundColor] =
