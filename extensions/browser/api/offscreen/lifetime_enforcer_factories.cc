@@ -93,6 +93,8 @@ constexpr ReasonAndFactoryMethodPair kReasonAndFactoryMethodPairs[] = {
     {api::offscreen::Reason::kClipboard, &CreateEmptyEnforcer},
     {api::offscreen::Reason::kLocalStorage, &CreateEmptyEnforcer},
     {api::offscreen::Reason::kWorkers, &CreateEmptyEnforcer},
+    {api::offscreen::Reason::kBatteryStatus, &CreateEmptyEnforcer},
+    {api::offscreen::Reason::kMatchMedia, &CreateEmptyEnforcer},
     {api::offscreen::Reason::kGeolocation, &CreateEmptyEnforcer}};
 
 static_assert(std::size(kReasonAndFactoryMethodPairs) ==
