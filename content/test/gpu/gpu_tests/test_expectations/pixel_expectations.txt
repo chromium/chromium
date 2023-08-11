@@ -206,9 +206,11 @@ crbug.com/1307787 [ fuchsia ] Pixel_VulkanSwiftShader_WebGPU* [ Skip ]
 crbug.com/1307787 [ mac ] Pixel_VulkanSwiftShader_WebGPU* [ Skip ]
 crbug.com/1307787 [ win ] Pixel_VulkanSwiftShader_WebGPU* [ Skip ]
 
-# Test is too slow for old phones and laptops, and in Debug mode.
+# Test is too slow for old phones and laptops, and in Debug and ASAN.
 crbug.com/1356246 [ android android-nexus-5x ] Pixel_SVGHuge [ Skip ]
 crbug.com/1356246 [ mac amd debug ] Pixel_SVGHuge [ Skip ]
+crbug.com/1356246 [ mac amd release asan ] Pixel_SVGHuge [ Skip ]
+crbug.com/1356246 [ mac intel release asan ] Pixel_SVGHuge [ Skip ]
 # Mac Nvidia laptops are quite old and the test times out on release builds too.
 crbug.com/1356246 [ mac nvidia ] Pixel_SVGHuge [ Skip ]
 
@@ -403,9 +405,9 @@ crbug.com/1469875 [ mac graphite-enabled ] Pixel_OffscreenCanvasWebGLSoftwareCom
 crbug.com/1469875 [ mac graphite-enabled ] Pixel_OffscreenCanvasWebGLSoftwareCompositingWorker [ Failure ]
 crbug.com/1469875 [ mac graphite-enabled ] Pixel_OffscreenCanvasWebglResizeOnWorker [ Failure ]
 crbug.com/1469875 [ mac graphite-enabled ] Pixel_PaintWorkletTransform [ Failure ]
-crbug.com/1469875 [ mac graphite-enabled amd release ] Pixel_SVGHuge [ Failure ]
+crbug.com/1469875 [ mac graphite-enabled amd release no-asan ] Pixel_SVGHuge [ Failure ]
 crbug.com/1469875 [ mac graphite-enabled apple ] Pixel_SVGHuge [ Failure ]
-crbug.com/1469875 [ mac graphite-enabled intel ] Pixel_SVGHuge [ Failure ]
+crbug.com/1469875 [ mac graphite-enabled intel no-asan ] Pixel_SVGHuge [ Failure ]
 crbug.com/1469875 [ mac graphite-enabled ] Pixel_VideoStreamFrom2DAlphaCanvas_DisableOOPRaster [ Failure ]
 crbug.com/1469875 [ mac graphite-enabled ] Pixel_VideoStreamFrom2DAlphaCanvas_DisableReadbackFromTexture [ Failure ]
 crbug.com/1469875 [ mac graphite-enabled ] Pixel_WebGL2_ClearBufferfv_Result_Displayed [ Failure ]
