@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/passwords/bubble_controllers/items_bubble_controller.h"
+#include "chrome/browser/ui/passwords/bubble_controllers/manage_passwords_bubble_controller.h"
 
 #include <memory>
 
@@ -53,9 +53,9 @@ password_manager::PasswordForm CreateTestForm(int index = 1) {
 
 }  // namespace
 
-class ItemsBubbleControllerTest : public ::testing::Test {
+class ManagePasswordsBubbleControllerTest : public ::testing::Test {
  public:
-  ItemsBubbleControllerTest() {
+  ManagePasswordsBubbleControllerTest() {
     profile_ = IdentityTestEnvironmentProfileAdaptor::
         CreateProfileForIdentityTestEnvironment();
     test_web_contents_ = content::WebContentsTester::CreateTestWebContents(
@@ -81,10 +81,10 @@ class ItemsBubbleControllerTest : public ::testing::Test {
                 })));
   }
 
-  ~ItemsBubbleControllerTest() override = default;
+  ~ManagePasswordsBubbleControllerTest() override = default;
 
   PasswordsModelDelegateMock* delegate() { return mock_delegate_.get(); }
-  ItemsBubbleController* controller() { return controller_.get(); }
+  ManagePasswordsBubbleController* controller() { return controller_.get(); }
   TestingProfile* profile() { return profile_.get(); }
   syncer::TestSyncService* sync_service() { return test_sync_service_; }
 
@@ -111,10 +111,10 @@ class ItemsBubbleControllerTest : public ::testing::Test {
   std::unique_ptr<content::WebContents> test_web_contents_;
   std::vector<std::unique_ptr<password_manager::PasswordForm>> current_forms_;
   std::unique_ptr<PasswordsModelDelegateMock> mock_delegate_;
-  std::unique_ptr<ItemsBubbleController> controller_;
+  std::unique_ptr<ManagePasswordsBubbleController> controller_;
 };
 
-void ItemsBubbleControllerTest::Init() {
+void ManagePasswordsBubbleControllerTest::Init() {
   current_forms_.push_back(
       std::make_unique<password_manager::PasswordForm>(CreateTestForm(1)));
   current_forms_.push_back(
@@ -130,8 +130,8 @@ void ItemsBubbleControllerTest::Init() {
       .WillRepeatedly(Return(test_web_contents_.get()));
 
   EXPECT_CALL(*delegate(), OnBubbleShown());
-  controller_ =
-      std::make_unique<ItemsBubbleController>(mock_delegate_->AsWeakPtr());
+  controller_ = std::make_unique<ManagePasswordsBubbleController>(
+      mock_delegate_->AsWeakPtr());
   ASSERT_TRUE(testing::Mock::VerifyAndClearExpectations(delegate()));
 
   EXPECT_CALL(*delegate(), GetWebContents())
@@ -139,15 +139,15 @@ void ItemsBubbleControllerTest::Init() {
 }
 
 const std::vector<std::unique_ptr<password_manager::PasswordForm>>&
-ItemsBubbleControllerTest::GetCurrentForms() const {
+ManagePasswordsBubbleControllerTest::GetCurrentForms() const {
   return current_forms_;
 }
 
-void ItemsBubbleControllerTest::DestroyController() {
+void ManagePasswordsBubbleControllerTest::DestroyController() {
   controller_.reset();
 }
 
-TEST_F(ItemsBubbleControllerTest, OnManageClicked) {
+TEST_F(ManagePasswordsBubbleControllerTest, OnManageClicked) {
   Init();
 
   EXPECT_CALL(
@@ -167,19 +167,20 @@ TEST_F(ItemsBubbleControllerTest, OnManageClicked) {
       password_manager::metrics_util::CLICKED_MANAGE, 1);
 }
 
-TEST_F(ItemsBubbleControllerTest, ShouldReturnLocalCredentials) {
+TEST_F(ManagePasswordsBubbleControllerTest, ShouldReturnLocalCredentials) {
   Init();
   const std::vector<std::unique_ptr<password_manager::PasswordForm>>&
       credentials = controller()->GetCredentials();
   const std::vector<std::unique_ptr<password_manager::PasswordForm>>&
-      expected_credentials = ItemsBubbleControllerTest::GetCurrentForms();
+      expected_credentials =
+          ManagePasswordsBubbleControllerTest::GetCurrentForms();
   EXPECT_EQ(credentials.size(), expected_credentials.size());
   for (size_t i = 0; i < credentials.size(); i++) {
     EXPECT_EQ(*credentials[i], *expected_credentials[i]);
   }
 }
 
-TEST_F(ItemsBubbleControllerTest, ShouldReturnPasswordSyncState) {
+TEST_F(ManagePasswordsBubbleControllerTest, ShouldReturnPasswordSyncState) {
   Init();
   CoreAccountInfo account;
   account.email = "account@gmail.com";
@@ -214,7 +215,7 @@ TEST_F(ItemsBubbleControllerTest, ShouldReturnPasswordSyncState) {
             password_manager::SyncState::kSyncingWithCustomPassphrase);
 }
 
-TEST_F(ItemsBubbleControllerTest, ShouldGetPrimaryAccountEmail) {
+TEST_F(ManagePasswordsBubbleControllerTest, ShouldGetPrimaryAccountEmail) {
   Init();
   // Simulate sign-in.
   signin::IdentityManager* identity_manager =
@@ -224,7 +225,7 @@ TEST_F(ItemsBubbleControllerTest, ShouldGetPrimaryAccountEmail) {
   EXPECT_EQ(controller()->GetPrimaryAccountEmail(), u"test@email.com");
 }
 
-TEST_F(ItemsBubbleControllerTest, OnUpdatePasswordNote) {
+TEST_F(ManagePasswordsBubbleControllerTest, OnUpdatePasswordNote) {
   Init();
 
   password_manager::PasswordForm original_form = CreateTestForm();
@@ -240,7 +241,7 @@ TEST_F(ItemsBubbleControllerTest, OnUpdatePasswordNote) {
   EXPECT_EQ(controller()->get_currently_selected_password(), updated_form);
 }
 
-TEST_F(ItemsBubbleControllerTest, OnUpdateUsername) {
+TEST_F(ManagePasswordsBubbleControllerTest, OnUpdateUsername) {
   Init();
 
   password_manager::PasswordForm original_form = CreateTestForm();
@@ -268,7 +269,7 @@ TEST_F(ItemsBubbleControllerTest, OnUpdateUsername) {
   controller()->UpdateSelectedCredentialInPasswordStore(updated_form);
 }
 
-TEST_F(ItemsBubbleControllerTest, OnUpdateUsernameAndPasswordNote) {
+TEST_F(ManagePasswordsBubbleControllerTest, OnUpdateUsernameAndPasswordNote) {
   Init();
 
   password_manager::PasswordForm original_form = CreateTestForm();
@@ -288,7 +289,7 @@ TEST_F(ItemsBubbleControllerTest, OnUpdateUsernameAndPasswordNote) {
   controller()->UpdateSelectedCredentialInPasswordStore(updated_form);
 }
 
-TEST_F(ItemsBubbleControllerTest,
+TEST_F(ManagePasswordsBubbleControllerTest,
        ShouldChangeSelectedPasswordOnSuccessfulOsAuth) {
   // The time it takes the user to complete the authentication flow in seconds.
   const int kTimeToAuth = 10;
@@ -315,7 +316,7 @@ TEST_F(ItemsBubbleControllerTest,
   EXPECT_EQ(controller()->get_currently_selected_password(), selected_form);
 }
 
-TEST_F(ItemsBubbleControllerTest,
+TEST_F(ManagePasswordsBubbleControllerTest,
        ShouldNotChangeSelectedPasswordOnFailedOsAuth) {
   Init();
   password_manager::PasswordForm selected_form = CreateTestForm();
@@ -333,7 +334,7 @@ TEST_F(ItemsBubbleControllerTest,
   EXPECT_FALSE(controller()->get_currently_selected_password().has_value());
 }
 
-TEST_F(ItemsBubbleControllerTest, ShouldReturnWhetherUsernameExists) {
+TEST_F(ManagePasswordsBubbleControllerTest, ShouldReturnWhetherUsernameExists) {
   Init();
   EXPECT_TRUE(controller()->UsernameExists(u"User1"));
   EXPECT_FALSE(controller()->UsernameExists(u"AnotherUsername"));

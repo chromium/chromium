@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/passwords/bubble_controllers/items_bubble_controller.h"
+#include "chrome/browser/ui/passwords/bubble_controllers/manage_passwords_bubble_controller.h"
 
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
@@ -63,30 +63,31 @@ void LogNoteChangesInPasswordManagementBubble(
 
 }  // namespace
 
-ItemsBubbleController::ItemsBubbleController(
+ManagePasswordsBubbleController::ManagePasswordsBubbleController(
     base::WeakPtr<PasswordsModelDelegate> delegate)
     : PasswordBubbleControllerBase(
           std::move(delegate),
           /*display_disposition=*/metrics_util::MANUAL_MANAGE_PASSWORDS) {}
 
-ItemsBubbleController::~ItemsBubbleController() {
+ManagePasswordsBubbleController::~ManagePasswordsBubbleController() {
   OnBubbleClosing();
 }
 
-std::u16string ItemsBubbleController::GetTitle() const {
+std::u16string ManagePasswordsBubbleController::GetTitle() const {
   return GetManagePasswordsDialogTitleText(
       GetWebContents()->GetVisibleURL(), delegate_->GetOrigin(),
       !delegate_->GetCurrentForms().empty());
 }
 
-void ItemsBubbleController::OnManageClicked(
+void ManagePasswordsBubbleController::OnManageClicked(
     password_manager::ManagePasswordsReferrer referrer) {
   dismissal_reason_ = metrics_util::CLICKED_MANAGE;
-  if (delegate_)
+  if (delegate_) {
     delegate_->NavigateToPasswordManagerSettingsPage(referrer);
+  }
 }
 
-void ItemsBubbleController::RequestFavicon(
+void ManagePasswordsBubbleController::RequestFavicon(
     base::OnceCallback<void(const gfx::Image&)> favicon_ready_callback) {
   favicon::FaviconService* favicon_service =
       FaviconServiceFactory::GetForProfile(GetProfile(),
@@ -94,42 +95,45 @@ void ItemsBubbleController::RequestFavicon(
   favicon::GetFaviconImageForPageURL(
       favicon_service, GetWebContents()->GetVisibleURL(),
       favicon_base::IconType::kFavicon,
-      base::BindOnce(&ItemsBubbleController::OnFaviconReady,
+      base::BindOnce(&ManagePasswordsBubbleController::OnFaviconReady,
                      base::Unretained(this), std::move(favicon_ready_callback)),
       &favicon_tracker_);
 }
 
-password_manager::SyncState ItemsBubbleController::GetPasswordSyncState() {
+password_manager::SyncState
+ManagePasswordsBubbleController::GetPasswordSyncState() {
   const syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(GetProfile());
   return password_manager_util::GetPasswordSyncState(sync_service);
 }
 
-std::u16string ItemsBubbleController::GetPrimaryAccountEmail() {
+std::u16string ManagePasswordsBubbleController::GetPrimaryAccountEmail() {
   Profile* profile = GetProfile();
-  if (!profile)
+  if (!profile) {
     return std::u16string();
+  }
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
-  if (!identity_manager)
+  if (!identity_manager) {
     return std::u16string();
+  }
   return base::UTF8ToUTF16(
       identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
           .email);
 }
 
-void ItemsBubbleController::OnGooglePasswordManagerLinkClicked() {
+void ManagePasswordsBubbleController::OnGooglePasswordManagerLinkClicked() {
   if (delegate_) {
     delegate_->NavigateToPasswordManagerSettingsPage(
         password_manager::ManagePasswordsReferrer::kManagePasswordsBubble);
   }
 }
 const std::vector<std::unique_ptr<password_manager::PasswordForm>>&
-ItemsBubbleController::GetCredentials() const {
+ManagePasswordsBubbleController::GetCredentials() const {
   return delegate_->GetCurrentForms();
 }
 
-void ItemsBubbleController::UpdateSelectedCredentialInPasswordStore(
+void ManagePasswordsBubbleController::UpdateSelectedCredentialInPasswordStore(
     password_manager::PasswordForm updated_form) {
   DCHECK(currently_selected_password_.has_value());
   Profile* profile = GetProfile();
@@ -170,7 +174,7 @@ void ItemsBubbleController::UpdateSelectedCredentialInPasswordStore(
       metrics_util::PasswordManagementBubbleInteractions::kUsernameAdded);
 }
 
-void ItemsBubbleController::AuthenticateUserAndDisplayDetailsOf(
+void ManagePasswordsBubbleController::AuthenticateUserAndDisplayDetailsOf(
     password_manager::PasswordForm password_form,
     base::OnceCallback<void(bool)> completion) {
   std::u16string message;
@@ -185,17 +189,18 @@ void ItemsBubbleController::AuthenticateUserAndDisplayDetailsOf(
   // bubble is closed (and controller is destructed) while the reauth flow is
   // running, no callback will be invoked upon the conclusion of the
   // authentication flow.
-  auto on_reath_complete =
-      base::BindOnce(&ItemsBubbleController::OnUserAuthenticationCompleted,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(password_form),
-                     std::move(completion));
+  auto on_reath_complete = base::BindOnce(
+      &ManagePasswordsBubbleController::OnUserAuthenticationCompleted,
+      weak_ptr_factory_.GetWeakPtr(), std::move(password_form),
+      std::move(completion));
   delegate_->AuthenticateUserWithMessage(
       message, metrics_util::TimeCallback(
                    std::move(on_reath_complete),
                    "PasswordManager.ManagementBubble.AuthenticationTime"));
 }
 
-bool ItemsBubbleController::UsernameExists(const std::u16string& username) {
+bool ManagePasswordsBubbleController::UsernameExists(
+    const std::u16string& username) {
   return base::ranges::any_of(
       GetCredentials(),
       [&username](const std::unique_ptr<password_manager::PasswordForm>& form) {
@@ -203,21 +208,22 @@ bool ItemsBubbleController::UsernameExists(const std::u16string& username) {
       });
 }
 
-void ItemsBubbleController::OnFaviconReady(
+void ManagePasswordsBubbleController::OnFaviconReady(
     base::OnceCallback<void(const gfx::Image&)> favicon_ready_callback,
     const favicon_base::FaviconImageResult& result) {
   std::move(favicon_ready_callback).Run(result.image);
 }
 
-void ItemsBubbleController::ReportInteractions() {
+void ManagePasswordsBubbleController::ReportInteractions() {
   metrics_util::LogGeneralUIDismissalReason(dismissal_reason_);
   // Record UKM statistics on dismissal reason.
-  if (metrics_recorder_)
+  if (metrics_recorder_) {
     metrics_recorder_->RecordUIDismissalReason(dismissal_reason_);
+  }
 }
 
 scoped_refptr<password_manager::PasswordStoreInterface>
-ItemsBubbleController::PasswordStoreForForm(
+ManagePasswordsBubbleController::PasswordStoreForForm(
     const password_manager::PasswordForm& password_form) const {
   Profile* profile = GetProfile();
   DCHECK(profile);
@@ -228,7 +234,7 @@ ItemsBubbleController::PasswordStoreForForm(
                    profile, ServiceAccessType::EXPLICIT_ACCESS);
 }
 
-void ItemsBubbleController::OnUserAuthenticationCompleted(
+void ManagePasswordsBubbleController::OnUserAuthenticationCompleted(
     password_manager::PasswordForm password_form,
     base::OnceCallback<void(bool)> completion,
     bool authentication_result) {

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_PASSWORDS_BUBBLE_CONTROLLERS_ITEMS_BUBBLE_CONTROLLER_H_
-#define CHROME_BROWSER_UI_PASSWORDS_BUBBLE_CONTROLLERS_ITEMS_BUBBLE_CONTROLLER_H_
+#ifndef CHROME_BROWSER_UI_PASSWORDS_BUBBLE_CONTROLLERS_MANAGE_PASSWORDS_BUBBLE_CONTROLLER_H_
+#define CHROME_BROWSER_UI_PASSWORDS_BUBBLE_CONTROLLERS_MANAGE_PASSWORDS_BUBBLE_CONTROLLER_H_
 
 #include "chrome/browser/ui/passwords/bubble_controllers/password_bubble_controller_base.h"
 
@@ -27,12 +27,12 @@ class PasswordStoreInterface;
 enum class SyncState;
 }  // namespace password_manager
 
-// This controller provides data and actions for the PasswordItemsView.
-class ItemsBubbleController : public PasswordBubbleControllerBase {
+// This controller provides data and actions for the ManagePasswordsView.
+class ManagePasswordsBubbleController : public PasswordBubbleControllerBase {
  public:
-  explicit ItemsBubbleController(
+  explicit ManagePasswordsBubbleController(
       base::WeakPtr<PasswordsModelDelegate> delegate);
-  ~ItemsBubbleController() override;
+  ~ManagePasswordsBubbleController() override;
 
   // PasswordBubbleControllerBase methods:
   std::u16string GetTitle() const override;
@@ -120,7 +120,7 @@ class ItemsBubbleController : public PasswordBubbleControllerBase {
   // currently selected password.
   absl::optional<password_manager::PasswordForm> currently_selected_password_;
 
-  base::WeakPtrFactory<ItemsBubbleController> weak_ptr_factory_{this};
+  base::WeakPtrFactory<ManagePasswordsBubbleController> weak_ptr_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_UI_PASSWORDS_BUBBLE_CONTROLLERS_ITEMS_BUBBLE_CONTROLLER_H_
+#endif  // CHROME_BROWSER_UI_PASSWORDS_BUBBLE_CONTROLLERS_MANAGE_PASSWORDS_BUBBLE_CONTROLLER_H_
