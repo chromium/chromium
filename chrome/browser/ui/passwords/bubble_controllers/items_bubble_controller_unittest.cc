@@ -167,28 +167,6 @@ TEST_F(ItemsBubbleControllerTest, OnManageClicked) {
       password_manager::metrics_util::CLICKED_MANAGE, 1);
 }
 
-TEST_F(ItemsBubbleControllerTest, OnPasswordActionAddPassword) {
-  Init();
-
-  password_manager::PasswordForm form = CreateTestForm();
-
-  EXPECT_CALL(*GetStore(), AddLogin(form, _));
-
-  controller()->OnPasswordAction(
-      form, PasswordBubbleControllerBase::PasswordAction::kAddPassword);
-}
-
-TEST_F(ItemsBubbleControllerTest, OnPasswordActionRemovePassword) {
-  Init();
-
-  password_manager::PasswordForm form = CreateTestForm();
-
-  EXPECT_CALL(*GetStore(), RemoveLogin(form));
-
-  controller()->OnPasswordAction(
-      form, PasswordBubbleControllerBase::PasswordAction::kRemovePassword);
-}
-
 TEST_F(ItemsBubbleControllerTest, ShouldReturnLocalCredentials) {
   Init();
   const std::vector<std::unique_ptr<password_manager::PasswordForm>>&

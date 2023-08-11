@@ -86,21 +86,6 @@ void ItemsBubbleController::OnManageClicked(
     delegate_->NavigateToPasswordManagerSettingsPage(referrer);
 }
 
-void ItemsBubbleController::OnPasswordAction(
-    const password_manager::PasswordForm& password_form,
-    PasswordAction action) {
-  Profile* profile = GetProfile();
-  if (!profile)
-    return;
-  scoped_refptr<password_manager::PasswordStoreInterface> password_store =
-      PasswordStoreForForm(password_form);
-  DCHECK(password_store);
-  if (action == PasswordAction::kRemovePassword)
-    password_store->RemoveLogin(password_form);
-  else
-    password_store->AddLogin(password_form);
-}
-
 void ItemsBubbleController::RequestFavicon(
     base::OnceCallback<void(const gfx::Image&)> favicon_ready_callback) {
   favicon::FaviconService* favicon_service =

@@ -5224,8 +5224,6 @@ static_library("ui") {
       "views/passwords/password_generation_confirmation_view.h",
       "views/passwords/password_generation_popup_view_views.cc",
       "views/passwords/password_generation_popup_view_views.h",
-      "views/passwords/password_items_view.cc",
-      "views/passwords/password_items_view.h",
       "views/passwords/password_save_unsynced_credentials_locally_view.cc",
       "views/passwords/password_save_unsynced_credentials_locally_view.h",
       "views/passwords/password_save_update_view.cc",

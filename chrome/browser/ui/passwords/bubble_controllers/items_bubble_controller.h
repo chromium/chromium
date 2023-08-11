@@ -40,11 +40,6 @@ class ItemsBubbleController : public PasswordBubbleControllerBase {
   // Called by the view code when the manage button is clicked by the user.
   void OnManageClicked(password_manager::ManagePasswordsReferrer referrer);
 
-  // Called by the view code to delete or add a password form to the
-  // PasswordStore.
-  void OnPasswordAction(const password_manager::PasswordForm& password_form,
-                        PasswordAction action);
-
   // Makes a request to the favicon service for the icon of current visible URL.
   // The request to the favicon store is canceled on destruction of the
   // controller.

@@ -13110,22 +13110,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_MANAGE_PASSWORDS_DIFFERENT_DOMAIN_NO_PASSWORDS_TITLE" desc="The title text that is used in the manage passwords bubble when no passwords are available for a different domain.">
         No passwords saved for <ph name="ORIGIN">$1<ex>example.com</ex></ph>
       </message>
-      <message name="IDS_MANAGE_PASSWORDS_ACCOUNT_STORE_ICON_DESCRIPTION" desc="An accessibility text for images that mark passwords as stored in the user's profile.">
-        Password stored in your Google account
-      </message>
-      <message name="IDS_MANAGE_PASSWORDS_DELETED" desc="The text that is used in the manage passwords bubble when a password is deleted.">
-        Password deleted
-      </message>
-      <message name="IDS_MANAGE_PASSWORDS_UNDO" desc="The text that is used in the manage passwords bubble when a password is deleted.">
-        Undo
-      </message>
-      <message name="IDS_MANAGE_PASSWORDS_UNDO_TOOLTIP" desc="Tooltip text for restoring a deleted password (undoing removal)">
-        Restore deleted password for <ph name="USERNAME">$1<ex>user@gmail.com</ex></ph>
-      </message>
-      <message name="IDS_MANAGE_PASSWORDS_DELETE" desc="The tooltip of a button that is used in the manage passwords bubble for removing the credential.">
-        Delete password for <ph name="USERNAME">$1<ex>user@gmail.com</ex></ph>
-      </message>
-
       <message name="IDS_MANAGE_PASSWORDS_SHOW_PASSWORD" desc="The tooltip of a button that is used in the manage pending password bubble for revealing the password.">
         Show password
       </message>
