@@ -212,7 +212,7 @@ TEST_F(ClassroomBubbleStudentViewTest, RendersComboBoxView) {
   ASSERT_TRUE(GetComboBoxView());
   ASSERT_EQ(GetComboBoxView()->GetModel()->GetItemCount(), 4u);
 
-  EXPECT_EQ(GetComboBoxView()->GetModel()->GetItemAt(0), u"Assigned");
+  EXPECT_EQ(GetComboBoxView()->GetModel()->GetItemAt(0), u"Due soon");
   EXPECT_EQ(GetComboBoxView()->GetModel()->GetItemAt(1), u"No due date");
   EXPECT_EQ(GetComboBoxView()->GetModel()->GetItemAt(2), u"Missing");
   EXPECT_EQ(GetComboBoxView()->GetModel()->GetItemAt(3), u"Done");

@@ -10,7 +10,6 @@
 
 #include "ash/glanceables/classroom/glanceables_classroom_client.h"
 #include "ash/glanceables/classroom/glanceables_classroom_types.h"
-#include "ash/glanceables/common/glanceables_progress_bar_view.h"
 #include "ash/glanceables/glanceables_v2_controller.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -43,13 +42,16 @@ constexpr std::array<StudentAssignmentsListType, 4>
         StudentAssignmentsListType::kMissing,
         StudentAssignmentsListType::kDone};
 
-// TODO(b/283371050): Localize these strings once finalized.
 constexpr auto kStudentAssignmentsListTypeToLabel =
-    base::MakeFixedFlatMap<StudentAssignmentsListType, base::StringPiece>(
-        {{StudentAssignmentsListType::kAssigned, "Assigned"},
-         {StudentAssignmentsListType::kNoDueDate, "No due date"},
-         {StudentAssignmentsListType::kMissing, "Missing"},
-         {StudentAssignmentsListType::kDone, "Done"}});
+    base::MakeFixedFlatMap<StudentAssignmentsListType, int>(
+        {{StudentAssignmentsListType::kAssigned,
+          IDS_GLANCEABLES_CLASSROOM_STUDENT_DUE_SOON_LIST_NAME},
+         {StudentAssignmentsListType::kNoDueDate,
+          IDS_GLANCEABLES_CLASSROOM_STUDENT_NO_DUE_DATE_LIST_NAME},
+         {StudentAssignmentsListType::kMissing,
+          IDS_GLANCEABLES_CLASSROOM_STUDENT_MISSING_LIST_NAME},
+         {StudentAssignmentsListType::kDone,
+          IDS_GLANCEABLES_CLASSROOM_STUDENT_DONE_LIST_NAME}});
 
 constexpr char kClassroomWebUIAssignedUrl[] =
     "https://classroom.google.com/u/0/a/not-turned-in/all";
@@ -65,7 +67,7 @@ std::u16string GetAssignmentListName(size_t index) {
       kStudentAssignmentsListTypeOrdered[index]);
   CHECK(iter != kStudentAssignmentsListTypeToLabel.end());
 
-  return base::UTF8ToUTF16(iter->second);
+  return l10n_util::GetStringUTF16(iter->second);
 }
 
 class ClassroomStudentComboboxModel : public ui::ComboboxModel {

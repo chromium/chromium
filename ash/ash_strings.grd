@@ -6889,6 +6889,18 @@ New install
       <message name="IDS_GLANCEABLES_TASKS_TASK_ITEM_MARK_NOT_COMPLETED_ACCESSIBLE_NAME" desc="The glanceable displays tasks items fetched from Google Tasks API. This is the a11y name announced by ChromeVox for the checkbox button to mark a task as not completed.">
         Mark as not completed
       </message>
+      <message name="IDS_GLANCEABLES_CLASSROOM_STUDENT_DUE_SOON_LIST_NAME" desc="The glanceable displays classroom items fetched from Google Classroom API. This is the name of the list that contains assigned (pending / not completed) student assignments w/ due date in the future.">
+        Due soon
+      </message>
+      <message name="IDS_GLANCEABLES_CLASSROOM_STUDENT_NO_DUE_DATE_LIST_NAME" desc="The glanceable displays classroom items fetched from Google Classroom API. This is the name of the list that contains assigned (pending / not completed) student assignments w/o specified due date.">
+        No due date
+      </message>
+      <message name="IDS_GLANCEABLES_CLASSROOM_STUDENT_MISSING_LIST_NAME" desc="The glanceable displays classroom items fetched from Google Classroom API. This is the name of the list that contains assigned (pending / not completed) student assignments with missed due date.">
+        Missing
+      </message>
+      <message name="IDS_GLANCEABLES_CLASSROOM_STUDENT_DONE_LIST_NAME" desc="The glanceable displays classroom items fetched from Google Classroom API. This is the name of the list that contains completed student assignments.">
+        Done
+      </message>
 
       <!-- Do Not Disturb notification -->
       <message name="IDS_ASH_DO_NOT_DISTURB_NOTIFICATION_TITLE" desc="Label used for the notification that shows up when the 'Do Not Disturb' feature is enabled.">
