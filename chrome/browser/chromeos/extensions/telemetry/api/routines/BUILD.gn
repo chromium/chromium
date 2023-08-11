@@ -1,0 +1,41 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("routines") {
+  sources = [
+    "diagnostic_routine_observation.cc",
+    "diagnostic_routine_observation.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/common/chromeos/extensions/api",
+    "//chromeos/crosapi/mojom",
+    "//content/public/browser",
+    "//extensions/common",
+    "//mojo/public/cpp/bindings",
+  ]
+
+  public_deps = [ "//extensions/browser" ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [ "diagnostic_routine_observation_browsertest.cc" ]
+
+  deps = [
+    ":routines",
+    "//base",
+    "//chrome/browser/chromeos/extensions/telemetry/api/common:test_support",
+    "//chrome/common/chromeos/extensions/api",
+    "//chrome/test:test_support_ui",
+    "//chromeos/crosapi/mojom",
+    "//extensions/common",
+    "//mojo/public/cpp/bindings",
+    "//testing/gtest",
+  ]
+
+  data = [ "//chrome/test/data" ]
+}
