@@ -2419,6 +2419,10 @@ BASE_FEATURE(kSystemJapanesePhysicalTyping,
 BASE_FEATURE(kSystemLiveCaption,
              "SystemLiveCaption",
              base::FEATURE_DISABLED_BY_DEFAULT);
+// Restricts the system live caption feature to the intended target population.
+BASE_FEATURE(kFeatureManagementSystemLiveCaption,
+             "FeatureManagementSystemLiveCaption",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables the ability to play sounds for system services.
 BASE_FEATURE(kSystemSounds, "SystemSounds", base::FEATURE_ENABLED_BY_DEFAULT);
@@ -3872,6 +3876,13 @@ bool IsSnapGroupEnabled() {
 
 bool IsSpeakOnMuteOptInNudgePrefsResetEnabled() {
   return base::FeatureList::IsEnabled(kSpeakOnMuteOptInNudgePrefsReset);
+}
+
+bool IsSystemLiveCaptionEnabled() {
+  // TODO(b/295244553): Once `kSystemLiveCaption` is enabled by default, switch
+  // to `&&`.
+  return base::FeatureList::IsEnabled(kSystemLiveCaption) ||
+         base::FeatureList::IsEnabled(kFeatureManagementSystemLiveCaption);
 }
 
 bool IsSystemTrayShadowEnabled() {

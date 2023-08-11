@@ -256,7 +256,7 @@ void UserSessionInitializer::InitializePrimaryProfileServices(
       std::make_unique<ClipboardImageModelFactoryImpl>(profile);
 
   if (captions::IsLiveCaptionFeatureSupported() &&
-      base::FeatureList::IsEnabled(features::kSystemLiveCaption)) {
+      features::IsSystemLiveCaptionEnabled()) {
     SystemLiveCaptionServiceFactory::GetInstance()->GetForProfile(profile);
   }
 
