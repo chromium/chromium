@@ -419,7 +419,6 @@ class CONTENT_EXPORT NavigationRequest
   bool IsServedFromBackForwardCache() override;
   void SetIsOverridingUserAgent(bool override_ua) override;
   void SetSilentlyIgnoreErrors() override;
-  network::mojom::WebSandboxFlags SandboxFlagsInitiator() override;
   network::mojom::WebSandboxFlags SandboxFlagsInherited() override;
   network::mojom::WebSandboxFlags SandboxFlagsToCommit() override;
   bool IsWaitingToCommit() override;
@@ -2312,10 +2311,6 @@ class CONTENT_EXPORT NavigationRequest
   // This is defined if and only if |initiator_frame_token_| above is, and it is
   // only valid in conjunction with it.
   const int initiator_process_id_ = ChildProcessHost::kInvalidUniqueID;
-
-  // The sandbox flags of the navigation's initiator, if any.
-  // WebSandboxFlags::kNone otherwise.
-  const network::mojom::WebSandboxFlags sandbox_flags_initiator_;
 
   // Whether a navigation in a new window had the opener suppressed. False if
   // the navigation is not in a new window. Can only be true for renderer
