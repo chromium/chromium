@@ -301,6 +301,7 @@ void ScopedOverviewTransformWindow::RestoreWindow(bool reset_transform,
     // Use identity transform directly to reset window's transform when exiting
     // overview.
     SetTransform(window_, gfx::Transform());
+
     // Add requests to cache render surface and perform trilinear filtering for
     // the exit animation of overview mode. The requests will be removed when
     // the exit animation finishes.

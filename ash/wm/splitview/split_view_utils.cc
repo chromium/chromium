@@ -169,13 +169,16 @@ void WindowTransformAnimationObserver::OnImplicitAnimationsCompleted() {
   }
 
   for (auto* transient_window :
-       ::wm::TransientWindowManager::GetOrCreate(window_)
-           ->transient_children()) {
+       wm::TransientWindowManager::GetOrCreate(window_)->transient_children()) {
     // For now we only care about bubble dialog type transient children.
     views::BubbleDialogDelegate* bubble_delegate_view =
         AsBubbleDialogDelegate(transient_window);
-    if (bubble_delegate_view)
-      bubble_delegate_view->OnAnchorBoundsChanged();
+    if (bubble_delegate_view) {
+      if (!bubble_delegate_view->GetAnchorRect().IsEmpty() ||
+          bubble_delegate_view->GetAnchorView()) {
+        bubble_delegate_view->OnAnchorBoundsChanged();
+      }
+    }
   }
 
   delete this;
