@@ -2160,10 +2160,11 @@
     {
       "id": 245,
       "description": "Switching framebuffers without a flush can lead to crashes on Intel 9th Generation GPU Macs.",
-      "cr_bugs": [783979],
+      "cr_bugs": [783979, 1472087],
       "os": {
         "type": "macosx"
       },
+      "gl_renderer": "ANGLE.*OpenGL.*",
       "intel_gpu_series": [
         "skylake",
         "kabylake",
