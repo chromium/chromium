@@ -321,6 +321,11 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   GREYWaitForAppToIdle(@"App failed to idle");
 }
 
+- (void)pinCurrentTab {
+  [ChromeEarlGreyAppInterface pinCurrentTab];
+  GREYWaitForAppToIdle(@"App failed to idle");
+}
+
 - (void)openNewIncognitoTab {
   [ChromeEarlGreyAppInterface openNewIncognitoTab];
   [self waitForPageToFinishLoading];

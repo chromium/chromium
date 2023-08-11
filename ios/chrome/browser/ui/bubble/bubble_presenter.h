@@ -86,10 +86,6 @@ class DeviceSwitcherResultDispatcher;
 // the item on the current website.
 - (void)presentPriceNotificationsWhileBrowsingTipBubble;
 
-// Presents a help bubble to inform the user how they can find the tab they just
-// pinned.
-- (void)presentTabPinnedBubble;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_BUBBLE_BUBBLE_PRESENTER_H_

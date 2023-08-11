@@ -84,8 +84,6 @@ const CGFloat kBubblePresentationDelay = 1;
     BubbleViewControllerPresenter* whatsNewBubblePresenter;
 @property(nonatomic, strong) BubbleViewControllerPresenter*
     priceNotificationsWhileBrowsingBubbleTipPresenter;
-@property(nonatomic, strong)
-    BubbleViewControllerPresenter* tabPinnedBubbleTipPresenter;
 @property(nonatomic, assign) WebStateList* webStateList;
 @property(nonatomic, assign) feature_engagement::Tracker* engagementTracker;
 @property(nonatomic, assign) HostContentSettingsMap* settingsMap;
@@ -207,7 +205,6 @@ const CGFloat kBubblePresentationDelay = 1;
   [self.readingListTipBubblePresenter dismissAnimated:NO];
   [self.followWhileBrowsingBubbleTipPresenter dismissAnimated:NO];
   [self.priceNotificationsWhileBrowsingBubbleTipPresenter dismissAnimated:NO];
-  [self.tabPinnedBubbleTipPresenter dismissAnimated:NO];
   [self.whatsNewBubblePresenter dismissAnimated:NO];
   [self.defaultPageModeTipBubblePresenter dismissAnimated:NO];
 }
@@ -371,39 +368,6 @@ const CGFloat kBubblePresentationDelay = 1;
     return;
 
   self.priceNotificationsWhileBrowsingBubbleTipPresenter = presenter;
-}
-
-- (void)presentTabPinnedBubble {
-  if (!IsSplitToolbarMode(self.rootViewController)) {
-    // Don't show the tip if the user sees the tap strip.
-    return;
-  }
-  if (![self canPresentBubble]) {
-    return;
-  }
-
-  BubbleArrowDirection arrowDirection = BubbleArrowDirectionDown;
-  NSString* text =
-      l10n_util::GetNSString(IDS_IOS_PINNED_TAB_OVERFLOW_ACTION_IPH_TEXT);
-  NSString* voiceOverAnnouncement = l10n_util::GetNSString(
-      IDS_IOS_PINNED_TAB_OVERFLOW_ACTION_IPH_VOICE_OVER_ANNOUNCEMENT);
-  CGPoint tabGridAnchor = [self anchorPointToGuide:kTabSwitcherGuide
-                                         direction:arrowDirection];
-
-  // If the feature engagement tracker does not consider it valid to display
-  // the tip, then end early to prevent the potential reassignment of the
-  // existing `tabPinnedBubbleTipPresenter` to nil.
-  BubbleViewControllerPresenter* presenter =
-      [self presentBubbleForFeature:feature_engagement::kIPHTabPinnedFeature
-                          direction:arrowDirection
-                               text:text
-              voiceOverAnnouncement:voiceOverAnnouncement
-                        anchorPoint:tabGridAnchor];
-  if (!presenter) {
-    return;
-  }
-
-  self.tabPinnedBubbleTipPresenter = presenter;
 }
 
 #pragma mark - Private

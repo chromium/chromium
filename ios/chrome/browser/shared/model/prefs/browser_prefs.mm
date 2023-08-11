@@ -568,3 +568,10 @@ void MigrateObsoleteBrowserStatePrefs(PrefService* prefs) {
   invalidation::PerUserTopicSubscriptionManager::ClearDeprecatedPrefs(prefs);
   invalidation::FCMInvalidationService::ClearDeprecatedPrefs(prefs);
 }
+
+void MigrateObsoleteUserDefault(void) {
+  // Added 08/2023.
+  [[NSUserDefaults standardUserDefaults]
+      setBool:NO
+       forKey:@"userHasInteractedWithPinnedTabsOverflow"];
+}

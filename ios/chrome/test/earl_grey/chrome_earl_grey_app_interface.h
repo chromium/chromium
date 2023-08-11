@@ -144,6 +144,9 @@
 // Closes current tab.
 + (void)closeCurrentTab;
 
+// Pins current tab.
++ (void)pinCurrentTab;
+
 // Opens a new incognito tab, and does not wait for animations to complete.
 + (void)openNewIncognitoTab;
 

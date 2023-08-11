@@ -157,6 +157,16 @@ void CloseCurrentTab() {
                                   WebStateList::CLOSE_USER_ACTION);
 }
 
+void PinCurrentTab() {
+  WebStateList* web_state_list = GetCurrentWebStateList();
+  if (!web_state_list ||
+      web_state_list->active_index() == WebStateList::kInvalidIndex) {
+    return;
+  }
+  web_state_list->SetWebStatePinnedAt(web_state_list->active_index(),
+                                      /*pinned =*/true);
+}
+
 void CloseTabAtIndex(NSUInteger index) {
   @autoreleasepool {  // Make sure that all internals are deallocated.
     DCHECK_LE(index, static_cast<NSUInteger>(INT_MAX));

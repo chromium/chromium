@@ -308,6 +308,9 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // Closes the current tab and waits for the UI to complete.
 - (void)closeCurrentTab;
 
+// Pins the current tab and waits for the UI to complete.
+- (void)pinCurrentTab;
+
 // Opens a new incognito tab and waits for the new tab animation to complete.
 - (void)openNewIncognitoTab;
 

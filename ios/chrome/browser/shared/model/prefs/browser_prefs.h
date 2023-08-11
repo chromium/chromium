@@ -31,4 +31,10 @@ void MigrateObsoleteLocalStatePrefs(PrefService* prefs);
 // it should remain *the* place to drop deprecated browser state's prefs at.
 void MigrateObsoleteBrowserStatePrefs(PrefService* prefs);
 
+// Migrate/cleanup deprecated prefs from the standard NSUserDefault store. Over
+// time, long deprecated prefs should be removed as new ones are added, but this
+// call should never go away (even if it becomes an empty call for some time) as
+// it should remain *the* place to drop deprecated NSUserDefault at.
+void MigrateObsoleteUserDefault(void);
+
 #endif  // IOS_CHROME_BROWSER_SHARED_MODEL_PREFS_BROWSER_PREFS_H_

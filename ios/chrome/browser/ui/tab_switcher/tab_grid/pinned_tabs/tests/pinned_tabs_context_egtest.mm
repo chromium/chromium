@@ -110,14 +110,6 @@ void AssertPinnedCellMovedToGridView(NSString* tab_title) {
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start");
 }
 
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config;
-  config.additional_args.push_back(
-      "--enable-features=" + std::string(kEnablePinnedTabs.name) + ":" +
-      kEnablePinnedTabsOverflowParam + "/true");
-  return config;
-}
-
 - (void)setUp {
   [super setUp];
 

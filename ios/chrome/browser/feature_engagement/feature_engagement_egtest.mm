@@ -79,12 +79,6 @@ id<GREYMatcher> DefaultSiteViewTip() {
       l10n_util::GetNSStringWithFixup(IDS_IOS_DEFAULT_PAGE_MODE_TIP));
 }
 
-// Matcher for the TabPinned tip.
-id<GREYMatcher> TabPinnedTip() {
-  return grey_accessibilityLabel(
-      l10n_util::GetNSString(IDS_IOS_PINNED_TAB_OVERFLOW_ACTION_IPH_TEXT));
-}
-
 // Opens the tools menu and request the desktop version of the page.
 void RequestDesktopVersion() {
   id<GREYMatcher> toolsMenuMatcher =
@@ -116,10 +110,6 @@ void RequestDesktopVersion() {
   std::string enable_features = base::StringPrintf(
       "%s:chosen_feature/%s", feature_engagement::kIPHDemoMode.name,
       feature.c_str());
-  if ([self isRunningTest:@selector(testPinTabFromOverflowMenu)]) {
-    enable_features += base::StringPrintf(",%s:%s/true", kEnablePinnedTabs.name,
-                                          kEnablePinnedTabsOverflowParam);
-  }
   AppLaunchConfiguration config = [self appConfigurationForTestCase];
   config.additional_args.push_back("--enable-features=" + enable_features);
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
@@ -259,76 +249,6 @@ void RequestDesktopVersion() {
 
   [[EarlGrey selectElementWithMatcher:DefaultSiteViewTip()]
       assertWithMatcher:grey_sufficientlyVisible()];
-}
-
-// Verifies that the IPH for Pinned tab is displayed after pinning a tab from
-// the overflow menu.
-- (void)testPinTabFromOverflowMenu {
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Skipped for iPad. The Pinned Tabs feature is only "
-                           @"supported on iPhone.");
-  }
-  if (@available(iOS 15, *)) {
-  } else {
-    // Only available for iOS 15+.
-    return;
-  }
-  [self enableDemoModeForFeature:"IPH_TabPinnedFeature"];
-
-  XCUIApplication* app = [[XCUIApplication alloc] init];
-
-  // Make sure that the pinned tabs feature has never been used from the
-  // overflow menu.
-  [ChromeEarlGrey setUserDefaultObject:@(0) forKey:kPinnedTabsOverflowEntryKey];
-
-  [ChromeEarlGreyUI openToolsMenu];
-
-  // Check that the "N" IPH badge is displayed before tapping on the action.
-  GREYAssert([[app images][@"overflowRowIPHBadgeIdentifier"] exists],
-             @"The 'N' IPH bagde should be displayed.");
-  [ChromeEarlGreyUI
-      tapToolsMenuAction:grey_accessibilityID(kToolsMenuPinTabId)];
-
-  NSString* pinTabSnackbarMessage =
-      l10n_util::GetNSString(IDS_IOS_SNACKBAR_MESSAGE_PINNED_TAB);
-  NSString* unpinTabSnackbarMessage =
-      l10n_util::GetNSString(IDS_IOS_SNACKBAR_MESSAGE_UNPINNED_TAB);
-
-  [[EarlGrey selectElementWithMatcher:TabPinnedTip()]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityLabel(pinTabSnackbarMessage)]
-      assertWithMatcher:grey_nil()];
-
-  [ChromeEarlGreyUI openToolsMenu];
-
-  // Check that the "N" IPH bagde is not displayed before tapping on the action.
-  GREYAssertFalse([[app images][@"overflowRowIPHBadgeIdentifier"] exists],
-                  @"The 'N' IPH bagde should not be displayed.");
-  [ChromeEarlGreyUI
-      tapToolsMenuAction:grey_accessibilityID(kToolsMenuUnpinTabId)];
-  [[EarlGrey selectElementWithMatcher:TabPinnedTip()]
-      assertWithMatcher:grey_nil()];
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityLabel(unpinTabSnackbarMessage)]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  // Tap the snackbar to make it disappear.
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityLabel(unpinTabSnackbarMessage)]
-      performAction:grey_tap()];
-
-  [ChromeEarlGreyUI openToolsMenu];
-  [ChromeEarlGreyUI
-      tapToolsMenuAction:grey_accessibilityID(kToolsMenuPinTabId)];
-  [[EarlGrey selectElementWithMatcher:TabPinnedTip()]
-      assertWithMatcher:grey_nil()];
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityLabel(pinTabSnackbarMessage)]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  // Tap the snackbar to make it disappear.
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityLabel(pinTabSnackbarMessage)]
-      performAction:grey_tap()];
 }
 
 @end

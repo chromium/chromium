@@ -480,9 +480,6 @@ BASE_FEATURE(kIPHiOSDefaultBrowserSettingsBadgeFeature,
 BASE_FEATURE(kIPHiOSPromoAppStoreFeature,
              "IPH_iOSPromoAppStore",
              base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kIPHTabPinnedFeature,
-             "IPH_TabPinnedFeature",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHiOSPromoWhatsNewFeature,
              "IPH_iOSPromoWhatsNew",
              base::FEATURE_ENABLED_BY_DEFAULT);

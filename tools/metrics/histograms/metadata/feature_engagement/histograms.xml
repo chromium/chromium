@@ -401,8 +401,6 @@ chromium-metrics-reviews@google.com.
   <variant name="IPH_TabGroupsTapToSeeAnotherTab" summary="tab strip"/>
   <variant name="IPH_TabGroupsYourTabsTogether"
       summary="tab switcher cards with multiple tab thumbnails"/>
-  <variant name="IPH_TabPinnedFeature"
-      summary="the hint to find the tab the user just pinned"/>
   <variant name="IPH_TabSearch" summary="tab search discovery"/>
   <variant name="IPH_TabSwitcherButton" summary="tab switcher button"/>
   <variant name="IPH_TranslateMenuButton" summary="translate menu button"/>

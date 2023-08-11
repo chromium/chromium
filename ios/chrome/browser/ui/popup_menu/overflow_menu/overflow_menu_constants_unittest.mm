@@ -90,9 +90,6 @@ TEST_F(OverflowMenuConstantsTest, ActionTypeConversion) {
       case overflow_menu::ActionType::NewWindow:
         finalExpectedActionType = overflow_menu::ActionType::NewWindow;
         break;
-      case overflow_menu::ActionType::PinTab:
-        finalExpectedActionType = overflow_menu::ActionType::PinTab;
-        break;
       case overflow_menu::ActionType::Follow:
         finalExpectedActionType = overflow_menu::ActionType::Follow;
         break;

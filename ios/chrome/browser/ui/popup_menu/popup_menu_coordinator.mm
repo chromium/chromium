@@ -50,7 +50,6 @@
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/browser/supervised_user/supervised_user_service_factory.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
-#import "ios/chrome/browser/tabs/features.h"
 #import "ios/chrome/browser/ui/browser_container/browser_container_mediator.h"
 #import "ios/chrome/browser/ui/bubble/bubble_presenter.h"
 #import "ios/chrome/browser/ui/bubble/bubble_view_controller_presenter.h"
@@ -514,12 +513,8 @@ enum class IOSOverflowMenuActionType {
   }
 
   if (self.overflowMenuMediator) {
-    __weak __typeof(self) weakSelf = self;
-    [self.baseViewController
-        dismissViewControllerAnimated:animated
-                           completion:^{
-                             [weakSelf.bubblePresenter presentTabPinnedBubble];
-                           }];
+    [self.baseViewController dismissViewControllerAnimated:animated
+                                                completion:nil];
     _overflowMenuModel = nil;
     [_overflowMenuOrderer updateForMenuDisappearance];
     [_overflowMenuOrderer disconnect];
@@ -532,44 +527,6 @@ enum class IOSOverflowMenuActionType {
   [self.mediator disconnect];
   self.mediator = nil;
   self.viewController = nil;
-}
-
-- (void)showSnackbarForPinnedState:(BOOL)pinnedState
-                          webState:(web::WebState*)webState {
-  DCHECK(IsPinnedTabsOverflowEnabled());
-  int messageId = pinnedState ? IDS_IOS_SNACKBAR_MESSAGE_PINNED_TAB
-                              : IDS_IOS_SNACKBAR_MESSAGE_UNPINNED_TAB;
-
-  base::WeakPtr<web::WebState> weakWebState = webState->GetWeakPtr();
-  base::WeakPtr<Browser> weakBrowser = self.browser->AsWeakPtr();
-
-  void (^undoAction)() = ^{
-    if (pinnedState) {
-      RecordAction(UserMetricsAction("MobileSnackbarUndoPinAction"));
-    } else {
-      RecordAction(UserMetricsAction("MobileSnackbarUndoUnpinAction"));
-    }
-
-    Browser* browser = weakBrowser.get();
-    if (!browser) {
-      return;
-    }
-    [OverflowMenuMediator setTabPinned:!pinnedState
-                              webState:weakWebState.get()
-                          webStateList:browser->GetWebStateList()];
-  };
-
-  MDCSnackbarMessage* message =
-      [MDCSnackbarMessage messageWithText:l10n_util::GetNSString(messageId)];
-
-  MDCSnackbarMessageAction* action = [[MDCSnackbarMessageAction alloc] init];
-  action.handler = undoAction;
-  action.title = l10n_util::GetNSString(IDS_IOS_SNACKBAR_ACTION_UNDO);
-  message.action = action;
-
-  id<SnackbarCommands> snackbarCommandsHandler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), SnackbarCommands);
-  [snackbarCommandsHandler showSnackbarMessage:message];
 }
 
 #pragma mark - OverflowMenuCustomizationCommands

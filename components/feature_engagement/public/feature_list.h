@@ -235,7 +235,6 @@ DEFINE_VARIATION_PARAM(kIPHiOSDefaultBrowserOverflowMenuBadgeFeature,
 DEFINE_VARIATION_PARAM(kIPHiOSDefaultBrowserSettingsBadgeFeature,
                        "IPH_iOSDefaultBrowserSettingsBadge");
 DEFINE_VARIATION_PARAM(kIPHiOSPromoAppStoreFeature, "IPH_iOSPromoAppStore");
-DEFINE_VARIATION_PARAM(kIPHTabPinnedFeature, "IPH_TabPinnedFeature");
 DEFINE_VARIATION_PARAM(kIPHiOSPromoWhatsNewFeature, "IPH_iOSPromoWhatsNew");
 DEFINE_VARIATION_PARAM(kIPHiOSPromoPostRestoreFeature,
                        "IPH_iOSPromoPostRestore");
@@ -527,7 +526,6 @@ constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHiOSDefaultBrowserOverflowMenuBadgeFeature),
         VARIATION_ENTRY(kIPHiOSDefaultBrowserSettingsBadgeFeature),
         VARIATION_ENTRY(kIPHiOSPromoAppStoreFeature),
-        VARIATION_ENTRY(kIPHTabPinnedFeature),
         VARIATION_ENTRY(kIPHiOSPromoWhatsNewFeature),
         VARIATION_ENTRY(kIPHiOSPromoPostRestoreFeature),
         VARIATION_ENTRY(kIPHiOSPromoCredentialProviderExtensionFeature),

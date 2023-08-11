@@ -20543,6 +20543,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileMenuPinTab">
+  <obsolete>Deprecated as of 2023-08</obsolete>
   <owner>ewannpv@chromium.org</owner>
   <owner>pakzhygitov@google.com</owner>
   <description>
@@ -20700,6 +20701,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileMenuUnpinTab">
+  <obsolete>Deprecated as of 2023-08</obsolete>
   <owner>ewannpv@chromium.org</owner>
   <owner>pakzhygitov@google.com</owner>
   <description>
@@ -21914,6 +21916,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileSnackbarUndoPinAction">
+  <obsolete>Deprecated as of 2023-08</obsolete>
   <owner>ewannpv@chromium.org</owner>
   <owner>pakzhygitov@google.com</owner>
   <description>
@@ -21923,6 +21926,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileSnackbarUndoUnpinAction">
+  <obsolete>Deprecated as of 2023-08</obsolete>
   <owner>ewannpv@chromium.org</owner>
   <owner>pakzhygitov@google.com</owner>
   <description>

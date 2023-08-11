@@ -196,7 +196,6 @@ BASE_DECLARE_FEATURE(kIPHiOSDefaultBrowserBadgeEligibilityFeature);
 BASE_DECLARE_FEATURE(kIPHiOSDefaultBrowserOverflowMenuBadgeFeature);
 BASE_DECLARE_FEATURE(kIPHiOSDefaultBrowserSettingsBadgeFeature);
 BASE_DECLARE_FEATURE(kIPHiOSPromoAppStoreFeature);
-BASE_DECLARE_FEATURE(kIPHTabPinnedFeature);
 BASE_DECLARE_FEATURE(kIPHiOSPromoWhatsNewFeature);
 BASE_DECLARE_FEATURE(kIPHiOSPromoPostRestoreFeature);
 BASE_DECLARE_FEATURE(kIPHiOSPromoCredentialProviderExtensionFeature);

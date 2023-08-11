@@ -62,7 +62,6 @@
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/tabs/features.h"
 #import "ios/chrome/browser/translate/chrome_ios_translate_client.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_utils_ios.h"
 #import "ios/chrome/browser/ui/ntp/metrics/feed_metrics_recorder.h"
@@ -222,9 +221,6 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 @property(nonatomic, strong) OverflowMenuAction* openIncognitoTabAction;
 @property(nonatomic, strong) OverflowMenuAction* openNewWindowAction;
 
-@property(nonatomic, strong) OverflowMenuAction* pinTabAction;
-@property(nonatomic, strong) OverflowMenuAction* unpinTabAction;
-
 @property(nonatomic, strong) OverflowMenuAction* clearBrowsingDataAction;
 @property(nonatomic, strong) OverflowMenuAction* followAction;
 @property(nonatomic, strong) OverflowMenuAction* addBookmarkAction;
@@ -245,15 +241,6 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 @end
 
 @implementation OverflowMenuMediator
-
-+ (void)setTabPinned:(BOOL)pinned
-            webState:(web::WebState*)webState
-        webStateList:(WebStateList*)webStateList {
-  if (!webState || !webStateList) {
-    return;
-  }
-  SetWebStatePinnedState(webStateList, webState->GetStableIdentifier(), pinned);
-}
 
 - (instancetype)init {
   self = [super init];
@@ -635,26 +622,6 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
         [weakSelf openNewWindow];
       });
 
-  self.pinTabAction = CreateOverflowMenuAction(
-      IDS_IOS_TOOLS_MENU_PIN_TAB, overflow_menu::ActionType::PinTab, kPinSymbol,
-      /*systemSymbol=*/YES, /*monochromeSymbol=*/NO, kToolsMenuPinTabId, ^{
-        SetPinnedTabOverflowUsed();
-        [weakSelf pinTab];
-      });
-
-  self.unpinTabAction = CreateOverflowMenuAction(
-      IDS_IOS_TOOLS_MENU_UNPIN_TAB, overflow_menu::ActionType::PinTab,
-      kPinSlashSymbol,
-      /*systemSymbol=*/YES, /*monochromeSymbol=*/NO, kToolsMenuUnpinTabId, ^{
-        SetPinnedTabOverflowUsed();
-        [weakSelf unpinTab];
-      });
-
-  if (!WasPinnedTabOverflowUsed()) {
-    self.pinTabAction.displayNewLabelIcon = YES;
-    self.unpinTabAction.displayNewLabelIcon = YES;
-  }
-
   self.clearBrowsingDataAction = [self newClearBrowsingDataAction];
 
   if (GetFollowActionState(self.webState) != FollowActionStateHidden) {
@@ -975,11 +942,6 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
     [appActions addObject:self.openNewWindowAction];
   }
 
-  if (IsPinnedTabsOverflowEnabled() && !self.isIncognito) {
-    [appActions addObject:([self isTabPinned] ? self.unpinTabAction
-                                              : self.pinTabAction)];
-  }
-
   self.appActionsGroup.actions = appActions;
 
   [self.menuOrderer updatePageActions];
@@ -1172,15 +1134,6 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
   OverflowMenuAction* action = [self newFollowAction];
   action.enabled = NO;
   return action;
-}
-
-// Returns 'YES' if the current tab is pinned.
-- (BOOL)isTabPinned {
-  DCHECK(self.webState);
-  DCHECK(self.webStateList);
-
-  int webStateIndex = self.webStateList->GetIndexOfWebState(self.webState);
-  return self.webStateList->IsWebStatePinnedAt(webStateIndex);
 }
 
 #pragma mark - CRWWebStateObserver
@@ -1470,8 +1423,6 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
       return self.openIncognitoTabAction;
     case overflow_menu::ActionType::NewWindow:
       return self.openNewWindowAction;
-    case overflow_menu::ActionType::PinTab:
-      return self.pinTabAction;
     case overflow_menu::ActionType::Follow: {
       // Try to create the followAction if there isn't one. It's possible that
       // sometimes when creating the model the followActionState is hidden so
@@ -1538,7 +1489,6 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
     case overflow_menu::ActionType::NewTab:
     case overflow_menu::ActionType::NewIncognitoTab:
     case overflow_menu::ActionType::NewWindow:
-    case overflow_menu::ActionType::PinTab:
     case overflow_menu::ActionType::ReportAnIssue:
     case overflow_menu::ActionType::Help:
     case overflow_menu::ActionType::ShareChrome:
@@ -1604,45 +1554,6 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
   [self.dispatcher
       openNewWindowWithActivity:ActivityToLoadURL(WindowActivityToolsOrigin,
                                                   GURL(kChromeUINewTabURL))];
-}
-
-// Dismisses the menu and pins the tab.
-- (void)pinTab {
-  if (!self.webState) {
-    [self.popupMenuCommandsHandler dismissPopupMenuAnimated:YES];
-    return;
-  }
-
-  RecordAction(UserMetricsAction("MobileMenuPinTab"));
-  [[self class] setTabPinned:YES
-                    webState:self.webState
-                webStateList:self.webStateList];
-  if (!IsSplitToolbarMode(self.webState->GetView()) ||
-      !_engagementTracker->WouldTriggerHelpUI(
-          feature_engagement::kIPHTabPinnedFeature)) {
-    // Only show the snackbar if the tab strip is visible or if the IPH is
-    // presented.
-    [self.popupMenuCommandsHandler showSnackbarForPinnedState:YES
-                                                     webState:self.webState];
-  }
-
-  [self.popupMenuCommandsHandler dismissPopupMenuAnimated:YES];
-}
-
-// Dismisses the menu and unpins the tab.
-- (void)unpinTab {
-  if (!self.webState) {
-    [self.popupMenuCommandsHandler dismissPopupMenuAnimated:YES];
-    return;
-  }
-
-  RecordAction(UserMetricsAction("MobileMenuUnpinTab"));
-  [[self class] setTabPinned:NO
-                    webState:self.webState
-                webStateList:self.webStateList];
-  [self.popupMenuCommandsHandler showSnackbarForPinnedState:NO
-                                                   webState:self.webState];
-  [self.popupMenuCommandsHandler dismissPopupMenuAnimated:YES];
 }
 
 // Dismisses the menu and opens the Clear Browsing Data screen.

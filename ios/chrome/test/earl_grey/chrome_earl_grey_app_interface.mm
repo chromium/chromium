@@ -322,6 +322,10 @@ NSString* SerializedValue(const base::Value* value) {
   chrome_test_util::CloseCurrentTab();
 }
 
++ (void)pinCurrentTab {
+  chrome_test_util::PinCurrentTab();
+}
+
 + (void)openNewIncognitoTab {
   chrome_test_util::OpenNewIncognitoTab();
 }

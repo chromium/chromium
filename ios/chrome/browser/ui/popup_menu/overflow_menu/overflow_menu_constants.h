@@ -30,7 +30,6 @@ enum class ActionType {
   NewTab,
   NewIncognitoTab,
   NewWindow,
-  PinTab,
   Follow,
   Bookmark,
   ReadingList,

@@ -124,12 +124,6 @@ class WebStateList;
 // The ReadingListBrowserAgent used to add urls to reading list.
 @property(nonatomic, assign) ReadingListBrowserAgent* readingListBrowserAgent;
 
-// Updates the pin state of the tab corresponding to the given `webState` in
-// `webStateList`.
-+ (void)setTabPinned:(BOOL)pinned
-            webState:(web::WebState*)webState
-        webStateList:(WebStateList*)webStateList;
-
 // Disconnect the mediator.
 - (void)disconnect;
 

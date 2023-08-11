@@ -505,14 +505,6 @@ const FeatureEntry::FeatureVariation
          std::size(kFeedAppCloseBackgroundRefresh), nullptr},
 };
 
-const FeatureEntry::FeatureParam kEnablePinnedTabsOverflow[] = {
-    {kEnablePinnedTabsOverflowParam, "true"}};
-
-const FeatureEntry::FeatureVariation kEnablePinnedTabsVariations[] = {
-    {"+ overflow entry", kEnablePinnedTabsOverflow,
-     std::size(kEnablePinnedTabsOverflow), nullptr},
-};
-
 const FeatureEntry::FeatureParam kAutofillBrandingIOSUntilInteracted[] = {
     {autofill::features::kAutofillBrandingIOSParamFrequencyTypePhone,
      autofill::features::kAutofillBrandingIOSParamFrequencyTypeUntilInteracted},
@@ -1316,9 +1308,7 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(kTabGridNewTransitions)},
     {"enable-pinned-tabs", flag_descriptions::kEnablePinnedTabsName,
      flag_descriptions::kEnablePinnedTabsDescription, flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(kEnablePinnedTabs,
-                                    kEnablePinnedTabsVariations,
-                                    "EnablePinnedTabs")},
+     FEATURE_VALUE_TYPE(kEnablePinnedTabs)},
     {"credential-provider-extension-promo",
      flag_descriptions::kCredentialProviderExtensionPromoName,
      flag_descriptions::kCredentialProviderExtensionPromoDescription,

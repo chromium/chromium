@@ -2480,12 +2480,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_PINNED_TABS_DRAG_TO_PIN_LABEL" desc="Label displayed in the pin tab toolbar when a Tab is being dragged.">
         Drag tab here to pin it.
       </message>
-      <message name="IDS_IOS_PINNED_TAB_OVERFLOW_ACTION_IPH_TEXT" desc="Text for the In Product Help displayed after the user pinned a tab using the overflow menu indicating where the pinned tab is.">
-        You can find your pinned tabs here.
-      </message>
-      <message name="IDS_IOS_PINNED_TAB_OVERFLOW_ACTION_IPH_VOICE_OVER_ANNOUNCEMENT" desc="Voiceover announcement for the In Product Help displayed after the user pinned a tab using the overflow menu indicating where the pinned tab is.">
-        You can find your pinned tabs by tapping Show Tabs button.
-      </message>
       <message name="IDS_IOS_PINNED_TAB_ACCESSIBILITY_LABEL" desc="Accessibility label for the Pinned Tab following by the tab title.">
         Pinned, <ph name="TAB_TITLE">$1<ex>CNN: Breaking News, Latest News and Videos</ex></ph>
       </message>
@@ -2698,17 +2692,11 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_SNACKBAR_MESSAGE_OFFLINE" desc="The iOS snackbar message when failed to follow/unfollow a web content because of offline. [iOS only]">
         You're offline. Check your internet connection and try again.
       </message>
-      <message name="IDS_IOS_SNACKBAR_MESSAGE_PINNED_TAB" desc="The iOS snackbar message when a tab has been pinned. [iOS only]">
-        Tab Pinned
-      </message>
       <message name="IDS_IOS_SNACKBAR_MESSAGE_UNFOLLOW_FAILED" desc="The iOS snackbar message when failed to unfollow a web content. [iOS only]">
         Can't unfollow. Something went wrong.
       </message>
       <message name="IDS_IOS_SNACKBAR_MESSAGE_UNFOLLOW_SUCCEED" desc="The iOS snackbar message when succeed to unfollow a web content. [iOS only]">
         Unfollowed <ph name="CHANNEL_NAME">$1<ex>CNN</ex></ph>
-      </message>
-      <message name="IDS_IOS_SNACKBAR_MESSAGE_UNPINNED_TAB" desc="The iOS snackbar message when a tab has been unpinned. [iOS only]">
-        Tab Unpinned
       </message>
       <message name="IDS_IOS_SNACKBAR_MESSAGE_INCOGNITO_DISABLED_BY_PARENT" desc="The material toast message when incogonito mode is disabled by parent [iOS only].">
         Incognito Mode is Unavailable
@@ -2733,12 +2721,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       </message>
       <message name="IDS_IOS_TOOLS_MENU_NEW_WINDOW" desc="The iOS menu item for opening a new window [iOS only]" meaning="[Length: unlimited]">
         New Window
-      </message>
-      <message name="IDS_IOS_TOOLS_MENU_PIN_TAB" desc="The iOS menu item for pinning a tab [iOS only]" meaning="[Length: unlimited]">
-        Pin Tab
-      </message>
-      <message name="IDS_IOS_TOOLS_MENU_UNPIN_TAB" desc="The iOS menu item for unpinning a tab [iOS only]" meaning="[Length: unlimited]">
-        Unpin Tab
       </message>
       <message name="IDS_IOS_READING_LIST_CONTENT_CONTEXT_OFFLINE" desc="Title of the button to display the Offline version instead of the Online one. [Length: 50em]">
         View Offline Version in New Tab

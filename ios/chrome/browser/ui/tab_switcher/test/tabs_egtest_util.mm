@@ -23,17 +23,6 @@ NSString* const kPinnedTabTitlePrefix = @"PinnedTab";
 constexpr base::TimeDelta kSnackbarAppearanceTimeout = base::Seconds(5);
 constexpr base::TimeDelta kSnackbarDisappearanceTimeout = base::Seconds(11);
 
-// Matcher for the overflow pin action.
-id<GREYMatcher> GetMatcherForPinOverflowAction() {
-  return grey_accessibilityID(kToolsMenuPinTabId);
-}
-
-// Pins a regular tab using overflow menu.
-void PinTabUsingOverflowMenu() {
-  [ChromeEarlGreyUI openToolsMenu];
-  [ChromeEarlGreyUI tapToolsMenuAction:GetMatcherForPinOverflowAction()];
-}
-
 }  // namespace
 
 // Creates a regular tab with `title` using `test_server`.
@@ -62,7 +51,7 @@ void CreatePinnedTabs(int tabs_count,
         [kPinnedTabTitlePrefix stringByAppendingFormat:@"%d", index];
 
     CreateRegularTab(test_server, title);
-    PinTabUsingOverflowMenu();
+    [ChromeEarlGrey pinCurrentTab];
   }
 }
 

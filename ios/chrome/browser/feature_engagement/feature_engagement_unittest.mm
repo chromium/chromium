@@ -144,18 +144,6 @@ class FeatureEngagementTest : public PlatformTest {
     return params;
   }
 
-  std::map<std::string, std::string> TabPinnedTipParams() {
-    std::map<std::string, std::string> params;
-    params["availability"] = "any";
-    params["session_rate"] = "any";
-    params["event_used"] = "name:popup_menu_tip_used;comparator:==0;window:180;"
-                           "storage:180";
-    params["event_trigger"] =
-        "name:tab_pinned_tip_triggered;comparator:==0;window:1825;"
-        "storage:1825";
-    return params;
-  }
-
   base::RepeatingCallback<void(bool)> BoolArgumentQuitClosure() {
     return base::IgnoreArgs<bool>(run_loop_.QuitClosure());
   }
@@ -553,25 +541,3 @@ TEST_F(FeatureEngagementTest,
       feature_engagement::kIPHDefaultSiteViewFeature));
 }
 
-// Verifies that the IPH for Pinned tab triggers after pinning a tab from
-// the overflow menu.
-TEST_F(FeatureEngagementTest, TestPinTabFromOverflowMenu) {
-  feature_engagement::test::ScopedIphFeatureList list;
-  list.InitAndEnableFeaturesWithParameters(
-      {{feature_engagement::kIPHTabPinnedFeature, TabPinnedTipParams()}});
-
-  std::unique_ptr<feature_engagement::Tracker> tracker =
-      feature_engagement::CreateTestTracker();
-  // Make sure tracker is initialized.
-  tracker->AddOnInitializedCallback(BoolArgumentQuitClosure());
-  run_loop_.Run();
-
-  // Check that the badge is initially displayed.
-  EXPECT_TRUE(
-      tracker->ShouldTriggerHelpUI(feature_engagement::kIPHTabPinnedFeature));
-  tracker->Dismissed(feature_engagement::kIPHTabPinnedFeature);
-
-  // Check that the badge is not displayed a second time.
-  EXPECT_FALSE(
-      tracker->ShouldTriggerHelpUI(feature_engagement::kIPHTabPinnedFeature));
-}
