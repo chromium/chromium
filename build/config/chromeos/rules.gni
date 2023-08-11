@@ -101,6 +101,78 @@ if (cros_sdk_version != "") {
   }
 }
 
+template("generate_chromeos_sdk_deps") {
+  forward_variables_from(invoker,
+                         [
+                           "deploy_chrome",
+                           "is_tast",
+                         ])
+  if (!defined(deploy_chrome)) {
+    deploy_chrome = false
+  }
+  if (!defined(is_tast)) {
+    is_tast = false
+  }
+
+  _sdk_data = []
+  assert(cros_sdk_version != "", "cros sdk version is not defined")
+  foreach(b, _potential_test_boards) {
+    _cros_is_vm = false
+    foreach(b1, string_split(cros_boards_with_qemu_images, ":")) {
+      if (b == b1) {
+        _cros_is_vm = true
+      }
+    }
+
+    # Determine the real paths for various items in the SDK, which may be used
+    # in the 'generate_runner_script' template below.
+    if (is_tast || _cros_is_vm || deploy_chrome) {
+      _symlink_targets = []
+      foreach(m, _symlink_targets_map) {
+        if (b == m[0]) {
+          _symlink_targets = []
+          _symlink_targets = m[1]
+        }
+      }
+
+      if (is_tast) {
+        # Add tast sdk items.
+        _sdk_data += [ _symlink_targets[0] ]
+      }
+      if (deploy_chrome) {
+        # To deploy chrome to the VM, it needs to be stripped down to fit into
+        # the VM. This is done by using binutils in the toolchain. So add the
+        # toolchain to the data.
+        _sdk_data += [
+          _symlink_targets[1],
+          _symlink_targets[2],
+        ]
+      }
+      if (_cros_is_vm) {
+        # Add vm sdk items.
+        _sdk_data += [
+          _symlink_targets[3],
+          _symlink_targets[4],
+          _symlink_targets[5],
+        ]
+      }
+    }
+  }
+  group(target_name) {
+    data = _sdk_data
+    data += [
+      # Needed for various SDK components used below.
+      "//build/cros_cache/chrome-sdk/misc/",
+      "//build/cros_cache/chrome-sdk/symlinks/",
+      "//chrome/VERSION",
+
+      # The LKGM file controls what version of the VM image to download. Add it
+      # as data here so that changes to it will trigger analyze.
+      "//chromeos/CHROMEOS_LKGM",
+    ]
+  }
+}
+
 # Creates dependencies required by skylab testing. If passed the
 # generated_script and test_exe this will generate the skylab runner script.
 # If passed tast_attr_expr, tast_tests or tast_disabled_tests this will
@@ -305,53 +377,14 @@ template("generate_runner_script") {
 
   # If we're in the cros chrome-sdk (and not the raw ebuild), the test will
   # need some additional runtime data located in the SDK cache.
-  _sdk_data = []
   if (cros_sdk_version != "") {
     assert(defined(generated_script),
            "Must specify where to place generated test launcher script via " +
                "'generated_script'")
 
-    foreach(b, _potential_test_boards) {
-      _cros_is_vm = false
-      foreach(b1, string_split(cros_boards_with_qemu_images, ":")) {
-        if (b == b1) {
-          _cros_is_vm = true
-        }
-      }
-
-      # Determine the real paths for various items in the SDK, which may be used
-      # in the 'generate_runner_script' template below.
-      if (is_tast || _cros_is_vm || deploy_chrome) {
-        _symlink_targets = []
-        foreach(m, _symlink_targets_map) {
-          if (b == m[0]) {
-            _symlink_targets = []
-            _symlink_targets = m[1]
-          }
-        }
-
-        if (is_tast) {
-          # Add tast sdk items.
-          _sdk_data += [ _symlink_targets[0] ]
-        }
-        if (deploy_chrome) {
-          # To deploy chrome to the VM, it needs to be stripped down to fit into
-          # the VM. This is done by using binutils in the toolchain. So add the
-          # toolchain to the data.
-          _sdk_data += [
-            _symlink_targets[1],
-            _symlink_targets[2],
-          ]
-        }
-        if (_cros_is_vm) {
-          # Add vm sdk items.
-          _sdk_data += [
-            _symlink_targets[3],
-            _symlink_targets[4],
-            _symlink_targets[5],
-          ]
-        }
-      }
+    generate_chromeos_sdk_deps(target_name + "_cros_deps__helper") {
+      is_tast = is_tast
+      deploy_chrome = deploy_chrome
     }
   }
 
@@ -497,25 +530,19 @@ template("generate_runner_script") {
       "//build/android/pylib/results/",
       "//build/chromeos/",
       "//build/util/",
-
-      # Needed for various SDK components used below.
-      "//build/cros_cache/chrome-sdk/misc/",
-      "//build/cros_cache/chrome-sdk/symlinks/",
-      "//chrome/VERSION",
-
-      # The LKGM file controls what version of the VM image to download. Add it
-      # as data here so that changes to it will trigger analyze.
-      "//chromeos/CHROMEOS_LKGM",
       "//third_party/chromite/",
     ]
-
-    data += _sdk_data
 
     if (defined(invoker.data)) {
       data += invoker.data
     }
 
-    data_deps = [ "//testing:test_scripts_shared" ]
+    data_deps = [
+      "//testing:test_scripts_shared",
+    ]
+    if (cros_sdk_version != "") {
+      data_deps += [":" + target_name + "_cros_deps__helper"]
+    }
     if (defined(invoker.data_deps)) {
       data_deps += invoker.data_deps
     }
