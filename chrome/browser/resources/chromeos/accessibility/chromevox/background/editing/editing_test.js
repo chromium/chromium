@@ -2543,7 +2543,7 @@ AX_TEST_F('ChromeVoxEditingTest', 'OnEvent', async function() {
   assertEquals(1, receivedIntents.length);
   assertEquals('b', receivedIntents[0]);
 
-  // Check that inferred intents override provided intents if event.intents\
+  // Check that inferred intents override provided intents if event.intents
   // contains CLEAR_SELECTION.
   handler.inferredIntents_ = ['b'];
   receivedIntents = false;

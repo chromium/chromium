@@ -35,6 +35,7 @@ const AutomationIntent = chrome.automation.AutomationIntent;
 const AutomationNode = chrome.automation.AutomationNode;
 const Dir = constants.Dir;
 const FormType = LibLouis.FormType;
+const IntentCommandType = chrome.automation.IntentCommandType;
 const Range = CursorRange;
 const RoleType = chrome.automation.RoleType;
 const StateType = chrome.automation.StateType;
@@ -137,12 +138,7 @@ export class TextEditHandler {
     // Be strict about what's allowed and limit only to overriding set
     // selections.
     if (this.inferredIntents_.length > 0 &&
-        (evt.intents.length === 0 ||
-         evt.intents.some(
-             intent => intent.command ===
-                     chrome.automation.IntentCommandType.SET_SELECTION ||
-                 intent.command ===
-                     chrome.automation.IntentCommandType.CLEAR_SELECTION))) {
+        (intents.length === 0 || intents.some(isSetOrClear))) {
       intents = this.inferredIntents_;
     }
     this.inferredIntents_ = [];
@@ -171,10 +167,10 @@ export class TextEditHandler {
    */
   moveToAfterEditText() {
     const after = AutomationUtil.findNextNode(
-                      this.node_, Dir.FORWARD, AutomationPredicate.object,
-                      {skipInitialSubtree: true}) ||
-        this.node_;
-    ChromeVoxState.instance.navigateToRange(CursorRange.fromNode(after));
+        this.node_, Dir.FORWARD, AutomationPredicate.object,
+        {skipInitialSubtree: true});
+    ChromeVoxState.instance.navigateToRange(
+        CursorRange.fromNode(after ?? this.node_));
   }
 
   /**
@@ -205,7 +201,7 @@ export class TextEditHandler {
  * A |ChromeVoxEditableTextBase| that implements text editing feedback
  * for automation tree text fields.
  */
-const AutomationEditableText = class extends ChromeVoxEditableTextBase {
+export class AutomationEditableText extends ChromeVoxEditableTextBase {
   /**
    * @param {!AutomationNode} node
    */
@@ -351,14 +347,14 @@ const AutomationEditableText = class extends ChromeVoxEditableTextBase {
     }
     return lineBreaks;
   }
-};
+}
 
 
 /**
  * A |ChromeVoxEditableTextBase| that implements text editing feedback
  * for automation tree text fields using anchor and focus selection.
  */
-const AutomationRichEditableText = class extends AutomationEditableText {
+export class AutomationRichEditableText extends AutomationEditableText {
   /**
    * @param {!AutomationNode} node
    */
@@ -995,7 +991,7 @@ const AutomationRichEditableText = class extends AutomationEditableText {
       this.speakTextStyle_(container);
     }
   }
-};
+}
 
 
 /**
@@ -1032,3 +1028,12 @@ EditingRangeObserver.instance = new EditingRangeObserver();
 
 /** @type {number} */
 const MAX_INLINE_TEXT_BOXES = 500;
+
+/**
+ * @param {!AutomationIntent} intent
+ * @return {boolean}
+ */
+function isSetOrClear(intent) {
+  return intent.command === IntentCommandType.SET_SELECTION ||
+      intent.command === IntentCommandType.CLEAR_SELECTION;
+}
