@@ -69,6 +69,8 @@ class ExternalVkImageBackingFactoryDawnTest
 
     ExternalVkImageBackingFactoryTest::SetUp();
 
+    dawnProcSetProcs(&dawn::native::GetProcs());
+
     // Create a Dawn Vulkan device
     dawn_instance_.DiscoverDefaultPhysicalDevices();
 
@@ -80,9 +82,6 @@ class ExternalVkImageBackingFactoryDawnTest
                                            return properties.backendType;
                                          });
     ASSERT_NE(adapter_it, adapters.end());
-
-    DawnProcTable procs = dawn::native::GetProcs();
-    dawnProcSetProcs(&procs);
 
     // We need to request internal usage to be able to do operations with
     // internal methods that would need specific usages.
