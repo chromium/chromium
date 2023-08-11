@@ -96,8 +96,19 @@ def _get_java_test_health(java_ast: CompilationUnit) -> JavaTestHealth:
 
     java_classes: List[ClassDeclaration] = java_ast.types
     for java_class in java_classes:
-        # TODO(crbug.com/1254072): Count test cases in the class instead.
-        annotation_counter.update(_count_annotations(java_class.annotations))
+        if any(annotation.name == _DISABLED_TEST_ANNOTATION
+               for annotation in java_class.annotations):
+            all_test_methods = _collect_all_test_methods(java_class)
+            annotation_counter[_DISABLED_TEST_ANNOTATION] += len(
+                all_test_methods)
+            continue
+        elif any(
+                re.fullmatch(_DISABLE_IF_TEST_PATTERN, annotation.name)
+                for annotation in java_class.annotations):
+            all_test_methods = _collect_all_test_methods(java_class)
+            annotation_counter[_DISABLE_IF_TEST_ANNOTATION] += len(
+                all_test_methods)
+            continue
 
         java_methods: List[MethodDeclaration] = java_class.methods
         for java_method in java_methods:
@@ -109,6 +120,14 @@ def _get_java_test_health(java_ast: CompilationUnit) -> JavaTestHealth:
         disabled_tests_count=annotation_counter[_DISABLED_TEST_ANNOTATION],
         disable_if_tests_count=annotation_counter[_DISABLE_IF_TEST_ANNOTATION],
         tests_count=annotation_counter[_TEST_ANNOTATION])
+
+
+def _collect_all_test_methods(java_class: ClassDeclaration) -> List[str]:
+    """Gets the names of all @Test methods in a Java class."""
+    return [
+        method.name for method in java_class.methods
+        if any(a.name == _TEST_ANNOTATION for a in method.annotations)
+    ]
 
 
 def _get_java_package_name(java_ast: CompilationUnit) -> Optional[str]:
