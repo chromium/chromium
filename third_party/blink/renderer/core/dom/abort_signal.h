@@ -6,7 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_ABORT_SIGNAL_H_
 
 #include "base/functional/callback_forward.h"
-#include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
+#include "base/functional/function_ref.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/abort_signal_composition_type.h"
@@ -19,14 +19,14 @@ namespace blink {
 
 class AbortController;
 class AbortSignalCompositionManager;
+class AbortSignalRegistry;
 class ExceptionState;
 class ExecutionContext;
 class FollowAlgorithm;
 class ScriptState;
 
 // Implementation of https://dom.spec.whatwg.org/#interface-AbortSignal
-class CORE_EXPORT AbortSignal : public EventTarget,
-                                public LazyActiveScriptWrappable<AbortSignal> {
+class CORE_EXPORT AbortSignal : public EventTarget {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -66,7 +66,7 @@ class CORE_EXPORT AbortSignal : public EventTarget,
   // be explcitly removed by passing the handle to `RemoveAlgorithm()`.
   class CORE_EXPORT AlgorithmHandle : public GarbageCollected<AlgorithmHandle> {
    public:
-    explicit AlgorithmHandle(Algorithm*);
+    AlgorithmHandle(Algorithm*, AbortSignal*);
     ~AlgorithmHandle();
 
     Algorithm* GetAlgorithm() { return algorithm_; }
@@ -75,6 +75,10 @@ class CORE_EXPORT AbortSignal : public EventTarget,
 
    private:
     Member<Algorithm> algorithm_;
+    // A reference to the signal the algorithm is associated with. This ensures
+    // the associated signal stays alive while it has pending algorithms, which
+    // is necessary for composite signals.
+    Member<AbortSignal> signal_;
   };
 
   // Constructs a SignalType::kInternal signal. This is only for non web-exposed
@@ -103,7 +107,6 @@ class CORE_EXPORT AbortSignal : public EventTarget,
 
   const AtomicString& InterfaceName() const override;
   ExecutionContext* GetExecutionContext() const override;
-  bool HasPendingActivity() const override;
 
   // Internal API
 
@@ -169,10 +172,15 @@ class CORE_EXPORT AbortSignal : public EventTarget,
   // can no longer emit events.
   virtual void DetachFromController();
 
-  // This enables the `PostConstructionCallbackTrait`, which is used to register
-  // the `LazyActiveScriptWrappable` for composite signals. Using this prevents
-  // calling a virtual method for objects under construction.
-  void ActiveScriptWrappableBaseConstructed();
+ protected:
+  // EventTarget callbacks.
+  void AddedEventListener(const AtomicString& event_type,
+                          RegisteredEventListener&) override;
+  void RemovedEventListener(const AtomicString& event_type,
+                            const RegisteredEventListener&) override;
+
+  // Returns true iff the signal is settled for the given composition type.
+  virtual bool IsSettledFor(AbortSignalCompositionType) const;
 
  private:
   // Common constructor initialization separated out to make mutually exclusive
@@ -180,6 +188,14 @@ class CORE_EXPORT AbortSignal : public EventTarget,
   void InitializeCommon(ExecutionContext*, SignalType);
 
   void AbortTimeoutFired(ScriptState*);
+
+  enum class AddRemoveType { kAdded, kRemoved };
+  void OnEventListenerAddedOrRemoved(const AtomicString& event_type,
+                                     AddRemoveType);
+
+  // Invokes the given callback on the associated `AbortSignalRegistry`. Must
+  // only be called for composite signals.
+  void InvokeRegistryCallback(base::FunctionRef<void(AbortSignalRegistry&)>);
 
   // This ensures abort is propagated to any "following" signals.
   //
