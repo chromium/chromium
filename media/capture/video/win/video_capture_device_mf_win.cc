@@ -668,6 +668,10 @@ class DXGIHandlePrivateData
   ~DXGIHandlePrivateData() override = default;
 };
 
+void RecordErrorHistogram(HRESULT hr) {
+  base::UmaHistogramSparse("Media.VideoCapture.Win.ErrorEvent", hr);
+}
+
 }  // namespace
 
 class VideoCaptureDeviceMFWin::MFVideoCallback final
@@ -785,6 +789,89 @@ class VideoCaptureDeviceMFWin::MFVideoCallback final
   raw_ptr<VideoCaptureDeviceMFWin> observer_ GUARDED_BY(lock_);
 };
 
+class VideoCaptureDeviceMFWin::MFActivitiesReportCallback final
+    : public base::RefCountedThreadSafe<MFActivitiesReportCallback>,
+      public IMFSensorActivitiesReportCallback {
+ public:
+  MFActivitiesReportCallback(
+      base::WeakPtr<VideoCaptureDeviceMFWin> observer,
+      scoped_refptr<base::SequencedTaskRunner> main_thread_task_runner,
+      std::string device_id)
+      : observer_(std::move(observer)),
+        main_thread_task_runner_(main_thread_task_runner),
+        device_id_(device_id) {}
+
+  IFACEMETHODIMP QueryInterface(REFIID riid, void** object) override {
+    HRESULT hr = E_NOINTERFACE;
+    if (riid == IID_IUnknown) {
+      *object = this;
+      hr = S_OK;
+    } else if (riid == IID_IMFSensorActivitiesReportCallback) {
+      *object = static_cast<IMFSensorActivitiesReportCallback*>(this);
+      hr = S_OK;
+    }
+    if (SUCCEEDED(hr)) {
+      AddRef();
+    }
+
+    return hr;
+  }
+
+  IFACEMETHODIMP_(ULONG) AddRef() override {
+    base::RefCountedThreadSafe<MFActivitiesReportCallback>::AddRef();
+    return 1U;
+  }
+
+  IFACEMETHODIMP_(ULONG) Release() override {
+    base::RefCountedThreadSafe<MFActivitiesReportCallback>::Release();
+    return 1U;
+  }
+
+  IFACEMETHODIMP_(HRESULT)
+  OnActivitiesReport(
+      IMFSensorActivitiesReport* sensorActivitiesReport) override {
+    bool in_use = false;
+
+    ComPtr<IMFSensorActivityReport> activity_report;
+    HRESULT hr = sensorActivitiesReport->GetActivityReportByDeviceName(
+        base::SysUTF8ToWide(device_id_).c_str(), &activity_report);
+    if (FAILED(hr)) {
+      return S_OK;
+    }
+    unsigned long proc_cnt = 0;
+    hr = activity_report->GetProcessCount(&proc_cnt);
+    // There can be several callback calls, some with empty process list. Ignore
+    // these.
+    if (FAILED(hr) || proc_cnt == 0) {
+      return S_OK;
+    }
+
+    for (size_t idx = 0; idx < proc_cnt; ++idx) {
+      ComPtr<IMFSensorProcessActivity> process_activity;
+      hr = activity_report->GetProcessActivity(idx, &process_activity);
+      if (SUCCEEDED(hr)) {
+        BOOL streaming_state = false;
+        hr = process_activity->GetStreamingState(&streaming_state);
+        in_use |= SUCCEEDED(hr) && streaming_state;
+      }
+    }
+
+    main_thread_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&VideoCaptureDeviceMFWin::OnCameraInUseReport, observer_,
+                       in_use, /*is_default_action=*/false));
+    return S_OK;
+  }
+
+ private:
+  friend class base::RefCountedThreadSafe<MFActivitiesReportCallback>;
+  ~MFActivitiesReportCallback() {}
+
+  base::WeakPtr<VideoCaptureDeviceMFWin> observer_;
+  scoped_refptr<base::SequencedTaskRunner> main_thread_task_runner_;
+  std::string device_id_;
+};
+
 // static
 bool VideoCaptureDeviceMFWin::GetPixelFormatFromMFSourceMediaSubtype(
     const GUID& mf_source_media_subtype,
@@ -879,6 +966,37 @@ bool VideoCaptureDeviceMFWin::CreateMFCameraControlMonitor() {
     return false;
   }
   camera_control_monitor_ = std::move(camera_control_monitor);
+  return true;
+}
+
+bool VideoCaptureDeviceMFWin::CreateMFSensorActivityMonitor() {
+  DCHECK(video_callback_);
+
+  // The MF DLLs have been loaded by VideoCaptureDeviceFactoryWin.
+  // Just get a DLL module handle here, once.
+  static const HMODULE module = GetModuleHandleW(L"mfsensorgroup.dll");
+  if (!module) {
+    DLOG(ERROR) << "Failed to get the mfsensorgroup.dll module handle";
+    return false;
+  }
+
+  using MFCreateSensorActivityMonitorType =
+      decltype(&MFCreateSensorActivityMonitor);
+  static const MFCreateSensorActivityMonitorType create_function =
+      reinterpret_cast<MFCreateSensorActivityMonitorType>(
+          GetProcAddress(module, "MFCreateSensorActivityMonitor"));
+  if (!create_function) {
+    DLOG(ERROR) << "Failed to get the MFCreateSensorActivityMonitor function";
+    return false;
+  }
+
+  HRESULT hr =
+      create_function(activities_report_callback_.get(), &activity_monitor_);
+  if (!activity_monitor_) {
+    LOG(ERROR) << "Failed to create IMFSensorActivityMonitor: "
+               << logging::SystemErrorCodeToString(hr);
+    return false;
+  }
   return true;
 }
 
@@ -2292,6 +2410,36 @@ void VideoCaptureDeviceMFWin::ProcessEventError(HRESULT hr) {
                "VideoCaptureDeviceMFWin::ProcessEventError");
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  if (hr == MF_E_HW_MFT_FAILED_START_STREAMING) {
+    // This may indicate that the camera is in use by another application.
+    if (!activities_report_callback_) {
+      activities_report_callback_ = new MFActivitiesReportCallback(
+          weak_factory_.GetWeakPtr(), main_thread_task_runner_,
+          device_descriptor_.device_id);
+    }
+    if (!activity_monitor_) {
+      bool created = CreateMFSensorActivityMonitor();
+      if (!created) {
+        // Can't rely on activity monitor to check if the camera is in use.
+        // Just report the error.
+        RecordErrorHistogram(hr);
+        OnError(VideoCaptureError::kWinMediaFoundationGetMediaEventStatusFailed,
+                FROM_HERE, hr);
+        return;
+      }
+    }
+    // Post default action in case there will be no callback calls.
+    activity_report_pending_ = true;
+    main_thread_task_runner_->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&VideoCaptureDeviceMFWin::OnCameraInUseReport,
+                       weak_factory_.GetWeakPtr(), /*in_use=*/false,
+                       /*is_default_action=*/true),
+        base::Milliseconds(500));
+    activity_monitor_->Start();
+    return;
+  }
+
   if (hr == DXGI_ERROR_DEVICE_REMOVED && dxgi_device_manager_ != nullptr) {
     // Removed device can happen for external reasons.
     // We should restart capture.
@@ -2334,7 +2482,7 @@ void VideoCaptureDeviceMFWin::ProcessEventError(HRESULT hr) {
   }
 
   if (FAILED(hr)) {
-    base::UmaHistogramSparse("Media.VideoCapture.Win.ErrorEvent", hr);
+    RecordErrorHistogram(hr);
     OnError(VideoCaptureError::kWinMediaFoundationGetMediaEventStatusFailed,
             FROM_HERE, hr);
   }
@@ -2443,4 +2591,33 @@ bool VideoCaptureDeviceMFWin::RecreateMFSource() {
   }
   return true;
 }
+
+void VideoCaptureDeviceMFWin::OnCameraInUseReport(bool in_use,
+                                                  bool is_default_action) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!activity_report_pending_) {
+    return;
+  }
+  activity_report_pending_ = false;
+
+  // Default action for no reports received can be only "camera not in use".
+  DCHECK(!in_use || !is_default_action);
+
+  base::UmaHistogramBoolean("Media.VideoCapture.Win.ActivityReportProcessed",
+                            is_default_action);
+
+  if (in_use) {
+    OnError(VideoCaptureError::kWinMediaFoundationCameraBusy, FROM_HERE,
+            "Camera is in use by another process");
+  } else {
+    RecordErrorHistogram(MF_E_HW_MFT_FAILED_START_STREAMING);
+    OnError(VideoCaptureError::kWinMediaFoundationGetMediaEventStatusFailed,
+            FROM_HERE, MF_E_HW_MFT_FAILED_START_STREAMING);
+  }
+
+  if (activity_monitor_) {
+    activity_monitor_->Stop();
+  }
+}
+
 }  // namespace media

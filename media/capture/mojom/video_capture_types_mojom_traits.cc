@@ -803,6 +803,8 @@ EnumTraits<media::mojom::VideoCaptureError, media::VideoCaptureError>::ToMojom(
           kVideoCaptureDeviceFactorySecondCreateDenied;
     case media::VideoCaptureError::kScreenCaptureKitResetStreamError:
       return media::mojom::VideoCaptureError::kScreenCaptureKitResetStreamError;
+    case media::VideoCaptureError::kWinMediaFoundationCameraBusy:
+      return media::mojom::VideoCaptureError::kWinMediaFoundationCameraBusy;
   }
   NOTREACHED_NORETURN();
 }
@@ -1457,6 +1459,9 @@ bool EnumTraits<media::mojom::VideoCaptureError, media::VideoCaptureError>::
       return true;
     case media::mojom::VideoCaptureError::kScreenCaptureKitResetStreamError:
       *output = media::VideoCaptureError::kScreenCaptureKitResetStreamError;
+      return true;
+    case media::mojom::VideoCaptureError::kWinMediaFoundationCameraBusy:
+      *output = media::VideoCaptureError::kWinMediaFoundationCameraBusy;
       return true;
   }
   NOTREACHED_NORETURN();

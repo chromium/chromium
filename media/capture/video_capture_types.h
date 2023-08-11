@@ -211,7 +211,8 @@ enum class VideoCaptureError {
   kWinDirectShowDeviceInitializationFailed = 146,
   kVideoCaptureDeviceFactorySecondCreateDenied = 147,
   kScreenCaptureKitResetStreamError = 148,
-  kMaxValue = 148
+  kWinMediaFoundationCameraBusy = 149,
+  kMaxValue = 149
 };
 
 // WARNING: Do not change the values assigned to the entries. They are used for

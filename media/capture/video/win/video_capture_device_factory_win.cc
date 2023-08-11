@@ -230,10 +230,8 @@ bool LoadMediaFoundationDlls() {
   }
 
   // Load optional DLLs whose availability depends on Windows version.
-  if (base::win::GetVersion() >= base::win::Version::WIN11_22H2) {
-    ExpandEnvironmentStringsAndLoadLibrary(
-        L"%WINDIR%\\system32\\mfsensorgroup.dll");
-  }
+  ExpandEnvironmentStringsAndLoadLibrary(
+      L"%WINDIR%\\system32\\mfsensorgroup.dll");
 
   return true;
 }

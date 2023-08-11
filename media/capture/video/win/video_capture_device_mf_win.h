@@ -127,8 +127,10 @@ class CAPTURE_EXPORT VideoCaptureDeviceMFWin : public VideoCaptureDevice {
 
  private:
   class MFVideoCallback;
+  class MFActivitiesReportCallback;
 
   bool CreateMFCameraControlMonitor();
+  bool CreateMFSensorActivityMonitor();
   void DeinitVideoCallbacksControlsAndMonitors();
   HRESULT ExecuteHresultCallbackWithRetries(
       base::RepeatingCallback<HRESULT()> callback,
@@ -180,10 +182,13 @@ class CAPTURE_EXPORT VideoCaptureDeviceMFWin : public VideoCaptureDevice {
   bool RecreateMFSource();
   void OnFrameDroppedInternal(VideoCaptureFrameDropReason reason);
   void ProcessEventError(HRESULT hr);
+  void OnCameraInUseReport(bool in_use, bool is_default_action);
 
   VideoCaptureDeviceDescriptor device_descriptor_;
   CreateMFPhotoCallbackCB create_mf_photo_callback_;
   scoped_refptr<MFVideoCallback> video_callback_;
+  scoped_refptr<MFActivitiesReportCallback> activities_report_callback_;
+  bool activity_report_pending_ = false;
   bool is_initialized_;
   int max_retry_count_;
   int retry_delay_in_ms_;
@@ -195,6 +200,7 @@ class CAPTURE_EXPORT VideoCaptureDeviceMFWin : public VideoCaptureDevice {
   Microsoft::WRL::ComPtr<IMFCameraControlMonitor> camera_control_monitor_;
   Microsoft::WRL::ComPtr<IMFExtendedCameraController>
       extended_camera_controller_;
+  Microsoft::WRL::ComPtr<IMFSensorActivityMonitor> activity_monitor_;
   Microsoft::WRL::ComPtr<IMFCaptureEngine> engine_;
   std::unique_ptr<CapabilityWin> selected_video_capability_;
   gfx::ColorSpace color_space_;
