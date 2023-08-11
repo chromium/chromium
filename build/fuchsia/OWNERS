@@ -3,12 +3,12 @@
 # if you would also add chromium-fuchsia-reviews@google.com so that a shadowed
 # reviewer is added automatically. Thank you.
 
+chonggu@google.com
 ddorwin@chromium.org
 sergeyu@chromium.org
 wez@chromium.org
-
-per-file *.py=chonggu@google.com
-per-file *.py=zijiehe@google.com
+wintermelons@google.com
+zijiehe@google.com
 
 per-file linux_internal.sdk.sha1=chromium-internal-autoroll@skia-corp.google.com.iam.gserviceaccount.com
 
