@@ -102,6 +102,8 @@ class SVGScriptElement final : public SVGElement,
   ExecutionContext* GetExecutionContext() const override;
   void DispatchLoadEvent() override;
   void DispatchErrorEvent() override;
+  bool HasLoadEventHandler() override;
+  bool HasErrorEventHandler() override;
 
   Type GetScriptElementType() override;
 

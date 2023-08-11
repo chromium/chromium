@@ -207,7 +207,7 @@ class ScriptStreamingTest : public testing::Test {
   }
 
   void Finish() {
-    resource_->Loader()->DidFinishLoading(base::TimeTicks(), 0, 0, 0);
+    resource_->Loader()->DidFinishLoading(base::TimeTicks(), 0, 0, 0, false);
     producer_handle_.reset();
     resource_->SetStatus(ResourceStatus::kCached);
   }

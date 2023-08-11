@@ -3955,6 +3955,11 @@ enum WebFeature {
   kV8WasmMemory64 = 4615,
   kV8WasmMultiMemory = 4616,
   kV8WasmGC = 4617,
+  kORBBlockWithoutAnyEventHandler = 4618,
+  kORBBlockWithOnErrorButWithoutOnLoadEventHandler = 4619,
+  kORBBlockWithOnLoadButWithoutOnErrorEventHandler = 4620,
+  kORBBlockWithOnLoadAndOnErrorEventHandler = 4621,
+  kORBBlockWithAnyEventHandler = 4622,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

@@ -395,7 +395,7 @@ void ImageResource::DecodeError(bool all_data_received) {
     // Observers are notified via ImageResource::finish().
     // TODO(hiroshige): Do not call didFinishLoading() directly.
     Loader()->AbortResponseBodyLoading();
-    Loader()->DidFinishLoading(base::TimeTicks::Now(), size, size, size);
+    Loader()->DidFinishLoading(base::TimeTicks::Now(), size, size, size, false);
   } else {
     auto result = GetContent()->UpdateImage(
         nullptr, GetStatus(),

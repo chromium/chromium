@@ -165,7 +165,7 @@ TEST_F(ResourceLoaderTest, LoadResponseBody) {
 
   loader->DidReceiveResponse(WrappedResourceResponse(response));
   loader->DidStartLoadingResponseBody(std::move(consumer));
-  loader->DidFinishLoading(base::TimeTicks(), 0, 0, 0);
+  loader->DidFinishLoading(base::TimeTicks(), 0, 0, 0, false);
 
   uint32_t num_bytes = 2;
   result = producer->WriteData("he", &num_bytes, MOJO_WRITE_DATA_FLAG_NONE);

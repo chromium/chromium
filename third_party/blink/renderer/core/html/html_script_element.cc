@@ -335,6 +335,14 @@ void HTMLScriptElement::DispatchErrorEvent() {
   DispatchEvent(*Event::Create(event_type_names::kError));
 }
 
+bool HTMLScriptElement::HasLoadEventHandler() {
+  return EventPath(*this).HasEventListenersInPath(event_type_names::kLoad);
+}
+
+bool HTMLScriptElement::HasErrorEventHandler() {
+  return EventPath(*this).HasEventListenersInPath(event_type_names::kError);
+}
+
 ScriptElementBase::Type HTMLScriptElement::GetScriptElementType() {
   return ScriptElementBase::Type::kHTMLScriptElement;
 }

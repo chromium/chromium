@@ -21,6 +21,8 @@ class MockScriptElementBase : public GarbageCollected<MockScriptElementBase>,
 
   MOCK_METHOD0(DispatchLoadEvent, void());
   MOCK_METHOD0(DispatchErrorEvent, void());
+  MOCK_METHOD0(HasLoadEventHandler, bool());
+  MOCK_METHOD0(HasErrorEventHandler, bool());
   MOCK_CONST_METHOD0(AsyncAttributeValue, bool());
   MOCK_CONST_METHOD0(CharsetAttributeValue, String());
   MOCK_CONST_METHOD0(CrossOriginAttributeValue, String());

@@ -1436,7 +1436,8 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
     }
     if (!StartLoad(resource,
                    std::move(params.MutableResourceRequest().MutableBody()),
-                   load_blocking_policy, params.GetRenderBlockingBehavior())) {
+                   load_blocking_policy, params.GetRenderBlockingBehavior(),
+                   params.CountORBBlockAs())) {
       resource->FinishAsError(ResourceError::CancelledError(params.Url()),
                               freezable_task_runner_.get());
     }
@@ -2364,14 +2365,15 @@ bool ResourceFetcher::StartLoad(Resource* resource) {
   }
   return StartLoad(resource, ResourceRequestBody(),
                    ImageLoadBlockingPolicy::kDefault,
-                   RenderBlockingBehavior::kNonBlocking);
+                   RenderBlockingBehavior::kNonBlocking, absl::nullopt);
 }
 
 bool ResourceFetcher::StartLoad(
     Resource* resource,
     ResourceRequestBody request_body,
     ImageLoadBlockingPolicy policy,
-    RenderBlockingBehavior render_blocking_behavior) {
+    RenderBlockingBehavior render_blocking_behavior,
+    absl::optional<mojom::blink::WebFeature> count_orb_block_as_) {
   DCHECK(resource);
   DCHECK(resource->StillNeedsLoad());
 
@@ -2417,7 +2419,7 @@ bool ResourceFetcher::StartLoad(
 
     loader = MakeGarbageCollected<ResourceLoader>(
         this, scheduler_, resource, context_lifecycle_notifier_,
-        std::move(request_body), size);
+        std::move(request_body), size, count_orb_block_as_);
     // Preload requests should not block the load event. IsLinkPreload()
     // actually continues to return true for Resources matched from the preload
     // cache that must block the load event, but that is OK because this method

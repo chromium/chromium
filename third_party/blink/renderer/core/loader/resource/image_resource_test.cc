@@ -299,7 +299,7 @@ TEST_F(ImageResourceTest, MultipartImage) {
 
   // This part finishes. The image is created, callbacks are sent, and the data
   // buffer is cleared.
-  image_resource->Loader()->DidFinishLoading(base::TimeTicks(), 0, 0, 0);
+  image_resource->Loader()->DidFinishLoading(base::TimeTicks(), 0, 0, 0, false);
   EXPECT_TRUE(image_resource->ResourceBuffer());
   EXPECT_FALSE(image_resource->ErrorOccurred());
   ASSERT_TRUE(image_resource->GetContent()->HasImage());
@@ -350,7 +350,7 @@ TEST_F(ImageResourceTest, BitmapMultipartImage) {
   image_resource->AppendData(reinterpret_cast<const char*>(kJpegImage),
                              sizeof(kJpegImage));
   image_resource->AppendData(kBoundary, strlen(kBoundary));
-  image_resource->Loader()->DidFinishLoading(base::TimeTicks(), 0, 0, 0);
+  image_resource->Loader()->DidFinishLoading(base::TimeTicks(), 0, 0, 0, false);
   EXPECT_TRUE(image_resource->GetContent()->HasImage());
   EXPECT_TRUE(IsA<BitmapImage>(image_resource->GetContent()->GetImage()));
   EXPECT_TRUE(image_resource->GetContent()
@@ -857,7 +857,7 @@ TEST_F(ImageResourceTest, DecodeErrorWithEmptyBody) {
   EXPECT_FALSE(observer->ImageNotifyFinishedCalled());
   EXPECT_EQ(0, observer->ImageChangedCount());
 
-  image_resource->Loader()->DidFinishLoading(base::TimeTicks(), 0, 0, 0);
+  image_resource->Loader()->DidFinishLoading(base::TimeTicks(), 0, 0, 0, false);
 
   EXPECT_EQ(ResourceStatus::kDecodeError, image_resource->GetStatus());
   EXPECT_TRUE(observer->ImageNotifyFinishedCalled());
@@ -906,7 +906,7 @@ TEST_F(ImageResourceTest, PartialContentWithoutDimensions) {
   image_resource->Loader()->DidFinishLoading(
       base::TimeTicks(), kJpegImageSubrangeWithoutDimensionsLength,
       kJpegImageSubrangeWithoutDimensionsLength,
-      kJpegImageSubrangeWithoutDimensionsLength);
+      kJpegImageSubrangeWithoutDimensionsLength, false);
 
   EXPECT_EQ(ResourceStatus::kDecodeError, image_resource->GetStatus());
   EXPECT_TRUE(observer->ImageNotifyFinishedCalled());

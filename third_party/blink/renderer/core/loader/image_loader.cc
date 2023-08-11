@@ -364,6 +364,20 @@ static void ConfigureRequest(
       html_image_element) {
     params.SetResourceWidth(html_image_element->GetResourceWidth());
   }
+
+  if (html_image_element) {
+    constexpr WebFeature kCountOrbBlockAs[2][2] = {
+        {WebFeature::kORBBlockWithoutAnyEventHandler,
+         WebFeature::kORBBlockWithOnErrorButWithoutOnLoadEventHandler},
+        {WebFeature::kORBBlockWithOnLoadButWithoutOnErrorEventHandler,
+         WebFeature::kORBBlockWithOnLoadAndOnErrorEventHandler}};
+
+    auto event_path = EventPath(element);
+    params.SetCountORBBlockAs(
+        kCountOrbBlockAs
+            [event_path.HasEventListenersInPath(event_type_names::kLoad)]
+            [event_path.HasEventListenersInPath(event_type_names::kError)]);
+  }
 }
 
 inline void ImageLoader::DispatchErrorEvent() {

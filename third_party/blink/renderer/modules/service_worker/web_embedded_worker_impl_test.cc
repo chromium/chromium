@@ -86,7 +86,7 @@ class FakeURLLoader final : public URLLoader {
       response.SetMimeType("text/javascript");
       response.SetHttpStatusCode(404);
       client->DidReceiveResponse(response);
-      client->DidFinishLoading(base::TimeTicks(), 0, 0, 0);
+      client->DidFinishLoading(base::TimeTicks(), 0, 0, 0, false);
       return;
     }
     // Don't handle other requests intentionally to emulate ongoing load.

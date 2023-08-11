@@ -372,7 +372,8 @@ class PLATFORM_EXPORT ResourceFetcher
   bool StartLoad(Resource*,
                  ResourceRequestBody,
                  ImageLoadBlockingPolicy,
-                 RenderBlockingBehavior);
+                 RenderBlockingBehavior,
+                 absl::optional<mojom::blink::WebFeature> count_orb_block_as);
 
   void InitializeRevalidation(ResourceRequest&, Resource*);
   // When |security_origin| of the ResourceLoaderOptions is not a nullptr, it'll
