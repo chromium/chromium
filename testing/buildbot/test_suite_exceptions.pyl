@@ -2056,8 +2056,12 @@
         'ci_only': True,
       },
       'fuchsia-code-coverage': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.coverage.content_browsertests.filter',
+          '--test-launcher-jobs=1',
+        ],
         'swarming': {
-          'shards': 41,
+          'shards': 125,
         },
       },
       'fuchsia-x64-cast-receiver-rel': {
@@ -4665,6 +4669,18 @@
       'fuchsia-code-coverage': {
         'swarming': {
           'shards': 28,
+        },
+      },
+    },
+  },
+  'web_engine_integration_tests': {
+    'modifications': {
+      'fuchsia-code-coverage': {
+        'args': [
+          '--test-launcher-jobs=1',
+        ],
+        'swarming': {
+          'shards': 4,
         },
       },
     },
