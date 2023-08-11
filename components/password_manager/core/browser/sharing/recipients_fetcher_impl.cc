@@ -71,6 +71,9 @@ void RecipientsFetcherImpl::FetchFamilyMembers(
 
 void RecipientsFetcherImpl::ServerRequestCallback() {
   if (!HasServerRequestCompletedWithSuccess(*pending_request_)) {
+    // Destroy the request object after the response was fetched otherwise no
+    // further call can be made.
+    pending_request_.reset();
     std::move(callback_).Run(std::vector<RecipientInfo>(),
                              FetchFamilyMembersRequestStatus::kNetworkError);
     return;
