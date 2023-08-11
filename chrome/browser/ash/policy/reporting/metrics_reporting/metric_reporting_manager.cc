@@ -91,6 +91,9 @@ constexpr size_t kAppEventsBucketCount = 10;
 BASE_FEATURE(kEnableAppEventsObserver,
              "EnableAppEventsObserver",
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kEnableRuntimeCounters,
+             "EnableRuntimeCounters",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool MetricReportingManager::Delegate::IsUserAffiliated(
     Profile& profile) const {
@@ -607,19 +610,23 @@ void MetricReportingManager::InitBootPerformanceCollector() {
 
 void MetricReportingManager::InitRuntimeCountersCollectors() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto psr_telemetry_handler = std::make_unique<CrosHealthdPsrSamplerHandler>();
-  auto psr_telemetry_sampler = std::make_unique<CrosHealthdMetricSampler>(
-      std::move(psr_telemetry_handler),
-      ::ash::cros_healthd::mojom::ProbeCategoryEnum::kSystem);
-  InitPeriodicTelemetryCollector(
-      kPsrTelemetry, psr_telemetry_sampler.get(), telemetry_report_queue_.get(),
-      /*enable_setting_path=*/::ash::kDeviceReportRuntimeCounters,
-      metrics::kDeviceReportRuntimeCountersDefaultValue,
-      /*rate_setting_path=*/::ash::kDeviceReportRuntimeCountersCheckingRateMs,
-      metrics::GetDefaultCollectionRate(
-          metrics::kDefaultRuntimeCountersTelemetryCollectionRate),
-      /*rate_unit_to_ms=*/1, delegate_->GetInitDelay());
-  samplers_.push_back(std::move(psr_telemetry_sampler));
+  if (base::FeatureList::IsEnabled(kEnableRuntimeCounters)) {
+    auto psr_telemetry_handler =
+        std::make_unique<CrosHealthdPsrSamplerHandler>();
+    auto psr_telemetry_sampler = std::make_unique<CrosHealthdMetricSampler>(
+        std::move(psr_telemetry_handler),
+        ::ash::cros_healthd::mojom::ProbeCategoryEnum::kSystem);
+    InitPeriodicTelemetryCollector(
+        kPsrTelemetry, psr_telemetry_sampler.get(),
+        telemetry_report_queue_.get(),
+        /*enable_setting_path=*/::ash::kDeviceReportRuntimeCounters,
+        metrics::kDeviceReportRuntimeCountersDefaultValue,
+        /*rate_setting_path=*/::ash::kDeviceReportRuntimeCountersCheckingRateMs,
+        metrics::GetDefaultCollectionRate(
+            metrics::kDefaultRuntimeCountersTelemetryCollectionRate),
+        /*rate_unit_to_ms=*/1, delegate_->GetInitDelay());
+    samplers_.push_back(std::move(psr_telemetry_sampler));
+  }
 }
 
 void MetricReportingManager::InitFatalCrashCollectors() {

@@ -38,6 +38,7 @@ class CollectorBase;
 class Sampler;
 
 BASE_DECLARE_FEATURE(kEnableAppEventsObserver);
+BASE_DECLARE_FEATURE(kEnableRuntimeCounters);
 
 // Class to initialize and start info, event, and telemetry collection and
 // reporting.
