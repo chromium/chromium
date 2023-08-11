@@ -250,6 +250,16 @@ void MirrorLayerTree(
                     desk_container);
   }
 
+  // Disables rounded corners sync on the mirroring layer. Changes on its source
+  // layer's rounded corners shouldn't affect the rounded corners of the
+  // mirroring layer.
+  // On entering overview, the rounded corners of the windows get updated after
+  // the starting animation completes. These rounded corners are added
+  // specifically for the visuals of the windows inside overview, whereas the
+  // desk previews reflect the windows visuals outside of overview. Hence, these
+  // changes of the rounded corners on the source layers should not show up on
+  // the mirror layers. See http://b/293946863.
+  mirror->set_sync_rounded_corners_with_source(false);
   mirror->set_sync_bounds_with_source(true);
   if (layer_data.should_force_mirror_visible) {
     mirror->SetVisible(true);

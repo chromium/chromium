@@ -1639,8 +1639,12 @@ void Layer::SetRoundedCornersFromAnimation(
     PropertyChangeReason reason) {
   cc_layer_->SetRoundedCorner(rounded_corners);
 
-  for (const auto& mirror : mirrors_)
-    mirror->dest()->SetRoundedCornersFromAnimation(rounded_corners, reason);
+  for (const auto& mirror : mirrors_) {
+    Layer* mirror_dest = mirror->dest();
+    if (mirror_dest->sync_rounded_corners_with_source_) {
+      mirror_dest->SetRoundedCornersFromAnimation(rounded_corners, reason);
+    }
+  }
 }
 
 void Layer::SetGradientMaskFromAnimation(
