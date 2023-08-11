@@ -14560,6 +14560,21 @@
             ]
         }
     ],
+    "SystemEmojiPickerGIFSupportByDefault": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SystemEmojiPickerGIFSupport"
+                    ]
+                }
+            ]
+        }
+    ],
     "TabAudioMuting": [
         {
             "platforms": [
