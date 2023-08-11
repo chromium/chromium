@@ -182,14 +182,10 @@ void DownloadRequestMaker::Start(DownloadRequestMaker::Callback callback) {
       target_file_path_, full_path_,
       base::BindOnce(&DownloadRequestMaker::OnFileFeatureExtractionDone,
                      weakptr_factory_.GetWeakPtr()));
-  start_time_ = base::Time::Now();
 }
 
 void DownloadRequestMaker::OnFileFeatureExtractionDone(
     FileAnalyzer::Results results) {
-  base::UmaHistogramMediumTimes(
-      "SBClientDownload.FileFeatureExtractionDuration",
-      base::Time::Now() - start_time_);
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   request_->set_download_type(results.type);
@@ -214,7 +210,6 @@ void DownloadRequestMaker::OnFileFeatureExtractionDone(
 }
 
 void DownloadRequestMaker::GetTabRedirects() {
-  start_time_ = base::Time::Now();
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!tab_urls_.url.is_valid()) {
     OnGotTabRedirects({});
@@ -243,8 +238,6 @@ void DownloadRequestMaker::GetTabRedirects() {
 
 void DownloadRequestMaker::OnGotTabRedirects(
     history::RedirectList redirect_list) {
-  base::UmaHistogramMediumTimes("SBClientDownload.GetTabRedirectsDuration",
-                                base::Time::Now() - start_time_);
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   for (size_t i = 0; i < redirect_list.size(); ++i) {

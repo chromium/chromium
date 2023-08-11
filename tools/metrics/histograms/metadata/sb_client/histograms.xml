@@ -312,27 +312,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="SBClientDownload.FileFeatureExtractionDuration" units="ms"
-    expires_after="2023-09-03">
-  <owner>drubery@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Records how long it takes to extract features from a downloaded file. This
-    is aggregated over all file types. It is recorded once per download.
-  </summary>
-</histogram>
-
-<histogram name="SBClientDownload.GetTabRedirectsDuration" units="ms"
-    expires_after="2023-09-03">
-  <owner>drubery@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Records how long it takes to get tab redirects when populating a
-    ClientDownloadRequest. This is aggregated over all file types. It is
-    recorded once per download.
-  </summary>
-</histogram>
-
 <histogram name="SBClientDownload.ImageDebugEntrySize" units="KB"
     expires_after="2023-09-06">
   <owner>drubery@chromium.org</owner>
@@ -363,18 +342,6 @@ chromium-metrics-reviews@google.com.
     <variant name="Policy" summary="Triggered by enterprise policy"/>
     <variant name="Unknown" summary="Unknown trigger"/>
   </token>
-</histogram>
-
-<histogram name="SBClientDownload.MemoryMapFileDuration" units="ms"
-    expires_after="2023-09-03">
-  <owner>drubery@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Records how long it takes to load the download as a memory-mapped file for
-    the purpose of extracting executable features. This is aggregated over all
-    file types that are checked as executables. It is recorded once per
-    download.
-  </summary>
 </histogram>
 
 <histogram name="SBClientDownload.SafeDownloadOpenedLatency2.{ShowAction}"

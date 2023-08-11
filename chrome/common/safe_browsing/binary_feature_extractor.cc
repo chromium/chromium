@@ -43,13 +43,10 @@ bool BinaryFeatureExtractor::ExtractImageFeatures(
                                       base::File::FLAG_WIN_TEMPORARY |
                                       base::File::FLAG_DELETE_ON_CLOSE);
 
-  base::Time start_time = base::Time::Now();
   base::MemoryMappedFile mapped_file;
   if (!mapped_file.Initialize(std::move(temp_file))) {
     return false;
   }
-  base::UmaHistogramMediumTimes("SBClientDownload.MemoryMapFileDuration",
-                                base::Time::Now() - start_time);
   return ExtractImageFeaturesFromData(mapped_file.data(), mapped_file.length(),
                                       options, image_headers, signed_data);
 }
