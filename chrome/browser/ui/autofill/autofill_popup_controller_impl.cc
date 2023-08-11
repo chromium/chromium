@@ -162,10 +162,12 @@ void AutofillPopupControllerImpl::Show(
         ->UpdateSourceAvailability(FillingSource::AUTOFILL,
                                    !suggestions_.empty());
 #endif
-    if (!view_.Call(&AutofillPopupView::Show,
-                    AutoselectFirstSuggestion(
-                        trigger_source == AutofillSuggestionTriggerSource::
-                                              kTextFieldDidReceiveKeyDown))) {
+    if (!view_
+             .Call(&AutofillPopupView::Show,
+                   AutoselectFirstSuggestion(trigger_source ==
+                                             AutofillSuggestionTriggerSource::
+                                                 kTextFieldDidReceiveKeyDown))
+             .value_or(false)) {
       return;
     }
 

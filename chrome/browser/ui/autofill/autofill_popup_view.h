@@ -25,8 +25,9 @@ class AutofillPopupView {
   static base::WeakPtr<AutofillPopupView> Create(
       base::WeakPtr<AutofillPopupController> controller);
 
-  // Displays the Autofill popup and fills it in with data from the controller.
-  virtual void Show(AutoselectFirstSuggestion autoselect_first_suggestion) = 0;
+  // Attempts to display the Autofill popup and fills it with data from the
+  // controller. Returns whether the popup was shown.
+  virtual bool Show(AutoselectFirstSuggestion autoselect_first_suggestion) = 0;
 
   // Hides the popup from view. This will cause the popup to be deleted.
   virtual void Hide() = 0;
@@ -37,7 +38,9 @@ class AutofillPopupView {
   virtual bool HandleKeyPressEvent(
       const content::NativeWebKeyboardEvent& event) = 0;
 
-  // Refreshes the position and redraws popup when suggestions change.
+  // Refreshes the position and redraws popup when suggestions change. Returns
+  // whether the resulting popup was shown (or had to hide, e.g. due to
+  // insufficient size).
   virtual void OnSuggestionsChanged() = 0;
 
   // Makes accessibility announcement.

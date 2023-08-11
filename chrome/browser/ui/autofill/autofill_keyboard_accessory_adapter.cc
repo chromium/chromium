@@ -52,10 +52,11 @@ AutofillKeyboardAccessoryAdapter::~AutofillKeyboardAccessoryAdapter() = default;
 
 // AutofillPopupView implementation.
 
-void AutofillKeyboardAccessoryAdapter::Show(
+bool AutofillKeyboardAccessoryAdapter::Show(
     AutoselectFirstSuggestion autoselect_first_suggestion) {
   CHECK(view_) << "Show called before a View was set!";
   OnSuggestionsChanged();
+  return true;
 }
 
 void AutofillKeyboardAccessoryAdapter::Hide() {

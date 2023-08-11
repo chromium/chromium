@@ -60,7 +60,7 @@ class PopupViewViews : public PopupBaseView,
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
   // AutofillPopupView:
-  void Show(AutoselectFirstSuggestion autoselect_first_suggestion) override;
+  bool Show(AutoselectFirstSuggestion autoselect_first_suggestion) override;
   void Hide() override;
   absl::optional<int32_t> GetAxUniqueId() override;
   void AxAnnounce(const std::u16string& text) override;

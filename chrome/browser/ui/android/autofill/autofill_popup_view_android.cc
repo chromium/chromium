@@ -48,9 +48,10 @@ AutofillPopupViewAndroid::AutofillPopupViewAndroid(
 
 AutofillPopupViewAndroid::~AutofillPopupViewAndroid() {}
 
-void AutofillPopupViewAndroid::Show(
+bool AutofillPopupViewAndroid::Show(
     AutoselectFirstSuggestion autoselect_first_suggestion) {
   OnSuggestionsChanged();
+  return true;
 }
 
 void AutofillPopupViewAndroid::Hide() {

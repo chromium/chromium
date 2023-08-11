@@ -125,12 +125,16 @@ void PopupViewViews::GetAccessibleNodeData(ui::AXNodeData* node_data) {
       l10n_util::GetStringUTF16(IDS_AUTOFILL_POPUP_ACCESSIBLE_NODE_DATA));
 }
 
-void PopupViewViews::Show(
+bool PopupViewViews::Show(
     AutoselectFirstSuggestion autoselect_first_suggestion) {
   NotifyAccessibilityEvent(ax::mojom::Event::kExpandedChanged, true);
-  if (DoShow() && autoselect_first_suggestion) {
+  if (!DoShow()) {
+    return false;
+  }
+  if (autoselect_first_suggestion) {
     SetSelectedCell(CellIndex{0u, PopupRowView::CellType::kContent});
   }
+  return true;
 }
 
 void PopupViewViews::Hide() {

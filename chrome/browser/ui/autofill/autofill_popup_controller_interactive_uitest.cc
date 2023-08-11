@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <utility>
 
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
@@ -28,6 +29,7 @@
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/vector2d.h"
 
 namespace autofill {
@@ -136,6 +138,21 @@ IN_PROC_BROWSER_TEST_F(AutofillPopupControllerBrowserTest,
   browser()->window()->SetBounds(new_bounds);
 
   autofill_external_delegate_->WaitForPopupHidden();
+  EXPECT_TRUE(autofill_external_delegate_->popup_hidden());
+}
+
+IN_PROC_BROWSER_TEST_F(AutofillPopupControllerBrowserTest,
+                       DoNotShowIfNotEnoughSpace) {
+  constexpr float kSize = 100.0f;
+  // Set to smallest possible size. The actual minimum size is larger and
+  // platform dependent.
+  browser()->window()->SetBounds(gfx::Rect(1, 1));
+  gfx::Rect window_bounds = browser()->window()->GetBounds();
+  // Position the popup in the lower right corner so that there is not enough
+  // space to display it.
+  GenerateTestAutofillPopup(
+      autofill_external_delegate_, /*element_bounds=*/gfx::RectF(
+          window_bounds.x() - kSize, window_bounds.y() - kSize, kSize, kSize));
   EXPECT_TRUE(autofill_external_delegate_->popup_hidden());
 }
 

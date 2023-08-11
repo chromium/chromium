@@ -137,7 +137,7 @@ class MockAutofillPopupView : public AutofillPopupView {
   MockAutofillPopupView& operator=(MockAutofillPopupView&) = delete;
   ~MockAutofillPopupView() override = default;
 
-  MOCK_METHOD(void, Show, (AutoselectFirstSuggestion), (override));
+  MOCK_METHOD(bool, Show, (AutoselectFirstSuggestion), (override));
   MOCK_METHOD(void, Hide, (), (override));
   MOCK_METHOD(bool,
               HandleKeyPressEvent,
