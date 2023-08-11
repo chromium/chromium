@@ -150,10 +150,10 @@ class AppListItemViewPixelTest
   size_t GetRevisionNumber() {
     if (jelly_enabled()) {
       // Revision numbers reset with Jelly.
-      return 2;
+      return 3;
     }
 
-    size_t base_revision_number = 4;
+    size_t base_revision_number = 5;
     if (use_folder_icon_refresh()) {
       ++base_revision_number;
     }
@@ -229,19 +229,19 @@ TEST_P(AppListItemViewPixelTest, AppListFolderItemsLayoutInIcon) {
       // In production, use_folder_icon_refresh() is always enabled when jelly
       // is enabled.
       EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-          GenerateScreenshotName(), /*revision_number=*/1, GetItemViewAt(0),
+          GenerateScreenshotName(), /*revision_number=*/2, GetItemViewAt(0),
           GetItemViewAt(1), GetItemViewAt(2), GetItemViewAt(3),
           GetItemViewAt(4)));
     }
     // jelly_enabled && !use_folder_icon_refresh is deliberately skipped.
   } else if (use_folder_icon_refresh()) {
     EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-        GenerateScreenshotName(), /*revision_number=*/2, GetItemViewAt(0),
+        GenerateScreenshotName(), /*revision_number=*/3, GetItemViewAt(0),
         GetItemViewAt(1), GetItemViewAt(2), GetItemViewAt(3),
         GetItemViewAt(4)));
   } else {
     EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-        GenerateScreenshotName(), /*revision_number=*/1, GetItemViewAt(0),
+        GenerateScreenshotName(), /*revision_number=*/2, GetItemViewAt(0),
         GetItemViewAt(1), GetItemViewAt(2), GetItemViewAt(3)));
   }
 }
@@ -282,7 +282,7 @@ TEST_P(AppListItemViewPixelTest, AppListFolderIconExtendedState) {
   if (jelly_enabled()) {
     if (use_folder_icon_refresh()) {
       EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-          GenerateScreenshotName(), /*revision_number=*/1, GetItemViewAt(0),
+          GenerateScreenshotName(), /*revision_number=*/2, GetItemViewAt(0),
           GetItemViewAt(1), GetItemViewAt(2), GetItemViewAt(3),
           GetItemViewAt(4)));
     }
@@ -290,12 +290,12 @@ TEST_P(AppListItemViewPixelTest, AppListFolderIconExtendedState) {
     // occur in production.
   } else if (use_folder_icon_refresh()) {
     EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-        GenerateScreenshotName(), /*revision_number=*/2, GetItemViewAt(0),
+        GenerateScreenshotName(), /*revision_number=*/3, GetItemViewAt(0),
         GetItemViewAt(1), GetItemViewAt(2), GetItemViewAt(3),
         GetItemViewAt(4)));
   } else {
     EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-        GenerateScreenshotName(), /*revision_number=*/1, GetItemViewAt(0),
+        GenerateScreenshotName(), /*revision_number=*/2, GetItemViewAt(0),
         GetItemViewAt(1), GetItemViewAt(2), GetItemViewAt(3)));
   }
 

@@ -93,7 +93,7 @@ TEST_F(BluetoothDetailedViewImplPixelTest, Basics) {
   // Compare pixels.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "check_view",
-      /*revision_number=*/2, detailed_view));
+      /*revision_number=*/3, detailed_view));
 }
 
 }  // namespace

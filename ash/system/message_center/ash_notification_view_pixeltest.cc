@@ -150,7 +150,7 @@ TEST_P(AshNotificationViewPixelTest, CloseButtonFocused) {
   EXPECT_TRUE(close_button->HasFocus());
   EXPECT_EQ(control_buttons_layer->opacity(), 1);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "close_button_focused", /*revision_number=*/1, notification_view));
+      "close_button_focused", /*revision_number=*/2, notification_view));
 }
 
 TEST_P(AshNotificationViewPixelTest, ExpandButtonDisabledState) {
@@ -242,7 +242,7 @@ TEST_P(AshNotificationViewTitlePixelTest, NotificationTitleTest) {
   // Compare pixels.
   const std::string screenshot_name = GetScreenshotName();
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      screenshot_name, /*revision_number=*/1, notification_view));
+      screenshot_name, /*revision_number=*/2, notification_view));
 }
 
 class ScreenCaptureNotificationPixelTest
@@ -319,7 +319,7 @@ TEST_P(ScreenCaptureNotificationPixelTest, VerifyPopup) {
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       base::StrCat({"screen_capture_popup_notification_",
                     GetDisplayTypeName(GetDisplayType())}),
-      /*revision_number=*/4,
+      /*revision_number=*/5,
       test_api()->GetPopupViewForId(kScreenCaptureNotificationId)));
 }
 

@@ -96,7 +96,7 @@ TEST_F(UnifiedSliderViewPixelTest, DefaultSliderMuted) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "default_slider_muted",
-      /*revision_number=*/1, widget_.get()));
+      /*revision_number=*/2, widget_.get()));
 
   default_slider->RequestFocus();
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
@@ -134,7 +134,7 @@ TEST_F(UnifiedSliderViewPixelTest, RadioActiveSliderMuted) {
   // `QuickSettingsSlider::Style::kRadioActiveMuted`.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "radio_active_slider_muted",
-      /*revision_number=*/1, widget_.get()));
+      /*revision_number=*/2, widget_.get()));
 
   radio_active_slider->RequestFocus();
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
