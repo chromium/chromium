@@ -180,6 +180,11 @@ class DownloadProtectionService {
 
   static std::string GetDownloadPingToken(const download::DownloadItem* item);
 
+  // Whether a DownloadProtectionData is found on the item.
+  static bool HasDownloadProtectionVerdict(const download::DownloadItem* item);
+
+  // Returns ClientDownloadResponse::SAFE by default if no
+  // DownloadProtectionData is found.
   static ClientDownloadResponse::Verdict GetDownloadProtectionVerdict(
       const download::DownloadItem* item);
 

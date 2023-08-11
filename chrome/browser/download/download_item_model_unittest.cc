@@ -43,9 +43,17 @@
 #include "ui/base/ui_base_features.h"
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/enterprise/connectors/connectors_service.h"
+#include "base/strings/pattern.h"
+#include "chrome/test/base/testing_profile.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "ui/views/vector_icons.h"
-#endif
+
+#if BUILDFLAG(FULL_SAFE_BROWSING)
+#include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
+#endif  // BUILDFLAG(FULL_SAFE_BROWSING)
+
+#endif  // BUILDFLAG(IS_ANDROID)
 
 using download::DownloadItem;
 using offline_items_collection::FailState;
@@ -219,6 +227,7 @@ class DownloadItemModelTest : public testing::Test {
   }
 
   Profile* profile() { return profile_; }
+  TestingProfile* testing_profile() { return profile_; }
 
   void SetStatusTextBuilder(bool for_bubble) {
     model_.set_status_text_builder_for_testing(for_bubble);
@@ -1069,6 +1078,177 @@ TEST_F(DownloadItemModelTest, GetBubbleStatusMessageWithBytes) {
   std::vector<int> expected_english = {53, 32, 77, 66, 32, 8226, 32, 65};
   compare_results(english, expected_english);
 }
+
+#if BUILDFLAG(FULL_SAFE_BROWSING)
+// TODO(chlily): Add more tests for kImprovedDownloadBubbleWarnings. At the
+// moment, these only include tests for the file type warnings.
+class DownloadItemModelImprovedDownloadBubbleWarningsTest
+    : public DownloadItemModelTest {
+ public:
+  DownloadItemModelImprovedDownloadBubbleWarningsTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {safe_browsing::kDownloadBubble, safe_browsing::kDownloadBubbleV2,
+         safe_browsing::kImprovedDownloadBubbleWarnings},
+        {});
+  }
+
+  void SetUp() override {
+    DownloadItemModelTest::SetUp();
+    SetupDownloadItemDefaults();
+    SetupCompletedDownloadItem(base::Minutes(30));
+    SetIsBubbleV2Enabled(true);
+    SetStatusTextBuilder(/*for_bubble=*/true);
+  }
+  ~DownloadItemModelImprovedDownloadBubbleWarningsTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Test file type warning where SB is on and verdict was obtained.
+TEST_F(DownloadItemModelImprovedDownloadBubbleWarningsTest,
+       FileTypeWarning_SafeBrowsingOn_HasVerdict) {
+  for (auto sb_state :
+       {safe_browsing::SafeBrowsingState::STANDARD_PROTECTION,
+        safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION}) {
+    SetSafeBrowsingState(profile()->GetPrefs(), sb_state);
+    EXPECT_CALL(item(), GetDangerType())
+        .WillRepeatedly(Return(download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE));
+    safe_browsing::DownloadProtectionService::SetDownloadProtectionData(
+        &item(), "token", safe_browsing::ClientDownloadResponse::DANGEROUS,
+        safe_browsing::ClientDownloadResponse::TailoredVerdict());
+    DownloadUIModel::BubbleUIInfo bubble_ui_info =
+        model().GetBubbleUIInfo(/*is_download_bubble_v2=*/true);
+
+    // Subpage warning
+    EXPECT_TRUE(bubble_ui_info.HasSubpage());
+    EXPECT_TRUE(base::MatchPattern(bubble_ui_info.warning_summary,
+                                   u"*file type isn't commonly downloaded*"));
+    // Suspicious pattern has 2 buttons on the subpage.
+    ASSERT_EQ(bubble_ui_info.subpage_buttons.size(), 2u);
+    // Primary subpage button.
+    EXPECT_EQ(bubble_ui_info.subpage_buttons[0].command,
+              DownloadCommands::DISCARD);
+    EXPECT_EQ(bubble_ui_info.subpage_buttons[0].label, u"Delete from history");
+    // Secondary subpage button. File is described as "suspicious".
+    EXPECT_EQ(bubble_ui_info.subpage_buttons[1].command,
+              DownloadCommands::KEEP);
+    EXPECT_EQ(bubble_ui_info.subpage_buttons[1].label,
+              u"Download suspicious file");
+    // Learn more link.
+    EXPECT_TRUE(bubble_ui_info.learn_more_link.has_value());
+    EXPECT_TRUE(
+        base::MatchPattern(bubble_ui_info.learn_more_link->label_and_link_text,
+                           u"Learn why * blocks some downloads"));
+    // Status text for row view. File is described as suspicious.
+    EXPECT_EQ(model().GetStatusText(), u"Suspicious download blocked");
+  }
+}
+
+// Test file type warning where SB is on but no SB verdict was obtained.
+TEST_F(DownloadItemModelImprovedDownloadBubbleWarningsTest,
+       FileTypeWarning_SafeBrowsingOn_NoVerdict) {
+  for (auto sb_state :
+       {safe_browsing::SafeBrowsingState::STANDARD_PROTECTION,
+        safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION}) {
+    SetSafeBrowsingState(profile()->GetPrefs(), sb_state);
+    EXPECT_CALL(item(), GetDangerType())
+        .WillRepeatedly(Return(download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE));
+    DownloadUIModel::BubbleUIInfo bubble_ui_info =
+        model().GetBubbleUIInfo(/*is_download_bubble_v2=*/true);
+
+    // Subpage warning
+    EXPECT_TRUE(bubble_ui_info.HasSubpage());
+    EXPECT_TRUE(base::MatchPattern(bubble_ui_info.warning_summary,
+                                   u"*file type isn't commonly downloaded*"));
+    // Suspicious pattern has 2 buttons on the subpage.
+    ASSERT_EQ(bubble_ui_info.subpage_buttons.size(), 2u);
+    // Primary subpage button.
+    EXPECT_EQ(bubble_ui_info.subpage_buttons[0].command,
+              DownloadCommands::DISCARD);
+    EXPECT_EQ(bubble_ui_info.subpage_buttons[0].label, u"Delete from history");
+    // Secondary subpage button. File is described as "unverified".
+    EXPECT_EQ(bubble_ui_info.subpage_buttons[1].command,
+              DownloadCommands::KEEP);
+    EXPECT_EQ(bubble_ui_info.subpage_buttons[1].label,
+              u"Download unverified file");
+    // Learn more link.
+    EXPECT_TRUE(bubble_ui_info.learn_more_link.has_value());
+    EXPECT_TRUE(
+        base::MatchPattern(bubble_ui_info.learn_more_link->label_and_link_text,
+                           u"Learn why * blocks some downloads"));
+    // Status text for row view. File is described as unverified.
+    EXPECT_EQ(model().GetStatusText(), u"Unverified download blocked");
+  }
+}
+
+// Test file type warning where SB is disabled by pref and can be turned on.
+TEST_F(DownloadItemModelImprovedDownloadBubbleWarningsTest,
+       FileTypeWarning_NoSafeBrowsing_DisabledByPref) {
+  SetSafeBrowsingState(profile()->GetPrefs(),
+                       safe_browsing::SafeBrowsingState::NO_SAFE_BROWSING);
+  EXPECT_CALL(item(), GetDangerType())
+      .WillRepeatedly(Return(download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE));
+  DownloadUIModel::BubbleUIInfo bubble_ui_info =
+      model().GetBubbleUIInfo(/*is_download_bubble_v2=*/true);
+
+  // Subpage warning
+  EXPECT_TRUE(bubble_ui_info.HasSubpage());
+  EXPECT_TRUE(base::MatchPattern(bubble_ui_info.warning_summary,
+                                 u"*file can't be verified*"));
+  // Suspicious pattern has 2 buttons on the subpage.
+  ASSERT_EQ(bubble_ui_info.subpage_buttons.size(), 2u);
+  // Primary subpage button.
+  EXPECT_EQ(bubble_ui_info.subpage_buttons[0].command,
+            DownloadCommands::DISCARD);
+  EXPECT_EQ(bubble_ui_info.subpage_buttons[0].label, u"Delete from history");
+  // Secondary subpage button. File is described as "unverified".
+  EXPECT_EQ(bubble_ui_info.subpage_buttons[1].command, DownloadCommands::KEEP);
+  EXPECT_EQ(bubble_ui_info.subpage_buttons[1].label,
+            u"Download unverified file");
+  // Learn more link.
+  EXPECT_TRUE(bubble_ui_info.learn_more_link.has_value());
+  EXPECT_TRUE(
+      base::MatchPattern(bubble_ui_info.learn_more_link->label_and_link_text,
+                         u"Turn on Safe Browsing to *"));
+  // Status text for row view. File is described as unverified.
+  EXPECT_EQ(model().GetStatusText(), u"Unverified download blocked");
+}
+
+// Test file type warning where SB is disabled by enterprise controls and cannot
+// be turned on.
+TEST_F(DownloadItemModelImprovedDownloadBubbleWarningsTest,
+       FileTypeWarning_NoSafeBrowsing_DisabledManaged) {
+  SetSafeBrowsingState(profile()->GetPrefs(),
+                       safe_browsing::SafeBrowsingState::NO_SAFE_BROWSING);
+  testing_profile()->GetTestingPrefService()->SetManagedPref(
+      prefs::kSafeBrowsingEnabled, std::make_unique<base::Value>(false));
+  EXPECT_CALL(item(), GetDangerType())
+      .WillRepeatedly(Return(download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE));
+  DownloadUIModel::BubbleUIInfo bubble_ui_info =
+      model().GetBubbleUIInfo(/*is_download_bubble_v2=*/true);
+
+  // Subpage warning
+  EXPECT_TRUE(bubble_ui_info.HasSubpage());
+  EXPECT_TRUE(base::MatchPattern(bubble_ui_info.warning_summary,
+                                 u"*file can't be verified*"));
+  // Suspicious pattern has 2 buttons on the subpage.
+  ASSERT_EQ(bubble_ui_info.subpage_buttons.size(), 2u);
+  // Primary subpage button.
+  EXPECT_EQ(bubble_ui_info.subpage_buttons[0].command,
+            DownloadCommands::DISCARD);
+  EXPECT_EQ(bubble_ui_info.subpage_buttons[0].label, u"Delete from history");
+  // Secondary subpage button. File is described as "unverified".
+  EXPECT_EQ(bubble_ui_info.subpage_buttons[1].command, DownloadCommands::KEEP);
+  EXPECT_EQ(bubble_ui_info.subpage_buttons[1].label,
+            u"Download unverified file");
+  // There is no learn more link because the user cannot turn on SB.
+  EXPECT_FALSE(bubble_ui_info.learn_more_link.has_value());
+  // Status text for row view. File is described as unverified.
+  EXPECT_EQ(model().GetStatusText(), u"Unverified download blocked");
+}
+#endif  // BUILDFLAG(FULL_SAFE_BROWSING)
+
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(DownloadItemModelTest, ShouldShowInShelf) {
@@ -1407,4 +1587,4 @@ TEST_F(DownloadItemModelTailoredWarningDisabledTest,
   EXPECT_FALSE(model().ShouldShowTailoredWarning());
 }
 
-#endif
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)

@@ -2640,6 +2640,7 @@ TEST_F(DownloadProtectionServiceTest, ShowDetailsForDownloadHasContext) {
 TEST_F(DownloadProtectionServiceTest, GetAndSetDownloadProtectionData) {
   NiceMockDownloadItem item;
   EXPECT_TRUE(DownloadProtectionService::GetDownloadPingToken(&item).empty());
+  EXPECT_FALSE(DownloadProtectionService::HasDownloadProtectionVerdict(&item));
   std::string token = "download_ping_token";
   ClientDownloadResponse::Verdict verdict = ClientDownloadResponse::DANGEROUS;
   ClientDownloadResponse::TailoredVerdict tailored_verdict;
@@ -2648,6 +2649,7 @@ TEST_F(DownloadProtectionServiceTest, GetAndSetDownloadProtectionData) {
   DownloadProtectionService::SetDownloadProtectionData(&item, token, verdict,
                                                        tailored_verdict);
   EXPECT_EQ(token, DownloadProtectionService::GetDownloadPingToken(&item));
+  EXPECT_TRUE(DownloadProtectionService::HasDownloadProtectionVerdict(&item));
   EXPECT_EQ(verdict,
             DownloadProtectionService::GetDownloadProtectionVerdict(&item));
   EXPECT_EQ(
@@ -2659,6 +2661,7 @@ TEST_F(DownloadProtectionServiceTest, GetAndSetDownloadProtectionData) {
       &item, std::string(), ClientDownloadResponse::SAFE,
       ClientDownloadResponse::TailoredVerdict());
   EXPECT_TRUE(DownloadProtectionService::GetDownloadPingToken(&item).empty());
+  EXPECT_TRUE(DownloadProtectionService::HasDownloadProtectionVerdict(&item));
   EXPECT_EQ(ClientDownloadResponse::SAFE,
             DownloadProtectionService::GetDownloadProtectionVerdict(&item));
   EXPECT_EQ(
