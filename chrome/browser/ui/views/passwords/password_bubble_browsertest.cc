@@ -14,7 +14,6 @@
 #include "chrome/browser/ui/passwords/manage_passwords_test.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/passwords/password_auto_sign_in_view.h"
-#include "components/password_manager/core/common/password_manager_features.h"
 #include "content/public/test/browser_test.h"
 #include "ui/views/test/ax_event_counter.h"
 
@@ -117,29 +116,6 @@ IN_PROC_BROWSER_TEST_P(PasswordBubbleBrowserTest, AlertAccessibleEvent) {
   EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kAlert));
 }
 
-class PasswordRevampedManagementBubbleBrowserTest
-    : public PasswordBubbleBrowserTest {
- public:
-  ~PasswordRevampedManagementBubbleBrowserTest() override = default;
-  void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        password_manager::features::kRevampedPasswordManagementBubble);
-    PasswordBubbleBrowserTest::SetUp();
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_P(PasswordRevampedManagementBubbleBrowserTest,
-                       InvokeUi_ManagePasswordBubbleWithRevampedDesign) {
-  ShowAndVerifyUi();
-}
-
 INSTANTIATE_TEST_SUITE_P(All,
                          PasswordBubbleBrowserTest,
-                         testing::Combine(testing::Bool(), testing::Bool()));
-
-INSTANTIATE_TEST_SUITE_P(,
-                         PasswordRevampedManagementBubbleBrowserTest,
                          testing::Combine(testing::Bool(), testing::Bool()));

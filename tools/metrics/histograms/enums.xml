@@ -63009,7 +63009,6 @@ from previous Chrome versions.
   <int value="-468657548" label="ReduceGpuPriorityOnBackground:enabled"/>
   <int value="-467792766" label="ReengagementNotification:enabled"/>
   <int value="-466704882" label="webview-log-js-console-messages"/>
-  <int value="-466665702" label="RevampedPasswordManagementBubble:disabled"/>
   <int value="-466164593"
       label="CacheControlNoStoreEnterBackForwardCache:disabled"/>
   <int value="-465429170" label="BackGestureRefactorActivityAndroid:enabled"/>
@@ -63363,7 +63362,6 @@ from previous Chrome versions.
   <int value="-284279318" label="LacrosMoveProfileMigration:enabled"/>
   <int value="-283706169" label="ArcInstantResponseWindowOpen:enabled"/>
   <int value="-283388027" label="ManualFallbacksFilling:disabled"/>
-  <int value="-283220112" label="RevampedPasswordManagementBubble:enabled"/>
   <int value="-283079109" label="TouchToFillPasswordSubmission:enabled"/>
   <int value="-283024110" label="WebXRPlaneDetection:disabled"/>
   <int value="-282770689"

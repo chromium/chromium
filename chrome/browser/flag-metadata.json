@@ -7028,11 +7028,6 @@
     "expiry_milestone": 96
   },
   {
-    "name": "revamped-password-management-bubble",
-    "owners": [ "mamir", "derinel@google.com" ],
-    "expiry_milestone": 117
-  },
-  {
     "name": "rounded-display",
     "owners": [
       "zoraiznaeem",

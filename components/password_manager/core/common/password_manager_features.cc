@@ -93,14 +93,6 @@ BASE_FEATURE(kRecoverFromNeverSaveAndroid,
              "RecoverFromNeverSaveAndroid_LAUNCHED",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-// Enables a revamped version of the password management bubble triggered by
-// manually clicking on the key icon in the omnibox.
-BASE_FEATURE(kRevampedPasswordManagementBubble,
-             "RevampedPasswordManagementBubble",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 // Displays at least the decryptable and never saved logins in the password
 // manager
