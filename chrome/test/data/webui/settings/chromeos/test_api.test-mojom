@@ -39,6 +39,9 @@ interface LockScreenSettings {
   // control.
   AssertRecoveryConfigured(bool is_configured) => ();
 
+  // Checks wheter a control for recovery is focused or not.
+  AssertRecoveryControlFocused() => ();
+
   // Enables the cryptohome recovery configuration.
   // Crashes if it is already on or after a click on the recovery toggle
   // the recovery is still disabled.

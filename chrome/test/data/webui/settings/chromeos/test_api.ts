@@ -163,6 +163,13 @@ export class LockScreenSettings implements LockScreenSettingsInterface {
     await assertForDuration(property);
   }
 
+  async assertRecoveryControlFocused(): Promise<void> {
+    const toggle = await retryUntilSome(() => this.recoveryToggle());
+    const isFocused = () => toggle.contains(this.shadowRoot().activeElement);
+    await assertAsync(isFocused);
+    await assertForDuration(isFocused);
+  }
+
   async assertRecoveryConfigured(isConfigured: boolean): Promise<void> {
     const property = () => {
       const toggle = this.recoveryToggle();

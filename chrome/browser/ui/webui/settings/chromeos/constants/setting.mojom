@@ -220,6 +220,7 @@ enum Setting {
   kGeolocationOnOff = 1118,
   kLockScreenNotification = 1119,
   kSpeakOnMuteDetectionOnOff = 1120,
+  kDataRecovery = 1121,
 
   // Languages and Input section.
   kAddLanguage = 1200,

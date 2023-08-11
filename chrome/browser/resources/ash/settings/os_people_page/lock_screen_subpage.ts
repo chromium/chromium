@@ -168,6 +168,7 @@ export class SettingsLockScreenElement extends SettingsLockScreenElementBase {
           Setting.kLockScreenV2,
           Setting.kChangeAuthPinV2,
           Setting.kLockScreenNotification,
+          Setting.kDataRecovery,
         ]),
       },
     };
