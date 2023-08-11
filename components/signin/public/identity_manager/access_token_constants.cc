@@ -83,7 +83,6 @@ const std::set<std::string> GetUnconsentedOAuth2Scopes() {
       GaiaConstants::kCalendarReadOnlyOAuth2Scope,
       GaiaConstants::kCastBackdropOAuth2Scope,
       GaiaConstants::kClearCutOAuth2Scope,
-      GaiaConstants::kCloudTranslationOAuth2Scope,
       GaiaConstants::kDriveOAuth2Scope,
       GaiaConstants::kDriveReadOnlyOAuth2Scope,
       GaiaConstants::kExperimentsAndConfigsOAuth2Scope,

@@ -44,7 +44,6 @@ COMPONENT_EXPORT(GOOGLE_APIS) extern const char kFCMOAuthScope[];
 COMPONENT_EXPORT(GOOGLE_APIS) extern const char kTachyonOAuthScope[];
 COMPONENT_EXPORT(GOOGLE_APIS) extern const char kPhotosOAuth2Scope[];
 COMPONENT_EXPORT(GOOGLE_APIS) extern const char kCastBackdropOAuth2Scope[];
-COMPONENT_EXPORT(GOOGLE_APIS) extern const char kCloudTranslationOAuth2Scope[];
 COMPONENT_EXPORT(GOOGLE_APIS)
 extern const char kPasswordsLeakCheckOAuth2Scope[];
 COMPONENT_EXPORT(GOOGLE_APIS)
