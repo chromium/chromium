@@ -30,6 +30,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkRowProperties.ImageVisibility;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenuButtonDelegate;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -84,6 +85,8 @@ public class ImprovedBookmarkRowTest {
                          .with(ImprovedBookmarkRowProperties.ROW_CLICK_LISTENER,
                                  (v) -> { mOpenBookmarkCallback.run(); })
                          .with(ImprovedBookmarkRowProperties.EDITABLE, true)
+                         .with(ImprovedBookmarkRowProperties.END_IMAGE_VISIBILITY,
+                                 ImageVisibility.MENU)
                          .build();
 
         PropertyModelChangeProcessor.create(
@@ -161,6 +164,23 @@ public class ImprovedBookmarkRowTest {
         // Setting the delegate shouldn't affect visibility.
         Assert.assertEquals(
                 visibility, mImprovedBookmarkRow.findViewById(R.id.more).getVisibility());
+    }
+
+    @Test
+    public void testNotEditableButMenuVisibility() {
+        mModel.set(ImprovedBookmarkRowProperties.END_IMAGE_VISIBILITY, ImageVisibility.MENU);
+        mModel.set(ImprovedBookmarkRowProperties.EDITABLE, false);
+        Assert.assertEquals(
+                View.GONE, mImprovedBookmarkRow.findViewById(R.id.more).getVisibility());
+    }
+
+    @Test
+    public void testEndImageVisibility() {
+        mModel.set(ImprovedBookmarkRowProperties.END_IMAGE_VISIBILITY, ImageVisibility.DRAWABLE);
+        Assert.assertEquals(
+                View.GONE, mImprovedBookmarkRow.findViewById(R.id.more).getVisibility());
+        Assert.assertEquals(
+                View.VISIBLE, mImprovedBookmarkRow.findViewById(R.id.end_image).getVisibility());
     }
 
     @Test
