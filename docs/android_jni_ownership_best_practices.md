@@ -27,7 +27,7 @@ C++ instance.
 
 ### [Option #2] C++ owns the Java counterpart
 For C++ objects, utilizing the appropriate smart java references
-([link](/base/android/jni_generator/README.md#java-objects-and-garbage-collection),
+([link](/third_party/jni_zero/README.md#java-objects-and-garbage-collection),
 [code ref](/base/android/scoped_java_ref.h)) will ensure corresponding Java
 objects can be garbage collected. But if the Java object requires cleaning up
 dependencies, the C++ object should call a corresponding teardown method on the

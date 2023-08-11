@@ -15,7 +15,7 @@
   - **writing tests**
     - [... write an instrumentation test?](/testing/android/docs/instrumentation.md)
     - [... write a JUnit or Robolectric test?](/testing/android/docs/junit.md)
-    - [... write a test that needs to mock native calls?](/base/android/jni_generator/README.md#testing-mockable-natives)
+    - [... write a test that needs to mock native calls?](/third_party/jni_zero/README.md#testing-mockable-natives)
   - **running tests**
     - [... run a gtest?](/testing/android/docs/android_test_instructions.md#gtests)
     - [... run an instrumentation test?](/testing/android/docs/android_test_instructions.md#instrumentation-tests)
