@@ -36,6 +36,7 @@
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/cros_healthd_sampler_handlers/cros_healthd_psr_sampler_handler.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/cros_healthd_sampler_handlers/cros_healthd_sampler_handler.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/device_activity/device_activity_sampler.h"
+#include "chrome/browser/ash/policy/reporting/metrics_reporting/fatal_crash/fatal_crash_events_observer.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/metric_reporting_prefs.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/network/https_latency_event_detector.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/network/https_latency_sampler.h"
@@ -302,6 +303,7 @@ void MetricReportingManager::DelayedInit() {
 
   InitBootPerformanceCollector();
   InitRuntimeCountersCollectors();
+  InitFatalCrashCollectors();
 
   initial_upload_timer_.Start(FROM_HERE, GetUploadDelay(), this,
                               &MetricReportingManager::UploadTelemetry);
@@ -618,6 +620,16 @@ void MetricReportingManager::InitRuntimeCountersCollectors() {
           metrics::kDefaultRuntimeCountersTelemetryCollectionRate),
       /*rate_unit_to_ms=*/1, delegate_->GetInitDelay());
   samplers_.push_back(std::move(psr_telemetry_sampler));
+}
+
+void MetricReportingManager::InitFatalCrashCollectors() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  event_observer_managers_.emplace_back(delegate_->CreateEventObserverManager(
+      std::make_unique<FatalCrashEventsObserver>(),
+      telemetry_report_queue_.get(), &reporting_settings_,
+      ash::kReportDeviceCrashReportInfo,
+      metrics::kReportDeviceCrashReportInfoDefaultValue,
+      /*collector_pool=*/this));
 }
 
 void MetricReportingManager::InitPeripheralsCollectors() {

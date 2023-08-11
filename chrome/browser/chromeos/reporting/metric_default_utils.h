@@ -94,6 +94,9 @@ constexpr bool kReportDeviceGraphicsStatusDefaultValue = false;
 // Default value for reporting device app info and usage.
 constexpr bool kReportDeviceAppInfoDefaultValue = false;
 
+// Default value for reporting fatal crashes.
+constexpr bool kReportDeviceCrashReportInfoDefaultValue = false;
+
 // Returns the default report upload frequency for the current environment.
 const base::TimeDelta GetDefaultReportUploadFrequency();
 

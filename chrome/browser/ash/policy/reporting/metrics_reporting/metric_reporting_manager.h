@@ -267,6 +267,8 @@ class MetricReportingManager : public policy::ManagedSessionService::Observer,
 
   void InitBootPerformanceCollector();
 
+  void InitFatalCrashCollectors();
+
   void InitPeripheralsCollectors();
 
   void InitRuntimeCountersCollectors();
