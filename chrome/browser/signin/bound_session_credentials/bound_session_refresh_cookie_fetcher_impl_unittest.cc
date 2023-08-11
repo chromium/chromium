@@ -8,10 +8,13 @@
 #include <string>
 
 #include "base/base64url.h"
+#include "base/containers/span.h"
 #include "base/json/json_reader.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_test_cookie_manager.h"
 #include "chrome/browser/signin/bound_session_credentials/session_binding_helper.h"
 #include "components/signin/public/base/session_binding_test_utils.h"
@@ -31,6 +34,7 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "services/network/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 using RefreshTestFuture =
@@ -39,6 +43,9 @@ using unexportable_keys::BackgroundTaskPriority;
 using unexportable_keys::ServiceErrorOr;
 using unexportable_keys::UnexportableKeyId;
 using unexportable_keys::UnexportableKeyService;
+
+constexpr char kSessionId[] = "session_id";
+constexpr char kChallenge[] = "dummy-challenge";
 
 UnexportableKeyId GenerateNewKey(
     UnexportableKeyService& unexportable_key_service) {
@@ -73,6 +80,19 @@ std::string GetChallengeFromJwt(std::string_view jwt) {
   std::string* challenge = payload_dict->FindString("jti");
   return challenge ? *challenge : std::string();
 }
+
+std::string CreateChallengeHeaderValue(const std::string& encoded_challenge) {
+  return base::StringPrintf("session-id=%s; challenge=%s", kSessionId,
+                            encoded_challenge.c_str());
+}
+
+// Use `kChallenge` as challenge for the header.
+std::string CreateValidChallengeHeaderValue() {
+  std::string encoded_challenge;
+  base::Base64UrlEncode(kChallenge, base::Base64UrlEncodePolicy::OMIT_PADDING,
+                        &encoded_challenge);
+  return CreateChallengeHeaderValue(encoded_challenge);
+}
 }  // namespace
 
 class BoundSessionRefreshCookieFetcherImplTest : public ::testing::Test {
@@ -94,7 +114,6 @@ class BoundSessionRefreshCookieFetcherImplTest : public ::testing::Test {
   const GURL kGairaUrl = GURL("https://google.com/");
   const std::string k1PSIDTSCookieName = "__Secure-1PSIDTS";
   const std::string k3PSIDTSCookieName = "__Secure-3PSIDTS";
-  const std::string kSessionId = "session_id";
 
   void UpdateCookieList(
       const base::flat_set<std::string>& excluded_cookies = {}) {
@@ -125,14 +144,15 @@ class BoundSessionRefreshCookieFetcherImplTest : public ::testing::Test {
     return reported_cookies;
   }
 
-  void SimulateChallengeRequired() {
+  void SimulateChallengeRequired(const std::string& challenge_header) {
     EXPECT_EQ(test_url_loader_factory_.NumPending(), 1);
     network::TestURLLoaderFactory::PendingRequest* pending_request =
         test_url_loader_factory_.GetPendingRequest(0);
     network::URLLoaderCompletionStatus ok_completion_status(net::OK);
     auto response = network::CreateURLResponseHead(net::HTTP_UNAUTHORIZED);
+
     response->headers->AddHeader("Sec-Session-Google-Challenge",
-                                 "DummyChallenge");
+                                 challenge_header);
     EXPECT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
         pending_request->request.url, ok_completion_status, std::move(response),
         ""));
@@ -356,7 +376,7 @@ TEST_F(BoundSessionRefreshCookieFetcherImplTest, ChallengeRequired) {
   RefreshTestFuture future;
   fetcher_->Start(future.GetCallback());
 
-  SimulateChallengeRequired();
+  SimulateChallengeRequired(CreateValidChallengeHeaderValue());
   task_environment_.RunUntilIdle();
   EXPECT_FALSE(future.IsReady());
   EXPECT_EQ(test_url_loader_factory_.NumPending(), 1);
@@ -369,7 +389,7 @@ TEST_F(BoundSessionRefreshCookieFetcherImplTest, ChallengeRequired) {
   EXPECT_TRUE(signin::VerifyJwtSignature(
       assertion, *unexportable_key_service_.GetAlgorithm(binding_key_id_),
       *unexportable_key_service_.GetSubjectPublicKeyInfo(binding_key_id_)));
-  EXPECT_EQ(GetChallengeFromJwt(assertion), "DummyChallenge");
+  EXPECT_EQ(GetChallengeFromJwt(assertion), kChallenge);
 
   // Set required cookies and complete the request.
   SimulateOnCookiesAccessed(network::mojom::CookieAccessDetails::Type::kChange);
@@ -380,6 +400,48 @@ TEST_F(BoundSessionRefreshCookieFetcherImplTest, ChallengeRequired) {
   EXPECT_EQ(future.Get(), BoundSessionRefreshCookieFetcher::Result::kSuccess);
 }
 
+TEST_F(BoundSessionRefreshCookieFetcherImplTest,
+       ChallengeRequiredDecodingFailed) {
+  ASSERT_FALSE(wait_for_network_callback_helper_.AreNetworkCallsDelayed());
+  RefreshTestFuture future;
+  fetcher_->Start(future.GetCallback());
+
+  // Encoded challenge with characters not in the base64 alphabet.
+  SimulateChallengeRequired(CreateChallengeHeaderValue("aGVsbG8/d29ybGQ"));
+  EXPECT_EQ(future.Get(), BoundSessionRefreshCookieFetcher::Result::
+                              kChallengeRequiredUnexpectedFormat);
+}
+
+TEST_F(BoundSessionRefreshCookieFetcherImplTest,
+       BadChallengeHeaderFormatEmpty) {
+  ASSERT_FALSE(wait_for_network_callback_helper_.AreNetworkCallsDelayed());
+  RefreshTestFuture future;
+  fetcher_->Start(future.GetCallback());
+  SimulateChallengeRequired("");
+  EXPECT_EQ(future.Get(), BoundSessionRefreshCookieFetcher::Result::
+                              kChallengeRequiredUnexpectedFormat);
+}
+
+TEST_F(BoundSessionRefreshCookieFetcherImplTest,
+       BadChallengeHeaderFormatChallengeMissing) {
+  ASSERT_FALSE(wait_for_network_callback_helper_.AreNetworkCallsDelayed());
+  RefreshTestFuture future;
+  fetcher_->Start(future.GetCallback());
+  SimulateChallengeRequired("session_id=12345;");
+  EXPECT_EQ(future.Get(), BoundSessionRefreshCookieFetcher::Result::
+                              kChallengeRequiredUnexpectedFormat);
+}
+
+TEST_F(BoundSessionRefreshCookieFetcherImplTest,
+       BadChallengeHeaderFormatChallengeFieldEmpty) {
+  ASSERT_FALSE(wait_for_network_callback_helper_.AreNetworkCallsDelayed());
+  RefreshTestFuture future;
+  fetcher_->Start(future.GetCallback());
+  SimulateChallengeRequired(CreateChallengeHeaderValue(""));
+  EXPECT_EQ(future.Get(), BoundSessionRefreshCookieFetcher::Result::
+                              kChallengeRequiredUnexpectedFormat);
+}
+
 TEST_F(BoundSessionRefreshCookieFetcherImplTest, AssertionAlreadyRequested) {
   ASSERT_FALSE(wait_for_network_callback_helper_.AreNetworkCallsDelayed());
   RefreshTestFuture future;
@@ -387,13 +449,13 @@ TEST_F(BoundSessionRefreshCookieFetcherImplTest, AssertionAlreadyRequested) {
 
   size_t assertion_requests = 0;
   while (assertion_requests < 2) {
-    SimulateChallengeRequired();
+    SimulateChallengeRequired(CreateValidChallengeHeaderValue());
     task_environment_.RunUntilIdle();
     assertion_requests++;
     EXPECT_EQ(future.IsReady(), assertion_requests > 1);
   }
-  EXPECT_EQ(future.Get(),
-            BoundSessionRefreshCookieFetcher::Result::kServerPersistentError);
+  EXPECT_EQ(future.Get(), BoundSessionRefreshCookieFetcher::Result::
+                              kChallengeRequiredUnexpectedFormat);
 }
 
 TEST_F(BoundSessionRefreshCookieFetcherImplTest, SignChallengeFailed) {
@@ -410,7 +472,7 @@ TEST_F(BoundSessionRefreshCookieFetcherImplTest, SignChallengeFailed) {
   RefreshTestFuture future;
   fetcher_->Start(future.GetCallback());
 
-  SimulateChallengeRequired();
+  SimulateChallengeRequired(CreateValidChallengeHeaderValue());
   EXPECT_EQ(future.Get(),
             BoundSessionRefreshCookieFetcher::Result::kSignChallengeFailed);
 }
@@ -475,4 +537,23 @@ TEST_F(BoundSessionRefreshCookieFetcherImplTest, OnCookiesAccessedChange) {
   SimulateOnCookiesAccessed(network::mojom::CookieAccessDetails::Type::kChange);
   EXPECT_TRUE(reported_cookies_notified());
   EXPECT_TRUE(expected_cookies_set());
+}
+
+TEST(BoundSessionRefreshCookieFetcherImplParsechallengeHeaderTest,
+     ParseChallengeHeader) {
+  // Empty header.
+  EXPECT_EQ(BoundSessionRefreshCookieFetcherImpl::ParseChallengeHeader(""), "");
+  EXPECT_EQ(BoundSessionRefreshCookieFetcherImpl::ParseChallengeHeader("xyz"),
+            "");
+  // Decoding failed.
+  EXPECT_EQ(BoundSessionRefreshCookieFetcherImpl::ParseChallengeHeader(
+                CreateChallengeHeaderValue("aGVsbG8/d29ybGQ")),
+            "");
+  // Empty challenge field.
+  EXPECT_EQ(BoundSessionRefreshCookieFetcherImpl::ParseChallengeHeader(
+                CreateChallengeHeaderValue("")),
+            "");
+  EXPECT_EQ(BoundSessionRefreshCookieFetcherImpl::ParseChallengeHeader(
+                CreateValidChallengeHeaderValue()),
+            kChallenge);
 }
