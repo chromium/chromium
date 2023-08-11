@@ -687,6 +687,7 @@ TEST(PNGCodec, DecodeInterlacedRGBtoSkBitmap) {
   SkBitmap decoded_bitmap;
   ASSERT_TRUE(PNGCodec::Decode(&encoded.front(), encoded.size(),
                                &decoded_bitmap));
+  EXPECT_EQ(decoded_bitmap.alphaType(), kOpaque_SkAlphaType);
 
   for (int x = 0; x < w; x++) {
     for (int y = 0; y < h; y++) {
@@ -696,17 +697,20 @@ TEST(PNGCodec, DecodeInterlacedRGBtoSkBitmap) {
                                                       original_pixel[1],
                                                       original_pixel[2]);
       const uint32_t decoded_pixel = decoded_bitmap.getAddr32(0, y)[x];
-      EXPECT_EQ(original_pixel_sk, decoded_pixel);
+      ASSERT_EQ(original_pixel_sk, decoded_pixel)
+          << "; original_pixel_sk = " << std::hex << std::setw(8)
+          << original_pixel_sk << "; decoded_pixel = " << std::hex
+          << std::setw(8) << decoded_pixel;
     }
   }
 }
 
-TEST(PNGCodec, DecodeInterlacedRGBAtoSkBitmap) {
+void DecodeInterlacedRGBAtoSkBitmap(bool use_transparency) {
   const int w = 20, h = 20;
 
   // create an image with known values
   std::vector<unsigned char> original;
-  MakeRGBAImage(w, h, false, &original);
+  MakeRGBAImage(w, h, use_transparency, &original);
 
   // encode
   std::vector<unsigned char> encoded;
@@ -720,18 +724,39 @@ TEST(PNGCodec, DecodeInterlacedRGBAtoSkBitmap) {
   SkBitmap decoded_bitmap;
   ASSERT_TRUE(PNGCodec::Decode(&encoded.front(), encoded.size(),
                                &decoded_bitmap));
+  EXPECT_EQ(decoded_bitmap.alphaType(),
+            use_transparency ? kPremul_SkAlphaType : kOpaque_SkAlphaType);
 
   for (int x = 0; x < w; x++) {
     for (int y = 0; y < h; y++) {
-      const unsigned char* original_pixel = &original[(y * w + x) * 4];
-      const uint32_t original_pixel_sk = SkPackARGB32(original_pixel[3],
-                                                      original_pixel[0],
-                                                      original_pixel[1],
-                                                      original_pixel[2]);
+      uint32_t expected_pixel_sk = 0;
+      {
+        const unsigned char* original_pixel = &original[(y * w + x) * 4];
+        const uint8_t alpha = original_pixel[3];
+        const uint8_t red = original_pixel[0];
+        const uint8_t green = original_pixel[1];
+        const uint8_t blue = original_pixel[2];
+        if (alpha == 255) {
+          expected_pixel_sk = SkPackARGB32(alpha, red, green, blue);
+        } else {
+          expected_pixel_sk = SkPreMultiplyARGB(alpha, red, green, blue);
+        }
+      }
       const uint32_t decoded_pixel = decoded_bitmap.getAddr32(0, y)[x];
-      EXPECT_EQ(original_pixel_sk, decoded_pixel);
+      ASSERT_EQ(expected_pixel_sk, decoded_pixel)
+          << "; expected_pixel_sk = " << std::hex << std::setw(8)
+          << expected_pixel_sk << "; decoded_pixel = " << std::hex
+          << std::setw(8) << decoded_pixel;
     }
   }
+}
+
+TEST(PNGCodec, DecodeInterlacedRGBAtoSkBitmap_Opaque) {
+  DecodeInterlacedRGBAtoSkBitmap(/*use_transparency=*/false);
+}
+
+TEST(PNGCodec, DecodeInterlacedRGBAtoSkBitmap_Transparent) {
+  DecodeInterlacedRGBAtoSkBitmap(/*use_transparency=*/true);
 }
 
 // Test that corrupted data decompression causes failures.
@@ -803,7 +828,9 @@ TEST(PNGCodec, EncodeBGRASkBitmapStridePadded) {
     for (int y = 0; y < kHeight; y++) {
       uint32_t original_pixel = original_bitmap.getAddr32(0, y)[x];
       uint32_t decoded_pixel = decoded_bitmap.getAddr32(0, y)[x];
-      EXPECT_TRUE(ColorsClose(original_pixel, decoded_pixel));
+      ASSERT_TRUE(ColorsClose(original_pixel, decoded_pixel))
+          << "; original_pixel = " << std::hex << std::setw(8) << original_pixel
+          << "; decoded_pixel = " << std::hex << std::setw(8) << decoded_pixel;
     }
   }
 }
@@ -830,7 +857,9 @@ TEST(PNGCodec, EncodeBGRASkBitmap) {
     for (int y = 0; y < h; y++) {
       uint32_t original_pixel = original_bitmap.getAddr32(0, y)[x];
       uint32_t decoded_pixel = decoded_bitmap.getAddr32(0, y)[x];
-      EXPECT_TRUE(ColorsClose(original_pixel, decoded_pixel));
+      ASSERT_TRUE(ColorsClose(original_pixel, decoded_pixel))
+          << "; original_pixel = " << std::hex << std::setw(8) << original_pixel
+          << "; decoded_pixel = " << std::hex << std::setw(8) << decoded_pixel;
     }
   }
 }
