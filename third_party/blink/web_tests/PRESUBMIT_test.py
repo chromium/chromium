@@ -5,6 +5,7 @@
 
 import fnmatch
 import functools
+import json
 import unittest
 import sys
 import os
@@ -135,6 +136,64 @@ class PresubmitTest(unittest.TestCase):
 
         self.assertEqual(1, len(messages))
         self.assertEqual("warning", messages[0].type)
+
+    def testIgnoreUnchangedOrOwnedVirtualSuites(self):
+        old_suites = [
+            'ignore this comment',
+            {
+                'prefix': 'existing-ownerless-suite',
+                'expires': 'Jan 1, 3000',
+            },
+        ]
+        new_suites = [
+            'ignore this comment',
+            {
+                'prefix': 'existing-ownerless-suite',
+                'expires': 'Jan 1, 3000',
+            },
+            {
+                'prefix': 'new-owned-suite',
+                'owners': ['someone@chromium.org'],
+                'expires': 'Jan 1, 3000',
+            },
+        ]
+        mock_vts_config = MockAffectedFile(
+            '/chromium/src/third_party/blink/web_tests/VirtualTestSuites',
+            json.dumps(new_suites), json.dumps(old_suites))
+        input_api = MockInputApi()
+        input_api.os_path = posixpath
+        input_api.presubmit_local_path = '/chromium/src/third_party/blink/web_tests'
+        input_api.files = [mock_vts_config]
+        messages = PRESUBMIT._CheckNewVirtualSuitesForOwners(
+            input_api, MockOutputApi())
+        self.assertEqual(messages, [])
+
+    def testCheckForNewOwnerlessVirtualSuites(self):
+        old_suites = []
+        new_suites = [
+            {
+                'prefix': 'new-temporary-suite',
+                'expires': 'Jan 1, 3000',
+            },
+            {
+                'prefix': 'new-permanent-suite',
+                'expires': 'never',
+            },
+        ]
+        mock_vts_config = MockAffectedFile(
+            '/chromium/src/third_party/blink/web_tests/VirtualTestSuites',
+            json.dumps(new_suites), json.dumps(old_suites))
+        input_api = MockInputApi()
+        input_api.os_path = posixpath
+        input_api.presubmit_local_path = '/chromium/src/third_party/blink/web_tests'
+        input_api.files = [mock_vts_config]
+        messages = PRESUBMIT._CheckNewVirtualSuitesForOwners(
+            input_api, MockOutputApi())
+        self.assertEqual(1, len(messages))
+        self.assertEqual('warning', messages[0].type)
+        self.assertRegex(messages[0].message, 'Consider specifying "owners"')
+        self.assertEqual(['new-temporary-suite', 'new-permanent-suite'],
+                         messages[0].items)
 
 
 if __name__ == "__main__":
