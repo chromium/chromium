@@ -24,8 +24,8 @@ std::unique_ptr<AddressComponent> CreateAddressComponentModel(
 
 // Returns the formatting expression corresponding to the provided parameters.
 // If the expression can't be found, an empty string is returned.
-std::u16string_view GetFormattingExpression(ServerFieldType field_type,
-                                            std::string_view country_code);
+std::u16string GetFormattingExpression(ServerFieldType field_type,
+                                       std::string_view country_code);
 
 }  // namespace autofill::i18n_model_definition
 

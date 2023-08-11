@@ -4,6 +4,8 @@
 
 #include "components/autofill/core/browser/data_model/autofill_i18n_api.h"
 
+#include <string>
+
 #include "base/containers/flat_map.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
@@ -11,6 +13,7 @@
 #include "components/autofill/core/browser/data_model/autofill_i18n_formatting_expressions.h"
 #include "components/autofill/core/browser/data_model/autofill_i18n_hierarchies.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address.h"
+#include "components/autofill/core/browser/data_model/autofill_structured_address_format_provider.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_name.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_utils.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -94,10 +97,16 @@ std::unique_ptr<AddressComponent> CreateAddressComponentModel(
   return result;
 }
 
-std::u16string_view GetFormattingExpression(ServerFieldType field_type,
-                                            std::string_view country_code) {
-  auto* it = kAutofillFormattingRulesMap.find({country_code, field_type});
-  return it != kAutofillFormattingRulesMap.end() ? it->second : u"";
+std::u16string GetFormattingExpression(ServerFieldType field_type,
+                                       std::string_view country_code) {
+  if (auto* it = kAutofillFormattingRulesMap.find({country_code, field_type});
+      it != kAutofillFormattingRulesMap.end()) {
+    return std::u16string(it->second);
+  }
+  // TODO(crbug/1464568): Add new address format rules that override all the
+  // legacy ones.
+  return StructuredAddressesFormatProvider::GetInstance()->GetPattern(
+      field_type, country_code);
 }
 
 }  // namespace autofill::i18n_model_definition

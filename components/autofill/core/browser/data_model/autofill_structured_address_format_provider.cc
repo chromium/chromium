@@ -4,6 +4,8 @@
 
 #include "components/autofill/core/browser/data_model/autofill_structured_address_format_provider.h"
 
+#include <string>
+
 #include "base/containers/fixed_flat_map.h"
 #include "base/no_destructor.h"
 
@@ -11,9 +13,9 @@ namespace autofill {
 
 namespace {
 
-std::u16string GetHomeStreetAddressPattern(const std::string& country_code) {
+std::u16string GetHomeStreetAddressPattern(std::string_view country_code) {
   static constexpr auto kHomeStreetAddressCountryMap = base::MakeFixedFlatMap<
-      base::StringPiece, base::StringPiece16>(
+      std::string_view, std::u16string_view>(
       {{"BR",
         u"${ADDRESS_HOME_STREET_NAME}${ADDRESS_HOME_HOUSE_NUMBER;, }"
         u"${ADDRESS_HOME_FLOOR;, ;º andar}${ADDRESS_HOME_APT_NUM;, apto ;}"},
@@ -28,8 +30,8 @@ std::u16string GetHomeStreetAddressPattern(const std::string& country_code) {
         u"${ADDRESS_HOME_STREET_NAME} ${ADDRESS_HOME_HOUSE_NUMBER}"
         u"${ADDRESS_HOME_FLOOR;, ;º}${ADDRESS_HOME_APT_NUM;, ;ª}"}});
 
-  auto* it = kHomeStreetAddressCountryMap.find(country_code);
-  if (it != kHomeStreetAddressCountryMap.end()) {
+  if (auto* it = kHomeStreetAddressCountryMap.find(country_code);
+      it != kHomeStreetAddressCountryMap.end()) {
     return std::u16string(it->second);
   }
 
@@ -60,7 +62,7 @@ StructuredAddressesFormatProvider::GetInstance() {
 
 std::u16string StructuredAddressesFormatProvider::GetPattern(
     ServerFieldType type,
-    const std::string& country_code,
+    std::string_view country_code,
     const ContextInfo& info) const {
   switch (type) {
     case ADDRESS_HOME_STREET_ADDRESS:
