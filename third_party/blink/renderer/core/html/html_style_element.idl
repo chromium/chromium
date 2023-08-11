@@ -32,5 +32,5 @@
     readonly attribute StyleSheet? sheet;
 
     // https://html.spec.whatwg.org/multipage/semantics.html#dom-style-blocking
-    [RuntimeEnabled=BlockingAttribute, SameObject, PutForwards=value] readonly attribute DOMTokenList blocking;
+    [SameObject, PutForwards=value] readonly attribute DOMTokenList blocking;
 };

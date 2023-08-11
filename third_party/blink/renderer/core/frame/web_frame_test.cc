@@ -14454,8 +14454,6 @@ TEST_F(WebFrameTest, FrameOwnerColorScheme) {
 }
 
 TEST_F(WebFrameSimTest, RenderBlockingPromotesResource) {
-  ScopedBlockingAttributeForTest enabled_scope(true);
-
   SimRequest main_request("https://example.com/", "text/html");
   SimSubresourceRequest script_request("https://example.com/script.js",
                                        "text/javascript");

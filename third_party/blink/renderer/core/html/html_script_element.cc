@@ -103,8 +103,7 @@ void HTMLScriptElement::ParseAttribute(
     // Hints is count usage upon parsing. Processing the value happens when the
     // element loads.
     UseCounter::Count(GetDocument(), WebFeature::kPriorityHints);
-  } else if (params.name == html_names::kBlockingAttr &&
-             RuntimeEnabledFeatures::BlockingAttributeEnabled()) {
+  } else if (params.name == html_names::kBlockingAttr) {
     blocking_attribute_->DidUpdateAttributeValue(params.old_value,
                                                  params.new_value);
     blocking_attribute_->CountTokenUsage();

@@ -56,5 +56,5 @@
     [Reflect] attribute DOMString integrity;
 
     // https://html.spec.whatwg.org/multipage/semantics.html#dom-link-blocking
-    [RuntimeEnabled=BlockingAttribute, SameObject, PutForwards=value] readonly attribute DOMTokenList blocking;
+    [SameObject, PutForwards=value] readonly attribute DOMTokenList blocking;
 };

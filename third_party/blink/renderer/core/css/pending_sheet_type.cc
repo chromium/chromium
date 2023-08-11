@@ -29,7 +29,6 @@ ComputePendingSheetTypeAndRenderBlockingBehavior(Element& sheet_owner,
                               : RenderBlockingBehavior::kBlocking);
   }
   bool potentially_render_blocking =
-      RuntimeEnabledFeatures::BlockingAttributeEnabled() &&
       IsA<HTMLElement>(sheet_owner) &&
       To<HTMLElement>(sheet_owner).IsPotentiallyRenderBlocking();
   return potentially_render_blocking

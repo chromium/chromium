@@ -498,12 +498,6 @@
       base_feature: "none",
     },
     {
-      // https://html.spec.whatwg.org/multipage/urls-and-fetching.html#blocking-attributes
-      name: "BlockingAttribute",
-      status: "stable",
-      base_feature: "none",
-    },
-    {
       name: "BlockingFocusWithoutUserActivation",
       status: "experimental",
     },

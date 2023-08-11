@@ -382,8 +382,7 @@ class TokenPreloadScanner::StartTagScanner {
     } else if (!fetch_priority_hint_set_ &&
                Match(attribute_name, html_names::kFetchpriorityAttr)) {
       SetFetchPriorityHint(attribute_value);
-    } else if (RuntimeEnabledFeatures::BlockingAttributeEnabled() &&
-               Match(attribute_name, html_names::kBlockingAttr)) {
+    } else if (Match(attribute_name, html_names::kBlockingAttr)) {
       blocking_attribute_value_ = attribute_value;
     } else if (Match(attribute_name, html_names::kAttributionsrcAttr)) {
       attributionsrc_attr_set_ = true;
@@ -493,8 +492,7 @@ class TokenPreloadScanner::StartTagScanner {
     } else if (!fetch_priority_hint_set_ &&
                Match(attribute_name, html_names::kFetchpriorityAttr)) {
       SetFetchPriorityHint(attribute_value);
-    } else if (RuntimeEnabledFeatures::BlockingAttributeEnabled() &&
-               Match(attribute_name, html_names::kBlockingAttr)) {
+    } else if (Match(attribute_name, html_names::kBlockingAttr)) {
       blocking_attribute_value_ = attribute_value;
     }
   }
