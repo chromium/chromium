@@ -69,6 +69,12 @@ class TranslateModelService
   void NotifyOnModelFileAvailable(NotifyModelAvailableCallback callback);
 
  private:
+  // Unloads the model in background task.
+  void UnloadModelFile();
+
+  // Notifies the model update to observers, and clears the observer list.
+  void NotifyModelUpdatesAndClear(bool is_model_available);
+
   void OnModelFileLoaded(base::File model_file);
 
   // Optimization Guide Service that provides model files for this service.
