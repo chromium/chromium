@@ -80,6 +80,17 @@ void ReadLaunchEventsFromFifo(
 class LaunchApplicationTest : public testing::Test {
  public:
   void SetUp() override {
+    constexpr bool is_component_build =
+#if defined(COMPONENT_BUILD)
+        true;
+#else
+        false;
+#endif
+    if (is_component_build) {
+      // TODO(https://crbug.com/1472325): Fix this.
+      GTEST_SKIP() << "These tests currently don't support component builds.";
+    }
+
     helper_bundle_id_ =
         SysUTF8ToNSString("org.chromium.LaunchApplicationTestHelper." +
                           Uuid::GenerateRandomV4().AsLowercaseString());
@@ -185,21 +196,23 @@ class LaunchApplicationTest : public testing::Test {
   }
 
   void TearDown() override {
-    // Make sure fifo reading task stops reading/waiting.
-    WriteFile(helper_app_fifo_path_, "<!FINISHED>");
+    if (temp_dir_.IsValid()) {
+      // Make sure fifo reading task stops reading/waiting.
+      WriteFile(helper_app_fifo_path_, "<!FINISHED>");
 
-    // Make sure all apps that were launched by this test are terminated.
-    NSArray<NSRunningApplication*>* apps =
-        NSWorkspace.sharedWorkspace.runningApplications;
-    for (NSRunningApplication* app in apps) {
-      if (temp_dir_.GetPath().IsParent(NSURLToFilePath(app.bundleURL)) ||
-          [app.bundleIdentifier isEqualToString:helper_bundle_id_]) {
-        [app forceTerminate];
+      // Make sure all apps that were launched by this test are terminated.
+      NSArray<NSRunningApplication*>* apps =
+          NSWorkspace.sharedWorkspace.runningApplications;
+      for (NSRunningApplication* app in apps) {
+        if (temp_dir_.GetPath().IsParent(NSURLToFilePath(app.bundleURL)) ||
+            [app.bundleIdentifier isEqualToString:helper_bundle_id_]) {
+          [app forceTerminate];
+        }
       }
-    }
 
-    // And make sure the temp dir was successfully deleted.
-    EXPECT_TRUE(temp_dir_.Delete());
+      // And make sure the temp dir was successfully deleted.
+      EXPECT_TRUE(temp_dir_.Delete());
+    }
   }
 
   // Calls `LaunchApplication` with the given parameters, expecting the launch
