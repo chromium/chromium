@@ -413,6 +413,12 @@ class EgtestsApp(GTestsApp):
       module_data['IsUITestBundle'] = True
       module_data['IsXCTRunnerHostedTestBundle'] = True
       module_data['SystemAttachmentLifetime'] = 'keepAlways'
+      # crbug.com/1469507: Xcode 15 now records video by default, but it
+      # seems to impact test performance. We prefer to use our own video
+      # recording feature since it supports xcode-parallelization, and
+      # physical devices. We could consider removing below if native
+      # video recording feature supports more use cases for us.
+      module_data['PreferredScreenCaptureFormat'] = 'screenshots'
       module_data['UITargetAppPath'] = '%s' % self.host_app_path
       module_data['UITargetAppBundleIdentifier'] = get_bundle_id(
           self.host_app_path)
