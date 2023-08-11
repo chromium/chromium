@@ -7,6 +7,7 @@
 #include "base/containers/flat_set.h"
 #include "base/time/time.h"
 #include "chrome/browser/extensions/api/reading_list/reading_list_api_constants.h"
+#include "chrome/browser/extensions/api/reading_list/reading_list_util.h"
 #include "chrome/browser/reading_list/reading_list_model_factory.h"
 #include "chrome/common/extensions/api/reading_list.h"
 #include "components/reading_list/core/reading_list_entry.h"
@@ -252,22 +253,11 @@ ExtensionFunction::ResponseValue ReadingListQueryFunction::MatchEntries() {
     if (has_been_read_.has_value() && entry->IsRead() != has_been_read_) {
       continue;
     }
-    matching_entries.emplace_back(ParseEntry(*entry));
+    matching_entries.emplace_back(reading_list_util::ParseEntry(*entry));
   }
 
   return ArgumentList(
       api::reading_list::Query::Results::Create(std::move(matching_entries)));
-}
-
-api::reading_list::ReadingListEntry ReadingListQueryFunction::ParseEntry(
-    const ReadingListEntry& entry) {
-  api::reading_list::ReadingListEntry reading_list_entry;
-
-  reading_list_entry.url = entry.URL().spec();
-  reading_list_entry.title = entry.Title();
-  reading_list_entry.has_been_read = entry.IsRead();
-
-  return reading_list_entry;
 }
 
 }  // namespace extensions

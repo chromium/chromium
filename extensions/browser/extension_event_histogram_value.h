@@ -555,6 +555,7 @@ enum HistogramValue {
   OS_EVENTS_ON_STYLUS_CONNECTED_EVENT = 533,
   ACCESSIBILITY_PRIVATE_ON_SELECT_TO_SPEAK_CONTEXT_MENU_CLICKED = 534,
   DESK_EVENTS_ON_DESK_REMOVAL_UNDONE = 535,
+  READING_LIST_ON_ENTRY_ADDED = 536,
   // Last entry: Add new entries above, then run:
   // tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY

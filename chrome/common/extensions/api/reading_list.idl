@@ -77,4 +77,10 @@ namespace readingList{
     [supportsPromises] static void query(QueryInfo info,
                                          QueryCallback callback);
   };
+
+  interface Events {
+    // Triggered when a ReadingListEntry was added to the reading list.
+    // |entry|: The entry that was added.
+    static void onEntryAdded(ReadingListEntry entry);
+  };
 };

@@ -8,17 +8,24 @@
 
 #include "base/test/values_test_util.h"
 #include "chrome/browser/extensions/api/reading_list/reading_list_api_constants.h"
+#include "chrome/browser/extensions/api/reading_list/reading_list_event_router.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/reading_list/reading_list_model_factory.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/common/extensions/api/reading_list.h"
 #include "chrome/test/base/test_browser_window.h"
+#include "components/keyed_service/core/keyed_service.h"
 #include "components/reading_list/core/reading_list_entry.h"
 #include "components/reading_list/core/reading_list_model.h"
 #include "components/reading_list/core/reading_list_test_utils.h"
 #include "components/version_info/channel.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/api_test_utils.h"
+#include "extensions/browser/event_router.h"
+#include "extensions/browser/event_router_factory.h"
+#include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/test_event_router_observer.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/features/feature_channel.h"
 #include "url/gurl.h"
@@ -40,6 +47,17 @@ void AddReadingListEntry(ReadingListModel* reading_list_model,
   reading_list_model->AddOrReplaceEntry(
       url, title, reading_list::EntrySource::ADDED_VIA_CURRENT_APP,
       base::TimeDelta());
+}
+
+std::unique_ptr<KeyedService> BuildReadingListEventRouter(
+    content::BrowserContext* context) {
+  return std::make_unique<ReadingListEventRouter>(context);
+}
+
+std::unique_ptr<KeyedService> BuildEventRouter(
+    content::BrowserContext* context) {
+  return std::make_unique<extensions::EventRouter>(
+      context, ExtensionPrefs::Get(context));
 }
 
 }  // namespace
@@ -74,6 +92,17 @@ void ReadingListApiUnitTest::SetUp() {
   params.type = Browser::TYPE_NORMAL;
   params.window = browser_window_.get();
   browser_ = std::unique_ptr<Browser>(Browser::Create(params));
+
+  ReadingListEventRouter::GetFactoryInstance()->SetTestingFactory(
+      browser_context(), base::BindRepeating(&BuildReadingListEventRouter));
+
+  EventRouterFactory::GetInstance()->SetTestingFactory(
+      browser_context(), base::BindRepeating(&BuildEventRouter));
+
+  // We need to call ReadingListEventRouterFactory::GetForProfile() in order to
+  // instantiate the keyed service, since it's not created by default in unit
+  // tests.
+  ReadingListEventRouter::Get(browser_context());
 }
 
 void ReadingListApiUnitTest::TearDown() {
@@ -389,6 +418,24 @@ TEST_F(ReadingListApiUnitTest, NoEntriesRetrieved) {
 
   // Verify that no entries were retrieved.
   EXPECT_EQ(entries.value().GetList().size(), 0u);
+}
+
+// Test that adding an entry generates an event.
+TEST_F(ReadingListApiUnitTest, ReadingListOnEntryAdded) {
+  TestEventRouterObserver event_observer(EventRouter::Get(browser_context()));
+
+  ReadingListModel* const reading_list_model =
+      ReadingListModelFactory::GetForBrowserContext(profile());
+
+  ReadingListLoadObserver(reading_list_model).Wait();
+
+  AddReadingListEntry(reading_list_model, GURL("https://www.example.com"),
+                      "example of title");
+
+  EXPECT_EQ(reading_list_model->size(), 1u);
+
+  EXPECT_TRUE(base::Contains(event_observer.events(),
+                             api::reading_list::OnEntryAdded::kEventName));
 }
 
 }  // namespace extensions
