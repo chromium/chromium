@@ -8,10 +8,6 @@
 #include "base/memory/raw_ptr.h"
 #include "components/power_bookmarks/core/power_bookmark_data_provider.h"
 
-namespace bookmarks {
-class BookmarkModel;
-}  // namespace bookmarks
-
 namespace power_bookmarks {
 class PowerBookmarkService;
 class PowerBookmarkMeta;
@@ -26,8 +22,7 @@ class ShoppingService;
 class ShoppingPowerBookmarkDataProvider
     : public power_bookmarks::PowerBookmarkDataProvider {
  public:
-  explicit ShoppingPowerBookmarkDataProvider(
-      bookmarks::BookmarkModel* bookmark_model,
+  ShoppingPowerBookmarkDataProvider(
       power_bookmarks::PowerBookmarkService* power_bookmark_service,
       ShoppingService* shopping_service);
   ShoppingPowerBookmarkDataProvider(const ShoppingPowerBookmarkDataProvider&) =
@@ -42,7 +37,6 @@ class ShoppingPowerBookmarkDataProvider
       power_bookmarks::PowerBookmarkMeta* meta) override;
 
  private:
-  raw_ptr<bookmarks::BookmarkModel> bookmark_model_;
   raw_ptr<power_bookmarks::PowerBookmarkService> power_bookmark_service_;
   raw_ptr<ShoppingService> shopping_service_;
 };

@@ -8,8 +8,6 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
-#include "components/bookmarks/browser/bookmark_model.h"
-#include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/commerce/core/price_tracking_utils.h"
 #include "components/commerce/core/shopping_service.h"
 #include "components/power_bookmarks/core/power_bookmark_service.h"
@@ -22,11 +20,9 @@ using power_bookmarks::PowerBookmarkService;
 namespace commerce {
 
 ShoppingPowerBookmarkDataProvider::ShoppingPowerBookmarkDataProvider(
-    bookmarks::BookmarkModel* bookmark_model,
     PowerBookmarkService* power_bookmark_service,
     ShoppingService* shopping_service)
-    : bookmark_model_(bookmark_model),
-      power_bookmark_service_(power_bookmark_service),
+    : power_bookmark_service_(power_bookmark_service),
       shopping_service_(shopping_service) {
   power_bookmark_service_->AddDataProvider(this);
 }

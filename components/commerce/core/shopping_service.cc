@@ -164,7 +164,7 @@ ShoppingService::ShoppingService(
     if (power_bookmark_service_ && IsProductInfoApiEnabled()) {
       shopping_power_bookmark_data_provider_ =
           std::make_unique<ShoppingPowerBookmarkDataProvider>(
-              bookmark_model_, power_bookmark_service_, this);
+              power_bookmark_service_, this);
     }
   }
 
