@@ -49,30 +49,21 @@ public class BookmarkUtilsTest {
     }
 
     @Test
-    public void testCanAddFolderWhileViewingParent() {
-        assertFalse(BookmarkUtils.canAddFolderWhileViewingParent(mBookmarkModel, ROOT_BOOKMARK_ID));
-        assertTrue(
-                BookmarkUtils.canAddFolderWhileViewingParent(mBookmarkModel, DESKTOP_BOOKMARK_ID));
-        assertTrue(
-                BookmarkUtils.canAddFolderWhileViewingParent(mBookmarkModel, FOLDER_BOOKMARK_ID_A));
-        assertFalse(BookmarkUtils.canAddFolderWhileViewingParent(
-                mBookmarkModel, READING_LIST_BOOKMARK_ID));
-        assertFalse(
-                BookmarkUtils.canAddFolderWhileViewingParent(mBookmarkModel, PARTNER_BOOKMARK_ID));
+    public void testCanAddFolderToParent() {
+        assertFalse(BookmarkUtils.canAddFolderToParent(mBookmarkModel, ROOT_BOOKMARK_ID));
+        assertTrue(BookmarkUtils.canAddFolderToParent(mBookmarkModel, DESKTOP_BOOKMARK_ID));
+        assertTrue(BookmarkUtils.canAddFolderToParent(mBookmarkModel, FOLDER_BOOKMARK_ID_A));
+        assertFalse(BookmarkUtils.canAddFolderToParent(mBookmarkModel, READING_LIST_BOOKMARK_ID));
+        assertFalse(BookmarkUtils.canAddFolderToParent(mBookmarkModel, PARTNER_BOOKMARK_ID));
     }
 
     @Test
-    public void testCanAddBookmarkWhileViewingParent() {
-        assertFalse(
-                BookmarkUtils.canAddBookmarkWhileViewingParent(mBookmarkModel, ROOT_BOOKMARK_ID));
-        assertTrue(BookmarkUtils.canAddBookmarkWhileViewingParent(
-                mBookmarkModel, DESKTOP_BOOKMARK_ID));
-        assertTrue(BookmarkUtils.canAddBookmarkWhileViewingParent(
-                mBookmarkModel, FOLDER_BOOKMARK_ID_A));
-        assertTrue(BookmarkUtils.canAddBookmarkWhileViewingParent(
-                mBookmarkModel, READING_LIST_BOOKMARK_ID));
-        assertFalse(BookmarkUtils.canAddBookmarkWhileViewingParent(
-                mBookmarkModel, PARTNER_BOOKMARK_ID));
+    public void testCanAddBookmarkToParent() {
+        assertFalse(BookmarkUtils.canAddBookmarkToParent(mBookmarkModel, ROOT_BOOKMARK_ID));
+        assertTrue(BookmarkUtils.canAddBookmarkToParent(mBookmarkModel, DESKTOP_BOOKMARK_ID));
+        assertTrue(BookmarkUtils.canAddBookmarkToParent(mBookmarkModel, FOLDER_BOOKMARK_ID_A));
+        assertTrue(BookmarkUtils.canAddBookmarkToParent(mBookmarkModel, READING_LIST_BOOKMARK_ID));
+        assertFalse(BookmarkUtils.canAddBookmarkToParent(mBookmarkModel, PARTNER_BOOKMARK_ID));
     }
 
     @Test

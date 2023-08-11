@@ -753,8 +753,7 @@ public class BookmarkUtils {
      * Returns whether the given folder being viewed can have a new folder added to it. While in
      * improved bookmarks, this includes the root folder.
      */
-    public static boolean canAddFolderWhileViewingParent(
-            BookmarkModel bookmarkModel, BookmarkId parent) {
+    public static boolean canAddFolderToParent(BookmarkModel bookmarkModel, BookmarkId parent) {
         return !Objects.equals(parent, bookmarkModel.getReadingListFolder())
                 && !Objects.equals(parent, bookmarkModel.getPartnerFolderId())
                 && !Objects.equals(parent, bookmarkModel.getRootFolderId());
@@ -764,8 +763,7 @@ public class BookmarkUtils {
      * Returns whether the given folder being viewed can have a new folder added to it. While in
      * improved bookmarks, this includes the root folder.
      */
-    public static boolean canAddBookmarkWhileViewingParent(
-            BookmarkModel bookmarkModel, BookmarkId parent) {
+    public static boolean canAddBookmarkToParent(BookmarkModel bookmarkModel, BookmarkId parent) {
         return !Objects.equals(parent, bookmarkModel.getPartnerFolderId())
                 && !Objects.equals(parent, bookmarkModel.getRootFolderId());
     }

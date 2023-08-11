@@ -122,11 +122,9 @@ class BookmarkFolderPickerMediator {
             }
 
             boolean excludeForFolder = mMovingAtLeastOneFolder
-                    && !BookmarkUtils.canAddFolderWhileViewingParent(
-                            mBookmarkModel, childItem.getId());
+                    && !BookmarkUtils.canAddFolderToParent(mBookmarkModel, childItem.getId());
             boolean excludeForBookmark = mMovingAtLeastOneBookmark
-                    && !BookmarkUtils.canAddBookmarkWhileViewingParent(
-                            mBookmarkModel, childItem.getId());
+                    && !BookmarkUtils.canAddBookmarkToParent(mBookmarkModel, childItem.getId());
             // Remove any folders which can't have children added to them.
             if (excludeForFolder || excludeForBookmark) {
                 continue;
