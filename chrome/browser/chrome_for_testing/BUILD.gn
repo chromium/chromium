@@ -36,6 +36,7 @@ if (is_linux && is_chrome_for_testing) {
       ":strip_chrome_binary",
       ":strip_chrome_crashpad_handler",
       ":strip_chrome_sandbox",
+      ":strip_headless_shell_binary",
       ":strip_libEGL_shlib",
       ":strip_libGLESv2_shlib",
       ":strip_libvk_swiftshader_shlib",
@@ -82,6 +83,11 @@ if (is_linux && is_chrome_for_testing) {
   strip_binary("strip_libvk_swiftshader_shlib") {
     binary_input = "$root_out_dir/libvk_swiftshader.so"
     deps = [ "//third_party/swiftshader/src/Vulkan:swiftshader_libvulkan" ]
+  }
+
+  strip_binary("strip_headless_shell_binary") {
+    binary_input = "$root_out_dir/headless_shell"
+    deps = [ "//headless:headless_shell" ]
   }
 
   if (enable_nacl) {
