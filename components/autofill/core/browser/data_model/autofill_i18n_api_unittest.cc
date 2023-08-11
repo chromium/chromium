@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/data_model/autofill_i18n_api.h"
 
 #include <string>
+#include <type_traits>
 
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
@@ -136,19 +137,20 @@ TEST(AutofillI18nApi, GetLegacy_AddressNode) {
 TEST(AutofillI18nApi, GetFormattingExpressions) {
   CountryDataMap* country_data_map = CountryDataMap::GetInstance();
   for (const std::string& country_code : country_data_map->country_codes()) {
-    for (int i = 0; i < MAX_VALID_FIELD_TYPE; ++i) {
-      if (ServerFieldType raw_value = static_cast<ServerFieldType>(i);
-          ToSafeServerFieldType(raw_value, NO_SERVER_DATA) != NO_SERVER_DATA) {
-        auto* it = kAutofillFormattingRulesMap.find({country_code, raw_value});
+    for (std::underlying_type_t<ServerFieldType> i = 0;
+         i < MAX_VALID_FIELD_TYPE; ++i) {
+      if (ServerFieldType field_type = ToSafeServerFieldType(i, NO_SERVER_DATA);
+          field_type != NO_SERVER_DATA) {
+        auto* it = kAutofillFormattingRulesMap.find({country_code, field_type});
         // The expected value is contained in `kAutofillFormattingRulesMap`. If
         // no entry is found, it is expected to fallback to the legacy string.
         std::u16string expected =
             it != kAutofillFormattingRulesMap.end()
                 ? std::u16string(it->second)
                 : StructuredAddressesFormatProvider::GetInstance()->GetPattern(
-                      raw_value, country_code);
+                      field_type, country_code);
 
-        EXPECT_EQ(i18n_model_definition::GetFormattingExpression(raw_value,
+        EXPECT_EQ(i18n_model_definition::GetFormattingExpression(field_type,
                                                                  country_code),
                   expected);
       }
