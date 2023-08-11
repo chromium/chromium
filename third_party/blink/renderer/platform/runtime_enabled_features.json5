@@ -3475,7 +3475,7 @@
     },
     {
       name: "SvgRasterOptimizations",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "SvgTextSkipZeroLengthItems",
