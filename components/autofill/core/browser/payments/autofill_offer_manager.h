@@ -14,6 +14,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "components/autofill/core/browser/payments/offer_notification_handler.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -96,6 +97,9 @@ class AutofillOfferManager : public KeyedService,
   // This is used as a local cache and will be updated whenever the data in the
   // database changes.
   std::set<GURL> eligible_merchant_domains_ = {};
+
+  base::ScopedObservation<PersonalDataManager, PersonalDataManagerObserver>
+      personal_data_manager_observation{this};
 
   // The handler for offer notification UI. It is a sub-level component of
   // AutofillOfferManager to decide whether to show the offer notification.
