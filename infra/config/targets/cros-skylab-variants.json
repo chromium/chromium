@@ -214,8 +214,8 @@
   "CROS_KEVIN_PUBLIC_LKGM": {
     "skylab": {
       "cros_board": "kevin",
-      "cros_chrome_version": "116.0.5833.0",
-      "cros_img": "kevin-public/R117-15511.0.0",
+      "cros_chrome_version": "117.0.5936.0",
+      "cros_img": "kevin-public/R118-15575.0.0",
       "bucket": "chromiumos-image-archive"
     },
     "enabled": true,

@@ -542,7 +542,7 @@
     'identifier': 'KEVIN_PUBLIC_LKGM',
     'skylab': {
       'cros_board': 'kevin',
-      'cros_img': 'kevin-public/R117-15511.0.0',
+      'cros_img': 'kevin-public/R118-15575.0.0',
       'bucket': 'chromiumos-image-archive',
     },
   },
