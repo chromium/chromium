@@ -780,13 +780,17 @@ void PersonalizationAppWallpaperProviderImpl::IsInTabletMode(
 }
 
 void PersonalizationAppWallpaperProviderImpl::ConfirmPreviewWallpaper() {
-  SetMinimizedWindowStateForPreview(/*preview_mode=*/false);
+  // Confirm the preview wallpaper before restoring the other windows. In tablet
+  // splitscreen, this prevents `WallpaperController::OnOverviewModeWillStart`
+  // from triggering first, which leads to preview wallpaper getting canceled
+  // before it gets confirmed (b/289133203).
   WallpaperController::Get()->ConfirmPreviewWallpaper();
+  SetMinimizedWindowStateForPreview(/*preview_mode=*/false);
 }
 
 void PersonalizationAppWallpaperProviderImpl::CancelPreviewWallpaper() {
-  SetMinimizedWindowStateForPreview(/*preview_mode=*/false);
   WallpaperController::Get()->CancelPreviewWallpaper();
+  SetMinimizedWindowStateForPreview(/*preview_mode=*/false);
 }
 
 wallpaper_handlers::GooglePhotosAlbumsFetcher*

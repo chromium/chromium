@@ -150,15 +150,17 @@ export class WallpaperFullscreen extends WithPersonalizationStore {
   }
 
   private async onClickExit_() {
-    await this.exitFullscreen();
     await cancelPreviewWallpaper(getWallpaperProvider());
+    await this.exitFullscreen();
   }
 
   private async onClickConfirm_() {
-    // Begin to exit fullscreen mode before confirming preview wallpaper. This
-    // makes local images and online images execute updates in the same order.
-    await this.exitFullscreen();
+    // Confirm the preview wallpaper before exiting fullscreen. In tablet
+    // splitscreen, this prevents `WallpaperController::OnOverviewModeWillStart`
+    // from triggering first, which leads to preview wallpaper getting canceled
+    // before it gets confirmed (b/289133203).
     await confirmPreviewWallpaper(getWallpaperProvider());
+    await this.exitFullscreen();
   }
 
   private async onClickLayout_(event: MouseEvent) {
