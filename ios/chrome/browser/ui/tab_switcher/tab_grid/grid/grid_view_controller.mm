@@ -715,17 +715,16 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
     suggestedActionsCell.suggestedActionsView =
         self.suggestedActionsViewController.view;
   } else {
-    // In some cases this is called with an indexPath.item that's beyond (by
-    // 1) the bounds of self.items -- see crbug.com/1068136. Presumably this
-    // is a race condition where an item has been deleted at the same time as
-    // the collection is doing layout (potentially during rotation?). DCHECK
-    // to catch this in debug, and then in production fudge by duplicating the
-    // last cell. The assumption is that there will be another, correct layout
-    // shortly after the incorrect one.
-    DCHECK_LT(itemIndex, self.items.count);
-    // Outside of debug builds, keep array bounds valid.
+    // In some cases this is called with an indexPath.item that's beyond (by 1)
+    // the bounds of self.items -- see crbug.com/1068136. Presumably this is a
+    // race condition where an item has been deleted at the same time as the
+    // collection is doing layout (potentially during rotation?). Fudge by
+    // duplicating the last cell. The assumption is that there will be another,
+    // correct layout shortly after the incorrect one.
+    // Keep array bounds valid, but dump without crashing to report.
     if (itemIndex >= self.items.count) {
       itemIndex = self.items.count - 1;
+      base::debug::DumpWithoutCrashing();
     }
 
     TabSwitcherItem* item = self.items[itemIndex];
@@ -974,7 +973,20 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
   }
 
   // Handle GridCell-s.
-  TabSwitcherItem* item = self.items[indexPath.item];
+  NSUInteger itemIndex = base::checked_cast<NSUInteger>(indexPath.item);
+  // In some cases this is called with an indexPath.item that's beyond (by 1)
+  // the bounds of self.items -- see crbug.com/1068136. Presumably this is a
+  // race condition where an item has been deleted at the same time as the
+  // collection is doing layout (potentially during rotation?). Fudge by
+  // duplicating the last cell. The assumption is that there will be another,
+  // correct layout shortly after the incorrect one.
+  // Keep array bounds valid, but dump without crashing to report.
+  if (itemIndex >= self.items.count) {
+    itemIndex = self.items.count - 1;
+    base::debug::DumpWithoutCrashing();
+  }
+
+  TabSwitcherItem* item = self.items[itemIndex];
   return [self.collectionView
       dequeueConfiguredReusableCellWithRegistration:self.gridCellRegistration
                                        forIndexPath:indexPath
