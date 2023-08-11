@@ -35,20 +35,24 @@ class BoundSessionRegistrationFetcherParam {
   static BoundSessionRegistrationFetcherParam CreateInstanceForTesting(
       GURL registration_endpoint,
       std::vector<crypto::SignatureVerifier::SignatureAlgorithm>
-          supported_algos);
+          supported_algos,
+      std::string challenge);
 
   const GURL& RegistrationEndpoint() const;
   base::span<const crypto::SignatureVerifier::SignatureAlgorithm>
   SupportedAlgos() const;
+  const std::string& Challenge() const;
 
  private:
   BoundSessionRegistrationFetcherParam(
       GURL registration_endpoint,
       std::vector<crypto::SignatureVerifier::SignatureAlgorithm>
-          supported_algos);
+          supported_algos,
+      std::string challenge);
 
   GURL registration_endpoint_;
   std::vector<crypto::SignatureVerifier::SignatureAlgorithm> supported_algos_;
+  std::string challenge_;
 };
 
 #endif  // CHROME_BROWSER_SIGNIN_BOUND_SESSION_CREDENTIALS_BOUND_SESSION_REGISTRATION_FETCHER_PARAM_H_

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/signin/bound_session_credentials/bound_session_registration_fetcher_param.h"
 
+#include "base/base64url.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -13,6 +14,7 @@ namespace {
 constexpr char kAlgoItemKey[] = "supported-alg";
 constexpr char kRegistrationHeaderName[] = "Sec-Session-Google-Registration";
 constexpr char kRegistrationItemKey[] = "registration";
+constexpr char kChallengeItemKey[] = "challenge";
 
 absl::optional<crypto::SignatureVerifier::SignatureAlgorithm> AlgoFromString(
     const std::string algo) {
@@ -40,9 +42,11 @@ BoundSessionRegistrationFetcherParam::~BoundSessionRegistrationFetcherParam() =
 
 BoundSessionRegistrationFetcherParam::BoundSessionRegistrationFetcherParam(
     GURL registration_endpoint,
-    std::vector<crypto::SignatureVerifier::SignatureAlgorithm> supported_algos)
+    std::vector<crypto::SignatureVerifier::SignatureAlgorithm> supported_algos,
+    std::string challenge)
     : registration_endpoint_(std::move(registration_endpoint)),
-      supported_algos_(std::move(supported_algos)) {}
+      supported_algos_(std::move(supported_algos)),
+      challenge_(std::move(challenge)) {}
 
 absl::optional<BoundSessionRegistrationFetcherParam>
 BoundSessionRegistrationFetcherParam::MaybeCreateInstance(
@@ -59,6 +63,7 @@ BoundSessionRegistrationFetcherParam::MaybeCreateInstance(
 
   GURL registration_endpoint;
   std::vector<crypto::SignatureVerifier::SignatureAlgorithm> supported_algos;
+  std::string challenge;
   base::StringPairs items;
   base::SplitStringIntoKeyValuePairs(header_value, '=', ';', &items);
   for (const auto& [key, value] : items) {
@@ -87,11 +92,21 @@ BoundSessionRegistrationFetcherParam::MaybeCreateInstance(
         }
       }
     }
+
+    if (base::EqualsCaseInsensitiveASCII(key, kChallengeItemKey)) {
+      if (!base::Base64UrlDecode(value,
+                                 base::Base64UrlDecodePolicy::DISALLOW_PADDING,
+                                 &challenge)) {
+        return absl::nullopt;
+      }
+    }
   }
 
-  if (registration_endpoint.is_valid() && !supported_algos.empty()) {
+  if (registration_endpoint.is_valid() && !supported_algos.empty() &&
+      !challenge.empty()) {
     return BoundSessionRegistrationFetcherParam(
-        std::move(registration_endpoint), std::move(supported_algos));
+        std::move(registration_endpoint), std::move(supported_algos),
+        std::move(challenge));
   } else {
     return absl::nullopt;
   }
@@ -100,10 +115,11 @@ BoundSessionRegistrationFetcherParam::MaybeCreateInstance(
 BoundSessionRegistrationFetcherParam
 BoundSessionRegistrationFetcherParam::CreateInstanceForTesting(
     GURL registration_endpoint,
-    std::vector<crypto::SignatureVerifier::SignatureAlgorithm>
-        supported_algos) {
+    std::vector<crypto::SignatureVerifier::SignatureAlgorithm> supported_algos,
+    std::string challenge) {
   return BoundSessionRegistrationFetcherParam(std::move(registration_endpoint),
-                                              std::move(supported_algos));
+                                              std::move(supported_algos),
+                                              std::move(challenge));
 }
 
 const GURL& BoundSessionRegistrationFetcherParam::RegistrationEndpoint() const {
@@ -113,4 +129,8 @@ const GURL& BoundSessionRegistrationFetcherParam::RegistrationEndpoint() const {
 base::span<const crypto::SignatureVerifier::SignatureAlgorithm>
 BoundSessionRegistrationFetcherParam::SupportedAlgos() const {
   return supported_algos_;
+}
+
+const std::string& BoundSessionRegistrationFetcherParam::Challenge() const {
+  return challenge_;
 }

@@ -41,6 +41,7 @@ const char kJSONRegistrationParams[] = R"(
         ]
     }
 )";
+constexpr char kChallenge[] = "test_challenge";
 
 std::vector<crypto::SignatureVerifier::SignatureAlgorithm> CreateAlgArray() {
   return {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256,
@@ -110,7 +111,7 @@ TEST_F(BoundSessionRegistrationFetcherImplTest, NoService) {
 
   BoundSessionRegistrationFetcherParam params =
       BoundSessionRegistrationFetcherParam::CreateInstanceForTesting(
-          GURL("http://accounts.google.com"), CreateAlgArray());
+          GURL("http://accounts.google.com"), CreateAlgArray(), kChallenge);
   std::unique_ptr<BoundSessionRegistrationFetcher> fetcher =
       std::make_unique<BoundSessionRegistrationFetcherImpl>(
           std::move(params), url_loader_factory.GetSafeWeakWrapper(), nullptr);
@@ -138,7 +139,8 @@ TEST_F(BoundSessionRegistrationFetcherImplTest, ValidInput) {
 
   BoundSessionRegistrationFetcherParam params =
       BoundSessionRegistrationFetcherParam::CreateInstanceForTesting(
-          GURL("https://www.google.com/startsession"), CreateAlgArray());
+          GURL("https://www.google.com/startsession"), CreateAlgArray(),
+          kChallenge);
   std::unique_ptr<BoundSessionRegistrationFetcher> fetcher =
       std::make_unique<BoundSessionRegistrationFetcherImpl>(
           std::move(params), url_loader_factory.GetSafeWeakWrapper(),
@@ -182,7 +184,8 @@ TEST_F(BoundSessionRegistrationFetcherImplTest, MissingXSSIPrefix) {
 
   BoundSessionRegistrationFetcherParam params =
       BoundSessionRegistrationFetcherParam::CreateInstanceForTesting(
-          GURL("https://www.google.com/startsession"), CreateAlgArray());
+          GURL("https://www.google.com/startsession"), CreateAlgArray(),
+          kChallenge);
   std::unique_ptr<BoundSessionRegistrationFetcher> fetcher =
       std::make_unique<BoundSessionRegistrationFetcherImpl>(
           std::move(params), url_loader_factory.GetSafeWeakWrapper(),
@@ -213,7 +216,8 @@ TEST_F(BoundSessionRegistrationFetcherImplTest, MissingJSONRegistrationParams) {
 
   BoundSessionRegistrationFetcherParam params =
       BoundSessionRegistrationFetcherParam::CreateInstanceForTesting(
-          GURL("https://www.google.com/startsession"), CreateAlgArray());
+          GURL("https://www.google.com/startsession"), CreateAlgArray(),
+          kChallenge);
   std::unique_ptr<BoundSessionRegistrationFetcher> fetcher =
       std::make_unique<BoundSessionRegistrationFetcherImpl>(
           std::move(params), url_loader_factory.GetSafeWeakWrapper(),
