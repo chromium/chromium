@@ -239,6 +239,11 @@ BASE_FEATURE(kOptimizationGuidePersonalizedFetching,
              "OptimizationPersonalizedHintsFetching",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Whether to resolve all URLs (minus fragments) to the same URL.
+BASE_FEATURE(kOptimizationGuideHintsURLKeyedCacheDropFragments,
+             "OptimizationGuideHintsURLKeyedCacheDropFragments",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // The default value here is a bit of a guess.
 // TODO(crbug/1163244): This should be tuned once metrics are available.
 base::TimeDelta PageTextExtractionOutstandingRequestsGracePeriod() {
@@ -752,6 +757,11 @@ bool IsInstallWideModelStoreEnabled() {
 bool ShouldPersistSalientImageMetadata() {
   return base::FeatureList::IsEnabled(
       kPageContentAnnotationsPersistSalientImageMetadata);
+}
+
+bool ShouldDropFragmentsForURLKeyedHintCacheKey() {
+  return base::FeatureList::IsEnabled(
+      kOptimizationGuideHintsURLKeyedCacheDropFragments);
 }
 
 }  // namespace features

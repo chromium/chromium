@@ -50,6 +50,7 @@ BASE_DECLARE_FEATURE(kExtractRelatedSearchesFromPrefetchedZPSResponse);
 BASE_DECLARE_FEATURE(kPageContentAnnotationsPersistSalientImageMetadata);
 BASE_DECLARE_FEATURE(kModelStoreUseRelativePath);
 BASE_DECLARE_FEATURE(kOptimizationGuidePersonalizedFetching);
+BASE_DECLARE_FEATURE(kOptimizationGuideHintsURLKeyedCacheDropFragments);
 
 // Enables use of task runner with trait CONTINUE_ON_SHUTDOWN for page content
 // annotations on-device models.
@@ -332,6 +333,9 @@ bool IsInstallWideModelStoreEnabled();
 
 // Whether to persist salient image metadata for each visit.
 bool ShouldPersistSalientImageMetadata();
+
+// Whether to drop fragments for the URL-keyed hint cache key.
+bool ShouldDropFragmentsForURLKeyedHintCacheKey();
 
 }  // namespace features
 }  // namespace optimization_guide

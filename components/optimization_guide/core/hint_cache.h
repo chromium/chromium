@@ -170,6 +170,9 @@ class HintCache {
   using URLKeyedHintCache =
       base::HashingLRUCache<std::string, std::unique_ptr<MemoryHint>>;
 
+  // Gets the cache key for the URL-keyed hint cache for the URL.
+  std::string GetURLKeyedHintCacheKey(const GURL& url) const;
+
   // The callback run after the store finishes initialization. This then runs
   // the callback initially provided by the Initialize() call.
   void OnStoreInitialized(base::OnceClosure callback);
@@ -203,6 +206,9 @@ class HintCache {
 
   // The clock used to determine if hints have expired.
   raw_ptr<const base::Clock> clock_;
+
+  // Whether to drop fragments from URL-keyed cache keys.
+  bool should_drop_fragments_from_url_keyed_cache_key_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
