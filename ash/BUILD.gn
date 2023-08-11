@@ -2261,6 +2261,8 @@ component("ash") {
     "utility/transformer_util.h",
     "virtual_trackpad/virtual_trackpad_view.cc",
     "virtual_trackpad/virtual_trackpad_view.h",
+    "wallpaper/google_photos_wallpaper_manager.cc",
+    "wallpaper/google_photos_wallpaper_manager.h",
     "wallpaper/online_wallpaper_manager.cc",
     "wallpaper/online_wallpaper_manager.h",
     "wallpaper/online_wallpaper_variant_info_fetcher.cc",
