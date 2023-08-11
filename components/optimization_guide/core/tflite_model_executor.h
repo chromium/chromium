@@ -128,14 +128,22 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputType> {
 
   // Called when a model file is available to load. Immediately loads model into
   // memory when `should_unload_model_on_complete_` is false.
-  void UpdateModelFile(const base::FilePath& file_path) override {
+  void UpdateModelFile(
+      base::optional_ref<const base::FilePath> file_path) override {
     DCHECK(execution_task_runner_ &&
            execution_task_runner_->RunsTasksInCurrentSequence());
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     UnloadModel();
+    DCHECK(!loaded_model_);
+    DCHECK(!model_fb_);
 
-    model_file_path_ = file_path;
+    // The model has been removed.
+    if (!file_path.has_value()) {
+      model_file_path_.reset();
+      return;
+    }
+    model_file_path_ = *file_path;
 
     // crbug/1257189: Histogram enums can't use dynamically created histogram
     // names, so factory create the local histogram (used in testing).

@@ -170,7 +170,7 @@ ClientSidePhishingModelOptimizationGuide::
 
 void ClientSidePhishingModelOptimizationGuide::OnModelUpdated(
     optimization_guide::proto::OptimizationTarget optimization_target,
-    const optimization_guide::ModelInfo& model_info) {
+    base::optional_ref<const optimization_guide::ModelInfo> model_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (optimization_target !=
           optimization_guide::proto::OPTIMIZATION_TARGET_CLIENT_SIDE_PHISHING &&
@@ -179,29 +179,32 @@ void ClientSidePhishingModelOptimizationGuide::OnModelUpdated(
               OPTIMIZATION_TARGET_CLIENT_SIDE_PHISHING_IMAGE_EMBEDDER) {
     return;
   }
+  if (!model_info.has_value()) {
+    return;
+  }
 
   if (optimization_target ==
       optimization_guide::proto::OPTIMIZATION_TARGET_CLIENT_SIDE_PHISHING) {
     background_task_runner_->PostTaskAndReplyWithResult(
         FROM_HERE,
         base::BindOnce(&LoadModelAndVisualTfLiteFile,
-                       model_info.GetModelFilePath(),
-                       model_info.GetAdditionalFiles()),
+                       model_info->GetModelFilePath(),
+                       model_info->GetAdditionalFiles()),
         base::BindOnce(&ClientSidePhishingModelOptimizationGuide::
                            OnModelAndVisualTfLiteFileLoaded,
                        weak_ptr_factory_.GetWeakPtr(),
-                       model_info.GetModelMetadata()));
+                       model_info->GetModelMetadata()));
   } else if (optimization_target ==
              optimization_guide::proto::
                  OPTIMIZATION_TARGET_CLIENT_SIDE_PHISHING_IMAGE_EMBEDDER) {
     background_task_runner_->PostTaskAndReplyWithResult(
         FROM_HERE,
         base::BindOnce(&LoadImageEmbeddingModelFile,
-                       model_info.GetModelFilePath()),
+                       model_info->GetModelFilePath()),
         base::BindOnce(&ClientSidePhishingModelOptimizationGuide::
                            OnImageEmbeddingModelLoaded,
                        weak_ptr_factory_.GetWeakPtr(),
-                       model_info.GetModelMetadata()));
+                       model_info->GetModelMetadata()));
   }
 }
 

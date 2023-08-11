@@ -103,10 +103,22 @@ class FakeOptimizationTargetModelObserver
     : public OptimizationTargetModelObserver {
  public:
   void OnModelUpdated(proto::OptimizationTarget optimization_target,
-                      const ModelInfo& model_info) override {
-    last_received_models_.insert_or_assign(optimization_target, model_info);
+                      base::optional_ref<const ModelInfo> model_info) override {
+    if (!model_info.has_value()) {
+      last_received_models_.insert_or_assign(optimization_target,
+                                             absl::nullopt);
+      return;
+    }
+    last_received_models_.insert_or_assign(optimization_target, *model_info);
   }
 
+  bool WasNullModelReceived(proto::OptimizationTarget optimization_target) {
+    auto model_it = last_received_models_.find(optimization_target);
+    return (model_it != last_received_models_.end()) && !model_it->second;
+  }
+
+  // Returns the last received ModelInfo for |optimization_target|. Does not
+  // differentiate whether a null model was received, or no model was received.
   absl::optional<ModelInfo> last_received_model_for_target(
       proto::OptimizationTarget optimization_target) const {
     auto model_it = last_received_models_.find(optimization_target);
@@ -119,7 +131,12 @@ class FakeOptimizationTargetModelObserver
   void Reset() { last_received_models_.clear(); }
 
  private:
-  base::flat_map<proto::OptimizationTarget, ModelInfo> last_received_models_;
+  // Contains the ModelInfo received per opt target. Three cases possible: Valid
+  // ModelInfo received. Null ModelInfo received is indicated by the presence of
+  // an entry with nullopt. No ModelInfo received is indicated by not having an
+  // entry for the opt target.
+  base::flat_map<proto::OptimizationTarget, absl::optional<ModelInfo>>
+      last_received_models_;
 };
 
 class FakePredictionModelDownloadManager
@@ -1403,9 +1420,7 @@ TEST_P(PredictionManagerTest, ModelRemovedWhenMissingInGetModelsResponse) {
       histogram_tester.ExpectUniqueSample(
           "OptimizationGuide.PredictionModelRemoved.PainfulPageLoad", true, 1);
     }
-    // TODO(b/292273719): The removed opt target should receive an update with
-    // a null model.
-    EXPECT_FALSE(observer.last_received_model_for_target(
+    EXPECT_TRUE(observer.WasNullModelReceived(
         proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD));
   }
 }

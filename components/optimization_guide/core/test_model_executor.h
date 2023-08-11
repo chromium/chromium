@@ -22,7 +22,7 @@ class TestModelExecutor
       scoped_refptr<base::SequencedTaskRunner>,
       scoped_refptr<base::SequencedTaskRunner>) override {}
 
-  void UpdateModelFile(const base::FilePath&) override {}
+  void UpdateModelFile(base::optional_ref<const base::FilePath>) override {}
 
   void UnloadModel() override {}
 

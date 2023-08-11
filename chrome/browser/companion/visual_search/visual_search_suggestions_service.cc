@@ -109,15 +109,18 @@ void VisualSearchSuggestionsService::OnModelFileLoaded(base::File model_file) {
 
 void VisualSearchSuggestionsService::OnModelUpdated(
     optimization_guide::proto::OptimizationTarget optimization_target,
-    const optimization_guide::ModelInfo& model_info) {
+    base::optional_ref<const optimization_guide::ModelInfo> model_info) {
   if (optimization_target !=
       optimization_guide::proto::
           OPTIMIZATION_TARGET_VISUAL_SEARCH_CLASSIFICATION) {
     return;
   }
+  if (!model_info.has_value()) {
+    return;
+  }
 
   const absl::optional<optimization_guide::proto::Any>& metadata =
-      model_info.GetModelMetadata();
+      model_info->GetModelMetadata();
 
   if (metadata.has_value()) {
     model_metadata_ = optimization_guide::ParsedAnyMetadata<
@@ -125,7 +128,7 @@ void VisualSearchSuggestionsService::OnModelUpdated(
   }
 
   background_task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE, base::BindOnce(&LoadModelFile, model_info.GetModelFilePath()),
+      FROM_HERE, base::BindOnce(&LoadModelFile, model_info->GetModelFilePath()),
       base::BindOnce(&VisualSearchSuggestionsService::OnModelFileLoaded,
                      weak_ptr_factory_.GetWeakPtr()));
 }

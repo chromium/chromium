@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "base/containers/contains.h"
+#import "base/files/file_util.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_command_line.h"
 #import "base/test/scoped_feature_list.h"
@@ -62,9 +64,9 @@ BuildGetModelsResponse() {
 class ModelFileObserver
     : public optimization_guide::OptimizationTargetModelObserver {
  public:
-  using ModelFileReceivedCallback =
-      base::OnceCallback<void(optimization_guide::proto::OptimizationTarget,
-                              const optimization_guide::ModelInfo&)>;
+  using ModelFileReceivedCallback = base::OnceCallback<void(
+      optimization_guide::proto::OptimizationTarget,
+      base::optional_ref<const optimization_guide::ModelInfo>)>;
 
   ModelFileObserver() = default;
   ~ModelFileObserver() override = default;
@@ -75,7 +77,8 @@ class ModelFileObserver
 
   void OnModelUpdated(
       optimization_guide::proto::OptimizationTarget optimization_target,
-      const optimization_guide::ModelInfo& model_info) override {
+      base::optional_ref<const optimization_guide::ModelInfo> model_info)
+      override {
     if (file_received_callback_)
       std::move(file_received_callback_).Run(optimization_target, model_info);
   }
@@ -390,6 +393,50 @@ class PredictionManagerModelDownloadingBrowserTest
             /*model_metadata=*/absl::nullopt, model_file_observer_.get());
   }
 
+  // Sets up the model observer to receive valid ModelInfo.
+  void SetUpValidModelInfoReceival(base::RunLoop* run_loop,
+                                   const std::set<base::FilePath::StringType>&
+                                       expected_additional_files = {}) {
+    model_file_observer_->set_model_file_received_callback(base::BindOnce(
+        [](base::RunLoop* run_loop,
+           const std::set<base::FilePath::StringType>&
+               expected_additional_files,
+           optimization_guide::proto::OptimizationTarget optimization_target,
+           base::optional_ref<const optimization_guide::ModelInfo> model_info) {
+          base::ScopedAllowBlockingForTesting scoped_allow_blocking;
+
+          EXPECT_EQ(
+              optimization_target,
+              optimization_guide::proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
+          EXPECT_TRUE(model_info.has_value());
+
+          EXPECT_EQ(123, model_info->GetVersion());
+          EXPECT_TRUE(model_info->GetModelFilePath().IsAbsolute());
+          EXPECT_TRUE(base::PathExists(model_info->GetModelFilePath()));
+
+          EXPECT_EQ(expected_additional_files.size(),
+                    model_info->GetAdditionalFiles().size());
+          for (const base::FilePath& add_file :
+               model_info->GetAdditionalFiles()) {
+            EXPECT_TRUE(add_file.IsAbsolute());
+            EXPECT_TRUE(base::PathExists(add_file));
+            EXPECT_TRUE(base::Contains(expected_additional_files,
+                                       add_file.BaseName().value()));
+          }
+          run_loop->Quit();
+        },
+        run_loop, expected_additional_files));
+  }
+
+  // Sets up the model observer to not receive any model.
+  void SetUpNoModelInfoReceival() {
+    model_file_observer_->set_model_file_received_callback(base::BindOnce(
+        [](optimization_guide::proto::OptimizationTarget optimization_target,
+           base::optional_ref<const optimization_guide::ModelInfo> model_info) {
+          FAIL() << "Should not be called";
+        }));
+  }
+
  private:
   void InitializeFeatureList() override {
     std::vector<base::test::FeatureRefAndParams> enabled_features = {
@@ -426,16 +473,7 @@ TEST_P(PredictionManagerModelDownloadingBrowserTest,
     base::HistogramTester histogram_tester;
 
     std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
-    model_file_observer()->set_model_file_received_callback(base::BindOnce(
-        [](base::RunLoop* run_loop,
-           optimization_guide::proto::OptimizationTarget optimization_target,
-           const optimization_guide::ModelInfo& model_info) {
-          EXPECT_EQ(
-              optimization_target,
-              optimization_guide::proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
-          run_loop->Quit();
-        },
-        run_loop.get()));
+    SetUpValidModelInfoReceival(run_loop.get());
     RegisterModelFileObserverWithBrowserState();
 
     // Wait until the observer receives the file. We increase the timeout to 60
@@ -465,16 +503,7 @@ TEST_P(PredictionManagerModelDownloadingBrowserTest,
     base::HistogramTester otr_histogram_tester;
     CreateOffTheRecordBrowserState();
     std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
-    model_file_observer()->set_model_file_received_callback(base::BindOnce(
-        [](base::RunLoop* run_loop,
-           optimization_guide::proto::OptimizationTarget optimization_target,
-           const optimization_guide::ModelInfo& model_info) {
-          EXPECT_EQ(
-              optimization_target,
-              optimization_guide::proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
-          run_loop->Quit();
-        },
-        run_loop.get()));
+    SetUpValidModelInfoReceival(run_loop.get());
     RegisterModelFileObserverWithBrowserState(
         browser_state_->GetOffTheRecordChromeBrowserState());
     task_environment_.RunUntilIdle();
@@ -495,14 +524,9 @@ TEST_P(PredictionManagerModelDownloadingBrowserTest,
 
   // Registering should not initiate the fetch and the model updated callback
   // should not be triggered too.
+  SetUpNoModelInfoReceival();
   RegisterModelFileObserverWithBrowserState(
       browser_state_->GetOffTheRecordChromeBrowserState());
-
-  model_file_observer()->set_model_file_received_callback(base::BindOnce(
-      [](optimization_guide::proto::OptimizationTarget optimization_target,
-         const optimization_guide::ModelInfo& model_info) {
-        FAIL() << "Should not be called";
-      }));
 
   RetryForHistogramUntilCountReached(
       &histogram_tester, "OptimizationGuide.PredictionManager.StoreInitialized",
@@ -546,16 +570,7 @@ TEST_P(PredictionManagerModelDownloadingBrowserTest,
       PredictionModelsFetcherRemoteResponseType::kSuccessfulWithValidModelFile);
 
   std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
-  model_file_observer()->set_model_file_received_callback(base::BindOnce(
-      [](base::RunLoop* run_loop,
-         optimization_guide::proto::OptimizationTarget optimization_target,
-         const optimization_guide::ModelInfo& model_info) {
-        EXPECT_EQ(
-            optimization_target,
-            optimization_guide::proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
-        run_loop->Quit();
-      },
-      run_loop.get()));
+  SetUpValidModelInfoReceival(run_loop.get());
 
   // Registering should initiate the fetch and receive a response with a model
   // containing a download URL and then subsequently downloaded.
@@ -592,20 +607,8 @@ TEST_P(PredictionManagerModelDownloadingBrowserTest,
                       kSuccessfulWithValidModelFileAndValidAdditionalFiles);
 
   std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
-  model_file_observer()->set_model_file_received_callback(base::BindOnce(
-      [](base::RunLoop* run_loop,
-         optimization_guide::proto::OptimizationTarget optimization_target,
-         const optimization_guide::ModelInfo& model_info) {
-        EXPECT_EQ(
-            optimization_target,
-            optimization_guide::proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
-        ASSERT_EQ(1U, model_info.GetAdditionalFiles().size());
-        EXPECT_TRUE(model_info.GetAdditionalFiles().begin()->IsAbsolute());
-        EXPECT_EQ(FILE_PATH_LITERAL("good_additional_file.txt"),
-                  model_info.GetAdditionalFiles().begin()->BaseName().value());
-        run_loop->Quit();
-      },
-      run_loop.get()));
+  SetUpValidModelInfoReceival(run_loop.get(),
+                              {FILE_PATH_LITERAL("good_additional_file.txt")});
 
   // Registering should initiate the fetch and receive a response with a model
   // containing a download URL and then subsequently downloaded.
@@ -640,18 +643,11 @@ TEST_P(PredictionManagerModelDownloadingBrowserTest,
 
   SetResponseType(PredictionModelsFetcherRemoteResponseType::
                       kSuccessfulWithValidModelFileAndInvalidAdditionalFiles);
-
-  std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
-  model_file_observer()->set_model_file_received_callback(base::BindOnce(
-      [](optimization_guide::proto::OptimizationTarget optimization_target,
-         const optimization_guide::ModelInfo& model_info) {
-        // Since the model's additional file is invalid, this callback should
-        // never be run.
-        FAIL();
-      }));
+  SetUpNoModelInfoReceival();
 
   // Registering should initiate the fetch and receive a response with a model
-  // containing a download URL and then subsequently downloaded.
+  // containing a download URL and then subsequently downloaded. But the model
+  // with invalid additional file, will not be delivered to observers.
   RegisterModelFileObserverWithBrowserState();
 
   RetryForHistogramUntilCountReached(

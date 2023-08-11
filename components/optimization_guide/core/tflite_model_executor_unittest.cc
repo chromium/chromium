@@ -849,5 +849,25 @@ TEST_F(TFLiteModelExecutorTest, UpdateModelFileWithPreloading) {
       true, 1);
 }
 
+TEST_F(TFLiteModelExecutorTest, NullModelUpdate) {
+  base::HistogramTester histogram_tester;
+  CreateModelHandler();
+
+  PushModelFileToModelExecutor(
+      proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
+      /*model_metadata=*/absl::nullopt);
+  EXPECT_TRUE(model_handler()->ModelAvailable());
+  EXPECT_TRUE(model_handler()->GetModelInfo());
+
+  // Model should not be available after a null model update.
+  model_handler()->OnModelUpdated(
+      proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
+      /*model_info=*/absl::nullopt);
+  RunUntilIdle();
+
+  EXPECT_FALSE(model_handler()->ModelAvailable());
+  EXPECT_FALSE(model_handler()->GetModelInfo());
+}
+
 }  // namespace
 }  // namespace optimization_guide

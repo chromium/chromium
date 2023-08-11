@@ -34,7 +34,8 @@ class OnDeviceTailModelService
   // optimization_guide::OptimizationTargetModelObserver implementation:
   void OnModelUpdated(
       optimization_guide::proto::OptimizationTarget optimization_target,
-      const optimization_guide::ModelInfo& model_info) override;
+      base::optional_ref<const optimization_guide::ModelInfo> model_info)
+      override;
 
   // Calls the model executor to generate predictions for the input.
   void GetPredictionsForInput(

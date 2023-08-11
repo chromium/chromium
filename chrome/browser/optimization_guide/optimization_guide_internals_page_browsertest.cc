@@ -83,31 +83,6 @@ class TestWebUIControllerFactory : public content::WebUIControllerFactory {
   }
 };
 
-class ModelFileObserver
-    : public optimization_guide::OptimizationTargetModelObserver {
- public:
-  using ModelFileReceivedCallback =
-      base::OnceCallback<void(optimization_guide::proto::OptimizationTarget,
-                              const optimization_guide::ModelInfo&)>;
-
-  ModelFileObserver() = default;
-  ~ModelFileObserver() override = default;
-
-  void set_model_file_received_callback(ModelFileReceivedCallback callback) {
-    file_received_callback_ = std::move(callback);
-  }
-
-  void OnModelUpdated(
-      optimization_guide::proto::OptimizationTarget optimization_target,
-      const optimization_guide::ModelInfo& model_info) override {
-    if (file_received_callback_)
-      std::move(file_received_callback_).Run(optimization_target, model_info);
-  }
-
- private:
-  ModelFileReceivedCallback file_received_callback_;
-};
-
 }  // namespace
 
 class OptimizationGuideInternalsPageBrowserTest : public MojoWebUIBrowserTest {
@@ -139,22 +114,24 @@ class OptimizationGuideInternalsPageBrowserTest : public MojoWebUIBrowserTest {
   void TriggerModelDownloadForOptimizationTarget(
       optimization_guide::proto::OptimizationTarget optimization_target) {
     base::RunLoop run_loop;
-    ModelFileObserver model_file_observer;
+    optimization_guide::ModelFileObserver model_file_observer;
 
     model_file_observer.set_model_file_received_callback(
         base::BindLambdaForTesting(
             [&run_loop](optimization_guide::proto::OptimizationTarget
                             optimization_target,
-                        const optimization_guide::ModelInfo& model_info) {
+                        base::optional_ref<const optimization_guide::ModelInfo>
+                            model_info) {
               base::ScopedAllowBlockingForTesting scoped_allow_blocking;
 
-              EXPECT_EQ(123, model_info.GetVersion());
-              EXPECT_TRUE(model_info.GetModelFilePath().IsAbsolute());
-              EXPECT_TRUE(base::PathExists(model_info.GetModelFilePath()));
+              EXPECT_TRUE(model_info.has_value());
+              EXPECT_EQ(123, model_info->GetVersion());
+              EXPECT_TRUE(model_info->GetModelFilePath().IsAbsolute());
+              EXPECT_TRUE(base::PathExists(model_info->GetModelFilePath()));
 
-              EXPECT_EQ(1U, model_info.GetAdditionalFiles().size());
+              EXPECT_EQ(1U, model_info->GetAdditionalFiles().size());
               for (const base::FilePath& add_file :
-                   model_info.GetAdditionalFiles()) {
+                   model_info->GetAdditionalFiles()) {
                 EXPECT_TRUE(add_file.IsAbsolute());
                 EXPECT_TRUE(base::PathExists(add_file));
               }

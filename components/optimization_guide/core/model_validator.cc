@@ -34,7 +34,7 @@ void ModelValidatorHandler::OnModelExecutionComplete(
 
 void ModelValidatorHandler::OnModelUpdated(
     optimization_guide::proto::OptimizationTarget optimization_target,
-    const optimization_guide::ModelInfo& model_info) {
+    base::optional_ref<const optimization_guide::ModelInfo> model_info) {
   // First invoke parent to update internal status.
   optimization_guide::ModelHandler<
       float, const std::vector<float>&>::OnModelUpdated(optimization_target,

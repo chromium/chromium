@@ -734,7 +734,7 @@ PredictionManager::GetDownloadedModelsInfoForWebUI() const {
 
 void PredictionManager::NotifyObserversOfNewModel(
     proto::OptimizationTarget optimization_target,
-    const ModelInfo& model_info) {
+    base::optional_ref<const ModelInfo> model_info) {
   auto observers_it =
       registered_observers_for_optimization_targets_.find(optimization_target);
   if (observers_it == registered_observers_for_optimization_targets_.end())
@@ -744,13 +744,21 @@ void PredictionManager::NotifyObserversOfNewModel(
   for (auto& observer : observers_it->second) {
     observer.OnModelUpdated(optimization_target, model_info);
     if (optimization_guide_logger_->ShouldEnableDebugLogs()) {
-      OPTIMIZATION_GUIDE_LOGGER(
-          optimization_guide_common::mojom::LogSource::MODEL_MANAGEMENT,
-          optimization_guide_logger_)
-          << "OnModelFileUpdated for target: " << optimization_target
-          << "\nFile path: " << model_info.GetModelFilePath().AsUTF8Unsafe()
-          << "\nHas metadata: "
-          << (model_info.GetModelMetadata() ? "True" : "False");
+      if (model_info.has_value()) {
+        OPTIMIZATION_GUIDE_LOGGER(
+            optimization_guide_common::mojom::LogSource::MODEL_MANAGEMENT,
+            optimization_guide_logger_)
+            << "OnModelFileUpdated for target: " << optimization_target
+            << "\nFile path: " << model_info->GetModelFilePath().AsUTF8Unsafe()
+            << "\nHas metadata: "
+            << (model_info->GetModelMetadata() ? "True" : "False");
+      } else {
+        OPTIMIZATION_GUIDE_LOGGER(
+            optimization_guide_common::mojom::LogSource::MODEL_MANAGEMENT,
+            optimization_guide_logger_)
+            << "OnModelFileUpdated for target: " << optimization_target
+            << " for model removed";
+      }
     }
   }
 }
@@ -932,6 +940,7 @@ void PredictionManager::RemoveModelFromStore(
                                           model_cache_key_)) {
       prediction_model_store_->RemoveModel(
           optimization_target, model_cache_key_, model_removal_reason);
+      NotifyObserversOfNewModel(optimization_target, absl::nullopt);
     }
     return;
   }
@@ -947,6 +956,7 @@ void PredictionManager::RemoveModelFromStore(
         true);
     model_and_features_store_->RemovePredictionModelFromEntryKey(
         model_entry_key);
+    NotifyObserversOfNewModel(optimization_target, absl::nullopt);
   }
 }
 

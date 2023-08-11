@@ -167,6 +167,9 @@ void AnnotatorImpl::NotifyWhenModelAvailable(base::OnceClosure callback) {
 
 absl::optional<optimization_guide::ModelInfo>
 AnnotatorImpl::GetBrowsingTopicsModelInfo() const {
+  if (!is_valid_model_) {
+    return absl::nullopt;
+  }
   return GetModelInfo();
 }
 
@@ -454,31 +457,34 @@ void AnnotatorImpl::UnloadModel() {
 
 void AnnotatorImpl::OnModelUpdated(
     optimization_guide::proto::OptimizationTarget optimization_target,
-    const optimization_guide::ModelInfo& model_info) {
+    base::optional_ref<const optimization_guide::ModelInfo> model_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // First invoke parent to update internal status.
+  optimization_guide::BertModelHandler::OnModelUpdated(optimization_target,
+                                                       model_info);
+  is_valid_model_ = false;
+
   if (optimization_target !=
       optimization_guide::proto::OPTIMIZATION_TARGET_PAGE_TOPICS_V2) {
     return;
   }
 
-  if (!model_info.GetModelMetadata()) {
+  if (!model_info.has_value() || !model_info->GetModelMetadata()) {
     return;
   }
 
   absl::optional<optimization_guide::proto::PageTopicsModelMetadata>
       model_metadata = optimization_guide::ParsedAnyMetadata<
           optimization_guide::proto::PageTopicsModelMetadata>(
-          *model_info.GetModelMetadata());
+          *model_info->GetModelMetadata());
 
   if (!model_metadata ||
       !IsModelTaxonomyVersionSupported(model_metadata->taxonomy_version())) {
     return;
   }
 
-  optimization_guide::BertModelHandler::OnModelUpdated(optimization_target,
-                                                       model_info);
-
   // New model, new override list.
+  is_valid_model_ = true;
   override_list_file_path_ = absl::nullopt;
   override_list_ = absl::nullopt;
 
@@ -486,7 +492,7 @@ void AnnotatorImpl::OnModelUpdated(
     version_ = model_metadata->version();
   }
 
-  for (const base::FilePath& path : model_info.GetAdditionalFiles()) {
+  for (const base::FilePath& path : model_info->GetAdditionalFiles()) {
     DCHECK(path.IsAbsolute());
     if (path.BaseName() == base::FilePath(kOverrideListBasePath)) {
       override_list_file_path_ = path;

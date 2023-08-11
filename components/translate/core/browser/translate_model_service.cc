@@ -95,14 +95,17 @@ void TranslateModelService::Shutdown() {
 
 void TranslateModelService::OnModelUpdated(
     optimization_guide::proto::OptimizationTarget optimization_target,
-    const optimization_guide::ModelInfo& model_info) {
+    base::optional_ref<const optimization_guide::ModelInfo> model_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (optimization_target !=
       optimization_guide::proto::OPTIMIZATION_TARGET_LANGUAGE_DETECTION) {
     return;
   }
+  if (!model_info.has_value()) {
+    return;
+  }
   background_task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE, base::BindOnce(&LoadModelFile, model_info.GetModelFilePath()),
+      FROM_HERE, base::BindOnce(&LoadModelFile, model_info->GetModelFilePath()),
       base::BindOnce(&TranslateModelService::OnModelFileLoaded,
                      weak_ptr_factory_.GetWeakPtr()));
 }

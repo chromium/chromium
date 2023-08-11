@@ -28,7 +28,8 @@ class PredictionModelHandler : public optimization_guide::ModelHandler<
   // optimization_guide::ModelHandler overrides.
   void OnModelUpdated(
       optimization_guide::proto::OptimizationTarget optimization_target,
-      const optimization_guide::ModelInfo& model_info) override;
+      base::optional_ref<const optimization_guide::ModelInfo> model_info)
+      override;
 
   void WaitForModelLoadForTesting();
 

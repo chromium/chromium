@@ -44,11 +44,14 @@ OptimizationGuideSegmentationModelHandler::
 
 void OptimizationGuideSegmentationModelHandler::OnModelUpdated(
     optimization_guide::proto::OptimizationTarget segment_id,
-    const optimization_guide::ModelInfo& model_info) {
+    base::optional_ref<const optimization_guide::ModelInfo> model_info) {
   // First invoke parent to update internal status.
   optimization_guide::ModelHandler<
       ModelProvider::Response,
       const ModelProvider::Request&>::OnModelUpdated(segment_id, model_info);
+  if (!model_info.has_value()) {
+    return;
+  }
   // The parent class should always set the model availability to true after
   // having received an updated model.
   DCHECK(ModelAvailable());
@@ -76,7 +79,7 @@ void OptimizationGuideSegmentationModelHandler::OnModelUpdated(
 
   model_updated_callback_.Run(OptimizationTargetToSegmentId(segment_id),
                               std::move(*segmentation_model_metadata),
-                              model_info.GetVersion());
+                              model_info->GetVersion());
 }
 
 }  // namespace segmentation_platform

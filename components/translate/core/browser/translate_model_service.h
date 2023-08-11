@@ -48,7 +48,8 @@ class TranslateModelService
   // optimization_guide::OptimizationTargetModelObserver implementation:
   void OnModelUpdated(
       optimization_guide::proto::OptimizationTarget optimization_target,
-      const optimization_guide::ModelInfo& model_info) override;
+      base::optional_ref<const optimization_guide::ModelInfo> model_info)
+      override;
 
   // Returns the language detection model file, should only be called when the
   // is model file is already available. See the |NotifyOnModelFileAvailable|

@@ -20,6 +20,7 @@
 #include "base/sequence_checker.h"
 #include "base/time/clock.h"
 #include "base/timer/timer.h"
+#include "base/types/optional_ref.h"
 #include "components/optimization_guide/core/model_enums.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/prediction_model_download_observer.h"
@@ -265,10 +266,12 @@ class PredictionManager : public PredictionModelDownloadObserver {
   // 2. The last time a fetch attempt was made.
   void ScheduleModelsFetch();
 
-  // Notifies observers of |optimization_target| that the model has been
-  // updated.
-  void NotifyObserversOfNewModel(proto::OptimizationTarget optimization_target,
-                                 const ModelInfo& model_info);
+  // Notifies observers of `optimization_target` that the model has been
+  // updated. `model_info` will be nullopt when the model was stopped to be
+  // served from the server, and removed from the store,
+  void NotifyObserversOfNewModel(
+      proto::OptimizationTarget optimization_target,
+      base::optional_ref<const ModelInfo> model_info);
 
   // Updates the metadata for |model|.
   void UpdateModelMetadata(const proto::PredictionModel& model);

@@ -42,7 +42,8 @@ class VisualSearchSuggestionsService
   // optimization_guide::OptimizationTargetModelObserver implementation:
   void OnModelUpdated(
       optimization_guide::proto::OptimizationTarget optimization_target,
-      const optimization_guide::ModelInfo& model_info) override;
+      base::optional_ref<const optimization_guide::ModelInfo> model_info)
+      override;
 
   // Registers a callback used when model file is available or updated.
   void SetModelUpdateCallback(ModelUpdateCallback callback);

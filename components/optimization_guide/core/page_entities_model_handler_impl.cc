@@ -263,17 +263,21 @@ void PageEntitiesModelHandlerImpl::AddOnModelUpdatedCallback(
 
 void PageEntitiesModelHandlerImpl::OnModelUpdated(
     proto::OptimizationTarget optimization_target,
-    const ModelInfo& model_info) {
-  if (optimization_target != proto::OPTIMIZATION_TARGET_PAGE_ENTITIES)
+    base::optional_ref<const ModelInfo> model_info) {
+  if (optimization_target != proto::OPTIMIZATION_TARGET_PAGE_ENTITIES) {
     return;
+  }
+  if (!model_info.has_value()) {
+    return;
+  }
 
-  model_info_ = model_info;
+  model_info_ = *model_info;
 
   background_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
           &EntityAnnotatorHolder::CreateAndSetEntityAnnotatorOnBackgroundThread,
-          entity_annotator_holder_->GetBackgroundWeakPtr(), model_info));
+          entity_annotator_holder_->GetBackgroundWeakPtr(), *model_info));
 
   // Run any observing callbacks after the model file is posted to the
   // model executor thread so that any model execution requests are posted to

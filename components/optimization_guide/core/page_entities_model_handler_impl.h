@@ -122,7 +122,7 @@ class PageEntitiesModelHandlerImpl : public OptimizationTargetModelObserver,
 
   // OptimizationTargetModelObserver:
   void OnModelUpdated(proto::OptimizationTarget optimization_target,
-                      const ModelInfo& model_info) override;
+                      base::optional_ref<const ModelInfo> model_info) override;
 
  private:
   // Invoked on the UI thread when entity annotator library has been

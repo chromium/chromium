@@ -17,6 +17,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
+#include "base/types/optional_ref.h"
 #include "components/optimization_guide/core/model_executor.h"
 #include "components/optimization_guide/core/model_util.h"
 #include "components/optimization_guide/core/optimization_guide_model_provider.h"
@@ -41,10 +42,13 @@ void RecordTaskExecutionLatency(proto::OptimizationTarget optimization_target,
 }  // namespace
 
 // This class owns and handles the execution of models on the UI thread.
-// Derived classes must provide an implementation of |ModelExecutor|
-// which is then owned by |this|. The passed executor will be called
-// and destroyed on the thread specified by |model_executor_task_runner|,
+// Derived classes must provide an implementation of `ModelExecutor`
+// which is then owned by `this`. The passed executor will be called
+// and destroyed on the thread specified by `model_executor_task_runner`,
 // which is all handled by this class.
+//
+// Derived classes that override `OnModelUpdated` must call the parent
+// `OnModelUpdated` as the first step, for the internal state to be updated.
 template <class OutputType, class InputType>
 class ModelHandler : public OptimizationTargetModelObserver {
  public:
@@ -193,8 +197,9 @@ class ModelHandler : public OptimizationTargetModelObserver {
 
   // OptimizationTargetModelObserver:
   void OnModelUpdated(proto::OptimizationTarget optimization_target,
-                      const ModelInfo& model_info) override {
+                      base::optional_ref<const ModelInfo> model_info) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    absl::optional<base::FilePath> model_file_path;
 
     if (optimization_target_ != optimization_target)
       return;
@@ -207,14 +212,19 @@ class ModelHandler : public OptimizationTargetModelObserver {
       handler_created_time_ = absl::nullopt;
     }
 
-    model_info_ = model_info;
-    model_available_ = true;
+    model_available_ = model_info.has_value();
+    if (model_info.has_value()) {
+      model_info_ = *model_info;
+      model_file_path = model_info->GetModelFilePath();
+    } else {
+      model_info_ = absl::nullopt;
+    }
 
     model_executor_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&ModelExecutor<OutputType, InputType>::UpdateModelFile,
                        model_executor_->GetWeakPtrForExecutionThread(),
-                       model_info.GetModelFilePath()));
+                       model_file_path));
 
     // Run any observing callbacks after the model file is posted to the
     // model executor thread so that any model execution requests are posted to

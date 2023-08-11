@@ -130,15 +130,18 @@ OnDeviceTailModelService::~OnDeviceTailModelService() {
 
 void OnDeviceTailModelService::OnModelUpdated(
     optimization_guide::proto::OptimizationTarget optimization_target,
-    const optimization_guide::ModelInfo& model_info) {
+    base::optional_ref<const optimization_guide::ModelInfo> model_info) {
   if (optimization_target !=
       optimization_guide::proto::
           OPTIMIZATION_TARGET_OMNIBOX_ON_DEVICE_TAIL_SUGGEST) {
     return;
   }
+  if (!model_info.has_value()) {
+    return;
+  }
 
   const absl::optional<optimization_guide::proto::Any>& metadata =
-      model_info.GetModelMetadata();
+      model_info->GetModelMetadata();
   absl::optional<optimization_guide::proto::OnDeviceTailSuggestModelMetadata>
       tail_model_metadata = absl::nullopt;
   if (metadata.has_value()) {
@@ -154,8 +157,8 @@ void OnDeviceTailModelService::OnModelUpdated(
   model_executor_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&InitializeTailModelExecutor, tail_model_executor_.get(),
-                     model_info.GetModelFilePath(),
-                     model_info.GetAdditionalFiles(),
+                     model_info->GetModelFilePath(),
+                     model_info->GetAdditionalFiles(),
                      tail_model_metadata.value()));
 }
 

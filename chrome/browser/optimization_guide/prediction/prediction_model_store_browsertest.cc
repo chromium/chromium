@@ -136,11 +136,14 @@ class PredictionModelStoreBrowserTestBase : public InProcessBrowserTest {
   void RegisterAndWaitForModelUpdate(ModelFileObserver* model_file_observer,
                                      Profile* profile = nullptr) {
     std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
-    model_file_observer->set_model_file_received_callback(
-        base::BindOnce([](base::RunLoop* run_loop,
-                          proto::OptimizationTarget optimization_target,
-                          const ModelInfo& model_info) { run_loop->Quit(); },
-                       run_loop.get()));
+    model_file_observer->set_model_file_received_callback(base::BindOnce(
+        [](base::RunLoop* run_loop,
+           proto::OptimizationTarget optimization_target,
+           base::optional_ref<const ModelInfo> model_info) {
+          EXPECT_TRUE(model_info.has_value());
+          run_loop->Quit();
+        },
+        run_loop.get()));
 
     RegisterModelFileObserverWithKeyedService(
         model_file_observer, profile ? profile : browser()->profile());

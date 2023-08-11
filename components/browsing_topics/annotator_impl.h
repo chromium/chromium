@@ -71,7 +71,8 @@ class AnnotatorImpl : public Annotator,
   // optimization_guide::BertModelHandler:
   void OnModelUpdated(
       optimization_guide::proto::OptimizationTarget optimization_target,
-      const optimization_guide::ModelInfo& model_info) override;
+      base::optional_ref<const optimization_guide::ModelInfo> model_info)
+      override;
 
   // Extracts the scored categories from the output of the model.
   absl::optional<std::vector<int32_t>> ExtractCategoriesFromModelOutput(
@@ -139,6 +140,10 @@ class AnnotatorImpl : public Annotator,
   // When this counter is 0 in |OnBatchComplete|, the model in unloaded from
   // memory.
   size_t in_progess_batches_ = 0;
+
+  // Indicates whether the model received was valid. Model will be invalid when
+  // metadata versions are unsupported.
+  bool is_valid_model_ = false;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
