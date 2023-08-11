@@ -142,6 +142,97 @@ v4l2_ctrl_hevc_sps SetupSPSCtrl(const H265SPS* sps) {
 
   return v4l2_sps;
 }
+
+// Translates decoder PPS structure into |v4l2_ctrl_hevc_pps| structure.
+v4l2_ctrl_hevc_pps SetupPPSCtrl(const H265PPS* pps) {
+  struct v4l2_ctrl_hevc_pps v4l2_pps;
+  memset(&v4l2_pps, 0, sizeof(v4l2_pps));
+
+  // Translates values using the |v4l2_ctrl_hevc_pps| struct order
+#define PPS_TO_V4L2PPS(a) v4l2_pps.a = pps->a
+  v4l2_pps.pic_parameter_set_id = pps->pps_pic_parameter_set_id;
+  PPS_TO_V4L2PPS(num_extra_slice_header_bits);
+  PPS_TO_V4L2PPS(num_ref_idx_l0_default_active_minus1);
+  PPS_TO_V4L2PPS(num_ref_idx_l1_default_active_minus1);
+  PPS_TO_V4L2PPS(init_qp_minus26);
+  PPS_TO_V4L2PPS(diff_cu_qp_delta_depth);
+  PPS_TO_V4L2PPS(pps_cb_qp_offset);
+  PPS_TO_V4L2PPS(pps_cr_qp_offset);
+
+  if (pps->tiles_enabled_flag) {
+    PPS_TO_V4L2PPS(num_tile_columns_minus1);
+    PPS_TO_V4L2PPS(num_tile_rows_minus1);
+
+    if (!pps->uniform_spacing_flag) {
+      static_assert(std::size(v4l2_pps.column_width_minus1) >=
+                        std::extent<decltype(pps->column_width_minus1)>(),
+                    "column_width_minus1 arrays must be same size");
+      for (int i = 0; i <= pps->num_tile_columns_minus1; ++i) {
+        v4l2_pps.column_width_minus1[i] = pps->column_width_minus1[i];
+      }
+
+      static_assert(std::size(v4l2_pps.row_height_minus1) >=
+                        std::extent<decltype(pps->row_height_minus1)>(),
+                    "row_height_minus1 arrays must be same size");
+      for (int i = 0; i <= pps->num_tile_rows_minus1; ++i) {
+        v4l2_pps.row_height_minus1[i] = pps->row_height_minus1[i];
+      }
+    }
+  }
+
+  PPS_TO_V4L2PPS(pps_beta_offset_div2);
+  PPS_TO_V4L2PPS(pps_tc_offset_div2);
+  PPS_TO_V4L2PPS(log2_parallel_merge_level_minus2);
+#undef PPS_TO_V4L2PPS
+
+#define SET_V4L2_PPS_FLAG_IF(cond, flag) \
+  v4l2_pps.flags |= ((pps->cond) ? (flag) : 0)
+  SET_V4L2_PPS_FLAG_IF(dependent_slice_segments_enabled_flag,
+                       V4L2_HEVC_PPS_FLAG_DEPENDENT_SLICE_SEGMENT_ENABLED);
+  SET_V4L2_PPS_FLAG_IF(output_flag_present_flag,
+                       V4L2_HEVC_PPS_FLAG_OUTPUT_FLAG_PRESENT);
+  SET_V4L2_PPS_FLAG_IF(sign_data_hiding_enabled_flag,
+                       V4L2_HEVC_PPS_FLAG_SIGN_DATA_HIDING_ENABLED);
+  SET_V4L2_PPS_FLAG_IF(cabac_init_present_flag,
+                       V4L2_HEVC_PPS_FLAG_CABAC_INIT_PRESENT);
+  SET_V4L2_PPS_FLAG_IF(constrained_intra_pred_flag,
+                       V4L2_HEVC_PPS_FLAG_CONSTRAINED_INTRA_PRED);
+  SET_V4L2_PPS_FLAG_IF(transform_skip_enabled_flag,
+                       V4L2_HEVC_PPS_FLAG_TRANSFORM_SKIP_ENABLED);
+  SET_V4L2_PPS_FLAG_IF(cu_qp_delta_enabled_flag,
+                       V4L2_HEVC_PPS_FLAG_CU_QP_DELTA_ENABLED);
+  SET_V4L2_PPS_FLAG_IF(pps_slice_chroma_qp_offsets_present_flag,
+                       V4L2_HEVC_PPS_FLAG_PPS_SLICE_CHROMA_QP_OFFSETS_PRESENT);
+  SET_V4L2_PPS_FLAG_IF(weighted_pred_flag, V4L2_HEVC_PPS_FLAG_WEIGHTED_PRED);
+  SET_V4L2_PPS_FLAG_IF(weighted_bipred_flag,
+                       V4L2_HEVC_PPS_FLAG_WEIGHTED_BIPRED);
+  SET_V4L2_PPS_FLAG_IF(transquant_bypass_enabled_flag,
+                       V4L2_HEVC_PPS_FLAG_TRANSQUANT_BYPASS_ENABLED);
+  SET_V4L2_PPS_FLAG_IF(tiles_enabled_flag, V4L2_HEVC_PPS_FLAG_TILES_ENABLED);
+  SET_V4L2_PPS_FLAG_IF(entropy_coding_sync_enabled_flag,
+                       V4L2_HEVC_PPS_FLAG_ENTROPY_CODING_SYNC_ENABLED);
+  SET_V4L2_PPS_FLAG_IF(loop_filter_across_tiles_enabled_flag,
+                       V4L2_HEVC_PPS_FLAG_LOOP_FILTER_ACROSS_TILES_ENABLED);
+  SET_V4L2_PPS_FLAG_IF(
+      pps_loop_filter_across_slices_enabled_flag,
+      V4L2_HEVC_PPS_FLAG_PPS_LOOP_FILTER_ACROSS_SLICES_ENABLED);
+  SET_V4L2_PPS_FLAG_IF(deblocking_filter_override_enabled_flag,
+                       V4L2_HEVC_PPS_FLAG_DEBLOCKING_FILTER_OVERRIDE_ENABLED);
+  SET_V4L2_PPS_FLAG_IF(pps_deblocking_filter_disabled_flag,
+                       V4L2_HEVC_PPS_FLAG_PPS_DISABLE_DEBLOCKING_FILTER);
+  SET_V4L2_PPS_FLAG_IF(lists_modification_present_flag,
+                       V4L2_HEVC_PPS_FLAG_LISTS_MODIFICATION_PRESENT);
+  SET_V4L2_PPS_FLAG_IF(
+      slice_segment_header_extension_present_flag,
+      V4L2_HEVC_PPS_FLAG_SLICE_SEGMENT_HEADER_EXTENSION_PRESENT);
+  SET_V4L2_PPS_FLAG_IF(deblocking_filter_control_present_flag,
+                       V4L2_HEVC_PPS_FLAG_DEBLOCKING_FILTER_CONTROL_PRESENT);
+  SET_V4L2_PPS_FLAG_IF(uniform_spacing_flag,
+                       V4L2_HEVC_PPS_FLAG_UNIFORM_SPACING);
+#undef SET_V4L2_PPS_FLAG_IF
+
+  return v4l2_pps;
+}
 }
 
 H265Decoder::H265Decoder(std::unique_ptr<V4L2IoctlShim> v4l2_ioctl,
@@ -724,10 +815,14 @@ bool H265Decoder::StartNewFrame(const H265SliceHeader* slice_hdr) {
   }
 
   struct v4l2_ctrl_hevc_sps v4l2_sps = SetupSPSCtrl(sps);
+  struct v4l2_ctrl_hevc_pps v4l2_pps = SetupPPSCtrl(pps);
 
   struct v4l2_ext_control ctrls[] = {{.id = V4L2_CID_STATELESS_HEVC_SPS,
                                       .size = sizeof(v4l2_sps),
-                                      .ptr = &v4l2_sps}};
+                                      .ptr = &v4l2_sps},
+                                     {.id = V4L2_CID_STATELESS_HEVC_PPS,
+                                      .size = sizeof(v4l2_pps),
+                                      .ptr = &v4l2_pps}};
   struct v4l2_ext_controls ext_ctrls = {
       .count = (sizeof(ctrls) / sizeof(ctrls[0])), .controls = ctrls};
 
