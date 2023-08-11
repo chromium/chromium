@@ -1548,7 +1548,20 @@ TEST_P(GpuImageDecodeCacheTest, GetHdrDecodedImageForDrawToSdr) {
   EXPECT_TRUE(decoded_draw_image.image());
   EXPECT_TRUE(decoded_draw_image.image()->isTextureBacked());
   EXPECT_TRUE(decoded_draw_image.is_budgeted());
-  EXPECT_NE(decoded_draw_image.image()->colorType(), kRGBA_F16_SkColorType);
+
+  // When testing in configurations that do not support rendering to F16, this
+  // will fall back to N32.
+  if (use_transfer_cache_) {
+    EXPECT_TRUE(decoded_draw_image.image()->colorType() ==
+                    kRGBA_F16_SkColorType ||
+                decoded_draw_image.image()->colorType() == kN32_SkColorType);
+  } else {
+    // Some non-OOP-R paths unconditionally create RGBA_8888 textures.
+    EXPECT_TRUE(
+        decoded_draw_image.image()->colorType() == kRGBA_F16_SkColorType ||
+        decoded_draw_image.image()->colorType() == kN32_SkColorType ||
+        decoded_draw_image.image()->colorType() == kRGBA_8888_SkColorType);
+  }
 
   EXPECT_FALSE(cache->DiscardableIsLockedForTesting(draw_image));
 

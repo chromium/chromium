@@ -3237,21 +3237,19 @@ std::tuple<SkImageInfo, int> GpuImageDecodeCache::CreateImageInfoForDrawImage(
   SkColorType color_type = color_type_;
 
   // The PaintImage will identify that its content is high bit depth by setting
-  // its SkColorType to kRGBA_F16_SkColorType. Only set the target SkColorType
-  // to this value if the PaintImage itself reports it. Otherwise, the content
-  // may not appear, see https://crbug.com/1266456.
+  // its SkColorType to kRGBA_F16_SkColorType. Always decode high bit depth WCG
+  // and HDR content as high bit depth, to avoid quantization artifacts.
+  // https://crbug.com/1363056: See effects of tone mapping applied to dithered
+  // low bit depth images.
+  // https://crbug.com/1266456: Do not attempt to decode non high bit depth
+  // images as high bit depth or they might not appear.
+  // https://crbug.com/1076568: See historical discussions.
   const auto image_color_type =
       draw_image.paint_image().GetSkImageInfo(aux_image).colorType();
-  if (image_color_type == kRGBA_F16_SkColorType) {
-    // Only set the target SkColorType to kRGBA_F16_SkColorType if the content
-    // is HDR and the target display is HDR capable. This is done to preserve
-    // existing behavior while fixing the above mentioned bug. See related
-    // discussions in https://crbug.com/1076568.
-    if (draw_image.paint_image().GetContentColorUsage() ==
-            gfx::ContentColorUsage::kHDR &&
-        draw_image.target_color_space().IsHDR()) {
-      color_type = kRGBA_F16_SkColorType;
-    }
+  if (image_color_type == kRGBA_F16_SkColorType &&
+      draw_image.paint_image().GetContentColorUsage() !=
+          gfx::ContentColorUsage::kSRGB) {
+    color_type = kRGBA_F16_SkColorType;
   }
 
   return {SkImageInfo::Make(mip_size.width(), mip_size.height(), color_type,
