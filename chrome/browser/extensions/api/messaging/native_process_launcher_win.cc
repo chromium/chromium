@@ -145,7 +145,7 @@ base::Process LaunchNativeHostViaCmd(const std::wstring& command,
       L"COMSPEC", base::WriteInto(&comspec, comspec_length), comspec_length);
 
   std::wstring wrapped_command = base::StringPrintf(
-      L"%ls /d /c %ls < %ls > %ls", comspec.c_str(), command.c_str(),
+      L"%ls /d /s /c \"%ls\" < %ls > %ls", comspec.c_str(), command.c_str(),
       in_pipe_name.c_str(), out_pipe_name.c_str());
 
   return base::LaunchProcess(wrapped_command, options);

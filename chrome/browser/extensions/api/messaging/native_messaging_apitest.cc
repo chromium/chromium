@@ -69,8 +69,7 @@ IN_PROC_BROWSER_TEST_F(NativeMessagingApiTestBase, UserLevelSendNativeMessage) {
 #if BUILDFLAG(IS_WIN)
 // On Windows, a new codepath is used to directly launch .EXE-based Native
 // Hosts. This codepath allows launching of Native Hosts even when cmd.exe is
-// disabled, or if the path to the host contains a character that prevents
-// cmd.exe from successfully launching it (e.g. "&" in this test).
+// disabled or misconfigured.
 class NativeMessagingLaunchExeTest : public NativeMessagingApiTestBase,
                                      public testing::WithParamInterface<bool> {
  public:
@@ -90,23 +89,33 @@ INSTANTIATE_TEST_SUITE_P(NativeMessagingLaunchExe,
                          NativeMessagingLaunchExeTest,
                          testing::Bool());
 
-IN_PROC_BROWSER_TEST_P(NativeMessagingLaunchExeTest, SendNativeMessageWinExe) {
-  ASSERT_NO_FATAL_FAILURE(test_host_.RegisterTestExeHost(/*user_level=*/false));
-
-  // The extension works properly only if the host launches successfully, which
-  // requires the kLaunchWindowsNativeHostsDirectly feature to be enabled.
-  ASSERT_EQ(IsDirectLaunchEnabled(),
-            RunExtensionTest("native_messaging_send_native_message_exe"));
-}
-
 IN_PROC_BROWSER_TEST_P(NativeMessagingLaunchExeTest,
                        UserLevelSendNativeMessageWinExe) {
-  ASSERT_NO_FATAL_FAILURE(test_host_.RegisterTestExeHost(/*user_level=*/true));
+  ASSERT_NO_FATAL_FAILURE(test_host_.RegisterTestExeHost(
+      "native_messaging_test_echo_host.exe", /*user_level=*/true));
 
-  // The extension works properly only if the host launches successfully, which
-  // requires the kLaunchWindowsNativeHostsDirectly feature to be enabled.
-  ASSERT_EQ(IsDirectLaunchEnabled(),
-            RunExtensionTest("native_messaging_send_native_message_exe"));
+  ASSERT(RunExtensionTest("native_messaging_send_native_message_exe"));
+}
+
+// The Host's filename deliberately contains the character '&' which causes the
+// Host to fail to launch if cmd.exe is used as an intermediary between the
+// extension and the host executable, unless extra quotes are used.
+// crbug.com/335558
+IN_PROC_BROWSER_TEST_P(NativeMessagingLaunchExeTest,
+                       SendNativeMessageWinExeAmpersand) {
+  ASSERT_NO_FATAL_FAILURE(test_host_.RegisterTestExeHost(
+      "native_messaging_test_echo_&_host.exe", /*user_level=*/false));
+
+  ASSERT(RunExtensionTest("native_messaging_send_native_message_exe"));
+}
+
+// Make sure that a filename with a space is supported.
+IN_PROC_BROWSER_TEST_P(NativeMessagingLaunchExeTest,
+                       SendNativeMessageWinExeSpace) {
+  ASSERT_NO_FATAL_FAILURE(test_host_.RegisterTestExeHost(
+      "native_messaging_test_echo_ _host.exe", /*user_level=*/false));
+
+  ASSERT(RunExtensionTest("native_messaging_send_native_message_exe"));
 }
 #endif
 

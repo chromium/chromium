@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_EXTENSIONS_API_MESSAGING_NATIVE_MESSAGING_TEST_UTIL_H_
 
 #include <memory>
+#include <string_view>
 
 #include "base/files/scoped_temp_dir.h"
 #include "build/build_config.h"
@@ -47,9 +48,8 @@ class ScopedTestNativeMessagingHost {
 
   void RegisterTestHost(bool user_level);
 #if BUILDFLAG(IS_WIN)
-  // Register the Windows-only |native_messaging_test_echo_host.exe| Native
-  // Host.
-  void RegisterTestExeHost(bool user_level);
+  // Register the Windows-only Native Host exe.
+  void RegisterTestExeHost(std::string_view filename, bool user_level);
 #endif
 
   const base::FilePath& temp_dir() { return temp_dir_.GetPath(); }
