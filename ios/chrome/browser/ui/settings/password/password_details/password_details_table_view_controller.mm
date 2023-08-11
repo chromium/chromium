@@ -231,6 +231,7 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
                 style:UIBarButtonItemStylePlain
                target:self
                action:@selector(onShareButtonPressed)];
+    shareButton.accessibilityIdentifier = kPasswordShareButtonId;
     self.navigationItem.rightBarButtonItems =
         @[ self.navigationItem.rightBarButtonItem, shareButton ];
   }

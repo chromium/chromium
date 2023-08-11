@@ -7,13 +7,20 @@
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
+@class RecipientInfoForIOSDisplay;
+
 // This coordinator presents a list of Google Family members of a user that
 // initiated sharing a password and allows choosing recipients.
 @interface FamilyPickerCoordinator : ChromeCoordinator
 
-- (instancetype)initWithBaseViewController:(UIViewController*)viewController
-                                   browser:(Browser*)browser
+- (instancetype)
+    initWithBaseViewController:(UIViewController*)viewController
+                       browser:(Browser*)browser
+                    recipients:(NSArray<RecipientInfoForIOSDisplay*>*)recipients
     NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser NS_UNAVAILABLE;
 
 @end
 

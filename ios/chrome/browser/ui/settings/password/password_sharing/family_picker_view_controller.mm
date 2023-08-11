@@ -31,10 +31,9 @@ const CGFloat kAccessorySymbolSize = 22;
 
 }  // namespace
 
-@interface FamilyPickerViewController () {
-  // List of password sharing recipients that the user can pick from.
-  NSArray<RecipientInfoForIOSDisplay*>* _recipients;
-}
+@interface FamilyPickerViewController ()
+
+@property(nonatomic, strong) NSArray<RecipientInfoForIOSDisplay*>* recipients;
 
 @end
 

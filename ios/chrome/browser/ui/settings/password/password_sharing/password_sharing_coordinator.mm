@@ -89,12 +89,14 @@ using password_manager::FetchFamilyMembersRequestStatus;
             (NSArray<RecipientInfoForIOSDisplay*>*)familyMembers
                   withStatus:(const FetchFamilyMembersRequestStatus&)status {
   // TODO(crbug.com/1463882): Add handling multiple credential groups.
+  // TODO(crbug.com/1463882): Add EG tests for the whole flow.
   switch (status) {
     case FetchFamilyMembersRequestStatus::kSuccess:
       [self.familyPickerCoordinator stop];
       self.familyPickerCoordinator = [[FamilyPickerCoordinator alloc]
           initWithBaseViewController:self.viewController
-                             browser:self.browser];
+                             browser:self.browser
+                          recipients:familyMembers];
       [self.familyPickerCoordinator start];
       break;
     case FetchFamilyMembersRequestStatus::kNoFamily:
