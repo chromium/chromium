@@ -11,7 +11,6 @@ source_set("snapshots") {
     "snapshot_generator_delegate.h",
     "snapshot_lru_cache.h",
     "snapshot_tab_helper.h",
-    "snapshots_util.h",
   ]
   sources = [
     "snapshot_browser_agent.mm",
@@ -20,7 +19,6 @@ source_set("snapshots") {
     "snapshot_generator.mm",
     "snapshot_lru_cache.mm",
     "snapshot_tab_helper.mm",
-    "snapshots_util.mm",
   ]
   deps = [
     "//base",
@@ -58,7 +56,6 @@ source_set("unit_tests") {
     "snapshot_cache_unittest.mm",
     "snapshot_lru_cache_unittest.mm",
     "snapshot_tab_helper_unittest.mm",
-    "snapshots_util_unittest.mm",
   ]
   deps = [
     ":snapshots",

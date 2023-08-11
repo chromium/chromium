@@ -30,6 +30,8 @@ source_set("browsing_data") {
     "browsing_data_remover_observer_bridge.mm",
     "sessions_storage_util.h",
     "sessions_storage_util.mm",
+    "system_snapshots_cleaner.h",
+    "system_snapshots_cleaner.mm",
   ]
   deps = [
     ":counters",
@@ -110,6 +112,7 @@ source_set("unit_tests") {
     "browsing_data_remover_impl_unittest.mm",
     "browsing_data_remover_observer_bridge_unittest.mm",
     "cache_counter_unittest.cc",
+    "system_snapshots_cleaner_unittest.mm",
   ]
   deps = [
     ":browsing_data",

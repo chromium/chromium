@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/snapshots/snapshots_util.h"
+#import "ios/chrome/browser/browsing_data/system_snapshots_cleaner.h"
 
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
@@ -29,8 +29,9 @@ bool RegexMatchesOneSnapshotPath(NSString* regexString) {
                            encoding:[NSString defaultCStringEncoding]];
     if ([regex numberOfMatchesInString:string
                                options:0
-                                 range:NSMakeRange(0, [string length])])
+                                 range:NSMakeRange(0, [string length])]) {
       numberOfMatches++;
+    }
   }
   return numberOfMatches == 1;
 }
