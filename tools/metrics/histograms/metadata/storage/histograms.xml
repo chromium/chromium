@@ -400,49 +400,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Storage.FileSystemAccess.PersistedPermissions.Age.{Type}"
-    units="ms" expires_after="2024-05-01">
-  <owner>asully@chromium.org</owner>
-  <owner>src/content/browser/file_system_access/OWNERS</owner>
-  <summary>
-    Age of a persisted permission when attempting to auto-grant via this
-    permission.
-  </summary>
-  <token key="Type">
-    <variant name="NonPWA" summary="Origins which are not installed PWAs"/>
-    <variant name="PWA" summary="Origins with installed PWAs"/>
-  </token>
-</histogram>
-
-<histogram name="Storage.FileSystemAccess.PersistedPermissions.Count"
-    units="paths" expires_after="2024-05-01">
-  <owner>asully@chromium.org</owner>
-  <owner>src/content/browser/file_system_access/OWNERS</owner>
-  <summary>
-    Number of paths with permissions being persisted via the File System Access
-    API. This is recorded shortly after instantiation of a new
-    ChromeFileSystemAccessPermissionContext, as well as sampled periodically via
-    a RepeatingTimer every 3 hours. See
-    ChromeFileSystemAccessPermissionContext::UpdatePersistedPermissions() and
-    its call sites for details.
-  </summary>
-</histogram>
-
-<histogram
-    name="Storage.FileSystemAccess.PersistedPermissions.SweepTime.{Type}"
-    units="ms" expires_after="2024-05-01">
-  <owner>asully@chromium.org</owner>
-  <owner>src/content/browser/file_system_access/OWNERS</owner>
-  <summary>
-    Time taken to sweep persisted permissions to automatically renew permissions
-    with active grants or revoke permissions which have expired.
-  </summary>
-  <token key="Type">
-    <variant name="All" summary="Update all persisted permissions"/>
-    <variant name="Origin" summary="Update one origin's persisted permissions"/>
-  </token>
-</histogram>
-
 <histogram
     name="Storage.FileSystemAccess.{OpType}PermissionRequestOutcome.{EntryType}"
     enum="FileSystemAccessPermissionRequestOutcome" expires_after="2024-05-01">
