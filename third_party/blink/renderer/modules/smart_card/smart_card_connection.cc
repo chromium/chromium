@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_smart_card_protocol.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_smart_card_transaction_callback.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_smart_card_transaction_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_smart_card_transmit_options.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/modules/smart_card/smart_card_cancel_algorithm.h"
 #include "third_party/blink/renderer/modules/smart_card/smart_card_context.h"
@@ -43,6 +44,18 @@ SmartCardDisposition ToMojomDisposition(
       return SmartCardDisposition::kUnpower;
     case V8SmartCardDisposition::Enum::kEject:
       return SmartCardDisposition::kEject;
+  }
+}
+
+device::mojom::blink::SmartCardProtocol ToMojoSmartCardProtocol(
+    const V8SmartCardProtocol& protocol) {
+  switch (protocol.AsEnum()) {
+    case blink::V8SmartCardProtocol::Enum::kRaw:
+      return device::mojom::blink::SmartCardProtocol::kRaw;
+    case blink::V8SmartCardProtocol::Enum::kT0:
+      return device::mojom::blink::SmartCardProtocol::kT0;
+    case blink::V8SmartCardProtocol::Enum::kT1:
+      return device::mojom::blink::SmartCardProtocol::kT1;
   }
 }
 
@@ -306,6 +319,7 @@ ScriptPromise SmartCardConnection::disconnect(
 
 ScriptPromise SmartCardConnection::transmit(ScriptState* script_state,
                                             const DOMArrayPiece& send_buffer,
+                                            SmartCardTransmitOptions* options,
                                             ExceptionState& exception_state) {
   if (!smart_card_context_->EnsureNoOperationInProgress(exception_state) ||
       !EnsureConnection(exception_state)) {
@@ -318,6 +332,17 @@ ScriptPromise SmartCardConnection::transmit(ScriptState* script_state,
     return ScriptPromise();
   }
 
+  device::mojom::blink::SmartCardProtocol protocol = active_protocol_;
+  if (options->hasProtocol()) {
+    protocol = ToMojoSmartCardProtocol(options->protocol());
+  }
+
+  if (protocol == device::mojom::blink::SmartCardProtocol::kUndefined) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "No active protocol.");
+    return ScriptPromise();
+  }
+
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
       script_state, exception_state.GetContext());
   SetOperationInProgress(resolver);
@@ -327,7 +352,7 @@ ScriptPromise SmartCardConnection::transmit(ScriptState* script_state,
                      static_cast<wtf_size_t>(send_buffer.ByteLength()));
 
   connection_->Transmit(
-      active_protocol_, send_vector,
+      protocol, send_vector,
       WTF::BindOnce(&SmartCardConnection::OnDataResult, WrapPersistent(this),
                     WrapPersistent(resolver)));
 

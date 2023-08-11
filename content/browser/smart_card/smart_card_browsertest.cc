@@ -48,6 +48,7 @@ using ::testing::_;
 using testing::Exactly;
 using testing::HasSubstr;
 using testing::InSequence;
+using testing::MatchesRegex;
 using testing::StrictMock;
 
 namespace content {
@@ -456,6 +457,119 @@ IN_PROC_BROWSER_TEST_F(SmartCardTest, Transmit) {
       let responseString = new Uint8Array(response).toString();
       return `response: ${responseString}`;
     })())"));
+}
+
+IN_PROC_BROWSER_TEST_F(SmartCardTest, TransmitWithOptions) {
+  ASSERT_TRUE(NavigateToURL(shell(), GetIsolatedContextUrl()));
+
+  MockSmartCardContextFactory& mock_context_factory =
+      GetFakeSmartCardDelegate().mock_context_factory;
+  MockSmartCardConnection mock_connection;
+  mojo::Receiver<SmartCardConnection> connection_receiver(&mock_connection);
+
+  {
+    InSequence s;
+
+    EXPECT_CALL(mock_context_factory,
+                Connect("Fake reader", SmartCardShareMode::kDirect, _, _))
+        .WillOnce([&connection_receiver](
+                      const std::string& reader,
+                      device::mojom::SmartCardShareMode share_mode,
+                      device::mojom::SmartCardProtocolsPtr preferred_protocols,
+                      SmartCardContext::ConnectCallback callback) {
+          EXPECT_FALSE(preferred_protocols->t0);
+          EXPECT_FALSE(preferred_protocols->t1);
+          EXPECT_FALSE(preferred_protocols->raw);
+
+          auto success = device::mojom::SmartCardConnectSuccess::New(
+              connection_receiver.BindNewPipeAndPassRemote(),
+              SmartCardProtocol::kUndefined);
+
+          std::move(callback).Run(
+              device::mojom::SmartCardConnectResult::NewSuccess(
+                  std::move(success)));
+        });
+
+    EXPECT_CALL(mock_connection, Transmit(SmartCardProtocol::kT0, _, _))
+        .WillOnce([](SmartCardProtocol protocol,
+                     const std::vector<uint8_t>& data,
+                     SmartCardConnection::TransmitCallback callback) {
+          EXPECT_EQ(data, std::vector<uint8_t>({3u, 2u, 1u}));
+          std::move(callback).Run(
+              device::mojom::SmartCardDataResult::NewData({12u, 34u}));
+        });
+  }
+
+  EXPECT_EQ("response: 12,34", EvalJs(shell(), R"(
+    (async () => {
+      let context = await navigator.smartCard.establishContext();
+
+      let connection =
+        (await context.connect("Fake reader", "direct")).connection;
+
+      // In real usage you would have in between:
+      // let IOCTL_SMARTCARD_SET_PROTOCOL = ...;
+      // connection.control(IOCTL_SMARTCARD_SET_PROTOCOL, ...);
+
+      let apdu = new Uint8Array([0x03, 0x02, 0x01]);
+      let response = await connection.transmit(apdu, {protocol: "t0"});
+
+      let responseString = new Uint8Array(response).toString();
+      return `response: ${responseString}`;
+    })())"));
+}
+
+IN_PROC_BROWSER_TEST_F(SmartCardTest, TransmitNoProtocol) {
+  ASSERT_TRUE(NavigateToURL(shell(), GetIsolatedContextUrl()));
+
+  MockSmartCardContextFactory& mock_context_factory =
+      GetFakeSmartCardDelegate().mock_context_factory;
+  StrictMock<MockSmartCardConnection> mock_connection;
+  mojo::Receiver<SmartCardConnection> connection_receiver(&mock_connection);
+
+  {
+    InSequence s;
+
+    EXPECT_CALL(mock_context_factory,
+                Connect("Fake reader", SmartCardShareMode::kDirect, _, _))
+        .WillOnce([&connection_receiver](
+                      const std::string& reader,
+                      device::mojom::SmartCardShareMode share_mode,
+                      device::mojom::SmartCardProtocolsPtr preferred_protocols,
+                      SmartCardContext::ConnectCallback callback) {
+          EXPECT_FALSE(preferred_protocols->t0);
+          EXPECT_FALSE(preferred_protocols->t1);
+          EXPECT_FALSE(preferred_protocols->raw);
+
+          auto success = device::mojom::SmartCardConnectSuccess::New(
+              connection_receiver.BindNewPipeAndPassRemote(),
+              SmartCardProtocol::kUndefined);
+
+          std::move(callback).Run(
+              device::mojom::SmartCardConnectResult::NewSuccess(
+                  std::move(success)));
+        });
+  }
+
+  EXPECT_THAT(
+      EvalJs(shell(), R"(
+    (async () => {
+      let context = await navigator.smartCard.establishContext();
+
+      let connection =
+        (await context.connect("Fake reader", "direct")).connection;
+
+      let apdu = new Uint8Array([0x03, 0x02, 0x01]);
+      try {
+        await connection.transmit(apdu);
+      } catch(e) {
+        return `transmit: ${e.name}, ${e.message}`;
+      }
+
+      return "ok";
+    })())")
+          .ExtractString(),
+      MatchesRegex("transmit: InvalidStateError, .*No active protocol\\."));
 }
 
 IN_PROC_BROWSER_TEST_F(SmartCardTest, Control) {

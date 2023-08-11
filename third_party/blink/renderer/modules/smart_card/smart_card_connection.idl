@@ -15,6 +15,10 @@ dictionary SmartCardTransactionOptions {
   AbortSignal signal;
 };
 
+dictionary SmartCardTransmitOptions {
+  SmartCardProtocol protocol;
+};
+
 callback SmartCardTransactionCallback = Promise<SmartCardDisposition?> ();
 
 [
@@ -27,7 +31,8 @@ callback SmartCardTransactionCallback = Promise<SmartCardDisposition?> ();
   Promise<void> disconnect(optional SmartCardDisposition disposition = "leave");
 
   [CallWith=ScriptState, RaisesException]
-  Promise<ArrayBuffer> transmit(BufferSource sendBuffer);
+  Promise<ArrayBuffer> transmit(BufferSource sendBuffer,
+    optional SmartCardTransmitOptions options = {});
 
   [CallWith=ScriptState, RaisesException]
   Promise<SmartCardConnectionStatus> status();

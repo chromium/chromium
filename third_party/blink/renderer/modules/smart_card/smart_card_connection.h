@@ -19,6 +19,7 @@ namespace blink {
 
 class SmartCardContext;
 class SmartCardTransactionOptions;
+class SmartCardTransmitOptions;
 class V8SmartCardDisposition;
 class V8SmartCardTransactionCallback;
 
@@ -41,6 +42,7 @@ class SmartCardConnection final : public ScriptWrappable,
                            ExceptionState& exception_state);
   ScriptPromise transmit(ScriptState* script_state,
                          const DOMArrayPiece& send_buffer,
+                         SmartCardTransmitOptions* options,
                          ExceptionState& exception_state);
   ScriptPromise status(ScriptState* script_state,
                        ExceptionState& exception_state);
