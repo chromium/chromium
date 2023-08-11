@@ -397,14 +397,6 @@
       </ntp-lens-upload-dialog>
     </template>
   </div>
-  <template is="dom-if" if="[[lazyRender_]]" >
-    <cr-toast id="webstoreToast" duration="10000">
-      <div>$i18n{webstoreThemesToastMessage}</div>
-      <cr-button on-click="onWebstoreToastButtonClick_">
-        $i18n{webstoreThemesToastButtonText}
-      </cr-button>
-    </cr-toast>
-  </template>
   <dom-if if="[[lazyRender_]]" on-dom-change="onLazyRendered_">
     <template>
       <template is="dom-if" if="[[shortcutsEnabled_]]">
@@ -499,3 +491,10 @@
     </clipPath>
   </defs>
 </svg>
+
+<cr-toast id="webstoreToast" duration="10000">
+  <div>$i18n{webstoreThemesToastMessage}</div>
+  <cr-button on-click="onWebstoreToastButtonClick_">
+    $i18n{webstoreThemesToastButtonText}
+  </cr-button>
+</cr-toast>

@@ -107,6 +107,7 @@ export interface AppElement {
     customizeDialogIf: DomIf,
     oneGoogleBarClipPath: HTMLElement,
     logo: LogoElement,
+    webstoreToast: CrToastElement,
   };
 }
 
@@ -427,7 +428,7 @@ export class AppElement extends AppElementBase {
     this.showWebstoreToastListenerId_ =
         NewTabPageProxy.getInstance()
             .callbackRouter.showWebstoreToast.addListener(() => {
-              $$<CrToastElement>(this, '#webstoreToast')!.show();
+              this.$.webstoreToast.show();
             });
 
     // Open Customize Chrome if there are Customize Chrome URL params.
