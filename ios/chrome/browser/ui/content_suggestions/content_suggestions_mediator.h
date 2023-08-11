@@ -31,6 +31,10 @@ namespace signin {
 class IdentityManager;
 }
 
+namespace syncer {
+class SyncService;
+}  // namespace syncer
+
 namespace user_prefs {
 class PrefRegistrySyncable;
 }  // namespace user_prefs
@@ -64,6 +68,7 @@ class WebStateList;
                  readingListModel:(ReadingListModel*)readingListModel
                       prefService:(PrefService*)prefService
     isGoogleDefaultSearchProvider:(BOOL)isGoogleDefaultSearchProvider
+                      syncService:(syncer::SyncService*)syncService
             authenticationService:(AuthenticationService*)authService
                   identityManager:(signin::IdentityManager*)identityManager
                           browser:(Browser*)browser NS_DESIGNATED_INITIALIZER;
