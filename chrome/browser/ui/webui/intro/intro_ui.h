@@ -27,9 +27,12 @@ enum class DefaultBrowserChoice {
   // The user exited the first run flow while on the prompt to set Chrome as
   // their default browser.
   kQuit = 2,
+  // The prompt was not shown due to a timeout when checking if the browser is
+  // already default.
+  kNotShownOnTimeout = 3,
   // Add any new values above this one, and update kMaxValue to the highest
   // enumerator value.
-  kMaxValue = kQuit
+  kMaxValue = kNotShownOnTimeout
 };
 
 // Callback specification for `SetSigninChoiceCallback()`.
