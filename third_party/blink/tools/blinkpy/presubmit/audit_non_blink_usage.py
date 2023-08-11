@@ -509,6 +509,7 @@ _CONFIG = [
             'cc::SnapContainerData',
             'cc::SnapFlingClient',
             'cc::SnapFlingController',
+            'cc::SnapPositionData',
             'cc::SnapSelectionStrategy',
             'cc::SnapStrictness',
             'cc::TargetSnapAreaElementIds',

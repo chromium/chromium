@@ -483,13 +483,13 @@ void InputHandler::AdjustScrollDeltaForScrollbarSnap(
           gfx::Vector2dF(scroll_state->delta_x(), scroll_state->delta_y()),
           true);
 
-  gfx::PointF snap_position;
-  TargetSnapAreaElementIds snap_target_ids;
-  if (!data.FindSnapPosition(*strategy, &snap_position, &snap_target_ids))
+  SnapPositionData snap = data.FindSnapPosition(*strategy);
+  if (snap.type == SnapPositionData::Type::kNone) {
     return;
+  }
 
-  scroll_state->data()->delta_x = snap_position.x() - current_position.x();
-  scroll_state->data()->delta_y = snap_position.y() - current_position.y();
+  scroll_state->data()->delta_x = snap.position.x() - current_position.x();
+  scroll_state->data()->delta_y = snap.position.y() - current_position.y();
 }
 
 void InputHandler::ScrollEnd(bool should_snap) {
@@ -929,14 +929,18 @@ bool InputHandler::GetSnapFlingInfoAndSetAnimatingSnapTarget(
 
   // CC side always uses fractional scroll deltas.
   bool use_fractional_offsets = true;
-  TargetSnapAreaElementIds snap_target_ids;
   std::unique_ptr<SnapSelectionStrategy> strategy =
       SnapSelectionStrategy::CreateForEndAndDirection(
           current_offset, natural_displacement_in_content,
           use_fractional_offsets);
-  if (!data.FindSnapPosition(*strategy, out_target_position, &snap_target_ids))
+
+  SnapPositionData snap = data.FindSnapPosition(*strategy);
+  if (snap.type == SnapPositionData::Type::kNone) {
     return false;
-  scroll_animating_snap_target_ids_ = snap_target_ids;
+  }
+
+  *out_target_position = snap.position;
+  scroll_animating_snap_target_ids_ = snap.target_element_ids;
 
   out_target_position->Scale(scale_factor);
   out_initial_position->Scale(scale_factor);
@@ -2078,17 +2082,17 @@ bool InputHandler::SnapAtScrollEnd(SnapReason reason) {
         did_scroll_y_for_scroll_gesture_);
   }
 
-  gfx::PointF snap_position;
-  TargetSnapAreaElementIds snap_target_ids;
-  if (!data.FindSnapPosition(*strategy, &snap_position, &snap_target_ids))
+  SnapPositionData snap = data.FindSnapPosition(*strategy);
+  if (snap.type == SnapPositionData::Type::kNone) {
     return false;
+  }
 
   // TODO(bokan): Why only on the viewport?
   if (GetViewport().ShouldScroll(*scroll_node)) {
     compositor_delegate_->WillScrollContent(scroll_node->element_id);
   }
 
-  gfx::Vector2dF delta = snap_position - current_position;
+  gfx::Vector2dF delta = snap.position - current_position;
   bool did_animate = false;
   if (scroll_node->scrolls_outer_viewport) {
     gfx::Vector2dF scaled_delta(delta);
@@ -2106,9 +2110,10 @@ bool InputHandler::SnapAtScrollEnd(SnapReason reason) {
   DCHECK(!IsAnimatingForSnap());
   if (did_animate) {
     // The snap target will be set when the animation is completed.
-    scroll_animating_snap_target_ids_ = snap_target_ids;
-  } else if (data.SetTargetSnapAreaElementIds(snap_target_ids)) {
-    updated_snapped_elements_[scroll_node->element_id] = snap_target_ids;
+    scroll_animating_snap_target_ids_ = snap.target_element_ids;
+  } else if (data.SetTargetSnapAreaElementIds(snap.target_element_ids)) {
+    updated_snapped_elements_[scroll_node->element_id] =
+        snap.target_element_ids;
     SetNeedsCommit();
   }
   return did_animate;

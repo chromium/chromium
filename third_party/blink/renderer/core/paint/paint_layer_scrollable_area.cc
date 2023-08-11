@@ -1956,16 +1956,16 @@ PaintLayerScrollableArea::GetSnapPositionAndSetTarget(
         CompositorElementIdFromDOMNodeId(DOMNodeIds::IdForNode(active_element));
   }
 
-  cc::TargetSnapAreaElementIds snap_targets;
-  gfx::PointF snap_position;
   absl::optional<gfx::PointF> snap_point;
-  if (data.FindSnapPosition(strategy, &snap_position, &snap_targets,
-                            active_element_id)) {
-    snap_point = gfx::PointF(snap_position.x(), snap_position.y());
+  cc::SnapPositionData snap =
+      data.FindSnapPosition(strategy, active_element_id);
+  if (snap.type != cc::SnapPositionData::Type::kNone) {
+    snap_point = gfx::PointF(snap.position.x(), snap.position.y());
   }
 
-  if (data.SetTargetSnapAreaElementIds(snap_targets))
+  if (data.SetTargetSnapAreaElementIds(snap.target_element_ids)) {
     GetLayoutBox()->SetNeedsPaintPropertyUpdate();
+  }
 
   return snap_point;
 }

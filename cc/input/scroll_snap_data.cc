@@ -140,14 +140,13 @@ void SnapContainerData::AddSnapAreaData(SnapAreaData snap_area_data) {
   snap_area_list_.push_back(snap_area_data);
 }
 
-bool SnapContainerData::FindSnapPosition(
+SnapPositionData SnapContainerData::FindSnapPosition(
     const SnapSelectionStrategy& strategy,
-    gfx::PointF* snap_position,
-    TargetSnapAreaElementIds* target_element_ids,
     const ElementId& active_element_id) const {
-  *target_element_ids = TargetSnapAreaElementIds();
+  SnapPositionData result;
+  result.target_element_ids = TargetSnapAreaElementIds();
   if (scroll_snap_type_.is_none)
-    return false;
+    return result;
 
   gfx::PointF base_position = strategy.base_position();
   SnapAxis axis = scroll_snap_type_.axis;
@@ -156,7 +155,7 @@ bool SnapContainerData::FindSnapPosition(
   bool should_snap_on_y = strategy.ShouldSnapOnY() &&
                           (axis == SnapAxis::kY || axis == SnapAxis::kBoth);
   if (!should_snap_on_x && !should_snap_on_y)
-    return false;
+    return result;
 
   bool should_prioritize_x_target =
       strategy.ShouldPrioritizeSnapTargets() &&
@@ -202,10 +201,12 @@ bool SnapContainerData::FindSnapPosition(
     // Searching along each axis separately can miss valid snap positions if
     // snapping along both axes and the snap positions are off screen.
     if (should_snap_on_x && should_snap_on_y &&
-        !strategy.ShouldRespectSnapStop())
-      return FindSnapPositionForMutualSnap(strategy, snap_position);
+        !strategy.ShouldRespectSnapStop() &&
+        FindSnapPositionForMutualSnap(strategy, &result.position)) {
+      result.type = SnapPositionData::Type::kFound;
+    }
 
-    return false;
+    return result;
   }
 
   // If snapping in one axis pushes off-screen the other snap area, this snap
@@ -232,18 +233,18 @@ bool SnapContainerData::FindSnapPosition(
     }
   }
 
-  *snap_position = strategy.current_position();
-  if (selected_x.has_value()) {
-    snap_position->set_x(selected_x.value().snap_offset());
-    target_element_ids->x = selected_x.value().element_id();
-  }
+  result.type = SnapPositionData::Type::kFound;
+  result.position = strategy.current_position();
 
-  if (selected_y.has_value()) {
-    snap_position->set_y(selected_y.value().snap_offset());
-    target_element_ids->y = selected_y.value().element_id();
+  if (selected_x) {
+    result.position.set_x(selected_x->snap_offset());
+    result.target_element_ids.x = selected_x->element_id();
   }
-
-  return true;
+  if (selected_y) {
+    result.position.set_y(selected_y->snap_offset());
+    result.target_element_ids.y = selected_y->element_id();
+  }
+  return result;
 }
 
 // This method is called only if the preferred algorithm fails to find either an

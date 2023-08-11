@@ -183,6 +183,21 @@ struct TargetSnapAreaElementIds {
 
 typedef std::vector<SnapAreaData> SnapAreaList;
 
+// Represents the result of a call to SnapContainerData::FindSnapPosition.
+struct SnapPositionData {
+  enum class Type { kNone, kFound };
+
+  // What kind of snap position (if any) was found.
+  // TODO(crbug.com/1420413): Distinguish aligned vs. covering snap positions.
+  Type type = Type::kNone;
+
+  // The scroll offset of the snap position.
+  gfx::PointF position;
+
+  // The elements generating the snap areas on both axes.
+  TargetSnapAreaElementIds target_element_ids;
+};
+
 // Snap container is a scroll container that at least one snap area assigned to
 // it.  If the snap-type is not 'none', then it can be snapped to one of its
 // snap areas when a scroll happens.
@@ -219,11 +234,9 @@ class CC_EXPORT SnapContainerData {
     return !(*this == other);
   }
 
-  // Returns true if a snap position was found.
-  bool FindSnapPosition(const SnapSelectionStrategy& strategy,
-                        gfx::PointF* snap_position,
-                        TargetSnapAreaElementIds* target_element_ids,
-                        const ElementId& active_element_id = ElementId()) const;
+  SnapPositionData FindSnapPosition(
+      const SnapSelectionStrategy& strategy,
+      const ElementId& active_element_id = ElementId()) const;
 
   const TargetSnapAreaElementIds& GetTargetSnapAreaElementIds() const;
   // Returns true if the target snap area element ids were changed.
