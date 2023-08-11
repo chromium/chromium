@@ -25,6 +25,7 @@
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
 #include "pdf/pdf_accessibility_action_handler.h"
+#include "pdf/pdf_accessibility_image_fetcher.h"
 #include "pdf/pdf_features.h"
 #include "third_party/blink/public/strings/grit/blink_accessibility_strings.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -57,10 +58,12 @@ using PdfOcrRequest = PdfAccessibilityTree::PdfOcrRequest;
 
 PdfOcrRequest::PdfOcrRequest(const ui::AXNodeID& image_node_id,
                              const chrome_pdf::AccessibilityImageInfo& image,
-                             const ui::AXNodeID& parent_node_id)
+                             const ui::AXNodeID& parent_node_id,
+                             uint32_t page_index)
     : image_node_id(image_node_id),
       image(image),
-      parent_node_id(parent_node_id) {}
+      parent_node_id(parent_node_id),
+      page_index(page_index) {}
 
 //
 // PdfOcrService
@@ -68,10 +71,13 @@ PdfOcrRequest::PdfOcrRequest(const ui::AXNodeID& image_node_id,
 
 using PdfOcrService = PdfAccessibilityTree::PdfOcrService;
 
-PdfOcrService::PdfOcrService(content::RenderFrame& render_frame,
-                             uint32_t page_count,
-                             OnOcrDataReceivedCallback callback)
-    : remaining_page_count_(page_count),
+PdfOcrService::PdfOcrService(
+    chrome_pdf::PdfAccessibilityImageFetcher* image_fetcher,
+    content::RenderFrame& render_frame,
+    uint32_t page_count,
+    OnOcrDataReceivedCallback callback)
+    : image_fetcher_(image_fetcher),
+      remaining_page_count_(page_count),
       on_ocr_data_received_callback_(std::move(callback)) {
   CHECK(features::IsPdfOcrEnabled());
   render_frame.GetBrowserInterfaceBroker()->GetInterface(
@@ -124,12 +130,21 @@ void PdfOcrService::OcrNextImage() {
   if (all_requests_.empty()) {
     return;
   }
-  const PdfOcrRequest request = all_requests_.front();
+  PdfOcrRequest request = all_requests_.front();
   all_requests_.pop();
+
+  SkBitmap bitmap = image_fetcher_->GetImageForOcr(
+      request.page_index, request.image.page_object_index);
+  request.image_pixel_size = gfx::SizeF(bitmap.width(), bitmap.height());
+  if (bitmap.drawsNothing()) {
+    ReceiveOcrResultsForImage(std::move(request), ui::AXTreeUpdate());
+    return;
+  }
+
   screen_ai_annotator_->PerformOcrAndReturnAXTreeUpdate(
-      request.image.image_data,
+      std::move(bitmap),
       base::BindOnce(&PdfOcrService::ReceiveOcrResultsForImage,
-                     weak_ptr_factory_.GetWeakPtr(), request));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(request)));
 
   base::UmaHistogramEnumeration("Accessibility.PdfOcr.PDFImages",
                                 PdfOcrRequestStatus::kRequested);
@@ -506,14 +521,11 @@ std::unique_ptr<ui::AXNodeData> CreateStatusNodeWrapper(
   return node_wrapper;
 }
 
-gfx::Transform MakeTransformForImage(
-    const chrome_pdf::AccessibilityImageInfo& image) {
+gfx::Transform MakeTransformForImage(const gfx::RectF image_screen_size,
+                                     const gfx::SizeF image_pixel_size) {
   // Nodes created with OCR results from the image will be misaligned on screen
   // if `image_screen_size` is different from `image_pixel_size`. To address
   // this misalignment issue, an additional transform needs to be created.
-  const gfx::RectF& image_screen_size = image.bounds;
-  const gfx::RectF image_pixel_size =
-      gfx::RectF(image.image_data.width(), image.image_data.height());
   CHECK(!image_pixel_size.IsEmpty());
 
   gfx::Transform transform;
@@ -1331,9 +1343,9 @@ class PdfAccessibilityTreeBuilder {
       ui::AXNodeData* image_node = CreateImageNode(images_[i]);
       para_node->child_ids.push_back(image_node->id);
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-      if (!has_accessible_text_ && ocr_available &&
-          !images_[i].image_data.drawsNothing()) {
-        ocr_requests.emplace(image_node->id, images_[i], para_node->id);
+      if (!has_accessible_text_ && ocr_available) {
+        ocr_requests.emplace(image_node->id, images_[i], para_node->id,
+                             page_index_);
       }
 #endif
     }
@@ -1409,12 +1421,15 @@ class PdfAccessibilityTreeBuilder {
 
 PdfAccessibilityTree::PdfAccessibilityTree(
     content::RenderFrame* render_frame,
-    chrome_pdf::PdfAccessibilityActionHandler* action_handler)
+    chrome_pdf::PdfAccessibilityActionHandler* action_handler,
+    chrome_pdf::PdfAccessibilityImageFetcher* image_fetcher)
     : content::RenderFrameObserver(render_frame),
       render_frame_(render_frame),
-      action_handler_(action_handler) {
+      action_handler_(action_handler),
+      image_fetcher_(image_fetcher) {
   DCHECK(render_frame);
   DCHECK(action_handler_);
+  DCHECK(image_fetcher_);
   MaybeHandleAccessibilityChange(/*always_load_or_reload_accessibility=*/false);
 }
 
@@ -2107,13 +2122,16 @@ void PdfAccessibilityTree::OnOcrDataReceived(
     // would be more convenient and less complex if an `ui::AXTree` was never
     // constructed and if the `ui::AXTreeSource` was able to use the collection
     // of `nodes_` directly.
-    base::UmaHistogramEnumeration("Accessibility.PdfOcr.PDFImages",
-                                  PdfOcrRequestStatus::kPerformed);
 
     if (tree_update.nodes.empty()) {
       VLOG(1) << "Empty OCR data received.";
+      // TODO(crbug.com/1471392): Create an empty update and continue. This can
+      // happen if OCR returns an empty result, or the image draws nothing.
       return;
     }
+
+    base::UmaHistogramEnumeration("Accessibility.PdfOcr.PDFImages",
+                                  PdfOcrRequestStatus::kPerformed);
 
     // Update the flag if OCR extracted text from any images. This flag will be
     // used to update the status node to notify users of it.
@@ -2145,7 +2163,8 @@ void PdfAccessibilityTree::OnOcrDataReceived(
     // transform, nodes created from OCR results will have misaligned bounding
     // boxes. This transform will be applied to all nodes from OCR results
     // below.
-    gfx::Transform transform = MakeTransformForImage(ocr_request.image);
+    gfx::Transform transform = MakeTransformForImage(
+        ocr_request.image.bounds, ocr_request.image_pixel_size);
 
     // Count each detected language and find out the most detected language in
     // OCR result. Then record the most detected language in UMA.
@@ -2231,7 +2250,7 @@ void PdfAccessibilityTree::OnOcrDataReceived(
 void PdfAccessibilityTree::CreateOcrService() {
   VLOG(2) << "Creating OCR service.";
   ocr_service_ = std::make_unique<PdfOcrService>(
-      *render_frame_, page_count_,
+      image_fetcher_, *render_frame_, page_count_,
       base::BindRepeating(&PdfAccessibilityTree::OnOcrDataReceived,
                           weak_ptr_factory_.GetWeakPtr()));
 }
