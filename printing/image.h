@@ -14,16 +14,12 @@
 #include "base/check.h"
 #include "ui/gfx/geometry/size.h"
 
-namespace base {
-class FilePath;
-}
-
 namespace printing {
 
 class Metafile;
 
 // Lightweight raw-bitmap management. The image, once initialized, is immutable.
-// The main purpose is testing image contents.
+// The only purpose is testing image contents.
 class Image {
  public:
   // Creates the image from the metafile.  Deduces bounds based on bounds in
@@ -40,18 +36,9 @@ class Image {
   // Return a checksum of the image (MD5 over the internal data structure).
   std::string checksum() const;
 
-  // Save image as PNG.
-  bool SaveToPng(const base::FilePath& filepath) const;
-
-  // Returns % of pixels different
-  double PercentageDifferent(const Image& rhs) const;
-
-  // Returns the 0x0RGB or 0xARGB value of the pixel at the given location.
+  // Returns the 0x0RGB value of the pixel at the given location.
   uint32_t Color(uint32_t color) const {
-    if (ignore_alpha_)
-      return color & 0xFFFFFF;  // Strip out A.
-    else
-      return color;
+    return color & 0xFFFFFF;  // Strip out alpha channel.
   }
 
   uint32_t pixel_at(int x, int y) const {
@@ -63,12 +50,6 @@ class Image {
   }
 
  private:
-  // Construct from metafile.  This is kept internal since it's ambiguous what
-  // kind of data is used (png, bmp, metafile etc).
-  Image(const void* data, size_t size);
-
-  bool LoadPng(const std::string& compressed);
-
   // Loads the first page from `metafile`.
   bool LoadMetafile(const Metafile& metafile);
 
@@ -81,9 +62,6 @@ class Image {
   // Actual bitmap data in arrays of RGBAs (so when loaded as uint32_t, it's
   // 0xABGR).
   std::vector<unsigned char> data_;
-
-  // Flag to signal if the comparison functions should ignore the alpha channel.
-  const bool ignore_alpha_;  // Currently always true.
 
   // Prevent operator= (this function has no implementation)
   Image& operator=(const Image& image);
