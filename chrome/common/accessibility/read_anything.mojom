@@ -40,13 +40,14 @@ interface UntrustedPageHandlerFactory {
 };
 
 // Used as identifiers for the Read Anything theme options.
-// Next value: 4
+// Next value: 5
 [Extensible, Stable, Uuid="03f38cfc-a34f-460a-a0a7-faf711f11a64"]
 enum Colors {
   [Default]kDefault = 0,
   kLight = 1,
   kDark = 2,
   kYellow = 3,
+  [MinVersion=1] kBlue = 4,
 };
 
 [Extensible, Stable, Uuid="2B5C793A-D81E-4C76-8CDF-695C7E0A30E2",
