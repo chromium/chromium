@@ -112,7 +112,17 @@ class SnapSearchResult {
   ElementId element_id() const { return element_id_; }
   void set_element_id(ElementId id) { element_id_ = id; }
 
+  absl::optional<gfx::RangeF> covered_range() const { return covered_range_; }
+  void set_covered_range(const gfx::RangeF& range) { covered_range_ = range; }
+
  private:
+  // Scroll offset corresponding to this snap position. If covered_range_ is set
+  // then this will be a position inside the range. In the covered case, the
+  // result from FindClosestValidArea has a snap_offset_ equal to the
+  // intended_position() of the SnapSelectionStrategy.
+  // TODO(crbug.com/1472410): With refactoring it may be possible to replace
+  // snap_offset_ and covered_range_ with a single range field with start == end
+  // for "aligned" snap positions.
   float snap_offset_;
   // This is the range on the cross axis, within which the SnapArea generating
   // this |snap_offset| is visible. We expect the range to be in order (as
@@ -121,6 +131,15 @@ class SnapSearchResult {
 
   // The ElementId of the snap area that corresponds to this SnapSearchResult.
   ElementId element_id_;
+
+  // This is set if the validity of this result derives from the fact that the
+  // snap area covers the viewport, as described in the spec section on
+  // "Snapping Boxes that Overflow the Scrollport":
+  // https://drafts.csswg.org/css-scroll-snap-1/#snap-overflow
+  //
+  // If set, indicates the range of scroll offsets for which the snap area
+  // covers the viewport. The snap_offset_ will be a point within this range.
+  absl::optional<gfx::RangeF> covered_range_;
 };
 
 // Snap area is a bounding box that could be snapped to when a scroll happens in
@@ -185,10 +204,9 @@ typedef std::vector<SnapAreaData> SnapAreaList;
 
 // Represents the result of a call to SnapContainerData::FindSnapPosition.
 struct SnapPositionData {
-  enum class Type { kNone, kFound };
+  enum class Type { kNone, kAligned, kCovered };
 
   // What kind of snap position (if any) was found.
-  // TODO(crbug.com/1420413): Distinguish aligned vs. covering snap positions.
   Type type = Type::kNone;
 
   // The scroll offset of the snap position.
@@ -196,6 +214,9 @@ struct SnapPositionData {
 
   // The elements generating the snap areas on both axes.
   TargetSnapAreaElementIds target_element_ids;
+
+  absl::optional<gfx::RangeF> covered_range_x;
+  absl::optional<gfx::RangeF> covered_range_y;
 };
 
 // Snap container is a scroll container that at least one snap area assigned to
@@ -310,7 +331,8 @@ class CC_EXPORT SnapContainerData {
 
   bool IsSnapportCoveredOnAxis(SearchAxis axis,
                                float current_offset,
-                               const gfx::RectF& area_rect) const;
+                               const gfx::RectF& area_rect,
+                               gfx::RangeF& out_covered_range) const;
 
   void UpdateSnapAreaForTesting(ElementId element_id,
                                 SnapAreaData snap_area_data);

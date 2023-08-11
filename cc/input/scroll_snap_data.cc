@@ -203,7 +203,7 @@ SnapPositionData SnapContainerData::FindSnapPosition(
     if (should_snap_on_x && should_snap_on_y &&
         !strategy.ShouldRespectSnapStop() &&
         FindSnapPositionForMutualSnap(strategy, &result.position)) {
-      result.type = SnapPositionData::Type::kFound;
+      result.type = SnapPositionData::Type::kAligned;
     }
 
     return result;
@@ -233,16 +233,22 @@ SnapPositionData SnapContainerData::FindSnapPosition(
     }
   }
 
-  result.type = SnapPositionData::Type::kFound;
+  result.type = SnapPositionData::Type::kAligned;
   result.position = strategy.current_position();
 
   if (selected_x) {
     result.position.set_x(selected_x->snap_offset());
     result.target_element_ids.x = selected_x->element_id();
+    result.covered_range_x = selected_x->covered_range();
   }
   if (selected_y) {
     result.position.set_y(selected_y->snap_offset());
     result.target_element_ids.y = selected_y->element_id();
+    result.covered_range_y = selected_y->covered_range();
+  }
+  if ((!selected_x || result.covered_range_x) &&
+      (!selected_y || result.covered_range_y)) {
+    result.type = SnapPositionData::Type::kCovered;
   }
   return result;
 }
@@ -429,12 +435,15 @@ SnapContainerData::FindClosestValidAreaInternal(
       continue;
 
     SnapSearchResult candidate = GetSnapSearchResult(axis, area);
+    gfx::RangeF covered_range;
     if (should_consider_covering &&
-        IsSnapportCoveredOnAxis(axis, intended_position, area.rect)) {
+        IsSnapportCoveredOnAxis(axis, intended_position, area.rect,
+                                covered_range)) {
       // Since snap area will cover the snapport, we consider the intended
       // position as a valid snap position.
       SnapSearchResult covering_candidate = candidate;
       covering_candidate.set_snap_offset(intended_position);
+      covering_candidate.set_covered_range(covered_range);
       if (IsMutualVisible(covering_candidate, cross_axis_snap_result))
         SetOrUpdateResult(covering_candidate, &covering, active_element_id);
 
@@ -537,7 +546,8 @@ constexpr float kSnapportCoveredTolerance = 0.5;
 bool SnapContainerData::IsSnapportCoveredOnAxis(
     SearchAxis axis,
     float current_offset,
-    const gfx::RectF& area_rect) const {
+    const gfx::RectF& area_rect,
+    gfx::RangeF& out_covered_range) const {
   // We expand the range that SnapContainerData considers covering the snapport
   // by kSnapportCoveredTolerance to handle offsets at the boundaries of
   // the snap container. At the boundaries, |current_offset| might be a rounded
@@ -547,16 +557,19 @@ bool SnapContainerData::IsSnapportCoveredOnAxis(
   if (axis == SearchAxis::kX) {
     if (area_rect.width() < rect_.width())
       return false;
-    float left = area_rect.x() - rect_.x() - kSnapportCoveredTolerance;
-    float right = area_rect.right() - rect_.right() + kSnapportCoveredTolerance;
-    return current_offset >= left && current_offset <= right;
+    float left = area_rect.x() - rect_.x();
+    float right = area_rect.right() - rect_.right();
+    out_covered_range = gfx::RangeF(left, right);
+    return current_offset >= left - kSnapportCoveredTolerance &&
+           current_offset <= right + kSnapportCoveredTolerance;
   } else {
     if (area_rect.height() < rect_.height())
       return false;
-    float top = area_rect.y() - rect_.y() - kSnapportCoveredTolerance;
-    float bottom =
-        area_rect.bottom() - rect_.bottom() + kSnapportCoveredTolerance;
-    return current_offset >= top && current_offset <= bottom;
+    float top = area_rect.y() - rect_.y();
+    float bottom = area_rect.bottom() - rect_.bottom();
+    out_covered_range = gfx::RangeF(top, bottom);
+    return current_offset >= top - kSnapportCoveredTolerance &&
+           current_offset <= bottom + kSnapportCoveredTolerance;
   }
 }
 
