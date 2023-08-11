@@ -1616,26 +1616,31 @@ class Port(object):
         """
         return self._filesystem.join(self.web_tests_dir(), test_name)
 
+    def _should_run_with_single_threaded_compositing(self, test_name):
+        # Threaded compositing is currently only turned on for web tests
+        # on Linux machines
+        if not self.host.platform.is_linux() or self.is_wpt_test(test_name):
+            return True
+
+        return False
+
     @memoized
     def args_for_test(self, test_name):
         args = self._lookup_virtual_test_args(test_name)
-
-        if self._should_run_single_threaded(test_name):
-            if (DISABLE_THREADED_COMPOSITING_FLAG not in args
-                    and ENABLE_THREADED_COMPOSITING_FLAG not in args):
-                args.append(DISABLE_THREADED_COMPOSITING_FLAG)
-        else:
-            if not ENABLE_THREADED_COMPOSITING_FLAG in args:
-                # There are no virtual suites with
-                # --disable-threaded-compositing arg
-                args.append(ENABLE_THREADED_COMPOSITING_FLAG)
-        if (DISABLE_THREADED_COMPOSITING_FLAG in args
-                and DISABLE_THREADED_ANIMATION_FLAG not in args):
-            args.append(DISABLE_THREADED_ANIMATION_FLAG)
-
         pac_url = self.extract_wpt_pac(test_name)
         if pac_url is not None:
             args.append("--proxy-pac-url=" + pac_url)
+
+        if ENABLE_THREADED_COMPOSITING_FLAG in args:
+            # Explicitly enabling threaded compositing takes precedence over
+            # explicitly disabling it.
+            if DISABLE_THREADED_COMPOSITING_FLAG in args:
+                args.remove(DISABLE_THREADED_COMPOSITING_FLAG)
+            if DISABLE_THREADED_ANIMATION_FLAG in args:
+                args.remove(DISABLE_THREADED_ANIMATION_FLAG)
+        elif self._should_run_with_single_threaded_compositing(test_name):
+            args.append(DISABLE_THREADED_COMPOSITING_FLAG)
+            args.append(DISABLE_THREADED_ANIMATION_FLAG)
 
         tracing_categories = self.get_option('enable_tracing')
         if tracing_categories:
@@ -1650,10 +1655,6 @@ class Port(object):
                 self._filesystem.sanitize_filename(test_name), current_time)
             args.append('--trace-startup-file=' + file_name)
 
-        assert (ENABLE_THREADED_COMPOSITING_FLAG in args
-                and DISABLE_THREADED_COMPOSITING_FLAG not in args) or (
-                    DISABLE_THREADED_COMPOSITING_FLAG in args
-                    and ENABLE_THREADED_COMPOSITING_FLAG not in args)
         return args
 
     @memoized
@@ -2376,8 +2377,10 @@ class Port(object):
                         '{} contains entries with the same prefix: {!r}. Please combine them'
                         .format(path_to_virtual_test_suites, json_config))
                 virtual_test_suites.append(vts)
-                for entry in vts.skip_base_tests:
-                    self._skip_base_tests.add(self.normalize_test_name(entry))
+                if self.operating_system() in vts.platforms:
+                    for entry in vts.skip_base_tests:
+                        self._skip_base_tests.add(
+                            self.normalize_test_name(entry))
         except ValueError as error:
             raise ValueError('{} is not a valid JSON file: {}'.format(
                 path_to_virtual_test_suites, error))
@@ -2611,27 +2614,6 @@ class Port(object):
         path = self._filesystem.join(self.web_tests_dir(), 'TestLists',
                                      'SingleThreadedTests')
         return set(self._filesystem.read_text_file(path).split('\n'))
-
-    def _should_run_single_threaded(self, test_name):
-        # We currently only turn on threaded compositing tests for Linux
-        if not self.host.platform.is_linux():
-            return True
-        # We currently only turn on threaded compositing for web_tests
-        if self.is_wpt_test(test_name):
-            return True
-
-        block_list = self._get_blocked_tests_for_threaded_compositing_testing()
-
-        if test_name in block_list:
-            return True
-
-        # We apply the setting of a base test to all of its virtual versions
-        base_name = self.lookup_virtual_test_base(test_name)
-        if base_name:
-            if base_name in block_list:
-                return True
-
-        return False
 
     def build_path(self, *comps: str, target: Optional[str] = None):
         """Returns a path from the build directory."""
