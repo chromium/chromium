@@ -22,6 +22,7 @@
 #include "ash/style/icon_button.h"
 #include "ash/style/pill_button.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/wm/desks/desks_test_util.h"
 #include "base/system/sys_info.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -549,6 +550,16 @@ TEST_F(GameDashboardCaptureModeTest, SettingsMenuHeightMinimum) {
   EXPECT_EQ(
       settings_bounds.size(),
       CaptureModeSettingsTestApi().GetSettingsView()->GetVisibleRect().size());
+}
+
+TEST_F(GameDashboardCaptureModeTest, StopOnWindowSentToDifferentDesk) {
+  NewDesk();
+  auto* controller = StartGameCaptureModeSession();
+  ASSERT_TRUE(controller->IsActive());
+
+  // Send the window to a different desk using the accelerator.
+  PressAndReleaseKey(ui::VKEY_OEM_6, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN);
+  EXPECT_FALSE(controller->IsActive());
 }
 
 // -----------------------------------------------------------------------------

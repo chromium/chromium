@@ -11,6 +11,7 @@
 #include "ash/capture_mode/capture_mode_util.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
+#include "ash/wm/desks/desks_util.h"
 #include "ui/compositor/layer.h"
 #include "ui/wm/public/activation_client.h"
 
@@ -108,6 +109,11 @@ void CaptureWindowObserver::OnWindowParentChanged(aura::Window* window,
     return;
   }
   CHECK_EQ(window, window_);
+  if (!desks_util::BelongsToActiveDesk(window)) {
+    // Window has been sent to another desk, so we should stop recording.
+    CaptureModeController::Get()->Stop();
+    return;
+  }
   // Move the capture mode widgets to the new root and repaint the capture
   // region when the window parent changes. E.g, `window_` is moved to another
   // display.
