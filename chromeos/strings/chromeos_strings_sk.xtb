@@ -15,7 +15,6 @@
 <translation id="1075811647922107217">Veľkosť stránky</translation>
 <translation id="1082009148392559545">Sťahuje sa šetrič obrazovky</translation>
 <translation id="1094693127011229778">Adresa IP nie je k dispozícii</translation>
-<translation id="1113892970288677790">Vyberte plagáty a obrázky</translation>
 <translation id="1118572504348554005">Spätnú väzbu odoslanú prostredníctvom tohto formulára môžeme zdieľať s našimi partnermi na účely opravy chýb a riešenia ďalších problémov, ktoré nám hlásite. Neuvádzajte citlivé údaje, ako sú heslá.</translation>
 <translation id="1119447706177454957">Interná chyba</translation>
 <translation id="1124772482545689468">Používateľ</translation>
@@ -183,6 +182,7 @@
 <translation id="225692081236532131">Stav aktivácie</translation>
 <translation id="2271469253353559191">Plán tmavého režimu</translation>
 <translation id="2276999893457278469">Najlepší pomocný obsah</translation>
+<translation id="2279051792571591988">Obnoviť predvolené hodnoty</translation>
 <translation id="2287186687001756809">K dispozícii nie je žiadny obrázok. Ak chcete pridať fotky, prejdite na <ph name="LINK" />.</translation>
 <translation id="2307344026739914387">Použitie aktuálneho páru kľúčov</translation>
 <translation id="2320295602967756579">Zapnúť svetlý motív</translation>
@@ -332,7 +332,6 @@
 <translation id="361575905210396100">Ďakujeme vám za spätnú väzbu</translation>
 <translation id="3632579075709132555">Prepínanie zámky na ochranu súkromia</translation>
 <translation id="3651050199673793219">Výber jednotky teploty</translation>
-<translation id="3663574643422533538">Vyberte exkluzívne video t pre zariadenie <ph name="PRODUCT_NAME" /></translation>
 <translation id="3668449597372804501">Tapeta s plynúcimi oblakmi</translation>
 <translation id="3689839747745352263">Test <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Načítava sa...</translation>
@@ -646,6 +645,7 @@
 <translation id="6061772781719867950">Neúspešné požiadavky HTTP</translation>
 <translation id="6073292342939316679">zníženie jasu klávesnice</translation>
 <translation id="6075872808778243331">(Android) Latencia protokolu HTTP</translation>
+<translation id="6078323886959318429">Pridať odkaz</translation>
 <translation id="6104112872696127344">Skenovanie bolo zrušené</translation>
 <translation id="6106186594183574873">Ak chcete zmenu dokončiť, zadajte staré heslo</translation>
 <translation id="6108689792487843350">Brána je nedostupná</translation>

@@ -15,7 +15,6 @@
 <translation id="1075811647922107217">ପୃଷ୍ଠାର ଆକାର</translation>
 <translation id="1082009148392559545">ସ୍କ୍ରିନ ସେଭର ଡାଉନଲୋଡ କରାଯାଉଛି</translation>
 <translation id="1094693127011229778">IP ଠିକଣା ଉପଲବ୍ଧ ନାହିଁ</translation>
-<translation id="1113892970288677790">କ୍ୟୁରେଟ୍ ହୋଇଥିବା କଳାକୃତି ଏବଂ ଛବିଗୁଡ଼ିକୁ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="1118572504348554005">ଆପଣ ଆମକୁ ରିପୋର୍ଟ କରିଥିବା ବଗ ଏବଂ ଅନ୍ୟ ସମସ୍ୟାଗୁଡ଼ିକର ଟ୍ରବୁଲସୁଟ କରିବା ପାଇଁ ଏହି ଫର୍ମ ମାଧ୍ୟମରେ ଦାଖଲ କରାଯାଇଥିବା ମତାମତକୁ ଆମେ ଆମ ପାର୍ଟନରମାନଙ୍କ ସହ ସେୟାର କରିପାରୁ। ପାସୱାର୍ଡଗୁଡ଼ିକ ପରି ସମ୍ବେଦନଶୀଳ ସୂଚନା ଅନ୍ତର୍ଭୁକ୍ତ କରନ୍ତୁ ନାହିଁ।</translation>
 <translation id="1119447706177454957">ଇଣ୍ଟର୍ନଲ୍‌ ତ୍ରୁଟି</translation>
 <translation id="1124772482545689468">ୟୁଜର</translation>
@@ -183,6 +182,7 @@
 <translation id="225692081236532131">ସକ୍ରିୟକରଣ ସ୍ଥିତି</translation>
 <translation id="2271469253353559191">ଡାର୍କ ମୋଡ୍ ସିଡୁଲ୍</translation>
 <translation id="2276999893457278469">ଶ୍ରେଷ୍ଠ ସହାୟତା ବିଷୟବସ୍ତୁ</translation>
+<translation id="2279051792571591988">ଡିଫଲ୍ଟଗୁଡ଼ିକୁ ରିଷ୍ଟୋର କରନ୍ତୁ</translation>
 <translation id="2287186687001756809">କୌଣସି ଇମେଜ ଉପଲବ୍ଧ ନାହିଁ। ଫଟୋଗୁଡ଼ିକୁ ଯୋଗ କରିବା ପାଇଁ <ph name="LINK" />କୁ ଯାଆନ୍ତୁ</translation>
 <translation id="2307344026739914387">ବର୍ତ୍ତମାନର କୀପେୟାର ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="2320295602967756579">ହାଲୁକା ଥିମ୍ ସକ୍ଷମ କରନ୍ତୁ</translation>
@@ -332,7 +332,6 @@
 <translation id="361575905210396100">ଆପଣଙ୍କ ମତାମତ ପାଇଁ ଧନ୍ୟବାଦ</translation>
 <translation id="3632579075709132555">ଗୋପନୀୟତା ସ୍କ୍ରିନ ଟୋଗଲ</translation>
 <translation id="3651050199673793219">ଏକ ତାପମାତ୍ରା ୟୁନିଟ ଚୟନ କରନ୍ତୁ</translation>
-<translation id="3663574643422533538"><ph name="PRODUCT_NAME" /> ଏକ୍ସକ୍ଲୁସିଭ କଳାକୃତି ଚୟନ କରନ୍ତୁ</translation>
 <translation id="3668449597372804501">କ୍ଲାଉଡ ଫ୍ଲୋ ୱାଲପେପର</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> ଟେଷ୍ଟ</translation>
 <translation id="370665806235115550">ଲୋଡ୍ କରୁଛି...</translation>
@@ -646,6 +645,7 @@
 <translation id="6061772781719867950">ବିଫଳ ହୋଇଥିବା HTTP ଅନୁରୋଧ</translation>
 <translation id="6073292342939316679">କୀବୋର୍ଡର ଉଜ୍ଜ୍ୱଳତା କମ୍ କରନ୍ତୁ</translation>
 <translation id="6075872808778243331">(Android) HTTP ଲାଟେନ୍ସି</translation>
+<translation id="6078323886959318429">ସର୍ଟକଟ୍ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="6104112872696127344">ସ୍କାନିଂ ବାତିଲ୍ କରାଯାଇଛି</translation>
 <translation id="6106186594183574873">ସମ୍ପୂର୍ଣ୍ଣ କରିବା ପାଇଁ, ଆପଣଙ୍କର ପୁରୁଣା ପାସ୍‍ୱାର୍ଡ ଲେଖନ୍ତୁ</translation>
 <translation id="6108689792487843350">ଗେଟୱେ ସହିତ ସଂଯୋଗ କରାଯାଇପାରିବ ନାହିଁ</translation>

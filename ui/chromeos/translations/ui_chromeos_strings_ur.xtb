@@ -166,7 +166,6 @@
 <translation id="2312704192806647271">{COUNT,plural, =1{‏ID والی ایک ایکسٹینشن <ph name="BEGIN_LIST" /><ph name="END_LIST" /> کا پتہ نہیں لگایا جا سکا۔ اپنے منتظم سے رابطہ کریں۔}other{‏IDs والی ایکسٹینشنز <ph name="BEGIN_LIST" /><ph name="END_LIST" /> کا پتہ نہیں لگایا جا سکا۔ اپنے منتظم سے رابطہ کریں۔}}</translation>
 <translation id="2325650632570794183">‏فائل کی یہ قسم تعاون یافتہ نہیں ہے۔ اس قسم کی فائل کو کھول سکنے والی ایپ تلاش کرنے کیلئے براہ کرم Chrome ویب اسٹور ملاحظہ کریں۔</translation>
 <translation id="2326539130272988168">بلغاریائی</translation>
-<translation id="2337715497728194187">‏Bruschetta کے ساتھ اشتراک کریں</translation>
 <translation id="233822363739146957">آپ کی تمام فائلز کو مطابقت پذیر بنانے کے لیے اسٹوریج کی کافی جگہ نہیں ہے</translation>
 <translation id="23721837607121582">موبائل پروفائل ڈاؤن لوڈ کریں، نیٹ ورک <ph name="NETWORK_INDEX" /> از <ph name="NETWORK_COUNT" />، <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">فہرست والے منظر پر سوئچ کریں</translation>
@@ -197,7 +196,6 @@
 <translation id="2544853746127077729">نیٹ ورک نے توثیق کا سرٹیفکیٹ مسترد کر دیا گیا</translation>
 <translation id="255937426064304553">امریکی بین الاقوامی</translation>
 <translation id="2563185590376525700">مینڈک</translation>
-<translation id="2574327434504608656">‏Bruschetta کے ساتھ 1 فولڈر کا اشتراک کیا گیا</translation>
 <translation id="2578394532502990878">تمل فونیٹک</translation>
 <translation id="2579959351793446050">اڑیہ</translation>
 <translation id="2587195714949534472"><ph name="FILE_NAME" /> کو مطابقت پذیری کرنے کی تیاری ہو رہی ہے...</translation>
@@ -297,7 +295,6 @@
 <translation id="3408072735282270043">فعال کریں، <ph name="NETWORK_NAME" /></translation>
 <translation id="3408236822532681288">نیو 2 کی بورڈ کے ساتھ جرمن (جرمنی)</translation>
 <translation id="3414856743105198592">ہٹانے لائق میڈیا کو فارمیٹ کرنے سے سبھی ڈیٹا مٹ جائے گا۔ کیا آپ جاری رکھنا چاہتے ہیں؟</translation>
-<translation id="3435143625481187092">‏Bruschetta کو <ph name="FOLDER_NAME" /> فولڈر میں موجود فائلز تک رسائی دینے کی اجازت دیں</translation>
 <translation id="3437801641691368414">بنانے کا وقت</translation>
 <translation id="343907260260897561">فوری کیمرا</translation>
 <translation id="3455931012307786678">اسٹونين</translation>
@@ -385,7 +382,6 @@
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> منتقل ہو گیا۔</translation>
 <translation id="4176286497474237543">کوڑے دان ابھی خالی کریں</translation>
 <translation id="4179621117429069925">یہ آئٹم آپ کے کوڑے دان میں ہے</translation>
-<translation id="4181839429935094755">‏<ph name="NUMBER_OF_ITEMS" /> فولڈرز کا اشتراک Bruschetta کے ساتھ کیا گیا</translation>
 <translation id="4186579485882418952">آف لائن فعال کریں</translation>
 <translation id="4193154014135846272">‏Google دستاویز</translation>
 <translation id="4197674956721858839">زپ کا انتخاب</translation>
@@ -452,7 +448,6 @@
 <translation id="4646813851450205600">‏Qwerty کی بورڈ کے ساتھ چیک زبان</translation>
 <translation id="4656777537938206294">فائلز کو آف لائن دستیاب کرائیں</translation>
 <translation id="4658782175094886150">برف سے ڈھکا ہوا شخص</translation>
-<translation id="466782788172479199">‏Bruschetta کو اپنے Google Drive میں موجود فائلز تک رسائی دینے کی اجازت دیں۔ آپ کے دیگر آلات پر تبدیلیوں کی مطابقت پذیری کی جائے گی۔</translation>
 <translation id="4669606053856530811">جب تک ان آئٹمز کا ان کے ساتھ اشتراک نہیں کیا جاتا ہے، <ph name="SOURCE_NAME" /> کے اراکین کی رسائی منقطع ہو جائے گي۔</translation>
 <translation id="467809019005607715">Google Slides</translation>
 <translation id="4690246192099372265">سويڈش</translation>
@@ -563,7 +558,6 @@
 <translation id="5323213332664049067">لاطینی امریکی</translation>
 <translation id="5330145655348521461">یہ فائلیں ایک مختلف ڈیسک ٹاپ پر کھولی گئیں۔ اسے دیکھنے کیلئے <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) پر جائیں۔</translation>
 <translation id="5330512191124428349">معلومات حاصل کریں</translation>
-<translation id="5344246330454251646">‏Bruschetta کے اشتراک کرنے کا نظم کریں</translation>
 <translation id="535792325654997756">بلیوں کے ساتھ شخص</translation>
 <translation id="5358764674931277">فریم ریٹ</translation>
 <translation id="5363339716524495120">ان پٹ زبان چینی ہے</translation>
@@ -731,7 +725,6 @@
 <translation id="6710213216561001401">گزشتہ</translation>
 <translation id="6732801395666424405">سرٹیفکیٹس لوڈ نہیں ہوئے</translation>
 <translation id="6736329909263487977">‎<ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]‎</translation>
-<translation id="6740270213273127264">‏Bruschetta کے ساتھ فولڈر کا اشتراک کریں</translation>
 <translation id="6750737795876287924">موجودہ ڈائریکٹری</translation>
 <translation id="6751256176799620176">1 فولڈر منتخب کیا گیا</translation>
 <translation id="6755827872271341378">‏ChromeOS Flex آلہ</translation>

@@ -74,7 +74,6 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="2592940277904433508">Pokračovat v používání prohlížeče Chromium</translation>
 <translation id="2648074677641340862">Během instalace došlo k chybě operačního systému. Stáhněte prosím Chromium znovu.</translation>
 <translation id="2661879430930417727">Pokud zařízení sdílíte s přáteli a členy rodiny, každý může procházet internet samostatně a nastavit si Chromium tak, jak potřebuje</translation>
-<translation id="2669853942967761236">Prohlížeč Chromium tento soubor archivu zablokoval, protože v něm může být skryt malware</translation>
 <translation id="268602741124540128">Vítejte v prohlížeči Chromium, <ph name="ACCOUNT_FIRST_NAME" /></translation>
 <translation id="2711502716910134313">Karta prohlížeče Chromium</translation>
 <translation id="2718390899429598676">V zájmu lepšího zabezpečení bude Chromium šifrovat vaše data.</translation>
@@ -409,6 +408,5 @@ Chromium nemůže vaše nastavení obnovit.</translation>
 <translation id="942598560705308788">Certifikáty spravované prohlížečem Chromium</translation>
 <translation id="965162752251293939">Kdo Chromium používá?</translation>
 <translation id="967427899662692980">Aktivujte si v prohlížeči Chromium maximální zabezpečení</translation>
-<translation id="9792300276217204">Při zavření prohlížeče Chromium vždy vymazat ze zařízení data webů</translation>
 <translation id="985602178874221306">Autoři prohlížeče Chromium</translation>
 </translationbundle>

@@ -63,6 +63,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1235458158152011030">Bekende netwerken</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> is verbonden.</translation>
 <translation id="1240638468526743569">Een app</translation>
+<translation id="1242883863226959074">apparaat</translation>
 <translation id="124678866338384709">Huidig tabblad sluiten</translation>
 <translation id="1246890715821376239">Niet-ondersteunde apps</translation>
 <translation id="1247372569136754018">Microfoon (intern)</translation>
@@ -181,6 +182,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1747827819627189109">Schermtoetsenbord staat aan</translation>
 <translation id="1749109475624620922">Venster <ph name="WINDOW_TITLE" /> is toegewezen aan alle bureaus</translation>
 <translation id="1750088060796401187">Er zijn maar <ph name="MAX_DESK_LIMIT" /> bureaus toegestaan. Verwijder een om een nieuw bureau toe te voegen.</translation>
+<translation id="1755556344721611131">App Diagnostische gegevens</translation>
 <translation id="1756833229520115364">Kan de template niet opslaan. Te veel vensters of tabbladen.</translation>
 <translation id="1757857692711134412">Uit tot zonsondergang</translation>
 <translation id="1768366657309696705">De sneltoets <ph name="LAUNCHER_KEY_NAME" /> + punt is veranderd. Als je de toets Insert wilt gebruiken, druk je op de <ph name="LAUNCHER_KEY_NAME" />-toets + Shift + Backspace.</translation>
@@ -266,7 +268,6 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="2148716181193084225">Vandaag</translation>
 <translation id="2149229036084364364">Naar de vorige track gaan</translation>
 <translation id="2161132820593978283">Probeer cameraframing, zodat je bij videogesprekken in het midden van het scherm te zien bent. Zet dit aan via Snelle instellingen.</translation>
-<translation id="2165966740263283349">opslaggebruik</translation>
 <translation id="2170530631236737939">Swipe met 3 vingers omlaag om het overzicht te sluiten</translation>
 <translation id="2185166372312820725">Naar het vorige tabblad gaan</translation>
 <translation id="2185444992308415167">Tabbladen 1 tot en met 8 doorlopen</translation>
@@ -474,6 +475,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3113492864356515707">Vorig item op de plank markeren</translation>
 <translation id="3120421559657122717">Apparaat uitzetten?</translation>
+<translation id="3122464029669770682">CPU</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">Opnieuw starten om updates uit te voeren</translation>
 <translation id="3139188263101386725">De geüpdatete sneltoets gebruiken</translation>
@@ -518,7 +520,6 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> kan later nog inloggen.</translation>
 <translation id="3321628682574733415">Onjuiste oudercode</translation>
 <translation id="332827762492701193">Meldingen zijn verborgen</translation>
-<translation id="3338855835380298613">cpu-gebruik</translation>
 <translation id="3339826665088060472">Screenshot, tools om screenshots en schermopnamen te maken</translation>
 <translation id="3340978935015468852">instellingen</translation>
 <translation id="3341303451326249809">Screenshot gemaakt</translation>
@@ -642,7 +643,6 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="3781910048497807059">De focus naar het vorige deelvenster verplaatsen</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">Vergrendelen</translation>
-<translation id="3796198851576711985">batterijconditie</translation>
 <translation id="3796746699333205839">Een app gebruikt je camera en microfoon</translation>
 <translation id="3798670284305777884">Luidspreker (intern)</translation>
 <translation id="3799080171973636491">Je hebt op de sneltoets van het vergrootglas voor volledig scherm gedrukt. Wil je deze functie aanzetten?</translation>
@@ -814,12 +814,10 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="4527045527269911712">Bluetooth-apparaat '<ph name="DEVICE_NAME" />' wil rechten om te koppelen.</translation>
 <translation id="4533343294786968049">De batterijduur wordt verlengd. De batterij is om <ph name="FULLY_CHARGE_TIME" /> volledig opgeladen.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> tot volledig opgeladen</translation>
-<translation id="4536664881735498710">ram-gebruik</translation>
 <translation id="4538824937723742295">Screenshot van volledig scherm maken</translation>
 <translation id="4539127209940689201">Huidige pagina afdrukken</translation>
 <translation id="4541706525461326392">Profiel verwijderen. Dit kan een paar minuten duren.</translation>
 <translation id="4544483149666270818">Selecteer een venster om op te nemen</translation>
-<translation id="454541942614298893">mijn apparaat</translation>
 <translation id="4545950850562423083">Huidige pagina opslaan als bookmark</translation>
 <translation id="4548482551627849548">Actief venster verplaatsen naar bureau aan de linkerkant</translation>
 <translation id="4560576029703263363">Aan</translation>
@@ -978,7 +976,6 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="5208059991603368177">Aan</translation>
 <translation id="5216991270656129561">Uit tot <ph name="TIME" /></translation>
 <translation id="5217646019792206018">Volgend bureau: <ph name="NEXT_DESK_NAME" />, gebruik Zoeken + spatiebalk of de sneltoets Shift + Zoeken + <ph name="NEXT_DESK_INDEX" /> om te activeren.</translation>
-<translation id="5221423477036820198">Stuur of beantwoord snel berichten van je telefoon met Telefoonhub.</translation>
 <translation id="5222676887888702881">Uitloggen</translation>
 <translation id="5229343007215035173">Privacyscherm aan-/uitzetten</translation>
 <translation id="5234764350956374838">Sluiten</translation>
@@ -1139,7 +1136,6 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="589817443623831496">Puntscannen</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5901630391730855834">Geel</translation>
-<translation id="5902162043476810127">random-access memory</translation>
 <translation id="5909862606227538307">Inactief bureau.</translation>
 <translation id="5911231045062997865">Lacros-vensters worden momenteel niet ondersteund. Andere apps worden opgeslagen.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
@@ -1540,7 +1536,6 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="7724603315864178912">Knip</translation>
 <translation id="7725108879223146004">Toon de hotspotdetails. Hotspot wordt uitgezet.</translation>
 <translation id="7727952505535211425">De website in de adresbalk openen in een nieuw tabblad</translation>
-<translation id="77365090426890123">geheugengebruik</translation>
 <translation id="7742327441377685481">Geen meldingen</translation>
 <translation id="7748275671948949022">Launcher-knop op de plank markeren</translation>
 <translation id="7749443890790263709">Maximum aantal bureaus bereikt.</translation>
@@ -1792,7 +1787,6 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="8853703225951107899">Je pincode of wachtwoord kan nog steeds niet worden geverifieerd. Opmerking: Als je onlangs je wachtwoord hebt gewijzigd, gebruik je je oude wachtwoord. Je nieuwe wachtwoord wordt toegepast zodra je uitlogt.</translation>
 <translation id="8855885154700222542">Toets voor volledig scherm</translation>
 <translation id="8858369206579825206">Privacyopties</translation>
-<translation id="8860817004574502558">batterijduur</translation>
 <translation id="8870509716567206129">App biedt geen ondersteuning voor gesplitst scherm.</translation>
 <translation id="8874184842967597500">Niet verbonden</translation>
 <translation id="8875021410787719674">Schakelen tussen rechterbenedenhoek, Launcher, adresbalk, bookmarkbalk, website die is geopend en downloads</translation>
@@ -1845,6 +1839,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="9080073830732419341">Camera uitgelijnd op de linkerbovenhoek</translation>
 <translation id="9080132581049224423">Swipe omhoog om naar het startscherm te gaan</translation>
 <translation id="9080206825613744995">Microfoon wordt gebruikt.</translation>
+<translation id="9083324773537346962">OS-versie</translation>
 <translation id="908451241440060346">Het geluid van meldingen staat uit als Niet storen aanstaat</translation>
 <translation id="9084606467167974638">Positie van menu wijzigen</translation>
 <translation id="9085962983642906571">Je batterij wordt op 80% gehouden terwijl deze is aangesloten om de batterijduur te verlengen.</translation>
@@ -1885,7 +1880,6 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="951991426597076286">Afwijzen</translation>
 <translation id="953431725143473984">Het apparaat uitzetten?</translation>
 <translation id="954052413789300507">Onvoldoende ruimte voor <ph name="FILENAME" />. Maak ruimte vrij.</translation>
-<translation id="968627661524972577">Gebruik apps waarmee je van alles kunt doen op je Chromebook: Je vindt je apps in de Launcher. Je kunt ook op de Launcher-toets op het toetsenbord drukken.</translation>
 <translation id="974545358917229949"><ph name="RESULT_COUNT" /> resultaten bekijken voor <ph name="QUERY" /></translation>
 <translation id="98120814841227350">Naar het einde van het document gaan</translation>
 <translation id="987589956647469042">Mobiele data staan aan</translation>

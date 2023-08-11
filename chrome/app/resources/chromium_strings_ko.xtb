@@ -74,7 +74,6 @@
 <translation id="2592940277904433508">Chromium 계속 사용</translation>
 <translation id="2648074677641340862">설치 중 운영체제 오류가 발생했습니다. Chromium을 다시 다운로드하세요.</translation>
 <translation id="2661879430930417727">기기를 공유하는 경우 친구와 가족이 개별적으로 탐색하고 원하는 대로 Chromium을 설정할 수 있습니다.</translation>
-<translation id="2669853942967761236">멀웨어가 숨겨져 있을 수 있어 Chromium에서 이 보관 파일을 차단했습니다.</translation>
 <translation id="268602741124540128"><ph name="ACCOUNT_FIRST_NAME" />님, Chromium에 오신 것을 환영합니다</translation>
 <translation id="2711502716910134313">Chromium 탭</translation>
 <translation id="2718390899429598676">보안 강화를 위해 Chromium에서 사용자 데이터를 암호화합니다.</translation>
@@ -409,6 +408,5 @@ Chromium에서 설정을 복구할 수 없습니다.</translation>
 <translation id="942598560705308788">Chromium이 관리하는 인증서</translation>
 <translation id="965162752251293939">Chromium 사용자 선택</translation>
 <translation id="967427899662692980">Chromium의 가장 강력한 보안 기능을 이용하세요</translation>
-<translation id="9792300276217204">Chromium 종료 시 기기에 있는 사이트 데이터를 항상 삭제</translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
 </translationbundle>

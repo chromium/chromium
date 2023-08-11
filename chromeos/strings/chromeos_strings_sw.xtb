@@ -15,7 +15,6 @@
 <translation id="1075811647922107217">Ukubwa wa ukurasa</translation>
 <translation id="1082009148392559545">Kupakua taswira ya skrini</translation>
 <translation id="1094693127011229778">Anwani ya IP haipatikani</translation>
-<translation id="1113892970288677790">Chagua kazi ya sanaa na picha zilizoratibiwa</translation>
 <translation id="1118572504348554005">Tunaweza kushiriki maoni yaliyowasilishwa kupitia fomu hii na washirika wetu ili kutatua hitilafu na matatizo mengine ambayo unaripoti kwetu. Usijumuishe taarifa nyeti kama vile manenosiri.</translation>
 <translation id="1119447706177454957">Hitilafu ya ndani</translation>
 <translation id="1124772482545689468">Mtumiaji</translation>
@@ -183,6 +182,7 @@
 <translation id="225692081236532131">Hali ya kuwasha</translation>
 <translation id="2271469253353559191">Ratiba ya hali nyeusi</translation>
 <translation id="2276999893457278469">Maudhui maarufu ya usaidizi</translation>
+<translation id="2279051792571591988">Rejesha viwe chaguo msingi</translation>
 <translation id="2287186687001756809">Hakuna picha inayopatikana. Ili uweke picha, nenda kwenye <ph name="LINK" /></translation>
 <translation id="2307344026739914387">Tumia jozi ya funguo ya sasa</translation>
 <translation id="2320295602967756579">Washa mandhari meupe</translation>
@@ -332,7 +332,6 @@
 <translation id="361575905210396100">Asante kwa maoni yako</translation>
 <translation id="3632579075709132555">Kugeuza skrini ya faragha</translation>
 <translation id="3651050199673793219">Chagua kizio cha halijoto</translation>
-<translation id="3663574643422533538">Chagua kazi ya sanaa ya kipekee ya <ph name="PRODUCT_NAME" /></translation>
 <translation id="3668449597372804501">Mandhari kulingana na mwelekeo wa mawingu</translation>
 <translation id="3689839747745352263">Jaribio la <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Inapakia...</translation>
@@ -646,6 +645,7 @@
 <translation id="6061772781719867950">Maombi ya HTTP hayakutumwa</translation>
 <translation id="6073292342939316679">kupunguza mwangaza wa kibodi</translation>
 <translation id="6075872808778243331">Muda wa Kusubiri Maombi ya HTTP (Android)</translation>
+<translation id="6078323886959318429">Ongeza njia ya mkato</translation>
 <translation id="6104112872696127344">Uchanganuzi umeghairiwa</translation>
 <translation id="6106186594183574873">Ili ukamilishe, weka nenosiri lako la awali</translation>
 <translation id="6108689792487843350">Imeshindwa kufikia lango</translation>

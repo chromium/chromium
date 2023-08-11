@@ -63,6 +63,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1235458158152011030">Mạng đã biết</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> đã kết nối.</translation>
 <translation id="1240638468526743569">Một ứng dụng</translation>
+<translation id="1242883863226959074">thiết bị</translation>
 <translation id="124678866338384709">Đóng thẻ hiện tại</translation>
 <translation id="1246890715821376239">Các ứng dụng không được hỗ trợ</translation>
 <translation id="1247372569136754018">Micrô (bên trong)</translation>
@@ -181,6 +182,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1747827819627189109">Đã bật bàn phím ảo</translation>
 <translation id="1749109475624620922">Cửa sổ <ph name="WINDOW_TITLE" /> đã được chỉ định cho tất cả không gian làm việc</translation>
 <translation id="1750088060796401187">Bạn chỉ được mở tối đa <ph name="MAX_DESK_LIMIT" /> không gian làm việc. Hãy xoá một không gian làm việc để mở một không gian làm việc mới.</translation>
+<translation id="1755556344721611131">Ứng dụng chẩn đoán</translation>
 <translation id="1756833229520115364">Không lưu được mẫu. Có quá nhiều cửa sổ hoặc thẻ.</translation>
 <translation id="1757857692711134412">Tắt cho đến hoàng hôn</translation>
 <translation id="1768366657309696705">Phím tắt <ph name="LAUNCHER_KEY_NAME" /> + Dấu chấm đã thay đổi. Để sử dụng phím Insert, hãy nhấn tổ hợp phím <ph name="LAUNCHER_KEY_NAME" /> + Shift + Backspace.</translation>
@@ -266,7 +268,6 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="2148716181193084225">Hôm nay</translation>
 <translation id="2149229036084364364">Quay về bản nhạc trước</translation>
 <translation id="2161132820593978283">Dùng thử tính năng lấy khung hình của máy ảnh để bạn luôn xuất hiện ở chính giữa màn hình khi gọi video. Bạn có thể bật tính năng này trong phần Cài đặt nhanh.</translation>
-<translation id="2165966740263283349">mức sử dụng bộ nhớ</translation>
 <translation id="2170530631236737939">Vuốt xuống bằng 3 ngón tay để thoát khỏi chế độ Tổng quan</translation>
 <translation id="2185166372312820725">Quay về thẻ trước</translation>
 <translation id="2185444992308415167">Xem qua các thẻ từ 1 đến 8</translation>
@@ -474,6 +475,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3113492864356515707">Đánh dấu mục trước trên kệ</translation>
 <translation id="3120421559657122717">Tắt thiết bị?</translation>
+<translation id="3122464029669770682">CPU</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">Khởi động lại để cập nhật</translation>
 <translation id="3139188263101386725">Sử dụng phím tắt mới</translation>
@@ -518,7 +520,6 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> vẫn có thể đăng nhập vào lúc khác.</translation>
 <translation id="3321628682574733415">Mã dành cho cha mẹ không chính xác</translation>
 <translation id="332827762492701193">Thông báo bị ẩn</translation>
-<translation id="3338855835380298613">mức sử dụng CPU</translation>
 <translation id="3339826665088060472">Chụp ảnh màn hình, các công cụ để chụp ảnh màn hình và ghi màn hình</translation>
 <translation id="3340978935015468852">cài đặt</translation>
 <translation id="3341303451326249809">Đã chụp ảnh màn hình</translation>
@@ -642,7 +643,6 @@ Hãy sạc thiết bị.</translation>
 <translation id="3781910048497807059">Di chuyển tiêu điểm về ngăn trước đó</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">Khóa</translation>
-<translation id="3796198851576711985">tình trạng pin</translation>
 <translation id="3796746699333205839">Một ứng dụng đang sử dụng máy ảnh và micrô của bạn</translation>
 <translation id="3798670284305777884">Loa (bên trong)</translation>
 <translation id="3799080171973636491">Bạn đã nhấn phím tắt của tính năng phóng to toàn màn hình. Bạn có muốn bật tính năng này không?</translation>
@@ -814,12 +814,10 @@ Hãy sạc thiết bị.</translation>
 <translation id="4527045527269911712">Thiết bị Bluetooth "<ph name="DEVICE_NAME" />"muốn được phép ghép nối.</translation>
 <translation id="4533343294786968049">Kéo dài thời lượng pin. Pin sẽ sạc đầy trước <ph name="FULLY_CHARGE_TIME" />.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> cho đến khi đầy</translation>
-<translation id="4536664881735498710">mức sử dụng ram</translation>
 <translation id="4538824937723742295">Chụp ảnh toàn màn hình</translation>
 <translation id="4539127209940689201">In trang hiện tại</translation>
 <translation id="4541706525461326392">Đang xóa hồ sơ. Quá trình này có thể mất vài phút.</translation>
 <translation id="4544483149666270818">Chọn một cửa sổ để ghi hình</translation>
-<translation id="454541942614298893">thiết bị của tôi</translation>
 <translation id="4545950850562423083">Lưu trang hiện tại làm dấu trang</translation>
 <translation id="4548482551627849548">Di chuyển cửa sổ đang hoạt động sang không gian làm việc ở bên trái</translation>
 <translation id="4560576029703263363">Đang bật</translation>
@@ -978,7 +976,6 @@ Hãy sạc thiết bị.</translation>
 <translation id="5208059991603368177">Bật</translation>
 <translation id="5216991270656129561">Tắt cho đến <ph name="TIME" /></translation>
 <translation id="5217646019792206018">Không gian làm việc tiếp theo: <ph name="NEXT_DESK_NAME" />, dùng tổ hợp phím Tìm kiếm + Phím cách hoặc phím tắt: Shift + Tìm kiếm + <ph name="NEXT_DESK_INDEX" /> để kích hoạt.</translation>
-<translation id="5221423477036820198">Nhanh chóng gửi hoặc trả lời tin nhắn trên điện thoại của bạn bằng Trung tâm điều khiển điện thoại.</translation>
 <translation id="5222676887888702881">Đăng xuất</translation>
 <translation id="5229343007215035173">Bật/tắt màn hình bảo vệ quyền riêng tư</translation>
 <translation id="5234764350956374838">Bỏ qua</translation>
@@ -1139,7 +1136,6 @@ Hãy sạc thiết bị.</translation>
 <translation id="589817443623831496">Quét điểm</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5901630391730855834">Vàng</translation>
-<translation id="5902162043476810127">bộ nhớ truy xuất ngẫu nhiên</translation>
 <translation id="5909862606227538307">Không gian làm việc không hoạt động.</translation>
 <translation id="5911231045062997865">Hiện chúng tôi không hỗ trợ cửa sổ Lacros. Các ứng dụng khác sẽ được lưu.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
@@ -1543,7 +1539,6 @@ Mới cài đặt</translation>
 <translation id="7724603315864178912">Cắt</translation>
 <translation id="7725108879223146004">Hiển thị thông tin chi tiết về điểm phát sóng. Điểm phát sóng sắp tắt.</translation>
 <translation id="7727952505535211425">Mở trang web trên thanh địa chỉ trong thẻ mới</translation>
-<translation id="77365090426890123">mức sử dụng bộ nhớ</translation>
 <translation id="7742327441377685481">Không có thông báo</translation>
 <translation id="7748275671948949022">Đánh dấu nút Trình chạy trên kệ</translation>
 <translation id="7749443890790263709">Đã đạt đến số lượng không gian làm việc tối đa.</translation>
@@ -1795,7 +1790,6 @@ Mới cài đặt</translation>
 <translation id="8853703225951107899">Hệ thống vẫn chưa xác minh được mã PIN hoặc mật khẩu của bạn. Lưu ý: Nếu bạn đổi mật khẩu gần đây, hãy dùng mật khẩu cũ. Bạn có thể dùng mật khẩu mới sau khi đăng xuất.</translation>
 <translation id="8855885154700222542">Phím toàn màn hình</translation>
 <translation id="8858369206579825206">Chế độ kiểm soát quyền riêng tư</translation>
-<translation id="8860817004574502558">thời lượng pin</translation>
 <translation id="8870509716567206129">Ứng dụng không hỗ trợ chế độ chia đôi màn hình.</translation>
 <translation id="8874184842967597500">Chưa kết nối</translation>
 <translation id="8875021410787719674">Di chuyển giữa góc dưới cùng bên phải, Trình chạy, thanh địa chỉ, thanh dấu trang, trang web đang mở và tệp đã tải xuống</translation>
@@ -1848,6 +1842,7 @@ Mới cài đặt</translation>
 <translation id="9080073830732419341">Máy ảnh đang bám theo góc trên bên trái</translation>
 <translation id="9080132581049224423">Vuốt lên để chuyển đến màn hình chính</translation>
 <translation id="9080206825613744995">Micrô đang được sử dụng.</translation>
+<translation id="9083324773537346962">Phiên bản Hệ điều hành</translation>
 <translation id="908451241440060346">Thông báo bị tắt tiếng khi chế độ Không làm phiền đang bật</translation>
 <translation id="9084606467167974638">Chuyển đổi vị trí menu</translation>
 <translation id="9085962983642906571">Pin duy trì ở mức 80% trong khi cắm nguồn để kéo dài thời lượng pin.</translation>
@@ -1888,7 +1883,6 @@ Mới cài đặt</translation>
 <translation id="951991426597076286">Từ chối</translation>
 <translation id="953431725143473984">Tắt thiết bị?</translation>
 <translation id="954052413789300507">Không đủ dung lượng cho <ph name="FILENAME" />. Giải phóng dung lượng.</translation>
-<translation id="968627661524972577">Dùng các ứng dụng để làm mọi việc bạn cần trên Chromebook. Bạn có thể tìm ứng dụng của mình trong Trình chạy. Bạn cũng có thể nhấn phím Trình chạy trên bàn phím.</translation>
 <translation id="974545358917229949">Đang hiển thị <ph name="RESULT_COUNT" /> kết quả cho <ph name="QUERY" /></translation>
 <translation id="98120814841227350">Chuyển đến cuối tài liệu</translation>
 <translation id="987589956647469042">Dữ liệu di động đang bật</translation>

@@ -15,7 +15,6 @@
 <translation id="1075811647922107217">صفحہ کا سائز</translation>
 <translation id="1082009148392559545">اسکرین سیور ڈاؤن لوڈ ہو رہا ہے</translation>
 <translation id="1094693127011229778">‏IP پتہ دستیاب نہیں ہے</translation>
-<translation id="1113892970288677790">کیوریٹ کردہ نیٹ ورک اور تصاویر کو منتخب کریں</translation>
 <translation id="1118572504348554005">ہم اس فارم کے ذریعے جمع کرائے گئے تاثرات کا اپنے پارٹنرز کے ساتھ بگز اور دیگر مسائل جن کی آپ ہمیں رپورٹ کرتے ہیں کو حل کرنے کے لیے اشتراک کر سکتے ہیں۔ پاس ورڈز جیسی حساس معلومات شامل نہ کریں۔</translation>
 <translation id="1119447706177454957">داخلی خرابی</translation>
 <translation id="1124772482545689468">صارف</translation>
@@ -183,6 +182,7 @@
 <translation id="225692081236532131">فعالیت کی صورتحال</translation>
 <translation id="2271469253353559191">تاریک وضع شیڈول</translation>
 <translation id="2276999893457278469">سرفہرست مددگار مواد</translation>
+<translation id="2279051792571591988">ڈیفالٹس کو بحال کریں</translation>
 <translation id="2287186687001756809">کوئی تصویر دستیاب نہیں ہے۔ تصاویر شامل کرنے کے لیے، <ph name="LINK" /> پر جائیں</translation>
 <translation id="2307344026739914387">موجودہ کلیدوں کا جوڑا استعمال کریں</translation>
 <translation id="2320295602967756579">ہلکی تھیم فعال کریں</translation>
@@ -332,7 +332,6 @@
 <translation id="361575905210396100">آپ کے تاثرات کا شکریہ</translation>
 <translation id="3632579075709132555">رازداری کی اسکرین کو ٹوگل کرنے کی کلید</translation>
 <translation id="3651050199673793219">درجۂ حرارت کی یونٹ منتخب کریں</translation>
-<translation id="3663574643422533538"><ph name="PRODUCT_NAME" /> خاص آرٹ ورک منتخب کریں</translation>
 <translation id="3668449597372804501">کلاؤڈ فلو وال پیپر</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> ٹیسٹ</translation>
 <translation id="370665806235115550">لوڈ ہو رہے ہیں…</translation>
@@ -646,6 +645,7 @@
 <translation id="6061772781719867950">‏ناکام HTTP درخواستیں</translation>
 <translation id="6073292342939316679">کی بورڈ کی چمک کو کم کریں</translation>
 <translation id="6075872808778243331">‏‎(Android) HTTP میں تاخیر</translation>
+<translation id="6078323886959318429">شارٹ کٹ شامل کریں</translation>
 <translation id="6104112872696127344">اسکین کا عمل منسوخ کر دیا گیا</translation>
 <translation id="6106186594183574873">مکمل کرنے کے لئے اپنا پرانا پاس ورڈ درج کریں</translation>
 <translation id="6108689792487843350">گیٹ وے ناقابل رسائی ہے</translation>

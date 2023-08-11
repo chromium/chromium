@@ -63,6 +63,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="1235458158152011030">Poznate mreže</translation>
 <translation id="1239161794459865856">Funkcija <ph name="FEATURE_NAME" /> je povezana.</translation>
 <translation id="1240638468526743569">Aplikacija</translation>
+<translation id="1242883863226959074">uređaj</translation>
 <translation id="124678866338384709">Zatvori trenutnu karticu</translation>
 <translation id="1246890715821376239">Nepodržane aplikacije</translation>
 <translation id="1247372569136754018">Mikrofon (interno)</translation>
@@ -181,6 +182,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="1747827819627189109">Tastatura na ekranu je omogućena</translation>
 <translation id="1749109475624620922">Prozor <ph name="WINDOW_TITLE" /> je dodijeljen svim radnim površinama</translation>
 <translation id="1750088060796401187">Maksimalan broj dozvoljenih radnih površina je <ph name="MAX_DESK_LIMIT" />. Uklonite jednu radnu površinu da otvorite novu.</translation>
+<translation id="1755556344721611131">Aplikacija Diagnostics</translation>
 <translation id="1756833229520115364">Pohranjivanje šablona nije uspjelo. Previše prozora ili kartica.</translation>
 <translation id="1757857692711134412">Isključeno do zalaska sunca</translation>
 <translation id="1768366657309696705">Prečica na tastaturi <ph name="LAUNCHER_KEY_NAME" /> + tačka je promijenjena. Da koristite tipku Insert, pritisnite tipku <ph name="LAUNCHER_KEY_NAME" /> + Shift + Backspace.</translation>
@@ -266,7 +268,6 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="2148716181193084225">Danas</translation>
 <translation id="2149229036084364364">Odlazak na prethodnu numeru</translation>
 <translation id="2161132820593978283">Isprobajte kadriranje kamere da budete na sredini ekrana prilikom video poziva. Uključite ga u Brzim postavkama.</translation>
-<translation id="2165966740263283349">iskorištenost pohrane</translation>
 <translation id="2170530631236737939">Prevucite nadolje s tri prsta da izađete iz Pregleda</translation>
 <translation id="2185166372312820725">Idi na prethodnu karticu</translation>
 <translation id="2185444992308415167">Kretanje od 1. od 8. kartice</translation>
@@ -474,6 +475,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3113492864356515707">Istaknite prethodnu stavku na polici</translation>
 <translation id="3120421559657122717">Isključiti uređaj?</translation>
+<translation id="3122464029669770682">CPU</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">Ponovo pokrenite za ažuriranje</translation>
 <translation id="3139188263101386725">Koristite ažuriranu prečicu</translation>
@@ -518,7 +520,6 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> se može ponovo prijaviti kasnije.</translation>
 <translation id="3321628682574733415">Pogrešan kôd za roditelja</translation>
 <translation id="332827762492701193">Obavještenja su skrivena</translation>
-<translation id="3338855835380298613">potrošnja cpu-a</translation>
 <translation id="3339826665088060472">Snimanje ekrana, alati za kreiranje slika i snimaka ekrana</translation>
 <translation id="3340978935015468852">postavke</translation>
 <translation id="3341303451326249809">Snimak ekrana je napravljen</translation>
@@ -642,7 +643,6 @@ Povežite uređaj na napajanje.</translation>
 <translation id="3781910048497807059">Prebacite fokus na prethodno okno</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">Zaključano</translation>
-<translation id="3796198851576711985">stanje baterije</translation>
 <translation id="3796746699333205839">Aplikacija koristi vašu kameru i mikrofon</translation>
 <translation id="3798670284305777884">Zvučnik (interni)</translation>
 <translation id="3799080171973636491">Pritisnite prečicu na tastaturi za povećalo preko cijelog ekrana. Želite li ga uključiti?</translation>
@@ -814,12 +814,10 @@ Povežite uređaj na napajanje.</translation>
 <translation id="4527045527269911712">Bluetooth uređaj "<ph name="DEVICE_NAME" />" traži odobrenje za uparivanje.</translation>
 <translation id="4533343294786968049">Produžavanje vijeka trajanja baterije. Ona će se potpuno napuniti do <ph name="FULLY_CHARGE_TIME" />.</translation>
 <translation id="453661520163887813">Do potpune napunjenosti je preostalo <ph name="TIME" /></translation>
-<translation id="4536664881735498710">korištenje ram-a</translation>
 <translation id="4538824937723742295">Snimanje cijelog ekrana</translation>
 <translation id="4539127209940689201">Štampanje trenutne stranice</translation>
 <translation id="4541706525461326392">Uklanjanje profila. To može potrajati nekoliko minuta.</translation>
 <translation id="4544483149666270818">Odaberite prozor za snimanje</translation>
-<translation id="454541942614298893">moj uređaj</translation>
 <translation id="4545950850562423083">Sačuvajte trenutnu stranicu kao oznaku</translation>
 <translation id="4548482551627849548">Premjesti aktivni prozor na lijevu radnu površinu</translation>
 <translation id="4560576029703263363">Uključeno</translation>
@@ -978,7 +976,6 @@ Povežite uređaj na napajanje.</translation>
 <translation id="5208059991603368177">Uključeno</translation>
 <translation id="5216991270656129561">Isključeno do <ph name="TIME" /></translation>
 <translation id="5217646019792206018">Sljedeća radna površina: <ph name="NEXT_DESK_NAME" />, koristite tipku za pretraživanje i razmak ili prečicu na tastaturi: Shift i tipku za pretraživanje i <ph name="NEXT_DESK_INDEX" /> da aktivirate.</translation>
-<translation id="5221423477036820198">Brzo šaljite ili odgovarajte na telefonske poruke pomoću Phone Huba.</translation>
 <translation id="5222676887888702881">Odjava</translation>
 <translation id="5229343007215035173">Uključivanje/isključivanje ekrana privatnosti</translation>
 <translation id="5234764350956374838">Odbaci</translation>
@@ -1139,7 +1136,6 @@ Povežite uređaj na napajanje.</translation>
 <translation id="589817443623831496">Pregledanje po tačkama</translation>
 <translation id="5901316534475909376">Shift + Esc</translation>
 <translation id="5901630391730855834">Žuta</translation>
-<translation id="5902162043476810127">memorija s nasumičnim pristupom</translation>
 <translation id="5909862606227538307">Neaktivna radna površina.</translation>
 <translation id="5911231045062997865">Lacros prozori trenutno nisu podržani. Druge aplikacije će se sačuvati.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
@@ -1543,7 +1539,6 @@ Da isključite uređaj, ponovo pritisnite i zadržite dugme za uključivanje na 
 <translation id="7724603315864178912">Izreži</translation>
 <translation id="7725108879223146004">Pogledajte detalje pristupne tačke. Pristupna tačka se isključuje.</translation>
 <translation id="7727952505535211425">Otvaranje web lokacije u traci za adresu u novoj kartici</translation>
-<translation id="77365090426890123">korištenje memorije</translation>
 <translation id="7742327441377685481">Nema obavještenja</translation>
 <translation id="7748275671948949022">Istaknite dugme Pokretača na polici</translation>
 <translation id="7749443890790263709">Dostigli ste maksimalni broj radnih površina.</translation>
@@ -1795,7 +1790,6 @@ Da isključite uređaj, ponovo pritisnite i zadržite dugme za uključivanje na 
 <translation id="8853703225951107899">Potvrđivanje PIN-a ili lozinke i dalje nije uspjelo. Napomena: Ako ste nedavno promijenili lozinku, koristite staru. Nova lozinka će se primijeniti nakon što se odjavite.</translation>
 <translation id="8855885154700222542">Tipka za prikaz preko cijelog ekrana</translation>
 <translation id="8858369206579825206">Kontrole privatnosti</translation>
-<translation id="8860817004574502558">vijek trajanja baterije</translation>
 <translation id="8870509716567206129">Aplikacija ne podržava dijeljenje ekrana.</translation>
 <translation id="8874184842967597500">Nije povezano</translation>
 <translation id="8875021410787719674">Premještajte se između donjeg desnog ugla, pokretača, trake za adresu, trake oznaka, otvorene web lokacije i preuzimanja</translation>
@@ -1848,6 +1842,7 @@ Da isključite uređaj, ponovo pritisnite i zadržite dugme za uključivanje na 
 <translation id="9080073830732419341">Kamera se uklopila u gornji lijevi ugao</translation>
 <translation id="9080132581049224423">Prevucite prema gore da odete na početni ekran</translation>
 <translation id="9080206825613744995">Mikrofon je u upotrebi.</translation>
+<translation id="9083324773537346962">Verzija operativnog sistema</translation>
 <translation id="908451241440060346">Zvuk je isključen za obavještenja kada je uključena funkcija Ne ometaj</translation>
 <translation id="9084606467167974638">Promijenite položaj menija</translation>
 <translation id="9085962983642906571">Vaša baterija će ostati na 80% dok je priključena na napajanje radi produženja vijeka trajanja baterije.</translation>
@@ -1888,7 +1883,6 @@ Da isključite uređaj, ponovo pritisnite i zadržite dugme za uključivanje na 
 <translation id="951991426597076286">Odbij</translation>
 <translation id="953431725143473984">Isključiti uređaj?</translation>
 <translation id="954052413789300507">Nema dovoljno prostora za fajl <ph name="FILENAME" />. Oslobodite prostor.</translation>
-<translation id="968627661524972577">Koristite aplikacije da uradite sve što vam je potrebno na Chromebooku. Aplikacije možete pronaći u Pokretaču. Također možete pritisnuti i tipku Pokretač na tastaturi.</translation>
 <translation id="974545358917229949">Prikaz <ph name="RESULT_COUNT" /> rezultata za upit <ph name="QUERY" /></translation>
 <translation id="98120814841227350">Prelazak na kraj dokumenta</translation>
 <translation id="987589956647469042">Prijenos podataka na mobilnoj mreži je uključen</translation>

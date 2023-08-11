@@ -72,7 +72,6 @@
 <translation id="2592940277904433508">Продолжить работу в Chromium</translation>
 <translation id="2648074677641340862">В процессе установки произошла ошибка в операционной системе. Скачайте Chromium ещё раз.</translation>
 <translation id="2661879430930417727">Если кроме вас устройством пользуется кто-то ещё, например родные или друзья, они тоже смогут настроить Chromium на свой вкус.</translation>
-<translation id="2669853942967761236">Chromium заблокировал этот архив, так как он может содержать вредоносное ПО</translation>
 <translation id="268602741124540128"><ph name="ACCOUNT_FIRST_NAME" />, добро пожаловать в Chromium!</translation>
 <translation id="2711502716910134313">Вкладка Chromium</translation>
 <translation id="2718390899429598676">В целях повышения безопасности Chromium шифрует ваши данные.</translation>
@@ -402,6 +401,5 @@
 <translation id="942598560705308788">Сертификаты, которыми управляет Chromium</translation>
 <translation id="965162752251293939">Кто использует Chromium?</translation>
 <translation id="967427899662692980">Обеспечьте максимальную защиту в Chromium</translation>
-<translation id="9792300276217204">Всегда удалять с устройства данные сайтов при закрытии Chromium</translation>
 <translation id="985602178874221306">Авторы Chromium</translation>
 </translationbundle>

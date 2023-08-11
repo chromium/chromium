@@ -166,7 +166,6 @@
 <translation id="2312704192806647271">{COUNT,plural, =1{Пашырэнне з ідэнтыфікатарам <ph name="BEGIN_LIST" /><ph name="END_LIST" /> знайсці не ўдалося. Звярніцеся да адміністратара.}one{Пашырэнні з ідэнтыфікатарам <ph name="BEGIN_LIST" /><ph name="END_LIST" /> знайсці не ўдалося. Звярніцеся да адміністратара.}few{Пашырэнні з ідэнтыфікатарам <ph name="BEGIN_LIST" /><ph name="END_LIST" /> знайсці не ўдалося. Звярніцеся да адміністратара.}many{Пашырэнні з ідэнтыфікатарам <ph name="BEGIN_LIST" /><ph name="END_LIST" /> знайсці не ўдалося. Звярніцеся да адміністратара.}other{Пашырэнні з ідэнтыфікатарам <ph name="BEGIN_LIST" /><ph name="END_LIST" /> знайсці не ўдалося. Звярніцеся да адміністратара.}}</translation>
 <translation id="2325650632570794183">Гэты тып файла не падтрымліваецца. Знайсці праграму для адкрыцця файлаў такога тыпу можна ў Вэб-краме Chrome.</translation>
 <translation id="2326539130272988168">Балгарская</translation>
-<translation id="2337715497728194187">Абагуліць з Bruschetta</translation>
 <translation id="233822363739146957">Недастаткова месца ў сховішчы для сінхранізацыі ўсіх файлаў</translation>
 <translation id="23721837607121582">Спампаваць мабільны профіль, сетка <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, "<ph name="NETWORK_NAME" />"</translation>
 <translation id="2377319039870049694">Пераключыць на рэжым спіса</translation>
@@ -197,7 +196,6 @@
 <translation id="2544853746127077729">Сертыфікат аўтэнтыфікацыі адхілены сеткай</translation>
 <translation id="255937426064304553">ЗША, міжнародная</translation>
 <translation id="2563185590376525700">Жаба</translation>
-<translation id="2574327434504608656">1 папка абагулена з Bruschetta</translation>
 <translation id="2578394532502990878">Тамільская (фанетычная раскладка)</translation>
 <translation id="2579959351793446050">Орыя</translation>
 <translation id="2587195714949534472">Ідзе падрыхтоўка да сінхранізацыі файла "<ph name="FILE_NAME" />"…</translation>
@@ -297,7 +295,6 @@
 <translation id="3408072735282270043">Актываваць сетку "<ph name="NETWORK_NAME" />"</translation>
 <translation id="3408236822532681288">Нямецкая (Германія) з раскладкай Neo 2</translation>
 <translation id="3414856743105198592">Фармаціраванне здымнага носьбіта мультымедыя прывядзе да страты ўсіх даных. Хочаце працягнуць?</translation>
-<translation id="3435143625481187092">Даць Bruschetta доступ да файлаў у папцы "<ph name="FOLDER_NAME" />"</translation>
 <translation id="3437801641691368414">Час стварэння</translation>
 <translation id="343907260260897561">Фотаапарат імгненнага друку</translation>
 <translation id="3455931012307786678">Эстонская</translation>
@@ -385,7 +382,6 @@
 <translation id="4159731583141908892">Элемент "<ph name="FILE_NAME" />" перамешчаны.</translation>
 <translation id="4176286497474237543">Ачысціць сметніцу</translation>
 <translation id="4179621117429069925">Гэты элемент знаходзіцца ў сметніцы</translation>
-<translation id="4181839429935094755">З Bruschetta абагулена наступная колькасць папак: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="4186579485882418952">Уключыць пазасеткавы рэжым</translation>
 <translation id="4193154014135846272">Дакумент Google</translation>
 <translation id="4197674956721858839">Архіваваць выбранае ў файл ZIP</translation>
@@ -452,7 +448,6 @@
 <translation id="4646813851450205600">Чэшская з раскладкай Qwerty</translation>
 <translation id="4656777537938206294">Доступ да файлаў у пазасеткавым рэжыме</translation>
 <translation id="4658782175094886150">Чалавек у снезе</translation>
-<translation id="466782788172479199">Даць Bruschetta доступ да файлаў на Google Дыску. Змены будуць сінхранізавацца з іншымі прыладамі.</translation>
 <translation id="4669606053856530811">Удзельнікі дыска "<ph name="SOURCE_NAME" />" страцяць доступ да гэтых элементаў, калі гэтыя элементы не абагулены з імі.</translation>
 <translation id="467809019005607715">Прэзентацыі Google</translation>
 <translation id="4690246192099372265">Шведская</translation>
@@ -563,7 +558,6 @@
 <translation id="5323213332664049067">Лацінаамерыканская</translation>
 <translation id="5330145655348521461">Гэтыя файлы адкрыты на іншым працоўным стале. Каб бачыць яго, перайдзіце на профіль <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />).</translation>
 <translation id="5330512191124428349">Атрымаць інфармацыю</translation>
-<translation id="5344246330454251646">Кіраваць абагульваннем з Bruschetta</translation>
 <translation id="535792325654997756">Чалавек з катамі</translation>
 <translation id="5358764674931277">Частата кадраў</translation>
 <translation id="5363339716524495120">Мова ўводу – кітайская</translation>
@@ -731,7 +725,6 @@
 <translation id="6710213216561001401">Назад</translation>
 <translation id="6732801395666424405">Сертыфікаты не загружаны</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
-<translation id="6740270213273127264">Абагульванне папкі з Bruschetta</translation>
 <translation id="6750737795876287924">Бягучы каталог</translation>
 <translation id="6751256176799620176">Выбрана 1 папка</translation>
 <translation id="6755827872271341378">Прылада з Chrome OS Flex</translation>

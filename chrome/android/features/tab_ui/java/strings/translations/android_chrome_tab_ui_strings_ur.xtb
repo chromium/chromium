@@ -3,7 +3,6 @@
 <translationbundle lang="ur">
 <translation id="1075622780330595106">آپ کے ٹیبز میں سے <ph name="NUMBER_OF_TABS" /> کا استعمال حال میں نہیں ہوا ہے۔ انہیں بند کریں؟</translation>
 <translation id="125153950246128346">دوسرا ٹیب دیکھنے کیلئے تھپتھپائیں</translation>
-<translation id="1455506303394048917">ان پوشیدگی ٹیبز میں موجود آپ کی سرگرمی اس آلے سے صاف ہو جائے گی</translation>
 <translation id="1499635324672558517">سبھی پوشیدگی ٹیبز بند کریں؟</translation>
 <translation id="1657719826150349398">ٹیب کو نیچے منتقل کریں</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ٹیب}other{<ph name="TABS_COUNT_MANY" /> ٹیبز}}</translation>

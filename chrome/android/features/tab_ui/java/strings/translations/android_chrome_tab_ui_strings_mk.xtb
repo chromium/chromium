@@ -3,7 +3,6 @@
 <translationbundle lang="mk">
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> ваши картички не се користени во последно време. Дали да се затворат?</translation>
 <translation id="125153950246128346">Допрете за да видите друга картичка</translation>
-<translation id="1455506303394048917">Вашата активност во картичкиве „Инкогнито“ ќе се избрише од уредов</translation>
 <translation id="1499635324672558517">Да се затворат сите картички „Инкогнито“?</translation>
 <translation id="1657719826150349398">Премести ја картичката надолу</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> картичка}one{<ph name="TABS_COUNT_MANY" /> картичка}other{<ph name="TABS_COUNT_MANY" /> картички}}</translation>

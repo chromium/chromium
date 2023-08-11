@@ -63,6 +63,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1235458158152011030">Kända nätverk</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> har anslutits.</translation>
 <translation id="1240638468526743569">En app</translation>
+<translation id="1242883863226959074">enhet</translation>
 <translation id="124678866338384709">Stäng den aktuella fliken</translation>
 <translation id="1246890715821376239">Appar som inte stöds</translation>
 <translation id="1247372569136754018">Mikrofon (inbyggd)</translation>
@@ -181,6 +182,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1747827819627189109">Skärmen på tangentbordet har aktiverats</translation>
 <translation id="1749109475624620922">Fönstret <ph name="WINDOW_TITLE" /> har tilldelats alla skrivbord</translation>
 <translation id="1750088060796401187">Bara <ph name="MAX_DESK_LIMIT" /> skrivbord tillåts. Ta bort ett skrivbord om du vill öppna ett nytt.</translation>
+<translation id="1755556344721611131">Appen Diagnostik</translation>
 <translation id="1756833229520115364">Det gick inte att spara mallen. För många fönster eller flikar.</translation>
 <translation id="1757857692711134412">Av till solnedgången</translation>
 <translation id="1768366657309696705">Kortkommandot <ph name="LAUNCHER_KEY_NAME" /> + punkt har ändrats. Om du vill använda Insert-tangenten trycker du på <ph name="LAUNCHER_KEY_NAME" /> + Skift + Backsteg.</translation>
@@ -266,7 +268,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2148716181193084225">Idag</translation>
 <translation id="2149229036084364364">Tillbaka till föregående spår</translation>
 <translation id="2161132820593978283">Testa kamerainramning så att du hamnar i mitten av skärmen i videosamtal. Aktivera det i snabbinställningarna.</translation>
-<translation id="2165966740263283349">använt lagringsutrymme</translation>
 <translation id="2170530631236737939">Stäng översikten genom att svepa nedåt med tre fingrar</translation>
 <translation id="2185166372312820725">Öppna föregående flik</translation>
 <translation id="2185444992308415167">Gå igenom flikarna 1 till 8</translation>
@@ -474,6 +475,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3113492864356515707">Markera föregående objekt på hyllan</translation>
 <translation id="3120421559657122717">Vill du stänga av enheten?</translation>
+<translation id="3122464029669770682">CPU</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">Starta om för att uppdatera</translation>
 <translation id="3139188263101386725">Använd det uppdaterade kortkommandot</translation>
@@ -518,7 +520,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> kan ändå logga in igen senare.</translation>
 <translation id="3321628682574733415">Felaktig föräldrakod</translation>
 <translation id="332827762492701193">Aviseringar har dolts</translation>
-<translation id="3338855835380298613">cpu användning</translation>
 <translation id="3339826665088060472">Skärmbild/skärminspelning, verktyg att ta skärmbilder och göra skärminspelningar med</translation>
 <translation id="3340978935015468852">inställningar</translation>
 <translation id="3341303451326249809">Skärmbilden har tagits</translation>
@@ -642,7 +643,6 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="3781910048497807059">Flytta fokus till föregående ruta</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">Lås</translation>
-<translation id="3796198851576711985">batterihälsa</translation>
 <translation id="3796746699333205839">Kameran och mikrofonen används av en app</translation>
 <translation id="3798670284305777884">Högtalare (inbyggd)</translation>
 <translation id="3799080171973636491">Du tryckte på kortkommandot för helskärmsförstoring. Vill du aktivera funktionen?</translation>
@@ -814,12 +814,10 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="4527045527269911712">Bluetooth-enheten <ph name="DEVICE_NAME" /> har begärt tillstånd för koppling.</translation>
 <translation id="4533343294786968049">Förlänger batteritiden. Batteriet laddas färdigt till <ph name="FULLY_CHARGE_TIME" />.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> tills batteriet är fullt</translation>
-<translation id="4536664881735498710">ram användning</translation>
 <translation id="4538824937723742295">Ta en skärmbild av hela skärmen</translation>
 <translation id="4539127209940689201">Skriv ut den aktuella sidan</translation>
 <translation id="4541706525461326392">Tar bort profilen. Det kan ta några minuter.</translation>
 <translation id="4544483149666270818">Välj ett fönster att spela in</translation>
-<translation id="454541942614298893">min enhet</translation>
 <translation id="4545950850562423083">Spara aktuell sida som bokmärke</translation>
 <translation id="4548482551627849548">Flytta det aktiva fönstret till skrivbordet till vänster</translation>
 <translation id="4560576029703263363">På</translation>
@@ -978,7 +976,6 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="5208059991603368177">På</translation>
 <translation id="5216991270656129561">Av till <ph name="TIME" /></translation>
 <translation id="5217646019792206018">Nästa skrivbord: <ph name="NEXT_DESK_NAME" />. Aktivera med Sök + Blanksteg eller kortkommandot Skift + Sök + <ph name="NEXT_DESK_INDEX" />.</translation>
-<translation id="5221423477036820198">Med Phone Hub kan du skicka eller svara snabbt på meddelanden på telefonen.</translation>
 <translation id="5222676887888702881">Logga ut</translation>
 <translation id="5229343007215035173">Aktivera/inaktivera integritetsskärmen</translation>
 <translation id="5234764350956374838">Stäng</translation>
@@ -1139,7 +1136,6 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="589817443623831496">Punktgenomsökning</translation>
 <translation id="5901316534475909376">Skift+Escape</translation>
 <translation id="5901630391730855834">Gul</translation>
-<translation id="5902162043476810127">ram minne</translation>
 <translation id="5909862606227538307">Inaktivt skrivbord.</translation>
 <translation id="5911231045062997865">För närvarande stöds inte Lacros-fönster. Andra appar sparas.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
@@ -1543,7 +1539,6 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="7724603315864178912">Klipp ut</translation>
 <translation id="7725108879223146004">Visa information om surfzon. Surfzonen inaktiveras.</translation>
 <translation id="7727952505535211425">Öppna webbplatsen i adressfältet i en ny flik</translation>
-<translation id="77365090426890123">minnesanvändning</translation>
 <translation id="7742327441377685481">Inga aviseringar</translation>
 <translation id="7748275671948949022">Markera appstartarknappen på hyllan</translation>
 <translation id="7749443890790263709">Det högsta tillåtna antalet skrivbord har uppnåtts.</translation>
@@ -1795,7 +1790,6 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="8853703225951107899">Det gick fortfarande inte att verifiera pinkoden eller lösenordet. Obs! Om du nyligen har bytt lösenord ska du använda det gamla lösenordet. Det nya lösenordet börjar gälla när du loggar ut.</translation>
 <translation id="8855885154700222542">Tangent för helskärm</translation>
 <translation id="8858369206579825206">Integritetsinställningar</translation>
-<translation id="8860817004574502558">batteritid</translation>
 <translation id="8870509716567206129">Appen har inte stöd för delad skärm.</translation>
 <translation id="8874184842967597500">Inte ansluten</translation>
 <translation id="8875021410787719674">Flytta mellan det nedre högra hörnet, Appstartaren, adressfältet, bokmärkesfältet, webbplatsen som är öppen och nedladdningar</translation>
@@ -1848,6 +1842,7 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="9080073830732419341">Kameran har fästs i det övre vänstra hörnet</translation>
 <translation id="9080132581049224423">Svep uppåt för att öppna startsidan</translation>
 <translation id="9080206825613744995">Mikrofonen används.</translation>
+<translation id="9083324773537346962">Operativsystemsversion</translation>
 <translation id="908451241440060346">Aviseringar hörs inte när Stör ej är aktiverat</translation>
 <translation id="9084606467167974638">Växla menyposition</translation>
 <translation id="9085962983642906571">Batterinivån stannar på 80 % när enheten är inkopplad för att förlänga batteritiden.</translation>
@@ -1888,7 +1883,6 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="951991426597076286">Godkänn inte</translation>
 <translation id="953431725143473984">Vill du stänga av enheten?</translation>
 <translation id="954052413789300507">Det finns inte tillräckligt med utrymme för <ph name="FILENAME" />. Frigör utrymme.</translation>
-<translation id="968627661524972577">Använd appar för att göra allt du behöver på din Chromebook. Du hittar dina appar i Appstartaren. Du kan även trycka på tangenten för Appstartaren på tangentbordet.</translation>
 <translation id="974545358917229949"><ph name="RESULT_COUNT" /> resultat visas för <ph name="QUERY" /></translation>
 <translation id="98120814841227350">Gå till slutet av dokumentet</translation>
 <translation id="987589956647469042">Mobildata har aktiverats</translation>

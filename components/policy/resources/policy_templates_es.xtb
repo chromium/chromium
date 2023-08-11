@@ -3041,17 +3041,6 @@ Si se inhabilita esta política o no se establece, los dispositivos registrados 
 
       Si no se define esta política, <ph name="PRODUCT_NAME" /> usará un nombre de biblioteca predeterminado.</translation>
 <translation id="3650122925429054129">Inhabilitar el resaltado del cursor en la pantalla de inicio de sesión</translation>
-<translation id="3652207037778361023">Habilita la función de sonido de batería baja.
-
-          Esta función se encarga de reproducir el sonido de batería baja.
-
-          Si se habilita esta política, se reproducirá el sonido de batería baja cuando el nivel de la batería o el tiempo restante estén por debajo de un umbral.
-
-          Si se inhabilita esta política, no se reproducirá ningún sonido de batería baja.
-
-          Si asignas un valor a esta política, los usuarios no podrán cambiarlo ni anularlo.
-
-          Si no se define la política, esta función se inhabilitará en los dispositivos <ph name="PRODUCT_OS_NAME" /> gestionados, pero se habilitará en otras circunstancias.</translation>
 <translation id="3652670852519271837">Permitir que los sitios pidan al usuario que otorgue permiso de lectura a archivos y directorios a través de la API File System</translation>
 <translation id="3653237928288822292">Icono del proveedor de búsquedas predeterminadas</translation>
 <translation id="3654906736796256792">Permite ejecutar el entorno aislado de audio</translation>
@@ -3783,17 +3772,6 @@ Nota: Bloquear las URLs internas chrome://* y chrome-untrusted://* podría provo
 <translation id="4311662690937656540">Requerir que se inicie sesión online en las pantallas de inicio de sesión y de bloqueo</translation>
 <translation id="4313767483634435271">Dirección MAC designada de la base del dispositivo</translation>
 <translation id="4314538398999793073">Inhabilitar la búsqueda de CNAME durante la autenticación Kerberos</translation>
-<translation id="4316437338046981895">Habilita la función de sonidos de carga.
-
-          Esta función se encarga de reproducir los sonidos de carga.
-
-          Si se habilita esta política, se reproducirán los sonidos de carga cuando el dispositivo esté conectado a un cargador de CA.
-
-          Si se inhabilita esta política, no se reproducirá ningún sonido de carga.
-
-          Si asignas un valor a esta política, los usuarios no podrán cambiarlo ni anularlo.
-
-          Si no se define la política, esta función se inhabilitará en los dispositivos <ph name="PRODUCT_OS_NAME" /> gestionados, pero se habilitará en otras circunstancias.</translation>
 <translation id="4320592646346933548">Wi-Fi</translation>
 <translation id="4322842393287974810">Permite que la aplicación de kiosco sin retardo con inicio automático controle la versión de <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="4323412353642577604">Habilitar la atestación remota para proteger el contenido</translation>
@@ -9301,16 +9279,6 @@ Si no se define esta política, <ph name="PRODUCT_NAME" /> recogerá y subirá e
 <translation id="9220314833408124365">Usar una política de referente predeterminada de no-referrer-when-downgrade</translation>
 <translation id="9221827710437832530">Permitir el acceso a la geolocalización en la pantalla de inicio de sesión.</translation>
 <translation id="922540222991413931">Configurar fuentes de instalación de secuencias de comandos de usuario, aplicaciones y extensiones</translation>
-<translation id="922656089385303086">Esta política está obsoleta y se eliminará en la versión 130. Usa <ph name="URL_KEYED_METRICS_ALLOWED_POLICY_NAME" /> en su lugar.
-
-Si se habilita esta política, siempre estará activa la recogida de datos anónima con clave de URL, que enviará las URLs de las páginas que el usuario visite a Google para mejorar las búsquedas y la navegación.
-
-Si se inhabilita esta política, no se activará la recogida de datos anónima con clave de URL.
-
-Si no se define la política, el usuario podrá cambiar este ajuste manualmente.
-
-En <ph name="PRODUCT_OS_NAME" /> Kiosk, esta política no ofrece la opción Permitir que el usuario decida. Si no se define esta política para <ph name="PRODUCT_OS_NAME" /> Kiosk, la recogida de datos anónima con clave de URL siempre estará activa.
-Cuando se define para <ph name="PRODUCT_OS_NAME" /> Kiosk, esta política habilita la recogida de métricas con clave de URL en las aplicaciones de kiosco.</translation>
 <translation id="924557436754151212">Importar las contraseñas guardadas desde el navegador predeterminado en la primera ejecución</translation>
 <translation id="926104720905645793">Esta política controla los informes en la nube de <ph name="PRODUCT_NAME" />, que sube información sobre el funcionamiento del navegador a la <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
 

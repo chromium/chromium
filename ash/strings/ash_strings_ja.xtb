@@ -63,6 +63,7 @@
 <translation id="1235458158152011030">既知のネットワーク</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> を接続しました。</translation>
 <translation id="1240638468526743569">アプリ</translation>
+<translation id="1242883863226959074">デバイス</translation>
 <translation id="124678866338384709">現在のタブを閉じる</translation>
 <translation id="1246890715821376239">サポートされていないアプリ</translation>
 <translation id="1247372569136754018">マイク（内蔵）</translation>
@@ -181,6 +182,7 @@
 <translation id="1747827819627189109">画面キーボードが有効です</translation>
 <translation id="1749109475624620922">ウィンドウ <ph name="WINDOW_TITLE" /> をすべてのデスクに割り当てました</translation>
 <translation id="1750088060796401187">表示できるデスクは最大 <ph name="MAX_DESK_LIMIT" /> 件です。新しいデスクを開くには、デスクを削除してください。</translation>
+<translation id="1755556344721611131">診断アプリ</translation>
 <translation id="1756833229520115364">テンプレートを保存できませんでした。ウィンドウまたはタブの数が多すぎます。</translation>
 <translation id="1757857692711134412">日の入りまでオフ</translation>
 <translation id="1768366657309696705">キーボード ショートカット「<ph name="LAUNCHER_KEY_NAME" />+ピリオド」が変更されました。Insert キーを使用するには、<ph name="LAUNCHER_KEY_NAME" />+Shift+Backspace キーを押してください。</translation>
@@ -266,7 +268,6 @@
 <translation id="2148716181193084225">今日</translation>
 <translation id="2149229036084364364">前のトラックに移動する</translation>
 <translation id="2161132820593978283">ビデオ通話で画面の中央にくるように、カメラのフレーミングをお試しください。クイック設定でオンにできます。</translation>
-<translation id="2165966740263283349">ストレージ使用状況</translation>
 <translation id="2170530631236737939">概要モードを終了するには、3 本の指で下にスワイプします</translation>
 <translation id="2185166372312820725">前のタブに移動する</translation>
 <translation id="2185444992308415167">タブ 1～8 に移動する</translation>
@@ -351,7 +352,7 @@
 <translation id="2531025035050312891">デバイスの動作が遅い</translation>
 <translation id="2531107890083353124">タブをドラッグしながら、<ph name="KEY_ONE" /> キーを押す</translation>
 <translation id="254900897760075745">選択した内容をクリップボードにコピーする</translation>
-<translation id="2549711466868162843">明るさを調整</translation>
+<translation id="2549711466868162843">明るさ補正</translation>
 <translation id="2549985041256363841">撮影を開始</translation>
 <translation id="255671100581129685">Google アシスタントは、公開セッションではご利用いただけません。</translation>
 <translation id="256712445991462162">ドッキング拡大鏡</translation>
@@ -474,6 +475,7 @@
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" />（Bluetooth）</translation>
 <translation id="3113492864356515707">シェルフで前のアイテムをハイライト表示します</translation>
 <translation id="3120421559657122717">デバイスをシャットダウンしますか？</translation>
+<translation id="3122464029669770682">CPU</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">再起動して更新</translation>
 <translation id="3139188263101386725">新しいショートカットを使用</translation>
@@ -518,7 +520,6 @@
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> が後でログインすることは引き続き可能です。</translation>
 <translation id="3321628682574733415">保護者のコードが間違っています</translation>
 <translation id="332827762492701193">通知は非表示になっています</translation>
-<translation id="3338855835380298613">CPU 使用状況</translation>
 <translation id="3339826665088060472">スクリーンショットの撮影や録画ができるスクリーン キャプチャ</translation>
 <translation id="3340978935015468852">設定</translation>
 <translation id="3341303451326249809">スクリーンショットをキャプチャしました</translation>
@@ -642,7 +643,6 @@
 <translation id="3781910048497807059">前のペインにフォーカスを移動する</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">ロック</translation>
-<translation id="3796198851576711985">電池の状態</translation>
 <translation id="3796746699333205839">アプリケーションがカメラとマイクを使用しています</translation>
 <translation id="3798670284305777884">スピーカー（内蔵）</translation>
 <translation id="3799080171973636491">全画面拡大鏡のキーボード ショートカットを押しました。この機能をオンにしますか？</translation>
@@ -814,12 +814,10 @@
 <translation id="4527045527269911712">Bluetooth デバイス「<ph name="DEVICE_NAME" />」がペア設定の権限をリクエストしています。</translation>
 <translation id="4533343294786968049">バッテリー充電中です。<ph name="FULLY_CHARGE_TIME" /> までに完全に充電されます。</translation>
 <translation id="453661520163887813">あと <ph name="TIME" /> で充電完了</translation>
-<translation id="4536664881735498710">RAM 使用状況</translation>
 <translation id="4538824937723742295">全画面のスクリーンショットを撮影</translation>
 <translation id="4539127209940689201">現在のページを印刷する</translation>
 <translation id="4541706525461326392">プロファイルを削除しています。この処理には数分かかることがあります。</translation>
 <translation id="4544483149666270818">録画するウィンドウを選択してください</translation>
-<translation id="454541942614298893">自分のデバイス</translation>
 <translation id="4545950850562423083">現在のページをブックマークとして保存する</translation>
 <translation id="4548482551627849548">アクティブなウィンドウを左側のデスクに移動する</translation>
 <translation id="4560576029703263363">オン</translation>
@@ -978,7 +976,6 @@
 <translation id="5208059991603368177">オン</translation>
 <translation id="5216991270656129561"><ph name="TIME" /> までオフ</translation>
 <translation id="5217646019792206018">次のデスク: <ph name="NEXT_DESK_NAME" />、有効にするには、検索+Space キーまたはキーボード ショートカット（Shift+検索+<ph name="NEXT_DESK_INDEX" />）を使用します。</translation>
-<translation id="5221423477036820198">スマートフォン ハブを使用して、スマートフォンのメッセージをすばやく送信、返信できます。</translation>
 <translation id="5222676887888702881">ログアウト</translation>
 <translation id="5229343007215035173">プライバシー画面のオン / オフを切り替える</translation>
 <translation id="5234764350956374838">閉じる</translation>
@@ -1139,7 +1136,6 @@
 <translation id="589817443623831496">ポイント スキャン</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5901630391730855834">黄</translation>
-<translation id="5902162043476810127">ランダム アクセス メモリ</translation>
 <translation id="5909862606227538307">アクティブでないデスクです。</translation>
 <translation id="5911231045062997865">Lacros ウィンドウは現在サポートされていません。他のアプリは保存されます。</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" />（<ph name="MAIL" />）</translation>
@@ -1544,7 +1540,6 @@
 <translation id="7724603315864178912">切り取り</translation>
 <translation id="7725108879223146004">アクセス ポイントの詳細を表示します。アクセス ポイントはオフです。</translation>
 <translation id="7727952505535211425">新しいタブのアドレスバーでウェブサイトを開く</translation>
-<translation id="77365090426890123">メモリ使用状況</translation>
 <translation id="7742327441377685481">通知なし</translation>
 <translation id="7748275671948949022">シェルフのランチャー ボタンをハイライト表示する</translation>
 <translation id="7749443890790263709">デスクの数が上限に達しました。</translation>
@@ -1795,7 +1790,6 @@
 <translation id="8853703225951107899">PIN またはパスワードはまだ確認されていません。注: パスワードを最近変更した場合は、古いパスワードを使用してください。新しいパスワードはログアウトした後に適用されます。</translation>
 <translation id="8855885154700222542">全画面表示キー</translation>
 <translation id="8858369206579825206">プライバシー管理</translation>
-<translation id="8860817004574502558">バッテリーの残り時間</translation>
 <translation id="8870509716567206129">アプリで分割画面がサポートされていません。</translation>
 <translation id="8874184842967597500">未接続</translation>
 <translation id="8875021410787719674">右下隅、ランチャー、アドレスバー、ブックマーク バー、開いているウェブサイト、ダウンロード ページ間を移動します</translation>
@@ -1848,6 +1842,7 @@
 <translation id="9080073830732419341">カメラは左上にスナップされています</translation>
 <translation id="9080132581049224423">ホームに移動するには上にスワイプしてください</translation>
 <translation id="9080206825613744995">マイクは使用中です。</translation>
+<translation id="9083324773537346962">OS のバージョン</translation>
 <translation id="908451241440060346">サイレント モードがオンになっている場合、通知はミュートされます</translation>
 <translation id="9084606467167974638">メニューの位置を切り替え</translation>
 <translation id="9085962983642906571">バッテリー寿命を延ばすため、電源接続時は残量が 80% に保たれます。</translation>
@@ -1888,7 +1883,6 @@
 <translation id="951991426597076286">同意しない</translation>
 <translation id="953431725143473984">デバイスをシャットダウンしますか？</translation>
 <translation id="954052413789300507"><ph name="FILENAME" /> をダウンロードするのに十分な容量がありません。容量を空けてください。</translation>
-<translation id="968627661524972577">Chromebook では、アプリを使用してさまざまな作業を行うことができます。アプリはランチャーに表示されます。キーボードのランチャーキーを押して表示することもできます。</translation>
 <translation id="974545358917229949"><ph name="QUERY" /> の検索結果 <ph name="RESULT_COUNT" /> 件を表示しています</translation>
 <translation id="98120814841227350">ドキュメントの末尾に移動する</translation>
 <translation id="987589956647469042">モバイルデータはオンです</translation>

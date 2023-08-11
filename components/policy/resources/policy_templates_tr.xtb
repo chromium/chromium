@@ -3072,17 +3072,6 @@ Politika, Devre Dışı değerine ayarlanır veya ayarlanmadan bırakılırsa ka
 
       Politika ayarlanmadan bırakılırsa <ph name="PRODUCT_NAME" />, varsayılan bir kitaplık adı kullanır.</translation>
 <translation id="3650122925429054129">Giriş ekranında fare imlecini vurgulamayı devre dışı bırak</translation>
-<translation id="3652207037778361023">Düşük pil seviyesi sesi özelliğini etkinleştirin.
-
-          Bu özellik, düşük pil seviyesi sesini çalmaktan sorumludur.
-
-          Bu politika, etkin olarak ayarlanırsa pil seviyesi veya kalan süre belirli bir eşiğin altına düştüğünde düşük pil seviyesi sesi çalınır.
-
-          Bu politika devre dışı olarak ayarlanırsa düşük pil seviyesi sesi çalınmaz.
-
-          Bu politikayı ayarlarsanız kullanıcılar değiştiremez veya geçersiz kılamaz.
-
-          Bu politika ayarlanmadan bırakılırsa bu özellik, yönetilen <ph name="PRODUCT_OS_NAME" /> cihazlarda devre dışı bırakılır, ancak diğer durumlarda etkinleştirilir.</translation>
 <translation id="3652670852519271837">Sitelerin kullanıcıdan File System API üzerinden dosya ve dizinlere okuma erişimi istemesine izin ver</translation>
 <translation id="3653237928288822292">Varsayılan arama sağlayıcı simgesi</translation>
 <translation id="3654906736796256792">Sesli korumalı alanın çalışmasına izin ver</translation>
@@ -3818,17 +3807,6 @@ Not: Dahili chrome://* ile chrome-untrusted://* URL'lerinin engellenmesi beklenm
 <translation id="4311662690937656540">Giriş ve kilit ekranlarında çevrimiçi girişleri zorunlu kıl</translation>
 <translation id="4313767483634435271">Cihazın atanmış yuva MAC adresi</translation>
 <translation id="4314538398999793073">Kerberos kimlik doğrulaması sırasında CNAME aramasını devre dışı bırak</translation>
-<translation id="4316437338046981895">Şarj sesleri özelliğini etkinleştirin.
-
-          Bu özellik, şarj seslerini çalmaktan sorumludur.
-
-          Bu politika etkin olarak ayarlanırsa cihaz bir AC şarj cihazına bağlandığında şarj sesleri çalınır.
-
-          Bu politika devre dışı olarak ayarlanırsa şarj sesleri çalınmaz.
-
-          Bu politikayı ayarlarsanız kullanıcılar değiştiremez veya geçersiz kılamaz.
-
-          Bu politika ayarlanmadan bırakılırsa bu özellik, yönetilen <ph name="PRODUCT_OS_NAME" /> cihazlarda devre dışı bırakılır, ancak diğer durumlarda etkinleştirilir.</translation>
 <translation id="4320592646346933548">Kablosuz</translation>
 <translation id="4322842393287974810">Sıfır gecikmeyle otomatik başlatılan kiosk uygulamasının <ph name="PRODUCT_OS_NAME" /> sürümünü kontrol etmesine izin ver</translation>
 <translation id="4323412353642577604">İçerik koruması için uzaktan onayı etkinleştir</translation>
@@ -9330,16 +9308,6 @@ Politika ayarlanmadan bırakılırsa <ph name="PRODUCT_NAME" /> varsayılan olar
 <translation id="9220314833408124365">Varsayılan yönlendirme politikası olarak "no-referrer-when-downgrade" kullan</translation>
 <translation id="9221827710437832530">Giriş ekranında coğrafi konum erişimine izin verin.</translation>
 <translation id="922540222991413931">Uzantı, uygulama ve kullanıcı komut dosyası yükleme kaynaklarını yapılandır</translation>
-<translation id="922656089385303086">Bu politikanın desteği sonlandırıldığı için sürüm 130'da kaldırılacaktır. Bunun yerine lütfen <ph name="URL_KEYED_METRICS_ALLOWED_POLICY_NAME" /> politikasını kullanın.
-
-Politika, Etkin değerine ayarlanırsa kullanıcının ziyaret ettiği sayfaların URL'lerini, arama ve göz atmayı iyileştirmek için Google'a gönderen, URL içeren veya URL'lerle ilişkili anonim veri toplama her zaman etkin olur.
-
-Politika, Devre Dışı değerine ayarlanırsa URL içeren veya URL'lerle ilişkili anonim veriler toplanmaz.
-
-Bu politika ayarlanmadan bırakılırsa kullanıcı bu ayarı manuel olarak değiştirebilir.
-
-<ph name="PRODUCT_OS_NAME" /> Kiosk'ta bu politika, "Kullanıcının karar vermesine izin ver" seçeneğini sunmaz. Bu politika <ph name="PRODUCT_OS_NAME" /> Kiosk için ayarlanmazsa URL içeren veya URL'lerle ilişkili anonim veri toplama her zaman etkin olur.
-Bu politika, <ph name="PRODUCT_OS_NAME" /> Kiosk için ayarlandığında kiosk uygulamalarındaki URL içeren veya URL'lerle ilişkili metrik toplama özelliğini etkinleştirir.</translation>
 <translation id="924557436754151212">İlk çalıştırmada kayıtlı şifreleri varsayılan tarayıcıdan içe aktar</translation>
 <translation id="926104720905645793">Bu politika, tarayıcı işlemi hakkındaki bilgileri <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> ürününe yükleyen <ph name="PRODUCT_NAME" /> bulut raporlamasını denetler.
 

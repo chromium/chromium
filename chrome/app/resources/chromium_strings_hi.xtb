@@ -72,7 +72,6 @@
 <translation id="2592940277904433508">Chromium को इस्तेमाल करना जारी रखें</translation>
 <translation id="2648074677641340862">इंस्‍टॉलेशन के दौरान ऑपरेटिंग सिस्‍टम गड़बड़ी हुई. कृपया क्रोमियम फिर से डाउनलोड करें.</translation>
 <translation id="2661879430930417727">अगर आप कोई डिवाइस शेयर करते हैं, तो आपके दोस्त और परिवार के लोग अलग-अलग ब्राउज़ कर सकते हैं. साथ ही, Chromium को अपने हिसाब से सेट कर सकते हैं</translation>
-<translation id="2669853942967761236">Chromium ने इस आर्काइव फ़ाइल को ब्लॉक कर दिया है, क्योंकि इसमें मैलवेयर हो सकता है</translation>
 <translation id="268602741124540128"><ph name="ACCOUNT_FIRST_NAME" />, Chromium में आपका स्वागत है</translation>
 <translation id="2711502716910134313">क्रोमियम टैब</translation>
 <translation id="2718390899429598676">ज़्यादा सुरक्षा के लिए, क्रोमियम आपके डेटा को सुरक्षित करेगा.</translation>
@@ -407,6 +406,5 @@
 <translation id="942598560705308788">वे सर्टिफ़िकेट जिन्हें Chromium मैनेज करता है</translation>
 <translation id="965162752251293939">क्रोमियम को कौन इस्तेमाल कर रहा है?</translation>
 <translation id="967427899662692980">Chromium की सबसे मज़बूत सुरक्षा पाएं</translation>
-<translation id="9792300276217204">Chromium बंद करने के बाद, अपने डिवाइस से साइट डेटा मिटाना कभी न भूलें</translation>
 <translation id="985602178874221306">क्रोमियम लेखक</translation>
 </translationbundle>

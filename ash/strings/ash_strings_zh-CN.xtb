@@ -63,6 +63,7 @@
 <translation id="1235458158152011030">已知网络</translation>
 <translation id="1239161794459865856">已连接“<ph name="FEATURE_NAME" />”。</translation>
 <translation id="1240638468526743569">某个应用</translation>
+<translation id="1242883863226959074">设备</translation>
 <translation id="124678866338384709">关闭当前标签页</translation>
 <translation id="1246890715821376239">不支持的应用</translation>
 <translation id="1247372569136754018">麦克风（内部）</translation>
@@ -181,6 +182,7 @@
 <translation id="1747827819627189109">屏幕键盘已启用</translation>
 <translation id="1749109475624620922">已将窗口“<ph name="WINDOW_TITLE" />”分配至所有桌面</translation>
 <translation id="1750088060796401187">最多只允许打开 <ph name="MAX_DESK_LIMIT" /> 个桌面。若要打开一个新桌面，请先移除一个已打开的桌面。</translation>
+<translation id="1755556344721611131">“诊断”应用</translation>
 <translation id="1756833229520115364">无法保存模板。窗口或标签页过多。</translation>
 <translation id="1757857692711134412">保持关闭状态，直到日落</translation>
 <translation id="1768366657309696705">键盘快捷键“<ph name="LAUNCHER_KEY_NAME" /> + 句点键”已更改。若要使用 Insert 键，请按<ph name="LAUNCHER_KEY_NAME" />键 + Shift + 退格键。</translation>
@@ -266,7 +268,6 @@
 <translation id="2148716181193084225">今天</translation>
 <translation id="2149229036084364364">切换到上一曲</translation>
 <translation id="2161132820593978283">试用相机取景功能，使自己在视频通话过程中位于屏幕中央。您可在“快捷设置”中开启此功能。</translation>
-<translation id="2165966740263283349">存储空间使用情况</translation>
 <translation id="2170530631236737939">若要退出“概览”模式，请用三根手指向下滑动</translation>
 <translation id="2185166372312820725">转到上一个标签页</translation>
 <translation id="2185444992308415167">逐一浏览第 1 至 8 个标签页</translation>
@@ -474,6 +475,7 @@
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" />（蓝牙）</translation>
 <translation id="3113492864356515707">突出显示任务栏上的前一项</translation>
 <translation id="3120421559657122717">要关机吗？</translation>
+<translation id="3122464029669770682">CPU</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">重新启动以进行更新</translation>
 <translation id="3139188263101386725">使用更新后的快捷键</translation>
@@ -518,7 +520,6 @@
 <translation id="3308453408813785101">日后“<ph name="USER_EMAIL_ADDRESS" />”仍能登录。</translation>
 <translation id="3321628682574733415">家长访问代码不正确</translation>
 <translation id="332827762492701193">已隐藏通知</translation>
-<translation id="3338855835380298613">CPU 使用情况</translation>
 <translation id="3339826665088060472">截屏工具栏，包含各种截屏和录屏工具</translation>
 <translation id="3340978935015468852">设置</translation>
 <translation id="3341303451326249809">已截取屏幕</translation>
@@ -642,7 +643,6 @@
 <translation id="3781910048497807059">将焦点移到上一个窗格</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">锁定</translation>
-<translation id="3796198851576711985">电池运行状况</translation>
 <translation id="3796746699333205839">有一个应用正在使用您的摄像头和麦克风</translation>
 <translation id="3798670284305777884">扬声器（内部）</translation>
 <translation id="3799080171973636491">您按下了全屏放大镜的键盘快捷键。要开启这项功能吗？</translation>
@@ -814,12 +814,10 @@
 <translation id="4527045527269911712">蓝牙设备“<ph name="DEVICE_NAME" />”需要配对许可。</translation>
 <translation id="4533343294786968049">正在减缓电池老化，延长电池寿命。电池电量将在<ph name="FULLY_CHARGE_TIME" /> 之前充满。</translation>
 <translation id="453661520163887813"><ph name="TIME" /> 后充满</translation>
-<translation id="4536664881735498710">RAM 使用情况</translation>
 <translation id="4538824937723742295">截取整个屏幕</translation>
 <translation id="4539127209940689201">打印当前网页</translation>
 <translation id="4541706525461326392">正在移除配置文件。这可能需要几分钟的时间。</translation>
 <translation id="4544483149666270818">选择一个窗口即可录制</translation>
-<translation id="454541942614298893">我的设备</translation>
 <translation id="4545950850562423083">将当前网页保存为书签</translation>
 <translation id="4548482551627849548">将活动窗口移至左侧桌面</translation>
 <translation id="4560576029703263363">已开启</translation>
@@ -978,7 +976,6 @@
 <translation id="5208059991603368177">开启</translation>
 <translation id="5216991270656129561">保持关闭状态，直到<ph name="TIME" /></translation>
 <translation id="5217646019792206018">下一个桌面：<ph name="NEXT_DESK_NAME" />，使用搜索键 + 空格键或使用键盘快捷键“Shift + 搜索键 + <ph name="NEXT_DESK_INDEX" />”即可启用。</translation>
-<translation id="5221423477036820198">使用 Phone Hub 快速发送或回复手机消息。</translation>
 <translation id="5222676887888702881">退出</translation>
 <translation id="5229343007215035173">开启/关闭隐私保护屏幕</translation>
 <translation id="5234764350956374838">关闭</translation>
@@ -1139,7 +1136,6 @@
 <translation id="589817443623831496">点扫描</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5901630391730855834">黄色</translation>
-<translation id="5902162043476810127">随机存取存储器</translation>
 <translation id="5909862606227538307">闲置的桌面。</translation>
 <translation id="5911231045062997865">目前不支持 Lacros 窗口。其他应用会被保存。</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
@@ -1540,7 +1536,6 @@
 <translation id="7724603315864178912">剪切</translation>
 <translation id="7725108879223146004">显示热点详情。热点正在关闭。</translation>
 <translation id="7727952505535211425">在新标签页中打开地址栏中的网站</translation>
-<translation id="77365090426890123">内存使用情况</translation>
 <translation id="7742327441377685481">无通知</translation>
 <translation id="7748275671948949022">突出显示任务栏上的启动器按钮</translation>
 <translation id="7749443890790263709">已达到桌面数量上限。</translation>
@@ -1792,7 +1787,6 @@
 <translation id="8853703225951107899">仍然无法验证您的 PIN 码或密码。注意：如果您最近更改了密码，请使用旧密码。待您退出登录后，系统才会应用新密码。</translation>
 <translation id="8855885154700222542">全屏键</translation>
 <translation id="8858369206579825206">隐私控制</translation>
-<translation id="8860817004574502558">电池续航时间</translation>
 <translation id="8870509716567206129">应用不支持分屏。</translation>
 <translation id="8874184842967597500">未连接</translation>
 <translation id="8875021410787719674">在右下角、启动器、地址栏、书签栏、打开的网站以及下载内容之间移动</translation>
@@ -1845,6 +1839,7 @@
 <translation id="9080073830732419341">相机已对准左上角</translation>
 <translation id="9080132581049224423">向上滑动可转到主屏幕</translation>
 <translation id="9080206825613744995">麦克风目前处于使用状态。</translation>
+<translation id="9083324773537346962">操作系统版本</translation>
 <translation id="908451241440060346">当“勿扰”模式处于开启状态时，系统会忽略通知</translation>
 <translation id="9084606467167974638">切换菜单位置</translation>
 <translation id="9085962983642906571">您的电池已接通电源，但电量会保持在 80% 以延长电池续航时间。</translation>
@@ -1885,7 +1880,6 @@
 <translation id="951991426597076286">拒绝</translation>
 <translation id="953431725143473984">要关闭设备吗？</translation>
 <translation id="954052413789300507">空间不足，无法下载“<ph name="FILENAME" />”。请先释放空间。</translation>
-<translation id="968627661524972577">您可在 Chromebook 上使用应用完成各种任务。若要使用应用，您可在启动器中查找，也可按一下键盘上的启动器键。</translation>
 <translation id="974545358917229949">显示了 <ph name="RESULT_COUNT" /> 条与“<ph name="QUERY" />”相符的结果</translation>
 <translation id="98120814841227350">转到文档末尾</translation>
 <translation id="987589956647469042">移动流量已开启</translation>

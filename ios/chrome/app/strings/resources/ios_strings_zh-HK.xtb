@@ -268,6 +268,7 @@
 <translation id="2648721026697078500">永不移動</translation>
 <translation id="2648803196158606475">刪除已閱讀的項目</translation>
 <translation id="2664621323652615289">停止</translation>
+<translation id="2666092431469916601">返回頁首</translation>
 <translation id="2671426118752779020">您可在 iPhone 上的其他應用程式使用您儲存到「Google 密碼管理工具」的密碼。</translation>
 <translation id="2690858294534178585">正在使用相機</translation>
 <translation id="26915454213703967">使用 Google 搜尋圖片內容</translation>
@@ -354,6 +355,7 @@
 建議您查看搜尋引擎的搜尋記錄刪除指示 (如有)。</translation>
 <translation id="3080525922482950719">您可儲存網頁，以便稍後或離線閱讀</translation>
 <translation id="3081338492074632642">請確保您儲存的密碼與 <ph name="WEBSITE" /> 上的密碼相符</translation>
+<translation id="3087734570205094154">下方</translation>
 <translation id="309672519329227863">在其他應用程式中使用你的 Chrome 密碼和其他資料。</translation>
 <translation id="3112556859945124369">標示…</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />查看您可同步處理的內容<ph name="END_LINK" /></translation>
@@ -431,7 +433,6 @@
 <translation id="3533436815740441613">新分頁</translation>
 <translation id="3540141921715814660">加入書籤</translation>
 <translation id="3551320343578183772">關閉分頁</translation>
-<translation id="3554280880535219766">在底部顯示網址列</translation>
 <translation id="3565207542107370586">清除瀏覽資料…</translation>
 <translation id="3575234738189584619">用「智能鏡頭」搜尋</translation>
 <translation id="3577555362230509265">在其他應用程式中使用 Chrome。</translation>
@@ -441,7 +442,6 @@
 <translation id="3595252146048399851">您隨時可在<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />中選擇要同步的資料。Google 可能會根據您的記錄，提供個人化「搜尋」和其他服務。</translation>
 <translation id="3603009562372709545">複製連結網址</translation>
 <translation id="3607167657931203000">自動填入資料</translation>
-<translation id="3608008480985212611">登入即可管理偏好設定。</translation>
 <translation id="3609785682760573515">同步處理中…</translation>
 <translation id="3631443864840848029">請確保要儲存此網站目前的密碼。</translation>
 <translation id="3638472932233958418">預先載入網頁</translation>
@@ -517,6 +517,7 @@
 <translation id="4133265950310064865">強化保護功能</translation>
 <translation id="4148023517926189160">此網站想下載檔案並將其新增至您的日曆中。</translation>
 <translation id="4152011295694446843">您可在此查看書籤</translation>
+<translation id="4168651806173792090"><ph name="NETWORK_NAME" />，尾碼係 <ph name="LAST_FOUR_DIGITS" /></translation>
 <translation id="4172051516777682613">永遠顯示</translation>
 <translation id="418156467088430727">在新分頁中查看離線版本</translation>
 <translation id="4181841719683918333">語言</translation>
@@ -703,7 +704,6 @@
 <translation id="5271265092610673171">{count,plural, =1{必填欄位沒有內容，請填寫後再儲存。}other{部分必填欄位沒有內容，請填寫後再儲存。}}</translation>
 <translation id="5271549068863921519">儲存密碼</translation>
 <translation id="5283494734135414249">輕按網址列下方顯示的捷徑。</translation>
-<translation id="5292723732574094123">已登出。重新登入即可查看帳戶中的書籤、密碼和其他資料。</translation>
 <translation id="5295239312320826323">要移除帳戶 <ph name="USER_EMAIL" /> 嗎？</translation>
 <translation id="5300589172476337783">顯示</translation>
 <translation id="5317780077021120954">儲存</translation>
@@ -762,7 +762,6 @@
 <translation id="5702108177581350218">當你分享使用者名稱和密碼副本後，家庭成員就能使用「Google 密碼管理工具」填寫這類資訊。</translation>
 <translation id="5704908597376970822">無法登入。</translation>
 <translation id="5706552126692816153">曾於 1 天前在線</translation>
-<translation id="5711039611392265845">如需更多與私隱權、安全性和資料收集相關的設定，請參閱<ph name="BEGIN_LINK" />同步處理和 Google 服務<ph name="END_LINK" />。</translation>
 <translation id="5718049162805123412">您應立即變更這些密碼</translation>
 <translation id="5724941645893276623">如要以無痕模式瀏覽網頁，請開啟新分頁</translation>
 <translation id="5728700505257787410">抱歉，登入您的帳戶時發生問題。</translation>
@@ -774,7 +773,6 @@
 <translation id="574762237186762643">活動</translation>
 <translation id="5755162682436943950">已登出。開啟對話框即可登入並開啟同步功能。</translation>
 <translation id="5758631781033351321">您可在此查看閱讀清單</translation>
-<translation id="5760258696409739442">在頂部顯示網址列</translation>
 <translation id="5762370665605786758">密碼短語加密的資料不包括 Google Pay 的付款方法和地址。
 
 只有知道密碼短語的的使用者，才能讀取已加密的資料。系統不會將密碼短語傳送給 Google，Google 亦不會儲存密碼短語。如果忘記密碼短語或想變更此設定，請<ph name="BEGIN_LINK" />清除帳戶中的 Chrome 資料<ph name="END_LINK" />。</translation>
@@ -940,6 +938,7 @@
 <translation id="651505212789431520">要取消同步處理嗎？您可隨時在「設定」中開啟同步功能。</translation>
 <translation id="6518133107902771759">驗證</translation>
 <translation id="6524918542306337007">無法使用無痕模式</translation>
+<translation id="6527303717912515753">分享</translation>
 <translation id="6530992499366869131">在密碼因資料外洩而被洩露時接收警告</translation>
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6540120577248033958">前往網站並按一下 Chrome 選單中的「追蹤」</translation>
@@ -1231,6 +1230,7 @@
 <translation id="8281781826761538115">預設 - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">略過</translation>
 <translation id="8283172974887967105">設定…</translation>
+<translation id="8286036467436129157">登入</translation>
 <translation id="8299417921174340354">如要使用密碼，您必須先在裝置上設定密碼。</translation>
 <translation id="8299613349954694191">開啟無痕式分頁就能以私密模式瀏覽網頁。</translation>
 <translation id="8316944564970119719">輸入網站和密碼，然後儲存</translation>

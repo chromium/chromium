@@ -63,6 +63,7 @@
 <translation id="1235458158152011030">알려진 네트워크</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" />이 연결되었습니다.</translation>
 <translation id="1240638468526743569">앱</translation>
+<translation id="1242883863226959074">기기</translation>
 <translation id="124678866338384709">현재 탭 닫기</translation>
 <translation id="1246890715821376239">지원되지 않는 앱</translation>
 <translation id="1247372569136754018">마이크(내부)</translation>
@@ -181,6 +182,7 @@
 <translation id="1747827819627189109">터치 키보드 사용 설정됨</translation>
 <translation id="1749109475624620922"><ph name="WINDOW_TITLE" /> 창이 모든 데스크에 할당됨</translation>
 <translation id="1750088060796401187">데스크는 최대 <ph name="MAX_DESK_LIMIT" />개만 허용됩니다. 새로운 데스크를 열려면 기존 데스크를 1개 삭제하세요.</translation>
+<translation id="1755556344721611131">진단 앱</translation>
 <translation id="1756833229520115364">템플릿을 저장할 수 없습니다. 창 또는 탭이 너무 많습니다.</translation>
 <translation id="1757857692711134412">일몰까지 끄기</translation>
 <translation id="1768366657309696705"><ph name="LAUNCHER_KEY_NAME" /> + 마침표 단축키가 변경되었습니다. Insert 키를 사용하려면 <ph name="LAUNCHER_KEY_NAME" /> 키 + Shift + Backspace 키를 누르세요.</translation>
@@ -266,7 +268,6 @@
 <translation id="2148716181193084225">오늘</translation>
 <translation id="2149229036084364364">이전 트랙으로 이동</translation>
 <translation id="2161132820593978283">영상 통화에서 화면 중앙에 표시되도록 카메라 프레이밍을 사용해 보세요. 빠른 설정에서 사용 설정하면 됩니다.</translation>
-<translation id="2165966740263283349">저장용량 사용량</translation>
 <translation id="2170530631236737939">최근 사용을 종료하려면 세 손가락을 사용해 아래로 스와이프하세요.</translation>
 <translation id="2185166372312820725">이전 탭으로 이동</translation>
 <translation id="2185444992308415167">탭 1~8 살펴보기</translation>
@@ -474,6 +475,7 @@
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" />(블루투스)</translation>
 <translation id="3113492864356515707">앱 표시줄의 이전 항목 강조 표시</translation>
 <translation id="3120421559657122717">기기를 종료할까요?</translation>
+<translation id="3122464029669770682">CPU</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">업데이트하려면 다시 시작</translation>
 <translation id="3139188263101386725">업데이트된 단축키 사용</translation>
@@ -518,7 +520,6 @@
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" />님은 나중에도 로그인할 수 있습니다.</translation>
 <translation id="3321628682574733415">잘못된 부모 코드</translation>
 <translation id="332827762492701193">알림이 숨겨져 있음</translation>
-<translation id="3338855835380298613">CPU 사용량</translation>
 <translation id="3339826665088060472">화면 캡처, 스크린샷을 찍고 화면을 녹화하는 도구</translation>
 <translation id="3340978935015468852">설정</translation>
 <translation id="3341303451326249809">스크린샷 촬영됨</translation>
@@ -642,7 +643,6 @@
 <translation id="3781910048497807059">이전 창으로 포커스 이동</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">잠금</translation>
-<translation id="3796198851576711985">배터리 상태</translation>
 <translation id="3796746699333205839">다른 애플리케이션에서 카메라와 마이크를 사용 중입니다.</translation>
 <translation id="3798670284305777884">스피커(내부)</translation>
 <translation id="3799080171973636491">전체 화면 돋보기 단축키를 누르셨습니다. 사용 설정할까요?</translation>
@@ -814,12 +814,10 @@
 <translation id="4527045527269911712">블루투스 기기 '<ph name="DEVICE_NAME" />'에서 페어링 허가를 요청합니다.</translation>
 <translation id="4533343294786968049">배터리 수명을 늘립니다. <ph name="FULLY_CHARGE_TIME" />까지 배터리가 완전히 충전됩니다.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> 후 충전 완료</translation>
-<translation id="4536664881735498710">RAM 사용량</translation>
 <translation id="4538824937723742295">화면 전체 스크린샷 촬영</translation>
 <translation id="4539127209940689201">현재 페이지 인쇄</translation>
 <translation id="4541706525461326392">프로필을 삭제하는 중입니다. 몇 분 정도 소요될 수 있습니다.</translation>
 <translation id="4544483149666270818">녹화할 창을 선택하세요.</translation>
-<translation id="454541942614298893">내 기기</translation>
 <translation id="4545950850562423083">현재 페이지를 북마크로 저장</translation>
 <translation id="4548482551627849548">활성 창을 왼쪽 데스크로 이동합니다.</translation>
 <translation id="4560576029703263363">사용</translation>
@@ -978,7 +976,6 @@
 <translation id="5208059991603368177">켜짐</translation>
 <translation id="5216991270656129561"><ph name="TIME" />까지 끄기</translation>
 <translation id="5217646019792206018">다음 데스크: <ph name="NEXT_DESK_NAME" />, 검색 키 + 스페이스바 또는 단축키: Shift 키 + 검색 키 + <ph name="NEXT_DESK_INDEX" />을(를) 사용하여 활성화합니다</translation>
-<translation id="5221423477036820198">휴대전화 허브를 사용하여 휴대전화의 메시지를 빠르게 전송하거나 답장할 수 있습니다.</translation>
 <translation id="5222676887888702881">로그아웃</translation>
 <translation id="5229343007215035173">개인 정보 보호 화면 사용 설정/중지</translation>
 <translation id="5234764350956374838">닫기</translation>
@@ -1139,7 +1136,6 @@
 <translation id="589817443623831496">지점 스캔</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5901630391730855834">노란색</translation>
-<translation id="5902162043476810127">랜덤 액세스 메모리</translation>
 <translation id="5909862606227538307">비활성 데스크입니다.</translation>
 <translation id="5911231045062997865">Lacros 창은 현재 지원되지 않습니다. 다른 앱은 저장됩니다.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" />(<ph name="MAIL" />)</translation>
@@ -1543,7 +1539,6 @@
 <translation id="7724603315864178912">잘라내기</translation>
 <translation id="7725108879223146004">핫스팟 세부정보를 표시합니다. 핫스팟을 끄는 중입니다.</translation>
 <translation id="7727952505535211425">새 탭의 주소 표시줄에서 웹사이트 열기</translation>
-<translation id="77365090426890123">메모리 사용량</translation>
 <translation id="7742327441377685481">알림 없음</translation>
 <translation id="7748275671948949022">앱 표시줄의 런처 버튼 강조 표시</translation>
 <translation id="7749443890790263709">최대 데스크 개수에 도달했습니다.</translation>
@@ -1795,7 +1790,6 @@
 <translation id="8853703225951107899">여전히 PIN 또는 비밀번호를 확인할 수 없습니다. 참고: 최근에 비밀번호를 변경한 경우 이전 비밀번호를 사용해 보세요. 로그아웃하고 나면 새로운 비밀번호가 적용됩니다.</translation>
 <translation id="8855885154700222542">전체화면 키</translation>
 <translation id="8858369206579825206">개인 정보 보호 설정</translation>
-<translation id="8860817004574502558">배터리 수명</translation>
 <translation id="8870509716567206129">앱이 화면 분할을 지원하지 않습니다.</translation>
 <translation id="8874184842967597500">연결되지 않음</translation>
 <translation id="8875021410787719674">오른쪽 하단, 런처, 주소 표시줄, 북마크바, 열려 있는 웹사이트, 다운로드 항목 간에 이동</translation>
@@ -1848,6 +1842,7 @@
 <translation id="9080073830732419341">카메라 미리보기가 왼쪽 상단으로 맞춰졌습니다</translation>
 <translation id="9080132581049224423">위로 스와이프하여 홈으로 이동</translation>
 <translation id="9080206825613744995">마이크가 사용 중입니다.</translation>
+<translation id="9083324773537346962">OS 버전</translation>
 <translation id="908451241440060346">방해 금지 모드가 사용 설정되어 있으면 알림이 음소거됩니다.</translation>
 <translation id="9084606467167974638">메뉴 위치 전환</translation>
 <translation id="9085962983642906571">전원에 연결된 상태에서 배터리 수명 연장을 위해 충전량이 80%로 유지됩니다.</translation>
@@ -1888,7 +1883,6 @@
 <translation id="951991426597076286">거부</translation>
 <translation id="953431725143473984">기기를 종료하시겠습니까?</translation>
 <translation id="954052413789300507"><ph name="FILENAME" /> 파일을 저장할 공간이 부족합니다. 기기 여유 공간을 확보하세요.</translation>
-<translation id="968627661524972577">앱을 사용하여 Chromebook에서 필요한 모든 작업을 수행해 보세요. 런처에서 앱을 찾을 수 있습니다. 키보드의 런처 키를 눌러도 됩니다.</translation>
 <translation id="974545358917229949"><ph name="QUERY" /> 검색결과 <ph name="RESULT_COUNT" />개 표시 중</translation>
 <translation id="98120814841227350">문서 하단으로 이동</translation>
 <translation id="987589956647469042">모바일 데이터가 사용 설정되었습니다.</translation>

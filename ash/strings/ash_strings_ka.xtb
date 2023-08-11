@@ -63,6 +63,7 @@
 <translation id="1235458158152011030">ცნობილი ქსელები</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> დაკავშირებულია.</translation>
 <translation id="1240638468526743569">აპი</translation>
+<translation id="1242883863226959074">მოწყობილობა</translation>
 <translation id="124678866338384709">მიმდინარე ჩანართის დახურვა</translation>
 <translation id="1246890715821376239">მხარდაუჭერელი აპები</translation>
 <translation id="1247372569136754018">მიკროფონი (შიდა)</translation>
@@ -181,6 +182,7 @@
 <translation id="1747827819627189109">ეკრანული კლავიატურა ჩართულია</translation>
 <translation id="1749109475624620922">ფანჯარა <ph name="WINDOW_TITLE" /> მიმაგრებულია ყველა სამუშაო მაგიდაზე</translation>
 <translation id="1750088060796401187">დაშვებულია მხოლოდ <ph name="MAX_DESK_LIMIT" /> სამუშაო მაგიდა. ახლის გასახსნელად ამოშალეთ ერთ-ერთი არსებული.</translation>
+<translation id="1755556344721611131">დიაგნოსტიკის აპი</translation>
 <translation id="1756833229520115364">შაბლონის შენახვა ვერ მოხერხდა. გახსნილია ზედმეტად ბევრი ფანჯარა ან ჩანართი.</translation>
 <translation id="1757857692711134412">გამორთულია მზის ჩასვლამდე</translation>
 <translation id="1768366657309696705"><ph name="LAUNCHER_KEY_NAME" /> + წერტილის კლავიატურის მალსახმობი შეიცვალა. Insert კლავიშის გამოსაყენებლად დააჭირეთ <ph name="LAUNCHER_KEY_NAME" /> კლავიშს + Shift + Backspace.</translation>
@@ -266,7 +268,6 @@
 <translation id="2148716181193084225">დღეს</translation>
 <translation id="2149229036084364364">წინა ჩანაწერზე გადასვლა</translation>
 <translation id="2161132820593978283">ცადეთ კამერის კადრირება, რის მეშვეობითაც, ვიდეოზარების დროს, ეკრანის ცენტრში იქნებით მოქცეული. მისი ჩართვა შეგიძლიათ სწრაფი პარამეტრებიდან.</translation>
-<translation id="2165966740263283349">გამოყენებული მეხსიერება</translation>
 <translation id="2170530631236737939">მიმოხილვიდან გასასვლელად გადაფურცლეთ ქვემოთ სამი თითით</translation>
 <translation id="2185166372312820725">წინა ჩანართზე გადასვლა</translation>
 <translation id="2185444992308415167">1-ელიდან მე-8 ჩანართებს შორის გადასვლა</translation>
@@ -474,6 +475,7 @@
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3113492864356515707">წინა ერთეულის გამოყოფა თაროზე</translation>
 <translation id="3120421559657122717">გსურთ, გათიშოთ მოწყობილობა?</translation>
+<translation id="3122464029669770682">CPU</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">გადატვირთეთ განახლებისთვის</translation>
 <translation id="3139188263101386725">გამოიყენეთ განახლებული მალსახმობი</translation>
@@ -518,7 +520,6 @@
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> მაინც შეძლებს სისტემაში შესვლას მოგვიანებით.</translation>
 <translation id="3321628682574733415">მშობლის კოდი არასწორია</translation>
 <translation id="332827762492701193">შეტყობინებები დამალულია</translation>
-<translation id="3338855835380298613">CPU-ს გამოყენება</translation>
 <translation id="3339826665088060472">ეკრანის აღბეჭდვა, ეკრანის ანაბეჭდებისა და ჩანაწერების შექმნის ხელსაწყოები</translation>
 <translation id="3340978935015468852">პარამეტრები</translation>
 <translation id="3341303451326249809">ეკრანის ანაბეჭდი გადაღებულია</translation>
@@ -642,7 +643,6 @@
 <translation id="3781910048497807059">წინა არის მოქცევა ფოკუსში</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">დაბლოკვა</translation>
-<translation id="3796198851576711985">ბატარეის მდგომარეობა</translation>
 <translation id="3796746699333205839">აპლიკაცია იყენებს თქვენს კამერასა და მიკროფონს</translation>
 <translation id="3798670284305777884">დინამიკი (შიდა)</translation>
 <translation id="3799080171973636491">თქვენ დააჭირეთ სრულეკრანიანი ლუპის კლავიატურის მალსახმობს. გსურთ მისი ჩართვა?</translation>
@@ -814,12 +814,10 @@
 <translation id="4527045527269911712">Bluetooth მოწყობილობა „<ph name="DEVICE_NAME" />“ მოითხოვს დაწყვილების ნებართვას.</translation>
 <translation id="4533343294786968049">მიმდინარეობს ბატარეის მუშაობის გახანგრძლივება. ბატარეა სრულად დაიტენება <ph name="FULLY_CHARGE_TIME" />-ისთვის.</translation>
 <translation id="453661520163887813">სრულ დატენვამდე დარჩენილია <ph name="TIME" /></translation>
-<translation id="4536664881735498710">ram-ის გამოყენება</translation>
 <translation id="4538824937723742295">ეკრანის სრულად აღბეჭდვა</translation>
 <translation id="4539127209940689201">მიმდინარე გვერდის ბეჭდვა</translation>
 <translation id="4541706525461326392">მიმდინარეობს პროფილის ამოშლა. ამას შეიძლება რამდენიმე წუთი დასჭირდეს.</translation>
 <translation id="4544483149666270818">აირჩიეთ ჩასაწერი ფანჯარა</translation>
-<translation id="454541942614298893">ჩემი მოწყობილობა</translation>
 <translation id="4545950850562423083">მიმდინარე გვერდის შენახვა სანიშნეს სახით</translation>
 <translation id="4548482551627849548">აქტიური ფანჯრის გადატანა სამუშაო მაგიდაზე მარცხნივ</translation>
 <translation id="4560576029703263363">ჩართვა</translation>
@@ -978,7 +976,6 @@
 <translation id="5208059991603368177">ჩართვა</translation>
 <translation id="5216991270656129561">გამორთულია <ph name="TIME" />-მდე</translation>
 <translation id="5217646019792206018">მომდევნო სამუშაო მაგიდა: <ph name="NEXT_DESK_NAME" />, გასააქტიურებლად გამოიყენეთ კლავიშთა კომბინაცია Search+შორისი ან კლავიატურის მალსახმობი Shift+Search+<ph name="NEXT_DESK_INDEX" />.</translation>
-<translation id="5221423477036820198">სწრაფად გაგზავნეთ შეტყობინებები თქვენი ტელეფონიდან, ან უპასუხეთ მათ, ტელეფონის ცენტრის მეშვეობით.</translation>
 <translation id="5222676887888702881">გამოსვლა</translation>
 <translation id="5229343007215035173">კონფიდენციალური ეკრანის ჩართვა/გამორთვა</translation>
 <translation id="5234764350956374838">გაუქმება</translation>
@@ -1139,7 +1136,6 @@
 <translation id="589817443623831496">წერტილოვანი სკანირება</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5901630391730855834">ყვითელი</translation>
-<translation id="5902162043476810127">ოპერატიული მეხსიერება</translation>
 <translation id="5909862606227538307">არააქტიური სამუშაო მაგიდა.</translation>
 <translation id="5911231045062997865">Lacros ფანჯრები ამჟამად მხარდაუჭერელია. სხვა აპები შეინახება.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
@@ -1543,7 +1539,6 @@
 <translation id="7724603315864178912">ამოჭრა</translation>
 <translation id="7725108879223146004">უსადენო ქსელის დეტალების ჩვენება. მიმდინარეობს უსადენო ქსელის გამორთვა.</translation>
 <translation id="7727952505535211425">მისამართთა ზოლში მითითებული ვებსაიტის გახსნა ახალ ჩანართში</translation>
-<translation id="77365090426890123">მეხსიერების მოხმარება</translation>
 <translation id="7742327441377685481">შეტყობინებები არ არის</translation>
 <translation id="7748275671948949022">გამშვების ღილაკის გამოყოფა თაროზე</translation>
 <translation id="7749443890790263709">მიღწეულია სამუშაო მაგიდების მაქსიმალური რაოდენობა.</translation>
@@ -1795,7 +1790,6 @@
 <translation id="8853703225951107899">თქვენი PIN-კოდის ან პაროლის დადასტურება კვლავ ვერ მოხერხდა. გაითვალისწინეთ: თუ ახლახან შეცვალეთ პაროლი, გამოიყენეთ თქვენი ძველი პაროლი. ახალი პაროლი ძალაში შევა, როცა სისტემიდან გახვალთ.</translation>
 <translation id="8855885154700222542">სრულეკრანიან რეჟიმზე გადართვის კლავიში</translation>
 <translation id="8858369206579825206">კონფიდენციალურობის მართვის პარამეტრები</translation>
-<translation id="8860817004574502558">ბატარეის მუშაობის ხანგრძლივობა</translation>
 <translation id="8870509716567206129">ეკრანის გაყოფა არ არის მხარდაჭერილი აპის მიერ.</translation>
 <translation id="8874184842967597500">არ არის დაკავშირებული</translation>
 <translation id="8875021410787719674">ქვედა მარჯვენა კუთხეს, გამშვებს, მისამართთა ზოლს, სანიშნეების ზოლს, გახსნილ ვებსაიტებსა და ჩამოტვირთვებს შორის გადაადგილება</translation>
@@ -1848,6 +1842,7 @@
 <translation id="9080073830732419341">კამერა მიზიდულია ზედა მარცხენა კუთხეში</translation>
 <translation id="9080132581049224423">მთავარ გვერდზე გადასასვლელად გადაფურცლეთ ზემოთ</translation>
 <translation id="9080206825613744995">მიკროფონი გამოიყენება.</translation>
+<translation id="9083324773537346962">ოპერაციული სისტემის ვერსია</translation>
 <translation id="908451241440060346">შეტყობინებები დადუმებულია, როცა ჩართულია რეჟიმი „არ შემაწუხოთ“</translation>
 <translation id="9084606467167974638">მენიუს პოზიციის გადართვა</translation>
 <translation id="9085962983642906571">ბატარეის მუშაობის ხანგრძლივობის გაზრდის მიზნით, თქვენი ბატარეა შენარჩუნდება 80%-ზე, სანამ მიერთებულია ელკვების წყაროსთან.</translation>
@@ -1888,7 +1883,6 @@
 <translation id="951991426597076286">უარყოფა</translation>
 <translation id="953431725143473984">გსურთ, გამორთოთ მოწყობილობა?</translation>
 <translation id="954052413789300507"><ph name="FILENAME" /> ვერ ჩამოიტვირთება არასაკმარისი სივრცის გამო. გაათავისუფლეთ მეხსიერება.</translation>
-<translation id="968627661524972577">გამოიყენეთ აპები, რომლებიც Chromebook-ზე ყველაფრის შესრულებაში დაგეხმარებათ. თქვენი აპების პოვნა შეგიძლიათ გამშვებში. გარდა ამისა, შეგიძლიათ კლავიატურაზე გამშვების კლავიშს დააჭიროთ.</translation>
 <translation id="974545358917229949">ნაჩვენებია <ph name="RESULT_COUNT" /> შედეგი მოთხოვნაზე: <ph name="QUERY" /></translation>
 <translation id="98120814841227350">დოკუმენტის ბოლოში გადასვლა</translation>
 <translation id="987589956647469042">მობილური ინტერნეტი ჩართულია</translation>

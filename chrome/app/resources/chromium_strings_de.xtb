@@ -72,7 +72,6 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="2592940277904433508">Chromium weiterhin verwenden</translation>
 <translation id="2648074677641340862">Während der Installation ist ein Fehler im Betriebssystem aufgetreten. Bitte lade Chromium erneut herunter.</translation>
 <translation id="2661879430930417727">Auf gemeinsam genutzten Geräten können die verschiedenen Nutzer separat surfen und Chromium jeweils nach ihren Wünschen einrichten</translation>
-<translation id="2669853942967761236">Chromium hat diese Archivdatei blockiert, da sie möglicherweise Malware enthält</translation>
 <translation id="268602741124540128">Willkommen bei Chromium, <ph name="ACCOUNT_FIRST_NAME" /></translation>
 <translation id="2711502716910134313">Chromium-Tab</translation>
 <translation id="2718390899429598676">Chromium verschlüsselt deine Daten zur Erhöhung der Sicherheit.</translation>
@@ -406,6 +405,5 @@ Chromium kann deine Einstellungen nicht wiederherstellen.</translation>
 <translation id="942598560705308788">Von Chromium verwaltete Zertifikate</translation>
 <translation id="965162752251293939">Wer verwendet gerade Chromium?</translation>
 <translation id="967427899662692980">Höchste Sicherheit in Chromium erhalten</translation>
-<translation id="9792300276217204">Beim Schließen von Chromium immer die Websitedaten von deinem Gerät löschen</translation>
 <translation id="985602178874221306">Die Chromium-Autoren</translation>
 </translationbundle>

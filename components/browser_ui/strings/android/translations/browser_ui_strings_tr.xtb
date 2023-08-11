@@ -99,6 +99,7 @@
 <translation id="2621115761605608342">Belirli bir site için JavaScript'e izin verin.</translation>
 <translation id="2653659639078652383">Gönder</translation>
 <translation id="2677748264148917807">Çık</translation>
+<translation id="2678468611080193228">Üçüncü taraf çerezlerine geçici olarak izin vermeyi deneyin. Bu durumda daha az korunursunuz ancak site özelliklerinin çalışma olasılığı daha yüksektir</translation>
 <translation id="2687403674020088961">Tüm çerezleri engelle (önerilmez)</translation>
 <translation id="2713106313042589954">Kamerayı kapat</translation>
 <translation id="2717722538473713889">E-posta adresleri</translation>
@@ -138,6 +139,7 @@
 <translation id="3362437373201486687">Bluetooth cihazları taranıyor</translation>
 <translation id="3386292677130313581">Sitelerin, konumunuzu öğrenmesine izin verilmeden önce size sorulsun (önerilir)</translation>
 <translation id="3403537308306431953">%%<ph name="ZOOM_LEVEL" /></translation>
+<translation id="344449859752187052">Üçüncü taraf çerezleri engellendi</translation>
 <translation id="3521663503435878242"><ph name="DOMAIN" /> altındaki siteler</translation>
 <translation id="3538390592868664640">Sitelerin çevremin 3D haritasını oluşturmasını veya kamera konumunu takip etmesini engelle</translation>
 <translation id="3544058026430919413">Bir şirket, bir site grubu tanımlayabilir ve çerezleri kullanarak gruptaki etkinliğinizi paylaşabilir. Bu ayar Gizli modda kapalıdır.</translation>
@@ -212,6 +214,7 @@
 <translation id="4962975101802056554">Cihaz için tüm izinleri iptal eder</translation>
 <translation id="497421865427891073">İlerle</translation>
 <translation id="4976702386844183910">Son ziyaret tarihi: <ph name="DATE" /></translation>
+<translation id="4985206706500620449">Bu site için üçüncü taraf çerezlerine izin verdiniz</translation>
 <translation id="4994033804516042629">Kişi bulunamadı</translation>
 <translation id="4996978546172906250">Paylaşım yöntemi:</translation>
 <translation id="5001526427543320409">Üçüncü taraf çerezleri</translation>
@@ -256,6 +259,7 @@
 <translation id="5677928146339483299">Engelleniyor</translation>
 <translation id="5689516760719285838">Konum</translation>
 <translation id="5690795753582697420">Kamera, Android ayarlarında kapatıldı</translation>
+<translation id="5700761515355162635">Üçüncü taraf çerezlerine izin verildi</translation>
 <translation id="5706552988683188916">Bu işlem, <ph name="WEBSITE" /> için çerezleri ve diğer site verilerini siler</translation>
 <translation id="5719847187258001597">Bu işlem, Ana ekranınızdaki <ph name="ORIGIN" /> sitesi ve sitenin uygulaması tarafından depolanan tüm verileri ve çerezleri temizleyecek.</translation>
 <translation id="5723967018671998714">Gizli modda üçüncü taraf çerezleri engelleniyor</translation>
@@ -303,6 +307,7 @@
 <translation id="6467852467360539617">Verileri temizle ve izinleri sıfırla</translation>
 <translation id="6500423977866688905">Pencere dar olduğunda mobil cihaz görünümü isteğinde bulunma</translation>
 <translation id="6527303717912515753">Paylaş</translation>
+<translation id="652937045869844725">Üçüncü taraf çerezlerine izin vermeyi deneyin. Bu durumda daha az korunursunuz ancak site özelliklerinin çalışma olasılığı daha yüksektir</translation>
 <translation id="6545864417968258051">Bluetooth taraması</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ve <ph name="NUM_MORE" /> izin daha engellendi}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ve <ph name="NUM_MORE" /> izin daha engellendi}}</translation>
 <translation id="6554732001434021288">En son <ph name="NUM_DAYS" /> gün önce ziyaret edildi</translation>
@@ -435,6 +440,7 @@
 <translation id="8736193154595564524">{NUM_SELECTED,plural, =1{1 siteye izin veriliyor}other{# siteye izin veriliyor}}</translation>
 <translation id="8737217482364735741">Bu işlem, <ph name="ORIGIN" /> tarafından depolanan tüm verileri ve çerezleri temizler.</translation>
 <translation id="8751914237388039244">Resim seçin</translation>
+<translation id="8800034312320686233">Site çalışmıyor mu?</translation>
 <translation id="8801436777607969138">JavaScript'i belirli bir site için engelleyin.</translation>
 <translation id="8803526663383843427">Açık olduğunda</translation>
 <translation id="8805385115381080995">Sitelerin gerçek bir kişi olduğunuzu doğrulamanızı isteme olasılığı daha düşük olduğundan daha hızlı bir göz atma deneyimi yaşarsınız</translation>

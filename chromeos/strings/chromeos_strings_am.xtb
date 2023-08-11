@@ -15,7 +15,6 @@
 <translation id="1075811647922107217">የገጽ መጠን</translation>
 <translation id="1082009148392559545">ማያ ገፅ ቆጣቢውን በማውረድ ላይ</translation>
 <translation id="1094693127011229778">የአይፒ አድራሻ አይገኝም</translation>
-<translation id="1113892970288677790">ተመርጠው የተሰበሰቡ የኪነ ጥበብ ሥራ እና ምስሎችን ይምረጡ</translation>
 <translation id="1118572504348554005">ለሳንካዎች እና ለእኛ ሪፖርት ለሚያደርጓቸው ሌሎች ችግሮች መላ ለመፈለግ በዚህ ቅጽ በኩል የቀረበውን ግብረመልስ ከአጋሮቻችን ጋር ልናጋራ እንችላለን። እንደ የይለፍ ቃላት የመሳሰሉ ልዩ ጥንቃቄ የሚያስፈልጋቸው መረጃዎችን አያካትቱ።</translation>
 <translation id="1119447706177454957">ውስጣዊ ስህተት</translation>
 <translation id="1124772482545689468">ተጠቃሚ</translation>
@@ -183,6 +182,7 @@
 <translation id="225692081236532131">የገባሪነት ሁኔታ</translation>
 <translation id="2271469253353559191">የጨለማ ሁነታ መርሐግብር</translation>
 <translation id="2276999893457278469">ከፍተኛ የእገዛ ይዘት</translation>
+<translation id="2279051792571591988">ወደ ነባሪዎች እነበረበት መልስ</translation>
 <translation id="2287186687001756809">ምንም ምስል አልተገኘም። ፎቶዎችን ለማከል ወደ <ph name="LINK" /> ይሂዱ</translation>
 <translation id="2307344026739914387">የአሁኑን የቁልፍ ጥምር ይጠቀሙ</translation>
 <translation id="2320295602967756579">ነጣ ያለ ገጽታን አንቃ</translation>
@@ -332,7 +332,6 @@
 <translation id="361575905210396100">ለግብረመልስዎ እናመሰግናለን</translation>
 <translation id="3632579075709132555">የግላዊነት ማያ ገፅ መቀየሪያ</translation>
 <translation id="3651050199673793219">የሙቀት መጠን አሃድ ይምረጡ</translation>
-<translation id="3663574643422533538"><ph name="PRODUCT_NAME" /> ለሚመለከተው የተወሰነ ሥነ ጥበብ ይምረጡ</translation>
 <translation id="3668449597372804501">የደመና ፍሰት ልጣፍ</translation>
 <translation id="3689839747745352263">የ<ph name="TEST_NAME" /> ሙከራ</translation>
 <translation id="370665806235115550">በመጫን ላይ…</translation>
@@ -646,6 +645,7 @@
 <translation id="6061772781719867950">ያልተሳካ የHTTP ጥያቄ</translation>
 <translation id="6073292342939316679">የቁልፍ ሰሌዳ ብሩህነት መቀነሻ</translation>
 <translation id="6075872808778243331">(Android) የኤችቲቲፒኤስ የስርዓተ ምላሽ ጊዜ</translation>
+<translation id="6078323886959318429">አቋራጭ አክል</translation>
 <translation id="6104112872696127344">መቃኘት ተሰርዟል</translation>
 <translation id="6106186594183574873">ለማጠናቀቅ፣ የእርስዎን ይለፍ ቃል ያስገቡ</translation>
 <translation id="6108689792487843350">አግባቢ ፍኖት አይገኝም</translation>

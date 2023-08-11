@@ -105,7 +105,6 @@
 <translation id="4266252015790371705">{MONTHS,plural, =1{Hai un mes}other{Hai # meses}}</translation>
 <translation id="4289300219472526559">Comeza a falar</translation>
 <translation id="4289540628985791613">Visión xeral</translation>
-<translation id="4306392492252714209">Quitar do portapapeis.</translation>
 <translation id="4491109536499578614">Imaxe</translation>
 <translation id="4565377596337484307">Ocultar contrasinal</translation>
 <translation id="4588090240171750605">Desprazar cara á dereita</translation>
@@ -175,6 +174,7 @@
 <translation id="7170202025028120564">A configuración da pantalla da túa aplicación terá efecto a próxima vez que se reinicie.</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{Queda un minuto}other{Quedan # minutos}}</translation>
+<translation id="7363164521834647158">Enviar resposta</translation>
 <translation id="7365057348334984696">{MINUTES,plural, =1{Hai un minuto}other{Hai # minutos}}</translation>
 <translation id="7389409599945284130">: <ph name="MESSAGE" /></translation>
 <translation id="7410957453383678442">{MINUTES,plural, =1{Queda un minuto}other{Quedan # minutos}}</translation>

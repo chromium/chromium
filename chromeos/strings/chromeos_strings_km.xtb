@@ -15,7 +15,6 @@
 <translation id="1075811647922107217">ទំហំ​ទំព័រ</translation>
 <translation id="1082009148392559545">កំពុង​ទាញយក​ធាតុរក្សា​អេក្រង់</translation>
 <translation id="1094693127011229778">មិនមានអាសយដ្ឋាន IP ទេ</translation>
-<translation id="1113892970288677790">ជ្រើសរើសរូបភាព និងរូបផូស្ទ័រ​ដែលបានជ្រើសរើស</translation>
 <translation id="1118572504348554005">យើង​អាច​ចែករំលែក​មតិកែលម្អ​ដែលបានដាក់បញ្ជូន​តាមរយៈទម្រង់បែបបទ​នេះ​ជាមួយ​ដៃគូ​របស់យើង ដើម្បីដោះស្រាយ​បញ្ហា និង​បញ្ហា​ផ្សេងៗទៀត​ដែល​អ្នក​រាយការណ៍​មកយើង។ សូមកុំរួមបញ្ចូល​ព័ត៌មាន​រសើប​ដូចជា​ពាក្យសម្ងាត់​ជាដើម។</translation>
 <translation id="1119447706177454957">កំហុសឆ្គងខាងក្នុង</translation>
 <translation id="1124772482545689468">អ្នកប្រើ</translation>
@@ -183,6 +182,7 @@
 <translation id="225692081236532131">ស្ថានភាពនៃការធ្វើឲ្យសកម្ម</translation>
 <translation id="2271469253353559191">កាលវិភាគ​មុខងារ​ងងឹត</translation>
 <translation id="2276999893457278469">ខ្លឹមសារ​ជំនួយ​ពេញនិយម</translation>
+<translation id="2279051792571591988">ស្ដារ​លំនាំដើម</translation>
 <translation id="2287186687001756809">មិនមាន​រូបភាពទេ។ ដើម្បី​បញ្ចូលរូបថត សូមចូល​ទៅកាន់ <ph name="LINK" /></translation>
 <translation id="2307344026739914387">ប្រើគូសោ​បច្ចុប្បន្ន</translation>
 <translation id="2320295602967756579">បើក​រចនាប័ទ្ម​ភ្លឺ</translation>
@@ -332,7 +332,6 @@
 <translation id="361575905210396100">សូមអរគុណ​ចំពោះ​មតិកែលម្អ​របស់អ្នក</translation>
 <translation id="3632579075709132555">ប៊ូតុងបិទ/បើក​របាំងឯកជនភាព</translation>
 <translation id="3651050199673793219">ជ្រើសរើស​ឯកតា​សីតុណ្ហភាព</translation>
-<translation id="3663574643422533538">ជ្រើសរើស​ស្នាដៃសិល្បៈ​ផ្ដាច់មុខ​របស់ <ph name="PRODUCT_NAME" /></translation>
 <translation id="3668449597372804501">ផ្ទាំង​រូបភាពចលនាពពក</translation>
 <translation id="3689839747745352263">តេស្ត <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">កំពុងដំណើរការ...</translation>
@@ -646,6 +645,7 @@
 <translation id="6061772781719867950">សំណើ HTTPS ដែលមិនដំណើរការ</translation>
 <translation id="6073292342939316679">បន្ថយ​ពន្លឺក្ដារចុច</translation>
 <translation id="6075872808778243331">(Android) ការពន្យារ HTTP</translation>
+<translation id="6078323886959318429">បន្ថែម​ផ្លូវកាត់</translation>
 <translation id="6104112872696127344">បានបោះបង់ការស្កេនហើយ</translation>
 <translation id="6106186594183574873">ដើម្បី​បញ្ចប់ សូម​បញ្ចូល​ពាក្យសម្ងាត់​ចាស់​របស់អ្នក</translation>
 <translation id="6108689792487843350">មិនអាចភ្ជាប់ជាមួយច្រកបានទេ</translation>

@@ -15,7 +15,6 @@
 <translation id="1075811647922107217">પેજનું કદ</translation>
 <translation id="1082009148392559545">સ્ક્રીન સેવર ડાઉનલોડ કરી રહ્યું છે</translation>
 <translation id="1094693127011229778">IP ઍડ્રેસ ઉપલબ્ધ નથી</translation>
-<translation id="1113892970288677790">ક્યુરેટ કરેલા આર્ટવર્ક અને છબીઓ પસંદ કરો</translation>
 <translation id="1118572504348554005">તમે અમને જાણ કરતા હો એવી ખામીઓ અને અન્ય સમસ્યાઓનું નિવારણ કરવા માટે, આ ફોર્મ મારફતે સબમિટ કરવામાં આવેલો પ્રતિસાદ કદાચ અમે અમારા ભાગીદારો સાથે શેર કરી શકીએ છીએ. પાસવર્ડ જેવી સંવેદનશીલ માહિતી શામેલ કરશો નહીં.</translation>
 <translation id="1119447706177454957">આંતરિક ભૂલ</translation>
 <translation id="1124772482545689468">વપરાશકર્તા</translation>
@@ -183,6 +182,7 @@
 <translation id="225692081236532131">સક્રિયતાની સ્થિતિ</translation>
 <translation id="2271469253353559191">ઘેરા મોડનું શેડ્યૂલ</translation>
 <translation id="2276999893457278469">લોકપ્રિય સહાયક કન્ટેન્ટ</translation>
+<translation id="2279051792571591988">ડિફૉલ્ટ રિસ્ટોર કરો</translation>
 <translation id="2287186687001756809">કોઈ છબી ઉપલબ્ધ નથી. ફોટા ઉમેરવા માટે, <ph name="LINK" /> પર જાઓ</translation>
 <translation id="2307344026739914387">હાલની કીની જોડીનો ઉપયોગ કરો</translation>
 <translation id="2320295602967756579">ઝાંખી થીમ ચાલુ કરો</translation>
@@ -332,7 +332,6 @@
 <translation id="361575905210396100">તમારા પ્રતિસાદ બદલ આભાર</translation>
 <translation id="3632579075709132555">પ્રાઇવસી સ્ક્રીન ટૉગલ કરો</translation>
 <translation id="3651050199673793219">તાપમાનનો એકમ પસંદ કરો</translation>
-<translation id="3663574643422533538"><ph name="PRODUCT_NAME" /> માટે વિશિષ્ટ હોય તેવું આર્ટવર્ક પસંદ કરો</translation>
 <translation id="3668449597372804501">ક્લાઉડ ફ્લો વૉલપેપર</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> પરીક્ષણ</translation>
 <translation id="370665806235115550">લોડ કરી રહ્યું છે...</translation>
@@ -646,6 +645,7 @@
 <translation id="6061772781719867950">HTTPSની નિષ્ફળ વિનંતીઓ</translation>
 <translation id="6073292342939316679">કીબોર્ડનું બ્રાઇટનેસ ઘટાડવાની કી</translation>
 <translation id="6075872808778243331">(Android) HTTPની વિલંબતા</translation>
+<translation id="6078323886959318429">શોર્ટકટ ઉમેરો</translation>
 <translation id="6104112872696127344">સ્કૅન કરવાનું કાર્ય રદ કરવામાં આવ્યું છે</translation>
 <translation id="6106186594183574873">સમાપ્ત કરવા માટે, તમારો જૂનો પાસવર્ડ દાખલ કરો</translation>
 <translation id="6108689792487843350">ગેટવેથી કનેક્ટ કરી શકાતું નથી</translation>

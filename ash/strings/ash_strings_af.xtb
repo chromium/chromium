@@ -63,6 +63,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="1235458158152011030">Bekende netwerke</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> is gekoppel.</translation>
 <translation id="1240638468526743569">’n Program</translation>
+<translation id="1242883863226959074">toestel</translation>
 <translation id="124678866338384709">Maak huidige oortjie toe</translation>
 <translation id="1246890715821376239">Ongesteunde programme</translation>
 <translation id="1247372569136754018">Mikrofoon (intern)</translation>
@@ -181,6 +182,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="1747827819627189109">Opskerm-sleutelbord geaktiveer</translation>
 <translation id="1749109475624620922">Venster <ph name="WINDOW_TITLE" /> is aan alle lesenaars toegewys</translation>
 <translation id="1750088060796401187">Net <ph name="MAX_DESK_LIMIT" /> lessenaars word toegelaat. Verwyder 'n lessenaar om 'n nuwe een oop te maak.</translation>
+<translation id="1755556344721611131">Diagnostiekprogram</translation>
 <translation id="1756833229520115364">Kon nie templaat stoor nie. Te veel vensters of oortjies.</translation>
 <translation id="1757857692711134412">Af tot sonsondergang</translation>
 <translation id="1768366657309696705">Die kortpadsleutel <ph name="LAUNCHER_KEY_NAME" /> + punt het verander. Om die Insert-sleutel te gebruik, moet jy die <ph name="LAUNCHER_KEY_NAME" />-sleutel + Shift + Backspace druk.</translation>
@@ -266,7 +268,6 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="2148716181193084225">Vandag</translation>
 <translation id="2149229036084364364">Gaan na vorige snit</translation>
 <translation id="2161132820593978283">Probeer kamera se raamfunksie sodat jy met video-oproepe in die middel van die skerm is. Skakel dit aan in Kitsinstellings.</translation>
-<translation id="2165966740263283349">berginggebruik</translation>
 <translation id="2170530631236737939">Swiep met drie vingers af om Oorsig te verlaat</translation>
 <translation id="2185166372312820725">Gaan na vorige oortjie</translation>
 <translation id="2185444992308415167">Gaan deur oortjies 1 tot 8</translation>
@@ -474,6 +475,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3113492864356515707">Merk vorige item op rak</translation>
 <translation id="3120421559657122717">Skakel toestel af?</translation>
+<translation id="3122464029669770682">CPU</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">Herbegin om op te dateer</translation>
 <translation id="3139188263101386725">Gebruik die opgedateerde kortpad</translation>
@@ -518,7 +520,6 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> kan steeds later aanmeld.</translation>
 <translation id="3321628682574733415">Verkeerde ouerkode</translation>
 <translation id="332827762492701193">Kennisgewings word versteek</translation>
-<translation id="3338855835380298613">CPU-gebruik</translation>
 <translation id="3339826665088060472">Skermskoot, nutsgoed om skermskote en skermopnames te neem</translation>
 <translation id="3340978935015468852">instellings</translation>
 <translation id="3341303451326249809">Skermkiekie is geneem</translation>
@@ -643,7 +644,6 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="3781910048497807059">Skuif fokus na vorige paneel</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">Sluit</translation>
-<translation id="3796198851576711985">batterygesondheid</translation>
 <translation id="3796746699333205839">'n Program gebruik tans jou kamera en mikrofoon</translation>
 <translation id="3798670284305777884">Luidspreker (intern)</translation>
 <translation id="3799080171973636491">Jy het die sleutelbordkortpad vir die volskermvergrootglas gedruk. Wil jy dit aanskakel?</translation>
@@ -815,12 +815,10 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="4527045527269911712">Bluetooth-toestel "<ph name="DEVICE_NAME" />" wil graag toestemming hê om saam te bind.</translation>
 <translation id="4533343294786968049">Verleng jou batterylewe. Battery sal teen <ph name="FULLY_CHARGE_TIME" /> volledig gelaai wees.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> tot vol</translation>
-<translation id="4536664881735498710">RAM-gebruik</translation>
 <translation id="4538824937723742295">Neem volskermskermkiekie</translation>
 <translation id="4539127209940689201">Druk huidige bladsy</translation>
 <translation id="4541706525461326392">Verwyder tans profiel. Dit kan 'n paar minute neem.</translation>
 <translation id="4544483149666270818">Kies 'n venster om op te neem</translation>
-<translation id="454541942614298893">my toestel</translation>
 <translation id="4545950850562423083">Stoor huidige bladsy as boekmerk</translation>
 <translation id="4548482551627849548">Skuif aktiewe venster na lessenaar aan die linkerkant toe</translation>
 <translation id="4560576029703263363">Aan</translation>
@@ -979,7 +977,6 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="5208059991603368177">Aan</translation>
 <translation id="5216991270656129561">Af tot <ph name="TIME" /></translation>
 <translation id="5217646019792206018">Volgende lessenaar: <ph name="NEXT_DESK_NAME" />, gebruik Soek+spasie of kortpadsleutel: Shift+Soek+<ph name="NEXT_DESK_INDEX" /> om te aktiveer.</translation>
-<translation id="5221423477036820198">Gebruik Foonsentrum om vinnig boodskappe te stuur of daarop te reageer.</translation>
 <translation id="5222676887888702881">Meld af</translation>
 <translation id="5229343007215035173">Skakel privaatheidskerm aan of af</translation>
 <translation id="5234764350956374838">Verwerp</translation>
@@ -1140,7 +1137,6 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="589817443623831496">Puntskandering</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5901630391730855834">Geel</translation>
-<translation id="5902162043476810127">lukrake toegangsgeheue</translation>
 <translation id="5909862606227538307">Onaktiewe lessenaar.</translation>
 <translation id="5911231045062997865">Lacros-vensters word nie tans gesteun nie Ander programme sal gestoor word.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
@@ -1544,7 +1540,6 @@ Druk en hou weer die aan/af-skakelaar op die toestel om dit af te skakel.</trans
 <translation id="7724603315864178912">Knip</translation>
 <translation id="7725108879223146004">Wys warmkolbesonderhede. Warmkol skakel tans af.</translation>
 <translation id="7727952505535211425">Maak die webwerf in die adresbalk in ’n nuwe oortjie oop</translation>
-<translation id="77365090426890123">geheuegebruik</translation>
 <translation id="7742327441377685481">Geen kennisgewings nie</translation>
 <translation id="7748275671948949022">Merk lanseerderknoppie op rak</translation>
 <translation id="7749443890790263709">Maksimum aantal lessenaars is bereik.</translation>
@@ -1796,7 +1791,6 @@ Druk en hou weer die aan/af-skakelaar op die toestel om dit af te skakel.</trans
 <translation id="8853703225951107899">Jou PIN of wagwoord kon steeds nie geverifieer word nie. Let wel: As jy jou wagwoord onlangs verander het, moet jy jou ou wagwoord gebruik. Jou nuwe wagwoord sal van toepassing wees sodra jy afmeld.</translation>
 <translation id="8855885154700222542">Volskermsleutel</translation>
 <translation id="8858369206579825206">Privaatheidkontroles</translation>
-<translation id="8860817004574502558">batterylewe</translation>
 <translation id="8870509716567206129">Program steun nie verdeelde skerm nie.</translation>
 <translation id="8874184842967597500">Nie gekoppel nie</translation>
 <translation id="8875021410787719674">Beweeg tussen regter onderste hoek, Lanseerder, adresbalk, boekmerkbalk, webwerf wat oop is en aflaaie</translation>
@@ -1849,6 +1843,7 @@ Druk en hou weer die aan/af-skakelaar op die toestel om dit af te skakel.</trans
 <translation id="9080073830732419341">Kamera is geglip na hoek bo links</translation>
 <translation id="9080132581049224423">Swiep op om na die tuisskerm toe te gaan</translation>
 <translation id="9080206825613744995">Mikrofoon word gebruik.</translation>
+<translation id="9083324773537346962">Bedryfstelselweergawe</translation>
 <translation id="908451241440060346">Kennisgewings is gedemp wanneer Moenie Steur Nie aan is</translation>
 <translation id="9084606467167974638">Wissel kieslysposisie</translation>
 <translation id="9085962983642906571">Jou battery word op 80% gehou terwyl dit ingeprop is om die batterylewe te verleng.</translation>
@@ -1889,7 +1884,6 @@ Druk en hou weer die aan/af-skakelaar op die toestel om dit af te skakel.</trans
 <translation id="951991426597076286">Weier</translation>
 <translation id="953431725143473984">Skakel die toestel af?</translation>
 <translation id="954052413789300507">Nie genoeg spasie vir <ph name="FILENAME" /> nie. Maak spasie beskikbaar.</translation>
-<translation id="968627661524972577">Gebruik apps om alles wat jy nodig het op jou Chromebook te doen. Jy kan jou apps in die Lanseerder kry. Jy kan ook die Lanseerder-sleutel op die sleutelbord druk.</translation>
 <translation id="974545358917229949">Wys tans <ph name="RESULT_COUNT" /> resultate vir <ph name="QUERY" /></translation>
 <translation id="98120814841227350">Gaan na einde van dokument</translation>
 <translation id="987589956647469042">Mobiele data is aangeskakel</translation>

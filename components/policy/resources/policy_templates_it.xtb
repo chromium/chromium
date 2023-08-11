@@ -3047,17 +3047,6 @@ Se il criterio viene disattivato o se non viene configurato, i dispositivi regis
 
       Se il criterio non viene configurato, <ph name="PRODUCT_NAME" /> utilizza un nome di libreria predefinito.</translation>
 <translation id="3650122925429054129">Disattiva l'evidenziazione del cursore nella schermata di accesso</translation>
-<translation id="3652207037778361023">Attiva la funzionalità suono della batteria in esaurimento.
-
-          Questa funzionalità consente di riprodurre il suono della batteria in esaurimento.
-
-          Se questo criterio viene attivato, il suono della batteria in esaurimento viene riprodotto quando il livello della batteria o il tempo rimanente scende al di sotto di una soglia.
-
-          Se questo criterio viene disattivato, non viene riprodotto alcun suono della batteria in esaurimento.
-
-          Se imposti questo criterio, gli utenti non potranno modificarlo o ignorarlo.
-
-          Se il criterio non viene impostato, la funzionalità viene disattivata sui dispositivi <ph name="PRODUCT_OS_NAME" /> gestiti, ma viene attivata in altre circostanze.</translation>
 <translation id="3652670852519271837">Consenti ai siti di richiedere all'utente l'accesso di lettura di file e directory tramite l'API file system</translation>
 <translation id="3653237928288822292">Icona del provider di ricerca predefinito</translation>
 <translation id="3654906736796256792">Consenti l'esecuzione della sandbox dell'audio</translation>
@@ -3792,17 +3781,6 @@ Nota: il blocco degli URL interni chrome://* e chrome-untrusted://* può causare
 <translation id="4311662690937656540">Applica in modo forzato gli accessi online nelle schermate di accesso e di blocco</translation>
 <translation id="4313767483634435271">Indirizzo MAC designato del dock del dispositivo</translation>
 <translation id="4314538398999793073">Disattiva ricerca CNAME durante l'autenticazione Kerberos</translation>
-<translation id="4316437338046981895">Attiva la funzionalità suoni di ricarica.
-
-          Questa funzionalità consente di riprodurre i suoni di ricarica.
-
-          Se questo criterio viene attivato, i suoni di ricarica verranno riprodotti quando il dispositivo è collegato a un caricabatterie CA.
-
-          Se questo criterio viene disattivato, non verrà riprodotto alcun suono di ricarica.
-
-          Se imposti questo criterio, gli utenti non potranno modificarlo o ignorarlo.
-
-          Se il criterio non viene impostato, la funzionalità viene disattivata sui dispositivi <ph name="PRODUCT_OS_NAME" /> gestiti, ma viene attivata in altre circostanze.</translation>
 <translation id="4320592646346933548">Wi-Fi</translation>
 <translation id="4322842393287974810">Consenti all'app kiosk avviata automaticamente senza ritardo di controllare la versione di <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="4323412353642577604">Attiva l'attestazione da remoto per la protezione dei contenuti</translation>
@@ -9245,16 +9223,6 @@ Se il criterio non viene configurato, per impostazione predefinita <ph name="PRO
 <translation id="9220314833408124365">Viene usato un criterio relativo al referrer predefinito no-referrer-when-downgrade</translation>
 <translation id="9221827710437832530">Consenti l'accesso alla geolocalizzazione nella schermata di accesso.</translation>
 <translation id="922540222991413931">Configura fonti di installazione di estensioni, applicazioni e script utente</translation>
-<translation id="922656089385303086">Questo criterio è deprecato e verrà rimosso nella versione 130. Utilizza il criterio <ph name="URL_KEYED_METRICS_ALLOWED_POLICY_NAME" />.
-
-Se il criterio viene attivato, la raccolta di dati anonimizzati con chiave URL, che invia a Google gli URL delle pagine visitate dagli utenti per migliorare le ricerche e la navigazione, è sempre attiva.
-
-Se viene disattivato, la raccolta di dati anonimizzati con chiave URL non viene attivata.
-
-Se questo criterio non viene configurato, l'utente potrà modificare manualmente questa impostazione.
-
-Nel kiosk <ph name="PRODUCT_OS_NAME" />, questo criterio non offre l'opzione per consentire all'utente di decidere. Se questo criterio non viene configurato per il kiosk <ph name="PRODUCT_OS_NAME" />, la raccolta di dati anonimizzati con chiave URL è sempre attiva.
-Se viene configurato per il kiosk <ph name="PRODUCT_OS_NAME" />, questo criterio consente la raccolta di metriche con chiave URL per le app kiosk.</translation>
 <translation id="924557436754151212">Importa password salvate dal browser predefinito alla prima esecuzione</translation>
 <translation id="926104720905645793">Questo criterio consente di controllare il reporting su cloud di <ph name="PRODUCT_NAME" />, che consente di caricare informazioni sul funzionamento del browser nella <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
 

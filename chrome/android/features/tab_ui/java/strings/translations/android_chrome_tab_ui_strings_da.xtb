@@ -3,7 +3,6 @@
 <translationbundle lang="da">
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> af dine faner er ikke blevet brugt for nylig. Vil du lukke dem?</translation>
 <translation id="125153950246128346">Tryk for at se en anden fane</translation>
-<translation id="1455506303394048917">Din aktivitet i disse inkognitofaner ryddes på denne enhed</translation>
 <translation id="1499635324672558517">Vil du lukke alle inkognitofaner?</translation>
 <translation id="1657719826150349398">Flyt fane ned</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> fane}one{<ph name="TABS_COUNT_MANY" /> fane}other{<ph name="TABS_COUNT_MANY" /> faner}}</translation>

@@ -15,7 +15,6 @@
 <translation id="1075811647922107217">పేజీ సైజ్‌</translation>
 <translation id="1082009148392559545">స్క్రీన్ సేవర్‌ను డౌన్‌లోడ్ చేస్తోంది</translation>
 <translation id="1094693127011229778">IP అడ్రస్ అందుబాటులో లేదు</translation>
-<translation id="1113892970288677790">నిర్వహిత ఆర్ట్‌వర్క్, ఇమేజ్‌లను ఎంచుకోండి</translation>
 <translation id="1118572504348554005">ఈ ఫారమ్ ద్వారా మీరు సబ్‌మిట్ చేసిన ఫీడ్‌బ్యాక్‌ను మా పార్ట్‌నర్‌లతో షేర్ చేసే అవకాశం ఉంది. బగ్‌లను, ఇతర సమస్యలను పరిష్కరించడానికి మీ ఫీడ్‌బ్యాక్ ఉపయోగపడవచ్చు. పాస్‌వర్డ్‌ల వంటి గోప్యమైన సమాచారాన్ని ఇవ్వకండి.</translation>
 <translation id="1119447706177454957">అంతర్గత ఎర్రర్</translation>
 <translation id="1124772482545689468">వినియోగదారు</translation>
@@ -183,6 +182,7 @@
 <translation id="225692081236532131">క్రియాశీలత స్థితి</translation>
 <translation id="2271469253353559191">డార్క్ మోడ్ షెడ్యూల్</translation>
 <translation id="2276999893457278469">టాప్ సహాయక కంటెంట్</translation>
+<translation id="2279051792571591988">ఆటోమేటిక్ సెట్టింగ్‌లను రీస్టోర్ చేయండి</translation>
 <translation id="2287186687001756809">ఇమేజ్ అందుబాటులో లేదు. ఫోటోలను జోడించడానికి, <ph name="LINK" />కు వెళ్లండి</translation>
 <translation id="2307344026739914387">ప్రస్తుత కీపెయిర్‌ను ఉపయోగించండి</translation>
 <translation id="2320295602967756579">లేత రంగు రూపాన్ని ఎనేబుల్ చేయండి</translation>
@@ -332,7 +332,6 @@
 <translation id="361575905210396100">మీ ఫీడ్‌బ్యాక్‌ను తెలిపినందుకు ధన్యవాదాలు</translation>
 <translation id="3632579075709132555">గోప్యతా స్క్రీన్ టోగుల్</translation>
 <translation id="3651050199673793219">ఉష్ణోగ్రత యూనిట్‌ను ఎంచుకోండి</translation>
-<translation id="3663574643422533538"><ph name="PRODUCT_NAME" />‌కు మాత్రమే అందుబాటులో ఉండే పోస్టర్ ఇమేజ్‌ను ఎంచుకోండి</translation>
 <translation id="3668449597372804501">క్లౌడ్ ఫ్లో వాల్‌పేపర్</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> పరీక్ష</translation>
 <translation id="370665806235115550">లోడ్ అవుతోంది...</translation>
@@ -646,6 +645,7 @@
 <translation id="6061772781719867950">విఫలమైన HTTP రిక్వెస్ట్‌లు</translation>
 <translation id="6073292342939316679">కీబోర్డ్ బ్రైట్‌నెస్‌ను తగ్గిస్తుంది</translation>
 <translation id="6075872808778243331">(Android) HTTP ప్రతిస్పందన సమయం</translation>
+<translation id="6078323886959318429">షార్ట్‌కట్‌ను జోడించండి</translation>
 <translation id="6104112872696127344">స్కానింగ్ రద్దు చేయబడింది</translation>
 <translation id="6106186594183574873">దీనిని ముగించడానికి, మీ పాత పాస్‌వర్డ్‌ను నమోదు చేయండి</translation>
 <translation id="6108689792487843350">గేట్‌వే అందుబాటులో లేదు</translation>

@@ -3,7 +3,6 @@
 <translationbundle lang="af">
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> van jou oortjies is nie onlangs gebruik nie. Maak hulle toe?</translation>
 <translation id="125153950246128346">Tik om nog 'n oortjie te sien</translation>
-<translation id="1455506303394048917">Jou aktiwiteit in hierdie Incognito-oortjies sal van hierdie toestel af uitgevee word</translation>
 <translation id="1499635324672558517">Maak alle Incognito-oortjies toe?</translation>
 <translation id="1657719826150349398">Skuif oortjie ondertoe</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> oortjie}other{<ph name="TABS_COUNT_MANY" /> oortjies}}</translation>

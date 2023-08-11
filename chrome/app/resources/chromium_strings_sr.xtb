@@ -74,7 +74,6 @@
 <translation id="2592940277904433508">Настави са коришћењем Chromium-а</translation>
 <translation id="2648074677641340862">Током инсталације је дошло до грешке у оперативном систему. Преузмите Chromium поново.</translation>
 <translation id="2661879430930417727">Ако делите уређај, пријатељи и породица могу засебно да прегледају и да подесе Chromium баш онако како желе</translation>
-<translation id="2669853942967761236">Chromium је блокирао овај фајл архиве јер можда крије малвер</translation>
 <translation id="268602741124540128">Добро дошли у Chromium, <ph name="ACCOUNT_FIRST_NAME" /></translation>
 <translation id="2711502716910134313">Картица Chromium</translation>
 <translation id="2718390899429598676">Chromium ће шифровати податке ради додатне сигурности.</translation>
@@ -409,6 +408,5 @@ Chromium не може да врати подешавања.</translation>
 <translation id="942598560705308788">Сертификати којима управља Chromium</translation>
 <translation id="965162752251293939">Ко користи Chromium?</translation>
 <translation id="967427899662692980">Набавите најјачу Chromium заштиту</translation>
-<translation id="9792300276217204">Увек обришите податке о сајтовима са уређаја када затворите Chromium</translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
 </translationbundle>

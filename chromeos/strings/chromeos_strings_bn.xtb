@@ -15,7 +15,6 @@
 <translation id="1075811647922107217">পৃষ্ঠার সাইজ</translation>
 <translation id="1082009148392559545">স্ক্রিন সেভার ডাউনলোড করা হচ্ছে</translation>
 <translation id="1094693127011229778">IP অ্যাড্রেস উপলভ্য নয়</translation>
-<translation id="1113892970288677790">আর্টওয়ার্ক ও ছবির সংগ্রহ বেছে নিন</translation>
 <translation id="1118572504348554005">আমরা আমাদের পার্টনারদের সাথে এই ফর্মের মাধ্যমে জমা দেওয়া মতামত শেয়ার করতে পারি, যাতে আপনার অভিযোগ করা সমস্যা এবং অন্যান্য সমস্যার সমাধান করা যায়। পাসওয়ার্ডের মতো সংবেদনশীল তথ্য দেবেন না।</translation>
 <translation id="1119447706177454957">অভ্যন্তরীণ ত্রুটি</translation>
 <translation id="1124772482545689468">ব্যবহারকারী</translation>
@@ -183,6 +182,7 @@
 <translation id="225692081236532131">সক্রিয়করণ স্থিতি</translation>
 <translation id="2271469253353559191">'ডার্ক মোড'-এর শিডিউল</translation>
 <translation id="2276999893457278469">সেরা সহায়তা কন্টেন্ট</translation>
+<translation id="2279051792571591988">ডিফল্ট ফিরিয়ে আনুন</translation>
 <translation id="2287186687001756809">কোনও ছবি নেই। ছবি যোগ করতে, <ph name="LINK" /> লিঙ্কে যান</translation>
 <translation id="2307344026739914387">বর্তমান কী পেয়ার ব্যবহার করুন</translation>
 <translation id="2320295602967756579">হালকা থিম চালু করুন</translation>
@@ -332,7 +332,6 @@
 <translation id="361575905210396100">মতামত জানানোর জন্য ধন্যবাদ</translation>
 <translation id="3632579075709132555">প্রাইভেসি স্ক্রিন টগল করার বোতাম</translation>
 <translation id="3651050199673793219">তাপমাত্রার ইউনিট বেছে নিন</translation>
-<translation id="3663574643422533538"><ph name="PRODUCT_NAME" /> এক্সক্লুসিভ আর্টওয়ার্ক বেছে নিন</translation>
 <translation id="3668449597372804501">ক্লাউড ফ্লো ওয়ালপেপার</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> টেস্ট</translation>
 <translation id="370665806235115550">লোড হচ্ছে...</translation>
@@ -646,6 +645,7 @@
 <translation id="6061772781719867950">HTTP অনুরোধ সফল হয়নি</translation>
 <translation id="6073292342939316679">কীবোর্ডের উজ্জ্বলতা কমান</translation>
 <translation id="6075872808778243331">(Android) HTTP লেটেন্সি</translation>
+<translation id="6078323886959318429">শর্টকাট যোগ করুন</translation>
 <translation id="6104112872696127344">স্ক্যানিং বাতিল করা হয়েছে</translation>
 <translation id="6106186594183574873">সম্পূর্ণ করতে, আপনার পুরনো পাসওয়ার্ড লিখুন</translation>
 <translation id="6108689792487843350">নেটওয়ার্ক গেটওয়ে অ্যাক্সেস করা যাচ্ছে না</translation>

@@ -99,6 +99,7 @@
 <translation id="2621115761605608342">Povolit JavaScript pro konkrétní web.</translation>
 <translation id="2653659639078652383">Odeslat</translation>
 <translation id="2677748264148917807">Odejít</translation>
+<translation id="2678468611080193228">Zkuste dočasně povolit soubory cookie třetích stran – budete méně chráněni, ale funkce webu budou s větší pravděpodobností fungovat</translation>
 <translation id="2687403674020088961">Blokovat všechny soubory cookie (nedoporučujeme)</translation>
 <translation id="2713106313042589954">Vypnout kameru</translation>
 <translation id="2717722538473713889">E‑mailové adresy</translation>
@@ -138,6 +139,7 @@
 <translation id="3362437373201486687">Vyhledávání zařízení Bluetooth</translation>
 <translation id="3386292677130313581">Pokud web bude chtít znát vaši polohu, zobrazit dotaz (doporučeno)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
+<translation id="344449859752187052">Soubory cookie třetích stran jsou blokovány</translation>
 <translation id="3521663503435878242">Weby pod doménou <ph name="DOMAIN" /></translation>
 <translation id="3538390592868664640">Bránit webům ve vytváření 3D mapy okolí a ve sledování polohy kamery</translation>
 <translation id="3544058026430919413">Společnost může definovat skupinu webů, které mohou pomocí souborů cookie sdílet vaši aktivitu ve skupině. Tato možnost je v anonymním režimu vypnutá.</translation>
@@ -212,6 +214,7 @@
 <translation id="4962975101802056554">Zrušit všechna oprávnění pro zařízení</translation>
 <translation id="497421865427891073">Vpřed</translation>
 <translation id="4976702386844183910">Naposledy navštíveno <ph name="DATE" /></translation>
+<translation id="4985206706500620449">Pro tento web jste povolili soubory cookie třetích stran</translation>
 <translation id="4994033804516042629">Nebyly nalezeny žádné kontakty</translation>
 <translation id="4996978546172906250">Sdílet prostřednictvím</translation>
 <translation id="5001526427543320409">Soubory cookie třetích stran</translation>
@@ -256,6 +259,7 @@
 <translation id="5677928146339483299">Zablokováno</translation>
 <translation id="5689516760719285838">Poloha</translation>
 <translation id="5690795753582697420">Fotoaparát je vypnutý v nastavení zařízení Android</translation>
+<translation id="5700761515355162635">Soubory cookie třetích stran jsou povoleny</translation>
 <translation id="5706552988683188916">Touto akcí smažete soubory cookie a další data webu <ph name="WEBSITE" /></translation>
 <translation id="5719847187258001597">Tímto vymažete veškerá data a soubory cookie, které uložil web <ph name="ORIGIN" /> nebo jeho aplikace na ploše.</translation>
 <translation id="5723967018671998714">Soubory cookie třetích stran jsou v anonymním režimu blokovány</translation>
@@ -303,6 +307,7 @@
 <translation id="6467852467360539617">Vymazat data a resetovat oprávnění</translation>
 <translation id="6500423977866688905">Když je okno úzké, požádejte o mobilní zobrazení</translation>
 <translation id="6527303717912515753">Sdílet</translation>
+<translation id="652937045869844725">Zkuste povolit soubory cookie třetích stran – budete méně chráněni, ale funkce webu budou s větší pravděpodobností fungovat</translation>
 <translation id="6545864417968258051">Vyhledávání Bluetooth</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{Blokovaná oprávnění: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> a další (<ph name="NUM_MORE" />)}few{Blokovaná oprávnění: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> a další (<ph name="NUM_MORE" />)}many{Blokovaná oprávnění: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> a další (<ph name="NUM_MORE" />)}other{Blokovaná oprávnění: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> a další (<ph name="NUM_MORE" />)}}</translation>
 <translation id="6554732001434021288">Naposledy navštíveno před <ph name="NUM_DAYS" /> dny</translation>
@@ -435,6 +440,7 @@
 <translation id="8736193154595564524">{NUM_SELECTED,plural, =1{Je povolen 1 web}few{Jsou povoleny # weby}many{Je povoleno # webu}other{Je povoleno # webů}}</translation>
 <translation id="8737217482364735741">Tímto vymažete všechna uložená data a soubory cookie webu <ph name="ORIGIN" />.</translation>
 <translation id="8751914237388039244">Vybrat obrázek</translation>
+<translation id="8800034312320686233">Web nefunguje?</translation>
 <translation id="8801436777607969138">Blokovat JavaScript na konkrétním webu.</translation>
 <translation id="8803526663383843427">Když je tato funkce zapnutá</translation>
 <translation id="8805385115381080995">Procházení je rychlejší, protože je méně pravděpodobné, že vás web požádá o ověření, že jste skutečná osoba</translation>

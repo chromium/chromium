@@ -99,6 +99,7 @@
 <translation id="2621115761605608342">允許特定網站執行 JavaScript。</translation>
 <translation id="2653659639078652383">提交</translation>
 <translation id="2677748264148917807">離開</translation>
+<translation id="2678468611080193228">請嘗試暫時允許使用第三方 Cookie，這代表保護程度較低，但網站功能較容易運作</translation>
 <translation id="2687403674020088961">封鎖所有 Cookie (不建議)</translation>
 <translation id="2713106313042589954">關閉攝錄機</translation>
 <translation id="2717722538473713889">電郵地址</translation>
@@ -138,6 +139,7 @@
 <translation id="3362437373201486687">正在掃瞄藍牙裝置</translation>
 <translation id="3386292677130313581">允許網站存取您的位置前先詢問您 (建議)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
+<translation id="344449859752187052">已封鎖第三方 Cookie</translation>
 <translation id="3521663503435878242"><ph name="DOMAIN" /> 下的網站</translation>
 <translation id="3538390592868664640">禁止網站建立您身處環境的 3D 地圖或追蹤攝錄機位置</translation>
 <translation id="3544058026430919413">公司可定義網站群組，指定哪些網站可使用 Cookie 分享您在群組中的活動。網站群組不會在無痕模式下啟用。</translation>
@@ -212,6 +214,7 @@
 <translation id="4962975101802056554">撤銷裝置所有的權限</translation>
 <translation id="497421865427891073">往前</translation>
 <translation id="4976702386844183910">上次瀏覽日期：<ph name="DATE" /></translation>
+<translation id="4985206706500620449">你已允許此網站使用第三方 Cookie</translation>
 <translation id="4994033804516042629">找不到任何聯絡人</translation>
 <translation id="4996978546172906250">共用方式</translation>
 <translation id="5001526427543320409">第三方 Cookie</translation>
@@ -256,6 +259,7 @@
 <translation id="5677928146339483299">已封鎖</translation>
 <translation id="5689516760719285838">位置</translation>
 <translation id="5690795753582697420">相機已在 Android 設定中關閉</translation>
+<translation id="5700761515355162635">已允許使用第三方 Cookie</translation>
 <translation id="5706552988683188916">此操作會刪除 <ph name="WEBSITE" /> 的 Cookie 和其他網站資料</translation>
 <translation id="5719847187258001597">此操作會清除主畫面上 <ph name="ORIGIN" /> 或其應用程式儲存的所有資料和 Cookie。</translation>
 <translation id="5723967018671998714">已封鎖無痕模式中的第三方 Cookie</translation>
@@ -303,6 +307,7 @@
 <translation id="6467852467360539617">清除資料並重設權限</translation>
 <translation id="6500423977866688905">視窗縮小時要求使用流動裝置檢視模式</translation>
 <translation id="6527303717912515753">分享</translation>
+<translation id="652937045869844725">請嘗試允許使用第三方 Cookie，這代表保護程度較低，但網站功能較容易運作</translation>
 <translation id="6545864417968258051">藍牙掃瞄</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{已封鎖「<ph name="PERMISSION_1" />」、「<ph name="PERMISSION_2" />」和另外 <ph name="NUM_MORE" /> 項權限}other{已封鎖「<ph name="PERMISSION_1" />」、「<ph name="PERMISSION_2" />」和另外 <ph name="NUM_MORE" /> 項權限}}</translation>
 <translation id="6554732001434021288">上次瀏覽日期：<ph name="NUM_DAYS" /> 天前</translation>
@@ -435,6 +440,7 @@
 <translation id="8736193154595564524">{NUM_SELECTED,plural, =1{已允許 1 個網站}other{已允許 # 個網站}}</translation>
 <translation id="8737217482364735741">此操作會清除 <ph name="ORIGIN" /> 儲存的所有資料和 Cookie。</translation>
 <translation id="8751914237388039244">選取圖片</translation>
+<translation id="8800034312320686233">網站無法正常運作嗎？</translation>
 <translation id="8801436777607969138">封鎖特定網站執行 JavaScript。</translation>
 <translation id="8803526663383843427">開啟時</translation>
 <translation id="8805385115381080995">降低網站要求驗證您是真人的機率，讓瀏覽體驗更快速</translation>

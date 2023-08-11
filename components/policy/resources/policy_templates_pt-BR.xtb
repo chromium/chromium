@@ -3099,17 +3099,6 @@ Se ela for desativada ou deixada sem definição, os dispositivos registrados n�
 
       Se ela não for definida, o <ph name="PRODUCT_NAME" /> usará um nome de biblioteca padrão.</translation>
 <translation id="3650122925429054129">Desativar o destaque do cursor na tela de login</translation>
-<translation id="3652207037778361023">Ativar o recurso de som de bateria fraca.
-
-          Esse recurso é responsável por reproduzir o som de bateria fraca.
-
-          Se a política for ativada, o som de bateria fraca será reproduzido quando o nível da bateria ou o tempo restante ficar abaixo de um limite.
-
-          Se a política for desativada, nenhum som de bateria fraca será reproduzido.
-
-          Se você definir esta política, os usuários não poderão mudá-la ou substituí-la.
-
-          Se esta política não for definida, o recurso será desativado nos dispositivos <ph name="PRODUCT_OS_NAME" /> gerenciados, mas será ativado em outras circunstâncias.</translation>
 <translation id="3652670852519271837">Permitir que sites peçam ao usuário para conceder permissão de acesso de leitura de arquivos e diretórios com a API File System</translation>
 <translation id="3653237928288822292">Ícone do provedor de pesquisa padrão</translation>
 <translation id="3654906736796256792">Permite a execução do sandbox de áudio.</translation>
@@ -3855,17 +3844,6 @@ Observação: o bloqueio de URLs internos chrome://* e chrome-untrusted://* pode
 <translation id="4311662690937656540">Usar logins on-line nas telas de login e de bloqueio</translation>
 <translation id="4313767483634435271">Endereço MAC designado da base para o dispositivo</translation>
 <translation id="4314538398999793073">Desativar a consulta CNAME ao negociar a autenticação do Kerberos</translation>
-<translation id="4316437338046981895">Ativar o recurso de sons de carregamento.
-
-          Esse recurso é responsável por reproduzir os sons de carregamento no dispositivo.
-
-          Se a política for definida como ativada, os sons de carregamento serão reproduzidos quando o dispositivo estiver conectado a um carregador de parede.
-
-          Se a política for definida como desativada, nenhum som de carregamento será reproduzido.
-
-          Se você definir esta política, os usuários não poderão mudá-la ou substituí-la.
-
-          Se esta política não for definida, o recurso será desativado nos dispositivos <ph name="PRODUCT_OS_NAME" /> gerenciados, mas será ativado em outras circunstâncias.</translation>
 <translation id="4320592646346933548">Wi-Fi</translation>
 <translation id="4322842393287974810">Permitir que o aplicativo de quiosque aberto automaticamente com zero de atraso controle a versão do <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="4323412353642577604">Ativar atestado remoto para proteção de conteúdo</translation>
@@ -9466,16 +9444,6 @@ Se a política é deixada sem definição, o <ph name="PRODUCT_NAME" /> pode col
 <translation id="9220314833408124365">Usar uma política de referenciador padrão de no-referrer-when-downgrade</translation>
 <translation id="9221827710437832530">Permitir acesso à geolocalização na tela de login.</translation>
 <translation id="922540222991413931">Configurar extensão, aplicativo e origens de instalação do script do usuário</translation>
-<translation id="922656089385303086">Esta política foi descontinuada e vai ser removida na versão 130. Use a <ph name="URL_KEYED_METRICS_ALLOWED_POLICY_NAME" />.
-
-Se a política for ativada, a coleta de dados anônimos inseridos no URL, que envia os URLs das páginas acessadas pelo usuário ao Google para melhorar a pesquisa e navegação, sempre vai ficar ativa.
-
-Se a política for desativada, não vai haver coleta de dados anônimos inseridos no URL.
-
-Se ela for deixada sem definição, o usuário poderá mudar a configuração manualmente.
-
-No quiosque do <ph name="PRODUCT_OS_NAME" />, essa política não oferece a opção de "Permitir que o usuário decida". Se ela não for definida para o quiosque do <ph name="PRODUCT_OS_NAME" />, a coleta de dados anônimos inseridos no URL sempre vai ficar ativa.
-Quando definida para o quiosque do <ph name="PRODUCT_OS_NAME" />, esta política ativa a coleta de métricas inseridas por URL para aplicativos de quiosque.</translation>
 <translation id="924557436754151212">Importar senhas salvas do navegador padrão na primeira execução</translation>
 <translation id="926104720905645793">Esta política controla os relatórios de nuvem do <ph name="PRODUCT_NAME" />, que faz upload de informações sobre a operação do navegador para o <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
 

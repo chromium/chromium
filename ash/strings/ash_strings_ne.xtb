@@ -63,6 +63,7 @@
 <translation id="1235458158152011030">ज्ञात नेटवर्कहरू</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> कनेक्ट गरिएको छ।</translation>
 <translation id="1240638468526743569">कुनै एप</translation>
+<translation id="1242883863226959074">डिभाइस</translation>
 <translation id="124678866338384709">हालको ट्याब बन्द गर्नुहोस्</translation>
 <translation id="1246890715821376239">प्रयोग गर्न नमिल्ने एपहरू</translation>
 <translation id="1247372569136754018">माइक्रोफोन (आन्तरिक)</translation>
@@ -181,6 +182,7 @@
 <translation id="1747827819627189109">अन-स्क्रिन किबोर्ड सक्षम गरियो</translation>
 <translation id="1749109475624620922">सबै डेस्कमा "<ph name="WINDOW_TITLE" />" विन्डो असाइन गरिएको छ।</translation>
 <translation id="1750088060796401187">बढीमा <ph name="MAX_DESK_LIMIT" /> वटा डेस्क मात्र खोल्न मिल्छ। तपाईं नयाँ डेस्क खोल्न चाहनुहुन्छ भने कुनै डेस्क हटाउनुहोस्।</translation>
+<translation id="1755556344721611131">डाइग्नोस्टिक्स एप</translation>
 <translation id="1756833229520115364">टेम्प्लेट सेभ गर्न सकिएन। अत्यन्त धेरै विन्डो वा ट्याबहरू सेभ गरिएका छन्।</translation>
 <translation id="1757857692711134412">सूर्यास्त नहुँदासम्म अफ रहने छ</translation>
 <translation id="1768366657309696705"><ph name="LAUNCHER_KEY_NAME" /> + पिरियड किबोर्ड सर्टकट परिवर्तन गरिएको छ। Insert की प्रयोग गर्न <ph name="LAUNCHER_KEY_NAME" /> की + Shift + Backspace थिच्नुहोस्।</translation>
@@ -266,7 +268,6 @@
 <translation id="2148716181193084225">आज</translation>
 <translation id="2149229036084364364">अघिल्लो ट्रयाक प्ले गर्नुहोस्</translation>
 <translation id="2161132820593978283">भिडियो कल गर्दा आफूलाई स्क्रिनको बिचमा राखिराख्न क्यामेरा फ्रेमिङ प्रयोग गरी हेर्नुहोस्। "द्रुत सेटिङ" मा गई यो सुविधा अन गर्नुहोस्।</translation>
-<translation id="2165966740263283349">भण्डारणको प्रयोग</translation>
 <translation id="2170530631236737939">हालैका स्क्रिन देखाइने मोड बन्द गर्न तीनवटा औँलाले तलतिर स्वाइप गर्नुहोस्</translation>
 <translation id="2185166372312820725">अघिल्लो ट्याबमा जानुहोस्</translation>
 <translation id="2185444992308415167">ट्याब १ बाट ट्याब ८ मा जानुहोस्</translation>
@@ -474,6 +475,7 @@
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (ब्लुटूथ)</translation>
 <translation id="3113492864356515707">सेल्फमा भएको अघिल्लो वस्तु हाइलाइट गर्नुहोस्</translation>
 <translation id="3120421559657122717">यो डिभाइस सट डाउन गर्ने हो?</translation>
+<translation id="3122464029669770682">CPU</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">अपडेट गर्न पुनः सुरु गर्नुहोस्</translation>
 <translation id="3139188263101386725">अपडेट गरिएको सर्टकट प्रयोग गर्नुहोस्</translation>
@@ -518,7 +520,6 @@
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> अझै पनि पछि साइन इन गर्न सक्नुहुन्छ।</translation>
 <translation id="3321628682574733415">अभिभावकको कोड गलत छ</translation>
 <translation id="332827762492701193">सूचनाहरू लुकाइएका छन्</translation>
-<translation id="3338855835380298613">CPU को प्रयोग</translation>
 <translation id="3339826665088060472">स्क्रिन क्याप्चर अर्थात् स्क्रिनसट र स्क्रिन रेकर्डिङ गर्ने टुल</translation>
 <translation id="3340978935015468852">सेटिङहरू</translation>
 <translation id="3341303451326249809">स्क्रिनसट खिचियो</translation>
@@ -642,7 +643,6 @@
 <translation id="3781910048497807059">फोकस सारेर अघिल्लो पेनमा लैजानुहोस्</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">लक गर्नुहोस्</translation>
-<translation id="3796198851576711985">ब्याट्रीको अवस्था</translation>
 <translation id="3796746699333205839">कुनै एपले तपाईंको तन्त्रको क्यामेरा र माइक्रोफोन प्रयोग गरिरहेको छ</translation>
 <translation id="3798670284305777884">स्पिकर (आन्तरिक)</translation>
 <translation id="3799080171973636491">तपाईंले फुल स्क्रिन म्याग्निफायरको किबोर्ड सर्टकट थिच्नुभयो। तपाईं यसलाई सक्रिय गर्न चाहनुहुन्छ?</translation>
@@ -814,12 +814,10 @@
 <translation id="4527045527269911712">ब्लुटूथ यन्त्र "<ph name="DEVICE_NAME" />" जोडिनको लागि अनुमति चाहन्छ।</translation>
 <translation id="4533343294786968049">ब्याट्री चार्ज गरिँदै छ। ब्याट्री <ph name="FULLY_CHARGE_TIME" /> सम्ममा फुल चार्ज हुने छ।</translation>
 <translation id="453661520163887813">पूर्ण हुन <ph name="TIME" /> बॉंकी छ</translation>
-<translation id="4536664881735498710">RAM को प्रयोग</translation>
 <translation id="4538824937723742295">फुल स्क्रिनको स्क्रिनसट खिच्नुहोस्</translation>
 <translation id="4539127209940689201">हालको पेज प्रिन्ट गर्नुहोस्</translation>
 <translation id="4541706525461326392">प्रोफाइल हटाइँदै छ। यो कार्य पूरा हुन केही बेर लाग्न सक्छ।</translation>
 <translation id="4544483149666270818">रेकर्ड गर्न कुनै विन्डो चयन गर्नुहोस्</translation>
-<translation id="454541942614298893">मेरो डिभाइस</translation>
 <translation id="4545950850562423083">हालको पेजलाई बुकमार्कका रूपमा सेभ गर्नुहोस्</translation>
 <translation id="4548482551627849548">सक्रिय विन्डो सारेर बायाँतिरको डेस्कमा लैजानुहोस्</translation>
 <translation id="4560576029703263363">अन</translation>
@@ -978,7 +976,6 @@
 <translation id="5208059991603368177">अन छ</translation>
 <translation id="5216991270656129561"><ph name="TIME" /> सम्म अफ रहने छ</translation>
 <translation id="5217646019792206018">अर्को डेस्क: <ph name="NEXT_DESK_NAME" />, एक्टिभेट गर्न Search+Space वा किबोर्डमा Shift+Search+<ph name="NEXT_DESK_INDEX" /> थिच्नुहोस्।</translation>
-<translation id="5221423477036820198">फोन हब प्रयोग गरेर आफ्नो फोनमा तुरुन्तै म्यासेज पठाउनुहोस् वा म्यासेजको जवाफ दिनुहोस्।</translation>
 <translation id="5222676887888702881">साइन आउट गर्नुहोस्</translation>
 <translation id="5229343007215035173">प्राइभेसी स्क्रिन अन/अफ गर्नुहोस्</translation>
 <translation id="5234764350956374838">खारेज गर्नुहोस्</translation>
@@ -1139,7 +1136,6 @@
 <translation id="589817443623831496">पोइन्ट स्क्यानिङ</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5901630391730855834">पहेँलो</translation>
-<translation id="5902162043476810127">र्‍यान्डम एक्सेस मेमोरी</translation>
 <translation id="5909862606227538307">निष्क्रिय डेस्क।</translation>
 <translation id="5911231045062997865">Lacros विन्डो हाल प्रयोग गर्न मिल्दैन। अन्य एपहरू सेभ गरिने छन्।</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
@@ -1543,7 +1539,6 @@
 <translation id="7724603315864178912">काट्नुहोस्</translation>
 <translation id="7725108879223146004">हटस्पटसम्बन्धी विवरणहरू देखाइऊन्। हटस्पट अफ हुँदै छ।</translation>
 <translation id="7727952505535211425">एड्रेस बारमा हालिएको वेबसाइट नयाँ ट्याबमा खोल्नुहोस्</translation>
-<translation id="77365090426890123">मेमोरीको प्रयोग</translation>
 <translation id="7742327441377685481">कुनै पनि सूचना छैन</translation>
 <translation id="7748275671948949022">सेल्फमा भएको लन्चर बटन हाइलाइट गर्नुहोस्</translation>
 <translation id="7749443890790263709">डेस्कको अधिकतम सङ्ख्या पुगेको छ।</translation>
@@ -1795,7 +1790,6 @@
 <translation id="8853703225951107899">तपाईंको PIN वा पासवर्ड अझै पनि पुष्टि गर्न सकिएन। याद राख्नुहोस्: तपाईंले हालसालै आफ्नो पासवर्ड बदल्नुभएको छ भने आफ्नो पुरानो पासवर्ड प्रयोग गरी साइन इन गर्नुहोस्। तपाईं साइन आउट हुनेबित्तिकै तपाईंको नयाँ पासवर्डले काम गर्न थाल्ने छ।</translation>
 <translation id="8855885154700222542">फुल स्क्रिन नामक कुञ्जी</translation>
 <translation id="8858369206579825206">गोपनीयतासम्बन्धी सेटिङ</translation>
-<translation id="8860817004574502558">ब्याट्रीको आयु</translation>
 <translation id="8870509716567206129">अनुप्रयोगले विभाजित-स्क्रिनलाई समर्थन गर्दैन।</translation>
 <translation id="8874184842967597500">जडित छैन</translation>
 <translation id="8875021410787719674">फेदको दायाँ कुना, लन्चर, एड्रेस बार, बुकमार्क बार, खुला रहेको वेबसाइट र डाउनलोडमध्ये एउटा वस्तुबाट अर्को वस्तुमा जानुहोस्</translation>
@@ -1848,6 +1842,7 @@
 <translation id="9080073830732419341">क्यामेरा सिरानको बायाँ कुनामा स्न्याप गरियो</translation>
 <translation id="9080132581049224423">गृहपृष्ठमा जान माथितिर स्वाइप गर्नुहोस्</translation>
 <translation id="9080206825613744995">माइक्रोफोन प्रयोगमा छ।</translation>
+<translation id="9083324773537346962">OS संस्करण</translation>
 <translation id="908451241440060346">Do Not Disturb अन हुँदा सूचनाहरू म्युट गरिन्छन्</translation>
 <translation id="9084606467167974638">मेनुको अवस्था टगल गर्नुहोस्</translation>
 <translation id="9085962983642906571">तपाईंको डिभाइस बिजुलीको स्रोतमा जोडिएकै भए तापनि उक्त डिभाइसको ब्याट्रीको आयु बढाउन ब्याट्री केही समयका लागि ८०% चार्ज गरेर राखिएको छ।</translation>
@@ -1888,7 +1883,6 @@
 <translation id="951991426597076286">अस्वीकार गर्नुहोस्</translation>
 <translation id="953431725143473984">डिभाइस सट डाउन गर्ने हो?</translation>
 <translation id="954052413789300507"><ph name="FILENAME" /> डाउनलोड गर्नका निम्ति पर्याप्त खाली ठाउँ छैन। ठाउँ खाली गर्नुहोस्।</translation>
-<translation id="968627661524972577">आफ्नो Chromebook मा आवश्यकताअनुसार सबै काम गर्न एपहरू प्रयोग गर्नुहोस्। तपाईं लन्चरमा गई आफ्ना एपहरू भेट्टाउन सक्नुहुन्छ। तपाईं किबोर्डमा लन्चर की थिच्न पनि सक्नुहुन्छ।</translation>
 <translation id="974545358917229949"><ph name="RESULT_COUNT" /> सम्बन्धी <ph name="QUERY" /> परिणामहरू देखाउँदै</translation>
 <translation id="98120814841227350">कागजातको फेदमा जानुहोस्</translation>
 <translation id="987589956647469042">मोबाइल डेटा अन गरिएको छ</translation>

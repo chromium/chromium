@@ -166,7 +166,6 @@
 <translation id="2312704192806647271">{COUNT,plural, =1{次の ID の拡張機能<ph name="BEGIN_LIST" /><ph name="END_LIST" />が見つかりません。管理者にお問い合わせください。}other{次の ID の拡張機能<ph name="BEGIN_LIST" /><ph name="END_LIST" />が見つかりません。管理者にお問い合わせください。}}</translation>
 <translation id="2325650632570794183">このファイル形式はサポートされていません。Chrome ウェブストアにアクセスして、この形式のファイルを開くことができるアプリをお探しください。</translation>
 <translation id="2326539130272988168">ブルガリア語</translation>
-<translation id="2337715497728194187">Bruschetta と共有</translation>
 <translation id="233822363739146957">空き容量が不足しているため、すべてのファイルを同期できません</translation>
 <translation id="23721837607121582">モバイル プロファイルのダウンロード - <ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" /> 件）、<ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">リスト表示に切り替え</translation>
@@ -197,7 +196,6 @@
 <translation id="2544853746127077729">認証証明書がネットワークによって拒否されました</translation>
 <translation id="255937426064304553">US インターナショナル</translation>
 <translation id="2563185590376525700">カエル</translation>
-<translation id="2574327434504608656">1 個のフォルダが Bruschetta と共有されています</translation>
 <translation id="2578394532502990878">タミル語（表音）</translation>
 <translation id="2579959351793446050">オディア語</translation>
 <translation id="2587195714949534472"><ph name="FILE_NAME" /> の同期を準備しています...</translation>
@@ -297,7 +295,6 @@
 <translation id="3408072735282270043"><ph name="NETWORK_NAME" /> を有効にする</translation>
 <translation id="3408236822532681288">ドイツ語（ドイツ）（Neo 2）キーボード</translation>
 <translation id="3414856743105198592">リムーバブル メディアをフォーマットすると、すべてのデータが消去されます。続行しますか？</translation>
-<translation id="3435143625481187092">Bruschetta に <ph name="FOLDER_NAME" /> フォルダのファイルへのアクセスを許可します</translation>
 <translation id="3437801641691368414">作成日時</translation>
 <translation id="343907260260897561">インスタント カメラ</translation>
 <translation id="3455931012307786678">エストニア語</translation>
@@ -385,7 +382,6 @@
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> を移動しました。</translation>
 <translation id="4176286497474237543">ゴミ箱を今すぐ空にする</translation>
 <translation id="4179621117429069925">このアイテムはゴミ箱にあります</translation>
-<translation id="4181839429935094755"><ph name="NUMBER_OF_ITEMS" /> 個のフォルダが Bruschetta と共有されています</translation>
 <translation id="4186579485882418952">オフラインを有効にする</translation>
 <translation id="4193154014135846272">Google ドキュメント</translation>
 <translation id="4197674956721858839">zip 圧縮</translation>
@@ -452,7 +448,6 @@
 <translation id="4646813851450205600">チェコ語（QWERTY）キーボード</translation>
 <translation id="4656777537938206294">ファイルへのオフライン アクセスの有効化</translation>
 <translation id="4658782175094886150">雪の中の人</translation>
-<translation id="466782788172479199">Bruschetta に Google ドライブのファイルへのアクセスを許可します。変更が加えられた場合は他のデバイスに同期されます。</translation>
 <translation id="4669606053856530811">「<ph name="SOURCE_NAME" />」のメンバーはこれらのアイテムにアクセスできなくなります（ただし個別に共有されている場合はアクセス可能です）。</translation>
 <translation id="467809019005607715">Google スライド</translation>
 <translation id="4690246192099372265">スウェーデン語</translation>
@@ -564,7 +559,6 @@
 <translation id="5323213332664049067">ラテン アメリカ</translation>
 <translation id="5330145655348521461">これらのファイルは別のデスクトップで開かれます。表示するには <ph name="USER_NAME" />（<ph name="MAIL_ADDRESS" />）に移動してください。</translation>
 <translation id="5330512191124428349">情報を見る</translation>
-<translation id="5344246330454251646">Bruschetta の共有を管理</translation>
 <translation id="535792325654997756">猫と一緒にいる人</translation>
 <translation id="5358764674931277">フレームレート</translation>
 <translation id="5363339716524495120">入力言語は中国語です</translation>
@@ -732,7 +726,6 @@
 <translation id="6710213216561001401">前へ</translation>
 <translation id="6732801395666424405">証明書が読み込まれていません</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
-<translation id="6740270213273127264">Bruschetta とのフォルダ共有</translation>
 <translation id="6750737795876287924">現在のディレクトリ</translation>
 <translation id="6751256176799620176">1 個のフォルダを選択しました</translation>
 <translation id="6755827872271341378">ChromeOS Flex デバイス</translation>

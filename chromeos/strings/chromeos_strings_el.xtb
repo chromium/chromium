@@ -15,7 +15,6 @@
 <translation id="1075811647922107217">Μέγεθος σελίδας</translation>
 <translation id="1082009148392559545">Λήψη προφύλαξης οθόνης</translation>
 <translation id="1094693127011229778">Η διεύθυνση IP δεν είναι διαθέσιμη.</translation>
-<translation id="1113892970288677790">Επιλέξτε οργανωμένα έργα τέχνης και εικόνες.</translation>
 <translation id="1118572504348554005">Ενδέχεται να κοινοποιήσουμε σχόλια μέσω αυτής της φόρμας στους συνεργάτες μας για την αντιμετώπιση σφαλμάτων και άλλων ζητημάτων που μας αναφέρετε. Μην συμπεριλάβετε ευαίσθητες πληροφορίες, όπως κωδικούς πρόσβασης.</translation>
 <translation id="1119447706177454957">Εσωτερικό σφάλμα</translation>
 <translation id="1124772482545689468">Χρήστης</translation>
@@ -183,6 +182,7 @@
 <translation id="225692081236532131">Κατάσταση ενεργοποίησης</translation>
 <translation id="2271469253353559191">Πρόγραμμα λειτουργίας χαμηλού φωτισμού</translation>
 <translation id="2276999893457278469">Κορυφαίο περιεχόμενο βοήθειας</translation>
+<translation id="2279051792571591988">Επαναφορά προεπιλογών</translation>
 <translation id="2287186687001756809">Δεν υπάρχει διαθέσιμη εικόνα. Για προσθήκη φωτογραφιών, μεταβείτε στη διεύθυνση <ph name="LINK" /></translation>
 <translation id="2307344026739914387">Χρήση τρέχοντος ζεύγους κλειδιών</translation>
 <translation id="2320295602967756579">Ενεργοποίηση φωτεινού θέματος</translation>
@@ -332,7 +332,6 @@
 <translation id="361575905210396100">Σας ευχαριστούμε για τα σχόλιά σας</translation>
 <translation id="3632579075709132555">Εναλλαγή οθόνης απορρήτου</translation>
 <translation id="3651050199673793219">Επιλέξτε μια μονάδα θερμοκρασίας</translation>
-<translation id="3663574643422533538">Επιλογή αποκλειστικού έργου τέχνης <ph name="PRODUCT_NAME" /></translation>
 <translation id="3668449597372804501">Ταπετσαρία Κίνηση των σύννεφων</translation>
 <translation id="3689839747745352263">Δοκιμή <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Φόρτωση...</translation>
@@ -646,6 +645,7 @@
 <translation id="6061772781719867950">Αποτυχημένα αιτήματα HTTP</translation>
 <translation id="6073292342939316679">μείωση φωτεινότητας πληκτρολογίου</translation>
 <translation id="6075872808778243331">(Android) Λανθάνων χρόνος HTTP</translation>
+<translation id="6078323886959318429">Προσθήκη συντόμευσης</translation>
 <translation id="6104112872696127344">Η σάρωση ακυρώθηκε</translation>
 <translation id="6106186594183574873">Για να τελειώσετε, εισαγάγετε τον παλιό κωδικό πρόσβασης</translation>
 <translation id="6108689792487843350">Μη προσβάσιμη πύλη</translation>

@@ -15,7 +15,6 @@
 <translation id="1075811647922107217">網頁大小</translation>
 <translation id="1082009148392559545">正在下載螢幕保護程式</translation>
 <translation id="1094693127011229778">缺少 IP 位址</translation>
-<translation id="1113892970288677790">選取系統收錄的藝術圖片和圖像</translation>
 <translation id="1118572504348554005">我們可能會將透過這份表單提交的意見回饋提供給合作夥伴，用於排解錯誤及你回報的其他問題。請勿輸入密碼等機密資訊。</translation>
 <translation id="1119447706177454957">內部錯誤</translation>
 <translation id="1124772482545689468">使用者</translation>
@@ -182,7 +181,8 @@
 <translation id="2240366984605217732">版面配置切換</translation>
 <translation id="225692081236532131">啟用狀態</translation>
 <translation id="2271469253353559191">深色模式時間表</translation>
-<translation id="2276999893457278469">頂端說明內容</translation>
+<translation id="2276999893457278469">熱門說明內容</translation>
+<translation id="2279051792571591988">還原預設值</translation>
 <translation id="2287186687001756809">沒有圖片。如要新增相片，請前往 <ph name="LINK" /></translation>
 <translation id="2307344026739914387">使用目前的金鑰組</translation>
 <translation id="2320295602967756579">啟用淺色主題</translation>
@@ -332,7 +332,6 @@
 <translation id="361575905210396100">感謝你提供寶貴意見</translation>
 <translation id="3632579075709132555">隱私保護功能切換</translation>
 <translation id="3651050199673793219">選取溫度單位</translation>
-<translation id="3663574643422533538">選取 <ph name="PRODUCT_NAME" /> 專屬藝術創作</translation>
 <translation id="3668449597372804501">雲朵動態桌布</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" />測試</translation>
 <translation id="370665806235115550">載入中…</translation>
@@ -646,6 +645,7 @@
 <translation id="6061772781719867950">HTTPS 要求失敗</translation>
 <translation id="6073292342939316679">調低鍵盤亮度</translation>
 <translation id="6075872808778243331">(Android) HTTP 延遲時間</translation>
+<translation id="6078323886959318429">新增捷徑</translation>
 <translation id="6104112872696127344">已取消掃描作業</translation>
 <translation id="6106186594183574873">如要完成變更，請輸入你的舊密碼</translation>
 <translation id="6108689792487843350">無法連上閘道</translation>

@@ -268,6 +268,7 @@ Werwe kan nie webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe t
 <translation id="2648721026697078500">Moet nooit skuif nie</translation>
 <translation id="2648803196158606475">Vee uit wat gelees is</translation>
 <translation id="2664621323652615289">Stop</translation>
+<translation id="2666092431469916601">Top</translation>
 <translation id="2671426118752779020">Jy kan die wagwoorde wat jy in Google Wagwoordbestuurder gestoor het in ander programme op jou iPhone gebruik.</translation>
 <translation id="2690858294534178585">Kamera word tans gebruik</translation>
 <translation id="26915454213703967">Soek op prent met Google</translation>
@@ -354,6 +355,7 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 Sien jou soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodig.</translation>
 <translation id="3080525922482950719">Jy kan bladsye stoor om later of vanlyn te lees</translation>
 <translation id="3081338492074632642">Maak seker dat die wagwoord wat jy stoor, ooreenstem met jou wagwoord vir <ph name="WEBSITE" /></translation>
+<translation id="3087734570205094154">Onderkant</translation>
 <translation id="309672519329227863">Kry toegang tot jou Chrome-wagwoorde en meer van ander apps af.</translation>
 <translation id="3112556859945124369">Merk …</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Sien wat jy kan sinkroniseer<ph name="END_LINK" /></translation>
@@ -431,7 +433,6 @@ Sien jou soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodi
 <translation id="3533436815740441613">Nuwe oortjie</translation>
 <translation id="3540141921715814660">Voeg by Boekmerke</translation>
 <translation id="3551320343578183772">Maak oortjie toe</translation>
-<translation id="3554280880535219766">Wys onderste adresbalk</translation>
 <translation id="3565207542107370586">Maak blaaierdata skoon …</translation>
 <translation id="3575234738189584619">Soek met Lens</translation>
 <translation id="3577555362230509265">Gebruik Chrome in ander apps.</translation>
@@ -441,7 +442,6 @@ Sien jou soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodi
 <translation id="3595252146048399851">Jy kan altyd in <ph name="BEGIN_LINK" />instellings<ph name="END_LINK" /> kies wat om te sinkroniseer. Google kan Search en ander dienste op grond van jou geskiedenis personaliseer.</translation>
 <translation id="3603009562372709545">Kopieer skakel se URL</translation>
 <translation id="3607167657931203000">Outovuldata</translation>
-<translation id="3608008480985212611">Meld aan om jou voorkeure te bestuur</translation>
 <translation id="3609785682760573515">Sinkroniseer tans …</translation>
 <translation id="3631443864840848029">Maak seker jy stoor jou huidige wagwoord vir hierdie werf.</translation>
 <translation id="3638472932233958418">Laai webbladsye vooraf</translation>
@@ -517,6 +517,7 @@ Sien jou soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodi
 <translation id="4133265950310064865">Gevorderde Beskerming</translation>
 <translation id="4148023517926189160">Hierdie webwerf wil ’n lêer aflaai en dit by jou kalender voeg.</translation>
 <translation id="4152011295694446843">Jy sal jou boekmerke hier kry</translation>
+<translation id="4168651806173792090"><ph name="NETWORK_NAME" /> wat met <ph name="LAST_FOUR_DIGITS" /> eindig</translation>
 <translation id="4172051516777682613">Wys altyd</translation>
 <translation id="418156467088430727">Bekyk vanlyn weergawe in nuwe oortjie</translation>
 <translation id="4181841719683918333">Tale</translation>
@@ -703,7 +704,6 @@ Sien jou soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodi
 <translation id="5271265092610673171">{count,plural, =1{’n Vereiste veld is leeg. Vul dit in voordat jy stoor.}other{Sommige vereiste velde is leeg. Vul hulle in voordat jy stoor.}}</translation>
 <translation id="5271549068863921519">Stoor wagwoord</translation>
 <translation id="5283494734135414249">Tik op die kortpad wat onder die adresbalk verskyn.</translation>
-<translation id="5292723732574094123">Afgemeld. Meld weer aan om die boekmerke, wagwoorde en meer in jou rekening te sien.</translation>
 <translation id="5295239312320826323">Verwyder <ph name="USER_EMAIL" /> se rekening?</translation>
 <translation id="5300589172476337783">Wys</translation>
 <translation id="5317780077021120954">Berg</translation>
@@ -762,7 +762,6 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="5702108177581350218">Wanneer jy ’n kopie van jou gebruikernaam en wagwoord deel, kan jou gesinslid dit met Google Wagwoordbestuurder invul.</translation>
 <translation id="5704908597376970822">Kan nie aanmeld nie.</translation>
 <translation id="5706552126692816153">1 dag gelede aktief</translation>
-<translation id="5711039611392265845">Raadpleeg <ph name="BEGIN_LINK" />Sinkronisering- en Google-dienste<ph name="END_LINK" /> vir meer instellings wat verband hou met privaatheid, sekuriteit en data-insameling.</translation>
 <translation id="5718049162805123412">Jy moet hulle nou verander</translation>
 <translation id="5724941645893276623">Voeg 'n nuwe oortjie by om privaat deur die web te blaai</translation>
 <translation id="5728700505257787410">Jammer, kon nie by jou program aanmeld nie.</translation>
@@ -774,7 +773,6 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="574762237186762643">Geleenthede</translation>
 <translation id="5755162682436943950">Afgemeld. Maak dialoog oop om aan te meld en sinkronisering aan te skakel.</translation>
 <translation id="5758631781033351321">Jy sal jou leeslys hier kry</translation>
-<translation id="5760258696409739442">Wys boonste adresbalk</translation>
 <translation id="5762370665605786758">Wagfrase-enkripsie sluit nie betaalmetodes en adresse van Google Pay af in nie.
 
 Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word nie na Google toe gestuur of deur hulle gestoor nie. <ph name="BEGIN_LINK" />Vee die Chrome-data in jou rekening uit<ph name="END_LINK" /> indien jy jou wagfrase vergeet of hierdie instelling wil verander.</translation>
@@ -942,6 +940,7 @@ Probeer 'n unieke wagwoord vir elke werf gebruik.</translation>
 <translation id="651505212789431520">Kanselleer sinkronisering? Jy kan sinkronisering enige tyd in Instellings aanskakel.</translation>
 <translation id="6518133107902771759">Verifieer</translation>
 <translation id="6524918542306337007">Incognitomodus is onbeskikbaar</translation>
+<translation id="6527303717912515753">Deel</translation>
 <translation id="6530992499366869131">Waarsku jou as wagwoorde in 'n dataskending blootgestel is</translation>
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6540120577248033958">Besoek ’n werf en klik Volg in die Chrome-kieslys</translation>
@@ -1233,6 +1232,7 @@ Werwe kan webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe te si
 <translation id="8281781826761538115">Verstek – <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Slaan oor</translation>
 <translation id="8283172974887967105">Stel …</translation>
+<translation id="8286036467436129157">Meld aan</translation>
 <translation id="8299417921174340354">Om wagwoorde te gebruik, moet jy eers 'n wagkode op jou toestel stel.</translation>
 <translation id="8299613349954694191">Maak 'n Incognito-oortjie oop om privaat deur die web te blaai.</translation>
 <translation id="8316944564970119719">Voer werf en wagwoord in, en stoor dan</translation>

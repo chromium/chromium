@@ -166,7 +166,6 @@
 <translation id="2312704192806647271">{COUNT,plural, =1{Ang extension na may ID na <ph name="BEGIN_LIST" /><ph name="END_LIST" /> ay hindi mahanap. Makipag-ugnayan sa iyong administrator.}one{Ang mga extension na may mga ID na <ph name="BEGIN_LIST" /><ph name="END_LIST" /> ay hindi mahanap. Makipag-ugnayan sa iyong administrator.}other{Ang mga extension na may mga ID na <ph name="BEGIN_LIST" /><ph name="END_LIST" /> ay hindi mahanap. Makipag-ugnayan sa iyong administrator.}}</translation>
 <translation id="2325650632570794183">Hindi sinusuportahan ang uri ng file na ito. Pakibisita ang Chrome Web Store upang makahanap ng app na makakapagbukas ng ganitong uri ng file.</translation>
 <translation id="2326539130272988168">Bulgarian</translation>
-<translation id="2337715497728194187">I-share sa Bruschetta</translation>
 <translation id="233822363739146957">Walang sapat na storage space para ma-sync ang lahat ng iyong file</translation>
 <translation id="23721837607121582">I-download ang mobile profile, Network <ph name="NETWORK_INDEX" /> ng <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Lumipat sa list view</translation>
@@ -197,7 +196,6 @@
 <translation id="2544853746127077729">Tinanggihan ng network ang certificate sa pagpapatunay</translation>
 <translation id="255937426064304553">US international</translation>
 <translation id="2563185590376525700">Palaka</translation>
-<translation id="2574327434504608656">1 folder ang na-share sa Bruschetta</translation>
 <translation id="2578394532502990878">Tamil Phonetic</translation>
 <translation id="2579959351793446050">Odia</translation>
 <translation id="2587195714949534472">Inihahandang i-sync ang <ph name="FILE_NAME" />...</translation>
@@ -297,7 +295,6 @@
 <translation id="3408072735282270043">I-activate, <ph name="NETWORK_NAME" /></translation>
 <translation id="3408236822532681288">German (Germany) na may Neo 2 keyboard</translation>
 <translation id="3414856743105198592">Buburahin ng pag-format sa naaalis na media ang lahat ng data. Nais mo bang magpatuloy?</translation>
-<translation id="3435143625481187092">Bigyan ng pahintulot ang Bruschetta na ma-access ang mga file sa folder na <ph name="FOLDER_NAME" /></translation>
 <translation id="3437801641691368414">Oras ng pagkakagawa</translation>
 <translation id="343907260260897561">Instant Camera</translation>
 <translation id="3455931012307786678">Estonian</translation>
@@ -385,7 +382,6 @@
 <translation id="4159731583141908892">Inilipat ang <ph name="FILE_NAME" />.</translation>
 <translation id="4176286497474237543">Bakantehin ang trash ngayon</translation>
 <translation id="4179621117429069925">Nasa trash mo ang item na ito</translation>
-<translation id="4181839429935094755"><ph name="NUMBER_OF_ITEMS" /> (na) folder na na-share sa Bruschetta</translation>
 <translation id="4186579485882418952">I-enable ang Offline</translation>
 <translation id="4193154014135846272">Dokumento ng Google</translation>
 <translation id="4197674956721858839">Pagpili ng zip</translation>
@@ -452,7 +448,6 @@
 <translation id="4646813851450205600">Czech na may Qwerty keyboard</translation>
 <translation id="4656777537938206294">Gawing available offline ang mga file</translation>
 <translation id="4658782175094886150">Tao sa snow</translation>
-<translation id="466782788172479199">Bigyan ang Bruschetta ng pahintulot na ma-access ang mga file sa iyong Google Drive. Masi-sync sa iba mo pang device ang mga pagbabago.</translation>
 <translation id="4669606053856530811">Mawawalan ng access ang mga miyembro ng '<ph name="SOURCE_NAME" />' maliban na lang kung ibinahagi sa kanila ang mga item na ito.</translation>
 <translation id="467809019005607715">Google Slides</translation>
 <translation id="4690246192099372265">Swedish</translation>
@@ -564,7 +559,6 @@
 <translation id="5323213332664049067">Latin American</translation>
 <translation id="5330145655348521461">Ang mga file na ito na binuksan sa ibang desktop. Ilipat sa <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) upang tingnan ito.</translation>
 <translation id="5330512191124428349">Kumuha ng impormasyon</translation>
-<translation id="5344246330454251646">Pamahalaan ang pag-share sa Bruschetta</translation>
 <translation id="535792325654997756">Taong may mga pusa</translation>
 <translation id="5358764674931277">Frame rate</translation>
 <translation id="5363339716524495120">Chinese ang wika sa pag-input</translation>
@@ -732,7 +726,6 @@
 <translation id="6710213216561001401">Nauna</translation>
 <translation id="6732801395666424405">Hindi na-load ang mga certificate</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
-<translation id="6740270213273127264">I-share ang folder sa Bruschetta</translation>
 <translation id="6750737795876287924">Kasalukuyang directory</translation>
 <translation id="6751256176799620176">1 folder ang napili</translation>
 <translation id="6755827872271341378">ChromeOS Flex device</translation>

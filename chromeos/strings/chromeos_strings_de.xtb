@@ -15,7 +15,6 @@
 <translation id="1075811647922107217">Seitengröße</translation>
 <translation id="1082009148392559545">Bildschirmschoner wird herunterladen</translation>
 <translation id="1094693127011229778">IP-Adresse ist nicht verfügbar</translation>
-<translation id="1113892970288677790">Kunstwerke und Bilder auswählen</translation>
 <translation id="1118572504348554005">Wir leiten über dieses Formular gesendetes Feedback möglicherweise an unsere Partner weiter, um Fehler und andere Probleme zu beheben, die du uns meldest. Gib keine vertraulichen Daten wie Passwörter an.</translation>
 <translation id="1119447706177454957">Interner Fehler</translation>
 <translation id="1124772482545689468">Nutzer</translation>
@@ -183,6 +182,7 @@
 <translation id="225692081236532131">Aktivierungsstatus</translation>
 <translation id="2271469253353559191">Zeitplan für dunklen Modus</translation>
 <translation id="2276999893457278469">Häufig gelesene Hilfeartikel</translation>
+<translation id="2279051792571591988">Standardeinstellungen wiederherstellen</translation>
 <translation id="2287186687001756809">Kein Bild verfügbar. Du kannst Fotos unter <ph name="LINK" /> hinzufügen.</translation>
 <translation id="2307344026739914387">Aktuelles Schlüsselpaar verwenden</translation>
 <translation id="2320295602967756579">Helles Design aktivieren</translation>
@@ -332,7 +332,6 @@
 <translation id="361575905210396100">Vielen Dank für dein Feedback</translation>
 <translation id="3632579075709132555">Privatsphärefunktion</translation>
 <translation id="3651050199673793219">Temperatureinheit auswählen</translation>
-<translation id="3663574643422533538">Exklusives Kunstwerk für <ph name="PRODUCT_NAME" /> auswählen</translation>
 <translation id="3668449597372804501">Cloud Flow-Hintergrund</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> – Test</translation>
 <translation id="370665806235115550">Wird geladen...</translation>
@@ -646,6 +645,7 @@
 <translation id="6061772781719867950">Fehlgeschlagene HTTPS-Anfragen</translation>
 <translation id="6073292342939316679">Tastaturhelligkeit verringern</translation>
 <translation id="6075872808778243331">(Android) HTTP-Latenz</translation>
+<translation id="6078323886959318429">Verknüpfung hinzufügen</translation>
 <translation id="6104112872696127344">Scannen wurde abgebrochen</translation>
 <translation id="6106186594183574873">Gib zum Schluss dein altes Passwort ein</translation>
 <translation id="6108689792487843350">Gateway nicht erreichbar</translation>

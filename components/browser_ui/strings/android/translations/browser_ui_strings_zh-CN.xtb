@@ -99,6 +99,7 @@
 <translation id="2621115761605608342">允许特定网站运行 JavaScript。</translation>
 <translation id="2653659639078652383">提交</translation>
 <translation id="2677748264148917807">离开</translation>
+<translation id="2678468611080193228">尝试暂时允许使用第三方 Cookie，这意味着您将采用较低级别的保护措施，但网站功能更有可能正常运行</translation>
 <translation id="2687403674020088961">阻止所有 Cookie（不建议）</translation>
 <translation id="2713106313042589954">关闭摄像头</translation>
 <translation id="2717722538473713889">电子邮件地址</translation>
@@ -138,6 +139,7 @@
 <translation id="3362437373201486687">正在搜寻蓝牙设备</translation>
 <translation id="3386292677130313581">需先询问，得到许可后才允许网站获取您的位置信息（推荐）</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" />%%</translation>
+<translation id="344449859752187052">已阻止第三方 Cookie</translation>
 <translation id="3521663503435878242"><ph name="DOMAIN" /> 下的网站</translation>
 <translation id="3538390592868664640">禁止网站为您的周边环境创建 3D 地图或跟踪摄像头位置</translation>
 <translation id="3544058026430919413">公司可以定义一组网站，允许它们使用 Cookie 在该群组中分享您的活动记录。在无痕模式下，此设置处于关闭状态。</translation>
@@ -212,6 +214,7 @@
 <translation id="4962975101802056554">撤消设备的所有权限</translation>
 <translation id="497421865427891073">前进</translation>
 <translation id="4976702386844183910">上次访问日期：<ph name="DATE" /></translation>
+<translation id="4985206706500620449">您已允许此网站使用第三方 Cookie</translation>
 <translation id="4994033804516042629">找不到任何联系人</translation>
 <translation id="4996978546172906250">分享方式</translation>
 <translation id="5001526427543320409">第三方 Cookie</translation>
@@ -256,6 +259,7 @@
 <translation id="5677928146339483299">已禁止</translation>
 <translation id="5689516760719285838">位置信息</translation>
 <translation id="5690795753582697420">已在 Android 设置中关闭摄像头</translation>
+<translation id="5700761515355162635">允许使用第三方 Cookie</translation>
 <translation id="5706552988683188916">此操作会删除 <ph name="WEBSITE" /> 的 Cookie 和其他网站数据</translation>
 <translation id="5719847187258001597">此操作会清除 <ph name="ORIGIN" /> 或其在主屏幕中安装的应用所存储的全部数据和 Cookie。</translation>
 <translation id="5723967018671998714">已阻止无痕模式下的第三方 Cookie</translation>
@@ -303,6 +307,7 @@
 <translation id="6467852467360539617">清除数据并重置权限</translation>
 <translation id="6500423977866688905">当窗口狭窄时，请求使用移动版视图</translation>
 <translation id="6527303717912515753">分享</translation>
+<translation id="652937045869844725">尝试允许使用第三方 Cookie，这意味着您将采用较低级别的保护措施，但网站功能更有可能正常运行</translation>
 <translation id="6545864417968258051">蓝牙扫描</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{已禁用“<ph name="PERMISSION_1" />”权限、“<ph name="PERMISSION_2" />”权限和另外 <ph name="NUM_MORE" /> 项权限}other{已禁用“<ph name="PERMISSION_1" />”权限、“<ph name="PERMISSION_2" />”权限和另外 <ph name="NUM_MORE" /> 项权限}}</translation>
 <translation id="6554732001434021288">上次访问时间：<ph name="NUM_DAYS" /> 天前</translation>
@@ -435,6 +440,7 @@
 <translation id="8736193154595564524">{NUM_SELECTED,plural, =1{已允许 1 个网站}other{已允许 # 个网站}}</translation>
 <translation id="8737217482364735741">这会清除 <ph name="ORIGIN" /> 存储的所有数据和 Cookie。</translation>
 <translation id="8751914237388039244">选择图片</translation>
+<translation id="8800034312320686233">网站无法正常运行？</translation>
 <translation id="8801436777607969138">禁止特定网站运行 JavaScript。</translation>
 <translation id="8803526663383843427">处于开启状态时</translation>
 <translation id="8805385115381080995">由于网站要求您验证自己是真实用户的情况随之减少，浏览体验将变得更加流畅。</translation>

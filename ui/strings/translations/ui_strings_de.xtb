@@ -105,7 +105,6 @@
 <translation id="4266252015790371705">{MONTHS,plural, =1{vor 1 Monat}other{vor # Monaten}}</translation>
 <translation id="4289300219472526559">Sprachausgabe starten</translation>
 <translation id="4289540628985791613">Übersicht</translation>
-<translation id="4306392492252714209">Aus der Zwischenablage entfernen.</translation>
 <translation id="4491109536499578614">Bild</translation>
 <translation id="4565377596337484307">Passwort ausblenden</translation>
 <translation id="4588090240171750605">Nach rechts blättern</translation>
@@ -175,6 +174,7 @@
 <translation id="7170202025028120564">Die Displayeinstellungen deiner App werden beim nächsten Neustart übernommen.</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{1 min übrig}other{# min übrig}}</translation>
+<translation id="7363164521834647158">Antwort senden</translation>
 <translation id="7365057348334984696">{MINUTES,plural, =1{vor 1 min}other{vor # min}}</translation>
 <translation id="7389409599945284130">– <ph name="MESSAGE" /></translation>
 <translation id="7410957453383678442">{MINUTES,plural, =1{1 Minute übrig}other{# Minuten übrig}}</translation>

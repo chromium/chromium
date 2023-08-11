@@ -15,7 +15,6 @@
 <translation id="1075811647922107217">Orriaren tamaina</translation>
 <translation id="1082009148392559545">Pantaila-babeslea deskargatzen</translation>
 <translation id="1094693127011229778">IP helbidea ez dago erabilgarri</translation>
-<translation id="1113892970288677790">Hautatu aukeratutako artelan eta irudietako bat</translation>
 <translation id="1118572504348554005">Salatzen dituzun akatsak eta bestelako arazoak konpontzeko, baliteke inprimaki honen bidez bidalitako oharrak gure bazkideekin partekatzea. Ez eman kontuzko informaziorik, hala nola pasahitzak.</translation>
 <translation id="1119447706177454957">Barneko errorea</translation>
 <translation id="1124772482545689468">Erabiltzailea</translation>
@@ -183,6 +182,7 @@
 <translation id="225692081236532131">Aktibazioaren egoera</translation>
 <translation id="2271469253353559191">Modu ilunaren programazioa</translation>
 <translation id="2276999893457278469">Laguntza-eduki nagusia</translation>
+<translation id="2279051792571591988">Leheneratu balio lehenetsiak</translation>
 <translation id="2287186687001756809">Ez dago irudirik. Argazkiak gehitzeko, joan <ph name="LINK" /> helbidera.</translation>
 <translation id="2307344026739914387">Erabili une honetako gako parea</translation>
 <translation id="2320295602967756579">Gaitu gai iluna</translation>
@@ -332,7 +332,6 @@
 <translation id="361575905210396100">Mila esker oharrak bidaltzeagatik</translation>
 <translation id="3632579075709132555">Pribatutasun-pantaila aldatzeko etengailua</translation>
 <translation id="3651050199673793219">Hautatu tenperatura-unitatea</translation>
-<translation id="3663574643422533538">Hautatu <ph name="PRODUCT_NAME" /> gailuko artelan esklusiboak</translation>
 <translation id="3668449597372804501">Hodeien fluxua erakusten duen horma-papera</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> neurtzeko proba</translation>
 <translation id="370665806235115550">Kargatzen…</translation>
@@ -646,6 +645,7 @@
 <translation id="6061772781719867950">huts egin dute HTTP eskaerek</translation>
 <translation id="6073292342939316679">txikitu teklatuaren distira</translation>
 <translation id="6075872808778243331">HTTP eskaeren latentzia (Android)</translation>
+<translation id="6078323886959318429">Gehitu lasterbidea</translation>
 <translation id="6104112872696127344">Bertan behera utzi da eskaneatzeko prozesua</translation>
 <translation id="6106186594183574873">Amaitzeko, idatzi pasahitz zaharra</translation>
 <translation id="6108689792487843350">Ezin da konektatu atebidera</translation>

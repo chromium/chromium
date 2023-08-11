@@ -166,7 +166,6 @@
 <translation id="2312704192806647271">{COUNT,plural, =1{<ph name="BEGIN_LIST" /><ph name="END_LIST" /> আইডিৰ এক্সেটেনশ্বনৰ অৱস্থান নিৰ্ধাৰণ কৰিব পৰা নগ’ল। আপোনাৰ প্ৰশাসকৰ সৈতে যোগাযোগ কৰক।}one{<ph name="BEGIN_LIST" /><ph name="END_LIST" /> আইডিৰ এক্সেটেনশ্বনসমূহৰ অৱস্থান নিৰ্ধাৰণ কৰিব পৰা নগ’ল। আপোনাৰ প্ৰশাসকৰ সৈতে যোগাযোগ কৰক।}other{<ph name="BEGIN_LIST" /><ph name="END_LIST" /> আইডিৰ এক্সেটেনশ্বনসমূহৰ অৱস্থান নিৰ্ধাৰণ কৰিব পৰা নগ’ল। আপোনাৰ প্ৰশাসকৰ সৈতে যোগাযোগ কৰক।}}</translation>
 <translation id="2325650632570794183">এইধৰণৰ ফাইল সমৰ্থিত নহয়। অনুগ্ৰহ কৰি Chrome Web Storeত গৈ এইধৰণৰ ফাইল খুলিব পৰা কোনো এপ্ বিচাৰক।</translation>
 <translation id="2326539130272988168">বুলগেৰিয়ান</translation>
-<translation id="2337715497728194187">Bruschettaৰ সৈতে শ্বেয়াৰ কৰক</translation>
 <translation id="233822363739146957">আপোনাৰ আটাইবোৰ ফাইল ছিংক কৰিবলৈ পৰ্যাপ্ত ষ্ট’ৰেজৰ স্থান নাই</translation>
 <translation id="23721837607121582">ম’বাইলৰ প্ৰ’ফাইল ডাউনল’ড কৰক, <ph name="NETWORK_COUNT" /> টা নেটৱৰ্কৰ <ph name="NETWORK_INDEX" /> নম্বৰৰটো, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">সূচী চোৱা ম’ডলৈ সলনি কৰক</translation>
@@ -197,7 +196,6 @@
 <translation id="2544853746127077729">নেটৱৰ্কে বিশ্বাসযোগ্যতাৰ প্ৰমাণপত্ৰ অগ্ৰাহ্য কৰিছে</translation>
 <translation id="255937426064304553">US আন্তৰ্জাতিক</translation>
 <translation id="2563185590376525700">ভেকুলী</translation>
-<translation id="2574327434504608656">Bruschettaৰ সৈতে ১ টা ফ’ল্ডাৰটো শ্বেয়াৰ কৰা হৈছে</translation>
 <translation id="2578394532502990878">তামিল ফ’নেটিক</translation>
 <translation id="2579959351793446050">ওড়িয়া</translation>
 <translation id="2587195714949534472"><ph name="FILE_NAME" /> ছিংক কৰিবলৈ সাজু কৰি থকা হৈছে...</translation>
@@ -297,7 +295,6 @@
 <translation id="3408072735282270043">সক্ৰিয়, <ph name="NETWORK_NAME" /></translation>
 <translation id="3408236822532681288">Neo 2 কীব’ৰ্ডৰ সৈতে জাৰ্মান (জাৰ্মানী)</translation>
 <translation id="3414856743105198592">আঁতৰাব পৰা মিডিয়া ফর্মেট কৰা কার্যয়ে সকলো ডেটা মচিব। আপুনি অব্যাহত ৰাখিব খোজেনে?</translation>
-<translation id="3435143625481187092">Bruschettaক <ph name="FOLDER_NAME" /> ফ’ল্ডাৰটোত থকা ফাইল এক্সেছ কৰিবলৈ অনুমতি দিয়ক</translation>
 <translation id="3437801641691368414">সৃষ্টি কৰাৰ সময়</translation>
 <translation id="343907260260897561">তাৎক্ষণিক কেমেৰা</translation>
 <translation id="3455931012307786678">ইষ্ট’নিয়া</translation>
@@ -385,7 +382,6 @@
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> স্থানান্তৰ কৰা হ’ল।</translation>
 <translation id="4176286497474237543">ট্ৰেশ্ব এতিয়াই খালী কৰক</translation>
 <translation id="4179621117429069925">এই বস্তুটো আপোনাৰ ট্ৰেশ্বত আছে</translation>
-<translation id="4181839429935094755">Bruschettaৰ সৈতে <ph name="NUMBER_OF_ITEMS" /> টা ফ’ল্ডাৰ শ্বেয়াৰ কৰা হৈছে</translation>
 <translation id="4186579485882418952">অফলাইনত সক্ষম কৰক</translation>
 <translation id="4193154014135846272">Google নথি</translation>
 <translation id="4197674956721858839">জিপৰ বাছনি</translation>
@@ -452,7 +448,6 @@
 <translation id="4646813851450205600">Qwerty কীব’ৰ্ডৰ সৈতে চেক</translation>
 <translation id="4656777537938206294">ফাইলসমূহ অনলাইনত উপলব্ধ কৰক</translation>
 <translation id="4658782175094886150">বৰফৰ মাজত থকা ব্যক্তিৰ ছবি</translation>
-<translation id="466782788172479199">Bruschettaক আপোনাৰ Google Driveত থকা ফাইল এক্সেছ কৰিবলৈ অনুমতি দিয়ক। সালসলনিসমূহ আপোনাৰ অন্য ডিভাইচৰ সৈতে ছিংক হ’ব।</translation>
 <translation id="4669606053856530811">’<ph name="SOURCE_NAME" />’ৰ সদস্যসকলে তেতিয়ালৈকে এক্সেছ নাপাব যেতিয়ালৈকে তেওঁলোকৰ সৈতে এই বস্তুবোৰ শ্বেয়াৰ কৰা নহয়।</translation>
 <translation id="467809019005607715">Google Slides</translation>
 <translation id="4690246192099372265">ছুইডিশ্ব</translation>
@@ -563,7 +558,6 @@
 <translation id="5323213332664049067">লেটিন আমেৰিকান</translation>
 <translation id="5330145655348521461">এই ফাইলসমূহ বেলেগ এটা ডেস্কটপত খোল খালে। ফাইলটো চাবলৈ <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />)লৈ নিয়ক।</translation>
 <translation id="5330512191124428349">তথ্য পাওক</translation>
-<translation id="5344246330454251646">Bruschettaৰ সৈতে শ্বেয়াৰ কৰাৰ সুবিধাটো পৰিচালনা কৰক</translation>
 <translation id="535792325654997756">মেকুৰীৰ সৈতে ব্যক্তিৰ ছবি</translation>
 <translation id="5358764674931277">ফ্ৰেমৰ হাৰ</translation>
 <translation id="5363339716524495120">ইনপুট ভাষা হৈছে চীনা</translation>
@@ -731,7 +725,6 @@
 <translation id="6710213216561001401">পূৰ্বৱৰ্তী</translation>
 <translation id="6732801395666424405">প্ৰমাণপত্ৰসমূহ ল’ড হোৱা নাই</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
-<translation id="6740270213273127264">Bruschettaৰ সৈতে ফ’ল্ডাৰটো শ্বেয়াৰ কৰক</translation>
 <translation id="6750737795876287924">বৰ্তমানৰ ডাইৰেক্টৰী</translation>
 <translation id="6751256176799620176">১টা ফ’ল্ডাৰ বাছনি কৰা হ’ল</translation>
 <translation id="6755827872271341378">ChromeOS Flex ডিভাইচ</translation>

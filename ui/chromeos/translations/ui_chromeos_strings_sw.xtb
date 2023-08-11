@@ -166,7 +166,6 @@
 <translation id="2312704192806647271">{COUNT,plural, =1{Huwezi kutambua mahali kilipo kiendelezi chenye kitambulisho <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Wasiliana na msimamizi wako.}other{Huwezi kufahamu vilipo viendelezi vyenye vitambulisho vya <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Wasiliana na msimamizi wako.}}</translation>
 <translation id="2325650632570794183">Aina hii ya faili haiwezi kutumika. Tafadhali tembelea Duka la Chrome kwenye Wavuti ili upate programu inayoweza kufungua aina hii ya faili.</translation>
 <translation id="2326539130272988168">Kibulgaria</translation>
-<translation id="2337715497728194187">Shiriki na Bruschetta</translation>
 <translation id="233822363739146957">Nafasi ya kuhifadhi haitoshi kusawazisha faili zako zote</translation>
 <translation id="23721837607121582">Pakua maelezo ya eSIM ya vifaa vya mkononi, Mtandao <ph name="NETWORK_INDEX" /> kati ya <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Tumia mwonekano wa orodha</translation>
@@ -197,7 +196,6 @@
 <translation id="2544853746127077729">Cheti cha uthibitishaji kimekataliwa na mtandao</translation>
 <translation id="255937426064304553">Kiingereza cha Marekani cha Kimataifa</translation>
 <translation id="2563185590376525700">Chura</translation>
-<translation id="2574327434504608656">Folda 1 imeshirikiwa na Bruschetta</translation>
 <translation id="2578394532502990878">Fonetiki ya Kitamili</translation>
 <translation id="2579959351793446050">Kiodia</translation>
 <translation id="2587195714949534472">Inajitayarisha kusawazisha <ph name="FILE_NAME" />...</translation>
@@ -297,7 +295,6 @@
 <translation id="3408072735282270043">Washa, <ph name="NETWORK_NAME" /></translation>
 <translation id="3408236822532681288">Kijerumani (Ujerumani) kwenye kibodi ya Neo 2</translation>
 <translation id="3414856743105198592">Uumbizaji wa media inayohamishika kutafuta data yote. Je, ungependa kuendelea?</translation>
-<translation id="3435143625481187092">Ipatie Bruschetta idhini ya kufikia faili zako zilizo kwenye folda ya <ph name="FOLDER_NAME" /></translation>
 <translation id="3437801641691368414">Wakati ilipoundwa</translation>
 <translation id="343907260260897561">Kamera ya Papo Hapo</translation>
 <translation id="3455931012307786678">Kiestonia</translation>
@@ -385,7 +382,6 @@
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> imehamishwa.</translation>
 <translation id="4176286497474237543">Safisha tupio sasa</translation>
 <translation id="4179621117429069925">Kipengee hiki kipo katika tupio lako</translation>
-<translation id="4181839429935094755">Folda <ph name="NUMBER_OF_ITEMS" /> zimeshirikiwa na Bruschetta</translation>
 <translation id="4186579485882418952">Washa hali ya Nje ya Mtandao</translation>
 <translation id="4193154014135846272">Hati za Google</translation>
 <translation id="4197674956721858839">Punguza uchaguzi</translation>
@@ -452,7 +448,6 @@
 <translation id="4646813851450205600">Kicheki kwenye kibodi ya Qwerty</translation>
 <translation id="4656777537938206294">Fanya faili zipatikane nje ya mtandao</translation>
 <translation id="4658782175094886150">Mtu kwenye theluji</translation>
-<translation id="466782788172479199">Ipatie Bruschetta idhini ya kufikia faili zilizo kwenye Hifadhi yako ya Google. Mabadiliko yatasawazishwa kwenye vifaa vyako vingine.</translation>
 <translation id="4669606053856530811">Wanachama wa '<ph name="SOURCE_NAME" />' hawataweza kuifikia isipokuwa vipengee hivi viwe vinashirikiwa nao.</translation>
 <translation id="467809019005607715">Slaidi za Google</translation>
 <translation id="4690246192099372265">Kisweden</translation>
@@ -564,7 +559,6 @@
 <translation id="5323213332664049067">Amerika ya Kusini</translation>
 <translation id="5330145655348521461">Faili hizi zilifunguka kwenye eneo-kazi tofauti. Sogea kwenye <ph name="USER_NAME" /> ( <ph name="MAIL_ADDRESS" /> ) ili uzione.</translation>
 <translation id="5330512191124428349">Pata maelezo</translation>
-<translation id="5344246330454251646">Dhibiti hali ya kushiriki na Bruschetta</translation>
 <translation id="535792325654997756">Mtu aliye na paka</translation>
 <translation id="5358764674931277">Kasi ya picha</translation>
 <translation id="5363339716524495120">Lugha ya kuweka data ni Kichina</translation>
@@ -732,7 +726,6 @@
 <translation id="6710213216561001401">Iliyopita</translation>
 <translation id="6732801395666424405">Vyeti havijapakiwa</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
-<translation id="6740270213273127264">Shiriki folda na Bruschetta</translation>
 <translation id="6750737795876287924">Saraka iliyochaguliwa sasa</translation>
 <translation id="6751256176799620176">Folda 1 imechaguliwa</translation>
 <translation id="6755827872271341378">Kifaa cha ChromeOS Flex</translation>

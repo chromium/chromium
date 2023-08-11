@@ -166,7 +166,6 @@
 <translation id="2312704192806647271">{COUNT,plural, =1{መታወቂያ <ph name="BEGIN_LIST" /><ph name="END_LIST" /> ያለው ቅጥያ ሊገኝ አይችልም። የእርስዎን አስተዳዳሪ ያነጋግሩ።}one{መታወቂያ <ph name="BEGIN_LIST" /><ph name="END_LIST" /> ያለው ቅጥያ ሊገኝ አይችልም። የእርስዎን አስተዳዳሪ ያነጋግሩ።}other{መታወቂያዎች <ph name="BEGIN_LIST" /><ph name="END_LIST" /> ያላቸው ቅጥያዎች ሊገኙ አይችሉም። የእርስዎን አስተዳዳሪ ያነጋግሩ።}}</translation>
 <translation id="2325650632570794183">ይህ ፋይል ዓይነት አይደገፍም። የዚህ ዓይነት ፋይል መክፈት የሚችል መተግበሪያን ለማግኘት እባክዎ Chrome የድር ሱቁን ይጎብኙ።</translation>
 <translation id="2326539130272988168">ቡልጋሪያኛ</translation>
-<translation id="2337715497728194187">ለBruschetta ያጋሩ</translation>
 <translation id="233822363739146957">የእርስዎን ሁሉንም ፋይሎች ለማስመር በቂ የማከማቻ ቦታ የለም</translation>
 <translation id="23721837607121582">የሞባይል መገለጫን ያውርዱ፣ አውታረ መረብ <ph name="NETWORK_INDEX" /> ከ<ph name="NETWORK_COUNT" />፣ <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">ወደ የዝርዝር እይታ ቀይር</translation>
@@ -197,7 +196,6 @@
 <translation id="2544853746127077729">የማረጋገጫ ምስክር ወረቀት በአውታረ መረቡ ተቀባይነት አላገኘም</translation>
 <translation id="255937426064304553">አሜሪካ ዓለምአቀፍ</translation>
 <translation id="2563185590376525700">እንቁራሪት</translation>
-<translation id="2574327434504608656">1 አቃፊ ከBruschetta ጋር ተጋርቷል</translation>
 <translation id="2578394532502990878">ታሚልኛ ፎነቲክ</translation>
 <translation id="2579959351793446050">ኦዲያ</translation>
 <translation id="2587195714949534472"><ph name="FILE_NAME" />ን ለማስመር በማዘጋጀት ላይ...</translation>
@@ -297,7 +295,6 @@
 <translation id="3408072735282270043">አግብር፣ <ph name="NETWORK_NAME" /></translation>
 <translation id="3408236822532681288">ጀርመንኛ (ጀርመን) በNeo 2 ቁልፍ ሰሌዳ</translation>
 <translation id="3414856743105198592">ተነቃይ ማህደረ ትውስታው ላይ ቅርጸት መስራት ሁሉንም ውሂብ ያጠፋል። መቀጠል ይፈልጋሉ?</translation>
-<translation id="3435143625481187092">በ<ph name="FOLDER_NAME" /> በአቃፊ ውስጥ ያሉ ፋይሎችን እንዲደርስ ለBruschetta ፈቃድ ይስጡ</translation>
 <translation id="3437801641691368414">የተፈጠረበት ጊዜ</translation>
 <translation id="343907260260897561">ቅጽበታዊ ካሜራ</translation>
 <translation id="3455931012307786678">ኤስቶኒያኛ</translation>
@@ -385,7 +382,6 @@
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> ተወስደዋል።</translation>
 <translation id="4176286497474237543">የቆሻሻ ማጠራቀሚያውን አሁኑኑ አጽዳ</translation>
 <translation id="4179621117429069925">ይህ ንጥል በመጣያዎ ውስጥ ነው</translation>
-<translation id="4181839429935094755"><ph name="NUMBER_OF_ITEMS" /> አቃፊዎች ከBruschetta ጋር ተጋርተዋል</translation>
 <translation id="4186579485882418952">ከመስመር ውጭን አንቃ</translation>
 <translation id="4193154014135846272">Google ሰነድ</translation>
 <translation id="4197674956721858839">የጨመቃ ምርጫ</translation>
@@ -452,7 +448,6 @@
 <translation id="4646813851450205600">ቼክኛ በQwerty ቁልፍ ሰሌዳ</translation>
 <translation id="4656777537938206294">ፋይሎችን ከመስመር ውጭ እንዲገኙ ያድርጉ</translation>
 <translation id="4658782175094886150">በበረዶ ውስጥ ያለ ሰው</translation>
-<translation id="466782788172479199">በእርስዎ Google Drive ውስጥ ፋይሎችን የመድረስ ፈቃድን ለBruschetta ይስጡ። ለውጦች ወደ ሌሎች የእርስዎ መሣሪያዎች የሚሰምሩ ይሆናል።</translation>
 <translation id="4669606053856530811">እነዚህ ንጥሎች ለእነሱ ካልተጋሩ በስተቀር የ«<ph name="SOURCE_NAME" />» አባላት መዳረሻ ያጣሉ።</translation>
 <translation id="467809019005607715">Google ስላይዶች</translation>
 <translation id="4690246192099372265">ስዊድንኛ</translation>
@@ -564,7 +559,6 @@
 <translation id="5323213332664049067">የላቲን አሜሪካ</translation>
 <translation id="5330145655348521461">እነዚህ ፋይሎች በተለየ ዴስክቶፕ ላይ ተከፍተዋል። ለማየት ወደ <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) ይውሰዱት።</translation>
 <translation id="5330512191124428349">መረጃ ያግኙ</translation>
-<translation id="5344246330454251646">የBruschetta ማጋራትን ያስተዳድሩ</translation>
 <translation id="535792325654997756">ድመቶች ያሉት ሰው</translation>
 <translation id="5358764674931277">የክፈፍ ፍጥነት</translation>
 <translation id="5363339716524495120">የግቤት ቋንቋ ቻይንኛ ነው</translation>
@@ -732,7 +726,6 @@
 <translation id="6710213216561001401">ቀዳሚ</translation>
 <translation id="6732801395666424405">የእውቅና ማረጋገጫዎች አልተጫኑም</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
-<translation id="6740270213273127264">አቃፊን ከBruschetta ጋር ያጋሩ</translation>
 <translation id="6750737795876287924">የአሁኑ ማውጫ</translation>
 <translation id="6751256176799620176">1 አቃፊ ተመርጧል</translation>
 <translation id="6755827872271341378">የChromeOS Flex መሣሪያ</translation>

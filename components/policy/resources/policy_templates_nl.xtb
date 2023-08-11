@@ -3027,17 +3027,6 @@ Als je het beleid niet toepast of niet instelt, kunnen ingeschreven apparaten ge
 
       Als je het beleid niet instelt, gebruikt <ph name="PRODUCT_NAME" /> een standaard bibliotheeknaam.</translation>
 <translation id="3650122925429054129">Cursormarkering op het inlogscherm uitzetten</translation>
-<translation id="3652207037778361023">De functie voor geluid voor een bijna lege batterij aanzetten.
-
-          Deze functie is verantwoordelijk voor het afspelen van het geluid voor een bijna lege batterij.
-
-          Als je dit beleid toepast, wordt het geluid voor een bijna lege batterij afgespeeld als het batterijniveau of de resterende tijd onder een drempelwaarde zakt.
-
-          Als je dit beleid niet toepast, wordt er geen geluid voor een bijna lege batterij afgespeeld.
-
-          Als je dit beleid instelt, kunnen gebruikers dit niet wijzigen of negeren.
-
-          Als je dit beleid niet instelt, staat deze functie uit op de beheerde <ph name="PRODUCT_OS_NAME" />-apparaten, maar aan onder andere omstandigheden.</translation>
 <translation id="3652670852519271837">Sites toestaan om gebruikers schrijftoegang te vragen tot bestanden en directory's via de File System API</translation>
 <translation id="3653237928288822292">Icoon voor standaardzoekprovider</translation>
 <translation id="3654906736796256792">Toestaan dat de audiosandbox wordt uitgevoerd</translation>
@@ -3768,17 +3757,6 @@ Gebruikers kunnen deze instelling niet wijzigen.</translation>
 <translation id="4311662690937656540">Online inloggen afdwingen op de inlog- en vergrendelschermen</translation>
 <translation id="4313767483634435271">Toegewezen MAC-adres van dock van apparaat</translation>
 <translation id="4314538398999793073">CNAME-lookup tijdens Kerberos-verificatie uitzetten</translation>
-<translation id="4316437338046981895">De functie voor oplaadgeluiden aanzetten.
-
-          Deze functie is verantwoordelijk voor het afspelen van de oplaadgeluiden.
-
-          Als je dit beleid toepast, worden de oplaadgeluiden afgespeeld als het apparaat wordt aangesloten op een wisselstroomoplader.
-
-          Als je dit beleid niet toepast, wordt er geen oplaadgeluid afgespeeld.
-
-          Als je dit beleid instelt, kunnen gebruikers dit niet wijzigen of negeren.
-
-          Als je dit beleid niet instelt, staat deze functie uit op de beheerde <ph name="PRODUCT_OS_NAME" />-apparaten, maar aan onder andere omstandigheden.</translation>
 <translation id="4320592646346933548">Wifi</translation>
 <translation id="4322842393287974810">Toestaan dat de kiosk-app die automatisch zonder vertraging is gestart, de <ph name="PRODUCT_OS_NAME" />-versie beheert</translation>
 <translation id="4323412353642577604">Extern attest voor contentbescherming aanzetten</translation>
@@ -9193,16 +9171,6 @@ en 6 optionele leden:
 <translation id="9220314833408124365">'no-referrer-when-downgrade' gebruiken als standaardbeleid voor verwijzende URL's</translation>
 <translation id="9221827710437832530">Toegang tot geolocatie op het inlogscherm toestaan.</translation>
 <translation id="922540222991413931">Installatiebronnen voor het configureren van extensies, apps en gebruikersscripts</translation>
-<translation id="922656089385303086">Dit beleid is beëindigd en wordt verwijderd in de mijlpaal 130. Gebruik in plaats daarvan <ph name="URL_KEYED_METRICS_ALLOWED_POLICY_NAME" />.
-
-Als je het beleid aanzet, is de geanonimiseerde gegevensverzameling met URL-sleutel altijd actief. Hiermee worden de URL's van pagina's die de gebruiker bezoekt naar Google gestuurd om zoekopdrachten en browsen te verbeteren.
-
-Als je het beleid uitzet, wordt de geanonimiseerde gegevensverzameling met URL-sleutel niet aangezet.
-
-Als je dit beleid niet instelt, kunnen gebruikers deze instelling handmatig wijzigen.
-
-In de <ph name="PRODUCT_OS_NAME" />-kiosk biedt dit beleid niet de optie Gebruiker laten bepalen. Als dit beleid niet is ingesteld voor de <ph name="PRODUCT_OS_NAME" />-kiosk, is de geanonimiseerde gegevensverzameling met URL-sleutel altijd actief.
-Als dit beleid is ingesteld voor de <ph name="PRODUCT_OS_NAME" />-kiosk, wordt de verzameling van URL-sleutelstatistieken voor kiosk-apps aangezet.</translation>
 <translation id="924557436754151212">Opgeslagen wachtwoorden importeren uit standaardbrowser bij eerste uitvoering</translation>
 <translation id="926104720905645793">Dit beleid beheert <ph name="PRODUCT_NAME" />-cloudrapportage waarmee informatie over de browseractiviteit wordt geüpload naar <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
 

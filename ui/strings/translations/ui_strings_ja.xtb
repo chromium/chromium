@@ -105,7 +105,6 @@
 <translation id="4266252015790371705">{MONTHS,plural, =1{1 か月前}other{# か月前}}</translation>
 <translation id="4289300219472526559">読み上げを開始</translation>
 <translation id="4289540628985791613">概要</translation>
-<translation id="4306392492252714209">クリップボードから削除します。</translation>
 <translation id="4491109536499578614">画像</translation>
 <translation id="4565377596337484307">パスワードを表示しない</translation>
 <translation id="4588090240171750605">右にスクロール</translation>
@@ -175,6 +174,7 @@
 <translation id="7170202025028120564">アプリケーションの表示設定は、再起動すると有効になります。</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{残り 1 分}other{残り # 分}}</translation>
+<translation id="7363164521834647158">返信</translation>
 <translation id="7365057348334984696">{MINUTES,plural, =1{1 分前}other{# 分前}}</translation>
 <translation id="7389409599945284130">- <ph name="MESSAGE" /></translation>
 <translation id="7410957453383678442">{MINUTES,plural, =1{残り 1 分}other{残り # 分}}</translation>

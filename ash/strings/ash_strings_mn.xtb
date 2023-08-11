@@ -63,6 +63,7 @@
 <translation id="1235458158152011030">Мэдэгдэж байгаа сүлжээ</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> холбогдсон.</translation>
 <translation id="1240638468526743569">Апп</translation>
+<translation id="1242883863226959074">төхөөрөмж</translation>
 <translation id="124678866338384709">Үндсэн чихтэй хуудсыг хаах</translation>
 <translation id="1246890715821376239">Дэмжигдээгүй аппууд</translation>
 <translation id="1247372569136754018">Микрофон (дотоод)</translation>
@@ -181,6 +182,7 @@
 <translation id="1747827819627189109">Дэлгэцэн дээрх гарыг идэвхжүүлсэн байна</translation>
 <translation id="1749109475624620922"><ph name="WINDOW_TITLE" /> цонхыг бүх дэлгэцэд оноосон</translation>
 <translation id="1750088060796401187">Зөвхөн <ph name="MAX_DESK_LIMIT" /> дэлгэцийг зөвшөөрсөн. Шинэ дэлгэц нээхийн тулд дэлгэц хасна уу.</translation>
+<translation id="1755556344721611131">Оношилгооны апп</translation>
 <translation id="1756833229520115364">Загварыг хадгалж чадсангүй. Хэт олон цонх эсвэл таб байна.</translation>
 <translation id="1757857692711134412">Нар жаргах хүртэл унтраалттай</translation>
 <translation id="1768366657309696705"><ph name="LAUNCHER_KEY_NAME" /> + Цэг товчлуурын шууд холбоосыг өөрчилсөн байна. Оруулах товчлуурыг ашиглахын тулд <ph name="LAUNCHER_KEY_NAME" /> товчлуур + Shift + Ухраахыг дарна уу.</translation>
@@ -266,7 +268,6 @@
 <translation id="2148716181193084225">Өнөөдөр</translation>
 <translation id="2149229036084364364">Өмнөх дууны зам руу очих</translation>
 <translation id="2161132820593978283">Камерын хүрээлэх онцлогийг туршсанаар та видео дуудлагын дэлгэцийн голд байх болно. Үүнийг Шуурхай тохиргоо хэсэгт асаана уу.</translation>
-<translation id="2165966740263283349">хадгалах сангийн ашиглалт</translation>
 <translation id="2170530631236737939">Тоймоос гарахын тулд гурван хуруугаараа доош шударна уу</translation>
 <translation id="2185166372312820725">Өмнөх табад очих</translation>
 <translation id="2185444992308415167">1-ээс 8 дахь таб руу очих</translation>
@@ -351,7 +352,7 @@
 <translation id="2531025035050312891">төхөөрөмж удаан</translation>
 <translation id="2531107890083353124">Табыг чирэх үедээ <ph name="KEY_ONE" />-г дарна уу</translation>
 <translation id="254900897760075745">Сонгосон контентыг түр санах ойд хуулах</translation>
-<translation id="2549711466868162843">Гэрэлтүүлгийг сайжруулах</translation>
+<translation id="2549711466868162843">Гэрэлтүүлэг сайжруулах</translation>
 <translation id="2549985041256363841">Бичиж эхлэх</translation>
 <translation id="255671100581129685">Олон нийтийн харилцан үйлдэлд Google Туслах боломжгүй байна.</translation>
 <translation id="256712445991462162">суурилуулсан томруулагч</translation>
@@ -474,6 +475,7 @@
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3113492864356515707">Тавиур дээрх өмнөх зүйлийг тодруулах</translation>
 <translation id="3120421559657122717">Төхөөрөмжийг унтраах уу?</translation>
+<translation id="3122464029669770682">CPU</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">Шинэчлэлт хийхээр дахин эхлүүлэх</translation>
 <translation id="3139188263101386725">Шинэчилсэн товчлол ашиглана уу</translation>
@@ -518,7 +520,6 @@
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> дараа нэвтрэх боломжтой хэвээр байна.</translation>
 <translation id="3321628682574733415">Эцэг эхийн код буруу байна</translation>
 <translation id="332827762492701193">Мэдэгдлийг нуусан</translation>
-<translation id="3338855835380298613">төв процессорын нэгжийн ашиглалт</translation>
 <translation id="3339826665088060472">Дэлгэцийн агшин болон дэлгэцийн бичлэг авах хэрэгсэл болох Дэлгэцийн зураг авах онцлог</translation>
 <translation id="3340978935015468852">тохиргоо</translation>
 <translation id="3341303451326249809">Дэлгэцийн агшныг авсан</translation>
@@ -643,7 +644,6 @@
 <translation id="3781910048497807059">Фокусыг өмнөх хэсэг рүү шилжүүлэх</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">Түгжих</translation>
-<translation id="3796198851576711985">батарейн барилт</translation>
 <translation id="3796746699333205839">Аппликэйшн таны камер болон микрофоныг ашиглаж байна</translation>
 <translation id="3798670284305777884">Чанга яригч (дотоод)</translation>
 <translation id="3799080171973636491">Та бүтэн дэлгэц томруулагчийн товчлуурын шууд холбоосыг дарсан байна. Үүнийг асаах уу?</translation>
@@ -815,12 +815,10 @@
 <translation id="4527045527269911712">"<ph name="DEVICE_NAME" />" Bluetooth төхөөрөмж хослох зөвшөөрөл хүсч байна.</translation>
 <translation id="4533343294786968049">Таны батарейн ажиллах хугацааг уртасгаж байна. Батарейг <ph name="FULLY_CHARGE_TIME" /> гэхэд бүрэн цэнэглэнэ.</translation>
 <translation id="453661520163887813">Дүүртэл <ph name="TIME" /> үлдсэн</translation>
-<translation id="4536664881735498710">шуурхай санах ойн ашиглалт</translation>
 <translation id="4538824937723742295">Бүтэн дэлгэцийн агшныг авах</translation>
 <translation id="4539127209940689201">Одоогийн хуудсыг нээх</translation>
 <translation id="4541706525461326392">Профайлыг хасаж байна. Үүнд хэдэн минут шаардлагатай байж магадгүй.</translation>
 <translation id="4544483149666270818">Бичих цонхыг сонгоно уу</translation>
-<translation id="454541942614298893">миний төхөөрөмж</translation>
 <translation id="4545950850562423083">Одоогийн хуудсыг хавчуургаар хадгалах</translation>
 <translation id="4548482551627849548">Идэвхтэй цонхыг зүүн талын дэлгэц рүү зөөх</translation>
 <translation id="4560576029703263363">Асаалттай</translation>
@@ -979,7 +977,6 @@
 <translation id="5208059991603368177">Асаалттай</translation>
 <translation id="5216991270656129561"><ph name="TIME" /> хүртэл унтраалттай</translation>
 <translation id="5217646019792206018">Дараагийн дэлгэц: <ph name="NEXT_DESK_NAME" />, Search+Space эсвэл товчлуурын шууд холбоосыг ашиглана уу: идэвхжүүлэхийн тулд Shift+Search+<ph name="NEXT_DESK_INDEX" />.</translation>
-<translation id="5221423477036820198">Phone Hub-г ашиглан утасныхаа мессежийг шуурхай илгээх эсвэл үүнд хариу бичээрэй.</translation>
 <translation id="5222676887888702881">Гарах</translation>
 <translation id="5229343007215035173">Нууцлалтай дэлгэцийг асаах/унтраах</translation>
 <translation id="5234764350956374838">Хэрэгсэхгүй болго</translation>
@@ -1140,7 +1137,6 @@
 <translation id="589817443623831496">Цэгээр скан хийх</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5901630391730855834">Шар</translation>
-<translation id="5902162043476810127">шуурхай санах ой</translation>
 <translation id="5909862606227538307">Идэвхгүй дэлгэц.</translation>
 <translation id="5911231045062997865">Lacros цонхыг одоогоор дэмждэггүй. Бусад аппыг хадгална.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
@@ -1544,7 +1540,6 @@
 <translation id="7724603315864178912">Хайчлах</translation>
 <translation id="7725108879223146004">Сүлжээний цэгийн дэлгэрэнгүйг харуулна уу. Сүлжээний цэгийг унтрааж байна.</translation>
 <translation id="7727952505535211425">Хаяг оруулах хэсэг дэх вебсайтыг шинэ табд нээх</translation>
-<translation id="77365090426890123">санах ойн ашиглалт</translation>
 <translation id="7742327441377685481">Мэдэгдэл алга</translation>
 <translation id="7748275671948949022">Тавиур дээрх Эхлүүлэгчийн товчлуурыг тодруулах</translation>
 <translation id="7749443890790263709">Дэлгэцийн тоо хамгийн дээд хэмжээнд хүрлээ.</translation>
@@ -1797,7 +1792,6 @@
 <translation id="8853703225951107899">Таны ПИН эсвэл нууц үгийг баталгаажуулж чадаагүй хэвээрээ байна. Тайлбар: Хэрэв та нууц үгээ саяхан сольсон бол хуучин нууц үгээ ашиглана уу. Таныг гарсны дараа, шинэ нууц үгийг ашиглах боломжтой болно.</translation>
 <translation id="8855885154700222542">Бүтэн дэлгэцийн түлхүүр</translation>
 <translation id="8858369206579825206">Нууцлалын тохиргоо</translation>
-<translation id="8860817004574502558">батарейн ажиллах хугацаа</translation>
 <translation id="8870509716567206129">Апп нь дэлгэц хуваах тохиргоог дэмждэггүй.</translation>
 <translation id="8874184842967597500">Холбогдоогүй</translation>
 <translation id="8875021410787719674">Баруун доод булан, Эхлүүлэгч, хаяг оруулах хэсэг, хавчуургын хэсэг, нээлттэй вебсайт болон татаж авсан файл хооронд шилжих</translation>
@@ -1850,6 +1844,7 @@
 <translation id="9080073830732419341">Камерыг зүүн дээд булан руу зэрэгцүүлсэн</translation>
 <translation id="9080132581049224423">Нүүр хуудас руу очихын тулд дээш шударна уу</translation>
 <translation id="9080206825613744995">Микрофоныг ашиглаж байна.</translation>
+<translation id="9083324773537346962">OS хувилбар</translation>
 <translation id="908451241440060346">Бүү саад бол онцлогийг асаалттай үед мэдэгдлийн дууг хаадаг</translation>
 <translation id="9084606467167974638">Цэсийн байршлыг асаах/унтраах</translation>
 <translation id="9085962983642906571">Батарейн ажиллах хугацааг уртасгахаар залгасан үед таны батарейг 80%-тай байлгана.</translation>
@@ -1890,7 +1885,6 @@
 <translation id="951991426597076286">Татгалзах</translation>
 <translation id="953431725143473984">Төхөөрөмжийг унтраах уу?</translation>
 <translation id="954052413789300507"><ph name="FILENAME" />-д хангалттай зай байхгүй байна. Зай гаргана уу.</translation>
-<translation id="968627661524972577">Хэрэгтэй бүх зүйлээ Chromebook-д хийхийн тулд аппуудыг ашиглана уу. Та аппуудаа Эхлүүлэгчээс олох боломжтой. Та мөн гарын Эхлүүлэгчийн товчийг дарах боломжтой.</translation>
 <translation id="974545358917229949"><ph name="QUERY" />-н <ph name="RESULT_COUNT" /> илэрцийг үзүүлж байна</translation>
 <translation id="98120814841227350">Документын төгсгөл хэсэгт очих</translation>
 <translation id="987589956647469042">Мобайл датаг асаасан</translation>

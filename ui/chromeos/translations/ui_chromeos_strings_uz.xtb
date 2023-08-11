@@ -166,7 +166,6 @@
 <translation id="2312704192806647271">{COUNT,plural, =1{<ph name="BEGIN_LIST" /><ph name="END_LIST" /> identifikatorli kengaytma topilmaydi. Administratorga murojaat qiling.}other{<ph name="BEGIN_LIST" /><ph name="END_LIST" /> identifikatorli kengaytmalar topilmaydi. Administratorga murojaat qiling.}}</translation>
 <translation id="2325650632570794183">Bunday fayl turi qo‘llab-quvvatlanmaydi. Bu faylni ocha oladigan ilovani topish uchun Chrome Internet do‘koniga kiring.</translation>
 <translation id="2326539130272988168">Bolgar</translation>
-<translation id="2337715497728194187">Bruschettaga ulashish</translation>
 <translation id="233822363739146957">Barcha fayllarni sinxronlash uchun xotiradagi joy yetarli emas</translation>
 <translation id="23721837607121582">Mobil profil, tarmoq <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /> kabilarni yuklab olish</translation>
 <translation id="2377319039870049694">Qator shaklida</translation>
@@ -197,7 +196,6 @@
 <translation id="2544853746127077729">Haqiqiylikni tekshirish sertifikati tarmoq tomonidan rad etildi</translation>
 <translation id="255937426064304553">AQSH (xalqaro)</translation>
 <translation id="2563185590376525700">Qurbaqa</translation>
-<translation id="2574327434504608656">1 ta jild Bruschettaga ulashildi</translation>
 <translation id="2578394532502990878">Tamil (fonetik)</translation>
 <translation id="2579959351793446050">Oriya</translation>
 <translation id="2587195714949534472"><ph name="FILE_NAME" /> sinxronlashga tayyorlanmoqda...</translation>
@@ -297,7 +295,6 @@
 <translation id="3408072735282270043"><ph name="NETWORK_NAME" /> tarmogʻini faollashtirish</translation>
 <translation id="3408236822532681288">Nemis (Germaniya) va Neo 2 klaviaturasi</translation>
 <translation id="3414856743105198592">Tashqi xotira qurilmasini formatlash undagi barcha ma’lumotlarni tozalaydi. Davom etasizmi?</translation>
-<translation id="3435143625481187092">Bruschettaga <ph name="FOLDER_NAME" /> jildidagi fayllarini ochishga ruxsat berish</translation>
 <translation id="3437801641691368414">Yaratilgan vaqti</translation>
 <translation id="343907260260897561">Polaroid</translation>
 <translation id="3455931012307786678">Eston</translation>
@@ -385,7 +382,6 @@
 <translation id="4159731583141908892">Boshqa joyga olindi: <ph name="FILE_NAME" />.</translation>
 <translation id="4176286497474237543">Chiqitdonni boʻshatish</translation>
 <translation id="4179621117429069925">Bu fayl chiqitdonda</translation>
-<translation id="4181839429935094755"><ph name="NUMBER_OF_ITEMS" /> ta jild Bruschettaga ulashildi</translation>
 <translation id="4186579485882418952">Oflayn rejimni yoqish</translation>
 <translation id="4193154014135846272">Google hujjati</translation>
 <translation id="4197674956721858839">Tanlangan fayllarni arxivlash</translation>
@@ -452,7 +448,6 @@
 <translation id="4646813851450205600">Chex va Qwerty klaviaturasi</translation>
 <translation id="4656777537938206294">Fayllarni oflaynga nusxalash</translation>
 <translation id="4658782175094886150">Qordagi odam</translation>
-<translation id="466782788172479199">Bruschettaga Google Drive omboringizdagi fayllarni ochishga ruxsat bering. Oʻzgarishlar boshqa qurilmalaringizga sinxronlanadi.</translation>
 <translation id="4669606053856530811">“<ph name="SOURCE_NAME" />” foydalanuvchilariga ulashmasangiz, ular bu obyektlardan foydalana olmasliklari mumkin.</translation>
 <translation id="467809019005607715">Google Slides</translation>
 <translation id="4690246192099372265">Shved tili</translation>
@@ -563,7 +558,6 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="5323213332664049067">Lotin Amerikasi klaviaturasi</translation>
 <translation id="5330145655348521461">Ushbu fayllar boshqa ish stolida ochilgan. Ularni ko‘rish uchun <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) profiliga o‘ting.</translation>
 <translation id="5330512191124428349">Fayl haqida</translation>
-<translation id="5344246330454251646">Bruschettaga ulashuvni boshqarish</translation>
 <translation id="535792325654997756">Mushuklari bor odam</translation>
 <translation id="5358764674931277">Kadrlar chastotasi</translation>
 <translation id="5363339716524495120">Xitoy tilida kiritiladi</translation>
@@ -731,7 +725,6 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="6710213216561001401">Avvalgi</translation>
 <translation id="6732801395666424405">Sertifikatlar yuklanmadi</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
-<translation id="6740270213273127264">Jildni Bruschettaga ulashish</translation>
 <translation id="6750737795876287924">Joriy katalog</translation>
 <translation id="6751256176799620176">1 ta jild tanlandi</translation>
 <translation id="6755827872271341378">ChromeOS Flex qurilmasi</translation>

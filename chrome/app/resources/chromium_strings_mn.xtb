@@ -74,7 +74,6 @@
 <translation id="2592940277904433508">Chromium-г үргэлжлүүлэн ашиглах</translation>
 <translation id="2648074677641340862">Суулгалтын явцад үйлдлийн системийн алдаа гарлаа. Chromium-ыг дахин татаж авна уу.</translation>
 <translation id="2661879430930417727">Хэрэв та төхөөрөмжийг дундаа ашигладаг бол найз нөхөд, гэр бүл тань хөтчөөр тусдаа үзэж, Chromium-г хүссэнээрээ тохируулах боломжтой</translation>
-<translation id="2669853942967761236">Энэ архивын файл хортой программ нууж байж магадгүй тул Chromium үүнийг блоклосон</translation>
 <translation id="268602741124540128">Chromium-д тавтай морилно уу, <ph name="ACCOUNT_FIRST_NAME" /></translation>
 <translation id="2711502716910134313">Chromium таб</translation>
 <translation id="2718390899429598676">Таны аюулгүй байдлыг сайжруулахын тулд Chromium таны өгөгдлийг шифрлэх болно.</translation>
@@ -405,6 +404,5 @@
 <translation id="942598560705308788">Chromium-с удирддаг гэрчилгээ</translation>
 <translation id="965162752251293939">Chromium-г хэн ашиглаж байна вэ?</translation>
 <translation id="967427899662692980">Chromium-н хамгийн хүчирхэг аюулгүй байдлыг аваарай</translation>
-<translation id="9792300276217204">Таныг Chromium-г хаах үед төхөөрөмжөөс тань сайтын өгөгдлийг үргэлж арилгана</translation>
 <translation id="985602178874221306">Chromium-ыг бүтээгчид</translation>
 </translationbundle>

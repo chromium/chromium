@@ -3,7 +3,6 @@
 <translationbundle lang="hi">
 <translation id="1075622780330595106">आपके <ph name="NUMBER_OF_TABS" /> टैब का हाल फ़िलहाल में इस्तेमाल नहीं हुआ है. उन्हें बंद करना चाहेंगे?</translation>
 <translation id="125153950246128346">कोई दूसरा टैब देखने के लिए टैप करें</translation>
-<translation id="1455506303394048917">इन गुप्त टैब में की गई आपकी गतिविधि को इस डिवाइस से मिटा दिया जाएगा</translation>
 <translation id="1499635324672558517">क्या सभी गुप्त टैब बंद करने हैं?</translation>
 <translation id="1657719826150349398">टैब को नीचे ले जाएं</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> टैब}one{<ph name="TABS_COUNT_MANY" /> टैब}other{<ph name="TABS_COUNT_MANY" /> टैब}}</translation>

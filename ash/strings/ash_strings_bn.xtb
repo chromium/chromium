@@ -63,6 +63,7 @@
 <translation id="1235458158152011030">পরিচিত নেটওয়ার্কগুলি</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> ফিচারটি কানেক্ট করা আছে।</translation>
 <translation id="1240638468526743569">একটি অ্যাপ</translation>
+<translation id="1242883863226959074">ডিভাইস</translation>
 <translation id="124678866338384709">বর্তমান ট্যাব বন্ধ করুন</translation>
 <translation id="1246890715821376239">কাজ করে না এমন অ্যাপ</translation>
 <translation id="1247372569136754018">মাইক্রোফোন (অভ্যন্তরীণ)</translation>
@@ -181,6 +182,7 @@
 <translation id="1747827819627189109">অন-স্ক্রিন কীবোর্ড সক্ষম করা রয়েছে</translation>
 <translation id="1749109475624620922"><ph name="WINDOW_TITLE" /> উইন্ডো সব ডেস্কে অ্যাসাইন করা হয়েছে</translation>
 <translation id="1750088060796401187">শুধুমাত্র <ph name="MAX_DESK_LIMIT" />টি ডেস্কের অনুমতি দেওয়া হয়েছে। নতুন একটি খোলার জন্য ডেস্ক সরান।</translation>
+<translation id="1755556344721611131">ডায়াগনস্টিকস অ্যাপ</translation>
 <translation id="1756833229520115364">টেমপ্লেট সেভ করা যাচ্ছে না। অনেক বেশি উইন্ডো বা ট্যাব।</translation>
 <translation id="1757857692711134412">সূর্যাস্ত পর্যন্ত বন্ধ আছে</translation>
 <translation id="1768366657309696705"><ph name="LAUNCHER_KEY_NAME" /> + পিরিয়ড কীবোর্ড শর্টকাট পরিবর্তিত হয়েছে। Insert বোতাম ব্যবহার করার জন্য, <ph name="LAUNCHER_KEY_NAME" /> বোতাম + Shift + Backspace প্রেস করুন।</translation>
@@ -266,7 +268,6 @@
 <translation id="2148716181193084225">আজ</translation>
 <translation id="2149229036084364364">আগের ট্র্যাকে যান</translation>
 <translation id="2161132820593978283">ভিডিও কলের কেন্দ্রে থাকার জন্য ক্যামেরা ফ্রেমিং ব্যবহার করুন। 'দ্রুত সেটিংস' থেকে এটি চালু করুন।</translation>
-<translation id="2165966740263283349">স্টোরেজ ব্যবহার</translation>
 <translation id="2170530631236737939">'এক নজরে' মোড থেকে বেরিয়ে আসতে তিনটি আঙুল দিয়ে নিচের দিকে সোয়াইপ করুন</translation>
 <translation id="2185166372312820725">আগের ট্যাবে যান</translation>
 <translation id="2185444992308415167">ট্যাব ১ থেকে ৮ যান</translation>
@@ -474,6 +475,7 @@
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (ব্লুটুথ)</translation>
 <translation id="3113492864356515707">শেল্ফে আগের আইটেম হাইলাইট করুন</translation>
 <translation id="3120421559657122717">ডিভাইস বন্ধ করবেন?</translation>
+<translation id="3122464029669770682">সিপিইউ</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">আপডেট করার জন্য পুনরারম্ভ করুন</translation>
 <translation id="3139188263101386725">আপডেট করা শর্টকাট ব্যবহার করুন</translation>
@@ -518,7 +520,6 @@
 <translation id="3308453408813785101">তা সত্ত্বেও, <ph name="USER_EMAIL_ADDRESS" /> পরে সাইন-ইন করতে পারবেন।</translation>
 <translation id="3321628682574733415">ভুল অভিভাবকীয় কোড</translation>
 <translation id="332827762492701193">বিজ্ঞপ্তি লুকানো আছে</translation>
-<translation id="3338855835380298613">সিপিইউ (CPU) ব্যবহার</translation>
 <translation id="3339826665088060472">স্ক্রিন ক্যাপচার, স্ক্রিনশট নেওয়ার টুল এবং স্ক্রিন রেকর্ডিং</translation>
 <translation id="3340978935015468852">সেটিংস</translation>
 <translation id="3341303451326249809">স্ক্রিনশট ক্যাপচার করা হয়েছে</translation>
@@ -642,7 +643,6 @@
 <translation id="3781910048497807059">আগের প্যানেলে ফোকাস সরান</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">লক করুন</translation>
-<translation id="3796198851576711985">ব্যাটারির স্বাস্থ্য</translation>
 <translation id="3796746699333205839">কোনও অ্যাপ্লিকেশন আপনার ক্যামেরা ও মাইক্রোফোন ব্যবহার করছে</translation>
 <translation id="3798670284305777884">স্পিকার (অভ্যন্তরীণ)</translation>
 <translation id="3799080171973636491">ফুল-স্ক্রিন ম্যাগনিফায়ারের জন্য আপনি কীবোর্ড শর্টকাট টিপেছেন। আপনি কি এটি চালু করতে চান?</translation>
@@ -814,12 +814,10 @@
 <translation id="4527045527269911712">ব্লুটুথ ডিভাইস "<ph name="DEVICE_NAME" />" যুক্ত করার অনুমতি চাইছে।</translation>
 <translation id="4533343294786968049">আপনার ব্যাটারি চার্জ হচ্ছে। <ph name="FULLY_CHARGE_TIME" />-এ ব্যাটারি পুরোপুরি চার্জ হয়ে যাবে।</translation>
 <translation id="453661520163887813">সম্পূর্ণ হতে <ph name="TIME" /> বাকি</translation>
-<translation id="4536664881735498710">র‌্যাম ব্যবহার</translation>
 <translation id="4538824937723742295">ফুল স্ক্রিনের স্ক্রিনশট নিন</translation>
 <translation id="4539127209940689201">বর্তমান পৃষ্ঠা প্রিন্ট করুন</translation>
 <translation id="4541706525461326392">প্রোফাইল সরানো হচ্ছে। এর জন্য কয়েক মিনিট সময় লাগতে পারে।</translation>
 <translation id="4544483149666270818">রেকর্ড করতে একটি উইন্ডো বেছে নিন</translation>
-<translation id="454541942614298893">আমার ডিভাইস</translation>
 <translation id="4545950850562423083">বর্তমান পৃষ্ঠাটি বুকমার্ক হিসেবে সেভ করুন</translation>
 <translation id="4548482551627849548">চালু থাকা উইন্ডো বাঁদিকের ডেস্কে সরান</translation>
 <translation id="4560576029703263363">চালু করা আছে</translation>
@@ -978,7 +976,6 @@
 <translation id="5208059991603368177">চালু আছে</translation>
 <translation id="5216991270656129561"><ph name="TIME" /> পর্যন্ত বন্ধ আছে</translation>
 <translation id="5217646019792206018">পরের ডেস্ক: <ph name="NEXT_DESK_NAME" />, Search+Space বা কীবোর্ডের শর্টকার্ট ব্যবহার করুন: চালু করতে Shift+Search+<ph name="NEXT_DESK_INDEX" />।</translation>
-<translation id="5221423477036820198">ফোন হাব ব্যবহার করে আপনার ফোনের মেসেজ দ্রুত পাঠান বা উত্তর দিন।</translation>
 <translation id="5222676887888702881">সাইন-আউট করুন</translation>
 <translation id="5229343007215035173">প্রাইভেসি স্ক্রিন চালু/বন্ধ করুন</translation>
 <translation id="5234764350956374838">খারিজ</translation>
@@ -1139,7 +1136,6 @@
 <translation id="589817443623831496">পয়েন্ট স্ক্যানিং</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5901630391730855834">হলুদ</translation>
-<translation id="5902162043476810127">র‍্যান্ডম অ্যাক্সেস মেমরি</translation>
 <translation id="5909862606227538307">ডেস্কটি অ্যাক্টিভ নেই</translation>
 <translation id="5911231045062997865">বর্তমানে Lacros উইন্ডো ব্যবহারের সুবিধা নেই। অন্যান্য অ্যাপ সেভ করা হবে।</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
@@ -1543,7 +1539,6 @@
 <translation id="7724603315864178912">কাটুন</translation>
 <translation id="7725108879223146004">হটস্পটের বিবরণ দেখুন। হটস্পট বন্ধ করা হচ্ছে।</translation>
 <translation id="7727952505535211425">একটি নতুন ট্যাবে অ্যাড্রেস বারে ওয়েবসাইটটি খুলুন</translation>
-<translation id="77365090426890123">মেমরি ব্যবহার</translation>
 <translation id="7742327441377685481">কোনও বিজ্ঞপ্তি নেই</translation>
 <translation id="7748275671948949022">শেল্ফের 'লঞ্চার' বোতাম হাইলাইট করুন</translation>
 <translation id="7749443890790263709">সর্বাধিক সংখ্যক ডেস্ক যোগ করা হয়ে গেছে।</translation>
@@ -1795,7 +1790,6 @@
 <translation id="8853703225951107899">আপনার পিন বা পাসওয়ার্ড এখনও যাচাই করা যায়নি। মনে রাখবেন: আপনি সম্প্রতি পাসওয়ার্ড পরিবর্তন করে থাকলে, পুরনো পাসওয়ার্ড ব্যবহার করুন। আপনি সাইন-আউট করলে নতুন পাসওয়ার্ড প্রয়োগ করা হবে।</translation>
 <translation id="8855885154700222542">ফুলস্ক্রিন করার বোতাম</translation>
 <translation id="8858369206579825206">গোপনীয়তা নিয়ন্ত্রণ</translation>
-<translation id="8860817004574502558">ব্যাটারির আয়ু</translation>
 <translation id="8870509716567206129">অ্যাপ্লিকেশনটি বিভক্ত-স্ক্রিন সমর্থন করে না৷</translation>
 <translation id="8874184842967597500">সংযুক্ত নয়</translation>
 <translation id="8875021410787719674">নিচে ডান কোণে, লঞ্চার, অ্যাড্রেস বার, বুকমার্ক বার, খোলা আছে এমন ওয়েবসাইট এবং ডাউনলোডগুলির মধ্যে সরান</translation>
@@ -1848,6 +1842,7 @@
 <translation id="9080073830732419341">ক্যামেরাটি উপরে বাঁদিকের কোণে স্ন্যাপ করা হয়েছে</translation>
 <translation id="9080132581049224423">'হোম' স্ক্রিনে যাওয়ার জন্য উপরের দিকে সোয়াইপ করুন</translation>
 <translation id="9080206825613744995">মাইক্রোফোন ব্যবহার করা হচ্ছে।</translation>
+<translation id="9083324773537346962">OS ভার্সন</translation>
 <translation id="908451241440060346">'বিরক্ত করবে না' চালু থাকলে বিজ্ঞপ্তি মিউট করা হয়</translation>
 <translation id="9084606467167974638">মেনুর অবস্থান টগল করুন</translation>
 <translation id="9085962983642906571">ব্যাটারির আয়ু বাড়ানোর জন্য প্লাগ-ইন করার সময় আপনার ব্যাটারি ৮০% এ রাখা হয়।</translation>
@@ -1888,7 +1883,6 @@
 <translation id="951991426597076286">প্রত্যাখ্যান</translation>
 <translation id="953431725143473984">ডিভাইস বন্ধ করবেন?</translation>
 <translation id="954052413789300507"><ph name="FILENAME" />-এর জন্য পর্যাপ্ত স্টোরেজ নেই। স্টোরেজ খালি করুন।</translation>
-<translation id="968627661524972577">আপনার Chromebook-এ প্রয়োজনীয় সবকিছু করতে অ্যাপ ব্যবহার করুন। আপনি 'লঞ্চার'-এ নিজের অ্যাপ খুঁজে পেতে পারবেন। এছাড়াও কীবোর্ডে 'লঞ্চার' কী প্রেস করতে পারবেন।</translation>
 <translation id="974545358917229949"><ph name="QUERY" />-এর জন্য <ph name="RESULT_COUNT" />টি ফলাফল দেখানো হচ্ছে</translation>
 <translation id="98120814841227350">ডকুমেন্টের শেষে যান</translation>
 <translation id="987589956647469042">মোবাইল ডেটা চালু রয়েছে</translation>

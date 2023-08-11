@@ -3,7 +3,6 @@
 <translationbundle lang="si">
 <translation id="1075622780330595106">ඔබේ පටිතිවලින් <ph name="NUMBER_OF_TABS" /> ක් මෑතදී භාවිත වී නැත. ඒවා වසන්නද?</translation>
 <translation id="125153950246128346">වෙනත් පටිත්තක් බැලීමට තට්ටු කරන්න</translation>
-<translation id="1455506303394048917">මෙම අප්‍රකට ටැබවල ඔබගේ ක්‍රියාකාරකම් මෙම උපාංගයෙන් ඉවත් කරනු ඇත</translation>
 <translation id="1499635324672558517">සියලු අප්‍රකට ටැබ වසන්නද?</translation>
 <translation id="1657719826150349398">පටිත්ත පහළට ගෙන යන්න</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> පටිත්තක්}one{පටිති <ph name="TABS_COUNT_MANY" /> ක්}other{පටිති <ph name="TABS_COUNT_MANY" /> ක්}}</translation>

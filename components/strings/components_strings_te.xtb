@@ -90,6 +90,7 @@
 <translation id="1175393348063009671">ఫోటో (మాట్)</translation>
 <translation id="1175875016430184367">కుడివైపు ట్రిపుల్ స్టేపుల్</translation>
 <translation id="1177802847690410663">వెబ్ బ్రౌజర్‌లు</translation>
+<translation id="1177863135347784049">అనుకూల</translation>
 <translation id="1178581264944972037">పాజ్ చేయి</translation>
 <translation id="1178821169867863726">12 x 16 అంగుళాలు</translation>
 <translation id="1181037720776840403">తీసివేయండి</translation>
@@ -134,7 +135,6 @@
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">మీ సంస్థ నిర్వహించని ఒక సైట్‌లో మీరు మీ పాస్‌వర్డ్‌ను నమోదు చేశారు. మీ ఖాతాను రక్షించడం కోసం, ఇతర యాప్‌లు మరియు సైట్‌లలో మీ పాస్‌వర్డ్‌ను తిరిగి ఉపయోగించవద్దు.</translation>
 <translation id="1257553931232494454">జూమ్ స్థాయిలు</translation>
-<translation id="1259843033850529027">పాలసీ స్థాయిని ఎంచుకోండి</translation>
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, మీ Chrome సెట్టింగ్‌లను మేనేజ్ చేయడానికి Tabను నొక్కి, ఆపై Enterను నొక్కండి</translation>
 <translation id="1264309058268477500">ఆల్టర్నేట్</translation>
 <translation id="1264974993859112054">క్రీడలు</translation>
@@ -258,12 +258,6 @@
 <translation id="1482879811280872320">సైక్లింగ్</translation>
 <translation id="1483493594462132177">పంపు</translation>
 <translation id="1492194039220927094">విధానాలను పుష్ చేయి:</translation>
-<translation id="149293076951187737">మీరు అన్ని Chrome అజ్ఞాత ట్యాబ్‌లను మూసివేసినప్పుడు, ఆ ట్యాబ్‌లలోని మీ యాక్టివిటీ ఈ పరికరం నుండి తీసివేయబడుతుంది:
-          <ph name="BEGIN_LIST" />
-            <ph name="LIST_ITEM" />బ్రౌజింగ్ యాక్టివిటీ<ph name="END_LIST_ITEM" />
-            <ph name="LIST_ITEM" />సెర్చ్ హిస్టరీ<ph name="END_LIST_ITEM" />
-            <ph name="LIST_ITEM" />ఫారమ్‌లలో ఎంటర్ చేసిన సమాచారం<ph name="END_LIST_ITEM" />
-          <ph name="END_LIST" /></translation>
 <translation id="14938948731065592">కంప్యూటర్ విడిభాగాలు</translation>
 <translation id="1495677929897281669">తిరిగి ట్యాబ్‌కు వెళ్లు</translation>
 <translation id="1501859676467574491">మీ Google ఖాతా నుండి కార్డ్‌లను చూపండి</translation>
@@ -392,7 +386,6 @@
 <translation id="1741613555002899862">DnsOverHttpsMode అనేది, <ph name="SECURE_DNS_MODE_SECURE" />గా సెట్ చేసి ఉన్నప్పుడు ఖచ్చితంగా పేర్కొనాలి, చెల్లుబాటు అయ్యే స్ట్రింగ్ అయి ఉండాలి.</translation>
 <translation id="1743393865165844832">పరుపులు &amp; దుప్పట్లు, దిండు గలేబాలు</translation>
 <translation id="1745399796851657441"><ph name="BEGIN_BOLD" />మేము ఈ డేటాను ఎలా ఉపయోగిస్తాము:<ph name="END_BOLD" /> మీరు బ్రౌజ్ చేస్తున్నప్పుడు మీకు ఆసక్తి ఉన్న టాపిక్‌లను Chrome నోట్ చేస్తుంది. టాపిక్ లేబుల్స్ ముందే నిర్వచించబడి ఉంటాయి, ఉదాహరణకు కళలు &amp; వినోదం, షాపింగ్, స్పోర్ట్స్ మొదలైనవి. ఆ తర్వాత, మీకు కనిపించే యాడ్‌లను వ్యక్తిగతీకరించడానికి, మీరు తెరిచిన ఏదైనా సైట్ మీ టాపిక్‌లలో కొన్నింటిని (మీ బ్రౌజింగ్ హిస్టరీ కాదు) అందించాల్సిందిగా Chromeను అడగవచ్చు.</translation>
-<translation id="1745880797583122200">మీ బ్రౌజర్ నిర్వహించబడుతోంది</translation>
 <translation id="1746113442205726301">చిత్రాన్ని Y అక్షంలో జరపు</translation>
 <translation id="1746531169546376413">0 డిగ్రీలు</translation>
 <translation id="1752021286346845558">మెయిల్‌బాక్స్ 8</translation>
@@ -458,6 +451,7 @@
 <translation id="1883255238294161206">లిస్ట్‌ను కుదించు</translation>
 <translation id="1884843295353628214">జాజ్</translation>
 <translation id="1890171020361705182">డైనో గేమ్. పిక్సెలేటెడ్ డైనోసార్ ఒక నిర్జనమైన ల్యాండ్‌స్కేప్‌లో కాక్టస్, టెరోడాక్టిల్స్‌ను తప్పించుకుంటూ పరుగెత్తుతున్నట్టు ఉంటుంది. మీరు ఆడియో క్యూను విన్నప్పుడు, అడ్డంకులపై నుండి దూకడానికి ట్యాప్ చేయండి.</translation>
+<translation id="189035593835762169">నియమాలు, షరతులు</translation>
 <translation id="1898423065542865115">ఫిల్టరింగ్</translation>
 <translation id="1901443836186977402">{1,plural, =1{ఇది <ph name="DOMAIN" /> అని సర్వర్ నిరూపించలేకపోయింది; నిన్న దీని భద్రతా సర్టిఫికెట్ గడువు ముగిసిపోయింది. తప్పుగా కాన్ఫిగర్ చేసినందున లేదా దాడి చేసేవారు మీ కనెక్షన్‌కు అంతరాయం కలిగించినందున ఇలా జరిగి ఉండవచ్చు. మీ కంప్యూటర్ గడియారం ప్రస్తుతం <ph name="CURRENT_DATE" />కు సెట్ చేయబడింది. అది సరిగానే ఉందా? సరిగ్గా లేకుంటే, మీరు సిస్టమ్ గడియారాన్ని సరిచేసి, ఆపై ఈ పేజీని రిఫ్రెష్ చేయండి.}other{ఈ సర్వర్ <ph name="DOMAIN" /> అని నిరూపించలేకపోయింది; దీని భద్రతా సర్టిఫికెట్ గడువు # రోజుల క్రితం ముగిసింది. ఇది తప్పుగా కాన్ఫిగర్ చేయడం వలన లేదా దాడి చేసేవారు మీ కనెక్షన్‌కు అంతరాయం కలిగించడం వలన జరిగి ఉండవచ్చు. మీ కంప్యూటర్ గడియారం ప్రస్తుతం <ph name="CURRENT_DATE" />కు సెట్ చేయబడింది. ఇది సరిగానే ఉందా? లేకపోతే, మీరు మీ సిస్టమ్ గడియారాన్ని సరి చేసి, ఆపై ఈ పేజీని రిఫ్రెష్ చేయాలి.}}</translation>
 <translation id="1902576642799138955">చెల్లుబాటు కాలం</translation>
@@ -809,6 +803,7 @@
 <translation id="2674804415323431591">సూచనలను దాచు</translation>
 <translation id="2677696497921480781">పుట్టినరోజులు &amp; నామకరణం చేసిన రోజులు</translation>
 <translation id="2677748264148917807">నిష్క్రమించండి</translation>
+<translation id="2678468611080193228">థర్డ్-పార్టీ కుక్కీలను తాత్కాలికంగా అనుమతించడానికి ట్రై చేయండి, అంటే తక్కువ రక్షణ ఉంటుంది కానీ సైట్ ఫీచర్‌లు పని చేసే అవకాశం ఎక్కువగా ఉంటుంది</translation>
 <translation id="2687555958734450033">సరిపోయేలా అమర్చు</translation>
 <translation id="2688186765492306706">500 x 760 మి.మీ.</translation>
 <translation id="2688969097326701645">అవును, కొనసాగించండి</translation>
@@ -1473,6 +1468,7 @@
 <translation id="4152318981910038897">{COUNT,plural, =1{1వ పేజీ}other{{COUNT}వ పేజీ}}</translation>
 <translation id="4154277373259957087">పేమెంట్ ఆప్షన్‌లలో వివరాలను పూరించడానికి ముందు ఇకపై Chrome, అలా చేస్తున్నది మీరేనని వెరిఫై చేస్తుంది. మీరు దీన్ని <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />లో ఎప్పుడైనా అప్‌డేట్ చేయవచ్చు.</translation>
 <translation id="4154664944169082762">వేలిముద్రలు</translation>
+<translation id="4159149286839604525">అంటే చాలా సైట్ ఫీచర్‌లు పని చేయాలి, కానీ మీకు తక్కువ రక్షణ ఉంటుంది</translation>
 <translation id="4159784952369912983">వంగపండు రంగు</translation>
 <translation id="4165986682804962316">సైట్ సెట్టింగ్‌లు</translation>
 <translation id="4169535189173047238">అనుమతించవద్దు</translation>
@@ -1845,7 +1841,6 @@
 <translation id="4901778704868714008">సేవ్ చేయండి...</translation>
 <translation id="4901952598169637881">సాధారణ షూస్</translation>
 <translation id="4905659621780993806">మీ అడ్మినిస్ట్రేటర్ మీ పరికరాన్ని <ph name="DATE" />న <ph name="TIME" />కు ఆటోమేటిక్‌గా రీస్టార్ట్ చేస్తారు. మీ పరికరం రీస్టార్ట్ కావడానికి ముందే, తెరిచి ఉన్న ఐటెమ్‌లు ఏవైనా ఉంటే, వాటిని సేవ్ చేయండి.</translation>
-<translation id="4907289208610706508">టార్గెట్</translation>
 <translation id="4913987521957242411">ఎడమవైపు ఎగువ భాగంలో రంధ్రాలు</translation>
 <translation id="4917064667437236721">ఇమేజింగ్ సిలిండర్</translation>
 <translation id="4918221908152712722"><ph name="APP_NAME" />ను ఇన్‌స్టాల్ చేయండి (డౌన్‌లోడ్ చేయాల్సిన అవసరం లేదు)</translation>
@@ -1879,6 +1874,7 @@
 <translation id="4983145717627482381">గైడ్ కలిగిన టూర్‌లు &amp; ఎస్కార్ట్ ఉన్న వెకేషన్‌లు</translation>
 <translation id="498323057460789381">స్కీమా ప్రామాణీకరణ ఎర్రర్: <ph name="ERROR" /></translation>
 <translation id="4984088539114770594">మైక్రోఫోన్‌ను ఉపయోగించాలా?</translation>
+<translation id="4985206706500620449">మీరు ఈ సైట్ కోసం థర్డ్-పార్టీ కుక్కీలను అనుమతించారు</translation>
 <translation id="4989163558385430922">అన్నీ చూడండి</translation>
 <translation id="4989542687859782284">అందుబాటులో లేనివి</translation>
 <translation id="4989809363548539747">ఈ ప్లగ్ఇన్‌‌కు మద్దతు లేదు</translation>
@@ -1888,6 +1884,7 @@
 <translation id="4995474875135717171">ఎడిట్ చేసిన సమయం:</translation>
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />, మీ ఆటోమేటిక్ సెర్చ్ ఇంజిన్‌ను, సైట్ సెర్చ్‌ను మేనేజ్ చేయడానికి Tabను నొక్కి, ఆపై Enterను నొక్కండి</translation>
 <translation id="4998950033665438990">సింగిల్ ఫేస్</translation>
+<translation id="5001526427543320409">థర్డ్-పార్టీ కుక్కీలు</translation>
 <translation id="5002932099480077015">ప్రారంభిస్తే, వేగవంతమైన ఫారమ్ పూరింపు కోసం ఈ పరికరంలో మీ కార్డ్ కాపీని స్టోరేజ్‌ చేస్తుంది.</translation>
 <translation id="5007392906805964215">రివ్యూ చేయండి</translation>
 <translation id="5011561501798487822">గుర్తించబడిన భాష</translation>
@@ -2570,7 +2567,6 @@
 <translation id="6450212216969386944">ఎన్వలప్ చౌ 40</translation>
 <translation id="6451458296329894277">ఫారమ్ పునఃసమర్పణను నిర్థారించండి</translation>
 <translation id="6452889436791091116">ISO ID-1</translation>
-<translation id="6453457495574553803">పాలసీ టార్గెట్‌ను ఎంచుకోండి</translation>
 <translation id="6456955391422100996">ప్రకటన తీసివేయబడింది.</translation>
 <translation id="6457206614190510200">సాడిల్ స్టిచ్</translation>
 <translation id="6457455098507772300">ధర తగ్గుదల అలర్ట్‌లు మీ డెస్క్‌టాప్‌లో పాప్అప్ నోటిఫికేషన్‌లుగా చూపబడతాయి</translation>
@@ -2604,6 +2600,7 @@
 <translation id="6521745193039995384">యాక్టివ్‌గా లేదు</translation>
 <translation id="6524830701589638230">'యాక్సెసిబిలిటీ సెట్టింగ్‌లను మేనేజ్ చేయండి' బటన్, Chrome సెట్టింగ్‌లలో మీ యాక్సెసిబిలిటీ టూల్స్‌ను వ్యక్తిగతీకరించడానికి దీన్ని యాక్టివేట్ చేయండి</translation>
 <translation id="6529173248185917884">సెవెంత్ రోల్</translation>
+<translation id="652937045869844725">థర్డ్-పార్టీ కుక్కీలను అనుమతించడానికి ట్రై చేయండి, అంటే తక్కువ రక్షణ ఉంటుంది కానీ సైట్ ఫీచర్‌లు పని చేసే అవకాశం ఎక్కువగా ఉంటుంది</translation>
 <translation id="6529602333819889595">&amp;తొలగించడాన్ని రిపీట్‌ చేయి</translation>
 <translation id="6535751101619004418">కరెన్సీలు &amp; విదేశీ మారకం</translation>
 <translation id="6536221421038631327">మీ <ph name="DEVICE_TYPE" /> నుండి Passpoint సబ్‌స్క్రిప్షన్‌ను తీసివేయడం వలన అనుబంధిత నెట్‌వర్క్‌లు తీసివేయబడతాయి. మీ సబ్‌స్క్రిప్షన్ ప్లాన్‌కు మార్పులు చేయడానికి "<ph name="FRIENDLY_NAME" />"ని కాంటాక్ట్ చేయండి. <ph name="LEARN_MORE" /></translation>
@@ -2684,6 +2681,7 @@
 <translation id="6702919718839027939">పిన్ చేయండి</translation>
 <translation id="6704458454638854812">ప్రాపర్టీ "custom_size" సెట్ చేయబడింది, పేరు "అనుకూలం" అవ్వవచ్చని ఊహించాము.</translation>
 <translation id="6706005862292023715">కర్టెయిన్‌లు &amp; కిటికీలకు సంబంధించిన అలంకరణ</translation>
+<translation id="6706210727756204531">పరిధి</translation>
 <translation id="6709133671862442373">News</translation>
 <translation id="6709888928011386878">సంగీత వాయిద్యాలు</translation>
 <translation id="6710213216561001401">మునుపటి</translation>
@@ -2867,6 +2865,7 @@
 <translation id="7102079138917191645">నిర్మాణం &amp; నిర్వహణ</translation>
 <translation id="7102554173784142865">Chrome Dino గేమ్‌ను ఆడండి</translation>
 <translation id="7102760431686146931">వంట సామగ్రి &amp; డైనింగ్ వస్తువులు</translation>
+<translation id="7106762743910369165">మీ బ్రౌజర్ మీ సంస్థ ద్వారా మేనేజ్ చేయబడుతుంది</translation>
 <translation id="7108338896283013870">దాచిపెట్టు</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> మీ కెమెరాను ఉపయోగించాలనుకుంటోంది</translation>
 <translation id="7108819624672055576">ఎక్స్‌టెన్షన్‌ ద్వారా అనుమతించబడింది</translation>
@@ -2880,12 +2879,6 @@
 <translation id="7119371694555167493">'కాపీ చేయడానికి' సమయం ముగిసింది</translation>
 <translation id="7119414471315195487">ఇతర ట్యాబ్‌లు లేదా ప్రోగ్రామ్‌లను మూసివేయండి</translation>
 <translation id="7124354851782353862">మీ CVCని ఎంటర్ చేయండి</translation>
-<translation id="7129355289156517987">మీరు అన్ని Chromium అజ్ఞాత ట్యాబ్‌లను మూసివేసినప్పుడు, ఆ ట్యాబ్‌లలోని మీ యాక్టివిటీ ఈ పరికరం నుండి తీసివేయబడుతుంది:
-          <ph name="BEGIN_LIST" />
-            <ph name="LIST_ITEM" />బ్రౌజింగ్ యాక్టివిటీ<ph name="END_LIST_ITEM" />
-            <ph name="LIST_ITEM" />సెర్చ్ హిస్టరీ<ph name="END_LIST_ITEM" />
-            <ph name="LIST_ITEM" />ఫారమ్‌లలో ఎంటర్ చేసిన సమాచారం<ph name="END_LIST_ITEM" />
-          <ph name="END_LIST" /></translation>
 <translation id="7129409597930077180">ఈ అడ్రస్‌కు రవాణా చేయడం సాధ్యం కాదు. వేరే అడ్రస్‌ను ఎంచుకోండి.</translation>
 <translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
 <translation id="7130775116821607281">అప్‌లోడ్ చేయకుండా బ్లాక్ చేయబడింది</translation>
@@ -2936,6 +2929,7 @@
 <translation id="7221855153210829124">నోటిఫికేషన్‌లను చూపాలనుకుంటోంది</translation>
 <translation id="7221857374443660083">అది మీరేనని మీ బ్యాంక్ నిర్ధారించాలనుకుంటోంది</translation>
 <translation id="722454870747268814">కొత్త అజ్ఞాత ట్యాబ్</translation>
+<translation id="7226276626900992675">థర్డ్-పార్టీ కుక్కీలను ఉపయోగించడానికి ఈ సైట్‌ను మీరు అనుమతించారు. అంటే చాలా సైట్ ఫీచర్‌లు పని చేయాలి, కానీ మీకు తక్కువ రక్షణ ఉంటుంది.</translation>
 <translation id="7227293336683593977">ధర హిస్టరీ</translation>
 <translation id="7233592378249864828">ప్రింట్ చేయడాన్ని నిర్ధారించే షీట్</translation>
 <translation id="7234638337680728591">గ్యాస్ ధరలు &amp; వాహన ఇంధనాలు</translation>
@@ -3555,7 +3549,6 @@
 <translation id="8483229036294884935">ఈ అడ్రస్ మీ Google ఖాతా, <ph name="ACCOUNT" /> నుండి తొలగించబడుతుంది</translation>
 <translation id="8488350697529856933">వీటికి వర్తిస్తుంది</translation>
 <translation id="8490137692873530638">స్టాకర్ 10</translation>
-<translation id="8493829133024050711">పాలసీ సోర్స్‌ను ఎంచుకోండి</translation>
 <translation id="8493948351860045254">స్థలాన్ని ఖాళీ చేయి</translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" /> ప్రతిస్పందించడానికి చాలా ఎక్కువ సమయం పట్టింది.</translation>
 <translation id="8503559462189395349">Chrome పాస్‌వర్డ్‌లు</translation>
@@ -3620,7 +3613,6 @@
 <translation id="8623885649813806493">పాస్‌వర్డ్‌లు ఏవీ మ్యాచ్ అవ్వలేదు. సేవ్ చేసిన అన్ని పాస్‌వర్డ్‌లను చూపు.</translation>
 <translation id="8624354461147303341">డిస్కౌంట్‌లను పొందండి</translation>
 <translation id="8634957317623797170">54 x 86 మి.మీ.</translation>
-<translation id="8637577059508742477">మీ ప్రొఫైల్, బ్రౌజర్‌ను <ph name="DOMAIN" /> మేనేజ్ చేస్తోంది</translation>
 <translation id="8641131559425911240">ఎన్వలప్ (బాండ్)</translation>
 <translation id="8643409044755049933">ఎన్వలప్ కాకు 3</translation>
 <translation id="8647287295490773273">210 x 330 మి.మీ.</translation>
@@ -3697,6 +3689,7 @@
 <translation id="8793655568873652685"><ph name="ENROLLMENT_DOMAIN" />, మీ బ్రౌజర్‌లో Chrome Enterprise కనెక్టర్‌లను ఆన్ చేసింది. ఈ కనెక్టర్‌లకు మీ డేటాలో కొంత డేటాకు యాక్సెస్ ఉంది.</translation>
 <translation id="8798099450830957504">డిఫాల్ట్</translation>
 <translation id="8798739476508189189">బ్రౌజర్ ఫ్లాగ్‌ల కోసం వెతుకుతున్నారా? సందర్శించండి</translation>
+<translation id="8800034312320686233">సైట్ పని చేయడం లేదా?</translation>
 <translation id="8805819170075074995">లిస్ట్‌ నమోదు "<ph name="LANGUAGE_ID" />": నమోదు విస్మరించబడింది, ఎందుకంటే ఇది SpellcheckLanguage విధానంలో కూడా ఉంది.</translation>
 <translation id="8806285662264631610">స్నానానికి వినియోగించే &amp; శరీర ప్రోడక్ట్‌లు</translation>
 <translation id="8806696968588872703">ప్లాస్టిక్ (శాటిన్)</translation>

@@ -166,7 +166,6 @@
 <translation id="2312704192806647271">{COUNT,plural, =1{<ph name="BEGIN_LIST" /><ph name="END_LIST" /> எனும் ஐடி உள்ள நீட்டிப்பைக் கண்டறிய முடியவில்லை. உங்கள் நிர்வாகியைத் தொடர்புகொள்ளவும்.}other{<ph name="BEGIN_LIST" /><ph name="END_LIST" /> எனும் ஐடிக்கள் உள்ள நீட்டிப்புகளைக் கண்டறிய முடியவில்லை. உங்கள் நிர்வாகியைத் தொடர்புகொள்ளவும்.}}</translation>
 <translation id="2325650632570794183">இந்த ஃபைல் வகை ஆதரிக்கப்படவில்லை. இந்த வகையான ஃபைலைத் திறக்கும் பயன்பாட்டைக் கண்டறிய Chrome  இணைய அங்காடியைப் பார்வையிடவும்.</translation>
 <translation id="2326539130272988168">பல்கேரியன்</translation>
-<translation id="2337715497728194187">Bruschetta உடன் பகிர்</translation>
 <translation id="233822363739146957">உங்கள் ஃபைல்கள் அனைத்தையும் ஒத்திசைக்க போதுமான சேமிப்பிடம் இல்லை</translation>
 <translation id="23721837607121582">இந்த மொபைல் சுயவிவரத்தைப் பதிவிறக்கும்: நெட்வொர்க் <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">பட்டியல் காட்சிக்கு மாறு</translation>
@@ -197,7 +196,6 @@
 <translation id="2544853746127077729">அங்கீகரிப்புச் சான்றிதழ் நெட்வொர்க்கால் நிராகரிக்கப்பட்டது</translation>
 <translation id="255937426064304553">யு.எஸ். இன்டர்நேஷனல்</translation>
 <translation id="2563185590376525700">தவளை</translation>
-<translation id="2574327434504608656">Bruschetta உடன் 1 ஃபோல்டர் பகிரப்பட்டது</translation>
 <translation id="2578394532502990878">தமிழ் ஒலிப்புமுறை</translation>
 <translation id="2579959351793446050">ஒடியா</translation>
 <translation id="2587195714949534472"><ph name="FILE_NAME" /> ஒத்திசைக்கத் தயாராகிறது...</translation>
@@ -297,7 +295,6 @@
 <translation id="3408072735282270043"><ph name="NETWORK_NAME" /> நெட்வொர்க்கைச் செயல்படுத்தும்</translation>
 <translation id="3408236822532681288">ஜெர்மன் (ஜெர்மனி) - நியோ 2 கீபோர்டு</translation>
 <translation id="3414856743105198592">அகற்றத்தக்க மீடியாவை வடிவமைப்பதானது எல்லா தரவையும் அழிக்கும். தொடர விரும்புகிறீர்களா?</translation>
-<translation id="3435143625481187092"><ph name="FOLDER_NAME" /> ஃபோல்டரில் உள்ள ஃபைல்களை அணுக Bruschettaவிற்கு அனுமதி வழங்குங்கள்</translation>
 <translation id="3437801641691368414">உருவாக்கிய நேரம்</translation>
 <translation id="343907260260897561">இன்ஸ்டண்ட் கேமரா</translation>
 <translation id="3455931012307786678">எஸ்தோனியன்</translation>
@@ -385,7 +382,6 @@
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> நகர்த்தப்பட்டது.</translation>
 <translation id="4176286497474237543">‘நீக்கியவையில்’ உள்ளவற்றை இப்போதே நீக்கு</translation>
 <translation id="4179621117429069925">இந்த ஃபைல் உங்கள் 'நீக்கியவை' ஃபோல்டரில் உள்ளது</translation>
-<translation id="4181839429935094755">Bruscheta உடன் <ph name="NUMBER_OF_ITEMS" /> ஃபோல்டர்கள் பகிரப்பட்டுள்ளன</translation>
 <translation id="4186579485882418952">இயக்கு</translation>
 <translation id="4193154014135846272">Google ஆவணம்</translation>
 <translation id="4197674956721858839">ஜிப் தேர்வு</translation>
@@ -452,7 +448,6 @@
 <translation id="4646813851450205600">செக் - Qwerty கீபோர்டு</translation>
 <translation id="4656777537938206294">ஃபைல்களை ஆஃப்லைனில் பயன்படுத்தலாம்</translation>
 <translation id="4658782175094886150">பனியில் இருக்கும் நபர்</translation>
-<translation id="466782788172479199">உங்கள் Google Driveவில் உள்ள ஃபைல்களை அணுக Bruschettaவிற்கு அனுமதி வழங்குங்கள். மாற்றங்கள் உங்களின் பிற சாதனங்களுடன் ஒத்திசைக்கப்படும்.</translation>
 <translation id="4669606053856530811">இந்த ஃபைல்களை '<ph name="SOURCE_NAME" />' இன் உறுப்பினர்களுடன் பகிரவில்லை எனில், அவர்கள் அவற்றுக்கான அணுகலை இழப்பார்கள்.</translation>
 <translation id="467809019005607715">Google Slides</translation>
 <translation id="4690246192099372265">ஸ்வீடிஷ்</translation>
@@ -564,7 +559,6 @@
 <translation id="5323213332664049067">லத்தீன் அமெரிக்கன்</translation>
 <translation id="5330145655348521461">இந்த ஃபைல்கள் மற்றொரு டெஸ்க்டாப்பில் திறக்கப்பட்டன. இதைப் பார்க்க, <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) க்கு நகர்த்தவும்.</translation>
 <translation id="5330512191124428349">தகவலைப் பெறு</translation>
-<translation id="5344246330454251646">Bruschetta உடனான பகிர்வை நிர்வகியுங்கள்</translation>
 <translation id="535792325654997756">பூனைகளுடன் இருக்கும் நபர்</translation>
 <translation id="5358764674931277">ஃபிரேம் வீதம்</translation>
 <translation id="5363339716524495120">உள்ளீட்டு மொழி சீனம்</translation>
@@ -732,7 +726,6 @@
 <translation id="6710213216561001401">முந்தையது</translation>
 <translation id="6732801395666424405">சான்றிதழ்கள் ஏற்றப்படவில்லை</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
-<translation id="6740270213273127264">Bruschetta உடன் ஃபோல்டரைப் பகிருங்கள்</translation>
 <translation id="6750737795876287924">தற்போதைய டைரக்டரி</translation>
 <translation id="6751256176799620176">1 ஃபோல்டர் தேர்ந்தெடுக்கப்பட்டது</translation>
 <translation id="6755827872271341378">ChromeOS Flex சாதனம்</translation>

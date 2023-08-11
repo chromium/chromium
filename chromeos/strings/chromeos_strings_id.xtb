@@ -15,7 +15,6 @@
 <translation id="1075811647922107217">Ukuran halaman</translation>
 <translation id="1082009148392559545">Mendownload screensaver</translation>
 <translation id="1094693127011229778">Alamat IP tidak tersedia</translation>
-<translation id="1113892970288677790">Pilih karya seni dan gambar pilihan</translation>
 <translation id="1118572504348554005">Kami mungkin membagikan masukan yang dikirim melalui formulir ini kepada partner kami untuk memecahkan masalah bug dan masalah lain yang Anda laporkan kepada kami. Jangan sertakan informasi sensitif seperti sandi.</translation>
 <translation id="1119447706177454957">Kesalahan internal</translation>
 <translation id="1124772482545689468">Pengguna</translation>
@@ -183,6 +182,7 @@
 <translation id="225692081236532131">Status aktivasi</translation>
 <translation id="2271469253353559191">Jadwal mode gelap</translation>
 <translation id="2276999893457278469">Konten bantuan teratas</translation>
+<translation id="2279051792571591988">Pulihkan default</translation>
 <translation id="2287186687001756809">Foto tidak tersedia. Untuk menambahkan foto, buka <ph name="LINK" /></translation>
 <translation id="2307344026739914387">Gunakan pasangan kunci saat ini</translation>
 <translation id="2320295602967756579">Aktifkan tema terang</translation>
@@ -332,7 +332,6 @@
 <translation id="361575905210396100">Terima kasih atas masukan Anda</translation>
 <translation id="3632579075709132555">Beralih layar privasi</translation>
 <translation id="3651050199673793219">Pilih satuan suhu</translation>
-<translation id="3663574643422533538">Pilih karya seni <ph name="PRODUCT_NAME" /> eksklusif</translation>
 <translation id="3668449597372804501">Wallpaper Aliran awan</translation>
 <translation id="3689839747745352263">Uji <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Memuat...</translation>
@@ -465,7 +464,7 @@
 <translation id="4691278870498629773">Dihentikan - Tidak ada baki</translation>
 <translation id="469379815867856270">Kekuatan Sinyal</translation>
 <translation id="4731797938093519117">Akses orang tua</translation>
-<translation id="473775607612524610">Perbarui</translation>
+<translation id="473775607612524610">Update</translation>
 <translation id="4771607256327216405">cerahkan keyboard</translation>
 <translation id="4773299976671772492">Dihentikan</translation>
 <translation id="4782311465517282004">Dapatkan definisi, terjemahan, atau konversi unit saat Anda mengklik kanan atau menyentuh lama teks</translation>
@@ -646,6 +645,7 @@
 <translation id="6061772781719867950">Permintaan HTTPS gagal</translation>
 <translation id="6073292342939316679">kurangi kecerahan keyboard</translation>
 <translation id="6075872808778243331">(Android) Latensi HTTP</translation>
+<translation id="6078323886959318429">Tambahkan pintasan</translation>
 <translation id="6104112872696127344">Pemindaian telah dibatalkan</translation>
 <translation id="6106186594183574873">Untuk menyelesaikan, masukkan sandi yang lama</translation>
 <translation id="6108689792487843350">Gateway tidak dapat dijangkau</translation>
@@ -923,7 +923,7 @@
 <translation id="8318753676953949627">Tidak Ada Gambar</translation>
 <translation id="8329018942023753850">aplikasi kalkulator</translation>
 <translation id="8336739000755212683">Ubah gambar akun perangkat</translation>
-<translation id="8347227221149377169">Pekerjaan cetak</translation>
+<translation id="8347227221149377169">Pencetakan</translation>
 <translation id="8351855506390808906">Titik sentuh konfigurasi tombol</translation>
 <translation id="8352772353338965963">Tambahkan akun ke fitur masuk banyak akun. Semua akun yang masuk dapat diakses tanpa menggunakan sandi, sebaiknya hanya gunakan akun ini dengan akun tepercaya.</translation>
 <translation id="8364946094152050673">Server nama kosong</translation>

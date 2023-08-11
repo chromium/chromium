@@ -1849,7 +1849,7 @@
 <translation id="2608887839902987727">禁止强制门户身份验证忽略代理设置</translation>
 <translation id="2608985885792348429">默认剪贴板设置</translation>
 <translation id="2615240493030733717">报告时区信息</translation>
-<translation id="2619258867868873629"><ph name="PRODUCT_OS_NAME" /> 设备上的“另存为 PDF”目的地和“保存到 Google 云端硬盘”目的地</translation>
+<translation id="2619258867868873629">“另存为 PDF”目的地和 <ph name="PRODUCT_OS_NAME" /> 设备上的“保存到 Google 云端硬盘”目的地</translation>
 <translation id="2621290137818374425">设置此政策可关闭对指定网址中所含主机名的证书透明度披露要求。虽然这会导致更难以检测到误颁的证书，但相应主机可以继续使用因没有恰当公开披露相关信息而不受信任的证书。
 
       如果您未设置此政策，<ph name="PRODUCT_NAME" /> 便会将那些应按照证书透明度要求进行披露但却未予披露的证书视为不可信证书。
@@ -3015,17 +3015,6 @@
 
       如果您不设置此政策，<ph name="PRODUCT_NAME" /> 便会使用默认库名称。</translation>
 <translation id="3650122925429054129">禁止在登录屏幕上使用光标突出显示</translation>
-<translation id="3652207037778361023">启用电量不足提示音功能。
-
-          该功能负责播放电量不足提示音。
-
-          如果将此政策设为启用，当电池电量或剩余续航时长降到特定阈值以下时，系统会播放电量不足提示音。
-
-          如果将此政策设为停用，系统将不会播放电量不足提示音。
-
-          如果您设置了此政策，用户便无法对其更改或覆盖。
-
-          如果未设置此政策，那么该功能在受管理的 <ph name="PRODUCT_OS_NAME" /> 设备上会处于停用状态，但在其他情况下会处于启用状态。</translation>
 <translation id="3652670852519271837">允许网站通过 File System API 请求用户授予对文件和目录的读取权限</translation>
 <translation id="3653237928288822292">默认搜索服务提供商图标</translation>
 <translation id="3654906736796256792">允许音频沙盒运行</translation>
@@ -3756,17 +3745,6 @@
 <translation id="4311662690937656540">强制在登录屏幕和锁定的屏幕上执行在线登录</translation>
 <translation id="4313767483634435271">设备的指定基座 MAC 地址</translation>
 <translation id="4314538398999793073">在 Kerberos 身份验证期间停用 CNAME 查找功能</translation>
-<translation id="4316437338046981895">启用充电提示音功能。
-
-          该功能负责播放充电提示音。
-
-          如果将此政策设为启用，当设备连接到交流电源充电器之后，系统会播放充电提示音。
-
-          如果将此政策设为停用，系统将不会播放充电提示音。
-
-          如果您设置了此政策，用户便无法对其更改或覆盖。
-
-          如果未设置此政策，那么该功能在受管理的 <ph name="PRODUCT_OS_NAME" /> 设备上会处于停用状态，但在其他情况下会处于启用状态。</translation>
 <translation id="4320592646346933548">Wi-Fi</translation>
 <translation id="4322842393287974810">允许自动启动零延迟的自助服务终端应用控制 <ph name="PRODUCT_OS_NAME" />版本</translation>
 <translation id="4323412353642577604">允许为保护内容而进行远程认证</translation>
@@ -9167,16 +9145,6 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="9220314833408124365">使用默认引荐来源网址政策值 no-referrer-when-downgrade</translation>
 <translation id="9221827710437832530">允许在登录屏幕上访问地理定位。</translation>
 <translation id="922540222991413931">配置扩展程序、应用和用户脚本安装源</translation>
-<translation id="922656089385303086">此政策已被弃用，并将在里程碑 130 中移除，请改用 <ph name="URL_KEYED_METRICS_ALLOWED_POLICY_NAME" />。
-
-如果已启用此政策，系统会始终启用以网址为键的匿名化数据收集功能，从而将用户访问的网页网址发送给 Google，以用于改善搜索和浏览体验。
-
-如果已停用此政策，系统将不会启用以网址为键的匿名化数据收集功能。
-
-如果未设置此政策，用户将能手动更改此设置。
-
-在 <ph name="PRODUCT_OS_NAME" /> 自助服务终端中，此政策不提供“允许用户决定”选项。如果未为 <ph name="PRODUCT_OS_NAME" /> 自助服务终端设置此政策，系统会始终启用以网址为键的匿名化数据收集功能。
-为 <ph name="PRODUCT_OS_NAME" /> 自助服务终端设置此政策后，系统会为自助服务终端应用启用以网址为键的指标收集功能。</translation>
 <translation id="924557436754151212">首次运行时，从默认浏览器导入保存的密码</translation>
 <translation id="926104720905645793">此政策旨在控制 <ph name="PRODUCT_NAME" /> 云报告功能，该功能可将与浏览器操作相关的信息上传到 <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />。
 

@@ -99,6 +99,7 @@
 <translation id="2621115761605608342">Дазвол JavaScript на канкрэтным сайце.</translation>
 <translation id="2653659639078652383">Адправіць</translation>
 <translation id="2677748264148917807">Выйсці</translation>
+<translation id="2678468611080193228">Паспрабуйце часова дазволіць староннія файлы cookie – гэта знізіць вашу абароненасць, але павысіць імавернасць таго, што функцыі сайта будуць працаваць</translation>
 <translation id="2687403674020088961">Блакіраваць усе файлы cookie (не рэкамендуецца)</translation>
 <translation id="2713106313042589954">Выключыць камеру</translation>
 <translation id="2717722538473713889">Адрасы электроннай пошты</translation>
@@ -138,6 +139,7 @@
 <translation id="3362437373201486687">Ідзе пошук прылад з Bluetooth</translation>
 <translation id="3386292677130313581">Пытацца, перш чым дазволіць сайтам атрымліваць інфармацыю пра ваша месцазнаходжанне (рэкамендуецца)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" />%%</translation>
+<translation id="344449859752187052">Староннія файлы cookie заблакіраваны</translation>
 <translation id="3521663503435878242">Сайты дамена <ph name="DOMAIN" /></translation>
 <translation id="3538390592868664640">Забараніць сайтам ствараць 3D-карту вашага асяроддзя і адсочваць становішча камеры</translation>
 <translation id="3544058026430919413">Кампанія можа вызначыць групу сайтаў, якім будзе дазволена выкарыстоўваць файлы cookie для перадачы адзін аднаму інфармацыі пра вашы дзеянні ў групе. У рэжыме інкогніта гэта функцыя не працуе.</translation>
@@ -212,6 +214,7 @@
 <translation id="4962975101802056554">Адклікаць усе дазволы для прылады</translation>
 <translation id="497421865427891073">Наперад</translation>
 <translation id="4976702386844183910">Апошняе наведванне: <ph name="DATE" /></translation>
+<translation id="4985206706500620449">Вы дазволілі староннія файлы cookie для гэтага сайта</translation>
 <translation id="4994033804516042629">Кантакты не знойдзены</translation>
 <translation id="4996978546172906250">Абагуліць праз</translation>
 <translation id="5001526427543320409">Староннія файлы cookie</translation>
@@ -256,6 +259,7 @@
 <translation id="5677928146339483299">Заблакіравана</translation>
 <translation id="5689516760719285838">Месцазнаходжанне</translation>
 <translation id="5690795753582697420">Камера выключана ў наладах Android</translation>
+<translation id="5700761515355162635">Староннія файлы cookie дазволены</translation>
 <translation id="5706552988683188916">Будуць выдалены файлы cookie і іншыя даныя сайта <ph name="WEBSITE" /></translation>
 <translation id="5719847187258001597">Будуць выдалены ўсе файлы cookie і даныя, захаваныя сайтам <ph name="ORIGIN" /> і яго праграмай, размешчанай на галоўным экране.</translation>
 <translation id="5723967018671998714">У рэжыме інкогніта староннія файлы cookie блакіруюцца</translation>
@@ -303,6 +307,7 @@
 <translation id="6467852467360539617">Выдаліць даныя і скінуць дазволы</translation>
 <translation id="6500423977866688905">Калі акно выцягнутае, запытайце версію для мабільных прылад</translation>
 <translation id="6527303717912515753">Абагуліць</translation>
+<translation id="652937045869844725">Паспрабуйце дазволіць староннія файлы cookie – гэта знізіць вашу абароненасць, але павысіць імавернасць таго, што функцыі сайта будуць працаваць</translation>
 <translation id="6545864417968258051">Пошук прылад Bluetooth</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{Заблакіраваны <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}one{Заблакіраваны <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}few{Заблакіраваны <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}many{Заблакіраваны <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}other{Заблакіраваны <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}}</translation>
 <translation id="6554732001434021288">Апошняе наведванне: <ph name="NUM_DAYS" /> сут таму</translation>
@@ -435,6 +440,7 @@
 <translation id="8736193154595564524">{NUM_SELECTED,plural, =1{Файлы cookie дазволены на 1 сайце}one{Файлы cookie дазволены на # сайце}few{Файлы cookie дазволены на # сайтах}many{Файлы cookie дазволены на # сайтах}other{Файлы cookie дазволены на # сайта}}</translation>
 <translation id="8737217482364735741">Будуць выдалены файлы cookie і даныя, захаваныя сайтам <ph name="ORIGIN" />.</translation>
 <translation id="8751914237388039244">Выберыце відарыс</translation>
+<translation id="8800034312320686233">Сайт не працуе?</translation>
 <translation id="8801436777607969138">Блакіраванне JavaScript для канкрэтнага сайта.</translation>
 <translation id="8803526663383843427">Калі функцыя ўключана</translation>
 <translation id="8805385115381080995">Прагляд старонак робіцца хутчэйшым, бо сайты з меншай імавернасцю будуць прасіць вас пацвердзіць, што вы сапраўды чалавек</translation>

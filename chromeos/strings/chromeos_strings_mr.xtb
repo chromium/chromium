@@ -15,7 +15,6 @@
 <translation id="1075811647922107217">पेजचा आकार</translation>
 <translation id="1082009148392559545">स्क्रीन सेव्हर डाउनलोड करत आहे</translation>
 <translation id="1094693127011229778">आयपी अ‍ॅड्रेस उपलब्ध नाही</translation>
-<translation id="1113892970288677790">निवडक कलाकृती आणि इमेज निवडा</translation>
 <translation id="1118572504348554005">बग आणि तुम्ही आमच्याकडे तक्रार केलेल्या इतर समस्यांचे निराकरण करण्यासाठी या फॉर्मद्वारे सबमिट केलेला फीडबॅक आम्ही आमच्या भागीदारांसोबत शेअर करू शकतो. पासवर्डसारखी संवेदनशील माहिती समाविष्ट करू नका.</translation>
 <translation id="1119447706177454957">अंतर्गत एरर</translation>
 <translation id="1124772482545689468">वापरकर्ता</translation>
@@ -183,6 +182,7 @@
 <translation id="225692081236532131">सक्रियन स्थिती</translation>
 <translation id="2271469253353559191">गडद मोडचे शेड्युल</translation>
 <translation id="2276999893457278469">सर्वोत्तम मदत आशय</translation>
+<translation id="2279051792571591988">डीफॉल्ट रिस्टोअर करा</translation>
 <translation id="2287186687001756809">इमेज उपलब्ध नाही. फोटो जोडण्यासाठी, <ph name="LINK" /> वर जा</translation>
 <translation id="2307344026739914387">सध्याचे कीपेअर वापरा</translation>
 <translation id="2320295602967756579">फिकट थीम सुरू करा</translation>
@@ -332,7 +332,6 @@
 <translation id="361575905210396100">तुमच्या फीडबॅकबद्दल धन्यवाद</translation>
 <translation id="3632579075709132555">गोपनीयता स्क्रीन टॉगल करा</translation>
 <translation id="3651050199673793219">तापमान युनिट निवडा</translation>
-<translation id="3663574643422533538"><ph name="PRODUCT_NAME" /> विशेष आर्टवर्क निवडा</translation>
 <translation id="3668449597372804501">क्लाउड फ्लो वॉलपेपर</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> चाचणी</translation>
 <translation id="370665806235115550">लोड करीत आहे...</translation>
@@ -646,6 +645,7 @@
 <translation id="6061772781719867950">अयशस्वी HTTPS विनंत्या</translation>
 <translation id="6073292342939316679">कीबोर्डचा ब्राइटनेस कमी करा</translation>
 <translation id="6075872808778243331">(Android) HTTP लेटन्सी</translation>
+<translation id="6078323886959318429">शॉर्टकट जोडा</translation>
 <translation id="6104112872696127344">स्कॅनिंग रद्द केले गेले</translation>
 <translation id="6106186594183574873">पूर्ण करण्यासाठी, तुमचा जुना पासवर्ड एंटर करा</translation>
 <translation id="6108689792487843350">गेटवेशी कनेक्ट करू शकत नाही</translation>

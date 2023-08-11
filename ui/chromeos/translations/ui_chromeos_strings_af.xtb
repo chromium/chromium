@@ -166,7 +166,6 @@
 <translation id="2312704192806647271">{COUNT,plural, =1{’n Uitbreiding met die ID <ph name="BEGIN_LIST" /><ph name="END_LIST" /> kan nie opgespoor word nie. Kontak jou admin.}other{Uitbreidings met die ID’s <ph name="BEGIN_LIST" /><ph name="END_LIST" /> kan nie opgespoor word nie. Kontak jou admin.}}</translation>
 <translation id="2325650632570794183">Hierdie lêertipe word nie gesteun nie. Besoek asseblief die Chrome Webwinkel om 'n program te vind wat hierdie tipe lêer kan oopmaak.</translation>
 <translation id="2326539130272988168">Bulgaars</translation>
-<translation id="2337715497728194187">Deel met Bruschetta</translation>
 <translation id="233822363739146957">Daar is te min bergingspasie om al jou lêers te sinkroniseer</translation>
 <translation id="23721837607121582">Laai mobiele profiel af, netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Skakel oor na lysaansig</translation>
@@ -197,7 +196,6 @@
 <translation id="2544853746127077729">Stawingsertifikaat deur netwerk verwerp</translation>
 <translation id="255937426064304553">VSA internasionaal</translation>
 <translation id="2563185590376525700">Padda</translation>
-<translation id="2574327434504608656">1 vouer is met Bruschetta gedeel</translation>
 <translation id="2578394532502990878">Tamil-foneties</translation>
 <translation id="2579959351793446050">Odia</translation>
 <translation id="2587195714949534472">Berei tans voor om <ph name="FILE_NAME" /> te sinkroniseer …</translation>
@@ -297,7 +295,6 @@
 <translation id="3408072735282270043">Aktiveer, <ph name="NETWORK_NAME" /></translation>
 <translation id="3408236822532681288">Duits (Duitsland) met Neo 2-sleutelbord</translation>
 <translation id="3414856743105198592">Die formatering van verwyderbare media gaan alle data uitvee. Wil jy voortgaan?</translation>
-<translation id="3435143625481187092">Gee Bruschetta toegang tot lêers in die <ph name="FOLDER_NAME" />-vouer</translation>
 <translation id="3437801641691368414">Tyd geskep</translation>
 <translation id="343907260260897561">Kitskamera</translation>
 <translation id="3455931012307786678">Esties</translation>
@@ -385,7 +382,6 @@
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> is geskuif.</translation>
 <translation id="4176286497474237543">Maak asblik nou leeg</translation>
 <translation id="4179621117429069925">Hierdie item is in jou asblik</translation>
-<translation id="4181839429935094755"><ph name="NUMBER_OF_ITEMS" /> vouers is met Bruschetta gedeel</translation>
 <translation id="4186579485882418952">Aktiveer vanlyn</translation>
 <translation id="4193154014135846272">Google-dokument</translation>
 <translation id="4197674956721858839">Kompakteer-keuse</translation>
@@ -452,7 +448,6 @@
 <translation id="4646813851450205600">Tsjeggies met Qwerty-sleutelbord</translation>
 <translation id="4656777537938206294">Maak lêers vanlyn beskikbaar</translation>
 <translation id="4658782175094886150">Persoon in sneeu</translation>
-<translation id="466782788172479199">Gee Bruschetta toegang tot lêers in jou Google Drive. Veranderinge sal met jou ander toestelle gesinkroniseer word.</translation>
 <translation id="4669606053856530811">Lede van "<ph name="SOURCE_NAME" />" sal toegang verloor tensy hierdie items met hulle gedeel word.</translation>
 <translation id="467809019005607715">Google Skyfies</translation>
 <translation id="4690246192099372265">Sweeds</translation>
@@ -563,7 +558,6 @@
 <translation id="5323213332664049067">Latyns-Amerikaans</translation>
 <translation id="5330145655348521461">Hierdie lêers het op 'n ander werkskerm oopgemaak. Beweeg na <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) om dit te bekyk.</translation>
 <translation id="5330512191124428349">Kry inligting</translation>
-<translation id="5344246330454251646">Bestuur Bruschetta-deling</translation>
 <translation id="535792325654997756">Persoon met katte</translation>
 <translation id="5358764674931277">Raamtempo</translation>
 <translation id="5363339716524495120">Invoertaal is Chinees</translation>
@@ -731,7 +725,6 @@
 <translation id="6710213216561001401">Vorige</translation>
 <translation id="6732801395666424405">Sertifikate is nie gelaai nie</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
-<translation id="6740270213273127264">Deel vouer met Bruschetta</translation>
 <translation id="6750737795876287924">Huidige indeks</translation>
 <translation id="6751256176799620176">1 vouer is gekies</translation>
 <translation id="6755827872271341378">Chrome OS Flex-toestel</translation>

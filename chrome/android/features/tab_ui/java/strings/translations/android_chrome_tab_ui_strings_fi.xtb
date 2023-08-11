@@ -3,7 +3,6 @@
 <translationbundle lang="fi">
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> välilehteä ei ole käytetty vähään aikaan. Suljetaanko ne?</translation>
 <translation id="125153950246128346">Näytä toinen välilehti napauttamalla</translation>
-<translation id="1455506303394048917">Toimintasi näillä incognito-välilehdillä tyhjennetään laitteelta</translation>
 <translation id="1499635324672558517">Suljetaanko kaikki incognito-välilehdet?</translation>
 <translation id="1657719826150349398">Siirrä välilehti alaspäin</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> välilehti}other{<ph name="TABS_COUNT_MANY" /> välilehteä}}</translation>

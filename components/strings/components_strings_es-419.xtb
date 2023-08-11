@@ -90,6 +90,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1175393348063009671">Foto (mate)</translation>
 <translation id="1175875016430184367">Grapas triples a la derecha</translation>
 <translation id="1177802847690410663">Navegadores web</translation>
+<translation id="1177863135347784049">Personalizado</translation>
 <translation id="1178581264944972037">Detener</translation>
 <translation id="1178821169867863726">30.5 × 40.6 cm (12 × 16 in)</translation>
 <translation id="1181037720776840403">Quitar</translation>
@@ -134,7 +135,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">Ingresaste tu contraseña en un sitio que no administra tu organización. Para proteger tu cuenta, no vuelvas a usar tu contraseña en otras apps y sitios.</translation>
 <translation id="1257553931232494454">niveles de zoom</translation>
-<translation id="1259843033850529027">Seleccionar el nivel de la política</translation>
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, presiona Tab y, luego, Intro para administrar tu configuración de Chrome</translation>
 <translation id="1264309058268477500">Alternativa</translation>
 <translation id="1264974993859112054">Deportes</translation>
@@ -256,12 +256,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1482879811280872320">Ciclismo</translation>
 <translation id="1483493594462132177">Enviar</translation>
 <translation id="1492194039220927094">Notificaciones push de políticas:</translation>
-<translation id="149293076951187737">Cuando cierras todas las pestañas de incógnito en Chrome, tu actividad en ellas se borra del dispositivo:
-          <ph name="BEGIN_LIST" />
-            <ph name="LIST_ITEM" />La actividad de navegación<ph name="END_LIST_ITEM" />
-            <ph name="LIST_ITEM" />El historial de búsqueda<ph name="END_LIST_ITEM" />
-            <ph name="LIST_ITEM" />La información que ingreses en formularios<ph name="END_LIST_ITEM" />
-          <ph name="END_LIST" /></translation>
 <translation id="14938948731065592">Periféricos de computadoras</translation>
 <translation id="1495677929897281669">Volver a la pestaña</translation>
 <translation id="1501859676467574491">Mostrar tarjetas de tu Cuenta de Google</translation>
@@ -390,7 +384,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1741613555002899862">Esta política debe especificarse y tener una string válida, cuando DnsOverHttpsMode es <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="1743393865165844832">Ropa de cama</translation>
 <translation id="1745399796851657441"><ph name="BEGIN_BOLD" />Cómo usamos estos datos:<ph name="END_BOLD" /> Chrome registra los temas que te interesan a medida que navegas. Las etiquetas de temas están predefinidas e incluyen categorías como Arte y entretenimiento, Compras y Deportes. Luego, los sitios que visites podrán pedirle a Chrome algunos de tus temas (pero no tu historial de navegación) para personalizar los anuncios que te verás.</translation>
-<translation id="1745880797583122200">Tu navegador está administrado</translation>
 <translation id="1746113442205726301">Cambio del eje Y de la imagen</translation>
 <translation id="1746531169546376413">0 grados</translation>
 <translation id="1752021286346845558">Buzón 8</translation>
@@ -456,6 +449,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1883255238294161206">Ocultar lista</translation>
 <translation id="1884843295353628214">Jazz</translation>
 <translation id="1890171020361705182">Juego del dinosaurio. Un dinosaurio pixelado esquiva cactus y pterodáctilos mientras corre por un paisaje desolado. Cuando escuches la señal, presiona para saltar los obstáculos.</translation>
+<translation id="189035593835762169">Términos y Condiciones</translation>
 <translation id="1898423065542865115">Filtrado</translation>
 <translation id="1901443836186977402">{1,plural, =1{Este servidor no pudo probar que su dominio es <ph name="DOMAIN" />; su certificado de seguridad venció en el último día. Es posible que se deba a una configuración incorrecta o a que un atacante haya interceptado tu conexión. El reloj de la computadora actualmente está configurado en la siguiente fecha: <ph name="CURRENT_DATE" />. ¿Es correcto? De no ser así, corrige el reloj del sistema y, luego, actualiza esta página.}other{Este servidor no pudo probar que su dominio es <ph name="DOMAIN" />; el certificado de seguridad venció hace # días. Es posible que esto se deba a una configuración incorrecta o a que un atacante haya interceptado tu conexión. El reloj de la computadora actualmente está configurado en la siguiente fecha: <ph name="CURRENT_DATE" />. ¿Es correcto? De no ser así, corrige el reloj del sistema y, luego, actualiza la página.}}</translation>
 <translation id="1902576642799138955">Período de validez</translation>
@@ -807,6 +801,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2674804415323431591">Ocultar sugerencias</translation>
 <translation id="2677696497921480781">Cumpleaños y onomásticos</translation>
 <translation id="2677748264148917807">Abandonar</translation>
+<translation id="2678468611080193228">Intenta permitir temporalmente cookies de terceros, lo que implica menos protección, pero aumenta las probabilidades de que las funciones del sitio puedan usarse</translation>
 <translation id="2687555958734450033">Ajustar tamaño</translation>
 <translation id="2688186765492306706">500 × 760 mm</translation>
 <translation id="2688969097326701645">Sí, continuar</translation>
@@ -1472,6 +1467,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4152318981910038897">{COUNT,plural, =1{Página 1}other{Página {COUNT}}}</translation>
 <translation id="4154277373259957087">Chrome ahora verificará tu identidad antes de completar las formas de pago. Puedes actualizar esta información en cualquier momento en <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
 <translation id="4154664944169082762">Huellas digitales</translation>
+<translation id="4159149286839604525">Esto significa que la mayoría de las funciones deberían poder usarse, pero tendrás menos protección</translation>
 <translation id="4159784952369912983">Púrpura</translation>
 <translation id="4165986682804962316">Configuración de sitios</translation>
 <translation id="4169535189173047238">No permitir</translation>
@@ -1844,7 +1840,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4901778704868714008">Guardar…</translation>
 <translation id="4901952598169637881">Calzado informal</translation>
 <translation id="4905659621780993806">El administrador reiniciará el dispositivo el <ph name="DATE" /> a las <ph name="TIME" />. Guarda los elementos abiertos antes de reiniciar el dispositivo.</translation>
-<translation id="4907289208610706508">Objetivo</translation>
 <translation id="4913987521957242411">Perforación en la esquina superior izquierda</translation>
 <translation id="4917064667437236721">Cilindro de impresión</translation>
 <translation id="4918221908152712722">Instala <ph name="APP_NAME" /> (no es necesario que descargues la app)</translation>
@@ -1878,6 +1873,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4983145717627482381">Visitas y vacaciones guiadas</translation>
 <translation id="498323057460789381">Error de validación del esquema: <ph name="ERROR" /></translation>
 <translation id="4984088539114770594">¿Permitir el uso del micrófono?</translation>
+<translation id="4985206706500620449">Permitiste las cookies de terceros para este sitio</translation>
 <translation id="4989163558385430922">Ver todo</translation>
 <translation id="4989542687859782284">No disponible</translation>
 <translation id="4989809363548539747">Este complemento no es compatible</translation>
@@ -1887,6 +1883,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4995474875135717171">Modificado:</translation>
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />, presiona Tab y, luego, Intro para administrar la búsqueda de sitios y tu motor de búsqueda predeterminado</translation>
 <translation id="4998950033665438990">Simple faz</translation>
+<translation id="5001526427543320409">Cookies de terceros</translation>
 <translation id="5002932099480077015">Si se habilita esta opción, Chrome almacenará una copia de la tarjeta en el dispositivo para llenar más rápidamente los formularios.</translation>
 <translation id="5007392906805964215">Revisar</translation>
 <translation id="5011561501798487822">Idioma detectado</translation>
@@ -2569,7 +2566,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6450212216969386944">Sobre Chou n.º 40</translation>
 <translation id="6451458296329894277">Confirmar reenvío del formulario</translation>
 <translation id="6452889436791091116">ISO ID-1</translation>
-<translation id="6453457495574553803">Seleccionar el objetivo de la política</translation>
 <translation id="6456955391422100996">Se quitó el anuncio.</translation>
 <translation id="6457206614190510200">Grapado en el pliegue central</translation>
 <translation id="6457455098507772300">Las alertas de descuentos se muestran como notificaciones emergentes en tu escritorio</translation>
@@ -2603,6 +2599,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6521745193039995384">Inactiva</translation>
 <translation id="6524830701589638230">Botón Administrar la configuración de accesibilidad: actívalo para personalizar tus herramientas de accesibilidad en la configuración de Chrome</translation>
 <translation id="6529173248185917884">Séptimo rollo</translation>
+<translation id="652937045869844725">Intenta permitir cookies de terceros, lo que implica menos protección, pero aumenta las probabilidades de que las funciones del sitio puedan usarse</translation>
 <translation id="6529602333819889595">&amp;Rehacer Eliminar</translation>
 <translation id="6535751101619004418">Monedas y mercado de divisas</translation>
 <translation id="6536221421038631327">Si quitas una suscripción a Passpoint de tu <ph name="DEVICE_TYPE" />, también se quitarán las redes asociadas. Comunícate con "<ph name="FRIENDLY_NAME" />" para hacer cambios en tu plan de suscripción. <ph name="LEARN_MORE" /></translation>
@@ -2683,6 +2680,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6702919718839027939">Presente</translation>
 <translation id="6704458454638854812">Se estableció la propiedad "custom_size", se esperaba el nombre "custom".</translation>
 <translation id="6706005862292023715">Cortinas y tratamientos de ventana</translation>
+<translation id="6706210727756204531">Alcance</translation>
 <translation id="6709133671862442373">Noticias</translation>
 <translation id="6709888928011386878">Instrumentos musicales</translation>
 <translation id="6710213216561001401">Anterior</translation>
@@ -2866,6 +2864,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="7102079138917191645">Construcción y mantenimiento</translation>
 <translation id="7102554173784142865">Jugar al juego del dinosaurio de Chrome</translation>
 <translation id="7102760431686146931">Utensilios de cocina y vajilla</translation>
+<translation id="7106762743910369165">Tu organización administra el navegador.</translation>
 <translation id="7108338896283013870">Ocultar</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> desea usar tu cámara</translation>
 <translation id="7108819624672055576">Permitido por una extensión</translation>
@@ -2879,12 +2878,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="7119371694555167493">Se agotó el tiempo de espera para copiar tus archivos</translation>
 <translation id="7119414471315195487">Cierra las demás pestañas o programas.</translation>
 <translation id="7124354851782353862">Ingresa tu CVC</translation>
-<translation id="7129355289156517987">Cuando cierras todas las pestañas de incógnito en Chromium, tu actividad en ellas se borra del dispositivo:
-          <ph name="BEGIN_LIST" />
-            <ph name="LIST_ITEM" />Actividad de navegación<ph name="END_LIST_ITEM" />
-            <ph name="LIST_ITEM" />Historial de búsqueda<ph name="END_LIST_ITEM" />
-            <ph name="LIST_ITEM" />Información que ingreses en formularios<ph name="END_LIST_ITEM" />
-          <ph name="END_LIST" /></translation>
 <translation id="7129409597930077180">No se pueden realizar envíos a esa dirección. Selecciona una dirección diferente.</translation>
 <translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
 <translation id="7130775116821607281">Carga bloqueada</translation>
@@ -2935,6 +2928,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="7221855153210829124">Mostrar notificaciones</translation>
 <translation id="7221857374443660083">El banco quiere confirmar tu identidad</translation>
 <translation id="722454870747268814">Nueva pestaña de incógnito</translation>
+<translation id="7226276626900992675">Permitiste que este sitio usara cookies de terceros. Esto significa que la mayoría de las funciones deberían poder usarse, pero tendrás menos protección.</translation>
 <translation id="7227293336683593977">Historial de precios</translation>
 <translation id="7233592378249864828">Imprimir hoja de confirmación</translation>
 <translation id="7234638337680728591">Precios de gasolina y combustible para vehículos</translation>
@@ -3554,7 +3548,6 @@ Detalles adicionales:
 <translation id="8483229036294884935">Se borrará esta dirección de tu Cuenta de Google, <ph name="ACCOUNT" /></translation>
 <translation id="8488350697529856933">Se aplica a</translation>
 <translation id="8490137692873530638">Apilador 10</translation>
-<translation id="8493829133024050711">Seleccionar la fuente de la política</translation>
 <translation id="8493948351860045254">Liberar espacio</translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" /> tardó demasiado en responder.</translation>
 <translation id="8503559462189395349">Contraseñas de Chrome</translation>
@@ -3620,7 +3613,6 @@ Detalles adicionales:
 <translation id="8623885649813806493">No se encontró una contraseña para este sitio. Mostrar todas las contraseñas guardadas.</translation>
 <translation id="8624354461147303341">Obtener descuentos</translation>
 <translation id="8634957317623797170">54 × 86 mm</translation>
-<translation id="8637577059508742477"><ph name="DOMAIN" /> administra tu perfil y navegador</translation>
 <translation id="8641131559425911240">Sobre (bond)</translation>
 <translation id="8643409044755049933">Sobre Kaku n.º 3</translation>
 <translation id="8647287295490773273">210 × 330 mm</translation>
@@ -3697,6 +3689,7 @@ Detalles adicionales:
 <translation id="8793655568873652685"><ph name="ENROLLMENT_DOMAIN" /> activó Chrome Enterprise Connectors en tu navegador. Estos conectores tienen acceso a algunos de tus datos.</translation>
 <translation id="8798099450830957504">Predeterminado</translation>
 <translation id="8798739476508189189">¿Buscas funciones experimentales del navegador? Visitar</translation>
+<translation id="8800034312320686233">¿No funciona el sitio?</translation>
 <translation id="8805819170075074995">Entrada de lista "<ph name="LANGUAGE_ID" />": Se ignorará la entrada porque también se incluye en la política SpellcheckLanguage.</translation>
 <translation id="8806285662264631610">Productos para el baño y el cuerpo</translation>
 <translation id="8806696968588872703">Plástico (satinado)</translation>

@@ -74,7 +74,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="2592940277904433508">Continue using Chromium</translation>
 <translation id="2648074677641340862">An operating system error occurred during installation. Please download Chromium again.</translation>
 <translation id="2661879430930417727">If you share a device, friends and family can browse separately and set up Chromium just the way they want</translation>
-<translation id="2669853942967761236">Chromium blocked this archive file because it may hide malware</translation>
 <translation id="268602741124540128">Welcome to Chromium, <ph name="ACCOUNT_FIRST_NAME" /></translation>
 <translation id="2711502716910134313">Chromium Tab</translation>
 <translation id="2718390899429598676">For added security, Chromium will encrypt your data.</translation>
@@ -408,6 +407,5 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="942598560705308788">Certificates managed by Chromium</translation>
 <translation id="965162752251293939">Who's using Chromium?</translation>
 <translation id="967427899662692980">Get Chromium's strongest security</translation>
-<translation id="9792300276217204">Always clear site data from your device when you close Chromium</translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
 </translationbundle>

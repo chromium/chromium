@@ -166,7 +166,6 @@
 <translation id="2312704192806647271">{COUNT,plural, =1{<ph name="BEGIN_LIST" /><ph name="END_LIST" /> kimliğine sahip bir uzantı bulunamadı. Yöneticinizle iletişime geçin.}other{<ph name="BEGIN_LIST" /><ph name="END_LIST" /> kimliklerine sahip uzantılar bulunamadı. Yöneticinizle iletişime geçin.}}</translation>
 <translation id="2325650632570794183">Bu dosya türü desteklenmiyor. Bu dosya türünü açabilecek bir uygulama bulmak için lütfen Chrome Web Mağazası'nı ziyaret edin.</translation>
 <translation id="2326539130272988168">Bulgarca</translation>
-<translation id="2337715497728194187">Bruschetta ile paylaşın</translation>
 <translation id="233822363739146957">Tüm dosyalarınızı senkronize etmek için yeterli depolama alanı yok</translation>
 <translation id="23721837607121582">Mobil profili indir, <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /> ağı</translation>
 <translation id="2377319039870049694">Liste görünümüne geç</translation>
@@ -197,7 +196,6 @@
 <translation id="2544853746127077729">Kimlik doğrulama sertifikası ağ tarafından reddedildi</translation>
 <translation id="255937426064304553">ABD uluslararası</translation>
 <translation id="2563185590376525700">Kurbağa</translation>
-<translation id="2574327434504608656">1 klasör Bruschetta ile paylaşıldı</translation>
 <translation id="2578394532502990878">Tamilce Fonetik</translation>
 <translation id="2579959351793446050">Oriya</translation>
 <translation id="2587195714949534472"><ph name="FILE_NAME" /> dosyası senkronize edilmeye hazırlanıyor...</translation>
@@ -297,7 +295,6 @@
 <translation id="3408072735282270043">Etkinleştir, <ph name="NETWORK_NAME" /></translation>
 <translation id="3408236822532681288">Almanca (Almanya) Neo 2 klavye</translation>
 <translation id="3414856743105198592">Çıkarılabilir medyanın biçimlendirilmesi tüm verileri silecektir. Devam etmek istiyor musunuz?</translation>
-<translation id="3435143625481187092">Bruschetta'ya <ph name="FOLDER_NAME" /> klasöründeki dosyalara erişim izni verin</translation>
 <translation id="3437801641691368414">Oluşturma zamanı</translation>
 <translation id="343907260260897561">Tek Kullanımlık Fotoğraf Makinesi</translation>
 <translation id="3455931012307786678">Estonca</translation>
@@ -385,7 +382,6 @@
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> öğe taşındı.</translation>
 <translation id="4176286497474237543">Çöp kutusunu şimdi boşalt</translation>
 <translation id="4179621117429069925">Bu öğe çöp kutunuzda</translation>
-<translation id="4181839429935094755"><ph name="NUMBER_OF_ITEMS" /> klasör Bruschetta ile paylaşıldı</translation>
 <translation id="4186579485882418952">Offline'ı etkinleştir</translation>
 <translation id="4193154014135846272">Google dokümanı</translation>
 <translation id="4197674956721858839">Zip seçimi</translation>
@@ -452,7 +448,6 @@
 <translation id="4646813851450205600">Çekçe Qwerty klavye</translation>
 <translation id="4656777537938206294">Dosyaları çevrimdışı kullanıma sunma</translation>
 <translation id="4658782175094886150">Karda bir kişi</translation>
-<translation id="466782788172479199">Bruschetta'ya Google Drive'ınızdaki dosyalara erişim izin verin. Değişiklikler, diğer cihazlarınızla senkronize edilecektir.</translation>
 <translation id="4669606053856530811">"<ph name="SOURCE_NAME" />" kaynağının üyeleri, bu öğeler kendileriyle paylaşılmadığı sürece erişimi kaybedecektir.</translation>
 <translation id="467809019005607715">Google Slaytlar</translation>
 <translation id="4690246192099372265">İsveççe</translation>
@@ -564,7 +559,6 @@
 <translation id="5323213332664049067">Latin Amerika</translation>
 <translation id="5330145655348521461">Bu dosyalar farklı bir masaüstünde açıldı. Görüntülemek için <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) adlı kullanıcıya geçin.</translation>
 <translation id="5330512191124428349">Bilgi al</translation>
-<translation id="5344246330454251646">Bruschetta paylaşımını yönetin</translation>
 <translation id="535792325654997756">Kediler ve insan</translation>
 <translation id="5358764674931277">Kare hızı</translation>
 <translation id="5363339716524495120">Giriş dili Çince</translation>
@@ -732,7 +726,6 @@
 <translation id="6710213216561001401">Önceki</translation>
 <translation id="6732801395666424405">Sertifikalar yüklenmedi</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
-<translation id="6740270213273127264">Klasörü Bruschetta ile paylaşın</translation>
 <translation id="6750737795876287924">Geçerli dizin</translation>
 <translation id="6751256176799620176">1 klasör seçildi</translation>
 <translation id="6755827872271341378">ChromeOS Flex cihaz</translation>
