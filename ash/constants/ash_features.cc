@@ -197,6 +197,12 @@ BASE_FEATURE(kOrca, "Orca", base::FEATURE_DISABLED_BY_DEFAULT);
 // Controls enabling / disabling the orca feature for dogfood population.
 BASE_FEATURE(kOrcaDogfood, "OrcaDogfood", base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls enabling / disabling the orca feature from the feature management
+// module.
+BASE_FEATURE(kFeatureManagementOrca,
+             "FeatureManagementOrca",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kAssistantNativeIcons,
              "AssistantNativeIcons",
              base::FEATURE_ENABLED_BY_DEFAULT);
