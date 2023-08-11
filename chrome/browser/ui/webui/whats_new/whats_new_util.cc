@@ -89,7 +89,8 @@ bool ShouldShowRefresh(PrefService* local_state) {
   }
 
   // Show refresh page if user has flag enabled.
-  return features::IsChromeRefresh2023();
+  return features::IsChromeRefresh2023() &&
+         features::IsChromeWebuiRefresh2023();
 }
 
 bool ShouldShowForState(PrefService* local_state,

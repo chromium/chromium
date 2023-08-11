@@ -33,26 +33,37 @@ TEST(WhatsNewUtil, GetServerURL) {
 
 class WhatsNewUtilTests : public testing::Test {
  public:
+  enum class EnableMode { kNotEnabled, kViewsRefreshOnly, kEnabled };
+
   WhatsNewUtilTests(const WhatsNewUtilTests&) = delete;
   WhatsNewUtilTests& operator=(const WhatsNewUtilTests&) = delete;
 
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kChromeWhatsNewUI, features::kChromeRefresh2023}, {});
+    ToggleRefresh(EnableMode::kEnabled);
     prefs_.registry()->RegisterBooleanPref(prefs::kHasShownRefreshWhatsNew,
                                            false);
     prefs_.registry()->RegisterIntegerPref(prefs::kLastWhatsNewVersion,
                                            CHROME_VERSION_MAJOR);
   }
 
-  void ToggleRefresh(bool enabled) {
+  void ToggleRefresh(EnableMode mode) {
     scoped_feature_list_.Reset();
-    if (enabled) {
-      scoped_feature_list_.InitWithFeatures(
-          {features::kChromeWhatsNewUI, features::kChromeRefresh2023}, {});
-    } else {
-      scoped_feature_list_.InitWithFeatures({features::kChromeWhatsNewUI},
-                                            {features::kChromeRefresh2023});
+    switch (mode) {
+      case EnableMode::kEnabled:
+        scoped_feature_list_.InitWithFeatures(
+            {features::kChromeWhatsNewUI, features::kChromeRefresh2023,
+             features::kChromeWebuiRefresh2023},
+            {});
+        break;
+      case EnableMode::kViewsRefreshOnly:
+        scoped_feature_list_.InitWithFeatures(
+            {features::kChromeWhatsNewUI, features::kChromeRefresh2023},
+            {features::kChromeWebuiRefresh2023});
+        break;
+      case EnableMode::kNotEnabled:
+        scoped_feature_list_.InitWithFeatures(
+            {features::kChromeWhatsNewUI},
+            {features::kChromeRefresh2023, features::kChromeWebuiRefresh2023});
     }
   }
 
@@ -90,13 +101,18 @@ TEST_F(WhatsNewUtilTests, ShouldShowRefresh) {
   ToggleHasShownRefresh(true);
   EXPECT_FALSE(whats_new::ShouldShowRefresh(prefs()));
 
-  // Disable Refresh 2023 feature
-  ToggleRefresh(false);
+  // Disable Refresh 2023 feature2
+  ToggleRefresh(EnableMode::kNotEnabled);
   // kChromeRefresh2023=disabled && hasShownRefreshWhatsNew=true
   EXPECT_FALSE(whats_new::ShouldShowRefresh(prefs()));
 
   // kChromeRefresh2023=disabled && hasShownRefreshWhatsNew=false
   ToggleHasShownRefresh(false);
+  EXPECT_FALSE(whats_new::ShouldShowRefresh(prefs()));
+
+  // Enable only Views refresh.
+  ToggleRefresh(EnableMode::kViewsRefreshOnly);
+  // kChromeRefresh2023=disabled && hasShownRefreshWhatsNew=true
   EXPECT_FALSE(whats_new::ShouldShowRefresh(prefs()));
 }
 

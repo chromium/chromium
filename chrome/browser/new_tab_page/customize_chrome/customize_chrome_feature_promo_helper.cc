@@ -39,7 +39,7 @@ bool CustomizeChromeFeaturePromoHelper::DefaultSearchProviderIsGoogle(
 void CustomizeChromeFeaturePromoHelper::MaybeShowCustomizeChromeFeaturePromo(
     content::WebContents* web_contents) {
   const base::Feature& customize_chrome_feature =
-      features::IsChromeRefresh2023()
+      features::IsChromeRefresh2023() && features::IsChromeWebuiRefresh2023()
           ? feature_engagement::kIPHDesktopCustomizeChromeRefreshFeature
           : feature_engagement::kIPHDesktopCustomizeChromeFeature;
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
@@ -54,7 +54,7 @@ void CustomizeChromeFeaturePromoHelper::MaybeShowCustomizeChromeFeaturePromo(
 void CustomizeChromeFeaturePromoHelper::CloseCustomizeChromeFeaturePromo(
     content::WebContents* web_contents) {
   const base::Feature& customize_chrome_feature =
-      features::IsChromeRefresh2023()
+      features::IsChromeRefresh2023() && features::IsChromeWebuiRefresh2023()
           ? feature_engagement::kIPHDesktopCustomizeChromeRefreshFeature
           : feature_engagement::kIPHDesktopCustomizeChromeFeature;
   if (auto* const browser_window =

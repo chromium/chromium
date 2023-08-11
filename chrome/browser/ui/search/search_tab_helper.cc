@@ -329,7 +329,7 @@ bool SearchTabHelper::IsInputInProgress() const {
 
 void SearchTabHelper::CloseNTPCustomizeChromeFeaturePromo() {
   const base::Feature& customize_chrome_feature =
-      features::IsChromeRefresh2023()
+      features::IsChromeRefresh2023() && features::IsChromeWebuiRefresh2023()
           ? feature_engagement::kIPHDesktopCustomizeChromeRefreshFeature
           : feature_engagement::kIPHDesktopCustomizeChromeFeature;
   if (web_contents()->GetController().GetVisibleEntry()->GetURL() ==
