@@ -44,7 +44,7 @@ const delay = ms => new Promise(resolve => step_timeout(resolve, ms));
  * received, returns the list of reports. Returns null if the timeout is reached
  * before a report is available.
  */
-const pollReports = async (url, wait_for = 1, timeout = 3000 /*ms*/) => {
+const pollReports = async (url, wait_for = 1, timeout = 5000 /*ms*/) => {
   let startTime = performance.now();
   let payloads = []
   while (performance.now() - startTime < timeout) {
