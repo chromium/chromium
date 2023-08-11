@@ -2076,6 +2076,7 @@
     },
     {
       name: "LayoutNewGridStaticPosition",
+      status: "stable",
     },
     {
       name: "LayoutNewSnapLogic",

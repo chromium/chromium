@@ -1391,6 +1391,10 @@ TEST_F(NGGridLayoutAlgorithmTest, ItemsSizeWithGap) {
 }
 
 TEST_F(NGGridLayoutAlgorithmTest, PositionedOutOfFlowItems) {
+  if (RuntimeEnabledFeatures::LayoutNewGridStaticPositionEnabled()) {
+    return;
+  }
+
   SetBodyInnerHTML(R"HTML(
     <style>
       #grid {
