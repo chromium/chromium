@@ -64,6 +64,13 @@ struct NodeOutput final {
 class GraphBuilder final {
  public:
   explicit GraphBuilder(ComPtr<IDMLDevice> device);
+
+  GraphBuilder(const GraphBuilder& other) = delete;
+  GraphBuilder& operator=(const GraphBuilder& other) = delete;
+
+  GraphBuilder(GraphBuilder&& other);
+  GraphBuilder& operator=(GraphBuilder&& other);
+
   ~GraphBuilder();
 
   // Create constant and non-constant input nodes for the DML graph.

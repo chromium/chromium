@@ -21,6 +21,8 @@ namespace webnn::dml {
 
 class CommandQueue;
 class CommandRecorder;
+class GraphBuilder;
+struct NodeOutputInfo;
 
 // GraphImpl inherits WebNNGraphImpl to represent a DML graph implementation. It
 // is mainly responsible for building and compiling a DML graph from
@@ -33,7 +35,7 @@ class GraphImpl final : public WebNNGraphImpl {
   // initialize the DML graph. Next, it calls CommandQueue::WaitAsync method to
   // wait for the initialization work to be completed on GPU, the GraphImpl
   // instance will only be created and bound to the mojom receiver in
-  // GraphImpl::OnWaitForBuildSignal method.
+  // GraphImpl::OnInitializationComplete method.
   static void CreateAndBuild(scoped_refptr<CommandQueue> command_queue,
                              Microsoft::WRL::ComPtr<IDMLDevice> dml_device,
                              const mojom::GraphInfoPtr& graph_info,
@@ -48,12 +50,30 @@ class GraphImpl final : public WebNNGraphImpl {
             Microsoft::WRL::ComPtr<ID3D12Resource> persistent_buffer,
             Microsoft::WRL::ComPtr<IDMLCompiledOperator> compiled_operator);
 
+  // The method compiles all DML operators into an IDMLCompiledOperator
+  // which can be dispatched to GPU. Since IDMLDevice1::CompileGraph called in
+  // this method may take long time to compile shaders (if not cached before),
+  // this method should run on a background thread rather than the current GPU
+  // main thread to avoid blocking.
+  static Microsoft::WRL::ComPtr<IDMLCompiledOperator> CompileOnBackgroundThread(
+      std::vector<NodeOutputInfo> graph_outputs,
+      GraphBuilder graph_builder);
+
+  // After the CompileOnBackgroundThread task is completed on a background
+  // thread, the OnCompilationComplete method should run back on the GPU main
+  // thread since graph initialization commands are submitted to GPU. Notice
+  // that the compiled_operator might be nullptr if the graph compilation fails.
+  static void OnCompilationComplete(
+      mojom::WebNNContext::CreateGraphCallback callback,
+      std::unique_ptr<CommandRecorder> command_recorder,
+      Microsoft::WRL::ComPtr<IDMLCompiledOperator> compiled_operator);
+
   // Create the GraphImpl instance and bind it to the mojom::WebNNGraph
   // receiver, then run callback to send the pending remote to the
   // render.
   // Notice that the persistent_buffer could be nullptr which means it isn't
   // required by the graph.
-  static void OnWaitForBuildSignal(
+  static void OnInitializationComplete(
       std::unique_ptr<CommandRecorder> command_recorder,
       Microsoft::WRL::ComPtr<ID3D12Resource> persistent_buffer,
       Microsoft::WRL::ComPtr<IDMLCompiledOperator> compiled_operator,

@@ -15,6 +15,9 @@ namespace webnn::dml {
 GraphBuilder::GraphBuilder(ComPtr<IDMLDevice> dml_device)
     : dml_device_(std::move(dml_device)) {}
 
+GraphBuilder::GraphBuilder(GraphBuilder&& other) = default;
+GraphBuilder& GraphBuilder::operator=(GraphBuilder&& other) = default;
+
 GraphBuilder::~GraphBuilder() = default;
 
 NodeInfo GraphBuilder::CreateInputNode() {

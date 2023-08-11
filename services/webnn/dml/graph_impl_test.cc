@@ -28,7 +28,7 @@ class WebNNGraphDMLImplTest : public TestBase {
 
  protected:
   bool is_compile_graph_supported_ = true;
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_;
   scoped_refptr<Adapter> adapter_;
 };
 

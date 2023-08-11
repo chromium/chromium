@@ -10,6 +10,7 @@
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/thread_pool.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/webnn/dml/command_queue.h"
 #include "services/webnn/dml/command_recorder.h"
@@ -255,7 +256,123 @@ GraphImpl::GraphImpl(std::unique_ptr<CommandRecorder> command_recorder,
 //  queued work to complete before destructing itself.
 GraphImpl::~GraphImpl() = default;
 
-// Static
+ComPtr<IDMLCompiledOperator> GraphImpl::CompileOnBackgroundThread(
+    std::vector<NodeOutputInfo> graph_outputs,
+    GraphBuilder graph_builder) {
+  return graph_builder.Compile(graph_outputs, DML_EXECUTION_FLAG_NONE);
+}
+
+// static
+void GraphImpl::OnCompilationComplete(
+    mojom::WebNNContext::CreateGraphCallback callback,
+    std::unique_ptr<CommandRecorder> command_recorder,
+    ComPtr<IDMLCompiledOperator> compiled_operator) {
+  if (!compiled_operator) {
+    DLOG(ERROR) << "Failed to compile the graph.";
+    std::move(callback).Run(mojo::NullRemote());
+    return;
+  }
+
+  HRESULT hr = command_recorder->Open();
+  if (FAILED(hr)) {
+    DLOG(ERROR) << "Failed to open the command recorder: "
+                << logging::SystemErrorCodeToString(hr);
+    std::move(callback).Run(mojo::NullRemote());
+    return;
+  }
+
+  // TODO(crbug.com/1273291): Create the input resource binding for
+  // operator initialization. Only the constant resource needs to be bound.
+
+  // Create the persistent resource which is bound as output of operator
+  // initializer.
+  absl::optional<DML_BINDING_DESC> persistent_buffer_binding_desc =
+      absl::nullopt;
+  DML_BINDING_PROPERTIES execution_binding_properties =
+      compiled_operator->GetBindingProperties();
+  uint64_t persistent_buffer_size =
+      execution_binding_properties.PersistentResourceSize;
+  ComPtr<ID3D12Resource> persistent_buffer;
+  if (persistent_buffer_size) {
+    hr = command_recorder->CreateDefaultBuffer(persistent_buffer_size,
+                                               persistent_buffer);
+    if (FAILED(hr)) {
+      DLOG(ERROR) << "Failed to create the default buffer: "
+                  << logging::SystemErrorCodeToString(hr);
+      std::move(callback).Run(mojo::NullRemote());
+      return;
+    }
+
+    DML_BUFFER_BINDING persistent_buffer_binding{
+        .Buffer = persistent_buffer.Get(),
+        .Offset = 0,
+        .SizeInBytes = persistent_buffer_size};
+
+    persistent_buffer_binding_desc = DML_BINDING_DESC{
+        .Type = DML_BINDING_TYPE_BUFFER, .Desc = &persistent_buffer_binding};
+  }
+
+  hr = command_recorder->InitializeOperator(
+      compiled_operator.Get(), absl::nullopt, persistent_buffer_binding_desc);
+  if (FAILED(hr)) {
+    DLOG(ERROR) << "Failed to initialize the operator: "
+                << logging::SystemErrorCodeToString(hr);
+    std::move(callback).Run(mojo::NullRemote());
+    return;
+  }
+
+  hr = command_recorder->CloseAndExecute();
+  if (FAILED(hr)) {
+    DLOG(ERROR) << "Failed to close and execute the command list: "
+                << logging::SystemErrorCodeToString(hr);
+    std::move(callback).Run(mojo::NullRemote());
+    return;
+  }
+
+  scoped_refptr<CommandQueue> command_queue(
+      command_recorder->GetCommandQueue());
+
+  // Ensure the GPU resources needed by the initialization work on the
+  // CommandQueue not to be released before the work completes.
+  if (persistent_buffer) {
+    command_queue->ReferenceUntilCompleted(persistent_buffer);
+  }
+  //  The IDMLCompiledOperator should also be referenced before the work
+  //  completes.
+  command_queue->ReferenceUntilCompleted(compiled_operator);
+
+  hr = command_queue->WaitAsync(
+      base::BindOnce(&GraphImpl::OnInitializationComplete,
+                     std::move(command_recorder), std::move(persistent_buffer),
+                     std::move(compiled_operator), std::move(callback)));
+  if (FAILED(hr)) {
+    DLOG(ERROR) << "Failed to wait the initialization completed: "
+                << logging::SystemErrorCodeToString(hr);
+    std::move(callback).Run(mojo::NullRemote());
+  }
+}
+
+// static
+void GraphImpl::OnInitializationComplete(
+    std::unique_ptr<CommandRecorder> command_recorder,
+    ComPtr<ID3D12Resource> persistent_buffer,
+    ComPtr<IDMLCompiledOperator> compiled_operator,
+    mojom::WebNNContext::CreateGraphCallback callback) {
+  scoped_refptr<CommandQueue> command_queue(
+      command_recorder->GetCommandQueue());
+  // The remote sent to the renderer.
+  mojo::PendingRemote<mojom::WebNNGraph> blink_remote;
+  // The receiver bound to GraphImpl.
+  mojo::MakeSelfOwnedReceiver<mojom::WebNNGraph>(
+      base::WrapUnique(new GraphImpl(std::move(command_recorder),
+                                     std::move(persistent_buffer),
+                                     std::move(compiled_operator))),
+      blink_remote.InitWithNewPipeAndPassReceiver());
+  command_queue->ReleaseCompletedResources();
+  std::move(callback).Run(std::move(blink_remote));
+}
+
+// static
 void GraphImpl::CreateAndBuild(
     scoped_refptr<CommandQueue> command_queue,
     ComPtr<IDMLDevice> dml_device,
@@ -354,113 +471,12 @@ void GraphImpl::CreateAndBuild(
     }
   }
 
-  // TODO(crbug.com/1273291): This method compiles all DML operators into an
-  // IDMLCompiledOperator which can be dispatched to GPU. It's a time-consuming
-  // method, so consider posting it to other threads rather than calling it in
-  // GPU main thread to avoid blocking.
-  ComPtr<IDMLCompiledOperator> compiled_operator =
-      graph_builder.Compile(graph_outputs, DML_EXECUTION_FLAG_NONE);
-  if (!compiled_operator) {
-    DLOG(ERROR) << "Failed to compile the graph.";
-    std::move(callback).Run(mojo::NullRemote());
-    return;
-  }
-
-  HRESULT hr = command_recorder->Open();
-  if (FAILED(hr)) {
-    DLOG(ERROR) << "Failed to open the command recorder: "
-                << logging::SystemErrorCodeToString(hr);
-    std::move(callback).Run(mojo::NullRemote());
-    return;
-  }
-
-  // TODO(crbug.com/1273291): Create the input resource binding for
-  // operator initialization. Only the constant resource needs to be bound.
-
-  // Create the persistent resource which is bound as output of operator
-  // initializer.
-  absl::optional<DML_BINDING_DESC> persistent_buffer_binding_desc =
-      absl::nullopt;
-  DML_BINDING_PROPERTIES execution_binding_properties =
-      compiled_operator->GetBindingProperties();
-  uint64_t persistent_buffer_size =
-      execution_binding_properties.PersistentResourceSize;
-  ComPtr<ID3D12Resource> persistent_buffer;
-  if (persistent_buffer_size) {
-    hr = command_recorder->CreateDefaultBuffer(persistent_buffer_size,
-                                               persistent_buffer);
-    if (FAILED(hr)) {
-      DLOG(ERROR) << "Failed to create the default buffer: "
-                  << logging::SystemErrorCodeToString(hr);
-      std::move(callback).Run(mojo::NullRemote());
-      return;
-    }
-
-    DML_BUFFER_BINDING persistent_buffer_binding{
-        .Buffer = persistent_buffer.Get(),
-        .Offset = 0,
-        .SizeInBytes = persistent_buffer_size};
-
-    persistent_buffer_binding_desc = DML_BINDING_DESC{
-        .Type = DML_BINDING_TYPE_BUFFER, .Desc = &persistent_buffer_binding};
-  }
-
-  hr = command_recorder->InitializeOperator(
-      compiled_operator.Get(), absl::nullopt, persistent_buffer_binding_desc);
-  if (FAILED(hr)) {
-    DLOG(ERROR) << "Failed to initialize the operator: "
-                << logging::SystemErrorCodeToString(hr);
-    std::move(callback).Run(mojo::NullRemote());
-    return;
-  }
-
-  hr = command_recorder->CloseAndExecute();
-  if (FAILED(hr)) {
-    DLOG(ERROR) << "Failed to close and execute the command list: "
-                << logging::SystemErrorCodeToString(hr);
-    std::move(callback).Run(mojo::NullRemote());
-    return;
-  }
-
-  // Ensure the GPU resources needed by the initialization work on the
-  // CommandQueue not to be released before the work completes.
-  if (!persistent_buffer) {
-    command_queue->ReferenceUntilCompleted(persistent_buffer);
-  }
-  //  The IDMLCompiledOperator should also be referenced before the work
-  //  completes.
-  command_queue->ReferenceUntilCompleted(compiled_operator);
-
-  hr = command_queue->WaitAsync(
-      base::BindOnce(&GraphImpl::OnWaitForBuildSignal,
-                     std::move(command_recorder), std::move(persistent_buffer),
-                     std::move(compiled_operator), std::move(callback)));
-  if (FAILED(hr)) {
-    DLOG(ERROR) << "Failed to wait the initialization completed: "
-                << logging::SystemErrorCodeToString(hr);
-    std::move(callback).Run(mojo::NullRemote());
-    return;
-  }
-}
-
-// static
-void GraphImpl::OnWaitForBuildSignal(
-    std::unique_ptr<CommandRecorder> command_recorder,
-    ComPtr<ID3D12Resource> persistent_buffer,
-    ComPtr<IDMLCompiledOperator> compiled_operator,
-    mojom::WebNNContext::CreateGraphCallback callback) {
-  scoped_refptr<CommandQueue> command_queue(
-      command_recorder->GetCommandQueue());
-  // The remote sent to the renderer.
-  mojo::PendingRemote<mojom::WebNNGraph> blink_remote;
-  // The receiver bound to GraphImpl.
-  mojo::MakeSelfOwnedReceiver<mojom::WebNNGraph>(
-      base::WrapUnique(new GraphImpl(std::move(command_recorder),
-                                     std::move(persistent_buffer),
-                                     std::move(compiled_operator))),
-      blink_remote.InitWithNewPipeAndPassReceiver());
-  command_queue->ReleaseCompletedResources();
-  std::move(callback).Run(std::move(blink_remote));
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&GraphImpl::CompileOnBackgroundThread,
+                     std::move(graph_outputs), std::move(graph_builder)),
+      base::BindOnce(&GraphImpl::OnCompilationComplete, std::move(callback),
+                     std::move(command_recorder)));
 }
 
 }  // namespace webnn::dml
