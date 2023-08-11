@@ -1384,8 +1384,8 @@ enum class ToolbarKind {
         [IncognitoReauthSceneAgent agentFromScene:sceneState];
 
     self.incognitoAuthMediator =
-        [[IncognitoReauthMediator alloc] initWithConsumer:browserViewController
-                                              reauthAgent:reauthAgent];
+        [[IncognitoReauthMediator alloc] initWithReauthAgent:reauthAgent];
+    self.incognitoAuthMediator.consumer = browserViewController;
   }
 }
 

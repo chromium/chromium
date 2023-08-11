@@ -140,8 +140,9 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
                                   SceneStateObserver,
                                   SnackbarCoordinatorDelegate,
                                   TabContextMenuDelegate,
-                                  TabPresentationDelegate,
-                                  TabGridViewControllerDelegate> {
+                                  TabGridMediatorDelegate,
+                                  TabGridViewControllerDelegate,
+                                  TabPresentationDelegate> {
   // Use an explicit ivar instead of synthesizing as the setter isn't using the
   // ivar.
   Browser* _incognitoBrowser;
@@ -722,6 +723,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   _baseViewController = baseViewController;
 
   _mediator.consumer = _baseViewController;
+  _mediator.delegate = self;
 
   _toolbarsCoordinator =
       [[TabGridToolbarsCoordinator alloc] initWithBaseViewController:nil
@@ -797,9 +799,10 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   baseViewController.incognitoTabsShareableItemsProvider =
       self.incognitoTabsMediator;
 
-  self.incognitoAuthMediator = [[IncognitoReauthMediator alloc]
-      initWithConsumer:self.baseViewController.incognitoTabsConsumer
-           reauthAgent:reauthAgent];
+  self.incognitoAuthMediator =
+      [[IncognitoReauthMediator alloc] initWithReauthAgent:reauthAgent];
+  self.incognitoAuthMediator.consumer =
+      self.baseViewController.incognitoTabsConsumer;
 
   self.recentTabsContextMenuHelper =
       [[RecentTabsContextMenuHelper alloc] initWithBrowser:self.regularBrowser
@@ -981,6 +984,8 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 
   [_bookmarksCoordinator stop];
   _bookmarksCoordinator = nil;
+
+  [_mediator disconnect];
 }
 
 #pragma mark - TabPresentationDelegate
@@ -1094,6 +1099,27 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   [self dismissActionSheetCoordinator];
   [self.sharingCoordinator stop];
   self.sharingCoordinator = nil;
+}
+
+#pragma mark - TabGridMediatorDelegate
+
+// TODO(crbug.com/1457146): Move this to incognito grid coordinator once it is
+// created.
+- (void)updateIncognitoTabGridState {
+  // Reconnect the incognito mediators to the incognito view controller.
+  self.incognitoTabsMediator.consumer =
+      self.baseViewController.incognitoTabsConsumer;
+  self.incognitoAuthMediator.consumer =
+      self.baseViewController.incognitoTabsConsumer;
+
+  // Reset the connection between the incognito view controller and the
+  // mediator.
+  self.baseViewController.reauthHandler =
+      HandlerForProtocol(self.dispatcher, IncognitoReauthCommands);
+  self.baseViewController.incognitoTabsContextMenuProvider =
+      self.incognitoTabContextMenuHelper;
+  self.baseViewController.incognitoTabsShareableItemsProvider =
+      self.incognitoTabsMediator;
 }
 
 #pragma mark - TabGridViewControllerDelegate

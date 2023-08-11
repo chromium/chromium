@@ -134,8 +134,6 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
                                 WebStateListObserving>
 // The browser state from the browser.
 @property(nonatomic, readonly) ChromeBrowserState* browserState;
-// The UI consumer to which updates are made.
-@property(nonatomic, weak) id<TabCollectionConsumer> consumer;
 
 @end
 
@@ -196,6 +194,11 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
       [self populateConsumerItems];
     }
   }
+}
+
+- (void)setConsumer:(id<TabCollectionConsumer>)consumer {
+  _consumer = consumer;
+  [self resetToAllItems];
 }
 
 #pragma mark - WebStateListObserving

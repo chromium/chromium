@@ -11,7 +11,11 @@
 @protocol TabGridConsumer <NSObject>
 
 // Updates the state of parental controls.
-- (void)updateParentalControlStatus:(BOOL)status;
+- (void)updateParentalControlStatus:(BOOL)isSubjectToParentalControls;
+
+// Updates the tab grid for supervised users.
+// Returns YES if the tab grid is updated, NO if unchanged.
+- (BOOL)updateTabGridForIncognitoModeDisabled:(BOOL)isIncognitoModeDisabled;
 
 @end
 

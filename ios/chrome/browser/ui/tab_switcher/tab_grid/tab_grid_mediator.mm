@@ -4,10 +4,15 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_mediator.h"
 
+#import "base/feature_list.h"
 #import "base/metrics/histogram_macros.h"
 #import "components/prefs/ios/pref_observer_bridge.h"
+#import "components/prefs/pref_change_registrar.h"
+#import "components/prefs/pref_service.h"
+#import "components/supervised_user/core/common/features.h"
 #import "components/supervised_user/core/common/pref_names.h"
 #import "components/supervised_user/core/common/supervised_user_utils.h"
+#import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_metrics.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_page_mutator.h"
@@ -18,15 +23,38 @@
 @implementation TabGridMediator {
   // Current selected grid.
   id<TabGridPageMutator> _currentPageMutator;
+  // Preference service from the application context.
   PrefService* _prefService;
+  // Pref observer to track changes to prefs.
+  std::unique_ptr<PrefObserverBridge> _prefObserverBridge;
+  // Registrar for pref changes notifications.
+  PrefChangeRegistrar _prefChangeRegistrar;
 }
 
 - (instancetype)initWithPrefService:(PrefService*)prefService {
   self = [super init];
   if (self) {
+    CHECK(prefService);
     _prefService = prefService;
+    _prefChangeRegistrar.Init(_prefService);
+    _prefObserverBridge.reset(new PrefObserverBridge(self));
+
+    // Register to observe any changes on supervised_user status.
+    if (base::FeatureList::IsEnabled(
+            supervised_user::
+                kFilterWebsitesForSupervisedUsersOnDesktopAndIOS)) {
+      _prefObserverBridge->ObserveChangesForPreference(prefs::kSupervisedUserId,
+                                                       &_prefChangeRegistrar);
+    }
   }
   return self;
+}
+
+- (void)disconnect {
+  _prefChangeRegistrar.RemoveAll();
+  _prefObserverBridge.reset();
+  _prefService = nil;
+  _consumer = nil;
 }
 
 #pragma mark - Public
@@ -44,10 +72,18 @@
 
 #pragma mark - PrefObserverDelegate
 
+// TODO(b/295307282): Migrate to IncognitoGridMediator once the incognito grid
+// coordinator and view controller is ready.
 - (void)onPreferenceChanged:(const std::string&)preferenceName {
   if (preferenceName == prefs::kSupervisedUserId) {
     [_consumer updateParentalControlStatus:
                    supervised_user::IsSubjectToParentalControls(_prefService)];
+    BOOL isTabGridUpdated = [_consumer
+        updateTabGridForIncognitoModeDisabled:IsIncognitoModeDisabled(
+                                                  _prefService)];
+    if (isTabGridUpdated) {
+      [_delegate updateIncognitoTabGridState];
+    }
   }
 }
 
