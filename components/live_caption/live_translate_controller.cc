@@ -77,13 +77,10 @@ LiveTranslateController::~LiveTranslateController() = default;
 // static
 void LiveTranslateController::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
-  registry->RegisterBooleanPref(
-      prefs::kLiveTranslateEnabled, false,
-      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  registry->RegisterBooleanPref(prefs::kLiveTranslateEnabled, false);
 
   registry->RegisterStringPref(prefs::kLiveTranslateTargetLanguageCode,
-                               speech::kEnglishLocaleNoCountry,
-                               user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+                               speech::kEnglishLocaleNoCountry);
 }
 
 void LiveTranslateController::GetTranslation(
