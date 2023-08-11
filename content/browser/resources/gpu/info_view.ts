@@ -13,6 +13,22 @@ import {ArrayData, Data} from './info_view_table_row.js';
 import {VulkanInfo} from './vulkan_info.js';
 
 /**
+ * Given a blob and a filename, prompts user to
+ * save as a file.
+ */
+const saveData = (function() {
+  const a = document.createElement('a');
+  a.style.display = 'none';
+  document.body.appendChild(a);
+  return function saveData(blob: Blob, fileName: string) {
+    const url = window.URL.createObjectURL(blob);
+    a.href = url;
+    a.download = fileName;
+    a.click();
+  };
+}());
+
+/**
  * @fileoverview This view displays information on the current GPU
  * hardware.  Its primary usefulness is to allow users to copy-paste
  * their data in an easy to read format for bug reports.
@@ -33,19 +49,26 @@ export class InfoViewElement extends CustomElement {
   }
 
   connectedCallback() {
-    // Add handler to 'copy to clipboard' button
-    const copyButton =
-        this.shadowRoot!.querySelector<HTMLElement>('#copy-to-clipboard');
-    assert(copyButton);
-    copyButton.onclick = (() => {
+    // Add handler to 'download report to clipboard' button
+    const downloadButton =
+        this.shadowRoot!.querySelector<HTMLElement>('#download-to-file')!;
+    assert(downloadButton);
+    downloadButton.onclick = (() => {
       // Make sure nothing is selected
       const s = window.getSelection()!;
       s.removeAllRanges();
+
+      // Select everything
       s.selectAllChildren(this.shadowRoot!);
-      document.execCommand('copy');
+      const text = s.toString();
 
       // And deselect everything at the end.
       window.getSelection()!.removeAllRanges();
+
+      const blob = new Blob([text], {type: 'text/text'});
+      const filename = `about-gpu-${
+          new Date().toISOString().replace(/[^a-z0-9-]/ig, '-')}.txt`;
+      saveData(blob, filename);
     });
   }
 
