@@ -43496,6 +43496,9 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4620" label="ORBBlockWithOnLoadButWithoutOnErrorEventHandler"/>
   <int value="4621" label="ORBBlockWithOnLoadAndOnErrorEventHandler"/>
   <int value="4622" label="ORBBlockWithAnyEventHandler"/>
+  <int value="4623" label="V8RTCEncodedVideoFrame_SetMetadata_Method"/>
+  <int value="4624" label="V8RTCEncodedVideoFrame_SetTimestamp_Method"/>
+  <int value="4625" label="V8RTCEncodedAudioFrame_SetTimestamp_Method"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
