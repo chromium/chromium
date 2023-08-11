@@ -159,6 +159,62 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Accessibility.Android.AutoDisableV2.{CurrentState}Time.{CallType}"
+    units="ms" expires_after="2023-11-30">
+  <owner>mschillaci@google.com</owner>
+  <owner>aldietz@google.com</owner>
+  <owner>dtseng@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Tracks the amount of time (in ms) that the accessibility engine was
+    {CurrentState} before {CallType}. This is recorded either at the start of
+    the onDisabled callback, or immediately before the call to
+    reEnableRendererAccessibility.
+  </summary>
+  <token key="CurrentState">
+    <variant name="Disabled" summary="disabled"/>
+    <variant name="Enabled" summary="enabled"/>
+  </token>
+  <token key="CallType">
+    <variant name="Initial"
+        summary="the initial call to the onDisable or
+                 reEnableRendererAccessibility methods. Can only be recorded
+                 once per instance."/>
+    <variant name="Successive"
+        summary="a subsequent call to the onDisable or
+                 reEnableRendererAccessibility methods. Can be recorded up to
+                 3 times per instance."/>
+  </token>
+</histogram>
+
+<histogram
+    name="Accessibility.Android.AutoDisableV2.{MethodCall}Called.{CallType}"
+    units="count" expires_after="2023-11-30">
+  <owner>mschillaci@google.com</owner>
+  <owner>aldietz@google.com</owner>
+  <owner>dtseng@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Tracks when the Auto-disable Accessibility feature changes the state of the
+    accessibility engine by calling {MethodCall}. This is {CallType}.
+  </summary>
+  <token key="MethodCall">
+    <variant name="Disable" summary="the onDisabled callback"/>
+    <variant name="ReEnable" summary="reEnableRendererAccessibility"/>
+  </token>
+  <token key="CallType">
+    <variant name="Initial"
+        summary="the initial call to the onDisable or
+                 reEnableRendererAccessibility methods. Can only be recorded
+                 once per instance."/>
+    <variant name="Successive"
+        summary="a subsequent call to the onDisable or
+                 reEnableRendererAccessibility methods. Can be recorded up to
+                 3 times per instance."/>
+  </token>
+</histogram>
+
 <histogram name="Accessibility.Android.Cache.MaxNodesInCache" units="count"
     expires_after="2024-02-04">
   <owner>mschillaci@google.com</owner>
