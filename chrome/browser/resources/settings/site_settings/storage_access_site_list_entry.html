@@ -64,21 +64,17 @@
         </cr-icon-button>
       </div>
     </div>
-    <cr-lazy-render id="originList">
-      <template>
-        <iron-collapse opened="[[expanded_]]" no-animation>
-          <div class="list-frame">
-            <template is="dom-repeat" items="[[model.exceptions]]">
-              <!-- Nested row that represents an embedding origin. -->
-              <div class="hr">
-                <storage-access-static-site-list-entry
-                    model="[[getStaticSiteEntryForException_(item)]]">
-                </storage-access-static-site-list-entry>
-              </div>
-            </template>
+    <template is="dom-if" if="[[expanded_]]" id="originList">
+      <div class="list-frame">
+        <template is="dom-repeat" items="[[model.exceptions]]">
+          <!-- Nested row that represents an embedding origin. -->
+          <div class="hr">
+            <storage-access-static-site-list-entry
+                model="[[getStaticSiteEntryForException_(item)]]">
+            </storage-access-static-site-list-entry>
           </div>
-        </iron-collapse>
-      </template>
-    </cr-lazy-render>
+        </template>
+      </div>
+    </template>
   </template>
 </div>

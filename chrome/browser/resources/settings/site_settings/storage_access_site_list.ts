@@ -42,7 +42,6 @@ export class StorageAccessSiteListElement extends
 
   static get properties() {
     return {
-
       /**
        * Header shown for the |categorySubtype|.
        */

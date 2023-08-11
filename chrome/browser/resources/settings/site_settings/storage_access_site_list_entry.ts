@@ -16,11 +16,9 @@ import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import '../settings_shared.css.js';
 import '../site_favicon.js';
 
-import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import {FocusRowMixin} from 'chrome://resources/cr_elements/focus_row_mixin.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {IronCollapseElement} from 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {DomIf, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ContentSettingsTypes} from './constants.js';
 import {SiteSettingsMixin} from './site_settings_mixin.js';
@@ -88,6 +86,7 @@ export class StorageAccessSiteListEntryElement extends
    */
   private onModelChanged_() {
     this.description_ = this.computeDescription_();
+    this.expandAriaLabel_ = this.computeExpandButtonAriaLabel_();
   }
 
   /**
@@ -95,6 +94,10 @@ export class StorageAccessSiteListEntryElement extends
    * element if needed.
    */
   private onExpandedChanged_() {
+    if (!this.shouldBeCollapsible_()) {
+      return;
+    }
+
     this.description_ = this.computeDescription_();
     this.expandAriaLabel_ = this.computeExpandButtonAriaLabel_();
 
@@ -104,9 +107,7 @@ export class StorageAccessSiteListEntryElement extends
 
     // Renders the nested rows if they haven't been opened before, so we can
     // scroll to make them visible if necessary.
-    this.shadowRoot!
-        .querySelector<CrLazyRenderElement<IronCollapseElement>>(
-            '#originList')!.get();
+    this.shadowRoot!.querySelector<DomIf>('#originList')!.render();
 
     this.scrollIntoViewIfNeeded();
   }
