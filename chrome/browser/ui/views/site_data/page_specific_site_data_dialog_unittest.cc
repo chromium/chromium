@@ -45,7 +45,7 @@ void ValidateAllowedUnpartitionedSites(
                           }));
 }
 
-blink::StorageKey CreateFirstPartyStorageKey(const GURL& url) {
+blink::StorageKey CreateUnpartitionedStorageKey(const GURL& url) {
   return blink::StorageKey::CreateFirstParty(url::Origin::Create(url));
 }
 
@@ -142,7 +142,7 @@ TEST_F(PageSpecificSiteDataDialogUnitTest, QuotaStorageAccessedFirstParty) {
   // in the dialog.
   auto* content_settings = GetContentSettings();
   content_settings->OnBrowsingDataAccessed(
-      CreateFirstPartyStorageKey(GURL(kThirdPartyUrl)),
+      CreateUnpartitionedStorageKey(GURL(kThirdPartyUrl)),
       BrowsingDataModel::StorageType::kQuotaStorage,
       /*blocked=*/false);
 
@@ -176,7 +176,7 @@ TEST_F(PageSpecificSiteDataDialogUnitTest,
        {*first_party_cookie},
        false});
   content_settings->OnBrowsingDataAccessed(
-      CreateFirstPartyStorageKey(GURL(kThirdPartyUrl)),
+      CreateUnpartitionedStorageKey(GURL(kThirdPartyUrl)),
       BrowsingDataModel::StorageType::kQuotaStorage,
       /*blocked=*/false);
 
@@ -210,7 +210,7 @@ TEST_F(PageSpecificSiteDataDialogUnitTest,
        {*first_party_cookie},
        false});
   content_settings->OnBrowsingDataAccessed(
-      CreateFirstPartyStorageKey(GURL(kThirdPartyUrl)),
+      CreateUnpartitionedStorageKey(GURL(kThirdPartyUrl)),
       BrowsingDataModel::StorageType::kQuotaStorage,
       /*blocked=*/false);
 
@@ -321,7 +321,7 @@ TEST_F(PageSpecificSiteDataDialogUnitTest, QuotaStorageAccessedMixedParty) {
   // in the dialog.
   auto* content_settings = GetContentSettings();
   content_settings->OnBrowsingDataAccessed(
-      CreateFirstPartyStorageKey(GURL(kThirdPartyUrl)),
+      CreateUnpartitionedStorageKey(GURL(kThirdPartyUrl)),
       BrowsingDataModel::StorageType::kQuotaStorage,
       /*blocked=*/false);
   content_settings->OnBrowsingDataAccessed(
@@ -359,7 +359,7 @@ TEST_F(PageSpecificSiteDataDialogUnitTest,
        {*first_party_cookie},
        false});
   content_settings->OnBrowsingDataAccessed(
-      CreateFirstPartyStorageKey(GURL(kThirdPartyUrl)),
+      CreateUnpartitionedStorageKey(GURL(kThirdPartyUrl)),
       BrowsingDataModel::StorageType::kQuotaStorage,
       /*blocked=*/false);
   std::unique_ptr<net::CanonicalCookie> third_party_cookie(
@@ -409,7 +409,7 @@ TEST_F(PageSpecificSiteDataDialogUnitTest,
        {*first_party_cookie},
        false});
   content_settings->OnBrowsingDataAccessed(
-      CreateFirstPartyStorageKey(GURL(kThirdPartyUrl)),
+      CreateUnpartitionedStorageKey(GURL(kThirdPartyUrl)),
       BrowsingDataModel::StorageType::kQuotaStorage,
       /*blocked=*/false);
   std::unique_ptr<net::CanonicalCookie> third_party_cookie(
@@ -732,10 +732,10 @@ TEST_P(PageSpecificSiteDataDialogStorageUnitTest, StorageAccessed) {
   auto* content_settings = GetContentSettings();
 
   content_settings->OnStorageAccessed(
-      GetParam(), CreateFirstPartyStorageKey(GURL(kCurrentUrl)),
+      GetParam(), CreateUnpartitionedStorageKey(GURL(kCurrentUrl)),
       /*blocked_by_policy=*/false);
   content_settings->OnStorageAccessed(
-      GetParam(), CreateFirstPartyStorageKey(GURL(kThirdPartyUrl)),
+      GetParam(), CreateUnpartitionedStorageKey(GURL(kThirdPartyUrl)),
       /*blocked_by_policy=*/false);
 
   auto delegate =

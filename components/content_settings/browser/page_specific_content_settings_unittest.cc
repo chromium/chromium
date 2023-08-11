@@ -71,7 +71,7 @@ class MockPageSpecificContentSettingsDelegate
   MOCK_METHOD(void, OnContentBlocked, (ContentSettingsType type));
 };
 
-blink::StorageKey CreateFirstPartyStorageKey(const GURL& url) {
+blink::StorageKey CreateUnpartitionedStorageKey(const GURL& url) {
   return blink::StorageKey::CreateFirstParty(url::Origin::Create(url));
 }
 
@@ -471,22 +471,23 @@ TEST_F(PageSpecificContentSettingsTest, LocalSharedObjectsContainer) {
                                   blocked_by_policy});
   content_settings->OnStorageAccessed(
       StorageType::FILE_SYSTEM,
-      CreateFirstPartyStorageKey(GURL("https://www.google.com")),
+      CreateUnpartitionedStorageKey(GURL("https://www.google.com")),
       blocked_by_policy);
   content_settings->OnStorageAccessed(
       StorageType::INDEXED_DB,
-      CreateFirstPartyStorageKey(GURL("https://localhost")), blocked_by_policy);
-  content_settings->OnStorageAccessed(
-      StorageType::LOCAL_STORAGE,
-      CreateFirstPartyStorageKey(GURL("http://maps.google.com:8080")),
+      CreateUnpartitionedStorageKey(GURL("https://localhost")),
       blocked_by_policy);
   content_settings->OnStorageAccessed(
       StorageType::LOCAL_STORAGE,
-      CreateFirstPartyStorageKey(GURL("http://example.com")),
+      CreateUnpartitionedStorageKey(GURL("http://maps.google.com:8080")),
+      blocked_by_policy);
+  content_settings->OnStorageAccessed(
+      StorageType::LOCAL_STORAGE,
+      CreateUnpartitionedStorageKey(GURL("http://example.com")),
       blocked_by_policy);
   content_settings->OnStorageAccessed(
       StorageType::DATABASE,
-      CreateFirstPartyStorageKey(GURL("http://192.168.0.1")),
+      CreateUnpartitionedStorageKey(GURL("http://192.168.0.1")),
       blocked_by_policy);
   content_settings->OnSharedWorkerAccessed(
       GURL("http://youtube.com/worker.js"), "worker",
@@ -825,22 +826,23 @@ TEST_F(PageSpecificContentSettingsTest, LocalSharedObjectsContainerHostsCount) {
                                   blocked_by_policy});
   content_settings->OnStorageAccessed(
       StorageType::FILE_SYSTEM,
-      CreateFirstPartyStorageKey(GURL("https://www.google.com")),
+      CreateUnpartitionedStorageKey(GURL("https://www.google.com")),
       blocked_by_policy);
   content_settings->OnStorageAccessed(
       StorageType::INDEXED_DB,
-      CreateFirstPartyStorageKey(GURL("https://localhost")), blocked_by_policy);
-  content_settings->OnStorageAccessed(
-      StorageType::LOCAL_STORAGE,
-      CreateFirstPartyStorageKey(GURL("http://maps.google.com:8080")),
+      CreateUnpartitionedStorageKey(GURL("https://localhost")),
       blocked_by_policy);
   content_settings->OnStorageAccessed(
       StorageType::LOCAL_STORAGE,
-      CreateFirstPartyStorageKey(GURL("http://example.com")),
+      CreateUnpartitionedStorageKey(GURL("http://maps.google.com:8080")),
+      blocked_by_policy);
+  content_settings->OnStorageAccessed(
+      StorageType::LOCAL_STORAGE,
+      CreateUnpartitionedStorageKey(GURL("http://example.com")),
       blocked_by_policy);
   content_settings->OnStorageAccessed(
       StorageType::DATABASE,
-      CreateFirstPartyStorageKey(GURL("http://192.168.0.1")),
+      CreateUnpartitionedStorageKey(GURL("http://192.168.0.1")),
       blocked_by_policy);
   content_settings->OnSharedWorkerAccessed(
       GURL("http://youtube.com/worker.js"), "worker",
@@ -960,13 +962,13 @@ TEST_F(PageSpecificContentSettingsWithBDMTest, BrowsingDataModelStorageAccess) {
   bool blocked_by_policy = false;
 
   content_settings->OnBrowsingDataAccessed(
-      CreateFirstPartyStorageKey(GURL("https://www.google.com")),
+      CreateUnpartitionedStorageKey(GURL("https://www.google.com")),
       BrowsingDataModel::StorageType::kQuotaStorage, blocked_by_policy);
   content_settings->OnBrowsingDataAccessed(
-      CreateFirstPartyStorageKey(GURL("http://example.com")),
+      CreateUnpartitionedStorageKey(GURL("http://example.com")),
       BrowsingDataModel::StorageType::kLocalStorage, blocked_by_policy);
   content_settings->OnBrowsingDataAccessed(
-      CreateFirstPartyStorageKey(GURL("https://www.youtube.com")),
+      CreateUnpartitionedStorageKey(GURL("https://www.youtube.com")),
       BrowsingDataModel::StorageType::kSessionStorage, blocked_by_policy);
 
   const auto* allowed_browsing_data_model =
