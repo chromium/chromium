@@ -424,6 +424,9 @@ extern const char kBorealisProvisionDescription[];
 extern const char kBorealisStorageBallooningName[];
 extern const char kBorealisStorageBallooningDescription[];
 
+extern const char kBorealisWebUIInstallerName[];
+extern const char kBorealisWebUIInstallerDescription[];
+
 extern const char kBypassAppBannerEngagementChecksName[];
 extern const char kBypassAppBannerEngagementChecksDescription[];
 

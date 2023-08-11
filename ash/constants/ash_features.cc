@@ -372,6 +372,11 @@ BASE_FEATURE(kBorealisStorageBallooning,
              "BorealisStorageBallooning",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Use the new WebUI installer instead of views installer.
+BASE_FEATURE(kBorealisWebUIInstaller,
+             "BorealisWebUIInstaller",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enable or disable calendar jelly.
 BASE_FEATURE(kCalendarJelly, "CalendarJelly", base::FEATURE_ENABLED_BY_DEFAULT);
 
