@@ -532,21 +532,29 @@ SnapSearchResult SnapContainerData::GetSnapSearchResult(
   return result;
 }
 
+constexpr float kSnapportCoveredTolerance = 0.5;
 bool SnapContainerData::IsSnapportCoveredOnAxis(
     SearchAxis axis,
     float current_offset,
     const gfx::RectF& area_rect) const {
+  // We expand the range that SnapContainerData considers covering the snapport
+  // by kSnapportCoveredTolerance to handle offsets at the boundaries of
+  // the snap container. At the boundaries, |current_offset| might be a rounded
+  // int coming from ScrollTree::ClampScrollOffsetToLimits which uses
+  // ScrollNode::bounds which is a gfx::Size which stores ints.
+  // See crbug.com/1468412.
   if (axis == SearchAxis::kX) {
     if (area_rect.width() < rect_.width())
       return false;
-    float left = area_rect.x() - rect_.x();
-    float right = area_rect.right() - rect_.right();
+    float left = area_rect.x() - rect_.x() - kSnapportCoveredTolerance;
+    float right = area_rect.right() - rect_.right() + kSnapportCoveredTolerance;
     return current_offset >= left && current_offset <= right;
   } else {
     if (area_rect.height() < rect_.height())
       return false;
-    float top = area_rect.y() - rect_.y();
-    float bottom = area_rect.bottom() - rect_.bottom();
+    float top = area_rect.y() - rect_.y() - kSnapportCoveredTolerance;
+    float bottom =
+        area_rect.bottom() - rect_.bottom() + kSnapportCoveredTolerance;
     return current_offset >= top && current_offset <= bottom;
   }
 }
