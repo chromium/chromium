@@ -22,6 +22,11 @@ import org.chromium.ui.modelutil.ListModel;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModel.ReadableBooleanPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.ReadableIntPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -49,42 +54,41 @@ public class EditorProperties {
         }
     }
 
-    public static final PropertyModel.ReadableObjectPropertyKey<String> EDITOR_TITLE =
-            new PropertyModel.ReadableObjectPropertyKey<>("editor_title");
-    public static final PropertyModel.ReadableObjectPropertyKey<String> CUSTOM_DONE_BUTTON_TEXT =
-            new PropertyModel.ReadableObjectPropertyKey<String>("custom_done_button_text");
-    public static final PropertyModel.ReadableObjectPropertyKey<String> FOOTER_MESSAGE =
-            new PropertyModel.ReadableObjectPropertyKey<>("footer_message");
-    public static final PropertyModel.ReadableObjectPropertyKey<String> DELETE_CONFIRMATION_TITLE =
-            new PropertyModel.ReadableObjectPropertyKey<>("delete_confirmation_title");
-    public static final PropertyModel.ReadableObjectPropertyKey<String> DELETE_CONFIRMATION_TEXT =
-            new PropertyModel.ReadableObjectPropertyKey<>("delete_confirmation_text");
-    public static final PropertyModel.ReadableBooleanPropertyKey SHOW_REQUIRED_INDICATOR =
-            new PropertyModel.ReadableBooleanPropertyKey("show_required_indicator");
+    public static final ReadableObjectPropertyKey<String> EDITOR_TITLE =
+            new ReadableObjectPropertyKey<>("editor_title");
+    public static final ReadableObjectPropertyKey<String> CUSTOM_DONE_BUTTON_TEXT =
+            new ReadableObjectPropertyKey<String>("custom_done_button_text");
+    public static final ReadableObjectPropertyKey<String> FOOTER_MESSAGE =
+            new ReadableObjectPropertyKey<>("footer_message");
+    public static final ReadableObjectPropertyKey<String> DELETE_CONFIRMATION_TITLE =
+            new ReadableObjectPropertyKey<>("delete_confirmation_title");
+    public static final ReadableObjectPropertyKey<String> DELETE_CONFIRMATION_TEXT =
+            new ReadableObjectPropertyKey<>("delete_confirmation_text");
+    public static final ReadableBooleanPropertyKey SHOW_REQUIRED_INDICATOR =
+            new ReadableBooleanPropertyKey("show_required_indicator");
 
-    public static final PropertyModel
-            .WritableObjectPropertyKey<ListModel<FieldItem>> EDITOR_FIELDS =
-            new PropertyModel.WritableObjectPropertyKey<>("editor_fields");
+    public static final WritableObjectPropertyKey<ListModel<FieldItem>> EDITOR_FIELDS =
+            new WritableObjectPropertyKey<>("editor_fields");
 
-    public static final PropertyModel.ReadableObjectPropertyKey<Runnable> DONE_RUNNABLE =
-            new PropertyModel.ReadableObjectPropertyKey<>("done_callback");
-    public static final PropertyModel.ReadableObjectPropertyKey<Runnable> CANCEL_RUNNABLE =
-            new PropertyModel.ReadableObjectPropertyKey<>("cancel_callback");
+    public static final ReadableObjectPropertyKey<Runnable> DONE_RUNNABLE =
+            new ReadableObjectPropertyKey<>("done_callback");
+    public static final ReadableObjectPropertyKey<Runnable> CANCEL_RUNNABLE =
+            new ReadableObjectPropertyKey<>("cancel_callback");
 
-    public static final PropertyModel.ReadableBooleanPropertyKey ALLOW_DELETE =
-            new PropertyModel.ReadableBooleanPropertyKey("allow_delete");
-    public static final PropertyModel.ReadableObjectPropertyKey<Runnable> DELETE_RUNNABLE =
-            new PropertyModel.ReadableObjectPropertyKey<>("delete_callback");
+    public static final ReadableBooleanPropertyKey ALLOW_DELETE =
+            new ReadableBooleanPropertyKey("allow_delete");
+    public static final ReadableObjectPropertyKey<Runnable> DELETE_RUNNABLE =
+            new ReadableObjectPropertyKey<>("delete_callback");
 
-    public static final PropertyModel.WritableBooleanPropertyKey VISIBLE =
-            new PropertyModel.WritableBooleanPropertyKey("visible");
+    public static final WritableBooleanPropertyKey VISIBLE =
+            new WritableBooleanPropertyKey("visible");
     /**
      * This property is temporary way to trigger field error message update process.
      * It also triggers field focus update.
      * TODO(crbug.com/1435314): remove this property once fields are updated through MCP.
      */
-    public static final PropertyModel.WritableBooleanPropertyKey FORM_VALID =
-            new PropertyModel.WritableBooleanPropertyKey("form_valid");
+    public static final WritableBooleanPropertyKey FORM_VALID =
+            new WritableBooleanPropertyKey("form_valid");
 
     public static final PropertyKey[] ALL_KEYS = {EDITOR_TITLE, CUSTOM_DONE_BUTTON_TEXT,
             FOOTER_MESSAGE, DELETE_CONFIRMATION_TITLE, DELETE_CONFIRMATION_TEXT,
@@ -133,19 +137,19 @@ public class EditorProperties {
      * Field properties common to every field.
      */
     public static class FieldProperties {
-        public static final PropertyModel.WritableObjectPropertyKey<String> LABEL =
-                new PropertyModel.WritableObjectPropertyKey<>("label");
+        public static final WritableObjectPropertyKey<String> LABEL =
+                new WritableObjectPropertyKey<>("label");
         public static final PropertyModel
                 .WritableObjectPropertyKey<EditorFieldValidator> VALIDATOR =
-                new PropertyModel.WritableObjectPropertyKey<>("validator");
-        public static final PropertyModel.WritableObjectPropertyKey<String> ERROR_MESSAGE =
-                new PropertyModel.WritableObjectPropertyKey<>("error_message");
+                new WritableObjectPropertyKey<>("validator");
+        public static final WritableObjectPropertyKey<String> ERROR_MESSAGE =
+                new WritableObjectPropertyKey<>("error_message");
         // TODO(crbug.com/1435314): make this field read-only.
-        public static final PropertyModel.WritableBooleanPropertyKey IS_REQUIRED =
-                new PropertyModel.WritableBooleanPropertyKey("is_required");
+        public static final WritableBooleanPropertyKey IS_REQUIRED =
+                new WritableBooleanPropertyKey("is_required");
         // TODO(crbug.com/1435314): make this field read-only.
-        public static final PropertyModel.WritableObjectPropertyKey<String> VALUE =
-                new PropertyModel.WritableObjectPropertyKey<>("value");
+        public static final WritableObjectPropertyKey<String> VALUE =
+                new WritableObjectPropertyKey<>("value");
 
         public static final PropertyKey[] FIELD_ALL_KEYS = {
                 LABEL, VALIDATOR, IS_REQUIRED, ERROR_MESSAGE, VALUE};
@@ -155,14 +159,12 @@ public class EditorProperties {
      * Properties specific for the dropdown fields.
      */
     public static class DropdownFieldProperties {
-        public static final PropertyModel
-                .ReadableObjectPropertyKey<List<DropdownKeyValue>> DROPDOWN_KEY_VALUE_LIST =
-                new PropertyModel.ReadableObjectPropertyKey<>("key_value_list");
-        public static final PropertyModel
-                .WritableObjectPropertyKey<Callback<String>> DROPDOWN_CALLBACK =
-                new PropertyModel.WritableObjectPropertyKey<>("callback");
-        public static final PropertyModel.ReadableObjectPropertyKey<String> DROPDOWN_HINT =
-                new PropertyModel.ReadableObjectPropertyKey<>("hint");
+        public static final ReadableObjectPropertyKey<List<DropdownKeyValue>>
+                DROPDOWN_KEY_VALUE_LIST = new ReadableObjectPropertyKey<>("key_value_list");
+        public static final WritableObjectPropertyKey<Callback<String>> DROPDOWN_CALLBACK =
+                new WritableObjectPropertyKey<>("callback");
+        public static final ReadableObjectPropertyKey<String> DROPDOWN_HINT =
+                new ReadableObjectPropertyKey<>("hint");
 
         public static final PropertyKey[] DROPDOWN_SPECIFIC_KEYS = {
                 DROPDOWN_KEY_VALUE_LIST, DROPDOWN_CALLBACK, DROPDOWN_HINT};
@@ -177,12 +179,12 @@ public class EditorProperties {
      * Properties specific for the text fields.
      */
     public static class TextFieldProperties {
-        public static final PropertyModel.ReadableIntPropertyKey TEXT_FIELD_TYPE =
-                new PropertyModel.ReadableIntPropertyKey("field_type");
-        public static final PropertyModel.WritableObjectPropertyKey<List<String>> TEXT_SUGGESTIONS =
-                new PropertyModel.WritableObjectPropertyKey<>("suggestions");
-        public static final PropertyModel.ReadableObjectPropertyKey<TextWatcher> TEXT_FORMATTER =
-                new PropertyModel.ReadableObjectPropertyKey<>("formatter");
+        public static final ReadableIntPropertyKey TEXT_FIELD_TYPE =
+                new ReadableIntPropertyKey("field_type");
+        public static final WritableObjectPropertyKey<List<String>> TEXT_SUGGESTIONS =
+                new WritableObjectPropertyKey<>("suggestions");
+        public static final ReadableObjectPropertyKey<TextWatcher> TEXT_FORMATTER =
+                new ReadableObjectPropertyKey<>("formatter");
 
         public static final PropertyKey[] TEXT_SPECIFIC_KEYS = {
                 TEXT_FIELD_TYPE,
