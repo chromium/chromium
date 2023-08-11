@@ -62,6 +62,9 @@
 // pseudo-struct:
 //
 //   struct BackingArray {
+//     // Sampling handler. This field isn't present when the sampling is
+//     // disabled or this allocation hasn't been selected for sampling.
+//     HashtablezInfoHandle infoz_;
 //     // The number of elements we can insert before growing the capacity.
 //     size_t growth_left;
 //     // Control bytes for the "real" slots.
@@ -175,6 +178,7 @@
 #define ABSL_CONTAINER_INTERNAL_RAW_HASH_SET_H_
 
 #include <algorithm>
+#include <cassert>
 #include <cmath>
 #include <cstddef>
 #include <cstdint>
@@ -361,7 +365,7 @@ uint32_t TrailingZeros(T x) {
 // width of an abstract bit in the representation.
 // This mask provides operations for any number of real bits set in an abstract
 // bit. To add iteration on top of that, implementation must guarantee no more
-// than one real bit is set in an abstract bit.
+// than the most significant real bit is set in a set abstract bit.
 template <class T, int SignificantBits, int Shift = 0>
 class NonIterableBitMask {
  public:
@@ -418,6 +422,10 @@ class BitMask : public NonIterableBitMask<T, SignificantBits, Shift> {
   using const_iterator = BitMask;
 
   BitMask& operator++() {
+    if (Shift == 3) {
+      constexpr uint64_t msbs = 0x8080808080808080ULL;
+      this->mask_ &= msbs;
+    }
     this->mask_ &= (this->mask_ - 1);
     return *this;
   }
@@ -651,9 +659,8 @@ struct GroupAArch64Impl {
   BitMask<uint64_t, kWidth, 3> Match(h2_t hash) const {
     uint8x8_t dup = vdup_n_u8(hash);
     auto mask = vceq_u8(ctrl, dup);
-    constexpr uint64_t msbs = 0x8080808080808080ULL;
     return BitMask<uint64_t, kWidth, 3>(
-        vget_lane_u64(vreinterpret_u64_u8(mask), 0) & msbs);
+        vget_lane_u64(vreinterpret_u64_u8(mask), 0));
   }
 
   NonIterableBitMask<uint64_t, kWidth, 3> MaskEmpty() const {
@@ -909,9 +916,11 @@ using HashSetIteratorGenerationInfo = HashSetIteratorGenerationInfoDisabled;
 // A valid capacity is a non-zero integer `2^m - 1`.
 inline bool IsValidCapacity(size_t n) { return ((n + 1) & n) == 0 && n > 0; }
 
-// Computes the offset from the start of the backing allocation of the control
-// bytes. growth_left is stored at the beginning of the backing array.
-inline size_t ControlOffset() { return sizeof(size_t); }
+// Computes the offset from the start of the backing allocation of control.
+// infoz and growth_left are stored at the beginning of the backing array.
+inline size_t ControlOffset(bool has_infoz) {
+  return (has_infoz ? sizeof(HashtablezInfoHandle) : 0) + sizeof(size_t);
+}
 
 // Returns the number of "cloned control bytes".
 //
@@ -922,24 +931,26 @@ constexpr size_t NumClonedBytes() { return Group::kWidth - 1; }
 
 // Given the capacity of a table, computes the offset (from the start of the
 // backing allocation) of the generation counter (if it exists).
-inline size_t GenerationOffset(size_t capacity) {
+inline size_t GenerationOffset(size_t capacity, bool has_infoz) {
   assert(IsValidCapacity(capacity));
   const size_t num_control_bytes = capacity + 1 + NumClonedBytes();
-  return ControlOffset() + num_control_bytes;
+  return ControlOffset(has_infoz) + num_control_bytes;
 }
 
 // Given the capacity of a table, computes the offset (from the start of the
 // backing allocation) at which the slots begin.
-inline size_t SlotOffset(size_t capacity, size_t slot_align) {
+inline size_t SlotOffset(size_t capacity, size_t slot_align, bool has_infoz) {
   assert(IsValidCapacity(capacity));
-  return (GenerationOffset(capacity) + NumGenerationBytes() + slot_align - 1) &
+  return (GenerationOffset(capacity, has_infoz) + NumGenerationBytes() +
+          slot_align - 1) &
          (~slot_align + 1);
 }
 
 // Given the capacity of a table, computes the total size of the backing
 // array.
-inline size_t AllocSize(size_t capacity, size_t slot_size, size_t slot_align) {
-  return SlotOffset(capacity, slot_align) + capacity * slot_size;
+inline size_t AllocSize(size_t capacity, size_t slot_size, size_t slot_align,
+                        bool has_infoz) {
+  return SlotOffset(capacity, slot_align, has_infoz) + capacity * slot_size;
 }
 
 // CommonFields hold the fields in raw_hash_set that do not depend
@@ -962,20 +973,20 @@ class CommonFields : public CommonFieldsGenerationInfo {
         control_(that.control()),
         slots_(that.slot_array()),
         capacity_(that.capacity()),
-        compressed_tuple_(that.size(), std::move(that.infoz())) {
+        size_(that.size_) {
     that.set_control(EmptyGroup());
     that.set_slots(nullptr);
     that.set_capacity(0);
-    that.set_size(0);
+    that.size_ = 0;
   }
   CommonFields& operator=(CommonFields&&) = default;
 
   ctrl_t* control() const { return control_; }
   void set_control(ctrl_t* c) { control_ = c; }
   void* backing_array_start() const {
-    // growth_left is stored before control bytes.
+    // growth_left (and maybe infoz) is stored before control bytes.
     assert(reinterpret_cast<uintptr_t>(control()) % alignof(size_t) == 0);
-    return control() - sizeof(size_t);
+    return control() - ControlOffset(has_infoz());
   }
 
   // Note: we can't use slots() because Qt defines "slots" as a macro.
@@ -983,8 +994,18 @@ class CommonFields : public CommonFieldsGenerationInfo {
   void set_slots(void* s) { slots_ = s; }
 
   // The number of filled slots.
-  size_t size() const { return compressed_tuple_.template get<0>(); }
-  void set_size(size_t s) { compressed_tuple_.template get<0>() = s; }
+  size_t size() const { return size_ >> HasInfozShift(); }
+  void set_size(size_t s) {
+    size_ = (s << HasInfozShift()) | (size_ & HasInfozMask());
+  }
+  void increment_size() {
+    assert(size() < capacity());
+    size_ += size_t{1} << HasInfozShift();
+  }
+  void decrement_size() {
+    assert(size() > 0);
+    size_ -= size_t{1} << HasInfozShift();
+  }
 
   // The total number of available slots.
   size_t capacity() const { return capacity_; }
@@ -996,15 +1017,31 @@ class CommonFields : public CommonFieldsGenerationInfo {
   // The number of slots we can still fill without needing to rehash.
   // This is stored in the heap allocation before the control bytes.
   size_t growth_left() const {
-    return *reinterpret_cast<size_t*>(backing_array_start());
+    const size_t* gl_ptr = reinterpret_cast<size_t*>(control()) - 1;
+    assert(reinterpret_cast<uintptr_t>(gl_ptr) % alignof(size_t) == 0);
+    return *gl_ptr;
   }
   void set_growth_left(size_t gl) {
-    *reinterpret_cast<size_t*>(backing_array_start()) = gl;
+    size_t* gl_ptr = reinterpret_cast<size_t*>(control()) - 1;
+    assert(reinterpret_cast<uintptr_t>(gl_ptr) % alignof(size_t) == 0);
+    *gl_ptr = gl;
   }
 
-  HashtablezInfoHandle& infoz() { return compressed_tuple_.template get<1>(); }
-  const HashtablezInfoHandle& infoz() const {
-    return compressed_tuple_.template get<1>();
+  bool has_infoz() const {
+    return ABSL_PREDICT_FALSE((size_ & HasInfozMask()) != 0);
+  }
+  void set_has_infoz(bool has_infoz) {
+    size_ = (size() << HasInfozShift()) | static_cast<size_t>(has_infoz);
+  }
+
+  HashtablezInfoHandle infoz() {
+    return has_infoz()
+               ? *reinterpret_cast<HashtablezInfoHandle*>(backing_array_start())
+               : HashtablezInfoHandle();
+  }
+  void set_infoz(HashtablezInfoHandle infoz) {
+    assert(has_infoz());
+    *reinterpret_cast<HashtablezInfoHandle*>(backing_array_start()) = infoz;
   }
 
   bool should_rehash_for_bug_detection_on_insert() const {
@@ -1017,7 +1054,7 @@ class CommonFields : public CommonFieldsGenerationInfo {
 
   // The size of the backing array allocation.
   size_t alloc_size(size_t slot_size, size_t slot_align) const {
-    return AllocSize(capacity(), slot_size, slot_align);
+    return AllocSize(capacity(), slot_size, slot_align, has_infoz());
   }
 
   // Returns the number of control bytes set to kDeleted. For testing only.
@@ -1027,9 +1064,14 @@ class CommonFields : public CommonFieldsGenerationInfo {
   }
 
  private:
-  // TODO(b/259599413): Investigate removing some of these fields:
+  // We store the has_infoz bit in the lowest bit of size_.
+  static constexpr size_t HasInfozShift() { return 1; }
+  static constexpr size_t HasInfozMask() {
+    return (size_t{1} << HasInfozShift()) - 1;
+  }
+
+  // TODO(b/182800944): Investigate removing some of these fields:
   // - control/slots can be derived from each other
-  // - we can use 6 bits for capacity since it's always a power of two minus 1
 
   // The control bytes (and, also, a pointer near to the base of the backing
   // array).
@@ -1044,12 +1086,16 @@ class CommonFields : public CommonFieldsGenerationInfo {
   // `control`. May be null for empty tables.
   void* slots_ = nullptr;
 
+  // The number of slots in the backing array. This is always 2^N-1 for an
+  // integer N. NOTE: we tried experimenting with compressing the capacity and
+  // storing it together with size_: (a) using 6 bits to store the corresponding
+  // power (N in 2^N-1), and (b) storing 2^N as the most significant bit of
+  // size_ and storing size in the low bits. Both of these experiments were
+  // regressions, presumably because we need capacity to do find operations.
   size_t capacity_ = 0;
 
-  // Bundle together size and HashtablezInfoHandle to ensure EBO for
-  // HashtablezInfoHandle when sampling is turned off.
-  absl::container_internal::CompressedTuple<size_t, HashtablezInfoHandle>
-      compressed_tuple_{0u, HashtablezInfoHandle{}};
+  // The size and also has one bit that stores whether we have infoz.
+  size_t size_ = 0;
 };
 
 template <class Policy, class Hash, class Eq, class Alloc>
@@ -1399,23 +1445,26 @@ ABSL_ATTRIBUTE_NOINLINE void InitializeSlots(CommonFields& c, Alloc alloc) {
        c.slot_array() == nullptr)
           ? SizeOfSlot
           : 0;
+  HashtablezInfoHandle infoz =
+      sample_size > 0 ? Sample(sample_size) : c.infoz();
 
+  const bool has_infoz = infoz.IsSampled();
   const size_t cap = c.capacity();
-  const size_t alloc_size = AllocSize(cap, SizeOfSlot, AlignOfSlot);
-  // growth_left (which is a size_t) is stored with the backing array.
+  const size_t alloc_size = AllocSize(cap, SizeOfSlot, AlignOfSlot, has_infoz);
   char* mem = static_cast<char*>(
       Allocate<BackingArrayAlignment(AlignOfSlot)>(&alloc, alloc_size));
   const GenerationType old_generation = c.generation();
-  c.set_generation_ptr(
-      reinterpret_cast<GenerationType*>(mem + GenerationOffset(cap)));
+  c.set_generation_ptr(reinterpret_cast<GenerationType*>(
+      mem + GenerationOffset(cap, has_infoz)));
   c.set_generation(NextGeneration(old_generation));
-  c.set_control(reinterpret_cast<ctrl_t*>(mem + ControlOffset()));
-  c.set_slots(mem + SlotOffset(cap, AlignOfSlot));
+  c.set_control(reinterpret_cast<ctrl_t*>(mem + ControlOffset(has_infoz)));
+  c.set_slots(mem + SlotOffset(cap, AlignOfSlot, has_infoz));
   ResetCtrl(c, SizeOfSlot);
-  if (sample_size) {
-    c.infoz() = Sample(sample_size);
+  c.set_has_infoz(has_infoz);
+  if (has_infoz) {
+    infoz.RecordStorageChanged(c.size(), cap);
+    c.set_infoz(infoz);
   }
-  c.infoz().RecordStorageChanged(c.size(), cap);
 }
 
 // PolicyFunctions bundles together some information for a particular
@@ -1456,6 +1505,7 @@ ABSL_ATTRIBUTE_NOINLINE void DeallocateStandard(CommonFields& common,
                                 policy.slot_size * common.capacity());
 
   std::allocator<char> alloc;
+  common.infoz().Unregister();
   Deallocate<BackingArrayAlignment(AlignOfSlot)>(
       &alloc, common.backing_array_start(),
       common.alloc_size(policy.slot_size, AlignOfSlot));
@@ -1886,11 +1936,10 @@ class raw_hash_set {
 
     // Unpoison before returning the memory to the allocator.
     SanitizerUnpoisonMemoryRegion(slot_array(), sizeof(slot_type) * cap);
+    infoz().Unregister();
     Deallocate<BackingArrayAlignment(alignof(slot_type))>(
         &alloc_ref(), common().backing_array_start(),
-        AllocSize(cap, sizeof(slot_type), alignof(slot_type)));
-
-    infoz().Unregister();
+        common().alloc_size(sizeof(slot_type), alignof(slot_type)));
   }
 
   iterator begin() ABSL_ATTRIBUTE_LIFETIME_BOUND {
@@ -2510,6 +2559,7 @@ class raw_hash_set {
     assert(IsValidCapacity(new_capacity));
     auto* old_ctrl = control();
     auto* old_slots = slot_array();
+    const bool had_infoz = common().has_infoz();
     const size_t old_capacity = common().capacity();
     common().set_capacity(new_capacity);
     initialize_slots();
@@ -2531,8 +2581,9 @@ class raw_hash_set {
       SanitizerUnpoisonMemoryRegion(old_slots,
                                     sizeof(slot_type) * old_capacity);
       Deallocate<BackingArrayAlignment(alignof(slot_type))>(
-          &alloc_ref(), old_ctrl - ControlOffset(),
-          AllocSize(old_capacity, sizeof(slot_type), alignof(slot_type)));
+          &alloc_ref(), old_ctrl - ControlOffset(had_infoz),
+          AllocSize(old_capacity, sizeof(slot_type), alignof(slot_type),
+                    had_infoz));
     }
     infoz().RecordRehash(total_probe_length);
   }
@@ -2678,7 +2729,7 @@ class raw_hash_set {
       rehash_and_grow_if_necessary();
       target = find_first_non_full(common(), hash);
     }
-    common().set_size(common().size() + 1);
+    common().increment_size();
     set_growth_left(growth_left() - IsEmpty(control()[target.offset]));
     SetCtrl(common(), target.offset, H2(hash), sizeof(slot_type));
     common().maybe_increment_generation_on_insert();
@@ -2743,7 +2794,7 @@ class raw_hash_set {
   slot_type* slot_array() const {
     return static_cast<slot_type*>(common().slot_array());
   }
-  HashtablezInfoHandle& infoz() { return common().infoz(); }
+  HashtablezInfoHandle infoz() { return common().infoz(); }
 
   hasher& hash_ref() { return settings_.template get<1>(); }
   const hasher& hash_ref() const { return settings_.template get<1>(); }
@@ -2774,6 +2825,7 @@ class raw_hash_set {
     SanitizerUnpoisonMemoryRegion(common.slot_array(),
                                   sizeof(slot_type) * common.capacity());
 
+    common.infoz().Unregister();
     Deallocate<BackingArrayAlignment(alignof(slot_type))>(
         &set->alloc_ref(), common.backing_array_start(),
         common.alloc_size(sizeof(slot_type), alignof(slot_type)));
@@ -2847,7 +2899,7 @@ struct HashtableDebugAccess<Set, absl::void_t<typename Set::raw_hash_set>> {
   static size_t AllocatedByteSize(const Set& c) {
     size_t capacity = c.capacity();
     if (capacity == 0) return 0;
-    size_t m = AllocSize(capacity, sizeof(Slot), alignof(Slot));
+    size_t m = c.common().alloc_size(sizeof(Slot), alignof(Slot));
 
     size_t per_slot = Traits::space_used(static_cast<const Slot*>(nullptr));
     if (per_slot != ~size_t{}) {
@@ -2866,8 +2918,8 @@ struct HashtableDebugAccess<Set, absl::void_t<typename Set::raw_hash_set>> {
   static size_t LowerBoundAllocatedByteSize(size_t size) {
     size_t capacity = GrowthToLowerboundCapacity(size);
     if (capacity == 0) return 0;
-    size_t m =
-        AllocSize(NormalizeCapacity(capacity), sizeof(Slot), alignof(Slot));
+    size_t m = AllocSize(NormalizeCapacity(capacity), sizeof(Slot),
+                         alignof(Slot), /*has_infoz=*/false);
     size_t per_slot = Traits::space_used(static_cast<const Slot*>(nullptr));
     if (per_slot != ~size_t{}) {
       m += per_slot * size;

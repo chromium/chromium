@@ -25,8 +25,9 @@
 #include <map>
 #include <memory>
 #include <ostream>
+#include <string>
 #include <tuple>
-#include <type_traits>
+#include <utility>
 #include <vector>
 
 #include "gtest/gtest.h"

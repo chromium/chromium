@@ -64,6 +64,8 @@ ABSL_NAMESPACE_BEGIN
 //   --my_log_level=info
 //   --my_log_level=0
 //
+// `DFATAL` and `kLogDebugFatal` are similarly accepted.
+//
 // Unparsing a flag produces the same result as `absl::LogSeverityName()` for
 // the standard levels and a base-ten integer otherwise.
 enum class LogSeverity : int {
@@ -81,6 +83,16 @@ constexpr std::array<absl::LogSeverity, 4> LogSeverities() {
   return {{absl::LogSeverity::kInfo, absl::LogSeverity::kWarning,
            absl::LogSeverity::kError, absl::LogSeverity::kFatal}};
 }
+
+// `absl::kLogDebugFatal` equals `absl::LogSeverity::kFatal` in debug builds
+// (i.e. when `NDEBUG` is not defined) and `absl::LogSeverity::kError`
+// otherwise.  Avoid ODR-using this variable as it has internal linkage and thus
+// distinct storage in different TUs.
+#ifdef NDEBUG
+static constexpr absl::LogSeverity kLogDebugFatal = absl::LogSeverity::kError;
+#else
+static constexpr absl::LogSeverity kLogDebugFatal = absl::LogSeverity::kFatal;
+#endif
 
 // LogSeverityName()
 //

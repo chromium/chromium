@@ -27,20 +27,20 @@
 #include <cstring>
 #include <iterator>
 #include <limits>
-#include <memory>
+#include <system_error>  // NOLINT(build/c++11)
 #include <utility>
 
 #include "absl/base/attributes.h"
+#include "absl/base/config.h"
 #include "absl/base/internal/endian.h"
 #include "absl/base/internal/raw_logging.h"
 #include "absl/base/optimization.h"
 #include "absl/numeric/bits.h"
+#include "absl/numeric/int128.h"
 #include "absl/strings/ascii.h"
 #include "absl/strings/charconv.h"
-#include "absl/strings/escaping.h"
-#include "absl/strings/internal/memutil.h"
 #include "absl/strings/match.h"
-#include "absl/strings/str_cat.h"
+#include "absl/strings/string_view.h"
 
 namespace absl {
 ABSL_NAMESPACE_BEGIN

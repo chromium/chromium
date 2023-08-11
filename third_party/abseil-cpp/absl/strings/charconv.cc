@@ -16,9 +16,10 @@
 
 #include <algorithm>
 #include <cassert>
-#include <cmath>
-#include <cstring>
+#include <cstddef>
+#include <cstdint>
 #include <limits>
+#include <system_error>  // NOLINT(build/c++11)
 
 #include "absl/base/casts.h"
 #include "absl/base/config.h"

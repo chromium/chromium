@@ -845,6 +845,7 @@ absl_cc_test(
     absl::log_internal_test_helpers
     absl::log_severity
     absl::scoped_mock_log
+    GTest::gmock
     GTest::gtest_main
 )
 

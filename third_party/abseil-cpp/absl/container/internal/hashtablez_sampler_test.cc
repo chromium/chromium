@@ -42,16 +42,11 @@ namespace container_internal {
 #if defined(ABSL_INTERNAL_HASHTABLEZ_SAMPLE)
 class HashtablezInfoHandlePeer {
  public:
-  static bool IsSampled(const HashtablezInfoHandle& h) {
-    return h.info_ != nullptr;
-  }
-
   static HashtablezInfo* GetInfo(HashtablezInfoHandle* h) { return h->info_; }
 };
 #else
 class HashtablezInfoHandlePeer {
  public:
-  static bool IsSampled(const HashtablezInfoHandle&) { return false; }
   static HashtablezInfo* GetInfo(HashtablezInfoHandle*) { return nullptr; }
 };
 #endif  // defined(ABSL_INTERNAL_HASHTABLEZ_SAMPLE)
@@ -267,7 +262,7 @@ TEST(HashtablezSamplerTest, Sample) {
   for (int i = 0; i < 1000000; ++i) {
     HashtablezInfoHandle h = Sample(test_element_size);
     ++total;
-    if (HashtablezInfoHandlePeer::IsSampled(h)) {
+    if (h.IsSampled()) {
       ++num_sampled;
     }
     sample_rate = static_cast<double>(num_sampled) / total;
@@ -294,6 +289,7 @@ TEST(HashtablezSamplerTest, Handle) {
   });
   EXPECT_TRUE(found);
 
+  h.Unregister();
   h = HashtablezInfoHandle();
   found = false;
   sampler.Iterate([&](const HashtablezInfo& h) {

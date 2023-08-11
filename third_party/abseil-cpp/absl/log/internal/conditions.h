@@ -137,6 +137,15 @@
                   ? true                                                   \
                   : (::absl::log_internal::ExitQuietly(), false))          \
            : false))
+#define ABSL_LOG_INTERNAL_CONDITION_DFATAL(type, condition)             \
+  ABSL_LOG_INTERNAL_##type##_CONDITION(                                 \
+      (ABSL_ASSUME(absl::kLogDebugFatal == absl::LogSeverity::kError || \
+                   absl::kLogDebugFatal == absl::LogSeverity::kFatal),  \
+       (condition) &&                                                   \
+           (::absl::kLogDebugFatal >=                                   \
+                static_cast<::absl::LogSeverity>(ABSL_MIN_LOG_LEVEL) || \
+            (::absl::kLogDebugFatal == ::absl::LogSeverity::kFatal &&   \
+             (::absl::log_internal::AbortQuietly(), false)))))
 
 #define ABSL_LOG_INTERNAL_CONDITION_LEVEL(severity)                    \
   for (int log_internal_severity_loop = 1; log_internal_severity_loop; \
@@ -162,6 +171,8 @@
 #define ABSL_LOG_INTERNAL_CONDITION_FATAL(type, condition) \
   ABSL_LOG_INTERNAL_##type##_CONDITION(condition)
 #define ABSL_LOG_INTERNAL_CONDITION_QFATAL(type, condition) \
+  ABSL_LOG_INTERNAL_##type##_CONDITION(condition)
+#define ABSL_LOG_INTERNAL_CONDITION_DFATAL(type, condition) \
   ABSL_LOG_INTERNAL_##type##_CONDITION(condition)
 #define ABSL_LOG_INTERNAL_CONDITION_LEVEL(severity)                    \
   for (int log_internal_severity_loop = 1; log_internal_severity_loop; \

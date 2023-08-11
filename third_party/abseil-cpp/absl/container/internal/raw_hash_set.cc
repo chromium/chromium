@@ -220,7 +220,7 @@ void DropDeletesWithoutResize(CommonFields& common,
 
 void EraseMetaOnly(CommonFields& c, ctrl_t* it, size_t slot_size) {
   assert(IsFull(*it) && "erasing a dangling iterator");
-  c.set_size(c.size() - 1);
+  c.decrement_size();
   const auto index = static_cast<size_t>(it - c.control());
   const size_t index_before = (index - Group::kWidth) & c.capacity();
   const auto empty_after = Group(it).MaskEmpty();
@@ -247,14 +247,15 @@ void ClearBackingArray(CommonFields& c, const PolicyFunctions& policy,
     ResetCtrl(c, policy.slot_size);
     c.infoz().RecordStorageChanged(0, c.capacity());
   } else {
+    // We need to record infoz before calling dealloc, which will unregister
+    // infoz.
+    c.infoz().RecordClearedReservation();
+    c.infoz().RecordStorageChanged(0, 0);
     (*policy.dealloc)(c, policy);
     c.set_control(EmptyGroup());
     c.set_generation_ptr(EmptyGeneration());
     c.set_slots(nullptr);
     c.set_capacity(0);
-    c.infoz().RecordClearedReservation();
-    assert(c.size() == 0);
-    c.infoz().RecordStorageChanged(0, 0);
   }
 }
 

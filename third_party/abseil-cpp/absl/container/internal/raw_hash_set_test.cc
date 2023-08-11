@@ -524,13 +524,6 @@ TEST(Table, EmptyFunctorOptimization) {
   static_assert(std::is_empty<std::allocator<int>>::value, "");
 
   struct MockTable {
-    void* infoz;
-    void* ctrl;
-    void* slots;
-    size_t size;
-    size_t capacity;
-  };
-  struct MockTableInfozDisabled {
     void* ctrl;
     void* slots;
     size_t size;
@@ -555,9 +548,7 @@ TEST(Table, EmptyFunctorOptimization) {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunreachable-code"
 #endif
-  constexpr size_t mock_size = std::is_empty<HashtablezInfoHandle>()
-                                   ? sizeof(MockTableInfozDisabled)
-                                   : sizeof(MockTable);
+  constexpr size_t mock_size = sizeof(MockTable);
   constexpr size_t generation_size =
       SwisstableGenerationsEnabled() ? sizeof(GenerationData) : 0;
 #if defined(__clang__)

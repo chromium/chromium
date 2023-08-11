@@ -32,6 +32,8 @@
 // * The `QFATAL` pseudo-severity level is equivalent to `FATAL` but triggers
 //   quieter termination messages, e.g. without a full stack trace, and skips
 //   running registered error handlers.
+// * The `DFATAL` pseudo-severity level is defined as `FATAL` in debug mode and
+//   as `ERROR` otherwise.
 // Some preprocessor shenanigans are used to ensure that e.g. `LOG(INFO)` has
 // the same meaning even if a local symbol or preprocessor macro named `INFO` is
 // defined.  To specify a severity level using an expression instead of a

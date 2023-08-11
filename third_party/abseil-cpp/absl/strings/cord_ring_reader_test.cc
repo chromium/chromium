@@ -12,19 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include <array>
 #include <cstdlib>
+#include <cstring>
 #include <ctime>
-#include <memory>
-#include <random>
-#include <sstream>
 
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
-#include "absl/debugging/leak_check.h"
+#include "absl/base/config.h"
 #include "absl/strings/internal/cord_internal.h"
 #include "absl/strings/internal/cord_rep_ring.h"
 #include "absl/strings/internal/cord_rep_ring_reader.h"
 #include "absl/strings/string_view.h"
+#include "absl/types/span.h"
 
 namespace absl {
 ABSL_NAMESPACE_BEGIN

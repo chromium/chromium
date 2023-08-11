@@ -14,16 +14,22 @@
 
 #include "absl/strings/str_format.h"
 
+#include <cerrno>
 #include <cstdarg>
 #include <cstdint>
 #include <cstdio>
+#include <ostream>
+#include <sstream>
 #include <string>
+#include <type_traits>
 
-#include "gmock/gmock.h"
 #include "gtest/gtest.h"
+#include "absl/base/config.h"
+#include "absl/base/macros.h"
 #include "absl/strings/cord.h"
 #include "absl/strings/str_cat.h"
 #include "absl/strings/string_view.h"
+#include "absl/types/span.h"
 
 namespace absl {
 ABSL_NAMESPACE_BEGIN

@@ -15,9 +15,13 @@
 #include "absl/strings/str_cat.h"
 
 #include <cstdint>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 #include <string>
 
 #include "benchmark/benchmark.h"
+#include "absl/strings/string_view.h"
 #include "absl/strings/substitute.h"
 
 namespace {

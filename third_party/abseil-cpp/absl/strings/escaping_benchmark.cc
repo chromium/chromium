@@ -14,13 +14,17 @@
 
 #include "absl/strings/escaping.h"
 
+#include <cstdint>
 #include <cstdio>
 #include <cstring>
+#include <memory>
 #include <random>
+#include <string>
 
 #include "benchmark/benchmark.h"
 #include "absl/base/internal/raw_logging.h"
 #include "absl/strings/internal/escaping_test_common.h"
+#include "absl/strings/str_cat.h"
 
 namespace {
 
