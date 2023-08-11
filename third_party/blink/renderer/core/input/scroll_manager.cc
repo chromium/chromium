@@ -921,6 +921,7 @@ bool ScrollManager::SnapAtGestureScrollEnd(
 }
 
 bool ScrollManager::GetSnapFlingInfoAndSetAnimatingSnapTarget(
+    const gfx::Vector2dF& current_delta,
     const gfx::Vector2dF& natural_displacement,
     gfx::PointF* out_initial_position,
     gfx::PointF* out_target_position) const {

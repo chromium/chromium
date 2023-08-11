@@ -912,6 +912,7 @@ bool InputHandler::ScrollingShouldSwitchtoMainThread() {
 }
 
 bool InputHandler::GetSnapFlingInfoAndSetAnimatingSnapTarget(
+    const gfx::Vector2dF& current_delta,
     const gfx::Vector2dF& natural_displacement_in_viewport,
     gfx::PointF* out_initial_position,
     gfx::PointF* out_target_position) {

@@ -52,7 +52,7 @@ bool SnapFlingController::HandleGestureScrollUpdate(
 
   gfx::PointF target_offset, start_offset;
   if (!client_->GetSnapFlingInfoAndSetAnimatingSnapTarget(
-          ending_displacement, &start_offset, &target_offset)) {
+          info.delta, ending_displacement, &start_offset, &target_offset)) {
     state_ = State::kIgnored;
     return false;
   }

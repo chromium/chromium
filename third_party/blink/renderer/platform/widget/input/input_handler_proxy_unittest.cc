@@ -231,8 +231,9 @@ class MockInputHandler : public cc::InputHandler {
   }
   void set_is_scrolling_root(bool is) { is_scrolling_root_ = is; }
 
-  MOCK_METHOD3(GetSnapFlingInfoAndSetAnimatingSnapTarget,
-               bool(const gfx::Vector2dF& natural_displacement,
+  MOCK_METHOD4(GetSnapFlingInfoAndSetAnimatingSnapTarget,
+               bool(const gfx::Vector2dF& current_delta,
+                    const gfx::Vector2dF& natural_displacement,
                     gfx::PointF* initial_offset,
                     gfx::PointF* target_offset));
   MOCK_METHOD1(ScrollEndForSnapFling, void(bool));
@@ -1079,9 +1080,9 @@ void InputHandlerProxyTest::FlingAndSnap() {
   gesture_.data.scroll_update.inertial_phase =
       WebGestureEvent::InertialPhaseState::kMomentum;
   EXPECT_CALL(mock_input_handler_,
-              GetSnapFlingInfoAndSetAnimatingSnapTarget(_, _, _))
-      .WillOnce(DoAll(testing::SetArgPointee<1>(gfx::PointF(0, 0)),
-                      testing::SetArgPointee<2>(gfx::PointF(0, 100)),
+              GetSnapFlingInfoAndSetAnimatingSnapTarget(_, _, _, _))
+      .WillOnce(DoAll(testing::SetArgPointee<2>(gfx::PointF(0, 0)),
+                      testing::SetArgPointee<3>(gfx::PointF(0, 100)),
                       testing::Return(true)));
   EXPECT_CALL(mock_input_handler_, ScrollUpdate(_, _)).Times(1);
   EXPECT_SET_NEEDS_ANIMATE_INPUT(1);
@@ -1097,7 +1098,7 @@ TEST_P(InputHandlerProxyTest, SnapFlingIgnoresFollowingGSUAndGSE) {
   expected_disposition_ = InputHandlerProxy::DROP_EVENT;
 
   EXPECT_CALL(mock_input_handler_,
-              GetSnapFlingInfoAndSetAnimatingSnapTarget(_, _, _))
+              GetSnapFlingInfoAndSetAnimatingSnapTarget(_, _, _, _))
       .Times(0);
   EXPECT_CALL(mock_input_handler_, ScrollUpdate(_, _)).Times(0);
   EXPECT_EQ(expected_disposition_,
@@ -1481,7 +1482,7 @@ TEST_F(InputHandlerProxyEventQueueTest, AckTouchActionNonBlockingForFling) {
           .Times(2)
           .WillRepeatedly(testing::Return(cc::ElementId()));
       EXPECT_CALL(mock_input_handler_,
-                  GetSnapFlingInfoAndSetAnimatingSnapTarget(_, _, _))
+                  GetSnapFlingInfoAndSetAnimatingSnapTarget(_, _, _, _))
           .WillOnce(Return(false));
 
       auto gsu_fling = CreateGestureScrollPinch(

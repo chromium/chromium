@@ -107,6 +107,7 @@ class CORE_EXPORT ScrollManager : public GarbageCollected<ScrollManager>,
 
   // SnapFlingClient implementation.
   bool GetSnapFlingInfoAndSetAnimatingSnapTarget(
+      const gfx::Vector2dF& current_delta,
       const gfx::Vector2dF& natural_displacement,
       gfx::PointF* out_initial_position,
       gfx::PointF* out_target_position) const override;

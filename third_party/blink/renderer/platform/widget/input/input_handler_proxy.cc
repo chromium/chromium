@@ -1554,11 +1554,12 @@ void InputHandlerProxy::SynchronouslyZoomBy(float magnify_delta,
 }
 
 bool InputHandlerProxy::GetSnapFlingInfoAndSetAnimatingSnapTarget(
+    const gfx::Vector2dF& current_delta,
     const gfx::Vector2dF& natural_displacement,
     gfx::PointF* initial_offset,
     gfx::PointF* target_offset) const {
   return input_handler_->GetSnapFlingInfoAndSetAnimatingSnapTarget(
-      natural_displacement, initial_offset, target_offset);
+      current_delta, natural_displacement, initial_offset, target_offset);
 }
 
 gfx::PointF InputHandlerProxy::ScrollByForSnapFling(

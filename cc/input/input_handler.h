@@ -393,6 +393,7 @@ class CC_EXPORT InputHandler : public InputDelegateForCompositor {
   // the active scroll sequence.
   // Returns false if their is no position to snap to.
   virtual bool GetSnapFlingInfoAndSetAnimatingSnapTarget(
+      const gfx::Vector2dF& current_delta,
       const gfx::Vector2dF& natural_displacement_in_viewport,
       gfx::PointF* initial_offset,
       gfx::PointF* target_offset);

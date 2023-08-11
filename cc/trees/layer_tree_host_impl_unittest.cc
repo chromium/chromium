@@ -2914,7 +2914,8 @@ TEST_F(LayerTreeHostImplTest,
 
   gfx::PointF initial_offset, target_offset;
   EXPECT_TRUE(GetInputHandler().GetSnapFlingInfoAndSetAnimatingSnapTarget(
-      gfx::Vector2dF(10, 10), &initial_offset, &target_offset));
+      gfx::Vector2dF(1, 1), gfx::Vector2dF(10, 10), &initial_offset,
+      &target_offset));
   EXPECT_TRUE(GetInputHandler().animating_for_snap_for_testing());
   EXPECT_POINTF_EQ(gfx::PointF(4, 4), initial_offset);
   EXPECT_POINTF_EQ(gfx::PointF(10, 10), target_offset);
@@ -2953,7 +2954,8 @@ TEST_F(LayerTreeHostImplTest, SnapFlingAnimationEndWithoutFinishing) {
 
   gfx::PointF initial_offset, target_offset;
   EXPECT_TRUE(GetInputHandler().GetSnapFlingInfoAndSetAnimatingSnapTarget(
-      gfx::Vector2dF(10, 10), &initial_offset, &target_offset));
+      gfx::Vector2dF(1, 1), gfx::Vector2dF(10, 10), &initial_offset,
+      &target_offset));
   EXPECT_TRUE(GetInputHandler().animating_for_snap_for_testing());
   EXPECT_POINTF_EQ(gfx::PointF(4, 4), initial_offset);
   EXPECT_POINTF_EQ(gfx::PointF(10, 10), target_offset);
