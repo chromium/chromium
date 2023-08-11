@@ -110,6 +110,7 @@ void FocusableView::InstallFocusRing() {
                                                : kBackdropBorderRoundingDp);
   views::FocusRing::Install(this);
   views::FocusRing* focus_ring = views::FocusRing::Get(this);
+  focus_ring->SetOutsetFocusRingDisabled(true);
   focus_ring->SetColorId(ui::kColorAshFocusRing);
   focus_ring->SetHasFocusPredicate(
       base::BindRepeating([](const views::View* view) {

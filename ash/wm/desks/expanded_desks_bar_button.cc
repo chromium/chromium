@@ -146,6 +146,7 @@ ExpandedDesksBarButton::ExpandedDesksBarButton(
       inner_button_, gfx::Insets(kFocusRingHaloInset), kBorderCornerRadius);
   if (bar_view_->type() == DeskBarViewBase::Type::kOverview) {
     auto* focus_ring = views::FocusRing::Get(inner_button_);
+    focus_ring->SetOutsetFocusRingDisabled(true);
     focus_ring->SetHasFocusPredicate(base::BindRepeating(
         [](const ExpandedDesksBarButton* desks_bar_button,
            const views::View* view) {

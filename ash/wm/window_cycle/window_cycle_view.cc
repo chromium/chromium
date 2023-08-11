@@ -184,6 +184,7 @@ WindowCycleView::WindowCycleView(aura::Window* root_window,
     // Configure the focus ring for the tab slider selector view.
     views::FocusRing::Install(tab_slider_selector_view);
     auto* focus_ring = views::FocusRing::Get(tab_slider_selector_view);
+    focus_ring->SetOutsetFocusRingDisabled(true);
     focus_ring->SetColorId(is_jellyroll_enabled ? cros_tokens::kCrosSysFocusRing
                                                 : static_cast<ui::ColorId>(
                                                       ui::kColorAshFocusRing));

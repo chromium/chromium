@@ -132,6 +132,7 @@ DeskMiniView::DeskMiniView(DeskBarViewBase* owner_bar,
       this));
 
   views::FocusRing* preview_focus_ring = views::FocusRing::Get(desk_preview_);
+  preview_focus_ring->SetOutsetFocusRingDisabled(true);
   views::InstallRoundRectHighlightPathGenerator(
       desk_preview_, gfx::Insets(kFocusRingHaloInset),
       chromeos::features::IsJellyrollEnabled() ? kPreviewFocusRingRadius
@@ -744,7 +745,7 @@ void DeskMiniView::LayoutDeskNameView(const gfx::Rect& preview_bounds) {
   // display. The preview uses a border to display focus and the name view uses
   // a focus ring (which does not inset the view), so subtract the focus ring
   // from the size calculations so that the focus UI is aligned.
-  views::FocusRing* focus_ring = views::FocusRing::Get(desk_name_view_);
+  const views::FocusRing* focus_ring = views::FocusRing::Get(desk_name_view_);
   const int focus_ring_length =
       focus_ring->GetHaloThickness() - focus_ring->GetHaloInset();
   const int min_width = std::min(preview_bounds.width() - focus_ring_length,

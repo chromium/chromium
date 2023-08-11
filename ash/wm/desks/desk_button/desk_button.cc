@@ -515,6 +515,7 @@ void DeskButton::UpdateShelfAutoHideDisabler(
 void DeskButton::SetupFocus(views::Button* view) {
   view->SetInstallFocusRingOnFocus(true);
   view->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
+  views::FocusRing::Get(view)->SetOutsetFocusRingDisabled(true);
   views::FocusRing::Get(view)->SetColorId(cros_tokens::kCrosSysFocusRing);
   views::InstallRoundRectHighlightPathGenerator(
       view, gfx::Insets(kFocusRingHaloInset), kButtonCornerRadius);

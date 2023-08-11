@@ -73,7 +73,9 @@ CrOSNextDeskIconButton::CrOSNextDeskIconButton(
       this, gfx::Insets(kFocusRingHaloInset),
       GetFocusRingRadiusForState(state_));
   if (bar_view_->type() == DeskBarViewBase::Type::kOverview) {
-    views::FocusRing::Get(this)->SetHasFocusPredicate(
+    auto* focus_ring = views::FocusRing::Get(this);
+    focus_ring->SetOutsetFocusRingDisabled(true);
+    focus_ring->SetHasFocusPredicate(
         base::BindRepeating([](const views::View* view) {
           const auto* v = views::AsViewClass<CrOSNextDeskIconButton>(view);
           CHECK(v);

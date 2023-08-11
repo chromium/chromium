@@ -56,6 +56,7 @@ DeskButtonBase::DeskButtonBase(const std::u16string& text,
   views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
                                                 kFocusRingRadius);
   views::FocusRing* focus_ring = views::FocusRing::Get(this);
+  focus_ring->SetOutsetFocusRingDisabled(true);
   focus_ring->SetColorId(ui::kColorAshFocusRing);
   if (bar_view_->type() == DeskBarViewBase::Type::kOverview) {
     focus_ring->SetHasFocusPredicate(

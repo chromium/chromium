@@ -30,7 +30,9 @@ SavedDeskSaveDeskButton::SavedDeskSaveDeskButton(
                  icon),
       callback_(callback),
       button_type_(button_type) {
-  views::FocusRing::Get(this)->SetHasFocusPredicate(
+  auto* focus_ring = views::FocusRing::Get(this);
+  focus_ring->SetOutsetFocusRingDisabled(true);
+  focus_ring->SetHasFocusPredicate(
       base::BindRepeating([](const views::View* view) {
         const auto* v = views::AsViewClass<SavedDeskSaveDeskButton>(view);
         CHECK(v);
