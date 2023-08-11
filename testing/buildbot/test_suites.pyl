@@ -7544,7 +7544,6 @@
     'ios_blink_dbg_tests': {
       'ios_blink_tests': {
         'variants': [
-          'SIM_IPHONE_14_16_4',
           'SIM_IPHONE_14_17_0',
         ]
       },
