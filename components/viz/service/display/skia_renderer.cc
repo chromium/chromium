@@ -2851,6 +2851,7 @@ void SkiaRenderer::ScheduleOverlays() {
                .supports_non_backed_solid_color_overlays &&
           !output_surface_->capabilities().supports_single_pixel_buffer) {
         overlay.mailbox = GetImageMailboxForColor(*overlay.color);
+        overlay.resource_size_in_pixels = gfx::Size(1, 1);
         // This can now be treated as a regular overlay with a mailbox backing.
         overlay.is_solid_color = false;
         locks.emplace_back(overlay.mailbox);
@@ -3681,6 +3682,7 @@ void SkiaRenderer::PrepareRenderPassOverlay(
   const RenderPassBacking& dst_overlay_backing =
       overlay_params->render_pass_backing;
   overlay->mailbox = dst_overlay_backing.mailbox;
+  overlay->resource_size_in_pixels = dst_overlay_backing.size;
 
   if (can_skip_render_pass) {
     int pixel_size = quad->rect.width() * quad->rect.height();

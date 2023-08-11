@@ -359,16 +359,6 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromDrawQuadResource(
   if (resource_id != kInvalidResourceId) {
     candidate.resource_size_in_pixels =
         resource_provider_->GetResourceBackedSize(resource_id);
-  } else {
-    // The resource size is used to calculate the damage rect, so we set it here
-    // even if there is no resource. For resource-less overlays it's defined in
-    // a target space.
-    // It is unclear how to support arbitrary transforms in this case, since an
-    // e.g. rotation could make the target space bounds non-axis-aligned.
-    candidate.resource_size_in_pixels =
-        gfx::Size(candidate.display_rect.size().width(),
-                  candidate.display_rect.size().height());
-    candidate.uv_rect = {1, 1};
   }
 
   AssignDamage(quad, candidate);
