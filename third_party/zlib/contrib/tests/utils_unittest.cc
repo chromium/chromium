@@ -1084,3 +1084,57 @@ TEST(ZlibTest, ZipFilenameCommentSize) {
   EXPECT_EQ(unzGoToNextFile(uzf), UNZ_END_OF_LIST_OF_FILE);
   EXPECT_EQ(unzClose(uzf), UNZ_OK);
 }
+
+TEST(ZlibTest, ZipExtraFieldSize) {
+  // Check that minizip rejects zip members with too large extra fields.
+
+  std::string extra_field;
+  extra_field.append("\x12\x34");  // Header ID.
+  extra_field.append("\xfb\xff");  // Data size (not including the header).
+  extra_field.append(UINT16_MAX - 4, 'a');
+
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath zip_file = temp_dir.GetPath().AppendASCII("extrafield.zip");
+
+  zipFile zf = zipOpen(zip_file.AsUTF8Unsafe().c_str(), APPEND_STATUS_CREATE);
+  ASSERT_NE(zf, nullptr);
+
+  // Adding a member with 2^16 byte extra field should work.
+  EXPECT_EQ(zipOpenNewFileInZip(zf, "a", nullptr, extra_field.data(),
+                                extra_field.size(), extra_field.data(),
+                                extra_field.size(), nullptr, Z_DEFLATED,
+                                Z_DEFAULT_COMPRESSION),
+            ZIP_OK);
+  EXPECT_EQ(zipWriteInFileInZip(zf, "1", 1), ZIP_OK);
+  EXPECT_EQ(zipCloseFileInZip(zf), ZIP_OK);
+
+  // More then 2^16 bytes doesn't work. Neither for size_extrafield_local, nor
+  // size_extrafield_global.
+  std::string extra_field_long = extra_field + 'x';
+  EXPECT_EQ(
+      zipOpenNewFileInZip(zf, "b", nullptr, nullptr, 0, extra_field_long.data(),
+                          extra_field_long.size(), nullptr, Z_DEFLATED,
+                          Z_DEFAULT_COMPRESSION),
+      ZIP_PARAMERROR);
+  EXPECT_EQ(zipOpenNewFileInZip(zf, "b", nullptr, extra_field_long.data(),
+                                extra_field_long.size(), nullptr, 0, nullptr,
+                                Z_DEFLATED, Z_DEFAULT_COMPRESSION),
+            ZIP_PARAMERROR);
+
+  EXPECT_EQ(zipClose(zf, nullptr), ZIP_OK);
+
+  // Check that the data can be read back.
+  unzFile uzf = unzOpen(zip_file.AsUTF8Unsafe().c_str());
+  ASSERT_NE(uzf, nullptr);
+  char buf[UINT16_MAX + 1] = {0};
+
+  ASSERT_EQ(unzGoToFirstFile(uzf), UNZ_OK);
+  ASSERT_EQ(unzGetCurrentFileInfo(uzf, nullptr, nullptr, 0, buf,
+                                  sizeof(buf) - 1, nullptr, 0),
+            UNZ_OK);
+  EXPECT_EQ(std::string(buf), extra_field);
+
+  EXPECT_EQ(unzGoToNextFile(uzf), UNZ_END_OF_LIST_OF_FILE);
+  EXPECT_EQ(unzClose(uzf), UNZ_OK);
+}
