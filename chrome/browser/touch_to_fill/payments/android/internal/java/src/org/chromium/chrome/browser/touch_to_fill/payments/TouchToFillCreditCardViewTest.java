@@ -42,12 +42,12 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
+import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -167,10 +167,8 @@ public class TouchToFillCreditCardViewTest {
     @MediumTest
     public void testSheetStartsInFullHeightForAccessibility() {
         // Enabling the accessibility settings.
-        runOnUiThreadBlocking(() -> {
-            ChromeAccessibilityUtil.get().setAccessibilityEnabledForTesting(true);
-            ChromeAccessibilityUtil.get().setTouchExplorationEnabledForTesting(true);
-        });
+        runOnUiThreadBlocking(
+                () -> { AccessibilityState.setIsTouchExplorationEnabledForTesting(true); });
 
         runOnUiThreadBlocking(() -> {
             mTouchToFillCreditCardModel.get(SHEET_ITEMS)
@@ -183,10 +181,8 @@ public class TouchToFillCreditCardViewTest {
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.FULL);
 
         // Disabling the accessibility settings.
-        runOnUiThreadBlocking(() -> {
-            ChromeAccessibilityUtil.get().setAccessibilityEnabledForTesting(false);
-            ChromeAccessibilityUtil.get().setTouchExplorationEnabledForTesting(false);
-        });
+        runOnUiThreadBlocking(
+                () -> { AccessibilityState.setIsTouchExplorationEnabledForTesting(false); });
     }
 
     @Test

@@ -58,6 +58,9 @@ public class AccessibilityState {
     public static final String AUTOFILL_COMPAT_ACCESSIBILITY_SERVICE_ID =
             "android/com.android.server.autofill.AutofillCompatAccessibilityService";
 
+    // Constant value to multiply animation timeouts by for pre-Q Android versions.
+    private static final int ANIMATION_TIMEOUT_MULTIPLIER = 2;
+
     /**
      * Interface for the observers of the system's accessibility state.
      */
@@ -179,6 +182,7 @@ public class AccessibilityState {
 
     private static State sState;
     private static boolean sInitialized;
+    private static boolean sIsInTestingMode;
 
     // Observers for various System, Activity, and Settings states relevant to accessibility.
     private static final ApplicationStatus.ActivityStateListener sActivityStateListener =
@@ -294,7 +298,8 @@ public class AccessibilityState {
 
     /**
      * Convenience method to get a recommended timeout on all versions of Android. The method that
-     * is part of AccessibilityManager is only available on Android >= Q.
+     * is part of AccessibilityManager is only available on Android >= Q. For earlier versions of
+     * Android, we will multiply by an arbitrary constant.
      *
      * This method will query the AccessibilityManager, which considers the currently running
      * services, to provide a suggested timeout. On Android >= Q, the returned value may not be
@@ -312,6 +317,11 @@ public class AccessibilityState {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             recommendedTimeout = sAccessibilityManager.getRecommendedTimeoutMillis(
                     nonA11yTimeout, FLAG_CONTENT_ICONS | FLAG_CONTENT_TEXT | FLAG_CONTENT_CONTROLS);
+        } else {
+            // For pre-Q Android versions, we will multiply by a constant when services are enabled.
+            if (AccessibilityState.isAnyAccessibilityServiceEnabled()) {
+                recommendedTimeout *= ANIMATION_TIMEOUT_MULTIPLIER;
+            }
         }
 
         return Math.max(minimumTimeout, recommendedTimeout);
@@ -626,6 +636,7 @@ public class AccessibilityState {
      */
     public static void registerObservers() {
         assert !sInitialized
+                || sIsInTestingMode
             : "AccessibilityState has been called to register observers, but observers have "
               + "already been registered, or, a client has already queried the state. Observers "
               + "should only be registered once during browser init and before any client queries.";
@@ -735,7 +746,7 @@ public class AccessibilityState {
     // clang-format off
 
     public static void setIsScreenReaderEnabledForTesting(boolean enabled) {
-        if (!sInitialized) updateAccessibilityServices();
+        if (!sInitialized) initializeForTesting();
 
         State newState = new State(
             enabled,
@@ -751,7 +762,7 @@ public class AccessibilityState {
     }
 
     public static void setIsTouchExplorationEnabledForTesting(boolean enabled) {
-        if (!sInitialized) updateAccessibilityServices();
+        if (!sInitialized) initializeForTesting();
 
         State newState = new State(
             sState.isScreenReaderEnabled,
@@ -767,7 +778,7 @@ public class AccessibilityState {
     }
 
     public static void setIsPerformGesturesEnabledForTesting(boolean enabled) {
-        if (!sInitialized) updateAccessibilityServices();
+        if (!sInitialized) initializeForTesting();
 
         State newState = new State(
             sState.isScreenReaderEnabled,
@@ -783,7 +794,7 @@ public class AccessibilityState {
     }
 
     public static void setIsAnyAccessibilityServiceEnabledForTesting(boolean enabled) {
-        if (!sInitialized) updateAccessibilityServices();
+        if (!sInitialized) initializeForTesting();
 
         State newState = new State(
             sState.isScreenReaderEnabled,
@@ -799,7 +810,7 @@ public class AccessibilityState {
     }
 
     public static void setIsAccessibilityToolPresentForTesting(boolean enabled) {
-        if (!sInitialized) updateAccessibilityServices();
+        if (!sInitialized) initializeForTesting();
 
         State newState = new State(
             sState.isScreenReaderEnabled,
@@ -815,7 +826,7 @@ public class AccessibilityState {
     }
 
     public static void setIsSpokenFeedbackServicePresentForTesting(boolean enabled) {
-        if (!sInitialized) updateAccessibilityServices();
+        if (!sInitialized) initializeForTesting();
 
         State newState = new State(
             sState.isScreenReaderEnabled,
@@ -831,7 +842,7 @@ public class AccessibilityState {
     }
 
     public static void setIsTextShowPasswordEnabledForTesting(boolean enabled) {
-        if (!sInitialized) updateAccessibilityServices();
+        if (!sInitialized) initializeForTesting();
 
         State newState = new State(
             sState.isScreenReaderEnabled,
@@ -847,7 +858,7 @@ public class AccessibilityState {
     }
 
     public static void setIsOnlyPasswordManagersEnabledForTesting(boolean enabled) {
-        if (!sInitialized) updateAccessibilityServices();
+        if (!sInitialized) initializeForTesting();
 
         State newState = new State(
             sState.isScreenReaderEnabled,
@@ -867,6 +878,12 @@ public class AccessibilityState {
 
         // Explicitly set mask so events can be (ir)relevant to currently enabled service.
         sEventTypeMask = mask;
+    }
+
+    private static void initializeForTesting() {
+        sState = new State(false, false, false, false, false, false, false, false);
+        sInitialized = true;
+        sIsInTestingMode = true;
     }
 
     // clang-format on

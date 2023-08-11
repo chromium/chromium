@@ -50,6 +50,7 @@ import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
 import org.chromium.components.version_info.VersionInfo;
+import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -258,7 +259,7 @@ public class TabSwitcherLayout extends Layout {
                 showOverviewWithTranslateUp(shouldAnimate);
             } else if (TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(getContext())
                     && GTS_ACCESSIBILITY_SUPPORT.getValue()
-                    && ChromeAccessibilityUtil.get().isTouchExplorationEnabled()) {
+                    && AccessibilityState.isTouchExplorationEnabled()) {
                 // Intentionally disable the shrinking animation when touch exploration is enabled.
                 // During the shrinking animation, since the ComponsitorViewHolder is not focusable,
                 // Chrome is in a temporary no "valid" focus target state. This result in focus

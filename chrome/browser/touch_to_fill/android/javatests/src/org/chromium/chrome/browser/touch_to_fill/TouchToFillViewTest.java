@@ -43,6 +43,7 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.filters.MediumTest;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -51,10 +52,11 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
-import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.ScalableTimeout;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -64,7 +66,6 @@ import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.FooterPro
 import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties;
 import org.chromium.chrome.browser.touch_to_fill.data.Credential;
 import org.chromium.chrome.browser.touch_to_fill.data.WebAuthnCredential;
-import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
@@ -73,6 +74,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.Shee
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
+import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -82,7 +84,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * View tests for the Touch To Fill component ensure that model changes are reflected in the sheet.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@DoNotBatch(reason = "The methods of ChromeAccessibilityUtil don't seem to work with batching.")
+@Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class TouchToFillViewTest {
     private static final Credential ANA =
@@ -126,6 +128,12 @@ public class TouchToFillViewTest {
             mTouchToFillView = new TouchToFillView(getActivity(), mBottomSheetController);
             TouchToFillCoordinator.setUpModelChangeProcessors(mModel, mTouchToFillView);
         });
+    }
+
+    @After
+    public void tearDown() {
+        ThreadUtils.runOnUiThread(
+                () -> { AccessibilityState.setIsTouchExplorationEnabledForTesting(false); });
     }
 
     @Test
@@ -486,10 +494,8 @@ public class TouchToFillViewTest {
     @MediumTest
     public void testSheetStartsInFullHeightForAccessibility() {
         // Enabling the accessibility settings.
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            ChromeAccessibilityUtil.get().setAccessibilityEnabledForTesting(true);
-            ChromeAccessibilityUtil.get().setTouchExplorationEnabledForTesting(true);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { AccessibilityState.setIsTouchExplorationEnabledForTesting(true); });
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mModel.get(SHEET_ITEMS)
