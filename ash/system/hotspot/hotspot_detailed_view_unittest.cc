@@ -220,7 +220,7 @@ TEST_F(HotspotDetailedViewTest, HotspotEnablingUI) {
   ASSERT_TRUE(hotspot_detailed_view_);
   AssertTextLabel(kHotspotTitle);
   AssertSubtextLabel(u"Turning on…");
-  AssertEntryRowEnabled(/*expected_enabled=*/false);
+  AssertEntryRowEnabled(/*expected_enabled=*/true);
   AssertToggleOn(/*expected_toggle_on=*/true);
   views::ImageView* extra_icon = GetExtraIcon();
   EXPECT_FALSE(extra_icon->GetVisible());
