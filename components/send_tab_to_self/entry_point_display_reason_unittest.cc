@@ -109,6 +109,19 @@ TEST_F(EntryPointDisplayReasonTest,
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
+TEST_F(EntryPointDisplayReasonTest, ShouldHidePromoIfSyncDisabledByPolicy) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kSendTabToSelfSigninPromo);
+
+  sync_service()->SetDisableReasons(
+      {syncer::SyncService::DISABLE_REASON_NOT_SIGNED_IN,
+       syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY});
+
+  EXPECT_FALSE(GetEntryPointDisplayReason(GURL(kHttpsUrl), sync_service(),
+                                          send_tab_to_self_sync_service(),
+                                          pref_service()));
+}
+
 TEST_F(EntryPointDisplayReasonTest, ShouldHideEntryPointIfModelNotReady) {
   SignIn();
   send_tab_to_self_sync_service()->GetSendTabToSelfModel()->SetIsReady(false);
