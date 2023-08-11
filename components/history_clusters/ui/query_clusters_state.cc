@@ -26,6 +26,8 @@ namespace {
 QueryClustersFilterParams GetFilterParamsFromFlags(const std::string& query) {
   QueryClustersFilterParams filter_params;
   filter_params.include_synced_visits = GetConfig().include_synced_visits;
+  filter_params.group_clusters_by_content =
+      GetConfig().content_clustering_enabled;
 
   // If there is a query, we do not want to apply any filtering.
   if (!query.empty()) {

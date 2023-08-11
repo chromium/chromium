@@ -534,7 +534,7 @@ OnDeviceClusteringBackend::GetClustersForUIOnBackgroundThread(
       std::make_unique<ClusterInteractionStateProcessor>(filter_params));
   cluster_processors.push_back(
       std::make_unique<ClusterSimilarityHeuristicsProcessor>());
-  if (GetConfig().content_clustering_enabled) {
+  if (filter_params.group_clusters_by_content) {
     cluster_processors.push_back(
         std::make_unique<ContentAnnotationsClusterProcessor>(
             &entity_id_to_entity_metadata_map));

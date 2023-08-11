@@ -329,6 +329,12 @@ BASE_FEATURE(kNtpHistoryClustersModuleIncludeSyncedVisits,
              "NtpHistoryClustersModuleIncludeSyncedVisits",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, the History clsuters module will enable content clustering for
+// the displayed clusters.
+BASE_FEATURE(kNtpHistoryClustersModuleEnableContentClustering,
+             "HistoryClustersModuleEnableContentClustering",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 const base::FeatureParam<std::string> kNtpOgbButtonSelectorParam{
     &kNtpRemoveScrim, "NtpOgbButtonSelectorParam", ".gb_A"};
 

@@ -71,6 +71,9 @@ struct QueryClustersFilterParams {
 
   // Whether to include synced visits.
   bool include_synced_visits = false;
+
+  // Whether to return merged clusters that are similar based on content.
+  bool group_clusters_by_content = false;
 };
 
 struct QueryClustersContinuationParams {
