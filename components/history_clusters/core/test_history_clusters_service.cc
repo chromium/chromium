@@ -31,14 +31,23 @@ TestHistoryClustersService::QueryClusters(
     QueryClustersContinuationParams continuation_params,
     bool recluster,
     QueryClustersCallback callback) {
+  // If the next call would exceed the size of the specified clusters for each
+  // call, set the query to done.
+  if (!(call_count_ < clusters_for_call_count_.size())) {
+    query_is_done_ = true;
+  }
+
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
-      base::BindOnce(std::move(callback), clusters_,
-                     next_query_is_done_
+      base::BindOnce(std::move(callback),
+                     (call_count_ < clusters_for_call_count_.size())
+                         ? clusters_for_call_count_.at(call_count_)
+                         : std::vector<history::Cluster>(),
+                     query_is_done_
                          ? QueryClustersContinuationParams::DoneParams()
                          : continuation_params));
-  // Set the next query to done so the query eventually finishes.
-  next_query_is_done_ = true;
+  call_count_++;
+
   return nullptr;
 }
 
@@ -47,11 +56,15 @@ void TestHistoryClustersService::SetIsJourneysEnabled(
   is_journeys_enabled_ = is_journeys_enabled;
 }
 
-void TestHistoryClustersService::SetClustersToReturn(
-    const std::vector<history::Cluster>& clusters,
-    bool exhausted_all_visits) {
-  clusters_ = clusters;
-  next_query_is_done_ = exhausted_all_visits;
+void TestHistoryClustersService::SetClustersToReturnOnFirstCall(
+    const std::vector<history::Cluster>& clusters) {
+  SetClustersToReturnForCalls({{clusters}});
+}
+
+void TestHistoryClustersService::SetClustersToReturnForCalls(
+    const std::vector<std::vector<history::Cluster>>& clusters_for_call_count) {
+  call_count_ = 0;
+  clusters_for_call_count_ = clusters_for_call_count;
 }
 
 }  // namespace history_clusters
