@@ -312,6 +312,14 @@ class AutocompleteController : public AutocompleteProviderListener,
   void UpdateResult(bool regenerate_result,
                     bool force_notify_default_match_changed);
 
+  // When the preserve default feature param is enabled, the default match
+  // that would have been shown before ML scoring is preserved. In this case,
+  // call `SortAndCull()` before the ML model is invoked to determine what
+  // this default match would've been. This also limits the potential
+  // suggestions to only what would've been shown in the legacy system.
+  absl::optional<AutocompleteMatch> PreprocessResultForMlScoring(
+      absl::optional<AutocompleteMatch> default_match_to_preserve);
+
   // Calls `SortAndCull()`, then annotates the final set of suggestions (with
   // open tab match, pedals, keyword info, etc.). Upon completion, notifies the
   // listeners that the result and potentially the default match has changed.
@@ -383,11 +391,14 @@ class AutocompleteController : public AutocompleteProviderListener,
   // for all the eligible matches, whether successfully or not.
   void RunUrlScoringModel(base::OnceClosure completion_callback);
 
-  // Runs the async batch scoring for all the eligible matches in
-  // `results_.matches_`. Passes `completion_callback` to
-  // `OnUrlScoringModelDone()` callback which is called once the model is done
-  // for all the eligible matches, whether successfully or not.
-  void RunBatchUrlScoringModel(base::OnceClosure completion_callback);
+  // Runs the batch scoring for all the eligible matches in
+  // `results_.matches_`. If `is_sync` is true, runs sync ML scoring on the
+  // current thread. Otherwise, runs async ML scoring. Passes
+  // `completion_callback` to `OnUrlScoringModelDone()` callback which is called
+  // once the model is done for all the eligible matches, whether successfully
+  // or not.
+  void RunBatchUrlScoringModel(base::OnceClosure completion_callback,
+                               bool is_sync);
 
   // Called when the async scoring model is done running for all the eligible
   // matches in `results_.matches_`. Redistributes the existing relevance scores

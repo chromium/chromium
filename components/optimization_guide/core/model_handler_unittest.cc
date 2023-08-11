@@ -303,6 +303,29 @@ TEST_F(ModelHandlerTest, ExecuteWithCancelableTaskTrackerCanceled) {
       0);
 }
 
+TEST_F(ModelHandlerTest, BatchExecuteModelWithInputSync) {
+  base::HistogramTester histogram_tester;
+  CreateModelHandler();
+
+  std::vector<float> input;
+  input.push_back(1.0f);
+
+  auto batch_outputs =
+      model_handler()->BatchExecuteModelWithInputSync({input, input});
+  EXPECT_EQ(2u, batch_outputs.size());
+  for (const auto& output : batch_outputs) {
+    ASSERT_TRUE(output.has_value());
+    EXPECT_EQ(1u, output.value().size());
+    EXPECT_EQ(1.0f, output.value().at(0));
+  }
+
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.ModelExecutor.TaskExecutionLatency." +
+          optimization_guide::GetStringNameForOptimizationTarget(
+              proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD),
+      1);
+}
+
 TEST_F(ModelHandlerTest, AddOnModelUpdatedCallback_RunsImmediately) {
   CreateModelHandler();
 

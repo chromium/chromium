@@ -77,6 +77,10 @@ class ModelExecutor {
       base::TimeTicks start_time,
       ConstRefInputVector inputs) = 0;
 
+  // Synchronous batch execution.
+  virtual std::vector<absl::optional<OutputType>> SendForBatchExecutionSync(
+      ConstRefInputVector inputs) = 0;
+
   // IMPORTANT: These WeakPointers must only be dereferenced on the
   // |execution_task_runner| thread.
   base::WeakPtr<ModelExecutor> GetWeakPtrForExecutionThread() {

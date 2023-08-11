@@ -1042,15 +1042,15 @@ const base::FeatureParam<bool> kMlUrlScoringPreserveDefault(
     "MlUrlScoringPreserveDefault",
     false);
 
-// If true, the ML model scores a batch of urls.
-const base::FeatureParam<bool> kMlBatchUrlScoring(&omnibox::kMlUrlScoring,
-                                                  "MlBatchUrlScoring",
-                                                  true);
-
 const base::FeatureParam<std::string> kMlUrlScoringMaxMatchesByProvider(
     &omnibox::kMlUrlScoring,
     "MlUrlScoringMaxMatchesByProvider",
     "");
+
+// If true, synchronously runs the ML model for a batch of urls.
+const base::FeatureParam<bool> kMlSyncBatchUrlScoring(&omnibox::kMlUrlScoring,
+                                                      "MlSyncBatchUrlScoring",
+                                                      false);
 
 MLConfig::MLConfig() {
   log_url_scoring_signals =
@@ -1059,7 +1059,7 @@ MLConfig::MLConfig() {
       kEnableScoringSignalsAnnotatorsForLogging.Get() ||
       kEnableScoringSignalsAnnotatorsForMlScoring.Get();
   ml_url_scoring = base::FeatureList::IsEnabled(omnibox::kMlUrlScoring);
-  ml_batch_url_scoring = kMlBatchUrlScoring.Get();
+  ml_sync_batch_url_scoring = kMlSyncBatchUrlScoring.Get();
   ml_url_scoring_counterfactual = kMlUrlScoringCounterfactual.Get();
   ml_url_scoring_unlimited_num_candidates =
       kMlUrlScoringUnlimitedNumCandidates.Get();
@@ -1108,8 +1108,12 @@ bool IsMlUrlScoringEnabled() {
   return false;
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 }
-bool IsMlBatchUrlScoringEnabled() {
-  return IsMlUrlScoringEnabled() && GetMLConfig().ml_batch_url_scoring;
+bool IsMlSyncBatchUrlScoringEnabled() {
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+  return IsMlUrlScoringEnabled() && GetMLConfig().ml_sync_batch_url_scoring;
+#else
+  return false;
+#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 }
 bool IsMlUrlScoringCounterfactual() {
   return IsMlUrlScoringEnabled() && GetMLConfig().ml_url_scoring_counterfactual;
