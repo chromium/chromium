@@ -23,7 +23,8 @@
 
 class GURL;
 
-namespace device::cablev2 {
+namespace device {
+namespace cablev2 {
 
 namespace tunnelserver {
 
@@ -53,7 +54,7 @@ GURL GetConnectURL(KnownDomainID domain,
 // The |tunnel_server| is assumed to be a valid domain name and should have been
 // taken from a previous call to |DecodeDomain|.
 COMPONENT_EXPORT(DEVICE_FIDO)
-GURL GetContactURL(KnownDomainID tunnel_server,
+GURL GetContactURL(const std::string& tunnel_server,
                    base::span<const uint8_t> contact_id);
 
 }  // namespace tunnelserver
@@ -353,6 +354,7 @@ std::vector<uint8_t> CalculatePairingSignature(
     base::span<const uint8_t, std::tuple_size<HandshakeHash>::value>
         handshake_hash);
 
-}  // namespace device::cablev2
+}  // namespace cablev2
+}  // namespace device
 
 #endif  // DEVICE_FIDO_CABLE_V2_HANDSHAKE_H_
