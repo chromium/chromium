@@ -4,12 +4,14 @@
 
 #include "components/segmentation_platform/embedder/default_model/device_switcher_result_dispatcher.h"
 
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/values.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/segmentation_platform/embedder/default_model/device_switcher_model.h"
 #include "components/segmentation_platform/public/constants.h"
+#include "components/segmentation_platform/public/features.h"
 #include "components/segmentation_platform/public/field_trial_register.h"
 #include "components/segmentation_platform/public/result.h"
 
@@ -98,6 +100,10 @@ void DeviceSwitcherResultDispatcher::OnSyncShutdown(syncer::SyncService* sync) {
 }
 
 void DeviceSwitcherResultDispatcher::RefreshSegmentResult() {
+  if (!base::FeatureList::IsEnabled(
+          features::kSegmentationPlatformDeviceSwitcher)) {
+    return;
+  }
   PredictionOptions options;
   options.on_demand_execution = true;
   segmentation_service_->GetClassificationResult(

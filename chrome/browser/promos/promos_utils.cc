@@ -14,6 +14,7 @@
 #include "chrome/browser/promos/promos_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/segmentation_platform/embedder/default_model/device_switcher_model.h"
+#include "components/segmentation_platform/public/features.h"
 
 // Max impression count per user for the iOS password promo on desktop.
 constexpr int kiOSPasswordPromoMaxImpressionCount = 2;
@@ -27,6 +28,9 @@ constexpr base::TimeDelta kiOSPasswordPromoCooldownTime = base::Days(60);
 // the promo in a contextual manner.
 bool IsContextualIOSPasswordPromoEnabled() {
   return base::FeatureList::IsEnabled(
+             segmentation_platform::features::
+                 kSegmentationPlatformDeviceSwitcher) &&
+         base::FeatureList::IsEnabled(
              promos_features::kIOSPromoPasswordBubble) &&
          (promos_features::kIOSPromoPasswordBubbleActivationParam.Get() ==
               promos_features::IOSPromoPasswordBubbleActivation::
