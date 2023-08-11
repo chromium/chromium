@@ -584,7 +584,8 @@ public class ExportFlow implements ExportFlowInterface {
                 });
             }
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-        mProgressBarManager.showWithDelay(new NonCancelableProgressBar(),
+        mProgressBarManager.showWithDelay(
+                new NonCancelableProgressBar(R.string.passwords_export_in_progress_title),
                 mDelegate.getFragmentManager(), PROGRESS_BAR_DELAY_MS);
     }
 

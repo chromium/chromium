@@ -19,6 +19,16 @@ import org.chromium.components.browser_ui.widget.MaterialProgressBar;
  * progress.
  */
 public class NonCancelableProgressBar extends DialogFragment {
+    private int mTitleStringId;
+
+    public NonCancelableProgressBar() {
+        mTitleStringId = R.string.please_wait_progress_message;
+    }
+
+    public NonCancelableProgressBar(int titleStringId) {
+        mTitleStringId = titleStringId;
+    }
+
     /**
      * Opens the dialog with the progress bar and sets the progress indicator to being
      * indeterminate, because the background operation does not easily allow to signal its own
@@ -35,7 +45,7 @@ public class NonCancelableProgressBar extends DialogFragment {
         return new AlertDialog
                 .Builder(activity, R.style.ThemeOverlay_BrowserUI_AlertDialog_NoActionBar)
                 .setView(dialog)
-                .setTitle(R.string.please_wait_progress_message)
+                .setTitle(mTitleStringId)
                 .create();
     }
 }
