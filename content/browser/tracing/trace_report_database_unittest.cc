@@ -24,11 +24,11 @@ class TraceReportDatabaseTest : public testing::Test {
 };
 
 TEST_F(TraceReportDatabaseTest, CreatingAndDroppingLocalTraceTable) {
-  EXPECT_TRUE(trace_report_.GetAllReports().size() == 0);
+  EXPECT_EQ(trace_report_.GetAllReports().size(), 0u);
 }
 
 TEST_F(TraceReportDatabaseTest, AddingNewReport) {
-  EXPECT_TRUE(trace_report_.GetAllReports().size() == 0);
+  EXPECT_EQ(trace_report_.GetAllReports().size(), 0u);
 
   // Create Report for the local traces database.
   TraceReportDatabase::NewReport new_report;
@@ -44,7 +44,7 @@ TEST_F(TraceReportDatabaseTest, AddingNewReport) {
 
   auto received_reports = trace_report_.GetAllReports();
 
-  EXPECT_TRUE(received_reports.size() == 1);
+  EXPECT_EQ(received_reports.size(), 1u);
   EXPECT_EQ(received_reports[0].scenario_name, "scenario1");
   EXPECT_EQ(received_reports[0].upload_rule_name, "rules1");
   EXPECT_EQ(received_reports[0].total_size, new_size);
@@ -71,7 +71,7 @@ TEST_F(TraceReportDatabaseTest, RetreiveProtoFromTrace) {
 }
 
 TEST_F(TraceReportDatabaseTest, DeletingSingleTrace) {
-  EXPECT_TRUE(trace_report_.GetAllReports().size() == 0);
+  EXPECT_EQ(trace_report_.GetAllReports().size(), 0u);
 
   // Create Report for the local traces database.
   TraceReportDatabase::NewReport new_report;
@@ -84,14 +84,14 @@ TEST_F(TraceReportDatabaseTest, DeletingSingleTrace) {
   const auto copie_value = new_report.uuid;
 
   ASSERT_TRUE(trace_report_.AddTrace(std::move(new_report)));
-  EXPECT_TRUE(trace_report_.GetAllReports().size() == 1);
+  EXPECT_EQ(trace_report_.GetAllReports().size(), 1u);
 
   ASSERT_TRUE(trace_report_.DeleteTrace(copie_value));
-  EXPECT_TRUE(trace_report_.GetAllReports().size() == 0);
+  EXPECT_EQ(trace_report_.GetAllReports().size(), 0u);
 }
 
 TEST_F(TraceReportDatabaseTest, DeletingAllTraces) {
-  EXPECT_TRUE(trace_report_.GetAllReports().size() == 0);
+  EXPECT_EQ(trace_report_.GetAllReports().size(), 0u);
 
   // Create multiple NewReport and add to the local_traces table.
 
@@ -106,14 +106,14 @@ TEST_F(TraceReportDatabaseTest, DeletingAllTraces) {
     ASSERT_TRUE(trace_report_.AddTrace(std::move(new_report)));
   }
 
-  EXPECT_TRUE(trace_report_.GetAllReports().size() == 5);
+  EXPECT_EQ(trace_report_.GetAllReports().size(), 5u);
 
   ASSERT_TRUE(trace_report_.DeleteAllTraces());
-  EXPECT_TRUE(trace_report_.GetAllReports().size() == 0);
+  EXPECT_EQ(trace_report_.GetAllReports().size(), 0u);
 }
 
 TEST_F(TraceReportDatabaseTest, DeletingTracesInRange) {
-  EXPECT_TRUE(trace_report_.GetAllReports().size() == 0);
+  EXPECT_EQ(trace_report_.GetAllReports().size(), 0u);
 
   const base::Time today = base::Time::Now();
   // Create multiple NewReport and add to the local_traces table.
@@ -154,17 +154,53 @@ TEST_F(TraceReportDatabaseTest, DeletingTracesInRange) {
     ASSERT_TRUE(trace_report_.AddTrace(std::move(new_report)));
   }
 
-  EXPECT_TRUE(trace_report_.GetAllReports().size() == 10);
+  EXPECT_EQ(trace_report_.GetAllReports().size(), 10u);
 
   const base::Time start = base::Time(today - base::Days(20));
   const base::Time end = base::Time(today - base::Days(10));
 
   ASSERT_TRUE(trace_report_.DeleteTracesInDateRange(start, end));
-  EXPECT_TRUE(trace_report_.GetAllReports().size() == 5);
+  EXPECT_EQ(trace_report_.GetAllReports().size(), 5u);
+}
+
+TEST_F(TraceReportDatabaseTest, DeleteTracesOlderThan) {
+  EXPECT_EQ(trace_report_.GetAllReports().size(), 0u);
+
+  const base::Time today = base::Time::Now();
+
+  // Create multiple NewReport and add to the local_traces table.
+  for (int i = 0; i < 5; i++) {
+    TraceReportDatabase::NewReport new_report;
+    new_report.uuid = base::Uuid::GenerateRandomV4();
+    new_report.creation_time = today;
+    new_report.scenario_name = "scenario";
+    new_report.upload_rule_name = "rules";
+    new_report.total_size = 23192873129873128;
+    new_report.proto = "Proto";
+
+    ASSERT_TRUE(trace_report_.AddTrace(std::move(new_report)));
+  }
+
+  for (int i = 0; i < 3; i++) {
+    TraceReportDatabase::NewReport new_report;
+    new_report.uuid = base::Uuid::GenerateRandomV4();
+    new_report.creation_time = base::Time(today - base::Days(20));
+    new_report.scenario_name = "scenario";
+    new_report.upload_rule_name = "rules";
+    new_report.total_size = 23192873129873128;
+    new_report.proto = "Proto";
+
+    ASSERT_TRUE(trace_report_.AddTrace(std::move(new_report)));
+  }
+
+  EXPECT_EQ(trace_report_.GetAllReports().size(), 8u);
+
+  ASSERT_TRUE(trace_report_.DeleteTracesOlderThan(base::Days(10)));
+  EXPECT_EQ(trace_report_.GetAllReports().size(), 5u);
 }
 
 TEST_F(TraceReportDatabaseTest, UserRequestedUpload) {
-  EXPECT_TRUE(trace_report_.GetAllReports().size() == 0);
+  EXPECT_EQ(trace_report_.GetAllReports().size(), 0u);
 
   // Create Report for the local traces database.
   TraceReportDatabase::NewReport new_report;
@@ -177,18 +213,18 @@ TEST_F(TraceReportDatabaseTest, UserRequestedUpload) {
   const auto copie_value = new_report.uuid;
 
   ASSERT_TRUE(trace_report_.AddTrace(std::move(new_report)));
-  EXPECT_TRUE(trace_report_.GetAllReports().size() == 1);
+  EXPECT_EQ(trace_report_.GetAllReports().size(), 1u);
 
   ASSERT_TRUE(trace_report_.UserRequestedUpload(copie_value));
 
   auto all_traces = trace_report_.GetAllReports();
-  EXPECT_TRUE(all_traces.size() == 1);
+  EXPECT_EQ(all_traces.size(), 1u);
   EXPECT_EQ(all_traces[0].state,
             TraceReportDatabase::ReportUploadState::kPending_UserRequested);
 }
 
 TEST_F(TraceReportDatabaseTest, UploadComplete) {
-  EXPECT_TRUE(trace_report_.GetAllReports().size() == 0);
+  EXPECT_EQ(trace_report_.GetAllReports().size(), 0u);
 
   // Create Report for the local traces database.
   TraceReportDatabase::NewReport new_report;
@@ -201,13 +237,13 @@ TEST_F(TraceReportDatabaseTest, UploadComplete) {
   const auto copie_value = new_report.uuid;
 
   ASSERT_TRUE(trace_report_.AddTrace(std::move(new_report)));
-  EXPECT_TRUE(trace_report_.GetAllReports().size() == 1);
+  EXPECT_EQ(trace_report_.GetAllReports().size(), 1u);
 
   auto uploaded_time = base::Time::Now();
   ASSERT_TRUE(trace_report_.UploadComplete(copie_value, uploaded_time));
 
   auto all_traces = trace_report_.GetAllReports();
-  EXPECT_TRUE(all_traces.size() == 1);
+  EXPECT_EQ(all_traces.size(), 1u);
   EXPECT_EQ(all_traces[0].state,
             TraceReportDatabase::ReportUploadState::kUploaded);
   EXPECT_EQ(all_traces[0].upload_time, uploaded_time);

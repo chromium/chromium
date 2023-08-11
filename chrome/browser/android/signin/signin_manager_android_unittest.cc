@@ -26,6 +26,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/keyed_service/core/simple_factory_key.h"
 #include "components/offline_pages/core/stub_offline_page_model.h"
+#include "content/public/browser/background_tracing_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browsing_data_remover.h"
 #include "content/public/browser/storage_partition.h"
@@ -67,6 +68,9 @@ class SigninManagerAndroidTest : public ::testing::Test {
         BookmarkModelFactory::GetDefaultFactory());
     profile_ = profile_builder.Build();
 
+    background_tracing_manager_ =
+        content::BackgroundTracingManager::CreateInstance();
+
     // Creating a BookmarkModel also a creates a StubOfflinePageModel.
     // We need to replace this with a mock that responds to deletions.
     offline_pages::OfflinePageModelFactory::GetInstance()->SetTestingFactory(
@@ -78,6 +82,8 @@ class SigninManagerAndroidTest : public ::testing::Test {
         ->SetDownloadManagerDelegateForTesting(
             std::make_unique<ChromeDownloadManagerDelegate>(profile_.get()));
   }
+
+  void TearDown() override { background_tracing_manager_.reset(); }
 
   TestingProfile* profile() { return profile_.get(); }
 
@@ -106,6 +112,8 @@ class SigninManagerAndroidTest : public ::testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
+  std::unique_ptr<content::BackgroundTracingManager>
+      background_tracing_manager_;
 };
 
 // TODO(crbug.com/929456): This test does not actually test anything; the

@@ -239,6 +239,22 @@ bool TraceReportDatabase::DeleteTracesInDateRange(const base::Time start,
   return delete_traces_in_range.Run();
 }
 
+bool TraceReportDatabase::DeleteTracesOlderThan(base::TimeDelta days_old) {
+  if (!database_.is_open()) {
+    return false;
+  }
+
+  sql::Statement delete_traces_older_than(database_.GetCachedStatement(
+      SQL_FROM_HERE, "DELETE FROM local_traces WHERE creation_time < ?"));
+
+  delete_traces_older_than.BindTime(0,
+                                    base::Time(base::Time::Now() - days_old));
+
+  CHECK(delete_traces_older_than.is_valid());
+
+  return delete_traces_older_than.Run();
+}
+
 bool TraceReportDatabase::EnsureTableCreated() {
   DCHECK(database_.is_open());
 

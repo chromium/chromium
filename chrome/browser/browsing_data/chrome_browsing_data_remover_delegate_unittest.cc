@@ -142,6 +142,7 @@
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "components/site_isolation/pref_names.h"
 #include "components/ukm/test_ukm_recorder.h"
+#include "content/public/browser/background_tracing_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
@@ -1232,6 +1233,8 @@ class ChromeBrowsingDataRemoverDelegateTest : public testing::Test {
     // Make sure the Network Service is started before making a NetworkContext.
     content::GetNetworkService();
     task_environment_.RunUntilIdle();
+    background_tracing_manager_ =
+        content::BackgroundTracingManager::CreateInstance();
 
     // This needs to be done after the test constructor, so that subclasses
     // that initialize a ScopedFeatureList in their constructors can do so
@@ -1326,6 +1329,8 @@ class ChromeBrowsingDataRemoverDelegateTest : public testing::Test {
     // the message loop is cleared out, before destroying the threads and loop.
     // Otherwise we leak memory.
     profile_manager_.reset();
+
+    background_tracing_manager_.reset();
     base::RunLoop().RunUntilIdle();
 
     TestingBrowserProcess::GetGlobal()->SetLocalState(nullptr);
@@ -1434,6 +1439,9 @@ class ChromeBrowsingDataRemoverDelegateTest : public testing::Test {
  private:
   // Cached pointer to BrowsingDataRemover for access to testing methods.
   raw_ptr<content::BrowsingDataRemover> remover_;
+
+  std::unique_ptr<content::BackgroundTracingManager>
+      background_tracing_manager_;
 
 #if BUILDFLAG(ENABLE_NACL)
   ScopedNaClBrowserDelegate nacl_browser_delegate_;

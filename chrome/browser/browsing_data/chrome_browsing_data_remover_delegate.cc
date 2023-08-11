@@ -122,6 +122,7 @@
 #include "components/web_cache/browser/web_cache_manager.h"
 #include "components/webrtc_logging/browser/log_cleanup.h"
 #include "components/webrtc_logging/browser/text_log_list.h"
+#include "content/public/browser/background_tracing_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
@@ -574,6 +575,9 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
     device_event_log::Clear(delete_begin_, delete_end_);
 
     CreateCrashUploadList()->Clear(delete_begin_, delete_end_);
+
+    content::BackgroundTracingManager::GetInstance().DeleteTracesInDateRange(
+        delete_begin_, delete_end_);
 
     FindBarStateFactory::GetForBrowserContext(profile_)->SetLastSearchText(
         std::u16string());

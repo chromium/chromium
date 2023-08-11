@@ -348,6 +348,8 @@ class LenientFakeBackgroundTracingManager
   void AbortScenarioForTesting() override {}
   void SetTraceToUploadForTesting(
       std::unique_ptr<std::string> trace_data) override {}
+
+  void DeleteTracesInDateRange(base::Time start, base::Time end) override {}
 };
 
 using FakeBackgroundTracingManager =

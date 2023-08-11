@@ -49,6 +49,8 @@
 namespace content {
 
 namespace {
+// The time to live of a trace is currently 14 days.
+const base::TimeDelta kTraceTimeToLive = base::Days(14);
 
 const char kBackgroundTracingConfig[] = "config";
 
@@ -150,7 +152,12 @@ void BackgroundTracingManagerImpl::OnTraceDatabaseCreated(
   if (!creation_result) {
     RecordMetric(Metrics::DATABASE_INITIALIZATION_FAILED);
     trace_database_.Reset();
+    return;
   }
+  clean_database_timer_.Start(
+      FROM_HERE, base::Days(1),
+      base::BindRepeating(&BackgroundTracingManagerImpl::CleanDatabase,
+                          weak_factory_.GetWeakPtr()));
 }
 
 void BackgroundTracingManagerImpl::AddMetadataGeneratorFunction() {
@@ -580,6 +587,24 @@ void BackgroundTracingManagerImpl::OnScenarioAborted() {
   }
 
   legacy_active_scenario_.reset();
+}
+
+void BackgroundTracingManagerImpl::CleanDatabase() {
+  DCHECK(trace_database_);
+
+  trace_database_
+      .AsyncCall(
+          base::IgnoreResult(&TraceReportDatabase::DeleteTracesOlderThan))
+      .WithArgs(kTraceTimeToLive);
+}
+
+void BackgroundTracingManagerImpl::DeleteTracesInDateRange(base::Time start,
+                                                           base::Time end) {
+  InitializeTraceReportDatabase();
+  trace_database_
+      .AsyncCall(
+          base::IgnoreResult(&TraceReportDatabase::DeleteTracesInDateRange))
+      .WithArgs(start, end);
 }
 
 // static

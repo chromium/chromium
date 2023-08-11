@@ -112,6 +112,9 @@ class CONTENT_EXPORT TraceReportDatabase {
   // Delete traces between the |start| and |end| dates inclusively.
   bool DeleteTracesInDateRange(const base::Time start, const base::Time end);
 
+  // Delete all traces older than |age| from today.
+  bool DeleteTracesOlderThan(const base::TimeDelta age);
+
   bool UserRequestedUpload(base::Uuid uuid);
   bool UploadComplete(base::Uuid uuid, base::Time time);
   bool UploadSkipped(base::Uuid uuid);

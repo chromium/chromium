@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/strings/string_piece.h"
+#include "base/time/time.h"
 #include "base/trace_event/trace_event_impl.h"
 #include "content/common/content_export.h"
 #include "third_party/perfetto/protos/perfetto/config/chrome/scenario_config.gen.h"
@@ -129,6 +130,10 @@ class BackgroundTracingManager {
 
   // Returns true whether a trace is ready to be uploaded.
   virtual bool HasTraceToUpload() = 0;
+
+  // TODO(b/295312118): Move this method to trace_report_list.h when it has
+  // landed.
+  virtual void DeleteTracesInDateRange(base::Time start, base::Time end) = 0;
 
   // Returns the latest trace created for uploading in a serialized proto of
   // message type perfetto::Trace.
