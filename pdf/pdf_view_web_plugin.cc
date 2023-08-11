@@ -274,8 +274,7 @@ std::unique_ptr<PDFiumEngine> PdfViewWebPlugin::Client::CreateEngine(
 
 std::unique_ptr<PdfAccessibilityDataHandler>
 PdfViewWebPlugin::Client::CreateAccessibilityDataHandler(
-    PdfAccessibilityActionHandler* action_handler,
-    PdfAccessibilityImageFetcher* image_fetcher) {
+    PdfAccessibilityActionHandler* action_handler) {
   return nullptr;
 }
 
@@ -287,7 +286,7 @@ PdfViewWebPlugin::PdfViewWebPlugin(
       pdf_service_(std::move(pdf_service)),
       initial_params_(params),
       pdf_accessibility_data_handler_(
-          client_->CreateAccessibilityDataHandler(this, this)) {
+          client_->CreateAccessibilityDataHandler(this)) {
   DCHECK(pdf_service_);
   pdf_service_->SetListener(listener_receiver_.BindNewPipeAndPassRemote());
 }
@@ -1928,11 +1927,6 @@ void PdfViewWebPlugin::EnableAccessibility() {
     return;
 
   LoadOrReloadAccessibility();
-}
-
-SkBitmap PdfViewWebPlugin::GetImageForOcr(int32_t page_index,
-                                          int32_t page_object_index) {
-  return engine_->GetImageForOcr(page_index, page_object_index);
 }
 
 void PdfViewWebPlugin::HandleAccessibilityAction(

@@ -35,7 +35,6 @@
 namespace chrome_pdf {
 
 class PdfAccessibilityActionHandler;
-class PdfAccessibilityImageFetcher;
 
 }  // namespace chrome_pdf
 
@@ -73,19 +72,14 @@ class PdfAccessibilityTree : public content::PluginAXTreeSource,
   struct PdfOcrRequest {
     PdfOcrRequest(const ui::AXNodeID& image_node_id,
                   const chrome_pdf::AccessibilityImageInfo& image,
-                  const ui::AXNodeID& parent_node_id,
-                  uint32_t page_index);
+                  const ui::AXNodeID& parent_node_id);
 
     const ui::AXNodeID image_node_id;
     const chrome_pdf::AccessibilityImageInfo image;
     const ui::AXNodeID parent_node_id;
-    const uint32_t page_index;
     // This boolean indicates which request corresponds to the last image on
     // each page.
     bool is_last_on_page = false;
-
-    // This field is set after the image is extracted from PDF.
-    gfx::SizeF image_pixel_size;
   };
 
   // Manages the connection to the OCR Service via Mojo, and ensures that
@@ -96,8 +90,7 @@ class PdfAccessibilityTree : public content::PluginAXTreeSource,
         std::vector<PdfOcrRequest> ocr_requests,
         std::vector<ui::AXTreeUpdate> tree_updates)>;
 
-    PdfOcrService(chrome_pdf::PdfAccessibilityImageFetcher* image_fetcher,
-                  content::RenderFrame& render_frame,
+    PdfOcrService(content::RenderFrame& render_frame,
                   uint32_t page_count,
                   OnOcrDataReceivedCallback callback);
 
@@ -131,9 +124,6 @@ class PdfAccessibilityTree : public content::PluginAXTreeSource,
     void ReceiveOcrResultsForImage(PdfOcrRequest request,
                                    const ui::AXTreeUpdate& tree_update);
 
-    // `image_fetcher_` owns `this`.
-    chrome_pdf::PdfAccessibilityImageFetcher* const image_fetcher_;
-
     uint32_t remaining_page_count_;
     // True if there are pending OCR requests. Used to determine if `OcrPage`
     // should call `OcrNextImage` or if the next call to
@@ -159,8 +149,7 @@ class PdfAccessibilityTree : public content::PluginAXTreeSource,
 
   PdfAccessibilityTree(
       content::RenderFrame* render_frame,
-      chrome_pdf::PdfAccessibilityActionHandler* action_handler,
-      chrome_pdf::PdfAccessibilityImageFetcher* image_fetcher);
+      chrome_pdf::PdfAccessibilityActionHandler* action_handler);
   ~PdfAccessibilityTree() override;
 
   static bool IsDataFromPluginValid(
@@ -316,7 +305,6 @@ class PdfAccessibilityTree : public content::PluginAXTreeSource,
 
   // Unowned. Must outlive `this`.
   chrome_pdf::PdfAccessibilityActionHandler* const action_handler_;
-  chrome_pdf::PdfAccessibilityImageFetcher* const image_fetcher_;
 
   // `zoom_` signifies the zoom level set in for the browser content.
   // `scale_` signifies the scale level set by user. Scale is applied

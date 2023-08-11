@@ -132,7 +132,7 @@ struct AccessibilityImageInfo {
   AccessibilityImageInfo(const std::string& alt_text,
                          uint32_t text_run_index,
                          const gfx::RectF& bounds,
-                         int32_t page_object_index);
+                         const SkBitmap& image_data);
   AccessibilityImageInfo(const AccessibilityImageInfo& other);
   ~AccessibilityImageInfo();
 
@@ -147,8 +147,9 @@ struct AccessibilityImageInfo {
   // Bounding box of the image.
   gfx::RectF bounds;
 
-  // Index of the image object in its page.
-  int32_t page_object_index;
+  // Only populated if `alt_text` is empty or unavailable, and if the user has
+  // requested that the OCR service tag the PDF so that it is made accessible.
+  SkBitmap image_data;
 };
 
 struct AccessibilityHighlightInfo {
