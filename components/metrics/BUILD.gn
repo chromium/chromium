@@ -77,6 +77,22 @@ if (!is_cronet_build && is_android) {
   }
 }
 
+# Used by the Chrome installer, which doesn't need the whole metrics library.
+source_set("client_info") {
+  sources = [
+    "client_info.cc",
+    "client_info.h",
+  ]
+}
+
+# Used by the Chrome installer, which doesn't need the whole metrics library.
+source_set("metrics_pref_names") {
+  sources = [
+    "metrics_pref_names.cc",
+    "metrics_pref_names.h",
+  ]
+}
+
 if (!is_cronet_build || is_ios) {
   static_library("metrics") {
     sources = [
@@ -86,8 +102,6 @@ if (!is_cronet_build || is_ios) {
       "call_stack_profile_metrics_provider.h",
       "clean_exit_beacon.cc",
       "clean_exit_beacon.h",
-      "client_info.cc",
-      "client_info.h",
       "cloned_install_detector.cc",
       "cloned_install_detector.h",
       "cpu_metrics_provider.cc",
@@ -133,8 +147,6 @@ if (!is_cronet_build || is_ios) {
       "metrics_log_uploader.h",
       "metrics_logs_event_manager.cc",
       "metrics_logs_event_manager.h",
-      "metrics_pref_names.cc",
-      "metrics_pref_names.h",
       "metrics_provider.cc",
       "metrics_provider.h",
       "metrics_reporting_default_state.cc",
@@ -195,6 +207,8 @@ if (!is_cronet_build || is_ios) {
     }
 
     public_deps = [
+      "//components/metrics:client_info",
+      "//components/metrics:metrics_pref_names",
       "//third_party/metrics_proto",
       "//third_party/zlib/google:compression_utils",
     ]
