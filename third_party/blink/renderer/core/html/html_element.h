@@ -43,7 +43,7 @@ class ElementInternals;
 class ExceptionState;
 class FormAssociated;
 class HTMLFormElement;
-class HTMLSelectMenuElement;
+class HTMLSelectListElement;
 class KeyboardEvent;
 class V8UnionStringLegacyNullToEmptyStringOrTrustedScript;
 
@@ -277,8 +277,8 @@ class CORE_EXPORT HTMLElement : public Element {
   void MaybeQueuePopoverHideEvent();
   static void HoveredElementChanged(Element* old_element, Element* new_element);
 
-  void SetPopoverOwnerSelectMenuElement(HTMLSelectMenuElement* element);
-  HTMLSelectMenuElement* popoverOwnerSelectMenuElement() const;
+  void SetPopoverOwnerSelectListElement(HTMLSelectListElement* element);
+  HTMLSelectListElement* popoverOwnerSelectListElement() const;
 
   bool DispatchFocusEvent(
       Element* old_focused_element,

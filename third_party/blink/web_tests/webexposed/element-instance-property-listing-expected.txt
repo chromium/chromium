@@ -993,7 +993,7 @@ html element select
     property validity
     property value
     property willValidate
-html element selectmenu
+html element selectlist
     property checkValidity
     property disabled
     property form

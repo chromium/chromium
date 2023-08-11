@@ -216,7 +216,7 @@ struct FormFieldData {
 
   bool IsPasswordInputElement() const;
 
-  // <select> and <selectmenu> are treated the same in Autofill except that
+  // <select> and <selectlist> are treated the same in Autofill except that
   // <select> gets special handling when it comes to unfocusable fields. The
   // motivation for this exception is that synthetic select fields often come
   // with an unfocusable <select> element.
@@ -228,8 +228,8 @@ struct FormFieldData {
   // support synthetic select fields, Autofill intentionally fills unfocusable
   // <select> elements.
   bool IsSelectElement() const;
-  bool IsSelectMenuElement() const;
-  bool IsSelectOrSelectMenuElement() const;
+  bool IsSelectListElement() const;
+  bool IsSelectOrSelectListElement() const;
 
   // Returns true if the field is focusable to the user.
   // This is an approximation of visibility with false positives.

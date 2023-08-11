@@ -866,7 +866,7 @@ gamepad/multiple-event-listeners.html
 html/dialog/close-multiple-dialogs-usecounter.html
 html/marquee/marquee-scroll.html
 html/marquee/marquee-scrollamount.html
-html/selectmenu/selectmenu-slot-warning-listbox.html
+html/selectlist/selectlist-slot-warning-listbox.html
 http/tests/background_fetch/block-cors-preflights.https.html
 http/tests/cache/history-only-cached-subresource-loads.html
 http/tests/cache/subresource-fragment-identifier.html

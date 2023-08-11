@@ -1806,7 +1806,7 @@ class AutofillFillAugmentedPhoneCountryCodeTest
 void DoTestFillAugmentedPhoneCountryCodeField(
     const FillAugmentedPhoneCountryCodeTestCase& test_case,
     const char* field_type) {
-  AutofillField field(test::CreateTestSelectOrSelectMenuField(
+  AutofillField field(test::CreateTestSelectOrSelectListField(
       /*label=*/"", /*name=*/"", /*value=*/"", /*autocomplete=*/"",
       test_case.phone_country_code_selection_options,
       test_case.phone_country_code_selection_options, field_type));
@@ -1828,8 +1828,8 @@ TEST_P(AutofillFillAugmentedPhoneCountryCodeTest,
 }
 
 TEST_P(AutofillFillAugmentedPhoneCountryCodeTest,
-       FillAugmentedPhoneCountryCodeSelectMenuField) {
-  DoTestFillAugmentedPhoneCountryCodeField(GetParam(), "selectmenu");
+       FillAugmentedPhoneCountryCodeSelectListField) {
+  DoTestFillAugmentedPhoneCountryCodeField(GetParam(), "selectlist");
 }
 
 INSTANTIATE_TEST_SUITE_P(

@@ -4709,7 +4709,7 @@ interface HTMLSelectElement : HTMLElement
     setter selectedIndex
     setter size
     setter value
-interface HTMLSelectMenuElement : HTMLElement
+interface HTMLSelectListElement : HTMLElement
     attribute @@toStringTag
     getter disabled
     getter form

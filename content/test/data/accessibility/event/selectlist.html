@@ -1,0 +1,47 @@
+<!--
+@AURALINUX-DENY:*
+@AURALINUX-ALLOW:STATE-CHANGE:EXPANDED*
+@AURALINUX-ALLOW:STATE-CHANGE:FOCUSED*
+@UIA-WIN-DENY:*
+@UIA-WIN-ALLOW:AutomationFocusChanged*
+@UIA-WIN-ALLOW:ExpandCollapseExpandCollapseState*
+@WIN-DENY:*
+@WIN-ALLOW:EVENT_OBJECT_FOCUS*
+@WIN-ALLOW:EVENT_OBJECT_HIDE*
+@WIN-ALLOW:EVENT_OBJECT_SHOW*
+@WIN-ALLOW:EVENT_OBJECT_STATECHANGE*
+-->
+<html>
+<body>
+  <selectlist id="A" name="Select A">
+    <div id="ButtonA" slot="button" behavior="button" aria-label="Combobox A">Button A</div>
+    <div popover slot="listbox" behavior="listbox">
+      <option value="1">Option 1</option>
+      <option value="2">Option 2</option>
+      <option value="3">Option 3</option>
+    </div>
+  </selectlist>
+  <selectlist id="B" name="Select B">
+    <div id="ButtonB" slot="button" behavior="button" aria-label="Combobox B">Button B</div>
+    <div popover slot="listbox" behavior="listbox">
+      <option value="4">Option 4</option>
+      <option value="5">Option 5</option>
+      <option value="6">Option 6</option>
+    </div>
+  </selectlist>
+<script>
+  var go_passes = [
+    // Expand the first list.
+    () => document.getElementById("ButtonA").click(),
+    // Expand the second list which will close the first list.
+    () => document.getElementById("ButtonB").click(),
+  ];
+
+  var current_pass = 0;
+  function go() {
+    go_passes[current_pass++].call();
+    return current_pass < go_passes.length;
+  }
+</script>
+</body>
+</html>

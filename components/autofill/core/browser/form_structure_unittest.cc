@@ -503,10 +503,10 @@ TEST_F(FormStructureTestImpl_ShouldBeParsed_Test, FalseIfOnlySelectField) {
       test_api(form_structure()).ShouldBeParsed({.min_required_fields = 2}));
 }
 
-TEST_F(FormStructureTestImpl_ShouldBeParsed_Test, FalseIfOnlySelectMenuField) {
+TEST_F(FormStructureTestImpl_ShouldBeParsed_Test, FalseIfOnlySelectListField) {
   {
     FormFieldData field;
-    field.form_control_type = "selectmenu";
+    field.form_control_type = "selectlist";
     AddField(field);
   }
   EXPECT_FALSE(test_api(form_structure()).ShouldBeParsed());

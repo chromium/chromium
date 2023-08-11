@@ -90,7 +90,7 @@ class MockAutofillDriver : public mojom::AutofillDriver {
                const gfx::RectF& bounding_box),
               (override));
   MOCK_METHOD(void,
-              SelectOrSelectMenuFieldOptionsDidChange,
+              SelectOrSelectListFieldOptionsDidChange,
               (const FormData& form),
               (override));
   MOCK_METHOD(void,
@@ -335,10 +335,10 @@ TEST_F(AutofillAgentTest, UndoAutofillSetsLastQueriedElement) {
           <option value="undo_select_option_1">Foo</option>
           <option value="autofill_select_option_1">Bar</option>
         </select>
-        <selectmenu id="selectmenu_id_1">
-          <option value="undo_selectmenu_option_1">Foo</option>
-          <option value="autofill_selectmenu_option_1">Bar</option>
-        </selectmenu>
+        <selectlist id="selectlist_id_1">
+          <option value="undo_selectlist_option_1">Foo</option>
+          <option value="autofill_selectlist_option_1">Bar</option>
+        </selectlist>
       </form>
   )");
 

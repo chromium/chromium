@@ -70,7 +70,7 @@ import java.util.concurrent.TimeoutException;
 @Batch(Batch.PER_CLASS)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @EnableFeatures({ChromeFeatureList.PORTALS, ChromeFeatureList.PORTALS_CROSS_ORIGIN,
-        AutofillFeatures.AUTOFILL_ENABLE_SELECT_MENU})
+        AutofillFeatures.AUTOFILL_ENABLE_SELECT_LIST})
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
         ContentSwitches.ENABLE_EXPERIMENTAL_WEB_PLATFORM_FEATURES})
 @DisabledTest(message = "crbug.com/1448820")

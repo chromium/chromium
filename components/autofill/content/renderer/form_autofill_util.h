@@ -169,14 +169,14 @@ bool IsMonthInput(const blink::WebInputElement& element);
 // Returns true if |element| is a text input element.
 bool IsTextInput(const blink::WebInputElement& element);
 
-// Returns true if `element` is either a select or a selectmenu element.
-bool IsSelectOrSelectMenuElement(const blink::WebFormControlElement& element);
+// Returns true if `element` is either a select or a selectlist element.
+bool IsSelectOrSelectListElement(const blink::WebFormControlElement& element);
 
 // Returns true if |element| is a select element.
 bool IsSelectElement(const blink::WebFormControlElement& element);
 
-// Returns true if `element` is a selectmenu element.
-bool IsSelectMenuElement(const blink::WebFormControlElement& element);
+// Returns true if `element` is a selectlist element.
+bool IsSelectListElement(const blink::WebFormControlElement& element);
 
 // Returns true if |element| is a textarea element.
 bool IsTextAreaElement(const blink::WebFormControlElement& element);
@@ -201,8 +201,8 @@ bool IsWebauthnTaggedElement(const blink::WebFormControlElement& element);
 // Returns true if |element| can be edited (enabled and not read only).
 bool IsElementEditable(const blink::WebInputElement& element);
 
-// True if this element can take focus. If this element is a selectmenu, checks
-// whether a child of the selectmenu can take focus.
+// True if this element can take focus. If this element is a selectlist, checks
+// whether a child of the selectlist can take focus.
 bool IsWebElementFocusableForAutofill(const blink::WebElement& element);
 
 // A heuristic visibility detection. See crbug.com/1335257 for an overview of

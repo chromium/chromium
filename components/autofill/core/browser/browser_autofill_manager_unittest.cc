@@ -125,7 +125,7 @@ namespace autofill {
 using mojom::SubmissionIndicatorEvent;
 using mojom::SubmissionSource;
 using test::CreateTestSelectField;
-using test::CreateTestSelectOrSelectMenuField;
+using test::CreateTestSelectOrSelectListField;
 
 namespace {
 
@@ -4596,7 +4596,7 @@ TEST_F(BrowserAutofillManagerTest, PreviewCreditCardForm_VirtualCard) {
 }
 
 // Test that unfocusable fields aren't filled, except for <select> fields (but
-// not <selectmenu> fields).
+// not <selectlist> fields).
 TEST_F(BrowserAutofillManagerTest, DoNotFillUnfocusableFieldsExceptForSelect) {
   // Create a form with both focusable and non-focusable fields.
   FormData form;
@@ -4616,16 +4616,16 @@ TEST_F(BrowserAutofillManagerTest, DoNotFillUnfocusableFieldsExceptForSelect) {
   field.is_focusable = false;
   form.fields.push_back(field);
 
-  form.fields.push_back(test::CreateTestSelectOrSelectMenuField(
+  form.fields.push_back(test::CreateTestSelectOrSelectListField(
       "Country", "country", "", "", {"CA", "US"}, {"Canada", "United States"},
-      "selectmenu"));
+      "selectlist"));
   form.fields.back().is_focusable = false;
 
-  form.fields.push_back(test::CreateTestSelectOrSelectMenuField(
+  form.fields.push_back(test::CreateTestSelectOrSelectListField(
       "Country", "country", "", "", {"CA", "US"}, {"Canada", "United States"},
-      "selectmenu"));
+      "selectlist"));
 
-  form.fields.push_back(test::CreateTestSelectOrSelectMenuField(
+  form.fields.push_back(test::CreateTestSelectOrSelectListField(
       "Country", "country", "", "", {"CA", "US"}, {"Canada", "United States"},
       "select-one"));
   form.fields.back().is_focusable = false;
@@ -4642,9 +4642,9 @@ TEST_F(BrowserAutofillManagerTest, DoNotFillUnfocusableFieldsExceptForSelect) {
   ExpectFilledField("", "lastname", "Presley", "text", response_data.fields[1]);
   ExpectFilledField("Postal Code", "postal_code", "", "text",
                     response_data.fields[2]);
-  ExpectFilledField("Country", "country", "", "selectmenu",
+  ExpectFilledField("Country", "country", "", "selectlist",
                     response_data.fields[3]);
-  ExpectFilledField("Country", "country", "US", "selectmenu",
+  ExpectFilledField("Country", "country", "US", "selectlist",
                     response_data.fields[4]);
   ExpectFilledField("Country", "country", "US", "select-one",
                     response_data.fields[5]);
@@ -7179,10 +7179,10 @@ TEST_F(BrowserAutofillManagerTest, FormSubmittedSelectWithDefaultValue) {
   DoTestFormSubmittedControlWithDefaultValue(this, "select-one");
 }
 
-// Test that we save form data when a <selectmenu> in the form contains the
+// Test that we save form data when a <selectlist> in the form contains the
 // default value.
-TEST_F(BrowserAutofillManagerTest, FormSubmittedSelectMenuWithDefaultValue) {
-  DoTestFormSubmittedControlWithDefaultValue(this, "selectmenu");
+TEST_F(BrowserAutofillManagerTest, FormSubmittedSelectListWithDefaultValue) {
+  DoTestFormSubmittedControlWithDefaultValue(this, "selectlist");
 }
 
 void DoTestFormSubmittedNonAddressControlWithDefaultValue(
@@ -7238,11 +7238,11 @@ TEST_F(BrowserAutofillManagerTest,
   DoTestFormSubmittedNonAddressControlWithDefaultValue(this, "select-one");
 }
 
-// Test that we save form data when a non-country, non-state <selectmenu> in the
+// Test that we save form data when a non-country, non-state <selectlist> in the
 // form contains the default value.
 TEST_F(BrowserAutofillManagerTest,
-       FormSubmittedNonAddressSelectMenuWithDefaultValue) {
-  DoTestFormSubmittedNonAddressControlWithDefaultValue(this, "selectmenu");
+       FormSubmittedNonAddressSelectListWithDefaultValue) {
+  DoTestFormSubmittedNonAddressControlWithDefaultValue(this, "selectlist");
 }
 
 struct ProfileMatchingTypesTestCase {
@@ -7442,7 +7442,7 @@ void DoTestDeterminePossibleFieldTypesForUploadOfSelect(
 
   // We want the "Memphis" in <option value="2">Memphis</option> to be
   // recognized.
-  FormFieldData city_field = CreateTestSelectOrSelectMenuField(
+  FormFieldData city_field = CreateTestSelectOrSelectListField(
       "label", "name", /*value=*/"2", /*autocomplete=*/"",
       /*values=*/{"1", "2", "3"},
       /*contents=*/{"New York", "Memphis", "Gotham City"}, field_type);
@@ -7450,7 +7450,7 @@ void DoTestDeterminePossibleFieldTypesForUploadOfSelect(
   // We want the +1 in <option value="US">USA (+1)</option> to be recognized
   // as a phone country code. Despite the value "US", we don't want this to be
   // recognized as a country field.
-  FormFieldData phone_country_code_field = CreateTestSelectOrSelectMenuField(
+  FormFieldData phone_country_code_field = CreateTestSelectOrSelectListField(
       "label", "name", /*value=*/"US", /*autocomplete=*/"",
       /*values=*/{"US", "DE"},
       /*contents=*/{"USA (+1)", "Germany (+49)"}, field_type);
@@ -7492,16 +7492,16 @@ TEST_P(DeterminePossibleFieldTypesForUploadOfSelectTest,
 }
 
 // Tests that DeterminePossibleFieldTypesForUpload considers both the value
-// and the human readable part of an <option> element in a <selectmenu> element:
+// and the human readable part of an <option> element in a <selectlist> element:
 // <option value="this is the value">this is the human readable part</option>
 //
 // In particular <option value="US">USA (+1)</option> is probably part of a
 // phone number country code.
 TEST_P(DeterminePossibleFieldTypesForUploadOfSelectTest,
-       DeterminePossibleFieldTypesForUploadOfSelectMenu) {
+       DeterminePossibleFieldTypesForUploadOfSelectList) {
   DoTestDeterminePossibleFieldTypesForUploadOfSelect(
       /*enable_autofill_vote_for_select_option_values=*/GetParam(),
-      "selectmenu");
+      "selectlist");
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

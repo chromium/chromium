@@ -126,7 +126,7 @@ void CSSDefaultStyleSheets::PrepareForLeakDetection() {
   forced_colors_style_sheet_.Clear();
   fullscreen_style_sheet_.Clear();
   popover_style_sheet_.Clear();
-  selectmenu_style_sheet_.Clear();
+  selectlist_style_sheet_.Clear();
   marker_style_sheet_.Clear();
   form_controls_not_vertical_style_sheet_.Clear();
   // Recreate the default style sheet to clean up possible SVG resources.
@@ -321,13 +321,13 @@ bool CSSDefaultStyleSheets::EnsureDefaultStyleSheetsForElement(
     changed_default_style = true;
   }
 
-  if (!selectmenu_style_sheet_ && IsA<HTMLSelectMenuElement>(element)) {
+  if (!selectlist_style_sheet_ && IsA<HTMLSelectListElement>(element)) {
     // TODO: We should assert that this sheet only contains rules for
-    // <selectmenu>.
-    DCHECK(RuntimeEnabledFeatures::HTMLSelectMenuElementEnabled());
-    selectmenu_style_sheet_ = ParseUASheet(
-        UncompressResourceAsASCIIString(IDR_UASTYLE_SELECTMENU_CSS));
-    AddRulesToDefaultStyleSheets(selectmenu_style_sheet_, NamespaceType::kHTML);
+    // <selectlist>.
+    CHECK(RuntimeEnabledFeatures::HTMLSelectListElementEnabled());
+    selectlist_style_sheet_ = ParseUASheet(
+        UncompressResourceAsASCIIString(IDR_UASTYLE_SELECTLIST_CSS));
+    AddRulesToDefaultStyleSheets(selectlist_style_sheet_, NamespaceType::kHTML);
     changed_default_style = true;
   }
 
@@ -460,7 +460,7 @@ void CSSDefaultStyleSheets::Trace(Visitor* visitor) const {
   visitor->Trace(forced_colors_style_sheet_);
   visitor->Trace(fullscreen_style_sheet_);
   visitor->Trace(popover_style_sheet_);
-  visitor->Trace(selectmenu_style_sheet_);
+  visitor->Trace(selectlist_style_sheet_);
   visitor->Trace(marker_style_sheet_);
   visitor->Trace(form_controls_not_vertical_style_sheet_);
 }

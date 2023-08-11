@@ -79,7 +79,7 @@
 #include "third_party/blink/renderer/core/html/forms/html_opt_group_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_option_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
-#include "third_party/blink/renderer/core/html/forms/html_select_menu_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_select_list_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_text_area_element.h"
 #include "third_party/blink/renderer/core/html/forms/labels_node_list.h"
 #include "third_party/blink/renderer/core/html/forms/radio_input_type.h"
@@ -1259,16 +1259,16 @@ ax::mojom::blink::Role AXNodeObject::NativeRoleIgnoringAria() const {
   if (GetNode()->IsTextNode())
     return ax::mojom::blink::Role::kStaticText;
 
-  const HTMLSelectMenuElement* owner_select_menu =
-      HTMLSelectMenuElement::OwnerSelectMenu(GetNode());
-  if (owner_select_menu) {
-    HTMLSelectMenuElement::PartType part_type =
-        owner_select_menu->AssignedPartType(GetNode());
-    if (part_type == HTMLSelectMenuElement::PartType::kButton) {
+  const HTMLSelectListElement* owner_select_list =
+      HTMLSelectListElement::OwnerSelectList(GetNode());
+  if (owner_select_list) {
+    HTMLSelectListElement::PartType part_type =
+        owner_select_list->AssignedPartType(GetNode());
+    if (part_type == HTMLSelectListElement::PartType::kButton) {
       return ax::mojom::blink::Role::kComboBoxMenuButton;
-    } else if (part_type == HTMLSelectMenuElement::PartType::kListBox) {
+    } else if (part_type == HTMLSelectListElement::PartType::kListBox) {
       return ax::mojom::blink::Role::kListBox;
-    } else if (part_type == HTMLSelectMenuElement::PartType::kOption) {
+    } else if (part_type == HTMLSelectListElement::PartType::kOption) {
       return ax::mojom::blink::Role::kListBoxOption;
     }
   }
@@ -2237,10 +2237,10 @@ AccessibilityExpanded AXNodeObject::IsExpanded() const {
   if (!element)
     return kExpandedUndefined;
 
-  if (HTMLSelectMenuElement* select_menu =
-          HTMLSelectMenuElement::OwnerSelectMenu(element)) {
-    if (select_menu->ButtonPart() == element) {
-      return select_menu->open() ? kExpandedExpanded : kExpandedCollapsed;
+  if (HTMLSelectListElement* select_list =
+          HTMLSelectListElement::OwnerSelectList(element)) {
+    if (select_list->ButtonPart() == element) {
+      return select_list->open() ? kExpandedExpanded : kExpandedCollapsed;
     }
   }
 
@@ -3493,10 +3493,10 @@ String AXNodeObject::GetValueForControl() const {
   }
 
   if (RoleValue() == ax::mojom::blink::Role::kComboBoxMenuButton) {
-    // An HTML <selectmenu> gets its value from the selected option.
-    if (auto* select_menu = HTMLSelectMenuElement::OwnerSelectMenu(node)) {
-      DCHECK(RuntimeEnabledFeatures::HTMLSelectMenuElementEnabled());
-      if (HTMLOptionElement* selected = select_menu->selectedOption()) {
+    // An HTML <selectlist> gets its value from the selected option.
+    if (auto* select_list = HTMLSelectListElement::OwnerSelectList(node)) {
+      DCHECK(RuntimeEnabledFeatures::HTMLSelectListElementEnabled());
+      if (HTMLOptionElement* selected = select_list->selectedOption()) {
         // TODO(accessibility) Because these <option> elements can contain
         // anything, we need to create an AXObject for the selected option, and
         // use ax_selected_option->ComputedName(). However, for now, the
@@ -3504,7 +3504,7 @@ String AXNodeObject::GetValueForControl() const {
         // returns false for the invisible slot parent. Also, strangely,
         // selected->innerText()/GetInnerTextWithoutUpdate() are returning "".
         // See the following content_browsertest:
-        // All/DumpAccessibilityTreeTest.AccessibilitySelectMenu/blink.
+        // All/DumpAccessibilityTreeTest.AccessibilitySelectList/blink.
         // TODO(crbug.com/1401767): DCHECK fails with synchronous serialization.
         DCHECK(selected->firstChild())
             << "There is a selected option but it has no DOM children.";

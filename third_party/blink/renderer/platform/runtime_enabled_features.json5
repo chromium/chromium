@@ -749,7 +749,7 @@
       // Allows positioning a positioned element relative to another one.
       // https://drafts.csswg.org/css-anchor-1/
       name: "CSSAnchorPositioning",
-      implied_by: ["HTMLSelectMenuElement"],
+      implied_by: ["HTMLSelectListElement"],
       status: "experimental",
       base_feature: "none",
     },
@@ -1935,7 +1935,7 @@
       name: "HTMLPopoverAttribute",
       status: "stable",
       origin_trial_feature_name: "HTMLPopupAttribute",
-      implied_by: ["HTMLSelectMenuElement","HTMLPopoverHint"],
+      implied_by: ["HTMLSelectListElement","HTMLPopoverHint"],
     },
     {
       // TODO(crbug.com/1416284): Enables popover=hint functionality.
@@ -1943,7 +1943,7 @@
       status: "experimental",
     },
     {
-      name: "HTMLSelectMenuElement",
+      name: "HTMLSelectListElement",
       status: "experimental",
       base_feature: "none",
     },

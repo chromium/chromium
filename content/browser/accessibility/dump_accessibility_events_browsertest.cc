@@ -1027,10 +1027,10 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
-                       AccessibilityEventsSelectMenu) {
+                       AccessibilityEventsSelectList) {
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      switches::kEnableBlinkFeatures, "HTMLSelectMenuElement");
-  RunEventTest(FILE_PATH_LITERAL("select-menu.html"));
+      switches::kEnableBlinkFeatures, "HTMLSelectListElement");
+  RunEventTest(FILE_PATH_LITERAL("selectlist.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,

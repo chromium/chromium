@@ -565,7 +565,7 @@ void AutofillManager::OnHidePopup() {
   OnHidePopupImpl();
 }
 
-void AutofillManager::OnSelectOrSelectMenuFieldOptionsDidChange(
+void AutofillManager::OnSelectOrSelectListFieldOptionsDidChange(
     const FormData& form) {
   if (!IsValidFormData(form))
     return;

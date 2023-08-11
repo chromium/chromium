@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<script src='../../resources/testharness.js'></script>
+<script src='../../resources/testharnessreport.js'></script>
+<script src="../../resources/testdriver.js"></script>
+<script src="../../resources/testdriver-actions.js"></script>
+<script src="../../resources/testdriver-vendor.js"></script>
+
+<!-- No console warnings: button was replaced. -->
+<selectlist>
+  <div slot="button">
+    <div behavior="button">
+      My custom button
+    </div>
+  </div>
+</selectlist>
+
+<!-- One console warning: button was not replaced. -->
+<selectlist>
+  <div slot="button">
+    <div>
+      Not a button
+    </div>
+  </div>
+</selectlist>
+
+<script>
+  setup({ single_test: true });
+  // The purpose of this test to to ensure that the correct
+  // console warnings are logged, via comparison with the expectations
+  // file. So, nothing to test here.
+  done();
+</script>

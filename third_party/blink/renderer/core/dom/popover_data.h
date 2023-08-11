@@ -9,7 +9,7 @@
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/element_rare_data_field.h"
 #include "third_party/blink/renderer/core/html/closewatcher/close_watcher.h"
-#include "third_party/blink/renderer/core/html/forms/html_select_menu_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_select_list_element.h"
 #include "third_party/blink/renderer/core/html_element_type_helpers.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -111,11 +111,11 @@ class PopoverData final : public GarbageCollected<PopoverData>,
     hover_hide_task_ = std::move(task);
   }
 
-  HTMLSelectMenuElement* ownerSelectMenuElement() const {
-    return owner_select_menu_element_;
+  HTMLSelectListElement* ownerSelectListElement() const {
+    return owner_select_list_element_;
   }
-  void setOwnerSelectMenuElement(HTMLSelectMenuElement* element) {
-    owner_select_menu_element_ = element;
+  void setOwnerSelectListElement(HTMLSelectListElement* element) {
+    owner_select_list_element_ = element;
   }
 
   CloseWatcher* closeWatcher() { return close_watcher_; }
@@ -127,7 +127,7 @@ class PopoverData final : public GarbageCollected<PopoverData>,
     visitor->Trace(invoker_);
     visitor->Trace(previously_focused_element_);
     visitor->Trace(hover_show_tasks_);
-    visitor->Trace(owner_select_menu_element_);
+    visitor->Trace(owner_select_list_element_);
     visitor->Trace(close_watcher_);
     ElementRareDataField::Trace(visitor);
   }
@@ -153,7 +153,7 @@ class PopoverData final : public GarbageCollected<PopoverData>,
   // A task that hides the popover after a delay.
   TaskHandle hover_hide_task_;
 
-  WeakMember<HTMLSelectMenuElement> owner_select_menu_element_;
+  WeakMember<HTMLSelectListElement> owner_select_list_element_;
 
   Member<CloseWatcher> close_watcher_;
 };

@@ -1905,11 +1905,11 @@ void HTMLElement::HidePopoverInternal(
     }
   }
 
-  if (auto* selectmenu = popoverOwnerSelectMenuElement()) {
-    // popoverOwnerSelectMenuElement() is set on both the <selectmenu> listbox
-    // and the <selectmenu> autofill preview popover.
-    if (selectmenu->ListBoxPart() == this) {
-      selectmenu->ListboxWasClosed();
+  if (auto* selectlist = popoverOwnerSelectListElement()) {
+    // popoverOwnerSelectListElement() is set on both the <selectlist> listbox
+    // and the <selectlist> autofill preview popover.
+    if (selectlist->ListBoxPart() == this) {
+      selectlist->ListboxWasClosed();
     }
   }
 
@@ -2320,17 +2320,17 @@ void HTMLElement::HoveredElementChanged(Element* old_element,
   }
 }
 
-void HTMLElement::SetPopoverOwnerSelectMenuElement(
-    HTMLSelectMenuElement* element) {
-  CHECK(RuntimeEnabledFeatures::HTMLSelectMenuElementEnabled());
+void HTMLElement::SetPopoverOwnerSelectListElement(
+    HTMLSelectListElement* element) {
+  CHECK(RuntimeEnabledFeatures::HTMLSelectListElementEnabled());
   CHECK(RuntimeEnabledFeatures::HTMLPopoverAttributeEnabled(
       GetDocument().GetExecutionContext()));
   CHECK(HasPopoverAttribute());
-  GetPopoverData()->setOwnerSelectMenuElement(element);
+  GetPopoverData()->setOwnerSelectListElement(element);
 }
 
-HTMLSelectMenuElement* HTMLElement::popoverOwnerSelectMenuElement() const {
-  return GetPopoverData() ? GetPopoverData()->ownerSelectMenuElement()
+HTMLSelectListElement* HTMLElement::popoverOwnerSelectListElement() const {
+  return GetPopoverData() ? GetPopoverData()->ownerSelectListElement()
                           : nullptr;
 }
 

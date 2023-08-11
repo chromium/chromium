@@ -85,10 +85,10 @@ TEST_F(WebFormControlElementTest, ResetDocumentClearsEditedState) {
           <option value="Bar">Bar</option>
           <option value="Foo">Foo</option>
         </select>
-        <selectmenu id="selectmenu_id">
+        <selectlist id="selectlist_id">
           <option value="Bar">Bar</option>
           <option value="Foo">Foo</option>
-        </selectmenu>
+        </selectlist>
         <input id="reset" type="reset">
       </form>
     </body>
@@ -98,22 +98,22 @@ TEST_F(WebFormControlElementTest, ResetDocumentClearsEditedState) {
       DynamicTo<HTMLFormControlElement>(GetElementById("text_id")));
   WebFormControlElement select(
       DynamicTo<HTMLFormControlElement>(GetElementById("select_id")));
-  WebFormControlElement selectmenu(
-      DynamicTo<HTMLFormControlElement>(GetElementById("selectmenu_id")));
+  WebFormControlElement selectlist(
+      DynamicTo<HTMLFormControlElement>(GetElementById("selectlist_id")));
 
   text.SetUserHasEditedTheField(true);
   select.SetUserHasEditedTheField(true);
-  selectmenu.SetUserHasEditedTheField(true);
+  selectlist.SetUserHasEditedTheField(true);
 
   EXPECT_TRUE(text.UserHasEditedTheField());
   EXPECT_TRUE(select.UserHasEditedTheField());
-  EXPECT_TRUE(selectmenu.UserHasEditedTheField());
+  EXPECT_TRUE(selectlist.UserHasEditedTheField());
 
   To<HTMLFormControlElement>(GetElementById("reset"))->click();
 
   EXPECT_FALSE(text.UserHasEditedTheField());
   EXPECT_FALSE(select.UserHasEditedTheField());
-  EXPECT_FALSE(selectmenu.UserHasEditedTheField());
+  EXPECT_FALSE(selectlist.UserHasEditedTheField());
 }
 
 TEST_P(WebFormControlElementTest, SetAutofillValue) {

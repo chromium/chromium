@@ -380,7 +380,7 @@ static_idl_files_in_core = [
   "//third_party/blink/renderer/core/html/forms/html_options_collection.idl",
   "//third_party/blink/renderer/core/html/forms/html_output_element.idl",
   "//third_party/blink/renderer/core/html/forms/html_select_element.idl",
-  "//third_party/blink/renderer/core/html/forms/html_select_menu_element.idl",
+  "//third_party/blink/renderer/core/html/forms/html_select_list_element.idl",
   "//third_party/blink/renderer/core/html/forms/html_text_area_element.idl",
   "//third_party/blink/renderer/core/html/forms/radio_node_list.idl",
   "//third_party/blink/renderer/core/html/forms/submit_event.idl",

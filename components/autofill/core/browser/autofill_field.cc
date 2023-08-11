@@ -583,8 +583,8 @@ FormControlType AutofillField::FormControlType() const {
     return FormControlType::kRadio;
   } else if (form_control_type == "select-one") {
     return FormControlType::kSelectOne;
-  } else if (form_control_type == "selectmenu") {
-    return FormControlType::kSelectmenu;
+  } else if (form_control_type == "selectlist") {
+    return FormControlType::kSelectlist;
   } else if (form_control_type == "") {
     return FormControlType::kEmpty;
   } else {

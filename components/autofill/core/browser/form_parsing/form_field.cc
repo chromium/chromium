@@ -531,7 +531,7 @@ bool FormField::MatchesFormControlType(base::StringPiece type,
     return true;
 
   if (match_type.contains(MatchFieldType::kSelect) &&
-      (type == "select-one" || type == "selectmenu")) {
+      (type == "select-one" || type == "selectlist")) {
     return true;
   }
 

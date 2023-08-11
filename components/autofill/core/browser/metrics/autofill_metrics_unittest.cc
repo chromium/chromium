@@ -9144,10 +9144,10 @@ TEST_F(AutofillMetricsFromLogEventsTest,
   histogram_tester.ExpectBucketCount("Autofill.LogEvent.All", 4, 1);
 }
 
-// Tests that the forms with <selectmenu> field are recorded in UkmFieldInfo
+// Tests that the forms with <selectlist> field are recorded in UkmFieldInfo
 // metrics.
 TEST_F(AutofillMetricsFromLogEventsTest,
-       AutofillFieldInfoMetricsRecordOnSelectMenuField) {
+       AutofillFieldInfoMetricsRecordOnSelectListField) {
   base::TimeTicks now = AutofillTickClock::NowTicks();
   TestAutofillTickClock test_clock;
   test_clock.SetNowTicks(now);
@@ -9169,10 +9169,10 @@ TEST_F(AutofillMetricsFromLogEventsTest,
   field.unique_renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
-  // Selectmenu.
+  // Selectlist.
   field.label = u"Country";
   field.name = u"country";
-  field.form_control_type = "selectmenu";
+  field.form_control_type = "selectlist";
   field.unique_renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
@@ -9200,7 +9200,7 @@ TEST_F(AutofillMetricsFromLogEventsTest,
       base::to_underlying(FormControlType::kText));
   test_ukm_recorder().ExpectEntryMetric(
       entries[2], UkmFieldInfoType::kFormControlTypeName,
-      base::to_underlying(FormControlType::kSelectmenu));
+      base::to_underlying(FormControlType::kSelectlist));
 }
 
 // Tests that the field which is in a different frame than its form is recorded

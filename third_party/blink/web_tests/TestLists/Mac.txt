@@ -399,7 +399,7 @@ external/wpt/html/semantics/embedded-content/media-elements/ready-states/autopla
 external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-cues-sorted-before-dispatch.html
 external/wpt/html/semantics/embedded-content/the-object-element/object-events.html
 external/wpt/html/semantics/forms/the-input-element/show-picker.tentative.html
-external/wpt/html/semantics/forms/the-selectmenu-element/selectmenu-parts-structure.tentative.html
+external/wpt/html/semantics/forms/the-selectlist-element/selectlist-parts-structure.tentative.html
 external/wpt/html/semantics/interactive-elements/the-dialog-element/dialog-focus-shadow.html
 external/wpt/html/semantics/scripting-1/the-script-element/moving-between-documents/before-prepare-iframe-fetch-error-external-module.html
 external/wpt/html/semantics/scripting-1/the-script-element/moving-between-documents/before-prepare-iframe-success-external-module.html
@@ -913,8 +913,8 @@ fonts/sans-serif.html
 fragmentation/single-line-cells-paginated-with-text.html
 gamepad/multiple-event-listeners.html
 html/details_summary/details-marker-style.html
-html/selectmenu/selectmenu-slot-warning-button.html
-html/selectmenu/selectmenu-slot-warning-listbox.html
+html/selectlist/selectlist-slot-warning-button.html
+html/selectlist/selectlist-slot-warning-listbox.html
 http/tests/credentialmanagement/credentialscontainer-create-from-nested-frame.html
 http/tests/credentialmanagement/credentialscontainer-create-origins.html
 http/tests/credentialmanagement/register-then-sign.html

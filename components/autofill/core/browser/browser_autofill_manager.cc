@@ -2578,12 +2578,12 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
 
     // Must match ForEachMatchingFormField() in form_autofill_util.cc.
     // Only notify autofilling of empty fields and the field that initiated the
-    // filling (note that <select> and <selectmenu> controls may not be empty
+    // filling (note that <select> and <selectlist> controls may not be empty
     // but will still be autofilled).
     const bool should_notify =
         !is_credit_card &&
         (result.fields[i].SameFieldAs(field) ||
-         result.fields[i].IsSelectOrSelectMenuElement() || !has_value_before);
+         result.fields[i].IsSelectOrSelectListElement() || !has_value_before);
     std::string failure_to_fill;  // Reason for failing to fill.
     const std::map<FieldGlobalId, std::u16string>& forced_fill_values =
         filling_context ? filling_context->forced_fill_values
@@ -2749,7 +2749,7 @@ bool BrowserAutofillManager::ShouldPreventAutofillFromOverridingPrefilledField(
   // Some sites have empty values in the fields, for example.
   if (std::u16string sanitized_field_value =
           RemoveWhiteSpaceAndConjugatingCharacters(field_data->value);
-      !field_data->IsSelectOrSelectMenuElement() &&
+      !field_data->IsSelectOrSelectListElement() &&
       !sanitized_field_value.empty() && !is_initiating_field) {
     std::string unused_failure_to_fill;
     const std::u16string kEmptyCvc{};
@@ -3072,7 +3072,7 @@ void BrowserAutofillManager::DeterminePossibleFieldTypesForUpload(
     absl::optional<std::u16string> select_content;
     // TODO(crbug.com/1395740) Remove the flag check once the feature has
     // settled.
-    if (field->IsSelectOrSelectMenuElement() &&
+    if (field->IsSelectOrSelectListElement() &&
         base::FeatureList::IsEnabled(
             features::kAutofillVoteForSelectOptionValues)) {
       auto it = base::ranges::find(field->options, field->value,

@@ -262,7 +262,7 @@ class AutofillManager
   void OnHidePopup();
 
   // Invoked when the options of a select element in the |form| changed.
-  void OnSelectOrSelectMenuFieldOptionsDidChange(const FormData& form);
+  void OnSelectOrSelectListFieldOptionsDidChange(const FormData& form);
 
   // Invoked after JavaScript set the value of |field| in |form|. Only called
   // if |field| was in autofilled state. Note that from a renderer's

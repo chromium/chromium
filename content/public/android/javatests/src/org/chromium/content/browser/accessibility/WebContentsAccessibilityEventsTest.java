@@ -1007,7 +1007,7 @@ public class WebContentsAccessibilityEventsTest {
     @Test
     @SmallTest
     public void test_selectMenu() {
-        performTest("select-menu.html", "select-menu-expected-android.txt");
+        performTest("selectlist.html", "selectlist-expected-android.txt");
     }
 
     @Test

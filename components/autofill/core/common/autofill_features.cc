@@ -175,10 +175,10 @@ const base::FeatureParam<int> kAutofillRankingFormulaVirtualCardBoostHalfLife{
     &kAutofillEnableRankingFormulaCreditCards,
     "autofill_ranking_formula_virtual_card_boost_half_life", 15};
 
-// When enabled, autofill will fill <selectmenu> elements.
-// TODO(crbug.com/1427153) Remove once autofilling <selectmenu> is launched.
-BASE_FEATURE(kAutofillEnableSelectMenu,
-             "AutofillEnableSelectMenu",
+// When enabled, autofill will fill <selectlist> elements.
+// TODO(crbug.com/1427153) Remove once autofilling <selectlist> is launched.
+BASE_FEATURE(kAutofillEnableSelectList,
+             "AutofillEnableSelectList",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls if Chrome support filling and importing between streets.

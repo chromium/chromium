@@ -1,9 +1,0 @@
-[document web]
-++[section]
-++++[section]
-++++++[combo box] expandable haspopup:listbox
-++++++++[section]
-++++++++++[static] name='Option 1'
-++++[section]
-++++++[combo box] expandable haspopup:listbox
-++++++++[static] name='Custom selectmenu button'

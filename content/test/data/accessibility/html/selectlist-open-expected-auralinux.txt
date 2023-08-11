@@ -1,0 +1,9 @@
+[document web]
+++[section]
+++++[section]
+++++++[combo box] expandable expanded haspopup:listbox
+++++++++[static] name='Custom selectlist button'
+++++++[list box] setsize:3
+++++++++[list item] name='Option 1' selectable selected posinset:1 setsize:3
+++++++++[list item] name='Option 2' selectable posinset:2 setsize:3
+++++++++[list item] name='Option 3' selectable posinset:3 setsize:3

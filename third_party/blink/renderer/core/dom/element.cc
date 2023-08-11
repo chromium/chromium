@@ -150,7 +150,7 @@
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_options_collection.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
-#include "third_party/blink/renderer/core/html/forms/html_select_menu_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_select_list_element.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
 #include "third_party/blink/renderer/core/html/html_area_element.h"
 #include "third_party/blink/renderer/core/html/html_body_element.h"
@@ -4443,7 +4443,7 @@ bool Element::CanAttachShadowRoot() const {
   return (IsCustomElement() &&
           CustomElement::IsValidName(tag_name.LocalName())) ||
          IsValidShadowHostName(tag_name) ||
-         tag_name == html_names::kSelectmenuTag;
+         tag_name == html_names::kSelectlistTag;
 }
 
 const char* Element::ErrorMessageForAttachShadow() const {
@@ -8896,8 +8896,8 @@ Element* Element::ImplicitAnchorElement() {
     if (Element* anchor = html_element->anchorElement()) {
       return anchor;
     }
-    if (Element* select_menu = html_element->popoverOwnerSelectMenuElement()) {
-      return select_menu;
+    if (Element* select_list = html_element->popoverOwnerSelectListElement()) {
+      return select_list;
     }
   } else if (PseudoElement* pseudo_element = DynamicTo<PseudoElement>(this)) {
     switch (pseudo_element->GetPseudoId()) {

@@ -57,7 +57,7 @@
 #include "third_party/blink/public/web/web_option_element.h"
 #include "third_party/blink/public/web/web_remote_frame.h"
 #include "third_party/blink/public/web/web_select_element.h"
-#include "third_party/blink/public/web/web_select_menu_element.h"
+#include "third_party/blink/public/web/web_select_list_element.h"
 #include "third_party/re2/src/re2/re2.h"
 
 using blink::WebAutofillState;
@@ -73,7 +73,7 @@ using blink::WebLocalFrame;
 using blink::WebNode;
 using blink::WebOptionElement;
 using blink::WebSelectElement;
-using blink::WebSelectMenuElement;
+using blink::WebSelectListElement;
 using blink::WebString;
 using blink::WebVector;
 using blink::mojom::GenericIssueErrorType;
@@ -971,14 +971,14 @@ ButtonTitleList InferButtonTitlesForForm(const WebFormElement& web_form) {
   return least_priority_buttons;
 }
 
-// Returns the list items for the passed-in <select> or <selectmenu>.
-WebVector<WebElement> GetListItemsForSelectOrSelectMenu(
+// Returns the list items for the passed-in <select> or <selectlist>.
+WebVector<WebElement> GetListItemsForSelectOrSelectList(
     const WebFormControlElement& element) {
   if (IsSelectElement(element)) {
     return element.To<WebSelectElement>().GetListItems();
   } else {
-    DCHECK(IsSelectMenuElement(element));
-    return element.To<WebSelectMenuElement>().GetListItems();
+    DCHECK(IsSelectListElement(element));
+    return element.To<WebSelectListElement>().GetListItems();
   }
 }
 
@@ -1099,7 +1099,7 @@ bool ShouldSkipFillField(const FormFieldData& field,
   }
 
   // Check if we should autofill/preview/clear a select element or leave it.
-  if (IsSelectOrSelectMenuElement(element) && element.UserHasEditedTheField() &&
+  if (IsSelectOrSelectListElement(element) && element.UserHasEditedTheField() &&
       !SanitizedFieldIsEmpty(current_element_value) && !field.force_override) {
     return true;
   }
@@ -1168,7 +1168,7 @@ void PreviewFormField(const FormFieldData& data,
     input_element.SetSuggestedValue(blink::WebString::FromUTF16(
         data.value.substr(0, input_element.MaxLength())));
     input_element.SetAutofillState(new_autofill_state);
-  } else if (IsTextAreaElement(*field) || IsSelectOrSelectMenuElement(*field)) {
+  } else if (IsTextAreaElement(*field) || IsSelectOrSelectListElement(*field)) {
     field->SetSuggestedValue(blink::WebString::FromUTF16(data.value));
     field->SetAutofillState(new_autofill_state);
   }
@@ -1864,8 +1864,8 @@ bool IsTextInput(const WebInputElement& element) {
   return !element.IsNull() && element.IsTextField();
 }
 
-bool IsSelectOrSelectMenuElement(const WebFormControlElement& element) {
-  return IsSelectElement(element) || IsSelectMenuElement(element);
+bool IsSelectOrSelectListElement(const WebFormControlElement& element) {
+  return IsSelectElement(element) || IsSelectListElement(element);
 }
 
 bool IsSelectElement(const WebFormControlElement& element) {
@@ -1873,9 +1873,9 @@ bool IsSelectElement(const WebFormControlElement& element) {
          element.FormControlTypeForAutofill() == "select-one";
 }
 
-bool IsSelectMenuElement(const WebFormControlElement& element) {
+bool IsSelectListElement(const WebFormControlElement& element) {
   return !element.IsNull() &&
-         element.FormControlTypeForAutofill() == "selectmenu";
+         element.FormControlTypeForAutofill() == "selectlist";
 }
 
 bool IsTextAreaElement(const WebFormControlElement& element) {
@@ -1907,8 +1907,8 @@ bool IsAutofillableElement(const WebFormControlElement& element) {
   const WebInputElement input_element = element.DynamicTo<WebInputElement>();
   return IsAutofillableInputElement(input_element) ||
          IsSelectElement(element) || IsTextAreaElement(element) ||
-         (IsSelectMenuElement(element) &&
-          base::FeatureList::IsEnabled(features::kAutofillEnableSelectMenu));
+         (IsSelectListElement(element) &&
+          base::FeatureList::IsEnabled(features::kAutofillEnableSelectList));
 }
 
 bool IsWebauthnTaggedElement(const WebFormControlElement& element) {
@@ -1923,9 +1923,9 @@ bool IsElementEditable(const WebInputElement& element) {
 
 bool IsWebElementFocusableForAutofill(const WebElement& element) {
   return element.IsFocusable() ||
-         // The <selectmenu> shadow root is not focusable.
-         (IsSelectMenuElement(element.DynamicTo<WebFormControlElement>()) &&
-          element.To<WebSelectMenuElement>().HasFocusableChild());
+         // The <selectlist> shadow root is not focusable.
+         (IsSelectListElement(element.DynamicTo<WebFormControlElement>()) &&
+          element.To<WebSelectListElement>().HasFocusableChild());
 }
 
 bool IsWebElementVisible(const blink::WebElement& element) {
@@ -2080,7 +2080,7 @@ void WebFormControlElementToFormField(
     return;
 
   if (IsAutofillableInputElement(input_element) || IsTextAreaElement(element) ||
-      IsSelectOrSelectMenuElement(element)) {
+      IsSelectOrSelectListElement(element)) {
     // The browser doesn't need to differentiate between preview and autofill.
     field->is_autofilled = element.IsAutofilled();
     field->is_focusable = IsWebElementFocusableForAutofill(element);
@@ -2102,9 +2102,9 @@ void WebFormControlElementToFormField(
     // Nothing more to do in this case.
   } else if (extract_mask & EXTRACT_OPTIONS) {
     // Set option strings on the field if available.
-    DCHECK(IsSelectOrSelectMenuElement(element));
+    DCHECK(IsSelectOrSelectListElement(element));
     WebVector<WebElement> element_list_items =
-        GetListItemsForSelectOrSelectMenu(element);
+        GetListItemsForSelectOrSelectList(element);
     FilterOptionElementsAndGetOptionStrings(element_list_items,
                                             &field->options);
   }
@@ -2129,11 +2129,11 @@ void WebFormControlElementToFormField(
 
   std::u16string value = element.Value().Utf16();
 
-  if (IsSelectOrSelectMenuElement(element) &&
+  if (IsSelectOrSelectListElement(element) &&
       (extract_mask & EXTRACT_OPTION_TEXT)) {
     // Convert the |element| value to text if requested.
     WebVector<WebElement> list_items =
-        GetListItemsForSelectOrSelectMenu(element);
+        GetListItemsForSelectOrSelectList(element);
     for (const auto& list_item : list_items) {
       if (HasTagName<kOption>(list_item)) {
         const WebOptionElement option_element =

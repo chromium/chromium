@@ -182,8 +182,8 @@ public final class ProductionSupportedFlagList {
                     "Enables parsing dependent locality fields (e.g. Bairros in Brazil)."),
             Flag.baseFeature(AutofillFeatures.AUTOFILL_ENABLE_EXPIRATION_DATE_IMPROVEMENTS,
                     "Enables various improvements to handling expiration dates."),
-            Flag.baseFeature(AutofillFeatures.AUTOFILL_ENABLE_SELECT_MENU,
-                    "Enables autofill of <selectmenu> elements."),
+            Flag.baseFeature(AutofillFeatures.AUTOFILL_ENABLE_SELECT_LIST,
+                    "Enables autofill of <selectlist> elements."),
             Flag.baseFeature(AutofillFeatures.AUTOFILL_ENABLE_SUPPORT_FOR_PHONE_NUMBER_TRUNK_TYPES,
                     "Rationalizes city-and-number and city-code fields to the "
                             + "correct trunk-prefix types."),

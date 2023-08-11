@@ -418,12 +418,12 @@ bool FormFieldData::IsSelectElement() const {
   return form_control_type == "select-one";
 }
 
-bool FormFieldData::IsSelectMenuElement() const {
-  return form_control_type == "selectmenu";
+bool FormFieldData::IsSelectListElement() const {
+  return form_control_type == "selectlist";
 }
 
-bool FormFieldData::IsSelectOrSelectMenuElement() const {
-  return IsSelectElement() || IsSelectMenuElement();
+bool FormFieldData::IsSelectOrSelectListElement() const {
+  return IsSelectElement() || IsSelectListElement();
 }
 
 bool FormFieldData::DidUserType() const {

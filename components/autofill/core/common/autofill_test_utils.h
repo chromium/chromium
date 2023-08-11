@@ -177,7 +177,7 @@ void CreateTestFormField(std::string_view label,
 [[nodiscard]] FormFieldData CreateTestSelectField(
     const std::vector<const char*>& values);
 
-[[nodiscard]] FormFieldData CreateTestSelectOrSelectMenuField(
+[[nodiscard]] FormFieldData CreateTestSelectOrSelectListField(
     std::string_view label,
     std::string_view name,
     std::string_view value,

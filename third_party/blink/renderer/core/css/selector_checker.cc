@@ -1762,13 +1762,13 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       }
       return false;
     case CSSSelector::kPseudoOpen:
-      if (auto* selectmenu = DynamicTo<HTMLSelectMenuElement>(element)) {
-        return selectmenu->open();
+      if (auto* selectlist = DynamicTo<HTMLSelectListElement>(element)) {
+        return selectlist->open();
       }
       return false;
     case CSSSelector::kPseudoClosed:
-      if (auto* selectmenu = DynamicTo<HTMLSelectMenuElement>(element)) {
-        return !selectmenu->open();
+      if (auto* selectlist = DynamicTo<HTMLSelectListElement>(element)) {
+        return !selectlist->open();
       }
       return false;
     case CSSSelector::kPseudoFullscreen:
@@ -1957,12 +1957,12 @@ static bool MatchesUAShadowElement(Element& element, const AtomicString& id) {
 bool SelectorChecker::CheckPseudoAutofill(CSSSelector::PseudoType pseudo_type,
                                           Element& element) const {
   HTMLFormControlElement* html_form_element = nullptr;
-  HTMLSelectMenuElement* owner_html_select_menu_element =
-      HTMLSelectMenuElement::OwnerSelectMenu(&element);
-  if (owner_html_select_menu_element &&
-      owner_html_select_menu_element->AssignedPartType(&element) ==
-          HTMLSelectMenuElement::PartType::kButton) {
-    html_form_element = owner_html_select_menu_element;
+  HTMLSelectListElement* owner_html_select_list_element =
+      HTMLSelectListElement::OwnerSelectList(&element);
+  if (owner_html_select_list_element &&
+      owner_html_select_list_element->AssignedPartType(&element) ==
+          HTMLSelectListElement::PartType::kButton) {
+    html_form_element = owner_html_select_list_element;
   } else {
     html_form_element = DynamicTo<HTMLFormControlElement>(&element);
   }

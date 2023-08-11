@@ -47,8 +47,8 @@ interface AutofillDriver {
                          FormFieldData field,
                          gfx.mojom.RectF bounding_box);
 
-  // Notification that a select or selectmenu element's options were modified.
-  SelectOrSelectMenuFieldOptionsDidChange(FormData form);
+  // Notification that a select or selectlist element's options were modified.
+  SelectOrSelectListFieldOptionsDidChange(FormData form);
 
   // Queries the browser for Autofill suggestions for a form input field.
   // For autofill this means asking the user which values to fill.

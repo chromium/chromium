@@ -3112,7 +3112,7 @@ enum WebFeature {
   kInsertHTMLCommandOnReadWritePlainText = 3808,
   kCSSAtRuleCounterStyle = 3809,
   kCanvasUseColorSpace = 3810,
-  kSelectMenuElement = 3811,
+  kSelectListElement = 3811,
   kOBSOLETE_RTCPeerConnectionSdpSemanticsPlanBWithReverseOriginTrial = 3812,
   kWebAppManifestCaptureLinks = 3813,
   kSanitizerAPICreated = 3814,

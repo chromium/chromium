@@ -94,7 +94,7 @@
     "samp",
     "section",
     "select",
-    "selectmenu",
+    "selectlist",
     "small",
     "source",
     "span",

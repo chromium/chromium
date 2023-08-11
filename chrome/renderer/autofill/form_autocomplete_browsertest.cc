@@ -124,7 +124,7 @@ class FakeContentAutofillDriver : public mojom::AutofillDriver {
 
   void DidEndTextFieldEditing() override {}
 
-  void SelectOrSelectMenuFieldOptionsDidChange(
+  void SelectOrSelectListFieldOptionsDidChange(
       const autofill::FormData& form) override {}
 
   // Records whether FocusNoLongerOnForm() get called.

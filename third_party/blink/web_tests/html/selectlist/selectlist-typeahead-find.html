@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script>
+function recordIt()
+{
+    var selectlist = document.getElementById("selectlist");
+    var res = document.getElementById("res");
+    if (res.innerText != "FAIL")
+        res.innerText = "PASS";
+}
+
+function testIt(ch, expectedValue)
+{
+    var selectlist = document.getElementById("selectlist");
+    selectlist.focus();
+    eventSender.keyDown(ch);
+    if (selectlist.value != expectedValue)
+        document.getElementById("res").innerText = "FAIL";
+}
+
+function test()
+{
+    if (!window.testRunner)
+        return;
+
+    testRunner.dumpAsText();
+    testIt("c", "cherry");
+}
+</script>
+</head>
+<body onload="test()">
+Verify type ahead selection fires onchange event.
+<ol>
+<li>Set focus to selectlist element</li>
+<li>Type "c"</li>
+<li>You see "cherry" in selectlist element and "PASS" below selectlist element.</li>
+</ol>
+<selectlist id="selectlist" onchange="recordIt()">
+    <option>apple</option>
+    <option>banana</option>
+    <option>cherry</option>
+</selectlist><br />
+<div id="res"></div>
+</html>
+

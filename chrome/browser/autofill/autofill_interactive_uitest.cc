@@ -156,11 +156,11 @@ constexpr char kTestShippingFormString[] = R"(
     </form>
     )";
 
-// Version of `kTestShippingFormString` which uses <selectmenu> instead of
+// Version of `kTestShippingFormString` which uses <selectlist> instead of
 // <select>.
-std::string GenerateTestShippingFormWithSelectMenu() {
+std::string GenerateTestShippingFormWithSelectList() {
   std::string out = kTestShippingFormString;
-  RE2::GlobalReplace(&out, "<(/?)select", "<\\1selectmenu");
+  RE2::GlobalReplace(&out, "<(/?)select", "<\\1selectlist");
   return out;
 }
 
@@ -1311,7 +1311,7 @@ const char AutofillInteractiveTestBase::kTestUrlPath[] =
 class AutofillInteractiveTest : public AutofillInteractiveTestBase {
  protected:
   AutofillInteractiveTest()
-      : feature_list_(features::kAutofillEnableSelectMenu) {}
+      : feature_list_(features::kAutofillEnableSelectList) {}
   ~AutofillInteractiveTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -1321,7 +1321,7 @@ class AutofillInteractiveTest : public AutofillInteractiveTestBase {
         translate::switches::kTranslateScriptURL,
         embedded_test_server()->GetURL("/mock_translate_script.js").spec());
     command_line->AppendSwitchASCII("enable-blink-features",
-                                    "HTMLSelectMenuElement");
+                                    "HTMLSelectListElement");
   }
 
  private:
@@ -1398,40 +1398,40 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, FillHiddenSelect) {
   EXPECT_EQ(kDefaultAddressValues.state_short, GetFieldValueById("state"));
 }
 
-// AutofillInteractiveTest subclass which disables autofilling <selectmenu>.
-class AutofillInteractiveDisableAutofillSelectMenuTest
+// AutofillInteractiveTest subclass which disables autofilling <selectlist>.
+class AutofillInteractiveDisableAutofillSelectListTest
     : public AutofillInteractiveTest {
  protected:
-  AutofillInteractiveDisableAutofillSelectMenuTest() {
-    feature_list_.InitAndDisableFeature(features::kAutofillEnableSelectMenu);
+  AutofillInteractiveDisableAutofillSelectListTest() {
+    feature_list_.InitAndDisableFeature(features::kAutofillEnableSelectList);
   }
-  ~AutofillInteractiveDisableAutofillSelectMenuTest() override = default;
+  ~AutofillInteractiveDisableAutofillSelectListTest() override = default;
 
  private:
   base::test::ScopedFeatureList feature_list_;
 };
 
-// Test that the <selectmenu> is not filled if the <selectmenu> autofilling
+// Test that the <selectlist> is not filled if the <selectlist> autofilling
 // feature is disabled.
-IN_PROC_BROWSER_TEST_F(AutofillInteractiveDisableAutofillSelectMenuTest,
-                       DisableSelectMenuAutofilling) {
-  const char kFormWithSelectMenuString[] = R"(
+IN_PROC_BROWSER_TEST_F(AutofillInteractiveDisableAutofillSelectListTest,
+                       DisableSelectListAutofilling) {
+  const char kFormWithSelectListString[] = R"(
     <!-- Disable extra network request for /favicon.ico -->
     <link rel="icon" href="data:,">
     <form action="https://www.example.com/" method="POST" id="shipping">
       <label for="firstname">First name:</label>
       <input type="text" id="firstname" autocomplete="given-name"><br>
       <label for="state">State:</label>
-      <selectmenu id="state" autocomplete="address-level1">
+      <selectlist id="state" autocomplete="address-level1">
         <option value="" selected="yes">--</option>
         <option value="CA">California</option>
         <option value="TX">Texas</option>
-      </selectmenu>
+      </selectlist>
     </form>
     )";
 
   CreateTestProfile();
-  SetTestUrlResponse(kFormWithSelectMenuString);
+  SetTestUrlResponse(kFormWithSelectListString);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
 
   ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this));
@@ -1564,10 +1564,10 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest,
 }
 
 void DoModifySelectFieldAndFill(AutofillInteractiveTest* test,
-                                bool should_test_selectmenu) {
+                                bool should_test_selectlist) {
   test->CreateTestProfile();
-  test->SetTestUrlResponse(should_test_selectmenu
-                               ? GenerateTestShippingFormWithSelectMenu()
+  test->SetTestUrlResponse(should_test_selectlist
+                               ? GenerateTestShippingFormWithSelectList()
                                : kTestShippingFormString);
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(test->browser(), test->GetTestUrl()));
@@ -1585,13 +1585,13 @@ void DoModifySelectFieldAndFill(AutofillInteractiveTest* test,
 // Test that autofill doesn't refill a <select> field initially modified by the
 // user.
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, ModifySelectFieldAndFill) {
-  DoModifySelectFieldAndFill(this, /*should_test_selectmenu=*/false);
+  DoModifySelectFieldAndFill(this, /*should_test_selectlist=*/false);
 }
 
-// Test that autofill doesn't refill a <selectmenu> field initially modified by
+// Test that autofill doesn't refill a <selectlist> field initially modified by
 // the user.
-IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, ModifySelectMenuFieldAndFill) {
-  DoModifySelectFieldAndFill(this, /*should_test_selectmenu=*/true);
+IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, ModifySelectListFieldAndFill) {
+  DoModifySelectFieldAndFill(this, /*should_test_selectlist=*/true);
 }
 
 // Test that autofill works when the website prefills the form when
@@ -2342,10 +2342,10 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, AutofillEvents) {
           var selectinput = false;
           var selectchange = false;
           var selectblur = false;
-          var selectmenufocus = false;
-          var selectmenuinput = false;
-          var selectmenuchange = false;
-          var selectmenublur = false;
+          var selectlistfocus = false;
+          var selectlistinput = false;
+          var selectlistchange = false;
+          var selectlistblur = false;
           </script>
           A form for testing events.
           <form action="https://www.example.com/" method="POST" id="shipping">
@@ -2378,13 +2378,13 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, AutofillEvents) {
           <label for="zip">ZIP code:</label>
            <input type="text" id="zip"><br>
           <label for="country">Country:</label>
-           <selectmenu id="country"
-           onfocus="selectmenufocus = true" oninput="selectmenuinput = true"
-           onchange="selectmenuchange = true" onblur="selectmenublur = true" >
+           <selectlist id="country"
+           onfocus="selectlistfocus = true" oninput="selectlistinput = true"
+           onchange="selectlistchange = true" onblur="selectlistblur = true" >
            <option value="" selected="yes">--</option>
            <option value="CA">Canada</option>
            <option value="US">United States</option>
-           </selectmenu><br>
+           </selectlist><br>
           <label for="phone">Phone number:</label>
            <input type="text" id="phone"><br>
           </form> )";
@@ -2420,11 +2420,11 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, AutofillEvents) {
   EXPECT_EQ(true, content::EvalJs(GetWebContents(), "selectchange;"));
   EXPECT_EQ(true, content::EvalJs(GetWebContents(), "selectblur;"));
 
-  // Checks that all the events were fired for the selectmenu field.
-  EXPECT_EQ(true, content::EvalJs(GetWebContents(), "selectmenufocus;"));
-  EXPECT_EQ(true, content::EvalJs(GetWebContents(), "selectmenuinput;"));
-  EXPECT_EQ(true, content::EvalJs(GetWebContents(), "selectmenuchange;"));
-  EXPECT_EQ(true, content::EvalJs(GetWebContents(), "selectmenublur;"));
+  // Checks that all the events were fired for the selectlist field.
+  EXPECT_EQ(true, content::EvalJs(GetWebContents(), "selectlistfocus;"));
+  EXPECT_EQ(true, content::EvalJs(GetWebContents(), "selectlistinput;"));
+  EXPECT_EQ(true, content::EvalJs(GetWebContents(), "selectlistchange;"));
+  EXPECT_EQ(true, content::EvalJs(GetWebContents(), "selectlistblur;"));
 }
 
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, AutofillAfterTranslate) {
@@ -3000,10 +3000,10 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestBase, AllAutocomplete) {
   EXPECT_EQ("15125551234", GetFieldValueById("phone"));
 }
 
-// Test that an 'onchange' event is not fired when a <selectmenu> preview
+// Test that an 'onchange' event is not fired when a <selectlist> preview
 // suggestion is shown or hidden.
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest,
-                       NoEventFiredWhenExitingSelectMenuPreview) {
+                       NoEventFiredWhenExitingSelectListPreview) {
   // It is hard to test that an event will not happen in the future, but we
   // assume that applying similar operations on two elements in sequence results
   // in a consistent order of events triggered by the operations. So the test
@@ -3012,7 +3012,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest,
 
   CreateTestProfile();
   GURL url = embedded_test_server()->GetURL(
-      "/autofill/form_selectmenu_preview_no_onchange.html");
+      "/autofill/form_selectlist_preview_no_onchange.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   // Show autofill preview.
@@ -3623,19 +3623,19 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
 void DoDynamicChangingFormFill_SelectUpdated(
     AutofillInteractiveTestDynamicForm* test,
     net::EmbeddedTestServer* test_server,
-    bool should_test_selectmenu,
+    bool should_test_selectlist,
     bool should_test_async_update) {
   test->CreateTestProfile();
   GURL url = test_server->GetURL(
       "a.com",
       base::StringPrintf(
-          ("/autofill/dynamic_form_select_or_selectmenu_options_change.html"
-           "?is_selectmenu=%s&is_async=%s"),
-          should_test_selectmenu ? "true" : "false",
+          ("/autofill/dynamic_form_select_or_selectlist_options_change.html"
+           "?is_selectlist=%s&is_async=%s"),
+          should_test_selectlist ? "true" : "false",
           should_test_async_update ? "true" : "false"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(test->browser(), url));
 
-  // Check that the test page correctly parsed the 'is_selectmenu' GET parameter
+  // Check that the test page correctly parsed the 'is_selectlist' GET parameter
   // by checking type of the inserted field.
   auto has_n_controls_of_type = [](const std::string& control_type,
                                    size_t expected_number,
@@ -3650,8 +3650,8 @@ void DoDynamicChangingFormFill_SelectUpdated(
   };
   ASSERT_TRUE(WaitForMatchingForm(
       test->GetBrowserAutofillManager(),
-      should_test_selectmenu
-          ? base::BindRepeating(has_n_controls_of_type, "selectmenu", 1)
+      should_test_selectlist
+          ? base::BindRepeating(has_n_controls_of_type, "selectlist", 1)
           : base::BindRepeating(has_n_controls_of_type, "select-one", 2)));
 
   ValueWaiter refill = test->ListenForRefill("state");
@@ -3681,16 +3681,16 @@ void DoDynamicChangingFormFill_SelectUpdated(
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
                        DynamicChangingFormFill_SelectUpdated) {
   DoDynamicChangingFormFill_SelectUpdated(this, embedded_test_server(),
-                                          /*should_test_selectmenu=*/false,
+                                          /*should_test_selectlist=*/false,
                                           /*should_test_async_update=*/false);
 }
 
-// Test that we can Autofill dynamically changing selectmenus that have options
+// Test that we can Autofill dynamically changing selectlists that have options
 // added and removed.
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
-                       DynamicChangingFormFill_SelectMenuUpdated) {
+                       DynamicChangingFormFill_SelectListUpdated) {
   DoDynamicChangingFormFill_SelectUpdated(this, embedded_test_server(),
-                                          /*should_test_selectmenu=*/true,
+                                          /*should_test_selectlist=*/true,
                                           /*should_test_async_update=*/false);
 }
 
@@ -3699,16 +3699,16 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
                        DynamicChangingFormFill_SelectUpdatedAsync) {
   DoDynamicChangingFormFill_SelectUpdated(this, embedded_test_server(),
-                                          /*should_test_selectmenu=*/false,
+                                          /*should_test_selectlist=*/false,
                                           /*should_test_async_update=*/true);
 }
 
-// Test that we can Autofill dynamically changing selectmenus that have options
+// Test that we can Autofill dynamically changing selectlists that have options
 // added and removed, when the updating occurs asynchronously.
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
-                       DynamicChangingFormFill_SelectMenuUpdatedAsync) {
+                       DynamicChangingFormFill_SelectListUpdatedAsync) {
   DoDynamicChangingFormFill_SelectUpdated(this, embedded_test_server(),
-                                          /*should_test_selectmenu=*/true,
+                                          /*should_test_selectlist=*/true,
                                           /*should_test_async_update=*/true);
 }
 

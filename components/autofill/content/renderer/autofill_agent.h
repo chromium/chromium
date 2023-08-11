@@ -258,7 +258,7 @@ class AutofillAgent : public content::RenderFrameObserver,
   void DidCompleteFocusChangeInFrame() override;
   void DidReceiveLeftMouseDownOrGestureTapInNode(
       const blink::WebNode& node) override;
-  void SelectOrSelectMenuFieldOptionsChanged(
+  void SelectOrSelectListFieldOptionsChanged(
       const blink::WebFormControlElement& element) override;
   void SelectControlDidChange(
       const blink::WebFormControlElement& element) override;
@@ -347,10 +347,10 @@ class AutofillAgent : public content::RenderFrameObserver,
   // to execute a refill.
   void TriggerRefillIfNeeded(const FormData& form);
 
-  // Helpers for SelectOrSelectMenuFieldOptionsChanged() and
+  // Helpers for SelectOrSelectListFieldOptionsChanged() and
   // DataListOptionsChanged(), which get called after a timer that is restarted
   // when another event of the same type started.
-  void BatchSelectOrSelectMenuOptionChange(
+  void BatchSelectOrSelectListOptionChange(
       const blink::WebFormControlElement& element);
   void BatchDataListOptionChange(const blink::WebFormControlElement& element);
 
@@ -444,7 +444,7 @@ class AutofillAgent : public content::RenderFrameObserver,
   bool was_last_action_fill_ = false;
 
   // Timers for throttling handling of frequent events.
-  base::OneShotTimer select_or_selectmenu_option_change_batch_timer_;
+  base::OneShotTimer select_or_selectlist_option_change_batch_timer_;
   base::OneShotTimer datalist_option_change_batch_timer_;
   // TODO(crbug.com/1444566): Merge some or all of these timers?
   base::OneShotTimer process_forms_after_dynamic_change_timer_;

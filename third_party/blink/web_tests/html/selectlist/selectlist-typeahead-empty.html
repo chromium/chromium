@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<p>
+  Check that selectlist does not crash on search when it's empty.
+</p>
+<selectlist id="selectlist">
+</selectlist>
+<div id="result">Cannot run interactively.</div>
+<script>
+    if (window.testRunner) {
+        testRunner.dumpAsText();
+        var selectlist = document.getElementById("selectlist");
+        selectlist.focus();
+        eventSender.keyDown("z");
+        eventSender.keyDown("z");
+        eventSender.keyDown("z");
+        eventSender.keyDown("z");
+        eventSender.keyDown("z");
+        eventSender.keyDown("z");
+    }
+</script>

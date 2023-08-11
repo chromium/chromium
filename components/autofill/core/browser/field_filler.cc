@@ -368,7 +368,7 @@ bool FillCountrySelectControl(const std::u16string& value,
 }
 
 // Attempt to fill the user's expiration month |value| inside the <select>
-// or <selectmenu> |field|. Since |value| is well defined but the website's
+// or <selectlist> |field|. Since |value| is well defined but the website's
 // |field| option values may not be, some heuristics are run to cover all
 // observed cases.
 bool FillExpirationMonthSelectControl(const std::u16string& value,
@@ -595,10 +595,10 @@ std::u16string GetVirtualCardNumberForPreviewInput(
   return value;
 }
 
-// Fills in the select or selectmenu control |field| with |value|. If an exact
+// Fills in the select or selectlist control |field| with |value|. If an exact
 // match is not found, falls back to alternate filling strategies based on the
 // |type|.
-bool FillSelectOrSelectMenuControl(
+bool FillSelectOrSelectListControl(
     const AutofillType& type,
     const std::u16string& value,
     absl::variant<const AutofillProfile*, const CreditCard*>
@@ -607,7 +607,7 @@ bool FillSelectOrSelectMenuControl(
     FormFieldData* field,
     AddressNormalizer* address_normalizer,
     std::string* failure_to_fill) {
-  DCHECK(field->IsSelectOrSelectMenuElement());
+  DCHECK(field->IsSelectOrSelectListElement());
 
   ServerFieldType storable_type = type.GetStorableType();
 
@@ -921,7 +921,7 @@ std::u16string GetValueForProfile(const AutofillProfile& profile,
     // If the `field_data` is a selection box and having the type
     // `PHONE_HOME_COUNTRY_CODE`, call
     // `GetPhoneCountryCodeSelectControlForInput`.
-    if (field_data->IsSelectOrSelectMenuElement() &&
+    if (field_data->IsSelectOrSelectListElement() &&
         type.GetStorableType() == PHONE_HOME_COUNTRY_CODE) {
       value = GetPhoneCountryCodeSelectControlForInput(value, field_data,
                                                        failure_to_fill);
@@ -1049,8 +1049,8 @@ bool FieldFiller::FillFormField(
       *failure_to_fill += "No value to fill available. ";
     return false;
   }
-  if (field.IsSelectOrSelectMenuElement()) {
-    return FillSelectOrSelectMenuControl(type, value, profile_or_credit_card,
+  if (field.IsSelectOrSelectListElement()) {
+    return FillSelectOrSelectListControl(type, value, profile_or_credit_card,
                                          app_locale_, field_data,
                                          address_normalizer_, failure_to_fill);
   }

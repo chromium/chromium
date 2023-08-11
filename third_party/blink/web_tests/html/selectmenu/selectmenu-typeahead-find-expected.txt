@@ -1,7 +1,0 @@
-Verify type ahead selection fires onchange event.
-Set focus to selectmenu element
-Type "c"
-You see "cherry" in selectmenu element and "PASS" below selectmenu element.
-
-
-PASS
