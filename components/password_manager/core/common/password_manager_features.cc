@@ -72,7 +72,7 @@ BASE_FEATURE(kPasswordChangeWellKnown,
 
 BASE_FEATURE(kPasswordsImportM2,
              "PasswordsImportM2",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables password reuse detection.
 BASE_FEATURE(kPasswordReuseDetectionEnabled,

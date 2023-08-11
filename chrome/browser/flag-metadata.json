@@ -6494,11 +6494,6 @@
     "expiry_milestone": 118
   },
   {
-    "name": "passwords-import-m2",
-    "owners": ["natiahlyi@google.com", "eliaskh"],
-    "expiry_milestone": 117
-  },
-  {
     "name": "passwords-in-android-credential-management",
     "owners": ["derinel@google.com", "fhorschig", "kenrb", "agl"],
     "expiry_milestone": 120

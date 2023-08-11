@@ -11057,25 +11057,6 @@
             ]
         }
     ],
-    "PasswordsImportM2": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "PasswordsImportM2"
-                    ]
-                }
-            ]
-        }
-    ],
     "Path2DPaintCache": [
         {
             "platforms": [

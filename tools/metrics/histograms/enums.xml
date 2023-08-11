@@ -60842,7 +60842,6 @@ from previous Chrome versions.
   <int value="-1557527869" label="LoadingWithMojo:disabled"/>
   <int value="-1556805396" label="ScreenshotsForAndroidV2:enabled"/>
   <int value="-1555616901" label="ShoppingListTrackByDefault:disabled"/>
-  <int value="-1555510175" label="PasswordImport:enabled"/>
   <int value="-1555375841" label="FedCmRpContext:enabled"/>
   <int value="-1554921134"
       label="OmniboxRemoveSuggestionHeaderChevron:disabled"/>
@@ -64660,7 +64659,6 @@ from previous Chrome versions.
   <int value="366524741"
       label="ArcTrackpadScrollTouchscreenEmulation:disabled"/>
   <int value="366860338" label="InternalServerSideSpeechRecognition:enabled"/>
-  <int value="367063319" label="PasswordImport:disabled"/>
   <int value="368224960" label="FedCmRpContext:disabled"/>
   <int value="368854020" label="ash-screen-rotation-animation"/>
   <int value="369301993" label="PrinterStatus:enabled"/>
@@ -66327,7 +66325,6 @@ from previous Chrome versions.
   <int value="1228115769" label="SiteCharacteristicsDatabase:disabled"/>
   <int value="1229299518" label="SingleTabMode:disabled"/>
   <int value="1229388323" label="AutofillEnableGoogleIssuedCard:disabled"/>
-  <int value="1229574191" label="PasswordsImportM2:enabled"/>
   <int value="1230018793" label="enable-dom-distiller"/>
   <int value="1230555479"
       label="AutofillEnableUnmaskCardRequestSetInstrumentId:disabled"/>
@@ -67615,7 +67612,6 @@ from previous Chrome versions.
   <int value="1865068568" label="disable-audio-support-for-desktop-share"/>
   <int value="1865211159" label="ShelfStackedHotseat:disabled"/>
   <int value="1865799183" label="javascript-harmony"/>
-  <int value="1865908358" label="PasswordsImportM2:disabled"/>
   <int value="1865963858" label="tls13-variant"/>
   <int value="1866079109" label="team-drives"/>
   <int value="1866280482" label="SearchHistoryLink:disabled"/>

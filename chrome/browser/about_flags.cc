@@ -9933,10 +9933,6 @@ const FeatureEntry kFeatureEntries[] = {
          kServiceWorkerSkipIgnorableFetchHandlerVariations,
          "ServiceWorkerSkipIgnorableFetchHandler")},
 
-    {"passwords-import-m2", flag_descriptions::kPasswordsImportM2Name,
-     flag_descriptions::kPasswordsImportM2Description, kOsDesktop,
-     FEATURE_VALUE_TYPE(password_manager::features::kPasswordsImportM2)},
-
 #if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
     {flag_descriptions::kDesktopPWAsAppHomePageFlagId,
      flag_descriptions::kDesktopPWAsAppHomePageName,

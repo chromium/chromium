@@ -1562,9 +1562,6 @@ extern const char kParallelDownloadingDescription[];
 extern const char kPasswordGenerationExperimentName[];
 extern const char kPasswordGenerationExperimentDescription[];
 
-extern const char kPasswordsImportM2Name[];
-extern const char kPasswordsImportM2Description[];
-
 extern const char kForceEnableFastCheckoutCapabilitiesName[];
 extern const char kForceEnableFastCheckoutCapabilitiesDescription[];
 
