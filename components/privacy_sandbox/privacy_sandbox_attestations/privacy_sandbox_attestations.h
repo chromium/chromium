@@ -86,8 +86,10 @@ class PrivacySandboxAttestations {
   // Invoke `LoadAttestationsInternal()` to parse the attestations file
   // asynchronously on the SequencedTaskRunner `task_runner_` in the thread
   // pool. This function should only be invoked with a valid version and
-  // `kEnforcePrivacySandboxAttestations` enabled.
-  void LoadAttestations(base::Version version, base::FilePath install_dir);
+  // `kEnforcePrivacySandboxAttestations` enabled. `installed_file_path` should
+  // be the path to the attestations list file.
+  void LoadAttestations(base::Version version,
+                        base::FilePath installed_file_path);
 
   // Override the site to be attested for all the Privacy Sandbox APIs, even if
   // it is not officially enrolled. This allows developers to test Privacy
@@ -134,9 +136,10 @@ class PrivacySandboxAttestations {
   // is done, store the result to `attestations_map_`. If there is an existing
   // attestations map, only parse if the attestations file has a newer version.
   // This function should only be invoked with a valid version and
-  // `kEnforcePrivacySandboxAttestations` enabled.
+  // `kEnforcePrivacySandboxAttestations` enabled. `installed_file_path` should
+  // be the path to the attestations list file.
   void LoadAttestationsInternal(base::Version version,
-                                base::FilePath install_dir);
+                                base::FilePath installed_file_path);
 
   // Store the parsed attestations map and its version.
   void SetParsedAttestations(base::Version version,

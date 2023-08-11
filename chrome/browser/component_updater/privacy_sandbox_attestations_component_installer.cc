@@ -83,7 +83,7 @@ PrivacySandboxAttestationsComponentInstallerPolicy::
 bool PrivacySandboxAttestationsComponentInstallerPolicy::VerifyInstallation(
     const base::Value::Dict& manifest,
     const base::FilePath& install_dir) const {
-  return base::PathExists(GetInstalledPath(install_dir));
+  return base::PathExists(GetInstalledFilePath(install_dir));
 }
 
 bool PrivacySandboxAttestationsComponentInstallerPolicy::
@@ -128,7 +128,11 @@ void PrivacySandboxAttestationsComponentInstallerPolicy::ComponentReady(
   VLOG(1) << "Privacy Sandbox Attestations Component ready, version "
           << version.GetString() << " in " << install_dir.value();
 
-  on_attestations_ready_.Run(std::move(version), std::move(install_dir));
+  on_attestations_ready_.Run(
+      std::move(version),
+      /*installed_file_path=*/
+      PrivacySandboxAttestationsComponentInstallerPolicy::GetInstalledFilePath(
+          install_dir));
 }
 
 base::FilePath
@@ -154,16 +158,25 @@ PrivacySandboxAttestationsComponentInstallerPolicy::GetInstallerAttributes()
   return update_client::InstallerAttributes();
 }
 
+void PrivacySandboxAttestationsComponentInstallerPolicy::
+    ComponentReadyForTesting(const base::Version& version,
+                             const base::FilePath& install_dir,
+                             base::Value::Dict manifest) {
+  ComponentReady(version, install_dir, std::move(manifest));
+}
+
+// static
+base::FilePath
+PrivacySandboxAttestationsComponentInstallerPolicy::GetInstalledFilePath(
+    const base::FilePath& base) {
+  return base.Append(kPrivacySandboxAttestationsFileName);
+}
+
+// static
 base::FilePath
 PrivacySandboxAttestationsComponentInstallerPolicy::GetInstalledDirectory(
     const base::FilePath& base) {
   return base.Append(kPrivacySandboxAttestationsRelativeInstallDir);
-}
-
-base::FilePath
-PrivacySandboxAttestationsComponentInstallerPolicy::GetInstalledPath(
-    const base::FilePath& base) {
-  return base.Append(kPrivacySandboxAttestationsFileName);
 }
 
 void RegisterPrivacySandboxAttestationsComponent(ComponentUpdateService* cus) {

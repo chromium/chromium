@@ -98,6 +98,9 @@ class PrivacySandboxSettingsImpl : public PrivacySandboxSettings {
   friend class PrivacySandboxSettingsTest;
   friend class PrivacySandboxAttestations;
   friend class PrivacySandboxAttestationsTestBase;
+  FRIEND_TEST_ALL_PREFIXES(
+      PrivacySandboxAttestationsBrowserTest,
+      CallComponentReadyWhenRegistrationFindsExistingComponent);
   FRIEND_TEST_ALL_PREFIXES(PrivacySandboxSettingsTest, FledgeJoiningAllowed);
   FRIEND_TEST_ALL_PREFIXES(PrivacySandboxSettingsTest, NonEtldPlusOneBlocked);
   FRIEND_TEST_ALL_PREFIXES(PrivacySandboxSettingsTest,

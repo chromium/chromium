@@ -152,8 +152,9 @@ PrivacySandboxSettingsImpl::Status PrivacySandboxAttestations::IsSiteAttested(
   return PrivacySandboxSettingsImpl::Status::kAttestationFailed;
 }
 
-void PrivacySandboxAttestations::LoadAttestations(base::Version version,
-                                                  base::FilePath install_dir) {
+void PrivacySandboxAttestations::LoadAttestations(
+    base::Version version,
+    base::FilePath installed_file_path) {
   // This function should only be called when the feature is enabled.
   CHECK(base::FeatureList::IsEnabled(
       privacy_sandbox::kEnforcePrivacySandboxAttestations));
@@ -163,7 +164,7 @@ void PrivacySandboxAttestations::LoadAttestations(base::Version version,
       FROM_HERE,
       base::BindOnce(&PrivacySandboxAttestations::LoadAttestationsInternal,
                      base::Unretained(this), std::move(version),
-                     std::move(install_dir)));
+                     std::move(installed_file_path)));
 }
 
 void PrivacySandboxAttestations::AddOverride(const net::SchemefulSite& site) {
@@ -201,7 +202,7 @@ PrivacySandboxAttestations::PrivacySandboxAttestations()
 
 void PrivacySandboxAttestations::LoadAttestationsInternal(
     base::Version version,
-    base::FilePath install_dir) {
+    base::FilePath installed_file_path) {
   // This function should only be called when the feature is enabled.
   CHECK(base::FeatureList::IsEnabled(
       privacy_sandbox::kEnforcePrivacySandboxAttestations));
@@ -228,7 +229,7 @@ void PrivacySandboxAttestations::LoadAttestationsInternal(
 
   attestations_parse_progress_ = Progress::kStarted;
 
-  std::ifstream stream(install_dir.AsUTF8Unsafe(),
+  std::ifstream stream(installed_file_path.AsUTF8Unsafe(),
                        std::ios::binary | std::ios::in);
   if (!stream.is_open()) {
     // File does not exist.
