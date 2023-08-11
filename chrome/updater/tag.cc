@@ -536,18 +536,16 @@ std::vector<uint8_t> ReadFileTail(const base::FilePath& filename) {
   const int64_t file_length = file.GetLength();
 
   int bytes_to_read = kMaxBufferLength;
-  if (file_length > static_cast<int64_t>(kMaxBufferLength)) {
-    if (file.Seek(base::File::FROM_END, -kMaxBufferLength) !=
-        kMaxBufferLength) {
-      return {};
-    }
+  int64_t offset = 0;
+  if (file_length > static_cast<int64_t>(bytes_to_read)) {
+    offset = file_length - bytes_to_read;
   } else {
     bytes_to_read = file_length;
   }
 
   std::vector<uint8_t> buffer(bytes_to_read + 1);
   const int num_bytes_read =
-      file.ReadAtCurrentPos(reinterpret_cast<char*>(&buffer[0]), bytes_to_read);
+      file.Read(offset, reinterpret_cast<char*>(&buffer[0]), bytes_to_read);
   if (num_bytes_read != bytes_to_read) {
     return {};
   }

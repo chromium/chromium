@@ -1285,6 +1285,21 @@ INSTANTIATE_TEST_SUITE_P(
            return tag_args;
          }()},
 
+        // MSI file size greater than `kMaxBufferLength` of 80KB.
+        {"GUH-size-greater-than-max.msi",
+         []() {
+           tagging::TagArgs tag_args;
+           tag_args.bundle_name = "Google Chrome Beta";
+           tag_args.brand_code = "GGLL";
+
+           tagging::AppArgs app_args("{8237E44A-0054-442C-B6B6-EA0509993955}");
+           app_args.app_name = "Google Chrome Beta";
+           app_args.needs_admin = tagging::AppArgs::NeedsAdmin::kYes;
+           tag_args.apps = {app_args};
+
+           return tag_args;
+         }()},
+
         // special character in the tag value.
         {"GUH-special-value.msi",
          []() {

@@ -84,6 +84,11 @@ INSTANTIATE_TEST_SUITE_P(
          "Chrome&NEEDSADMIN=prefers&BRAND=CHMB&INSTALLDATAINDEX="
          "defaultbrowser"},
 
+        // MSI file size greater than `kMaxBufferLength` of 80KB.
+        {"GUH-size-greater-than-max.msi",
+         "APPGUID={8237E44A-0054-442C-B6B6-EA0509993955}&APPNAME=Google Chrome "
+         "Beta&NEEDSADMIN=True&BRAND=GGLL"},
+
         // special character in the tag value.
         {"GUH-special-value.msi", "BRAND=QA*A"},
 

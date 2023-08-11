@@ -813,8 +813,9 @@ if (is_win || is_mac || is_linux) {
       "test/data/tagged_msi/GUH-invalid-key.msi",
       "test/data/tagged_msi/GUH-invalid-length.msi",
       "test/data/tagged_msi/GUH-invalid-marker.msi",
-      "test/data/tagged_msi/GUH-special-value.msi",
       "test/data/tagged_msi/GUH-multiple.msi",
+      "test/data/tagged_msi/GUH-size-greater-than-max.msi",
+      "test/data/tagged_msi/GUH-special-value.msi",
       "test/data/tagged_msi/GUH-untagged.msi",
     ]
 
