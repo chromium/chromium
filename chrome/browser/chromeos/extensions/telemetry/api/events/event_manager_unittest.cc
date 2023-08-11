@@ -268,9 +268,11 @@ TEST_F(TelemetryExtensionEventManagerTest, RegisterEventNavigateOut) {
 }
 
 TEST_F(TelemetryExtensionEventManagerTest, RegisterEventTwoExtension) {
-  const std::string extension_id_1 = "gogonhoemckpdpadfnjnpgbjpbjnodgc";
+  const extensions::ExtensionId extension_id_1 =
+      "gogonhoemckpdpadfnjnpgbjpbjnodgc";
   CreateExtension(extension_id_1, {"*://googlechromelabs.github.io/*"});
-  const std::string extension_id_2 = "alnedpmllcfpgldkagbfbjkloonjlfjb";
+  const extensions::ExtensionId extension_id_2 =
+      "alnedpmllcfpgldkagbfbjkloonjlfjb";
   CreateExtension(extension_id_2, {"https://hpcs-appschr.hpcloud.hp.com/*"});
 
   // Open app UI for extension 1.

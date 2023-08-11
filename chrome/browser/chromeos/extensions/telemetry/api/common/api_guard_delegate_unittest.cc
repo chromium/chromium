@@ -21,6 +21,7 @@
 #include "content/public/browser/ssl_status.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/extension_urls.h"
 #include "net/base/net_errors.h"
 #include "net/cert/cert_status_flags.h"
@@ -162,7 +163,9 @@ class ApiGuardDelegateTest
   }
 
  protected:
-  std::string extension_id() const { return GetParam().extension_id; }
+  extensions::ExtensionId extension_id() const {
+    return GetParam().extension_id;
+  }
 
   std::string app_ui_url() const { return GetParam().app_ui_url; }
 
