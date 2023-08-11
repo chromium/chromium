@@ -25,6 +25,11 @@ using ash::file_manager::kChromeUIFileManagerURL;
 
 namespace {
 
+// Devices we use for testing (eve) have default width 1200px. We will set min
+// width to 596px to still allow snapping on those devices in tablet mode.
+const int kFileManagerMinimumWidth = 596;
+const int kFileManagerMinimumHeight = 240;
+
 // Appends a file handler to `info`.
 // The handler action has the format: chrome://file-manager/?${ACTION_NAME}
 // This means: For files with the given `file_extensions` or `mime_type` the
@@ -186,4 +191,8 @@ bool FileManagerSystemAppDelegate::ShouldShowNewWindowMenuOption() const {
 std::vector<std::string>
 FileManagerSystemAppDelegate::GetAppIdsToUninstallAndReplace() const {
   return {extension_misc::kFilesManagerAppId};
+}
+
+gfx::Size FileManagerSystemAppDelegate::GetMinimumWindowSize() const {
+  return {kFileManagerMinimumWidth, kFileManagerMinimumHeight};
 }
