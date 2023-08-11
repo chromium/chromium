@@ -71,7 +71,7 @@ TEST_F(DefaultModelManagerTest, BasicTest) {
       &model_provider_factory_,
       model_provider_data_.segments_supporting_default_model);
 
-  // Set up models 1 and 3 in DB.
+  // Set up models 1 and 3 in DB (Server models).
   proto::SegmentInfo* segment_1_from_db =
       segment_database_.FindOrCreateSegment(segment_1);
   segment_1_from_db->set_model_version(model_version_db);
@@ -84,6 +84,13 @@ TEST_F(DefaultModelManagerTest, BasicTest) {
   proto::SegmentationModelMetadata metadata_2;
   model_provider_data_.default_provider_metadata[segment_1] = metadata_1;
   model_provider_data_.default_provider_metadata[segment_2] = metadata_2;
+  proto::SegmentInfo* segment_1_default_from_db =
+      segment_database_.FindOrCreateSegment(
+          segment_1, proto::ModelSource::DEFAULT_MODEL_SOURCE);
+  segment_1_default_from_db->set_model_version(model_version_default);
+  proto::SegmentInfo* segment_2_from_db = segment_database_.FindOrCreateSegment(
+      segment_2, proto::ModelSource::DEFAULT_MODEL_SOURCE);
+  segment_2_from_db->set_model_version(model_version_default);
 
   // Query models.
   default_model_manager_->GetAllSegmentInfoFromBothModels(
@@ -92,8 +99,8 @@ TEST_F(DefaultModelManagerTest, BasicTest) {
                      weak_ptr_factory_.GetWeakPtr()));
   task_environment_.RunUntilIdle();
 
-  // Verify that model exists from both sources in order: segment_1 from db,
-  // segment_1 from model, segment_2 from model.
+  // Verify that model exists from both sources in order: segment_1 from db both
+  // for server and default, segment_2 from db for default.
   EXPECT_EQ(3u, get_all_segment_result().size());
   EXPECT_EQ(segment_1, get_all_segment_result()[0]->segment_info.segment_id());
   EXPECT_EQ(model_version_db,
@@ -109,7 +116,7 @@ TEST_F(DefaultModelManagerTest, BasicTest) {
   EXPECT_EQ(model_version_default,
             get_all_segment_result()[2]->segment_info.model_version());
   EXPECT_EQ(proto::ModelSource::DEFAULT_MODEL_SOURCE,
-            get_all_segment_result()[1]->segment_info.model_source());
+            get_all_segment_result()[2]->segment_info.model_source());
 
   // Query again, this time with a segment ID that doesn't exist in either
   // sources.

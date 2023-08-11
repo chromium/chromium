@@ -70,14 +70,6 @@ class TestDefaultModelManager : public DefaultModelManager {
       : DefaultModelManager(nullptr, base::flat_set<SegmentId>()) {}
   ~TestDefaultModelManager() override = default;
 
-  void GetAllSegmentInfoFromDefaultModel(
-      const base::flat_set<SegmentId>& segment_ids,
-      MultipleSegmentInfoCallback callback) override {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback),
-                                  DefaultModelManager::SegmentInfoList()));
-  }
-
   void GetAllSegmentInfoFromBothModels(
       const base::flat_set<SegmentId>& segment_ids,
       SegmentInfoDatabase* segment_database,

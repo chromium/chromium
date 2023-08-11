@@ -152,16 +152,7 @@ class ServiceProxyImplTest : public testing::Test,
 
   void OnClientInfoAvailable(
       const std::vector<ServiceProxy::ClientInfo>& client_info) override {
-    if (wait_for_client_info_) {
-      wait_for_client_info_->QuitClosure().Run();
-    }
     client_info_ = client_info;
-  }
-
-  void WaitForClientInfo() {
-    wait_for_client_info_ = std::make_unique<base::RunLoop>();
-    wait_for_client_info_->Run();
-    wait_for_client_info_.reset();
   }
 
  protected:
@@ -181,8 +172,6 @@ class ServiceProxyImplTest : public testing::Test,
   base::flat_map<std::string, std::unique_ptr<SegmentSelectorImpl>>
       segment_selectors_;
   TestingPrefServiceSimple pref_service_;
-
-  std::unique_ptr<base::RunLoop> wait_for_client_info_;
 };
 
 TEST_F(ServiceProxyImplTest, GetServiceStatus) {
@@ -199,7 +188,6 @@ TEST_F(ServiceProxyImplTest, GetServiceStatus) {
   ASSERT_EQ(is_initialized_, true);
   ASSERT_EQ(status_flag_, 7);
 
-  WaitForClientInfo();
   ASSERT_FALSE(client_info_.empty());
   ASSERT_EQ(client_info_.size(), 1u);
 }
@@ -213,13 +201,13 @@ TEST_F(ServiceProxyImplTest, GetSegmentationInfoFromDefaultModel) {
   data_.segments_supporting_default_model = {segment_id};
   configs_.at(0)->segments.insert(
       {segment_id, std::make_unique<Config::SegmentMetadata>("UmaName")});
-
+  AddSegmentInfo(segment_db_.get(), configs_.at(0).get(), segment_id,
+                 proto::ModelSource::DEFAULT_MODEL_SOURCE);
   SetUpProxy();
 
   ASSERT_TRUE(data_.default_model_providers[segment_id]);
 
   service_proxy_impl_->OnServiceStatusChanged(true, 7);
-  WaitForClientInfo();
 
   ASSERT_EQ(client_info_.size(), 1u);
   ASSERT_EQ(client_info_.at(0).segmentation_key, kTestSegmentationKey);
@@ -246,7 +234,6 @@ TEST_F(ServiceProxyImplTest, GetSegmentationInfoFromDB) {
   ASSERT_TRUE(data_.default_model_providers[segment_id]);
 
   service_proxy_impl_->OnServiceStatusChanged(true, 7);
-  WaitForClientInfo();
 
   ASSERT_EQ(client_info_.size(), 1u);
   ASSERT_EQ(client_info_.at(0).segmentation_key, kTestSegmentationKey);

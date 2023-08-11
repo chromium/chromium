@@ -62,12 +62,6 @@ class DefaultModelManager {
       SegmentInfoDatabase* segment_database,
       MultipleSegmentInfoCallback callback);
 
-  // Called to get the segment info from the default model for a given set of
-  // segment IDs.
-  virtual void GetAllSegmentInfoFromDefaultModel(
-      const base::flat_set<SegmentId>& segment_ids,
-      MultipleSegmentInfoCallback callback);
-
   // Returns the default provider or `nulllptr` when unavailable.
   DefaultModelProvider* GetDefaultProvider(SegmentId segment_id);
 
@@ -75,29 +69,6 @@ class DefaultModelManager {
       std::map<SegmentId, std::unique_ptr<DefaultModelProvider>>&& providers);
 
  private:
-  void GetNextSegmentInfoFromDefaultModel(
-      std::unique_ptr<SegmentInfoList> result,
-      std::deque<SegmentId> remaining_segment_ids,
-      MultipleSegmentInfoCallback callback);
-
-  void OnFetchDefaultModel(std::unique_ptr<SegmentInfoList> result,
-                           std::deque<SegmentId> remaining_segment_ids,
-                           MultipleSegmentInfoCallback callback,
-                           SegmentId segment_id,
-                           proto::SegmentationModelMetadata metadata,
-                           int64_t model_version);
-
-  void OnGetAllSegmentInfoFromDatabase(
-      const base::flat_set<SegmentId>& segment_ids,
-      MultipleSegmentInfoCallback callback,
-      std::unique_ptr<SegmentInfoDatabase::SegmentInfoList> segment_infos);
-
-  void OnGetAllSegmentInfoFromDefaultModel(
-      MultipleSegmentInfoCallback callback,
-      std::unique_ptr<SegmentInfoDatabase::SegmentInfoList>
-          segment_infos_from_db,
-      SegmentInfoList segment_infos_from_default_model);
-
   // Default model providers.
   std::map<SegmentId, std::unique_ptr<DefaultModelProvider>>
       default_model_providers_;
