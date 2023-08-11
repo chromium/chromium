@@ -5,8 +5,7 @@
 import 'chrome://os-settings/lazy_load.js';
 
 import {OsSettingsFilesPageElement} from 'chrome://os-settings/lazy_load.js';
-import {CrSettingsPrefs, OneDriveBrowserProxy, Router, routes, SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
-import {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
+import {CrLinkRowElement, CrSettingsPrefs, OneDriveBrowserProxy, Router, routes, SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util_ts.js';
