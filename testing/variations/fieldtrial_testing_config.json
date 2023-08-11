@@ -13390,6 +13390,21 @@
             ]
         }
     ],
+    "ScrollToTLDOptimization": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20230615",
+                    "enable_features": [
+                        "ScrollToTLDOptimization"
+                    ]
+                }
+            ]
+        }
+    ],
     "SearchPrefetchHighPriorityPrefetches": [
         {
             "platforms": [
