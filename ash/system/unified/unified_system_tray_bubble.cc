@@ -117,6 +117,8 @@ UnifiedSystemTrayBubble::~UnifiedSystemTrayBubble() {
   // Remove child views synchronously to ensure they don't try to access
   // `controller_` after `this` goes out of scope.
   bubble_view_->RemoveAllChildViews();
+  quick_settings_view_ = nullptr;
+  unified_view_ = nullptr;
   bubble_view_->ResetDelegate();
 
   if (bubble_widget_) {
@@ -405,7 +407,9 @@ void UnifiedSystemTrayBubble::UpdateBubbleBounds() {
       CalculateMaxTrayBubbleHeight(tray_->GetBubbleWindowContainer());
   if (bubble_view_->ShouldUseFixedHeight()) {
     DCHECK(features::IsQsRevampEnabled());
-    max_height = std::min(max_height, kDetailedViewHeight);
+    const int qs_current_height = quick_settings_view_->height();
+    max_height =
+        std::min(max_height, std::max(qs_current_height, kDetailedViewHeight));
   }
   if (features::IsQsRevampEnabled()) {
     quick_settings_view_->SetMaxHeight(max_height);

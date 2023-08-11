@@ -8,12 +8,15 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/test/shell_test_api.h"
+#include "ash/public/cpp/test/test_cast_config_controller.h"
+#include "ash/public/cpp/test/test_nearby_share_delegate.h"
 #include "ash/root_window_controller.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_layout_manager.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/message_center/unified_message_center_bubble.h"
+#include "ash/system/model/system_tray_model.h"
 #include "ash/system/notification_center/notification_center_tray.h"
 #include "ash/system/notification_center/notification_center_view.h"
 #include "ash/system/privacy/privacy_indicators_controller.h"
@@ -966,6 +969,61 @@ TEST_P(UnifiedSystemTrayTest, BubbleViewSizeChangeNoEnoughSpace) {
 
   // No enough space for the fixed detailed view height.
   EXPECT_GT(kQsDetailedViewHeight, bubble_view->height());
+  tray->CloseBubble();
+}
+
+TEST_P(UnifiedSystemTrayTest, BubbleViewSizeChangeWithBigMainPage) {
+  // No QuickSettingsView in the old unified system bubble.
+  if (!IsQsRevampEnabled()) {
+    return;
+  }
+
+  // Set a large enough screen size.
+  UpdateDisplay("1600x900");
+
+  // The following code adds 2 more row in the tile section and 1 media control
+  // view to the qs bubble. In this case the main page should be larger than the
+  // default detailed page height.
+
+  // Enables nearby sharing to show the tile.
+  auto* test_delegate = static_cast<TestNearbyShareDelegate*>(
+      Shell::Get()->nearby_share_delegate());
+  test_delegate->set_is_pod_button_visible(true);
+
+  // Constructs the test cast config to add the cast tile.
+  TestCastConfigController cast_config;
+
+  // Adds locales to show the locale tile.
+  std::vector<LocaleInfo> locale_list;
+  locale_list.emplace_back("en-US", u"English (United States)");
+  Shell::Get()->system_tray_model()->SetLocaleList(std::move(locale_list),
+                                                   "en-US");
+  // Adds the media control view.
+  auto* tray = GetPrimaryUnifiedSystemTray();
+  tray->ShowBubble();
+  auto* qs_view = tray->bubble()->quick_settings_view();
+  auto media_conroller = std::make_unique<UnifiedMediaControlsController>(
+      tray->bubble()->unified_system_tray_controller());
+  qs_view->AddMediaControlsView(media_conroller->CreateView());
+  qs_view->ShowMediaControls();
+
+  auto* bubble_view = tray->bubble()->GetBubbleView();
+
+  // The main page height should be larger than the detailed view height.
+  EXPECT_LT(kQsDetailedViewHeight, bubble_view->height());
+
+  const int main_page_height = bubble_view->height();
+
+  // Goes to a detailed view (here using calendar view).
+  ShellTestApi().PressAccelerator(
+      ui::Accelerator(ui::VKEY_C, ui::EF_COMMAND_DOWN));
+
+  // Asserts that calendar is actually shown.
+  EXPECT_TRUE(GetPrimaryUnifiedSystemTray()->IsShowingCalendarView());
+
+  EXPECT_LT(kQsDetailedViewHeight, bubble_view->height());
+  EXPECT_EQ(main_page_height, bubble_view->height());
+
   tray->CloseBubble();
 }
 
