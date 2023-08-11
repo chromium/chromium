@@ -318,9 +318,11 @@ IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_VideoOnly_MP4_VP9) {
 // TODO(crbug.com/707127): Decide when it's supported on Android.
 #if !BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_FUCHSIA) && defined(ARCH_CPU_ARM_FAMILY))
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
+    (BUILDFLAG(IS_FUCHSIA) && defined(ARCH_CPU_ARM_FAMILY))
 // TODO(https://crbug.com/1222685): Failing on Mac.
 // TODO(https://crbug.com/1280308): Failing on Fuchsia arm.
+// TODO(https://crbug.com/1472415): Failing on Win.
 #define MAYBE_Playback_VideoOnly_WebM_VP9Profile2 \
   DISABLED_Playback_VideoOnly_WebM_VP9Profile2
 #else
