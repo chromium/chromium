@@ -128,6 +128,7 @@ def validateJavaScriptAllowed(source_dir, out_dir, is_ios):
       'chrome/browser/resources/ntp4',
       'chrome/test/data/webui',
       'chrome/test/data/webui/chromeos',
+      'chrome/test/data/webui/cr_components/chromeos',
       'chrome/test/data/webui/settings/chromeos',
       # TODO(https://crbug.com/1002798): Migrate Mojo bindings to TypeScript and
       # remove exception.
