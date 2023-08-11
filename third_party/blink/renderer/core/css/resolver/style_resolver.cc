@@ -2534,7 +2534,7 @@ bool PropagateScrollSnapStyleToViewport(
   PROPAGATE_FROM(document_element_style, ScrollPaddingLeft,
                  SetScrollPaddingLeft, Length());
 
-  if (changed) {
+  if (changed && !RuntimeEnabledFeatures::LayoutNewSnapLogicEnabled()) {
     document.GetSnapCoordinator().SnapContainerDidChange(
         *document.GetLayoutView());
   }

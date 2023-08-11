@@ -2072,6 +2072,10 @@
       name: "LayoutNewGridStaticPosition",
     },
     {
+      name: "LayoutNewSnapLogic",
+      status: "stable",
+    },
+    {
       name: "LayoutNewStickyLogic",
       status: "stable",
     },

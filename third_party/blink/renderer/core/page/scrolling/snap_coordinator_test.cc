@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
@@ -79,8 +80,21 @@ class SnapCoordinatorTest : public testing::Test,
   }
 
   unsigned SizeOfSnapAreas(const ContainerNode& node) {
-    if (node.GetLayoutBox()->SnapAreas())
-      return node.GetLayoutBox()->SnapAreas()->size();
+    auto* box = node.GetLayoutBox();
+    if (RuntimeEnabledFeatures::LayoutNewSnapLogicEnabled()) {
+      for (auto& fragment : box->PhysicalFragments()) {
+        if (fragment.PropagatedSnapAreas()) {
+          return 0u;
+        }
+        if (auto* snap_areas = fragment.SnapAreas()) {
+          return snap_areas->size();
+        }
+      }
+    } else {
+      if (auto* snap_areas = box->SnapAreas()) {
+        return snap_areas->size();
+      }
+    }
     return 0U;
   }
 
@@ -234,7 +248,7 @@ TEST_F(SnapCoordinatorTest, UpdateStyleForSnapElement) {
   EXPECT_EQ(1U, SizeOfSnapAreas(SnapContainer()));
 }
 
-TEST_F(SnapCoordinatorTest, ViewpoertScrollSnapStyleComesFromDocumentElement) {
+TEST_F(SnapCoordinatorTest, ViewportScrollSnapStyleComesFromDocumentElement) {
   SetHTML(R"HTML(
     <style>
     :root {
@@ -245,6 +259,7 @@ TEST_F(SnapCoordinatorTest, ViewpoertScrollSnapStyleComesFromDocumentElement) {
     }
     </style>
     <body>
+      <div style='scroll-snap-align: start;'></div>
     </body>
     )HTML");
   UpdateAllLifecyclePhasesForTest();
@@ -734,6 +749,13 @@ TEST_F(SnapCoordinatorTest, VerticalRlSnapDataCalculation) {
 
 TEST_F(SnapCoordinatorTest, ChangeOverflowToVisible) {
   SetUpSingleSnapArea();
+
+  // Ensure we have at least one snap-area.
+  GetDocument()
+      .getElementById(AtomicString("area"))
+      ->setAttribute(kStyleAttr, AtomicString("scroll-snap-align: start;"));
+  UpdateAllLifecyclePhasesForTest();
+
   Element* scroller_element =
       GetDocument().getElementById(AtomicString("scroller"));
   const cc::SnapContainerData* data =

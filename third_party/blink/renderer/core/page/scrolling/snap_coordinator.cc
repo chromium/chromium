@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/ng/geometry/ng_box_strut.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
@@ -101,6 +102,8 @@ cc::ScrollSnapType GetPhysicalSnapType(const LayoutBox& snap_container) {
 //                   |   |
 //                   A1  A2
 void SnapCoordinator::AddSnapContainer(LayoutBox& snap_container) {
+  DCHECK(!RuntimeEnabledFeatures::LayoutNewSnapLogicEnabled());
+
   snap_containers_.insert(&snap_container);
 
   LayoutBox* ancestor_snap_container = FindSnapContainer(snap_container);
@@ -133,6 +136,8 @@ void SnapCoordinator::AddSnapContainer(LayoutBox& snap_container) {
 }
 
 void SnapCoordinator::RemoveSnapContainer(LayoutBox& snap_container) {
+  DCHECK(!RuntimeEnabledFeatures::LayoutNewSnapLogicEnabled());
+
   LayoutBox* ancestor_snap_container = FindSnapContainer(snap_container);
 
   // We remove the snap container if it is no longer scrollable, or if the
@@ -157,6 +162,8 @@ void SnapCoordinator::RemoveSnapContainer(LayoutBox& snap_container) {
 }
 
 void SnapCoordinator::SnapContainerDidChange(LayoutBox& snap_container) {
+  DCHECK(!RuntimeEnabledFeatures::LayoutNewSnapLogicEnabled());
+
   // Scroll snap properties have no effect on the document element instead they
   // are propagated to (See StyleResolver::PropagateStyleToViewport) and handled
   // by the LayoutView.
@@ -187,6 +194,8 @@ void SnapCoordinator::SnapContainerDidChange(LayoutBox& snap_container) {
 
 void SnapCoordinator::SnapAreaDidChange(LayoutBox& snap_area,
                                         cc::ScrollSnapAlign scroll_snap_align) {
+  DCHECK(!RuntimeEnabledFeatures::LayoutNewSnapLogicEnabled());
+
   LayoutBox* old_container = snap_area.SnapContainer();
   if (scroll_snap_align.alignment_inline == cc::SnapAlignment::kNone &&
       scroll_snap_align.alignment_block == cc::SnapAlignment::kNone) {
@@ -224,7 +233,10 @@ void SnapCoordinator::UpdateSnapContainerData(LayoutBox& snap_container) {
       ScrollableArea::GetForScrolling(&snap_container);
   const auto* old_snap_container_data = scrollable_area->GetSnapContainerData();
   auto snap_type = GetPhysicalSnapType(snap_container);
-  scrollable_area->SetSnapContainerDataNeedsUpdate(false);
+
+  if (!RuntimeEnabledFeatures::LayoutNewSnapLogicEnabled()) {
+    scrollable_area->SetSnapContainerDataNeedsUpdate(false);
+  }
 
   // Scrollers that don't have any snap areas assigned to them and don't snap
   // require no further processing. These are the most common types and thus
@@ -292,7 +304,19 @@ void SnapCoordinator::UpdateSnapContainerData(LayoutBox& snap_container) {
           ? old_snap_container_data->GetTargetSnapAreaElementIds()
           : cc::TargetSnapAreaElementIds();
 
-  if (SnapAreaSet* snap_areas = snap_container.SnapAreas()) {
+  const HeapHashSet<Member<LayoutBox>>* snap_areas;
+  if (RuntimeEnabledFeatures::LayoutNewSnapLogicEnabled()) {
+    for (auto& fragment : snap_container.PhysicalFragments()) {
+      snap_areas = fragment.SnapAreas();
+      if (snap_areas) {
+        break;
+      }
+    }
+  } else {
+    snap_areas = snap_container.SnapAreas();
+  }
+
+  if (snap_areas) {
     for (const LayoutBox* snap_area : *snap_areas) {
       cc::SnapAreaData snap_area_data =
           CalculateSnapAreaData(*snap_area, snap_container);

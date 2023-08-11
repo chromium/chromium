@@ -53,9 +53,11 @@ class CORE_EXPORT SnapCoordinator final
       const LayoutBox& snap_container);
 
   bool AnySnapContainerDataNeedsUpdate() const {
+    DCHECK(!RuntimeEnabledFeatures::LayoutNewSnapLogicEnabled());
     return any_snap_container_data_needs_update_;
   }
   void SetAnySnapContainerDataNeedsUpdate(bool needs_update) {
+    DCHECK(!RuntimeEnabledFeatures::LayoutNewSnapLogicEnabled());
     any_snap_container_data_needs_update_ = needs_update;
   }
   // Called by Document::PerformScrollSnappingTasks() whenever a style or layout

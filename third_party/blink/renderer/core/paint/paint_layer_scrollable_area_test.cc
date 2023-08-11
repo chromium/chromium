@@ -1460,6 +1460,9 @@ TEST_P(MAYBE_PaintLayerScrollableAreaTest, LowEndCompositeWithTrivial3D) {
 }
 
 TEST_P(MAYBE_PaintLayerScrollableAreaTest, SetSnapContainerDataNeedsUpdate) {
+  if (RuntimeEnabledFeatures::LayoutNewSnapLogicEnabled()) {
+    return;
+  }
   SetBodyInnerHTML(R"HTML(
     <style>
     .scroller {

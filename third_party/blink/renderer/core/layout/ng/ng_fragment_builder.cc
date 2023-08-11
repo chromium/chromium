@@ -120,6 +120,26 @@ void NGFragmentBuilder::PropagateStickyDescendants(
   }
 }
 
+HeapHashSet<Member<LayoutBox>>& NGFragmentBuilder::EnsureSnapAreas() {
+  if (!snap_areas_) {
+    snap_areas_ = MakeGarbageCollected<HeapHashSet<Member<LayoutBox>>>();
+  }
+  return *snap_areas_;
+}
+
+void NGFragmentBuilder::PropagateSnapAreas(const NGPhysicalFragment& child) {
+  if (child.IsSnapArea()) {
+    EnsureSnapAreas().insert(To<LayoutBox>(child.GetMutableLayoutObject()));
+  }
+
+  if (const auto* child_snap_areas = child.PropagatedSnapAreas()) {
+    auto& snap_areas = EnsureSnapAreas();
+    for (auto& child_snap_area : *child_snap_areas) {
+      snap_areas.insert(child_snap_area);
+    }
+  }
+}
+
 NGLogicalAnchorQuery& NGFragmentBuilder::EnsureAnchorQuery() {
   if (!anchor_query_)
     anchor_query_ = MakeGarbageCollected<NGLogicalAnchorQuery>();
@@ -219,8 +239,11 @@ void NGFragmentBuilder::PropagateFromFragment(
   // Propagate anchors from the |child|. Anchors are in |OutOfFlowData| but the
   // |child| itself may have an anchor.
   PropagateChildAnchors(child, child_offset + relative_offset);
-  PropagateStickyDescendants(child);
 
+  PropagateStickyDescendants(child);
+  if (RuntimeEnabledFeatures::LayoutNewSnapLogicEnabled()) {
+    PropagateSnapAreas(child);
+  }
   PropagateScrollStartTarget(child);
 
   if (child.NeedsOOFPositionedInfoPropagation() &&

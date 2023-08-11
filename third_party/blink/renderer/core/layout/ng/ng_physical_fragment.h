@@ -162,6 +162,11 @@ class CORE_EXPORT NGPhysicalFragment
   bool IsInitialLetterBox() const {
     return IsCSSBox() && layout_object_->IsInitialLetterBox();
   }
+  bool IsSnapArea() const {
+    return IsCSSBox() && IsA<LayoutBox>(layout_object_.Get()) &&
+           layout_object_->StyleRef().GetScrollSnapAlign() !=
+               cc::ScrollSnapAlign();
+  }
   // Return true if this is the legend child of a fieldset that gets special
   // treatment (i.e. placed over the block-start border).
   bool IsRenderedLegend() const {
@@ -640,8 +645,16 @@ class CORE_EXPORT NGPhysicalFragment
     return IsScrollContainer() ? nullptr : scroll_start_targets_.Get();
   }
 
+  const HeapHashSet<Member<LayoutBox>>* SnapAreas() const {
+    return snap_areas_.Get();
+  }
+  const HeapHashSet<Member<LayoutBox>>* PropagatedSnapAreas() const {
+    return IsScrollContainer() ? nullptr : snap_areas_.Get();
+  }
+
   bool HasPropagatedLayoutObjects() const {
-    return PropagatedStickyDescendants() || PropagatedScrollStartTargets();
+    return PropagatedStickyDescendants() || PropagatedScrollStartTargets() ||
+           PropagatedSnapAreas();
   }
 
   struct OutOfFlowData : public GarbageCollected<OutOfFlowData> {
@@ -777,6 +790,7 @@ class CORE_EXPORT NGPhysicalFragment
 
   Member<const NGBreakToken> break_token_;
   Member<const HeapVector<Member<LayoutBoxModelObject>>> sticky_descendants_;
+  Member<const HeapHashSet<Member<LayoutBox>>> snap_areas_;
   Member<OutOfFlowData> oof_data_;
   // TODO(awogbemila): Find a better location for this field to avoid paying
   // the cost of the size of this field for every fragment of a page.

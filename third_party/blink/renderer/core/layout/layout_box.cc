@@ -536,14 +536,18 @@ void LayoutBox::DisassociatePhysicalFragments() {
 void LayoutBox::InsertedIntoTree() {
   NOT_DESTROYED();
   LayoutBoxModelObject::InsertedIntoTree();
-  AddScrollSnapMapping();
+  if (!RuntimeEnabledFeatures::LayoutNewSnapLogicEnabled()) {
+    AddScrollSnapMapping();
+  }
   AddCustomLayoutChildIfNeeded();
 }
 
 void LayoutBox::WillBeRemovedFromTree() {
   NOT_DESTROYED();
   ClearCustomLayoutChild();
-  ClearScrollSnapMapping();
+  if (!RuntimeEnabledFeatures::LayoutNewSnapLogicEnabled()) {
+    ClearScrollSnapMapping();
+  }
   LayoutBoxModelObject::WillBeRemovedFromTree();
 }
 
@@ -871,22 +875,48 @@ void LayoutBox::UpdateScrollSnapMappingAfterStyleChange(
       old_style.ScrollPaddingLeft() != StyleRef().ScrollPaddingLeft() ||
       old_style.ScrollPaddingTop() != StyleRef().ScrollPaddingTop() ||
       old_style.ScrollPaddingRight() != StyleRef().ScrollPaddingRight()) {
-    snap_coordinator.SnapContainerDidChange(*this);
+    if (RuntimeEnabledFeatures::LayoutNewSnapLogicEnabled()) {
+      if (!NeedsLayout() && IsScrollContainer()) {
+        GetScrollableArea()->EnqueueForSnapUpdateIfNeeded();
+      }
+    } else {
+      snap_coordinator.SnapContainerDidChange(*this);
+    }
   }
 
-  // scroll-snap-align, scroll-snap-stop and scroll-margin invalidate the snap
-  // area.
-  if (old_style.GetScrollSnapAlign() != StyleRef().GetScrollSnapAlign() ||
-      old_style.ScrollSnapStop() != StyleRef().ScrollSnapStop() ||
+  auto SnapAreaDidChange = [&]() {
+    if (RuntimeEnabledFeatures::LayoutNewSnapLogicEnabled()) {
+      auto* snap_container = ContainingScrollContainer();
+      if (!snap_container->NeedsLayout()) {
+        snap_container->GetScrollableArea()->EnqueueForSnapUpdateIfNeeded();
+      }
+    } else {
+      snap_coordinator.SnapAreaDidChange(*this,
+                                         StyleRef().GetScrollSnapAlign());
+    }
+  };
+
+  if (old_style.GetScrollSnapAlign() != StyleRef().GetScrollSnapAlign()) {
+    if (RuntimeEnabledFeatures::LayoutNewSnapLogicEnabled()) {
+      ContainingBlock()->SetNeedsLayout(
+          layout_invalidation_reason::kStyleChange, kMarkContainerChain);
+    } else {
+      SnapAreaDidChange();
+    }
+  }
+
+  // scroll-snap-stop and scroll-margin invalidate the snap area.
+  if (old_style.ScrollSnapStop() != StyleRef().ScrollSnapStop() ||
       old_style.ScrollMarginBottom() != StyleRef().ScrollMarginBottom() ||
       old_style.ScrollMarginLeft() != StyleRef().ScrollMarginLeft() ||
       old_style.ScrollMarginTop() != StyleRef().ScrollMarginTop() ||
-      old_style.ScrollMarginRight() != StyleRef().ScrollMarginRight())
-    snap_coordinator.SnapAreaDidChange(*this, StyleRef().GetScrollSnapAlign());
+      old_style.ScrollMarginRight() != StyleRef().ScrollMarginRight()) {
+    SnapAreaDidChange();
+  }
 
   // Transform invalidates the snap area.
   if (old_style.Transform() != StyleRef().Transform())
-    snap_coordinator.SnapAreaDidChange(*this, StyleRef().GetScrollSnapAlign());
+    SnapAreaDidChange();
 }
 
 void LayoutBox::AddScrollSnapMapping() {

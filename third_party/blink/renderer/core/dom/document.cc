@@ -2654,7 +2654,14 @@ void Document::UpdateStyleAndLayout(DocumentUpdateReason reason) {
 
   if (LocalFrameView* frame_view_anchored = View())
     frame_view_anchored->PerformScrollAnchoringAdjustments();
-  PerformScrollSnappingTasks();
+
+  if (RuntimeEnabledFeatures::LayoutNewSnapLogicEnabled()) {
+    if (frame_view) {
+      frame_view->ExecutePendingSnapUpdates();
+    }
+  } else {
+    PerformScrollSnappingTasks();
+  }
 
   if (reason != DocumentUpdateReason::kBeginMainFrame && frame_view)
     frame_view->DidFinishForcedLayout(reason);
@@ -8214,6 +8221,7 @@ SnapCoordinator& Document::GetSnapCoordinator() {
 }
 
 void Document::PerformScrollSnappingTasks() {
+  DCHECK(!RuntimeEnabledFeatures::LayoutNewSnapLogicEnabled());
   SnapCoordinator& snap_coordinator = GetSnapCoordinator();
   if (!snap_coordinator.AnySnapContainerDataNeedsUpdate())
     return;

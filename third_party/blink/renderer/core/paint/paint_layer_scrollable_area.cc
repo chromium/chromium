@@ -159,8 +159,10 @@ PaintLayerScrollableArea::PaintLayerScrollableArea(PaintLayer& layer)
     element->SetSavedLayerScrollOffset(ScrollOffset());
   }
 
-  GetLayoutBox()->GetDocument().GetSnapCoordinator().AddSnapContainer(
-      *GetLayoutBox());
+  if (!RuntimeEnabledFeatures::LayoutNewSnapLogicEnabled()) {
+    GetLayoutBox()->GetDocument().GetSnapCoordinator().AddSnapContainer(
+        *GetLayoutBox());
+  }
 }
 
 PaintLayerScrollableArea::~PaintLayerScrollableArea() {
@@ -182,8 +184,10 @@ void PaintLayerScrollableArea::DidCompositorScroll(
 void PaintLayerScrollableArea::DisposeImpl() {
   rare_data_.Clear();
 
-  GetLayoutBox()->GetDocument().GetSnapCoordinator().RemoveSnapContainer(
-      *GetLayoutBox());
+  if (!RuntimeEnabledFeatures::LayoutNewSnapLogicEnabled()) {
+    GetLayoutBox()->GetDocument().GetSnapCoordinator().RemoveSnapContainer(
+        *GetLayoutBox());
+  }
 
   if (InResizeMode() && !GetLayoutBox()->DocumentBeingDestroyed()) {
     if (LocalFrame* frame = GetLayoutBox()->GetFrame())
@@ -1085,9 +1089,15 @@ void PaintLayerScrollableArea::UpdateAfterLayout() {
   } else if (!HasScrollbar() && resizer_will_change) {
     Layer()->DirtyStackingContextZOrderLists();
   }
-  // The snap container data will be updated at the end of the layout update. If
-  // the data changes, then this will try to re-snap.
-  SetSnapContainerDataNeedsUpdate(true);
+
+  if (RuntimeEnabledFeatures::LayoutNewSnapLogicEnabled()) {
+    EnqueueForSnapUpdateIfNeeded();
+  } else {
+    // The snap container data will be updated at the end of the layout update.
+    // If the data changes, then this will try to re-snap.
+    SetSnapContainerDataNeedsUpdate(true);
+  }
+
   {
     UpdateScrollbarEnabledState(is_horizontal_scrollbar_frozen,
                                 is_vertical_scrollbar_frozen);
@@ -1246,7 +1256,13 @@ void PaintLayerScrollableArea::DidChangeGlobalRootScroller() {
   // Recalculate the snap container data since the scrolling behaviour for this
   // layout box changed (i.e. it either became the layout viewport or it
   // is no longer the layout viewport).
-  SetSnapContainerDataNeedsUpdate(true);
+  if (RuntimeEnabledFeatures::LayoutNewSnapLogicEnabled()) {
+    if (!GetLayoutBox()->NeedsLayout()) {
+      EnqueueForSnapUpdateIfNeeded();
+    }
+  } else {
+    SetSnapContainerDataNeedsUpdate(true);
+  }
 }
 
 bool PaintLayerScrollableArea::ShouldPerformScrollAnchoring() const {
@@ -1908,6 +1924,7 @@ bool PaintLayerScrollableArea::SnapContainerDataNeedsUpdate() const {
 
 void PaintLayerScrollableArea::SetSnapContainerDataNeedsUpdate(
     bool needs_update) {
+  DCHECK(!RuntimeEnabledFeatures::LayoutNewSnapLogicEnabled());
   EnsureRareData().snap_container_data_needs_update_ = needs_update;
   if (!needs_update)
     return;
@@ -2191,6 +2208,23 @@ void PaintLayerScrollableArea::UpdateResizerStyle(
   } else if (resizer_) {
     resizer_->Destroy();
     resizer_ = nullptr;
+  }
+}
+
+void PaintLayerScrollableArea::EnqueueForSnapUpdateIfNeeded() {
+  auto* box = GetLayoutBox();
+  // Not all PLSAs are scroll containers!
+  if (!box->IsScrollContainer()) {
+    return;
+  }
+
+  // Enqueue ourselves for a snap update if we have any snap-areas, or if we
+  // currently have snap-data (and it needs to be cleared).
+  for (const auto& fragment : box->PhysicalFragments()) {
+    if (fragment.SnapAreas() || GetSnapContainerData()) {
+      box->GetFrameView()->AddPendingSnapUpdate(box);
+      break;
+    }
   }
 }
 

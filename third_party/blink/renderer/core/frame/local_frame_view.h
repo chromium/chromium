@@ -770,6 +770,9 @@ class CORE_EXPORT LocalFrameView final
   void AddPendingStickyUpdate(PaintLayerScrollableArea*);
   void ExecutePendingStickyUpdates();
 
+  void AddPendingSnapUpdate(LayoutBox*);
+  void ExecutePendingSnapUpdates();
+
   void ForAllChildLocalFrameViews(base::FunctionRef<void(LocalFrameView&)>);
 
   void NotifyElementWithRememberedSizeDisconnected(Element*);
@@ -1188,8 +1191,12 @@ class CORE_EXPORT LocalFrameView final
   Member<HeapHashSet<Member<LayoutObject>>> pending_opacity_updates_;
 
   // A set of objects needing sticky constraint updates. These updates are
-  // registered during layout deferred until the end of layout.
+  // registered during layout, and deferred until the end of layout.
   Member<HeapHashSet<Member<PaintLayerScrollableArea>>> pending_sticky_updates_;
+
+  // A set of objects needing snap-area constraint updates. These updates are
+  // registered during style/layout, and deferred until the end of layout.
+  Member<HeapHashSet<Member<LayoutBox>>> pending_snap_updates_;
 
   // These are elements that were disconnected while having a remembered
   // size. We need to clear the remembered at resize observer timing,

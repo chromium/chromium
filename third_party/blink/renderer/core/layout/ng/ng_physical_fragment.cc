@@ -33,7 +33,7 @@ struct SameSizeAsNGPhysicalFragment
   Member<void*> layout_object;
   PhysicalSize size;
   unsigned flags;
-  Member<void*> members[4];
+  Member<void*> members[5];
 };
 
 ASSERT_SIZE(NGPhysicalFragment, SameSizeAsNGPhysicalFragment);
@@ -352,6 +352,7 @@ NGPhysicalFragment::NGPhysicalFragment(NGFragmentBuilder* builder,
           builder->HasOutOfFlowInFragmentainerSubtree()),
       break_token_(std::move(builder->break_token_)),
       sticky_descendants_(builder->sticky_descendants_),
+      snap_areas_(builder->snap_areas_),
       oof_data_(builder->oof_positioned_descendants_.empty() &&
                         !builder->AnchorQuery() &&
                         !has_fragmented_out_of_flow_data_
@@ -442,6 +443,7 @@ NGPhysicalFragment::NGPhysicalFragment(const NGPhysicalFragment& other)
       base_direction_(other.base_direction_),
       break_token_(other.break_token_),
       sticky_descendants_(other.sticky_descendants_),
+      snap_areas_(other.snap_areas_),
       oof_data_(other.oof_data_ ? other.CloneOutOfFlowData() : nullptr),
       scroll_start_targets_(other.scroll_start_targets_) {
   CHECK(layout_object_);
@@ -732,6 +734,7 @@ void NGPhysicalFragment::TraceAfterDispatch(Visitor* visitor) const {
   visitor->Trace(layout_object_);
   visitor->Trace(break_token_);
   visitor->Trace(sticky_descendants_);
+  visitor->Trace(snap_areas_);
   visitor->Trace(oof_data_);
   visitor->Trace(scroll_start_targets_);
 }

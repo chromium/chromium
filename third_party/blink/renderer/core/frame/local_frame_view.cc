@@ -345,6 +345,7 @@ void LocalFrameView::Trace(Visitor* visitor) const {
   visitor->Trace(pending_transform_updates_);
   visitor->Trace(pending_opacity_updates_);
   visitor->Trace(pending_sticky_updates_);
+  visitor->Trace(pending_snap_updates_);
   visitor->Trace(disconnected_elements_with_remembered_size_);
 }
 
@@ -2548,7 +2549,11 @@ bool LocalFrameView::RunStyleAndLayoutLifecyclePhases(
     frame_view.PerformScrollAnchoringAdjustments();
   });
 
-  frame_->GetDocument()->PerformScrollSnappingTasks();
+  if (RuntimeEnabledFeatures::LayoutNewSnapLogicEnabled()) {
+    ExecutePendingSnapUpdates();
+  } else {
+    frame_->GetDocument()->PerformScrollSnappingTasks();
+  }
 
   EnqueueScrollEvents();
 
@@ -5133,6 +5138,26 @@ void LocalFrameView::ExecutePendingStickyUpdates() {
       scrollable_area->UpdateAllStickyConstraints();
     }
     pending_sticky_updates_->clear();
+  }
+}
+
+void LocalFrameView::AddPendingSnapUpdate(LayoutBox* object) {
+  if (!pending_snap_updates_) {
+    pending_snap_updates_ =
+        MakeGarbageCollected<HeapHashSet<Member<LayoutBox>>>();
+  }
+  pending_snap_updates_->insert(object);
+}
+
+void LocalFrameView::ExecutePendingSnapUpdates() {
+  if (pending_snap_updates_) {
+    // Iteration order of the objects doesn't matter as the snap-areas are
+    // contained within each scroll-container.
+    for (LayoutBox* snap_container : *pending_snap_updates_) {
+      DCHECK(snap_container->IsScrollContainer());
+      SnapCoordinator::UpdateSnapContainerData(*snap_container);
+    }
+    pending_snap_updates_->clear();
   }
 }
 
