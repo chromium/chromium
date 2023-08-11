@@ -103,18 +103,11 @@ void BluetoothFeaturePodController::OnIconPressed() {
 
   const bool is_toggled = IsButtonToggled();
   remote_cros_bluetooth_config_->SetBluetoothEnabledState(!is_toggled);
+  TrackToggleUMA(/*target_toggle_state=*/!is_toggled);
 
   if (auto* hats_bluetooth_revamp_trigger = HatsBluetoothRevampTrigger::Get()) {
     hats_bluetooth_revamp_trigger->TryToShowSurvey();
   }
-
-  if (is_toggled) {
-    TrackToggleUMA(/*target_toggle_state=*/false);
-    return;
-  }
-
-  TrackDiveInUMA();
-  tray_controller_->ShowBluetoothDetailedView();
 }
 
 void BluetoothFeaturePodController::OnLabelPressed() {
@@ -123,9 +116,6 @@ void BluetoothFeaturePodController::OnLabelPressed() {
   }
 
   TrackDiveInUMA();
-  if (!IsButtonToggled()) {
-    remote_cros_bluetooth_config_->SetBluetoothEnabledState(true);
-  }
 
   if (auto* hats_bluetooth_revamp_trigger = HatsBluetoothRevampTrigger::Get()) {
     hats_bluetooth_revamp_trigger->TryToShowSurvey();

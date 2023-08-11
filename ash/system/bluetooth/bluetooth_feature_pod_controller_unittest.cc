@@ -135,22 +135,33 @@ class BluetoothFeaturePodControllerTest
     return battery_info;
   }
 
-  void ExpectBluetoothDetailedViewFocused() {
+  // Checks if the qs bubble is currently showing Bluetooth detailed view.
+  void IsShowingDetailedView(bool is_showing = true) {
     if (IsQsRevampEnabled()) {
       auto* quick_settings_view =
           GetPrimaryUnifiedSystemTray()->bubble()->quick_settings_view();
       EXPECT_TRUE(quick_settings_view->detailed_view_container());
       const views::View::Views& children =
           quick_settings_view->detailed_view_container()->children();
-      EXPECT_EQ(1u, children.size());
-      EXPECT_STREQ("BluetoothDetailedViewImpl", children.at(0)->GetClassName());
+      if (is_showing) {
+        EXPECT_EQ(1u, children.size());
+        EXPECT_STREQ("BluetoothDetailedViewImpl",
+                     children.at(0)->GetClassName());
+        return;
+      }
+      EXPECT_EQ(0u, children.size());
+
     } else {
       EXPECT_TRUE(tray_view()->detailed_view_container());
       const views::View::Views& children =
           tray_view()->detailed_view_container()->children();
-      EXPECT_EQ(1u, children.size());
-      EXPECT_STREQ("BluetoothDetailedViewLegacy",
-                   children.at(0)->GetClassName());
+      if (is_showing) {
+        EXPECT_EQ(1u, children.size());
+        EXPECT_STREQ("BluetoothDetailedViewLegacy",
+                     children.at(0)->GetClassName());
+        return;
+      }
+      EXPECT_EQ(0u, children.size());
     }
   }
 
@@ -317,8 +328,9 @@ TEST_P(BluetoothFeaturePodControllerTest, PressingIconOrLabelChangesBluetooth) {
   EXPECT_FALSE(IsButtonToggled());
   EXPECT_EQ(1u, GetTryToShowSurveyCount());
 
+  // Pressing the label should not enable bluetooth.
   PressLabel();
-  EXPECT_TRUE(IsButtonToggled());
+  EXPECT_FALSE(IsButtonToggled());
   EXPECT_EQ(2u, GetTryToShowSurveyCount());
 }
 
@@ -502,20 +514,20 @@ TEST_P(BluetoothFeaturePodControllerTest,
       GetButtonTooltipText());
 }
 
-TEST_P(BluetoothFeaturePodControllerTest,
-       EnablingBluetoothShowsBluetoothDetailedView) {
+TEST_P(BluetoothFeaturePodControllerTest, EnablingBluetoothOnTheMainPage) {
   SetSystemState(BluetoothSystemState::kDisabled);
   EXPECT_FALSE(IsButtonToggled());
+
   PressIcon();
   EXPECT_TRUE(IsButtonToggled());
-  ExpectBluetoothDetailedViewFocused();
+  IsShowingDetailedView(/*is_showing=*/false);
 }
 
 TEST_P(BluetoothFeaturePodControllerTest,
        PressingLabelWithEnabledBluetoothShowsBluetoothDetailedView) {
   EXPECT_TRUE(IsButtonToggled());
   PressLabel();
-  ExpectBluetoothDetailedViewFocused();
+  IsShowingDetailedView();
 }
 
 TEST_P(BluetoothFeaturePodControllerTest,
@@ -531,7 +543,7 @@ TEST_P(BluetoothFeaturePodControllerTest,
 }
 
 TEST_P(BluetoothFeaturePodControllerTest, IconUMATracking) {
-  // No metrics logged before clicking on any views.
+  // No metrics are logged before clicking on any views.
   auto histogram_tester = std::make_unique<base::HistogramTester>();
   histogram_tester->ExpectTotalCount(GetToggledOnHistogramName(),
                                      /*expected_count=*/0);
@@ -540,7 +552,7 @@ TEST_P(BluetoothFeaturePodControllerTest, IconUMATracking) {
   histogram_tester->ExpectTotalCount(GetDiveInHistogramName(),
                                      /*expected_count=*/0);
 
-  // Disable bluetooth when pressing on the icon.
+  // Disables bluetooth when pressing on the icon.
   PressIcon();
   histogram_tester->ExpectTotalCount(GetToggledOnHistogramName(),
                                      /*expected_count=*/0);
@@ -552,10 +564,23 @@ TEST_P(BluetoothFeaturePodControllerTest, IconUMATracking) {
                                       QsFeatureCatalogName::kBluetooth,
                                       /*expected_count=*/1);
 
-  // Go to the bluetooth detailed page when pressing on the icon again.
+  // Toggles on.
   PressIcon();
   histogram_tester->ExpectTotalCount(GetToggledOnHistogramName(),
+                                     /*expected_count=*/1);
+  histogram_tester->ExpectBucketCount(GetToggledOffHistogramName(),
+                                      QsFeatureCatalogName::kBluetooth,
+                                      /*expected_count=*/1);
+  histogram_tester->ExpectTotalCount(GetDiveInHistogramName(),
                                      /*expected_count=*/0);
+  histogram_tester->ExpectBucketCount(GetDiveInHistogramName(),
+                                      QsFeatureCatalogName::kBluetooth,
+                                      /*expected_count=*/0);
+
+  // Goes to the bluetooth detailed page when pressing on the label.
+  PressLabel();
+  histogram_tester->ExpectTotalCount(GetToggledOnHistogramName(),
+                                     /*expected_count=*/1);
   histogram_tester->ExpectBucketCount(GetToggledOffHistogramName(),
                                       QsFeatureCatalogName::kBluetooth,
                                       /*expected_count=*/1);
