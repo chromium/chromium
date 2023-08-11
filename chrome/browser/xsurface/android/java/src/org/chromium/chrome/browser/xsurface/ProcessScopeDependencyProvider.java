@@ -111,6 +111,7 @@ public interface ProcessScopeDependencyProvider {
         return null;
     }
 
+    @Deprecated
     default @Nullable PersistentKeyValueCache getPersistentKeyValueCache() {
         return null;
     }

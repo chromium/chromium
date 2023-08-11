@@ -6,7 +6,10 @@ package org.chromium.chrome.browser.xsurface.feed;
 
 import android.graphics.Rect;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.chrome.browser.xsurface.LoggingParameters;
+import org.chromium.chrome.browser.xsurface.PersistentKeyValueCache;
 import org.chromium.chrome.browser.xsurface.SurfaceHeaderOffsetObserver;
 import org.chromium.chrome.browser.xsurface.SurfaceScopeDependencyProvider;
 
@@ -137,4 +140,13 @@ public interface FeedSurfaceScopeDependencyProvider extends SurfaceScopeDependen
      * message.
      */
     default void processViewAction(byte[] data, LoggingParameters loggingParameters) {}
+
+    /**
+     * Returns a {@link PersistentKeyValueCache}. This value will be cached as an account-level
+     * dependency, and only cleared after {@link ProcessScope#resetAccount()} is called.
+     */
+    @Nullable
+    default PersistentKeyValueCache getPersistentKeyValueCache() {
+        return null;
+    }
 }

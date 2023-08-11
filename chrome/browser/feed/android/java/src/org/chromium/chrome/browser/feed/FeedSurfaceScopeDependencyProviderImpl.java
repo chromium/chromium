@@ -11,6 +11,7 @@ import android.view.View;
 
 import org.chromium.base.ObserverList;
 import org.chromium.chrome.browser.xsurface.LoggingParameters;
+import org.chromium.chrome.browser.xsurface.PersistentKeyValueCache;
 import org.chromium.chrome.browser.xsurface.SurfaceHeaderOffsetObserver;
 
 /**
@@ -23,6 +24,8 @@ public class FeedSurfaceScopeDependencyProviderImpl
     private final Context mActivityContext;
     private final boolean mDarkMode;
     private final ObserverList<SurfaceHeaderOffsetObserver> mObserverList = new ObserverList<>();
+    private final FeedPersistentKeyValueCache mPersistentKeyValueCache =
+            new FeedPersistentKeyValueCache();
 
     public FeedSurfaceScopeDependencyProviderImpl(
             Activity activity, Context activityContext, boolean darkMode) {
@@ -84,5 +87,10 @@ public class FeedSurfaceScopeDependencyProviderImpl
     public void processViewAction(byte[] data, LoggingParameters loggingParameters) {
         FeedProcessScopeDependencyProviderJni.get().processViewAction(
                 data, FeedLoggingParameters.convertToProto(loggingParameters).toByteArray());
+    }
+
+    @Override
+    public PersistentKeyValueCache getPersistentKeyValueCache() {
+        return mPersistentKeyValueCache;
     }
 }
