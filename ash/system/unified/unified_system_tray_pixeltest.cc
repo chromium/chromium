@@ -98,7 +98,7 @@ TEST_P(UnifiedSystemTrayPixelTest, NotificationCounter) {
   }
   ASSERT_EQ(kTrayNotificationMaxCount + 1, GetNotificationCount());
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "more_than_max_notifications", /*revision_number=*/0,
+      "more_than_max_notifications", /*revision_number=*/1,
       GetNotificationCounter()));
 }
 

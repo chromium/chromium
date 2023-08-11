@@ -314,6 +314,10 @@ void ShadowController::Impl::CreateShadowForWindow(aura::Window* window) {
   shadow->layer()->SetVisible(ShouldShowShadowForWindow(window));
   window->layer()->Add(shadow->layer());
   window->layer()->StackAtBottom(shadow->layer());
+
+  if (delegate_) {
+    delegate_->ApplyColorThemeToWindowShadow(window);
+  }
 }
 
 ShadowController::Impl::Impl(aura::Env* env)
@@ -343,6 +347,10 @@ ui::Shadow* ShadowController::GetShadowForWindow(aura::Window* window) {
 ui::Shadow::ElevationToColorsMap ShadowController::GenerateShadowColorsMap(
     const ui::ColorProvider* color_provider) {
   ui::Shadow::ElevationToColorsMap color_map;
+  color_map[kShadowElevationPopup] = std::make_pair(
+      color_provider->GetColor(ui::kColorShadowValueKeyShadowElevationFour),
+      color_provider->GetColor(
+          ui::kColorShadowValueAmbientShadowElevationFour));
   color_map[kShadowElevationInactiveWindow] = std::make_pair(
       color_provider->GetColor(ui::kColorShadowValueKeyShadowElevationTwelve),
       color_provider->GetColor(

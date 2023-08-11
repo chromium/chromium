@@ -27,6 +27,10 @@ class COMPONENT_EXPORT(UI_WM) ShadowControllerDelegate {
   // Invoked when the shadow on `window` is to be modified, either normally from
   // activation change or manually.
   virtual bool ShouldHaveRoundedShadowForWindow(const aura::Window* window) = 0;
+
+  // Invoked when the shadow on `window` is created to apply the window color
+  // theme to its shadow.
+  virtual void ApplyColorThemeToWindowShadow(aura::Window* window) = 0;
 };
 
 }  // namespace wm

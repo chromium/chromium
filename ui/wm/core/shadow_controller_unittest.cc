@@ -321,6 +321,8 @@ class TestShadowControllerDelegate : public wm::ShadowControllerDelegate {
   bool ShouldHaveRoundedShadowForWindow(const aura::Window* window) override {
     return true;
   }
+
+  void ApplyColorThemeToWindowShadow(aura::Window* window) override {}
 };
 
 }  // namespace

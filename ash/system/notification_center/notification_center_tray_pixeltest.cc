@@ -83,7 +83,7 @@ TEST_F(NotificationCenterTrayPixelTest,
 
   // Check the UI of the notification center tray on the secondary display.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnSecondaryScreen(
-      "check_view", /*revision_number=*/1,
+      "check_view", /*revision_number=*/2,
       test_api()->GetTrayOnDisplay(secondary_display_id)));
 }
 
