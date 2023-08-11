@@ -7,10 +7,7 @@
   "incognito" : "split",
   "manifest_version": 2,
   "permissions": [
-    {
-      "fileSystem": ["requestFileSystem"]
-    },
-    "fileManagerPrivate",
+    "imageLoaderPrivate",
     "nativeMessaging",
     "storage"
   ],

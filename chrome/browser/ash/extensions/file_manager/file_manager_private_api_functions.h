@@ -21,6 +21,5 @@
 #include "chrome/browser/ash/extensions/file_manager/private_api_sharesheet.h"
 #include "chrome/browser/ash/extensions/file_manager/private_api_strings.h"
 #include "chrome/browser/ash/extensions/file_manager/private_api_tasks.h"
-#include "chrome/browser/ash/extensions/file_manager/private_api_thumbnail.h"
 
 #endif  // CHROME_BROWSER_ASH_EXTENSIONS_FILE_MANAGER_FILE_MANAGER_PRIVATE_API_FUNCTIONS_H_

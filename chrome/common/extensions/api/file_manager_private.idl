@@ -1433,10 +1433,6 @@ callback GetLinuxPackageInfoCallback =
 callback InstallLinuxPackageCallback = void(
     InstallLinuxPackageResponse response, DOMString failure_reason);
 
-// |thumbnailDataUrl| A data URL for the thumbnail; |thumbnailDataUrl| is empty
-// if no thumbnail was available.
-callback GetThumbnailCallback = void(DOMString thumbnailDataUrl);
-
 // |apps| List of Android picker apps.
 callback GetAndroidPickerAppsCallback = void(AndroidApp[] apps);
 
@@ -1845,35 +1841,6 @@ interface Functions {
   // apps and files.
   [nocompile]
   static void importCrostiniImage([instanceOf=Entry] object entry);
-
-  // For a file in DriveFS, retrieves its thumbnail. If |cropToSquare| is true,
-  // returns a thumbnail appropriate for file list or grid views; otherwise,
-  // returns a thumbnail appropriate for quickview.
-  [nocompile]
-  static void getDriveThumbnail([instanceOf=FileEntry] object entry,
-                                boolean cropToSquare,
-                                GetThumbnailCallback callback);
-
-  // For a local PDF file, retrieves its thumbnail with a given |width| and
-  // |height|.
-  [nocompile]
-  static void getPdfThumbnail([instanceOf=FileEntry] object entry,
-                              long width,
-                              long height,
-                              GetThumbnailCallback callback);
-
-  // Retrieves a thumbnail of an ARC DocumentsProvider file, closely matching
-  // the hinted size specified by |widthHint| and |heightHint|, but not
-  // necessarily the exact size. |callback| is called with thumbnail data
-  // encoded as a data URL. If the document does not support thumbnails,
-  // |callback| is called with an empty string.
-  // Note: The thumbnail data may originate from third-party application code,
-  // and is untrustworthy (Security).
-  [nocompile]
-  static void getArcDocumentsProviderThumbnail([instanceOf=FileEntry] object entry,
-                                               long widthHint,
-                                               long heightHint,
-                                               GetThumbnailCallback callback);
 
   // Returns a list of Android picker apps to be shown in file selector.
   static void getAndroidPickerApps(DOMString[] extensions,

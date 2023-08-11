@@ -36836,8 +36836,9 @@ Called by update_extension_histograms.py.-->
   <int value="1513" label="IDENTITY_CLEARALLCACHEDAUTHTOKENS"/>
   <int value="1514" label="TABS_GROUP"/>
   <int value="1515" label="TABS_UNGROUP"/>
-  <int value="1516" label="FILEMANAGERPRIVATEINTERNAL_GETDRIVETHUMBNAIL"/>
-  <int value="1517" label="FILEMANAGERPRIVATEINTERNAL_GETPDFTHUMBNAIL"/>
+  <int value="1516"
+      label="DELETED_FILEMANAGERPRIVATEINTERNAL_GETDRIVETHUMBNAIL"/>
+  <int value="1517" label="DELETED_FILEMANAGERPRIVATEINTERNAL_GETPDFTHUMBNAIL"/>
   <int value="1518" label="AUTOTESTPRIVATE_REMOVEALLNOTIFICATIONS"/>
   <int value="1519" label="VIRTUALKEYBOARDPRIVATE_OPENSUGGESTIONSETTINGS"/>
   <int value="1520" label="ACCESSIBILITY_PRIVATE_SETPOINTSCANSTATE"/>
@@ -36845,7 +36846,7 @@ Called by update_extension_histograms.py.-->
   <int value="1522" label="DECLARATIVENETREQUEST_GETAVAILABLESTATICRULECOUNT"/>
   <int value="1523" label="CHROMEOSINFOPRIVATE_ISTABLETMODEENABLED"/>
   <int value="1524"
-      label="FILEMANAGERPRIVATEINTERNAL_GETARCDOCUMENTSPROVIDERTHUMBNAIL"/>
+      label="DELETED_FILEMANAGERPRIVATEINTERNAL_GETARCDOCUMENTSPROVIDERTHUMBNAIL"/>
   <int value="1525" label="ACCESSIBILITY_PRIVATE_ISFEATUREENABLED"/>
   <int value="1526" label="INPUTMETHODPRIVATE_ONAUTOCORRECT"/>
   <int value="1527" label="TAB_GROUPS_GET"/>
@@ -37148,6 +37149,10 @@ Called by update_extension_histograms.py.-->
   <int value="1810" label="PASSWORDSPRIVATE_SHAREPASSWORD"/>
   <int value="1811" label="AUTOFILLPRIVATE_CHECKIFDEVICEAUTHAVAILABLE"/>
   <int value="1812" label="OS_DIAGNOSTICS_RUNBLUETOOTHDISCOVERYROUTINE"/>
+  <int value="1813"
+      label="IMAGELOADERPRIVATE_GETARCDOCUMENTSPROVIDERTHUMBNAIL"/>
+  <int value="1814" label="IMAGELOADERPRIVATE_GETDRIVETHUMBNAIL"/>
+  <int value="1815" label="IMAGELOADERPRIVATE_GETPDFTHUMBNAIL"/>
 </enum>
 
 <enum name="ExtensionIconState">
@@ -37796,6 +37801,7 @@ Called by update_extension_permission.py.-->
   <int value="248" label="kChromeOSEvents"/>
   <int value="249" label="kChromeOSAttachedDeviceInfo"/>
   <int value="250" label="kReadingList"/>
+  <int value="251" label="kImageLoaderPrivate"/>
 </enum>
 
 <enum name="ExtensionPointEnableState">

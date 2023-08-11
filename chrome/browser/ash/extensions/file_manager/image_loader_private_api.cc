@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/extensions/file_manager/private_api_thumbnail.h"
+#include "chrome/browser/ash/extensions/file_manager/image_loader_private_api.h"
 
 #include "base/base64.h"
 #include "base/containers/span.h"
@@ -19,8 +19,7 @@
 #include "chrome/browser/pdf/pdf_pref_names.h"
 #include "chrome/browser/printing/printing_service.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/extensions/api/file_manager_private.h"
-#include "chrome/common/extensions/api/file_manager_private_internal.h"
+#include "chrome/common/extensions/api/image_loader_private.h"
 #include "chrome/services/printing/public/mojom/printing_service.mojom.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/consent_level.h"
@@ -119,26 +118,25 @@ std::string ReadMojoHandleToDataUrl(mojo::PlatformHandle&& handle) {
 
 }  // namespace
 
-FileManagerPrivateGetThumbnailFunction::
-    FileManagerPrivateGetThumbnailFunction() = default;
+ImageLoaderPrivateGetThumbnailFunction::
+    ImageLoaderPrivateGetThumbnailFunction() = default;
 
-void FileManagerPrivateGetThumbnailFunction::SendEncodedThumbnail(
+void ImageLoaderPrivateGetThumbnailFunction::SendEncodedThumbnail(
     std::string thumbnail_data_url) {
   Respond(WithArguments(std::move(thumbnail_data_url)));
 }
 
-FileManagerPrivateInternalGetDriveThumbnailFunction::
-    FileManagerPrivateInternalGetDriveThumbnailFunction() {
+ImageLoaderPrivateGetDriveThumbnailFunction::
+    ImageLoaderPrivateGetDriveThumbnailFunction() {
   SetWarningThresholds(base::Seconds(5), base::Minutes(1));
 }
 
-FileManagerPrivateInternalGetDriveThumbnailFunction::
-    ~FileManagerPrivateInternalGetDriveThumbnailFunction() = default;
+ImageLoaderPrivateGetDriveThumbnailFunction::
+    ~ImageLoaderPrivateGetDriveThumbnailFunction() = default;
 
 ExtensionFunction::ResponseAction
-FileManagerPrivateInternalGetDriveThumbnailFunction::Run() {
-  using extensions::api::file_manager_private_internal::GetDriveThumbnail::
-      Params;
+ImageLoaderPrivateGetDriveThumbnailFunction::Run() {
+  using extensions::api::image_loader_private::GetDriveThumbnail::Params;
   const absl::optional<Params> params = Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -174,14 +172,13 @@ FileManagerPrivateInternalGetDriveThumbnailFunction::Run() {
   drivefs_interface->GetThumbnail(
       path, params->crop_to_square,
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-          base::BindOnce(&FileManagerPrivateInternalGetDriveThumbnailFunction::
-                             GotThumbnail,
-                         this),
+          base::BindOnce(
+              &ImageLoaderPrivateGetDriveThumbnailFunction::GotThumbnail, this),
           absl::nullopt));
   return RespondLater();
 }
 
-void FileManagerPrivateInternalGetDriveThumbnailFunction::GotThumbnail(
+void ImageLoaderPrivateGetDriveThumbnailFunction::GotThumbnail(
     const absl::optional<std::vector<uint8_t>>& data) {
   if (!data) {
     Respond(WithArguments(""));
@@ -191,20 +188,20 @@ void FileManagerPrivateInternalGetDriveThumbnailFunction::GotThumbnail(
       FROM_HERE,
       base::BindOnce(&MakeThumbnailDataUrlOnThreadPool, kMimeTypeImagePng,
                      *data),
-      base::BindOnce(&FileManagerPrivateInternalGetDriveThumbnailFunction::
-                         SendEncodedThumbnail,
-                     this));
+      base::BindOnce(
+          &ImageLoaderPrivateGetDriveThumbnailFunction::SendEncodedThumbnail,
+          this));
 }
 
-FileManagerPrivateInternalGetPdfThumbnailFunction::
-    FileManagerPrivateInternalGetPdfThumbnailFunction() = default;
+ImageLoaderPrivateGetPdfThumbnailFunction::
+    ImageLoaderPrivateGetPdfThumbnailFunction() = default;
 
-FileManagerPrivateInternalGetPdfThumbnailFunction::
-    ~FileManagerPrivateInternalGetPdfThumbnailFunction() = default;
+ImageLoaderPrivateGetPdfThumbnailFunction::
+    ~ImageLoaderPrivateGetPdfThumbnailFunction() = default;
 
 ExtensionFunction::ResponseAction
-FileManagerPrivateInternalGetPdfThumbnailFunction::Run() {
-  using extensions::api::file_manager_private_internal::GetPdfThumbnail::Params;
+ImageLoaderPrivateGetPdfThumbnailFunction::Run() {
+  using extensions::api::image_loader_private::GetPdfThumbnail::Params;
   const absl::optional<Params> params = Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -230,13 +227,12 @@ FileManagerPrivateInternalGetPdfThumbnailFunction::Run() {
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
       base::BindOnce(&ReadLocalPdf, std::move(path)),
-      base::BindOnce(
-          &FileManagerPrivateInternalGetPdfThumbnailFunction::FetchThumbnail,
-          this, gfx::Size(params->width, params->height)));
+      base::BindOnce(&ImageLoaderPrivateGetPdfThumbnailFunction::FetchThumbnail,
+                     this, gfx::Size(params->width, params->height)));
   return RespondLater();
 }
 
-void FileManagerPrivateInternalGetPdfThumbnailFunction::FetchThumbnail(
+void ImageLoaderPrivateGetPdfThumbnailFunction::FetchThumbnail(
     const gfx::Size& size,
     const std::string& content) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -254,7 +250,7 @@ void FileManagerPrivateInternalGetPdfThumbnailFunction::FetchThumbnail(
   GetPrintingService()->BindPdfThumbnailer(
       pdf_thumbnailer_.BindNewPipeAndPassReceiver());
   pdf_thumbnailer_.set_disconnect_handler(base::BindOnce(
-      &FileManagerPrivateInternalGetPdfThumbnailFunction::ThumbnailDisconnected,
+      &ImageLoaderPrivateGetPdfThumbnailFunction::ThumbnailDisconnected,
       base::Unretained(this)));
   const PrefService* prefs =
       Profile::FromBrowserContext(browser_context())->GetPrefs();
@@ -267,39 +263,35 @@ void FileManagerPrivateInternalGetPdfThumbnailFunction::FetchThumbnail(
       /*stretch_to_bounds=*/false, /*keep_aspect_ratio=*/true);
   pdf_thumbnailer_->GetThumbnail(
       std::move(params), std::move(pdf_region.region),
-      base::BindOnce(
-          &FileManagerPrivateInternalGetPdfThumbnailFunction::GotThumbnail,
-          this));
+      base::BindOnce(&ImageLoaderPrivateGetPdfThumbnailFunction::GotThumbnail,
+                     this));
 }
 
-void FileManagerPrivateInternalGetPdfThumbnailFunction::
-    ThumbnailDisconnected() {
+void ImageLoaderPrivateGetPdfThumbnailFunction::ThumbnailDisconnected() {
   DLOG(WARNING) << "PDF thumbnail disconnected";
   Respond(Error("PDF service disconnected"));
 }
 
-void FileManagerPrivateInternalGetPdfThumbnailFunction::GotThumbnail(
+void ImageLoaderPrivateGetPdfThumbnailFunction::GotThumbnail(
     const SkBitmap& bitmap) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   pdf_thumbnailer_.reset();
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, base::BindOnce(&ConvertAndEncode, bitmap),
-      base::BindOnce(&FileManagerPrivateInternalGetPdfThumbnailFunction::
-                         SendEncodedThumbnail,
-                     this));
+      base::BindOnce(
+          &ImageLoaderPrivateGetPdfThumbnailFunction::SendEncodedThumbnail,
+          this));
 }
 
-FileManagerPrivateInternalGetArcDocumentsProviderThumbnailFunction::
-    FileManagerPrivateInternalGetArcDocumentsProviderThumbnailFunction() =
-        default;
+ImageLoaderPrivateGetArcDocumentsProviderThumbnailFunction::
+    ImageLoaderPrivateGetArcDocumentsProviderThumbnailFunction() = default;
 
-FileManagerPrivateInternalGetArcDocumentsProviderThumbnailFunction::
-    ~FileManagerPrivateInternalGetArcDocumentsProviderThumbnailFunction() =
-        default;
+ImageLoaderPrivateGetArcDocumentsProviderThumbnailFunction::
+    ~ImageLoaderPrivateGetArcDocumentsProviderThumbnailFunction() = default;
 
 ExtensionFunction::ResponseAction
-FileManagerPrivateInternalGetArcDocumentsProviderThumbnailFunction::Run() {
-  using extensions::api::file_manager_private_internal::
+ImageLoaderPrivateGetArcDocumentsProviderThumbnailFunction::Run() {
+  using extensions::api::image_loader_private::
       GetArcDocumentsProviderThumbnail::Params;
   const absl::optional<Params> params = Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
@@ -324,15 +316,14 @@ FileManagerPrivateInternalGetArcDocumentsProviderThumbnailFunction::Run() {
 
   const gfx::Size size_hint(params->width_hint, params->height_hint);
   root->GetExtraFileMetadata(
-      path,
-      base::BindOnce(
-          &FileManagerPrivateInternalGetArcDocumentsProviderThumbnailFunction::
-              OnGetExtraFileMetadata,
-          this, size_hint, file_system_url));
+      path, base::BindOnce(
+                &ImageLoaderPrivateGetArcDocumentsProviderThumbnailFunction::
+                    OnGetExtraFileMetadata,
+                this, size_hint, file_system_url));
   return RespondLater();
 }
 
-void FileManagerPrivateInternalGetArcDocumentsProviderThumbnailFunction::
+void ImageLoaderPrivateGetArcDocumentsProviderThumbnailFunction::
     OnGetExtraFileMetadata(
         const gfx::Size& size_hint,
         const storage::FileSystemURL& file_system_url,
@@ -352,15 +343,15 @@ void FileManagerPrivateInternalGetArcDocumentsProviderThumbnailFunction::
       Profile::FromBrowserContext(browser_context()),
       std::vector<storage::FileSystemURL>{file_system_url},
       base::BindOnce(
-          &FileManagerPrivateInternalGetArcDocumentsProviderThumbnailFunction::
+          &ImageLoaderPrivateGetArcDocumentsProviderThumbnailFunction::
               GotContentUrls,
           this, size_hint));
 }
 
-void FileManagerPrivateInternalGetArcDocumentsProviderThumbnailFunction::
-    GotContentUrls(const gfx::Size& size_hint,
-                   const std::vector<GURL>& urls,
-                   const std::vector<base::FilePath>& paths_to_share) {
+void ImageLoaderPrivateGetArcDocumentsProviderThumbnailFunction::GotContentUrls(
+    const gfx::Size& size_hint,
+    const std::vector<GURL>& urls,
+    const std::vector<base::FilePath>& paths_to_share) {
   if (urls.size() != 1 || urls[0] == GURL()) {
     Respond(Error("Failed to resolve to countent URL"));
     return;
@@ -379,13 +370,13 @@ void FileManagerPrivateInternalGetArcDocumentsProviderThumbnailFunction::
       url, size_hint,
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(
           base::BindOnce(
-              &FileManagerPrivateInternalGetArcDocumentsProviderThumbnailFunction::
+              &ImageLoaderPrivateGetArcDocumentsProviderThumbnailFunction::
                   GotArcThumbnailFileHandle,
               this),
           mojo::ScopedHandle()));
 }
 
-void FileManagerPrivateInternalGetArcDocumentsProviderThumbnailFunction::
+void ImageLoaderPrivateGetArcDocumentsProviderThumbnailFunction::
     GotArcThumbnailFileHandle(mojo::ScopedHandle handle) {
   mojo::PlatformHandle platform_handle =
       mojo::UnwrapPlatformHandle(std::move(handle));
@@ -399,7 +390,7 @@ void FileManagerPrivateInternalGetArcDocumentsProviderThumbnailFunction::
       FROM_HERE, {base::MayBlock()},
       base::BindOnce(&ReadMojoHandleToDataUrl, std::move(platform_handle)),
       base::BindOnce(
-          &FileManagerPrivateInternalGetArcDocumentsProviderThumbnailFunction::
+          &ImageLoaderPrivateGetArcDocumentsProviderThumbnailFunction::
               SendEncodedThumbnail,
           this));
 }

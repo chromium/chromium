@@ -344,10 +344,12 @@
   },
   "fileManagerPrivate": {
     "channel": "stable",
-    "extension_types": ["extension", "legacy_packaged_app", "platform_app"],
+    "extension_types": ["extension", "platform_app"],
+    "location": "component",
     "platforms": ["chromeos"],
     "allowlist": [
-      "74E2D32A61B08D29521A8C4E360F581DE78F5CA5"  // Image loader
+      // Only used for API tests by test ext pkplfbidichfdicaijlchgnapepdginl.
+      "5065C83E84321221675D20FBE4DC43C655CC8C6F"
     ]
   },
   "fileSystemProvider": [{
@@ -413,6 +415,16 @@
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app"],
     "platforms": ["chromeos", "win", "linux"]
+  },
+  "imageLoaderPrivate": {
+    "channel": "stable",
+    "component_extensions_auto_granted": false,
+    "extension_types": ["extension"],
+    "location": "component",
+    "platforms": ["chromeos"],
+    "allowlist": [
+      "74E2D32A61B08D29521A8C4E360F581DE78F5CA5"  // Image loader
+    ]
   },
   "inputMethodPrivate": [{
     "channel": "stable",

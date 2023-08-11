@@ -152,6 +152,8 @@ constexpr APIPermissionInfo::InitInfo permissions_to_register[] = {
      "enterprise.reportingPrivate", APIPermissionInfo::kFlagCannotBeOptional},
     {APIPermissionID::kFileManagerPrivate, "fileManagerPrivate",
      APIPermissionInfo::kFlagCannotBeOptional},
+    {APIPermissionID::kImageLoaderPrivate, "imageLoaderPrivate",
+     APIPermissionInfo::kFlagCannotBeOptional},
     {APIPermissionID::kImageWriterPrivate, "imageWriterPrivate",
      APIPermissionInfo::kFlagCannotBeOptional},
     {APIPermissionID::kInputMethodPrivate, "inputMethodPrivate",

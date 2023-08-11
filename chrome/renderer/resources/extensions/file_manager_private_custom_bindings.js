@@ -314,25 +314,6 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
     fileManagerPrivateInternal.installLinuxPackage(url, callback);
   });
 
-  apiFunctions.setHandleRequest('getDriveThumbnail', function(
-        entry, cropToSquare, callback) {
-    var url = getEntryURL(entry);
-    fileManagerPrivateInternal.getDriveThumbnail(url, cropToSquare, callback);
-  });
-
-  apiFunctions.setHandleRequest('getPdfThumbnail', function(
-        entry, width, height, callback) {
-    var url = getEntryURL(entry);
-    fileManagerPrivateInternal.getPdfThumbnail(url, width, height, callback);
-  });
-
-  apiFunctions.setHandleRequest('getArcDocumentsProviderThumbnail', function(
-        entry, widthHint, heightHint, callback) {
-    var url = getEntryURL(entry);
-    fileManagerPrivateInternal.getArcDocumentsProviderThumbnail(
-        url, widthHint, heightHint, callback);
-  });
-
   apiFunctions.setCustomCallback('searchFiles',
       function(callback, response) {
     if (response && !response.error && response.entries) {

@@ -143,17 +143,6 @@ namespace fileManagerPrivateInternal {
     static void installLinuxPackage(DOMString url,
                                     InstallLinuxPackageCallback callback);
     static void importCrostiniImage(DOMString url);
-    static void getDriveThumbnail(DOMString url,
-                                  boolean cropToSquare,
-                                  GetThumbnailCallback callback);
-    static void getPdfThumbnail(DOMString url,
-                                long width,
-                                long height,
-                                GetThumbnailCallback callback);
-    static void getArcDocumentsProviderThumbnail(DOMString url,
-                                                 long widthHint,
-                                                 long heightHint,
-                                                 GetThumbnailCallback callback);
     static void sharesheetHasTargets(DOMString[] urls, BooleanCallback callback);
     static void invokeSharesheet(
         DOMString[] urls,

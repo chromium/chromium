@@ -345,13 +345,6 @@ ImageRequestTask.prototype.downloadThumbnail_ = function(onSuccess, onFailure) {
     return;
   }
 
-  const resolveLocalFileSystemUrl = (url, onResolveSuccess) => {
-    window.webkitResolveLocalFileSystemURL(url, onResolveSuccess, error => {
-      console.warn(error);
-      onFailure();
-    });
-  };
-
   const onExternalThumbnail = (dataUrl) => {
     if (chrome.runtime.lastError) {
       console.warn(chrome.runtime.lastError.message);
@@ -369,20 +362,16 @@ ImageRequestTask.prototype.downloadThumbnail_ = function(onSuccess, onFailure) {
   if (drivefsUrlMatches) {
     const url = drivefsUrlMatches[1];
     const cropToSquare = !!this.request_.crop;
-    resolveLocalFileSystemUrl(
-        url,
-        entry => chrome.fileManagerPrivate.getDriveThumbnail(
-            entry, cropToSquare, onExternalThumbnail));
+    chrome.imageLoaderPrivate.getDriveThumbnail(
+        url, cropToSquare, onExternalThumbnail);
     return;
   }
 
   // Load PDF source thumbnail.
   if (this.request_.url.endsWith('.pdf')) {
     const {width, height} = this.targetThumbnailSize_();
-    resolveLocalFileSystemUrl(
-        this.request_.url,
-        entry => chrome.fileManagerPrivate.getPdfThumbnail(
-            entry, width, height, onExternalThumbnail));
+    chrome.imageLoaderPrivate.getPdfThumbnail(
+        this.request_.url, width, height, onExternalThumbnail);
     return;
   }
 
@@ -391,33 +380,12 @@ ImageRequestTask.prototype.downloadThumbnail_ = function(onSuccess, onFailure) {
       'filesystem:chrome-extension://[a-z]+/external/arc-documents-provider/.*'));
   if (isDocumentsProviderRequest) {
     const {width, height} = this.targetThumbnailSize_();
-    resolveLocalFileSystemUrl(this.request_.url, entry => {
-      chrome.fileManagerPrivate.getArcDocumentsProviderThumbnail(
-          entry, width, height, onExternalThumbnail);
-    });
+    chrome.imageLoaderPrivate.getArcDocumentsProviderThumbnail(
+        this.request_.url, width, height, onExternalThumbnail);
     return;
   }
 
   const fileType = getFileTypeForName(this.request_.url);
-
-  // Load RAW image source thumbnail.
-  if (fileType.type === 'raw') {
-    PiexLoader.load(this.request_.url, chrome.runtime.reload)
-        .then(
-            function(data) {
-              this.renderOrientation_ =
-                  ImageOrientation.fromExifOrientation(data.orientation);
-              this.ifd_ = data.ifd;
-              this.contentType_ = data.mimeType;
-              const blob = new Blob([data.thumbnail], {type: data.mimeType});
-              this.image_.src = URL.createObjectURL(blob);
-            }.bind(this),
-            function() {
-              // PiexLoader calls console.warn on errors.
-              onFailure();
-            });
-    return;
-  }
 
   // Load video source thumbnail.
   if (fileType.type === 'video') {
@@ -434,6 +402,22 @@ ImageRequestTask.prototype.downloadThumbnail_ = function(onSuccess, onFailure) {
 
   // Load the source directly.
   this.load(this.request_.url, (contentType, blob) => {
+    // Load RAW image source thumbnail.
+    if (fileType.type === 'raw') {
+      blob.arrayBuffer()
+          .then(buffer => PiexLoader.load(buffer, chrome.runtime.reload))
+          .then(data => {
+            this.renderOrientation_ =
+                ImageOrientation.fromExifOrientation(data.orientation);
+            this.ifd_ = data.ifd;
+            this.contentType_ = data.mimeType;
+            const blob = new Blob([data.thumbnail], {type: data.mimeType});
+            this.image_.src = URL.createObjectURL(blob);
+          })
+          .catch(onFailure);
+      return;
+    }
+
     this.image_.src = blob ? URL.createObjectURL(blob) : '!';
     this.contentType_ = contentType || null;
     if (this.contentType_ === 'image/jpeg') {

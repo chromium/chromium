@@ -122,10 +122,8 @@ js_library("image_request_task") {
     "//ash/webui/common/resources:assert",
   ]
   externs_list = [
-    "$externs_path/file_manager_private.js",
-    "$externs_path/file_system_provider.js",
+    "$externs_path/image_loader_private.js",
     "$externs_path/chrome_extensions.js",
-    "$externs_path/chrome.js",
   ]
 }
 

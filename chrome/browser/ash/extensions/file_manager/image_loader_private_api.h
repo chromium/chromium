@@ -5,8 +5,8 @@
 // This file provides API functions to fetch external thumbnails for filesystem
 // providers that support it.
 
-#ifndef CHROME_BROWSER_ASH_EXTENSIONS_FILE_MANAGER_PRIVATE_API_THUMBNAIL_H_
-#define CHROME_BROWSER_ASH_EXTENSIONS_FILE_MANAGER_PRIVATE_API_THUMBNAIL_H_
+#ifndef CHROME_BROWSER_ASH_EXTENSIONS_FILE_MANAGER_IMAGE_LOADER_PRIVATE_API_H_
+#define CHROME_BROWSER_ASH_EXTENSIONS_FILE_MANAGER_IMAGE_LOADER_PRIVATE_API_H_
 
 #include <memory>
 #include <string>
@@ -14,7 +14,7 @@
 #include "chrome/browser/ash/extensions/file_manager/logged_extension_function.h"
 
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_root.h"
-#include "chrome/common/extensions/api/file_manager_private_internal.h"
+#include "chrome/common/extensions/api/image_loader_private.h"
 #include "chrome/services/printing/public/mojom/pdf_thumbnailer.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "storage/browser/file_system/file_system_url.h"
@@ -24,27 +24,27 @@ class SkBitmap;
 namespace extensions {
 
 // Base class for thumbnail functions
-class FileManagerPrivateGetThumbnailFunction : public LoggedExtensionFunction {
+class ImageLoaderPrivateGetThumbnailFunction : public LoggedExtensionFunction {
  public:
-  FileManagerPrivateGetThumbnailFunction();
+  ImageLoaderPrivateGetThumbnailFunction();
 
  protected:
-  ~FileManagerPrivateGetThumbnailFunction() override = default;
+  ~ImageLoaderPrivateGetThumbnailFunction() override = default;
 
   // Responds with a base64 encoded PNG thumbnail data.
   void SendEncodedThumbnail(std::string thumbnail_data_url);
 };
 
-class FileManagerPrivateInternalGetDriveThumbnailFunction
-    : public FileManagerPrivateGetThumbnailFunction {
+class ImageLoaderPrivateGetDriveThumbnailFunction
+    : public ImageLoaderPrivateGetThumbnailFunction {
  public:
-  DECLARE_EXTENSION_FUNCTION("fileManagerPrivateInternal.getDriveThumbnail",
-                             FILEMANAGERPRIVATEINTERNAL_GETDRIVETHUMBNAIL)
+  DECLARE_EXTENSION_FUNCTION("imageLoaderPrivate.getDriveThumbnail",
+                             IMAGELOADERPRIVATE_GETDRIVETHUMBNAIL)
 
-  FileManagerPrivateInternalGetDriveThumbnailFunction();
+  ImageLoaderPrivateGetDriveThumbnailFunction();
 
  protected:
-  ~FileManagerPrivateInternalGetDriveThumbnailFunction() override;
+  ~ImageLoaderPrivateGetDriveThumbnailFunction() override;
 
   // ExtensionFunction overrides.
   ResponseAction Run() override;
@@ -54,16 +54,16 @@ class FileManagerPrivateInternalGetDriveThumbnailFunction
   void GotThumbnail(const absl::optional<std::vector<uint8_t>>& data);
 };
 
-class FileManagerPrivateInternalGetPdfThumbnailFunction
-    : public FileManagerPrivateGetThumbnailFunction {
+class ImageLoaderPrivateGetPdfThumbnailFunction
+    : public ImageLoaderPrivateGetThumbnailFunction {
  public:
-  DECLARE_EXTENSION_FUNCTION("fileManagerPrivateInternal.getPdfThumbnail",
-                             FILEMANAGERPRIVATEINTERNAL_GETPDFTHUMBNAIL)
+  DECLARE_EXTENSION_FUNCTION("imageLoaderPrivate.getPdfThumbnail",
+                             IMAGELOADERPRIVATE_GETPDFTHUMBNAIL)
 
-  FileManagerPrivateInternalGetPdfThumbnailFunction();
+  ImageLoaderPrivateGetPdfThumbnailFunction();
 
  protected:
-  ~FileManagerPrivateInternalGetPdfThumbnailFunction() override;
+  ~ImageLoaderPrivateGetPdfThumbnailFunction() override;
 
   // ExtensionFunction overrides.
   ResponseAction Run() override;
@@ -93,18 +93,17 @@ class FileManagerPrivateInternalGetPdfThumbnailFunction
   constexpr static int kDpi = 30;
 };
 
-class FileManagerPrivateInternalGetArcDocumentsProviderThumbnailFunction
-    : public FileManagerPrivateGetThumbnailFunction {
+class ImageLoaderPrivateGetArcDocumentsProviderThumbnailFunction
+    : public ImageLoaderPrivateGetThumbnailFunction {
  public:
   DECLARE_EXTENSION_FUNCTION(
-      "fileManagerPrivateInternal.getArcDocumentsProviderThumbnail",
-      FILEMANAGERPRIVATEINTERNAL_GETARCDOCUMENTSPROVIDERTHUMBNAIL)
+      "imageLoaderPrivate.getArcDocumentsProviderThumbnail",
+      IMAGELOADERPRIVATE_GETARCDOCUMENTSPROVIDERTHUMBNAIL)
 
-  FileManagerPrivateInternalGetArcDocumentsProviderThumbnailFunction();
+  ImageLoaderPrivateGetArcDocumentsProviderThumbnailFunction();
 
  protected:
-  ~FileManagerPrivateInternalGetArcDocumentsProviderThumbnailFunction()
-      override;
+  ~ImageLoaderPrivateGetArcDocumentsProviderThumbnailFunction() override;
 
   // ExtensionFunction overrides.
   ResponseAction Run() override;
@@ -131,4 +130,4 @@ class FileManagerPrivateInternalGetArcDocumentsProviderThumbnailFunction
 
 }  // namespace extensions
 
-#endif  // CHROME_BROWSER_ASH_EXTENSIONS_FILE_MANAGER_PRIVATE_API_THUMBNAIL_H_
+#endif  // CHROME_BROWSER_ASH_EXTENSIONS_FILE_MANAGER_IMAGE_LOADER_PRIVATE_API_H_

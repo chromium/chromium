@@ -575,6 +575,10 @@
     "dependencies": ["permission:idltest"],
     "contexts": ["blessed_extension"]
   },
+  "imageLoaderPrivate": {
+    "dependencies": ["permission:imageLoaderPrivate"],
+    "contexts": ["blessed_extension"]
+  },
   "input.ime": {
     "dependencies": ["permission:input"],
     "contexts": ["blessed_extension"]
