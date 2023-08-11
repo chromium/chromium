@@ -4,6 +4,7 @@
 
 package org.chromium.components.stylus_handwriting;
 
+import android.content.ComponentName;
 import android.content.Context;
 import android.os.Build;
 import android.provider.Settings;
@@ -60,11 +61,12 @@ public class AndroidStylusWritingHandler
 
         InputMethodManager inputMethodManager = context.getSystemService(InputMethodManager.class);
         List<InputMethodInfo> inputMethods = inputMethodManager.getInputMethodList();
-        String defaultImePackage = Settings.Secure.getString(
-                context.getContentResolver(), Settings.Secure.DEFAULT_INPUT_METHOD);
+        ComponentName defaultImePackage =
+                ComponentName.unflattenFromString(Settings.Secure.getString(
+                        context.getContentResolver(), Settings.Secure.DEFAULT_INPUT_METHOD));
 
         for (InputMethodInfo inputMethod : inputMethods) {
-            if (!inputMethod.getComponent().flattenToString().equals(defaultImePackage)) continue;
+            if (!inputMethod.getComponent().equals(defaultImePackage)) continue;
 
             boolean result = inputMethod.supportsStylusHandwriting();
 
