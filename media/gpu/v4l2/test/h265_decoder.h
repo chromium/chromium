@@ -115,7 +115,7 @@ class H265Decoder : public VideoDecoder {
                         const H265SliceHeader* slice_hdr);
 
   // Notifies client that a picture is ready for output.
-  void OutputPic(scoped_refptr<H265Picture> pic);
+  bool OutputPic(scoped_refptr<H265Picture> pic);
 
   // Performs DPB management operations for |curr_pic_| by removing no longer
   // needed entries from the DPB and outputting pictures from the DPB. |sps|
@@ -127,8 +127,14 @@ class H265Decoder : public VideoDecoder {
   // reference picture marking, DPB management and picture output.
   bool StartNewFrame(const H265SliceHeader* slice_hdr);
 
+  // Commits all pending data for HW decoder and starts HW decoder.
+  bool DecodePicture();
+
+  // Called after we are done processing |pic|.
+  void FinishPicture(scoped_refptr<H265Picture> pic);
+
   // All data for a frame received, process it and decode.
-  bool FinishPrevFrameIfPresent();
+  void FinishPrevFrameIfPresent();
 
   // This is the main method used for running the decode loop. It will try to
   // decode all frames in the stream until there is a configuration change,

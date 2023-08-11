@@ -351,8 +351,19 @@ std::unique_ptr<H265Decoder> H265Decoder::Create(
 }
 
 bool H265Decoder::OutputAllRemainingPics() {
-  NOTIMPLEMENTED();
-  return false;
+  // Output all pictures that are waiting to be outputted.
+  H265Picture::Vector to_output;
+  dpb_.AppendPendingOutputPics(&to_output);
+  // Sort them by ascending POC to output in order.
+  std::sort(to_output.begin(), to_output.end(), POCAscCompare());
+
+  for (auto& pic : to_output) {
+    if (!OutputPic(std::move(pic))) {
+      return false;
+    }
+  }
+
+  return true;
 }
 
 bool H265Decoder::Flush() {
@@ -438,11 +449,31 @@ bool H265Decoder::ProcessPPS(int pps_id, bool* need_new_buffers) {
 }
 
 bool H265Decoder::PreprocessCurrentSlice() {
-  NOTIMPLEMENTED();
-  return false;
+  const H265SliceHeader* slice_hdr = curr_slice_hdr_.get();
+  CHECK(slice_hdr);
+
+  if (slice_hdr->first_slice_segment_in_pic_flag) {
+    // New picture, so first finish the previous one before processing it.
+    FinishPrevFrameIfPresent();
+    CHECK(!curr_pic_);
+  }
+
+  return true;
 }
 
 bool H265Decoder::ProcessCurrentSlice() {
+  CHECK(curr_pic_);
+
+  const H265SliceHeader* slice_hdr = curr_slice_hdr_.get();
+  CHECK(slice_hdr);
+
+  const H265SPS* sps = parser_->GetSPS(curr_sps_id_);
+  CHECK(sps);
+
+  const H265PPS* pps = parser_->GetPPS(curr_pps_id_);
+  CHECK(pps);
+
+  // TODO(b/261127809): Implement to process the current slice
   NOTIMPLEMENTED();
   return false;
 }
@@ -771,8 +802,14 @@ bool H265Decoder::BuildRefPicLists(const H265SPS* sps,
   return true;
 }
 
-void H265Decoder::OutputPic(scoped_refptr<H265Picture> pic) {
+bool H265Decoder::OutputPic(scoped_refptr<H265Picture> pic) {
+  CHECK(!pic->outputted_);
+  pic->outputted_ = true;
+  VLOGF(4) << "Posting output task for POC: " << pic->pic_order_cnt_val_;
+
+  // TODO(b/261127809): Add this |pic|, ready to be outputted, to a queue.
   NOTIMPLEMENTED();
+  return false;
 }
 
 bool H265Decoder::PerformDpbOperations(const H265SPS* sps) {
@@ -903,9 +940,38 @@ bool H265Decoder::StartNewFrame(const H265SliceHeader* slice_hdr) {
   return false;
 }
 
-bool H265Decoder::FinishPrevFrameIfPresent() {
+bool H265Decoder::DecodePicture() {
+  CHECK(curr_pic_.get());
+
+  // TODO(b/261127809): Implement to submit a task to decode current picture
   NOTIMPLEMENTED();
   return false;
+}
+
+void H265Decoder::FinishPicture(scoped_refptr<H265Picture> pic) {
+  // 8.3.1
+  if (pic->valid_for_prev_tid0_pic_) {
+    prev_tid0_pic_ = pic;
+  }
+
+  ref_pic_list_.clear();
+  ref_pic_list0_.clear();
+  ref_pic_list1_.clear();
+  ref_pic_set_lt_curr_.clear();
+  ref_pic_set_st_curr_after_.clear();
+  ref_pic_set_st_curr_before_.clear();
+
+  last_slice_hdr_.reset();
+}
+
+void H265Decoder::FinishPrevFrameIfPresent() {
+  // If we already have a frame waiting to be decoded, decode it and finish.
+  if (curr_pic_) {
+    const bool success = DecodePicture();
+    CHECK(success) << "Failed to decode the current picture.";
+
+    FinishPicture(std::move(curr_pic_));
+  }
 }
 
 H265Decoder::DecodeResult H265Decoder::Decode() {
@@ -920,8 +986,7 @@ H265Decoder::DecodeResult H265Decoder::Decode() {
       if (parse_result == H265Parser::kEOStream) {
         curr_nalu_.reset();
 
-        const bool success = FinishPrevFrameIfPresent();
-        CHECK(success) << "Failed to finish processing the previous frame.";
+        FinishPrevFrameIfPresent();
 
         is_stream_over_ = true;
         return kRanOutOfStreamData;
@@ -1030,8 +1095,7 @@ H265Decoder::DecodeResult H265Decoder::Decode() {
         break;
       }
       case H265NALU::SPS_NUT: {
-        const bool success = FinishPrevFrameIfPresent();
-        CHECK(success) << "Failed to finish processing the previous frame.";
+        FinishPrevFrameIfPresent();
 
         int sps_id;
 
@@ -1042,8 +1106,7 @@ H265Decoder::DecodeResult H265Decoder::Decode() {
         break;
       }
       case H265NALU::PPS_NUT: {
-        const bool success = FinishPrevFrameIfPresent();
-        CHECK(success) << "Failed to finish processing the previous frame.";
+        FinishPrevFrameIfPresent();
 
         int pps_id;
 
@@ -1084,8 +1147,7 @@ H265Decoder::DecodeResult H265Decoder::Decode() {
       case H265NALU::UNSPEC53:
       case H265NALU::UNSPEC54:
       case H265NALU::UNSPEC55: {
-        const bool success = FinishPrevFrameIfPresent();
-        CHECK(success) << "Failed to finish processing the previous frame.";
+        FinishPrevFrameIfPresent();
         break;
       }
       default:
