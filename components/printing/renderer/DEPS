@@ -1,6 +1,5 @@
 include_rules = [
   "+cc/paint",
-  "+components/crash/core/common/crash_key.h",
   "+components/grit/components_resources.h",
   "+content/public/renderer",
   "+mojo/public",
