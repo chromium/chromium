@@ -5,6 +5,7 @@
 #include "components/navigation_interception/intercept_navigation_delegate.h"
 
 #include <memory>
+#include <tuple>
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
@@ -201,6 +202,12 @@ bool InterceptNavigationDelegate::ShouldIgnoreNavigation(
   // URL navigation.
   bool is_sandboxed = navigation_handle->SandboxFlagsInherited() !=
                       network::mojom::WebSandboxFlags::kNone;
+
+  bool initiator_is_sandboxed = navigation_handle->SandboxFlagsInitiator() !=
+                                network::mojom::WebSandboxFlags::kNone;
+
+  // TODO(https://crbug.com/1425355) Use the initiator sandbox flags.
+  std::ignore = initiator_is_sandboxed;
 
   return Java_InterceptNavigationDelegate_shouldIgnoreNavigation(
       env, jdelegate, navigation_handle->GetJavaNavigationHandle(),

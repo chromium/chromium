@@ -210,6 +210,7 @@ class MockNavigationHandle : public NavigationHandle {
               (const std::vector<std::string>& trials));
   MOCK_METHOD(void, SetIsOverridingUserAgent, (bool));
   MOCK_METHOD(void, SetSilentlyIgnoreErrors, ());
+  MOCK_METHOD(network::mojom::WebSandboxFlags, SandboxFlagsInitiator, ());
   MOCK_METHOD(network::mojom::WebSandboxFlags, SandboxFlagsInherited, ());
   MOCK_METHOD(network::mojom::WebSandboxFlags, SandboxFlagsToCommit, ());
   MOCK_METHOD(bool, IsWaitingToCommit, ());
