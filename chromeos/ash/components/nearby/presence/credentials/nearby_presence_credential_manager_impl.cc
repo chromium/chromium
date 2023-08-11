@@ -741,6 +741,7 @@ void NearbyPresenceCredentialManagerImpl::DownloadCredentials(
     base::RepeatingCallback<
         void(std::vector<::nearby::internal::SharedCredential>, bool)>
         download_credentials_result_callback) {
+  download_credentials_attempts_needed_count_++;
   ash::nearby::proto::ListPublicCertificatesRequest request;
   request.set_parent(kDeviceIdPrefix +
                      local_device_data_provider_->GetDeviceId());
@@ -773,14 +774,14 @@ void NearbyPresenceCredentialManagerImpl::HandleDownloadCredentialsResult(
     base::RepeatingCallback<
         void(std::vector<::nearby::internal::SharedCredential>, bool)>
         download_credentials_result_callback,
-    bool success,
+    ash::nearby::NearbyHttpResult result,
     std::vector<::nearby::internal::SharedCredential> credentials) {
-  // TODO(b/276307539): Add metrics to record failures.
-
   server_client_.reset();
 
   CHECK(download_on_demand_scheduler_);
-  if (!success) {
+  if (result != ash::nearby::NearbyHttpResult::kSuccess) {
+    metrics::RecordSharedCredentialDownloadFailureReason(result);
+
     // Allow the scheduler to exponentially attempt downloading credentials
     // until the max. Once it reaches the max attempts, notify consumers of
     // failure.
@@ -793,15 +794,22 @@ void NearbyPresenceCredentialManagerImpl::HandleDownloadCredentialsResult(
 
     // We've exceeded the max attempts; registration has failed.
     download_on_demand_scheduler_->Stop();
+    metrics::RecordSharedCredentialDownloadResult(/*success=*/false);
     download_on_demand_scheduler_.reset();
     CHECK(download_credentials_result_callback);
     download_credentials_result_callback.Run(/*credentials=*/{},
                                              /*success=*/false);
+    download_credentials_attempts_needed_count_ = 0;
     return;
   }
 
   download_on_demand_scheduler_->HandleResult(/*success=*/true);
+  metrics::RecordSharedCredentialDownloadResult(/*success=*/true);
+  metrics::RecordSharedCredentialDownloadTotalAttemptsNeededCount(
+      download_credentials_attempts_needed_count_);
   download_on_demand_scheduler_.reset();
+  download_credentials_attempts_needed_count_ = 0;
+  CHECK(download_credentials_result_callback);
   download_credentials_result_callback.Run(/*credentials=*/credentials,
                                            /*success=*/true);
 }
@@ -811,8 +819,9 @@ void NearbyPresenceCredentialManagerImpl::OnDownloadCredentialsTimeout(
         void(std::vector<::nearby::internal::SharedCredential>, bool)>
         download_credentials_result_callback) {
   // TODO(b/276307539): Add metrics to record timeout.
-  HandleDownloadCredentialsResult(download_credentials_result_callback,
-                                  /*success=*/false, /*credentials=*/{});
+  HandleDownloadCredentialsResult(
+      download_credentials_result_callback,
+      /*result=*/ash::nearby::NearbyHttpResult::kTimeout, /*credentials=*/{});
 }
 
 void NearbyPresenceCredentialManagerImpl::OnDownloadCredentialsSuccess(
@@ -828,9 +837,10 @@ void NearbyPresenceCredentialManagerImpl::OnDownloadCredentialsSuccess(
         proto::PublicCertificateToSharedCredential(public_certificate));
   }
 
-  HandleDownloadCredentialsResult(download_credentials_result_callback,
-                                  /*success=*/true,
-                                  /*credentials=*/remote_credentials);
+  HandleDownloadCredentialsResult(
+      download_credentials_result_callback,
+      /*result=*/ash::nearby::NearbyHttpResult::kSuccess,
+      /*credentials=*/remote_credentials);
 }
 
 void NearbyPresenceCredentialManagerImpl::OnDownloadCredentialsFailure(
@@ -840,8 +850,10 @@ void NearbyPresenceCredentialManagerImpl::OnDownloadCredentialsFailure(
     ash::nearby::NearbyHttpError error) {
   // TODO(b/276307539): Add metrics to record the type of NearbyHttpError.
   server_response_timer_.Stop();
-  HandleDownloadCredentialsResult(download_credentials_result_callback,
-                                  /*success=*/false, /*credentials=*/{});
+  HandleDownloadCredentialsResult(
+      download_credentials_result_callback,
+      /*result=*/ash::nearby::NearbyHttpErrorToResult(error),
+      /*credentials=*/{});
 }
 
 }  // namespace ash::nearby::presence

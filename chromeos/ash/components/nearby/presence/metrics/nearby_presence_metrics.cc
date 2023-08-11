@@ -25,4 +25,21 @@ void RecordSharedCredentialUploadResult(bool success) {
                             success);
 }
 
+void RecordSharedCredentialDownloadFailureReason(
+    ash::nearby::NearbyHttpResult failure_reason) {
+  base::UmaHistogramEnumeration(
+      "Nearby.Presence.Credentials.Download.FailureReason", failure_reason);
+}
+
+void RecordSharedCredentialDownloadTotalAttemptsNeededCount(int attempt_count) {
+  base::UmaHistogramExactLinear(
+      "Nearby.Presence.Credentials.Download.AttemptsNeededCount", attempt_count,
+      /*exclusive_max=*/10);
+}
+
+void RecordSharedCredentialDownloadResult(bool success) {
+  base::UmaHistogramBoolean("Nearby.Presence.Credentials.Download.Result",
+                            success);
+}
+
 }  // namespace ash::nearby::presence::metrics

@@ -229,7 +229,7 @@ class NearbyPresenceCredentialManagerImpl
       base::RepeatingCallback<
           void(std::vector<::nearby::internal::SharedCredential>, bool)>
           download_credentials_result_callback,
-      bool success,
+      ash::nearby::NearbyHttpResult result,
       std::vector<::nearby::internal::SharedCredential> credentials);
   void OnDownloadCredentialsTimeout(
       base::RepeatingCallback<
@@ -271,6 +271,12 @@ class NearbyPresenceCredentialManagerImpl
   // once the upload request is completed (either resulting in final
   // success or failure).
   int upload_credentials_attempts_needed_count_ = 0;
+
+  // Stores the number of current attempts for downloading credentials from the
+  // server. Increments on each attempt to download credentials, and is reset to
+  // 0 once the download request is completed (either resulting in final
+  // success or failure).
+  int download_credentials_attempts_needed_count_ = 0;
 
   // Initialized during the first time registration flow kicked off in
   // `RegisterPresence()`. Not expected to be a valid pointer unless used during

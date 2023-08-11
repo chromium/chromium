@@ -13,6 +13,10 @@ void RecordSharedCredentialUploadAttemptFailureReason(
     ash::nearby::NearbyHttpResult failure_reason);
 void RecordSharedCredentialUploadTotalAttemptsNeededCount(int attempt_count);
 void RecordSharedCredentialUploadResult(bool success);
+void RecordSharedCredentialDownloadFailureReason(
+    ash::nearby::NearbyHttpResult failure_reason);
+void RecordSharedCredentialDownloadTotalAttemptsNeededCount(int attempt_count);
+void RecordSharedCredentialDownloadResult(bool success);
 
 }  // namespace ash::nearby::presence::metrics
 

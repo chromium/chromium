@@ -316,6 +316,43 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Nearby.Presence.Credentials.Download.AttemptsNeededCount"
+    units="attempts" expires_after="2024-01-05">
+  <owner>julietlevesque@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records the total number of attempts of downloading the remote devices'
+    SharedCredentials from the Nearby Presence Web Server needed for a
+    successful download. Emitted on success to reflect the final count of
+    attempts required to download credentials from the server. No metric is
+    emitted on failure.
+  </summary>
+</histogram>
+
+<histogram name="Nearby.Presence.Credentials.Download.FailureReason"
+    enum="NearbyHttpResult" expires_after="2024-01-05">
+  <owner>julietlevesque@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records the failure reason of a single attempt to download the remote
+    devices' SharedCredentials from the Nearby Presence Web Server. Emitted
+    after every unsuccessful attempt to download credentials from the server. No
+    metric is emitted on success.
+  </summary>
+</histogram>
+
+<histogram name="Nearby.Presence.Credentials.Download.Result"
+    enum="BooleanSuccess" expires_after="2024-01-05">
+  <owner>julietlevesque@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records the overall success or failure of downloading the remote devices'
+    SharedCredentials from the Nearby Presence Web Server. Emitted after all
+    retries to download from the server have been completed, to reflect the
+    final result of downloading credentials from the server.
+  </summary>
+</histogram>
+
 <histogram name="Nearby.Presence.Credentials.Upload.AttemptsNeededCount"
     units="attempts" expires_after="2024-01-05">
   <owner>julietlevesque@google.com</owner>
