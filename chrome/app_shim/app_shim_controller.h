@@ -75,6 +75,10 @@ class AppShimController : public chrome::mojom::AppShim {
   // Called when a item is selected from the application dock menu.
   void CommandFromDock(uint32_t index);
 
+  // Called when an item is selected from the application menu while no windows
+  // are shown.
+  void CommandDispatch(int command_id);
+
   // Called by AppShimDelegate in response to an URL being opened. If this
   // occurs before OnDidFinishLaunching, then the argument is the files that
   // triggered the launch of the app.

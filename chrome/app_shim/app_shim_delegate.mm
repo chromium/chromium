@@ -6,6 +6,7 @@
 
 #include "base/mac/foundation_util.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/app/chrome_command_ids.h"
 #include "chrome/app_shim/app_shim_controller.h"
 #include "net/base/mac/url_conversions.h"
 
@@ -57,7 +58,20 @@
 }
 
 - (BOOL)validateUserInterfaceItem:(id<NSValidatedUserInterfaceItem>)item {
+  SEL action = [item action];
+  if (action == @selector(commandDispatch:)) {
+    NSInteger tag = [item tag];
+    if (tag == IDC_WEB_APP_SETTINGS || tag == IDC_NEW_WINDOW) {
+      return YES;
+    }
+  }
   return NO;
+}
+
+- (void)commandDispatch:(id)sender {
+  NSInteger tag = [sender tag];
+  NSLog(@"Dispatching: %d", int(tag));
+  _appShimController->CommandDispatch(tag);
 }
 
 - (NSMenu*)applicationDockMenu:(NSApplication*)sender {

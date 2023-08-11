@@ -124,6 +124,10 @@ interface AppShimHost {
   // Called when a profile is selected from the profiles menu.
   ProfileSelectedFromMenu(mojo_base.mojom.FilePath profile_path);
 
+  // Called when settings is opened from the app menu while no browser windows
+  // are open.
+  OpenAppSettings();
+
   // Sent when urls are opened by the app (e.g. clicking a link in mail)
   UrlsOpened(array<url.mojom.Url> urls);
 

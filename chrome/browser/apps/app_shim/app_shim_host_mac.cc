@@ -180,6 +180,10 @@ void AppShimHost::ProfileSelectedFromMenu(const base::FilePath& profile_path) {
   client_->OnShimSelectedProfile(this, profile_path);
 }
 
+void AppShimHost::OpenAppSettings() {
+  client_->OnShimOpenedAppSettings(this);
+}
+
 void AppShimHost::UrlsOpened(const std::vector<GURL>& urls) {
   client_->OnShimOpenedUrls(this, urls);
 }

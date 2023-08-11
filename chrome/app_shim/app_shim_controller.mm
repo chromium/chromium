@@ -617,6 +617,17 @@ void AppShimController::CommandFromDock(uint32_t index) {
   host_->OpenAppWithOverrideUrl(dock_menu_items_[index]->url);
 }
 
+void AppShimController::CommandDispatch(int command_id) {
+  switch (command_id) {
+    case IDC_WEB_APP_SETTINGS:
+      host_->OpenAppSettings();
+      break;
+    case IDC_NEW_WINDOW:
+      host_->ReopenApp();
+      break;
+  }
+}
+
 NSMenu* AppShimController::GetApplicationDockMenu() {
   if (init_state_ == InitState::kWaitingForAppToFinishLaunch ||
       dock_menu_items_.size() == 0)

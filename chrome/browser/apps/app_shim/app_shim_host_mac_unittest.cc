@@ -184,6 +184,7 @@ class AppShimHostTest : public testing::Test,
                          const std::vector<base::FilePath>& files) override {}
   void OnShimSelectedProfile(AppShimHost* host,
                              const base::FilePath& profile_path) override {}
+  void OnShimOpenedAppSettings(AppShimHost* host) override {}
   void OnShimOpenedUrls(AppShimHost* host,
                         const std::vector<GURL>& urls) override {}
   void OnShimOpenAppWithOverrideUrl(AppShimHost* host,

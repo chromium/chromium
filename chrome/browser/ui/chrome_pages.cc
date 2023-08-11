@@ -618,18 +618,30 @@ void ShowShortcutCustomizationApp(Profile* profile) {
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_FUCHSIA)
-void ShowWebAppSettings(Browser* browser,
-                        const std::string& app_id,
-                        web_app::AppSettingsPageEntryPoint entry_point) {
+void ShowWebAppSettingsImpl(Browser* browser,
+                            Profile* profile,
+                            const std::string& app_id,
+                            web_app::AppSettingsPageEntryPoint entry_point) {
   base::UmaHistogramEnumeration(
       web_app::kAppSettingsPageEntryPointsHistogramName, entry_point);
 
   const GURL link_destination(chrome::kChromeUIWebAppSettingsURL + app_id);
-  NavigateParams params(browser->profile(), link_destination,
-                        ui::PAGE_TRANSITION_TYPED);
+  NavigateParams params(profile, link_destination, ui::PAGE_TRANSITION_TYPED);
   params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
   params.browser = browser;
   Navigate(&params);
+}
+
+void ShowWebAppSettings(Browser* browser,
+                        const std::string& app_id,
+                        web_app::AppSettingsPageEntryPoint entry_point) {
+  ShowWebAppSettingsImpl(browser, browser->profile(), app_id, entry_point);
+}
+
+void ShowWebAppSettings(Profile* profile,
+                        const std::string& app_id,
+                        web_app::AppSettingsPageEntryPoint entry_point) {
+  ShowWebAppSettingsImpl(/*browser=*/nullptr, profile, app_id, entry_point);
 }
 #endif
 

@@ -45,6 +45,7 @@
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
+#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/profile_picker.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
@@ -52,6 +53,7 @@
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut_mac.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "components/crash/core/common/crash_key.h"
 #include "components/crx_file/id_util.h"
@@ -1178,6 +1180,33 @@ void AppShimManager::OnShimSelectedProfile(AppShimHost* host,
   LoadAndLaunchAppParams params;
   params.app_id = host->GetAppId();
   LoadAndLaunchApp(profile_path, params, base::DoNothing());
+}
+
+void AppShimManager::OnShimOpenedAppSettings(AppShimHost* host) {
+  // Retrieve the list of last-active profiles. If there are no last-active
+  // profiles (which is rare -- e.g, when the last-active profiles were
+  // removed), then use all profiles for which the app is installed.
+  std::set<base::FilePath> last_active_profile_paths =
+      AppShimRegistry::Get()->GetLastActiveProfilesForApp(host->GetAppId());
+  if (last_active_profile_paths.empty()) {
+    last_active_profile_paths =
+        AppShimRegistry::Get()->GetInstalledProfilesForApp(host->GetAppId());
+  }
+  if (last_active_profile_paths.empty()) {
+    return;
+  }
+  // Open settings in the first of these profiles.
+  LoadProfileAsync(
+      *last_active_profile_paths.begin(),
+      base::BindOnce(
+          [](const web_app::AppId& app_id, Profile* profile) {
+            if (profile) {
+              chrome::ShowWebAppSettings(
+                  profile, app_id,
+                  web_app::AppSettingsPageEntryPoint::kBrowserCommand);
+            }
+          },
+          host->GetAppId()));
 }
 
 void AppShimManager::OnShimOpenedUrls(AppShimHost* host,
