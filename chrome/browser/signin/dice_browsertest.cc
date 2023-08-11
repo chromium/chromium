@@ -942,8 +942,10 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest, EnableSyncAfterToken) {
   // Signin using the Chrome Sync endpoint.
   signin_metrics::AccessPoint access_point =
       signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS;
-  browser()->signin_view_controller()->ShowSignin(
-      profiles::BUBBLE_VIEW_MODE_GAIA_SIGNIN, access_point);
+  browser()->signin_view_controller()->ShowDiceEnableSyncTab(
+      access_point,
+      signin_metrics::PromoAction::PROMO_ACTION_NEW_ACCOUNT_NO_EXISTING_ACCOUNT,
+      /*email_hint=*/std::string());
 
   // Receive token.
   EXPECT_FALSE(
