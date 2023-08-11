@@ -1793,4 +1793,64 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest, GetWorkerContextId) {
   }
 }
 
+// Basic test to checks that service worker keepalives are tracked properly in
+// the ProcessManager.
+IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
+                       ActiveServiceWorkerKeepalivesAreTracked) {
+  // Load up a basic extension.
+  static constexpr char kManifest[] =
+      R"({
+           "name": "Worker Extension",
+           "manifest_version": 3,
+           "version": "0.1",
+           "background": {"service_worker": "background.js"}
+         })";
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"),
+                     "// Intentionally blank");
+
+  const Extension* extension = LoadExtension(
+      test_dir.UnpackedPath(), {.wait_for_registration_stored = true});
+
+  ProcessManager* process_manager = ProcessManager::Get(profile());
+  ASSERT_TRUE(process_manager);
+
+  // There should be exactly one service worker running.
+  std::vector<WorkerId> workers =
+      process_manager->GetServiceWorkersForExtension(extension->id());
+  ASSERT_EQ(1u, workers.size());
+  WorkerId worker_id = workers[0];
+
+  EXPECT_TRUE(
+      process_manager->GetServiceWorkerKeepaliveDataForRecords(extension->id())
+          .empty());
+
+  // Add a keepalive for an arbitrary reason.
+  const Activity::Type kActivityType = Activity::API_FUNCTION;
+  const std::string kExtraData = "tabs.create";
+  base::Uuid keepalive_uuid =
+      process_manager->IncrementServiceWorkerKeepaliveCount(
+          worker_id, content::ServiceWorkerExternalRequestTimeoutType::kDefault,
+          kActivityType, kExtraData);
+
+  {
+    auto keepalives = process_manager->GetServiceWorkerKeepaliveDataForRecords(
+        extension->id());
+    ASSERT_EQ(1u, keepalives.size());
+    const ProcessManager::ServiceWorkerKeepaliveData& keepalive_data =
+        keepalives.front();
+    EXPECT_EQ(worker_id, keepalive_data.worker_id);
+    EXPECT_EQ(kActivityType, keepalive_data.activity_type);
+    EXPECT_EQ(kExtraData, keepalive_data.extra_data);
+  }
+
+  process_manager->DecrementServiceWorkerKeepaliveCount(
+      worker_id, keepalive_uuid, kActivityType, kExtraData);
+
+  EXPECT_TRUE(
+      process_manager->GetServiceWorkerKeepaliveDataForRecords(extension->id())
+          .empty());
+}
+
 }  // namespace extensions

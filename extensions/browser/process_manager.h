@@ -61,6 +61,15 @@ class ProcessManager : public KeyedService,
  public:
   using ExtensionHostSet = std::set<extensions::ExtensionHost*>;
 
+  // A struct representing an active service worker keepalive.
+  struct ServiceWorkerKeepaliveData {
+    WorkerId worker_id;
+    Activity::Type activity_type;
+    std::string extra_data;
+  };
+  using ServiceWorkerKeepaliveDataMap =
+      std::map<base::Uuid, ServiceWorkerKeepaliveData>;
+
   static ProcessManager* Get(content::BrowserContext* context);
 
   ProcessManager(const ProcessManager&) = delete;
@@ -246,6 +255,14 @@ class ProcessManager : public KeyedService,
   // registered in the process manager. Otherwise, returns an empty base::Uuid.
   base::Uuid GetContextIdForWorker(const WorkerId& worker_id) const;
 
+  // Returns the active service worker keepalives for the given `extension_id`.
+  // Note: This should be used for debugging and metrics purposes; callers
+  // should only interact with the service worker keepalives they themselves
+  // created via IncrementServiceWorkerKeepaliveCount().
+  std::vector<ServiceWorkerKeepaliveData>
+  GetServiceWorkerKeepaliveDataForRecords(
+      const ExtensionId& extension_id) const;
+
   bool startup_background_hosts_created_for_test() const {
     return startup_background_hosts_created_;
   }
@@ -409,6 +426,9 @@ class ProcessManager : public KeyedService,
   // Maps render render_process_id -> extension_id for all Service Workers this
   // ProcessManager manages.
   std::map<int, std::set<ExtensionId>> worker_process_to_extension_ids_;
+
+  // A map of the active service worker keepalives.
+  ServiceWorkerKeepaliveDataMap service_worker_keepalives_;
 
   // Must be last member, see doc on WeakPtrFactory.
   base::WeakPtrFactory<ProcessManager> weak_ptr_factory_{this};

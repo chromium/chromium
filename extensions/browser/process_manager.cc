@@ -755,7 +755,6 @@ base::Uuid ProcessManager::IncrementServiceWorkerKeepaliveCount(
     content::ServiceWorkerExternalRequestTimeoutType timeout_type,
     Activity::Type activity_type,
     const std::string& extra_data) {
-  // TODO(lazyboy): Use |activity_type| and |extra_data|.
   int64_t service_worker_version_id = worker_id.version_id;
   DCHECK(!worker_id.extension_id.empty());
   const Extension* extension =
@@ -765,6 +764,10 @@ base::Uuid ProcessManager::IncrementServiceWorkerKeepaliveCount(
   DCHECK(BackgroundInfo::IsServiceWorkerBased(extension));
 
   base::Uuid request_uuid = base::Uuid::GenerateRandomV4();
+
+  service_worker_keepalives_[request_uuid] =
+      ServiceWorkerKeepaliveData{worker_id, activity_type, extra_data};
+
   content::ServiceWorkerContext* service_worker_context =
       util::GetServiceWorkerContextForExtensionId(extension->id(),
                                                   browser_context_);
@@ -820,6 +823,14 @@ void ProcessManager::DecrementServiceWorkerKeepaliveCount(
     return;
 
   DCHECK(BackgroundInfo::IsServiceWorkerBased(extension));
+
+  // Find and remove the entry from `service_worker_keepalives_`.
+  auto iter = service_worker_keepalives_.find(request_uuid);
+  CHECK(iter != service_worker_keepalives_.end());
+  CHECK_EQ(iter->second.worker_id, worker_id);
+  CHECK_EQ(iter->second.activity_type, activity_type);
+  CHECK_EQ(iter->second.extra_data, extra_data);
+  service_worker_keepalives_.erase(iter);
 
   int64_t service_worker_version_id = worker_id.version_id;
   content::ServiceWorkerContext* service_worker_context =
@@ -1060,6 +1071,19 @@ base::Uuid ProcessManager::GetContextIdForWorker(
     const WorkerId& worker_id) const {
   auto iter = worker_context_ids_.find(worker_id);
   return iter != worker_context_ids_.end() ? iter->second : base::Uuid();
+}
+
+std::vector<ProcessManager::ServiceWorkerKeepaliveData>
+ProcessManager::GetServiceWorkerKeepaliveDataForRecords(
+    const ExtensionId& extension_id) const {
+  std::vector<ServiceWorkerKeepaliveData> result;
+  for (const auto& entry : service_worker_keepalives_) {
+    if (entry.second.worker_id.extension_id == extension_id) {
+      result.push_back(entry.second);
+    }
+  }
+
+  return result;
 }
 
 std::vector<WorkerId> ProcessManager::GetAllWorkersIdsForTesting() {
