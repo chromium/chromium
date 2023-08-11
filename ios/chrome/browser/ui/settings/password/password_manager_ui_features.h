@@ -16,6 +16,11 @@ BASE_DECLARE_FEATURE(kIOSPasswordAuthOnEntry);
 // Helper function returning the status of `kIOSPasswordAuthOnEntry`.
 bool IsAuthOnEntryEnabled();
 
+BASE_DECLARE_FEATURE(kIOSPasswordAuthOnEntryV2);
+
+// Helper function returning the status of `kIOSPasswordAuthOnEntry2`.
+bool IsAuthOnEntryV2Enabled();
+
 }  // namespace password_manager::features
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_MANAGER_UI_FEATURES_H_

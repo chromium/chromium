@@ -1666,6 +1666,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"discover-feed-sport-card", flag_descriptions::kDiscoverFeedSportCardName,
      flag_descriptions::kDiscoverFeedSportCardDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kDiscoverFeedSportCard)},
+    {"ios-password-auth-on-entry-v2",
+     flag_descriptions::kIOSPasswordAuthOnEntryV2Name,
+     flag_descriptions::kIOSPasswordAuthOnEntryV2Description, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(password_manager::features::kIOSPasswordAuthOnEntryV2)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

@@ -4992,6 +4992,11 @@
     "expiry_milestone": 121
   },
   {
+    "name": "ios-password-auth-on-entry-v2",
+    "owners": ["eic", "bling-transactions@google.com"],
+    "expiry_milestone": 122
+  },
+  {
     "name": "ios-password-bottom-sheet",
     "owners": ["veronguyen", "sugoi", "tmartino", "bling-integrations-team@google.com"],
     "expiry_milestone": 118

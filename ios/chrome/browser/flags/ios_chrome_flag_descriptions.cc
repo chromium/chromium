@@ -607,8 +607,16 @@ const char kIOSNewPostRestoreExperienceDescription[] =
 
 const char kIOSPasswordAuthOnEntryName[] = "Password Manager Auth on Entry";
 const char kIOSPasswordAuthOnEntryDescription[] =
-    "Requires Biometric Authentication before showing saved credentials in "
-    "Password Manager.";
+    "Requires Local Authentication before showing saved credentials in "
+    "the Password Manager Main Page. Ignored if 'Password Manager Auth on "
+    "Entry V2' is enabled.";
+
+const char kIOSPasswordAuthOnEntryV2Name[] =
+    "Password Manager Auth on Entry V2";
+const char kIOSPasswordAuthOnEntryV2Description[] =
+    "Requires Local Authentication before showing saved credentials in "
+    "Password Manager subpages. Supersedes `Password Manager Auth on Entry` if "
+    "enabled.";
 
 const char kIOSPasswordCheckupName[] = "Password Checkup";
 const char kIOSPasswordCheckupDescription[] =

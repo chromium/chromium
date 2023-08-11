@@ -549,12 +549,16 @@ void CheckPasswordManagerVisitMetricCount(int count) {
             (testOpenPasswordManagerWithWithoutPasscodeSet)]) {
     config.features_enabled.push_back(
         password_manager::features::kIOSPasswordAuthOnEntry);
+    config.features_enabled.push_back(
+        password_manager::features::kIOSPasswordAuthOnEntryV2);
   }
 
   if ([self isRunningTest:@selector
             (testPasswordManagerVisitMetricWithoutAuthRequired)]) {
     config.features_disabled.push_back(
         password_manager::features::kIOSPasswordAuthOnEntry);
+    config.features_disabled.push_back(
+        password_manager::features::kIOSPasswordAuthOnEntryV2);
   }
 
   return config;

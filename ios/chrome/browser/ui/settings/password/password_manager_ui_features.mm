@@ -5,8 +5,8 @@
 #import "ios/chrome/browser/ui/settings/password/password_manager_ui_features.h"
 
 namespace password_manager::features {
-// When enabled, biometric authentication (Face ID, Touch ID or Passcode) is
-// required to view saved credentials in the Password Manager.
+// When enabled, local authentication (Face ID, Touch ID or Passcode) is
+// required to view saved credentials in the Password Manager Main Page.
 BASE_FEATURE(kIOSPasswordAuthOnEntry,
              "IOSPasswordAuthOnEntry",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -14,4 +14,15 @@ BASE_FEATURE(kIOSPasswordAuthOnEntry,
 bool IsAuthOnEntryEnabled() {
   return base::FeatureList::IsEnabled(kIOSPasswordAuthOnEntry);
 }
+
+// When enabled, local authentication (Face ID, Touch ID or Passcode) is
+// required to view saved credentials in all Password Manager Surfaces.
+BASE_FEATURE(kIOSPasswordAuthOnEntryV2,
+             "IOSPasswordAuthOnEntryV2",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsAuthOnEntryV2Enabled() {
+  return base::FeatureList::IsEnabled(kIOSPasswordAuthOnEntryV2);
+}
+
 }  // namespace password_manager::features
