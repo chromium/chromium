@@ -275,6 +275,9 @@
     <message name="IDS_MANAGEMENT_EXTENSION_REPORT_PERF_CRASH" desc="Message explaining that an extension currently reports the user's  performance data and crash report">
       Performance data and crash reports
     </message>
+    <message name="IDS_MANAGEMENT_LEGACY_TECH_REPORT" desc="Message explaining that browser will upload a report when a legacy technology is used for a webpage">
+      A limited list of URLs of pages you visit where <ph name="BEGIN_LINK">&lt;a target="_blank" href="https://chromestatus.com/features#browsers.chrome.status%3A%22Deprecated%22" &gt;</ph>legacy technology events<ph name="END_LINK">&lt;/a&gt;</ph> are occuring.
+    </message>
 
     <!-- Strings related to Chrome Enterprise Connectors -->
     <message name="IDS_MANAGEMENT_THREAT_PROTECTION" desc="Title of the Chrome Enterprise Connectors section of the page">

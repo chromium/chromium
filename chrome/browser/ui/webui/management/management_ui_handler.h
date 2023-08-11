@@ -88,6 +88,8 @@ extern const char kManagementOnPrintVisibleData[];
 extern const char kManagementOnPageVisitedEvent[];
 extern const char kManagementOnPageVisitedVisibleData[];
 
+extern const char kManagementLegacyTechReport[];
+
 extern const char kPolicyKeyReportMachineIdData[];
 extern const char kPolicyKeyReportUserIdData[];
 extern const char kPolicyKeyReportVersionData[];
@@ -102,6 +104,7 @@ extern const char kReportingTypeExtensions[];
 extern const char kReportingTypeSecurity[];
 extern const char kReportingTypeUser[];
 extern const char kReportingTypeUserActivity[];
+extern const char kReportingTypeLegacyTech[];
 
 namespace extensions {
 class Extension;

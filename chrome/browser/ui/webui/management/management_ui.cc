@@ -153,6 +153,7 @@ content::WebUIDataSource* CreateAndAddManagementUIHtmlSource(Profile* profile) {
     {kManagementOnPageVisitedEvent, IDS_MANAGEMENT_PAGE_VISITED_EVENT},
     {kManagementOnPageVisitedVisibleData,
      IDS_MANAGEMENT_PAGE_VISITED_VISIBLE_DATA},
+    {kManagementLegacyTechReport, IDS_MANAGEMENT_LEGACY_TECH_REPORT},
   };
 
   source->AddLocalizedStrings(kLocalizedStrings);
