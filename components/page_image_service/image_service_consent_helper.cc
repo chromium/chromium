@@ -58,10 +58,8 @@ void ImageServiceConsentHelper::EnqueueRequest(
   if (!request_processing_timer_.IsRunning()) {
     request_processing_timer_.Start(
         FROM_HERE, kTimeout,
-        base::BindOnce(
-            &ImageServiceConsentHelper::OnTimeoutExpired,
-            // Unretained usage here okay, because this object owns the timer.
-            base::Unretained(this)));
+        base::BindOnce(&ImageServiceConsentHelper::OnTimeoutExpired,
+                       weak_ptr_factory_.GetWeakPtr()));
   }
 }
 
