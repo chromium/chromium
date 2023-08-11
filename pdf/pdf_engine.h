@@ -408,6 +408,8 @@ class PDFEngine {
   virtual std::vector<AccessibilityImageInfo> GetImageInfo(
       int page_index,
       uint32_t text_run_count) = 0;
+  // Returns the image as a 32-bit bitmap format for OCR.
+  virtual SkBitmap GetImageForOcr(int page_index, int image_index) = 0;
   // For all the highlights in page `page_index`, get their underlying text
   // ranges and bounding boxes.
   virtual std::vector<AccessibilityHighlightInfo> GetHighlightInfo(
