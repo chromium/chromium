@@ -2560,11 +2560,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "enable-email-in-bookmarks-reading-list-snackbar",
-    "owners": [ "jlebel", "bsazonov", "chrome-signin-team" ],
-    "expiry_milestone": 116
-  },
-  {
     "name": "enable-empty-states",
     "owners": [ "zheliooo@google.com", "skavuluru@google.com", "nemco@google.com", "clank-app-team@google.com" ],
     "expiry_milestone": 120
