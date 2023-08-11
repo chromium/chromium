@@ -746,14 +746,12 @@ export class FileManager extends EventTarget {
     this.ui_.decorateFilesMenuItems();
     this.ui_.selectionMenuButton.hidden = false;
 
-    await Promise.all(
-        [fileListPromise, currentDirectoryPromise, this.setGuestMode_()]);
-
-    // When bulk pin progress events are received, dispatch an action to the
-    // store containing the updated data.
-    // TODO(b/275635808): Depending on the users corpus size, this API could be
-    // quite chatty, consider wrapping it in a concurrency model.
-    this.initBulkPinning_();
+    await Promise.all([
+      fileListPromise,
+      currentDirectoryPromise,
+      this.setGuestMode_(),
+      this.initBulkPinning_(),
+    ]);
   }
 
   /**
@@ -767,21 +765,21 @@ export class FileManager extends EventTarget {
       return;
     }
 
-    const promise = getBulkPinProgress();
-
-    chrome.fileManagerPrivate.onBulkPinProgress.addListener((progress) => {
-      console.debug('Got bulk-pinning event:', progress);
-      this.store_.dispatch(updateBulkPinProgress(progress));
-    });
-
     try {
+      const promise = getBulkPinProgress();
+
+      chrome.fileManagerPrivate.onBulkPinProgress.addListener((progress) => {
+        console.debug('Got bulk-pinning event:', progress);
+        this.store_.dispatch(updateBulkPinProgress(progress));
+      });
+
       const progress = await promise;
       if (progress) {
         console.debug('Got initial bulk-pinning state:', progress);
         this.store_.dispatch(updateBulkPinProgress(progress));
       }
     } catch (e) {
-      console.error('Cannot get initial bulk-pinning state:', e);
+      console.warn('Cannot get initial bulk-pinning state:', e);
     }
   }
 
