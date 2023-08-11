@@ -74,6 +74,8 @@ SyncEncryptionKeysToTrustedVaultKeys(
   return trusted_vault_keys;
 }
 
+// Parses an array of key objects passed to `setClientEncryptionKeys()`.
+// The members of each object are `epoch` integer and `key` ArrayBuffer.
 bool ParseTrustedVaultKeyArray(
     v8::Local<v8::Context> context,
     v8::Local<v8::Array> array,
@@ -86,58 +88,60 @@ bool ParseTrustedVaultKeyArray(
       return false;
     }
     v8::Local<v8::Object> obj = value.As<v8::Object>();
-    v8::Local<v8::Value> version_value;
-    if (!obj->Get(context, gin::StringToV8(context->GetIsolate(), "version"))
-             .ToLocal(&version_value) ||
-        !version_value->IsInt32()) {
-      DVLOG(1) << "invalid key version";
+    v8::Local<v8::Value> epoch_value;
+    if (!obj->Get(context, gin::StringToV8(context->GetIsolate(), "epoch"))
+             .ToLocal(&epoch_value) ||
+        !epoch_value->IsInt32()) {
+      DVLOG(1) << "invalid key epoch";
       return false;
     }
-    const int32_t version = version_value.As<v8::Int32>()->Value();
+    const int32_t version = epoch_value.As<v8::Int32>()->Value();
 
-    v8::Local<v8::Value> bytes_value;
-    if (!obj->Get(context, gin::StringToV8(context->GetIsolate(), "bytes"))
-             .ToLocal(&bytes_value) ||
-        !bytes_value->IsArrayBuffer()) {
+    v8::Local<v8::Value> key_value;
+    if (!obj->Get(context, gin::StringToV8(context->GetIsolate(), "key"))
+             .ToLocal(&key_value) ||
+        !key_value->IsArrayBuffer()) {
       DVLOG(1) << "invalid key bytes";
       return false;
     }
     std::vector<uint8_t> bytes =
-        ArrayBufferAsBytes(bytes_value.As<v8::ArrayBuffer>());
+        ArrayBufferAsBytes(key_value.As<v8::ArrayBuffer>());
     trusted_vault_keys->push_back(
         chrome::mojom::TrustedVaultKey::New(version, std::move(bytes)));
   }
   return true;
 }
 
-bool ParseObjectToTrustedVaultKeysMap(
+// Parses the `encryption_keys` parameter to `setClientEncryptionKeys()`, which
+// is a map of security domain name strings to encryption_keys: A map of
+// security domain name strings to arrays of objects with members `epoch`
+// integer, and `key` ArrayBuffer.
+bool ParseTrustedVaultKeysFromMap(
     v8::Local<v8::Context> context,
-    v8::Local<v8::Object> object,
+    v8::Local<v8::Map> map,
     base::flat_map<std::string, std::vector<chrome::mojom::TrustedVaultKeyPtr>>*
         trusted_vault_keys) {
   std::vector<
       std::pair<std::string, std::vector<chrome::mojom::TrustedVaultKeyPtr>>>
       result;
-  v8::Local<v8::Array> own_property_names =
-      object->GetOwnPropertyNames(context).ToLocalChecked();
-  for (uint32_t i = 0; i < own_property_names->Length(); ++i) {
+  v8::Local<v8::Array> array = map->AsArray();
+  CHECK_EQ(array->Length(), 2 * map->Size());
+  for (uint32_t i = 0; i < array->Length(); i += 2) {
     v8::Local<v8::Value> key;
-    if (!own_property_names->Get(context, i).ToLocal(&key) ||
-        !key->IsString()) {
+    if (!array->Get(context, i).ToLocal(&key) || !key->IsString()) {
       DVLOG(1) << "invalid map key";
       return false;
     }
     const std::string security_domain_name(
         *v8::String::Utf8Value(context->GetIsolate(), key));
 
-    v8::Local<v8::Value> prop_value;
-    if (!object->Get(context, key).ToLocal(&prop_value) ||
-        !prop_value->IsArray()) {
+    v8::Local<v8::Value> value;
+    if (!array->Get(context, i + 1).ToLocal(&value) || !value->IsArray()) {
       DVLOG(1) << "invalid map value";
       return false;
     }
     std::vector<chrome::mojom::TrustedVaultKeyPtr> domain_keys;
-    if (!ParseTrustedVaultKeyArray(context, prop_value.As<v8::Array>(),
+    if (!ParseTrustedVaultKeyArray(context, value.As<v8::Array>(),
                                    &domain_keys)) {
       DVLOG(1) << "parsing vault keys failed";
       return false;
@@ -359,8 +363,8 @@ void TrustedVaultEncryptionKeysExtension::SetClientEncryptionKeys(
   //   callback: Allows caller to get notified upon completion.
   //   gaia_id: String representing the user's server-provided ID.
   //   encryption_keys: A map of security domain name string => array of
-  //                    TrustedVaultKey, with members `version` integer and
-  //                    `bytes` encryption key blob.
+  //                    object with members `epoch` integer, and `key`
+  //                    ArrayBuffer.
 
   v8::HandleScope handle_scope(args->isolate());
 
@@ -387,8 +391,8 @@ void TrustedVaultEncryptionKeysExtension::SetClientEncryptionKeys(
   }
 
   v8::Local<v8::Object> encryption_keys;
-  if (!args->GetNext(&encryption_keys)) {
-    DLOG(ERROR) << "No encryption keys object";
+  if (!args->GetNext(&encryption_keys) || !encryption_keys->IsMap()) {
+    DLOG(ERROR) << "No encryption keys map";
     RecordCallToSetClientEncryptionKeysToUma(kInvalidArgs);
     args->ThrowError();
     return;
@@ -396,8 +400,8 @@ void TrustedVaultEncryptionKeysExtension::SetClientEncryptionKeys(
 
   base::flat_map<std::string, std::vector<chrome::mojom::TrustedVaultKeyPtr>>
       trusted_vault_keys;
-  if (!ParseObjectToTrustedVaultKeysMap(context, encryption_keys,
-                                        &trusted_vault_keys)) {
+  if (!ParseTrustedVaultKeysFromMap(context, encryption_keys.As<v8::Map>(),
+                                    &trusted_vault_keys)) {
     DLOG(ERROR) << "Can't parse encryption keys object";
     RecordCallToSetClientEncryptionKeysToUma(kInvalidArgs);
     args->ThrowError();
