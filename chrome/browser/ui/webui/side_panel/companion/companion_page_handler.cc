@@ -240,7 +240,6 @@ void CompanionPageHandler::OnLoadingState(
                               false);
     return;
   }
-  NOTREACHED();
 }
 
 void CompanionPageHandler::ShowUI() {
