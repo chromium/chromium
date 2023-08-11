@@ -701,17 +701,14 @@ const FeatureEntry::Choice kReplaceSyncPromosWithSignInPromosChoices[] = {
     {"Everything (bookmarks, reading list, etc)", "enable-features",
      "ReplaceSyncPromosWithSignInPromos,"
      "FeedBottomSyncStringRemoval,"
-     "SyncEnableContactInfoDataType,"
      "SyncEnableContactInfoDataTypeInTransportMode,"
      "SyncEnableContactInfoDataTypeForCustomPassphraseUsers,"
-     "EnablePasswordsAccountStorage,"
      "EnableBookmarksAccountStorage,"
      "EnablePreferencesAccountStorage,"
      "ReadingListEnableDualReadingListModel,"
      "ReadingListEnableSyncTransportModeUponSignIn,"
      "ConsistencyNewAccountInterface,"
-     "AutofillAccountProfileStorage,"
-     "SyncEnableHistoryDataType"},
+     "AutofillAccountProfileStorage"},
 };
 
 const FeatureEntry::FeatureParam kOneTapForMapsConsentModeDefault[] = {
