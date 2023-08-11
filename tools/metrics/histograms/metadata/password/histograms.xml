@@ -3545,7 +3545,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.UPMUpdateSignInCredentialsSucces"
-    enum="Boolean" expires_after="2023-08-20">
+    enum="Boolean" expires_after="2024-01-30">
   <owner>izuzic@google.com</owner>
   <owner>ioanap@chromium.org</owner>
   <summary>
