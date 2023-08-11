@@ -74,11 +74,6 @@ class MockPrinter {
                      uint32_t expected_pages_count,
                      bool has_selection,
                      printing::mojom::PrintPagesParams* settings);
-  void UpdateSettings(printing::mojom::PrintPagesParams* params,
-                      const printing::PageRanges& page_range_array,
-                      int margins_type,
-                      const gfx::SizeF& page_size,
-                      int scale_factor);
   void PrintPage(printing::mojom::DidPrintDocumentParamsPtr params);
 
   // Functions that retrieve the output pages.
@@ -98,7 +93,7 @@ class MockPrinter {
   void CreateDocumentCookie();
 
   // Helper function to fill the fields in |params|.
-  void SetPrintParams(printing::mojom::PrintParams* params);
+  void GetPrintParams(printing::mojom::PrintParams* params) const;
 
   // In pixels according to dpi_x and dpi_y.
   gfx::SizeF page_size_;

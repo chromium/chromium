@@ -22,40 +22,6 @@
 #include "printing/pdf_metafile_cg_mac.h"
 #endif
 
-namespace {
-
-void UpdateMargins(int margins_type,
-                   int dpi,
-                   printing::mojom::PrintParams* params) {
-  printing::mojom::MarginType type =
-      static_cast<printing::mojom::MarginType>(margins_type);
-  if (type == printing::mojom::MarginType::kNoMargins) {
-    params->content_size.SetSize(static_cast<int>((8.5 * dpi)),
-                                 static_cast<int>((11.0 * dpi)));
-    params->margin_left = 0;
-    params->margin_top = 0;
-  } else if (type == printing::mojom::MarginType::kPrintableAreaMargins) {
-    params->content_size.SetSize(static_cast<int>((8.0 * dpi)),
-                                 static_cast<int>((10.5 * dpi)));
-    params->margin_left = static_cast<int>(0.25 * dpi);
-    params->margin_top = static_cast<int>(0.25 * dpi);
-  } else if (type == printing::mojom::MarginType::kCustomMargins) {
-    params->content_size.SetSize(static_cast<int>((7.9 * dpi)),
-                                 static_cast<int>((10.4 * dpi)));
-    params->margin_left = static_cast<int>(0.30 * dpi);
-    params->margin_top = static_cast<int>(0.30 * dpi);
-  }
-}
-
-void UpdatePageSizeAndScaling(const gfx::SizeF& page_size,
-                              int scale_factor,
-                              printing::mojom::PrintParams* params) {
-  params->page_size = page_size;
-  params->scale_factor = static_cast<double>(scale_factor) / 100.0;
-}
-
-}  // namespace
-
 MockPrinterPage::MockPrinterPage(const printing::Image& image)
     : image_(image) {}
 
@@ -103,7 +69,7 @@ printing::mojom::PrintParamsPtr MockPrinter::GetDefaultPrintSettings() {
   // Assign a unit document cookie and set the print settings.
   CreateDocumentCookie();
   auto params = printing::mojom::PrintParams::New();
-  SetPrintParams(params.get());
+  GetPrintParams(params.get());
   return params;
 }
 
@@ -132,37 +98,7 @@ void MockPrinter::ScriptedPrint(int cookie,
 
   *settings->params = printing::mojom::PrintParams();
   settings->pages.clear();
-
-  settings->params->dpi = gfx::Size(dpi_, dpi_);
-  settings->params->selection_only = selection_only_;
-  settings->params->should_print_backgrounds = should_print_backgrounds_;
-  settings->params->document_cookie = document_cookie_.value();
-  settings->params->page_size = page_size_;
-  settings->params->content_size = content_size_;
-  settings->params->printable_area = printable_area_;
-  settings->params->is_first_request = is_first_request_;
-  settings->params->print_scaling_option = print_scaling_option_;
-  settings->params->print_to_pdf = print_to_pdf_;
-  settings->params->preview_request_id = preview_request_id_;
-  settings->params->display_header_footer = display_header_footer_;
-  settings->params->title = title_;
-  settings->params->url = url_;
-  printer_status_ = PRINTER_PRINTING;
-}
-
-void MockPrinter::UpdateSettings(printing::mojom::PrintPagesParams* params,
-                                 const printing::PageRanges& pages,
-                                 int margins_type,
-                                 const gfx::SizeF& page_size,
-                                 int scale_factor) {
-  EXPECT_TRUE(document_cookie_.has_value());
-
-  *params->params = printing::mojom::PrintParams();
-  params->pages = pages;
-  SetPrintParams(params->params.get());
-  UpdateMargins(margins_type, dpi_, params->params.get());
-  if (!page_size.IsEmpty())
-    UpdatePageSizeAndScaling(page_size, scale_factor, params->params.get());
+  GetPrintParams(settings->params.get());
   printer_status_ = PRINTER_PRINTING;
 }
 
@@ -250,7 +186,7 @@ void MockPrinter::CreateDocumentCookie() {
                          : printing::PrintSettings::NewCookie();
 }
 
-void MockPrinter::SetPrintParams(printing::mojom::PrintParams* params) {
+void MockPrinter::GetPrintParams(printing::mojom::PrintParams* params) const {
   params->dpi = gfx::Size(dpi_, dpi_);
   params->selection_only = selection_only_;
   params->should_print_backgrounds = should_print_backgrounds_;
