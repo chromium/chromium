@@ -1209,7 +1209,7 @@ void WebGPUDecoderImpl::RequestAdapterImpl(
              "No available adapters.", userdata);
     return;
   }
-  callback(WGPURequestAdapterStatus_Success, adapter.Release(), nullptr,
+  callback(WGPURequestAdapterStatus_Success, adapter.MoveToCHandle(), nullptr,
            userdata);
 }
 
