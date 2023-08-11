@@ -233,7 +233,8 @@ enum class FeatureProcessingError {
   kSqlBindValuesError = 4,
   kSqlQueryRunError = 5,
   kResultTensorError = 6,
-  kMaxValue = kResultTensorError,
+  kSuccess = 7,
+  kMaxValue = kSuccess,
 };
 
 // Return a string display for the given FeatureProcessingError.

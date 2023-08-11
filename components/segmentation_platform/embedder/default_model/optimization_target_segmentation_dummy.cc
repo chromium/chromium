@@ -32,6 +32,12 @@ constexpr int64_t kMinSignalCollectionLength = 7;
 // Refresh the result every 7 days.
 constexpr int64_t kResultTTLDays = 7;
 
+// InputFeatures.
+constexpr std::array<MetadataWriter::UMAFeature, 1> kUMAFeatures = {
+    // Total amount of times user action was recorded in last 14 days.
+    MetadataWriter::UMAFeature::FromUserAction("UserActionName", 14),
+};
+
 }  // namespace
 
 // static
@@ -45,6 +51,8 @@ std::unique_ptr<Config> OptimizationTargetSegmentationDummy::GetConfig() {
   config->segmentation_uma_name = kOptimizationTargetSegmentationDummyUmaName;
   config->AddSegmentId(kSegmentId,
                        std::make_unique<OptimizationTargetSegmentationDummy>());
+  config->auto_execute_and_cache = false;
+
   return config;
 }
 
@@ -68,10 +76,15 @@ OptimizationTargetSegmentationDummy::GetModelConfig() {
       /*top_label_to_ttl_list=*/{},
       /*default_ttl=*/kResultTTLDays, proto::TimeUnit::DAY);
 
-  // Set ondemand model.
-  metadata.mutable_training_outputs()
-      ->mutable_trigger_config()
-      ->set_decision_type(proto::TrainingOutputs::TriggerConfig::ONDEMAND);
+  // Set input features.
+  writer.AddUmaFeatures(kUMAFeatures.data(), kUMAFeatures.size());
+
+  // Set output features.
+  writer.AddUmaFeatures(kUMAFeatures.data(), kUMAFeatures.size(),
+                        /*is_output=*/true);
+
+  // Set ondemand model with a trigger.
+  writer.AddDelayTrigger(0);
 
   return std::make_unique<ModelConfig>(std::move(metadata), kModelVersion);
 }
@@ -79,6 +92,13 @@ OptimizationTargetSegmentationDummy::GetModelConfig() {
 void OptimizationTargetSegmentationDummy::ExecuteModelWithInput(
     const ModelProvider::Request& inputs,
     ExecutionCallback callback) {
+  // Invalid inputs.
+  if (inputs.size() != kUMAFeatures.size()) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
+    return;
+  }
+
   float result = 1;
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(

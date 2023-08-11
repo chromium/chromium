@@ -26,8 +26,7 @@ TEST_F(OptimizationTargetSegmentationDummyTest, InitAndFetchModel) {
 }
 
 TEST_F(OptimizationTargetSegmentationDummyTest, ExecuteModelWithInput) {
-  // TODO: Add test cases to verify if the heuristic returns the right segment.
-  ExpectExecutionWithInput(/*inputs=*/{}, /*expected_error=*/false,
+  ExpectExecutionWithInput(/*inputs=*/{1}, /*expected_error=*/false,
                            /*expected_result=*/{1});
 }
 
