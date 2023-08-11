@@ -95,6 +95,12 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::VisualPropertiesDataView,
     return r.compositing_scale_factor;
   }
 
+  static float cursor_accessibility_scale_factor(
+      const blink::VisualProperties& r) {
+    DCHECK_GE(r.cursor_accessibility_scale_factor, 1.f);
+    return r.cursor_accessibility_scale_factor;
+  }
+
   static const std::vector<gfx::Rect>& root_widget_window_segments(
       const blink::VisualProperties& r) {
     return r.root_widget_window_segments;

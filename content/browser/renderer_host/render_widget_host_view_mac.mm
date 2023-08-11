@@ -60,6 +60,8 @@
 #import "ui/base/clipboard/clipboard_util_mac.h"
 #include "ui/base/cocoa/animation_utils.h"
 #include "ui/base/cocoa/cocoa_base_utils.h"
+#include "ui/base/cocoa/cursor_accessibility_scale_factor_observer.h"
+#include "ui/base/cocoa/cursor_utils.h"
 #include "ui/base/cocoa/remote_accessibility_api.h"
 #import "ui/base/cocoa/secure_password_input.h"
 #include "ui/base/cocoa/text_services_context_menu.h"
@@ -240,6 +242,14 @@ RenderWidgetHostViewMac::RenderWidgetHostViewMac(RenderWidgetHost* widget)
   }
 
   cursor_manager_ = std::make_unique<CursorManager>(this);
+  // Start observing changes to the system's cursor accessibility scale factor.
+  __block auto render_widget_host_view_mac = this;
+  cursor_scale_observer_ =
+      [[CursorAccessibilityScaleFactorObserver alloc] initWithHandler:^{
+        ui::GetCursorAccessibilityScaleFactor(/*force_update=*/true);
+        // Notify renderers of the new system cursor accessibility scale factor.
+        render_widget_host_view_mac->host()->SynchronizeVisualProperties();
+      }];
 
   if (GetTextInputManager())
     GetTextInputManager()->AddObserver(this);

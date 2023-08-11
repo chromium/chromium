@@ -152,6 +152,7 @@
 #include "content/browser/renderer_host/input/fling_scheduler_mac.h"
 #include "services/device/public/mojom/wake_lock_provider.mojom.h"
 #include "ui/accelerated_widget_mac/window_resize_helper_mac.h"
+#include "ui/base/cocoa/cursor_utils.h"
 #endif
 
 using blink::DragOperationsMask;
@@ -1092,6 +1093,12 @@ blink::VisualProperties RenderWidgetHostImpl::GetVisualProperties() {
 
   visual_properties.compositing_scale_factor =
       properties_from_parent_local_root_.compositing_scale_factor;
+
+#if BUILDFLAG(IS_MAC)
+  // Only macOS cursor scaling affects CSS custom cursor images for now.
+  visual_properties.cursor_accessibility_scale_factor =
+      ui::GetCursorAccessibilityScaleFactor();
+#endif
 
   // The |visible_viewport_size| is affected by auto-resize which is magical and
   // tricky.
@@ -2772,6 +2779,8 @@ bool RenderWidgetHostImpl::StoredVisualPropertiesNeedsUpdate(
              new_visual_properties.page_scale_factor ||
          old_visual_properties->compositing_scale_factor !=
              new_visual_properties.compositing_scale_factor ||
+         old_visual_properties->cursor_accessibility_scale_factor !=
+             new_visual_properties.cursor_accessibility_scale_factor ||
          old_visual_properties->is_pinch_gesture_active !=
              new_visual_properties.is_pinch_gesture_active ||
          old_visual_properties->root_widget_window_segments !=

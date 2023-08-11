@@ -39,6 +39,9 @@ struct FrameVisualProperties {
   // account the transform from child frame space to main frame space.
   float compositing_scale_factor = 1;
 
+  // The OS cursor accessibility scale factor.
+  float cursor_accessibility_scale_factor = 1;
+
   // The size of the area of the widget that is visible to the user, in DIPs.
   // The visible area may be empty if the visible area does not intersect with
   // the widget, for example in the case of a child frame that is entirely

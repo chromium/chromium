@@ -955,6 +955,8 @@ bool RemoteFrame::SynchronizeVisualProperties(bool propagate) {
           pending_visual_properties_.page_scale_factor ||
       sent_visual_properties_->compositing_scale_factor !=
           pending_visual_properties_.compositing_scale_factor ||
+      sent_visual_properties_->cursor_accessibility_scale_factor !=
+          pending_visual_properties_.cursor_accessibility_scale_factor ||
       sent_visual_properties_->is_pinch_gesture_active !=
           pending_visual_properties_.is_pinch_gesture_active ||
       sent_visual_properties_->visible_viewport_size !=
@@ -1072,6 +1074,11 @@ void RemoteFrame::DidChangeVisibleViewportSize(
 void RemoteFrame::UpdateCaptureSequenceNumber(
     uint32_t capture_sequence_number) {
   pending_visual_properties_.capture_sequence_number = capture_sequence_number;
+  SynchronizeVisualProperties();
+}
+
+void RemoteFrame::CursorAccessibilityScaleFactorChanged(float scale_factor) {
+  pending_visual_properties_.cursor_accessibility_scale_factor = scale_factor;
   SynchronizeVisualProperties();
 }
 

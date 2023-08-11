@@ -1717,6 +1717,24 @@ void WebFrameWidgetImpl::UpdateVisualProperties(
         /*is_pinch_gesture_active=*/false);
   }
 
+  EventHandler& event_handler = local_root_->GetFrame()->GetEventHandler();
+  if (event_handler.cursor_accessibility_scale_factor() !=
+      visual_properties.cursor_accessibility_scale_factor) {
+    ForEachLocalFrameControlledByWidget(
+        local_root_->GetFrame(), [&](WebLocalFrameImpl* local_frame) {
+          local_frame->GetFrame()
+              ->GetEventHandler()
+              .set_cursor_accessibility_scale_factor(
+                  visual_properties.cursor_accessibility_scale_factor);
+        });
+    // Propagate changes down to any child RemoteFrames.
+    ForEachRemoteFrameControlledByWidget(
+        [scale_factor = visual_properties.cursor_accessibility_scale_factor](
+            RemoteFrame* remote_frame) {
+          remote_frame->CursorAccessibilityScaleFactorChanged(scale_factor);
+        });
+  }
+
   // TODO(crbug.com/939118): This code path where scroll_focused_node_into_view
   // is set is used only for WebView, crbug 939118 tracks fixing webviews to
   // not use scroll_focused_node_into_view.

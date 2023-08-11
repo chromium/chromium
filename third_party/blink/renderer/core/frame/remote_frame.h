@@ -149,6 +149,8 @@ class CORE_EXPORT RemoteFrame final : public Frame,
   void DidChangeVisibleViewportSize(const gfx::Size& visible_viewport_size);
   // Called when the local root's capture sequence number has changed.
   void UpdateCaptureSequenceNumber(uint32_t sequence_number);
+  // Called when the cursor accessibility scale factor changed.
+  void CursorAccessibilityScaleFactorChanged(float scale_factor);
 
   const String& UniqueName() const { return unique_name_; }
   const FrameVisualProperties& GetPendingVisualPropertiesForTesting() const {
