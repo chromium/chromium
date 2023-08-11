@@ -21,19 +21,17 @@
   }
 
   .message-detail {
-    /* TODO(b/290239226): Replace with body-1-font after print-preview is
-                          configured to use dynamic styling. */
-    font: 400 14px/20px 'Google Sans Text Regular', 'Google Sans', 'Roboto',
-          sans-serif;
+    font: var(--cros-body-1-font);
     margin-block: 0;
   }
 
   .message-heading {
-    /* TODO(b/290239226): Replace with display-7-font after print-preview is
-                          configured to use dynamic styling. */
-    font: 500 18px/24px 'Google Sans Medium', 'Google Sans', 'Roboto',
-          sans-serif;
+    font: var(--cros-display-7-font);
     margin-block: 0;
+  }
+
+  cr-button {
+    font: var(--cros-button-2-font);
   }
 
   /* TODO(b/290239226): Remove hard-coded SVG colors after print-preview is
