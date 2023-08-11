@@ -12,9 +12,6 @@ namespace policy {
 // false.
 bool IsDeviceEnterpriseManaged();
 
-// Returns true if the device is managed by a cloud source.
-bool IsDeviceCloudManaged();
-
 }  // namespace policy
 
 #endif  // CHROME_BROWSER_POLICY_MANAGEMENT_UTILS_H_

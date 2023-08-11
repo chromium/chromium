@@ -37,12 +37,4 @@ bool IsDeviceEnterpriseManaged() {
 #endif
 }
 
-bool IsDeviceCloudManaged() {
-#if BUILDFLAG(IS_CHROMEOS)
-  return IsDeviceEnterpriseManaged();
-#else
-  return policy::BrowserDMTokenStorage::Get()->RetrieveDMToken().is_valid();
-#endif
-}
-
 }  // namespace policy
