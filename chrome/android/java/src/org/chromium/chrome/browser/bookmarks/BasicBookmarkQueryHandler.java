@@ -33,7 +33,9 @@ public class BasicBookmarkQueryHandler implements BookmarkQueryHandler {
 
     @Override
     public List<BookmarkListEntry> buildBookmarkListForParent(BookmarkId parentId) {
-        final List<BookmarkId> childIdList = mBookmarkModel.getChildIds(parentId);
+        final List<BookmarkId> childIdList = parentId.equals(mBookmarkModel.getRootFolderId())
+                ? BookmarkUtils.populateTopLevelFolders(mBookmarkModel)
+                : mBookmarkModel.getChildIds(parentId);
         final List<BookmarkListEntry> bookmarkListEntries = new ArrayList<>();
         for (BookmarkId bookmarkId : childIdList) {
             PowerBookmarkMeta powerBookmarkMeta = mBookmarkModel.getPowerBookmarkMeta(bookmarkId);
@@ -44,7 +46,6 @@ public class BasicBookmarkQueryHandler implements BookmarkQueryHandler {
                     continue;
                 }
             }
-
             BookmarkItem bookmarkItem = mBookmarkModel.getBookmarkById(bookmarkId);
             BookmarkListEntry bookmarkListEntry = BookmarkListEntry.createBookmarkEntry(
                     bookmarkItem, powerBookmarkMeta, mBookmarkUiPrefs.getBookmarkRowDisplayPref());

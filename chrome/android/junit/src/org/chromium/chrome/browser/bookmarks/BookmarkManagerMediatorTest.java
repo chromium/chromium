@@ -197,15 +197,23 @@ public class BookmarkManagerMediatorTest {
     private final ObservableSupplierImpl<Boolean>
             mSelectableListLayoutHandleBackPressChangedSupplier = new ObservableSupplierImpl<>();
     private final BookmarkId mRootFolderId = new BookmarkId(/*id=*/1, BookmarkType.NORMAL);
-    private final BookmarkId mFolderId1 = new BookmarkId(/*id=*/2, BookmarkType.NORMAL);
-    private final BookmarkId mFolderId2 = new BookmarkId(/*id=*/3, BookmarkType.NORMAL);
-    private final BookmarkId mFolderId3 = new BookmarkId(/*id=*/4, BookmarkType.NORMAL);
-    private final BookmarkId mBookmarkId21 = new BookmarkId(/*id=*/5, BookmarkType.NORMAL);
+    private final BookmarkId mDesktopFolderId = new BookmarkId(/*id=*/2, BookmarkType.NORMAL);
+    private final BookmarkId mMobileFolderId = new BookmarkId(/*id=*/3, BookmarkType.NORMAL);
+    private final BookmarkId mOtherFolderId = new BookmarkId(/*id=*/4, BookmarkType.NORMAL);
+    private final BookmarkId mFolderId1 = new BookmarkId(/*id=*/5, BookmarkType.NORMAL);
+    private final BookmarkId mFolderId2 = new BookmarkId(/*id=*/6, BookmarkType.NORMAL);
+    private final BookmarkId mFolderId3 = new BookmarkId(/*id=*/7, BookmarkType.NORMAL);
+    private final BookmarkId mBookmarkId21 = new BookmarkId(/*id=*/8, BookmarkType.NORMAL);
     private final BookmarkId mReadingListFolderId =
-            new BookmarkId(/*id=*/5, BookmarkType.READING_LIST);
-    private final BookmarkId mReadingListId = new BookmarkId(/*id=*/6, BookmarkType.READING_LIST);
-    private final BookmarkId mDesktopFolderId = new BookmarkId(/*id=*/7, BookmarkType.NORMAL);
+            new BookmarkId(/*id=*/9, BookmarkType.READING_LIST);
+    private final BookmarkId mReadingListId = new BookmarkId(/*id=*/10, BookmarkType.READING_LIST);
 
+    private final BookmarkItem mDesktopFolderItem = new BookmarkItem(
+            mDesktopFolderId, "Bookmarks bar", null, true, mRootFolderId, true, false, 0, false, 0);
+    private final BookmarkItem mMobileFolderItem = new BookmarkItem(mMobileFolderId,
+            "Mobile bookmarks", null, true, mRootFolderId, true, false, 0, false, 0);
+    private final BookmarkItem mOtherFolderItem = new BookmarkItem(
+            mOtherFolderId, "Other bookmarks", null, true, mRootFolderId, true, false, 0, false, 0);
     private final BookmarkItem mFolderItem1 = new BookmarkItem(
             mFolderId1, "Folder1", null, true, mRootFolderId, true, false, 0, false, 0);
     private final BookmarkItem mFolderItem2 = new BookmarkItem(
@@ -220,8 +228,6 @@ public class BookmarkManagerMediatorTest {
     private final BookmarkItem mReadingListItem = new BookmarkItem(mReadingListId,
             JUnitTestGURLs.EXAMPLE_URL, JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL), false,
             mReadingListFolderId, true, false, 0, false, 0);
-    private final BookmarkItem mDesktopFolderItem = new BookmarkItem(
-            mDesktopFolderId, "Desktop", null, true, mRootFolderId, false, false, 0, false, 0);
     private final ModelList mModelList = new ModelList();
     private final Bitmap mBitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
     private BookmarkUiPrefs mBookmarkUiPrefs =
@@ -256,12 +262,16 @@ public class BookmarkManagerMediatorTest {
 
             // Setup BookmarkModel.
             doReturn(mRootFolderId).when(mBookmarkModel).getRootFolderId();
+            doReturn(mDesktopFolderId).when(mBookmarkModel).getDesktopFolderId();
+            doReturn(mDesktopFolderItem).when(mBookmarkModel).getBookmarkById(mDesktopFolderId);
+            doReturn(mMobileFolderId).when(mBookmarkModel).getMobileFolderId();
+            doReturn(mMobileFolderItem).when(mBookmarkModel).getBookmarkById(mMobileFolderId);
+            doReturn(mOtherFolderId).when(mBookmarkModel).getOtherFolderId();
+            doReturn(mOtherFolderItem).when(mBookmarkModel).getBookmarkById(mOtherFolderId);
             doReturn(mReadingListFolderId).when(mBookmarkModel).getReadingListFolder();
             doReturn(mReadingListFolderItem)
                     .when(mBookmarkModel)
                     .getBookmarkById(mReadingListFolderId);
-            doReturn(mDesktopFolderId).when(mBookmarkModel).getDesktopFolderId();
-            doReturn(mDesktopFolderItem).when(mBookmarkModel).getBookmarkById(mDesktopFolderId);
             doReturn(true).when(mBookmarkModel).doesBookmarkExist(any());
             doReturn(Arrays.asList(mFolderId2, mFolderId3))
                     .when(mBookmarkModel)
@@ -1150,13 +1160,20 @@ public class BookmarkManagerMediatorTest {
 
         mMediator.openFolder(mRootFolderId);
 
-        assertEquals(3, mModelList.size());
-        verifyCurrentBookmarkIds(null, mReadingListFolderId, mDesktopFolderId);
+        assertEquals(5, mModelList.size());
+        verifyCurrentBookmarkIds(
+                null, mDesktopFolderId, mMobileFolderId, mOtherFolderId, mReadingListFolderId);
         assertEquals(specialBackgroundColor,
                 mModelList.get(1).model.get(
                         ImprovedBookmarkRowProperties.START_AREA_BACKGROUND_COLOR));
         assertEquals(specialBackgroundColor,
                 mModelList.get(2).model.get(
+                        ImprovedBookmarkRowProperties.START_AREA_BACKGROUND_COLOR));
+        assertEquals(specialBackgroundColor,
+                mModelList.get(3).model.get(
+                        ImprovedBookmarkRowProperties.START_AREA_BACKGROUND_COLOR));
+        assertEquals(specialBackgroundColor,
+                mModelList.get(4).model.get(
                         ImprovedBookmarkRowProperties.START_AREA_BACKGROUND_COLOR));
 
         mMediator.openFolder(mFolderId1);

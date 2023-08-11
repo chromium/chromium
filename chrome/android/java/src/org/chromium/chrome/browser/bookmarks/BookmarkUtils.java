@@ -755,12 +755,6 @@ public class BookmarkUtils {
      */
     public static boolean canAddFolderWhileViewingParent(
             BookmarkModel bookmarkModel, BookmarkId parent) {
-        // There's special logic while viewing the root node while improved bookamrks is enabled.
-        if (Objects.equals(parent, bookmarkModel.getRootFolderId())
-                && BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
-            return true;
-        }
-
         return !Objects.equals(parent, bookmarkModel.getReadingListFolder())
                 && !Objects.equals(parent, bookmarkModel.getPartnerFolderId())
                 && !Objects.equals(parent, bookmarkModel.getRootFolderId());
@@ -772,12 +766,6 @@ public class BookmarkUtils {
      */
     public static boolean canAddBookmarkWhileViewingParent(
             BookmarkModel bookmarkModel, BookmarkId parent) {
-        // There's special logic while viewing the root node while improved bookamrks is enabled.
-        if (Objects.equals(parent, bookmarkModel.getRootFolderId())
-                && BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
-            return true;
-        }
-
         return !Objects.equals(parent, bookmarkModel.getPartnerFolderId())
                 && !Objects.equals(parent, bookmarkModel.getRootFolderId());
     }
@@ -792,40 +780,7 @@ public class BookmarkUtils {
             BookmarkModel bookmarkModel, BookmarkId bookmarkId) {
         BookmarkItem item = bookmarkModel.getBookmarkById(bookmarkId);
         BookmarkId parent = item.getParentId();
-        if (!BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) return parent;
-
-        boolean skipToRoot = Objects.equals(parent, bookmarkModel.getOtherFolderId())
-                || Objects.equals(parent, bookmarkModel.getMobileFolderId());
-        return skipToRoot ? bookmarkModel.getRootFolderId() : parent;
-    }
-
-    /**
-     * Moves the given {@link BookmarkId}s to the new parent if the parent is valid. Type-swaps
-     * Reading List items as necessary. This method assumes that the bookmark ids that are passed
-     * in are valid bookmarks that are moveable. See the {@link canAddFolderWhileViewingParent} and
-     * {@link canAddBookmarkWhileViewingParent} methods for details on where a valid move location
-     * is.
-     */
-    public static void moveBookmarksToViewedParent(
-            BookmarkModel bookmarkModel, List<BookmarkId> bookmarksToMove, BookmarkId newParent) {
-        // Check if each bookmark is moveable to the viewed parent.
-        for (BookmarkId id : bookmarksToMove) {
-            BookmarkItem item = bookmarkModel.getBookmarkById(id);
-            boolean canAddCurrentBookmarkToViewedParent = item.isFolder()
-                    ? canAddFolderWhileViewingParent(bookmarkModel, newParent)
-                    : canAddBookmarkWhileViewingParent(bookmarkModel, newParent);
-            if (!canAddCurrentBookmarkToViewedParent) return;
-        }
-
-        if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()
-                && Objects.equals(newParent, bookmarkModel.getRootFolderId())) {
-            newParent = bookmarkModel.getOtherFolderId();
-        }
-        List<BookmarkId> typeSwappedReadingListItems = new ArrayList<>();
-        ReadingListUtils.typeSwapBookmarksIfNecessary(
-                bookmarkModel, bookmarksToMove, typeSwappedReadingListItems, newParent);
-        bookmarkModel.moveBookmarks(bookmarksToMove, newParent);
-        bookmarksToMove.addAll(typeSwappedReadingListItems);
+        return parent;
     }
 
     /** Returns whether the given folder should display images. */

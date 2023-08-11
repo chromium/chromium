@@ -70,21 +70,24 @@ public class BookmarkFolderPickerMediatorTest {
     //    UserBookmark
     //   UserFolder
     private final BookmarkId mRootFolderId = new BookmarkId(/*id=*/1, BookmarkType.NORMAL);
-    private final BookmarkId mMobileFolderId = new BookmarkId(/*id=*/2, BookmarkType.NORMAL);
-    private final BookmarkId mBookmarkBarFolderId = new BookmarkId(/*id=*/3, BookmarkType.NORMAL);
+    private final BookmarkId mDesktopFolderId = new BookmarkId(/*id=*/2, BookmarkType.NORMAL);
+    private final BookmarkId mMobileFolderId = new BookmarkId(/*id=*/3, BookmarkType.NORMAL);
+    private final BookmarkId mOtherFolderId = new BookmarkId(/*id=*/4, BookmarkType.NORMAL);
     private final BookmarkId mReadingListFolderId =
-            new BookmarkId(/*id=*/4, BookmarkType.READING_LIST);
-    private final BookmarkId mUserFolderId = new BookmarkId(/*id=*/5, BookmarkType.NORMAL);
-    private final BookmarkId mUserBookmarkId = new BookmarkId(/*id=*/6, BookmarkType.NORMAL);
-    private final BookmarkId mUserFolderId2 = new BookmarkId(/*id=*/7, BookmarkType.NORMAL);
-    private final BookmarkId mUserBookmarkId1 = new BookmarkId(/*id=*/8, BookmarkType.NORMAL);
+            new BookmarkId(/*id=*/5, BookmarkType.READING_LIST);
+    private final BookmarkId mUserFolderId = new BookmarkId(/*id=*/6, BookmarkType.NORMAL);
+    private final BookmarkId mUserBookmarkId = new BookmarkId(/*id=*/7, BookmarkType.NORMAL);
+    private final BookmarkId mUserFolderId2 = new BookmarkId(/*id=*/8, BookmarkType.NORMAL);
+    private final BookmarkId mUserBookmarkId1 = new BookmarkId(/*id=*/9, BookmarkType.NORMAL);
 
     private final BookmarkItem mRootFolderItem =
             new BookmarkItem(mRootFolderId, "Root", null, true, null, false, false, 0, false, 0);
+    private final BookmarkItem mDesktopFolderItem = new BookmarkItem(
+            mDesktopFolderId, "Bookmarks bar", null, true, mRootFolderId, true, false, 0, false, 0);
     private final BookmarkItem mMobileFolderItem = new BookmarkItem(mMobileFolderId,
-            "Mobile Bookmarks", null, true, mRootFolderId, false, false, 0, false, 0);
-    private final BookmarkItem mBookmarkBarFolderItem = new BookmarkItem(mBookmarkBarFolderId,
-            "Bookmarks Bar", null, true, mRootFolderId, false, false, 0, false, 0);
+            "Mobile bookmarks", null, true, mRootFolderId, true, false, 0, false, 0);
+    private final BookmarkItem mOtherFolderItem = new BookmarkItem(
+            mOtherFolderId, "Other bookmarks", null, true, mRootFolderId, true, false, 0, false, 0);
     private final BookmarkItem mReadingListFolderItem = new BookmarkItem(mReadingListFolderId,
             "Reading List", null, true, mRootFolderId, false, false, 0, false, 0);
     private final BookmarkItem mUserFolderItem = new BookmarkItem(
@@ -136,17 +139,11 @@ public class BookmarkFolderPickerMediatorTest {
 
         // Setup BookmarkModel.
         doReturn(true).when(mBookmarkModel).isFolderVisible(any());
-        doReturn(Arrays.asList(mReadingListFolderId))
-                .when(mBookmarkModel)
-                .getTopLevelFolderIds(/*getSpecial=*/true, /*getNormal=*/false);
         doReturn(mRootFolderId).when(mBookmarkModel).getRootFolderId();
         doReturn(mRootFolderItem).when(mBookmarkModel).getBookmarkById(mRootFolderId);
         // Reading list folder
         doReturn(mReadingListFolderId).when(mBookmarkModel).getReadingListFolder();
         doReturn(mReadingListFolderItem).when(mBookmarkModel).getBookmarkById(mReadingListFolderId);
-        doReturn(Arrays.asList(mMobileFolderId, mBookmarkBarFolderId, mReadingListFolderId))
-                .when(mBookmarkModel)
-                .getChildIds(mRootFolderId);
         doReturn(Arrays.asList(mReadingListFolderId))
                 .when(mBookmarkModel)
                 .getTopLevelFolderIds(/*getSpecial=*/true, /*getNormal=*/false);
@@ -157,10 +154,15 @@ public class BookmarkFolderPickerMediatorTest {
                 .when(mBookmarkModel)
                 .getChildIds(mMobileFolderId);
         doReturn(2).when(mBookmarkModel).getTotalBookmarkCount(mMobileFolderId);
-        // Bookmarks bar folder.
-        doReturn(mBookmarkBarFolderId).when(mBookmarkModel).getDesktopFolderId();
-        doReturn(mBookmarkBarFolderItem).when(mBookmarkModel).getBookmarkById(mBookmarkBarFolderId);
-        doReturn(Arrays.asList()).when(mBookmarkModel).getChildIds(mBookmarkBarFolderId);
+        // Desktop folder.
+        doReturn(mDesktopFolderId).when(mBookmarkModel).getDesktopFolderId();
+        doReturn(mDesktopFolderItem).when(mBookmarkModel).getBookmarkById(mDesktopFolderId);
+        doReturn(Arrays.asList()).when(mBookmarkModel).getChildIds(mDesktopFolderId);
+        doReturn(0).when(mBookmarkModel).getTotalBookmarkCount(mMobileFolderId);
+        // Other folder.
+        doReturn(mOtherFolderId).when(mBookmarkModel).getOtherFolderId();
+        doReturn(mOtherFolderItem).when(mBookmarkModel).getBookmarkById(mOtherFolderId);
+        doReturn(Arrays.asList()).when(mBookmarkModel).getChildIds(mOtherFolderId);
         doReturn(0).when(mBookmarkModel).getTotalBookmarkCount(mMobileFolderId);
         // User folders/bookmarks.
         doReturn(mUserFolderItem).when(mBookmarkModel).getBookmarkById(mUserFolderId);

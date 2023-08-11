@@ -276,7 +276,7 @@ public class BookmarkFolderSelectActivity
     }
 
     private void moveBookmarksAndFinish(List<BookmarkId> bookmarks, BookmarkId parent) {
-        BookmarkUtils.moveBookmarksToViewedParent(mModel, bookmarks, parent);
+        mModel.moveBookmarks(bookmarks, parent);
         BookmarkUtils.setLastUsedParent(this, parent);
         finishActivity(bookmarks);
     }
