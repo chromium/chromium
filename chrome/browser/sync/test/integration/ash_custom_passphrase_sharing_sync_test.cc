@@ -9,6 +9,7 @@
 #include "base/files/file_path.h"
 #include "base/json/json_writer.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/values.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
@@ -20,7 +21,6 @@
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/crosapi/mojom/account_manager.mojom.h"
-#include "chromeos/crosapi/mojom/sync.mojom-test-utils.h"
 #include "chromeos/crosapi/mojom/sync.mojom.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/chromeos/explicit_passphrase_mojo_utils.h"
@@ -177,14 +177,11 @@ class AshCustomPassphraseSharingSyncTest : public SyncTest {
   }
 
   std::unique_ptr<syncer::Nigori> GetDecryptionKeyExposedViaCrosapi() {
-    crosapi::mojom::SyncExplicitPassphraseClientAsyncWaiter
-        explicit_passphrase_client_async_waiter(
-            explicit_passphrase_client_remote_.get());
+    base::test::TestFuture<crosapi::mojom::NigoriKeyPtr> mojo_nigori_key_future;
+    explicit_passphrase_client_remote_->GetDecryptionNigoriKey(
+        GetSyncingUserAccountKey(), mojo_nigori_key_future.GetCallback());
 
-    crosapi::mojom::NigoriKeyPtr mojo_nigori_key;
-    explicit_passphrase_client_async_waiter.GetDecryptionNigoriKey(
-        GetSyncingUserAccountKey(), &mojo_nigori_key);
-
+    auto mojo_nigori_key = mojo_nigori_key_future.Take();
     if (!mojo_nigori_key) {
       return nullptr;
     }
@@ -197,7 +194,7 @@ class AshCustomPassphraseSharingSyncTest : public SyncTest {
     auto nigori = syncer::Nigori::CreateByDerivation(
         key_params.derivation_params, key_params.password);
 
-    explicit_passphrase_client_remote_.get()->SetDecryptionNigoriKey(
+    explicit_passphrase_client_remote_->SetDecryptionNigoriKey(
         GetSyncingUserAccountKey(),
         /*decryption_key=*/syncer::NigoriToMojo(*nigori));
   }

@@ -15,7 +15,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "base/json/values_util.h"
-#include "chromeos/crosapi/mojom/prefs.mojom-test-utils.h"
 #include "chromeos/crosapi/mojom/prefs.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
 #endif
@@ -225,13 +224,13 @@ IN_PROC_BROWSER_TEST_F(AccessCodeCastSinkServiceBrowserTest,
         run_loop.Quit();
       }));
 
-  crosapi::mojom::PrefsAsyncWaiter async_waiter(
-      chromeos::LacrosService::Get()->GetRemote<crosapi::mojom::Prefs>().get());
-  async_waiter.SetPref(crosapi::mojom::PrefPath::kAccessCodeCastDevices,
-                       base::Value(std::move(devices_dict)));
-  async_waiter.SetPref(
-      crosapi::mojom::PrefPath::kAccessCodeCastDeviceAdditionTime,
-      base::Value(std::move(device_added_time_dict)));
+  auto& prefs =
+      chromeos::LacrosService::Get()->GetRemote<crosapi::mojom::Prefs>();
+  prefs->SetPref(crosapi::mojom::PrefPath::kAccessCodeCastDevices,
+                 base::Value(std::move(devices_dict)), base::DoNothing());
+  prefs->SetPref(crosapi::mojom::PrefPath::kAccessCodeCastDeviceAdditionTime,
+                 base::Value(std::move(device_added_time_dict)),
+                 base::DoNothing());
 
   // Wait for the AccessCodeCastSinkService to be notified and add new sink to
   // the Media Router.

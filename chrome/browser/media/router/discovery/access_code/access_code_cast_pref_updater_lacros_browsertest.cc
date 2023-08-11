@@ -17,7 +17,7 @@
 #include "chrome/browser/media/router/test/provider_test_helpers.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chromeos/crosapi/mojom/prefs.mojom-test-utils.h"
+#include "chromeos/crosapi/mojom/prefs.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "content/public/test/browser_test.h"
 #include "services/preferences/public/cpp/dictionary_value_update.h"
@@ -26,10 +26,10 @@
 namespace {
 
 base::Value::Dict GetDictFromPrefService(crosapi::mojom::PrefPath pref_path) {
-  absl::optional<::base::Value> out_value;
-  crosapi::mojom::PrefsAsyncWaiter async_waiter(
-      chromeos::LacrosService::Get()->GetRemote<crosapi::mojom::Prefs>().get());
-  async_waiter.GetPref(pref_path, &out_value);
+  base::test::TestFuture<absl::optional<base::Value>> future;
+  chromeos::LacrosService::Get()->GetRemote<crosapi::mojom::Prefs>()->GetPref(
+      pref_path, future.GetCallback());
+  auto out_value = future.Take();
   if (out_value && out_value->is_dict()) {
     return std::move(out_value.value()).TakeDict();
   }
@@ -52,14 +52,11 @@ class AccessCodeCastPrefUpdaterLacrosTest : public InProcessBrowserTest {
     ASSERT_TRUE(lacros_service);
     ASSERT_TRUE(lacros_service->IsAvailable<crosapi::mojom::Prefs>());
 
-    crosapi::mojom::PrefsAsyncWaiter async_waiter(
-        chromeos::LacrosService::Get()
-            ->GetRemote<crosapi::mojom::Prefs>()
-            .get());
-    absl::optional<base::Value> pref_value;
-    async_waiter.GetPref(crosapi::mojom::PrefPath::kAccessCodeCastDevices,
-                         &pref_value);
+    base::test::TestFuture<absl::optional<base::Value>> future;
+    chromeos::LacrosService::Get()->GetRemote<crosapi::mojom::Prefs>()->GetPref(
+        crosapi::mojom::PrefPath::kAccessCodeCastDevices, future.GetCallback());
 
+    auto pref_value = future.Take();
     // If the pref cannot be fetched, the ash version may be too old.
     if (!pref_value.has_value()) {
       GTEST_SKIP() << "Skipping as the prefs are not available in the "
@@ -71,15 +68,22 @@ class AccessCodeCastPrefUpdaterLacrosTest : public InProcessBrowserTest {
     // Remove all stored devices from prefs because the same ash-chrome instance
     // is used for each test and prefs stored in ash won't be reset after each
     // test finishes.
-    crosapi::mojom::PrefsAsyncWaiter async_waiter(
-        chromeos::LacrosService::Get()
-            ->GetRemote<crosapi::mojom::Prefs>()
-            .get());
-    async_waiter.SetPref(crosapi::mojom::PrefPath::kAccessCodeCastDevices,
-                         base::Value(base::Value::Type::DICT));
-    async_waiter.SetPref(
-        crosapi::mojom::PrefPath::kAccessCodeCastDeviceAdditionTime,
-        base::Value(base::Value::Type::DICT));
+    auto& prefs =
+        chromeos::LacrosService::Get()->GetRemote<crosapi::mojom::Prefs>();
+    {
+      base::test::TestFuture<void> future;
+      prefs->SetPref(crosapi::mojom::PrefPath::kAccessCodeCastDevices,
+                     base::Value(base::Value::Type::DICT),
+                     future.GetCallback());
+      ASSERT_TRUE(future.Wait());
+    }
+    {
+      base::test::TestFuture<void> future;
+      prefs->SetPref(
+          crosapi::mojom::PrefPath::kAccessCodeCastDeviceAdditionTime,
+          base::Value(base::Value::Type::DICT), future.GetCallback());
+      ASSERT_TRUE(future.Wait());
+    }
 
     ASSERT_TRUE(GetDevicesDictFromPrefService().empty());
   }

@@ -18,7 +18,7 @@
 #include "chrome/browser/ui/views/apps/app_dialog/app_uninstall_dialog_view.h"
 #include "chrome/browser/web_applications/test/app_registry_cache_waiter.h"
 #include "chrome/browser/web_applications/web_app_id.h"
-#include "chromeos/crosapi/mojom/test_controller.mojom-test-utils.h"
+#include "chromeos/crosapi/mojom/test_controller.mojom.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
 #include "content/public/test/browser_test.h"
@@ -108,10 +108,10 @@ class WebAppsCrosapiBrowserTest
 
   std::string InstallWebApp(const std::string& start_url,
                             apps::WindowMode mode) {
-    crosapi::mojom::StandaloneBrowserTestControllerAsyncWaiter waiter(
-        GetStandaloneBrowserTestController());
-    std::string app_id;
-    waiter.InstallWebApp(start_url, mode, &app_id);
+    base::test::TestFuture<const std::string&> app_id_future;
+    GetStandaloneBrowserTestController()->InstallWebApp(
+        start_url, mode, app_id_future.GetCallback());
+    std::string app_id = app_id_future.Take();
     CHECK(!app_id.empty());
     web_app::AppReadinessWaiter(profile(), app_id).Await();
     return app_id;

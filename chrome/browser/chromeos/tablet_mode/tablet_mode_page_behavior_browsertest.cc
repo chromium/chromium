@@ -25,7 +25,7 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/crosapi/mojom/test_controller.mojom-test-utils.h"
+#include "chromeos/crosapi/mojom/test_controller.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "ui/display/display_observer.h"
 #include "ui/display/screen.h"
@@ -99,14 +99,13 @@ class TabletModePageBehaviorTest : public InProcessBrowserTest {
     TabletModeWatcher watcher(run_loop.QuitClosure(),
                               chromeos::TabletState::Get()->state());
     display::Screen::GetScreen()->AddObserver(&watcher);
-    crosapi::mojom::TestControllerAsyncWaiter controller(
-        chromeos::LacrosService::Get()
-            ->GetRemote<crosapi::mojom::TestController>()
-            .get());
-    if (enable)
-      controller.EnterTabletMode();
-    else
-      controller.ExitTabletMode();
+    auto& test_controller = chromeos::LacrosService::Get()
+                                ->GetRemote<crosapi::mojom::TestController>();
+    if (enable) {
+      test_controller->EnterTabletMode(base::DoNothing());
+    } else {
+      test_controller->ExitTabletMode(base::DoNothing());
+    }
     run_loop.Run();
     display::Screen::GetScreen()->RemoveObserver(&watcher);
 #endif

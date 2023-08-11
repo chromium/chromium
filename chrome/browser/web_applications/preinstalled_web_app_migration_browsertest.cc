@@ -69,7 +69,6 @@
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chromeos/crosapi/mojom/app_service.mojom.h"
-#include "chromeos/crosapi/mojom/test_controller.mojom-test-utils.h"
 #include "chromeos/crosapi/mojom/test_controller.mojom.h"
 #include "chromeos/crosapi/mojom/web_app_service.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
@@ -809,8 +808,8 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppMigrationBrowserTest,
     return;
   }
 
-  crosapi::mojom::TestControllerAsyncWaiter waiter(
-      lacros_service->GetRemote<crosapi::mojom::TestController>().get());
+  auto& test_controller =
+      lacros_service->GetRemote<crosapi::mojom::TestController>();
 
   AppId old_app_id;
   {
@@ -824,7 +823,10 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppMigrationBrowserTest,
     attributes->item_position = "testapplistposition";
     attributes->pin_position = "testpinposition";
 
-    waiter.SetAppListItemAttributes(old_app_id, std::move(attributes));
+    base::test::TestFuture<void> future;
+    test_controller->SetAppListItemAttributes(old_app_id, std::move(attributes),
+                                              future.GetCallback());
+    ASSERT_TRUE(future.Wait());
   }
 
   AppId new_app_id;
@@ -853,8 +855,11 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppMigrationBrowserTest,
     AppReadinessWaiter(profile(), new_app_id).Await();
   }
 
-  crosapi::mojom::AppListItemAttributesPtr attributes =
-      waiter.GetAppListItemAttributes(new_app_id);
+  base::test::TestFuture<crosapi::mojom::AppListItemAttributesPtr>
+      attributes_future;
+  test_controller->GetAppListItemAttributes(new_app_id,
+                                            attributes_future.GetCallback());
+  auto attributes = attributes_future.Take();
   EXPECT_EQ(attributes->item_position, "testapplistposition");
   EXPECT_EQ(attributes->pin_position, "testpinposition");
 }
