@@ -1037,6 +1037,10 @@ enum class ToolbarKind {
   _viewControllerDependencies.popupMenuCommandsHandler = nil;
   _viewControllerDependencies.applicationCommandsHandler = nil;
   _viewControllerDependencies.findInPageCommandsHandler = nil;
+  _viewControllerDependencies.urlLoadingBrowserAgent = nil;
+  _viewControllerDependencies.urlLoadingNotifierBrowserAgent = nil;
+  _viewControllerDependencies.tabUsageRecorderBrowserAgent = nil;
+  _viewControllerDependencies.layoutGuideCenter = nil;
   _viewControllerDependencies.voiceSearchController = nil;
   _viewControllerDependencies.safeAreaProvider = nil;
   _viewControllerDependencies.pagePlaceholderBrowserAgent = nil;
