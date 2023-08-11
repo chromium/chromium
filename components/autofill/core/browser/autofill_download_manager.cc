@@ -210,7 +210,7 @@ net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
           user_data {
             type: NONE
           }
-          last_reviewed: "2023-07-31"
+          last_reviewed: "2023-08-10"
         }
         policy {
           cookies_allowed: NO
@@ -228,6 +228,12 @@ net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
             AutofillAddressEnabled {
                 policy_options {mode: MANDATORY}
                 AutofillAddressEnabled: false
+            }
+          }
+          chrome_policy {
+            PasswordManagerEnabled {
+                policy_options {mode: MANDATORY}
+                PasswordManagerEnabled: false
             }
           }
         })");
