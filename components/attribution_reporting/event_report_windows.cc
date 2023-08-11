@@ -129,7 +129,7 @@ base::Time EventReportWindows::ComputeReportTime(
   base::TimeDelta reporting_window_to_use = *end_times_.rbegin();
 
   for (base::TimeDelta reporting_window : end_times_) {
-    if (source_time + reporting_window < trigger_time) {
+    if (source_time + reporting_window <= trigger_time) {
       continue;
     }
     reporting_window_to_use = reporting_window;

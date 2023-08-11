@@ -12,7 +12,8 @@ namespace {
 
 TEST(AttributionUtilsTest, LastTriggerTimeForReportTime) {
   const base::Time time = base::Time::Now();
-  EXPECT_EQ(LastTriggerTimeForReportTime(time), time - base::Hours(1));
+  EXPECT_EQ(LastTriggerTimeForReportTime(time),
+            time - base::Hours(1) - base::Milliseconds(1));
 }
 
 }  // namespace

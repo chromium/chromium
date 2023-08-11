@@ -255,7 +255,8 @@ TEST(AttributionStorageDelegateImplTest, GetFakeReportsForSequenceIndex) {
           .sequence_index = 1,
           .expected = {{
               .trigger_data = 0,
-              .trigger_time = kExpiryReportTime - base::Hours(1),
+              .trigger_time =
+                  kExpiryReportTime - base::Hours(1) - base::Milliseconds(1),
               .report_time = kExpiryReportTime,
           }},
       },
@@ -264,7 +265,8 @@ TEST(AttributionStorageDelegateImplTest, GetFakeReportsForSequenceIndex) {
           .sequence_index = 2,
           .expected = {{
               .trigger_data = 1,
-              .trigger_time = kExpiryReportTime - base::Hours(1),
+              .trigger_time =
+                  kExpiryReportTime - base::Hours(1) - base::Milliseconds(1),
               .report_time = kExpiryReportTime,
           }},
       },
@@ -279,7 +281,8 @@ TEST(AttributionStorageDelegateImplTest, GetFakeReportsForSequenceIndex) {
           .sequence_index = 20,
           .expected = {{
               .trigger_data = 3,
-              .trigger_time = kEarlyReportTime1 - base::Hours(1),
+              .trigger_time =
+                  kEarlyReportTime1 - base::Hours(1) - base::Milliseconds(1),
               .report_time = kEarlyReportTime1,
           }},
       },
@@ -290,12 +293,14 @@ TEST(AttributionStorageDelegateImplTest, GetFakeReportsForSequenceIndex) {
               {
                   {
                       .trigger_data = 4,
-                      .trigger_time = kEarlyReportTime1 - base::Hours(1),
+                      .trigger_time = kEarlyReportTime1 - base::Hours(1) -
+                                      base::Milliseconds(1),
                       .report_time = kEarlyReportTime1,
                   },
                   {
                       .trigger_data = 2,
-                      .trigger_time = kEarlyReportTime1 - base::Hours(1),
+                      .trigger_time = kEarlyReportTime1 - base::Hours(1) -
+                                      base::Milliseconds(1),
                       .report_time = kEarlyReportTime1,
                   },
               },
@@ -307,12 +312,14 @@ TEST(AttributionStorageDelegateImplTest, GetFakeReportsForSequenceIndex) {
               {
                   {
                       .trigger_data = 4,
-                      .trigger_time = kEarlyReportTime1 - base::Hours(1),
+                      .trigger_time = kEarlyReportTime1 - base::Hours(1) -
+                                      base::Milliseconds(1),
                       .report_time = kEarlyReportTime1,
                   },
                   {
                       .trigger_data = 4,
-                      .trigger_time = kEarlyReportTime1 - base::Hours(1),
+                      .trigger_time = kEarlyReportTime1 - base::Hours(1) -
+                                      base::Milliseconds(1),
                       .report_time = kEarlyReportTime1,
                   },
               },
@@ -324,17 +331,20 @@ TEST(AttributionStorageDelegateImplTest, GetFakeReportsForSequenceIndex) {
               {
                   {
                       .trigger_data = 1,
-                      .trigger_time = kExpiryReportTime - base::Hours(1),
+                      .trigger_time = kExpiryReportTime - base::Hours(1) -
+                                      base::Milliseconds(1),
                       .report_time = kExpiryReportTime,
                   },
                   {
                       .trigger_data = 6,
-                      .trigger_time = kEarlyReportTime2 - base::Hours(1),
+                      .trigger_time = kEarlyReportTime2 - base::Hours(1) -
+                                      base::Milliseconds(1),
                       .report_time = kEarlyReportTime2,
                   },
                   {
                       .trigger_data = 7,
-                      .trigger_time = kEarlyReportTime1 - base::Hours(1),
+                      .trigger_time = kEarlyReportTime1 - base::Hours(1) -
+                                      base::Milliseconds(1),
                       .report_time = kEarlyReportTime1,
                   },
               },

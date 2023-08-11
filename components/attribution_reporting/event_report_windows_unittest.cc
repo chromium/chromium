@@ -253,19 +253,19 @@ TEST(EventReportWindowsTest, ComputeReportTime) {
           .expected = source_time + base::Hours(2) + kWindowDeadlineOffset,
       },
       {
-          .trigger_time = source_time + base::Hours(2),
+          .trigger_time = source_time + base::Hours(2) - base::Milliseconds(1),
           .expected = source_time + base::Hours(2) + kWindowDeadlineOffset,
       },
       {
-          .trigger_time = source_time + base::Hours(2) + base::Milliseconds(1),
+          .trigger_time = source_time + base::Hours(2),
+          .expected = source_time + base::Days(1) + kWindowDeadlineOffset,
+      },
+      {
+          .trigger_time = source_time + base::Days(1) - base::Milliseconds(1),
           .expected = source_time + base::Days(1) + kWindowDeadlineOffset,
       },
       {
           .trigger_time = source_time + base::Days(1),
-          .expected = source_time + base::Days(1) + kWindowDeadlineOffset,
-      },
-      {
-          .trigger_time = source_time + base::Days(1) + base::Milliseconds(1),
           .expected = source_time + base::Days(7) + kWindowDeadlineOffset,
       },
       {
