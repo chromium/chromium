@@ -3,14 +3,14 @@
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file.
  *
- * The default style sheet used to render elements with a `popup`
- * content attribute (with HTMLPopupAttribute feature enabled).
  */
 
 @namespace "http://www.w3.org/1999/xhtml";
 
-/* TODO(crbug.com/681917): These form controls don't go vertical if
-   FormControlsVerticalWritingModeSupport is disabled. */
+/* TODO(crbug.com/681917): This stylesheet is included only if the
+  FormControlsVerticalWritingModeSupport feature is disabled. This keeps
+  form controls from being rendered with a vertical writing mode in that
+  case. */
 input,
 textarea,
 select,

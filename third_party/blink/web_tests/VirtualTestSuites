@@ -2281,5 +2281,24 @@
     "args": ["--disable-blink-features=RemoveNonStandardAppearanceValue"],
     "owners": ["dizhangg@chromium.org"],
     "expires": "Dec 21, 2023"
+  },
+  {
+    "prefix": "vertical-form-controls-disabled",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": [
+      "external/wpt/css/css-writing-modes/forms/progress-appearance-native-vertical.optional.html",
+      "external/wpt/css/css-writing-modes/forms/meter-appearance-native-vertical.optional.html",
+      "external/wpt/css/css-writing-modes/forms/textarea-appearance-native-vlr.optional.html",
+      "external/wpt/css/css-writing-modes/forms/button-appearance-native-vertical.optional.html",
+      "external/wpt/css/css-writing-modes/forms/select-multiple-appearance-native-vlr.optional.html",
+      "external/wpt/css/css-writing-modes/forms/color-input-appearance-native-vertical.optional.html",
+      "external/wpt/css/css-writing-modes/forms/range-input-appearance-native-vertical.optional.html",
+      "external/wpt/css/css-writing-modes/forms/text-input-block-size.optional.html",
+      "external/wpt/css/css-writing-modes/forms/date-input-appearance-native-vertical.optional.html",
+      "external/wpt/css/css-flexbox/flex-item-compressible-002.html"
+    ],
+    "args": ["--disable-features=FormControlsVerticalWritingModeSupport"],
+    "owners": ["dizhangg@chromium.org"],
+    "expires": "Dec 21, 2023"
   }
 ]

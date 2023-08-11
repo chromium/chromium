@@ -1399,6 +1399,21 @@ crbug.com/750992 [ Win ] external/wpt/css/css-writing-modes/sizing-orthog-vrl-in
 crbug.com/1432009 external/wpt/css/css-writing-modes/forms/range-input-appearance-native-vertical-rtl.optional.html [ Failure ]
 crbug.com/1432009 external/wpt/css/css-writing-modes/forms/range-input-appearance-none-vertical-rtl.optional.html [ Failure ]
 
+# These tests are mismatch tests which means they will only pass if the rendered page is not the
+# same between vertical and horizontal writing mode. Failing the tests is equivalent to testing
+# that the appearance is the same. For the virtual version, we disable the feature
+# FormControlsVerticalWritingModeSupport and expect failures (meaning vertical writing mode is
+# definitely disabled).
+crbug.com/1471518 virtual/vertical-form-controls-disabled/external/wpt/css/css-writing-modes/forms/progress-appearance-native-vertical.optional.html [ Failure ]
+crbug.com/1471518 virtual/vertical-form-controls-disabled/external/wpt/css/css-writing-modes/forms/meter-appearance-native-vertical.optional.html [ Failure ]
+crbug.com/1471518 virtual/vertical-form-controls-disabled/external/wpt/css/css-writing-modes/forms/textarea-appearance-native-vlr.optional.html [ Failure ]
+crbug.com/1471518 virtual/vertical-form-controls-disabled/external/wpt/css/css-writing-modes/forms/button-appearance-native-vertical.optional.html [ Failure ]
+crbug.com/1471518 virtual/vertical-form-controls-disabled/external/wpt/css/css-writing-modes/forms/select-multiple-appearance-native-vlr.optional.html [ Failure ]
+crbug.com/1471518 virtual/vertical-form-controls-disabled/external/wpt/css/css-writing-modes/forms/color-input-appearance-native-vertical.optional.html [ Failure ]
+crbug.com/1471518 virtual/vertical-form-controls-disabled/external/wpt/css/css-writing-modes/forms/range-input-appearance-native-vertical.optional.html [ Failure ]
+crbug.com/1471518 virtual/vertical-form-controls-disabled/external/wpt/css/css-writing-modes/forms/text-input-block-size.optional.html [ Failure ]
+crbug.com/1471518 virtual/vertical-form-controls-disabled/external/wpt/css/css-writing-modes/forms/date-input-appearance-native-vertical.optional.html [ Failure ]
+
 ### With LayoutNGFragmentItem enabled
 crbug.com/982194 [ Win10.20h2 ] fast/writing-mode/border-image-vertical-lr.html [ Failure Pass ]
 
