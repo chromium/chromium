@@ -75,6 +75,7 @@ bool NeedsFirstPartySetMetadata() {
 bool IsImplicitOutcome(RequestOutcome outcome) {
   switch (outcome) {
     case RequestOutcome::kAllowedByCookieSettings:
+    case RequestOutcome::kAllowedBySameSite:
     case RequestOutcome::kDeniedByCookieSettings:
     case RequestOutcome::kDeniedByFirstPartySet:
     case RequestOutcome::kDeniedByPrerequisites:
@@ -100,6 +101,7 @@ bool ShouldDisplayOutcomeInOmnibox(RequestOutcome outcome) {
     case RequestOutcome::kReusedPreviousDecision:
       return true;
     case RequestOutcome::kAllowedByCookieSettings:
+    case RequestOutcome::kAllowedBySameSite:
     case RequestOutcome::kDeniedByCookieSettings:
     case RequestOutcome::kDeniedByFirstPartySet:
     case RequestOutcome::kDeniedByTopLevelInteractionHeuristic:
@@ -159,6 +161,7 @@ content_settings::ContentSettingConstraints ComputeConstraints(
     case RequestOutcome::kDeniedByTopLevelInteractionHeuristic:
     case RequestOutcome::kAllowedByCookieSettings:
     case RequestOutcome::kDeniedByCookieSettings:
+    case RequestOutcome::kAllowedBySameSite:
       NOTREACHED_NORETURN();
     case RequestOutcome::kGrantedByUser:
     case RequestOutcome::kDeniedByUser:
@@ -253,6 +256,17 @@ void StorageAccessGrantPermissionContext::DecidePermission(
     return;
   }
 
+  net::SchemefulSite requesting_site(requesting_origin);
+  net::SchemefulSite embedding_site(embedding_origin);
+
+  // Return early without prompting users if the requesting frame is same-site
+  // with the top-level frame.
+  if (requesting_site == embedding_site) {
+    RecordOutcomeSample(RequestOutcome::kAllowedBySameSite);
+    std::move(callback).Run(CONTENT_SETTING_ALLOW);
+    return;
+  }
+
   if (!user_gesture || !StorageAccessAPIEnabled()) {
     if (!user_gesture) {
       rfh->AddMessageToConsole(
@@ -272,12 +286,10 @@ void StorageAccessGrantPermissionContext::DecidePermission(
     return;
   }
 
-  net::SchemefulSite embedding_site(embedding_origin);
-
   first_party_sets::FirstPartySetsPolicyServiceFactory::GetForBrowserContext(
       browser_context())
       ->ComputeFirstPartySetMetadata(
-          net::SchemefulSite(requesting_origin), &embedding_site,
+          requesting_site, &embedding_site,
           base::BindOnce(&StorageAccessGrantPermissionContext::
                              CheckForAutoGrantOrAutoDenial,
                          weak_factory_.GetWeakPtr(), id, requesting_origin,

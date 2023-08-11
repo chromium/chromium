@@ -946,9 +946,7 @@ IN_PROC_BROWSER_TEST_P(
 
   prompt_factory()->set_response_type(
       permissions::PermissionRequestManager::ACCEPT_ALL);
-  // TODO(https://crbug.com/1441133): should EXPECT_FALSE here since 3p cookies
-  // are blocked by user explicitly.
-  EXPECT_TRUE(
+  EXPECT_FALSE(
       content::ExecJs(GetNestedFrame(), "document.requestStorageAccess()"));
 
   EXPECT_EQ(ReadCookiesAndContent(GetNestedFrame(), kHostA),
@@ -971,10 +969,7 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
   prompt_factory()->set_response_type(
       permissions::PermissionRequestManager::ACCEPT_ALL);
-  // TODO(https://crbug.com/1441133): should EXPECT_FALSE here since user
-  // explicitly blocks cookies for hostA.
-  EXPECT_TRUE(content::ExecJs(GetFrame(), "document.requestStorageAccess()"));
-
+  EXPECT_FALSE(content::ExecJs(GetFrame(), "document.requestStorageAccess()"));
   EXPECT_EQ(0, prompt_factory()->TotalRequestCount());
 
   EXPECT_EQ(ReadCookiesAndContent(GetFrame(), kHostA), NoCookiesWithContent());
@@ -1005,6 +1000,32 @@ IN_PROC_BROWSER_TEST_P(StorageAccessAPIBrowserTest,
   // Access change should be reflected immediately.
   EXPECT_EQ(ReadCookiesAndContent(GetFrame(), kHostB), NoCookiesWithContent());
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
+}
+
+// Validates that if the user explicitly blocks cookies, cookie access is
+// blocked even with the existing grant.
+IN_PROC_BROWSER_TEST_P(StorageAccessAPIBrowserTest,
+                       ExplicitUserSettingsBlockThirdPartyGrantsAccess) {
+  SetBlockThirdPartyCookies(true);
+
+  NavigateToPageWithFrame(kHostA);
+  NavigateFrameTo(EchoCookiesURL(kHostB));
+  EXPECT_EQ(ReadCookiesAndContent(GetFrame(), kHostB), NoCookiesWithContent());
+
+  EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
+  prompt_factory()->set_response_type(
+      permissions::PermissionRequestManager::ACCEPT_ALL);
+  EXPECT_TRUE(storage::test::RequestAndCheckStorageAccessForFrame(GetFrame()));
+  EXPECT_EQ(ReadCookies(GetFrame(), kHostB), CookieBundle("cross-site=b.test"));
+
+  BlockAllCookiesOnHost(kHostB);
+
+  // Access change should be reflected immediately.
+  EXPECT_EQ(ReadCookiesAndContent(GetFrame(), kHostB), NoCookiesWithContent());
+  EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
+  // TODO(https://crbug.com/1441133): should EXPECT_FALSE here since user
+  // explicitly blocks cookies for hostB
+  EXPECT_TRUE(content::ExecJs(GetFrame(), "document.requestStorageAccess()"));
 }
 
 // Validate that if the iframe's origin is opaque, it cannot obtain storage
@@ -1393,6 +1414,7 @@ IN_PROC_BROWSER_TEST_P(StorageAccessAPIBrowserTest,
 // access after requesting access.
 IN_PROC_BROWSER_TEST_P(StorageAccessAPIBrowserTest,
                        NestedSameOriginCookieAccess_CrossSiteAncestorChain) {
+  base::HistogramTester histogram_tester;
   SetBlockThirdPartyCookies(true);
 
   NavigateToPageWithFrame(kHostA);
@@ -1410,6 +1432,9 @@ IN_PROC_BROWSER_TEST_P(StorageAccessAPIBrowserTest,
   EXPECT_EQ(0, prompt_factory()->TotalRequestCount());
   EXPECT_EQ(ReadCookies(GetNestedFrame(), kHostA),
             CookieBundle("cross-site=a.test"));
+  histogram_tester.ExpectTotalCount(kRequestOutcomeHistogram, 1);
+  histogram_tester.ExpectBucketCount(kRequestOutcomeHistogram,
+                                     RequestOutcome::kAllowedBySameSite, 1);
 }
 
 // Validate that in a A(B(sub.A)) frame tree, the inner iframe can obtain cookie

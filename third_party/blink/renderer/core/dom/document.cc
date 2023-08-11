@@ -6480,21 +6480,6 @@ ScriptPromise Document::requestStorageAccess(ScriptState* script_state) {
     return promise;
   }
 
-  // TODO(https://crbug.com/1441133): we should not return early here since 3p
-  // cookies could be blocked by user explicitly.
-  if (GetExecutionContext()->GetSecurityOrigin()->IsSameSiteWith(
-          &*TopFrameOrigin())) {
-    FireRequestStorageAccessHistogram(
-        RequestStorageResult::APPROVED_PRIMARY_FRAME);
-
-    // If this frame is same-site with the outermost frame we no longer need
-    // to make a request and can resolve the promise.
-    dom_window_->SetHasStorageAccess();
-
-    resolver->Resolve();
-    return promise;
-  }
-
   if (dom_window_->IsSandboxed(network::mojom::blink::WebSandboxFlags::
                                    kStorageAccessByUserActivation)) {
     AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
@@ -6516,19 +6501,8 @@ ScriptPromise Document::requestStorageAccess(ScriptState* script_state) {
         "requestStorageAccess not allowed"));
     return promise;
   }
-
-  // TODO(https://crbug.com/1441133): we should not return early based on the
-  // per-frame bit since 3p cookies could be blocked by user explicitly.
-  if (dom_window_->HasStorageAccess()) {
-    FireRequestStorageAccessHistogram(
-        RequestStorageResult::APPROVED_EXISTING_ACCESS);
-
-    // If there is current access to storage for this document we no longer need
-    // to make a request and can resolve the promise.
-    resolver->Resolve();
-    return promise;
-  }
-
+  // RequestPermission may return `GRANTED` without actually creating a
+  // permission grant if cookies are already accessible.
   auto descriptor = mojom::blink::PermissionDescriptor::New();
   descriptor->name = mojom::blink::PermissionName::STORAGE_ACCESS;
   GetPermissionService(ExecutionContext::From(resolver->GetScriptState()))
