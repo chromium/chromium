@@ -34,15 +34,13 @@
     [_running_app addObserver:self
                    forKeyPath:@"activationPolicy"
                       options:NSKeyValueObservingOptionNew
-                      context:nullptr];
+                      context:nil];
   }
   return self;
 }
 
 - (void)dealloc {
-  [_running_app removeObserver:self
-                    forKeyPath:@"activationPolicy"
-                       context:nullptr];
+  [_running_app removeObserver:self forKeyPath:@"activationPolicy" context:nil];
 }
 
 - (void)observeValueForKeyPath:(NSString*)keyPath

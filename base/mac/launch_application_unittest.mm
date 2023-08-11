@@ -80,17 +80,6 @@ void ReadLaunchEventsFromFifo(
 class LaunchApplicationTest : public testing::Test {
  public:
   void SetUp() override {
-    constexpr bool is_component_build =
-#if defined(COMPONENT_BUILD)
-        true;
-#else
-        false;
-#endif
-    if (is_component_build) {
-      // TODO(https://crbug.com/1472325): Fix this.
-      GTEST_SKIP() << "These tests currently don't support component builds.";
-    }
-
     helper_bundle_id_ =
         SysUTF8ToNSString("org.chromium.LaunchApplicationTestHelper." +
                           Uuid::GenerateRandomV4().AsLowercaseString());
