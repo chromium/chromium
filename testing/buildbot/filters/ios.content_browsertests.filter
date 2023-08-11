@@ -205,6 +205,11 @@
 # and fallback ID.
 -BFCachedRenderWidgetHostViewBrowserTest.BFCachedPageResizedWhileHiddenShouldNotHavePreservedFallback
 
+# TODO(https://crbug.com/1472026): `WCImpl::GetSize()` should be replaced by
+# `WC::GetRenderWidgetHostView()->GetViewBounds()`; `ui::GrabViewSnapshot` isn't
+# implemented for IOS.
+-RenderFrameHostImplBrowserTestWithBFCacheAndViewTransition.NewContentTimeoutIsSetWhenLeavingBFCacheWithViewTransition
+
 # TODO(crbug.com/1466927): unexpected level of support for codec.
 -MediaCanPlayTypeTest.CodecSupportTest_mp4
 
