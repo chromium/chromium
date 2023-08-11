@@ -14304,38 +14304,6 @@
             ]
         }
     ],
-    "StylusPointerAdjustment": [
-        {
-            "platforms": [
-                "android",
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "StylusPointerAdjustment"
-                    ]
-                }
-            ]
-        }
-    ],
-    "StylusRichGestures": [
-        {
-            "platforms": [
-                "android",
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20230313",
-                    "enable_features": [
-                        "StylusRichGestures"
-                    ]
-                }
-            ]
-        }
-    ],
     "SubprocessMetricsAsync": [
         {
             "platforms": [
