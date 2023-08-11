@@ -39,8 +39,6 @@
 
 namespace {
 
-const char kSpaceChar = ' ';
-
 // Split the transcription into sentences. Spaces are included in the preceding
 // sentence.
 std::vector<std::string> SplitSentences(const std::string& text,
@@ -186,18 +184,20 @@ void LiveCaptionSpeechRecognitionHost::OnSpeechRecognitionRecognitionEvent(
     std::string cached_translation;
     std::string string_to_translate;
     bool cached_translation_found = true;
-    for (std::string& sentence : sentences) {
+    for (const std::string& sentence : sentences) {
       if (cached_translation_found) {
-        bool sentence_contains_trailing_space = ContainsTrailingSpace(sentence);
+        std::string trailing_space =
+            ContainsTrailingSpace(sentence)
+                ? sentence.substr(sentence.length() - 1, sentence.length())
+                : std::string();
         auto translation_cache_key = GetTranslationCacheKey(
             source_language_, target_language,
-            sentence_contains_trailing_space ? RemoveTrailingSpace(sentence)
-                                             : sentence);
+            trailing_space.empty() ? sentence : RemoveTrailingSpace(sentence));
         auto iter = translation_cache_.find(translation_cache_key);
         if (iter != translation_cache_.end()) {
           cached_translation += iter->second;
-          if (sentence_contains_trailing_space) {
-            cached_translation += kSpaceChar;
+          if (!trailing_space.empty()) {
+            cached_translation += trailing_space;
           }
 
           continue;

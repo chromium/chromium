@@ -429,6 +429,21 @@ IN_PROC_BROWSER_TEST_F(LiveCaptionSpeechRecognitionHostTest, TranslationCache) {
   base::RunLoop().RunUntilIdle();
   ASSERT_EQ(14u, GetTranslationRequests().size());
   ASSERT_EQ("Amazing", GetTranslationRequests().back());
+
+  // Ensure that strings are cached without whitespace.
+  OnSpeechRecognitionRecognitionEvent(
+      frame_host, "Flying squirrels can glide up to 300 feet. Wow",
+      /* expected_success= */ true, /* is_final= */ false);
+  base::RunLoop().RunUntilIdle();
+  ASSERT_EQ(15u, GetTranslationRequests().size());
+  ASSERT_EQ("Flying squirrels can glide up to 300 feet. Wow",
+            GetTranslationRequests().back());
+  OnSpeechRecognitionRecognitionEvent(
+      frame_host, "Flying squirrels can glide up to 300 feet.\nThat's so far",
+      /* expected_success= */ true, /* is_final= */ false);
+  base::RunLoop().RunUntilIdle();
+  ASSERT_EQ(16u, GetTranslationRequests().size());
+  ASSERT_EQ("That's so far", GetTranslationRequests().back());
 }
 
 IN_PROC_BROWSER_TEST_F(LiveCaptionSpeechRecognitionHostTest,
