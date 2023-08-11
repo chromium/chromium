@@ -101,8 +101,8 @@ TEST_F(RecipientsFetcherImplTest, ShouldFetchRecpientInfoWhenRequestSucceeds) {
   expected_recipient_info.user_name = kTestUserName;
   expected_recipient_info.email = kTestEmail;
   expected_recipient_info.profile_image_url = kTestProfileImageUrl;
-  expected_recipient_info.public_key = kTestPublicKey;
-  expected_recipient_info.public_key_version = kTestPublicKeyVersion;
+  expected_recipient_info.public_key.key = kTestPublicKey;
+  expected_recipient_info.public_key.key_version = kTestPublicKeyVersion;
   StrictMock<base::MockCallback<RecipientsFetcher::FetchFamilyMembersCallback>>
       callback;
   EXPECT_CALL(callback, Run(ElementsAre(expected_recipient_info),

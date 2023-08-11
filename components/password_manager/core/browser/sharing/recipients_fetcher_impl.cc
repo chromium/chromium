@@ -34,9 +34,7 @@ RecipientInfo ToRecipientInfo(const sync_pb::UserInfo& user_info) {
   recipient_info.profile_image_url =
       user_info.user_display_info().profile_image_url();
   recipient_info.public_key =
-      user_info.cross_user_sharing_public_key().x25519_public_key();
-  recipient_info.public_key_version =
-      user_info.cross_user_sharing_public_key().version();
+      PublicKey::FromProto(user_info.cross_user_sharing_public_key());
   return recipient_info;
 }
 

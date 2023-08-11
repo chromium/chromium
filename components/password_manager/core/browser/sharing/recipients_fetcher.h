@@ -9,6 +9,8 @@
 
 #include "base/functional/callback.h"
 
+#include "components/password_manager/core/browser/sharing/recipient_info.h"
+
 namespace password_manager {
 
 // An Enum that contains possible request status values for a Fetch Recipients
@@ -21,32 +23,6 @@ enum class FetchFamilyMembersRequestStatus {
   kNoFamily = 3,
   // A pending requests already exists. No new request was created.
   kPendingRequest = 4,
-};
-
-// The RecipientInfo struct represents a recipient with whom the user can share
-// a password.
-struct RecipientInfo {
-  RecipientInfo();
-  RecipientInfo(const RecipientInfo&);
-  RecipientInfo(RecipientInfo&&);
-  RecipientInfo& operator=(const RecipientInfo&);
-  RecipientInfo& operator=(RecipientInfo&&);
-  ~RecipientInfo();
-
-  bool operator==(const RecipientInfo& other) const;
-
-  // Recipient's user identifier (obfuscated Gaia ID).
-  std::string user_id;
-  // Recipients's user name for display in the UI.
-  std::string user_name;
-  // The email address of the recipients account for display in the UI.
-  std::string email;
-  // URL to the profile picture of the recipient for display in the UI.
-  std::string profile_image_url;
-  // Recipient's Public key.
-  std::string public_key;
-  // Recipient's Public key version.
-  uint32_t public_key_version;
 };
 
 // The RecipientsFetcher class defines the interface for fetching a list of
