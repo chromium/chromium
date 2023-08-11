@@ -98,13 +98,13 @@ by manually editing DEPS file. If git submodules are used, you will also need to
 remove it from git:
 
 ```
-git rm {dependency}
+git rm --cache {dependency}
 ```
 
 or using the example from the previous section:
 
 ```
-git rm third_party/boringssl/src
+git rm --cache third_party/boringssl/src
 ```
 
 Once git-rm is executed, you can proceed with committing your change. You should
