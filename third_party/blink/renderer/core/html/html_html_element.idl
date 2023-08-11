@@ -25,4 +25,6 @@
     // obsolete members
     // https://html.spec.whatwg.org/C/#HTMLHtmlElement-partial
     [CEReactions, Reflect] attribute DOMString version;
+
+    [RuntimeEnabled=DocumentRenderBlocking, SameObject, PutForwards=value] readonly attribute DOMTokenList blocking;
 };

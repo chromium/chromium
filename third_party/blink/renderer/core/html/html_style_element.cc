@@ -55,9 +55,8 @@ void HTMLStyleElement::ParseAttribute(
     HTMLElement::ParseAttribute(params);
     StyleElement::ChildrenChanged(*this);
   } else if (params.name == html_names::kBlockingAttr) {
-    blocking_attribute_->DidUpdateAttributeValue(params.old_value,
+    blocking_attribute_->OnAttributeValueChanged(params.old_value,
                                                  params.new_value);
-    blocking_attribute_->CountTokenUsage();
     BlockingAttributeChanged(*this);
   } else {
     HTMLElement::ParseAttribute(params);

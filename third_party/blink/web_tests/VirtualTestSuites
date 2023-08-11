@@ -1739,6 +1739,7 @@
     "prefix": "no-forced-frame-updates",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [
+      "dom/domparsing/document-render-blocking-no-block.html",
       "external/wpt/css/css-transitions/render-blocking",
       "external/wpt/html/dom/render-blocking"
     ],

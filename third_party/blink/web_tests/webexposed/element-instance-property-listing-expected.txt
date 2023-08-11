@@ -672,6 +672,7 @@ html element hr
     property size
     property width
 html element html
+    property blocking
     property version
 html element i
 html element iframe

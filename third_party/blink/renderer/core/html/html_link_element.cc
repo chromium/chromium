@@ -87,8 +87,7 @@ void HTMLLinkElement::ParseAttribute(
     rel_list_->DidUpdateAttributeValue(params.old_value, value);
     Process();
   } else if (name == html_names::kBlockingAttr) {
-    blocking_attribute_->DidUpdateAttributeValue(params.old_value, value);
-    blocking_attribute_->CountTokenUsage();
+    blocking_attribute_->OnAttributeValueChanged(params.old_value, value);
     if (!IsPotentiallyRenderBlocking()) {
       if (GetLinkStyle() && GetLinkStyle()->StyleSheetIsLoading())
         GetLinkStyle()->UnblockRenderingForPendingSheet();

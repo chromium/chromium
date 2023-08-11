@@ -104,9 +104,8 @@ void HTMLScriptElement::ParseAttribute(
     // element loads.
     UseCounter::Count(GetDocument(), WebFeature::kPriorityHints);
   } else if (params.name == html_names::kBlockingAttr) {
-    blocking_attribute_->DidUpdateAttributeValue(params.old_value,
+    blocking_attribute_->OnAttributeValueChanged(params.old_value,
                                                  params.new_value);
-    blocking_attribute_->CountTokenUsage();
     if (GetDocument().GetRenderBlockingResourceManager() &&
         !IsPotentiallyRenderBlocking()) {
       GetDocument().GetRenderBlockingResourceManager()->RemovePendingScript(

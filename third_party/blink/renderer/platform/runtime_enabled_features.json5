@@ -1430,6 +1430,12 @@
       base_feature: "none",
     },
     {
+      name: "DocumentRenderBlocking",
+      status: "test",
+      base_feature: "none",
+      implied_by: ["ViewTransitionOnNavigation"],
+    },
+    {
       name: "DocumentWrite",
       base_feature: "none",
     },

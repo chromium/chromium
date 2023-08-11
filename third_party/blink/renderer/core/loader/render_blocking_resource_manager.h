@@ -35,7 +35,8 @@ class CORE_EXPORT RenderBlockingResourceManager final
     return HasNonFontRenderBlockingResources() || HasRenderBlockingFonts();
   }
   bool HasNonFontRenderBlockingResources() const {
-    return pending_stylesheet_owner_nodes_.size() || pending_scripts_.size();
+    return pending_stylesheet_owner_nodes_.size() || pending_scripts_.size() ||
+           blocked_on_main_document_parsing_;
   }
   bool HasRenderBlockingFonts() const {
     return pending_font_preloads_.size() || imperative_font_loading_count_;
@@ -68,6 +69,10 @@ class CORE_EXPORT RenderBlockingResourceManager final
   void EnsureStartFontPreloadMaxBlockingTimer();
   void EnsureStartFontPreloadMaxFCPDelayTimer();
   void FontPreloadingTimerFired(TimerBase*);
+
+  // Notifies whether rendering should remain blocked until main Document
+  // parsing is complete.
+  void SetMainDocumentParsingIsRenderBlocking(bool blocking);
 
   void Trace(Visitor* visitor) const;
 
@@ -104,6 +109,7 @@ class CORE_EXPORT RenderBlockingResourceManager final
       font_preload_max_fcp_delay_timer_;
   base::TimeDelta font_preload_timeout_;
   bool font_preload_timer_has_fired_ = false;
+  bool blocked_on_main_document_parsing_ = false;
 };
 
 }  // namespace blink

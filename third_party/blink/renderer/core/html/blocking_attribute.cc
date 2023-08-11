@@ -36,7 +36,9 @@ bool BlockingAttribute::ValidateTokenValue(const AtomicString& token_value,
   return SupportedTokens().Contains(token_value);
 }
 
-void BlockingAttribute::CountTokenUsage() {
+void BlockingAttribute::OnAttributeValueChanged(const AtomicString& old_value,
+                                                const AtomicString& new_value) {
+  DidUpdateAttributeValue(old_value, new_value);
   if (contains(keywords::kRender)) {
     GetElement().GetDocument().CountUse(
         WebFeature::kBlockingAttributeRenderToken);
