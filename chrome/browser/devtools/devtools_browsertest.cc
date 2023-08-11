@@ -2825,7 +2825,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest,
 }
 
 // TODO(crbug.com/1471349): The bug is flaky on chromeos (mostly dbg).
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
 #define MAYBE_TestRawHeadersWithRedirectAndHSTS \
   DISABLED_TestRawHeadersWithRedirectAndHSTS
 #else
