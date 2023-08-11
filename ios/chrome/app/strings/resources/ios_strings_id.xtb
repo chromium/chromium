@@ -558,7 +558,7 @@ Data Anda dienkripsi dengan frasa sandi sinkronisasi. Loginkan frasa sandi untuk
 <translation id="4697071790493980729">Hasil Tidak Ditemukan</translation>
 <translation id="470966556546083668">Jangan Aktifkan Sinkronisasi</translation>
 <translation id="4737560986434232178">Telusuri Tab Terbaru</translation>
-<translation id="473775607612524610">Perbarui</translation>
+<translation id="473775607612524610">Update</translation>
 <translation id="4746926359847517643">Anda selalu bisa membukanya kembali di histori.</translation>
 <translation id="4747097190499141774">Enkripsi frasa sandi tidak mencakup alamat dan metode pembayaran dari Google Pay. Hanya pengguna yang memiliki frasa sandi Anda yang dapat membaca data yang telah Anda enkripsi. Frasa sandi tidak dikirim atau disimpan oleh Google. Jika lupa frasa sandi Anda atau ingin mengubah setelan ini, Anda harus menyetel ulang sinkronisasi. <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="4751162929052964260"><ph name="TITLE" />, <ph name="STATE" />, Hanya di perangkat ini, <ph name="URL" /></translation>
@@ -941,7 +941,7 @@ Selama dalam mode Samaran, situs tidak dapat menggunakan cookie untuk melihat ak
 <translation id="6973630695168034713">Folder</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6988572888918530647">Kelola Akun Google Anda</translation>
-<translation id="6989674195860388998">Ubah di Setelan …</translation>
+<translation id="6989674195860388998">Ubah di Setelan…</translation>
 <translation id="6998989275928107238">Kepada</translation>
 <translation id="699954956411469731">Notifikasi Seluler</translation>
 <translation id="7004032350256606903">Organisasi mengharuskan Anda menjelajah secara pribadi.

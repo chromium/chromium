@@ -942,7 +942,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3299098170013242198">O Windows Hello está ativado para preencher senhas</translation>
 <translation id="3303176609391916566">30 x 42 pol.</translation>
 <translation id="3303855915957856445">Nenhum resultado de pesquisa encontrado</translation>
-<translation id="3304073249511302126">verificação de Bluetooth</translation>
+<translation id="3304073249511302126">busca por Bluetooth</translation>
 <translation id="3304777285002411338">A2x3</translation>
 <translation id="33073482541490531">A senha que você usou foi encontrada em uma violação de dados. O Gerenciador de senhas recomenda que você a mude imediatamente.</translation>
 <translation id="3308006649705061278">Unidade organizacional (OU)</translation>
@@ -2259,7 +2259,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6535751101619004418">Moedas e câmbio</translation>
 <translation id="6536221421038631327">A remoção de uma assinatura do Passpoint do <ph name="DEVICE_TYPE" /> também remove as redes associadas. Entre em contato com "<ph name="FRIENDLY_NAME" />" para fazer mudanças no seu plano de assinatura. <ph name="LEARN_MORE" /></translation>
 <translation id="6540534463546766581">Fundos mútuos</translation>
-<translation id="6545864417968258051">Verificação de Bluetooth</translation>
+<translation id="6545864417968258051">Busca por Bluetooth</translation>
 <translation id="6547208576736763147">Perfuração dupla no lado esquerdo</translation>
 <translation id="6549443526281184652">Trajes típicos</translation>
 <translation id="6551873053534932690">Salvar endereço na conta?</translation>
@@ -2878,7 +2878,7 @@ Mais detalhes:
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{Este cartão e o endereço de faturamento dele serão salvos. Você poderá usá-lo quando a conta <ph name="USER_EMAIL" /> estiver conectada.}one{Este cartão e o endereço de faturamento dele serão salvos. Você poderá usá-lo quando a conta <ph name="USER_EMAIL" /> estiver conectada.}other{Estes cartões e os endereços de faturamento deles serão salvos. Você poderá usá-los quando a conta <ph name="USER_EMAIL" /> estiver conectada.}}</translation>
 <translation id="8012647001091218357">Não foi possível contatar seus pais. Tente novamente.</translation>
 <translation id="8019861005170389898"><ph name="TRADITIONAL_TEXT" /> (<ph name="ADDITIONAL_TEXT" />)</translation>
-<translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Tab e depois Enter para definir o Chrome como o navegador padrão do sistema</translation>
+<translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Tab e depois Enter para definir o Chrome como navegador padrão do sistema.</translation>
 <translation id="8025119109950072390">Invasores nesse site podem induzir você a fazer algo perigoso, como instalar um software ou revelar suas informações pessoais (por exemplo, senhas, números de telefone ou cartões de crédito).</translation>
 <translation id="8026126421313327427">O Chrome exclui automaticamente os temas que estão na lista há mais de quatro semanas. Enquanto você navega, um tema pode reaparecer na lista. Você também pode bloquear temas que não quer que o Chrome compartilhe com sites.</translation>
 <translation id="8026334261755873520">Remover dados de navegação</translation>

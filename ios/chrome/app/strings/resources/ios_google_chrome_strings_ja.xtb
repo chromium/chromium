@@ -24,7 +24,7 @@
 <translation id="2427791862912929107">Chrome には、インターネットのデータやウェブページの読み込み速度を管理できる機能があります。
 <ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="2444854139071078915">保存したパスワードを他のアプリでも簡単に利用するには、Chrome の自動入力を使用します</translation>
-<translation id="2561231791489583059">Chrome を既定のブラウザとして使用すると、危険なサイトから保護され、パスワードを安全に保つことができます</translation>
+<translation id="2561231791489583059">Chrome を既定のブラウザに設定すれば、危険なサイトから保護され、パスワードを保護できます</translation>
 <translation id="2574249610672786438">どのデバイスからでも Chrome で自分のタブにアクセスするには、すべてのデバイスでログインしてください</translation>
 <translation id="2576431527583832481">Chrome のアップデートが見つかりました。新しいバージョンが利用可能です。</translation>
 <translation id="257708665678654955">次回から Google Chrome でこのサイトの <ph name="LANGUAGE_NAME" /> ページの翻訳を表示しますか？</translation>
@@ -117,7 +117,7 @@
 <translation id="7754633291442704733">このアカウントで保存した Chrome のデータ、ブックマーク、履歴、パスワード、その他の設定は、組織（<ph name="DOMAIN" />）からアクセス可能となります。ログアウトすると、データはこのデバイスから消去されますが、管理対象の Google アカウントには保存されたままで、組織はこれを使用できます。また、組織はこのアカウント専用のユーザー ポリシーを設定して、Chrome の動作を変更することも可能です。</translation>
 <translation id="7780154209050837198">Chrome を最大限に活用するには、Google アカウントで Chrome にログインしてください。</translation>
 <translation id="7855730255114109580">Google Chrome は最新版です</translation>
-<translation id="8022947259858476807">Chrome を既定に設定すると、リンクの表示やウィジェットからの検索、他のアプリでのパスワードの自動入力に使用できるようになります</translation>
+<translation id="8022947259858476807">Chrome を既定に設定すると、リンクの表示やウィジェットからの検索、他のアプリへのパスワード自動入力に使用できるようになります</translation>
 <translation id="804638182476029347">Chrome の通知設定で値下げアラートの受信を許可する</translation>
 <translation id="81358522153858150">Chrome で管理対象アカウントのユーザー ポリシーがサポートされるようになりました</translation>
 <translation id="8160472928944011082">Chrome を更新できません</translation>
