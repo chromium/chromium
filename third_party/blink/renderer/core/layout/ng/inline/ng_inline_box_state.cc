@@ -16,7 +16,7 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_relative_utils.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_inline_text.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
-#include "third_party/blink/renderer/core/svg/svg_length_context.h"
+#include "third_party/blink/renderer/core/svg/svg_length_functions.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
 
 namespace blink {
@@ -1009,11 +1009,11 @@ NGInlineLayoutStateStack::ApplyBaselineShift(NGInlineBoxState* box,
       case EBaselineShiftType::kLength: {
         const Length& length = style.BaselineShift();
         // ValueForLength() should be called with unscaled values.
+        const float computed_font_size =
+            box->font->GetFontDescription().ComputedPixelSize() /
+            box->scaling_factor;
         baseline_shift =
-            LayoutUnit(-SVGLengthContext::ValueForLength(
-                           length, style,
-                           box->font->GetFontDescription().ComputedPixelSize() /
-                               box->scaling_factor) *
+            LayoutUnit(-ValueForLength(length, style, computed_font_size) *
                        box->scaling_factor);
         break;
       }

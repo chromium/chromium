@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_ellipse.h"
 #include "third_party/blink/renderer/core/svg/svg_animated_length.h"
 #include "third_party/blink/renderer/core/svg/svg_length.h"
+#include "third_party/blink/renderer/core/svg/svg_length_functions.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
@@ -66,11 +67,11 @@ void SVGEllipseElement::Trace(Visitor* visitor) const {
 Path SVGEllipseElement::AsPath() const {
   Path path;
 
-  SVGLengthContext length_context(this);
+  const SVGViewportResolver viewport_resolver(*this);
   const ComputedStyle& style = ComputedStyleRef();
 
   gfx::Vector2dF radii =
-      length_context.ResolveLengthPair(style.Rx(), style.Ry(), style);
+      VectorForLengthPair(style.Rx(), style.Ry(), viewport_resolver, style);
   if (style.Rx().IsAuto())
     radii.set_x(radii.y());
   else if (style.Ry().IsAuto())
@@ -78,8 +79,8 @@ Path SVGEllipseElement::AsPath() const {
   if (radii.x() < 0 || radii.y() < 0 || (!radii.x() && !radii.y()))
     return path;
 
-  gfx::PointF center = gfx::PointAtOffsetFromOrigin(
-      length_context.ResolveLengthPair(style.Cx(), style.Cy(), style));
+  gfx::PointF center =
+      PointForLengthPair(style.Cx(), style.Cy(), viewport_resolver, style);
   path.AddEllipse(center, radii.x(), radii.y());
   return path;
 }

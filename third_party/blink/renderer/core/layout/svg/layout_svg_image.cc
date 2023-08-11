@@ -40,8 +40,7 @@
 #include "third_party/blink/renderer/core/paint/timing/image_element_timing.h"
 #include "third_party/blink/renderer/core/svg/graphics/svg_image.h"
 #include "third_party/blink/renderer/core/svg/svg_image_element.h"
-#include "third_party/blink/renderer/core/svg/svg_length_context.h"
-#include "third_party/blink/renderer/platform/geometry/length_functions.h"
+#include "third_party/blink/renderer/core/svg/svg_length_functions.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record.h"
 
 namespace blink {
@@ -98,10 +97,10 @@ bool LayoutSVGImage::HasOverriddenIntrinsicSize() const {
 gfx::SizeF LayoutSVGImage::CalculateObjectSize() const {
   NOT_DESTROYED();
 
+  const SVGViewportResolver viewport_resolver(*this);
   gfx::Vector2dF style_size =
-      SVGLengthContext(GetElement())
-          .ResolveLengthPair(StyleRef().UsedWidth(), StyleRef().UsedHeight(),
-                             StyleRef());
+      VectorForLengthPair(StyleRef().UsedWidth(), StyleRef().UsedHeight(),
+                          viewport_resolver, StyleRef());
   bool width_is_auto = style_size.x() < 0 || StyleRef().UsedWidth().IsAuto();
   bool height_is_auto = style_size.y() < 0 || StyleRef().UsedHeight().IsAuto();
   if (!width_is_auto && !height_is_auto)
@@ -153,9 +152,10 @@ bool LayoutSVGImage::UpdateBoundingBox() {
   NOT_DESTROYED();
   gfx::RectF old_object_bounding_box = object_bounding_box_;
 
-  object_bounding_box_.set_origin(gfx::PointAtOffsetFromOrigin(
-      SVGLengthContext(GetElement())
-          .ResolveLengthPair(StyleRef().X(), StyleRef().Y(), StyleRef())));
+  const SVGViewportResolver viewport_resolver(*this);
+  const ComputedStyle& style = StyleRef();
+  object_bounding_box_.set_origin(
+      PointForLengthPair(style.X(), style.Y(), viewport_resolver, style));
   object_bounding_box_.set_size(CalculateObjectSize());
 
   return old_object_bounding_box != object_bounding_box_;

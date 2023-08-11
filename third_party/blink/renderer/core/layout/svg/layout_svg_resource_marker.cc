@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/core/svg/svg_animated_angle.h"
 #include "third_party/blink/renderer/core/svg/svg_animated_length.h"
 #include "third_party/blink/renderer/core/svg/svg_animated_rect.h"
+#include "third_party/blink/renderer/core/svg/svg_length_context.h"
 
 namespace blink {
 

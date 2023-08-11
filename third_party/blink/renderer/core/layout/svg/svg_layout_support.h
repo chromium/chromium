@@ -37,11 +37,9 @@ class RectF;
 
 namespace blink {
 
-class AffineTransform;
-class LayoutBoxModelObject;
-class LayoutObject;
 class ComputedStyle;
-class SVGLengthContext;
+class LayoutBoxModelObject;
+class SVGViewportResolver;
 class StrokeData;
 class TransformState;
 
@@ -104,7 +102,7 @@ class CORE_EXPORT SVGLayoutSupport {
 
   static DashArray ResolveSVGDashArray(const SVGDashArray&,
                                        const ComputedStyle&,
-                                       const SVGLengthContext&);
+                                       const SVGViewportResolver&);
 
   // Determines if any ancestor has adjusted the scale factor.
   static bool ScreenScaleFactorChanged(const LayoutObject*);

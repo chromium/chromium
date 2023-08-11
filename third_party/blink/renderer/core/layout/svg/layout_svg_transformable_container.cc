@@ -24,7 +24,7 @@
 #include "third_party/blink/renderer/core/layout/svg/transform_helper.h"
 #include "third_party/blink/renderer/core/svg/svg_g_element.h"
 #include "third_party/blink/renderer/core/svg/svg_graphics_element.h"
-#include "third_party/blink/renderer/core/svg/svg_length_context.h"
+#include "third_party/blink/renderer/core/svg/svg_length_functions.h"
 #include "third_party/blink/renderer/core/svg/svg_use_element.h"
 
 namespace blink {
@@ -80,9 +80,9 @@ SVGTransformChange LayoutSVGTransformableContainer::UpdateLocalTransform(
   // attributes.
   if (IsA<SVGUseElement>(element)) {
     const ComputedStyle& style = StyleRef();
-    SVGLengthContext length_context(element);
+    const SVGViewportResolver viewport_resolver(*this);
     additional_translation_ =
-        length_context.ResolveLengthPair(style.X(), style.Y(), style);
+        VectorForLengthPair(style.X(), style.Y(), viewport_resolver, style);
   }
 
   SVGTransformChangeDetector change_detector(local_transform_);

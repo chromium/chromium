@@ -27,7 +27,7 @@
 
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_rect.h"
 
-#include "third_party/blink/renderer/core/svg/svg_length_context.h"
+#include "third_party/blink/renderer/core/svg/svg_length_functions.h"
 #include "third_party/blink/renderer/core/svg/svg_rect_element.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 
@@ -44,15 +44,15 @@ void LayoutSVGRect::UpdateShapeFromElement() {
   decorated_bounding_box_ = gfx::RectF();
   use_path_fallback_ = false;
 
-  SVGLengthContext length_context(GetElement());
+  const SVGViewportResolver viewport_resolver(*this);
   const ComputedStyle& style = StyleRef();
-  gfx::Vector2dF origin =
-      length_context.ResolveLengthPair(style.X(), style.Y(), style);
-  gfx::Vector2dF size = length_context.ResolveLengthPair(
-      style.UsedWidth(), style.UsedHeight(), style);
-  // Spec: "A negative value is an error." gfx::Rect::SetRect() clamps negative
+  fill_bounding_box_.set_origin(
+      PointForLengthPair(style.X(), style.Y(), viewport_resolver, style));
+  gfx::Vector2dF size = VectorForLengthPair(
+      style.UsedWidth(), style.UsedHeight(), viewport_resolver, style);
+  // Spec: "A negative value is an error." gfx::SizeF() clamps negative
   // width/height to 0.
-  fill_bounding_box_.SetRect(origin.x(), origin.y(), size.x(), size.y());
+  fill_bounding_box_.set_size(gfx::SizeF(size.x(), size.y()));
 
   // Spec: "A value of zero disables rendering of the element."
   if (!fill_bounding_box_.IsEmpty()) {
@@ -67,7 +67,7 @@ void LayoutSVGRect::UpdateShapeFromElement() {
       return;
     }
     gfx::Vector2dF radii =
-        length_context.ResolveLengthPair(style.Rx(), style.Ry(), style);
+        VectorForLengthPair(style.Rx(), style.Ry(), viewport_resolver, style);
     if (radii.x() > 0 || radii.y() > 0 || !DefinitelyHasSimpleStroke()) {
       CreatePath();
       use_path_fallback_ = true;

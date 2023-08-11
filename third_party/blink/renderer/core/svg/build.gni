@@ -193,6 +193,8 @@ blink_core_sources_svg = [
   "svg_length.h",
   "svg_length_context.cc",
   "svg_length_context.h",
+  "svg_length_functions.cc",
+  "svg_length_functions.h",
   "svg_length_list.cc",
   "svg_length_list.h",
   "svg_length_list_tear_off.h",

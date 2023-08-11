@@ -10,7 +10,7 @@
 #include "third_party/blink/renderer/core/layout/svg/transformed_hit_test_location.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/svg/svg_foreign_object_element.h"
-#include "third_party/blink/renderer/core/svg/svg_length_context.h"
+#include "third_party/blink/renderer/core/svg/svg_length_functions.h"
 
 namespace blink {
 
@@ -102,8 +102,6 @@ void LayoutNGSVGForeignObject::UpdateLayout() {
   NOT_DESTROYED();
   DCHECK(NeedsLayout());
 
-  auto* foreign = To<SVGForeignObjectElement>(GetElement());
-
   // Update our transform before layout, in case any of our descendants rely on
   // the transform being somewhat accurate.  The |needs_transform_update_| flag
   // will be cleared after layout has been performed.
@@ -116,14 +114,14 @@ void LayoutNGSVGForeignObject::UpdateLayout() {
 
   // Resolve the viewport in the local coordinate space - this does not include
   // zoom.
-  SVGLengthContext length_context(foreign);
+  const SVGViewportResolver viewport_resolver(*this);
   const ComputedStyle& style = StyleRef();
-  gfx::Vector2dF origin =
-      length_context.ResolveLengthPair(style.X(), style.Y(), style);
-  gfx::Vector2dF size = length_context.ResolveLengthPair(
-      style.UsedWidth(), style.UsedHeight(), style);
-  // SetRect() will clamp negative width/height to zero.
-  viewport_.SetRect(origin.x(), origin.y(), size.x(), size.y());
+  viewport_.set_origin(
+      PointForLengthPair(style.X(), style.Y(), viewport_resolver, style));
+  gfx::Vector2dF size = VectorForLengthPair(
+      style.UsedWidth(), style.UsedHeight(), viewport_resolver, style);
+  // gfx::SizeF() will clamp negative width/height to zero.
+  viewport_.set_size(gfx::SizeF(size.x(), size.y()));
 
   // A generated physical fragment should have the size for viewport_.
   // This is necessary for external/wpt/inert/inert-on-non-html.html.

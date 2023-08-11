@@ -22,22 +22,17 @@
 
 #include "third_party/blink/renderer/core/svg/svg_length_context.h"
 
-#include <cmath>
-
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/css_resolution_units.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
-#include "third_party/blink/renderer/core/layout/svg/layout_svg_hidden_container.h"
-#include "third_party/blink/renderer/core/layout/svg/layout_svg_root.h"
-#include "third_party/blink/renderer/core/layout/svg/layout_svg_viewport_container.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
+#include "third_party/blink/renderer/core/svg/svg_element.h"
 #include "third_party/blink/renderer/core/svg/svg_length.h"
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
 #include "third_party/blink/renderer/platform/geometry/length_point.h"
 #include "ui/gfx/geometry/size_f.h"
-#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace blink {
 
@@ -168,27 +163,6 @@ gfx::RectF SVGLengthContext::ResolveRectangle(const SVGElement* context,
   return resolved_rect;
 }
 
-gfx::Vector2dF SVGLengthContext::ResolveLengthPair(
-    const Length& x_length,
-    const Length& y_length,
-    const ComputedStyle& style) const {
-  gfx::SizeF viewport_size;
-  if ((x_length.IsPercentOrCalc() || y_length.IsPercentOrCalc()) && context_) {
-    viewport_size = SVGViewportResolver(*context_).ResolveViewport();
-    // If either |x_length| or |y_length| is 'auto', set that viewport dimension
-    // to zero so that the corresponding Length resolves to zero. This matches
-    // the behavior of ValueForLength() below.
-    if (x_length.IsAuto()) {
-      viewport_size.set_width(0);
-    } else if (y_length.IsAuto()) {
-      viewport_size.set_height(0);
-    }
-  }
-  float zoom = style.EffectiveZoom();
-  return gfx::Vector2dF(ValueForLength(x_length, zoom, viewport_size.width()),
-                        ValueForLength(y_length, zoom, viewport_size.height()));
-}
-
 float SVGLengthContext::ResolveValue(const CSSPrimitiveValue& primitive_value,
                                      SVGLengthMode mode) const {
   const ComputedStyle* style = ComputedStyleForLengthResolving(context_);
@@ -197,46 +171,8 @@ float SVGLengthContext::ResolveValue(const CSSPrimitiveValue& primitive_value,
   }
   const SVGLengthConversionData conversion_data(*context_, *style);
   const Length& length = primitive_value.ConvertToLength(conversion_data);
-  return ValueForLength(length, 1.0f, mode);
-}
-
-float SVGLengthContext::ValueForLength(const UnzoomedLength& unzoomed_length,
-                                       SVGLengthMode mode) const {
-  return ValueForLength(unzoomed_length.length(), 1, mode);
-}
-
-float SVGLengthContext::ValueForLength(const Length& length,
-                                       const ComputedStyle& style,
-                                       SVGLengthMode mode) const {
-  return ValueForLength(length, style.EffectiveZoom(), mode);
-}
-
-float SVGLengthContext::ValueForLength(const Length& length,
-                                       float zoom,
-                                       SVGLengthMode mode) const {
-  // The viewport will be unaffected by zoom.
-  const float dimension =
-      length.IsPercentOrCalc() && context_
-          ? SVGViewportResolver(*context_).ViewportDimension(mode)
-          : 0;
-  return ValueForLength(length, zoom, dimension);
-}
-
-float SVGLengthContext::ValueForLength(const Length& length,
-                                       const ComputedStyle& style,
-                                       float dimension) {
-  return ValueForLength(length, style.EffectiveZoom(), dimension);
-}
-
-float SVGLengthContext::ValueForLength(const Length& length,
-                                       float zoom,
-                                       float dimension) {
-  DCHECK_NE(zoom, 0);
-  // Only "specified" lengths have meaning for SVG.
-  if (!length.IsSpecified()) {
-    return 0;
-  }
-  return FloatValueForLength(length, dimension * zoom) / zoom;
+  const SVGViewportResolver viewport_resolver(*context_);
+  return ValueForLength(length, viewport_resolver, 1.0f, mode);
 }
 
 double SVGLengthContext::ConvertValueToUserUnitsUnclamped(
@@ -347,63 +283,6 @@ float SVGLengthContext::ConvertValueFromUserUnits(
     return 0;
   }
   return ClampTo<float>(value / reference);
-}
-
-SVGViewportResolver::SVGViewportResolver(const SVGElement& context)
-    : SVGViewportResolver(context.GetLayoutObject()) {}
-
-gfx::SizeF SVGViewportResolver::ResolveViewport() const {
-  if (!context_object_) {
-    return gfx::SizeF();
-  }
-  // Root <svg> element lengths are resolved against the top level viewport.
-  if (auto* svg_root = DynamicTo<LayoutSVGRoot>(*context_object_)) {
-    return svg_root->ViewportSize();
-  }
-  // Find the nearest viewport object and get the relevant viewport size.
-  for (const LayoutObject* object = context_object_->Parent(); object;
-       object = object->Parent()) {
-    if (auto* outer_svg = DynamicTo<LayoutSVGRoot>(*object)) {
-      gfx::SizeF viewbox_size = outer_svg->ViewBoxRect().size();
-      if (!viewbox_size.IsEmpty()) {
-        return viewbox_size;
-      }
-      return outer_svg->ViewportSize();
-    }
-    if (auto* inner_svg = DynamicTo<LayoutSVGViewportContainer>(*object)) {
-      gfx::SizeF viewbox_size = inner_svg->ViewBoxRect().size();
-      if (!viewbox_size.IsEmpty()) {
-        return viewbox_size;
-      }
-      return inner_svg->Viewport().size();
-    }
-    if (auto* hidden_container = DynamicTo<LayoutSVGHiddenContainer>(*object)) {
-      if (IsA<SVGSymbolElement>(*hidden_container->GetElement())) {
-        return gfx::SizeF();
-      }
-    }
-  }
-  NOTREACHED();
-  return gfx::SizeF();
-}
-
-float SVGViewportResolver::ViewportDimension(SVGLengthMode mode) const {
-  gfx::SizeF viewport_size = ResolveViewport();
-  switch (mode) {
-    case SVGLengthMode::kWidth:
-      return viewport_size.width();
-    case SVGLengthMode::kHeight:
-      return viewport_size.height();
-    case SVGLengthMode::kOther:
-      // Returns the normalized diagonal length of the viewport, as defined in
-      // https://www.w3.org/TR/SVG2/coords.html#Units.
-      return ClampTo<float>(std::sqrt(
-          gfx::Vector2dF(viewport_size.width(), viewport_size.height())
-              .LengthSquared() /
-          2));
-  }
-  NOTREACHED();
-  return 0;
 }
 
 }  // namespace blink
