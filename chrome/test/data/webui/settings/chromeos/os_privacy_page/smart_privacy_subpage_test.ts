@@ -5,10 +5,9 @@
 import 'chrome://os-settings/lazy_load.js';
 
 import {SettingsSmartPrivacySubpage} from 'chrome://os-settings/lazy_load.js';
-import {Router} from 'chrome://os-settings/os_settings.js';
+import {IronCollapseElement, Router} from 'chrome://os-settings/os_settings.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {IronCollapseElement} from 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
