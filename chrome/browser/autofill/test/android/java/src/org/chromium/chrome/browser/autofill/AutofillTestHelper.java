@@ -16,7 +16,6 @@ import org.chromium.components.autofill.VirtualCardEnrollmentState;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
@@ -48,27 +47,13 @@ public class AutofillTestHelper {
     }
 
     List<AutofillProfile> getProfilesToSuggest(final boolean includeNameInLabel) {
-        return runOnUiThreadBlockingNoException(() -> {
-            // TODO(1079268): Simplify once //chrome AutofillProfile is gone.
-            List<AutofillProfile> profiles = new ArrayList<>();
-            for (AutofillProfile profile :
-                    PersonalDataManager.getInstance().getProfilesToSuggest(includeNameInLabel)) {
-                profiles.add(profile);
-            }
-            return profiles;
-        });
+        return runOnUiThreadBlockingNoException(
+                () -> PersonalDataManager.getInstance().getProfilesToSuggest(includeNameInLabel));
     }
 
     List<AutofillProfile> getProfilesForSettings() {
-        return runOnUiThreadBlockingNoException(() -> {
-            // TODO(1079268): Simplify once //chrome AutofillProfile is gone.
-            List<AutofillProfile> profiles = new ArrayList<>();
-            for (AutofillProfile profile :
-                    PersonalDataManager.getInstance().getProfilesForSettings()) {
-                profiles.add(profile);
-            }
-            return profiles;
-        });
+        return runOnUiThreadBlockingNoException(
+                () -> PersonalDataManager.getInstance().getProfilesForSettings());
     }
 
     int getNumberOfProfilesToSuggest() {

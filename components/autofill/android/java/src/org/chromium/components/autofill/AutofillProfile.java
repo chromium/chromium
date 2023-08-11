@@ -55,8 +55,7 @@ public class AutofillProfile {
     /**
      * Builder for the {@link AutofillProfile}.
      */
-    // TODO(crbug.com/1079268): Convert back to final when //chrome AutofillProfile is deleted.
-    public static class Builder {
+    public static final class Builder {
         private String mGUID = "";
         private boolean mIsLocal = true;
         private @Source int mSource = Source.LOCAL_OR_SYNCABLE;

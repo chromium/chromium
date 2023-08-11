@@ -14,7 +14,6 @@ android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/autofill/AutofillAddress.java",
     "java/src/org/chromium/chrome/browser/autofill/AutofillEditorBase.java",
-    "java/src/org/chromium/chrome/browser/autofill/AutofillProfile.java",
     "java/src/org/chromium/chrome/browser/autofill/AutofillProfileBridge.java",
     "java/src/org/chromium/chrome/browser/autofill/AutofillUiUtils.java",
     "java/src/org/chromium/chrome/browser/autofill/PersonalDataManager.java",
