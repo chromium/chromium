@@ -9,6 +9,7 @@
 #include "base/time/time.h"
 #include "components/autofill/core/browser/autofill_manager_test_api.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
+#include "components/autofill/core/browser/single_field_form_fill_router.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
@@ -72,6 +73,10 @@ class BrowserAutofillManagerTestApi : public AutofillManagerTestApi {
   FormInteractionsFlowId address_form_interactions_flow_id() const {
     return manager_->address_form_event_logger_
         ->form_interactions_flow_id_for_test();
+  }
+
+  SingleFieldFormFillRouter* single_field_form_fill_router() {
+    return manager_->single_field_form_fill_router_.get();
   }
 
   void set_single_field_form_fill_router(
