@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/ranges/algorithm.h"
+#include "base/uuid.h"
 #include "chrome/browser/sync/test/integration/saved_tab_groups_helper.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
@@ -12,6 +14,7 @@
 #include "components/sync/base/model_type.h"
 #include "components/sync/protocol/saved_tab_group_specifics.pb.h"
 #include "components/sync/protocol/sync.pb.h"
+#include "components/sync/protocol/sync_entity.pb.h"
 #include "components/sync/test/fake_server.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -65,6 +68,21 @@ class SingleClientSavedTabGroupsSyncTest : public SyncTest {
     }
 
     NOTREACHED();
+  }
+
+  bool ContainsUuidInFakeServer(base::Uuid uuid) {
+    const std::vector<sync_pb::SyncEntity> server_tabs_and_groups =
+        GetFakeServer()->GetSyncEntitiesByModelType(syncer::SAVED_TAB_GROUP);
+
+    const std::string& uuid_string = uuid.AsLowercaseString();
+
+    auto it = base::ranges::find_if(
+        server_tabs_and_groups,
+        [uuid_string](const sync_pb::SyncEntity entity) {
+          return entity.specifics().saved_tab_group().guid() == uuid_string;
+        });
+
+    return it != server_tabs_and_groups.end();
   }
 
  private:
@@ -285,10 +303,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientSavedTabGroupsSyncTest, RemoveGroup) {
                   service, tab2.saved_tab_guid())
                   .Wait());
 
-  // Remove group1 and its tabs.
+  // Simulate that the group was deleted on another device, which
+  // corresponds to deleting the group, but not the tab entities.
   RemoveDataFromFakeServer(group1.saved_guid());
-  RemoveDataFromFakeServer(tab1.saved_tab_guid());
-  RemoveDataFromFakeServer(tab2.saved_tab_guid());
 
   // Verify the group and its tabs were removed from the model.
   EXPECT_TRUE(saved_tab_groups_helper::SavedTabOrGroupDoesNotExistChecker(
@@ -300,6 +317,11 @@ IN_PROC_BROWSER_TEST_F(SingleClientSavedTabGroupsSyncTest, RemoveGroup) {
   EXPECT_TRUE(saved_tab_groups_helper::SavedTabOrGroupDoesNotExistChecker(
                   service, tab2.saved_tab_guid())
                   .Wait());
+
+  // Verify only the tabs are stored in the server.
+  EXPECT_FALSE(ContainsUuidInFakeServer(group1.saved_guid()));
+  EXPECT_TRUE(ContainsUuidInFakeServer(tab1.saved_tab_guid()));
+  EXPECT_TRUE(ContainsUuidInFakeServer(tab2.saved_tab_guid()));
 }
 
 // Update the metadata of a saved group already in the model.

@@ -33,8 +33,9 @@
 #include "components/sync/protocol/saved_tab_group_specifics.pb.h"
 
 namespace {
-constexpr base::TimeDelta discard_orphaned_tabs_threshold =
-    base::Microseconds(base::Time::kMicrosecondsPerDay * 90);
+
+// Discard orphaned tabs after 30 days if the associated group cannot be found.
+constexpr base::TimeDelta kDiscardOrphanedTabsThreshold = base::Days(30);
 
 std::unique_ptr<syncer::EntityData> CreateEntityData(
     std::unique_ptr<sync_pb::SavedTabGroupSpecifics> specific) {
@@ -219,18 +220,19 @@ void SavedTabGroupSyncBridge::SavedTabGroupRemovedLocally(
   std::unique_ptr<syncer::ModelTypeStore::WriteBatch> write_batch =
       store_->CreateWriteBatch();
 
+  // Intentionally only remove the group (creating orphaned tabs in the
+  // process), so other devices with the group open in the Tabstrip can react to
+  // the deletion appropriately (i.e. We do not have to determine if a tab
+  // deletion was part of a group deletion).
   RemoveEntitySpecific(removed_group->saved_guid(), write_batch.get());
-  for (const SavedTabGroupTab& tab : removed_group->saved_tabs()) {
-    RemoveEntitySpecific(tab.saved_tab_guid(), write_batch.get());
-  }
 
   store_->CommitWriteBatch(
       std::move(write_batch),
       base::BindOnce(&SavedTabGroupSyncBridge::OnDatabaseSave,
                      weak_ptr_factory_.GetWeakPtr()));
 
-  // Update the ModelTypeStore (local storage) and sync with the new positions 
-  // of all the groups after a remove has occurred so the positions are 
+  // Update the ModelTypeStore (local storage) and sync with the new positions
+  // of all the groups after a remove has occurred so the positions are
   // preserved on browser restart. See crbug/1462443.
   SavedTabGroupReorderedLocally();
 }
@@ -414,8 +416,9 @@ void SavedTabGroupSyncBridge::ResolveTabsMissingGroups(
           base::Microseconds(tab_iterator->update_time_windows_epoch_micros()));
       base::Time now = base::Time::Now();
 
-      // Discard orphaned tabs that have not been updated for 90 days.
-      if (now - last_update_time >= discard_orphaned_tabs_threshold) {
+      // Discard the tabs that do not have an associated group and have not been
+      // updated within the discard threshold.
+      if (now - last_update_time >= kDiscardOrphanedTabsThreshold) {
         RemoveEntitySpecific(base::Uuid::ParseLowercase(tab_iterator->guid()),
                              write_batch);
         tab_iterator = tabs_missing_groups_.erase(tab_iterator);

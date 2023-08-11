@@ -41,8 +41,8 @@
 using testing::_;
 
 namespace {
-constexpr base::TimeDelta discard_orphaned_tabs_threshold =
-    base::Microseconds(base::Time::kMicrosecondsPerDay * 90);
+// Discard orphaned tabs after 30 days if the associated group cannot be found.
+constexpr base::TimeDelta kDiscardOrphanedTabsThreshold = base::Days(30);
 
 // Do not check update times for specifics as adding tabs to a group through the
 // bridge will change the update times for the group object.
@@ -302,15 +302,15 @@ TEST_F(SavedTabGroupSyncBridgeTest, OrphanedTabAddedIntoGroupWhenFound) {
 }
 
 // Verify orphaned tabs (tabs missing their group) that have not been updated
-// for 90 days are discarded and not added into the model.
-TEST_F(SavedTabGroupSyncBridgeTest, OprhanedTabDiscardedAfter90Days) {
+// for 30 days are discarded and not added into the model.
+TEST_F(SavedTabGroupSyncBridgeTest, OprhanedTabDiscardedAfter30Days) {
   // Merge an orphaned tab. Then merge its missing group. This aims to
   // simulate data spread out over multiple changes.
   base::Uuid orphaned_guid = base::Uuid::GenerateRandomV4();
   SavedTabGroupTab orphaned_tab(GURL("https://mail.google.com"), u"Mail",
                                 orphaned_guid, /*position=*/0);
   orphaned_tab.SetUpdateTimeWindowsEpochMicros(base::Time::Now() -
-                                               discard_orphaned_tabs_threshold);
+                                               kDiscardOrphanedTabsThreshold);
 
   syncer::EntityChangeList orphaned_tab_change_list;
   orphaned_tab_change_list.push_back(
@@ -344,8 +344,8 @@ TEST_F(SavedTabGroupSyncBridgeTest, OprhanedTabDiscardedAfter90Days) {
 }
 
 // Verify orphaned tabs (tabs missing their group) that have not been updated
-// for 90 days and have a group are not discarded.
-TEST_F(SavedTabGroupSyncBridgeTest, OprhanedTabGroupFoundAfter90Days) {
+// for 30 days and have a group are not discarded.
+TEST_F(SavedTabGroupSyncBridgeTest, OprhanedTabGroupFoundAfter30Days) {
   // Merge an orphaned tab. Then merge its missing group. This aims to
   // simulate data spread out over multiple changes.
   base::Uuid orphaned_guid = base::Uuid::GenerateRandomV4();
@@ -366,7 +366,7 @@ TEST_F(SavedTabGroupSyncBridgeTest, OprhanedTabGroupFoundAfter90Days) {
   SavedTabGroupTab orphaned_tab(GURL("https://mail.google.com"), u"Mail",
                                 orphaned_guid, /*position=*/0);
   orphaned_tab.SetUpdateTimeWindowsEpochMicros(base::Time::Now() -
-                                               discard_orphaned_tabs_threshold);
+                                               kDiscardOrphanedTabsThreshold);
   syncer::EntityChangeList orphaned_tab_change_list;
   orphaned_tab_change_list.push_back(
       CreateEntityChange(orphaned_tab.ToSpecifics(),
@@ -577,7 +577,8 @@ TEST_F(SavedTabGroupSyncBridgeTest, AddGroupLocally) {
   saved_tab_group_model_.Add(std::move(group));
 }
 
-// Verify that locally removed groups remove all group data from the processor.
+// Verify that locally removed groups removes the group from the processor
+// and leaves the tabs without an associated group.
 TEST_F(SavedTabGroupSyncBridgeTest, RemoveGroupLocally) {
   EXPECT_TRUE(saved_tab_group_model_.saved_tab_groups().empty());
 
@@ -594,9 +595,9 @@ TEST_F(SavedTabGroupSyncBridgeTest, RemoveGroupLocally) {
   base::Uuid tab_2_guid = tab_2.saved_tab_guid();
   saved_tab_group_model_.Add(std::move(group));
 
-  EXPECT_CALL(processor_, Delete(tab_1_guid.AsLowercaseString(), _));
-  EXPECT_CALL(processor_, Delete(tab_2_guid.AsLowercaseString(), _));
   EXPECT_CALL(processor_, Delete(group_guid.AsLowercaseString(), _));
+  EXPECT_CALL(processor_, Delete(tab_1_guid.AsLowercaseString(), _)).Times(0);
+  EXPECT_CALL(processor_, Delete(tab_2_guid.AsLowercaseString(), _)).Times(0);
 
   saved_tab_group_model_.Remove(group_guid);
 }
