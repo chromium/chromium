@@ -211,6 +211,10 @@ GLManager::Options::Options() = default;
 GLManager::GLManager()
     : gpu_memory_buffer_factory_(
           gpu::GpuMemoryBufferFactory::CreateNativeType(nullptr)) {
+  const base::CommandLine& command_line =
+      *base::CommandLine::ForCurrentProcess();
+  InitializeGpuPreferencesForTestingFromCommandLine(command_line,
+                                                    &gpu_preferences_);
   SetupBaseContext();
 }
 
@@ -269,8 +273,6 @@ void GLManager::InitializeWithWorkaroundsImpl(
   const base::CommandLine& command_line =
       *base::CommandLine::ForCurrentProcess();
   DCHECK(!command_line.HasSwitch(switches::kDisableGLExtensions));
-  InitializeGpuPreferencesForTestingFromCommandLine(command_line,
-                                                    &gpu_preferences_);
 
   context_type_ = options.context_type;
   if (options.share_mailbox_manager) {
@@ -368,6 +370,12 @@ void GLManager::InitializeWithWorkaroundsImpl(
 
   ASSERT_TRUE(context_->MakeCurrent(surface_.get()));
 
+  // if (gpu_preferences_.use_passthrough_cmd_decoder) {
+  //   auto* apit = g_current_gl_context;
+  //   api->glRequestExtensionANGLEFn("GL_EXT_read_format_bgra");
+  //   api->glRequestExtensionANGLEFn("GL_EXT_texture_format_BGRA8888");
+  // }
+
   auto result =
       decoder_->Initialize(surface_.get(), context_.get(), true,
                            ::gpu::gles2::DisallowedFeatures(), attribs);
@@ -457,16 +465,20 @@ size_t GLManager::GetSharedMemoryBytesAllocated() const {
 void GLManager::SetupBaseContext() {
   if (!use_count_) {
 #if BUILDFLAG(IS_ANDROID)
-    base_share_group_ =
-        new scoped_refptr<gl::GLShareGroup>(new gl::GLShareGroup);
-    gfx::Size size(4, 4);
-    base_surface_ = new scoped_refptr<gl::GLSurface>(
-        gl::init::CreateOffscreenGLSurface(gl::GetDefaultDisplay(), size));
-    base_context_ = new scoped_refptr<gl::GLContext>(gl::init::CreateGLContext(
-        base_share_group_->get(), base_surface_->get(),
-        gl::GLContextAttribs()));
-    g_gpu_feature_info.ApplyToGLContext(base_context_->get());
-    #endif
+    // Virtual contexts is not necessary with passthrough.
+    if (!gpu_preferences_.use_passthrough_cmd_decoder) {
+      base_share_group_ =
+          new scoped_refptr<gl::GLShareGroup>(new gl::GLShareGroup);
+      gfx::Size size(4, 4);
+      base_surface_ = new scoped_refptr<gl::GLSurface>(
+          gl::init::CreateOffscreenGLSurface(gl::GetDefaultDisplay(), size));
+      base_context_ =
+          new scoped_refptr<gl::GLContext>(gl::init::CreateGLContext(
+              base_share_group_->get(), base_surface_->get(),
+              gl::GLContextAttribs()));
+      g_gpu_feature_info.ApplyToGLContext(base_context_->get());
+    }
+#endif
   }
   ++use_count_;
 }

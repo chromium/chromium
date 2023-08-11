@@ -17,6 +17,12 @@ class GLBGRAMipMapTest : public testing::Test {
  protected:
   void SetUp() override { gl_.Initialize(GLManager::Options()); }
   void TearDown() override { gl_.Destroy(); }
+  bool ShouldSkipBGRA() const {
+    return !gl_.decoder()
+                ->GetFeatureInfo()
+                ->feature_flags()
+                .ext_texture_format_bgra8888;
+  }
   GLManager gl_;
 };
 
@@ -27,6 +33,10 @@ class GLBGRAMipMapTest : public testing::Test {
 // GL_BGRA. For example, Mesa+Intel does not support mipmapping on textures
 // that use the GL_BGRA internal format. This test verifies a workaround.
 TEST_F(GLBGRAMipMapTest, GenerateMipmapsSucceeds) {
+  if (ShouldSkipBGRA()) {
+    return;
+  }
+
   static const int kWidth = 100;
   static const int kHeight = 50;
 

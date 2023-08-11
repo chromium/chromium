@@ -82,8 +82,22 @@ scoped_refptr<gl::GLSurface> ImageTransportSurface::CreateNativeGLSurface(
     SurfaceHandle surface_handle,
     gl::GLSurfaceFormat format) {
   if (gl::GetGLImplementation() == gl::kGLImplementationMockGL ||
-      gl::GetGLImplementation() == gl::kGLImplementationStubGL)
-    return new gl::GLSurfaceStub;
+      gl::GetGLImplementation() == gl::kGLImplementationStubGL) {
+    return base::MakeRefCounted<gl::GLSurfaceStub>();
+  }
+
+  // For some unittests, we will using ANGLE with Null ANGLE backend, in this
+  // case, we need to use SurfacelessEGL.
+  if (gl::GetGLImplementation() == gl::kGLImplementationEGLANGLE &&
+      gl::GetANGLEImplementation() == gl::ANGLEImplementation::kNull) {
+    auto surface = base::MakeRefCounted<gl::SurfacelessEGL>(
+        display->GetAs<gl::GLDisplayEGL>(), gfx::Size());
+    if (!surface->Initialize(format)) {
+      return nullptr;
+    }
+    return surface;
+  }
+
   DCHECK(GpuSurfaceLookup::GetInstance());
   DCHECK_NE(surface_handle, kNullSurfaceHandle);
 

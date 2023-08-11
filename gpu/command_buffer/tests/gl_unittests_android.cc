@@ -22,7 +22,11 @@ namespace gpu {
 
 class GLSurfaceTextureTest : public testing::Test {
  protected:
-  void SetUp() override { gl_.Initialize(GLManager::Options()); }
+  void SetUp() override {
+    GLManager::Options options;
+    options.bind_generates_resource = true;
+    gl_.Initialize(options);
+  }
 
   void TearDown() override { gl_.Destroy(); }
 

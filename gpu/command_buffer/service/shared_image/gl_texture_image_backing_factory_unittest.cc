@@ -78,6 +78,8 @@ class GLTextureImageBackingFactoryTestBase : public SharedImageTestBase {
     supports_ar30_ = feature_info->feature_flags().chromium_image_ar30;
     supports_ab30_ = feature_info->feature_flags().chromium_image_ab30;
 
+    supports_bgra_ = feature_info->feature_flags().ext_texture_format_bgra8888;
+
     backing_factory_ = std::make_unique<GLTextureImageBackingFactory>(
         gpu_preferences_, gpu_workarounds_, context_state_->feature_info(),
         &progress_reporter_, for_cpu_upload_usage);
@@ -90,20 +92,29 @@ class GLTextureImageBackingFactoryTestBase : public SharedImageTestBase {
         return false;
       }
       return supports_r_rg_;
-    } else if (format == viz::SinglePlaneFormat::kR_8 ||
-               format == viz::SinglePlaneFormat::kRG_88) {
+    }
+    if (format == viz::SinglePlaneFormat::kR_8 ||
+        format == viz::SinglePlaneFormat::kRG_88) {
       return supports_r_rg_;
-    } else if (format == viz::SinglePlaneFormat::kR_16 ||
-               format == viz::SinglePlaneFormat::kRG_1616) {
+    }
+    if (format == viz::SinglePlaneFormat::kR_16 ||
+        format == viz::SinglePlaneFormat::kRG_1616) {
       return supports_rg16_;
-    } else if (format == viz::SinglePlaneFormat::kRGBA_F16) {
+    }
+    if (format == viz::SinglePlaneFormat::kRGBA_F16) {
       return supports_rgba_f16_;
-    } else if (format == viz::SinglePlaneFormat::kBGRA_1010102 ||
-               format == viz::SinglePlaneFormat::kRGBA_1010102) {
+    }
+    if (format == viz::SinglePlaneFormat::kBGRA_1010102 ||
+        format == viz::SinglePlaneFormat::kRGBA_1010102) {
       return supports_ar30_ || supports_ab30_;
-    } else if (format == viz::SinglePlaneFormat::kETC1) {
+    }
+    if (format == viz::SinglePlaneFormat::kETC1) {
       return supports_etc1_;
     }
+    if (format == viz::SinglePlaneFormat::kBGRA_8888) {
+      return supports_bgra_;
+    }
+
     return true;
   }
 
@@ -115,6 +126,7 @@ class GLTextureImageBackingFactoryTestBase : public SharedImageTestBase {
   bool supports_etc1_ = false;
   bool supports_ar30_ = false;
   bool supports_ab30_ = false;
+  bool supports_bgra_ = false;
 };
 
 // Non-parameterized tests.

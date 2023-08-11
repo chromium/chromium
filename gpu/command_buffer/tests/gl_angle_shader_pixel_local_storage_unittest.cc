@@ -40,7 +40,7 @@ static GLint gl_get_integer(GLenum pname) {
 TEST_F(ANGLEShaderPixelLocalStorageTest, GetIntegerv) {
   if (!gl_.IsInitialized() ||
       !GLTestHelper::HasExtension("GL_ANGLE_shader_pixel_local_storage")) {
-    return;
+    GTEST_SKIP();
   }
 
   EXPECT_GT(gl_get_integer(GL_MAX_PIXEL_LOCAL_STORAGE_PLANES_ANGLE), 4);
