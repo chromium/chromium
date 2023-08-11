@@ -19,9 +19,9 @@ enum class RunningSafetyCheckState;
 // `safeBrowsingState`, and `runningState`.
 - (instancetype)
     initWithUpdateChromeState:(UpdateChromeSafetyCheckState)updateChromeState
-             andPasswordState:(PasswordSafetyCheckState)passwordState
-         andSafeBrowsingState:(SafeBrowsingSafetyCheckState)safeBrowsingState
-              andRunningState:(RunningSafetyCheckState)runningState;
+                passwordState:(PasswordSafetyCheckState)passwordState
+            safeBrowsingState:(SafeBrowsingSafetyCheckState)safeBrowsingState
+                 runningState:(RunningSafetyCheckState)runningState;
 
 // The current state of the Update Chrome check.
 @property(nonatomic, readonly) UpdateChromeSafetyCheckState updateChromeState;

@@ -10,6 +10,8 @@ source_set("safety_check") {
     "safety_check_item_view.mm",
     "safety_check_state.h",
     "safety_check_state.mm",
+    "safety_check_view.h",
+    "safety_check_view.mm",
     "types.h",
   ]
   deps = [
@@ -20,6 +22,7 @@ source_set("safety_check") {
     "//ios/chrome/browser/safety_check:constants",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/ui/content_suggestions/cells",
     "//ios/chrome/common",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/table_view:cells_constants",

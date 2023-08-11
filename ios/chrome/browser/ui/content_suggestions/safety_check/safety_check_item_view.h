@@ -19,16 +19,16 @@ enum class SafetyCheckItemLayoutType;
 // `itemType` and `layoutType`, but without specific insecure credentials
 // information.
 - (instancetype)initWithItemType:(SafetyCheckItemType)itemType
-                   andLayoutType:(SafetyCheckItemLayoutType)layoutType;
+                      layoutType:(SafetyCheckItemLayoutType)layoutType;
 
 // Initialize a SafetyCheckItemView with the given `itemType`, `layoutType`,
 // `weakPasswordsCount`, `reusedPasswordsCount`, and
 // `compromisedPasswordsCount`.
 - (instancetype)initWithItemType:(SafetyCheckItemType)itemType
-                   andLayoutType:(SafetyCheckItemLayoutType)layoutType
-           andWeakPasswordsCount:(NSInteger)weakPasswordsCount
-         andReusedPasswordsCount:(NSInteger)reusedPasswordsCount
-    andCompromisedPasswordsCount:(NSInteger)compromisedPasswordsCount;
+                      layoutType:(SafetyCheckItemLayoutType)layoutType
+              weakPasswordsCount:(NSInteger)weakPasswordsCount
+            reusedPasswordsCount:(NSInteger)reusedPasswordsCount
+       compromisedPasswordsCount:(NSInteger)compromisedPasswordsCount;
 
 @end
 

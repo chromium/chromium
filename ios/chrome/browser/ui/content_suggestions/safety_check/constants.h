@@ -16,6 +16,7 @@ extern NSString* const kUpdateChromeItemID;
 extern NSString* const kPasswordItemID;
 extern NSString* const kSafeBrowsingItemID;
 extern NSString* const kDefaultItemID;
+extern NSString* const kSafetyCheckViewID;
 
 }  // namespace safety_check
 

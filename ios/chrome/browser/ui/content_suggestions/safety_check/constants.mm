@@ -14,5 +14,7 @@ constexpr NSString* const kPasswordItemID = @"safety_check::kPasswordItemID";
 constexpr NSString* const kSafeBrowsingItemID =
     @"safety_check::kSafeBrowsingItemID";
 constexpr NSString* const kDefaultItemID = @"safety_check::kDefaultItemID";
+constexpr NSString* const kSafetyCheckViewID =
+    @"safety_check::kSafetyCheckViewID";
 
 }  // namespace safety_check

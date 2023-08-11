@@ -102,21 +102,21 @@ int PasswordIssuesTypeCount(NSInteger weak_passwords_count,
 }
 
 - (instancetype)initWithItemType:(SafetyCheckItemType)itemType
-                   andLayoutType:(SafetyCheckItemLayoutType)layoutType {
+                      layoutType:(SafetyCheckItemLayoutType)layoutType {
   self = [self initWithItemType:itemType
-                     andLayoutType:layoutType
-             andWeakPasswordsCount:0
-           andReusedPasswordsCount:0
-      andCompromisedPasswordsCount:0];
+                     layoutType:layoutType
+             weakPasswordsCount:0
+           reusedPasswordsCount:0
+      compromisedPasswordsCount:0];
 
   return self;
 }
 
 - (instancetype)initWithItemType:(SafetyCheckItemType)itemType
-                   andLayoutType:(SafetyCheckItemLayoutType)layoutType
-           andWeakPasswordsCount:(NSInteger)weakPasswordsCount
-         andReusedPasswordsCount:(NSInteger)reusedPasswordsCount
-    andCompromisedPasswordsCount:(NSInteger)compromisedPasswordsCount {
+                      layoutType:(SafetyCheckItemLayoutType)layoutType
+              weakPasswordsCount:(NSInteger)weakPasswordsCount
+            reusedPasswordsCount:(NSInteger)reusedPasswordsCount
+       compromisedPasswordsCount:(NSInteger)compromisedPasswordsCount {
   if (self = [super init]) {
     _itemType = itemType;
     _layoutType = layoutType;
@@ -155,7 +155,7 @@ int PasswordIssuesTypeCount(NSInteger weak_passwords_count,
   NSMutableArray* arrangedSubviews = [[NSMutableArray alloc] init];
 
   SafetyCheckItemIcon* icon = [self iconForItemType:_itemType
-                                      andLayoutType:_layoutType];
+                                         layoutType:_layoutType];
 
   // When the item is displayed in a hero-style layout, the icon is more
   // prominently displayed via an icon container view.
@@ -226,7 +226,7 @@ int PasswordIssuesTypeCount(NSInteger weak_passwords_count,
 // Returns the corresponding `SafetyCheckItemIcon*` given an `itemType` and
 // `layoutType`.
 - (SafetyCheckItemIcon*)iconForItemType:(SafetyCheckItemType)itemType
-                          andLayoutType:(SafetyCheckItemLayoutType)layoutType {
+                             layoutType:(SafetyCheckItemLayoutType)layoutType {
   BOOL compactLayout = layoutType == SafetyCheckItemLayoutType::kCompact;
   BOOL inSquare = YES;
 

@@ -10,9 +10,9 @@
 
 - (instancetype)
     initWithUpdateChromeState:(UpdateChromeSafetyCheckState)updateChromeState
-             andPasswordState:(PasswordSafetyCheckState)passwordState
-         andSafeBrowsingState:(SafeBrowsingSafetyCheckState)safeBrowsingState
-              andRunningState:(RunningSafetyCheckState)runningState {
+                passwordState:(PasswordSafetyCheckState)passwordState
+            safeBrowsingState:(SafeBrowsingSafetyCheckState)safeBrowsingState
+                 runningState:(RunningSafetyCheckState)runningState {
   if (self = [super init]) {
     _updateChromeState = updateChromeState;
     _passwordState = passwordState;
