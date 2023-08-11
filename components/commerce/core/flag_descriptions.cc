@@ -34,6 +34,10 @@ const char kChromeCartDomBasedHeuristicsDescription[] =
 const char kPriceInsightsName[] = "Price Insights";
 const char kPriceInsightsDescription[] = "Enable price insights experiment.";
 
+const char kShowDiscountOnNavigationName[] = "Show discount on navigation";
+const char kShowDiscountOnNavigationDescription[] =
+    "Enable discount to show on navigation";
+
 const char kPriceTrackingChipExperimentName[] =
     "Price Tracking Chip Experiment";
 const char kPriceTrackingChipExperimentDescription[] =

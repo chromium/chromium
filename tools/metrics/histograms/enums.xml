@@ -63693,6 +63693,7 @@ from previous Chrome versions.
   <int value="-114768488" label="ImmersiveFullscreen:enabled"/>
   <int value="-113855291" label="RelatedSearchesUi:enabled"/>
   <int value="-112971292" label="ShortcutCustomizationJelly:disabled"/>
+  <int value="-112758607" label="ShowDiscountOnNavigation:disabled"/>
   <int value="-112707644" label="pervasive-system-accent-color"/>
   <int value="-112588076"
       label="AutofillEnablePaymentsAndroidBottomSheet:enabled"/>
@@ -67741,6 +67742,7 @@ from previous Chrome versions.
   <int value="1929603041" label="HideShelfControlsInTabletMode:disabled"/>
   <int value="1930185502"
       label="EnableBluetoothVerboseLogsForGooglers:enabled"/>
+  <int value="1930212531" label="ShowDiscountOnNavigation:enabled"/>
   <int value="1930901873" label="disable-sync-app-list"/>
   <int value="1931309368" label="fill-on-account-select:disabled"/>
   <int value="1932038907" label="CrosBatterySaverAlwaysOn:enabled"/>

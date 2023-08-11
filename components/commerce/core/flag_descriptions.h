@@ -31,6 +31,9 @@ extern const char kChromeCartDomBasedHeuristicsDescription[];
 extern const char kPriceInsightsName[];
 extern const char kPriceInsightsDescription[];
 
+extern const char kShowDiscountOnNavigationName[];
+extern const char kShowDiscountOnNavigationDescription[];
+
 extern const char kPriceTrackingChipExperimentName[];
 extern const char kPriceTrackingChipExperimentDescription[];
 

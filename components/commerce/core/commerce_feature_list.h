@@ -103,6 +103,11 @@ BASE_DECLARE_FEATURE(kShoppingListRegionLaunched);
 BASE_DECLARE_FEATURE(kShoppingListTrackByDefault);
 BASE_DECLARE_FEATURE(kShoppingPDPMetrics);
 BASE_DECLARE_FEATURE(kShoppingPDPMetricsRegionLaunched);
+
+// Feature flag for Discounts on navigation.
+BASE_DECLARE_FEATURE(kShowDiscountOnNavigation);
+BASE_DECLARE_FEATURE(kShowDiscountOnNavigationRegionLaunched);
+
 BASE_DECLARE_FEATURE(kRetailCoupons);
 BASE_DECLARE_FEATURE(kCommerceDeveloper);
 // Parameter for enabling feature variation of coupons with code.

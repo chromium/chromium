@@ -632,6 +632,16 @@ bool ShoppingService::IsPriceInsightsInfoApiEnabled() {
                                       country_on_startup_, locale_on_startup_);
 }
 
+bool ShoppingService::IsDiscountEligibleToShowOnNavigation() {
+  if (!IsRegionLockedFeatureEnabled(kShowDiscountOnNavigation,
+                                    kShowDiscountOnNavigationRegionLaunched,
+                                    country_on_startup_, locale_on_startup_)) {
+    return false;
+  }
+  return account_checker_ && account_checker_->IsSignedIn() &&
+         account_checker_->IsAnonymizedUrlDataCollectionEnabled();
+}
+
 void ShoppingService::HandleOptGuideProductInfoResponse(
     const GURL& url,
     WebWrapper* web,
