@@ -3024,6 +3024,7 @@ if (!is_android) {
       ]
       deps += [
         ":lacros_test_support_ui",
+        "../browser/lacros/cros_apps/api:browser_tests",
         "//chromeos/crosapi/mojom",
         "//chromeos/lacros",
         "//chromeos/lacros:test_support",
