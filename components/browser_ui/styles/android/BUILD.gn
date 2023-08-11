@@ -27,6 +27,7 @@ android_resources("java_resources") {
     "java/res/color-night/switch_thumb_tint_list.xml",
     "java/res/color-night/switch_track_tint.xml",
     "java/res/color/chip_text_color_secondary_list.xml",
+    "java/res/color/color_primary_with_alpha_5.xml",
     "java/res/color/default_icon_color_accent1_tint_list.xml",
     "java/res/color/default_icon_color_dark_tint_list.xml",
     "java/res/color/default_icon_color_disabled.xml",
