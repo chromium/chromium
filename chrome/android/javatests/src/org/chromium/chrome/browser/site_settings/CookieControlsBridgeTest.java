@@ -18,6 +18,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataType;
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
@@ -396,6 +397,7 @@ public class CookieControlsBridgeTest {
     @Test
     @SmallTest
     @Features.EnableFeatures(PageInfoFeatures.USER_BYPASS_UI_NAME)
+    @DisabledTest(message = "TODO(crbug/1470719): Cookies need to be set in third-party context.")
     public void testCookieBridgeWithChangingAllowedCookiesCountUserBypass() throws Exception {
         int currentCallCount = mCallbackHelper.getCallCount();
 
@@ -426,6 +428,7 @@ public class CookieControlsBridgeTest {
     @Test
     @SmallTest
     @Features.EnableFeatures(PageInfoFeatures.USER_BYPASS_UI_NAME)
+    @DisabledTest(message = "TODO(crbug/1470719): Cookies need to be set in third-party context.")
     public void testCookieBridgeWithChangingBlockedCookiesCountUserBypass() throws Exception {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             UserPrefs.get(Profile.getLastUsedRegularProfile())

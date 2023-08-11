@@ -159,6 +159,12 @@ class CookieControlsController
   // Returns the number of blocked sites.
   int GetBlockedSitesCount() const;
 
+  // Returns the number of allowed third-party sites with cookies.
+  int GetAllowedThirdPartyCookiesSitesCount() const;
+
+  // Returns the number of blocked third-party sites with cookies.
+  int GetBlockedThirdPartyCookiesSitesCount() const;
+
   double GetSiteEngagementScore();
 
   // Record metrics when third-party cookies are allowed.

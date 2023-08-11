@@ -16,6 +16,7 @@ static_library("page_info") {
     "//base",
     "//build:chromeos_buildflags",
     "//components/browsing_data/content",
+    "//components/browsing_data/core",
     "//components/content_settings/browser",
     "//components/content_settings/browser/ui",
     "//components/content_settings/core/browser",

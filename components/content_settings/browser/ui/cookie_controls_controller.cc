@@ -137,15 +137,16 @@ void CookieControlsController::Update(content::WebContents* web_contents) {
   }
   auto status = GetStatus(web_contents);
   if (base::FeatureList::IsEnabled(content_settings::features::kUserBypassUI)) {
-    int allowed_sites = GetAllowedSitesCount();
-    int blocked_sites = GetBlockedSitesCount();
+    int third_party_allowed_sites = GetAllowedThirdPartyCookiesSitesCount();
+    int third_party_blocked_sites = GetBlockedThirdPartyCookiesSitesCount();
 
     for (auto& observer : observers_) {
       observer.OnStatusChanged(status.status, status.enforcement,
                                status.expiration);
-      observer.OnSitesCountChanged(allowed_sites, blocked_sites);
-      observer.OnBreakageConfidenceLevelChanged(
-          GetConfidenceLevel(status.status, allowed_sites, blocked_sites));
+      observer.OnSitesCountChanged(third_party_allowed_sites,
+                                   third_party_blocked_sites);
+      observer.OnBreakageConfidenceLevelChanged(GetConfidenceLevel(
+          status.status, third_party_allowed_sites, third_party_blocked_sites));
     }
   } else {
     int allowed_cookies = GetAllowedCookieCount();
@@ -393,6 +394,32 @@ int CookieControlsController::GetBlockedSitesCount() const {
       *(pscs->blocked_browsing_data_model()));
 }
 
+int CookieControlsController::GetAllowedThirdPartyCookiesSitesCount() const {
+  auto* pscs = content_settings::PageSpecificContentSettings::GetForPage(
+      GetWebContents()->GetPrimaryPage());
+  if (!pscs) {
+    return 0;
+  }
+
+  return browsing_data::GetUniqueThirdPartyCookiesHostCount(
+      GetWebContents()->GetLastCommittedURL(),
+      pscs->allowed_local_shared_objects(),
+      *(pscs->allowed_browsing_data_model()));
+}
+
+int CookieControlsController::GetBlockedThirdPartyCookiesSitesCount() const {
+  auto* pscs = content_settings::PageSpecificContentSettings::GetForPage(
+      GetWebContents()->GetPrimaryPage());
+  if (!pscs) {
+    return 0;
+  }
+
+  return browsing_data::GetUniqueThirdPartyCookiesHostCount(
+      GetWebContents()->GetLastCommittedURL(),
+      pscs->blocked_local_shared_objects(),
+      *(pscs->blocked_browsing_data_model()));
+}
+
 int CookieControlsController::GetStatefulBounceCount() const {
   auto* pscs = content_settings::PageSpecificContentSettings::GetForPage(
       GetWebContents()->GetPrimaryPage());
@@ -406,13 +433,14 @@ int CookieControlsController::GetStatefulBounceCount() const {
 void CookieControlsController::PresentBlockedCookieCounter() {
   if (base::FeatureList::IsEnabled(content_settings::features::kUserBypassUI)) {
     auto status = GetStatus(GetWebContents());
-    int allowed_sites = GetAllowedSitesCount();
-    int blocked_sites = GetBlockedSitesCount();
+    int third_party_allowed_sites = GetAllowedThirdPartyCookiesSitesCount();
+    int third_party_blocked_sites = GetBlockedThirdPartyCookiesSitesCount();
 
     for (auto& observer : observers_) {
-      observer.OnSitesCountChanged(allowed_sites, blocked_sites);
-      observer.OnBreakageConfidenceLevelChanged(
-          GetConfidenceLevel(status.status, allowed_sites, blocked_sites));
+      observer.OnSitesCountChanged(third_party_allowed_sites,
+                                   third_party_blocked_sites);
+      observer.OnBreakageConfidenceLevelChanged(GetConfidenceLevel(
+          status.status, third_party_allowed_sites, third_party_blocked_sites));
     }
   } else {
     int allowed_cookies = GetAllowedCookieCount();

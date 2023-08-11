@@ -97,6 +97,11 @@ int GetUniqueHostCount(
     const browsing_data::LocalSharedObjectsContainer& local_shared_objects,
     const BrowsingDataModel& browsing_data_model);
 
+int GetUniqueThirdPartyCookiesHostCount(
+    const GURL& first_party_url,
+    const browsing_data::LocalSharedObjectsContainer& local_shared_objects,
+    const BrowsingDataModel& browsing_data_model);
+
 }  // namespace browsing_data
 
 #endif  // COMPONENTS_BROWSING_DATA_CONTENT_BROWSING_DATA_HELPER_H_

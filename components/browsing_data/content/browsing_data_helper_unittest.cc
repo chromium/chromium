@@ -4,8 +4,13 @@
 
 #include "components/browsing_data/content/browsing_data_helper.h"
 
+#include "components/browsing_data/content/browsing_data_model.h"
+#include "components/browsing_data/content/database_helper.h"
 #include "content/public/common/url_constants.h"
+#include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_browser_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
@@ -25,6 +30,9 @@ class BrowsingDataHelperTest : public testing::Test {
     GURL test(scheme + "://example.com");
     return (HasWebScheme(test) && browsing_data::IsWebScheme(scheme));
   }
+
+  content::BrowserTaskEnvironment task_environment_;
+  content::TestBrowserContext browser_context_;
 };
 
 TEST_F(BrowsingDataHelperTest, WebStorageSchemesAreWebSchemes) {
@@ -51,6 +59,97 @@ TEST_F(BrowsingDataHelperTest, SchemesThatCantStoreDataDontMatchAnything) {
   EXPECT_FALSE(IsWebScheme(url::kBlobScheme));
   EXPECT_FALSE(IsWebScheme(url::kFileSystemScheme));
   EXPECT_FALSE(IsWebScheme("invalid-scheme-i-just-made-up"));
+}
+
+TEST_F(BrowsingDataHelperTest, GetUniqueThirdPartyCookiesHostCount) {
+  auto local_shared_objects_container =
+      browsing_data::LocalSharedObjectsContainer(
+          browser_context_.GetDefaultStoragePartition(), false, {},
+          base::NullCallback());
+
+  std::unique_ptr<BrowsingDataModel> browsing_data_model =
+      BrowsingDataModel::BuildEmpty(
+          browser_context_.GetDefaultStoragePartition(), /*delegate=*/nullptr);
+
+  // 1.
+  auto google_url = GURL("http://google.com");
+  browsing_data_model->AddBrowsingData(
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(google_url)),
+      BrowsingDataModel::StorageType::kLocalStorage,
+      /*storage_size=*/0,
+      /*cookie_count=*/0);
+
+  // Should be consolidated in first entry.
+  browsing_data_model->AddBrowsingData(
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(google_url)),
+      BrowsingDataModel::StorageType::kSharedStorage,
+      /*storage_size=*/0,
+      /*cookie_count=*/0);
+
+  // 2. Subdomains should be treated separately.
+  auto google_subdomain_url = GURL("http://maps.google.com");
+  browsing_data_model->AddBrowsingData(
+      blink::StorageKey::CreateFirstParty(
+          url::Origin::Create(google_subdomain_url)),
+      BrowsingDataModel::StorageType::kQuotaStorage,
+      /*storage_size=*/0,
+      /*cookie_count=*/0);
+
+  // 3.
+  auto localhost_url = GURL("http://localhost");
+  browsing_data_model->AddBrowsingData(
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(localhost_url)),
+      BrowsingDataModel::StorageType::kQuotaStorage,
+      /*storage_size=*/0,
+      /*cookie_count=*/0);
+
+  // 4.
+  auto localhost_ip_url = GURL("http://127.0.0.1");
+  browsing_data_model->AddBrowsingData(
+      blink::StorageKey::CreateFirstParty(
+          url::Origin::Create(localhost_ip_url)),
+      BrowsingDataModel::StorageType::kLocalStorage,
+      /*storage_size=*/0,
+      /*cookie_count=*/0);
+
+  // 5.
+  auto example_url = GURL("http://example.com");
+  auto example_origin = url::Origin::Create(example_url);
+  local_shared_objects_container.databases()->Add(example_origin);
+
+  // Should be counted once in the unique hosts.
+  browsing_data_model->AddBrowsingData(
+      example_origin, BrowsingDataModel::StorageType::kTrustTokens,
+      /*storage_size=*/0,
+      /*cookie_count=*/0);
+
+  // 6.
+  auto ip_url = GURL("http://192.168.1.1");
+  browsing_data_model->AddBrowsingData(
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(ip_url)),
+      BrowsingDataModel::StorageType::kLocalStorage,
+      /*storage_size=*/0,
+      /*cookie_count=*/0);
+
+  // When `google_url` is the top frame unique third-party count should sites
+  // other than google URLs (out of 6 entries should be 4).
+  int unique_site_count = GetUniqueThirdPartyCookiesHostCount(
+      google_url, local_shared_objects_container, *browsing_data_model);
+  EXPECT_EQ(4, unique_site_count);
+
+  // When `google_subdomain_url` is the top frame unique third-party count
+  // should sites other than google URLs (out of 6 entries should be 4).
+  unique_site_count = GetUniqueThirdPartyCookiesHostCount(
+      google_subdomain_url, local_shared_objects_container,
+      *browsing_data_model);
+  EXPECT_EQ(4, unique_site_count);
+
+  // When `ip_url` is the top frame this tests empty top frame domain with other
+  // sites. Subdomains are counted separately because they're different hosts
+  // (out of 6 entries should be 5).
+  unique_site_count = GetUniqueThirdPartyCookiesHostCount(
+      ip_url, local_shared_objects_container, *browsing_data_model);
+  EXPECT_EQ(5, unique_site_count);
 }
 
 }  // namespace
