@@ -238,7 +238,6 @@ SyncServiceImpl::~SyncServiceImpl() {
   if (identity_manager_) {
     identity_manager_->RemoveObserver(this);
   }
-  sync_prefs_.RemoveSyncPrefObserver(this);
   // Shutdown() should have been called before destruction.
   DCHECK(!engine_);
 }
@@ -262,7 +261,7 @@ void SyncServiceImpl::Initialize() {
       base::BindRepeating(&SyncServiceImpl::GetAccountInfo,
                           base::Unretained(this)));
 
-  sync_prefs_.AddSyncPrefObserver(this);
+  sync_prefs_observation_.Observe(&sync_prefs_);
 
   if (!IsLocalSyncEnabled()) {
     auth_manager_->RegisterForAuthNotifications();

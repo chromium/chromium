@@ -131,12 +131,12 @@ void SyncPrefs::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(kObsoleteAutofillWalletImportEnabled, true);
 }
 
-void SyncPrefs::AddSyncPrefObserver(SyncPrefObserver* sync_pref_observer) {
+void SyncPrefs::AddObserver(SyncPrefObserver* sync_pref_observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   sync_pref_observers_.AddObserver(sync_pref_observer);
 }
 
-void SyncPrefs::RemoveSyncPrefObserver(SyncPrefObserver* sync_pref_observer) {
+void SyncPrefs::RemoveObserver(SyncPrefObserver* sync_pref_observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   sync_pref_observers_.RemoveObserver(sync_pref_observer);
 }

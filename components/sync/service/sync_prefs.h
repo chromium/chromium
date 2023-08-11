@@ -64,8 +64,8 @@ class SyncPrefs {
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
-  void AddSyncPrefObserver(SyncPrefObserver* sync_pref_observer);
-  void RemoveSyncPrefObserver(SyncPrefObserver* sync_pref_observer);
+  void AddObserver(SyncPrefObserver* sync_pref_observer);
+  void RemoveObserver(SyncPrefObserver* sync_pref_observer);
 
   // Getters and setters for global sync prefs.
 

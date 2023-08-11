@@ -87,7 +87,7 @@ TEST_F(SyncPrefsTest, ObservedPrefs) {
   ASSERT_FALSE(sync_prefs_->IsInitialSyncFeatureSetupComplete());
   ASSERT_FALSE(sync_prefs_->IsSyncRequested());
 
-  sync_prefs_->AddSyncPrefObserver(&mock_sync_pref_observer);
+  sync_prefs_->AddObserver(&mock_sync_pref_observer);
 
   pref_service_.SetBoolean(prefs::internal::kSyncManaged, true);
   EXPECT_TRUE(sync_prefs_->IsSyncClientDisabledByPolicy());
@@ -104,7 +104,7 @@ TEST_F(SyncPrefsTest, ObservedPrefs) {
   sync_prefs_->SetSyncRequested(false);
   EXPECT_FALSE(sync_prefs_->IsSyncRequested());
 
-  sync_prefs_->RemoveSyncPrefObserver(&mock_sync_pref_observer);
+  sync_prefs_->RemoveObserver(&mock_sync_pref_observer);
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -114,11 +114,11 @@ TEST_F(SyncPrefsTest, SetSelectedOsTypesTriggersPreferredDataTypesPrefChange) {
               OnPreferredDataTypesPrefChange(
                   /*payments_integration_enabled_changed=*/false));
 
-  sync_prefs_->AddSyncPrefObserver(&mock_sync_pref_observer);
+  sync_prefs_->AddObserver(&mock_sync_pref_observer);
   sync_prefs_->SetSelectedOsTypes(/*sync_all_os_types=*/false,
                                   UserSelectableOsTypeSet(),
                                   UserSelectableOsTypeSet());
-  sync_prefs_->RemoveSyncPrefObserver(&mock_sync_pref_observer);
+  sync_prefs_->RemoveObserver(&mock_sync_pref_observer);
 }
 #endif
 
@@ -651,7 +651,7 @@ TEST_F(SyncPrefsTest, ShouldSetAppsSyncEnabledByOsToFalseByDefault) {
 
 TEST_F(SyncPrefsTest, ShouldChangeAppsSyncEnabledByOsAndNotifyObservers) {
   StrictMock<MockSyncPrefObserver> mock_sync_pref_observer;
-  sync_prefs_->AddSyncPrefObserver(&mock_sync_pref_observer);
+  sync_prefs_->AddObserver(&mock_sync_pref_observer);
 
   EXPECT_CALL(mock_sync_pref_observer,
               OnPreferredDataTypesPrefChange(

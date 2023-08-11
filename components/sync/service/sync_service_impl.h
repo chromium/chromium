@@ -16,6 +16,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -519,6 +520,9 @@ class SyncServiceImpl : public SyncService,
 
   // Used to track download status changes during browser startup.
   std::unique_ptr<DownloadStatusRecorder> download_status_recorder_;
+
+  base::ScopedObservation<SyncPrefs, SyncPrefObserver> sync_prefs_observation_{
+      this};
 
 #if BUILDFLAG(IS_ANDROID)
   // Manage and fetch the java object that wraps this SyncService on
