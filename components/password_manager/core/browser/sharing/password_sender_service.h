@@ -9,6 +9,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/password_manager/core/browser/sharing/recipient_info.h"
 
 namespace syncer {
 class ModelTypeControllerDelegate;
@@ -22,9 +23,8 @@ struct PasswordForm;
 struct PasswordRecipient {
   // Recipient's user identifier (obfuscated Gaia ID).
   std::string user_id;
-
-  // TODO(crbug.com/1456309): Add a field for the public key of the receiver
-  // once the discussion concluded which type to use.
+  // Recipient's Public Key.
+  PublicKey public_key;
 };
 
 // The PasswordSenderService class defines the interface for sending passwords.

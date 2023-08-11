@@ -10,6 +10,13 @@ bool PublicKey::operator==(const PublicKey& other) const {
   return key == other.key && key_version == other.key_version;
 }
 
+sync_pb::CrossUserSharingPublicKey PublicKey::ToProto() const {
+  sync_pb::CrossUserSharingPublicKey proto_result;
+  proto_result.set_x25519_public_key(key);
+  proto_result.set_version(key_version);
+  return proto_result;
+}
+
 // static
 PublicKey PublicKey::FromProto(
     const sync_pb::CrossUserSharingPublicKey& proto_public_key) {

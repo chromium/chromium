@@ -20,6 +20,8 @@ struct PublicKey {
 
   bool operator==(const PublicKey& other) const;
 
+  sync_pb::CrossUserSharingPublicKey ToProto() const;
+
   static PublicKey FromProto(
       const sync_pb::CrossUserSharingPublicKey& proto_public_key);
 };

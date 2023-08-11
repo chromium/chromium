@@ -43,7 +43,9 @@ base::Value::Dict EntityData::ToDictionaryValue() const {
       // tree.
       .Set("PARENT_ID", legacy_parent_id)
       .Set("CTIME", GetTimeDebugString(creation_time))
-      .Set("MTIME", GetTimeDebugString(modification_time));
+      .Set("MTIME", GetTimeDebugString(modification_time))
+      .Set("RECIPIENT_PUBLIC_KEY",
+           CrossUserSharingPublicKeyToValue(recipient_public_key));
 }
 
 size_t EntityData::EstimateMemoryUsage() const {
@@ -57,6 +59,7 @@ size_t EntityData::EstimateMemoryUsage() const {
   memory_usage += EstimateMemoryUsage(name);
   memory_usage += EstimateMemoryUsage(specifics);
   memory_usage += EstimateMemoryUsage(legacy_parent_id);
+  memory_usage += EstimateMemoryUsage(recipient_public_key);
   return memory_usage;
 }
 
