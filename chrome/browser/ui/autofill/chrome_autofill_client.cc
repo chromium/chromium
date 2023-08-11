@@ -31,6 +31,7 @@
 #include "chrome/browser/fast_checkout/fast_checkout_features.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/password_manager/password_manager_settings_service_factory.h"
+#include "chrome/browser/plus_addresses/plus_address_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_promo_util.h"
@@ -85,6 +86,7 @@
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_requirements_service.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
+#include "components/plus_addresses/features.h"
 #include "components/prefs/pref_service.h"
 #include "components/profile_metrics/browser_profile_type.h"
 #include "components/security_state/core/security_state.h"
@@ -224,6 +226,18 @@ IbanManager* ChromeAutofillClient::GetIbanManager() {
   Profile* profile =
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
   return IbanManagerFactory::GetForProfile(profile);
+}
+
+plus_addresses::PlusAddressService*
+ChromeAutofillClient::GetPlusAddressService() {
+  // The `PlusAddressServiceFactory` should also ensure the service is not
+  // created without the feature enabled, but being defensive here to avoid
+  // surprises.
+  if (!base::FeatureList::IsEnabled(plus_addresses::kFeature)) {
+    return nullptr;
+  }
+  return PlusAddressServiceFactory::GetForBrowserContext(
+      web_contents()->GetBrowserContext());
 }
 
 MerchantPromoCodeManager* ChromeAutofillClient::GetMerchantPromoCodeManager() {

@@ -10,6 +10,7 @@ include_rules = [
   "+components/leveldb_proto",
   "+components/metrics",
   "+components/optimization_guide/core",
+  "+components/plus_addresses",
   "+components/profile_metrics",
   "+components/policy",
   "+components/security_state",

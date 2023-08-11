@@ -133,6 +133,10 @@ class AutofillExternalDelegate : public AutofillPopupDelegate {
   void OnCreditCardScanned(const AutofillTriggerSource trigger_source,
                            const CreditCard& card);
 
+  // Fills the form field with the given plus address.
+  // Called when a plus address is created.
+  void OnPlusAddressCreated(const std::string& plus_address);
+
   // Fills the form with the Autofill data corresponding to `backend_id`.
   // If `is_preview` is true then this is just a preview to show the user what
   // would be selected and if `is_preview` is false then the user has selected

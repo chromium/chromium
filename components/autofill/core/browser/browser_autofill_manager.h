@@ -729,6 +729,10 @@ class BrowserAutofillManager : public AutofillManager,
   // focusable input field with a type from heuristics or the server.
   bool ShouldUploadUkm(const FormStructure& form_structure);
 
+  // Returns a plus address suggestion, if eligible, using `client()`'s
+  // `GetPlusAddressService`.
+  absl::optional<Suggestion> MaybeGetPlusAddressSuggestion();
+
   // Delegates to perform external processing (display, selection) on
   // our behalf.
   std::unique_ptr<AutofillExternalDelegate> external_delegate_;

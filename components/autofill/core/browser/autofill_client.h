@@ -64,6 +64,10 @@ class InternalAuthenticator;
 }
 #endif
 
+namespace plus_addresses {
+class PlusAddressService;
+}
+
 namespace autofill {
 
 class AddressNormalizer;
@@ -396,6 +400,8 @@ class AutofillClient : public RiskDataLoader {
 
   // Gets the IbanManager instance associated with the client.
   virtual IbanManager* GetIbanManager();
+
+  virtual plus_addresses::PlusAddressService* GetPlusAddressService();
 
   // Gets the MerchantPromoCodeManager instance associated with the
   // client (can be null for unsupported platforms).

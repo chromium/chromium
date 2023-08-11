@@ -108,6 +108,7 @@
 #include "components/autofill/core/common/password_form_fill_data.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "components/plus_addresses/plus_address_service.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/security_interstitials/core/pref_names.h"
@@ -284,6 +285,8 @@ FillDataType GetEventTypeFromSingleFieldSuggestionPopupItemId(
     case PopupItemId::kFillFullName:
     case PopupItemId::kFillEverythingFromAddressProfile:
     case PopupItemId::kFieldByFieldFilling:
+    case PopupItemId::kFillExistingPlusAddress:
+    case PopupItemId::kCreateNewPlusAddress:
       NOTREACHED();
   }
   NOTREACHED();
@@ -3545,6 +3548,13 @@ void BrowserAutofillManager::GetAvailableSuggestions(
     *suggestions =
         GetProfileSuggestions(form, *context->form_structure, field,
                               *context->focused_field, trigger_source);
+    if (context->focused_field->Type().group() == FieldTypeGroup::kEmail) {
+      absl::optional<Suggestion> maybe_plus_address_suggestion =
+          MaybeGetPlusAddressSuggestion();
+      if (maybe_plus_address_suggestion.has_value()) {
+        suggestions->push_back(maybe_plus_address_suggestion.value());
+      }
+    }
   }
 
   // Ablation experiment:
@@ -3830,6 +3840,32 @@ bool BrowserAutofillManager::ShouldUploadUkm(
   }
 
   return true;
+}
+
+absl::optional<Suggestion>
+BrowserAutofillManager::MaybeGetPlusAddressSuggestion() {
+  plus_addresses::PlusAddressService* plus_address_service =
+      client().GetPlusAddressService();
+  if (!plus_address_service ||
+      !plus_address_service->SupportsPlusAddresses(
+          client().GetLastCommittedPrimaryMainFrameOrigin())) {
+    return absl::nullopt;
+  }
+  absl::optional<std::string> maybe_address =
+      plus_address_service->GetPlusAddress(
+          client().GetLastCommittedPrimaryMainFrameOrigin());
+  if (maybe_address == absl::nullopt) {
+    Suggestion create_plus_address_suggestion(
+        plus_address_service->GetCreateSuggestionLabel());
+    create_plus_address_suggestion.popup_item_id =
+        PopupItemId::kCreateNewPlusAddress;
+    return create_plus_address_suggestion;
+  }
+  Suggestion existing_plus_address_suggestion(
+      base::UTF8ToUTF16(maybe_address.value()));
+  existing_plus_address_suggestion.popup_item_id =
+      PopupItemId::kFillExistingPlusAddress;
+  return existing_plus_address_suggestion;
 }
 
 void BrowserAutofillManager::LogEventCountsUMAMetric(

@@ -62,6 +62,10 @@ IbanManager* AutofillClient::GetIbanManager() {
   return nullptr;
 }
 
+plus_addresses::PlusAddressService* AutofillClient::GetPlusAddressService() {
+  return nullptr;
+}
+
 MerchantPromoCodeManager* AutofillClient::GetMerchantPromoCodeManager() {
   return nullptr;
 }

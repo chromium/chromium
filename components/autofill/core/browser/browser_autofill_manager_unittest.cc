@@ -80,6 +80,8 @@
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/feature_engagement/public/feature_constants.h"
+#include "components/plus_addresses/features.h"
+#include "components/plus_addresses/plus_address_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/security_interstitials/core/pref_names.h"
 #include "components/security_state/core/security_state.h"
@@ -229,6 +231,13 @@ std::string MakeGuid(size_t last_digit) {
 
 std::string kElvisProfileGuid = MakeGuid(1);
 
+// Used to control the plus addressing feature, such that it is deterministic
+// and does not trigger any UI elements.
+class MockPlusAddressService : public plus_addresses::PlusAddressService {
+ public:
+  MOCK_METHOD(bool, SupportsPlusAddresses, (url::Origin), (override));
+};
+
 class MockAutofillClient : public TestAutofillClient {
  public:
   MockAutofillClient() {
@@ -265,6 +274,10 @@ class MockAutofillClient : public TestAutofillClient {
                bool is_refill),
               (override));
   MOCK_METHOD(bool, HasCreditCardScanFeature, (), (override));
+  MOCK_METHOD(plus_addresses::PlusAddressService*,
+              GetPlusAddressService,
+              (),
+              (override));
 };
 
 class MockAutofillDownloadManager : public AutofillDownloadManager {
@@ -10652,6 +10665,35 @@ TEST_F(BrowserAutofillManagerTest, TrackFillingOriginWorksOnlyOnFilledField) {
             absl::nullopt);
 }
 
+// Ensure that the experimental plus_addresses feature is not shown by default.
+// This is true even if the PlusAddressService had existing data for the current
+// domain.
+TEST_F(BrowserAutofillManagerTest, NoPlusAddressSuggestionsByDefault) {
+  plus_addresses::PlusAddressService plus_address_service;
+  plus_address_service.SavePlusAddress(
+      autofill_client_.GetLastCommittedPrimaryMainFrameOrigin(),
+      "plus+plus@plus.plus");
+  ON_CALL(autofill_client_, GetPlusAddressService)
+      .WillByDefault(Return(&plus_address_service));
+  // Set up our form data. Notably, the first field is an email address.
+  FormData form = test::GetFormData(
+      {.fields = {{.role = EMAIL_ADDRESS, .autocomplete_attribute = "email"}}});
+  form.name = u"MyForm";
+  form.url = GURL("https://myform.com/form.html");
+  form.action = GURL("https://myform.com/submit.html");
+
+  FormsSeen({form});
+
+  // Check that suggestions are made for the field that has the autocomplete
+  // attribute, and ensure that they are exactly the expected set, with no plus
+  // address data.
+  GetAutofillSuggestions(form, form.fields[0]);
+  CheckSuggestions(
+      form.fields[0].global_id(),
+      Suggestion("buddy@gmail.com", "", "", PopupItemId::kAddressEntry),
+      Suggestion("theking@gmail.com", "", "", PopupItemId::kAddressEntry));
+}
+
 // Desktop only tests.
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 class BrowserAutofillManagerTestForVirtualCardOption
@@ -11599,6 +11641,103 @@ TEST_F(BrowserAutofillManagerVotingTest, NoBlurVoteOnSubmission) {
                          _, _, _, /*observed_submission=*/true, _, _))
       .Times(1);
   FormSubmitted(form_);
+}
+
+class BrowserAutofillManagerPlusAddressTest
+    : public BrowserAutofillManagerTest {
+ protected:
+  void SetUp() override {
+    BrowserAutofillManagerTest::SetUp();
+    mock_plus_address_service_ =
+        std::make_unique<NiceMock<MockPlusAddressService>>();
+    ON_CALL(*mock_plus_address_service_, SupportsPlusAddresses)
+        .WillByDefault(Return(true));
+    ON_CALL(autofill_client_, GetPlusAddressService)
+        .WillByDefault(Return(mock_plus_address_service_.get()));
+  }
+  std::unique_ptr<NiceMock<MockPlusAddressService>> mock_plus_address_service_;
+  base::test::ScopedFeatureList features_{plus_addresses::kFeature};
+};
+
+// Ensure that plus address options aren't shown unexpectedly.
+TEST_F(BrowserAutofillManagerPlusAddressTest, NoPlusAddressesWithNameFields) {
+  // Set up our form data.
+  FormData form = test::GetFormData(
+      {.fields = {{.role = NAME_FIRST, .autocomplete_attribute = "given-name"},
+                  {.role = NAME_LAST}}});
+  form.name = u"MyForm";
+  form.url = GURL("https://myform.com/form.html");
+  form.action = GURL("https://myform.com/submit.html");
+
+  FormsSeen({form});
+
+  // Check that suggestions are made for the field that has the autocomplete
+  // attribute. Ensure that, despite enabling the plus addresses feature, there
+  // is no plus address option shown, because those options are only applicable
+  // to email fields.
+  GetAutofillSuggestions(form, form.fields[0]);
+  CheckSuggestions(form.fields[0].global_id(),
+                   Suggestion("Charles", "", "", PopupItemId::kAddressEntry),
+                   Suggestion("Elvis", "", "", PopupItemId::kAddressEntry));
+
+  // Also check that there are no suggestions for the field without the
+  // autocomplete attribute, ensuring that unrecognized fields don't get plus
+  // address options.
+  GetAutofillSuggestions(form, form.fields[1]);
+  EXPECT_FALSE(external_delegate()->on_suggestions_returned_seen());
+}
+
+// Ensure that existing plus addresses are offered.
+TEST_F(BrowserAutofillManagerPlusAddressTest, PlusAddressSuggestionShown) {
+  plus_addresses::PlusAddressService* plus_address_service =
+      autofill_client_.GetPlusAddressService();
+  plus_address_service->SavePlusAddress(
+      autofill_client_.GetLastCommittedPrimaryMainFrameOrigin(),
+      "plus+plus@plus.plus");
+  // Set up our form data. Notably, the first field is an email address.
+  FormData form = test::GetFormData(
+      {.fields = {{.role = EMAIL_ADDRESS, .autocomplete_attribute = "email"}}});
+  form.name = u"MyForm";
+  form.url = GURL("https://myform.com/form.html");
+  form.action = GURL("https://myform.com/submit.html");
+  FormsSeen({form});
+
+  // Check that suggestions are made for the field that has the autocomplete
+  // attribute, and ensure that they are exactly the expected set.
+  GetAutofillSuggestions(form, form.fields[0]);
+  CheckSuggestions(
+      form.fields[0].global_id(),
+      Suggestion("buddy@gmail.com", "", "", PopupItemId::kAddressEntry),
+      Suggestion("theking@gmail.com", "", "", PopupItemId::kAddressEntry),
+      Suggestion("plus+plus@plus.plus", "", "",
+                 PopupItemId::kFillExistingPlusAddress));
+}
+
+// Ensure that email fields without existing plus addresses for the domain, but
+// with the feature enabled, still offer creation of a new plus address.
+TEST_F(BrowserAutofillManagerPlusAddressTest,
+       CreatePlusAddressSuggestionShown) {
+  plus_addresses::PlusAddressService* plus_address_service =
+      autofill_client_.GetPlusAddressService();
+  // Set up our form data. Notably, the first field is an email address.
+  FormData form = test::GetFormData(
+      {.fields = {{.role = EMAIL_ADDRESS, .autocomplete_attribute = "email"}}});
+  form.name = u"MyForm";
+  form.url = GURL("https://myform.com/form.html");
+  form.action = GURL("https://myform.com/submit.html");
+
+  FormsSeen({form});
+
+  // Check that suggestions are made for the field that has the autocomplete
+  // attribute, and ensure that they are exactly the expected set.
+  GetAutofillSuggestions(form, form.fields[0]);
+  CheckSuggestions(
+      form.fields[0].global_id(),
+      Suggestion("buddy@gmail.com", "", "", PopupItemId::kAddressEntry),
+      Suggestion("theking@gmail.com", "", "", PopupItemId::kAddressEntry),
+      Suggestion(
+          base::UTF16ToUTF8(plus_address_service->GetCreateSuggestionLabel()),
+          "", "", PopupItemId::kCreateNewPlusAddress));
 }
 
 }  // namespace autofill

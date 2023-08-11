@@ -31,6 +31,7 @@
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
+#include "components/plus_addresses/plus_address_service.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/strings/grit/components_strings.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -263,6 +264,7 @@ void AutofillExternalDelegate::DidSelectSuggestion(
     case PopupItemId::kIbanEntry:
     case PopupItemId::kMerchantPromoCodeEntry:
     case PopupItemId::kFieldByFieldFilling:
+    case PopupItemId::kFillExistingPlusAddress:
       manager_->driver().RendererShouldPreviewFieldWithValue(
           query_field_.global_id(), suggestion.main_text.value);
       break;
@@ -368,6 +370,21 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
           suggestion.GetPayload<GURL>(), suggestion.main_text.value,
           suggestion.popup_item_id, query_form_, query_field_);
       break;
+    case PopupItemId::kFillExistingPlusAddress:
+      manager_->driver().RendererShouldFillFieldWithValue(
+          query_field_.global_id(), suggestion.main_text.value);
+      break;
+    case PopupItemId::kCreateNewPlusAddress: {
+      plus_addresses::PlusAddressService* plus_address_service =
+          manager_->client().GetPlusAddressService();
+      if (plus_address_service) {
+        plus_address_service->OfferPlusAddressCreation(
+            manager_->client().GetLastCommittedPrimaryMainFrameOrigin(),
+            base::BindOnce(&AutofillExternalDelegate::OnPlusAddressCreated,
+                           GetWeakPtr()));
+      }
+      break;
+    }
     default:
       if (suggestion.popup_item_id == PopupItemId::kAddressEntry ||
           suggestion.popup_item_id == PopupItemId::kCreditCardEntry ||
@@ -468,6 +485,12 @@ void AutofillExternalDelegate::OnCreditCardScanned(
     const CreditCard& card) {
   manager_->FillCreditCardFormImpl(query_form_, query_field_, card,
                                    std::u16string(), trigger_source);
+}
+
+void AutofillExternalDelegate::OnPlusAddressCreated(
+    const std::string& plus_address) {
+  manager_->driver().RendererShouldFillFieldWithValue(
+      query_field_.global_id(), base::UTF8ToUTF16(plus_address));
 }
 
 void AutofillExternalDelegate::FillAutofillFormData(

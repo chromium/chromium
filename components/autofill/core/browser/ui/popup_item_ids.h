@@ -54,6 +54,8 @@ enum class PopupItemId : int {
   kWebauthnSignInWithAnotherDevice,
   kIbanEntry,
   kDeleteAddressProfile,
+  kCreateNewPlusAddress,
+  kFillExistingPlusAddress,
 };
 
 // List of `PopupItemId` that trigger filling a value into an input element

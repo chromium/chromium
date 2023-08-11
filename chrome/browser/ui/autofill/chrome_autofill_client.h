@@ -106,6 +106,7 @@ class ChromeAutofillClient : public ContentAutofillClient,
   PersonalDataManager* GetPersonalDataManager() override;
   AutocompleteHistoryManager* GetAutocompleteHistoryManager() override;
   IbanManager* GetIbanManager() override;
+  plus_addresses::PlusAddressService* GetPlusAddressService() override;
   MerchantPromoCodeManager* GetMerchantPromoCodeManager() override;
   CreditCardCvcAuthenticator* GetCvcAuthenticator() override;
   CreditCardOtpAuthenticator* GetOtpAuthenticator() override;

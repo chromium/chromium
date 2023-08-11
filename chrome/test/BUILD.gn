@@ -6513,6 +6513,7 @@ test("unit_tests") {
     "//components/performance_manager",
     "//components/performance_manager/public/mojom",
     "//components/performance_manager/test_support:test_support_common",
+    "//components/plus_addresses",
     "//components/policy/core/browser:test_support",
     "//components/policy/test_support:unittests",
     "//components/privacy_sandbox:privacy_sandbox",
