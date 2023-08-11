@@ -2414,6 +2414,10 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::ParseRegistrationData(
     (*out)->router_rules = std::move(router_rules);
   }
 
+  if (data.has_has_hid_event_handlers()) {
+    (*out)->has_hid_event_handlers = data.has_hid_event_handlers();
+  }
+
   return Status::kOk;
 }
 
@@ -2852,6 +2856,8 @@ void ServiceWorkerDatabase::WriteRegistrationDataInBatch(
       }
     }
   }
+
+  data.set_has_hid_event_handlers(registration.has_hid_event_handlers);
 
   std::string value;
   bool success = data.SerializeToString(&value);

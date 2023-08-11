@@ -604,6 +604,8 @@ void ServiceWorkerRegistry::StoreRegistration(
                 .ToMojoPolicyContainerPolicies()
           : blink::mojom::PolicyContainerPolicies::New();
 
+  data->has_hid_event_handlers = version->has_hid_event_handlers();
+
   ResourceList resources = version->script_cache_map()->GetResources();
   if (resources.empty()) {
     RunSoon(FROM_HERE,
@@ -1105,6 +1107,9 @@ ServiceWorkerRegistry::GetOrCreateRegistration(
         registration.get(), data.script, data.script_type, data.version_id,
         std::move(version_reference), context_->AsWeakPtr());
     version->set_fetch_handler_type(data.fetch_handler_type);
+    // `has_hid_event_handlers_` in ServiceWorkerVersion should be set before
+    // changing the status to ACTIVATED.
+    version->set_has_hid_event_handlers(data.has_hid_event_handlers);
     // Set resources before changing the status to ACTIVATED/INSTALLED.
     // |sha256_script_checksum_| in ServiceWorkerVersion should be set before
     // changing the status.

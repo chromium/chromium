@@ -257,6 +257,8 @@ message ServiceWorkerRegistrationData {
   optional PolicyContainerPolicies policy_container_policies = 23;
 
   optional RouterRules router_rules = 24;
+
+  optional bool has_hid_event_handlers = 25;
 }
 
 message ServiceWorkerResourceRecord {
