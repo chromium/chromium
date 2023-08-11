@@ -13,6 +13,7 @@
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_management_test_util.h"
 #include "chrome/browser/extensions/extension_service.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/service_worker_context_observer.h"
 #include "content/public/browser/storage_partition.h"
@@ -27,6 +28,7 @@
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
+#include "net/dns/mock_host_resolver.h"
 #include "url/gurl.h"
 
 namespace extensions {
@@ -143,6 +145,12 @@ class ServiceWorkerLifetimeKeepaliveBrowsertest : public ExtensionApiTest {
       const ServiceWorkerLifetimeKeepaliveBrowsertest&) = delete;
 
   ~ServiceWorkerLifetimeKeepaliveBrowsertest() override = default;
+
+  void SetUpOnMainThread() override {
+    ExtensionApiTest::SetUpOnMainThread();
+    host_resolver()->AddRule("*", "127.0.0.1");
+    ASSERT_TRUE(StartEmbeddedTestServer());
+  }
 
   void TearDownOnMainThread() override {
     ExtensionApiTest::TearDownOnMainThread();
@@ -541,6 +549,93 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerLifetimeKeepaliveBrowsertest,
   // decrement the keepalive count of the worker. The worker was already
   // terminated; it should gracefully handle this case (as opposed to crash).
   message_listener.Reply("foo");
+}
+
+// Tests that an active debugger session will keep an extension service worker
+// alive past its typical timeout.
+IN_PROC_BROWSER_TEST_F(ServiceWorkerLifetimeKeepaliveBrowsertest,
+                       DebuggerAttachKeepsServiceWorkerAlive) {
+  static constexpr char kManifest[] =
+      R"({
+           "name": "Debugger attach",
+           "manifest_version": 3,
+           "version": "0.1",
+           "permissions": ["debugger"],
+           "background": {
+             "service_worker": "background.js"
+           }
+         })";
+  // A simple background script that knows how to attach and detach a debugging
+  // session from a target (active) tab.
+  static constexpr char kBackgroundJs[] =
+      R"(let attachedTab;
+         async function attachToActiveTab() {
+           let tabs =
+               await chrome.tabs.query({active: true, currentWindow: true});
+           let tab = tabs[0];
+           await chrome.debugger.attach({tabId: tab.id}, '1.3');
+           attachedTab = tab;
+           chrome.test.sendScriptResult('attached');
+         }
+
+         async function detach() {
+           await chrome.debugger.detach({tabId: attachedTab.id});
+           chrome.test.sendScriptResult('detached');
+         })";
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackgroundJs);
+
+  // Load up the extension and wait for the worker to start.
+  service_worker_test_utils::TestRegistrationObserver registration_observer(
+      profile());
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+  // We explicitly wait for the worker to be activated. Otherwise, the
+  // activation event might still be running when we advance the timer, causing
+  // the worker to be killed for the activation event timing out.
+  registration_observer.WaitForWorkerActivated();
+  int64_t version_id = registration_observer.GetServiceWorkerVersionId();
+
+  // Open a new tab for the extension to attach a debugger to.
+  const GURL example_com =
+      embedded_test_server()->GetURL("example.com", "/simple.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), example_com));
+  EXPECT_EQ(example_com, browser()
+                             ->tab_strip_model()
+                             ->GetActiveWebContents()
+                             ->GetLastCommittedURL());
+
+  // Attach the extension debugger.
+  EXPECT_EQ("attached",
+            BackgroundScriptExecutor::ExecuteScript(
+                profile(), extension->id(), "attachToActiveTab();",
+                BackgroundScriptExecutor::ResultCapture::kSendScriptResult));
+  // Ensure the keepalive associated with sendScriptResult() has resolved.
+  base::RunLoop().RunUntilIdle();
+
+  content::ServiceWorkerContext* context = GetServiceWorkerContext(profile());
+
+  // Since the extension has an active debugger session, it should not be
+  // terminated, even for going past the typical time limit.
+  content::AdvanceClockAfterRequestTimeout(context, version_id,
+                                           &tick_clock_opener_);
+  TriggerTimeoutAndCheckActive(context, version_id);
+
+  // Have the extension detach its debugging session.
+  EXPECT_EQ("detached",
+            BackgroundScriptExecutor::ExecuteScript(
+                profile(), extension->id(), "detach();",
+                BackgroundScriptExecutor::ResultCapture::kSendScriptResult));
+  // Ensure the keepalive associated with sendScriptResult() has resolved.
+  base::RunLoop().RunUntilIdle();
+
+  // The extension service worker should now be terminated, since it no longer
+  // has an active debug session.
+  content::AdvanceClockAfterRequestTimeout(context, version_id,
+                                           &tick_clock_opener_);
+  TriggerTimeoutAndCheckStopped(context, version_id);
 }
 
 }  // namespace extensions

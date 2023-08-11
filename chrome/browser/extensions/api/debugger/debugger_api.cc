@@ -61,6 +61,7 @@
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/switches.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 using content::DevToolsAgentHost;
@@ -256,10 +257,12 @@ base::LazyInstance<AttachedClientHosts>::Leaky g_attached_client_hosts =
 class ExtensionDevToolsClientHost : public content::DevToolsAgentHostClient,
                                     public ExtensionRegistryObserver {
  public:
-  ExtensionDevToolsClientHost(Profile* profile,
-                              DevToolsAgentHost* agent_host,
-                              scoped_refptr<const Extension> extension,
-                              const Debuggee& debuggee);
+  ExtensionDevToolsClientHost(
+      Profile* profile,
+      DevToolsAgentHost* agent_host,
+      scoped_refptr<const Extension> extension,
+      absl::optional<WorkerId> extension_service_worker_id,
+      const Debuggee& debuggee);
 
   ExtensionDevToolsClientHost(const ExtensionDevToolsClientHost&) = delete;
   ExtensionDevToolsClientHost& operator=(const ExtensionDevToolsClientHost&) =
@@ -309,6 +312,10 @@ class ExtensionDevToolsClientHost : public content::DevToolsAgentHostClient,
   raw_ptr<Profile> profile_;
   scoped_refptr<DevToolsAgentHost> agent_host_;
   scoped_refptr<const Extension> extension_;
+  // The WorkerId of the extension service worker that called attach() for this
+  // client host, if any.
+  const absl::optional<WorkerId> extension_service_worker_id_;
+
   Debuggee debuggee_;
   base::CallbackListSubscription on_app_terminating_subscription_;
   int last_request_id_ = 0;
@@ -316,6 +323,11 @@ class ExtensionDevToolsClientHost : public content::DevToolsAgentHostClient,
   base::CallbackListSubscription subscription_;
   api::debugger::DetachReason detach_reason_ =
       api::debugger::DetachReason::kTargetClosed;
+
+  // A service worker keepalive used to keep the associated worker alive while
+  // this client is attached. Only used if `extension_service_worker_id_` has a
+  // value.
+  absl::optional<base::Uuid> service_worker_keepalive_;
 
   // Listen to extension unloaded notification.
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
@@ -326,10 +338,12 @@ ExtensionDevToolsClientHost::ExtensionDevToolsClientHost(
     Profile* profile,
     DevToolsAgentHost* agent_host,
     scoped_refptr<const Extension> extension,
+    absl::optional<WorkerId> extension_service_worker_id,
     const Debuggee& debuggee)
     : profile_(profile),
       agent_host_(agent_host),
-      extension_(std::move(extension)) {
+      extension_(std::move(extension)),
+      extension_service_worker_id_(std::move(extension_service_worker_id)) {
   CopyDebuggee(&debuggee_, debuggee);
 
   g_attached_client_hosts.Get().insert(this);
@@ -366,12 +380,38 @@ bool ExtensionDevToolsClientHost::Attach() {
       extension_id(), extension_->name(),
       base::BindOnce(&ExtensionDevToolsClientHost::InfoBarDestroyed,
                      base::Unretained(this)));
+  if (extension_service_worker_id_) {
+    ProcessManager* process_manager = ProcessManager::Get(profile_);
+    CHECK(process_manager);
+    // The service worker should definitely be registered at this point.
+    CHECK(process_manager->HasServiceWorker(*extension_service_worker_id_));
+    service_worker_keepalive_ =
+        process_manager->IncrementServiceWorkerKeepaliveCount(
+            *extension_service_worker_id_,
+            content::ServiceWorkerExternalRequestTimeoutType::kDoesNotTimeout,
+            Activity::DEBUGGER, /*extra_data=*/std::string());
+  }
+
   return true;
 }
 
 ExtensionDevToolsClientHost::~ExtensionDevToolsClientHost() {
   ExtensionDevToolsInfoBarDelegate::NotifyExtensionDetached(extension_id());
   g_attached_client_hosts.Get().erase(this);
+
+  // Decrement the associated worker keepalive, if any.
+  if (service_worker_keepalive_) {
+    CHECK(extension_service_worker_id_);
+    ProcessManager* process_manager = ProcessManager::Get(profile_);
+    CHECK(process_manager);
+    // The worker may have terminated for other reasons. Only decrement the
+    // keepalive if it's still around.
+    if (process_manager->HasServiceWorker(*extension_service_worker_id_)) {
+      process_manager->DecrementServiceWorkerKeepaliveCount(
+          *extension_service_worker_id_, *service_worker_keepalive_,
+          Activity::DEBUGGER, /*extra_data=*/std::string());
+    }
+  }
 }
 
 // DevToolsAgentHostClient implementation.
@@ -677,7 +717,7 @@ ExtensionFunction::ResponseAction DebuggerAttachFunction::Run() {
 
   Profile* profile = Profile::FromBrowserContext(browser_context());
   auto host = std::make_unique<ExtensionDevToolsClientHost>(
-      profile, agent_host_.get(), extension(), debuggee_);
+      profile, agent_host_.get(), extension(), worker_id(), debuggee_);
 
   if (!host->Attach()) {
     return RespondNow(Error(debugger_api_constants::kRestrictedError));
