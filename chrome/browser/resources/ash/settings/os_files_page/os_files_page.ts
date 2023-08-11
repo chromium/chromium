@@ -66,6 +66,12 @@ export class OsSettingsFilesPageElement extends OsSettingsFilesPageElementBase {
         },
       },
 
+      showGoogleDriveSettingsPage_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('showGoogleDriveSettingsPage') ||
+            loadTimeData.getBoolean('enableDriveFsBulkPinning'),
+      },
+
       isBulkPinningEnabled_: {
         type: Boolean,
         value() {

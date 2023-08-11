@@ -2,7 +2,7 @@
 <os-settings-animated-pages id="pages" section="[[section_]]">
   <div route-path="default">
     <settings-card header-text="$i18n{filesPageTitle}">
-      <template is="dom-if" if="[[!isBulkPinningEnabled_]]">
+      <template is="dom-if" if="[[!showGoogleDriveSettingsPage_]]">
         <settings-toggle-button
             id="disconnectGoogleDriveAccount"
             pref="{{prefs.gdata.disabled}}"
@@ -10,7 +10,7 @@
             deep-link-focus-id$="[[Setting.kGoogleDriveConnection]]">
         </settings-toggle-button>
       </template>
-      <template is="dom-if" if="[[isBulkPinningEnabled_]]">
+      <template is="dom-if" if="[[showGoogleDriveSettingsPage_]]">
         <cr-link-row
             id="GoogleDriveLink"
             start-icon="settings20:google-drive"

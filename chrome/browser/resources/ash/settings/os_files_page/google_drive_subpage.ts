@@ -15,6 +15,7 @@ import {SettingsToggleButtonElement} from '/shared/settings/controls/settings_to
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DeepLinkingMixin} from '../deep_linking_mixin.js';
@@ -99,6 +100,15 @@ export class SettingsGoogleDriveSubpageElement extends
         notify: true,
         value: false,
       },
+
+      /**
+       * Indicates whether the `DriveFsBulkPinning` flag is enabled.
+       */
+      isDriveFsBulkPinningEnabled_: {
+        type: Boolean,
+        readonly: true,
+        value: () => loadTimeData.getBoolean('enableDriveFsBulkPinning'),
+      },
     };
   }
 
@@ -149,6 +159,8 @@ export class SettingsGoogleDriveSubpageElement extends
   private showSpinner: boolean = false;
 
   private updatePinnedSizeInterval_: number;
+
+  private isDriveFsBulkPinningEnabled_: boolean;
 
   /**
    * Returns the browser proxy page handler (to invoke functions).

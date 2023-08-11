@@ -95,7 +95,9 @@ FilesSection::FilesSection(Profile* profile,
   if (chromeos::IsEligibleAndEnabledUploadOfficeToCloud(profile)) {
     updater.AddSearchTags(GetFilesOfficeSearchConcepts());
   }
-  if (drive::util::IsDriveFsBulkPinningEnabled(profile)) {
+  if (drive::util::IsDriveFsBulkPinningEnabled(profile) ||
+      base::FeatureList::IsEnabled(
+          ash::features::kFilesGoogleDriveSettingsPage)) {
     updater.AddSearchTags(GetFilesGoogleDriveSearchConcepts());
   }
 }
@@ -239,6 +241,10 @@ void FilesSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
 
   html_source->AddBoolean("enableDriveFsBulkPinning",
                           drive::util::IsDriveFsBulkPinningEnabled(profile()));
+
+  html_source->AddBoolean("showGoogleDriveSettingsPage",
+                          base::FeatureList::IsEnabled(
+                              ash::features::kFilesGoogleDriveSettingsPage));
 }
 
 void FilesSection::AddHandlers(content::WebUI* web_ui) {

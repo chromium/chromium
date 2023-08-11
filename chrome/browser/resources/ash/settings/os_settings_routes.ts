@@ -570,7 +570,8 @@ export function createRoutes(): OsSettingsRoutes {
   if (!isGuest()) {
     r.FILES = createSection(
         r.ADVANCED, routesMojom.FILES_SECTION_PATH, Section.kFiles);
-    if (loadTimeData.getBoolean('enableDriveFsBulkPinning')) {
+    if (loadTimeData.getBoolean('showGoogleDriveSettingsPage') ||
+        loadTimeData.getBoolean('enableDriveFsBulkPinning')) {
       r.GOOGLE_DRIVE = createSubpage(
           r.FILES, routesMojom.GOOGLE_DRIVE_SUBPAGE_PATH, Subpage.kGoogleDrive);
     }
