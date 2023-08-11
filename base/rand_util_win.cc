@@ -26,6 +26,31 @@ BOOL WINAPI ProcessPrng(PBYTE pbData, SIZE_T cbData);
 
 namespace base {
 
+namespace internal {
+
+namespace {
+
+// The BoringSSl helpers are duplicated in rand_util_fuchsia.cc and
+// rand_util_posix.cc.
+std::atomic<bool> g_use_boringssl;
+
+BASE_FEATURE(kUseBoringSSLForRandBytes,
+             "UseBoringSSLForRandBytes",
+             FEATURE_DISABLED_BY_DEFAULT);
+
+}  // namespace
+
+void ConfigureBoringSSLBackedRandBytesFieldTrial() {
+  g_use_boringssl.store(FeatureList::IsEnabled(kUseBoringSSLForRandBytes),
+                        std::memory_order_relaxed);
+}
+
+bool UseBoringSSLForRandBytes() {
+  return g_use_boringssl.load(std::memory_order_relaxed);
+}
+
+}  // namespace internal
+
 namespace {
 
 // Import bcryptprimitives!ProcessPrng rather than cryptbase!RtlGenRandom to
@@ -41,7 +66,7 @@ decltype(&ProcessPrng) GetProcessPrng() {
 }
 
 void RandBytes(void* output, size_t output_length, bool avoid_allocation) {
-  if (!avoid_allocation) {
+  if (!avoid_allocation && internal::UseBoringSSLForRandBytes()) {
     // Ensure BoringSSL is initialized so it can use things like RDRAND.
     CRYPTO_library_init();
     // BoringSSL's RAND_bytes always returns 1. Any error aborts the program.

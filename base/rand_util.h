@@ -28,9 +28,18 @@ namespace base {
 
 namespace internal {
 
+#if BUILDFLAG(IS_ANDROID)
+// Sets the implementation of RandBytes according to the corresponding
+// base::Feature. Thread safe: allows to switch while RandBytes() is in use.
+void ConfigureRandBytesFieldTrial();
+#endif
+
+#if !BUILDFLAG(IS_NACL)
+void ConfigureBoringSSLBackedRandBytesFieldTrial();
+#endif
+
 // Returns a random double in range [0, 1). For use in allocator shim to avoid
-// infinite recursion. Thread-safe. This call is generally a lot slower than
-// performing a memory allocation, it must be heavily throttled in the field.
+// infinite recursion. Thread-safe.
 BASE_EXPORT double RandDoubleAvoidAllocation();
 
 }  // namespace internal

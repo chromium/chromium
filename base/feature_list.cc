@@ -566,6 +566,15 @@ void FeatureList::SetInstance(std::unique_ptr<FeatureList> instance) {
 
   EarlyFeatureAccessTracker::GetInstance()->AssertNoAccess();
 
+#if !BUILDFLAG(IS_NACL)
+  // Configured first because it takes precedence over the getrandom() trial.
+  internal::ConfigureBoringSSLBackedRandBytesFieldTrial();
+#endif
+
+#if BUILDFLAG(IS_ANDROID)
+  internal::ConfigureRandBytesFieldTrial();
+#endif
+
 #if BUILDFLAG(DCHECK_IS_CONFIGURABLE)
   // Update the behaviour of LOGGING_DCHECK to match the Feature configuration.
   // DCHECK is also forced to be FATAL if we are running a death-test.
