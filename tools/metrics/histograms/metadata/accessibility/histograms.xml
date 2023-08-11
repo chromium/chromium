@@ -2422,6 +2422,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="DomDistiller.Time.ActivelyViewingArticleBeforeDistilling"
     units="ms" expires_after="2021-08-19">
+  <obsolete>
+    Removed in M118.
+  </obsolete>
   <owner>katie@chromium.org</owner>
   <owner>chrome-a11y-core@chromium.org</owner>
   <summary>

@@ -27,7 +27,6 @@ TEST_F(UMAHelperTest, TestTimerBasics) {
   UMAHelper::DistillabilityDriverTimer timer;
   ASSERT_FALSE(timer.HasStarted());
   timer.Start(false);
-  ASSERT_FALSE(timer.IsTimingDistilledPage());
   ASSERT_TRUE(timer.HasStarted());
 
   FastForwardBy(100);
@@ -83,7 +82,6 @@ TEST_F(UMAHelperTest, TestTimerForDistilledPage) {
 
   timer.Start(true);
   ASSERT_TRUE(timer.HasStarted());
-  ASSERT_TRUE(timer.IsTimingDistilledPage());
   FastForwardBy(100);
   ASSERT_EQ(timer.GetElapsedTime().InMilliseconds(), 100);
   timer.Start(true);

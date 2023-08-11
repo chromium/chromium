@@ -47,10 +47,6 @@ bool UMAHelper::DistillabilityDriverTimer::HasStarted() {
          total_active_time_ != base::TimeDelta();
 }
 
-bool UMAHelper::DistillabilityDriverTimer::IsTimingDistilledPage() {
-  return HasStarted() && is_distilled_page_;
-}
-
 base::TimeDelta UMAHelper::DistillabilityDriverTimer::GetElapsedTime() {
   // If the timer is unpaused, add in the current time too.
   if (active_time_start_ != base::Time())
@@ -137,24 +133,6 @@ void UMAHelper::UpdateTimersOnNavigation(content::WebContents* web_contents,
     return;
 
   // Stop timing distilled pages when a user navigates away.
-  driver->GetTimer().Reset();
-}
-
-// static
-void UMAHelper::LogTimeOnDistillablePage(content::WebContents* web_contents) {
-  CHECK(web_contents);
-  DistillabilityDriver::CreateForWebContents(web_contents);
-  DistillabilityDriver* driver =
-      DistillabilityDriver::FromWebContents(web_contents);
-  CHECK(driver);
-  DCHECK(driver->GetTimer().HasStarted());
-
-  // We shouldn't log time on a distillable page if this is a distilled page.
-  DCHECK(!driver->GetTimer().IsTimingDistilledPage());
-
-  base::UmaHistogramLongTimes(
-      "DomDistiller.Time.ActivelyViewingArticleBeforeDistilling",
-      driver->GetTimer().GetElapsedTime());
   driver->GetTimer().Reset();
 }
 
