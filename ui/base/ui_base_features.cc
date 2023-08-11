@@ -299,12 +299,7 @@ bool IsDeprecateAltBasedSixPackEnabled() {
 // TODO(b/262297017): Clean up after touch text editing redesign ships.
 BASE_FEATURE(kTouchTextEditingRedesign,
              "TouchTextEditingRedesign",
-#if BUILDFLAG(IS_CHROMEOS)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsTouchTextEditingRedesignEnabled() {
   return base::FeatureList::IsEnabled(kTouchTextEditingRedesign);
