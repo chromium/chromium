@@ -175,7 +175,7 @@ class BrowsingTopicsServiceImplTest
          {blink::features::kBrowsingTopicsParameters,
           {{"time_period_per_epoch",
             base::StrCat({base::NumberToString(kEpoch.InSeconds()), "s"})},
-           {"browsing_topics_max_epoch_introduction_delay",
+           {"max_epoch_introduction_delay",
             base::StrCat(
                 {base::NumberToString(kMaxEpochIntroductionDelay.InSeconds()),
                  "s"})}}}},
@@ -2275,11 +2275,11 @@ TEST_F(BrowsingTopicsServiceImplTest, BlockTopicWithFinch) {
        {blink::features::kBrowsingTopicsParameters,
         {{"time_period_per_epoch",
           base::StrCat({base::NumberToString(kEpoch.InSeconds()), "s"})},
-         {"browsing_topics_max_epoch_introduction_delay",
+         {"max_epoch_introduction_delay",
           base::StrCat(
               {base::NumberToString(kMaxEpochIntroductionDelay.InSeconds()),
                "s"})},
-         {"browsing_topics_disabled_topics_list", "20,10,7"}}}},
+         {"disabled_topics_list", "20,10,7"}}}},
       /*disabled_features=*/{});
   InitializeBrowsingTopicsService(std::move(mock_calculator_results));
 

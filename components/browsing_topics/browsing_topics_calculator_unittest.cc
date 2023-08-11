@@ -880,7 +880,7 @@ TEST_F(BrowsingTopicsCalculatorTest, TopicBlockedByFinch) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       blink::features::kBrowsingTopicsParameters,
-      {{"browsing_topics_disabled_topics_list", "6,4"}});
+      {{"disabled_topics_list", "6,4"}});
 
   EpochTopics result = CalculateTopics();
   ExpectResultTopicsEqual(

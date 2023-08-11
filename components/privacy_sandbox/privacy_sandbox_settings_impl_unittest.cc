@@ -221,7 +221,7 @@ class PrivacySandboxSettingsTest : public testing::Test {
     disabled_topics_feature_list_.Reset();
     disabled_topics_feature_list_.InitAndEnableFeatureWithParameters(
         blink::features::kBrowsingTopicsParameters,
-        {{"browsing_topics_disabled_topics_list", topics_to_disable}});
+        {{"disabled_topics_list", topics_to_disable}});
   }
   content::BrowserTaskEnvironment* task_environment() {
     return &browser_task_environment_;

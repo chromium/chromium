@@ -339,9 +339,9 @@ const base::FeatureParam<int> kBrowsingTopicsUseRandomTopicProbabilityPercent{
 // using that new epoch's topics. The time chosen is a per-site random point in
 // time between [calculation time, calculation time + max duration).
 const base::FeatureParam<base::TimeDelta>
-    kBrowsingTopicsMaxEpochIntroductionDelay{
-        &kBrowsingTopicsParameters,
-        "browsing_topics_max_epoch_introduction_delay", base::Days(2)};
+    kBrowsingTopicsMaxEpochIntroductionDelay{&kBrowsingTopicsParameters,
+                                             "max_epoch_introduction_delay",
+                                             base::Days(2)};
 // How many epochs (weeks) of API usage data (i.e. topics observations) will be
 // based off for the filtering of topics for a calling context.
 const base::FeatureParam<int>
@@ -379,7 +379,7 @@ const base::FeatureParam<int> kBrowsingTopicsTaxonomyVersion{
 // Comma separated Topic IDs to be blocked. Descendant topics of each blocked
 // topic will be blocked as well.
 const base::FeatureParam<std::string> kBrowsingTopicsDisabledTopicsList{
-    &kBrowsingTopicsParameters, "browsing_topics_disabled_topics_list", ""};
+    &kBrowsingTopicsParameters, "disabled_topics_list", ""};
 
 // Enables the deprecatedBrowsingTopics XHR attribute. For this feature to take
 // effect, the main Topics feature has to be enabled first (i.e.
