@@ -168,7 +168,7 @@ int RoundedWindowsRadius() {
   }
 
   return base::GetFieldTrialParamByFeatureAsInt(
-      kRoundedWindows, kRoundedWindowsRadius, /*default_value=*/8);
+      kRoundedWindows, kRoundedWindowsRadius, /*default_value=*/12);
 }
 
 }  // namespace chromeos::features
