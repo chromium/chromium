@@ -477,12 +477,10 @@ const base::FeatureParam<bool> kChromeWideEchoCancellationAllowAllSampleRates{
 // is disabled and processing is done on the audio capture thread itself.
 BASE_FEATURE(kDecreaseProcessingAudioFifoSize,
              "DecreaseProcessingAudioFifoSize",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<int> kDecreaseProcessingAudioFifoSizeValue{
-    &kDecreaseProcessingAudioFifoSize, "fifo_size",
-    110  // Default value for the enabled feature.
-};
+    &kDecreaseProcessingAudioFifoSize, "fifo_size", 10};
 
 #endif
 
