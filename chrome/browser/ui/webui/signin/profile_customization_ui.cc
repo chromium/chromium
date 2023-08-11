@@ -86,17 +86,18 @@ ProfileCustomizationUI::ProfileCustomizationUI(content::WebUI* web_ui)
 
       // Color picker strings:
       {"colorPickerLabel", IDS_NTP_CUSTOMIZE_COLOR_PICKER_LABEL},
+      {"colorsContainerLabel", IDS_NTP_THEMES_CONTAINER_LABEL},
+      {"currentTheme", IDS_NTP_CUSTOMIZE_CHROME_CURRENT_THEME_LABEL},
+      {"defaultColorName", IDS_NTP_CUSTOMIZE_DEFAULT_LABEL},
       {"defaultThemeLabel", IDS_NTP_CUSTOMIZE_DEFAULT_LABEL},
+      {"greyDefaultColorName", IDS_NTP_CUSTOMIZE_GREY_DEFAULT_LABEL},
+      {"mainColorName", IDS_NTP_CUSTOMIZE_MAIN_COLOR_LABEL},
+      {"managedColorsBody", IDS_NTP_THEME_MANAGED_DIALOG_BODY},
+      {"managedColorsTitle", IDS_NTP_THEME_MANAGED_DIALOG_TITLE},
       {"themesContainerLabel",
        IDS_PROFILE_CUSTOMIZATION_THEMES_CONTAINER_LABEL},
       {"thirdPartyThemeDescription", IDS_NTP_CUSTOMIZE_3PT_THEME_DESC},
       {"uninstallThirdPartyThemeButton", IDS_NTP_CUSTOMIZE_3PT_THEME_UNINSTALL},
-      {"colorsContainerLabel", IDS_NTP_THEMES_CONTAINER_LABEL},
-      {"currentTheme", IDS_NTP_CUSTOMIZE_CHROME_CURRENT_THEME_LABEL},
-      {"greyDefaultColorName", IDS_NTP_CUSTOMIZE_GREY_DEFAULT_LABEL},
-      {"mainColorName", IDS_NTP_CUSTOMIZE_MAIN_COLOR_LABEL},
-      {"managedColorsTitle", IDS_NTP_THEME_MANAGED_DIALOG_TITLE},
-      {"managedColorsBody", IDS_NTP_THEME_MANAGED_DIALOG_BODY},
   };
   source->AddLocalizedStrings(kLocalizedStrings);
 
