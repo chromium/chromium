@@ -793,6 +793,7 @@ void TracingSamplerProfiler::DeleteOnChildThreadForTesting() {
 // static
 void TracingSamplerProfiler::ResetDataSourceForTesting() {
   TracingSamplerProfilerDataSource::Get()->ResetForTesting();
+  RegisterDataSource();
 }
 
 // static
