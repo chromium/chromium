@@ -23,6 +23,7 @@
 namespace {
 
 const char kRequestName[] = "Pepper's Request";
+const char kMacAddress[] = "AA:BB:CC:DD:EE:FF";
 
 const char kDeviceName[] = "Test's Chromebook";
 const char kAccountName[] = "test.tester@gmail.com";
@@ -37,6 +38,13 @@ ash::nearby::presence::mojom::MetadataPtr BuildTestMetadata() {
   metadata->account_name = kAccountName;
   metadata->device_name = kDeviceName;
   metadata->device_profile_url = kProfileUrl;
+  return metadata;
+}
+
+::nearby::internal::Metadata BuildTestPresenceClientMetadata() {
+  ::nearby::internal::Metadata metadata;
+  metadata.set_bluetooth_mac_address(kMacAddress);
+  metadata.set_device_name(kDeviceName);
   return metadata;
 }
 
@@ -114,16 +122,34 @@ class NearbyPresenceTest : public testing::Test,
   void OnDeviceFound(
       ash::nearby::presence::mojom::PresenceDevicePtr device) override {
     num_devices_found_++;
+    last_device_found_name_ = device->device_name;
+    std::move(next_on_device_found_callback_).Run();
   }
 
   void OnDeviceChanged(
       ash::nearby::presence::mojom::PresenceDevicePtr device) override {
     num_devices_changed_++;
+    last_device_changed_name_ = device->device_name;
+    std::move(next_on_device_changed_callback_).Run();
   }
 
   void OnDeviceLost(
       ash::nearby::presence::mojom::PresenceDevicePtr device) override {
     num_devices_lost_++;
+    last_device_lost_name_ = device->device_name;
+    std::move(next_on_device_lost_callback_).Run();
+  }
+
+  void SetNextOnDeviceFoundCallback(base::OnceClosure callback) {
+    next_on_device_found_callback_ = std::move(callback);
+  }
+
+  void SetNextOnDeviceChangedCallback(base::OnceClosure callback) {
+    next_on_device_changed_callback_ = std::move(callback);
+  }
+
+  void SetNextOnDeviceLostCallback(base::OnceClosure callback) {
+    next_on_device_lost_callback_ = std::move(callback);
   }
 
  protected:
@@ -141,7 +167,13 @@ class NearbyPresenceTest : public testing::Test,
   int num_devices_found_ = 0;
   int num_devices_changed_ = 0;
   int num_devices_lost_ = 0;
+  std::string last_device_found_name_;
+  std::string last_device_changed_name_;
+  std::string last_device_lost_name_;
   mojo::Remote<::ash::nearby::presence::mojom::ScanSession> scan_session_;
+  base::OnceClosure next_on_device_found_callback_;
+  base::OnceClosure next_on_device_changed_callback_;
+  base::OnceClosure next_on_device_lost_callback_;
 
  private:
   base::WeakPtrFactory<NearbyPresenceTest> weak_ptr_factory_{this};
@@ -149,11 +181,10 @@ class NearbyPresenceTest : public testing::Test,
 
 TEST_F(NearbyPresenceTest, RunStartScan_StatusOk) {
   auto run_loop = base::RunLoop();
-
   CallStartScan(run_loop.QuitClosure());
-
-  // RunUntilIdle is used here to make sure StartScan() is able to pass
-  // FakePresenceClient the callback before it is called on the next line.
+  // Nearby Presence StartScan() needs to be able to finish before the start
+  // scan callback can be called. Since there is no callback at the end of
+  // NearbyPresence::StartScan() RunUntilIdle is necessary here.
   base::RunLoop().RunUntilIdle();
   fake_presence_service_->GetMostRecentFakePresenceClient()
       ->CallStartScanCallback(absl::OkStatus());
@@ -164,13 +195,11 @@ TEST_F(NearbyPresenceTest, RunStartScan_StatusOk) {
 
 TEST_F(NearbyPresenceTest, RunStartScan_StatusNotOk) {
   auto run_loop = base::RunLoop();
-
   CallStartScan(run_loop.QuitClosure());
-
-  // RunUntilIdle is used here to make sure StartScan() is able to pass
-  // FakePresenceClient the callback before it is called on the next line.
+  // Nearby Presence StartScan() needs to be able to finish before the start
+  // scan callback can be called. Since there is no callback at the end of
+  // NearbyPresence::StartScan() RunUntilIdle is necessary here.
   base::RunLoop().RunUntilIdle();
-
   absl::Status status(absl::StatusCode::kCancelled, "");
   fake_presence_service_->GetMostRecentFakePresenceClient()
       ->CallStartScanCallback(status);
@@ -183,47 +212,86 @@ TEST_F(NearbyPresenceTest, RunStartScan_StatusNotOk) {
 }
 
 TEST_F(NearbyPresenceTest, RunStartScan_DeviceFoundCallback) {
-  auto run_loop = base::RunLoop();
-  CallStartScan(run_loop.QuitClosure());
-  base::RunLoop().RunUntilIdle();
-  fake_presence_service_->GetMostRecentFakePresenceClient()
-      ->CallStartScanCallback(absl::OkStatus());
-  run_loop.Run();
-  fake_presence_service_->GetMostRecentFakePresenceClient()->CallOnDiscovered();
-  base::RunLoop().RunUntilIdle();
+  {
+    auto run_loop = base::RunLoop();
+    CallStartScan(run_loop.QuitClosure());
+    // Nearby Presence StartScan() needs to be able to finish before the start
+    // scan callback can be called. Since there is no callback at the end of
+    // NearbyPresence::StartScan() RunUntilIdle is necessary here.
+    base::RunLoop().RunUntilIdle();
+    fake_presence_service_->GetMostRecentFakePresenceClient()
+        ->CallStartScanCallback(absl::OkStatus());
+    run_loop.Run();
+  }
+
+  ::nearby::presence::PresenceDevice device{BuildTestPresenceClientMetadata()};
+  {
+    auto run_loop = base::RunLoop();
+    SetNextOnDeviceFoundCallback(run_loop.QuitClosure());
+    fake_presence_service_->GetMostRecentFakePresenceClient()->CallOnDiscovered(
+        device);
+
+    run_loop.Run();
+  }
 
   EXPECT_TRUE(was_on_scan_started_called);
+  EXPECT_EQ(last_device_found_name_, device.GetMetadata().device_name());
   EXPECT_EQ(1, num_devices_found_);
 }
 
 TEST_F(NearbyPresenceTest, RunStartScan_DeviceChangedCallback) {
-  auto run_loop = base::RunLoop();
+  {
+    auto run_loop = base::RunLoop();
+    CallStartScan(run_loop.QuitClosure());
+    // Nearby Presence StartScan() needs to be able to finish before the start
+    // scan callback can be called. Since there is no callback at the end of
+    // NearbyPresence::StartScan() RunUntilIdle is necessary here.
+    base::RunLoop().RunUntilIdle();
+    fake_presence_service_->GetMostRecentFakePresenceClient()
+        ->CallStartScanCallback(absl::OkStatus());
+    run_loop.Run();
+  }
 
-  CallStartScan(run_loop.QuitClosure());
-  base::RunLoop().RunUntilIdle();
+  ::nearby::presence::PresenceDevice device{BuildTestPresenceClientMetadata()};
+  {
+    auto run_loop = base::RunLoop();
+    SetNextOnDeviceChangedCallback(run_loop.QuitClosure());
+    fake_presence_service_->GetMostRecentFakePresenceClient()->CallOnUpdated(
+        device);
 
-  fake_presence_service_->GetMostRecentFakePresenceClient()
-      ->CallStartScanCallback(absl::OkStatus());
-  run_loop.Run();
-  fake_presence_service_->GetMostRecentFakePresenceClient()->CallOnUpdated();
-  base::RunLoop().RunUntilIdle();
+    run_loop.Run();
+  }
 
   EXPECT_TRUE(was_on_scan_started_called);
+  EXPECT_EQ(last_device_changed_name_, device.GetMetadata().device_name());
   EXPECT_EQ(1, num_devices_changed_);
 }
 
 TEST_F(NearbyPresenceTest, RunStartScan_DeviceLostCallback) {
-  auto run_loop = base::RunLoop();
+  {
+    auto run_loop = base::RunLoop();
+    CallStartScan(run_loop.QuitClosure());
+    // Nearby Presence StartScan() needs to be able to finish before the start
+    // scan callback can be called. Since there is no callback at the end of
+    // NearbyPresence::StartScan() RunUntilIdle is necessary here.
+    base::RunLoop().RunUntilIdle();
+    fake_presence_service_->GetMostRecentFakePresenceClient()
+        ->CallStartScanCallback(absl::OkStatus());
+    run_loop.Run();
+  }
 
-  CallStartScan(run_loop.QuitClosure());
-  base::RunLoop().RunUntilIdle();
-  fake_presence_service_->GetMostRecentFakePresenceClient()
-      ->CallStartScanCallback(absl::OkStatus());
-  run_loop.Run();
-  fake_presence_service_->GetMostRecentFakePresenceClient()->CallOnLost();
-  base::RunLoop().RunUntilIdle();
+  ::nearby::presence::PresenceDevice device{BuildTestPresenceClientMetadata()};
+  {
+    auto run_loop = base::RunLoop();
+    SetNextOnDeviceLostCallback(run_loop.QuitClosure());
+    fake_presence_service_->GetMostRecentFakePresenceClient()->CallOnLost(
+        device);
+
+    run_loop.Run();
+  }
 
   EXPECT_TRUE(was_on_scan_started_called);
+  EXPECT_EQ(last_device_lost_name_, device.GetMetadata().device_name());
   EXPECT_EQ(1, num_devices_lost_);
 }
 
