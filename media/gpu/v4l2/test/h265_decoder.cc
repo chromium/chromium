@@ -233,6 +233,69 @@ v4l2_ctrl_hevc_pps SetupPPSCtrl(const H265PPS* pps) {
 
   return v4l2_pps;
 }
+
+// Builds the |v4l2_ctrl_hevc_scaling_matrix| structure and checks against SPS
+// and PPS scaling matrix sizes.
+v4l2_ctrl_hevc_scaling_matrix SetupScalingMatrix(const H265SPS* sps,
+                                                 const H265PPS* pps) {
+  struct v4l2_ctrl_hevc_scaling_matrix v4l2_scaling_matrix;
+  memset(&v4l2_scaling_matrix, 0, sizeof(v4l2_scaling_matrix));
+  struct H265ScalingListData checker;
+
+  static_assert(
+      std::size(checker.scaling_list_dc_coef_16x16) ==
+              std::size(v4l2_scaling_matrix.scaling_list_dc_coef_16x16) &&
+          std::size(checker.scaling_list_dc_coef_32x32) / 3 ==
+              std::size(v4l2_scaling_matrix.scaling_list_dc_coef_32x32) &&
+          std::size(checker.scaling_list_4x4) ==
+              std::size(v4l2_scaling_matrix.scaling_list_4x4) &&
+          std::size(checker.scaling_list_4x4[0]) ==
+              std::size(v4l2_scaling_matrix.scaling_list_4x4[0]) &&
+          std::size(checker.scaling_list_8x8) ==
+              std::size(v4l2_scaling_matrix.scaling_list_8x8) &&
+          std::size(checker.scaling_list_8x8[0]) ==
+              std::size(v4l2_scaling_matrix.scaling_list_8x8[0]) &&
+          std::size(checker.scaling_list_16x16) ==
+              std::size(v4l2_scaling_matrix.scaling_list_16x16) &&
+          std::size(checker.scaling_list_16x16[0]) ==
+              std::size(v4l2_scaling_matrix.scaling_list_16x16[0]) &&
+          std::size(checker.scaling_list_32x32) / 3 ==
+              std::size(v4l2_scaling_matrix.scaling_list_32x32) &&
+          std::size(checker.scaling_list_32x32[0]) ==
+              std::size(v4l2_scaling_matrix.scaling_list_32x32[0]),
+      "scaling_list_data must be of correct size");
+
+  if (sps->scaling_list_enabled_flag) {
+    // We already populated the scaling list data with default values in the
+    // parser if they are not present in the stream, so just fill them all in.
+    const auto& scaling_list = pps->pps_scaling_list_data_present_flag
+                                   ? pps->scaling_list_data
+                                   : sps->scaling_list_data;
+
+    memcpy(v4l2_scaling_matrix.scaling_list_4x4, scaling_list.scaling_list_4x4,
+           sizeof(v4l2_scaling_matrix.scaling_list_4x4));
+    memcpy(v4l2_scaling_matrix.scaling_list_8x8, scaling_list.scaling_list_8x8,
+           sizeof(v4l2_scaling_matrix.scaling_list_8x8));
+    memcpy(v4l2_scaling_matrix.scaling_list_16x16,
+           scaling_list.scaling_list_16x16,
+           sizeof(v4l2_scaling_matrix.scaling_list_16x16));
+    memcpy(v4l2_scaling_matrix.scaling_list_32x32[0],
+           scaling_list.scaling_list_32x32[0],
+           sizeof(v4l2_scaling_matrix.scaling_list_32x32[0]));
+    memcpy(v4l2_scaling_matrix.scaling_list_32x32[1],
+           scaling_list.scaling_list_32x32[3],
+           sizeof(v4l2_scaling_matrix.scaling_list_32x32[1]));
+    memcpy(v4l2_scaling_matrix.scaling_list_dc_coef_16x16,
+           scaling_list.scaling_list_dc_coef_16x16,
+           sizeof(v4l2_scaling_matrix.scaling_list_dc_coef_16x16));
+    v4l2_scaling_matrix.scaling_list_dc_coef_32x32[0] =
+        scaling_list.scaling_list_dc_coef_32x32[0];
+    v4l2_scaling_matrix.scaling_list_dc_coef_32x32[1] =
+        scaling_list.scaling_list_dc_coef_32x32[3];
+  }
+
+  return v4l2_scaling_matrix;
+}
 }
 
 H265Decoder::H265Decoder(std::unique_ptr<V4L2IoctlShim> v4l2_ioctl,
@@ -816,13 +879,19 @@ bool H265Decoder::StartNewFrame(const H265SliceHeader* slice_hdr) {
 
   struct v4l2_ctrl_hevc_sps v4l2_sps = SetupSPSCtrl(sps);
   struct v4l2_ctrl_hevc_pps v4l2_pps = SetupPPSCtrl(pps);
+  struct v4l2_ctrl_hevc_scaling_matrix v4l2_matrix =
+      SetupScalingMatrix(sps, pps);
 
-  struct v4l2_ext_control ctrls[] = {{.id = V4L2_CID_STATELESS_HEVC_SPS,
-                                      .size = sizeof(v4l2_sps),
-                                      .ptr = &v4l2_sps},
-                                     {.id = V4L2_CID_STATELESS_HEVC_PPS,
-                                      .size = sizeof(v4l2_pps),
-                                      .ptr = &v4l2_pps}};
+  struct v4l2_ext_control ctrls[] = {
+      {.id = V4L2_CID_STATELESS_HEVC_SPS,
+       .size = sizeof(v4l2_sps),
+       .ptr = &v4l2_sps},
+      {.id = V4L2_CID_STATELESS_HEVC_PPS,
+       .size = sizeof(v4l2_pps),
+       .ptr = &v4l2_pps},
+      {.id = V4L2_CID_STATELESS_HEVC_SCALING_MATRIX,
+       .size = sizeof(v4l2_matrix),
+       .ptr = &v4l2_matrix}};
   struct v4l2_ext_controls ext_ctrls = {
       .count = (sizeof(ctrls) / sizeof(ctrls[0])), .controls = ctrls};
 
