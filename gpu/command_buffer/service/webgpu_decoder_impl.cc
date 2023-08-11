@@ -1154,13 +1154,9 @@ bool WebGPUDecoderImpl::IsFeatureExposed(wgpu::FeatureName feature) const {
     case wgpu::FeatureName::ChromiumExperimentalDp4a:
     // TODO(dawn:1664): Enable Float32Filterable by default once it is tested.
     case wgpu::FeatureName::Float32Filterable:
-    // TODO(crbug.com/1258986): DawnMultiPlanarFormats is a stable feature in
-    // Dawn, but currently we hide it from Render process as unsafe apis, so
-    // that 0-copy code path, which explicitly checks this feature, is protected
-    // under unsafe apis as well.
-    case wgpu::FeatureName::DawnMultiPlanarFormats:
     case wgpu::FeatureName::ShaderF16:
       return allow_unsafe_apis_;
+    case wgpu::FeatureName::DawnMultiPlanarFormats:
     case wgpu::FeatureName::Depth32FloatStencil8:
     case wgpu::FeatureName::DepthClipControl:
     case wgpu::FeatureName::TextureCompressionBC:
