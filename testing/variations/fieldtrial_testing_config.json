@@ -10314,6 +10314,22 @@
             ]
         }
     ],
+    "OnBeginFrameThrottleVideo": [
+        {
+            "platforms": [
+                "android",
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_08072023",
+                    "enable_features": [
+                        "OnBeginFrameThrottleVideo"
+                    ]
+                }
+            ]
+        }
+    ],
     "OneGroupPerRenderer": [
         {
             "platforms": [
