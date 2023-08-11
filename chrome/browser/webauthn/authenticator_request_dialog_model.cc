@@ -1053,10 +1053,21 @@ void AuthenticatorRequestDialogModel::RecordMacOsSuccessHistogram(
   }
 
   absl::optional<MacOsHistogramValues> v;
-  if (authenticator_type == device::AuthenticatorType::kTouchID) {
-    v = MacOsHistogramValues::kSuccessfulGetFromProfileAuthenticator;
-  } else if (authenticator_type == device::AuthenticatorType::kICloudKeychain) {
-    v = MacOsHistogramValues::kSuccessfulGetFromICloudKeychain;
+
+  if (transport_availability_.request_type ==
+      device::FidoRequestType::kMakeCredential) {
+    v = transport_availability_.has_icloud_drive_enabled
+            ? MacOsHistogramValues::
+                  kSuccessfulCreateForProfileAuthenticatorICloudDriveEnabled
+            : MacOsHistogramValues::
+                  kSuccessfulCreateForProfileAuthenticatorICloudDriveDisabled;
+  } else {
+    if (authenticator_type == device::AuthenticatorType::kTouchID) {
+      v = MacOsHistogramValues::kSuccessfulGetFromProfileAuthenticator;
+    } else if (authenticator_type ==
+               device::AuthenticatorType::kICloudKeychain) {
+      v = MacOsHistogramValues::kSuccessfulGetFromICloudKeychain;
+    }
   }
 
   if (v) {
