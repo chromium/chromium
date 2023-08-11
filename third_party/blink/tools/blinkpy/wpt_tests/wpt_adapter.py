@@ -271,7 +271,6 @@ class WPTAdapter:
         runner_options.binary_args.extend([
             '--host-resolver-rules='
             'MAP nonexistent.*.test ~NOTFOUND, MAP *.test 127.0.0.1',
-            '--disable-field-trial-config',
         ])
 
         if self.options.product != 'content_shell':
