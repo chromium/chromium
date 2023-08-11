@@ -7692,8 +7692,11 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_MODULES_DISMISS_BUTTON_TEXT" desc="Text shown on the disable button of an NTP module.">
         Hide <ph name="MODULE_TITLE">$1<ex>Office Chairs</ex></ph>
       </message>
-      <message name="IDS_NTP_MODULES_DISABLE_BUTTON_TEXT" desc="Text shown on the dismiss button of an NTP module.">
+      <message name="IDS_NTP_MODULES_DISABLE_BUTTON_TEXT" desc="Text shown on the disable button of an NTP module.">
         Never show <ph name="MODULE_NAME">$1<ex>shopping suggestions</ex></ph>
+      </message>
+      <message name="IDS_NTP_MODULES_DISABLE_BUTTON_TEXT_V2" desc="Text shown on the disable button of an NTP module.">
+        Don't show <ph name="MODULE_NAME">$1<ex>shopping suggestions</ex></ph>
       </message>
       <message name="IDS_NTP_MODULES_MORE_ACTIONS" desc="The tooltip and accessibility label for the 3 dot menu on a module.">
         More actions for <ph name="MODULE_NAME">$1<ex>shopping suggestions</ex></ph>
@@ -8023,11 +8026,20 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_MODULES_HISTORY_CLUSTERS_SENTENCE2" desc="Variant of the name of the History Clusters module in sentence case shown in various UIs.">
         Journeys
       </message>
+      <message name="IDS_NTP_MODULES_HISTORY_CLUSTERS_DISMISS_BUTTON" desc="A label for the dismiss button in the dropdown.">
+        No longer interested
+      </message>
       <message name="IDS_NTP_MODULES_HISTORY_CLUSTERS_DISABLE_TEXT" desc="A label to append to the disable text in the dropdown.">
         Journeys card
       </message>
+      <message name="IDS_NTP_MODULES_HISTORY_CLUSTERS_DONE_BUTTON" desc="A label for the done button in the dropdown.">
+        Mark as done and hide
+      </message>
       <message name="IDS_NTP_MODULES_HISTORY_CLUSTERS_OPEN_ALL_IN_NEW_TAB_GROUP_BUTTON_TEXT" desc="A label to display for the `Open all in new tab group` dropdown action.">
         Open all in new tab group
+      </message>
+      <message name="IDS_NTP_MODULES_HISTORY_CLUSTERS_SHOW_ALL_BUTTON" desc="A label for the show all button in NTP Quests Module.">
+        Open in side panel
       </message>
       <message name="IDS_ACCNAME_SHOW_ALL" desc="The accessible name for the show all button in the header of NTP Journeys Module.">
         Show all searches for <ph name="QUERY_CLUSTER_NAME">$1<ex>Office Chairs</ex></ph>
