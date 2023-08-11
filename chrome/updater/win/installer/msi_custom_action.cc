@@ -136,10 +136,7 @@ UINT MsiSetTags(MsiHandleInterface& msi_handle) {
     return ERROR_SUCCESS;
   }
 
-  for (const auto& [name, value] : tag_args->attributes) {
-    msi_handle.SetProperty(base::ToUpperASCII(name), value);
-  }
-
+  msi_handle.SetProperty("TAGSTRING", tag_args->tag_string);
   return ERROR_SUCCESS;
 }
 

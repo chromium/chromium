@@ -125,39 +125,9 @@
       Value='[ProductTag]$(var.ProductCustomParams)'
       Execute='immediate'
       Return='check' />
-    <CustomAction Id='AppendInstallIdToProductTagProperty'
+    <CustomAction Id='TaggedMSIOverrideProductTagProperty'
       Property='ProductTag'
-      Value='[ProductTag]&amp;iid=[IID]'
-      Execute='immediate'
-      Return='check' />
-    <CustomAction Id='AppendBrandToProductTagProperty'
-      Property='ProductTag'
-      Value='[ProductTag]&amp;brand=[BRAND]'
-      Execute='immediate'
-      Return='check' />
-    <CustomAction Id='AppendBrowserToProductTagProperty'
-      Property='ProductTag'
-      Value='[ProductTag]&amp;browser=[BROWSER]'
-      Execute='immediate'
-      Return='check' />
-    <CustomAction Id='AppendEnrollmentTokenToProductTagProperty'
-      Property='ProductTag'
-      Value='[ProductTag]&amp;etoken=[ETOKEN]'
-      Execute='immediate'
-      Return='check' />
-    <CustomAction Id='AppendUsageStatsToProductTagProperty'
-      Property='ProductTag'
-      Value='[ProductTag]&amp;usagestats=[USAGESTATS]'
-      Execute='immediate'
-      Return='check' />
-    <CustomAction Id='AppendApToProductTagProperty'
-      Property='ProductTag'
-      Value='[ProductTag]&amp;ap=[AP]'
-      Execute='immediate'
-      Return='check' />
-    <CustomAction Id='AppendInstallDataIndexToProductTagProperty'
-      Property='ProductTag'
-      Value='[ProductTag]&amp;installdataindex=[INSTALLDATAINDEX]'
+      Value='[TAGSTRING]'
       Execute='immediate'
       Return='check' />
 
@@ -262,38 +232,17 @@
       </Custom>
       <!-- Add on the build-time string. -->
       <Custom Action='AppendCustomParamsToProductTagProperty'
-              Before='AppendInstallIdToProductTagProperty'>
+              Before='TaggedMSIOverrideProductTagProperty'>
         (((?ProductClientState=2) AND ($ProductClientState=3)) OR ((?ProductClientState=3) AND REINSTALL))
       </Custom>
-      <!-- Next add on each of the values extracted from the tag:
-           iid, brand, browser, usagestats, ap, installdataindex -->
-      <Custom Action='AppendInstallIdToProductTagProperty'
-              Before='AppendBrandToProductTagProperty'>
-        (((?ProductClientState=2) AND ($ProductClientState=3)) OR ((?ProductClientState=3) AND REINSTALL)) AND (IID &lt;&gt; "")
-      </Custom>
-      <Custom Action='AppendBrandToProductTagProperty'
-              Before='AppendEnrollmentTokenToProductTagProperty'>
-        (((?ProductClientState=2) AND ($ProductClientState=3)) OR ((?ProductClientState=3) AND REINSTALL)) AND (BRAND &lt;&gt; "")
-      </Custom>
-      <Custom Action='AppendEnrollmentTokenToProductTagProperty'
-              Before='AppendBrowserToProductTagProperty'>
-        (((?ProductClientState=2) AND ($ProductClientState=3)) OR ((?ProductClientState=3) AND REINSTALL)) AND (ETOKEN &lt;&gt; "")
-      </Custom>
-      <Custom Action='AppendBrowserToProductTagProperty'
-              Before='AppendUsageStatsToProductTagProperty'>
-        (((?ProductClientState=2) AND ($ProductClientState=3)) OR ((?ProductClientState=3) AND REINSTALL)) AND (BROWSER &lt;&gt; "")
-      </Custom>
-      <Custom Action='AppendUsageStatsToProductTagProperty'
-              Before='AppendApToProductTagProperty'>
-        (((?ProductClientState=2) AND ($ProductClientState=3)) OR ((?ProductClientState=3) AND REINSTALL)) AND (USAGESTATS &lt;&gt; "")
-      </Custom>
-      <Custom Action='AppendApToProductTagProperty'
-              Before='AppendInstallDataIndexToProductTagProperty'>
-        (((?ProductClientState=2) AND ($ProductClientState=3)) OR ((?ProductClientState=3) AND REINSTALL)) AND (AP &lt;&gt; "")
-      </Custom>
-      <Custom Action='AppendInstallDataIndexToProductTagProperty'
+      <!-- Override the tag completely if the MSI is tagged, or if the caller
+           has set the `TAGSTRING` property. Among all actions that change
+           `ProductTag`, this action must be the last one before
+           `BuildInstallCommand`, since this one overrides all previous
+           values.-->
+      <Custom Action='TaggedMSIOverrideProductTagProperty'
               Before='BuildInstallCommand'>
-        (((?ProductClientState=2) AND ($ProductClientState=3)) OR ((?ProductClientState=3) AND REINSTALL)) AND (INSTALLDATAINDEX &lt;&gt; "")
+        (((?ProductClientState=2) AND ($ProductClientState=3)) OR ((?ProductClientState=3) AND REINSTALL)) AND (TAGSTRING &lt;&gt; "")
       </Custom>
       <Custom Action='SetOptArgsProperty'
               Before='AppendEnterpriseToOptArgsProperty'>

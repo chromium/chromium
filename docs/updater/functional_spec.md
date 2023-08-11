@@ -680,7 +680,7 @@ For example, to create `GoogleChromeBetaStandaloneEnterprise.msi` from
 python3 chrome/updater/win/signing/msi_from_standalone.py
     --candle_path ../third_party/wix/v3_8_1128/files/candle.exe
     --light_path ../third_party/wix/v3_8_1128/files/light.exe
-    --product_name "Google Chrome Beta"
+    --product_name "GoogleChromeBeta"
     --product_version 110.0.5478.0
     --appid {8237E44A-0054-442C-B6B6-EA0509993955}
     --product_custom_params "&brand=GCEA"
@@ -691,6 +691,40 @@ python3 chrome/updater/win/signing/msi_from_standalone.py
     --msi_base_name GoogleChromeBetaStandaloneEnterprise
     --enterprise_installer_dir chrome/updater/win/signing
     --output_dir out/Default
+```
+
+If this untagged MSI installer is run as-is, it will run the updater
+metainstaller with the following parameters:
+```
+--silent
+--tag=appguid={8237E44A-0054-442C-B6B6-EA0509993955}&appname=GoogleChromeBeta&
+      needsAdmin=True&brand=GCEA
+--installsource enterprisemsi
+--appargs=appguid={8237E44A-0054-442C-B6B6-EA0509993955}&
+          installerdata=%7B%22dis%22%3A%7B%22msi%22%3Atrue%7D%7D
+```
+
+This MSI can be tagged using `tag.exe` as follows:
+```
+out\ChromeBrandedDebug\tag.exe
+    "--set-tag=appguid={8237E44A-0054-442C-B6B6-EA0509993955}&
+     appname=Google%20Chrome%20Beta&needsAdmin=True&brand=GGLL"
+    GoogleChromeBetaStandaloneEnterprise.msi
+```
+
+Notice that the tag overrode the `product_name` and `product_custom_params` that
+were used to create the original MSI installer. The tag needs to include the
+`appguid`, the `appname`, and `needsAdmin`. Other tag parameters are optional.
+
+If this tagged MSI installer is run, it will run the updater metainstaller with
+the following parameters:
+```
+--silent
+--tag=appguid={8237E44A-0054-442C-B6B6-EA0509993955}&appname=Google%20Chrome%20
+      Beta&needsAdmin=True&brand=GGLL
+--installsource enterprisemsi
+--appargs=appguid={8237E44A-0054-442C-B6B6-EA0509993955}&
+          installerdata=%7B%22dis%22%3A%7B%22msi%22%3Atrue%7D%7D
 ```
 
 ### Enterprise Enrollment

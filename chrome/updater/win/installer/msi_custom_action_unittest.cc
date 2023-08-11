@@ -71,26 +71,25 @@ INSTANTIATE_TEST_SUITE_P(
     MsiSetTagsTest,
     ValuesIn(std::vector<MsiSetTagsTestCase>{
         // single tag parameter.
-        {"GUH-brand-only.msi", "BRAND=QAQA"},
+        {"GUH-brand-only.msi", "brand=QAQA"},
 
         // single tag parameter ending in an ampersand.
-        {"GUH-ampersand-ending.msi", "BRAND=QAQA"},
+        {"GUH-ampersand-ending.msi", "brand=QAQA&"},
 
         // multiple tag parameters.
         {"GUH-multiple.msi",
-         "APPGUID={8A69D345-D564-463C-AFF1-A69D9E530F96}&IID={2D8C18E9-8D3A-"
-         "4EFC-"
-         "6D61-AE23E3530EA2}&LANG=en&BROWSER=4&USAGESTATS=0&APPNAME=Google "
-         "Chrome&NEEDSADMIN=prefers&BRAND=CHMB&INSTALLDATAINDEX="
+         "appguid={8A69D345-D564-463C-AFF1-A69D9E530F96}&iid={2D8C18E9-8D3A-"
+         "4EFC-6D61-AE23E3530EA2}&lang=en&browser=4&usagestats=0&appname="
+         "Google%20Chrome&needsadmin=prefers&brand=CHMB&installdataindex="
          "defaultbrowser"},
 
         // MSI file size greater than `kMaxBufferLength` of 80KB.
         {"GUH-size-greater-than-max.msi",
-         "APPGUID={8237E44A-0054-442C-B6B6-EA0509993955}&APPNAME=Google Chrome "
-         "Beta&NEEDSADMIN=True&BRAND=GGLL"},
+         "appguid={8237E44A-0054-442C-B6B6-EA0509993955}&appname=Google%"
+         "20Chrome%20Beta&needsAdmin=True&brand=GGLL"},
 
         // special character in the tag value.
-        {"GUH-special-value.msi", "BRAND=QA*A"},
+        {"GUH-special-value.msi", "brand=QA*A"},
 
         // untagged msi.
         {"GUH-untagged.msi", {}},
@@ -126,17 +125,13 @@ TEST_P(MsiSetTagsTest, MsiSetTags) {
                                                    msi_file_path.end())),
                       SetArgReferee<2>(msi_file_path.length()),
                       Return(ERROR_SUCCESS)));
-  std::string tag_string;
-  EXPECT_CALL(mock_msi_handle, SetProperty)
-      .WillRepeatedly(
-          DoAll(Invoke([&](const std::string& name, const std::string& value) {
-                  tag_string += base::StrCat(
-                      {!tag_string.empty() ? "&" : "", name, "=", value});
-                }),
-                Return(ERROR_SUCCESS)));
+  if (!GetParam().expected_tag_string.empty()) {
+    EXPECT_CALL(mock_msi_handle, SetProperty(std::string("TAGSTRING"),
+                                             GetParam().expected_tag_string))
+        .WillOnce(Return(ERROR_SUCCESS));
+  }
 
   MsiSetTags(mock_msi_handle);
-  EXPECT_EQ(tag_string, GetParam().expected_tag_string);
 }
 
 TEST(MsiCustomActionTest, ExtractTagInfoFromInstaller) {
