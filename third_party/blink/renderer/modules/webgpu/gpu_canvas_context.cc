@@ -480,6 +480,10 @@ void GPUCanvasContext::configure(const GPUCanvasConfiguration* descriptor,
     // In cases where a copy is necessary the swap buffers will always use the
     // preferred canvas format.
     swap_texture_descriptor_.format = GPU::preferred_canvas_format();
+
+    // The swap buffer texture doesn't need any view formats.
+    swap_texture_descriptor_.viewFormats = nullptr;
+    swap_texture_descriptor_.viewFormatCount = 0;
   }
 
   alpha_mode_ = descriptor->alphaMode().AsEnum();
