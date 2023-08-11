@@ -1011,11 +1011,14 @@ void AudioDetailedView::UpdateAgcInfoRow() {
 
   std::vector<std::string> app_names = GetNamesOfAppsAccessingMic(
       app_registry_cache_, app_capability_access_cache_);
-  label->SetText(GetTextForAgcInfo(app_names));
+
+  std::u16string agc_info_text = GetTextForAgcInfo(app_names);
+  label->SetText(agc_info_text);
 
   views::View* agc_info_row =
       scroll_content()->GetViewByID(AudioDetailedViewID::kAgcInfoRow);
   CHECK(agc_info_row);
+  agc_info_row->SetAccessibleName(agc_info_text);
   agc_info_row->SetVisible(ShowAgcInfoRow() && !app_names.empty());
 }
 
@@ -1036,7 +1039,11 @@ void AudioDetailedView::UpdateQsAgcInfoRow() {
 
   std::vector<std::string> app_names = GetNamesOfAppsAccessingMic(
       app_registry_cache_, app_capability_access_cache_);
-  text_label->SetText(GetTextForAgcInfo(app_names));
+
+  std::u16string agc_info_text = GetTextForAgcInfo(app_names);
+  text_label->SetText(agc_info_text);
+
+  agc_info_view->SetAccessibleName(agc_info_text);
   agc_info_view->SetVisible(ShowAgcInfoRow() && !app_names.empty());
 }
 
