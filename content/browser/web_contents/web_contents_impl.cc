@@ -2945,12 +2945,14 @@ const blink::web_pref::WebPreferences WebContentsImpl::ComputeWebPreferences() {
   // externally connected displays. Get the display where Chrome is opened
   // instead.
   display::Display display = display::Screen::GetScreen()->GetPrimaryDisplay();
-  float screen_width_in_dp =
-      display.GetSizeInPixel().width() / display.device_scale_factor();
+  gfx::Size size = display.GetSizeInPixel();
+  int min_width = size.width() < size.height() ? size.width() : size.height();
+  int min_width_in_dp =
+      static_cast<int>(min_width / display.device_scale_factor());
   if (prefs.viewport_enabled &&
       base::FeatureList::IsEnabled(
           blink::features::kDefaultViewportIsDeviceWidth) &&
-      screen_width_in_dp >= kTabletWidthThreshold &&
+      min_width_in_dp >= kTabletWidthThreshold &&
       ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TV) {
     prefs.viewport_style = blink::mojom::ViewportStyle::kDefault;
   }
@@ -3013,10 +3015,7 @@ const blink::web_pref::WebPreferences WebContentsImpl::ComputeWebPreferences() {
     prefs.media_controls_enabled = false;
 
 #if BUILDFLAG(IS_ANDROID)
-  gfx::Size size = display.GetSizeInPixel();
-  int min_width = size.width() < size.height() ? size.width() : size.height();
-  prefs.device_scale_adjustment = GetDeviceScaleAdjustment(
-      static_cast<int>(min_width / display.device_scale_factor()));
+  prefs.device_scale_adjustment = GetDeviceScaleAdjustment(min_width_in_dp);
 
   if (base::FeatureList::IsEnabled(features::kForceOffTextAutosizing)) {
     prefs.text_autosizing_enabled = false;
