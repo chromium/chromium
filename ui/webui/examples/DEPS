@@ -11,6 +11,9 @@ include_rules = [
   # Devtools relies on IPC definitions.
   "+ipc/ipc_channel.h",
 
+  # The WebUI examples uses mojo to communicate with the browser process.
+  "+mojo/public",
+
   # Devtools relies on various net APIs.
   "+net",
 

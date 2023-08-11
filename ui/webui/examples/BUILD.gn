@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/ui.gni")
+import("//mojo/public/tools/bindings/mojom.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/repack.gni")
 import("//tools/v8_context_snapshot/v8_context_snapshot.gni")
@@ -29,6 +30,8 @@ static_library("webui_examples_lib") {
     "browser/devtools/devtools_server.h",
     "browser/ui/web/browser.cc",
     "browser/ui/web/browser.h",
+    "browser/ui/web/browser_page_handler.cc",
+    "browser/ui/web/browser_page_handler.h",
     "browser/ui/web/webui.cc",
     "browser/ui/web/webui.h",
     "browser/webui_controller_factory.cc",
@@ -42,6 +45,7 @@ static_library("webui_examples_lib") {
   ]
 
   deps = [
+    ":browser_mojo_bindings",
     ":pak",
     ":resources_grit",
     "resources/browser:resources",
@@ -51,6 +55,7 @@ static_library("webui_examples_lib") {
     "//content/public/browser",
     "//content/public/renderer",
     "//ipc",
+    "//mojo/public/cpp/bindings",
     "//net",
     "//third_party/blink/public:blink",
     "//ui/base",
@@ -129,6 +134,12 @@ repack("pak") {
     "//ui/strings",
   ]
   output = "$root_out_dir/webui_examples.pak"
+}
+
+mojom("browser_mojo_bindings") {
+  sources = [ "browser/ui/web/browser.mojom" ]
+  webui_module_path = "/"
+  use_typescript_sources = true
 }
 
 executable("webui_examples") {

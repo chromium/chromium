@@ -7,6 +7,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "ui/webui/examples/browser/ui/web/browser_page_handler.h"
 #include "ui/webui/examples/resources/browser/grit/webui_examples_browser_resources.h"
 
 namespace webui_examples {
@@ -25,10 +26,24 @@ Browser::Browser(content::WebUI* web_ui)
   html_source->AddResourcePath("index.js", IDR_WEBUI_EXAMPLES_BROWSER_INDEX_JS);
   html_source->AddResourcePath("index.css",
                                IDR_WEBUI_EXAMPLES_BROWSER_INDEX_CSS);
+  html_source->AddResourcePath(
+      "browser.mojom-webui.js",
+      IDR_WEBUI_EXAMPLES_BROWSER_BROWSER_MOJOM_WEBUI_JS);
   html_source->SetDefaultResource(IDR_WEBUI_EXAMPLES_BROWSER_INDEX_HTML);
 }
 
 Browser::~Browser() = default;
+
+void Browser::BindInterface(
+    mojo::PendingReceiver<webui_examples::mojom::PageHandlerFactory> receiver) {
+  page_factory_receiver_.reset();
+  page_factory_receiver_.Bind(std::move(receiver));
+}
+
+void Browser::CreatePageHandler(
+    mojo::PendingReceiver<webui_examples::mojom::PageHandler> receiver) {
+  page_handler_ = std::make_unique<BrowserPageHandler>(std::move(receiver));
+}
 
 WEB_UI_CONTROLLER_TYPE_IMPL(Browser)
 
