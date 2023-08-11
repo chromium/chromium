@@ -9,7 +9,14 @@
 
 enum class SafetyCheckItemType;
 enum class SafetyCheckItemLayoutType;
+@class SafetyCheckItemView;
 @class SafetyCheckState;
+
+// A protocol for handling `SafetyCheckItemView` taps.
+@protocol SafetyCheckItemViewTapDelegate
+// Indicates that the user has tapped the given `view`.
+- (void)didTapSafetyCheckItemView:(SafetyCheckItemView*)view;
+@end
 
 // A view to display an individual check state (list item) in the Safety Check
 // (Magic Stack) module.
@@ -29,6 +36,12 @@ enum class SafetyCheckItemLayoutType;
               weakPasswordsCount:(NSInteger)weakPasswordsCount
             reusedPasswordsCount:(NSInteger)reusedPasswordsCount
        compromisedPasswordsCount:(NSInteger)compromisedPasswordsCount;
+
+// Indicates the type of item.
+@property(nonatomic, readonly) SafetyCheckItemType itemType;
+
+// The object that should receive a message when this view is tapped.
+@property(nonatomic, weak) id<SafetyCheckItemViewTapDelegate> tapDelegate;
 
 @end
 

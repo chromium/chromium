@@ -89,8 +89,6 @@ int PasswordIssuesTypeCount(NSInteger weak_passwords_count,
 }  // namespace
 
 @implementation SafetyCheckItemView {
-  // The item type.
-  SafetyCheckItemType _itemType;
   // The item layout type.
   SafetyCheckItemLayoutType _layoutType;
   // The number of weak passwords found by the Password check.
@@ -99,6 +97,8 @@ int PasswordIssuesTypeCount(NSInteger weak_passwords_count,
   NSInteger _reusedPasswordsCount;
   // The number of compromised passwords found by the Password check.
   NSInteger _compromisedPasswordsCount;
+  // UI tap gesture recognizer.
+  UITapGestureRecognizer* _tapGestureRecognizer;
 }
 
 - (instancetype)initWithItemType:(SafetyCheckItemType)itemType
@@ -137,6 +137,12 @@ int PasswordIssuesTypeCount(NSInteger weak_passwords_count,
 }
 
 #pragma mark - Private
+
+- (void)handleTap:(UITapGestureRecognizer*)sender {
+  if (sender.state == UIGestureRecognizerStateEnded) {
+    [self.tapDelegate didTapSafetyCheckItemView:self];
+  }
+}
 
 - (void)createSubviews {
   // Return if the subviews have already been created and added.
@@ -221,6 +227,13 @@ int PasswordIssuesTypeCount(NSInteger weak_passwords_count,
   if (_layoutType == SafetyCheckItemLayoutType::kCompact) {
     AddSameConstraints(contentStack, self);
   }
+
+  // Set up the tap gesture recognizer.
+  _tapGestureRecognizer =
+      [[UITapGestureRecognizer alloc] initWithTarget:self
+                                              action:@selector(handleTap:)];
+
+  [self addGestureRecognizer:_tapGestureRecognizer];
 }
 
 // Returns the corresponding `SafetyCheckItemIcon*` given an `itemType` and

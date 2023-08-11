@@ -35,6 +35,9 @@ int CheckIssuesCount(SafetyCheckState* state) {
 
 }  // namespace
 
+@interface SafetyCheckView () <SafetyCheckItemViewTapDelegate>
+@end
+
 @implementation SafetyCheckView {
   SafetyCheckState* _state;
 }
@@ -55,6 +58,12 @@ int CheckIssuesCount(SafetyCheckState* state) {
   [super willMoveToSuperview:newSuperview];
 
   [self createSubviews];
+}
+
+#pragma mark - SafetyCheckItemViewTapDelegate
+
+- (void)didTapSafetyCheckItemView:(SafetyCheckItemView*)view {
+  [self.delegate didSelectSafetyCheckItem:view.itemType];
 }
 
 #pragma mark - Private methods
@@ -78,6 +87,8 @@ int CheckIssuesCount(SafetyCheckState* state) {
         initWithItemType:SafetyCheckItemType::kRunning
               layoutType:SafetyCheckItemLayoutType::kHero];
 
+    view.tapDelegate = self;
+
     [self addSubview:view];
 
     AddSameConstraints(view, self);
@@ -95,6 +106,8 @@ int CheckIssuesCount(SafetyCheckState* state) {
         initWithItemType:SafetyCheckItemType::kDefault
               layoutType:SafetyCheckItemLayoutType::kHero];
 
+    view.tapDelegate = self;
+
     [self addSubview:view];
 
     AddSameConstraints(view, self);
@@ -109,6 +122,8 @@ int CheckIssuesCount(SafetyCheckState* state) {
     SafetyCheckItemView* view = [[SafetyCheckItemView alloc]
         initWithItemType:SafetyCheckItemType::kAllSafe
               layoutType:SafetyCheckItemLayoutType::kHero];
+
+    view.tapDelegate = self;
 
     [self addSubview:view];
 
@@ -127,6 +142,8 @@ int CheckIssuesCount(SafetyCheckState* state) {
           initWithItemType:SafetyCheckItemType::kUpdateChrome
                 layoutType:SafetyCheckItemLayoutType::kCompact];
 
+      updateChromeView.tapDelegate = self;
+
       [safetyCheckItems addObject:updateChromeView];
     }
 
@@ -135,6 +152,8 @@ int CheckIssuesCount(SafetyCheckState* state) {
       SafetyCheckItemView* passwordView = [[SafetyCheckItemView alloc]
           initWithItemType:SafetyCheckItemType::kPassword
                 layoutType:SafetyCheckItemLayoutType::kCompact];
+
+      passwordView.tapDelegate = self;
 
       [safetyCheckItems addObject:passwordView];
     }
@@ -148,6 +167,8 @@ int CheckIssuesCount(SafetyCheckState* state) {
       SafetyCheckItemView* safeBrowsingView = [[SafetyCheckItemView alloc]
           initWithItemType:SafetyCheckItemType::kSafeBrowsing
                 layoutType:SafetyCheckItemLayoutType::kCompact];
+
+      safeBrowsingView.tapDelegate = self;
 
       [safetyCheckItems addObject:safeBrowsingView];
     }
@@ -182,6 +203,8 @@ int CheckIssuesCount(SafetyCheckState* state) {
         initWithItemType:SafetyCheckItemType::kSafeBrowsing
               layoutType:SafetyCheckItemLayoutType::kHero];
   }
+
+  view.tapDelegate = self;
 
   [self addSubview:view];
 
