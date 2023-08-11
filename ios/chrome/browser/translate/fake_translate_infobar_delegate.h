@@ -51,7 +51,7 @@ class FakeTranslateInfoBarDelegate
   bool IsTranslatableLanguageByPrefs() const override;
 
  private:
-  base::ObserverList<Observer> observers_;
+  base::ObserverList<Observer, true> observers_;
   std::u16string source_language_;
   std::u16string target_language_;
   bool translatable_language_ = true;
