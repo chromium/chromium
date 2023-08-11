@@ -62,6 +62,9 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kSiteIsolationCitadelEnforcement);
 // (crbug/1377753): Speculatively start service worker before BeforeUnload runs.
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kSpeculativeServiceWorkerStartup);
 
+// Flag guard for fix for crbug.com/1414936.
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kWindowOpenFileSelectFix);
+
 // Please keep features in alphabetical order.
 
 }  // namespace content

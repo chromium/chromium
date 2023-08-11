@@ -1820,10 +1820,13 @@ class MockFileSelectListener : public FileChooserImpl::FileSelectListenerImpl {
   void FileSelected(std::vector<blink::mojom::FileChooserFileInfoPtr> files,
                     const base::FilePath& base_dir,
                     blink::mojom::FileChooserParams::Mode mode) override {}
-  void FileSelectionCanceled() override {}
+  void FileSelectionCanceled() override { cancelled_ = true; }
+
+  bool cancelled() const { return cancelled_; }
 
  private:
   ~MockFileSelectListener() override = default;
+  bool cancelled_ = false;
 };
 
 IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
@@ -2895,7 +2898,10 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, FileChooserEndsFullscreen) {
 
   wc->EnterFullscreenMode(wc->GetPrimaryMainFrame(), {});
   EXPECT_TRUE(wc->IsFullscreen());
-  wc->RunFileChooser(wc->GetPrimaryMainFrame(),
+
+  auto [chooser, remote] =
+      FileChooserImpl::CreateForTesting(wc->GetPrimaryMainFrame());
+  wc->RunFileChooser(chooser->GetWeakPtr(), wc->GetPrimaryMainFrame(),
                      base::MakeRefCounted<MockFileSelectListener>(),
                      blink::mojom::FileChooserParams());
   EXPECT_FALSE(wc->IsFullscreen());
@@ -3035,6 +3041,72 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   EXPECT_TRUE(ExecJs(wc, script));
   test_delegate.Wait();
   EXPECT_FALSE(wc->IsFullscreen());
+}
+
+IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
+                       FileChooserBlockedFromHiddenWebContents) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  shell()->set_hold_file_chooser();
+
+  EXPECT_TRUE(NavigateToURL(shell(), GURL("about:blank")));
+
+  WebContentsImpl* wc = static_cast<WebContentsImpl*>(shell()->web_contents());
+  wc->WasHidden();
+  EXPECT_EQ(shell()->web_contents()->GetVisibility(), Visibility::HIDDEN);
+
+  auto [chooser, remote] =
+      FileChooserImpl::CreateForTesting(wc->GetPrimaryMainFrame());
+  auto file_select_listener = base::MakeRefCounted<MockFileSelectListener>();
+  wc->RunFileChooser(chooser->GetWeakPtr(), wc->GetPrimaryMainFrame(),
+                     file_select_listener, blink::mojom::FileChooserParams());
+  EXPECT_TRUE(file_select_listener->cancelled());
+  EXPECT_EQ(shell()->run_file_chooser_count(), 0u);
+}
+
+IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
+                       EnumerateDirectoryBlockedFromHiddenWebContents) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  shell()->set_hold_file_chooser();
+
+  EXPECT_TRUE(NavigateToURL(shell(), GURL("about:blank")));
+
+  WebContentsImpl* wc = static_cast<WebContentsImpl*>(shell()->web_contents());
+  wc->WasHidden();
+  EXPECT_EQ(shell()->web_contents()->GetVisibility(), Visibility::HIDDEN);
+
+  auto [chooser, remote] =
+      FileChooserImpl::CreateForTesting(wc->GetPrimaryMainFrame());
+  auto file_select_listener = base::MakeRefCounted<MockFileSelectListener>();
+  wc->EnumerateDirectory(chooser->GetWeakPtr(), wc->GetPrimaryMainFrame(),
+                         file_select_listener, base::FilePath());
+  EXPECT_TRUE(file_select_listener->cancelled());
+  EXPECT_EQ(shell()->run_file_chooser_count(), 0u);
+}
+
+IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
+                       NewWindowBlockedForActiveFileChooser) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  shell()->set_hold_file_chooser();
+
+  GURL url = embedded_test_server()->GetURL("/click-noreferrer-links.html");
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  WebContentsImpl* wc = static_cast<WebContentsImpl*>(shell()->web_contents());
+  auto [chooser, remote] =
+      FileChooserImpl::CreateForTesting(wc->GetPrimaryMainFrame());
+  auto file_select_listener = base::MakeRefCounted<MockFileSelectListener>();
+  wc->RunFileChooser(chooser->GetWeakPtr(), wc->GetPrimaryMainFrame(),
+                     file_select_listener, blink::mojom::FileChooserParams());
+  EXPECT_FALSE(file_select_listener->cancelled());
+
+  // Open a new, named window.
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+  console_observer.SetPattern(
+      "window.open blocked due to active file chooser.");
+  EXPECT_TRUE(ExecJs(shell(), "window.open('about:blank','new_window');"));
+  ASSERT_TRUE(console_observer.Wait());
+  EXPECT_EQ(url, shell()->web_contents()->GetLastCommittedURL());
+  EXPECT_EQ(1u, Shell::windows().size());
 }
 
 IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,

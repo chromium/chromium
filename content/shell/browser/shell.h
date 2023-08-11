@@ -174,6 +174,9 @@ class Shell : public WebContentsDelegate, public WebContentsObserver {
   void RunFileChooser(RenderFrameHost* render_frame_host,
                       scoped_refptr<FileSelectListener> listener,
                       const blink::mojom::FileChooserParams& params) override;
+  void EnumerateDirectory(WebContents* web_contents,
+                          scoped_refptr<FileSelectListener> listener,
+                          const base::FilePath& path) override;
   bool IsBackForwardCacheSupported() override;
   PreloadingEligibility IsPrerender2Supported(
       WebContents& web_contents) override;
@@ -198,6 +201,11 @@ class Shell : public WebContentsDelegate, public WebContentsObserver {
   void set_delay_popup_contents_delegate_for_testing(bool delay) {
     delay_popup_contents_delegate_for_testing_ = delay;
   }
+
+  void set_hold_file_chooser() { hold_file_chooser_ = true; }
+
+  // Counts both RunFileChooser and EnumerateDirectory.
+  size_t run_file_chooser_count() const { return run_file_chooser_count_; }
 
  private:
   class DevToolsWebContentsObserver;
@@ -244,6 +252,10 @@ class Shell : public WebContentsDelegate, public WebContentsObserver {
   gfx::Size content_size_;
 
   bool delay_popup_contents_delegate_for_testing_ = false;
+
+  bool hold_file_chooser_ = false;
+  scoped_refptr<FileSelectListener> held_file_chooser_listener_;
+  size_t run_file_chooser_count_ = 0u;
 
   // A container of all the open windows. We use a vector so we can keep track
   // of ordering.
