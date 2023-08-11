@@ -236,7 +236,7 @@ void PolicyApplicator::GetEntryCallback(const std::string& entry_identifier,
     // more recent policy application.
     if (ash::features::IsSmdsSupportEuiccUploadEnabled()) {
       const std::string* name =
-          onc_part.FindString(::onc::network_config::kName);
+          new_policy->FindString(::onc::network_config::kName);
       absl::optional<policy_util::SmdxActivationCode> activation_code =
           policy_util::GetSmdxActivationCodeFromONC(*new_policy);
       if (was_managed && managed_cellular_pref_handler_ && iccid && name &&
