@@ -672,7 +672,7 @@ void AppListClientImpl::OpenURL(Profile* profile,
                                 const GURL& url,
                                 ui::PageTransition transition,
                                 WindowOpenDisposition disposition) {
-  if (crosapi::browser_util::IsLacrosPrimaryBrowser()) {
+  if (crosapi::browser_util::IsLacrosEnabled()) {
     const GURL sanitized_url =
         crosapi::gurl_os_handler_utils::SanitizeAshURL(url);
     if (CanBeHandledAsSystemUrl(sanitized_url, transition)) {

@@ -59,7 +59,7 @@ bool DeviceInfoSyncClientImpl::GetSendTabToSelfReceivingEnabled() const {
   // for Lacros-Primary. Once Lacros-Only is the only available option, this
   // should simply check whether SendTabToSelf datatype is enabled.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  return !crosapi::browser_util::IsLacrosPrimaryBrowser();
+  return !crosapi::browser_util::IsLacrosEnabled();
 #else
   return true;
 #endif

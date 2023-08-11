@@ -821,14 +821,12 @@ void BrowserManager::InitializeAndStartIfNeeded() {
 
   browser_util::RecordMigrationStatus();
 
-  const bool is_lacros_enabled = browser_util::IsLacrosEnabled();
-
   // As a switch between Ash and Lacros mode requires an Ash restart plus
   // profile migration, the state will not change while the system is up.
   // At this point we are starting Lacros for the first time and with that the
   // operation mode is 'locked in'.
-  crosapi::lacros_startup_state::SetLacrosStartupState(
-      is_lacros_enabled, browser_util::IsLacrosPrimaryBrowser());
+  const bool is_lacros_enabled = browser_util::IsLacrosEnabled();
+  crosapi::lacros_startup_state::SetLacrosStartupState(is_lacros_enabled);
 
   if (is_lacros_enabled) {
     if (browser_util::IsLacrosAllowedToLaunch()) {
@@ -836,9 +834,7 @@ void BrowserManager::InitializeAndStartIfNeeded() {
       // 1) Lacros was opened in the previous session; or
       // 2) Lacros is the primary web browser.
       //    This can be suppressed via commandline flag for testing.
-      if (GetLaunchOnLoginPref() ||
-          (browser_util::IsLacrosPrimaryBrowser() &&
-           !IsLoginLacrosOpeningDisabledForTesting())) {
+      if (GetLaunchOnLoginPref() || !IsLoginLacrosOpeningDisabledForTesting()) {
         pending_actions_.Push(BrowserAction::GetActionForSessionStart());
       }
       SetState(State::MOUNTING);
@@ -1681,8 +1677,7 @@ void BrowserManager::ResumeLaunch() {
   // because they required the user to be logged in.
   PrepareLacrosPolicies();
   RecordLacrosLaunchMode();
-  crosapi::lacros_startup_state::SetLacrosStartupState(
-      is_lacros_enabled, browser_util::IsLacrosPrimaryBrowser());
+  crosapi::lacros_startup_state::SetLacrosStartupState(is_lacros_enabled);
   RecordDataVerForPrimaryUser();
 
   // Once Lacros starts and BrowserService is connected,

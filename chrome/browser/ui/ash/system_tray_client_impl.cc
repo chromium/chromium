@@ -564,7 +564,7 @@ void SystemTrayClientImpl::ShowEnterpriseInfo() {
   }
 
   // Otherwise show enterprise management info page.
-  if (crosapi::browser_util::IsLacrosPrimaryBrowser()) {
+  if (crosapi::browser_util::IsLacrosEnabled()) {
     crosapi::BrowserManager::Get()->SwitchToTab(
         GURL(chrome::kChromeUIManagementURL),
         /*path_behavior=*/NavigateParams::RESPECT);

@@ -962,7 +962,6 @@ AccessibilityPrivateUpdateSwitchAccessBubbleFunction::Run() {
 
 ExtensionFunction::ResponseAction
 AccessibilityPrivateIsLacrosPrimaryFunction::Run() {
-  const bool is_lacros_primary =
-      crosapi::lacros_startup_state::IsLacrosPrimaryEnabled();
-  return RespondNow(WithArguments(is_lacros_primary));
+  return RespondNow(
+      WithArguments(crosapi::lacros_startup_state::IsLacrosEnabled()));
 }

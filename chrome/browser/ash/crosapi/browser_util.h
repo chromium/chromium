@@ -247,32 +247,14 @@ bool IsAshWebBrowserEnabled();
 bool IsAshWebBrowserEnabledForMigration(const user_manager::User* user,
                                         PolicyInitState policy_init_state);
 
-// Returns true if the lacros should be used as a primary browser.
-bool IsLacrosPrimaryBrowser();
-
-// Similar to `IsLacrosPrimaryBrowser()` but is calleable even before primary
-// profile and policy are initialized.
-bool IsLacrosPrimaryBrowserForMigration(const user_manager::User* user,
-                                        PolicyInitState policy_init_state);
-
 // Returns the current mode Lacros is running.
 // See LacrosMode definition for a full list of modes.
 LacrosMode GetLacrosMode();
 
-// Returns true if the lacros can be used as a primary browser
+// Returns true if Lacros can be used as the only browser
 // for the current session.
-// Note that IsLacrosPrimaryBrowser may return false, even if this returns
-// true, specifically, the feature is disabled by user/policy.
-bool IsLacrosPrimaryBrowserAllowed();
-
-// Similar to `IsLacrosPrimaryBrowserAllowed()` but is calleable even before
-// primary profile and policy are initialized.
-bool IsLacrosPrimaryBrowserAllowedForMigration(
-    const user_manager::User* user,
-    ash::standalone_browser::LacrosAvailability lacros_availability);
-
-// Returns true if the lacros can be used as a only browser
-// for the current session.
+// Note that IsLacrosEnabled may return false, even if this returns
+// true, specifically, if the feature is disabled by user/policy.
 bool IsLacrosOnlyBrowserAllowed();
 
 // Returns true if `ash::features::kLacrosOnly` flag is allowed.

@@ -367,7 +367,7 @@ void ChromeSavedDeskDelegate::GetFaviconForUrl(
     base::CancelableTaskTracker* tracker) const {
   TRACE_EVENT0("ui", "ChromeSavedDeskDelegate::GetFaviconForUrl");
   // Get the icons from lacros favicon service.
-  if (crosapi::browser_util::IsLacrosPrimaryBrowser()) {
+  if (crosapi::browser_util::IsLacrosEnabled()) {
     crosapi::CrosapiManager::Get()
         ->crosapi_ash()
         ->desk_template_ash()

@@ -274,15 +274,15 @@ metrics::OmniboxInputType AutocompleteInput::Parse(
     return metrics::OmniboxInputType::QUERY;
 
 #if BUILDFLAG(IS_CHROMEOS)
-  const bool is_lacros_or_lacros_is_primary =
+  const bool is_lacros_or_lacros_is_enabled =
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
       true;
 #else
       // ChromeOS's launcher is using the omnibox from Ash. As such we have to
       // allow Ash to use the os scheme if Lacros is the primary browser.
-      crosapi::lacros_startup_state::IsLacrosPrimaryEnabled();
+      crosapi::lacros_startup_state::IsLacrosEnabled();
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (is_lacros_or_lacros_is_primary &&
+  if (is_lacros_or_lacros_is_enabled &&
       crosapi::gurl_os_handler_utils::IsAshOsAsciiScheme(parsed_scheme_utf8)) {
     // Lacros and Ash have a different set of internal chrome:// pages.
     // However - once Lacros is the primary browser, the Ash browser cannot be

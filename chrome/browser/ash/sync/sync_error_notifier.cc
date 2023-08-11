@@ -57,7 +57,7 @@ void ShowSyncSetup(Profile* profile) {
     return;
   }
 
-  if (crosapi::browser_util::IsLacrosPrimaryBrowser()) {
+  if (crosapi::browser_util::IsLacrosEnabled()) {
     chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
         profile, chromeos::settings::mojom::kSyncSetupSubpagePath);
   } else {

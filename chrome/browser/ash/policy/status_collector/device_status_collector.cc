@@ -2313,7 +2313,7 @@ bool DeviceStatusCollector::GetVersionInfo(
   status->set_os_version(os_version_);
   status->set_browser_version(std::string(version_info::GetVersionNumber()));
   status->set_is_lacros_primary_browser(
-      crosapi::browser_util::IsLacrosPrimaryBrowser());
+      crosapi::browser_util::IsLacrosEnabled());
   status->set_channel(ConvertToProtoChannel(chrome::GetChannel()));
 
   // TODO(b/144081278): Remove when resolved.

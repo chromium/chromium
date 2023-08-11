@@ -685,10 +685,12 @@ void InjectBrowserPostLoginParams(BrowserParams* params,
       environment_provider->GetLastPolicyFetchAttemptTimestamp().ToTimeT();
 
   params->initial_browser_action = initial_browser_action.action;
-  params->web_apps_enabled = web_app::IsWebAppsCrosapiEnabled();
-  params->standalone_browser_is_primary = IsLacrosPrimaryBrowser();
 
+  // TODO(crbug.com/1448575): These three are equivalent, remove two.
+  params->web_apps_enabled = web_app::IsWebAppsCrosapiEnabled();
+  params->standalone_browser_is_primary = IsLacrosEnabled();
   params->standalone_browser_is_only_browser = !IsAshWebBrowserEnabled();
+
   params->publish_chrome_apps = browser_util::IsLacrosChromeAppsEnabled();
   params->publish_hosted_apps = crosapi::IsStandaloneBrowserHostedAppsEnabled();
 

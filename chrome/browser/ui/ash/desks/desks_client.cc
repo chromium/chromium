@@ -552,10 +552,9 @@ void DesksClient::LaunchAppsFromTemplate(
     return;
 
   // Since we default the browser to launch as ash chrome, we want to to check
-  // to see if lacros is enabled and primary. If so, update the app id of the
-  // browser app to launch lacros instead of ash.
-  if (crosapi::browser_util::IsLacrosEnabled() &&
-      crosapi::browser_util::IsLacrosPrimaryBrowser()) {
+  // if lacros is enabled. If so, update the app id of the browser app to launch
+  // lacros instead of ash.
+  if (crosapi::browser_util::IsLacrosEnabled()) {
     restore_data->UpdateBrowserAppIdToLacros();
   }
 

@@ -492,7 +492,7 @@ void AppendHeader(std::string* output, const std::string& unescaped_title) {
 // calling browser is Lacros.
 bool isLacrosPrimaryOrCurrentBrowser() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  return crosapi::browser_util::IsLacrosPrimaryBrowser();
+  return crosapi::browser_util::IsLacrosEnabled();
 #else
   return true;
 #endif

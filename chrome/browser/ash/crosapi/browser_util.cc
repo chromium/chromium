@@ -274,19 +274,6 @@ bool IsLacrosEnabledInternal(const User* user,
   }
 }
 
-bool IsLacrosPrimaryBrowserInternal(const User* user,
-                                    LacrosAvailability lacros_availability,
-                                    bool check_migration_status) {
-  LacrosMode mode =
-      GetLacrosModeInternal(user, lacros_availability, check_migration_status);
-  switch (mode) {
-    case LacrosMode::kDisabled:
-      return false;
-    case LacrosMode::kOnly:
-      return true;
-  }
-}
-
 // This is equivalent to "not LacrosOnly".
 bool IsAshWebBrowserEnabledInternal(const User* user,
                                     LacrosAvailability lacros_availability,
@@ -509,33 +496,9 @@ bool IsAshWebBrowserEnabledForMigration(const user_manager::User* user,
       /*check_migration_status=*/false);
 }
 
-bool IsLacrosPrimaryBrowser() {
-  return IsLacrosPrimaryBrowserInternal(GetPrimaryUser(),
-                                        GetCachedLacrosAvailability(),
-                                        /*check_migration_status=*/true);
-}
-
-bool IsLacrosPrimaryBrowserForMigration(const user_manager::User* user,
-                                        PolicyInitState policy_init_state) {
-  return IsLacrosPrimaryBrowserInternal(
-      user, GetLacrosAvailability(user, policy_init_state),
-      /*check_migration_status=*/false);
-}
-
 LacrosMode GetLacrosMode() {
   return GetLacrosModeInternal(GetPrimaryUser(), GetCachedLacrosAvailability(),
                                /*check_migration_status=*/true);
-}
-
-bool IsLacrosPrimaryBrowserAllowed() {
-  return IsLacrosAllowedInternal(GetPrimaryUser(),
-                                 GetCachedLacrosAvailability());
-}
-
-bool IsLacrosPrimaryBrowserAllowedForMigration(
-    const user_manager::User* user,
-    LacrosAvailability lacros_availability) {
-  return IsLacrosAllowedInternal(user, lacros_availability);
 }
 
 bool IsLacrosOnlyBrowserAllowed() {
@@ -553,13 +516,8 @@ bool IsLacrosAllowedToLaunch() {
 }
 
 bool IsLacrosChromeAppsEnabled() {
-  if (base::FeatureList::IsEnabled(kLacrosDisableChromeApps))
-    return false;
-
-  if (!IsLacrosPrimaryBrowser())
-    return false;
-
-  return true;
+  return !base::FeatureList::IsEnabled(kLacrosDisableChromeApps) &&
+         IsLacrosEnabled();
 }
 
 bool IsLacrosEnabledInWebKioskSession() {
@@ -1118,9 +1076,8 @@ bool WasGotoFilesClicked(PrefService* local_state,
 }
 
 bool ShouldEnforceAshExtensionKeepList() {
-  return IsLacrosPrimaryBrowser() &&
-         base::FeatureList::IsEnabled(
-             ash::features::kEnforceAshExtensionKeeplist);
+  return IsLacrosEnabled() && base::FeatureList::IsEnabled(
+                                  ash::features::kEnforceAshExtensionKeeplist);
 }
 
 bool IsAshDevToolEnabled() {

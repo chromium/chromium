@@ -302,13 +302,13 @@ void ArcOpenUrlDelegateImpl::OpenUrlFromArc(const GURL& url) {
     return;
 
   GURL url_to_open = ConvertArcUrlToExternalFileUrlIfNeeded(url);
-  // If Lacros is primary browser, convert externalfile:// url into file:// url
+  // If Lacros is enabled, convert externalfile:// url into file:// url
   // managed by the FuseBox moniker system because Lacros cannot handle
   // externalfile:// urls.
   // TODO(crbug.com/1374575): Check if other externalfile:// urls can use the
   // same logic. If so, move this code into CrosapiNewWindowDelegate::OpenUrl()
   // which is only for Lacros.
-  if (crosapi::browser_util::IsLacrosPrimaryBrowser() &&
+  if (crosapi::browser_util::IsLacrosEnabled() &&
       url_to_open.SchemeIs(content::kExternalFileScheme)) {
     Profile* profile = ash::ProfileHelper::Get()->GetProfileByUser(
         user_manager::UserManager::Get()->GetPrimaryUser());

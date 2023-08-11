@@ -673,7 +673,7 @@ class DriveIntegrationService::DriveFsHolder
       mojo::PendingRemote<drivefs::mojom::NativeMessagingHost> host,
       drivefs::mojom::DriveFsDelegate::ConnectToExtensionCallback callback)
       override {
-    if (crosapi::browser_util::IsLacrosPrimaryBrowser()) {
+    if (crosapi::browser_util::IsLacrosEnabled()) {
       if (!native_message_host_bridge_) {
         auto* browser_manager = crosapi::BrowserManager::Get();
         if (!native_message_keep_alive_ && browser_manager) {

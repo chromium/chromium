@@ -152,7 +152,7 @@ bool IsAppValidForProfile(Profile* profile, const std::string& app_id) {
 }
 
 void OpenUrlForProfile(Profile* profile, const GURL& url) {
-  if (crosapi::browser_util::IsLacrosPrimaryBrowser()) {
+  if (crosapi::browser_util::IsLacrosEnabled()) {
     const GURL sanitized_url =
         crosapi::gurl_os_handler_utils::SanitizeAshURL(url);
     // Handle settings-related urls to open in their respective windows

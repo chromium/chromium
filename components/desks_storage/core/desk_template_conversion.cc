@@ -225,8 +225,7 @@ std::string GetJsonAppId(const base::Value::Dict& app) {
 #else
         // Note that this will launch the browser as lacros if it is enabled,
         // even if it was saved as a non-lacros window (and vice-versa).
-        crosapi::lacros_startup_state::IsLacrosEnabled() &&
-        crosapi::lacros_startup_state::IsLacrosPrimaryEnabled();
+        crosapi::lacros_startup_state::IsLacrosEnabled();
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
     // Browser app has a known app ID.
@@ -1201,8 +1200,7 @@ std::string GetAppId(const sync_pb::WorkspaceDeskSpecifics_App& app) {
 #else
           // Note that this will launch the browser as lacros if it is enabled,
           // even if it was saved as a non-lacros window (and vice-versa).
-          crosapi::lacros_startup_state::IsLacrosEnabled() &&
-          crosapi::lacros_startup_state::IsLacrosPrimaryEnabled();
+          crosapi::lacros_startup_state::IsLacrosEnabled();
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
       // Browser app has a known app ID.

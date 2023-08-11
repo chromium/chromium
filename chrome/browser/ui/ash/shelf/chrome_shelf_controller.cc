@@ -331,7 +331,7 @@ ChromeShelfController::~ChromeShelfController() {
 
 void ChromeShelfController::Init() {
   TRACE_EVENT0("ui", "ChromeShelfController::Init");
-  if (!crosapi::browser_util::IsLacrosPrimaryBrowser()) {
+  if (!crosapi::browser_util::IsLacrosEnabled()) {
     CreateBrowserShortcutItem(/*pinned=*/true);
     UpdateBrowserItemState();
   }

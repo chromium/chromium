@@ -46,8 +46,7 @@ bool TryOpenUrl(const GURL& url,
                 WindowOpenDisposition disposition,
                 NavigateParams::PathBehavior path_behavior,
                 ChromeSchemeSemantics chrome_scheme_semantics) {
-  if (!crosapi::browser_util::IsLacrosPrimaryBrowser()) {
-    // We're running neither Lacros-Primary nor Lacros-Only, nothing to do.
+  if (!crosapi::browser_util::IsLacrosEnabled()) {
     return false;
   }
 

@@ -900,9 +900,10 @@ bool StartupBrowserCreator::ShouldLoadProfileWithoutWindow(
     return true;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // If Lacros is the primary web browser, do not open a browser window.
-  if (crosapi::browser_util::IsLacrosPrimaryBrowser())
+  // If Lacros is enabled, do not open an Ash browser window.
+  if (crosapi::browser_util::IsLacrosEnabled()) {
     return true;
+  }
 #endif
 
   return false;

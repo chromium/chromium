@@ -21,7 +21,8 @@ ash::NewWindowDelegate* ChromeNewWindowDelegateProvider::GetInstance() {
 }
 
 ash::NewWindowDelegate* ChromeNewWindowDelegateProvider::GetPrimary() {
-  if (crosapi::browser_util::IsLacrosPrimaryBrowser())
+  if (crosapi::browser_util::IsLacrosEnabled()) {
     return crosapi_new_window_delegate_.get();
+  }
   return ash_new_window_delegate_.get();
 }

@@ -692,7 +692,7 @@ class LegacyPackagedAppLacrosPrimaryPublisherTest : public PublisherTest {
 
     PublisherTest::SetUp();
 
-    ASSERT_TRUE(crosapi::browser_util::IsLacrosPrimaryBrowser());
+    ASSERT_TRUE(crosapi::browser_util::IsLacrosEnabled());
   }
 
  private:

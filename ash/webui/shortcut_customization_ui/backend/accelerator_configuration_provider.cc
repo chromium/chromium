@@ -476,8 +476,7 @@ bool ShouldExcludeItem(const AcceleratorLayoutDetails& details) {
     // Hide user switching shortcuts for lacros builds.
     case kSwitchToNextUser:
     case kSwitchToPreviousUser:
-      return crosapi::lacros_startup_state::IsLacrosEnabled() ||
-             crosapi::lacros_startup_state::IsLacrosPrimaryEnabled();
+      return crosapi::lacros_startup_state::IsLacrosEnabled();
     case kPrivacyScreenToggle:
       return accelerators::CanTogglePrivacyScreen();
   }
