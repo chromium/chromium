@@ -580,7 +580,6 @@ Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud
 <translation id="4550040941166547650">Pouze na tomto zařízení</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{Zavřít {COUNT} neaktivní kartu?}few{Zavřít {COUNT} neaktivní karty?}many{Zavřít {COUNT} neaktivní karty?}other{Zavřít {COUNT} neaktivních karet?}}</translation>
 <translation id="457386861538956877">Další...</translation>
-<translation id="4587235830039045480">Uložte si heslo do účtu Google</translation>
 <translation id="4587589328781138893">Weby</translation>
 <translation id="4588014171431912783">Nastavení synchronizace se obnoví podle vaší poslední zálohy. <ph name="BEGIN_LINK" />Co lze synchronizovat<ph name="END_LINK" /></translation>
 <translation id="4592368184551360546">Klávesnice</translation>
@@ -1334,7 +1333,6 @@ Vaše data byla <ph name="TIME" /> zašifrována pomocí heslové fráze. Pokud 
 <translation id="891658175948553296">Zvýrazněte text na webu.</translation>
 <translation id="8917490105272468696">Souhlasím</translation>
 <translation id="8928133177108699615">Počítač</translation>
-<translation id="8934982071228289624">Pokud toto heslo chcete uložit do svého účtu, musíte nejdříve nastavit heslo v zařízení.</translation>
 <translation id="894191600409472540">Vytvářejte silná hesla</translation>
 <translation id="8952559610785099500">Přidat heslo</translation>
 <translation id="8953046091948372197">Zde najdete svá hesla</translation>

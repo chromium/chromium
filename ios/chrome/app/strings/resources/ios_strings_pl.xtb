@@ -580,7 +580,6 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="4550040941166547650">Tylko na tym urządzeniu</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{Zamknąć {COUNT} nieaktywną kartę?}few{Zamknąć {COUNT} nieaktywne karty?}many{Zamknąć {COUNT} nieaktywnych kart?}other{Zamknąć {COUNT} nieaktywnej karty?}}</translation>
 <translation id="457386861538956877">Więcej</translation>
-<translation id="4587235830039045480">Zapisz hasło na koncie Google</translation>
 <translation id="4587589328781138893">Witryny</translation>
 <translation id="4588014171431912783">Ustawienia synchronizacji zostaną przywrócone na podstawie ostatniej kopii zapasowej. <ph name="BEGIN_LINK" />Zobacz, co możesz synchronizować<ph name="END_LINK" /></translation>
 <translation id="4592368184551360546">Klawiatura</translation>
@@ -1334,7 +1333,6 @@ Dane zostały zaszyfrowane hasłem <ph name="TIME" />. Podaj hasło, aby korzyst
 <translation id="891658175948553296">Zaznaczanie tekstu w witrynie</translation>
 <translation id="8917490105272468696">Tak, zgadzam się</translation>
 <translation id="8928133177108699615">Komputerowy</translation>
-<translation id="8934982071228289624">Aby zapisać to hasło na koncie, musisz najpierw ustawić kod dostępu na urządzeniu.</translation>
 <translation id="894191600409472540">Utwórz silne hasła</translation>
 <translation id="8952559610785099500">Dodaj hasło</translation>
 <translation id="8953046091948372197">Tu znajdziesz swoje zakładki</translation>

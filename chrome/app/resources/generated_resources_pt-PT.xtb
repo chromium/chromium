@@ -1170,6 +1170,7 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1925124445985510535">A verificação de segurança foi efetuada à(s) <ph name="TIME" />.</translation>
 <translation id="192564025059434655">As versões antigas das Apps do Chrome não vão abrir nos dispositivos Windows depois de dezembro de 2022. Pode verificar se está disponível uma nova versão.</translation>
 <translation id="1926339101652878330">Estas definições são controladas por uma política da empresa. Contacte o gestor para mais informações.</translation>
+<translation id="1926887872692564784">Cursor</translation>
 <translation id="1927632033341042996">Dedo <ph name="NEW_FINGER_NUMBER" /></translation>
 <translation id="192817607445937251">PIN do bloqueio de ecrã</translation>
 <translation id="192858925209436740">Associe o OneDrive à app Files para gerir os seus documentos armazenados a partir do Chromebook. Vai ter de iniciar sessão com a sua conta Microsoft.</translation>
@@ -3272,6 +3273,7 @@ Quer pará-lo?</translation>
 <translation id="3653887973853407813">Não podes usar esta extensão. Um dos teus pais ou o teu tutor desativou as "Autorizações para sites, apps e extensões" do Chrome.</translation>
 <translation id="3653999333232393305">Continuar a permitir que <ph name="HOST" /> aceda ao seu microfone</translation>
 <translation id="3654045516529121250">Ler definições de acessibilidade</translation>
+<translation id="3656328935986149999">Velocidade do cursor</translation>
 <translation id="3658871634334445293">Aceleração do TrackPoint</translation>
 <translation id="3659550105763988702">Use a sua token de acesso para a app <ph name="APP_NAME" /></translation>
 <translation id="3659929705630080526">Introduziu um código de acesso incorreto demasiadas vezes. Tente mais tarde</translation>
@@ -3985,6 +3987,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="4232375817808480934">Configure o Kerberos</translation>
 <translation id="4233739489690259993">O seu Chromebook já não está a receber atualizações de segurança e software. Atualize o seu dispositivo para obter novas funcionalidades e as funcionalidades de segurança mais recentes. Aplicam-se os termos da oferta.</translation>
 <translation id="4235965441080806197">Cancelar início de sessão</translation>
+<translation id="4235976607074422892">Velocidade de deslocamento</translation>
 <translation id="4237282663517880406">Mostrar sugestões do Google Drive</translation>
 <translation id="4241182343707213132">Reinicie para atualizar as apps da entidade</translation>
 <translation id="4242145785130247982">Não são suportados certificados de vários clientes.</translation>
@@ -5307,6 +5310,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="5365881113273618889">A pasta que selecionou contém ficheiros confidenciais. Tem a certeza de que quer conceder à aplicação "<ph name="APP_NAME" />" acesso de escrita permanente a esta pasta?</translation>
 <translation id="536638840841140142">Nenhumas</translation>
 <translation id="5368246151595623328">Rede "<ph name="NETWORK_NAME" />" guardada do dispositivo <ph name="DEVICE_NAME" /></translation>
+<translation id="5368255566854433132">Criar palavra-passe do dispositivo <ph name="DEVICE_TYPE" /></translation>
 <translation id="5368720394188453070">O seu telemóvel está bloqueado. Desbloqueie-o para introduzir.</translation>
 <translation id="5368779022775404937">Iniciar sessão em <ph name="REALM" /></translation>
 <translation id="536882527576164740">{0,plural, =1{Navegação anónima}other{Navegação anónima (#)}}</translation>
@@ -8636,6 +8640,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8137559199583651773">Gerir extensões</translation>
 <translation id="8138217203226449454">Pretendia alterar o seu fornecedor de pesquisas?</translation>
 <translation id="8138997515734480534">Estado: <ph name="VM_NAME" /></translation>
+<translation id="8139440916039659819">Aceleração do cursor</translation>
 <translation id="8139447493436036221">Ficheiros do Google Drive</translation>
 <translation id="8139643636835015859">Esta ação vai remover <ph name="OFFLINE_STORAGE_SIZE" /> de espaço usado pelos seus ficheiros offline. Alguns ficheiros continuam disponíveis offline. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="8140070492745508800"><ph name="FIRST_DEVICE" />, <ph name="SECOND_DEVICE" /></translation>
@@ -8972,6 +8977,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">Permitiu <ph name="PERMISSION" /> e mais <ph name="COUNT" /></translation>
 <translation id="8413956290606243087">Quer ativar o ChromeVox, o leitor de ecrã incorporado para o ChromeOS?</translation>
+<translation id="8414065061814811918">Aceleração do deslocamento. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="8414249071344507766">Memórias ocultas durante dois dias</translation>
 <translation id="8414396119627470038">Inicie sessão em <ph name="SITE_ETLD_PLUS_ONE" /> com <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8414685983518053656">Notas</translation>
@@ -9098,6 +9104,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">Altifalantes</translation>
 <translation id="8527257351549797148">A sua organização pode exigir a inscrição para que possa aceder a apps, extensões e muito mais. Isto também permite à sua organização gerir aspetos como definições de segurança e do dispositivo.</translation>
+<translation id="8527869672961320915">Apps <ph name="VM_NAME" /></translation>
 <translation id="8528074251912154910">Adicionar idiomas</translation>
 <translation id="8528479410903501741">Guarde o IBAN</translation>
 <translation id="8528962588711550376">A iniciar sessão.</translation>
@@ -9354,6 +9361,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8736288397686080465">Este site foi atualizado em segundo plano.</translation>
 <translation id="8737709691285775803">Shill</translation>
 <translation id="8737914367566358838">Escolha o idioma para o qual quer traduzir a página</translation>
+<translation id="8740086188450289493">Usar palavra-passe da Conta Google</translation>
 <translation id="8740247629089392745">Pode entregar este Chromebook a <ph name="SUPERVISED_USER_NAME" />. A configuração está quase concluída. Depois, pode começar a explorar.</translation>
 <translation id="8740672167979365981">Atualização do ChromeOS Flex necessária</translation>
 <translation id="8741944563400125534">Guia de configuração do acesso por interruptor</translation>
@@ -9736,6 +9744,7 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="9045160989383249058">A sua lista de leitura foi movida para o novo painel lateral. Experimente-a aqui.</translation>
 <translation id="9045430190527754450">Envia o endereço Web da página a que está a tentar aceder para a Google.</translation>
 <translation id="9048745018038487540">Selecionar todos os tipos de letra</translation>
+<translation id="9050135202879860719">Use uma palavra-passe para iniciar sessão no dispositivo <ph name="DEVICE_TYPE" /></translation>
 <translation id="9050666287014529139">Frase de acesso</translation>
 <translation id="9052404922357793350">Continuar a bloquear</translation>
 <translation id="90528604757378587">A atividade em segundo plano e alguns efeitos visuais, como o deslocamento suave, podem ser limitados.</translation>

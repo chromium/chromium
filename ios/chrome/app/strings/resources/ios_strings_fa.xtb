@@ -580,7 +580,6 @@
 <translation id="4550040941166547650">فقط در «این دستگاه»</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{{COUNT} برگه غیرفعال بسته شود؟}one{{COUNT} برگه غیرفعال بسته شود؟}other{{COUNT} برگه غیرفعال بسته شود؟}}</translation>
 <translation id="457386861538956877">بیشتر...</translation>
-<translation id="4587235830039045480">‏گذرواژه را در «حساب Google» خود ذخیره کنید</translation>
 <translation id="4587589328781138893">سایت‌ها</translation>
 <translation id="4588014171431912783">تنظیمات همگام‌سازی براساس آخرین نسخه پشتیبان شما بازیابی خواهد شد. <ph name="BEGIN_LINK" />دیدن مواردی که می‌توانید همگام‌سازی کنید<ph name="END_LINK" /></translation>
 <translation id="4592368184551360546">صفحه‌کلید</translation>
@@ -1334,7 +1333,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="891658175948553296">نوشتار سایت‌ها برجسته کنید</translation>
 <translation id="8917490105272468696">بله، موافقم</translation>
 <translation id="8928133177108699615">رایانه</translation>
-<translation id="8934982071228289624">برای ذخیره کردن این گذرواژه در حسابتان، ابتدا باید گذرنویسه‌ای در دستگاهتان تنظیم کنید.</translation>
 <translation id="894191600409472540">گذرواژه‌های قوی ایجاد کنید</translation>
 <translation id="8952559610785099500">افزودن گذرواژه</translation>
 <translation id="8953046091948372197">گذرواژه‌هایتان را اینجا خواهید دید</translation>

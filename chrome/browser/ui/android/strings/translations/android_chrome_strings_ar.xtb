@@ -62,7 +62,6 @@
 <translation id="1283039547216852943">النقر للتوسيع</translation>
 <translation id="1289059016768036948">‏سيُطلب منك تسجيل الدخول إلى حسابك على Google.</translation>
 <translation id="1291207594882862231">محو السجل وملفات تعريف الارتباط وبيانات المواقع الإلكترونية وذاكرة التخزين المؤقت…</translation>
-<translation id="1293898515599432175">‏سيتم حذف كلمات المرور من "مدير كلمات المرور في Google" في <ph name="CHROME_CHANNEL" /> من Chrome. وستتمكَّن من الاحتفاظ بملف كلمات المرور الذي نزّلته.</translation>
 <translation id="129553762522093515">المغلقة حديثًا</translation>
 <translation id="1298077576058087471">توفير ما يصل إلى 60% من البيانات والاطّلاع على أخبار اليوم</translation>
 <translation id="1303339473099049190">يتعذّر العثور على كلمة المرور هذه. يجب إجراء تدقيق إملائي وإعادة المحاولة.</translation>
@@ -824,7 +823,6 @@
 <translation id="5401851137404501592">للمتابعة، سيشارك <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> اسمك وعنوان بريدك الإلكتروني وصورة ملفك الشخصي مع هذا الموقع الإلكتروني.</translation>
 <translation id="5409881200985013443">هل تريد إرسال <ph name="ONE_TIME_CODE" /> إلى <ph name="CLIENT_NAME" />؟</translation>
 <translation id="5414836363063783498">جارٍ التحقق...</translation>
-<translation id="542190472198460451">‏سيتم تنزيل جميع كلمات المرور على جهازك وإزالتها من <ph name="CHROME_CHANNEL" /> من Chrome.</translation>
 <translation id="5423934151118863508">ستظهر صفحاتك الأكثر زيارة هنا</translation>
 <translation id="5424588387303617268">يتوفر <ph name="GIGABYTES" /> غيغابايت</translation>
 <translation id="543338862236136125">تعديل كلمة المرور</translation>
@@ -1368,7 +1366,6 @@
 <translation id="8110024788458304985">‏المساعدة في تحسين ميزات Chrome وأدائه</translation>
 <translation id="8110087112193408731">‏هل تريد عرض نشاط Chrome في الرفاهية الرقمية؟</translation>
 <translation id="8118117428362942925">إذا احتجت للمساعدة، يمكنك طلبها من أحد والدَيك (<ph name="PARENT_NAME" />).</translation>
-<translation id="8124758083429256800">‏بعد الإصدار 121، سيتم دمج قوائم كلمات المرور المحفوظة في متصفِّح Chrome و<ph name="ERROR_DESCRIPTION" /> من Chrome. ستتمكّن تلقائيًا من ملء جميع كلمات المرور المحفوظة في كلا التطبيقين.</translation>
 <translation id="8127542551745560481">تعديل الصفحة الرئيسية</translation>
 <translation id="8130309322784422030">معلومات تسجيل الدخول المُخزَّنة الخاصة بك قد تكون قديمة.</translation>
 <translation id="813082847718468539">عرض معلومات الموقع</translation>

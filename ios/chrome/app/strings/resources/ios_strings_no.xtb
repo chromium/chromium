@@ -580,7 +580,6 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="4550040941166547650">Bare på denne enheten</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{Vil du lukke {COUNT} inaktiv fane?}other{Vil du lukke {COUNT} inaktive faner?}}</translation>
 <translation id="457386861538956877">Mer</translation>
-<translation id="4587235830039045480">Lagre passord i Google-kontoen din</translation>
 <translation id="4587589328781138893">Nettsteder</translation>
 <translation id="4588014171431912783">Synkroniseringsinnstillingene dine gjenopprettes basert på den forrige sikkerhetskopien. <ph name="BEGIN_LINK" />Se hva du kan synkronisere<ph name="END_LINK" /></translation>
 <translation id="4592368184551360546">Tastatur</translation>
@@ -1334,7 +1333,6 @@ Dataene dine ble kryptert med passordfrasen din <ph name="TIME" />. Skriv den in
 <translation id="891658175948553296">Marker tekst på nettsteder</translation>
 <translation id="8917490105272468696">Ja, den er grei</translation>
 <translation id="8928133177108699615">Datamaskin</translation>
-<translation id="8934982071228289624">For å lagre dette passordet i kontoen din må du først angi en adgangskode på enheten din.</translation>
 <translation id="894191600409472540">Lag sterke passord</translation>
 <translation id="8952559610785099500">Legg til et passord</translation>
 <translation id="8953046091948372197">Her finner du passordene dine</translation>

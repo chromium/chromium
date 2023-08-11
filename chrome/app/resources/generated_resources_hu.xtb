@@ -1181,6 +1181,7 @@ Az alkalmazások számára már megadott engedélyek erre a fiókra is érvénye
 <translation id="1925124445985510535">A biztonsági ellenőrzés utolsó lefutásának ideje: <ph name="TIME" /></translation>
 <translation id="192564025059434655">A Chrome-alkalmazások régi verziói 2022 decembere után nem nyílnak majd meg Windows rendszerű eszközökön. Ellenőrizheti, hogy rendelkezésre áll-e újabb verzió.</translation>
 <translation id="1926339101652878330">Ezeket a beállításokat vállalati irányelv szabályozza. Kérjük, további információért lépjen kapcsolatba a rendszergazdájával.</translation>
+<translation id="1926887872692564784">Kurzor</translation>
 <translation id="1927632033341042996"><ph name="NEW_FINGER_NUMBER" />. ujjlenyomat</translation>
 <translation id="192817607445937251">Képernyőzár PIN-kódja</translation>
 <translation id="192858925209436740">A OneDrive és a Fájlok alkalmazás összekapcsolásával kezelheti a Chromebookon tárolt dokumentumokat. Ehhez be kell jelentkeznie Microsoft-fiókjával.</translation>
@@ -3285,6 +3286,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3653887973853407813">Nem használhatod ezt a bővítményt. A szülőd vagy a gyámod kikapcsolta az „Engedélyek webhelyek, alkalmazások és bővítmények számára” beállítást a Chrome-ra vonatkozóan.</translation>
 <translation id="3653999333232393305">A(z) <ph name="HOST" /> továbbra is hozzáférhet az Ön mikrofonjához</translation>
 <translation id="3654045516529121250">A kisegítő lehetőségek beállításainak áttekintése</translation>
+<translation id="3656328935986149999">Kurzor sebessége</translation>
 <translation id="3658871634334445293">TrackPoint gyorsítása</translation>
 <translation id="3659550105763988702">Azonosítókulcs használata a következőhöz: <ph name="APP_NAME" /></translation>
 <translation id="3659929705630080526">Túl sokszor adott meg helytelen hozzáférési kódot. Próbálkozzon később.</translation>
@@ -3997,6 +3999,7 @@ Ide tartozhatnak a telepített szoftverekkel, valamint a fájlokkal, a böngész
 <translation id="4232375817808480934">A Kerberos konfigurálása</translation>
 <translation id="4233739489690259993">Chromebookja a továbbiakban nem kap biztonsági és szoftverfrissítéseket. Frissítse eszközét, hogy megkapja a legújabb biztonsági és egyéb új funkciókat. Az ajánlatra feltételek vonatkoznak.</translation>
 <translation id="4235965441080806197">Bejelentkezés megszakítása</translation>
+<translation id="4235976607074422892">Görgetési sebesség</translation>
 <translation id="4237282663517880406">Google Drive-javaslatok megjelenítése</translation>
 <translation id="4241182343707213132">Indítsa újra az eszközt a szervezet alkalmazásainak frissítéséhez</translation>
 <translation id="4242145785130247982">Több ügyféltanúsítvány sem támogatott</translation>
@@ -5321,6 +5324,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="5365881113273618889">A kiválasztott mappa bizalmas fájlokat tartalmaz. Biztosan állandó írási hozzáférést szeretne adni a(z) „<ph name="APP_NAME" />” alkalmazásnak a mappához?</translation>
 <translation id="536638840841140142">Nincs</translation>
 <translation id="5368246151595623328">„<ph name="NETWORK_NAME" />” innen mentve: <ph name="DEVICE_NAME" /></translation>
+<translation id="5368255566854433132"><ph name="DEVICE_TYPE" />-jelszó létrehozása</translation>
 <translation id="5368720394188453070">A telefon zárolva van. Oldja fel a belépéshez.</translation>
 <translation id="5368779022775404937">Bejelentkezés itt: <ph name="REALM" /></translation>
 <translation id="536882527576164740">{0,plural, =1{Inkognitó}other{Inkognitó (#)}}</translation>
@@ -8649,6 +8653,7 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8137559199583651773">Bővítmények kezelése</translation>
 <translation id="8138217203226449454">Szándékosan változtatta meg a keresési szolgáltatóját?</translation>
 <translation id="8138997515734480534"><ph name="VM_NAME" /> állapota</translation>
+<translation id="8139440916039659819">Kurzor gyorsulása</translation>
 <translation id="8139447493436036221">Google Drive-fájlok</translation>
 <translation id="8139643636835015859">Ezzel felszabadít <ph name="OFFLINE_STORAGE_SIZE" />, offline fájlok által használt tárhelyet. Egyes fájlok továbbra is rendelkezésre állnak offline állapotban. <ph name="LINK_BEGIN" />További információ<ph name="LINK_END" />.</translation>
 <translation id="8140070492745508800"><ph name="FIRST_DEVICE" />, <ph name="SECOND_DEVICE" /></translation>
@@ -8985,6 +8990,7 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">Engedélyezve: <ph name="PERMISSION" /> és további <ph name="COUNT" /></translation>
 <translation id="8413956290606243087">Szeretné aktiválni a ChromeVoxot, a ChromeOS beépített képernyőolvasóját?</translation>
+<translation id="8414065061814811918">Görgetés gyorsítása. <ph name="LINK_BEGIN" />További információ<ph name="LINK_END" />.</translation>
 <translation id="8414249071344507766">Emlékek elrejtve két napig</translation>
 <translation id="8414396119627470038">Jelentkezzen be a(z) <ph name="SITE_ETLD_PLUS_ONE" /> webhelyre a következővel: <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8414685983518053656">Megjegyzések</translation>
@@ -9111,6 +9117,7 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">Hangfalak</translation>
 <translation id="8527257351549797148">Előfordulhat, hogy szervezete regisztrációhoz köti az Ön alkalmazásokhoz, bővítményekhez és egyebekhez való hozzáférését. Ez lehetővé teszi a szervezet számára többek között a biztonság és az eszközbeállítások kezelését.</translation>
+<translation id="8527869672961320915"><ph name="VM_NAME" /> alkalmazás</translation>
 <translation id="8528074251912154910">Nyelvek hozzáadása</translation>
 <translation id="8528479410903501741">IBAN-kód mentése</translation>
 <translation id="8528962588711550376">Bejelentkezés.</translation>
@@ -9367,6 +9374,7 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8736288397686080465">Ez a webhely frissült a háttérben.</translation>
 <translation id="8737709691285775803">Shill</translation>
 <translation id="8737914367566358838">Válassza ki a nyelvet, amelyre le szeretné fordítani az oldalt</translation>
+<translation id="8740086188450289493">A Google-fiók jelszavának használata</translation>
 <translation id="8740247629089392745">Átadhatja a Chromebookot <ph name="SUPERVISED_USER_NAME" /> számára. A beállítás majdnem kész, eljött a felfedezés ideje.</translation>
 <translation id="8740672167979365981">Szükség van a ChromeOS Flex frissítésére</translation>
 <translation id="8741944563400125534">Kapcsolóalapú hozzáférés – Beállítási útmutató</translation>
@@ -9749,6 +9757,7 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="9045160989383249058">Az olvasólistája átkerült az új oldalsó panelre. Itt kipróbálhatja.</translation>
 <translation id="9045430190527754450">Elküldi az elérni kívánt oldal internetcímét a Google-nak</translation>
 <translation id="9048745018038487540">Az összes betűtípus kiválasztása</translation>
+<translation id="9050135202879860719">Használhat jelszót a(z) <ph name="DEVICE_TYPE" /> eszközre való bejelentkezéshez</translation>
 <translation id="9050666287014529139">Összetett jelszó</translation>
 <translation id="9052404922357793350">Letiltás fenntartása</translation>
 <translation id="90528604757378587">Lehetséges, hogy a háttértevékenységek és bizonyos vizuális effektek (például a finomgörgetés) korlátozottak.</translation>

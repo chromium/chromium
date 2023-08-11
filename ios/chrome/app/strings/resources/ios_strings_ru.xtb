@@ -580,7 +580,6 @@
 <translation id="4550040941166547650">Только на этом устройстве</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{Закрыть {COUNT} неактивную вкладку?}one{Закрыть {COUNT} неактивную вкладку?}few{Закрыть {COUNT} неактивные вкладки?}many{Закрыть {COUNT} неактивных вкладок?}other{Закрыть {COUNT} неактивной вкладки?}}</translation>
 <translation id="457386861538956877">Ещё...</translation>
-<translation id="4587235830039045480">Сохраните пароль в аккаунте Google.</translation>
 <translation id="4587589328781138893">Сайты</translation>
 <translation id="4588014171431912783">Ваши настройки синхронизации будут восстановлены на основе данных из последней резервной копии. <ph name="BEGIN_LINK" />Какие данные можно синхронизировать<ph name="END_LINK" /></translation>
 <translation id="4592368184551360546">Клавиатура</translation>
@@ -1334,7 +1333,6 @@
 <translation id="891658175948553296">Выделите текст на сайте.</translation>
 <translation id="8917490105272468696">Включить функцию</translation>
 <translation id="8928133177108699615">Версия для компьютера</translation>
-<translation id="8934982071228289624">Чтобы сохранить этот пароль в аккаунте, задайте код-пароль на устройстве.</translation>
 <translation id="894191600409472540">Создайте надежные пароли</translation>
 <translation id="8952559610785099500">Добавление пароля</translation>
 <translation id="8953046091948372197">Здесь будут ваши пароли</translation>

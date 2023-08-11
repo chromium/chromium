@@ -25,6 +25,7 @@
 <translation id="108486256082349153">സെല്ലുലാര്‍‌: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">ഗുഡ് ആഫ്‌റ്റർനൂൺ <ph name="GIVEN_NAME" />,</translation>
 <translation id="1088231044944504242">നിങ്ങളുടെ <ph name="CATEGORY" />, ഫയലുകൾ, ആപ്പുകൾ എന്നിവയും മറ്റും തിരയൂ. നിങ്ങളുടെ ആപ്പുകളിലേക്ക് പോകാൻ അമ്പടയാള കീകൾ ഉപയോഗിക്കുക.</translation>
+<translation id="1093645050124056515">ctrl + alt + താഴേക്കുള്ള അമ്പടയാളം</translation>
 <translation id="109942774857561566">എനിക്ക് ബോറടിക്കുന്നു</translation>
 <translation id="1104084341931202936">പ്രവേശനക്ഷമത ക്രമീകരണം കാണിക്കുക</translation>
 <translation id="1104621072296271835">നിങ്ങളുടെ ഉപകരണങ്ങൾ 'ഒരുമിച്ചും' നന്നായി പ്രവർത്തിക്കും</translation>
@@ -43,6 +44,7 @@
 <translation id="1178581264944972037">താൽക്കാലികമായി നിർത്തുക</translation>
 <translation id="1181037720776840403">നീക്കംചെയ്യൂ</translation>
 <translation id="1182225749592316782">ക്യാമറ, മൈക്രോഫോൺ എന്നിവ ആക്‌സസ് ചെയ്യാൻ അനുമതിയുള്ള എല്ലാ ആപ്പുകൾക്കും വെബ്സൈറ്റുകൾക്കും ഇത് ആക്‌സസ് അനുവദിക്കുന്നു</translation>
+<translation id="1182876754474670069">വീട്</translation>
 <translation id="1183863904939664422">ഈ നിർദ്ദേശത്തിൽ താൽപ്പര്യമില്ല</translation>
 <translation id="1184126796192815024">നിങ്ങളുടെ ഫോണിൽ നിന്നുള്ള സ്ട്രീമിംഗ് ആപ്പുകളെ ഈ നെറ്റ്‌വർക്ക് പിന്തുണയ്ക്കുന്നില്ല. നിങ്ങളുടെ ഫോണിന്റെ ഹോട്ട്‌സ്‌പോട്ട് ഉപയോഗിച്ച് നോക്കൂ. <ph name="LEARN_MORE" /></translation>
 <translation id="118437560755358292">കൂടുതൽ സുരക്ഷയ്ക്ക് പാസ്‌വേഡ് അല്ലെങ്കിൽ പിൻ നൽകുക</translation>
@@ -147,6 +149,7 @@
 <translation id="1586324912145647027">1 മുതൽ 8 വരെയുള്ള ഡെസ്ക്കുകളിലേക്ക് പോകുക</translation>
 <translation id="1589090746204042747">ഈ സെഷനിൽ നിങ്ങളുടെ എല്ലാ ആക്‌റ്റിവിറ്റികളും ആക്‌സസ് ചെയ്യുക</translation>
 <translation id="1592682369233288537">അടുത്ത ഡെസ്‌ക്: <ph name="NEXT_DESK_NAME" />, സജീവമാക്കാൻ Search+Space ഉപയോഗിക്കുക.</translation>
+<translation id="1602874809115667351"><ph name="LAUNCHER_KEY_NAME" /> + താഴേക്കുള്ള അമ്പടയാളം</translation>
 <translation id="1604857178818051494">മീഡിയ തൽക്കാലികമായി നിർത്തുക</translation>
 <translation id="1610778689852195798">"പഴയപടിയാക്കുക"</translation>
 <translation id="1611993646327628135">ഓണാണ്</translation>
@@ -249,6 +252,7 @@
 <translation id="2021864487439853900">അൺലോക്കുചെയ്യാൻ ക്ലിക്കുചെയ്യൂ</translation>
 <translation id="2023558322300866873">നിങ്ങൾക്ക് ഏതുസമയത്തും പാക്കറ്റ് ക്യാപ്ചർ അവസാനിപ്പിക്കാം</translation>
 <translation id="2034971124472263449">എന്തായാലും സംരക്ഷിക്കുക</translation>
+<translation id="204259843076055848"><ph name="SIX_PACK_KEY_NAME" /> കുറുക്കുവഴി നിലവിൽ ഓഫാണ്</translation>
 <translation id="2049240716062114887">ഡെസ്‌കിന്റെ പേര് <ph name="DESK_NAME" /> എന്നാക്കി മാറ്റി</translation>
 <translation id="206377500836174974">പരമാവധി</translation>
 <translation id="2064048859448024834">ക്യാമറാ പ്രിവ്യു ഓണാണ്</translation>
@@ -381,6 +385,7 @@
 <translation id="2665788051462227163"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> എന്നിവ ഈ ഉപകരണത്തിൽ ലഭ്യമല്ല.</translation>
 <translation id="2673968385134502798">ഗെയിമുകൾ</translation>
 <translation id="2678852583403169292">വായിച്ചുകേൾക്കാൻ തിരഞ്ഞെടുക്കുക മെനു</translation>
+<translation id="2687510499067466116">കീബോഡ് കുറുക്കുവഴികള്‍ മാറ്റി</translation>
 <translation id="2689613560355655046">ഡെസ്ക് 8</translation>
 <translation id="2695305337569143674">വെബ്</translation>
 <translation id="2697697418792422688">കീബോർഡ് ക്രമീകരണം കാണിക്കുക. <ph name="KEYBOARD_NAME" /> തിരഞ്ഞെടുത്തു.</translation>
@@ -637,12 +642,14 @@
 <translation id="3738664582935948253">ഇപ്പോൾ നിങ്ങൾക്ക് സ്‌ക്രീൻ റെക്കോർഡിംഗുകളിൽ ക്ലിക്ക്, കീബോർഡ് കുറുക്കുവഴികൾ കാണിക്കാനാകും</translation>
 <translation id="3742055079367172538">സ്‌ക്രീൻഷോട്ട് എടുത്തു</translation>
 <translation id="3756485814916578707">സ്‌ക്രീൻ കാസ്റ്റ് ചെയ്യുന്നു</translation>
+<translation id="3765841382945324995"><ph name="SIX_PACK_KEY_NAME" /> കുറുക്കുവഴി, <ph name="OLD_SHORTCUT" /> എന്നതിൽ നിന്ന് <ph name="NEW_SHORTCUT" /> എന്നതാക്കി അപ്ഡേറ്റ് ചെയ്തു</translation>
 <translation id="3765841986579723851">ഇന്ന് എഡിറ്റ് ചെയ്തത്</translation>
 <translation id="3773700760453577392"><ph name="USER_EMAIL" /> എന്ന ഇമെയിലിലേക്ക് ഒന്നിലധികം പേർ സൈൻ ഇൻ ചെയ്യുന്നത് ഒരു അഡ്‌മിനിസ്‌ട്രേറ്റർ വിലക്കിയിരിക്കുന്നു. തുടരാൻ, എല്ലാ ഉപയോക്താക്കളും സൈൻ ഔട്ട് ചെയ്യണം.</translation>
 <translation id="3779139509281456663"><ph name="NAME" /> കണക്റ്റ് ചെയ്യുന്നു</translation>
 <translation id="3781910048497807059">മുമ്പത്തെ പെയിനിലേക്ക് ഫോക്കസ് നീക്കുക</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">ലോക്കുചെയ്യുക</translation>
+<translation id="3796215473395753611">alt + മുകളിലേയ്ക്കുള്ള അമ്പടയാളം</translation>
 <translation id="3796746699333205839">ഒരു ആപ്പ് നിങ്ങളുടെ ക്യാമറയും മൈക്രോഫോണും ഉപയോഗിക്കുന്നു</translation>
 <translation id="3798670284305777884">സ്‌പീക്കർ (ഇന്റേണൽ)</translation>
 <translation id="3799080171973636491">നിങ്ങൾ പൂർണ്ണ സ്‌ക്രീൻ മാഗ്നിഫയറിനുള്ള കീബോഡ് കുറുക്കുവഴി അമർത്തി. അത് ഓണാക്കണോ?</translation>
@@ -698,6 +705,7 @@
 <translation id="4026843240379844265">ഡിസ്‌പ്ലേകൾക്ക് ഇടയിൽ സജീവ വിൻഡോകൾ നീക്കുക</translation>
 <translation id="4028481283645788203">കൂടുതൽ സുരക്ഷയ്ക്ക് പാസ്‍വേഡ് ആവശ്യമാണ്</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
+<translation id="4032988577476260673"><ph name="LAUNCHER_KEY_NAME" /> + ഇടത്തേയ്ക്കുള്ള അമ്പടയാളം</translation>
 <translation id="4042660782729322247">നിങ്ങൾ സ്‌ക്രീൻ പങ്കിടുന്നു</translation>
 <translation id="404437169852192935">അപ്‌ഡേറ്റുകൾ അവസാനിച്ചു</translation>
 <translation id="4049230407053723315">ദ്രുത ക്രമീകരണം</translation>
@@ -719,6 +727,7 @@
 <translation id="4129129681837227511">നിങ്ങളുടെ ലോക്ക് സ്‌ക്രീനിൽ അറിയിപ്പുകൾ കാണാൻ, ക്രമീകരണം മാറ്റാനായി അൺലോക്ക് ചെയ്യുക</translation>
 <translation id="4131973331381812765">താപനില: <ph name="TEMPERATURE" />°C - നിലവിലെ വേഗത: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" />GHz</translation>
 <translation id="4136724716305260864">സൂര്യോദയം വരെ ഓണാണ്</translation>
+<translation id="4141710407113804517"><ph name="LAUNCHER_KEY_NAME" /> + വലത്തേയ്ക്കുള്ള അമ്പടയാളം</translation>
 <translation id="4146671046252289537">അടുത്ത വാക്കിന്റെ അവസാനത്തിലേക്ക് നീങ്ങുക</translation>
 <translation id="4146833061457621061">സംഗീതം പ്ലേ ചെയ്യുക</translation>
 <translation id="4150201353443180367">ഡിസ്‌പ്ലേ</translation>
@@ -865,6 +874,7 @@
 <translation id="4747410141429390146">അറിയിപ്പുകൾ കാണാൻ അൺലോക്ക് ചെയ്യുക</translation>
 <translation id="4752784485658729358">സംരക്ഷിച്ച 6 ഡെസ്ക്കുകൾ മാത്രമേ അനുവദിക്കൂ. പുതിയൊരെണ്ണം സംരക്ഷിക്കാൻ ഒരു ഡെസ്‌ക് നീക്കം ചെയ്യുക.</translation>
 <translation id="4759238208242260848">ഡൌണ്‍ലോഡുകള്‍</translation>
+<translation id="4762160261012420470"><ph name="LAUNCHER_KEY_NAME" /> + മുകളിലേയ്ക്കുള്ള അമ്പടയാളം</translation>
 <translation id="4762573482154983647">ആപ്പുകൾ മറയ്ക്കുക</translation>
 <translation id="4763885921995354846">ക്യാമറ ആക്‌സസ് ചെയ്യാൻ അനുമതിയുള്ള മുഴുവൻ ആപ്പുകൾക്കും വെബ്സൈറ്റുകൾക്കും ഇത് ക്യാമറയിലേക്ക് ആക്‌സസ് അനുവദിക്കുന്നു. നിങ്ങൾക്ക് വെബ് പേജ് റീഫ്രഷ് ചെയ്യേണ്ടതായോ ആപ്പ് റീസ്റ്റാർട്ട് ചെയ്യേണ്ടതായോ വന്നേക്കാം.</translation>
 <translation id="4774338217796918551">നാളെ <ph name="COME_BACK_TIME" />-ന് തിരികെ വരിക.</translation>
@@ -946,6 +956,7 @@
 <translation id="5062496344832867502">RAM</translation>
 <translation id="5068762093486106012">മ്യൂട്ട് ചെയ്തിരിക്കുമ്പോൾ സംസാരിക്കുകയാണെങ്കിൽ, നിങ്ങൾക്ക് അറിയിപ്പ് ലഭിക്കും. ഓഡിയോ നിങ്ങളുടെ ഉപകരണത്തിൽ നിന്ന് ഒരിക്കലും പുറത്തുപോകില്ല.</translation>
 <translation id="5078796286268621944">തെറ്റായ PIN</translation>
+<translation id="5083035541015925118">ctrl + alt + മുകളിലേയ്ക്കുള്ള അമ്പടയാളം</translation>
 <translation id="5083553833479578423">കൂടുതൽ അസിസ്റ്റന്റ് ഫീച്ചറുകൾ അൺലോക്ക് ചെയ്യുക.</translation>
 <translation id="5092436659250499817">കീബോർഡ് ബാക്ക്‌ലൈറ്റ് ഓണാക്കുക/ഓഫാക്കുക</translation>
 <translation id="5094577350232361255">വിവരം</translation>
@@ -1067,6 +1078,7 @@
 <translation id="5590609058453685222">മ്യൂട്ട് നഡ്‌ജ് ഓണാണ്. മ്യൂട്ട് ചെയ്തിരിക്കുമ്പോൾ സംസാരിക്കുകയാണെങ്കിൽ, നിങ്ങൾക്ക് അറിയിപ്പ് ലഭിക്കും.</translation>
 <translation id="5596627076506792578">കൂടുതൽ‍ ഓപ്‌ഷനുകൾ</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
+<translation id="5599242528220103262">കീബോഡ് കുറുക്കുവഴികൾ ഓഫാണ്</translation>
 <translation id="5600837773213129531">സംഭാഷണ ഫീഡ്‌ബാക്ക് പ്രവർത്തനരഹിതമാക്കാൻ Ctrl + Alt + Z അമർത്തുക.</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5618148318840095371">ഞങ്ങൾ നിങ്ങളെ മികച്ച നെറ്റ്‌വർക്കിലേക്ക് മാറ്റി</translation>
@@ -1086,6 +1098,7 @@
 <translation id="5678564054339031017">അടുത്ത ആഴ്‌ചത്തെ കാണിക്കുക</translation>
 <translation id="5679050765726761783">കുറഞ്ഞ പവറുള്ള അഡാപ്‌റ്റർ കണക്റ്റ് ചെയ്‌തു</translation>
 <translation id="5682642926269496722">നിലവിലെ ഉപയോക്തൃ അക്കൗണ്ടിന് Google അസിസ്‌റ്റന്റ് ലഭ്യമല്ല.</translation>
+<translation id="5689233503102158537">alt + backspace</translation>
 <translation id="5689633613396158040">മങ്ങിയ വെളിച്ചത്തിൽ സ്‌ക്രീനിൽ നോക്കുന്നതോ വായിക്കുന്നതോ നൈറ്റ് ലൈറ്റ് എളുപ്പമാക്കുന്നു. നൈറ്റ് ലൈറ്റ് പൂർണ്ണമായി ഓഫാകുകയോ ഓണാകുകയോ ചെയ്യേണ്ട സമയം മാറ്റാൻ ടാപ്പ് ചെയ്യുക.</translation>
 <translation id="5691772641933328258">വിരലടയാളം തിരിച്ചറിഞ്ഞില്ല</translation>
 <translation id="5693255400847650006">മൈക്രോഫോൺ ഉപയോഗിക്കുന്നു</translation>
@@ -1232,6 +1245,7 @@
 <translation id="6291221004442998378">ചാർജ് ചെയ്യുന്നില്ല</translation>
 <translation id="6309219492973062892">ഷെൽഫിലെ 1 മുതൽ 8 വരെയുള്ള ഐക്കണുകൾ ക്ലിക്ക് ചെയ്യുക അല്ലെങ്കിൽ ടാപ്പ് ചെയ്യുക</translation>
 <translation id="6315170314923504164">വോയ്സ്</translation>
+<translation id="6324916366299863871">കുറുക്കുവഴി എഡിറ്റ് ചെയ്യുക</translation>
 <translation id="6330012934079202188">എല്ലാ ഡെസ്‌ക്കിലും നിന്നുള്ള വിൻഡോകൾ കാണിക്കുന്നു, നിലവിലെ ഡെസ്ക്കിൽ നിന്നുള്ള വിൻഡോകൾ കാണിക്കാൻ മുകളിലേയ്ക്കുള്ള അമ്പടയാള കീ അമർത്തുക</translation>
 <translation id="6338485349199627913"><ph name="MANAGER" /> മാനേജ് ചെയ്യുന്ന ഒരു മാനേജ് ചെയ്യപ്പെടുന്ന സെഷനാണ് <ph name="DISPLAY_NAME" /></translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> കണക്‌റ്റ് ചെയ്‌തു</translation>
@@ -1246,6 +1260,7 @@
 <translation id="639644700271529076">CAPS LOCK ഓഫാണ്</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6417265370957905582">Google Assistant</translation>
+<translation id="641817663353603351">page up</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, സിഗ്‌നൽ ശക്തി <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">എല്ലാ അറിയിപ്പുകളും മായ്ക്കുക</translation>
 <translation id="643147933154517414">എല്ലാം ചെയ്‌തു</translation>
@@ -1255,6 +1270,7 @@
 <translation id="6445915701151710649">CPU</translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> ഇവന്റ്</translation>
 <translation id="6449483711453944360">Linux ആപ്പുകൾക്കും അദൃശ്യ വിൻഡോകൾക്കും നിലവിൽ പിന്തുണയില്ല</translation>
+<translation id="6450245544201845082">വലത്-ക്ലിക്ക് കുറുക്കുവഴി നിലവിൽ ഓഫാണ്</translation>
 <translation id="6452181791372256707">നിരസിക്കുക</translation>
 <translation id="6453179446719226835">ഭാഷ മാറ്റിയിരിക്കുന്നു</translation>
 <translation id="6459472438155181876">സ്‌ക്രീൻ <ph name="DISPLAY_NAME" /> എന്നതിലേക്ക് വികസിപ്പിക്കുന്നു</translation>
@@ -1379,6 +1395,7 @@
 <translation id="6965382102122355670">ശരി</translation>
 <translation id="6972754398087986839">ആരംഭിക്കാം</translation>
 <translation id="6979158407327259162">Google Drive</translation>
+<translation id="6980402667292348590">insert</translation>
 <translation id="6981291220124935078">ആക്സസ് ഓണാക്കുക</translation>
 <translation id="6981982820502123353">ഉപയോഗസഹായി</translation>
 <translation id="698231206551913481">ഈ ഉപയോക്താവിനെ നീക്കംചെയ്യുമ്പോൾ അതോടൊപ്പം അയാളുമായി ബന്ധപ്പെട്ട എല്ലാ ഫയലുകളും പ്രാദേശിക വിവരങ്ങളും ശാശ്വതമായി ഇല്ലാതാക്കപ്പെടും.</translation>
@@ -1430,6 +1447,7 @@
 <translation id="7258828758145722155">ഇന്നലെ എഡിറ്റ് ചെയ്‌തത്</translation>
 <translation id="726276584504105859">സ്പ്ലിറ്റ് സ്ക്രീൻ ഉപയോഗിക്കുന്നതിന് ഇവിടെ വലിച്ചിടുക</translation>
 <translation id="7262906531272962081">റിമൈൻഡർ സൃഷ്‌ടിക്കുക</translation>
+<translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + backspace</translation>
 <translation id="7297440678881127227"><ph name="START_TIME" /> മുതൽ
         <ph name="END_TIME" /> വരെ,
         <ph name="TIME_ZONE" />,
@@ -1440,6 +1458,7 @@
 <translation id="7312210124139670355">നിങ്ങളുടെ അഡ്‌മിൻ eSIM റീസെറ്റ് ചെയ്യുകയാണ്. ഇതിന് കുറച്ച് സമയമെടുത്തേക്കാം.</translation>
 <translation id="7313193732017069507">ക്യാമറ വികസിപ്പിക്കുക</translation>
 <translation id="7316261577130609484">പുതിയ ടാസ്‌ക് ചേർക്കുക</translation>
+<translation id="7331646370422660166">alt + താഴേക്കുള്ള അമ്പടയാളം</translation>
 <translation id="7340731148882810149">സ്വയമേവയുള്ള ക്ലിക്കുകളുടെ മെനു</translation>
 <translation id="7346909386216857016">മനസ്സിലായി</translation>
 <translation id="7348093485538360975">ഓൺ-സ്‌ക്രീൻ കീബോർഡ്</translation>
@@ -1485,6 +1504,7 @@
 <translation id="7513922695575567867">കലണ്ടർ, <ph name="DATE" />-ലെ ആഴ്‌ച, നിലവിൽ <ph name="SELECTED_DATE" /> തിരഞ്ഞെടുത്തിരിക്കുന്നു.</translation>
 <translation id="7514365320538308">ഡൗൺലോഡ് ചെയ്യുക</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7516641972665276706">page down</translation>
 <translation id="7519206258459640379">ക്യാമറാ ഫ്രെയിമിംഗ് ഓണാണ്.</translation>
 <translation id="7519649142417630956">ഷട്ട് ഡൗൺ ചെയ്തുകഴിഞ്ഞാൽ അഡ്‌മിൻ ലോഗൗട്ട് ആകും, അവർക്ക് നിങ്ങളുടെ ഉപകരണം നിയന്ത്രിക്കാനാകില്ല.
 
@@ -1856,6 +1876,7 @@
 <translation id="9126339866969410112">അവസാന പ്രവർത്തനം പഴയപടിയാക്കുക</translation>
 <translation id="9133335900048457298">പരിരക്ഷിത ഉള്ളടക്കം റെക്കോർഡ് ചെയ്യാനാകില്ല</translation>
 <translation id="9139720510312328767">അടുത്ത അക്ഷരം ഇല്ലാതാക്കുക</translation>
+<translation id="9151906066336345901">end</translation>
 <translation id="9161053988251441839">നിർദ്ദേശിച്ചിരിക്കുന്ന ആപ്പുകൾ</translation>
 <translation id="9168436347345867845">ഇത് പിന്നീട് ചെയ്യുക</translation>
 <translation id="9178475906033259337"><ph name="QUERY" /> എന്നതിനുള്ള ഒരു ഫലം കാണിക്കുന്നു</translation>

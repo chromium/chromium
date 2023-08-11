@@ -580,7 +580,6 @@
 <translation id="4550040941166547650">यो डिभाइसमा मात्र</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{{COUNT} निष्क्रिय ट्याब बन्द गर्ने हो?}other{{COUNT} वटा निष्क्रिय ट्याब बन्द गर्ने हो?}}</translation>
 <translation id="457386861538956877">थप...</translation>
-<translation id="4587235830039045480">आफ्नो Google खातामा पासवर्ड सेभ गर्नुहोस्</translation>
 <translation id="4587589328781138893">साइटहरू</translation>
 <translation id="4588014171431912783">तपाईंको पछिल्लो ब्याकअपका आधारमा तपाईंले तय गर्नुभएका सिंकसम्बन्धी सेटिङ रिस्टोर गरिने छ। <ph name="BEGIN_LINK" />तपाईं के कस्ता कुराहरू सिंक गर्न पाउनुहुन्छ भन्ने कुरा हेर्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="4592368184551360546">किबोर्ड</translation>
@@ -1334,7 +1333,6 @@
 <translation id="891658175948553296">कुनै साइटमा देखाइएको टेक्स्ट हाइलाइट गर्नुहोस्</translation>
 <translation id="8917490105272468696">हो, म सहमत छु</translation>
 <translation id="8928133177108699615">डेस्कटप</translation>
-<translation id="8934982071228289624">तपाईं आफ्नो डिभाइसको पासकोड सेट गरेपछि मात्र आफ्नो खातामा यो पासवर्ड सेभ गर्न सक्नुहुन्छ।</translation>
 <translation id="894191600409472540">भरपर्दा पासवर्डहरू सिर्जना गर्नुहोस्</translation>
 <translation id="8952559610785099500">पासवर्ड थप्नुहोस्</translation>
 <translation id="8953046091948372197">तपाईंका पासवर्डहरू यहाँ देखिने छन्</translation>

@@ -62,7 +62,6 @@
 <translation id="1283039547216852943">విస్త‌రించ‌డానికి నొక్కండి</translation>
 <translation id="1289059016768036948">మీ Google ఖాతాకు సైన్ ఇన్ చేయమని మిమ్మల్ని కోరడం జరుగుతుంది</translation>
 <translation id="1291207594882862231">హిస్టరీ, కుక్కీలు, సైట్ డేటా, కాష్‌ను తీసివేస్తుంది…</translation>
-<translation id="1293898515599432175">Chrome <ph name="CHROME_CHANNEL" /> కోసం Google Password Manager నుండి మీ పాస్‌వర్డ్‌లు తొలగించబడతాయి. మీరు ఇప్పుడే డౌన్‌లోడ్ చేసిన పాస్‌వర్డ్‌ల ఫైల్‌ను అలాగే ఉంచుతారు.</translation>
 <translation id="129553762522093515">ఇటీవల మూసివేయబడినవి</translation>
 <translation id="1298077576058087471">60% వరకు డేటాను ఆదా చేయండి, ఈరోజు వార్తలను చదవండి</translation>
 <translation id="1303339473099049190">ఆ పాస్‌వర్డ్‌ను కనుగొనడం సాధ్యపడలేదు. మీ స్పెల్లింగ్ సరిచూసుకుని, ఆపై మళ్లీ ట్రై చేయండి.</translation>
@@ -822,7 +821,6 @@
 <translation id="5401851137404501592">కొనసాగించడానికి, మీ పేరు, ఈమెయిల్ అడ్రస్, ప్రొఫైల్ ఫోటోను <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ఈ సైట్‌తో షేర్ చేస్తుంది.</translation>
 <translation id="5409881200985013443"><ph name="CLIENT_NAME" />లో <ph name="ONE_TIME_CODE" />ను సమర్పించాలా?</translation>
 <translation id="5414836363063783498">ధృవీకరిస్తోంది...</translation>
-<translation id="542190472198460451">పాస్‌వర్డ్‌లన్నీ మీ పరికరంలో డౌన్‌లోడ్ అవుతాయి, అలాగే Chrome <ph name="CHROME_CHANNEL" /> నుండి తీసివేయబడతాయి</translation>
 <translation id="5423934151118863508">మీరు అత్యంత ఎక్కువగా సందర్శించిన పేజీలు ఇక్కడ కనిపిస్తాయి</translation>
 <translation id="5424588387303617268"><ph name="GIGABYTES" /> GB అందుబాటులో ఉంది</translation>
 <translation id="543338862236136125">పాస్‌వర్డ్‌ను ఎడిట్ చేయండి</translation>
@@ -1366,7 +1364,6 @@
 <translation id="8110024788458304985">Chrome OS ఫీచర్‌లు, పనితీరును మెరుగుపరచడంలో సహాయపడండి</translation>
 <translation id="8110087112193408731">డిజిటల్ సంక్షేమంలో మీ Chrome యాక్టివిటీని చూపించాలా?</translation>
 <translation id="8118117428362942925">మీకు సహాయం అవసరమైతే, మీ తల్లి/తండ్రి (<ph name="PARENT_NAME" />)ని అడగండి</translation>
-<translation id="8124758083429256800">Chrome, Chrome <ph name="ERROR_DESCRIPTION" /> కోసం మీ సేవ్ చేసిన పాస్‌వర్డ్‌ల లిస్ట్‌లు వెర్షన్ 121 తర్వాత విలీనం అవుతాయి. మీరు రెండు యాప్‌లలో మీరు సేవ్ చేసిన పాస్‌వర్డ్‌లు అన్నింటినీ ఆటోఫిల్ చేయగలరు.</translation>
 <translation id="8127542551745560481">హోమ్ పేజీని ఎడిట్ చేయండి</translation>
 <translation id="8130309322784422030">మీ స్టోర్ చేయబడిన సైన్ ఇన్ సమాచారం గడువు ముగిసి ఉండవచ్చు</translation>
 <translation id="813082847718468539">సైట్ సమాచారాన్ని చూడండి</translation>

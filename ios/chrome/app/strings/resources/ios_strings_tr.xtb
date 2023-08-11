@@ -580,7 +580,6 @@ Arama geçmişinizi silmek için arama motorunuzun bununla ilgili talimatların�
 <translation id="4550040941166547650">Yalnızca Bu Cihazda</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{Etkin Olmayan {COUNT} Sekme Kapatılsın mı?}other{Etkin Olmayan {COUNT} Sekme Kapatılsın mı?}}</translation>
 <translation id="457386861538956877">Diğer...</translation>
-<translation id="4587235830039045480">Şifreyi Google Hesabınıza kaydedin</translation>
 <translation id="4587589328781138893">Siteler</translation>
 <translation id="4588014171431912783">Senkronizasyon ayarlarınız, son yedeğinize bağlı olarak geri yüklenecek. <ph name="BEGIN_LINK" />Neleri Senkronize Edebileceğinizi Görün<ph name="END_LINK" /></translation>
 <translation id="4592368184551360546">Klavye</translation>
@@ -1334,7 +1333,6 @@ Verileriniz <ph name="TIME" /> tarihinde parolanızla şifrelendi. Chrome verile
 <translation id="891658175948553296">Bir Sitedeki Metni Vurgulayın</translation>
 <translation id="8917490105272468696">Evet</translation>
 <translation id="8928133177108699615">Masaüstü</translation>
-<translation id="8934982071228289624">Bu şifreyi hesabınıza kaydetmek için öncelikle cihazınızda bir şifre kodu ayarlamanız gerekir.</translation>
 <translation id="894191600409472540">Güçlü şifreler oluşturun</translation>
 <translation id="8952559610785099500">Şifre Ekleyin</translation>
 <translation id="8953046091948372197">Şifreleriniz burada gösterilir</translation>

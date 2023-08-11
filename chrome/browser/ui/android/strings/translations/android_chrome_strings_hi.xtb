@@ -62,7 +62,6 @@
 <translation id="1283039547216852943">पूरा खोलने के लिए टैप करें</translation>
 <translation id="1289059016768036948">आपसे अपने Google खाते में साइन इन करने के लिए कहा जाएगा</translation>
 <translation id="1291207594882862231">इतिहास, कुकी, साइट डेटा, कैश साफ़ करें…</translation>
-<translation id="1293898515599432175">Chrome <ph name="CHROME_CHANNEL" /> के लिए, Google Password Manager से आपके पासवर्ड मिटा दिए जाएंगे. आपने अभी जो पासवर्ड फ़ाइल डाउनलोड की है वह सेव रहेगी.</translation>
 <translation id="129553762522093515">हाल ही में बंद किए गए</translation>
 <translation id="1298077576058087471">60% तक डेटा बचाएं, आज की खबरें पढ़ें</translation>
 <translation id="1303339473099049190">वह पासवर्ड नहीं मिला. अपनी स्पेलिंग की जांच करें और फिर से कोशिश करें.</translation>
@@ -822,7 +821,6 @@
 <translation id="5401851137404501592">आगे बढ़ने के लिए, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> इस साइट के साथ आपका नाम, ईमेल पता, और प्रोफ़ाइल फ़ोटो शेयर करेगा.</translation>
 <translation id="5409881200985013443">क्या आप <ph name="CLIENT_NAME" /> पर <ph name="ONE_TIME_CODE" /> सबमिट करना चाहते हैं?</translation>
 <translation id="5414836363063783498">सत्यापन हो रहा है...</translation>
-<translation id="542190472198460451">सभी पासवर्ड आपके डिवाइस पर डाउनलोड किए जाएंगे और उन्हें Chrome <ph name="CHROME_CHANNEL" /> से हटा दिया जाएगा</translation>
 <translation id="5423934151118863508">  सबसे ज़्यादा देखे गए पेज यहां दिखाई देंगे</translation>
 <translation id="5424588387303617268"><ph name="GIGABYTES" /> जीबी उपलब्ध है</translation>
 <translation id="543338862236136125">पासवर्ड में बदलाव करें</translation>
@@ -1366,7 +1364,6 @@
 <translation id="8110024788458304985">Chrome की सुविधाओं और परफ़ॉर्मेंस को बेहतर बनाने में मदद करें</translation>
 <translation id="8110087112193408731">'डिजिटल वेलबीइंग' में अपनी Chrome गतिविधि दिखाना चाहते हैं?</translation>
 <translation id="8118117428362942925">अगर आपको मदद चाहिए, तो अपने माता-पिता (<ph name="PARENT_NAME" />) से पूछें</translation>
-<translation id="8124758083429256800">Chrome और Chrome <ph name="ERROR_DESCRIPTION" /> पर सेव किए गए पासवर्ड की सूचियां, वर्शन 121 के बाद मर्ज हो जाएंगी. आपके पास दोनों ऐप्लिकेशन पर, सेव किए गए अपने सभी पासवर्ड ऑटोमैटिक भरने की सुविधा होगी.</translation>
 <translation id="8127542551745560481">होम पेज में बदलाव करें</translation>
 <translation id="8130309322784422030">हो सकता है कि आपकी सेव की गई, साइन इन से जुड़ी जानकारी पुरानी हो</translation>
 <translation id="813082847718468539">साइट जानकारी देखें</translation>

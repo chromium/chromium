@@ -62,7 +62,6 @@
 <translation id="1283039547216852943">ချဲ့ရန် တို့ပါ</translation>
 <translation id="1289059016768036948">သင့်အား Google Account သို့ လက်မှတ်ထိုးဝင်ခိုင်းပါမည်</translation>
 <translation id="1291207594882862231">မှတ်တမ်း၊ ကွတ်ကီး၊ ဆိုက်ဒေတာ၊ ကက်ရှ်များကို ရှင်းလင်းပါ...</translation>
-<translation id="1293898515599432175">Chrome <ph name="CHROME_CHANNEL" /> အတွက် Google Password Manager မှ သင့်စကားဝှက်များကို ဖျက်ပါမည်။ ယခုတင် သင်ဒေါင်းလုဒ်လုပ်ထားသော စကားဝှက်ဖိုင်ကို ဆက်သိမ်းထားပါမည်။</translation>
 <translation id="129553762522093515">မကြာသေးခင်က ပိတ်ထားခဲ့သည်</translation>
 <translation id="1298077576058087471">ဒေတာ ၆၀ ရာခိုင်နှုန်းအထိ ချွေတာပါ၊ ယနေ့သတင်းများကို ဖတ်ပါ</translation>
 <translation id="1303339473099049190">ထိုစကားဝှက်ကို ရှာမတွေ့ပါ။ စာလုံးပေါင်းစစ်ဆေးပြီး ထပ်စမ်းကြည့်ပါ။</translation>
@@ -822,7 +821,6 @@
 <translation id="5401851137404501592">ရှေ့ဆက်ရန် <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> က သင့်အမည်၊ အီးမေးလ်လိပ်စာနှင့် ပရိုဖိုင်ပုံကို ဤဝဘ်ဆိုက်အား မျှဝေမည်။</translation>
 <translation id="5409881200985013443"><ph name="CLIENT_NAME" /> သို့ <ph name="ONE_TIME_CODE" /> ပို့မလား။</translation>
 <translation id="5414836363063783498">စိစစ်နေ…</translation>
-<translation id="542190472198460451">စကားဝှက်အားလုံးကို သင်၏စက်တွင် ဒေါင်းလုဒ်လုပ်ပြီး Chrome <ph name="CHROME_CHANNEL" /> မှ ဖယ်ရှားလိုက်မည်</translation>
 <translation id="5423934151118863508">သင် အများဆုံး ဝင်ကြည့်ခဲ့သည့် စာမျက်နှာများ ဒီမှာ ပေါ်လာမည်</translation>
 <translation id="5424588387303617268"><ph name="GIGABYTES" /> GB အသုံးပြုနိုင်ပါသည်</translation>
 <translation id="543338862236136125">စကားဝှက်ကို တည်းဖြတ်ခြင်း</translation>
@@ -1365,7 +1363,6 @@
 <translation id="8110024788458304985">Chrome\u2019s ၏ ဝန်ဆောင်မှုနှင့် စွမ်းဆောင်ရည် ပိုကောင်းလာစေရန် ကူညီခြင်း</translation>
 <translation id="8110087112193408731">'ဒစ်ဂျစ်တယ် အာရောဂျံ' အတွင်း သင်၏ Chrome လုပ်ဆောင်ချက်ကို ပြစေလိုပါသလား။</translation>
 <translation id="8118117428362942925">အကူအညီလိုပါက သင့်မိဘ (<ph name="PARENT_NAME" />) ကိုတောင်းပါ</translation>
-<translation id="8124758083429256800">Chrome နှင့် Chrome <ph name="ERROR_DESCRIPTION" /> တို့အတွက် သိမ်းထားသော စကားဝှက်စာရင်းကို ဗားရှင်း 121 နောက်ပိုင်းတွင် ပေါင်းစည်းပါမည်။ သင်၏ သိမ်းထားသော စကားဝှက်အားလုံးကို အက်ပ်နှစ်ခုလုံးတွင် အော်တိုဖြည့်နိုင်ပါမည်။</translation>
 <translation id="8127542551745560481">ပင်မစာမျက်နှာအား တည်းဖြတ်ရန်</translation>
 <translation id="8130309322784422030">သိမ်းထားသော လက်မှတ်ထိုးဝင်သည့် အချက်အလက် ဟောင်းနေခြင်း ဖြစ်နိုင်သည်</translation>
 <translation id="813082847718468539">ဆိုက် အချက်အလက်များကို ကြည့်ရန်</translation>

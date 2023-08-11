@@ -62,7 +62,6 @@
 <translation id="1283039547216852943">Հպեք՝ ընդարձակելու համար</translation>
 <translation id="1289059016768036948">Ձեզնից կպահանջվի մուտք գործել ձեր Google հաշիվ</translation>
 <translation id="1291207594882862231">Մաքրել պատմությունը, քուքիները, կայքի տվյալները, քեշը…</translation>
-<translation id="1293898515599432175">Ձեր գաղտնաբառերը կջնջվեն Google գաղտնաբառերի կառավարչից Chrome <ph name="CHROME_CHANNEL" />-ում։ Գաղտնաբառերով ֆայլը, որը հենց նոր ներբեռնեցիք, կպահպանվի։</translation>
 <translation id="129553762522093515">Վերջերս փակված</translation>
 <translation id="1298077576058087471">Տնտեսեք թրաֆիկի մինչև 60%-ը, կարդացեք այսօրվա նորությունները</translation>
 <translation id="1303339473099049190">Չհաջողվեց գտնել այդ գաղտնաբառը։ Ստուգեք ուղղագրությունը և նորից փորձեք։</translation>
@@ -822,7 +821,6 @@
 <translation id="5401851137404501592">Շարունակելու համար <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ընկերությունը կփոխանցի ձեր անունը, էլ․ հասցեն և պրոֆիլի նկարը այս կայքին։</translation>
 <translation id="5409881200985013443">Ուղարկե՞լ <ph name="ONE_TIME_CODE" /> կոդը <ph name="CLIENT_NAME" />-ին</translation>
 <translation id="5414836363063783498">Ստուգում…</translation>
-<translation id="542190472198460451">Բոլոր գաղտնաբառերը կներբեռնվեն ձեր սարքում և կհեռացվեն Chrome <ph name="CHROME_CHANNEL" />-ից</translation>
 <translation id="5423934151118863508">Ձեր հաճախակի այցելած էջերը կցուցադրվեն այստեղ</translation>
 <translation id="5424588387303617268">Ազատ տարածքը՝ <ph name="GIGABYTES" /> ԳԲ</translation>
 <translation id="543338862236136125">Փոխել գաղտնաբառը</translation>
@@ -1366,7 +1364,6 @@
 <translation id="8110024788458304985">Օգնել բարելավել Chrome-ի գործառույթներն ու աշխատանքը</translation>
 <translation id="8110087112193408731">Ցուցադրե՞լ Chrome-ի պատմությունը Թվային բարեկեցության մեջ</translation>
 <translation id="8118117428362942925">Եթե օգնության կարիք ունենաս, դիմիր ծնողիդ (<ph name="PARENT_NAME" />)</translation>
-<translation id="8124758083429256800">Պահված գաղտնաբառերի ձեր ցանկերը Chrome-ի և Chrome <ph name="ERROR_DESCRIPTION" />-ի համար կմիավորվեն տարբերակ 121-ի թողարկումից հետո։ Դուք կկարողանաք ինքնալրացնել ձեր բոլոր գաղտնաբառերը երկու հավելվածներում։</translation>
 <translation id="8127542551745560481">Փոփոխել գլխավոր էջը</translation>
 <translation id="8130309322784422030">Հնարավոր է՝ մուտքի պահված տվյալները հնացել են</translation>
 <translation id="813082847718468539">Դիտել կայքի տեղեկությունները</translation>

@@ -580,7 +580,6 @@
 <translation id="4550040941166547650">Лише на цьому пристрої</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{Закрити {COUNT} неактивну вкладку?}one{Закрити {COUNT} неактивну вкладку?}few{Закрити {COUNT} неактивні вкладки?}many{Закрити {COUNT} неактивних вкладок?}other{Закрити {COUNT} неактивної вкладки?}}</translation>
 <translation id="457386861538956877">Інші...</translation>
-<translation id="4587235830039045480">Збережіть пароль у своєму обліковому записі Google</translation>
 <translation id="4587589328781138893">Сайти</translation>
 <translation id="4588014171431912783">Налаштування синхронізації буде відновлено на основі даних останньої резервної копії. <ph name="BEGIN_LINK" />Дізнайтесь, які дані можна синхронізувати.<ph name="END_LINK" /></translation>
 <translation id="4592368184551360546">Клавіатура</translation>
@@ -1334,7 +1333,6 @@
 <translation id="891658175948553296">Виділіть текст на сайті</translation>
 <translation id="8917490105272468696">Так</translation>
 <translation id="8928133177108699615">Режим робочого столу</translation>
-<translation id="8934982071228289624">Щоб зберегти цей пароль в обліковому записі, спершу вам потрібно налаштувати код доступу на своєму пристрої.</translation>
 <translation id="894191600409472540">Створіть надійні паролі</translation>
 <translation id="8952559610785099500">Додати пароль</translation>
 <translation id="8953046091948372197">Тут відображатимуться ваші паролі</translation>

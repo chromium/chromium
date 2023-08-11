@@ -580,7 +580,6 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="4550040941166547650">Bara på den här enheten</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{Vill du stänga {COUNT} inaktiv flik?}other{Vill du stänga {COUNT} inaktiva flikar?}}</translation>
 <translation id="457386861538956877">Mer...</translation>
-<translation id="4587235830039045480">Spara lösenord i Google-kontot</translation>
 <translation id="4587589328781138893">Webbplatser</translation>
 <translation id="4588014171431912783">Synkroniseringsinställningarna återställs utifrån den senaste säkerhetskopian. <ph name="BEGIN_LINK" />Se vad du kan synkronisera<ph name="END_LINK" /></translation>
 <translation id="4592368184551360546">Tangentbord</translation>
@@ -1334,7 +1333,6 @@ Din data krypterades med lösenfrasen den <ph name="TIME" />. Ange den om du vil
 <translation id="891658175948553296">Markera text på en webbplats</translation>
 <translation id="8917490105272468696">Ja</translation>
 <translation id="8928133177108699615">Dator</translation>
-<translation id="8934982071228289624">Om du vill spara det här lösenordet i ditt konto måste du först ställa in ett lösenord på enheten.</translation>
 <translation id="894191600409472540">Skapa starka lösenord</translation>
 <translation id="8952559610785099500">Lägg till lösenord</translation>
 <translation id="8953046091948372197">Du hittar dina lösenord här</translation>

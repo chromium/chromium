@@ -580,7 +580,6 @@ Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa history n
 <translation id="4550040941166547650">Sa Device Lang na Ito</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{Isara ang {COUNT} Hindi Aktibong Tab?}one{Isara ang {COUNT} Hindi Aktibong Tab?}other{Isara ang {COUNT} na Hindi Aktibong Tab?}}</translation>
 <translation id="457386861538956877">Higit pa...</translation>
-<translation id="4587235830039045480">I-save ang password sa iyong Google Account</translation>
 <translation id="4587589328781138893">Mga Site</translation>
 <translation id="4588014171431912783">Ire-restore ang iyong mga setting ng pag-sync batay sa huli mong backup. <ph name="BEGIN_LINK" />Tingnan Kung Ano ang Puwede Mong I-sync<ph name="END_LINK" /></translation>
 <translation id="4592368184551360546">Keyboard</translation>
@@ -1334,7 +1333,6 @@ Na-encrypt ang iyong data gamit ang passphrase mo noong <ph name="TIME" />. Ilag
 <translation id="891658175948553296">Mag-highlight ng Text sa isang Site</translation>
 <translation id="8917490105272468696">Oo, Tinatanggap Ko</translation>
 <translation id="8928133177108699615">Desktop</translation>
-<translation id="8934982071228289624">Para i-save ang password na ito sa iyong account, dapat ka munang magtakda ng passcode sa device mo.</translation>
 <translation id="894191600409472540">Gumawa ng malalakas na password</translation>
 <translation id="8952559610785099500">Magdagdag ng Password</translation>
 <translation id="8953046091948372197">Makikita mo rito ang iyong mga password</translation>

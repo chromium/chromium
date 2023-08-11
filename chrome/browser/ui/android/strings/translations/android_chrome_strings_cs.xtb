@@ -62,7 +62,6 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="1283039547216852943">Klepnutím rozbalíte</translation>
 <translation id="1289059016768036948">Budete vyzváni, abyste se přihlásili k účtu Google</translation>
 <translation id="1291207594882862231">Vymazat historii, soubory cookie, data webů, mezipaměť…</translation>
-<translation id="1293898515599432175">Vaše hesla budou smazána ze Správce hesel Google pro Chrome <ph name="CHROME_CHANNEL" />. Soubor s hesly, který jste právě stáhli, vám zůstane.</translation>
 <translation id="129553762522093515">Nedávno zavřené</translation>
 <translation id="1298077576058087471">Přečtěte si dnešní zprávy a ušetřete až 60 % dat</translation>
 <translation id="1303339473099049190">Dané heslo nebylo nalezeno. Zkontrolujte ho a zkuste to znovu.</translation>
@@ -822,7 +821,6 @@ Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<
 <translation id="5401851137404501592">Aby bylo možné pokračovat, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> bude s tímto webem sdílet vaše jméno, e‑mailovou adresu a profilový obrázek.</translation>
 <translation id="5409881200985013443">Odeslat v klientu <ph name="CLIENT_NAME" /> kód <ph name="ONE_TIME_CODE" />?</translation>
 <translation id="5414836363063783498">Ověřování…</translation>
-<translation id="542190472198460451">Všechna hesla budou stažena do vašeho zařízení a odstraněna z Chromu <ph name="CHROME_CHANNEL" /></translation>
 <translation id="5423934151118863508">Zde se zobrazí vaše nejnavštěvovanější stránky.</translation>
 <translation id="5424588387303617268">K dispozici: <ph name="GIGABYTES" /> GB</translation>
 <translation id="543338862236136125">Upravit heslo</translation>
@@ -1366,7 +1364,6 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="8110024788458304985">Pomozte zlepšovat funkce a výkon Chromu</translation>
 <translation id="8110087112193408731">Zobrazovat vaši aktivitu v Chromu v digitální rovnováze?</translation>
 <translation id="8118117428362942925">Pokud potřebuješ pomoc, požádej rodiče (<ph name="PARENT_NAME" />)</translation>
-<translation id="8124758083429256800">Vaše seznamy uložených hesel pro Chrome a Chrome <ph name="ERROR_DESCRIPTION" /> budou po verzi 121 sloučeny. V obou aplikacích budete moci automaticky vyplňovat všechna uložená hesla.</translation>
 <translation id="8127542551745560481">Upravit domovskou stránku</translation>
 <translation id="8130309322784422030">Uložené přihlašovací údaje mohou být zastaralé</translation>
 <translation id="813082847718468539">Zobrazit informace o stránkách</translation>

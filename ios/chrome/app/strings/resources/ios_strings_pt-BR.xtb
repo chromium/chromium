@@ -580,7 +580,6 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="4550040941166547650">Somente neste dispositivo</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{Fechar {COUNT} guia inativa?}one{Fechar {COUNT} guia inativa?}other{Fechar {COUNT} guias inativas?}}</translation>
 <translation id="457386861538956877">Mais...</translation>
-<translation id="4587235830039045480">Salve a senha na sua Conta do Google</translation>
 <translation id="4587589328781138893">Sites</translation>
 <translation id="4588014171431912783">Suas configurações de sincronização vão ser restauradas com base no seu último backup. <ph name="BEGIN_LINK" />Veja o que pode ser sincronizado<ph name="END_LINK" /></translation>
 <translation id="4592368184551360546">Teclado</translation>
@@ -1335,7 +1334,6 @@ Seus dados foram criptografados com a senha longa em <ph name="TIME" />. Digite-
 <translation id="891658175948553296">Destacar texto em um site</translation>
 <translation id="8917490105272468696">Sim</translation>
 <translation id="8928133177108699615">Computador</translation>
-<translation id="8934982071228289624">Para salvar essa senha na sua conta, primeiro defina uma para o dispositivo.</translation>
 <translation id="894191600409472540">Crie senhas fortes</translation>
 <translation id="8952559610785099500">Adicionar senha</translation>
 <translation id="8953046091948372197">Suas senhas vão aparecer aqui</translation>

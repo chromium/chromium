@@ -580,7 +580,6 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="4550040941166547650">Gailu honetan soilik</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{{COUNT} fitxa inaktibo itxi nahi duzu?}other{{COUNT} fitxa inaktibo itxi nahi dituzu?}}</translation>
 <translation id="457386861538956877">Gehiago…</translation>
-<translation id="4587235830039045480">Gorde pasahitza Google-ko kontuan</translation>
 <translation id="4587589328781138893">Webguneak</translation>
 <translation id="4588014171431912783">Sinkronizazio-ezarpenak azken babeskopiaren arabera leheneratuko dira. <ph name="BEGIN_LINK" />Ikusi zer sinkroniza dezakezun<ph name="END_LINK" /></translation>
 <translation id="4592368184551360546">Teklatua</translation>
@@ -1334,7 +1333,6 @@ Datuak pasaesaldiarekin enkriptatu ziren data honetan: <ph name="TIME" />. Chrom
 <translation id="891658175948553296">Nabarmendu webgune bateko testua</translation>
 <translation id="8917490105272468696">Bai, ados</translation>
 <translation id="8928133177108699615">Mahaigainekoa</translation>
-<translation id="8934982071228289624">Pasahitza kontuan gordetzeko, gailuan pasakode bat ezarri behar duzu.</translation>
 <translation id="894191600409472540">Sortu pasahitz konplexuak</translation>
 <translation id="8952559610785099500">Gehitu pasahitz bat</translation>
 <translation id="8953046091948372197">Hemen dituzu pasahitzak</translation>

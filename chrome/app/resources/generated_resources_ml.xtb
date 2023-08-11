@@ -1169,6 +1169,7 @@
 <translation id="1925124445985510535"><ph name="TIME" />-ന് സുരക്ഷാ പരിശോധന നടത്തി</translation>
 <translation id="192564025059434655">2022 ഡിസംബറിന് ശേഷം, Chrome ആപ്പുകളുടെ പഴയ പതിപ്പുകൾ Windows ഉപകരണങ്ങളിൽ തുറക്കാനാകില്ല. പുതിയ പതിപ്പ് ലഭ്യമാണോയെന്ന് നിങ്ങൾക്ക് പരിശോധിക്കാം.</translation>
 <translation id="1926339101652878330">ഈ ക്രമീകരണത്തെ നിയന്ത്രിക്കുന്നത് എന്റർപ്രൈസ് നയമാണ്. കൂടുതൽ വിവരങ്ങൾക്ക് നിങ്ങളുടെ അഡ്‌മിനിസ്‌ട്രേറ്ററെ ബന്ധപ്പെടുക.</translation>
+<translation id="1926887872692564784">കഴ്‌സർ</translation>
 <translation id="1927632033341042996"><ph name="NEW_FINGER_NUMBER" />-മത്തെ വിരലടയാളം</translation>
 <translation id="192817607445937251">സ്‌ക്രീൻ ലോക്ക് പിൻ</translation>
 <translation id="192858925209436740">നിങ്ങളുടെ Chromebook-ൽ നിന്ന് സംഭരിച്ച ഡോക്യുമെന്റുകൾ മാനേജ് ചെയ്യാൻ Files ആപ്പിലേക്ക് OneDrive കണക്റ്റ് ചെയ്യുക. നിങ്ങളുടെ Microsoft അക്കൗണ്ട് ഉപയോഗിച്ച് സൈൻ ഇൻ ചെയ്യേണ്ടതുണ്ട്.</translation>
@@ -3270,6 +3271,7 @@
 <translation id="3653887973853407813">നിങ്ങൾക്ക് ഈ വിപുലീകരണം ഉപയോഗിക്കാനാകില്ല. നിങ്ങളുടെ രക്ഷിതാവ് Chrome-ൽ "സൈറ്റുകൾക്കും ആപ്പുകൾക്കും വിപുലീകരണങ്ങൾക്കുമുള്ള അനുമതികൾ" ഓഫാക്കിയിരിക്കുന്നു.</translation>
 <translation id="3653999333232393305">നിങ്ങളുടെ മൈക്രോഫോൺ ആക്‌സസ് ചെയ്യാൻ <ph name="HOST" /> എന്നതിനെ അനുവദിക്കുന്നത് തുടരുക</translation>
 <translation id="3654045516529121250">നിങ്ങളുടെ ഉപയോഗസഹായി ക്രമീകരണങ്ങൾ റീഡ് ചെയ്യുക</translation>
+<translation id="3656328935986149999">കഴ്‌സർ വേഗത</translation>
 <translation id="3658871634334445293">TrackPoint ആക്സിലറേഷൻ</translation>
 <translation id="3659550105763988702"><ph name="APP_NAME" /> എന്നതിനുള്ള പാസ്‌കീ ഉപയോഗിക്കുക</translation>
 <translation id="3659929705630080526">നിങ്ങൾ നിരവധി തവണ തെറ്റായ ആക്‌സസ് കോഡ് നൽകി. പിന്നീട് വീണ്ടും ശ്രമിക്കുക</translation>
@@ -3982,6 +3984,7 @@
 <translation id="4232375817808480934">Kerberos കോൺഫിഗർ ചെയ്യുക</translation>
 <translation id="4233739489690259993">നിങ്ങളുടെ Chromebook-ന് ഇനി സുരക്ഷാ, സോഫ്‌റ്റ്‌വെയർ അപ്‌ഡേറ്റുകൾ ലഭിക്കില്ല. ഏറ്റവും പുതിയ സുരക്ഷയ്ക്കും പുതിയ ഫീച്ചറുകൾക്കും നിങ്ങളുടെ ഉപകരണം അപ്ഗ്രേഡ് ചെയ്യുക. ഓഫർ നിബന്ധനകൾ ബാധകം.</translation>
 <translation id="4235965441080806197">സൈൻ ഇൻ റദ്ദാക്കുക</translation>
+<translation id="4235976607074422892">സ്ക്രോളിംഗ് വേഗത</translation>
 <translation id="4237282663517880406">Google Drive നിർദ്ദേശങ്ങൾ കാണിക്കുക</translation>
 <translation id="4241182343707213132">സ്ഥാപനത്തിന്റെ ആപ്പുകൾ അപ്ഡേറ്റ് ചെയ്യാൻ റീസ്റ്റാർട്ട് ചെയ്യുക</translation>
 <translation id="4242145785130247982">ഒന്നിലധികം ക്ലയന്റ് സർട്ടിഫിക്കറ്റുകൾ പിന്തുണയ്‌ക്കുന്നില്ല</translation>
@@ -5304,6 +5307,7 @@
 <translation id="5365881113273618889">നിങ്ങൾ തിരഞ്ഞെടുത്ത ഫോൾഡറിൽ സൂക്ഷ്‌മമായി കൈകാര്യം ചെയ്യേണ്ട ഫയലുകൾ അടങ്ങിയിരിക്കുന്നു. ഈ ഫോൾഡറിലേക്ക് "<ph name="APP_NAME" />" എന്നതിന് റൈറ്റ് ചെയ്യാനുള്ള ശാശ്വതമായ ആക്‌സസ് അനുവദിക്കണമെന്ന് ഉറപ്പാണോ?</translation>
 <translation id="536638840841140142">ഒന്നുമില്ല</translation>
 <translation id="5368246151595623328"><ph name="DEVICE_NAME" /> എന്നതിൽ നിന്ന് '<ph name="NETWORK_NAME" />' സംരക്ഷിച്ചു</translation>
+<translation id="5368255566854433132"><ph name="DEVICE_TYPE" /> പാസ്‌വേഡ് സൃഷ്‌ടിക്കുക</translation>
 <translation id="5368720394188453070">നിങ്ങളുടെ ഫോൺ ലോക്കായിരിക്കുമ്പോൾ. പ്രവേശിക്കുന്നതിന് അത് അൺലോക്ക് ചെയ്യുക.</translation>
 <translation id="5368779022775404937"><ph name="REALM" /> എന്നതിൽ സൈൻ ഇൻ ചെയ്യുക</translation>
 <translation id="536882527576164740">{0,plural, =1{അദൃശ്യ മോഡ്}other{അദൃശ്യ മോഡ് (#)}}</translation>
@@ -8633,6 +8637,7 @@
 <translation id="8137559199583651773">വിപുലീകരണങ്ങള്‍ നിയന്ത്രിക്കുക</translation>
 <translation id="8138217203226449454">നിങ്ങളുടെ തിരയൽ ദാതാവിനെ മാറ്റാനാണോ നിങ്ങൾ ഉദ്ദേശിച്ചത്?</translation>
 <translation id="8138997515734480534"><ph name="VM_NAME" /> നില</translation>
+<translation id="8139440916039659819">കഴ്‌സർ ആക്സിലറേഷൻ</translation>
 <translation id="8139447493436036221">Google Drive ഫയലുകൾ</translation>
 <translation id="8139643636835015859">ഇത് നിങ്ങളുടെ ഓഫ്‌ലൈൻ ഫയലുകൾ ഉപയോഗിക്കുന്ന <ph name="OFFLINE_STORAGE_SIZE" /> ഇടം നീക്കം ചെയ്യും. ചില ഫയലുകൾ ഇപ്പോഴും ഓഫ്‌ലൈനിൽ ലഭ്യമാകും. <ph name="LINK_BEGIN" />കൂടുതലറിയുക<ph name="LINK_END" /></translation>
 <translation id="8140070492745508800"><ph name="FIRST_DEVICE" />, <ph name="SECOND_DEVICE" /></translation>
@@ -8969,6 +8974,7 @@
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322"><ph name="PERMISSION" /> എന്നതും മറ്റ് <ph name="COUNT" /> എണ്ണവും അനുവദിച്ചു</translation>
 <translation id="8413956290606243087">ChromeOS-നുള്ള ബിൽറ്റ് ഇൻ സ്ക്രീൻ റീഡർ ആയ ChromeVox സജീവമാക്കണോ?</translation>
+<translation id="8414065061814811918">സ്‌ക്രോൾ ചെയ്യൽ ആക്സിലറേഷൻ. <ph name="LINK_BEGIN" />കൂടുതലറിയുക<ph name="LINK_END" /></translation>
 <translation id="8414249071344507766">മനോഹര ഓർമ്മകൾ രണ്ട് ദിവസത്തേക്ക് മറച്ചു</translation>
 <translation id="8414396119627470038"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ഉപയോഗിച്ച് <ph name="SITE_ETLD_PLUS_ONE" /> എന്നതിലേക്ക് സൈൻ ഇൻ ചെയ്യുക</translation>
 <translation id="8414685983518053656">കുറിപ്പുകള്‍</translation>
@@ -9095,6 +9101,7 @@
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">സ്‌പീക്കറുകൾ</translation>
 <translation id="8527257351549797148">നിങ്ങൾക്ക് ആപ്പുകളും വിപുലീകരണങ്ങളും മറ്റും ആക്‌സസ് ചെയ്യാൻ കഴിയുന്നതിന് നിങ്ങളുടെ സ്ഥാപനത്തിന് എൻറോൾമെന്റ് ആവശ്യമായി വന്നേക്കാം. സുരക്ഷാ, ഉപകരണ ക്രമീകരണം പോലുള്ള കാര്യങ്ങൾ മാനേജ് ചെയ്യാനും ഇത് നിങ്ങളുടെ സ്ഥാപനത്തെ അനുവദിക്കുന്നു.</translation>
+<translation id="8527869672961320915"><ph name="VM_NAME" /> ആപ്പുകൾ</translation>
 <translation id="8528074251912154910">ഭാഷകൾ ചേർക്കുക</translation>
 <translation id="8528479410903501741">IBAN സംരക്ഷിക്കുക</translation>
 <translation id="8528962588711550376">പ്രവേശിക്കുന്നു.</translation>
@@ -9351,6 +9358,7 @@
 <translation id="8736288397686080465">ഈ സൈറ്റ് പശ്‌ചാത്തലത്തിൽ അപ്‌ഡേറ്റ് ചെയ്‌തു.</translation>
 <translation id="8737709691285775803">ഷിൽ</translation>
 <translation id="8737914367566358838">പേജ് വിവർത്തനം ചെയ്യാൻ ഭാഷ തിരഞ്ഞെടുക്കുക</translation>
+<translation id="8740086188450289493">Google Account പാസ്‍വേഡ് ഉപയോഗിക്കുക</translation>
 <translation id="8740247629089392745">നിങ്ങൾക്ക് ഈ Chromebook <ph name="SUPERVISED_USER_NAME" /> എന്ന കുട്ടിക്ക് കൈമാറാം. സജ്ജീകരണം ഏതാണ്ട് പൂർത്തിയായി, ഇനി അടുത്തറിയാനുള്ള സമയമാണ്.</translation>
 <translation id="8740672167979365981">ChromeOS Flex അപ്ഡേറ്റ് ആവശ്യമാണ്</translation>
 <translation id="8741944563400125534">സ്വിച്ച് ആക്‌സസ് സജ്ജീകരണ ഗൈഡ്</translation>
@@ -9732,6 +9740,7 @@
 <translation id="9045160989383249058">നിങ്ങളുടെ വായിക്കാനുള്ളവയുടെ ലിസ്റ്റ് പുതിയ സൈഡ് പാനലിലേക്ക് നീക്കി. ഇത് ഇവിടെ പരീക്ഷിക്കൂ.</translation>
 <translation id="9045430190527754450">നിങ്ങൾ എത്തിച്ചേരാൻ ശ്രമിക്കുന്ന പേജിന്റെ വെബ് വിലാസം Google-ലേക്ക് അയയ്ക്കുന്നു</translation>
 <translation id="9048745018038487540">എല്ലാ ഫോണ്ടുകളും തിരഞ്ഞെടുക്കുക</translation>
+<translation id="9050135202879860719">നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> എന്നതിലേക്ക് സൈൻ ഇൻ ചെയ്യാൻ പാസ്‍വേഡ് ഉപയോഗിക്കുക</translation>
 <translation id="9050666287014529139">പാസ്ഫ്രെയ്‍സ്</translation>
 <translation id="9052404922357793350">ബ്ലോക്ക് ചെയ്യുന്നത് തുടരുക</translation>
 <translation id="90528604757378587">പശ്ചാത്തല ആക്റ്റിവിറ്റിയും സുഗമമായ സ്ക്രോളിംഗ് പോലുള്ള ചില വിഷ്വൽ ഇഫക്റ്റുകളും പരിമിതപ്പെടാം.</translation>

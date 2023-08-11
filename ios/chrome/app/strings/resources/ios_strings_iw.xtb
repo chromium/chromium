@@ -580,7 +580,6 @@
 <translation id="4550040941166547650">רק במכשיר הזה</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{לסגור את הכרטיסייה הלא פעילה ({COUNT})?}one{לסגור {COUNT} כרטיסיות לא פעילות?}two{לסגור {COUNT} כרטיסיות לא פעילות?}other{לסגור {COUNT} כרטיסיות לא פעילות?}}</translation>
 <translation id="457386861538956877">עוד...</translation>
-<translation id="4587235830039045480">‏שמירת הסיסמה בחשבון Google</translation>
 <translation id="4587589328781138893">אתרים</translation>
 <translation id="4588014171431912783">הגדרות הסנכרון ישוחזרו על סמך הגיבוי האחרון שלך. <ph name="BEGIN_LINK" />אלו הדברים שאפשר לסנכרן<ph name="END_LINK" /></translation>
 <translation id="4592368184551360546">מקלדת</translation>
@@ -1334,7 +1333,6 @@
 <translation id="891658175948553296">מדגישים טקסט באתר</translation>
 <translation id="8917490105272468696">כן, מקובל עלי.</translation>
 <translation id="8928133177108699615">מחשב</translation>
-<translation id="8934982071228289624">כדי לשמור את הסיסמה הזו בחשבון, קודם עליך להגדיר קוד גישה במכשיר.</translation>
 <translation id="894191600409472540">עליך ליצור סיסמאות חזקות</translation>
 <translation id="8952559610785099500">הוספת סיסמה</translation>
 <translation id="8953046091948372197">הסיסמאות יופיעו כאן</translation>

@@ -62,7 +62,6 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="1283039547216852943">Tik om uit te vouwen</translation>
 <translation id="1289059016768036948">Je wordt gevraagd in te loggen op je Google-account.</translation>
 <translation id="1291207594882862231">Geschiedenis, cookies, sitegegevens, cachegeheugen wissen</translation>
-<translation id="1293898515599432175">Je wachtwoorden worden verwijderd uit Google Wachtwoordmanager voor Chrome <ph name="CHROME_CHANNEL" />. Je houdt het wachtwoordbestand dat je net hebt gedownload.</translation>
 <translation id="129553762522093515">Recent gesloten</translation>
 <translation id="1298077576058087471">Bespaar tot 60% data, lees het nieuws van vandaag</translation>
 <translation id="1303339473099049190">Kan dat wachtwoord niet vinden. Check de spelling en probeer het opnieuw.</translation>
@@ -822,7 +821,6 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="5401851137404501592"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> deelt je naam, e-mailadres en profielfoto met deze site om door te gaan.</translation>
 <translation id="5409881200985013443"><ph name="ONE_TIME_CODE" /> doorgeven op <ph name="CLIENT_NAME" />?</translation>
 <translation id="5414836363063783498">Verifiëren…</translation>
-<translation id="542190472198460451">Alle wachtwoorden worden gedownload op je apparaat en verwijderd uit Chrome <ph name="CHROME_CHANNEL" /></translation>
 <translation id="5423934151118863508">Hier zie je de meest bezochte pagina's</translation>
 <translation id="5424588387303617268"><ph name="GIGABYTES" /> GB beschikbaar</translation>
 <translation id="543338862236136125">Wachtwoord bewerken</translation>
@@ -1366,7 +1364,6 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="8110024788458304985">Help de functies en prestaties van Chrome te verbeteren</translation>
 <translation id="8110087112193408731">Chrome-activiteit in Digitaal welzijn bekijken?</translation>
 <translation id="8118117428362942925">Vraag zo nodig je ouder (<ph name="PARENT_NAME" />) om hulp</translation>
-<translation id="8124758083429256800">Je lijsten met opgeslagen wachtwoorden voor Chrome en Chrome <ph name="ERROR_DESCRIPTION" /> worden samengevoegd na versie 121. Je kunt al je opgeslagen wachtwoorden dan automatisch invullen in beide apps.</translation>
 <translation id="8127542551745560481">Homepage bewerken</translation>
 <translation id="8130309322784422030">Je opgeslagen inloggegevens zijn misschien verouderd</translation>
 <translation id="813082847718468539">Sitegegevens bekijken</translation>

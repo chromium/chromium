@@ -62,7 +62,6 @@
 <translation id="1283039547216852943">برای بزرگ کردن ضربه بزنید</translation>
 <translation id="1289059016768036948">‏از شما خواسته می‌شود به سیستم «حساب Google» خود وارد شوید</translation>
 <translation id="1291207594882862231">پاک کردن سابقه، کوکی‌ها، داده‌های سایت، حافظه پنهان…</translation>
-<translation id="1293898515599432175">‏گذرواژه‌هایتان از «مدیر گذرواژه Google» برای Chrome <ph name="CHROME_CHANNEL" /> حذف خواهد شد. فایل گذرواژه‌هایی را که اکنون بارگیری کردید نزد خود نگه دارید.</translation>
 <translation id="129553762522093515">اخیراً بسته‌شده</translation>
 <translation id="1298077576058087471">تا ۶۰٪ در مصرف داده صرفه‌جویی کنید، اخبار امروز را بخوانید</translation>
 <translation id="1303339473099049190">گذرواژه پیدا نشد. املای آن را بررسی و دوباره امتحان کنید.</translation>
@@ -822,7 +821,6 @@
 <translation id="5401851137404501592">برای ادامه دادن، <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> نام، نشانی ایمیل، و عکس نمایه‌تان را با این سایت هم‌رسانی خواهد کرد.</translation>
 <translation id="5409881200985013443"><ph name="ONE_TIME_CODE" /> در <ph name="CLIENT_NAME" /> ارسال شود؟</translation>
 <translation id="5414836363063783498">در حال تأیید کردن…</translation>
-<translation id="542190472198460451">‏همه گذرواژه‌ها در دستگاهتان بارگیری خواهند شد و از <ph name="CHROME_CHANNEL" /> Chrome برداشته می‌شوند</translation>
 <translation id="5423934151118863508">صفحاتی که بیشترین بازدید را از آنها داشته‌اید در اینجا نمایان می‌شوند</translation>
 <translation id="5424588387303617268"><ph name="GIGABYTES" /> گیگابایت در دسترس</translation>
 <translation id="543338862236136125">ویرایش گذرواژه</translation>
@@ -1366,7 +1364,6 @@
 <translation id="8110024788458304985">‏کمک به بهبود عملکرد و ویژگی‌های Chrome</translation>
 <translation id="8110087112193408731">‏فعالیت Chrome شما در «آسایش دیجیتالی» نشان داده شود؟</translation>
 <translation id="8118117428362942925">اگر به راهنمایی نیاز داشتید، از ولی خود کمک بگیرید (<ph name="PARENT_NAME" />)</translation>
-<translation id="8124758083429256800">‏فهرست‌های گذرواژه‌های ذخیره‌شده شما برای Chrome و Chrome <ph name="ERROR_DESCRIPTION" /> بعداز نسخه ۱۲۱ ادغام خواهد شد. می‌توانید همه گذرواژه‌های ذخیره‌شده خود را در هردو برنامه به‌طور خودکار تکمیل کنید.</translation>
 <translation id="8127542551745560481">ویرایش صفحه اصلی</translation>
 <translation id="8130309322784422030">ممکن است اطلاعات ذخیره‌شده ورود به سیستم قدیمی باشد</translation>
 <translation id="813082847718468539">مشاهدهٔ اطلاعات سایت</translation>

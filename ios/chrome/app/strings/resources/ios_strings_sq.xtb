@@ -580,7 +580,6 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="4550040941166547650">. Vetëm në këtë pajisje</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{Të mbyllet {COUNT} skedë joaktive?}other{Të mbyllen {COUNT} skeda joaktive?}}</translation>
 <translation id="457386861538956877">Më shumë...</translation>
-<translation id="4587235830039045480">Ruaje fjalëkalimin në "Llogarinë tënde të Google"</translation>
 <translation id="4587589328781138893">Sajtet</translation>
 <translation id="4588014171431912783">Cilësimet e tua të sinkronizimit do të restaurohen bazuar në rezervimin tënd të fundit. <ph name="BEGIN_LINK" />Shiko se çfarë mund të sinkronizosh<ph name="END_LINK" /></translation>
 <translation id="4592368184551360546">Tastiera</translation>
@@ -1334,7 +1333,6 @@ Të dhënat e tua janë enkriptuar me frazën tënde të kalimit më <ph name="T
 <translation id="891658175948553296">Thekso tekstin në një sajt</translation>
 <translation id="8917490105272468696">Po, jam dakord</translation>
 <translation id="8928133177108699615">Desktop</translation>
-<translation id="8934982071228289624">Për ta ruajtur këtë fjalëkalim në llogarinë tënde, në fillim duhet të caktosh një kod kalimi në pajisjen tënde.</translation>
 <translation id="894191600409472540">Krijo fjalëkalime të forta</translation>
 <translation id="8952559610785099500">Shto fjalëkalimin</translation>
 <translation id="8953046091948372197">Këtu do të gjesh fjalëkalimet e tua</translation>

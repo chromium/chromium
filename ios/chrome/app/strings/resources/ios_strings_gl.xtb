@@ -580,7 +580,6 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="4550040941166547650">Só neste dispositivo</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{Queres pechar {COUNT} pestana inactiva?}other{Queres pechar {COUNT} pestanas inactivas?}}</translation>
 <translation id="457386861538956877">Máis...</translation>
-<translation id="4587235830039045480">Garda o contrasinal na túa Conta de Google</translation>
 <translation id="4587589328781138893">Sitios</translation>
 <translation id="4588014171431912783">Restaurarase a configuración de sincronización segundo a última copia de seguranza. <ph name="BEGIN_LINK" />Consulta o que podes sincronizar<ph name="END_LINK" /></translation>
 <translation id="4592368184551360546">Teclado</translation>
@@ -1334,7 +1333,6 @@ Os teus datos encriptáronse coa túa frase de acceso o <ph name="TIME" />. Intr
 <translation id="891658175948553296">Destaca texto nun sitio</translation>
 <translation id="8917490105272468696">Si, acepto</translation>
 <translation id="8928133177108699615">Ordenador</translation>
-<translation id="8934982071228289624">Para gardar este contrasinal na túa conta, primeiro debes configurar un contrasinal para o dispositivo.</translation>
 <translation id="894191600409472540">Crea contrasinais seguros</translation>
 <translation id="8952559610785099500">Engadir un contrasinal</translation>
 <translation id="8953046091948372197">Aquí atoparás os teus contrasinais</translation>

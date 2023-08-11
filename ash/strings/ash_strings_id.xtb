@@ -860,7 +860,7 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (Kiri)</translation>
 <translation id="4734965478015604180">Horizontal</translation>
 <translation id="4735944890391795473">Desktop 12</translation>
-<translation id="473775607612524610">Perbarui</translation>
+<translation id="473775607612524610">Update</translation>
 <translation id="4740516757091333363">Hapus desktop tersimpan?</translation>
 <translation id="4747410141429390146">Buka kunci untuk melihat notifikasi</translation>
 <translation id="4752784485658729358">Hanya diizinkan menyimpan 6 desktop. Hapus satu desktop untuk menambahkan yang baru.</translation>
@@ -1232,6 +1232,7 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="6291221004442998378">Tidak mengisi daya</translation>
 <translation id="6309219492973062892">Klik atau ketuk ikon rak 1-8</translation>
 <translation id="6315170314923504164">Suara</translation>
+<translation id="6324916366299863871">Edit pintasan</translation>
 <translation id="6330012934079202188">Menampilkan jendela dari semua desktop, tekan tombol Panah atas untuk menampilkan jendela dari desktop saat ini</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> adalah sesi terkelola yang dikelola oleh <ph name="MANAGER" /></translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> terhubung</translation>

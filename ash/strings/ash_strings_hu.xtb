@@ -25,6 +25,7 @@
 <translation id="108486256082349153">Mobil: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">Jó napot, <ph name="GIVEN_NAME" />!</translation>
 <translation id="1088231044944504242">Keresés a következők között: <ph name="CATEGORY" />, fájlok, alkalmazások és egyebek. A nyílbillentyűkkel navigálhat az alkalmazások között.</translation>
+<translation id="1093645050124056515">ctrl + alt + lefelé nyíl</translation>
 <translation id="109942774857561566">Unatkozom</translation>
 <translation id="1104084341931202936">A kisegítő lehetőségekhez tartozó beállítások megjelenítése</translation>
 <translation id="1104621072296271835">Eszközei együtt még jobban működnek</translation>
@@ -43,6 +44,7 @@
 <translation id="1178581264944972037">Szünet</translation>
 <translation id="1181037720776840403">Eltávolítás</translation>
 <translation id="1182225749592316782">Ezzel engedélyezi a hozzáférést a kamera- és mikrofonengedéllyel rendelkező összes alkalmazás és webhely számára.</translation>
+<translation id="1182876754474670069">home</translation>
 <translation id="1183863904939664422">Nem érdekel ez a javaslat</translation>
 <translation id="1184126796192815024">Ez a hálózat nem támogatja alkalmazások streamelését a telefonjáról. Próbálja meg a telefon hotspotját használni. <ph name="LEARN_MORE" /></translation>
 <translation id="118437560755358292">A nagyobb biztonság érdekében adja meg a jelszót vagy a PIN-kódot</translation>
@@ -147,6 +149,7 @@
 <translation id="1586324912145647027">Lépjen az 1–8. asztal valamelyikéhez.</translation>
 <translation id="1589090746204042747">Hozzáférés az Ön jelen munkamenetben végzett összes tevékenységéhez</translation>
 <translation id="1592682369233288537">Következő asztal: <ph name="NEXT_DESK_NAME" />. Az aktiváláshoz használja a Keresőgomb + Szóköz billentyűparancsot.</translation>
+<translation id="1602874809115667351"><ph name="LAUNCHER_KEY_NAME" /> + lefelé nyíl</translation>
 <translation id="1604857178818051494">Médiatartalom szüneteltetése</translation>
 <translation id="1610778689852195798">„Undo” (Visszavonás)</translation>
 <translation id="1611993646327628135">Be</translation>
@@ -249,6 +252,7 @@
 <translation id="2021864487439853900">Kattintson a feloldáshoz</translation>
 <translation id="2023558322300866873">A csomagok elfogását bármikor leállíthatja</translation>
 <translation id="2034971124472263449">Mentés mindenképp</translation>
+<translation id="204259843076055848">A(z) <ph name="SIX_PACK_KEY_NAME" /> billentyűparancsa jelenleg ki van kapcsolva</translation>
 <translation id="2049240716062114887">Az asztal neve a következőre változott: <ph name="DESK_NAME" /></translation>
 <translation id="206377500836174974">Tele</translation>
 <translation id="2064048859448024834">Kamera-előnézet bekapcsolva</translation>
@@ -381,6 +385,7 @@
 <translation id="2665788051462227163">A(z) <ph name="UNAVAILABLE_APPS_ONE" /> és a(z) <ph name="UNAVAILABLE_APPS_TWO" /> alkalmazás nincs telepítve erre az eszközre.</translation>
 <translation id="2673968385134502798">Játékok</translation>
 <translation id="2678852583403169292">Felolvasás menü</translation>
+<translation id="2687510499067466116">A billentyűparancs módosult</translation>
 <translation id="2689613560355655046">8. asztal</translation>
 <translation id="2695305337569143674">böngésző</translation>
 <translation id="2697697418792422688">Billentyűzetbeállítások megjelenítése. <ph name="KEYBOARD_NAME" /> kiválasztva.</translation>
@@ -637,6 +642,7 @@ Csatlakoztassa az eszközt áramforráshoz.</translation>
 <translation id="3738664582935948253">Mostantól megjelenítheti a kattintásokat és a billentyűparancsokat a képernyőfelvételeken</translation>
 <translation id="3742055079367172538">Képernyőkép elkészítve</translation>
 <translation id="3756485814916578707">Képernyőtartalom átküldése</translation>
+<translation id="3765841382945324995">A(z) <ph name="SIX_PACK_KEY_NAME" /> billentyűparancsa a(z) <ph name="NEW_SHORTCUT" /> billentyűparancsra módosult a következőről: <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="3765841986579723851">Ma szerkesztette</translation>
 <translation id="3773700760453577392">Egy rendszergazda letiltotta a többfiókos bejelentkezést <ph name="USER_EMAIL" /> számára.
 Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
@@ -644,6 +650,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="3781910048497807059">Fókusz áthelyezése az előző panelre</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">Zárolás</translation>
+<translation id="3796215473395753611">alt + felfelé mutató nyíl</translation>
 <translation id="3796746699333205839">Egy alkalmazás használja az Ön kameráját és mikrofonját</translation>
 <translation id="3798670284305777884">Hangszóró (belső)</translation>
 <translation id="3799080171973636491">Lenyomta a teljes képernyős nagyító billentyűparancsát. Bekapcsolja a funkciót?</translation>
@@ -699,6 +706,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="4026843240379844265">Aktív ablak áthelyezése egyik kijelzőről a másikra</translation>
 <translation id="4028481283645788203">A nagyobb biztonság érdekében jelszó szükséges</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
+<translation id="4032988577476260673"><ph name="LAUNCHER_KEY_NAME" /> + balra nyíl</translation>
 <translation id="4042660782729322247">Jelenleg megosztja a képernyőt</translation>
 <translation id="404437169852192935">Többé nem kap frissítést</translation>
 <translation id="4049230407053723315">Gyorsbeállítások</translation>
@@ -720,6 +728,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="4129129681837227511">Ha szeretné látni az értesítéseket a lezárási képernyőn, oldja fel a képernyő zárolását a beállítás módosításához</translation>
 <translation id="4131973331381812765">Hőmérséklet: <ph name="TEMPERATURE" /> °C – Aktuális sebesség: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> GHz</translation>
 <translation id="4136724716305260864">Bekapcsolva napkeltéig</translation>
+<translation id="4141710407113804517"><ph name="LAUNCHER_KEY_NAME" /> + jobbra nyíl</translation>
 <translation id="4146671046252289537">Ugrás a következő szó végére</translation>
 <translation id="4146833061457621061">Zenelejátszás</translation>
 <translation id="4150201353443180367">Megjelenítés</translation>
@@ -866,6 +875,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="4747410141429390146">Oldja fel a zárolást az értesítések megtekintéséhez</translation>
 <translation id="4752784485658729358">Csak hat mentett asztal engedélyezett. Távolítsa el valamelyiket, ha új asztalt szeretne menteni.</translation>
 <translation id="4759238208242260848">Letöltések</translation>
+<translation id="4762160261012420470"><ph name="LAUNCHER_KEY_NAME" /> + felfelé nyíl</translation>
 <translation id="4762573482154983647">Alkalmazások elrejtése</translation>
 <translation id="4763885921995354846">Ezzel engedélyezi a kamerához való hozzáférést a kamerahasználati engedéllyel rendelkező összes alkalmazás és webhely számára. Előfordulhat, hogy frissítenie kell a weboldalt, vagy újra kell indítania az alkalmazást.</translation>
 <translation id="4774338217796918551">Térjen vissza holnap, ekkor: <ph name="COME_BACK_TIME" />.</translation>
@@ -947,6 +957,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="5062496344832867502">ram</translation>
 <translation id="5068762093486106012">Értesítést kap, ha némított állapotban beszél. A hanganyag sosem kerül ki az eszközről.</translation>
 <translation id="5078796286268621944">Helytelen PIN-kód</translation>
+<translation id="5083035541015925118">ctrl + alt + felfelé nyíl</translation>
 <translation id="5083553833479578423">Hozzáférés a Segéd további funkcióihoz</translation>
 <translation id="5092436659250499817">A billentyűzet háttérvilágításának be- vagy kikapcsolása</translation>
 <translation id="5094577350232361255">névjegy</translation>
@@ -1068,6 +1079,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="5590609058453685222">A némításra emlékeztetés funkció be van kapcsolva. Értesítést kap, ha némított állapotban beszél.</translation>
 <translation id="5596627076506792578">További lehetőségek</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
+<translation id="5599242528220103262">A billentyűparancs ki van kapcsolva</translation>
 <translation id="5600837773213129531">A hangos visszajelzés kikapcsolásához nyomja meg a Ctrl+Alt+Z billentyűkombinációt.</translation>
 <translation id="5601503069213153581">PIN-kód</translation>
 <translation id="5618148318840095371">Átcsatlakoztattuk egy jobb hálózatra</translation>
@@ -1087,6 +1099,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="5678564054339031017">A következő hét megjelenítése</translation>
 <translation id="5679050765726761783">Alacsony energiafogyasztású csatlakozó csatlakoztatva</translation>
 <translation id="5682642926269496722">A Google Segéd nem áll rendelkezésre ennél a felhasználói fióknál.</translation>
+<translation id="5689233503102158537">alt + backspace</translation>
 <translation id="5689633613396158040">Az Éjszakai fény funkció kellemesebbé teszi a képernyő nézését és az olvasást gyenge fény mellett. Koppintson, ha módosítani szeretné, hogy mikor kapcsoljon be az Éjszakai mód, vagy ha teljesen ki szeretné kapcsolni.</translation>
 <translation id="5691772641933328258">Ujjlenyomat felismerése sikertelen</translation>
 <translation id="5693255400847650006">A mikrofon használatban van</translation>
@@ -1233,6 +1246,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="6291221004442998378">Nem tölt</translation>
 <translation id="6309219492973062892">Kattintson vagy koppintson a polcon lévő ikonokra (1–8)</translation>
 <translation id="6315170314923504164">Hang</translation>
+<translation id="6324916366299863871">Billentyűparancs szerkesztése</translation>
 <translation id="6330012934079202188">Most az összes asztal ablakait mutatja; az aktuális asztal ablakainak megjelenítéséhez nyomja meg a felfelé nyilat</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> – <ph name="MANAGER" /> által kezelt munkamenet</translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> csatlakoztatva</translation>
@@ -1247,6 +1261,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="639644700271529076">A CAPS LOCK ki van kapcsolva</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6417265370957905582">Google Segéd</translation>
+<translation id="641817663353603351">page up</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, jelerősség: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">Az összes értesítés törlése</translation>
 <translation id="643147933154517414">Elkészült</translation>
@@ -1256,6 +1271,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="6445915701151710649">cpu</translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> esemény</translation>
 <translation id="6449483711453944360">A Linux-alkalmazások és az inkognitó ablakok jelenleg nem támogatottak.</translation>
+<translation id="6450245544201845082">A jobb egérgombos kattintás billentyűparancsa jelenleg ki van kapcsolva</translation>
 <translation id="6452181791372256707">Elutasítás</translation>
 <translation id="6453179446719226835">A nyelv módosult</translation>
 <translation id="6459472438155181876">Képernyő kiterjesztése erre: <ph name="DISPLAY_NAME" /></translation>
@@ -1380,6 +1396,7 @@ Frissen telepítve</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6972754398087986839">Első lépések</translation>
 <translation id="6979158407327259162">Google Drive</translation>
+<translation id="6980402667292348590">insert</translation>
 <translation id="6981291220124935078">Hozzáférés engedélyezése</translation>
 <translation id="6981982820502123353">Kisegítő lehetőségek</translation>
 <translation id="698231206551913481">A felhasználó eltávolításakor az összes hozzá tartozó fájl és helyi adat is véglegesen törlődik.</translation>
@@ -1431,6 +1448,7 @@ Frissen telepítve</translation>
 <translation id="7258828758145722155">Tegnap szerkesztette</translation>
 <translation id="726276584504105859">Húzza ide az osztott képernyő használatához</translation>
 <translation id="7262906531272962081">Emlékeztető létrehozása</translation>
+<translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + backspace</translation>
 <translation id="7297440678881127227"><ph name="START_TIME" /> –
         <ph name="END_TIME" />,
         <ph name="TIME_ZONE" />,
@@ -1441,6 +1459,7 @@ Frissen telepítve</translation>
 <translation id="7312210124139670355">A rendszergazda visszaállítja az Ön eSIM-jét. Ez eltarthat néhány percig.</translation>
 <translation id="7313193732017069507">Kamera kibontása</translation>
 <translation id="7316261577130609484">Új feladat felvétele</translation>
+<translation id="7331646370422660166">alt + lefelé mutató nyíl</translation>
 <translation id="7340731148882810149">Automatikus kattintások menü</translation>
 <translation id="7346909386216857016">Rendben, értem</translation>
 <translation id="7348093485538360975">Képernyő-billentyűzet</translation>
@@ -1486,6 +1505,7 @@ Frissen telepítve</translation>
 <translation id="7513922695575567867">Naptár, <ph name="DATE" />-i hét, jelenleg kijelölt dátum: <ph name="SELECTED_DATE" />.</translation>
 <translation id="7514365320538308">Letöltés</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7516641972665276706">page down</translation>
 <translation id="7519206258459640379">A keretezés be van kapcsolva.</translation>
 <translation id="7519649142417630956">A kikapcsolást követően az eszköz kijelentkezteti a rendszergazdát, aki a továbbiakban nem fogja tudni vezérelni az eszközét.
 
@@ -1857,6 +1877,7 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="9126339866969410112">Utolsó művelet visszavonása</translation>
 <translation id="9133335900048457298">Nem lehet rögzíteni védett tartalmakat</translation>
 <translation id="9139720510312328767">Következő betű törlése</translation>
+<translation id="9151906066336345901">end</translation>
 <translation id="9161053988251441839">JAVASOLT ALKALMAZÁSOK</translation>
 <translation id="9168436347345867845">Később</translation>
 <translation id="9178475906033259337">1 találat megjelenítése a következő lekérdezésre: <ph name="QUERY" /></translation>

@@ -62,7 +62,6 @@ Só pode ler os datos encriptados alguén que coñeza a túa frase de acceso. A 
 <translation id="1283039547216852943">Toca para despregar</translation>
 <translation id="1289059016768036948">Pediráseche que inicies sesión na túa Conta de Google</translation>
 <translation id="1291207594882862231">Borrar o historial, as cookies, os datos dos sitios, a memoria caché…</translation>
-<translation id="1293898515599432175">Os contrasinais eliminaranse do xestor de contrasinais de Google para Chrome <ph name="CHROME_CHANNEL" />. Manterás o ficheiro de contrasinais que acabas de descargar.</translation>
 <translation id="129553762522093515">Pechado recentemente</translation>
 <translation id="1298077576058087471">Le as noticias do día e aforra ata un 60 % de datos</translation>
 <translation id="1303339473099049190">Non se puido atopar o contrasinal. Comproba a ortografía e téntao de novo.</translation>
@@ -822,7 +821,6 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="5401851137404501592">Para continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> compartirá o teu nome, enderezo de correo electrónico e imaxe do perfil con este sitio.</translation>
 <translation id="5409881200985013443">Queres enviar o código <ph name="ONE_TIME_CODE" /> a <ph name="CLIENT_NAME" />?</translation>
 <translation id="5414836363063783498">Verificando...</translation>
-<translation id="542190472198460451">Descargaranse todos os contrasinais que haxa no teu dispositivo e quitaranse de Chrome <ph name="CHROME_CHANNEL" /></translation>
 <translation id="5423934151118863508">As túas páxinas máis visitadas aparecerán aquí</translation>
 <translation id="5424588387303617268">Espazo dispoñible: <ph name="GIGABYTES" /> GB</translation>
 <translation id="543338862236136125">Editar contrasinal</translation>
@@ -1366,7 +1364,6 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="8110024788458304985">Axudar a mellorar o rendemento e as funcións de Chrome</translation>
 <translation id="8110087112193408731">Queres mostrar a túa actividade de Chrome en Benestar dixital?</translation>
 <translation id="8118117428362942925">Se necesitas axuda, pídella ao teu pai ou á túa nai (<ph name="PARENT_NAME" />)</translation>
-<translation id="8124758083429256800">As túas listas de contrasinais gardados de Chrome e Chrome <ph name="ERROR_DESCRIPTION" /> combinaranse despois da versión 121. Poderás autocompletar os contrasinais gardados nas dúas aplicacións.</translation>
 <translation id="8127542551745560481">Editar páxina de inicio</translation>
 <translation id="8130309322784422030">A información de inicio de sesión que gardaches podería estar desactualizada</translation>
 <translation id="813082847718468539">Consulta a información do sitio</translation>

@@ -580,7 +580,6 @@
 <translation id="4550040941166547650">Само на овом уређају</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{Желите да затворите {COUNT} неактивну картицу?}one{Желите да затворите {COUNT} неактивну картицу?}few{Желите да затворите {COUNT} неактивне картице?}other{Желите да затворите {COUNT} неактивних картица?}}</translation>
 <translation id="457386861538956877">Још...</translation>
-<translation id="4587235830039045480">Сачувајте лозинку на Google налогу</translation>
 <translation id="4587589328781138893">Сајтови</translation>
 <translation id="4588014171431912783">Подешавања синхронизације ће се вратити основу последње резервне копије. <ph name="BEGIN_LINK" />Погледајте шта можете да синхронизујете<ph name="END_LINK" /></translation>
 <translation id="4592368184551360546">Тастатура</translation>
@@ -1334,7 +1333,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="891658175948553296">Истакните текст на сајту</translation>
 <translation id="8917490105272468696">Да, омогући</translation>
 <translation id="8928133177108699615">Рачунар</translation>
-<translation id="8934982071228289624">Да бисте сачували ову лозинку на налогу, морате прво да подесите шифру на уређају.</translation>
 <translation id="894191600409472540">Направите јаке лозинке</translation>
 <translation id="8952559610785099500">Додајте лозинку</translation>
 <translation id="8953046091948372197">Овде ћете пронаћи лозинке</translation>

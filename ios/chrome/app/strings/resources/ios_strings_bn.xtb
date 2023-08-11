@@ -580,7 +580,6 @@
 <translation id="4550040941166547650">শুধুমাত্র এই ডিভাইসে</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{চালু না থাকা {COUNT}টি ট্যাব বন্ধ করবেন?}one{চালু না থাকা {COUNT}টি ট্যাব বন্ধ করবেন?}other{চালু না থাকা {COUNT}টি ট্যাব বন্ধ করবেন?}}</translation>
 <translation id="457386861538956877">আরও...</translation>
-<translation id="4587235830039045480">আপনার Google অ্যাকাউন্টে পাসওয়ার্ড সেভ করুন</translation>
 <translation id="4587589328781138893">সাইট</translation>
 <translation id="4588014171431912783">আপনার শেষ ব্যাক-আপের উপর ভিত্তি করে সিঙ্ক সেটিংস ফিরিয়ে আনা হবে। <ph name="BEGIN_LINK" />আপনি কী সিঙ্ক করতে পারবেন তা দেখুন<ph name="END_LINK" /></translation>
 <translation id="4592368184551360546">কীবোর্ড</translation>
@@ -1335,7 +1334,6 @@
 <translation id="891658175948553296">সাইটে টেক্সট হাইলাইট করুন</translation>
 <translation id="8917490105272468696">হ্যাঁ, আমি রাজি</translation>
 <translation id="8928133177108699615">ডেস্কটপ</translation>
-<translation id="8934982071228289624">আপনার অ্যাকাউন্টে এই পাসওয়ার্ডটি সেভ করতে, আপনাকে প্রথমে ডিভাইসে একটি পাসকোড সেট করতে হবে।</translation>
 <translation id="894191600409472540">শক্তিশালী পাসওয়ার্ড তৈরি করুন</translation>
 <translation id="8952559610785099500">পাসওয়ার্ড যোগ করুন</translation>
 <translation id="8953046091948372197">আপনি নিজের পাসওয়ার্ড এখানে খুঁজে পাবেন</translation>

@@ -580,7 +580,6 @@
 <translation id="4550040941166547650">Ушул түзмөктө гана</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{{COUNT} жигерсиз өтмөктү жабасызбы?}other{{COUNT} жигерсиз өтмөктү жабасызбы?}}</translation>
 <translation id="457386861538956877">Дагы…</translation>
-<translation id="4587235830039045480">Сырсөздү Google аккаунтуңузга сактаңыз</translation>
 <translation id="4587589328781138893">Сайттар</translation>
 <translation id="4588014171431912783">Шайкештирүү параметрлери акыркы жолу сакталган камдык көчүрмөнүн негизинде калыбына келтирилет. <ph name="BEGIN_LINK" />Шайкештире ала турган нерселерди көрүңүз<ph name="END_LINK" /></translation>
 <translation id="4592368184551360546">Баскычтоп</translation>
@@ -1334,7 +1333,6 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="891658175948553296">Сайттагы текстти бөлүп көрсөтүңүз</translation>
 <translation id="8917490105272468696">Ооба, мен макулмун</translation>
 <translation id="8928133177108699615">Иш такта</translation>
-<translation id="8934982071228289624">Бул сырсөздү аккаунтуңузга сактоо үчүн алгач түзмөгүңүздө өткөрүүчү кодду тууралашыңыз керек.</translation>
 <translation id="894191600409472540">Татаал сырсөз түзүңүз</translation>
 <translation id="8952559610785099500">Сырсөз кошуу</translation>
 <translation id="8953046091948372197">Сырсөздөрүңүздү ушул жерден табасыз</translation>

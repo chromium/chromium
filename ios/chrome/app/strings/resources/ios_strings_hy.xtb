@@ -580,7 +580,6 @@
 <translation id="4550040941166547650">Միայն այս սարքում</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{Փակե՞լ {COUNT} ոչ ակտիվ ներդիրը}one{Փակե՞լ {COUNT} ոչ ակտիվ ներդիրը}other{Փակե՞լ {COUNT} ոչ ակտիվ ներդիրները}}</translation>
 <translation id="457386861538956877">Ավելին…</translation>
-<translation id="4587235830039045480">Պահեք գաղտնաբառը ձեր Google հաշվում</translation>
 <translation id="4587589328781138893">Կայքեր</translation>
 <translation id="4588014171431912783">Համաժամացման ձեր կարգավորումները կվերականգնվեն վերջին պահուստավորված տվյալների հիման վրա։ <ph name="BEGIN_LINK" />Ինչ տվյալներ կարող եք համաժամացնել<ph name="END_LINK" /></translation>
 <translation id="4592368184551360546">Ստեղնաշար</translation>
@@ -1334,7 +1333,6 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="891658175948553296">Առանձնացրեք տեքստը կայքում</translation>
 <translation id="8917490105272468696">Եղավ</translation>
 <translation id="8928133177108699615">Համակարգչի ռեժիմ</translation>
-<translation id="8934982071228289624">Այս գաղտնաբառը հաշվում պահելու համար նախ պետք է ձեր սարքում անցակոդ կարգավորեք։</translation>
 <translation id="894191600409472540">Ստեղծեք հուսալի գաղտնաբառեր</translation>
 <translation id="8952559610785099500">Ավելացրեք գաղտնաբառ</translation>
 <translation id="8953046091948372197">Ձեր գաղտնաբառերը կգտնեք այստեղ</translation>

@@ -580,7 +580,6 @@
 <translation id="4550040941166547650">Само на това устройство</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{Искате ли да затворите {COUNT} неактивен раздел?}other{Искате ли да затворите {COUNT} неактивни раздела?}}</translation>
 <translation id="457386861538956877">Още...</translation>
-<translation id="4587235830039045480">Запазване на паролата в профила ви в Google</translation>
 <translation id="4587589328781138893">Сайтове</translation>
 <translation id="4588014171431912783">Настройките ви за синхронизиране ще бъдат възстановени въз основа на най-скорошното ви резервно копие. <ph name="BEGIN_LINK" />Вижте какво можете да синхронизирате<ph name="END_LINK" /></translation>
 <translation id="4592368184551360546">Клавиатура</translation>
@@ -1334,7 +1333,6 @@
 <translation id="891658175948553296">Откройте текст в сайт.</translation>
 <translation id="8917490105272468696">Да, ще участвам</translation>
 <translation id="8928133177108699615">Настолна</translation>
-<translation id="8934982071228289624">За да запазите тази парола в профила си, трябва първо да зададете код за достъп на устройството си.</translation>
 <translation id="894191600409472540">Създавайте надеждни пароли</translation>
 <translation id="8952559610785099500">Добавяне на парола</translation>
 <translation id="8953046091948372197">Тук ще се показват паролите ви</translation>

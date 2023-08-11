@@ -580,7 +580,6 @@
 <translation id="4550040941166547650">Толькі на гэтай прыладзе.</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{Закрыць {COUNT} неактыўную ўкладку?}one{Закрыць {COUNT} неактыўную ўкладку?}few{Закрыць {COUNT} неактыўныя ўкладкі?}many{Закрыць {COUNT} неактыўных укладак?}other{Закрыць {COUNT} неактыўнай укладкі?}}</translation>
 <translation id="457386861538956877">Яшчэ...</translation>
-<translation id="4587235830039045480">Пароль будзе захаваны ў вашым Уліковым запісе Google</translation>
 <translation id="4587589328781138893">Сайты</translation>
 <translation id="4588014171431912783">Налады сінхранізацыі будуць адноўлены з апошняй рэзервовай копіі. <ph name="BEGIN_LINK" />Якія даныя можна сінхранізаваць<ph name="END_LINK" /></translation>
 <translation id="4592368184551360546">Клавіятура</translation>
@@ -1334,7 +1333,6 @@
 <translation id="891658175948553296">Вылучыце тэкст на сайце</translation>
 <translation id="8917490105272468696">Так, я згаджаюся</translation>
 <translation id="8928133177108699615">Рэжым ПК</translation>
-<translation id="8934982071228289624">Каб захаваць гэты пароль ва ўліковым запісе, задайце код доступу на прыладзе.</translation>
 <translation id="894191600409472540">Стварыце надзейныя паролі</translation>
 <translation id="8952559610785099500">Дадайце пароль</translation>
 <translation id="8953046091948372197">Вашы паролі знаходзяцца тут</translation>

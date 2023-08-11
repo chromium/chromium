@@ -582,7 +582,6 @@
 <translation id="4550040941166547650">على هذا الجهاز فقط</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{هل تريد إغلاق علامة تبويب واحدة ({COUNT}) غير نشطة؟}zero{هل تريد إغلاق {COUNT} علامة تبويب غير نشطة؟}two{هل تريد إغلاق علامتَي تبويب ({COUNT}) غير نشطتَين؟}few{هل تريد إغلاق {COUNT} علامات تبويب غير نشطة؟}many{هل تريد إغلاق {COUNT} علامة تبويب غير نشطة؟}other{هل تريد إغلاق {COUNT} علامة تبويب غير نشطة؟}}</translation>
 <translation id="457386861538956877">المزيد...</translation>
-<translation id="4587235830039045480">‏يمكنك حفظ كلمة المرور في حسابك على Google.</translation>
 <translation id="4587589328781138893">المواقع</translation>
 <translation id="4588014171431912783">ستتم استعادة إعدادات المزامنة استنادًا إلى آخر نسخة احتياطية. <ph name="BEGIN_LINK" />التعرُّف على أنواع البيانات التي يمكنك مزامنتها<ph name="END_LINK" /></translation>
 <translation id="4592368184551360546">لوحة المفاتيح</translation>
@@ -1336,7 +1335,6 @@
 <translation id="891658175948553296">ميِّز النص على موقع إلكتروني.</translation>
 <translation id="8917490105272468696">نعم، أوافق</translation>
 <translation id="8928133177108699615">الإصدار المخصّص لأجهزة الكمبيوتر</translation>
-<translation id="8934982071228289624">لحفظ كلمة المرور هذه في حسابك، يجب أولاً ضبط رمز مرور على جهازك.</translation>
 <translation id="894191600409472540">إنشاء كلمات مرور قوية</translation>
 <translation id="8952559610785099500">إضافة كلمة مرور</translation>
 <translation id="8953046091948372197">ستظهر كلمات المرور هنا</translation>

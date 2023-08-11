@@ -580,7 +580,6 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="4550040941166547650">Iba v tomto zariadení</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{Chcete zavrieť {COUNT} neaktívnu kartu?}few{Chcete zavrieť {COUNT} neaktívne karty?}many{Close {COUNT} Inactive Tabs?}other{Chcete zavrieť {COUNT} neaktívnych kariet?}}</translation>
 <translation id="457386861538956877">Viac...</translation>
-<translation id="4587235830039045480">Uloženie hesla do účtu Google</translation>
 <translation id="4587589328781138893">Weby</translation>
 <translation id="4588014171431912783">Nastavenia synchronizácie budú obnovené na základe poslednej zálohy. <ph name="BEGIN_LINK" />Čo môžete synchronizovať<ph name="END_LINK" /></translation>
 <translation id="4592368184551360546">Klávesnica</translation>
@@ -1334,7 +1333,6 @@ Vaše údaje boli zašifrované pomocou prístupovej frázy <ph name="TIME" />. 
 <translation id="891658175948553296">Zvýraznite text na webe</translation>
 <translation id="8917490105272468696">Áno, súhlasím</translation>
 <translation id="8928133177108699615">Počítač</translation>
-<translation id="8934982071228289624">Ak chcete uložiť toto heslo vo svojom účte, musíte najprv nastaviť vstupný kód v zariadení.</translation>
 <translation id="894191600409472540">Vytvárajte si silné heslá</translation>
 <translation id="8952559610785099500">Pridanie hesla</translation>
 <translation id="8953046091948372197">Tu nájdete svoje heslá</translation>

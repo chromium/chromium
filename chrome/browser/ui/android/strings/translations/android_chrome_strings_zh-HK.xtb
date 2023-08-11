@@ -62,7 +62,6 @@
 <translation id="1283039547216852943">輕按即可展開</translation>
 <translation id="1289059016768036948">系統將會要求您登入 Google 帳戶</translation>
 <translation id="1291207594882862231">清除記錄、Cookie、網站資料、快取…</translation>
-<translation id="1293898515599432175">密碼將從 Chrome <ph name="CHROME_CHANNEL" />的「Google 密碼管理工具」中刪除。您可保留剛剛下載的密碼檔案。</translation>
 <translation id="129553762522093515">最近關閉的分頁</translation>
 <translation id="1298077576058087471">節省高達 60% 數據用量，立即閱讀今天新聞</translation>
 <translation id="1303339473099049190">找不到該密碼。請檢查您輸入的內容，然後再試一次。</translation>
@@ -822,7 +821,6 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="5401851137404501592">如要繼續，<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 將會與此網站分享您的姓名、電郵地址和個人檔案相片。</translation>
 <translation id="5409881200985013443">要在「<ph name="CLIENT_NAME" />」上提交 <ph name="ONE_TIME_CODE" /> 嗎？</translation>
 <translation id="5414836363063783498">正在驗證…</translation>
-<translation id="542190472198460451">所有密碼將會下載至您的裝置，並從 Chrome <ph name="CHROME_CHANNEL" /> 中移除</translation>
 <translation id="5423934151118863508">您最常瀏覽的網頁會在此顯示</translation>
 <translation id="5424588387303617268">可用空間：<ph name="GIGABYTES" /> GB</translation>
 <translation id="543338862236136125">修改密碼</translation>
@@ -1366,7 +1364,6 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="8110024788458304985">協助改善 Chrome\u2019s 的功能和效能</translation>
 <translation id="8110087112193408731">要在「健康數碼生活」中顯示您的 Chrome 活動記錄嗎？</translation>
 <translation id="8118117428362942925">如需協助，請找家長 (<ph name="PARENT_NAME" />) 幫忙</translation>
-<translation id="8124758083429256800">Chrome 和 Chrome <ph name="ERROR_DESCRIPTION" /> 的已儲存密碼清單會在版本 121 後合併。在兩個應用程式中都可自動填入所有已儲存的密碼。</translation>
 <translation id="8127542551745560481">編輯首頁</translation>
 <translation id="8130309322784422030">您儲存的登入資料可能已過期</translation>
 <translation id="813082847718468539">檢視網站資料</translation>

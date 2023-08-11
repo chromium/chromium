@@ -580,7 +580,6 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="4550040941166547650">Numai pe acest dispozitiv</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{Închizi {COUNT} filă inactivă?}few{Închizi {COUNT} file inactive?}other{Închizi {COUNT} de file inactive?}}</translation>
 <translation id="457386861538956877">Mai multe...</translation>
-<translation id="4587235830039045480">Salvează parola în Contul Google</translation>
 <translation id="4587589328781138893">Site-uri</translation>
 <translation id="4588014171431912783">Setările de sincronizare vor fi restabilite pe baza ultimului backup. <ph name="BEGIN_LINK" />Află ce poți sincroniza<ph name="END_LINK" /></translation>
 <translation id="4592368184551360546">Tastatură</translation>
@@ -1334,7 +1333,6 @@ Datele au fost criptate cu expresia de acces pentru <ph name="TIME" />. Introdu-
 <translation id="891658175948553296">Evidențiază textul pe un site</translation>
 <translation id="8917490105272468696">Da, accept</translation>
 <translation id="8928133177108699615">Computer</translation>
-<translation id="8934982071228289624">Pentru a salva parola în cont, mai întâi trebuie să setezi o parolă pe dispozitiv.</translation>
 <translation id="894191600409472540">Creează parole puternice</translation>
 <translation id="8952559610785099500">Adaugă parola</translation>
 <translation id="8953046091948372197">Aici vei vedea parolele</translation>

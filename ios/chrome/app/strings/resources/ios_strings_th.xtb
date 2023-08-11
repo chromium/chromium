@@ -580,7 +580,6 @@
 <translation id="4550040941166547650">เฉพาะในอุปกรณ์นี้</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{ปิดแท็บที่ไม่ได้ใช้งาน {COUNT} แท็บใช่ไหม}other{ปิดแท็บที่ไม่ได้ใช้งาน {COUNT} แท็บใช่ไหม}}</translation>
 <translation id="457386861538956877">เพิ่มเติม...</translation>
-<translation id="4587235830039045480">บันทึกรหัสผ่านในบัญชี Google</translation>
 <translation id="4587589328781138893">เว็บไซต์</translation>
 <translation id="4588014171431912783">ระบบจะกู้คืนการตั้งค่าการซิงค์ตามการสำรองข้อมูลครั้งล่าสุด <ph name="BEGIN_LINK" />ดูสิ่งที่คุณซิงค์ได้<ph name="END_LINK" /></translation>
 <translation id="4592368184551360546">แป้นพิมพ์</translation>
@@ -1334,7 +1333,6 @@
 <translation id="891658175948553296">ไฮไลต์ข้อความในเว็บไซต์</translation>
 <translation id="8917490105272468696">ได้สิ ตกลง</translation>
 <translation id="8928133177108699615">เดสก์ท็อป</translation>
-<translation id="8934982071228289624">หากต้องการบันทึกรหัสผ่านนี้ในบัญชี คุณต้องตั้งรหัสผ่านในอุปกรณ์ก่อน</translation>
 <translation id="894191600409472540">สร้างรหัสผ่านที่รัดกุม</translation>
 <translation id="8952559610785099500">เพิ่มรหัสผ่าน</translation>
 <translation id="8953046091948372197">คุณจะเห็นรหัสผ่านที่นี่</translation>

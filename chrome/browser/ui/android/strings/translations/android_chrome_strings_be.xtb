@@ -62,7 +62,6 @@
 <translation id="1283039547216852943">Дакраніцеся, каб разгарнуць</translation>
 <translation id="1289059016768036948">Вам трэба будзе ўвайсці ва Уліковы запіс Google</translation>
 <translation id="1291207594882862231">Ачысціць гісторыю, файлы cookie, даныя сайта, кэш…</translation>
-<translation id="1293898515599432175">Вашы паролі будуць выдалены з Менеджара пароляў Google для Chrome <ph name="CHROME_CHANNEL" />. У вас захаваецца толькі што спампаваны файл пароляў.</translation>
 <translation id="129553762522093515">Нядаўна закрытыя</translation>
 <translation id="1298077576058087471">Чытайце сённяшнія навіны. Эканомце да 60% трафіка</translation>
 <translation id="1303339473099049190">Не ўдалося знайсці гэты пароль. Праверце правільнасць напісання і паўтарыце спробу.</translation>
@@ -821,7 +820,6 @@
 <translation id="5401851137404501592">Каб працягнуць, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> абагуліць ваша імя, адрас электроннай пошты і відарыс профілю з гэтым сайтам.</translation>
 <translation id="5409881200985013443">Адправіць код <ph name="ONE_TIME_CODE" /> на прыладу "<ph name="CLIENT_NAME" />"?</translation>
 <translation id="5414836363063783498">Ідзе праверка…</translation>
-<translation id="542190472198460451">Усе паролі будуць спампамаваны на вашу прыладу і выдалены з Chrome <ph name="CHROME_CHANNEL" /></translation>
 <translation id="5423934151118863508">Тут будуць паказвацца старонкі, якія вы найчасцей наведваеце</translation>
 <translation id="5424588387303617268">Даступна <ph name="GIGABYTES" /> ГБ</translation>
 <translation id="543338862236136125">Змяніць пароль</translation>
@@ -1365,7 +1363,6 @@
 <translation id="8110024788458304985">Дапамагаць паляпшаць функцыі і прадукцыйнасць Chrome</translation>
 <translation id="8110087112193408731">Паказваць у службе лічбавага камфорту вашы дзеянні ў Chrome?</translation>
 <translation id="8118117428362942925">Калі табе патрабуецца дапамога, звярніся да аднаго з бацькоў (<ph name="PARENT_NAME" />)</translation>
-<translation id="8124758083429256800">Вашы спісы захаваных пароляў для Chrome і Chrome <ph name="ERROR_DESCRIPTION" /> аб'яднаюцца пасля версіі 121. Вы зможаце выкарыстоўваць аўтазапаўненне для захаваных пароляў у абедзвюх праграмах.</translation>
 <translation id="8127542551745560481">Змяніць галоўную старонку</translation>
 <translation id="8130309322784422030">Уліковыя даныя могуць быць устарэлымі</translation>
 <translation id="813082847718468539">Прагляд звестак пра сайт</translation>

@@ -580,7 +580,6 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="4550040941166547650">Uniquement sur cet appareil</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{Fermer {COUNT} onglet inactif?}one{Fermer {COUNT} onglet inactif?}other{Fermer {COUNT} onglets inactifs?}}</translation>
 <translation id="457386861538956877">Autres...</translation>
-<translation id="4587235830039045480">Enregistrer le mot de passe dans votre compte Google</translation>
 <translation id="4587589328781138893">Sites</translation>
 <translation id="4588014171431912783">Vos paramètres de synchronisation seront restaurés en fonction de votre dernière sauvegarde. <ph name="BEGIN_LINK" />Afficher ce que vous pouvez synchroniser<ph name="END_LINK" /></translation>
 <translation id="4592368184551360546">Clavier</translation>
@@ -1334,7 +1333,6 @@ Vos données ont été chiffrées avec votre phrase de passe sur <ph name="TIME"
 <translation id="891658175948553296">Mettre du texte en surbrillance sur un site</translation>
 <translation id="8917490105272468696">Oui, j'accepte</translation>
 <translation id="8928133177108699615">Bureau</translation>
-<translation id="8934982071228289624">Pour enregistrer ce mot de passe dans votre compte, vous devez d'abord définir un mot de passe sur votre appareil.</translation>
 <translation id="894191600409472540">Créez des mots de passe forts</translation>
 <translation id="8952559610785099500">Ajouter un mot de passe</translation>
 <translation id="8953046091948372197">Vous trouverez vos mots de passe ici</translation>

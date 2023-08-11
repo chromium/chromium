@@ -580,7 +580,6 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="4550040941166547650">Uniquement sur cet appareil</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{Fermer {COUNT} onglet inactif ?}one{Fermer {COUNT} onglet inactif ?}other{Fermer {COUNT} onglets inactifs ?}}</translation>
 <translation id="457386861538956877">Autres...</translation>
-<translation id="4587235830039045480">Enregistrez le mot de passe dans votre compte Google</translation>
 <translation id="4587589328781138893">Sites</translation>
 <translation id="4588014171431912783">Vos paramètres de synchronisation seront restaurés en fonction de votre dernière sauvegarde. <ph name="BEGIN_LINK" />Voir ce que vous pouvez synchroniser<ph name="END_LINK" /></translation>
 <translation id="4592368184551360546">Clavier</translation>
@@ -636,7 +635,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="4848999860252535517">Supprimer le mot de passe pour <ph name="WEBSITE" /> ?</translation>
 <translation id="4854345657858711387">Définir un code secret</translation>
 <translation id="4856498338299082007">Dans votre compte Google</translation>
-<translation id="4858786880085262208">Passez à HTTPS, si possible. Les sites sécurisés peuvent intégrer du contenu non sécurisé.</translation>
+<translation id="4858786880085262208">Passer à HTTPS, si possible. Les sites sécurisés peuvent intégrer du contenu non sécurisé.</translation>
 <translation id="4860895144060829044">Appeler</translation>
 <translation id="4872323082491632254">Vérifier les mots de passe</translation>
 <translation id="4881695831933465202">Ouvrir</translation>
@@ -1335,7 +1334,6 @@ Vos données ont été chiffrées avec votre phrase secrète le <ph name="TIME" 
 <translation id="891658175948553296">Mettez du texte en surbrillance sur un site</translation>
 <translation id="8917490105272468696">J'accepte</translation>
 <translation id="8928133177108699615">Bureau</translation>
-<translation id="8934982071228289624">Pour enregistrer ce mot de passe dans votre compte, vous devez d'abord définir un code secret sur votre appareil.</translation>
 <translation id="894191600409472540">Créez des mots de passe sécurisés</translation>
 <translation id="8952559610785099500">Ajouter un mot de passe</translation>
 <translation id="8953046091948372197">Vous trouverez vos mots de passe ici</translation>

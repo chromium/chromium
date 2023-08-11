@@ -580,7 +580,6 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="4550040941166547650">Só neste dispositivo</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{Fechar {COUNT} separador inativo?}other{Fechar {COUNT} separadores inativos?}}</translation>
 <translation id="457386861538956877">Mais...</translation>
-<translation id="4587235830039045480">Guarde a palavra-passe na sua Conta Google</translation>
 <translation id="4587589328781138893">Sites</translation>
 <translation id="4588014171431912783">As definições de sincronização vão ser restauradas com base na última cópia de segurança. <ph name="BEGIN_LINK" />Veja o que pode sincronizar<ph name="END_LINK" /></translation>
 <translation id="4592368184551360546">Teclado</translation>
@@ -1334,7 +1333,6 @@ Os seus dados foram encriptados com a sua frase de acesso a <ph name="TIME" />. 
 <translation id="891658175948553296">Realce texto num site</translation>
 <translation id="8917490105272468696">Sim, aceito</translation>
 <translation id="8928133177108699615">Computador</translation>
-<translation id="8934982071228289624">Para guardar esta palavra-passe na sua conta, tem de definir primeiro um código secreto no dispositivo.</translation>
 <translation id="894191600409472540">Crie palavras-passe fortes</translation>
 <translation id="8952559610785099500">Adicione uma palavra-passe</translation>
 <translation id="8953046091948372197">As suas palavras-passe são apresentadas aqui</translation>

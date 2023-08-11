@@ -62,7 +62,6 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="1283039547216852943">Appuyer pour développer</translation>
 <translation id="1289059016768036948">Vous serez invité à vous connecter à votre compte Google</translation>
 <translation id="1291207594882862231">Effacez l'historique, vider le cache, supprimer les cookies et les données des sites…</translation>
-<translation id="1293898515599432175">Vos mots de passe seront supprimés du Gestionnaire de mots de passe de Google pour Chrome <ph name="CHROME_CHANNEL" />. Vous conserverez le fichier de mots de passe que vous venez de télécharger.</translation>
 <translation id="129553762522093515">Récemment fermés</translation>
 <translation id="1298077576058087471">Économisez jusqu'à 60 % de données mobiles, découvrez les actualités du jour</translation>
 <translation id="1303339473099049190">Ce mot de passe est introuvable. Vérifiez l'orthographe, puis réessayez.</translation>
@@ -822,7 +821,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5401851137404501592">Pour continuer, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> partagera avec ce site vos nom, adresse e-mail et photo de profil.</translation>
 <translation id="5409881200985013443">Envoyer <ph name="ONE_TIME_CODE" /> sur <ph name="CLIENT_NAME" /> ?</translation>
 <translation id="5414836363063783498">Validation…</translation>
-<translation id="542190472198460451">Tous les mots de passe seront téléchargés sur votre appareil et supprimés de Chrome <ph name="CHROME_CHANNEL" /></translation>
 <translation id="5423934151118863508">Les pages les plus consultées s'affichent ici.</translation>
 <translation id="5424588387303617268">Espace disponible : <ph name="GIGABYTES" /> Go</translation>
 <translation id="543338862236136125">Modifier le mot de passe</translation>
@@ -1366,7 +1364,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="8110024788458304985">Contribuer à l'amélioration des fonctionnalités et des performances de Chrome</translation>
 <translation id="8110087112193408731">Afficher votre activité Chrome dans Bien-être numérique ?</translation>
 <translation id="8118117428362942925">Si tu as besoin d'aide, demande à ton parent (<ph name="PARENT_NAME" />)</translation>
-<translation id="8124758083429256800">Vos listes de mots de passe enregistrés pour Chrome et Chrome <ph name="ERROR_DESCRIPTION" /> seront fusionnées après la version 121. Vous pourrez saisir automatiquement tous vos mots de passe enregistrés dans les deux applis.</translation>
 <translation id="8127542551745560481">Modifier la page d'accueil</translation>
 <translation id="8130309322784422030">Les infos de connexion enregistrées sont peut-être obsolètes</translation>
 <translation id="813082847718468539">Afficher des informations à propos du site</translation>

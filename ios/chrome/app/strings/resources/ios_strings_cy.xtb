@@ -580,7 +580,6 @@ Gweler cyfarwyddiadau eich peiriant chwilio er mwyn dileu eich hanes chwilio, os
 <translation id="4550040941166547650">Ar y ddyfais hon yn unig</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{Cau {COUNT} Tab Anweithredol?}zero{Cau {COUNT} Tab Anweithredol?}two{Cau {COUNT} Dab Anweithredol?}few{Cau {COUNT} Thab Anweithredol?}many{Cau {COUNT} Thab Anweithredol?}other{Cau {COUNT} Tab Anweithredol?}}</translation>
 <translation id="457386861538956877">Rhagor...</translation>
-<translation id="4587235830039045480">Cadw cyfrinair yn eich Cyfrif Google</translation>
 <translation id="4587589328781138893">Gwefannau</translation>
 <translation id="4588014171431912783">Bydd eich gosodiadau cysoni yn cael eu hadfer yn seiliedig ar eich copi wrth gefn diwethaf. <ph name="BEGIN_LINK" />Gweld Beth Allwch ei Gysoni<ph name="END_LINK" /></translation>
 <translation id="4592368184551360546">Bysellfwrdd</translation>
@@ -1334,7 +1333,6 @@ Cafodd eich data eu hamgryptio gyda'ch cyfrinymadrodd ar <ph name="TIME" />. Rho
 <translation id="891658175948553296">Amlygu Testun ar Wefan</translation>
 <translation id="8917490105272468696">Iawn, Rwy'n Cydsynio</translation>
 <translation id="8928133177108699615">Bwrdd gwaith</translation>
-<translation id="8934982071228289624">I gadw'r cyfrinair hwn yn eich cyfrif, rhaid i chi osod cod pas ar eich dyfais yn gyntaf.</translation>
 <translation id="894191600409472540">Creu cyfrineiriau cryf</translation>
 <translation id="8952559610785099500">Ychwanegu Cyfrinair</translation>
 <translation id="8953046091948372197">Byddwch yn gweld eich cyfrineiriau yma</translation>

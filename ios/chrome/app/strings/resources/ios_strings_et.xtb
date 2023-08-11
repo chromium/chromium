@@ -580,7 +580,6 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="4550040941166547650">Ainult selles seadmes</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{Kas sulgeda {COUNT} inaktiivne vaheleht?}other{Kas sulgeda {COUNT} inaktiivset vahelehte?}}</translation>
 <translation id="457386861538956877">Rohkem ...</translation>
-<translation id="4587235830039045480">Parooli salvestamine teie Google’i kontole</translation>
 <translation id="4587589328781138893">Saidid</translation>
 <translation id="4588014171431912783">Sünkroonimisseaded taastatakse teie viimase varukoopia alusel. <ph name="BEGIN_LINK" />Vaadake, mida sünkroonida saate<ph name="END_LINK" /></translation>
 <translation id="4592368184551360546">Klaviatuur</translation>
@@ -1334,7 +1333,6 @@ Teie andmed krüpteeriti teie parooliga kuupäeval <ph name="TIME" />. Chrome’
 <translation id="891658175948553296">Saidil teksti esiletõstmine</translation>
 <translation id="8917490105272468696">Jah, olen nõus</translation>
 <translation id="8928133177108699615">Lauaarvuti</translation>
-<translation id="8934982071228289624">Selle parooli salvestamiseks oma kontole peate oma seadmes esmalt seadistama pääsukoodi.</translation>
 <translation id="894191600409472540">Looge tugevad paroolid</translation>
 <translation id="8952559610785099500">Parooli lisamine</translation>
 <translation id="8953046091948372197">Oma paroolid leiate siit</translation>

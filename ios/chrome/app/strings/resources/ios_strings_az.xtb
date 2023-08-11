@@ -580,7 +580,6 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="4550040941166547650">Yalnız bu cihazda</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{{COUNT} fəaliyyətsiz tab bağlansın?}other{{COUNT} fəaliyyətsiz tab bağlansın?}}</translation>
 <translation id="457386861538956877">Digər...</translation>
-<translation id="4587235830039045480">Parolu Google Hesabında yadda saxlayın</translation>
 <translation id="4587589328781138893">Saytlar</translation>
 <translation id="4588014171431912783">Sinxronizasiya ayarlarınız son yedəkləmənizə əsasən bərpa olunacaq. <ph name="BEGIN_LINK" />Nəyi sinxronlaşdıra biləcəyinizə baxın<ph name="END_LINK" /></translation>
 <translation id="4592368184551360546">Klaviatura</translation>
@@ -1334,7 +1333,6 @@ Data <ph name="TIME" /> tarixində parol ifadəsi ilə şifrələnib. Google Hes
 <translation id="891658175948553296">Saytda Mətni vurğulayın</translation>
 <translation id="8917490105272468696">Bəli, razıyam</translation>
 <translation id="8928133177108699615">Masaüstü</translation>
-<translation id="8934982071228289624">Bu parolu hesabda saxlamaq üçün cihazda giriş kodu ayarlamalısınız.</translation>
 <translation id="894191600409472540">Güclü parollar yaradın</translation>
 <translation id="8952559610785099500">Parol əlavə edin</translation>
 <translation id="8953046091948372197">Parolları burada tapa bilərsiniz</translation>

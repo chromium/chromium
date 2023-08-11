@@ -62,7 +62,6 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="1283039547216852943">Tap to expand</translation>
 <translation id="1289059016768036948">You’ll be asked to sign in to your Google Account</translation>
 <translation id="1291207594882862231">Clear history, cookies, site data, cache…</translation>
-<translation id="1293898515599432175">Your passwords will be deleted from Google Password Manager for Chrome <ph name="CHROME_CHANNEL" />. You will keep the passwords file you just downloaded.</translation>
 <translation id="129553762522093515">Recently closed</translation>
 <translation id="1298077576058087471">Save up to 60% data, read today's news</translation>
 <translation id="1303339473099049190">Can’t find that password. Check your spelling and try again.</translation>
@@ -822,7 +821,6 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5401851137404501592">To continue, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> will share your name, email address and profile picture with this site.</translation>
 <translation id="5409881200985013443">Submit <ph name="ONE_TIME_CODE" /> on <ph name="CLIENT_NAME" />?</translation>
 <translation id="5414836363063783498">Verifying…</translation>
-<translation id="542190472198460451">All passwords will be downloaded on your device and removed from Chrome <ph name="CHROME_CHANNEL" /></translation>
 <translation id="5423934151118863508">Your most visited pages will appear here</translation>
 <translation id="5424588387303617268"><ph name="GIGABYTES" /> GB available</translation>
 <translation id="543338862236136125">Edit password</translation>
@@ -1366,7 +1364,6 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="8110024788458304985">Help improve Chrome\u2019s features and performance</translation>
 <translation id="8110087112193408731">Show your Chrome activity in Digital Wellbeing?</translation>
 <translation id="8118117428362942925">If you need help, ask your parent (<ph name="PARENT_NAME" />)</translation>
-<translation id="8124758083429256800">Your lists of saved passwords for Chrome and Chrome <ph name="ERROR_DESCRIPTION" /> will merge after version 121. You’ll be able to autofill all your saved passwords on both apps.</translation>
 <translation id="8127542551745560481">Edit homepage</translation>
 <translation id="8130309322784422030">Your stored sign-in info might be out of date</translation>
 <translation id="813082847718468539">View site information</translation>

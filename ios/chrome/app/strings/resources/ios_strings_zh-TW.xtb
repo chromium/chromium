@@ -578,7 +578,6 @@
 <translation id="4550040941166547650">僅在這部裝置上</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{要關閉 {COUNT} 個閒置分頁嗎？}other{要關閉 {COUNT} 個閒置分頁嗎？}}</translation>
 <translation id="457386861538956877">更多…</translation>
-<translation id="4587235830039045480">將密碼儲存到 Google 帳戶</translation>
 <translation id="4587589328781138893">網站</translation>
 <translation id="4588014171431912783">系統會根據上次的備份記錄還原同步處理設定。<ph name="BEGIN_LINK" />查看可以同步處理的內容<ph name="END_LINK" /></translation>
 <translation id="4592368184551360546">鍵盤</translation>
@@ -1330,7 +1329,6 @@
 <translation id="891658175948553296">醒目顯示網站的文字</translation>
 <translation id="8917490105272468696">是，我同意</translation>
 <translation id="8928133177108699615">電腦模式</translation>
-<translation id="8934982071228289624">如要將這組密碼儲存在帳戶中，請務必先在裝置上設定密碼。</translation>
 <translation id="894191600409472540">建立高強度密碼</translation>
 <translation id="8952559610785099500">新增密碼</translation>
 <translation id="8953046091948372197">這裡會顯示你的密碼</translation>

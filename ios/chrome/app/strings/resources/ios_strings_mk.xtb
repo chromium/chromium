@@ -580,7 +580,6 @@
 <translation id="4550040941166547650">Само на уредов</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{Дали да се затвори {COUNT} неактивна картичка?}one{Дали да се затворат {COUNT} неактивна картичка?}other{Дали да се затворат {COUNT} неактивни картички?}}</translation>
 <translation id="457386861538956877">Повеќе…</translation>
-<translation id="4587235830039045480">Зачувајте ја лозинката на вашата сметка на Google</translation>
 <translation id="4587589328781138893">Сајтови</translation>
 <translation id="4588014171431912783">Поставките за синхронизација ќе се вратат според последниот бекап. <ph name="BEGIN_LINK" />Видете што може да синхронизирате<ph name="END_LINK" /></translation>
 <translation id="4592368184551360546">Тастатура</translation>
@@ -1334,7 +1333,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="891658175948553296">Нагласете текст на сајт</translation>
 <translation id="8917490105272468696">Да, прифаќам</translation>
 <translation id="8928133177108699615">Компјутер</translation>
-<translation id="8934982071228289624">За да ја зачувате лозинкава на вашата сметка, прво мора да поставите лозинка на вашиот уред.</translation>
 <translation id="894191600409472540">Создајте силни лозинки</translation>
 <translation id="8952559610785099500">Додајте лозинка</translation>
 <translation id="8953046091948372197">Вашите лозинки ќе ги најдете тука</translation>
