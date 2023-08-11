@@ -1300,6 +1300,10 @@ BASE_FEATURE(kPrefetchPrivacyChanges,
              "PrefetchPrivacyChanges",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kPreloadingHeuristicsMLModel,
+             "PreloadingHeuristicsMLModel",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kPrerender2InNewTab,
              "Prerender2InNewTab",
              base::FEATURE_DISABLED_BY_DEFAULT);

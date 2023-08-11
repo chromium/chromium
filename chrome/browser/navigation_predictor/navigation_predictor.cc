@@ -15,6 +15,8 @@
 #include "base/system/sys_info.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service_factory.h"
+#include "chrome/browser/navigation_predictor/preloading_model_keyed_service.h"
+#include "chrome/browser/navigation_predictor/preloading_model_keyed_service_factory.h"
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
@@ -180,6 +182,14 @@ void NavigationPredictor::ReportNewAnchorElements(
             kAnchorElementsParsedFromWebPage,
         new_predictions);
   }
+
+  PreloadingModelKeyedService* model_service =
+      PreloadingModelKeyedServiceFactory::GetForProfile(
+          Profile::FromBrowserContext(render_frame_host().GetBrowserContext()));
+  if (!model_service) {
+    return;
+  }
+  // TODO(isaboori): use the ML model to predict the next use click.
 }
 
 void NavigationPredictor::ReportAnchorElementClick(

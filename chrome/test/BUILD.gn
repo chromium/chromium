@@ -2118,6 +2118,7 @@ if (!is_android) {
       "../browser/navigation_predictor/anchor_element_preloader_browsertest.cc",
       "../browser/navigation_predictor/navigation_predictor_browsertest.cc",
       "../browser/navigation_predictor/navigation_predictor_preconnect_client_browsertest.cc",
+      "../browser/navigation_predictor/preloading_model_keyed_service_browsertest.cc",
       "../browser/navigation_predictor/search_engine_preconnector_browsertest.cc",
       "../browser/net/cert_verifier_service_browsertest.cc",
       "../browser/net/cert_verify_proc_browsertest.cc",
@@ -6140,7 +6141,11 @@ test("unit_tests") {
     "../test/base/v8_unit_test.cc",
     "../test/base/v8_unit_test.h",
   ]
-
+  if (build_with_tflite_lib) {
+    sources += [
+      "../browser/navigation_predictor/preloading_model_executor_unittest.cc",
+    ]
+  }
   if (!is_chromeos_ash) {
     sources += [
       "../browser/signin/wait_for_network_callback_helper_chrome_unittest.cc",
@@ -6268,6 +6273,11 @@ test("unit_tests") {
     "//third_party/pywebsocket3/src/mod_pywebsocket/",
     "//tools/metrics/histograms/enums.xml",
   ]
+
+  if (build_with_tflite_lib) {
+    data +=
+        [ "../browser/navigation_predictor/test/preloading_heuristics.tflite" ]
+  }
 
   if (is_android) {
     # Trim data specifically to what is used by unit tests on Android.
