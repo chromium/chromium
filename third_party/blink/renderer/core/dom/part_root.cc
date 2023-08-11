@@ -75,59 +75,66 @@ void PartRoot::RemovePart(Part& part) {
 // PartRoot (from FirstIncludedChildNode to LastIncludedChildNode), and collect
 // any Parts we find. If we find a ChildNodePart (or other PartRoot), we ignore
 // Parts until we exit the Partroot.
-// TODO(crbug.com/1453291) Future optimization: just skip the Node
-// traversal directly to the LastIncludedChildNode and avoid looping through
-// the descendants.)
 HeapDeque<Member<Part>>& PartRoot::RebuildPartsList() {
   DCHECK(cached_parts_list_dirty_);
-
   auto& ordered_parts = *MakeGarbageCollected<HeapDeque<Member<Part>>>();
-
   // Then traverse the tree under the root container and add parts in the order
   // they're found in the tree, and for the same Node, in the order they were
   // constructed.
-  Node* child = FirstIncludedChildNode();
-  Node* last_child = LastIncludedChildNode();
-  if (!child || !last_child) {
+  Node* node = FirstIncludedChildNode();
+  if (!node || !LastIncludedChildNode()) {
     return ordered_parts;
   }
-  bool done = false;
-  Part* inside_sub_root = nullptr;
-  while (!done) {
-    for (auto& descendant : NodeTraversal::InclusiveDescendantsOf(*child)) {
-      if (auto* parts = descendant.GetDOMParts()) {
-        for (Part* part : *parts) {
-          PartRoot* part_root = part->GetAsPartRoot();
-          if (part_root == this) {
-            // Skip the PartRoot itself.
-            continue;
-          }
-          if (inside_sub_root) {
-            if (inside_sub_root == part) {
-              // We just exited the other side of the ChildNodePart.
-              DCHECK_EQ(part_root->LastIncludedChildNode(), &descendant);
-              inside_sub_root = nullptr;
-            }
-            continue;
-          }
-          if (part->NodeToSortBy() != descendant) {
-            continue;
-          }
-          if (!part->IsValid()) {
-            continue;
-          }
-          DCHECK(!base::Contains(ordered_parts, part));
-          ordered_parts.push_back(part);
-          if (!inside_sub_root && part_root) {
-            // We just entered a PartRoot - ignore further parts until we
-            // traverse the end node of this PartRoot.
-            inside_sub_root = part;
-          }
+  Node* end_node = LastIncludedChildNode()->nextSibling();
+  enum class NestedPartRoot {
+    kNone,
+    kAtStart,
+    kAtEnd
+  } nested_part_root = NestedPartRoot::kNone;
+  while (node != end_node) {
+    Node* next_node = NodeTraversal::Next(*node);
+    if (auto* parts = node->GetDOMParts()) {
+      // If we were previously at the start of a nested root, we're now at the
+      // end.
+      nested_part_root = nested_part_root == NestedPartRoot::kAtStart
+                             ? NestedPartRoot::kAtEnd
+                             : NestedPartRoot::kNone;
+      for (Part* part : *parts) {
+        if (!part->IsValid()) {
+          continue;
         }
+        if (PartRoot* part_root = part->GetAsPartRoot()) {
+          // Skip the PartRoot itself.
+          if (part_root == this) {
+            continue;
+          }
+          // TODO(crbug.com/1453291) It's still possible to construct two
+          // overlapping ChildNodeParts, e.g. both with the same endpoints,
+          // overlapping endpoints, or adjoining endpoings (previous==next).
+          // Eventually that should not be legal. Until then, ignore the second
+          // and subsequent nested part roots we find. When such parts are no
+          // longer legal, |nested_part_root| can be removed.
+          if (nested_part_root != NestedPartRoot::kNone) {
+            continue;
+          }
+          // We just entered a contained PartRoot; we should be at the
+          // FirstIncludedChildNode. Skip all descendants of this PartRoot and
+          // move to the last included child. Make sure to process any other
+          // Parts that are on the endpoint Nodes.
+          DCHECK_EQ(part_root->FirstIncludedChildNode(), node);
+          DCHECK_EQ(part_root->LastIncludedChildNode()->parentNode(),
+                    node->parentNode());
+          next_node = part_root->LastIncludedChildNode();
+          nested_part_root = NestedPartRoot::kAtStart;
+        }
+        if (part->NodeToSortBy() != node) {
+          continue;
+        }
+        DCHECK(!base::Contains(ordered_parts, part));
+        ordered_parts.push_back(part);
       }
     }
-    done = child == last_child;
-    child = child->nextSibling();
+    node = next_node;
   }
   return ordered_parts;
 }

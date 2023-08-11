@@ -27,7 +27,9 @@ class NodeMoveScopeItem : public GarbageCollected<NodeMoveScopeItem> {
   // mutation events have listeners. Or something like that.
   NodeMoveScopeItem(Node& destination_root, NodeMoveScopeType type)
       : destination_root_(destination_root),
-        all_parts_lists_clean_(type != NodeMoveScopeType::kOther),
+        all_parts_lists_clean_(type != NodeMoveScopeType::kOther &&
+                               !destination_root.GetDocument().HasListenerType(
+                                   Document::kDOMMutationEventListener)),
         prepending_children_(type ==
                              NodeMoveScopeType::kInsertBeforeAllChildren) {
     DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
