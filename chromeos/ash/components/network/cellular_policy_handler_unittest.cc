@@ -558,6 +558,47 @@ TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled,
 }
 
 TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled,
+       InstalledButFailedToEnable) {
+  SetupGolden();
+
+  ExpectedHistogramState expected_state;
+  CheckHistogramState(expected_state);
+
+  const policy_util::SmdxActivationCode activation_code(
+      policy_util::SmdxActivationCode::Type::SMDP,
+      HermesEuiccClient::Get()
+          ->GetTestInterface()
+          ->GenerateFakeActivationCode());
+
+  absl::optional<base::Value::Dict> onc_config =
+      chromeos::onc::ReadDictionaryFromJson(
+          GenerateCellularPolicy(activation_code));
+  ASSERT_TRUE(onc_config.has_value());
+
+  // Set the result of the next attempt to enable a carrier profile to match
+  // what would be returned when a profile was successfully installed, but
+  // failed to become enabled.
+  HermesProfileClient::Get()
+      ->GetTestInterface()
+      ->SetNextEnableCarrierProfileResult(
+          HermesResponseStatus::kErrorWrongState);
+
+  {
+    CellularInhibitorObserver cellular_inhibitor_observer;
+    InstallProfile(*onc_config);
+    cellular_inhibitor_observer.CheckLastInhibitReason(
+        CellularInhibitor::InhibitReason::kRequestingAvailableProfiles);
+  }
+
+  EXPECT_TRUE(IsProfileInstalled(*onc_config, activation_code.value(),
+                                 /*check_for_service=*/true));
+  EXPECT_TRUE(HasESimMetadata(activation_code.value()));
+  expected_state.success_initial_count++;
+  expected_state.install_method_via_smdp_count++;
+  CheckHistogramState(expected_state);
+}
+
+TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled,
        InstallSuccess_SMDSMultipleProfiles) {
   SetupGolden();
 

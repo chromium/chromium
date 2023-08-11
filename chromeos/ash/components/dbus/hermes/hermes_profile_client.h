@@ -37,6 +37,13 @@ class COMPONENT_EXPORT(HERMES_CLIENT) HermesProfileClient {
     // Sets service state to connected after eSIM profiles are enabled.
     virtual void SetEnableProfileBehavior(
         EnableProfileBehavior enable_profile_behavior) = 0;
+
+    // Sets the return for the next call to
+    // HermesEuiccClient::EnableCarrierProfile(). The implementation of this
+    // method should only accept error statuses since clients expect additional
+    // steps to have been taken when successful.
+    virtual void SetNextEnableCarrierProfileResult(
+        HermesResponseStatus status) = 0;
   };
 
   // Hermes profile properties.

@@ -509,7 +509,12 @@ void CellularPolicyHandler::OnESimProfileInstallAttemptComplete(
 
   auto current_request = std::move(remaining_install_requests_.front());
   PopRequest();
-  if (status != HermesResponseStatus::kSuccess) {
+
+  const bool has_error = status != HermesResponseStatus::kSuccess;
+  const bool was_installed = profile_path.has_value() &&
+                             ash::features::IsSmdsSupportEuiccUploadEnabled();
+
+  if (has_error && !was_installed) {
     if (!base::Contains(kHermesUserErrorCodes, status)) {
       NET_LOG(ERROR)
           << "Failed to install the policy eSIM profile due to a non-user "
@@ -528,8 +533,17 @@ void CellularPolicyHandler::OnESimProfileInstallAttemptComplete(
     return;
   }
 
-  NET_LOG(EVENT) << "Successfully installed policy eSIM profile: "
-                 << current_request->activation_code.ToString();
+  if (has_error) {
+    NET_LOG(ERROR)
+        << "Successfully installed policy eSIM profile but failed to "
+        << "subsequently enable or connect to the profile: " << status << ". "
+        << "Writing the profile information to device prefs and will not "
+        << "schedule another attempt: "
+        << current_request->activation_code.ToString();
+  } else {
+    NET_LOG(EVENT) << "Successfully installed policy eSIM profile: "
+                   << current_request->activation_code.ToString();
+  }
 
   current_request->retry_backoff.InformOfRequest(/*succeeded=*/true);
   HermesProfileClient::Properties* profile_properties =

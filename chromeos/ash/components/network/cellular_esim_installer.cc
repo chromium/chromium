@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/components/network/cellular_esim_installer.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
@@ -360,10 +361,19 @@ void CellularESimInstaller::HandleNewProfileEnableFailure(
   NET_LOG(ERROR) << "Error enabling newly created profile path="
                  << profile_path.value() << ", service path=" << service_path
                  << ", error_name=" << error_name;
-
-  std::move(callback).Run(HermesResponseStatus::kErrorWrongState,
-                          /*profile_path=*/absl::nullopt,
-                          /*service_path=*/absl::nullopt);
+  if (ash::features::IsSmdsSupportEuiccUploadEnabled()) {
+    // Propagate |profile_path| and |service_path| so that the code that
+    // initiated the installation can handle the case where the profile was
+    // successfully installed, but the installation process failed for some
+    // other reason e.g. failed to enable the profile.
+    std::move(callback).Run(HermesResponseStatus::kErrorWrongState,
+                            /*profile_path=*/profile_path,
+                            /*service_path=*/service_path);
+  } else {
+    std::move(callback).Run(HermesResponseStatus::kErrorWrongState,
+                            /*profile_path=*/absl::nullopt,
+                            /*service_path=*/absl::nullopt);
+  }
 }
 
 }  // namespace ash
