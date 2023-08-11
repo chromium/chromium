@@ -14,7 +14,6 @@
 #import "base/mac/scoped_cftyperef.h"
 #import "base/run_loop.h"
 #import "base/strings/sys_string_conversions.h"
-#import "base/task/thread_pool/thread_pool_instance.h"
 #import "base/time/time.h"
 #import "ios/chrome/browser/snapshots/snapshot_cache_internal.h"
 #import "ios/chrome/browser/snapshots/snapshot_cache_observer.h"
@@ -24,8 +23,18 @@
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 
-static const NSUInteger kSnapshotCount = 10;
-static const NSUInteger kSnapshotPixelSize = 8;
+namespace {
+
+const NSUInteger kSnapshotCount = 10;
+const NSUInteger kSnapshotPixelSize = 8;
+
+// Constants used to construct path to test the storage migration.
+const base::FilePath::CharType kSnapshots[] = FILE_PATH_LITERAL("Snapshots");
+const base::FilePath::CharType kSessions[] = FILE_PATH_LITERAL("Sessions");
+const base::FilePath::CharType kIdentifier[] = FILE_PATH_LITERAL("Identifier");
+const base::FilePath::CharType kFilename[] = FILE_PATH_LITERAL("Filename.txt");
+
+}  // namespace
 
 @interface FakeSnapshotCacheObserver : NSObject<SnapshotCacheObserver>
 @property(nonatomic, copy) NSString* lastUpdatedID;
@@ -42,15 +51,30 @@ namespace {
 
 class SnapshotCacheTest : public PlatformTest {
  protected:
-  // Build an array of snapshot IDs and an array of UIImages filled with
-  // random colors.
   void SetUp() override {
     PlatformTest::SetUp();
-    ASSERT_TRUE(scoped_temp_directory_.CreateUniqueTempDir());
-    snapshotCache_ = [[SnapshotCache alloc]
-        initWithStoragePath:scoped_temp_directory_.GetPath()];
+
     testImages_ = [[NSMutableArray alloc] initWithCapacity:kSnapshotCount];
     snapshotIDs_ = [[NSMutableArray alloc] initWithCapacity:kSnapshotCount];
+  }
+
+  void TearDown() override {
+    ClearDumpedImages();
+    [snapshotCache_ shutdown];
+    snapshotCache_ = nil;
+    PlatformTest::TearDown();
+  }
+
+  // Build an array of snapshot IDs and an array of UIImages filled with
+  // random colors.
+  [[nodiscard]] bool CreateSnapshotCache() {
+    DCHECK(!snapshotCache_);
+    if (!scoped_temp_directory_.CreateUniqueTempDir()) {
+      return false;
+    }
+
+    snapshotCache_ = [[SnapshotCache alloc]
+        initWithStoragePath:scoped_temp_directory_.GetPath()];
 
     CGFloat scale = [snapshotCache_ snapshotScaleForDevice];
 
@@ -62,17 +86,13 @@ class SnapshotCacheTest : public PlatformTest {
           addObject:[NSString stringWithFormat:@"SnapshotID-%" PRIuNS, i]];
     }
 
-    ClearDumpedImages();
+    return true;
   }
 
-  void TearDown() override {
-    ClearDumpedImages();
-    [snapshotCache_ shutdown];
-    snapshotCache_ = nil;
-    PlatformTest::TearDown();
+  SnapshotCache* GetSnapshotCache() {
+    DCHECK(snapshotCache_);
+    return snapshotCache_;
   }
-
-  SnapshotCache* GetSnapshotCache() { return snapshotCache_; }
 
   // Adds a fake snapshot file into `directory` using `snapshot_id` in the
   // filename.
@@ -114,45 +134,54 @@ class SnapshotCacheTest : public PlatformTest {
         }];
   }
 
-  // Flushes all the runloops internally used by the snapshot cache.
-  void FlushRunLoops() {
-    base::ThreadPoolInstance::Get()->FlushForTesting();
-    base::RunLoop().RunUntilIdle();
+  // Flushes all the runloops internally used by the snapshot cache. This is
+  // done by asking to retrieve a non-existent image from disk and blocking
+  // until the callback is invoked.
+  void FlushRunLoops(SnapshotCache* cache) {
+    base::RunLoop run_loop;
+    [cache retrieveImageForSnapshotID:[[NSUUID UUID] UUIDString]
+                             callback:base::CallbackToBlock(
+                                          base::IgnoreArgs<UIImage*>(
+                                              run_loop.QuitClosure()))];
+    run_loop.Run();
   }
 
   // This function removes the snapshots both from dictionary and from disk.
   void ClearDumpedImages() {
-    SnapshotCache* cache = GetSnapshotCache();
+    if (!snapshotCache_) {
+      return;
+    }
 
     NSString* snapshotID;
     for (snapshotID in snapshotIDs_)
-      [cache removeImageWithSnapshotID:snapshotID];
+      [snapshotCache_ removeImageWithSnapshotID:snapshotID];
 
-    FlushRunLoops();
+    FlushRunLoops(snapshotCache_);
     // The above calls to -removeImageWithSnapshotID remove both the color
     // and grey snapshots for each snapshotID, if they are on disk.  However,
     // ensure we also get rid of the grey snapshots in memory.
-    [cache removeGreyCache];
+    [snapshotCache_ removeGreyCache];
 
     __block BOOL foundImage = NO;
     __block NSUInteger numCallbacks = 0;
     for (snapshotID in snapshotIDs_) {
-      base::FilePath path([cache imagePathForSnapshotID:snapshotID]);
+      base::FilePath path([snapshotCache_ imagePathForSnapshotID:snapshotID]);
 
       // Checks that the snapshot is not on disk.
       EXPECT_FALSE(base::PathExists(path));
 
       // Check that the snapshot is not in the dictionary.
-      [cache retrieveImageForSnapshotID:snapshotID
-                               callback:^(UIImage* image) {
-                                 ++numCallbacks;
-                                 if (image)
-                                   foundImage = YES;
-                               }];
+      [snapshotCache_ retrieveImageForSnapshotID:snapshotID
+                                        callback:^(UIImage* image) {
+                                          ++numCallbacks;
+                                          if (image) {
+                                            foundImage = YES;
+                                          }
+                                        }];
     }
 
     // Expect that all the callbacks ran and that none retrieved an image.
-    FlushRunLoops();
+    FlushRunLoops(snapshotCache_);
     EXPECT_EQ([snapshotIDs_ count], numCallbacks);
     EXPECT_FALSE(foundImage);
   }
@@ -166,21 +195,20 @@ class SnapshotCacheTest : public PlatformTest {
   // Loads `count` color images into the cache.  If `waitForFilesOnDisk`
   // is YES, will not return until the images have been written to disk.
   void LoadColorImagesIntoCache(NSUInteger count, bool waitForFilesOnDisk) {
-    SnapshotCache* cache = GetSnapshotCache();
     // Put color images in the cache.
     for (NSUInteger i = 0; i < count; ++i) {
       @autoreleasepool {
         UIImage* image = [testImages_ objectAtIndex:i];
         NSString* snapshotID = [snapshotIDs_ objectAtIndex:i];
-        [cache setImage:image withSnapshotID:snapshotID];
+        [snapshotCache_ setImage:image withSnapshotID:snapshotID];
       }
     }
     if (waitForFilesOnDisk) {
-      FlushRunLoops();
+      FlushRunLoops(snapshotCache_);
       for (NSUInteger i = 0; i < count; ++i) {
         // Check that images are on the disk.
         NSString* snapshotID = [snapshotIDs_ objectAtIndex:i];
-        base::FilePath path([cache imagePathForSnapshotID:snapshotID]);
+        base::FilePath path([snapshotCache_ imagePathForSnapshotID:snapshotID]);
         EXPECT_TRUE(base::PathExists(path));
       }
     }
@@ -189,10 +217,9 @@ class SnapshotCacheTest : public PlatformTest {
   // Waits for the first `count` grey images for `snapshotIDs_` to be placed in
   // the cache.
   void WaitForGreyImagesInCache(NSUInteger count) {
-    SnapshotCache* cache = GetSnapshotCache();
-    FlushRunLoops();
+    FlushRunLoops(snapshotCache_);
     for (NSUInteger i = 0; i < count; i++)
-      EXPECT_TRUE([cache hasGreyImageInMemory:snapshotIDs_[i]]);
+      EXPECT_TRUE([snapshotCache_ hasGreyImageInMemory:snapshotIDs_[i]]);
   }
 
   // Guesses the order of the color channels in the image.
@@ -247,6 +274,7 @@ class SnapshotCacheTest : public PlatformTest {
 // As the snapshots are kept in memory, the same pointer can be retrieved.
 // This test also checks that images are correctly removed from the disk.
 TEST_F(SnapshotCacheTest, Cache) {
+  ASSERT_TRUE(CreateSnapshotCache());
   SnapshotCache* cache = GetSnapshotCache();
 
   NSUInteger expectedCacheSize = MIN(kSnapshotCount, [cache lruCacheMaxSize]);
@@ -278,6 +306,7 @@ TEST_F(SnapshotCacheTest, Cache) {
 // This test puts all the snapshots in the cache and flushes them to disk.
 // The snapshots are then reloaded from the disk, and the colors are compared.
 TEST_F(SnapshotCacheTest, SaveToDisk) {
+  ASSERT_TRUE(CreateSnapshotCache());
   SnapshotCache* cache = GetSnapshotCache();
 
   // Put all images in the cache.
@@ -286,7 +315,7 @@ TEST_F(SnapshotCacheTest, SaveToDisk) {
     NSString* snapshotID = [snapshotIDs_ objectAtIndex:i];
     [cache setImage:image withSnapshotID:snapshotID];
   }
-  FlushRunLoops();
+  FlushRunLoops(cache);
 
   for (NSUInteger i = 0; i < kSnapshotCount; ++i) {
     // Check that images are on the disk.
@@ -336,6 +365,7 @@ TEST_F(SnapshotCacheTest, SaveToDisk) {
 }
 
 TEST_F(SnapshotCacheTest, Purge) {
+  ASSERT_TRUE(CreateSnapshotCache());
   SnapshotCache* cache = GetSnapshotCache();
 
   // Put all images in the cache.
@@ -351,7 +381,7 @@ TEST_F(SnapshotCacheTest, Purge) {
   // Purge the cache.
   [cache purgeCacheOlderThan:(base::Time::Now() - base::Hours(1))
                      keeping:liveSnapshotIDs];
-  FlushRunLoops();
+  FlushRunLoops(cache);
 
   // Check that nothing has been deleted.
   for (NSUInteger i = 0; i < kSnapshotCount; ++i) {
@@ -364,7 +394,7 @@ TEST_F(SnapshotCacheTest, Purge) {
 
   // Purge the cache.
   [cache purgeCacheOlderThan:base::Time::Now() keeping:liveSnapshotIDs];
-  FlushRunLoops();
+  FlushRunLoops(cache);
 
   // Check that the file have been deleted.
   for (NSUInteger i = 0; i < kSnapshotCount; ++i) {
@@ -382,6 +412,7 @@ TEST_F(SnapshotCacheTest, Purge) {
 // Tests that migration code correctly rename the specified files and leave
 // the other files untouched.
 TEST_F(SnapshotCacheTest, RenameSnapshots) {
+  ASSERT_TRUE(CreateSnapshotCache());
   SnapshotCache* cache = GetSnapshotCache();
 
   // This snapshot will be renamed.
@@ -396,7 +427,7 @@ TEST_F(SnapshotCacheTest, RenameSnapshots) {
 
   NSString* new_id = [[NSUUID UUID] UUIDString];
   [cache renameSnapshotsWithIDs:@[ image1_id ] toIDs:@[ new_id ]];
-  FlushRunLoops();
+  FlushRunLoops(cache);
 
   // image1 should have been moved.
   EXPECT_FALSE(base::PathExists(image1_path));
@@ -409,6 +440,7 @@ TEST_F(SnapshotCacheTest, RenameSnapshots) {
 // Loads the color images into the cache, and pins two of them.  Ensures that
 // only the two pinned IDs remain in memory after a memory warning.
 TEST_F(SnapshotCacheTest, HandleMemoryWarning) {
+  ASSERT_TRUE(CreateSnapshotCache());
   LoadAllColorImagesIntoCache(true);
 
   SnapshotCache* cache = GetSnapshotCache();
@@ -429,7 +461,7 @@ TEST_F(SnapshotCacheTest, HandleMemoryWarning) {
   EXPECT_FALSE([cache hasImageInMemory:notPinnedID]);
 
   // Wait for the final image to be pulled off disk.
-  FlushRunLoops();
+  FlushRunLoops(cache);
 }
 
 // Tests that createGreyCache creates the grey snapshots in the background,
@@ -439,6 +471,7 @@ TEST_F(SnapshotCacheTest, HandleMemoryWarning) {
 // Disabled on simulators because it sometimes crashes. crbug/421425
 #if !TARGET_IPHONE_SIMULATOR
 TEST_F(SnapshotCacheTest, CreateGreyCache) {
+  ASSERT_TRUE(CreateSnapshotCache());
   LoadAllColorImagesIntoCache(true);
 
   // Request the creation of a grey image cache for all images.
@@ -465,6 +498,7 @@ TEST_F(SnapshotCacheTest, CreateGreyCache) {
 // rather than in memory.
 // Disabled due to the greyImage crash.  b/8048597
 TEST_F(SnapshotCacheTest, CreateGreyCacheFromDisk) {
+  ASSERT_TRUE(CreateSnapshotCache());
   LoadAllColorImagesIntoCache(true);
 
   // Remove color images from in-memory cache.
@@ -498,6 +532,7 @@ TEST_F(SnapshotCacheTest, CreateGreyCacheFromDisk) {
 // callback of the three requests should be called.
 // Disabled due to the greyImage crash.  b/8048597
 TEST_F(SnapshotCacheTest, MostRecentGreyBlock) {
+  ASSERT_TRUE(CreateSnapshotCache());
   const NSUInteger kNumImages = 3;
   NSMutableArray* snapshotIDs =
       [[NSMutableArray alloc] initWithCapacity:kNumImages];
@@ -544,6 +579,7 @@ TEST_F(SnapshotCacheTest, MostRecentGreyBlock) {
 // Test the function used to save a grey copy of a color snapshot fully on a
 // background thread when the application is backgrounded.
 TEST_F(SnapshotCacheTest, GreyImageAllInBackground) {
+  ASSERT_TRUE(CreateSnapshotCache());
   LoadAllColorImagesIntoCache(true);
 
   SnapshotCache* cache = GetSnapshotCache();
@@ -555,7 +591,7 @@ TEST_F(SnapshotCacheTest, GreyImageAllInBackground) {
 
   // Waits for the grey images for `snapshotIDs_` to be written to disk, which
   // happens in a background thread.
-  FlushRunLoops();
+  FlushRunLoops(cache);
 
   for (NSString* snapshotID in snapshotIDs_) {
     base::FilePath path([cache greyImagePathForSnapshotID:snapshotID]);
@@ -567,6 +603,7 @@ TEST_F(SnapshotCacheTest, GreyImageAllInBackground) {
 // Verifies that image size and scale are preserved when writing and reading
 // from disk.
 TEST_F(SnapshotCacheTest, SizeAndScalePreservation) {
+  ASSERT_TRUE(CreateSnapshotCache());
   SnapshotCache* cache = GetSnapshotCache();
 
   // Create an image with the expected snapshot scale.
@@ -577,7 +614,7 @@ TEST_F(SnapshotCacheTest, SizeAndScalePreservation) {
   // is read from disk instead of the in-memory cache.
   NSString* const kSnapshotID = @"foo";
   [cache setImage:image withSnapshotID:kSnapshotID];
-  FlushRunLoops();  // ensure the file is written to disk.
+  FlushRunLoops(cache);  // ensure the file is written to disk.
   TriggerMemoryWarning();
 
   // Retrive the image and have the callback verify the size and scale.
@@ -591,12 +628,13 @@ TEST_F(SnapshotCacheTest, SizeAndScalePreservation) {
                           EXPECT_EQ(image.scale, imageFromDisk.scale);
                           callbackComplete = YES;
                         }];
-  FlushRunLoops();
+  FlushRunLoops(cache);
   EXPECT_TRUE(callbackComplete);
 }
 
 // Verifies that retina-scale images are deleted properly.
 TEST_F(SnapshotCacheTest, DeleteRetinaImages) {
+  ASSERT_TRUE(CreateSnapshotCache());
   SnapshotCache* cache = GetSnapshotCache();
   if ([cache snapshotScaleForDevice] != 2.0) {
     return;
@@ -609,7 +647,7 @@ TEST_F(SnapshotCacheTest, DeleteRetinaImages) {
   // is read from disk instead of the in-memory cache.
   NSString* const kSnapshotID = @"foo";
   [cache setImage:image withSnapshotID:kSnapshotID];
-  FlushRunLoops();  // ensure the file is written to disk.
+  FlushRunLoops(cache);  // ensure the file is written to disk.
   TriggerMemoryWarning();
 
   // Verify the file was writted with @2x in the file name.
@@ -618,7 +656,7 @@ TEST_F(SnapshotCacheTest, DeleteRetinaImages) {
 
   // Delete the image.
   [cache removeImageWithSnapshotID:kSnapshotID];
-  FlushRunLoops();  // ensure the file is removed.
+  FlushRunLoops(cache);  // ensure the file is removed.
 
   EXPECT_FALSE(base::PathExists(retinaFile));
 }
@@ -626,18 +664,20 @@ TEST_F(SnapshotCacheTest, DeleteRetinaImages) {
 // Tests that image immediately deletes when calling
 // `-removeImageWithSnapshotID:`.
 TEST_F(SnapshotCacheTest, ImageDeleted) {
+  ASSERT_TRUE(CreateSnapshotCache());
   SnapshotCache* cache = GetSnapshotCache();
   UIImage* image = GenerateRandomImage(0);
   [cache setImage:image withSnapshotID:@"snapshotID"];
   base::FilePath image_path = [cache imagePathForSnapshotID:@"snapshotID"];
   [cache removeImageWithSnapshotID:@"snapshotID"];
   // Give enough time for deletion.
-  FlushRunLoops();
+  FlushRunLoops(cache);
   EXPECT_FALSE(base::PathExists(image_path));
 }
 
 // Tests that all images are deleted when calling `-removeAllImages`.
 TEST_F(SnapshotCacheTest, AllImagesDeleted) {
+  ASSERT_TRUE(CreateSnapshotCache());
   SnapshotCache* cache = GetSnapshotCache();
   UIImage* image = GenerateRandomImage(0);
   [cache setImage:image withSnapshotID:@"snapshotID-1"];
@@ -646,13 +686,14 @@ TEST_F(SnapshotCacheTest, AllImagesDeleted) {
   base::FilePath image_2_path = [cache imagePathForSnapshotID:@"snapshotID-2"];
   [cache removeAllImages];
   // Give enough time for deletion.
-  FlushRunLoops();
+  FlushRunLoops(cache);
   EXPECT_FALSE(base::PathExists(image_1_path));
   EXPECT_FALSE(base::PathExists(image_2_path));
 }
 
 // Tests that observers are notified when a snapshot is cached and removed.
 TEST_F(SnapshotCacheTest, ObserversNotifiedOnSetAndRemoveImage) {
+  ASSERT_TRUE(CreateSnapshotCache());
   SnapshotCache* cache = GetSnapshotCache();
   FakeSnapshotCacheObserver* observer =
       [[FakeSnapshotCacheObserver alloc] init];
@@ -667,4 +708,114 @@ TEST_F(SnapshotCacheTest, ObserversNotifiedOnSetAndRemoveImage) {
   EXPECT_NSEQ(snapshotID, observer.lastUpdatedID);
   [cache removeObserver:observer];
 }
+
+// Tests that creating the SnapshotCache migrate an existing legacy cache.
+TEST_F(SnapshotCacheTest, MigrateCache) {
+  ASSERT_TRUE(scoped_temp_directory_.CreateUniqueTempDir());
+  const base::FilePath root = scoped_temp_directory_.GetPath();
+
+  const base::FilePath storage_path =
+      root.Append(kSnapshots).Append(kIdentifier);
+
+  const base::FilePath legacy_path =
+      root.Append(kSessions).Append(kIdentifier).Append(kSnapshots);
+
+  ASSERT_TRUE(base::CreateDirectory(legacy_path));
+  ASSERT_TRUE(base::WriteFile(legacy_path.Append(kFilename), ""));
+
+  SnapshotCache* cache =
+      [[SnapshotCache alloc] initWithStoragePath:storage_path
+                                      legacyPath:legacy_path];
+
+  FlushRunLoops(cache);
+
+  EXPECT_TRUE(base::DirectoryExists(storage_path));
+  EXPECT_FALSE(base::DirectoryExists(legacy_path));
+
+  // Check that the legacy directory content has been moved.
+  EXPECT_TRUE(base::PathExists(storage_path.Append(kFilename)));
+
+  [cache shutdown];
+}
+
+// Tests that creating the SnapshotCache simply create the cache directory
+// if the legacy path is not specified.
+TEST_F(SnapshotCacheTest, MigrateCache_EmptyLegacyPath) {
+  ASSERT_TRUE(scoped_temp_directory_.CreateUniqueTempDir());
+  const base::FilePath root = scoped_temp_directory_.GetPath();
+
+  const base::FilePath storage_path =
+      root.Append(kSnapshots).Append(kIdentifier);
+
+  SnapshotCache* cache =
+      [[SnapshotCache alloc] initWithStoragePath:storage_path
+                                      legacyPath:base::FilePath()];
+
+  FlushRunLoops(cache);
+
+  EXPECT_TRUE(base::DirectoryExists(storage_path));
+
+  [cache shutdown];
+}
+
+// Tests that creating the SnapshotCache simply create the cache directory
+// if the legacy path does not exists.
+TEST_F(SnapshotCacheTest, MigrateCache_NoLegacyStorage) {
+  ASSERT_TRUE(scoped_temp_directory_.CreateUniqueTempDir());
+  const base::FilePath root = scoped_temp_directory_.GetPath();
+
+  const base::FilePath storage_path =
+      root.Append(kSnapshots).Append(kIdentifier);
+
+  const base::FilePath legacy_path =
+      root.Append(kSessions).Append(kIdentifier).Append(kSnapshots);
+
+  ASSERT_FALSE(base::DirectoryExists(legacy_path));
+
+  SnapshotCache* cache =
+      [[SnapshotCache alloc] initWithStoragePath:storage_path
+                                      legacyPath:legacy_path];
+
+  FlushRunLoops(cache);
+
+  EXPECT_TRUE(base::DirectoryExists(storage_path));
+  EXPECT_FALSE(base::DirectoryExists(legacy_path));
+
+  [cache shutdown];
+}
+
+// Tests that creating the SnapshotCache can fail to create the cache
+// directory and that the legacy directory is left untouch in that case.
+TEST_F(SnapshotCacheTest, MigrateCache_FailCreatingCache) {
+  ASSERT_TRUE(scoped_temp_directory_.CreateUniqueTempDir());
+  const base::FilePath root = scoped_temp_directory_.GetPath();
+
+  const base::FilePath storage_path =
+      root.Append(kSnapshots).Append(kIdentifier);
+
+  const base::FilePath legacy_path =
+      root.Append(kSessions).Append(kIdentifier).Append(kSnapshots);
+
+  ASSERT_TRUE(base::CreateDirectory(legacy_path));
+  ASSERT_TRUE(base::WriteFile(legacy_path.Append(kFilename), ""));
+
+  // Create a file with the same name as the cache directory to
+  // simulate a failure (in real world the failure would be caused
+  // by a disk that is full).
+  ASSERT_TRUE(base::CreateDirectory(storage_path.DirName()));
+  ASSERT_TRUE(base::WriteFile(storage_path, ""));
+
+  SnapshotCache* cache =
+      [[SnapshotCache alloc] initWithStoragePath:storage_path
+                                      legacyPath:base::FilePath()];
+
+  FlushRunLoops(cache);
+
+  EXPECT_FALSE(base::DirectoryExists(storage_path));
+  EXPECT_TRUE(base::DirectoryExists(legacy_path));
+  EXPECT_TRUE(base::PathExists(legacy_path.Append(kFilename)));
+
+  [cache shutdown];
+}
+
 }  // namespace

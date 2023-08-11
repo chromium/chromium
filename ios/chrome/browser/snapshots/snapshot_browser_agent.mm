@@ -94,17 +94,24 @@ void SnapshotBrowserAgent::SetSessionID(NSString* session_identifier) {
   DCHECK(!snapshot_cache_);
   DCHECK(session_identifier.length != 0);
 
+  const std::string identifier = base::SysNSStringToUTF8(session_identifier);
+
+  const base::FilePath& browser_state_path =
+      browser_->GetBrowserState()->GetStatePath();
+
   // The snapshots are stored in a sub-directory of the session storage.
   // TODO(crbug.com/1383087): change this before launching the optimised
   // session storage as the session directory will be renamed.
-  const base::FilePath storage_path =
-      browser_->GetBrowserState()
-          ->GetStatePath()
-          .Append(FILE_PATH_LITERAL("Sessions"))
-          .Append(base::SysNSStringToUTF8(session_identifier))
+  const base::FilePath legacy_path =
+      browser_state_path.Append(FILE_PATH_LITERAL("Sessions"))
+          .Append(identifier)
           .Append(kSnapshots);
 
-  snapshot_cache_ = [[SnapshotCache alloc] initWithStoragePath:storage_path];
+  const base::FilePath storage_path =
+      browser_state_path.Append(kSnapshots).Append(identifier);
+
+  snapshot_cache_ = [[SnapshotCache alloc] initWithStoragePath:storage_path
+                                                    legacyPath:legacy_path];
 }
 
 void SnapshotBrowserAgent::PerformStorageMaintenance() {

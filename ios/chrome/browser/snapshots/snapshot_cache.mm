@@ -314,12 +314,36 @@ void RenameSnapshots(const base::FilePath& cache_directory,
   }
 }
 
-void CreateCacheDirectory(const base::FilePath& cache_directory) {
+void CreateCacheDirectory(const base::FilePath& cache_directory,
+                          const base::FilePath& legacy_directory) {
   // This is a NO-OP if the directory already exists.
   if (!base::CreateDirectory(cache_directory)) {
+    const base::File::Error error = base::File::GetLastFileError();
     DLOG(ERROR) << "Error creating snapshot storage: "
-                << cache_directory.AsUTF8Unsafe();
+                << cache_directory.AsUTF8Unsafe() << ": "
+                << base::File::ErrorToString(error);
+    return;
   }
+
+  if (legacy_directory.empty() || !base::DirectoryExists(legacy_directory)) {
+    return;
+  }
+
+  // If `legacy_directory` exists and is a directory, move its content to
+  // `cache_directory` and then delete the directory. As this function is
+  // used to move snapshot file which are not stored recursively, limit
+  // the enumeration to files and do not perform a recursive enumeration.
+  base::FileEnumerator iter(legacy_directory, /*recursive*/ false,
+                            base::FileEnumerator::FILES);
+
+  for (base::FilePath item = iter.Next(); !item.empty(); item = iter.Next()) {
+    base::FilePath to_path = cache_directory;
+    legacy_directory.AppendRelativePath(item, &to_path);
+    base::Move(item, to_path);
+  }
+
+  // Delete the `legacy_directory` once the existing files have been moved.
+  base::DeletePathRecursively(legacy_directory);
 }
 
 UIImage* GreyImageFromCachedImage(const base::FilePath& cache_directory,
@@ -377,7 +401,8 @@ UIImage* GreyImageFromCachedImage(const base::FilePath& cache_directory,
   SEQUENCE_CHECKER(_sequenceChecker);
 }
 
-- (instancetype)initWithStoragePath:(const base::FilePath&)storagePath {
+- (instancetype)initWithStoragePath:(const base::FilePath&)storagePath
+                         legacyPath:(const base::FilePath&)legacyPath {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   if ((self = [super init])) {
     NSUInteger cacheSize = IsPinnedTabsEnabled()
@@ -390,8 +415,9 @@ UIImage* GreyImageFromCachedImage(const base::FilePath& cache_directory,
     _taskRunner = base::ThreadPool::CreateSequencedTaskRunner(
         {base::MayBlock(), base::TaskPriority::USER_VISIBLE});
 
-    // Must be called after task runner is created.
-    [self createStorageIfNecessary];
+    _taskRunner->PostTask(
+        FROM_HERE,
+        base::BindOnce(CreateCacheDirectory, _cacheDirectory, legacyPath));
 
     _observers = [SnapshotCacheObservers observers];
 
@@ -412,6 +438,10 @@ UIImage* GreyImageFromCachedImage(const base::FilePath& cache_directory,
              object:nil];
   }
   return self;
+}
+
+- (instancetype)initWithStoragePath:(const base::FilePath&)storagePath {
+  return [self initWithStoragePath:storagePath legacyPath:base::FilePath()];
 }
 
 - (void)dealloc {
@@ -728,17 +758,6 @@ UIImage* GreyImageFromCachedImage(const base::FilePath& cache_directory,
 
 - (void)shutdown {
   _taskRunner = nullptr;
-}
-
-#pragma mark - Private methods
-
-- (void)createStorageIfNecessary {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  if (!_taskRunner)
-    return;
-
-  _taskRunner->PostTask(FROM_HERE,
-                        base::BindOnce(CreateCacheDirectory, _cacheDirectory));
 }
 
 @end

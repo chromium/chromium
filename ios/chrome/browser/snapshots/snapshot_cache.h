@@ -29,8 +29,19 @@ class Time;
 // managed by this SnapshotCache are stored. `storagePath` is not guaranteed to
 // exist. The contents of `storagePath` are entirely managed by this
 // SnapshotCache.
+//
+// To support renaming the directory where the snapshots are stored, it is
+// possible to pass a non-empty path via `legacyPath`. If present, then it
+// will be moved to `storagePath`.
+//
+// TODO(crbug.com/1383087): Remove when the storage for all users has been
+// migrated.
 - (instancetype)initWithStoragePath:(const base::FilePath&)storagePath
+                         legacyPath:(const base::FilePath&)legacyPath
     NS_DESIGNATED_INITIALIZER;
+
+// Convenience initializer that pass an empty `legacyPath`.
+- (instancetype)initWithStoragePath:(const base::FilePath&)storagePath;
 - (instancetype)init NS_UNAVAILABLE;
 
 // The scale that should be used for snapshots.
