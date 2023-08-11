@@ -45,6 +45,13 @@ class SearchEngineChoiceService : public KeyedService {
   // Returns whether the Search Engine Choice dialog should be displayed or not.
   static bool ShouldDisplayDialog(Browser& browser);
 
+  // Disables the display of the Search Engine Choice dialog for testing. When
+  // `dialog_disabled` is true, `ShouldDisplayDialog` will return false.
+  // NOTE: This is set to true in InProcessBrowserTest::SetUp, disabling the
+  // dialog for those tests. If you set this outside of that context, you should
+  // ensure it is reset at the end of your test.
+  static void SetDialogDisabledForTests(bool dialog_disabled);
+
  private:
   // Observes the BrowserList to make sure that closed browsers are correctly
   // removed from our set of browser pointers. This ensures that we don't get

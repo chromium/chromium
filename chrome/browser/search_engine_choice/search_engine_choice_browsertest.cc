@@ -94,6 +94,9 @@ class SearchEngineChoiceBrowserTest : public InProcessBrowserTest {
 
   void SetUpInProcessBrowserTestFixture() override {
     InProcessBrowserTest::SetUpInProcessBrowserTestFixture();
+    SearchEngineChoiceService::SetDialogDisabledForTests(
+        /*dialog_disabled=*/false);
+
     create_services_subscription_ =
         BrowserContextDependencyManager::GetInstance()
             ->RegisterCreateServicesCallbackForTesting(
@@ -105,14 +108,9 @@ class SearchEngineChoiceBrowserTest : public InProcessBrowserTest {
                 }));
   }
 
-  // TODO(crbug.com/1468496): Make this function handle multiple browsers with
-  // multiple profiles.
-  void QuitAndRestoreBrowsersWithSameProfile(Profile* profile) {
-    // Simulate an exit by shutting down the session service. If we don't do
-    // this the first window close is treated as though the user closed the
-    // window and won't be restored.
-    SessionServiceFactory::ShutdownForProfile(profile);
-
+  // TODO(crbug.com/1468496): Make this function handle multiple browsers.
+  void QuitAndRestoreBrowser(Browser* browser) {
+    Profile* profile = browser->profile();
     // Enable SessionRestore to last used pages.
     SessionStartupPref startup_pref(SessionStartupPref::LAST);
     SessionStartupPref::SetStartupPref(profile, startup_pref);
@@ -122,10 +120,7 @@ class SearchEngineChoiceBrowserTest : public InProcessBrowserTest {
         KeepAliveOrigin::SESSION_RESTORE, KeepAliveRestartOption::DISABLED);
     auto profile_keep_alive = std::make_unique<ScopedProfileKeepAlive>(
         profile, ProfileKeepAliveOrigin::kBrowserWindow);
-
-    for (Browser* browser : *BrowserList::GetInstance()) {
-      CloseBrowserSynchronously(browser);
-    }
+    CloseBrowserSynchronously(browser);
 
     ui_test_utils::AllBrowserTabAddedWaiter tab_waiter;
     SessionRestoreTestHelper restore_observer;
@@ -133,8 +128,9 @@ class SearchEngineChoiceBrowserTest : public InProcessBrowserTest {
     // Create a new window, which should trigger session restore.
     chrome::NewEmptyWindow(profile);
     tab_waiter.Wait();
-    for (Browser* browser : *BrowserList::GetInstance()) {
-      WaitForTabsToLoad(browser);
+
+    for (Browser* new_browser : *BrowserList::GetInstance()) {
+      WaitForTabsToLoad(new_browser);
     }
 
     restore_observer.Wait();
@@ -153,6 +149,9 @@ class SearchEngineChoiceBrowserTest : public InProcessBrowserTest {
   }
 
  private:
+  base::AutoReset<bool> scoped_chrome_build_override_ =
+      SearchEngineChoiceServiceFactory::ScopedChromeBuildOverrideForTesting(
+          /*force_chrome_build=*/true);
   base::test::ScopedFeatureList feature_list_{switches::kSearchEngineChoice};
   base::CallbackListSubscription create_services_subscription_;
 };
@@ -174,7 +173,7 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceBrowserTest,
 
   // Make sure that the dialog gets opened only once.
   EXPECT_CALL(*service, NotifyDialogOpened(_, _)).Times(1);
-  QuitAndRestoreBrowsersWithSameProfile(browser()->profile());
+  QuitAndRestoreBrowser(browser());
   ASSERT_TRUE(browser());
   EXPECT_EQ(browser()->tab_strip_model()->count(), 3);
 }
@@ -185,7 +184,7 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceBrowserTest,
   Profile* profile = browser()->profile();
 
   // Open another browser with the same profile.
-  CreateBrowser(profile);
+  Browser* new_browser = CreateBrowser(profile);
   EXPECT_EQ(BrowserList::GetInstance()->size(), 2u);
   auto* service = static_cast<MockSearchEngineChoiceService*>(
       SearchEngineChoiceServiceFactory::GetForProfile(profile));
@@ -193,7 +192,13 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceBrowserTest,
   // Make sure that we have 2 dialogs open, one for each browser.
   EXPECT_CALL(*service, NotifyDialogOpened(_, _)).Times(2);
 
-  QuitAndRestoreBrowsersWithSameProfile(profile);
+  // Simulate an exit by shutting down the session service. If we don't do this
+  // the first window close is treated as though the user closed the window
+  // and won't be restored.
+  SessionServiceFactory::ShutdownForProfile(profile);
+
+  CloseBrowserSynchronously(new_browser);
+  QuitAndRestoreBrowser(browser());
   EXPECT_EQ(BrowserList::GetInstance()->size(), 2u);
 }
 
@@ -209,7 +214,7 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceBrowserTest,
 
   // Make sure that the dialog doesn't open if the tab is the settings page.
   EXPECT_CALL(*service, NotifyDialogOpened(_, _)).Times(0);
-  QuitAndRestoreBrowsersWithSameProfile(browser()->profile());
+  QuitAndRestoreBrowser(browser());
   ASSERT_TRUE(browser());
   EXPECT_EQ(browser()->tab_strip_model()->count(), 1);
   EXPECT_EQ(GURL("chrome://settings"),

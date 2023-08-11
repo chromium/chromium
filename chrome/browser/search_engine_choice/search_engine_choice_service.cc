@@ -4,6 +4,7 @@
 
 #include "chrome/browser/search_engine_choice/search_engine_choice_service.h"
 
+#include "base/check_is_test.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "chrome/browser/profiles/profile.h"
@@ -12,6 +13,10 @@
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/search_engines_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
+
+namespace {
+bool g_dialog_disabled_for_testing = false;
+}
 
 SearchEngineChoiceService::BrowserObserver::BrowserObserver(
     SearchEngineChoiceService& service)
@@ -55,6 +60,13 @@ void SearchEngineChoiceService::NotifyDialogClosed(Browser* browser) {
   browsers_with_open_dialogs_.erase(browser);
 }
 
+// static
+void SearchEngineChoiceService::SetDialogDisabledForTests(
+    bool dialog_disabled) {
+  CHECK_IS_TEST();
+  g_dialog_disabled_for_testing = dialog_disabled;
+}
+
 bool SearchEngineChoiceService::IsShowingDialog(Browser* browser) {
   return base::Contains(browsers_with_open_dialogs_, browser);
 }
@@ -75,5 +87,6 @@ bool SearchEngineChoiceService::ShouldDisplayDialog(Browser& browser) {
   auto* search_engine_choice_service =
       SearchEngineChoiceServiceFactory::GetForProfile(browser.profile());
   return search_engine_choice_service &&
-         !search_engine_choice_service->IsShowingDialog(&browser);
+         !search_engine_choice_service->IsShowingDialog(&browser) &&
+         !g_dialog_disabled_for_testing;
 }

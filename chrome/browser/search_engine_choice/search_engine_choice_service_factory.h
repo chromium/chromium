@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_SEARCH_ENGINE_CHOICE_SEARCH_ENGINE_CHOICE_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_SEARCH_ENGINE_CHOICE_SEARCH_ENGINE_CHOICE_SERVICE_FACTORY_H_
 
+#include "base/auto_reset.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
@@ -25,6 +26,11 @@ class SearchEngineChoiceServiceFactory : public ProfileKeyedServiceFactory {
   static SearchEngineChoiceService* GetForProfile(Profile* profile);
 
   static SearchEngineChoiceServiceFactory* GetInstance();
+
+  // Overrides the check for branded build. This allows bots that run on
+  // non-branded builds to test the code.
+  static base::AutoReset<bool> ScopedChromeBuildOverrideForTesting(
+      bool force_chrome_build);
 
  private:
   friend class base::NoDestructor<SearchEngineChoiceServiceFactory>;
