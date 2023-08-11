@@ -389,7 +389,7 @@ gfx::Rect DeskBarController::GetDeskBarWidgetBounds(aura::Window* root) const {
   return {bar_origin, bar_size};
 }
 
-void DeskBarController::OnMaybePressOffBar(const ui::LocatedEvent& event) {
+void DeskBarController::OnMaybePressOffBar(ui::LocatedEvent& event) {
   if (desk_bars_.empty()) {
     return;
   }
@@ -418,6 +418,8 @@ void DeskBarController::OnMaybePressOffBar(const ui::LocatedEvent& event) {
     } else if (desk_bar.bar_view->IsDeskNameBeingModified()) {
       desk_name_being_modified = true;
       DeskNameView::CommitChanges(desk_bar.bar_widget.get());
+      event.SetHandled();
+      event.StopPropagation();
     }
 
     if (desk_button_bounds.Contains(screen_location)) {
