@@ -603,12 +603,12 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
     return E_NOTIMPL;
   }
 
-  IFACEMETHODIMP get_serverInstallDataIndex(BSTR* language) override {
+  IFACEMETHODIMP get_serverInstallDataIndex(BSTR* install_data_index) override {
     LOG(ERROR) << "Reached unimplemented COM method: " << __func__;
     return E_NOTIMPL;
   }
 
-  IFACEMETHODIMP put_serverInstallDataIndex(BSTR language) override {
+  IFACEMETHODIMP put_serverInstallDataIndex(BSTR install_data_index) override {
     LOG(ERROR) << "Reached unimplemented COM method: " << __func__;
     return E_NOTIMPL;
   }
