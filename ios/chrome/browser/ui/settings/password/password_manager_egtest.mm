@@ -404,9 +404,8 @@ void CheckPasswordManagerVisitMetricCount(int count) {
 // Various tests for the main Password Manager UI.
 @interface PasswordManagerTestCase : ChromeTestCase
 
-- (GREYElementInteraction*)
-    interactionForSinglePasswordEntryWithDomain:(NSString*)domain
-                                       username:(NSString*)username;
+- (GREYElementInteraction*)interactionForSinglePasswordEntryWithDomain:
+    (NSString*)domain;
 
 // Matcher for the websites in Password Details view.
 // `websites` should be in the format "website1, website2,..." with `websiteN`
@@ -434,9 +433,8 @@ void CheckPasswordManagerVisitMetricCount(int count) {
   return YES;
 }
 
-- (GREYElementInteraction*)
-    interactionForSinglePasswordEntryWithDomain:(NSString*)domain
-                                       username:(NSString*)username {
+- (GREYElementInteraction*)interactionForSinglePasswordEntryWithDomain:
+    (NSString*)domain {
   // With notes enabled authentication is required before interacting with
   // password details.
   if ([self notesEnabled]) {
@@ -444,8 +442,6 @@ void CheckPasswordManagerVisitMetricCount(int count) {
                                       ReauthenticationResult::kSuccess];
   }
 
-  // With grouping enabled, discard the username; it's only shown on the details
-  // page.
   // ID, not label because the latter might contain an extra label for the
   // "local password icon" and most tests don't care about it.
   return GetInteractionForListItem(ButtonWithAccessibilityID(domain),
@@ -578,8 +574,7 @@ void CheckPasswordManagerVisitMetricCount(int count) {
       performAction:grey_tap()];
 
   // Inspect "password details" view.
-  [[self interactionForSinglePasswordEntryWithDomain:@"example.com"
-                                            username:@"concrete username"]
+  [[self interactionForSinglePasswordEntryWithDomain:@"example.com"]
       performAction:grey_tap()];
   [ChromeEarlGrey verifyAccessibilityForCurrentScreen];
   [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
@@ -604,8 +599,7 @@ void CheckPasswordManagerVisitMetricCount(int count) {
 
   OpenPasswordManager();
 
-  [[self interactionForSinglePasswordEntryWithDomain:@"example.com"
-                                            username:@"concrete username"]
+  [[self interactionForSinglePasswordEntryWithDomain:@"example.com"]
       performAction:grey_tap()];
 
   // Check the snackbar in case of successful reauthentication.
@@ -648,8 +642,7 @@ void CheckPasswordManagerVisitMetricCount(int count) {
 
   OpenPasswordManager();
 
-  [[self interactionForSinglePasswordEntryWithDomain:@"example.com"
-                                            username:@"concrete username"]
+  [[self interactionForSinglePasswordEntryWithDomain:@"example.com"]
       performAction:grey_tap()];
 
   if (![self notesEnabled]) {
@@ -685,8 +678,7 @@ void CheckPasswordManagerVisitMetricCount(int count) {
 
   OpenPasswordManager();
 
-  [[self interactionForSinglePasswordEntryWithDomain:@"example.com"
-                                            username:@"concrete username"]
+  [[self interactionForSinglePasswordEntryWithDomain:@"example.com"]
       performAction:grey_tap()];
 
   [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
@@ -719,8 +711,7 @@ void CheckPasswordManagerVisitMetricCount(int count) {
 
   OpenPasswordManager();
 
-  [[self interactionForSinglePasswordEntryWithDomain:@"example.com"
-                                            username:@"concrete username"]
+  [[self interactionForSinglePasswordEntryWithDomain:@"example.com"]
       performAction:grey_tap()];
 
   CopyPasswordDetailWithID(IDS_IOS_SHOW_PASSWORD_VIEW_USERNAME);
@@ -745,8 +736,7 @@ void CheckPasswordManagerVisitMetricCount(int count) {
 
   OpenPasswordManager();
 
-  [[self interactionForSinglePasswordEntryWithDomain:@"example.com"
-                                            username:@"concrete username"]
+  [[self interactionForSinglePasswordEntryWithDomain:@"example.com"]
       performAction:grey_tap()];
 
   CopyPasswordDetailWithInteraction(GetInteractionForPasswordDetailItem(
@@ -774,8 +764,7 @@ void CheckPasswordManagerVisitMetricCount(int count) {
 
   OpenPasswordManager();
 
-  [[self interactionForSinglePasswordEntryWithDomain:@"example.com"
-                                            username:@"concrete username"]
+  [[self interactionForSinglePasswordEntryWithDomain:@"example.com"]
       performAction:grey_tap()];
 
   if (![self notesEnabled]) {
@@ -802,8 +791,7 @@ void CheckPasswordManagerVisitMetricCount(int count) {
                   @"Stored password was not removed from PasswordStore.");
 
   // Also verify that the removed password is no longer in the list.
-  [[self interactionForSinglePasswordEntryWithDomain:@"example.com"
-                                            username:@"concrete username"]
+  [[self interactionForSinglePasswordEntryWithDomain:@"example.com"]
       assertWithMatcher:grey_not(grey_sufficientlyVisible())];
 
   // Finally, verify that the Add button is visible and enabled, because there
@@ -826,8 +814,7 @@ void CheckPasswordManagerVisitMetricCount(int count) {
 
   OpenPasswordManager();
 
-  [[self interactionForSinglePasswordEntryWithDomain:@"example.com"
-                                            username:@"concrete username"]
+  [[self interactionForSinglePasswordEntryWithDomain:@"example.com"]
       performAction:grey_tap()];
 
   if (![self notesEnabled]) {
@@ -861,8 +848,7 @@ void CheckPasswordManagerVisitMetricCount(int count) {
                   @"Stored password was not removed from PasswordStore.");
 
   // Also verify that the removed password is no longer in the list.
-  [[self interactionForSinglePasswordEntryWithDomain:@"example.com"
-                                            username:@"concrete username"]
+  [[self interactionForSinglePasswordEntryWithDomain:@"example.com"]
       assertWithMatcher:grey_not(grey_sufficientlyVisible())];
 
   // Finally, verify that the Add button is visible and enabled, because there
@@ -888,8 +874,7 @@ void CheckPasswordManagerVisitMetricCount(int count) {
 
   OpenPasswordManager();
 
-  [[self interactionForSinglePasswordEntryWithDomain:@"example.com"
-                                            username:@"concrete username"]
+  [[self interactionForSinglePasswordEntryWithDomain:@"example.com"]
       performAction:grey_tap()];
 
   if (![self notesEnabled]) {
@@ -916,8 +901,7 @@ void CheckPasswordManagerVisitMetricCount(int count) {
                   @"Stored password was not removed from PasswordStore.");
 
   // Also verify that the removed password is no longer in the list.
-  [[self interactionForSinglePasswordEntryWithDomain:@"example.com"
-                                            username:@"concrete username"]
+  [[self interactionForSinglePasswordEntryWithDomain:@"example.com"]
       assertWithMatcher:grey_not(grey_sufficientlyVisible())];
 
   // Verify blocked sites are still there.
@@ -949,8 +933,7 @@ void CheckPasswordManagerVisitMetricCount(int count) {
 
   OpenPasswordManager();
 
-  [[self interactionForSinglePasswordEntryWithDomain:@"example.com"
-                                            username:@"concrete username"]
+  [[self interactionForSinglePasswordEntryWithDomain:@"example.com"]
       performAction:grey_tap()];
 
   if (![self notesEnabled]) {
@@ -980,8 +963,7 @@ void CheckPasswordManagerVisitMetricCount(int count) {
                   @"Stored password was not removed from PasswordStore.");
 
   // Also verify that the removed password is no longer in the list.
-  [[self interactionForSinglePasswordEntryWithDomain:@"example.com"
-                                            username:@"concrete username"]
+  [[self interactionForSinglePasswordEntryWithDomain:@"example.com"]
       assertWithMatcher:grey_not(grey_sufficientlyVisible())];
 
   // Finally, verify that the Add button is visible and enabled, because there
@@ -1090,8 +1072,7 @@ void CheckPasswordManagerVisitMetricCount(int count) {
       assertWithMatcher:grey_not(grey_sufficientlyVisible())];
 
   // Verify existing saved password is still in the list.
-  [[self interactionForSinglePasswordEntryWithDomain:@"example.com"
-                                            username:@"concrete username"]
+  [[self interactionForSinglePasswordEntryWithDomain:@"example.com"]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
@@ -1107,8 +1088,7 @@ void CheckPasswordManagerVisitMetricCount(int count) {
 
   OpenPasswordManager();
 
-  [[self interactionForSinglePasswordEntryWithDomain:@"example.com"
-                                            username:@"concrete username"]
+  [[self interactionForSinglePasswordEntryWithDomain:@"example.com"]
       performAction:grey_tap()];
 
   if (![self notesEnabled]) {
@@ -1143,8 +1123,7 @@ void CheckPasswordManagerVisitMetricCount(int count) {
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
       performAction:grey_tap()];
-  [[self interactionForSinglePasswordEntryWithDomain:@"example.com"
-                                            username:@"concrete username"]
+  [[self interactionForSinglePasswordEntryWithDomain:@"example.com"]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
@@ -1163,8 +1142,7 @@ void CheckPasswordManagerVisitMetricCount(int count) {
 
   TapNavigationBarEditButton();
 
-  [[self interactionForSinglePasswordEntryWithDomain:@"example.com"
-                                            username:@"concrete username"]
+  [[self interactionForSinglePasswordEntryWithDomain:@"example.com"]
       performAction:grey_tap()];
 
   // Check that the current view is not the detail view, by failing to locate
@@ -1186,8 +1164,7 @@ void CheckPasswordManagerVisitMetricCount(int count) {
 
   OpenPasswordManager();
 
-  [[self interactionForSinglePasswordEntryWithDomain:@"example.com"
-                                            username:@"concrete username"]
+  [[self interactionForSinglePasswordEntryWithDomain:@"example.com"]
       performAction:grey_tap()];
 
   // Tap the password cell to display the context menu.
@@ -1235,8 +1212,7 @@ void CheckPasswordManagerVisitMetricCount(int count) {
 
   OpenPasswordManager();
 
-  [[self interactionForSinglePasswordEntryWithDomain:@"example.com"
-                                            username:@"federated username"]
+  [[self interactionForSinglePasswordEntryWithDomain:@"example.com"]
       performAction:grey_tap()];
 
   // Check that the Site and Username are present and correct.
@@ -1282,8 +1258,7 @@ void CheckPasswordManagerVisitMetricCount(int count) {
 
   OpenPasswordManager();
 
-  [[self interactionForSinglePasswordEntryWithDomain:@"example.com"
-                                            username:@"concrete username"]
+  [[self interactionForSinglePasswordEntryWithDomain:@"example.com"]
       performAction:grey_tap()];
 
   [[EarlGrey
@@ -1326,8 +1301,7 @@ void CheckPasswordManagerVisitMetricCount(int count) {
 
   OpenPasswordManager();
 
-  [[self interactionForSinglePasswordEntryWithDomain:@"example.com"
-                                            username:@"concrete username"]
+  [[self interactionForSinglePasswordEntryWithDomain:@"example.com"]
       performAction:grey_tap()];
 
   [[EarlGrey
@@ -1371,8 +1345,7 @@ void CheckPasswordManagerVisitMetricCount(int count) {
 
   OpenPasswordManager();
 
-  [[self interactionForSinglePasswordEntryWithDomain:@"example.com"
-                                            username:@"concrete username"]
+  [[self interactionForSinglePasswordEntryWithDomain:@"example.com"]
       performAction:grey_tap()];
 
   [[EarlGrey
@@ -1416,8 +1389,7 @@ void CheckPasswordManagerVisitMetricCount(int count) {
 
   OpenPasswordManager();
 
-  [[self interactionForSinglePasswordEntryWithDomain:@"example.com"
-                                            username:@"concrete username"]
+  [[self interactionForSinglePasswordEntryWithDomain:@"example.com"]
       performAction:grey_tap()];
 
   TapNavigationBarEditButton();
@@ -1500,8 +1472,7 @@ void CheckPasswordManagerVisitMetricCount(int count) {
 
   OpenPasswordManager();
 
-  [[self interactionForSinglePasswordEntryWithDomain:@"example.com"
-                                            username:@"federated username"]
+  [[self interactionForSinglePasswordEntryWithDomain:@"example.com"]
       performAction:grey_tap()];
 
   [[EarlGrey
@@ -1570,8 +1541,7 @@ void CheckPasswordManagerVisitMetricCount(int count) {
         performAction:grey_tap()];
 
     // Check the stored items. Scroll down if needed.
-    [[self interactionForSinglePasswordEntryWithDomain:@"example.com"
-                                              username:@"concrete username"]
+    [[self interactionForSinglePasswordEntryWithDomain:@"example.com"]
         assertWithMatcher:grey_notNil()];
   }
 
@@ -1624,8 +1594,7 @@ void CheckPasswordManagerVisitMetricCount(int count) {
   TapNavigationBarEditButton();
 
   // Select password entry to be removed.
-  [[self interactionForSinglePasswordEntryWithDomain:@"example.com"
-                                            username:@"concrete username"]
+  [[self interactionForSinglePasswordEntryWithDomain:@"example.com"]
       performAction:grey_tap()];
 
   [[EarlGrey selectElementWithMatcher:DeleteButtonAtBottom()]
@@ -1662,8 +1631,7 @@ void CheckPasswordManagerVisitMetricCount(int count) {
 
   OpenPasswordManager();
 
-  [[self interactionForSinglePasswordEntryWithDomain:@"example.com"
-                                            username:@"concrete username"]
+  [[self interactionForSinglePasswordEntryWithDomain:@"example.com"]
       performAction:grey_tap()];
 
   [PasswordSettingsAppInterface mockReauthenticationModuleCanAttempt:NO];
@@ -1693,8 +1661,7 @@ void CheckPasswordManagerVisitMetricCount(int count) {
 
   OpenPasswordManager();
 
-  [[self interactionForSinglePasswordEntryWithDomain:@"example.com"
-                                            username:@"concrete username"]
+  [[self interactionForSinglePasswordEntryWithDomain:@"example.com"]
       performAction:grey_tap()];
 
   [PasswordSettingsAppInterface mockReauthenticationModuleCanAttempt:NO];
@@ -1796,8 +1763,7 @@ void CheckPasswordManagerVisitMetricCount(int count) {
   TapNavigationBarEditButton();
 
   // Select password entry to be removed.
-  [[self interactionForSinglePasswordEntryWithDomain:@"example.com"
-                                            username:@"concrete username"]
+  [[self interactionForSinglePasswordEntryWithDomain:@"example.com"]
       performAction:grey_tap()];
 
   [[EarlGrey selectElementWithMatcher:DeleteButtonAtBottom()]
@@ -1890,12 +1856,10 @@ void CheckPasswordManagerVisitMetricCount(int count) {
 
   OpenPasswordManager();
 
-  [[self interactionForSinglePasswordEntryWithDomain:@"example11.com"
-                                            username:@"user1"]
+  [[self interactionForSinglePasswordEntryWithDomain:@"example11.com"]
       assertWithMatcher:grey_notNil()];
 
-  [[self interactionForSinglePasswordEntryWithDomain:@"example12.com"
-                                            username:@"user2"]
+  [[self interactionForSinglePasswordEntryWithDomain:@"example12.com"]
       assertWithMatcher:grey_notNil()];
   [GetInteractionForPasswordEntry(@"exclude1.com")
       assertWithMatcher:grey_notNil()];
@@ -1907,11 +1871,9 @@ void CheckPasswordManagerVisitMetricCount(int count) {
   [[EarlGrey selectElementWithMatcher:SearchTextField()]
       performAction:grey_replaceText(@"2")];
 
-  [[self interactionForSinglePasswordEntryWithDomain:@"example11.com"
-                                            username:@"user1"]
+  [[self interactionForSinglePasswordEntryWithDomain:@"example11.com"]
       assertWithMatcher:grey_nil()];
-  [[self interactionForSinglePasswordEntryWithDomain:@"example12.com"
-                                            username:@"user2"]
+  [[self interactionForSinglePasswordEntryWithDomain:@"example12.com"]
       assertWithMatcher:grey_notNil()];
   [GetInteractionForPasswordEntry(@"exclude1.com")
       assertWithMatcher:grey_nil()];
@@ -1948,11 +1910,9 @@ void CheckPasswordManagerVisitMetricCount(int count) {
   TapNavigationBarEditButton();
 
   // Select all.
-  [[self interactionForSinglePasswordEntryWithDomain:@"example11.com"
-                                            username:@"user1"]
+  [[self interactionForSinglePasswordEntryWithDomain:@"example11.com"]
       performAction:grey_tap()];
-  [[self interactionForSinglePasswordEntryWithDomain:@"example12.com"
-                                            username:@"user2"]
+  [[self interactionForSinglePasswordEntryWithDomain:@"example12.com"]
       performAction:grey_tap()];
 
   [GetInteractionForPasswordEntry(@"exclude1.com") performAction:grey_tap()];
@@ -1969,11 +1929,9 @@ void CheckPasswordManagerVisitMetricCount(int count) {
   [ChromeEarlGreyUI waitForAppToIdle];
 
   // All should be gone.
-  [[self interactionForSinglePasswordEntryWithDomain:@"example11.com"
-                                            username:@"user1"]
+  [[self interactionForSinglePasswordEntryWithDomain:@"example11.com"]
       assertWithMatcher:grey_nil()];
-  [[self interactionForSinglePasswordEntryWithDomain:@"example12.com"
-                                            username:@"user2"]
+  [[self interactionForSinglePasswordEntryWithDomain:@"example12.com"]
       assertWithMatcher:grey_nil()];
   [GetInteractionForPasswordEntry(@"exclude1.com")
       assertWithMatcher:grey_nil()];
@@ -2055,8 +2013,7 @@ void CheckPasswordManagerVisitMetricCount(int count) {
 
   OpenPasswordManager();
 
-  [[self interactionForSinglePasswordEntryWithDomain:@"example.com"
-                                            username:@"concrete username"]
+  [[self interactionForSinglePasswordEntryWithDomain:@"example.com"]
       performAction:grey_tap()];
 
   // Check the snackbar in case of successful reauthentication.
@@ -2108,8 +2065,7 @@ void CheckPasswordManagerVisitMetricCount(int count) {
 
   OpenPasswordManager();
 
-  [[self interactionForSinglePasswordEntryWithDomain:@"example.com"
-                                            username:@"concrete username"]
+  [[self interactionForSinglePasswordEntryWithDomain:@"example.com"]
       performAction:grey_tap()];
 
   // Check the snackbar in case of successful reauthentication.
@@ -2147,8 +2103,7 @@ void CheckPasswordManagerVisitMetricCount(int count) {
   [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
       performAction:grey_tap()];
 
-  [[self interactionForSinglePasswordEntryWithDomain:@"example.com"
-                                            username:@"new username"]
+  [[self interactionForSinglePasswordEntryWithDomain:@"example.com"]
       assertWithMatcher:grey_notNil()];
 
   [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
@@ -2170,8 +2125,7 @@ void CheckPasswordManagerVisitMetricCount(int count) {
 
   OpenPasswordManager();
 
-  [[self interactionForSinglePasswordEntryWithDomain:@"example.com"
-                                            username:@"concrete username1"]
+  [[self interactionForSinglePasswordEntryWithDomain:@"example.com"]
       performAction:grey_tap()];
 
   // Check the snackbar in case of successful reauthentication.
@@ -2214,8 +2168,7 @@ void CheckPasswordManagerVisitMetricCount(int count) {
 
   OpenPasswordManager();
 
-  [[self interactionForSinglePasswordEntryWithDomain:@"example.com"
-                                            username:@"concrete username"]
+  [[self interactionForSinglePasswordEntryWithDomain:@"example.com"]
       performAction:grey_tap()];
 
   // Check the snackbar in case of successful reauthentication.
@@ -2351,8 +2304,7 @@ void CheckPasswordManagerVisitMetricCount(int count) {
   [[EarlGrey selectElementWithMatcher:AddPasswordSaveButton()]
       performAction:grey_tap()];
 
-  [[self interactionForSinglePasswordEntryWithDomain:@"example.com"
-                                            username:@"new username"]
+  [[self interactionForSinglePasswordEntryWithDomain:@"example.com"]
       performAction:grey_tap()];
 
   [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
@@ -2452,8 +2404,7 @@ void CheckPasswordManagerVisitMetricCount(int count) {
       performAction:grey_tap()];
 
   // The newly created credential exists.
-  [[self interactionForSinglePasswordEntryWithDomain:@"zexample.com"
-                                            username:@"zconcrete username"]
+  [[self interactionForSinglePasswordEntryWithDomain:@"zexample.com"]
       performAction:grey_tap()];
 
   [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
@@ -2515,8 +2466,7 @@ void CheckPasswordManagerVisitMetricCount(int count) {
   [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
       performAction:grey_tap()];
 
-  [[self interactionForSinglePasswordEntryWithDomain:@"example.com"
-                                            username:@"new username"]
+  [[self interactionForSinglePasswordEntryWithDomain:@"example.com"]
       assertWithMatcher:grey_notNil()];
 
   [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
@@ -2642,8 +2592,7 @@ void CheckPasswordManagerVisitMetricCount(int count) {
   [[EarlGrey selectElementWithMatcher:AddPasswordSaveButton()]
       performAction:grey_tap()];
 
-  [[self interactionForSinglePasswordEntryWithDomain:@"example.com"
-                                            username:@"new username"]
+  [[self interactionForSinglePasswordEntryWithDomain:@"example.com"]
       performAction:grey_tap()];
 
   if (![self notesEnabled]) {
@@ -2745,8 +2694,7 @@ void CheckPasswordManagerVisitMetricCount(int count) {
 
   OpenPasswordManager();
 
-  [[self interactionForSinglePasswordEntryWithDomain:@"example.com"
-                                            username:@"concrete username"]
+  [[self interactionForSinglePasswordEntryWithDomain:@"example.com"]
       performAction:grey_tap()];
 
   // Check the snackbar in case of successful reauthentication.
@@ -2781,8 +2729,7 @@ void CheckPasswordManagerVisitMetricCount(int count) {
 
   OpenPasswordManager();
 
-  [[self interactionForSinglePasswordEntryWithDomain:@"example.com"
-                                            username:@"concrete username"]
+  [[self interactionForSinglePasswordEntryWithDomain:@"example.com"]
       performAction:grey_tap()];
 
   [GetInteractionForPasswordDetailItem(ShowPasswordButton())
@@ -2817,8 +2764,7 @@ void CheckPasswordManagerVisitMetricCount(int count) {
   // Make sure the cell is loaded properly before tapping on it.
   ConditionBlock condition = ^{
     NSError* error = nil;
-    [[self interactionForSinglePasswordEntryWithDomain:@"example12.com"
-                                              username:@"user2"]
+    [[self interactionForSinglePasswordEntryWithDomain:@"example12.com"]
         assertWithMatcher:grey_sufficientlyVisible()
                     error:&error];
     return error == nil;
@@ -2828,8 +2774,7 @@ void CheckPasswordManagerVisitMetricCount(int count) {
                  base::test::ios::kWaitForUIElementTimeout, condition),
              @"Waiting for the cell to load");
 
-  [[self interactionForSinglePasswordEntryWithDomain:@"example12.com"
-                                            username:@"user2"]
+  [[self interactionForSinglePasswordEntryWithDomain:@"example12.com"]
       performAction:grey_tap()];
 
   // Metric: Passwords in the password manager.
