@@ -1,43 +1,48 @@
 <style>
   #wrapper {
     align-items: center;
-    background-color: var(--cr-card-background-color);
-    border: 1px solid var(--cros-button-stroke-color-secondary);
-    border-radius: 8px;
-    box-sizing: border-box;
-    cursor: pointer;
     display: flex;
-    height: 40px;
-    margin: 3px;
-    padding-block-end: 6px;
-    padding-block-start: 6px;
+    border-radius: 8px;
+    outline: none;
+    padding-block-end: 3px;
+    padding-block-start: 3px;
     padding-inline-end: 9px;
-    padding-inline-start: 9px;
+    padding-inline-start: 6px;
+    cursor: pointer;
+    margin: 3px;
+    height: 40px;
+    box-sizing: border-box;
+    overflow: hidden;
   }
 
-  :host(:focus) {
-    outline: none;
+  :host {
+    background-color: var(--cr-card-background-color);
+    border: 1px solid var(--cros-button-stroke-color-secondary);
+    border-bottom-style: hidden;
+    align-items: center;
+    display: flex;
   }
 
   /* TODO(b/279623883): Remove once Jelly is launched. */
-  :host-context(body:not(.jelly-enabled)):host(:focus) #wrapper{
-    box-shadow: 0 0 0 2px var(--cros-focus-aura-color);
+  :host-context(body:not(.jelly-enabled)):host(:focus) {
+    outline: none;
+    box-shadow: inset 0 0 0 2px var(--cros-focus-aura-color);
   }
 
-  :host-context(body.jelly-enabled):host(:focus) #wrapper {
+  :host-context(body.jelly-enabled):host(:focus) {
     border: 2px solid var(--cros-sys-focus_ring);
   }
 
-  :host-context(body.jelly-enabled):host(:hover) #wrapper {
+  :host-context(body.jelly-enabled):host(:hover) {
     background-color: var(--cros-sys-hover_on_subtle);
   }
 
   /* TODO(b/279623883): Remove once Jelly is launched. */
-  :host-context(body:not(.jelly-enabled)):host([is-selected]) #wrapper {
+  :host-context(body:not(.jelly-enabled)):host([is-selected]) {
     border-color: var(--cros-button-icon-color-secondary);
   }
 
-  :host-context(body.jelly-enabled):host([is-selected]) #wrapper {
+  :host-context(body.jelly-enabled):host([is-selected]) {
     background-color: var(--cros-sys-primary_container);
   }
 
