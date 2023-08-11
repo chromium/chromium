@@ -4,8 +4,7 @@
 
 import {stringToMojoString16} from 'chrome://resources/ash/common/bluetooth/bluetooth_utils.js';
 import {AudioOutputCapability, BluetoothDeviceProperties, BluetoothDeviceStatusObserverInterface, BluetoothDiscoveryDelegateInterface, BluetoothModificationState, BluetoothSystemProperties, BluetoothSystemState, CrosBluetoothConfigInterface, DeviceConnectionState, DevicePairingHandlerReceiver, DeviceType, DiscoverySessionStatusObserverInterface, PairedBluetoothDeviceProperties, SystemPropertiesObserverInterface} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
-
-import {assertFalse, assertNotReached, assertTrue} from '../../../chromeos/chai_assert.js';
+import {assertFalse, assertNotReached, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {FakeDevicePairingHandler} from './fake_device_pairing_handler.js';
 
@@ -110,7 +109,6 @@ export class FakeBluetoothConfig {
   }
 
   /**
-   * @override
    * @param {!SystemPropertiesObserverInterface}
    *     observer
    */
@@ -120,7 +118,6 @@ export class FakeBluetoothConfig {
   }
 
   /**
-   * @override
    * @param {!BluetoothDeviceStatusObserverInterface}
    *     observer
    */
@@ -129,7 +126,6 @@ export class FakeBluetoothConfig {
   }
 
   /**
-   * @override
    * @param {!DiscoverySessionStatusObserverInterface}
    *     observer
    */
@@ -140,7 +136,6 @@ export class FakeBluetoothConfig {
 
 
   /**
-   * @override
    * @param {!BluetoothDiscoveryDelegateInterface}
    *     delegate
    */
@@ -152,7 +147,6 @@ export class FakeBluetoothConfig {
   }
 
   /**
-   * @override
    * Begins the operation to enable/disable Bluetooth. If the systemState is
    * current disabled, transitions to enabling. If the systemState is
    * currently enabled, transitions to disabled. Does nothing if already in the
@@ -173,14 +167,12 @@ export class FakeBluetoothConfig {
                   bluetoothSystemState.kDisabling);
   }
 
-  /** @override */
   setBluetoothHidDetectionActive() {
     // This method is left unimplemented as it is only used in OOBE.
     assertNotReached();
   }
 
   /**
-   * @override
    * @param {boolean} isUsingBluetooth
    */
   setBluetoothHidDetectionInactive(isUsingBluetooth) {
@@ -191,7 +183,6 @@ export class FakeBluetoothConfig {
   /**
    * Initiates connecting to a device with id |deviceId|. To finish the
    * operation, call completeConnect().
-   * @override
    */
   connect(deviceId) {
     assertFalse(!!this.pendingConnectRequest_);
@@ -212,7 +203,6 @@ export class FakeBluetoothConfig {
   /**
    * Initiates disconnecting from a device with id |deviceId|. To finish the
    * operation, call completeDisconnect().
-   * @override
    */
   disconnect(deviceId) {
     assertFalse(!!this.pendingDisconnectRequest_);
@@ -227,7 +217,6 @@ export class FakeBluetoothConfig {
   /**
    * Initiates forgetting a device with id |deviceId|. To finish the
    * operation, call completeForget().
-   * @override
    */
   forget(deviceId) {
     assertFalse(!!this.pendingForgetRequest_);
@@ -239,7 +228,6 @@ export class FakeBluetoothConfig {
     });
   }
 
-  /** @override */
   setDeviceNickname(deviceId, nickname) {
     const device = this.systemProperties_.pairedDevices.find(
         d => d.deviceProperties.id === deviceId);
