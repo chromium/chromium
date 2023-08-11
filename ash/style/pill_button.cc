@@ -193,7 +193,9 @@ PillButton::PillButton(PressedCallback callback,
                                    /*highlight_on_focus=*/false,
                                    /*background_color=*/
                                    gfx::kPlaceholderColor);
-  views::FocusRing::Get(this)->SetColorId(ui::kColorAshFocusRing);
+  auto* focus_ring = views::FocusRing::Get(this);
+  focus_ring->SetOutsetFocusRingDisabled(true);
+  focus_ring->SetColorId(ui::kColorAshFocusRing);
 
   // Initialize image and icon spacing.
   SetImageLabelSpacing(kIconPillButtonImageLabelSpacingDp);

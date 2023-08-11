@@ -67,6 +67,7 @@ TabSliderButton::TabSliderButton(PressedCallback callback,
 
   // Configure the focus ring.
   auto* focus_ring = views::FocusRing::Get(this);
+  focus_ring->SetOutsetFocusRingDisabled(true);
   focus_ring->SetColorId(cros_tokens::kCrosSysFocusRing);
   const float halo_inset =
       focus_ring->GetHaloThickness() / 2.f + kFocusRingPadding;
@@ -142,6 +143,7 @@ IconSliderButton::IconSliderButton(PressedCallback callback,
   // Replace the pill shaped highlight path of focus ring with a circle shaped
   // highlight path.
   auto* focus_ring = views::FocusRing::Get(this);
+  focus_ring->SetOutsetFocusRingDisabled(true);
   focus_ring->SetPathGenerator(
       std::make_unique<views::CircleHighlightPathGenerator>(-gfx::Insets(
           focus_ring->GetHaloThickness() / 2 + kFocusRingPadding)));

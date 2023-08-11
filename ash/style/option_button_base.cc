@@ -35,6 +35,7 @@ OptionButtonBase::OptionButtonBase(int button_width,
                                    /*highlight_on_focus=*/false);
   views::InstallRectHighlightPathGenerator(this);
   auto* focus_ring = views::FocusRing::Get(this);
+  focus_ring->SetOutsetFocusRingDisabled(true);
   focus_ring->SetColorId(ui::kColorAshFocusRing);
 }
 

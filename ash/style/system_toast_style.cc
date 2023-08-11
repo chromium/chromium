@@ -193,6 +193,7 @@ bool SystemToastStyle::ToggleA11yFocus() {
   }
 
   auto* focus_ring = views::FocusRing::Get(dismiss_button_);
+  focus_ring->SetOutsetFocusRingDisabled(true);
   focus_ring->SetHasFocusPredicate(base::BindRepeating(
       [](const SystemToastStyle* style, const views::View* view) {
         return style->is_dismiss_button_highlighted_;

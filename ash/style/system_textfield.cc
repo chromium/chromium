@@ -77,9 +77,14 @@ SystemTextfield::SystemTextfield(Type type) : type_(type) {
   // appears not only on hover but also on focus.
   RemoveHoverEffect();
 
+  // Override the very round highlight path set in `views::Textfield`.
+  views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
+                                                kCornerRadius);
+
   // Configure focus ring.
   auto* focus_ring = views::FocusRing::Get(this);
   DCHECK(focus_ring);
+  focus_ring->SetOutsetFocusRingDisabled(true);
   const float halo_thickness = focus_ring->GetHaloThickness();
   focus_ring->SetHaloInset(-kFocusRingGap - 0.5f * halo_thickness);
   focus_ring->SetColorId(cros_tokens::kCrosSysFocusRing);
@@ -141,6 +146,7 @@ void SystemTextfield::SetShowFocusRing(bool show) {
     return;
   }
   show_focus_ring_ = show;
+  views::FocusRing::Get(this)->SetOutsetFocusRingDisabled(true);
   views::FocusRing::Get(this)->SchedulePaint();
 }
 

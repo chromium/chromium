@@ -190,6 +190,7 @@ views::FocusRing* StyleUtil::SetUpFocusRingForView(
   DCHECK(view);
   views::FocusRing::Install(view);
   views::FocusRing* focus_ring = views::FocusRing::Get(view);
+  focus_ring->SetOutsetFocusRingDisabled(true);
   focus_ring->SetColorId(ui::kColorAshFocusRing);
   if (halo_inset)
     focus_ring->SetHaloInset(*halo_inset);

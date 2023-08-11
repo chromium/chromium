@@ -160,6 +160,7 @@ IconButton::IconButton(PressedCallback callback,
   UpdateVectorIcon();
 
   auto* focus_ring = views::FocusRing::Get(this);
+  focus_ring->SetOutsetFocusRingDisabled(true);
   focus_ring->SetColorId(
       chromeos::features::IsJellyrollEnabled()
           ? cros_tokens::kCrosSysFocusRing
