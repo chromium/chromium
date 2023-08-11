@@ -1203,6 +1203,7 @@ component("ash") {
     "style/style_util.h",
     "style/style_viewer/checkbox_group_instances_grid_view_factory.cc",
     "style/style_viewer/checkbox_instances_grid_view_factory.cc",
+    "style/style_viewer/combobox_instances_grid_view_factory.cc",
     "style/style_viewer/icon_button_instances_grid_view_factory.cc",
     "style/style_viewer/icon_switch_instances_grid_view_factory.cc",
     "style/style_viewer/pagination_instances_grid_view_factory.cc",

@@ -178,6 +178,8 @@ void SystemUIComponentsStyleViewerView::CreateAndShowWidget() {
   viewer_view->AddComponent(
       u"Pagination", base::BindRepeating(&CreatePaginationInstancesGridView));
   viewer_view->AddComponent(
+      u"Combobox", base::BindRepeating(&CreateComboboxInstancesGridView));
+  viewer_view->AddComponent(
       u"Typography", base::BindRepeating(&CreateTypographyInstancesGridView));
 
   // Show PillButton on start.
