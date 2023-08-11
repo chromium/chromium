@@ -21,7 +21,6 @@ static_library("page_info") {
     "//components/content_settings/browser/ui",
     "//components/content_settings/core/browser",
     "//components/keyed_service/core",
-    "//components/omnibox/common",
     "//components/optimization_guide/core",
     "//components/page_info/core",
     "//components/password_manager/core/browser",

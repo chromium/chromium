@@ -16,7 +16,6 @@ include_rules = [
   "+components/safe_browsing/content/browser",
   "+components/safe_browsing/core/browser",
   "+components/safe_browsing/core/common",
-  "+components/omnibox/common",
   "+components/security_interstitials",
   "+components/security_state",
   "+components/search",
