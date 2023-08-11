@@ -140,12 +140,15 @@ void NativeThemeGtk::NotifyOnNativeThemeUpdated() {
 
   // Update the preferred contrast settings for the NativeThemeAura instance and
   // notify its observers about the change.
-  ui::NativeTheme* native_theme = ui::NativeTheme::GetInstanceForNativeUi();
-  native_theme->SetPreferredContrast(
-      UserHasContrastPreference()
-          ? ui::NativeThemeBase::PreferredContrast::kMore
-          : ui::NativeThemeBase::PreferredContrast::kNoPreference);
-  native_theme->NotifyOnNativeThemeUpdated();
+  for (ui::NativeTheme* native_theme :
+       {ui::NativeTheme::GetInstanceForNativeUi(),
+        ui::NativeTheme::GetInstanceForWeb()}) {
+    native_theme->SetPreferredContrast(
+        UserHasContrastPreference()
+            ? ui::NativeThemeBase::PreferredContrast::kMore
+            : ui::NativeThemeBase::PreferredContrast::kNoPreference);
+    native_theme->NotifyOnNativeThemeUpdated();
+  }
 }
 
 void NativeThemeGtk::OnThemeChanged(GtkSettings* settings,
