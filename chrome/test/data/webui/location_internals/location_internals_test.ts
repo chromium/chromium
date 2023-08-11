@@ -5,9 +5,9 @@
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {POSITION_CACHE_TABLE_ID, WIFI_DATA_TABLE_ID, WIFI_POLLING_POLICY_TABLE_ID} from 'chrome://location-internals/diagnose_info_view.js';
-import {GeolocationDiagnostics, GeolocationInternalsInterface, GeolocationInternalsPendingReceiver, GeolocationInternalsReceiver, INVALID_CHANNEL, INVALID_RADIO_SIGNAL_STRENGTH, INVALID_SIGNAL_TO_NOISE} from 'chrome://location-internals/geolocation_internals.mojom-webui.js';
+import {GeolocationDiagnostics, GeolocationInternalsInterface, GeolocationInternalsObserverRemote, GeolocationInternalsPendingReceiver, GeolocationInternalsReceiver, INVALID_CHANNEL, INVALID_RADIO_SIGNAL_STRENGTH, INVALID_SIGNAL_TO_NOISE} from 'chrome://location-internals/geolocation_internals.mojom-webui.js';
 import {BAD_ACCURACY, BAD_ALTITUDE, BAD_HEADING, BAD_LATITUDE_LONGITUDE, BAD_SPEED} from 'chrome://location-internals/geoposition.mojom-webui.js';
-import {DIAGNOSE_INFO_VIEW_ID, initializeMojo, REFRESH_BUTTON_ID, REFRESH_FINISH_EVENT, REFRESH_STATUS_FAILURE, REFRESH_STATUS_ID, REFRESH_STATUS_SUCCESS, WATCH_BUTTON_ID} from 'chrome://location-internals/location_internals.js';
+import {DIAGNOSE_INFO_VIEW_ID, initializeMojo, REFRESH_FINISH_EVENT, REFRESH_STATUS_ID, REFRESH_STATUS_SUCCESS, REFRESH_STATUS_UNINITIALIZED, WATCH_BUTTON_ID} from 'chrome://location-internals/location_internals.js';
 import {LocationInternalsHandler, LocationInternalsHandlerInterface, LocationInternalsHandlerReceiver} from 'chrome://location-internals/location_internals.mojom-webui.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {getRequiredElement} from 'chrome://resources/js/util_ts.js';
@@ -19,11 +19,9 @@ let geolocationInternalsRemote: FakeGeolocationInternalsRemote|null = null;
 
 // Updates diagnostic information, then clicks the refresh button and returns a
 // promise that resolves when the display has updated.
-function simulateDiagnosticsUpdate(diagnostics: GeolocationDiagnostics|null) {
+function simulateDiagnosticsUpdate(diagnostics: GeolocationDiagnostics) {
+  const promise = eventToPromise(REFRESH_FINISH_EVENT, window);
   geolocationInternalsRemote!.installDiagnostics(diagnostics);
-  const refreshButton = getRequiredElement<HTMLElement>(REFRESH_BUTTON_ID);
-  const promise = eventToPromise(REFRESH_FINISH_EVENT, refreshButton);
-  refreshButton.click();
   return promise;
 }
 
@@ -141,6 +139,7 @@ class FakeLocationInternalsHandlerRemote extends TestBrowserProxy implements
 class FakeGeolocationInternalsRemote extends TestBrowserProxy implements
     GeolocationInternalsInterface {
   private receiver_: GeolocationInternalsReceiver;
+  private observer_: GeolocationInternalsObserverRemote|null;
   private diagnostics_: GeolocationDiagnostics|null;
 
   constructor(pendingReceiver: GeolocationInternalsPendingReceiver) {
@@ -150,16 +149,21 @@ class FakeGeolocationInternalsRemote extends TestBrowserProxy implements
 
     this.receiver_ = new GeolocationInternalsReceiver(this);
     this.receiver_.$.bindHandle(pendingReceiver.handle);
+    this.observer_ = null;
     this.diagnostics_ = null;
   }
 
-  getDiagnostics(): Promise<{diagnostics: GeolocationDiagnostics | null}> {
-    this.methodCalled('getDiagnostics');
+  addInternalsObserver(observer: GeolocationInternalsObserverRemote):
+      Promise<{diagnostics: (GeolocationDiagnostics | null)}> {
+    this.observer_ = observer;
     return Promise.resolve({diagnostics: this.diagnostics_});
   }
 
-  installDiagnostics(diagnostics: GeolocationDiagnostics|null) {
+  installDiagnostics(diagnostics: GeolocationDiagnostics) {
     this.diagnostics_ = diagnostics;
+    if (this.observer_ !== null) {
+      this.observer_.onDiagnosticsChanged(this.diagnostics_);
+    }
   }
 }
 
@@ -189,22 +193,17 @@ suite('LocationInternalsUITest', function() {
   });
 
   test('RefreshStatus', async function() {
+    // Check that the initial status indicates the API is not initialized.
     const refreshStatus = getRequiredElement<HTMLElement>(REFRESH_STATUS_ID);
+    assert(refreshStatus.textContent!.includes(REFRESH_STATUS_UNINITIALIZED));
 
-    // Simulate geolocation not yet initialized.
-    await simulateDiagnosticsUpdate(null);
-    assert(refreshStatus.textContent! === REFRESH_STATUS_FAILURE);
-
-    // Installed valid data and trigger click again. On real UI we will append
-    // timestamp to `refreshStatus`, here we simply validate that the
-    // refreshStatus's text includes REFRESH_STATUS_SUCCESS.
+    // Simulate an update and check that the status message indicates success.
     await simulateDiagnosticsUpdate({providerState: 0});
     assert(refreshStatus.textContent!.includes(REFRESH_STATUS_SUCCESS));
   });
 
   test('NetworkLocationDiagnosticsHidden', async function() {
     // Simulate geolocation not yet initialized.
-    await simulateDiagnosticsUpdate(null);
     checkTableHidden(WIFI_DATA_TABLE_ID);
 
     // Simulate network location provider not initialized.
@@ -312,7 +311,6 @@ suite('LocationInternalsUITest', function() {
 
   test('PositionCacheDiagnosticsHidden', async function() {
     // Simulate geolocation not yet initialized.
-    await simulateDiagnosticsUpdate(null);
     checkTableHidden(POSITION_CACHE_TABLE_ID);
 
     // Simulate uninitialized position cache.
@@ -490,8 +488,7 @@ suite('LocationInternalsUITest', function() {
   });
 
   test('WifiPollingPolicyTableHidden', async function() {
-    // Simulate geolocation not yet initialized.
-    await simulateDiagnosticsUpdate(null);
+    // Geolocation not yet initialized.
     checkTableHidden(WIFI_POLLING_POLICY_TABLE_ID);
 
     // Simulate wifi polling policy not initialized.

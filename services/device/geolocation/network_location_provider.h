@@ -42,7 +42,8 @@ class NetworkLocationProvider : public LocationProvider
       GeolocationManager* geolocation_manager,
       const scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
       const std::string& api_key,
-      PositionCache* position_cache);
+      PositionCache* position_cache,
+      base::RepeatingClosure internals_updated_closure);
 
   NetworkLocationProvider(const NetworkLocationProvider&) = delete;
   NetworkLocationProvider& operator=(const NetworkLocationProvider&) = delete;
@@ -125,6 +126,8 @@ class NetworkLocationProvider : public LocationProvider
 
   bool is_awaiting_initial_permission_status_ = true;
 #endif
+
+  base::RepeatingClosure internals_updated_closure_;
 
   base::WeakPtrFactory<NetworkLocationProvider> weak_factory_{this};
 };

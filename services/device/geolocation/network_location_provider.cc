@@ -45,7 +45,8 @@ NetworkLocationProvider::NetworkLocationProvider(
     GeolocationManager* geolocation_manager,
     const scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
     const std::string& api_key,
-    PositionCache* position_cache)
+    PositionCache* position_cache,
+    base::RepeatingClosure internals_updated_closure)
     : wifi_data_update_callback_(
           base::BindRepeating(&NetworkLocationProvider::OnWifiDataUpdate,
                               base::Unretained(this))),
@@ -57,8 +58,10 @@ NetworkLocationProvider::NetworkLocationProvider(
           std::move(url_loader_factory),
           api_key,
           base::BindRepeating(&NetworkLocationProvider::OnLocationResponse,
-                              base::Unretained(this)))) {
+                              base::Unretained(this)))),
+      internals_updated_closure_(std::move(internals_updated_closure)) {
   DCHECK(position_cache_);
+  CHECK(internals_updated_closure_);
 #if BUILDFLAG(IS_APPLE)
   DCHECK(geolocation_manager);
   geolocation_manager_ = geolocation_manager;
@@ -123,8 +126,10 @@ void NetworkLocationProvider::SetUpdateCallback(
 void NetworkLocationProvider::OnPermissionGranted() {
   const bool was_permission_granted = is_permission_granted_;
   is_permission_granted_ = true;
-  if (!was_permission_granted && IsStarted())
+  if (!was_permission_granted && IsStarted()) {
     RequestPosition();
+    internals_updated_closure_.Run();
+  }
 }
 
 #if BUILDFLAG(IS_APPLE)
@@ -145,6 +150,7 @@ void NetworkLocationProvider::OnSystemPermissionUpdated(
     wifi_data_provider_handle_->ForceRescan();
     OnWifiDataUpdate();
   }
+  internals_updated_closure_.Run();
 }
 #endif
 
@@ -187,6 +193,8 @@ void NetworkLocationProvider::OnWifiDataUpdate() {
       << is_wifi_data_complete_ << " delayed=" << delayed;
   if (is_wifi_data_complete_ || delayed)
     RequestPosition();
+
+  internals_updated_closure_.Run();
 }
 
 void NetworkLocationProvider::OnLocationResponse(
@@ -205,6 +213,7 @@ void NetworkLocationProvider::OnLocationResponse(
   if (!location_provider_update_callback_.is_null()) {
     location_provider_update_callback_.Run(this, std::move(result));
   }
+  internals_updated_closure_.Run();
 }
 
 void NetworkLocationProvider::StartProvider(bool high_accuracy) {

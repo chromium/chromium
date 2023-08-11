@@ -53,7 +53,8 @@ class LocationArbitrator : public LocationProvider {
       const scoped_refptr<base::SingleThreadTaskRunner>& main_task_runner,
       const scoped_refptr<network::SharedURLLoaderFactory>& url_loader_factory,
       const std::string& api_key,
-      std::unique_ptr<PositionCache> position_cache);
+      std::unique_ptr<PositionCache> position_cache,
+      base::RepeatingClosure internals_updated_closure);
   LocationArbitrator(const LocationArbitrator&) = delete;
   LocationArbitrator& operator=(const LocationArbitrator&) = delete;
   ~LocationArbitrator() override;
@@ -121,6 +122,8 @@ class LocationArbitrator : public LocationProvider {
   // The current best estimate of our position, or `nullptr` if no estimate has
   // been received.
   mojom::GeopositionResultPtr result_;
+  // To be called when a provider's internal diagnostics have changed.
+  base::RepeatingClosure internals_updated_closure_;
 };
 
 // Factory functions for the various types of location provider to abstract

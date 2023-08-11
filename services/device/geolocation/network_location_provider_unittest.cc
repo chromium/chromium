@@ -91,7 +91,7 @@ class GeolocationNetworkProviderTest : public testing::Test {
         test_url_loader_factory_.GetSafeWeakWrapper(),
         fake_geolocation_manager_.get(),
         base::SingleThreadTaskRunner::GetCurrentDefault(), api_key,
-        &position_cache_);
+        &position_cache_, /*internals_updated_closure=*/base::DoNothing());
     // For macOS we must simulate the granting of location permission
     if (grant_system_permission_by_default_) {
       fake_geolocation_manager_->SetSystemPermission(
@@ -103,7 +103,7 @@ class GeolocationNetworkProviderTest : public testing::Test {
         test_url_loader_factory_.GetSafeWeakWrapper(),
         /*geolocation_system_permission_manager=*/nullptr,
         base::SingleThreadTaskRunner::GetCurrentDefault(), api_key,
-        &position_cache_);
+        &position_cache_, /*internals_updated_closure=*/base::DoNothing());
 #endif
     if (set_permission_granted) {
       provider->OnPermissionGranted();

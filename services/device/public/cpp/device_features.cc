@@ -30,5 +30,9 @@ BASE_FEATURE(kCrOSGeolocationReducedWifiPollingInterval,
 BASE_FEATURE(kEnableBluetoothSerialPortProfileInSerialApi,
              "EnableBluetoothSerialPortProfileInSerialApi",
              base::FEATURE_ENABLED_BY_DEFAULT);
+// Enable real-time diagnostic updates in chrome://location-internals.
+BASE_FEATURE(kGeolocationDiagnosticsObserver,
+             "GeolocationDiagnosticsObserver",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace features

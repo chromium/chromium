@@ -123,9 +123,17 @@ struct GeolocationDiagnostics {
   WifiPollingPolicyDiagnostics? wifi_polling_policy_diagnostics;
 };
 
+// Interface for chrome://location-internals to be notified when the debug data
+// is updated.
+interface GeolocationInternalsObserver {
+  // Called after handling an event that may have changed the debug data.
+  OnDiagnosticsChanged(GeolocationDiagnostics diagnostics);
+};
+
 // Interface for chrome://location-internals to access geolocation debug data.
 interface GeolocationInternals {
-  // Returns diagnostic information used for debugging the geolocation service,
-  // or null if the geolocation service is not initialized.
-  GetDiagnostics() => (GeolocationDiagnostics? diagnostics);
+  // Registers a geolocation debug data observer. Responds with the current
+  // debug data, or null if the geolocation API has not been initialized.
+  AddInternalsObserver(pending_remote<GeolocationInternalsObserver> observer) =>
+      (GeolocationDiagnostics? diagnostics);
 };
