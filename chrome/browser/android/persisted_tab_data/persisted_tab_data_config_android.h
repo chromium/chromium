@@ -30,6 +30,9 @@ class PersistedTabDataConfigAndroid {
   }
   const char* data_id() { return data_id_; }
 
+  static std::unique_ptr<std::vector<PersistedTabDataStorageAndroid*>>
+  GetAllStorage(Profile* profile);
+
  private:
   raw_ptr<PersistedTabDataStorageAndroid> persisted_tab_data_storage_;
   raw_ptr<const char> data_id_;

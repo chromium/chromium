@@ -33,3 +33,17 @@ PersistedTabDataConfigAndroid::Get(const void* user_data_key,
   NOTREACHED() << "Unknown UserDataKey";
   return nullptr;
 }
+
+std::unique_ptr<std::vector<PersistedTabDataStorageAndroid*>>
+PersistedTabDataConfigAndroid::GetAllStorage(Profile* profile) {
+  std::unique_ptr<std::vector<PersistedTabDataStorageAndroid*>> storage =
+      std::make_unique<std::vector<PersistedTabDataStorageAndroid*>>();
+  if (profile) {
+    DCHECK(LevelDBPersistedTabDataStorageAndroidFactory::GetInstance()
+               ->GetForBrowserContext(profile));
+    storage->push_back(
+        LevelDBPersistedTabDataStorageAndroidFactory::GetInstance()
+            ->GetForBrowserContext(profile));
+  }
+  return storage;
+}

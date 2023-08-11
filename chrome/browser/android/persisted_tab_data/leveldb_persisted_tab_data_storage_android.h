@@ -33,6 +33,10 @@ class LevelDBPersistedTabDataStorageAndroid
   // Remove entry in the database for a given |tab_id| and |data_id|.
   void Remove(int tab_id, const char* data_id) override;
 
+  // Remove entries in the database for all PersistedTabDataAndroid for a given
+  // |tab_id|
+  void RemoveAll(int tab_id) override;
+
  private:
   friend class LevelDBPersistedTabDataStorageAndroidFactory;
   explicit LevelDBPersistedTabDataStorageAndroid(Profile* profile);

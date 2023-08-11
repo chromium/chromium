@@ -1,0 +1,156 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/android/persisted_tab_data/persisted_tab_data_android.h"
+#include "chrome/browser/android/persisted_tab_data/test/bar_persisted_tab_data.h"
+#include "chrome/browser/android/persisted_tab_data/test/foo_persisted_tab_data.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/android/tab_model/tab_model.h"
+#include "chrome/browser/ui/android/tab_model/tab_model_list.h"
+#include "chrome/test/base/android/android_browser_test.h"
+#include "chrome/test/base/chrome_test_utils.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
+#include "net/dns/mock_host_resolver.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
+
+class PersistedTabDataAndroidBrowserTest : public AndroidBrowserTest {
+ public:
+  PersistedTabDataAndroidBrowserTest() = default;
+
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+    ASSERT_TRUE(embedded_test_server()->Start());
+
+    // Create a second Tab.
+    TabModel* tab_model =
+        TabModelList::GetTabModelForWebContents(web_contents());
+    std::unique_ptr<content::WebContents> contents =
+        content::WebContents::Create(
+            content::WebContents::CreateParams(profile()));
+    content::WebContents* second_web_contents = contents.release();
+    tab_model->CreateTab(tab_android(), second_web_contents);
+  }
+
+  TabAndroid* tab_android() {
+    return TabAndroid::FromWebContents(web_contents());
+  }
+
+  TabAndroid* another_tab() {
+    TabModel* tab_model =
+        TabModelList::GetTabModelForWebContents(web_contents());
+    return tab_model->GetTabAt(1);
+  }
+
+  void FooExistsForTesting(TabAndroid* tab_android,
+                           bool expect_exists,
+                           base::RunLoop& run_loop) {
+    FooPersistedTabDataAndroid::ExistsForTesting(
+        tab_android,
+        base::BindOnce(
+            [](base::OnceClosure done, bool expect_exists, bool exists) {
+              EXPECT_EQ(expect_exists, exists);
+              std::move(done).Run();
+            },
+            run_loop.QuitClosure(), expect_exists));
+  }
+
+  void BarExistsForTesting(TabAndroid* tab_android,
+                           bool expect_exists,
+                           base::RunLoop& run_loop) {
+    BarPersistedTabDataAndroid::ExistsForTesting(
+        tab_android,
+        base::BindOnce(
+            [](base::OnceClosure done, bool expect_exists, bool exists) {
+              EXPECT_EQ(expect_exists, exists);
+              std::move(done).Run();
+            },
+            run_loop.QuitClosure(), expect_exists));
+  }
+
+  void OnTabClose(TabAndroid* tab_android) {
+    PersistedTabDataAndroid::OnTabClose(tab_android);
+  }
+
+ private:
+  content::WebContents* web_contents() {
+    return chrome_test_utils::GetActiveWebContents(this);
+  }
+
+  Profile* profile() {
+    auto* web_contents = chrome_test_utils::GetActiveWebContents(this);
+    return Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(PersistedTabDataAndroidBrowserTest, TestRemoveAll) {
+  // Save FooPersistedTabDataAndroid and BarPersistedTabDataAndroid for
+  // tab_android()
+  FooPersistedTabDataAndroid foo_persisted_tab_data_android(tab_android());
+  foo_persisted_tab_data_android.SetValue(42);
+  BarPersistedTabDataAndroid bar_persisted_tab_data_android(tab_android());
+  bar_persisted_tab_data_android.SetValue(true);
+
+  // FooPersistedTabDataAndroid and BarPersistedTabDataAndroid should both
+  // be in storage now for tab_android()
+  base::RunLoop run_loop[4];
+  FooExistsForTesting(tab_android(), true, run_loop[0]);
+  run_loop[0].Run();
+  BarExistsForTesting(tab_android(), true, run_loop[1]);
+  run_loop[1].Run();
+
+  OnTabClose(tab_android());
+
+  // FooPersistedTabDataAndroid and BarPersistedTabDataAndroid should both
+  // be removed following a Tab close of tab_android().
+  FooExistsForTesting(tab_android(), false, run_loop[2]);
+  run_loop[2].Run();
+  BarExistsForTesting(tab_android(), false, run_loop[3]);
+  run_loop[3].Run();
+}
+
+IN_PROC_BROWSER_TEST_F(PersistedTabDataAndroidBrowserTest,
+                       TestRemoveAllMultipleTabs) {
+  // Save FooPersistedTabDataAndroid and BarPersistedTabDataAndroid for
+  // tab_android() and another_tab().
+  FooPersistedTabDataAndroid foo_persisted_tab_data_android(tab_android());
+  foo_persisted_tab_data_android.SetValue(42);
+  BarPersistedTabDataAndroid bar_persisted_tab_data_android(tab_android());
+  bar_persisted_tab_data_android.SetValue(true);
+  FooPersistedTabDataAndroid another_tab_foo_persisted_tab_data_android(
+      another_tab());
+  another_tab_foo_persisted_tab_data_android.SetValue(32);
+  BarPersistedTabDataAndroid another_tab_bar_persisted_tab_data_android(
+      another_tab());
+  another_tab_bar_persisted_tab_data_android.SetValue(false);
+
+  // FooPersistedTabDataAndroid and BarPersistedTabDataAndroid should both
+  // exist for tab_android() and another_tab().
+  base::RunLoop run_loop[8];
+  FooExistsForTesting(tab_android(), true, run_loop[0]);
+  run_loop[0].Run();
+  FooExistsForTesting(another_tab(), true, run_loop[1]);
+  run_loop[1].Run();
+  BarExistsForTesting(tab_android(), true, run_loop[2]);
+  run_loop[2].Run();
+  BarExistsForTesting(another_tab(), true, run_loop[3]);
+  run_loop[3].Run();
+
+  OnTabClose(tab_android());
+
+  // FooPersistedTabDataAndroid and BarPersistedTabDataAndroid should
+  // both be removed following a Tab close of tab_android(). However,
+  // another_tab() is still open so FooPersistedTabDataAndroid and
+  // BarPersistedTabDataAndroid should still be in storage for
+  // another_tab().
+  FooExistsForTesting(tab_android(), false, run_loop[4]);
+  run_loop[4].Run();
+  BarExistsForTesting(tab_android(), false, run_loop[5]);
+  run_loop[5].Run();
+  FooExistsForTesting(another_tab(), true, run_loop[6]);
+  run_loop[6].Run();
+  BarExistsForTesting(another_tab(), true, run_loop[7]);
+  run_loop[7].Run();
+}

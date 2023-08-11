@@ -134,6 +134,7 @@ generate_jni("jni_headers") {
     "java/src/org/chromium/chrome/browser/tab/WebContentsStateBridge.java",
     "java/src/org/chromium/chrome/browser/tab/state/CriticalPersistedTabData.java",
     "java/src/org/chromium/chrome/browser/tab/state/LevelDBPersistedDataStorage.java",
+    "java/src/org/chromium/chrome/browser/tab/state/PersistedTabData.java",
   ]
 }
 
