@@ -43,6 +43,7 @@ class PrefService;
 @protocol PriceNotificationsCommands;
 class PromosManager;
 class ReadingListBrowserAgent;
+class ReadingListModel;
 @protocol TextZoomCommands;
 class WebNavigationBrowserAgent;
 class WebStateList;
@@ -88,6 +89,9 @@ class WebStateList;
 @property(nonatomic, assign)
     bookmarks::BookmarkModel* localOrSyncableBookmarkModel;
 @property(nonatomic, assign) bookmarks::BookmarkModel* accountBookmarkModel;
+
+// Readinglist model to know if model has finished loading.
+@property(nonatomic, assign) ReadingListModel* readingListModel;
 
 // Pref service to retrieve browser state preference values.
 @property(nonatomic, assign) PrefService* browserStatePrefs;

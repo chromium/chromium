@@ -7,6 +7,7 @@
 #import "base/files/scoped_temp_dir.h"
 #import "base/ios/ios_util.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/test/ios/wait_util.h"
 #import "base/time/default_clock.h"
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/browser/bookmark_utils.h"
@@ -20,6 +21,7 @@
 #import "components/policy/core/common/mock_configuration_policy_provider.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/testing_pref_service.h"
+#import "components/reading_list/core/reading_list_model.h"
 #import "components/supervised_user/core/browser/supervised_user_preferences.h"
 #import "components/supervised_user/core/common/pref_names.h"
 #import "components/sync/base/features.h"
@@ -38,6 +40,8 @@
 #import "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
 #import "ios/chrome/browser/policy/enterprise_policy_test_helper.h"
 #import "ios/chrome/browser/promos_manager/mock_promos_manager.h"
+#import "ios/chrome/browser/reading_list/reading_list_model_factory.h"
+#import "ios/chrome/browser/reading_list/reading_list_test_utils.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -139,6 +143,10 @@ class OverflowMenuMediatorTest : public PlatformTest {
         base::BindRepeating(&password_manager::BuildPasswordStoreInterface<
                             web::BrowserState,
                             password_manager::MockPasswordStoreInterface>));
+    builder.AddTestingFactory(
+        ReadingListModelFactory::GetInstance(),
+        base::BindRepeating(&BuildReadingListModelWithFakeStorage,
+                            std::vector<scoped_refptr<ReadingListEntry>>()));
     browser_state_ = builder.Build();
 
     web::test::OverrideJavaScriptFeatures(
@@ -213,6 +221,7 @@ class OverflowMenuMediatorTest : public PlatformTest {
     mediator_.baseViewController = baseViewController_;
     mediator_.supervisedUserService =
         SupervisedUserServiceFactory::GetForBrowserState(browser_state_.get());
+    SetUpReadingList();
     return mediator_;
   }
 
@@ -260,6 +269,17 @@ class OverflowMenuMediatorTest : public PlatformTest {
     }
     mediator_.localOrSyncableBookmarkModel = local_or_syncable_bookmark_model_;
     mediator_.accountBookmarkModel = account_bookmark_model_;
+  }
+
+  void SetUpReadingList() {
+    reading_list_model_ =
+        ReadingListModelFactory::GetForBrowserState(browser_state_.get());
+    DCHECK(reading_list_model_);
+    ASSERT_TRUE(
+        base::test::ios::WaitUntilConditionOrTimeout(base::Seconds(5), ^{
+          return reading_list_model_->loaded();
+        }));
+    mediator_.readingListModel = reading_list_model_;
   }
 
   void InsertNewWebState(int index) {
@@ -367,6 +387,7 @@ class OverflowMenuMediatorTest : public PlatformTest {
   OverflowMenuOrderer* orderer_;
   BookmarkModel* local_or_syncable_bookmark_model_;
   BookmarkModel* account_bookmark_model_;
+  ReadingListModel* reading_list_model_;
   std::unique_ptr<TestingPrefServiceSimple> browserStatePrefs_;
   std::unique_ptr<TestingPrefServiceSimple> localStatePrefs_;
   web::FakeWebState* web_state_;

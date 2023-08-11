@@ -165,6 +165,9 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
 // reading list count.
 @property(nonatomic, strong)
     ContentSuggestionsMostVisitedActionItem* readingListItem;
+// Indicates if reading list model is loaded. Readlist cannot be triggered until
+// it is.
+@property(nonatomic, assign) NSInteger readingListModelIsLoaded;
 // Number of unread items in reading list model.
 @property(nonatomic, assign) NSInteger readingListUnreadCount;
 // YES if the Return to Recent Tab tile is being shown.
@@ -464,10 +467,13 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
   // Checks if the item is a shortcut tile. Does not include Most Visited URL
   // tiles.
   if ([item isKindOfClass:[ContentSuggestionsMostVisitedActionItem class]]) {
-    [self.NTPMetricsDelegate shortcutTileOpened];
     ContentSuggestionsMostVisitedActionItem* mostVisitedItem =
         base::mac::ObjCCastStrict<ContentSuggestionsMostVisitedActionItem>(
             item);
+    if (mostVisitedItem.disabled) {
+      return;
+    }
+    [self.NTPMetricsDelegate shortcutTileOpened];
     [self.contentSuggestionsMetricsRecorder
         recordShortcutTileTapped:mostVisitedItem.collectionShortcutType];
     switch (mostVisitedItem.collectionShortcutType) {
@@ -970,6 +976,7 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
   if (!_actionButtonItems) {
     self.readingListItem = ReadingListActionItem();
     self.readingListItem.count = self.readingListUnreadCount;
+    self.readingListItem.disabled = !self.readingListModelIsLoaded;
     _actionButtonItems = @[
       [self shouldShowWhatsNewActionItem] ? WhatsNewActionItem()
                                           : BookmarkActionItem(),
@@ -1031,8 +1038,10 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
 
 - (void)readingListModelDidApplyChanges:(const ReadingListModel*)model {
   self.readingListUnreadCount = model->unread_size();
+  self.readingListModelIsLoaded = model->loaded();
   if (self.readingListItem) {
     self.readingListItem.count = self.readingListUnreadCount;
+    self.readingListItem.disabled = !self.readingListModelIsLoaded;
     [self.consumer updateShortcutTileConfig:self.readingListItem];
   }
 }

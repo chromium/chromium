@@ -51,6 +51,7 @@ source_set("popup_menu") {
     "//components/prefs",
     "//components/prefs/ios",
     "//components/profile_metrics",
+    "//components/reading_list/core",
     "//components/segmentation_platform/embedder/default_model",
     "//components/segmentation_platform/public",
     "//components/translate/core/browser",

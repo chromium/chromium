@@ -74,6 +74,7 @@ const CGFloat kIconSize = 56;
   if (config.count > 0) {
     self.countLabel.text = [@(config.count) stringValue];
   }
+  self.alpha = config.disabled ? 0.3 : 1.0;
 }
 
 - (UILabel*)countLabel {

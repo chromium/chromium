@@ -24,6 +24,7 @@
 #import "components/prefs/pref_change_registrar.h"
 #import "components/prefs/pref_service.h"
 #import "components/profile_metrics/browser_profile_type.h"
+#import "components/reading_list/core/reading_list_model.h"
 #import "components/translate/core/browser/translate_manager.h"
 #import "components/translate/core/browser/translate_prefs.h"
 #import "ios/chrome/browser/bookmarks/bookmark_model_bridge_observer.h"
@@ -194,6 +195,9 @@ PopupMenuTextItem* CreateEnterpriseInfoItem(NSString* imageName,
 // YES if the current website has been followed.
 @property(nonatomic, assign) BOOL followed;
 
+// State of reading list model loading.
+@property(nonatomic, assign) BOOL readingListModelLoaded;
+
 #pragma mark*** Specific Items ***
 
 @property(nonatomic, strong) PopupMenuToolsItem* openNewIncognitoTabItem;
@@ -229,6 +233,7 @@ PopupMenuTextItem* CreateEnterpriseInfoItem(NSString* imageName,
     _isIncognito = isIncognito;
     _readingListMenuNotifier =
         [[ReadingListMenuNotifier alloc] initWithReadingList:readingListModel];
+    _readingListModelLoaded = readingListModel->loaded();
     _webStateObserver = std::make_unique<web::WebStateObserverBridge>(self);
     _webStateListObserver = std::make_unique<WebStateListObserverBridge>(self);
     _overlayPresenterObserver =
@@ -1052,21 +1057,23 @@ PopupMenuTextItem* CreateEnterpriseInfoItem(NSString* imageName,
       @"popup_menu_bookmarks", kToolsMenuBookmarksId);
 
   // Reading List.
-  self.readingListItem = CreateTableViewItem(
-      IDS_IOS_TOOLS_MENU_READING_LIST, PopupMenuActionReadingList,
-      @"popup_menu_reading_list", kToolsMenuReadingListId);
-  NSInteger numberOfUnreadArticles =
-      [self.readingListMenuNotifier readingListUnreadCount];
-  self.readingListItem.badgeNumber = numberOfUnreadArticles;
-  if (numberOfUnreadArticles) {
-    self.readingListItem.additionalAccessibilityLabel =
-        AccessibilityLabelForReadingListCellWithCount(numberOfUnreadArticles);
-  }
-  if (self.engagementTracker &&
-      self.engagementTracker->ShouldTriggerHelpUI(
-          feature_engagement::kIPHBadgedReadingListFeature)) {
-    self.readingListItem.badgeText = l10n_util::GetNSStringWithFixup(
-        IDS_IOS_TOOLS_MENU_CELL_NEW_FEATURE_BADGE);
+  if (self.readingListModelLoaded) {
+    self.readingListItem = CreateTableViewItem(
+        IDS_IOS_TOOLS_MENU_READING_LIST, PopupMenuActionReadingList,
+        @"popup_menu_reading_list", kToolsMenuReadingListId);
+    NSInteger numberOfUnreadArticles =
+        [self.readingListMenuNotifier readingListUnreadCount];
+    self.readingListItem.badgeNumber = numberOfUnreadArticles;
+    if (numberOfUnreadArticles) {
+      self.readingListItem.additionalAccessibilityLabel =
+          AccessibilityLabelForReadingListCellWithCount(numberOfUnreadArticles);
+    }
+    if (self.engagementTracker &&
+        self.engagementTracker->ShouldTriggerHelpUI(
+            feature_engagement::kIPHBadgedReadingListFeature)) {
+      self.readingListItem.badgeText = l10n_util::GetNSStringWithFixup(
+          IDS_IOS_TOOLS_MENU_CELL_NEW_FEATURE_BADGE);
+    }
   }
 
   // Recent Tabs.
@@ -1091,14 +1098,18 @@ PopupMenuTextItem* CreateEnterpriseInfoItem(NSString* imageName,
       CreateTableViewItem(IDS_IOS_TOOLS_MENU_SETTINGS, PopupMenuActionSettings,
                           @"popup_menu_settings", kToolsMenuSettingsActionId);
 
-  if (self.isIncognito) {
-    return @[ bookmarks, self.readingListItem, downloadsFolder, settings ];
+  NSMutableArray* items = [[NSMutableArray alloc] init];
+  [items addObject:bookmarks];
+  if (self.readingListItem) {
+    [items addObject:self.readingListItem];
   }
-
-  return @[
-    bookmarks, self.readingListItem, recentTabs, history, downloadsFolder,
-    settings
-  ];
+  if (!self.isIncognito) {
+    [items addObject:recentTabs];
+    [items addObject:history];
+  }
+  [items addObject:downloadsFolder];
+  [items addObject:settings];
+  return items;
 }
 
 // Creates the section for enterprise info.
