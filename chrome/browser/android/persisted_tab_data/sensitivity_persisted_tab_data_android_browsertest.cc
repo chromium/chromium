@@ -114,8 +114,9 @@ IN_PROC_BROWSER_TEST_F(SensitivityPersistedTabDataAndroidBrowserTest,
   sptda.set_is_sensitive(true);
   std::unique_ptr<const std::vector<uint8_t>> serialized = Serialize(&sptda);
   SensitivityPersistedTabDataAndroid deserialized(tab_android);
-  EXPECT_TRUE(deserialized.is_sensitive());
+  EXPECT_FALSE(deserialized.is_sensitive());
   Deserialize(&deserialized, *serialized.get());
+  EXPECT_TRUE(deserialized.is_sensitive());
 }
 
 IN_PROC_BROWSER_TEST_F(SensitivityPersistedTabDataAndroidBrowserTest,
