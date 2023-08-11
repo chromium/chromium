@@ -403,6 +403,8 @@ void ExtensionInfoGenerator::CreateExtensionInfo(
     state = developer::EXTENSION_STATE_DISABLED;
   else if ((ext = registry->terminated_extensions().GetByID(id)) != nullptr)
     state = developer::EXTENSION_STATE_TERMINATED;
+  else if ((ext = registry->blocklisted_extensions().GetByID(id)) != nullptr)
+    state = developer::EXTENSION_STATE_BLACKLISTED;
 
   if (ext && ui_util::ShouldDisplayInExtensionSettings(*ext))
     CreateExtensionInfoHelper(*ext, state);
