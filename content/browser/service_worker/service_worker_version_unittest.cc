@@ -1516,6 +1516,7 @@ class NoFetchHandlerClient : public FakeEmbeddedWorkerInstanceClient {
     host()->OnScriptEvaluationStart();
     host()->OnStarted(blink::mojom::ServiceWorkerStartStatus::kNormalCompletion,
                       blink::mojom::ServiceWorkerFetchHandlerType::kNoHandler,
+                      /*has_hid_event_handlers=*/false,
                       helper()->GetNextThreadId(),
                       blink::mojom::EmbeddedWorkerStartTiming::New());
   }
@@ -1976,5 +1977,44 @@ TEST_F(ServiceWorkerVersionStaticRouterTest, SetRouterEvaluator) {
     EXPECT_TRUE(version->router_evaluator());
   }
 }
+
+// An instance client for controlling whether it has hid event handlers or not.
+class HidEventHandlerClient : public FakeEmbeddedWorkerInstanceClient {
+ public:
+  HidEventHandlerClient(EmbeddedWorkerTestHelper* helper,
+                        bool has_hid_event_handlers)
+      : FakeEmbeddedWorkerInstanceClient(helper),
+        has_hid_event_handlers_(has_hid_event_handlers) {}
+
+  HidEventHandlerClient(const NoFetchHandlerClient&) = delete;
+  HidEventHandlerClient& operator=(const NoFetchHandlerClient&) = delete;
+
+  void EvaluateScript() override {
+    host()->OnScriptEvaluationStart();
+    host()->OnStarted(
+        blink::mojom::ServiceWorkerStartStatus::kNormalCompletion,
+        blink::mojom::ServiceWorkerFetchHandlerType::kNotSkippable,
+        has_hid_event_handlers_, helper()->GetNextThreadId(),
+        blink::mojom::EmbeddedWorkerStartTiming::New());
+  }
+
+ private:
+  bool has_hid_event_handlers_;
+};
+
+TEST_F(ServiceWorkerVersionTest, HasHidEventHandler) {
+  helper_->AddNewPendingInstanceClient<HidEventHandlerClient>(
+      helper_.get(), /*has_hid_event_handlers*/ true);
+  StartServiceWorker(version_.get());
+  EXPECT_TRUE(version_->has_hid_event_handlers());
+}
+
+TEST_F(ServiceWorkerVersionTest, NoHidEventHandler) {
+  helper_->AddNewPendingInstanceClient<HidEventHandlerClient>(
+      helper_.get(), /*has_hid_event_handlers*/ false);
+  StartServiceWorker(version_.get());
+  EXPECT_FALSE(version_->has_hid_event_handlers());
+}
+
 }  // namespace service_worker_version_unittest
 }  // namespace content

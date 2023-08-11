@@ -302,6 +302,10 @@ ServiceWorkerGlobalScopeProxy::FetchHandlerType() {
   return WorkerGlobalScope()->FetchHandlerType();
 }
 
+bool ServiceWorkerGlobalScopeProxy::HasHidEventHandlers() {
+  return WorkerGlobalScope()->HasHidEventHandlers();
+}
+
 WebServiceWorkerContextClient& ServiceWorkerGlobalScopeProxy::Client() const {
   DCHECK(client_);
   return *client_;

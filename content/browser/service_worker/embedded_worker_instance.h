@@ -101,7 +101,8 @@ class CONTENT_EXPORT EmbeddedWorkerInstance
     virtual void OnScriptEvaluationStart() {}
     virtual void OnStarted(
         blink::mojom::ServiceWorkerStartStatus status,
-        blink::mojom::ServiceWorkerFetchHandlerType fetch_handler_type) {}
+        blink::mojom::ServiceWorkerFetchHandlerType fetch_handler_type,
+        bool has_hid_event_handlers) {}
 
     // Called when status changed to STOPPING. The renderer has been sent a Stop
     // IPC message and OnStopped() will be called upon successful completion.
@@ -302,6 +303,7 @@ class CONTENT_EXPORT EmbeddedWorkerInstance
   void OnStarted(
       blink::mojom::ServiceWorkerStartStatus status,
       blink::mojom::ServiceWorkerFetchHandlerType fetch_handler_type,
+      bool has_hid_event_handlers,
       int thread_id,
       blink::mojom::EmbeddedWorkerStartTimingPtr start_timing) override;
   // Resets the embedded worker instance to the initial state. Changes
