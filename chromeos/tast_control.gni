@@ -354,6 +354,9 @@ tast_disabled_tests_from_chrome_all = [
   "arc.Downloads",
   "network.ConfigBaseline.login",
 
+  # https://b/294004569
+  "lacros.CompareVersionWithAsh",
+
   # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
 ]
 
