@@ -41,10 +41,6 @@
     background-color: var(--cros-sys-primary_container);
   }
 
-  :host([is-selected]) #done {
-    display: flex;
-  }
-
   /* TODO(b/279623883): Remove once Jelly is launched. */
   :host-context(body:not(.jelly-enabled)):host([is-selected]) #name {
     color: var(--cros-text-color-prominent);
@@ -58,20 +54,27 @@
     border: 1px solid var(--cros-sys-primary);
   }
 
-  #done {
+  :host([is-selected]) #checked {
+    display: flex;
+  }
+
+  #checked {
     display: none;
     flex-shrink: 0;
-    height: 17px;
-    width: 17px;
+    height: 20px;
+    padding-left: 2px;
+    padding-top: 2px;
+    vertical-align: middle;
+    width: 20px;
+  }
+
+  :host-context(body.jelly-enabled) #checked {
+    color: var(--cros-sys-primary);
   }
 
   /* TODO(b/279623883): Remove once Jelly is launched. */
-  :host-context(body:not(.jelly-enabled)) #done {
-    color: var(--cros-text-color-prominent);
-  }
-
-  :host-context(body.jelly-enabled) #done {
-    color: var(--cros-sys-primary);
+  :host-context(body:not(.jelly-enabled)) #checked {
+    color: var(--cros-icon-color-prominent);
   }
 
   #icon {
@@ -134,5 +137,5 @@
       auto-src="[[getTargetImageUrl_(shareTarget)]]">
   </img>
   <div id="name">[[shareTarget.name]]</div>
-  <iron-icon id="done" icon="nearby-share:done"></iron-icon>
+  <iron-icon id="checked" icon="nearby-share:checked"></iron-icon>
 </div>
