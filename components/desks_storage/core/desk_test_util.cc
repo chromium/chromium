@@ -54,6 +54,26 @@ void PopulateAppRegistryCache(AccountId account_id,
   apps::AppRegistryCacheWrapper::Get().AddAppRegistryCache(account_id, cache);
 }
 
+void PopulateAdminTestAppRegistryCache(AccountId account_id,
+                                       apps::AppRegistryCache* cache) {
+  std::vector<apps::AppPtr> ash_delta;
+
+  ash_delta.push_back(MakeApp(app_constants::kChromeAppId, "Ash Chrome Browser",
+                              apps::AppType::kChromeApp));
+  cache->OnApps(std::move(ash_delta), apps::AppType::kChromeApp,
+                /*should_notify_initialized=*/true);
+
+  std::vector<apps::AppPtr> lacros_delta;
+
+  lacros_delta.push_back(MakeApp(app_constants::kLacrosAppId,
+                                 "Lacros Chrome Browser",
+                                 apps::AppType::kStandaloneBrowser));
+  cache->OnApps(std::move(lacros_delta), apps::AppType::kStandaloneBrowser,
+                /*should_notify_initialized=*/true);
+
+  cache->SetAccountId(account_id);
+}
+
 void AddAppIdToAppRegistryCache(AccountId account_id,
                                 apps::AppRegistryCache* cache,
                                 const char* app_id) {

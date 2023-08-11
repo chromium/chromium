@@ -146,6 +146,11 @@ void AddAppIdToAppRegistryCache(AccountId account_id,
                                 apps::AppRegistryCache* cache,
                                 const char* app_id);
 
+// Populates browser apps and notifies cache observers. Note: This app assumes
+// that `cache` has been added to the AppRegistryCacheWrapper already.
+void PopulateAdminTestAppRegistryCache(AccountId account_id,
+                                       apps::AppRegistryCache* cache);
+
 }  // namespace desks_storage::desk_test_util
 
 #endif  // COMPONENTS_DESKS_STORAGE_CORE_DESK_TEST_UTIL_H_

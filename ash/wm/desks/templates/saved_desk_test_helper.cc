@@ -43,6 +43,12 @@ SavedDeskTestHelper::SavedDeskTestHelper()
   cache_ = std::make_unique<apps::AppRegistryCache>();
   desks_storage::desk_test_util::PopulateAppRegistryCache(account_id_,
                                                           cache_.get());
+
+  // The admin template service requires that some app types be in the
+  // initialized apps set, this method ensures that that set is populated
+  // correctly.
+  desks_storage::desk_test_util::PopulateAdminTestAppRegistryCache(
+      account_id_, cache_.get());
 }
 
 SavedDeskTestHelper::~SavedDeskTestHelper() {

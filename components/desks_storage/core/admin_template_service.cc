@@ -12,23 +12,82 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "components/app_constants/constants.h"
 #include "components/desks_storage/core/desk_template_conversion.h"
 #include "components/policy/policy_constants.h"
+#include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 
 namespace desks_storage {
 
 namespace {
 
-// Reads from `pref_service` and updates the model with the contents within.
-void UpdateModelWithPolicy(desks_storage::DeskModel* desk_model,
-                           const PrefService* pref_service) {
-  // Query for the desired preference.
-  if (pref_service == nullptr) {
+bool WillAppRegistryCacheResolveAppIds(const AccountId& account_id) {
+  apps::AppRegistryCache* cache =
+      apps::AppRegistryCacheWrapper::Get().GetAppRegistryCache(account_id);
+  // TODO(b/295070373): Fix so we can just have this be a CHECK.
+  if (cache == nullptr) {
+    return false;
+  }
+
+  std::set<apps::AppType> initialized_types = cache->InitializedAppTypes();
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (initialized_types.contains(apps::AppType::kStandaloneBrowser)) {
+    return true;
+  }
+#endif
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (initialized_types.contains(apps::AppType::kChromeApp)) {
+    return true;
+  }
+#endif
+
+  return false;
+}
+
+}  // namespace
+
+AdminTemplateService::AdminTemplateService(
+    const base::FilePath& user_data_dir_path,
+    const AccountId& account_id,
+    PrefService* pref_service)
+    : account_id_(account_id), pref_service_(pref_service) {
+  data_manager_ = std::make_unique<LocalDeskDataManager>(
+      user_data_dir_path, account_id,
+      LocalDeskDataManager::StorageLocation::kAppLaunchAutomationDir);
+
+  model_obs_.Observe(data_manager_.get());
+
+  auto* apps_cache =
+      apps::AppRegistryCacheWrapper::Get().GetAppRegistryCache(account_id_);
+
+  // TODO(b/295070373): Fix so we can just have this be a CHECK.
+  if (apps_cache) {
+    app_cache_obs_.Observe(apps_cache);
+  }
+
+  pref_change_registrar_.Init(pref_service_);
+  pref_change_registrar_.Add(
+      ash::prefs::kAppLaunchAutomation,
+      base::BindRepeating(&AdminTemplateService::UpdateModelWithPolicy,
+                          weak_ptr_factory_.GetWeakPtr()));
+}
+
+AdminTemplateService::~AdminTemplateService() {}
+
+void AdminTemplateService::UpdateModelWithPolicy() {
+  if (!IsReady()) {
     return;
   }
 
+  if (pref_service_ == nullptr) {
+    return;
+  }
+
+  // Query for the desired preference.
   const PrefService::Preference* app_launch_automation_preference =
-      pref_service->FindPreference(ash::prefs::kAppLaunchAutomation);
+      pref_service_->FindPreference(ash::prefs::kAppLaunchAutomation);
 
   if (app_launch_automation_preference == nullptr) {
     return;
@@ -46,15 +105,8 @@ void UpdateModelWithPolicy(desks_storage::DeskModel* desk_model,
       desks_storage::desk_template_conversion::
           ParseAdminTemplatesFromPolicyValue(*pref_value);
 
-  if (desk_model == nullptr) {
-    return;
-  } else if (!desk_model->IsReady()) {
-    LOG(WARNING) << "Attempted to update model before model was ready.";
-    return;
-  }
-
   // If templates exist that aren't in the current policy we should delete them.
-  std::set<base::Uuid> desk_uuids_to_delete = desk_model->GetAllEntryUuids();
+  std::set<base::Uuid> desk_uuids_to_delete = data_manager_->GetAllEntryUuids();
 
   for (auto& desk_template : desk_templates) {
     // Something went wrong when parsing the template
@@ -68,7 +120,8 @@ void UpdateModelWithPolicy(desks_storage::DeskModel* desk_model,
     }
 
     // Query model to determine if this entry exists already.
-    auto get_entry_result = desk_model->GetEntryByUUID(desk_template->uuid());
+    auto get_entry_result =
+        data_manager_->GetEntryByUUID(desk_template->uuid());
     auto entry_status = get_entry_result.status;
 
     // If this template exists in the current policy then don't delete it after
@@ -96,38 +149,15 @@ void UpdateModelWithPolicy(desks_storage::DeskModel* desk_model,
 
     // If the policy template exists in an updated form or is new then either
     // add it to the model or overwrite the existing definition.
-    desk_model->AddOrUpdateEntry(std::move(desk_template), base::DoNothing());
+    data_manager_->AddOrUpdateEntry(std::move(desk_template),
+                                    base::DoNothing());
   }
 
   // Remove all templates that aren't in the policy.  If the policy is empty
   // then this will remove all admin templates from the device.
   for (auto uuid : desk_uuids_to_delete) {
-    desk_model->DeleteEntry(uuid, base::DoNothing());
+    data_manager_->DeleteEntry(uuid, base::DoNothing());
   }
-}
-
-}  // namespace
-
-AdminTemplateService::AdminTemplateService(
-    const base::FilePath& user_data_dir_path,
-    const AccountId& account_id,
-    PrefService* pref_service)
-    : pref_service_(pref_service) {
-  data_manager_ = std::make_unique<LocalDeskDataManager>(
-      user_data_dir_path, account_id,
-      LocalDeskDataManager::StorageLocation::kAppLaunchAutomationDir);
-
-  data_manager_->AddObserver(this);
-
-  pref_change_registrar_.Init(pref_service_);
-  pref_change_registrar_.Add(
-      ash::prefs::kAppLaunchAutomation,
-      base::BindRepeating(&UpdateModelWithPolicy, data_manager_.get(),
-                          pref_service_));
-}
-
-AdminTemplateService::~AdminTemplateService() {
-  data_manager_->RemoveObserver(this);
 }
 
 AdminTemplateModel* AdminTemplateService::GetAdminModel() {
@@ -139,11 +169,34 @@ DeskModel* AdminTemplateService::GetFullDeskModel() {
 }
 
 bool AdminTemplateService::IsReady() {
-  return data_manager_->IsReady();
+  CHECK(data_manager_);
+  return data_manager_->IsReady() && is_cache_ready_;
 }
 
 void AdminTemplateService::DeskModelLoaded() {
-  UpdateModelWithPolicy(data_manager_.get(), pref_service_);
+  is_cache_ready_ = WillAppRegistryCacheResolveAppIds(account_id_);
+  UpdateModelWithPolicy();
+}
+
+void AdminTemplateService::OnAppRegistryCacheWillBeDestroyed(
+    apps::AppRegistryCache* cache) {
+  // Disallow updating the model.  If this is happening we're likely going
+  // to be deallocated soon as well.
+  is_cache_ready_ = false;
+
+  app_cache_obs_.Reset();
+}
+
+void AdminTemplateService::OnAppTypeInitialized(apps::AppType app_type) {
+  // If the cache is already ready we don't need to update the model.
+  if (is_cache_ready_) {
+    return;
+  }
+  is_cache_ready_ = WillAppRegistryCacheResolveAppIds(account_id_);
+
+  // If we're here it means that we have a policy that needs to be parsed but
+  // until this point the AppRegistryCache wasn't ready.
+  UpdateModelWithPolicy();
 }
 
 }  // namespace desks_storage

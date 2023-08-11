@@ -13,9 +13,11 @@
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "components/account_id/account_id.h"
+#include "components/app_restore/restore_data.h"
 #include "components/desks_storage/core/desk_test_util.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace desks_storage {
@@ -45,12 +47,12 @@ class AdminTemplateServiceTest : public testing::Test {
     return admin_template_service_.get();
   }
 
-  void WaitForAdminTemplateService() {
+  void WaitForAdminTemplateServiceModel() {
     auto* admin_template_service = GetAdminService();
     if (!admin_template_service) {
       return;
     }
-    while (!admin_template_service->IsReady()) {
+    while (!admin_template_service->GetFullDeskModel()->IsReady()) {
       base::RunLoop run_loop;
       run_loop.RunUntilIdle();
     }
@@ -60,13 +62,31 @@ class AdminTemplateServiceTest : public testing::Test {
     pref_service_.registry()->RegisterListPref(
         ash::prefs::kAppLaunchAutomation);
 
+    // Add an empty apps registry cache, see why in comment over
+    // `SetUpAppsCache`
+    apps::AppRegistryCacheWrapper::Get().AddAppRegistryCache(account_id_,
+                                                             cache_.get());
+
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
     admin_template_service_ = std::make_unique<AdminTemplateService>(
         temp_dir_.GetPath(), account_id_, &pref_service_);
 
-    desk_test_util::PopulateAppRegistryCache(account_id_, cache_.get());
-    WaitForAdminTemplateService();
+    WaitForAdminTemplateServiceModel();
     testing::Test::SetUp();
+  }
+
+  // Because on most platforms calling `ReinitialzeForTesting` on an apps cache
+  // will not reset the initialized app types set we have to defer the
+  // initialization of the apps cache in the test
+  // `WaitsForAppsCacheBeforeParsingPolicy` so this method must be called at
+  // the beginning of all other tests in this file.
+  //
+  // see: Components/service/app_service/public/cpp/app_registry_cache.cc
+  // method: `ReinitializeForTesting`
+  void SetUpAppsCache() {
+    desk_test_util::PopulateAdminTestAppRegistryCache(account_id_,
+                                                      cache_.get());
+    task_environment_.RunUntilIdle();
   }
 
   void SetPrefValue(const base::Value& value) {
@@ -94,6 +114,7 @@ class AdminTemplateServiceTest : public testing::Test {
 };
 
 TEST_F(AdminTemplateServiceTest, AppliesPolicySettingCorrectly) {
+  SetUpAppsCache();
   SetPrefValue(ParsePolicyFromString(desk_test_util::kAdminTemplatePolicy));
 
   auto* admin_service = GetAdminService();
@@ -103,6 +124,7 @@ TEST_F(AdminTemplateServiceTest, AppliesPolicySettingCorrectly) {
 }
 
 TEST_F(AdminTemplateServiceTest, AppliesModifiedPolicySettingCorrectly) {
+  SetUpAppsCache();
   SetPrefValue(ParsePolicyFromString(desk_test_util::kAdminTemplatePolicy));
   SetPrefValue(ParsePolicyFromString(
       desk_test_util::kAdminTemplatePolicyWithOneTemplate));
@@ -114,6 +136,7 @@ TEST_F(AdminTemplateServiceTest, AppliesModifiedPolicySettingCorrectly) {
 }
 
 TEST_F(AdminTemplateServiceTest, AppliesEmptyPolicySettingCorrectly) {
+  SetUpAppsCache();
   SetPrefValue(ParsePolicyFromString(desk_test_util::kAdminTemplatePolicy));
   SetEmptyPrefValue();
 
@@ -124,6 +147,7 @@ TEST_F(AdminTemplateServiceTest, AppliesEmptyPolicySettingCorrectly) {
 }
 
 TEST_F(AdminTemplateServiceTest, AppliesAdditionalPolicySettingCorrectly) {
+  SetUpAppsCache();
   SetPrefValue(ParsePolicyFromString(
       desk_test_util::kAdminTemplatePolicyWithOneTemplate));
   SetPrefValue(ParsePolicyFromString(desk_test_util::kAdminTemplatePolicy));
@@ -132,6 +156,37 @@ TEST_F(AdminTemplateServiceTest, AppliesAdditionalPolicySettingCorrectly) {
   ASSERT_TRUE(admin_service != nullptr);
 
   EXPECT_EQ(admin_service->GetFullDeskModel()->GetEntryCount(), 2UL);
+}
+
+TEST_F(AdminTemplateServiceTest, WaitsForAppsCacheBeforeParsingPolicy) {
+  // Set up test environment such that  the admin template service will be
+  // loaded before the apps cache has initialized the browser types.
+  SetPrefValue(ParsePolicyFromString(desk_test_util::kAdminTemplatePolicy));
+
+  // We will attempt to load the model when the preference is set, however we
+  // will not load because the apps cache doesn't currently recognize the
+  // browser ids.
+  EXPECT_EQ(
+      GetAdminService()->GetFullDeskModel()->GetAllEntries().entries.size(),
+      0UL);
+
+  // Now we populate the apps cache, which should in turn populate the
+  // entries.
+  SetUpAppsCache();
+
+  auto all_entries_result =
+      GetAdminService()->GetFullDeskModel()->GetAllEntries();
+
+  EXPECT_EQ(all_entries_result.status, DeskModel::GetAllEntriesStatus::kOk);
+  std::vector<const ash::DeskTemplate*>& entries = all_entries_result.entries;
+
+  EXPECT_EQ(entries.size(), 2UL);
+
+  // Finally we verify that the restore data is populated.
+  for (const auto* entry : entries) {
+    // When we support other types we will make this check more comprehensive.
+    EXPECT_TRUE(entry->desk_restore_data()->HasBrowser());
+  }
 }
 
 }  // namespace desks_storage

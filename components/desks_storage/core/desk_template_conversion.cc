@@ -813,17 +813,6 @@ base::Value::List ConvertURLsToBrowserAppTabValues(
 
 std::string GetAppTypeForJson(apps::AppRegistryCache* apps_cache,
                               const std::string& app_id) {
-  // Browsers are special cases, in some cases we reach this function before
-  // apps cache is ready so we have these special cases to prevent data loss.
-  // TODO(b/293177225): Find a better solution for this issue,
-  if (app_id == app_constants::kChromeAppId) {
-    return kAppTypeBrowser;
-  }
-
-  if (app_id == app_constants::kLacrosAppId) {
-    return kAppTypeBrowser;
-  }
-
   // This switch should follow the same structure as DeskSyncBridge#FillApp.
   switch (apps_cache->GetAppType(app_id)) {
     case apps::AppType::kWeb:
