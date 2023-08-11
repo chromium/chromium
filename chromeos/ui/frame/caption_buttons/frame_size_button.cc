@@ -387,6 +387,12 @@ void FrameSizeButton::StateChanged(views::Button::ButtonState old_state) {
     return;
   }
 
+  // Ignore if there is no native window, which can happen during widget
+  // shutdown.
+  if (!GetWidget()->GetNativeWindow()) {
+    return;
+  }
+
   // Pie animation will start on both active/inactive window.
   if (aura::client::CursorClient* cursor_client = aura::client::GetCursorClient(
           GetWidget()->GetNativeWindow()->GetRootWindow());
