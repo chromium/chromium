@@ -642,6 +642,12 @@ void FederatedAuthRequestImpl::RequestToken(
       error_token_status = TokenStatus::kDisabledInFlags;
       break;
     case FederatedApiPermissionStatus::BLOCKED_THIRD_PARTY_COOKIES_BLOCKED:
+      // We allow FedCM without third-party cookies when the IDP sign-in
+      // status API is enabled, in general or through OT.
+      if (webid::GetIdpSigninStatusMode(render_frame_host()) ==
+          FedCmIdpSigninStatusMode::ENABLED) {
+        break;
+      }
       error_token_status = TokenStatus::kThirdPartyCookiesBlocked;
       request_result =
           FederatedAuthRequestResult::kErrorThirdPartyCookiesBlocked;
