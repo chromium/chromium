@@ -9560,7 +9560,7 @@ TEST_F(AuthenticatorCableV2Test, PairingBasedWithConnectionSignal) {
 
 static std::unique_ptr<device::cablev2::Pairing> DummyPairing() {
   auto ret = std::make_unique<device::cablev2::Pairing>();
-  ret->tunnel_server_domain = "example.com";
+  ret->tunnel_server_domain = device::cablev2::kTunnelServer;
   ret->contact_id = {1, 2, 3, 4, 5};
   ret->id = {6, 7, 8, 9};
   ret->secret = {10, 11, 12, 13};
