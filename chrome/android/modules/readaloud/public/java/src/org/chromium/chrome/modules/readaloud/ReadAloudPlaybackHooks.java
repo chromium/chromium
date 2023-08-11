@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.modules.readaloud;
 
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+
 /** Interface for creating ReadAloud playback. */
 public interface ReadAloudPlaybackHooks {
     /** Interface to receive createPlayback result. */
@@ -35,4 +37,13 @@ public interface ReadAloudPlaybackHooks {
      * @param callback     Called when request finishes or fails.
      */
     default void createPlayback(PlaybackArgs playbackArgs, CreatePlaybackCallback callback) {}
+
+    /**
+     * Create the expanded player UI component.
+     * @param bottomSheetController BottomSheetController for showing the expanded player sheet.
+     * @return a new ExpandedPlayer.
+     */
+    default ExpandedPlayer createExpandedPlayer(BottomSheetController bottomSheetController) {
+        return new ExpandedPlayer() {};
+    }
 }

@@ -38,6 +38,7 @@ import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModelSelector;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -64,6 +65,8 @@ public class ReadAloudControllerUnitTest {
     private ReadAloudReadabilityHooksImpl mHooksImpl;
     @Mock
     private ViewStub mViewStub;
+    @Mock
+    private BottomSheetController mBottomSheetController;
 
     MockTabModelSelector mTabModelSelector;
 
@@ -85,8 +88,8 @@ public class ReadAloudControllerUnitTest {
                 });
         when(mHooksImpl.isEnabled()).thenReturn(true);
         ReadAloudController.setReadabilityHooks(mHooksImpl);
-        mController = new ReadAloudController(
-                mContext, mMockProfileSupplier, mTabModelSelector.getModel(false), mViewStub);
+        mController = new ReadAloudController(mContext, mMockProfileSupplier,
+                mTabModelSelector.getModel(false), mViewStub, mBottomSheetController);
 
         mTab = (MockTab) mTabModelSelector.getCurrentTab();
         mTab.setGurlOverrideForTesting(sTestGURL);
@@ -151,6 +154,19 @@ public class ReadAloudControllerUnitTest {
         verify(mHooksImpl, times(1))
                 .isPageReadable(Mockito.anyString(),
                         Mockito.any(ReadAloudReadabilityHooks.ReadabilityCallback.class));
+    }
+
+    @Test
+    public void checkReadability_noMSBB() {
+        mController.maybeCheckReadability(sTestGURL);
+
+        verify(mHooksImpl, times(1))
+                .isPageReadable(eq(sTestGURL.getSpec()), mCallbackCaptor.capture());
+        assertFalse(mController.isReadable(mTab));
+
+        mCallbackCaptor.getValue().onSuccess(sTestGURL.getSpec(), true, false);
+        UnifiedConsentServiceBridge.setUrlKeyedAnonymizedDataCollectionEnabled(false);
+        assertFalse(mController.isReadable(mTab));
     }
 
     @Test

@@ -14,11 +14,13 @@ import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.readaloud.expandedplayer.ExpandedPlayerCoordinator;
 import org.chromium.chrome.browser.readaloud.miniplayer.MiniPlayerCoordinator;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelTabObserver;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.url.GURL;
 
@@ -40,6 +42,7 @@ public class ReadAloudController {
     private final TabModel mTabModel;
     private final ViewStub mMiniPlayerStub;
     private final MiniPlayerCoordinator mMiniPlayerCoordinator;
+    private final ExpandedPlayerCoordinator mExpandedPlayerCoordinator;
     private TabModelTabObserver mTabObserver;
 
     private final ReadAloudReadabilityHooks mReadabilityHooks;
@@ -72,7 +75,8 @@ public class ReadAloudController {
             };
 
     public ReadAloudController(Context context, ObservableSupplier<Profile> profileSupplier,
-            TabModel tabModel, ViewStub miniPlayerStub) {
+            TabModel tabModel, ViewStub miniPlayerStub,
+            BottomSheetController bottomSheetController) {
         mProfileSupplier = profileSupplier;
         mTabModel = tabModel;
         mMiniPlayerStub = miniPlayerStub;
@@ -80,6 +84,7 @@ public class ReadAloudController {
                 ? sReadabilityHooksForTesting
                 : new ReadAloudReadabilityHooksImpl(context, /* apiKeyOverride= */ null);
         mMiniPlayerCoordinator = new MiniPlayerCoordinator(miniPlayerStub);
+        mExpandedPlayerCoordinator = new ExpandedPlayerCoordinator(context, bottomSheetController);
         if (mReadabilityHooks.isEnabled()) {
             mTabObserver = new TabModelTabObserver(mTabModel) {
                 @Override
@@ -162,6 +167,7 @@ public class ReadAloudController {
 
     public void playTab(Tab tab) {
         Log.e(TAG, "playTab() not implemented.");
+        mExpandedPlayerCoordinator.show();
     }
 
     /**

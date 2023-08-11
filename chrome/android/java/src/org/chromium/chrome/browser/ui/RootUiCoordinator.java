@@ -827,7 +827,8 @@ public class RootUiCoordinator
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.READALOUD)) {
             ViewStub miniPlayerStub = mActivity.findViewById(R.id.readaloud_mini_player_stub);
             ReadAloudController controller = new ReadAloudController(mActivity, mProfileSupplier,
-                    mTabModelSelectorSupplier.get().getModel(false), miniPlayerStub);
+                    mTabModelSelectorSupplier.get().getModel(false), miniPlayerStub,
+                    getBottomSheetController());
             mReadAloudControllerSupplier.set(controller);
         }
     }
