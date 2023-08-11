@@ -133,7 +133,9 @@ source_set("tests") {
   }
 
   if (is_fuchsia) {
-    sources += [ "public/cpp/fuchsia_perfetto_producer_connector_unittest.cc" ]
+    sources += [
+      "public/cpp/perfetto/fuchsia_perfetto_producer_connector_unittest.cc",
+    ]
     deps += [
       "//net",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.tracing.perfetto:fuchsia.tracing.perfetto_cpp",
