@@ -134,6 +134,10 @@ BASE_DECLARE_FEATURE(kFeedShowSignInCommand);
 // performance-oriented features in Feed.
 BASE_DECLARE_FEATURE(kFeedPerformanceStudy);
 
+// When enabled, allows the server to unilaterally alter capabilities sent
+// by the client, primarily to retroactively work around bugs.
+BASE_DECLARE_FEATURE(kSyntheticCapabilities);
+
 // Feature that enables Cormorant for users.
 BASE_DECLARE_FEATURE(kCormorant);
 
