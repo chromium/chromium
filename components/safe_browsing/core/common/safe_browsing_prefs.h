@@ -306,9 +306,6 @@ void SetSafeBrowsingState(PrefService* prefs,
 // Returns whether Safe Browsing is enabled for the user.
 bool IsSafeBrowsingEnabled(const PrefService& prefs);
 
-// Returns whether Safe Browsing Standard Protection is enabled for the user.
-bool IsStandardProtectionEnabled(const PrefService& prefs);
-
 // Returns whether Safe Browsing enhanced protection is enabled for the user.
 bool IsEnhancedProtectionEnabled(const PrefService& prefs);
 
@@ -409,14 +406,6 @@ void SetEnhancedProtectionPref(PrefService* prefs, bool value);
 
 // Set prefs to enable Safe Browsing Standard Protection.
 void SetStandardProtectionPref(PrefService* prefs, bool value);
-
-// Called when a security interstitial is closed by the user.
-// |on_show_pref_existed| indicates whether the pref existed when the
-// interstitial was shown. |on_show_pref_value| contains the pref value when the
-// interstitial was shown.
-void UpdateMetricsAfterSecurityInterstitial(const PrefService& prefs,
-                                            bool on_show_pref_existed,
-                                            bool on_show_pref_value);
 
 // Called to indicate that a security interstitial is about to be shown to the
 // user. This may trigger the user to begin seeing the Scout opt-in text
