@@ -79,6 +79,69 @@ bool IsValidBitDepth(uint8_t bit_depth, VideoCodecProfile profile) {
       return false;
   }
 }
+
+// Translates decoder SPS structure into |v4l2_ctrl_hevc_sps| structure.
+v4l2_ctrl_hevc_sps SetupSPSCtrl(const H265SPS* sps) {
+  struct v4l2_ctrl_hevc_sps v4l2_sps;
+  memset(&v4l2_sps, 0, sizeof(v4l2_sps));
+
+  int highest_tid = sps->sps_max_sub_layers_minus1;
+
+  // Translates values using the |v4l2_ctrl_hevc_sps| struct order
+  v4l2_sps.video_parameter_set_id = sps->sps_video_parameter_set_id;
+  v4l2_sps.seq_parameter_set_id = sps->sps_seq_parameter_set_id;
+
+#define SPS_TO_V4L2SPS(a) v4l2_sps.a = sps->a
+  SPS_TO_V4L2SPS(pic_width_in_luma_samples);
+  SPS_TO_V4L2SPS(pic_height_in_luma_samples);
+  SPS_TO_V4L2SPS(bit_depth_luma_minus8);
+  SPS_TO_V4L2SPS(bit_depth_chroma_minus8);
+  SPS_TO_V4L2SPS(log2_max_pic_order_cnt_lsb_minus4);
+
+#define SPS_TO_V4L2SPS_FROM_ARRAY(a) v4l2_sps.a = sps->a[highest_tid];
+  SPS_TO_V4L2SPS_FROM_ARRAY(sps_max_dec_pic_buffering_minus1);
+  SPS_TO_V4L2SPS_FROM_ARRAY(sps_max_num_reorder_pics);
+  SPS_TO_V4L2SPS_FROM_ARRAY(sps_max_latency_increase_plus1);
+#undef SPS_TO_V4L2SPS_FROM_ARRAY
+
+  SPS_TO_V4L2SPS(log2_min_luma_coding_block_size_minus3);
+  SPS_TO_V4L2SPS(log2_diff_max_min_luma_coding_block_size);
+  SPS_TO_V4L2SPS(log2_min_luma_transform_block_size_minus2);
+  SPS_TO_V4L2SPS(log2_diff_max_min_luma_transform_block_size);
+  SPS_TO_V4L2SPS(max_transform_hierarchy_depth_inter);
+  SPS_TO_V4L2SPS(max_transform_hierarchy_depth_intra);
+  SPS_TO_V4L2SPS(pcm_sample_bit_depth_luma_minus1);
+  SPS_TO_V4L2SPS(pcm_sample_bit_depth_chroma_minus1);
+  SPS_TO_V4L2SPS(log2_min_pcm_luma_coding_block_size_minus3);
+  SPS_TO_V4L2SPS(log2_diff_max_min_pcm_luma_coding_block_size);
+  SPS_TO_V4L2SPS(num_short_term_ref_pic_sets);
+  SPS_TO_V4L2SPS(num_long_term_ref_pics_sps);
+  SPS_TO_V4L2SPS(chroma_format_idc);
+  SPS_TO_V4L2SPS(sps_max_sub_layers_minus1);
+#undef SPS_TO_V4L2SPS
+
+#define SET_V4L2_SPS_FLAG_IF(cond, flag) \
+  v4l2_sps.flags |= ((sps->cond) ? (flag) : 0)
+  SET_V4L2_SPS_FLAG_IF(separate_colour_plane_flag,
+                       V4L2_HEVC_SPS_FLAG_SEPARATE_COLOUR_PLANE);
+  SET_V4L2_SPS_FLAG_IF(scaling_list_enabled_flag,
+                       V4L2_HEVC_SPS_FLAG_SCALING_LIST_ENABLED);
+  SET_V4L2_SPS_FLAG_IF(amp_enabled_flag, V4L2_HEVC_SPS_FLAG_AMP_ENABLED);
+  SET_V4L2_SPS_FLAG_IF(sample_adaptive_offset_enabled_flag,
+                       V4L2_HEVC_SPS_FLAG_SAMPLE_ADAPTIVE_OFFSET);
+  SET_V4L2_SPS_FLAG_IF(pcm_enabled_flag, V4L2_HEVC_SPS_FLAG_PCM_ENABLED);
+  SET_V4L2_SPS_FLAG_IF(pcm_loop_filter_disabled_flag,
+                       V4L2_HEVC_SPS_FLAG_PCM_LOOP_FILTER_DISABLED);
+  SET_V4L2_SPS_FLAG_IF(long_term_ref_pics_present_flag,
+                       V4L2_HEVC_SPS_FLAG_LONG_TERM_REF_PICS_PRESENT);
+  SET_V4L2_SPS_FLAG_IF(sps_temporal_mvp_enabled_flag,
+                       V4L2_HEVC_SPS_FLAG_SPS_TEMPORAL_MVP_ENABLED);
+  SET_V4L2_SPS_FLAG_IF(strong_intra_smoothing_enabled_flag,
+                       V4L2_HEVC_SPS_FLAG_STRONG_INTRA_SMOOTHING_ENABLED);
+#undef SET_V4L2_SPS_FLAG_IF
+
+  return v4l2_sps;
+}
 }
 
 H265Decoder::H265Decoder(std::unique_ptr<V4L2IoctlShim> v4l2_ioctl,
@@ -660,7 +723,11 @@ bool H265Decoder::StartNewFrame(const H265SliceHeader* slice_hdr) {
     curr_pic_->processed_ = true;
   }
 
-  struct v4l2_ext_control ctrls[] = {};
+  struct v4l2_ctrl_hevc_sps v4l2_sps = SetupSPSCtrl(sps);
+
+  struct v4l2_ext_control ctrls[] = {{.id = V4L2_CID_STATELESS_HEVC_SPS,
+                                      .size = sizeof(v4l2_sps),
+                                      .ptr = &v4l2_sps}};
   struct v4l2_ext_controls ext_ctrls = {
       .count = (sizeof(ctrls) / sizeof(ctrls[0])), .controls = ctrls};
 
