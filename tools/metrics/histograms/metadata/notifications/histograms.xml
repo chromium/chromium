@@ -24,6 +24,7 @@ chromium-metrics-reviews@google.com.
 
 <variants name="MacOSNotificationStyle">
   <variant name="Alert" summary="Alert: Stays on screen"/>
+  <variant name="AppShim" summary="AppShim: Attributed to a PWA"/>
   <variant name="Banner" summary="Banner: Auto dismisses"/>
 </variants>
 

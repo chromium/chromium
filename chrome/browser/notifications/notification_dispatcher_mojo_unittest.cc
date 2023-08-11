@@ -87,7 +87,7 @@ class FakeMacNotificationProviderFactory
  public:
   explicit FakeMacNotificationProviderFactory(
       base::RepeatingClosure on_disconnect)
-      : MacNotificationProviderFactory(/*in_process=*/false),
+      : MacNotificationProviderFactory(ProcessType::kAlertProcess),
         on_disconnect_(std::move(on_disconnect)) {}
   ~FakeMacNotificationProviderFactory() override = default;
 

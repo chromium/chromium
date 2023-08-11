@@ -64,7 +64,7 @@ void LogUNNotificationRequestPermissionResult(
     UNNotificationRequestPermissionResult result) {
   base::UmaHistogramEnumeration(
       base::StrCat({"Notifications.Permissions.UNNotification.",
-                    MacNotificationStyleSuffix(IsAppBundleAlertStyle()),
+                    MacNotificationStyleSuffix(ProcessTypeFromAppBundle()),
                     ".PermissionRequest"}),
       result);
 }
@@ -74,7 +74,7 @@ void LogUNNotificationSettings(UNUserNotificationCenter* center) {
               UNNotificationSettings* _Nonnull settings) {
     std::string prefix =
         base::StrCat({"Notifications.Permissions.UNNotification.",
-                      MacNotificationStyleSuffix(IsAppBundleAlertStyle())});
+                      MacNotificationStyleSuffix(ProcessTypeFromAppBundle())});
 
     base::UmaHistogramEnumeration(
         base::StrCat({prefix, ".Style"}),

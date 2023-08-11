@@ -11,10 +11,13 @@
 #include "base/process/process_handle.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/notifications/notification_platform_bridge_mac_utils.h"
 #include "chrome/browser/notifications/notification_test_util.h"
 #include "chrome/browser/notifications/stub_notification_dispatcher_mac.h"
 #include "chrome/common/buildflags.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -59,29 +62,33 @@ class NotificationPlatformBridgeMacTest : public testing::Test {
                                              const char* subtitle,
                                              const char* origin,
                                              const char* button1,
-                                             const char* button2) {
+                                             const char* button2,
+                                             const char* web_app_id = nullptr) {
     return CreateNotification(title, subtitle, origin, button1, button2,
                               /*require_interaction=*/false,
-                              /*show_settings_button=*/true);
+                              /*show_settings_button=*/true, web_app_id);
   }
 
   std::unique_ptr<Notification> CreateAlert(const char* title,
                                             const char* subtitle,
                                             const char* origin,
                                             const char* button1,
-                                            const char* button2) {
+                                            const char* button2,
+                                            const char* web_app_id = nullptr) {
     return CreateNotification(title, subtitle, origin, button1, button2,
                               /*require_interaction=*/true,
-                              /*show_settings_button=*/true);
+                              /*show_settings_button=*/true, web_app_id);
   }
 
-  std::unique_ptr<Notification> CreateNotification(const char* title,
-                                                   const char* subtitle,
-                                                   const char* origin,
-                                                   const char* button1,
-                                                   const char* button2,
-                                                   bool require_interaction,
-                                                   bool show_settings_button) {
+  std::unique_ptr<Notification> CreateNotification(
+      const char* title,
+      const char* subtitle,
+      const char* origin,
+      const char* button1,
+      const char* button2,
+      bool require_interaction,
+      bool show_settings_button,
+      const char* web_app_id = nullptr) {
     message_center::RichNotificationData optional_fields;
     if (button1) {
       optional_fields.buttons.push_back(
@@ -101,7 +108,11 @@ class NotificationPlatformBridgeMacTest : public testing::Test {
     auto notification = std::make_unique<Notification>(
         message_center::NOTIFICATION_TYPE_SIMPLE, "id1",
         base::UTF8ToUTF16(title), base::UTF8ToUTF16(subtitle), ui::ImageModel(),
-        u"Notifier's Name", url, message_center::NotifierId(url),
+        u"Notifier's Name", url,
+        message_center::NotifierId(
+            url, /*title=*/absl::nullopt,
+            web_app_id ? absl::make_optional(std::string(web_app_id))
+                       : absl::nullopt),
         optional_fields, new message_center::NotificationDelegate());
     if (require_interaction)
       notification->set_never_timeout(true);
@@ -111,22 +122,42 @@ class NotificationPlatformBridgeMacTest : public testing::Test {
 
   std::unique_ptr<NotificationDispatcherMac> CreateBannerDispatcher() {
     auto banner_dispatcher = std::make_unique<StubNotificationDispatcherMac>();
-    banner_dispatcher_ = banner_dispatcher.get();
+    banner_dispatcher_ = banner_dispatcher->AsWeakPtr();
     return banner_dispatcher;
   }
 
   std::unique_ptr<NotificationDispatcherMac> CreateAlertDispatcher() {
     auto alert_dispatcher = std::make_unique<StubNotificationDispatcherMac>();
-    alert_dispatcher_ = alert_dispatcher.get();
+    alert_dispatcher_ = alert_dispatcher->AsWeakPtr();
     return alert_dispatcher;
   }
 
+  NotificationPlatformBridgeMac::WebAppDispatcherFactory
+  CreateWebAppDispatcherFactory() {
+    return base::BindLambdaForTesting(
+        [&](const web_app::AppId& web_app_id)
+            -> std::unique_ptr<NotificationDispatcherMac> {
+          auto dispatcher = std::make_unique<StubNotificationDispatcherMac>();
+          web_app_dispatchers_[web_app_id] = dispatcher->AsWeakPtr();
+          return dispatcher;
+        });
+  }
+
   StubNotificationDispatcherMac* banner_dispatcher() {
-    return banner_dispatcher_;
+    return banner_dispatcher_.get();
   }
 
   StubNotificationDispatcherMac* alert_dispatcher() {
-    return alert_dispatcher_;
+    return alert_dispatcher_.get();
+  }
+
+  StubNotificationDispatcherMac* dispatcher_for_web_app(
+      const web_app::AppId& web_app_id) {
+    auto it = web_app_dispatchers_.find(web_app_id);
+    if (it == web_app_dispatchers_.end()) {
+      return nullptr;
+    }
+    return it->second.get();
   }
 
   TestingProfile* profile() { return profile_; }
@@ -135,10 +166,10 @@ class NotificationPlatformBridgeMacTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager profile_manager_;
   raw_ptr<TestingProfile> profile_ = nullptr;
-  raw_ptr<StubNotificationDispatcherMac, DanglingUntriaged> banner_dispatcher_ =
-      nullptr;
-  raw_ptr<StubNotificationDispatcherMac, DanglingUntriaged> alert_dispatcher_ =
-      nullptr;
+  base::WeakPtr<StubNotificationDispatcherMac> banner_dispatcher_;
+  base::WeakPtr<StubNotificationDispatcherMac> alert_dispatcher_;
+  std::map<web_app::AppId, base::WeakPtr<StubNotificationDispatcherMac>>
+      web_app_dispatchers_;
 };
 
 TEST_F(NotificationPlatformBridgeMacTest, TestDisplayNoButtons) {
@@ -146,7 +177,8 @@ TEST_F(NotificationPlatformBridgeMacTest, TestDisplayNoButtons) {
       CreateBanner("Title", "Context", "https://gmail.com", nullptr, nullptr);
 
   auto bridge = std::make_unique<NotificationPlatformBridgeMac>(
-      CreateBannerDispatcher(), CreateAlertDispatcher());
+      CreateBannerDispatcher(), CreateAlertDispatcher(),
+      CreateWebAppDispatcherFactory());
   bridge->Display(NotificationHandler::Type::WEB_PERSISTENT, profile(),
                   *notification, nullptr);
   const auto& notifications = banner_dispatcher()->notifications();
@@ -163,7 +195,8 @@ TEST_F(NotificationPlatformBridgeMacTest, TestDisplayNoButtons) {
 
 TEST_F(NotificationPlatformBridgeMacTest, TestIncognitoProfile) {
   auto bridge = std::make_unique<NotificationPlatformBridgeMac>(
-      CreateBannerDispatcher(), CreateAlertDispatcher());
+      CreateBannerDispatcher(), CreateAlertDispatcher(),
+      CreateWebAppDispatcherFactory());
   std::unique_ptr<Notification> notification =
       CreateBanner("Title", "Context", "https://gmail.com", nullptr, nullptr);
 
@@ -199,7 +232,8 @@ TEST_F(NotificationPlatformBridgeMacTest, TestDisplayNoSettings) {
       /*require_interaction=*/false, /*show_settings_button=*/false);
 
   auto bridge = std::make_unique<NotificationPlatformBridgeMac>(
-      CreateBannerDispatcher(), CreateAlertDispatcher());
+      CreateBannerDispatcher(), CreateAlertDispatcher(),
+      CreateWebAppDispatcherFactory());
   bridge->Display(NotificationHandler::Type::WEB_PERSISTENT, profile(),
                   *notification, nullptr);
   const auto& notifications = banner_dispatcher()->notifications();
@@ -219,7 +253,8 @@ TEST_F(NotificationPlatformBridgeMacTest, TestDisplayOneButton) {
       "Title", "Context", "https://gmail.com", "Button 1", nullptr);
 
   auto bridge = std::make_unique<NotificationPlatformBridgeMac>(
-      CreateBannerDispatcher(), CreateAlertDispatcher());
+      CreateBannerDispatcher(), CreateAlertDispatcher(),
+      CreateWebAppDispatcherFactory());
   bridge->Display(NotificationHandler::Type::WEB_PERSISTENT, profile(),
                   *notification, nullptr);
 
@@ -242,7 +277,8 @@ TEST_F(NotificationPlatformBridgeMacTest, TestDisplayProgress) {
   notification->set_type(message_center::NOTIFICATION_TYPE_PROGRESS);
 
   auto bridge = std::make_unique<NotificationPlatformBridgeMac>(
-      CreateBannerDispatcher(), CreateAlertDispatcher());
+      CreateBannerDispatcher(), CreateAlertDispatcher(),
+      CreateWebAppDispatcherFactory());
   bridge->Display(NotificationHandler::Type::WEB_PERSISTENT, profile(),
                   *notification, nullptr);
 
@@ -261,7 +297,8 @@ TEST_F(NotificationPlatformBridgeMacTest, TestCloseNotification) {
       "Title", "Context", "https://gmail.com", "Button 1", nullptr);
 
   auto bridge = std::make_unique<NotificationPlatformBridgeMac>(
-      CreateBannerDispatcher(), CreateAlertDispatcher());
+      CreateBannerDispatcher(), CreateAlertDispatcher(),
+      CreateWebAppDispatcherFactory());
   EXPECT_EQ(0u, banner_dispatcher()->notifications().size());
   bridge->Display(NotificationHandler::Type::WEB_PERSISTENT, profile(),
                   *notification, nullptr);
@@ -275,7 +312,8 @@ TEST_F(NotificationPlatformBridgeMacTest, TestGetDisplayed) {
   std::unique_ptr<Notification> notification = CreateBanner(
       "Title", "Context", "https://gmail.com", "Button 1", nullptr);
   auto bridge = std::make_unique<NotificationPlatformBridgeMac>(
-      CreateBannerDispatcher(), CreateAlertDispatcher());
+      CreateBannerDispatcher(), CreateAlertDispatcher(),
+      CreateWebAppDispatcherFactory());
   EXPECT_EQ(0u, banner_dispatcher()->notifications().size());
   bridge->Display(NotificationHandler::Type::WEB_PERSISTENT, profile(),
                   *notification, nullptr);
@@ -293,7 +331,8 @@ TEST_F(NotificationPlatformBridgeMacTest, TestQuitRemovesNotifications) {
       "Title", "Context", "https://gmail.com", "Button 1", nullptr);
   {
     auto bridge = std::make_unique<NotificationPlatformBridgeMac>(
-        CreateBannerDispatcher(), CreateAlertDispatcher());
+        CreateBannerDispatcher(), CreateAlertDispatcher(),
+        CreateWebAppDispatcherFactory());
     EXPECT_EQ(0u, banner_dispatcher()->notifications().size());
     bridge->Display(NotificationHandler::Type::WEB_PERSISTENT, profile(),
                     *notification, nullptr);
@@ -304,7 +343,8 @@ TEST_F(NotificationPlatformBridgeMacTest, TestQuitRemovesNotifications) {
 TEST_F(NotificationPlatformBridgeMacTest,
        TestProfileShutdownRemovesNotifications) {
   auto bridge = std::make_unique<NotificationPlatformBridgeMac>(
-      CreateBannerDispatcher(), CreateAlertDispatcher());
+      CreateBannerDispatcher(), CreateAlertDispatcher(),
+      CreateWebAppDispatcherFactory());
 
   std::unique_ptr<Notification> notification = CreateBanner(
       "Title", "Context", "https://gmail.com", "Button 1", "Button 2");
@@ -334,7 +374,8 @@ TEST_F(NotificationPlatformBridgeMacTest,
 // Regression test for crbug.com/1182795
 TEST_F(NotificationPlatformBridgeMacTest, TestNullProfileShutdown) {
   auto bridge = std::make_unique<NotificationPlatformBridgeMac>(
-      CreateBannerDispatcher(), CreateAlertDispatcher());
+      CreateBannerDispatcher(), CreateAlertDispatcher(),
+      CreateWebAppDispatcherFactory());
   // Emulate shutdown of the null profile.
   bridge->DisplayServiceShutDown(/*profile=*/nullptr);
 }
@@ -343,7 +384,8 @@ TEST_F(NotificationPlatformBridgeMacTest, TestDisplayAlert) {
   std::unique_ptr<Notification> alert =
       CreateAlert("Title", "Context", "https://gmail.com", "Button 1", nullptr);
   auto bridge = std::make_unique<NotificationPlatformBridgeMac>(
-      CreateBannerDispatcher(), CreateAlertDispatcher());
+      CreateBannerDispatcher(), CreateAlertDispatcher(),
+      CreateWebAppDispatcherFactory());
   bridge->Display(NotificationHandler::Type::WEB_PERSISTENT, profile(), *alert,
                   nullptr);
   EXPECT_EQ(0u, banner_dispatcher()->notifications().size());
@@ -356,7 +398,8 @@ TEST_F(NotificationPlatformBridgeMacTest, TestDisplayBannerAndAlert) {
   std::unique_ptr<Notification> banner = CreateBanner(
       "Title", "Context", "https://gmail.com", "Button 1", nullptr);
   auto bridge = std::make_unique<NotificationPlatformBridgeMac>(
-      CreateBannerDispatcher(), CreateAlertDispatcher());
+      CreateBannerDispatcher(), CreateAlertDispatcher(),
+      CreateWebAppDispatcherFactory());
   bridge->Display(NotificationHandler::Type::WEB_PERSISTENT, profile(),
                   Notification("notification_id1", *banner), nullptr);
   bridge->Display(NotificationHandler::Type::WEB_PERSISTENT, profile(),
@@ -369,7 +412,8 @@ TEST_F(NotificationPlatformBridgeMacTest, TestCloseAlert) {
   std::unique_ptr<Notification> alert =
       CreateAlert("Title", "Context", "https://gmail.com", "Button 1", nullptr);
   auto bridge = std::make_unique<NotificationPlatformBridgeMac>(
-      CreateBannerDispatcher(), CreateAlertDispatcher());
+      CreateBannerDispatcher(), CreateAlertDispatcher(),
+      CreateWebAppDispatcherFactory());
   EXPECT_EQ(0u, alert_dispatcher()->notifications().size());
   bridge->Display(NotificationHandler::Type::WEB_PERSISTENT, profile(), *alert,
                   nullptr);
@@ -391,7 +435,8 @@ TEST_F(NotificationPlatformBridgeMacTest, TestQuitRemovesBannersAndAlerts) {
   auto alert_dispatcher = std::make_unique<MockNotificationDispatcherMac>();
   MockNotificationDispatcherMac* alert_dispatcher_ptr = alert_dispatcher.get();
   auto bridge = std::make_unique<NotificationPlatformBridgeMac>(
-      std::move(banner_dispatcher), std::move(alert_dispatcher));
+      std::move(banner_dispatcher), std::move(alert_dispatcher),
+      CreateWebAppDispatcherFactory());
 
   EXPECT_EQ(0u, banner_dispatcher_ptr->notifications().size());
   EXPECT_EQ(0u, alert_dispatcher_ptr->notifications().size());
@@ -414,7 +459,8 @@ TEST_F(NotificationPlatformBridgeMacTest, TestDisplayETLDPlusOne) {
       "Button 1", nullptr);
 
   auto bridge = std::make_unique<NotificationPlatformBridgeMac>(
-      CreateBannerDispatcher(), CreateAlertDispatcher());
+      CreateBannerDispatcher(), CreateAlertDispatcher(),
+      CreateWebAppDispatcherFactory());
   bridge->Display(NotificationHandler::Type::WEB_PERSISTENT, profile(),
                   Notification("notification_id1", *notification), nullptr);
 
@@ -453,4 +499,50 @@ TEST_F(NotificationPlatformBridgeMacTest, TestDisplayETLDPlusOne) {
   EXPECT_EQ(u"peter.sh", notifications[3]->subtitle);
   EXPECT_EQ(u"localhost:8080", notifications[4]->subtitle);
   EXPECT_EQ(u"93.186.186.172", notifications[5]->subtitle);
+}
+
+class NotificationPlatformBridgeMacTestWithNotificationAttribution
+    : public NotificationPlatformBridgeMacTest {
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kAppShimNotificationAttribution};
+};
+
+TEST_F(NotificationPlatformBridgeMacTestWithNotificationAttribution,
+       BannersAndAlertsAreAttributed) {
+  const char* const kWebAppId = "webappid";
+  std::unique_ptr<Notification> alert = CreateAlert(
+      "Title", "Context", "https://gmail.com", "Button 1", nullptr, kWebAppId);
+  std::unique_ptr<Notification> banner = CreateBanner(
+      "Title", "Context", "https://gmail.com", "Button 1", nullptr, kWebAppId);
+  auto bridge = std::make_unique<NotificationPlatformBridgeMac>(
+      CreateBannerDispatcher(), CreateAlertDispatcher(),
+      CreateWebAppDispatcherFactory());
+  bridge->Display(NotificationHandler::Type::WEB_PERSISTENT, profile(),
+                  Notification("notification_id1", *banner), nullptr);
+  bridge->Display(NotificationHandler::Type::WEB_PERSISTENT, profile(),
+                  Notification("notification_id2", *alert), nullptr);
+  EXPECT_EQ(0u, banner_dispatcher()->notifications().size());
+  EXPECT_EQ(0u, alert_dispatcher()->notifications().size());
+  auto* app_dispatcher = dispatcher_for_web_app(kWebAppId);
+  ASSERT_TRUE(app_dispatcher);
+  EXPECT_EQ(2u, app_dispatcher->notifications().size());
+}
+
+TEST_F(NotificationPlatformBridgeMacTestWithNotificationAttribution,
+       CloseNotificationInWebApp) {
+  const char* const kWebAppId = "webappid";
+  std::unique_ptr<Notification> banner = CreateBanner(
+      "Title", "Context", "https://gmail.com", "Button 1", nullptr, kWebAppId);
+  auto bridge = std::make_unique<NotificationPlatformBridgeMac>(
+      CreateBannerDispatcher(), CreateAlertDispatcher(),
+      CreateWebAppDispatcherFactory());
+  bridge->Display(NotificationHandler::Type::WEB_PERSISTENT, profile(),
+                  Notification("notification_id1", *banner), nullptr);
+  auto* app_dispatcher = dispatcher_for_web_app(kWebAppId);
+  ASSERT_TRUE(app_dispatcher);
+  EXPECT_EQ(1u, app_dispatcher->notifications().size());
+
+  bridge->Close(profile(), "notification_id1");
+  EXPECT_EQ(0u, app_dispatcher->notifications().size());
 }

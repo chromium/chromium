@@ -27,6 +27,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_executor.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/thread.h"
 #include "chrome/app/chrome_crash_reporter_client.h"
 #include "chrome/app_shim/app_shim_controller.h"
@@ -158,6 +159,11 @@ int APP_SHIM_ENTRY_POINT_NAME(const app_mode::ChromeAppModeInfo* info) {
     }
     base::FeatureList::SetInstance(std::move(feature_list));
     mojo::core::InitFeatures();
+
+    // Create and start a ThreadPool using default parameters, matching for
+    // example utility processes.
+    base::ThreadPoolInstance::Create("AppShim");
+    base::ThreadPoolInstance::Get()->StartWithDefaultParams();
 
     // We're using an isolated Mojo connection between the browser and this
     // process, so this process must act as a broker.

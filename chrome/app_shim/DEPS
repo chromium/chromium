@@ -5,6 +5,7 @@ include_rules = [
   "+chrome/browser/ui/cocoa",
   "+chrome/grit/generated_resources.h",
   "+chrome/installer/launcher_support",
+  "+chrome/services/mac_notifications",
   "+components/crash/core/app",
   "+components/remote_cocoa",
   "+content/public/browser",

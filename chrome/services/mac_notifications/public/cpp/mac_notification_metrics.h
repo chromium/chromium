@@ -8,18 +8,19 @@
 #include <string>
 
 namespace mac_notifications {
+enum class ProcessType { kInProcess, kAlertProcess, kAppShimProcess };
 
-// Returns if the current app bundle has the alert style set to "alert".
-bool IsAppBundleAlertStyle();
+// Returns the process type from the current app bundle.
+ProcessType ProcessTypeFromAppBundle();
 
 // Returns a suffix to be used in UMA histogram names. Needs to be kept in sync
 // with variants of MacOSNotificationStyle in .../notifications/histograms.xml.
-std::string MacNotificationStyleSuffix(bool is_alert);
+std::string MacNotificationStyleSuffix(ProcessType process_type);
 
 // Called when a user performed an action on a notification on macOS.
-// |is_alert| determines if the notification was an alert or a banner.
+// |process_type| determines if the notification was an alert or a banner.
 // |is_valid| determines if the action data was valid and we passed it along.
-void LogMacNotificationActionReceived(bool is_alert, bool is_valid);
+void LogMacNotificationActionReceived(ProcessType process_type, bool is_valid);
 
 }  // namespace mac_notifications
 

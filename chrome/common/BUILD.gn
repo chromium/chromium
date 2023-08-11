@@ -784,7 +784,10 @@ mojom("mojo_bindings") {
   ]
 
   if (is_mac) {
-    public_deps += [ "//components/remote_cocoa/common:mojo" ]
+    public_deps += [
+      "//chrome/services/mac_notifications/public/mojom",
+      "//components/remote_cocoa/common:mojo",
+    ]
   }
 
   if (safe_browsing_mode == 1) {

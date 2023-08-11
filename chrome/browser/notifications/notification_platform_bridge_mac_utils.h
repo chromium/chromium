@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "chrome/browser/notifications/mac_notification_provider_factory.h"
 #include "chrome/browser/notifications/notification_common.h"
 #include "chrome/browser/notifications/notification_handler.h"
 #include "chrome/services/mac_notifications/public/mojom/mac_notifications.mojom.h"
@@ -37,7 +38,7 @@ std::u16string CreateMacNotificationContext(
 // Processes a notification response generated from a user action
 // (click close, etc.).
 void ProcessMacNotificationResponse(
-    bool is_alert,
+    MacNotificationProviderFactory::ProcessType process_type,
     mac_notifications::mojom::NotificationActionInfoPtr info);
 
 // Returns if the given |notification| should be shown as an alert.

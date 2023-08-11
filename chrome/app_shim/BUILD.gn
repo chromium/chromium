@@ -30,6 +30,7 @@ source_set("app_shim") {
     "//chrome/browser/ui",
     "//chrome/common",
     "//chrome/common:mojo_bindings",
+    "//chrome/services/mac_notifications",
     "//components/crash/core/app",
     "//components/remote_cocoa/app_shim",
     "//content/public/browser",

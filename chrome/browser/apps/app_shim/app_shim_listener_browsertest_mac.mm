@@ -84,6 +84,9 @@ class TestShimClient : public chrome::mojom::AppShim {
   void UpdateApplicationDockMenu(
       std::vector<chrome::mojom::ApplicationDockMenuItemPtr> dock_menu_items)
       override {}
+  void BindNotificationProvider(
+      mojo::PendingReceiver<mac_notifications::mojom::MacNotificationProvider>
+          provider) override {}
 
  private:
   void OnShimConnectedDone(

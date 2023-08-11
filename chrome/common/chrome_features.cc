@@ -63,6 +63,13 @@ BASE_FEATURE(kAppShimRemoteCocoa,
 BASE_FEATURE(kAppShimNewCloseBehavior,
              "AppShimNewCloseBehavior",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When enabled, notifications coming from PWAs will be displayed via their app
+// shim processes, rather than directly by chrome.
+// https://crbug.com/938661
+BASE_FEATURE(kAppShimNotificationAttribution,
+             "AppShimNotificationAttribution",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_MAC)
 
 // Enables the built-in DNS resolver.

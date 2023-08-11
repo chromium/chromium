@@ -25,6 +25,7 @@
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/mac/app_shim.mojom.h"
+#include "chrome/services/mac_notifications/public/mojom/mac_notifications.mojom.h"
 #include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/testing_pref_service.h"
@@ -243,7 +244,8 @@ class TestingAppShimHostBootstrap : public AppShimHostBootstrap {
 const char kTestAppIdA[] = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
 const char kTestAppIdB[] = "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb";
 
-class TestAppShim : public chrome::mojom::AppShim {
+class TestAppShim : public chrome::mojom::AppShim,
+                    public mac_notifications::mojom::MacNotificationProvider {
  public:
   // chrome::mojom::AppShim:
   void CreateRemoteCocoaApplication(
@@ -264,10 +266,25 @@ class TestAppShim : public chrome::mojom::AppShim {
       override {
     dock_menu_items_ = std::move(dock_menu_items);
   }
+  void BindNotificationProvider(
+      mojo::PendingReceiver<mac_notifications::mojom::MacNotificationProvider>
+          provider) override {
+    notification_provider_receiver_.Bind(std::move(provider));
+  }
+
+  // mac_notifications::mojom::MacNotificationProvider:
+  void BindNotificationService(
+      mojo::PendingReceiver<mac_notifications::mojom::MacNotificationService>
+          service,
+      mojo::PendingRemote<
+          mac_notifications::mojom::MacNotificationActionHandler> handler)
+      override {}
 
   std::vector<chrome::mojom::ProfileMenuItemPtr> profile_menu_items_;
   std::vector<chrome::mojom::ApplicationDockMenuItemPtr> dock_menu_items_;
   std::string badge_label_;
+  mojo::Receiver<mac_notifications::mojom::MacNotificationProvider>
+      notification_provider_receiver_{this};
 };
 
 class TestHost : public AppShimHost {
@@ -1788,6 +1805,45 @@ TEST_F(AppShimManagerTest,
       "/* exists */ and certificate leaf[subject.OU] = EQHXZ8M8AV");
   EXPECT_EQ(base::SysCFStringRefToUTF8(got_req_string),
             base::SysCFStringRefToUTF8(want_req_string));
+}
+
+TEST_F(AppShimManagerTest, LaunchNotificationProviderWithAppRunning) {
+  scoped_feature_list_.InitWithFeatures(
+      {features::kAppShimNotificationAttribution}, {});
+
+  // This app is installed for profile A throughout this test.
+  AppShimRegistry::Get()->OnAppInstalledForProfile(kTestAppIdA,
+                                                   profile_path_a_);
+
+  // Launch the app shim.
+  manager_->SetHostForCreate(std::move(host_aa_unique_));
+  EXPECT_CALL(*delegate_, DoLaunchShim(&profile_a_, kTestAppIdA, false));
+  manager_->OnAppActivated(&profile_a_, kTestAppIdA);
+  EXPECT_EQ(host_aa_.get(), manager_->FindHost(&profile_a_, kTestAppIdA));
+
+  // Connect to its notification provider.
+  mojo::Remote<mac_notifications::mojom::MacNotificationProvider> provider =
+      manager_->LaunchNotificationProvider(kTestAppIdA);
+  EXPECT_TRUE(provider.is_bound());
+  EXPECT_TRUE(
+      host_aa_->test_app_shim_->notification_provider_receiver_.is_bound());
+  provider.FlushForTesting();
+  EXPECT_TRUE(provider.is_connected());
+}
+
+TEST_F(AppShimManagerTest, LaunchNotificationProviderWithoutAppRunning) {
+  scoped_feature_list_.InitWithFeatures(
+      {features::kAppShimNotificationAttribution}, {});
+
+  // This app is installed for profile A throughout this test.
+  AppShimRegistry::Get()->OnAppInstalledForProfile(kTestAppIdA,
+                                                   profile_path_a_);
+
+  mojo::Remote<mac_notifications::mojom::MacNotificationProvider> provider =
+      manager_->LaunchNotificationProvider(kTestAppIdA);
+  EXPECT_TRUE(provider.is_bound());
+  provider.FlushForTesting();
+  EXPECT_TRUE(provider.is_connected());
 }
 
 }  // namespace apps

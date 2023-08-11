@@ -35,6 +35,7 @@
 #include "chrome/common/mac/app_mode_common.h"
 #include "chrome/common/process_singleton_lock_posix.h"
 #include "chrome/grit/generated_resources.h"
+#import "chrome/services/mac_notifications/mac_notification_service_ns.h"
 #include "components/remote_cocoa/app_shim/application_bridge.h"
 #include "components/remote_cocoa/app_shim/native_widget_ns_window_bridge.h"
 #include "components/remote_cocoa/common/application.mojom.h"
@@ -569,6 +570,30 @@ void AppShimController::UpdateProfileMenu(
 void AppShimController::UpdateApplicationDockMenu(
     std::vector<chrome::mojom::ApplicationDockMenuItemPtr> dock_menu_items) {
   dock_menu_items_ = std::move(dock_menu_items);
+}
+
+void AppShimController::BindNotificationProvider(
+    mojo::PendingReceiver<mac_notifications::mojom::MacNotificationProvider>
+        provider) {
+  if (notifications_receiver_.is_bound()) {
+    notifications_receiver_.reset();
+    notification_service_.reset();
+  }
+  notifications_receiver_.Bind(std::move(provider));
+}
+
+void AppShimController::BindNotificationService(
+    mojo::PendingReceiver<mac_notifications::mojom::MacNotificationService>
+        service,
+    mojo::PendingRemote<mac_notifications::mojom::MacNotificationActionHandler>
+        handler) {
+  DCHECK(!notification_service_);
+  // TODO(mek): When app shims switch to being ad-hoc signed, switch this to use
+  // the UNUserNotification API rather than the NSUserNotification API.
+  notification_service_ =
+      std::make_unique<mac_notifications::MacNotificationServiceNS>(
+          std::move(service), std::move(handler),
+          [NSUserNotificationCenter defaultUserNotificationCenter]);
 }
 
 void AppShimController::SetUserAttention(

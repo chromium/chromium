@@ -55,12 +55,15 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/services/mac_notifications/public/mojom/mac_notifications.mojom.h"
 #include "components/crash/core/common/crash_key.h"
 #include "components/crx_file/id_util.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/notification_details.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/notification_source.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/filename_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -457,6 +460,44 @@ void AppShimManager::UpdateAppBadge(
 
   profile_state->badge = badge;
   UpdateApplicationBadge(profile_state);
+}
+
+mojo::Remote<mac_notifications::mojom::MacNotificationProvider>
+AppShimManager::LaunchNotificationProvider(const web_app::AppId& app_id) {
+  CHECK(
+      base::FeatureList::IsEnabled(features::kAppShimNotificationAttribution));
+
+  mojo::Remote<mac_notifications::mojom::MacNotificationProvider> remote;
+  AppShimHost* shim = nullptr;
+
+  auto found_app = apps_.find(app_id);
+  if (found_app != apps_.end()) {
+    AppState* app_state = found_app->second.get();
+    CHECK(app_state->IsMultiProfile());
+    shim = app_state->multi_profile_host.get();
+  }
+
+  if (shim) {
+    shim->GetAppShim()->BindNotificationProvider(
+        remote.BindNewPipeAndPassReceiver());
+  } else {
+    // TODO(mek): Support launching a new app shim.
+    dummy_notification_provider_receivers_.Add(
+        this, remote.BindNewPipeAndPassReceiver());
+  }
+
+  return remote;
+}
+
+void AppShimManager::BindNotificationService(
+    mojo::PendingReceiver<mac_notifications::mojom::MacNotificationService>
+        service,
+    mojo::PendingRemote<mac_notifications::mojom::MacNotificationActionHandler>
+        handler) {
+  // Dummy MacNotificationProvider implementation. The notifications code that
+  // ends up calling LaunchNotificationProvider expects to always get a
+  // bound/connected MacNotificationProvider remote, so if we don't have an
+  // app shim process to connect to, instead a remote bound to this is returned.
 }
 
 void AppShimManager::UpdateApplicationBadge(ProfileState* profile_state) {
