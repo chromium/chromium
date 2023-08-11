@@ -103,6 +103,11 @@ void SiteInstanceGroup::RenderProcessHostDestroyed(RenderProcessHost* host) {
 void SiteInstanceGroup::RenderProcessExited(
     RenderProcessHost* host,
     const ChildProcessTerminationInfo& info) {
+  // Increment the refcount of `this` to keep it alive while iterating over the
+  // observer list. That will prevent `this` from getting deleted during
+  // iteration.
+  scoped_refptr<SiteInstanceGroup> self_refcount = base::WrapRefCounted(this);
+  base::AutoReset<bool> scope(&is_notifying_observers_, true);
   for (auto& observer : observers_)
     observer.RenderProcessGone(this, info);
 }
