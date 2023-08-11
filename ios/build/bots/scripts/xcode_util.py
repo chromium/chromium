@@ -8,6 +8,7 @@ import logging
 import os
 import shutil
 import subprocess
+import sys
 
 import iossim_util
 import mac_util
@@ -434,3 +435,61 @@ def using_xcode_15_or_higher():
   LOGGER.debug('Checking if Xcode version is 15 or higher')
   return distutils.version.LooseVersion(
       '15.0') <= distutils.version.LooseVersion(version()[0])
+
+
+def install_xcode(mac_toolchain_cmd, xcode_build_version, xcode_path,
+                  runtime_cache_prefix, ios_version):
+  """Installs the requested Xcode build version.
+
+    Returns:
+      (bool, bool)
+        First bool: True if installation was successful. False otherwise.
+        Second bool: True if Xcode is legacy package. False if it's new.
+    """
+  try:
+    if not mac_toolchain_cmd:
+      raise test_runner_errors.MacToolchainNotFoundError(mac_toolchain_cmd)
+    # Guard against incorrect install paths. On swarming, this path
+    # should be a requested named cache, and it must exist.
+    if not os.path.exists(xcode_path):
+      raise test_runner_errors.XcodePathNotFoundError(xcode_path)
+
+    runtime_cache_folder = None
+    # Runner script only utilizes runtime cache when it's a simulator task.
+    if ios_version:
+      runtime_cache_folder = construct_runtime_cache_folder(
+          runtime_cache_prefix, ios_version)
+      if not os.path.exists(runtime_cache_folder):
+        # Depending on infra project, runtime named cache might not be
+        # deployed. Create the dir if it doesn't exist since xcode_util
+        # assumes it exists.
+        # TODO(crbug.com/1191260): Raise error instead of creating dirs after
+        # runtime named cache is deployed everywhere.
+        os.makedirs(runtime_cache_folder)
+    # install() installs the Xcode & iOS runtime, and returns a bool
+    # indicating if the Xcode version in CIPD is a legacy Xcode package (which
+    # includes iOS runtimes).
+    # Update as of 2023: for MacOS13+, iOS runtime will not be installed in
+    # install(). See install_runtime_dmg below().
+    is_legacy_xcode = install(
+        mac_toolchain_cmd,
+        xcode_build_version,
+        xcode_path,
+        runtime_cache_folder=runtime_cache_folder,
+        ios_version=ios_version)
+    select(xcode_path)
+
+    # Starting MacOS13+, additional simulator runtime will be installed
+    # in DMG format
+    if ios_version and mac_util.is_macos_13_or_higher():
+      install_runtime_dmg(mac_toolchain_cmd, runtime_cache_folder, ios_version,
+                          xcode_build_version)
+  except subprocess.CalledProcessError as e:
+    # Flush buffers to ensure correct output ordering.
+    sys.stdout.flush()
+    sys.stderr.write('Xcode build version %s failed to install: %s\n' %
+                     (xcode_build_version, e))
+    sys.stderr.flush()
+    return False, False
+  else:
+    return True, is_legacy_xcode

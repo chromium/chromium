@@ -122,20 +122,6 @@ class XCTestPlugInNotFoundError(TestRunnerError):
         'XCTest not found: %s' % xctest_path)
 
 
-class MacToolchainNotFoundError(TestRunnerError):
-  """The mac_toolchain is not specified."""
-  def __init__(self, mac_toolchain):
-    super(MacToolchainNotFoundError, self).__init__(
-        'mac_toolchain is not specified or not found: "%s"' % mac_toolchain)
-
-
-class XcodePathNotFoundError(TestRunnerError):
-  """The path to Xcode.app is not specified."""
-  def __init__(self, xcode_path):
-    super(XcodePathNotFoundError, self).__init__(
-        'xcode_path is not specified or does not exist: "%s"' % xcode_path)
-
-
 class ShardingDisabledError(TestRunnerError):
   """Temporary error indicating that sharding is not yet implemented."""
   def __init__(self):
