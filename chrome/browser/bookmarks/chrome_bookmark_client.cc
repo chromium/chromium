@@ -46,7 +46,10 @@ void ChromeBookmarkClient::Init(bookmarks::BookmarkModel* model) {
 #if BUILDFLAG(ENABLE_OFFLINE_PAGES)
   offline_page_observer_ =
       std::make_unique<offline_pages::OfflinePageBookmarkObserver>(profile_);
-  model->AddObserver(offline_page_observer_.get());
+  model_observation_ = std::make_unique<base::ScopedObservation<
+      bookmarks::BookmarkModel, bookmarks::BaseBookmarkModelObserver>>(
+      offline_page_observer_.get());
+  model_observation_->Observe(model);
 #endif
 }
 
