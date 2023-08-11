@@ -19,6 +19,8 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.shadows.ShadowLooper;
 
+import org.chromium.base.FeatureList;
+import org.chromium.base.FeatureList.TestValues;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -30,6 +32,7 @@ import org.chromium.base.test.util.JniMocker;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
@@ -66,6 +69,8 @@ public class ToolbarControlContainerTest {
     private Tab mTab;
     @Mock
     private LayoutStateProvider mLayoutStateProvider;
+    @Mock
+    private FullscreenManager mFullscreenManager;
 
     private final Supplier<Tab> mTabSupplier = () -> mTab;
     private final ObservableSupplierImpl<Boolean> mCompositorInMotionSupplier =
@@ -106,7 +111,7 @@ public class ToolbarControlContainerTest {
     private void initAdapter(ToolbarViewResourceAdapter adapter) {
         adapter.setPostInitializationDependencies(mToolbar, mConstraintsSupplier, mTabSupplier,
                 mCompositorInMotionSupplier, mBrowserStateBrowserControlsVisibilityDelegate,
-                mIsVisibleSupplier, mLayoutStateProviderSupplier);
+                mIsVisibleSupplier, mLayoutStateProviderSupplier, mFullscreenManager);
         // The adapter may observe some of these already, which will post events.
         ShadowLooper.idleMainLooper();
         // The initial addObserver triggers an event that we don't care about. Reset count.
@@ -431,6 +436,32 @@ public class ToolbarControlContainerTest {
         // TOOLBAR_SWIPE should bypass the in motion check and return dirty.
         Mockito.doReturn(LayoutType.TOOLBAR_SWIPE).when(mLayoutStateProvider).getActiveLayoutType();
 
+        Assert.assertTrue(adapter.isDirty());
+    }
+
+    @Test
+    public void testIsDirty_Fullscreen() {
+        TestValues testValues = new TestValues();
+        testValues.addFeatureFlagOverride(ChromeFeatureList.SUPPRESS_TOOLBAR_CAPTURES, true);
+        testValues.addFieldTrialParamOverride(ChromeFeatureList.SUPPRESS_TOOLBAR_CAPTURES,
+                ToolbarFeatures.BLOCK_FOR_FULLSCREEN, "true");
+        FeatureList.setTestValues(testValues);
+
+        Mockito.when(mFullscreenManager.getPersistentFullscreenMode()).thenReturn(true);
+
+        ToolbarViewResourceAdapter adapter = makeAndInitAdapter();
+        Mockito.doReturn(CaptureReadinessResult.readyWithSnapshotDifference(
+                                 ToolbarSnapshotDifference.URL_TEXT))
+                .when(mToolbar)
+                .isReadyForTextureCapture();
+
+        Assert.assertFalse(adapter.isDirty());
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        "Android.TopToolbar.BlockCaptureReason",
+                        TopToolbarBlockCaptureReason.FULLSCREEN));
+
+        Mockito.when(mFullscreenManager.getPersistentFullscreenMode()).thenReturn(false);
         Assert.assertTrue(adapter.isDirty());
     }
 }

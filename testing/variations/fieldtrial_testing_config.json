@@ -14228,6 +14228,9 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "block_for_fullscreen": "true"
+                    },
                     "enable_features": [
                         "DeferNotifyInMotion",
                         "SuppressToolbarCaptures",
