@@ -46,18 +46,7 @@ bool FakeHibermanClient::IsHibernateToS4Enabled() const {
 }
 
 void FakeHibermanClient::ResumeFromHibernate(
-    const std::string& account_id,
-    ResumeFromHibernateCallback callback) {
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), true));
-}
-
-void FakeHibermanClient::ResumeFromHibernateAS(
-    const std::string& auth_session_id,
-    ResumeFromHibernateCallback callback) {
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), true));
-}
+    const std::string& auth_session_id) {}
 
 void FakeHibermanClient::WaitForServiceToBeAvailable(
     chromeos::WaitForServiceToBeAvailableCallback callback) {

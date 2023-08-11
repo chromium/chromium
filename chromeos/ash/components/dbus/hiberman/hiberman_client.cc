@@ -86,24 +86,8 @@ class HibermanClientImpl : public HibermanClient {
     proxy_->WaitForServiceToBeAvailable(std::move(callback));
   }
 
-  void ResumeFromHibernate(const std::string& account_id,
-                           ResumeFromHibernateCallback callback) override {
-    VLOG(1) << "Attempt ResumeFromHibernate";
-    dbus::MethodCall method_call(::hiberman::kHibernateResumeInterface,
-                                 ::hiberman::kResumeFromHibernateMethod);
-    dbus::MessageWriter writer(&method_call);
-    writer.AppendString(account_id);
-    // Bind with the weak pointer of |this| so the response is not
-    // handled once |this| is already destroyed.
-    proxy_->CallMethod(
-        &method_call, kHibermanResumeTimeoutMs,
-        base::BindOnce(&HibermanClientImpl::HandleResponse,
-                       weak_factory_.GetWeakPtr(), std::move(callback)));
-  }
-
-  void ResumeFromHibernateAS(const std::string& auth_session_id,
-                             ResumeFromHibernateCallback callback) override {
-    VLOG(1) << "Attempt ResumeFromHibernateAS";
+  void ResumeFromHibernate(const std::string& auth_session_id) override {
+    VLOG(1) << "ResumeFromHibernate";
     dbus::MethodCall method_call(::hiberman::kHibernateResumeInterface,
                                  ::hiberman::kResumeFromHibernateASMethod);
     dbus::MessageWriter writer(&method_call);
@@ -112,10 +96,9 @@ class HibermanClientImpl : public HibermanClient {
         auth_session_id.length());
     // Bind with the weak pointer of |this| so the response is not
     // handled once |this| is already destroyed.
-    proxy_->CallMethod(
-        &method_call, kHibermanResumeTimeoutMs,
-        base::BindOnce(&HibermanClientImpl::HandleResponse,
-                       weak_factory_.GetWeakPtr(), std::move(callback)));
+    proxy_->CallMethod(&method_call, kHibermanResumeTimeoutMs,
+                       base::BindOnce(&HibermanClientImpl::HandleResponse,
+                                      weak_factory_.GetWeakPtr()));
   }
 
   void AbortResumeHibernate(const std::string& reason) override {
@@ -139,10 +122,8 @@ class HibermanClientImpl : public HibermanClient {
   }
 
  private:
-  void HandleResponse(chromeos::VoidDBusMethodCallback callback,
-                      dbus::Response* response) {
+  void HandleResponse(dbus::Response* response) {
     VLOG(1) << "Received Resume Response: " << (response != nullptr);
-    std::move(callback).Run(response != nullptr);
   }
 
   void HandleAbortResponse(dbus::Response* response) {

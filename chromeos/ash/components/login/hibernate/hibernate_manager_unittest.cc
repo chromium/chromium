@@ -57,30 +57,4 @@ class HibernateManagerTest : public testing::Test {
   base::WeakPtrFactory<HibernateManagerTest> weak_factory_{this};
 };
 
-// Test that the callback gets called.
-TEST_F(HibernateManagerTest, BasicResumeCall) {
-  hibernate_manager_.PrepareHibernateAndMaybeResume(
-      std::move(user_context_),
-      base::BindOnce(&HibernateManagerTest::ResumeCallback,
-                     weak_factory_.GetWeakPtr()));
-
-  task_environment_.RunUntilIdle();
-
-  EXPECT_EQ(successful_callbacks_, 1);
-  EXPECT_EQ(failed_callbacks_, 0);
-}
-
-// Test that ResumeFromHiberateAsAuthOp calls its callback.
-TEST_F(HibernateManagerTest, BasicAuthOpResumeCall) {
-  hibernate_manager_.PrepareHibernateAndMaybeResumeAuthOp(
-      std::move(user_context_),
-      base::BindOnce(&HibernateManagerTest::ResumeAuthOpCallback,
-                     weak_factory_.GetWeakPtr()));
-
-  task_environment_.RunUntilIdle();
-
-  EXPECT_EQ(successful_callbacks_, 1);
-  EXPECT_EQ(failed_callbacks_, 0);
-}
-
 }  // namespace ash

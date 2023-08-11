@@ -131,6 +131,7 @@
 #include "chromeos/ash/components/login/auth/auth_session_authenticator.h"
 #include "chromeos/ash/components/login/auth/challenge_response/known_user_pref_utils.h"
 #include "chromeos/ash/components/login/auth/stub_authenticator_builder.h"
+#include "chromeos/ash/components/login/hibernate/hibernate_manager.h"
 #include "chromeos/ash/components/login/session/session_termination_manager.h"
 #include "chromeos/ash/components/network/portal_detector/network_portal_detector.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
@@ -1011,10 +1012,18 @@ bool UserSessionManager::RespectLocalePreference(
 bool UserSessionManager::RestartToApplyPerSessionFlagsIfNeed(
     Profile* profile,
     bool early_restart) {
-  if (!SessionManagerClient::Get()->SupportsBrowserRestart())
-    return false;
-
   if (!ProfileHelper::IsUserProfile(profile)) {
+    return false;
+  }
+
+  if (ash::HibernateManager::IsHibernateSupported()) {
+    // No need to do anything if Hibernate isn't even supported on this
+    // device.
+    flags_ui::PrefServiceFlagsStorage flags_storage(profile->GetPrefs());
+    ash::HibernateManager::Get()->MaybeResume(flags_storage.GetFlags());
+  }
+
+  if (!SessionManagerClient::Get()->SupportsBrowserRestart()) {
     return false;
   }
 

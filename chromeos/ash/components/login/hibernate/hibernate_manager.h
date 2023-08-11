@@ -5,6 +5,9 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_LOGIN_HIBERNATE_HIBERNATE_MANAGER_H_
 #define CHROMEOS_ASH_COMPONENTS_LOGIN_HIBERNATE_HIBERNATE_MANAGER_H_
 
+#include <set>
+#include <string>
+
 #include "base/component_export.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
@@ -28,18 +31,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_HIBERNATE)
 
   ~HibernateManager();
 
-  base::WeakPtr<HibernateManager> AsWeakPtr();
-
-  // Resume from hibernate, in the form of an AuthOperation.
-  void PrepareHibernateAndMaybeResumeAuthOp(
-      std::unique_ptr<UserContext> user_context,
-      AuthOperationCallback callback);
-
-  // Resume from hibernate. On a successful resume from hibernation, this never
-  // returns. On failure, or if no hibernate image is available to resume to,
-  // calls the callback.
-  void PrepareHibernateAndMaybeResume(std::unique_ptr<UserContext> user_context,
-                                      HibernateResumeCallback callback);
+  // Returns the HibernateManager singleton.
+  static HibernateManager* Get();
 
   // Determines if hibernate is supported on this platform.
   static void InitializePlatformSupport();
@@ -50,13 +43,24 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_HIBERNATE)
   // Determines if hibernate is supported.
   static bool IsHibernateSupported();
 
+  // Set auth_session_id. During the login flow we save the auth session id to
+  // pass to hiberman after the users profile has been created.
+  void SetAuthSessionID(const std::string& auth_session_id);
+
+  // Once the user's profile has been created and preferences loaded we will try
+  // to resume. The reason this is necessary is because if a user has overridden
+  // their suspend-to-disk settings via chrome://flags it would still be too
+  // early to learn this. So HibernateManager will inspect the preferences for
+  // this unique situation.
+  void MaybeResume(const std::set<std::string>& user_prefs);
+
  private:
+  std::string auth_session_id_;
+
   void ResumeFromHibernateAuthOpCallback(
       AuthOperationCallback callback,
       std::unique_ptr<UserContext> user_context,
       bool resume_call_successful);
-
-  base::WeakPtrFactory<HibernateManager> weak_factory_{this};
 };
 
 }  // namespace ash

@@ -113,22 +113,4 @@ class HibermanClientTest : public testing::Test {
   }
 };
 
-TEST_F(HibermanClientTest, ResumeFromHibernate) {
-  base::test::TestFuture<bool> future;
-  client_->ResumeFromHibernate("test@google.com", future.GetCallback());
-  base::RunLoop().RunUntilIdle();
-  // Assert that the callback was called and that the method_call_success
-  // parameter returned true.
-  ASSERT_TRUE(future.Get<0>());
-}
-
-TEST_F(HibermanClientTest, ResumeFromHibernateAS) {
-  base::test::TestFuture<bool> future;
-  client_->ResumeFromHibernateAS("fake_auth_session_id", future.GetCallback());
-  base::RunLoop().RunUntilIdle();
-  // Assert that the callback was called and that the method_call_success
-  // parameter returned true.
-  ASSERT_TRUE(future.Get<0>());
-}
-
 }  // namespace ash

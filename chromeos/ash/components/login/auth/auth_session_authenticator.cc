@@ -56,7 +56,6 @@ AuthSessionAuthenticator::AuthSessionAuthenticator(
           std::make_unique<AuthFactorEditor>(UserDataAuthClient::Get())),
       auth_performer_(
           std::make_unique<AuthPerformer>(UserDataAuthClient::Get())),
-      hibernate_manager_(std::make_unique<HibernateManager>()),
       mount_performer_(std::make_unique<MountPerformer>()),
       local_state_(local_state) {
   DCHECK(safe_mode_delegate_);
@@ -271,9 +270,6 @@ void AuthSessionAuthenticator::DoCompleteLogin(
                                      weak_factory_.GetWeakPtr()));
       steps.push_back(base::BindOnce(&MountPerformer::CreateNewUser,
                                      mount_performer_->AsWeakPtr()));
-      steps.push_back(base::BindOnce(
-          &HibernateManager::PrepareHibernateAndMaybeResumeAuthOp,
-          hibernate_manager_->AsWeakPtr()));
       steps.push_back(base::BindOnce(&MountPerformer::MountPersistentDirectory,
                                      mount_performer_->AsWeakPtr()));
     }
@@ -321,11 +317,6 @@ void AuthSessionAuthenticator::DoCompleteLogin(
           base::BindOnce(&AuthPerformer::AuthenticateUsingKnowledgeKey,
                          auth_performer_->AsWeakPtr()));
     }
-    // TODO(b/233103309): Abort resume from hibernate here as the user just went
-    // through online login and may need auth tokens synced.
-    steps.push_back(
-        base::BindOnce(&HibernateManager::PrepareHibernateAndMaybeResumeAuthOp,
-                       hibernate_manager_->AsWeakPtr()));
     steps.push_back(base::BindOnce(&MountPerformer::MountPersistentDirectory,
                                    mount_performer_->AsWeakPtr()));
     if (safe_mode_delegate_->IsSafeMode()) {
@@ -450,9 +441,6 @@ void AuthSessionAuthenticator::DoLoginAsExistingUser(
         base::BindOnce(&AuthPerformer::AuthenticateUsingKnowledgeKey,
                        auth_performer_->AsWeakPtr()));
   }
-  steps.push_back(
-      base::BindOnce(&HibernateManager::PrepareHibernateAndMaybeResumeAuthOp,
-                     hibernate_manager_->AsWeakPtr()));
   steps.push_back(base::BindOnce(&MountPerformer::MountPersistentDirectory,
                                  mount_performer_->AsWeakPtr()));
   if (safe_mode_delegate_->IsSafeMode()) {
@@ -769,12 +757,6 @@ void AuthSessionAuthenticator::RecoverEncryptedData(
                                  auth_performer_->AsWeakPtr()));
   steps.push_back(base::BindOnce(&AuthFactorEditor::ReplaceContextKey,
                                  auth_factor_editor_->AsWeakPtr()));
-  // TODO(b/233103309): Abort resume from hibernate here as the user just went
-  // through the recovery flow and online login, so they may have tokens that
-  // need to be synced.
-  steps.push_back(
-      base::BindOnce(&HibernateManager::PrepareHibernateAndMaybeResumeAuthOp,
-                     hibernate_manager_->AsWeakPtr()));
   steps.push_back(base::BindOnce(&MountPerformer::MountPersistentDirectory,
                                  mount_performer_->AsWeakPtr()));
   if (safe_mode_delegate_->IsSafeMode()) {
@@ -1023,6 +1005,13 @@ void AuthSessionAuthenticator::HandleMigrationRequired(
 void AuthSessionAuthenticator::NotifyAuthSuccess(
     std::unique_ptr<UserContext> context) {
   LOGIN_LOG(EVENT) << "Logged in successfully";
+
+  if (HibernateManager::IsHibernateSupported()) {
+    // Pass the AuthSessionID to HibernateManager so once the user's profile is
+    // created we can notify hiberman.
+    HibernateManager::Get()->SetAuthSessionID(context->GetAuthSessionId());
+  }
+
   if (consumer_)
     consumer_->OnAuthSuccess(*context);
 }
