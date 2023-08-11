@@ -334,6 +334,7 @@
   X("gpu,benchmark")                                                          \
   X("gpu,benchmark,android_webview")                                          \
   X("gpu,benchmark,webview")                                                  \
+  X("gpu,login")                                                              \
   X("gpu,startup")                                                            \
   X("gpu,toplevel.flow")                                                      \
   X("gpu.angle,startup")                                                      \

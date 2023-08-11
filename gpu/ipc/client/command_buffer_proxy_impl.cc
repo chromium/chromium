@@ -421,8 +421,18 @@ void CommandBufferProxyImpl::EnsureWorkVisible() {
   if (disconnected_)
     return;
 
+  constexpr char kEnsureWorkVisible[] = "EnsureWorkVisible";
+
   const base::ElapsedTimer elapsed_timer;
+
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("gpu,login", kEnsureWorkVisible,
+                                    TRACE_ID_LOCAL(kEnsureWorkVisible));
+
   channel_->VerifyFlush(UINT32_MAX);
+
+  TRACE_EVENT_NESTABLE_ASYNC_END0("gpu,login", kEnsureWorkVisible,
+                                  TRACE_ID_LOCAL(kEnsureWorkVisible));
+
   GetUMAHistogramEnsureWorkVisibleDuration()->Add(
       elapsed_timer.Elapsed().InMicroseconds());
 
