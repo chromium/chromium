@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/functional/callback.h"
 #include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -144,6 +145,9 @@ class PLATFORM_EXPORT AVIFImageDecoder final : public ImageDecoder {
   avifPixelFormat avif_yuv_format_ = AVIF_PIXEL_FORMAT_NONE;
   wtf_size_t decoded_frame_count_ = 0;
   SkYUVColorSpace yuv_color_space_ = SkYUVColorSpace::kIdentity_SkYUVColorSpace;
+  // Used to call UpdateBppHistogram() at most once to record the
+  // bits-per-pixel value of the image when the image is successfully decoded.
+  base::OnceCallback<void(gfx::Size, size_t)> update_bpp_histogram_callback_;
   absl::optional<AVIFCleanApertureType> clap_type_;
   // Whether the 'clap' (clean aperture) property should be ignored, e.g.
   // because the 'clap' property is invalid or unsupported.

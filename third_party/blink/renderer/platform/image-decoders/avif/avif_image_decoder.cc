@@ -9,13 +9,16 @@
 #include <algorithm>
 #include <cstring>
 #include <memory>
+#include <utility>
 
 #include "base/bits.h"
 #include "base/containers/adapters.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "base/timer/elapsed_timer.h"
@@ -31,6 +34,7 @@
 #include "third_party/blink/renderer/platform/image-decoders/fast_shared_buffer_reader.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_animation.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder.h"
+#include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/libavif/src/include/avif/avif.h"
 #include "third_party/libavifinfo/src/avifinfo.h"
 #include "third_party/libyuv/include/libyuv.h"
@@ -366,6 +370,87 @@ void AvifInfoSegmentReaderSkip(void* void_stream, size_t num_bytes) {
   AvifInfoSegmentReaderStream* stream =
       reinterpret_cast<AvifInfoSegmentReaderStream*>(void_stream);
   stream->num_read_bytes += num_bytes;
+}
+
+// Choose one of the Blink.DecodedImage.AvifDensity.Count.* histograms based on
+// the image area, and add 1 to the bucket for the bits per pixel in the
+// histogram.
+void UpdateBppHistogram(gfx::Size size, size_t image_size_bytes) {
+#define DEFINE_BPP_HISTOGRAM(var, suffix) \
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(        \
+      CustomCountHistogram, var,          \
+      ("Blink.DecodedImage.AvifDensity.Count." suffix, 1, 1000, 100))
+
+  // From 1 pixel to 1 MP, we have one histogram per 0.1 MP.
+  // From 2 MP to 13 MP, we have one histogram per 1 MP.
+  // Finally, we have one histogram for > 13 MP.
+  DEFINE_BPP_HISTOGRAM(avif_density_point_1_mp_histogram, "0.1MP");
+  DEFINE_BPP_HISTOGRAM(avif_density_point_2_mp_histogram, "0.2MP");
+  DEFINE_BPP_HISTOGRAM(avif_density_point_3_mp_histogram, "0.3MP");
+  DEFINE_BPP_HISTOGRAM(avif_density_point_4_mp_histogram, "0.4MP");
+  DEFINE_BPP_HISTOGRAM(avif_density_point_5_mp_histogram, "0.5MP");
+  DEFINE_BPP_HISTOGRAM(avif_density_point_6_mp_histogram, "0.6MP");
+  DEFINE_BPP_HISTOGRAM(avif_density_point_7_mp_histogram, "0.7MP");
+  DEFINE_BPP_HISTOGRAM(avif_density_point_8_mp_histogram, "0.8MP");
+  DEFINE_BPP_HISTOGRAM(avif_density_point_9_mp_histogram, "0.9MP");
+  static CustomCountHistogram* const density_histogram_small[9] = {
+      &avif_density_point_1_mp_histogram, &avif_density_point_2_mp_histogram,
+      &avif_density_point_3_mp_histogram, &avif_density_point_4_mp_histogram,
+      &avif_density_point_5_mp_histogram, &avif_density_point_6_mp_histogram,
+      &avif_density_point_7_mp_histogram, &avif_density_point_8_mp_histogram,
+      &avif_density_point_9_mp_histogram};
+
+  DEFINE_BPP_HISTOGRAM(avif_density_1_mp_histogram, "01MP");
+  DEFINE_BPP_HISTOGRAM(avif_density_2_mp_histogram, "02MP");
+  DEFINE_BPP_HISTOGRAM(avif_density_3_mp_histogram, "03MP");
+  DEFINE_BPP_HISTOGRAM(avif_density_4_mp_histogram, "04MP");
+  DEFINE_BPP_HISTOGRAM(avif_density_5_mp_histogram, "05MP");
+  DEFINE_BPP_HISTOGRAM(avif_density_6_mp_histogram, "06MP");
+  DEFINE_BPP_HISTOGRAM(avif_density_7_mp_histogram, "07MP");
+  DEFINE_BPP_HISTOGRAM(avif_density_8_mp_histogram, "08MP");
+  DEFINE_BPP_HISTOGRAM(avif_density_9_mp_histogram, "09MP");
+  DEFINE_BPP_HISTOGRAM(avif_density_10_mp_histogram, "10MP");
+  DEFINE_BPP_HISTOGRAM(avif_density_11_mp_histogram, "11MP");
+  DEFINE_BPP_HISTOGRAM(avif_density_12_mp_histogram, "12MP");
+  DEFINE_BPP_HISTOGRAM(avif_density_13_mp_histogram, "13MP");
+  static CustomCountHistogram* const density_histogram_big[13] = {
+      &avif_density_1_mp_histogram,  &avif_density_2_mp_histogram,
+      &avif_density_3_mp_histogram,  &avif_density_4_mp_histogram,
+      &avif_density_5_mp_histogram,  &avif_density_6_mp_histogram,
+      &avif_density_7_mp_histogram,  &avif_density_8_mp_histogram,
+      &avif_density_9_mp_histogram,  &avif_density_10_mp_histogram,
+      &avif_density_11_mp_histogram, &avif_density_12_mp_histogram,
+      &avif_density_13_mp_histogram};
+
+  DEFINE_BPP_HISTOGRAM(avif_density_14plus_mp_histogram, "14+MP");
+
+#undef DEFINE_BPP_HISTOGRAM
+
+  uint64_t image_area = size.Area64();
+  CHECK_NE(image_area, 0u);
+  // The calculation of density_centi_bpp cannot overflow. SetSize() ensures
+  // that image_area won't overflow int32_t. And image_size_bytes must be much
+  // smaller than UINT64_MAX / (100 * 8), which is roughly 2^54, or 16 peta
+  // bytes.
+  base::CheckedNumeric<uint64_t> checked_image_size_bytes = image_size_bytes;
+  base::CheckedNumeric<uint64_t> density_centi_bpp =
+      (checked_image_size_bytes * 100 * 8 + image_area / 2) / image_area;
+
+  CustomCountHistogram* density_histogram;
+  if (image_area <= 900000) {
+    // One histogram per 0.1 MP.
+    int n = (static_cast<int>(image_area) + (100000 - 1)) / 100000;
+    density_histogram = density_histogram_small[n - 1];
+  } else if (image_area <= 13000000) {
+    // One histogram per 1 MP.
+    int n = (static_cast<int>(image_area) + (1000000 - 1)) / 1000000;
+    density_histogram = density_histogram_big[n - 1];
+  } else {
+    density_histogram = &avif_density_14plus_mp_histogram;
+  }
+
+  density_histogram->Count(base::saturated_cast<base::Histogram::Sample>(
+      density_centi_bpp.ValueOrDie()));
 }
 
 }  // namespace
@@ -1119,6 +1204,13 @@ bool AVIFImageDecoder::UpdateDemuxer() {
       // TODO(crbug.com/911246): Support color space transforms for YUV decodes.
       !ColorTransform();
 
+  // Record bpp information only for 8-bit, color, still images that do not have
+  // alpha.
+  if (container->depth == 8 && avif_yuv_format_ != AVIF_PIXEL_FORMAT_YUV400 &&
+      !decoder_->alphaPresent && decoded_frame_count_ == 1) {
+    update_bpp_histogram_callback_ = base::BindOnce(&UpdateBppHistogram);
+  }
+
   unsigned width = container->width;
   unsigned height = container->height;
   // If the image is cropped, pass the size of the cropped image (the clean
@@ -1191,10 +1283,16 @@ avifResult AVIFImageDecoder::DecodeImage(wtf_size_t index) {
     CropDecodedImage();
   }
 
-  if (ret == AVIF_RESULT_OK && clap_type_.has_value()) {
-    base::UmaHistogramEnumeration("Blink.ImageDecoders.Avif.CleanAperture",
-                                  clap_type_.value());
-    clap_type_.reset();
+  if (ret == AVIF_RESULT_OK) {
+    if (IsAllDataReceived() && !update_bpp_histogram_callback_.is_null()) {
+      std::move(update_bpp_histogram_callback_).Run(Size(), data_->size());
+    }
+
+    if (clap_type_.has_value()) {
+      base::UmaHistogramEnumeration("Blink.ImageDecoders.Avif.CleanAperture",
+                                    clap_type_.value());
+      clap_type_.reset();
+    }
   }
   return ret;
 }
