@@ -106,7 +106,7 @@ struct GFX_EXPORT TextRunHarfBuzz {
     Font::Weight weight = Font::Weight::NORMAL;
     int font_size = 0;
     int baseline_offset = 0;
-    int baseline_type = 0;
+    BaselineStyle baseline_type = BaselineStyle::kNormalBaseline;
     bool italic = false;
     bool strike = false;
     bool underline = false;

@@ -949,7 +949,7 @@ class GFX_EXPORT RenderText {
   // BreakList positions are stored with text indices, not display indices.
   // TODO(msw): Expand to support cursor, selection, background, etc. colors.
   BreakList<SkColor> colors_{kPlaceholderColor};
-  BreakList<BaselineStyle> baselines_{NORMAL_BASELINE};
+  BreakList<BaselineStyle> baselines_{BaselineStyle::kNormalBaseline};
   BreakList<int> font_size_overrides_{0};
   BreakList<Font::Weight> weights_{Font::Weight::NORMAL};
   internal::StyleArray styles_;

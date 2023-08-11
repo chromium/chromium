@@ -678,7 +678,8 @@ TEST_F(RenderTextTest, DefaultStyles) {
   const char16_t* const cases[] = {kWeak, kLtr, u"Hello", kRtl, u"", u""};
   for (size_t i = 0; i < std::size(cases); ++i) {
     EXPECT_TRUE(test_api()->colors().EqualsValueForTesting(kPlaceholderColor));
-    EXPECT_TRUE(test_api()->baselines().EqualsValueForTesting(NORMAL_BASELINE));
+    EXPECT_TRUE(test_api()->baselines().EqualsValueForTesting(
+        BaselineStyle::kNormalBaseline));
     EXPECT_TRUE(test_api()->font_size_overrides().EqualsValueForTesting(0));
     for (size_t style = 0; style < static_cast<int>(TEXT_STYLE_COUNT); ++style)
       EXPECT_TRUE(test_api()->styles()[style].EqualsValueForTesting(false));
@@ -691,13 +692,14 @@ TEST_F(RenderTextTest, SetStyles) {
   RenderText* render_text = GetRenderText();
   const SkColor color = SK_ColorGREEN;
   render_text->SetColor(color);
-  render_text->SetBaselineStyle(SUPERSCRIPT);
+  render_text->SetBaselineStyle(BaselineStyle::kSuperscript);
   render_text->SetWeight(Font::Weight::BOLD);
   render_text->SetStyle(TEXT_STYLE_UNDERLINE, false);
   const char16_t* const cases[] = {kWeak, kLtr, u"Hello", kRtl, u"", u""};
   for (size_t i = 0; i < std::size(cases); ++i) {
     EXPECT_TRUE(test_api()->colors().EqualsValueForTesting(color));
-    EXPECT_TRUE(test_api()->baselines().EqualsValueForTesting(SUPERSCRIPT));
+    EXPECT_TRUE(test_api()->baselines().EqualsValueForTesting(
+        BaselineStyle::kSuperscript));
     EXPECT_TRUE(
         test_api()->weights().EqualsValueForTesting(Font::Weight::BOLD));
     EXPECT_TRUE(
@@ -722,7 +724,7 @@ TEST_F(RenderTextTest, ApplyStyles) {
 
   // Apply a ranged color and style and check the resulting breaks.
   render_text->ApplyColor(SK_ColorGREEN, Range(1, 4));
-  render_text->ApplyBaselineStyle(SUPERIOR, Range(2, 4));
+  render_text->ApplyBaselineStyle(BaselineStyle::kSuperior, Range(2, 4));
   render_text->ApplyWeight(Font::Weight::BOLD, Range(2, 5));
   render_text->ApplyFontSizeOverride(kTestFontSizeOverride, Range(5, 7));
 
@@ -730,7 +732,9 @@ TEST_F(RenderTextTest, ApplyStyles) {
       {{0, kPlaceholderColor}, {1, SK_ColorGREEN}, {4, kPlaceholderColor}}));
 
   EXPECT_TRUE(test_api()->baselines().EqualsForTesting(
-      {{0, NORMAL_BASELINE}, {2, SUPERIOR}, {4, NORMAL_BASELINE}}));
+      {{0, BaselineStyle::kNormalBaseline},
+       {2, BaselineStyle::kSuperior},
+       {4, BaselineStyle::kNormalBaseline}}));
 
   EXPECT_TRUE(test_api()->font_size_overrides().EqualsForTesting(
       {{0, 0}, {5, kTestFontSizeOverride}, {7, 0}}));
@@ -743,8 +747,9 @@ TEST_F(RenderTextTest, ApplyStyles) {
   // Ensure that setting a value overrides the ranged values.
   render_text->SetColor(SK_ColorBLUE);
   EXPECT_TRUE(test_api()->colors().EqualsValueForTesting(SK_ColorBLUE));
-  render_text->SetBaselineStyle(SUBSCRIPT);
-  EXPECT_TRUE(test_api()->baselines().EqualsValueForTesting(SUBSCRIPT));
+  render_text->SetBaselineStyle(BaselineStyle::kSubscript);
+  EXPECT_TRUE(
+      test_api()->baselines().EqualsValueForTesting(BaselineStyle::kSubscript));
   render_text->SetWeight(Font::Weight::NORMAL);
   EXPECT_TRUE(
       test_api()->weights().EqualsValueForTesting(Font::Weight::NORMAL));
@@ -753,11 +758,13 @@ TEST_F(RenderTextTest, ApplyStyles) {
   // should be used instead of the text length for the range end)
   const size_t text_length = render_text->text().length();
   render_text->ApplyColor(SK_ColorGREEN, Range(0, text_length));
-  render_text->ApplyBaselineStyle(SUPERIOR, Range(0, text_length));
+  render_text->ApplyBaselineStyle(BaselineStyle::kSuperior,
+                                  Range(0, text_length));
   render_text->ApplyWeight(Font::Weight::BOLD, Range(2, text_length));
 
   EXPECT_TRUE(test_api()->colors().EqualsForTesting({{0, SK_ColorGREEN}}));
-  EXPECT_TRUE(test_api()->baselines().EqualsForTesting({{0, SUPERIOR}}));
+  EXPECT_TRUE(test_api()->baselines().EqualsForTesting(
+      {{0, BaselineStyle::kSuperior}}));
   EXPECT_TRUE(test_api()->weights().EqualsForTesting(
       {{0, Font::Weight::NORMAL}, {2, Font::Weight::BOLD}}));
 
@@ -988,7 +995,7 @@ TEST_F(RenderTextTest, AppendTextKeepsStyles) {
   // Setup basic functionality.
   render_text->SetText(u"abcd");
   render_text->ApplyColor(SK_ColorGREEN, Range(0, 1));
-  render_text->ApplyBaselineStyle(SUPERSCRIPT, Range(1, 2));
+  render_text->ApplyBaselineStyle(BaselineStyle::kSuperscript, Range(1, 2));
   render_text->ApplyStyle(TEXT_STYLE_UNDERLINE, true, Range(2, 3));
   render_text->ApplyFontSizeOverride(20, Range(3, 4));
   // Verify basic functionality.
@@ -996,7 +1003,9 @@ TEST_F(RenderTextTest, AppendTextKeepsStyles) {
       {0, SK_ColorGREEN}, {1, kPlaceholderColor}};
   EXPECT_TRUE(test_api()->colors().EqualsForTesting(expected_color));
   const std::vector<std::pair<size_t, BaselineStyle>> expected_baseline = {
-      {0, NORMAL_BASELINE}, {1, SUPERSCRIPT}, {2, NORMAL_BASELINE}};
+      {0, BaselineStyle::kNormalBaseline},
+      {1, BaselineStyle::kSuperscript},
+      {2, BaselineStyle::kNormalBaseline}};
   EXPECT_TRUE(test_api()->baselines().EqualsForTesting(expected_baseline));
   const std::vector<std::pair<size_t, bool>> expected_style = {
       {0, false}, {2, true}, {3, false}};
@@ -7434,10 +7443,10 @@ TEST_F(RenderTextTest, DISABLED_TextDoesntClip) {
   for (auto* string : kTestStrings) {
     paint_canvas.clear(SkColors::kWhite);
     render_text->SetText(base::UTF8ToUTF16(string));
-    render_text->ApplyBaselineStyle(SUPERSCRIPT, Range(1, 2));
-    render_text->ApplyBaselineStyle(SUPERIOR, Range(3, 4));
-    render_text->ApplyBaselineStyle(INFERIOR, Range(5, 6));
-    render_text->ApplyBaselineStyle(SUBSCRIPT, Range(7, 8));
+    render_text->ApplyBaselineStyle(BaselineStyle::kSuperscript, Range(1, 2));
+    render_text->ApplyBaselineStyle(BaselineStyle::kSuperior, Range(3, 4));
+    render_text->ApplyBaselineStyle(BaselineStyle::kInferior, Range(5, 6));
+    render_text->ApplyBaselineStyle(BaselineStyle::kSubscript, Range(7, 8));
     const Size string_size = render_text->GetStringSize();
     render_text->SetWeight(Font::Weight::BOLD);
     render_text->SetDisplayRect(
