@@ -12,7 +12,6 @@ import android.view.ViewGroup;
 import android.view.ViewPropertyAnimator;
 import android.view.ViewTreeObserver;
 
-import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.ObserverList;
@@ -27,15 +26,12 @@ import org.chromium.chrome.browser.customtabs.content.TabCreationMode;
 import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar;
 import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar.CustomTabTabObserver;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.lifecycle.InflationObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.url.GURL;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.lang.reflect.Method;
 
 import javax.inject.Inject;
@@ -71,15 +67,6 @@ public class SplashController
         }
     };
 
-    @IntDef({TranslucencyRemoval.NONE, TranslucencyRemoval.ON_SPLASH_SHOWN,
-            TranslucencyRemoval.ON_SPLASH_HIDDEN})
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface TranslucencyRemoval {
-        int NONE = 0;
-        int ON_SPLASH_SHOWN = 1;
-        int ON_SPLASH_HIDDEN = 2;
-    }
-
     private final Activity mActivity;
     private final ActivityLifecycleDispatcher mLifecycleDispatcher;
     private final TabObserverRegistrar mTabObserverRegistrar;
@@ -101,9 +88,6 @@ public class SplashController
     /** The duration of the splash hide animation. */
     private long mSplashHideAnimationDurationMs;
 
-    /** Indicates when translucency should be removed. */
-    private @TranslucencyRemoval int mTranslucencyRemovalStrategy;
-
     private boolean mDidPreInflationStartup;
 
     /** Whether the splash hide animation was started. */
@@ -111,6 +95,9 @@ public class SplashController
 
     /** Time that the splash screen was shown. */
     private long mSplashShownTimestamp;
+
+    /** Indicates whether translucency should be removed. */
+    private boolean mIsWindowInitiallyTranslucent;
 
     /** Whether translucency was removed. */
     private boolean mRemovedTranslucency;
@@ -127,17 +114,14 @@ public class SplashController
         mLifecycleDispatcher = lifecycleDispatcher;
         mTabObserverRegistrar = tabObserverRegistrar;
         mObservers = new ObserverList<>();
-        mTranslucencyRemovalStrategy = TranslucencyRemoval.NONE;
         mFinishHandler = finishHandler;
         mTabProvider = tabProvider;
         mCompositorViewHolder = compositorViewHolder;
 
-        boolean isWindowInitiallyTranslucent =
+        mIsWindowInitiallyTranslucent =
                 BaseCustomTabActivity.isWindowInitiallyTranslucent(activity);
-        mTranslucencyRemovalStrategy =
-                computeTranslucencyRemovalStrategy(isWindowInitiallyTranslucent);
 
-        orientationController.delayOrientationRequestsIfNeeded(this, isWindowInitiallyTranslucent);
+        orientationController.delayOrientationRequestsIfNeeded(this, mIsWindowInitiallyTranslucent);
 
         mLifecycleDispatcher.register(this);
         mTabObserverRegistrar.registerActivityTabObserver(this);
@@ -182,10 +166,6 @@ public class SplashController
 
     @Override
     public void onPostInflationStartup() {
-        if (mTranslucencyRemovalStrategy == TranslucencyRemoval.ON_SPLASH_SHOWN) {
-            // In rare cases I see toolbar flickering. TODO(pshmakov): investigate why.
-            mActivity.findViewById(R.id.coordinator).setVisibility(View.INVISIBLE);
-        }
         bringSplashBackToFront();
     }
 
@@ -239,7 +219,7 @@ public class SplashController
         if (mSplashView == null) {
             mTabObserverRegistrar.unregisterActivityTabObserver(this);
             mLifecycleDispatcher.unregister(this);
-            if (mTranslucencyRemovalStrategy != TranslucencyRemoval.NONE) {
+            if (mIsWindowInitiallyTranslucent) {
                 removeTranslucency();
             }
             return;
@@ -250,37 +230,10 @@ public class SplashController
 
         recordTraceEventsShowedSplash();
 
-        if (mTranslucencyRemovalStrategy == TranslucencyRemoval.ON_SPLASH_SHOWN) {
-            // Without swapping the pixel format, removing translucency is only safe before
-            // SurfaceView is attached.
-            removeTranslucency();
-        }
-
         // If the client's activity is opaque, finishing the activities one after another may lead
         // to bottom activity showing itself in a short flash. The problem can be solved by bottom
         // activity killing the whole task.
         mFinishHandler.setShouldAttemptFinishingTask(true);
-    }
-
-    private static @TranslucencyRemoval int computeTranslucencyRemovalStrategy(
-            boolean isWindowInitiallyTranslucent) {
-        if (!isWindowInitiallyTranslucent) return TranslucencyRemoval.NONE;
-
-        // Activity#convertFromTranslucent() incorrectly makes the Window opaque when a surface view
-        // is attached. This is fixed in http://b/126897750#comment14 The bug causes the SurfaceView
-        // to become black. We need to manually swap the pixel format to restore it. When hardware
-        // acceleration is disabled, swapping the pixel format causes the surface to get recreated.
-        // A bug fix in Android N preserves the old surface till the new one is drawn.
-        //
-        // Removing translucency is important for performance, otherwise the windows under Chrome
-        // will continue being drawn (e.g. launcher with wallpaper). Without removing translucency,
-        // we also see visual glitches in the following cases:
-        // - closing activity (example: https://crbug.com/856544#c41)
-        // - send activity to the background (example: https://crbug.com/856544#c30)
-        if (ChromeFeatureList.sSwapPixelFormatToFixConvertFromTranslucent.isEnabled()) {
-            return TranslucencyRemoval.ON_SPLASH_HIDDEN;
-        }
-        return TranslucencyRemoval.ON_SPLASH_SHOWN;
     }
 
     private boolean canHideSplashScreen() {
@@ -293,8 +246,7 @@ public class SplashController
             return;
         }
 
-        if (mTranslucencyRemovalStrategy == TranslucencyRemoval.ON_SPLASH_HIDDEN
-                && !mRemovedTranslucency) {
+        if (mIsWindowInitiallyTranslucent && !mRemovedTranslucency) {
             removeTranslucency();
 
             // Activity#convertFromTranslucent() incorrectly makes the Window opaque -
@@ -320,6 +272,12 @@ public class SplashController
     }
 
     private void removeTranslucency() {
+        // Removing translucency is important for performance, otherwise the windows under Chrome
+        // will continue being drawn (e.g. launcher with wallpaper). Without removing translucency,
+        // we also see visual glitches in the following cases:
+        // - closing activity (example: https://crbug.com/856544#c41)
+        // - send activity to the background (example: https://crbug.com/856544#c30)
+
         mRemovedTranslucency = true;
 
         // Removing the temporary translucency, so that underlying windows don't get drawn.

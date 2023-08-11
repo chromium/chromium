@@ -438,8 +438,6 @@ public abstract class ChromeFeatureList {
     public static final String SUGGESTION_ANSWERS_COLOR_REVERSE = "SuggestionAnswersColorReverse";
     public static final String SUPPRESS_TOOLBAR_CAPTURES = "SuppressToolbarCaptures";
     public static final String SURFACE_POLISH = "SurfacePolish";
-    public static final String SWAP_PIXEL_FORMAT_TO_FIX_CONVERT_FROM_TRANSLUCENT =
-            "SwapPixelFormatToFixConvertFromTranslucent";
     public static final String SYNC_ANDROID_LIMIT_NTP_PROMO_IMPRESSIONS =
             "SyncAndroidLimitNTPPromoImpressions";
     public static final String SYNC_ENABLE_HISTORY_DATA_TYPE = "SyncEnableHistoryDataType";
@@ -588,10 +586,6 @@ public abstract class ChromeFeatureList {
             new CachedFlag(START_SURFACE_WITH_ACCESSIBILITY, false);
     public static final CachedFlag sStoreHoursAndroid = new CachedFlag(STORE_HOURS, false);
     public static final CachedFlag sSurfacePolish = new CachedFlag(SURFACE_POLISH, false);
-    public static final CachedFlag sSwapPixelFormatToFixConvertFromTranslucent = new CachedFlag(
-            SWAP_PIXEL_FORMAT_TO_FIX_CONVERT_FROM_TRANSLUCENT,
-            ChromePreferenceKeys.FLAGS_CACHED_SWAP_PIXEL_FORMAT_TO_FIX_CONVERT_FROM_TRANSLUCENT,
-            true);
     public static final CachedFlag sTabDragDropAndroid =
             new CachedFlag(TAB_DRAG_DROP_ANDROID, false);
     public static final CachedFlag sTabGroupsAndroid = new CachedFlag(
@@ -672,7 +666,6 @@ public abstract class ChromeFeatureList {
         sStartSurfaceWithAccessibility,
         sStoreHoursAndroid,
         sSurfacePolish,
-        sSwapPixelFormatToFixConvertFromTranslucent,
         sTabDragDropAndroid,
         sTabGroupsAndroid,
         sTabGroupsContinuationAndroid,

@@ -302,7 +302,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kSuppressToolbarCaptures,
     &kSplitCompositorTask,
     &kStoreHoursAndroid,
-    &kSwapPixelFormatToFixConvertFromTranslucent,
     &kTabDragDropAndroid,
     &kTabAndLinkDragDropAndroid,
     &kTabEngagementReportingAndroid,
@@ -993,10 +992,6 @@ BASE_FEATURE(kStoreHoursAndroid,
 
 BASE_FEATURE(kSuppressToolbarCaptures,
              "SuppressToolbarCaptures",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kSwapPixelFormatToFixConvertFromTranslucent,
-             "SwapPixelFormatToFixConvertFromTranslucent",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTabDragDropAndroid,

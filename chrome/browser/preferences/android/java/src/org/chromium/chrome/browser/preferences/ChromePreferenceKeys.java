@@ -351,11 +351,6 @@ public final class ChromePreferenceKeys {
     public static final String FLAGS_CACHED_START_SURFACE_ENABLED = "start_surface_enabled";
 
     /**
-     * Key to cache whether SWAP_PIXEL_FORMAT_TO_FIX_CONVERT_FROM_TRANSLUCENT is enabled.
-     */
-    public static final String FLAGS_CACHED_SWAP_PIXEL_FORMAT_TO_FIX_CONVERT_FROM_TRANSLUCENT =
-            "swap_pixel_format_to_fix_convert_from_translucent";
-    /**
      * Whether or not the tab group is enabled.
      * Default value is false.
      */
