@@ -16,7 +16,7 @@
     flex: 1;
   }
 </style>
-<div class="list-item">
+<div class="list-item" id="listItem">
   <div class="settings-row">
     <site-favicon url="[[model.faviconOrigin]]"></site-favicon>
     <div class="middle" id="displayName">
@@ -34,8 +34,7 @@
         icon-aria-label="$i18n{incognitoSiteExceptionDesc}"
         icon-class="settings20:incognito"
         focus-type="incognito"
-        tooltip-text="$i18n{incognitoSiteExceptionDesc}"
-        focus-row-control focus-type="incognito">
+        tooltip-text="$i18n{incognitoSiteExceptionDesc}">
     </cr-tooltip-icon>
   </template>
   <!-- Trash can icon. -->
@@ -43,8 +42,7 @@
     <div class="separator"></div>
     <cr-icon-button id="resetButton"
         aria-label$="[[model.resetAriaLabel]]"
-        class="icon-delete-gray" on-click="onResetButtonClick_"
-        focus-row-control focus-type="reset">
+        class="icon-delete-gray" on-click="onResetButtonClick_">
     </cr-icon-button>
   </div>
 </div>

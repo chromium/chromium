@@ -30,7 +30,7 @@
     --cr-section-vertical-padding: 0;
   }
 </style>
-<div id="collapseParent" focus-row-container>
+<div id="collapseParent">
   <!-- Static row, only if the exception applies to all domains, '*'. -->
   <template is="dom-if" if="[[shouldBeStatic_(model.*)]]" restamp>
     <storage-access-static-site-list-entry
@@ -42,8 +42,7 @@
     <div class="list-item">
       <!-- Top row of the collapsible component that represents an origin. -->
       <cr-expand-button id="expandButton" no-hover expanded="{{expanded_}}"
-          aria-label$="[[expandAriaLabel_]]"
-          focus-row-control focus-type="embedded-site">
+          aria-label$="[[expandAriaLabel_]]">
         <div class="settings-row">
           <site-favicon url="[[model.origin]]"></site-favicon>
           <div class="middle" id="displayName">
@@ -59,8 +58,7 @@
         <div class="separator"></div>
         <cr-icon-button id="resetAllButton" class="icon-delete-gray"
             aria-label$="[[getResetAllButtonAriaLabel_(model.*)]]"
-            on-click="onResetAllButtonClick_"
-            focus-row-control focus-type="reset-all">
+            on-click="onResetAllButtonClick_">
         </cr-icon-button>
       </div>
     </div>
