@@ -17,6 +17,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/timer/timer.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/context_menu_controller.h"
 
@@ -338,6 +339,11 @@ class ASH_EXPORT TrayBackgroundView : public ActionableView,
   void AddRippleLayer();
   void RemoveRippleLayer();
 
+  // Start playing the pulse animation on button. ONLY called in
+  // `StartPulseAnimation()` when all layers are ready.
+  void PlayPulseAnimation();
+  void StartPulseAnimationCoolDownTimer();
+
   // The shelf containing the system tray for this view.
   raw_ptr<Shelf, ExperimentalAsh> shelf_;
 
@@ -352,6 +358,7 @@ class ASH_EXPORT TrayBackgroundView : public ActionableView,
   // The handle to abort ripple and pulse animation.
   std::unique_ptr<views::AnimationAbortHandle>
       ripple_and_pulse_animation_abort_handle_;
+  base::OneShotTimer pulse_animation_cool_down_timer_;
 
   // Determines if the view is active. This changes how  the ink drop ripples
   // behave.
