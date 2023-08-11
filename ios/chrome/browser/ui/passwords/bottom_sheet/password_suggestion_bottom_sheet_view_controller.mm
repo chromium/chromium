@@ -99,25 +99,21 @@
   }
 }
 
+- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
+  [super traitCollectionDidChange:previousTraitCollection];
+
+  if (self.traitCollection.preferredContentSizeCategory !=
+      previousTraitCollection.preferredContentSizeCategory) {
+    [self updateHeightConstraints];
+  }
+}
+
 - (void)viewIsAppearing:(BOOL)animated {
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 170000
   [super viewIsAppearing:animated];
 #endif
 
-  if (_suggestions.count) {
-    [self.view layoutIfNeeded];
-    // Update height constraints for the table view.
-    CGFloat fullHeight =
-        [self computeTableViewHeightForCellCount:_suggestions.count];
-    if (fullHeight > 0) {
-      _fullHeightConstraint.constant = fullHeight;
-    }
-    CGFloat minimizedHeight = [self
-        computeTableViewHeightForCellCount:[self initialNumberOfVisibleCells]];
-    if (minimizedHeight > 0) {
-      _minimizedHeightConstraint.constant = minimizedHeight;
-    }
-  }
+  [self updateHeightConstraints];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -387,6 +383,24 @@
     height += cellHeight;
   }
   return height;
+}
+
+// Updates the bottom sheet's height constraints.
+- (void)updateHeightConstraints {
+  if (_suggestions.count) {
+    [self.view layoutIfNeeded];
+    // Update height constraints for the table view.
+    CGFloat fullHeight =
+        [self computeTableViewHeightForCellCount:_suggestions.count];
+    if (fullHeight > 0) {
+      _fullHeightConstraint.constant = fullHeight;
+    }
+    CGFloat minimizedHeight = [self
+        computeTableViewHeightForCellCount:[self initialNumberOfVisibleCells]];
+    if (minimizedHeight > 0) {
+      _minimizedHeightConstraint.constant = minimizedHeight;
+    }
+  }
 }
 
 // Layouts the cell for the table view with the password form suggestion at the

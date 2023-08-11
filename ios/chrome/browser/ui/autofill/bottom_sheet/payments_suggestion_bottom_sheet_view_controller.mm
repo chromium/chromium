@@ -130,6 +130,11 @@ NSString* const kCustomDetentIdentifier = @"customDetent";
     // Make sure the GPay logo matches the new trait collection.
     self.image = [self titleImage];
   }
+
+  if (self.traitCollection.preferredContentSizeCategory !=
+      previousTraitCollection.preferredContentSizeCategory) {
+    [self updateHeight];
+  }
 }
 
 - (void)viewIsAppearing:(BOOL)animated {
