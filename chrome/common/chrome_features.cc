@@ -109,6 +109,11 @@ BASE_FEATURE(kBackgroundModeAllowRestart,
 BASE_FEATURE(kBorealis, "Borealis", base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+// Enables cco test1.
+BASE_FEATURE(kCcoTest1, "CcoTest1", base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 // Enables change picture video mode.
 BASE_FEATURE(kChangePictureVideoMode,
              "ChangePictureVideoMode",

@@ -1058,6 +1058,11 @@
     "expiry_milestone": 140
   },
   {
+    "name": "cco-test1",
+    "owners": [ "petewil", "sky" ],
+    "expiry_milestone": 121
+  },
+  {
     "name": "cct-brand-transparency",
     "owners": [ "wenyufu" ],
     "expiry_milestone": 117

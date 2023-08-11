@@ -801,6 +801,10 @@ const char kServiceWorkerStaticRouterDescription[] =
 const char kCameraMicPreviewName[] = "Camera and Mic Preview";
 const char kCameraMicPreviewDescription[] =
     "Enables camera and mic preview in permission bubble and site settings.";
+
+const char kCcoTest1Name[] = "Cco Test1";
+const char kCcoTest1Description[] = "Enables cco test 1";
+
 #endif
 
 const char kChromeLabsName[] = "Chrome Labs";

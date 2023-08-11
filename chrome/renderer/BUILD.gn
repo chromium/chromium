@@ -472,4 +472,10 @@ static_library("renderer") {
       ]
     }
   }
+  if (!is_android && !is_chromeos) {
+    sources += [
+      "cco/multiline_detector.cc",
+      "cco/multiline_detector.h",
+    ]
+  }
 }
