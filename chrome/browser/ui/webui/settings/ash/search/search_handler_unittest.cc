@@ -7,9 +7,10 @@
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/ui/webui/settings/ash/fake_hierarchy.h"
 #include "chrome/browser/ui/webui/settings/ash/fake_os_settings_sections.h"
-#include "chrome/browser/ui/webui/settings/ash/search/mojom/search.mojom-test-utils.h"
+#include "chrome/browser/ui/webui/settings/ash/search/mojom/search.mojom.h"
 #include "chrome/browser/ui/webui/settings/ash/search/search_tag_registry.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/grit/generated_resources.h"
@@ -134,6 +135,16 @@ class SearchHandlerTest : public testing::Test {
     updater.RemoveSearchTags(search_tags);
   }
 
+  std::vector<mojom::SearchResultPtr> Search(
+      const std::u16string& query,
+      uint32_t max_num_results,
+      mojom::ParentResultBehavior parent_result_behavior) {
+    base::test::TestFuture<std::vector<mojom::SearchResultPtr>> future;
+    handler_remote_->Search(query, max_num_results, parent_result_behavior,
+                            future.GetCallback());
+    return future.Take();
+  }
+
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<local_search_service::LocalSearchServiceProxy>
       local_search_service_proxy_ =
@@ -157,37 +168,33 @@ TEST_F(SearchHandlerTest, AddAndRemove) {
   std::vector<mojom::SearchResultPtr> search_results;
 
   // 3 results should be available for a "Print" query.
-  mojom::SearchHandlerAsyncWaiter(handler_remote_.get())
-      .Search(u"Print",
-              /*max_num_results=*/3u,
-              mojom::ParentResultBehavior::kDoNotIncludeParentResults,
-              &search_results);
+  search_results =
+      Search(u"Print",
+             /*max_num_results=*/3u,
+             mojom::ParentResultBehavior::kDoNotIncludeParentResults);
   EXPECT_EQ(search_results.size(), 3u);
 
   // Limit results to 1 max and ensure that only 1 result is returned.
-  mojom::SearchHandlerAsyncWaiter(handler_remote_.get())
-      .Search(u"Print",
-              /*max_num_results=*/1u,
-              mojom::ParentResultBehavior::kDoNotIncludeParentResults,
-              &search_results);
+  search_results =
+      Search(u"Print",
+             /*max_num_results=*/1u,
+             mojom::ParentResultBehavior::kDoNotIncludeParentResults);
   EXPECT_EQ(search_results.size(), 1u);
 
   // Search for a query which should return no results.
-  mojom::SearchHandlerAsyncWaiter(handler_remote_.get())
-      .Search(u"QueryWithNoResults",
-              /*max_num_results=*/3u,
-              mojom::ParentResultBehavior::kDoNotIncludeParentResults,
-              &search_results);
+  search_results =
+      Search(u"QueryWithNoResults",
+             /*max_num_results=*/3u,
+             mojom::ParentResultBehavior::kDoNotIncludeParentResults);
   EXPECT_TRUE(search_results.empty());
 
   // Remove printing search tags to registry and verify that no results are
   // returned for "Printing".
   RemoveSearchTags(GetPrintingSearchConcepts());
-  mojom::SearchHandlerAsyncWaiter(handler_remote_.get())
-      .Search(u"Print",
-              /*max_num_results=*/3u,
-              mojom::ParentResultBehavior::kDoNotIncludeParentResults,
-              &search_results);
+  search_results =
+      Search(u"Print",
+             /*max_num_results=*/3u,
+             mojom::ParentResultBehavior::kDoNotIncludeParentResults);
   EXPECT_TRUE(search_results.empty());
   EXPECT_EQ(2u, observer_.num_calls());
 }
@@ -195,12 +202,10 @@ TEST_F(SearchHandlerTest, AddAndRemove) {
 TEST_F(SearchHandlerTest, UrlModification) {
   // Add printing search tags to registry and search for "Saved".
   AddSearchTags(GetPrintingSearchConcepts());
-  std::vector<mojom::SearchResultPtr> search_results;
-  mojom::SearchHandlerAsyncWaiter(handler_remote_.get())
-      .Search(u"Saved",
-              /*max_num_results=*/3u,
-              mojom::ParentResultBehavior::kDoNotIncludeParentResults,
-              &search_results);
+  std::vector<mojom::SearchResultPtr> search_results =
+      Search(u"Saved",
+             /*max_num_results=*/3u,
+             mojom::ParentResultBehavior::kDoNotIncludeParentResults);
 
   // Only the "saved printers" item should be returned.
   EXPECT_EQ(search_results.size(), 1u);
@@ -214,16 +219,14 @@ TEST_F(SearchHandlerTest, UrlModification) {
 TEST_F(SearchHandlerTest, AltTagMatch) {
   // Add printing search tags to registry.
   AddSearchTags(GetPrintingSearchConcepts());
-  std::vector<mojom::SearchResultPtr> search_results;
 
   // Search for "CUPS". The IDS_OS_SETTINGS_TAG_PRINTING result has an alternate
   // tag "CUPS" (referring to the Unix printing protocol), so we should receive
   // one match.
-  mojom::SearchHandlerAsyncWaiter(handler_remote_.get())
-      .Search(u"CUPS",
-              /*max_num_results=*/3u,
-              mojom::ParentResultBehavior::kDoNotIncludeParentResults,
-              &search_results);
+  std::vector<mojom::SearchResultPtr> search_results =
+      Search(u"CUPS",
+             /*max_num_results=*/3u,
+             mojom::ParentResultBehavior::kDoNotIncludeParentResults);
   EXPECT_EQ(search_results.size(), 1u);
 
   // Verify the result text and canonical restult text.
@@ -236,16 +239,13 @@ TEST_F(SearchHandlerTest, AltTagMatch) {
 TEST_F(SearchHandlerTest, AllowParentResult) {
   // Add printing search tags to registry.
   AddSearchTags(GetPrintingSearchConcepts());
-  std::vector<mojom::SearchResultPtr> search_results;
 
   // Search for "Saved", which should only apply to the "saved printers" item.
   // Pass the kAllowParentResults flag, which should also cause its parent
   // subpage item to be returned.
-  mojom::SearchHandlerAsyncWaiter(handler_remote_.get())
-      .Search(u"Saved",
-              /*max_num_results=*/3u,
-              mojom::ParentResultBehavior::kAllowParentResults,
-              &search_results);
+  std::vector<mojom::SearchResultPtr> search_results = Search(
+      u"Saved",
+      /*max_num_results=*/3u, mojom::ParentResultBehavior::kAllowParentResults);
   EXPECT_EQ(search_results.size(), 2u);
   EXPECT_FALSE(search_results[1]->was_generated_from_text_match);
 }
@@ -253,16 +253,13 @@ TEST_F(SearchHandlerTest, AllowParentResult) {
 TEST_F(SearchHandlerTest, DefaultRank) {
   // Add printing search tags to registry.
   AddSearchTags(GetPrintingSearchConcepts());
-  std::vector<mojom::SearchResultPtr> search_results;
 
   // Search for "Print". Only the IDS_OS_SETTINGS_TAG_PRINTING result
   // contains the word "Printing", but the other results have the similar word
   // "Printer". Thus, "Printing" has a higher relevance score.
-  mojom::SearchHandlerAsyncWaiter(handler_remote_.get())
-      .Search(u"Print",
-              /*max_num_results=*/3u,
-              mojom::ParentResultBehavior::kAllowParentResults,
-              &search_results);
+  std::vector<mojom::SearchResultPtr> search_results = Search(
+      u"Print",
+      /*max_num_results=*/3u, mojom::ParentResultBehavior::kAllowParentResults);
   EXPECT_EQ(search_results.size(), 3u);
 
   // Since the IDS_OS_SETTINGS_TAG_PRINTING result has a default rank of kLow,
