@@ -270,6 +270,9 @@ class ProducerEndpoint : public perfetto::ProducerEndpoint,
           this, producer_task_runner);
     }
 
+    shared_memory_arbiter_->SetDirectSMBPatchingSupportedByService();
+    shared_memory_arbiter_->EnableDirectSMBPatching();
+
     mojo::PendingRemote<mojom::ProducerClient> client_remote;
     mojo::PendingRemote<mojom::ProducerHost> host_remote;
     auto client_receiver = client_remote.InitWithNewPipeAndPassReceiver();
