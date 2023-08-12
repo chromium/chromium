@@ -6,10 +6,8 @@
 #define ASH_CAPTURE_MODE_CAPTURE_WINDOW_OBSERVER_H_
 
 #include "ash/ash_export.h"
-#include "ash/capture_mode/capture_mode_types.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/aura/window_observer.h"
-#include "ui/base/cursor/cursor.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/wm/public/activation_change_observer.h"

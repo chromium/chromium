@@ -57,6 +57,7 @@
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_test_util.h"
 #include "ash/wm/overview/overview_controller.h"
+#include "ash/wm/overview/overview_item.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
@@ -70,8 +71,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
-#include "base/scoped_observation.h"
-#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -107,14 +106,12 @@
 #include "ui/gfx/geometry/dip_util.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/gfx/native_widget_types.h"
-#include "ui/message_center/message_center.h"
-#include "ui/message_center/message_center_observer.h"
 #include "ui/message_center/public/cpp/notification.h"
-#include "ui/message_center/public/cpp/notification_delegate.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
@@ -2552,6 +2549,36 @@ TEST_F(CaptureModeTest, OnlyAdvanceFocusWhenTabShiftPressed) {
           ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN);
   EXPECT_EQ(window_util::GetActiveWindow(), window1.get());
   EXPECT_EQ(FocusGroup::kTypeSource, test_api.GetCurrentFocusGroup());
+}
+
+// Tests that the capture region will be refreshed if in overview to reflect the
+// bounds of the overview item for this window in `kWindow` mode.
+TEST_F(CaptureModeTest, RefreshCaptureRegionInOverviewForKWindow) {
+  auto window = CreateAppWindow(gfx::Rect(100, 50, 200, 200));
+  auto* controller =
+      StartCaptureSession(CaptureModeSource::kWindow, CaptureModeType::kImage);
+  auto* session = controller->capture_mode_session();
+
+  auto* event_generator = GetEventGenerator();
+  event_generator->MoveMouseToCenterOf(window.get());
+  gfx::Rect capture_region = session->GetCaptureSurfaceConfineBounds();
+  wm::ConvertRectToScreen(session->GetSelectedWindow(), &capture_region);
+  EXPECT_EQ(capture_region, window->GetBoundsInScreen());
+
+  // Start overview and verify that the capture region is refreshed correctly.
+  auto* overview_controller = Shell::Get()->overview_controller();
+  overview_controller->StartOverview(OverviewStartAction::kTests);
+  ASSERT_TRUE(overview_controller->InOverviewSession());
+  OverviewItem* overview_item =
+      overview_controller->overview_session()->GetOverviewItemForWindow(
+          window.get());
+  const auto target_bounds = overview_item->target_bounds();
+  event_generator->MoveMouseTo(
+      gfx::ToRoundedPoint(target_bounds.CenterPoint()));
+  auto capture_region_in_overview = session->GetCaptureSurfaceConfineBounds();
+  wm::ConvertRectToScreen(overview_item->item_widget()->GetNativeWindow(),
+                          &capture_region_in_overview);
+  EXPECT_EQ(capture_region_in_overview, gfx::ToRoundedRect(target_bounds));
 }
 
 class CaptureModeSaveFileTest

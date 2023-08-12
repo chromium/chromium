@@ -5,7 +5,6 @@
 #include "ash/capture_mode/capture_mode_session.h"
 
 #include <memory>
-#include <tuple>
 #include <utility>
 
 #include "ash/accessibility/accessibility_controller_impl.h"
@@ -36,13 +35,13 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/utility/cursor_setter.h"
-#include "ash/wm/mru_window_tracker.h"
+#include "ash/wm/overview/overview_controller.h"
+#include "ash/wm/overview/overview_item.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_dimmer.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "cc/paint/paint_flags.h"
@@ -62,12 +61,12 @@
 #include "ui/compositor/paint_recorder.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/display/screen.h"
-#include "ui/display/types/display_constants.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/gfx/shadow_value.h"
@@ -941,9 +940,7 @@ gfx::Rect CaptureModeSession::GetCaptureSurfaceConfineBounds() const {
           .work_area();
     }
     case CaptureModeSource::kWindow: {
-      aura::Window* selected_window = GetSelectedWindow();
-      return selected_window ? gfx::Rect(selected_window->bounds().size())
-                             : gfx::Rect();
+      return gfx::Rect(GetSelectedWindowBounds().size());
     }
     case CaptureModeSource::kRegion: {
       gfx::Rect capture_region = controller->user_capture_region();
@@ -1724,7 +1721,24 @@ void CaptureModeSession::OnRecordingTypeDropDownButtonPressed(
 
 gfx::Rect CaptureModeSession::GetSelectedWindowBounds() const {
   auto* window = GetSelectedWindow();
-  return window ? window->bounds() : gfx::Rect();
+  if (!window) {
+    return gfx::Rect();
+  }
+
+  OverviewController* overview_controller = Shell::Get()->overview_controller();
+  if (overview_controller->InOverviewSession()) {
+    if (OverviewItem* item =
+            overview_controller->overview_session()->GetOverviewItemForWindow(
+                window)) {
+      gfx::Rect target_bounds_in_root =
+          gfx::ToRoundedRect(item->target_bounds());
+      wm::ConvertRectFromScreen(GetParentContainer(window->GetRootWindow()),
+                                &target_bounds_in_root);
+      return target_bounds_in_root;
+    }
+  }
+
+  return window->bounds();
 }
 
 void CaptureModeSession::RefreshStackingOrder() {
