@@ -574,6 +574,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2166049586286450108">Acesso completo de administrador</translation>
 <translation id="2166378884831602661">Não foi possível estabelecer uma conexão segura com este site</translation>
 <translation id="2168151236314517198">A impressão desse conteúdo está bloqueada pela política do administrador</translation>
+<translation id="2175630235841878061">Arquivos com mais de 100 MB não estão disponíveis para download</translation>
 <translation id="2176974405772725904">Salvar endereço na conta</translation>
 <translation id="2178665390943006934">Botão "Atualizar o Chrome". Ative para atualizar o Chrome pelas configurações dele.</translation>
 <translation id="2181821976797666341">Políticas</translation>
@@ -2404,6 +2405,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6118782133429281336">A lista de origem está vazia.</translation>
 <translation id="6120179357481664955">Lembrar código da UPI?</translation>
 <translation id="6122181661879998141">parte da frente do cartão</translation>
+<translation id="6124058285696691147">Fazer o download do anexo</translation>
 <translation id="6124432979022149706">Conectores do Chrome Enterprise</translation>
 <translation id="6126565365696310362">Envelope chinês 2</translation>
 <translation id="6127379762771434464">Item removido</translation>

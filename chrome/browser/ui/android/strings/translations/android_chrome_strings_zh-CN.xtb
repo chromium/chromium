@@ -1000,6 +1000,7 @@
 <translation id="6363990818884053551">若要开始同步，请验证是您本人在操作</translation>
 <translation id="6364438453358674297">要从历史记录中移除建议吗？</translation>
 <translation id="6380100320871303656">更频繁地预加载 Chrome 认为您可能会访问的网页。此设置可能会消耗更多数据流量。</translation>
+<translation id="6382848304055775421">正在导出</translation>
 <translation id="6391355955030242704">若要在车载系统中同步 Chrome 信息并确保数据安全，您必须在安全设置中设置个人资料锁定功能。之后，每当您上车时，系统都会要求您输入验证码或密码。</translation>
 <translation id="6394791151443660613">搜索：<ph name="SEARCH_QUERY" /></translation>
 <translation id="6395288395575013217">链接</translation>
@@ -1565,6 +1566,7 @@
 <translation id="9169507124922466868">导航历史记录在下半屏中显示</translation>
 <translation id="9190276265094487094">您将能够在所有已同步的设备上查看您的历史记录，以继续执行先前未完成的操作</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{1 分钟前检查过}other{# 分钟前检查过}}</translation>
+<translation id="9204021776105550328">正在删除</translation>
 <translation id="9204836675896933765">还剩 1 个文件</translation>
 <translation id="9205933215779845960">找不到这个页面。请检查拼写，或尝试在 <ph name="SEARCH_ENGINE" /> 上进行搜索。</translation>
 <translation id="9206873250291191720">A</translation>

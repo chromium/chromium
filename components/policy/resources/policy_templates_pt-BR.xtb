@@ -98,6 +98,7 @@ isso não impede capturas de tela com apps do sistema operacional ou de terceiro
 <translation id="1065175969514496951">A definição da política fornece acesso aos URLs listados durante a autenticação (por exemplo, na tela de login e de bloqueio), como exceções a <ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" />. Consulte a descrição da política para saber o formato das entradas dessa lista. Por exemplo, se <ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" /> for definida como <ph name="WILDCARD_VALUE" />, todas as solicitações serão bloqueadas, e você poderá usar a política para limitar o acesso a uma lista de URLs. Ela pode abrir exceções para alguns esquemas, subdomínios de outros domínios, portas ou caminhos específicos usando o formato especificado em ( https://support.google.com/chrome/a?p=url_blocklist_filter_format ). O filtro mais específico determina se um URL vai ser bloqueado ou permitido. A política <ph name="DEVICE_AUTHENTICATION_URL_ALLOWLIST_POLICY_NAME" /> tem precedência sobre a <ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" />. Esta política tem um limite de 1.000 entradas.
 
 Se a política não for definida, nenhuma exceção a <ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" /> será permitida.</translation>
+<translation id="1068801725746725727">Ativar o recebimento de pesquisas da Navegação segura</translation>
 <translation id="1069489575852947981">Definir a política como "Ativada" ou deixá-la sem definição faz com que uma conta local do dispositivo seja configurada para login automático sem atraso. O <ph name="PRODUCT_OS_NAME" /> aplica o atalho de teclado Ctrl+Alt+S para ignorar o login automático e mostrar a tela de login.
 
       Definir a política como "Desativada" faz com que os usuários não possam ignorar o login automático sem atraso (se configurado).</translation>
@@ -5155,6 +5156,7 @@ Se a política for desativada ou deixada sem definição, as configurações de 
       Se a opção "Forced" for selecionada, as páginas poderão ser abertas SOMENTE no modo de navegação anônima. A opção "Forced" não funciona para o Android no Chrome
 
       Observação: no iOS, se a política for alterada durante a sessão, ela só terá efeito após a reinicialização.</translation>
+<translation id="549471902631700911">Desativar o recebimento de pesquisas da Navegação segura</translation>
 <translation id="5499375345075963939">Esta política só fica ativada em modo de varejo.
 
       Quando o valor desta política está definido e não é 0, o usuário conectado no momento é desconectado automaticamente após um tempo de inatividade de duração especificada.
@@ -8896,6 +8898,7 @@ Se a política for deixada sem definição, nenhuma senha salva será importada 
 <translation id="874149307422233209">Esta política permite que os administradores controlem como o Google processa os dados dos usuários enviados à Pesquisa pelos recursos do <ph name="PRODUCT_OS_NAME" />.
 Quando ela está ativada, o usuário pode usar a caixa de pesquisa do acesso rápido do <ph name="PRODUCT_OS_NAME" /> e a caixa de endereço do navegador <ph name="PRODUCT_NAME" /> no <ph name="PRODUCT_OS_NAME" />. Assim, o histórico de pesquisa não é vinculado à identidade da pessoa.
 Quando a política é deixada sem definição ou desativada, os dados do usuário que fez as pesquisas são vinculados à identidade dele.</translation>
+<translation id="8743902569031401303">Permitir pesquisas da Navegação segura</translation>
 <translation id="8744844164152340112">Controla o tema usado para renderizar a interface na configuração inicial feita pelo usuário e durante a sessão (escuro/claro/automático).
       O modo automático troca automaticamente entre os temas claro e escuro ao amanhecer e ao anoitecer.
       Esta política precisa ser recomendada para dar aos usuários a possibilidade de mudar o tema nas configurações do sistema.</translation>
@@ -9495,6 +9498,8 @@ A configuração padrão é permitir que o navegador do host faça a renderizaç
 <translation id="981346395360763138">Serviços de localização do Google desativados</translation>
 <translation id="982497069985795632">Ativar verificação ortográfica</translation>
 <translation id="983256325512298435">Define uma lista de protocolos que podem inicializar um aplicativo externo a partir de origens listadas sem notificar o usuário</translation>
+<translation id="984365509386992443">Quando esta política for ativada ou deixada sem definição, o usuário poderá receber pesquisas relacionadas ao recurso Navegação segura.
+Quando ela for desativada, o usuário não vai receber essas pesquisas.</translation>
 <translation id="987261962216071510">Permitir apenas logins em navegação como visitante</translation>
 <translation id="987975731398348803">Se a política for ativada ou deixada sem definição, os dispositivos registrados vão informar a lista de usuários que fizeram login recentemente.
 
