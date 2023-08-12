@@ -748,7 +748,7 @@ OperationID FileSystemOperationRunner::BeginOperation(
     std::unique_ptr<FileSystemOperation> operation) {
   OperationID id = next_operation_id_++;
 
-  DCHECK(operations_.find(id) == operations_.end());
+  DCHECK(!base::Contains(operations_, id));
   operations_[id] = std::move(operation);
   return id;
 }

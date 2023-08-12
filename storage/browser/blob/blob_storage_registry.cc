@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "storage/browser/blob/blob_entry.h"
@@ -27,7 +28,7 @@ BlobEntry* BlobStorageRegistry::CreateEntry(
     const std::string& uuid,
     const std::string& content_type,
     const std::string& content_disposition) {
-  DCHECK(blob_map_.find(uuid) == blob_map_.end());
+  DCHECK(!base::Contains(blob_map_, uuid));
   std::unique_ptr<BlobEntry> entry =
       std::make_unique<BlobEntry>(content_type, content_disposition);
   BlobEntry* entry_ptr = entry.get();
@@ -40,7 +41,7 @@ bool BlobStorageRegistry::DeleteEntry(const std::string& uuid) {
 }
 
 bool BlobStorageRegistry::HasEntry(const std::string& uuid) const {
-  return blob_map_.find(uuid) != blob_map_.end();
+  return base::Contains(blob_map_, uuid);
 }
 
 BlobEntry* BlobStorageRegistry::GetEntry(const std::string& uuid) {
