@@ -91,6 +91,9 @@ constexpr size_t kAppEventsBucketCount = 10;
 BASE_FEATURE(kEnableAppEventsObserver,
              "EnableAppEventsObserver",
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kEnableFatalCrashEventsObserver,
+             "EnableFatalCrashEventsObserver",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kEnableRuntimeCounters,
              "EnableRuntimeCounters",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -631,12 +634,15 @@ void MetricReportingManager::InitRuntimeCountersCollectors() {
 
 void MetricReportingManager::InitFatalCrashCollectors() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  event_observer_managers_.emplace_back(delegate_->CreateEventObserverManager(
-      std::make_unique<FatalCrashEventsObserver>(),
-      telemetry_report_queue_.get(), &reporting_settings_,
-      ash::kReportDeviceCrashReportInfo,
-      metrics::kReportDeviceCrashReportInfoDefaultValue,
-      /*collector_pool=*/this));
+
+  if (base::FeatureList::IsEnabled(kEnableFatalCrashEventsObserver)) {
+    event_observer_managers_.emplace_back(delegate_->CreateEventObserverManager(
+        std::make_unique<FatalCrashEventsObserver>(),
+        telemetry_report_queue_.get(), &reporting_settings_,
+        ash::kReportDeviceCrashReportInfo,
+        metrics::kReportDeviceCrashReportInfoDefaultValue,
+        /*collector_pool=*/this));
+  }
 }
 
 void MetricReportingManager::InitPeripheralsCollectors() {
