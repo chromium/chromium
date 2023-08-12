@@ -602,8 +602,11 @@ src/webgpu/web_platform/canvas/context_creation.spec.ts
 src/webgpu/web_platform/canvas/getCurrentTexture.spec.ts
 src/webgpu/web_platform/canvas/getPreferredCanvasFormat.spec.ts
 src/webgpu/web_platform/canvas/readbackFromWebGPUCanvas.spec.ts
+src/webgpu/web_platform/copyToTexture/util.ts
 src/webgpu/web_platform/copyToTexture/ImageBitmap.spec.ts
+src/webgpu/web_platform/copyToTexture/ImageData.spec.ts
 src/webgpu/web_platform/copyToTexture/canvas.spec.ts
+src/webgpu/web_platform/copyToTexture/image.spec.ts
 src/webgpu/web_platform/copyToTexture/video.spec.ts
 src/webgpu/web_platform/external_texture/video.spec.ts
 src/webgpu/web_platform/reftests/gpu_ref_test.ts
