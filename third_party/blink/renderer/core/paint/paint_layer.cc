@@ -881,14 +881,6 @@ bool PaintLayer::RequiresScrollableArea() const {
   // PaintLayerScrollableArea.
   if (GetLayoutBox()->CanResize())
     return true;
-  // With custom scrollbars unfortunately we may need a PaintLayerScrollableArea
-  // to be able to calculate the size of scrollbar gutters.
-  const ComputedStyle& style = GetLayoutObject().StyleRef();
-  if (style.IsScrollbarGutterStable() &&
-      style.OverflowBlockDirection() == EOverflow::kHidden &&
-      style.HasPseudoElementStyle(kPseudoIdScrollbar)) {
-    return true;
-  }
   return false;
 }
 
