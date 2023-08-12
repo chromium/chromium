@@ -10392,6 +10392,14 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
       <message name="IDS_MEDIA_SCREEN_CAPTURE_NOTIFICATION_STOP" desc="Text shown on the button that stops screen capture.">
         Stop sharing
       </message>
+      <if expr="chromeos_lacros">
+        <message name="IDS_LACROS_STATUS_TRAY_SCREEN_ACCESS_STOP" desc="screen sharing stop button">
+          Stop
+        </message>
+        <message name="IDS_LACROS_STATUS_TRAY_SCREEN_SHARE_TITLE" desc="The title for screen sharing notification">
+          You're sharing your screen
+        </message>
+      </if>
 
       <!-- Strings for the certificate selection dialog triggered by chrome.platformKeys -->
       <message name="IDS_PLATFORM_KEYS_SELECT_CERT_DIALOG_TEXT" desc="The text in the dialog that prompts the user to select a certificate when an extension requests certificates through the platformKeys API.">

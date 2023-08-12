@@ -4998,7 +4998,7 @@ if (!is_android) {
       sources += [ "../browser/extensions/api/bluetooth_low_energy/bluetooth_low_energy_apitest.cc" ]
     }
 
-    if (toolkit_views && !is_chromeos_ash) {
+    if (toolkit_views && !is_chromeos) {
       sources +=
           [ "../browser/ui/screen_capture_notification_ui_browsertest.cc" ]
     }
@@ -5332,6 +5332,7 @@ if (is_chromeos_lacros) {
       "../browser/ui/browser_navigator_browsertest.cc",
       "../browser/ui/browser_navigator_browsertest.h",
       "../browser/ui/browser_navigator_browsertest_chromeos.cc",
+      "../browser/ui/lacros/screen_capture_notification_ui_lacros_browsertest.cc",
       "../browser/ui/sharing_hub/sharing_hub_bubble_controller_chromeos_lacros_browsertest.cc",
       "../browser/ui/startup/first_run_service_browsertest.cc",
       "../browser/ui/views/intent_picker_bubble_view_browsertest.cc",

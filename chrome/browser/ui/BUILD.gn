@@ -5923,7 +5923,6 @@ static_library("ui") {
         "views/relaunch_notification/relaunch_recommended_timer.h",
         "views/relaunch_notification/relaunch_required_dialog_view.cc",
         "views/relaunch_notification/relaunch_required_dialog_view.h",
-        "views/screen_capture_notification_ui_views.cc",
         "views/sync/bubble_sync_promo_signin_button_view.cc",
         "views/sync/bubble_sync_promo_signin_button_view.h",
         "views/sync/bubble_sync_promo_view.cc",
@@ -5944,6 +5943,7 @@ static_library("ui") {
         "views/frame/opaque_browser_frame_view_layout_delegate.h",
         "views/policy/idle_dialog_view.cc",
         "views/policy/idle_dialog_view.h",
+        "views/screen_capture_notification_ui_views.cc",
         "views/sharing_hub/sharing_hub_bubble_view_impl.cc",
         "views/sharing_hub/sharing_hub_bubble_view_impl.h",
       ]

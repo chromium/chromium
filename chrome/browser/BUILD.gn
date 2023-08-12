@@ -5588,6 +5588,8 @@ static_library("browser") {
       "ui/lacros/float_controller_lacros.h",
       "ui/lacros/immersive_context_lacros.cc",
       "ui/lacros/immersive_context_lacros.h",
+      "ui/lacros/screen_capture_notification_ui_lacros.cc",
+      "ui/lacros/screen_capture_notification_ui_lacros.h",
       "ui/lacros/snap_controller_lacros.cc",
       "ui/lacros/snap_controller_lacros.h",
       "ui/lacros/window_properties.cc",
