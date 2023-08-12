@@ -297,10 +297,6 @@ export class OsSettingsSyncSubpageElement extends
     // </if>
   }
 
-  private shouldShowLacrosSideBySideWarning_(): boolean {
-    return loadTimeData.getBoolean('shouldShowLacrosSideBySideWarning');
-  }
-
   private showActivityControls_(): boolean {
     // Should be hidden in OS settings.
     return false;

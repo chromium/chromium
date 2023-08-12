@@ -40,10 +40,6 @@
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/startup/browser_params_proxy.h"
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #endif
@@ -61,25 +57,6 @@ std::u16string GetHelpUrlWithBoard(const std::string& original_url) {
 }
 
 }  // namespace
-#endif
-
-// Lacros side-by-side warning should be shown as long as both Lacros and Ash
-// browsers enabled.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-bool ShouldShowLacrosSideBySideWarningInAsh() {
-  return base::FeatureList::IsEnabled(
-             syncer::kSyncSettingsShowLacrosSideBySideWarning) &&
-         crosapi::browser_util::IsAshWebBrowserEnabled() &&
-         crosapi::browser_util::IsLacrosEnabled();
-}
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-bool ShouldShowLacrosSideBySideWarningInLacros() {
-  return base::FeatureList::IsEnabled(
-             syncer::kSyncSettingsShowLacrosSideBySideWarning) &&
-         !chromeos::BrowserParamsProxy::Get()->StandaloneBrowserIsOnlyBrowser();
-}
 #endif
 
 void AddCaptionSubpageStrings(content::WebUIDataSource* html_source) {
@@ -226,14 +203,6 @@ void AddSharedSyncPageStrings(content::WebUIDataSource* html_source) {
     {"existingPassphraseLabelWithDate",
      IDS_SYNC_FULL_ENCRYPTION_BODY_CUSTOM_WITH_DATE},
     {"existingPassphraseLabel", IDS_SYNC_FULL_ENCRYPTION_BODY_CUSTOM},
-  // Settings warning for Lacros side-by-side mode.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    {"syncSettingsLacrosSideBySideWarning",
-     IDS_SYNC_SETTINGS_SIDE_BY_SIDE_WARNING_ASH},
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-    {"syncSettingsLacrosSideBySideWarning",
-     IDS_SYNC_SETTINGS_SIDE_BY_SIDE_WARNING_LACROS},
-#endif
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
@@ -276,15 +245,11 @@ void AddSharedSyncPageStrings(content::WebUIDataSource* html_source) {
           base::ASCIIToUTF16(chrome::kSyncEncryptionHelpURL)));
 #endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  html_source->AddBoolean("shouldShowLacrosSideBySideWarning",
-                          ShouldShowLacrosSideBySideWarningInAsh());
   html_source->AddBoolean(
       "showSyncSettingsRevamp",
       base::FeatureList::IsEnabled(syncer::kSyncChromeOSAppsToggleSharing) &&
           crosapi::browser_util::IsLacrosEnabled());
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  html_source->AddBoolean("shouldShowLacrosSideBySideWarning",
-                          ShouldShowLacrosSideBySideWarningInLacros());
   html_source->AddBoolean(
       "showSyncSettingsRevamp",
       base::FeatureList::IsEnabled(syncer::kSyncChromeOSAppsToggleSharing));

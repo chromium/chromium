@@ -402,19 +402,6 @@
   <message name="IDS_SETTINGS_SYNC_SETUP_CANCEL_DIALOG_BODY" desc="The body text of the dialog to confirm the sync cancellation.">
     You can turn on sync anytime in settings
   </message>
-    <if expr="chromeos_ash">
-    <!-- TODO(crbug.com/1231500): Remove this string after Lacros side-by-side rollout stage. -->
-    <message name="IDS_SYNC_SETTINGS_SIDE_BY_SIDE_WARNING_ASH" desc="The warning message that is shown when lacros side-by-side mode is enabled.">
-      Changes you make here apply only to Chrome Browser. To make changes to your Lacros Chrome Browser settings, open Lacros Chrome Browser and go to settings.
-    </message>
-  </if>
-
-  <if expr="chromeos_lacros">
-    <!-- TODO(crbug.com/1231500): Remove this string after Lacros side-by-side rollout stage. -->
-    <message name="IDS_SYNC_SETTINGS_SIDE_BY_SIDE_WARNING_LACROS" desc="The warning message that is shown when lacros side-by-side mode is enabled.">
-      Changes you make here apply only to Lacros Chrome Browser. To make changes to your Chrome Browser settings, open Chrome Browser and go to settings.
-    </message>
-  </if>
 
   <if expr="is_chromeos">
     <message name="IDS_BROWSER_SETTINGS_SYNC_FEATURE_LABEL" desc="Label describing the browser sync feature.">

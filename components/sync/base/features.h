@@ -70,10 +70,6 @@ BASE_DECLARE_FEATURE(kSyncAutofillWalletCredentialData);
 BASE_DECLARE_FEATURE(kSyncSegmentationDataType);
 
 #if BUILDFLAG(IS_CHROMEOS)
-// Whether warning should be shown in sync settings page when lacros
-// side-by-side mode is enabled.
-BASE_DECLARE_FEATURE(kSyncSettingsShowLacrosSideBySideWarning);
-
 // Whether explicit passphrase sharing between Ash and Lacros is enabled.
 BASE_DECLARE_FEATURE(kSyncChromeOSExplicitPassphraseSharing);
 

@@ -130,12 +130,6 @@ export class SettingsSyncControlsElement extends
   }
   // </if>
 
-  // <if expr="is_chromeos">
-  private shouldShowLacrosSideBySideWarning_(): boolean {
-    return loadTimeData.getBoolean('shouldShowLacrosSideBySideWarning');
-  }
-  // </if>
-
   /**
    * Handler for when the sync preferences are updated.
    */
