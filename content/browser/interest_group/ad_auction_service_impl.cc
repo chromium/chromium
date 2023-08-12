@@ -89,6 +89,21 @@ bool IsAdRequestValid(const blink::mojom::AdRequestConfig& config) {
   return true;
 }
 
+bool AreAllowedReportingOriginsAttested(
+    BrowserContext* browser_context,
+    const std::vector<url::Origin>& origins) {
+  for (const auto& origin : origins) {
+    if (!GetContentClient()
+             ->browser()
+             ->IsPrivacySandboxReportingDestinationAttested(
+                 browser_context, origin,
+                 PrivacySandboxInvokingAPI::kProtectedAudience)) {
+      return false;
+    }
+  }
+  return true;
+}
+
 }  // namespace
 
 AdAuctionServiceImpl::BiddingAndAuctionDataConstructionState::
@@ -133,10 +148,16 @@ void AdAuctionServiceImpl::JoinInterestGroup(
     updated_group.expiry = max_expiry;
   }
 
+  // `base::Unretained` is safe here since the `BrowserContext` owns the
+  // `StoragePartition` that owns the interest group manager.
   GetInterestGroupManager().CheckPermissionsAndJoinInterestGroup(
       std::move(updated_group), main_frame_url_, origin(),
       GetFrame()->GetNetworkIsolationKey(), report_result_only,
-      *GetFrameURLLoaderFactory(), std::move(callback));
+      *GetFrameURLLoaderFactory(),
+      base::BindRepeating(
+          &AreAllowedReportingOriginsAttested,
+          base::Unretained(render_frame_host().GetBrowserContext())),
+      std::move(callback));
 }
 
 void AdAuctionServiceImpl::LeaveInterestGroup(
@@ -225,8 +246,14 @@ void AdAuctionServiceImpl::UpdateAdInterestGroups() {
           ContentBrowserClient::InterestGroupApiOperation::kUpdate, origin())) {
     return;
   }
+
+  // `base::Unretained` is safe here since the `BrowserContext` owns the
+  // `StoragePartition` that owns the interest group manager.
   GetInterestGroupManager().UpdateInterestGroupsOfOwner(
-      origin(), GetClientSecurityState());
+      origin(), GetClientSecurityState(),
+      base::BindRepeating(
+          &AreAllowedReportingOriginsAttested,
+          base::Unretained(render_frame_host().GetBrowserContext())));
 }
 
 void AdAuctionServiceImpl::CreateAuctionNonce(
@@ -320,6 +347,9 @@ void AdAuctionServiceImpl::RunAdAuction(
                           base::Unretained(this)),
       base::BindRepeating(&AdAuctionServiceImpl::GetAdAuctionPageData,
                           base::Unretained(this)),
+      base::BindRepeating(
+          &AreAllowedReportingOriginsAttested,
+          base::Unretained(render_frame_host().GetBrowserContext())),
       std::move(abort_receiver),
       base::BindOnce(&AdAuctionServiceImpl::OnAuctionComplete,
                      base::Unretained(this), std::move(callback),

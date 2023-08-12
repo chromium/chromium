@@ -548,18 +548,21 @@ InterestGroupUpdateManager::~InterestGroupUpdateManager() = default;
 
 void InterestGroupUpdateManager::UpdateInterestGroupsOfOwner(
     const url::Origin& owner,
-    network::mojom::ClientSecurityStatePtr client_security_state) {
+    network::mojom::ClientSecurityStatePtr client_security_state,
+    AreReportingOriginsAttestedCallback callback) {
+  attestation_callback_ = std::move(callback);
   owners_to_update_.Enqueue(owner, std::move(client_security_state));
   MaybeContinueUpdatingCurrentOwner();
 }
 
 void InterestGroupUpdateManager::UpdateInterestGroupsOfOwners(
     base::span<url::Origin> owners,
-    network::mojom::ClientSecurityStatePtr client_security_state) {
+    network::mojom::ClientSecurityStatePtr client_security_state,
+    AreReportingOriginsAttestedCallback callback) {
   // Shuffle the list of interest group owners for fairness.
   base::RandomShuffle(owners.begin(), owners.end());
   for (const url::Origin& owner : owners) {
-    UpdateInterestGroupsOfOwner(owner, client_security_state.Clone());
+    UpdateInterestGroupsOfOwner(owner, client_security_state.Clone(), callback);
   }
 }
 
@@ -749,6 +752,17 @@ void InterestGroupUpdateManager::DidUpdateInterestGroupsOfOwnerJsonParse(
   if (!interest_group_update) {
     ReportUpdateFailed(group_key, UpdateDelayType::kParseFailure);
     return;
+  }
+  if (interest_group_update->ads) {
+    for (const auto& ad : *interest_group_update->ads) {
+      if (ad.allowed_reporting_origins) {
+        if (!attestation_callback_.Run(ad.allowed_reporting_origins.value())) {
+          // Treat this the same way as a parse failure.
+          ReportUpdateFailed(group_key, UpdateDelayType::kParseFailure);
+          return;
+        }
+      }
+    }
   }
   UpdateInterestGroup(group_key, std::move(*interest_group_update));
 }

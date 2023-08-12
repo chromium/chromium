@@ -173,6 +173,7 @@ void InterestGroupManagerImpl::CheckPermissionsAndJoinInterestGroup(
     const net::NetworkIsolationKey& network_isolation_key,
     bool report_result_only,
     network::mojom::URLLoaderFactory& url_loader_factory,
+    AreReportingOriginsAttestedCallback attestation_callback,
     blink::mojom::AdAuctionService::JoinInterestGroupCallback callback) {
   url::Origin interest_group_owner = group.owner;
   permissions_checker_.CheckPermissions(
@@ -181,7 +182,8 @@ void InterestGroupManagerImpl::CheckPermissionsAndJoinInterestGroup(
       base::BindOnce(
           &InterestGroupManagerImpl::OnJoinInterestGroupPermissionsChecked,
           base::Unretained(this), std::move(group), joining_url,
-          report_result_only, std::move(callback)));
+          report_result_only, std::move(attestation_callback),
+          std::move(callback)));
 }
 
 void InterestGroupManagerImpl::CheckPermissionsAndLeaveInterestGroup(
@@ -228,16 +230,18 @@ void InterestGroupManagerImpl::LeaveInterestGroup(
 
 void InterestGroupManagerImpl::UpdateInterestGroupsOfOwner(
     const url::Origin& owner,
-    network::mojom::ClientSecurityStatePtr client_security_state) {
-  update_manager_.UpdateInterestGroupsOfOwner(owner,
-                                              std::move(client_security_state));
+    network::mojom::ClientSecurityStatePtr client_security_state,
+    AreReportingOriginsAttestedCallback callback) {
+  update_manager_.UpdateInterestGroupsOfOwner(
+      owner, std::move(client_security_state), std::move(callback));
 }
 
 void InterestGroupManagerImpl::UpdateInterestGroupsOfOwners(
     base::span<url::Origin> owners,
-    network::mojom::ClientSecurityStatePtr client_security_state) {
+    network::mojom::ClientSecurityStatePtr client_security_state,
+    AreReportingOriginsAttestedCallback callback) {
   update_manager_.UpdateInterestGroupsOfOwners(
-      owners, std::move(client_security_state));
+      owners, std::move(client_security_state), std::move(callback));
 }
 
 void InterestGroupManagerImpl::RecordInterestGroupBids(
@@ -465,6 +469,7 @@ void InterestGroupManagerImpl::OnJoinInterestGroupPermissionsChecked(
     blink::InterestGroup group,
     const GURL& joining_url,
     bool report_result_only,
+    AreReportingOriginsAttestedCallback attestation_callback,
     blink::mojom::AdAuctionService::JoinInterestGroupCallback callback,
     bool can_join) {
   // Invoke callback before calling JoinInterestGroup(), which posts a task to
@@ -475,8 +480,20 @@ void InterestGroupManagerImpl::OnJoinInterestGroupPermissionsChecked(
   // invoking the callback may potentially leak whether the user was previously
   // in the InterestGroup through timing differences.
   std::move(callback).Run(/*failed_well_known_check=*/!can_join);
-  if (!report_result_only && can_join)
+
+  // All ads' allowed reporting origins must be attested. Otherwise don't join.
+  if (!report_result_only && can_join) {
+    if (group.ads) {
+      for (const auto& ad : *group.ads) {
+        if (ad.allowed_reporting_origins) {
+          if (!attestation_callback.Run(ad.allowed_reporting_origins.value())) {
+            return;
+          }
+        }
+      }
+    }
     JoinInterestGroup(std::move(group), joining_url);
+  }
 }
 
 void InterestGroupManagerImpl::OnLeaveInterestGroupPermissionsChecked(
