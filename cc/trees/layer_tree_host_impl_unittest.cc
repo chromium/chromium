@@ -2970,6 +2970,73 @@ TEST_F(LayerTreeHostImplTest, SnapFlingAnimationEndWithoutFinishing) {
             GetSnapContainerData(overflow)->GetTargetSnapAreaElementIds());
 }
 
+TEST_F(LayerTreeHostImplTest, NativeFlingInSnapArea) {
+  gfx::Size view_size(100, 100);
+  gfx::Size overflow_size(100, 1000);
+  gfx::RectF snap_area_1(0, 0, 100, 700);
+  gfx::RectF snap_area_2(0, 700, 100, 100);
+
+  SetupViewportLayersInnerScrolls(view_size, view_size);
+  LayerImpl* overflow =
+      AddScrollableLayer(OuterViewportScrollLayer(), view_size, overflow_size);
+
+  SnapContainerData container(
+      ScrollSnapType(false, SnapAxis::kY, SnapStrictness::kMandatory),
+      gfx::RectF(0, 0, 100, 100), gfx::PointF(0, 900));
+  ScrollSnapAlign start = ScrollSnapAlign(SnapAlignment::kStart);
+  container.AddSnapAreaData(
+      SnapAreaData(start, snap_area_1, false, ElementId(10)));
+  container.AddSnapAreaData(
+      SnapAreaData(start, snap_area_2, false, ElementId(20)));
+  GetScrollNode(overflow)->snap_container_data.emplace(container);
+  DrawFrame();
+
+  auto& handler = GetInputHandler();
+  gfx::PointF initial_offset, target_offset;
+  gfx::Point position(50, 50);
+  ui::ScrollInputType type = ui::ScrollInputType::kTouchscreen;
+
+  handler.ScrollBegin(&*BeginState(position, gfx::Vector2dF(0, 100), type),
+                      type);
+  handler.ScrollUpdate(&*UpdateState(position, gfx::Vector2dF(0, 100), type));
+  EXPECT_POINTF_EQ(gfx::PointF(0, 100), CurrentScrollOffset(overflow));
+
+  // 100 (current offset) + 400 (predicted fling) keeps us inside snap_area_1.
+  // The input handler should return false to trigger native fling physics.
+  EXPECT_FALSE(handler.GetSnapFlingInfoAndSetAnimatingSnapTarget(
+      gfx::Vector2dF(0, 10), gfx::Vector2dF(0, 400), &initial_offset,
+      &target_offset));
+  EXPECT_FALSE(handler.animating_for_snap_for_testing());
+
+  handler.ScrollUpdate(&*UpdateState(position, gfx::Vector2dF(0, 450), type));
+  EXPECT_POINTF_EQ(gfx::PointF(0, 550), CurrentScrollOffset(overflow));
+
+  // 550 (current offset) + 100 (new delta) takes us outside snap_area_1.
+  // Constrain to snap_area_1 by triggering snap fling to the maximum offset
+  // such that snap_area_1 still covers the viewport (600).
+  EXPECT_TRUE(handler.GetSnapFlingInfoAndSetAnimatingSnapTarget(
+      gfx::Vector2dF(0, 100), gfx::Vector2dF(0, 4000), &initial_offset,
+      &target_offset));
+  EXPECT_TRUE(handler.animating_for_snap_for_testing());
+  EXPECT_POINTF_EQ(gfx::PointF(0, 550), initial_offset);
+  EXPECT_POINTF_EQ(gfx::PointF(0, 600), target_offset);
+
+  // Reset for a new fling from 550.
+  GetInputHandler().ScrollEndForSnapFling(false /* did_finish */);
+  EXPECT_POINTF_EQ(gfx::PointF(0, 550), CurrentScrollOffset(overflow));
+
+  handler.ScrollBegin(&*BeginState(position, gfx::Vector2dF(0, 100), type),
+                      type);
+
+  // This fling is predicted to land in snap_area_2 (offset 700).
+  EXPECT_TRUE(handler.GetSnapFlingInfoAndSetAnimatingSnapTarget(
+      gfx::Vector2dF(0, 10), gfx::Vector2dF(0, 400), &initial_offset,
+      &target_offset));
+  EXPECT_TRUE(handler.animating_for_snap_for_testing());
+  EXPECT_POINTF_EQ(gfx::PointF(0, 550), initial_offset);
+  EXPECT_POINTF_EQ(gfx::PointF(0, 700), target_offset);
+}
+
 TEST_F(LayerTreeHostImplTest, OverscrollBehaviorPreventsPropagation) {
   const gfx::Size kViewportSize(100, 100);
   const gfx::Size kContentSize(200, 200);

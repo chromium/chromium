@@ -526,6 +526,7 @@ void InputHandler::ScrollEnd(bool should_snap) {
   ClearCurrentlyScrollingNode();
   deferred_scroll_end_ = false;
   SetNeedsCommit();
+  snap_fling_state_ = kNoFling;
 }
 
 void InputHandler::RecordScrollBegin(
@@ -911,40 +912,78 @@ bool InputHandler::ScrollingShouldSwitchtoMainThread() {
   return false;
 }
 
+absl::optional<gfx::PointF> InputHandler::ConstrainFling(gfx::PointF original) {
+  gfx::PointF fling = original;
+  if (fling_snap_constrain_x_) {
+    fling.set_x(std::clamp(fling.x(), fling_snap_constrain_x_->GetMin(),
+                           fling_snap_constrain_x_->GetMax()));
+  }
+  if (fling_snap_constrain_y_) {
+    fling.set_y(std::clamp(fling.y(), fling_snap_constrain_y_->GetMin(),
+                           fling_snap_constrain_y_->GetMax()));
+  }
+  return original == fling ? absl::nullopt : absl::make_optional(fling);
+}
+
 bool InputHandler::GetSnapFlingInfoAndSetAnimatingSnapTarget(
     const gfx::Vector2dF& current_delta,
     const gfx::Vector2dF& natural_displacement_in_viewport,
     gfx::PointF* out_initial_position,
     gfx::PointF* out_target_position) {
   ScrollNode* scroll_node = CurrentlyScrollingNode();
-  if (!scroll_node || !scroll_node->snap_container_data.has_value())
+  if (!scroll_node || !scroll_node->snap_container_data.has_value() ||
+      snap_fling_state_ == kNativeFling) {
     return false;
+  }
   const SnapContainerData& data = scroll_node->snap_container_data.value();
 
   float scale_factor = ActiveTree().page_scale_factor_for_scroll();
-  gfx::Vector2dF natural_displacement_in_content =
+  gfx::Vector2dF current_delta_in_content =
+      gfx::ScaleVector2d(current_delta, 1.f / scale_factor);
+  gfx::Vector2dF snap_displacement =
       gfx::ScaleVector2d(natural_displacement_in_viewport, 1.f / scale_factor);
 
   gfx::PointF current_offset = GetVisualScrollOffset(*scroll_node);
-  *out_initial_position = current_offset;
+  gfx::PointF new_offset = current_offset + current_delta_in_content;
+
+  if (snap_fling_state_ == kConstrainedNativeFling) {
+    if (absl::optional<gfx::PointF> constrained = ConstrainFling(new_offset)) {
+      snap_displacement = *constrained - current_offset;
+    } else {
+      return false;
+    }
+  }
 
   // CC side always uses fractional scroll deltas.
   bool use_fractional_offsets = true;
   std::unique_ptr<SnapSelectionStrategy> strategy =
       SnapSelectionStrategy::CreateForEndAndDirection(
-          current_offset, natural_displacement_in_content,
-          use_fractional_offsets);
+          current_offset, snap_displacement, use_fractional_offsets);
 
   SnapPositionData snap = data.FindSnapPosition(*strategy);
   if (snap.type == SnapPositionData::Type::kNone) {
+    snap_fling_state_ = kNativeFling;
     return false;
   }
 
+  if (snap_fling_state_ == kNoFling &&
+      snap.type == SnapPositionData::Type::kCovered) {
+    fling_snap_constrain_x_ = snap.covered_range_x;
+    fling_snap_constrain_y_ = snap.covered_range_y;
+    if (!ConstrainFling(new_offset)) {
+      snap_fling_state_ = kConstrainedNativeFling;
+      return false;
+    }
+  }
+
+  *out_initial_position = current_offset;
   *out_target_position = snap.position;
-  scroll_animating_snap_target_ids_ = snap.target_element_ids;
 
   out_target_position->Scale(scale_factor);
   out_initial_position->Scale(scale_factor);
+
+  scroll_animating_snap_target_ids_ = snap.target_element_ids;
+  snap_fling_state_ = kSnapFling;
   return true;
 }
 

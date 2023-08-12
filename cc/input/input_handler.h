@@ -674,6 +674,8 @@ class CC_EXPORT InputHandler : public InputDelegateForCompositor {
     return scrollbar_controller_.get();
   }
 
+  absl::optional<gfx::PointF> ConstrainFling(gfx::PointF original);
+
   // The input handler is owned by the delegate so their lifetimes are tied
   // together.
   const raw_ref<CompositorDelegateForInput> compositor_delegate_;
@@ -709,6 +711,16 @@ class CC_EXPORT InputHandler : public InputDelegateForCompositor {
   // At the end of a scroll animation, the target should be set as the scroll
   // node's snap target.
   TargetSnapAreaElementIds scroll_animating_snap_target_ids_;
+
+  enum SnapFlingState {
+    kNoFling,
+    kNativeFling,
+    kConstrainedNativeFling,
+    kSnapFling
+  };
+  SnapFlingState snap_fling_state_ = kNoFling;
+  absl::optional<gfx::RangeF> fling_snap_constrain_x_;
+  absl::optional<gfx::RangeF> fling_snap_constrain_y_;
 
   // A set of elements that scroll-snapped to a new target since the last
   // begin main frame. The snap target ids of these elements will be sent to
