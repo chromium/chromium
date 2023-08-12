@@ -407,7 +407,8 @@ GpuServiceImpl::GpuServiceImpl(
         },
         base::Unretained(this));
     dawn_context_provider_ = gpu::DawnContextProvider::Create(
-        dawn_caching_interface_factory_.get(), std::move(cache_blob_callback));
+        gpu_preferences, dawn_caching_interface_factory_.get(),
+        std::move(cache_blob_callback));
     if (!dawn_context_provider_) {
       DLOG(ERROR) << "Failed to create Dawn context provider for Graphite.";
     }

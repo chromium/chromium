@@ -112,6 +112,7 @@ bool GetANGLED3D11DeviceLUID(LUID* luid) {
 }  // namespace
 
 std::unique_ptr<DawnContextProvider> DawnContextProvider::Create(
+    const GpuPreferences& gpu_preferences,
     webgpu::DawnCachingInterfaceFactory* caching_interface_factory,
     CacheBlobCallback callback) {
   auto context_provider =
@@ -121,7 +122,7 @@ std::unique_ptr<DawnContextProvider> DawnContextProvider::Create(
   // the only known way to avoid this is platform-specific; e.g. on Mac, create
   // a Dawn device, get the actual Metal device from it, and compare against
   // MTLCreateSystemDefaultDevice().
-  if (!context_provider->Initialize(std::move(callback))) {
+  if (!context_provider->Initialize(gpu_preferences, std::move(callback))) {
     context_provider.reset();
   }
   return context_provider;
@@ -132,7 +133,8 @@ DawnContextProvider::DawnContextProvider(
     : caching_interface_factory_(caching_interface_factory) {}
 DawnContextProvider::~DawnContextProvider() = default;
 
-bool DawnContextProvider::Initialize(CacheBlobCallback callback) {
+bool DawnContextProvider::Initialize(const GpuPreferences& gpu_preferences,
+                                     CacheBlobCallback callback) {
   std::unique_ptr<webgpu::DawnCachingInterface> caching_interface;
   if (caching_interface_factory_) {
     caching_interface = caching_interface_factory_->CreateInstance(
@@ -140,22 +142,20 @@ bool DawnContextProvider::Initialize(CacheBlobCallback callback) {
   }
 
   platform_ = std::make_unique<Platform>(std::move(caching_interface));
-
-  GpuPreferences preferences;
-#if DCHECK_IS_ON()
-  preferences.enable_dawn_backend_validation =
-      DawnBackendValidationLevel::kFull;
-#else
-  preferences.enable_dawn_backend_validation =
-      DawnBackendValidationLevel::kDisabled;
-#endif
-
-  instance_ = webgpu::DawnInstance::Create(platform_.get(), preferences);
+  instance_ = webgpu::DawnInstance::Create(platform_.get(), gpu_preferences);
 
   // If a new toggle is added here, ForceDawnTogglesForSkia() which collects
   // info for about:gpu should be updated as well.
-  wgpu::DawnTogglesDescriptor toggles_desc;
   std::vector<const char*> enabled_toggles;
+  std::vector<const char*> disabled_toggles;
+  for (const auto& toggle : gpu_preferences.enabled_dawn_features_list) {
+    enabled_toggles.push_back(toggle.c_str());
+  }
+  for (const auto& toggle : gpu_preferences.disabled_dawn_features_list) {
+    disabled_toggles.push_back(toggle.c_str());
+  }
+  // The following toggles are all device-scoped toggles so it's not necessary
+  // to pass them when creating the Instance above.
 #if DCHECK_IS_ON()
   enabled_toggles.push_back("use_user_defined_labels_in_backend");
 #else
@@ -164,11 +164,16 @@ bool DawnContextProvider::Initialize(CacheBlobCallback callback) {
   enabled_toggles.push_back("disable_robustness");
   enabled_toggles.push_back("skip_validation");
 #endif
+
+  wgpu::DawnTogglesDescriptor toggles_desc;
   toggles_desc.enabledToggles = enabled_toggles.data();
+  toggles_desc.disabledToggles = disabled_toggles.data();
 #ifdef WGPU_BREAKING_CHANGE_COUNT_RENAME
   toggles_desc.enabledToggleCount = enabled_toggles.size();
+  toggles_desc.disabledToggleCount = disabled_toggles.size();
 #else
   toggles_desc.enabledTogglesCount = enabled_toggles.size();
+  toggles_desc.disabledTogglesCount = disabled_toggles.size();
 #endif
 
   wgpu::DeviceDescriptor descriptor;
