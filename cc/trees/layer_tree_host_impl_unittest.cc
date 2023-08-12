@@ -17630,15 +17630,15 @@ class UnifiedScrollingTest : public LayerTreeHostImplTest {
     DrawFrame();
   }
 
-  void CreateSuashingLayerCoveringWholeViewport() {
-    // Add a (simulated) "squashing layer". It's scroll parent is the outer
-    // viewport but it covers the entire viewport and any scrollers underneath
-    // it.
-    LayerImpl* squashing_layer = AddLayer();
-    squashing_layer->SetBounds(gfx::Size(100, 100));
-    squashing_layer->SetDrawsContent(true);
-    squashing_layer->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
-    CopyProperties(OuterViewportScrollLayer(), squashing_layer);
+  void CreateLayerCoveringWholeViewportEscapingScrollers(
+      HitTestOpaqueness opaqueness) {
+    // Add a layer with the outer viewport as its scroll parent but it covers
+    // the entire viewport and any scrollers underneath it.
+    LayerImpl* layer = AddLayer();
+    layer->SetBounds(gfx::Size(100, 100));
+    layer->SetDrawsContent(true);
+    layer->SetHitTestOpaqueness(opaqueness);
+    CopyProperties(OuterViewportScrollLayer(), layer);
     UpdateDrawProperties(host_impl_->active_tree());
   }
 
@@ -17873,19 +17873,19 @@ TEST_F(UnifiedScrollingTest, MainThreadHitTestScrollNodeNotFound) {
   }
 }
 
-// The presence of a squashing layer is one reason we might "fail to hit test"
-// on the compositor. A heuristic is used that if the first hit scrollable
-// layer isn't a scrolling ancestor of the first hit layer, we probably hit a
-// squashing layer which might have empty regions we don't know how to hit
-// test. This requires falling back to the main thread. However, with scroll
-// unification, we may still be able to scroll the final scroller entirely on
-// the compositor. See LayerTreeHostImpl::IsInitialScrollHitTestReliable.
-TEST_F(UnifiedScrollingTest, SquashingLayerCausesMainThreadHitTest) {
+// The presence of a layer with mixed hit test opaqueness causes "fail to hit
+// test" if its scroll parent isn't the first hit scrollable layer. This
+// requires falling back to the main thread (see InputHandler::
+// IsInitialScrollHitTestReliable). However, we can still perform the scroll
+// updates on the compositor.
+TEST_F(UnifiedScrollingTest,
+       LayerMixedHitTestOpaquenessCausesMainThreadHitTest) {
   // Create a scroller that should scroll on the compositor thread and the add
-  // "squashing" layer over top of it. This simulates the case where a
-  // squashing layer obscuring a scroller makes the hit test unreliable.
+  // a layer with mixed hit test opaqueness over top it. This simulates the
+  // case where a squashing layer obscuring a scroller makes the hit test
+  // unreliable.
   CreateScroller(MainThreadScrollingReason::kNotScrollingOnMain);
-  CreateSuashingLayerCoveringWholeViewport();
+  CreateLayerCoveringWholeViewportEscapingScrollers(HitTestOpaqueness::kMixed);
 
   // When ScrollUnification is turned on, scrolling over a squashing-like layer
   // that cannot be reliably hit tested on the compositor should request a main
@@ -17907,6 +17907,21 @@ TEST_F(UnifiedScrollingTest, SquashingLayerCausesMainThreadHitTest) {
 
     EXPECT_TRUE(CurrentlyScrollingNode());
     EXPECT_EQ(ScrollerNode(), CurrentlyScrollingNode());
+  }
+}
+
+// Similar to the above, but the layer is opaque to hit test.
+TEST_F(UnifiedScrollingTest, LayerOpaqueToHitTestScrollsOnCompositor) {
+  CreateScroller(MainThreadScrollingReason::kNotScrollingOnMain);
+  CreateLayerCoveringWholeViewportEscapingScrollers(HitTestOpaqueness::kOpaque);
+  {
+    ScrollStatus status = ScrollBegin(gfx::Vector2d(0, 10));
+    EXPECT_EQ(ScrollThread::SCROLL_ON_IMPL_THREAD, status.thread);
+    EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
+              status.main_thread_hit_test_reasons);
+    // We can start scroll the scroll parent of the layer, which is the outer
+    // viewport scroll layer.
+    EXPECT_EQ(host_impl_->OuterViewportScrollNode(), CurrentlyScrollingNode());
   }
 }
 
@@ -18082,7 +18097,7 @@ TEST_F(UnifiedScrollingTest, UncompositedScrollerDoesntAffectTransform) {
 // thread hit test first, we should modify the transform tree as usual.
 TEST_F(UnifiedScrollingTest, CompositedWithSquashedLayerMutatesTransform) {
   CreateScroller(MainThreadScrollingReason::kNotScrollingOnMain);
-  CreateSuashingLayerCoveringWholeViewport();
+  CreateLayerCoveringWholeViewportEscapingScrollers(HitTestOpaqueness::kMixed);
 
   TestUncompositedScrollingState(/*mutates_transform_tree=*/true);
 

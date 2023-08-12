@@ -2526,7 +2526,7 @@ LayerTreeImpl::FindLayersHitByPointInNonFastScrollableRegion(
 }
 
 std::vector<const LayerImpl*>
-LayerTreeImpl::FindAllLayersUpToAndIncludingFirstScrollable(
+LayerTreeImpl::FindLayersUpToFirstScrollableOrOpaqueToHitTest(
     const gfx::PointF& screen_space_point) {
   std::vector<const LayerImpl*> layers;
   if (layer_list_.empty())
@@ -2581,8 +2581,9 @@ LayerTreeImpl::FindAllLayersUpToAndIncludingFirstScrollable(
           std::pair<const LayerImpl*, float>(layer, distance_to_intersection));
     } else {
       layers.push_back(layer);
-      if (layer->IsScrollerOrScrollbar())
+      if (layer->IsScrollerOrScrollbar() || layer->OpaqueToHitTest()) {
         break;
+      }
     }
   }
 
@@ -2609,8 +2610,9 @@ LayerTreeImpl::FindAllLayersUpToAndIncludingFirstScrollable(
       const LayerImpl* layer = pair.first;
 
       result.push_back(layer);
-      if (layer->IsScrollerOrScrollbar())
+      if (layer->IsScrollerOrScrollbar() || layer->OpaqueToHitTest()) {
         return result;
+      }
     }
     // Append 2D layers if none of the 3D layers were scrollable.
     result.insert(result.end(), layers.begin(), layers.end());

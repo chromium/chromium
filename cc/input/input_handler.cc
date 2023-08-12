@@ -227,8 +227,10 @@ InputHandler::ScrollStatus InputHandler::ScrollBegin(ScrollState* scroll_state,
             scroll_status.main_thread_scrolling_reasons =
                 MainThreadScrollingReason::kScrollbarScrolling;
             return scroll_status;
-          } else if (!IsInitialScrollHitTestReliable(
-                         layer_impl, first_scrolling_layer_or_scrollbar)) {
+          }
+          ScrollNode* unused = nullptr;
+          if (!IsInitialScrollHitTestReliable(
+                  layer_impl, first_scrolling_layer_or_scrollbar, unused)) {
             TRACE_EVENT_INSTANT0("cc", "Failed Hit Test",
                                  TRACE_EVENT_SCOPE_THREAD);
             scroll_status.thread =
@@ -1486,26 +1488,21 @@ InputHandler::ScrollHitTestResult InputHandler::HitTestScrollNode(
   result.hit_test_successful = false;
 
   std::vector<const LayerImpl*> layers =
-      ActiveTree().FindAllLayersUpToAndIncludingFirstScrollable(
+      ActiveTree().FindLayersUpToFirstScrollableOrOpaqueToHitTest(
           device_viewport_point);
 
   const LayerImpl* scroller_layer =
       (!layers.empty() && layers.back()->IsScrollerOrScrollbar())
           ? layers.back()
           : nullptr;
+  ScrollNode* node_to_scroll = nullptr;
 
   // Go through each layer up to (and including) the scroller. Any may block
   // scrolling if they come from outside the scroller's scroll-subtree or if we
   // hit a non-fast-scrolling-region.
   for (const auto* layer_impl : layers) {
-    // There are some cases where the hit layer may not be correct (e.g. layer
-    // squashing, pointer-events:none layer) because the compositor doesn't
-    // know what parts of the layer (if any) are actually visible to hit
-    // testing. This is fine if we can determine that the scrolling node will
-    // be the same regardless of whether we hit an opaque or transparent (to
-    // hit testing) point of the layer. If the scrolling node may depend on
-    // this, we have to get a hit test from the main thread.
-    if (!IsInitialScrollHitTestReliable(layer_impl, scroller_layer)) {
+    if (!IsInitialScrollHitTestReliable(layer_impl, scroller_layer,
+                                        node_to_scroll)) {
       TRACE_EVENT_INSTANT0("cc", "Failed Hit Test", TRACE_EVENT_SCOPE_THREAD);
       result.main_thread_hit_test_reasons =
           MainThreadScrollingReason::kFailedHitTest;
@@ -1524,19 +1521,11 @@ InputHandler::ScrollHitTestResult InputHandler::HitTestScrollNode(
     }
   }
 
-  // If we hit a scrollbar layer, get the ScrollNode from its associated
-  // scrolling layer, rather than directly from the scrollbar layer. The latter
-  // would return the parent scroller's ScrollNode.
-  if (scroller_layer && scroller_layer->IsScrollbarLayer()) {
-    scroller_layer = ActiveTree().LayerByElementId(
-        ToScrollbarLayer(scroller_layer)->scroll_element_id());
-  }
-
   // It's theoretically possible to hit no layers or only non-scrolling layers.
   // e.g. an API hit test outside the viewport, or sending a scroll to an OOPIF
   // that does not have overflow. If we made it to here, we also don't have any
   // non-fast scroll regions. Fallback to scrolling the viewport.
-  if (!scroller_layer) {
+  if (!node_to_scroll) {
     result.hit_test_successful = true;
     if (InnerViewportScrollNode())
       result.scroll_node = GetNodeToScroll(InnerViewportScrollNode());
@@ -1544,10 +1533,7 @@ InputHandler::ScrollHitTestResult InputHandler::HitTestScrollNode(
     return result;
   }
 
-  ScrollNode* scroll_node =
-      GetScrollTree().Node(scroller_layer->scroll_tree_index());
-
-  result.scroll_node = GetNodeToScroll(scroll_node);
+  result.scroll_node = node_to_scroll;
   result.hit_test_successful = true;
   return result;
 }
@@ -1596,10 +1582,19 @@ ScrollNode* InputHandler::GetNodeToScroll(ScrollNode* node) const {
 
 bool InputHandler::IsInitialScrollHitTestReliable(
     const LayerImpl* layer_impl,
-    const LayerImpl* first_scrolling_layer_or_scrollbar) const {
+    const LayerImpl* first_scrolling_layer_or_scrollbar,
+    ScrollNode*& out_node_to_scroll) const {
   // Hit tests directly on a composited scrollbar are always reliable.
   if (layer_impl->IsScrollbarLayer()) {
     DCHECK(layer_impl == first_scrolling_layer_or_scrollbar);
+    // If we hit a scrollbar layer, get the ScrollNode from its associated
+    // scrolling layer, rather than directly from the scrollbar layer. The
+    // latter would return the parent scroller's ScrollNode.
+    out_node_to_scroll = GetScrollTree().FindNodeFromElementId(
+        ToScrollbarLayer(layer_impl)->scroll_element_id());
+    if (out_node_to_scroll) {
+      out_node_to_scroll = GetNodeToScroll(out_node_to_scroll);
+    }
     return true;
   }
 
@@ -1618,6 +1613,13 @@ bool InputHandler::IsInitialScrollHitTestReliable(
       break;
     }
   }
+  // We can reliably use layer_impl's closest scroll node if layer_impl is
+  // opaque to hit test (which can be true only if the blink feature
+  // HitTestOpaqueness is enabled).
+  if (layer_impl->OpaqueToHitTest()) {
+    out_node_to_scroll = closest_scroll_node;
+    return true;
+  }
   // If there's a scrolling layer, we should also have a closest scroll node,
   // and vice versa. Otherwise, the hit test is not reliable.
   if ((first_scrolling_layer_or_scrollbar && !closest_scroll_node) ||
@@ -1626,6 +1628,7 @@ bool InputHandler::IsInitialScrollHitTestReliable(
   }
   if (!first_scrolling_layer_or_scrollbar && !closest_scroll_node) {
     // It's ok if we have neither.
+    out_node_to_scroll = nullptr;
     return true;
   }
 
@@ -1633,9 +1636,11 @@ bool InputHandler::IsInitialScrollHitTestReliable(
   // a scrollable layer with a scroll node. If this scroll node corresponds to
   // first scrollable ancestor along the scroll tree for |layer_impl|, the hit
   // test has not escaped to other areas of the scroll tree and is reliable.
-  if (!first_scrolling_layer_or_scrollbar->IsScrollbarLayer()) {
-    return closest_scroll_node->id ==
-           first_scrolling_layer_or_scrollbar->scroll_tree_index();
+  if (!first_scrolling_layer_or_scrollbar->IsScrollbarLayer() &&
+      closest_scroll_node->id ==
+          first_scrolling_layer_or_scrollbar->scroll_tree_index()) {
+    out_node_to_scroll = closest_scroll_node;
+    return true;
   }
 
   return false;

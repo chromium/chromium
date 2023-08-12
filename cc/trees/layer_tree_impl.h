@@ -626,10 +626,11 @@ class CC_EXPORT LayerTreeImpl {
   // Return all layers with a hit non-fast scrollable region.
   std::vector<const LayerImpl*> FindLayersHitByPointInNonFastScrollableRegion(
       const gfx::PointF& screen_space_point);
-  // Returns all layers up to the first scroller or scrollbar layer, inclusive.
-  // The returned vector is sorted in order of top most come first. The back of
-  // the vector will be the scrollable layer if one was hit.
-  std::vector<const LayerImpl*> FindAllLayersUpToAndIncludingFirstScrollable(
+  // Returns all layers up to the first scroller, scrollbar layer or a layer
+  // opaque to hit test, inclusive. The returned vector is sorted in order of
+  // top most come first. The back of the vector will be the scrollable layer
+  // or the first layer opaque to hit test, if one was hit.
+  std::vector<const LayerImpl*> FindLayersUpToFirstScrollableOrOpaqueToHitTest(
       const gfx::PointF& screen_space_point);
   bool PointHitsNonFastScrollableRegion(const gfx::PointF& scree_space_point,
                                         const LayerImpl& layer) const;

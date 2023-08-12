@@ -567,14 +567,24 @@ class CC_EXPORT InputHandler : public InputDelegateForCompositor {
   // scroll position to a snap point. Otherwise returns false.
   bool SnapAtScrollEnd(SnapReason reason);
 
-  // |layer| is returned from a regular hit test, and
-  // |first_scrolling_layer_or_drawn_scrollbar| is returned from a hit test
-  // performed only on scrollers and scrollbars. Initial scroll hit testing can
-  // be unreliable if the latter is not the direct scroll ancestor of the
-  // former. In this case, we will fall back to main thread scrolling because
-  // the compositor thread doesn't know which layer to scroll. This happens when
-  // a layer covers a scroller that doesn't scroll the former, or a scroller is
-  // masked by a mask layer for mask image, clip-path, rounded border, etc.
+  // `layer` is returned from a regular hit test, and
+  // `first_scrolling_layer_or_drawn_scrollbar` is returned from a hit test
+  // performed only on scrollers and scrollbars.
+  // - If the latter is the direct scroll ancestor of `layer`, this function
+  //   returns true;
+  // - Otherwise, which scroller to scroll depends on the hit test opaqueness
+  //   of `layer`:
+  //   - If `layer` is opaque to hit test, then we should scroll `layer`'s
+  //     direct scroll ancestor.
+  //   - Otherwise the initial scroll hit testing is unreliable and this
+  //     function returns false. Then we will fall back to main thread
+  //     scrolling because the compositor thread doesn't know which layer to
+  //     scroll.
+  //   This happens when a layer covers a scroller that doesn't scroll the
+  //   former, or a scroller is masked by a mask layer for mask image,
+  //   clip-path, rounded border, etc.
+  // If this function returns true, `out_node_to_scroll` is set to the scroll
+  // node to scroll.
   //
   // Note, position: fixed layers use the inner viewport as their ScrollNode
   // (since they don't scroll with the outer viewport), however, scrolls from
@@ -584,7 +594,8 @@ class CC_EXPORT InputHandler : public InputDelegateForCompositor {
   // this method must use the same scroll chaining logic we use in ApplyScroll.
   bool IsInitialScrollHitTestReliable(
       const LayerImpl* layer,
-      const LayerImpl* first_scrolling_layer_or_drawn_scrollbar) const;
+      const LayerImpl* first_scrolling_layer_or_drawn_scrollbar,
+      ScrollNode*& out_node_to_scroll) const;
 
   // Similar to above but includes complicated logic to determine whether the
   // ScrollNode is able to be scrolled on the compositor or requires main
