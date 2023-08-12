@@ -895,10 +895,10 @@ StoreReadResult V4Store::ReadFromDisk() {
     return HASH_PREFIX_INFO_MISSING_FAILURE;
   }
 
-  HashPrefixMap::MigrateResult migrate_result =
-      MigrateFileFormatIfNeeded(&file_format);
-  if (migrate_result == HashPrefixMap::MigrateResult::kFailure)
+  migrate_result_ = MigrateFileFormatIfNeeded(&file_format);
+  if (migrate_result_ == HashPrefixMap::MigrateResult::kFailure) {
     return MIGRATION_FAILURE;
+  }
 
   ApplyUpdateResult apply_update_result =
       hash_prefix_map_->ReadFromDisk(file_format);
@@ -917,7 +917,7 @@ StoreReadResult V4Store::ReadFromDisk() {
   }
 
   // If a migration happened, we already updated file size.
-  if (migrate_result != HashPrefixMap::MigrateResult::kSuccess) {
+  if (migrate_result_ != HashPrefixMap::MigrateResult::kSuccess) {
     // Update |file_size_| now because we parsed the file correctly.
     file_size_ = file_size;
     for (const auto& hash_file : file_format.hash_files())

@@ -34,13 +34,17 @@ typedef unsigned ThreatSeverity;
 // SafeBrowsing service and interfaces with the protocol manager.
 class V4LocalDatabaseManager : public SafeBrowsingDatabaseManager {
  public:
+  using RecordMigrationMetricsCallback =
+      base::OnceCallback<void(HashPrefixMap::MigrateResult)>;
+
   // Create and return an instance of V4LocalDatabaseManager, if Finch trial
   // allows it; nullptr otherwise.
   static scoped_refptr<V4LocalDatabaseManager> Create(
       const base::FilePath& base_path,
       scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
       scoped_refptr<base::SequencedTaskRunner> io_task_runner,
-      ExtendedReportingLevelCallback extended_reporting_level_callback);
+      ExtendedReportingLevelCallback extended_reporting_level_callback,
+      RecordMigrationMetricsCallback record_migration_metrics_callback);
 
   V4LocalDatabaseManager(const V4LocalDatabaseManager&) = delete;
   V4LocalDatabaseManager& operator=(const V4LocalDatabaseManager&) = delete;
@@ -115,6 +119,7 @@ class V4LocalDatabaseManager : public SafeBrowsingDatabaseManager {
   V4LocalDatabaseManager(
       const base::FilePath& base_path,
       ExtendedReportingLevelCallback extended_reporting_level_callback,
+      RecordMigrationMetricsCallback record_migration_metrics_callback,
       scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
       scoped_refptr<base::SequencedTaskRunner> io_task_runner,
       scoped_refptr<base::SequencedTaskRunner> task_runner_for_tests);
@@ -435,6 +440,9 @@ class V4LocalDatabaseManager : public SafeBrowsingDatabaseManager {
   // Callback to get the current extended reporting level. Needed by the update
   // manager.
   ExtendedReportingLevelCallback extended_reporting_level_callback_;
+
+  // Callback to record metrics on database migration after initialization.
+  RecordMigrationMetricsCallback record_migration_metrics_callback_;
 
   // The client_state of each list currently being synced. This is updated each
   // time a database update completes, and used to send list client_state
