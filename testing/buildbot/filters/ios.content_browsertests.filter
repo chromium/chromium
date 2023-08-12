@@ -224,6 +224,8 @@
 -BackForwardCacheBrowserTestWithJavaScriptDetails.MultipleBlocksFromJavaScriptFile
 
 # TODO(crbug.com/1472299): Fail due to SEGV_ACCERR in GL-related work
+-All/BackForwardCacheBrowserUnloadHandlerTest.UnloadHandlerPresent/0
+-All/BackForwardCacheWithDedicatedWorkerBrowserTest.FetchRedirectedWhileStoring_Nested/1
 -All/BackForwardCacheWithDedicatedWorkerBrowserTest.FetchStillLoading_ResponseStartedWhileFrozen_ExceedsPerProcessBytesLimit_Nested/0
 -All/BackForwardCacheWithDedicatedWorkerBrowserTest.ImageStillLoading_ResponseStartedWhileFrozen_Timeout_Nested/0
 -All/BackForwardCacheWithDedicatedWorkerBrowserTest.PageWithDrainedDatapipeRequestsForFetchShouldBeEvicted/1
@@ -253,6 +255,7 @@
 -BackForwardCacheBrowserTest.EventsForPageIneligibleBeforePagehide
 -BackForwardCacheBrowserTestWithMediaSession.DontCacheWhenMediaSessionServiceIsUsed
 -CrossPlatformAccessibilityBrowserTest.ActiveDescendantChangesAreNotBatched
+-CrossPlatformAccessibilityBrowserTest.DocumentSelectionChangesAreNotBatched
 -Default/MediaTest.AudioBearFlac/1
 -Default/MediaTest.AudioBearFlac192kHzMp4/1
 -Default/MediaTest.AudioBearFlacMp4/1
@@ -271,6 +274,7 @@
 -Default/MediaTest.VideoBearWavPcm3kHz/1
 -DomSerializerTests.SerializeHTMLDOMWithAddingMOTW
 -DomSerializerTests.SerializeHTMLDOMWithBaseTag
+-DomSerializerTests.SerializeHTMLDOMWithEmptyHead
 -DomSerializerTests.SerializeHTMLDOMWithEntitiesInAttributeValue
 -DomSerializerTests.SerializeHTMLDOMWithoutDocType
 -FileSystemChooserBrowserTest.OpenDirectory_BlockedPermission
@@ -280,6 +284,7 @@
 -FormControlsBrowserTest.Input
 -FormControlsBrowserTest.Meter
 -FormControlsBrowserTest.MultiSelect
+-FormControlsBrowserTest.Select
 -FormControlsBrowserTest.Textarea
 -MediaColorTest.Yuv422pH264
 -MediaColorTest.Yuv422pTheora
@@ -311,6 +316,7 @@
 -WebRtcCaptureFromElementBrowserTest.VerifyCanvasWebGLCaptureOpaqueColor
 -WebRtcGetUserMediaBrowserTest.ApplyConstraintsNonDevice
 -WebRtcGetUserMediaBrowserTest.GetUserMediaWithMandatorySourceID
+-WebRtcGetUserMediaBrowserTest.VideoWithBadConstraintsInIFrameAndCloseInFailureCb
 -WebRtcMediaRecorderTest.TwoChannelAudioRecording
 
 # These tests are flaky.
