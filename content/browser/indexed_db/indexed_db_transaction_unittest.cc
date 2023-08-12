@@ -82,12 +82,10 @@ class IndexedDBTransactionTest : public testing::Test {
     // DB is created here instead of the constructor to workaround a
     // "peculiarity of C++". More info at
     // https://github.com/google/googletest/blob/main/docs/faq.md#my-compiler-complains-that-a-constructor-or-destructor-cannot-return-a-value-whats-going-on
-    leveldb::Status s;
-    std::tie(db_, s) = IndexedDBClassFactory::Get()->CreateIndexedDBDatabase(
+    db_ = IndexedDBClassFactory::Get()->CreateIndexedDBDatabase(
         u"db", backing_store_.get(), indexed_db_context_->GetIDBFactory(),
         CreateRunTasksCallback(), IndexedDBDatabase::Identifier(),
         &lock_manager_);
-    ASSERT_TRUE(s.ok());
   }
 
   TasksAvailableCallback CreateRunTasksCallback() {
@@ -552,6 +550,7 @@ INSTANTIATE_TEST_SUITE_P(IndexedDBTransactions,
                          ::testing::ValuesIn(kTestModes));
 
 TEST_F(IndexedDBTransactionTest, AbortCancelsLockRequest) {
+  std::u16string name(u"name");
   const int64_t id = 0;
   const int64_t object_store_id = 1ll;
   const std::set<int64_t> scope = {object_store_id};
@@ -563,7 +562,7 @@ TEST_F(IndexedDBTransactionTest, AbortCancelsLockRequest) {
   // Acquire a lock to block the transaction's lock acquisition.
   bool locks_recieved = false;
   std::vector<PartitionedLockManager::PartitionedLockRequest> lock_requests;
-  lock_requests.emplace_back(GetDatabaseLockId(id),
+  lock_requests.emplace_back(GetDatabaseLockId(name),
                              PartitionedLockManager::LockType::kShared);
   lock_requests.emplace_back(GetObjectStoreLockId(id, object_store_id),
                              PartitionedLockManager::LockType::kExclusive);

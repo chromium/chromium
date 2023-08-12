@@ -172,7 +172,7 @@ IndexedDBDatabase::BuildLockRequestsFromTransaction(
   std::vector<PartitionedLockManager::PartitionedLockRequest> lock_requests;
   lock_requests.reserve(1 + transaction->scope().size());
   lock_requests.emplace_back(
-      GetDatabaseLockId(id()),
+      GetDatabaseLockId(name()),
       transaction->mode() == blink::mojom::IDBTransactionMode::VersionChange
           ? PartitionedLockManager::LockType::kExclusive
           : PartitionedLockManager::LockType::kShared);

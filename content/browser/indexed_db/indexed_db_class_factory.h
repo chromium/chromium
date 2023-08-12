@@ -10,7 +10,6 @@
 #include <memory>
 #include <set>
 #include <string>
-#include <utility>
 
 #include "base/functional/callback.h"
 #include "base/lazy_instance.h"
@@ -55,11 +54,10 @@ class CONTENT_EXPORT IndexedDBClassFactory {
   virtual LevelDBFactory& leveldb_factory();
   virtual TransactionalLevelDBFactory& transactional_leveldb_factory();
 
-  // Returns a constructed database, or a leveldb::Status error if there was a
-  // problem initializing the database. |run_tasks_callback| is called when the
-  // database has tasks to run.
-  virtual std::pair<std::unique_ptr<IndexedDBDatabase>, leveldb::Status>
-  CreateIndexedDBDatabase(
+  // Returns a database that is newly constructed, but which has uninitialized
+  // metadata. |tasks_available_callback| is called when the database has tasks
+  // to run.
+  virtual std::unique_ptr<IndexedDBDatabase> CreateIndexedDBDatabase(
       const std::u16string& name,
       IndexedDBBackingStore* backing_store,
       IndexedDBFactory* factory,

@@ -69,14 +69,11 @@ class IndexedDBDatabaseTest : public ::testing::Test {
         /*file_system_access_context=*/mojo::NullRemote(),
         base::SequencedTaskRunner::GetCurrentDefault(),
         base::SequencedTaskRunner::GetCurrentDefault());
-    leveldb::Status s;
-
-    std::tie(db_, s) = IndexedDBClassFactory::Get()->CreateIndexedDBDatabase(
+    db_ = IndexedDBClassFactory::Get()->CreateIndexedDBDatabase(
         u"db", backing_store_.get(), indexed_db_context_->GetIDBFactory(),
         base::BindRepeating(&IndexedDBDatabaseTest::RunTasksForDatabase,
                             weak_factory_.GetWeakPtr(), true),
         IndexedDBDatabase::Identifier(), &lock_manager_);
-    ASSERT_TRUE(s.ok());
   }
 
   void RunTasksForDatabase(bool async) {
@@ -485,14 +482,12 @@ class IndexedDBDatabaseOperationTest : public testing::Test {
         base::SequencedTaskRunner::GetCurrentDefault(),
         base::SequencedTaskRunner::GetCurrentDefault());
     backing_store_ = std::make_unique<IndexedDBFakeBackingStore>();
-    leveldb::Status s;
-    std::tie(db_, s) = IndexedDBClassFactory::Get()->CreateIndexedDBDatabase(
+    db_ = IndexedDBClassFactory::Get()->CreateIndexedDBDatabase(
         u"db", backing_store_.get(), indexed_db_context_->GetIDBFactory(),
         base::BindRepeating(
             &IndexedDBDatabaseOperationTest::RunTasksForDatabase,
             base::Unretained(this), true),
         IndexedDBDatabase::Identifier(), &lock_manager_);
-    ASSERT_TRUE(s.ok());
 
     callbacks_ = base::MakeRefCounted<MockIndexedDBDatabaseCallbacks>();
     const int64_t transaction_id = 1;

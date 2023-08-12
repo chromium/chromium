@@ -124,7 +124,15 @@ CONTENT_EXPORT int CompareIndexKeys(const base::StringPiece& a,
 // Logging support.
 std::string IndexedDBKeyToDebugString(base::StringPiece key);
 
-CONTENT_EXPORT PartitionedLockId GetDatabaseLockId(int64_t database_id);
+// TODO(estade): these lock id factories have nothing to do with level db
+// coding and don't belong in this file.
+
+// We can't use the database ID for the database lock because we need to hold
+// this lock before we start reading/writing the database metadata, at which
+// point we don't yet know the ID, but do know the name (which is unique
+// anyway).
+CONTENT_EXPORT PartitionedLockId
+GetDatabaseLockId(std::u16string database_name);
 CONTENT_EXPORT PartitionedLockId GetObjectStoreLockId(int64_t database_id,
                                                       int64_t object_store_id);
 

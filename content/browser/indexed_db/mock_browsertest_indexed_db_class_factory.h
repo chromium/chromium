@@ -40,8 +40,7 @@ class MockBrowserTestIndexedDBClassFactory
 
   TransactionalLevelDBFactory& transactional_leveldb_factory() override;
 
-  std::pair<std::unique_ptr<IndexedDBDatabase>, leveldb::Status>
-  CreateIndexedDBDatabase(
+  std::unique_ptr<IndexedDBDatabase> CreateIndexedDBDatabase(
       const std::u16string& name,
       IndexedDBBackingStore* backing_store,
       IndexedDBFactory* factory,

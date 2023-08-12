@@ -371,7 +371,7 @@ MockBrowserTestIndexedDBClassFactory::transactional_leveldb_factory() {
   return *this;
 }
 
-std::pair<std::unique_ptr<IndexedDBDatabase>, leveldb::Status>
+std::unique_ptr<IndexedDBDatabase>
 MockBrowserTestIndexedDBClassFactory::CreateIndexedDBDatabase(
     const std::u16string& name,
     IndexedDBBackingStore* backing_store,
@@ -379,15 +379,9 @@ MockBrowserTestIndexedDBClassFactory::CreateIndexedDBDatabase(
     TasksAvailableCallback tasks_available_callback,
     const IndexedDBDatabase::Identifier& unique_identifier,
     PartitionedLockManager* transaction_lock_manager) {
-  std::unique_ptr<IndexedDBTestDatabase> database =
-      std::make_unique<IndexedDBTestDatabase>(
-          name, backing_store, factory, this,
-          std::move(tasks_available_callback), unique_identifier,
-          transaction_lock_manager);
-  leveldb::Status s = database->OpenInternal();
-  if (!s.ok())
-    database.reset();
-  return {std::move(database), s};
+  return std::make_unique<IndexedDBTestDatabase>(
+      name, backing_store, factory, this, std::move(tasks_available_callback),
+      unique_identifier, transaction_lock_manager);
 }
 
 std::unique_ptr<IndexedDBTransaction>

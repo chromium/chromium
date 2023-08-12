@@ -379,6 +379,9 @@ class CONTENT_EXPORT IndexedDBDatabase {
   // Safe because the IndexedDBBackingStore is owned by the same object which
   // owns us, the IndexedDBPerBucketFactory.
   raw_ptr<IndexedDBBackingStore> backing_store_;
+
+  // `metadata_` may not be fully initialized, but its `name` will always be
+  // valid.
   blink::IndexedDBDatabaseMetadata metadata_;
 
   const Identifier identifier_;

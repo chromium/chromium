@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
@@ -694,8 +695,10 @@ TEST(PartitionedLockManager, TestRangeDifferences) {
   PartitionedLockId lock_id_db1_os1;
   PartitionedLockId lock_id_db1_os2;
   for (int64_t i = 0; i < 512; ++i) {
-    lock_id_db1 = GetDatabaseLockId(i);
-    lock_id_db2 = GetDatabaseLockId(i + 1);
+    lock_id_db1 = GetDatabaseLockId(
+        base::ASCIIToUTF16(base::StringPrintf("%" PRIx64, i)));
+    lock_id_db2 = GetDatabaseLockId(
+        base::ASCIIToUTF16(base::StringPrintf("%" PRIx64, i + 1)));
     lock_id_db1_os1 = GetObjectStoreLockId(i, i);
     lock_id_db1_os2 = GetObjectStoreLockId(i, i + 1);
     EXPECT_NE(lock_id_db1, lock_id_db2);

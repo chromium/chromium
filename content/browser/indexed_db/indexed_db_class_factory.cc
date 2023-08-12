@@ -88,7 +88,7 @@ IndexedDBClassFactory::transactional_leveldb_factory() {
   return *transactional_leveldb_factory_;
 }
 
-std::pair<std::unique_ptr<IndexedDBDatabase>, leveldb::Status>
+std::unique_ptr<IndexedDBDatabase>
 IndexedDBClassFactory::CreateIndexedDBDatabase(
     const std::u16string& name,
     IndexedDBBackingStore* backing_store,
@@ -98,14 +98,9 @@ IndexedDBClassFactory::CreateIndexedDBDatabase(
     PartitionedLockManager* transaction_lock_manager) {
   DCHECK(backing_store);
   DCHECK(factory);
-  std::unique_ptr<IndexedDBDatabase> database = base::WrapUnique(
-      new IndexedDBDatabase(name, backing_store, factory, this,
-                            std::move(tasks_available_callback),
-                            unique_identifier, transaction_lock_manager));
-  leveldb::Status s = database->OpenInternal();
-  if (!s.ok())
-    database = nullptr;
-  return {std::move(database), s};
+  return base::WrapUnique(new IndexedDBDatabase(
+      name, backing_store, factory, this, std::move(tasks_available_callback),
+      unique_identifier, transaction_lock_manager));
 }
 
 std::unique_ptr<IndexedDBTransaction>

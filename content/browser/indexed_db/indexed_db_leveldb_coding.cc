@@ -1321,13 +1321,8 @@ std::string IndexedDBKeyToDebugString(base::StringPiece key) {
   return result.str();
 }
 
-PartitionedLockId GetDatabaseLockId(int64_t database_id) {
-  // These keys used to attempt to be bytewise-comparable, which is why
-  // it uses big-endian encoding here. There was a goal to match the
-  // existing leveldb key scheme used by IndexedDB. This is no longer a goal.
-  uint64_t key[1] = {ByteSwapToBE64(static_cast<uint64_t>(database_id))};
-  return {kDatabaseLockPartition,
-          std::string(reinterpret_cast<char*>(&key), sizeof(key))};
+PartitionedLockId GetDatabaseLockId(std::u16string database_name) {
+  return {kDatabaseLockPartition, base::UTF16ToUTF8(database_name)};
 }
 
 PartitionedLockId GetObjectStoreLockId(int64_t database_id,
