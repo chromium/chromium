@@ -10,6 +10,7 @@
 #include "base/test/test_future.h"
 #include "content/browser/service_worker/embedded_worker_instance.h"
 #include "content/browser/service_worker/embedded_worker_test_helper.h"
+#include "content/browser/service_worker/service_worker_hid_delegate_observer.h"
 #include "content/browser/service_worker/service_worker_test_utils.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -53,6 +54,15 @@ void EmbeddedWorkerInstanceTestHarness::CreateAndStartWorker(
       EmbeddedWorkerTestHelper::CreateMainScriptResponse());
   worker_version_->set_fetch_handler_type(
       ServiceWorkerVersion::FetchHandlerType::kNotSkippable);
+
+  content::HidDelegate* hid_delegate =
+      content::GetContentClientForTesting()->browser()->GetHidDelegate();
+  worker_version_->set_has_hid_event_handlers(
+      hid_delegate && hid_delegate->IsServiceWorkerAllowedForOrigin(
+                          url::Origin::Create(origin)));
+
+  worker_version_->SetStatus(ServiceWorkerVersion::Status::ACTIVATED);
+  pair.first->SetActiveVersion(worker_version_);
 
   // Make the registration findable via storage functions.
   base::test::TestFuture<blink::ServiceWorkerStatusCode> status;

@@ -242,6 +242,15 @@ class HidServiceBaseTest : public testing::Test, public HidServiceTestHelper {
             embedded_worker_test_helper_->PrepareRegistrationAndVersion(
                 scope, worker_url);
         worker_version_ = pair.second;
+        worker_version_->set_fetch_handler_type(
+            ServiceWorkerVersion::FetchHandlerType::kNotSkippable);
+        // Since this test fixture is used expecting device events being
+        // handled, simulate the script having hid event handlers by setting
+        // `has_hid_event_handlers_` of `worker_version_` before it is being
+        // activated.
+        worker_version_->set_has_hid_event_handlers(true);
+        worker_version_->SetStatus(ServiceWorkerVersion::Status::ACTIVATED);
+        pair.first->SetActiveVersion(worker_version_);
         auto* embedded_worker = worker_version_->GetEmbeddedWorkerForTesting();
         embedded_worker_test_helper_->StartWorker(
             embedded_worker,

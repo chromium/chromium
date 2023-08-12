@@ -70,6 +70,12 @@ class CONTENT_EXPORT ServiceWorkerHidDelegateObserver
       const device::mojom::HidDeviceInfo& device_info,
       HidServiceDeviceEventCallback callback);
 
+  // Run `callback` with `device_info` after the worker of `version` is started.
+  void WorkerStarted(device::mojom::HidDeviceInfoPtr device_info,
+                     HidServiceDeviceEventCallback callback,
+                     scoped_refptr<ServiceWorkerVersion> version,
+                     blink::ServiceWorkerStatusCode service_worker_status);
+
   // Get HidService for the `registration_id`. It can be null if no live
   // HidService for the `registration_id`.
   HidService* GetHidService(int64_t registration_id);
@@ -79,6 +85,9 @@ class CONTENT_EXPORT ServiceWorkerHidDelegateObserver
 
   base::ScopedObservation<HidDelegate, ServiceWorkerHidDelegateObserver>
       hid_delegate_observation{this};
+
+  base::WeakPtrFactory<ServiceWorkerHidDelegateObserver> weak_ptr_factory_{
+      this};
 };
 
 }  // namespace content

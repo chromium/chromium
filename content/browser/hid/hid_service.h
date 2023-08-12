@@ -48,6 +48,12 @@ class CONTENT_EXPORT HidService : public blink::mojom::HidService,
                      const url::Origin&,
                      mojo::PendingReceiver<blink::mojom::HidService>);
 
+  // Removes reports from `device` if the report IDs match the IDs in the
+  // protected report ID lists. If all of the reports are removed from a
+  // collection, the collection is also removed.
+  static void RemoveProtectedReports(device::mojom::HidDeviceInfo& device,
+                                     bool is_fido_allowed);
+
   // blink::mojom::HidService:
   void RegisterClient(
       mojo::PendingAssociatedRemote<device::mojom::HidManagerClient> client)

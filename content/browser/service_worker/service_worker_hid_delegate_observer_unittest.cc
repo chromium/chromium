@@ -8,6 +8,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/test_future.h"
@@ -46,6 +47,65 @@ using ::testing::Return;
 const char kTestUrl[] = "https://www.google.com";
 const char kTestGuid[] = "test-guid";
 
+// This TestServiceWorkerObserver observes starting, started, and stopped of
+// the worker with `version_id`.
+class TestServiceWorkerObserver : public ServiceWorkerContextCoreObserver {
+ public:
+  TestServiceWorkerObserver(ServiceWorkerContextWrapper* context,
+                            int64_t version_id)
+      : version_id_(version_id) {
+    observation_.Observe(context);
+  }
+
+  TestServiceWorkerObserver(const TestServiceWorkerObserver&) = delete;
+  TestServiceWorkerObserver& operator=(const TestServiceWorkerObserver&) =
+      delete;
+
+  ~TestServiceWorkerObserver() override = default;
+
+  void WaitForWorkerStarting() { starting_run_loop.Run(); }
+
+  void WaitForWorkerStarted() { started_run_loop.Run(); }
+
+  void WaitForWorkerStopped() { stopped_run_loop.Run(); }
+
+  // ServiceWorkerContextCoreObserver:
+  void OnStarting(int64_t version_id) override {
+    if (version_id != version_id_) {
+      return;
+    }
+    starting_run_loop.Quit();
+  }
+
+  void OnStarted(int64_t version_id,
+                 const GURL& scope,
+                 int process_id,
+                 const GURL& script_url,
+                 const blink::ServiceWorkerToken& token,
+                 const blink::StorageKey& key) override {
+    if (version_id != version_id_) {
+      return;
+    }
+    started_run_loop.Quit();
+  }
+
+  void OnStopped(int64_t version_id) override {
+    if (version_id != version_id_) {
+      return;
+    }
+    stopped_run_loop.Quit();
+  }
+
+ private:
+  base::RunLoop starting_run_loop;
+  base::RunLoop started_run_loop;
+  base::RunLoop stopped_run_loop;
+  int64_t version_id_;
+  base::ScopedObservation<ServiceWorkerContextWrapper,
+                          ServiceWorkerContextCoreObserver>
+      observation_{this};
+};
+
 class FakeHidConnectionClient : public device::mojom::HidConnectionClient {
  public:
   FakeHidConnectionClient() = default;
@@ -78,11 +138,15 @@ class MockHidManagerClient : public device::mojom::HidManagerClient {
     receiver_.Bind(std::move(receiver));
   }
 
-  MOCK_METHOD1(DeviceAdded, void(device::mojom::HidDeviceInfoPtr device_info));
-  MOCK_METHOD1(DeviceRemoved,
-               void(device::mojom::HidDeviceInfoPtr device_info));
-  MOCK_METHOD1(DeviceChanged,
-               void(device::mojom::HidDeviceInfoPtr device_info));
+  MOCK_METHOD(void, DeviceAdded, (device::mojom::HidDeviceInfoPtr), (override));
+  MOCK_METHOD(void,
+              DeviceRemoved,
+              (device::mojom::HidDeviceInfoPtr),
+              (override));
+  MOCK_METHOD(void,
+              DeviceChanged,
+              (device::mojom::HidDeviceInfoPtr),
+              (override));
 
  private:
   mojo::AssociatedReceiver<device::mojom::HidManagerClient> receiver_{this};
@@ -217,12 +281,39 @@ class ServiceWorkerHidDelegateObserverTest
 
   MockHidManagerClient& hid_manager_client() { return hid_manager_client_; }
 
+  std::tuple<blink::ServiceWorkerStatusCode,
+             scoped_refptr<ServiceWorkerRegistration>>
+  FindRegistration(int64_t registration_id, const blink::StorageKey& key) {
+    TestFuture<blink::ServiceWorkerStatusCode,
+               scoped_refptr<ServiceWorkerRegistration>>
+        future;
+    registry()->FindRegistrationForId(registration_id, key,
+                                      future.GetCallback());
+    return future.Take();
+  }
+
+  void ServiceWorkerInstalling(
+      scoped_refptr<ServiceWorkerVersion> version) override {
+    // This simulates the scenario where the service worker script has an HID
+    // event handler.
+    version->set_has_hid_event_handlers(true);
+  }
+
  protected:
   MockHidManagerClient hid_manager_client_;
   HidTestContentBrowserClient test_client_;
   device::FakeHidManager hid_manager_;
   FakeHidConnectionClient connection_client_;
   ScopedContentBrowserClientSetting setting{&test_client_};
+};
+
+class ServiceWorkerHidDelegateObserverNoEventHandlersTest
+    : public ServiceWorkerHidDelegateObserverTest {
+ public:
+  void ServiceWorkerInstalling(
+      scoped_refptr<ServiceWorkerVersion> version) override {
+    // Do nothing to simluate no HID event handlers.
+  }
 };
 
 }  // namespace
@@ -241,12 +332,37 @@ TEST_F(ServiceWorkerHidDelegateObserverTest, DeviceAdded) {
     auto* version = registrations[idx]->newest_installed_version();
     ASSERT_NE(version, nullptr);
     version_ids.push_back(version->version_id());
-    StartServiceWorker(version);
-    hid_services[idx] = CreateHidService(version);
-    RegisterHidManagerClient(hid_services[idx], hid_manager_clients[idx]);
   }
 
-  auto device = CreateDeviceWithOneReport("device-guid");
+  auto device1 = CreateDeviceWithOneReport("device1-guid");
+  auto device2 = CreateDeviceWithOneReport("device2-guid");
+  // DeviceAdded event when the service worker is not running.
+  {
+    std::vector<std::unique_ptr<TestServiceWorkerObserver>>
+        service_worker_observers;
+    std::vector<TestFuture<device::mojom::HidDeviceInfoPtr>>
+        device_added_futures(num_workers);
+    for (size_t idx = 0; idx < num_workers; ++idx) {
+      service_worker_observers.push_back(
+          std::make_unique<TestServiceWorkerObserver>(context()->wrapper(),
+                                                      version_ids[idx]));
+      auto& device_added_future = device_added_futures[idx];
+      EXPECT_CALL(hid_manager_clients[idx], DeviceAdded).WillOnce([&](auto d) {
+        device_added_future.SetValue(std::move(d));
+      });
+    }
+    ConnectDevice(*device1);
+    for (size_t idx = 0; idx < num_workers; ++idx) {
+      service_worker_observers[idx]->WaitForWorkerStarting();
+      auto* version = context()->GetLiveVersion(version_ids[idx]);
+      ASSERT_NE(version, nullptr);
+      hid_services[idx] = CreateHidService(version);
+      RegisterHidManagerClient(hid_services[idx], hid_manager_clients[idx]);
+      service_worker_observers[idx]->WaitForWorkerStarted();
+      EXPECT_EQ(device_added_futures[idx].Get()->guid, device1->guid);
+    }
+  }
+
   // DeviceAdded event when the service worker is running.
   {
     std::vector<TestFuture<device::mojom::HidDeviceInfoPtr>>
@@ -260,9 +376,9 @@ TEST_F(ServiceWorkerHidDelegateObserverTest, DeviceAdded) {
         device_added_future.SetValue(std::move(d));
       });
     }
-    ConnectDevice(*device);
+    ConnectDevice(*device2);
     for (size_t idx = 0; idx < num_workers; ++idx) {
-      EXPECT_EQ(device_added_futures[idx].Get()->guid, device->guid);
+      EXPECT_EQ(device_added_futures[idx].Get()->guid, device2->guid);
     }
   }
 }
@@ -281,14 +397,39 @@ TEST_F(ServiceWorkerHidDelegateObserverTest, DeviceRemoved) {
     auto* version = registrations[idx]->newest_installed_version();
     ASSERT_NE(version, nullptr);
     version_ids.push_back(version->version_id());
-    StartServiceWorker(version);
-    hid_services[idx] = CreateHidService(version);
-    RegisterHidManagerClient(hid_services[idx], hid_manager_clients[idx]);
   }
 
   auto device = CreateDeviceWithOneReport();
   hid_manager_.AddDevice(device.Clone());
-  // DeviceRemoved event when the service wokrer is running.
+  // DeviceRemoved event when the service worker is not running.
+  {
+    std::vector<std::unique_ptr<TestServiceWorkerObserver>>
+        service_worker_observers;
+    std::vector<TestFuture<device::mojom::HidDeviceInfoPtr>>
+        device_removed_futures(num_workers);
+    for (size_t idx = 0; idx < num_workers; ++idx) {
+      service_worker_observers.push_back(
+          std::make_unique<TestServiceWorkerObserver>(context()->wrapper(),
+                                                      version_ids[idx]));
+      auto& device_removed_future = device_removed_futures[idx];
+      EXPECT_CALL(hid_manager_clients[idx], DeviceRemoved)
+          .WillOnce(
+              [&](auto d) { device_removed_future.SetValue(std::move(d)); });
+    }
+    DisconnectDevice(*device);
+    for (size_t idx = 0; idx < num_workers; ++idx) {
+      service_worker_observers[idx]->WaitForWorkerStarting();
+      auto* version = context()->GetLiveVersion(version_ids[idx]);
+      ASSERT_NE(version, nullptr);
+      hid_services[idx] = CreateHidService(version);
+      RegisterHidManagerClient(hid_services[idx], hid_manager_clients[idx]);
+      service_worker_observers[idx]->WaitForWorkerStarted();
+      EXPECT_EQ(device_removed_futures[idx].Get()->guid, device->guid);
+    }
+  }
+
+  hid_manager_.AddDevice(device.Clone());
+  // DeviceRemoved event when the service worker is running.
   {
     std::vector<TestFuture<device::mojom::HidDeviceInfoPtr>>
         device_removed_futures(num_workers);
@@ -322,14 +463,39 @@ TEST_F(ServiceWorkerHidDelegateObserverTest, DeviceChanged) {
     auto* version = registrations[idx]->newest_installed_version();
     ASSERT_NE(version, nullptr);
     version_ids.push_back(version->version_id());
-    StartServiceWorker(version);
-    hid_services[idx] = CreateHidService(version);
-    RegisterHidManagerClient(hid_services[idx], hid_manager_clients[idx]);
   }
 
+  // DeviceChanged event when the service worker is not running.
   auto device = CreateDeviceWithOneReport();
   hid_manager_.AddDevice(device.Clone());
-  // DeviceChanged event when the service wokrer is running.
+  {
+    std::vector<std::unique_ptr<TestServiceWorkerObserver>>
+        service_worker_observers;
+    std::vector<TestFuture<device::mojom::HidDeviceInfoPtr>>
+        device_changed_futures(num_workers);
+    for (size_t idx = 0; idx < num_workers; ++idx) {
+      service_worker_observers.push_back(
+          std::make_unique<TestServiceWorkerObserver>(context()->wrapper(),
+                                                      version_ids[idx]));
+      auto& device_changed_future = device_changed_futures[idx];
+      EXPECT_CALL(hid_manager_clients[idx], DeviceChanged)
+          .WillOnce(
+              [&](auto d) { device_changed_future.SetValue(std::move(d)); });
+    }
+    device = CreateDeviceWithTwoReports();
+    UpdateDevice(*device);
+    for (size_t idx = 0; idx < num_workers; ++idx) {
+      service_worker_observers[idx]->WaitForWorkerStarting();
+      auto* version = context()->GetLiveVersion(version_ids[idx]);
+      ASSERT_NE(version, nullptr);
+      hid_services[idx] = CreateHidService(version);
+      RegisterHidManagerClient(hid_services[idx], hid_manager_clients[idx]);
+      service_worker_observers[idx]->WaitForWorkerStarted();
+      EXPECT_EQ(device_changed_futures[idx].Get()->guid, device->guid);
+    }
+  }
+
+  // DeviceChanged event when the service worker is running.
   {
     std::vector<TestFuture<device::mojom::HidDeviceInfoPtr>>
         device_changed_futures(num_workers);
@@ -510,6 +676,244 @@ TEST_F(ServiceWorkerHidDelegateObserverTest,
   hid_service = CreateHidService(version);
   EXPECT_TRUE(context()->hid_delegate_observer()->GetHidServiceForTesting(
       registration->id()));
+}
+
+TEST_F(ServiceWorkerHidDelegateObserverTest,
+       RestartBrowserWithInstalledServiceWorker) {
+  const GURL origin(kTestUrl);
+  auto registration = InstallServiceWorker(origin);
+  auto registration_id = registration->id();
+  auto* version = registration->newest_installed_version();
+  ASSERT_NE(version, nullptr);
+  auto version_id = version->version_id();
+  EXPECT_TRUE(context()->GetLiveRegistration(registration_id));
+
+  // Simulate a browser restart scenario where the registration_id_map of
+  // ServiceWorkerHidDelegateObserver is empty, and the
+  // ServiceWorkerRegistration, ServiceWorkerVersion are not alive.
+  registration.reset();
+  EXPECT_FALSE(context()->GetLiveRegistration(registration_id));
+  EXPECT_FALSE(context()->GetLiveVersion(version_id));
+  context()->SetServiceWorkerHidDelegateObserverForTesting(
+      std::make_unique<ServiceWorkerHidDelegateObserver>(context()));
+  EXPECT_TRUE(
+      context()->hid_delegate_observer()->registration_id_map().empty());
+
+  // Create ServiceWorkerRegistration and ServiceWorkerVersion by finding the
+  // registration.
+  const blink::StorageKey key =
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(origin));
+  auto [status, found_registration] = FindRegistration(registration_id, key);
+  EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk, status);
+  EXPECT_TRUE(found_registration);
+  version = found_registration->GetNewestVersion();
+  EXPECT_NE(version, nullptr);
+  EXPECT_TRUE(version->has_hid_event_handlers());
+  EXPECT_TRUE(context()->GetLiveRegistration(registration_id));
+  const auto it =
+      context()->hid_delegate_observer()->registration_id_map().find(
+          registration_id);
+  EXPECT_NE(it,
+            context()->hid_delegate_observer()->registration_id_map().end());
+  EXPECT_EQ(it->second.key, key);
+  EXPECT_TRUE(it->second.has_event_handlers);
+}
+
+TEST_F(ServiceWorkerHidDelegateObserverTest, NoPermissionNotStartWorker) {
+  const GURL origin(kTestUrl);
+  auto registration = InstallServiceWorker(origin);
+  auto* version = registration->newest_installed_version();
+  ASSERT_NE(version, nullptr);
+
+  auto device = CreateDeviceWithOneReport();
+  EXPECT_CALL(hid_delegate(), HasDevicePermission).WillOnce(Return(false));
+  ConnectDevice(*device);
+  EXPECT_EQ(version->running_status(), EmbeddedWorkerStatus::STOPPED);
+}
+
+TEST_F(ServiceWorkerHidDelegateObserverTest, NoReportsDeviceNotStartWorker) {
+  const GURL origin(kTestUrl);
+  auto registration = InstallServiceWorker(origin);
+  auto* version = registration->newest_installed_version();
+  ASSERT_NE(version, nullptr);
+
+  auto device = CreateDeviceWithNoReports();
+  EXPECT_CALL(hid_delegate(), HasDevicePermission).WillOnce(Return(true));
+  ConnectDevice(*device);
+  EXPECT_EQ(version->running_status(), EmbeddedWorkerStatus::STOPPED);
+}
+
+TEST_F(ServiceWorkerHidDelegateObserverTest, ProcessPendingCallback) {
+  size_t num_workers = 10;
+  std::vector<const GURL> origins;
+  std::vector<scoped_refptr<ServiceWorkerRegistration>> registrations;
+  std::vector<int64_t> version_ids;
+  std::vector<mojo::Remote<blink::mojom::HidService>> hid_services(num_workers);
+  std::vector<MockHidManagerClient> hid_manager_clients(num_workers);
+  for (size_t idx = 0; idx < num_workers; ++idx) {
+    origins.push_back(
+        GURL(base::StringPrintf("https://www.example%zu.com", idx)));
+    registrations.push_back(InstallServiceWorker(origins[idx]));
+    auto* version = registrations[idx]->newest_installed_version();
+    ASSERT_NE(version, nullptr);
+    version_ids.push_back(version->version_id());
+  }
+
+  auto device1 = CreateDeviceWithOneReport("device1-guid");
+  auto device2 = CreateDeviceWithOneReport("device2-guid");
+  // DeviceAdded event when the service worker is not running.
+  {
+    std::vector<std::unique_ptr<TestServiceWorkerObserver>>
+        service_worker_observers;
+    std::vector<TestFuture<device::mojom::HidDeviceInfoPtr>>
+        device_added_futures(num_workers);
+    for (size_t idx = 0; idx < num_workers; ++idx) {
+      service_worker_observers.push_back(
+          std::make_unique<TestServiceWorkerObserver>(context()->wrapper(),
+                                                      version_ids[idx]));
+    }
+    ConnectDevice(*device1);
+    const auto& pending_callbacks =
+        context()->hid_delegate_observer()->GetPendingCallbacksForTesting();
+    for (size_t idx = 0; idx < num_workers; ++idx) {
+      service_worker_observers[idx]->WaitForWorkerStarting();
+      auto* version = context()->GetLiveVersion(version_ids[idx]);
+      ASSERT_NE(version, nullptr);
+      // Not to register HidManagerClient until later to have callback stored
+      // and be consumed later.
+      hid_services[idx] = CreateHidService(version);
+      service_worker_observers[idx]->WaitForWorkerStarted();
+      const auto it = pending_callbacks.find(version_ids[idx]);
+      EXPECT_NE(it, pending_callbacks.end());
+      EXPECT_EQ(it->second.size(), 1u);
+    }
+
+    for (size_t idx = 0; idx < num_workers; ++idx) {
+      auto& device_added_future = device_added_futures[idx];
+      EXPECT_CALL(hid_manager_clients[idx], DeviceAdded).WillOnce([&](auto d) {
+        device_added_future.SetValue(std::move(d));
+      });
+      RegisterHidManagerClient(hid_services[idx], hid_manager_clients[idx]);
+      EXPECT_EQ(device_added_futures[idx].Get()->guid, device1->guid);
+      EXPECT_FALSE(pending_callbacks.contains(version_ids[idx]));
+    }
+  }
+}
+
+TEST_F(ServiceWorkerHidDelegateObserverTest,
+       ClearPendingCallbackWhenWorkerStopped) {
+  size_t num_workers = 10;
+  std::vector<const GURL> origins;
+  std::vector<scoped_refptr<ServiceWorkerRegistration>> registrations;
+  std::vector<int64_t> version_ids;
+  for (size_t idx = 0; idx < num_workers; ++idx) {
+    origins.push_back(
+        GURL(base::StringPrintf("https://www.example%zu.com", idx)));
+    registrations.push_back(InstallServiceWorker(origins[idx]));
+    auto* version = registrations[idx]->newest_installed_version();
+    ASSERT_NE(version, nullptr);
+    version_ids.push_back(version->version_id());
+  }
+
+  auto device1 = CreateDeviceWithOneReport("device1-guid");
+  auto device2 = CreateDeviceWithOneReport("device2-guid");
+  std::vector<mojo::Remote<blink::mojom::HidService>> hid_services(num_workers);
+  std::vector<MockHidManagerClient> hid_manager_clients(num_workers);
+  // DeviceAdded event when the service worker is not running.
+  {
+    std::vector<std::unique_ptr<TestServiceWorkerObserver>>
+        service_worker_observers;
+    std::vector<TestFuture<device::mojom::HidDeviceInfoPtr>>
+        device_added_futures(num_workers);
+    for (size_t idx = 0; idx < num_workers; ++idx) {
+      service_worker_observers.push_back(
+          std::make_unique<TestServiceWorkerObserver>(context()->wrapper(),
+                                                      version_ids[idx]));
+    }
+    ConnectDevice(*device1);
+    const auto& pending_callbacks =
+        context()->hid_delegate_observer()->GetPendingCallbacksForTesting();
+    for (size_t idx = 0; idx < num_workers; ++idx) {
+      service_worker_observers[idx]->WaitForWorkerStarting();
+      auto* version = context()->GetLiveVersion(version_ids[idx]);
+      ASSERT_NE(version, nullptr);
+      hid_services[idx] = CreateHidService(version);
+      service_worker_observers[idx]->WaitForWorkerStarted();
+      const auto it = pending_callbacks.find(version_ids[idx]);
+      EXPECT_NE(it, pending_callbacks.end());
+      EXPECT_EQ(it->second.size(), 1u);
+    }
+
+    for (size_t idx = 0; idx < num_workers; ++idx) {
+      auto* version = context()->GetLiveVersion(version_ids[idx]);
+      ASSERT_NE(version, nullptr);
+      ASSERT_EQ(version->version_id(), version_ids[idx]);
+      StopServiceWorker(version);
+      service_worker_observers[idx]->WaitForWorkerStopped();
+      // Returning from `WaitForWorkerStopped()` does not guarantee that all of
+      // the `ServiceWorkerContextCoreObserver` are called. It might be the case
+      // that `TestServiceWorkerObserver::OnStopped` is called but
+      // `ServiceWorkerDeviceDelegateObserver::OnStopped` is not called yet. To
+      // handle this case, start the worker and then check the state when the
+      // work is started because that is the point at which all of the
+      // `ServiceWorkerContextCoreObservers::OnStopped` have been called.
+      StartServiceWorker(version);
+      EXPECT_FALSE(pending_callbacks.contains(version_ids[idx]));
+    }
+  }
+}
+
+TEST_F(ServiceWorkerHidDelegateObserverNoEventHandlersTest,
+       DeviceAddedNotStartWorker) {
+  const GURL origin(kTestUrl);
+  auto registration = InstallServiceWorker(origin);
+  auto* version = registration->newest_installed_version();
+  ASSERT_TRUE(version);
+
+  auto device = CreateDeviceWithOneReport();
+  ConnectDevice(*device);
+  EXPECT_EQ(version->running_status(), EmbeddedWorkerStatus::STOPPED);
+}
+
+TEST_F(ServiceWorkerHidDelegateObserverNoEventHandlersTest,
+       RestartBrowserWithInstalledServiceWorker) {
+  const GURL origin(kTestUrl);
+  auto registration = InstallServiceWorker(origin);
+  auto registration_id = registration->id();
+  auto* version = registration->newest_installed_version();
+  ASSERT_NE(version, nullptr);
+  auto version_id = version->version_id();
+  EXPECT_TRUE(context()->GetLiveRegistration(registration_id));
+
+  // Simulate a browser restart scenario where the registration_id_map of
+  // ServiceWorkerHidDelegateObserver is empty, and the
+  // ServiceWorkerRegistration, ServiceWorkerVersion are not alive.
+  registration.reset();
+  EXPECT_FALSE(context()->GetLiveRegistration(registration_id));
+  EXPECT_FALSE(context()->GetLiveVersion(version_id));
+  context()->SetServiceWorkerHidDelegateObserverForTesting(
+      std::make_unique<ServiceWorkerHidDelegateObserver>(context()));
+  EXPECT_TRUE(
+      context()->hid_delegate_observer()->registration_id_map().empty());
+
+  // Create ServiceWorkerRegistration and ServiceWorkerVersion by finding the
+  // registration.
+  const blink::StorageKey key =
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(origin));
+  auto [status, found_registration] = FindRegistration(registration_id, key);
+  EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk, status);
+  EXPECT_TRUE(found_registration);
+  version = found_registration->GetNewestVersion();
+  EXPECT_NE(version, nullptr);
+  EXPECT_FALSE(version->has_hid_event_handlers());
+  EXPECT_TRUE(context()->GetLiveRegistration(registration_id));
+  EXPECT_TRUE(
+      context()->hid_delegate_observer()->registration_id_map().empty());
+
+  StartServiceWorker(version);
+  EXPECT_FALSE(version->has_hid_event_handlers());
+  EXPECT_TRUE(
+      context()->hid_delegate_observer()->registration_id_map().empty());
 }
 
 }  // namespace content

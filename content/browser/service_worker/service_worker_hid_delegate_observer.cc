@@ -14,8 +14,22 @@
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/service_worker/service_worker_registration.h"
 #include "content/browser/service_worker/service_worker_version.h"
+#include "content/public/browser/browser_context.h"
+#include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 
 namespace content {
+
+namespace {
+
+bool HasDevicePermission(HidDelegate* delegate,
+                         BrowserContext* browser_context,
+                         const blink::StorageKey& key,
+                         const device::mojom::HidDeviceInfo& device_info) {
+  return delegate && delegate->HasDevicePermission(browser_context,
+                                                   key.origin(), device_info);
+}
+
+}  // namespace
 
 ServiceWorkerHidDelegateObserver::ServiceWorkerHidDelegateObserver(
     ServiceWorkerContextCore* context)
@@ -104,7 +118,7 @@ void ServiceWorkerHidDelegateObserver::DispatchHidDeviceEventToWorkers(
     HidServiceDeviceEventCallback callback) {
   for (auto const& [id, info] : registration_id_map()) {
     // No need to proceed if the registration doesn't have any event listeners.
-    if (!info.has_event_listener) {
+    if (!info.has_event_handlers) {
       continue;
     }
     // Forward it to HidService if the service worker is running, HidService is
@@ -118,8 +132,59 @@ void ServiceWorkerHidDelegateObserver::DispatchHidDeviceEventToWorkers(
         continue;
       }
     }
-    // TODO:(crbug.com/1446487): Wake up SW for HID events.
+
+    // Avoid waking up the worker if eventually the device event won't be
+    // delivered for the HidService.
+    if (!HasDevicePermission(GetContentClient()->browser()->GetHidDelegate(),
+                             GetBrowserContext(), info.key, device_info)) {
+      continue;
+    }
+    auto filtered_device_info = device_info.Clone();
+    HidService::RemoveProtectedReports(
+        *filtered_device_info,
+        GetContentClient()->browser()->GetHidDelegate()->IsFidoAllowedForOrigin(
+            GetBrowserContext(), info.key.origin()));
+    if (filtered_device_info->collections.empty()) {
+      continue;
+    }
+
+    DispatchEventToWorker(
+        id, base::BindOnce(&ServiceWorkerHidDelegateObserver::WorkerStarted,
+                           weak_ptr_factory_.GetWeakPtr(),
+                           std::move(filtered_device_info), callback));
   }
+}
+
+void ServiceWorkerHidDelegateObserver::WorkerStarted(
+    device::mojom::HidDeviceInfoPtr device_info,
+    HidServiceDeviceEventCallback callback,
+    scoped_refptr<ServiceWorkerVersion> version,
+    blink::ServiceWorkerStatusCode service_worker_status) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (!version ||
+      service_worker_status != blink::ServiceWorkerStatusCode::kOk) {
+    return;
+  }
+
+  auto registration_id = version->registration_id();
+  auto* hid_service = GetHidService(registration_id);
+  // Even when the service worker is in the running state, the HidService may
+  // not be available or the render-side HidManagerClient may not have yet
+  // registered. This is because the service worker is set to running state
+  // after the script is evaluated, but the inter-process request that creates
+  // the HidService or gets the HidManagerClient registered may still be in
+  // progress. In order to handle this case, the callback is stored and will be
+  // processed when the HidService is ready and the HidManagerClient is
+  // registered with the HidService.
+  if (!hid_service || hid_service->clients().empty()) {
+    AddPendingCallback(
+        version.get(),
+        base::BindOnce(&ServiceWorkerHidDelegateObserver::WorkerStarted,
+                       base::Unretained(this), std::move(device_info),
+                       std::move(callback), version, service_worker_status));
+    return;
+  }
+  callback.Run(*device_info, hid_service);
 }
 
 HidService* ServiceWorkerHidDelegateObserver::GetHidService(
