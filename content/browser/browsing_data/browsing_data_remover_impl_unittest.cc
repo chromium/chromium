@@ -61,6 +61,7 @@
 #include "storage/browser/test/mock_special_storage_policy.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/origin.h"
@@ -1856,7 +1857,7 @@ TEST_F(BrowsingDataRemoverImplTest, RemoveStorageBucketsAndReply) {
           StoragePartitionConfig::CreateDefault(&browser_context),
           &storage_partition);
       remover.RemoveStorageBucketsAndReply(
-          storage_key, buckets,
+          absl::nullopt, storage_key, buckets,
           base::BindOnce(&TestObserver::OnBrowsingDataRemoverDone,
                          base::Unretained(this), 0));
     }

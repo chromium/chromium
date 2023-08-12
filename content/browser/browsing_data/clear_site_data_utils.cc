@@ -110,7 +110,9 @@ class SiteDataClearer : public BrowsingDataRemover::Observer {
       // For storage buckets, no mask is being passed per se. Therefore, when
       // the storage buckets are successfully removed, the `failed_data_types`
       // arg should be set to 0 to align with existing behaviour in this class.
+      // TODO(zelin): Pass down storage partition and replace nullopt.
       remover_->RemoveStorageBucketsAndReply(
+          absl::nullopt,
           storage_key_.value_or(blink::StorageKey::CreateFirstParty(origin_)),
           storage_buckets_to_remove_,
           base::BindOnce(&SiteDataClearer::OnBrowsingDataRemoverDone,

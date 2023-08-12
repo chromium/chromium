@@ -47,7 +47,11 @@ class CONTENT_EXPORT BrowsingDataRemoverImpl
   // Is the BrowsingDataRemoverImpl currently in the process of removing data?
   bool IsRemovingForTesting() { return is_removing_; }
 
+  // Removes storage buckets of a storage key.
+  // If |storage_partition_config| is null, the operation will take place
+  // on the profile's default storage partition.
   void RemoveStorageBucketsAndReply(
+      const absl::optional<StoragePartitionConfig> storage_partition_config,
       const blink::StorageKey& storage_key,
       const std::set<std::string>& storage_buckets,
       base::OnceClosure callback);
