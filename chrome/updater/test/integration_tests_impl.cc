@@ -109,19 +109,16 @@ std::string GetHashHex(const base::FilePath& file) {
   return base::HexEncode(actual_hash, sizeof(actual_hash));
 }
 
-std::string GetUpdateResponse(const std::string& app_id,
-                              const std::string& install_data_index,
-                              const std::string& codebase,
-                              const base::Version& version,
-                              const base::FilePath& update_file,
-                              const std::string& run_action,
-                              const std::string& arguments,
-                              const std::string& file_hash) {
+std::string GetUpdateResponseForApp(
+    const std::string& app_id,
+    const std::string& install_data_index,
+    const std::string& codebase,
+    const base::Version& version,
+    const base::FilePath& update_file,
+    const std::string& run_action,
+    const std::string& arguments,
+    const absl::optional<std::string>& file_hash = absl::nullopt) {
   return base::StringPrintf(
-      ")]}'\n"
-      R"({"response":{)"
-      R"(  "protocol":"3.1",)"
-      R"(  "app":[)"
       R"(    {)"
       R"(      "appid":"%s",)"
       R"(      "status":"ok",)"
@@ -140,9 +137,7 @@ std::string GetUpdateResponse(const std::string& app_id,
       R"(          })"
       R"(        })"
       R"(      })"
-      R"(    })"
-      R"(  ])"
-      R"(}})",
+      R"(    })",
       base::ToLowerASCII(app_id).c_str(),
       !install_data_index.empty()
           ? base::StringPrintf(
@@ -153,7 +148,33 @@ std::string GetUpdateResponse(const std::string& app_id,
           : "",
       codebase.c_str(), version.GetString().c_str(), run_action.c_str(),
       arguments.c_str(), update_file.BaseName().AsUTF8Unsafe().c_str(),
-      file_hash.c_str());
+      file_hash ? file_hash->c_str() : GetHashHex(update_file).c_str());
+}
+
+std::string GetUpdateResponse(const std::vector<std::string>& app_responses) {
+  return base::StringPrintf(
+      ")]}'\n"
+      R"({"response":{)"
+      R"(  "protocol":"3.1",)"
+      R"(  "app":[)"
+      R"(%s)"
+      R"(  ])"
+      R"(}})",
+      base::JoinString(app_responses, ",\n").c_str());
+}
+
+std::string GetUpdateResponse(const std::string& app_id,
+                              const std::string& install_data_index,
+                              const std::string& codebase,
+                              const base::Version& version,
+                              const base::FilePath& update_file,
+                              const std::string& run_action,
+                              const std::string& arguments,
+                              const std::string& file_hash) {
+  return GetUpdateResponse(
+      {GetUpdateResponseForApp(app_id, install_data_index, codebase, version,
+                               update_file, run_action, arguments, file_hash)
+           .c_str()});
 }
 
 std::string GetUpdateResponse(const std::string& app_id,
@@ -290,6 +311,25 @@ void ExpectDeviceManagementRequest(ScopedServer* test_server,
 }
 
 }  // namespace
+
+AppUpdateExpectation::AppUpdateExpectation(
+    const std::string& app_id,
+    const base::Version& from_version,
+    const base::Version& to_version,
+    bool should_update,
+    bool allow_rollback,
+    const std::string& target_version_prefix,
+    const base::FilePath& crx_relative_path)
+    : app_id(app_id),
+      from_version(from_version),
+      to_version(to_version),
+      should_update(should_update),
+      allow_rollback(allow_rollback),
+      target_version_prefix(target_version_prefix),
+      crx_relative_path(crx_relative_path) {}
+AppUpdateExpectation::AppUpdateExpectation(const AppUpdateExpectation&) =
+    default;
+AppUpdateExpectation::~AppUpdateExpectation() = default;
 
 void ExitTestMode(UpdaterScope scope) {
   DeleteFileAndEmptyParentDirectories(GetOverrideFilePath(scope));
@@ -445,56 +485,80 @@ void ExpectNoCrashes(UpdaterScope scope) {
   EXPECT_EQ(count, 0) << ": " << count << " crashes found";
 }
 
+void ExpectAppsUpdateSequence(UpdaterScope scope,
+                              ScopedServer* test_server,
+                              const std::vector<AppUpdateExpectation>& apps) {
 #if BUILDFLAG(IS_WIN)
-void ExpectAppRollbackUpdateSequence(UpdaterScope scope,
-                                     ScopedServer* test_server,
-                                     const std::string& app_id,
-                                     bool rollback_allowed,
-                                     const std::string& target_version_prefix,
-                                     const base::Version& from_version,
-                                     const base::Version& to_version) {
+  const base::FilePath::StringType kExeExtension = FILE_PATH_LITERAL(".exe");
+#else
+  const base::FilePath::StringType kExeExtension = FILE_PATH_LITERAL("");
+#endif  // BUILDFLAG(IS_WIN)
+
   base::FilePath exe_path;
   ASSERT_TRUE(base::PathService::Get(base::DIR_EXE, &exe_path));
-  base::FilePath crx_path = exe_path.Append(FILE_PATH_LITERAL("test_installer"))
-                                .AppendASCII("TestApp2Setup.crx3");
-  ASSERT_TRUE(base::PathExists(crx_path));
 
   // First request: update check.
-  test_server->ExpectOnce(
-      {request::GetPathMatcher(test_server->update_path()),
-       request::GetContentMatcher({
-           base::StringPrintf(R"("appid":"%s")", app_id.c_str()),
-           rollback_allowed ? "\"rollback_allowed\":true" : "",
-           target_version_prefix.empty()
-               ? ""
-               : base::StringPrintf(R"("targetversionprefix":"%s")",
-                                    target_version_prefix.c_str()),
-       }),
-       request::GetScopeMatcher(scope)},
-      GetUpdateResponse(
-          app_id, "", test_server->update_url().spec(), to_version, crx_path,
-          "TestApp2Setup.exe",
-          base::StringPrintf("%s --appid=%s --company=%s --product_version=%s",
-                             IsSystemInstall(scope) ? "--system" : "",
-                             app_id.c_str(), COMPANY_SHORTNAME_STRING,
-                             to_version.GetString().c_str())));
+  std::vector<std::string> app_requests;
+  std::vector<std::string> app_responses;
+  for (const AppUpdateExpectation& app : apps) {
+    const base::FilePath crx_path = exe_path.Append(app.crx_relative_path);
+    app_requests.push_back(
+        base::StringPrintf(R"("appid":"%s")", app.app_id.c_str()));
+    app_responses.push_back(GetUpdateResponseForApp(
+        app.app_id, "", test_server->update_url().spec(), app.to_version,
+        crx_path,
+        crx_path.BaseName()
+            .ReplaceExtension(kExeExtension)
+            .MaybeAsASCII()
+            .c_str(),
+        base::StringPrintf("%s --appid=%s --company=%s --product_version=%s",
+                           IsSystemInstall(scope) ? "--system" : "",
+                           app.app_id.c_str(), COMPANY_SHORTNAME_STRING,
+                           app.to_version.GetString().c_str())));
+  }
+  test_server->ExpectOnce({request::GetPathMatcher(test_server->update_path()),
+                           request::GetContentMatcher(app_requests),
+                           request::GetScopeMatcher(scope)},
+                          GetUpdateResponse(app_responses));
 
-  // Second request: update download.
-  std::string crx_bytes;
-  base::ReadFileToString(crx_path, &crx_bytes);
-  test_server->ExpectOnce({request::GetContentMatcher({""})}, crx_bytes);
+  for (const AppUpdateExpectation& app : apps) {
+    if (app.should_update) {
+      // Download requests for apps that update
+      const base::FilePath crx_path = exe_path.Append(app.crx_relative_path);
+      ASSERT_TRUE(base::PathExists(crx_path));
+      std::string crx_bytes;
+      base::ReadFileToString(crx_path, &crx_bytes);
+      test_server->ExpectOnce({request::GetContentMatcher({""})}, crx_bytes);
 
-  // Third request: event ping.
-  test_server->ExpectOnce(
-      {request::GetPathMatcher(test_server->update_path()),
-       request::GetContentMatcher({base::StringPrintf(
-           R"(.*"eventresult":1,"eventtype":3,)"
-           R"("nextversion":"%s","previousversion":"%s".*)",
-           to_version.GetString().c_str(), from_version.GetString().c_str())}),
-       request::GetScopeMatcher(scope)},
-      ")]}'\n");
+      // Followed by event ping.
+      test_server->ExpectOnce(
+          {request::GetPathMatcher(test_server->update_path()),
+           request::GetContentMatcher({base::StringPrintf(
+               R"(.*"appid":"%s",.*)"
+               R"("eventresult":1,"eventtype":3,)"
+               R"("nextversion":"%s","previousversion":"%s".*)"
+               R"("version":"%s".*)",
+               app.app_id.c_str(), app.to_version.GetString().c_str(),
+               app.from_version.GetString().c_str(),
+               app.to_version.GetString().c_str())})},
+          ")]}'\n");
+    } else {
+      // Event ping for apps that doesn't update.
+      test_server->ExpectOnce(
+          {request::GetPathMatcher(test_server->update_path()),
+           request::GetContentMatcher({base::StringPrintf(
+               R"(.*"appid":"%s",.*)"
+               R"(.*"errorcat":4,"errorcode":2,)"
+               R"("eventresult":0,"eventtype":3,)"
+               R"("nextversion":"%s","previousversion":"%s".*)"
+               R"("version":"%s".*)",
+               app.app_id.c_str(), app.to_version.GetString().c_str(),
+               app.from_version.GetString().c_str(),
+               app.from_version.GetString().c_str())})},
+          ")]}'\n");
+    }
+  }
 }
-#endif  // BUILDFLAG(IS_WIN)
 
 void RunWake(UpdaterScope scope, int expected_exit_code) {
   RunUpdaterWithSwitch(base::Version(kUpdaterVersion), scope, kWakeSwitch,
