@@ -35,6 +35,11 @@
 #include "device/fido/mac/util.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "device/bluetooth/bluetooth_low_energy_scan_filter.h"
+#include "device/bluetooth/floss/floss_features.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 namespace device {
 
 namespace {
@@ -326,7 +331,81 @@ void FidoCableDiscovery::AdapterDiscoveringChanged(BluetoothAdapter* adapter,
   }
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
+void FidoCableDiscovery::OnDeviceFound(
+    device::BluetoothLowEnergyScanSession* scan_session,
+    device::BluetoothDevice* device) {
+  DeviceAdded(adapter_.get(), device);
+}
+
+void FidoCableDiscovery::OnDeviceLost(
+    device::BluetoothLowEnergyScanSession* scan_session,
+    device::BluetoothDevice* device) {
+  DeviceRemoved(adapter_.get(), device);
+}
+
+void FidoCableDiscovery::OnSessionStarted(
+    device::BluetoothLowEnergyScanSession* scan_session,
+    absl::optional<device::BluetoothLowEnergyScanSession::ErrorCode>
+        error_code) {
+  if (error_code) {
+    FIDO_LOG(ERROR) << "Failed to start caBLE LE scan session, error_code = "
+                    << static_cast<int>(error_code.value());
+    le_scan_session_.reset();
+    return;
+  }
+
+  FIDO_LOG(DEBUG) << "LE scan session started.";
+
+  // Advertising is delayed by 500ms to ensure that any UI has a chance to
+  // appear as we don't want to start broadcasting without the user being
+  // aware.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&FidoCableDiscovery::StartAdvertisement,
+                     weak_factory_.GetWeakPtr()),
+      base::Milliseconds(500));
+}
+
+void FidoCableDiscovery::OnSessionInvalidated(
+    device::BluetoothLowEnergyScanSession* scan_session) {
+  FIDO_LOG(EVENT) << "LE scan session invalidated";
+  le_scan_session_.reset();
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 void FidoCableDiscovery::StartCableDiscovery() {
+#if BUILDFLAG(IS_CHROMEOS)
+  if (floss::features::IsFlossEnabled()) {
+    device::BluetoothLowEnergyScanFilter::Pattern google_pattern(
+        /*start_position=*/0,
+        device::BluetoothLowEnergyScanFilter::AdvertisementDataType::
+            kServiceData,
+        /* kServiceData takes the 16-bit UUID as a little endian byte vector. */
+        std::vector<uint8_t>{kGoogleCableUUID[3], kGoogleCableUUID[2]});
+    device::BluetoothLowEnergyScanFilter::Pattern fido_pattern(
+        /*start_position=*/0,
+        device::BluetoothLowEnergyScanFilter::AdvertisementDataType::
+            kServiceData,
+        std::vector<uint8_t>{kFIDOCableUUID[3], kFIDOCableUUID[2]});
+    auto filter = device::BluetoothLowEnergyScanFilter::Create(
+        device::BluetoothLowEnergyScanFilter::Range::kFar,
+        /*device_found_timeout=*/base::Seconds(1),
+        /*device_lost_timeout=*/base::Seconds(7),
+        {google_pattern, fido_pattern},
+        /*rssi_sampling_period=*/base::Seconds(1));
+    if (!filter) {
+      FIDO_LOG(ERROR)
+          << "Failed to start LE scanning due to failure to create filter.";
+      return;
+    }
+
+    le_scan_session_ = adapter_->StartLowEnergyScanSession(
+        std::move(filter), weak_factory_.GetWeakPtr());
+    return;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
   adapter()->StartDiscoverySessionWithFilter(
       std::make_unique<BluetoothDiscoveryFilter>(
           BluetoothTransport::BLUETOOTH_TRANSPORT_LE),

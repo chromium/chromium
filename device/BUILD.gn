@@ -200,6 +200,10 @@ test("device_unittests") {
       "//services/data_decoder/public/cpp:test_support",
     ]
 
+    if (is_chromeos_lacros) {
+      deps += [ "//chromeos/startup" ]
+    }
+
     if (is_mac) {
       data_deps += [ "fido/strings:fido_test_strings" ]
     }
