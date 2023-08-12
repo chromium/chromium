@@ -528,7 +528,13 @@ IN_PROC_BROWSER_TEST_F(ChromeSharedDictionaryBrowserTest,
       /*expected_used_for_subresource_count=*/1);
 }
 
-IN_PROC_BROWSER_TEST_F(ChromeSharedDictionaryBrowserTest, SiteDataCount) {
+// TODO(crbug.com/1472445): Fix flakiness in test and enable.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_SiteDataCount DISABLED_SiteDataCount
+#else
+#define MAYBE_SiteDataCount SiteDataCount
+#endif  //BUILDFLAG(IS_WIN) 
+IN_PROC_BROWSER_TEST_F(ChromeSharedDictionaryBrowserTest, MAYBE_SiteDataCount) {
   base::Time time1 = base::Time::Now();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/title1.html")));
