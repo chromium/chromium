@@ -574,6 +574,7 @@
 <translation id="2166049586286450108">Пълен администраторски достъп</translation>
 <translation id="2166378884831602661">Този сайт не може да осигури защитена връзка</translation>
 <translation id="2168151236314517198">Отпечатването на това съдържание е блокирано чрез администраторско правило</translation>
+<translation id="2175630235841878061">Файловете над 100 MB не са налице за изтегляне</translation>
 <translation id="2176974405772725904">Запазване на адреса в профила</translation>
 <translation id="2178665390943006934">Бутон „Актуализиране на Chrome“. Активирайте, за да актуализирате Chrome от настройките</translation>
 <translation id="2181821976797666341">Правила</translation>
@@ -2404,6 +2405,7 @@
 <translation id="6118782133429281336">Списъкът с източници е празен.</translation>
 <translation id="6120179357481664955">Помните ли идентификационния си номер за UPI?</translation>
 <translation id="6122181661879998141">предната страна на картата ви</translation>
+<translation id="6124058285696691147">Изтегляне на прикачения файл</translation>
 <translation id="6124432979022149706">Конектори за Chrome Enterprise</translation>
 <translation id="6126565365696310362">Плик, китайски №2</translation>
 <translation id="6127379762771434464">Елементът бе премахнат</translation>

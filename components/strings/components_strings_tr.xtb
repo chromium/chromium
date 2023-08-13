@@ -574,6 +574,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2166049586286450108">Tam Yönetici Erişimi</translation>
 <translation id="2166378884831602661">Bu site güvenli bağlantı sağlayamıyor</translation>
 <translation id="2168151236314517198">Bu içeriğin yazdırılması yönetici politikası tarafından engellendi</translation>
+<translation id="2175630235841878061">100 MB'tan büyük dosyalar indirilemez</translation>
 <translation id="2176974405772725904">Adresi Hesaba Kaydedin</translation>
 <translation id="2178665390943006934">Chrome'u güncelle düğmesi, Chrome ayarlarınızdan Chrome'u güncellemek için etkinleştirin</translation>
 <translation id="2181821976797666341">Politikalar</translation>
@@ -2404,6 +2405,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6118782133429281336">Kaynak listesi boş.</translation>
 <translation id="6120179357481664955">UPI ID'nizi hatırlıyor musunuz?</translation>
 <translation id="6122181661879998141">kartınızın önünde</translation>
+<translation id="6124058285696691147">Eklentiyi indir</translation>
 <translation id="6124432979022149706">Chrome Enterprise Connectors</translation>
 <translation id="6126565365696310362">Zarf Chinese #2</translation>
 <translation id="6127379762771434464">Öğe kaldırıldı</translation>
