@@ -40,6 +40,7 @@ namespace recordreplay {
   Macro(V8RecordReplayHasDisabledFeatures, (), (), bool, false)         \
   Macro(V8RecordReplayAreAssertsDisabled, (), (), bool, false)          \
   Macro(V8IsMainThread, (), (), bool, false)                            \
+  Macro(V8RecordReplayIsInReplayCode, (), (), bool, false)              \
   Macro(V8RecordReplayHadMismatch, (), (), bool, false)
 
 #define ForEachV8APIVoid(Macro)                                         \
@@ -111,7 +112,9 @@ namespace recordreplay {
   Macro(V8RecordReplayMaybeTerminate,                                   \
         (void (*callback)(void*), void* data), (callback, data))        \
   Macro(V8RecordReplayGetCurrentJSStack,                                \
-        (std::string* stackTrace), (stackTrace))
+        (std::string* stackTrace), (stackTrace))                        \
+  Macro(V8RecordReplayEnterReplayCode, (), ())                          \
+  Macro(V8RecordReplayExitReplayCode, (), ())
 
 #if BUILDFLAG(IS_WIN)
 
@@ -493,12 +496,16 @@ int NewIdAnyThread(const char* name) {
 }
 
 bool IsInReplayCode() {
-  // Events are disallowed when running Replay's own scripts.
-  // FIXME Add to Recording API.
-  // https://linear.app/replay/issue/RUN-1502
-  return IsReplaying() && AreEventsDisallowed();
+  return V8RecordReplayIsInReplayCode();
 }
 
+AutoMarkReplayCode::AutoMarkReplayCode() {
+  V8RecordReplayEnterReplayCode();
+}
+
+AutoMarkReplayCode::~AutoMarkReplayCode() {
+  V8RecordReplayExitReplayCode();
+}
 
 void RecordReplayString(const char* why, std::string& str) {
   size_t length = RecordReplayValue(why, str.length());

@@ -110,7 +110,14 @@ void OnNavigationEvent(const char* kind, const char* url);
 int NewIdMainThread(const char* name);
 int NewIdAnyThread(const char* name);
 
+// Return whether record/replay specific scripts are executing.
 bool IsInReplayCode();
+
+// Mark a region where record/replay specific scripts are executing.
+struct AutoMarkReplayCode {
+  AutoMarkReplayCode();
+  ~AutoMarkReplayCode();
+};
 
 // stl comparator that uses pointer IDs to compare elements when recording/replaying,
 // giving a deterministic sort order.

@@ -129,16 +129,6 @@ const gSourceMapData = new Map();
 
 try {
 
-
-
-
-
-
-
-
-
-
-
 // Save these before page code potentially overwrites them.
 const JSON_stringify = JSON.stringify;
 const JSON_parse = JSON.parse;
@@ -4901,6 +4891,7 @@ void SetupRecordReplayCommands(v8::Isolate* isolate, LocalFrame* localFrame) {
 
   if (recordreplay::FeatureEnabled("collect-source-maps") &&
       !TestEnv("RECORD_REPLAY_DISABLE_SOURCEMAP_COLLECTION")) {
+    recordreplay::AutoMarkReplayCode amrc;
     RunScript(isolate, context, gSourceMapScript, InternalScriptURL);
   }
 
@@ -4911,14 +4902,16 @@ void SetupRecordReplayCommands(v8::Isolate* isolate, LocalFrame* localFrame) {
   }
 
   if (recordreplay::IsReplaying()) {
+    recordreplay::AutoMarkReplayCode amrc;
     recordreplay::AutoDisallowEvents disallow("SetupRecordReplayCommands");
     RunScript(isolate, context, gReplayScript, InternalScriptURL);
   }
 }
 
 void OnNewRootFrame(v8::Isolate* isolate, LocalFrame* localFrame) {
+  recordreplay::AutoMarkReplayCode amrc;
   v8::Local<v8::Context> context = isolate->GetCurrentContext();
-  
+
   // 1. Register navigation event.
   if (localFrame->GetDocument()->Url().ProtocolIsInHTTPFamily()) {
     recordreplay::OnNavigationEvent(
@@ -4941,6 +4934,7 @@ void OnNewRootFrame(v8::Isolate* isolate, LocalFrame* localFrame) {
 }
 
 void OnNewWindow2(v8::Isolate* isolate, LocalFrame* localFrame) {
+  recordreplay::AutoMarkReplayCode amrc;
   v8::Local<v8::Context> context = isolate->GetCurrentContext();
   RunScript(isolate, context, gOnNewWindowScript,
             "record-replay-devtools-OnNewWindow");
