@@ -22,6 +22,7 @@
 
 #include "third_party/blink/renderer/core/css/css_import_rule.h"
 
+#include "third_party/blink/renderer/core/css/css_markup.h"
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
 #include "third_party/blink/renderer/core/css/media_list.h"
 #include "third_party/blink/renderer/core/css/style_rule_import.h"
@@ -50,9 +51,8 @@ MediaList* CSSImportRule::media() {
 
 String CSSImportRule::cssText() const {
   StringBuilder result;
-  result.Append("@import url(\"");
-  result.Append(import_rule_->Href());
-  result.Append("\")");
+  result.Append("@import ");
+  result.Append(SerializeURI(import_rule_->Href()));
 
   if (import_rule_->IsLayered()) {
     result.Append(" layer");
