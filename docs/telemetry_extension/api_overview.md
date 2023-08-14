@@ -436,10 +436,31 @@ and **events**.
 | touchPoints | Array<TouchPointInfo\> | The touch points reported by the touchpad |
 
 ### TouchpadConnectedEventInfo
+| Property Name | Type | Description |
+------------ | ------- | ----------- |
 | maxX | number | The maximum possible x position of touch points |
 | maxY | number | The maximum possible y position of touch points |
 | maxPressure | number | The maximum possible pressure of touch points, or 0 if pressure is not supported |
 | buttons | Array<InputTouchButton\> | The supported buttons |
+
+### StylusTouchPointInfo
+| Property Name | Type | Description |
+------------ | ------- | ----------- |
+| x | number | The x position in the cartesian XY plane. The value ranges from 0 to `max_x` as defined in `StylusConnectedEventInfo` |
+| y | number | The y position in the cartesian XY plane. The value ranges from 0 to `max_y` as defined in `StylusConnectedEventInfo` |
+| pressure | number | The pressure applied to the touch contact. The value ranges from 0 to `max_pressure` as defined in `StylusConnectedEventInfo` |
+
+### StylusTouchEventInfo
+| Property Name | Type | Description |
+------------ | ------- | ----------- |
+| touchPoint | StylusTouchPointInfo | The info of the stylus touch point. A null touch point means the stylus leaves the contact |
+
+### StylusConnectedEventInfo
+| Property Name | Type | Description |
+------------ | ------- | ----------- |
+| maxX | number | The maximum possible x position of touch points |
+| maxY | number | The maximum possible y position of touch points |
+| maxPressure | number | The maximum possible pressure of touch points, or 0 if pressure is not supported |
 
 ## Functions
 
@@ -456,7 +477,7 @@ and **events**.
 | onAudioJackEvent | function(AudioJackEventInfo) | `os.events` | M115 | An audio device was plugged in or out |
 | onKeyboardDiagnosticEvent | function(KeyboardDiagnosticEventInfo) | `os.events` | M117 | Informs the extension that a Keyboard diagnostic has been completed in the first party diagnostic tool |
 | onLidEvent | function(LidEventInfo) | `os.events` | M115 | The device lid was opened or closed |
-| onUsbEvent | function(UsbEventInfo) | `os.events` | M117 | Informs the extension that a `Usb` event occurred |
+| onUsbEvent | function(UsbEventInfo) | `os.events` | M115 | Informs the extension that a `Usb` event occurred |
 | onExternalDisplayEvent | function(ExternalDisplayEventInfo) | `os.events` | M117 | Informs the extension that a `ExternalDisplay` event occurred |
 | onSdCardEvent | function(SdCardEventInfo) | `os.events` | M117 | Informs the extension that a `SD Card` event occurred |
 | onPowerEvent | function(PowerEventInfo) | `os.events` | M117 | Informs the extension that a `Power` event occurred |
