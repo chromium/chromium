@@ -209,6 +209,11 @@ class PageInfoUI {
   // mid-sentence.
   static std::u16string PermissionTypeToUIStringMidSentence(
       ContentSettingsType type);
+  // Returns a tooltip for permission |type|.
+  static std::u16string PermissionTooltipUiString(
+      ContentSettingsType type,
+      const absl::optional<url::Origin>& requesting_origin);
+
   static base::span<const PermissionUIInfo>
   GetContentSettingsUIInfoForTesting();
 

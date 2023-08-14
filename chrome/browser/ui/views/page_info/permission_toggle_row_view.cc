@@ -123,9 +123,8 @@ void PermissionToggleRowView::InitForUserSource(bool should_show_spacer_view) {
                 row_view_->GetFirstLineHeight()));
   toggle_button->SetProperty(views::kMarginsKey,
                              gfx::Insets::VH(0, icon_label_spacing));
-  toggle_button->SetAccessibleName(l10n_util::GetStringFUTF16(
-      IDS_PAGE_INFO_SELECTOR_TOOLTIP,
-      PageInfoUI::PermissionTypeToUIString(permission_.type)));
+  toggle_button->SetTooltipText(PageInfoUI::PermissionTooltipUiString(
+      permission_.type, permission_.requesting_origin));
 
   toggle_button_ = row_view_->AddControl(std::move(toggle_button));
 

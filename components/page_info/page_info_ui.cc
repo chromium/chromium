@@ -13,6 +13,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/page_info/core/features.h"
 #include "components/page_info/page_info.h"
 #include "components/page_info/page_info_ui_delegate.h"
@@ -25,12 +26,15 @@
 #include "components/security_interstitials/core/common_string_util.h"
 #include "components/strings/grit/components_chromium_strings.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/url_formatter/elide_url.h"
 #include "content/public/browser/permission_result.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "services/device/public/cpp/device_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/time_format.h"
 #include "url/gurl.h"
+#include "url/origin.h"
+
 #if BUILDFLAG(IS_ANDROID)
 #include "components/resources/android/theme_resources.h"
 #else
@@ -588,6 +592,25 @@ std::u16string PageInfoUI::PermissionTypeToUIStringMidSentence(
   }
   NOTREACHED();
   return std::u16string();
+}
+
+// static
+std::u16string PageInfoUI::PermissionTooltipUiString(
+    ContentSettingsType type,
+    const absl::optional<url::Origin>& requesting_origin) {
+  switch (type) {
+    case ContentSettingsType::STORAGE_ACCESS:
+      return l10n_util::GetStringFUTF16(
+          IDS_PAGE_INFO_SELECTOR_STORAGE_ACCESS_TOOLTIP,
+          url_formatter::FormatOriginForSecurityDisplay(
+              *requesting_origin,
+              url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC));
+    default:
+      DCHECK(!requesting_origin.has_value());
+      return l10n_util::GetStringFUTF16(
+          IDS_PAGE_INFO_SELECTOR_TOOLTIP,
+          PageInfoUI::PermissionTypeToUIString(type));
+  }
 }
 
 // static

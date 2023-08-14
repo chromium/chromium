@@ -362,6 +362,9 @@
     <message name="IDS_PAGE_INFO_SELECTOR_TOOLTIP" desc="The text of the tooltip on the page info selector.">
       Select permission for <ph name="PERMISSION_NAME">$1<ex>Location</ex></ph>
     </message>
+    <message name="IDS_PAGE_INFO_SELECTOR_STORAGE_ACCESS_TOOLTIP" desc="The text of the tooltip on the page info selector for the storage access permission.">
+      Allow <ph name="SITE">$1<ex>example.com</ex></ph> to use info they've saved about you
+    </message>
 
     <!-- Permission ask strings -->
     <message name="IDS_PAGE_INFO_STATE_TEXT_AR_ASK" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the AR permission is in the ask state and the site can prompt the user to ask if they want to allow the site to track their camera position.">
