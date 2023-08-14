@@ -5,8 +5,10 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_PAYMENTS_CLIENT_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_PAYMENTS_CLIENT_H_
 
+#include <memory>
 #include <set>
 #include <string>
+#include <unordered_map>
 #include <utility>
 #include <vector>
 
@@ -85,8 +87,11 @@ class PaymentsClient {
   // along with any information required to facilitate the authentication.
   struct UnmaskDetails {
     UnmaskDetails();
+    UnmaskDetails(const UnmaskDetails&);
+    UnmaskDetails(UnmaskDetails&&);
+    UnmaskDetails& operator=(const UnmaskDetails&);
+    UnmaskDetails& operator=(UnmaskDetails&&);
     ~UnmaskDetails();
-    UnmaskDetails& operator=(const UnmaskDetails& other);
 
     // The type of authentication method suggested for card unmask.
     AutofillClient::UnmaskAuthMethod unmask_auth_method =
@@ -131,8 +136,10 @@ class PaymentsClient {
   struct UnmaskResponseDetails {
     UnmaskResponseDetails();
     UnmaskResponseDetails(const UnmaskResponseDetails& other);
-    ~UnmaskResponseDetails();
+    UnmaskResponseDetails(UnmaskResponseDetails&&);
     UnmaskResponseDetails& operator=(const UnmaskResponseDetails& other);
+    UnmaskResponseDetails& operator=(UnmaskResponseDetails&&);
+    ~UnmaskResponseDetails();
 
     UnmaskResponseDetails& with_real_pan(std::string r) {
       real_pan = r;

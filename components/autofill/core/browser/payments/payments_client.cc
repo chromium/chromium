@@ -83,7 +83,13 @@ GURL GetRequestUrl(const std::string& path) {
 }  // namespace
 
 PaymentsClient::UnmaskDetails::UnmaskDetails() = default;
-PaymentsClient::UnmaskDetails::~UnmaskDetails() = default;
+
+PaymentsClient::UnmaskDetails::UnmaskDetails(const UnmaskDetails& other) {
+  *this = other;
+}
+
+PaymentsClient::UnmaskDetails::UnmaskDetails(UnmaskDetails&&) = default;
+
 PaymentsClient::UnmaskDetails& PaymentsClient::UnmaskDetails::operator=(
     const PaymentsClient::UnmaskDetails& other) {
   unmask_auth_method = other.unmask_auth_method;
@@ -96,6 +102,11 @@ PaymentsClient::UnmaskDetails& PaymentsClient::UnmaskDetails::operator=(
   fido_eligible_card_ids = other.fido_eligible_card_ids;
   return *this;
 }
+
+PaymentsClient::UnmaskDetails& PaymentsClient::UnmaskDetails::operator=(
+    UnmaskDetails&&) = default;
+
+PaymentsClient::UnmaskDetails::~UnmaskDetails() = default;
 
 PaymentsClient::UnmaskRequestDetails::UnmaskRequestDetails() = default;
 PaymentsClient::UnmaskRequestDetails::UnmaskRequestDetails(
@@ -125,15 +136,22 @@ PaymentsClient::UnmaskRequestDetails::operator=(
 PaymentsClient::UnmaskRequestDetails::~UnmaskRequestDetails() = default;
 
 PaymentsClient::UnmaskResponseDetails::UnmaskResponseDetails() = default;
+
 PaymentsClient::UnmaskResponseDetails::UnmaskResponseDetails(
     const UnmaskResponseDetails& other) {
   *this = other;
 }
-PaymentsClient::UnmaskResponseDetails::~UnmaskResponseDetails() = default;
+
+PaymentsClient::UnmaskResponseDetails::UnmaskResponseDetails(
+    UnmaskResponseDetails&&) = default;
+
 PaymentsClient::UnmaskResponseDetails&
 PaymentsClient::UnmaskResponseDetails::operator=(
-    const PaymentsClient::UnmaskResponseDetails& other) {
+    const UnmaskResponseDetails& other) {
   real_pan = other.real_pan;
+  dcvv = other.dcvv;
+  expiration_month = other.expiration_month;
+  expiration_year = other.expiration_year;
   if (other.fido_request_options.has_value()) {
     fido_request_options = other.fido_request_options->Clone();
   } else {
@@ -143,8 +161,15 @@ PaymentsClient::UnmaskResponseDetails::operator=(
   card_authorization_token = other.card_authorization_token;
   flow_status = other.flow_status;
   context_token = other.context_token;
+  autofill_error_dialog_context = other.autofill_error_dialog_context;
   return *this;
 }
+
+PaymentsClient::UnmaskResponseDetails&
+PaymentsClient::UnmaskResponseDetails::operator=(UnmaskResponseDetails&&) =
+    default;
+
+PaymentsClient::UnmaskResponseDetails::~UnmaskResponseDetails() = default;
 
 PaymentsClient::OptChangeRequestDetails::OptChangeRequestDetails() = default;
 PaymentsClient::OptChangeRequestDetails::OptChangeRequestDetails(
