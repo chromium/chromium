@@ -172,6 +172,11 @@
 }
 
 - (void)displayPromoCallback:(BOOL)isFirstShownPromo {
+  // If there's already a displayed promo, skip.
+  if (_currentPromoData.has_value()) {
+    return;
+  }
+
   absl::optional<PromoDisplayData> nextPromoForDisplay =
       [self.mediator nextPromoForDisplay:isFirstShownPromo];
 
@@ -221,17 +226,6 @@
   }
 
   promos_manager::Promo promo = promoData.promo;
-
-  // Trying to display a promo while the previous dismissal was not communicated
-  // back to the promos manager.
-  // TODO(crbug.com/1452233): Remove once all promos dismiss themselves.
-  if (_currentPromoData.has_value()) {
-    static crash_reporter::CrashKeyString<40> key("current-promo");
-    crash_reporter::ScopedCrashKeyString crashKey(
-        &key, ShortNameForPromo(_currentPromoData.value().promo));
-    base::debug::DumpWithoutCrashing();
-  }
-
   _currentPromoData = promoData;
 
   auto handler_it = _displayHandlerPromos.find(promo);
