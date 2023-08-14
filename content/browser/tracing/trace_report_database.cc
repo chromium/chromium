@@ -21,7 +21,26 @@ namespace {
 
 const base::FilePath::CharType kLocalTracesDatabaseName[] =
     FILE_PATH_LITERAL("LocalTraces.db");
+
 constexpr int kCurrentVersionNumber = 1;
+
+TraceReportDatabase::ClientReport GetReportFromStatement(
+    sql::Statement& statement) {
+  TraceReportDatabase::ClientReport client_report;
+  client_report.uuid = base::Uuid::ParseLowercase(statement.ColumnString(0));
+  client_report.creation_time = statement.ColumnTime(1);
+  client_report.scenario_name = statement.ColumnString(2);
+  client_report.upload_rule_name = statement.ColumnString(3);
+  client_report.total_size = static_cast<uint64_t>(statement.ColumnInt64(8));
+
+  client_report.state = static_cast<TraceReportDatabase::ReportUploadState>(
+      statement.ColumnInt(4));
+  client_report.upload_time = statement.ColumnTime(5);
+  client_report.skip_reason =
+      static_cast<TraceReportDatabase::SkipUploadReason>(
+          statement.ColumnInt(6));
+  return client_report;
+}
 
 // create table `local_traces` with following columns:
 // `uuid` is the unique ID of the trace.
@@ -33,7 +52,7 @@ constexpr int kCurrentVersionNumber = 1;
 // `skip_reason` Reason why a trace was not uploaded.
 // `proto` The trace proto string
 // `file_size` The size of trace in bytes.
-static constexpr char kLocalTracesTableSql[] = R"sql(
+constexpr char kLocalTracesTableSql[] = R"sql(
   CREATE TABLE IF NOT EXISTS local_traces(
     uuid TEXT PRIMARY KEY NOT NULL,
     creation_time DATETIME NOT NULL,
@@ -116,10 +135,12 @@ bool TraceReportDatabase::AddTrace(NewReport new_report) {
   create_local_trace.BindTime(1, new_report.creation_time);
   create_local_trace.BindString(2, new_report.scenario_name);
   create_local_trace.BindString(3, new_report.upload_rule_name);
-  create_local_trace.BindInt(4,
-                             static_cast<int>(ReportUploadState::kNotUploaded));
+  create_local_trace.BindInt(
+      4, new_report.skip_reason == SkipUploadReason::kNoSkip
+             ? static_cast<int>(ReportUploadState::kPending)
+             : static_cast<int>(ReportUploadState::kNotUploaded));
   create_local_trace.BindNull(5);
-  create_local_trace.BindInt(6, static_cast<int>(SkipUploadReason::kNoSkip));
+  create_local_trace.BindInt(6, static_cast<int>(new_report.skip_reason));
   create_local_trace.BindBlob(7, new_report.proto);
   create_local_trace.BindInt64(8, new_report.total_size);
 
@@ -275,31 +296,36 @@ TraceReportDatabase::GetAllReports() {
     return all_reports;
   }
 
-  sql::Statement get_all_local_trace(database_.GetCachedStatement(
-      SQL_FROM_HERE, "SELECT * FROM local_traces"));
+  sql::Statement statement(database_.GetCachedStatement(SQL_FROM_HERE, R"sql(
+      SELECT * FROM local_traces
+      ORDER BY creation_time DESC
+    )sql"));
+  CHECK(statement.is_valid());
 
-  CHECK(get_all_local_trace.is_valid());
-
-  while (get_all_local_trace.Step()) {
-    TraceReportDatabase::ClientReport client_report;
-    // Initialization of members
-    client_report.uuid =
-        base::Uuid::ParseLowercase(get_all_local_trace.ColumnString(0));
-    client_report.creation_time = get_all_local_trace.ColumnTime(1);
-    client_report.scenario_name = get_all_local_trace.ColumnString(2);
-    client_report.upload_rule_name = get_all_local_trace.ColumnString(3);
-    client_report.total_size =
-        static_cast<uint64_t>(get_all_local_trace.ColumnInt64(8));
-
-    client_report.state =
-        static_cast<ReportUploadState>(get_all_local_trace.ColumnInt(4));
-    client_report.upload_time = get_all_local_trace.ColumnTime(5);
-    client_report.skip_reason =
-        static_cast<SkipUploadReason>(get_all_local_trace.ColumnInt(6));
-
-    all_reports.push_back(client_report);
+  while (statement.Step()) {
+    all_reports.push_back(GetReportFromStatement(statement));
   }
   return all_reports;
+}
+
+absl::optional<TraceReportDatabase::ClientReport>
+TraceReportDatabase::GetNextReportPendingUpload() {
+  if (!database_.is_open()) {
+    return absl::nullopt;
+  }
+
+  sql::Statement statement(database_.GetCachedStatement(SQL_FROM_HERE, R"sql(
+      SELECT * FROM local_traces WHERE state in (1,2)
+      ORDER BY creation_time DESC
+    )sql"));
+  CHECK(statement.is_valid());
+
+  // Select the most recent report first, to prioritize surfacing new
+  // issues and collecting traces from new scenarios.
+  while (statement.Step()) {
+    return GetReportFromStatement(statement);
+  }
+  return absl::nullopt;
 }
 
 }  // namespace content

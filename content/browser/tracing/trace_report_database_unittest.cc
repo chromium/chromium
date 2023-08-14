@@ -37,6 +37,7 @@ TEST_F(TraceReportDatabaseTest, AddingNewReport) {
   new_report.upload_rule_name = "rules1";
   new_report.total_size = 23192873129873128;
   new_report.proto = "Proto1";
+  new_report.skip_reason = TraceReportDatabase::SkipUploadReason::kNoSkip;
 
   const auto new_size = new_report.total_size;
 
@@ -48,6 +49,8 @@ TEST_F(TraceReportDatabaseTest, AddingNewReport) {
   EXPECT_EQ(received_reports[0].scenario_name, "scenario1");
   EXPECT_EQ(received_reports[0].upload_rule_name, "rules1");
   EXPECT_EQ(received_reports[0].total_size, new_size);
+  EXPECT_EQ(received_reports[0].state,
+            TraceReportDatabase::ReportUploadState::kPending);
 }
 
 TEST_F(TraceReportDatabaseTest, RetreiveProtoFromTrace) {
@@ -233,6 +236,7 @@ TEST_F(TraceReportDatabaseTest, UploadComplete) {
   new_report.upload_rule_name = "rules3";
   new_report.total_size = 23192873129873128;
   new_report.proto = "Proto3";
+  new_report.skip_reason = TraceReportDatabase::SkipUploadReason::kNoSkip;
 
   const auto copie_value = new_report.uuid;
 
@@ -247,6 +251,32 @@ TEST_F(TraceReportDatabaseTest, UploadComplete) {
   EXPECT_EQ(all_traces[0].state,
             TraceReportDatabase::ReportUploadState::kUploaded);
   EXPECT_EQ(all_traces[0].upload_time, uploaded_time);
+}
+
+TEST_F(TraceReportDatabaseTest, GetNextReportPendingUpload) {
+  EXPECT_FALSE(trace_report_.GetNextReportPendingUpload());
+
+  // Create Report for the local traces database.
+  TraceReportDatabase::NewReport new_report;
+  new_report.uuid = base::Uuid::GenerateRandomV4();
+  new_report.scenario_name = "scenario3";
+  new_report.upload_rule_name = "rules3";
+  new_report.total_size = 23192873129873128;
+  new_report.proto = "Proto3";
+  new_report.skip_reason = TraceReportDatabase::SkipUploadReason::kNoSkip;
+
+  const auto copie_value = new_report.uuid;
+
+  ASSERT_TRUE(trace_report_.AddTrace(std::move(new_report)));
+
+  auto upload_report = trace_report_.GetNextReportPendingUpload();
+  ASSERT_TRUE(upload_report);
+  EXPECT_EQ(upload_report->uuid, copie_value);
+
+  auto uploaded_time = base::Time::Now();
+  ASSERT_TRUE(trace_report_.UploadComplete(copie_value, uploaded_time));
+
+  EXPECT_FALSE(trace_report_.GetNextReportPendingUpload());
 }
 
 }  // namespace content

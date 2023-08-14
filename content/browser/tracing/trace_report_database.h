@@ -53,6 +53,10 @@ class CONTENT_EXPORT TraceReportDatabase {
 
     // The total size in bytes taken by the report.
     uint64_t total_size;
+
+    // The reason for which a report was not uploaded even if the upload rules
+    // were met.
+    SkipUploadReason skip_reason = SkipUploadReason::kNoSkip;
   };
 
   // NewReport represents the metadata needed to create and add a new report
@@ -83,10 +87,6 @@ class CONTENT_EXPORT TraceReportDatabase {
 
     // The time at which the report was successfully uploaded to a server.
     base::Time upload_time;
-
-    // The reason for which a report was not uploaded even if the upload rules
-    // were met.
-    SkipUploadReason skip_reason;
   };
 
   TraceReportDatabase();
@@ -124,6 +124,9 @@ class CONTENT_EXPORT TraceReportDatabase {
 
   // Returns all the reports currently stored in the database.
   std::vector<ClientReport> GetAllReports();
+
+  // Returns the next report pending upload.
+  absl::optional<ClientReport> GetNextReportPendingUpload();
 
  private:
   bool EnsureTableCreated();
