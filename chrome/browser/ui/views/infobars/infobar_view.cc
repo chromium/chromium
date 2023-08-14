@@ -54,8 +54,6 @@
 
 namespace {
 
-constexpr int kSeparatorHeightDip = 1;
-
 int GetElementSpacing() {
   return ChromeLayoutProvider::Get()->GetDistanceMetric(
       DISTANCE_UNRELATED_CONTROL_HORIZONTAL);
@@ -110,7 +108,9 @@ InfoBarView::InfoBarView(std::unique_ptr<infobars::InfoBarDelegate> delegate)
     // This is the wrong color, but allows the button's size to be computed
     // correctly.  We'll reset this with the correct color in OnThemeChanged().
     views::SetImageFromVectorIconWithColor(
-        close_button.get(), vector_icons::kCloseRoundedIcon,
+        close_button.get(),
+        features::IsChromeRefresh2023() ? vector_icons::kCloseChromeRefreshIcon
+                                        : vector_icons::kCloseRoundedIcon,
         gfx::kPlaceholderColor, gfx::kPlaceholderColor);
     close_button->SetTooltipText(l10n_util::GetStringUTF16(IDS_ACCNAME_CLOSE));
     gfx::Insets close_button_spacing = GetCloseButtonSpacing();
@@ -143,7 +143,7 @@ void InfoBarView::RecalculateHeight() {
   }
   const gfx::Insets infobar_margins =
       ChromeLayoutProvider::Get()->GetInsetsMetric(INSETS_INFOBAR_VIEW);
-  SetTargetHeight(height + kSeparatorHeightDip + infobar_margins.height());
+  SetTargetHeight(height + infobar_margins.height());
 }
 
 void InfoBarView::Layout() {
@@ -208,17 +208,6 @@ void InfoBarView::ViewHierarchyChanged(
   }
 }
 
-void InfoBarView::OnPaint(gfx::Canvas* canvas) {
-  views::View::OnPaint(canvas);
-
-  const SkColor color =
-      GetColorProvider()->GetColor(kColorInfoBarContentAreaSeparator);
-  const gfx::RectF local_bounds(GetLocalBounds());
-  const gfx::Vector2d separator_offset(0, kSeparatorHeightDip);
-  canvas->DrawSharpLine(local_bounds.bottom_left() - separator_offset,
-                        local_bounds.bottom_right() - separator_offset, color);
-}
-
 void InfoBarView::OnThemeChanged() {
   views::View::OnThemeChanged();
   const auto* cp = GetColorProvider();
@@ -230,9 +219,11 @@ void InfoBarView::OnThemeChanged() {
   const SkColor icon_disabled_color =
       cp->GetColor(kColorInfoBarButtonIconDisabled);
   if (close_button_) {
-    views::SetImageFromVectorIconWithColor(close_button_,
-                                           vector_icons::kCloseRoundedIcon,
-                                           icon_color, icon_disabled_color);
+    views::SetImageFromVectorIconWithColor(
+        close_button_,
+        features::IsChromeRefresh2023() ? vector_icons::kCloseChromeRefreshIcon
+                                        : vector_icons::kCloseRoundedIcon,
+        icon_color, icon_disabled_color);
   }
 
   for (views::View* child : children()) {

@@ -42,7 +42,6 @@ class InfoBarView : public infobars::InfoBar,
   gfx::Size CalculatePreferredSize() const override;
   void ViewHierarchyChanged(
       const views::ViewHierarchyChangedDetails& details) override;
-  void OnPaint(gfx::Canvas* canvas) override;
   void OnThemeChanged() override;
 
   // views::ExternalFocusTracker:
