@@ -1030,25 +1030,6 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
         execution_target);
   }
 
-  // If `execution_target` is non-null, uses it as the target. Otherwise, uses
-  // shell().
-  [[nodiscard]] content::EvalJsResult JoinInterestGroupAndWait(
-      const std::string& interest_group_json,
-      const absl::optional<ToRenderFrameHost> execution_target =
-          absl::nullopt) {
-    return EvalJs(execution_target ? *execution_target : shell(),
-                  base::StringPrintf(
-                      R"(
-(async function() {
-  try {
-    return await navigator.joinAdInterestGroup(%s);
-  } catch (e) {
-    return e.toString();
-  }
-})())",
-                      interest_group_json.c_str()));
-  }
-
   [[nodiscard]] content::EvalJsResult CreateAuctionNonceAndWait() {
     return EvalJs(shell(), "navigator.createAuctionNonce()");
   }
