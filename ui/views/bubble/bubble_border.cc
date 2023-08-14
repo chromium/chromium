@@ -214,8 +214,7 @@ const cc::PaintFlags& GetBorderAndShadowFlags(
     return flag_map->find(key)->second;
 
   cc::PaintFlags flags;
-  flags.setColor(
-      color_provider->GetColor(ui::kColorBubbleBorderWhenShadowPresent));
+  flags.setColor(color_provider->GetColor(ui::kColorBubbleBorder));
   flags.setAntiAlias(true);
   flags.setLooper(gfx::CreateShadowDrawLooper(
       GetShadowValues(color_provider, elevation, shadow_type)));
@@ -703,8 +702,7 @@ void BubbleBorder::PaintVisibleArrow(const View& view, gfx::Canvas* canvas) {
   cc::PaintFlags flags;
   flags.setStrokeCap(cc::PaintFlags::kRound_Cap);
 
-  flags.setColor(view.GetColorProvider()->GetColor(
-      ui::kColorBubbleBorderWhenShadowPresent));
+  flags.setColor(view.GetColorProvider()->GetColor(ui::kColorBubbleBorder));
   flags.setStyle(cc::PaintFlags::kStroke_Style);
   flags.setStrokeWidth(1.2);
   flags.setAntiAlias(true);
