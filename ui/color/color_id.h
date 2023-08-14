@@ -290,6 +290,19 @@
   E_CPONLY(kColorDropdownForegroundSelected) \
   E_CPONLY(kColorFocusableBorderFocused) \
   E_CPONLY(kColorFocusableBorderUnfocused) \
+  /* These colors correspond to the system colors defined in */ \
+  /* ui::NativeTheme::SystemThemeColor. They are used to support the */ \
+  /* platform agnostic forced colors mode. */ \
+  E_CPONLY(kColorForcedBtnFace) \
+  E_CPONLY(kColorForcedBtnText) \
+  E_CPONLY(kColorForcedGrayText) \
+  E_CPONLY(kColorForcedHighlight) \
+  E_CPONLY(kColorForcedHighlightText) \
+  E_CPONLY(kColorForcedHotlight) \
+  E_CPONLY(kColorForcedMenuHilight) \
+  E_CPONLY(kColorForcedScrollbar) \
+  E_CPONLY(kColorForcedWindow) \
+  E_CPONLY(kColorForcedWindowText) \
   E_CPONLY(kColorFrameActive) \
   E_CPONLY(kColorFrameActiveUnthemed) \
   E_CPONLY(kColorFrameCaptionButtonUnfocused) \

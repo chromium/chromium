@@ -292,15 +292,29 @@ ColorProvider CreateColorProviderFromRendererColorMap(
 ColorProvider CreateEmulatedForcedColorsColorProvider(bool dark_mode) {
   ColorProvider color_provider;
   ui::ColorMixer& mixer = color_provider.AddMixer();
-  // These three colors correspond to the colors kButtonText, kHighlight, and
-  // kButtonFace (in order), defined in
-  // WebThemeEngineDefault::OverrideForcedColorsTheme.
-  mixer[kColorScrollbarArrowForeground] = {dark_mode ? SK_ColorWHITE
-                                                     : SK_ColorBLACK};
-  mixer[kColorScrollbarArrowForegroundPressed] = {
-      dark_mode ? SkColorSetRGB(0x1A, 0xEB, 0xFF)
-                : SkColorSetRGB(0x37, 0x00, 0x6E)};
-  mixer[kColorScrollbarCorner] = {dark_mode ? SK_ColorBLACK : SK_ColorWHITE};
+  // Colors were chosen based on Windows 10 default light and dark high contrast
+  // themes.
+  mixer[kColorForcedBtnFace] = {dark_mode ? SK_ColorBLACK : SK_ColorWHITE};
+  mixer[kColorForcedBtnText] = {dark_mode ? SK_ColorWHITE : SK_ColorBLACK};
+  mixer[kColorForcedGrayText] = {dark_mode ? SkColorSetRGB(0x3F, 0xF2, 0x3F)
+                                           : SkColorSetRGB(0x60, 0x00, 0x00)};
+  mixer[kColorForcedHighlight] = {dark_mode ? SkColorSetRGB(0x1A, 0xEB, 0xFF)
+                                            : SkColorSetRGB(0x37, 0x00, 0x6E)};
+  mixer[kColorForcedHighlightText] = {dark_mode ? SK_ColorBLACK
+                                                : SK_ColorWHITE};
+  mixer[kColorForcedHotlight] = {dark_mode ? SkColorSetRGB(0xFF, 0xFF, 0x00)
+                                           : SkColorSetRGB(0x00, 0x00, 0x9F)};
+  mixer[kColorForcedMenuHilight] = {dark_mode ? SkColorSetRGB(0x80, 0x00, 0x80)
+                                              : SK_ColorBLACK};
+  mixer[kColorForcedScrollbar] = {dark_mode ? SK_ColorBLACK : SK_ColorWHITE};
+  mixer[kColorForcedWindow] = {dark_mode ? SK_ColorBLACK : SK_ColorWHITE};
+  mixer[kColorForcedWindowText] = {dark_mode ? SK_ColorWHITE : SK_ColorBLACK};
+
+  // Set the colors for the scrollbar parts based on the emulated definitions
+  // above.
+  mixer[kColorScrollbarArrowForeground] = {kColorForcedBtnText};
+  mixer[kColorScrollbarArrowForegroundPressed] = {kColorForcedHighlight};
+  mixer[kColorScrollbarCorner] = {kColorForcedBtnFace};
   CompleteFluentScrollbarColorsDefinition(mixer);
   color_provider.GenerateColorMap();
   return color_provider;
