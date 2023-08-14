@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/arc/tracing/arc_app_performance_tracing_test_helper.h"
+#include "chrome/browser/ash/arc/tracing/test/arc_app_performance_tracing_test_helper.h"
 
 #include "ash/constants/ash_features.h"
 #include "base/containers/enum_set.h"

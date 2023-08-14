@@ -15,7 +15,7 @@
 #include "chrome/browser/ash/app_restore/arc_ghost_window_handler.h"
 #include "chrome/browser/ash/app_restore/arc_ghost_window_shell_surface.h"
 #include "chrome/browser/ash/arc/tracing/arc_app_performance_tracing_session.h"
-#include "chrome/browser/ash/arc/tracing/arc_app_performance_tracing_test_helper.h"
+#include "chrome/browser/ash/arc/tracing/test/arc_app_performance_tracing_test_helper.h"
 #include "chrome/browser/ash/arc/tracing/arc_app_performance_tracing_uma_session.h"
 #include "chrome/browser/ash/arc/window_predictor/window_predictor_utils.h"
 #include "chrome/browser/sync/sync_service_factory.h"
