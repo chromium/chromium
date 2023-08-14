@@ -1091,11 +1091,6 @@
       status: "stable",
     },
     {
-      // Merge multiple rulesets into one, for faster matching.
-      name: "CSSSuperRulesets",
-      status: "experimental",
-    },
-    {
       name: "CSSSystemAccentColor",
       status: "experimental",
     },
