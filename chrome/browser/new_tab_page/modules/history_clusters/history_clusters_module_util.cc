@@ -110,6 +110,8 @@ history_clusters::QueryClustersFilterParams CreateFilterParamsFromFeatureFlags(
   filter_params.filter_hidden_visits = true;
   filter_params.include_synced_visits = base::FeatureList::IsEnabled(
       ntp_features::kNtpHistoryClustersModuleIncludeSyncedVisits);
+  filter_params.group_clusters_by_content = base::FeatureList::IsEnabled(
+      ntp_features::kNtpHistoryClustersModuleEnableContentClustering);
 
   return filter_params;
 }
