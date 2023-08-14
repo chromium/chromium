@@ -9,6 +9,7 @@
 #include <set>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
@@ -68,13 +69,14 @@ constexpr char kNonce[] = "nonce123";
 constexpr char kAccountId[] = "1234";
 constexpr char kToken[] = "[not a real token]";
 
-static const std::initializer_list<IdentityRequestAccount> kAccounts{{
-    kAccountId,                 // id
-    "ken@idp.example",          // email
-    "Ken R. Example",           // name
-    "Ken",                      // given_name
-    GURL(),                     // picture
-    std::vector<std::string>()  // login_hints
+static const std::vector<IdentityRequestAccount> kAccounts{{
+    kAccountId,                  // id
+    "ken@idp.example",           // email
+    "Ken R. Example",            // name
+    "Ken",                       // given_name
+    GURL(),                      // picture
+    std::vector<std::string>(),  // login_hints
+    std::vector<std::string>()   // hosted_domains
 }};
 
 // IdpNetworkRequestManager which returns valid data from IdP.

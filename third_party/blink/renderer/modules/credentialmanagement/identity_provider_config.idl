@@ -10,6 +10,7 @@ dictionary IdentityProviderConfig {
   required USVString clientId;
   USVString nonce;
   DOMString loginHint;
+  [RuntimeEnabled=FedCmHostedDomain] DOMString hostedDomain;
   [RuntimeEnabled=FedCmAuthz] sequence<USVString> scope;
   [RuntimeEnabled=FedCmAuthz] sequence<USVString> responseType;
   [RuntimeEnabled=FedCmAuthz] record<USVString, USVString> params;

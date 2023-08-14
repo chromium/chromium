@@ -5,6 +5,8 @@
 #include "content/browser/webid/federated_auth_request_impl.h"
 
 #include "base/command_line.h"
+#include "base/containers/contains.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
@@ -315,12 +317,10 @@ void FilterAccountsWithLoginHint(
   // Note that it is technically possible for us to end up with more than one
   // account afterwards, in which case the multiple account chooser would be
   // shown.
-  auto Filter = [&login_hint](const IdentityRequestAccount& account) {
-    return std::find(account.login_hints.begin(), account.login_hints.end(),
-                     login_hint) == account.login_hints.end();
+  auto filter = [&login_hint](const IdentityRequestAccount& account) {
+    return !base::Contains(account.login_hints, login_hint);
   };
-  accounts.erase(std::remove_if(accounts.begin(), accounts.end(), Filter),
-                 accounts.end());
+  base::EraseIf(accounts, filter);
   FedCmMetrics::NumAccounts num_matching = FedCmMetrics::NumAccounts::kZero;
   if (accounts.size() == 1u) {
     num_matching = FedCmMetrics::NumAccounts::kOne;
@@ -329,6 +329,26 @@ void FilterAccountsWithLoginHint(
   }
   base::UmaHistogramEnumeration("Blink.FedCm.LoginHint.NumMatchingAccounts",
                                 num_matching);
+}
+
+void FilterAccountsWithHostedDomain(
+    const std::string& hosted_domain,
+    IdpNetworkRequestManager::AccountList& accounts) {
+  if (hosted_domain.empty()) {
+    return;
+  }
+
+  if (hosted_domain == FederatedAuthRequestImpl::kWildcardHostedDomain) {
+    auto filter = [](const IdentityRequestAccount& account) {
+      return account.hosted_domains.empty();
+    };
+    base::EraseIf(accounts, filter);
+  } else {
+    auto filter = [&hosted_domain](const IdentityRequestAccount& account) {
+      return !base::Contains(account.hosted_domains, hosted_domain);
+    };
+    base::EraseIf(accounts, filter);
+  }
 }
 
 std::unique_ptr<FedCmMetrics> CreateFedCmMetrics(
@@ -1469,6 +1489,10 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
     }
     case IdpNetworkRequestManager::ParseStatus::kSuccess: {
       FilterAccountsWithLoginHint(idp_info->provider->login_hint, accounts);
+      if (IsFedCmHostedDomainEnabled()) {
+        FilterAccountsWithHostedDomain(idp_info->provider->hosted_domain,
+                                       accounts);
+      }
       if (accounts.empty()) {
         render_frame_host().AddMessageToConsole(
             blink::mojom::ConsoleMessageLevel::kError,

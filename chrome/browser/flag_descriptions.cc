@@ -1654,6 +1654,11 @@ const char kFedCmAuthzName[] = "FedCmAuthz";
 const char kFedCmAuthzDescription[] =
     "Enables RPs to request authorization for custom IdP scopes.";
 
+const char kFedCmHostedDomainName[] = "FedCmHostedDomain";
+const char kFedCmHostedDomainDescription[] =
+    "Enables RPs to request only FedCM invocations to only show accounts "
+    "matching a given hosted domain.";
+
 const char kFedCmIdPRegistrationName[] = "FedCM with IdP Registration support";
 const char kFedCmIdPRegistrationDescription[] =
     "Enables RPs to get identity credentials from registered IdPs.";

@@ -735,6 +735,10 @@ TypeConverter<IdentityProviderConfigPtr, blink::IdentityProviderConfig>::
   mojo_provider->client_id = provider.clientId();
   mojo_provider->nonce = provider.getNonceOr("");
   mojo_provider->login_hint = provider.getLoginHintOr("");
+  mojo_provider->hosted_domain =
+      blink::RuntimeEnabledFeatures::FedCmHostedDomainEnabled()
+          ? provider.getHostedDomainOr("")
+          : "";
 
   if (blink::RuntimeEnabledFeatures::FedCmAuthzEnabled()) {
     if (provider.hasScope()) {

@@ -4185,9 +4185,9 @@
     "expiry_milestone": 120
   },
   {
-    "name": "fedcm-auto-re-authn",
-    "owners": [ "tanzachary", "web-identity-eng@google.com"],
-    "expiry_milestone": 120
+    "name": "fedcm-hosted-domain",
+    "owners": [ "npm", "web-identity-eng@google.com"],
+    "expiry_milestone": 122
   },
   {
     "name": "fedcm-idp-registration",

@@ -96,9 +96,11 @@ Account ConvertFieldsToAccount(
 
   GURL picture_url = *url::GURLAndroid::ToNativeGURL(env, picture_url_obj);
 
-  // The login hints are only used before account selection.
+  // The login hints and hosted domains are only used before account selection.
   std::vector<std::string> login_hints;
-  return Account(account_id, email, name, given_name, picture_url, login_hints,
+  std::vector<std::string> hosted_domains;
+  return Account(account_id, email, name, given_name, picture_url,
+                 std::move(login_hints), std::move(hosted_domains),
                  login_state);
 }
 

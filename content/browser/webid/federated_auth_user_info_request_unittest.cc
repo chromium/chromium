@@ -167,7 +167,9 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
       accounts.emplace_back(
           account_config.id, GenerateEmailForUserId(account_config.id),
           kAccountName, kAccountGivenName, GURL(kAccountPicture),
-          std::vector<std::string>(), account_config.login_state);
+          /*login_hints=*/std::vector<std::string>(),
+          /*hosted_domains=*/std::vector<std::string>(),
+          account_config.login_state);
     }
 
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(

@@ -930,6 +930,9 @@ extern const char kFedCmDescription[];
 extern const char kFedCmAuthzName[];
 extern const char kFedCmAuthzDescription[];
 
+extern const char kFedCmHostedDomainName[];
+extern const char kFedCmHostedDomainDescription[];
+
 extern const char kFedCmIdPRegistrationName[];
 extern const char kFedCmIdPRegistrationDescription[];
 

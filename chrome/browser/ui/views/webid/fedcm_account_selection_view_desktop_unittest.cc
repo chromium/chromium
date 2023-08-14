@@ -200,7 +200,9 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
     std::vector<content::IdentityRequestAccount> accounts;
     for (const auto& account_info : account_infos) {
       accounts.emplace_back(account_info.first, "", "", "", GURL::EmptyGURL(),
-                            std::vector<std::string>(), account_info.second);
+                            /*login_hints=*/std::vector<std::string>(),
+                            /*hosted_domains=*/std::vector<std::string>(),
+                            account_info.second);
     }
     return IdentityProviderDisplayData(u"", content::IdentityProviderMetadata(),
                                        content::ClientMetadata(GURL(), GURL()),

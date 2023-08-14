@@ -29,7 +29,8 @@ class FedCmAccountSelectionViewBrowserTest : public DialogBrowserTest {
   void ShowUi(const std::string& name) override {
     std::vector<content::IdentityRequestAccount> accounts = {
         {"id", "email", "name", "given_name", GURL::EmptyGURL(),
-         std::vector<std::string>()}};
+         /*login_hints=*/std::vector<std::string>(),
+         /*hosted_domains=*/std::vector<std::string>()}};
     account_selection_view()->Show(
         "top-frame-example.com",
         absl::make_optional<std::string>("iframe-example.com"),

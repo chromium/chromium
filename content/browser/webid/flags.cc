@@ -56,4 +56,8 @@ bool IsWebIdentityMDocsEnabled() {
   return base::FeatureList::IsEnabled(features::kWebIdentityMDocs);
 }
 
+bool IsFedCmHostedDomainEnabled() {
+  return base::FeatureList::IsEnabled(features::kFedCmHostedDomain);
+}
+
 }  // namespace content
