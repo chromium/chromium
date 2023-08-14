@@ -27,6 +27,14 @@ std::string_view GetSourceForOptInOrOptOutEvent(
 
 }  // namespace
 
+void LogMandatoryReauthOfferOptInDecision(
+    MandatoryReauthOfferOptInDecision opt_in_decision) {
+  base::UmaHistogramEnumeration(
+      "Autofill.PaymentMethods.MandatoryReauth.CheckoutFlow."
+      "ReauthOfferOptInDecision",
+      opt_in_decision);
+}
+
 void LogMandatoryReauthOptInBubbleOffer(MandatoryReauthOptInBubbleOffer metric,
                                         bool is_reshow) {
   std::string histogram_name =

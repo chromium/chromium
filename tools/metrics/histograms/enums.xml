@@ -69000,6 +69000,19 @@ from previous Chrome versions.
   <int value="3" label="Flow failed"/>
 </enum>
 
+<enum name="MandatoryReauthOfferOptInDecision">
+  <int value="0" label="Offered"/>
+  <int value="1" label="Incognito mode"/>
+  <int value="2" label="No supported reauth method"/>
+  <int value="3" label="No card extracted from form"/>
+  <int value="4" label="Went through interactive authentication"/>
+  <int value="5" label="Manually filled local card"/>
+  <int value="6" label="Manually filled server card"/>
+  <int value="7" label="Manually filled virtual card"/>
+  <int value="8" label="No stored card for the extracted card"/>
+  <int value="9" label="Unsupported card type"/>
+</enum>
+
 <enum name="MandatoryReauthOptInBubbleOffer">
   <int value="0" label="Shown"/>
 </enum>

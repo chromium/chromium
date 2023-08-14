@@ -12,6 +12,29 @@ namespace autofill::autofill_metrics {
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+enum class MandatoryReauthOfferOptInDecision {
+  kOffered = 0,
+  // Opt-in is not offered for the detailed reason below:
+  kIncognitoMode = 1,
+  kNoSupportedReauthMethod = 2,
+  kNoCardExtractedFromForm = 3,
+  // We only offer opt-in after user experienced non-interactive authentication.
+  kWentThroughInteractiveAuthentication = 4,
+  // For corner cases when a user goes through a non-interactive authentication
+  // flow with a card that is not a local/server/virtual card, then types in a
+  // local/server/virtual card manually into the form.
+  kManuallyFilledLocalCard = 5,
+  kManuallyFilledServerCard = 6,
+  kManuallyFilledVirtualCard = 7,
+  // For corner cases when there is no stored card for the extracted card.
+  kNoStoredCardForExtractedCard = 8,
+  // Currently reauth opt-in is only supported for local and virtual cards.
+  kUnsupportedCardType = 9,
+  kMaxValue = kUnsupportedCardType,
+};
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class MandatoryReauthOptInBubbleOffer {
   // The user is shown the opt-in bubble.
   kShown = 0,
@@ -73,6 +96,9 @@ enum class MandatoryReauthOptInOrOutSource {
   kCheckoutVirtualCard = 3,
   kMaxValue = kCheckoutVirtualCard,
 };
+
+void LogMandatoryReauthOfferOptInDecision(
+    MandatoryReauthOfferOptInDecision opt_in_decision);
 
 // Logs when the user is offered mandatory reauth.
 void LogMandatoryReauthOptInBubbleOffer(MandatoryReauthOptInBubbleOffer metric,
