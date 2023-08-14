@@ -35,7 +35,7 @@ constexpr CGFloat kMarginAroundBadge = 5.0;
 // The size of the "new" IPH badge.
 constexpr CGFloat kNewIPHBadgeSize = 20.0;
 // The font size of the "N" in the "new" IPH badge.
-constexpr CGFloat kNewIPHBadgeFontSize = 11.0;
+constexpr CGFloat kNewIPHBadgeFontSize = 10.0;
 
 // kDefaultTextLabelSpacing represents the default spacing between the text
 // labels when no dot is present.
@@ -82,10 +82,11 @@ UIView* NewIPHBadgeView() {
 
   UILabel* newLabel = [[UILabel alloc] init];
   newLabel.translatesAutoresizingMaskIntoConstraints = NO;
-  newLabel.text = l10n_util::GetNSString(IDS_IOS_NEW_LABEL_FEATURE_BADGE);
-  newLabel.textColor = UIColor.whiteColor;
+  newLabel.text =
+      l10n_util::GetNSStringWithFixup(IDS_IOS_NEW_LABEL_FEATURE_BADGE);
+  newLabel.textColor = [UIColor colorNamed:kPrimaryBackgroundColor];
   UIFont* font = [UIFont systemFontOfSize:kNewIPHBadgeFontSize
-                                   weight:UIFontWeightBlack];
+                                   weight:UIFontWeightBold];
   UIFontDescriptor* descriptor = [font.fontDescriptor
       fontDescriptorWithDesign:UIFontDescriptorSystemDesignRounded];
   font = [UIFont fontWithDescriptor:descriptor size:kNewIPHBadgeFontSize];
