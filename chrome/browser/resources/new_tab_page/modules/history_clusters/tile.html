@@ -169,6 +169,51 @@
     line-height: 16px;
   }
 
+  #discountChip {
+    background: var(--color-sys-tertiary-container);
+    border-radius: var(--ntp-module-item-border-radius);
+    color: var(--color-sys-on-tertiary-container);
+    display: inline-block;
+    font-weight: 500;
+    font-size: 11px;
+    height: 18px;
+    line-height: 18px;
+    margin-top: 8px;
+    padding-inline-end: 4px;
+    padding-inline-start: 4px;
+    text-align: center;
+  }
+
+  :host([large-format]) #discountChip {
+    margin-bottom: 26px;
+    margin-inline-start: 16px;
+  }
+
+  :host([medium-format]) #discountChip {
+    margin-bottom: 32px;
+    margin-inline-start: 8px;
+  }
+
+  :host([small-format]) #discountChip {
+    margin-bottom: 30px;
+    margin-inline-start: 16px;
+  }
+
+  :host([has-discount]) #title{
+    margin-bottom: 0px;
+  }
+
+  :host([has-discount][large-format]) #title{
+    -webkit-line-clamp: 1;
+    height: 24px;
+  }
+
+  :host([has-discount][medium-format]) #title,
+  :host([has-discount][small-format]) #title {
+    -webkit-line-clamp: 2;
+    height: 40px;
+  }
+
   /* Set styles for high contrast mode in Windows. */
   @media (forced-colors: active) {
     /* Set focus outline since box-shadow isn't visible in hcm */
@@ -199,6 +244,9 @@
   </div>
   <div id="text-container">
     <div id="title" class="truncate">[[visit.pageTitle]]</div>
+    <template is="dom-if" if="[[hasDiscount]]" restamp>
+      <div id="discountChip"></div>
+    </template>
     <div id="info-container">
       <page-favicon id="icon" url="[[visit.normalizedUrl]]"
           is-known-to-sync="[[visit.isKnownToSync]]">

@@ -128,4 +128,25 @@ suite('NewTabPageModulesHistoryClustersModuleTileTest', () => {
     assertTrue(!$$(tileElement, '#image img'));
     assertTrue(!!$$(tileElement, '#image page-favicon'));
   });
+
+  test('Tile shows and hides discount chip', async () => {
+    // Arrange.
+    const tileElement = initializeModule(createVisit({
+      relativeDate: '1 min ago',
+      annotations: [Annotation.kBookmarked],
+    }));
+
+    // Assert.
+    await waitAfterNextRender(tileElement);
+    assertTrue(!!tileElement);
+    assertTrue(!$$(tileElement, '#discountChip'));
+
+    // Act.
+    tileElement.hasDiscount = true;
+
+    // Assert.
+    await waitAfterNextRender(tileElement);
+    assertTrue(!!tileElement);
+    assertTrue(!!$$(tileElement, '#discountChip'));
+  });
 });
