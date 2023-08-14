@@ -133,6 +133,12 @@ std::unique_ptr<PrefService> PrefServiceForTesting(
   return factory.Create(registry);
 }
 
+[[nodiscard]] FormData CreateTestAddressFormData(const char* unique_id) {
+  FormData form;
+  CreateTestAddressFormData(&form, unique_id);
+  return form;
+}
+
 void CreateTestAddressFormData(FormData* form, const char* unique_id) {
   std::vector<ServerFieldTypeSet> types;
   CreateTestAddressFormData(form, &types, unique_id);

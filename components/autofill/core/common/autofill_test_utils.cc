@@ -24,8 +24,6 @@
 
 namespace autofill::test {
 
-using base::ASCIIToUTF16;
-
 AutofillTestEnvironment* AutofillTestEnvironment::current_instance_ = nullptr;
 
 AutofillTestEnvironment& AutofillTestEnvironment::GetCurrent(
@@ -125,9 +123,9 @@ void CreateTestFormField(std::string_view label,
                          FormFieldData* field) {
   field->host_frame = MakeLocalFrameToken();
   field->unique_renderer_id = MakeFieldRendererId();
-  field->label = ASCIIToUTF16(label);
-  field->name = ASCIIToUTF16(name);
-  field->value = ASCIIToUTF16(value);
+  field->label = base::UTF8ToUTF16(label);
+  field->name = base::UTF8ToUTF16(name);
+  field->value = base::UTF8ToUTF16(value);
   field->form_control_type = type;
   field->is_focusable = true;
 }
