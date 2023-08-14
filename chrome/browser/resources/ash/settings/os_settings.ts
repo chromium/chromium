@@ -95,6 +95,7 @@ export {PageStatus, StatusAction, StoredAccount, SyncBrowserProxy, SyncBrowserPr
 export {PrivacyPageBrowserProxyImpl, SecureDnsMode, SecureDnsUiManagementMode} from '/shared/settings/privacy_page/privacy_page_browser_proxy.js';
 export {AppManagementFileHandlingItemElement} from 'chrome://resources/cr_components/app_management/file_handling_item.js';
 export {AppManagementSupportedLinksItemElement} from 'chrome://resources/cr_components/app_management/supported_links_item.js';
+export {AppManagementToggleRowElement} from 'chrome://resources/cr_components/app_management/toggle_row.js';
 export {LocalizedLinkElement} from 'chrome://resources/cr_components/localized_link/localized_link.js';
 export {SettingsPrefsElement} from 'chrome://resources/cr_components/settings_prefs/prefs.js';
 export {CrSettingsPrefs} from 'chrome://resources/cr_components/settings_prefs/prefs_types.js';

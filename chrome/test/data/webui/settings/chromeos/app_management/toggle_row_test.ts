@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AppManagementToggleRowElement} from 'chrome://resources/cr_components/app_management/toggle_row.js';
+import 'chrome://os-settings/os_settings.js';
+
+import {AppManagementToggleRowElement} from 'chrome://os-settings/os_settings.js';
 import {assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 

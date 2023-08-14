@@ -5,11 +5,10 @@
 import 'chrome://os-settings/lazy_load.js';
 
 import {AppManagementBorealisDetailViewElement, AppManagementPinToShelfItemElement} from 'chrome://os-settings/lazy_load.js';
-import {AppManagementStore, CrToggleElement, Router, updateSelectedAppId} from 'chrome://os-settings/os_settings.js';
+import {AppManagementStore, AppManagementToggleRowElement, CrToggleElement, Router, updateSelectedAppId} from 'chrome://os-settings/os_settings.js';
 import {App, AppType, Permission, PermissionType} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {PermissionTypeIndex} from 'chrome://resources/cr_components/app_management/permission_constants.js';
 import {createBoolPermission} from 'chrome://resources/cr_components/app_management/permission_util.js';
-import {AppManagementToggleRowElement} from 'chrome://resources/cr_components/app_management/toggle_row.js';
 import {convertOptionalBoolToBool, getPermissionValueBool} from 'chrome://resources/cr_components/app_management/util.js';
 import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
