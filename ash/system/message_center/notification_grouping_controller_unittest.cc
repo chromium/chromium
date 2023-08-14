@@ -8,7 +8,10 @@
 #include "ash/constants/ash_features.h"
 #include "ash/system/message_center/ash_message_popup_collection.h"
 #include "ash/system/message_center/ash_notification_view.h"
+#include "ash/system/message_center/unified_message_center_bubble.h"
 #include "ash/system/notification_center/notification_center_tray.h"
+#include "ash/system/notification_center/notification_center_view.h"
+#include "ash/system/notification_center/notification_list_view.h"
 #include "ash/system/tray/tray_background_view.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
@@ -134,6 +137,17 @@ class NotificationGroupingControllerTest
     return view->slide_out_controller_for_test();
   }
 
+  bool IsNotificationListViewAnimating() const {
+    return features::IsQsRevampEnabled() ? GetPrimaryNotificationCenterTray()
+                                               ->GetNotificationListView()
+                                               ->IsAnimating()
+                                         : GetPrimaryUnifiedSystemTray()
+                                               ->message_center_bubble()
+                                               ->notification_center_view()
+                                               ->notification_list_view()
+                                               ->IsAnimating();
+  }
+
   bool IsQsRevampEnabled() const { return GetParam(); }
 
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -183,6 +197,29 @@ TEST_P(NotificationGroupingControllerTest, BasicRemoval) {
   EXPECT_TRUE(MessageCenter::Get()->FindNotificationById(id2)->group_child());
   EXPECT_TRUE(
       MessageCenter::Get()->FindNotificationById(id_parent)->group_parent());
+}
+
+// Tests that having a grouped notification as the latest notification does not
+// animate the notification list. This happened because latest notifications get
+// expanded and it was rapidly being collapsed due to it being grouped.
+TEST_P(NotificationGroupingControllerTest, LatestNotificationDoesNotAnimate) {
+  TrayBackgroundView* tray;
+
+  // Add two grouped notifications.
+  const GURL url(u"http://test-url.com");
+  AddNotificationWithOriginUrl(url);
+  AddNotificationWithOriginUrl(url);
+
+  // Show the notification center.
+  if (features::IsQsRevampEnabled()) {
+    tray = GetPrimaryNotificationCenterTray();
+  } else {
+    tray = GetPrimaryUnifiedSystemTray();
+  }
+  tray->ShowBubble();
+
+  // List should not be animating when the latest notification is grouped.
+  EXPECT_FALSE(IsNotificationListViewAnimating());
 }
 
 TEST_P(NotificationGroupingControllerTest,
