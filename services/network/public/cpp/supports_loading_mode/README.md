@@ -1,2 +1,2 @@
 This is a parser for the Supports-Loading-Mode header, described here:
-  https://github.com/jeremyroman/alternate-loading-modes/blob/gh-pages/opt-in.md
+  https://github.com/WICG/nav-speculation/blob/main/opt-in.md
