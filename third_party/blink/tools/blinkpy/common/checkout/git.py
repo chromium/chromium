@@ -29,7 +29,7 @@
 
 import logging
 import re
-from typing import List
+from typing import List, Optional
 
 from blinkpy.common.memoized import memoized
 from blinkpy.common.system.executive import Executive, ScriptError
@@ -217,11 +217,16 @@ class Git(object):
     def move(self, origin, destination):
         return self.run(['mv', '-f', origin, destination])
 
-    def exists(self, path):
-        return_code = self.run(['show', 'HEAD:%s' % path],
-                               return_exit_code=True,
-                               decode_output=False)
-        return return_code != self.ERROR_FILE_IS_MISSING
+    def exists(self, path: str) -> bool:
+        try:
+            self.show_blob(path, ref='HEAD')
+        except ScriptError as error:
+            return error.exit_code != self.ERROR_FILE_IS_MISSING
+        return True
+
+    def show_blob(self, path: str, ref: Optional[str] = None) -> bytes:
+        ref = ref or self._merge_base()
+        return self.run(['show', f'{ref}:{path}'], decode_output=False)
 
     def _branch_from_ref(self, ref):
         return ref.replace('refs/heads/', '')
