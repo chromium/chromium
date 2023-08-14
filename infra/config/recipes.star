@@ -223,10 +223,6 @@ build_recipe(
 )
 
 build_recipe(
-    name = "recipe:flakiness/generate_builder_test_data",
-)
-
-build_recipe(
     name = "recipe:flakiness/reproducer",
 )
 

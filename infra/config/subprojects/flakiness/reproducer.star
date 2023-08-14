@@ -5,6 +5,14 @@
 load("//lib/builders.star", "builders", "os")
 load("//lib/consoles.star", "consoles")
 
+consoles.defaults.set(
+    repo = "https://chromium.googlesource.com/chromium/src",
+)
+
+consoles.console_view(
+    name = "chromium.flakiness",
+)
+
 luci.bucket(
     name = "flaky-reproducer",
     acls = [
