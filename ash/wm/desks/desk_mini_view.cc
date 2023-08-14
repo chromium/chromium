@@ -8,6 +8,7 @@
 
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
@@ -42,6 +43,7 @@
 #include "ui/views/background.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
+#include "ui/views/controls/menu/menu_types.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 
@@ -180,11 +182,8 @@ DeskMiniView::DeskMiniView(DeskBarViewBase* owner_bar,
       },
       base::Unretained(this)));
 
-  const std::u16string initial_combine_desks_target_name =
-      desks_controller->GetCombineDesksTargetName(desk_);
-
   desk_action_view_ = AddChildView(std::make_unique<DeskActionView>(
-      initial_combine_desks_target_name,
+      desks_controller->GetCombineDesksTargetName(desk_),
       /*combine_desks_callback=*/
       base::BindRepeating(&DeskMiniView::OnRemovingDesk, base::Unretained(this),
                           DeskCloseType::kCombineDesks),
@@ -235,16 +234,6 @@ DeskMiniView::DeskMiniView(DeskBarViewBase* owner_bar,
     desk_shortcut_view_->SetCanProcessEventsWithinSubtree(false);
   }
 
-  context_menu_ = std::make_unique<DeskActionContextMenu>(
-      initial_combine_desks_target_name,
-      /*combine_desks_callback=*/
-      base::BindRepeating(&DeskMiniView::OnRemovingDesk, base::Unretained(this),
-                          DeskCloseType::kCombineDesks),
-      /*close_all_callback=*/
-      base::BindRepeating(&DeskMiniView::OnRemovingDesk, base::Unretained(this),
-                          DeskCloseType::kCloseAllWindowsAndWait),
-      base::BindRepeating(&DeskMiniView::OnContextMenuClosed,
-                          base::Unretained(this)));
   UpdateDeskButtonVisibility();
 }
 
@@ -388,17 +377,36 @@ void DeskMiniView::OpenContextMenu(ui::MenuSourceType source) {
   UpdateDeskButtonVisibility();
 
   desk_preview_->SetHighlightOverlayVisibility(true);
-  context_menu_->UpdateCombineDesksTargetName(
-      DesksController::Get()->GetCombineDesksTargetName(desk_));
 
-  // Only show the combine desks context menu option if there are app windows in
-  // the desk, or if there are windows that should be visible on all desks.
-  context_menu_->SetCombineDesksMenuItemVisibility(ContainsAppWindows(desk_));
+  const bool show_on_top =
+      owner_bar_->type() == DeskBarViewBase::Type::kDeskButton &&
+      Shelf::ForWindow(root_window_)->IsHorizontalAlignment();
+
+  context_menu_ = std::make_unique<DeskActionContextMenu>(
+      ContainsAppWindows(desk_)
+          ? absl::make_optional(
+                DesksController::Get()->GetCombineDesksTargetName(desk_))
+          : absl::nullopt,
+      show_on_top ? views::MenuAnchorPosition::kBubbleTopRight
+                  : views::MenuAnchorPosition::kBubbleBottomRight,
+      /*combine_desks_callback=*/
+      base::BindRepeating(&DeskMiniView::OnRemovingDesk, base::Unretained(this),
+                          DeskCloseType::kCombineDesks),
+      /*close_all_callback=*/
+      base::BindRepeating(&DeskMiniView::OnRemovingDesk, base::Unretained(this),
+                          DeskCloseType::kCloseAllWindowsAndWait),
+      /*on_context_menu_closed_callback=*/
+      base::BindRepeating(&DeskMiniView::OnContextMenuClosed,
+                          base::Unretained(this)));
 
   context_menu_->ShowContextMenuForView(
       this,
-      base::i18n::IsRTL() ? desk_preview_->GetBoundsInScreen().bottom_right()
-                          : desk_preview_->GetBoundsInScreen().bottom_left(),
+      show_on_top ? (base::i18n::IsRTL()
+                         ? desk_preview_->GetBoundsInScreen().top_right()
+                         : desk_preview_->GetBoundsInScreen().origin())
+                  : (base::i18n::IsRTL()
+                         ? desk_preview_->GetBoundsInScreen().bottom_right()
+                         : desk_preview_->GetBoundsInScreen().bottom_left()),
       source);
 }
 

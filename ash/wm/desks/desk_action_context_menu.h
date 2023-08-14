@@ -7,6 +7,7 @@
 
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/views/context_menu_controller.h"
+#include "ui/views/controls/menu/menu_types.h"
 
 namespace views {
 class MenuRunner;
@@ -30,23 +31,17 @@ class DeskActionContextMenu : public views::ContextMenuController,
     kCloseAll,
   };
 
-  DeskActionContextMenu(const std::u16string& initial_combine_desks_target_name,
-                        base::RepeatingClosure combine_desks_callback,
-                        base::RepeatingClosure close_all_callback,
-                        base::RepeatingClosure on_context_menu_closed_callback);
+  // If `combine_desks_target_name` is not set, the option to combine desks will
+  // not be visible.
+  DeskActionContextMenu(
+      const absl::optional<std::u16string>& combine_desks_target_name,
+      const views::MenuAnchorPosition anchor_position,
+      base::RepeatingClosure combine_desks_callback,
+      base::RepeatingClosure close_all_callback,
+      base::RepeatingClosure on_context_menu_closed_callback);
   DeskActionContextMenu(const DeskActionContextMenu&) = delete;
   DeskActionContextMenu& operator=(const DeskActionContextMenu&) = delete;
   ~DeskActionContextMenu() override;
-
-  // Because the desk that we move the windows to in the combine desks operation
-  // can change (such as when the user reorders desks), we need to update
-  // `combine_desks_target_name_` before we show the context menu.
-  void UpdateCombineDesksTargetName(
-      const std::u16string& new_combine_desks_target_name);
-
-  // Changes the visibility of the combine desks context menu item so that it
-  // can reflect whether there are windows on the desk.
-  void SetCombineDesksMenuItemVisibility(bool visible);
 
   // Closes the context menu if one is running.
   void MaybeCloseMenu();
@@ -62,6 +57,8 @@ class DeskActionContextMenu : public views::ContextMenuController,
   void ShowContextMenuForViewImpl(views::View* source,
                                   const gfx::Point& point,
                                   ui::MenuSourceType source_type) override;
+
+  const views::MenuAnchorPosition anchor_position_;
 
   // Callbacks to run when the combine desks option is selected, when the close
   // desk and windows option is selected, and when the menu is closed.

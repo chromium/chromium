@@ -8528,17 +8528,16 @@ TEST_P(DesksCloseAllTest, HideCombineDesksOptionWhenNoWindowsOnDesk) {
   event_generator->MoveMouseTo(desk_preview_view_center);
   EXPECT_FALSE(combine_desks_button->GetVisible());
 
-  // We need to open the context menu to trigger state change for the combine
-  // desks option in the context menu.
+  // We need to open the context menu to trigger its creation.
   OpenContextMenuForMiniView(0);
-  EXPECT_FALSE(
-      DesksTestApi::GetContextMenuModelForDesk(DeskBarViewBase::Type::kOverview,
-                                               0)
-          .IsVisibleAt(DeskActionContextMenu::CommandId::kCombineDesks));
+  // If there are no windows, there should only be 1 option in the context menu.
+  EXPECT_EQ(1u, DesksTestApi::GetContextMenuModelForDesk(
+                    DeskBarViewBase::Type::kOverview, 0)
+                    .GetItemCount());
   event_generator->ClickLeftButton();
 
-  // Add a window and check to see if that makes the context option visible for
-  // the desk's action view.
+  // Add a window and check to see if that causes the creation of the context
+  // option for combining desks.
   auto window = CreateAppWindow();
   DesksController::Get()->SendToDeskAtIndex(window.get(), 0);
   EnterOverview();
@@ -8553,10 +8552,9 @@ TEST_P(DesksCloseAllTest, HideCombineDesksOptionWhenNoWindowsOnDesk) {
   event_generator->MoveMouseTo(desk_preview_view_center);
   EXPECT_TRUE(combine_desks_button->GetVisible());
   OpenContextMenuForMiniView(0);
-  EXPECT_TRUE(
-      DesksTestApi::GetContextMenuModelForDesk(DeskBarViewBase::Type::kOverview,
-                                               0)
-          .IsVisibleAt(DeskActionContextMenu::CommandId::kCombineDesks));
+  EXPECT_EQ(2u, DesksTestApi::GetContextMenuModelForDesk(
+                    DeskBarViewBase::Type::kOverview, 0)
+                    .GetItemCount());
 }
 
 // Tests that the shortcut to close all (Ctrl + Shift + W) on a desk mini view
