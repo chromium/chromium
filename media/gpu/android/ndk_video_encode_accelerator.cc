@@ -417,6 +417,19 @@ void NdkVideoEncodeAccelerator::Destroy() {
   delete this;
 }
 
+bool NdkVideoEncodeAccelerator::IsFlushSupported() {
+  // While MediaCodec supports marking an input buffer as end-of-stream, the
+  // documentation indicates that returning to a normal state is only supported
+  // for decoders:
+  //
+  // https://developer.android.com/reference/android/media/MediaCodec#states
+  //
+  // Since we haven't yet encountered any encoders which won't eventually return
+  // outputs given enough time and recreating codecs is expensive, we opt to not
+  // implement flush and have VEA clients instead wait for all outputs to flush.
+  return false;
+}
+
 bool NdkVideoEncodeAccelerator::SetInputBufferLayout(
     const gfx::Size& configured_size) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

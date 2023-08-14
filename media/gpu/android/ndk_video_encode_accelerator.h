@@ -58,6 +58,7 @@ class MEDIA_GPU_EXPORT NdkVideoEncodeAccelerator final
   void RequestEncodingParametersChange(const Bitrate& bitrate,
                                        uint32_t framerate) override;
   void Destroy() override;
+  bool IsFlushSupported() override;
 
  private:
   // Called by MediaCodec when an input buffer becomes available.
