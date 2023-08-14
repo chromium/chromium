@@ -64,6 +64,7 @@ class BrowserViewLayout : public views::LayoutManager {
                     views::View* left_aligned_side_panel_separator,
                     views::View* unified_side_panel,
                     views::View* right_aligned_side_panel_separator,
+                    views::View* side_panel_rounded_corner,
                     ImmersiveModeController* immersive_mode_controller,
                     views::View* contents_separator);
 
@@ -190,6 +191,8 @@ class BrowserViewLayout : public views::LayoutManager {
   const raw_ptr<views::View, AcrossTasksDanglingUntriaged> unified_side_panel_;
   const raw_ptr<views::View, AcrossTasksDanglingUntriaged>
       right_aligned_side_panel_separator_;
+  const raw_ptr<views::View, AcrossTasksDanglingUntriaged>
+      side_panel_rounded_corner_;
   const raw_ptr<ImmersiveModeController, AcrossTasksDanglingUntriaged>
       immersive_mode_controller_;
   const raw_ptr<views::View, AcrossTasksDanglingUntriaged> contents_separator_;

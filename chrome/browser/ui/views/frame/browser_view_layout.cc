@@ -37,6 +37,7 @@
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "ui/base/hit_test.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
@@ -155,6 +156,7 @@ BrowserViewLayout::BrowserViewLayout(
     views::View* left_aligned_side_panel_separator,
     views::View* unified_side_panel,
     views::View* right_aligned_side_panel_separator,
+    views::View* side_panel_rounded_corner,
     ImmersiveModeController* immersive_mode_controller,
     views::View* contents_separator)
     : delegate_(std::move(delegate)),
@@ -169,6 +171,7 @@ BrowserViewLayout::BrowserViewLayout(
       left_aligned_side_panel_separator_(left_aligned_side_panel_separator),
       unified_side_panel_(unified_side_panel),
       right_aligned_side_panel_separator_(right_aligned_side_panel_separator),
+      side_panel_rounded_corner_(side_panel_rounded_corner),
       immersive_mode_controller_(immersive_mode_controller),
       contents_separator_(contents_separator),
       tab_strip_(tab_strip),
@@ -664,16 +667,22 @@ void BrowserViewLayout::LayoutContentsContainerView(int top, int bottom) {
 
   LayoutSidePanelView(unified_side_panel_, contents_container_bounds);
 
-  const bool side_panel_visible =
-      unified_side_panel_ && unified_side_panel_->GetVisible();
+  contents_container_->SetBoundsRect(contents_container_bounds);
+}
 
-  // TODO(pbos): If right-aligned side panels get merged into one View, move
-  // separator visibility back into LayoutSidePanelView().
+void BrowserViewLayout::LayoutSidePanelView(
+    views::View* side_panel,
+    gfx::Rect& contents_container_bounds) {
+  const bool side_panel_visible = side_panel && side_panel->GetVisible();
+  // Update side panel rounded corner visibility to match side panel visibility.
+  if (side_panel_rounded_corner_) {
+    SetViewVisibility(side_panel_rounded_corner_, side_panel_visible);
+  }
+
   if (left_aligned_side_panel_separator_) {
     const bool side_panel_visible_on_left =
         side_panel_visible &&
         !views::AsViewClass<SidePanel>(unified_side_panel_)->IsRightAligned();
-
     SetViewVisibility(left_aligned_side_panel_separator_,
                       side_panel_visible_on_left);
   }
@@ -682,17 +691,10 @@ void BrowserViewLayout::LayoutContentsContainerView(int top, int bottom) {
     const bool side_panel_visible_on_right =
         side_panel_visible &&
         views::AsViewClass<SidePanel>(unified_side_panel_)->IsRightAligned();
-
     SetViewVisibility(right_aligned_side_panel_separator_,
                       side_panel_visible_on_right);
   }
 
-  contents_container_->SetBoundsRect(contents_container_bounds);
-}
-
-void BrowserViewLayout::LayoutSidePanelView(
-    views::View* side_panel,
-    gfx::Rect& contents_container_bounds) {
   if (!side_panel || !side_panel->GetVisible())
     return;
 
@@ -760,6 +762,27 @@ void BrowserViewLayout::LayoutSidePanelView(
                                         : contents_container_bounds.right());
 
   side_panel_separator->SetBoundsRect(side_panel_separator_bounds);
+
+  // Adjust the side panel rounded corner bounds based on the side panel bounds
+  // calculated above.
+  if (side_panel_rounded_corner_) {
+    const float corner_radius =
+        side_panel_rounded_corner_->GetLayoutProvider()->GetCornerRadiusMetric(
+            views::ShapeContextTokens::kSidePanelContentRadius);
+    if (is_container_after_side_panel) {
+      side_panel_rounded_corner_->SetBounds(
+          side_panel_bounds.right(),
+          side_panel_bounds.y() - views::Separator::kThickness,
+          corner_radius + views::Separator::kThickness,
+          corner_radius + views::Separator::kThickness);
+    } else {
+      side_panel_rounded_corner_->SetBounds(
+          side_panel_bounds.x() - corner_radius - views::Separator::kThickness,
+          side_panel_bounds.y() - views::Separator::kThickness,
+          corner_radius + views::Separator::kThickness,
+          corner_radius + views::Separator::kThickness);
+    }
+  }
 }
 
 void BrowserViewLayout::UpdateTopContainerBounds() {

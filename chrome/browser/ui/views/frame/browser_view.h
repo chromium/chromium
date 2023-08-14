@@ -781,6 +781,9 @@ class BrowserView : public BrowserWindow,
   FullscreenControlHost* fullscreen_control_host_for_test() {
     return fullscreen_control_host_.get();
   }
+  views::View* GetSidePanelRoundedCorner() {
+    return side_panel_rounded_corner_;
+  }
 
   // Returns all the NativeViewHosts attached to this BrowserView which should
   // be transformed as part of the TopControlsSlide behavior with touch scroll
@@ -1128,10 +1131,10 @@ class BrowserView : public BrowserWindow,
       nullptr;
   raw_ptr<views::View, AcrossTasksDanglingUntriaged>
       right_aligned_side_panel_separator_ = nullptr;
-
-  // The side search side panel.
   raw_ptr<views::View, AcrossTasksDanglingUntriaged>
       left_aligned_side_panel_separator_ = nullptr;
+  raw_ptr<views::View, AcrossTasksDanglingUntriaged>
+      side_panel_rounded_corner_ = nullptr;
 
   // Provides access to the toolbar buttons this browser view uses. Buttons may
   // appear in a hosted app frame or in a tabbed UI toolbar.

@@ -231,7 +231,8 @@ class BrowserViewLayoutTest : public ChromeViewsTestBase {
         /*left_aligned_side_panel_separator=*/nullptr,
         /*unified_side_panel=*/nullptr,
         /*right_aligned_side_panel_separator=*/nullptr,
-        immersive_mode_controller_.get(), separator_);
+        /*side_panel_rounded_corner=*/nullptr, immersive_mode_controller_.get(),
+        separator_);
     layout->set_webui_tab_strip(webui_tab_strip());
     layout_ = layout.get();
     browser_view_->SetLayoutManager(std::move(layout));

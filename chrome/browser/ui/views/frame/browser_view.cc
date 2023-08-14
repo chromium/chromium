@@ -147,6 +147,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_rounded_corner.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_toolbar_container.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_util.h"
 #include "chrome/browser/ui/views/status_bubble_views.h"
@@ -238,6 +239,7 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/text/bytes_formatting.h"
 #include "ui/base/theme_provider.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/base/window_open_disposition_utils.h"
 #include "ui/compositor/layer.h"
@@ -963,6 +965,10 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
       this, is_right_aligned ? SidePanel::kAlignRight : SidePanel::kAlignLeft));
   left_aligned_side_panel_separator_ =
       AddChildView(std::make_unique<ContentsSeparator>());
+  if (features::IsChromeRefresh2023()) {
+    side_panel_rounded_corner_ =
+        AddChildView(std::make_unique<SidePanelRoundedCorner>(this));
+  }
 
   SidePanelUI::SetSidePanelUIForBrowser(
       browser_.get(), std::make_unique<SidePanelCoordinator>(this));
@@ -2323,6 +2329,10 @@ void BrowserView::UpdateSidePanelHorizontalAlignment() {
   unified_side_panel_->SetHorizontalAlignment(
       is_right_aligned ? SidePanel::kAlignRight : SidePanel::kAlignLeft);
   GetBrowserViewLayout()->Layout(this);
+  if (side_panel_rounded_corner_) {
+    side_panel_rounded_corner_->Layout();
+    side_panel_rounded_corner_->SchedulePaint();
+  }
 }
 
 void BrowserView::FocusBookmarksToolbar() {
@@ -4116,7 +4126,8 @@ void BrowserView::AddedToWidget() {
       tab_strip_region_view_, tabstrip_, toolbar_, infobar_container_,
       contents_container_, left_aligned_side_panel_separator_,
       unified_side_panel_, right_aligned_side_panel_separator_,
-      immersive_mode_controller_.get(), contents_separator_));
+      side_panel_rounded_corner_, immersive_mode_controller_.get(),
+      contents_separator_));
 
   EnsureFocusOrder();
 
