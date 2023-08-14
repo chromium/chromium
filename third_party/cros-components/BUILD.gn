@@ -77,10 +77,7 @@ rewrite_imports("cros_components_ts") {
     "@material/|chrome://resources/mwc/@material/",
 
     # Add js prefix's to any internal imports so they work at runtime.
-    "../async_helpers/async_helpers|../async_helpers/async_helpers.js",
-    "../helpers/helpers|../helpers/helpers.js",
-    "./worker|./worker.js",
-    "./event_binders|./event_binders.js",
+    "(?P<filepath>\.\.?/[\w/]+)\$|\g<filepath>.js",
   ]
 
   deps = [

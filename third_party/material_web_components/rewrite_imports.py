@@ -24,9 +24,11 @@ _CWD = os.getcwd()
 def main(argv):
     parser = argparse.ArgumentParser()
     # List of imports and what they should be rewritten to. Specified as an
-    # array of "src|dest" strings. Note that the src will be treated as regex
-    # matched against the entire import path. I.e. "foo|bar" will translate to
-    # re.replace("^foo$", "bar", line).
+    # array of "src|dest" strings. Note that if the src is not a directory, it
+    # will be treated as a regex matched against the entire import path. I.e.
+    # "foo|bar" will translate to re.sub("^foo$", "bar", line). Since re.sub is
+    # used, regex features like referencing groups from `src` in `dest` are
+    # available.
     parser.add_argument('--import_mappings', nargs='*')
     # List of rules for renaming imported variables. The format is
     # "path:oldName|newName". When "path" is part of the original path, the
@@ -63,21 +65,17 @@ def main(argv):
         import_var_mappings.append((path, (old_name, new_name)))
 
     # For `import_path`, either replace the prefix as described in
-    #  `--import_mappings` or drop the "generated:" prefix. Returns None if no
-    #  processing is needed.
+    #  `--import_mappings` or drop the "generated:" prefix.
     def _map_import(import_path):
-        for regex in import_mappings.keys():
-            import_match = re.match(f"^{regex}(.*)", import_path)
-            if import_match:
-                is_targetting_directory = regex[-1] == "/"
-                if is_targetting_directory:
-                    return import_mappings[regex] + import_match.group(1)
-                else:
-                    return import_mappings[regex]
-        generated_import_match = re.match(r'^generated:(.*)', import_path)
-        if generated_import_match:
-            return generated_import_match.group(1)
-        return None
+        for regex, substitution in import_mappings.items():
+            if regex[-1] == "/":
+                substitution = rf"{substitution}\g<file>"
+            rewritten = re.sub(rf"^{regex}(?P<file>.*)", substitution,
+                               import_path)
+            if rewritten != import_path:
+                return rewritten
+
+        return re.sub(r'^generated:(.*)', r'\g<1>', import_path)
 
     # Applies the rules from --import_var_mappings and returns the rewritten
     # import variables.
@@ -110,7 +108,7 @@ def main(argv):
             if match:
                 import_vars = match.group(1)
                 import_path = match.group(2)
-                new_import_path = _map_import(import_path) or import_path
+                new_import_path = _map_import(import_path)
                 new_import_vars = _map_import_vars(import_path, import_vars)
                 # If this is an import statement line and it has a replacement,
                 # modify the line before outputing it.
