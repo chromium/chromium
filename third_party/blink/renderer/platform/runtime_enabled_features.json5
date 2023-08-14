@@ -3323,6 +3323,13 @@
       status: {"Android": "", "default": "test"},
     },
     {
+      name: "SmartZoom",
+      depends_on: ["AccessibilityPageZoom"],
+      base_feature: "none",
+      public: true,
+      status: {"Android": "test"},
+    },
+    {
       // If enabled Border, Outline and Column-Rule Widths
       // will be pixel snapped before layout.
       name: "SnapBorderWidthsBeforeLayout",
