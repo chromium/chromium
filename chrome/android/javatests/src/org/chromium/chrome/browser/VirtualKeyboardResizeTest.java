@@ -372,6 +372,7 @@ public class VirtualKeyboardResizeTest {
      */
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1469918")
     public void testModeAfterNavigation() throws Throwable {
         startMainActivityWithURL("/chrome/test/data/android/page_with_editable.html");
 
