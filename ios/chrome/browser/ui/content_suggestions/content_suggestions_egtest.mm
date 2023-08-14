@@ -36,6 +36,7 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
+#import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "net/base/mac/url_conversions.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
@@ -568,7 +569,9 @@ void TapMoreButtonIfVisible() {
   // Verify that the signin screen is gone.
   [[EarlGrey selectElementWithMatcher:signinView] assertWithMatcher:grey_nil()];
 
-  [self prepareToTestSetUpList];
+  [ChromeEarlGrey closeAllTabs];
+  [ChromeEarlGrey openNewTab];
+
   // Tap the signin item.
   TapView(set_up_list::kSignInItemID);
   // Verify the signin screen appears.
@@ -693,8 +696,9 @@ void TapMoreButtonIfVisible() {
   [ChromeEarlGrey resetDataForLocalStatePref:
                       prefs::kIosCredentialProviderPromoLastActionTaken];
   [NewTabPageAppInterface resetSetUpListPrefs];
-  [ChromeEarlGrey closeAllTabs];
-  [ChromeEarlGrey openNewTab];
+  AppLaunchConfiguration config = self.appConfigurationForTestCase;
+  config.relaunch_policy = ForceRelaunchByCleanShutdown;
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
   ScrollToSetUpList();
 
   // SetUpList is visible
@@ -708,8 +712,9 @@ void TapMoreButtonIfVisible() {
   [ChromeEarlGrey resetDataForLocalStatePref:
                       prefs::kIosCredentialProviderPromoLastActionTaken];
   [NewTabPageAppInterface resetSetUpListPrefs];
-  [ChromeEarlGrey closeAllTabs];
-  [ChromeEarlGrey openNewTab];
+  AppLaunchConfiguration config = self.appConfigurationForTestCase;
+  config.relaunch_policy = ForceRelaunchByCleanShutdown;
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 }
 
 // Setup a most visited tile, and open the context menu by long pressing on it.

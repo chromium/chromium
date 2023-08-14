@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/utils.h"
 
 #import "base/time/time.h"
+#import "ios/chrome/browser/first_run/first_run.h"
 #import "ios/chrome/browser/ntp/set_up_list_prefs.h"
 #import "ios/chrome/browser/ui/first_run/first_run_util.h"
 
@@ -12,6 +13,9 @@ namespace set_up_list_utils {
 
 bool IsSetUpListActive(PrefService* local_state) {
   if (set_up_list_prefs::IsSetUpListDisabled(local_state)) {
+    return false;
+  }
+  if (FirstRun::IsChromeFirstRun()) {
     return false;
   }
   // Check if we are within 14 days of FRE
