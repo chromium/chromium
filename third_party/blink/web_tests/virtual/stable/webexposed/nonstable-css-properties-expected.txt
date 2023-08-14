@@ -93,33 +93,33 @@ getComputedStyle(el).getPropertyValue('text-underline-position') is under right
 
 
 el.style.setProperty('clear', 'inline-start')
-el.style.getPropertyValue('clear') is 
-getComputedStyle(el).getPropertyValue('clear') is none
+el.style.getPropertyValue('clear') is inline-start
+getComputedStyle(el).getPropertyValue('clear') is inline-start
 
 
 el.style.setProperty('clear', 'inline-end')
-el.style.getPropertyValue('clear') is 
-getComputedStyle(el).getPropertyValue('clear') is none
+el.style.getPropertyValue('clear') is inline-end
+getComputedStyle(el).getPropertyValue('clear') is inline-end
 
 
 el.style.setProperty('float', 'inline-start')
-el.style.getPropertyValue('float') is 
-getComputedStyle(el).getPropertyValue('float') is none
+el.style.getPropertyValue('float') is inline-start
+getComputedStyle(el).getPropertyValue('float') is inline-start
 
 
 el.style.setProperty('float', 'inline-end')
-el.style.getPropertyValue('float') is 
-getComputedStyle(el).getPropertyValue('float') is none
+el.style.getPropertyValue('float') is inline-end
+getComputedStyle(el).getPropertyValue('float') is inline-end
 
 
 el.style.setProperty('resize', 'block')
-el.style.getPropertyValue('resize') is 
-getComputedStyle(el).getPropertyValue('resize') is none
+el.style.getPropertyValue('resize') is block
+getComputedStyle(el).getPropertyValue('resize') is block
 
 
 el.style.setProperty('resize', 'inline')
-el.style.getPropertyValue('resize') is 
-getComputedStyle(el).getPropertyValue('resize') is none
+el.style.getPropertyValue('resize') is inline
+getComputedStyle(el).getPropertyValue('resize') is inline
 
 
 PASS successfullyParsed is true

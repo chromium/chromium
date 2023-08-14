@@ -915,7 +915,7 @@
     },
     {
       name: "CSSLogical",
-      status: "experimental",
+      status: "stable",
       base_feature: "none",
     },
     {
