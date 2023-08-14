@@ -2061,7 +2061,7 @@
           '--test-launcher-jobs=1',
         ],
         'swarming': {
-          'shards': 125,
+          'shards': 41,
         },
       },
       'fuchsia-x64-cast-receiver-rel': {
