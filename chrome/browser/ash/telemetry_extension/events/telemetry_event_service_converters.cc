@@ -166,74 +166,64 @@ crosapi::mojom::TelemetryStylusTouchPointInfoPtr UncheckedConvertPtr(
 crosapi::mojom::TelemetryEventInfoPtr UncheckedConvertPtr(
     cros_healthd::mojom::EventInfoPtr input) {
   switch (input->which()) {
-    case cros_healthd::mojom::internal::EventInfo_Data::EventInfo_Tag::
-        kAudioJackEventInfo:
+    case cros_healthd::mojom::EventInfo::Tag::kAudioJackEventInfo:
       return crosapi::mojom::TelemetryEventInfo::NewAudioJackEventInfo(
           ConvertStructPtr(std::move(input->get_audio_jack_event_info())));
-    case cros_healthd::mojom::internal::EventInfo_Data::EventInfo_Tag::
-        kLidEventInfo:
+    case cros_healthd::mojom::EventInfo::Tag::kLidEventInfo:
       return crosapi::mojom::TelemetryEventInfo::NewLidEventInfo(
           ConvertStructPtr(std::move(input->get_lid_event_info())));
-    case cros_healthd::mojom::internal::EventInfo_Data::EventInfo_Tag::
-        kUsbEventInfo:
+    case cros_healthd::mojom::EventInfo::Tag::kUsbEventInfo:
       return crosapi::mojom::TelemetryEventInfo::NewUsbEventInfo(
           ConvertStructPtr(std::move(input->get_usb_event_info())));
-    case cros_healthd::mojom::internal::EventInfo_Data::EventInfo_Tag::
-        kExternalDisplayEventInfo:
+    case cros_healthd::mojom::EventInfo::Tag::kExternalDisplayEventInfo:
       return crosapi::mojom::TelemetryEventInfo::NewExternalDisplayEventInfo(
           ConvertStructPtr(
               std::move(input->get_external_display_event_info())));
-    case cros_healthd::mojom::internal::EventInfo_Data::EventInfo_Tag::
-        kSdCardEventInfo:
+    case cros_healthd::mojom::EventInfo::Tag::kSdCardEventInfo:
       return crosapi::mojom::TelemetryEventInfo::NewSdCardEventInfo(
           ConvertStructPtr(std::move(input->get_sd_card_event_info())));
-    case cros_healthd::mojom::internal::EventInfo_Data::EventInfo_Tag::
-        kPowerEventInfo:
+    case cros_healthd::mojom::EventInfo::Tag::kPowerEventInfo:
       return crosapi::mojom::TelemetryEventInfo::NewPowerEventInfo(
           ConvertStructPtr(std::move(input->get_power_event_info())));
-    case cros_healthd::mojom::internal::EventInfo_Data::EventInfo_Tag::
-        kKeyboardDiagnosticEventInfo:
+    case cros_healthd::mojom::EventInfo::Tag::kKeyboardDiagnosticEventInfo:
       return crosapi::mojom::TelemetryEventInfo::NewKeyboardDiagnosticEventInfo(
           ConvertStructPtr(
               std::move(input->get_keyboard_diagnostic_event_info())));
-    case cros_healthd::mojom::internal::EventInfo_Data::EventInfo_Tag::
-        kStylusGarageEventInfo:
+    case cros_healthd::mojom::EventInfo::Tag::kStylusGarageEventInfo:
       return crosapi::mojom::TelemetryEventInfo::NewStylusGarageEventInfo(
           ConvertStructPtr(std::move(input->get_stylus_garage_event_info())));
-    case cros_healthd::mojom::internal::EventInfo_Data::EventInfo_Tag::
-        kTouchpadEventInfo: {
-      if (input->get_touchpad_event_info()->is_button_event()) {
-        return crosapi::mojom::TelemetryEventInfo::NewTouchpadButtonEventInfo(
-            ConvertStructPtr(std::move(
-                input->get_touchpad_event_info()->get_button_event())));
+    case cros_healthd::mojom::EventInfo::Tag::kTouchpadEventInfo: {
+      auto info = std::move(input->get_touchpad_event_info());
+      switch (info->which()) {
+        case cros_healthd::mojom::TouchpadEventInfo::Tag::kButtonEvent:
+          return crosapi::mojom::TelemetryEventInfo::NewTouchpadButtonEventInfo(
+              ConvertStructPtr(std::move(info->get_button_event())));
+        case cros_healthd::mojom::TouchpadEventInfo::Tag::kTouchEvent:
+          return crosapi::mojom::TelemetryEventInfo::NewTouchpadTouchEventInfo(
+              ConvertStructPtr(std::move(info->get_touch_event())));
+        case cros_healthd::mojom::TouchpadEventInfo::Tag::kConnectedEvent:
+          return crosapi::mojom::TelemetryEventInfo::
+              NewTouchpadConnectedEventInfo(
+                  ConvertStructPtr(std::move(info->get_connected_event())));
+        case cros_healthd::mojom::TouchpadEventInfo::Tag::kDefaultType:
+          LOG(WARNING) << "Got unsupported touchpad event";
+          return nullptr;
       }
-      if (input->get_touchpad_event_info()->is_touch_event()) {
-        return crosapi::mojom::TelemetryEventInfo::NewTouchpadTouchEventInfo(
-            ConvertStructPtr(std::move(
-                input->get_touchpad_event_info()->get_touch_event())));
-      }
-      if (input->get_touchpad_event_info()->is_connected_event()) {
-        return crosapi::mojom::TelemetryEventInfo::
-            NewTouchpadConnectedEventInfo(ConvertStructPtr(std::move(
-                input->get_touchpad_event_info()->get_connected_event())));
-      }
-      LOG(WARNING) << "Got unsupported touchpad event";
-      return nullptr;
     }
-    case cros_healthd::mojom::internal::EventInfo_Data::EventInfo_Tag::
-        kStylusEventInfo: {
-      if (input->get_stylus_event_info()->is_touch_event()) {
-        return crosapi::mojom::TelemetryEventInfo::NewStylusTouchEventInfo(
-            ConvertStructPtr(
-                std::move(input->get_stylus_event_info()->get_touch_event())));
+    case cros_healthd::mojom::EventInfo::Tag::kStylusEventInfo: {
+      auto info = std::move(input->get_stylus_event_info());
+      switch (info->which()) {
+        case cros_healthd::mojom::StylusEventInfo::Tag::kTouchEvent:
+          return crosapi::mojom::TelemetryEventInfo::NewStylusTouchEventInfo(
+              ConvertStructPtr(std::move(info->get_touch_event())));
+        case cros_healthd::mojom::StylusEventInfo::Tag::kConnectedEvent:
+          return crosapi::mojom::TelemetryEventInfo::
+              NewStylusConnectedEventInfo(
+                  ConvertStructPtr(std::move(info->get_connected_event())));
+        case cros_healthd::mojom::StylusEventInfo::Tag::kDefaultType:
+          LOG(WARNING) << "Got unsupported touchpad event";
+          return nullptr;
       }
-      if (input->get_stylus_event_info()->is_connected_event()) {
-        return crosapi::mojom::TelemetryEventInfo::NewStylusConnectedEventInfo(
-            ConvertStructPtr(std::move(
-                input->get_stylus_event_info()->get_connected_event())));
-      }
-      LOG(WARNING) << "Got unsupported touchpad event";
-      return nullptr;
     }
     default:
       LOG(WARNING) << "Got event for unsupported category";
