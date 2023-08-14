@@ -9,6 +9,7 @@
 #include <set>
 
 #include "base/compiler_specific.h"
+#include "base/containers/contains.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -23,6 +24,7 @@
 #include "ui/events/event.h"
 #include "ui/gfx/canvas.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/controls/image_view.h"
 #include "ui/views/controls/menu/menu_config.h"
 #include "ui/views/controls/menu/menu_controller.h"
 #include "ui/views/controls/menu/menu_host.h"
@@ -89,8 +91,76 @@ MenuItemView* SubmenuView::GetMenuItemAt(size_t index) {
   return menu_items[index];
 }
 
+int SubmenuView::GetPreferredItemHeight() const {
+  EmptyMenuMenuItem menu_item(parent_menu_item_);
+  menu_item.set_controller(parent_menu_item_->GetMenuController());
+  return menu_item.GetPreferredSize().height();
+}
+
 PrefixSelector* SubmenuView::GetPrefixSelector() {
   return &prefix_selector_;
+}
+
+void SubmenuView::UpdateMenuPartSizes() {
+  const MenuConfig& config = MenuConfig::instance();
+
+  trailing_padding_ =
+      config.item_horizontal_padding + config.item_horizontal_border_padding;
+  const auto& menu_items = GetMenuItems();
+  if (config.reserve_dedicated_arrow_column &&
+      base::ranges::any_of(menu_items, &MenuItemView::HasSubmenu)) {
+    trailing_padding_ +=
+        kSubmenuArrowSize +
+        (base::Contains(menu_items, MenuItemView::Type::kActionableSubMenu,
+                        &MenuItemView::GetType)
+             ? config.actionable_submenu_arrow_to_edge_padding
+             : config.arrow_to_edge_padding);
+  }
+
+  const bool has_checks_or_radios = base::ranges::any_of(
+      menu_items,
+      [](MenuItemView::Type type) {
+        return type == MenuItemView::Type::kCheckbox ||
+               type == MenuItemView::Type::kRadio;
+      },
+      &MenuItemView::GetType);
+  icon_area_width_ = has_checks_or_radios ? config.check_width : 0;
+  int max_icon_width = 0;
+  if (parent_menu_item_->GetRootMenuItem()->has_icons() &&
+      !menu_items.empty()) {
+    std::vector<int> widths(menu_items.size());
+    base::ranges::transform(
+        menu_items, widths.begin(), [&](const MenuItemView* item) {
+          // If this item has a radio or checkbox, the icon will not
+          // affect alignment of other items.
+          return (config.icons_in_label ||
+                  (item->GetType() != MenuItemView::Type::kCheckbox &&
+                   item->GetType() != MenuItemView::Type::kRadio))
+                     ? item->GetIconPreferredWidth()
+                     : 0;
+        });
+    max_icon_width = base::ranges::max(widths);
+  }
+  if (!config.icons_in_label) {
+    icon_area_width_ = std::max(icon_area_width_, max_icon_width);
+  }
+
+  label_start_ = parent_menu_item_->GetContentStart() + icon_area_width_;
+  if (icon_area_width_) {
+    const auto* const controller = parent_menu_item_->GetMenuController();
+    if (controller && controller->use_ash_system_ui_layout()) {
+      label_start_ += config.touchable_item_horizontal_padding;
+    } else if (config.icons_in_label) {
+      label_start_ += config.item_horizontal_padding;
+    } else {
+      label_start_ += LayoutProvider::Get()->GetDistanceMetric(
+          DISTANCE_RELATED_LABEL_HORIZONTAL);
+    }
+  }
+
+  if (config.icons_in_label) {
+    icon_area_width_ = max_icon_width;
+  }
 }
 
 void SubmenuView::ChildPreferredSizeChanged(View* child) {

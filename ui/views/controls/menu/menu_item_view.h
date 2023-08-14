@@ -145,13 +145,6 @@ class VIEWS_EXPORT MenuItemView : public View {
   bool HandleAccessibleAction(const ui::AXActionData& action_data) override;
   FocusBehavior GetFocusBehavior() const override;
 
-  // Returns the preferred height of menu items. This is only valid when the
-  // menu is about to be shown.
-  static int pref_menu_height() { return pref_menu_height_; }
-
-  // X-coordinate of where the label starts.
-  static int label_start() { return label_start_; }
-
   // Returns if a given |anchor| is a bubble or not.
   static bool IsBubble(MenuAnchorPosition anchor);
 
@@ -310,6 +303,9 @@ class VIEWS_EXPORT MenuItemView : public View {
   // SetIcon(). MenuItemView takes ownership of |icon_view|.
   void SetIconView(std::unique_ptr<ImageView> icon_view);
 
+  // Returns the preferred width of the icon view if any, or 0 if none.
+  int GetIconPreferredWidth() const;
+
   // Sets the command id of this menu item.
   void SetCommand(int command) { command_ = command; }
 
@@ -345,7 +341,16 @@ class VIEWS_EXPORT MenuItemView : public View {
   // Return the preferred dimensions of the item in pixel.
   const MenuItemDimensions& GetDimensions() const;
 
-  // Returns the object responsible for controlling showing the menu.
+  // Returns the earliest horizontal position where content may appear.
+  int GetContentStart() const;
+
+  void set_controller(MenuController* controller) {
+    if (controller) {
+      controller_ = controller->AsWeakPtr();
+    } else {
+      controller_.reset();
+    }
+  }
   MenuController* GetMenuController();
   const MenuController* GetMenuController() const;
 
@@ -465,10 +470,8 @@ class VIEWS_EXPORT MenuItemView : public View {
   void UpdateMenuPartSizes();
 
   // The RunXXX methods call into this to set up the necessary state before
-  // running. |is_first_menu| is true if no menus are currently showing.
-  void PrepareForRun(bool is_first_menu,
-                     bool has_mnemonics,
-                     bool show_mnemonics);
+  // running.
+  void PrepareForRun(bool has_mnemonics, bool show_mnemonics);
 
   // Returns the flags passed to DrawStringRect.
   int GetDrawStringFlags();
@@ -536,9 +539,6 @@ class VIEWS_EXPORT MenuItemView : public View {
   //    ApplyMinimumDimensions(x).height >= x.height
   void ApplyMinimumDimensions(MenuItemDimensions* dims) const;
 
-  // Returns the earliest horizontal position where content may appear.
-  int GetContentStart() const;
-
   // Get the horizontal position at which to draw the menu item's label.
   int GetLabelStartForThisItem() const;
 
@@ -547,12 +547,6 @@ class VIEWS_EXPORT MenuItemView : public View {
   MenuPosition actual_menu_position() const { return actual_menu_position_; }
   void set_actual_menu_position(MenuPosition actual_menu_position) {
     actual_menu_position_ = actual_menu_position;
-  }
-  void set_controller(MenuController* controller) {
-    if (controller)
-      controller_ = controller->AsWeakPtr();
-    else
-      controller_.reset();
   }
 
   // Returns true if this MenuItemView contains a single child
@@ -565,12 +559,6 @@ class VIEWS_EXPORT MenuItemView : public View {
 
   // Returns number of child views excluding icon_view.
   int NonIconChildViewsCount() const;
-
-  // Returns the max icon width; recurses over submenus.
-  int GetMaxIconViewWidth() const;
-
-  // Returns true if the menu has items with a checkbox or a radio button.
-  bool HasChecksOrRadioButtons() const;
 
   void invalidate_dimensions() { dimensions_.height = 0; }
   bool is_dimensions_valid() const { return dimensions_.height > 0; }
@@ -656,19 +644,6 @@ class VIEWS_EXPORT MenuItemView : public View {
 
   // The tooltip to show on hover for this menu item.
   std::u16string tooltip_;
-
-  // Width of a menu icon area.
-  static int icon_area_width_;
-
-  // X-coordinate of where the label starts.
-  static int label_start_;
-
-  // The width of the padding after the minor text. If there is a dedicated
-  // submenu arrow column, it fits inside this.
-  static int trailing_padding_;
-
-  // Preferred height of menu items. Reset every time a menu is run.
-  static int pref_menu_height_;
 
   // Cached dimensions. This is cached as text sizing calculations are quite
   // costly.
