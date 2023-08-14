@@ -47,6 +47,14 @@ void SharedStorageRenderThreadWorkletDriver::StartWorkletService(
       std::move(pending_receiver));
 }
 
+RenderProcessHost* SharedStorageRenderThreadWorkletDriver::GetProcessHost() {
+  if (!agent_scheduling_group_host_) {
+    return nullptr;
+  }
+
+  return agent_scheduling_group_host_->GetProcess();
+}
+
 void SharedStorageRenderThreadWorkletDriver::RenderProcessHostDestroyed(
     RenderProcessHost* host) {
   // This could occur when the browser shuts down during the worklet's

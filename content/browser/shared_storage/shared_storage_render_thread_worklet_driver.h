@@ -32,6 +32,7 @@ class SharedStorageRenderThreadWorkletDriver
   void StartWorkletService(
       mojo::PendingReceiver<blink::mojom::SharedStorageWorkletService>
           pending_receiver) override;
+  RenderProcessHost* GetProcessHost() override;
 
   // RenderProcessHostObserver overrides
   void RenderProcessHostDestroyed(RenderProcessHost* host) override;

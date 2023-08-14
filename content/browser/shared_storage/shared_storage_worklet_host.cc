@@ -185,6 +185,7 @@ void SharedStorageWorkletHost::AddModuleOnWorklet(
   }
 
   add_module_state_ = AddModuleState::kInitiated;
+  script_source_url_ = script_source_url;
 
   mojo::PendingRemote<network::mojom::URLLoaderFactory> url_loader_factory;
 
@@ -690,6 +691,10 @@ void SharedStorageWorkletHost::RecordUseCounters(
     GetContentClient()->browser()->LogWebFeatureForCurrentPage(
         &page_->GetMainDocument(), feature);
   }
+}
+
+RenderProcessHost* SharedStorageWorkletHost::GetProcessHost() const {
+  return driver_->GetProcessHost();
 }
 
 void SharedStorageWorkletHost::OnAddModuleOnWorkletFinished(
