@@ -6935,3 +6935,5 @@ crbug.com/1459188 [ Linux ] inspector-protocol/input/dispatchMouseEvent-dragging
 
 # Gardener 2023-08-14
 crbug.com/1472631 [ Linux ] virtual/text-antialias/whitespace/normal-after-nowrap-breaking.html [ Failure Pass ]
+crbug.com/1472675 [ Linux ] virtual/threaded/external/wpt/css/css-scroll-snap/overscroll-snap.html [ Failure Pass ]
+crbug.com/1472675 [ Linux ] virtual/disable-composite-scroll-after-paint/external/wpt/css/css-scroll-snap/overscroll-snap.html [ Failure Pass ]
