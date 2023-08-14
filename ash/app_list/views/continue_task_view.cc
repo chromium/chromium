@@ -97,6 +97,7 @@ ContinueTaskView::ContinueTaskView(AppListViewDelegate* view_delegate,
       is_jelly_enabled
           ? static_cast<ui::ColorId>(cros_tokens::kCrosSysFocusRing)
           : ui::kColorAshFocusRing;
+  views::FocusRing::Get(this)->SetOutsetFocusRingDisabled(true);
   views::FocusRing::Get(this)->SetColorId(focus_ring_color);
   SetFocusPainter(nullptr);
 

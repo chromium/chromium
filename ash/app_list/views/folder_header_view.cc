@@ -90,6 +90,7 @@ class FolderHeaderView::FolderNameView : public views::Textfield,
     SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
     SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(0, kFolderNamePadding)));
     views::FocusRing::Install(this);
+    views::FocusRing::Get(this)->SetOutsetFocusRingDisabled(true);
     views::FocusRing::Get(this)->SetColorId(ui::kColorAshFocusRing);
     views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
                                                   kFolderNameBorderRadius);

@@ -522,6 +522,7 @@ void SearchBoxView::OnThemeChanged() {
       gfx::CreateVectorIcon(chromeos::kAssistantIcon, GetSearchBoxIconSize(),
                             button_icon_color));
   auto* focus_ring = views::FocusRing::Get(assistant_button());
+  focus_ring->SetOutsetFocusRingDisabled(true);
   focus_ring->SetColorId(GetFocusColorId(is_jelly_enabled_));
 
   if (focus_ring_layer_) {

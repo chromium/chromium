@@ -83,6 +83,7 @@ SearchResultImageView::SearchResultImageView(
 
   views::FocusRing::Install(this);
   views::FocusRing* const focus_ring = views::FocusRing::Get(this);
+  focus_ring->SetOutsetFocusRingDisabled(true);
   const bool is_jelly_enabled = chromeos::features::IsJellyEnabled();
   focus_ring->SetColorId(is_jelly_enabled ? static_cast<ui::ColorId>(
                                                 cros_tokens::kCrosSysFocusRing)

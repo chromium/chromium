@@ -511,6 +511,7 @@ AppListItemView::AppListItemView(const AppListConfig* app_list_config,
 
   views::FocusRing::Install(this);
   views::FocusRing* const focus_ring = views::FocusRing::Get(this);
+  focus_ring->SetOutsetFocusRingDisabled(true);
   focus_ring->SetColorId(is_jelly_enabled ? static_cast<ui::ColorId>(
                                                 cros_tokens::kCrosSysFocusRing)
                                           : ui::kColorAshFocusRing);
