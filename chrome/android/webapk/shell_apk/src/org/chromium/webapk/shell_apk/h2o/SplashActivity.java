@@ -197,12 +197,14 @@ public class SplashActivity extends Activity {
      */
     @VisibleForTesting
     void updateStatusBar(Bundle metadata) {
-        int statusBarColor = WebApkUtils.inDarkMode(this)
-                ? (int) WebApkMetaDataUtils.getLongFromMetaData(
-                        metadata, WebApkMetaDataKeys.DARK_THEME_COLOR, Color.BLACK)
-                : (int) WebApkMetaDataUtils.getLongFromMetaData(
-                        metadata, WebApkMetaDataKeys.THEME_COLOR, Color.WHITE);
-        WebApkUtils.setStatusBarColor(this, statusBarColor);
+        int statusBarColor = (int) WebApkMetaDataUtils.getLongFromMetaData(
+                metadata, WebApkMetaDataKeys.THEME_COLOR, Color.WHITE);
+        int defaultDarkStatusBarColor = (int) WebApkMetaDataUtils.getLongFromMetaData(
+                metadata, WebApkMetaDataKeys.THEME_COLOR, Color.BLACK);
+        int darkStatusBarColor = (int) WebApkMetaDataUtils.getLongFromMetaData(
+                metadata, WebApkMetaDataKeys.DARK_THEME_COLOR, defaultDarkStatusBarColor);
+        WebApkUtils.setStatusBarColor(
+                this, WebApkUtils.inDarkMode(this) ? darkStatusBarColor : statusBarColor);
         boolean needsDarkStatusBarIcons =
                 !WebApkUtils.shouldUseLightForegroundOnBackground(statusBarColor);
         WebApkUtils.setStatusBarIconColor(
