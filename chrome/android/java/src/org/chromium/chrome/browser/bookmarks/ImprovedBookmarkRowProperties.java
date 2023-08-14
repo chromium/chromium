@@ -70,12 +70,12 @@ public class ImprovedBookmarkRowProperties {
     public static final WritableObjectPropertyKey<ImprovedBookmarkFolderViewCoordinator>
             FOLDER_COORDINATOR = new WritableObjectPropertyKey<>();
 
-    private static final PropertyKey[] IMPROVED_BOOKAMRK_ROW_PROPERTIES = {TITLE, DESCRIPTION,
+    private static final PropertyKey[] IMPROVED_BOOKMARK_ROW_PROPERTIES = {TITLE, DESCRIPTION,
             DESCRIPTION_VISIBLE, START_IMAGE_VISIBILITY, START_AREA_BACKGROUND_COLOR,
             START_ICON_TINT, START_ICON_DRAWABLE, ACCESSORY_VIEW, LIST_MENU_BUTTON_DELEGATE,
             POPUP_LISTENER, SELECTED, SELECTION_ACTIVE, DRAG_ENABLED, EDITABLE, ROW_CLICK_LISTENER,
             SHOPPING_ACCESSORY_COORDINATOR, FOLDER_COORDINATOR, END_IMAGE_VISIBILITY,
             END_IMAGE_RES};
     public static final PropertyKey[] ALL_KEYS = PropertyModel.concatKeys(
-            BookmarkManagerProperties.ALL_KEYS, IMPROVED_BOOKAMRK_ROW_PROPERTIES);
+            BookmarkManagerProperties.ALL_KEYS, IMPROVED_BOOKMARK_ROW_PROPERTIES);
 }

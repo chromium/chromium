@@ -248,7 +248,7 @@ found in the LICENSE file.
     <dimen name="improved_bookmark_row_start_margin">16dp</dimen>
     <dimen name="improved_bookmark_row_start_negative_margin">-16dp</dimen>
 
-    <!-- Improved bookamrk save flow properties-->
+    <!-- Improved bookmark save flow properties-->
     <dimen name="improved_bookmark_save_flow_outer_radius">8dp</dimen>
     <dimen name="improved_bookmark_save_flow_inner_radius">4dp</dimen>
     <dimen name="improved_bookmark_save_flow_image_size">75dp</dimen>

@@ -689,7 +689,7 @@ public class BookmarkUtils {
     }
 
     /**
-     * Returns the description to use for the folder in bookamrks manager.
+     * Returns the description to use for the folder in bookmarks manager.
      * @param id The bookmark to get the description for, must be a folder.
      * @param bookmarkModel The bookmark model to get info on the bookmark.
      * @param resources Android resources object to get strings.
