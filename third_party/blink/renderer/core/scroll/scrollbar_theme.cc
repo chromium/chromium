@@ -120,9 +120,18 @@ void ScrollbarTheme::PaintScrollCorner(
 #if BUILDFLAG(IS_MAC)
   context.FillRect(corner_rect, Color::kWhite, AutoDarkMode::Disabled());
 #else
+  WebThemeEngine::ScrollbarTrackExtraParams scrollbar_track;
+  if (vertical_scrollbar != nullptr &&
+      vertical_scrollbar->ScrollbarTrackColor().has_value()) {
+    scrollbar_track.track_color = vertical_scrollbar->ScrollbarTrackColor()
+                                      .value()
+                                      .toSkColor4f()
+                                      .toSkColor();
+  }
+  WebThemeEngine::ExtraParams extra_params(scrollbar_track);
   WebThemeEngineHelper::GetNativeThemeEngine()->Paint(
       context.Canvas(), WebThemeEngine::kPartScrollbarCorner,
-      WebThemeEngine::kStateNormal, corner_rect, nullptr, color_scheme);
+      WebThemeEngine::kStateNormal, corner_rect, &extra_params, color_scheme);
 #endif
 }
 

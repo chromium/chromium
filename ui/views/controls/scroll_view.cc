@@ -68,8 +68,8 @@ class ScrollCornerView : public View {
     ui::NativeTheme::ExtraParams params(
         absl::in_place_type<ui::NativeTheme::ScrollbarExtraParams>);
 #else
-    // This is ignored on non-Apple platforms.
-    ui::NativeTheme::ExtraParams params;
+    ui::NativeTheme::ExtraParams params(
+        absl::in_place_type<ui::NativeTheme::ScrollbarTrackExtraParams>);
 #endif
     GetNativeTheme()->Paint(canvas->sk_canvas(), GetColorProvider(),
                             ui::NativeTheme::kScrollbarCorner,

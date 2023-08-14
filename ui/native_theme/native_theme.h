@@ -262,6 +262,10 @@ class NATIVE_THEME_EXPORT NativeTheme {
     bool is_hovering = false;
     float zoom = 0;
     bool right_to_left = false;
+    // These allow clients to directly override the color values to support
+    // element-specific web platform CSS.
+    absl::optional<SkColor> thumb_color;
+    absl::optional<SkColor> track_color;
   };
 
   struct ScrollbarTrackExtraParams {
@@ -271,6 +275,9 @@ class NATIVE_THEME_EXPORT NativeTheme {
     int track_width = 0;
     int track_height = 0;
     int classic_state = 0;  // Used on Windows when uxtheme is not available.
+    // This allows clients to directly override the color values to support
+    // element-specific web platform CSS.
+    absl::optional<SkColor> track_color;
   };
 
   enum class ScrollbarOverlayColorTheme {
@@ -283,6 +290,9 @@ class NATIVE_THEME_EXPORT NativeTheme {
     bool is_hovering = false;
     ScrollbarOverlayColorTheme scrollbar_theme =
         ScrollbarOverlayColorTheme::kDefault;
+    // This allows clients to directly override the color values to support
+    // element-specific web platform CSS.
+    absl::optional<SkColor> thumb_color;
   };
 
 #if BUILDFLAG(IS_APPLE)
@@ -305,6 +315,8 @@ class NATIVE_THEME_EXPORT NativeTheme {
         ScrollbarOrientation::kVerticalOnRight;  // Used on Mac for drawing
                                                  // gradients.
     float scale_from_dip = 0;
+    // These allow clients to directly override the color values to support
+    // element-specific web platform CSS.
     absl::optional<SkColor> thumb_color;
     absl::optional<SkColor> track_color;
   };

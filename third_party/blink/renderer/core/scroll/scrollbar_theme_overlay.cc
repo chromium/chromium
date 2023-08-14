@@ -197,6 +197,10 @@ void ScrollbarThemeOverlay::PaintThumb(GraphicsContext& context,
   blink::WebThemeEngine::ScrollbarThumbExtraParams scrollbar_thumb;
   scrollbar_thumb.scrollbar_theme = static_cast<WebScrollbarOverlayColorTheme>(
       scrollbar.GetScrollbarOverlayColorTheme());
+  if (scrollbar.ScrollbarThumbColor().has_value()) {
+    scrollbar_thumb.thumb_color =
+        scrollbar.ScrollbarThumbColor().value().toSkColor4f().toSkColor();
+  }
 
   // Horizontally flip the canvas if it is left vertical scrollbar.
   if (scrollbar.IsLeftSideVerticalScrollbar()) {

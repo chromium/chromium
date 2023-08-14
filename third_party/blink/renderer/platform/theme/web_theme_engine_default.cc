@@ -46,6 +46,7 @@ static ui::NativeTheme::ExtraParams GetNativeThemeExtraParams(
   }
 
   switch (part) {
+    case WebThemeEngine::kPartScrollbarCorner:
     case WebThemeEngine::kPartScrollbarHorizontalTrack:
     case WebThemeEngine::kPartScrollbarVerticalTrack: {
       ui::NativeTheme::ScrollbarTrackExtraParams native_scrollbar_track;
@@ -56,6 +57,7 @@ static ui::NativeTheme::ExtraParams GetNativeThemeExtraParams(
       native_scrollbar_track.track_y = scrollbar_track.track_y;
       native_scrollbar_track.track_width = scrollbar_track.track_width;
       native_scrollbar_track.track_height = scrollbar_track.track_height;
+      native_scrollbar_track.track_color = scrollbar_track.track_color;
       return ui::NativeTheme::ExtraParams(native_scrollbar_track);
     }
     case WebThemeEngine::kPartCheckbox: {
@@ -164,6 +166,7 @@ static ui::NativeTheme::ExtraParams GetNativeThemeExtraParams(
       native_scrollbar_thumb.scrollbar_theme =
           NativeThemeScrollbarOverlayColorTheme(
               scrollbar_thumb.scrollbar_theme);
+      native_scrollbar_thumb.thumb_color = scrollbar_thumb.thumb_color;
       return ui::NativeTheme::ExtraParams(native_scrollbar_thumb);
     }
     case WebThemeEngine::kPartScrollbarDownArrow:
@@ -175,6 +178,8 @@ static ui::NativeTheme::ExtraParams GetNativeThemeExtraParams(
           absl::get<WebThemeEngine::ScrollbarButtonExtraParams>(*extra_params);
       native_scrollbar_arrow.zoom = scrollbar_button.zoom;
       native_scrollbar_arrow.right_to_left = scrollbar_button.right_to_left;
+      native_scrollbar_arrow.thumb_color = scrollbar_button.thumb_color;
+      native_scrollbar_arrow.track_color = scrollbar_button.track_color;
       return ui::NativeTheme::ExtraParams(native_scrollbar_arrow);
     }
     default: {

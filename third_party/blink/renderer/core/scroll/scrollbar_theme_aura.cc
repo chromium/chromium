@@ -243,8 +243,9 @@ void ScrollbarThemeAura::PaintTrack(GraphicsContext& context,
   // of the back track and forward track.
   auto state = WebThemeEngine::kStateNormal;
 
-  // TODO(wangxianzhu): The extra params for scrollbar track were for painting
-  // back and forward tracks separately, which we don't support. Remove them.
+  // TODO(wangxianzhu): Some of these extra params for scrollbar track were for
+  // painting back and forward tracks separately, which we don't support. Remove
+  // them.
   gfx::Rect align_rect = TrackRect(scrollbar);
 
   WebThemeEngine::ScrollbarTrackExtraParams scrollbar_track;
@@ -253,6 +254,11 @@ void ScrollbarThemeAura::PaintTrack(GraphicsContext& context,
   scrollbar_track.track_y = align_rect.y();
   scrollbar_track.track_width = align_rect.width();
   scrollbar_track.track_height = align_rect.height();
+
+  if (scrollbar.ScrollbarTrackColor().has_value()) {
+    scrollbar_track.track_color =
+        scrollbar.ScrollbarTrackColor().value().toSkColor4f().toSkColor();
+  }
 
   WebThemeEngine::ExtraParams extra_params(scrollbar_track);
 
@@ -276,6 +282,14 @@ void ScrollbarThemeAura::PaintButton(GraphicsContext& gc,
   WebThemeEngine::ScrollbarButtonExtraParams scrollbar_button;
   scrollbar_button.zoom = scrollbar.EffectiveZoom();
   scrollbar_button.right_to_left = scrollbar.ContainerIsRightToLeft();
+  if (scrollbar.ScrollbarThumbColor().has_value()) {
+    scrollbar_button.thumb_color =
+        scrollbar.ScrollbarThumbColor().value().toSkColor4f().toSkColor();
+  }
+  if (scrollbar.ScrollbarTrackColor().has_value()) {
+    scrollbar_button.track_color =
+        scrollbar.ScrollbarTrackColor().value().toSkColor4f().toSkColor();
+  }
   WebThemeEngine::ExtraParams extra_params(scrollbar_button);
   WebThemeEngineHelper::GetNativeThemeEngine()->Paint(
       gc.Canvas(), params.part, params.state, rect, &extra_params,
@@ -300,8 +314,14 @@ void ScrollbarThemeAura::PaintThumb(GraphicsContext& gc,
   else
     state = WebThemeEngine::kStateNormal;
 
-  WebThemeEngine::ExtraParams params(
-      absl::in_place_type<WebThemeEngine::ScrollbarThumbExtraParams>);
+  WebThemeEngine::ScrollbarThumbExtraParams scrollbar_thumb;
+
+  if (scrollbar.ScrollbarThumbColor().has_value()) {
+    scrollbar_thumb.thumb_color =
+        scrollbar.ScrollbarThumbColor().value().toSkColor4f().toSkColor();
+  }
+
+  WebThemeEngine::ExtraParams params(scrollbar_thumb);
 
   WebThemeEngineHelper::GetNativeThemeEngine()->Paint(
       canvas,

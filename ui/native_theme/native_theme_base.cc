@@ -330,10 +330,9 @@ void NativeThemeBase::Paint(cc::PaintCanvas* canvas,
       break;
     case kScrollbarHorizontalThumb:
     case kScrollbarVerticalThumb:
-      PaintScrollbarThumb(
-          canvas, color_provider, part, state, rect,
-          absl::get<ScrollbarThumbExtraParams>(extra).scrollbar_theme,
-          color_scheme);
+      PaintScrollbarThumb(canvas, color_provider, part, state, rect,
+                          absl::get<ScrollbarThumbExtraParams>(extra),
+                          color_scheme);
       break;
     case kScrollbarHorizontalTrack:
     case kScrollbarVerticalTrack:
@@ -347,7 +346,9 @@ void NativeThemeBase::Paint(cc::PaintCanvas* canvas,
       // implementations, so no NOTIMPLEMENTED.
       break;
     case kScrollbarCorner:
-      PaintScrollbarCorner(canvas, color_provider, state, rect, color_scheme);
+      PaintScrollbarCorner(canvas, color_provider, state, rect,
+                           absl::get<ScrollbarTrackExtraParams>(extra),
+                           color_scheme);
       break;
     case kSliderTrack:
       PaintSliderTrack(canvas, color_provider, state, rect,
@@ -413,7 +414,8 @@ void NativeThemeBase::PaintArrowButton(
 
   // Calculate button color.
   SkScalar track_hsv[3];
-  SkColorToHSV(GetColor(kTrackColor, color_scheme), track_hsv);
+  SkColorToHSV(arrow.track_color.value_or(GetColor(kTrackColor, color_scheme)),
+               track_hsv);
   SkColor button_color = SaturateAndBrighten(track_hsv, 0, 0.2f);
   SkColor background_color = button_color;
   if (state == kPressed) {
@@ -483,8 +485,12 @@ void NativeThemeBase::PaintArrowButton(
   flags.setColor(OutlineColor(track_hsv, thumb_hsv));
   canvas->drawPath(outline, flags);
 
-  PaintArrow(canvas, rect, direction,
-             GetArrowColor(state, color_scheme, color_provider));
+  // TODO(crbug.com/891944): Adjust thumb_color based on `state`.
+  const SkColor arrow_color =
+      arrow.thumb_color.has_value()
+          ? arrow.thumb_color.value()
+          : GetArrowColor(state, color_scheme, color_provider);
+  PaintArrow(canvas, rect, direction, arrow_color);
 }
 
 void NativeThemeBase::PaintArrow(cc::PaintCanvas* gc,
@@ -567,13 +573,14 @@ void NativeThemeBase::PaintScrollbarTrack(
   DrawBox(canvas, rect, flags);
 }
 
-void NativeThemeBase::PaintScrollbarThumb(cc::PaintCanvas* canvas,
-                                          const ColorProvider* color_provider,
-                                          Part part,
-                                          State state,
-                                          const gfx::Rect& rect,
-                                          ScrollbarOverlayColorTheme,
-                                          ColorScheme color_scheme) const {
+void NativeThemeBase::PaintScrollbarThumb(
+    cc::PaintCanvas* canvas,
+    const ColorProvider* color_provider,
+    Part part,
+    State state,
+    const gfx::Rect& rect,
+    const ScrollbarThumbExtraParams& extra_params,
+    ColorScheme color_scheme) const {
   const bool hovered = state == kHovered;
   const int midx = rect.x() + rect.width() / 2;
   const int midy = rect.y() + rect.height() / 2;
@@ -633,11 +640,13 @@ void NativeThemeBase::PaintScrollbarThumb(cc::PaintCanvas* canvas,
   }
 }
 
-void NativeThemeBase::PaintScrollbarCorner(cc::PaintCanvas* canvas,
-                                           const ColorProvider* color_provider,
-                                           State state,
-                                           const gfx::Rect& rect,
-                                           ColorScheme color_scheme) const {}
+void NativeThemeBase::PaintScrollbarCorner(
+    cc::PaintCanvas* canvas,
+    const ColorProvider* color_provider,
+    State state,
+    const gfx::Rect& rect,
+    const ScrollbarTrackExtraParams& extra_params,
+    ColorScheme color_scheme) const {}
 
 void NativeThemeBase::PaintCheckbox(
     cc::PaintCanvas* canvas,

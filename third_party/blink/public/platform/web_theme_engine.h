@@ -114,6 +114,7 @@ class WebThemeEngine {
     int track_y = 0;
     int track_width = 0;
     int track_height = 0;
+    absl::optional<SkColor> track_color;
   };
 
   // Extra parameters for PartCheckbox, PartPushButton and PartRadio.
@@ -182,15 +183,18 @@ class WebThemeEngine {
     bool is_horizontal = false;
   };
 
-  // Extra parameters for scrollbar thumb. Used only for overlay scrollbars.
+  // Extra parameters for scrollbar thumb.
   struct ScrollbarThumbExtraParams {
     WebScrollbarOverlayColorTheme scrollbar_theme =
         WebScrollbarOverlayColorTheme::kWebScrollbarOverlayColorThemeDark;
+    absl::optional<SkColor> thumb_color;
   };
 
   struct ScrollbarButtonExtraParams {
     float zoom = 0;
     bool right_to_left = false;
+    absl::optional<SkColor> thumb_color;
+    absl::optional<SkColor> track_color;
   };
 
   // Represents ui::NativeTheme System Info
