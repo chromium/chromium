@@ -608,6 +608,8 @@ void LockContentsView::AddedToWidget() {
   views::FocusManager* focus_manager = widget->GetFocusManager();
   if (focus_manager) {
     focus_manager->AddFocusChangeListener(this);
+  } else {
+    LOG(ERROR) << "LockContentsView attached to Widget without FocusManager";
   }
 
   // Focus the primary user when showing the UI. This will focus the password.
@@ -1599,8 +1601,7 @@ void LockContentsView::OnDidChangeFocus(View* focused_before,
     return;
   }
 
-  const bool before_in_anchor =
-      login_views_utils::IsDescendantView(*focused_before, *anchor);
+  const bool before_in_anchor = anchor->Contains(focused_before);
   if (!before_in_anchor) {
     return;
   }
@@ -1620,13 +1621,11 @@ void LockContentsView::OnDidChangeFocus(View* focused_before,
 
   views::View* dropdown_button = user_view->GetDropdownButton();
   const bool now_in_dropdown_button =
-      dropdown_button &&
-      login_views_utils::IsDescendantView(*focused_now, *dropdown_button);
+      dropdown_button && dropdown_button->Contains(focused_now);
 
   views::View* pin_password_toggle = auth_user->pin_password_toggle();
   const bool now_in_pin_password_toggle =
-      pin_password_toggle &&
-      login_views_utils::IsDescendantView(*focused_now, *pin_password_toggle);
+      pin_password_toggle && pin_password_toggle->Contains(focused_now);
 
   if (!now_in_dropdown_button && !now_in_pin_password_toggle) {
     return;

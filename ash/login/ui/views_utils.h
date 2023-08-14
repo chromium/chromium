@@ -47,11 +47,9 @@ ASH_EXPORT std::unique_ptr<views::View> WrapViewForPreferredSize(
 // Returns true if landscape constants should be used for UI shown in |widget|.
 ASH_EXPORT bool ShouldShowLandscape(const views::Widget* widget);
 
-// Returns true if |view| or any of its descendant views HasFocus.
+// Returns true if |view| or any of its descendant views HasFocus. `view` must
+// be attached to a widget with a focus manager, and it must not be null.
 ASH_EXPORT bool HasFocusInAnyChildView(views::View* view);
-
-ASH_EXPORT bool IsDescendantView(views::View& descendant,
-                                 views::View& ancestor);
 
 // Creates a standard text label for use in the login bubbles.
 // If |view_defining_max_width| is set, we allow the label to have multiple

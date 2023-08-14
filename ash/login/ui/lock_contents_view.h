@@ -44,6 +44,7 @@
 #include "ui/display/screen.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/view.h"
+#include "ui/views/widget/widget.h"
 
 namespace keyboard {
 class KeyboardUIController;
