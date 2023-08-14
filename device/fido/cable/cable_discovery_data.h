@@ -154,10 +154,8 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) Pairing {
   static bool EqualPublicKeys(const std::unique_ptr<Pairing>&,
                               const std::unique_ptr<Pairing>&);
 
-  // tunnel_server_domain is known to be a valid hostname as it's constructed
-  // from the 22-bit value in the BLE advert rather than being parsed as a
-  // string from the authenticator.
-  std::string tunnel_server_domain;
+  // tunnel_server_domain is the encoded 16-bit value in the BLE advert.
+  tunnelserver::KnownDomainID tunnel_server_domain = kTunnelServer;
   // contact_id is an opaque value that is sent to the tunnel service in order
   // to identify the caBLEv2 authenticator.
   std::vector<uint8_t> contact_id;

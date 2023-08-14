@@ -181,15 +181,15 @@ GURL GetConnectURL(KnownDomainID domain,
   return url;
 }
 
-GURL GetContactURL(const std::string& tunnel_server,
+GURL GetContactURL(KnownDomainID tunnel_server,
                    base::span<const uint8_t> contact_id) {
   std::string contact_id_base64;
   base::Base64UrlEncode(
       base::StringPiece(reinterpret_cast<const char*>(contact_id.data()),
                         contact_id.size()),
       base::Base64UrlEncodePolicy::OMIT_PADDING, &contact_id_base64);
-  GURL ret(std::string("wss://") + tunnel_server + "/cable/contact/" +
-           contact_id_base64);
+  GURL ret(std::string("wss://") + tunnelserver::DecodeDomain(tunnel_server) +
+           "/cable/contact/" + contact_id_base64);
   DCHECK(ret.is_valid());
   return ret;
 }

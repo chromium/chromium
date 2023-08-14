@@ -81,7 +81,8 @@ const char kWebAuthnCablePairingsPrefName[] = "webauthn.cablev2_pairings";
 // where each dict has these keys:
 const char kPairingPrefName[] = "name";
 const char kPairingPrefContactId[] = "contact_id";
-const char kPairingPrefTunnelServer[] = "tunnel_server";
+// This used to be "tunnel_server" and contain the decoded domain as a string.
+const char kPairingPrefEncodedTunnelServer[] = "encoded_tunnel_server";
 const char kPairingPrefId[] = "id";
 const char kPairingPrefSecret[] = "secret";
 const char kPairingPrefPublicKey[] = "pub_key";
@@ -159,8 +160,6 @@ std::vector<std::unique_ptr<Pairing>> GetLinkedDevices(Profile* const profile) {
     const base::Value::Dict& dict = pairing.GetDict();
     auto out_pairing = std::make_unique<Pairing>();
     if (!CopyString(&out_pairing->name, dict.FindString(kPairingPrefName)) ||
-        !CopyString(&out_pairing->tunnel_server_domain,
-                    dict.FindString(kPairingPrefTunnelServer)) ||
         !CopyBytestring(&out_pairing->contact_id,
                         dict.FindString(kPairingPrefContactId)) ||
         !CopyBytestring(&out_pairing->id, dict.FindString(kPairingPrefId)) ||
@@ -174,6 +173,21 @@ std::vector<std::unique_ptr<Pairing>> GetLinkedDevices(Profile* const profile) {
     const absl::optional<bool> is_new_impl = dict.FindBool(kPairingPrefNewImpl);
     out_pairing->from_new_implementation = is_new_impl && *is_new_impl;
     out_pairing->name = NameForDisplay(out_pairing->name);
+    const absl::optional<uint16_t> maybe_tunnel_server =
+        dict.FindInt(kPairingPrefEncodedTunnelServer);
+    if (maybe_tunnel_server) {
+      absl::optional<device::cablev2::tunnelserver::KnownDomainID>
+          maybe_domain_id = device::cablev2::tunnelserver::ToKnownDomainID(
+              *maybe_tunnel_server);
+      if (!maybe_domain_id) {
+        continue;
+      }
+      out_pairing->tunnel_server_domain = *maybe_domain_id;
+    } else {
+      // Pairings stored before we started tracking the encoded tunnel server
+      // domain are known to be Android phones.
+      out_pairing->tunnel_server_domain = device::cablev2::kTunnelServer;
+    }
     ret.emplace_back(std::move(out_pairing));
   }
 
@@ -238,8 +252,7 @@ std::unique_ptr<Pairing> PairingFromSyncedDevice(syncer::DeviceInfo* device,
     return nullptr;
   }
 
-  pairing->tunnel_server_domain =
-      device::cablev2::tunnelserver::DecodeDomain(*tunnel_server_domain);
+  pairing->tunnel_server_domain = *tunnel_server_domain;
   pairing->contact_id = paask_info.contact_id;
   pairing->peer_public_key_x962 = paask_info.peer_public_key_x962;
   pairing->secret.assign(paask_info.secret.begin(), paask_info.secret.end());
@@ -388,7 +401,8 @@ void AddPairing(Profile* profile, std::unique_ptr<Pairing> pairing) {
 
   base::Value::Dict dict;
   dict.Set(kPairingPrefPublicKey, std::move(public_key_base64));
-  dict.Set(kPairingPrefTunnelServer, pairing->tunnel_server_domain);
+  dict.Set(kPairingPrefEncodedTunnelServer,
+           pairing->tunnel_server_domain.value());
   // `Names` is called without calling `MergeDevices` because that function will
   // discard linked entries with duplicate public keys, which can hide some
   // names that we would still like to avoid colliding with.
