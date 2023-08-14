@@ -103,11 +103,6 @@ constexpr char kAttributeSrc[] = "src";
 // API namespace.
 constexpr char kAPINamespace[] = "webViewInternal";
 
-// API error messages.
-constexpr char kAPILoadDataInvalidDataURL[] = "Invalid data URL \"%s\".";
-constexpr char kAPILoadDataInvalidBaseURL[] = "Invalid base URL \"%s\".";
-constexpr char kAPILoadDataInvalidVirtualURL[] = "Invalid virtual URL \"%s\".";
-
 // Initialization parameters.
 constexpr char kInitialZoomFactor[] = "initialZoomFactor";
 constexpr char kParameterUserAgentOverride[] = "userAgentOverride";
@@ -1342,48 +1337,6 @@ void WebViewGuest::SetTransparency(
 
 void WebViewGuest::SetAllowScaling(bool allow) {
   allow_scaling_ = allow;
-}
-
-bool WebViewGuest::LoadDataWithBaseURL(const GURL& data_url,
-                                       const GURL& base_url,
-                                       const GURL& virtual_url,
-                                       std::string* error) {
-  // Check that the provided URLs are valid.
-  // |data_url| must be a valid data URL.
-  if (!data_url.is_valid() || !data_url.SchemeIs(url::kDataScheme)) {
-    base::SStringPrintf(error, kAPILoadDataInvalidDataURL,
-                        data_url.possibly_invalid_spec().c_str());
-    return false;
-  }
-  const url::Origin& owner_origin = owner_rfh()->GetLastCommittedOrigin();
-  const bool base_in_owner_origin = owner_origin.IsSameOriginWith(base_url);
-  // |base_url| must be a valid URL. It is also limited to URLs that the owner
-  // is trusted to have control over.
-  if (!base_url.is_valid() ||
-      (!base_url.SchemeIsHTTPOrHTTPS() && !base_in_owner_origin)) {
-    base::SStringPrintf(error, kAPILoadDataInvalidBaseURL,
-                        base_url.possibly_invalid_spec().c_str());
-    return false;
-  }
-  // |virtual_url| must be a valid URL.
-  if (!virtual_url.is_valid()) {
-    base::SStringPrintf(error, kAPILoadDataInvalidVirtualURL,
-                        virtual_url.possibly_invalid_spec().c_str());
-    return false;
-  }
-
-  // Set up the parameters to load |data_url| with the specified |base_url|.
-  content::NavigationController::LoadURLParams load_params(data_url);
-  load_params.load_type = content::NavigationController::LOAD_TYPE_DATA;
-  load_params.base_url_for_data_url = base_url;
-  load_params.virtual_url_for_data_url = virtual_url;
-  load_params.override_user_agent =
-      content::NavigationController::UA_OVERRIDE_INHERIT;
-
-  // Navigate to the data URL.
-  GetController().LoadURLWithParams(load_params);
-
-  return true;
 }
 
 void WebViewGuest::AddNewContents(

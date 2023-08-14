@@ -99,12 +99,6 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
   void SetAllowTransparency(bool allow);
   bool allow_transparency() const { return allow_transparency_; }
 
-  // Loads a data URL with a specified base URL and virtual URL.
-  bool LoadDataWithBaseURL(const GURL& data_url,
-                           const GURL& base_url,
-                           const GURL& virtual_url,
-                           std::string* error);
-
   // Begin or continue a find request.
   void StartFind(const std::u16string& search_text,
                  blink::mojom::FindOptionsPtr options,
