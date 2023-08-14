@@ -269,8 +269,7 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
       return false;
     }
 
-    return loadTimeData.getBoolean('hasShowInFolder') &&
-        this.data.dangerType !== DangerType.DEEP_SCANNED_FAILED &&
+    return this.data.dangerType !== DangerType.DEEP_SCANNED_FAILED &&
         this.computeCompletelyOnDisk_();
   }
 

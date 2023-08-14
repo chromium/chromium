@@ -139,8 +139,6 @@ content::WebUIDataSource* CreateAndAddDownloadsUIHTMLSource(Profile* profile) {
                              IDS_BLOCK_REASON_INSECURE_DOWNLOAD);
   source->AddLocalizedString("accountCompromiseDownloadDesc",
                              IDS_BLOCK_REASON_ACCOUNT_COMPROMISE);
-  source->AddBoolean("hasShowInFolder",
-                     browser_defaults::kDownloadPageHasShowInFolder);
 
   bool update_deep_scanning_ux =
       base::FeatureList::IsEnabled(safe_browsing::kDeepScanningUpdatedUX);

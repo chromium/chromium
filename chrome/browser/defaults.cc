@@ -44,8 +44,6 @@ const bool kShowHelpMenuItemIcon = true;
 const bool kShowHelpMenuItemIcon = false;
 #endif
 
-const bool kDownloadPageHasShowInFolder = true;
-
 #if BUILDFLAG(IS_LINUX)
 const bool kScrollEventChangesTab = true;
 #else
