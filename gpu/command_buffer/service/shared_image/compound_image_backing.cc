@@ -596,6 +596,12 @@ gfx::Rect CompoundImageBacking::ClearedRect() const {
 
 void CompoundImageBacking::SetClearedRect(const gfx::Rect& cleared_rect) {}
 
+gfx::GpuMemoryBufferHandle CompoundImageBacking::GetGpuMemoryBufferHandle() {
+  auto& element = GetElement(SharedImageAccessStream::kMemory);
+  CHECK(element.backing);
+  return element.backing->GetGpuMemoryBufferHandle();
+}
+
 std::unique_ptr<DawnImageRepresentation> CompoundImageBacking::ProduceDawn(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,

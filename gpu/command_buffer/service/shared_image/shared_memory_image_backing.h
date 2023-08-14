@@ -40,6 +40,7 @@ class GPU_GLES2_EXPORT SharedMemoryImageBacking : public SharedImageBacking {
   SharedImageBackingType GetType() const override;
   gfx::Rect ClearedRect() const override;
   void SetClearedRect(const gfx::Rect& cleared_rect) override;
+  gfx::GpuMemoryBufferHandle GetGpuMemoryBufferHandle() override;
 
   const SharedMemoryRegionWrapper& shared_memory_wrapper();
   const std::vector<SkPixmap>& pixmaps();

@@ -155,6 +155,7 @@ class ExternalVkImageBacking final : public ClearTrackingSharedImageBacking {
   void Update(std::unique_ptr<gfx::GpuFence> in_fence) override;
   bool UploadFromMemory(const std::vector<SkPixmap>& pixmaps) override;
   scoped_refptr<gfx::NativePixmap> GetNativePixmap() override;
+  gfx::GpuMemoryBufferHandle GetGpuMemoryBufferHandle() override;
 
   // Add semaphores to a pending list for reusing or being released immediately.
   void AddSemaphoresToPendingListOrRelease(

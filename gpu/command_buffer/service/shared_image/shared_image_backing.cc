@@ -415,6 +415,14 @@ scoped_refptr<gfx::NativePixmap> SharedImageBacking::GetNativePixmap() {
   return nullptr;
 }
 
+gfx::GpuMemoryBufferHandle SharedImageBacking::GetGpuMemoryBufferHandle() {
+  // Reaching here is invalid since this method should be only called for
+  // backings which implements it,i.e., memory buffer handle should only be
+  // retrieved from the backings which supports native buffer or shared memory.
+  NOTREACHED();
+  return gfx::GpuMemoryBufferHandle();
+}
+
 bool SharedImageBacking::IsPurgeable() const {
   return false;
 }

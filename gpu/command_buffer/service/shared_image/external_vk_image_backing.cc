@@ -641,6 +641,20 @@ scoped_refptr<gfx::NativePixmap> ExternalVkImageBacking::GetNativePixmap() {
   return pixmap_;
 }
 
+gfx::GpuMemoryBufferHandle ExternalVkImageBacking::GetGpuMemoryBufferHandle() {
+#if BUILDFLAG(IS_OZONE)
+  gfx::GpuMemoryBufferHandle handle;
+  handle.type = gfx::GpuMemoryBufferType::NATIVE_PIXMAP;
+  handle.native_pixmap_handle = pixmap_->ExportHandle();
+  return handle;
+#else
+  LOG(ERROR) << "Illegal access to GetGpuMemoryBufferHandle for non OZONE "
+                "platforms from this backing.";
+  NOTREACHED();
+  return gfx::GpuMemoryBufferHandle();
+#endif
+}
+
 void ExternalVkImageBacking::ReturnPendingSemaphoresWithFenceHelper(
     std::vector<ExternalSemaphore> semaphores) {
   std::move(semaphores.begin(), semaphores.end(),

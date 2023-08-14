@@ -294,6 +294,7 @@ class GPU_GLES2_EXPORT IOSurfaceImageBacking
   void SetPurgeable(bool purgeable) override;
   bool IsPurgeable() const override;
   void Update(std::unique_ptr<gfx::GpuFence> in_fence) override;
+  gfx::GpuMemoryBufferHandle GetGpuMemoryBufferHandle() override;
 
   // IOSurfaceBackingEGLState::Client:
   bool IOSurfaceBackingEGLStateBeginAccess(IOSurfaceBackingEGLState* egl_state,

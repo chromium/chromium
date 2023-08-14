@@ -119,6 +119,7 @@ class GPU_GLES2_EXPORT CompoundImageBacking : public SharedImageBacking {
   gfx::Rect ClearedRect() const override;
   void SetClearedRect(const gfx::Rect& cleared_rect) override;
   void OnAddSecondaryReference() override;
+  gfx::GpuMemoryBufferHandle GetGpuMemoryBufferHandle() override;
 
  protected:
   // SharedImageBacking implementation.

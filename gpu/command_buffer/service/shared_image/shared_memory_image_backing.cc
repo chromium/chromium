@@ -99,6 +99,11 @@ void SharedMemoryImageBacking::SetClearedRect(const gfx::Rect& cleared_rect) {
   NOTREACHED();
 }
 
+gfx::GpuMemoryBufferHandle
+SharedMemoryImageBacking::GetGpuMemoryBufferHandle() {
+  return handle_.Clone();
+}
+
 const SharedMemoryRegionWrapper&
 SharedMemoryImageBacking::shared_memory_wrapper() {
   return shared_memory_wrapper_;

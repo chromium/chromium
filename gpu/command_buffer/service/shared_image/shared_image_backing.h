@@ -27,6 +27,7 @@
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/gpu_memory_buffer.h"
 #include "ui/gfx/native_pixmap.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -167,7 +168,7 @@ class GPU_GLES2_EXPORT SharedImageBacking {
   // Marks the provided rect as cleared.
   virtual void SetClearedRect(const gfx::Rect& cleared_rect) = 0;
 
-  // Indicate that the image is purgable. When an image is purgeable, its
+  // Indicate that the image is purgeable. When an image is purgeable, its
   // contents may be discarded at any time. Before the image can be used again,
   // it must be set to be not-purgeable. This is intended to be lighter-weight
   // than allocating and freeing the image. See investigation in
@@ -228,6 +229,9 @@ class GPU_GLES2_EXPORT SharedImageBacking {
   // Returns the NativePixmap backing the SharedImageBacking. Returns null if
   // the SharedImage is not backed by a NativePixmap.
   virtual scoped_refptr<gfx::NativePixmap> GetNativePixmap();
+
+  // Returns the GpuMemoryBufferHandle if present.
+  virtual gfx::GpuMemoryBufferHandle GetGpuMemoryBufferHandle();
 
   // Helper to determine if the entire SharedImage is cleared.
   bool IsCleared() const { return ClearedRect() == gfx::Rect(size()); }
