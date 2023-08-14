@@ -83,7 +83,8 @@ struct COMPONENT_EXPORT(DISPLAY_SHARED_MOJOM_TRAITS)
     return display.maximum_cursor_size();
   }
 
-  static gfx::DisplayColorSpaces color_spaces(const display::Display& display) {
+  static const gfx::DisplayColorSpaces& color_spaces(
+      const display::Display& display) {
     return display.GetColorSpaces();
   }
 
