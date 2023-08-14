@@ -108,9 +108,6 @@ class ScrollLatencyBrowserTest : public ContentBrowserTest {
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     ContentBrowserTest::SetUpCommandLine(command_line);
-    if (disable_threaded_scrolling_) {
-      command_line->AppendSwitch(::blink::switches::kDisableThreadedScrolling);
-    }
     // Set the scroll animation duration to a large number so that
     // we ensure secondary GestureScrollUpdates update the animation
     // instead of starting a new one.
@@ -204,7 +201,6 @@ class ScrollLatencyBrowserTest : public ContentBrowserTest {
   }
 
   std::unique_ptr<base::RunLoop> run_loop_;
-  bool disable_threaded_scrolling_ = false;
 
  protected:
   base::HistogramTester histogram_tester_;
@@ -223,22 +219,6 @@ class ScrollLatencyBrowserTest : public ContentBrowserTest {
 // Perform a smooth wheel scroll, and verify that our end-to-end wheel latency
 // metrics are recorded. See crbug.com/599910 for details.
 IN_PROC_BROWSER_TEST_F(ScrollLatencyBrowserTest, MAYBE_MultipleWheelScroll) {
-  LoadURL();
-  RunMultipleWheelScroll();
-}
-
-// Disabled due to flakiness https://crbug.com/1163246
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || \
-    BUILDFLAG(IS_MAC) ||                                                 \
-    (BUILDFLAG(IS_CHROMEOS) &&                                           \
-     (!defined(NDEBUG) || defined(ADDRESS_SANITIZER)))
-#define MAYBE_MultipleWheelScrollOnMain DISABLED_MultipleWheelScrollOnMain
-#else
-#define MAYBE_MultipleWheelScrollOnMain MultipleWheelScrollOnMain
-#endif
-IN_PROC_BROWSER_TEST_F(ScrollLatencyBrowserTest,
-                       MAYBE_MultipleWheelScrollOnMain) {
-  disable_threaded_scrolling_ = true;
   LoadURL();
   RunMultipleWheelScroll();
 }
