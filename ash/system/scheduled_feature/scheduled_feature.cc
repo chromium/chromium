@@ -453,15 +453,6 @@ void ScheduledFeature::RefreshScheduleTimer(
         GetCheckpointForEnabledState(current_enabled, schedule_type);
   }
 
-  // We reach here in one of the following conditions:
-  // 1) If schedule changes don't result in changes in the status, we need to
-  // explicitly update the timer to re-schedule the next refresh to account for
-  // any changes.
-  // 2) The user has just manually toggled the status of the feature either from
-  // the System Menu or System Settings. In this case, we respect the user
-  // wish and maintain the current status that they desire, but we schedule the
-  // status to be toggled according to the time that corresponds with the
-  // opposite status of the current one.
   ScheduleNextRefresh(
       {now + time_until_next_refresh, next_feature_status, new_checkpoint},
       now);
