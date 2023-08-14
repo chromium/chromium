@@ -217,8 +217,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="WebAuthentication.MacOs.PlatformAuthenticatorAction"
-    enum="WebAuthenticationMacOsPlatformAuthenticatorAction"
+<histogram name="WebAuthentication.MacOS.PlatformAuthenticatorAction"
+    enum="WebAuthenticationMacOSPlatformAuthenticatorAction"
     expires_after="2024-06-14">
   <owner>agl@chromium.org</owner>
   <owner>martinkr@google.com</owner>

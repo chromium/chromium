@@ -112127,7 +112127,7 @@ others/histograms.xml -->
   <int value="5" label="Android Accessory"/>
 </enum>
 
-<enum name="WebAuthenticationMacOsPlatformAuthenticatorAction">
+<enum name="WebAuthenticationMacOSPlatformAuthenticatorAction">
   <int value="0"
       label="Started create() for profile authenticator with iCloud Drive
              enabled"/>
