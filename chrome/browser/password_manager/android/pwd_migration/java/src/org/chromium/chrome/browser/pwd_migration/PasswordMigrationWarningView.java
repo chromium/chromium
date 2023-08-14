@@ -48,6 +48,8 @@ public class PasswordMigrationWarningView implements BottomSheetContent {
     private Runnable mOnResumeExportFlowCallback;
     private boolean mSetFragmentWasCalled;
 
+    private Callback<Throwable> mExceptionReporter;
+
     private final BottomSheetObserver mBottomSheetObserver = new EmptyBottomSheetObserver() {
         @Override
         public void onSheetClosed(@BottomSheetController.StateChangeReason int reason) {
@@ -84,14 +86,13 @@ public class PasswordMigrationWarningView implements BottomSheetContent {
         public void onSheetOpened(@StateChangeReason int reason) {
             if (mBottomSheetController.getCurrentSheetContent() == PasswordMigrationWarningView.this
                     && mScreenType != ScreenType.NONE && getContentView().isShown()) {
-                mOnShowEventListener.run();
                 setFragment();
             }
         }
     };
 
     PasswordMigrationWarningView(Context context, BottomSheetController bottomSheetController,
-            Runnable onResumeExportFlowCallback) {
+            Runnable onResumeExportFlowCallback, Callback<Throwable> exceptionReporter) {
         mContext = context;
         mBottomSheetController = bottomSheetController;
         mOnResumeExportFlowCallback = onResumeExportFlowCallback;
@@ -103,6 +104,7 @@ public class PasswordMigrationWarningView implements BottomSheetContent {
         sheetHeaderImage.setImageDrawable(AppCompatResources.getDrawable(
                 context, PasswordManagerResourceProviderFactory.create().getPasswordManagerIcon()));
         mFragmentManager = ((AppCompatActivity) context).getSupportFragmentManager();
+        mExceptionReporter = exceptionReporter;
     }
 
     void setOnShowEventListener(Runnable onShowEventListener) {
@@ -155,10 +157,10 @@ public class PasswordMigrationWarningView implements BottomSheetContent {
                             ()
                                     -> mOnClickHandler.onAcknowledge(mBottomSheetController),
                             () -> mOnClickHandler.onMoreOptions());
-            mFragmentManager.beginTransaction()
-                    .setReorderingAllowed(true)
-                    .replace(R.id.fragment_container_view, introFragment)
-                    .commit();
+            if (mContentView != null
+                    && mContentView.findViewById(R.id.fragment_container_view) != null) {
+                replaceFragment(introFragment, mOnShowEventListener);
+            }
         } else if (mScreenType == ScreenType.OPTIONS_SCREEN) {
             String exportOptionSubtitle =
                     mContext.getString(R.string.password_migration_warning_password_export_subtitle)
@@ -170,10 +172,10 @@ public class PasswordMigrationWarningView implements BottomSheetContent {
                             ()
                                     -> mOnClickHandler.onCancel(mBottomSheetController),
                             mAccountDisplayName, mFragmentManager, mOnResumeExportFlowCallback);
-            mFragmentManager.beginTransaction()
-                    .setReorderingAllowed(true)
-                    .replace(R.id.fragment_container_view, optionsFragment)
-                    .commit();
+            if (mContentView != null
+                    && mContentView.findViewById(R.id.fragment_container_view) != null) {
+                replaceFragment(optionsFragment, null);
+            }
         }
     }
 
@@ -188,6 +190,19 @@ public class PasswordMigrationWarningView implements BottomSheetContent {
         mAccountDisplayName = accountDisplayName;
     }
 
+    private void replaceFragment(Fragment newFragment, @Nullable Runnable onCommitted) {
+        try {
+            mFragmentManager.beginTransaction()
+                    .setReorderingAllowed(true)
+                    .replace(R.id.fragment_container_view, newFragment)
+                    .commitNow();
+            if (onCommitted != null) {
+                onCommitted.run();
+            }
+        } catch (IllegalArgumentException exception) {
+            mExceptionReporter.onResult(exception);
+        }
+    }
     private @Px int getDesiredSheetHeightPx() {
         if (mScreenType == ScreenType.INTRO_SCREEN) {
             return getDimensionPixelSize(R.dimen.pwd_migration_warning_intro_fragment_height);

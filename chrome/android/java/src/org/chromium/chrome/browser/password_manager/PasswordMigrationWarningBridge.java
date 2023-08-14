@@ -9,6 +9,7 @@ import android.content.Context;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.CalledByNative;
+import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
 import org.chromium.chrome.browser.password_manager.settings.ExportFlow;
 import org.chromium.chrome.browser.password_manager.settings.PasswordListObserver;
 import org.chromium.chrome.browser.password_manager.settings.PasswordManagerHandlerProvider;
@@ -54,7 +55,8 @@ class PasswordMigrationWarningBridge {
                         (PasswordListObserver observer)
                                 -> PasswordManagerHandlerProvider.getInstance().addObserver(
                                         observer),
-                        new PasswordStoreBridge(), referrer);
+                        new PasswordStoreBridge(), referrer,
+                        ChromePureJavaExceptionReporter::reportJavaException);
         passwordMigrationWarningCoordinator.showWarning();
     }
 }

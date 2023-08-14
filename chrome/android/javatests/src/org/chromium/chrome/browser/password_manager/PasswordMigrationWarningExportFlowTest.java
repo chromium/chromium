@@ -20,6 +20,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItem;
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.verify;
 
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_LOCAL_PWD_MIGRATION_WARNING;
@@ -114,7 +115,8 @@ public class PasswordMigrationWarningExportFlowTest {
                     ManageSyncSettings.class, mExportFlow,
                     (PasswordListObserver observer)
                             -> PasswordManagerHandlerProvider.getInstance().addObserver(observer),
-                    mPasswordStoreBridge, PasswordMigrationWarningTriggers.CHROME_STARTUP);
+                    mPasswordStoreBridge, PasswordMigrationWarningTriggers.CHROME_STARTUP,
+                    (Throwable exception) -> fail());
             PasswordManagerHandlerProvider.getInstance().passwordListAvailable(1);
             mCoordinator.showWarning();
         });
