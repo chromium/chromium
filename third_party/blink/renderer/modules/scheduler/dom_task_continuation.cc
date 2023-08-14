@@ -17,13 +17,12 @@
 namespace blink {
 
 DOMTaskContinuation::DOMTaskContinuation(ScriptPromiseResolver* resolver,
-                                         DOMTaskSignal* signal,
+                                         AbortSignal* signal,
                                          DOMScheduler::DOMTaskQueue* task_queue)
     : resolver_(resolver), signal_(signal), task_queue_(task_queue) {
   CHECK(task_queue_);
-  CHECK(signal_);
 
-  if (signal_->CanAbort()) {
+  if (signal_ && signal_->CanAbort()) {
     CHECK(!signal_->aborted());
     abort_handle_ = signal_->AddAlgorithm(
         WTF::BindOnce(&DOMTaskContinuation::OnAbort, WrapWeakPersistent(this)));
@@ -70,6 +69,7 @@ void DOMTaskContinuation::OnAbort() {
   // JS stack.
   ScriptState::Scope script_state_scope(resolver_script_state);
   // TODO(crbug.com/1293949): Add an error message.
+  CHECK(signal_);
   resolver_->Reject(
       ToV8Traits<IDLAny>::ToV8(resolver_script_state,
                                signal_->reason(resolver_script_state))
