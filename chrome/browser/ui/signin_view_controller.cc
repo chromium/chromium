@@ -424,7 +424,8 @@ void SigninViewController::ShowDiceEnableSyncTab(
             .email;
     DCHECK(email_hint.empty() || gaia::AreEmailsSame(email_hint, email_to_use));
   }
-  ShowDiceSigninTab(reason, access_point, promo_action, email_to_use);
+  ShowDiceSigninTab(reason, access_point, promo_action, email_to_use,
+                    GURL(chrome::kChromeUINewTabURL));
 }
 
 void SigninViewController::ShowDiceAddAccountTab(
@@ -432,7 +433,7 @@ void SigninViewController::ShowDiceAddAccountTab(
     const std::string& email_hint) {
   ShowDiceSigninTab(signin_metrics::Reason::kAddSecondaryAccount, access_point,
                     signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO,
-                    email_hint);
+                    email_hint, /*redirect_url=*/GURL());
 }
 
 void SigninViewController::ShowGaiaLogoutTab(

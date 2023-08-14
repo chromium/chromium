@@ -74,6 +74,9 @@ class DiceTabHelper : public content::WebContentsUserData<DiceTabHelper>,
 
   // Initializes the DiceTabHelper for a new signin flow. Must be called once
   // per signin flow happening in the tab, when the signin URL is being loaded.
+  // The `redirect_url` is used after enabling Sync or in case of errors ; it is
+  // not used after a successful signin without sync, and in this case the
+  // page will navigate to the `continue_url` parameter from `signin_url`.
   void InitializeSigninFlow(const GURL& signin_url,
                             signin_metrics::AccessPoint access_point,
                             signin_metrics::Reason reason,

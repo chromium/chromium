@@ -194,11 +194,14 @@ class SigninViewController {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   // Shows the DICE-specific sign-in flow: opens a Gaia sign-in webpage in a new
   // tab attached to |browser_|. |email_hint| may be empty.
+  // If `redirect_url` is empty, the Google search URL is used as continue_url.
+  // Internal URLs such as the NTP are only supported when `signin_reason` is
+  // `signin_metrics::Reason::kSigninPrimaryAccount`.
   void ShowDiceSigninTab(signin_metrics::Reason signin_reason,
                          signin_metrics::AccessPoint access_point,
                          signin_metrics::PromoAction promo_action,
                          const std::string& email_hint,
-                         const GURL& redirect_url = GURL::EmptyGURL());
+                         const GURL& redirect_url);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
   // Returns the web contents of the modal dialog.
