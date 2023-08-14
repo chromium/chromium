@@ -186,7 +186,9 @@ IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiTest, BubbleOpens) {
           WaitForShow(CookieControlsBubbleView::kCookieControlsBubble)));
 }
 
-IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiTest, CreateException) {
+// TODO(crbug.com/1472648): Fix flakiness and reenable the test.
+IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiTest,
+                       DISABLED_CreateException) {
   // Open the bubble while 3PC are blocked, re-enable them for the site, and
   // confirm the appropriate exception is created.
   browser()->profile()->GetPrefs()->SetInteger(
@@ -205,7 +207,9 @@ IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiTest, CreateException) {
       CheckStateForTemporaryException());
 }
 
-IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiTest, RemoveException) {
+// TODO(crbug.com/1472648): Fix flakiness and reenable the test.
+IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiTest,
+                       DISABLED_RemoveException) {
   // Open the bubble while 3PC are blocked, but the page already has an
   // exception. Disable 3PC for the page, and confirm the exception is removed.
   browser()->profile()->GetPrefs()->SetInteger(
