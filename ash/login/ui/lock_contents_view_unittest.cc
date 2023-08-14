@@ -1204,11 +1204,6 @@ TEST_F(LockContentsViewUnitTest, GaiaNeverShownAfterFirstFailedLoginAttempt) {
 
 // Gaia is shown in login on the 4th bad password attempt.
 TEST_F(LockContentsViewUnitTest, ShowGaiaAuthAfterManyFailedLoginAttempts) {
-  base::test::ScopedFeatureList feature_list;
-  // With recovery feature enabled, the online login is not forced after bad
-  // password attempts.
-  feature_list.InitAndDisableFeature(features::kCryptohomeRecovery);
-
   // Build lock screen with a single user.
   auto* contents = new LockContentsView(
       mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLogin,
