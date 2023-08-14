@@ -26,11 +26,6 @@ BASE_FEATURE(kAllowRTCEncodedVideoFrameSetMetadataAllFields,
 namespace {
 static constexpr size_t kMaxNumDependencies = 8;
 
-// Allow CSRCs to be set when calling RTCEncodedVideoFrame.setMetadata.
-BASE_FEATURE(kAllowRTCEncodedVideoFrameSetMetadataCsrcs,
-             "AllowRTCEncodedVideoFrameSetMetadataCsrcs",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 V8RTCDecodeTargetIndication
 V8RTCDecodeTargetIndicationFromDecodeTargetIndication(
     webrtc::DecodeTargetIndication decode_target_indication) {
@@ -195,27 +190,25 @@ bool IsAllowedSetMetadataChange(
     const RTCEncodedVideoFrameMetadata* original_metadata,
     const RTCEncodedVideoFrameMetadata* metadata) {
   return (metadata->contributingSources() ==
-              original_metadata->contributingSources() ||
-          base::FeatureList::IsEnabled(
-              kAllowRTCEncodedVideoFrameSetMetadataCsrcs)) &&
-         (metadata->hasFrameId() == original_metadata->hasFrameId() &&
-          (metadata->hasFrameId()
-               ? metadata->frameId() == original_metadata->frameId()
-               : true)) &&
-         metadata->height() == original_metadata->height() &&
-         metadata->isLastFrameInPicture() ==
-             original_metadata->isLastFrameInPicture() &&
-         metadata->payloadType() == original_metadata->payloadType() &&
-         metadata->simulcastIdx() == original_metadata->simulcastIdx() &&
-         metadata->spatialIndex() == original_metadata->spatialIndex() &&
-         metadata->synchronizationSource() ==
-             original_metadata->synchronizationSource() &&
-         metadata->temporalIndex() == original_metadata->temporalIndex() &&
-         metadata->frameType() == original_metadata->frameType() &&
-         metadata->width() == original_metadata->width() &&
-         metadata->dependencies() == original_metadata->dependencies() &&
-         metadata->decodeTargetIndications() ==
-             original_metadata->decodeTargetIndications();
+              original_metadata->contributingSources() &&
+          (metadata->hasFrameId() == original_metadata->hasFrameId() &&
+           (metadata->hasFrameId()
+                ? metadata->frameId() == original_metadata->frameId()
+                : true)) &&
+          metadata->height() == original_metadata->height() &&
+          metadata->isLastFrameInPicture() ==
+              original_metadata->isLastFrameInPicture() &&
+          metadata->payloadType() == original_metadata->payloadType() &&
+          metadata->simulcastIdx() == original_metadata->simulcastIdx() &&
+          metadata->spatialIndex() == original_metadata->spatialIndex() &&
+          metadata->synchronizationSource() ==
+              original_metadata->synchronizationSource() &&
+          metadata->temporalIndex() == original_metadata->temporalIndex() &&
+          metadata->frameType() == original_metadata->frameType() &&
+          metadata->width() == original_metadata->width() &&
+          metadata->dependencies() == original_metadata->dependencies() &&
+          metadata->decodeTargetIndications() ==
+              original_metadata->decodeTargetIndications());
 }
 
 bool ValidateMetadata(const RTCEncodedVideoFrameMetadata* metadata,

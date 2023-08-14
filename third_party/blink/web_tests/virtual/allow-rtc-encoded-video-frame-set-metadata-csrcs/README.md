@@ -1,1 +1,0 @@
-Tests that run with the browser feature AllowRTCEncodedVideoFrameSetMetadataCsrcs enabled

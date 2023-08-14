@@ -47,15 +47,6 @@ async function setupLoopbackWithCodecAndGetReader(t, codec) {
 promise_test(async t => {
   const senderReader = await setupLoopbackWithCodecAndGetReader(t, 'VP8');
   const result = await senderReader.read();
-  const metadata = result.value.getMetadata();
-  const clone = result.value.clone();
-  metadata['contributingSources'] = [13];
-  assert_throws_dom('InvalidModificationError', () => clone.setMetadata(metadata), "For field \"contributingSources\",");
-}, "setMetadata() does not allow changes to contributingSources without a flag");
-
-promise_test(async t => {
-  const senderReader = await setupLoopbackWithCodecAndGetReader(t, 'VP8');
-  const result = await senderReader.read();
   const field_values = {
     'decodeTargetIndications':['required'],
     'dependencies':[1],
@@ -68,6 +59,7 @@ promise_test(async t => {
     'spatialIndex':4,
     'synchronizationSource':17,
     'temporalIndex':5,
+    'contributingSources' : [13],
     'width':800
   }
   for (const field in field_values) {
@@ -92,7 +84,7 @@ promise_test(async t => {
     metadata.codecSpecifics[field] = codec_specific_field_values_vp8[field];
     assert_throws_dom('InvalidModificationError', () => clone.setMetadata(metadata), "For field \"codecSpecifics." + field + "\",");
   }
-}, "setMetadata() does not allow changes to fields other than contributingSources without a flag");
+}, "setMetadata() does not allow changes to fields without a flag");
 
 promise_test(async t => {
   const senderReader = await setupLoopbackWithCodecAndGetReader(t, 'VP8');
@@ -155,27 +147,5 @@ promise_test(async t => {
   metadata.frameId = undefined;
 
   cloneFrame.setMetadata(metadata);
-}, "setMetadata() allows metadata with no generic dependency descriptor - ie no frameId");
-
-promise_test(async t => {
-  const {senderStreams, receiverStreams} =
-    await setupLoopbackWithCodedAndGetStreams(t, 'VP8');
-
-  let csrcs = [123, 321, 456, 654];
-
-  const receiverReaderPromise = receiverStreams.readable.getReader().read();
-
-  // Modify the CSRCs on a sent frame.
-  let sendFrame = (await senderStreams.readable.getReader().read()).value;
-  const metadata = sendFrame.getMetadata();
-  metadata.contributingSources = csrcs;
-  sendFrame.setMetadata(metadata);
-  await senderStreams.writable.getWriter().write(sendFrame);
-
-  // Assert the received frame has the modified CSRCs
-  const receivedFrame = (await receiverReaderPromise).value;
-
-  assert_array_equals(receivedFrame.getMetadata().contributingSources, csrcs,
-                        "First modified CSRCS match");
-}, "modified csrcs are propagated over a PeerConnection");
+}, "setMetadata() allows metadata when AllowRTCEncodedVideoFrameSetMetadataAllFields is enabled with no generic dependency descriptor - ie no frameId");
 </script>
