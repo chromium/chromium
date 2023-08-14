@@ -257,8 +257,7 @@ struct OverflowMenuDestinationList: View {
   {
     let layoutParameters = OverflowMenuDestinationList.layoutParameters(
       forScreenWidth: width, forSizeCategory: sizeCategory)
-    let destinationWidth = OverflowMenuDestinationButton.destinationWidth(
-      forLayoutParameters: layoutParameters)
+    let destinationWidth = OverflowMenuDestinationView.destinationWidth(layoutParameters)
 
     return (width / destinationWidth).rounded(.up)
   }
