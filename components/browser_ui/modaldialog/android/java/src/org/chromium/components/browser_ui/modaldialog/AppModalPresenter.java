@@ -115,10 +115,7 @@ public class AppModalPresenter extends ModalDialogManager.Presenter {
         } catch (WindowManager.BadTokenException badToken) {
             // See https://crbug.com/926688.
             dismissCurrentDialog(DialogDismissalCause.NOT_ATTACHED_TO_WINDOW);
-            return;
         }
-
-        dialogView.announceForAccessibility(getContentDescription(model));
     }
 
     @Override
