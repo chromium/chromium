@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 package org.chromium.chrome.browser.tab;
 
+import static org.chromium.components.content_settings.PrefNames.DESKTOP_SITE_WINDOW_SETTING_ENABLED;
+
 import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
@@ -44,9 +46,13 @@ import org.chromium.components.messages.MessageBannerProperties;
 import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageIdentifier;
 import org.chromium.components.messages.PrimaryActionClickBehavior;
+import org.chromium.components.prefs.PrefService;
 import org.chromium.components.profile_metrics.BrowserProfileType;
 import org.chromium.components.ukm.UkmRecorder;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.variations.SyntheticTrialAnnotationMode;
+import org.chromium.content_public.browser.ContentFeatureList;
+import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.display.DisplayAndroidManager;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -205,7 +211,17 @@ public class RequestDesktopUtils {
         // For incognito profile, keep the domain level setting to override the settings from normal
         // profile.
         if (!isIncognito && useDesktopUserAgent == rdsGlobalSetting) {
-            contentSettingValue = ContentSettingValues.DEFAULT;
+            if (ContentFeatureMap.isEnabled(
+                        ContentFeatureList.REQUEST_DESKTOP_SITE_WINDOW_SETTING)) {
+                // To support the window setting, keep the domain settings when the window setting
+                // is ON.
+                PrefService prefService = UserPrefs.get(profile);
+                if (!prefService.getBoolean(DESKTOP_SITE_WINDOW_SETTING_ENABLED)) {
+                    contentSettingValue = ContentSettingValues.DEFAULT;
+                }
+            } else {
+                contentSettingValue = ContentSettingValues.DEFAULT;
+            }
         }
 
         // Set or remove a domain level exception.

@@ -15,6 +15,8 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.components.content_settings.PrefNames.DESKTOP_SITE_WINDOW_SETTING_ENABLED;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
@@ -71,6 +73,10 @@ import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.messages.MessageBannerProperties;
 import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageIdentifier;
+import org.chromium.components.prefs.PrefService;
+import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.components.user_prefs.UserPrefsJni;
+import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.display.DisplayAndroidManager;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -201,9 +207,14 @@ public class RequestDesktopUtilsUnitTest {
     private DisplayAndroid mDisplayAndroid;
     @Mock
     private Display mDisplay;
+    @Mock
+    private UserPrefs.Natives mUserPrefsJni;
+    @Mock
+    private PrefService mPrefService;
 
     private Tab mTab;
     private @ContentSettingValues int mRdsDefaultValue;
+    private boolean mWindowSetting;
     private SharedPreferencesManager mSharedPreferencesManager;
 
     private final Map<String, Integer> mContentSettingMap = new HashMap<>();
@@ -225,6 +236,7 @@ public class RequestDesktopUtilsUnitTest {
         mJniMocker.mock(WebsitePreferenceBridgeJni.TEST_HOOKS, mWebsitePreferenceBridgeJniMock);
         ShadowProfile.setProfile(mProfile);
         ShadowUmaSessionStats.setMetricsServiceAvailable(true);
+        mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsJni);
 
         mTab = createTab();
 
@@ -275,6 +287,11 @@ public class RequestDesktopUtilsUnitTest {
         when(mDisplay.getDisplayId()).thenReturn(Display.DEFAULT_DISPLAY);
         enableFeatureWithParams(
                 ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS_LOGGING, null, false);
+        enableFeature(ContentFeatureList.REQUEST_DESKTOP_SITE_WINDOW_SETTING, false);
+        when(mUserPrefsJni.get(mProfile)).thenReturn(mPrefService);
+        doAnswer(invocation -> mWindowSetting)
+                .when(mPrefService)
+                .getBoolean(eq(DESKTOP_SITE_WINDOW_SETTING_ENABLED));
     }
 
     @After
@@ -400,6 +417,190 @@ public class RequestDesktopUtilsUnitTest {
         RequestDesktopUtils.setRequestDesktopSiteContentSettingsForUrl(mProfile, mMapsUrl, true);
         Assert.assertEquals("Request Desktop Site domain level setting is not set correctly.",
                 ContentSettingValues.ALLOW, mContentSettingMap.get(GOOGLE_COM).intValue());
+    }
+
+    @Test
+    public void
+    testSetRequestDesktopSiteContentSettingsForUrl_DefaultBlock_SiteBlock_WindowSettingOn() {
+        enableFeature(ContentFeatureList.REQUEST_DESKTOP_SITE_WINDOW_SETTING, true);
+        mWindowSetting = true;
+        // Regular profile type.
+        when(mProfile.isOffTheRecord()).thenReturn(false);
+        mRdsDefaultValue = ContentSettingValues.BLOCK;
+        // Pre-existing subdomain setting.
+        mContentSettingMap.put(mGoogleUrl.getHost(), ContentSettingValues.BLOCK);
+        RequestDesktopUtils.setRequestDesktopSiteContentSettingsForUrl(mProfile, mGoogleUrl, true);
+        Assert.assertEquals("Request Desktop Site domain level setting is not set correctly.",
+                ContentSettingValues.ALLOW, mContentSettingMap.get(GOOGLE_COM).intValue());
+        Assert.assertEquals("Request Desktop Site subdomain level setting should be removed.",
+                ContentSettingValues.DEFAULT,
+                mContentSettingMap.get(mGoogleUrl.getHost()).intValue());
+
+        RequestDesktopUtils.setRequestDesktopSiteContentSettingsForUrl(mProfile, mMapsUrl, false);
+        Assert.assertEquals("Request Desktop Site domain level setting should not be removed "
+                        + "when window setting is ON.",
+                ContentSettingValues.BLOCK, mContentSettingMap.get(GOOGLE_COM).intValue());
+    }
+
+    @Test
+    public void
+    testSetRequestDesktopSiteContentSettingsForUrl_DefaultBlock_SiteBlock_WindowSettingOff() {
+        enableFeature(ContentFeatureList.REQUEST_DESKTOP_SITE_WINDOW_SETTING, true);
+        mWindowSetting = false;
+        // Regular profile type.
+        when(mProfile.isOffTheRecord()).thenReturn(false);
+        mRdsDefaultValue = ContentSettingValues.BLOCK;
+        // Pre-existing subdomain setting.
+        mContentSettingMap.put(mGoogleUrl.getHost(), ContentSettingValues.BLOCK);
+        RequestDesktopUtils.setRequestDesktopSiteContentSettingsForUrl(mProfile, mGoogleUrl, true);
+        Assert.assertEquals("Request Desktop Site domain level setting is not set correctly.",
+                ContentSettingValues.ALLOW, mContentSettingMap.get(GOOGLE_COM).intValue());
+        Assert.assertEquals("Request Desktop Site subdomain level setting should be removed.",
+                ContentSettingValues.DEFAULT,
+                mContentSettingMap.get(mGoogleUrl.getHost()).intValue());
+
+        RequestDesktopUtils.setRequestDesktopSiteContentSettingsForUrl(mProfile, mMapsUrl, false);
+        Assert.assertEquals("Request Desktop Site domain level setting should be removed "
+                        + "when window setting is OFF.",
+                ContentSettingValues.DEFAULT, mContentSettingMap.get(GOOGLE_COM).intValue());
+    }
+
+    @Test
+    public void
+    testSetRequestDesktopSiteContentSettingsForUrl_DefaultBlock_SiteAllow_WindowSettingOn() {
+        enableFeature(ContentFeatureList.REQUEST_DESKTOP_SITE_WINDOW_SETTING, true);
+        mWindowSetting = true;
+        // Regular profile type.
+        when(mProfile.isOffTheRecord()).thenReturn(false);
+        mRdsDefaultValue = ContentSettingValues.BLOCK;
+        // Pre-existing subdomain setting.
+        mContentSettingMap.put(mGoogleUrl.getHost(), ContentSettingValues.ALLOW);
+        RequestDesktopUtils.setRequestDesktopSiteContentSettingsForUrl(mProfile, mGoogleUrl, false);
+        Assert.assertEquals("Request Desktop Site domain level setting should not be removed "
+                        + "when window setting is ON.",
+                ContentSettingValues.BLOCK, mContentSettingMap.get(GOOGLE_COM).intValue());
+        Assert.assertEquals("Request Desktop Site subdomain level setting should be removed.",
+                ContentSettingValues.DEFAULT,
+                mContentSettingMap.get(mGoogleUrl.getHost()).intValue());
+
+        RequestDesktopUtils.setRequestDesktopSiteContentSettingsForUrl(mProfile, mMapsUrl, true);
+        Assert.assertEquals("Request Desktop Site domain level setting is not set correctly.",
+                ContentSettingValues.ALLOW, mContentSettingMap.get(GOOGLE_COM).intValue());
+    }
+
+    @Test
+    public void
+    testSetRequestDesktopSiteContentSettingsForUrl_DefaultBlock_SiteAllow_WindowSettingOff() {
+        enableFeature(ContentFeatureList.REQUEST_DESKTOP_SITE_WINDOW_SETTING, true);
+        mWindowSetting = false;
+        // Regular profile type.
+        when(mProfile.isOffTheRecord()).thenReturn(false);
+        mRdsDefaultValue = ContentSettingValues.BLOCK;
+        // Pre-existing subdomain setting.
+        mContentSettingMap.put(mGoogleUrl.getHost(), ContentSettingValues.ALLOW);
+        RequestDesktopUtils.setRequestDesktopSiteContentSettingsForUrl(mProfile, mGoogleUrl, false);
+        Assert.assertEquals("Request Desktop Site domain level setting should be removed "
+                        + "when window setting is OFF.",
+                ContentSettingValues.DEFAULT, mContentSettingMap.get(GOOGLE_COM).intValue());
+        Assert.assertEquals("Request Desktop Site subdomain level setting should be removed.",
+                ContentSettingValues.DEFAULT,
+                mContentSettingMap.get(mGoogleUrl.getHost()).intValue());
+
+        RequestDesktopUtils.setRequestDesktopSiteContentSettingsForUrl(mProfile, mMapsUrl, true);
+        Assert.assertEquals("Request Desktop Site domain level setting is not set correctly.",
+                ContentSettingValues.ALLOW, mContentSettingMap.get(GOOGLE_COM).intValue());
+    }
+
+    @Test
+    public void
+    testSetRequestDesktopSiteContentSettingsForUrl_DefaultAllow_SiteAllow_WindowSettingOn() {
+        enableFeature(ContentFeatureList.REQUEST_DESKTOP_SITE_WINDOW_SETTING, true);
+        mWindowSetting = true;
+        // Regular profile type.
+        when(mProfile.isOffTheRecord()).thenReturn(false);
+        mRdsDefaultValue = ContentSettingValues.ALLOW;
+        // Pre-existing subdomain setting.
+        mContentSettingMap.put(mGoogleUrl.getHost(), ContentSettingValues.ALLOW);
+        RequestDesktopUtils.setRequestDesktopSiteContentSettingsForUrl(mProfile, mGoogleUrl, false);
+        Assert.assertEquals("Request Desktop Site domain level setting is not set correctly.",
+                ContentSettingValues.BLOCK, mContentSettingMap.get(GOOGLE_COM).intValue());
+        Assert.assertEquals("Request Desktop Site subdomain level setting should be removed.",
+                ContentSettingValues.DEFAULT,
+                mContentSettingMap.get(mGoogleUrl.getHost()).intValue());
+
+        RequestDesktopUtils.setRequestDesktopSiteContentSettingsForUrl(mProfile, mMapsUrl, true);
+        Assert.assertEquals("Request Desktop Site domain level setting should not be removed "
+                        + "when window setting is ON.",
+                ContentSettingValues.ALLOW, mContentSettingMap.get(GOOGLE_COM).intValue());
+    }
+
+    @Test
+    public void
+    testSetRequestDesktopSiteContentSettingsForUrl_DefaultAllow_SiteAllow_WindowSettingOff() {
+        enableFeature(ContentFeatureList.REQUEST_DESKTOP_SITE_WINDOW_SETTING, true);
+        mWindowSetting = false;
+        // Regular profile type.
+        when(mProfile.isOffTheRecord()).thenReturn(false);
+        mRdsDefaultValue = ContentSettingValues.ALLOW;
+        // Pre-existing subdomain setting.
+        mContentSettingMap.put(mGoogleUrl.getHost(), ContentSettingValues.ALLOW);
+        RequestDesktopUtils.setRequestDesktopSiteContentSettingsForUrl(mProfile, mGoogleUrl, false);
+        Assert.assertEquals("Request Desktop Site domain level setting is not set correctly.",
+                ContentSettingValues.BLOCK, mContentSettingMap.get(GOOGLE_COM).intValue());
+        Assert.assertEquals("Request Desktop Site subdomain level setting should be removed.",
+                ContentSettingValues.DEFAULT,
+                mContentSettingMap.get(mGoogleUrl.getHost()).intValue());
+
+        RequestDesktopUtils.setRequestDesktopSiteContentSettingsForUrl(mProfile, mMapsUrl, true);
+        Assert.assertEquals("Request Desktop Site domain level setting should be removed "
+                        + "when window setting is OFF.",
+                ContentSettingValues.DEFAULT, mContentSettingMap.get(GOOGLE_COM).intValue());
+    }
+
+    @Test
+    public void
+    testSetRequestDesktopSiteContentSettingsForUrl_DefaultAllow_SiteBlock_WindowSettingOn() {
+        enableFeature(ContentFeatureList.REQUEST_DESKTOP_SITE_WINDOW_SETTING, true);
+        mWindowSetting = true;
+        // Regular profile type.
+        when(mProfile.isOffTheRecord()).thenReturn(false);
+        mRdsDefaultValue = ContentSettingValues.ALLOW;
+        // Pre-existing subdomain setting.
+        mContentSettingMap.put(mGoogleUrl.getHost(), ContentSettingValues.BLOCK);
+        RequestDesktopUtils.setRequestDesktopSiteContentSettingsForUrl(mProfile, mGoogleUrl, true);
+        Assert.assertEquals("Request Desktop Site domain level setting should not be removed "
+                        + "when window setting is ON.",
+                ContentSettingValues.ALLOW, mContentSettingMap.get(GOOGLE_COM).intValue());
+        Assert.assertEquals("Request Desktop Site subdomain level setting should be removed.",
+                ContentSettingValues.DEFAULT,
+                mContentSettingMap.get(mGoogleUrl.getHost()).intValue());
+
+        RequestDesktopUtils.setRequestDesktopSiteContentSettingsForUrl(mProfile, mMapsUrl, false);
+        Assert.assertEquals("Request Desktop Site domain level setting is not set correctly.",
+                ContentSettingValues.BLOCK, mContentSettingMap.get(GOOGLE_COM).intValue());
+    }
+
+    @Test
+    public void
+    testSetRequestDesktopSiteContentSettingsForUrl_DefaultAllow_SiteBlock_WindowSettingOff() {
+        enableFeature(ContentFeatureList.REQUEST_DESKTOP_SITE_WINDOW_SETTING, true);
+        mWindowSetting = false;
+        // Regular profile type.
+        when(mProfile.isOffTheRecord()).thenReturn(false);
+        mRdsDefaultValue = ContentSettingValues.ALLOW;
+        // Pre-existing subdomain setting.
+        mContentSettingMap.put(mGoogleUrl.getHost(), ContentSettingValues.BLOCK);
+        RequestDesktopUtils.setRequestDesktopSiteContentSettingsForUrl(mProfile, mGoogleUrl, true);
+        Assert.assertEquals("Request Desktop Site domain level setting should be removed "
+                        + "when window setting is OFF.",
+                ContentSettingValues.DEFAULT, mContentSettingMap.get(GOOGLE_COM).intValue());
+        Assert.assertEquals("Request Desktop Site subdomain level setting should be removed.",
+                ContentSettingValues.DEFAULT,
+                mContentSettingMap.get(mGoogleUrl.getHost()).intValue());
+
+        RequestDesktopUtils.setRequestDesktopSiteContentSettingsForUrl(mProfile, mMapsUrl, false);
+        Assert.assertEquals("Request Desktop Site domain level setting is not set correctly.",
+                ContentSettingValues.BLOCK, mContentSettingMap.get(GOOGLE_COM).intValue());
     }
 
     /**
