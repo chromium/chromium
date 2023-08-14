@@ -302,7 +302,6 @@ TEST_F(SyncPrefsTest, DefaultSelectedTypesInTransportMode) {
                             kReadingListEnableSyncTransportModeUponSignIn,
                             password_manager::features::
                                 kEnablePasswordsAccountStorage,
-                            kSyncEnableContactInfoDataType,
                             kSyncEnableContactInfoDataTypeInTransportMode,
                             kEnablePreferencesAccountStorage},
       /*disabled_features=*/{kReplaceSyncPromosWithSignInPromos});
@@ -341,7 +340,6 @@ TEST_F(SyncPrefsTest, DefaultSelectedTypesForAccountInTransportMode) {
                             kReadingListEnableSyncTransportModeUponSignIn,
                             password_manager::features::
                                 kEnablePasswordsAccountStorage,
-                            kSyncEnableContactInfoDataType,
                             kSyncEnableContactInfoDataTypeInTransportMode,
                             kEnablePreferencesAccountStorage},
       /*disabled_features=*/{});
@@ -365,7 +363,6 @@ TEST_F(SyncPrefsTest, SetSelectedTypesInTransportMode) {
                             kReadingListEnableSyncTransportModeUponSignIn,
                             password_manager::features::
                                 kEnablePasswordsAccountStorage,
-                            kSyncEnableContactInfoDataType,
                             kSyncEnableContactInfoDataTypeInTransportMode},
       /*disabled_features=*/{kReplaceSyncPromosWithSignInPromos});
 
@@ -719,7 +716,6 @@ class SyncPrefsMigrationTest : public testing::Test {
                               kReadingListEnableSyncTransportModeUponSignIn,
                               password_manager::features::
                                   kEnablePasswordsAccountStorage,
-                              kSyncEnableContactInfoDataType,
                               kSyncEnableContactInfoDataTypeInTransportMode,
                               kEnablePreferencesAccountStorage},
         /*disabled_features=*/{});

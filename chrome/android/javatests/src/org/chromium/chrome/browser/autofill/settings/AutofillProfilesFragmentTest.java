@@ -68,7 +68,6 @@ import java.util.concurrent.TimeoutException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 @Features.EnableFeatures({ChromeFeatureList.AUTOFILL_ACCOUNT_PROFILE_STORAGE,
-        ChromeFeatureList.SYNC_ENABLE_CONTACT_INFO_DATA_TYPE,
         ChromeFeatureList.SYNC_ENABLE_CONTACT_INFO_DATA_TYPE_IN_TRANSPORT_MODE})
 public class AutofillProfilesFragmentTest {
     private static final AutofillProfile sLocalOrSyncProfile =
@@ -615,14 +614,13 @@ public class AutofillProfilesFragmentTest {
     }
 
     /**
-     * Cloud off icons are shown conditionally depending on the 3 feature flags
+     * Cloud off icons are shown conditionally depending on the 2 feature flags
      * being turned on.
      */
     @Test
     @MediumTest
     @Feature({"Preferences"})
     @Features.DisableFeatures({ChromeFeatureList.AUTOFILL_ACCOUNT_PROFILE_STORAGE,
-            ChromeFeatureList.SYNC_ENABLE_CONTACT_INFO_DATA_TYPE,
             ChromeFeatureList.SYNC_ENABLE_CONTACT_INFO_DATA_TYPE_IN_TRANSPORT_MODE})
     public void
     testLocalProfiles_NoRequiredFeatureFlags() throws Exception {

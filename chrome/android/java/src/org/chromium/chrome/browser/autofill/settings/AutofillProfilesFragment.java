@@ -280,8 +280,6 @@ public class AutofillProfilesFragment extends PreferenceFragmentCompat
         }
         if (!ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_ACCOUNT_PROFILE_STORAGE)
                 || !ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.SYNC_ENABLE_CONTACT_INFO_DATA_TYPE)
-                || !ChromeFeatureList.isEnabled(
                         ChromeFeatureList.SYNC_ENABLE_CONTACT_INFO_DATA_TYPE_IN_TRANSPORT_MODE)) {
             return false;
         }

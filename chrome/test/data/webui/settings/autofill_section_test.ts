@@ -303,7 +303,6 @@ suite('AutofillSectionAddressTests', function() {
   test('verifyAddressLocalIndication', async () => {
     loadTimeData.overrideValues({
       autofillAccountProfileStorage: false,
-      syncEnableContactInfoDataType: false,
       syncEnableContactInfoDataTypeInTransportMode: false,
     });
 
@@ -344,7 +343,6 @@ suite('AutofillSectionAddressTests', function() {
 
     loadTimeData.overrideValues({
       autofillAccountProfileStorage: true,
-      syncEnableContactInfoDataType: true,
       syncEnableContactInfoDataTypeInTransportMode: true,
     });
     changeListener(

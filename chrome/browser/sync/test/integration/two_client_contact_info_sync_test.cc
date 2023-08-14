@@ -5,7 +5,6 @@
 #include <tuple>
 #include <vector>
 
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/sync/test/integration/contact_info_helper.h"
 #include "chrome/browser/sync/test/integration/status_change_checker.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
@@ -79,10 +78,6 @@ class AutofillProfilesEqualChecker
 class TwoClientContactInfoSyncTest : public SyncTest {
  public:
   TwoClientContactInfoSyncTest() : SyncTest(TWO_CLIENT) {}
-
- private:
-  base::test::ScopedFeatureList features_{
-      syncer::kSyncEnableContactInfoDataType};
 };
 
 IN_PROC_BROWSER_TEST_F(TwoClientContactInfoSyncTest, SyncAddUpdateDelete) {

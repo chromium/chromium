@@ -141,10 +141,6 @@ class SingleClientContactInfoSyncTest : public SyncTest {
   autofill::PersonalDataManager* GetPersonalDataManager() const {
     return contact_info_helper::GetPersonalDataManager(GetProfile(0));
   }
-
- private:
-  base::test::ScopedFeatureList features_{
-      syncer::kSyncEnableContactInfoDataType};
 };
 
 IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest, DownloadInitialData) {

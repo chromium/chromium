@@ -1458,10 +1458,6 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
           autofill::features::kAutofillAccountProfileStorage));
 
   html_source->AddBoolean(
-      "syncEnableContactInfoDataType",
-      base::FeatureList::IsEnabled(syncer::kSyncEnableContactInfoDataType));
-
-  html_source->AddBoolean(
       "syncEnableContactInfoDataTypeInTransportMode",
       base::FeatureList::IsEnabled(
           syncer::kSyncEnableContactInfoDataTypeInTransportMode));

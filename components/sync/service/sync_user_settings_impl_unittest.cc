@@ -124,7 +124,6 @@ TEST_F(SyncUserSettingsImplTest, GetSelectedTypesWhileSignedOut) {
                             kReadingListEnableSyncTransportModeUponSignIn,
                             password_manager::features::
                                 kEnablePasswordsAccountStorage,
-                            kSyncEnableContactInfoDataType,
                             kSyncEnableContactInfoDataTypeInTransportMode,
                             kEnablePreferencesAccountStorage},
       /*disabled_features=*/{});
@@ -145,7 +144,6 @@ TEST_F(SyncUserSettingsImplTest, SetSelectedTypeInTransportMode) {
                             kReadingListEnableSyncTransportModeUponSignIn,
                             password_manager::features::
                                 kEnablePasswordsAccountStorage,
-                            kSyncEnableContactInfoDataType,
                             kSyncEnableContactInfoDataTypeInTransportMode,
                             kEnablePreferencesAccountStorage},
       /*disabled_features=*/{});

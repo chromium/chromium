@@ -251,8 +251,7 @@ SyncApiComponentFactoryImpl::CreateCommonDataTypeControllers(
           /*delegate_for_transport_mode=*/nullptr));
     }
 
-    if (base::FeatureList::IsEnabled(syncer::kSyncEnableContactInfoDataType) &&
-        !disabled_types.Has(syncer::CONTACT_INFO)) {
+    if (!disabled_types.Has(syncer::CONTACT_INFO)) {
       // The same delegate is used for full sync and transport mode.
       controllers.push_back(
           std::make_unique<autofill::ContactInfoModelTypeController>(

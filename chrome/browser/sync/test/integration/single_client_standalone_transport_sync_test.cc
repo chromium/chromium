@@ -293,7 +293,6 @@ class SingleClientStandaloneTransportWithReplaceSyncWithSigninSyncTest
         /*enabled_features=*/
         {syncer::kSyncEnableHistoryDataType,
          syncer::kEnablePreferencesAccountStorage,
-         syncer::kSyncEnableContactInfoDataType,
          syncer::kSyncEnableContactInfoDataTypeInTransportMode,
          syncer::kSyncEnableContactInfoDataTypeForCustomPassphraseUsers,
          syncer::kReplaceSyncPromosWithSignInPromos},
@@ -534,7 +533,6 @@ class SingleClientStandaloneTransportReplaceSyncWithSigninMigrationSyncTest
          syncer::kReadingListEnableDualReadingListModel,
          syncer::kReadingListEnableSyncTransportModeUponSignIn,
          password_manager::features::kEnablePasswordsAccountStorage,
-         syncer::kSyncEnableContactInfoDataType,
          syncer::kSyncEnableContactInfoDataTypeInTransportMode,
          syncer::kEnablePreferencesAccountStorage},
         /*disabled_features=*/{});

@@ -81,9 +81,7 @@ void PersonalDataManagerCleaner::SyncStarted(syncer::ModelType model_type) {
   // `autofill_profile_sync_started` and `contact_info_sync_started`.
   autofill_profile_sync_started |= model_type == syncer::AUTOFILL_PROFILE;
   contact_info_sync_started |= model_type == syncer::CONTACT_INFO;
-  if (autofill_profile_sync_started &&
-      (contact_info_sync_started ||
-       !base::FeatureList::IsEnabled(syncer::kSyncEnableContactInfoDataType)) &&
+  if (autofill_profile_sync_started && contact_info_sync_started &&
       !alternative_state_name_map_updater_
            ->is_alternative_state_name_map_populated() &&
       base::FeatureList::IsEnabled(

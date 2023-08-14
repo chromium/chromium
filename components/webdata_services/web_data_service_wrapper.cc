@@ -45,7 +45,6 @@ void InitAutofillSyncBridgesOnDBSequence(
     scoped_refptr<base::SequencedTaskRunner> db_task_runner,
     const scoped_refptr<autofill::AutofillWebDataService>& autofill_web_data,
     const std::string& app_locale,
-    bool enable_contact_info_sync,
     autofill::AutofillWebDataBackend* autofill_backend) {
   DCHECK(db_task_runner->RunsTasksInCurrentSequence());
 
@@ -53,10 +52,8 @@ void InitAutofillSyncBridgesOnDBSequence(
       autofill_web_data.get(), autofill_backend);
   autofill::AutofillProfileSyncBridge::CreateForWebDataServiceAndBackend(
       app_locale, autofill_backend, autofill_web_data.get());
-  if (enable_contact_info_sync) {
-    autofill::ContactInfoSyncBridge::CreateForWebDataServiceAndBackend(
-        autofill_backend, autofill_web_data.get());
-  }
+  autofill::ContactInfoSyncBridge::CreateForWebDataServiceAndBackend(
+      autofill_backend, autofill_web_data.get());
 }
 
 void InitWalletSyncBridgesOnDBSequence(
@@ -154,10 +151,9 @@ WebDataServiceWrapper::WebDataServiceWrapper(
       base::BindOnce(show_error_callback, ERROR_LOADING_PAYMENT_MANIFEST));
 #endif
 
-  profile_autofill_web_data_->GetAutofillBackend(base::BindOnce(
-      &InitAutofillSyncBridgesOnDBSequence, db_task_runner,
-      profile_autofill_web_data_, application_locale,
-      base::FeatureList::IsEnabled(syncer::kSyncEnableContactInfoDataType)));
+  profile_autofill_web_data_->GetAutofillBackend(
+      base::BindOnce(&InitAutofillSyncBridgesOnDBSequence, db_task_runner,
+                     profile_autofill_web_data_, application_locale));
   profile_autofill_web_data_->GetAutofillBackend(
       base::BindOnce(&InitWalletSyncBridgesOnDBSequence, db_task_runner,
                      profile_autofill_web_data_, application_locale));

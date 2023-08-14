@@ -97,7 +97,6 @@ inline constexpr base::FeatureParam<int>
     kSyncHistoryForeignVisitsToDeletePerBatch{
         &kSyncEnableHistoryDataType, "foreign_visit_deletions_per_batch", 100};
 
-BASE_DECLARE_FEATURE(kSyncEnableContactInfoDataType);
 BASE_DECLARE_FEATURE(kSyncEnableContactInfoDataTypeInTransportMode);
 BASE_DECLARE_FEATURE(kSyncEnableContactInfoDataTypeForCustomPassphraseUsers);
 BASE_DECLARE_FEATURE(kSyncEnableContactInfoDataTypeForDasherUsers);
