@@ -98,25 +98,6 @@ public class AccessibilityUtil {
     }
 
     /**
-     * Checks to see that touch exploration is enabled. Does not include accessibility services that
-     * perform gestures (e.g. switchaccess returns false here)
-     * @return        Whether or not accessibility and touch exploration are enabled.
-     */
-    public boolean isTouchExplorationEnabled() {
-        if (mModeChangeHandler == null) registerModeChangeListeners();
-        if (mIsTouchExplorationEnabled != null) return mIsTouchExplorationEnabled;
-
-        TraceEvent.begin("AccessibilityManager::isTouchExplorationEnabled");
-
-        AccessibilityManager manager = getAccessibilityManager();
-        mIsTouchExplorationEnabled =
-                manager != null && manager.isEnabled() && manager.isTouchExplorationEnabled();
-
-        TraceEvent.end("AccessibilityManager::isTouchExplorationEnabled");
-        return mIsTouchExplorationEnabled;
-    }
-
-    /**
      * Get the recommended timeout for changes to the UI needed by this user. The timeout value
      * can be set by users on Q+.
      *
@@ -228,17 +209,6 @@ public class AccessibilityUtil {
     public void setAccessibilityEnabledForTesting(@Nullable Boolean isEnabled) {
         ThreadUtils.assertOnUiThread();
         mIsAccessibilityEnabled = isEnabled;
-        notifyModeChange();
-    }
-
-    /**
-     * Set whether the device has touch exploration enabled. Should be reset back to null after the
-     * test has finished.
-     * @param isEnabled whether the device has touch exploration enabled.
-     */
-    public void setTouchExplorationEnabledForTesting(@Nullable Boolean isEnabled) {
-        ThreadUtils.assertOnUiThread();
-        mIsTouchExplorationEnabled = isEnabled;
         notifyModeChange();
     }
 }

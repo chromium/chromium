@@ -87,7 +87,6 @@ import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuUiState;
 import org.chromium.chrome.browser.translate.TranslateBridge;
 import org.chromium.chrome.browser.translate.TranslateBridgeJni;
-import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.browser.webapps.WebappRegistry;
 import org.chromium.chrome.features.start_surface.StartSurface;
 import org.chromium.chrome.features.start_surface.StartSurfaceCoordinator;
@@ -111,6 +110,7 @@ import org.chromium.components.webapps.AppBannerManagerJni;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.net.ConnectionType;
+import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -265,8 +265,7 @@ public class AppMenuPropertiesDelegateUnitTest {
 
     @After
     public void tearDown() {
-        ChromeAccessibilityUtil.get().setAccessibilityEnabledForTesting(false);
-        ChromeAccessibilityUtil.get().setTouchExplorationEnabledForTesting(false);
+        AccessibilityState.setIsScreenReaderEnabledForTesting(false);
     }
 
     private void setupFeatureDefaults() {
@@ -558,8 +557,7 @@ public class AppMenuPropertiesDelegateUnitTest {
 
         // Test specific setup
         ThreadUtils.setThreadAssertsDisabledForTesting(true);
-        ChromeAccessibilityUtil.get().setAccessibilityEnabledForTesting(true);
-        ChromeAccessibilityUtil.get().setTouchExplorationEnabledForTesting(true);
+        AccessibilityState.setIsScreenReaderEnabledForTesting(true);
 
         Menu menu = createTestMenu();
         mAppMenuPropertiesDelegate.prepareMenu(menu, null);

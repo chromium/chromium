@@ -18,16 +18,15 @@ import org.chromium.chrome.browser.metrics.ChangeMetricsReportingStateCalledFrom
 import org.chromium.chrome.browser.metrics.UmaSessionStats;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
-import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
+import org.chromium.ui.accessibility.AccessibilityState;
 
 /** Provides first run related utility functions. */
 public class FirstRunUtils {
     private static Boolean sHasGoogleAccountAuthenticator;
     private static final int DEFAULT_SKIP_TOS_EXIT_DELAY_MS = 1000;
-    private static final int A11Y_DELAY_FACTOR = 2;
 
     private static boolean sDisableDelayOnExitFreForTest;
 
@@ -141,20 +140,17 @@ public class FirstRunUtils {
 
     /**
      * The the number of ms delay before exiting FRE with policy. By default the delay would be
-     * {@link #DEFAULT_SKIP_TOS_EXIT_DELAY_MS}, while in a11y mode it will be extended by a factor
-     * of {@link #A11Y_DELAY_FACTOR}. This is intended to avoid screen reader being interrupted, but
-     * it is likely not going to work perfectly for all languages.
+     * {@link #DEFAULT_SKIP_TOS_EXIT_DELAY_MS}, but we will get the recommended timeout from the
+     * AccessibilityState, which calculates a time based on currently running accessibility
+     * services and OS-level system settings.
      *
      * @return The number of ms delay before exiting FRE with policy.
      */
     public static int getSkipTosExitDelayMs() {
         if (sDisableDelayOnExitFreForTest) return 0;
 
-        int durationMs = DEFAULT_SKIP_TOS_EXIT_DELAY_MS;
-        if (ChromeAccessibilityUtil.get().isTouchExplorationEnabled()) {
-            durationMs *= A11Y_DELAY_FACTOR;
-        }
-        return durationMs;
+        return AccessibilityState.getRecommendedTimeoutMillis(
+                DEFAULT_SKIP_TOS_EXIT_DELAY_MS, DEFAULT_SKIP_TOS_EXIT_DELAY_MS);
     }
 
     public static void setDisableDelayOnExitFreForTest(boolean isDisable) {

@@ -65,23 +65,8 @@ public class ChromeAccessibilityUtil extends AccessibilityUtil {
     }
 
     @Override
-    public boolean isTouchExplorationEnabled() {
-        if (mActivityStateListener == null) {
-            mActivityStateListener = new ActivityStateListenerImpl();
-            ApplicationStatus.registerStateListenerForAllActivities(mActivityStateListener);
-        }
-        return super.isTouchExplorationEnabled();
-    }
-
-    @Override
     public void setAccessibilityEnabledForTesting(@Nullable Boolean isEnabled) {
         mWasAccessibilityEnabledForTestingCalled = isEnabled != null;
         super.setAccessibilityEnabledForTesting(isEnabled);
-    }
-
-    @Override
-    public void setTouchExplorationEnabledForTesting(@Nullable Boolean isEnabled) {
-        mWasTouchExplorationEnabledForTestingCalled = isEnabled != null;
-        super.setTouchExplorationEnabledForTesting(isEnabled);
     }
 }
