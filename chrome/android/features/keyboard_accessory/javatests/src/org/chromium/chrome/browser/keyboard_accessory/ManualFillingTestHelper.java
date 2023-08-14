@@ -50,6 +50,7 @@ import org.junit.Assert;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.Criteria;
+import org.chromium.chrome.browser.ChromeKeyboardVisibilityDelegate;
 import org.chromium.chrome.browser.ChromeWindow;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
@@ -177,10 +178,21 @@ public class ManualFillingTestHelper {
     }
 
     public void focusPasswordField() throws TimeoutException {
+        focusPasswordField(true);
+    }
+
+    public void focusPasswordField(boolean useFakeKeyboard) throws TimeoutException {
         DOMUtils.focusNode(mActivityTestRule.getWebContents(), PASSWORD_NODE_ID);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { mActivityTestRule.getWebContents().scrollFocusedEditableNodeIntoView(); });
-        getKeyboard().showKeyboard(mActivityTestRule.getActivity().getCurrentFocus());
+
+        ChromeKeyboardVisibilityDelegate keyboard;
+        if (useFakeKeyboard) {
+            keyboard = getKeyboard();
+        } else {
+            keyboard = (ChromeKeyboardVisibilityDelegate) mActivityTestRule.getKeyboardDelegate();
+        }
+        keyboard.showKeyboard(mActivityTestRule.getActivity().getCurrentFocus());
     }
 
     public String getPasswordText() throws TimeoutException {
