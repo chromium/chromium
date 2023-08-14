@@ -83,7 +83,11 @@ void CookieControlsContentView::AddContentLabels() {
 
   description_ = label_wrapper->AddChildView(std::make_unique<views::Label>());
   description_->SetTextContext(views::style::CONTEXT_LABEL);
-  description_->SetTextStyle(views::style::STYLE_SECONDARY);
+  if (features::IsChromeRefresh2023()) {
+    description_->SetTextStyle(views::style::STYLE_BODY_5);
+  } else {
+    description_->SetTextStyle(views::style::STYLE_SECONDARY);
+  }
   description_->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
   description_->SetMultiLine(true);
   description_->SetProperty(views::kElementIdentifierKey, kDescription);
@@ -105,6 +109,9 @@ void CookieControlsContentView::SetToggleVisible(bool visible) {
 
 void CookieControlsContentView::SetToggleLabel(const std::u16string& label) {
   toggle_label_->SetText(label);
+  if (features::IsChromeRefresh2023()) {
+    toggle_label_->SetTextStyle(views::style::STYLE_BODY_5);
+  }
 
   const std::u16string accessible_name = base::JoinString(
       {

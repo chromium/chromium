@@ -75,7 +75,12 @@ PageInfoCookiesContentView::PageInfoCookiesContentView(PageInfo* presenter)
   }
   cookies_description_label->SetID(
       PageInfoViewFactory::VIEW_ID_PAGE_INFO_COOKIES_DESCRIPTION_LABEL);
-  cookies_description_label->SetDefaultTextStyle(views::style::STYLE_SECONDARY);
+  if (features::IsChromeRefresh2023()) {
+    cookies_description_label->SetDefaultTextStyle(views::style::STYLE_BODY_5);
+  } else {
+    cookies_description_label->SetDefaultTextStyle(
+        views::style::STYLE_SECONDARY);
+  }
   cookies_description_label->SetText(description_text);
   cookies_description_label->AddStyleRange(link_range, link_style);
 
@@ -289,6 +294,10 @@ void PageInfoCookiesContentView::SetThirdPartyCookiesInfo(
                 IDS_PAGE_INFO_COOKIES_ALLOWED_SITES_COUNT,
                 cookie_info.allowed_third_party_sites_count);
   third_party_cookies_toggle_subtitle_->SetText(toggle_subtitle);
+  if (features::IsChromeRefresh2023()) {
+    third_party_cookies_toggle_subtitle_->SetTextStyle(
+        views::style::STYLE_BODY_5);
+  }
 
   const std::u16string toggle_a11y_name =
       are_third_party_cookies_blocked
@@ -524,7 +533,12 @@ void PageInfoCookiesContentView::AddThirdPartyCookiesContainer() {
       third_party_cookies_label_wrapper_->AddChildView(
           std::make_unique<views::Label>());
   third_party_cookies_description_->SetTextContext(views::style::CONTEXT_LABEL);
-  third_party_cookies_description_->SetTextStyle(views::style::STYLE_SECONDARY);
+  if (features::IsChromeRefresh2023()) {
+    third_party_cookies_description_->SetTextStyle(views::style::STYLE_BODY_5);
+  } else {
+    third_party_cookies_description_->SetTextStyle(
+        views::style::STYLE_SECONDARY);
+  }
   third_party_cookies_description_->SetHorizontalAlignment(
       gfx::HorizontalAlignment::ALIGN_LEFT);
   third_party_cookies_description_->SetMultiLine(true);
