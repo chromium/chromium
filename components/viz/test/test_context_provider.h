@@ -59,6 +59,16 @@ class TestSharedImageInterface : public gpu::SharedImageInterface {
                                  base::StringPiece debug_label,
                                  base::span<const uint8_t> pixel_data) override;
 
+  gpu::Mailbox CreateSharedImage(SharedImageFormat format,
+                                 const gfx::Size& size,
+                                 const gfx::ColorSpace& color_space,
+                                 GrSurfaceOrigin surface_origin,
+                                 SkAlphaType alpha_type,
+                                 uint32_t usage,
+                                 base::StringPiece debug_label,
+                                 gpu::SurfaceHandle surface_handle,
+                                 gfx::BufferUsage buffer_usage) override;
+
   gpu::Mailbox CreateSharedImage(
       SharedImageFormat format,
       const gfx::Size& size,
