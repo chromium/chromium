@@ -2102,7 +2102,7 @@
       // crbug.com/1353190
       name: "LayoutNGNoCopyBack",
       depends_on: ["LayoutNGNoLocation", "ScrollableAreaNoSnapping"],
-      status: "test",
+      status: "stable",
     },
     {
       // crbug.com/1353190
