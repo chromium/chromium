@@ -56,6 +56,11 @@ bool WebGPUTest::WebGPUSupported() const {
     return false;
   }
 
+  // Pixel 2 does not support WebGPU
+  if (GPUTestBotConfig::CurrentConfigMatches("Android Qualcomm 0x5040001")) {
+    return false;
+  }
+
   return true;
 }
 
