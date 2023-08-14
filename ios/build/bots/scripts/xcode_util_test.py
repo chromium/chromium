@@ -25,6 +25,8 @@ _XCODEBUILD_VERSION_OUTPUT_15 = b"""Xcode 15.0
 Build version 15A5209g
 """
 
+ADD_SIMULATOR_RUNTIME_OUTPUT = 'ramdomid (iOS 15.0)'
+
 
 class XcodeUtilTest(test_runner_test.TestCase):
   """Test class for xcode_util functions."""
@@ -266,15 +268,18 @@ class InstallTest(XcodeUtilTest):
             'xcode_util._install_runtime_dmg') as mock__install_runtime_dmg:
           with mock.patch('iossim_util.add_simulator_runtime'
                          ) as mock_add_simulator_runtime:
-            result = xcode_util.install_runtime_dmg(
-                mac_toolchain='mac_toolchain',
-                runtime_cache_folder='/path/to/runtime_cache_folder',
-                ios_version='15.0',
-                xcode_build_version='14a123')
+            with mock.patch('iossim_util.override_default_iphonesim_runtime'
+                           ) as mock_override_default_iphonesim_runtime:
+              result = xcode_util.install_runtime_dmg(
+                  mac_toolchain='mac_toolchain',
+                  runtime_cache_folder='/path/to/runtime_cache_folder',
+                  ios_version='15.0',
+                  xcode_build_version='14a123')
 
     self.assertFalse(mock_delete_simulator_runtime_and_wait.called)
     self.assertFalse(mock__install_runtime_dmg.called)
     self.assertFalse(mock_add_simulator_runtime.called)
+    self.assertFalse(mock_override_default_iphonesim_runtime.called)
 
   def test_install_runtime_dmg_with_non_builtin_runtime(self):
     with mock.patch('xcode_util.is_runtime_builtin', return_value=False):
@@ -282,22 +287,28 @@ class InstallTest(XcodeUtilTest):
                      ) as mock_delete_simulator_runtime_and_wait:
         with mock.patch(
             'xcode_util._install_runtime_dmg') as mock__install_runtime_dmg:
-          with mock.patch('iossim_util.add_simulator_runtime'
-                         ) as mock_add_simulator_runtime:
+          with mock.patch(
+              'iossim_util.add_simulator_runtime',
+              return_value=ADD_SIMULATOR_RUNTIME_OUTPUT
+          ) as mock_add_simulator_runtime:
             with mock.patch(
                 'xcode_util.get_runtime_dmg_name',
                 return_value='/path/to/runtime_cache_folder/test.dmg'):
-              result = xcode_util.install_runtime_dmg(
-                  mac_toolchain='mac_toolchain',
-                  runtime_cache_folder='/path/to/runtime_cache_folder',
-                  ios_version='15.0',
-                  xcode_build_version='15a123')
+              with mock.patch('iossim_util.override_default_iphonesim_runtime'
+                             ) as mock_override_default_iphonesim_runtime:
+                result = xcode_util.install_runtime_dmg(
+                    mac_toolchain='mac_toolchain',
+                    runtime_cache_folder='/path/to/runtime_cache_folder',
+                    ios_version='15.0',
+                    xcode_build_version='15a123')
 
     mock_delete_simulator_runtime_and_wait.assert_called_once_with('15.0')
     mock__install_runtime_dmg.assert_called_once_with(
         'mac_toolchain', '/path/to/runtime_cache_folder', '15.0', '15a123')
     mock_add_simulator_runtime.assert_called_once_with(
         '/path/to/runtime_cache_folder/test.dmg')
+    mock_override_default_iphonesim_runtime.assert_called_once_with(
+        ADD_SIMULATOR_RUNTIME_OUTPUT, '15.0')
 
 
 class HelperFunctionTests(XcodeUtilTest):

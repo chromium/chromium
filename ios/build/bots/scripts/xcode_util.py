@@ -386,7 +386,10 @@ def install_runtime_dmg(mac_toolchain, runtime_cache_folder, ios_version,
 
   _install_runtime_dmg(mac_toolchain, runtime_cache_folder, ios_version,
                        xcode_build_version)
-  iossim_util.add_simulator_runtime(get_runtime_dmg_name(runtime_cache_folder))
+  output = iossim_util.add_simulator_runtime(
+      get_runtime_dmg_name(runtime_cache_folder))
+
+  iossim_util.override_default_iphonesim_runtime(output, ios_version)
 
 
 def version():

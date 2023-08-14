@@ -302,6 +302,14 @@ def get_simulator_runtime_list():
                                '-j']).decode('utf-8'))
 
 
+def get_simulator_runtime_match_list():
+  """Gets list of chosen simulator runtime for each simulator sdk type"""
+  return json.loads(
+      subprocess.check_output(
+          ['xcrun', 'simctl', 'runtime', 'match', 'list',
+           '-j']).decode('utf-8'))
+
+
 def get_simulator_runtime_info(ios_version):
   """Gets runtime object based on iOS version.
 
@@ -328,10 +336,54 @@ def get_simulator_runtime_info(ios_version):
   return None
 
 
+def override_default_iphonesim_runtime(runtime_id, ios_version):
+  """Overrides the default simulator runtime build version.
+
+  The default simulator runtime build version that Xcode looks
+  for might not be the same as what we downloaded. Therefore,
+  this method gives the option for override the default with a
+  different runtime build version (ideally the one we downloaded from cipd.
+
+  Args:
+    runtime_id: (str) the runtime id that we desire to use.
+      The runtime build version will be extracted and override the
+      default one.
+    ios_version: the iOS version of the iphone sdk we want to
+      override. e.g. 17.0
+  """
+
+  # find the runtime build number to override with
+  overriding_build = None
+  runtimes = get_simulator_runtime_list()
+  for runtime_key in runtimes:
+    if runtime_key in runtime_id:
+      overriding_build = runtimes[runtime_key].get('build')
+      break
+  if overriding_build is None:
+    LOGGER.debug(
+        'Unable to find the simulator runtime build number to override with...')
+    return
+
+  # find the runtime build number to be overridden
+  sdks = get_simulator_runtime_match_list()
+  iphone_sdk_key = 'iphoneos' + ios_version
+  sdk_build = sdks.get(iphone_sdk_key, {}).get("sdkBuild")
+  if sdk_build is None:
+    LOGGER.debug(
+        'Unable to find the simulator runtime build number to be overriden...')
+    return
+  cmd = [
+      'xcrun', 'simctl', 'runtime', 'match', 'set', iphone_sdk_key,
+      overriding_build, '--sdkBuild', sdk_build
+  ]
+  LOGGER.debug('Overriding default runtime with command %s' % cmd)
+  subprocess.check_call(cmd)
+
+
 def add_simulator_runtime(runtime_dmg_path):
   cmd = ['xcrun', 'simctl', 'runtime', 'add', runtime_dmg_path]
   LOGGER.debug('Adding runtime with command %s' % cmd)
-  subprocess.check_output(cmd)
+  return subprocess.check_output(cmd).decode('utf-8')
 
 
 def delete_simulator_runtime(runtime_id):

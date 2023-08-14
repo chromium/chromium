@@ -144,25 +144,6 @@ class Runner():
     if not install_success:
       raise test_runner.XcodeVersionNotFoundError(self.args.xcode_build_version)
 
-    # TODO(crbug.com/1469994): remove the below hack once we roll to xc15 beta6.
-    # The hack is required for Xcode simulators to work in xc15 beta5.
-    # We might have to implement a programmatic way to force set the correct
-    # ios runtime version, as this issue has happened in both xc15 beta2&5.
-    if self.args.xcode_build_version.lower() == '15a5209g':
-      logging.info("Xcode version is 15a5209g, going to force override runtime")
-      set_runtime_cmd = [
-          'xcrun', 'simctl', 'runtime', 'match', 'set', 'iphoneos17.0',
-          '21A5291g', '--sdkBuild', '21A5291f'
-      ]
-      subprocess.check_output(set_runtime_cmd, stderr=subprocess.STDOUT)
-    elif self.args.xcode_build_version.lower() == '15a5219j':
-      logging.info("Xcode version is 15a5219j, going to force override runtime")
-      set_runtime_cmd = [
-          'xcrun', 'simctl', 'runtime', 'match', 'set', 'iphoneos17.0',
-          '21A5303d', '--sdkBuild', '21A5303c'
-      ]
-      subprocess.check_output(set_runtime_cmd, stderr=subprocess.STDOUT)
-
     # Sharding env var is required to shard GTest.
     env_vars = self.args.env_var + self.sharding_env_vars()
 

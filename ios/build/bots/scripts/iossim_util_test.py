@@ -100,6 +100,7 @@ SIMULATORS_LIST = {
 
 RUNTIMES_LIST = {
     "111111": {
+        "build": "21A111111",
         "deletable": True,
         "identifier": "11111",
         "kind": "Disk Image",
@@ -114,6 +115,7 @@ RUNTIMES_LIST = {
         "version": "13.1"
     },
     "222222": {
+        "build": "21A222222",
         "deletable": False,
         "identifier": "222222",
         "kind": "Bundled with Xcode",
@@ -127,6 +129,7 @@ RUNTIMES_LIST = {
         "version": "13.2"
     },
     "333333": {
+        "build": "21A333333",
         "deletable": True,
         "identifier": "333333",
         "kind": "Legacy Download",
@@ -140,6 +143,27 @@ RUNTIMES_LIST = {
         "version": "11.4"
     }
 }
+
+RUNTIMES_MATCH_LIST = {
+    "appletvos17.0": {
+        "chosenRuntimeBuild": "21J11111",
+        "defaultBuild": "21J11111",
+        "platform": "com.apple.platform.appletvos",
+        "preferredBuild": "21J11111",
+        "sdkBuild": "21J11111",
+        "sdkVersion": "13.1"
+    },
+    "iphoneos17.0": {
+        "chosenRuntimeBuild": "21A111112",
+        "defaultBuild": "21A111112",
+        "platform": "com.apple.platform.iphoneos",
+        "preferredBuild": "21A111111",
+        "sdkBuild": "21A111112",
+        "sdkVersion": "13.1"
+    }
+}
+
+ADD_RUNTIME_OUTPUT = "111111 (iOS17.0)"
 
 
 @mock.patch.object(
@@ -282,6 +306,31 @@ class GetiOSSimUtil(test_runner_test.TestCase):
     runtime = iossim_util.get_simulator_runtime_info('13.1')
     self.assertIsNotNone(runtime)
     self.assertEqual(runtime['version'], '13.1')
+
+  @mock.patch.object(iossim_util, 'get_simulator_runtime_match_list')
+  def test_override_default_iphonesim_runtime(self, override_runtime_mock, _,
+                                              _2):
+    check_call_mock = mock.Mock()
+    self.mock(subprocess, 'check_call', check_call_mock)
+    override_runtime_mock.return_value = RUNTIMES_MATCH_LIST
+    iossim_util.override_default_iphonesim_runtime(ADD_RUNTIME_OUTPUT, '17.0')
+    calls = [
+        mock.call([
+            'xcrun', 'simctl', 'runtime', 'match', 'set', 'iphoneos17.0',
+            '21A111111', '--sdkBuild', '21A111112'
+        ]),
+    ]
+    check_call_mock.assert_has_calls(calls)
+
+  @mock.patch.object(iossim_util, 'get_simulator_runtime_match_list')
+  def test_override_default_iphonesim_runtime_not_found(self,
+                                                        override_runtime_mock,
+                                                        _, _2):
+    check_call_mock = mock.Mock()
+    self.mock(subprocess, 'check_call', check_call_mock)
+    override_runtime_mock.return_value = RUNTIMES_MATCH_LIST
+    iossim_util.override_default_iphonesim_runtime('random string', '17.0')
+    check_call_mock.assert_not_called()
 
   def test_add_simulator_runtime(self, _, _2):
     check_output_mock = mock.Mock()
