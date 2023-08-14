@@ -19,12 +19,17 @@
 namespace gpu {
 namespace {
 
+constexpr uint32_t kWebGPUUsages =
+    SHARED_IMAGE_USAGE_WEBGPU | SHARED_IMAGE_USAGE_WEBGPU_SWAP_CHAIN_TEXTURE |
+    SHARED_IMAGE_USAGE_WEBGPU_STORAGE_TEXTURE;
+
 constexpr uint32_t kSupportedUsage =
     SHARED_IMAGE_USAGE_GLES2 | SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT |
     SHARED_IMAGE_USAGE_DISPLAY_WRITE | SHARED_IMAGE_USAGE_DISPLAY_READ |
     SHARED_IMAGE_USAGE_RASTER | SHARED_IMAGE_USAGE_OOP_RASTERIZATION |
     SHARED_IMAGE_USAGE_SCANOUT | SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE |
-    SHARED_IMAGE_USAGE_HIGH_PERFORMANCE_GPU | SHARED_IMAGE_USAGE_CPU_UPLOAD;
+    SHARED_IMAGE_USAGE_HIGH_PERFORMANCE_GPU | SHARED_IMAGE_USAGE_CPU_UPLOAD |
+    kWebGPUUsages;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -184,6 +189,13 @@ bool GLTextureImageBackingFactory::IsSupported(
        (usage & SHARED_IMAGE_USAGE_DISPLAY_WRITE) ||
        (usage & SHARED_IMAGE_USAGE_RASTER))) {
     return false;
+  }
+
+  // Only supports WebGPU usages on Dawn's OpenGLES backend.
+  if (usage & kWebGPUUsages) {
+    if (use_webgpu_adapter_ != WebGPUAdapterName::kOpenGLES) {
+      return false;
+    }
   }
 
   return CanCreateTexture(format, size, pixel_data, GL_TEXTURE_2D);

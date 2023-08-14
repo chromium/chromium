@@ -1309,6 +1309,14 @@ void WebGPUDecoderImpl::RequestDeviceImpl(
     required_features.push_back(wgpu::FeatureName::DawnMultiPlanarFormats);
   }
 
+#if BUILDFLAG(USE_DAWN) && BUILDFLAG(DAWN_ENABLE_BACKEND_OPENGLES)
+  // On Desktop GL via ANGLE, require GL texture sharing.
+  if (use_webgpu_adapter_ == WebGPUAdapterName::kOpenGLES &&
+      gl::GetANGLEImplementation() == gl::ANGLEImplementation::kOpenGL) {
+    required_features.push_back(wgpu::FeatureName::ANGLETextureSharing);
+  }
+#endif
+
   desc.requiredFeatures = required_features.data();
 #ifdef WGPU_BREAKING_CHANGE_COUNT_RENAME
   desc.requiredFeatureCount = required_features.size();

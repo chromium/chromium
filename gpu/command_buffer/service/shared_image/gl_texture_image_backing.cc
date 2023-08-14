@@ -29,6 +29,10 @@
 #include "ui/gl/gl_context.h"
 #include "ui/gl/scoped_make_current.h"
 
+#if BUILDFLAG(USE_DAWN) && BUILDFLAG(DAWN_ENABLE_BACKEND_OPENGLES)
+#include "gpu/command_buffer/service/shared_image/dawn_gl_texture_representation.h"
+#endif
+
 namespace gpu {
 
 namespace {
@@ -367,6 +371,20 @@ std::unique_ptr<DawnImageRepresentation> GLTextureImageBacking::ProduceDawn(
     DLOG(ERROR) << "No SharedImageFactory to create a dawn representation.";
     return nullptr;
   }
+
+#if BUILDFLAG(USE_DAWN) && BUILDFLAG(DAWN_ENABLE_BACKEND_OPENGLES)
+  if (backend_type == wgpu::BackendType::OpenGLES) {
+    std::unique_ptr<GLTextureImageRepresentationBase> image;
+    if (IsPassthrough()) {
+      image = ProduceGLTexturePassthrough(manager, tracker);
+    } else {
+      image = ProduceGLTexture(manager, tracker);
+    }
+    auto result = std::make_unique<DawnGLTextureRepresentation>(
+        std::move(image), manager, this, tracker, device);
+    return result;
+  }
+#endif
 
   // Make SharedContextState from factory the current context
   SharedContextState* shared_context_state = factory()->GetSharedContextState();

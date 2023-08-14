@@ -229,6 +229,7 @@ class GPU_GLES2_EXPORT GLTextureImageRepresentationBase
  protected:
   friend class SkiaGLImageRepresentation;
   friend class DawnEGLImageRepresentation;
+  friend class DawnGLTextureRepresentation;
   friend class GLTextureGLCommonRepresentation;
 
   // Can be overridden to handle clear state tracking when GL access begins or
