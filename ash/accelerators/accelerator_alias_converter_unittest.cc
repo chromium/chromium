@@ -7,6 +7,8 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
+#include "ash/keyboard/keyboard_controller_impl.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
 #include "ash/shell.h"
 #include "ash/system/input_device_settings/input_device_settings_controller_impl.h"
@@ -96,11 +98,11 @@ class AcceleratorAliasConverterTest : public AshTestBase {
                                    bool enabled) {
     if (!features::IsInputDeviceSettingsSplitEnabled()) {
       // Top row keys not fKeys prevents remapping.
-      Shell::Get()
-          ->keyboard_capability()
-          ->SetTopRowKeysAsFKeysEnabledForTesting(enabled);
-      EXPECT_EQ(enabled,
-                Shell::Get()->keyboard_capability()->TopRowKeysAreFKeys());
+      Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
+          prefs::kSendFunctionKeys, enabled);
+      EXPECT_EQ(
+          enabled,
+          Shell::Get()->keyboard_controller()->AreTopRowKeysFunctionKeys());
       return;
     }
 

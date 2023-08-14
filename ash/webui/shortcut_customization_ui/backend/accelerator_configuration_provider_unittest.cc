@@ -13,6 +13,7 @@
 #include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/accelerators/ash_accelerator_configuration.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/keyboard/keyboard_controller_impl.h"
 #include "ash/public/cpp/accelerator_configuration.h"
 #include "ash/public/cpp/accelerators.h"
 #include "ash/public/mojom/accelerator_configuration.mojom.h"
@@ -624,7 +625,8 @@ TEST_F(AcceleratorConfigurationProviderTest, TopRowKeyAcceleratorRemapped) {
   if (!features::IsInputDeviceSettingsSplitEnabled()) {
     Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
         prefs::kSendFunctionKeys, false);
-    EXPECT_FALSE(Shell::Get()->keyboard_capability()->TopRowKeysAreFKeys());
+    EXPECT_FALSE(
+        Shell::Get()->keyboard_controller()->AreTopRowKeysFunctionKeys());
   } else {
     auto settings = Shell::Get()
                         ->input_device_settings_controller()
@@ -676,7 +678,8 @@ TEST_F(AcceleratorConfigurationProviderTest, TopRowKeyAcceleratorRemapped) {
   if (!features::IsInputDeviceSettingsSplitEnabled()) {
     Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
         prefs::kSendFunctionKeys, true);
-    EXPECT_TRUE(Shell::Get()->keyboard_capability()->TopRowKeysAreFKeys());
+    EXPECT_TRUE(
+        Shell::Get()->keyboard_controller()->AreTopRowKeysFunctionKeys());
   } else {
     auto settings = Shell::Get()
                         ->input_device_settings_controller()
@@ -974,7 +977,8 @@ TEST_F(AcceleratorConfigurationProviderTest, AliasWithOriginalAccelerator) {
   if (!features::IsInputDeviceSettingsSplitEnabled()) {
     Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
         prefs::kSendFunctionKeys, false);
-    EXPECT_FALSE(Shell::Get()->keyboard_capability()->TopRowKeysAreFKeys());
+    EXPECT_FALSE(
+        Shell::Get()->keyboard_controller()->AreTopRowKeysFunctionKeys());
   } else {
     auto settings = Shell::Get()
                         ->input_device_settings_controller()
@@ -2532,7 +2536,8 @@ TEST_F(AcceleratorConfigurationProviderTest, GetDefaultAcceleratorsForId) {
   if (!features::IsInputDeviceSettingsSplitEnabled()) {
     Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
         prefs::kSendFunctionKeys, true);
-    EXPECT_TRUE(Shell::Get()->keyboard_capability()->TopRowKeysAreFKeys());
+    EXPECT_TRUE(
+        Shell::Get()->keyboard_controller()->AreTopRowKeysFunctionKeys());
   } else {
     auto settings = Shell::Get()
                         ->input_device_settings_controller()

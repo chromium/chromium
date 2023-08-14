@@ -68,7 +68,6 @@
 #include "ash/display/window_tree_host_manager.h"
 #include "ash/drag_drop/drag_drop_controller.h"
 #include "ash/events/event_rewriter_controller_impl.h"
-#include "ash/events/keyboard_capability_delegate_impl.h"
 #include "ash/fast_ink/laser/laser_pointer_controller.h"
 #include "ash/focus_cycler.h"
 #include "ash/frame/non_client_frame_view_ash.h"
@@ -1136,8 +1135,7 @@ void Shell::Init(
   message_center_ash_impl_ = std::make_unique<MessageCenterAshImpl>();
 
   // Initialized early since it is used by some other objects.
-  keyboard_capability_ = std::make_unique<ui::KeyboardCapability>(
-      std::make_unique<KeyboardCapabilityDelegateImpl>());
+  keyboard_capability_ = std::make_unique<ui::KeyboardCapability>();
 
   // These controllers call Shell::Get() in their constructors, so they cannot
   // be in the member initialization list.

@@ -555,8 +555,6 @@ component("ash") {
     "events/accessibility_event_rewriter.h",
     "events/event_rewriter_controller_impl.cc",
     "events/event_rewriter_controller_impl.h",
-    "events/keyboard_capability_delegate_impl.cc",
-    "events/keyboard_capability_delegate_impl.h",
     "events/keyboard_driven_event_rewriter.cc",
     "events/keyboard_driven_event_rewriter.h",
     "events/peripheral_customization_event_rewriter.cc",

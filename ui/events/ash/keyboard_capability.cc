@@ -112,19 +112,6 @@ constexpr auto kChromeOSKeyboardsWithCapsLock =
         {0x046d, 0xb370}  // Logitech Signature K650
     });
 
-class StubKeyboardCapabilityDelegate : public KeyboardCapability::Delegate {
- public:
-  StubKeyboardCapabilityDelegate() = default;
-  StubKeyboardCapabilityDelegate(const StubKeyboardCapabilityDelegate&) =
-      delete;
-  StubKeyboardCapabilityDelegate& operator=(
-      const StubKeyboardCapabilityDelegate&) = delete;
-  ~StubKeyboardCapabilityDelegate() override = default;
-
-  bool TopRowKeysAreFKeys() const override { return false; }
-  void SetTopRowKeysAsFKeysEnabledForTesting(bool enabled) override {}
-};
-
 absl::optional<KeyboardDevice> FindKeyboardWithId(int device_id) {
   const auto& keyboards =
       DeviceDataManager::GetInstance()->GetKeyboardDevices();
@@ -476,19 +463,16 @@ bool HasExternalKeyboardConnected() {
 
 }  // namespace
 
-KeyboardCapability::KeyboardCapability(std::unique_ptr<Delegate> delegate)
-    : delegate_(std::move(delegate)) {
+KeyboardCapability::KeyboardCapability() {
   scan_code_to_evdev_key_converter_ =
       base::BindRepeating(&ConvertScanCodeToEvdevKey);
   DeviceDataManager::GetInstance()->AddObserver(this);
 }
 
 KeyboardCapability::KeyboardCapability(
-    ScanCodeToEvdevKeyConverter scan_code_to_evdev_key_converter,
-    std::unique_ptr<Delegate> delegate)
+    ScanCodeToEvdevKeyConverter scan_code_to_evdev_key_converter)
     : scan_code_to_evdev_key_converter_(
-          std::move(scan_code_to_evdev_key_converter)),
-      delegate_(std::move(delegate)) {
+          std::move(scan_code_to_evdev_key_converter)) {
   DeviceDataManager::GetInstance()->AddObserver(this);
 }
 
@@ -505,8 +489,7 @@ KeyboardCapability::KeyboardInfo::~KeyboardInfo() = default;
 // static
 std::unique_ptr<KeyboardCapability>
 KeyboardCapability::CreateStubKeyboardCapability() {
-  return std::make_unique<KeyboardCapability>(
-      std::make_unique<StubKeyboardCapabilityDelegate>());
+  return std::make_unique<KeyboardCapability>();
 }
 
 // static
@@ -547,16 +530,6 @@ absl::optional<KeyboardCode> KeyboardCapability::ConvertToKeyboardCode(
     }
   }
   return absl::nullopt;
-}
-
-bool KeyboardCapability::TopRowKeysAreFKeys() const {
-  return delegate_->TopRowKeysAreFKeys();
-}
-
-void KeyboardCapability::SetTopRowKeysAsFKeysEnabledForTesting(
-    bool enabled) const {
-  CHECK_IS_TEST();
-  delegate_->SetTopRowKeysAsFKeysEnabledForTesting(enabled);  // IN-TEST
 }
 
 // static

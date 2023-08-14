@@ -9,7 +9,6 @@
 
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
-#include "ash/events/keyboard_capability_delegate_impl.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
@@ -214,8 +213,7 @@ class KeyboardCapabilityTest : public NoSessionAshTestBase {
   void SetUp() override {
     AshTestBase::SetUp();
     keyboard_capability_ = std::make_unique<ui::KeyboardCapability>(
-        base::BindRepeating(&GetEvdevKeyCodeForScanCode),
-        std::make_unique<KeyboardCapabilityDelegateImpl>());
+        base::BindRepeating(&GetEvdevKeyCodeForScanCode));
     SimulateUserLogin(/*user_email=*/"email@google.com");
     fake_keyboard_manager_ = std::make_unique<FakeDeviceManager>();
   }
@@ -244,17 +242,6 @@ class KeyboardCapabilityTest : public NoSessionAshTestBase {
   std::unique_ptr<ui::KeyboardCapability> keyboard_capability_;
   std::unique_ptr<FakeDeviceManager> fake_keyboard_manager_;
 };
-
-TEST_F(KeyboardCapabilityTest, TestTopRowKeysAreFKeys) {
-  // Top row keys are F-Keys pref is false in default.
-  EXPECT_FALSE(keyboard_capability_->TopRowKeysAreFKeys());
-
-  keyboard_capability_->SetTopRowKeysAsFKeysEnabledForTesting(true);
-  EXPECT_TRUE(keyboard_capability_->TopRowKeysAreFKeys());
-
-  keyboard_capability_->SetTopRowKeysAsFKeysEnabledForTesting(false);
-  EXPECT_FALSE(keyboard_capability_->TopRowKeysAreFKeys());
-}
 
 TEST_F(KeyboardCapabilityTest, TestIsSixPackKey) {
   for (const auto& [key_code, _] : ui::kSixPackKeyToSearchSystemKeyMap) {
