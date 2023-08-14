@@ -123,7 +123,8 @@ class ContentShell(Product):
 
 class ChromeiOS(Product):
 
-    IOS_VERSION = '15.5'
+    IOS_VERSION = '17.0'
+    DEVICE = 'iPhone 14 Pro'
     name = 'chrome_ios'
 
     def __init__(self, port, options):
@@ -146,29 +147,21 @@ class ChromeiOS(Product):
             self._port.artifacts_directory(), "xcode-output")
         return [
             '--out-dir=' + output_dir, '--os=' + self.IOS_VERSION,
-            '--device=iPhone 11 Pro'
+            '--device=' + self.DEVICE
         ]
 
     @contextlib.contextmanager
     def test_env(self):
         path_finder.add_build_ios_to_sys_path()
         import xcode_util as xcode
-        #TODO(crbug.com/1351820): Create a function of the xcode installation in
-        # the util library and use it here.
         with super().test_env():
             # Install xcode.
             if self.xcode_build_version:
                 try:
-                    runtime_cache_folder = xcode.construct_runtime_cache_folder(
-                        '../../Runtime-ios-', self.IOS_VERSION)
-                    self._host.filesystem.maybe_make_directory(
-                        runtime_cache_folder)
-                    xcode.install('../../mac_toolchain',
-                                  self._options.xcode_build_version,
-                                  '../../Xcode.app',
-                                  runtime_cache_folder=runtime_cache_folder,
-                                  ios_version=self.IOS_VERSION)
-                    xcode.select('../../Xcode.app')
+                    xcode.install_xcode('../../mac_toolchain',
+                                        self._options.xcode_build_version,
+                                        '../../Xcode.app',
+                                        '../../Runtime-ios-', self.IOS_VERSION)
                 except subprocess.CalledProcessError as e:
                     logging.error(
                         'Xcode build version %s failed to install: %s ',
