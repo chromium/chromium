@@ -3765,6 +3765,9 @@ are declared in tools/grit/grit_rule.gni.
       <message name="IDS_NOTIFICATIONS_QUIET_PERMISSION_BUBBLE_DESCRIPTION" desc="Description for the notifications status bubble, which is triggered when a user clicks on the blocked notifications icon in the omnibox.">
         Notifications are automatically blocked for all sites except ones you allow
       </message>
+      <message name="IDS_GEOLOCATION_QUIET_PERMISSION_BUBBLE_DESCRIPTION" desc="Description for the geolocation status bubble, which is triggered when a user clicks on the blocked geolocation icon in the omnibox.">
+        Location requests are automatically blocked for all sites except ones you allow
+      </message>
       <message name="IDS_NOTIFICATIONS_QUIET_PERMISSION_BUBBLE_ALLOW_BUTTON" desc="Text displayed on a button that enables notifications for a site. This button is part of the notifications status bubble, which is triggered when a user clicks on the blocked notifications icon in the omnibox.">
         Allow for this site
       </message>

@@ -103,6 +103,10 @@ BASE_FEATURE(kPermissionOnDeviceGeolocationPredictions,
              "PermissionOnDeviceGeolocationPredictions",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kPermissionDedicatedCpssSetting,
+             "PermissionDedicatedCpssSettings",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_ANDROID)
 
 // When enabled, blocks notifications permission prompt when Chrome doesn't

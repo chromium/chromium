@@ -16,6 +16,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
+#include "components/content_settings/core/common/pref_names.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_actions_history.h"
@@ -24,6 +25,7 @@
 #include "components/permissions/prediction_service/prediction_common.h"
 #include "components/permissions/prediction_service/prediction_service.h"
 #include "components/permissions/prediction_service/prediction_service_messages.pb.h"
+#include "components/permissions/request_type.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 
@@ -332,10 +334,21 @@ bool PredictionBasedPermissionUiSelector::ShouldHoldBack(
 
 PredictionSource PredictionBasedPermissionUiSelector::GetPredictionTypeToUse(
     permissions::RequestType request_type) {
-  if (!safe_browsing::IsSafeBrowsingEnabled(*(profile_->GetPrefs()))) {
-    return PredictionSource::USE_NONE;
+  if (base::FeatureList::IsEnabled(
+          permissions::features::kPermissionDedicatedCpssSetting)) {
+    if (request_type == permissions::RequestType::kNotifications &&
+        !profile_->GetPrefs()->GetBoolean(prefs::kEnableNotificationCPSS)) {
+      return PredictionSource::USE_NONE;
+    }
+    if (request_type == permissions::RequestType::kGeolocation &&
+        !profile_->GetPrefs()->GetBoolean(prefs::kEnableGeolocationCPSS)) {
+      return PredictionSource::USE_NONE;
+    }
+  } else {
+    if (!safe_browsing::IsSafeBrowsingEnabled(*(profile_->GetPrefs()))) {
+      return PredictionSource::USE_NONE;
+    }
   }
-
   bool is_server_side_prediction_enabled = false;
   bool is_ondevice_prediction_enabled = false;
 
