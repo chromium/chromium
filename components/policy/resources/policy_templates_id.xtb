@@ -98,6 +98,7 @@ kebijakan ini tidak melarang screenshot yang diambil dengan aplikasi sistem oper
 <translation id="1065175969514496951">Jika kebijakan ini disetel, akses ke URL yang tercantum selama autentikasi (mis. di layar login dan layar kunci) akan diberikan, sebagai pengecualian untuk <ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" />. Lihat deskripsi kebijakan tersebut untuk mengetahui format entri daftar ini. Misalnya, menyetel <ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" /> ke <ph name="WILDCARD_VALUE" /> akan memblokir semua permintaan, dan Anda dapat menggunakan kebijakan ini untuk mengizinkan akses ke URL yang ada dalam daftar terbatas. Gunakan kebijakan ini untuk membuka pengecualian untuk skema tertentu, subdomain dari domain lain, port, atau jalur khusus, menggunakan format yang ditentukan di ( https://support.google.com/chrome/a?p=url_blocklist_filter_format ). Filter paling spesifik akan menentukan apakah URL diblokir atau diizinkan. Kebijakan <ph name="DEVICE_AUTHENTICATION_URL_ALLOWLIST_POLICY_NAME" /> akan lebih diprioritaskan daripada <ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" />. Kebijakan ini terbatas untuk 1.000 entri.
 
 Jika kebijakan ini tidak disetel, tidak akan ada pengecualian untuk <ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" />.</translation>
+<translation id="1068801725746725727">Aktifkan penerimaan survei Safe Browsing</translation>
 <translation id="1069489575852947981">Jika kebijakan disetel ke Aktif atau tidak disetel, akun lokal perangkat akan disiapkan untuk login otomatis tanpa penundaan. <ph name="PRODUCT_OS_NAME" /> akan mematuhi pintasan keyboard Ctrl+Alt+S untuk melewati login otomatis dan menampilkan layar login.
 
       Jika kebijakan disetel ke Nonaktif, pengguna tidak dapat melewati login otomatis tanpa penundaan (jika dikonfigurasikan).</translation>
@@ -140,6 +141,11 @@ Jika kebijakan ini tidak disetel, tidak akan ada pengecualian untuk <ph name="DE
           Jika kebijakan ini disetel ke aktif atau tidak disetel, pengguna dapat menentukan apakah sandi Kerberos akan diingat, sehingga pengguna tidak perlu memasukkannya lagi. Tiket Kerberos diambil secara otomatis, kecuali jika diperlukan autentikasi tambahan (autentikasi 2 langkah).
 
           Jika kebijakan ini disetel ke nonaktif, sandi tidak akan diingat dan semua sandi yang disimpan sebelumnya akan dihapus. Pengguna harus memasukkan sandinya setiap kali mereka perlu melakukan autentikasi dengan sistem Kerberos. Hal ini biasanya terjadi antara setiap 8 jam hingga beberapa bulan, tergantung pada setelan server.</translation>
+<translation id="112794759469625182">Kebijakan ini dihapus di M118. Fungsi kebijakan ini adalah untuk mengaktifkan dan menonaktifkan Pengesahan Jarak Jauh bagi pengguna, tetapi Pengesahan Jarak Jauh telah diaktifkan secara default.
+
+Jika kebijakan disetel ke Aktif, pengguna akan dapat menggunakan hardware di perangkat <ph name="PRODUCT_OS_NAME" /> untuk mengesahkan identitasnya dari jarak jauh ke CA privasi melalui <ph name="ENTERPRISE_PLATFORM_KEYS_API" /> menggunakan <ph name="CHALLENGE_USER_KEY_FUNCTION" />.
+
+      Jika kebijakan disetel ke Nonaktif atau tidak disetel, panggilan ke API akan gagal dan disertai kode error.</translation>
 <translation id="1133622335785078255">Izinkan pengguna membuat dan menggunakan profil sekunder, serta menggunakan mode tamu di browser <ph name="LACROS_NAME" /></translation>
 <translation id="1137096407176363892">Mengizinkan suara text-to-speech enhanced network di fitur aksesibilitas Klik untuk Diucapkan. Suara ini mengirim teks ke server Google untuk menyintesis ucapan yang terdengar alami.
 
@@ -1473,6 +1479,7 @@ Jika kebijakan ini tidak disetel atau disetel ke Nonaktif, transfer file tidak a
       Kebijakan ini menggantikan <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" />, <ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" />, <ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME" />, dan preferensi pengguna.
 
       Kebijakan ini hanya memengaruhi akses ke perangkat USB melalui Web Serial API. Untuk memberikan akses ke perangkat USB melalui WebUSB API, lihat kebijakan <ph name="WEB_USB_ALLOW_DEVICES_FOR_URLS_POLICY_NAME" />.</translation>
+<translation id="2246565294817797392">Blokir cookie yang terpotong</translation>
 <translation id="2246621891161157804">Mengizinkan Chrome memblokir navigasi ke protokol eksternal di iframe sandbox</translation>
 <translation id="224750967938323855">Jangan tampilkan Izin Sinkronisasi selama login</translation>
 <translation id="2252400912879027343">WebSQL dalam konteks yang tidak aman akan tetap tersedia hingga M109, lalu tidak tersedia mulai M110.</translation>
@@ -5163,6 +5170,7 @@ Jika kebijakan disetel ke Nonaktif atau tidak disetel, setelan pemulihan penuh a
       Jika 'Forced' dipilih, halaman dapat dibuka HANYA dalam mode Samaran. Perlu diketahui bahwa 'Forced' tidak berfungsi pada Android di Chrome
 
       Catatan: Di iOS, jika kebijakan diubah selama suatu sesi, perubahan hanya akan berpengaruh saat peluncuran kembali.</translation>
+<translation id="549471902631700911">Nonaktifkan penerimaan survei Safe Browsing</translation>
 <translation id="5499375345075963939">Kebijakan ini hanya aktif pada mode ritel.
 
       Saat nilai kebijakan ini disetel dan tidak 0, maka pengguna demo yang saat ini telah masuk akan dikeluarkan secara otomatis setelah waktu tidak aktif selama durasi yang ditentukan telah habis.
@@ -6265,6 +6273,7 @@ diupgrade ke HTTPS oleh fitur ini.
 Lihat juga kebijakan <ph name="HTTPS_ONLY_MODE_POLICY_NAME" />.</translation>
 <translation id="6438972408080276697">Jika kebijakan ditetapkan ke Benar (True), laporan peristiwa tombol saat penginstalan aplikasi Android yang dipicu kebijakan akan dikirimkan ke Google. Jika kebijakan ditetapkan ke Salah (False), tidak ada peristiwa yang direkam.</translation>
 <translation id="6440051664870270040">Izinkan situs menavigasi dan membuka (jendela) pop-up sekaligus</translation>
+<translation id="6441781723322254041">Izinkan cookie yang terpotong</translation>
 <translation id="6446366416439249472">Nonaktifkan sinkronisasi Google Drive melalui koneksi seluler</translation>
 <translation id="6447948611083700881">Opsi pencadangan dan pemulihan dinonaktifkan</translation>
 <translation id="6449476513004303784">Jangan izinkan pengguna mengelola sertifikat</translation>
@@ -6513,6 +6522,13 @@ Waktu tunggu tidak ada aktivitas untuk memulai screensaver dan interval saat gam
 <translation id="66265932317331474">Melaporkan info CPU</translation>
 <translation id="6628120204569232711">Laporkan status penyimpanan</translation>
 <translation id="662991036483361836">Cegah pengguna mengaktifkan Berbagi Langsung</translation>
+<translation id="6634974629075330608">Kebijakan ini memberikan penghentian sementara untuk perubahan cara Chrome menangani cookie yang ditetapkan melalui JavaScript yang berisi karakter kontrol tertentu (NULL, enter, dan line feed).
+Sebelumnya, keberadaan salah satu karakter ini dalam string cookie akan membuatnya terpotong tetapi masih ditetapkan.
+Sekarang, keberadaan karakter ini akan menyebabkan seluruh string cookie diabaikan.
+
+Jika kebijakan ini disetel ke Benar (True), yang merupakan setelan defaultnya, perilaku baru akan diaktifkan.
+
+Jika kebijakan ini disetel ke Salah (False), perilaku lama akan diaktifkan.</translation>
 <translation id="663685822663765995">Batasi mode warna pencetakan</translation>
 <translation id="6637946190026453735">Daftar setelan layanan <ph name="PRODUCT_NAME" /> Enterprise Connectors yang akan diterapkan ke <ph name="ON_PRINT_ENTERPRISE_CONNECTOR" /> Enterprise Connector, yang aktif saat halaman atau file dicetak dari <ph name="PRODUCT_NAME" />.
 
@@ -8907,6 +8923,7 @@ Jika kebijakan tidak disetel, sandi tersimpan tidak akan diimpor saat browser pe
 <translation id="874149307422233209">Kebijakan ini memungkinkan admin mengontrol cara Google memproses data pengguna yang dikirim ke Penelusuran melalui fitur <ph name="PRODUCT_OS_NAME" />.
 Jika kebijakan ini diaktifkan, pengguna akan dapat menggunakan kotak penelusuran Peluncur <ph name="PRODUCT_OS_NAME" />, dan kotak URL Browser <ph name="PRODUCT_NAME" /> di <ph name="PRODUCT_OS_NAME" />, sehingga histori penelusuran pengguna tidak akan dikaitkan ke identitas mereka.
 Jika kebijakan ini disetel ke nonaktif atau tidak disetel, data pengguna dari penelusuran ini akan dikaitkan ke identitas mereka.</translation>
+<translation id="8743902569031401303">Mengizinkan Survei Safe Browsing</translation>
 <translation id="8744844164152340112">Mengontrol tema yang digunakan untuk merender UI selama OOBE dan dalam sesi (gelap/terang/otomatis).
       Mode otomatis akan mengubah tema antara gelap dan terang secara otomatis saat matahari terbit dan tenggelam.
       Kebijakan ini harus direkomendasikan, sehingga memungkinkan pengguna untuk mengubah tema di setelan sistem.</translation>
@@ -9508,6 +9525,8 @@ Jika kebijakan tidak disetel, <ph name="PRODUCT_NAME" /> akan mengumpulkan dan m
 <translation id="981346395360763138">Layanan lokasi Google dinonaktifkan</translation>
 <translation id="982497069985795632">Aktifkan fitur pemeriksa ejaan</translation>
 <translation id="983256325512298435">Menentukan daftar protokol yang dapat meluncurkan aplikasi eksternal dari asal yang tercantum tanpa meminta izin pengguna</translation>
+<translation id="984365509386992443">Jika kebijakan ini disetel ke aktif atau tidak disetel, pengguna mungkin akan menerima survei yang terkait dengan Safe Browsing.
+Jika kebijakan ini disetel ke nonaktif, pengguna tidak akan menerima survei yang terkait dengan Safe Browsing.</translation>
 <translation id="987261962216071510">Hanya izinkan login browser tamu</translation>
 <translation id="987975731398348803">Jika kebijakan disetel ke Aktif atau tidak disetel, perangkat yang terdaftar akan melaporkan daftar pengguna perangkat yang login baru-baru ini.
 

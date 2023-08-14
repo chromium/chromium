@@ -574,6 +574,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="2166049586286450108">Úplný správcovský prístup</translation>
 <translation id="2166378884831602661">Tento web nedokáže poskytnúť zabezpečené pripojenie</translation>
 <translation id="2168151236314517198">Tlač tohto obsahu je zablokovaná pravidlom správcu</translation>
+<translation id="2175630235841878061">Súbory väčšie než 100 MB sa nedajú stiahnuť</translation>
 <translation id="2176974405772725904">Uložiť adresu do účtu</translation>
 <translation id="2178665390943006934">Tlačidlo Aktualizovať Chrome, ktorého aktivovaním aktualizujete Chrome v jeho nastaveniach</translation>
 <translation id="2181821976797666341">Pravidlá</translation>
@@ -2399,6 +2400,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="6118782133429281336">Zoznam zdrojov je prázdny.</translation>
 <translation id="6120179357481664955">Chcete uložiť svoj identifikátor UPI?</translation>
 <translation id="6122181661879998141">prednej strany karty</translation>
+<translation id="6124058285696691147">Stiahnuť prílohu</translation>
 <translation id="6124432979022149706">Konektory Chrome Enterprise</translation>
 <translation id="6126565365696310362">Čínska obálka č. 2</translation>
 <translation id="6127379762771434464">Položka bola odstránená</translation>

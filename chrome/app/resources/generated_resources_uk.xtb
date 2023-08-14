@@ -1182,6 +1182,7 @@
 <translation id="1925124445985510535">Перевірку безпеки виконано о <ph name="TIME" /></translation>
 <translation id="192564025059434655">Старі версії додатків Chrome не відкриватимуться на пристроях Windows після грудня 2022 року. Ви можете перевірити, чи доступна нова версія.</translation>
 <translation id="1926339101652878330">Ці налаштування регулюються політикою підприємства. Зверніться до адміністратора, щоб дізнатися більше.</translation>
+<translation id="1926887872692564784">Курсор</translation>
 <translation id="1927632033341042996">Палець <ph name="NEW_FINGER_NUMBER" /></translation>
 <translation id="192817607445937251">PIN-код для розблокування екрана</translation>
 <translation id="192858925209436740">Зв’яжіть OneDrive із додатком Файли, щоб керувати збереженими документами з пристрою Chromebook. Для цього вам потрібно ввійти у свій обліковий запис Microsoft.</translation>
@@ -3286,6 +3287,7 @@
 <translation id="3653887973853407813">Це розширення не можна використовувати. Хтось із батьків або опікун вимкнув параметр "Дозволи для сайтів, додатків і розширень" для Chrome.</translation>
 <translation id="3653999333232393305">Продовжити надавати хосту <ph name="HOST" /> доступ до вашого мікрофона</translation>
 <translation id="3654045516529121250">Переглядати налаштування доступності</translation>
+<translation id="3656328935986149999">Швидкість руху курсора</translation>
 <translation id="3658871634334445293">Прискорення TrackPoint</translation>
 <translation id="3659550105763988702">Використайте ключ доступу для додатка <ph name="APP_NAME" /></translation>
 <translation id="3659929705630080526">Ви ввели неправильний код доступу забагато разів. Спробуйте пізніше</translation>
@@ -3998,6 +4000,7 @@
 <translation id="4232375817808480934">Налаштувати Kerberos</translation>
 <translation id="4233739489690259993">Ваш Chromebook більше не отримує оновлення системи безпеки й програмного забезпечення. Придбайте новий пристрій з останньою версією системи безпеки й оновленими функціями. Діють умови пропозиції.</translation>
 <translation id="4235965441080806197">Скасувати вхід</translation>
+<translation id="4235976607074422892">Швидкість прокручування</translation>
 <translation id="4237282663517880406">Показувати підказки для Google Диска</translation>
 <translation id="4241182343707213132">Перезапустіть, щоб оновити додатки організації</translation>
 <translation id="4242145785130247982">Кілька сертифікатів клієнтів не підтримуються</translation>
@@ -5321,6 +5324,7 @@
 <translation id="5365881113273618889">Вибрана папка містить файли з конфіденційною інформацією. Надати додатку <ph name="APP_NAME" /> постійний дозвіл на редагування цієї папки?</translation>
 <translation id="536638840841140142">Немає</translation>
 <translation id="5368246151595623328">Дані мережі "<ph name="NETWORK_NAME" />" збережено з пристрою "<ph name="DEVICE_NAME" />"</translation>
+<translation id="5368255566854433132">Створити пароль для пристрою <ph name="DEVICE_TYPE" /></translation>
 <translation id="5368720394188453070">Ваш телефон заблоковано. Щоб увійти, розблокуйте його.</translation>
 <translation id="5368779022775404937">Увійти на сторінці <ph name="REALM" /></translation>
 <translation id="536882527576164740">{0,plural, =1{Вікно в режимі анонімного перегляду}one{Вікна в режимі анонімного перегляду (#)}few{Вікна в режимі анонімного перегляду (#)}many{Вікна в режимі анонімного перегляду (#)}other{Вікна в режимі анонімного перегляду (#)}}</translation>
@@ -8651,6 +8655,7 @@
 <translation id="8137559199583651773">Керувати розширеннями</translation>
 <translation id="8138217203226449454">Ви хотіли змінити пошукову систему?</translation>
 <translation id="8138997515734480534">Статус віртуальної машини <ph name="VM_NAME" /></translation>
+<translation id="8139440916039659819">Прискорення руху курсора</translation>
 <translation id="8139447493436036221">Файли з Google Диска</translation>
 <translation id="8139643636835015859">Буде звільнено <ph name="OFFLINE_STORAGE_SIZE" /> пам’яті, що використовується для файлів, збережених офлайн. Деякі файли все ще будуть доступні офлайн. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
 <translation id="8140070492745508800">"<ph name="FIRST_DEVICE" />", "<ph name="SECOND_DEVICE" />"</translation>
@@ -8987,6 +8992,7 @@
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">Дозволено: <ph name="PERMISSION" /> і ще <ph name="COUNT" /></translation>
 <translation id="8413956290606243087">Активувати ChromeVox, вбудовану програму зчитування з екрана для ОС Chrome?</translation>
+<translation id="8414065061814811918">Прискорення прокручування. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
 <translation id="8414249071344507766">Спогади приховано на два дні</translation>
 <translation id="8414396119627470038">Увійдіть на сайт <ph name="SITE_ETLD_PLUS_ONE" /> з обліковими даними <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8414685983518053656">Примітки</translation>
@@ -9113,6 +9119,7 @@
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">Колонки</translation>
 <translation id="8527257351549797148">Можливо, ваша організація вимагатиме від вас зареєструватися, щоб ви могли отримати доступ до додатків, розширень тощо. Це також дасть змогу вашій організації керувати налаштуваннями безпеки й пристрою.</translation>
+<translation id="8527869672961320915">Додатки <ph name="VM_NAME" /></translation>
 <translation id="8528074251912154910">Додати мови</translation>
 <translation id="8528479410903501741">Зберегти номер IBAN</translation>
 <translation id="8528962588711550376">Виконується вхід.</translation>
@@ -9369,6 +9376,7 @@
 <translation id="8736288397686080465">Цей сайт оновлено у фоновому режимі.</translation>
 <translation id="8737709691285775803">Shill</translation>
 <translation id="8737914367566358838">Виберіть, якою мовою перекласти сторінку</translation>
+<translation id="8740086188450289493">Використати пароль облікового запису Google</translation>
 <translation id="8740247629089392745"><ph name="SUPERVISED_USER_NAME" /> може отримати цей пристрій Chromebook. Налаштування майже завершено.</translation>
 <translation id="8740672167979365981">Оновіть ОС Chrome Flex</translation>
 <translation id="8741944563400125534">Налаштування кнопкового доступу</translation>
@@ -9754,6 +9762,7 @@
 <translation id="9045160989383249058">Список читання переміщено на нову бічну панель. Перегляньте його там.</translation>
 <translation id="9045430190527754450">Надсилає в Google веб-адресу сторінки, яку ви намагаєтеся відкрити</translation>
 <translation id="9048745018038487540">Вибрати всі шрифти</translation>
+<translation id="9050135202879860719">Використати пароль для входу в обліковий запис на пристрої <ph name="DEVICE_TYPE" /></translation>
 <translation id="9050666287014529139">Парольна фраза</translation>
 <translation id="9052404922357793350">Продовжити блокування</translation>
 <translation id="90528604757378587">Також можуть обмежуватися дії у фоновому режимі й деякі візуальні ефекти, як-от плавне прокручування.</translation>

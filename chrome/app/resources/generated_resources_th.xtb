@@ -1167,6 +1167,7 @@
 <translation id="1925124445985510535">เรียกใช้การตรวจสอบความปลอดภัยเมื่อเวลา <ph name="TIME" /></translation>
 <translation id="192564025059434655">แอป Chrome เวอร์ชันเก่าจะเปิดใช้งานในอุปกรณ์ Windows ไม่ได้แล้วหลังเดือนธันวาคม 2022 คุณตรวจสอบได้ว่ามีเวอร์ชันใหม่พร้อมให้บริการหรือไม่</translation>
 <translation id="1926339101652878330">การตั้งค่านี้ควบคุมโดยนโยบายองค์กร โปรดสอบถามข้อมูลเพิ่มเติมจากผู้ดูแลระบบ</translation>
+<translation id="1926887872692564784">เคอร์เซอร์</translation>
 <translation id="1927632033341042996">นิ้วที่ <ph name="NEW_FINGER_NUMBER" /></translation>
 <translation id="192817607445937251">PIN ของการล็อกหน้าจอ</translation>
 <translation id="192858925209436740">เชื่อมต่อ OneDrive กับแอป Files เพื่อจัดการเอกสารที่จัดเก็บไว้จาก Chromebook คุณจะต้องลงชื่อเข้าใช้ด้วยบัญชี Microsoft</translation>
@@ -3268,6 +3269,7 @@
 <translation id="3653887973853407813">คุณใช้ส่วนขยายนี้ไม่ได้ พ่อแม่หรือผู้ปกครองได้ปิดใช้ "สิทธิ์สำหรับเว็บไซต์ แอป และส่วนขยาย" ใน Chrome</translation>
 <translation id="3653999333232393305">อนุญาตให้ <ph name="HOST" /> เข้าถึงไมโครโฟนของคุณต่อไป</translation>
 <translation id="3654045516529121250">อ่านการตั้งค่าการเข้าถึง</translation>
+<translation id="3656328935986149999">ความเร็วของเคอร์เซอร์</translation>
 <translation id="3658871634334445293">การเร่งความเร็วของ TrackPoint</translation>
 <translation id="3659550105763988702">ใช้พาสคีย์สําหรับ "<ph name="APP_NAME" />"</translation>
 <translation id="3659929705630080526">คุณป้อนรหัสการเข้าถึงไม่ถูกต้องหลายครั้งเกินไป ลองอีกครั้งในภายหลัง</translation>
@@ -3980,6 +3982,7 @@
 <translation id="4232375817808480934">กำหนดค่า Kerberos</translation>
 <translation id="4233739489690259993">Chromebook ของคุณจะไม่ได้รับการอัปเดตความปลอดภัยและซอฟต์แวร์อีกต่อไป อัปเกรดอุปกรณ์เพื่อรับการรักษาความปลอดภัยและฟีเจอร์ใหม่ล่าสุด เป็นไปตามข้อกำหนดของข้อเสนอ</translation>
 <translation id="4235965441080806197">ยกเลิกการลงชื่อเข้าใช้</translation>
+<translation id="4235976607074422892">ความเร็วของการเลื่อน</translation>
 <translation id="4237282663517880406">แสดงคำแนะนำจาก Google ไดรฟ์</translation>
 <translation id="4241182343707213132">รีสตาร์ทเพื่ออัปเดตแอปขององค์กร</translation>
 <translation id="4242145785130247982">ไม่รองรับใบรับรองไคลเอ็นต์หลายรายการ</translation>
@@ -5302,6 +5305,7 @@
 <translation id="5365881113273618889">โฟลเดอร์ที่คุณเลือกมีไฟล์ที่ละเอียดอ่อน แน่ใจไหมว่าต้องการให้สิทธิ์การเข้าถึงในการเขียนโฟลเดอร์นี้อย่างถาวรแก่ "<ph name="APP_NAME" />"</translation>
 <translation id="536638840841140142">ไม่มี</translation>
 <translation id="5368246151595623328">บันทึก "<ph name="NETWORK_NAME" />" จาก <ph name="DEVICE_NAME" /> แล้ว</translation>
+<translation id="5368255566854433132">สร้างรหัสผ่าน <ph name="DEVICE_TYPE" /></translation>
 <translation id="5368720394188453070">โทรศัพท์ล็อกอยู่ โปรดปลดล็อกเพื่อเข้าใช้งาน</translation>
 <translation id="5368779022775404937">ลงชื่อเข้าใช้ <ph name="REALM" /></translation>
 <translation id="536882527576164740">{0,plural, =1{ไม่ระบุตัวตน}other{ไม่ระบุตัวตน (#)}}</translation>
@@ -8626,6 +8630,7 @@
 <translation id="8137559199583651773">จัดการส่วนขยาย</translation>
 <translation id="8138217203226449454">คุณตั้งใจที่จะเปลี่ยนผู้ให้บริการการค้นหาใช่ไหม</translation>
 <translation id="8138997515734480534">สถานะ <ph name="VM_NAME" /></translation>
+<translation id="8139440916039659819">การเร่งความเร็วของเคอร์เซอร์</translation>
 <translation id="8139447493436036221">ไฟล์ใน Google ไดรฟ์</translation>
 <translation id="8139643636835015859">การดำเนินการนี้จะนำพื้นที่ว่างที่ไฟล์ออฟไลน์ใช้ออก <ph name="OFFLINE_STORAGE_SIZE" /> ไฟล์บางรายการจะยังใช้งานแบบออฟไลน์ได้ <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
 <translation id="8140070492745508800"><ph name="FIRST_DEVICE" />, <ph name="SECOND_DEVICE" /></translation>
@@ -8962,6 +8967,7 @@
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">อนุญาตให้เข้าถึง<ph name="PERMISSION" />และอีก <ph name="COUNT" /> รายการ</translation>
 <translation id="8413956290606243087">คุณต้องการเปิดใช้งาน ChromeVox ซึ่งเป็นโปรแกรมอ่านหน้าจอในตัวสำหรับ Chrome OS ไหม</translation>
+<translation id="8414065061814811918">การเร่งความเร็วของการเลื่อน <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
 <translation id="8414249071344507766">ซ่อนความทรงจำเป็นเวลา 2 วัน</translation>
 <translation id="8414396119627470038">ลงชื่อเข้าใช้ <ph name="SITE_ETLD_PLUS_ONE" /> ด้วย <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8414685983518053656">หมายเหตุ</translation>
@@ -9088,6 +9094,7 @@
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">ลำโพง</translation>
 <translation id="8527257351549797148">องค์กรของคุณอาจกำหนดให้ต้องลงทะเบียนเพื่อให้คุณเข้าถึงแอป ส่วนขยาย และอื่นๆ ได้ ซึ่งจะช่วยให้องค์กรจัดการสิ่งต่างๆ เช่น ความปลอดภัยและการตั้งค่าอุปกรณ์ได้ด้วย</translation>
+<translation id="8527869672961320915">แอป <ph name="VM_NAME" /></translation>
 <translation id="8528074251912154910">เพิ่มภาษา</translation>
 <translation id="8528479410903501741">บันทึก IBAN</translation>
 <translation id="8528962588711550376">กำลังลงชื่อเข้าใช้</translation>
@@ -9344,6 +9351,7 @@
 <translation id="8736288397686080465">มีการอัปเดตไซต์นี้ในพื้นหลัง</translation>
 <translation id="8737709691285775803">Shill</translation>
 <translation id="8737914367566358838">เลือกภาษาปลายทางของหน้าเว็บ</translation>
+<translation id="8740086188450289493">ใช้รหัสผ่านของบัญชี Google</translation>
 <translation id="8740247629089392745">คุณส่งมอบ Chromebook เครื่องนี้ให้ <ph name="SUPERVISED_USER_NAME" /> ได้ การตั้งค่าใกล้เสร็จแล้ว จากนั้นก็ได้เวลาแห่งการสำรวจ</translation>
 <translation id="8740672167979365981">ต้องอัปเดต Chrome OS Flex</translation>
 <translation id="8741944563400125534">คู่มือการตั้งค่าการเข้าถึงด้วยสวิตช์</translation>
@@ -9726,6 +9734,7 @@
 <translation id="9045160989383249058">เรื่องรออ่านย้ายไปแผงด้านข้างใหม่แล้ว ลองที่นี่</translation>
 <translation id="9045430190527754450">ส่งที่อยู่เว็บของหน้าที่คุณพยายามเข้าถึงให้กับ Google</translation>
 <translation id="9048745018038487540">เลือกแบบอักษรทั้งหมด</translation>
+<translation id="9050135202879860719">ใช้รหัสผ่านเพื่อลงชื่อเข้าใช้ <ph name="DEVICE_TYPE" /></translation>
 <translation id="9050666287014529139">ข้อความรหัสผ่าน</translation>
 <translation id="9052404922357793350">บล็อกต่อไป</translation>
 <translation id="90528604757378587">ระบบอาจจำกัดกิจกรรมในเบื้องหลังและเอฟเฟกต์ภาพบางอย่าง เช่น การเลื่อนอย่างราบรื่น</translation>

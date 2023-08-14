@@ -1069,6 +1069,7 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="6649642165559792194">Peržiūrėti vaizdą <ph name="BEGIN_NEW" />Naujas<ph name="END_NEW" /></translation>
 <translation id="6657585470893396449">Slaptažodis</translation>
 <translation id="6659594942844771486">Skirtukas</translation>
+<translation id="6662119761881114773">Šiuo metu šiame įrenginyje išsaugotų slaptažodžių negalima naudoti skirtinguose „Chrome“ kanaluose. Po 121 versijos „Chrome“ įrenginyje išsaugoti „Chrome“ ir „<ph name="CHROME_CHANNEL" />“ slaptažodžiai bus sujungti ir juos bus galima naudoti abiejose programose.</translation>
 <translation id="666731172850799929">Atidaryti naudojant „<ph name="APP_NAME" />“</translation>
 <translation id="6671495933530132209">Kopijuoti vaizdą</translation>
 <translation id="6672917148207387131">Pridėti <ph name="DOMAIN" /></translation>

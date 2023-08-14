@@ -25,6 +25,7 @@
 <translation id="108486256082349153">دستگاه تلفن همراه: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">بعدازظهر به‌خیر <ph name="GIVEN_NAME" />،</translation>
 <translation id="1088231044944504242">جستجوی <ph name="CATEGORY" />، فایل‌ها، برنامه‌ها، و موارد بیشتر. برای پیمایش برنامه‌ها، از کلیدهای جهت‌نما استفاده کنید.</translation>
+<translation id="1093645050124056515">مهار + دگرساز + پایین‌بر</translation>
 <translation id="109942774857561566">‏I’m bored (حوصله‌ام سر رفته)</translation>
 <translation id="1104084341931202936">نشان دادن تنظیمات دسترس‌پذیری</translation>
 <translation id="1104621072296271835">دستگاه‌هایتان باهم به‌مراتب بهتر کار می‌کنند</translation>
@@ -43,6 +44,7 @@
 <translation id="1178581264944972037">مکث</translation>
 <translation id="1181037720776840403">حذف</translation>
 <translation id="1182225749592316782">با این کار، دسترسی برای همه برنامه‌ها و وب‌سایت‌های دارای اجازه دوربین و میکروفون مجاز می‌شود</translation>
+<translation id="1182876754474670069">صفحه اصلی</translation>
 <translation id="1183863904939664422">به این پیشنهاد علاقه‌ای ندارم</translation>
 <translation id="1184126796192815024">این شبکه از جاری‌سازی برنامه‌ها از تلفنتان پشتیبانی نمی‌کند. از نقطه اتصال تلفنتان استفاده کنید. <ph name="LEARN_MORE" /></translation>
 <translation id="118437560755358292">برای ایمنی بیشتر، گذرواژه یا پین را وارد کنید</translation>
@@ -147,6 +149,7 @@
 <translation id="1586324912145647027">رفتن به میزکار ۱ تا ۸</translation>
 <translation id="1589090746204042747">به همه فعالیت‌هایتان در این جلسه دسترسی پیدا کنید</translation>
 <translation id="1592682369233288537">میزکار بعدی: <ph name="NEXT_DESK_NAME" />، برای فعال‌سازی از «جستجو+فاصله» استفاده کنید.</translation>
+<translation id="1602874809115667351"><ph name="LAUNCHER_KEY_NAME" /> + پایین‌بر</translation>
 <translation id="1604857178818051494">مکث رسانه</translation>
 <translation id="1610778689852195798">«واگرد»</translation>
 <translation id="1611993646327628135">روشن</translation>
@@ -249,6 +252,7 @@
 <translation id="2021864487439853900">قفل‌گشایی با کلیک کردن</translation>
 <translation id="2023558322300866873">هرزمان خواستید می‌توانید ضبط بسته را متوقف کنید</translation>
 <translation id="2034971124472263449">درهرصورت ذخیره شود</translation>
+<translation id="204259843076055848">میان‌بر <ph name="SIX_PACK_KEY_NAME" /> درحال‌حاضر خاموش است</translation>
 <translation id="2049240716062114887">نام میزکار به <ph name="DESK_NAME" /> تغییر کرد</translation>
 <translation id="206377500836174974">کامل</translation>
 <translation id="2064048859448024834">پیش‌نمای دوربین روشن است</translation>
@@ -381,6 +385,7 @@
 <translation id="2665788051462227163"><ph name="UNAVAILABLE_APPS_ONE" /> و <ph name="UNAVAILABLE_APPS_TWO" /> در این دستگاه وجود ندارند.</translation>
 <translation id="2673968385134502798">بازی‌ها</translation>
 <translation id="2678852583403169292">منوی «انتخاب برای شنیدن»</translation>
+<translation id="2687510499067466116">میان‌بر صفحه‌کلید تغییر کرده است</translation>
 <translation id="2689613560355655046">میزکار ۸</translation>
 <translation id="2695305337569143674">وب</translation>
 <translation id="2697697418792422688">نمایش تنظیمات صفحه‌کلید. <ph name="KEYBOARD_NAME" /> انتخاب شده است.</translation>
@@ -636,12 +641,14 @@
 <translation id="3738664582935948253">ازاین‌پس می‌توانید کلیک‌ها و میان‌برهای صفحه‌کلید را در ویدیوهای ضبط‌شده از صفحه‌نمایش نشان دهید</translation>
 <translation id="3742055079367172538">نماگرفت گرفته شد</translation>
 <translation id="3756485814916578707">درحال ارسال محتوای صفحه</translation>
+<translation id="3765841382945324995">میان‌بر <ph name="SIX_PACK_KEY_NAME" /> از <ph name="OLD_SHORTCUT" /> به <ph name="NEW_SHORTCUT" /> تغییر کرده است</translation>
 <translation id="3765841986579723851">امروز ویرایش شده است</translation>
 <translation id="3773700760453577392">یکی از سرپرستان ورود چندگانه به سیستم را برای <ph name="USER_EMAIL" /> غیرمجاز کرده است. برای ادامه دادن، همه کاربران باید از سیستم خارج شوند.</translation>
 <translation id="3779139509281456663">درحال اتصال <ph name="NAME" /></translation>
 <translation id="3781910048497807059">انتقال تمرکز به قاب قبلی</translation>
 <translation id="3783640748446814672">دگرساز</translation>
 <translation id="3784455785234192852">قفل</translation>
+<translation id="3796215473395753611">دگرساز + بالابر</translation>
 <translation id="3796746699333205839">برنامه‌ای درحال استفاده از دوربین و میکروفونتان است</translation>
 <translation id="3798670284305777884">بلندگو (داخلی)</translation>
 <translation id="3799080171973636491">میان‌بر صفحه‌کلید مربوط به ذره‌بین تمام‌صفحه را فشار دادید. می‌خواهید آن را روشن کنید؟</translation>
@@ -697,6 +704,7 @@
 <translation id="4026843240379844265">جابه‌جایی پنجره فعال بین نمایشگرها</translation>
 <translation id="4028481283645788203">برای ایمنی بیشتر به گذرواژه نیاز است</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
+<translation id="4032988577476260673"><ph name="LAUNCHER_KEY_NAME" /> + چپ‌بَر</translation>
 <translation id="4042660782729322247">درحال اشتراک‌گذاری صفحه‌تان هستید</translation>
 <translation id="404437169852192935">به‌روزرسانی‌ها به‌پایان رسید</translation>
 <translation id="4049230407053723315">تنظیمات فوری</translation>
@@ -718,6 +726,7 @@
 <translation id="4129129681837227511">برای دیدن اعلان‌ها در صفحه قفل، ابتدا قفل را باز کنید و تنظیمات را تغییر دهید</translation>
 <translation id="4131973331381812765">دما: <ph name="TEMPERATURE" /> درجه سانتی‌گراد - سرعت فعلی: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> گیگاهرتز</translation>
 <translation id="4136724716305260864">روشن تا طلوع آفتاب</translation>
+<translation id="4141710407113804517"><ph name="LAUNCHER_KEY_NAME" /> + راست‌بَر</translation>
 <translation id="4146671046252289537">انتقال به انتهای کلمه بعدی</translation>
 <translation id="4146833061457621061">‏Play music (موسیقی پخش کن)</translation>
 <translation id="4150201353443180367">صفحه‌نمایش</translation>
@@ -864,6 +873,7 @@
 <translation id="4747410141429390146">لطفاً برای مشاهده اعلان‌ها، قفل را باز کنید</translation>
 <translation id="4752784485658729358">تنها ۶ میزکار ذخیره‌شده مجاز است. برای ذخیره میزکار جدید، یکی‌از میزکارها را بردارید.</translation>
 <translation id="4759238208242260848">بارگیری‌ها</translation>
+<translation id="4762160261012420470"><ph name="LAUNCHER_KEY_NAME" /> + بالابر</translation>
 <translation id="4762573482154983647">پنهان کردن برنامه‌ها</translation>
 <translation id="4763885921995354846">با این کار، دسترسی به دوربین برای همه برنامه‌ها و وب‌سایت‌های دارای اجازه دوربین مجاز می‌شود. ممکن است لازم باشد صفحه وب را بازآوری کنید یا برنامه را دوباره راه‌اندازی کنید.</translation>
 <translation id="4774338217796918551">فردا ساعت <ph name="COME_BACK_TIME" /> برگردید.</translation>
@@ -945,6 +955,7 @@
 <translation id="5062496344832867502">RAM</translation>
 <translation id="5068762093486106012">اگر هنگام بی‌صدا بودن صحبت کنید به شما اطلاع داده می‌شود. صدا هرگز از دستگاهتان خارج نمی‌شود.</translation>
 <translation id="5078796286268621944">پین اشتباه</translation>
+<translation id="5083035541015925118">مهار + دگرساز + بالابر</translation>
 <translation id="5083553833479578423">باز کردن قفل ویژگی‌های بیشتری از «دستیار».</translation>
 <translation id="5092436659250499817">روشن/ خاموش کردن نور پس‌زمینه صفحه‌کلید</translation>
 <translation id="5094577350232361255">درباره</translation>
@@ -1066,6 +1077,7 @@
 <translation id="5590609058453685222">«تذکر میکروفون خاموش» روشن است. اگر هنگام بی‌صدا بودن صحبت کنید به شما اطلاع داده می‌شود.</translation>
 <translation id="5596627076506792578">گزینه‌های بیشتر</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />، <ph name="DATE" /></translation>
+<translation id="5599242528220103262">میان‌بر صفحه‌کلید خاموش است</translation>
 <translation id="5600837773213129531">‏برای غیرفعال کردن بازخورد گفتاری، Ctrl + Alt + Z را فشار دهید.</translation>
 <translation id="5601503069213153581">پین</translation>
 <translation id="5618148318840095371">شما را به شبکه‌ای بهتر منتقل کردیم</translation>
@@ -1085,6 +1097,7 @@
 <translation id="5678564054339031017">نمایش هفته آینده</translation>
 <translation id="5679050765726761783">آداپتور کم‌توان متصل شده است</translation>
 <translation id="5682642926269496722">‏«دستیار Google» برای حساب کاربری فعلی دردسترس نیست.</translation>
+<translation id="5689233503102158537">دگرساز + پس‌بَر</translation>
 <translation id="5689633613396158040">بااستفاده از «نور شب»، نگاه کردن به صفحه‌نمایش یا خواندن در نور کم آسان‌تر می‌شود. برای تغییر زمان روشن شدن «نور شب»، یا خاموش کردن آن به‌طور کامل، ضربه بزنید.</translation>
 <translation id="5691772641933328258">اثر انگشت تشخیص داده نشد</translation>
 <translation id="5693255400847650006">میکروفون درحال استفاده است</translation>
@@ -1246,6 +1259,7 @@
 <translation id="639644700271529076">‏CAPS LOCK خاموش است</translation>
 <translation id="6406704438230478924">دگرساز راست</translation>
 <translation id="6417265370957905582">‏دستیار Google</translation>
+<translation id="641817663353603351">صفحه قبلی</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />، قدرت سیگنال <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">پاک کردن همه اعلان‌ها</translation>
 <translation id="643147933154517414">کاملاً انجام شد</translation>
@@ -1255,6 +1269,7 @@
 <translation id="6445915701151710649">CPU</translation>
 <translation id="6447111710783417522"><ph name="DATE" />، <ph name="NUMBER" /> رویداد</translation>
 <translation id="6449483711453944360">‏درحال‌حاضر از برنامه‌های Linux و پنجره‌های «ناشناس» پشتیبانی نمی‌شود</translation>
+<translation id="6450245544201845082">میان‌بر کلیک راست درحال‌حاضر خاموش است</translation>
 <translation id="6452181791372256707">عدم پذیرش</translation>
 <translation id="6453179446719226835">زبان تغییر کرد</translation>
 <translation id="6459472438155181876">گسترش صفحه به <ph name="DISPLAY_NAME" /></translation>
@@ -1379,6 +1394,7 @@
 <translation id="6965382102122355670">تأیید</translation>
 <translation id="6972754398087986839">شروع به کار</translation>
 <translation id="6979158407327259162">Google Drive</translation>
+<translation id="6980402667292348590">درج</translation>
 <translation id="6981291220124935078">روشن کردن دسترسی</translation>
 <translation id="6981982820502123353">دسترس‌پذیری</translation>
 <translation id="698231206551913481">اگر کاربر حذف شود، همه فایل‌ها و داده‌های محلی مربوط به او به‌طور دائم حذف خواهند شد.</translation>
@@ -1430,6 +1446,7 @@
 <translation id="7258828758145722155">دیروز ویرایش شده است</translation>
 <translation id="726276584504105859">برای استفاده از تقسیم صفحه، به اینجا بکشید</translation>
 <translation id="7262906531272962081">ایجاد یادآوری</translation>
+<translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + پس‌بر</translation>
 <translation id="7297440678881127227">‏<ph name="START_TIME" /> تا
         <ph name="END_TIME" />،
         <ph name="TIME_ZONE" />،
@@ -1440,6 +1457,7 @@
 <translation id="7312210124139670355">سرپرستتان درحال بازنشاندن سیم‌کارت داخلی شما است. ممکن است چند دقیقه طول بکشد.</translation>
 <translation id="7313193732017069507">گسترده کردن دوربین</translation>
 <translation id="7316261577130609484">افزودن تکلیف جدید</translation>
+<translation id="7331646370422660166">دگرساز + پایین‌بر</translation>
 <translation id="7340731148882810149">منوی کلیک‌های خودکار</translation>
 <translation id="7346909386216857016">بله متوجه شدم.</translation>
 <translation id="7348093485538360975">صفحه‌کلید مجازی</translation>
@@ -1485,6 +1503,7 @@
 <translation id="7513922695575567867">تقویم، هفته <ph name="DATE" />، درحال‌حاضر <ph name="SELECTED_DATE" /> انتخاب شده است.</translation>
 <translation id="7514365320538308">بارگیری</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7516641972665276706">صفحه بعدی</translation>
 <translation id="7519206258459640379">قاب‌بندی دوربین روشن است.</translation>
 <translation id="7519649142417630956">پس‌از خاموش شدن، سرپرست از سیستم خارج می‌شود و دیگر نمی‌تواند دستگاهتان را کنترل کند.
 
@@ -1855,6 +1874,7 @@
 <translation id="9126339866969410112">واگرد آخرین کنش</translation>
 <translation id="9133335900048457298">نمی‌توان محتوای محافظت‌شده را ضبط کرد</translation>
 <translation id="9139720510312328767">حذف حرف بعدی</translation>
+<translation id="9151906066336345901">پایان</translation>
 <translation id="9161053988251441839">برنامه‌های پیشنهادشده</translation>
 <translation id="9168436347345867845">بعداً انجام شود</translation>
 <translation id="9178475906033259337">نمایش ۱ نتیجه برای <ph name="QUERY" /></translation>

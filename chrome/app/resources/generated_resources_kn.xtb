@@ -1172,6 +1172,7 @@
 <translation id="1925124445985510535">ಸುರಕ್ಷತೆ ಪರಿಶೀಲನೆಯನ್ನು <ph name="TIME" /> ಸಮಯಕ್ಕೆ ನಡೆಸಲಾಗಿದೆ</translation>
 <translation id="192564025059434655">ಡಿಸೆಂಬರ್ 2022 ರ ನಂತರ Chrome ಆ್ಯಪ್‌ಗಳ ಹಳೆಯ ಆವೃತ್ತಿಗಳು Windows ಸಾಧನಗಳಲ್ಲಿ ತೆರೆಯುವುದಿಲ್ಲ. ಹೊಸ ಆವೃತ್ತಿ ಲಭ್ಯವಿದೆಯೇ ಎಂಬುದನ್ನು ನೀವು ಪರಿಶೀಲಿಸಬಹುದು.</translation>
 <translation id="1926339101652878330">ಈ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಎಂಟರ್‌ಪ್ರೈಸ್ ನೀತಿಯಿಂದ ನಿಯಂತ್ರಿಸಲಾಗುತ್ತದೆ. ಹೆಚ್ಚಿನ ಮಾಹಿತಿಗಾಗಿ ದಯವಿಟ್ಟು ನಿಮ್ಮ ನಿರ್ವಾಹಕರನ್ನು ಸಂಪರ್ಕಿಸಿ.</translation>
+<translation id="1926887872692564784">ಕರ್ಸರ್</translation>
 <translation id="1927632033341042996">ಫಿಂಗರ್ <ph name="NEW_FINGER_NUMBER" /></translation>
 <translation id="192817607445937251">ಸ್ಕ್ರೀನ್ ಲಾಕ್ ಪಿನ್</translation>
 <translation id="192858925209436740">ನಿಮ್ಮ Chromebook ನಲ್ಲಿ ಸಂಗ್ರಹಿಸಿದ ಡಾಕ್ಯುಮೆಂಟ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಲು OneDrive ಅನ್ನು Files ಆ್ಯಪ್‌ಗೆ ಕನೆಕ್ಟ್ ಮಾಡಿ. ನಿಮ್ಮ Microsoft ಖಾತೆಯೊಂದಿಗೆ ನೀವು ಸೈನ್ ಇನ್ ಮಾಡಬೇಕಾಗುತ್ತದೆ.</translation>
@@ -3276,6 +3277,7 @@
 <translation id="3653887973853407813">ಈ ವಿಸ್ತರಣೆಯನ್ನು ಬಳಸಲು ನಿಮಗೆ ಸಾಧ್ಯವಾಗುವುದಿಲ್ಲ. ನಿಮ್ಮ ಪೋಷಕರು ಅಥವಾ ಪಾಲಕರು, Chrome ಗೆ ಸಂಬಂಧಿಸಿದಂತೆ "ಸೈಟ್‌ಗಳು, ಆ್ಯಪ್‌ಗಳು ಮತ್ತು ವಿಸ್ತರಣೆಗಳಿಗೆ ಸಂಬಂಧಿಸಿದ ಅನುಮತಿಗಳನ್ನು" ಆಫ್ ಮಾಡಿದ್ದಾರೆ.</translation>
 <translation id="3653999333232393305">ನಿಮ್ಮ ಮೈಕ್ರೋಫೋನ್ ಪ್ರವೇಶಿಸಲು <ph name="HOST" /> ಗೆ ಅನುಮತಿಸುವುದನ್ನು ಮುಂದುವರೆಸಿ</translation>
 <translation id="3654045516529121250">ನಿಮ್ಮ ಆ್ಯಕ್ಸೆಸಿಬಿಲಿಟಿ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಓದಿಕೊಳ್ಳಿ</translation>
+<translation id="3656328935986149999">ಕರ್ಸರ್ ವೇಗ</translation>
 <translation id="3658871634334445293">TrackPoint ವೇಗವರ್ಧಕ</translation>
 <translation id="3659550105763988702"><ph name="APP_NAME" /> ಆ್ಯಪ್‌ಗಾಗಿ ನಿಮ್ಮ ಪಾಸ್‌ಕೀ ಅನ್ನು ಬಳಸಿ</translation>
 <translation id="3659929705630080526">ನೀವು ಹಲವಾರು ಬಾರಿ ತಪ್ಪಾದ ಆ್ಯಕ್ಸೆಸ್ ಕೋಡ್ ಅನ್ನು ನಮೂದಿಸಿದ್ದೀರಿ. ನಂತರ ಪುನಃ ಪ್ರಯತ್ನಿಸಿ</translation>
@@ -3989,6 +3991,7 @@
 <translation id="4232375817808480934">Kerberos ಕಾನ್ಫಿಗರ್ ಮಾಡಿ</translation>
 <translation id="4233739489690259993">ನಿಮ್ಮ Chromebook ಇನ್ನು ಮುಂದೆ ಭದ್ರತೆ ಮತ್ತು ಸಾಫ್ಟ್‌ವೇರ್ ಅಪ್‌ಡೇಟ್‌ಗಳನ್ನು ಸ್ವೀಕರಿಸುವುದಿಲ್ಲ. ಇತ್ತೀಚಿನ ಭದ್ರತೆ ಮತ್ತು ಹೊಸ ಫೀಚರ್‌ಗಳಿಗಾಗಿ ನಿಮ್ಮ ಸಾಧನವನ್ನು ಅಪ್‌ಗ್ರೇಡ್ ಮಾಡಿ. ಆಫರ್ ನಿಯಮಗಳು ಅನ್ವಯಿಸುತ್ತವೆ.</translation>
 <translation id="4235965441080806197">ಸೈನ್‌ ಇನ್ ಮಾಡುವುದನ್ನು ರದ್ದುಮಾಡಿ</translation>
+<translation id="4235976607074422892">ಸ್ಕ್ರಾಲ್ ಮಾಡುವಿಕೆಯ ವೇಗ</translation>
 <translation id="4237282663517880406">Google Drive ಸಲಹೆಗಳನ್ನು ತೋರಿಸಿ</translation>
 <translation id="4241182343707213132">ಸಂಸ್ಥೆಯ ಆ್ಯಪ್‌ಗಳನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಲು ಮರುಪ್ರಾರಂಭಿಸಿ</translation>
 <translation id="4242145785130247982">ಬಹು ಕ್ಲೈಂಟ್ ಪ್ರಮಾಣಪತ್ರಗಳನ್ನು ಬೆಂಬಲಿಸುವುದಿಲ್ಲ</translation>
@@ -5312,6 +5315,7 @@
 <translation id="5365881113273618889">ನೀವು ಆಯ್ಕೆ ಮಾಡಿದ ಫೋಲ್ಡ‌ರ್‌ನಲ್ಲಿ ಸೂಕ್ಷ್ಮವಾದ ಫೈಲ್‌ಗಳಿವೆ. ಈ ಫೋಲ್ಡರ್‌ನಲ್ಲಿ ಬರೆಯಲು "<ph name="APP_NAME" />" ಗೆ ಶಾಶ್ವತ ಆ್ಯಕ್ಸೆಸ್ ಒದಗಿಸಲು ನೀವು ಖಂಡಿತವಾಗಿಯೂ ಬಯಸುತ್ತೀರಾ?</translation>
 <translation id="536638840841140142">ಯಾವುದೂ ಅಲ್ಲ</translation>
 <translation id="5368246151595623328"><ph name="DEVICE_NAME" /> ನಿಂದ '<ph name="NETWORK_NAME" />' ಅನ್ನು ಉಳಿಸಲಾಗಿದೆ</translation>
+<translation id="5368255566854433132"><ph name="DEVICE_TYPE" /> ಪಾಸ್‍ವರ್ಡ್ ಅನ್ನು ರಚಿಸಿ</translation>
 <translation id="5368720394188453070">ನಿಮ್ಮ ಫೋನ್ ಲಾಕ್ ಮಾಡಲಾಗಿದೆ. ಪ್ರವೇಶಿಸಲು ಅದನ್ನು ಅನ್‌ಲಾಕ್ ಮಾಡಿ.</translation>
 <translation id="5368779022775404937"><ph name="REALM" /> ಗೆ ಸೈನ್‌ಇನ್ ಮಾಡಿ</translation>
 <translation id="536882527576164740">{0,plural, =1{ಅಜ್ಞಾತ}one{ಅಜ್ಞಾತ (#)}other{ಅಜ್ಞಾತ (#)}}</translation>
@@ -8639,6 +8643,7 @@
 <translation id="8137559199583651773">ವಿಸ್ತರಣೆಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="8138217203226449454">ನಿಮ್ಮ ಹುಡುಕಾಟ ಪೂರೈಕೆದಾರರನ್ನು ಬದಲಾಯಿಸಬೇಕೆಂದುಕೊಂಡಿರಾ?</translation>
 <translation id="8138997515734480534"><ph name="VM_NAME" /> ಸ್ಥಿತಿ</translation>
+<translation id="8139440916039659819">ಕರ್ಸರ್ ವೇಗವರ್ಧನೆ</translation>
 <translation id="8139447493436036221">Google Drive ಫೈಲ್‌ಗಳು</translation>
 <translation id="8139643636835015859">ಇದು ನಿಮ್ಮ ಆಫ್‌ಲೈನ್ ಫೈಲ್‌ಗಳು ಬಳಸಿದ <ph name="OFFLINE_STORAGE_SIZE" /> ರಷ್ಟು ಸ್ಪೇಸ್‌ ಅನ್ನು ತೆಗೆದುಹಾಕುತ್ತದೆ. ಕೆಲವು ಫೈಲ್‌ಗಳು ಇನ್ನೂ ಆಫ್‌ಲೈನ್‌ನಲ್ಲಿ ಲಭ್ಯವಿರುತ್ತವೆ. <ph name="LINK_BEGIN" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="LINK_END" /></translation>
 <translation id="8140070492745508800"><ph name="FIRST_DEVICE" />, <ph name="SECOND_DEVICE" /></translation>
@@ -8975,6 +8980,7 @@
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322"><ph name="PERMISSION" /> ಮತ್ತು <ph name="COUNT" /> ಕ್ಕೂ ಹೆಚ್ಚಿನವುಗಳನ್ನು ಅನುಮತಿಸಲಾಗಿದೆ</translation>
 <translation id="8413956290606243087">ChromeVox, ChromeOS ಗಾಗಿ ಅಂತರ್ನಿರ್ಮಿತ ಸ್ಕ್ರೀನ್ ರೀಡರ್ ಅನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಲು ನೀವು ಬಯಸುವಿರಾ?</translation>
+<translation id="8414065061814811918">ಸ್ಕ್ರಾಲ್ ವೇಗವರ್ಧನೆ. <ph name="LINK_BEGIN" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="LINK_END" /></translation>
 <translation id="8414249071344507766">ಎರಡು ದಿನಗಳ ಮಟ್ಟಿಗೆ ನೆನಪುಗಳನ್ನು ಮರೆಮಾಡಲಾಗಿದೆ</translation>
 <translation id="8414396119627470038"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ಮೂಲಕ <ph name="SITE_ETLD_PLUS_ONE" /> ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
 <translation id="8414685983518053656">ಟಿಪ್ಪಣಿಗಳು</translation>
@@ -9101,6 +9107,7 @@
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">ಸ್ಪೀಕರ್‌ಗಳು</translation>
 <translation id="8527257351549797148">ನಿಮ್ಮ ಸಂಸ್ಥೆಗೆ ನೋಂದಣಿ ಅಗತ್ಯವಿರಬಹುದು ಆದ್ದರಿಂದ ನೀವು ಆ್ಯಪ್‌ಗಳು, ಎಕ್ಸ್‌ಟೆನ್ಶನ್‌ಗಳು ಮತ್ತು ಹೆಚ್ಚಿನದನ್ನು ಆ್ಯಕ್ಸೆಸ್ ಮಾಡಬಹುದು. ಭದ್ರತೆ ಮತ್ತು ಸಾಧನ ಸೆಟ್ಟಿಂಗ್‌ಗಳಂತಹ ವಿಷಯಗಳನ್ನು ನಿರ್ವಹಿಸಲು ಇದು ನಿಮ್ಮ ಸಂಸ್ಥೆಗೆ ಅನುಮತಿಸುತ್ತದೆ.</translation>
+<translation id="8527869672961320915"><ph name="VM_NAME" /> ಆ್ಯಪ್‌ಗಳು</translation>
 <translation id="8528074251912154910">ಭಾಷೆಗಳನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="8528479410903501741">IBAN ಉಳಿಸಿ</translation>
 <translation id="8528962588711550376">ಸೈನ್ ಇನ್ ಮಾಡಲಾಗುತ್ತಿದೆ.</translation>
@@ -9357,6 +9364,7 @@
 <translation id="8736288397686080465">ಈ ಸೈಟ್ ಅನ್ನು ಹಿನ್ನೆಲೆಯಲ್ಲಿ ಅಪ್‌ಡೇಟ್‌ ಮಾಡಲಾಗಿದೆ.</translation>
 <translation id="8737709691285775803">ಶಿಲ್</translation>
 <translation id="8737914367566358838">ಪುಟವನ್ನು ಯಾವ ಭಾಷೆಗೆ ಅನುವಾದಿಸಬೇಕೆಂಬುದನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
+<translation id="8740086188450289493">Google ಖಾತೆಯ ಪಾಸ್‌ವರ್ಡ್ ಬಳಸಿ</translation>
 <translation id="8740247629089392745">ಈ Chromebook ಅನ್ನು <ph name="SUPERVISED_USER_NAME" /> ಅವರಿಗೆ ಹಸ್ತಾಂತರಿಸಬಹುದು. ಸೆಟಪ್ ಬಹುತೇಕ ಪೂರ್ಣಗೊಂಡಿದೆ, ಇದು ಎಕ್ಸ್‌ಪ್ಲೋರ್ ಮಾಡುವ ಸಮಯ.</translation>
 <translation id="8740672167979365981">ChromeOS Flex ಅನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡುವ ಅಗತ್ಯವಿದೆ</translation>
 <translation id="8741944563400125534">ಸ್ವಿಚ್‌ ಆ್ಯಕ್ಸೆಸ್ ಸೆಟಪ್ ಗೈಡ್‌</translation>
@@ -9740,6 +9748,7 @@
 <translation id="9045160989383249058">ನಿಮ್ಮ ಓದುವ ಪಟ್ಟಿಯನ್ನು ಹೊಸ ಸೈಡ್ ಪ್ಯಾನಲ್‌ಗೆ ಸರಿಸಲಾಗಿದೆ. ಇದನ್ನು ಇಲ್ಲಿ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="9045430190527754450">ನೀವು Google ಗೆ ತಲುಪಿಸಲು ಬಯಸುವಂತಹ ಪುಟದ ವೆಬ್ ವಿಳಾಸವನ್ನು ಕಳುಹಿಸುತ್ತದೆ</translation>
 <translation id="9048745018038487540">ಎಲ್ಲಾ ಫಾಂಟ್‌ಗಳನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
+<translation id="9050135202879860719">ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಲು ಪಾಸ್‌ವರ್ಡ್ ಬಳಸಿ</translation>
 <translation id="9050666287014529139">ಪಾಸ್‌ಫ್ರೇಸ್</translation>
 <translation id="9052404922357793350">ನಿರ್ಬಂಧಿಸುವುದನ್ನು ಮುಂದುವರಿಸಿ</translation>
 <translation id="90528604757378587">ಹಿನ್ನೆಲೆ ಚಟುವಟಿಕೆ ಮತ್ತು ಮೃದುವಾದ ಸ್ಕ್ರಾಲಿಂಗ್‌ನಂತಹ ಕೆಲವು ವಿಷುವಲ್ ಎಫೆಕ್ಟ್‌ಗಳು ಸೀಮಿತವಾಗಿರಬಹುದು.</translation>

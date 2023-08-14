@@ -574,6 +574,7 @@
 <translation id="2166049586286450108">전체 관리자 액세스</translation>
 <translation id="2166378884831602661">사이트에 보안 연결할 수 없음</translation>
 <translation id="2168151236314517198">관리자 정책에서 이 콘텐츠 인쇄를 차단했습니다.</translation>
+<translation id="2175630235841878061">100MB를 초과하는 파일은 다운로드할 수 없습니다.</translation>
 <translation id="2176974405772725904">계정에 주소 저장</translation>
 <translation id="2178665390943006934">Chrome 업데이트 버튼, Chrome 설정에서 Chrome을 업데이트하려면 활성화하세요.</translation>
 <translation id="2181821976797666341">정책</translation>
@@ -2403,6 +2404,7 @@
 <translation id="6118782133429281336">원본 목록이 비어 있습니다.</translation>
 <translation id="6120179357481664955">UPI ID를 저장하시겠습니까?</translation>
 <translation id="6122181661879998141">카드 앞면</translation>
+<translation id="6124058285696691147">첨부파일 다운로드</translation>
 <translation id="6124432979022149706">Chrome Enterprise Connectors</translation>
 <translation id="6126565365696310362">봉투 Chinese @2</translation>
 <translation id="6127379762771434464">항목 삭제됨</translation>

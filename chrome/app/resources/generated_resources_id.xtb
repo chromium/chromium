@@ -1179,6 +1179,7 @@ Izin yang telah Anda berikan ke aplikasi dapat berlaku untuk akun ini. Anda dapa
 <translation id="1925124445985510535">Pemeriksaan keamanan berjalan pukul <ph name="TIME" /></translation>
 <translation id="192564025059434655">Aplikasi Chrome versi lama tidak dapat dibuka di perangkat Windows setelah Desember 2022. Anda dapat memeriksa apakah versi baru telah tersedia.</translation>
 <translation id="1926339101652878330">Setelan ini dikontrol oleh kebijakan perusahaan. Hubungi administrator Anda untuk informasi selengkapnya.</translation>
+<translation id="1926887872692564784">Kursor</translation>
 <translation id="1927632033341042996">Jari <ph name="NEW_FINGER_NUMBER" /></translation>
 <translation id="192817607445937251">PIN layar kunci</translation>
 <translation id="192858925209436740">Hubungkan OneDrive ke aplikasi File untuk mengelola dokumen tersimpan dari Chromebook. Anda harus login dengan akun Microsoft Anda.</translation>
@@ -3283,6 +3284,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3653887973853407813">Kamu tidak bisa menggunakan ekstensi ini. Orang tua atau wali telah menonaktifkan “Izin untuk situs, aplikasi, dan ekstensi” untuk Chrome.</translation>
 <translation id="3653999333232393305">Terus izinkan <ph name="HOST" /> mengakses mikrofon Anda</translation>
 <translation id="3654045516529121250">Baca setelan aksesibilitas Anda</translation>
+<translation id="3656328935986149999">Kecepatan kursor</translation>
 <translation id="3658871634334445293">Akselerasi TrackPoint</translation>
 <translation id="3659550105763988702">Gunakan kunci sandi untuk <ph name="APP_NAME" /></translation>
 <translation id="3659929705630080526">Anda terlalu sering memasukkan kode akses yang salah. Coba lagi nanti</translation>
@@ -3995,6 +3997,7 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="4232375817808480934">Konfigurasikan Kerberos</translation>
 <translation id="4233739489690259993">Chromebook Anda tidak lagi menerima update keamanan dan software. Upgrade perangkat Anda untuk mendapatkan fitur dan keamanan terbaru. Persyaratan penawaran berlaku.</translation>
 <translation id="4235965441080806197">Batalkan proses masuk</translation>
+<translation id="4235976607074422892">Kecepatan scroll</translation>
 <translation id="4237282663517880406">Tampilkan saran Google Drive</translation>
 <translation id="4241182343707213132">Mulai ulang untuk mengupdate aplikasi organisasi</translation>
 <translation id="4242145785130247982">Beberapa sertifikat klien tidak didukung</translation>
@@ -5318,6 +5321,7 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="5365881113273618889">Folder yang Anda pilih berisi file sensitif. Yakin ingin memberi "<ph name="APP_NAME" />" akses tulis permanen ke folder ini?</translation>
 <translation id="536638840841140142">Tidak ada</translation>
 <translation id="5368246151595623328">'<ph name="NETWORK_NAME" />' disimpan dari <ph name="DEVICE_NAME" /></translation>
+<translation id="5368255566854433132">Buat sandi <ph name="DEVICE_TYPE" /></translation>
 <translation id="5368720394188453070">Ponsel terkunci. Buka kunci untuk masuk.</translation>
 <translation id="5368779022775404937">Login ke <ph name="REALM" /></translation>
 <translation id="536882527576164740">{0,plural, =1{Samaran}other{Samaran (#)}}</translation>
@@ -8645,6 +8649,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8137559199583651773">Kelola ekstensi</translation>
 <translation id="8138217203226449454">Apakah Anda bermaksud mengubah penyedia penelusuran?</translation>
 <translation id="8138997515734480534">Status <ph name="VM_NAME" /></translation>
+<translation id="8139440916039659819">Akselerasi kursor</translation>
 <translation id="8139447493436036221">File Google Drive</translation>
 <translation id="8139643636835015859">Tindakan ini akan menghapus ruang penyimpanan sebesar <ph name="OFFLINE_STORAGE_SIZE" /> yang digunakan oleh file offline. Beberapa file akan tetap tersedia secara offline. <ph name="LINK_BEGIN" />Pelajari lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="8140070492745508800"><ph name="FIRST_DEVICE" />, <ph name="SECOND_DEVICE" /></translation>
@@ -8981,6 +8986,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">Mengizinkan <ph name="PERMISSION" /> dan <ph name="COUNT" /> lainnya</translation>
 <translation id="8413956290606243087">Ingin mengaktifkan ChromeVox, pembaca layar bawaan untuk ChromeOS?</translation>
+<translation id="8414065061814811918">Akselerasi scroll. <ph name="LINK_BEGIN" />Pelajari lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="8414249071344507766">Kenangan disembunyikan selama dua hari</translation>
 <translation id="8414396119627470038">Login ke <ph name="SITE_ETLD_PLUS_ONE" /> dengan <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8414685983518053656">Catatan</translation>
@@ -9107,6 +9113,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">Speaker</translation>
 <translation id="8527257351549797148">Organisasi Anda mungkin memerlukan pendaftaran agar Anda dapat mengakses aplikasi, ekstensi, dan lainnya. Hal ini juga memungkinkan organisasi Anda mengelola hal-hal seperti setelan keamanan dan perangkat.</translation>
+<translation id="8527869672961320915">Aplikasi <ph name="VM_NAME" /></translation>
 <translation id="8528074251912154910">Tambahkan bahasa</translation>
 <translation id="8528479410903501741">Simpan IBAN</translation>
 <translation id="8528962588711550376">Login.</translation>
@@ -9363,6 +9370,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8736288397686080465">Situs ini diperbarui di latar belakang.</translation>
 <translation id="8737709691285775803">Shill</translation>
 <translation id="8737914367566358838">Pilih bahasa target terjemahan halaman</translation>
+<translation id="8740086188450289493">Gunakan sandi Akun Google</translation>
 <translation id="8740247629089392745">Anda dapat menyerahkan Chromebook ini ke <ph name="SUPERVISED_USER_NAME" />. Sebentar lagi penyiapan selesai, dan konten bisa segera dijelajahi.</translation>
 <translation id="8740672167979365981">Perlu update ChromeOS Flex</translation>
 <translation id="8741944563400125534">Panduan penyiapan Tombol Akses</translation>
@@ -9745,6 +9753,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="9045160989383249058">Daftar bacaan Anda telah dipindahkan ke panel samping yang baru. Coba di sini.</translation>
 <translation id="9045430190527754450">Mengirimkan alamat web halaman yang ingin Anda buka ke Google</translation>
 <translation id="9048745018038487540">Pilih semua font</translation>
+<translation id="9050135202879860719">Gunakan sandi untuk login ke <ph name="DEVICE_TYPE" /> Anda</translation>
 <translation id="9050666287014529139">Frasa sandi</translation>
 <translation id="9052404922357793350">Lanjutkan pemblokiran</translation>
 <translation id="90528604757378587">Aktivitas latar belakang dan beberapa efek visual, seperti scroll yang lancar, mungkin dibatasi.</translation>

@@ -1084,6 +1084,7 @@ Probajte ponovo u režimu laptopa.</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5618148318840095371">Prebacili smo vas na bolju mrežu</translation>
 <translation id="5619862035903135339">Smernice administratora onemogućavaju snimanje ekrana</translation>
+<translation id="5620856676199877916">Pogledajte sve školske zadatke na veb-sajtu Google učionice</translation>
 <translation id="5620979661744857819">Ovo omogućava pristup aplikaciji <ph name="APP_NAME" /> i svim aplikacijama i veb-sajtovima koji imaju dozvole za kameru i mikrofon. Možda ćete morati da osvežite veb-stranicu ili restartujete aplikaciju.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Verifikacija lozinke nije uspela. Probajte ponovo.</translation>
@@ -1213,6 +1214,7 @@ Probajte ponovo u režimu laptopa.</translation>
 <translation id="6154006699632741460">Periferni uređaj nije podržan</translation>
 <translation id="6156960295318603523">Podešavanja jezika</translation>
 <translation id="615957422585914272">Prikaži tastaturu na ekranu</translation>
+<translation id="616543563528926612">Prečica za desni klik je sada alt + klik, a ne više taster <ph name="LAUNCHER_KEY_NAME" /> + klik</translation>
 <translation id="6165508094623778733">Saznajte više</translation>
 <translation id="6166852626429024716">Pretražujte uređaj, aplikacije, podešavanja, veb...</translation>
 <translation id="6168318496333165060">Otvorite aplikaciju Dijagnostika</translation>
@@ -1500,6 +1502,7 @@ Novo instaliranje</translation>
 <translation id="7497767806359279797">Odaberite jezik i tastaturu</translation>
 <translation id="7508690557411636492">Otvarano proteklog meseca</translation>
 <translation id="7509246181739783082">Verifikujte identitet</translation>
+<translation id="7512509370370076552">Prečica za desni klik je sada taster <ph name="LAUNCHER_KEY_NAME" /> + klik, a ne više alt + klik</translation>
 <translation id="7512726380443357693"><ph name="BUTTON_LABEL" />, nije izabrano</translation>
 <translation id="7513622367902644023">Izabran je režim snimka ekrana</translation>
 <translation id="7513922695575567867">Kalendar, sedmica kada je <ph name="DATE" />, <ph name="SELECTED_DATE" /> je trenutno izabran.</translation>
@@ -1603,6 +1606,7 @@ Da biste isključili uređaj, ponovo pritisnite i zadržite dugme za uključivan
 <translation id="7904094684485781019">Administrator za ovaj nalog je zabranio višestruko prijavljivanje.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422">Povezanih uređaja: <ph name="DEVICECOUNT" /></translation>
+<translation id="7926080067315048321">Pogledajte sve zadatke u Google zadacima na vebu</translation>
 <translation id="7930731167419639574">Govor se sada lokalno obrađuje i diktiranje radi oflajn</translation>
 <translation id="7932451802722951285">Otvori u Google kalendaru</translation>
 <translation id="7933084174919150729">Google pomoćnik je dostupan samo za primarni profil.</translation>

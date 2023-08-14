@@ -998,6 +998,7 @@
 <translation id="6363990818884053551">หากต้องการเริ่มต้นการซิงค์ โปรดยืนยันว่าเป็นคุณ</translation>
 <translation id="6364438453358674297">ต้องการนำคำแนะนำออกจากประวัติการเข้าชมใช่ไหม</translation>
 <translation id="6380100320871303656">โหลดหน้าที่ Chrome คิดว่าคุณอาจจะเข้าชมไว้ล่วงหน้าบ่อยขึ้น การตั้งค่านี้อาจทำให้ใช้อินเทอร์เน็ตมากขึ้น</translation>
+<translation id="6382848304055775421">กำลังส่งออก</translation>
 <translation id="6391355955030242704">หากต้องการซิงค์ข้อมูล Chrome และรักษาข้อมูลในรถให้ปลอดภัย คุณต้องสร้างการล็อกโปรไฟล์ในการตั้งค่าความปลอดภัย จากนั้นจะต้องใช้รหัสหรือรหัสผ่านทุกครั้งที่ขึ้นรถ</translation>
 <translation id="6394791151443660613">ค้นหา: <ph name="SEARCH_QUERY" /></translation>
 <translation id="6395288395575013217">ลิงก์</translation>
@@ -1133,6 +1134,7 @@
 <translation id="6979737339423435258">ตั้งแต่ต้น</translation>
 <translation id="6987047470128880212">แท็บที่ไม่ระบุตัวตนไม่พร้อมใช้งานในอุปกรณ์นี้</translation>
 <translation id="6995899638241819463">เตือนคุณในกรณีที่รหัสผ่านรั่วไหลจากการละเมิดข้อมูล</translation>
+<translation id="6996145122199359148">ดาวน์โหลดหน้านี้</translation>
 <translation id="7020741890149022655">เพิ่มลงในเรื่องรออ่าน <ph name="BEGIN_NEW" />ใหม่<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">เปิดในเบราว์เซอร์</translation>
 <translation id="7027549951530753705">คืนค่า <ph name="ITEM_TITLE" /> แล้ว</translation>
@@ -1563,6 +1565,7 @@
 <translation id="9169507124922466868">ประวัติการนำทางเปิดอยู่ครึ่งเดียว</translation>
 <translation id="9190276265094487094">อุปกรณ์ทั้งหมดที่ซิงค์ไว้จะมีประวัติการเข้าชม คุณจึงทำสิ่งที่ดำเนินการอยู่ต่อได้</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{ตรวจสอบเมื่อ 1 นาทีที่ผ่านมา}other{ตรวจสอบเมื่อ # นาทีที่ผ่านมา}}</translation>
+<translation id="9204021776105550328">กำลังลบ</translation>
 <translation id="9204836675896933765">เหลืออีก 1 ไฟล์</translation>
 <translation id="9205933215779845960">ไม่พบหน้านั้น โปรดตรวจสอบตัวสะกดหรือลองค้นหาใน <ph name="SEARCH_ENGINE" /></translation>
 <translation id="9206873250291191720">A</translation>

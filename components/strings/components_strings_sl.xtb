@@ -574,6 +574,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2166049586286450108">Polni skrbniški dostop</translation>
 <translation id="2166378884831602661">To spletno mesto ne more zagotoviti varne povezave</translation>
 <translation id="2168151236314517198">Tiskanje te vsebine je blokiral pravilnik skrbnika.</translation>
+<translation id="2175630235841878061">Datoteke, večje od 100 MB, niso na voljo za prenos</translation>
 <translation id="2176974405772725904">Shranite naslov v račun</translation>
 <translation id="2178665390943006934">Gumb za posodobitev Chroma, aktivirajte, če želite posodobiti Chrome v Chromovih nastavitvah</translation>
 <translation id="2181821976797666341">Pravilniki</translation>
@@ -2403,6 +2404,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6118782133429281336">Seznam izhodišč je prazen.</translation>
 <translation id="6120179357481664955">Si želite zapomniti ID za UPI?</translation>
 <translation id="6122181661879998141">sprednji strani kartice</translation>
+<translation id="6124058285696691147">Prenos priloge</translation>
 <translation id="6124432979022149706">Priključki za Chrome za podjetja</translation>
 <translation id="6126565365696310362">Kitajska kuverta št. 2</translation>
 <translation id="6127379762771434464">Element odstranjen</translation>

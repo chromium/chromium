@@ -25,6 +25,7 @@
 <translation id="108486256082349153">โทรศัพท์มือถือ: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">สวัสดียามบ่าย <ph name="GIVEN_NAME" /></translation>
 <translation id="1088231044944504242">ค้นหา<ph name="CATEGORY" /> ไฟล์ แอป และอื่นๆ ใช้แป้นลูกศรเพื่อไปยังส่วนต่างๆ ของแอป</translation>
+<translation id="1093645050124056515">Ctrl + Alt + ลูกศรลง</translation>
 <translation id="109942774857561566">ฉันเบื่อจัง</translation>
 <translation id="1104084341931202936">แสดงการตั้งค่าการเข้าถึงพิเศษ</translation>
 <translation id="1104621072296271835">อุปกรณ์จะทำงานได้ดียิ่งขึ้นเมื่อใช้ร่วมกัน</translation>
@@ -43,6 +44,7 @@
 <translation id="1178581264944972037">หยุดชั่วคราว</translation>
 <translation id="1181037720776840403">นำออก</translation>
 <translation id="1182225749592316782">การดำเนินการนี้ช่วยให้แอปและเว็บไซต์ทั้งหมดที่มีสิทธิ์สามารถเข้าถึงกล้องและไมโครโฟนได้</translation>
+<translation id="1182876754474670069">Home</translation>
 <translation id="1183863904939664422">ไม่สนใจคำแนะนำนี้</translation>
 <translation id="1184126796192815024">เครือข่ายนี้ไม่รองรับการสตรีมแอปจากโทรศัพท์ของคุณ ลองใช้ฮอตสปอตของโทรศัพท์ <ph name="LEARN_MORE" /></translation>
 <translation id="118437560755358292">ป้อนรหัสผ่านหรือ PIN เพื่อความปลอดภัยมากขึ้น</translation>
@@ -147,6 +149,7 @@
 <translation id="1586324912145647027">ไปที่เดสก์ 1 ถึง 8</translation>
 <translation id="1589090746204042747">เข้าถึงกิจกรรมทั้งหมดของคุณในเซสชันนี้</translation>
 <translation id="1592682369233288537">เดสก์ถัดไป: <ph name="NEXT_DESK_NAME" /> ใช้ Search+Space เพื่อเปิดใช้งาน</translation>
+<translation id="1602874809115667351"><ph name="LAUNCHER_KEY_NAME" /> + ลูกศรลง</translation>
 <translation id="1604857178818051494">หยุดสื่อชั่วคราว</translation>
 <translation id="1610778689852195798">"เลิกทำ"</translation>
 <translation id="1611993646327628135">เปิด</translation>
@@ -249,6 +252,7 @@
 <translation id="2021864487439853900">คลิกเพื่อปลดล็อก</translation>
 <translation id="2023558322300866873">คุณหยุดการบันทึกแพ็กเก็ตได้ทุกเมื่อ</translation>
 <translation id="2034971124472263449">บันทึกเลย</translation>
+<translation id="204259843076055848">แป้นพิมพ์ลัดสำหรับการ<ph name="SIX_PACK_KEY_NAME" />ปิดอยู่</translation>
 <translation id="2049240716062114887">เปลี่ยนชื่อเดสก์ท็อปเป็น <ph name="DESK_NAME" /> แล้ว</translation>
 <translation id="206377500836174974">เต็ม</translation>
 <translation id="2064048859448024834">การแสดงตัวอย่างจากกล้องถ่ายรูปเปิดอยู่</translation>
@@ -381,6 +385,7 @@
 <translation id="2665788051462227163"><ph name="UNAVAILABLE_APPS_ONE" /> และ <ph name="UNAVAILABLE_APPS_TWO" /> ไม่ได้อยู่ในอุปกรณ์</translation>
 <translation id="2673968385134502798">เกม</translation>
 <translation id="2678852583403169292">เมนูเลือกเพื่อให้อ่าน</translation>
+<translation id="2687510499067466116">เปลี่ยนแป้นพิมพ์ลัดแล้ว</translation>
 <translation id="2689613560355655046">เดสก์ 8</translation>
 <translation id="2695305337569143674">เว็บ</translation>
 <translation id="2697697418792422688">แสดงการตั้งค่าแป้นพิมพ์ เลือก <ph name="KEYBOARD_NAME" /> แล้ว</translation>
@@ -633,12 +638,14 @@
 <translation id="3738664582935948253">ตอนนี้คุณแสดงการคลิกและแป้นพิมพ์ลัดในการบันทึกหน้าจอได้แล้ว</translation>
 <translation id="3742055079367172538">ภาพหน้าจอที่บันทึก</translation>
 <translation id="3756485814916578707">กำลังแคสต์หน้าจอ</translation>
+<translation id="3765841382945324995">อัปเดตแป้นพิมพ์ลัดสำหรับการ<ph name="SIX_PACK_KEY_NAME" />จาก <ph name="OLD_SHORTCUT" /> เป็น <ph name="NEW_SHORTCUT" /> แล้ว</translation>
 <translation id="3765841986579723851">แก้ไขวันนี้</translation>
 <translation id="3773700760453577392">ผู้ดูแลระบบไม่อนุญาตให้ <ph name="USER_EMAIL" /> ลงชื่อเข้าสู่ระบบพร้อมกันหลายบัญชี ผู้ใช้ทุกคนต้องออกจากระบบเพื่อดำเนินการต่อ</translation>
 <translation id="3779139509281456663">กำลังเชื่อมต่อกับ <ph name="NAME" /></translation>
 <translation id="3781910048497807059">ย้ายโฟกัสไปยังแผงก่อนหน้า</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">ล็อก</translation>
+<translation id="3796215473395753611">Alt + ลูกศรขึ้น</translation>
 <translation id="3796746699333205839">มีแอปพลิเคชันกำลังใช้กล้องและไมโครโฟน</translation>
 <translation id="3798670284305777884">ลำโพง (ภายใน)</translation>
 <translation id="3799080171973636491">คุณกดแป้นพิมพ์ลัดสำหรับแว่นขยายทั้งหน้าจอ จะเปิดแว่นขยายไหม</translation>
@@ -694,6 +701,7 @@
 <translation id="4026843240379844265">ย้ายหน้าต่างที่ใช้งานไปยังหน้าจอต่างๆ</translation>
 <translation id="4028481283645788203">ต้องป้อนรหัสผ่านเพื่อให้มีความปลอดภัยมากขึ้น</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
+<translation id="4032988577476260673"><ph name="LAUNCHER_KEY_NAME" /> + ลูกศรซ้าย</translation>
 <translation id="4042660782729322247">คุณกำลังแชร์หน้าจอ</translation>
 <translation id="404437169852192935">การอัปเดตสิ้นสุดแล้ว</translation>
 <translation id="4049230407053723315">การตั้งค่าด่วน</translation>
@@ -715,6 +723,7 @@
 <translation id="4129129681837227511">หากต้องการดูการแจ้งเตือนในหน้าจอล็อก ให้ปลดล็อกเพื่อเปลี่ยนการตั้งค่า</translation>
 <translation id="4131973331381812765">อุณหภูมิ: <ph name="TEMPERATURE" />°C - ความเร็วในปัจจุบัน: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" />GHz</translation>
 <translation id="4136724716305260864">เปิดจนถึงพระอาทิตย์ขึ้น</translation>
+<translation id="4141710407113804517"><ph name="LAUNCHER_KEY_NAME" /> + ลูกศรขวา</translation>
 <translation id="4146671046252289537">ย้ายไปยังจุดสิ้นสุดของคำถัดไป</translation>
 <translation id="4146833061457621061">เปิดเพลง</translation>
 <translation id="4150201353443180367">การแสดงผล</translation>
@@ -861,6 +870,7 @@
 <translation id="4747410141429390146">โปรดปลดล็อกเพื่อดูการแจ้งเตือน</translation>
 <translation id="4752784485658729358">อนุญาตให้บันทึกเพียง 6 เดสก์ นำออกเพื่อบันทึกเดสก์ใหม่</translation>
 <translation id="4759238208242260848">ดาวน์โหลด</translation>
+<translation id="4762160261012420470"><ph name="LAUNCHER_KEY_NAME" /> + ลูกศรขึ้น</translation>
 <translation id="4762573482154983647">ซ่อนแอป</translation>
 <translation id="4763885921995354846">การดำเนินการนี้ช่วยให้แอปและเว็บไซต์ทั้งหมดที่มีสิทธิ์สามารถเข้าถึงกล้องได้ คุณอาจต้องรีเฟรชหน้าเว็บหรือรีสตาร์ทแอป</translation>
 <translation id="4774338217796918551">ใช้ได้อีกครั้งพรุ่งนี้ เวลา <ph name="COME_BACK_TIME" /></translation>
@@ -942,6 +952,7 @@
 <translation id="5062496344832867502">RAM</translation>
 <translation id="5068762093486106012">คุณจะได้รับการแจ้งเตือนเมื่อพูดขณะที่ปิดเสียงอยู่ โดยระบบจะไม่ส่งเสียงของคุณออกไปที่อื่น</translation>
 <translation id="5078796286268621944">PIN ไม่ถูกต้อง</translation>
+<translation id="5083035541015925118">Ctrl + Alt + ลูกศรขึ้น</translation>
 <translation id="5083553833479578423">ใช้ฟีเจอร์จาก Assistant ได้มากขึ้น</translation>
 <translation id="5092436659250499817">เปิด/ปิดไฟแบ็กไลต์ของแป้นพิมพ์</translation>
 <translation id="5094577350232361255">เกี่ยวกับ</translation>
@@ -1063,6 +1074,7 @@
 <translation id="5590609058453685222">การกระตุ้นเตือนการปิดเสียงเปิดอยู่ คุณจะได้รับการแจ้งเตือนเมื่อพูดขณะที่ปิดเสียงอยู่</translation>
 <translation id="5596627076506792578">ตัวเลือกเพิ่มเติม</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
+<translation id="5599242528220103262">แป้นพิมพ์ลัดปิดอยู่</translation>
 <translation id="5600837773213129531">กด Ctrl + Alt + Z เพื่อปิดใช้อธิบายและอ่านออกเสียง</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5618148318840095371">เราสลับไปใช้เครือข่ายที่ดีกว่า</translation>
@@ -1082,6 +1094,7 @@
 <translation id="5678564054339031017">แสดงสัปดาห์ถัดไป</translation>
 <translation id="5679050765726761783">เชื่อมต่ออะแดปเตอร์พลังงานต่ำแล้ว</translation>
 <translation id="5682642926269496722">Google Assistant ไม่พร้อมใช้งานกับบัญชีผู้ใช้ปัจจุบัน</translation>
+<translation id="5689233503102158537">Alt + Backspace</translation>
 <translation id="5689633613396158040">แสงตอนกลางคืนช่วยให้มองหรืออ่านหน้าจอในแสงสลัวได้ง่ายขึ้น แตะเพื่อเปลี่ยนเวลาเปิดแสงตอนกลางคืนหรือจะปิดไปเลยก็ได้</translation>
 <translation id="5691772641933328258">ระบบไม่รู้จักลายนิ้วมือนี้</translation>
 <translation id="5693255400847650006">ใช้ไมโครโฟนอยู่</translation>
@@ -1243,6 +1256,7 @@
 <translation id="639644700271529076">CAPS LOCK ปิดอยู่</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6417265370957905582">Google Assistant</translation>
+<translation id="641817663353603351">Page Up</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, ความแรงสัญญาณ <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">ล้างการแจ้งเตือนทั้งหมด</translation>
 <translation id="643147933154517414">เสร็จเรียบร้อย</translation>
@@ -1252,6 +1266,7 @@
 <translation id="6445915701151710649">cpu</translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> กิจกรรม</translation>
 <translation id="6449483711453944360">ขณะนี้ยังไม่รองรับแอป Linux และหน้าต่างที่ไม่ระบุตัวตน</translation>
+<translation id="6450245544201845082">แป้นพิมพ์ลัดสำหรับการคลิกขวาปิดอยู่</translation>
 <translation id="6452181791372256707">ปฏิเสธ</translation>
 <translation id="6453179446719226835">เปลี่ยนภาษาแล้ว</translation>
 <translation id="6459472438155181876">ขยายหน้าจอไปยัง <ph name="DISPLAY_NAME" /></translation>
@@ -1376,6 +1391,7 @@
 <translation id="6965382102122355670">ตกลง</translation>
 <translation id="6972754398087986839">เริ่มต้นใช้งาน</translation>
 <translation id="6979158407327259162">Google ไดรฟ์</translation>
+<translation id="6980402667292348590">Insert</translation>
 <translation id="6981291220124935078">เปิดการเข้าถึง</translation>
 <translation id="6981982820502123353">การช่วยเหลือพิเศษ</translation>
 <translation id="698231206551913481">ระบบจะลบไฟล์ทั้งหมดและข้อมูลในเครื่องที่เชื่อมโยงกับผู้ใช้รายนี้ออกอย่างถาวรหลังจากนำผู้ใช้รายนี้ออกแล้ว</translation>
@@ -1427,6 +1443,7 @@
 <translation id="7258828758145722155">แก้ไขเมื่อวานนี้</translation>
 <translation id="726276584504105859">ลากมาที่นี่เพื่อใช้การแยกหน้าจอ</translation>
 <translation id="7262906531272962081">สร้างการช่วยเตือน</translation>
+<translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + Backspace</translation>
 <translation id="7297440678881127227"><ph name="START_TIME" /> ถึง
         <ph name="END_TIME" />,
         <ph name="TIME_ZONE" />,
@@ -1437,6 +1454,7 @@
 <translation id="7312210124139670355">ผู้ดูแลระบบกำลังรีเซ็ต eSIM การดำเนินการนี้อาจใช้เวลาสักครู่</translation>
 <translation id="7313193732017069507">ขยายขนาดกล้อง</translation>
 <translation id="7316261577130609484">เพิ่มงานใหม่</translation>
+<translation id="7331646370422660166">Alt + ลูกศรลง</translation>
 <translation id="7340731148882810149">เมนูการคลิกอัตโนมัติ</translation>
 <translation id="7346909386216857016">รับทราบ</translation>
 <translation id="7348093485538360975">แป้นพิมพ์บนหน้าจอ</translation>
@@ -1482,6 +1500,7 @@
 <translation id="7513922695575567867">ปฏิทิน, สัปดาห์วันที่ <ph name="DATE" />, เลือกวันที่ <ph name="SELECTED_DATE" /> อยู่</translation>
 <translation id="7514365320538308">ดาวน์โหลด</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7516641972665276706">Page Down</translation>
 <translation id="7519206258459640379">การจัดเฟรมกล้องเปิดอยู่</translation>
 <translation id="7519649142417630956">เมื่อปิดแล้ว ผู้ดูแลระบบจะออกจากระบบและควบคุมอุปกรณ์ไม่ได้
 
@@ -1853,6 +1872,7 @@
 <translation id="9126339866969410112">เลิกทำงานล่าสุด</translation>
 <translation id="9133335900048457298">บันทึกเนื้อหาที่ได้รับการคุ้มครองไม่ได้</translation>
 <translation id="9139720510312328767">ลบตัวอักษรถัดไป</translation>
+<translation id="9151906066336345901">End</translation>
 <translation id="9161053988251441839">แอปที่แนะนำ</translation>
 <translation id="9168436347345867845">ข้ามไปก่อน</translation>
 <translation id="9178475906033259337">กำลังแสดงผลการค้นหา 1 รายการสำหรับ "<ph name="QUERY" />"</translation>

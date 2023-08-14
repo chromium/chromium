@@ -1179,6 +1179,7 @@
 <translation id="1925124445985510535">안전 확인이 <ph name="TIME" />에 실행됨</translation>
 <translation id="192564025059434655">2022년 12월 이후에는 이전 버전의 Chrome 앱이 Windows 기기에서 열리지 않습니다. 이용 가능한 새 버전이 있는지 확인해 보세요.</translation>
 <translation id="1926339101652878330">이러한 설정은 엔터프라이즈 정책에 의해 관리됩니다. 자세한 정보는 관리자에게 문의하세요.</translation>
+<translation id="1926887872692564784">커서</translation>
 <translation id="1927632033341042996">지문 <ph name="NEW_FINGER_NUMBER" /></translation>
 <translation id="192817607445937251">화면 잠금 PIN</translation>
 <translation id="192858925209436740">OneDrive를 Files 앱에 연결하여 Chromebook에서 저장된 문서를 관리하세요. Microsoft 계정으로 로그인해야 합니다.</translation>
@@ -3285,6 +3286,7 @@
 <translation id="3653887973853407813">이 확장 프로그램을 사용할 수 없습니다. 부모 또는 보호자가 Chrome의 '사이트, 앱, 확장 프로그램에 대한 권한'을 사용 중지했습니다.</translation>
 <translation id="3653999333232393305"><ph name="HOST" />에서 마이크에 액세스하도록 계속 허용</translation>
 <translation id="3654045516529121250">접근성 설정 확인</translation>
+<translation id="3656328935986149999">커서 속도</translation>
 <translation id="3658871634334445293">TrackPoint 가속</translation>
 <translation id="3659550105763988702"><ph name="APP_NAME" />의 패스키 사용</translation>
 <translation id="3659929705630080526">잘못된 액세스 코드를 너무 여러 번 입력했습니다. 나중에 다시 시도해 보세요.</translation>
@@ -3995,6 +3997,7 @@
 <translation id="4232375817808480934">Kerberos 설정</translation>
 <translation id="4233739489690259993">더 이상 Chromebook에 보안 및 소프트웨어 업데이트가 적용되지 않습니다. 최신 보안과 새로운 기능을 이용하려면 기기를 업그레이드하세요. 혜택 약관이 적용됩니다.</translation>
 <translation id="4235965441080806197">로그인 취소</translation>
+<translation id="4235976607074422892">스크롤 속도</translation>
 <translation id="4237282663517880406">Google Drive 추천 표시</translation>
 <translation id="4241182343707213132">다시 시작하여 조직의 앱 업데이트</translation>
 <translation id="4242145785130247982">여러 개의 클라이언트 인증서는 지원되지 않습니다.</translation>
@@ -5318,6 +5321,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5365881113273618889">선택한 폴더에 민감한 파일이 포함되어 있습니다. 이 폴더에 '<ph name="APP_NAME" />' 영구 쓰기 액세스 권한을 부여하시겠습니까?</translation>
 <translation id="536638840841140142">없음</translation>
 <translation id="5368246151595623328"><ph name="DEVICE_NAME" />의 '<ph name="NETWORK_NAME" />' 저장됨</translation>
+<translation id="5368255566854433132"><ph name="DEVICE_TYPE" /> 비밀번호 생성</translation>
 <translation id="5368720394188453070">휴대전화가 잠겨있습니다. 이용하려면 기기를 잠금 해제하세요.</translation>
 <translation id="5368779022775404937"><ph name="REALM" /> 로그인</translation>
 <translation id="536882527576164740">{0,plural, =1{시크릿 모드}other{시크릿 모드(창 #개)}}</translation>
@@ -8646,6 +8650,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8137559199583651773">확장 프로그램 관리</translation>
 <translation id="8138217203226449454">검색 제공업체를 변경하려고 하셨나요?</translation>
 <translation id="8138997515734480534"><ph name="VM_NAME" /> 상태</translation>
+<translation id="8139440916039659819">커서 가속</translation>
 <translation id="8139447493436036221">Google Drive 파일</translation>
 <translation id="8139643636835015859">오프라인 파일이 차지하고 있는 <ph name="OFFLINE_STORAGE_SIZE" />의 저장공간이 삭제됩니다. 일부 파일은 오프라인에서 계속 사용할 수 있습니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="8140070492745508800"><ph name="FIRST_DEVICE" />, <ph name="SECOND_DEVICE" /></translation>
@@ -8982,6 +8987,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322"><ph name="PERMISSION" /> 외 <ph name="COUNT" />개 허용함</translation>
 <translation id="8413956290606243087">ChromeOS 내장 스크린 리더인 ChromeVox를 활성화하시겠습니까?</translation>
+<translation id="8414065061814811918">스크롤 가속 <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="8414249071344507766">이틀 동안 추억 숨김</translation>
 <translation id="8414396119627470038"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />의 계정으로 <ph name="SITE_ETLD_PLUS_ONE" />에 로그인하세요</translation>
 <translation id="8414685983518053656">참고</translation>
@@ -9108,6 +9114,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">스피커</translation>
 <translation id="8527257351549797148">앱, 확장 프로그램 등에 액세스하려면 조직에서 등록을 요구할 수도 있습니다. 이를 통해 조직에서 보안 및 기기 설정 등을 관리할 수 있습니다.</translation>
+<translation id="8527869672961320915"><ph name="VM_NAME" /> 앱</translation>
 <translation id="8528074251912154910">언어 추가</translation>
 <translation id="8528479410903501741">IBAN 저장</translation>
 <translation id="8528962588711550376">로그인 중입니다.</translation>
@@ -9364,6 +9371,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8736288397686080465">이 사이트는 백그라운드에서 업데이트되었습니다.</translation>
 <translation id="8737709691285775803">Shill</translation>
 <translation id="8737914367566358838">페이지를 번역할 언어 선택</translation>
+<translation id="8740086188450289493">Google 계정 비밀번호 사용</translation>
 <translation id="8740247629089392745">이 Chromebook을 <ph name="SUPERVISED_USER_NAME" />님에게 전달할 수 있습니다. 설정이 거의 끝났습니다. 기기를 살펴보세요.</translation>
 <translation id="8740672167979365981">ChromeOS Flex 업데이트 필요</translation>
 <translation id="8741944563400125534">스위치 제어 설정 가이드</translation>
@@ -9746,6 +9754,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="9045160989383249058">읽기 목록을 새 측면 패널로 이동했습니다. 여기에서 사용해 보세요.</translation>
 <translation id="9045430190527754450">사용자가 접속하려는 페이지의 웹 주소를 Google에 전송</translation>
 <translation id="9048745018038487540">모든 글꼴 선택</translation>
+<translation id="9050135202879860719">비밀번호를 사용하여 <ph name="DEVICE_TYPE" />에 로그인합니다.</translation>
 <translation id="9050666287014529139">암호</translation>
 <translation id="9052404922357793350">차단 계속</translation>
 <translation id="90528604757378587">백그라운드 활동 및 부드러운 스크롤과 같은 일부 시각 효과가 제한될 수 있습니다.</translation>

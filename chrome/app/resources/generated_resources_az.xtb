@@ -1163,6 +1163,7 @@ Hazırda tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna bilər. And
 <translation id="1925124445985510535">Təhlükəsizlik yoxlanışı <ph name="TIME" /> radələrində icra olunub</translation>
 <translation id="192564025059434655">Chrome Tətbiqlərinin köhnə versiyaları 2022-ci ilin dekabrından sonra Windows cihazlarında açılmayacaq. Yeni versiyanın əlçatan olub-olmadığını yoxlayın.</translation>
 <translation id="1926339101652878330">Bu ayarlar sahibkarlıq qaydaları ilə tənzimlənir. Ətraflı məlumat üçün administratorunuzla əlaqə saxlayın.</translation>
+<translation id="1926887872692564784">Kursor</translation>
 <translation id="1927632033341042996"><ph name="NEW_FINGER_NUMBER" /> barmaq</translation>
 <translation id="192817607445937251">Ekran kilidi PIN-kodu</translation>
 <translation id="192858925209436740">Chromebook-da saxlanmış sənədləri idarə etmək üçün OneDrive-ı Fayllara qoşun. Microsoft hesabı ilə daxil olmalısınız.</translation>
@@ -3267,6 +3268,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3653887973853407813">Bu artırmadan istifadə edə bilməzsiniz. Valideyn və ya qəyyum Chrome üçün "Sayt, tətbiq və artırmalar üzrə icazələr" seçimini deaktiv edib.</translation>
 <translation id="3653999333232393305"><ph name="HOST" /> saytına mikrofonunuza girməyə icazə verin</translation>
 <translation id="3654045516529121250">Əlçatımlılıq ayarlarını oxuyun</translation>
+<translation id="3656328935986149999">Kursor sürəti</translation>
 <translation id="3658871634334445293">TrackPoint sürətlənməsi</translation>
 <translation id="3659550105763988702"><ph name="APP_NAME" /> üçün giriş açarınızdan istifadə edin</translation>
 <translation id="3659929705630080526">Giriş kodunu dəfələrlə yanlış daxil etmisiniz. Sonra cəhd edin</translation>
@@ -3977,6 +3979,7 @@ Bura quraşdırılmış proqram təminatı, fayllar, brauzer və cihazın əməl
 <translation id="4232375817808480934">Kerberos'u konfiqurasiya edin</translation>
 <translation id="4233739489690259993">Chromebook artıq təhlükəsizlik və proqram təminatı güncəllənmələri qəbul etmir. Ən son təhlükəsizlik və yeni funksiyalar üçün cihazı təkmilləşdirin. Təklif şərtləri tətbiq edilir.</translation>
 <translation id="4235965441080806197">Daxilolmanı ləğv edin</translation>
+<translation id="4235976607074422892">Sürüşdürmə sürəti</translation>
 <translation id="4237282663517880406">Google Disk təkliflərini göstərin</translation>
 <translation id="4241182343707213132">Təşkilatın tətbiqlərini güncəlləmək üçün yenidən başladın</translation>
 <translation id="4242145785130247982">Çoxsaylı klient sertifikatları dəstəklənmir</translation>
@@ -5299,6 +5302,7 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="5365881113273618889">Seçdiyiniz qovluqda həssas fayllar var. "<ph name="APP_NAME" />" tətbiqi üçün bu qovluğa həmişəlik yazı girişi icazə vermək istədiyinizə əminsiniz?</translation>
 <translation id="536638840841140142">Yoxdur</translation>
 <translation id="5368246151595623328">'<ph name="NETWORK_NAME" />' <ph name="DEVICE_NAME" /> cihazından saxlanılıb</translation>
+<translation id="5368255566854433132"><ph name="DEVICE_TYPE" /> üçün parol yaradın</translation>
 <translation id="5368720394188453070">Telefonunuz kilidlənib. Daxil etmək üçün kiliddən çıxarılıb.</translation>
 <translation id="5368779022775404937"><ph name="REALM" /> domeninə daxil olun</translation>
 <translation id="536882527576164740">{0,plural, =1{Anonim pəncərə}other{Anonim pəncərə (#)}}</translation>
@@ -8623,6 +8627,7 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8137559199583651773">Artırmaları idarə edin</translation>
 <translation id="8138217203226449454">Axtarış təminatçınızın dəyişməsini nəzərdə tuturdunuz?</translation>
 <translation id="8138997515734480534"><ph name="VM_NAME" /> statusu</translation>
+<translation id="8139440916039659819">Kursor sürətləndirmə</translation>
 <translation id="8139447493436036221">Google Disk faylları</translation>
 <translation id="8139643636835015859">Oflayn faylların tutduğu <ph name="OFFLINE_STORAGE_SIZE" /> yer təmizlənəcək. Bəzi fayllar oflayn əlçatan qalacaq. <ph name="LINK_BEGIN" />Ətraflı məlumat<ph name="LINK_END" /></translation>
 <translation id="8140070492745508800"><ph name="FIRST_DEVICE" />, <ph name="SECOND_DEVICE" /></translation>
@@ -8959,6 +8964,7 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322"><ph name="PERMISSION" /> və daha <ph name="COUNT" /> üçün icazə verilib</translation>
 <translation id="8413956290606243087">ChromeOS üçün daxili ekran oxuyucusu olan ChromeVox'u aktiv etmək istəyirsiniz?</translation>
+<translation id="8414065061814811918">Sürüşdürmənin sürətləndirilməsi. <ph name="LINK_BEGIN" />Ətraflı məlumat<ph name="LINK_END" /></translation>
 <translation id="8414249071344507766">Xatirələr iki günlük gizlədilib</translation>
 <translation id="8414396119627470038"><ph name="SITE_ETLD_PLUS_ONE" /> saytına <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ilə daxil olun</translation>
 <translation id="8414685983518053656">Qeydlər</translation>
@@ -9085,6 +9091,7 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">Dinamiklər</translation>
 <translation id="8527257351549797148">Tətbiq, artırma və s. dataya giriş üçün təşkilat qeydiyyat tələb edə bilər. Bununla təşkilata güvənlik və cihaz ayarları kimi parametrləri idarə etmək imkanı da verilir.</translation>
+<translation id="8527869672961320915"><ph name="VM_NAME" /> tətbiqləri</translation>
 <translation id="8528074251912154910">Dillər əlavə edin</translation>
 <translation id="8528479410903501741">IBAN'ı yadda saxlayın</translation>
 <translation id="8528962588711550376">Hesaba giriş.</translation>
@@ -9341,6 +9348,7 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8736288397686080465">Bu sayt arxa fonda güncəlləşdi.</translation>
 <translation id="8737709691285775803">Shill</translation>
 <translation id="8737914367566358838">Səhifənin tərcümə ediləcəyi dili seçin</translation>
+<translation id="8740086188450289493">Google Hesabı parolundan istifadə edin</translation>
 <translation id="8740247629089392745">Bu Chromebook'u <ph name="SUPERVISED_USER_NAME" /> adlı istifadəçiyə verə bilərsiniz. Ayarlama tamamlanmaq üzrədir, bundan sonra araşdırmağa başlaya bilərsiniz.</translation>
 <translation id="8740672167979365981">ChromeOS Flex güncəllənməsi tələb olunur</translation>
 <translation id="8741944563400125534">Düymə ilə Giriş ayarlama bələdçisi</translation>
@@ -9721,6 +9729,7 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="9045160989383249058">Oxu siyahınız yeni yan panelə keçirilib. Burada sınayın.</translation>
 <translation id="9045430190527754450">Google'a daxil olduğunuz səhifənin veb ünvanını göndərir</translation>
 <translation id="9048745018038487540">Bütün şriftləri seçin</translation>
+<translation id="9050135202879860719"><ph name="DEVICE_TYPE" /> cihazına parol ilə daxil olun</translation>
 <translation id="9050666287014529139">Parol ifadəsi</translation>
 <translation id="9052404922357793350">Blok etməyə davam edin</translation>
 <translation id="90528604757378587">Arxa fon fəaliyyəti və hamar sürüşmə kimi bəzi vizual effektlər məhdudlaşdırıla bilər.</translation>

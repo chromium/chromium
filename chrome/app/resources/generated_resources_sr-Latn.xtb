@@ -7705,6 +7705,7 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="7396017167185131589">Ovde se prikazuju deljeni direktorijumi</translation>
 <translation id="7396845648024431313"><ph name="APP_NAME" /> će se pokrenuti prilikom pokretanja sistema i nastaviti da radi u pozadini čak i kada zatvorite sve ostale <ph name="PRODUCT_NAME" /> prozore.</translation>
 <translation id="7399045143794278225">Prilagodite sinhronizaciju</translation>
+<translation id="7399616692258236448">Zahtevi za lokaciju se automatski blokiraju za sve sajtove osim za one koje omogućite</translation>
 <translation id="7400418766976504921">URL adresa</translation>
 <translation id="7400447915166857470">Želite li da se vratite na <ph name="OLD_SEARCH_PROVIDER" />?</translation>
 <translation id="7400839060291901923">Podesite vezu na telefonu <ph name="PHONE_NAME" /></translation>
@@ -9658,6 +9659,7 @@ Dozvole koje ste već dali veb-sajtovima i aplikacijama mogu da važe za ovaj n
 <translation id="8986494364107987395">Automatski šalji Google-u statističke podatke o korišćenju i izveštaje o otkazivanju</translation>
 <translation id="8987305927843254629">Svaka osoba može da personalizuje doživljaj i čuva privatnost podataka.</translation>
 <translation id="8987927404178983737">Mesec</translation>
+<translation id="8988539543012086784">Ova stranica je sačuvana u: <ph name="BOOKMARK_FOLDER" /></translation>
 <translation id="8989359959810288806">Osveži status privezivanja</translation>
 <translation id="8991520179165052608">Sajt može da koristi mikrofon</translation>
 <translation id="8991694323904646277">Nema kamere</translation>

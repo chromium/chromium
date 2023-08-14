@@ -1182,6 +1182,7 @@ Dovoljenja, ki ste jih že odobrili aplikacijam, morda veljajo za ta račun. Dov
 <translation id="1925124445985510535">Varnostno preverjanje je bilo izvedeno ob <ph name="TIME" /></translation>
 <translation id="192564025059434655">Stare različice aplikacij za Chrome se po decembru 2022 ne bodo odprle v napravah s sistemom Windows. Preverite lahko, ali je na voljo nova različica.</translation>
 <translation id="1926339101652878330">Te nastavitve ureja pravilnik podjetja. Če želite več informacij, se obrnite na skrbnika.</translation>
+<translation id="1926887872692564784">Kazalec</translation>
 <translation id="1927632033341042996">Prst <ph name="NEW_FINGER_NUMBER" /></translation>
 <translation id="192817607445937251">Koda PIN za zaklepanje zaslona</translation>
 <translation id="192858925209436740">Povežite OneDrive z aplikacijo Datoteke, če želite upravljati shranjene dokumente v Chromebooku. Prijaviti se boste morali z Microsoftovim računom.</translation>
@@ -3286,6 +3287,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3653887973853407813">Te razširitve ne smeš uporabljati. Starš ali skrbnik je izklopil »Dovoljenja za spletna mesta, aplikacije in razširitve« za Chrome.</translation>
 <translation id="3653999333232393305">Še naprej omogočaj gostitelju <ph name="HOST" /> dostop do mikrofona</translation>
 <translation id="3654045516529121250">Branje nastavitev za funkcije za ljudi s posebnimi potrebami</translation>
+<translation id="3656328935986149999">Hitrost kazalca</translation>
 <translation id="3658871634334445293">Pospeševanje sledilne palčke</translation>
 <translation id="3659550105763988702">Uporabite ključ za dostop za aplikacijo <ph name="APP_NAME" /></translation>
 <translation id="3659929705630080526">Prevečkrat ste vnesli napačno kodo za dostop. Poskusite znova pozneje.</translation>
@@ -3998,6 +4000,7 @@ To lahko vključuje podatke o nameščeni programski opremi, datotekah, brskalni
 <translation id="4232375817808480934">Konfiguriranje storitve Kerberos</translation>
 <translation id="4233739489690259993">Vaš Chromebook ne prejema več varnostnih posodobitev in posodobitev programske opreme. Nadgradite napravo za najnovejše varnostne in nove funkcije. Veljajo pogoji ponudbe.</translation>
 <translation id="4235965441080806197">Prekliči prijavo</translation>
+<translation id="4235976607074422892">Hitrost pomikanja</translation>
 <translation id="4237282663517880406">Pokaži predloge v Googlu Drive</translation>
 <translation id="4241182343707213132">Znova zaženite, če želite posodobiti aplikacije organizacije</translation>
 <translation id="4242145785130247982">Več potrdil odjemalca ni podprtih</translation>
@@ -5321,6 +5324,7 @@ Za pomanjšavo pritisnite Ctrl + Alt + tipko za zmanjšanje svetlosti.</translat
 <translation id="5365881113273618889">Izbrana mapa vsebuje občutljive datoteke. Ali ste prepričani, da želite aplikaciji »<ph name="APP_NAME" />« odobriti trajni dostop za pisanje v tej mapi?</translation>
 <translation id="536638840841140142">Brez</translation>
 <translation id="5368246151595623328">Omrežje »<ph name="NETWORK_NAME" />« je bilo shranjeno iz naprave <ph name="DEVICE_NAME" />.</translation>
+<translation id="5368255566854433132">Ustvarite geslo za napravo <ph name="DEVICE_TYPE" /></translation>
 <translation id="5368720394188453070">Telefon je zaklenjen. Za dostop ga odklenite.</translation>
 <translation id="5368779022775404937">Prijavite se v domeno <ph name="REALM" /></translation>
 <translation id="536882527576164740">{0,plural, =1{Anonimni način}one{Anonimni način (#)}two{Anonimni način (#)}few{Anonimni način (#)}other{Anonimni način (#)}}</translation>
@@ -8657,6 +8661,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8137559199583651773">Upravljanje razširitev</translation>
 <translation id="8138217203226449454">Ali ste nameravali zamenjati ponudnika iskanja?</translation>
 <translation id="8138997515734480534">Stanje navideznega računalnika <ph name="VM_NAME" /></translation>
+<translation id="8139440916039659819">Pospeševanje kazalca</translation>
 <translation id="8139447493436036221">Datoteke v Googlu Drive</translation>
 <translation id="8139643636835015859">S tem boste sprostili <ph name="OFFLINE_STORAGE_SIZE" /> prostora, ki ga uporabljajo datoteke brez povezave. Nekatere datoteke bodo še vedno na voljo brez povezave. <ph name="LINK_BEGIN" />Več o tem<ph name="LINK_END" /></translation>
 <translation id="8140070492745508800"><ph name="FIRST_DEVICE" />, <ph name="SECOND_DEVICE" /></translation>
@@ -8993,6 +8998,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">Dovoljeno: <ph name="PERMISSION" /> in še <ph name="COUNT" /></translation>
 <translation id="8413956290606243087">Ali želite aktivirati ChromeVox, vgrajeni bralnik zaslona za Chrome OS?</translation>
+<translation id="8414065061814811918">Pospeševanje pomikanja. <ph name="LINK_BEGIN" />Več o tem<ph name="LINK_END" /></translation>
 <translation id="8414249071344507766">Spomini so skriti za dva dneva.</translation>
 <translation id="8414396119627470038">Prijavite se v storitev <ph name="SITE_ETLD_PLUS_ONE" /> s podatki za <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8414685983518053656">Opombe</translation>
@@ -9119,6 +9125,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">Zvočniki</translation>
 <translation id="8527257351549797148">Vaša organizacija morda zahteva včlanitev, da boste lahko dostopali do aplikacij, razširitev in drugega. To organizaciji tudi omogoča upravljanje stvari, kot so nastavitve varnosti in naprave.</translation>
+<translation id="8527869672961320915">Aplikacije <ph name="VM_NAME" /></translation>
 <translation id="8528074251912154910">Dodaj jezike</translation>
 <translation id="8528479410903501741">Shranjevanje številke IBAN</translation>
 <translation id="8528962588711550376">Prijavljanje.</translation>
@@ -9375,6 +9382,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8736288397686080465">To spletno mesto je bilo posodobljeno v ozadju.</translation>
 <translation id="8737709691285775803">Shill</translation>
 <translation id="8737914367566358838">Izberite jezik, v katerega želite prevesti stran.</translation>
+<translation id="8740086188450289493">Uporabite geslo za račun Google</translation>
 <translation id="8740247629089392745">Ta Chromebook lahko predate osebi <ph name="SUPERVISED_USER_NAME" />. Nastavitev je skoraj dokončana, čas je za raziskovanje.</translation>
 <translation id="8740672167979365981">Zahtevana je posodobitev sistema ChromeOS Flex</translation>
 <translation id="8741944563400125534">Vodnik za nastavitev stikalnega dostopa</translation>
@@ -9760,6 +9768,7 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="9045160989383249058">Vaš bralni seznam je premaknjen v novo stransko podokno. Preizkusite.</translation>
 <translation id="9045430190527754450">Pošlje spletni naslov strani, ki jo želite odpreti, Googlu</translation>
 <translation id="9048745018038487540">Izberi vse pisave</translation>
+<translation id="9050135202879860719">Uporabite geslo za prijavo v napravo <ph name="DEVICE_TYPE" /></translation>
 <translation id="9050666287014529139">Geslo</translation>
 <translation id="9052404922357793350">Blokiraj še naprej</translation>
 <translation id="90528604757378587">Dejavnost v ozadju in nekateri vizualni učinki (denimo gladko drsenje) bodo morda omejeni.</translation>

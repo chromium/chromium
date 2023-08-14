@@ -7705,6 +7705,7 @@
 <translation id="7396017167185131589">Овде се приказују дељени директоријуми</translation>
 <translation id="7396845648024431313"><ph name="APP_NAME" /> ће се покренути приликом покретања система и наставити да ради у позадини чак и када затворите све остале <ph name="PRODUCT_NAME" /> прозоре.</translation>
 <translation id="7399045143794278225">Прилагодите синхронизацију</translation>
+<translation id="7399616692258236448">Захтеви за локацију се аутоматски блокирају за све сајтове осим за оне које омогућите</translation>
 <translation id="7400418766976504921">URL адреса</translation>
 <translation id="7400447915166857470">Желите ли да се вратите на <ph name="OLD_SEARCH_PROVIDER" />?</translation>
 <translation id="7400839060291901923">Подесите везу на телефону <ph name="PHONE_NAME" /></translation>
@@ -9658,6 +9659,7 @@
 <translation id="8986494364107987395">Аутоматски шаљи Google-у статистичке податке о коришћењу и извештаје о отказивању</translation>
 <translation id="8987305927843254629">Свака особа може да персонализује доживљај и чува приватност података.</translation>
 <translation id="8987927404178983737">Месец</translation>
+<translation id="8988539543012086784">Ова страница је сачувана у: <ph name="BOOKMARK_FOLDER" /></translation>
 <translation id="8989359959810288806">Освежи статус привезивања</translation>
 <translation id="8991520179165052608">Сајт може да користи микрофон</translation>
 <translation id="8991694323904646277">Нема камере</translation>

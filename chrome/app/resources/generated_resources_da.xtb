@@ -1180,6 +1180,7 @@ De tilladelser, du har givet til apps, gælder muligvis for denne konto. Du kan 
 <translation id="1925124445985510535">Sikkerhedstjekket blev udført <ph name="TIME" /></translation>
 <translation id="192564025059434655">Gamle versioner af Chrome-apps kan ikke åbnes på Windows-enheder efter december 2022. Du kan tjekke, om en ny version er tilgængelig.</translation>
 <translation id="1926339101652878330">Disse indstillinger er underlagt en virksomhedspolitik. Kontakt din administrator for at få flere oplysninger.</translation>
+<translation id="1926887872692564784">Markør</translation>
 <translation id="1927632033341042996">Finger <ph name="NEW_FINGER_NUMBER" /></translation>
 <translation id="192817607445937251">Pinkode til skærmlås</translation>
 <translation id="192858925209436740">Forbind OneDrive til appen Filer for at administrere dine gemte dokumenter fra din Chromebook. Du skal logge ind med din Microsoft-konto.</translation>
@@ -3284,6 +3285,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3653887973853407813">Du må ikke bruge denne udvidelse. Din forælder eller værge har deaktiveret "Tilladelser for websites, apps og udvidelser" for Chrome.</translation>
 <translation id="3653999333232393305">Tillad fortsat, at <ph name="HOST" /> har adgang til din mikrofon</translation>
 <translation id="3654045516529121250">Læse dine indstillinger for hjælpefunktioner</translation>
+<translation id="3656328935986149999">Markørens hastighed</translation>
 <translation id="3658871634334445293">TrackPoint-acceleration</translation>
 <translation id="3659550105763988702">Brug din adgangsnøgle til <ph name="APP_NAME" /></translation>
 <translation id="3659929705630080526">Du har angivet en forkert adgangskode for mange gange. Prøv igen senere</translation>
@@ -3996,6 +3998,7 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser og enh
 <translation id="4232375817808480934">Konfigurer Kerberos</translation>
 <translation id="4233739489690259993">Din Chromebook modtager ikke længere sikkerheds- og softwareopdateringer. Opgrader din enhed for at få de nyeste sikkerhedsfunktioner og nye funktioner. Vilkårene for tilbuddet er gældende.</translation>
 <translation id="4235965441080806197">Annuller login</translation>
+<translation id="4235976607074422892">Hastighed ved rulning</translation>
 <translation id="4237282663517880406">Vis Google Drev-forslag</translation>
 <translation id="4241182343707213132">Genstart for at opdatere organisationens apps</translation>
 <translation id="4242145785130247982">Flere klientcertifikater understøttes ikke</translation>
@@ -5319,6 +5322,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="5365881113273618889">Den valgte mappe indeholder følsomme filer. Er du sikker på, at du vil give "<ph name="APP_NAME" />" permanent skriveadgang til denne mappe?</translation>
 <translation id="536638840841140142">Ingen</translation>
 <translation id="5368246151595623328">"<ph name="NETWORK_NAME" />" blev gemt via <ph name="DEVICE_NAME" /></translation>
+<translation id="5368255566854433132">Opret adgangskode til <ph name="DEVICE_TYPE" /></translation>
 <translation id="5368720394188453070">Din telefon er låst. Lås den op for at få adgang.</translation>
 <translation id="5368779022775404937">Log ind på <ph name="REALM" /></translation>
 <translation id="536882527576164740">{0,plural, =1{Inkognito}one{Inkognito (#)}other{Inkognito (#)}}</translation>
@@ -8648,6 +8652,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8137559199583651773">Administrer udvidelser</translation>
 <translation id="8138217203226449454">Ville du ændre din søgemaskine?</translation>
 <translation id="8138997515734480534">Status for <ph name="VM_NAME" /></translation>
+<translation id="8139440916039659819">Markøracceleration</translation>
 <translation id="8139447493436036221">Google Drev-filer</translation>
 <translation id="8139643636835015859">Dette frigør <ph name="OFFLINE_STORAGE_SIZE" /> plads, som bruges af dine offlinefiler. Nogle filer vil stadig være tilgængelige offline. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="8140070492745508800"><ph name="FIRST_DEVICE" />, <ph name="SECOND_DEVICE" /></translation>
@@ -8984,6 +8989,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">Adgangen til <ph name="PERMISSION" /> og <ph name="COUNT" /> yderligere blev tilladt</translation>
 <translation id="8413956290606243087">Vil du aktivere ChromeVox, der er den indbyggede skærmlæser til ChromeOS?</translation>
+<translation id="8414065061814811918">Acceleration ved rulning. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="8414249071344507766">Minder skjules i to dage</translation>
 <translation id="8414396119627470038">Log ind på <ph name="SITE_ETLD_PLUS_ONE" /> med <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8414685983518053656">Noter</translation>
@@ -9110,6 +9116,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">Højttalere</translation>
 <translation id="8527257351549797148">Din organisation kræver muligvis tilmelding, før du kan få adgang til apps, udvidelser m.m. Dette giver også din organisation mulighed for at administrere ting såsom sikkerheds- og enhedsindstillinger.</translation>
+<translation id="8527869672961320915">Apps på <ph name="VM_NAME" /></translation>
 <translation id="8528074251912154910">Tilføj sprog</translation>
 <translation id="8528479410903501741">Gem IBAN</translation>
 <translation id="8528962588711550376">Logger ind...</translation>
@@ -9366,6 +9373,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8736288397686080465">Dette website er blevet opdateret i baggrunden.</translation>
 <translation id="8737709691285775803">Shill</translation>
 <translation id="8737914367566358838">Vælg det sprog, du vil oversætte siden til</translation>
+<translation id="8740086188450289493">Brug adgangskoden til din Google-konto</translation>
 <translation id="8740247629089392745">Nu er denne Chromebook klar til <ph name="SUPERVISED_USER_NAME" />. Konfigurationen er næsten gennemført, og det er snart tid til at gå på opdagelse.</translation>
 <translation id="8740672167979365981">ChromeOS Flex skal opdateres</translation>
 <translation id="8741944563400125534">Konfigurationsvejledning til Kontaktadgang</translation>
@@ -9750,6 +9758,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="9045160989383249058">Din læseliste er blevet flyttet til det nye sidepanel. Prøv det her.</translation>
 <translation id="9045430190527754450">Sender webadressen på den side, du forsøger at åbne, til Google</translation>
 <translation id="9048745018038487540">Vælg alle skrifttyper</translation>
+<translation id="9050135202879860719">Brug en adgangskode til at logge ind på din <ph name="DEVICE_TYPE" /></translation>
 <translation id="9050666287014529139">Adgangssætning</translation>
 <translation id="9052404922357793350">Fortsæt blokering</translation>
 <translation id="90528604757378587">Baggrundsaktivitet og nogle visuelle effekter, f.eks. problemfri rulning, kan være begrænset.</translation>

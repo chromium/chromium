@@ -347,6 +347,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="1668071460721346172">Primite imejl</translation>
 <translation id="1671391448414634642">Stranice na jeziku <ph name="SOURCE_LANGUAGE" /> se od sada prevode na <ph name="TARGET_LANGUAGE" />.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> na <ph name="TARGET_LANGUAGE" /></translation>
+<translation id="1674542638006317838">Ograničena lista URL-ova stranica koje posećujete na kojima se dešavaju <ph name="BEGIN_LINK" />događaji sa zastarelom tehnologijom<ph name="END_LINK" />.</translation>
 <translation id="1682696192498422849">Prvo kratka ivica</translation>
 <translation id="168693727862418163">Validacija šeme ove vrednosti za smernice nije uspela i zanemariće se.</translation>
 <translation id="168841957122794586">Sertifikat servera sadrži slab kriptografski ključ.</translation>

@@ -1084,6 +1084,7 @@
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5618148318840095371">Пребацили смо вас на бољу мрежу</translation>
 <translation id="5619862035903135339">Смернице администратора онемогућавају снимање екрана</translation>
+<translation id="5620856676199877916">Погледајте све школске задатке на веб-сајту Google учионице</translation>
 <translation id="5620979661744857819">Ово омогућава приступ апликацији <ph name="APP_NAME" /> и свим апликацијама и веб-сајтовима који имају дозволе за камеру и микрофон. Можда ћете морати да освежите веб-страницу или рестартујете апликацију.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Верификација лозинке није успела. Пробајте поново.</translation>
@@ -1213,6 +1214,7 @@
 <translation id="6154006699632741460">Периферни уређај није подржан</translation>
 <translation id="6156960295318603523">Подешавања језика</translation>
 <translation id="615957422585914272">Прикажи тастатуру на екрану</translation>
+<translation id="616543563528926612">Пречица за десни клик је сада alt + клик, а не више тастер <ph name="LAUNCHER_KEY_NAME" /> + клик</translation>
 <translation id="6165508094623778733">Сазнајте више</translation>
 <translation id="6166852626429024716">Претражујте уређај, апликације, подешавања, веб...</translation>
 <translation id="6168318496333165060">Отворите апликацију Дијагностика</translation>
@@ -1500,6 +1502,7 @@
 <translation id="7497767806359279797">Одаберите језик и тастатуру</translation>
 <translation id="7508690557411636492">Отварано протеклог месеца</translation>
 <translation id="7509246181739783082">Верификујте идентитет</translation>
+<translation id="7512509370370076552">Пречица за десни клик је сада тастер <ph name="LAUNCHER_KEY_NAME" /> + клик, а не више alt + клик</translation>
 <translation id="7512726380443357693"><ph name="BUTTON_LABEL" />, није изабрано</translation>
 <translation id="7513622367902644023">Изабран је режим снимка екрана</translation>
 <translation id="7513922695575567867">Календар, седмица када је <ph name="DATE" />, <ph name="SELECTED_DATE" /> је тренутно изабран.</translation>
@@ -1603,6 +1606,7 @@
 <translation id="7904094684485781019">Администратор за овај налог је забранио вишеструко пријављивање.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422">Повезаних уређаја: <ph name="DEVICECOUNT" /></translation>
+<translation id="7926080067315048321">Погледајте све задатке у Google задацима на вебу</translation>
 <translation id="7930731167419639574">Говор се сада локално обрађује и диктирање ради офлајн</translation>
 <translation id="7932451802722951285">Отвори у Google календару</translation>
 <translation id="7933084174919150729">Google помоћник је доступан само за примарни профил.</translation>

@@ -25,6 +25,7 @@
 <translation id="108486256082349153">MAC-адрес мобильного устройства: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">Добрый день, <ph name="GIVEN_NAME" />!</translation>
 <translation id="1088231044944504242">Ищите <ph name="CATEGORY" />, файлы, приложения и не только. Используйте клавиши со стрелками, чтобы переходить от одного приложения к другому.</translation>
+<translation id="1093645050124056515">Ctrl + Alt + Стрелка вниз</translation>
 <translation id="109942774857561566">Мне скучно</translation>
 <translation id="1104084341931202936">Показать настройки специальных возможностей</translation>
 <translation id="1104621072296271835">Вместе ваши устройства будут работать ещё лучше</translation>
@@ -43,6 +44,7 @@
 <translation id="1178581264944972037">Пауза</translation>
 <translation id="1181037720776840403">Удалить</translation>
 <translation id="1182225749592316782">Доступ будет предоставлен всем приложениям и сайтам с разрешениями "Камера" и "Микрофон".</translation>
+<translation id="1182876754474670069">Home</translation>
 <translation id="1183863904939664422">Эта подсказка мне неинтересна</translation>
 <translation id="1184126796192815024">Эта сеть не поддерживает трансляцию приложений с телефона. Попробуйте использовать телефон как точку доступа. <ph name="LEARN_MORE" /></translation>
 <translation id="118437560755358292">Для дополнительной безопасности введите пароль или PIN-код.</translation>
@@ -147,6 +149,7 @@
 <translation id="1586324912145647027">Перейти к рабочим столам (от 1 до 8)</translation>
 <translation id="1589090746204042747">Получать доступ к данным о ваших действиях во время этого сеанса.</translation>
 <translation id="1592682369233288537">Следующий рабочий стол: <ph name="NEXT_DESK_NAME" />. Чтобы его активировать, нажмите Поиск + Пробел.</translation>
+<translation id="1602874809115667351"><ph name="LAUNCHER_KEY_NAME" /> + Стрелка вниз</translation>
 <translation id="1604857178818051494">Приостановить воспроизведение</translation>
 <translation id="1610778689852195798">"Отменить"</translation>
 <translation id="1611993646327628135">Включено</translation>
@@ -249,6 +252,7 @@
 <translation id="2021864487439853900">Нажать, чтобы разблокировать</translation>
 <translation id="2023558322300866873">Операцию можно прервать в любой момент.</translation>
 <translation id="2034971124472263449">Все равно сохранить</translation>
+<translation id="204259843076055848">Сочетание клавиш для действия "<ph name="SIX_PACK_KEY_NAME" />" отключено</translation>
 <translation id="2049240716062114887">Название рабочего стола изменилось на "<ph name="DESK_NAME" />"</translation>
 <translation id="206377500836174974">Полное</translation>
 <translation id="2064048859448024834">Предварительный просмотр для камеры включен</translation>
@@ -381,6 +385,7 @@
 <translation id="2665788051462227163">Приложения "<ph name="UNAVAILABLE_APPS_ONE" />" и "<ph name="UNAVAILABLE_APPS_TWO" />" не установлены на этом устройстве.</translation>
 <translation id="2673968385134502798">Игры</translation>
 <translation id="2678852583403169292">Меню озвучивания при нажатии</translation>
+<translation id="2687510499067466116">Сочетание клавиш изменено</translation>
 <translation id="2689613560355655046">Рабочий стол 8</translation>
 <translation id="2695305337569143674">веб</translation>
 <translation id="2697697418792422688">Показать настройки клавиатуры. Выбрано: <ph name="KEYBOARD_NAME" />.</translation>
@@ -637,12 +642,14 @@
 <translation id="3738664582935948253">Теперь в записи видео с экрана можно показывать сочетания клавиш и нажатия.</translation>
 <translation id="3742055079367172538">Сделан скриншот</translation>
 <translation id="3756485814916578707">Трансляция экрана…</translation>
+<translation id="3765841382945324995">Сочетание клавиш для действия "<ph name="SIX_PACK_KEY_NAME" />" изменено с <ph name="OLD_SHORTCUT" /> на <ph name="NEW_SHORTCUT" /></translation>
 <translation id="3765841986579723851">Изменено сегодня</translation>
 <translation id="3773700760453577392">Администратор отключил множественный вход для аккаунта <ph name="USER_EMAIL" />. Чтобы продолжить, все пользователи должны выйти из аккаунтов.</translation>
 <translation id="3779139509281456663">Подключение к устройству "<ph name="NAME" />"</translation>
 <translation id="3781910048497807059">Перейти к предыдущей панели</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">Заблокировать</translation>
+<translation id="3796215473395753611">Alt + Стрелка вверх</translation>
 <translation id="3796746699333205839">Приложение использует вашу камеру и микрофон</translation>
 <translation id="3798670284305777884">Динамик (встроенный)</translation>
 <translation id="3799080171973636491">Вы нажали сочетание клавиш для включения полноэкранной лупы. Выполнить это действие?</translation>
@@ -698,6 +705,7 @@
 <translation id="4026843240379844265">Переместить активное окно между экранами</translation>
 <translation id="4028481283645788203">В качестве дополнительной меры безопасности введите пароль.</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
+<translation id="4032988577476260673"><ph name="LAUNCHER_KEY_NAME" /> + Стрелка влево</translation>
 <translation id="4042660782729322247">Вы открыли доступ к своему экрану</translation>
 <translation id="404437169852192935">Обновления больше не будут выпускаться</translation>
 <translation id="4049230407053723315">Быстрые настройки</translation>
@@ -719,6 +727,7 @@
 <translation id="4129129681837227511">Чтобы разрешить показ уведомлений на заблокированном экране, разблокируйте устройство, а затем измените эту настройку.</translation>
 <translation id="4131973331381812765">Температура: <ph name="TEMPERATURE" /> °C - Текущая скорость: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> ГГц</translation>
 <translation id="4136724716305260864">Вкл. до рассвета</translation>
+<translation id="4141710407113804517"><ph name="LAUNCHER_KEY_NAME" /> + Стрелка вправо</translation>
 <translation id="4146671046252289537">Переместить в конец следующего слова</translation>
 <translation id="4146833061457621061">Включить музыку</translation>
 <translation id="4150201353443180367">Экран</translation>
@@ -865,6 +874,7 @@
 <translation id="4747410141429390146">Чтобы их увидеть, разблокируйте экран.</translation>
 <translation id="4752784485658729358">Максимальное количество сохраненных рабочих столов – 6. Удалите один из них, чтобы сохранить новый.</translation>
 <translation id="4759238208242260848">Скачанные файлы</translation>
+<translation id="4762160261012420470"><ph name="LAUNCHER_KEY_NAME" /> + Стрелка вверх</translation>
 <translation id="4762573482154983647">Скрыть приложения</translation>
 <translation id="4763885921995354846">Доступ к камере получат все приложения и сайты с разрешением "Камера". Возможно, потребуется обновить веб-страницу или перезапустить приложение.</translation>
 <translation id="4774338217796918551">Возвращайтесь завтра в <ph name="COME_BACK_TIME" />.</translation>
@@ -946,6 +956,7 @@
 <translation id="5062496344832867502">озу</translation>
 <translation id="5068762093486106012">Если вы будете говорить при выключенном микрофоне, появится уведомление. Аудио с вашего устройства никуда не передается.</translation>
 <translation id="5078796286268621944">Неверный PIN-код</translation>
+<translation id="5083035541015925118">Ctrl + Alt + Стрелка вверх</translation>
 <translation id="5083553833479578423">Получите доступ к другим возможностям Ассистента.</translation>
 <translation id="5092436659250499817">Включить/отключить подсветку клавиатуры</translation>
 <translation id="5094577350232361255">сведения о версии</translation>
@@ -1067,6 +1078,7 @@
 <translation id="5590609058453685222">Функция "Напоминание включить микрофон" теперь работает. Если вы будете говорить с отключенным звуком микрофона, появится уведомление.</translation>
 <translation id="5596627076506792578">Ещё</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
+<translation id="5599242528220103262">Сочетание клавиш отключено</translation>
 <translation id="5600837773213129531">Чтобы отключить озвучивание текста на экране, нажмите CTRL + ALT + Z.</translation>
 <translation id="5601503069213153581">PIN-код</translation>
 <translation id="5618148318840095371">Мы переключили вас на лучшую сеть.</translation>
@@ -1086,6 +1098,7 @@
 <translation id="5678564054339031017">Показать следующую неделю</translation>
 <translation id="5679050765726761783">Подключен маломощный адаптер питания</translation>
 <translation id="5682642926269496722">Google Ассистент недоступен в этом аккаунте.</translation>
+<translation id="5689233503102158537">Alt + Backspace</translation>
 <translation id="5689633613396158040">Она помогает снизить напряжение глаз при тусклом свете. Нажмите здесь, чтобы изменить расписание или полностью отключить ночную подсветку.</translation>
 <translation id="5691772641933328258">Не удалось распознать отпечаток</translation>
 <translation id="5693255400847650006">Используется микрофон</translation>
@@ -1247,6 +1260,7 @@
 <translation id="639644700271529076">CAPS LOCK отключен</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6417265370957905582">Google Ассистент</translation>
+<translation id="641817663353603351">Page Up</translation>
 <translation id="6424520630891723617">Статус защиты – "<ph name="SECURITY_STATUS" />", уровень сигнала – <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">Удалить все уведомления</translation>
 <translation id="643147933154517414">Уведомлений больше нет</translation>
@@ -1256,6 +1270,7 @@
 <translation id="6445915701151710649">процессор</translation>
 <translation id="6447111710783417522"><ph name="DATE" />, мероприятий: <ph name="NUMBER" /></translation>
 <translation id="6449483711453944360">Приложения для Linux и окна в режиме инкогнито пока не поддерживаются</translation>
+<translation id="6450245544201845082">Сочетание клавиш для действия "нажать правой кнопкой мыши" отключено</translation>
 <translation id="6452181791372256707">Отклонить</translation>
 <translation id="6453179446719226835">Язык изменен</translation>
 <translation id="6459472438155181876">Расширение экрана на <ph name="DISPLAY_NAME" /></translation>
@@ -1380,6 +1395,7 @@
 <translation id="6965382102122355670">ОК</translation>
 <translation id="6972754398087986839">Начать</translation>
 <translation id="6979158407327259162">Google Диск</translation>
+<translation id="6980402667292348590">Insert</translation>
 <translation id="6981291220124935078">Разрешить доступ</translation>
 <translation id="6981982820502123353">Спец. возможности</translation>
 <translation id="698231206551913481">После удаления пользователя все связанные с ним файлы и локальные данные также будут удалены.</translation>
@@ -1431,6 +1447,7 @@
 <translation id="7258828758145722155">Изменено вчера</translation>
 <translation id="726276584504105859">Перетащите сюда, чтобы разделить экран</translation>
 <translation id="7262906531272962081">Создать напоминание</translation>
+<translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + Backspace</translation>
 <translation id="7297440678881127227">С <ph name="START_TIME" /> до
         <ph name="END_TIME" />,
         <ph name="TIME_ZONE" />,
@@ -1441,6 +1458,7 @@
 <translation id="7312210124139670355">Администратор выполняет сброс eSIM. Это может занять несколько минут.</translation>
 <translation id="7313193732017069507">Показать кнопку изменения размера</translation>
 <translation id="7316261577130609484">Добавить задачу</translation>
+<translation id="7331646370422660166">Alt + Стрелка вниз</translation>
 <translation id="7340731148882810149">Меню автоматического нажатия</translation>
 <translation id="7346909386216857016">ОК</translation>
 <translation id="7348093485538360975">Экранная клавиатура</translation>
@@ -1486,6 +1504,7 @@
 <translation id="7513922695575567867">Календарь, неделя с <ph name="DATE" />, сейчас выбрано <ph name="SELECTED_DATE" />.</translation>
 <translation id="7514365320538308">Скачать</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7516641972665276706">Page Down</translation>
 <translation id="7519206258459640379">Автомасштабирование включено</translation>
 <translation id="7519649142417630956">При выключении сеанс удаленной работы прервется и администратор не сможет управлять вашим устройством.
 
@@ -1857,6 +1876,7 @@
 <translation id="9126339866969410112">Отменить последнее действие</translation>
 <translation id="9133335900048457298">Не удается записать видео с экрана из-за защищенного контента</translation>
 <translation id="9139720510312328767">Удалить следующую букву</translation>
+<translation id="9151906066336345901">End</translation>
 <translation id="9161053988251441839">РЕКОМЕНДУЕМЫЕ ПРИЛОЖЕНИЯ</translation>
 <translation id="9168436347345867845">Позже</translation>
 <translation id="9178475906033259337">Показан 1 результат поиска по запросу "<ph name="QUERY" />"</translation>

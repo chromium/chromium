@@ -347,6 +347,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="1668071460721346172">Nhận email</translation>
 <translation id="1671391448414634642">Kể từ bây giờ trở đi, các trang viết bằng <ph name="SOURCE_LANGUAGE" /> sẽ được dịch sang <ph name="TARGET_LANGUAGE" />.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> sang <ph name="TARGET_LANGUAGE" /></translation>
+<translation id="1674542638006317838">Một danh sách hạn chế chứa URL của những trang bạn truy cập có diễn ra <ph name="BEGIN_LINK" />sự kiện công nghệ cũ<ph name="END_LINK" />.</translation>
 <translation id="1682696192498422849">Cạnh ngắn trước</translation>
 <translation id="168693727862418163">Giá trị chính sách này không xác thực được dựa vào giản đồ và sẽ bị bỏ qua.</translation>
 <translation id="168841957122794586">Chứng chỉ máy chủ chứa khóa mật mã yếu.</translation>

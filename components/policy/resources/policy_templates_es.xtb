@@ -96,6 +96,7 @@ Ten en cuenta que en <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> y <ph 
 <translation id="1065175969514496951">Si se define esta política, se permite acceder a las URLs incluidas en la lista, las cuales se consideran excepciones de <ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" />, durante la autenticación (por ejemplo, en la pantalla de inicio de sesión y en la de bloqueo). Consulta la descripción de la política para conocer el formato de las entradas de esta lista. Por ejemplo, si se le asigna el valor <ph name="WILDCARD_VALUE" /> a <ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" />, se bloquearán todas las solicitudes, y esta política se podrá usar para permitir el acceso a una lista limitada de URLs. También se puede usar para abrir excepciones de determinados esquemas, subdominios de otros dominios, puertos o rutas específicas usando el formato especificado en https://support.google.com/chrome/a?p=url_blocklist_filter_format. El filtro más específico determinará si una URL está bloqueada o permitida. La política <ph name="DEVICE_AUTHENTICATION_URL_ALLOWLIST_POLICY_NAME" /> prevalece frente a <ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" />. Esta política está limitada a 1000 entradas.
 
 Si no se define esta política, no se permitirán excepciones de <ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" />.</translation>
+<translation id="1068801725746725727">Habilitar la recepción de encuestas sobre Navegación segura</translation>
 <translation id="1069489575852947981">Si se asigna el valor "Enabled" a esta política o no se le asigna ninguno, se definirá una cuenta local del dispositivo para el inicio de sesión automático sin retardo. <ph name="PRODUCT_OS_NAME" /> permitirá usar la combinación de teclas Ctrl + Alt + S para omitir el inicio de sesión automático y mostrar la pantalla de inicio de sesión.
 
       Si se le asigna el valor "Disabled", los usuarios no podrán omitir el inicio de sesión automático sin retardo (si se ha configurado).</translation>
@@ -138,6 +139,11 @@ Si no se define esta política, no se permitirán excepciones de <ph name="DEVIC
           Si se habilita esta política o no se establece, los usuarios podrán decidir si se recuerdan las contraseñas de Kerberos para que no tengan que introducirlas de nuevo. Los tickets de Kerberos se obtienen automáticamente a menos que se necesite una autenticación adicional (autenticación de dos factores).
 
           Si se inhabilita esta política, nunca se recordarán las contraseñas y se eliminarán todas las contraseñas almacenadas anteriormente. Los usuarios tendrán que introducir la contraseña cada vez que quieran autenticarse en el sistema Kerberos. Según la configuración del servidor, esto puede ocurrir cada 8 horas o cada varios meses.</translation>
+<translation id="112794759469625182">Esta política se quitó en la versión M118. Servía para habilitar e inhabilitar el uso de atestación remota por parte del usuario, pero la atestación remota se ha habilitado de forma predeterminada.
+
+Si se habilita esta política, se permitirá que los usuarios usen el hardware en dispositivos <ph name="PRODUCT_OS_NAME" /> para atestar su identidad de forma remota ante la AC de privacidad a través de la <ph name="ENTERPRISE_PLATFORM_KEYS_API" /> con <ph name="CHALLENGE_USER_KEY_FUNCTION" />.
+
+      Si se inhabilita esta política o no se define, no se podrán realizar llamadas a la API y se mostrará un código de error.</translation>
 <translation id="1133622335785078255">Permite que los usuarios creen y utilicen perfiles secundarios, y que usen el modo Invitado en el navegador <ph name="LACROS_NAME" /></translation>
 <translation id="1137096407176363892">Permite las voces de conversión de texto a voz de red mejorada en la función de accesibilidad Enunciar selección. Estas voces envían texto a los servidores de Google para sintetizar un enunciado que suene natural.
 
@@ -1458,6 +1464,7 @@ Si no se establece esta política o se inhabilita, no se permitirá la transfere
       Esta política anula las políticas <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" />, <ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" /> y <ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME" />, así como las preferencias del usuario.
 
       Esta política solo afecta al acceso a los dispositivos USB a través de la API Web Serial. Para conceder acceso a dispositivos USB a través de la API WebUSB, consulta la política <ph name="WEB_USB_ALLOW_DEVICES_FOR_URLS_POLICY_NAME" />.</translation>
+<translation id="2246565294817797392">Bloquear cookies truncadas</translation>
 <translation id="2246621891161157804">Permitir que Chrome bloquee el acceso a protocolos externos dentro de iframes en entornos aislados</translation>
 <translation id="224750967938323855">No mostrar Sync Consent durante el inicio de sesión</translation>
 <translation id="2252400912879027343">WebSQL en contextos no seguros seguirá disponible hasta la versión M109 y, a partir de la M110, dejará de admitirse</translation>
@@ -5047,6 +5054,7 @@ Si se inhabilita la política o no se establece, la configuración de restauraci
       Si se asigna el valor "Forced" a esta política, solo se podrán abrir páginas en modo Incógnito. Ten en cuenta que el valor "Forced" no funciona en dispositivos con Android en Chrome.
 
       Nota: En iOS, si se cambia esta política durante una sesión, los cambios se aplicarán después de reiniciar.</translation>
+<translation id="549471902631700911">Inhabilitar la recepción de encuestas sobre Navegación segura</translation>
 <translation id="5499375345075963939">Esta política solo se encuentra activa en el modo comercial.
 
       Cuando el valor de esta política se establece en un número distinto de 0, la sesión del usuario que haya iniciado sesión en ese momento en modo Demo se cerrará automáticamente una vez que haya transcurrido el periodo de inactividad especificado.
@@ -6107,6 +6115,7 @@ La política independiente <ph name="HTTP_ALLOWLIST_POLICY_NAME" /> puede usarse
 Consulta también la política <ph name="HTTPS_ONLY_MODE_POLICY_NAME" />.</translation>
 <translation id="6438972408080276697">Si se asigna el valor "true" a esta política, se enviarán a Google informes de los principales eventos de instalación de aplicaciones de Android activados por la política. Si se le asigna el valor "false", no se enviará información de ninguno de estos eventos.</translation>
 <translation id="6440051664870270040">Permitir que los sitios abran ventanas emergentes y naveguen de forma simultánea</translation>
+<translation id="6441781723322254041">Permitir cookies truncadas</translation>
 <translation id="6446366416439249472">Inhabilitar la sincronización de Google Drive mediante conexiones de datos móviles</translation>
 <translation id="6447948611083700881">La función de copia de seguridad y restauración está inhabilitada</translation>
 <translation id="6449476513004303784">No permitir que los usuarios gestionen certificados</translation>
@@ -6355,6 +6364,13 @@ El tiempo de espera de inactividad para que se inicie el salvapantallas y el int
 <translation id="66265932317331474">Proporcionar información sobre la CPU</translation>
 <translation id="6628120204569232711">Informar sobre el estado del almacenamiento</translation>
 <translation id="662991036483361836">Impedir que los usuarios habiliten Compartir con Nearby</translation>
+<translation id="6634974629075330608">Esta política inhabilita temporalmente los cambios en la forma en que Chrome gestiona las cookies configuradas mediante JavaScript que contienen determinados caracteres de control (NULL, retorno de carro y salto de línea).
+Anteriormente, la presencia de cualquiera de estos caracteres en una cadena de cookies provocaba que se truncara, pero aun así se definía.
+Ahora, la presencia de estos caracteres hará que se ignore toda la cadena de cookies.
+
+Si se le asigna el valor True a esta política (el valor predeterminado), se habilitará el nuevo comportamiento.
+
+Si se le asigna el valor False a esta política, se habilitará el comportamiento anterior.</translation>
 <translation id="663685822663765995">Restringir el modo de impresión en color</translation>
 <translation id="6637946190026453735">Lista con los ajustes de los servicios de <ph name="PRODUCT_NAME" /> Enterprise Connectors que se van a aplicar al conector <ph name="ON_PRINT_ENTERPRISE_CONNECTOR" /> de Enterprise, que se activa cuando se imprimen una página o un archivo desde <ph name="PRODUCT_NAME" />.
 
@@ -8719,6 +8735,7 @@ Si se configura la política, los usuarios no podrán cambiar esta función. Si 
 <translation id="874149307422233209">Esta política permite que los administradores controlen cómo trata Google los datos de usuario que se envían a la Búsqueda mediante las funciones de <ph name="PRODUCT_OS_NAME" />.
 Si se habilita la política, el usuario podrá usar el cuadro de búsqueda del menú de aplicaciones de <ph name="PRODUCT_OS_NAME" /> y el cuadro de direcciones del navegador <ph name="PRODUCT_NAME" /> en <ph name="PRODUCT_OS_NAME" /> de tal forma que no se asocie el historial de búsqueda del usuario a su identidad.
 Si esta política se inhabilita o no se establece, los datos del usuario de estas búsquedas se asociarán a su identidad.</translation>
+<translation id="8743902569031401303">Permitir encuestas sobre Navegación segura</translation>
 <translation id="8744844164152340112">Controla el tema utilizado para renderizar la interfaz de usuario la primera vez que se usa el dispositivo y durante la sesión (oscuro/claro/automático).
       El modo automático cambia automáticamente entre los temas oscuro y claro al amanecer y al atardecer.
       Esta política debería recomendarse para ofrecer a los usuarios la opción de cambiar el tema en la configuración del sistema.</translation>
@@ -9327,6 +9344,8 @@ Si no se define esta política, <ph name="PRODUCT_NAME" /> recogerá y subirá e
 <translation id="981346395360763138">Los servicios de ubicación de Google están inhabilitados</translation>
 <translation id="982497069985795632">Habilitar corrector ortográfico</translation>
 <translation id="983256325512298435">Definir una lista de protocolos que pueden abrir una aplicación externa de orígenes autorizados sin pedir permiso al usuario</translation>
+<translation id="984365509386992443">Si se habilita esta política o no se define, el usuario podrá recibir encuestas relacionadas con Navegación segura.
+Si se inhabilita esta política, el usuario no recibirá encuestas relacionadas con Navegación segura.</translation>
 <translation id="987261962216071510">Solo permitir que se inicie sesión en el navegador con el modo Invitado</translation>
 <translation id="987975731398348803">Si se habilita esta política o no se define, los dispositivos registrados informarán sobre la lista de usuarios de dispositivos que hayan iniciado sesión recientemente.
 

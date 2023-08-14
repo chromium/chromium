@@ -574,6 +574,7 @@
 <translation id="2166049586286450108">การเข้าถึงระดับผู้ดูแลระบบโดยสมบูรณ์</translation>
 <translation id="2166378884831602661">เว็บไซต์นี้ไม่สามารถให้การเชื่อมต่อที่ปลอดภัย</translation>
 <translation id="2168151236314517198">นโยบายของผู้ดูแลระบบบล็อกการพิมพ์เนื้อหานี้ไว้</translation>
+<translation id="2175630235841878061">ไฟล์ที่มีขนาดเกิน 100 MB ไม่พร้อมให้ดาวน์โหลด</translation>
 <translation id="2176974405772725904">บันทึกที่อยู่ในบัญชี</translation>
 <translation id="2178665390943006934">ปุ่มอัปเดต Chrome เปิดใช้งานเพื่ออัปเดต Chrome จากการตั้งค่า Chrome</translation>
 <translation id="2181821976797666341">นโยบาย</translation>
@@ -2402,6 +2403,7 @@
 <translation id="6118782133429281336">รายการต้นทางว่างเปล่า</translation>
 <translation id="6120179357481664955">จำรหัส UPI ไหม</translation>
 <translation id="6122181661879998141">ด้านหน้าบัตร</translation>
+<translation id="6124058285696691147">ดาวน์โหลดไฟล์แนบ</translation>
 <translation id="6124432979022149706">เครื่องมือเชื่อมต่อ Chrome Enterprise</translation>
 <translation id="6126565365696310362">Envelope Chinese #2</translation>
 <translation id="6127379762771434464">นำรายการออกแล้ว</translation>

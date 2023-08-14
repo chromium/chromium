@@ -998,6 +998,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="6363990818884053551">Para iniciar la sincronización, verifica tu identidad</translation>
 <translation id="6364438453358674297">¿Eliminar sugerencia del historial?</translation>
 <translation id="6380100320871303656">Precarga más frecuentemente las páginas que Chrome considera que es probable que visites. Este ajuste puede provocar un aumento en el uso de datos.</translation>
+<translation id="6382848304055775421">Exportando</translation>
 <translation id="6391355955030242704">Para sincronizar tu información de Chrome y mantener tus datos seguros en el coche, debes crear un bloqueo de perfil en la configuración de seguridad. Tendrás que introducir un código o una contraseña cada vez que entres en el coche.</translation>
 <translation id="6394791151443660613">Buscar: <ph name="SEARCH_QUERY" /></translation>
 <translation id="6395288395575013217">ENLACE</translation>
@@ -1133,6 +1134,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="6979737339423435258">Desde siempre</translation>
 <translation id="6987047470128880212">El modo Incógnito no está disponible en este dispositivo</translation>
 <translation id="6995899638241819463">Avisarte si tus contraseñas se ven expuestas en una brecha de seguridad de datos</translation>
+<translation id="6996145122199359148">Descargar esta página</translation>
 <translation id="7020741890149022655">Añadir a lista de lectura <ph name="BEGIN_NEW" />Nuevo<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">Abrir en el navegador</translation>
 <translation id="7027549951530753705">Se ha restaurado <ph name="ITEM_TITLE" /></translation>
@@ -1563,6 +1565,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="9169507124922466868">El historial de navegación está medio abierto</translation>
 <translation id="9190276265094487094">Tendrás tu historial en todos tus dispositivos sincronizados y podrás continuar con lo que estabas haciendo</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Comprobado hace 1 minuto}other{Comprobado hace # minutos}}</translation>
+<translation id="9204021776105550328">Eliminando</translation>
 <translation id="9204836675896933765">1 archivo restante</translation>
 <translation id="9205933215779845960">No se puede encontrar la página. Comprueba que la hayas escrito bien o prueba a buscarla en <ph name="SEARCH_ENGINE" />.</translation>
 <translation id="9206873250291191720">A</translation>

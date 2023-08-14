@@ -1176,6 +1176,7 @@
 <translation id="1925124445985510535">«بررسی ایمنی» <ph name="TIME" /> اجرا شد</translation>
 <translation id="192564025059434655">‏نسخه‌های قدیمی «برنامه‌های Chrome» بعداز دسامبر ۲۰۲۲ در دستگاه‌های Windows باز نخواهند شد. می‌توانید بررسی کنید که آیا نسخه جدیدی دردسترس است یا نه.</translation>
 <translation id="1926339101652878330">این تنظیمات توسط خط‌مشی شرکتی کنترل می‌شوند. برای اطلاعات بیشتر، لطفاً با سرپرستتان تماس بگیرید.</translation>
+<translation id="1926887872692564784">نشانگر</translation>
 <translation id="1927632033341042996">انگشت <ph name="NEW_FINGER_NUMBER" /></translation>
 <translation id="192817607445937251">پین قفل صفحه</translation>
 <translation id="192858925209436740">‏OneDrive را به برنامه Files متصل کنید تا اسنادی را که از Chromebook ذخیره کرده‌اید مدیریت کنید. باید با حساب Microsoft به سیستم وارد شوید.</translation>
@@ -3280,6 +3281,7 @@
 <translation id="3653887973853407813">‏نمی‌توانید از این افزونه استفاده کنید. ولی یا سرپرستتان «اجازه‌های سایت‌ها، برنامه‌ها، و افزونه‌ها» را در Chrome خاموش کرده است.</translation>
 <translation id="3653999333232393305">ادامه اجازه به <ph name="HOST" /> برای دسترسی به میکروفون</translation>
 <translation id="3654045516529121250">خواندن تنظیمات دسترس‌پذیری خودتان</translation>
+<translation id="3656328935986149999">سرعت نشانگر</translation>
 <translation id="3658871634334445293">‏شتاب TrackPoint</translation>
 <translation id="3659550105763988702">استفاده از گذرکلید برای <ph name="APP_NAME" /></translation>
 <translation id="3659929705630080526">کد دسترسی نادرستی را چند بار وارد کرده‌اید. بعداً دوباره امتحان کنید</translation>
@@ -3992,6 +3994,7 @@
 <translation id="4232375817808480934">‏پیکربندی Kerberos</translation>
 <translation id="4233739489690259993">‏Chromebook شما دیگر به‌روزرسانی‌های امنیتی و نرم‌افزاری را دریافت نمی‌کند. برای دریافت آخرین نسخه امنیتی و ویژگی‌های جدید، دستگاهتان را ارتقا دهید. شرایط پیشنهاد اعمال می‌شود.</translation>
 <translation id="4235965441080806197">لغو ورود به سیستم</translation>
+<translation id="4235976607074422892">سرعت پیمایش</translation>
 <translation id="4237282663517880406">‏نمایش پیشنهادهای Google Drive</translation>
 <translation id="4241182343707213132">برای به‌روزرسانی برنامه‌های سازمان، بازراه‌اندازی کنید</translation>
 <translation id="4242145785130247982">چند مورد از گواهینامه‌های کارخواه پشتیبانی نمی‌شوند</translation>
@@ -5315,6 +5318,7 @@
 <translation id="5365881113273618889">پوشه‌ای که انتخاب کرده‌اید حاوی فایل‌های حساسی است. آیا مطمئنید می‌خواهید به «<ph name="APP_NAME" />» دسترسی دائم نوشتن این پوشه را بدهید؟</translation>
 <translation id="536638840841140142">هیچ‌کدام</translation>
 <translation id="5368246151595623328">«<ph name="NETWORK_NAME" />» از <ph name="DEVICE_NAME" /> ذخیره شد</translation>
+<translation id="5368255566854433132">ایجاد گذرواژه <ph name="DEVICE_TYPE" /></translation>
 <translation id="5368720394188453070">تلفنتان قفل است. برای وارد شدن قفل آن را باز کنید.</translation>
 <translation id="5368779022775404937">به سیستم <ph name="REALM" /> وارد شوید</translation>
 <translation id="536882527576164740">{0,plural, =1{حالت ناشناس}one{حالت ناشناس (#)}other{حالت ناشناس (#)}}</translation>
@@ -8644,6 +8648,7 @@
 <translation id="8137559199583651773">مدیریت افزونه‌ها</translation>
 <translation id="8138217203226449454">آیا می‌خواستید ارائه‌دهنده جستجو را تغییر دهید؟</translation>
 <translation id="8138997515734480534">وضعیت <ph name="VM_NAME" /></translation>
+<translation id="8139440916039659819">شتاب نشانگر</translation>
 <translation id="8139447493436036221">‏فایل‌های Google Drive</translation>
 <translation id="8139643636835015859">با این کار، <ph name="OFFLINE_STORAGE_SIZE" /> از فضای استفاده‌شده توسط فایل‌های آفلاین برداشته می‌شود. بعضی‌از فایل‌ها همچنان به‌صورت آفلاین دردسترس خواهند بود. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
 <translation id="8140070492745508800"><ph name="FIRST_DEVICE" />،<ph name="SECOND_DEVICE" /></translation>
@@ -8980,6 +8985,7 @@
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322"><ph name="PERMISSION" /> و <ph name="COUNT" /> اجازه دیگر مجاز شده‌اند</translation>
 <translation id="8413956290606243087">‏مایلید ChromeVox (صفحه‌خوان داخلی ChromeOS) را فعال کنید؟</translation>
+<translation id="8414065061814811918">شتاب پیمایش. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
 <translation id="8414249071344507766">خاطرات برای دو روز پنهان شد</translation>
 <translation id="8414396119627470038">ورود به سیستم <ph name="SITE_ETLD_PLUS_ONE" /> با <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8414685983518053656">نکته‌ها</translation>
@@ -9106,6 +9112,7 @@
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">بلندگوها</translation>
 <translation id="8527257351549797148">سازمانتان ممکن است شما را ملزم کند برای دسترسی به برنامه‌ها، افزونه‌ها، و موارد دیگر ثبت‌نام کنید. این کار همچنین به سازمان اجازه می‌دهد تا مواردی مثل امنیت و تنظیمات دستگاه را مدیریت کنید.</translation>
+<translation id="8527869672961320915">برنامه <ph name="VM_NAME" /></translation>
 <translation id="8528074251912154910">افزودن زبان</translation>
 <translation id="8528479410903501741">‏ذخیره IBAN</translation>
 <translation id="8528962588711550376">ورود به برنامه.</translation>
@@ -9362,6 +9369,7 @@
 <translation id="8736288397686080465">این سایت در پس‌زمینه به‌روزرسانی شده است.</translation>
 <translation id="8737709691285775803">Shill</translation>
 <translation id="8737914367566358838">انتخاب کنید صفحه به چه زبانی ترجمه شود</translation>
+<translation id="8740086188450289493">‏استفاده از گذرواژه «حساب Google»</translation>
 <translation id="8740247629089392745">‏می‌توانید این Chromebook را به <ph name="SUPERVISED_USER_NAME" /> بدهید. راه‌اندازی به‌زودی تمام می‌شود و زمان کاوش دستگاه می‌رسد.</translation>
 <translation id="8740672167979365981">‏به‌روزرسانی ChromeOS Flex لازم است</translation>
 <translation id="8741944563400125534">راهنمای راه‌اندازی «دسترسی کلیدی»</translation>
@@ -9745,6 +9753,7 @@
 <translation id="9045160989383249058">فهرست خواندن به پانل کناری جدید منتقل شده است. آن را در اینجا امتحان کنید.</translation>
 <translation id="9045430190527754450">‏نشانی وب صفحه‌ای را که باز می‌کنید به Google ارسال می‌کند</translation>
 <translation id="9048745018038487540">انتخاب همه قلم‌ها</translation>
+<translation id="9050135202879860719">برای ورود به سیستم <ph name="DEVICE_TYPE" /> از گذرواژه استفاده کنید</translation>
 <translation id="9050666287014529139">گذرعبارت</translation>
 <translation id="9052404922357793350">ادامه مسدود کردن</translation>
 <translation id="90528604757378587">فعالیت پس‌زمینه و برخی جلوه‌های بصری، مثل پیمایش روان، ممکن است محدود شوند.</translation>

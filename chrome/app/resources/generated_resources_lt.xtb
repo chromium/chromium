@@ -99,6 +99,7 @@
 <translation id="1071917609930274619">Duomenų kodavimas</translation>
 <translation id="1072700771426194907">Aptiktas USB įrenginys</translation>
 <translation id="107278043869924952">Be slaptažodžio, papildomai naudoti PIN kodą</translation>
+<translation id="107450319332239199">Kažkas nepavyko. Vietoj to atidarykite langus neautomatiškai.</translation>
 <translation id="1076176485976385390">Puslapių naršymas teksto žymekliu</translation>
 <translation id="1076382954055048850">Rodyti kitus „Cast“ seansus</translation>
 <translation id="1076698951459398590">Įgalinti temą</translation>
@@ -9685,6 +9686,7 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="8989359959810288806">Atnaujinti įrenginio kaip modemo naudojimo būseną</translation>
 <translation id="8991520179165052608">Svetainė gali naudoti jūsų mikrofoną</translation>
 <translation id="8991694323904646277">Nėra fotoaparato</translation>
+<translation id="8991766915726096402">Vietinių duomenų atkūrimas</translation>
 <translation id="8992671062738341478">„<ph name="WINDOW_TITLE" />“ – atminties sąnaudos – <ph name="MEMORY_VALUE" /></translation>
 <translation id="8993059306046735527">Jei pamiršite „<ph name="DEVICE_TYPE" />“ slaptažodį, vis tiek galėsite atkurti vietinius duomenis. Turėsite prisijungti prie „Google“ paskyros arba naudoti paskyros atkūrimo funkciją.</translation>
 <translation id="8993737615451556423">Teikiami skaitymo balsu spartinimo, lėtinimo ir pristabdymo valdikliai</translation>

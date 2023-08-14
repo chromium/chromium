@@ -25,6 +25,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="108486256082349153">Mobil: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">Goddag, <ph name="GIVEN_NAME" /></translation>
 <translation id="1088231044944504242">Søg i dine <ph name="CATEGORY" />, filer, apps og meget mere. Brug piletasterne til at navigere i dine apps.</translation>
+<translation id="1093645050124056515">Ctrl + Alt + pil ned</translation>
 <translation id="109942774857561566">Jeg keder mig</translation>
 <translation id="1104084341931202936">Vis indstillinger for hjælpefunktioner</translation>
 <translation id="1104621072296271835">Dine enheder fungerer endnu bedre sammen</translation>
@@ -43,6 +44,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="1178581264944972037">Pause</translation>
 <translation id="1181037720776840403">Fjern</translation>
 <translation id="1182225749592316782">Dette giver alle apps og websites, der har kamera- og mikrofontilladelserne, adgang</translation>
+<translation id="1182876754474670069">Home</translation>
 <translation id="1183863904939664422">Jeg er ikke interesseret i dette forslag</translation>
 <translation id="1184126796192815024">Dette netværk understøtter ikke streaming af apps fra din telefon. Prøv at bruge telefonens hotspot. <ph name="LEARN_MORE" /></translation>
 <translation id="118437560755358292">Angiv adgangskode eller pinkode som ekstra sikkerhed</translation>
@@ -147,6 +149,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="1586324912145647027">Gå til skrivebord 1 til 8</translation>
 <translation id="1589090746204042747">Få adgang til al din aktivitet i denne session</translation>
 <translation id="1592682369233288537">Næste skrivebord: <ph name="NEXT_DESK_NAME" />, brug søgetasten+mellemrumstasten for at aktivere.</translation>
+<translation id="1602874809115667351"><ph name="LAUNCHER_KEY_NAME" /> + pil ned</translation>
 <translation id="1604857178818051494">Sæt medie på pause</translation>
 <translation id="1610778689852195798">"Fortryd"</translation>
 <translation id="1611993646327628135">Til</translation>
@@ -249,6 +252,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="2021864487439853900">Klik for at låse op</translation>
 <translation id="2023558322300866873">Du kan til enhver tid afbryde registrering af pakker</translation>
 <translation id="2034971124472263449">Gem alligevel</translation>
+<translation id="204259843076055848">Genvejen for <ph name="SIX_PACK_KEY_NAME" /> er deaktiveret i øjeblikket</translation>
 <translation id="2049240716062114887">Navnet på skrivebordet blev ændret til <ph name="DESK_NAME" /></translation>
 <translation id="206377500836174974">Fuld</translation>
 <translation id="2064048859448024834">Forhåndsvisning af kamera er slået til</translation>
@@ -381,6 +385,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="2665788051462227163"><ph name="UNAVAILABLE_APPS_ONE" /> og <ph name="UNAVAILABLE_APPS_TWO" /> er ikke på denne enhed.</translation>
 <translation id="2673968385134502798">Spil</translation>
 <translation id="2678852583403169292">Tekstoplæsningsmenu</translation>
+<translation id="2687510499067466116">Tastaturgenvejen er ændret</translation>
 <translation id="2689613560355655046">Skrivebord 8</translation>
 <translation id="2695305337569143674">nettet</translation>
 <translation id="2697697418792422688">Vis tastaturindstillinger. <ph name="KEYBOARD_NAME" /> er valgt.</translation>
@@ -637,12 +642,14 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="3738664582935948253">Du kan nu vise klik og tastaturgenveje i skærmoptagelser</translation>
 <translation id="3742055079367172538">Screenshottet blev gemt</translation>
 <translation id="3756485814916578707">Skærmen castes</translation>
+<translation id="3765841382945324995">Genvejen for <ph name="SIX_PACK_KEY_NAME" /> er opdateret til <ph name="NEW_SHORTCUT" /> fra <ph name="OLD_SHORTCUT" /></translation>
 <translation id="3765841986579723851">Redigeret i dag</translation>
 <translation id="3773700760453577392">En administrator har afvist samlet login fra flere konti for <ph name="USER_EMAIL" />. Alle brugere skal logge ud for at fortsætte.</translation>
 <translation id="3779139509281456663">Opretter forbindelse til <ph name="NAME" /></translation>
 <translation id="3781910048497807059">Flyt fokus til forrige rude</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">Lås</translation>
+<translation id="3796215473395753611">Alt + pil op</translation>
 <translation id="3796746699333205839">Dit kamera og din telefon anvendes af en app</translation>
 <translation id="3798670284305777884">Højttaler (indbygget)</translation>
 <translation id="3799080171973636491">Du trykkede på tastaturgenvejen for forstørrelse af fuld skærm. Vil du aktivere indstillingen?</translation>
@@ -698,6 +705,7 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="4026843240379844265">Flyt det aktive vindue fra skærm til skærm</translation>
 <translation id="4028481283645788203">Der kræves en adgangskode som ekstra sikkerhed</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
+<translation id="4032988577476260673"><ph name="LAUNCHER_KEY_NAME" /> + venstrepil</translation>
 <translation id="4042660782729322247">Du deler din skærm</translation>
 <translation id="404437169852192935">Du modtager ikke længere opdateringer</translation>
 <translation id="4049230407053723315">Kvikmenu</translation>
@@ -719,6 +727,7 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="4129129681837227511">Du kan se notifikationer på din låseskærm ved at låse skærmen op og ændre indstillingen</translation>
 <translation id="4131973331381812765">Temperatur: <ph name="TEMPERATURE" /> °C – aktuel hastighed: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> GHz</translation>
 <translation id="4136724716305260864">Aktiveret indtil solopgang</translation>
+<translation id="4141710407113804517"><ph name="LAUNCHER_KEY_NAME" /> + højrepil</translation>
 <translation id="4146671046252289537">Flyt til slutningen af ​​næste ord</translation>
 <translation id="4146833061457621061">Spil musik</translation>
 <translation id="4150201353443180367">Skærm</translation>
@@ -865,6 +874,7 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="4747410141429390146">Lås op for at se notifikationer</translation>
 <translation id="4752784485658729358">Der er en grænse på maks. 6 gemte skriveborde. Fjern et skrivebord for at gemme et nyt.</translation>
 <translation id="4759238208242260848">Downloads</translation>
+<translation id="4762160261012420470"><ph name="LAUNCHER_KEY_NAME" /> + pil op</translation>
 <translation id="4762573482154983647">Skjul apps</translation>
 <translation id="4763885921995354846">Dette giver alle apps og websites, der har kameratilladelsen, adgang til kameraet. Du skal muligvis opdatere websiden eller genstarte appen.</translation>
 <translation id="4774338217796918551">Kom tilbage i morgen kl. <ph name="COME_BACK_TIME" />.</translation>
@@ -946,6 +956,7 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="5062496344832867502">ram</translation>
 <translation id="5068762093486106012">Du får besked, hvis du taler, mens mikrofonen er slået fra. Lyden forlader aldrig din enhed.</translation>
 <translation id="5078796286268621944">Forkert pinkode</translation>
+<translation id="5083035541015925118">Ctrl + Alt + pil op</translation>
 <translation id="5083553833479578423">Få adgang til endnu flere Assistent-funktioner.</translation>
 <translation id="5092436659250499817">Slå tastaturets baggrundslys til/fra</translation>
 <translation id="5094577350232361255">om</translation>
@@ -1067,6 +1078,7 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="5590609058453685222">Funktionen "Påmindelse om at mikrofonen er slået fra" er aktiveret. Du får besked, hvis du taler, mens mikrofonen er slået fra.</translation>
 <translation id="5596627076506792578">Flere valgmuligheder</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" /> d. <ph name="DATE" /></translation>
+<translation id="5599242528220103262">Tastaturgenvej er deaktiveret</translation>
 <translation id="5600837773213129531">Tryk på Ctrl+Alt+Z for at deaktivere talefeedback.</translation>
 <translation id="5601503069213153581">Pinkode</translation>
 <translation id="5618148318840095371">Vi har ændret dit netværk til et bedre et</translation>
@@ -1086,6 +1098,7 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="5678564054339031017">Vis næste uge</translation>
 <translation id="5679050765726761783">En adapter med lav effekt er tilsluttet</translation>
 <translation id="5682642926269496722">Google Assistent er ikke tilgængelig for den aktuelle brugerkonto.</translation>
+<translation id="5689233503102158537">Alt + Backspace</translation>
 <translation id="5689633613396158040">Nattelys gør det mere behageligt at kigge på din skærm eller læse på den i svag belysning. Tryk for at ændre indstillingerne for, hvornår Nattelys aktiveres, eller for at deaktivere funktionen helt.</translation>
 <translation id="5691772641933328258">Fingeraftrykket kunne ikke genkendes</translation>
 <translation id="5693255400847650006">Mikrofonen er i brug</translation>
@@ -1247,6 +1260,7 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="639644700271529076">CAPS LOCK er deaktiveret</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6417265370957905582">Google Assistent</translation>
+<translation id="641817663353603351">Page Up</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, signalstyrke <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">Ryd alle notifikationer</translation>
 <translation id="643147933154517414">Færdig</translation>
@@ -1256,6 +1270,7 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="6445915701151710649">cpu</translation>
 <translation id="6447111710783417522"><ph name="DATE" /> – <ph name="NUMBER" /> begivenhed</translation>
 <translation id="6449483711453944360">Linux-apps og inkognitovinduer understøttes ikke i øjeblikket</translation>
+<translation id="6450245544201845082">Genvejen for højreklik er deaktiveret i øjeblikket</translation>
 <translation id="6452181791372256707">Afvis</translation>
 <translation id="6453179446719226835">Sproget er blevet ændret</translation>
 <translation id="6459472438155181876">Udvider skærmen til <ph name="DISPLAY_NAME" /></translation>
@@ -1380,6 +1395,7 @@ Installeret for nylig</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6972754398087986839">Kom godt i gang</translation>
 <translation id="6979158407327259162">Google Drev</translation>
+<translation id="6980402667292348590">Insert</translation>
 <translation id="6981291220124935078">Giv adgang</translation>
 <translation id="6981982820502123353">Hjælpefunktioner</translation>
 <translation id="698231206551913481">Alle filer og lokale data, der er knyttet til denne bruger, slettes permanent, når brugeren fjernes.</translation>
@@ -1431,6 +1447,7 @@ Installeret for nylig</translation>
 <translation id="7258828758145722155">Redigeret i går</translation>
 <translation id="726276584504105859">Træk hertil for at bruge opdelt skærm</translation>
 <translation id="7262906531272962081">Opret påmindelse</translation>
+<translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + Backspace</translation>
 <translation id="7297440678881127227"><ph name="START_TIME" /> til
         <ph name="END_TIME" />,
         <ph name="TIME_ZONE" />,
@@ -1441,6 +1458,7 @@ Installeret for nylig</translation>
 <translation id="7312210124139670355">Din administrator er ved at nulstille dit eSIM. Dette kan tage et par minutter.</translation>
 <translation id="7313193732017069507">Udvid kameraet</translation>
 <translation id="7316261577130609484">Tilføj ny opgave</translation>
+<translation id="7331646370422660166">Alt + pil ned</translation>
 <translation id="7340731148882810149">Menu for automatiske klik</translation>
 <translation id="7346909386216857016">OK</translation>
 <translation id="7348093485538360975">Skærmtastatur</translation>
@@ -1486,6 +1504,7 @@ Installeret for nylig</translation>
 <translation id="7513922695575567867">Kalender for ugen med <ph name="DATE" /> – <ph name="SELECTED_DATE" /> er valgt.</translation>
 <translation id="7514365320538308">Download</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7516641972665276706">Page Down</translation>
 <translation id="7519206258459640379">Automatisk zoom er aktiveret.</translation>
 <translation id="7519649142417630956">Når enheden er slukket, logges administratoren ud, og vedkommende kan ikke styre din enhed.
 
@@ -1857,6 +1876,7 @@ Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</trans
 <translation id="9126339866969410112">Fortryd seneste handling</translation>
 <translation id="9133335900048457298">Der kan ikke optages beskyttet indhold</translation>
 <translation id="9139720510312328767">Slet næste bogstav</translation>
+<translation id="9151906066336345901">End</translation>
 <translation id="9161053988251441839">FORESLÅEDE APPS</translation>
 <translation id="9168436347345867845">Gør det senere</translation>
 <translation id="9178475906033259337">Viser ét resultat for <ph name="QUERY" /></translation>
