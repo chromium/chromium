@@ -892,6 +892,12 @@ TEST_P(GLCopyTextureCHROMIUMTest, ImmutableTexture) {
 
   for (auto src_internal_format : src_internal_formats) {
     for (auto dest_internal_format : dest_internal_formats) {
+      if (src_internal_format == GL_BGRA8_EXT ||
+          dest_internal_format == GL_BGRA8_EXT) {
+        if (ShouldSkipBGRA()) {
+          continue;
+        }
+      }
       CreateAndBindDestinationTextureAndFBO(GL_TEXTURE_2D);
       glBindTexture(GL_TEXTURE_2D, textures_[0]);
       glTexStorage2DEXT(GL_TEXTURE_2D, 1, src_internal_format, 1, 1);
