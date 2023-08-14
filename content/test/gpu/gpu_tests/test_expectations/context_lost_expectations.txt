@@ -190,15 +190,15 @@ crbug.com/1419583 [ linux amd-0x7340 angle-vulkan ] ContextLost_WebGLContextRest
 
 crbug.com/1419558 [ angle-swiftshader clang-coverage fuchsia fuchsia-board-qemu-x64 google-0xc0de ] ContextLost_WebGLContextLostFromQuantity [ Failure ]
 
-crbug.com/1469875 [ mac graphite-enabled ] ContextLost_WebGLBlockedAfterJSNavigation [ Failure ]
-crbug.com/1469875 [ mac graphite-enabled ] ContextLost_WebGLContextLostFromGPUProcessExit [ Failure ]
-crbug.com/1469875 [ mac graphite-enabled ] ContextLost_WebGLContextRestoredInHiddenTab [ Failure ]
-crbug.com/1469875 [ mac graphite-enabled ] ContextLost_WebGLUnblockedAfterUserInitiatedReload [ Failure ]
-crbug.com/1469875 [ mac graphite-enabled ] ContextLost_WorkerWebGLRAFAfterGPUCrash [ Failure ]
-crbug.com/1469875 [ mac graphite-enabled ] GpuCrash_GPUProcessCrashesExactlyOncePerVisitToAboutGpuCrash [ Failure ]
+crbug.com/1469875 [ angle-opengl graphite-enabled mac ] ContextLost_WebGLBlockedAfterJSNavigation [ Failure ]
+crbug.com/1469875 [ angle-opengl graphite-enabled mac ] ContextLost_WebGLContextLostFromGPUProcessExit [ Failure ]
+crbug.com/1469875 [ angle-opengl graphite-enabled mac ] ContextLost_WebGLContextRestoredInHiddenTab [ Failure ]
+crbug.com/1469875 [ angle-opengl graphite-enabled mac ] ContextLost_WebGLUnblockedAfterUserInitiatedReload [ Failure ]
+crbug.com/1469875 [ angle-opengl graphite-enabled mac ] ContextLost_WorkerWebGLRAFAfterGPUCrash [ Failure ]
+crbug.com/1469875 [ angle-opengl graphite-enabled mac ] GpuCrash_GPUProcessCrashesExactlyOncePerVisitToAboutGpuCrash [ Failure ]
 crbug.com/1469875 [ mac graphite-enabled intel release asan ] GpuCrash_InfoForHardwareGpu [ Failure ]
-crbug.com/1469875 [ mac graphite-enabled ] GpuNormalTermination_NewWebGLNotBlocked [ Failure ]
-crbug.com/1469875 [ mac graphite-enabled ] GpuNormalTermination_OriginalWebGLNotBlocked [ Failure ]
+crbug.com/1469875 [ angle-opengl graphite-enabled mac ] GpuNormalTermination_NewWebGLNotBlocked [ Failure ]
+crbug.com/1469875 [ angle-opengl graphite-enabled mac ] GpuNormalTermination_OriginalWebGLNotBlocked [ Failure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
