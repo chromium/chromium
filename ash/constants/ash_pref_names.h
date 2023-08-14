@@ -1309,6 +1309,11 @@ inline constexpr char kAppListReorderNudge[] =
 inline constexpr char kLauncherFilesPrivacyNotice[] =
     "ash.launcher.continue_section_privacy_notice";
 
+// A dictionary pref that determines if the image search privacy notice in the
+// launcher search should be shown or not.
+inline constexpr char kImageSearchPrivacyNotice[] =
+    "ash.launcher.image_search_privacy_notice";
+
 // A boolean pref that indicates whether lock screen media controls are enabled.
 // Controlled by user policy.
 inline constexpr char kLockScreenMediaControlsEnabled[] =

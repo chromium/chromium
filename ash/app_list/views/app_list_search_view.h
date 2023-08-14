@@ -23,6 +23,7 @@ namespace ash {
 class AppListViewDelegate;
 class ResultSelectionController;
 class SearchBoxView;
+class SearchNotifierController;
 class SearchResultPageDialogController;
 class SearchResultImageListView;
 
@@ -79,6 +80,10 @@ class ASH_EXPORT AppListSearchView : public views::View,
   }
 
   SearchBoxView* search_box_view() { return search_box_view_.get(); }
+
+  SearchNotifierController* search_notifier_controller() const {
+    return search_notifier_controller_.get();
+  }
 
  private:
   // views::View:
@@ -145,6 +150,9 @@ class ASH_EXPORT AppListSearchView : public views::View,
 
   // Handles search result selection.
   std::unique_ptr<ResultSelectionController> result_selection_controller_;
+
+  // Handles the search notifiers in launcher search.
+  std::unique_ptr<SearchNotifierController> search_notifier_controller_;
 
   // Timer used to delay calls to NotifyA11yResultsChanged().
   base::OneShotTimer notify_a11y_results_changed_timer_;

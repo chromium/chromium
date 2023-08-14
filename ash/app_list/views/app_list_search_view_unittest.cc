@@ -16,6 +16,7 @@
 #include "ash/app_list/views/pulsing_block_view.h"
 #include "ash/app_list/views/result_selection_controller.h"
 #include "ash/app_list/views/search_box_view.h"
+#include "ash/app_list/views/search_notifier_controller.h"
 #include "ash/app_list/views/search_result_image_list_view.h"
 #include "ash/app_list/views/search_result_image_view_delegate.h"
 #include "ash/app_list/views/search_result_list_view.h"
@@ -570,6 +571,60 @@ TEST_P(SearchResultImageViewTest, PulsingBlocksShowWhenNoResultIcon) {
   }
 
   client->set_search_callback(TestAppListClient::SearchCallback());
+}
+
+TEST_P(SearchResultImageViewTest, SearchNotifierController) {
+  GetAppListTestHelper()->ShowAppList();
+  PrefService* prefs =
+      Shell::Get()->session_controller()->GetLastActiveUserPrefService();
+  auto* notifier_controller = GetSearchView()->search_notifier_controller();
+  EXPECT_EQ(notifier_controller->GetPrivacyNoticeShownCount(prefs), 0);
+  EXPECT_TRUE(notifier_controller->ShouldShowPrivacyNotice());
+
+  // Press a character key to open the search.
+  PressAndReleaseKey(ui::VKEY_A);
+  EXPECT_TRUE(GetSearchPage()->GetVisible());
+  EXPECT_EQ(notifier_controller->GetPrivacyNoticeShownCount(prefs), 1);
+  EXPECT_TRUE(notifier_controller->ShouldShowPrivacyNotice());
+
+  PressAndReleaseKey(ui::VKEY_BACK);
+  EXPECT_FALSE(GetSearchPage()->GetVisible());
+  EXPECT_EQ(notifier_controller->GetPrivacyNoticeShownCount(prefs), 1);
+
+  PressAndReleaseKey(ui::VKEY_A);
+  EXPECT_TRUE(GetSearchPage()->GetVisible());
+  EXPECT_EQ(notifier_controller->GetPrivacyNoticeShownCount(prefs), 2);
+  EXPECT_TRUE(notifier_controller->ShouldShowPrivacyNotice());
+
+  PressAndReleaseKey(ui::VKEY_BACK);
+  EXPECT_FALSE(GetSearchPage()->GetVisible());
+  EXPECT_EQ(notifier_controller->GetPrivacyNoticeShownCount(prefs), 2);
+
+  PressAndReleaseKey(ui::VKEY_A);
+  EXPECT_TRUE(GetSearchPage()->GetVisible());
+  EXPECT_EQ(notifier_controller->GetPrivacyNoticeShownCount(prefs), 3);
+  EXPECT_FALSE(notifier_controller->ShouldShowPrivacyNotice());
+}
+
+TEST_P(SearchResultImageViewTest, AcceptingPrivacyNoticeRemovesIt) {
+  GetAppListTestHelper()->ShowAppList();
+
+  auto* search_notifier_controller =
+      GetSearchView()->search_notifier_controller();
+  EXPECT_TRUE(search_notifier_controller->ShouldShowPrivacyNotice());
+
+  // Press a character key to open the search.
+  PressAndReleaseKey(ui::VKEY_A);
+  EXPECT_TRUE(GetSearchPage()->GetVisible());
+
+  // Accept the privacy notice.
+  // TODO(crbug.com/1352636): Accept this by clicking the "Got it" button after
+  // the prviacy notice view is implemented.
+  search_notifier_controller->SetPrivacyNoticeAcceptedPref();
+
+  // The privacy notice should not be shown again after accepted.
+  // TODO(crbug.com/1352636): Check the visibility of the privacy notice.
+  EXPECT_FALSE(search_notifier_controller->ShouldShowPrivacyNotice());
 }
 
 TEST_P(SearchViewClamshellAndTabletTest, AnimateSearchResultView) {

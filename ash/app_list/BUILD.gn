@@ -128,6 +128,8 @@ source_set("app_list") {
     "views/search_box_view.cc",
     "views/search_box_view.h",
     "views/search_box_view_delegate.h",
+    "views/search_notifier_controller.cc",
+    "views/search_notifier_controller.h",
     "views/search_result_actions_view.cc",
     "views/search_result_actions_view.h",
     "views/search_result_actions_view_delegate.h",

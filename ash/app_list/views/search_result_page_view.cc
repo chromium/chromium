@@ -12,6 +12,7 @@
 #include "ash/app_list/views/app_list_search_view.h"
 #include "ash/app_list/views/contents_view.h"
 #include "ash/app_list/views/search_box_view.h"
+#include "ash/app_list/views/search_notifier_controller.h"
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/search_box/search_box_constants.h"
 #include "ash/style/ash_color_id.h"
@@ -121,6 +122,14 @@ void SearchResultPageView::InitializeContainers(
 
 const char* SearchResultPageView::GetClassName() const {
   return "SearchResultPageView";
+}
+
+void SearchResultPageView::VisibilityChanged(View* starting_from,
+                                             bool is_visible) {
+  auto* notifier_controller = search_view_->search_notifier_controller();
+  if (starting_from == this && notifier_controller) {
+    notifier_controller->UpdateNotifierVisibility(is_visible);
+  }
 }
 
 gfx::Size SearchResultPageView::CalculatePreferredSize() const {

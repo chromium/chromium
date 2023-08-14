@@ -10,6 +10,8 @@
 #include "ash/ambient/ambient_controller.h"
 #include "ash/ambient/managed/screensaver_images_policy_handler.h"
 #include "ash/app_list/app_list_controller_impl.h"
+#include "ash/app_list/views/app_list_nudge_controller.h"
+#include "ash/app_list/views/search_notifier_controller.h"
 #include "ash/assistant/assistant_controller_impl.h"
 #include "ash/calendar/calendar_controller.h"
 #include "ash/capture_mode/capture_mode_controller.h"
@@ -92,6 +94,7 @@ namespace {
 void RegisterProfilePrefs(PrefRegistrySimple* registry, bool for_test) {
   AccessibilityControllerImpl::RegisterProfilePrefs(registry);
   AppListControllerImpl::RegisterProfilePrefs(registry);
+  AppListNudgeController::RegisterProfilePrefs(registry);
   AshAcceleratorConfiguration::RegisterProfilePrefs(registry);
   AssistantControllerImpl::RegisterProfilePrefs(registry);
   AutozoomControllerImpl::RegisterProfilePrefs(registry);
@@ -139,6 +142,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry, bool for_test) {
   ProjectorControllerImpl::RegisterProfilePrefs(registry);
   quick_pair::Mediator::RegisterProfilePrefs(registry);
   ScreensaverImagesPolicyHandler::RegisterPrefs(registry);
+  SearchNotifierController::RegisterProfilePrefs(registry);
   ShelfController::RegisterProfilePrefs(registry);
   SnoopingProtectionController::RegisterProfilePrefs(registry);
   TabletModeTuckEducation::RegisterProfilePrefs(registry);

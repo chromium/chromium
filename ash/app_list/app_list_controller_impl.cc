@@ -21,6 +21,7 @@
 #include "ash/app_list/views/app_list_view.h"
 #include "ash/app_list/views/contents_view.h"
 #include "ash/app_list/views/search_box_view.h"
+#include "ash/app_list/views/search_notifier_controller.h"
 #include "ash/assistant/assistant_controller_impl.h"
 #include "ash/assistant/model/assistant_ui_model.h"
 #include "ash/assistant/ui/assistant_view_delegate.h"
@@ -317,7 +318,6 @@ void AppListControllerImpl::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterTimePref(prefs::kLauncherLastContinueRequestTime,
                              base::Time());
   registry->RegisterBooleanPref(prefs::kLauncherUseLongContinueDelay, false);
-  AppListNudgeController::RegisterProfilePrefs(registry);
 }
 
 void AppListControllerImpl::SetClient(AppListClient* client) {
@@ -470,10 +470,11 @@ void AppListControllerImpl::OnUserSessionAdded(const AccountId& account_id) {
   ash::ReportPrefSortOrderOnSessionStart(client_->GetPermanentSortingOrder(),
                                          IsTabletMode());
 
+  auto* prefs =
+      Shell::Get()->session_controller()->GetUserPrefServiceForUser(account_id);
   if (features::IsLauncherNudgeSessionResetEnabled()) {
-    AppListNudgeController::ResetPrefsForNewUserSession(
-        Shell::Get()->session_controller()->GetUserPrefServiceForUser(
-            account_id));
+    AppListNudgeController::ResetPrefsForNewUserSession(prefs);
+    SearchNotifierController::ResetPrefsForNewUserSession(prefs);
   }
 }
 

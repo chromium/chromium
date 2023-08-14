@@ -35,6 +35,7 @@ class ASH_EXPORT SearchResultPageView : public AppListPage {
 
   // Overridden from views::View:
   const char* GetClassName() const override;
+  void VisibilityChanged(View* starting_from, bool is_visible) override;
   gfx::Size CalculatePreferredSize() const override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
 

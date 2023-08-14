@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/app_list/views/app_list_search_view.h"
+#include "ash/app_list/views/search_notifier_controller.h"
 #include "ash/bubble/bubble_constants.h"
 #include "base/check_op.h"
 #include "base/time/time.h"
@@ -42,6 +43,14 @@ AppListBubbleSearchPage::AppListBubbleSearchPage(
 }
 
 AppListBubbleSearchPage::~AppListBubbleSearchPage() = default;
+
+void AppListBubbleSearchPage::VisibilityChanged(View* starting_from,
+                                                bool is_visible) {
+  auto* notifier_controller = search_view_->search_notifier_controller();
+  if (starting_from == this && notifier_controller) {
+    notifier_controller->UpdateNotifierVisibility(is_visible);
+  }
+}
 
 void AppListBubbleSearchPage::AnimateShowPage() {
   // If skipping animations, just update visibility.

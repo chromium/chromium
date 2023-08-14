@@ -15,6 +15,7 @@
 #include "ash/app_list/app_list_view_delegate.h"
 #include "ash/app_list/views/result_selection_controller.h"
 #include "ash/app_list/views/search_box_view.h"
+#include "ash/app_list/views/search_notifier_controller.h"
 #include "ash/app_list/views/search_result_image_list_view.h"
 #include "ash/app_list/views/search_result_list_view.h"
 #include "ash/app_list/views/search_result_view.h"
@@ -125,6 +126,7 @@ AppListSearchView::AppListSearchView(
 
   // Launcher image search container is always the third view shown.
   if (features::IsProductivityLauncherImageSearchEnabled()) {
+    search_notifier_controller_ = std::make_unique<SearchNotifierController>();
     image_search_container_ = scroll_contents->AddChildView(
         std::make_unique<SearchResultImageListView>(view_delegate));
     add_result_container(image_search_container_);
