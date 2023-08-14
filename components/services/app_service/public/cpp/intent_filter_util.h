@@ -43,6 +43,11 @@ bool IsSupportedLinkForApp(const std::string& app_id,
 size_t IntentFilterUrlMatchLength(const apps::IntentFilterPtr& intent_filter,
                                   const GURL& url);
 
+// Returns all of the links that this intent filter would accept, to be used
+// in listing all of the supported links for a given app.
+std::set<std::string> GetSupportedLinksForAppManagement(
+    const apps::IntentFilterPtr& intent_filter);
+
 }  // namespace apps_util
 
 #endif  // COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_INTENT_FILTER_UTIL_H_

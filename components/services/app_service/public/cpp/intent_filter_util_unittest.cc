@@ -63,7 +63,8 @@ class IntentFilterUtilTest : public testing::Test {
 TEST_F(IntentFilterUtilTest, EmptyConditionList) {
   auto intent_filter = std::make_unique<apps::IntentFilter>();
 
-  EXPECT_EQ(intent_filter->GetSupportedLinksForAppManagement().size(), 0u);
+  EXPECT_EQ(apps_util::GetSupportedLinksForAppManagement(intent_filter).size(),
+            0u);
 }
 
 TEST_F(IntentFilterUtilTest, SingleHostAndManyPaths) {
@@ -78,7 +79,7 @@ TEST_F(IntentFilterUtilTest, SingleHostAndManyPaths) {
                                          apps::PatternMatchType::kLiteral);
 
   std::set<std::string> links =
-      intent_filter->GetSupportedLinksForAppManagement();
+      apps_util::GetSupportedLinksForAppManagement(intent_filter);
 
   EXPECT_EQ(links.size(), 0u);
 
@@ -86,7 +87,7 @@ TEST_F(IntentFilterUtilTest, SingleHostAndManyPaths) {
                                          kPathLiteral,
                                          apps::PatternMatchType::kLiteral);
 
-  links = intent_filter->GetSupportedLinksForAppManagement();
+  links = apps_util::GetSupportedLinksForAppManagement(intent_filter);
 
   EXPECT_EQ(links.size(), 1u);
   EXPECT_EQ(links.count(kUrlGoogleLiteral), 1u);
@@ -94,7 +95,7 @@ TEST_F(IntentFilterUtilTest, SingleHostAndManyPaths) {
   intent_filter->AddSingleValueCondition(
       apps::ConditionType::kPath, kPathPrefix, apps::PatternMatchType::kPrefix);
 
-  links = intent_filter->GetSupportedLinksForAppManagement();
+  links = apps_util::GetSupportedLinksForAppManagement(intent_filter);
 
   EXPECT_EQ(links.size(), 2u);
   EXPECT_EQ(links.count(kUrlGoogleLiteral), 1u);
@@ -103,7 +104,7 @@ TEST_F(IntentFilterUtilTest, SingleHostAndManyPaths) {
   intent_filter->AddSingleValueCondition(apps::ConditionType::kPath, kPathGlob,
                                          apps::PatternMatchType::kGlob);
 
-  links = intent_filter->GetSupportedLinksForAppManagement();
+  links = apps_util::GetSupportedLinksForAppManagement(intent_filter);
 
   EXPECT_EQ(links.size(), 3u);
   EXPECT_EQ(links.count(kUrlGoogleLiteral), 1u);
@@ -116,7 +117,7 @@ TEST_F(IntentFilterUtilTest, InvalidScheme) {
                                   apps::PatternMatchType::kLiteral);
 
   std::set<std::string> links =
-      intent_filter->GetSupportedLinksForAppManagement();
+      apps_util::GetSupportedLinksForAppManagement(intent_filter);
 
   EXPECT_EQ(links.size(), 0u);
 }
@@ -144,7 +145,7 @@ TEST_F(IntentFilterUtilTest, ManyHostsAndOnePath) {
                                          apps::PatternMatchType::kLiteral);
 
   std::set<std::string> links =
-      intent_filter->GetSupportedLinksForAppManagement();
+      apps_util::GetSupportedLinksForAppManagement(intent_filter);
 
   EXPECT_EQ(links.size(), 2u);
   EXPECT_EQ(links.count(kUrlGoogleLiteral), 1u);
@@ -181,7 +182,7 @@ TEST_F(IntentFilterUtilTest, ManyHostsAndManyPaths) {
       apps::ConditionType::kPath, std::move(path_condition_values)));
 
   std::set<std::string> links =
-      intent_filter->GetSupportedLinksForAppManagement();
+      apps_util::GetSupportedLinksForAppManagement(intent_filter);
 
   EXPECT_EQ(links.size(), 6u);
   EXPECT_EQ(links.count(kUrlGoogleLiteral), 1u);
@@ -206,7 +207,7 @@ TEST_F(IntentFilterUtilTest, WildcardHost) {
                                          apps::PatternMatchType::kLiteral);
 
   std::set<std::string> links =
-      intent_filter->GetSupportedLinksForAppManagement();
+      apps_util::GetSupportedLinksForAppManagement(intent_filter);
 
   EXPECT_EQ(links.size(), 1u);
   EXPECT_EQ(links.count("*.google.com/a"), 1u);
@@ -217,7 +218,7 @@ TEST_F(IntentFilterUtilTest, HttpsScheme) {
       MakeFilter(url::kHttpsScheme, kHostUrlGoogle, kPathLiteral,
                  apps::PatternMatchType::kLiteral);
   std::set<std::string> links =
-      intent_filter->GetSupportedLinksForAppManagement();
+      apps_util::GetSupportedLinksForAppManagement(intent_filter);
 
   EXPECT_EQ(links.size(), 1u);
   EXPECT_EQ(links.count(kUrlGoogleLiteral), 1u);
@@ -246,7 +247,7 @@ TEST_F(IntentFilterUtilTest, HttpAndHttpsSchemes) {
                                          apps::PatternMatchType::kLiteral);
 
   std::set<std::string> links =
-      intent_filter->GetSupportedLinksForAppManagement();
+      apps_util::GetSupportedLinksForAppManagement(intent_filter);
 
   EXPECT_EQ(links.size(), 1u);
   EXPECT_EQ(links.count(kUrlGoogleLiteral), 1u);
@@ -273,7 +274,7 @@ TEST_F(IntentFilterUtilTest, PathsWithNoSlash) {
                                          apps::PatternMatchType::kPrefix);
 
   std::set<std::string> links =
-      intent_filter->GetSupportedLinksForAppManagement();
+      apps_util::GetSupportedLinksForAppManagement(intent_filter);
 
   EXPECT_EQ(links.size(), 3u);
   EXPECT_EQ(links.count("m.youtube.com/*"), 1u);

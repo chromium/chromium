@@ -161,7 +161,8 @@ std::vector<std::string> GetSupportedLinks(Profile* profile,
   std::set<std::string> supported_links;
   auto intent_filters = GetSupportedLinkIntentFilters(profile, app_id);
   for (auto& filter : intent_filters) {
-    for (const auto& link : filter->GetSupportedLinksForAppManagement()) {
+    for (const auto& link :
+         apps_util::GetSupportedLinksForAppManagement(filter)) {
       supported_links.insert(link);
     }
   }

@@ -199,4 +199,78 @@ size_t IntentFilterUrlMatchLength(const apps::IntentFilterPtr& intent_filter,
          url.host_piece().size() + path_length;
 }
 
+std::set<std::string> GetSupportedLinksForAppManagement(
+    const apps::IntentFilterPtr& intent_filter) {
+  std::set<std::string> hosts;
+  std::set<std::string> paths;
+  bool is_http_or_https = false;
+
+  for (auto& condition : intent_filter->conditions) {
+    // For scheme conditions we check if it's http or https and set a Boolean
+    // if this intent filter is for one of those schemes.
+    if (condition->condition_type == apps::ConditionType::kScheme) {
+      for (auto& condition_value : condition->condition_values) {
+        // We only care about http and https schemes.
+        if (condition_value->value == url::kHttpScheme ||
+            condition_value->value == url::kHttpsScheme) {
+          is_http_or_https = true;
+          break;
+        }
+      }
+
+      // There should only be one condition of type |kScheme| so if there
+      // aren't any http or https scheme values this indicates that no http or
+      // https scheme exists in the intent filter and thus we will have to
+      // return an empty list.
+      if (!is_http_or_https) {
+        break;
+      }
+    }
+
+    // For host conditions we add each value to the |hosts| set.
+    if (condition->condition_type == apps::ConditionType::kAuthority) {
+      for (auto& condition_value : condition->condition_values) {
+        // Prepend the wildcard to indicate any subdomain in the hosts
+        std::string host = condition_value->value;
+        if (condition_value->match_type == apps::PatternMatchType::kSuffix) {
+          host = "*" + host;
+        }
+        hosts.insert(host);
+      }
+    }
+
+    // For path conditions we add each value to the |paths| set.
+    if (condition->condition_type == apps::ConditionType::kPath) {
+      for (auto& condition_value : condition->condition_values) {
+        std::string value = condition_value->value;
+        // Glob and literal patterns can be printed exactly, but prefix
+        // patterns must have be appended with "*" to indicate that
+        // anything with that prefix can be matched.
+        if (condition_value->match_type == apps::PatternMatchType::kPrefix) {
+          value.append("*");
+        }
+        paths.insert(value);
+      }
+    }
+  }
+
+  // We only care about http and https schemes.
+  if (!is_http_or_https) {
+    return std::set<std::string>();
+  }
+
+  std::set<std::string> supported_links;
+  for (auto& host : hosts) {
+    for (auto& path : paths) {
+      if (!path.empty() && path.front() == '/') {
+        supported_links.insert(host + path);
+      } else {
+        supported_links.insert(host + "/" + path);
+      }
+    }
+  }
+
+  return supported_links;
+}
+
 }  // namespace apps_util

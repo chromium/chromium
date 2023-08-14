@@ -169,10 +169,6 @@ struct COMPONENT_EXPORT(APP_TYPES) IntentFilter {
   void GetMimeTypesAndExtensions(std::set<std::string>& mime_types,
                                  std::set<std::string>& file_extensions);
 
-  // Returns all of the links that this intent filter would accept, to be used
-  // in listing all of the supported links for a given app.
-  std::set<std::string> GetSupportedLinksForAppManagement();
-
   // Returns true if the filter is a browser filter, i.e. can handle all https
   // or http scheme.
   bool IsBrowserFilter();
