@@ -12,6 +12,7 @@
 #include "components/performance_manager/public/features.h"
 #include "components/permissions/features.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 
@@ -1002,7 +1003,18 @@ IN_PROC_BROWSER_TEST_F(SettingsSafetyHubTest, All) {
           "mocha.run()");
 }
 
-using SettingsSecurityPageTest = SettingsBrowserTest;
+class SettingsSecurityPageTest : public SettingsBrowserTest {
+ protected:
+  SettingsSecurityPageTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {safe_browsing::kFriendlierSafeBrowsingSettingsEnhancedProtection,
+         safe_browsing::kFriendlierSafeBrowsingSettingsStandardProtection},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
 
 IN_PROC_BROWSER_TEST_F(SettingsSecurityPageTest, Main) {
   RunTest("settings/security_page_test.js", "runMochaSuite('Main')");

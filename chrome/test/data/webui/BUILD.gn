@@ -104,6 +104,7 @@ source_set("browser_tests") {
     "//components/performance_manager:performance_manager",
     "//components/power_bookmarks/core:features",
     "//components/privacy_sandbox:features",
+    "//components/safe_browsing/core/common:common",
     "//components/search:search",
     "//components/user_notes:features",
   ]

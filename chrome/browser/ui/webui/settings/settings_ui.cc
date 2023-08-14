@@ -338,9 +338,12 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       safe_browsing::kEsbIphBubbleAndCollapseSettingsEnableCollapse.Get());
 
   html_source->AddBoolean(
-      "enableFriendlierSafeBrowsingSettingsStandardProtection",
+      "enableFriendlierSafeBrowsingSettings",
       base::FeatureList::IsEnabled(
-          safe_browsing::kFriendlierSafeBrowsingSettingsStandardProtection));
+          safe_browsing::kFriendlierSafeBrowsingSettingsEnhancedProtection) &&
+          base::FeatureList::IsEnabled(
+              safe_browsing::
+                  kFriendlierSafeBrowsingSettingsStandardProtection));
 
   html_source->AddBoolean(
       "downloadBubblePartialViewControlledByPref",

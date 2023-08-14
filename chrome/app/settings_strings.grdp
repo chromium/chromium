@@ -2583,6 +2583,9 @@
   <message name="IDS_SETTINGS_SAFEBROWSING_ENHANCED_DESC" desc="Description of safe browsing enhanced protection mode">
     Faster, proactive protection against dangerous websites, downloads, and extensions. Warns you about password breaches. Requires browsing data to be sent to Google.
   </message>
+  <message name="IDS_SETTINGS_SAFEBROWSING_ENHANCED_DESC_UPDATED" desc="Updated description of safe browsing enhanced protection mode">
+    Real-time, proactive protection against dangerous sites, downloads, and extensions that's based on your browsing data getting sent to Google
+  </message>
   <message name="IDS_SETTINGS_SAFEBROWSING_ENHANCED_EXPAND_ACCESSIBILITY_LABEL" desc="Label for the button that toggles showing the detailed description of safe browsing enhanced protection. Only visible by screen reader software.">
     Show enhanced protection details
   </message>
@@ -2597,6 +2600,33 @@
   </message>
   <message name="IDS_SETTINGS_SAFEBROWSING_ENHANCED_BULLET_FIVE" desc="Fourth bullet point under the safe browsing enhanced protection mode">
     Sends URLs to Safe Browsing to check them. Also sends a small sample of pages, downloads, extension activity, and system information to help discover new threats. Temporarily links this data to your Google Account when you're signed in, to protect you across Google apps.
+  </message>
+  <message name="IDS_SETTINGS_SAFEBROWSING_ENHANCED_WHEN_ON_LABEL" desc="Label of 'When on' section under the Safe Browsing enhanced protection mode">
+    When on
+  </message>
+  <message name="IDS_SETTINGS_SAFEBROWSING_ENHANCED_WHEN_ON_BULLET_TWO" desc="Second bullet point under the Safe Browsing enhanced protection mode section titled 'When on'">
+    In-depth scans for suspicious downloads.
+  </message>
+  <message name="IDS_SETTINGS_SAFEBROWSING_ENHANCED_WHEN_ON_BULLET_THREE" desc="Third bullet point under the Safe Browsing enhanced protection mode section titled 'When on'">
+    When you're signed in, protects you across Google services.
+  </message>
+  <message name="IDS_SETTINGS_SAFEBROWSING_ENHANCED_WHEN_ON_BULLET_FOUR" desc="Fourth bullet point under the Safe Browsing enhanced protection mode section titled 'When on'">
+    Improves security for you and everyone on the web.
+  </message>
+  <message name="IDS_SETTINGS_SAFEBROWSING_ENHANCED_WHEN_ON_BULLET_FIVE" desc="Fifth bullet point under the Safe Browsing enhanced protection mode section titled 'When on'">
+    Warns you if you use a password that has been compromised in a data breach.
+  </message>
+  <message name="IDS_SETTINGS_SAFEBROWSING_ENHANCED_THINGS_TO_CONSIDER_LABEL" desc="Label of 'Things to consider' section under the Safe Browsing enhanced protection mode">
+    Things to consider
+  </message>
+  <message name="IDS_SETTINGS_SAFEBROWSING_ENHANCED_THINGS_TO_CONSIDER_BULLET_ONE" desc="First bullet point under the Safe Browsing enhanced protection mode section titled 'Things to consider'">
+    Sends the URLs of sites you visit and a small sample of page content, downloads, extension activity, and system information to Google Safe Browsing to check if they're harmful.
+  </message>
+  <message name="IDS_SETTINGS_SAFEBROWSING_ENHANCED_THINGS_TO_CONSIDER_BULLET_TWO" desc="Second bullet point under the Safe Browsing enhanced protection mode section titled 'Things to consider'">
+    When you're signed in, this data is linked to your Google Account to protect you across Google services, for example increasing protection in Gmail after a security incident.
+  </message>
+  <message name="IDS_SETTINGS_SAFEBROWSING_ENHANCED_THINGS_TO_CONSIDER_BULLET_THREE" desc="Third bullet point under the Safe Browsing enhanced protection mode section titled 'Things to consider'">
+    Doesn't noticeably slow down your browser or device.
   </message>
   <message name="IDS_SETTINGS_SAFEBROWSING_STANDARD" desc="Label for safe browsing standard protection mode">
     Standard protection
@@ -2621,6 +2651,9 @@
   </message>
   <message name="IDS_SETTINGS_SAFEBROWSING_NONE_DESC" desc="Description for safe browsing no protection mode">
     Does not protect you against dangerous websites, downloads, and extensions. You’ll still get Safe Browsing protection, where available, in other Google services, like Gmail and Search.
+  </message>
+  <message name="IDS_SETTINGS_SAFEBROWSING_NONE_DESC_UPDATED" desc="Updated description for safe browsing no protection mode">
+    Does not protect you against dangerous websites, downloads, and extensions. Your Safe Browsing settings in other Google products won't be affected.
   </message>
   <message name="IDS_SETTINGS_SAFEBROWSING_DISABLE_DIALOG_TITLE" desc="Title for the confirmation dialog to turn off SafeBrowsing">
     Turn off Safe Browsing?

@@ -245,6 +245,9 @@
   <message name="IDS_SETTINGS_SAFEBROWSING_STANDARD_BULLET_TWO" desc="First bullet point under the safe browsing standard protection mode">
     Checks URLs with a list of unsafe sites stored in Chrome. If a site tries to steal your password, or when you download a harmful file, Chrome may also send URLs, including bits of page content, to Safe Browsing.
   </message>
+  <message name="IDS_SETTINGS_SAFEBROWSING_ENHANCED_WHEN_ON_BULLET_ONE" desc="First bullet point under the Safe Browsing enhanced protection mode section titled 'When on'">
+    Warns you about dangerous sites, even ones Google didn't know about before, by analyzing more data from sites than standard protection. You can choose to skip Chrome warnings.
+  </message>
 
   <!-- People Page -->
   <message name="IDS_SETTINGS_SYNC_DISCONNECT_DELETE_PROFILE_WARNING_WITH_COUNTS_SINGULAR" desc="Warning message displayed in the Sign out of Chrome dialog that indicates profile browsing data will be removed from the device.">

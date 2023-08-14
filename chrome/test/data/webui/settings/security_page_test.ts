@@ -56,7 +56,6 @@ suite('Main', function() {
     loadTimeData.overrideValues({
       enableSecurityKeysSubpage: true,
       showChromeRootStoreCertificates: true,
-      enableFriendlierSafeBrowsingSettingsStandardProtection: true,
     });
   });
 
@@ -170,6 +169,17 @@ suite('Main', function() {
         'passwordsLeakDetectionGeneralDescriptionUpdated');
     assertEquals(updatedPasswordLeakSubLabel, passwordsLeakToggle.subLabel);
   });
+
+  test('UpdatedEnhancedProtectionText', function() {
+    const enhancedProtection = page.$.safeBrowsingEnhanced;
+    const epSubLabel =
+        loadTimeData.getString('safeBrowsingEnhancedDescUpdated');
+    assertEquals(epSubLabel, enhancedProtection.subLabel);
+
+    const noProtection = page.$.safeBrowsingDisabled;
+    const npSubLabel = loadTimeData.getString('safeBrowsingNoneDescUpdated');
+    assertEquals(npSubLabel, noProtection.subLabel);
+  });
 });
 
 suite('FlagsDisabled', function() {
@@ -178,7 +188,7 @@ suite('FlagsDisabled', function() {
   suiteSetup(function() {
     loadTimeData.overrideValues({
       enableSecurityKeysSubpage: false,
-      enableFriendlierSafeBrowsingSettingsStandardProtection: false,
+      enableFriendlierSafeBrowsingSettings: false,
     });
   });
 
@@ -229,6 +239,23 @@ suite('FlagsDisabled', function() {
         loadTimeData.getString('passwordsLeakDetectionGeneralDescription');
     assertEquals(passwordLeakSubLabel, passwordsLeakToggle.subLabel);
   });
+
+  // TODO(crbug.com/1470385): Remove once friendlier safe browsing settings
+  // enhanced protection is launched.
+  test('NotUpdatedEnhancedProtectionDropdown', function() {
+    // Enhanced protection sublabel should not be the updated one.
+    const enhancedProtection = page.$.safeBrowsingEnhanced;
+    const epSubLabel = loadTimeData.getString('safeBrowsingEnhancedDesc');
+    assertEquals(epSubLabel, enhancedProtection.subLabel);
+
+    // The updated description container should not be visible.
+    assertFalse(isChildVisible(page, '#enhancedProtectionDescContainer'));
+
+    // No protection sublabel should not be the updated one.
+    const noProtection = page.$.safeBrowsingDisabled;
+    const npSubLabel = loadTimeData.getString('safeBrowsingNoneDesc');
+    assertEquals(npSubLabel, noProtection.subLabel);
+  });
 });
 
 // Separate test suite for tests specifically related to Safe Browsing controls.
@@ -239,6 +266,12 @@ suite('SafeBrowsing', function() {
   // <if expr="chrome_root_store_supported">
   let openWindowProxy: TestOpenWindowProxy;
   // </if>
+
+  suiteSetup(function() {
+    loadTimeData.overrideValues({
+      enableFriendlierSafeBrowsingSettings: false,
+    });
+  });
 
   setup(function() {
     testMetricsBrowserProxy = new TestMetricsBrowserProxy();

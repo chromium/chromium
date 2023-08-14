@@ -75,15 +75,15 @@
         </div>
     </settings-collapse-radio-button>
     <settings-collapse-radio-button id="safeBrowsingRadioStandard"
-        no-collapse="[[enableFriendlierSafeBrowsingSettingsStandardProtection_]]"
+        no-collapse="[[enableFriendlierSafeBrowsingSettings_]]"
         pref="[[prefs.generated.safe_browsing]]"
         name="[[safeBrowsingSettingEnum_.STANDARD]]"
         label="$i18n{safeBrowsingStandard}"
         sub-label="[[getSafeBrowsingStandardSubLabel_(
-                    enableFriendlierSafeBrowsingSettingsStandardProtection_)]]"
+                    enableFriendlierSafeBrowsingSettings_)]]"
         expand-aria-label="$i18n{safeBrowsingStandardExpandA11yLabel}"
         on-click="onSafeBrowsingStandardClick_">
-        <template is="dom-if" if="[[!enableFriendlierSafeBrowsingSettingsStandardProtection_]]">
+        <template is="dom-if" if="[[!enableFriendlierSafeBrowsingSettings_]]">
           <div slot="collapse" class="description-wrapper-radio two-column"
             id="whenOnThingsToConsiderStandardProtection">
             <div class="description-column description-column-first">
