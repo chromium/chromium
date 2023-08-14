@@ -563,6 +563,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="DevTools.TraceLoad" enum="DevToolsSyncSetting"
+    expires_after="2024-08-12">
+  <owner>paulirish@chromium.org</owner>
+  <owner>jacktfranklin@chromium.org</owner>
+  <owner>victorporof@chromium.org</owner>
+  <summary>
+    Measures the time a trace is loading. Starts when recording is stopped or
+    file/url load was started. Stops after the first render of the flamechart.
+  </summary>
+</histogram>
+
 <histogram name="DevTools.VMInlineScriptShown"
     enum="DevToolsVMInlineScriptType" expires_after="2024-02-04">
   <owner>yangguo@chromium.org</owner>
