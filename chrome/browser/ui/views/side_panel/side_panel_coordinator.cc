@@ -765,6 +765,7 @@ std::unique_ptr<views::Combobox> SidePanelCoordinator::CreateCombobox() {
   if (features::IsChromeRefresh2023()) {
     combobox->SetForegroundColorId(kColorSidePanelEntryTitle);
     combobox->SetForegroundIconColorId(kColorSidePanelEntryIcon);
+    combobox->SetForegroundTextStyle(views::style::STYLE_HEADLINE_5);
   }
   combobox->SetEventHighlighting(true);
   combobox->SetSizeToLargestLabel(false);

@@ -291,6 +291,11 @@ void Combobox::SetForegroundIconColorId(ui::ColorId color_id) {
   SchedulePaint();
 }
 
+void Combobox::SetForegroundTextStyle(style::TextStyle text_style) {
+  foreground_text_style_ = text_style;
+  SchedulePaint();
+}
+
 void Combobox::SetEventHighlighting(bool should_highlight) {
   should_highlight_ = should_highlight;
   AsViewClass<TransparentButton>(arrow_button_)
@@ -361,7 +366,7 @@ gfx::Size Combobox::CalculatePreferredSize() const {
   }
 
   return gfx::Size(width, LayoutProvider::GetControlHeightForFont(
-                              kContext, kStyle, GetFontList()));
+                              kContext, kStyle, GetForegroundFontList()));
 }
 
 void Combobox::OnBoundsChanged(const gfx::Rect& previous_bounds) {
@@ -607,7 +612,7 @@ void Combobox::PaintIconAndText(gfx::Canvas* canvas) {
                            ? GetColorProvider()->GetColor(*foreground_color_id_)
                            : GetTextColorForEnableState(*this, GetEnabled());
   std::u16string text = GetModel()->GetItemAt(*selected_index_);
-  const gfx::FontList& font_list = GetFontList();
+  const gfx::FontList& font_list = GetForegroundFontList();
 
   // If the text is not empty, add padding between it and the icon. If there
   // was an empty icon, this padding is not necessary.
@@ -722,7 +727,7 @@ void Combobox::OnPerformAction() {
 }
 
 gfx::Size Combobox::GetContentSize() const {
-  const gfx::FontList& font_list = GetFontList();
+  const gfx::FontList& font_list = GetForegroundFontList();
   int height = font_list.GetHeight();
   int width = 0;
   for (size_t i = 0; i < GetModel()->GetItemCount(); ++i) {
@@ -778,6 +783,13 @@ PrefixSelector* Combobox::GetPrefixSelector() {
   if (!selector_)
     selector_ = std::make_unique<PrefixSelector>(this, this);
   return selector_.get();
+}
+
+const gfx::FontList& Combobox::GetForegroundFontList() const {
+  if (foreground_text_style_) {
+    return style::GetFont(kContext, *foreground_text_style_);
+  }
+  return GetFontList();
 }
 
 BEGIN_METADATA(Combobox, View)
