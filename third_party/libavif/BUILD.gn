@@ -4,10 +4,15 @@
 
 import("//media/media_options.gni")
 
-source_set("libavif") {
-  public = [
-    "src/include/avif/avif.h",
-  ]
+config("avif_config") {
+  if (is_component_build) {
+    defines = [ "AVIF_DLL" ]
+  }
+}
+
+component("libavif") {
+  public = [ "src/include/avif/avif.h" ]
+  public_configs = [ ":avif_config" ]
 
   sources = [
     "src/include/avif/internal.h",
@@ -28,9 +33,6 @@ source_set("libavif") {
     "src/src/utils.c",
   ]
 
-  # configs -= [ "//build/config/compiler:chromium_code" ]
-  # configs += [ "//build/config/compiler:no_chromium_code" ]
-
   # CFI builds have an issue when C code tries to access, via a function
   # pointer, a C++ function that contains a "struct YuvConstants *" parameter.
   # Work around that issue by adding "-fsanitize-cfi-icall-generalize-pointers"
@@ -38,6 +40,9 @@ source_set("libavif") {
   configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
   include_dirs = [ "src/include/" ]
   defines = [ "AVIF_LIBYUV_ENABLED" ]
+  if (is_component_build) {
+    defines += [ "AVIF_BUILDING_SHARED_LIBS" ]
+  }
 
   deps = [ "//third_party/libyuv" ]
 
