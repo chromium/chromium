@@ -6,6 +6,7 @@
 
 #include "base/json/json_reader.h"
 #include "base/json/values_util.h"
+#include "base/rand_util.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -178,6 +179,235 @@ TEST_F(WebAppPrefsUtilsTest, TestTakeAllWebAppInstallSources) {
   EXPECT_TRUE(web_apps_pref_dict.Find("app3"));
   EXPECT_FALSE(web_apps_pref_dict.FindByDottedPath(
       "app3.latest_web_app_install_source"));
+}
+
+TEST_F(WebAppPrefsUtilsTest, MLInstallIgnored) {
+  EXPECT_FALSE(GetTimeWebAppPref(prefs(), app_id, kLastTimeMlInstallIgnored)
+                   .has_value());
+  EXPECT_FALSE(
+      GetIntWebAppPref(prefs(), app_id, kConsecutiveMlInstallNotAcceptedCount)
+          .has_value());
+
+  RecordMlInstallIgnored(prefs(), app_id, base::Time::Now());
+  EXPECT_EQ(
+      GetIntWebAppPref(prefs(), app_id, kConsecutiveMlInstallNotAcceptedCount)
+          .value_or(0),
+      1);
+  auto last_ignore_time =
+      GetTimeWebAppPref(prefs(), app_id, kLastTimeMlInstallIgnored);
+  EXPECT_TRUE(last_ignore_time.has_value());
+  {
+    const auto& dict = prefs()->GetDict(prefs::kWebAppsAppAgnosticMlState);
+    EXPECT_EQ(dict.FindInt(kConsecutiveMlInstallNotAcceptedCount).value_or(0),
+              1);
+    EXPECT_EQ(base::ValueToTime(dict.Find(kLastTimeMlInstallIgnored)),
+              last_ignore_time.value());
+  }
+}
+
+TEST_F(WebAppPrefsUtilsTest, MLInstallDismissed) {
+  EXPECT_FALSE(GetTimeWebAppPref(prefs(), app_id, kLastTimeMlInstallDismissed)
+                   .has_value());
+  EXPECT_FALSE(
+      GetIntWebAppPref(prefs(), app_id, kConsecutiveMlInstallNotAcceptedCount)
+          .has_value());
+
+  RecordMlInstallDismissed(prefs(), app_id, base::Time::Now());
+  EXPECT_EQ(
+      GetIntWebAppPref(prefs(), app_id, kConsecutiveMlInstallNotAcceptedCount)
+          .value_or(0),
+      1);
+  auto last_dismissed_time =
+      GetTimeWebAppPref(prefs(), app_id, kLastTimeMlInstallDismissed);
+  EXPECT_TRUE(last_dismissed_time.has_value());
+  {
+    const auto& dict = prefs()->GetDict(prefs::kWebAppsAppAgnosticMlState);
+    EXPECT_EQ(dict.FindInt(kConsecutiveMlInstallNotAcceptedCount).value_or(0),
+              1);
+    EXPECT_EQ(base::ValueToTime(dict.Find(kLastTimeMlInstallDismissed)),
+              last_dismissed_time.value());
+  }
+}
+
+TEST_F(WebAppPrefsUtilsTest, MLAcceptResetsCounters) {
+  RecordMlInstallIgnored(prefs(), app_id, base::Time::Now());
+  EXPECT_EQ(
+      GetIntWebAppPref(prefs(), app_id, kConsecutiveMlInstallNotAcceptedCount)
+          .value_or(0),
+      1);
+  {
+    const auto& dict = prefs()->GetDict(prefs::kWebAppsAppAgnosticMlState);
+    EXPECT_EQ(dict.FindInt(kConsecutiveMlInstallNotAcceptedCount).value_or(0),
+              1);
+  }
+  RecordMlInstallAccepted(prefs(), app_id, base::Time::Now());
+  EXPECT_EQ(
+      GetIntWebAppPref(prefs(), app_id, kConsecutiveMlInstallNotAcceptedCount)
+          .value_or(0),
+      0);
+  {
+    const auto& dict = prefs()->GetDict(prefs::kWebAppsAppAgnosticMlState);
+    EXPECT_EQ(dict.FindInt(kConsecutiveMlInstallNotAcceptedCount).value_or(0),
+              0);
+  }
+}
+
+TEST_F(WebAppPrefsUtilsTest, MLGuardrailConsecutiveAppSpecificIgnores) {
+  RecordMlInstallIgnored(prefs(), app_id, base::Time::Now());
+  EXPECT_EQ(
+      GetIntWebAppPref(prefs(), app_id, kConsecutiveMlInstallNotAcceptedCount)
+          .value_or(0),
+      1);
+  RecordMlInstallIgnored(prefs(), app_id, base::Time::Now());
+  EXPECT_EQ(
+      GetIntWebAppPref(prefs(), app_id, kConsecutiveMlInstallNotAcceptedCount)
+          .value_or(0),
+      2);
+  RecordMlInstallIgnored(prefs(), app_id, base::Time::Now());
+  EXPECT_EQ(
+      GetIntWebAppPref(prefs(), app_id, kConsecutiveMlInstallNotAcceptedCount)
+          .value_or(0),
+      3);
+  EXPECT_TRUE(IsMlPromotionBlockedByHistoryGuardrail(prefs(), app_id));
+  {
+    const auto& dict = prefs()->GetDict(prefs::kWebAppsAppAgnosticMlState);
+    EXPECT_EQ(*dict.FindString(kMLPromotionGuardrailBlockReason),
+              "app_specific_not_accept_count_exceeded");
+  }
+}
+
+TEST_F(WebAppPrefsUtilsTest, MLGuardrailAppSpecificIgnoreForDays) {
+  base::Time now_time = base::Time::Now();
+  RecordMlInstallIgnored(prefs(), app_id, now_time);
+  auto ignore_time =
+      GetTimeWebAppPref(prefs(), app_id, kLastTimeMlInstallIgnored);
+  EXPECT_TRUE(ignore_time.has_value());
+  EXPECT_EQ(now_time, ignore_time);
+
+  base::Time forwarded_time = base::Time::Now() + base::Days(1);
+  RecordMlInstallIgnored(prefs(), app_id, forwarded_time);
+  auto ignore_time_new =
+      GetTimeWebAppPref(prefs(), app_id, kLastTimeMlInstallIgnored);
+  EXPECT_TRUE(ignore_time_new.has_value());
+  EXPECT_EQ(forwarded_time, ignore_time_new);
+  EXPECT_TRUE(IsMlPromotionBlockedByHistoryGuardrail(prefs(), app_id));
+  {
+    const auto& dict = prefs()->GetDict(prefs::kWebAppsAppAgnosticMlState);
+    EXPECT_EQ(*dict.FindString(kMLPromotionGuardrailBlockReason),
+              "app_specific_ml_install_ignore_days_hit");
+  }
+}
+
+TEST_F(WebAppPrefsUtilsTest, MLGuardrailAppSpecificDismissForDays) {
+  base::Time now_time = base::Time::Now();
+  RecordMlInstallDismissed(prefs(), app_id, now_time);
+  auto dismiss_time =
+      GetTimeWebAppPref(prefs(), app_id, kLastTimeMlInstallDismissed);
+  EXPECT_TRUE(dismiss_time.has_value());
+  EXPECT_EQ(now_time, dismiss_time);
+
+  // Dismissing the same app within 14 days should trigger the guardrail
+  // response.
+  int randDays = base::RandInt(1, 13);
+  base::Time forwarded_time = base::Time::Now() + base::Days(randDays);
+  RecordMlInstallDismissed(prefs(), app_id, forwarded_time);
+  auto dismiss_time_new =
+      GetTimeWebAppPref(prefs(), app_id, kLastTimeMlInstallDismissed);
+  EXPECT_TRUE(dismiss_time_new.has_value());
+  EXPECT_EQ(forwarded_time, dismiss_time_new);
+  EXPECT_TRUE(IsMlPromotionBlockedByHistoryGuardrail(prefs(), app_id));
+  {
+    const auto& dict = prefs()->GetDict(prefs::kWebAppsAppAgnosticMlState);
+    EXPECT_EQ(*dict.FindString(kMLPromotionGuardrailBlockReason),
+              "app_specific_ml_install_dismiss_days_hit");
+  }
+}
+
+TEST_F(WebAppPrefsUtilsTest, MLGuardrailConsecutiveAppAgnosticIgnores) {
+  const AppId& app_id1 = "app1";
+  const AppId& app_id2 = "app2";
+  const AppId& app_id3 = "app3";
+  const AppId& app_id4 = "app4";
+  const AppId& app_id5 = "app5";
+  RecordMlInstallIgnored(prefs(), app_id1, base::Time::Now());
+  {
+    const auto& dict = prefs()->GetDict(prefs::kWebAppsAppAgnosticMlState);
+    EXPECT_EQ(dict.FindInt(kConsecutiveMlInstallNotAcceptedCount).value_or(0),
+              1);
+  }
+  RecordMlInstallDismissed(prefs(), app_id2, base::Time::Now());
+  {
+    const auto& dict = prefs()->GetDict(prefs::kWebAppsAppAgnosticMlState);
+    EXPECT_EQ(dict.FindInt(kConsecutiveMlInstallNotAcceptedCount).value_or(0),
+              2);
+  }
+  RecordMlInstallDismissed(prefs(), app_id3, base::Time::Now());
+  {
+    const auto& dict = prefs()->GetDict(prefs::kWebAppsAppAgnosticMlState);
+    EXPECT_EQ(dict.FindInt(kConsecutiveMlInstallNotAcceptedCount).value_or(0),
+              3);
+  }
+  RecordMlInstallDismissed(prefs(), app_id4, base::Time::Now());
+  {
+    const auto& dict = prefs()->GetDict(prefs::kWebAppsAppAgnosticMlState);
+    EXPECT_EQ(dict.FindInt(kConsecutiveMlInstallNotAcceptedCount).value_or(0),
+              4);
+  }
+  RecordMlInstallIgnored(prefs(), app_id5, base::Time::Now());
+  {
+    const auto& dict = prefs()->GetDict(prefs::kWebAppsAppAgnosticMlState);
+    EXPECT_EQ(dict.FindInt(kConsecutiveMlInstallNotAcceptedCount).value_or(0),
+              5);
+  }
+  EXPECT_TRUE(IsMlPromotionBlockedByHistoryGuardrail(prefs(), app_id));
+  {
+    const auto& dict = prefs()->GetDict(prefs::kWebAppsAppAgnosticMlState);
+    EXPECT_EQ(*dict.FindString(kMLPromotionGuardrailBlockReason),
+              "app_agnostic_not_accept_count_exceeded");
+  }
+}
+
+TEST_F(WebAppPrefsUtilsTest, MLGuardrailConsecutiveAppAgnosticIgnoreDays) {
+  const AppId& app_id1 = "app1";
+  RecordMlInstallIgnored(prefs(), app_id1, base::Time::Now());
+  auto last_ignored_time =
+      GetTimeWebAppPref(prefs(), app_id1, kLastTimeMlInstallIgnored);
+  EXPECT_TRUE(last_ignored_time.has_value());
+  {
+    const auto& dict = prefs()->GetDict(prefs::kWebAppsAppAgnosticMlState);
+    EXPECT_EQ(base::ValueToTime(dict.Find(kLastTimeMlInstallIgnored)),
+              last_ignored_time.value());
+  }
+  EXPECT_TRUE(IsMlPromotionBlockedByHistoryGuardrail(prefs(), app_id));
+  {
+    const auto& dict = prefs()->GetDict(prefs::kWebAppsAppAgnosticMlState);
+    EXPECT_EQ(*dict.FindString(kMLPromotionGuardrailBlockReason),
+              "app_agnostic_ml_install_ignore_days_hit");
+  }
+}
+
+TEST_F(WebAppPrefsUtilsTest, MLGuardrailConsecutiveAppAgnosticDismissDays) {
+  const AppId& app_id1 = "app1";
+
+  // Dismissing any app within the last 7 days should trigger the app agnostic
+  // dismiss guardrail response.
+  int randDays = base::RandInt(0, 6);
+  RecordMlInstallDismissed(prefs(), app_id1,
+                           base::Time::Now() - base::Days(randDays));
+  auto last_dismissed_time =
+      GetTimeWebAppPref(prefs(), app_id1, kLastTimeMlInstallDismissed);
+  EXPECT_TRUE(last_dismissed_time.has_value());
+  {
+    const auto& dict = prefs()->GetDict(prefs::kWebAppsAppAgnosticMlState);
+    EXPECT_EQ(base::ValueToTime(dict.Find(kLastTimeMlInstallDismissed)),
+              last_dismissed_time.value());
+  }
+  EXPECT_TRUE(IsMlPromotionBlockedByHistoryGuardrail(prefs(), app_id));
+  {
+    const auto& dict = prefs()->GetDict(prefs::kWebAppsAppAgnosticMlState);
+    EXPECT_EQ(*dict.FindString(kMLPromotionGuardrailBlockReason),
+              "app_agnostic_ml_install_dismiss_days_hit");
+  }
 }
 
 }  // namespace web_app

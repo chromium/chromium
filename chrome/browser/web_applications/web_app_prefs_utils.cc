@@ -268,6 +268,7 @@ const char kLastTimeMlInstallIgnored[] = "ML_last_time_install_ignored";
 const char kLastTimeMlInstallDismissed[] = "ML_last_time_install_dismissed";
 const char kConsecutiveMlInstallNotAcceptedCount[] =
     "ML_num_of_consecutive_not_accepted";
+const char kMLPromotionGuardrailBlockReason[] = "ML_guardrail_blocked";
 
 void RecordMlInstallIgnored(PrefService* pref_service,
                             const AppId& app_id,
@@ -289,21 +290,23 @@ void RecordMlInstallIgnored(PrefService* pref_service,
               base::saturated_cast<int>(global_count + 1));
   update->Set(kLastTimeMlInstallIgnored, base::TimeToValue(time));
 }
+
 void RecordMlInstallDismissed(PrefService* pref_service,
                               const AppId& app_id,
                               base::Time time) {
   CHECK(pref_service);
 
-  absl::optional<int> ignored_count =
-      GetIntWebAppPref(pref_service, app_id, kLastTimeMlInstallDismissed);
+  absl::optional<int> ignored_count = GetIntWebAppPref(
+      pref_service, app_id, kConsecutiveMlInstallNotAcceptedCount);
   int new_count = base::saturated_cast<int>(1 + ignored_count.value_or(0));
 
-  UpdateIntWebAppPref(pref_service, app_id, kLastTimeMlInstallDismissed,
-                      new_count);
-  UpdateTimeWebAppPref(pref_service, app_id, kLastTimeMlInstallIgnored, time);
+  UpdateIntWebAppPref(pref_service, app_id,
+                      kConsecutiveMlInstallNotAcceptedCount, new_count);
+  UpdateTimeWebAppPref(pref_service, app_id, kLastTimeMlInstallDismissed, time);
 
   ScopedDictPrefUpdate update(pref_service, prefs::kWebAppsAppAgnosticMlState);
-  int global_count = update->FindInt(kLastTimeMlInstallDismissed).value_or(0);
+  int global_count =
+      update->FindInt(kConsecutiveMlInstallNotAcceptedCount).value_or(0);
   update->Set(kConsecutiveMlInstallNotAcceptedCount,
               base::saturated_cast<int>(global_count + 1));
   update->Set(kLastTimeMlInstallDismissed, base::TimeToValue(time));
@@ -324,11 +327,11 @@ void RecordMlInstallAccepted(PrefService* pref_service,
 
 bool IsMlPromotionBlockedByHistoryGuardrail(PrefService* pref_service,
                                             const AppId& app_id) {
-  constexpr int kMuteMlInstallAfterConsecutiveAppSpecificIgnores = 3;
+  constexpr int kMuteMlInstallAfterConsecutiveAppSpecificNotAcceptedCount = 3;
   constexpr int kMuteMlInstallAfterIgnoreForDays = 2;
   constexpr int kMuteMlInstallAfterDismissForDays = 14;
 
-  constexpr int kMuteMlInstallAfterConsecutiveAppAgnosticIgnores = 5;
+  constexpr int kMuteMlInstallAfterConsecutiveAppAgnosticNotAcceptedCount = 5;
   constexpr int kMuteMlInstallAfterAnyIgnoreForDays = 1;
   constexpr int kMuteMlInstallAfterAnyDismissForDays = 7;
 
@@ -337,7 +340,12 @@ bool IsMlPromotionBlockedByHistoryGuardrail(PrefService* pref_service,
       GetIntWebAppPref(pref_service, app_id,
                        kConsecutiveMlInstallNotAcceptedCount)
           .value_or(0);
-  if (app_ignored_count >= kMuteMlInstallAfterConsecutiveAppSpecificIgnores) {
+  if (app_ignored_count >=
+      kMuteMlInstallAfterConsecutiveAppSpecificNotAcceptedCount) {
+    ScopedDictPrefUpdate update(pref_service,
+                                prefs::kWebAppsAppAgnosticMlState);
+    update->Set(kMLPromotionGuardrailBlockReason,
+                "app_specific_not_accept_count_exceeded");
     return true;
   }
   // Do not show Ml install if the user ignored a promo for this app within N
@@ -346,6 +354,10 @@ bool IsMlPromotionBlockedByHistoryGuardrail(PrefService* pref_service,
       GetTimeWebAppPref(pref_service, app_id, kLastTimeMlInstallIgnored);
   if (TimeOccurredWithinDays(app_last_ignore,
                              kMuteMlInstallAfterIgnoreForDays)) {
+    ScopedDictPrefUpdate update(pref_service,
+                                prefs::kWebAppsAppAgnosticMlState);
+    update->Set(kMLPromotionGuardrailBlockReason,
+                "app_specific_ml_install_ignore_days_hit");
     return true;
   }
   // Do not show Ml install if the user dismissed a promo for this app within N
@@ -354,6 +366,10 @@ bool IsMlPromotionBlockedByHistoryGuardrail(PrefService* pref_service,
       GetTimeWebAppPref(pref_service, app_id, kLastTimeMlInstallDismissed);
   if (TimeOccurredWithinDays(app_last_dismissed,
                              kMuteMlInstallAfterDismissForDays)) {
+    ScopedDictPrefUpdate update(pref_service,
+                                prefs::kWebAppsAppAgnosticMlState);
+    update->Set(kMLPromotionGuardrailBlockReason,
+                "app_specific_ml_install_dismiss_days_hit");
     return true;
   }
 
@@ -364,16 +380,24 @@ bool IsMlPromotionBlockedByHistoryGuardrail(PrefService* pref_service,
   int global_ignored_count =
       dict.FindInt(kConsecutiveMlInstallNotAcceptedCount).value_or(0);
   if (global_ignored_count >=
-      kMuteMlInstallAfterConsecutiveAppAgnosticIgnores) {
+      kMuteMlInstallAfterConsecutiveAppAgnosticNotAcceptedCount) {
+    ScopedDictPrefUpdate update(pref_service,
+                                prefs::kWebAppsAppAgnosticMlState);
+    update->Set(kMLPromotionGuardrailBlockReason,
+                "app_agnostic_not_accept_count_exceeded");
     return true;
   }
 
   // Do not show Ml install if the user ignored a promo for any app within N
   // days.
-  auto global_last_ignore =
-      base::ValueToTime(dict.Find(kConsecutiveMlInstallNotAcceptedCount));
-  if (TimeOccurredWithinDays(global_last_ignore,
+  auto global_last_ignore_time =
+      base::ValueToTime(dict.Find(kLastTimeMlInstallIgnored));
+  if (TimeOccurredWithinDays(global_last_ignore_time,
                              kMuteMlInstallAfterAnyIgnoreForDays)) {
+    ScopedDictPrefUpdate update(pref_service,
+                                prefs::kWebAppsAppAgnosticMlState);
+    update->Set(kMLPromotionGuardrailBlockReason,
+                "app_agnostic_ml_install_ignore_days_hit");
     return true;
   }
   // Do not show Ml install if the user ignored a promo for any app within N
@@ -382,6 +406,10 @@ bool IsMlPromotionBlockedByHistoryGuardrail(PrefService* pref_service,
       base::ValueToTime(dict.Find(kLastTimeMlInstallDismissed));
   if (TimeOccurredWithinDays(global_last_dismiss,
                              kMuteMlInstallAfterAnyDismissForDays)) {
+    ScopedDictPrefUpdate update(pref_service,
+                                prefs::kWebAppsAppAgnosticMlState);
+    update->Set(kMLPromotionGuardrailBlockReason,
+                "app_agnostic_ml_install_dismiss_days_hit");
     return true;
   }
   return false;
