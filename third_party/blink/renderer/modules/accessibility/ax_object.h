@@ -303,7 +303,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // whether children, parent or other pointers are actually out of date; there
   // are other dirty bits such as children_dirty_ for that.
   void SetAncestorsHaveDirtyDescendants() const;
-  void SetHasDirtyDescendants(bool dirty) { has_dirty_descendants_ = dirty; }
+  void SetHasDirtyDescendants(bool dirty) const;
   bool HasDirtyDescendants() const { return has_dirty_descendants_; }
 
   // When the corresponding WebCore object that this AXObject

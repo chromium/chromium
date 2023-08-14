@@ -599,10 +599,18 @@ AXObject::~AXObject() {
   --number_of_live_ax_objects_;
 }
 
+void AXObject::SetHasDirtyDescendants(bool dirty) const {
+  CHECK(!dirty || LastKnownIsIncludedInTreeValue())
+      << "Only included nodes can be marked as having dirty descendants: "
+      << ToString(true, true);
+  has_dirty_descendants_ = dirty;
+}
+
 void AXObject::SetAncestorsHaveDirtyDescendants() const {
   DCHECK(!IsDetached());
   DCHECK(!AXObjectCache().HasBeenDisposed());
   DCHECK(!AXObjectCache().IsFrozen());
+  DCHECK(!AXObjectCache().UpdatingTree());
 
   if (!RuntimeEnabledFeatures::AccessibilityEagerAXTreeUpdateEnabled()) {
     return;
@@ -619,7 +627,7 @@ void AXObject::SetAncestorsHaveDirtyDescendants() const {
   if (IsRoot()) {
     // Need at least the root object to be flagged in order for
     // UpdateTreeIfNeeded() to do anything.
-    has_dirty_descendants_ = true;
+    SetHasDirtyDescendants(true);
     return;
   }
 
@@ -644,7 +652,7 @@ void AXObject::SetAncestorsHaveDirtyDescendants() const {
     // LastKnownIsIncludedInTreeValue is false, since those objects are omitted
     // from the generated tree. However, don't set the bit on unincluded
     // objects, during the clearing phase in
-    // AXObjectCacheImpl::UpdateTreeIfNeededOnce(), only included nodes are
+    // AXObjectCacheImpl::UpdateTreeIfNeeded(), only included nodes are
     // visited.
     if (!ancestor->LastKnownIsIncludedInTreeValue()) {
       continue;
@@ -652,7 +660,7 @@ void AXObject::SetAncestorsHaveDirtyDescendants() const {
     if (ancestor->has_dirty_descendants_) {
       break;
     }
-    ancestor->has_dirty_descendants_ = true;
+    ancestor->SetHasDirtyDescendants(true);
   }
 #if DCHECK_IS_ON()
   // Walk up the tree looking for dirty bits that failed to be set. If any
@@ -721,9 +729,7 @@ void AXObject::Init(AXObject* parent) {
       << "\n* Parent = " << parent_->ToString(true, true)
       << "\n* Child = " << ToString(true, true);
 
-  // children_dirty_ is set after the role_ is computed, because the role is
-  // used to determine whether an AXObject can have children.
-  children_dirty_ = CanHaveChildren();
+  children_dirty_ = true;
 
   UpdateCachedAttributeValuesIfNeeded(false);
 
@@ -739,10 +745,24 @@ void AXObject::Init(AXObject* parent) {
   // whether AXObjectCacheImpl::UpdateTreeIfNeeded needs to update the root
   // object.
   if (IsRoot()) {
-    has_dirty_descendants_ = true;
+    SetHasDirtyDescendants(true);
+  } else if (AXObjectCache().UpdatingTree()) {
+    if (children_dirty_ && LastKnownIsIncludedInTreeValue()) {
+      // If we're in the updating tree loop, and a new object is created, we
+      // need to make sure to fill out all descendants of the new object.
+      SetHasDirtyDescendants(true);
+      // We also need to tell the new object's parent to iterate through
+      // all of its children to look for the has dirty descendants flag.
+      // However, we do not set the flag on higher ancestors since
+      // they have already been walked by the tree update loop.
+      if (AXObject* ax_included_parent = ParentObjectIncludedInTree()) {
+        ax_included_parent->SetHasDirtyDescendants(true);
+      }
+    }
   } else {
     DCHECK(ParentObjectIncludedInTree()->HasDirtyDescendants())
-        << "When adding a new child to a parent, the included parent must be "
+        << "When adding a new child to a parent, and not updating the entire "
+           "tree from the top down, the included parent must be "
            "flagged as having dirty descendants:"
         << "\n* Object: " << ToString(true, true) << "* Included parent: "
         << ParentObjectIncludedInTree()->ToString(true, true);
@@ -853,7 +873,17 @@ void AXObject::SetParent(AXObject* new_parent) const {
 #endif
   parent_ = new_parent;
   // TODO(accessibility) Is it necessary to do this while updating the tree?
-  SetAncestorsHaveDirtyDescendants();
+  if (AXObjectCache().UpdatingTree()) {
+    // If updating tree, tell the newly included parent to iterate through
+    // all of its children to look for the has dirty descendants flag.
+    // However, we do not set the flag on higher ancestors since
+    // they have already been walked by the tree update loop.
+    if (AXObject* ax_included_parent = ParentObjectIncludedInTree()) {
+      ax_included_parent->SetHasDirtyDescendants(true);
+    }
+  } else {
+    SetAncestorsHaveDirtyDescendants();
+  }
 }
 
 bool AXObject::IsMissingParent() const {
@@ -3078,6 +3108,10 @@ void AXObject::UpdateCachedAttributeValuesIfNeeded(
   cached_values_need_update_ = false;
 
 #if DCHECK_IS_ON()  // Required in order to get Lifecycle().ToString()
+  DCHECK(!AXObjectCache().IsFrozen())
+      << "All cached values must be updated before the tree is frozen "
+         "serialization, because changes to the ignored state could cause tree "
+         "structure changes.";
   DCHECK(!is_computing_role_)
       << "Updating cached values while computing a role is dangerous as it "
          "can lead to code that uses the AXObject before it is ready.";
@@ -5710,6 +5744,7 @@ void AXObject::SetNeedsToUpdateChildren() const {
   if (children_dirty_) {
     return;
   }
+  DCHECK(!AXObjectCache().UpdatingTree());
   children_dirty_ = true;
   ClearChildren();
   SetAncestorsHaveDirtyDescendants();

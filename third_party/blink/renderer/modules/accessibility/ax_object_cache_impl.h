@@ -624,16 +624,13 @@ class MODULES_EXPORT AXObjectCacheImpl
         "blink::WebAXObject");
   };
 
-  // Calls UpdateTreeIfNeededOnce if NeedsUpdate is true on the root AXObject,
-  // and a second time if it is still true.
-  void UpdateTreeIfNeeded();
-  // Updates the AX tree once by walking from the root, calling AXObject::
+  // Updates the AX tree by walking from the root, calling AXObject::
   // UpdateChildrenIfNecessary on each AXObject for which NeedsUpdate is true.
   // This method is part of a11y-during-render, and in particular transitioning
   // to an eager (as opposed to lazy) AX tree update pattern. See
   // https://bugs.chromium.org/p/chromium/issues/detail?id=1342801#c12 for more
   // details.
-  void UpdateTreeIfNeededOnce();
+  void UpdateTreeIfNeeded();
 
   // Create an AXObject, and do not check if a previous one exists.
   // Also, initialize the object and add it to maps for later retrieval.

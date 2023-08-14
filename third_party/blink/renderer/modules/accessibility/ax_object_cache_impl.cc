@@ -2618,41 +2618,32 @@ void AXObjectCacheImpl::ChildrenChangedWithCleanLayout(Node* optional_node,
   TableCellRoleMaybeChanged(optional_node);
 }
 
-void AXObjectCacheImpl::UpdateTreeIfNeededOnce() {
-  DCHECK(!updating_tree_);
-  base::AutoReset<bool> updating(&updating_tree_, true);
-  HeapDeque<Member<AXObject>> objects_to_process;
-  objects_to_process.push_back(Root());
-  while (!objects_to_process.empty()) {
-    AXObject* obj = objects_to_process.front();
-    objects_to_process.pop_front();
-    if (obj->IsDetached()) {
-      continue;
-    }
-    obj->UpdateChildrenIfNecessary();
-    if (obj->HasDirtyDescendants()) {
-      obj->SetHasDirtyDescendants(false);
-      for (auto& child : obj->ChildrenIncludingIgnored()) {
-        objects_to_process.push_back(child);
-      }
-    }
-  }
-}
-
 void AXObjectCacheImpl::UpdateTreeIfNeeded() {
   if (!RuntimeEnabledFeatures::AccessibilityEagerAXTreeUpdateEnabled()) {
     return;
   }
+
+  DCHECK(!updating_tree_);
   if (Root()->HasDirtyDescendants()) {
-    UpdateTreeIfNeededOnce();
+    base::AutoReset<bool> updating(&updating_tree_, true);
+    HeapDeque<Member<AXObject>> objects_to_process;
+    objects_to_process.push_back(Root());
+    while (!objects_to_process.empty()) {
+      AXObject* obj = objects_to_process.front();
+      objects_to_process.pop_front();
+      if (obj->IsDetached()) {
+        continue;
+      }
+      obj->UpdateChildrenIfNecessary();
+      if (obj->HasDirtyDescendants()) {
+        obj->SetHasDirtyDescendants(false);
+        for (auto& child : obj->ChildrenIncludingIgnored()) {
+          objects_to_process.push_back(child);
+        }
+      }
+    }
   }
-  // Update a second time because image maps or AX relations may invalidate
-  // ancestors. See AXNodeObject::AddImageMapChildren or
-  // AXRelationCache::UpdateRelatedText.
-  // TODO(chrishtr): find a way to do this without two tree walks.
-  if (Root()->HasDirtyDescendants()) {
-    UpdateTreeIfNeededOnce();
-  }
+
 #if EXPENSIVE_DCHECKS_ARE_ON()
   for (const auto& entry : objects_) {
     const AXObject* object = entry.value;
