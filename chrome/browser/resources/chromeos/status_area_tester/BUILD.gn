@@ -10,6 +10,7 @@ build_webui("build") {
   static_files = [ "main.html" ]
   web_component_files = [ "status_area_tester.ts" ]
 
+  ts_definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
   ts_deps = [
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/cr_elements:build_ts",

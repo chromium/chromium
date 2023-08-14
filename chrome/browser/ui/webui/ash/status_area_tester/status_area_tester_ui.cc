@@ -4,7 +4,10 @@
 
 #include "chrome/browser/ui/webui/ash/status_area_tester/status_area_tester_ui.h"
 
+#include <memory>
+
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/ash/status_area_tester/status_area_tester_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
@@ -12,6 +15,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/status_area_tester_resources.h"
 #include "chrome/grit/status_area_tester_resources_map.h"
+#include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 
 namespace ash {
@@ -28,6 +32,8 @@ StatusAreaTesterUI::StatusAreaTesterUI(content::WebUI* web_ui)
                               base::make_span(kStatusAreaTesterResources,
                                               kStatusAreaTesterResourcesSize),
                               IDR_STATUS_AREA_TESTER_MAIN_HTML);
+
+  web_ui->AddMessageHandler(std::make_unique<StatusAreaTesterHandler>());
 }
 
 StatusAreaTesterUI::~StatusAreaTesterUI() = default;

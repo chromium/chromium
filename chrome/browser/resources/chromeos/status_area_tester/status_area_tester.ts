@@ -26,6 +26,20 @@ export class StatusAreaTesterElement extends PolymerElement {
   static get properties() {
     return {};
   }
+
+  private onImeToggled_(e: CustomEvent<boolean>) {
+    e.stopPropagation();
+
+    const toggled = e.detail;
+    chrome.send('toggleIme', [toggled]);
+  }
+
+  private onPaletteToggled_(e: CustomEvent<boolean>) {
+    e.stopPropagation();
+
+    const toggled = e.detail;
+    chrome.send('togglePalette', [toggled]);
+  }
 }
 
 customElements.define(StatusAreaTesterElement.is, StatusAreaTesterElement);

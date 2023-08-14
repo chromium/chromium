@@ -8082,6 +8082,7 @@ test("unit_tests") {
       "../browser/ui/webui/ash/edu_account_login_handler_unittest.cc",
       "../browser/ui/webui/ash/emoji/emoji_ui_unittest.cc",
       "../browser/ui/webui/ash/emoji/gif_tenor_api_fetcher_unittest.cc",
+      "../browser/ui/webui/ash/status_area_tester/status_area_tester_handler_unittest.cc",
       "../browser/ui/webui/ash/sync/os_sync_handler_unittest.cc",
       "../browser/ui/webui/help/version_updater_chromeos_unittest.cc",
       "../browser/ui/webui/signin/ash/user_cloud_signin_restriction_policy_fetcher_unittest.cc",
