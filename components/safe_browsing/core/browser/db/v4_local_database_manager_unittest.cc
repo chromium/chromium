@@ -363,6 +363,7 @@ class FakeV4LocalDatabaseManager : public V4LocalDatabaseManager {
       scoped_refptr<base::SequencedTaskRunner> task_runner)
       : V4LocalDatabaseManager(base_path,
                                extended_reporting_level_callback,
+                               RecordMigrationMetricsCallback(),
                                base::SequencedTaskRunner::GetCurrentDefault(),
                                base::SequencedTaskRunner::GetCurrentDefault(),
                                task_runner),
@@ -415,6 +416,7 @@ class V4LocalDatabaseManagerTest : public PlatformTest {
     v4_local_database_manager_ =
         base::WrapRefCounted(new V4LocalDatabaseManager(
             base_dir_.GetPath(), erl_callback_,
+            V4LocalDatabaseManager::RecordMigrationMetricsCallback(),
             base::SequencedTaskRunner::GetCurrentDefault(),
             base::SequencedTaskRunner::GetCurrentDefault(), task_runner_));
 
@@ -486,6 +488,7 @@ class V4LocalDatabaseManagerTest : public PlatformTest {
     v4_local_database_manager_ =
         base::WrapRefCounted(new V4LocalDatabaseManager(
             base_dir_.GetPath(), erl_callback_,
+            V4LocalDatabaseManager::RecordMigrationMetricsCallback(),
             base::SequencedTaskRunner::GetCurrentDefault(),
             base::SequencedTaskRunner::GetCurrentDefault(), task_runner_));
     StartLocalDatabaseManager();

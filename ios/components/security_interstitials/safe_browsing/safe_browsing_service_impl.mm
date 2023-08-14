@@ -81,7 +81,8 @@ void SafeBrowsingServiceImpl::Initialize(
   safe_browsing_db_manager_ = safe_browsing::V4LocalDatabaseManager::Create(
       safe_browsing_data_path, web::GetUIThreadTaskRunner({}),
       web::GetIOThreadTaskRunner({}),
-      safe_browsing::ExtendedReportingLevelCallback());
+      safe_browsing::ExtendedReportingLevelCallback(),
+      safe_browsing::V4LocalDatabaseManager::RecordMigrationMetricsCallback());
 
   io_thread_enabler_ =
       base::MakeRefCounted<IOThreadEnabler>(safe_browsing_db_manager_);

@@ -404,6 +404,7 @@ static_library("safe_browsing") {
         "//components/prefs",
         "//components/safe_browsing/core/browser:verdict_cache_manager",
         "//components/safe_browsing/core/browser/db",
+        "//components/safe_browsing/core/browser/db:v4_store",
         "//components/safe_browsing/core/browser/hashprefix_realtime:hash_realtime_service",
         "//components/safe_browsing/core/browser/hashprefix_realtime:hash_realtime_utils",
         "//components/safe_browsing/core/browser/realtime:policy_engine",

@@ -59,6 +59,7 @@ class ChromeCleanerControllerDelegate;
 class ChromeSafeBrowsingUIManagerDelegate;
 class DownloadUrlSBClient;
 class IncidentReportingService;
+class ServicesDelegateDesktop;
 
 namespace internal {
 class ReporterRunner;
@@ -132,6 +133,7 @@ class ChromeMetricsServiceAccessor : public metrics::MetricsServiceAccessor {
   friend class safe_browsing::ChromeSafeBrowsingUIManagerDelegate;
   friend class safe_browsing::DownloadUrlSBClient;
   friend class safe_browsing::IncidentReportingService;
+  friend class safe_browsing::ServicesDelegateDesktop;
   friend class safe_browsing::internal::ReporterRunner;
   friend class segmentation_platform::FieldTrialRegisterImpl;
   friend class ChromeMetricsServiceClient;

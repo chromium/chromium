@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "chrome/browser/safe_browsing/services_delegate.h"
+#include "components/safe_browsing/core/browser/db/hash_prefix_map.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 
 namespace safe_browsing {
@@ -63,6 +64,8 @@ class ServicesDelegateDesktop : public ServicesDelegate {
   scoped_refptr<SafeBrowsingDatabaseManager> CreateDatabaseManager();
   DownloadProtectionService* CreateDownloadProtectionService();
   IncidentReportingService* CreateIncidentReportingService();
+
+  static void UpdateSyntheticFieldTrial(HashPrefixMap::MigrateResult result);
 
   std::unique_ptr<DownloadProtectionService> download_service_;
   std::unique_ptr<IncidentReportingService> incident_service_;

@@ -347,9 +347,11 @@ scoped_refptr<V4LocalDatabaseManager> V4LocalDatabaseManager::Create(
     const base::FilePath& base_path,
     scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
     scoped_refptr<base::SequencedTaskRunner> io_task_runner,
-    ExtendedReportingLevelCallback extended_reporting_level_callback) {
+    ExtendedReportingLevelCallback extended_reporting_level_callback,
+    RecordMigrationMetricsCallback record_migration_metrics_callback) {
   return base::WrapRefCounted(new V4LocalDatabaseManager(
-      base_path, extended_reporting_level_callback, std::move(ui_task_runner),
+      base_path, extended_reporting_level_callback,
+      std::move(record_migration_metrics_callback), std::move(ui_task_runner),
       std::move(io_task_runner), nullptr));
 }
 
@@ -373,6 +375,7 @@ void V4LocalDatabaseManager::CollectDatabaseManagerInfo(
 V4LocalDatabaseManager::V4LocalDatabaseManager(
     const base::FilePath& base_path,
     ExtendedReportingLevelCallback extended_reporting_level_callback,
+    RecordMigrationMetricsCallback record_migration_metrics_callback,
     scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
     scoped_refptr<base::SequencedTaskRunner> io_task_runner,
     scoped_refptr<base::SequencedTaskRunner> task_runner_for_tests)
@@ -380,6 +383,8 @@ V4LocalDatabaseManager::V4LocalDatabaseManager(
                                   std::move(io_task_runner)),
       base_path_(base_path),
       extended_reporting_level_callback_(extended_reporting_level_callback),
+      record_migration_metrics_callback_(
+          std::move(record_migration_metrics_callback)),
       list_infos_(GetListInfos()),
       task_runner_(task_runner_for_tests
                        ? task_runner_for_tests
@@ -704,6 +709,12 @@ void V4LocalDatabaseManager::DatabaseReadyForChecks(
     v4_database_ = std::move(v4_database);
 
     v4_database_->RecordFileSizeHistograms();
+    if (record_migration_metrics_callback_) {
+      ui_task_runner()->PostTask(
+          FROM_HERE,
+          base::BindOnce(std::move(record_migration_metrics_callback_),
+                         v4_database_->GetMigrateResult()));
+    }
 
     PopulateArtificialDatabase();
 
