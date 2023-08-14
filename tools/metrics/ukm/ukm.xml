@@ -4128,6 +4128,16 @@ be describing additional metrics about the same event.
       Records a 1 each time a mismatch dialog is shown.
     </summary>
   </metric>
+  <metric name="NumRequestsPerDocument">
+    <summary>
+      Records the number of navigator.credentials.get() requests made in a
+      document. Requests made when FedCM is disabled, when there is a pending
+      FedCM request or for the purpose of MDocs or multi-IDP are not counted.
+      Records at most one sample for every document where at least one
+      navigator.credentials.get() request is made. No samples are recorded if
+      the count is 0. The bucketing method used is base::UmaHistogramCounts100.
+    </summary>
+  </metric>
   <metric name="PreventSilentAccessFrameType"
       enum="FedCmPreventSilentAccessFrameType">
     <summary>

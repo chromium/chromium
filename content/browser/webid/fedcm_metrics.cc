@@ -375,6 +375,22 @@ void FedCmMetrics::RecordAccountsRequestSent() {
   base::UmaHistogramBoolean("Blink.FedCm.AccountsRequestSent", true);
 }
 
+void FedCmMetrics::RecordNumRequestsPerDocument(const int num_requests) {
+  if (is_disabled_) {
+    return;
+  }
+  auto RecordUkm = [&](auto& ukm_builder) {
+    ukm_builder.SetNumRequestsPerDocument(num_requests);
+    ukm_builder.SetFedCmSessionID(session_id_);
+    ukm_builder.Record(ukm::UkmRecorder::Get());
+  };
+  ukm::builders::Blink_FedCm fedcm_builder(page_source_id_);
+  RecordUkm(fedcm_builder);
+
+  base::UmaHistogramCounts100("Blink.FedCm.NumRequestsPerDocument",
+                              num_requests);
+}
+
 void RecordPreventSilentAccess(RenderFrameHost& rfh,
                                PreventSilentAccessFrameType frame_type) {
   base::UmaHistogramEnumeration("Blink.FedCm.PreventSilentAccessFrameType",

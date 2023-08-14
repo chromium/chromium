@@ -3774,6 +3774,10 @@ TEST_F(FederatedAuthRequestImplTest, DuplicateIdpMultiIdpRequest) {
 }
 
 TEST_F(FederatedAuthRequestImplTest, TooManyRequests) {
+  base::RunLoop ukm_loop;
+  ukm_recorder()->SetOnAddEntryCallback(FedCmEntry::kEntryName,
+                                        ukm_loop.QuitClosure());
+
   MockConfiguration configuration = kConfigurationValid;
   configuration.accounts_dialog_action = AccountsDialogAction::kNone;
   RunAuthDontWaitForCallback(kDefaultRequestParameters, configuration);
@@ -3795,6 +3799,20 @@ TEST_F(FederatedAuthRequestImplTest, TooManyRequests) {
       /*selected_idp_config_url=*/absl::nullopt};
   RunAuthTest(kDefaultRequestParameters, expectations, configuration);
   EXPECT_FALSE(DidFetchAnyEndpoint());
+
+  // Check that the appropriate metrics are recorded upon destruction.
+  federated_auth_request_impl_->ResetAndDeleteThis();
+
+  ukm_loop.Run();
+
+  // Only count the first request, the second request that resulted in
+  // RequestTokenStatus::kErrorTooManyRequests should not be counted.
+  histogram_tester_.ExpectUniqueSample("Blink.FedCm.NumRequestsPerDocument", 1,
+                                       1);
+
+  // Check for RP-keyed UKM presence.
+  ExpectUKMPresenceInternal("NumRequestsPerDocument", FedCmEntry::kEntryName);
+  CheckAllFedCmSessionIDs();
 }
 
 // TestIdpNetworkRequestManager subclass which records requests to metrics
@@ -4523,6 +4541,58 @@ TEST_F(FederatedAuthRequestImplTest, AbortedMismatchDialogShownDurationMetric) {
 
   ExpectNoUKMPresence("Timing.AccountsDialogShownDuration");
   ExpectUKMPresence("Timing.MismatchDialogShownDuration");
+  CheckAllFedCmSessionIDs();
+}
+
+// Tests that when requests are made to FedCM in succession, the appropriate
+// metrics are recorded upon destruction.
+TEST_F(FederatedAuthRequestImplTest, RecordNumRequestsPerDocumentMetric) {
+  base::RunLoop ukm_loop;
+  ukm_recorder()->SetOnAddEntryCallback(FedCmEntry::kEntryName,
+                                        ukm_loop.QuitClosure());
+
+  // First auth request.
+  MockConfiguration configuration = kConfigurationValid;
+  configuration.accounts_dialog_action = AccountsDialogAction::kNone;
+  RunAuthDontWaitForCallback(kDefaultRequestParameters, configuration);
+  EXPECT_TRUE(did_show_accounts_dialog());
+  EXPECT_FALSE(did_show_idp_signin_status_mismatch_dialog());
+
+  // Abort the first auth request.
+  federated_auth_request_impl_->CancelTokenRequest();
+
+  WaitForCurrentAuthRequest();
+  RequestExpectations expectations{RequestTokenStatus::kErrorCanceled,
+                                   FederatedAuthRequestResult::kErrorCanceled,
+                                   /*standalone_console_message=*/absl::nullopt,
+                                   /*selected_idp_config_url=*/absl::nullopt};
+  CheckAuthExpectations(configuration, expectations);
+
+  // Reset test classes for second auth request.
+  SetNetworkRequestManager(std::make_unique<TestIdpNetworkRequestManager>());
+  auth_helper_.Reset();
+
+  // Second auth request.
+  configuration.accounts_dialog_action = AccountsDialogAction::kClose;
+  expectations = {RequestTokenStatus::kError,
+                  FederatedAuthRequestResult::kShouldEmbargo,
+                  /*standalone_console_message=*/absl::nullopt,
+                  /*selected_idp_config_url=*/absl::nullopt};
+  RunAuthTest(kDefaultRequestParameters, expectations, configuration);
+  EXPECT_TRUE(did_show_accounts_dialog());
+  EXPECT_FALSE(did_show_idp_signin_status_mismatch_dialog());
+
+  // Check that the appropriate metrics are recorded upon destruction.
+  federated_auth_request_impl_->ResetAndDeleteThis();
+
+  ukm_loop.Run();
+
+  // Both requests should have been counted.
+  histogram_tester_.ExpectUniqueSample("Blink.FedCm.NumRequestsPerDocument", 2,
+                                       1);
+
+  // Check for RP-keyed UKM presence.
+  ExpectUKMPresenceInternal("NumRequestsPerDocument", FedCmEntry::kEntryName);
   CheckAllFedCmSessionIDs();
 }
 
