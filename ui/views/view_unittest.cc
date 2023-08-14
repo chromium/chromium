@@ -18,6 +18,7 @@
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
+#include "base/scoped_multi_source_observation.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -1146,12 +1147,17 @@ class ScopedTestPaintWidget {
   ScopedTestPaintWidget(const ScopedTestPaintWidget&) = delete;
   ScopedTestPaintWidget& operator=(const ScopedTestPaintWidget&) = delete;
 
-  ~ScopedTestPaintWidget() { widget_->CloseNow(); }
+  ~ScopedTestPaintWidget() {
+    // Widget is self-owning, and CloseNow() destroys the Widget, so this method
+    // has to pull the raw Widget* out of the raw_ptr to avoid the raw_ptr
+    // dangling after the Widget is destroyed.
+    widget_.ExtractAsDangling()->CloseNow();
+  }
 
   Widget* operator->() { return widget_; }
 
  private:
-  raw_ptr<Widget, DanglingUntriaged> widget_;
+  raw_ptr<Widget> widget_;
 };
 
 }  // namespace
@@ -4547,7 +4553,7 @@ class ViewLayerTest : public ViewsTestBase {
   }
 
   void TearDown() override {
-    widget_->CloseNow();
+    widget_.ExtractAsDangling()->CloseNow();
     ViewsTestBase::TearDown();
   }
 
@@ -4563,7 +4569,7 @@ class ViewLayerTest : public ViewsTestBase {
   void SchedulePaintOnParent(View* view) { view->SchedulePaintOnParent(); }
 
  private:
-  raw_ptr<Widget, DanglingUntriaged> widget_ = nullptr;
+  raw_ptr<Widget> widget_ = nullptr;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -6259,14 +6265,14 @@ TEST_F(ViewTest, InsertAfterInFocusList) {
 // Observer tests.
 ////////////////////////////////////////////////////////////////////////////////
 
-class ViewObserverTest : public ViewTest, public ViewObserver {
+class TestViewObserver : public ViewObserver {
  public:
-  ViewObserverTest() = default;
-
-  ViewObserverTest(const ViewObserverTest&) = delete;
-  ViewObserverTest& operator=(const ViewObserverTest&) = delete;
-
-  ~ViewObserverTest() override = default;
+  explicit TestViewObserver(std::vector<View*> views) {
+    for (auto* view : views) {
+      observations_.AddObservation(view);
+    }
+  }
+  ~TestViewObserver() override = default;
 
   // ViewObserver:
   void OnChildViewAdded(View* parent, View* child) override {
@@ -6291,24 +6297,6 @@ class ViewObserverTest : public ViewTest, public ViewObserver {
     view_reordered_ = view;
   }
 
-  void reset() {
-    child_view_added_times_ = 0;
-    child_view_removed_times_ = 0;
-    child_view_added_ = nullptr;
-    child_view_added_parent_ = nullptr;
-    child_view_removed_ = nullptr;
-    child_view_removed_parent_ = nullptr;
-    view_visibility_changed_ = nullptr;
-    view_bounds_changed_ = nullptr;
-    view_reordered_ = nullptr;
-  }
-
-  std::unique_ptr<View> NewView() {
-    auto view = std::make_unique<View>();
-    view->AddObserver(this);
-    return view;
-  }
-
   int child_view_added_times() { return child_view_added_times_; }
   int child_view_removed_times() { return child_view_removed_times_; }
   const View* child_view_added() const { return child_view_added_; }
@@ -6329,95 +6317,121 @@ class ViewObserverTest : public ViewTest, public ViewObserver {
   const View* view_reordered() const { return view_reordered_; }
 
  private:
+  base::ScopedMultiSourceObservation<View, ViewObserver> observations_{this};
+
   int child_view_added_times_ = 0;
   int child_view_removed_times_ = 0;
 
-  raw_ptr<View, DanglingUntriaged> child_view_added_parent_ = nullptr;
-  raw_ptr<View, DanglingUntriaged> child_view_added_ = nullptr;
-  raw_ptr<View, DanglingUntriaged> child_view_removed_ = nullptr;
-  raw_ptr<View, DanglingUntriaged> child_view_removed_parent_ = nullptr;
-  raw_ptr<View, DanglingUntriaged> view_visibility_changed_ = nullptr;
-  raw_ptr<View, DanglingUntriaged> view_visibility_changed_starting_ = nullptr;
-  raw_ptr<View, DanglingUntriaged> view_bounds_changed_ = nullptr;
-  raw_ptr<View, DanglingUntriaged> view_reordered_ = nullptr;
+  raw_ptr<View> child_view_added_parent_ = nullptr;
+  raw_ptr<View> child_view_added_ = nullptr;
+  raw_ptr<View> child_view_removed_ = nullptr;
+  raw_ptr<View> child_view_removed_parent_ = nullptr;
+  raw_ptr<View> view_visibility_changed_ = nullptr;
+  raw_ptr<View> view_visibility_changed_starting_ = nullptr;
+  raw_ptr<View> view_bounds_changed_ = nullptr;
+  raw_ptr<View> view_reordered_ = nullptr;
 };
 
-TEST_F(ViewObserverTest, ViewParentChanged) {
-  std::unique_ptr<View> parent1 = NewView();
-  std::unique_ptr<View> parent2 = NewView();
-  std::unique_ptr<View> child_view = NewView();
+using ViewObserverTest = ViewTest;
 
-  parent1->AddChildView(child_view.get());
-  EXPECT_EQ(0, child_view_removed_times());
-  EXPECT_EQ(1, child_view_added_times());
-  EXPECT_EQ(child_view.get(), child_view_added());
-  EXPECT_EQ(child_view->parent(), child_view_added_parent());
-  EXPECT_EQ(child_view->parent(), parent1.get());
-  reset();
+TEST_F(ViewObserverTest, ViewParentChanged) {
+  auto parent1 = std::make_unique<View>();
+  auto parent2 = std::make_unique<View>();
+  auto child = std::make_unique<View>();
+  View* weak_child = child.get();
+
+  {
+    TestViewObserver observer({parent1.get(), parent2.get(), weak_child});
+    parent1->AddChildView(std::move(child));
+    EXPECT_EQ(0, observer.child_view_removed_times());
+    EXPECT_EQ(1, observer.child_view_added_times());
+    EXPECT_EQ(weak_child, observer.child_view_added());
+    EXPECT_EQ(weak_child->parent(), observer.child_view_added_parent());
+    EXPECT_EQ(weak_child->parent(), parent1.get());
+  }
 
   // Removed from parent1, added to parent2
-  parent1->RemoveChildView(child_view.get());
-  parent2->AddChildView(child_view.get());
-  EXPECT_EQ(1, child_view_removed_times());
-  EXPECT_EQ(1, child_view_added_times());
-  EXPECT_EQ(child_view.get(), child_view_removed());
-  EXPECT_EQ(parent1.get(), child_view_removed_parent());
-  EXPECT_EQ(child_view.get(), child_view_added());
-  EXPECT_EQ(child_view->parent(), parent2.get());
+  {
+    TestViewObserver observer({parent1.get(), parent2.get(), weak_child});
+    parent2->AddChildView(parent1->RemoveChildViewT(weak_child));
+    EXPECT_EQ(1, observer.child_view_removed_times());
+    EXPECT_EQ(1, observer.child_view_added_times());
+    EXPECT_EQ(weak_child, observer.child_view_removed());
+    EXPECT_EQ(parent1.get(), observer.child_view_removed_parent());
+    EXPECT_EQ(weak_child, observer.child_view_added());
+    EXPECT_EQ(weak_child->parent(), parent2.get());
+  }
 
-  reset();
-
-  parent2->RemoveChildView(child_view.get());
-  EXPECT_EQ(1, child_view_removed_times());
-  EXPECT_EQ(0, child_view_added_times());
-  EXPECT_EQ(child_view.get(), child_view_removed());
-  EXPECT_EQ(parent2.get(), child_view_removed_parent());
+  {
+    TestViewObserver observer({parent1.get(), parent2.get(), weak_child});
+    child = parent2->RemoveChildViewT(weak_child);
+    EXPECT_EQ(1, observer.child_view_removed_times());
+    EXPECT_EQ(0, observer.child_view_added_times());
+    EXPECT_EQ(weak_child, observer.child_view_removed());
+    EXPECT_EQ(parent2.get(), observer.child_view_removed_parent());
+  }
 }
 
 TEST_F(ViewObserverTest, ViewVisibilityChanged) {
-  std::unique_ptr<View> parent(new View);
-  View* view = parent->AddChildView(NewView());
+  auto parent = std::make_unique<View>();
+  View* weak_child = parent->AddChildView(std::make_unique<View>());
 
   // Ensure setting |view| itself not visible calls the observer.
-  view->SetVisible(false);
-  EXPECT_EQ(view, view_visibility_changed());
-  EXPECT_EQ(view, view_visibility_changed_starting());
-  reset();
+  {
+    TestViewObserver observer({weak_child});
+    weak_child->SetVisible(false);
+    EXPECT_EQ(weak_child, observer.view_visibility_changed());
+    EXPECT_EQ(weak_child, observer.view_visibility_changed_starting());
+  }
 
   // Ditto for setting it visible.
-  view->SetVisible(true);
-  EXPECT_EQ(view, view_visibility_changed());
-  EXPECT_EQ(view, view_visibility_changed_starting());
-  reset();
+  {
+    TestViewObserver observer({weak_child});
+    weak_child->SetVisible(true);
+    EXPECT_EQ(weak_child, observer.view_visibility_changed());
+    EXPECT_EQ(weak_child, observer.view_visibility_changed_starting());
+  }
 
   // Ensure setting |parent| not visible also calls the
   // observer. |view->GetVisible()| should still return true however.
-  parent->SetVisible(false);
-  EXPECT_EQ(view, view_visibility_changed());
-  EXPECT_EQ(parent.get(), view_visibility_changed_starting());
+  {
+    TestViewObserver observer({weak_child});
+    parent->SetVisible(false);
+    EXPECT_EQ(weak_child, observer.view_visibility_changed());
+    EXPECT_EQ(parent.get(), observer.view_visibility_changed_starting());
+  }
 }
 
 TEST_F(ViewObserverTest, ViewBoundsChanged) {
-  std::unique_ptr<View> view = NewView();
-  gfx::Rect bounds(2, 2, 2, 2);
-  view->SetBoundsRect(bounds);
-  EXPECT_EQ(view.get(), view_bounds_changed());
-  EXPECT_EQ(bounds, view->bounds());
+  auto view = std::make_unique<View>();
 
-  reset();
+  {
+    TestViewObserver observer({view.get()});
+    gfx::Rect bounds(2, 2, 2, 2);
+    view->SetBoundsRect(bounds);
+    EXPECT_EQ(view.get(), observer.view_bounds_changed());
+    EXPECT_EQ(bounds, view->bounds());
+  }
 
-  gfx::Rect new_bounds(1, 1, 1, 1);
-  view->SetBoundsRect(new_bounds);
-  EXPECT_EQ(view.get(), view_bounds_changed());
-  EXPECT_EQ(new_bounds, view->bounds());
+  {
+    TestViewObserver observer({view.get()});
+    gfx::Rect new_bounds(1, 1, 1, 1);
+    view->SetBoundsRect(new_bounds);
+    EXPECT_EQ(view.get(), observer.view_bounds_changed());
+    EXPECT_EQ(new_bounds, view->bounds());
+  }
 }
 
 TEST_F(ViewObserverTest, ChildViewReordered) {
-  std::unique_ptr<View> view = NewView();
-  view->AddChildView(NewView());
-  View* child_view2 = view->AddChildView(NewView());
-  view->ReorderChildView(child_view2, 0);
-  EXPECT_EQ(child_view2, view_reordered());
+  auto parent = std::make_unique<View>();
+  parent->AddChildView(std::make_unique<View>());
+  auto* child = parent->AddChildView(std::make_unique<View>());
+
+  {
+    TestViewObserver observer({parent.get()});
+    parent->ReorderChildView(child, 0);
+    EXPECT_EQ(child, observer.view_reordered());
+  }
 }
 
 class MockViewObserver : public ViewObserver {
@@ -6436,8 +6450,7 @@ ACTION_TEMPLATE(ExpectThatViewProperty,
 }
 
 TEST_F(ViewObserverTest, ViewPropertyChanged) {
-  // Create `view`.
-  std::unique_ptr<View> view = NewView();
+  auto view = std::make_unique<View>();
 
   // Observe `view`.
   StrictMock<MockViewObserver> view_observer;
@@ -6518,21 +6531,20 @@ class TestParentView : public View {
 // 2. We don't receive two layer changes when a child with an existing layer
 //    creates a new layer.
 TEST_F(ViewObserverTest, ChildViewLayerNotificationTest) {
-  std::unique_ptr<TestParentView> parent_view(new TestParentView);
-  std::unique_ptr<View> child_view = NewView();
-  parent_view->AddChildView(child_view.get());
+  auto parent = std::make_unique<TestParentView>();
+  auto* child = parent->AddChildView(std::make_unique<View>());
 
-  EXPECT_FALSE(parent_view->received_layer_change_notification());
-  EXPECT_EQ(0, parent_view->layer_change_count());
+  EXPECT_FALSE(parent->received_layer_change_notification());
+  EXPECT_EQ(0, parent->layer_change_count());
 
-  child_view->SetPaintToLayer(ui::LAYER_TEXTURED);
-  EXPECT_TRUE(parent_view->received_layer_change_notification());
-  EXPECT_EQ(1, parent_view->layer_change_count());
+  child->SetPaintToLayer(ui::LAYER_TEXTURED);
+  EXPECT_TRUE(parent->received_layer_change_notification());
+  EXPECT_EQ(1, parent->layer_change_count());
 
-  parent_view->Reset();
-  child_view->SetPaintToLayer(ui::LAYER_SOLID_COLOR);
-  EXPECT_TRUE(parent_view->received_layer_change_notification());
-  EXPECT_EQ(1, parent_view->layer_change_count());
+  parent->Reset();
+  child->SetPaintToLayer(ui::LAYER_SOLID_COLOR);
+  EXPECT_TRUE(parent->received_layer_change_notification());
+  EXPECT_EQ(1, parent->layer_change_count());
 }
 
 namespace {
