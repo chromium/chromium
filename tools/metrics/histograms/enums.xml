@@ -73164,6 +73164,9 @@ Called by update_use_counter_css.py.-->
   <int value="13" label="Wi-Fi LAN error"/>
   <int value="14" label="Payload unknown"/>
   <int value="15" label="Already listening"/>
+  <int value="16" label="Connection was reset"/>
+  <int value="17" label="Connection timed out"/>
+  <int value="18" label="Unknown failure"/>
 </enum>
 
 <enum name="NearbyConnectionsUtilityProcessMojoDependencyName">

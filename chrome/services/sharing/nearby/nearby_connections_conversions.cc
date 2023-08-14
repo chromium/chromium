@@ -4,8 +4,6 @@
 
 #include "chrome/services/sharing/nearby/nearby_connections_conversions.h"
 
-#include <utility>
-
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/task/sequenced_task_runner.h"
@@ -60,6 +58,12 @@ mojom::Status StatusToMojom(Status::Value status) {
       return mojom::Status::kPayloadUnknown;
     case Status::Value::kAlreadyListening:
       return mojom::Status::kAlreadyListening;
+    case Status::Value::kReset:
+      return mojom::Status::kReset;
+    case Status::Value::kTimeout:
+      return mojom::Status::kTimeout;
+    case Status::Value::kUnknown:
+      return mojom::Status::kUnknown;
     case Status::Value::kNextValue:
       return mojom::Status::kNextValue;
   }

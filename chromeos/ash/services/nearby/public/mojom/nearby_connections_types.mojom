@@ -11,6 +11,7 @@ import "mojo/public/mojom/base/time.mojom";
 // Generic result status of NearbyConnections API calls. These values are
 // persisted to logs. Entries should not be renumbered and numeric values should
 // never be reused.
+// Keep synced with tools/metrics/histograms/enums.xml - NearbyConnectionsStatus
 enum Status {
   // The operation was successful.
   kSuccess = 0,
@@ -58,8 +59,14 @@ enum Status {
   // The app is already listening for incoming connections from remote
   // endpoints.
   kAlreadyListening = 15,
+  // The connection was reset.
+  kReset = 16,
+  // The connection timed out.
+  kTimeout = 17,
+  // Unknown failure.
+  kUnknown = 18,
   // Value of the next enum variant.
-  kNextValue = 16,
+  kNextValue = 19,
 };
 
 // Information about a connection that is being initiated.
