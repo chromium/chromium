@@ -326,4 +326,37 @@ function abortSignalAnyMemoryTests(signalInterface, controllerInterface) {
       gc();
     });
   }, `Nested and intermediate composite signals can be GCed when expected ${suffix}`);
+
+  promise_test(t => {
+    return new Promise((resolve) => {
+      let tokenCount = 0;
+      gRegistry = new FinalizationRegistry(t.step_func(function(token) {
+        ++tokenCount;
+        if (tokenCount == 2) {
+          resolve();
+        }
+      }));
+
+      (function() {
+        let signal1 = signalInterface.any([]);
+        signal1.addEventListener('abort', () => {});
+        // For plain AbortSignals, this should not be a no-op. For TaskSignals,
+        // this will test the settling logic.
+        signal1.addEventListener('prioritychange', () => {});
+        gRegistry.register(signal1, 1);
+
+        let controller = new controllerInterface();
+        let signal2 = signalInterface.any([controller.signal]);
+        signal2.addEventListener('abort', () => {});
+        signal2.addEventListener('prioritychange', () => {});
+        gRegistry.register(signal2, 2);
+
+        signal1 = null;
+        signal2 = null;
+        controller = null;
+      })();
+
+      gc();
+    });
+  }, `Settled composite signals with event listeners can be GCed ${suffix}`);
 }
