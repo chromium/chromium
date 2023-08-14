@@ -118,6 +118,9 @@ enum VideoConferenceAppType {
   [MinVersion=1] kBorealis,
   // App is traced by AshClient, but the type is unknown.
   [MinVersion=1] kAshClientUnknown,
+
+  // The ChromeOS native Screen Capture tool.
+  [MinVersion=2] kAshCaptureMode,
 };
 
 [Stable]

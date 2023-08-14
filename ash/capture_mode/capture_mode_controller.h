@@ -24,7 +24,9 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "base/unguessable_token.h"
 #include "chromeos/ash/services/recording/public/mojom/recording_service.mojom.h"
+#include "chromeos/crosapi/mojom/video_conference.mojom.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -71,7 +73,8 @@ class ASH_EXPORT CaptureModeController
     : public recording::mojom::RecordingServiceClient,
       public recording::mojom::DriveFsQuotaDelegate,
       public SessionObserver,
-      public chromeos::PowerManagerClient::Observer {
+      public chromeos::PowerManagerClient::Observer,
+      public crosapi::mojom::VideoConferenceManagerClient {
  public:
   // Contains info about the folder used for saving the captured images and
   // videos.
@@ -132,6 +135,9 @@ class ASH_EXPORT CaptureModeController
 
   // Returns true if there's an active video recording that is recording audio.
   bool IsAudioRecordingInProgress() const;
+
+  // Returns true if the camera preview is visible, false otherwise.
+  bool IsShowingCameraPreview() const;
 
   // Sets the capture source/type, and recording type, which will be applied to
   // an ongoing capture session (if any), or to a future capture session when
@@ -281,6 +287,10 @@ class ASH_EXPORT CaptureModeController
   // windows such as the PIP window and the automatic click bubble menu.
   std::vector<aura::Window*> GetWindowsForCollisionAvoidance() const;
 
+  // Updates the video conference manager and panel with the current state of
+  // screen recording and whether camera or audio are being recorded.
+  void MaybeUpdateVcPanel();
+
   // recording::mojom::RecordingServiceClient:
   void OnRecordingEnded(recording::mojom::RecordingStatus status,
                         const gfx::ImageSkia& thumbnail) override;
@@ -290,12 +300,23 @@ class ASH_EXPORT CaptureModeController
       GetDriveFsFreeSpaceBytesCallback callback) override;
 
   // SessionObserver:
+  void OnFirstSessionStarted() override;
   void OnActiveUserSessionChanged(const AccountId& account_id) override;
   void OnSessionStateChanged(session_manager::SessionState state) override;
   void OnChromeTerminating() override;
 
   // chromeos::PowerManagerClient::Observer:
   void SuspendImminent(power_manager::SuspendImminent::Reason reason) override;
+
+  // crosapi::mojom::VideoConferenceManagerClient:
+  void GetMediaApps(GetMediaAppsCallback callback) override;
+  void ReturnToApp(const base::UnguessableToken& token,
+                   ReturnToAppCallback callback) override;
+  void SetSystemMediaDeviceStatus(
+      crosapi::mojom::VideoConferenceMediaDevice device,
+      bool disabled,
+      SetSystemMediaDeviceStatusCallback callback) override;
+  void StopAllScreenShare() override;
 
   // Skips the 3-second count down, and IsCaptureAllowed() checks, and starts
   // video recording right away for testing purposes.
@@ -558,6 +579,14 @@ class ASH_EXPORT CaptureModeController
   // otherwise.
   CaptureModeBehavior* GetBehavior(BehaviorType behavior_type);
 
+  // The ID of this object as a client of the video conference manager.
+  const base::UnguessableToken vc_client_id_ = base::UnguessableToken::Create();
+
+  // The ID of an ongoing recording as a media app tracked by the video
+  // conference manager.
+  const base::UnguessableToken capture_mode_media_app_id_ =
+      base::UnguessableToken::Create();
+
   std::unique_ptr<CaptureModeDelegate> delegate_;
 
   // Controls the selfie camera feature of capture mode.
@@ -609,6 +638,12 @@ class ASH_EXPORT CaptureModeController
   // content restrictions that may block capture mode at any of its stages
   // (initialization or performing the capture).
   bool pending_dlp_check_ = false;
+
+  // These track the state of the camera and microphone (e.g. the camera can be
+  // disabled using a privacy switch, and the microphone can be muted from the
+  // settings).
+  bool is_camera_muted_ = false;
+  bool is_microphone_muted_ = false;
 
   // Watches events that lead to ending video recording.
   std::unique_ptr<VideoRecordingWatcher> video_recording_watcher_;

@@ -123,6 +123,15 @@ class TestCaptureModeDelegate : public CaptureModeDelegate {
   void GetDriveFsFreeSpaceBytes(OnGotDriveFsFreeSpace callback) override;
   bool IsCameraDisabledByPolicy() const override;
   bool IsAudioCaptureDisabledByPolicy() const override;
+  void RegisterVideoConferenceManagerClient(
+      crosapi::mojom::VideoConferenceManagerClient* client,
+      const base::UnguessableToken& client_id) override;
+  void UnregisterVideoConferenceManagerClient(
+      const base::UnguessableToken& client_id) override;
+  void UpdateVideoConferenceManager(
+      crosapi::mojom::VideoConferenceMediaUsageStatusPtr status) override;
+  void NotifyDeviceUsedWhileDisabled(
+      crosapi::mojom::VideoConferenceMediaDevice device) override;
 
  private:
   std::unique_ptr<recording::RecordingServiceTestApi> recording_service_;

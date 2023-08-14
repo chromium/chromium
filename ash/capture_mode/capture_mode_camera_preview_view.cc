@@ -130,6 +130,7 @@ CameraPreviewView::CameraPreviewView(
   RefreshResizeButtonVisibility();
   UpdateResizeButtonTooltip();
   capture_mode_util::MaybeUpdateCaptureModePrivacyIndicators();
+  CaptureModeController::Get()->MaybeUpdateVcPanel();
 }
 
 CameraPreviewView::~CameraPreviewView() {
@@ -137,6 +138,7 @@ CameraPreviewView::~CameraPreviewView() {
   if (controller->IsActive() && !controller->is_recording_in_progress())
     controller->capture_mode_session()->OnCameraPreviewDestroyed();
   capture_mode_util::MaybeUpdateCaptureModePrivacyIndicators();
+  controller->MaybeUpdateVcPanel();
 }
 
 void CameraPreviewView::SetIsCollapsible(bool value) {

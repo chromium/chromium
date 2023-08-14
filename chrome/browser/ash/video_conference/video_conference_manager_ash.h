@@ -21,6 +21,8 @@ namespace base {
 class UnguessableToken;
 }  // namespace base
 
+class CaptureModeVideoConferenceBrowserTests;
+
 namespace ash {
 
 class VideoConferenceClientWrapper;
@@ -98,6 +100,7 @@ class VideoConferenceManagerAsh
  private:
   friend class VideoConferenceAshfeatureClientTest;
   friend class VideoConferenceAppServiceClientTest;
+  friend class ::CaptureModeVideoConferenceBrowserTests;
 
   // A (client_id, client_wrapper) entry is inserted into this map
   // whenever a new client is registered on the manager and deleted

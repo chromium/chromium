@@ -4,7 +4,6 @@
 
 #include "ash/capture_mode/capture_mode_controller.h"
 
-#include <algorithm>
 #include <utility>
 #include <vector>
 
@@ -29,6 +28,7 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/message_center/message_view_factory.h"
+#include "ash/system/video_conference/video_conference_tray_controller.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/auto_reset.h"
@@ -43,7 +43,6 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/current_thread.h"
 #include "base/task/sequenced_task_runner.h"
@@ -69,6 +68,7 @@
 #include "ui/message_center/public/cpp/notification_types.h"
 #include "ui/snapshot/snapshot.h"
 #include "ui/views/widget/widget.h"
+#include "ui/wm/core/window_util.h"
 
 namespace ash {
 
@@ -539,6 +539,10 @@ CaptureModeController::~CaptureModeController() {
   MessageViewFactory::ClearCustomNotificationViewFactory(
       kScreenRecordingNotificationType);
 
+  if (features::IsVideoConferenceEnabled()) {
+    delegate_->UnregisterVideoConferenceManagerClient(vc_client_id_);
+  }
+
   DCHECK_EQ(g_instance, this);
   g_instance = nullptr;
 }
@@ -579,6 +583,10 @@ bool CaptureModeController::IsAudioRecordingInProgress() const {
   return video_recording_watcher_ &&
          !video_recording_watcher_->is_shutting_down() &&
          video_recording_watcher_->is_recording_audio();
+}
+
+bool CaptureModeController::IsShowingCameraPreview() const {
+  return !!camera_controller_->camera_preview_widget();
 }
 
 void CaptureModeController::SetSource(CaptureModeSource source) {
@@ -956,6 +964,38 @@ CaptureModeController::GetWindowsForCollisionAvoidance() const {
   return windows_to_be_avoided;
 }
 
+void CaptureModeController::MaybeUpdateVcPanel() {
+  if (!features::IsVideoConferenceEnabled()) {
+    return;
+  }
+
+  const bool is_camera_used = IsShowingCameraPreview();
+  const bool is_recording_audio = IsAudioRecordingInProgress();
+
+  delegate_->UpdateVideoConferenceManager(
+      crosapi::mojom::VideoConferenceMediaUsageStatus::New(
+          /*client_id=*/vc_client_id_,
+          /*has_media_app=*/is_recording_in_progress(),
+          /*has_camera_permission=*/is_camera_used,
+          /*has_microphone_permission=*/is_recording_audio,
+          /*is_capturing_camera=*/is_camera_used,
+          /*is_capturing_microphone=*/is_recording_audio,
+          /*is_capturing_screen=*/false));
+
+  // If the camera is being recorded while disabled (e.g. privacy switch is
+  // turned on), or the microphone is being recorded while mic input is muted,
+  // we need to notify the user through the video conference manager.
+  if (is_camera_used && is_camera_muted_) {
+    delegate_->NotifyDeviceUsedWhileDisabled(
+        crosapi::mojom::VideoConferenceMediaDevice::kCamera);
+  }
+
+  if (is_recording_audio && is_microphone_muted_) {
+    delegate_->NotifyDeviceUsedWhileDisabled(
+        crosapi::mojom::VideoConferenceMediaDevice::kMicrophone);
+  }
+}
+
 void CaptureModeController::OnRecordingEnded(
     recording::mojom::RecordingStatus status,
     const gfx::ImageSkia& thumbnail) {
@@ -984,6 +1024,15 @@ void CaptureModeController::OnActiveUserSessionChanged(
                                      /*by_user=*/false);
 }
 
+void CaptureModeController::OnFirstSessionStarted() {
+  if (features::IsVideoConferenceEnabled()) {
+    auto* vc_tray_controller = VideoConferenceTrayController::Get();
+    is_camera_muted_ = vc_tray_controller->GetCameraMuted();
+    is_microphone_muted_ = vc_tray_controller->GetMicrophoneMuted();
+    delegate_->RegisterVideoConferenceManagerClient(this, vc_client_id_);
+  }
+}
+
 void CaptureModeController::OnSessionStateChanged(
     session_manager::SessionState state) {
   if (Shell::Get()->session_controller()->IsUserSessionBlocked())
@@ -1001,6 +1050,65 @@ void CaptureModeController::OnChromeTerminating() {
 void CaptureModeController::SuspendImminent(
     power_manager::SuspendImminent::Reason reason) {
   EndSessionOrRecording(EndRecordingReason::kImminentSuspend);
+}
+
+void CaptureModeController::GetMediaApps(GetMediaAppsCallback callback) {
+  std::vector<crosapi::mojom::VideoConferenceMediaAppInfoPtr> apps;
+
+  if (is_recording_in_progress()) {
+    apps.push_back(crosapi::mojom::VideoConferenceMediaAppInfo::New(
+        /*id=*/capture_mode_media_app_id_,
+        /*last_activity_time=*/base::Time::Now(),
+        /*is_capturing_camera=*/IsShowingCameraPreview(),
+        /*is_capturing_microphone=*/IsAudioRecordingInProgress(),
+        /*is_capturing_screen=*/false,
+        /*title=*/
+        l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_DISPLAY_SOURCE),
+        /*url=*/absl::nullopt,
+        /*app_type=*/crosapi::mojom::VideoConferenceAppType::kAshCaptureMode));
+  }
+
+  std::move(callback).Run(std::move(apps));
+}
+
+void CaptureModeController::ReturnToApp(const base::UnguessableToken& token,
+                                        ReturnToAppCallback callback) {
+  // The return-to-app feature is only available when recording an app window
+  // (rather than the fullscreen or region). In this case, it simply "returns"
+  // to that window by activating it.
+  bool success = false;
+  if (video_recording_watcher_ &&
+      !video_recording_watcher_->is_shutting_down() &&
+      video_recording_watcher_->recording_source() ==
+          CaptureModeSource::kWindow) {
+    wm::ActivateWindow(video_recording_watcher_->window_being_recorded());
+    success = true;
+  }
+  std::move(callback).Run(success);
+}
+
+void CaptureModeController::SetSystemMediaDeviceStatus(
+    crosapi::mojom::VideoConferenceMediaDevice device,
+    bool disabled,
+    SetSystemMediaDeviceStatusCallback callback) {
+  switch (device) {
+    case crosapi::mojom::VideoConferenceMediaDevice::kCamera:
+      is_camera_muted_ = disabled;
+      std::move(callback).Run(true);
+      return;
+    case crosapi::mojom::VideoConferenceMediaDevice::kMicrophone:
+      is_microphone_muted_ = disabled;
+      std::move(callback).Run(true);
+      return;
+    case crosapi::mojom::VideoConferenceMediaDevice::kUnusedDefault:
+      std::move(callback).Run(false);
+      return;
+  }
+}
+
+void CaptureModeController::StopAllScreenShare() {
+  // Our screen recordings are not considered screen shares, and we already have
+  // the stop recording button, so this does nothing.
 }
 
 void CaptureModeController::StartVideoRecordingImmediatelyForTesting() {
@@ -1208,6 +1316,7 @@ void CaptureModeController::LaunchRecordingServiceAndStartRecording(
 
   if (microphone_stream_factory || system_audio_stream_factory) {
     capture_mode_util::MaybeUpdateCaptureModePrivacyIndicators();
+    MaybeUpdateVcPanel();
   }
 
   // Only act as a `DriveFsQuotaDelegate` for the recording service if the video
@@ -1298,6 +1407,7 @@ void CaptureModeController::FinalizeRecording(bool success,
       video_recording_watcher_->active_behavior();
   video_recording_watcher_.reset();
   capture_mode_util::MaybeUpdateCaptureModePrivacyIndicators();
+  MaybeUpdateVcPanel();
 
   delegate_->StopObservingRestrictedContent(base::BindOnce(
       &CaptureModeController::OnDlpRestrictionCheckedAtVideoEnd,
