@@ -137,6 +137,10 @@ void OnDeviceTailModelService::OnModelUpdated(
     return;
   }
   if (!model_info.has_value()) {
+    model_executor_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&OnDeviceTailModelExecutor::Reset,
+                       base::Unretained(tail_model_executor_.get())));
     return;
   }
 

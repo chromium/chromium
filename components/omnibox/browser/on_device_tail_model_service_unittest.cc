@@ -115,3 +115,20 @@ TEST_F(OnDeviceTailModelServiceTest, GetPredictionsForInput) {
   EXPECT_TRUE(base::StartsWith(results[0].suggestion, "facebook",
                                base::CompareCase::SENSITIVE));
 }
+
+TEST_F(OnDeviceTailModelServiceTest, NullModelUpdate) {
+  service_->OnModelUpdated(
+      optimization_guide::proto::OptimizationTarget::
+          OPTIMIZATION_TARGET_OMNIBOX_ON_DEVICE_TAIL_SUGGEST,
+      *model_info_);
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(IsExecutorReady());
+
+  // Null model update shoud disable the executor.
+  service_->OnModelUpdated(
+      optimization_guide::proto::OptimizationTarget::
+          OPTIMIZATION_TARGET_OMNIBOX_ON_DEVICE_TAIL_SUGGEST,
+      absl::nullopt);
+  task_environment_.RunUntilIdle();
+  EXPECT_FALSE(IsExecutorReady());
+}
