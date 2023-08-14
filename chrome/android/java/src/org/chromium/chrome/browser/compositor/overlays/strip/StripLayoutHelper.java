@@ -252,6 +252,8 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     private boolean mTabStateInitialized;
     private boolean mPlaceholderStripReady;
     private boolean mSelectedOnStartup;
+    private boolean mCreatedTabOnStartup;
+    private boolean mActiveTabReplaced;
     private int mTabCountOnStartup;
     private int mActiveTabIndexOnStartup;
     private int mCurrentPlaceholderIndex;
@@ -882,12 +884,15 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
      * @param activeTabIndexOnStartup What the active tab index should be after tabs finish
      *                                restoring.
      * @param tabCountOnStartup What the tab count should be after tabs finish restoring.
+     * @param createdTabOnStartup If an additional tab was created on startup (e.g. through intent).
      */
-    protected void setTabModelStartupInfo(int tabCountOnStartup, int activeTabIndexOnStartup) {
+    protected void setTabModelStartupInfo(
+            int tabCountOnStartup, int activeTabIndexOnStartup, boolean createdTabOnStartup) {
         if (!ChromeFeatureList.sTabStripStartupRefactoring.isEnabled()) return;
 
         mTabCountOnStartup = tabCountOnStartup;
         mActiveTabIndexOnStartup = activeTabIndexOnStartup;
+        mCreatedTabOnStartup = createdTabOnStartup;
 
         // If tabs are still being restored on startup, create placeholder tabs to mitigate jank.
         if (!mTabStateInitialized) {
@@ -940,6 +945,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         // will need to be placeholders before the active tab. If this is the case, replace the
         // active tab later to ensure it's at the correct index.
         int numTabsToCopy = mModel.getCount();
+        if (mCreatedTabOnStartup) numTabsToCopy--;
         boolean needPlaceholdersBeforeActiveTab =
                 numTabsToCopy <= mActiveTabIndexOnStartup && mSelectedOnStartup;
         if (needPlaceholdersBeforeActiveTab) numTabsToCopy--;
@@ -957,20 +963,32 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
             tab.setContainerOpacity(TAB_OPACITY_HIDDEN);
         }
 
-        // 2. If the active tab could not be copied earlier, copy it over now at the correct index.
-        if (needPlaceholdersBeforeActiveTab && mModel.getCount() > 0) {
-            // If we need placeholders before the active tab, the active tab should be the last one
-            // in the model.
-            assert mModel.index() == mModel.getCount() - 1;
-
-            final StripLayoutTab tab = mStripTabs[mActiveTabIndexOnStartup];
+        // 2. If a new tab was created on startup (e.g. through intent), copy it over now.
+        if (mCreatedTabOnStartup) {
+            final StripLayoutTab tab = mStripTabs[mStripTabs.length - 1];
 
             tab.setId(mModel.getTabAt(mModel.getCount() - 1).getId());
             tab.setIsPlaceholder(false);
             tab.setContainerOpacity(TAB_OPACITY_HIDDEN);
         }
 
-        // 3. Request new frame.
+        // 3. If the active tab could not be copied earlier, copy it over now at the correct index.
+        if (needPlaceholdersBeforeActiveTab) {
+            int prevActiveIndex = mModel.getCount() - 1;
+            if (mCreatedTabOnStartup) prevActiveIndex--;
+
+            if (prevActiveIndex >= 0) {
+                final StripLayoutTab tab = mStripTabs[mActiveTabIndexOnStartup];
+
+                tab.setId(mModel.getTabAt(prevActiveIndex).getId());
+                tab.setIsPlaceholder(false);
+                tab.setContainerOpacity(TAB_OPACITY_HIDDEN);
+
+                mActiveTabReplaced = true;
+            }
+        }
+
+        // 4. Request new frame.
         mRenderHost.requestRender();
     }
 
@@ -995,7 +1013,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
 
         // Replace the matching placeholder.
         int replaceIndex;
-        if (selected) {
+        if (selected || !mActiveTabReplaced) {
             replaceIndex = mActiveTabIndexOnStartup;
         } else {
             // Should match the index in the model.
@@ -1003,10 +1021,12 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
             assert replaceIndex == mModel.indexOf(getTabById(id));
         }
 
-        final StripLayoutTab placeholderTab = mStripTabs[replaceIndex];
-        placeholderTab.setId(id);
-        placeholderTab.setIsPlaceholder(false);
-        placeholderTab.setContainerOpacity(TAB_OPACITY_HIDDEN);
+        if (replaceIndex >= 0 && replaceIndex < mStripTabs.length) {
+            final StripLayoutTab placeholderTab = mStripTabs[replaceIndex];
+            placeholderTab.setId(id);
+            placeholderTab.setIsPlaceholder(false);
+            placeholderTab.setContainerOpacity(TAB_OPACITY_HIDDEN);
+        }
 
         mRenderHost.requestRender();
     }
@@ -1023,6 +1043,13 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
      */
     protected int getActiveTabIndexOnStartupForTesting() {
         return mActiveTabIndexOnStartup;
+    }
+
+    /**
+     * @return Whether a non-restored tab was created during startup (e.g. through intent).
+     */
+    protected boolean getCreatedTabOnStartupForTesting() {
+        return mCreatedTabOnStartup;
     }
 
     /**

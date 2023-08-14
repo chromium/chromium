@@ -80,13 +80,18 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
         public final int incognitoCount;
         public final int standardActiveIndex;
         public final int incognitoActiveIndex;
+        public final boolean createdStandardTabOnStartup;
+        public final boolean createdIncognitoTabOnStartup;
 
         public TabModelStartupInfo(int standardCount, int incognitoCount, int standardActiveIndex,
-                int incognitoActiveIndex) {
+                int incognitoActiveIndex, boolean createdStandardTabOnStartup,
+                boolean createdIncognitoTabOnStartup) {
             this.standardCount = standardCount;
             this.incognitoCount = incognitoCount;
             this.standardActiveIndex = standardActiveIndex;
             this.incognitoActiveIndex = incognitoActiveIndex;
+            this.createdStandardTabOnStartup = createdStandardTabOnStartup;
+            this.createdIncognitoTabOnStartup = createdIncognitoTabOnStartup;
         }
     }
 
@@ -397,10 +402,10 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
     }
 
     private void setTabModelStartupInfo(TabModelStartupInfo startupInfo) {
-        mNormalHelper.setTabModelStartupInfo(
-                startupInfo.standardCount, startupInfo.standardActiveIndex);
-        mIncognitoHelper.setTabModelStartupInfo(
-                startupInfo.incognitoCount, startupInfo.incognitoActiveIndex);
+        mNormalHelper.setTabModelStartupInfo(startupInfo.standardCount,
+                startupInfo.standardActiveIndex, startupInfo.createdStandardTabOnStartup);
+        mIncognitoHelper.setTabModelStartupInfo(startupInfo.incognitoCount,
+                startupInfo.incognitoActiveIndex, startupInfo.createdIncognitoTabOnStartup);
     }
 
     // Incognito button for Tab Strip Redesign.
