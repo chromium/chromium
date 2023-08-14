@@ -39,7 +39,7 @@ import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntent
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
-import org.chromium.ui.accessibility.AccessibilityState;
+import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.ui.base.LocalizationUtils;
 
 /**
@@ -209,14 +209,14 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
         setContentVisible(false);
         if (isMaximized()) {
             if (mSheetOnRight) configureLayoutBeyondScreen(false);
-            maybeResetFocusForScreenReaders();
+            maybeResetTalkbackFocus();
             maybeInvokeResizeCallback();
             setContentVisible(true);
         } else {
             // System UI dimensions are not settled yet. Post the task.
             new Handler().post(() -> {
                 if (mSheetOnRight) configureLayoutBeyondScreen(false);
-                maybeResetFocusForScreenReaders();
+                maybeResetTalkbackFocus();
                 initializeSize();
                 if (shouldDrawDividerLine()) drawDividerLine();
                 // We have a delay before showing the resized web contents so it has to be done
@@ -227,16 +227,15 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
         }
     }
 
-    private void maybeResetFocusForScreenReaders() {
-        if (AccessibilityState.isScreenReaderEnabled()) {
-            // After resizing the view, notify the window state change to let screen reader
+    private void maybeResetTalkbackFocus() {
+        if (ChromeAccessibilityUtil.get().isTouchExplorationEnabled()) {
+            // After resizing the view, notify the window state change to let the talkback
             // focus navigation work as before.
             mToolbarView.sendAccessibilityEvent(AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED);
             new Handler().postDelayed(() -> {
-                // Move the focus and accessibility focus from the leftmost button back to maximize
-                // the button. This happens when double-tapping on the button causes the sheet to be
-                // resized to full width when a screen reader is running. Some delay is required
-                // for this to work as expected.
+                // Move the talkback focus from the leftmost button back to maximize button. This
+                // happens when double-tapping on the button causes the sheet to be resized to full
+                // width in talkback mode. Some delay is required for this to work as expected.
                 var maximizeButton = mToolbarView.findViewById(R.id.custom_tabs_sidepanel_maximize);
                 maximizeButton.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
                 maximizeButton.sendAccessibilityEvent(

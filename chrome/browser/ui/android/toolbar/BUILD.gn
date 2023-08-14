@@ -182,7 +182,6 @@ android_library("java") {
     "//third_party/androidx:androidx_preference_preference_java",
     "//third_party/androidx:androidx_vectordrawable_vectordrawable_java",
     "//third_party/metrics_proto:metrics_proto_java",
-    "//ui/accessibility:ax_base_java",
     "//ui/android:ui_full_java",
     "//ui/android:ui_utils_java",
     "//url:gurl_java",

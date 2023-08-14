@@ -61,7 +61,6 @@ import org.chromium.chrome.features.start_surface.StartSurfaceState;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
 import org.chromium.content_public.browser.LoadUrlParams;
-import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelAnimatorFactory;
@@ -379,7 +378,7 @@ class StartSurfaceToolbarMediator implements ButtonDataProvider.ButtonDataObserv
                 && ChromeFeatureList.sTabGroupsContinuationAndroid.isEnabled()
                 && ChromeFeatureList.sTabGroupsAndroid.isEnabled()
                 && DeviceClassManager.GTS_ACCESSIBILITY_SUPPORT.getValue()
-                && AccessibilityState.isTouchExplorationEnabled()) {
+                && ChromeAccessibilityUtil.get().isTouchExplorationEnabled()) {
             shouldShowAnimation = false;
         }
 
