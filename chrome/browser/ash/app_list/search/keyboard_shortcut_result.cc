@@ -200,8 +200,11 @@ void KeyboardShortcutResult::PopulateTextVector(
   CHECK(text_vector);
 
   std::vector<KeyboardCode> key_codes;
-  // Insert keys by the order of CTRL, ALT, SHIFT, SEARCH, and then key, to be
-  // consistent with existing hardcoded shortcuts search.
+  // Insert keys by the order of SEARCH, CTRL, ALT, SHIFT, and then key, to be
+  // consistent with the shortcuts app.
+  if (accelerator.IsCmdDown()) {
+    key_codes.push_back(KeyboardCode::VKEY_COMMAND);
+  }
   if (accelerator.IsCtrlDown()) {
     key_codes.push_back(KeyboardCode::VKEY_CONTROL);
   }
@@ -210,9 +213,6 @@ void KeyboardShortcutResult::PopulateTextVector(
   }
   if (accelerator.IsShiftDown()) {
     key_codes.push_back(KeyboardCode::VKEY_SHIFT);
-  }
-  if (accelerator.IsCmdDown()) {
-    key_codes.push_back(KeyboardCode::VKEY_COMMAND);
   }
   key_codes.push_back(accelerator.key_code());
 

@@ -246,6 +246,8 @@ TEST_F(KeyboardShortcutResultTest, PopulateTextVector_One_Key) {
   VerifyTextItem(text_vector[0], u"space", TextType::kIconifiedText);
 }
 
+// The shortcuts app uses the following order:
+//  SEARCH, CTRL, ALT, SHIFT.
 TEST_F(KeyboardShortcutResultTest, PopulateTextVector_ModifierKeysOrder) {
   ui::Accelerator accelerator(/*key_code=*/ui::KeyboardCode::VKEY_F,
                               /*modifiers=*/ui::EF_ALT_DOWN |
@@ -255,10 +257,10 @@ TEST_F(KeyboardShortcutResultTest, PopulateTextVector_ModifierKeysOrder) {
   PopulateTextVector(&text_vector, accelerator);
 
   ASSERT_EQ(text_vector.size(), 5u);
-  VerifyTextItem(text_vector[0], u"ctrl", TextType::kIconifiedText);
-  VerifyTextItem(text_vector[1], u"alt", TextType::kIconifiedText);
-  VerifyTextItem(text_vector[2], u"shift", TextType::kIconifiedText);
-  VerifyTextItem(text_vector[3], u"search", TextType::kIconifiedText);
+  VerifyTextItem(text_vector[0], u"search", TextType::kIconifiedText);
+  VerifyTextItem(text_vector[1], u"ctrl", TextType::kIconifiedText);
+  VerifyTextItem(text_vector[2], u"alt", TextType::kIconifiedText);
+  VerifyTextItem(text_vector[3], u"shift", TextType::kIconifiedText);
   VerifyTextItem(text_vector[4], u"f", TextType::kIconifiedText);
 }
 
