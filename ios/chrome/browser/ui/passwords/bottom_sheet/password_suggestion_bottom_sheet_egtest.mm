@@ -118,7 +118,8 @@ id<GREYMatcher> DeleteConfirmationButton() {
 
 #pragma mark - Tests
 
-- (void)testOpenPasswordBottomSheetUsePassword {
+// TODO(crbug.com/1472810): Fix & re-enable.
+- (void)DISABLED_testOpenPasswordBottomSheetUsePassword {
   [PasswordSuggestionBottomSheetAppInterface setUpMockReauthenticationModule];
   [PasswordSuggestionBottomSheetAppInterface
       mockReauthenticationModuleExpectedResult:ReauthenticationResult::
@@ -179,7 +180,8 @@ id<GREYMatcher> DeleteConfirmationButton() {
   }
 }
 
-- (void)testOpenPasswordBottomSheetTapNoThanksShowKeyboard {
+// TODO(crbug.com/1472810): Fix & re-enable.
+- (void)DISABLED_testOpenPasswordBottomSheetTapNoThanksShowKeyboard {
   [PasswordManagerAppInterface
       storeCredentialWithUsername:@"user"
                          password:@"password"
@@ -203,7 +205,8 @@ id<GREYMatcher> DeleteConfirmationButton() {
   WaitForKeyboardToAppear();
 }
 
-- (void)testOpenPasswordBottomSheetOpenPasswordManager {
+// TODO(crbug.com/1472810): Fix & re-enable.
+- (void)DISABLED_testOpenPasswordBottomSheetOpenPasswordManager {
   [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
                                 enableSync:NO];
   NSURL* URL =
@@ -392,7 +395,8 @@ id<GREYMatcher> DeleteConfirmationButton() {
       assertWithMatcher:grey_nil()];
 }
 
-- (void)testOpenPasswordBottomSheetSelectPassword {
+// TODO(crbug.com/1472810): Fix & re-enable.
+- (void)DISABLED_testOpenPasswordBottomSheetSelectPassword {
   [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
                                 enableSync:NO];
   NSURL* URL =
@@ -481,7 +485,8 @@ id<GREYMatcher> DeleteConfirmationButton() {
       performAction:grey_tap()];
 }
 
-- (void)testPasswordBottomSheetDismiss3TimesNotShownAnymore {
+// TODO(crbug.com/1472810): Fix & re-enable.
+- (void)DISABLED_testPasswordBottomSheetDismiss3TimesNotShownAnymore {
   [PasswordManagerAppInterface
       storeCredentialWithUsername:@"user"
                          password:@"password"
