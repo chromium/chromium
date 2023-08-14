@@ -110,14 +110,8 @@ try_.compilator_builder(
 # win-rel to Siso.
 try_.orchestrator_builder(
     name = "win-siso-rel",
-    mirrors = [
-        "ci/Win x64 Builder",
-        "ci/Win10 Tests x64",
-        "ci/GPU Win x64 Builder",
-        "ci/Win10 x64 Release (NVIDIA)",
-    ],
+    mirrors = builder_config.copy_from("try/win-rel"),
     try_settings = builder_config.try_settings(
-        include_all_triggered_testers = True,
         is_compile_only = True,
         rts_config = builder_config.rts_config(
             condition = builder_config.rts_condition.QUICK_RUN_ONLY,

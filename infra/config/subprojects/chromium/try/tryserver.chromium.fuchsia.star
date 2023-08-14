@@ -159,11 +159,8 @@ try_.compilator_builder(
 # fuchsia-x64-cast-receiver-rel to Siso.
 try_.orchestrator_builder(
     name = "fuchsia-x64-cast-receiver-siso-rel",
-    mirrors = [
-        "ci/fuchsia-x64-cast-receiver-rel",
-    ],
+    mirrors = builder_config.copy_from("try/fuchsia-x64-cast-receiver-rel"),
     try_settings = builder_config.try_settings(
-        include_all_triggered_testers = True,
         is_compile_only = True,
     ),
     compilator = "fuchsia-x64-cast-receiver-siso-rel-compilator",

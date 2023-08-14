@@ -270,14 +270,8 @@ try_.compilator_builder(
 # to Siso.
 try_.orchestrator_builder(
     name = "linux-siso-rel",
-    mirrors = [
-        "ci/Linux Builder",
-        "ci/Linux Tests",
-        "ci/GPU Linux Builder",
-        "ci/Linux Release (NVIDIA)",
-    ],
+    mirrors = builder_config.copy_from("try/linux-rel"),
     try_settings = builder_config.try_settings(
-        include_all_triggered_testers = True,
         is_compile_only = True,
         rts_config = builder_config.rts_config(
             condition = builder_config.rts_condition.QUICK_RUN_ONLY,
@@ -347,12 +341,8 @@ try_.compilator_builder(
 # linux-wayland-rel to Siso.
 try_.orchestrator_builder(
     name = "linux-wayland-siso-rel",
-    mirrors = [
-        "ci/Linux Builder (Wayland)",
-        "ci/Linux Tests (Wayland)",
-    ],
+    mirrors = builder_config.copy_from("try/linux-wayland-rel"),
     try_settings = builder_config.try_settings(
-        include_all_triggered_testers = True,
         is_compile_only = True,
         rts_config = builder_config.rts_config(
             condition = builder_config.rts_condition.QUICK_RUN_ONLY,
@@ -507,12 +497,8 @@ try_.compilator_builder(
 # linux_chromium_asan_rel_ng to Siso.
 try_.orchestrator_builder(
     name = "linux_chromium_asan_siso_rel_ng",
-    mirrors = [
-        "ci/Linux ASan LSan Builder",
-        "ci/Linux ASan LSan Tests (1)",
-    ],
+    mirrors = builder_config.copy_from("try/linux_chromium_asan_rel_ng"),
     try_settings = builder_config.try_settings(
-        include_all_triggered_testers = True,
         is_compile_only = True,
         rts_config = builder_config.rts_config(
             condition = builder_config.rts_condition.QUICK_RUN_ONLY,

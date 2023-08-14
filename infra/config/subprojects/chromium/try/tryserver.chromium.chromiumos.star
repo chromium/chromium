@@ -82,9 +82,8 @@ try_.compilator_builder(
 # chromeos-amd64-generic-rel to Siso.
 try_.orchestrator_builder(
     name = "chromeos-amd64-generic-siso-rel",
-    mirrors = ["ci/chromeos-amd64-generic-rel"],
+    mirrors = builder_config.copy_from("try/chromeos-amd64-generic-rel"),
     try_settings = builder_config.try_settings(
-        include_all_triggered_testers = True,
         is_compile_only = True,
     ),
     compilator = "chromeos-amd64-generic-siso-rel-compilator",
@@ -297,11 +296,8 @@ try_.compilator_builder(
 # linux-chromeos-rel to Siso.
 try_.orchestrator_builder(
     name = "linux-chromeos-siso-rel",
-    mirrors = [
-        "ci/linux-chromeos-rel",
-    ],
+    mirrors = builder_config.copy_from("try/linux-chromeos-rel"),
     try_settings = builder_config.try_settings(
-        include_all_triggered_testers = True,
         is_compile_only = True,
     ),
     compilator = "linux-chromeos-siso-rel-compilator",
@@ -360,12 +356,8 @@ try_.compilator_builder(
 # linux-lacros-rel to Siso.
 try_.orchestrator_builder(
     name = "linux-lacros-siso-rel",
-    mirrors = [
-        "ci/linux-lacros-builder-rel",
-        "ci/linux-lacros-tester-rel",
-    ],
+    mirrors = builder_config.copy_from("try/linux-lacros-rel"),
     try_settings = builder_config.try_settings(
-        include_all_triggered_testers = True,
         is_compile_only = True,
     ),
     compilator = "linux-lacros-siso-rel-compilator",

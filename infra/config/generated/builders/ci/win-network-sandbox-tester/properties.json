@@ -65,12 +65,6 @@
           "builder": "win-network-sandbox-tester",
           "project": "chromium"
         }
-      ],
-      "mirroring_builder_group_and_names": [
-        {
-          "builder": "win-siso-rel",
-          "group": "tryserver.chromium.win"
-        }
       ]
     }
   },

@@ -63,12 +63,6 @@
           "builder": "Linux ASan Tests (sandboxed)",
           "project": "chromium"
         }
-      ],
-      "mirroring_builder_group_and_names": [
-        {
-          "builder": "linux_chromium_asan_siso_rel_ng",
-          "group": "tryserver.chromium.linux"
-        }
       ]
     }
   },

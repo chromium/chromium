@@ -91,11 +91,8 @@ try_.compilator_builder(
 # android-12-x64-rel to Siso.
 try_.orchestrator_builder(
     name = "android-12-x64-siso-rel",
-    mirrors = [
-        "ci/android-12-x64-rel",
-    ],
+    mirrors = builder_config.copy_from("try/android-12-x64-rel"),
     try_settings = builder_config.try_settings(
-        include_all_triggered_testers = True,
         is_compile_only = True,
         rts_config = builder_config.rts_config(
             condition = builder_config.rts_condition.QUICK_RUN_ONLY,
@@ -173,12 +170,8 @@ try_.compilator_builder(
 try_.orchestrator_builder(
     name = "android-arm64-siso-rel",
     description_html = "This builder may trigger tests on multiple Android versions.",
-    mirrors = [
-        "ci/Android Release (Nexus 5X)",  # Nexus 5X on Nougat
-        "ci/android-pie-arm64-rel",  # Pixel 1, 2 on Pie
-    ],
+    mirrors = builder_config.copy_from("try/android-arm64-rel"),
     try_settings = builder_config.try_settings(
-        include_all_triggered_testers = True,
         is_compile_only = True,
         rts_config = builder_config.rts_config(
             condition = builder_config.rts_condition.QUICK_RUN_ONLY,
@@ -420,11 +413,8 @@ try_.builder(
 # android-nougat-x86-rel to Siso.
 try_.orchestrator_builder(
     name = "android-nougat-x86-siso-rel",
-    mirrors = [
-        "ci/android-nougat-x86-rel",
-    ],
+    mirrors = builder_config.copy_from("try/android-nougat-x86-rel"),
     try_settings = builder_config.try_settings(
-        include_all_triggered_testers = True,
         is_compile_only = True,
         rts_config = builder_config.rts_config(
             condition = builder_config.rts_condition.QUICK_RUN_ONLY,

@@ -59,34 +59,6 @@
                 "project": "chromium"
               }
             }
-          },
-          {
-            "builder_id": {
-              "bucket": "ci",
-              "builder": "Linux ASan Tests (sandboxed)",
-              "project": "chromium"
-            },
-            "builder_spec": {
-              "build_gs_bucket": "chromium-memory-archive",
-              "builder_group": "chromium.memory",
-              "execution_mode": "TEST",
-              "legacy_chromium_config": {
-                "apply_configs": [
-                  "mb"
-                ],
-                "build_config": "Release",
-                "config": "chromium_asan",
-                "target_bits": 64
-              },
-              "legacy_gclient_config": {
-                "config": "chromium"
-              },
-              "parent": {
-                "bucket": "ci",
-                "builder": "Linux ASan LSan Builder",
-                "project": "chromium"
-              }
-            }
           }
         ]
       },
@@ -101,11 +73,6 @@
         {
           "bucket": "ci",
           "builder": "Linux ASan LSan Tests (1)",
-          "project": "chromium"
-        },
-        {
-          "bucket": "ci",
-          "builder": "Linux ASan Tests (sandboxed)",
           "project": "chromium"
         }
       ],
