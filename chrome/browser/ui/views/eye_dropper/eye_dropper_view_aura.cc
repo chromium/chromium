@@ -114,6 +114,14 @@ void EyeDropperView::PreEventDispatchHandler::OnMouseEvent(
   }
 }
 
+void EyeDropperView::PreEventDispatchHandler::OnGestureEvent(
+    ui::GestureEvent* event) {
+  if (event->type() == ui::ET_GESTURE_TAP) {
+    view_->OnColorSelected();
+    event->StopPropagation();
+  }
+}
+
 void EyeDropperView::MoveViewToFront() {
   // The view is already topmost when Aura is used.
 }

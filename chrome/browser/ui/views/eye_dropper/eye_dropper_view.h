@@ -48,6 +48,7 @@ class EyeDropperView : public content::EyeDropper,
 
    private:
     void OnMouseEvent(ui::MouseEvent* event) override;
+    void OnGestureEvent(ui::GestureEvent* event) override;
 
     raw_ptr<EyeDropperView> view_;
 #if defined(USE_AURA)
