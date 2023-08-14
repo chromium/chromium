@@ -94,11 +94,16 @@ public class AutofillUiUtils {
         int NONE = 7;
     }
 
+    /**
+     * Different sizes in which we show the credit card art images. Update the {@code NUM_SIZES}
+     * entry when adding/removing entries.
+     */
     @IntDef({CardIconSize.SMALL, CardIconSize.LARGE})
     @Retention(RetentionPolicy.SOURCE)
     public @interface CardIconSize {
         int SMALL = 0;
         int LARGE = 1;
+        int NUM_SIZES = 2;
     }
 
     /**
