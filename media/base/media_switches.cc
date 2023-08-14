@@ -14,6 +14,8 @@
 #include "components/system_media_controls/linux/buildflags/buildflags.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "media/media_buildflags.h"
+#include "ui/gl/gl_features.h"
+#include "ui/gl/gl_utils.h"
 
 #if BUILDFLAG(IS_LINUX)
 #include "base/cpu.h"
@@ -1588,8 +1590,13 @@ bool IsVideoCaptureAcceleratedJpegDecodingEnabled() {
 }
 
 bool IsMultiPlaneFormatForHardwareVideoEnabled() {
-  return base::FeatureList::IsEnabled(features::kPassthroughYuvRgbConversion) &&
-         base::FeatureList::IsEnabled(kUseMultiPlaneFormatForHardwareVideo);
+  return
+#if BUILDFLAG(ENABLE_VALIDATING_COMMAND_DECODER) && BUILDFLAG(IS_CHROMEOS)
+      gl::UsePassthroughCommandDecoder(
+          base::CommandLine::ForCurrentProcess()) &&
+#endif
+      base::FeatureList::IsEnabled(features::kPassthroughYuvRgbConversion) &&
+      base::FeatureList::IsEnabled(kUseMultiPlaneFormatForHardwareVideo);
 }
 
 #if BUILDFLAG(IS_WIN)
