@@ -363,15 +363,18 @@ void ProfilePolicyConnector::Init(
   DCHECK_EQ(nullptr, user);
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  browser_policy_connector_ = connector;
-#endif
-
   ConfigurationPolicyProvider* platform_provider =
       connector->GetPlatformProvider();
   if (platform_provider) {
     AppendPolicyProviderWithSchemaTracking(platform_provider, schema_registry);
   }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  browser_policy_connector_ = connector;
+  if (connector->ash_policy_provider()) {
+    policy_providers_.push_back(connector->ash_policy_provider());
+  }
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (browser_policy_connector->GetDeviceCloudPolicyManager()) {

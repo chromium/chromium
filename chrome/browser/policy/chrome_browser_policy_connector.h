@@ -137,6 +137,10 @@ class ChromeBrowserPolicyConnector : public BrowserPolicyConnector {
   PolicyLoaderLacros* device_account_policy_loader() {
     return device_account_policy_loader_;
   }
+
+  ConfigurationPolicyProvider* ash_policy_provider() {
+    return ash_policy_provider_;
+  }
 #endif
 
  protected:
@@ -202,6 +206,8 @@ class ChromeBrowserPolicyConnector : public BrowserPolicyConnector {
   // Owned by |platform_provider_|.
   raw_ptr<PolicyLoaderLacros, DanglingUntriaged> device_account_policy_loader_ =
       nullptr;
+  // Provides the user policy fetched/cached by ash-chrome. Owned by base class.
+  raw_ptr<ConfigurationPolicyProvider> ash_policy_provider_ = nullptr;
 #endif
 
   // Weak pointers needed for tasks that need to wait until it can be decided
