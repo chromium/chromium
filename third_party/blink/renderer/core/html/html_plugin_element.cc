@@ -457,6 +457,11 @@ ScriptValue HTMLPlugInElement::AnonymousNamedGetter(const AtomicString& name) {
 NamedPropertySetterResult HTMLPlugInElement::AnonymousNamedSetter(
     const AtomicString& name,
     const ScriptValue& value) {
+  if (!GetExecutionContext()) {
+    // PluginWrapper() is guaranteed nullptr if there's no ExecutionContext.
+    return NamedPropertySetterResult::kDidNotIntercept;
+  }
+
   v8::Local<v8::Context> context =
       GetExecutionContext()->GetIsolate()->GetCurrentContext();
   ScriptState* script_state = ScriptState::From(context);
