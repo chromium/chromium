@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/location_bar/content_setting_image_view.h"
 
+#include <string>
 #include <utility>
 
 #include "base/metrics/user_metrics.h"
@@ -110,11 +111,10 @@ ContentSettingImageView::ContentSettingImageView(
           ? l10n_util::GetStringUTF16(content_setting_image_model_
                                           ->AccessibilityAnnouncementStringId())
           : std::u16string();
-  const std::u16string& accessible_description =
-      l10n_util::GetStringUTF16(IDS_A11Y_OMNIBOX_CHIP_HINT);
 
   SetAccessibilityProperties(
-      /*role*/ absl::nullopt, accessible_name, accessible_description,
+      /*role*/ absl::nullopt, accessible_name,
+      /*description=*/absl::nullopt,
       /*role_description*/ absl::nullopt,
       accessible_name.empty() ? ax::mojom::NameFrom::kAttributeExplicitlyEmpty
                               : ax::mojom::NameFrom::kAttribute);
@@ -155,6 +155,9 @@ void ContentSettingImageView::Update() {
     auto name = l10n_util::GetStringUTF16(
         content_setting_image_model_->AccessibilityAnnouncementStringId());
     SetAccessibleName(name);
+    const std::u16string& accessible_description =
+        l10n_util::GetStringUTF16(IDS_A11Y_OMNIBOX_CHIP_HINT);
+    SetAccessibleDescription(accessible_description);
     NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
     content_setting_image_model_->AccessibilityWasNotified(web_contents);
   }
