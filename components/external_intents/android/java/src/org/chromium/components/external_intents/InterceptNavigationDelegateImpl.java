@@ -150,7 +150,7 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
 
     @Override
     public boolean shouldIgnoreNavigation(NavigationHandle navigationHandle, GURL escapedUrl,
-            boolean crossFrame, boolean isSandboxedFrame) {
+            boolean hiddenCrossFrame, boolean isSandboxedFrame) {
         // We should never get here for non-main-frame navigations.
         if (!navigationHandle.isInPrimaryMainFrame()) throw new RuntimeException();
 
@@ -164,7 +164,7 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
                 navigationHandle.getReferrerUrl(), navigationHandle.isInPrimaryMainFrame(),
                 navigationHandle.getInitiatorOrigin(), navigationHandle.isExternalProtocol(),
                 mClient.areIntentLaunchesAllowedInHiddenTabsForNavigation(navigationHandle),
-                this::onDidAsyncActionInMainFrame, crossFrame, isSandboxedFrame);
+                this::onDidAsyncActionInMainFrame, hiddenCrossFrame, isSandboxedFrame);
 
         mClient.onDecisionReachedForNavigation(navigationHandle, result);
 
@@ -207,7 +207,7 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
                 GURL.emptyGURL() /* referrerUrl */, false /* isInPrimaryMainFrame */,
                 initiatorOrigin, true /* isExternalProtocol */,
                 false /* areIntentLaunchesAllowedInHiddenTabsForNavigation */,
-                this::onDidAsyncActionInSubFrame, false /* crossframe */,
+                this::onDidAsyncActionInSubFrame, false /* hiddenCrossFrame */,
                 false /* isSandboxedMainFrame */);
 
         switch (result.getResultType()) {
@@ -231,7 +231,7 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
             boolean hasUserGesture, boolean isRendererInitiated, GURL referrerUrl,
             boolean isInPrimaryMainFrame, Origin initiatorOrigin, boolean isExternalProtocol,
             boolean areIntentLaunchesAllowedInHiddenTabsForNavigation,
-            Callback<AsyncActionTakenParams> asyncActionTakenCallback, boolean crossFrame,
+            Callback<AsyncActionTakenParams> asyncActionTakenCallback, boolean hiddenCrossFrame,
             boolean isSandboxedMainFrame) {
         boolean initialNavigation = isInitialNavigation();
         redirectHandler.updateNewUrlLoading(pageTransition, isRedirect, hasUserGesture,
@@ -260,7 +260,7 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
                         .setInitiatorOrigin(initiatorOrigin)
                         .setAsyncActionTakenCallback(asyncActionTakenCallback)
                         .setIsInitialNavigationInFrame(initialNavigation)
-                        .setIsCrossFrameNavigation(crossFrame)
+                        .setIsHiddenCrossFrameNavigation(hiddenCrossFrame)
                         .setIsSandboxedMainFrame(isSandboxedMainFrame)
                         .build();
 

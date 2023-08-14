@@ -30,8 +30,8 @@ BASE_FEATURE(kExternalNavigationDebugLogs,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kBlockFrameRenavigations,
-             "BlockFrameRenavigations2",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             "BlockFrameRenavigations3",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kBlockIntentsToSelf,
              "BlockIntentsToSelf",

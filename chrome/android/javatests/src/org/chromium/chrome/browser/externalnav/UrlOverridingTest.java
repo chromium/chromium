@@ -29,6 +29,7 @@ import android.util.Base64;
 import android.util.Pair;
 import android.widget.TextView;
 
+import androidx.annotation.IntDef;
 import androidx.browser.customtabs.CustomTabsSessionToken;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.Espresso;
@@ -120,6 +121,8 @@ import org.chromium.ui.mojom.WindowOpenDisposition;
 import org.chromium.url.GURL;
 import org.chromium.url.Origin;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -209,6 +212,14 @@ public class UrlOverridingTest {
     private static final String TRUSTED_CCT_PACKAGE = "com.trusted.cct";
 
     private static final String EXTERNAL_APP_SCHEME = "externalappscheme";
+
+    @IntDef({NavigationType.SELF, NavigationType.BLANK, NavigationType.TOP})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface NavigationType {
+        int SELF = 0;
+        int BLANK = 1;
+        int TOP = 2;
+    }
 
     @Mock
     private RedirectHandler mRedirectHandler;
@@ -628,7 +639,7 @@ public class UrlOverridingTest {
     }
 
     private String getSubframeNavigationUrl(
-            String subframeTargetUrl, boolean openInNewTab, boolean sandbox) {
+            String subframeTargetUrl, @NavigationType int navigationType, boolean sandbox) {
         // The replace_text parameters for SUBFRAME_NAVIGATION_CHILD, which is loaded in
         // the iframe in SUBFRAME_NAVIGATION_PARENT, have to go through the
         // embedded test server twice and, as such, have to be base64-encoded twice.
@@ -639,18 +650,25 @@ public class UrlOverridingTest {
         byte[] base64SubframeUrl = Base64.encode(
                 ApiCompatibilityUtils.getBytesUtf8(subframeTargetUrl), Base64.URL_SAFE);
 
-        byte[] paramBlank = ApiCompatibilityUtils.getBytesUtf8("PARAM_BLANK");
+        byte[] paramNavType = ApiCompatibilityUtils.getBytesUtf8("PARAM_BLANK");
         byte[] valBlank = ApiCompatibilityUtils.getBytesUtf8("_blank");
+        byte[] valTop = ApiCompatibilityUtils.getBytesUtf8("_top");
 
         String url = sandbox ? SUBFRAME_NAVIGATION_PARENT_SANDBOX : SUBFRAME_NAVIGATION_PARENT;
+
+        String navType = "";
+        if (navigationType == NavigationType.BLANK) {
+            navType = Base64.encodeToString(valBlank, Base64.URL_SAFE);
+        } else if (navigationType == NavigationType.TOP) {
+            navType = Base64.encodeToString(valTop, Base64.URL_SAFE);
+        }
 
         return mTestServer.getURL(url
                 + "?replace_text=" + Base64.encodeToString(paramBase64Name, Base64.URL_SAFE) + ":"
                 + Base64.encodeToString(base64ParamSubframeUrl, Base64.URL_SAFE)
                 + "&replace_text=" + Base64.encodeToString(paramBase64Value, Base64.URL_SAFE) + ":"
-                + Base64.encodeToString(base64SubframeUrl, Base64.URL_SAFE)
-                + "&replace_text=" + Base64.encodeToString(paramBlank, Base64.URL_SAFE) + ":"
-                + (openInNewTab ? Base64.encodeToString(valBlank, Base64.URL_SAFE) : ""));
+                + Base64.encodeToString(base64SubframeUrl, Base64.URL_SAFE) + "&replace_text="
+                + Base64.encodeToString(paramNavType, Base64.URL_SAFE) + ":" + navType);
     }
 
     private String getOpenWindowFromLinkUserGestureUrl(String targetUrl) {
@@ -776,7 +794,7 @@ public class UrlOverridingTest {
         String fallbackUrl = mTestServer.getURL(FALLBACK_LANDING_PATH);
         String subframeUrl = "intent://test/#Intent;scheme=badscheme;S.browser_fallback_url="
                 + fallbackUrl + ";end";
-        String originalUrl = getSubframeNavigationUrl(subframeUrl, false, false);
+        String originalUrl = getSubframeNavigationUrl(subframeUrl, NavigationType.SELF, false);
 
         final Tab tab = mActivityTestRule.getActivity().getActivityTab();
 
@@ -1502,7 +1520,7 @@ public class UrlOverridingTest {
                 + "https%3A%2F%2Fplay.google.com%2Fstore%2Fapps%2Fdetails%3Fid%3Dcom.android.chrome"
                 + ";end";
 
-        String originalUrl = getSubframeNavigationUrl(subframeTarget, false, false);
+        String originalUrl = getSubframeNavigationUrl(subframeTarget, NavigationType.SELF, false);
 
         final Tab tab = mActivityTestRule.getActivity().getActivityTab();
 
@@ -1543,7 +1561,7 @@ public class UrlOverridingTest {
         String subframeUrl =
                 "intent://test/#Intent;scheme=externalappscheme;S.browser_fallback_url="
                 + fallbackUrl + ";end";
-        String originalUrl = getSubframeNavigationUrl(subframeUrl, false, false);
+        String originalUrl = getSubframeNavigationUrl(subframeUrl, NavigationType.SELF, false);
 
         final Tab tab = mActivityTestRule.getActivity().getActivityTab();
 
@@ -1651,6 +1669,17 @@ public class UrlOverridingTest {
 
     @Test
     @LargeTest
+    public void testNavigateTopFrame() throws Exception {
+        mActivityTestRule.startMainActivityOnBlankPage();
+
+        String subframeUrl = "intent://test/#Intent;scheme=externalappscheme;end";
+        String originalUrl = getSubframeNavigationUrl(subframeUrl, NavigationType.TOP, false);
+
+        loadUrlAndWaitForIntentUrl(originalUrl, true, false, true, null, true);
+    }
+
+    @Test
+    @LargeTest
     @Features.EnableFeatures({ExternalIntentsFeatures.BLOCK_INTENTS_TO_SELF_NAME})
     public void
     testIntentToSelf() {
@@ -1686,7 +1715,7 @@ public class UrlOverridingTest {
                 + "https%3A%2F%2Fplay.google.com%2Fstore%2Fapps%2Fdetails%3Fid%3Dcom.android.chrome"
                 + ";end";
 
-        String originalUrl = getSubframeNavigationUrl(subframeTarget, true, false);
+        String originalUrl = getSubframeNavigationUrl(subframeTarget, NavigationType.BLANK, false);
 
         final Tab tab = mActivityTestRule.getActivity().getActivityTab();
 
@@ -1733,7 +1762,7 @@ public class UrlOverridingTest {
                 + "https%3A%2F%2Fplay.google.com%2Fstore%2Fapps%2Fdetails%3Fid%3Dcom.android.chrome"
                 + ";end";
 
-        String originalUrl = getSubframeNavigationUrl(subframeTarget, true, true);
+        String originalUrl = getSubframeNavigationUrl(subframeTarget, NavigationType.BLANK, true);
 
         final Tab tab = mActivityTestRule.getActivity().getActivityTab();
 

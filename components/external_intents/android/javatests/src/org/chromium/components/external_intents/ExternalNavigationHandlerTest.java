@@ -2615,12 +2615,12 @@ public class ExternalNavigationHandlerTest {
 
     @Test
     @SmallTest
-    public void testBlockCrossFrameReNavigation() {
+    public void testBlockHiddenCrossFrameReNavigation() {
         mDelegate.add(new IntentActivity(YOUTUBE_URL, YOUTUBE_PACKAGE_NAME));
 
         checkUrl(YOUTUBE_URL, redirectHandlerForLinkClick())
                 .withIsInitialNavigationInFrame(false)
-                .withIsCrossFrame(true)
+                .withIsHiddenCrossFrame(true)
                 .expecting(OverrideUrlLoadingResultType.NO_OVERRIDE, IGNORE);
     }
 
@@ -3117,7 +3117,7 @@ public class ExternalNavigationHandlerTest {
         private boolean mIsRendererInitiated = true;
         private boolean mIsMainFrame = true;
         private boolean mIsInitialNavigationInFrame;
-        private boolean mIsCrossFrame;
+        private boolean mIsHiddenCrossFrame;
 
         private ExternalNavigationTestParams(String url, RedirectHandler handler) {
             mUrl = url;
@@ -3183,8 +3183,8 @@ public class ExternalNavigationHandlerTest {
             return this;
         }
 
-        public ExternalNavigationTestParams withIsCrossFrame(boolean isCrossFrame) {
-            mIsCrossFrame = isCrossFrame;
+        public ExternalNavigationTestParams withIsHiddenCrossFrame(boolean isHiddenCrossFrame) {
+            mIsHiddenCrossFrame = isHiddenCrossFrame;
             return this;
         }
 
@@ -3234,7 +3234,7 @@ public class ExternalNavigationHandlerTest {
                             .setIsRendererInitiated(mIsRendererInitiated)
                             .setAsyncActionTakenCallback(callback)
                             .setIsInitialNavigationInFrame(mIsInitialNavigationInFrame)
-                            .setIsCrossFrameNavigation(mIsCrossFrame)
+                            .setIsHiddenCrossFrameNavigation(mIsHiddenCrossFrame)
                             .build();
             OverrideUrlLoadingResult result = mUrlHandler.shouldOverrideUrlLoading(params);
 

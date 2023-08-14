@@ -1358,21 +1358,24 @@ public class ExternalNavigationHandler {
      * https://crbug.com/1066555. A re-navigation can make it look like the current tab is
      * performing a navigation when it's actually a background tab doing the navigation.
      */
-    private boolean isCrossFrameRenavigation(ExternalNavigationParams params) {
+    private boolean isHiddenCrossFrameRenavigation(ExternalNavigationParams params) {
         if (!ExternalIntentsFeatures.BLOCK_FRAME_RENAVIGATIONS.isEnabled()) return false;
 
-        if (params.getRedirectHandler().navigationChainPerformedCrossFrameNavigation()) {
+        if (params.getRedirectHandler().navigationChainPerformedHiddenCrossFrameNavigation()) {
             if (debug()) Log.i(TAG, "Navigation chain used cross-frame re-navigation.");
             return true;
         }
 
-        if (params.isInitialNavigationInFrame() || !params.isCrossFrameNavigation()) return false;
+        if (params.isInitialNavigationInFrame() || !params.isHiddenCrossFrameNavigation()) {
+            return false;
+        }
+
         // Server redirects can be seen as cross frame to the initial navigation in the frame, but
         // are still controlled by the site in the frame.
         if (params.isRedirect()) return false;
 
         if (debug()) Log.i(TAG, "Cross-frame re-navigation.");
-        params.getRedirectHandler().setPerformedCrossFrameNavigation();
+        params.getRedirectHandler().setPerformedHiddenCrossFrameNavigation();
         return true;
     }
 
@@ -1595,7 +1598,7 @@ public class ExternalNavigationHandler {
 
         // Needs to be checked first as a failure for this reason is persisted through the
         // navigation chain, and other failures should not cause this check to be skipped.
-        if (isCrossFrameRenavigation(params)) return OverrideUrlLoadingResult.forNoOverride();
+        if (isHiddenCrossFrameRenavigation(params)) return OverrideUrlLoadingResult.forNoOverride();
 
         if (shouldBlockAllExternalAppLaunches(params, incomingIntentRedirect)) {
             return OverrideUrlLoadingResult.forNoOverride();

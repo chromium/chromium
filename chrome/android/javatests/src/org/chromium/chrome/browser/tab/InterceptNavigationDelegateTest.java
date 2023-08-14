@@ -115,10 +115,10 @@ public class InterceptNavigationDelegateTest {
             InterceptNavigationDelegateImpl delegate = new InterceptNavigationDelegateImpl(client) {
                 @Override
                 public boolean shouldIgnoreNavigation(NavigationHandle navigationHandle,
-                        GURL escapedUrl, boolean crossFrame, boolean isSandboxedFrame) {
+                        GURL escapedUrl, boolean hiddenCrossFrame, boolean isSandboxedFrame) {
                     mNavParamHistory.add(navigationHandle);
                     return super.shouldIgnoreNavigation(
-                            navigationHandle, escapedUrl, crossFrame, isSandboxedFrame);
+                            navigationHandle, escapedUrl, hiddenCrossFrame, isSandboxedFrame);
                 }
 
                 @Override
