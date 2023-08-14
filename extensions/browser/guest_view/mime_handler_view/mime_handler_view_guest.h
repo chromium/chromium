@@ -12,6 +12,7 @@
 #include "components/guest_view/browser/guest_view.h"
 #include "content/public/browser/global_routing_id.h"
 #include "extensions/common/api/mime_handler.mojom.h"
+#include "extensions/common/extension_id.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/mojom/loader/transferrable_url_loader.mojom.h"
@@ -47,7 +48,7 @@ class StreamContainer {
   bool embedded() const { return embedded_; }
   int tab_id() const { return tab_id_; }
   GURL handler_url() const { return handler_url_; }
-  std::string extension_id() const { return extension_id_; }
+  ExtensionId extension_id() const { return extension_id_; }
 
   const std::string& mime_type() const { return mime_type_; }
   const GURL& original_url() const { return original_url_; }
@@ -68,7 +69,7 @@ class StreamContainer {
   const bool embedded_;
   const int tab_id_;
   const GURL handler_url_;
-  const std::string extension_id_;
+  const ExtensionId extension_id_;
   blink::mojom::TransferrableURLLoaderPtr transferrable_loader_;
 
   std::string mime_type_;
