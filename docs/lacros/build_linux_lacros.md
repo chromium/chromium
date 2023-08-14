@@ -88,9 +88,9 @@ launch issues be sure to run this step.
 % rm -rf /tmp/ash-chrome
 ```
 
-Run ash-chrome-on-linux with support for lacros-chrome:
+Run ash-chrome-on-linux with lacros-chrome as the only browser:
 ```shell
-% XDG_RUNTIME_DIR=/tmp/ash_chrome_xdg_runtime ./out_linux_ash/Release/chrome --user-data-dir=/tmp/ash-chrome --enable-wayland-server --no-startup-window --login-manager --login-profile=user --enable-features=LacrosSupport,LacrosPrimary,LacrosOnly --lacros-chrome-path=${PWD}/out_linux_lacros/Release/
+% XDG_RUNTIME_DIR=/tmp/ash_chrome_xdg_runtime ./out_linux_ash/Release/chrome --user-data-dir=/tmp/ash-chrome --enable-wayland-server --no-startup-window --login-manager --login-profile=user --enable-features=LacrosOnly --lacros-chrome-path=${PWD}/out_linux_lacros/Release/
 ```
 
 You will be prompted to log in. Once you log in, Lacros will be the primary
@@ -113,7 +113,7 @@ of the mojo_connection_lacros_launcher.py script (without the script, mojo
 connection won’t be hooked up correctly). Firstly, launch ash-chrome-on-linux
 with the --lacros-mojo-socket-for-testing cmd line argument.
 ```shell
-% XDG_RUNTIME_DIR=/tmp/ash_chrome_xdg_runtime ./out_linux_ash/Release/chrome --user-data-dir=/tmp/ash-chrome --enable-wayland-server --no-startup-window --login-manager --enable-features=LacrosSupport --lacros-mojo-socket-for-testing=/tmp/lacros.sock
+% XDG_RUNTIME_DIR=/tmp/ash_chrome_xdg_runtime ./out_linux_ash/Release/chrome --user-data-dir=/tmp/ash-chrome --enable-wayland-server --no-startup-window --login-manager --enable-features=LacrosOnly --lacros-mojo-socket-for-testing=/tmp/lacros.sock
 ```
 
 Then, launch lacros-chrome-on-linux with the launcher script with

@@ -3918,9 +3918,8 @@ chromium-metrics-reviews@google.com.
   <owner>skuhne@chromium.org</owner>
   <owner>lacros-team@google.com</owner>
   <summary>
-    The Lacros operation mode. This will record if Ash is the only browser, both
-    browsers are running side by side or if Lacros is the only browser. It will
-    be emitted once when the system (Ash) starts.
+    The Lacros operation mode. This will record whether Lacros is the only
+    browser. It will be emitted once when the system (Ash) starts.
   </summary>
 </histogram>
 
@@ -3929,9 +3928,8 @@ chromium-metrics-reviews@google.com.
   <owner>skuhne@chromium.org</owner>
   <owner>lacros-team@google.com</owner>
   <summary>
-    The Lacros operation mode. This will record if Ash is the only browser, both
-    browsers are running side by side or if Lacros is the only browser. It will
-    be emitted at least once a day.
+    The Lacros operation mode. This will record whether Lacros is the only
+    browser. It will be emitted at least once a day.
   </summary>
 </histogram>
 
@@ -3940,12 +3938,11 @@ chromium-metrics-reviews@google.com.
   <owner>skuhne@chromium.org</owner>
   <owner>lacros-team@google.com</owner>
   <summary>
-    The Lacros operation mode and the origin of the setting. This will record if
-    Ash is the only browser, both browsers are running side by side or if Lacros
-    is the only browser as well as if the setting was set by the user, enforced
-    by a policy or enforced by the user (overriding any given policy). It will
-    be emitted shortly before Lacros gets started the first time from the system
-    (Ash).
+    The Lacros operation mode and the origin of the setting. This will record
+    whether Lacros is enabled as well as whether that was set by the user,
+    enforced by a policy or enforced by the user (overriding any given policy).
+    It will be emitted shortly before Lacros gets started the first time from
+    the system (Ash).
   </summary>
 </histogram>
 
@@ -3954,11 +3951,10 @@ chromium-metrics-reviews@google.com.
   <owner>skuhne@chromium.org</owner>
   <owner>lacros-team@google.com</owner>
   <summary>
-    The Lacros operation mode and the origin of the setting. This will record if
-    Ash is the only browser, both browsers are running side by side or if Lacros
-    is the only browser as well as if the setting was set by the user, enforced
-    by a policy or enforced by the user (overriding any given policy). It will
-    be emitted at least once a day.
+    The Lacros operation mode and the origin of the setting. This will record
+    whether Lacros is enabled as well as whether that was set by the user,
+    enforced by a policy or enforced by the user (overriding any given policy).
+    It will be emitted at least once a day.
   </summary>
 </histogram>
 

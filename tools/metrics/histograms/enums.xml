@@ -62067,7 +62067,6 @@ from previous Chrome versions.
   <int value="-959244784" label="ContextualSearchSuppressShortView:enabled"/>
   <int value="-959173180" label="AccessibilityPageZoom:disabled"/>
   <int value="-958950214" label="AllowDisableMouseAcceleration:disabled"/>
-  <int value="-958372962" label="LacrosSupport:enabled"/>
   <int value="-958159088" label="RestoreTabsOnFRE:enabled"/>
   <int value="-957200826" label="enable-spdy-proxy-auth"/>
   <int value="-956696029" label="scheduler-configuration"/>
@@ -66585,7 +66584,6 @@ from previous Chrome versions.
   <int value="1353113954" label="EnableMDRoundedCornersOnDialogs:enabled"/>
   <int value="1353629763" label="MediaSessionAccelerators:enabled"/>
   <int value="1353749554" label="QuickAnswersTranslation:enabled"/>
-  <int value="1354978146" label="LacrosPrimary:enabled"/>
   <int value="1355458262" label="WebIdentityMDocs:enabled"/>
   <int value="1355656242"
       label="DesktopPWAsMigrationUserDisplayModeCleanUp:disabled"/>
@@ -67219,7 +67217,6 @@ from previous Chrome versions.
   <int value="1680248931" label="use-fake-device-for-media-stream:enabled"/>
   <int value="1680381128" label="SmartZoom:enabled"/>
   <int value="1680524929" label="AutofillEnableSupportForLandmark:disabled"/>
-  <int value="1680855806" label="LacrosPrimary:disabled"/>
   <int value="1681219077" label="VoiceButtonInTopToolbar:enabled"/>
   <int value="1681612611" label="CodeBasedRBD:disabled"/>
   <int value="1683560662" label="ChromeShareHighlightsAndroid:disabled"/>
@@ -68111,7 +68108,6 @@ from previous Chrome versions.
   <int value="2114221139" label="EnableHostnameSetting:disabled"/>
   <int value="2114843059" label="ContextualSuggestionsOptOut:enabled"/>
   <int value="2114894984" label="DelayCompetingLowPriorityRequests:enabled"/>
-  <int value="2115848376" label="LacrosSupport:disabled"/>
   <int value="2116535245" label="PasswordEditDialogWithDetails:disabled"/>
   <int value="2117485960" label="SupportPepperVideoDecoderDevAPI:disabled"/>
   <int value="2118287149" label="HelpAppSearchServiceIntegration:enabled"/>

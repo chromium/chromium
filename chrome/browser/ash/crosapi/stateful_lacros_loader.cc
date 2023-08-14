@@ -280,7 +280,7 @@ void StatefulLacrosLoader::OnCheckInstalledToUnload(bool was_installed) {
     return;
   }
 
-  // Workaround for login crash when the user un-sets the LacrosSupport flag.
+  // Workaround for login crash when the user disables Lacros.
   // CrOSComponentManager::Unload() calls into code in MetadataTable that
   // assumes that system salt is available. This isn't always true when chrome
   // restarts to apply non-owner flags. It's hard to make MetadataTable async.

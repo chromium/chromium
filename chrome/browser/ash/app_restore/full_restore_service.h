@@ -55,9 +55,9 @@ enum class RestoreAction {
 };
 
 // Returns true if FullRestoreService can be created to restore/launch Lacros
-// during the system startup phase when below conditions are matched:
+// during the system startup phase when all of the below conditions are met:
 // 1. The FullRestoreForLacros flag is enabled.
-// 2. The WebAppsCrosapi or LacrosPrimary flag is enabled.
+// 2. Lacros is enabled.
 // 3. FullRestoreService can be created for the primary profile.
 bool MaybeCreateFullRestoreServiceForLacros();
 
