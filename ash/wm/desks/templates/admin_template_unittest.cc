@@ -262,7 +262,7 @@ TEST_P(AdminTemplateTest, LaunchTemplate) {
   EXPECT_THAT(app_restore_data->display_id, Optional(Not(Eq(-1))));
   // And window activation index.
   EXPECT_THAT(app_restore_data->activation_index,
-              Optional(Le(kAdminTemplateStartingActivationIndex)));
+              Optional(Le(kTemplateStartingActivationIndex)));
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

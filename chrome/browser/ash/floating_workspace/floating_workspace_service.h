@@ -148,7 +148,8 @@ class FloatingWorkspaceService : public KeyedService,
   // Launch downloaded floating workspace desk when all conditions are met.
   // Virtual for testing.
   virtual void LaunchFloatingWorkspaceTemplate(
-      const DeskTemplate* desk_template);
+      const DeskTemplate* desk_template,
+      bool launch_on_active_desk);
 
   // Return the desk client to be used, in test it will return a mocked one.
   virtual DesksClient* GetDesksClient();

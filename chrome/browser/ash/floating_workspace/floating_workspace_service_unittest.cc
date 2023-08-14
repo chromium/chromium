@@ -184,6 +184,7 @@ class TestFloatingWorkSpaceService : public FloatingWorkspaceService {
     Init(mock_sync_service, fake_desk_sync_service);
     mock_open_tabs_ = std::make_unique<MockOpenTabsUIDelegate>();
     mock_desks_client_ = std::make_unique<MockDesksClient>();
+    are_desks_combined_ = false;
   }
 
   void RestoreLocalSessionWindows() override {
@@ -217,14 +218,18 @@ class TestFloatingWorkSpaceService : public FloatingWorkspaceService {
   DeskTemplate* GetUploadedFloatingWorkspaceTemplate() {
     return uploaded_desk_template_;
   }
+  bool AreDesksCombined() { return are_desks_combined_; }
 
  private:
   sync_sessions::OpenTabsUIDelegate* GetOpenTabsUIDelegate() override {
     return mock_open_tabs_.get();
   }
 
-  void LaunchFloatingWorkspaceTemplate(
-      const DeskTemplate* desk_template) override {
+  void LaunchFloatingWorkspaceTemplate(const DeskTemplate* desk_template,
+                                       bool launch_on_active_desk) override {
+    if (launch_on_active_desk) {
+      are_desks_combined_ = true;
+    }
     restored_floating_workspace_template_ = desk_template;
   }
   void UploadFloatingWorkspaceTemplateToDeskModel(
@@ -242,6 +247,7 @@ class TestFloatingWorkSpaceService : public FloatingWorkspaceService {
   raw_ptr<DeskTemplate, ExperimentalAsh> uploaded_desk_template_ = nullptr;
   std::unique_ptr<MockOpenTabsUIDelegate> mock_open_tabs_;
   std::unique_ptr<MockDesksClient> mock_desks_client_;
+  bool are_desks_combined_;
 };
 
 class FloatingWorkspaceServiceTest : public testing::Test {
@@ -543,6 +549,7 @@ TEST_F(FloatingWorkspaceServiceTest, RestoreFloatingWorkspaceTemplate) {
       test_floating_workspace_service_v2.GetRestoredFloatingWorkspaceTemplate()
           ->template_name(),
       base::UTF8ToUTF16(template_name));
+  EXPECT_FALSE(test_floating_workspace_service_v2.AreDesksCombined());
   scoped_feature_list().Reset();
 }
 
@@ -611,6 +618,7 @@ TEST_F(FloatingWorkspaceServiceTest,
       test_floating_workspace_service_v2.GetRestoredFloatingWorkspaceTemplate()
           ->template_name(),
       base::UTF8ToUTF16(template_name));
+  EXPECT_TRUE(test_floating_workspace_service_v2.AreDesksCombined());
   scoped_feature_list().Reset();
 }
 
@@ -659,6 +667,7 @@ TEST_F(FloatingWorkspaceServiceTest,
       absl::nullopt);
   EXPECT_FALSE(test_floating_workspace_service_v2
                    .GetRestoredFloatingWorkspaceTemplate());
+  EXPECT_FALSE(test_floating_workspace_service_v2.AreDesksCombined());
   scoped_feature_list().Reset();
 }
 

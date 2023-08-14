@@ -19,9 +19,9 @@ namespace ash {
 
 class SavedDeskDialogController;
 class SavedDeskPresenter;
+class DeskTemplate;
 
 namespace saved_desk_util {
-
 // Registers the per-profile preferences for whether desks templates are
 // enabled.
 void RegisterProfilePrefs(PrefRegistrySimple* registry);
@@ -40,8 +40,14 @@ ASH_EXPORT SavedDeskPresenter* GetSavedDeskPresenter();
 // otherwise.
 ASH_EXPORT std::string GetAppId(aura::Window* window);
 
-// Returns true if `window` was launched from an admin template.
-bool IsAdminTemplateWindow(aura::Window* window);
+// Returns true if `window` was launched from an admin template and should be on
+// top relative to other desk templates windows.
+bool IsWindowOnTopForTemplate(aura::Window* window);
+
+// This function updates the activation indices of all the windows in a
+// template so that windows launched from it will stack in the order they are
+// defined, while also stacking on top of any existing windows.
+ASH_EXPORT void UpdateTemplateActivationIndices(DeskTemplate& saved_desk);
 
 }  // namespace saved_desk_util
 }  // namespace ash

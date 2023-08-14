@@ -271,7 +271,8 @@ void FloatingWorkspaceService::Click(
               static_cast<int>(
                   RestoreFromErrorNotificationButtonIndex::kRestore)) {
         VLOG(1) << "Restore button clicked for floating workspace after error";
-        LaunchFloatingWorkspaceTemplate(GetLatestFloatingWorkspaceTemplate());
+        LaunchFloatingWorkspaceTemplate(GetLatestFloatingWorkspaceTemplate(),
+                                        /*launch_on_active_desk=*/true);
       }
       break;
   }
@@ -491,11 +492,13 @@ void FloatingWorkspaceService::RestoreFloatingWorkspaceTemplate(
     should_run_restore_ = false;
     return;
   }
-  LaunchFloatingWorkspaceTemplate(desk_template);
+  LaunchFloatingWorkspaceTemplate(desk_template,
+                                  /*launch_on_active_desk=*/false);
 }
 
 void FloatingWorkspaceService::LaunchFloatingWorkspaceTemplate(
-    const DeskTemplate* desk_template) {
+    const DeskTemplate* desk_template,
+    bool launch_on_active_desk) {
   should_run_restore_ = false;
   if (desk_template == nullptr) {
     return;
@@ -505,11 +508,24 @@ void FloatingWorkspaceService::LaunchFloatingWorkspaceTemplate(
           << desk_template->GetLastUpdatedTime();
   RemoveAllPreviousDesksExceptActiveDesk(
       /*exclude_desk_uuid=*/active_desk_uuid);
-  GetDesksClient()->LaunchDeskTemplate(
-      desk_template->uuid(),
-      base::BindOnce(&FloatingWorkspaceService::OnTemplateLaunched,
-                     weak_pointer_factory_.GetWeakPtr()),
-      desk_template->template_name());
+
+  // If the user clicks on the restore button for launch, launch the apps to the
+  // current active desk. If it is an auto launch, launch into a new desk and
+  // remove all other desks after launch.
+  if (launch_on_active_desk) {
+    VLOG(1) << "Combining Floating Workspace apps to current desk.";
+    std::unique_ptr<DeskTemplate> template_copy = desk_template->Clone();
+    // Open the apps from the floating workspace on top of existing windows.
+    saved_desk_util::UpdateTemplateActivationIndices(*template_copy);
+    GetDesksClient()->LaunchAppsFromTemplate(std::move(template_copy));
+    RecordLaunchSavedDeskHistogram(DeskTemplateType::kFloatingWorkspace);
+  } else {
+    GetDesksClient()->LaunchDeskTemplate(
+        desk_template->uuid(),
+        base::BindOnce(&FloatingWorkspaceService::OnTemplateLaunched,
+                       weak_pointer_factory_.GetWeakPtr()),
+        desk_template->template_name());
+  }
 }
 
 DesksClient* FloatingWorkspaceService::GetDesksClient() {

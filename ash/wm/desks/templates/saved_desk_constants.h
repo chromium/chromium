@@ -21,11 +21,11 @@ constexpr int kSaveDeskCornerRadius = 16;
 // Used in desk grid padding, SavedDeskItemView horizontal padding.
 constexpr int kSaveDeskPaddingDp = 24;
 
-// Windows launched from admin templates will start with this activation index,
-// and then proceed downwards. In other words, all windows launched from admin
-// templates will have an activation index that is equal to or lower than this
-// value.
-constexpr int kAdminTemplateStartingActivationIndex = -1000000;
+// Windows launched from admin templates or floating workspace templates will
+// start with this activation index, and then proceed downwards. In other words,
+// all windows launched from admin templates or floating workspace templates
+// will have an activation index that is equal to or lower than this value.
+constexpr int kTemplateStartingActivationIndex = -1000000;
 
 }  // namespace ash
 

@@ -236,7 +236,7 @@ WindowRestoreController::GetWindowToInsertBefore(
 
   // If this is an admin template window, it should be placed on top of existing
   // windows (but relative to other desk template windows).
-  if (saved_desk_util::IsAdminTemplateWindow(window)) {
+  if (saved_desk_util::IsWindowOnTopForTemplate(window)) {
     for (auto it = windows.begin(); it != windows.end(); ++it) {
       const int32_t* next_activation_index =
           (*it)->GetProperty(app_restore::kActivationIndexKey);
