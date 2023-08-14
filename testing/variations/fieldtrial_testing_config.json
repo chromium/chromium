@@ -4834,27 +4834,6 @@
             ]
         }
     ],
-    "DesktopNtpPanorama": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Panorama_In_Product_Help",
-                    "enable_features": [
-                        "CustomizeChromeColorExtraction",
-                        "CustomizeChromeSidePanel",
-                        "IPH_DesktopCustomizeChrome"
-                    ]
-                }
-            ]
-        }
-    ],
     "DesktopOmniboxCalculatorProvider": [
         {
             "platforms": [
