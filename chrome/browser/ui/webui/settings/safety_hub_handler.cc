@@ -26,6 +26,7 @@
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/permissions/constants.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
@@ -87,6 +88,19 @@ GetUnusedSitePermissionsFromDict(
   constraints.set_lifetime(lifetime);
 
   return std::make_tuple(origin, permission_types, constraints);
+}
+
+// Returns the state of Safe Browsing setting.
+SafeBrowsingState GetSafeBrowsingState(PrefService* pref_service) {
+  if (safe_browsing::IsEnhancedProtectionEnabled(*pref_service))
+    return SafeBrowsingState::kEnabledEnhanced;
+  if (safe_browsing::IsSafeBrowsingEnabled(*pref_service))
+    return SafeBrowsingState::kEnabledStandard;
+  if (safe_browsing::IsSafeBrowsingPolicyManaged(*pref_service))
+    return SafeBrowsingState::kDisabledByAdmin;
+  if (safe_browsing::IsSafeBrowsingExtensionControlled(*pref_service))
+    return SafeBrowsingState::kDisabledByExtension;
+  return SafeBrowsingState::kDisabledByUser;
 }
 }  // namespace
 
@@ -321,6 +335,18 @@ void SafetyHubHandler::HandleUndoIgnoreOriginsForNotificationPermissionReview(
   SendNotificationPermissionReviewList();
 }
 
+void SafetyHubHandler::HandleGetSafeBrowsingState(
+    const base::Value::List& args) {
+  AllowJavascript();
+
+  CHECK_EQ(1U, args.size());
+  const base::Value& callback_id = args[0];
+
+  SafeBrowsingState result = GetSafeBrowsingState(profile_->GetPrefs());
+
+  ResolveJavascriptCallback(callback_id, (int)result);
+}
+
 void SafetyHubHandler::RegisterMessages() {
   // Usage of base::Unretained(this) is safe, because web_ui() owns `this` and
   // won't release ownership until destruction.
@@ -381,6 +407,10 @@ void SafetyHubHandler::RegisterMessages() {
           &SafetyHubHandler::
               HandleUndoIgnoreOriginsForNotificationPermissionReview,
           base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "getSafeBrowsingState",
+      base::BindRepeating(&SafetyHubHandler::HandleGetSafeBrowsingState,
+                          base::Unretained(this)));
 }
 
 void SafetyHubHandler::SendUnusedSitePermissionsReviewList() {

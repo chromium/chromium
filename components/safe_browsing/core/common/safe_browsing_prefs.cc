@@ -214,6 +214,13 @@ bool IsSafeBrowsingPolicyManaged(const PrefService& prefs) {
          prefs.IsManagedPreference(prefs::kSafeBrowsingEnhanced);
 }
 
+bool IsSafeBrowsingExtensionControlled(const PrefService& prefs) {
+  // Checking only kSafeBrowsingEnabled since there is no extension API
+  // that can control the kSafeBrowsingEnhanced protection pref.
+  return prefs.FindPreference(prefs::kSafeBrowsingEnabled)
+             ->IsExtensionControlled();
+}
+
 bool IsRealTimeDownloadProtectionRequestAllowed(const PrefService& prefs) {
   return prefs.GetBoolean(
       prefs::kRealTimeDownloadProtectionRequestAllowedByPolicy);

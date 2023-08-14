@@ -14,6 +14,17 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "url/origin.h"
 
+// The state of Safe Browsing settings.
+enum class SafeBrowsingState {
+  kEnabledEnhanced = 0,
+  kEnabledStandard = 1,
+  kDisabledByAdmin = 2,
+  kDisabledByExtension = 3,
+  kDisabledByUser = 4,
+  // New enum values must go above here.
+  kMaxValue = kDisabledByUser,
+};
+
 /**
  * This handler deals with the permission-related operations on the site
  * settings page.
@@ -117,6 +128,9 @@ class SafetyHubHandler : public settings::SettingsPageUIHandler {
   // verification blocklist.
   void HandleUndoIgnoreOriginsForNotificationPermissionReview(
       const base::Value::List& args);
+
+  // Returns the Safe Browsing state.
+  void HandleGetSafeBrowsingState(const base::Value::List& args);
 
   // Sends the list of notification permissions to review to the WebUI.
   void SendNotificationPermissionReviewList();

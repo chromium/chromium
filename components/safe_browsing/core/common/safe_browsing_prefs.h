@@ -334,6 +334,9 @@ bool IsExtendedReportingPolicyManaged(const PrefService& prefs);
 // SafeBrowsingProtectionLevel policy(new).
 bool IsSafeBrowsingPolicyManaged(const PrefService& prefs);
 
+// Return whether the Safe Browsing preference is controlled by an extension.
+bool IsSafeBrowsingExtensionControlled(const PrefService& prefs);
+
 // Returns whether Safe Browsing Real Time Download Protection request uploads
 // are allowed for the user. If this returns false, Download Protection
 // request uploads are disabled. Otherwise, Download Protection will depend on

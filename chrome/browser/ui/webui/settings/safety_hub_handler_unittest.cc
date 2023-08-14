@@ -6,6 +6,7 @@
 #include <memory>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/test/gtest_util.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/clock.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -22,6 +23,8 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/permissions/constants.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
@@ -29,6 +32,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
+enum SettingManager { USER, ADMIN, EXTENSION };
 constexpr char kUnusedTestSite[] = "https://example1.com";
 constexpr char kUsedTestSite[] = "https://example2.com";
 constexpr ContentSettingsType kUnusedPermission =
@@ -110,6 +114,53 @@ class SafetyHubHandlerTest : public testing::Test {
               data.arg1()->GetString());
 
     ASSERT_TRUE(data.arg2()->is_list());
+  }
+
+  void SetPrefsForSafeBrowsing(bool is_enabled,
+                               bool is_enhanced,
+                               SettingManager managed_by) {
+    auto* prefs = profile()->GetTestingPrefService();
+
+    switch (managed_by) {
+      case USER:
+        prefs->SetUserPref(prefs::kSafeBrowsingEnabled,
+                           std::make_unique<base::Value>(is_enabled));
+        prefs->SetUserPref(prefs::kSafeBrowsingEnhanced,
+                           std::make_unique<base::Value>(is_enhanced));
+        break;
+      case ADMIN:
+        prefs->SetManagedPref(prefs::kSafeBrowsingEnabled,
+                              std::make_unique<base::Value>(is_enabled));
+        prefs->SetManagedPref(prefs::kSafeBrowsingEnhanced,
+                              std::make_unique<base::Value>(is_enhanced));
+        break;
+      case EXTENSION:
+        prefs->SetExtensionPref(prefs::kSafeBrowsingEnabled,
+                                std::make_unique<base::Value>(is_enabled));
+        prefs->SetExtensionPref(prefs::kSafeBrowsingEnhanced,
+                                std::make_unique<base::Value>(is_enhanced));
+        break;
+      default:
+        NOTREACHED() << "Unexpected value for managed_by argument. \n";
+    }
+  }
+
+  void ValidateHandleSafeBrowsingState(SafeBrowsingState state) {
+    base::Value::List args;
+    args.Append("getSafeBrowsingState");
+
+    handler()->HandleGetSafeBrowsingState(args);
+
+    const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
+
+    EXPECT_EQ("cr.webUIResponse", data.function_name());
+    ASSERT_TRUE(data.arg1()->is_string());
+    EXPECT_EQ("getSafeBrowsingState", data.arg1()->GetString());
+    // arg2 is a boolean that is true if the callback is successful.
+    ASSERT_TRUE(data.arg2()->is_bool());
+    ASSERT_TRUE(data.arg2());
+    ASSERT_TRUE(data.arg3()->is_int());
+    EXPECT_EQ((std::int32_t)state, data.arg3()->GetInt());
   }
 
   base::Value::List GetOriginList(int size) {
@@ -326,4 +377,50 @@ TEST_F(SafetyHubHandlerTest, HandleResetNotificationPermissionForOrigins) {
   ASSERT_EQ(CONTENT_SETTING_ASK, type);
 
   ValidateNotificationPermissionUpdate();
+}
+
+TEST_F(SafetyHubHandlerTest, HandleGetSafeBrowsingState_EnabledEnhanced) {
+  SetPrefsForSafeBrowsing(true, true, SettingManager::USER);
+  ValidateHandleSafeBrowsingState(SafeBrowsingState::kEnabledEnhanced);
+
+  SetPrefsForSafeBrowsing(true, true, SettingManager::EXTENSION);
+  ValidateHandleSafeBrowsingState(SafeBrowsingState::kEnabledEnhanced);
+
+  SetPrefsForSafeBrowsing(true, true, SettingManager::ADMIN);
+  ValidateHandleSafeBrowsingState(SafeBrowsingState::kEnabledEnhanced);
+}
+
+TEST_F(SafetyHubHandlerTest, HandleGetSafeBrowsingState_EnabledStandard) {
+  SetPrefsForSafeBrowsing(true, false, SettingManager::USER);
+  ValidateHandleSafeBrowsingState(SafeBrowsingState::kEnabledStandard);
+
+  SetPrefsForSafeBrowsing(true, false, SettingManager::EXTENSION);
+  ValidateHandleSafeBrowsingState(SafeBrowsingState::kEnabledStandard);
+
+  SetPrefsForSafeBrowsing(true, false, SettingManager::ADMIN);
+  ValidateHandleSafeBrowsingState(SafeBrowsingState::kEnabledStandard);
+}
+
+TEST_F(SafetyHubHandlerTest, HandleGetSafeBrowsingState_DisabledByAdmin) {
+  SetPrefsForSafeBrowsing(false, false, SettingManager::ADMIN);
+  ValidateHandleSafeBrowsingState(SafeBrowsingState::kDisabledByAdmin);
+
+  SetPrefsForSafeBrowsing(false, true, SettingManager::ADMIN);
+  ValidateHandleSafeBrowsingState(SafeBrowsingState::kDisabledByAdmin);
+}
+
+TEST_F(SafetyHubHandlerTest, HandleGetSafeBrowsingState_DisabledByExtension) {
+  SetPrefsForSafeBrowsing(false, false, SettingManager::EXTENSION);
+  ValidateHandleSafeBrowsingState(SafeBrowsingState::kDisabledByExtension);
+
+  SetPrefsForSafeBrowsing(false, true, SettingManager::EXTENSION);
+  ValidateHandleSafeBrowsingState(SafeBrowsingState::kDisabledByExtension);
+}
+
+TEST_F(SafetyHubHandlerTest, HandleGetSafeBrowsingState_DisabledByUser) {
+  SetPrefsForSafeBrowsing(false, false, SettingManager::USER);
+  ValidateHandleSafeBrowsingState(SafeBrowsingState::kDisabledByUser);
+
+  SetPrefsForSafeBrowsing(false, true, SettingManager::USER);
+  ValidateHandleSafeBrowsingState(SafeBrowsingState::kDisabledByUser);
 }
