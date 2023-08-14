@@ -149,7 +149,9 @@
 #include "base/environment.h"
 #include "base/files/file_path_watcher.h"
 #include "base/process/launch.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/uuid.h"
+#include "base/version.h"
 #include "chrome/browser/lacros/cert/cert_db_initializer_factory.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
 #include "components/account_manager_core/chromeos/account_manager_facade_factory.h"  // nogncheck
@@ -309,6 +311,27 @@ FakeAccountManagerUI* InProcessBrowserTest::GetFakeAccountManagerUI() const {
   return static_cast<FakeAccountManagerUI*>(
       MaybeGetAshAccountManagerUIForTests());
 }
+
+base::Version InProcessBrowserTest::GetAshChromeVersion() {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  base::FilePath ash_chrome_path =
+      command_line->GetSwitchValuePath("ash-chrome-path");
+  CHECK(!ash_chrome_path.empty());
+  base::CommandLine invoker(ash_chrome_path);
+  invoker.AppendSwitch(switches::kVersion);
+  std::string output;
+  base::ScopedAllowBlockingForTesting blocking;
+  CHECK(base::GetAppOutput(invoker, &output));
+  std::vector<std::string> tokens = base::SplitString(
+      output, " ", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+  CHECK_GT(tokens.size(), 1U);
+  // We assume Chrome version is always at the second last position.
+  base::Version version(tokens[tokens.size() - 2]);
+  CHECK(version.IsValid()) << "Can not find "
+                           << "chrome version in string: " << output;
+  return version;
+}
+
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 void InProcessBrowserTest::Initialize() {

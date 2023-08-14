@@ -4,6 +4,8 @@
 
 #include "chrome/test/base/in_process_browser_test.h"
 
+#include "base/strings/string_split.h"
+#include "base/version.h"
 #include "chrome/browser/speech/tts_crosapi_util.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -32,4 +34,22 @@ class StartUniqueAshBrowserTest : public InProcessBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(StartUniqueAshBrowserTest, StartAshChrome) {
   CheckExpectations();
+}
+
+class GetAshChromeVersionBrowserTest : public InProcessBrowserTest {
+ public:
+  void SetUp() override {
+    ash_version_ = GetAshChromeVersion();
+    InProcessBrowserTest::SetUp();
+  }
+
+ protected:
+  base::Version ash_version_;
+};
+
+IN_PROC_BROWSER_TEST_F(GetAshChromeVersionBrowserTest, GetAshChromeVersion) {
+  std::vector<std::string> versions =
+      base::SplitString(ash_version_.GetString(), ".", base::KEEP_WHITESPACE,
+                        base::SPLIT_WANT_ALL);
+  ASSERT_EQ(versions.size(), 4U);
 }

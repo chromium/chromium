@@ -48,6 +48,7 @@ class ScopedCOMInitializer;
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 class Process;
+class Version;
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 }  // namespace base
 
@@ -374,6 +375,12 @@ class InProcessBrowserTest : public content::BrowserTestBase {
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   FakeAccountManagerUI* GetFakeAccountManagerUI() const;
+
+  // Return the Ash chrome version hooked with Lacros. This API does not
+  // depend on crosapi. So it is safe to call when crosapi is disabled and
+  // as early as in test SetUp().
+  static base::Version GetAshChromeVersion();
+
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
