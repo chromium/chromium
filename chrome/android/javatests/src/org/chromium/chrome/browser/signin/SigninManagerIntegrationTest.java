@@ -232,6 +232,7 @@ public class SigninManagerIntegrationTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/1467211")
     public void testUpdateAccountListTwoAccountsThenRemoveAllSignOut() {
         // Add accounts.
         mSigninTestRule.addAccountAndWaitForSeeding(TEST_ACCOUNT1);
