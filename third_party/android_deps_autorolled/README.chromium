@@ -1,5 +1,6 @@
 Name: Android Deps Autorolled Repository
 Short Name: android_deps_autorolled
+URL: https://chromium.googlesource.com/chromium/src/+/main/third_party/android_deps/README.md
 Version: 1
 License: Refer to additional_readme_paths.json
 License Android Compatible: yes

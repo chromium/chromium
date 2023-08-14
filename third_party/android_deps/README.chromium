@@ -1,6 +1,6 @@
 Name: Android Deps Repository
 Short Name: android_deps
-URL: https://chromium.googlesource.com/chromium/src/+/master/third_party/android_deps/README.md
+URL: https://chromium.googlesource.com/chromium/src/+/main/third_party/android_deps/README.md
 Version: 1
 License: Refer to additional_readme_paths.json
 License Android Compatible: yes
