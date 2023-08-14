@@ -4,11 +4,11 @@
     height: 410px;
   }
 
-  :host([images-enabled]) {
+  :host([images-enabled_]) {
     height: 496px;
   }
 
-  :host([images-enabled]:not([show-related-searches])) {
+  :host([images-enabled_]:not([show-related-searches])) {
     align-self: flex-start;
     height: 370px
   }
@@ -38,11 +38,11 @@
     padding: 8px;
   }
 
-  :host([images-enabled]:not([show-related-searches])) #layout {
+  :host([images-enabled_]:not([show-related-searches])) #layout {
     grid-template: repeat(6, 1fr) / repeat(2, 1fr)
   }
 
-  :host([images-enabled]) #layout {
+  :host([images-enabled_]) #layout {
     grid-template: repeat(8, 1fr) / repeat(2, 1fr);
   }
 
@@ -70,7 +70,7 @@
     grid-row: 3 / 6;
   }
 
-  :host([images-enabled]) #first-tile {
+  :host([images-enabled_]) #first-tile {
     grid-row: 3 / 7;
   }
 
@@ -89,7 +89,7 @@
     grid-row: 3 / 6;
   }
 
-  :host([images-enabled]) #last-tile {
+  :host([images-enabled_]) #last-tile {
     grid-row: 3 / 7;
   }
 
@@ -176,7 +176,7 @@
     width: 100%;
   }
 
-  :host([images-enabled]:not([format='wide'])) #related-searches {
+  :host([images-enabled_]:not([format='wide'])) #related-searches {
     grid-row: 7 / 9;
   }
 
@@ -205,7 +205,7 @@
       visit="[[cluster.visits.1]]" on-click="onVisitTileClick_"
       on-aux-click="onVisitTileClick_" format="[[format]]"
       show-related-searches$="[[showRelatedSearches]]"
-      images-enabled$="[[imagesEnabled]]">
+      images-enabled="[[imagesEnabled_]]">
   </ntp-history-clusters-visit-tile>
   <template is="dom-if" if="[[shouldShowCartTile_(cart)]]" restamp>
     <ntp-history-clusters-cart-tile-v2
@@ -218,7 +218,8 @@
     <ntp-history-clusters-visit-tile id="last-tile"
         visit="[[cluster.visits.2]]" on-click="onVisitTileClick_"
         on-aux-click="onVisitTileClick_" format="[[format]]"
-        show-related-searches$="[[showRelatedSearches]]">
+        show-related-searches$="[[showRelatedSearches]]"
+        images-enabled="[[imagesEnabled_]]">
     </ntp-history-clusters-visit-tile>
   </template>
   <div id="related-searches" hidden="[[!showRelatedSearches]]">

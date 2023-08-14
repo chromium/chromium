@@ -68,8 +68,8 @@ export class VisitTileModuleElement extends I18nMixin
   }
 
   format: string;
+  imagesEnabled: boolean;
   visit: URLVisit;
-  private imagesEnabled_: boolean;
   private imageUrl_: Url|null;
 
   hasImageUrl(): boolean {

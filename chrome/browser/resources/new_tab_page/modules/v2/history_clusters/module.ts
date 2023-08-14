@@ -62,10 +62,10 @@ export class HistoryClustersModuleElement extends I18nMixin
         reflectToAttribute: true,
       },
 
-      imagesEnabled: {
+      imagesEnabled_: {
         type: Boolean,
         value: true,
-        computed: `computeImagesEnabled(cart)`,
+        computed: `computeImagesEnabled_(cart)`,
         reflectToAttribute: true,
       },
 
@@ -161,7 +161,7 @@ export class HistoryClustersModuleElement extends I18nMixin
         !!cart;
   }
 
-  private computeImagesEnabled(): boolean {
+  private computeImagesEnabled_(): boolean {
     return loadTimeData.getBoolean('historyClustersImagesEnabled') ||
         !!this.cart;
   }
