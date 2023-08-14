@@ -9,6 +9,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
+#include "build/build_config.h"
 #include "components/viz/common/resources/resource_sizes.h"
 #include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
 #include "gpu/command_buffer/common/mailbox.h"
@@ -123,6 +124,14 @@ class EGLImageBackingFactoryThreadSafeTest
   void SetUp() override {
     if (!IsEglImageSupported())
       return;
+
+#if BUILDFLAG(IS_ANDROID)
+    auto* command_line = base::CommandLine::ForCurrentProcess();
+    if (gles2::UsePassthroughCommandDecoder(command_line)) {
+      // TODO(crbug.com/1472516): fix this tests to work with passthrough.
+      GTEST_SKIP();
+    }
+#endif
 
     GpuDriverBugWorkarounds workarounds;
 
