@@ -8,6 +8,7 @@ import("//build/config/features.gni")
 import("//build/config/nacl/config.gni")
 import("//build/config/ui.gni")
 import("//build_overrides/build.gni")
+import("//third_party/perfetto/gn/perfetto_cc_proto_descriptor.gni")
 import("//third_party/protobuf/proto_library.gni")
 
 if (is_android) {
@@ -186,6 +187,7 @@ static_library("test_support") {
       "test_trace_processor.cc",
       "test_trace_processor.h",
     ]
+    deps += [ ":gen_cc_chrome_track_event_descriptor" ]
     if (is_ios) {
       deps += [
         ":test_trace_processor+bundle",
@@ -516,6 +518,11 @@ executable("test_child_process") {
 }
 
 if (enable_base_tracing) {
+  perfetto_cc_proto_descriptor("gen_cc_chrome_track_event_descriptor") {
+    descriptor_name = "chrome_track_event.descriptor"
+    descriptor_target = "//base/tracing/protos:chrome_track_event"
+  }
+
   # We encapsulate the trace processor in a separate shared library to prevent
   # any duplicate symbol issues. Perfetto symbols are exported by chromium’s
   # base via a public_dep on libperfetto; libtrace_processor also depends on

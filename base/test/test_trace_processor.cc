@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "base/test/test_trace_processor.h"
+#include "base/test/chrome_track_event.descriptor.h"
 #include "base/trace_event/trace_log.h"
+#include "third_party/perfetto/protos/perfetto/trace/extension_descriptor.pbzero.h"
 
 namespace base::test {
 
@@ -83,7 +85,29 @@ void TestTraceProcessor::StartTrace(const TraceConfig& config,
   run_loop.Run();
 }
 
+namespace {
+// Emitting the chrome_track_event.descriptor into the trace allows the trace
+// processor to parse the arguments during ingestion of the trace events.
+// This function emits the descriptor generated from
+// base/tracing/protos/chrome_track_event.proto so we can use TestTraceProcessor
+// to write tests based on new arguments/types added in the same patch.
+void EmitChromeTrackEventDescriptor() {
+  base::TrackEvent::Trace([&](base::TrackEvent::TraceContext ctx) {
+    protozero::MessageHandle<perfetto::protos::pbzero::TracePacket> handle =
+        ctx.NewTracePacket();
+    auto* extension_descriptor = handle->BeginNestedMessage<protozero::Message>(
+        perfetto::protos::pbzero::TracePacket::kExtensionDescriptorFieldNumber);
+    extension_descriptor->AppendBytes(
+        perfetto::protos::pbzero::ExtensionDescriptor::kExtensionSetFieldNumber,
+        perfetto::kChromeTrackEventDescriptor.data(),
+        perfetto::kChromeTrackEventDescriptor.size());
+    handle->Finalize();
+  });
+}
+}  // namespace
+
 absl::Status TestTraceProcessor::StopAndParseTrace() {
+  EmitChromeTrackEventDescriptor();
   base::TrackEvent::Flush();
   session_->StopBlocking();
   std::vector<char> trace = session_->ReadTraceBlocking();
