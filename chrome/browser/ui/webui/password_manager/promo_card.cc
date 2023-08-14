@@ -275,10 +275,8 @@ std::u16string PasswordManagerShortcutPromo::GetTitle() const {
 }
 
 std::u16string PasswordManagerShortcutPromo::GetDescription() const {
-  return l10n_util::GetStringFUTF16(
-      IDS_PASSWORD_MANAGER_UI_SHORTCUT_PROMO_CARD_DESCRIPTION,
-      l10n_util::GetStringUTF16(
-          IDS_PASSWORD_BUBBLES_PASSWORD_MANAGER_LINK_TEXT_SAVING_ON_DEVICE));
+  return l10n_util::GetStringUTF16(
+      IDS_PASSWORD_MANAGER_UI_SHORTCUT_PROMO_CARD_DESCRIPTION);
 }
 
 std::u16string PasswordManagerShortcutPromo::GetActionButtonText() const {
