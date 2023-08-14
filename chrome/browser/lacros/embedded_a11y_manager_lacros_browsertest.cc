@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <string>
 
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -27,6 +28,7 @@
 #include "extensions/browser/extension_host_test_helper.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/service_worker/service_worker_test_utils.h"
+#include "extensions/common/extension_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window.h"
@@ -46,6 +48,8 @@
 // for unsetting it.
 
 namespace {
+
+constexpr const char16_t kMenuItemName[] = u"Listen to selected text";
 
 using AssistiveTechnologyType = crosapi::mojom::AssistiveTechnologyType;
 
@@ -109,6 +113,21 @@ class EmbeddedA11yManagerLacrosTest : public InProcessBrowserTest {
   EmbeddedA11yManagerLacrosTest(const EmbeddedA11yManagerLacrosTest&) = delete;
   EmbeddedA11yManagerLacrosTest& operator=(
       const EmbeddedA11yManagerLacrosTest&) = delete;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    scoped_feature_list_.InitAndEnableFeature(
+        extensions_features::kApiAccessibilityServicePrivate);
+  }
+
+  void SetUp() override {
+    // Start unique Ash instance for AccessibilityServicePrivate enabled.
+    StartUniqueAshChrome(
+        /*enabled_features=*/{"ApiAccessibilityServicePrivate"},
+        /*disabled_features=*/{}, /*additional_cmdline_switches=*/{},
+        "crbug/1459275 Switch to shared ash when the "
+        "AccessibilityServicePrivate API is enabled by default.");
+    InProcessBrowserTest::SetUp();
+  }
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
@@ -217,6 +236,8 @@ class EmbeddedA11yManagerLacrosTest : public InProcessBrowserTest {
     return menu;
   }
 
+  int num_context_clicks() const { return num_context_clicks_; }
+
  private:
   void OnExtensionChanged() {
     if (waiter_ && waiter_->running()) {
@@ -225,6 +246,8 @@ class EmbeddedA11yManagerLacrosTest : public InProcessBrowserTest {
   }
 
   std::unique_ptr<base::RunLoop> waiter_;
+  int num_context_clicks_ = 0;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(EmbeddedA11yManagerLacrosTest,
@@ -392,7 +415,7 @@ IN_PROC_BROWSER_TEST_F(EmbeddedA11yManagerLacrosTest,
 }
 
 IN_PROC_BROWSER_TEST_F(EmbeddedA11yManagerLacrosTest,
-                       DoesNotShowStsContextMenuWhenStsDisabled) {
+                       DoesNotShowContextMenuWhenSelectToSpeakDisabled) {
   Profile* profile = ProfileManager::GetPrimaryUserProfile();
   ASSERT_TRUE(profile);
 
@@ -408,10 +431,9 @@ IN_PROC_BROWSER_TEST_F(EmbeddedA11yManagerLacrosTest,
   RenderViewContextMenu* menu = LoadTestPageAndSelectTextAndRightClick();
 
   const ui::SimpleMenuModel& menu_model = menu->menu_model();
-  const std::u16string menu_item_name = u"Listen to selected text";
   bool found = false;
   for (size_t i = 0; i < menu_model.GetItemCount(); i++) {
-    if (menu_model.GetLabelAt(i) == menu_item_name) {
+    if (menu_model.GetLabelAt(i) == kMenuItemName) {
       found = true;
       break;
     }
@@ -423,5 +445,43 @@ IN_PROC_BROWSER_TEST_F(EmbeddedA11yManagerLacrosTest,
       extension_misc::kEmbeddedA11yHelperExtensionId);
 }
 
-// TODO(b/271633121): Add a test that the STS context menu is shown
-// when STS is enabled.
+IN_PROC_BROWSER_TEST_F(EmbeddedA11yManagerLacrosTest,
+                       TriggerSelectToSpeakFromContextMenu) {
+  Profile* profile = ProfileManager::GetPrimaryUserProfile();
+  ASSERT_TRUE(profile);
+
+  extensions::service_worker_test_utils::TestRegistrationObserver
+      service_worker_observer(profile);
+
+  SetEnabledAndWaitForExtensionLoaded(
+      profile, AssistiveTechnologyType::kSelectToSpeak,
+      extension_misc::kEmbeddedA11yHelperExtensionId);
+
+  service_worker_observer.WaitForWorkerStart();
+
+  RenderViewContextMenu* menu = LoadTestPageAndSelectTextAndRightClick();
+
+  const ui::SimpleMenuModel& menu_model = menu->menu_model();
+  int found_index = -1;
+  for (size_t i = 0; i < menu_model.GetItemCount(); i++) {
+    if (menu_model.GetLabelAt(i) == kMenuItemName) {
+      found_index = i;
+      break;
+    }
+  }
+  ASSERT_GE(found_index, 0);
+
+  base::RunLoop run_loop;
+  EmbeddedA11yManagerLacros::GetInstance()->AddSpeakSelectedTextCallbackForTest(
+      run_loop.QuitClosure());
+
+  int command_id = menu_model.GetCommandIdAt(found_index);
+  menu->ExecuteCommand(command_id, /*flags=*/0);
+
+  // Block until the callback is received.
+  run_loop.Run();
+
+  SetDisabledAndWaitForExtensionUnloaded(
+      profile, AssistiveTechnologyType::kSelectToSpeak,
+      extension_misc::kEmbeddedA11yHelperExtensionId);
+}

@@ -3,9 +3,15 @@
 // found in the LICENSE file.
 
 const INITIALIZED_KEY: string = 'sts_initialized';
+// During development, chrome.accessibilityServicePrivate is behind a feature
+// flag.
+const SHOW_CONTEXT_MENU = chrome.accessibilityServicePrivate !== undefined;
 
 async function selectToSpeakContextMenusCallback() {
-  // TODO(b/271633121): Inform Lacros of the context menu click.
+  // Inform Lacros of the context menu click.
+  if (SHOW_CONTEXT_MENU) {
+    chrome.accessibilityServicePrivate.speakSelectedText();
+  }
 }
 
 async function onSelectToSpeakChanged(
@@ -18,7 +24,15 @@ async function onSelectToSpeakChanged(
     const storageUpdate = {[INITIALIZED_KEY]: true};
     chrome.storage.session.set(storageUpdate);
 
-    // TODO(b/271633121): Add a context menu item to selection contexts.
+    //  Add a context menu item to selection contexts.
+    if (SHOW_CONTEXT_MENU) {
+      await chrome.contextMenus.create({
+        title: chrome.i18n.getMessage(
+            'select_to_speak_listen_context_menu_option_text'),
+        contexts: [chrome.contextMenus.ContextType.SELECTION],
+        id: 'embedded_a11y_helper',
+      });
+    }
     return;
   }
 

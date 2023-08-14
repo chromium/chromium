@@ -115,9 +115,21 @@ void EmbeddedA11yManagerLacros::Init() {
   UpdateAllProfiles();
 }
 
+void EmbeddedA11yManagerLacros::SpeakSelectedText() {
+  // TODO(b/271633121): Forward through crosapi to Ash.
+  if (speak_selected_text_callback_for_test_) {
+    speak_selected_text_callback_for_test_.Run();
+  }
+}
+
 void EmbeddedA11yManagerLacros::AddExtensionChangedCallbackForTest(
-    base::RepeatingCallback<void()> callback) {
+    base::RepeatingClosure callback) {
   extension_installation_changed_callback_for_test_ = std::move(callback);
+}
+
+void EmbeddedA11yManagerLacros::AddSpeakSelectedTextCallbackForTest(
+    base::RepeatingClosure callback) {
+  speak_selected_text_callback_for_test_ = std::move(callback);
 }
 
 void EmbeddedA11yManagerLacros::OnProfileWillBeDestroyed(Profile* profile) {

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_LACROS_EMBEDDED_A11Y_MANAGER_LACROS_H_
 #define CHROME_BROWSER_LACROS_EMBEDDED_A11Y_MANAGER_LACROS_H_
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/singleton.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
@@ -41,10 +42,16 @@ class EmbeddedA11yManagerLacros : public ProfileObserver,
   // Should be called when Lacros starts up.
   void Init();
 
+  // Called when the Select to Speak context menu was clicked in Lacros,
+  // and forwards the event back to Ash to inform the Select to Speak
+  // accessibility feature that selected text should be spoken.
+  void SpeakSelectedText();
+
   // We can't use extensions::ExtensionHostTestHelper as those require a
   // background page, and these extensions do not have background pages.
-  void AddExtensionChangedCallbackForTest(
-      base::RepeatingCallback<void()> callback);
+  void AddExtensionChangedCallbackForTest(base::RepeatingClosure callback);
+
+  void AddSpeakSelectedTextCallbackForTest(base::RepeatingClosure callback);
 
  private:
   EmbeddedA11yManagerLacros();
@@ -96,8 +103,8 @@ class EmbeddedA11yManagerLacros : public ProfileObserver,
   bool switch_access_enabled_ = false;
   bool pdf_ocr_always_active_enabled_ = false;
 
-  base::RepeatingCallback<void()>
-      extension_installation_changed_callback_for_test_;
+  base::RepeatingClosure extension_installation_changed_callback_for_test_;
+  base::RepeatingClosure speak_selected_text_callback_for_test_;
 
   base::ScopedMultiSourceObservation<Profile, ProfileObserver>
       observed_profiles_{this};

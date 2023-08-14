@@ -1,0 +1,22 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// API which provides support for ChromeOS Accessibility features in the
+// browser.
+
+[platforms=("chromeos", "lacros"),
+  modernised_enums,
+  implemented_in="chrome/browser/chromeos/extensions/accessibility_service_private.h"]
+
+namespace accessibilityServicePrivate {
+  callback VoidCallback = void();
+
+  interface Functions {
+    // Called when Select to Speak in ChromeOS should speak the current
+    // text selection; fired when the context menu option was clicked in
+    // a selection context.
+    [supportsPromises] static void speakSelectedText(
+      optional VoidCallback callback);
+  };
+};

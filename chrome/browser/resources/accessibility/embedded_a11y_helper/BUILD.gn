@@ -25,7 +25,9 @@ ts_library("build_ts") {
     "//tools/typescript/definitions/tabs.d.ts",
     "//tools/typescript/definitions/storage.d.ts",
     "//tools/typescript/definitions/accessibility_features.d.ts",
+    "//tools/typescript/definitions/accessibility_service_private.d.ts",
     "//tools/typescript/definitions/context_menus.d.ts",
+    "//tools/typescript/definitions/i18n.d.ts",
   ]
 }
 

@@ -74,6 +74,7 @@ if (!is_android) {
 
 if (is_chromeos) {
   schema_sources_ += [
+    "accessibility_service_private.idl",
     "certificate_provider.idl",
     "certificate_provider_internal.idl",
     "document_scan.idl",

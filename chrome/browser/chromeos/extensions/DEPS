@@ -23,4 +23,9 @@ specific_include_rules = {
   "file_system_provider_api\.cc": [
     "+chrome/browser/ash/guest_os",
   ],
+
+  # Guarded by IS_CHROMEOS_ASH.
+  "accessibility_service_private\.cc": [
+    "+chrome/browser/ash/accessibility/accessibility_manager.h",
+  ],
 }

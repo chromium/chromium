@@ -11,6 +11,11 @@ namespace extensions_features {
 // API Features
 ///////////////////////////////////////////////////////////////////////////////
 
+// Controls the availability of the AccessibilityServicePrivate API.
+BASE_FEATURE(kApiAccessibilityServicePrivate,
+             "ApiAccessibilityServicePrivate",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls the availability of the ReadingList API.
 BASE_FEATURE(kApiReadingList,
              "ApiReadingList",

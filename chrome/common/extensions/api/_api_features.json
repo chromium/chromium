@@ -58,6 +58,15 @@
        "A9A9FC0228ADF541F0334F22BEFB8F9C245B21D7"   // http://crbug.com/839189
     ]
   },
+  "accessibilityServicePrivate": {
+    "dependencies": ["permission:accessibilityServicePrivate"],
+    // TODO(b/271633121): Upgrade to stable channel.
+    "channel": "trunk",
+    "contexts": ["blessed_extension"],
+    "platforms": ["chromeos", "lacros"],
+    // TODO(b/271633121): Enable flag by default.
+    "feature_flag": "ApiAccessibilityServicePrivate"
+  },
   "action": {
     "dependencies": ["manifest:action"],
     "contexts": ["blessed_extension"]
