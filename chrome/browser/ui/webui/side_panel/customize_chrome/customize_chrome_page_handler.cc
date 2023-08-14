@@ -119,6 +119,10 @@ void CustomizeChromePageHandler::SetDefaultColor() {
   theme_service_->UseDefaultTheme();
 }
 
+void CustomizeChromePageHandler::SetFollowDeviceTheme(bool follow) {
+  theme_service_->UseDeviceTheme(follow);
+}
+
 void CustomizeChromePageHandler::SetBackgroundImage(
     const std::string& attribution_1,
     const std::string& attribution_2,
@@ -229,6 +233,7 @@ void CustomizeChromePageHandler::UpdateTheme() {
     background_image = nullptr;
   }
   theme->background_image = std::move(background_image);
+  theme->follow_device_theme = theme_service_->UsingDeviceTheme();
 
   auto user_color = theme_service_->GetUserColor();
   // If a user has the GM3 flag enabled but a GM2 theme set they are in a limbo

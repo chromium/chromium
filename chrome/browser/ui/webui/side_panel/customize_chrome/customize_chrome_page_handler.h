@@ -68,6 +68,7 @@ class CustomizeChromePageHandler
 
   // side_panel::mojom::CustomizeChromePageHandler:
   void SetDefaultColor() override;
+  void SetFollowDeviceTheme(bool follow) override;
   void SetBackgroundImage(const std::string& attribution_1,
                           const std::string& attribution_2,
                           const GURL& attribution_url,

@@ -32,6 +32,7 @@ function createTheme(isDarkMode = false): Theme {
     colorsManagedByPolicy: false,
     isGreyBaseline: false,
     browserColorVariant: BrowserColorVariant.kTonalSpot,
+    followDeviceTheme: false,
   };
 }
 
