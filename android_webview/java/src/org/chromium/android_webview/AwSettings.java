@@ -407,6 +407,8 @@ public class AwSettings {
      */
     public void setAcceptThirdPartyCookies(boolean accept) {
         if (TRACE) Log.i(TAG, "setAcceptThirdPartyCookies=" + accept);
+        RecordHistogram.recordBooleanHistogram(
+                "Android.WebView.SetAcceptThirdPartyCookies", accept);
         synchronized (mAwSettingsLock) {
             mAcceptThirdPartyCookies = accept;
             mEventHandler.updateCookiePolicyLocked();

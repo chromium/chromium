@@ -5215,6 +5215,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.WebView.SetAcceptThirdPartyCookies"
+    enum="BooleanAccepted" expires_after="2024-06-13">
+  <owner>jdeabreu@chromium.org</owner>
+  <owner>pbirk@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records whether third party cookies are being accepted following every
+    Android API call, initiated by the hosting Android app, to
+    CookieManager.setAcceptThirdPartyCookies().
+  </summary>
+</histogram>
+
 <histogram name="Android.WebView.ShouldInterceptRequest.IsRequestIntercepted"
     enum="Boolean" expires_after="2024-06-13">
   <owner>ntfschr@chromium.org</owner>
