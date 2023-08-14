@@ -55,19 +55,22 @@ class ImageServiceConsentHelper : public syncer::SyncServiceObserver {
   // The model type `this` pertains to.
   const syncer::ModelType model_type_;
 
-  // Requests waiting for the consent throttle to initialize. Requests are
-  // stored in the queue in order of their arrival.
-  std::vector<base::OnceCallback<void(bool)>> enqueued_request_callbacks_;
-
   // Timer used to periodically process unanswered enqueued requests, and
   // respond to them in the negative.
   base::OneShotTimer request_processing_timer_;
+
+  // Requests waiting for the consent throttle to initialize. Requests are
+  // stored in the queue in order of their arrival.
+  std::vector<base::OnceCallback<void(bool)>> enqueued_request_callbacks_;
 
   // Consent throttle to be used if sync service is not being directly observed.
   std::unique_ptr<unified_consent::ConsentThrottle> consent_throttle_;
 
   base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
       sync_service_observer_{this};
+
+  // Used to get `weak_ptr_` to self.
+  base::WeakPtrFactory<ImageServiceConsentHelper> weak_ptr_factory_{this};
 };
 
 }  // namespace page_image_service
