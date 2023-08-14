@@ -286,6 +286,11 @@ void Combobox::SetForegroundColorId(ui::ColorId color_id) {
   SchedulePaint();
 }
 
+void Combobox::SetForegroundIconColorId(ui::ColorId color_id) {
+  foreground_icon_color_id_ = color_id;
+  SchedulePaint();
+}
+
 void Combobox::SetEventHighlighting(bool should_highlight) {
   should_highlight_ = should_highlight;
   AsViewClass<TransparentButton>(arrow_button_)
@@ -583,6 +588,12 @@ void Combobox::PaintIconAndText(gfx::Canvas* canvas) {
   // Draw the icon.
   ui::ImageModel icon = GetModel()->GetIconAt(selected_index_.value());
   if (!icon.IsEmpty()) {
+    // Update the icon color if provided and if the icon color can be changed.
+    if (foreground_icon_color_id_ && icon.IsVectorIcon()) {
+      icon = ui::ImageModel::FromVectorIcon(*icon.GetVectorIcon().vector_icon(),
+                                            foreground_icon_color_id_.value(),
+                                            icon.GetVectorIcon().icon_size());
+    }
     gfx::ImageSkia icon_skia = icon.Rasterize(GetColorProvider());
     int icon_y = y + (contents_height - icon_skia.height()) / 2;
     gfx::Rect icon_bounds(x, icon_y, icon_skia.width(), icon_skia.height());
