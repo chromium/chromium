@@ -11,6 +11,7 @@
 #include "content/shell/browser/shell.h"
 #include "content/shell/browser/shell_devtools_manager_delegate.h"
 #include "wolvic/browser/session_settings.h"
+#include "wolvic/browser/youtube/youtube_url_loader_request_interceptor.h"
 #include "wolvic/wolvic_browser_context.h"
 #include "wolvic/wolvic_content_main_delegate.h"
 #include "wolvic/wolvic_main_parts.h"
@@ -123,6 +124,19 @@ void WolvicContentBrowserClient::AppendExtraCommandLineSwitches(
         user_level_memory_pressure_params.str());
   }
 #endif  // BUILDFLAG(IS_ANDROID)
+}
+
+std::vector<std::unique_ptr<content::URLLoaderRequestInterceptor>>
+WolvicContentBrowserClient::WillCreateURLLoaderRequestInterceptors(
+    content::NavigationUIData* navigation_ui_data,
+    int frame_tree_node_id) {
+  std::vector<std::unique_ptr<content::URLLoaderRequestInterceptor>>
+      interceptors;
+
+  interceptors.push_back(
+      std::make_unique<wolvic::YoutubeURLLoaderRequestInterceptor>());
+
+  return interceptors;
 }
 
 }  // namespace content
