@@ -1759,6 +1759,8 @@ void DeviceSection::AddDevicePointersStrings(
     content::WebUIDataSource* html_source) {
   const bool kIsRevampEnabled =
       ash::features::IsOsSettingsRevampWayfindingEnabled();
+  const bool kIsAllowMouseScrollSettingsEnabled =
+      base::FeatureList::IsEnabled(ash::features::kAllowScrollSettings);
 
   webui::LocalizedString kPointersStrings[] = {
       {"mouseTitle", IDS_SETTINGS_MOUSE_TITLE},
@@ -1790,8 +1792,9 @@ void DeviceSection::AddDevicePointersStrings(
       {"primaryMouseButtonRight",
        IDS_SETTINGS_PRIMARY_MOUSE_BUTTON_RIGHT_LABEL},
       {"mouseReverseScrollLabel",
-       kIsRevampEnabled ? IDS_OS_SETTINGS_REVAMP_MOUSE_REVERSE_SCROLL_LABEL
-                        : IDS_SETTINGS_MOUSE_REVERSE_SCROLL_LABEL},
+       (kIsRevampEnabled || kIsAllowMouseScrollSettingsEnabled)
+           ? IDS_OS_SETTINGS_REVAMP_MOUSE_REVERSE_SCROLL_LABEL
+           : IDS_SETTINGS_MOUSE_REVERSE_SCROLL_LABEL},
       {"mouseReverseScrollDescription",
        IDS_OS_SETTINGS_REVAMP_MOUSE_REVERSE_SCROLL_DESCRIPTION},
       {"mouseAccelerationLabel",
