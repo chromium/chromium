@@ -10,7 +10,6 @@
 
 namespace apps {
 
-COMPONENT_EXPORT(APP_TYPES) BASE_DECLARE_FEATURE(kUnifiedAppServiceIconLoading);
 COMPONENT_EXPORT(APP_TYPES) BASE_DECLARE_FEATURE(kAppServiceStorage);
 
 }  // namespace apps
