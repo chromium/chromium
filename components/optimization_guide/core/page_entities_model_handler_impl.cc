@@ -241,9 +241,15 @@ void PageEntitiesModelHandlerImpl::OnEntityAnnotatorLibraryInitialized(
   optimization_guide_model_provider->AddObserverForOptimizationTargetModel(
       proto::OptimizationTarget::OPTIMIZATION_TARGET_PAGE_ENTITIES,
       any_metadata, this);
+  optimization_guide_model_provider_ = optimization_guide_model_provider;
 }
 
 PageEntitiesModelHandlerImpl::~PageEntitiesModelHandlerImpl() {
+  if (optimization_guide_model_provider_) {
+    optimization_guide_model_provider_
+        ->RemoveObserverForOptimizationTargetModel(
+            proto::OptimizationTarget::OPTIMIZATION_TARGET_PAGE_ENTITIES, this);
+  }
   // |entity_annotator_holder_|'s  WeakPtrs are used on the background thread,
   // so that is also where the class must be destroyed.
   background_task_runner_->DeleteSoon(FROM_HERE,

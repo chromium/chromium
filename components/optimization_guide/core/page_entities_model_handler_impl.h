@@ -143,6 +143,11 @@ class PageEntitiesModelHandlerImpl : public OptimizationTargetModelObserver,
   // model file is available, then is notified when |OnModelUpdated| is called.
   base::OnceClosureList on_model_updated_callbacks_;
 
+  // The opt guide model provider that gives the model updates. Populated only
+  // when model observer was registered.
+  raw_ptr<optimization_guide::OptimizationGuideModelProvider>
+      optimization_guide_model_provider_;
+
   base::WeakPtrFactory<PageEntitiesModelHandlerImpl> weak_ptr_factory_{this};
 };
 

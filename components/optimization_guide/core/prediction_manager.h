@@ -167,6 +167,22 @@ class PredictionManager : public PredictionModelDownloadObserver {
           prediction_models);
 
  private:
+  // Contains the model registration specific info to be kept for each
+  // optimization target.
+  struct ModelRegistrationInfo {
+    ModelRegistrationInfo(absl::optional<proto::Any> metadata,
+                          OptimizationTargetModelObserver* model_observer);
+    ~ModelRegistrationInfo();
+
+    // The feature-provided metadata that was registered with the prediction
+    // manager.
+    absl::optional<proto::Any> metadata;
+
+    // The model observer that was registered to receive model updates from
+    // the prediction manager.
+    raw_ptr<OptimizationTargetModelObserver> model_observer;
+  };
+
   friend class PredictionManagerTestBase;
   friend class PredictionModelStoreBrowserTestBase;
 
@@ -303,18 +319,11 @@ class PredictionManager : public PredictionModelDownloadObserver {
   // A map of optimization target to the model file containing the model for the
   // target.
   base::flat_map<proto::OptimizationTarget, std::unique_ptr<ModelInfo>>
-      optimization_target_model_info_map_;
+      optimization_target_model_info_map_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  // The map from optimization targets to feature-provided metadata that have
-  // been registered with the prediction manager.
-  base::flat_map<proto::OptimizationTarget, absl::optional<proto::Any>>
-      registered_optimization_targets_and_metadata_;
-
-  // The map from optimization target to observers that have been registered to
-  // receive model updates from the prediction manager.
-  std::map<proto::OptimizationTarget,
-           base::ObserverList<OptimizationTargetModelObserver>>
-      registered_observers_for_optimization_targets_;
+  // The map from optimization target to the model registration specific data.
+  std::map<proto::OptimizationTarget, ModelRegistrationInfo>
+      model_registration_info_map_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // The fetcher that handles making requests to update the models and host
   // model features from the remote Optimization Guide Service.

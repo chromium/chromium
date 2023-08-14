@@ -66,6 +66,8 @@ TranslateModelService::TranslateModelService(
 }
 
 TranslateModelService::~TranslateModelService() {
+  opt_guide_->RemoveObserverForOptimizationTargetModel(
+      optimization_guide::proto::OPTIMIZATION_TARGET_LANGUAGE_DETECTION, this);
   // Clear any pending requests, no model file is acceptable as shutdown is
   // happening.
   NotifyModelUpdatesAndClear(false);
