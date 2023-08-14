@@ -10389,21 +10389,61 @@
                 {
                     "name": "EnabledWithNormalLanguage",
                     "params": {
+                        "probability": "1",
+                        "probability_vector": "1.0,1.0,1.0",
+                        "prompt_disposition_reason_filter": "DefaultFallback",
+                        "request_type_filter": "Geolocation,VideoCapture,AudioCapture",
+                        "survey_display_time": "OnPromptResolved",
+                        "trigger_id": "WZp2sfiwg0ugnJ3q1cK0VHG6m12V,zrDfttnJe0ugnJ3q1cK0QcoodXoN,WokA6U5FP0ugnJ3q1cK0VYJQ93c4",
                         "use_stronger_prompt_language": "false"
                     },
                     "enable_features": [
                         "ActiveContentSettingExpiry",
-                        "OneTimePermission"
+                        "OneTimePermission",
+                        "PermissionsPromptSurvey"
                     ]
                 },
                 {
                     "name": "EnabledWithStrongLanguage",
                     "params": {
+                        "probability": "1",
+                        "probability_vector": "1.0,1.0,1.0",
+                        "prompt_disposition_reason_filter": "DefaultFallback",
+                        "request_type_filter": "Geolocation,VideoCapture,AudioCapture",
+                        "survey_display_time": "OnPromptResolved",
+                        "trigger_id": "Xrna7ZFaz0ugnJ3q1cK0Nn4Zgupz,z1o2b2qU70ugnJ3q1cK0XcJwgRg4,1E7SQhG9X0ugnJ3q1cK0YHQnpSTL",
                         "use_stronger_prompt_language": "true"
                     },
                     "enable_features": [
                         "ActiveContentSettingExpiry",
+                        "OneTimePermission",
+                        "PermissionsPromptSurvey"
+                    ]
+                },
+                {
+                    "name": "HatsControl",
+                    "params": {
+                        "probability": "1",
+                        "probability_vector": "1.0,1.0,1.0",
+                        "prompt_disposition_reason_filter": "DefaultFallback",
+                        "request_type_filter": "Geolocation,VideoCapture,AudioCapture",
+                        "survey_display_time": "OnPromptResolved",
+                        "trigger_id": "q1b37Zevt0ugnJ3q1cK0THbqyNJ4,zZBrVcebz0ugnJ3q1cK0Q9Uo6NFQ,m42rnDDGV0ugnJ3q1cK0RDuG9CQ4"
+                    },
+                    "enable_features": [
+                        "PermissionsPromptSurvey"
+                    ],
+                    "disable_features": [
+                        "ActiveContentSettingExpiry",
                         "OneTimePermission"
+                    ]
+                },
+                {
+                    "name": "Control",
+                    "disable_features": [
+                        "ActiveContentSettingExpiry",
+                        "OneTimePermission",
+                        "PermissionsPromptSurvey"
                     ]
                 }
             ]
@@ -11345,33 +11385,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "PermissionsPolicyUnload"
-                    ]
-                }
-            ]
-        }
-    ],
-    "PermissionsQuietPromptsSurvey": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_Notifications_Quiet_20230208",
-                    "params": {
-                        "probability": "0.3",
-                        "prompt_disposition_filter": "LocationBarLeftQuietChip",
-                        "prompt_disposition_reason_filter": "OnDevicePredictionModel,PredictionService",
-                        "request_type_filter": "Notifications",
-                        "survey_display_time": "OnPromptAppearing",
-                        "trigger_id": "UKctDAzjF0ugnJ3q1cK0SvrQob5m"
-                    },
-                    "enable_features": [
-                        "PermissionsPromptSurvey"
                     ]
                 }
             ]
