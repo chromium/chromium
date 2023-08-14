@@ -4650,14 +4650,32 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_MULTIDEVICE_SMART_LOCK_SUMMARY" desc="Description of for the 'Smart Lock' setting. This feature automatically unlocks the user's Chromebook if their phone is nearby and unlocked.">
     Unlock your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> with your phone. <ph name="LINK_BEGIN">&lt;a target="_blank" href="$2<ex>https://google.com/</ex>"&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
   </message>
+  <message name="IDS_SETTINGS_PEOPLE_LOCK_SCREEN_CHANGE_PASSWORD_BUTTON" desc="Button that is used to change a password.">
+    Change password
+  </message>
+  <message name="IDS_SETTINGS_PEOPLE_LOCK_SCREEN_DEVICE_PASSWORD_OPTION_LABEL" desc="Label for the option to use a device password to sign in.">
+    Device password
+  </message>
+  <message name="IDS_SETTINGS_PEOPLE_LOCK_SCREEN_GOOGLE_ACCOUNT_PASSWORD_OPTION_LABEL" desc="Label for the option to use the Google Account password to sign in.">
+    Google Account password
+  </message>
   <message name="IDS_SETTINGS_PEOPLE_LOCK_SCREEN_OPTIONS_LOGIN_LOCK" desc="Text on the lock screen which is the subheader for the screen locking options.">
     Lock screen from sleep mode
   </message>
   <message name="IDS_SETTINGS_PEOPLE_LOCK_SCREEN_REMOVE_PIN_BUTTON" desc="Label of the button that removes the user's PIN.">
     Remove
   </message>
+  <message name="IDS_SETTINGS_PEOPLE_LOCK_SCREEN_PASSWORD_LABEL" desc="Label for the password authentication factor on the lock screen page.">
+    Password
+  </message>
+  <message name="IDS_SETTINGS_PEOPLE_LOCK_SCREEN_PASSWORD_DESCRIPTION" desc="Description of the password authentication factor on the lock screen page.">
+    Device password or Google Account password
+  </message>
   <message name="IDS_SETTINGS_PEOPLE_LOCK_SCREEN_PIN_LABEL" desc="Label for PIN authentication factor on the lock screen page.">
     PIN
+  </message>
+  <message name="IDS_SETTINGS_PEOPLE_LOCK_SCREEN_SETUP_PASSWORD_BUTTON" desc="Button that is used to setup a password when the user does not have a password yet.">
+    Set up
   </message>
   <message name="IDS_SETTINGS_PEOPLE_LOCK_SCREEN_SETUP_PIN_BUTTON" desc="Button that is used to setup a new PIN when the user does not have a PIN yet.">
     Set up

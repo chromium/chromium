@@ -30,6 +30,13 @@
         class="list-item"
         deep-link-focus-id$="[[Setting.kChangeAuthPinV2]]">
     </settings-pin-settings>
+    <template is="dom-if" if="[[showPasswordSettings_]]" restamp>
+      <settings-password-settings
+          id="passwordSettings"
+          auth-token="[[authToken]]"
+          class="list-item">
+      </settings-password-settings>
+    </template>
   </div>
   <template is="dom-if" if="[[lockScreenNotificationsEnabled_]]">
     <h2 class="settings-box">

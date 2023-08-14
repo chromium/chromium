@@ -26,6 +26,7 @@ import './pin_autosubmit_dialog.js';
 import './local_data_recovery_dialog.js';
 import '../settings_shared.css.js';
 import '../multidevice_page/multidevice_smartlock_item.js';
+import './password_settings.js';
 import './pin_settings.js';
 
 import {SettingsToggleButtonElement} from '/shared/settings/controls/settings_toggle_button.js';
@@ -145,6 +146,18 @@ export class SettingsLockScreenElement extends SettingsLockScreenElementBase {
       },
 
       /**
+       * TODO(b/290916811): Whether to show a control for changing passwords.
+       * Currently, we only show this if the user has a local password, but not
+       * if the user has a Gaia password. Once the password-settings element
+       * allows switching between types of passwords, we should always show
+       * this control, making this flag obsolete.
+       */
+      showPasswordSettings_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /**
        * Alias for the SmartLockUIRevamp feature flag.
        */
       smartLockUIRevampEnabled_: {
@@ -185,6 +198,7 @@ export class SettingsLockScreenElement extends SettingsLockScreenElementBase {
   private recovery_: chrome.settingsPrivate.PrefObject|null;
   private noRecoveryVirtualPref_: chrome.settingsPrivate.PrefObject;
   private recoveryChangeInProcess_: boolean;
+  private showPasswordSettings_: boolean;
   private smartLockUIRevampEnabled_: boolean;
   private showDisableRecoveryDialog_: boolean;
   private fingerprintBrowserProxy_: FingerprintBrowserProxy;
@@ -192,6 +206,7 @@ export class SettingsLockScreenElement extends SettingsLockScreenElementBase {
   static get observers() {
     return [
       'updateRecoveryState_(authToken)',
+      'updatePasswordState_(authToken)',
     ];
   }
 
@@ -359,6 +374,10 @@ export class SettingsLockScreenElement extends SettingsLockScreenElementBase {
       case AuthFactor.kRecovery:
         this.updateRecoveryState_(this.authToken);
         break;
+      case AuthFactor.kGaiaPassword:
+      case AuthFactor.kLocalPassword:
+        this.updatePasswordState_(this.authToken);
+        break;
       default:
         break;
     }
@@ -424,6 +443,26 @@ export class SettingsLockScreenElement extends SettingsLockScreenElementBase {
     }
     assert(authToken === this.authToken);
     this.recovery_ = await this.fetchFactorState_(AuthFactor.kRecovery);
+  }
+
+  /**
+   * Fetches the state of the password factor and updates the corresponding
+   * property.
+   * @param authToken Must be equal to |this.authToken|. The parameter is there
+   *     so that this function can be used as callback for changes of the
+   *     |authToken| property.
+   */
+  private async updatePasswordState_(authToken: string|
+                                     undefined): Promise<void> {
+    if (!authToken) {
+      return;
+    }
+    assert(authToken === this.authToken);
+
+    this.showPasswordSettings_ =
+        (await this.authFactorConfig.isConfigured(
+             this.authToken, AuthFactor.kLocalPassword))
+            .configured;
   }
 
   /**

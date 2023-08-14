@@ -253,6 +253,7 @@ build_webui("build") {
     "os_people_page/fingerprint_list_subpage.ts",
     "os_people_page/local_data_recovery_dialog.ts",
     "os_people_page/lock_screen_subpage.ts",
+    "os_people_page/password_settings.ts",
     "os_people_page/pin_settings.ts",
     "os_people_page/lock_screen_password_prompt_dialog.ts",
     "os_people_page/os_people_page.ts",
