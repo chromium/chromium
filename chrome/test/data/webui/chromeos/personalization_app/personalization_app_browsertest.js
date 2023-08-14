@@ -17,10 +17,11 @@ const ROOT_PAGE = 'chrome://personalization/';
 const DEFAULT_WALLPAPER_NAME = 'Default Wallpaper';
 
 // See ash/public/cpp/personalization_app/time_of_day_test_utils.h/cc.
-const TIME_OF_DAY_DISABLED_FEATURES = [
-  'ash::features::kTimeOfDayWallpaper', 'ash::features::kTimeOfDayScreenSaver',
+const TIME_OF_DAY_FEATURES = [
+  'ash::features::kTimeOfDayWallpaper',
+  'ash::features::kTimeOfDayScreenSaver',
   'ash::features::kFeatureManagementTimeOfDayWallpaper',
-  'ash::features::kFeatureManagementTimeOfDayScreenSaver'
+  'ash::features::kFeatureManagementTimeOfDayScreenSaver',
 ];
 
 /**
@@ -354,13 +355,7 @@ class PersonalizationAppWallpaperSubpageBrowserTest extends
   /** @override */
   get featureList() {
     return {
-      // The mock set of collections created for this test does not contain the
-      // time of day collection. If time of day wallpaper happens to be enabled,
-      // the test will fail because the time of day collection is missing, which
-      // is irrelevant for these test cases. It must explicitly be disabled
-      // here.
-      // TODO(b/292651329) enable this.
-      disabled: TIME_OF_DAY_DISABLED_FEATURES,
+      enabled: TIME_OF_DAY_FEATURES,
     };
   }
 }
@@ -440,8 +435,7 @@ TEST_F(PersonalizationAppWallpaperSubpageBrowserTest.name, 'All', async () => {
     });
   });
 
-  // TODO(b/278166473) flaky.
-  suite.skip('backdrop', function() {
+  suite('backdrop', function() {
     test('selects wallpaper', async () => {
       const wallpaperSelected = getWallpaperSelected();
       const textContainer =
@@ -486,17 +480,20 @@ TEST_F(PersonalizationAppWallpaperSubpageBrowserTest.name, 'All', async () => {
       gridItem.click();
 
       const expectedImageTitle =
-          'fake_attribution_fake_collection_id_2_asset_id_31_line_0';
+          'fake_attribution_fake_collection_id_2_asset_id_41_line_0';
+
       await waitUntil(
           () =>
               textContainer.querySelector('#imageTitle').textContent.trim() ===
               expectedImageTitle,
           () => `failed waiting for expected image title ` +
               `${expectedImageTitle} after selecting wallpaper. ` +
-              `html:\n${textContainer.outerHTML}`);
+              `html:\n${textContainer.outerHTML}`,
+          /*intervalMs=*/ 500,
+          /*timeoutMs=*/ 3001);
 
       assertEquals(
-          'fake_attribution_fake_collection_id_2_asset_id_31_line_1',
+          'fake_attribution_fake_collection_id_2_asset_id_41_line_1',
           textContainer.querySelector('span:last-of-type').textContent.trim());
 
       assertTrue(gridItem.selected, 'wallpaper tile is selected after click');
@@ -575,8 +572,7 @@ TEST_F(PersonalizationAppWallpaperSubpageBrowserTest.name, 'All', async () => {
           'album id and is shared param should appear in location.search');
     });
 
-    // TODO(b/278166473) flaky.
-    test.skip('select shared album as daily refresh', async () => {
+    test('select shared album as daily refresh', async () => {
       const sharedAlbumId = 'fake_google_photos_shared_album_id_2';
       await openGooglePhotosSharedAlbumById(sharedAlbumId);
 
@@ -606,7 +602,9 @@ TEST_F(PersonalizationAppWallpaperSubpageBrowserTest.name, 'All', async () => {
           () => dailyRefreshRegex.test(imageTitle.textContent.trim()),
           () => `Expected Daily refresh text to match regex ` +
               `${dailyRefreshRegex.source} but received:\n` +
-              `${imageTitle.outerHTML}`);
+              `${imageTitle.outerHTML}`,
+          /*intervalMs=*/ 500,
+          /*timeoutMs=*/ 3001);
 
       assertEquals(
           null, getSharedAlbumDialog(),
@@ -626,7 +624,7 @@ class PersonalizationAppDynamicColorEnabledBrowserTest extends
         'chromeos::features::kJelly',
       ],
       // TODO(b/292651329) enable these.
-      disabled: TIME_OF_DAY_DISABLED_FEATURES,
+      disabled: TIME_OF_DAY_FEATURES,
     };
   }
 }
