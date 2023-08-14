@@ -640,7 +640,15 @@ class ThreadDelegateForMultipleThreadCachesAccounting
 
 }  // namespace
 
-TEST_P(PartitionAllocThreadCacheTest, MultipleThreadCachesAccounting) {
+// TODO(https://crbug.com/1472705): Flaky on Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_MultipleThreadCachesAccounting \
+  DISABLED_MultipleThreadCachesAccounting
+#else
+#define MAYBE_MultipleThreadCachesAccounting MultipleThreadCachesAccounting
+#endif
+
+TEST_P(PartitionAllocThreadCacheTest, MAYBE_MultipleThreadCachesAccounting) {
   ThreadCacheStats wqthread_stats{0};
 #if !(BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_ANDROID) ||   \
       BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)) && \
