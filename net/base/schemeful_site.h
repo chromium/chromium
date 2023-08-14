@@ -37,7 +37,6 @@ struct StructTraits;
 
 namespace net {
 
-class CookieMonster;
 class NetworkAnonymizationKey;
 class SiteForCookies;
 
@@ -132,12 +131,6 @@ class NET_EXPORT SchemefulSite {
 
   bool has_registrable_domain_or_host() const {
     return !registrable_domain_or_host().empty();
-  }
-
-  // See the private zero-arg `registrable_domain_or_host()`. CookieMonster
-  // currently needs access to this, since it ignores the schemes of domains.
-  std::string registrable_domain_or_host(base::PassKey<CookieMonster>) const {
-    return registrable_domain_or_host();
   }
 
   // Testing only function which allows tests to access the underlying

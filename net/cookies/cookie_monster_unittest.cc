@@ -5758,9 +5758,11 @@ TEST_F(FirstPartySetEnabledCookieMonsterTest, RecordsPeriodicFPSSizes) {
   });
 
   ASSERT_TRUE(SetCookie(cm(), GURL("https://owner1.test"), kValidCookieLine));
-  ASSERT_TRUE(SetCookie(cm(), GURL("https://member1.test"), kValidCookieLine));
+  ASSERT_TRUE(SetCookie(cm(), GURL("https://subdomain.member1.test"),
+                        kValidCookieLine));
   ASSERT_TRUE(SetCookie(cm(), GURL("https://member2.test"), kValidCookieLine));
-  ASSERT_TRUE(SetCookie(cm(), GURL("https://owner2.test"), kValidCookieLine));
+  ASSERT_TRUE(
+      SetCookie(cm(), GURL("https://subdomain.owner2.test"), kValidCookieLine));
   ASSERT_TRUE(SetCookie(cm(), GURL("https://member3.test"), kValidCookieLine));
   // No cookie set for member4.test.
   ASSERT_TRUE(
