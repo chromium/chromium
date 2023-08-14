@@ -5,7 +5,9 @@
 package org.chromium.chrome.browser.readaloud.expandedplayer;
 
 import android.content.Context;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 
@@ -18,10 +20,20 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
     private final BottomSheetController mBottomSheetController;
     private final View mContentView;
 
+    // TODO remove hard-coded strings
+    @SuppressWarnings("SetTextI18n")
     public ExpandedPlayerSheetContent(
             Context context, BottomSheetController bottomSheetController) {
         mBottomSheetController = bottomSheetController;
-        mContentView = new View(context);
+        mContentView = LayoutInflater.from(context).inflate(
+                R.layout.readaloud_expanded_player_layout, null);
+        ((TextView) mContentView.findViewById(R.id.readaloud_expanded_player_title))
+                .setText("Page title");
+        ((TextView) mContentView.findViewById(R.id.readaloud_expanded_player_publisher))
+                .setText("Site");
+        ((TextView) mContentView.findViewById(R.id.readaloud_player_time)).setText("00:00");
+        ((TextView) mContentView.findViewById(R.id.readaloud_player_duration)).setText("00:00");
+        ((TextView) mContentView.findViewById(R.id.readaloud_playback_speed)).setText("1.0x");
     }
 
     public void show() {

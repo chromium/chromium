@@ -169,7 +169,6 @@ public class ReadAloudController {
 
     public void playTab(Tab tab) {
         Log.e(TAG, "playTab() not implemented.");
-        mExpandedPlayerCoordinator.show();
         PlaybackArgs args =
                 new PlaybackArgs(tab.getUrl().getSpec(), TranslateBridge.getCurrentLanguage(tab),
                         /* voice=*/null, /* dateModifiedMsSinceEpock=*/0);
