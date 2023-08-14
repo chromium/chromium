@@ -45,6 +45,7 @@ using testing::_;
 using testing::IsEmpty;
 using testing::Pair;
 using testing::UnorderedElementsAre;
+using PermissionStatus = blink::mojom::PermissionStatus;
 
 constexpr char kGrantIsImplicitHistogram[] =
     "API.StorageAccess.GrantIsImplicit";
@@ -463,20 +464,20 @@ TEST_P(StorageAccessGrantPermissionContextAPIEnabledTest, FpsGrantReused) {
 
 TEST_P(StorageAccessGrantPermissionContextAPIDisabledTest,
        PermissionStatusBlocked) {
-  EXPECT_EQ(CONTENT_SETTING_BLOCK,
+  EXPECT_EQ(PermissionStatus::DENIED,
             permission_context()
                 ->GetPermissionStatus(/*render_frame_host=*/nullptr,
                                       GetRequesterURL(), GetTopLevelURL())
-                .content_setting);
+                .status);
 }
 
 TEST_P(StorageAccessGrantPermissionContextAPIEnabledTest,
        PermissionStatusAsksWhenFeatureEnabled) {
-  EXPECT_EQ(CONTENT_SETTING_ASK,
+  EXPECT_EQ(PermissionStatus::ASK,
             permission_context()
                 ->GetPermissionStatus(/*render_frame_host=*/nullptr,
                                       GetRequesterURL(), GetTopLevelURL())
-                .content_setting);
+                .status);
 }
 
 // When 3p cookie access is already allowed by user-agent-specific cookie
@@ -721,11 +722,11 @@ TEST_P(StorageAccessGrantPermissionContextAPIEnabledTest,
 
   // However, ensure that the user's denial is not exposed when querying the
   // permission, per the spec.
-  EXPECT_EQ(CONTENT_SETTING_ASK,
+  EXPECT_EQ(PermissionStatus::ASK,
             permission_context()
                 ->GetPermissionStatus(/*render_frame_host=*/nullptr,
                                       GetRequesterURL(), GetTopLevelURL())
-                .content_setting);
+                .status);
 
   EXPECT_THAT(page_specific_content_settings()->GetTwoSiteRequests(
                   ContentSettingsType::STORAGE_ACCESS),

@@ -33,7 +33,6 @@
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_manager.h"
-#include "components/permissions/permission_result.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/common/content_switches.h"

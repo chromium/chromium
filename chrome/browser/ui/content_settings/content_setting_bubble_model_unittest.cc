@@ -44,7 +44,6 @@
 #include "components/infobars/core/infobar_delegate.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/permissions/permission_recovery_success_rate_tracker.h"
-#include "components/permissions/permission_result.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/elide_url.h"

@@ -122,11 +122,6 @@ class PermissionUtil {
   static blink::mojom::PermissionStatus ContentSettingToPermissionStatus(
       ContentSetting setting);
 
-  static content::PermissionResult ToContentPermissionResult(
-      PermissionResult result);
-
-  static PermissionResult ToPermissionResult(content::PermissionResult result);
-
   // If an iframed document/worker inherits a different StoragePartition from
   // its embedder than it would use if it were a main frame, we should block
   // undelegated permissions. Because permissions are scoped to BrowserContext

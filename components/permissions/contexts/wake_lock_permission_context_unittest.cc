@@ -12,6 +12,8 @@
 
 namespace permissions {
 
+using PermissionStatus = blink::mojom::PermissionStatus;
+
 class WakeLockPermissionContextTests : public testing::Test {
  public:
   content::TestBrowserContext* browser_context() { return &browser_context_; }
@@ -33,16 +35,16 @@ TEST_F(WakeLockPermissionContextTests, InsecureOriginsAreRejected) {
   for (const auto& content_settings_type : kWakeLockTypes) {
     WakeLockPermissionContext permission_context(browser_context(),
                                                  content_settings_type);
-    EXPECT_EQ(CONTENT_SETTING_BLOCK,
+    EXPECT_EQ(PermissionStatus::DENIED,
               permission_context
                   .GetPermissionStatus(/*render_frame_host=*/nullptr,
                                        insecure_url, insecure_url)
-                  .content_setting);
-    EXPECT_EQ(CONTENT_SETTING_BLOCK,
+                  .status);
+    EXPECT_EQ(PermissionStatus::DENIED,
               permission_context
                   .GetPermissionStatus(/*render_frame_host=*/nullptr,
                                        insecure_url, secure_url)
-                  .content_setting);
+                  .status);
   }
 }
 
@@ -50,20 +52,20 @@ TEST_F(WakeLockPermissionContextTests, TestScreenLockPermissionRequest) {
   WakeLockPermissionContext permission_context(
       browser_context(), ContentSettingsType::WAKE_LOCK_SCREEN);
   GURL url("https://www.example.com");
-  EXPECT_EQ(CONTENT_SETTING_ALLOW,
+  EXPECT_EQ(PermissionStatus::GRANTED,
             permission_context
                 .GetPermissionStatus(/*render_frame_host=*/nullptr, url, url)
-                .content_setting);
+                .status);
 }
 
 TEST_F(WakeLockPermissionContextTests, TestSystemLockPermissionRequest) {
   WakeLockPermissionContext permission_context(
       browser_context(), ContentSettingsType::WAKE_LOCK_SYSTEM);
   GURL url("https://www.example.com");
-  EXPECT_EQ(CONTENT_SETTING_BLOCK,
+  EXPECT_EQ(PermissionStatus::DENIED,
             permission_context
                 .GetPermissionStatus(/*render_frame_host=*/nullptr, url, url)
-                .content_setting);
+                .status);
 }
 
 }  // namespace permissions

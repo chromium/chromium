@@ -34,7 +34,6 @@
 #include "components/permissions/contexts/bluetooth_chooser_context.h"
 #include "components/permissions/object_permission_context_base.h"
 #include "components/permissions/permission_manager.h"
-#include "components/permissions/permission_result.h"
 #include "components/prefs/pref_service.h"
 #include "components/security_interstitials/content/stateful_ssl_host_state_delegate.h"
 #include "components/subresource_filter/content/browser/subresource_filter_content_settings_manager.h"
@@ -175,20 +174,18 @@ std::u16string ChromePageInfoDelegate::GetWarningDetailText() {
 }
 #endif
 
-permissions::PermissionResult ChromePageInfoDelegate::GetPermissionResult(
+content::PermissionResult ChromePageInfoDelegate::GetPermissionResult(
     blink::PermissionType permission,
     const url::Origin& origin,
     const absl::optional<url::Origin>& requesting_origin) {
   auto* controller = GetProfile()->GetPermissionController();
 
   if (requesting_origin.has_value()) {
-    return permissions::PermissionUtil::ToPermissionResult(
-        controller->GetPermissionResultForOriginWithoutContext(
-            permission, *requesting_origin, origin));
+    return controller->GetPermissionResultForOriginWithoutContext(
+        permission, *requesting_origin, origin);
   } else {
-    return permissions::PermissionUtil::ToPermissionResult(
-        controller->GetPermissionResultForOriginWithoutContext(permission,
-                                                               origin));
+    return controller->GetPermissionResultForOriginWithoutContext(permission,
+                                                                  origin);
   }
 }
 

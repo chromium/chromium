@@ -19,13 +19,13 @@
 #include "components/permissions/features.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/permissions/permission_manager.h"
-#include "components/permissions/permission_result.h"
 #include "components/permissions/permission_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/security_interstitials/core/common_string_util.h"
 #include "components/strings/grit/components_chromium_strings.h"
 #include "components/strings/grit/components_strings.h"
+#include "content/public/browser/permission_result.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "services/device/public/cpp/device_features.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -783,26 +783,25 @@ std::u16string PageInfoUI::PermissionAutoBlockedToUIString(
   if (permission.setting == CONTENT_SETTING_BLOCK &&
       permissions::PermissionDecisionAutoBlocker::IsEnabledForContentSetting(
           permission.type)) {
-    permissions::PermissionResult permission_result(
-        CONTENT_SETTING_DEFAULT,
-        permissions::PermissionStatusSource::UNSPECIFIED);
+    content::PermissionResult permission_result(
+        PermissionStatus::ASK, content::PermissionStatusSource::UNSPECIFIED);
     if (permissions::PermissionUtil::IsPermission(permission.type)) {
       blink::PermissionType permission_type =
           permissions::PermissionUtil::ContentSettingTypeToPermissionType(
               permission.type);
       permission_result = delegate->GetPermissionResult(permission_type);
     } else if (permission.type == ContentSettingsType::FEDERATED_IDENTITY_API) {
-      absl::optional<permissions::PermissionResult> embargo_result =
+      absl::optional<content::PermissionResult> embargo_result =
           delegate->GetEmbargoResult(permission.type);
       if (embargo_result)
         permission_result = *embargo_result;
     }
 
     switch (permission_result.source) {
-      case permissions::PermissionStatusSource::MULTIPLE_DISMISSALS:
+      case content::PermissionStatusSource::MULTIPLE_DISMISSALS:
         message_id = IDS_PAGE_INFO_PERMISSION_AUTOMATICALLY_BLOCKED;
         break;
-      case permissions::PermissionStatusSource::MULTIPLE_IGNORES:
+      case content::PermissionStatusSource::MULTIPLE_IGNORES:
         message_id = IDS_PAGE_INFO_PERMISSION_AUTOMATICALLY_BLOCKED;
         break;
       default:

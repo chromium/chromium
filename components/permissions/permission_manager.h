@@ -23,6 +23,8 @@
 #include "content/public/browser/permission_result.h"
 #include "url/origin.h"
 
+using PermissionStatus = blink::mojom::PermissionStatus;
+
 namespace blink {
 enum class PermissionType;
 }
@@ -102,23 +104,20 @@ class PermissionManager : public KeyedService,
       content::RenderFrameHost* render_frame_host,
       const GURL& requesting_origin,
       bool user_gesture,
-      base::OnceCallback<void(blink::mojom::PermissionStatus)> callback)
-      override;
+      base::OnceCallback<void(PermissionStatus)> callback) override;
   void RequestPermissions(
       const std::vector<blink::PermissionType>& permissions,
       content::RenderFrameHost* render_frame_host,
       const GURL& requesting_origin,
       bool user_gesture,
-      base::OnceCallback<
-          void(const std::vector<blink::mojom::PermissionStatus>&)> callback)
+      base::OnceCallback<void(const std::vector<PermissionStatus>&)> callback)
       override;
   void RequestPermissionsInternal(
       const std::vector<blink::PermissionType>& permissions,
       content::RenderFrameHost* render_frame_host,
       const GURL& requesting_origin,
       bool user_gesture,
-      base::OnceCallback<
-          void(const std::vector<blink::mojom::PermissionStatus>&)> callback);
+      base::OnceCallback<void(const std::vector<PermissionStatus>&)> callback);
   void ResetPermission(blink::PermissionType permission,
                        const GURL& requesting_origin,
                        const GURL& embedding_origin) override;
@@ -126,28 +125,26 @@ class PermissionManager : public KeyedService,
       const std::vector<blink::PermissionType>& permissions,
       content::RenderFrameHost* render_frame_host,
       bool user_gesture,
-      base::OnceCallback<
-          void(const std::vector<blink::mojom::PermissionStatus>&)> callback)
+      base::OnceCallback<void(const std::vector<PermissionStatus>&)> callback)
       override;
-  blink::mojom::PermissionStatus GetPermissionStatus(
-      blink::PermissionType permission,
-      const GURL& requesting_origin,
-      const GURL& embedding_origin) override;
+  PermissionStatus GetPermissionStatus(blink::PermissionType permission,
+                                       const GURL& requesting_origin,
+                                       const GURL& embedding_origin) override;
   content::PermissionResult GetPermissionResultForOriginWithoutContext(
       blink::PermissionType permission,
       const url::Origin& requesting_origin,
       const url::Origin& embedding_origin) override;
-  blink::mojom::PermissionStatus GetPermissionStatusForCurrentDocument(
+  PermissionStatus GetPermissionStatusForCurrentDocument(
       blink::PermissionType permission,
       content::RenderFrameHost* render_frame_host) override;
   content::PermissionResult GetPermissionResultForCurrentDocument(
       blink::PermissionType permission,
       content::RenderFrameHost* render_frame_host) override;
-  blink::mojom::PermissionStatus GetPermissionStatusForWorker(
+  PermissionStatus GetPermissionStatusForWorker(
       blink::PermissionType permission,
       content::RenderProcessHost* render_process_host,
       const GURL& worker_origin) override;
-  blink::mojom::PermissionStatus GetPermissionStatusForEmbeddedRequester(
+  PermissionStatus GetPermissionStatusForEmbeddedRequester(
       blink::PermissionType permission,
       content::RenderFrameHost* render_frame_host,
       const url::Origin& requesting_origin) override;
@@ -159,8 +156,7 @@ class PermissionManager : public KeyedService,
       content::RenderProcessHost* render_process_host,
       content::RenderFrameHost* render_frame_host,
       const GURL& requesting_origin,
-      base::RepeatingCallback<void(blink::mojom::PermissionStatus)> callback)
-      override;
+      base::RepeatingCallback<void(PermissionStatus)> callback) override;
   void UnsubscribePermissionStatusChange(
       SubscriptionId subscription_id) override;
   absl::optional<gfx::Rect> GetExclusionAreaBoundsInScreen(
@@ -184,7 +180,7 @@ class PermissionManager : public KeyedService,
 
   // Only one of |render_process_host| and |render_frame_host| should be set,
   // or neither. RenderProcessHost will be inferred from |render_frame_host|.
-  PermissionResult GetPermissionStatusInternal(
+  content::PermissionResult GetPermissionStatusInternal(
       ContentSettingsType permission,
       content::RenderProcessHost* render_process_host,
       content::RenderFrameHost* render_frame_host,

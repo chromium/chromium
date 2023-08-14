@@ -29,6 +29,8 @@
 
 namespace {
 
+using PermissionStatus = blink::mojom::PermissionStatus;
+
 constexpr char kRequestOutcomeHistogram[] =
     "API.TopLevelStorageAccess.RequestOutcome";
 
@@ -129,11 +131,11 @@ TEST_F(TopLevelStorageAccessPermissionContextTestAPIDisabledTest,
        PermissionStatusBlocked) {
   TopLevelStorageAccessPermissionContext permission_context(profile());
 
-  EXPECT_EQ(CONTENT_SETTING_BLOCK,
+  EXPECT_EQ(PermissionStatus::DENIED,
             permission_context
                 .GetPermissionStatus(/*render_frame_host=*/nullptr,
                                      GetRequesterURL(), GetTopLevelURL())
-                .content_setting);
+                .status);
 }
 
 class TopLevelStorageAccessPermissionContextTestAPIEnabledTest
@@ -169,11 +171,11 @@ TEST_F(TopLevelStorageAccessPermissionContextTestAPIEnabledTest,
        PermissionStatusAsksWhenFeatureEnabled) {
   TopLevelStorageAccessPermissionContext permission_context(profile());
 
-  EXPECT_EQ(CONTENT_SETTING_ASK,
+  EXPECT_EQ(PermissionStatus::ASK,
             permission_context
                 .GetPermissionStatus(/*render_frame_host=*/nullptr,
                                      GetRequesterURL(), GetTopLevelURL())
-                .content_setting);
+                .status);
 }
 
 class TopLevelStorageAccessPermissionContextAPIWithFirstPartySetsTest
@@ -281,11 +283,11 @@ TEST_F(TopLevelStorageAccessPermissionContextAPIWithFirstPartySetsTest,
 
   // Even though the permission is granted, queries from cross-site frames
   // should return the default value.
-  EXPECT_EQ(CONTENT_SETTING_ASK,
+  EXPECT_EQ(PermissionStatus::ASK,
             permission_context
                 .GetPermissionStatus(navigated_subframe, GetRequesterURL(),
                                      GetTopLevelURL())
-                .content_setting);
+                .status);
 }
 
 TEST_F(TopLevelStorageAccessPermissionContextAPIWithFirstPartySetsTest,
@@ -358,11 +360,11 @@ TEST_F(TopLevelStorageAccessPermissionContextAPIWithFirstPartySetsTest,
   // The permission denial should not be exposed via query. Note that the block
   // setting is not persisted anyway with the current implementation; this is a
   // forward-looking test.
-  EXPECT_EQ(CONTENT_SETTING_ASK,
+  EXPECT_EQ(PermissionStatus::ASK,
             permission_context
                 .GetPermissionStatus(/*render_frame_host=*/nullptr,
                                      GetRequesterURL(), GetDummyEmbeddingUrl())
-                .content_setting);
+                .status);
 }
 
 class TopLevelStorageAccessPermissionContextAPIFirstPartySetsDisabledTest

@@ -14,6 +14,8 @@
 
 namespace permissions {
 
+using PermissionStatus = blink::mojom::PermissionStatus;
+
 class MidiPermissionContextTests : public testing::Test {
  public:
   void EnableBlockMidiByDefault() {
@@ -34,23 +36,23 @@ TEST_F(MidiPermissionContextTests, TestNoSysexAllowedAllOrigins) {
   GURL insecure_url("http://www.example.com");
   GURL secure_url("https://www.example.com");
 
-  EXPECT_EQ(CONTENT_SETTING_BLOCK,
+  EXPECT_EQ(PermissionStatus::DENIED,
             permission_context
                 .GetPermissionStatus(nullptr /* render_frame_host */,
                                      insecure_url, insecure_url)
-                .content_setting);
+                .status);
 
-  EXPECT_EQ(CONTENT_SETTING_BLOCK,
+  EXPECT_EQ(PermissionStatus::DENIED,
             permission_context
                 .GetPermissionStatus(nullptr /* render_frame_host */,
                                      insecure_url, secure_url)
-                .content_setting);
+                .status);
 
-  EXPECT_EQ(CONTENT_SETTING_ALLOW,
+  EXPECT_EQ(PermissionStatus::GRANTED,
             permission_context
                 .GetPermissionStatus(nullptr /* render_frame_host */,
                                      secure_url, secure_url)
-                .content_setting);
+                .status);
 }
 
 // Web MIDI permission status should be denied for insecure origins.
@@ -80,17 +82,17 @@ TEST_F(MidiPermissionContextTests, TestInsecureQueryingUrl) {
                 ->GetContentSetting(insecure_url, secure_url,
                                     ContentSettingsType::MIDI));
 
-  EXPECT_EQ(CONTENT_SETTING_BLOCK,
+  EXPECT_EQ(PermissionStatus::DENIED,
             permission_context
                 .GetPermissionStatus(nullptr /* render_frame_host */,
                                      insecure_url, insecure_url)
-                .content_setting);
+                .status);
 
-  EXPECT_EQ(CONTENT_SETTING_BLOCK,
+  EXPECT_EQ(PermissionStatus::DENIED,
             permission_context
                 .GetPermissionStatus(nullptr /* render_frame_host */,
                                      insecure_url, secure_url)
-                .content_setting);
+                .status);
 }
 
 // Setting MIDI should update MIDI_SYSEX permissions

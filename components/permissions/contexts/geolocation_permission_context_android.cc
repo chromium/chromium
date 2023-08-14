@@ -26,6 +26,8 @@
 namespace permissions {
 namespace {
 
+using PermissionStatus = blink::mojom::PermissionStatus;
+
 int g_day_offset_for_testing = 0;
 
 base::Time GetTimeNow() {
@@ -113,11 +115,11 @@ void GeolocationPermissionContextAndroid::RequestPermission(
   }
 
   DCHECK(render_frame_host);
-  ContentSetting content_setting =
+  PermissionStatus status =
       GeolocationPermissionContext::GetPermissionStatus(
           render_frame_host, requesting_frame_origin, embedding_origin)
-          .content_setting;
-  if (content_setting == CONTENT_SETTING_ALLOW &&
+          .status;
+  if (status == PermissionStatus::GRANTED &&
       ShouldRepromptUserForPermissions(web_contents,
                                        {ContentSettingsType::GEOLOCATION}) ==
           PermissionRepromptState::kShow) {
@@ -212,12 +214,12 @@ void GeolocationPermissionContextAndroid::NotifyPermissionSet(
                             std::move(callback), persist, content_setting);
 }
 
-PermissionResult
+content::PermissionResult
 GeolocationPermissionContextAndroid::UpdatePermissionStatusWithDeviceStatus(
-    PermissionResult result,
+    content::PermissionResult result,
     const GURL& requesting_origin,
     const GURL& embedding_origin) const {
-  if (result.content_setting != CONTENT_SETTING_BLOCK) {
+  if (result.status != PermissionStatus::DENIED) {
     if (!location_settings_->IsSystemLocationSettingEnabled()) {
       // As this is returning the status for possible future permission
       // requests, whose gesture status is unknown, pretend there is a user
@@ -231,21 +233,20 @@ GeolocationPermissionContextAndroid::UpdatePermissionStatusWithDeviceStatus(
       // backoff will be reset.
       if (CanShowLocationSettingsDialog(
               requesting_origin, true /* user_gesture */,
-              result.content_setting ==
-                  CONTENT_SETTING_ASK /* ignore_backoff */)) {
-        result.content_setting = CONTENT_SETTING_ASK;
+              result.status == PermissionStatus::ASK /* ignore_backoff */)) {
+        result.status = PermissionStatus::ASK;
       } else {
-        result.content_setting = CONTENT_SETTING_BLOCK;
+        result.status = PermissionStatus::DENIED;
       }
-      result.source = PermissionStatusSource::UNSPECIFIED;
+      result.source = content::PermissionStatusSource::UNSPECIFIED;
     }
 
-    if (result.content_setting != CONTENT_SETTING_BLOCK &&
+    if (result.status != PermissionStatus::DENIED &&
         !location_settings_->HasAndroidLocationPermission()) {
       // TODO(benwells): plumb through the RFH and use the associated
       // WebContents to check that the android location can be prompted for.
-      result.content_setting = CONTENT_SETTING_ASK;
-      result.source = PermissionStatusSource::UNSPECIFIED;
+      result.status = PermissionStatus::ASK;
+      result.source = content::PermissionStatusSource::UNSPECIFIED;
     }
   }
 

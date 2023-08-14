@@ -39,7 +39,6 @@
 #include "components/device_event_log/device_event_log.h"
 #include "components/performance_manager/public/decorators/page_live_state_decorator.h"
 #include "components/permissions/permission_manager.h"
-#include "components/permissions/permission_result.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_frame_host.h"

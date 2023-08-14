@@ -30,6 +30,7 @@
 #include "url/origin.h"
 
 using bookmarks::BookmarkModel;
+using PermissionStatus = blink::mojom::PermissionStatus;
 
 DurableStoragePermissionContext::DurableStoragePermissionContext(
     content::BrowserContext* browser_context)
@@ -45,14 +46,14 @@ void DurableStoragePermissionContext::DecidePermission(
     bool user_gesture,
     permissions::BrowserPermissionCallback callback) {
   DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
-  DCHECK_NE(CONTENT_SETTING_ALLOW,
+  DCHECK_NE(PermissionStatus::GRANTED,
             GetPermissionStatus(nullptr /* render_frame_host */,
                                 requesting_origin, embedding_origin)
-                .content_setting);
-  DCHECK_NE(CONTENT_SETTING_BLOCK,
+                .status);
+  DCHECK_NE(PermissionStatus::DENIED,
             GetPermissionStatus(nullptr /* render_frame_host */,
                                 requesting_origin, embedding_origin)
-                .content_setting);
+                .status);
 
   // Durable is only allowed to be granted to the top-level origin. Embedding
   // origin is the last committed navigation origin to the web contents.

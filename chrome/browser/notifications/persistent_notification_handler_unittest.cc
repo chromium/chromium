@@ -30,6 +30,7 @@
 
 using ::testing::_;
 using ::testing::Return;
+using PermissionStatus = blink::mojom::PermissionStatus;
 
 namespace {
 
@@ -50,8 +51,7 @@ class TestingProfileWithPermissionManager : public TestingProfile {
   ~TestingProfileWithPermissionManager() override = default;
 
   // Sets the notification permission status to |permission_status|.
-  void SetNotificationPermissionStatus(
-      blink::mojom::PermissionStatus permission_status) {
+  void SetNotificationPermissionStatus(PermissionStatus permission_status) {
     ON_CALL(*permission_manager_,
             GetPermissionResultForOriginWithoutContext(
                 blink::PermissionType::NOTIFICATIONS, _, _))
@@ -112,8 +112,7 @@ class PersistentNotificationHandlerTest : public ::testing::Test {
 
 TEST_F(PersistentNotificationHandlerTest, OnClick_WithoutPermission) {
   EXPECT_CALL(*mock_logger_, LogPersistentNotificationClickWithoutPermission());
-  profile_.SetNotificationPermissionStatus(
-      blink::mojom::PermissionStatus::DENIED);
+  profile_.SetNotificationPermissionStatus(PermissionStatus::DENIED);
 
   std::unique_ptr<NotificationHandler> handler =
       std::make_unique<PersistentNotificationHandler>();
@@ -143,8 +142,7 @@ TEST_F(PersistentNotificationHandlerTest,
   ASSERT_TRUE(display_service_tester_.GetNotification(kExampleNotificationId));
 
   // Revoke permission for any origin to display notifications.
-  profile_.SetNotificationPermissionStatus(
-      blink::mojom::PermissionStatus::DENIED);
+  profile_.SetNotificationPermissionStatus(PermissionStatus::DENIED);
 
   // Now simulate a click on the notification. It should be automatically closed
   // by the PersistentNotificationHandler.
@@ -187,8 +185,8 @@ TEST_F(PersistentNotificationHandlerTest, DisableNotifications) {
   ASSERT_EQ(permission_context
                 ->GetPermissionStatus(nullptr /* render_frame_host */, origin_,
                                       origin_)
-                .content_setting,
-            CONTENT_SETTING_ASK);
+                .status,
+            PermissionStatus::ASK);
 
   std::unique_ptr<NotificationHandler> handler =
       std::make_unique<PersistentNotificationHandler>();
@@ -197,6 +195,6 @@ TEST_F(PersistentNotificationHandlerTest, DisableNotifications) {
   ASSERT_EQ(permission_context
                 ->GetPermissionStatus(nullptr /* render_frame_host */, origin_,
                                       origin_)
-                .content_setting,
-            CONTENT_SETTING_BLOCK);
+                .status,
+            PermissionStatus::DENIED);
 }

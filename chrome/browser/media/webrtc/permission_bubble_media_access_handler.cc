@@ -18,7 +18,6 @@
 #include "chrome/common/pref_names.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
-#include "components/permissions/permission_result.h"
 #include "components/permissions/permission_util.h"
 #include "components/permissions/permissions_client.h"
 #include "components/pref_registry/pref_registry_syncable.h"

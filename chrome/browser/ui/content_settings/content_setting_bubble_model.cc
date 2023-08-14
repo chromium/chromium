@@ -56,7 +56,6 @@
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/permissions/permission_request_manager.h"
-#include "components/permissions/permission_result.h"
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permission_util.h"
 #include "components/permissions/permissions_client.h"

@@ -50,7 +50,6 @@
 #include "components/permissions/contexts/bluetooth_chooser_context.h"
 #include "components/permissions/object_permission_context_base.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
-#include "components/permissions/permission_result.h"
 #include "components/permissions/permission_util.h"
 #include "components/permissions/permissions_client.h"
 #include "components/prefs/pref_service.h"
@@ -81,6 +80,8 @@ constexpr char kAppName[] = "appName";
 constexpr char kAppId[] = "appId";
 
 namespace {
+
+using PermissionStatus = blink::mojom::PermissionStatus;
 
 // Chooser data group names.
 const char kUsbChooserDataGroupType[] = "usb-devices-data";
@@ -247,15 +248,17 @@ SiteSettingSource CalculateSiteSettingSource(
     const ContentSettingsType content_type,
     const GURL& origin,
     const content_settings::SettingInfo& info,
-    const permissions::PermissionResult result) {
+    const content::PermissionResult result) {
   if (info.source == content_settings::SETTING_SOURCE_ALLOWLIST)
     return SiteSettingSource::kAllowlist;  // Source #1.
 
-  if (result.source == permissions::PermissionStatusSource::KILL_SWITCH)
+  if (result.source == content::PermissionStatusSource::KILL_SWITCH) {
     return SiteSettingSource::kKillSwitch;  // Source #2.
+  }
 
-  if (result.source == permissions::PermissionStatusSource::INSECURE_ORIGIN)
+  if (result.source == content::PermissionStatusSource::INSECURE_ORIGIN) {
     return SiteSettingSource::kInsecureOrigin;  // Source #3.
+  }
 
   if (info.source == content_settings::SETTING_SOURCE_POLICY ||
       info.source == content_settings::SETTING_SOURCE_SUPERVISED) {
@@ -280,10 +283,8 @@ SiteSettingSource CalculateSiteSettingSource(
 
   DCHECK_NE(content_settings::SETTING_SOURCE_NONE, info.source);
   if (info.source == content_settings::SETTING_SOURCE_USER) {
-    if (result.source ==
-            permissions::PermissionStatusSource::MULTIPLE_DISMISSALS ||
-        result.source ==
-            permissions::PermissionStatusSource::MULTIPLE_IGNORES) {
+    if (result.source == content::PermissionStatusSource::MULTIPLE_DISMISSALS ||
+        result.source == content::PermissionStatusSource::MULTIPLE_IGNORES) {
       return SiteSettingSource::kEmbargo;  // Source #8.
     }
     if (info.primary_pattern == ContentSettingsPattern::Wildcard() &&
@@ -386,9 +387,8 @@ std::string GetSourceStringForChooserException(
 
   // Chooser exceptions do not use a PermissionContextBase for their
   // permissions.
-  permissions::PermissionResult permission_result(
-      CONTENT_SETTING_DEFAULT,
-      permissions::PermissionStatusSource::UNSPECIFIED);
+  content::PermissionResult permission_result(
+      PermissionStatus::ASK, content::PermissionStatusSource::UNSPECIFIED);
 
   // The |origin| parameter is only used for |ContentSettingsType::ADS| with
   // the |kSafeBrowsingSubresourceFilter| feature flag enabled, so an empty GURL
@@ -1055,27 +1055,25 @@ ContentSetting GetContentSettingForOrigin(Profile* profile,
       map->GetContentSetting(origin, origin, content_type, &info);
 
   // Retrieve the content setting.
-  permissions::PermissionResult result(
-      setting, permissions::PermissionStatusSource::UNSPECIFIED);
+  content::PermissionResult result(
+      permissions::PermissionUtil::ContentSettingToPermissionStatus(setting),
+      content::PermissionStatusSource::UNSPECIFIED);
   if (permissions::PermissionDecisionAutoBlocker::IsEnabledForContentSetting(
           content_type)) {
     if (permissions::PermissionUtil::IsPermission(content_type)) {
-      content::PermissionResult permission_result =
-          profile->GetPermissionController()
-              ->GetPermissionResultForOriginWithoutContext(
-                  permissions::PermissionUtil::
-                      ContentSettingTypeToPermissionType(content_type),
-                  url::Origin::Create(origin));
-      result =
-          permissions::PermissionUtil::ToPermissionResult(permission_result);
+      result = profile->GetPermissionController()
+                   ->GetPermissionResultForOriginWithoutContext(
+                       permissions::PermissionUtil::
+                           ContentSettingTypeToPermissionType(content_type),
+                       url::Origin::Create(origin));
     } else {
       permissions::PermissionDecisionAutoBlocker* auto_blocker =
           permissions::PermissionsClient::Get()
               ->GetPermissionDecisionAutoBlocker(profile);
-      absl::optional<permissions::PermissionResult> embargo_result =
+      absl::optional<content::PermissionResult> embargo_result =
           auto_blocker->GetEmbargoResult(origin, content_type);
       if (embargo_result)
-        result = *embargo_result;
+        result = embargo_result.value();
     }
   }
 
@@ -1087,10 +1085,11 @@ ContentSetting GetContentSettingForOrigin(Profile* profile,
       content_settings::SessionModel::OneTime) {
     DCHECK(
         permissions::PermissionUtil::CanPermissionBeAllowedOnce(content_type));
-    DCHECK_EQ(result.content_setting, CONTENT_SETTING_ALLOW);
+    DCHECK_EQ(result.status, PermissionStatus::ASK);
     return CONTENT_SETTING_DEFAULT;
   }
-  return result.content_setting;
+  return permissions::PermissionUtil::PermissionStatusToContentSetting(
+      result.status);
 }
 
 std::vector<ContentSettingPatternSource>

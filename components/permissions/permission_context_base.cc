@@ -45,6 +45,8 @@
 namespace permissions {
 namespace {
 
+using PermissionStatus = blink::mojom::PermissionStatus;
+
 const char kPermissionBlockedKillSwitchMessage[] =
     "%s permission has been blocked.";
 
@@ -155,13 +157,13 @@ void PermissionContextBase::RequestPermission(
   // Check the content setting to see if the user has already made a decision,
   // or if the origin is under embargo. If so, respect that decision.
   DCHECK(rfh);
-  PermissionResult result =
+  content::PermissionResult result =
       GetPermissionStatus(rfh, requesting_origin, embedding_origin);
 
-  if (result.content_setting == CONTENT_SETTING_ALLOW ||
-      result.content_setting == CONTENT_SETTING_BLOCK) {
+  if (result.status == PermissionStatus::GRANTED ||
+      result.status == PermissionStatus::DENIED) {
     switch (result.source) {
-      case PermissionStatusSource::KILL_SWITCH:
+      case content::PermissionStatusSource::KILL_SWITCH:
         // Block the request and log to the developer console.
         LogPermissionBlockedMessage(rfh, kPermissionBlockedKillSwitchMessage,
                                     content_settings_type_);
@@ -169,47 +171,49 @@ void PermissionContextBase::RequestPermission(
             content_settings_type_, rfh);
         std::move(callback).Run(CONTENT_SETTING_BLOCK);
         return;
-      case PermissionStatusSource::MULTIPLE_DISMISSALS:
+      case content::PermissionStatusSource::MULTIPLE_DISMISSALS:
         LogPermissionBlockedMessage(rfh,
                                     kPermissionBlockedRepeatedDismissalsMessage,
                                     content_settings_type_);
         PermissionUmaUtil::RecordPermissionRequestedFromFrame(
             content_settings_type_, rfh);
         break;
-      case PermissionStatusSource::MULTIPLE_IGNORES:
+      case content::PermissionStatusSource::MULTIPLE_IGNORES:
         LogPermissionBlockedMessage(rfh,
                                     kPermissionBlockedRepeatedIgnoresMessage,
                                     content_settings_type_);
         PermissionUmaUtil::RecordPermissionRequestedFromFrame(
             content_settings_type_, rfh);
         break;
-      case PermissionStatusSource::FEATURE_POLICY:
+      case content::PermissionStatusSource::FEATURE_POLICY:
         LogPermissionBlockedMessage(rfh,
                                     kPermissionBlockedPermissionsPolicyMessage,
                                     content_settings_type_);
         break;
-      case PermissionStatusSource::RECENT_DISPLAY:
+      case content::PermissionStatusSource::RECENT_DISPLAY:
         LogPermissionBlockedMessage(rfh, kPermissionBlockedRecentDisplayMessage,
                                     content_settings_type_);
         break;
-      case PermissionStatusSource::UNSPECIFIED:
+      case content::PermissionStatusSource::UNSPECIFIED:
         PermissionUmaUtil::RecordPermissionRequestedFromFrame(
             content_settings_type_, rfh);
         break;
-      case PermissionStatusSource::PORTAL:
-      case PermissionStatusSource::FENCED_FRAME:
-      case PermissionStatusSource::INSECURE_ORIGIN:
-      case PermissionStatusSource::VIRTUAL_URL_DIFFERENT_ORIGIN:
+      case content::PermissionStatusSource::PORTAL:
+      case content::PermissionStatusSource::FENCED_FRAME:
+      case content::PermissionStatusSource::INSECURE_ORIGIN:
+      case content::PermissionStatusSource::VIRTUAL_URL_DIFFERENT_ORIGIN:
         break;
     }
 
     // If we are under embargo, record the embargo reason for which we have
     // suppressed the prompt.
     PermissionUmaUtil::RecordEmbargoPromptSuppressionFromSource(result.source);
-    NotifyPermissionSet(id, requesting_origin, embedding_origin,
-                        std::move(callback), /*persist=*/false,
-                        result.content_setting, /*is_one_time=*/false,
-                        /*is_final_decision=*/true);
+    NotifyPermissionSet(
+        id, requesting_origin, embedding_origin, std::move(callback),
+        /*persist=*/false,
+        PermissionUtil::PermissionStatusToContentSetting(result.status),
+        /*is_one_time=*/false,
+        /*is_final_decision=*/true);
     return;
   }
 
@@ -249,27 +253,29 @@ PermissionContextBase::CreatePermissionRequest(
       std::move(delete_callback));
 }
 
-PermissionResult PermissionContextBase::GetPermissionStatus(
+content::PermissionResult PermissionContextBase::GetPermissionStatus(
     content::RenderFrameHost* render_frame_host,
     const GURL& requesting_origin,
     const GURL& embedding_origin) const {
   // If the permission has been disabled through Finch, block all requests.
   if (IsPermissionKillSwitchOn()) {
-    return PermissionResult(CONTENT_SETTING_BLOCK,
-                            PermissionStatusSource::KILL_SWITCH);
+    return content::PermissionResult(
+        PermissionStatus::DENIED, content::PermissionStatusSource::KILL_SWITCH);
   }
 
   if (!IsPermissionAvailableToOrigins(requesting_origin, embedding_origin)) {
-    return PermissionResult(CONTENT_SETTING_BLOCK,
-                            PermissionStatusSource::INSECURE_ORIGIN);
+    return content::PermissionResult(
+        PermissionStatus::DENIED,
+        content::PermissionStatusSource::INSECURE_ORIGIN);
   }
 
   // Check whether the feature is enabled for the frame by permissions policy.
   // We can only do this when a RenderFrameHost has been provided.
   if (render_frame_host &&
       !PermissionAllowedByPermissionsPolicy(render_frame_host)) {
-    return PermissionResult(CONTENT_SETTING_BLOCK,
-                            PermissionStatusSource::FEATURE_POLICY);
+    return content::PermissionResult(
+        PermissionStatus::DENIED,
+        content::PermissionStatusSource::FEATURE_POLICY);
   }
 
   if (render_frame_host) {
@@ -289,9 +295,9 @@ PermissionResult PermissionContextBase::GetPermissionStatus(
       if (virtual_url.SchemeIsHTTPOrHTTPS() &&
           loaded_url.SchemeIsHTTPOrHTTPS() &&
           !url::IsSameOriginWith(virtual_url, loaded_url)) {
-        return PermissionResult(
-            CONTENT_SETTING_BLOCK,
-            PermissionStatusSource::VIRTUAL_URL_DIFFERENT_ORIGIN);
+        return content::PermissionResult(
+            PermissionStatus::DENIED,
+            content::PermissionStatusSource::VIRTUAL_URL_DIFFERENT_ORIGIN);
       }
     }
   }
@@ -300,20 +306,21 @@ PermissionResult PermissionContextBase::GetPermissionStatus(
       render_frame_host, requesting_origin, embedding_origin);
 
   if (content_setting != CONTENT_SETTING_ASK) {
-    return PermissionResult(content_setting,
-                            PermissionStatusSource::UNSPECIFIED);
+    return content::PermissionResult(
+        PermissionUtil::ContentSettingToPermissionStatus(content_setting),
+        content::PermissionStatusSource::UNSPECIFIED);
   }
 
-  absl::optional<PermissionResult> result =
+  absl::optional<content::PermissionResult> result =
       PermissionsClient::Get()
           ->GetPermissionDecisionAutoBlocker(browser_context_)
           ->GetEmbargoResult(requesting_origin, content_settings_type_);
   if (result) {
-    DCHECK(result->content_setting == CONTENT_SETTING_BLOCK);
-    return *result;
+    DCHECK(result->status == PermissionStatus::DENIED);
+    return result.value();
   }
-  return PermissionResult(CONTENT_SETTING_ASK,
-                          PermissionStatusSource::UNSPECIFIED);
+  return content::PermissionResult(
+      PermissionStatus::ASK, content::PermissionStatusSource::UNSPECIFIED);
 }
 
 bool PermissionContextBase::IsPermissionAvailableToOrigins(
@@ -336,8 +343,9 @@ bool PermissionContextBase::IsPermissionAvailableToOrigins(
   return true;
 }
 
-PermissionResult PermissionContextBase::UpdatePermissionStatusWithDeviceStatus(
-    PermissionResult result,
+content::PermissionResult
+PermissionContextBase::UpdatePermissionStatusWithDeviceStatus(
+    content::PermissionResult result,
     const GURL& requesting_origin,
     const GURL& embedding_origin) const {
   return result;

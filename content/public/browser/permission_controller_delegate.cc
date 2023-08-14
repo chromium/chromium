@@ -19,7 +19,7 @@ PermissionResult
 PermissionControllerDelegate::GetPermissionResultForCurrentDocument(
     blink::PermissionType permission,
     RenderFrameHost* render_frame_host) {
-  return PermissionResult(blink::mojom::PermissionStatus::DENIED,
+  return PermissionResult(PermissionStatus::DENIED,
                           PermissionStatusSource::UNSPECIFIED);
 }
 

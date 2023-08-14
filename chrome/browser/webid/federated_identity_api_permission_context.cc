@@ -11,7 +11,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
-#include "components/permissions/permission_result.h"
 #include "content/public/common/content_features.h"
 #include "url/origin.h"
 

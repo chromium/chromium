@@ -13,9 +13,9 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/permission_request.h"
-#include "components/permissions/permission_result.h"
 #include "components/permissions/prediction_service/prediction_service_messages.pb.h"
 #include "components/permissions/request_type.h"
+#include "content/public/browser/permission_result.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
 
@@ -483,7 +483,7 @@ class PermissionUmaUtil {
       PermissionEmbargoStatus embargo_status);
 
   static void RecordEmbargoPromptSuppressionFromSource(
-      PermissionStatusSource source);
+      content::PermissionStatusSource source);
 
   static void RecordEmbargoStatus(PermissionEmbargoStatus embargo_status);
 

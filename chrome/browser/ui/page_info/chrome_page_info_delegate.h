@@ -48,7 +48,7 @@ class ChromePageInfoDelegate : public PageInfoDelegate {
   void OnUserActionOnPasswordUi(safe_browsing::WarningAction action) override;
   std::u16string GetWarningDetailText() override;
 #endif
-  permissions::PermissionResult GetPermissionResult(
+  content::PermissionResult GetPermissionResult(
       blink::PermissionType permission,
       const url::Origin& origin,
       const absl::optional<url::Origin>& requesting_origin) override;

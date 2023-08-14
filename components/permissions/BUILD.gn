@@ -84,8 +84,6 @@ source_set("permissions") {
     "permission_request_manager.h",
     "permission_request_queue.cc",
     "permission_request_queue.h",
-    "permission_result.cc",
-    "permission_result.h",
     "permission_ui_selector.cc",
     "permission_ui_selector.h",
     "permission_uma_util.cc",

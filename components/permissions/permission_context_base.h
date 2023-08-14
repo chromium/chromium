@@ -18,7 +18,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/permission_request.h"
-#include "components/permissions/permission_result.h"
+#include "content/public/browser/permission_result.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
 
 class GURL;
@@ -98,7 +98,7 @@ class PermissionContextBase : public content_settings::Observer {
   // Returns whether the permission has been granted, denied etc.
   // |render_frame_host| may be nullptr if the call is coming from a context
   // other than a specific frame.
-  PermissionResult GetPermissionStatus(
+  content::PermissionResult GetPermissionStatus(
       content::RenderFrameHost* render_frame_host,
       const GURL& requesting_origin,
       const GURL& embedding_origin) const;
@@ -110,8 +110,8 @@ class PermissionContextBase : public content_settings::Observer {
   // Update |result| with any modifications based on the device state. For
   // example, if |result| is ALLOW but Chrome does not have the relevant
   // permission at the device level, but will prompt the user, return ASK.
-  virtual PermissionResult UpdatePermissionStatusWithDeviceStatus(
-      PermissionResult result,
+  virtual content::PermissionResult UpdatePermissionStatusWithDeviceStatus(
+      content::PermissionResult result,
       const GURL& requesting_origin,
       const GURL& embedding_origin) const;
 

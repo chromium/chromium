@@ -22,6 +22,8 @@
 namespace permissions {
 namespace {
 
+using PermissionStatus = blink::mojom::PermissionStatus;
+
 constexpr int kDefaultDismissalsBeforeBlock = 3;
 constexpr int kDefaultIgnoresBeforeBlock = 4;
 constexpr int kDefaultDismissalsBeforeBlockWithQuietUi = 1;
@@ -238,7 +240,7 @@ bool PermissionDecisionAutoBlocker::IsEnabledForContentSetting(
 }
 
 // static
-absl::optional<PermissionResult>
+absl::optional<content::PermissionResult>
 PermissionDecisionAutoBlocker::GetEmbargoResult(
     HostContentSettingsMap* settings_map,
     const GURL& request_origin,
@@ -258,15 +260,17 @@ PermissionDecisionAutoBlocker::GetEmbargoResult(
                      kPermissionDismissalEmbargoKey, current_time,
                      GetEmbargoDurationForContentSettingsType(permission,
                                                               dismiss_count))) {
-    return PermissionResult(CONTENT_SETTING_BLOCK,
-                            PermissionStatusSource::MULTIPLE_DISMISSALS);
+    return content::PermissionResult(
+        PermissionStatus::DENIED,
+        content::PermissionStatusSource::MULTIPLE_DISMISSALS);
   }
 
   if (IsUnderEmbargo(permission_dict, features::kBlockPromptsIfIgnoredOften,
                      kPermissionIgnoreEmbargoKey, current_time,
                      base::Days(g_ignore_embargo_days))) {
-    return PermissionResult(CONTENT_SETTING_BLOCK,
-                            PermissionStatusSource::MULTIPLE_IGNORES);
+    return content::PermissionResult(
+        PermissionStatus::DENIED,
+        content::PermissionStatusSource::MULTIPLE_IGNORES);
   }
 
   if (IsUnderEmbargo(permission_dict,
@@ -274,8 +278,9 @@ PermissionDecisionAutoBlocker::GetEmbargoResult(
                      kPermissionDisplayEmbargoKey, current_time,
                      GetEmbargoDurationForContentSettingsType(
                          permission, /*dismiss_count=*/0))) {
-    return PermissionResult(CONTENT_SETTING_BLOCK,
-                            PermissionStatusSource::RECENT_DISPLAY);
+    return content::PermissionResult(
+        PermissionStatus::DENIED,
+        content::PermissionStatusSource::RECENT_DISPLAY);
   }
 
   return absl::nullopt;
@@ -329,7 +334,7 @@ bool PermissionDecisionAutoBlocker::IsEmbargoed(
   return GetEmbargoResult(request_origin, permission).has_value();
 }
 
-absl::optional<PermissionResult>
+absl::optional<content::PermissionResult>
 PermissionDecisionAutoBlocker::GetEmbargoResult(
     const GURL& request_origin,
     ContentSettingsType permission) {

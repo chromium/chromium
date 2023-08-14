@@ -153,6 +153,7 @@ using ::testing::Return;
 using ::testing::UnorderedElementsAre;
 
 using GroupingKey = settings::SiteSettingsHandler::GroupingKey;
+using PermissionStatus = blink::mojom::PermissionStatus;
 
 constexpr char kCallbackId[] = "test-callback-id";
 constexpr char kSetting[] = "setting";
@@ -1195,9 +1196,9 @@ TEST_F(SiteSettingsHandlerTest, GetAllSites) {
         url4, ContentSettingsType::NOTIFICATIONS, false);
   }
   EXPECT_EQ(
-      CONTENT_SETTING_BLOCK,
+      PermissionStatus::DENIED,
       auto_blocker->GetEmbargoResult(url4, ContentSettingsType::NOTIFICATIONS)
-          ->content_setting);
+          ->status);
   handler()->HandleGetAllSites(get_all_sites_args);
 
   {
@@ -1234,9 +1235,9 @@ TEST_F(SiteSettingsHandlerTest, GetAllSites) {
         url3, ContentSettingsType::NOTIFICATIONS, false);
   }
   EXPECT_EQ(
-      CONTENT_SETTING_BLOCK,
+      PermissionStatus::DENIED,
       auto_blocker->GetEmbargoResult(url3, ContentSettingsType::NOTIFICATIONS)
-          ->content_setting);
+          ->status);
   clock.Advance(base::Days(8));
   EXPECT_FALSE(
       auto_blocker->GetEmbargoResult(url3, ContentSettingsType::NOTIFICATIONS)
@@ -1264,9 +1265,9 @@ TEST_F(SiteSettingsHandlerTest, GetAllSites) {
         url5, ContentSettingsType::NOTIFICATIONS, false);
   }
   EXPECT_EQ(
-      CONTENT_SETTING_BLOCK,
+      PermissionStatus::DENIED,
       auto_blocker->GetEmbargoResult(url5, ContentSettingsType::NOTIFICATIONS)
-          ->content_setting);
+          ->status);
   clock.Advance(base::Days(8));
   EXPECT_FALSE(
       auto_blocker->GetEmbargoResult(url5, ContentSettingsType::NOTIFICATIONS)
@@ -1870,10 +1871,10 @@ TEST_F(SiteSettingsHandlerTest, ResetCategoryPermissionForEmbargoedOrigins) {
     }
     // Check that origin is under embargo.
     EXPECT_EQ(
-        CONTENT_SETTING_BLOCK,
+        PermissionStatus::DENIED,
         auto_blocker
             ->GetEmbargoResult(GURL(kOriginToEmbargo), kPermissionNotifications)
-            ->content_setting);
+            ->status);
   }
 
   // Check there are 2 blocked origins.
@@ -3334,9 +3335,9 @@ TEST_F(SiteSettingsHandlerTest, StorageAccessExceptions_Description_Embargoed) {
                                           kPermissionStorageAccess, false);
   }
   EXPECT_EQ(
-      CONTENT_SETTING_BLOCK,
+      PermissionStatus::DENIED,
       auto_blocker->GetEmbargoResult(GURL(kOrigin), kPermissionStorageAccess)
-          ->content_setting);
+          ->status);
 
   base::Value::List get_exception_list_args;
   get_exception_list_args.Append(kCallbackId);
@@ -3369,9 +3370,9 @@ TEST_F(SiteSettingsHandlerTest,
                                           kPermissionStorageAccess, false);
   }
   EXPECT_EQ(
-      CONTENT_SETTING_BLOCK,
+      PermissionStatus::DENIED,
       auto_blocker->GetEmbargoResult(GURL(kOrigin), kPermissionStorageAccess)
-          ->content_setting);
+          ->status);
 
   CreateIncognitoProfile();
   permissions::PermissionDecisionAutoBlocker* auto_blocker_incognito =
@@ -3381,10 +3382,10 @@ TEST_F(SiteSettingsHandlerTest,
     auto_blocker_incognito->RecordDismissAndEmbargo(
         GURL(kOrigin), kPermissionStorageAccess, false);
   }
-  EXPECT_EQ(CONTENT_SETTING_BLOCK,
+  EXPECT_EQ(PermissionStatus::DENIED,
             auto_blocker_incognito
                 ->GetEmbargoResult(GURL(kOrigin), kPermissionStorageAccess)
-                ->content_setting);
+                ->status);
 
   base::Value::List get_exception_list_args;
   get_exception_list_args.Append(kCallbackId);

@@ -12,7 +12,6 @@
 #include "components/permissions/features.h"
 #include "components/permissions/permission_manager.h"
 #include "components/permissions/permission_request_manager.h"
-#include "components/permissions/permission_result.h"
 #include "components/permissions/test/mock_permission_prompt_factory.h"
 #include "content/public/browser/permission_result.h"
 #include "testing/gtest/include/gtest/gtest.h"

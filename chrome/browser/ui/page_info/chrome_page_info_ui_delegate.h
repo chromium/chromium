@@ -69,9 +69,9 @@ class ChromePageInfoUiDelegate : public PageInfoUiDelegate {
   bool IsBlockAutoPlayEnabled() override;
   bool IsMultipleTabsOpen() override;
 #endif  // !BUILDFLAG(IS_ANDROID)
-  permissions::PermissionResult GetPermissionResult(
+  content::PermissionResult GetPermissionResult(
       blink::PermissionType permission) override;
-  absl::optional<permissions::PermissionResult> GetEmbargoResult(
+  absl::optional<content::PermissionResult> GetEmbargoResult(
       ContentSettingsType type) override;
 
  private:

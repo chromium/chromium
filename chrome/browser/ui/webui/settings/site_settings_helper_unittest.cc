@@ -60,6 +60,9 @@
 namespace site_settings {
 
 namespace {
+
+using PermissionStatus = blink::mojom::PermissionStatus;
+
 constexpr ContentSettingsType kContentType = ContentSettingsType::GEOLOCATION;
 constexpr ContentSettingsType kContentTypeCookies =
     ContentSettingsType::COOKIES;
@@ -67,7 +70,7 @@ constexpr ContentSettingsType kContentTypeFileSystem =
     ContentSettingsType::FILE_SYSTEM_WRITE_GUARD;
 constexpr ContentSettingsType kContentTypeNotifications =
     ContentSettingsType::NOTIFICATIONS;
-}
+}  // namespace
 
 class SiteSettingsHelperTest : public testing::Test {
  public:
@@ -173,11 +176,11 @@ TEST_F(SiteSettingsHelperTest, ExceptionListShowsIncognitoEmbargoed) {
     }
 
     // Check that origin is under embargo.
-    ASSERT_EQ(CONTENT_SETTING_BLOCK,
+    ASSERT_EQ(PermissionStatus::DENIED,
               auto_blocker
                   ->GetEmbargoResult(GURL(kOriginToEmbargo),
                                      kContentTypeNotifications)
-                  ->content_setting);
+                  ->status);
   }
 
   // Check there is 1 embargoed origin for a non-incognito profile.
@@ -231,11 +234,11 @@ TEST_F(SiteSettingsHelperTest, ExceptionListShowsIncognitoEmbargoed) {
       incognito_auto_blocker->RecordDismissAndEmbargo(
           GURL(kOriginToEmbargoIncognito), kContentTypeNotifications, false);
     }
-    EXPECT_EQ(CONTENT_SETTING_BLOCK,
+    EXPECT_EQ(PermissionStatus::DENIED,
               incognito_auto_blocker
                   ->GetEmbargoResult(GURL(kOriginToEmbargoIncognito),
                                      kContentTypeNotifications)
-                  ->content_setting);
+                  ->status);
   }
 
   // Check there are 2 blocked or embargoed origins for an incognito profile.
@@ -288,10 +291,10 @@ TEST_F(SiteSettingsHelperTest, ExceptionListShowsEmbargoed) {
   }
 
   // Check that origin is under embargo.
-  EXPECT_EQ(CONTENT_SETTING_BLOCK,
+  EXPECT_EQ(PermissionStatus::DENIED,
             auto_blocker
                 ->GetEmbargoResult(origin_to_embargo, kContentTypeNotifications)
-                ->content_setting);
+                ->status);
 
   // Check there are 2 blocked origins.
   {

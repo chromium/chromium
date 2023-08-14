@@ -14,6 +14,7 @@
 #include "components/permissions/contexts/midi_permission_context.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_request_id.h"
+#include "components/permissions/permission_util.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/navigation_simulator.h"
@@ -109,11 +110,11 @@ class PermissionContextBasePermissionsPolicyTest
 
   ContentSetting GetPermissionForFrame(permissions::PermissionContextBase* pcb,
                                        content::RenderFrameHost* rfh) {
-    return pcb
-        ->GetPermissionStatus(
-            rfh, rfh->GetLastCommittedURL(),
-            web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL())
-        .content_setting;
+    return permissions::PermissionUtil::PermissionStatusToContentSetting(
+        pcb->GetPermissionStatus(
+               rfh, rfh->GetLastCommittedURL(),
+               web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL())
+            .status);
   }
 
   ContentSetting RequestPermissionForFrame(

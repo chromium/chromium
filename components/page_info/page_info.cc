@@ -44,7 +44,6 @@
 #include "components/permissions/permission_manager.h"
 #include "components/permissions/permission_recovery_success_rate_tracker.h"
 #include "components/permissions/permission_request_manager.h"
-#include "components/permissions/permission_result.h"
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permission_util.h"
 #include "components/permissions/permissions_client.h"
@@ -1198,9 +1197,8 @@ void PageInfo::PopulatePermissionInfo(PermissionInfo& permission_info,
       permission_info.setting == CONTENT_SETTING_DEFAULT &&
       permission_info.source ==
           content_settings::SettingSource::SETTING_SOURCE_USER) {
-    permissions::PermissionResult permission_result(
-        CONTENT_SETTING_DEFAULT,
-        permissions::PermissionStatusSource::UNSPECIFIED);
+    content::PermissionResult permission_result(
+        PermissionStatus::ASK, content::PermissionStatusSource::UNSPECIFIED);
     if (permissions::PermissionUtil::IsPermission(permission_info.type)) {
       permission_result = delegate_->GetPermissionResult(
           permissions::PermissionUtil::ContentSettingTypeToPermissionType(
@@ -1208,21 +1206,23 @@ void PageInfo::PopulatePermissionInfo(PermissionInfo& permission_info,
           url::Origin::Create(site_url_), permission_info.requesting_origin);
     } else if (permission_info.type ==
                ContentSettingsType::FEDERATED_IDENTITY_API) {
-      absl::optional<permissions::PermissionResult> embargo_result =
+      absl::optional<content::PermissionResult> embargo_result =
           delegate_->GetPermissionDecisionAutoblocker()->GetEmbargoResult(
               site_url_, permission_info.type);
       if (embargo_result) {
-        permission_result = *embargo_result;
+        permission_result = embargo_result.value();
       }
     }
 
     // If under embargo, update |permission_info| to reflect that.
-    if (permission_result.content_setting == CONTENT_SETTING_BLOCK &&
+    if (permission_result.status == PermissionStatus::DENIED &&
         (permission_result.source ==
-             permissions::PermissionStatusSource::MULTIPLE_DISMISSALS ||
+             content::PermissionStatusSource::MULTIPLE_DISMISSALS ||
          permission_result.source ==
-             permissions::PermissionStatusSource::MULTIPLE_IGNORES)) {
-      permission_info.setting = permission_result.content_setting;
+             content::PermissionStatusSource::MULTIPLE_IGNORES)) {
+      permission_info.setting =
+          permissions::PermissionUtil::PermissionStatusToContentSetting(
+              permission_result.status);
     }
   }
 }

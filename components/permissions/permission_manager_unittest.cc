@@ -16,7 +16,6 @@
 #include "components/permissions/features.h"
 #include "components/permissions/permission_context_base.h"
 #include "components/permissions/permission_request_manager.h"
-#include "components/permissions/permission_result.h"
 #include "components/permissions/permission_util.h"
 #include "components/permissions/test/mock_permission_prompt_factory.h"
 #include "components/permissions/test/permission_test_util.h"
@@ -37,7 +36,6 @@
 
 using blink::PermissionType;
 using blink::mojom::PermissionsPolicyFeature;
-using blink::mojom::PermissionStatus;
 
 namespace permissions {
 namespace {
@@ -141,9 +139,8 @@ class PermissionManagerTest : public content::RenderViewHostTestHarness {
     GetPermissionManager()->RequestPermissionsFromCurrentDocument(
         std::vector(1, type), rfh, true,
         base::BindOnce(
-            [](base::OnceCallback<void(blink::mojom::PermissionStatus)>
-                   callback,
-               const std::vector<blink::mojom::PermissionStatus>& state) {
+            [](base::OnceCallback<void(PermissionStatus)> callback,
+               const std::vector<PermissionStatus>& state) {
               DCHECK_EQ(state.size(), 1U);
               std::move(callback).Run(state[0]);
             },
@@ -158,9 +155,8 @@ class PermissionManagerTest : public content::RenderViewHostTestHarness {
     GetPermissionManager()->RequestPermissionsFromCurrentDocument(
         std::vector(1, type), rfh, true,
         base::BindOnce(
-            [](base::OnceCallback<void(blink::mojom::PermissionStatus)>
-                   callback,
-               const std::vector<blink::mojom::PermissionStatus>& state) {
+            [](base::OnceCallback<void(PermissionStatus)> callback,
+               const std::vector<PermissionStatus>& state) {
               DCHECK_EQ(state.size(), 1U);
               std::move(callback).Run(state[0]);
             },

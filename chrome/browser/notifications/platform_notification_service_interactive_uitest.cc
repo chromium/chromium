@@ -44,7 +44,6 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/permission_manager.h"
 #include "components/permissions/permission_request_manager.h"
-#include "components/permissions/permission_result.h"
 #include "components/site_engagement/content/site_engagement_score.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "content/public/common/content_features.h"
