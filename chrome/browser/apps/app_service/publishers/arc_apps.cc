@@ -622,47 +622,6 @@ void ArcApps::Shutdown() {
   arc_privacy_items_bridge_observation_.Reset();
 }
 
-void ArcApps::LoadIcon(const std::string& app_id,
-                       const IconKey& icon_key,
-                       IconType icon_type,
-                       int32_t size_hint_in_dip,
-                       bool allow_placeholder_icon,
-                       apps::LoadIconCallback callback) {
-  if (icon_type == IconType::kUnknown) {
-    std::move(callback).Run(std::make_unique<IconValue>());
-    return;
-  }
-  IconEffects icon_effects = static_cast<IconEffects>(icon_key.icon_effects);
-
-  // Treat the Play Store as a special case, loading an icon defined by a
-  // resource instead of asking the Android VM (or the cache of previous
-  // responses from the Android VM). Presumably this is for bootstrapping:
-  // the Play Store icon (the UI for enabling and installing Android apps)
-  // should be showable even before the user has installed their first
-  // Android app and before bringing up an Android VM for the first time.
-  if (app_id == arc::kPlayStoreAppId) {
-    LoadPlayStoreIcon(icon_type, size_hint_in_dip, icon_effects,
-                      std::move(callback));
-  } else {
-    const ArcAppListPrefs* arc_prefs = ArcAppListPrefs::Get(profile_);
-    DCHECK(arc_prefs);
-
-    // If the app has been removed, immediately terminate the icon request since
-    // it can't possibly succeed.
-    std::unique_ptr<ArcAppListPrefs::AppInfo> app_info =
-        arc_prefs->GetApp(app_id);
-    if (!app_info) {
-      std::move(callback).Run(std::make_unique<IconValue>());
-      return;
-    }
-
-    arc_icon_once_loader_.LoadIcon(
-        app_id, size_hint_in_dip, icon_type,
-        base::BindOnce(&OnArcAppIconCompletelyLoaded, icon_type,
-                       size_hint_in_dip, icon_effects, std::move(callback)));
-  }
-}
-
 void ArcApps::GetCompressedIconData(const std::string& app_id,
                                     int32_t size_in_dip,
                                     ui::ResourceScaleFactor scale_factor,
@@ -1354,22 +1313,6 @@ void ArcApps::OnInstanceRegistryWillBeDestroyed(
     apps::InstanceRegistry* instance_registry) {
   DCHECK(instance_registry_observation_.IsObservingSource(instance_registry));
   instance_registry_observation_.Reset();
-}
-
-void ArcApps::LoadPlayStoreIcon(apps::IconType icon_type,
-                                int32_t size_hint_in_dip,
-                                IconEffects icon_effects,
-                                apps::LoadIconCallback callback) {
-  // Use overloaded Chrome icon for Play Store that is adapted to Chrome style.
-  constexpr bool quantize_to_supported_scale_factor = true;
-  int size_hint_in_px = apps_util::ConvertDipToPx(
-      size_hint_in_dip, quantize_to_supported_scale_factor);
-  int resource_id = (size_hint_in_px <= 32) ? IDR_ARC_SUPPORT_ICON_32_PNG
-                                            : IDR_ARC_SUPPORT_ICON_192_PNG;
-  constexpr bool is_placeholder_icon = false;
-  LoadIconFromResource(/*profile=*/nullptr, /*app_id=*/absl::nullopt, icon_type,
-                       size_hint_in_dip, resource_id, is_placeholder_icon,
-                       icon_effects, std::move(callback));
 }
 
 AppPtr ArcApps::CreateApp(ArcAppListPrefs* prefs,

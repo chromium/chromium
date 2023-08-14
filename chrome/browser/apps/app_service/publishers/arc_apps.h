@@ -95,12 +95,6 @@ class ArcApps : public KeyedService,
   void Shutdown() override;
 
   // apps::AppPublisher overrides.
-  void LoadIcon(const std::string& app_id,
-                const IconKey& icon_key,
-                IconType icon_type,
-                int32_t size_hint_in_dip,
-                bool allow_placeholder_icon,
-                apps::LoadIconCallback callback) override;
   void GetCompressedIconData(const std::string& app_id,
                              int32_t size_in_dip,
                              ui::ResourceScaleFactor scale_factor,
@@ -198,11 +192,6 @@ class ArcApps : public KeyedService,
   void OnInstanceUpdate(const apps::InstanceUpdate& update) override;
   void OnInstanceRegistryWillBeDestroyed(
       apps::InstanceRegistry* instance_registry) override;
-
-  void LoadPlayStoreIcon(apps::IconType icon_type,
-                         int32_t size_hint_in_dip,
-                         IconEffects icon_effects,
-                         apps::LoadIconCallback callback);
 
   // Creates the App struct for `app_id` based on `app_info`. If `update_icon`
   // is true, creates a new icon key. If `raw_icon_updated` is true, sets
