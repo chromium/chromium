@@ -61,7 +61,8 @@ public class ExportDeletionDialogFragment extends DialogFragment implements Pass
                                         .getResources()
                                         .getString(R.string.exported_passwords_deletion_dialog_text)
                                         .replace("%1$s",
-                                                PasswordMigrationWarningUtil.getChannelString()))
+                                                PasswordMigrationWarningUtil.getChannelString(
+                                                        getActivity().getApplicationContext())))
                         .setTitle(getActivity().getResources().getString(
                                 R.string.exported_passwords_deletion_dialog_title))
                         .create();

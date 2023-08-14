@@ -748,7 +748,7 @@ CHAR_LIMIT guidelines:
         We’re changing how passwords are saved on this device
       </message>
       <message name="IDS_PASSWORD_MIGRATION_WARNING_SUBTITLE" desc="The subtitle of the password migration warning sheet." formatter_data="android_java">
-        Your lists of saved passwords for Chrome and Chrome <ph name="ERROR_DESCRIPTION">%1$s<ex>Dev</ex></ph> will merge after version 121. You’ll be able to autofill all your saved passwords on both apps.
+        Your lists of saved passwords for Chrome and <ph name="CHROME_CHANNEL">%1$s<ex>Chrome Dev</ex></ph> will merge after version 121. You’ll be able to autofill all your saved passwords on both apps.
       </message>
       <message name="IDS_PASSWORD_MIGRATION_WARNING_ACKNOWLEDGE" desc="The text on the button that acknowledges the password migration warning.">
         Got it
@@ -772,7 +772,7 @@ CHAR_LIMIT guidelines:
         Export &amp; delete passwords saved to this device
       </message>
       <message name="IDS_PASSWORD_MIGRATION_WARNING_PASSWORD_EXPORT_SUBTITLE" desc="The subtitle that explaint the password export option in the password migration warning sheet.">
-        All passwords will be downloaded on your device and removed from Chrome <ph name="CHROME_CHANNEL">%1$s<ex>Dev</ex></ph>
+        All passwords will be downloaded on your device and removed from <ph name="CHROME_CHANNEL">%1$s<ex>Chrome Dev</ex></ph>
       </message>
       <message name="IDS_PASSWORD_MIGRATION_WARNING_NEXT" desc="The text for the next button in the password migration warning sheet. It starts one of the flows offered on the sheet.">
         Next
@@ -790,10 +790,19 @@ CHAR_LIMIT guidelines:
         Exporting
       </message>
       <message name="IDS_EXPORTED_PASSWORDS_DELETION_DIALOG_TEXT" desc="The text that describes the option to delete the passwords that were just exported." formatter_data="android_java">
-        Your passwords will be deleted from Google Password Manager for Chrome <ph name="CHROME_CHANNEL">%1$s<ex>Dev</ex></ph>. You will keep the passwords file you just downloaded.
+        Your passwords will be deleted from Google Password Manager for <ph name="CHROME_CHANNEL">%1$s<ex>Chrome Dev</ex></ph>. You will keep the passwords file you just downloaded.
       </message>
       <message name="IDS_EXPORTED_PASSWORDS_DELETE_BUTTON" desc="The text on the button that confirms the action of deleting the passwords that were exported." formatter_data="android_java">
         Delete passwords
+      </message>
+      <message name="IDS_CHROME_CHANNEL_NAME_CANARY" desc="The Chrome channel name for canary channel">
+        Chrome Canary
+      </message>
+      <message name="IDS_CHROME_CHANNEL_NAME_DEV" desc="The Chrome channel name for dev channel">
+        Chrome Dev
+      </message>
+      <message name="IDS_CHROME_CHANNEL_NAME_BETA" desc="The Chrome channel name for beta channel">
+        Chrome Beta
       </message>
 
       <!-- Lock Screen Fragment -->
