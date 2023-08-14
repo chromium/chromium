@@ -14,11 +14,8 @@ import android.view.inputmethod.InputMethodInfo;
 import android.view.inputmethod.InputMethodManager;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.OptIn;
 import androidx.annotation.RequiresApi;
-import androidx.core.os.BuildCompat;
 
-import org.chromium.base.BuildInfo;
 import org.chromium.base.Log;
 import org.chromium.blink_public.common.BlinkFeatures;
 import org.chromium.content_public.browser.ContentFeatureMap;
@@ -26,7 +23,6 @@ import org.chromium.content_public.browser.StylusWritingHandler;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.ViewAndroidDelegate.StylusWritingCursorHandler;
 
-import java.lang.reflect.Field;
 import java.util.List;
 
 /**
@@ -41,12 +37,11 @@ public class AndroidStylusWritingHandler
     private final InputMethodManager mInputMethodManager;
     private View mTargetView;
 
-    @OptIn(markerClass = androidx.core.os.BuildCompat.PrereleaseSdkCheck.class)
     public static boolean isEnabled(Context context) {
-        if (!BuildInfo.isAtLeastT()) return false;
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) return false;
 
         int value = -1;
-        if (BuildCompat.isAtLeastU()) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             value = Settings.Secure.getInt(
                     context.getContentResolver(), "stylus_handwriting_enabled", 1);
         } else {
@@ -78,20 +73,11 @@ public class AndroidStylusWritingHandler
         return false;
     }
 
-    @OptIn(markerClass = androidx.core.os.BuildCompat.PrereleaseSdkCheck.class)
     private static @Nullable Integer getHandwritingHoverPointer() {
-        Integer handwritingPointerType = null;
         // Android handwriting hover icon is supported from Android U.
-        if (BuildCompat.isAtLeastU()) {
-            // TODO(crbug.com/1416170): Remove this reflection code when Android U is released.
-            try {
-                Field handwritingPointer = PointerIcon.class.getField("TYPE_HANDWRITING");
-                handwritingPointerType = (Integer) handwritingPointer.get(null);
-            } catch (NoSuchFieldException | IllegalAccessException e) {
-                // Do nothing.
-            }
-        }
-        return handwritingPointerType;
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
+                ? PointerIcon.TYPE_HANDWRITING
+                : null;
     }
 
     AndroidStylusWritingHandler(Context context) {
