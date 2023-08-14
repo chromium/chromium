@@ -6,18 +6,6 @@
 
 /**
  * Launches the PaymentRequest UI that does not require a shipping address.
- */
-function buy() {
-  buyWithMethods([
-    {
-      supportedMethods: 'basic-card',
-      data: {supportedNetworks: ['visa', 'mastercard']},
-    },
-  ]);
-}
-
-/**
- * Launches the PaymentRequest UI that does not require a shipping address.
  * @param {String} methodData - An array of payment method objects.
  * @return {string} - The error message, if any.
  */
