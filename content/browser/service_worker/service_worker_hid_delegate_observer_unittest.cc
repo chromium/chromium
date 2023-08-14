@@ -257,7 +257,7 @@ class ServiceWorkerHidDelegateObserverTest
       ServiceWorkerVersion* version) {
     auto const& origin = version->key().origin();
     mojo::Remote<blink::mojom::HidService> service;
-    auto* embedded_worker = version->GetEmbeddedWorkerForTesting();
+    auto* embedded_worker = version->embedded_worker();
     EXPECT_CALL(hid_delegate(), IsServiceWorkerAllowedForOrigin(origin))
         .WillOnce(Return(true));
     embedded_worker->BindHidService(origin,

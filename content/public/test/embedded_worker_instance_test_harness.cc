@@ -12,9 +12,9 @@
 #include "content/browser/service_worker/embedded_worker_test_helper.h"
 #include "content/browser/service_worker/service_worker_hid_delegate_observer.h"
 #include "content/browser/service_worker/service_worker_test_utils.h"
+#include "content/public/test/test_browser_context.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "test_browser_context.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -71,14 +71,14 @@ void EmbeddedWorkerInstanceTestHarness::CreateAndStartWorker(
   ASSERT_EQ(blink::ServiceWorkerStatusCode::kOk, status.Get());
 
   StartServiceWorker(worker_version_.get());
-  ASSERT_EQ(worker_version_->GetEmbeddedWorkerForTesting()->status(),
+  ASSERT_EQ(worker_version_->embedded_worker()->status(),
             content::EmbeddedWorkerStatus::RUNNING);
 }
 
 void EmbeddedWorkerInstanceTestHarness::StopAndResetWorker() {
   EXPECT_NE(worker_version_, nullptr);
   StopServiceWorker(worker_version_.get());
-  ASSERT_EQ(worker_version_->GetEmbeddedWorkerForTesting()->status(),
+  ASSERT_EQ(worker_version_->embedded_worker()->status(),
             EmbeddedWorkerStatus::STOPPED);
   worker_version_.reset();
 }
@@ -87,8 +87,7 @@ void EmbeddedWorkerInstanceTestHarness::StopAndResetWorker() {
 void EmbeddedWorkerInstanceTestHarness::BindHidServiceToWorker(
     const GURL& origin,
     mojo::PendingReceiver<blink::mojom::HidService> receiver) {
-  EmbeddedWorkerInstance* worker =
-      worker_version_->GetEmbeddedWorkerForTesting();
+  EmbeddedWorkerInstance* worker = worker_version_->embedded_worker();
   EXPECT_NE(worker, nullptr);
   worker->BindHidService(url::Origin::Create(origin), std::move(receiver));
 }
@@ -97,8 +96,7 @@ void EmbeddedWorkerInstanceTestHarness::BindHidServiceToWorker(
 void EmbeddedWorkerInstanceTestHarness::BindUsbServiceToWorker(
     const GURL& origin,
     mojo::PendingReceiver<blink::mojom::WebUsbService> receiver) {
-  EmbeddedWorkerInstance* worker =
-      worker_version_->GetEmbeddedWorkerForTesting();
+  EmbeddedWorkerInstance* worker = worker_version_->embedded_worker();
   EXPECT_NE(worker, nullptr);
   worker->BindUsbService(url::Origin::Create(origin), std::move(receiver));
 }

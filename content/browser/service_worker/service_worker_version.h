@@ -731,10 +731,6 @@ class CONTENT_EXPORT ServiceWorkerVersion
 
   base::WeakPtr<ServiceWorkerVersion> GetWeakPtr();
 
-  EmbeddedWorkerInstance* GetEmbeddedWorkerForTesting() {
-    return embedded_worker_.get();
-  }
-
  private:
   friend class base::RefCounted<ServiceWorkerVersion>;
   friend class EmbeddedWorkerTestHelper;

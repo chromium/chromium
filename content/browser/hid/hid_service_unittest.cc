@@ -251,7 +251,7 @@ class HidServiceBaseTest : public testing::Test, public HidServiceTestHelper {
         worker_version_->set_has_hid_event_handlers(true);
         worker_version_->SetStatus(ServiceWorkerVersion::Status::ACTIVATED);
         pair.first->SetActiveVersion(worker_version_);
-        auto* embedded_worker = worker_version_->GetEmbeddedWorkerForTesting();
+        auto* embedded_worker = worker_version_->embedded_worker();
         embedded_worker_test_helper_->StartWorker(
             embedded_worker,
             embedded_worker_test_helper_->CreateStartParams(pair.second));
