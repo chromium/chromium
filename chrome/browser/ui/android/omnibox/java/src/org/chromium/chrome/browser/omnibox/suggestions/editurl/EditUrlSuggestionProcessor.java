@@ -5,6 +5,9 @@
 package org.chromium.chrome.browser.omnibox.suggestions.editurl;
 
 import android.content.Context;
+import android.text.TextUtils;
+
+import androidx.annotation.NonNull;
 
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
@@ -18,7 +21,6 @@ import org.chromium.chrome.browser.omnibox.styles.SuggestionSpannable;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.UrlBarDelegate;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProcessor;
-import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProperties;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProperties.Action;
 import org.chromium.chrome.browser.omnibox.suggestions.basic.SuggestionViewProperties;
 import org.chromium.chrome.browser.share.ShareDelegate;
@@ -40,16 +42,9 @@ import java.util.Arrays;
  * the rest of Chrome.
  */
 public class EditUrlSuggestionProcessor extends BaseSuggestionViewProcessor {
-    /** The delegate for accessing the location bar for observation and modification. */
-    private final UrlBarDelegate mUrlBarDelegate;
-
-    /** The delegate for accessing the sharing feature. */
-    private final Supplier<ShareDelegate> mShareDelegateSupplier;
-
-    /** A means of accessing the activity's tab. */
-    private final Supplier<Tab> mTabSupplier;
-
-    /** Whether the omnibox has already cleared its content for the focus event. */
+    private final @NonNull UrlBarDelegate mUrlBarDelegate;
+    private final @NonNull Supplier<ShareDelegate> mShareDelegateSupplier;
+    private final @NonNull Supplier<Tab> mTabSupplier;
     private boolean mHasClearedOmniboxForFocus;
 
     public EditUrlSuggestionProcessor(Context context, SuggestionHost suggestionHost,
@@ -100,12 +95,15 @@ public class EditUrlSuggestionProcessor extends BaseSuggestionViewProcessor {
     public void populateModel(AutocompleteMatch suggestion, PropertyModel model, int position) {
         super.populateModel(suggestion, model, position);
 
-        if (OmniboxFeatures.noopEditUrlSuggestionClicks()) {
-            model.set(BaseSuggestionViewProperties.ON_CLICK, null);
+        var tab = mTabSupplier.get();
+        var title = suggestion.getDescription();
+        if (!tab.isLoading()) {
+            title = tab.getTitle();
+        } else if (TextUtils.isEmpty(title)) {
+            title = mContext.getResources().getText(R.string.tab_loading_default_title).toString();
         }
 
-        model.set(SuggestionViewProperties.TEXT_LINE_1_TEXT,
-                new SuggestionSpannable(mTabSupplier.get().getTitle()));
+        model.set(SuggestionViewProperties.TEXT_LINE_1_TEXT, new SuggestionSpannable(title));
         model.set(SuggestionViewProperties.TEXT_LINE_2_TEXT,
                 new SuggestionSpannable(suggestion.getDisplayText()));
 
@@ -138,20 +136,25 @@ public class EditUrlSuggestionProcessor extends BaseSuggestionViewProcessor {
 
     @Override
     protected void onSuggestionClicked(AutocompleteMatch suggestion, int position) {
-        super.onSuggestionClicked(suggestion, position);
         RecordUserAction.record("Omnibox.EditUrlSuggestion.Tap");
+        if (OmniboxFeatures.noopEditUrlSuggestionClicks()) {
+            mSuggestionHost.finishInteraction();
+            return;
+        }
+
+        super.onSuggestionClicked(suggestion, position);
     }
 
     /** Invoked when user interacts with Share action button. */
     private void onShareLink() {
         RecordUserAction.record("Omnibox.EditUrlSuggestion.Share");
-        Tab tab = mTabSupplier.get();
-        if (tab != null && tab.getWebContents() != null) {
+        var webContents = mTabSupplier.get().getWebContents();
+        if (webContents != null) {
+            // TODO(ender): find out if this is still captured anywhere.
             new UkmRecorder.Bridge().recordEventWithBooleanMetric(
-                    mTabSupplier.get().getWebContents(), "Omnibox.EditUrlSuggestion.Share",
-                    "HasOccurred");
+                    webContents, "Omnibox.EditUrlSuggestion.Share", "HasOccurred");
         }
-        mUrlBarDelegate.clearOmniboxFocus();
+        mSuggestionHost.finishInteraction();
         // TODO(mdjones): This should only share the displayed URL instead of the background tab.
         mShareDelegateSupplier.get().share(mTabSupplier.get(), false, ShareOrigin.EDIT_URL);
     }
