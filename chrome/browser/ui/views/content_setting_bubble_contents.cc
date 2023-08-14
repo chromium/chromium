@@ -493,9 +493,11 @@ bool ContentSettingBubbleContents::ShouldShowCloseButton() const {
 void ContentSettingBubbleContents::Init() {
   DCHECK(content_setting_bubble_model_);
   const ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
+  int vertical_spacing =
+      provider->GetDistanceMetric(views::DISTANCE_RELATED_CONTROL_VERTICAL);
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(),
-      provider->GetDistanceMetric(views::DISTANCE_RELATED_CONTROL_VERTICAL)));
+      vertical_spacing));
   std::vector<LayoutRow> rows;
 
   const ContentSettingBubbleModel::BubbleContent& bubble_content =
@@ -504,7 +506,9 @@ void ContentSettingBubbleContents::Init() {
   if (!bubble_content.subtitle.empty()) {
     SetSubtitle(bubble_content.subtitle);
     auto separator = std::make_unique<views::Separator>();
-    rows.push_back({std::move(separator), LayoutRowType::INDENTED});
+    separator->SetProperty(views::kMarginsKey,
+                           gfx::Insets::VH(vertical_spacing, 0));
+    rows.push_back({std::move(separator), LayoutRowType::FULL_WIDTH});
   }
 
   if (!bubble_content.message.empty()) {
