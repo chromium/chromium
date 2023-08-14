@@ -7,6 +7,7 @@
 #import "base/test/gtest_util.h"
 #import "components/password_manager/core/browser/password_manager_util.h"
 #import "components/signin/public/base/signin_metrics.h"
+#import "components/sync/base/pref_names.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "ios/chrome/browser/default_browser/utils.h"
 #import "ios/chrome/browser/default_browser/utils_test_support.h"
@@ -23,6 +24,7 @@
 #import "ios/chrome/browser/signin/fake_authentication_service_delegate.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
 #import "ios/chrome/browser/signin/fake_system_identity_manager.h"
+#import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/fakes/fake_browser_state.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -52,9 +54,12 @@ class SetUpListTest : public PlatformTest {
 
   // Builds a new instance of SetUpList.
   void BuildSetUpList() {
-    set_up_list_ = [SetUpList buildFromPrefs:prefs_
-                                  localState:local_state_.Get()
-                       authenticationService:auth_service_];
+    set_up_list_ =
+        [SetUpList buildFromPrefs:prefs_
+                       localState:local_state_.Get()
+                      syncService:SyncServiceFactory::GetForBrowserState(
+                                      browser_state_.get())
+            authenticationService:auth_service_];
   }
 
   // Fakes a sign-in with a fake identity.
@@ -125,9 +130,19 @@ class SetUpListTest : public PlatformTest {
   SetUpList* set_up_list_;
 };
 
-// Tests that the SetUpList uses the correct criteria when including the
-// SyncInSync item.
-TEST_F(SetUpListTest, BuildListWithSignInSync) {
+// Tests the SignInSync item is hidden if sync is disabled by policy.
+TEST_F(SetUpListTest, NoSignInSyncIfSyncDisabledByPolicy) {
+  prefs_->SetBoolean(syncer::prefs::internal::kSyncManaged, true);
+  BuildSetUpList();
+  ExpectListToNotInclude(SetUpListItemType::kSignInSync);
+
+  prefs_->ClearPref(syncer::prefs::internal::kSyncManaged);
+  BuildSetUpList();
+  ExpectListToInclude(SetUpListItemType::kSignInSync, NO);
+}
+
+// Tests the SignInSync item is hidden if sign-in is disabled by policy.
+TEST_F(SetUpListTest, NoSignInSyncItemIfSigninDisabledByPolicy) {
   // Set sign-in disabled by policy.
   local_state_.Get()->SetInteger(
       prefs::kBrowserSigninPolicy,
@@ -139,7 +154,11 @@ TEST_F(SetUpListTest, BuildListWithSignInSync) {
                                  static_cast<int>(BrowserSigninMode::kEnabled));
   BuildSetUpList();
   ExpectListToInclude(SetUpListItemType::kSignInSync, NO);
+}
 
+// Tests that the SetUpList shows or hides the SignInSync item depending on
+// whether the user is currently signed-in.
+TEST_F(SetUpListTest, SignInSyncReactsToAccountChanges) {
   SignInFakeIdentity();
   BuildSetUpList();
   ExpectListToInclude(SetUpListItemType::kSignInSync, YES);

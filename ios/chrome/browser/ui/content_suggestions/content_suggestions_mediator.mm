@@ -61,6 +61,7 @@
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/authentication_service_observer_bridge.h"
+#import "ios/chrome/browser/sync/sync_observer_bridge.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_action_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_return_to_recent_tab_item.h"
@@ -111,6 +112,7 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
 }  // namespace
 
 @interface ContentSuggestionsMediator () <AuthenticationServiceObserving,
+                                          SyncObserverModelBridge,
                                           IdentityManagerObserverBridgeDelegate,
                                           MostVisitedSitesObserving,
                                           ReadingListModelBridgeObserver,
@@ -189,11 +191,15 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
   PrefChangeRegistrar _prefChangeRegistrar;
   // Local State prefs.
   PrefService* _localState;
+  // Used by SetUpList to get the sync status.
+  syncer::SyncService* _syncService;
   // Used by SetUpList to get signed-in status.
   AuthenticationService* _authenticationService;
   // Used by SetUpList to observe changes to signed-in status.
   std::unique_ptr<signin::IdentityManagerObserverBridge>
       _identityObserverBridge;
+  // Observer for sync service status changes.
+  std::unique_ptr<SyncObserverBridge> _syncObserverBridge;
   // Observer for auth service status changes.
   std::unique_ptr<AuthenticationServiceObserverBridge>
       _authServiceObserverBridge;
@@ -209,6 +215,7 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
                  readingListModel:(ReadingListModel*)readingListModel
                       prefService:(PrefService*)prefService
     isGoogleDefaultSearchProvider:(BOOL)isGoogleDefaultSearchProvider
+                      syncService:(syncer::SyncService*)syncService
             authenticationService:(AuthenticationService*)authenticationService
                   identityManager:(signin::IdentityManager*)identityManager
                           browser:(Browser*)browser {
@@ -237,12 +244,15 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
     _readingListModelBridge =
         std::make_unique<ReadingListModelBridge>(self, readingListModel);
 
+    _authenticationService = authenticationService;
+    _syncService = syncService;
     if (IsIOSSetUpListEnabled() &&
         set_up_list_utils::IsSetUpListActive(_localState)) {
-      _authenticationService = authenticationService;
       _authServiceObserverBridge =
           std::make_unique<AuthenticationServiceObserverBridge>(
               _authenticationService, self);
+      _syncObserverBridge =
+          std::make_unique<SyncObserverBridge>(self, _syncService);
       _identityObserverBridge =
           std::make_unique<signin::IdentityManagerObserverBridge>(
               identityManager, self);
@@ -261,6 +271,7 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
       }
       _setUpList = [SetUpList buildFromPrefs:prefService
                                   localState:_localState
+                                 syncService:syncService
                        authenticationService:authenticationService];
     }
     SceneState* sceneState =
@@ -1034,6 +1045,22 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
   if (self.readingListItem) {
     self.readingListItem.count = self.readingListUnreadCount;
     [self.consumer updateShortcutTileConfig:self.readingListItem];
+  }
+}
+
+#pragma mark - SyncObserverModelBridge
+
+- (void)onSyncStateChanged {
+  if (!_setUpList) {
+    return;
+  }
+  if (_syncService->HasDisableReason(
+          syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY) ||
+      HasManagedSyncType(_syncService)) {
+    // Sync is now disabled, so mark the SetUpList item complete so that it
+    // cannot be used again.
+    set_up_list_prefs::MarkItemComplete(_localState,
+                                        SetUpListItemType::kSignInSync);
   }
 }
 
