@@ -44,7 +44,7 @@ NetworkDetailedNetworkViewImpl::NetworkDetailedNetworkViewImpl(
     NetworkDetailedNetworkView::Delegate* delegate)
     : NetworkDetailedView(detailed_view_delegate,
                           delegate,
-                          NetworkDetailedView::ListType::LIST_TYPE_NETWORK),
+                          NetworkDetailedViewListType::LIST_TYPE_NETWORK),
       NetworkDetailedNetworkView(delegate) {
   RecordDetailedViewSection(DetailedViewSection::kDetailedSection);
 }

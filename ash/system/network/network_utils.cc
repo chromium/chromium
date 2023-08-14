@@ -40,6 +40,19 @@ std::string GetNetworkTypeName(
 
 }  // namespace
 
+int GetStringIdForNetworkDetailedViewTitleRow(
+    NetworkDetailedViewListType list_type) {
+  if (base::FeatureList::IsEnabled(ash::features::kInstantHotspotRebrand)) {
+    return (list_type == NetworkDetailedViewListType::LIST_TYPE_NETWORK
+                ? IDS_ASH_STATUS_TRAY_INTERNET
+                : IDS_ASH_STATUS_TRAY_VPN);
+  } else {
+    return (list_type == NetworkDetailedViewListType::LIST_TYPE_NETWORK
+                ? IDS_ASH_STATUS_TRAY_NETWORK
+                : IDS_ASH_STATUS_TRAY_VPN);
+  }
+}
+
 void RecordNetworkRowClickedAction(NetworkRowClickedAction action) {
   base::UmaHistogramEnumeration("ChromeOS.SystemTray.Network.RowClickedAction",
                                 action);

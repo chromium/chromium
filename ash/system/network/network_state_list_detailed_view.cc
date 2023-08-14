@@ -187,7 +187,7 @@ class NetworkStateListDetailedView::InfoBubble
 
 NetworkStateListDetailedView::NetworkStateListDetailedView(
     DetailedViewDelegate* delegate,
-    ListType list_type,
+    NetworkDetailedViewListType list_type,
     LoginStatus login)
     : TrayDetailedView(delegate),
       list_type_(list_type),
@@ -219,9 +219,7 @@ const char* NetworkStateListDetailedView::GetClassName() const {
 
 void NetworkStateListDetailedView::Init() {
   CreateScrollableList();
-  CreateTitleRow(list_type_ == ListType::LIST_TYPE_NETWORK
-                     ? IDS_ASH_STATUS_TRAY_NETWORK
-                     : IDS_ASH_STATUS_TRAY_VPN);
+  CreateTitleRow(GetStringIdForNetworkDetailedViewTitleRow(list_type_));
 
   model_->AddObserver(this);
   Update();

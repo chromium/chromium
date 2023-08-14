@@ -31,15 +31,15 @@ namespace ash {
 NetworkDetailedView::NetworkDetailedView(
     DetailedViewDelegate* detailed_view_delegate,
     Delegate* delegate,
-    ListType list_type)
+    NetworkDetailedViewListType list_type)
     : TrayDetailedView(detailed_view_delegate),
       list_type_(list_type),
       login_(Shell::Get()->session_controller()->login_status()),
       model_(Shell::Get()->system_tray_model()->network_state_model()),
       delegate_(delegate) {
-  CreateTitleRow(list_type_ == ListType::LIST_TYPE_NETWORK
-                     ? IDS_ASH_STATUS_TRAY_NETWORK
-                     : IDS_ASH_STATUS_TRAY_VPN);
+  title_row_string_id_ = GetStringIdForNetworkDetailedViewTitleRow(list_type_);
+  CreateTitleRow(title_row_string_id_);
+
   CreateScrollableList();
   // TODO(b/207089013): add metrics for UI surface displayed.
 }

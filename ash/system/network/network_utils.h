@@ -33,6 +33,8 @@ enum class DetailedViewSection {
   kMaxValue = kDetailedSection
 };
 
+enum NetworkDetailedViewListType { LIST_TYPE_NETWORK, LIST_TYPE_VPN };
+
 ASH_EXPORT void RecordNetworkRowClickedAction(NetworkRowClickedAction action);
 
 ASH_EXPORT void RecordDetailedViewSection(DetailedViewSection section);
@@ -56,6 +58,8 @@ ASH_EXPORT bool IsNetworkInhibited(
     const chromeos::network_config::mojom::NetworkStatePropertiesPtr&
         network_properties);
 
+ASH_EXPORT int GetStringIdForNetworkDetailedViewTitleRow(
+    NetworkDetailedViewListType list_type);
 }  // namespace ash
 
 #endif  // ASH_SYSTEM_NETWORK_NETWORK_UTILS_H_

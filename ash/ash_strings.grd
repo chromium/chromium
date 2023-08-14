@@ -2690,6 +2690,9 @@ Turning on battery saver to increase your battery life.
       <message name="IDS_ASH_STATUS_TRAY_NETWORK" desc="The label used in the network dialog header. [CHAR_LIMIT=18]">
         Network
       </message>
+      <message name="IDS_ASH_STATUS_TRAY_INTERNET" desc="The label used in the network dialog header. [CHAR_LIMIT=18]">
+        Internet
+      </message>
       <message name="IDS_ASH_QUICK_SETTINGS_KNOWN_NETWORKS" desc="The label used in the network detailed page for the known networks group">
         Known networks
       </message>
