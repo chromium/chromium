@@ -44,8 +44,16 @@ HashSet<v8::Isolate*>& ForegroundedIsolates()
   return foregrounded_isolates;
 }
 
+bool& IsolateCurrentlyInBackground() EXCLUSIVE_LOCKS_REQUIRED(IsolatesLock()) {
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(bool, isolate_currently_in_background, ());
+  return isolate_currently_in_background;
+}
+
 void AddWorkerIsolate(v8::Isolate* isolate) {
   base::AutoLock locker(IsolatesLock());
+  if (IsolateCurrentlyInBackground()) {
+    isolate->IsolateInBackgroundNotification();
+  }
   Isolates().insert(isolate);
 }
 
@@ -151,6 +159,7 @@ void WorkerBackingThread::MemoryPressureNotificationToWorkerThreadIsolates(
 void WorkerBackingThread::
     IsolateInBackgroundNotificationToWorkerThreadIsolates() {
   base::AutoLock locker(IsolatesLock());
+  IsolateCurrentlyInBackground() = true;
   for (v8::Isolate* isolate : Isolates()) {
     if (!ForegroundedIsolates().Contains(isolate)) {
       isolate->IsolateInBackgroundNotification();
@@ -162,6 +171,7 @@ void WorkerBackingThread::
 void WorkerBackingThread::
     IsolateInForegroundNotificationToWorkerThreadIsolates() {
   base::AutoLock locker(IsolatesLock());
+  IsolateCurrentlyInBackground() = false;
   for (v8::Isolate* isolate : Isolates()) {
     if (!ForegroundedIsolates().Contains(isolate)) {
       isolate->IsolateInForegroundNotification();
