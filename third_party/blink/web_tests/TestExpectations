@@ -2021,10 +2021,6 @@ crbug.com/1029069 external/wpt/css/css-fonts/standard-font-family-20.html [ Fail
 crbug.com/1058772 external/wpt/css/css-fonts/test-synthetic-italic-2.html [ Failure ]
 crbug.com/1058772 external/wpt/css/css-fonts/test-synthetic-italic-3.html [ Failure ]
 
-crbug.com/1191718 external/wpt/css/css-text-decor/text-decoration-thickness-percent-001.html [ Failure ]
-
-crbug.com/1191718 external/wpt/css/css-fonts/size-adjust-text-decoration.tentative.html [ Failure ]
-
 # CSS Font Feature Resolution is not implemented yet
 crbug.com/450619 external/wpt/css/css-fonts/font-feature-resolution-001.html [ Failure ]
 crbug.com/450619 external/wpt/css/css-fonts/font-feature-resolution-002.html [ Failure ]
