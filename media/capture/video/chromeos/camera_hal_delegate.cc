@@ -305,10 +305,6 @@ CameraHalDelegate::~CameraHalDelegate() {
   power_manager_client_proxy_->Shutdown();
   ui_task_runner_->DeleteSoon(FROM_HERE,
                               std::move(power_manager_client_proxy_));
-
-  if (vcd_task_runner_) {
-    vcd_task_runner_->DeleteSoon(FROM_HERE, std::move(vcd_delegate_map_));
-  }
 }
 
 bool CameraHalDelegate::RegisterCameraClient() {
@@ -697,9 +693,6 @@ VideoCaptureDeviceChromeOSDelegate* CameraHalDelegate::GetVCDDelegate(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner_for_screen_observer,
     const VideoCaptureDeviceDescriptor& device_descriptor) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!vcd_task_runner_) {
-    vcd_task_runner_ = base::SequencedTaskRunner::GetCurrentDefault();
-  }
   auto camera_id = GetCameraIdFromDeviceId(device_descriptor.device_id);
   if (!vcd_delegate_map_->HasVCDDelegate(camera_id) ||
       vcd_delegate_map_->Get(camera_id)->HasDeviceClient() == 0) {

@@ -276,11 +276,6 @@ class CAPTURE_EXPORT CameraHalDelegate final
   std::unique_ptr<PowerManagerClientProxy> power_manager_client_proxy_;
 
   scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner_;
-
-  // The sequence used to communicate with VCD factory.
-  // Now it is used to handle the life of VCD delegates after CameraHalDelegate
-  // is destroyed.
-  scoped_refptr<base::SequencedTaskRunner> vcd_task_runner_;
 };
 
 }  // namespace media
