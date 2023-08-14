@@ -199,13 +199,11 @@ ExtensionTelemetryService::~ExtensionTelemetryService() = default;
 
 ExtensionTelemetryService::ExtensionTelemetryService(
     Profile* profile,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    extensions::ExtensionRegistry* extension_registry,
-    extensions::ExtensionPrefs* extension_prefs)
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : profile_(profile),
       url_loader_factory_(url_loader_factory),
-      extension_registry_(extension_registry),
-      extension_prefs_(extension_prefs),
+      extension_registry_(extensions::ExtensionRegistry::Get(profile)),
+      extension_prefs_(extensions::ExtensionPrefs::Get(profile)),
       enabled_(false),
       current_reporting_interval_(
           base::Seconds(kExtensionTelemetryUploadIntervalSeconds.Get())) {
