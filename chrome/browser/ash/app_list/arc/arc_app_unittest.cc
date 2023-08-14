@@ -39,7 +39,6 @@
 #include "chrome/browser/apps/app_service/app_icon/app_icon_decoder.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_util.h"
-#include "chrome/browser/apps/app_service/app_icon/arc_icon_once_loader.h"
 #include "chrome/browser/apps/app_service/app_icon/dip_px_util.h"
 #include "chrome/browser/apps/app_service/app_icon/icon_effects.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -1173,13 +1172,6 @@ class ArcAppModelIconTest : public ArcAppModelBuilderRecreate,
   }
 
   void RemoveAppsFromIconLoader(std::vector<std::string>& app_ids) {
-    apps::ArcIconOnceLoader& arc_icon_once_loader =
-        apps::ArcAppsFactory::GetForProfile(profile())
-            ->GetArcIconOnceLoaderForTesting();
-    for (const auto& app_id : app_ids) {
-      arc_icon_once_loader.OnAppRemoved(app_id);
-    }
-
     // Update the icon key to fetch the new icon and avoid icon catch,
     apps_util::IncrementingIconKeyFactory icon_key_factory;
     std::vector<apps::AppPtr> apps;
@@ -1194,15 +1186,6 @@ class ArcAppModelIconTest : public ArcAppModelBuilderRecreate,
     apps::AppServiceProxyFactory::GetForProfile(profile())->OnApps(
         std::move(apps), apps::AppType::kArc,
         false /* should_notify_initialized */);
-  }
-
-  // Set FakeArcAppIconFactory to use FakeArcAppIcon for Arc app icon loading to
-  // calculate the arc app icon requests number.
-  void SetFakeArcAppIconFactory() {
-    apps::ArcAppsFactory::GetForProfile(profile())
-        ->GetArcIconOnceLoaderForTesting()
-        .SetArcAppIconFactoryForTesting(std::make_unique<FakeArcAppIconFactory>(
-            arc_app_icon_requests_, max_arc_app_icon_request_count_));
   }
 
   arc::mojom::AppInfoPtr test_app() const { return fake_apps()[0]->Clone(); }
@@ -2859,8 +2842,6 @@ TEST_P(ArcAppModelIconTest, LoadManyIcons) {
   ArcAppListPrefs* prefs = ArcAppListPrefs::Get(profile_.get());
   ASSERT_NE(nullptr, prefs);
 
-  SetFakeArcAppIconFactory();
-
   int app_count = 500;
   std::vector<std::string> app_ids;
   CreateFakeApps(app_count, app_ids);
@@ -2881,8 +2862,6 @@ TEST_P(ArcAppModelIconTest, LoadManyIconsWithSomeBadIcons) {
 
   ArcAppListPrefs* prefs = ArcAppListPrefs::Get(profile_.get());
   ASSERT_NE(nullptr, prefs);
-
-  SetFakeArcAppIconFactory();
 
   int app_count = 500;
   std::vector<std::string> app_ids;

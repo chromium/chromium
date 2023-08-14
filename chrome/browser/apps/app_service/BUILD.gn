@@ -125,8 +125,6 @@ source_set("app_service") {
       "app_icon/app_icon_writer.h",
       "app_icon/arc_activity_adaptive_icon_impl.cc",
       "app_icon/arc_activity_adaptive_icon_impl.h",
-      "app_icon/arc_icon_once_loader.cc",
-      "app_icon/arc_icon_once_loader.h",
       "app_service_proxy_ash.cc",
       "app_service_proxy_ash.h",
       "app_shortcut_item.cc",

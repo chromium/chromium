@@ -538,9 +538,7 @@ ArcApps* ArcApps::Get(Profile* profile) {
 }
 
 ArcApps::ArcApps(AppServiceProxy* proxy)
-    : AppPublisher(proxy),
-      profile_(proxy->profile()),
-      arc_icon_once_loader_(profile_) {}
+    : AppPublisher(proxy), profile_(proxy->profile()) {}
 
 ArcApps::~ArcApps() {
   proxy()->UnregisterPublisher(AppType::kArc);
@@ -610,7 +608,6 @@ void ArcApps::Shutdown() {
   if (prefs) {
     prefs->RemoveObserver(this);
   }
-  arc_icon_once_loader_.StopObserving(prefs);
 
   auto* intent_helper_bridge =
       arc::ArcIntentHelperBridge::GetForBrowserContext(profile_);

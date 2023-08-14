@@ -24,7 +24,6 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_icon/arc_activity_adaptive_icon_impl.h"
-#include "chrome/browser/apps/app_service/app_icon/arc_icon_once_loader.h"
 #include "chrome/browser/apps/app_service/app_icon/icon_key_util.h"
 #include "chrome/browser/apps/app_service/app_notifications.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
@@ -73,10 +72,6 @@ class ArcApps : public KeyedService,
   ArcApps& operator=(const ArcApps&) = delete;
 
   ~ArcApps() override;
-
-  ArcIconOnceLoader& GetArcIconOnceLoaderForTesting() {
-    return arc_icon_once_loader_;
-  }
 
   WebApkManager* GetWebApkManagerForTesting() { return web_apk_manager_.get(); }
 
@@ -222,7 +217,6 @@ class ArcApps : public KeyedService,
       std::unique_ptr<apps::AppShortcutItems> app_shortcut_items);
 
   const raw_ptr<Profile, ExperimentalAsh> profile_;
-  ArcIconOnceLoader arc_icon_once_loader_;
   ArcActivityAdaptiveIconImpl arc_activity_adaptive_icon_impl_;
 
   apps_util::IncrementingIconKeyFactory icon_key_factory_;
