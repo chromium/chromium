@@ -1204,8 +1204,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.Shelf.DragInfo" enum="Download.DragInfo"
-    expires_after="2023-10-22">
-  <owner>thefrog@chromium.org</owner>
+    expires_after="2023-11-22">
+  <owner>chlily@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     This tracks drag events on a complete download on the shelf, and also
@@ -1214,8 +1214,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.Shelf.VisibleTime" units="ms"
-    expires_after="2023-08-20">
-  <owner>xinghuilu@chromium.org</owner>
+    expires_after="2023-11-20">
+  <owner>chlily@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     The time that the download shelf was visible until it was closed. This
@@ -1226,7 +1226,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Download.ShelfContextMenuAction"
     enum="DownloadShelfContextMenuAction" expires_after="2023-12-24">
-  <owner>xinghuilu@chromium.org</owner>
+  <owner>chlily@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     This histogram is used to record the different actions and events associated
