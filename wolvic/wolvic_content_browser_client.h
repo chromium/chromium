@@ -42,6 +42,10 @@ class WolvicContentBrowserClient : public ContentBrowserClient {
 #endif
   void AppendExtraCommandLineSwitches(base::CommandLine* command_line,
                                       int child_process_id) override;
+  std::vector<std::unique_ptr<content::URLLoaderRequestInterceptor>>
+  WillCreateURLLoaderRequestInterceptors(
+      content::NavigationUIData* navigation_ui_data,
+      int frame_tree_node_id) override;
 
  private:
   raw_ptr<WolvicMainParts> browser_main_parts_;
