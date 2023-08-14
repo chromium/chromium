@@ -70,3 +70,20 @@ source_set("unit_tests") {
   ]
   frameworks = [ "CoreGraphics.framework" ]
 }
+
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [ "bubble_presenter_egtest.mm" ]
+  deps = [
+    "//base",
+    "//components/feature_engagement/public",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/test:eg_test_support+eg2",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//net:test_support",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
