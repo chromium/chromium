@@ -1436,16 +1436,16 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     // A config that allows a user education bubble to be shown for the bottom
     // toolbar. After the promo manager dismisses What's New promo, the user
     // education bubble will be shown once. This can only occur once every a
-    // year.
+    // month.
 
     absl::optional<FeatureConfig> config = FeatureConfig();
     config->valid = true;
     config->availability = Comparator(ANY, 0);
-    config->session_rate = Comparator(EQUAL, 0);
+    config->session_rate = Comparator(ANY, 0);
     config->trigger =
-        EventConfig("whats_new_trigger", Comparator(EQUAL, 0), 360, 360);
+        EventConfig("whats_new_trigger", Comparator(LESS_THAN, 1), 30, 360);
     config->used =
-        EventConfig("whats_new_used", Comparator(EQUAL, 0), 360, 360);
+        EventConfig("whats_new_used", Comparator(LESS_THAN, 1), 30, 360);
     return config;
   }
 
