@@ -328,7 +328,7 @@ suite('LensUploadDialogTest', () => {
   test('drop event should submit files', async () => {
     // Arrange.
     let submitFileListCalled = false;
-    uploadDialog.$.lensForm.submitFileList = (_fileList: FileList) => {
+    uploadDialog.$.lensForm.submitFileList = async (_fileList: FileList) => {
       submitFileListCalled = true;
     };
     // Act.

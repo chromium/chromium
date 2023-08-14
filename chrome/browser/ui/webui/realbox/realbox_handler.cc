@@ -582,6 +582,9 @@ void RealboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source,
       base::FeatureList::IsEnabled(ntp_features::kNtpRealboxLensSearch) &&
           profile->GetPrefs()->GetBoolean(prefs::kLensDesktopNTPSearchEnabled));
   source->AddString("realboxLensVariations", GetBase64UrlVariations(profile));
+  source->AddBoolean(
+      "realboxLensDirectUpload",
+      base::FeatureList::IsEnabled(ntp_features::kNtpLensDirectUpload));
 }
 
 // static
