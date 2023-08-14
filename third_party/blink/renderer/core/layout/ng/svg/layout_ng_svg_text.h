@@ -40,6 +40,9 @@ class LayoutNGSVGText final : public LayoutNGBlockFlowMixin<LayoutSVGBlock> {
  private:
   // LayoutObject override:
   void UpdateLayout() override;
+  // Update LayoutObject state after layout has completed. Returns true if
+  // boundaries needs to be propagated (because of a change to the transform).
+  bool UpdateAfterSvgLayout(bool bounds_changed);
   const char* GetName() const override;
   bool IsOfType(LayoutObjectType type) const override;
   bool IsChildAllowed(LayoutObject* child, const ComputedStyle&) const override;

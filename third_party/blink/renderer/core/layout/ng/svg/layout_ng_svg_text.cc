@@ -234,7 +234,7 @@ void LayoutNGSVGText::UpdateLayout() {
     needs_text_metrics_update_ = false;
   }
 
-  gfx::RectF old_boundaries = ObjectBoundingBox();
+  const gfx::RectF old_boundaries = ObjectBoundingBox();
 
   const ComputedStyle& style = StyleRef();
   NGConstraintSpaceBuilder builder(
@@ -245,8 +245,23 @@ void LayoutNGSVGText::UpdateLayout() {
 
   needs_update_bounding_box_ = true;
 
-  gfx::RectF boundaries = ObjectBoundingBox();
+  const gfx::RectF boundaries = ObjectBoundingBox();
   const bool bounds_changed = old_boundaries != boundaries;
+  bool update_parent_boundaries = false;
+  if (bounds_changed) {
+    update_parent_boundaries = true;
+  }
+  if (UpdateAfterSvgLayout(bounds_changed)) {
+    update_parent_boundaries = true;
+  }
+
+  // If our bounds changed, notify the parents.
+  if (update_parent_boundaries) {
+    SetNeedsBoundariesUpdate();
+  }
+}
+
+bool LayoutNGSVGText::UpdateAfterSvgLayout(bool bounds_changed) {
   if (bounds_changed) {
     // Invalidate all resources of this client if our reference box changed.
     SVGResourceInvalidator resource_invalidator(*this);
@@ -254,11 +269,8 @@ void LayoutNGSVGText::UpdateLayout() {
     resource_invalidator.InvalidatePaints();
   }
 
-  // If our bounds changed, notify the parents.
-  if (UpdateTransformAfterLayout(bounds_changed) || bounds_changed)
-    SetNeedsBoundariesUpdate();
-
   UpdateTransformAffectsVectorEffect();
+  return UpdateTransformAfterLayout(bounds_changed);
 }
 
 bool LayoutNGSVGText::IsObjectBoundingBoxValid() const {

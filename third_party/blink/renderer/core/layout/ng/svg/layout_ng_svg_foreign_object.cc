@@ -110,7 +110,7 @@ void LayoutNGSVGForeignObject::UpdateLayout() {
   // will not care about (reach) this value.
   UpdateTransformBeforeLayout();
 
-  PhysicalRect old_frame_rect(PhysicalLocation(), Size());
+  const PhysicalRect old_frame_rect(PhysicalLocation(), Size());
 
   // Resolve the viewport in the local coordinate space - this does not include
   // zoom.
@@ -152,22 +152,31 @@ void LayoutNGSVGForeignObject::UpdateLayout() {
   NGBlockNode(this).Layout(builder.ToConstraintSpace());
 
   DCHECK(!NeedsLayout() || ChildLayoutBlockedByDisplayLock());
-  const bool bounds_changed =
-      old_frame_rect != PhysicalRect(PhysicalLocation(), Size());
 
-  // Invalidate all resources of this client if our reference box changed.
-  if (EverHadLayout() && bounds_changed)
-    SVGResourceInvalidator(*this).InvalidateEffects();
-
-  bool update_parent_boundaries = bounds_changed;
-  if (UpdateTransformAfterLayout(bounds_changed))
+  const PhysicalRect frame_rect(PhysicalLocation(), Size());
+  const bool bounds_changed = old_frame_rect != frame_rect;
+  bool update_parent_boundaries = false;
+  if (bounds_changed) {
     update_parent_boundaries = true;
+  }
+  if (UpdateAfterSvgLayout(bounds_changed)) {
+    update_parent_boundaries = true;
+  }
 
   // Notify ancestor about our bounds changing.
-  if (update_parent_boundaries)
+  if (update_parent_boundaries) {
     LayoutSVGBlock::SetNeedsBoundariesUpdate();
+  }
 
   DCHECK(!needs_transform_update_);
+}
+
+bool LayoutNGSVGForeignObject::UpdateAfterSvgLayout(bool bounds_changed) {
+  // Invalidate all resources of this client if our reference box changed.
+  if (EverHadLayout() && bounds_changed) {
+    SVGResourceInvalidator(*this).InvalidateEffects();
+  }
+  return UpdateTransformAfterLayout(bounds_changed);
 }
 
 void LayoutNGSVGForeignObject::StyleDidChange(StyleDifference diff,

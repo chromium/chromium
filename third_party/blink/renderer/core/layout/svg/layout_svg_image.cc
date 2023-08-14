@@ -166,6 +166,28 @@ void LayoutSVGImage::UpdateLayout() {
   DCHECK(NeedsLayout());
 
   const bool bbox_changed = UpdateBoundingBox();
+  bool update_parent_boundaries = false;
+  if (bbox_changed) {
+    update_parent_boundaries = true;
+  }
+  if (UpdateAfterLayout(bbox_changed)) {
+    update_parent_boundaries = true;
+  }
+
+  // If our bounds changed, notify the parents.
+  if (update_parent_boundaries) {
+    LayoutSVGModelObject::SetNeedsBoundariesUpdate();
+  }
+
+  DCHECK(!needs_transform_update_);
+  ClearNeedsLayout();
+}
+
+bool LayoutSVGImage::UpdateAfterLayout(bool bbox_changed) {
+  if (auto* svg_image_element = DynamicTo<SVGImageElement>(GetElement())) {
+    media_element_parser_helpers::CheckUnsizedMediaViolation(
+        this, svg_image_element->IsDefaultIntrinsicSize());
+  }
   if (bbox_changed) {
     SetShouldDoFullPaintInvalidation(PaintInvalidationReason::kSVGResource);
 
@@ -173,32 +195,18 @@ void LayoutSVGImage::UpdateLayout() {
     if (EverHadLayout())
       SVGResourceInvalidator(*this).InvalidateEffects();
   }
-
   if (!needs_transform_update_ && transform_uses_reference_box_) {
     needs_transform_update_ = CheckForImplicitTransformChange(bbox_changed);
     if (needs_transform_update_)
       SetNeedsPaintPropertyUpdate();
   }
-
-  bool update_parent_boundaries = bbox_changed;
   if (needs_transform_update_) {
     local_transform_ =
         TransformHelper::ComputeTransformIncludingMotion(*GetElement());
     needs_transform_update_ = false;
-    update_parent_boundaries = true;
+    return true;
   }
-
-  // If our bounds changed, notify the parents.
-  if (update_parent_boundaries)
-    LayoutSVGModelObject::SetNeedsBoundariesUpdate();
-
-  DCHECK(!needs_transform_update_);
-
-  if (auto* svg_image_element = DynamicTo<SVGImageElement>(GetElement())) {
-    media_element_parser_helpers::CheckUnsizedMediaViolation(
-        this, svg_image_element->IsDefaultIntrinsicSize());
-  }
-  ClearNeedsLayout();
+  return false;
 }
 
 void LayoutSVGImage::Paint(const PaintInfo& paint_info) const {

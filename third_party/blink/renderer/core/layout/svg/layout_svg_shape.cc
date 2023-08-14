@@ -344,43 +344,50 @@ void LayoutSVGShape::UpdateLayout() {
       HasNonScalingStroke()) {
     gfx::RectF old_object_bounding_box = ObjectBoundingBox();
     UpdateShapeFromElement();
-    if (old_object_bounding_box != ObjectBoundingBox()) {
-      SetShouldDoFullPaintInvalidation();
-      bbox_changed = true;
-    }
+    bbox_changed = old_object_bounding_box != ObjectBoundingBox();
     needs_shape_update_ = false;
     needs_boundaries_update_ = false;
     update_parent_boundaries = true;
   }
 
-  // Invalidate all resources of this client if our reference box changed.
-  if (EverHadLayout() && bbox_changed) {
-    SVGResourceInvalidator resource_invalidator(*this);
-    resource_invalidator.InvalidateEffects();
-    resource_invalidator.InvalidatePaints();
-  }
-
-  if (!needs_transform_update_ && transform_uses_reference_box_) {
-    needs_transform_update_ = CheckForImplicitTransformChange(bbox_changed);
-    if (needs_transform_update_)
-      SetNeedsPaintPropertyUpdate();
-  }
-
-  if (needs_transform_update_) {
-    local_transform_ =
-        TransformHelper::ComputeTransformIncludingMotion(*GetElement());
-    needs_transform_update_ = false;
+  if (UpdateAfterLayout(bbox_changed)) {
     update_parent_boundaries = true;
   }
 
   // If our bounds changed, notify the parents.
-  if (update_parent_boundaries)
+  if (update_parent_boundaries) {
     LayoutSVGModelObject::SetNeedsBoundariesUpdate();
+  }
 
   DCHECK(!needs_shape_update_);
   DCHECK(!needs_boundaries_update_);
   DCHECK(!needs_transform_update_);
   ClearNeedsLayout();
+}
+
+bool LayoutSVGShape::UpdateAfterLayout(bool bbox_changed) {
+  if (bbox_changed) {
+    SetShouldDoFullPaintInvalidation();
+
+    // Invalidate all resources of this client if our reference box changed.
+    if (EverHadLayout()) {
+      SVGResourceInvalidator resource_invalidator(*this);
+      resource_invalidator.InvalidateEffects();
+      resource_invalidator.InvalidatePaints();
+    }
+  }
+  if (!needs_transform_update_ && transform_uses_reference_box_) {
+    needs_transform_update_ = CheckForImplicitTransformChange(bbox_changed);
+    if (needs_transform_update_)
+      SetNeedsPaintPropertyUpdate();
+  }
+  if (needs_transform_update_) {
+    local_transform_ =
+        TransformHelper::ComputeTransformIncludingMotion(*GetElement());
+    needs_transform_update_ = false;
+    return true;
+  }
+  return false;
 }
 
 AffineTransform LayoutSVGShape::ComputeRootTransform() const {

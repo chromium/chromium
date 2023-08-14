@@ -102,6 +102,10 @@ class LayoutSVGContainer : public LayoutSVGModelObject {
            LayoutSVGModelObject::IsOfType(type);
   }
   void UpdateLayout() override;
+  // Update LayoutObject state after layout has completed. Returns true if
+  // boundaries needs to be propagated (because of a change to the transform).
+  bool UpdateAfterLayout(SVGTransformChange transform_change,
+                         bool bbox_changed);
 
   void SetTransformUsesReferenceBox(bool transform_uses_reference_box) {
     NOT_DESTROYED();
