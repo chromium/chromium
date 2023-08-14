@@ -515,6 +515,9 @@ struct ServerCvc {
 //                      from a structured subcomponent, or if the value was
 //                      observed in a form submission, or even validated by the
 //                      user in the settings.
+//  observations        An encoding of the observations stored for this `type`.
+//                      See `ProfileTokenConfidence::
+//                      SerializeObservationsForStoredType()`.
 //
 // virtual_card_usage_data
 //                      Contains data related to retrieval attempts of a virtual
@@ -898,6 +901,7 @@ class AutofillTable : public WebDatabaseTable,
   bool MigrateToVersion114DropLegacyAddressTables();
   bool MigrateToVersion115EncryptIbanValue();
   bool MigrateToVersion116AddStoredCvcTable();
+  bool MigrateToVersion117AddProfileObservationColumn();
 
   // Max data length saved in the table, AKA the maximum length allowed for
   // form data.

@@ -31,6 +31,8 @@
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/credit_card_cloud_token_data.h"
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
+#include "components/autofill/core/browser/profile_token_quality.h"
+#include "components/autofill/core/browser/profile_token_quality_test_api.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/browser/webdata/autofill_change.h"
 #include "components/autofill/core/browser/webdata/autofill_entry.h"
@@ -1066,6 +1068,42 @@ TEST_P(AutofillTableProfileTest, RemoveAllAutofillProfiles) {
           : AutofillProfile::Source::kAccount;
   ASSERT_TRUE(table_->GetAutofillProfiles(other_source, &profiles));
   EXPECT_EQ(profiles.size(), 1u);
+}
+
+// Tests that `ProfileTokenQuality` observations are read and written.
+TEST_P(AutofillTableProfileTest, ProfileTokenQuality) {
+  AutofillProfile profile = CreateAutofillProfile();
+  test_api(profile.token_quality())
+      .AddObservation(NAME_FIRST,
+                      ProfileTokenQuality::ObservationType::kAccepted,
+                      ProfileTokenQualityTestApi::FormSignatureHash(12));
+
+  // Add
+  table_->AddAutofillProfile(profile);
+  profile = *table_->GetAutofillProfile(profile.guid(), profile.source());
+  EXPECT_THAT(
+      profile.token_quality().GetObservationTypesForFieldType(NAME_FIRST),
+      UnorderedElementsAre(ProfileTokenQuality::ObservationType::kAccepted));
+  EXPECT_THAT(
+      test_api(profile.token_quality()).GetHashesForStoredType(NAME_FIRST),
+      UnorderedElementsAre(ProfileTokenQualityTestApi::FormSignatureHash(12)));
+
+  // Update
+  test_api(profile.token_quality())
+      .AddObservation(NAME_FIRST,
+                      ProfileTokenQuality::ObservationType::kEditedFallback,
+                      ProfileTokenQualityTestApi::FormSignatureHash(21));
+  table_->UpdateAutofillProfile(profile);
+  profile = *table_->GetAutofillProfile(profile.guid(), profile.source());
+  EXPECT_THAT(
+      profile.token_quality().GetObservationTypesForFieldType(NAME_FIRST),
+      UnorderedElementsAre(
+          ProfileTokenQuality::ObservationType::kAccepted,
+          ProfileTokenQuality::ObservationType::kEditedFallback));
+  EXPECT_THAT(
+      test_api(profile.token_quality()).GetHashesForStoredType(NAME_FIRST),
+      UnorderedElementsAre(ProfileTokenQualityTestApi::FormSignatureHash(12),
+                           ProfileTokenQualityTestApi::FormSignatureHash(21)));
 }
 
 TEST_F(AutofillTableTest, Iban) {

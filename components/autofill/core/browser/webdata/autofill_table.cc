@@ -307,6 +307,7 @@ constexpr std::string_view kLocalAddressesTypeTokensTable =
 constexpr std::string_view kType = "type";
 // kValue = "value"
 constexpr std::string_view kVerificationStatus = "verification_status";
+constexpr std::string_view kObservations = "observations";
 
 constexpr std::string_view kVirtualCardUsageDataTable =
     "virtual_card_usage_data";
@@ -1044,11 +1045,13 @@ bool AddAutofillProfileToTable(sql::Database* db,
       continue;
     }
     InsertBuilder(db, s, GetProfileTypeTokensTable(profile.source()),
-                  {kGuid, kType, kValue, kVerificationStatus});
+                  {kGuid, kType, kValue, kVerificationStatus, kObservations});
     s.BindString(0, profile.guid());
     s.BindInt(1, type);
     s.BindString16(2, Truncate(profile.GetRawInfo(type)));
     s.BindInt(3, profile.GetVerificationStatusInt(type));
+    s.BindBlob(
+        4, profile.token_quality().SerializeObservationsForStoredType(type));
     if (!s.Run())
       return false;
   }
@@ -1276,6 +1279,9 @@ bool AutofillTable::MigrateToVersion(int version,
     case 116:
       *update_compatible_version = false;
       return MigrateToVersion116AddStoredCvcTable();
+    case 117:
+      *update_compatible_version = false;
+      return MigrateToVersion117AddProfileObservationColumn();
   }
   return true;
 }
@@ -1688,7 +1694,8 @@ std::unique_ptr<AutofillProfile> AutofillTable::GetAutofillProfile(
   profile->set_last_modifier_id(s.ColumnInt(index++));
 
   if (!SelectByGuid(db_, s, GetProfileTypeTokensTable(profile_source),
-                    {kType, kValue, kVerificationStatus}, guid)) {
+                    {kType, kValue, kVerificationStatus, kObservations},
+                    guid)) {
     return nullptr;
   }
   // As `SelectByGuid()` already calls `s.Step()`, do-while is used here.
@@ -1697,6 +1704,8 @@ std::unique_ptr<AutofillProfile> AutofillTable::GetAutofillProfile(
     DCHECK(type != UNKNOWN_TYPE);
     profile->SetRawInfoWithVerificationStatusInt(type, s.ColumnString16(1),
                                                  s.ColumnInt(2));
+    profile->token_quality().LoadSerializedObservationsForStoredType(
+        type, s.ColumnBlob(3));
   } while (s.Step());
 
   profile->FinalizeAfterImport();
@@ -3500,6 +3509,15 @@ bool AutofillTable::MigrateToVersion116AddStoredCvcTable() {
          transaction.Commit();
 }
 
+bool AutofillTable::MigrateToVersion117AddProfileObservationColumn() {
+  sql::Transaction transaction(db_);
+  return transaction.Begin() &&
+         AddColumn(db_, kContactInfoTypeTokensTable, kObservations, "BLOB") &&
+         AddColumn(db_, kLocalAddressesTypeTokensTable, kObservations,
+                   "BLOB") &&
+         transaction.Commit();
+}
+
 bool AutofillTable::AddFormFieldValuesTime(
     const std::vector<FormFieldData>& elements,
     std::vector<AutofillChange>* changes,
@@ -4030,7 +4048,8 @@ bool AutofillTable::InitProfileTypeTokensTable(AutofillProfile::Source source) {
                                 {{kGuid, "VARCHAR"},
                                  {kType, "INTEGER"},
                                  {kValue, "VARCHAR"},
-                                 {kVerificationStatus, "INTEGER DEFAULT 0"}},
+                                 {kVerificationStatus, "INTEGER DEFAULT 0"},
+                                 {kObservations, "BLOB"}},
                                 /*composite_primary_key=*/{kGuid, kType});
 }
 

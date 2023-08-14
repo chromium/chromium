@@ -355,6 +355,36 @@ ObservationType ProfileTokenQuality::GetObservationTypeFromField(
                                           other_profiles, app_locale);
 }
 
+std::vector<uint8_t> ProfileTokenQuality::SerializeObservationsForStoredType(
+    ServerFieldType type) const {
+  CHECK(IsStoredType(type));
+  std::vector<uint8_t> serialized_data;
+  if (auto it = observations_.find(type); it != observations_.end()) {
+    for (const Observation& observation : it->second) {
+      serialized_data.push_back(static_cast<uint8_t>(observation.type));
+      serialized_data.push_back(observation.form_hash.value());
+    }
+  }
+  return serialized_data;
+}
+
+void ProfileTokenQuality::LoadSerializedObservationsForStoredType(
+    ServerFieldType type,
+    base::span<const uint8_t> serialized_data) {
+  CHECK(IsStoredType(type));
+  // If the database was modified through external means, the `serialized_data`
+  // might not be valid. In this case, the code won't crash, but it might create
+  // observations with incorrect types.
+  for (size_t i = 0; i + 1 < serialized_data.size(); i += 2) {
+    AddObservation(
+        type,
+        Observation{.type = static_cast<ObservationType>(std::min(
+                        serialized_data[i],
+                        static_cast<uint8_t>(ObservationType::kMaxValue))),
+                    .form_hash = FormSignatureHash(serialized_data[i + 1])});
+  }
+}
+
 void ProfileTokenQuality::CopyObservationsForStoredType(
     ServerFieldType type,
     const ProfileTokenQuality& other) {

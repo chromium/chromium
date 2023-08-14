@@ -140,7 +140,7 @@ class WebDatabaseMigrationTest : public testing::Test {
   base::ScopedTempDir temp_dir_;
 };
 
-const int WebDatabaseMigrationTest::kCurrentTestedVersionNumber = 116;
+const int WebDatabaseMigrationTest::kCurrentTestedVersionNumber = 117;
 
 void WebDatabaseMigrationTest::LoadDatabase(
     const base::FilePath::StringType& file) {
@@ -1141,5 +1141,32 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion115ToCurrent) {
     // The stored_cvc tables should exist.
     EXPECT_TRUE(connection.DoesTableExist("local_stored_cvc"));
     EXPECT_TRUE(connection.DoesTableExist("server_stored_cvc"));
+  }
+}
+
+// Tests verifying an observations column is created for the
+// contact_info_type_tokens and local_addresses_type_tokens tables.
+TEST_F(WebDatabaseMigrationTest, MigrateVersion116ToCurrent) {
+  ASSERT_NO_FATAL_FAILURE(LoadDatabase(FILE_PATH_LITERAL("version_116.sql")));
+  {
+    sql::Database connection;
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    ASSERT_TRUE(sql::MetaTable::DoesTableExist(&connection));
+    EXPECT_EQ(116, VersionFromConnection(&connection));
+    EXPECT_FALSE(
+        connection.DoesColumnExist("contact_info_type_tokens", "observations"));
+    EXPECT_FALSE(connection.DoesColumnExist("local_addresses_type_tokens",
+                                            "observations"));
+  }
+  DoMigration();
+  {
+    sql::Database connection;
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    ASSERT_TRUE(sql::MetaTable::DoesTableExist(&connection));
+    EXPECT_EQ(kCurrentTestedVersionNumber, VersionFromConnection(&connection));
+    EXPECT_TRUE(
+        connection.DoesColumnExist("contact_info_type_tokens", "observations"));
+    EXPECT_TRUE(connection.DoesColumnExist("local_addresses_type_tokens",
+                                           "observations"));
   }
 }

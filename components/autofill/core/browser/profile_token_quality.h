@@ -14,6 +14,7 @@
 
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ref.h"
 #include "base/types/strong_alias.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -82,6 +83,7 @@ class ProfileTokenQuality {
     // enum values above. E.g, edited to some completely different value, that
     // doesn't occur in any profile.
     kEditedFallback = 8,
+    kMaxValue = kEditedFallback
   };
 
   // For each stored type, only at most `kMaxObservationsPerToken` observations
@@ -136,6 +138,19 @@ class ProfileTokenQuality {
   // the observations of the corresponding stored type are returned.
   std::vector<ObservationType> GetObservationTypesForFieldType(
       ServerFieldType type) const;
+
+  // Observations are stored together with their stored `type` in the database.
+  // The observations for each stored type are serialized as a sequence of
+  // integers. Each observation is represented using two uint8_ts, where the
+  // first byte represents the `ObservationType` and the second byte the
+  // `FormSignatureHash`.
+  // Changing the encoding requires adding migration logic to `AutofillTable`.
+  // Tested by autofill_table_unittest.cc.
+  std::vector<uint8_t> SerializeObservationsForStoredType(
+      ServerFieldType type) const;
+  void LoadSerializedObservationsForStoredType(
+      ServerFieldType type,
+      base::span<const uint8_t> serialized_data);
 
   void set_profile(AutofillProfile* profile) {
     CHECK(profile);
