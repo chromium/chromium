@@ -54,7 +54,7 @@ bool ShouldPrepareForRecovery(const AccountId& account_id) {
 }
 
 bool ShouldUseReauthEndpoint(const AccountId& account_id) {
-  if (!account_id.is_valid()) {
+  if (account_id.empty()) {
     return false;
   }
   auto* user = user_manager::UserManager::Get()->FindUser(account_id);
@@ -63,7 +63,13 @@ bool ShouldUseReauthEndpoint(const AccountId& account_id) {
   if (user && user->IsChild()) {
     return true;
   }
-  return features::IsGaiaReauthEndpointEnabled();
+  // Use reauth endpoint for potential recovery use cases (exclude cases where
+  // reauth enforced by policy).
+  if (features::IsGaiaReauthEndpointEnabled() &&
+      ShouldPrepareForRecovery(account_id)) {
+    return true;
+  }
+  return false;
 }
 
 }  // namespace

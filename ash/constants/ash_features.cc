@@ -1112,7 +1112,7 @@ BASE_FEATURE(kGlanceablesV2,
 // Enables the Gaia reauth endpoint.
 BASE_FEATURE(kGaiaReauthEndpoint,
              "GaiaReauthEndpoint",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enable the Game Dashboard.
 BASE_FEATURE(kGameDashboard,
