@@ -138,6 +138,8 @@ public class QuickDeleteControllerTest {
             AppMenuTestSupport.callOnItemClick(
                     mActivityTestRule.getAppMenuCoordinator(), R.id.quick_delete_menu_id);
         });
+        onViewWaiting(withId(R.id.quick_delete_spinner))
+                .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
     }
 
     private void resetCookies() throws TimeoutException {
@@ -216,8 +218,8 @@ public class QuickDeleteControllerTest {
         openQuickDeleteDialog();
 
         HistogramWatcher histogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher("Privacy.QuickDelete",
-                                QuickDeleteMetricsDelegate.QuickDeleteAction.DELETE_CLICKED);
+                HistogramWatcher.newSingleRecordWatcher(QuickDeleteMetricsDelegate.HISTOGRAM_NAME,
+                        QuickDeleteMetricsDelegate.QuickDeleteAction.DELETE_CLICKED);
 
         onViewWaiting(withId(R.id.positive_button)).perform(click());
 
@@ -226,12 +228,11 @@ public class QuickDeleteControllerTest {
 
     @Test
     @MediumTest
-    public void testQuickDeleteLast15MinutesHistogram_WhenClickingDelete() throws IOException {
+    public void testQuickDeleteHistogram_WhenClickingDelete() throws IOException {
         openQuickDeleteDialog();
 
-        HistogramWatcher histogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher("Privacy.DeleteBrowsingData.Action",
-                        DeleteBrowsingDataAction.QUICK_DELETE_LAST15_MINUTES);
+        HistogramWatcher histogramWatcher = HistogramWatcher.newSingleRecordWatcher(
+                "Privacy.DeleteBrowsingData.Action", DeleteBrowsingDataAction.QUICK_DELETE);
 
         onViewWaiting(withId(R.id.positive_button)).perform(click());
 
@@ -277,10 +278,24 @@ public class QuickDeleteControllerTest {
         openQuickDeleteDialog();
 
         HistogramWatcher histogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher("Privacy.QuickDelete",
-                                QuickDeleteMetricsDelegate.QuickDeleteAction.CANCEL_CLICKED);
+                HistogramWatcher.newSingleRecordWatcher(QuickDeleteMetricsDelegate.HISTOGRAM_NAME,
+                        QuickDeleteMetricsDelegate.QuickDeleteAction.CANCEL_CLICKED);
 
         onViewWaiting(withId(R.id.negative_button)).perform(click());
+
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    public void testMoreOptionsClickedHistogram_WhenClickingMoreOptions() throws IOException {
+        openQuickDeleteDialog();
+
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(QuickDeleteMetricsDelegate.HISTOGRAM_NAME,
+                        QuickDeleteMetricsDelegate.QuickDeleteAction.MORE_OPTIONS_CLICKED);
+
+        onViewWaiting(withId(R.id.quick_delete_more_options)).perform(click());
 
         histogramWatcher.assertExpected();
     }
@@ -291,9 +306,8 @@ public class QuickDeleteControllerTest {
         openQuickDeleteDialog();
 
         HistogramWatcher histogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher("Privacy.QuickDelete",
-                                QuickDeleteMetricsDelegate.QuickDeleteAction
-                                        .DIALOG_DISMISSED_IMPLICITLY);
+                HistogramWatcher.newSingleRecordWatcher(QuickDeleteMetricsDelegate.HISTOGRAM_NAME,
+                        QuickDeleteMetricsDelegate.QuickDeleteAction.DIALOG_DISMISSED_IMPLICITLY);
 
         // Implicitly dismiss pop up by pressing Clank's back button.
         pressBack();

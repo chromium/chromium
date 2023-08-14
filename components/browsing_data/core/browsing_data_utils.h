@@ -67,7 +67,7 @@ enum class DeleteBrowsingDataAction {
   kCookiesInUseDialog = 3,
   kSitesSettingsPage = 4,
   kHistoryPageEntries = 5,
-  kQuickDeleteLast15Minutes = 6,
+  kQuickDelete = 6,
   kPageInfoResetPermissions = 7,
   kMaxValue = kPageInfoResetPermissions,
 };
