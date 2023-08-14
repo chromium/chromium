@@ -217,6 +217,8 @@ class SyncEngineImplTest : public testing::Test {
     if (expect_success) {
       EXPECT_TRUE(engine_types_.Empty());
       engine_types_ = fake_manager_->GetConnectedTypes();
+      ON_CALL(mock_sync_invalidations_service_, GetInterestedDataTypes)
+          .WillByDefault(Return(engine_types_));
     }
   }
 
@@ -582,8 +584,8 @@ TEST_F(SyncEngineImplTest, ShouldInvalidateOnlyEnabledDataTypes) {
 }
 
 TEST_F(SyncEngineImplTest, ShouldStartHandlingInvalidations) {
-  ON_CALL(mock_sync_invalidations_service_, GetInterestedDataTypes())
-      .WillByDefault(Return(enabled_types_));
+  InitializeBackend(/*expect_success=*/true);
+
   EXPECT_CALL(mock_sync_invalidations_service_, AddListener(backend_.get()));
   backend_->StartHandlingInvalidations();
 }
@@ -598,10 +600,13 @@ TEST_F(SyncEngineImplTest, DoNotUseOldInvalidationsAtAll) {
   ConfigureDataTypes();
 }
 
-TEST_F(SyncEngineImplTest, ShouldEnableInvalidationsWhenInitialized) {
+TEST_F(SyncEngineImplTest, ShouldEnableInvalidationsWhenStartedHandling) {
+  EXPECT_CALL(mock_sync_invalidations_service_, HasListener)
+      .WillRepeatedly(Return(true));
   EXPECT_CALL(mock_sync_invalidations_service_, GetFCMRegistrationToken)
       .WillRepeatedly(Return("fcm_token"));
   InitializeBackend(/*expect_success=*/true);
+  backend_->StartHandlingInvalidations();
   fake_manager_->WaitForSyncThread();
   EXPECT_TRUE(fake_manager_->IsInvalidatorEnabled());
 }
@@ -611,6 +616,11 @@ TEST_F(SyncEngineImplTest, ShouldEnableInvalidationsOnTokenUpdate) {
       .WillRepeatedly(Return(absl::nullopt));
   InitializeBackend(/*expect_success=*/true);
   fake_manager_->WaitForSyncThread();
+
+  // Simulate listening for invalidations but since an FCM token hasn't been
+  // obtained, the invalidator is still disabled.
+  ON_CALL(mock_sync_invalidations_service_, HasListener)
+      .WillByDefault(Return(true));
   EXPECT_FALSE(fake_manager_->IsInvalidatorEnabled());
 
   EXPECT_CALL(mock_sync_invalidations_service_, GetFCMRegistrationToken)

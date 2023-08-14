@@ -104,6 +104,11 @@ void FCMHandler::AddListener(InvalidationsListener* listener) {
   }
 }
 
+bool FCMHandler::HasListener(InvalidationsListener* listener) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return listeners_.HasObserver(listener);
+}
+
 void FCMHandler::RemoveListener(InvalidationsListener* listener) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   listeners_.RemoveObserver(listener);

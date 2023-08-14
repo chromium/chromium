@@ -35,6 +35,12 @@ void SyncInvalidationsServiceImpl::AddListener(
   fcm_handler_->AddListener(listener);
 }
 
+bool SyncInvalidationsServiceImpl::HasListener(
+    InvalidationsListener* listener) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return fcm_handler_->HasListener(listener);
+}
+
 void SyncInvalidationsServiceImpl::RemoveListener(
     InvalidationsListener* listener) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

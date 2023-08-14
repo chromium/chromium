@@ -163,7 +163,10 @@ class SyncEngineImpl : public SyncEngine,
   // upper layers via |sync_transport_data_cleared_cb_|.
   void ClearLocalTransportDataAndNotify();
 
-  // Updates the current state of standalone invalidations.
+  // Updates the current state of standalone invalidations. Note that the
+  // invalidations can be handled even if the invalidation service is not fully
+  // initialized yet (e.g. while processing the incoming queue of messages
+  // received during browser startup).
   void UpdateStandaloneInvalidationsState();
 
   void OnInvalidatorStateChange(invalidation::InvalidatorState state);

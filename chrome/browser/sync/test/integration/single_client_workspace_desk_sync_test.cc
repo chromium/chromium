@@ -29,6 +29,7 @@ using ash::DeskTemplateType;
 using desks_storage::DeskModel;
 using desks_storage::DeskSyncService;
 using sync_pb::WorkspaceDeskSpecifics;
+using testing::Contains;
 
 constexpr char kUuidFormat[] = "9e186d5a-502e-49ce-9ee1-00000000000%d";
 constexpr char kNameFormat[] = "template %d";
@@ -42,6 +43,21 @@ WorkspaceDeskSpecifics CreateWorkspaceDeskSpecifics(int templateIndex,
       created_time.ToDeltaSinceWindowsEpoch().InMicroseconds());
   return specifics;
 }
+
+// Waits for kUpToDate download status for WORKSPACE_DESK data type.
+class DownloadStatusChecker : public SingleClientStatusChangeChecker {
+ public:
+  explicit DownloadStatusChecker(syncer::SyncServiceImpl* sync_service)
+      : SingleClientStatusChangeChecker(sync_service) {}
+  ~DownloadStatusChecker() override = default;
+
+  bool IsExitConditionSatisfied(std::ostream* os) override {
+    *os << "Waiting for download status kUpToDate for WORKSPACE_DESK.";
+
+    return service()->GetDownloadStatusFor(syncer::WORKSPACE_DESK) ==
+           syncer::SyncService::ModelTypeDownloadStatus::kUpToDate;
+  }
+};
 
 class SingleClientWorkspaceDeskSyncTest : public SyncTest {
  public:
@@ -100,6 +116,33 @@ IN_PROC_BROWSER_TEST_F(SingleClientWorkspaceDeskSyncTest,
       workspace_desk_helper::DeskUuidChecker(
           DeskSyncServiceFactory::GetForProfile(GetProfile(0)), kTestUuid1_)
           .Wait());
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientWorkspaceDeskSyncTest,
+                       PRE_DownloadDeskTemplateWhenUpToDate) {
+  ASSERT_TRUE(SetupSync());
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientWorkspaceDeskSyncTest,
+                       DownloadDeskTemplateWhenUpToDate) {
+  // Inject a test desk template to Sync.
+  sync_pb::EntitySpecifics specifics;
+  WorkspaceDeskSpecifics* desk = specifics.mutable_workspace_desk();
+  desk->CopyFrom(CreateWorkspaceDeskSpecifics(1, AdvanceAndGetTime()));
+
+  fake_server_->InjectEntity(
+      syncer::PersistentUniqueClientEntity::CreateFromSpecificsForTesting(
+          "non_unique_name", kTestUuid1_.AsLowercaseString(), specifics,
+          /*creation_time=*/syncer::TimeToProtoTime(AdvanceAndGetTime()),
+          /*last_modified_time=*/syncer::TimeToProtoTime(AdvanceAndGetTime())));
+
+  ASSERT_TRUE(SetupClients());
+  ASSERT_TRUE(DownloadStatusChecker(GetSyncService(0)).Wait());
+
+  // Verify that the update has been actually downloaded.
+  desks_storage::DeskModel* desk_model =
+      DeskSyncServiceFactory::GetForProfile(GetProfile(0))->GetDeskModel();
+  EXPECT_THAT(desk_model->GetAllEntryUuids(), Contains(kTestUuid1_));
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientWorkspaceDeskSyncTest, IsReady) {

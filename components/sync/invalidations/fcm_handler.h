@@ -65,6 +65,9 @@ class FCMHandler : public gcm::GCMAppHandler {
   // previously received messages will be immediately replayed.
   void AddListener(InvalidationsListener* listener);
 
+  // Returns whether `listener` was added before.
+  bool HasListener(InvalidationsListener* listener);
+
   // Removes |listener|, does nothing if it wasn't added before. |listener| must
   // not be nullptr.
   void RemoveListener(InvalidationsListener* listener);
