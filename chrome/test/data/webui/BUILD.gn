@@ -84,6 +84,10 @@ source_set("browser_tests") {
     sources += [ "gaia_auth_host/gaia_auth_host_browsertest.cc" ]
   }
 
+  if (is_win || is_mac || is_linux || is_chromeos) {
+    sources += [ "discards/discards_browsertest.cc" ]
+  }
+
   if (is_win || is_mac || is_linux || is_fuchsia) {
     sources += [ "app_settings/app_settings_browsertest.cc" ]
   }
@@ -301,9 +305,6 @@ if (include_js2gtest_tests) {
     }
     if (!is_chromeos_lacros) {
       sources += [ "bluetooth_internals/bluetooth_internals_browsertest.js" ]
-    }
-    if (is_win || is_mac || is_linux || is_chromeos) {
-      sources += [ "discards/discards_browsertest.js" ]
     }
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
   }
