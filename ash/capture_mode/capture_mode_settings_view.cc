@@ -19,6 +19,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/screen_util.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/icon_button.h"
@@ -47,26 +48,63 @@ constexpr gfx::Size kSettingsSize{266, 248};
 // Returns the bounds of the settings widget in screen coordinates relative to
 // the bounds of the `bar_view` based on its given preferred
 // `settings_size`, which should be centered with respect to the capture
-// bar. Constrains the height of the widget if it is too close to the top of the
-// screen.
+// bar.
+//
+// The bounds priority works as follows:
+// - If there is enough space above the bar view, we will show the menu at its
+//   full height.
+// - Otherwise, we will choose between showing above or below the bar,
+//   whichever has more space. The available space only includes the work area,
+//   as we do not want to show the menu on top of or behind the shelf.
+// - If necessary, we will also constrain the height of the menu, up to
+//   `capture_mode::kSettingsMenuMinHeight`.
 gfx::Rect GetWidgetBounds(CaptureModeBarView* bar_view,
                           const gfx::Size& settings_size) {
   const int width = settings_size.width();
-  int height = settings_size.height();
+  const int pref_height = settings_size.height();
 
-  const int x = bar_view->GetBoundsInScreen().CenterPoint().x() - width / 2.f;
-  const int menu_bottom = bar_view->GetBoundsInScreen().y() -
-                          capture_mode::kSpaceBetweenCaptureBarAndSettingsMenu;
-  int y = menu_bottom - height;
+  const gfx::Rect bar_bounds = bar_view->GetBoundsInScreen();
+  const int x = bar_bounds.CenterPoint().x() - width / 2.f;
+  int menu_bottom =
+      bar_bounds.y() - capture_mode::kSpaceBetweenCaptureBarAndSettingsMenu;
+  int y = menu_bottom - pref_height;
 
-  // Adjust the menu's height to make it scrollable when it reaches the top of
-  // the display.
+  // Showing the menu above the bar at full height is our priority, but this may
+  // change if it is too close to the top of the screen.
   if (y < capture_mode::kMinDistanceFromSettingsToScreen) {
-    y = capture_mode::kMinDistanceFromSettingsToScreen;
-    height = std::max(capture_mode::kSettingsMenuMinHeight, menu_bottom - y);
+    const gfx::Rect work_area =
+        screen_util::GetDisplayWorkAreaBoundsInScreenForActiveDeskContainer(
+            bar_view->GetWidget()->GetNativeWindow());
+    const int available_above = menu_bottom -
+                                capture_mode::kMinDistanceFromSettingsToScreen -
+                                work_area.y();
+    const int available_below =
+        work_area.y() + work_area.height() -
+        capture_mode::kMinDistanceFromSettingsToScreen -
+        capture_mode::kSpaceBetweenCaptureBarAndSettingsMenu - bar_bounds.y() -
+        bar_bounds.height();
+
+    // We want to show the menu on the side of the bar that has more space.
+    if (available_above >= available_below) {
+      y = std::max(
+          bar_bounds.y() -
+              capture_mode::kSpaceBetweenCaptureBarAndSettingsMenu -
+              pref_height,
+          work_area.y() + capture_mode::kMinDistanceFromSettingsToScreen);
+      menu_bottom =
+          bar_bounds.y() - capture_mode::kSpaceBetweenCaptureBarAndSettingsMenu;
+    } else {
+      y = bar_bounds.bottom() +
+          capture_mode::kSpaceBetweenCaptureBarAndSettingsMenu;
+      menu_bottom = std::min(
+          y + pref_height,
+          work_area.bottom() - capture_mode::kMinDistanceFromSettingsToScreen);
+    }
   }
 
-  return gfx::Rect(x, y, width, height);
+  return gfx::Rect(
+      x, y, width,
+      std::max(capture_mode::kSettingsMenuMinHeight, menu_bottom - y));
 }
 
 CaptureModeController::CaptureFolder GetCurrentCaptureFolder() {
