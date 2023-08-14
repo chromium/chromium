@@ -10,7 +10,6 @@
 #include "components/segmentation_platform/internal/data_collection/training_data_cache.h"
 #include "components/segmentation_platform/internal/database/cached_result_provider.h"
 #include "components/segmentation_platform/internal/database/storage_service.h"
-#include "components/segmentation_platform/internal/execution/default_model_manager.h"
 #include "components/segmentation_platform/internal/signals/histogram_signal_handler.h"
 #include "components/segmentation_platform/internal/signals/user_action_signal_handler.h"
 #include "components/segmentation_platform/public/input_context.h"

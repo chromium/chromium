@@ -87,7 +87,8 @@ class TrainingDataCollectorImpl : public TrainingDataCollector,
       const proto::SegmentInfo& segment_info,
       SuccessCallback callback);
 
-  void OnGetSegmentsInfoList(DefaultModelManager::SegmentInfoList segment_list);
+  void OnGetSegmentsInfoList(
+      std::unique_ptr<SegmentInfoDatabase::SegmentInfoList> segment_list);
 
   void ReportForSegmentsInfoList(
       const absl::optional<ImmediateCollectionParam>& param,
@@ -102,7 +103,7 @@ class TrainingDataCollectorImpl : public TrainingDataCollector,
       TrainingRequestId request_id,
       DecisionType type,
       scoped_refptr<InputContext> input_context,
-      DefaultModelManager::SegmentInfoList segment_list);
+      std::unique_ptr<SegmentInfoDatabase::SegmentInfoList> segment_list);
 
   void OnGetTrainingTensorsAtDecisionTime(
       TrainingRequestId request_id,
@@ -173,9 +174,6 @@ class TrainingDataCollectorImpl : public TrainingDataCollector,
 
   // Cache class to temporarily store training data in the observation period.
   std::unique_ptr<TrainingDataCache> training_cache_;
-
-  // Class to get segment info from default models.
-  const raw_ptr<DefaultModelManager, DanglingUntriaged> default_model_manager_;
 
   // Hash of histograms for immediate training data collection. When any
   // histogram hash contained in the map is recorded, a UKM message is reported
