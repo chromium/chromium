@@ -41,6 +41,9 @@ using content::BrowserThread;
 
 namespace drive::util {
 
+using user_manager::User;
+using user_manager::UserManager;
+
 DriveIntegrationService* GetIntegrationServiceByProfile(Profile* profile) {
   DriveIntegrationService* service =
       DriveIntegrationServiceFactory::FindForProfile(profile);
@@ -98,8 +101,7 @@ bool IsDriveAvailableForProfile(const Profile* const profile) {
   if (profile->IsOffTheRecord()) {
     return false;
   }
-  const user_manager::User* user =
-      ash::ProfileHelper::Get()->GetUserByProfile(profile);
+  const User* const user = ash::ProfileHelper::Get()->GetUserByProfile(profile);
   if (!user || !user->HasGaiaAccount()) {
     return false;
   }
@@ -125,29 +127,22 @@ bool IsDriveEnabledForProfile(const Profile* const profile) {
 
 bool IsDriveFsBulkPinningEnabled(const Profile* const profile) {
   DCHECK(profile);
-  bool is_enabled = !profile->GetProfilePolicyConnector()->IsManaged() &&
-                    ash::features::IsDriveFsBulkPinningEnabled();
-
-  user_manager::UserManager* user_manager = user_manager::UserManager::Get();
-  if (!user_manager) {
-    return is_enabled;
+  if (!profile->GetProfilePolicyConnector()->IsManaged()) {
+    return ash::features::IsDriveFsBulkPinningEnabled();
   }
 
-  user_manager::User* user = user_manager->GetActiveUser();
+  // Managed user.
+  const User* const user = UserManager::Get()->GetActiveUser();
   if (!user) {
-    return is_enabled;
+    return false;
   }
 
   // For Googlers, only rely on the feature flag not the feature management
   // flag. This enables dogfooding for Googlers and that the regular feature
-  // flag can be kill switched if needed.
-  // TODO(b/290727126): Update this check in time for M117 branch.
-  if (profile->GetProfilePolicyConnector()->IsManaged() &&
-      gaia::IsGoogleInternalAccountEmail(user->GetAccountId().GetUserEmail())) {
-    return base::FeatureList::IsEnabled(ash::features::kDriveFsBulkPinning);
-  }
-
-  return is_enabled;
+  // flag can be kill-switched if needed.
+  return gaia::IsGoogleInternalAccountEmail(
+             user->GetAccountId().GetUserEmail()) &&
+         base::FeatureList::IsEnabled(ash::features::kDriveFsBulkPinning);
 }
 
 ConnectionStatusType GetDriveConnectionStatus(Profile* profile) {
