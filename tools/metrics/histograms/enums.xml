@@ -101833,6 +101833,17 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="1" label="Suggested app"/>
 </enum>
 
+<enum name="SuggestedTabStripOrganizationReason">
+  <int value="0" label="Manual tab grouping"/>
+  <int value="1" label="Dragged within same tabstrip"/>
+  <int value="2" label="Added to Reading List"/>
+  <int value="3" label="Added to Bookmarks"/>
+  <int value="4" label="Opened link in background"/>
+  <int value="5" label="Same origin navigation"/>
+  <int value="6" label="Session restored"/>
+  <int value="7" label="Resuming from standby"/>
+</enum>
+
 <!--
 These values are based on the server-side type AnswerTriggererKey. Note that not
 all of the types are launched in Chrome but if they're sent erroneously, it
