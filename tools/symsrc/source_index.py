@@ -243,9 +243,6 @@ def ExtractGitInfo(local_filename):
                           cwd=local_file_dir, raise_on_failure=False)
 
   if not file_info:
-    # If this message is being printed then it may be necessary to add a new
-    # entry to tools/symsrc/indexing-exclusions.txt to prevent the expensive
-    # calls from happening.
     print('No results from running git log %s in %s. This can be expensive.' %
           (local_file_basename, local_file_dir))
     return
