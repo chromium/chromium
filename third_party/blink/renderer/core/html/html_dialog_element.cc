@@ -150,7 +150,13 @@ void HTMLDialogElement::close(const String& return_value) {
   bool was_modal = is_modal_;
   SetIsModal(false);
 
-  document.ScheduleForTopLayerRemoval(this, Document::TopLayerReason::kDialog);
+  // If this dialog is open as a non-modal dialog and open as a popover at the
+  // same time, then we shouldn't remove it from the top layer because it is
+  // still open as a popover.
+  if (was_modal) {
+    document.ScheduleForTopLayerRemoval(this,
+                                        Document::TopLayerReason::kDialog);
+  }
   InertSubtreesChanged(document, old_modal_dialog);
 
   if (!return_value.IsNull())
@@ -209,15 +215,6 @@ void HTMLDialogElement::show(ExceptionState& exception_state) {
     if (FastHasAttribute(html_names::kOpenAttr)) {
       return;
     }
-  }
-
-  if (RuntimeEnabledFeatures::HTMLPopoverAttributeEnabled(
-          GetDocument().GetExecutionContext()) &&
-      HasPopoverAttribute() && popoverOpen()) {
-    return exception_state.ThrowDOMException(
-        DOMExceptionCode::kInvalidStateError,
-        "The dialog is already open as a Popover, and therefore cannot be "
-        "opened as a non-modal dialog.");
   }
 
   SetBooleanAttribute(html_names::kOpenAttr, true);

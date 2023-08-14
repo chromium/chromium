@@ -7981,8 +7981,21 @@ void Document::ScheduleForTopLayerRemoval(Element* element,
   if (!element->IsInTopLayer()) {
     return;
   }
-  top_layer_elements_pending_removal_.push_back(
-      MakeGarbageCollected<TopLayerPendingRemoval>(element, reason));
+
+  absl::optional<TopLayerReason> existing_pending_removal = absl::nullopt;
+  for (const auto& pending_removal : top_layer_elements_pending_removal_) {
+    if (pending_removal->element == element) {
+      existing_pending_removal = pending_removal->reason;
+      break;
+    }
+  }
+
+  if (existing_pending_removal) {
+    CHECK_EQ(*existing_pending_removal, reason);
+  } else {
+    top_layer_elements_pending_removal_.push_back(
+        MakeGarbageCollected<TopLayerPendingRemoval>(element, reason));
+  }
   ScheduleLayoutTreeUpdateIfNeeded();
 }
 

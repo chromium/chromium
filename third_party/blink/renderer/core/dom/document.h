@@ -2489,6 +2489,11 @@ class CORE_EXPORT Document : public ContainerNode,
   // removed from top_layer_elements_ when overlay computes to none. Each
   // element also has a "reason" for being in the top layer which corresponds to
   // the API which caused the element to enter the top layer in the first place.
+  // TODO(http://crbug.com/1472330): This data structure is a Vector in order to
+  // preserve ordering, but ideally it would be a map so that we could key into
+  // it with an Element and access the TopLayerReason. However, there is no
+  // ordered map oilpan data structure, so some methods that access this will be
+  // O(n) instead of O(1).
   class TopLayerPendingRemoval
       : public GarbageCollected<TopLayerPendingRemoval> {
    public:

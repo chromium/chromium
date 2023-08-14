@@ -1,8 +1,0 @@
-This is a testharness.js-based test.
-FAIL Popover combination: Popover Dialog promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'show' on 'HTMLDialogElement': The dialog is already open as a Popover, and therefore cannot be opened as a non-modal dialog."
-FAIL Popover combination: Open Non-modal Popover Dialog promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'showPopover' on 'HTMLElement': The dialog is already open as a dialog, and therefore cannot be opened as a popover."
-PASS Popover combination: Fullscreen Popover
-FAIL Popover combination: Fullscreen Popover Dialog promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'show' on 'HTMLDialogElement': The dialog is already open as a Popover, and therefore cannot be opened as a non-modal dialog."
-FAIL Popover combination: Fullscreen Open Non-modal Popover Dialog promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'showPopover' on 'HTMLElement': The dialog is already open as a dialog, and therefore cannot be opened as a popover."
-Harness: the test ran to completion.
-

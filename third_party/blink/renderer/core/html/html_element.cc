@@ -1391,12 +1391,13 @@ bool HTMLElement::IsPopoverReady(PopoverTriggerAction action,
                           "hiding a popover element.");
     return false;
   }
-  if (action == PopoverTriggerAction::kShow && IsA<HTMLDialogElement>(this) &&
-      hasAttribute(html_names::kOpenAttr)) {
-    maybe_throw_exception(DOMExceptionCode::kInvalidStateError,
-                          "The dialog is already open as a dialog, and "
-                          "therefore cannot be opened as a popover.");
-    return false;
+  if (auto* dialog = DynamicTo<HTMLDialogElement>(this)) {
+    if (action == PopoverTriggerAction::kShow && dialog->IsModal()) {
+      maybe_throw_exception(DOMExceptionCode::kInvalidStateError,
+                            "The dialog is already open as a dialog, and "
+                            "therefore cannot be opened as a popover.");
+      return false;
+    }
   }
   if (action == PopoverTriggerAction::kShow &&
       Fullscreen::IsFullscreenElement(*this)) {
