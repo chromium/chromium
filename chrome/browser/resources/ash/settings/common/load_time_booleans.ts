@@ -63,3 +63,12 @@ export function isAccountManagerEnabled(): boolean {
 export function isPowerwashAllowed(): boolean {
   return loadTimeData.getBoolean('allowPowerwash');
 }
+
+// Search page
+export function isAssistantAllowed(): boolean {
+  return loadTimeData.getBoolean('isAssistantAllowed');
+}
+
+export function shouldShowQuickAnswersSettings(): boolean {
+  return loadTimeData.getBoolean('shouldShowQuickAnswersSettings');
+}
