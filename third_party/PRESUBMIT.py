@@ -89,6 +89,9 @@ def CheckThirdPartyReadmesUpdated(input_api, output_api):
   shortname_pattern = input_api.re.compile(
     r'^Short Name: [a-zA-Z0-9_\-\.]+\r?$',
     input_api.re.IGNORECASE | input_api.re.MULTILINE)
+  url_pattern = input_api.re.compile(
+    r'^URL: (.+)\r?$',
+    input_api.re.IGNORECASE | input_api.re.MULTILINE)
   version_pattern = input_api.re.compile(
     r'^Version: [a-zA-Z0-9_\-\+\.:/]+\r?$',
     input_api.re.IGNORECASE | input_api.re.MULTILINE)
@@ -125,6 +128,15 @@ def CheckThirdPartyReadmesUpdated(input_api, output_api):
         'Third party README files should contain either a \'Short Name\' or\n'
         'a \'Name\' which is the name under which the package is\n'
         'distributed. Check README.chromium.template for details.',
+        [f]))
+    if not url_pattern.search(contents):
+      # TODO: This should be changed to `PresubmitError` once all existing
+      # README.chromium files contain a URL field. Until then it needs to be a
+      # warning to not make the linux-presubmit CI job fail.
+      errors.append(output_api.PresubmitPromptWarning(
+        'Third party README files should contain a \'URL\' field.\n'
+        'This field specifies the URL where the package lives. Check\n'
+        'README.chromium.template for details.',
         [f]))
     if not version_pattern.search(contents):
       errors.append(output_api.PresubmitError(
