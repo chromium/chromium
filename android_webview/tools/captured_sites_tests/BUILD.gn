@@ -35,6 +35,7 @@ android_library("webview_captured_sites_app_java") {
 
 android_resources("webview_captured_sites_app_apk_resources") {
   deps = [ "//android_webview/tools/automated_ui_tests:webview_ui_test_app_apk_resources" ]
+  sources = [ "java/res/layout/autofill_dataset_picker_text_only.xml" ]
 }
 
 instrumentation_test_apk("webview_captured_sites_test_apk") {
@@ -42,6 +43,7 @@ instrumentation_test_apk("webview_captured_sites_test_apk") {
   apk_under_test = ":webview_captured_sites_app_apk"
   android_manifest = "javatests/AndroidManifest.xml"
   sources = [
+    "javatests/src/org/chromium/webview_ui_test/test/TestAutofillService.java",
     "javatests/src/org/chromium/webview_ui_test/test/util/CapturedSitesSyncWrapper.java",
     "javatests/src/org/chromium/webview_ui_test/test/util/CapturedSitesTestRule.java",
   ]
@@ -52,6 +54,7 @@ instrumentation_test_apk("webview_captured_sites_test_apk") {
     "//base:base_java_test_support",
     "//third_party/android_deps:espresso_java",
     "//third_party/android_sdk:android_test_base_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_test_monitor_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/androidx:androidx_test_uiautomator_uiautomator_java",
