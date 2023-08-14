@@ -47,6 +47,7 @@ class DOMTask final : public GarbageCollected<DOMTask> {
   // catching any errors and retrieving the result.
   void InvokeInternal(ScriptState*);
   void OnAbort();
+  void RemoveAbortAlgorithm();
 
   TaskHandle task_handle_;
   Member<V8SchedulerPostTaskCallback> callback_;

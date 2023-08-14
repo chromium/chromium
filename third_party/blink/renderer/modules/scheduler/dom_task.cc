@@ -141,8 +141,10 @@ void DOMTask::Invoke() {
   // ExecutionContext is detached. Note that this context can be different
   // from the the callback's relevant context.
   ExecutionContext* scheduler_context = resolver_->GetExecutionContext();
-  if (!scheduler_context || scheduler_context->IsContextDestroyed())
+  if (!scheduler_context || scheduler_context->IsContextDestroyed()) {
+    RemoveAbortAlgorithm();
     return;
+  }
 
   ScriptState* script_state =
       callback_->CallbackRelevantScriptStateOrReportError("DOMTask", "Invoke");
@@ -158,10 +160,12 @@ void DOMTask::Invoke() {
     // up the ScriptPromiseResolver since it is associated with a different
     // context.
     resolver_->Detach();
+    RemoveAbortAlgorithm();
     return;
   }
 
   InvokeInternal(script_state);
+  RemoveAbortAlgorithm();
   callback_.Release();
 }
 
@@ -237,6 +241,13 @@ void DOMTask::OnAbort() {
       ToV8Traits<IDLAny>::ToV8(resolver_script_state,
                                signal_->reason(resolver_script_state))
           .ToLocalChecked());
+}
+
+void DOMTask::RemoveAbortAlgorithm() {
+  if (abort_handle_) {
+    signal_->RemoveAlgorithm(abort_handle_);
+    abort_handle_ = nullptr;
+  }
 }
 
 }  // namespace blink
