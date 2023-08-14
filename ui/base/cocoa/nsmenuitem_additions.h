@@ -16,6 +16,14 @@
 // menu item to fire.
 - (BOOL)cr_firesForKeyEquivalentEvent:(NSEvent*)event;
 
+// Convenience method for setting a menu item's key equivalent.
+- (void)cr_setKeyEquivalent:(NSString*)aString
+               modifierMask:(NSEventModifierFlags)mask;
+
+// Convenience method for clearing a menu item's key equivalent. After calling,
+// the item has no keyEquivalent string or mask.
+- (void)cr_clearKeyEquivalent;
+
 @end
 
 namespace ui::cocoa {

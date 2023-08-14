@@ -278,4 +278,16 @@ NSUInteger ModifierMaskForKeyEvent(NSEvent* event) {
          eventModifiers == self.keyEquivalentModifierMask;
 }
 
+- (void)cr_setKeyEquivalent:(NSString*)aString
+               modifierMask:(NSEventModifierFlags)mask {
+  DCHECK(aString);
+  self.keyEquivalent = aString;
+  self.keyEquivalentModifierMask = mask;
+}
+
+- (void)cr_clearKeyEquivalent {
+  self.keyEquivalent = @"";
+  self.keyEquivalentModifierMask = 0;
+}
+
 @end

@@ -119,6 +119,7 @@
 #include "net/base/filename_util.h"
 #include "net/base/mac/url_conversions.h"
 #import "ui/base/cocoa/nsmenu_additions.h"
+#import "ui/base/cocoa/nsmenuitem_additions.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 #include "ui/color/color_provider.h"
@@ -605,8 +606,8 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
   // Outlets for the close tab/window menu items so that we can adjust the
   // command-key equivalent depending on the kind of window and how many
   // tabs it has.
-  NSMenuItem* __strong _closeTabMenuItem;
-  NSMenuItem* __strong _closeWindowMenuItem;
+  NSMenuItem* __strong _closeTabMenuItemForTesting;
+  NSMenuItem* __strong _closeWindowMenuItemForTesting;
 
   std::unique_ptr<PrefChangeRegistrar> _profilePrefRegistrar;
   PrefChangeRegistrar _localPrefRegistrar;
@@ -673,6 +674,26 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
   NOTREACHED();
 }
 
+- (NSMenu*)fileMenu {
+  return [[NSApp.mainMenu itemWithTag:IDC_FILE_MENU] submenu];
+}
+
+- (NSMenuItem*)closeTabMenuItem {
+  if (_closeTabMenuItemForTesting != nil) {
+    return _closeTabMenuItemForTesting;
+  }
+
+  return [[self fileMenu] itemWithTag:IDC_CLOSE_TAB];
+}
+
+- (NSMenuItem*)closeWindowMenuItem {
+  if (_closeWindowMenuItemForTesting != nil) {
+    return _closeWindowMenuItemForTesting;
+  }
+
+  return [[self fileMenu] itemWithTag:IDC_CLOSE_WINDOW];
+}
+
 // This method is called very early in application startup (ie, before
 // the profile is loaded or any preferences have been registered). Defer any
 // user-data initialization until -applicationDidFinishLaunching:.
@@ -697,11 +718,8 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
              name:NSWorkspaceWillPowerOffNotification
            object:nil];
 
-  NSMenu* fileMenu = [[NSApp.mainMenu itemWithTag:IDC_FILE_MENU] submenu];
-  _closeTabMenuItem = [fileMenu itemWithTag:IDC_CLOSE_TAB];
-  DCHECK(_closeTabMenuItem);
-  _closeWindowMenuItem = [fileMenu itemWithTag:IDC_CLOSE_WINDOW];
-  DCHECK(_closeWindowMenuItem);
+  DCHECK([self closeTabMenuItem]);
+  DCHECK([self closeWindowMenuItem]);
 
   // Set up the command updater for when there are no windows open
   [self initMenuState];
@@ -854,30 +872,10 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
   }
 }
 
-// If the window has a tab controller, make "close window" be cmd-shift-w,
-// otherwise leave it as the normal cmd-w. Capitalization of the key equivalent
-// affects whether the shift modifier is used.
-- (void)adjustCloseWindowMenuItemKeyEquivalent:(BOOL)enableCloseTabShortcut {
-  _closeWindowMenuItem.keyEquivalent = enableCloseTabShortcut ? @"W" : @"w";
-  _closeWindowMenuItem.keyEquivalentModifierMask = NSEventModifierFlagCommand;
-}
-
-// If the window has a tab controller, make "close tab" take over cmd-w,
-// otherwise it shouldn't have any key-equivalent because it should be disabled.
-- (void)adjustCloseTabMenuItemKeyEquivalent:(BOOL)enableCloseTabShortcut {
-  if (enableCloseTabShortcut) {
-    _closeTabMenuItem.keyEquivalent = @"w";
-    _closeTabMenuItem.keyEquivalentModifierMask = NSEventModifierFlagCommand;
-  } else {
-    _closeTabMenuItem.keyEquivalent = @"";
-    _closeTabMenuItem.keyEquivalentModifierMask = 0;
-  }
-}
-
 // See if the focused window window has tabs, and adjust the key equivalents for
 // Close Tab/Close Window accordingly.
 - (void)menuNeedsUpdate:(NSMenu*)menu {
-  DCHECK(menu == _closeTabMenuItem.menu);
+  DCHECK(menu == [self fileMenu]);
   [self updateMenuItemKeyEquivalents];
 }
 
@@ -1006,7 +1004,7 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
   _quitWithAppsController = new QuitWithAppsController();
 
   // Dynamically update shortcuts for "Close Window" and "Close Tab" menu items.
-  _closeTabMenuItem.menu.delegate = self;
+  [self fileMenu].delegate = self;
 
   // Instantiate the ProfileAttributesStorage observer so that we can get
   // notified when a profile is deleted.
@@ -1910,8 +1908,6 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
 }
 
 - (void)updateMenuItemKeyEquivalents {
-  BOOL enableCloseTabShortcut = NO;
-
   id target = [NSApp targetForAction:@selector(performClose:)];
 
   // If `target` is a popover (likely the dictionary lookup popover) the
@@ -1931,12 +1927,24 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
     if ([targetWindow parentWindow] != nil) {
       targetWindow = [targetWindow parentWindow];
     }
-
-    enableCloseTabShortcut = [self windowHasBrowserTabs:targetWindow];
   }
 
-  [self adjustCloseWindowMenuItemKeyEquivalent:enableCloseTabShortcut];
-  [self adjustCloseTabMenuItemKeyEquivalent:enableCloseTabShortcut];
+  NSMenuItem* closeTabMenuItem = [self closeTabMenuItem];
+  NSMenuItem* closeWindowMenuItem = [self closeWindowMenuItem];
+
+  // If the browser window has tabs, assign Cmd-Shift-W to "Close Window",
+  // otherwise leave it as the normal Cmd-W. Capitalization of the key
+  // equivalent affects whether the Shift modifier is used.
+  if ([self windowHasBrowserTabs:targetWindow]) {
+    [closeTabMenuItem cr_setKeyEquivalent:@"w"
+                             modifierMask:NSEventModifierFlagCommand];
+    [closeWindowMenuItem cr_setKeyEquivalent:@"W"
+                                modifierMask:NSEventModifierFlagCommand];
+  } else {
+    [closeTabMenuItem cr_clearKeyEquivalent];
+    [closeWindowMenuItem cr_setKeyEquivalent:@"w"
+                                modifierMask:NSEventModifierFlagCommand];
+  }
 }
 
 // This only has an effect on macOS 12+, and requests any state restoration
@@ -2078,11 +2086,11 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
 }
 
 - (void)setCloseWindowMenuItemForTesting:(NSMenuItem*)menuItem {
-  _closeWindowMenuItem = menuItem;
+  _closeWindowMenuItemForTesting = menuItem;
 }
 
 - (void)setCloseTabMenuItemForTesting:(NSMenuItem*)menuItem {
-  _closeTabMenuItem = menuItem;
+  _closeTabMenuItemForTesting = menuItem;
 }
 
 - (void)setLastProfileForTesting:(Profile*)profile {

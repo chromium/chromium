@@ -67,8 +67,7 @@ NSMenuItem* MenuItem(NSString* equiv, NSUInteger mask = 0) {
   NSMenuItem* item = [[NSMenuItem alloc] initWithTitle:@""
                                                 action:nil
                                          keyEquivalent:@""];
-  item.keyEquivalent = equiv;
-  item.keyEquivalentModifierMask = mask;
+  [item cr_setKeyEquivalent:equiv modifierMask:mask];
   return item;
 }
 
@@ -742,6 +741,19 @@ TEST(NSMenuItemAdditionsTest, MMFKEHandlesFlagsChangedEvents) {
   // Make sure we correctly handle the situation of function key press event
   // with no characters (dead keys).
   EXPECT_EQ(expected_flags, ModifierMaskForKeyEvent(empty_chars_event));
+}
+
+// Tests that cr_clearKeyEquivalent clears a menu item's key equivalent.
+TEST(NSMenuItemAdditionsTest, TestClearKeyEquivalent) {
+  NSMenuItem* item =
+      MenuItem(@"W", NSEventModifierFlagCommand | NSEventModifierFlagControl |
+                         NSEventModifierFlagOption);
+  [item cr_clearKeyEquivalent];
+
+  NSString* kNoKeyEquivalentString = @"";
+  EXPECT_TRUE([kNoKeyEquivalentString isEqualToString:item.keyEquivalent]);
+  NSUInteger kEmptyMask = 0;
+  EXPECT_EQ(item.keyEquivalentModifierMask, kEmptyMask);
 }
 
 }  // namespace
