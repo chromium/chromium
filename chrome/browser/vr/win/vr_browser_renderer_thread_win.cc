@@ -273,14 +273,10 @@ void VRBrowserRendererThreadWin::StartOverlay() {
   // Create a vr::Ui
   ui_browser_interface_ = std::make_unique<VRUiBrowserInterface>();
   UiInitialState ui_initial_state = {};
-  ui_initial_state.in_web_vr = true;
-  ui_initial_state.browsing_disabled = true;
-  ui_initial_state.supports_selection = false;
   std::unique_ptr<Ui> ui =
       std::make_unique<Ui>(ui_browser_interface_.get(), ui_initial_state);
   static_cast<UiInterface*>(ui.get())->OnGlInitialized();
   ui_ = static_cast<BrowserUiInterface*>(ui.get());
-  ui_->SetWebVrMode(true);
   scheduler_ui_ = static_cast<UiInterface*>(ui.get())->GetSchedulerUiPtr();
 
   // Create the delegates, and keep raw pointers to them.  They are owned by

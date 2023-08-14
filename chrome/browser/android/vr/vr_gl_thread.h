@@ -69,7 +69,6 @@ class VrGLThread : public base::android::JavaHandlerThread,
   void ExitPresent() override;
 
   // BrowserUiInterface implementation (Browser calling to UI).
-  void SetWebVrMode(bool enabled) override;
   void SetCapturingState(
       const CapturingStateModel& active_capturing,
       const CapturingStateModel& background_capturing,

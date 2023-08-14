@@ -13,7 +13,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/version.h"
-#include "chrome/browser/vr/assets_load_status.h"
 #include "chrome/browser/vr/browser_ui_interface.h"
 #include "chrome/browser/vr/scheduler_ui_interface.h"
 #include "chrome/browser/vr/ui_element_renderer.h"
@@ -58,7 +57,6 @@ class VR_UI_EXPORT Ui : public UiInterface,
 
  private:
   // BrowserUiInterface
-  void SetWebVrMode(bool enabled) override;
   void SetCapturingState(
       const CapturingStateModel& active_capturing,
       const CapturingStateModel& background_capturing,
@@ -71,7 +69,6 @@ class VR_UI_EXPORT Ui : public UiInterface,
   SchedulerUiInterface* GetSchedulerUiPtr() override;
   void OnGlInitialized() override;
   void OnPause() override;
-  void OnProjMatrixChanged(const gfx::Transform& proj_matrix) override;
   gfx::Point3F GetTargetPointForTesting(UserFriendlyElementName element_name,
                                         const gfx::PointF& position) override;
   bool GetElementVisibilityForTesting(
@@ -99,11 +96,7 @@ class VR_UI_EXPORT Ui : public UiInterface,
   void OnWebXrTimeoutImminent() override;
 
  private:
-  void SetAlertDialogSize(float width, float height);
-  void SetContentOverlayAlertDialogSize(float width_percentage,
-                                        float height_percentage);
   void OnMenuButtonClicked();
-  void OnSpeechRecognitionEnded();
   void InitializeModel(const UiInitialState& ui_initial_state);
   raw_ptr<UiBrowserInterface, DanglingUntriaged> browser_;
   FovRectangle GetMinimalFov(const gfx::Transform& view_matrix,

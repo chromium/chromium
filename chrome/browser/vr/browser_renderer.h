@@ -10,7 +10,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
-#include "chrome/browser/vr/gl_texture_location.h"
 #include "chrome/browser/vr/graphics_delegate.h"
 #include "chrome/browser/vr/scheduler_browser_renderer_interface.h"
 #include "chrome/browser/vr/vr_export.h"

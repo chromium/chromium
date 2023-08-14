@@ -18,7 +18,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/vr/input_event.h"
 #include "chrome/browser/vr/model/model.h"
-#include "chrome/browser/vr/model/platform_toast.h"
 #include "chrome/browser/vr/skia_surface_provider_factory.h"
 #include "chrome/browser/vr/ui_browser_interface.h"
 #include "chrome/browser/vr/ui_element_renderer.h"
@@ -116,19 +115,6 @@ SchedulerUiInterface* Ui::GetSchedulerUiPtr() {
   return this;
 }
 
-void Ui::SetWebVrMode(bool enabled) {
-  if (enabled) {
-    model_->web_vr.has_received_permissions = false;
-    model_->web_vr.state = kWebVrAwaitingFirstFrame;
-    if (!model_->web_vr_enabled())
-      model_->push_mode(kModeWebVr);
-  } else {
-    model_->web_vr.state = kWebVrNoTimeoutPending;
-    if (model_->web_vr_enabled())
-      model_->pop_mode();
-  }
-}
-
 void Ui::SetCapturingState(const CapturingStateModel& active_capturing,
                            const CapturingStateModel& background_capturing,
                            const CapturingStateModel& potential_capturing) {
@@ -136,18 +122,6 @@ void Ui::SetCapturingState(const CapturingStateModel& active_capturing,
   model_->background_capturing = background_capturing;
   model_->potential_capturing = potential_capturing;
   model_->web_vr.has_received_permissions = true;
-}
-
-void Ui::SetAlertDialogSize(float width, float height) {
-  float scale = std::max(height, width);
-  model_->hosted_platform_ui.rect.set_height(height / scale);
-  model_->hosted_platform_ui.rect.set_width(width / scale);
-}
-
-void Ui::SetContentOverlayAlertDialogSize(float width_percentage,
-                                          float height_percentage) {
-  model_->hosted_platform_ui.rect.set_height(height_percentage);
-  model_->hosted_platform_ui.rect.set_width(width_percentage);
 }
 
 void Ui::OnGlInitialized() {
@@ -168,23 +142,17 @@ void Ui::OnMenuButtonClicked() {
   // Menu button click exits the WebVR presentation and fullscreen.
   browser_->ExitPresent();
 }
-void Ui::OnProjMatrixChanged(const gfx::Transform& proj_matrix) {
-  model_->projection_matrix = proj_matrix;
-}
 
 void Ui::OnWebXrFrameAvailable() {
-  if (model_->web_vr_enabled())
-    model_->web_vr.state = kWebVrPresenting;
+  model_->web_vr.state = kWebVrPresenting;
 }
 
 void Ui::OnWebXrTimeoutImminent() {
-  if (model_->web_vr_enabled())
-    model_->web_vr.state = kWebVrTimeoutImminent;
+  model_->web_vr.state = kWebVrTimeoutImminent;
 }
 
 void Ui::OnWebXrTimedOut() {
-  if (model_->web_vr_enabled())
-    model_->web_vr.state = kWebVrTimedOut;
+  model_->web_vr.state = kWebVrTimedOut;
 }
 
 void Ui::Dump(bool include_bindings) {
@@ -215,17 +183,9 @@ bool Ui::GetElementVisibilityForTesting(UserFriendlyElementName element_name) {
 }
 
 void Ui::InitializeModel(const UiInitialState& ui_initial_state) {
-  model_->ui_modes.clear();
-  model_->push_mode(kModeBrowsing);
-  if (ui_initial_state.in_web_vr) {
-    auto mode = kModeWebVr;
-    model_->web_vr.has_received_permissions = false;
-    model_->web_vr.state = kWebVrAwaitingFirstFrame;
-    model_->push_mode(mode);
-  }
+  model_->web_vr.has_received_permissions = false;
+  model_->web_vr.state = kWebVrAwaitingFirstFrame;
 
-  model_->waiting_for_background = ui_initial_state.assets_supported;
-  model_->controllers.push_back(ControllerModel());
   model_->gvr_input_support = ui_initial_state.gvr_input_support;
 }
 
@@ -256,7 +216,6 @@ void Ui::SetVisibleExternalPromptNotification(
 
 bool Ui::OnBeginFrame(base::TimeTicks current_time,
                       const gfx::Transform& head_pose) {
-  model_->current_time = current_time;
   return scene_->OnBeginFrame(current_time, head_pose);
 }
 

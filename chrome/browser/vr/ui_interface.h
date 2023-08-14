@@ -13,7 +13,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/vr/fov_rectangle.h"
-#include "chrome/browser/vr/gl_texture_location.h"
 
 namespace gfx {
 class Point3F;
@@ -46,7 +45,6 @@ class UiInterface {
   virtual void OnGlInitialized() = 0;
 
   virtual void OnPause() = 0;
-  virtual void OnProjMatrixChanged(const gfx::Transform& proj_matrix) = 0;
   virtual gfx::Point3F GetTargetPointForTesting(
       UserFriendlyElementName element_name,
       const gfx::PointF& position) = 0;

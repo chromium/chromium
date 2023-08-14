@@ -19,7 +19,6 @@
 #include "chrome/browser/vr/elements/ui_element_type.h"
 #include "chrome/browser/vr/frame_lifecycle.h"
 #include "chrome/browser/vr/model/camera_model.h"
-#include "chrome/browser/vr/model/reticle_model.h"
 #include "chrome/browser/vr/target_property.h"
 #include "chrome/browser/vr/vr_ui_export.h"
 #include "ui/gfx/animation/keyframe/animation_curve.h"
@@ -443,9 +442,6 @@ class VR_UI_EXPORT UiElement : public gfx::FloatAnimationCurve::Target,
     return updated_visibility_this_frame_;
   }
 
-  void set_cursor_type(CursorType cursor_type) { cursor_type_ = cursor_type; }
-  CursorType cursor_type() const { return cursor_type_; }
-
   std::string DebugName() const;
 
 #ifndef NDEBUG
@@ -647,8 +643,6 @@ class VR_UI_EXPORT UiElement : public gfx::FloatAnimationCurve::Target,
 
   // Indicates that this element may be resized by parent layout elements.
   bool resizable_by_layout_ = false;
-
-  CursorType cursor_type_ = kCursorDefault;
 };
 
 }  // namespace vr

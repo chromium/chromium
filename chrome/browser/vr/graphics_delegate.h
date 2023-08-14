@@ -9,7 +9,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "chrome/browser/vr/fov_rectangle.h"
 #include "chrome/browser/vr/frame_type.h"
-#include "chrome/browser/vr/gl_texture_location.h"
 #include "chrome/browser/vr/vr_export.h"
 
 namespace gfx {
@@ -30,8 +29,6 @@ struct RenderInfo;
 class VR_EXPORT GraphicsDelegate {
  public:
   using Transform = float[16];
-  using TexturesInitializedCallback = base::OnceCallback<
-      void(GlTextureLocation, unsigned int, unsigned int, unsigned int)>;
   virtual ~GraphicsDelegate() {}
 
   virtual FovRectangles GetRecommendedFovs() = 0;

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_VR_SCHEDULER_UI_INTERFACE_H_
 #define CHROME_BROWSER_VR_SCHEDULER_UI_INTERFACE_H_
 
-#include "chrome/browser/vr/gl_texture_location.h"
 #include "chrome/browser/vr/vr_base_export.h"
 
 namespace vr {

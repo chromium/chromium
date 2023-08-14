@@ -87,10 +87,10 @@ void TexturedElement::Render(UiElementRenderer* renderer,
     return;
   }
 
-  renderer->DrawTexturedQuad(
-      skia_texture_->texture_id(), 0, kGlTextureLocationLocal,
-      model.view_proj_matrix * world_space_transform(), GetClipRect(),
-      computed_opacity(), size(), corner_radius(), true /* blend */);
+  renderer->DrawTexturedQuad(skia_texture_->texture_id(), 0,
+                             model.view_proj_matrix * world_space_transform(),
+                             GetClipRect(), computed_opacity(), size(),
+                             corner_radius(), true /* blend */);
 }
 
 }  // namespace vr

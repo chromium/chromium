@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_VR_TEST_MOCK_BROWSER_UI_INTERFACE_H_
 
 #include "chrome/browser/vr/browser_ui_interface.h"
-#include "chrome/browser/vr/model/assets.h"
 #include "chrome/browser/vr/ui_test_input.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -21,7 +20,6 @@ class MockBrowserUiInterface : public BrowserUiInterface {
 
   ~MockBrowserUiInterface() override;
 
-  MOCK_METHOD1(SetWebVrMode, void(bool enabled));
   MOCK_METHOD3(SetCapturingState,
                void(const CapturingStateModel& state,
                     const CapturingStateModel& background_state,

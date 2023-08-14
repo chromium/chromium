@@ -8,7 +8,6 @@
 #include <string>
 #include <tuple>
 #include <utility>
-#include <vector>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -20,32 +19,21 @@
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/vr/databinding/binding.h"
-#include "chrome/browser/vr/databinding/vector_binding.h"
-#include "chrome/browser/vr/elements/button.h"
-#include "chrome/browser/vr/elements/controller.h"
-#include "chrome/browser/vr/elements/disc_button.h"
 #include "chrome/browser/vr/elements/draw_phase.h"
-#include "chrome/browser/vr/elements/environment/background.h"
 #include "chrome/browser/vr/elements/environment/grid.h"
 #include "chrome/browser/vr/elements/full_screen_rect.h"
 #include "chrome/browser/vr/elements/indicator_spec.h"
-#include "chrome/browser/vr/elements/laser.h"
 #include "chrome/browser/vr/elements/linear_layout.h"
-#include "chrome/browser/vr/elements/oval.h"
 #include "chrome/browser/vr/elements/rect.h"
-#include "chrome/browser/vr/elements/reticle.h"
 #include "chrome/browser/vr/elements/scaled_depth_adjuster.h"
 #include "chrome/browser/vr/elements/spinner.h"
 #include "chrome/browser/vr/elements/text.h"
-#include "chrome/browser/vr/elements/text_button.h"
 #include "chrome/browser/vr/elements/transient_element.h"
 #include "chrome/browser/vr/elements/ui_element.h"
 #include "chrome/browser/vr/elements/ui_element_name.h"
-#include "chrome/browser/vr/elements/ui_texture.h"
 #include "chrome/browser/vr/elements/vector_icon.h"
 #include "chrome/browser/vr/elements/viewport_aware_root.h"
 #include "chrome/browser/vr/model/model.h"
-#include "chrome/browser/vr/model/platform_toast.h"
 #include "chrome/browser/vr/target_property.h"
 #include "chrome/browser/vr/ui.h"
 #include "chrome/browser/vr/ui_browser_interface.h"
@@ -90,31 +78,6 @@ void BindColor(Model* model,
 }
 
 #define VR_BIND_COLOR(m, v, c, s) BindColor(m, v, c, #c, s, #s)
-
-template <typename V, typename C, typename S>
-void BindButtonColors(Model* model,
-                      V* view,
-                      C colors,
-                      const std::string& colors_string,
-                      S setter,
-                      const std::string& setter_string) {
-  view->AddBinding(std::make_unique<Binding<ButtonColors>>(
-      base::BindRepeating([](Model* m, C c) { return (m->color_scheme()).*c; },
-                          base::Unretained(model), colors),
-#ifndef NDEBUG
-      colors_string,
-#endif
-      base::BindRepeating(
-          [](V* v, S s, const ButtonColors& value) { (v->*s)(value); },
-          base::Unretained(view), setter)
-#ifndef NDEBUG
-          ,
-      setter_string
-#endif
-      ));
-}
-
-#define VR_BIND_BUTTON_COLORS(m, v, c, s) BindButtonColors(m, v, c, #c, s, #s)
 
 #define VR_BIND_VISIBILITY(v, c) \
   v->AddBinding(                 \
@@ -196,8 +159,6 @@ std::unique_ptr<UiElement> CreateWebVrIndicator(Model* model,
 
   std::unique_ptr<UiElement> description_element;
   auto text_element = Create<Text>(kNone, phase, kWebVrPermissionFontHeight);
-  text_element->SetLayoutMode(kMultiLineFixedWidth);
-  text_element->SetAlignment(kTextAlignmentLeft);
   text_element->SetColor(SK_ColorWHITE);
   text_element->SetFieldWidth(kWebVrPermissionTextWidth);
   if (spec.signal) {
@@ -236,43 +197,6 @@ void SetVisibleInLayout(UiElement* e, bool v) {
   e->set_requires_layout(v);
 }
 
-std::unique_ptr<TransientElement> CreateTextToast(
-    UiElementName transient_parent_name,
-    UiElementName toast_name,
-    Model* model,
-    const std::u16string& text) {
-  auto parent =
-      CreateTransientParent(transient_parent_name, kToastTimeoutSeconds, false);
-  parent->set_bounds_contain_children(true);
-  parent->SetScale(kContentDistance, kContentDistance, 1.0f);
-
-  auto background_element = Create<Rect>(toast_name, kPhaseForeground);
-  VR_BIND_COLOR(model, background_element.get(), &ColorScheme::toast_background,
-                &Rect::SetColor);
-
-  background_element->set_bounds_contain_children(true);
-  background_element->set_padding(kToastXPaddingDMM, kToastYPaddingDMM,
-                                  kToastXPaddingDMM, kToastYPaddingDMM);
-  background_element->SetTransitionedProperties({OPACITY});
-  background_element->SetType(kTypeToastBackground);
-  background_element->SetCornerRadius(kToastCornerRadiusDMM);
-
-  auto text_element =
-      Create<Text>(kNone, kPhaseForeground, kToastTextFontHeightDMM);
-  text_element->SetLayoutMode(kSingleLine);
-  text_element->SetColor(SK_ColorWHITE);
-  text_element->set_owner_name_for_test(toast_name);
-  text_element->SetType(kTypeToastText);
-  text_element->SetText(text);
-
-  VR_BIND_COLOR(model, text_element.get(), &ColorScheme::toast_foreground,
-                &Text::SetColor);
-
-  background_element->AddChild(std::move(text_element));
-  parent->AddChild(std::move(background_element));
-  return parent;
-}
-
 #if BUILDFLAG(IS_WIN)
 void BindIndicatorTranscienceForWin(
     TransientElement* e,
@@ -281,8 +205,7 @@ void BindIndicatorTranscienceForWin(
     const absl::optional<
         std::tuple<bool, CapturingStateModel, CapturingStateModel>>& last_value,
     const std::tuple<bool, CapturingStateModel, CapturingStateModel>& value) {
-  const bool in_web_vr_presentation = model->web_vr_enabled() &&
-                                      model->web_vr.IsImmersiveWebXrVisible() &&
+  const bool in_web_vr_presentation = model->web_vr.IsImmersiveWebXrVisible() &&
                                       model->web_vr.has_received_permissions;
 
   const CapturingStateModel active_capture = std::get<1>(value);
@@ -347,14 +270,11 @@ void BindIndicatorTranscience(
     TransientElement* e,
     Model* model,
     UiScene* scene,
-    const absl::optional<std::tuple<bool, bool, bool>>& last_value,
-    const std::tuple<bool, bool, bool>& value) {
+    const absl::optional<std::tuple<bool, bool>>& last_value,
+    const std::tuple<bool, bool>& value) {
   const bool in_web_vr_presentation = std::get<0>(value);
   const bool in_long_press = std::get<1>(value);
-  const bool showing_hosted_ui = std::get<2>(value);
   const bool was_in_long_press = last_value && std::get<1>(last_value.value());
-  const bool was_showing_hosted_ui =
-      last_value && std::get<2>(last_value.value());
 
   if (!in_web_vr_presentation) {
     e->SetVisibleImmediately(false);
@@ -366,11 +286,6 @@ void BindIndicatorTranscience(
   // press, and the situation when we want to initially show the
   // indicators.
   if (was_in_long_press && !in_long_press)
-    return;
-
-  // Similarly, we need to know when we've finished presenting hosted
-  // ui because we should not show indicators then.
-  if (was_showing_hosted_ui && !showing_hosted_ui)
     return;
 
   e->SetVisible(true);
@@ -468,7 +383,10 @@ void UiSceneCreator::CreateScene() {
 void UiSceneCreator::CreateWebVrRoot() {
   auto element = std::make_unique<UiElement>();
   element->SetName(kWebVrRoot);
-  VR_BIND_VISIBILITY(element, model->web_vr_enabled());
+  element->SetVisible(true);
+  // TODO(https://crbug.com/913607): floor_height appears to be removable here,
+  // since it's always set to 0 and it looks to only be used as a getter. In
+  // this case, the translate is always returned as 0,0,0.
   element->AddBinding(VR_BIND(
       float, Model, model_, model->floor_height, UiElement, element.get(),
       view->SetTranslate(0, value ? value - kFloorHeight : 0.0, 0.0)));
@@ -488,8 +406,6 @@ void UiSceneCreator::CreateExternalPromptNotifcationOverlay() {
 
   auto text1 = Create<Text>(kNone, phase, kPromptFontSize);
   text1->SetType(kTypePromptText);
-  text1->SetLayoutMode(kMultiLineFixedWidth);
-  text1->SetAlignment(kTextAlignmentLeft);
   text1->SetFieldWidth(kPromptTextWidth);
   VR_BIND_COLOR(model_, text1.get(), &ColorScheme::modal_prompt_foreground,
                 &Text::SetColor);
@@ -497,8 +413,6 @@ void UiSceneCreator::CreateExternalPromptNotifcationOverlay() {
 
   auto text2 = Create<Text>(kNone, phase, kPromptFontSize);
   text2->SetType(kTypePromptText);
-  text2->SetLayoutMode(kMultiLineFixedWidth);
-  text2->SetAlignment(kTextAlignmentLeft);
   text2->SetFieldWidth(kPromptTextWidth);
   text2->SetText(l10n_util::GetStringUTF16(IDS_DESKTOP_PROMPT_DOFF_HEADSET));
   VR_BIND_COLOR(model_, text2.get(), &ColorScheme::modal_prompt_foreground,
@@ -546,9 +460,8 @@ void UiSceneCreator::CreateExternalPromptNotifcationOverlay() {
   scaler->SetType(kTypeScaledDepthAdjuster);
   scaler->AddChild(std::move(prompt_window));
   scaler->set_contributes_to_parent_bounds(false);
-  VR_BIND_VISIBILITY(scaler, model->web_vr_enabled() &&
-                                 (model->web_vr.external_prompt_notification !=
-                                  ExternalPromptNotificationType::kPromptNone));
+  VR_BIND_VISIBILITY(scaler, (model->web_vr.external_prompt_notification !=
+                              ExternalPromptNotificationType::kPromptNone));
 
   scaler->AddBinding(std::make_unique<Binding<ExternalPromptNotificationType>>(
       VR_BIND_LAMBDA(
@@ -593,11 +506,9 @@ void UiSceneCreator::CreateWebVrSubtree() {
   bg->SetVisible(false);
   bg->SetColor(model_->color_scheme().web_vr_background);
   bg->SetTransitionedProperties({OPACITY});
-  VR_BIND_VISIBILITY(bg, model->web_vr_enabled() &&
-                             (!model->web_vr.IsImmersiveWebXrVisible() ||
-                              model->web_vr.showing_hosted_ui ||
-                              model->web_vr.external_prompt_notification !=
-                                  ExternalPromptNotificationType::kPromptNone));
+  VR_BIND_VISIBILITY(bg, (!model->web_vr.IsImmersiveWebXrVisible() ||
+                          model->web_vr.external_prompt_notification !=
+                              ExternalPromptNotificationType::kPromptNone));
   auto grid = CreateGrid(model_, kNone);
   grid->set_owner_name_for_test(kWebVrFloor);
   VR_BIND_COLOR(model_, grid.get(), &ColorScheme::web_vr_floor_grid,
@@ -610,12 +521,9 @@ void UiSceneCreator::CreateWebVrSubtree() {
                 &Rect::SetEdgeColor);
   grid_bg->AddBinding(std::make_unique<Binding<bool>>(
       VR_BIND_LAMBDA(
-          [](Model* model, UiElement* timeout_screen) {
-            return model->web_vr_enabled() &&
-                   (model->web_vr.showing_hosted_ui ||
-                    timeout_screen->GetTargetOpacity() != 0.f);
+          [](UiElement* timeout_screen) {
+            return timeout_screen->GetTargetOpacity() != 0.f;
           },
-          base::Unretained(model_),
           base::Unretained(scene_->GetUiElementByName(kWebVrTimeoutRoot))),
       VR_BIND_LAMBDA(
           [](UiElement* e, const bool& value) { e->SetVisible(value); },
@@ -679,7 +587,6 @@ void UiSceneCreator::CreateWebVrTimeoutScreen() {
       l10n_util::GetStringUTF16(IDS_VR_WEB_VR_TIMEOUT_MESSAGE));
   timeout_text->SetColor(
       model_->color_scheme().web_vr_timeout_message_foreground);
-  timeout_text->SetAlignment(kTextAlignmentLeft);
   timeout_text->SetFieldWidth(kTimeoutMessageTextWidthDMM);
   timeout_text->set_hit_testable(true);
 
@@ -739,8 +646,8 @@ void UiSceneCreator::CreateWebVrOverlayElements() {
               [](Model* model) {
                 return std::tuple<bool, CapturingStateModel,
                                   CapturingStateModel>(
-                    model->web_vr_enabled() &&
-                        model->web_vr.IsImmersiveWebXrVisible() &&
+
+                    model->web_vr.IsImmersiveWebXrVisible() &&
                         model->web_vr.has_received_permissions,
                     model->active_capturing, model->potential_capturing);
               },
@@ -749,15 +656,13 @@ void UiSceneCreator::CreateWebVrOverlayElements() {
                          base::Unretained(parent.get()),
                          base::Unretained(model_), base::Unretained(scene_))));
 #else
-  parent->AddBinding(std::make_unique<Binding<std::tuple<bool, bool, bool>>>(
+  parent->AddBinding(std::make_unique<Binding<std::tuple<bool, bool>>>(
       VR_BIND_LAMBDA(
           [](Model* model) {
-            return std::tuple<bool, bool, bool>(
-                model->web_vr_enabled() &&
-                    model->web_vr.IsImmersiveWebXrVisible() &&
+            return std::tuple<bool, bool>(
+                model->web_vr.IsImmersiveWebXrVisible() &&
                     model->web_vr.has_received_permissions,
-                model->menu_button_long_pressed,
-                model->web_vr.showing_hosted_ui);
+                model->menu_button_long_pressed);
           },
           base::Unretained(model_)),
       VR_BIND_LAMBDA(BindIndicatorTranscience, base::Unretained(parent.get()),

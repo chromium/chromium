@@ -5,6 +5,7 @@
 #include "chrome/browser/vr/elements/indicator_spec.h"
 
 #include "build/build_config.h"
+#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/vr/vector_icons/vector_icons.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"

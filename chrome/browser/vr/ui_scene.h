@@ -11,7 +11,6 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/vr/elements/ui_element.h"
 #include "chrome/browser/vr/elements/ui_element_name.h"
-#include "chrome/browser/vr/sequence.h"
 #include "chrome/browser/vr/vr_ui_export.h"
 #include "third_party/skia/include/core/SkColor.h"
 
@@ -81,8 +80,6 @@ class VR_UI_EXPORT UiScene {
   // do every frame regardless of element or subtree visibility.
   void AddPerFrameCallback(PerFrameCallback callback);
 
-  void AddSequence(std::unique_ptr<Sequence> sequence);
-
   SkiaSurfaceProvider* SurfaceProviderForTesting() { return provider_; }
 
   void RunFirstFrameForTest();
@@ -110,7 +107,6 @@ class VR_UI_EXPORT UiScene {
 
   std::vector<PerFrameCallback> per_frame_callback_;
 
-  std::vector<std::unique_ptr<Sequence>> scheduled_tasks_;
   raw_ptr<SkiaSurfaceProvider, DanglingUntriaged> provider_ = nullptr;
 };
 

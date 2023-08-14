@@ -9,7 +9,6 @@
 #include "chrome/browser/vr/input_delegate.h"
 #include "chrome/browser/vr/input_event.h"
 #include "chrome/browser/vr/model/controller_model.h"
-#include "chrome/browser/vr/model/reticle_model.h"
 #include "chrome/browser/vr/render_info.h"
 #include "chrome/browser/vr/scheduler_delegate.h"
 #include "chrome/browser/vr/test/mock_browser_ui_interface.h"
@@ -32,7 +31,6 @@ class MockUi : public UiInterface {
   SchedulerUiInterface* GetSchedulerUiPtr() override { return nullptr; }
   MOCK_METHOD0(OnGlInitialized, void());
   MOCK_METHOD0(OnPause, void());
-  void OnProjMatrixChanged(const gfx::Transform&) override {}
   MOCK_METHOD2(GetTargetPointForTesting,
                gfx::Point3F(UserFriendlyElementName,
                             const gfx::PointF& position));
@@ -97,8 +95,6 @@ class MockGraphicsDelegate : public GraphicsDelegate {
     using_buffer_ = false;
   }
   void GetWebXrDrawParams(int*, Transform*) override {}
-  MOCK_METHOD1(SetTexturesInitializedCallback,
-               void(TexturesInitializedCallback));
   bool Initialize(const scoped_refptr<gl::GLSurface>&) override { return true; }
   bool RunInSkiaContext(base::OnceClosure callback) override {
     std::move(callback).Run();

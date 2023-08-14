@@ -19,8 +19,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/toolbar/chrome_location_bar_model_delegate.h"
-#include "chrome/browser/vr/assets_load_status.h"
-#include "chrome/browser/vr/exit_vr_prompt_choice.h"
 #include "chrome/browser/vr/model/capturing_state_model.h"
 #include "chrome/browser/vr/ui_browser_interface.h"
 #include "chrome/browser/vr/ui_initial_state.h"

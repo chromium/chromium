@@ -12,10 +12,8 @@
 #include "chrome/browser/android/vr/metrics_util_android.h"
 #include "chrome/browser/android/vr/ui_factory.h"
 #include "chrome/browser/android/vr/vr_shell.h"
-#include "chrome/browser/vr/assets_loader.h"
 #include "chrome/browser/vr/browser_renderer.h"
 #include "chrome/browser/vr/browser_ui_interface.h"
-#include "chrome/browser/vr/model/assets.h"
 #include "chrome/browser/vr/ui_test_input.h"
 #include "third_party/gvr-android-sdk/src/libraries/headers/vr/gvr/capi/include/gvr.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -93,13 +91,6 @@ void VrGLThread::ExitPresent() {
 }
 
 void VrGLThread::ToggleCardboardGamepad(bool enabled) {}
-
-void VrGLThread::SetWebVrMode(bool enabled) {
-  DCHECK(OnMainThread());
-  task_runner()->PostTask(FROM_HERE,
-                          base::BindOnce(&BrowserUiInterface::SetWebVrMode,
-                                         weak_browser_ui_, enabled));
-}
 
 void VrGLThread::SetCapturingState(
     const CapturingStateModel& active_capturing,

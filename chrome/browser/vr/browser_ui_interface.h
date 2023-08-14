@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_VR_BROWSER_UI_INTERFACE_H_
 #define CHROME_BROWSER_VR_BROWSER_UI_INTERFACE_H_
 
-#include "chrome/browser/vr/assets_load_status.h"
 #include "chrome/browser/vr/model/capturing_state_model.h"
 #include "chrome/browser/vr/model/web_vr_model.h"
 #include "chrome/browser/vr/vr_base_export.h"
@@ -20,7 +19,6 @@ class VR_BASE_EXPORT BrowserUiInterface {
  public:
   virtual ~BrowserUiInterface() {}
 
-  virtual void SetWebVrMode(bool enabled) = 0;
   virtual void SetCapturingState(
       const CapturingStateModel& active_capturing,
       const CapturingStateModel& background_capturing,

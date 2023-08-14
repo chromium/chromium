@@ -1856,7 +1856,6 @@ static_library("browser") {
     "user_bypass/user_bypass_web_contents_observer.h",
     "visibility_timer_tab_helper.cc",
     "visibility_timer_tab_helper.h",
-    "vr/ui_suppressed_element.h",
     "vr/vr_tab_helper.cc",
     "vr/vr_tab_helper.h",
     "web_data_service_factory.cc",

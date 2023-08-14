@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ANDROID_VR_GL_BROWSER_INTERFACE_H_
 
 #include "base/android/jni_weak_ref.h"
-#include "chrome/browser/vr/assets_load_status.h"
 #include "chrome/browser/vr/ui_test_input.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
 #include "ui/gfx/geometry/transform.h"

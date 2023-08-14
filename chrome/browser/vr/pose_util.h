@@ -17,9 +17,6 @@ namespace vr {
 // Provides the direction the head is looking towards as a 3x1 unit vector.
 VR_BASE_EXPORT gfx::Vector3dF GetForwardVector(const gfx::Transform& head_pose);
 
-// Returns a vector heading upward from the viewer's head.
-VR_BASE_EXPORT gfx::Vector3dF GetUpVector(const gfx::Transform& head_pose);
-
 }  // namespace vr
 
 #endif  //  CHROME_BROWSER_VR_POSE_UTIL_H_

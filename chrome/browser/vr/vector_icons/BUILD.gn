@@ -7,16 +7,7 @@ import("//components/vector_icons/vector_icons.gni")
 aggregate_vector_icons("vr_vector_icons") {
   icon_directory = "."
 
-  sources = [
-    "daydream_controller_app_button.icon",
-    "daydream_controller_home_button.icon",
-    "file_download_done.icon",
-    "more_vert.icon",
-    "my_location.icon",
-    "remove_circle_outline.icon",
-    "reposition.icon",
-    "sad_tab.icon",
-  ]
+  sources = [ "remove_circle_outline.icon" ]
 }
 
 source_set("vector_icons") {
