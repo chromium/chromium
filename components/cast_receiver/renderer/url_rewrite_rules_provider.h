@@ -32,8 +32,7 @@ class UrlRewriteRulesProvider final : public content::RenderFrameObserver {
   UrlRewriteRulesProvider(const UrlRewriteRulesProvider&) = delete;
   UrlRewriteRulesProvider& operator=(const UrlRewriteRulesProvider&) = delete;
 
-  const scoped_refptr<url_rewrite::UrlRequestRewriteRules>& GetCachedRules()
-      const;
+  scoped_refptr<url_rewrite::UrlRequestRewriteRules> GetCachedRules() const;
 
  private:
   // content::RenderFrameObserver implementation.

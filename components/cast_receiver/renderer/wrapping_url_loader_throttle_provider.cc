@@ -51,7 +51,7 @@ WrappingURLLoaderThrottleProvider::CreateThrottles(
 
   auto* provider = client_->GetUrlRewriteRulesProvider(render_frame_id);
   if (provider) {
-    auto& rules = provider->GetCachedRules();
+    auto rules = provider->GetCachedRules();
     if (rules) {
       throttles.emplace_back(std::make_unique<url_rewrite::URLLoaderThrottle>(
           rules,

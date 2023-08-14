@@ -314,8 +314,9 @@ bool CastContentBrowserClient::OverridesAudioManager() {
 std::unique_ptr<::media::CdmFactory> CastContentBrowserClient::CreateCdmFactory(
     ::media::mojom::FrameInterfaceFactory* frame_interfaces) {
   url::Origin cdm_origin;
-  if (!CastCdmOriginProvider::GetCdmOrigin(frame_interfaces, &cdm_origin))
+  if (!CastCdmOriginProvider::GetCdmOrigin(frame_interfaces, &cdm_origin)) {
     return nullptr;
+  }
 
   return std::make_unique<media::CastCdmFactory>(
       GetMediaTaskRunner(), cdm_origin, media_resource_tracker());
@@ -374,15 +375,16 @@ void CastContentBrowserClient::RenderProcessWillLaunch(
   // such that secure codecs can always be rendered.
   //
   // TODO(yucliu): On Clank, secure codecs support is tied to AndroidOverlay.
-  // Remove kForceVideoOverlays and swtich to the Clank model for secure codecs
+  // Remove kForceVideoOverlays and switch to the Clank model for secure codecs
   // support.
   host->AddFilter(new cdm::CdmMessageFilterAndroid(true, true));
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
 bool CastContentBrowserClient::IsHandledURL(const GURL& url) {
-  if (!url.is_valid())
+  if (!url.is_valid()) {
     return false;
+  }
 
   static const char* const kProtocolList[] = {
       content::kChromeUIScheme, content::kChromeDevToolsScheme,
@@ -392,8 +394,9 @@ bool CastContentBrowserClient::IsHandledURL(const GURL& url) {
 
   const std::string& scheme = url.scheme();
   for (size_t i = 0; i < std::size(kProtocolList); ++i) {
-    if (scheme == kProtocolList[i])
+    if (scheme == kProtocolList[i]) {
       return true;
+    }
   }
 
   if (scheme == url::kFileScheme) {
@@ -542,8 +545,9 @@ void CastContentBrowserClient::OverrideWebkitPrefs(
   CastWebPreferences* web_preferences =
       static_cast<CastWebPreferences*>(web_contents->GetUserData(
           CastWebPreferences::kCastWebPreferencesDataKey));
-  if (web_preferences)
+  if (web_preferences) {
     web_preferences->Update(prefs);
+  }
 }
 
 std::string CastContentBrowserClient::GetApplicationLocale() {
@@ -707,8 +711,9 @@ bool CastContentBrowserClient::IsBufferingEnabled() {
 absl::optional<service_manager::Manifest>
 CastContentBrowserClient::GetServiceManifestOverlay(
     base::StringPiece service_name) {
-  if (service_name == ServiceManagerContext::kBrowserServiceName)
+  if (service_name == ServiceManagerContext::kBrowserServiceName) {
     return GetCastContentBrowserOverlayManifest();
+  }
 
   return absl::nullopt;
 }
@@ -808,7 +813,7 @@ CastContentBrowserClient::CreateCrashHandlerHost(
   base::FilePath dumps_path;
   base::PathService::Get(base::DIR_TEMP, &dumps_path);
 
-  // Alway set "upload" to false to use our own uploader.
+  // Always set "upload" to false to use our own uploader.
   breakpad::CrashHandlerHostLinux* crash_handler =
       new breakpad::CrashHandlerHostLinux(process_type, dumps_path,
                                           false /* upload */);
@@ -911,7 +916,7 @@ CastContentBrowserClient::CreateURLLoaderThrottles(
 
   // |cast_web_contents| may be nullptr in browser tests.
   if (cast_web_contents) {
-    const auto& rules =
+    auto rules =
         cast_web_contents->url_rewrite_rules_manager()->GetCachedRules();
     if (rules) {
       throttles.emplace_back(std::make_unique<url_rewrite::URLLoaderThrottle>(
