@@ -63,30 +63,22 @@ BlindSignHttpImpl::BlindSignHttpImpl(
 
 BlindSignHttpImpl::~BlindSignHttpImpl() = default;
 
-void BlindSignHttpImpl::DoRequest(const std::string& path_and_query,
+void BlindSignHttpImpl::DoRequest(quiche::BlindSignHttpRequestType request_type,
                                   const std::string& authorization_header,
                                   const std::string& body,
                                   quiche::BlindSignHttpCallback callback) {
   callback_ = std::move(callback);
 
-  // Note that the `path_and_query` we parse here comes from the BlindSignAuth
-  // library, which is maintained by Google. Thus, this can be considered
-  // trustworthy input.
-  std::vector<base::StringPiece> split_path_and_query = base::SplitStringPiece(
-      path_and_query, "?", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
-  // We assume there will always be a non-empty path component.
-  CHECK(split_path_and_query.size() >= 1);
-
   GURL::Replacements replacements;
-  replacements.SetPathStr(split_path_and_query.front());
-  // Define `new_query` here so that its value stays alive for the lifetime of
-  // `replacements` (if needed).
-  std::string new_query;
-  if (split_path_and_query.size() > 1) {
-    std::vector<base::StringPiece> split_query(split_path_and_query.begin() + 1,
-                                               split_path_and_query.end());
-    new_query = base::JoinString(split_query, "?");
-    replacements.SetQueryStr(new_query);
+  switch (request_type) {
+    case quiche::BlindSignHttpRequestType::kGetInitialData:
+      replacements.SetPathStr(kIpProtectionServerGetInitialDataPath);
+      break;
+    case quiche::BlindSignHttpRequestType::kAuthAndSign:
+      replacements.SetPathStr(kIpProtectionServerAuthAndSignPath);
+      break;
+    case quiche::BlindSignHttpRequestType::kUnknown:
+      NOTREACHED_NORETURN();
   }
 
   auto resource_request = std::make_unique<network::ResourceRequest>();
