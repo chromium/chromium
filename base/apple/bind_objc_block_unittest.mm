@@ -7,13 +7,12 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
-#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/gtest_mac.h"
 
 namespace {
 
-TEST(BindObjcBlockTestARC, TestScopedClosureRunnerExitScope) {
+TEST(BindObjcBlockTest, TestScopedClosureRunnerExitScope) {
   int run_count = 0;
   int* ptr = &run_count;
   {
@@ -25,7 +24,7 @@ TEST(BindObjcBlockTestARC, TestScopedClosureRunnerExitScope) {
   EXPECT_EQ(1, run_count);
 }
 
-TEST(BindObjcBlockTestARC, TestScopedClosureRunnerRelease) {
+TEST(BindObjcBlockTest, TestScopedClosureRunnerRelease) {
   int run_count = 0;
   int* ptr = &run_count;
   base::OnceClosure c;
@@ -41,7 +40,7 @@ TEST(BindObjcBlockTestARC, TestScopedClosureRunnerRelease) {
   EXPECT_EQ(1, run_count);
 }
 
-TEST(BindObjcBlockTestARC, TestReturnValue) {
+TEST(BindObjcBlockTest, TestReturnValue) {
   const int kReturnValue = 42;
   base::OnceCallback<int(void)> c = base::BindOnce(^{
     return kReturnValue;
@@ -49,7 +48,7 @@ TEST(BindObjcBlockTestARC, TestReturnValue) {
   EXPECT_EQ(kReturnValue, std::move(c).Run());
 }
 
-TEST(BindObjcBlockTestARC, TestArgument) {
+TEST(BindObjcBlockTest, TestArgument) {
   const int kArgument = 42;
   base::OnceCallback<int(int)> c = base::BindOnce(^(int a) {
     return a + 1;
@@ -57,7 +56,7 @@ TEST(BindObjcBlockTestARC, TestArgument) {
   EXPECT_EQ(kArgument + 1, std::move(c).Run(kArgument));
 }
 
-TEST(BindObjcBlockTestARC, TestTwoArguments) {
+TEST(BindObjcBlockTest, TestTwoArguments) {
   std::string result;
   std::string* ptr = &result;
   base::OnceCallback<void(const std::string&, const std::string&)> c =
@@ -68,7 +67,7 @@ TEST(BindObjcBlockTestARC, TestTwoArguments) {
   EXPECT_EQ(result, "fortytwo");
 }
 
-TEST(BindObjcBlockTestARC, TestThreeArguments) {
+TEST(BindObjcBlockTest, TestThreeArguments) {
   std::string result;
   std::string* ptr = &result;
   base::OnceCallback<void(const std::string&, const std::string&,
@@ -81,7 +80,7 @@ TEST(BindObjcBlockTestARC, TestThreeArguments) {
   EXPECT_EQ(result, "sixtimesnine");
 }
 
-TEST(BindObjcBlockTestARC, TestSixArguments) {
+TEST(BindObjcBlockTest, TestSixArguments) {
   std::string result1;
   std::string* ptr = &result1;
   int result2;
@@ -98,7 +97,7 @@ TEST(BindObjcBlockTestARC, TestSixArguments) {
   EXPECT_EQ(result2, 6);
 }
 
-TEST(BindObjcBlockTestARC, TestBlockMoveable) {
+TEST(BindObjcBlockTest, TestBlockMoveable) {
   base::OnceClosure c;
   __block BOOL invoked_block = NO;
   @autoreleasepool {
@@ -112,10 +111,10 @@ TEST(BindObjcBlockTestARC, TestBlockMoveable) {
   EXPECT_TRUE(invoked_block);
 }
 
-// Tests that the bound block is retained until the end of its execution,
-// even if the callback itself is destroyed during the invocation. It was
-// found that some code depends on this behaviour (see crbug.com/845687).
-TEST(BindObjcBlockTestARC, TestBlockDeallocation) {
+// Tests that the bound block is retained until the end of its execution, even
+// if the callback itself is destroyed during the invocation. It was found that
+// some code depends on this behaviour (see https://crbug.com/845687).
+TEST(BindObjcBlockTest, TestBlockDeallocation) {
   base::RepeatingClosure closure;
   __block BOOL invoked_block = NO;
   closure = base::BindRepeating(
@@ -128,9 +127,7 @@ TEST(BindObjcBlockTestARC, TestBlockDeallocation) {
   EXPECT_TRUE(invoked_block);
 }
 
-#if BUILDFLAG(IS_IOS)
-
-TEST(BindObjcBlockTestARC, TestBlockReleased) {
+TEST(BindObjcBlockTest, TestBlockReleased) {
   __weak NSObject* weak_nsobject;
   @autoreleasepool {
     NSObject* nsobject = [[NSObject alloc] init];
@@ -142,7 +139,5 @@ TEST(BindObjcBlockTestARC, TestBlockReleased) {
   }
   EXPECT_NSEQ(nil, weak_nsobject);
 }
-
-#endif
 
 }  // namespace

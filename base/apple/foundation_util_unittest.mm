@@ -269,8 +269,8 @@ TEST(FoundationUtilTest, GetValueFromDictionary) {
   ScopedCFTypeRef<CFNumberRef> cf_three(
       CFNumberCreate(kCFAllocatorDefault, kCFNumberIntType, &three));
 
-  CFStringRef keys[] = { CFSTR("one"), CFSTR("two"), CFSTR("three") };
-  CFNumberRef values[] = { cf_one, cf_two, cf_three };
+  CFStringRef keys[] = {CFSTR("one"), CFSTR("two"), CFSTR("three")};
+  CFNumberRef values[] = {cf_one, cf_two, cf_three};
 
   static_assert(std::size(keys) == std::size(values),
                 "keys and values arrays must have the same size");

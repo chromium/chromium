@@ -2953,7 +2953,7 @@ if (is_ios) {
 if (is_apple) {
   source_set("base_unittests_noarc") {
     testonly = true
-    sources = [ "mac/scoped_nsobject_unittest.mm" ]
+    sources = [ "apple/scoped_nsobject_unittest.mm" ]
 
     # Do not compile with ARC because this target has tests for code that does
     # not compile with ARC.
@@ -3713,8 +3713,8 @@ test("base_unittests") {
   if (is_apple) {
     sources += [
       "apple/backup_util_unittest.mm",
-      "mac/bind_objc_block_unittest_arc.mm",
-      "mac/foundation_util_unittest.mm",
+      "apple/bind_objc_block_unittest.mm",
+      "apple/foundation_util_unittest.mm",
       "strings/sys_string_conversions_mac_unittest.mm",
     ]
   }
