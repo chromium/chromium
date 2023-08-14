@@ -303,8 +303,17 @@ void ApnMigrator::OnGetManagedProperties(
   const base::Value::Dict* cellular_dict =
       chromeos::network_config::GetDictionary(&properties.value(),
                                               ::onc::network_config::kCellular);
+  absl::optional<ApnPropertiesPtr> last_connected_attach_apn =
+      GetPreRevampApnFromDict(cellular_dict,
+                              ::onc::cellular::kLastConnectedAttachApnProperty);
 
-  if (network->IsManagedByPolicy()) {
+  absl::optional<ApnPropertiesPtr> last_connected_default_apn =
+      GetPreRevampApnFromDict(
+          cellular_dict, ::onc::cellular::kLastConnectedDefaultApnProperty);
+
+  const bool is_network_managed = network->IsManagedByPolicy();
+  if (is_network_managed &&
+      !(last_connected_default_apn || last_connected_attach_apn)) {
     ManagedApnPropertiesPtr selected_apn =
         chromeos::network_config::GetManagedApnProperties(
             cellular_dict, ::onc::cellular::kAPN);
@@ -333,14 +342,9 @@ void ApnMigrator::OnGetManagedProperties(
       SetShillCustomApnListForNetwork(*network, &empty_apn_list);
     }
   } else {
-    absl::optional<ApnPropertiesPtr> last_connected_attach_apn =
-        GetPreRevampApnFromDict(
-            cellular_dict, ::onc::cellular::kLastConnectedAttachApnProperty);
-
-    absl::optional<ApnPropertiesPtr> last_connected_default_apn =
-        GetPreRevampApnFromDict(
-            cellular_dict, ::onc::cellular::kLastConnectedDefaultApnProperty);
-
+    NET_LOG(EVENT)
+        << "Migrating network with non-managed flow, is network managed: "
+        << is_network_managed;
     if (!last_connected_attach_apn && !last_connected_default_apn) {
       absl::optional<ApnPropertiesPtr> last_good_apn =
           GetPreRevampApnFromDict(cellular_dict, ::onc::cellular::kLastGoodAPN);
