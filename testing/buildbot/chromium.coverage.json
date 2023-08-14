@@ -1249,8 +1249,7 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--git-revision=${got_revision}",
-          "--use-persistent-shell"
+          "--git-revision=${got_revision}"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -1290,7 +1289,7 @@
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 54
+          "shards": 19
         },
         "test": "chrome_public_test_apk",
         "test_id_prefix": "ninja://chrome/android:chrome_public_test_apk/"
@@ -3067,7 +3066,7 @@
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 36
+          "shards": 12
         },
         "test": "webview_instrumentation_test_apk",
         "test_id_prefix": "ninja://android_webview/test:webview_instrumentation_test_apk/"
