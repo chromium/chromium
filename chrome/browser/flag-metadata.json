@@ -1271,7 +1271,7 @@
       "basiaz@google.com",
       "chrome-language@google.com"
     ],
-    "expiry_milestone": 117
+    "expiry_milestone": 120
   },
   {
     "name": "content-suggestions-magic-stack",
@@ -7818,7 +7818,7 @@
       "basiaz@google.com",
       "chrome-language@google.com"
     ],
-    "expiry_milestone": 117
+    "expiry_milestone": 120
   },
   {
     "name": "twa-post-message",
