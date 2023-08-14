@@ -5647,7 +5647,7 @@ hooks = [
     # Clean up build dirs for crbug.com/1337238.
     # After a libc++ roll and revert, .ninja_deps would get into a state
     # that breaks Ninja on Windows.
-    # TODO(crbug.com/1337238): Remove in a month or so.
+    # TODO(crbug.com/1409337): Remove this after updating Ninja 1.12 or newer.
     'name': 'del_ninja_deps_cache',
     'pattern': '.',
     'condition': 'host_os == "win"',
