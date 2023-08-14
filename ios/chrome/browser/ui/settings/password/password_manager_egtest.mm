@@ -2007,6 +2007,53 @@ void CheckPasswordManagerVisitMetricCount(int count) {
       performAction:grey_tap()];
 }
 
+// Edit a password with only incognito tab opened should work.
+- (void)testEditPasswordWithOnlyIncognitoTabOpen {
+  SavePasswordForm();
+
+  [ChromeEarlGrey openNewIncognitoTab];
+  [ChromeEarlGrey closeAllNormalTabs];
+
+  OpenPasswordManager();
+
+  [[self interactionForSinglePasswordEntryWithDomain:@"example.com"]
+      performAction:grey_tap()];
+
+  // Check the snackbar in case of successful reauthentication.
+  if (![self notesEnabled]) {
+    [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
+                                      ReauthenticationResult::kSuccess];
+  }
+
+  TapNavigationBarEditButton();
+
+  [[EarlGrey selectElementWithMatcher:PasswordDetailPassword()]
+      assertWithMatcher:grey_textFieldValue(@"concrete password")];
+
+  [[EarlGrey selectElementWithMatcher:PasswordDetailPassword()]
+      performAction:grey_replaceText(@"new password")];
+
+  [[EarlGrey selectElementWithMatcher:EditDoneButton()]
+      performAction:grey_tap()];
+
+  [[EarlGrey selectElementWithMatcher:EditPasswordConfirmationButton()]
+      performAction:grey_tap()];
+
+  TapNavigationBarEditButton();
+
+  [[EarlGrey selectElementWithMatcher:PasswordDetailPassword()]
+      assertWithMatcher:grey_textFieldValue(@"new password")];
+
+  [[EarlGrey selectElementWithMatcher:NavigationBarCancelButton()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
+      performAction:grey_tap()];
+}
+
 // Checks that attempts to edit a password provide appropriate feedback.
 - (void)testEditPassword {
   SavePasswordForm();
