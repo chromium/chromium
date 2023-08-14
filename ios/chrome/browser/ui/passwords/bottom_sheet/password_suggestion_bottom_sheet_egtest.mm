@@ -259,6 +259,11 @@ id<GREYMatcher> DeleteConfirmationButton() {
 
   [ChromeEarlGreyUI waitForAppToIdle];
 
+  // Mock local authentication result needed for opening the password manager.
+  [PasswordSettingsAppInterface setUpMockReauthenticationModule];
+  [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
+                                    ReauthenticationResult::kSuccess];
+
   [[EarlGrey
       selectElementWithMatcher:
           grey_allOf(chrome_test_util::ButtonWithAccessibilityLabel(
@@ -277,6 +282,8 @@ id<GREYMatcher> DeleteConfirmationButton() {
                                                         origin]),
                                    grey_sufficientlyVisible(), nil)]
       assertWithMatcher:grey_notNil()];
+
+  [PasswordSettingsAppInterface removeMockReauthenticationModule];
 }
 
 - (void)testOpenPasswordBottomSheetOpenPasswordDetails {
