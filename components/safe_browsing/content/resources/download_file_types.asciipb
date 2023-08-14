@@ -8,7 +8,7 @@
 ##
 ## Top level settings
 ##
-version_id: 61
+version_id: 62
 sampled_ping_probability: 0.01
 max_archived_binaries_to_report: 10
 default_file_type {
@@ -2955,6 +2955,30 @@ file_types {
 file_types {
   extension: "msix"
   uma_value: 407
+  is_archive: true
+  ping_setting: FULL_PING
+  platform_settings {
+    platform: PLATFORM_TYPE_WINDOWS
+    danger_level: ALLOW_ON_USER_GESTURE
+    auto_open_hint: DISALLOW_AUTO_OPEN
+  }
+  inspection_type: ZIP
+}
+file_types {
+  extension: "appxbundle"
+  uma_value: 408
+  is_archive: true
+  ping_setting: FULL_PING
+  platform_settings {
+    platform: PLATFORM_TYPE_WINDOWS
+    danger_level: ALLOW_ON_USER_GESTURE
+    auto_open_hint: DISALLOW_AUTO_OPEN
+  }
+  inspection_type: ZIP
+}
+file_types {
+  extension: "msixbundle"
+  uma_value: 409
   is_archive: true
   ping_setting: FULL_PING
   platform_settings {

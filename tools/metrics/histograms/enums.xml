@@ -94682,6 +94682,8 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="405" label="ATLOC"/>
   <int value="406" label="APPX"/>
   <int value="407" label="MSIX"/>
+  <int value="408" label="APPXBUNDLE"/>
+  <int value="409" label="MSIXBUNDLE"/>
 </enum>
 
 <enum name="SBClientDownloadIsSignedBinary">
