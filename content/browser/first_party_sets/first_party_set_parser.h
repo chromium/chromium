@@ -85,6 +85,10 @@ class CONTENT_EXPORT FirstPartySetParser {
       const base::Value::Dict& policy);
 };
 
+CONTENT_EXPORT std::ostream& operator<<(
+    std::ostream& os,
+    const FirstPartySetParser::ParsedPolicySetLists& lists);
+
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_FIRST_PARTY_SETS_FIRST_PARTY_SET_PARSER_H_
