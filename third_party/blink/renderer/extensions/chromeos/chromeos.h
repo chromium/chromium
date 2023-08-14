@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_EXTENSIONS_CHROMEOS_CHROMEOS_H_
 
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/extensions/chromeos/diagnostics/cros_diagnostics.h"
 #include "third_party/blink/renderer/extensions/chromeos/extensions_chromeos_export.h"
 #include "third_party/blink/renderer/extensions/chromeos/system_extensions/hid/cros_hid.h"
 #include "third_party/blink/renderer/extensions/chromeos/system_extensions/managed_device_health_services/telemetry/cros_telemetry.h"
@@ -22,6 +23,7 @@ class EXTENSIONS_CHROMEOS_EXPORT ChromeOS : public ScriptWrappable {
   CrosWindowManagement* windowManagement(ExecutionContext*);
   CrosHID* hid(ExecutionContext*);
   CrosTelemetry* telemetry(ExecutionContext*);
+  CrosDiagnostics* diagnostics(ExecutionContext*);
 
   void Trace(Visitor*) const override;
 };

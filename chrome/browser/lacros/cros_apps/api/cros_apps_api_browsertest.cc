@@ -31,3 +31,22 @@ IN_PROC_BROWSER_TEST_F(CrosAppsApiBrowserTest, ChromeOsExistsTest) {
   EXPECT_EQ(true, content::EvalJs(web_contents,
                                   "typeof window.chromeos !== 'undefined'"));
 }
+
+class DiagnosticsApiBrowserTest : public CrosAppsApiBrowserTest {
+ public:
+  // CrosAppsApiBrowserTest:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    CrosAppsApiBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
+                                    "BlinkExtensionChromeOSDiagnostics");
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(DiagnosticsApiBrowserTest, DiagnosticsExistsTest) {
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  EXPECT_EQ(true, content::EvalJs(
+                      web_contents,
+                      "typeof window.chromeos.diagnostics !== 'undefined'"));
+}

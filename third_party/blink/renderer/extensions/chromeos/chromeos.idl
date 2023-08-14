@@ -13,4 +13,7 @@
 
   [RuntimeEnabled=BlinkExtensionChromeOSTelemetry,CallWith=ExecutionContext]
   readonly attribute CrosTelemetry telemetry;
+
+  [RuntimeEnabled=BlinkExtensionChromeOSDiagnostics,CallWith=ExecutionContext]
+  readonly attribute CrosDiagnostics diagnostics;
 };

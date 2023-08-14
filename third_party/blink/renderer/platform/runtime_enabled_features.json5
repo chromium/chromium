@@ -476,6 +476,11 @@
       base_feature: "none",
     },
     {
+      name: "BlinkExtensionChromeOSDiagnostics",
+      depends_on: ["BlinkExtensionChromeOS"],
+      base_feature: "none",
+    },
+    {
       name: "BlinkExtensionChromeOSHID",
       depends_on: ["BlinkExtensionChromeOS"],
       base_feature: "none",
