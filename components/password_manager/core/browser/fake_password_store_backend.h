@@ -116,7 +116,7 @@ class FakePasswordStoreBackend : public PasswordStoreBackend {
   const IsAccountStore is_account_store_{false};
   const UpdateAlwaysSucceeds update_always_succeeds_{false};
 
-  base::raw_ptr<AffiliatedMatchHelper> match_helper_;
+  raw_ptr<AffiliatedMatchHelper> match_helper_;
   PasswordMap stored_passwords_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 };

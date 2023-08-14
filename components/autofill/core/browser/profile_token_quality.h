@@ -229,7 +229,7 @@ class ProfileTokenQuality {
       const std::string& app_locale) const;
 
   // The profile for which observations are collected.
-  base::raw_ref<AutofillProfile> profile_;
+  raw_ref<AutofillProfile> profile_;
 
   // Maps from `AutofillTable::GetStoredTypesForAutofillProfile()` to the
   // observations for this stored type. The following invariants hold for the

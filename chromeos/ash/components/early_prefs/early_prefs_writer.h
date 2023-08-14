@@ -44,7 +44,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_EARLY_PREFS) EarlyPrefsWriter
   absl::optional<std::string> SerializeData() override;
 
   base::Value::Dict root_;
-  base::raw_ptr<base::Value::Dict> data_;
+  raw_ptr<base::Value::Dict> data_;
   base::FilePath data_file_;
   std::unique_ptr<base::ImportantFileWriter> writer_;
   scoped_refptr<base::SequencedTaskRunner> file_task_runner_;

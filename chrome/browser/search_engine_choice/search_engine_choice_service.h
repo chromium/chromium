@@ -64,7 +64,7 @@ class SearchEngineChoiceService : public KeyedService {
     void OnBrowserRemoved(Browser* browser) override;
 
    private:
-    base::raw_ref<SearchEngineChoiceService> search_engine_choice_service_;
+    raw_ref<SearchEngineChoiceService> search_engine_choice_service_;
     base::ScopedObservation<BrowserList, BrowserListObserver> observation_{
         this};
   };

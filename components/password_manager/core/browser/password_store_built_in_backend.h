@@ -107,7 +107,7 @@ class PasswordStoreBuiltInBackend : public PasswordStoreBackend,
   std::unique_ptr<LoginDatabaseAsyncHelper> helper_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
-  base::raw_ptr<AffiliatedMatchHelper> affiliated_match_helper_;
+  raw_ptr<AffiliatedMatchHelper> affiliated_match_helper_;
 
   // TaskRunner for all the background operations.
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_

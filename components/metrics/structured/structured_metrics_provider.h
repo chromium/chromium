@@ -23,7 +23,7 @@ namespace metrics::structured {
 class StructuredMetricsProvider final : public metrics::MetricsProvider {
  public:
   explicit StructuredMetricsProvider(
-      base::raw_ptr<StructuredMetricsRecorder> structured_metrics_recorder);
+      raw_ptr<StructuredMetricsRecorder> structured_metrics_recorder);
   ~StructuredMetricsProvider() override;
   StructuredMetricsProvider(const StructuredMetricsProvider&) = delete;
   StructuredMetricsProvider& operator=(const StructuredMetricsProvider&) =
@@ -42,7 +42,7 @@ class StructuredMetricsProvider final : public metrics::MetricsProvider {
   // TODO(crbug/1350322): Use this ctor to replace existing ctor.
   StructuredMetricsProvider(
       base::TimeDelta min_independent_metrics_interval,
-      base::raw_ptr<StructuredMetricsRecorder> structured_metrics_recorder);
+      raw_ptr<StructuredMetricsRecorder> structured_metrics_recorder);
 
   // Removes all in-memory and on-disk events.
   void Purge();
@@ -73,7 +73,7 @@ class StructuredMetricsProvider final : public metrics::MetricsProvider {
   // available on every ProvideIndependentMetrics.
   base::TimeDelta min_independent_metrics_interval_;
 
-  base::raw_ptr<StructuredMetricsRecorder> structured_metrics_recorder_;
+  raw_ptr<StructuredMetricsRecorder> structured_metrics_recorder_;
 
   base::WeakPtrFactory<StructuredMetricsProvider> weak_factory_{this};
 };

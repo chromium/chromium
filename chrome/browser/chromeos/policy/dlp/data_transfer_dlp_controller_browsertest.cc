@@ -286,7 +286,7 @@ class DataTransferDlpBrowserTest : public InProcessBrowserTest {
 
   raw_ptr<MockDlpRulesManager, DanglingUntriaged> rules_manager_;
   std::unique_ptr<DlpReportingManager> reporting_manager_;
-  base::raw_ptr<reporting::MockReportQueue> reporting_queue_;
+  raw_ptr<reporting::MockReportQueue> reporting_queue_;
   FakeClipboardNotifier helper_;
   std::unique_ptr<FakeDlpController> dlp_controller_;
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
@@ -541,7 +541,7 @@ class DataTransferDlpBlinkBrowserTest : public InProcessBrowserTest {
 
   std::unique_ptr<::testing::NiceMock<MockDlpRulesManager>> rules_manager_;
   std::unique_ptr<DlpReportingManager> reporting_manager_;
-  base::raw_ptr<reporting::MockReportQueue> reporting_queue_;
+  raw_ptr<reporting::MockReportQueue> reporting_queue_;
   FakeClipboardNotifier helper_;
   std::unique_ptr<FakeDlpController> dlp_controller_;
 };

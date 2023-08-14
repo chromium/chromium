@@ -122,10 +122,9 @@ class AuthHubTestBase : public ::testing::Test {
   std::unique_ptr<user_manager::FakeUserManager> user_manager_;
   std::unique_ptr<AuthPartsImpl> parts_;
 
-  base::raw_ptr<MockAuthFactorEngineFactory> engine_factory_ = nullptr;
-  base::raw_ptr<MockAuthFactorEngine> engine_ = nullptr;
-  base::raw_ptr<AuthFactorEngine::FactorEngineObserver,
-                AcrossTasksDanglingUntriaged>
+  raw_ptr<MockAuthFactorEngineFactory> engine_factory_ = nullptr;
+  raw_ptr<MockAuthFactorEngine> engine_ = nullptr;
+  raw_ptr<AuthFactorEngine::FactorEngineObserver, AcrossTasksDanglingUntriaged>
       engine_observer_ = nullptr;
   absl::optional<AuthFactorEngine::UsageAllowed> engine_usage_;
 };
@@ -191,8 +190,7 @@ class AuthHubTestVector : public AuthHubTestBase {
 
   AccountId account_;
   AuthAttemptVector attempt_;
-  base::raw_ptr<AuthHubConnector, AcrossTasksDanglingUntriaged> connector_ =
-      nullptr;
+  raw_ptr<AuthHubConnector, AcrossTasksDanglingUntriaged> connector_ = nullptr;
   StrictMock<MockAuthAttemptConsumer> attempt_consumer_;
   StrictMock<MockAuthFactorStatusConsumer> status_consumer_;
   FactorsStatusMap factors_state_;

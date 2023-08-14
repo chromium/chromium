@@ -35,7 +35,7 @@ class GrpcCall {
     void Cancel() { grpc_context_->TryCancel(); }
 
    private:
-    base::raw_ptr<grpc::ClientContext> grpc_context_;
+    raw_ptr<grpc::ClientContext> grpc_context_;
   };
 
   explicit GrpcCall(SyncInterface* stub) : GrpcCall(stub, Request()) {}
@@ -71,8 +71,8 @@ class GrpcCall {
   GrpcCallOptions&& options() && { return std::move(options_); }
 
  private:
-  base::raw_ptr<SyncInterface> stub_;
-  base::raw_ptr<AsyncInterface> async_;
+  raw_ptr<SyncInterface> stub_;
+  raw_ptr<AsyncInterface> async_;
   Request request_;
   GrpcCallOptions options_;
 };

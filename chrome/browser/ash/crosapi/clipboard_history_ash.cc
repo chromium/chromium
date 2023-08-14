@@ -52,7 +52,7 @@ class ClipboardHistoryAsh::ClientUpdater
 
  private:
   // The associated client.
-  const base::raw_ptr<mojom::ClipboardHistoryClient> client_;
+  const raw_ptr<mojom::ClipboardHistoryClient> client_;
 
   // The observation on the clipboard history controller.
   base::ScopedObservation<ash::ClipboardHistoryController,

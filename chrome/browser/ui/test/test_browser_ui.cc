@@ -70,7 +70,7 @@ class ScopedMouseDisabler {
   ~ScopedMouseDisabler() { cursor_client_->EnableMouseEvents(); }
 
  private:
-  base::raw_ptr<aura::client::CursorClient> cursor_client_;
+  raw_ptr<aura::client::CursorClient> cursor_client_;
 };
 #endif
 

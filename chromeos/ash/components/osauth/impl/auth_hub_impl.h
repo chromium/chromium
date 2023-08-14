@@ -92,10 +92,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthHubImpl
   AuthEnginesMap engines_;
 
   absl::optional<AuthAttemptVector> current_attempt_;
-  base::raw_ptr<AuthAttemptConsumer> attempt_consumer_ = nullptr;
+  raw_ptr<AuthAttemptConsumer> attempt_consumer_ = nullptr;
 
   absl::optional<AuthAttemptVector> pending_attempt_;
-  base::raw_ptr<AuthAttemptConsumer> pending_consumer_ = nullptr;
+  raw_ptr<AuthAttemptConsumer> pending_consumer_ = nullptr;
 
   // Target mode for initialization, used to store last request when
   // some extra actions are required before mode can be switched.
@@ -108,7 +108,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthHubImpl
   std::unique_ptr<AuthHubAttemptHandler> attempt_handler_;
   std::unique_ptr<AuthHubVectorLifecycle> vector_lifecycle_;
   std::unique_ptr<AuthHubModeLifecycle> mode_lifecycle_;
-  base::raw_ptr<AuthFactorPresenceCache> cache_;
+  raw_ptr<AuthFactorPresenceCache> cache_;
 
   base::WeakPtrFactory<AuthHubImpl> weak_factory_{this};
 };

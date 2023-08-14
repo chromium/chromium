@@ -702,7 +702,7 @@ class FastPairGattServiceClientTest : public testing::Test {
   std::unique_ptr<FakeBluetoothDevice> unique_fake_bt_device_;
   std::unique_ptr<FakeBluetoothGattCharacteristic>
       fake_key_based_characteristic_;
-  base::raw_ptr<FakeBluetoothGattCharacteristic, DanglingUntriaged>
+  raw_ptr<FakeBluetoothGattCharacteristic, DanglingUntriaged>
       additional_data_characteristic_;
   std::unique_ptr<FakeFastPairDataEncryptor> fast_pair_data_encryptor_ =
       std::make_unique<FakeFastPairDataEncryptor>();

@@ -59,8 +59,8 @@ class MEDIA_EXPORT HlsLiveRendition : public HlsRendition {
   // turn owns |this|, so it's safe to keep these as raw ptrs. |host_| is needed
   // to access the chunk demuxer, and |engine_| is needed to make network
   // requests.
-  base::raw_ptr<ManifestDemuxerEngineHost> engine_host_;
-  base::raw_ptr<HlsRenditionHost> rendition_host_;
+  raw_ptr<ManifestDemuxerEngineHost> engine_host_;
+  raw_ptr<HlsRenditionHost> rendition_host_;
 
   // The chunk demuxer role for this rendition.
   std::string role_;

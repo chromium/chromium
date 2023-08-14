@@ -114,7 +114,7 @@ class MockHlsDataSourceProvider : public HlsDataSourceProvider {
 
 class FakeHlsDataSourceProvider : public HlsDataSourceProvider {
  private:
-  base::raw_ptr<HlsDataSourceProvider> mock_;
+  raw_ptr<HlsDataSourceProvider> mock_;
 
  public:
   FakeHlsDataSourceProvider(HlsDataSourceProvider* mock) : mock_(mock) {}

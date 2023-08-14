@@ -122,7 +122,7 @@ class ASH_EXPORT AmbientManagedPhotoController
   // show.
   std::vector<base::FilePath> images_file_paths_;
 
-  base::raw_ptr<Observer> observer_ = nullptr;
+  raw_ptr<Observer> observer_ = nullptr;
 
   base::ScopedObservation<AmbientViewDelegate, AmbientViewDelegateObserver>
       scoped_view_delegate_observation_{this};

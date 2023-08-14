@@ -52,7 +52,7 @@ char StructuredMetricsRecorder::kDeviceKeyDataPath[] =
 char StructuredMetricsRecorder::kUnsentLogsPath[] = "structured_metrics/events";
 
 StructuredMetricsRecorder::StructuredMetricsRecorder(
-    base::raw_ptr<metrics::MetricsProvider> system_profile_provider)
+    raw_ptr<metrics::MetricsProvider> system_profile_provider)
     : StructuredMetricsRecorder(base::FilePath(kDeviceKeyDataPath),
                                 base::Milliseconds(kSaveDelayMs),
                                 system_profile_provider) {}
@@ -60,7 +60,7 @@ StructuredMetricsRecorder::StructuredMetricsRecorder(
 StructuredMetricsRecorder::StructuredMetricsRecorder(
     const base::FilePath& device_key_path,
     base::TimeDelta write_delay,
-    base::raw_ptr<metrics::MetricsProvider> system_profile_provider)
+    raw_ptr<metrics::MetricsProvider> system_profile_provider)
     : device_key_path_(device_key_path),
       write_delay_(write_delay),
       system_profile_provider_(system_profile_provider) {

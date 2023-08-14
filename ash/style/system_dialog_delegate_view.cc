@@ -197,12 +197,12 @@ class SystemDialogDelegateView::ButtonContainer : public views::FlexLayoutView {
 
  private:
   // Owned by the container.
-  base::raw_ptr<PillButton> cancel_button_ = nullptr;
-  base::raw_ptr<PillButton> accept_button_ = nullptr;
-  base::raw_ptr<views::View> additional_view_ = nullptr;
+  raw_ptr<PillButton> cancel_button_ = nullptr;
+  raw_ptr<PillButton> accept_button_ = nullptr;
+  raw_ptr<views::View> additional_view_ = nullptr;
   // The view used to fill the free spaces between the additional view and
   // cancel button.
-  base::raw_ptr<views::View> place_holder_view_ = nullptr;
+  raw_ptr<views::View> place_holder_view_ = nullptr;
 };
 
 BEGIN_METADATA(SystemDialogDelegateView, ButtonContainer, views::FlexLayoutView)

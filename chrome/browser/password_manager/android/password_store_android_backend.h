@@ -348,7 +348,7 @@ class PasswordStoreAndroidBackend
 
   raw_ptr<const syncer::SyncService> sync_service_ = nullptr;
 
-  base::raw_ptr<AffiliatedMatchHelper> affiliated_match_helper_;
+  raw_ptr<AffiliatedMatchHelper> affiliated_match_helper_;
 
   // Delegate to handle sync events.
   std::unique_ptr<PasswordSyncControllerDelegateAndroid>

@@ -646,7 +646,7 @@ class SubscriptionObserver : public StateObserver {
   }
 
   base::CallbackListSubscription subscription_;
-  base::raw_ptr<SubscribableObject> object_;
+  raw_ptr<SubscribableObject> object_;
 };
 ```
 

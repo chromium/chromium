@@ -69,7 +69,7 @@ class MediaEffectsServiceTest : public testing::Test {
   std::unique_ptr<MediaEffectsService> service_;
 
  private:
-  base::raw_ptr<Profile> profile_;
+  raw_ptr<Profile> profile_;
   content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager profile_manager_;
 };

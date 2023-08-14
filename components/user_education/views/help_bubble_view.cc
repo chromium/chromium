@@ -493,7 +493,7 @@ class HelpBubbleView::AnchorViewObserver : public views::ViewObserver {
     }
   }
 
-  const base::raw_ptr<HelpBubbleView> help_bubble_;
+  const raw_ptr<HelpBubbleView> help_bubble_;
   base::ScopedObservation<View, ViewObserver> observation_{this};
 };
 

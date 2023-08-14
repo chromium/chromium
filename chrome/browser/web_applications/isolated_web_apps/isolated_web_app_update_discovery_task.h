@@ -104,8 +104,8 @@ class IsolatedWebAppUpdateDiscoveryTask {
   GURL update_manifest_url_;
   IsolatedWebAppUrlInfo url_info_;
 
-  base::raw_ref<WebAppCommandScheduler> command_scheduler_;
-  base::raw_ref<WebAppRegistrar> registrar_;
+  raw_ref<WebAppCommandScheduler> command_scheduler_;
+  raw_ref<WebAppRegistrar> registrar_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
   std::unique_ptr<UpdateManifestFetcher> update_manifest_fetcher_;

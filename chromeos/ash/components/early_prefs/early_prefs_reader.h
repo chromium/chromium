@@ -42,7 +42,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_EARLY_PREFS) EarlyPrefsReader {
   bool ValidatePref(const base::Value& pref) const;
 
   std::unique_ptr<base::Value> root_;
-  base::raw_ptr<base::Value::Dict> data_ = nullptr;
+  raw_ptr<base::Value::Dict> data_ = nullptr;
   base::FilePath data_file_;
   scoped_refptr<base::SequencedTaskRunner> file_task_runner_;
   base::WeakPtrFactory<EarlyPrefsReader> weak_factory_{this};

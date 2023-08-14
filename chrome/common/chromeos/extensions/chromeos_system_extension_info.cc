@@ -146,7 +146,7 @@ class ScopedChromeOSSystemExtensionInfoImpl
   void ApplyCommandLineSwitchesForTesting() override;  // IN-TEST
 
  private:
-  base::raw_ptr<ChromeOSSystemExtensionInfoMap> map_;
+  raw_ptr<ChromeOSSystemExtensionInfoMap> map_;
 };
 
 // static

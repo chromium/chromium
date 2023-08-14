@@ -110,14 +110,14 @@ class MT21Decompressor {
   std::atomic_bool should_shutdown_ = false;
   std::vector<std::thread> big_core_threads_;
   std::vector<scoped_refptr<MT21DecompressionJob>> big_core_jobs_;
-  base::raw_ptr<uint8_t> big_core_pivot_;
+  raw_ptr<uint8_t> big_core_pivot_;
   std::vector<std::thread> little_core_threads_;
   std::vector<scoped_refptr<MT21DecompressionJob>> little_core_jobs_;
-  base::raw_ptr<uint8_t> little_core_pivot_;
+  raw_ptr<uint8_t> little_core_pivot_;
 
   gfx::Size aligned_resolution_;
 
-  base::raw_ptr<GolombRiceTableEntry> symbol_cache_;
+  raw_ptr<GolombRiceTableEntry> symbol_cache_;
 };
 
 }  // namespace media

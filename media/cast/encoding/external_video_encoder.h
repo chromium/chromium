@@ -86,7 +86,7 @@ class ExternalVideoEncoder final : public VideoEncoder {
 
   const scoped_refptr<CastEnvironment> cast_environment_;
 
-  base::raw_ref<VideoEncoderMetricsProvider> metrics_provider_;
+  raw_ref<VideoEncoderMetricsProvider> metrics_provider_;
 
   // The size of the visible region of the video frames to be encoded.
   const gfx::Size frame_size_;

@@ -41,7 +41,7 @@ class EmbeddedTestServerSetupMixin : public InProcessBrowserTestMixin {
   EmbeddedTestServerSetupMixin() = delete;
   explicit EmbeddedTestServerSetupMixin(InProcessBrowserTestMixinHost& host);
   EmbeddedTestServerSetupMixin(InProcessBrowserTestMixinHost& host,
-                               base::raw_ptr<net::EmbeddedTestServer> server,
+                               raw_ptr<net::EmbeddedTestServer> server,
                                const Options& options);
 
   EmbeddedTestServerSetupMixin(const EmbeddedTestServerSetupMixin&) = delete;
@@ -63,7 +63,7 @@ class EmbeddedTestServerSetupMixin : public InProcessBrowserTestMixin {
 
  private:
   // Embedded test server owned by test that uses this mixin.
-  base::raw_ptr<net::EmbeddedTestServer> embedded_test_server_;
+  raw_ptr<net::EmbeddedTestServer> embedded_test_server_;
 
   // Mocks server functionalities.
   KidsManagementApiServerMock api_mock_;

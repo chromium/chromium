@@ -23,13 +23,13 @@ using ::metrics::SystemProfileProto;
 }  // namespace
 
 StructuredMetricsProvider::StructuredMetricsProvider(
-    base::raw_ptr<StructuredMetricsRecorder> structured_metrics_recorder)
+    raw_ptr<StructuredMetricsRecorder> structured_metrics_recorder)
     : StructuredMetricsProvider(base::Minutes(GetUploadCadenceMinutes()),
                                 structured_metrics_recorder) {}
 
 StructuredMetricsProvider::StructuredMetricsProvider(
     base::TimeDelta min_independent_metrics_interval,
-    base::raw_ptr<StructuredMetricsRecorder> structured_metrics_recorder)
+    raw_ptr<StructuredMetricsRecorder> structured_metrics_recorder)
     : min_independent_metrics_interval_(min_independent_metrics_interval),
       structured_metrics_recorder_(structured_metrics_recorder) {
   DCHECK(structured_metrics_recorder_);

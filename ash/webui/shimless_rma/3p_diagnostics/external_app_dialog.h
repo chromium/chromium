@@ -23,7 +23,7 @@ class ExternalAppDialog : public ui::WebDialogDelegate {
   // Params for a dialog.
   struct InitParams {
     // The BrowserContext for the dialog.
-    base::raw_ptr<content::BrowserContext> context;
+    raw_ptr<content::BrowserContext> context;
     // The url of the dialog content.
     const GURL& content_url;
   };

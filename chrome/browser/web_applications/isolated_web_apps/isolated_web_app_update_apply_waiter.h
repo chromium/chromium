@@ -46,7 +46,7 @@ class IsolatedWebAppUpdateApplyWaiter {
   void Signal();
 
   IsolatedWebAppUrlInfo url_info_;
-  base::raw_ref<WebAppUiManager> ui_manager_;
+  raw_ref<WebAppUiManager> ui_manager_;
 
   Callback callback_;
   std::unique_ptr<ScopedKeepAlive> keep_alive_;

@@ -43,8 +43,7 @@ class KidsManagementApiServerMock {
   // this instance and must not be started prior to calling this method.
   // Caution: installed handlers are executed until one matches the request.
 
-  void InstallOn(
-      base::raw_ptr<net::test_server::EmbeddedTestServer> test_server_);
+  void InstallOn(raw_ptr<net::test_server::EmbeddedTestServer> test_server_);
   base::CallbackListSubscription Subscribe(
       base::RepeatingCallback<RequestMonitor> monitor);
 

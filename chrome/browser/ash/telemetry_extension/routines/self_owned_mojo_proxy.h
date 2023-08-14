@@ -53,7 +53,7 @@ class SelfOwnedMojoProxy : public SelfOwnedMojoProxyInterface {
       base::OnceCallback<void(SelfOwnedMojoProxyInterface*)>;
 
   template <typename... ImplArgs>
-  static base::raw_ptr<SelfOwnedMojoProxyInterface, ExperimentalAsh> Create(
+  static raw_ptr<SelfOwnedMojoProxyInterface, ExperimentalAsh> Create(
       mojo::PendingReceiver<ReceiverInterface> pending_receiver,
       mojo::PendingRemote<RemoteInterface> pending_remote,
       OnDisconnectCallback on_disconnect_callback,
@@ -75,7 +75,7 @@ class SelfOwnedMojoProxy : public SelfOwnedMojoProxyInterface {
   }
 
  private:
-  friend base::raw_ptr<SelfOwnedMojoProxy> Create(
+  friend raw_ptr<SelfOwnedMojoProxy> Create(
       std::unique_ptr<ReceiverImpl> receiver_impl,
       mojo::PendingReceiver<ReceiverInterface> pending_receiver,
       OnDisconnectCallback on_disconnect_callback);

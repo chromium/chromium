@@ -73,7 +73,7 @@ SupervisionMixin::SupervisionMixin(
 SupervisionMixin::SupervisionMixin(
     InProcessBrowserTestMixinHost& test_mixin_host,
     InProcessBrowserTest* test_base,
-    base::raw_ptr<net::EmbeddedTestServer> embedded_test_server,
+    raw_ptr<net::EmbeddedTestServer> embedded_test_server,
     const Options& options)
     : InProcessBrowserTestMixin(&test_mixin_host),
       test_base_(test_base),

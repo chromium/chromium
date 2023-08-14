@@ -50,7 +50,7 @@ class ASH_EXPORT DeskBarController : public DesksController::Observer,
     ~BarWidgetAndView();
 
     std::unique_ptr<views::Widget> bar_widget;
-    base::raw_ptr<DeskBarViewBase> bar_view;
+    raw_ptr<DeskBarViewBase> bar_view;
   };
 
   DeskBarController();

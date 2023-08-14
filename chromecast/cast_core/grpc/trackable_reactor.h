@@ -29,7 +29,7 @@ class TrackableReactor : public TReactor {
   ~TrackableReactor() override { server_reactor_tracker_->RemoveReactor(this); }
 
  private:
-  base::raw_ptr<ServerReactorTracker> const server_reactor_tracker_;
+  raw_ptr<ServerReactorTracker> const server_reactor_tracker_;
 };
 
 }  // namespace utils

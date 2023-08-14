@@ -65,7 +65,7 @@ class BackgroundServiceHandler
   std::unique_ptr<BackgroundService::Frontend> frontend_;
 
   // Owned by the storage partition.
-  base::raw_ptr<DevToolsBackgroundServicesContextImpl> devtools_context_;
+  raw_ptr<DevToolsBackgroundServicesContextImpl> devtools_context_;
 
   base::flat_set<devtools::proto::BackgroundService> enabled_services_;
 

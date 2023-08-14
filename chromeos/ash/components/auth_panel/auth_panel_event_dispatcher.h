@@ -46,7 +46,7 @@ class AuthPanelEventDispatcher {
     kFailure,
   };
 
-  explicit AuthPanelEventDispatcher(base::raw_ptr<AuthFactorStore> store);
+  explicit AuthPanelEventDispatcher(raw_ptr<AuthFactorStore> store);
   ~AuthPanelEventDispatcher();
   AuthPanelEventDispatcher(const AuthPanelEventDispatcher&) = delete;
   AuthPanelEventDispatcher(AuthPanelEventDispatcher&&) = delete;
@@ -58,7 +58,7 @@ class AuthPanelEventDispatcher {
   void DispatchEvent(AshAuthFactor factor, AuthVerdict verdict);
 
  private:
-  base::raw_ptr<AuthFactorStore> store_;
+  raw_ptr<AuthFactorStore> store_;
 };
 
 }  // namespace ash

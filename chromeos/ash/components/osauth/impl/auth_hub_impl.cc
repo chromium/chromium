@@ -133,7 +133,7 @@ void AuthHubImpl::StartAuthentication(AccountId account_id,
 
   attempt_handler_ = std::make_unique<AuthHubAttemptHandler>(
       this, *current_attempt_, engines_, cached_factors);
-  base::raw_ptr<AuthFactorStatusConsumer> status_consumer;
+  raw_ptr<AuthFactorStatusConsumer> status_consumer;
   attempt_consumer_->OnUserAuthAttemptConfirmed(
       attempt_handler_->GetConnector(), status_consumer);
   attempt_handler_->SetConsumer(status_consumer);

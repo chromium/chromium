@@ -1556,7 +1556,7 @@ class DCompPresenterSkiaGoldTest : public DCompPresenterPixelTest {
   }
 
  private:
-  base::raw_ptr<ui::test::SkiaGoldPixelDiff> pixel_diff_ = nullptr;
+  raw_ptr<ui::test::SkiaGoldPixelDiff> pixel_diff_ = nullptr;
 
   // The matching algorithm for goldctl to use.
   std::unique_ptr<ui::test::SkiaGoldMatchingAlgorithm> matching_algorithm_;

@@ -27,7 +27,7 @@ class EarlyPrefsExportService : public KeyedService {
   void StoreAndTrackPref(const std::string& pref_name);
   void OnPrefChanged(const std::string& pref_name);
 
-  base::raw_ptr<PrefService> prefs_;
+  raw_ptr<PrefService> prefs_;
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
   std::unique_ptr<EarlyPrefsWriter> writer_;
 };

@@ -32,7 +32,7 @@ class ExamplesSkiaGoldPixelDiff {
   void DoScreenshot(views::Widget* widget);
 
   std::string screenshot_prefix_;
-  base::raw_ptr<ui::test::SkiaGoldPixelDiff> pixel_diff_ = nullptr;
+  raw_ptr<ui::test::SkiaGoldPixelDiff> pixel_diff_ = nullptr;
   mutable gfx::Image screenshot_;
   ExamplesExitCode result_ = ExamplesExitCode::kNone;
 };

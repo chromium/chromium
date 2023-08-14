@@ -122,7 +122,7 @@ class GrpcServerStreamingCall : public GrpcCall<TGrpcStub, TRequest> {
                                 const Request*,
                                 grpc::ClientReadReactor<Response>*)>;
 
-    base::raw_ptr<AsyncInterface> async_interface_;
+    raw_ptr<AsyncInterface> async_interface_;
     ResponseCallback response_callback_;
     Response response_;
   };

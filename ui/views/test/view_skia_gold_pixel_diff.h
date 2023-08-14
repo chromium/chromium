@@ -97,7 +97,7 @@ class ViewSkiaGoldPixelDiff {
                          gfx::Image* image) const;
 
   const std::string screenshot_prefix_;
-  base::raw_ptr<ui::test::SkiaGoldPixelDiff> pixel_diff_ = nullptr;
+  raw_ptr<ui::test::SkiaGoldPixelDiff> pixel_diff_ = nullptr;
 };
 
 }  // namespace views

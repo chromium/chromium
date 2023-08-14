@@ -29,7 +29,7 @@ class FeatureEngagementInitializedObserver
  private:
   void OnTrackerInitialized(bool success);
 
-  base::raw_ptr<feature_engagement::Tracker> tracker_ = nullptr;
+  raw_ptr<feature_engagement::Tracker> tracker_ = nullptr;
   base::WeakPtrFactory<FeatureEngagementInitializedObserver> weak_ptr_factory_{
       this};
 };

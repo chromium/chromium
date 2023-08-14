@@ -33,7 +33,7 @@ class GrpcHandler {
       grpc::CallbackServerContext* context) = 0;
 
  private:
-  base::raw_ptr<ServerReactorTracker> server_reactor_tracker_;
+  raw_ptr<ServerReactorTracker> server_reactor_tracker_;
 };
 
 }  // namespace utils

@@ -47,7 +47,7 @@ class UserImageManagerRegistry : public user_manager::UserManager::Observer {
   void OnUserProfileCreated(const user_manager::User& user) override;
 
  private:
-  const base::raw_ptr<user_manager::UserManager, ExperimentalAsh> user_manager_;
+  const raw_ptr<user_manager::UserManager, ExperimentalAsh> user_manager_;
   std::map<AccountId, std::unique_ptr<UserImageManager>> map_;
 
   base::ScopedObservation<user_manager::UserManager,

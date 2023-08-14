@@ -56,7 +56,7 @@ class ASH_EXPORT BlurredBackgroundShield : public views::ViewObserver {
   void UpdateBackgroundColor();
 
   ui::Layer background_layer_ = ui::Layer(ui::LAYER_SOLID_COLOR);
-  const base::raw_ptr<views::View> host_;
+  const raw_ptr<views::View> host_;
   absl::variant<SkColor, ui::ColorId> color_;
   const float blur_sigma_;
   // If the background layer should be added to the view's region below.

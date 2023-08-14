@@ -96,8 +96,8 @@ class MultiProfileUserController {
   // Invoked when user behavior pref value changes.
   void OnUserPrefChanged(Profile* profile);
 
-  base::raw_ptr<PrefService, ExperimentalAsh> local_state_;
-  base::raw_ptr<user_manager::UserManager> user_manager_;
+  raw_ptr<PrefService, ExperimentalAsh> local_state_;
+  raw_ptr<user_manager::UserManager> user_manager_;
   std::vector<std::unique_ptr<PrefChangeRegistrar>> pref_watchers_;
 };
 

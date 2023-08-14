@@ -219,7 +219,7 @@ class ParentPermissionDialogViewHarness
   }
 
   // Provides identity manager to the view.
-  base::raw_ref<supervised_user::SupervisionMixin> supervision_mixin_;
+  raw_ref<supervised_user::SupervisionMixin> supervision_mixin_;
 
   // `under_test_` is intercepted by OnTestParentPermissionDialogViewCreated.
   raw_ptr<ParentPermissionDialogView, DisableDanglingPtrDetection> under_test_;

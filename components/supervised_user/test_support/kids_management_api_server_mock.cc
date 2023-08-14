@@ -73,7 +73,7 @@ KidsManagementApiServerMock::~KidsManagementApiServerMock() {
 }
 
 void KidsManagementApiServerMock::InstallOn(
-    base::raw_ptr<net::test_server::EmbeddedTestServer> test_server_) {
+    raw_ptr<net::test_server::EmbeddedTestServer> test_server_) {
   CHECK(!test_server_->Started());
 
   test_server_->RegisterRequestHandler(base::BindRepeating(

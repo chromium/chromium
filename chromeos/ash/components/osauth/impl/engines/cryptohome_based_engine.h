@@ -57,8 +57,8 @@ class CryptohomeBasedEngine : public AuthFactorEngine,
   void OnAuthAttempt(std::unique_ptr<UserContext>,
                      absl::optional<AuthenticationError>);
 
-  base::raw_ptr<FactorEngineObserver> observer_;
-  base::raw_ptr<CryptohomeCore> core_;
+  raw_ptr<FactorEngineObserver> observer_;
+  raw_ptr<CryptohomeCore> core_;
   UsageAllowed usage_allowed_ = UsageAllowed::kDisabled;
   ShutdownCallback shutdown_callback_;
 

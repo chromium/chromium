@@ -10,7 +10,7 @@
 namespace ash {
 
 AuthPanelEventDispatcher::AuthPanelEventDispatcher(
-    base::raw_ptr<AuthFactorStore> store)
+    raw_ptr<AuthFactorStore> store)
     : store_(store) {}
 
 AuthPanelEventDispatcher::~AuthPanelEventDispatcher() = default;

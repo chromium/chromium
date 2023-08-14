@@ -46,7 +46,7 @@ class WebKioskAppInstaller {
       const GURL& app_url,
       web_app::ExternallyManagedAppManager::InstallResult result);
 
-  const base::raw_ref<Profile> profile_;
+  const raw_ref<Profile> profile_;
   const GURL install_url_;
 
   base::WeakPtrFactory<WebKioskAppInstaller> weak_ptr_factory_{this};

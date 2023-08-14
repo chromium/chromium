@@ -20,7 +20,7 @@ namespace search_engines {
 // the 'Profile' class is different between platforms.
 struct ProfileProperties {
   bool is_regular_profile = false;
-  base::raw_ptr<PrefService> pref_service;
+  raw_ptr<PrefService> pref_service;
 };
 
 // Returns whether the search engine choice screen can be displayed or not based

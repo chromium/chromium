@@ -54,7 +54,7 @@ class TracingProcessSetMonitor : public DevToolsSession::ChildObserver,
 
   void MaybeAddProcess(DevToolsAgentHost* host);
 
-  base::raw_ref<DevToolsSession> const root_session_;
+  raw_ref<DevToolsSession> const root_session_;
   base::ScopedObservation<DevToolsSession, DevToolsSession::ChildObserver>
       session_observation_{this};
   const ProcessAddedCallback process_added_callback_;

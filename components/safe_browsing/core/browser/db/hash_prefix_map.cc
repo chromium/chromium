@@ -179,8 +179,8 @@ class InMemoryHashPrefixMapWriteSession : public HashPrefixMap::WriteSession {
   }
 
  private:
-  const base::raw_ref<std::unordered_map<PrefixSize, HashPrefixes>> map_;
-  const base::raw_ref<ListUpdateResponse> lur_;
+  const raw_ref<std::unordered_map<PrefixSize, HashPrefixes>> map_;
+  const raw_ref<ListUpdateResponse> lur_;
 };
 
 }  // namespace

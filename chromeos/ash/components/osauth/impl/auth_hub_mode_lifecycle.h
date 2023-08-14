@@ -102,7 +102,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthHubModeLifecycle {
   base::flat_map<AshAuthFactor, EngineState> engines_;
 
   base::OneShotTimer watchdog_;
-  base::raw_ptr<Owner> owner_;
+  raw_ptr<Owner> owner_;
   base::WeakPtrFactory<AuthHubModeLifecycle> weak_factory_{this};
 };
 

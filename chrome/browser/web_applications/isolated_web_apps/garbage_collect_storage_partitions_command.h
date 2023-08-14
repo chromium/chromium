@@ -50,7 +50,7 @@ class GarbageCollectStoragePartititonsCommand
   std::unique_ptr<AllAppsLockDescription> lock_description_;
   std::unique_ptr<AllAppsLock> lock_;
 
-  base::raw_ptr<Profile> profile_;
+  raw_ptr<Profile> profile_;
 
   base::OnceClosure done_closure_;
 

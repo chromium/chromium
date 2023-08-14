@@ -57,7 +57,7 @@ struct IPHException {
   IPHException& operator=(const IPHException& other) = default;
   ~IPHException() = default;
 
-  base::raw_ptr<const base::Feature> feature = nullptr;
+  raw_ptr<const base::Feature> feature = nullptr;
   absl::optional<IPHFailureReason> reason;
   const char* description = nullptr;
 };
@@ -71,9 +71,9 @@ struct IPHFailure {
   IPHFailure(const IPHFailure& other) = default;
   IPHFailure& operator=(const IPHFailure& other) = default;
 
-  base::raw_ptr<const base::Feature> feature = nullptr;
+  raw_ptr<const base::Feature> feature = nullptr;
   IPHFailureReason reason = IPHFailureReason::kNone;
-  base::raw_ptr<const feature_engagement::FeatureConfig> config = nullptr;
+  raw_ptr<const feature_engagement::FeatureConfig> config = nullptr;
 };
 
 std::ostream& operator<<(std::ostream& os,

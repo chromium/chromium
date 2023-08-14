@@ -28,7 +28,7 @@ namespace {
 struct ServerGuard {
   explicit ServerGuard(TestHttpServer& server) : server_(server) {}
   ~ServerGuard() { server_->Stop(); }
-  base::raw_ref<TestHttpServer> server_;
+  raw_ref<TestHttpServer> server_;
 };
 
 class TestHttpServerTest : public testing::Test {

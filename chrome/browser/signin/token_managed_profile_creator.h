@@ -64,7 +64,7 @@ class TokenManagedProfileCreator : public ProfileAttributesStorageObserver {
   // Callback invoked once the token service is ready for the new profile.
   void OnNewProfileTokensLoaded(Profile* new_profile);
 
-  base::raw_ptr<Profile> source_profile_;
+  raw_ptr<Profile> source_profile_;
   const std::string id_;
   const std::string enrollment_token_;
   base::FilePath expected_profile_path_;

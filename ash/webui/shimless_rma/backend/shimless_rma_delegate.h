@@ -47,7 +47,7 @@ class ShimlessRmaDelegate {
   // object or an error message. This method is also responsible to check if the
   // extension and the IWA are allowed by the system.
   struct PrepareDiagnosticsAppBrowserContextResult {
-    base::raw_ptr<content::BrowserContext> context;
+    raw_ptr<content::BrowserContext> context;
     std::string extension_id;
     web_package::SignedWebBundleId iwa_id;
   };

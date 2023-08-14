@@ -121,9 +121,8 @@ class FileSystemChooseEntryFunction : public FileSystemEntryFunction {
     // These first three options are mutually exclusive and are chosen in
     // this order.
     bool use_suggested_path = false;
-    const base::raw_ptr<base::FilePath> path_to_be_picked = nullptr;
-    const base::raw_ptr<std::vector<base::FilePath>> paths_to_be_picked =
-        nullptr;
+    const raw_ptr<base::FilePath> path_to_be_picked = nullptr;
+    const raw_ptr<std::vector<base::FilePath>> paths_to_be_picked = nullptr;
     bool skip_directory_confirmation = false;
     // This option is true and is only set to false in tests that do not
     // expect a dialog box to be displayed and want the test to fail if

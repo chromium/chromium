@@ -59,7 +59,7 @@ class BluetoothPowerStateObserver : public ui::test::ObservationStateObserver<
   }
 
  private:
-  const base::raw_ptr<BluetoothAdapterClient::Properties> properties_;
+  const raw_ptr<BluetoothAdapterClient::Properties> properties_;
 };
 
 DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(BluetoothPowerStateObserver,

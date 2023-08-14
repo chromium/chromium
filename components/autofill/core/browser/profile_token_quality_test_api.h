@@ -30,7 +30,7 @@ class ProfileTokenQualityTestApi {
       ServerFieldType type) const;
 
  private:
-  base::raw_ref<ProfileTokenQuality> quality_;
+  raw_ref<ProfileTokenQuality> quality_;
 };
 
 inline ProfileTokenQualityTestApi test_api(ProfileTokenQuality& quality) {

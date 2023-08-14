@@ -130,7 +130,7 @@ class GrpcServerReactor : public grpc::ServerGenericBidiReactor {
   }
 
   const std::string name_;
-  base::raw_ptr<grpc::CallbackServerContext> context_;
+  raw_ptr<grpc::CallbackServerContext> context_;
 
   absl::optional<grpc::ByteBuffer> request_byte_buffer_;
   absl::optional<grpc::ByteBuffer> response_byte_buffer_;

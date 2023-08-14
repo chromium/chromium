@@ -84,7 +84,7 @@ struct PrepareDiagnosticsAppProfileState {
   // Reference to the crx_installer.
   scoped_refptr<extensions::CrxInstaller> crx_installer = nullptr;
   // Result.
-  base::raw_ptr<content::BrowserContext> context;
+  raw_ptr<content::BrowserContext> context;
   absl::optional<std::string> extension_id;
   absl::optional<web_package::SignedWebBundleId> iwa_id;
 };

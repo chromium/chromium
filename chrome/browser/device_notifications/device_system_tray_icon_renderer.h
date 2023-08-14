@@ -24,7 +24,7 @@ class DeviceSystemTrayIconRenderer {
 
  protected:
   // DeviceSystemTrayIconRenderer is owned by `device_system_tray_icon_`
-  base::raw_ptr<DeviceSystemTrayIcon> device_system_tray_icon_;
+  raw_ptr<DeviceSystemTrayIcon> device_system_tray_icon_;
 };
 
 #endif  // CHROME_BROWSER_DEVICE_NOTIFICATIONS_DEVICE_SYSTEM_TRAY_ICON_RENDERER_H_

@@ -26,8 +26,8 @@ class MediaEffectsServiceFactoryTest : public testing::Test {
   }
 
  protected:
-  base::raw_ptr<TestingProfile> profile1_;
-  base::raw_ptr<TestingProfile> profile2_;
+  raw_ptr<TestingProfile> profile1_;
+  raw_ptr<TestingProfile> profile2_;
 
  private:
   content::BrowserTaskEnvironment task_environment_;

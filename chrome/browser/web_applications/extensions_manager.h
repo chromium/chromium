@@ -47,8 +47,8 @@ class ExtensionsManager {
   RegisterGarbageCollectionInstallGate();
 
  private:
-  base::raw_ptr<Profile> profile_;
-  base::raw_ptr<extensions::ExtensionRegistry> registry_;
+  raw_ptr<Profile> profile_;
+  raw_ptr<extensions::ExtensionRegistry> registry_;
 };
 
 }  // namespace web_app

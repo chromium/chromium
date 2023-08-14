@@ -169,7 +169,7 @@ class MEDIA_EXPORT HlsManifestDemuxerEngine : public ManifestDemuxer::Engine,
   GURL root_playlist_uri_;
 
   std::unique_ptr<MediaLog> media_log_;
-  base::raw_ptr<ManifestDemuxerEngineHost> host_ = nullptr;
+  raw_ptr<ManifestDemuxerEngineHost> host_ = nullptr;
 
   // The codec detector is a reusable way for determining codecs in a media
   // stream.

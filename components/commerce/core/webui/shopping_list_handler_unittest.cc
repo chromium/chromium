@@ -136,7 +136,7 @@ class ShoppingListHandlerTest : public testing::Test {
   std::unique_ptr<MockShoppingService> shopping_service_;
   std::unique_ptr<commerce::ShoppingListHandler> handler_;
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
-  base::raw_ptr<MockDelegate> delegate_;
+  raw_ptr<MockDelegate> delegate_;
   feature_engagement::test::MockTracker tracker_;
   base::test::TaskEnvironment task_environment_;
   base::test::ScopedFeatureList features_;

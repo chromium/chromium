@@ -193,7 +193,7 @@ class InstanceRecursiveObserver : public apps::InstanceRegistry::Observer {
     EXPECT_EQ(outer.BrowserContext(), inner.BrowserContext());
   }
 
-  base::raw_ptr<apps::InstanceRegistry> instance_registry_;
+  raw_ptr<apps::InstanceRegistry> instance_registry_;
 
   int expected_num_instances_ = -1;
   int num_instances_seen_on_instance_update_ = 0;

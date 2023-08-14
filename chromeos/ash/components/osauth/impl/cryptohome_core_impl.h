@@ -46,14 +46,14 @@ class CryptohomeCoreImpl : public CryptohomeCore {
   void EndAuthSessionImpl();
 
   absl::optional<AuthAttemptVector> current_attempt_;
-  base::flat_set<base::raw_ptr<Client>> clients_;
-  base::flat_set<base::raw_ptr<Client>> clients_being_removed_;
+  base::flat_set<raw_ptr<Client>> clients_;
+  base::flat_set<raw_ptr<Client>> clients_being_removed_;
 
   Stage current_stage_ = Stage::kIdle;
   bool auth_session_started_ = false;
   bool was_authenticated_ = false;
   std::unique_ptr<UserContext> context_;
-  base::raw_ptr<UserDataAuthClient> dbus_client_;
+  raw_ptr<UserDataAuthClient> dbus_client_;
   std::unique_ptr<AuthPerformer> performer_;
 
   base::WeakPtrFactory<CryptohomeCoreImpl> weak_factory_{this};

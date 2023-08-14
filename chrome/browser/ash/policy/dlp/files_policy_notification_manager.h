@@ -213,7 +213,7 @@ class FilesPolicyNotificationManager
     dlp::FileAction action_;
     // Warning/Error dialog widget. Each FileTask is expected to have only one
     // open dialog at a time.
-    base::raw_ptr<views::Widget> widget_ = nullptr;
+    raw_ptr<views::Widget> widget_ = nullptr;
     // Warning/Error dialog widget observation.
     base::ScopedObservation<views::Widget, views::WidgetObserver>
         widget_observation_{this};

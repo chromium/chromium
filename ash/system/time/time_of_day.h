@@ -76,8 +76,8 @@ class ASH_EXPORT TimeOfDay {
 
   // May be null, in which case `GetLocalTimeConverter()` returns the default
   // implementation.
-  base::raw_ptr<const LocalTimeConverter, ExperimentalAsh>
-      local_time_converter_ = nullptr;
+  raw_ptr<const LocalTimeConverter, ExperimentalAsh> local_time_converter_ =
+      nullptr;
 };
 
 ASH_EXPORT std::ostream& operator<<(std::ostream& os,

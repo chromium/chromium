@@ -96,7 +96,7 @@ class ObservationStateObserver : public StateObserver<T>, public Observer {
   }
 
  private:
-  base::raw_ptr<Source> source_;
+  raw_ptr<Source> source_;
   base::ScopedObservation<Source, Observer> observation_{this};
 };
 

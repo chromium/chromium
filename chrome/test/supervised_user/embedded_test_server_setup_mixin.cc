@@ -42,7 +42,7 @@ inline void AddKidsManagementHostToResolve(
 
 EmbeddedTestServerSetupMixin::EmbeddedTestServerSetupMixin(
     InProcessBrowserTestMixinHost& host,
-    base::raw_ptr<net::EmbeddedTestServer> server,
+    raw_ptr<net::EmbeddedTestServer> server,
     const Options& options)
     : InProcessBrowserTestMixin(&host),
       embedded_test_server_(server),

@@ -158,7 +158,7 @@ class FeaturePromoDialogTest : public DialogBrowserTest {
     return *feature_it;
   }
 
-  base::raw_ptr<const base::Feature> feature_ = nullptr;
+  raw_ptr<const base::Feature> feature_ = nullptr;
   feature_engagement::test::ScopedIphFeatureList scoped_feature_list_;
   base::AutoReset<absl::optional<web_app::AppIdentityUpdate>>
       update_dialog_scope_;

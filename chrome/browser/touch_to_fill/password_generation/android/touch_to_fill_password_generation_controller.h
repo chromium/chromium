@@ -58,7 +58,7 @@ class TouchToFillPasswordGenerationController
   // Password manager driver for the frame on which the Touch-To-Fill was
   // triggered.
   base::WeakPtr<password_manager::ContentPasswordManagerDriver> frame_driver_;
-  base::raw_ptr<content::WebContents> web_contents_;
+  raw_ptr<content::WebContents> web_contents_;
   PasswordGenerationElementData generation_element_data_;
   std::unique_ptr<TouchToFillPasswordGenerationBridge> bridge_;
   OnDismissedCallback on_dismissed_callback_;

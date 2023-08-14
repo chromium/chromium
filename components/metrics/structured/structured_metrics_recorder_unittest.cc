@@ -139,7 +139,7 @@ class TestStructuredMetricsRecorder : public StructuredMetricsRecorder {
  public:
   TestStructuredMetricsRecorder(
       const base::FilePath& device_key_path,
-      base::raw_ptr<metrics::MetricsProvider> system_profile_provider)
+      raw_ptr<metrics::MetricsProvider> system_profile_provider)
       : StructuredMetricsRecorder(device_key_path,
                                   /*write_delay=*/base::Seconds(0),
                                   system_profile_provider) {}

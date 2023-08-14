@@ -79,7 +79,7 @@ class CredManControllerTest : public testing::Test {
   std::unique_ptr<CredManController> controller_;
   std::unique_ptr<StubPasswordManagerDriver> driver_;
   std::unique_ptr<WebAuthnCredManDelegate> web_authn_cred_man_delegate_;
-  base::raw_ptr<MockPasswordCredentialFiller> last_filler_;
+  raw_ptr<MockPasswordCredentialFiller> last_filler_;
   MockKeyboardReplacingSurfaceVisibilityController visibility_controller_;
 };
 

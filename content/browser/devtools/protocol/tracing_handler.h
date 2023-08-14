@@ -150,11 +150,11 @@ class TracingHandler : public DevToolsDomainHandler, public Tracing::Backend {
   std::unique_ptr<base::RepeatingTimer> buffer_usage_poll_timer_;
 
   std::unique_ptr<Tracing::Frontend> frontend_;
-  const base::raw_ptr<DevToolsIOContext> io_context_;
-  const base::raw_ptr<DevToolsAgentHostImpl> host_;  // Only null in unit tests.
+  const raw_ptr<DevToolsIOContext> io_context_;
+  const raw_ptr<DevToolsAgentHostImpl> host_;  // Only null in unit tests.
 
   // Session is for use in process filter and is null in browser.
-  const base::raw_ptr<DevToolsSession> session_for_process_filter_;
+  const raw_ptr<DevToolsSession> session_for_process_filter_;
   bool did_initiate_recording_;
   bool return_as_stream_;
   bool gzip_compression_;

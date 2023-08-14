@@ -135,7 +135,7 @@ class GrpcUnaryCall : public GrpcCall<TGrpcStub, TRequest> {
                                                   Response*,
                                                   grpc::ClientUnaryReactor*)>;
 
-    base::raw_ptr<AsyncInterface> async_interface_;
+    raw_ptr<AsyncInterface> async_interface_;
     ResponseCallback response_callback_;
     Response response_;
   };

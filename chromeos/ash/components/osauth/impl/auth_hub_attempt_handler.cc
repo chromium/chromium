@@ -31,7 +31,7 @@ AuthHubConnector* AuthHubAttemptHandler::GetConnector() {
 }
 
 void AuthHubAttemptHandler::SetConsumer(
-    base::raw_ptr<AuthFactorStatusConsumer> consumer) {
+    raw_ptr<AuthFactorStatusConsumer> consumer) {
   status_consumer_ = std::move(consumer);
   status_consumer_->InitializeUi(initial_factors_, this);
 }

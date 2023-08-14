@@ -362,8 +362,8 @@ class WebBubbleView : public views::BubbleDialogDelegateView {
     web_view_->LoadInitialURL(url);
   }
 
-  const base::raw_ptr<Profile> profile_;
-  base::raw_ptr<views::WebView> web_view_;
+  const raw_ptr<Profile> profile_;
+  raw_ptr<views::WebView> web_view_;
   std::unique_ptr<content::WebContents> owned_web_contents_;
 };
 
