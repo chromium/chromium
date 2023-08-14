@@ -43,6 +43,10 @@ class GameDashboardContext {
     return main_menu_button_widget_.get();
   }
 
+  ToolbarSnapLocation toolbar_snap_location() const {
+    return toolbar_snap_location_;
+  }
+
   // Reassigns the new `toolbar_snap_location_` and performs an animation as the
   // toolbar moves to its new location.
   void SetToolbarSnapLocation(ToolbarSnapLocation new_location);

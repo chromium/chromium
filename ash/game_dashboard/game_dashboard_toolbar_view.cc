@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/app_list/app_list_util.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_util.h"
 #include "ash/constants/ash_features.h"
@@ -22,6 +23,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/background.h"
@@ -29,6 +31,8 @@
 namespace ash {
 
 namespace {
+
+using ToolbarSnapLocation = GameDashboardContext::ToolbarSnapLocation;
 
 // Horizontal padding for the border around the toolbar.
 constexpr int kPaddingWidth = 4;
@@ -50,18 +54,46 @@ std::unique_ptr<IconButton> CreateIconButton(base::RepeatingClosure callback,
   return button;
 }
 
-GameDashboardContext::ToolbarSnapLocation CalculateToolbarSnapLocation(
+ToolbarSnapLocation CalculateToolbarSnapLocation(
     const gfx::PointF& toolbar_screen_location,
     const gfx::Rect& game_window_screen_bounds) {
   const auto game_window_center = game_window_screen_bounds.CenterPoint();
   if (toolbar_screen_location.x() < game_window_center.x()) {
     return toolbar_screen_location.y() < game_window_center.y()
-               ? GameDashboardContext::ToolbarSnapLocation::kTopLeft
-               : GameDashboardContext::ToolbarSnapLocation::kBottomLeft;
+               ? ToolbarSnapLocation::kTopLeft
+               : ToolbarSnapLocation::kBottomLeft;
   }
   return toolbar_screen_location.y() < game_window_center.y()
-             ? GameDashboardContext::ToolbarSnapLocation::kTopRight
-             : GameDashboardContext::ToolbarSnapLocation::kBottomRight;
+             ? ToolbarSnapLocation::kTopRight
+             : ToolbarSnapLocation::kBottomRight;
+}
+
+ToolbarSnapLocation GetNextHorizontalSnapLocation(ToolbarSnapLocation current,
+                                                  bool going_left) {
+  switch (current) {
+    case ToolbarSnapLocation::kTopLeft:
+      return going_left ? current : ToolbarSnapLocation::kTopRight;
+    case ToolbarSnapLocation::kTopRight:
+      return going_left ? ToolbarSnapLocation::kTopLeft : current;
+    case ToolbarSnapLocation::kBottomLeft:
+      return going_left ? current : ToolbarSnapLocation::kBottomRight;
+    case ToolbarSnapLocation::kBottomRight:
+      return going_left ? ToolbarSnapLocation::kBottomLeft : current;
+  }
+}
+
+ToolbarSnapLocation GetNextVerticalSnapLocation(ToolbarSnapLocation current,
+                                                bool going_up) {
+  switch (current) {
+    case ToolbarSnapLocation::kTopLeft:
+      return going_up ? current : ToolbarSnapLocation::kBottomLeft;
+    case ToolbarSnapLocation::kTopRight:
+      return going_up ? current : ToolbarSnapLocation::kBottomRight;
+    case ToolbarSnapLocation::kBottomLeft:
+      return going_up ? ToolbarSnapLocation::kTopLeft : current;
+    case ToolbarSnapLocation::kBottomRight:
+      return going_up ? ToolbarSnapLocation::kTopRight : current;
+  }
 }
 
 }  // namespace
@@ -140,6 +172,30 @@ void GameDashboardToolbarView::OnGestureEvent(ui::GestureEvent* event) {
 
   event->StopPropagation();
   event->SetHandled();
+}
+
+bool GameDashboardToolbarView::OnKeyPressed(const ui::KeyEvent& event) {
+  const auto current_snap_location = context_->toolbar_snap_location();
+  const auto event_key_code = event.key_code();
+  switch (event_key_code) {
+    case ui::VKEY_LEFT:
+    case ui::VKEY_RIGHT:
+      context_->SetToolbarSnapLocation(GetNextHorizontalSnapLocation(
+          current_snap_location,
+          /*going_left=*/event_key_code == ui::VKEY_LEFT));
+      return true;
+    case ui::VKEY_UP:
+    case ui::VKEY_DOWN:
+      context_->SetToolbarSnapLocation(GetNextVerticalSnapLocation(
+          current_snap_location, /*going_up=*/event_key_code == ui::VKEY_UP));
+      return true;
+    default:
+      return false;
+  }
+}
+
+bool GameDashboardToolbarView::OnKeyReleased(const ui::KeyEvent& event) {
+  return IsArrowKeyEvent(event);
 }
 
 void GameDashboardToolbarView::OnGamepadButtonPressed() {
