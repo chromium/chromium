@@ -2,7 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-"""Library for defining builder health indicator thresholds."""
+"""Library for defining builder health indicator thresholds.
+
+See //docs/infra/builder_health_indicators.md for more info.
+"""
 
 load("@stdlib//internal/graph.star", "graph")
 load("@stdlib//internal/luci/common.star", "keys")
@@ -11,8 +14,11 @@ load("./structs.star", "structs")
 
 _HEALTH_SPEC = nodes.create_bucket_scoped_node_type("health_spec")
 
+# See https://source.chromium.org/chromium/infra/infra/+/main:go/src/infra/cr_builder_health/thresholds.go?q=f:thresholds.go%20%22type%20BuilderThresholds%22
+# for all configurable thresholds.
 _default_thresholds = struct(
     # If any of these threholds are exceeded, the builder will be deemed unhealthy.
+    # Setting a value of None will ignore that threshold
     infra_fail_rate = struct(
         average = 0.05,
     ),
@@ -20,16 +26,34 @@ _default_thresholds = struct(
         average = 0.2,
     ),
     build_time = struct(
-        p50_mins = 60,
+        p50_mins = None,
     ),
     pending_time = struct(
         p50_mins = 20,
     ),
 )
 
-DEFAULT_HEALTH_SPEC = struct(_default = "_default")
+_blank_thresholds = struct(
+    infra_fail_rate = struct(
+        average = None,
+    ),
+    fail_rate = struct(
+        average = None,
+    ),
+    build_time = struct(
+        p50_mins = None,
+    ),
+    pending_time = struct(
+        p50_mins = None,
+    ),
+)
 
-def health_spec(**kwargs):
+DEFAULT = struct(_default = "_default")
+
+def spec(**kwargs):
+    return structs.evolve(_blank_thresholds, **kwargs)
+
+def modified_default(**kwargs):
     return structs.evolve(_default_thresholds, **kwargs)
 
 def register_health_spec(bucket, name, spec):
@@ -57,5 +81,11 @@ def _generate_health_specs(ctx):
     }
 
     ctx.output["health-specs/health-specs.json"] = json.indent(json.encode(result), indent = "  ")
+
+health_spec = struct(
+    DEFAULT = DEFAULT,
+    spec = spec,
+    modified_default = modified_default,
+)
 
 lucicfg.generator(_generate_health_specs)

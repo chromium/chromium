@@ -5,6 +5,7 @@
 
 load("//lib/args.star", "args")
 load("//lib/builder_config.star", "builder_config")
+load("//lib/builder_health_indicators.star", "health_spec")
 load("//lib/builders.star", "builders", "os", "reclient", "sheriff_rotations", "xcode")
 load("//lib/branches.star", "branches")
 load("//lib/ci.star", "ci")
@@ -22,6 +23,7 @@ ci.defaults.set(
     # Naturally the runtime will be ~4-8h on average, depending on config.
     # CFI builds will take even longer - around 11h.
     execution_timeout = 14 * time.hour,
+    health_spec = health_spec.DEFAULT,
     properties = {
         "perf_dashboard_machine_group": "ChromiumClang",
     },

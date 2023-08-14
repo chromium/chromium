@@ -4,6 +4,7 @@
 """Definitions for the chromium.cft (chrome for testing) builder group."""
 
 load("//lib/builder_config.star", "builder_config")
+load("//lib/builder_health_indicators.star", "health_spec")
 load("//lib/builders.star", "os", "reclient", "sheriff_rotations")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
@@ -17,6 +18,7 @@ ci.defaults.set(
     sheriff_rotations = sheriff_rotations.CFT,
     tree_closing = False,
     execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
+    health_spec = health_spec.DEFAULT,
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
     service_account = ci.DEFAULT_SERVICE_ACCOUNT,
