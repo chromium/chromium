@@ -77,6 +77,7 @@
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
+#include "base/android/build_info.h"
 #include "chrome/browser/download/download_prompt_status.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
@@ -837,6 +838,52 @@ TEST_F(ChromeDownloadManagerDelegateTest, InterceptDownloadByOfflinePages) {
       kUrl, "", "attachment" /*content_disposition*/, mime_type, "", 10,
       false /*is_transient*/, nullptr);
   EXPECT_FALSE(should_intercept);
+}
+
+namespace {
+class TestDownloadMessageBridge : public DownloadMessageBridge {
+ public:
+  TestDownloadMessageBridge() = default;
+
+  TestDownloadMessageBridge(const TestDownloadMessageBridge&) = delete;
+  TestDownloadMessageBridge& operator=(const TestDownloadMessageBridge&) =
+      delete;
+
+  void ShowUnsupportedDownloadMessage(
+      content::WebContents* web_contents) override {
+    message_shown_count_++;
+  }
+
+  // Returns the number of times ShowUnsupportedDownloadMessage has been called.
+  int GetMessageShownCount() { return message_shown_count_; }
+
+ private:
+  int message_shown_count_;
+};
+
+}  // namespace
+
+TEST_F(ChromeDownloadManagerDelegateTest, InterceptDownloadForAutomotive) {
+  if (!base::android::BuildInfo::GetInstance()->is_automotive()) {
+    GTEST_SKIP() << "This test should only run on automotive.";
+  }
+
+  TestDownloadMessageBridge* message_bridge = new TestDownloadMessageBridge();
+  delegate()->SetDownloadMessageBridgeForTesting(
+      static_cast<DownloadMessageBridge*>(message_bridge));
+
+  const GURL kUrl("http://example.com/foo");
+  std::string mime_type = "image/png";
+  bool should_intercept = delegate()->InterceptDownloadIfApplicable(
+      kUrl, "", "", mime_type, "", 10, false /*is_transient*/, nullptr);
+  EXPECT_FALSE(should_intercept);
+
+  mime_type = "application/pdf";
+  should_intercept = delegate()->InterceptDownloadIfApplicable(
+      kUrl, "", "", mime_type, "", 10, false /*is_transient*/, nullptr);
+  EXPECT_TRUE(should_intercept);
+
+  EXPECT_EQ(1, message_bridge->GetMessageShownCount());
 }
 #endif
 

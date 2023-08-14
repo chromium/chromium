@@ -92,6 +92,7 @@
 #include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "base/android/build_info.h"
 #include "base/android/content_uri_utils.h"
 #include "base/android/path_utils.h"
 #include "chrome/browser/download/android/chrome_duplicate_download_infobar_delegate.h"
@@ -107,6 +108,7 @@
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "net/http/http_content_disposition.h"
+#include "third_party/blink/public/common/mime_util/mime_util.h"
 #include "ui/android/window_android.h"
 #else
 #include "chrome/browser/download/download_item_web_app_data.h"
@@ -503,6 +505,11 @@ void ChromeDownloadManagerDelegate::SetDownloadDialogBridgeForTesting(
     DownloadDialogBridge* bridge) {
   download_dialog_bridge_.reset(bridge);
 }
+
+void ChromeDownloadManagerDelegate::SetDownloadMessageBridgeForTesting(
+    DownloadMessageBridge* bridge) {
+  download_message_bridge_.reset(bridge);
+}
 #endif  // BUILDFLAG(IS_ANDROID)
 
 void ChromeDownloadManagerDelegate::Shutdown() {
@@ -827,6 +834,16 @@ bool ChromeDownloadManagerDelegate::InterceptDownloadIfApplicable(
     return true;
   }
 #endif
+
+#if BUILDFLAG(IS_ANDROID)
+  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+    if (!blink::IsSupportedMimeType(mime_type)) {
+      download_message_bridge_->ShowUnsupportedDownloadMessage(web_contents);
+      return true;
+    }
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+
   return false;
 }
 

@@ -87,6 +87,7 @@ class ChromeDownloadManagerDelegate
                           DownloadDialogBridge::DialogCallback callback);
 
   void SetDownloadDialogBridgeForTesting(DownloadDialogBridge* bridge);
+  void SetDownloadMessageBridgeForTesting(DownloadMessageBridge* bridge);
 #endif
 
   // Callbacks passed to GetNextId() will not be called until the returned
