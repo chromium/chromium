@@ -52,6 +52,10 @@ class ASH_PUBLIC_EXPORT WallpaperControllerObserver {
   // Invoked after a user successfully sets a wallpaper.
   virtual void OnUserSetWallpaper(const AccountId& account_id) {}
 
+  // Invoked when the WallpaperDailyRefreshScheduler triggers
+  // OnCheckpointChanged().
+  virtual void OnDailyRefreshCheckpointChanged() {}
+
  protected:
   virtual ~WallpaperControllerObserver();
 };

@@ -22,6 +22,7 @@
 #include "ash/public/cpp/wallpaper/online_wallpaper_variant.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller_client.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller_observer.h"
+#include "ash/public/cpp/wallpaper/wallpaper_info.h"
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "ash/root_window_controller.h"
 #include "ash/session/session_controller_impl.h"
@@ -61,6 +62,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/time/time.h"
 #include "base/time/time_override.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -361,12 +363,22 @@ class TestWallpaperControllerObserver : public WallpaperControllerObserver {
     DCHECK(is_in_wallpaper_preview_);
     is_in_wallpaper_preview_ = false;
   }
+  void OnDailyRefreshCheckpointChanged() override {
+    ++daily_refresh_checkpoint_count_;
+  }
 
   int colors_changed_count() const { return colors_changed_count_; }
   int blur_changed_count() const { return blur_changed_count_; }
   int first_shown_count() const { return first_shown_count_; }
   int wallpaper_changed_count() const { return wallpaper_changed_count_; }
+  int daily_refresh_checkpoint_count() const {
+    return daily_refresh_checkpoint_count_;
+  }
   bool is_in_wallpaper_preview() const { return is_in_wallpaper_preview_; }
+
+  void ClearDailyRefreshCheckpointCount() {
+    daily_refresh_checkpoint_count_ = 0;
+  }
 
  private:
   raw_ptr<WallpaperController, ExperimentalAsh> controller_;
@@ -378,6 +390,7 @@ class TestWallpaperControllerObserver : public WallpaperControllerObserver {
   int blur_changed_count_ = 0;
   int first_shown_count_ = 0;
   int wallpaper_changed_count_ = 0;
+  int daily_refresh_checkpoint_count_ = 0;
   bool is_in_wallpaper_preview_ = false;
 };
 
@@ -5787,6 +5800,34 @@ TEST_P(
   pref_manager_->GetUserWallpaperInfo(kAccountId1, &current_info);
 
   EXPECT_EQ(WallpaperType::kDefault, current_info.type);
+}
+
+TEST_P(WallpaperControllerTest,
+       OnCheckpointChanged_WallpaperDailyRefreshScheduler) {
+  TestWallpaperControllerObserver observer(controller_);
+  EXPECT_EQ(0, observer.daily_refresh_checkpoint_count());
+  // User's wallpaper info should exist.
+  pref_manager_->SetUserWallpaperInfo(kAccountId1,
+                                      InfoWithType(WallpaperType::kDaily));
+  SimulateUserLogin(kAccountId1);
+  // Clears signal on login.
+  observer.ClearDailyRefreshCheckpointCount();
+  task_environment()->FastForwardBy(base::Days(1));
+  // Expect that 2 signals are sent every day by WallpaperDailyRefreshScheduler.
+  EXPECT_EQ(2, observer.daily_refresh_checkpoint_count());
+}
+
+TEST_P(WallpaperControllerTest,
+       OnCheckpointChanged_CalledOnLogin_WallpaperDailyRefreshScheduler) {
+  TestWallpaperControllerObserver observer(controller_);
+  EXPECT_EQ(0, observer.daily_refresh_checkpoint_count());
+  // User's wallpaper info should exist.
+  pref_manager_->SetUserWallpaperInfo(kAccountId1,
+                                      InfoWithType(WallpaperType::kDaily));
+  SimulateUserLogin(kAccountId1);
+  RunAllTasksUntilIdle();
+  // Expect that one signal is sent on login.
+  EXPECT_EQ(1, observer.daily_refresh_checkpoint_count());
 }
 
 }  // namespace ash

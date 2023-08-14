@@ -37,6 +37,7 @@
 #include "ash/wallpaper/views/wallpaper_widget_controller.h"
 #include "ash/wallpaper/wallpaper_blur_manager.h"
 #include "ash/wallpaper/wallpaper_constants.h"
+#include "ash/wallpaper/wallpaper_daily_refresh_scheduler.h"
 #include "ash/wallpaper/wallpaper_drag_drop_delegate.h"
 #include "ash/wallpaper/wallpaper_image_downloader.h"
 #include "ash/wallpaper/wallpaper_metrics_manager.h"
@@ -1494,6 +1495,8 @@ void WallpaperControllerImpl::OnShellInitialized() {
   shell->tablet_mode_controller()->AddObserver(this);
   shell->overview_controller()->AddObserver(this);
   shell->dark_light_mode_controller()->AddCheckpointObserver(this);
+  daily_refresh_scheduler_ = std::make_unique<WallpaperDailyRefreshScheduler>();
+  daily_refresh_scheduler_->AddCheckpointObserver(this);
 }
 
 void WallpaperControllerImpl::OnShellDestroying() {
@@ -1501,6 +1504,7 @@ void WallpaperControllerImpl::OnShellDestroying() {
   shell->tablet_mode_controller()->RemoveObserver(this);
   shell->overview_controller()->RemoveObserver(this);
   shell->dark_light_mode_controller()->RemoveCheckpointObserver(this);
+  daily_refresh_scheduler_->RemoveCheckpointObserver(this);
 }
 
 void WallpaperControllerImpl::OnWallpaperResized() {
@@ -1605,6 +1609,15 @@ void WallpaperControllerImpl::OnCheckpointChanged(
   if (!pref_manager_->GetUserWallpaperInfo(account_id, &info)) {
     return;
   }
+
+  if (src == daily_refresh_scheduler_.get()) {
+    DVLOG(1) << __func__ << " notified by daily_refresh_scheduler_";
+    for (auto& observer : observers_) {
+      observer.OnDailyRefreshCheckpointChanged();
+    }
+    return;
+  }
+
   if (!IsOnlineWallpaper(info.type)) {
     return;
   }
@@ -1699,6 +1712,10 @@ void WallpaperControllerImpl::OnActiveUserPrefServiceChanged(
 
     SyncLocalAndRemotePrefs(account_id);
   }
+
+  // Sends signal for daily refresh check.
+  OnCheckpointChanged(daily_refresh_scheduler_.get(),
+                      daily_refresh_scheduler_->current_checkpoint());
 
   if (IsDailyRefreshEnabled() || IsDailyGooglePhotosWallpaperSelected())
     StartDailyRefreshTimer();

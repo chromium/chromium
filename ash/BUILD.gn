@@ -2276,6 +2276,8 @@ component("ash") {
     "wallpaper/wallpaper_constants.h",
     "wallpaper/wallpaper_controller_impl.cc",
     "wallpaper/wallpaper_controller_impl.h",
+    "wallpaper/wallpaper_daily_refresh_scheduler.cc",
+    "wallpaper/wallpaper_daily_refresh_scheduler.h",
     "wallpaper/wallpaper_drag_drop_delegate.cc",
     "wallpaper/wallpaper_drag_drop_delegate.h",
     "wallpaper/wallpaper_image_downloader.cc",

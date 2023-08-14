@@ -183,6 +183,8 @@ void GeolocationController::SetLocalTimeConverterForTesting(
 void GeolocationController::SetGeolocationProviderForTesting(
     std::unique_ptr<SimpleGeolocationProvider> simple_geolocation_provider) {
   simple_geolocation_provider_ = std::move(simple_geolocation_provider);
+  // Immediately schedule a new request to receive a geoposition event.
+  ScheduleNextRequest(base::Seconds(0));
 }
 
 void GeolocationController::SetCurrentTimezoneIdForTesting(

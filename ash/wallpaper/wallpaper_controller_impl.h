@@ -62,6 +62,7 @@ namespace ash {
 
 class OnlineWallpaperManager;
 class WallpaperColorCalculator;
+class WallpaperDailyRefreshScheduler;
 class WallpaperDriveFsDelegate;
 class WallpaperImageDownloader;
 class WallpaperMetricsManager;
@@ -408,6 +409,11 @@ class ASH_EXPORT WallpaperControllerImpl
 
   WallpaperImageDownloader* wallpaper_image_downloader_for_testing() {
     return wallpaper_image_downloader_.get();
+  }
+
+  raw_ptr<WallpaperDailyRefreshScheduler>
+  daily_refresh_scheduler_for_testing() {
+    return daily_refresh_scheduler_.get();
   }
 
  private:
@@ -847,6 +853,9 @@ class ASH_EXPORT WallpaperControllerImpl
   // which include downloading and saving wallpapers to disk, or loading the
   // wallpapers from disk.
   GooglePhotosWallpaperManager google_photos_wallpaper_manager_;
+
+  // Provides signals to trigger wallpaper daily refresh.
+  std::unique_ptr<WallpaperDailyRefreshScheduler> daily_refresh_scheduler_;
 
   scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;
 
