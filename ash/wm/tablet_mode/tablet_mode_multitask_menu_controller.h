@@ -51,9 +51,7 @@ class TabletModeMultitaskMenuController : public ui::EventHandler {
     return reserved_for_gesture_sent_;
   }
 
-  aura::Window* target_window_for_test() const {
-    return target_window_for_test_;
-  }
+  aura::Window* target_window_for_test() { return target_window_for_test_; }
 
  private:
   void MaybeCreateMultitaskMenu(aura::Window* active_window);
