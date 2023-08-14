@@ -1306,7 +1306,9 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     OpenFilesInWebDrive, /* open_files_in_web_drive.js */
     FilesAppBrowserTest,
-    ::testing::Values(TestCase("hostedOpenDrive"),
+    ::testing::Values(TestCase("hostedHasDefaultTask"),
+                      TestCase("encryptedHasDefaultTask"),
+                      TestCase("hostedOpenDrive"),
                       TestCase("encryptedHostedOpenDrive"),
                       TestCase("encryptedNonHostedOpenDrive")));
 

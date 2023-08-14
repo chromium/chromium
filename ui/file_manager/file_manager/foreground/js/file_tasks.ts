@@ -960,6 +960,9 @@ export function annotateTasks(
       } else if (parsedActionId === 'view-in-browser') {
         annotateTask.iconType = 'generic';
         annotateTask.title = str('TASK_VIEW');
+      } else if (parsedActionId === 'open-encrypted') {
+        annotateTask.iconType = 'generic';
+        annotateTask.title = str('TASK_OPEN_GDRIVE');
       }
     }
     if (!annotateTask.iconType && taskType === 'web-intent') {

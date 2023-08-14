@@ -11,9 +11,50 @@ import {testcase} from '../testcase.js';
 import {remoteCall, setupAndWaitUntilReady} from './background.js';
 
 /**
+ * Tests context menu default task label for Google Drive items.
+ *
+ * @param {Object<TestEntryInfo>} entry FileSystem entry to use.
+ * @param {string} expected_label Label of the context menu item.
+ */
+async function checkDefaultTaskLabel(entry, expected_label) {
+  // Open Files.App on drive path, add entry to Drive.
+  const appId = await setupAndWaitUntilReady(RootPath.DRIVE, [], [entry]);
+
+  // Select the file.
+  await remoteCall.waitAndClickElement(
+      appId, `#file-list [file-name="${entry.nameText}"]`);
+
+  // Right-click the selected file.
+  chrome.test.assertTrue(
+      !!await remoteCall.callRemoteTestUtil(
+          'fakeMouseRightClick', appId, ['.table-row[selected]']),
+      'fakeMouseRightClick failed');
+
+  // Wait for the context menu to appear.
+  await remoteCall.waitForElement(appId, '#file-context-menu:not([hidden])');
+
+  // Get the default task context menu item.
+  const element =
+      await remoteCall.waitForElement(appId, '[command="#default-task"]');
+
+  // Verify the context menu item's label.
+  chrome.test.assertEq(expected_label, element.innerText);
+}
+
+testcase.hostedHasDefaultTask = () => {
+  return checkDefaultTaskLabel(ENTRIES.testDocument, 'Google Docs');
+};
+
+testcase.encryptedHasDefaultTask = () => {
+  return checkDefaultTaskLabel(ENTRIES.testCSEFile, 'Google Drive');
+};
+
+/**
  * Tests opening a file from Files app in Web Drive.
  *
  * @param {Object<TestEntryInfo>} entry FileSystem entry to use.
+ * @param {string} expected_hostname Hostname of the resource the browser is
+ * supposed to be navigated to.
  */
 async function webDriveFileOpen(entry, expected_hostname) {
   await sendTestMessage({
