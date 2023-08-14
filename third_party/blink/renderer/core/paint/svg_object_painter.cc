@@ -24,7 +24,7 @@ void ApplyColorInterpolation(const ComputedStyle& style,
 }  // namespace
 
 void SVGObjectPainter::PaintResourceSubtree(GraphicsContext& context) {
-  DCHECK(!layout_object_.SelfNeedsLayout());
+  DCHECK(!layout_object_.SelfNeedsFullLayout());
 
   PaintInfo info(
       context, CullRect::Infinite(), PaintPhase::kForeground,

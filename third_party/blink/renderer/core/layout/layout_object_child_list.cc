@@ -234,7 +234,7 @@ void LayoutObjectChildList::InsertChildNode(LayoutObject* owner,
       SubtreePaintPropertyUpdateReason::kContainerChainMayChange);
   new_child->SetNeedsOverflowRecalc();
 
-  if (!owner->NormalChildNeedsLayout()) {
+  if (!owner->ChildNeedsFullLayout()) {
     owner->SetChildNeedsLayout();  // We may supply the static position for an
                                    // absolute positioned child.
   }

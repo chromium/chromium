@@ -276,21 +276,29 @@ void LayoutTreeAsText::WriteLayoutObject(WTF::TextStream& ts,
   }
 
   if (behavior & kLayoutAsTextShowLayoutState) {
-    bool needs_layout = o.SelfNeedsLayout() || o.NormalChildNeedsLayout();
+    bool needs_layout = o.NeedsLayout();
     if (needs_layout)
       ts << " (needs layout:";
 
     bool have_previous = false;
-    if (o.SelfNeedsLayout()) {
+    if (o.SelfNeedsFullLayout()) {
       ts << " self";
       have_previous = true;
     }
 
-    if (o.NormalChildNeedsLayout()) {
+    if (o.ChildNeedsFullLayout()) {
       if (have_previous)
         ts << ",";
       have_previous = true;
       ts << " child";
+    }
+
+    if (o.NeedsSimplifiedLayout()) {
+      if (have_previous) {
+        ts << ",";
+      }
+      have_previous = true;
+      ts << " simplified";
     }
 
     if (needs_layout)

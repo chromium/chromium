@@ -963,7 +963,7 @@ void LayoutBox::LayoutSubtreeRoot() {
   // Our own style may have changed which would disqualify us as a layout root
   // (e.g. our containment/writing-mode/formatting-context status/etc changed).
   // Skip subtree layout, and ensure our container chain needs layout.
-  if (SelfNeedsLayout()) {
+  if (SelfNeedsFullLayout()) {
     MarkContainerChainForLayout();
     return;
   }

@@ -38,9 +38,9 @@ void LayoutSVGViewportContainer::UpdateLayout() {
   DCHECK(NeedsLayout());
 
   const auto* svg = To<SVGSVGElement>(GetElement());
-  is_layout_size_changed_ = SelfNeedsLayout() && svg->HasRelativeLengths();
+  is_layout_size_changed_ = SelfNeedsFullLayout() && svg->HasRelativeLengths();
 
-  if (SelfNeedsLayout()) {
+  if (SelfNeedsFullLayout()) {
     SVGLengthContext length_context(svg);
     gfx::RectF old_viewport = viewport_;
     viewport_.SetRect(svg->x()->CurrentValue()->Value(length_context),

@@ -51,7 +51,7 @@ void SVGMaskPainter::Paint(GraphicsContext& context,
   DCHECK(masker);
   if (DisplayLockUtilities::LockedAncestorPreventingLayout(*masker))
     return;
-  SECURITY_DCHECK(!masker->SelfNeedsLayout());
+  SECURITY_DCHECK(!masker->SelfNeedsFullLayout());
   masker->ClearInvalidationMask();
 
   gfx::RectF reference_box =

@@ -31,7 +31,7 @@ void LayoutSVGHiddenContainer::UpdateLayout() {
   DCHECK(NeedsLayout());
 
   SVGContainerLayoutInfo layout_info;
-  layout_info.force_layout = SelfNeedsLayout();
+  layout_info.force_layout = SelfNeedsFullLayout();
   // When HasRelativeLengths() is false, no descendants have relative lengths
   // (hence no one is interested in viewport size changes).
   layout_info.viewport_changed =

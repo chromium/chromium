@@ -87,7 +87,7 @@ gfx::RectF LayoutSVGResourceMasker::ResourceBoundingBox(
     const gfx::RectF& reference_box,
     float reference_box_zoom) {
   NOT_DESTROYED();
-  DCHECK(!SelfNeedsLayout());
+  DCHECK(!SelfNeedsFullLayout());
   auto* mask_element = To<SVGMaskElement>(GetElement());
   DCHECK(mask_element);
 

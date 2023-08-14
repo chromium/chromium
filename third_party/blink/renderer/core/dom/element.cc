@@ -506,7 +506,7 @@ bool WillUpdateSizeContainerDuringLayout(const LayoutObject& layout_object) {
   // When a size-container LayoutObject is marked as needs layout,
   // NGBlockNode::Layout() will resume style recalc with an up-to-date size in
   // StyleEngine::UpdateStyleAndLayoutTreeForContainer().
-  return layout_object.SelfNeedsLayout() &&
+  return layout_object.SelfNeedsFullLayout() &&
          layout_object.IsEligibleForSizeContainment();
 }
 

@@ -57,7 +57,7 @@ LayoutSVGResourceClipper* ResolveElementReference(
   if (DisplayLockUtilities::LockedAncestorPreventingLayout(*resource_clipper))
     return nullptr;
 
-  SECURITY_DCHECK(!resource_clipper->SelfNeedsLayout());
+  SECURITY_DCHECK(!resource_clipper->SelfNeedsFullLayout());
   return resource_clipper;
 }
 

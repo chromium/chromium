@@ -57,10 +57,12 @@ void DumpToTracedValue(const LayoutObject& object,
 
   if (object.IsOutOfFlowPositioned())
     traced_value->SetBoolean("positioned", object.IsOutOfFlowPositioned());
-  if (object.SelfNeedsLayout())
-    traced_value->SetBoolean("selfNeeds", object.SelfNeedsLayout());
-  if (object.NormalChildNeedsLayout())
-    traced_value->SetBoolean("childNeeds", object.NormalChildNeedsLayout());
+  if (object.SelfNeedsFullLayout()) {
+    traced_value->SetBoolean("selfNeeds", object.SelfNeedsFullLayout());
+  }
+  if (object.ChildNeedsFullLayout()) {
+    traced_value->SetBoolean("childNeeds", object.ChildNeedsFullLayout());
+  }
 
   if (object.IsTableCell()) {
     // Table layout might be dirty if traceGeometry is false.

@@ -146,7 +146,7 @@ TEST_F(LayoutSVGContainerTest, PatternWithContentVisibility) {
   UpdateAllLifecyclePhasesForTest();
 
   EXPECT_TRUE(pattern->GetLayoutObject()->NeedsLayout());
-  EXPECT_FALSE(pattern->GetLayoutObject()->SelfNeedsLayout());
+  EXPECT_FALSE(pattern->GetLayoutObject()->SelfNeedsFullLayout());
 }
 
 }  // namespace blink

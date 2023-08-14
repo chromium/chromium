@@ -103,7 +103,7 @@ const NGLayoutResult* LayoutBox::CachedLayoutResult(
   // re-layout when unlocking.
   bool is_blocked_by_display_lock = ChildLayoutBlockedByDisplayLock();
   bool child_needs_layout_unless_locked =
-      !is_blocked_by_display_lock && NormalChildNeedsLayout();
+      !is_blocked_by_display_lock && ChildNeedsFullLayout();
 
   const NGPhysicalBoxFragment& physical_fragment =
       To<NGPhysicalBoxFragment>(cached_layout_result->PhysicalFragment());
@@ -114,8 +114,8 @@ const NGLayoutResult* LayoutBox::CachedLayoutResult(
       (break_token && break_token->IsRepeated()))
     return nullptr;
 
-  if (SelfNeedsLayout() || child_needs_layout_unless_locked ||
-      NeedsSimplifiedNormalFlowLayout()) {
+  if (SelfNeedsFullLayout() || child_needs_layout_unless_locked ||
+      NeedsSimplifiedLayout()) {
     if (!ChildrenInline()) {
       // Check if we only need "simplified" layout. We don't abort yet, as we
       // need to check if other things (like floats) will require us to perform
@@ -124,8 +124,7 @@ const NGLayoutResult* LayoutBox::CachedLayoutResult(
         return nullptr;
 
       cache_status = NGLayoutCacheStatus::kNeedsSimplifiedLayout;
-    } else if (!NeedsSimplifiedLayoutOnly() ||
-               NeedsSimplifiedNormalFlowLayout()) {
+    } else if (SelfNeedsFullLayout() || ChildNeedsFullLayout()) {
       // We don't regenerate any lineboxes during our "simplified" layout pass.
       // If something needs "simplified" layout within a linebox, (e.g. an
       // atomic-inline) we miss the cache.
@@ -137,8 +136,9 @@ const NGLayoutResult* LayoutBox::CachedLayoutResult(
       if (!use_layout_cache_slot)
         return nullptr;
 
-      if (SelfNeedsLayout())
+      if (SelfNeedsFullLayout()) {
         return nullptr;
+      }
 
       if (!physical_fragment.HasItems())
         return nullptr;

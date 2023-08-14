@@ -100,7 +100,7 @@ void LayoutSVGContainer::UpdateLayout() {
 bool LayoutSVGContainer::UpdateAfterLayout(SVGTransformChange transform_change,
                                            bool bbox_changed) {
   // Invalidate all resources of this client if our reference box changed.
-  if (EverHadLayout() && (SelfNeedsLayout() || bbox_changed)) {
+  if (EverHadLayout() && (SelfNeedsFullLayout() || bbox_changed)) {
     SVGResourceInvalidator(*this).InvalidateEffects();
   }
   if (!needs_transform_update_ && transform_uses_reference_box_) {

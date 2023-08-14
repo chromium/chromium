@@ -276,7 +276,7 @@ bool LayoutSVGResourceClipper::HitTestClipContent(
 gfx::RectF LayoutSVGResourceClipper::ResourceBoundingBox(
     const gfx::RectF& reference_box) {
   NOT_DESTROYED();
-  DCHECK(!SelfNeedsLayout());
+  DCHECK(!SelfNeedsFullLayout());
 
   if (local_clip_bounds_.IsEmpty())
     CalculateLocalClipBounds();

@@ -161,7 +161,7 @@ void LayoutBlockFlow::AddVisualOverflowFromFloats(
 
 void LayoutBlockFlow::ComputeVisualOverflow() {
   NOT_DESTROYED();
-  DCHECK(!SelfNeedsLayout());
+  DCHECK(!SelfNeedsFullLayout());
 
   PhysicalRect previous_visual_overflow_rect =
       PhysicalVisualOverflowRectAllowingUnset();
