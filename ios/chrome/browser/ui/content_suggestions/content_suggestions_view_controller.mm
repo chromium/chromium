@@ -191,8 +191,10 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
 
   if (self.returnToRecentTabTile) {
     [self addUIElement:self.returnToRecentTabTile
-        withCustomBottomSpacing:content_suggestions::
-                                    kReturnToRecentTabSectionBottomMargin];
+        withCustomBottomSpacing:
+            IsMagicStackEnabled()
+                ? kMostVisitedBottomMargin
+                : content_suggestions::kReturnToRecentTabSectionBottomMargin];
     [self layoutReturnToRecentTabTile];
   }
   if ([self.mostVisitedViews count] > 0) {
@@ -276,8 +278,10 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
     [self.verticalStackView insertArrangedSubview:self.returnToRecentTabTile
                                           atIndex:0];
     [self.verticalStackView
-        setCustomSpacing:content_suggestions::
-                             kReturnToRecentTabSectionBottomMargin
+        setCustomSpacing:IsMagicStackEnabled()
+                             ? kMostVisitedBottomMargin
+                             : content_suggestions::
+                                   kReturnToRecentTabSectionBottomMargin
                afterView:self.returnToRecentTabTile];
     [self layoutReturnToRecentTabTile];
     [self.audience returnToRecentTabWasAdded];
