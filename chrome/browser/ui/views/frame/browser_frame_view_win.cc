@@ -813,11 +813,14 @@ void BrowserFrameViewWin::LayoutCaptionButtons() {
           ? 0
           : width() - frame()->GetMinimizeButtonOffset();
 
+  height = features::IsChromeRefresh2023() ? GetFrameHeight()
+                                           : std::min(GetFrameHeight(), height);
+
   caption_button_container_->SetBounds(
       CaptionButtonsOnLeadingEdge()
           ? system_caption_buttons_width
           : width() - system_caption_buttons_width - preferred_size.width(),
-      WindowTopY(), preferred_size.width(), std::min(GetFrameHeight(), height));
+      WindowTopY(), preferred_size.width(), height);
 }
 
 void BrowserFrameViewWin::LayoutClientView() {

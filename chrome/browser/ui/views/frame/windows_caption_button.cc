@@ -53,17 +53,6 @@ WindowsCaptionButton::CreateIconPainter() {
 gfx::Size WindowsCaptionButton::CalculatePreferredSize() const {
   const int width =
       WindowFrameUtil::kWindowsCaptionButtonWidth + GetBetweenButtonSpacing();
-  if (features::IsChromeRefresh2023()) {
-    const gfx::Rect tab_strip_region_bounds =
-        frame_view_->GetBoundsForTabStripRegion(frame_view_->browser_view()
-                                                    ->tab_strip_region_view()
-                                                    ->GetMinimumSize());
-
-    const int bottom_y = tab_strip_region_bounds.bottom() -
-                         GetLayoutConstant(TABSTRIP_TOOLBAR_OVERLAP);
-
-    return gfx::Size(width, bottom_y - frame_view_->WindowTopY());
-  }
 
   // TODO(bsep): The sizes in this function are for 1x device scale and don't
   // match Windows button sizes at hidpi.
