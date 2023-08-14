@@ -14,7 +14,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/repeating_test_future.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/test/values_test_util.h"
@@ -49,7 +48,6 @@ namespace policy {
 namespace {
 
 using base::test::IsJson;
-using base::test::RepeatingTestFuture;
 using base::test::TestFuture;
 using test::TestSessionType;
 using UmaSessionType = DeviceCommandStartCrdSessionJob::UmaSessionType;

@@ -13,8 +13,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/repeating_test_future.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/input_method/assistive_suggester_client_filter.h"
@@ -1417,7 +1417,7 @@ class AssistiveSuggesterControlVLongpressTest : public AshTestBase {
     Shell::Get()
         ->clipboard_history_controller()
         ->set_confirmed_operation_callback_for_test(
-            operation_confirmed_future_.GetCallback());
+            operation_confirmed_future_.GetRepeatingCallback());
 
     // Write content to the clipboard so that the clipboard history menu can
     // appear.
@@ -1458,7 +1458,7 @@ class AssistiveSuggesterControlVLongpressTest : public AshTestBase {
   TestingProfile profile_;
   FakeSuggestionHandler suggestion_handler_;
   AssistiveSuggester assistive_suggester_;
-  base::test::RepeatingTestFuture<bool> operation_confirmed_future_;
+  base::test::TestFuture<bool> operation_confirmed_future_;
   std::unique_ptr<views::Widget> textfield_widget_;
   raw_ptr<views::Textfield> textfield_;
   base::HistogramTester histogram_tester_;

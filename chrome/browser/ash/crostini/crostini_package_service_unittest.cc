@@ -10,7 +10,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
-#include "base/test/repeating_test_future.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/crostini/crostini_simple_types.h"
 #include "chrome/browser/ash/crostini/crostini_test_helper.h"
@@ -45,7 +44,6 @@ namespace {
 using ::ash::FakeCiceroneClient;
 using ::ash::FakeConciergeClient;
 using ::ash::FakeSeneschalClient;
-using ::base::test::RepeatingTestFuture;
 using ::base::test::TestFuture;
 using ::chromeos::DBusMethodCallback;
 using ::testing::_;
@@ -108,11 +106,11 @@ void RunUntilUninstallRequestMade(
     FakeCiceroneClient* fake_cicerone_client,
     UninstallPackageOwningFileRequest* request,
     DBusMethodCallback<UninstallPackageOwningFileResponse>* callback) {
-  RepeatingTestFuture<const UninstallPackageOwningFileRequest&,
-                      DBusMethodCallback<UninstallPackageOwningFileResponse>>
+  TestFuture<const UninstallPackageOwningFileRequest&,
+             DBusMethodCallback<UninstallPackageOwningFileResponse>>
       result_future;
   fake_cicerone_client->SetOnUninstallPackageOwningFileCallback(
-      result_future.GetCallback());
+      result_future.GetRepeatingCallback());
   auto result = result_future.Take();
   *request = std::get<0>(result);
   if (callback != nullptr) {

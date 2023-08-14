@@ -23,7 +23,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/repeating_test_future.h"
 #include "base/test/test_future.h"
 #include "base/values.h"
 #include "chrome/browser/ash/os_feedback/os_feedback_screenshot_manager.h"
@@ -215,10 +214,10 @@ class ChromeOsFeedbackDelegateTest : public InProcessBrowserTest {
                      scoped_refptr<FeedbackData>& actual_feedback_data,
                      bool preload_system_logs = false) {
     // Will be called when preloading system logs is done.
-    base::test::RepeatingTestFuture<bool> fetch_future;
+    base::test::TestFuture<bool> fetch_future;
     auto* profile_ = browser()->profile();
     auto mock_private_delegate = std::make_unique<FakeFeedbackPrivateDelegate>(
-        fetch_future.GetCallback());
+        fetch_future.GetRepeatingCallback());
     auto mock_feedback_service =
         base::MakeRefCounted<extensions::MockFeedbackService>(
             profile_, mock_private_delegate.get());

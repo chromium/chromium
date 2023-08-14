@@ -10,7 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
-#include "base/test/repeating_test_future.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/test/cryptohome_mixin.h"
@@ -208,10 +208,11 @@ class NetworkTelemetrySamplerBrowserTest
 
   void SetReportNetworkStatusPolicy(bool enabled) {
     bool network_status_enabled;
-    base::test::RepeatingTestFuture<void> test_future;
+    base::test::TestFuture<void> test_future;
     base::CallbackListSubscription subscription =
         ::ash::CrosSettings::Get()->AddSettingsObserver(
-            ::ash::kReportDeviceNetworkStatus, test_future.GetCallback());
+            ::ash::kReportDeviceNetworkStatus,
+            test_future.GetRepeatingCallback());
     device_reporting()->set_report_network_status(enabled);
     policy_helper_.RefreshDevicePolicy();
 
@@ -223,11 +224,11 @@ class NetworkTelemetrySamplerBrowserTest
 
   void SetReportNetworkTelemetryCollectionRateMs(int64_t rate) {
     int collection_rate;
-    base::test::RepeatingTestFuture<void> test_future;
+    base::test::TestFuture<void> test_future;
     base::CallbackListSubscription subscription =
         ::ash::CrosSettings::Get()->AddSettingsObserver(
             ::ash::kReportDeviceNetworkTelemetryCollectionRateMs,
-            test_future.GetCallback());
+            test_future.GetRepeatingCallback());
     device_reporting()->set_report_network_telemetry_collection_rate_ms(rate);
     policy_helper_.RefreshDevicePolicy();
 

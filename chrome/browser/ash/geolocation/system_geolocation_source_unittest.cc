@@ -11,8 +11,8 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
-#include "base/test/repeating_test_future.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/ash/geolocation/system_geolocation_source.h"
 #include "components/prefs/pref_service.h"
 
@@ -38,10 +38,9 @@ TEST_F(SystemGeolocationSourceTests, PermissionUpdate) {
   scoped_feature_list_.InitAndEnableFeature(ash::features::kCrosPrivacyHub);
 
   SystemGeolocationSource source;
-  base::test::RepeatingTestFuture<device::LocationSystemPermissionStatus>
-      status;
+  base::test::TestFuture<device::LocationSystemPermissionStatus> status;
 
-  source.RegisterPermissionUpdateCallback(status.GetCallback());
+  source.RegisterPermissionUpdateCallback(status.GetRepeatingCallback());
 
   // Initial value should be to allow.
   EXPECT_EQ(device::LocationSystemPermissionStatus::kAllowed, status.Take());
@@ -61,10 +60,9 @@ TEST_F(SystemGeolocationSourceTests, DisabledInV0) {
                                         {ash::features::kCrosPrivacyHub});
 
   SystemGeolocationSource source;
-  base::test::RepeatingTestFuture<device::LocationSystemPermissionStatus>
-      status;
+  base::test::TestFuture<device::LocationSystemPermissionStatus> status;
 
-  source.RegisterPermissionUpdateCallback(status.GetCallback());
+  source.RegisterPermissionUpdateCallback(status.GetRepeatingCallback());
 
   // The value should always be kAllowed.
   EXPECT_EQ(device::LocationSystemPermissionStatus::kAllowed, status.Take());

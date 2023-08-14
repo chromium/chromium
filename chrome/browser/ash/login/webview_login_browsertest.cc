@@ -24,7 +24,7 @@
 #include "base/synchronization/lock.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/repeating_test_future.h"
+#include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/helper.h"
@@ -225,8 +225,9 @@ class ErrorScreenWatcher : public OobeUI::Observer {
     OobeUI* oobe_ui = LoginDisplayHost::default_host()->GetOobeUI();
     oobe_ui_observation_.Observe(oobe_ui);
 
-    if (oobe_ui->current_screen() == ErrorScreenView::kScreenId)
+    if (oobe_ui->current_screen() == ErrorScreenView::kScreenId) {
       has_error_screen_been_shown_ = true;
+    }
   }
 
   ErrorScreenWatcher(const ErrorScreenWatcher& other) = delete;
@@ -241,8 +242,9 @@ class ErrorScreenWatcher : public OobeUI::Observer {
   // OobeUI::Observer:
   void OnCurrentScreenChanged(OobeScreenId current_screen,
                               OobeScreenId new_screen) override {
-    if (new_screen == ErrorScreenView::kScreenId)
+    if (new_screen == ErrorScreenView::kScreenId) {
       has_error_screen_been_shown_ = true;
+    }
   }
 
   // OobeUI::Observer:
@@ -1222,19 +1224,20 @@ class WebviewClientCertsLoginTestBase : public WebviewLoginTest {
     em::ChromeDeviceSettingsProto& proto(device_policy_builder_.payload());
     auto* field =
         proto.mutable_device_login_screen_auto_select_certificate_for_urls();
-    for (const std::string& autoselect_pattern : autoselect_patterns)
+    for (const std::string& autoselect_pattern : autoselect_patterns) {
       field->add_login_screen_auto_select_certificate_rules(autoselect_pattern);
+    }
 
     device_policy_builder_.Build();
 
     FakeSessionManagerClient::Get()->set_device_policy(
         device_policy_builder_.GetBlob());
     PrefChangeRegistrar registrar;
-    base::test::RepeatingTestFuture<const char*> pref_changed_future;
+    base::test::TestFuture<const char*> pref_changed_future;
     registrar.Init(ProfileHelper::GetSigninProfile()->GetPrefs());
     registrar.Add(
         prefs::kManagedAutoSelectCertificateForUrls,
-        base::BindRepeating(pref_changed_future.GetCallback(),
+        base::BindRepeating(pref_changed_future.GetRepeatingCallback(),
                             prefs::kManagedAutoSelectCertificateForUrls));
     FakeSessionManagerClient::Get()->OnPropertyChangeComplete(true);
     EXPECT_EQ(prefs::kManagedAutoSelectCertificateForUrls,
@@ -1263,11 +1266,11 @@ class WebviewClientCertsLoginTestBase : public WebviewLoginTest {
     FakeSessionManagerClient::Get()->set_device_policy(
         device_policy_builder_.GetBlob());
     PrefChangeRegistrar registrar;
-    base::test::RepeatingTestFuture<const char*> pref_changed_future;
+    base::test::TestFuture<const char*> pref_changed_future;
     registrar.Init(g_browser_process->local_state());
     registrar.Add(
         onc::prefs::kDeviceOpenNetworkConfiguration,
-        base::BindRepeating(pref_changed_future.GetCallback(),
+        base::BindRepeating(pref_changed_future.GetRepeatingCallback(),
                             onc::prefs::kDeviceOpenNetworkConfiguration));
     FakeSessionManagerClient::Get()->OnPropertyChangeComplete(true);
     EXPECT_EQ(onc::prefs::kDeviceOpenNetworkConfiguration,
@@ -1286,11 +1289,11 @@ class WebviewClientCertsLoginTestBase : public WebviewLoginTest {
     FakeSessionManagerClient::Get()->set_device_policy(
         device_policy_builder_.GetBlob());
     PrefChangeRegistrar registrar;
-    base::test::RepeatingTestFuture<const char*> pref_changed_future;
+    base::test::TestFuture<const char*> pref_changed_future;
     registrar.Init(ProfileHelper::GetSigninProfile()->GetPrefs());
     registrar.Add(
         prefs::kPromptOnMultipleMatchingCertificates,
-        base::BindRepeating(pref_changed_future.GetCallback(),
+        base::BindRepeating(pref_changed_future.GetRepeatingCallback(),
                             prefs::kPromptOnMultipleMatchingCertificates));
     FakeSessionManagerClient::Get()->OnPropertyChangeComplete(true);
     EXPECT_EQ(prefs::kPromptOnMultipleMatchingCertificates,
@@ -1367,8 +1370,9 @@ class WebviewClientCertsLoginTestBase : public WebviewLoginTest {
           net::ImportClientCertAndKeyFromFile(
               net::GetTestCertsDirectory(), pem_file_name.MaybeAsASCII(),
               pk8_file_name.MaybeAsASCII(), system_slot);
-      if (!client_cert)
+      if (!client_cert) {
         ADD_FAILURE() << "Failed to import cert from " << client_cert_name;
+      }
     }
   }
 
@@ -1559,8 +1563,9 @@ IN_PROC_BROWSER_TEST_P(SigninFrameWebviewClientCertsLoginTest,
   ASSERT_NO_FATAL_FAILURE(StartHttpsServer(server_config));
   // Prepare the certificate selector hook for simulating the user gesture in
   // the "act" part of the test.
-  if (GetParam().manually_select_cert)
+  if (GetParam().manually_select_cert) {
     SimulateUserWillSelectClientCert(*GetParam().manually_select_cert);
+  }
 
   EXPECT_TRUE(LoginScreenTestApi::ClickAddUserButton());
   WaitForGaiaPageLoadAndPropertyUpdate();
@@ -1605,8 +1610,9 @@ IN_PROC_BROWSER_TEST_P(SigninFrameWebviewClientCertsLoginTest, LockscreenTest) {
   ASSERT_NO_FATAL_FAILURE(StartHttpsServer(server_config));
   // Prepare the certificate selector hook for simulating the user gesture in
   // the "act" part of the test.
-  if (GetParam().manually_select_cert)
+  if (GetParam().manually_select_cert) {
     SimulateUserWillSelectClientCert(*GetParam().manually_select_cert);
+  }
 
   // Log in a user and lock the screen, then trigger the lock screen SAML reauth
   // dialog.
@@ -2115,8 +2121,9 @@ class WebviewProxyAuthLoginTest : public WebviewLoginTest {
     LoginHandler* login_handler =
         content::Details<LoginNotificationDetails>(details)->handler();
     if (login_handler->web_contents() !=
-        content::WebContents::FromRenderFrameHost(gaia_rfh))
+        content::WebContents::FromRenderFrameHost(gaia_rfh)) {
       return false;
+    }
 
     gaia_frame_login_handler_ = login_handler;
     auth_needed_wait_loop_->Quit();
@@ -2293,8 +2300,9 @@ IN_PROC_BROWSER_TEST_P(WebviewCloseViewLoginTest, UserInfoNeverSent) {
                                FakeGaiaMixin::kPasswordPath);
   test::OobeJS().ClickOnPath(kPrimaryButton);
 
-  if (GetParam())
+  if (GetParam()) {
     SigninFrameJS().ExecuteAsync("gaia.chromeOSLogin.sendCloseView()");
+  }
 
   EmulateGaiaDoneTimeout();
 

@@ -40,7 +40,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
 #include "base/test/gtest_tags.h"
-#include "base/test/repeating_test_future.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
@@ -370,9 +369,8 @@ const base::Value* RefreshAndWaitForPolicies(
     policy::PolicyService* policy_service,
     const policy::PolicyNamespace& ns) {
   PolicyChangeRegistrar policy_registrar(policy_service, ns);
-  base::test::RepeatingTestFuture<const base::Value*, const base::Value*>
-      future;
-  policy_registrar.Observe("string", future.GetCallback());
+  TestFuture<const base::Value*, const base::Value*> future;
+  policy_registrar.Observe("string", future.GetRepeatingCallback());
   policy_service->RefreshPolicies(base::OnceClosure());
   return std::get<1>(future.Take());
 }

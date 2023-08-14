@@ -5,7 +5,6 @@
 #include "chrome/browser/ash/crosapi/network_settings_service_ash.h"
 
 #include "ash/constants/ash_pref_names.h"
-#include "base/test/repeating_test_future.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/crosapi/network_settings_translation.h"
 #include "chrome/browser/ash/crosapi/prefs_ash.h"
@@ -83,17 +82,17 @@ class NetworkSettingsObserver : public crosapi::mojom::NetworkSettingsObserver {
 
   // crosapi::mojom::NetworkSettingsObserver:
   void OnProxyChanged(crosapi::mojom::ProxyConfigPtr proxy_config) override {
-    future_.AddValue(std::move(proxy_config));
+    future_.SetValue(std::move(proxy_config));
   }
 
   crosapi::mojom::ProxyConfigPtr WaitForProxyConfig() { return future_.Take(); }
 
   mojo::Receiver<crosapi::mojom::NetworkSettingsObserver> receiver_{this};
 
-  bool AreAllProxyUpdatesRead() { return future_.IsEmpty(); }
+  bool AreAllProxyUpdatesRead() { return !future_.IsReady(); }
 
  private:
-  base::test::RepeatingTestFuture<crosapi::mojom::ProxyConfigPtr> future_;
+  base::test::TestFuture<crosapi::mojom::ProxyConfigPtr> future_;
 };
 
 }  // namespace

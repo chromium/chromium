@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/test/bind.h"
-#include "base/test/repeating_test_future.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "chromeos/ash/components/mojo_service_manager/fake_mojo_service_manager.h"
@@ -38,7 +37,7 @@ class TestEventObserver : public crosapi::mojom::TelemetryEventObserver {
 
   // crosapi::mojom::TelemetryEventObserver:
   void OnEvent(crosapi::mojom::TelemetryEventInfoPtr info) override {
-    event_future_.AddValue(std::move(info));
+    event_future_.SetValue(std::move(info));
   }
 
   crosapi::mojom::TelemetryEventInfoPtr WaitAndGetEvent() {
@@ -57,8 +56,7 @@ class TestEventObserver : public crosapi::mojom::TelemetryEventObserver {
 
  private:
   mojo::Receiver<crosapi::mojom::TelemetryEventObserver> receiver_;
-  base::test::RepeatingTestFuture<crosapi::mojom::TelemetryEventInfoPtr>
-      event_future_;
+  base::test::TestFuture<crosapi::mojom::TelemetryEventInfoPtr> event_future_;
 };
 
 }  // namespace
