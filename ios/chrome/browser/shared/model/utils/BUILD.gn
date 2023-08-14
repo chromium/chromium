@@ -4,9 +4,15 @@
 
 source_set("utils") {
   sources = [
+    "first_run_util.h",
+    "first_run_util.mm",
     "notification_observer_bridge.h",
     "notification_observer_bridge.mm",
   ]
 
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/first_run",
+    "//ios/chrome/browser/shared/public/features:system_flags",
+  ]
 }
