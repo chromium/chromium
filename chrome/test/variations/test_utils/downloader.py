@@ -130,6 +130,12 @@ def find_version(release_os: str, channel: str) -> packaging.version.Version:
   except Exception as e:
     raise RuntimeError("Fail to retrieve version info.") from e
 
+def parse_version(version: str) -> packaging.version.Version:
+  try:
+    return packaging.version.parse(version)
+  except packaging.version.InvalidVersion:
+    raise RuntimeError(f"Invalid version: {version}")
+
 def find_closest_version(release_os: str,
                          channel: str,
                          version: str) -> packaging.version.Version:
