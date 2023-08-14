@@ -488,6 +488,11 @@ void StoreCurrentTimestampForKey(NSString* key) {
   StoreTimestampsForKey(key, timestamps);
 }
 
+std::string GetVideoPromoVariant() {
+  return base::GetFieldTrialParamValueByFeature(
+      kDefaultBrowserVideoPromo, "default_browser_video_promo_variant");
+}
+
 }  // namespace
 
 NSString* const kLastTimeUserInteractedWithNonModalPromo =
@@ -506,6 +511,17 @@ NSString* const kOmniboxUseCount = @"OmniboxUseCount";
 NSString* const kBookmarkUseCount = @"BookmarkUseCount";
 NSString* const kAutofillUseCount = @"AutofillUseCount";
 NSString* const kSpecialTabsUseCount = @"SpecialTabUseCount";
+
+const char kVideoConditionsFullscreenPromo[] =
+    "video_conditions_fullscreen_promo";
+const char kVideoConditionsHalfscreenPromo[] =
+    "video_conditions_halfscreen_promo";
+const char kGenericConditionsFullscreenPromo[] =
+    "generic_conditions_fullscreen_promo";
+const char kGenericConditionsHalfscreenPromo[] =
+    "generic_conditions_halfscreen_promo";
+const char kDefaultBrowserVideoPromoVariant[] =
+    "default_browser_video_promo_variant";
 
 void SetObjectIntoStorageForKey(NSString* key, NSObject* data) {
   UpdateStorageWithDictionary(@{key : data});
@@ -652,10 +668,20 @@ bool ShouldTriggerDefaultBrowserPromoOnOmniboxCopyPaste() {
       kDefaultBrowserTriggerOnOmniboxCopyPaste, false);
 }
 
-bool IsDefaultBrowserVideoPromoHalfscreenEnabled() {
-  return base::GetFieldTrialParamByFeatureAsBool(
-      kDefaultBrowserVideoPromo, "default_browser_video_promo_halfscreen",
-      false);
+bool IsDBVideoPromoHalfscreenEnabled() {
+  return GetVideoPromoVariant().compare(kVideoConditionsHalfscreenPromo) == 0;
+}
+
+bool IsDBVideoPromoFullscreenEnabled() {
+  return GetVideoPromoVariant().compare(kVideoConditionsFullscreenPromo) == 0;
+}
+
+bool IsDBVideoPromoWithGenericFullscreenEnabled() {
+  return GetVideoPromoVariant().compare(kGenericConditionsFullscreenPromo) == 0;
+}
+
+bool IsDBVideoPromoWithGenericHalfscreenEnabled() {
+  return GetVideoPromoVariant().compare(kGenericConditionsHalfscreenPromo) == 0;
 }
 
 bool IsNonModalDefaultBrowserPromoCooldownRefactorEnabled() {

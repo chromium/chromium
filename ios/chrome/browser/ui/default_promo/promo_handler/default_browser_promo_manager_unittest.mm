@@ -143,8 +143,12 @@ TEST_F(DefaultBrowserPromoManagerTest, showDefaultBrowserFullscreenPromo) {
 // Tests that the DefaultPromoTypeVideo promo is shown when it was detected
 // that the user is likely interested in the promo.
 TEST_F(DefaultBrowserPromoManagerTest, showDefaultBrowserVideoPromo) {
+  std::map<std::string, std::string> parameters;
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kDefaultBrowserVideoPromo);
+  parameters[kDefaultBrowserVideoPromoVariant] =
+      kVideoConditionsFullscreenPromo;
+  feature_list.InitAndEnableFeatureWithParameters(kDefaultBrowserVideoPromo,
+                                                  parameters);
   TestingApplicationContext::GetGlobal()->SetLastShutdownClean(true);
   feature_engagement::test::MockTracker* mock_tracker =
       static_cast<feature_engagement::test::MockTracker*>(

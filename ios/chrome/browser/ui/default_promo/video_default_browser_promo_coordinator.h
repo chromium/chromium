@@ -13,6 +13,9 @@
 // Handler for all actions of this coordinator.
 @property(nonatomic, weak) id<DefaultBrowserPromoCommands> handler;
 
+// Add halfscreen view
+@property(nonatomic, assign) BOOL isHalfScreen;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_DEFAULT_PROMO_VIDEO_DEFAULT_BROWSER_PROMO_COORDINATOR_H_

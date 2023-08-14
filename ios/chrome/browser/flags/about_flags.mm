@@ -219,15 +219,32 @@ const FeatureEntry::FeatureVariation kOmniboxMaxURLMatchesVariations[] = {
      nullptr},
 };
 
-const FeatureEntry::FeatureParam kDefaultBrowserVideoPromoHalfscreen[] = {
-    {"default_browser_video_promo_halfscreen", "true"}};
-const FeatureEntry::FeatureParam kDefaultBrowserVideoPromoFullscreen[] = {
-    {"default_browser_video_promo_halfscreen", "false"}};
+const FeatureEntry::FeatureParam
+    kDefaultBrowserVideoConditionsHalfscreenPromo[] = {
+        {kDefaultBrowserVideoPromoVariant, kVideoConditionsHalfscreenPromo}};
+const FeatureEntry::FeatureParam
+    kDefaultBrowserVideoConditionsFullscreenPromo[] = {
+        {kDefaultBrowserVideoPromoVariant, kVideoConditionsFullscreenPromo}};
+const FeatureEntry::FeatureParam
+    kDefaultBrowserGenericConsitionsFullscreenPromo[] = {
+        {kDefaultBrowserVideoPromoVariant, kGenericConditionsFullscreenPromo}};
+const FeatureEntry::FeatureParam
+    kDefaultBrowserGenericConditionsHalfscreenPromo[] = {
+        {kDefaultBrowserVideoPromoVariant, kGenericConditionsHalfscreenPromo}};
+
 const FeatureEntry::FeatureVariation kDefaultBrowserVideoPromoVariations[] = {
-    {"Show half screen ui", kDefaultBrowserVideoPromoHalfscreen,
-     std::size(kDefaultBrowserVideoPromoHalfscreen), nullptr},
-    {"Show full screen ui", kDefaultBrowserVideoPromoFullscreen,
-     std::size(kDefaultBrowserVideoPromoFullscreen), nullptr},
+    {"Show half screen ui with video condtions",
+     kDefaultBrowserVideoConditionsHalfscreenPromo,
+     std::size(kDefaultBrowserVideoConditionsHalfscreenPromo), nullptr},
+    {"Show full screen ui with video condtions",
+     kDefaultBrowserVideoConditionsFullscreenPromo,
+     std::size(kDefaultBrowserVideoConditionsFullscreenPromo), nullptr},
+    {"Show full screen ui with generic condtions",
+     kDefaultBrowserGenericConsitionsFullscreenPromo,
+     std::size(kDefaultBrowserGenericConsitionsFullscreenPromo), nullptr},
+    {"Show half screen ui with generic condtions",
+     kDefaultBrowserGenericConditionsHalfscreenPromo,
+     std::size(kDefaultBrowserGenericConditionsHalfscreenPromo), nullptr},
 };
 
 const FeatureEntry::FeatureParam

@@ -106,6 +106,13 @@ extern NSString* const kAutofillUseCount;
 // a pinned tab or remote tab use event.
 extern NSString* const kSpecialTabsUseCount;
 
+// Param names used for the default browser video promo.
+extern const char kVideoConditionsFullscreenPromo[];
+extern const char kVideoConditionsHalfscreenPromo[];
+extern const char kGenericConditionsFullscreenPromo[];
+extern const char kGenericConditionsHalfscreenPromo[];
+extern const char kDefaultBrowserVideoPromoVariant[];
+
 // Helper function to set `data` for `key` into the storage object.
 void SetObjectIntoStorageForKey(NSString* key, NSObject* data);
 
@@ -149,7 +156,18 @@ bool IsDefaultBrowserInPromoManagerEnabled();
 bool IsDefaultBrowserVideoPromoEnabled();
 
 // Returns true if the default browser video promo half screen enabled.
-bool IsDefaultBrowserVideoPromoHalfscreenEnabled();
+bool IsDBVideoPromoHalfscreenEnabled();
+
+// Returns true if the default browser video promo full screen enabled.
+bool IsDBVideoPromoFullscreenEnabled();
+
+// Returns true if the default browser video promo full screen with generic
+// triggering conditions enabled.
+bool IsDBVideoPromoWithGenericFullscreenEnabled();
+
+// Returns true if the default browser video promo half screen with generic
+// triggering conditions enabled.
+bool IsDBVideoPromoWithGenericHalfscreenEnabled();
 
 // Returns true if the non-modal default browser promo cooldown refactor is
 // enabled.
