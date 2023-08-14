@@ -238,7 +238,13 @@ void V4L2StatefulVideoDecoder::Initialize(const VideoDecoderConfig& config,
   }
 
   // If we've been Initialize()d before, destroy state members.
-  if (OUTPUT_queue_) {
+  if (IsInitialized()) {
+    // Invalidate pointers from and cancel all hypothetical in-flight requests
+    // to the WaitOnceForEvents() routine.
+    weak_this_factory_.InvalidateWeakPtrs();
+    weak_this_ = weak_this_factory_.GetWeakPtr();
+    cancelable_task_tracker_.TryCancelAll();
+
     // This will also Deallocate() all buffers and issue a VIDIOC_STREAMOFF.
     OUTPUT_queue_.reset();
     CAPTURE_queue_.reset();
@@ -303,7 +309,7 @@ void V4L2StatefulVideoDecoder::Initialize(const VideoDecoderConfig& config,
 void V4L2StatefulVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
                                       DecodeCB decode_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(OUTPUT_queue_) << "V4L2StatefulVideoDecoder hasn't been Initialize()d";
+  DCHECK(IsInitialized()) << "V4L2StatefulVideoDecoder must be Initialize()d";
   DVLOGF(3) << buffer->AsHumanReadableString(/*verbose=*/false);
 
   if (buffer->end_of_stream()) {
@@ -444,7 +450,7 @@ V4L2StatefulVideoDecoder::~V4L2StatefulVideoDecoder() {
 
 bool V4L2StatefulVideoDecoder::InitializeCAPTUREQueue() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(OUTPUT_queue_) << "V4L2StatefulVideoDecoder hasn't been Initialize()d";
+  DCHECK(IsInitialized()) << "V4L2StatefulVideoDecoder must be Initialize()d";
 
   CAPTURE_queue_ = base::WrapRefCounted(
       new V4L2Queue(base::BindRepeating(&HandledIoctl, device_fd_.get()),
@@ -780,7 +786,7 @@ void V4L2StatefulVideoDecoder::TryAndEnqueueCAPTUREQueueBuffers() {
 
 bool V4L2StatefulVideoDecoder::DrainOUTPUTQueue() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(OUTPUT_queue_) << "|OUTPUT_queue_| must be created at this point";
+  DCHECK(IsInitialized()) << "V4L2StatefulVideoDecoder must be Initialize()d";
 
   bool success;
   scoped_refptr<V4L2ReadableBuffer> dequeued_buffer;
@@ -794,7 +800,7 @@ bool V4L2StatefulVideoDecoder::DrainOUTPUTQueue() {
 
 bool V4L2StatefulVideoDecoder::TryAndEnqueueOUTPUTQueueBuffers() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(OUTPUT_queue_) << "|OUTPUT_queue_| must be created at this point";
+  DCHECK(IsInitialized()) << "V4L2StatefulVideoDecoder must be Initialize()d";
 
   for (absl::optional<V4L2WritableBufferRef> v4l2_buffer =
            OUTPUT_queue_->GetFreeBuffer();
@@ -833,6 +839,11 @@ void V4L2StatefulVideoDecoder::PrintOutQueueStatesForVLOG(
           << OUTPUT_queue_->AllocatedBuffersCount() << ", |CAPTURE_queue_| "
           << (CAPTURE_queue_ ? CAPTURE_queue_->QueuedBuffersCount() : 0) << "/"
           << (CAPTURE_queue_ ? CAPTURE_queue_->AllocatedBuffersCount() : 0);
+}
+
+bool V4L2StatefulVideoDecoder::IsInitialized() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return !!OUTPUT_queue_;
 }
 
 }  // namespace media

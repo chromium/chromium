@@ -122,6 +122,9 @@ class MEDIA_GPU_EXPORT V4L2StatefulVideoDecoder : public VideoDecoderMixin {
   // debugging, preceded with |from_here|s function name.
   void PrintOutQueueStatesForVLOG(const base::Location& from_here);
 
+  // Returns true if this class has successfully Initialize()d.
+  bool IsInitialized() const;
+
   base::ScopedFD device_fd_ GUARDED_BY_CONTEXT(sequence_checker_);
   // This |wake_event_| is used to interrupt a blocking poll() call, such as the
   // one started by e.g. RearmCAPTUREQueueMonitoring().
