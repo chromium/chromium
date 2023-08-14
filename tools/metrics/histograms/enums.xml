@@ -53855,6 +53855,15 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="3" label="3G"/>
 </enum>
 
+<enum name="InitialServiceWorkerStatus">
+  <int value="0" label="kRunning"/>
+  <int value="1" label="kStarting"/>
+  <int value="2" label="kStopping"/>
+  <int value="3" label="kStopped"/>
+  <int value="4" label="kWarmingUp"/>
+  <int value="5" label="kWarmedUp"/>
+</enum>
+
 <enum name="InitiatorAccess">
   <int value="0" label="Initiator absent"/>
   <int value="1" label="No access"/>
