@@ -7,6 +7,10 @@
 
 #import <Foundation/Foundation.h>
 
+namespace syncer {
+class SyncService;
+}  // namespace syncer
+
 class ChromeAccountManagerService;
 @class ConsistencyDefaultAccountMediator;
 @protocol ConsistencyDefaultAccountConsumer;
@@ -26,7 +30,8 @@ class ChromeAccountManagerService;
 
 // The designated initializer.
 - (instancetype)initWithAccountManagerService:
-    (ChromeAccountManagerService*)accountManagerService
+                    (ChromeAccountManagerService*)accountManagerService
+                                  syncService:(syncer::SyncService*)syncService
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

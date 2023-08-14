@@ -4,12 +4,14 @@
 
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_default_account/consistency_default_account_view_controller.h"
 
+#import "base/check.h"
 #import "base/feature_list.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/base/features.h"
+#import "components/sync/base/user_selectable_type.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_layout_delegate.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
@@ -37,26 +39,60 @@ constexpr CGFloat kExtraNavBarTopPadding = 3.;
 constexpr CGFloat kPrimaryButtonVerticalInsets = 15.5;
 
 // The label the bottom sheet should display, or null if there should be none.
-NSString* GetPromoLabelString(signin_metrics::AccessPoint accessPoint) {
-  switch (accessPoint) {
+// The label should never promise "sign in to achieve X" if an enterprise
+// policy is preventing X.
+NSString* GetPromoLabelString(
+    signin_metrics::AccessPoint access_point,
+    bool sync_transport_disabled_by_policy,
+    syncer::UserSelectableTypeSet sync_types_disabled_by_policy) {
+  // TODO(crbug.com/1468530): Convert DUMP_WILL_BE_CHECKs to CHECKs (some are
+  // probably failing now).
+  switch (access_point) {
     case signin_metrics::AccessPoint::ACCESS_POINT_SEND_TAB_TO_SELF_PROMO:
+      // Sign-in shouldn't be offered if the feature doesn't work.
+      DUMP_WILL_BE_CHECK(!sync_transport_disabled_by_policy);
       return l10n_util::GetNSString(IDS_SEND_TAB_TO_SELF_SIGN_IN_PROMO_LABEL);
     case signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_CARD_MENU_PROMO:
+      // Configuring feed interests is independent of sync.
       return l10n_util::GetNSString(IDS_IOS_FEED_CARD_SIGN_IN_ONLY_PROMO_LABEL);
     case signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN:
-      return base::FeatureList::IsEnabled(
-                 syncer::kReplaceSyncPromosWithSignInPromos)
+      if (!base::FeatureList::IsEnabled(
+              syncer::kReplaceSyncPromosWithSignInPromos)) {
+        return l10n_util::GetNSString(
+            IDS_IOS_CONSISTENCY_PROMO_DEFAULT_ACCOUNT_LABEL);
+      }
+      // This could check `sync_types_disabled_by_policy` only for the types
+      // mentioned in the regular string, but don't bother.
+      return sync_transport_disabled_by_policy ||
+                     !sync_types_disabled_by_policy.Empty()
                  ? l10n_util::GetNSString(
-                       IDS_IOS_SIGNIN_SHEET_LABEL_FOR_WEB_SIGNIN)
+                       IDS_IOS_CONSISTENCY_PROMO_DEFAULT_ACCOUNT_LABEL)
                  : l10n_util::GetNSString(
-                       IDS_IOS_CONSISTENCY_PROMO_DEFAULT_ACCOUNT_LABEL);
+                       IDS_IOS_SIGNIN_SHEET_LABEL_FOR_WEB_SIGNIN);
     case signin_metrics::AccessPoint::ACCESS_POINT_NTP_SIGNED_OUT_ICON:
+      // This could check `sync_types_disabled_by_policy` only for the types
+      // mentioned in the regular string, but don't bother.
+      return sync_transport_disabled_by_policy ||
+                     !sync_types_disabled_by_policy.Empty()
+                 ? nil
+                 : l10n_util::GetNSString(
+                       IDS_IOS_IDENTITY_DISC_SIGN_IN_PROMO_LABEL);
     case signin_metrics::AccessPoint::ACCESS_POINT_SET_UP_LIST:
+      // "Sync" is mentioned in the setup list (the card, not this sheet). So it
+      // was easier to hide it than come up with new strings. In the future, we
+      // could tweak the card strings and return nil here.
+      DUMP_WILL_BE_CHECK(!sync_transport_disabled_by_policy &&
+                         sync_types_disabled_by_policy.Empty());
       return l10n_util::GetNSString(IDS_IOS_IDENTITY_DISC_SIGN_IN_PROMO_LABEL);
     case signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO:
     case signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_BOTTOM_PROMO:
+      // Feed personalization is independent of sync.
       return l10n_util::GetNSString(IDS_IOS_SIGNIN_SHEET_LABEL_FOR_FEED_PROMO);
     case signin_metrics::AccessPoint::ACCESS_POINT_RECENT_TABS:
+      // Sign-in shouldn't be offered if the feature doesn't work.
+      DUMP_WILL_BE_CHECK(!sync_transport_disabled_by_policy &&
+                         !sync_types_disabled_by_policy.Has(
+                             syncer::UserSelectableType::kTabs));
       return l10n_util::GetNSString(IDS_IOS_SIGNIN_SHEET_LABEL_FOR_RECENT_TABS);
     case signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS:
       // No text.
@@ -114,7 +150,7 @@ NSString* GetPromoLabelString(signin_metrics::AccessPoint accessPoint) {
   }
 }
 
-}
+}  // namespace
 
 @interface ConsistencyDefaultAccountViewController ()
 
@@ -134,6 +170,13 @@ NSString* GetPromoLabelString(signin_metrics::AccessPoint accessPoint) {
 @property(nonatomic, strong) UIActivityIndicatorView* activityIndicatorView;
 // The access point that triggered sign-in.
 @property(nonatomic, assign, readonly) signin_metrics::AccessPoint accessPoint;
+// Whether the sync transport layer got disabled by an enterprise policy. See
+// also the comment in the corresponding ConsistencyDefaultAccountConsumer
+// setter as to how this might differ from `syncTypesDisabledByPolicy` below.
+@property(nonatomic, assign, readwrite) BOOL syncTransportDisabledByPolicy;
+// Whether individual sync types got disabled by an enterprise policy.
+@property(nonatomic, assign, readwrite)
+    syncer::UserSelectableTypeSet syncTypesDisabledByPolicy;
 
 @end
 
@@ -285,7 +328,9 @@ NSString* GetPromoLabelString(signin_metrics::AccessPoint accessPoint) {
   ]];
 
   // Add the label.
-  NSString* labelText = GetPromoLabelString(self.accessPoint);
+  NSString* labelText =
+      GetPromoLabelString(self.accessPoint, self.syncTransportDisabledByPolicy,
+                          self.syncTypesDisabledByPolicy);
   if (labelText) {
     UILabel* label = [[UILabel alloc] init];
     label.text = labelText;

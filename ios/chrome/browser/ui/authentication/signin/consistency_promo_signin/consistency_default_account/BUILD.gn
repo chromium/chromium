@@ -17,7 +17,8 @@ source_set("consistency_default_account") {
   deps = [
     "//components/prefs",
     "//components/strings",
-    "//components/sync/base:features",
+    "//components/sync/base",
+    "//components/sync/service",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",

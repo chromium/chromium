@@ -1039,8 +1039,8 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 
   // Ensure the sign-in sheet is displayed.
   [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
-                                   IDS_IOS_IDENTITY_DISC_SIGN_IN_PROMO_LABEL))]
+      selectElementWithMatcher:
+          grey_accessibilityID(kWebSigninPrimaryButtonAccessibilityIdentifier)]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
