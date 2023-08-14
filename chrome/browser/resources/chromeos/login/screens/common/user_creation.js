@@ -7,6 +7,8 @@ import '//resources/cr_elements/cr_radio_button/cr_card_radio_button.js';
 import '//resources/cr_elements/cr_radio_group/cr_radio_group.js';
 import '//resources/js/action_link.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import '../../components/buttons/oobe_back_button.js';
+import '../../components/buttons/oobe_next_button.js';
 import '../../components/hd_iron_icon.js';
 import '../../components/oobe_icons.html.js';
 import '../../components/common_styles/oobe_common_styles.css.js';
@@ -123,6 +125,7 @@ class UserCreation extends UserCreationScreenElementBase {
         type: String,
       },
 
+
       /**
        * Is the back button visible on the first step of the screen. Back button
        * is visible iff we are in the add person flow.
@@ -152,6 +155,13 @@ class UserCreation extends UserCreationScreenElementBase {
         },
       },
 
+      /**
+       * Indicates if all OOBE screens have been loaded, so that it's safe to
+       * enable the Next and Back buttons.
+       */
+      isOobeLoaded_: {
+        type: Boolean,
+      },
     };
   }
 
@@ -168,7 +178,7 @@ class UserCreation extends UserCreationScreenElementBase {
     }
     this.selectedEnrollTriageMethod = '';
     this.selectedChildSetupMethod = '';
-    this.isBackButtonVisible_ = true;
+    this.isBackButtonVisible_ = false;
   }
 
   /** @override */
@@ -193,28 +203,46 @@ class UserCreation extends UserCreationScreenElementBase {
     if (this.isOobeSoftwareUpdateEnabled_) {
       this.restoreOobeUIState();
       this.selectedUserType = '';
-      this.titleKey_ = this.isBackButtonVisible_ ?
-          'userCreationAddPersonUpdatedTitle' :
-          'userCreationUpdatedTitle';
-      this.subtitleKey_ = this.isBackButtonVisible_ ?
-          'userCreationAddPersonUpdatedSubtitle' :
-          'userCreationUpdatedSubtitle';
-    } else {
-      this.selectedUserType = UserCreationUserType.SELF;
-      this.titleKey_ = this.isBackButtonVisible_ ?
-          'userCreationAddPersonTitle' :
-          'userCreationTitle';
-      this.subtitleKey_ = this.isBackButtonVisible_ ?
-          'userCreationAddPersonSubtitle' :
-          'userCreationSubtitle';
+      if (!loadTimeData.getBoolean('isOobeFlow')) {
+        this.titleKey_ = 'userCreationAddPersonUpdatedTitle';
+        this.subtitleKey_ = 'userCreationAddPersonUpdatedSubtitle';
+      } else {
+        this.titleKey_ = 'userCreationUpdatedTitle';
+        this.subtitleKey_ = 'userCreationUpdatedSubtitle';
+      }
+      this.selectedEnrollTriageMethod = '';
+      this.selectedChildSetupMethod = '';
+
+      return;
     }
-    this.selectedEnrollTriageMethod = '';
-    this.selectedChildSetupMethod = '';
+
+    this.selectedUserType = UserCreationUserType.SELF;
+    if (!loadTimeData.getBoolean('isOobeFlow')) {
+      this.titleKey_ = 'userCreationAddPersonTitle';
+      this.subtitleKey_ = 'userCreationAddPersonSubtitle';
+    } else {
+      this.titleKey_ = 'userCreationTitle';
+      this.subtitleKey_ = 'userCreationSubtitle';
+    }
   }
 
   /** @override */
   ready() {
     super.ready();
+
+    if (loadTimeData.getBoolean('isOobeLazyLoadingEnabled')) {
+      // The UserCreation screen is a priority screen, so it becomes visible
+      // before the remaining of the OOBE flow is fully loaded. 'Back' and
+      // 'Next' buttons are initially disabled, and enabled upon receiving the
+      //|oobe-screens-loaded| event.
+      this.isOobeLoaded_ = false;
+      document.addEventListener('oobe-screens-loaded', () => {
+        this.isOobeLoaded_ = true;
+      }, {once: true});
+    } else {
+      this.isOobeLoaded_ = true;
+    }
+
     this.initializeLoginScreen('UserCreationScreen');
   }
 
@@ -257,6 +285,10 @@ class UserCreation extends UserCreationScreenElementBase {
     } else {
       this.userActed(UserAction.CANCEL);
     }
+  }
+
+  isNextButtonEnabled_(selection, isOobeLoaded) {
+    return selection && isOobeLoaded;
   }
 
   onNextClicked_() {

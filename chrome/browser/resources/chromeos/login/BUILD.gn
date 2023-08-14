@@ -197,6 +197,7 @@ preprocess_if_expr("preprocess_unconditional_existing") {
     "oobe_screen.css",
     "oobe_trace.js",
     "oobe_trace_start.js",
+    "priority_screens_common_flow.js",
     "priority_screens_oobe_flow.js",
     "screens.js",
   ]

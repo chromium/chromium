@@ -24,6 +24,7 @@ found in the LICENSE file.
   #learnMoreDialog p {
     margin-bottom: 10px;
   }
+
 </style>
 <oobe-adaptive-dialog id="userCreationDialog"
     for-step="create"
@@ -90,12 +91,13 @@ found in the LICENSE file.
   </div>
   <div slot="back-navigation">
     <oobe-back-button id="backButton" on-click="onBackClicked_"
-        hidden="[[!isBackButtonVisible_]]">
+        hidden="[[!isBackButtonVisible_]]" disabled="[[!isOobeLoaded_]]">
     </oobe-back-button>
   </div>
   <div slot="bottom-buttons">
     <oobe-next-button id="nextButton"
-        on-click="onNextClicked_" disabled="[[!selectedUserType]]">
+        class="focus-on-show" on-click="onNextClicked_"
+        disabled="[[!isNextButtonEnabled_(selectedUserType, isOobeLoaded_)]]">
     </oobe-next-button>
   </div>
 </oobe-adaptive-dialog>
@@ -159,13 +161,15 @@ found in the LICENSE file.
     </cr-radio-group>
   </div>
   <div slot="back-navigation">
-    <oobe-back-button id="enrollTriageBackButton" on-click="onBackClicked_">
+    <oobe-back-button id="enrollTriageBackButton" on-click="onBackClicked_"
+        disabled="[[!isOobeLoaded_]]">
     </oobe-back-button>
   </div>
   <div slot="bottom-buttons">
     <oobe-next-button id="enrollTriageNextButton"
         on-click="onTriageNextClicked_"
-        disabled="[[!selectedEnrollTriageMethod]]">
+        disabled="[[!isNextButtonEnabled_(selectedEnrollTriageMethod,
+            isOobeLoaded_)]]">
     </oobe-next-button>
   </div>
 </oobe-adaptive-dialog>
@@ -219,13 +223,15 @@ found in the LICENSE file.
     </cr-radio-group>
   </div>
   <div slot="back-navigation">
-    <oobe-back-button id="childSetupBackButton" on-click="onBackClicked_">
+    <oobe-back-button id="childSetupBackButton" on-click="onBackClicked_"
+        disabled="[[!isOobeLoaded_]]">
     </oobe-back-button>
   </div>
   <div slot="bottom-buttons">
     <oobe-next-button id="childSetupNextButton"
         on-click="onChildSetupNextClicked_"
-        disabled="[[!selectedChildSetupMethod]]">
+        disabled="[[!isNextButtonEnabled_(selectedChildSetupMethod,
+            isOobeLoaded_)]]">
     </oobe-next-button>
   </div>
 </oobe-adaptive-dialog>

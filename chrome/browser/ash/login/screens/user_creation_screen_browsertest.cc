@@ -234,6 +234,10 @@ class UserCreationScreenSoftwareUpdateTest : public UserCreationScreenTest {
   // UserMethod and Next button is disabled
   void SelectUserTypeOnUserCreationScreen(test::UIPath element_id) {
     OobeScreenWaiter(UserCreationView::kScreenId).Wait();
+    test::OobeJS()
+        .CreateWaiter(
+            test::GetAttributeExpression("isOobeLoaded_", {kUserCreationId}))
+        ->Wait();
     ASSERT_TRUE(LoginScreenTestApi::IsEnterpriseEnrollmentButtonShown());
     test::OobeJS().ExpectVisiblePath(kUserCreationDialog);
     test::OobeJS().ExpectHasNoAttribute("checked", kSelfButton);

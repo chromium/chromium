@@ -75,7 +75,8 @@ CoreOobe::~CoreOobe() {
 
 void CoreOobe::ShowScreenWithData(const OobeScreenId& screen,
                                   absl::optional<base::Value::Dict> data) {
-  const bool is_priority_screen = view_ && view_->IsPriorityScreen(screen.name);
+  const bool is_priority_screen =
+      PriorityScreenChecker::IsPriorityScreen(screen);
 
   switch (ui_init_state_) {
     case CoreOobeView::UiState::kUninitialized:
