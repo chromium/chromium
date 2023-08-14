@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
 #include "chrome/browser/apps/app_service/publishers/shortcut_publisher.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
@@ -40,6 +41,11 @@ class BrowserShortcuts : public apps::ShortcutPublisher,
   void InitBrowserShortcuts();
 
   bool IsShortcut(const AppId& app_id);
+
+  // apps::ShortcutPublisher overrides.
+  void LaunchShortcut(const std::string& host_app_id,
+                      const std::string& local_id,
+                      int64_t display_id) override;
 
   const raw_ptr<Profile> profile_;
 

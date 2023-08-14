@@ -9,6 +9,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/publishers/app_publisher.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
@@ -16,6 +17,7 @@
 #include "components/services/app_service/public/cpp/shortcut/shortcut_registry_cache.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/display/types/display_constants.h"
 
 namespace apps {
 
@@ -23,21 +25,49 @@ class FakeShortcutPublisher : public ShortcutPublisher {
  public:
   FakeShortcutPublisher(AppServiceProxy* proxy,
                         AppType app_type,
-                        Shortcuts initial_shortcuts)
-      : ShortcutPublisher(proxy),
-        initial_shortcuts_(std::move(initial_shortcuts)) {
+                        const Shortcuts& initial_shortcuts)
+      : ShortcutPublisher(proxy) {
     RegisterShortcutPublisher(app_type);
-    CreateInitialShortcuts();
+    CreateInitialShortcuts(initial_shortcuts);
   }
 
-  void CreateInitialShortcuts() {
-    for (const auto& shortcut : initial_shortcuts_) {
+  void CreateInitialShortcuts(const Shortcuts& initial_shortcuts) {
+    for (const auto& shortcut : initial_shortcuts) {
       ShortcutPublisher::PublishShortcut(shortcut->Clone());
     }
   }
 
+  void LaunchShortcut(const std::string& host_app_id,
+                      const std::string& local_id,
+                      int64_t display_id) override {
+    shortcut_launched = true;
+    host_app_id_ = host_app_id;
+    local_id_ = local_id;
+    display_id_ = display_id;
+  }
+
+  void ClearPreviousLaunch() {
+    // Clear previous launch;
+    shortcut_launched = false;
+    host_app_id_ = "";
+    local_id_ = "";
+    display_id_ = display::kDefaultDisplayId;
+  }
+
+  void VerifyShortcutLaunch(const std::string& expected_host_app_id,
+                            const std::string& expected_local_id,
+                            int64_t expected_display_id) {
+    EXPECT_TRUE(shortcut_launched);
+    EXPECT_EQ(expected_host_app_id, host_app_id_);
+    EXPECT_EQ(expected_local_id, local_id_);
+    EXPECT_EQ(expected_display_id, display_id_);
+  }
+
  private:
-  Shortcuts initial_shortcuts_;
+  bool shortcut_launched = false;
+  std::string host_app_id_;
+  std::string local_id_;
+  int64_t display_id_;
 };
 
 class ShortcutPublisherTest : public testing::Test {
@@ -50,6 +80,18 @@ class ShortcutPublisherTest : public testing::Test {
   }
 
   Profile* profile() { return profile_.get(); }
+  AppServiceProxy* proxy() {
+    return AppServiceProxyFactory::GetForProfile(profile());
+  }
+
+  void PublishApp(AppType type, const std::string& app_id) {
+    std::vector<apps::AppPtr> app_deltas;
+    app_deltas.push_back(apps::AppPublisher::MakeApp(
+        type, app_id, apps::Readiness::kReady, "Some App Name",
+        apps::InstallReason::kUser, apps::InstallSource::kSystem));
+    proxy()->AppRegistryCache().OnApps(std::move(app_deltas), type,
+                                       /* should_notify_initialized */ true);
+  }
 
  private:
   content::BrowserTaskEnvironment task_environment_;
@@ -59,7 +101,6 @@ class ShortcutPublisherTest : public testing::Test {
 };
 
 TEST_F(ShortcutPublisherTest, PublishExistingShortcuts) {
-  Shortcuts initial_extension_shortcuts;
   ShortcutPtr shortcut_1 = std::make_unique<Shortcut>("app_id_1", "local_id_1");
   shortcut_1->name = "name1";
 
@@ -67,39 +108,92 @@ TEST_F(ShortcutPublisherTest, PublishExistingShortcuts) {
   shortcut_2->name = "name2";
   shortcut_2->shortcut_source = ShortcutSource::kDeveloper;
 
-  initial_extension_shortcuts.push_back(std::move(shortcut_1));
-  initial_extension_shortcuts.push_back(std::move(shortcut_2));
-  AppServiceProxy* proxy = AppServiceProxyFactory::GetForProfile(profile());
-  FakeShortcutPublisher fake_extension_publisher(
-      proxy, AppType::kExtension, CloneShortcuts(initial_extension_shortcuts));
+  Shortcuts initial_chrome_shortcuts;
+  initial_chrome_shortcuts.push_back(std::move(shortcut_1));
+  initial_chrome_shortcuts.push_back(std::move(shortcut_2));
 
-  Shortcuts initial_web_app_shortcuts;
+  FakeShortcutPublisher fake_chrome_app_publisher(proxy(), AppType::kChromeApp,
+                                                  initial_chrome_shortcuts);
+
   ShortcutPtr shortcut_3 = std::make_unique<Shortcut>("app_id_2", "local_id_3");
   shortcut_3->name = "name3";
   shortcut_3->shortcut_source = ShortcutSource::kUser;
-  initial_web_app_shortcuts.push_back(std::move(shortcut_3));
-  FakeShortcutPublisher fake_web_app_publisher(
-      proxy, AppType::kWeb, CloneShortcuts(initial_web_app_shortcuts));
 
-  ShortcutRegistryCache* cache = proxy->ShortcutRegistryCache();
+  Shortcuts initial_web_app_shortcuts;
+  initial_web_app_shortcuts.push_back(std::move(shortcut_3));
+  FakeShortcutPublisher fake_web_app_publisher(proxy(), AppType::kWeb,
+                                               initial_web_app_shortcuts);
+
+  ShortcutRegistryCache* cache = proxy()->ShortcutRegistryCache();
   ASSERT_TRUE(cache);
 
   ASSERT_EQ(cache->GetAllShortcuts().size(), 3u);
 
-  ASSERT_TRUE(cache->HasShortcut(initial_extension_shortcuts[0]->shortcut_id));
+  ASSERT_TRUE(cache->HasShortcut(initial_chrome_shortcuts[0]->shortcut_id));
   ShortcutView stored_shortcut1 =
-      cache->GetShortcut(initial_extension_shortcuts[0]->shortcut_id);
-  EXPECT_EQ(*(stored_shortcut1->Clone()), *initial_extension_shortcuts[0]);
+      cache->GetShortcut(initial_chrome_shortcuts[0]->shortcut_id);
+  EXPECT_EQ(*(stored_shortcut1->Clone()), *initial_chrome_shortcuts[0]);
 
-  ASSERT_TRUE(cache->HasShortcut(initial_extension_shortcuts[1]->shortcut_id));
+  ASSERT_TRUE(cache->HasShortcut(initial_chrome_shortcuts[1]->shortcut_id));
   ShortcutView stored_shortcut2 =
-      cache->GetShortcut(initial_extension_shortcuts[1]->shortcut_id);
-  EXPECT_EQ(*(stored_shortcut2->Clone()), *initial_extension_shortcuts[1]);
+      cache->GetShortcut(initial_chrome_shortcuts[1]->shortcut_id);
+  EXPECT_EQ(*(stored_shortcut2->Clone()), *initial_chrome_shortcuts[1]);
 
   ASSERT_TRUE(cache->HasShortcut(initial_web_app_shortcuts[0]->shortcut_id));
   ShortcutView stored_shortcut3 =
       cache->GetShortcut(initial_web_app_shortcuts[0]->shortcut_id);
   EXPECT_EQ(*(stored_shortcut3->Clone()), *initial_web_app_shortcuts[0]);
+}
+
+TEST_F(ShortcutPublisherTest, LaunchShortcut_CallsCorrectPublisher) {
+  // Setup shortcuts in different publishers to verify the launch gets to the
+  // correct publisher.
+  ShortcutPtr shortcut_1 = std::make_unique<Shortcut>("app_id_1", "local_id_1");
+
+  ShortcutPtr shortcut_2 = std::make_unique<Shortcut>("app_id_1", "local_id_2");
+
+  Shortcuts initial_chrome_shortcuts;
+  initial_chrome_shortcuts.push_back(std::move(shortcut_1));
+  initial_chrome_shortcuts.push_back(std::move(shortcut_2));
+
+  FakeShortcutPublisher fake_chrome_app_publisher(proxy(), AppType::kChromeApp,
+                                                  initial_chrome_shortcuts);
+
+  ShortcutPtr shortcut_3 = std::make_unique<Shortcut>("app_id_2", "local_id_3");
+
+  Shortcuts initial_web_app_shortcuts;
+  initial_web_app_shortcuts.push_back(std::move(shortcut_3));
+  FakeShortcutPublisher fake_web_app_publisher(proxy(), AppType::kWeb,
+                                               initial_web_app_shortcuts);
+
+  // Add parent apps with corresponding app type so that correct publisher can
+  // be found to launch the shortcut.
+  PublishApp(apps::AppType::kChromeApp, "app_id_1");
+  PublishApp(apps::AppType::kWeb, "app_id_2");
+
+  int64_t display_id = display::kInvalidDisplayId;
+
+  // Verify that shortcut launch command goes to the correct shortcut publisher
+  // based on the parent app app type, with correct host app id and local
+  // shortcut id.
+  fake_chrome_app_publisher.ClearPreviousLaunch();
+  proxy()->LaunchShortcut(initial_chrome_shortcuts[0]->shortcut_id, display_id);
+  fake_chrome_app_publisher.VerifyShortcutLaunch(
+      initial_chrome_shortcuts[0]->host_app_id,
+      initial_chrome_shortcuts[0]->local_id, display_id);
+
+  fake_chrome_app_publisher.ClearPreviousLaunch();
+  proxy()->LaunchShortcut(initial_chrome_shortcuts[1]->shortcut_id, display_id);
+  fake_chrome_app_publisher.VerifyShortcutLaunch(
+      initial_chrome_shortcuts[1]->host_app_id,
+      initial_chrome_shortcuts[1]->local_id, display_id);
+
+  fake_web_app_publisher.ClearPreviousLaunch();
+  proxy()->LaunchShortcut(initial_web_app_shortcuts[0]->shortcut_id,
+                          display_id);
+  fake_web_app_publisher.VerifyShortcutLaunch(
+      initial_web_app_shortcuts[0]->host_app_id,
+      initial_web_app_shortcuts[0]->local_id, display_id);
 }
 
 }  // namespace apps

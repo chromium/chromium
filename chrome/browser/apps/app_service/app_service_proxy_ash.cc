@@ -439,6 +439,27 @@ apps::ShortcutRegistryCache* AppServiceProxyAsh::ShortcutRegistryCache() {
   return shortcut_registry_cache_ ? shortcut_registry_cache_.get() : nullptr;
 }
 
+void AppServiceProxyAsh::LaunchShortcut(const ShortcutId& id,
+                                        int64_t display_id) {
+  ShortcutView shortcut = ShortcutRegistryCache()->GetShortcut(id);
+  if (!shortcut) {
+    return;
+  }
+  AppType app_type = AppRegistryCache().GetAppType(shortcut->host_app_id);
+
+  auto* shortcut_publisher = GetShortcutPublisher(app_type);
+  if (!shortcut_publisher) {
+    return;
+  }
+  shortcut_publisher->LaunchShortcut(shortcut->host_app_id, shortcut->local_id,
+                                     display_id);
+
+  // TODO(crbug.com/1412708): Add new launch source for shortcut and record
+  // metrics.
+  // TODO(crbug.com/1412708): Add callback to make launch async to support
+  // Lacros.
+}
+
 void AppServiceProxyAsh::Shutdown() {
   crosapi_subscriber_ = nullptr;
 
@@ -883,6 +904,11 @@ IntentLaunchInfo AppServiceProxyAsh::CreateIntentLaunchInfo(
     entry.is_dlp_blocked = files_controller->IsLaunchBlocked(update, intent);
   }
   return entry;
+}
+
+ShortcutPublisher* AppServiceProxyAsh::GetShortcutPublisher(AppType app_type) {
+  auto it = shortcut_publishers_.find(app_type);
+  return it == shortcut_publishers_.end() ? nullptr : it->second;
 }
 
 }  // namespace apps

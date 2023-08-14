@@ -9,9 +9,11 @@
 
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
+#include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
@@ -60,7 +62,7 @@ void BrowserShortcuts::Initialize() {
 
 void BrowserShortcuts::InitBrowserShortcuts() {
   // Register publisher for shortcuts created from browser.
-  RegisterShortcutPublisher(apps::AppType::kExtension);
+  RegisterShortcutPublisher(apps::AppType::kChromeApp);
 
   for (const WebApp& web_app : provider_->registrar_unsafe().GetApps()) {
     if (!IsShortcut(web_app.app_id())) {
@@ -84,6 +86,17 @@ bool BrowserShortcuts::IsShortcut(const AppId& app_id) {
   } else {
     return false;
   }
+}
+
+void BrowserShortcuts::LaunchShortcut(const std::string& host_app_id,
+                                      const std::string& local_id,
+                                      int64_t display_id) {
+  apps::AppLaunchParams params(
+      local_id, apps::LaunchContainer::kLaunchContainerTab,
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      apps::LaunchSource::kFromAppListGrid, display_id);
+  provider_->scheduler().LaunchAppWithCustomParams(std::move(params),
+                                                   base::DoNothing());
 }
 
 }  // namespace web_app

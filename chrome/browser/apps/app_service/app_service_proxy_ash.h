@@ -178,6 +178,12 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
   // May return a nullptr if this cache doesn't exist.
   apps::ShortcutRegistryCache* ShortcutRegistryCache();
 
+  // Launches shortcut with `id` in it's parent app. `display_id` contains the
+  // id of the display from which the shortcut will be launched.
+  // display::kInvalidDisplayId means that the default display for new windows
+  // will be used. See `display::Screen` for details.
+  void LaunchShortcut(const ShortcutId& id, int64_t display_id);
+
  private:
   // For access to Initialize.
   friend class AppServiceProxyFactory;
@@ -325,6 +331,8 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
       const apps::IntentPtr& intent,
       const apps::IntentFilterPtr& filter,
       const apps::AppUpdate& update) override;
+
+  ShortcutPublisher* GetShortcutPublisher(AppType app_type);
 
   raw_ptr<SubscriberCrosapi, ExperimentalAsh> crosapi_subscriber_ = nullptr;
 

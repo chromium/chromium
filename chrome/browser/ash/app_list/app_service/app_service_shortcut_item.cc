@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ash/app_list/app_service/app_service_shortcut_item.h"
 
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/ash/app_list/app_list_controller_delegate.h"
 #include "chrome/browser/ash/app_list/app_list_model_updater.h"
 #include "chrome/browser/ash/app_list/chrome_app_list_item.h"
 #include "components/services/app_service/public/cpp/shortcut/shortcut_update.h"
@@ -56,4 +59,10 @@ AppServiceShortcutItem::AppServiceShortcutItem(
 
 const char* AppServiceShortcutItem::GetItemType() const {
   return AppServiceShortcutItem::kItemType;
+}
+
+void AppServiceShortcutItem::Activate(int event_flags) {
+  int64_t display_id = GetController()->GetAppListDisplayId();
+  apps::AppServiceProxyFactory::GetForProfile(profile())->LaunchShortcut(
+      apps::ShortcutId(id()), display_id);
 }

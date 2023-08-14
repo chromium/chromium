@@ -39,5 +39,6 @@ class AppServiceShortcutItem : public ChromeAppListItem {
 
   // ChromeAppListItem overrides:
   const char* GetItemType() const override;
+  void Activate(int event_flags) override;
 };
 #endif  // CHROME_BROWSER_ASH_APP_LIST_APP_SERVICE_APP_SERVICE_SHORTCUT_ITEM_H_

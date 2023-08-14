@@ -31,6 +31,15 @@ class ShortcutPublisher {
   // that sends the initial list of apps to the App Service.
   void RegisterShortcutPublisher(AppType app_type);
 
+  // Launches a shortcut identified by `local_shortcut_id` in the app identified
+  // by 'host_app_id`. `display_id` contains the id of the display from which
+  // the shortcut will be launched. display::kInvalidDisplayId means that the
+  // default display for new windows will be used. See `display::Screen` for
+  // details.
+  virtual void LaunchShortcut(const std::string& host_app_id,
+                              const std::string& local_shortcut_id,
+                              int64_t display_id) = 0;
+
  protected:
   // Publish one `delta` to AppServiceProxy. Should be called whenever the
   // shortcut represented by `delta` undergoes some state change to inform
