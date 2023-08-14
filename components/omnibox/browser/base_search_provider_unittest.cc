@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/functional/callback.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -297,6 +298,59 @@ TEST_F(BaseSearchProviderTest, PreserveImageWhenDeduplicating) {
   EXPECT_EQ(entity_info.image_url(), duplicate.image_url.spec());
   EXPECT_EQ(AutocompleteMatchType::SEARCH_SUGGEST_ENTITY, duplicate.type);
   EXPECT_EQ(omnibox::TYPE_CATEGORICAL_QUERY, duplicate.suggest_type);
+  EXPECT_EQ(850, duplicate.relevance);
+}
+
+TEST_F(BaseSearchProviderTest, PreserveSubtypesWhenDeduplicating) {
+  // Ensure categorical suggestions and merging subtypes are enabled.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {omnibox::kCategoricalSuggestions, omnibox::kMergeSubtypes}, {});
+
+  TemplateURLData data;
+  data.SetURL("http://foo.com/url?bar={searchTerms}");
+  auto template_url = std::make_unique<TemplateURL>(data);
+
+  TestBaseSearchProvider::MatchMap map;
+  std::u16string query = u"wrist wa";
+
+  SearchSuggestionParser::SuggestResult more_relevant(
+      query, AutocompleteMatchType::SEARCH_HISTORY, omnibox::TYPE_NATIVE_CHROME,
+      /*subtypes=*/{omnibox::SUBTYPE_PERSONAL}, /*from_keyword=*/false,
+      /*relevance=*/1300, /*relevance_from_server=*/true,
+      /*input_text=*/query);
+  provider_->AddMatchToMap(
+      more_relevant, std::string(), AutocompleteInput(), template_url.get(),
+      client_->GetTemplateURLService()->search_terms_data(),
+      TemplateURLRef::NO_SUGGESTION_CHOSEN, false, false, &map);
+
+  SearchSuggestionParser::SuggestResult less_relevant(
+      query, AutocompleteMatchType::SEARCH_SUGGEST_ENTITY,
+      omnibox::TYPE_CATEGORICAL_QUERY,
+      /*subtypes=*/{omnibox::SUBTYPE_TRENDS}, /*from_keyword=*/false,
+      /*relevance=*/850, /*relevance_from_server=*/true,
+      /*input_text=*/query);
+  provider_->AddMatchToMap(
+      less_relevant, std::string(), AutocompleteInput(), template_url.get(),
+      client_->GetTemplateURLService()->search_terms_data(),
+      TemplateURLRef::NO_SUGGESTION_CHOSEN, false, false, &map);
+
+  ASSERT_EQ(1U, map.size());
+
+  AutocompleteMatch match = map.begin()->second;
+  EXPECT_EQ(AutocompleteMatchType::SEARCH_HISTORY, match.type);
+  EXPECT_EQ(omnibox::TYPE_NATIVE_CHROME, match.suggest_type);
+  ASSERT_EQ(2U, match.subtypes.size());
+  EXPECT_TRUE(base::Contains(match.subtypes, omnibox::SUBTYPE_PERSONAL));
+  EXPECT_TRUE(base::Contains(match.subtypes, omnibox::SUBTYPE_TRENDS));
+  EXPECT_EQ(1300, match.relevance);
+
+  ASSERT_EQ(1U, match.duplicate_matches.size());
+  AutocompleteMatch duplicate = match.duplicate_matches[0];
+  EXPECT_EQ(AutocompleteMatchType::SEARCH_SUGGEST_ENTITY, duplicate.type);
+  EXPECT_EQ(omnibox::TYPE_CATEGORICAL_QUERY, duplicate.suggest_type);
+  ASSERT_EQ(1U, duplicate.subtypes.size());
+  EXPECT_TRUE(base::Contains(duplicate.subtypes, omnibox::SUBTYPE_TRENDS));
   EXPECT_EQ(850, duplicate.relevance);
 }
 

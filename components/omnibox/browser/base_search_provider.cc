@@ -603,6 +603,19 @@ void BaseSearchProvider::AddMatchToMap(
         existing_match.image_url = less_relevant_duplicate_match.image_url;
       }
     }
+    // This is to avoid having shopping categorical queries lose their subtypes
+    // to higher-relevance local history and verbatim matches. The subtypes are
+    // sent to the backend in the ChromeSearchboxStats proto via the gs_lcrp=
+    // param when the user selects a suggestion. The subtypes may be used to
+    // identify what the user selected so they can be suggested the next time,
+    // i.e., if the user selects a decorated suggestion - which is accompanied
+    // by specific subtypes - we want to show a decorated suggestion next time.
+    if (base::FeatureList::IsEnabled(omnibox::kCategoricalSuggestions) &&
+        base::FeatureList::IsEnabled(omnibox::kMergeSubtypes)) {
+      existing_match.subtypes.insert(
+          less_relevant_duplicate_match.subtypes.begin(),
+          less_relevant_duplicate_match.subtypes.end());
+    }
     // This is to avoid having `stripped_destination_url` being later set by
     // `AutocompleteResult::ComputeStrippedDestinationURL()` which strips away
     // the additional query params from `destination_url` leaving only the

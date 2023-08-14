@@ -557,6 +557,13 @@ BASE_FEATURE(kCategoricalSuggestions,
              "CategoricalSuggestions",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// If enabled, merges the suggestion subtypes for the remote suggestions and the
+// local verbatim and history suggestion duplicates at the provider level. This
+// is needed for omnibox::kCategoricalSuggestions to function correctly but is
+// being controlled by a separate feature in case there are unintended side
+// effects beyond the categorical suggestions.
+BASE_FEATURE(kMergeSubtypes, "MergeSubtypes", base::FEATURE_ENABLED_BY_DEFAULT);
+
 bool IsOmniboxCr23CustomizeGuardedFeatureEnabled(const base::Feature& feature) {
   if (!features::CustomizeChromeSupportsChromeRefresh2023()) {
     // Bail before checking any other feature flags so that associated studies

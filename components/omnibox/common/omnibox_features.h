@@ -148,6 +148,7 @@ BASE_DECLARE_FEATURE(kActionsInSuggest);
 
 // Adds support for categorical suggestion type.
 BASE_DECLARE_FEATURE(kCategoricalSuggestions);
+BASE_DECLARE_FEATURE(kMergeSubtypes);
 
 // Returns true if the Omnibox CR23 `feature`, which depends on customize
 // chrome, should be enabled.
