@@ -12228,6 +12228,38 @@
             ]
         }
     ],
+    "PropagateWebViewNetworkingSignals": [
+        {
+            "platforms": [
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "SignalAndConnecMigration_20230706",
+                    "enable_features": [
+                        "MigrateSessionsOnNetworkChangeV2",
+                        "webViewPropagateNetworkSignals"
+                    ]
+                },
+                {
+                    "name": "Control_20230706",
+                    "disable_features": [
+                        "MigrateSessionsOnNetworkChangeV2",
+                        "webViewPropagateNetworkSignals"
+                    ]
+                },
+                {
+                    "name": "SignalNoConnecMigration_20230706",
+                    "enable_features": [
+                        "webViewPropagateNetworkSignals"
+                    ],
+                    "disable_features": [
+                        "MigrateSessionsOnNetworkChangeV2"
+                    ]
+                }
+            ]
+        }
+    ],
     "PurgeOldCacheEntriesOnTimer": [
         {
             "platforms": [
