@@ -3132,12 +3132,11 @@
     },
     {
       name: "ScrollbarColor",
-      status: "test",
+      status: "experimental",
     },
     {
       name: "ScrollbarWidth",
       status: "experimental",
-      base_feature: "none",
     },
     {
       name: "ScrollCustomization",
