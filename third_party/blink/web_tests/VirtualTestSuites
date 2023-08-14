@@ -28,7 +28,8 @@
     "bases": ["external/wpt/fetch/private-network-access"],
     "args": [
       "--enable-features=PrivateNetworkAccessPermissionPrompt",
-      "--enable-blink-features=PrivateNetworkAccessPermissionPrompt"],
+      "--enable-blink-features=PrivateNetworkAccessPermissionPrompt",
+      "--disable-threaded-compositing", "--disable-threaded-animation"],
     "owners": ["phao@google.com", "lyf@google.com"],
     "expires": "Jan 1, 2024"
   },
@@ -36,7 +37,8 @@
     "prefix": "pna-workers-disabled",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/fetch/private-network-access"],
-    "args": ["--disable-features=PrivateNetworkAccessForWorkers"],
+    "args": ["--disable-features=PrivateNetworkAccessForWorkers",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "owners": ["phao@google.com", "lyf@google.com"],
     "expires": "Jan 1, 2024"
   },
@@ -46,8 +48,8 @@
     "bases": ["external/wpt/fetch/private-network-access"],
     "args": [
       "--enable-features=PrivateNetworkAccessForWorkers",
-      "--disable-features=PrivateNetworkAccessForWorkersWarningOnly"
-    ],
+      "--disable-features=PrivateNetworkAccessForWorkersWarningOnly",
+      "--disable-threaded-compositing", "--disable-threaded-animation"],
     "owners": ["phao@google.com", "lyf@google.com"],
     "expires": "Jan 1, 2024"
   },
@@ -55,7 +57,8 @@
     "prefix": "pna-iframes-enabled",
     "platforms": ["Linux", "Mac", "win"],
     "bases": ["external/wpt/fetch/private-network-access"],
-    "args": ["--enable-features=PrivateNetworkAccessForIframes"],
+    "args": ["--enable-features=PrivateNetworkAccessForIframes",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "owners": ["phao@google.com", "lyf@google.com"],
     "expires": "Jan 1, 2024"
   },
@@ -63,7 +66,8 @@
     "prefix": "pna-iframes-warning",
     "platforms": ["Linux", "Mac", "win"],
     "bases": ["external/wpt/fetch/private-network-access"],
-    "args": ["--enable-features=PrivateNetworkAccessForIframes,PrivateNetworkAccessForIframesWarningOnly"],
+    "args": ["--enable-features=PrivateNetworkAccessForIframes,PrivateNetworkAccessForIframesWarningOnly",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "owners": ["phao@google.com", "lyf@google.com"],
     "expires": "Jan 1, 2024"
   },
@@ -76,16 +80,8 @@
               "navigator_language/reduce_accept_language"],
     "exclusive_tests": ["http/tests/serviceworker/reduce-accept-language/fetch-event-headers.html",
                         "navigator_language/reduce_accept_language"],
-    "args": ["--enable-features=ReduceAcceptLanguage"],
-    "expires": "Jan 1, 2024"
-  },
-  {
-    "prefix": "reduce-accept-language-single-threaded",
-    "platforms": ["Linux"],
-    "bases": ["http/tests/inspector-protocol/network"],
     "args": ["--enable-features=ReduceAcceptLanguage",
-             "--disable-threaded-compositing",
-             "--disable-threaded-animation"],
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jan 1, 2024"
   },
   {
@@ -94,34 +90,8 @@
     "bases": [ "fast/canvas",
                "external/wpt/mediacapture-record/MediaRecorder-canvas-media-source.https.html",
                "external/wpt/webmessaging/postMessage_cross_domain_image_transfer_2d.sub.htm" ],
-    "args": ["--enable-accelerated-2d-canvas"],
-    "expires": "Jul 1, 2023"
-  },
-  {
-    "prefix": "gpu-single-threaded",
-    "platforms": ["Linux"],
-    "bases": ["fast/canvas/canvas-clearRect-with-clip.html",
-              "fast/canvas/canvas-drawImage-svg.html",
-              "fast/canvas/canvas-createImageBitmap-drawImage.html",
-              "fast/canvas/canvas-clearRect-first.html",
-              "fast/canvas/canvas-drawImage-video-reset.html",
-              "fast/canvas/canvas-composite-video-shadow.html",
-              "fast/canvas/synchronous-create-pattern.html",
-              "fast/canvas/canvas-composite-alpha.html",
-              "fast/canvas/disconnected-canvas-lost-gpu-context.html",
-              "fast/canvas/canvas-resize-after-paint.html",
-              "fast/canvas/canvas-createImageBitmap-svg-image.html",
-              "fast/canvas/OffscreenCanvas-2d-placeholder-willReadFrequently.html",
-              "fast/canvas/offscreencanvas-oncontextlost.html",
-              "fast/canvas/OffscreenCanvas-2d-drawImage.html",
-              "fast/canvas/canvas-composite-video.html",
-              "fast/canvas/offscreencanvas-lost-gpu-context.html",
-              "fast/canvas/OffscreenCanvas-copyImage.html",
-              "fast/canvas/OffscreenCanvas-2d-pattern.html",
-              "fast/canvas/downsample-quality.html",
-              "fast/canvas/color-space/canvas-drawImage-offscreenCanvas.html"],
-    "args": ["--enable-accelerated-2d-canvas", "--disable-threaded-compositing",
-             "--disable-threaded-animation"],
+    "args": ["--enable-accelerated-2d-canvas",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jul 1, 2023"
   },
   {
@@ -198,7 +168,8 @@
               "http/tests/intersection-observer",
               "intersection-observer",
               "wpt_internal/display-lock"],
-    "args": ["--disable-features=IntersectionOptimization"],
+    "args": ["--disable-features=IntersectionOptimization",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Oct 1, 2023"
   },
   {
@@ -208,7 +179,8 @@
     "exclusive_tests": "ALL",
     "args": ["--attribution-reporting-debug-mode",
              "--enable-features=AttributionReportingCrossAppWeb,AttributionReportingReportVerification,PrivacySandboxAdsAPIsOverride,PrivacySandboxAggregationService:trusted_server_url/https%3A%2F%2Fweb-platform.test%3A8444%2Fwpt_internal%2Fattribution-reporting%2Fresources%2FpublicKeys",
-             "--additional-private-state-token-key-commitments={\"https://web-platform.test:8444\":{\"PrivateStateTokenV3VOPRF\":{\"protocol_version\":\"PrivateStateTokenV3VOPRF\",\"id\":1,\"batchsize\":1,\"keys\":{\"0\":{\"Y\":\"AAAAAASqh8oivosFN46xxx7zIK10bh07Younm5hZ90HgglQqOFUC8l2/VSlsOlReOHJ2CrfJ6CG1adnTkKJhZ0BtbSPWBwviQtdl64MWJc7sSg9HPvWfTjDigX5ihbzihG8V8aA=\",\"expiry\":\"253402300799000000\"}}}}}"],
+             "--additional-private-state-token-key-commitments={\"https://web-platform.test:8444\":{\"PrivateStateTokenV3VOPRF\":{\"protocol_version\":\"PrivateStateTokenV3VOPRF\",\"id\":1,\"batchsize\":1,\"keys\":{\"0\":{\"Y\":\"AAAAAASqh8oivosFN46xxx7zIK10bh07Younm5hZ90HgglQqOFUC8l2/VSlsOlReOHJ2CrfJ6CG1adnTkKJhZ0BtbSPWBwviQtdl64MWJc7sSg9HPvWfTjDigX5ihbzihG8V8aA=\",\"expiry\":\"253402300799000000\"}}}}}",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Oct 8, 2023"
   },
   {
@@ -216,7 +188,8 @@
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["http/tests/inspector-protocol/attribution-reporting/os"],
     "exclusive_tests": "ALL",
-    "args": ["--enable-features=AttributionReportingCrossAppWeb,PrivacySandboxAdsAPIsOverride"],
+    "args": ["--enable-features=AttributionReportingCrossAppWeb,PrivacySandboxAdsAPIsOverride",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Oct 8, 2023"
   },
   {
@@ -237,40 +210,6 @@
     "bases": ["compositing/overflow",
               "compositing/squashing/keep-lcd-text.html",
               "scrollbars"],
-    "args": ["--enable-prefer-compositing-to-lcd-text"],
-    "expires": "Jul 1, 2023"
-  },
-  {
-    "prefix": "prefer_compositing_to_lcd_text-single-threaded",
-    "platforms": ["Linux"],
-    "bases": ["compositing/overflow/border-radius-on-two-ancestors-composited-grandchild.html",
-              "compositing/overflow/border-radius-composited-subframe.html",
-              "compositing/overflow/reparented-overlay-scrollbars-should-respect-ancestor-clip.html",
-              "compositing/overflow/border-radius-styles-with-composited-child.html",
-              "compositing/overflow/rotate-clip.html",
-              "compositing/overflow/tiled-mask.html",
-              "compositing/overflow/descendant-with-clip-path.html",
-              "compositing/overflow/overflow-scroll-content-fractional-offset.html",
-              "compositing/overflow/border-radius-on-parent-composited-grandchild.html",
-              "compositing/overflow/overflow-scroll-background-fractional-offset.html",
-              "compositing/overflow/border-radius-on-grandparent-composited-grandchild.html",
-              "compositing/overflow/composited-sticky-element-with-non-integer-relative-position-to-container.html",
-              "compositing/overflow/rotate-then-clip.html",
-              "compositing/overflow/border-radius-on-squashed-layers.html",
-              "compositing/overflow/border-radius-clip-subpixel-accumulation.html",
-              "compositing/overflow/local-attachment-border-radius-styles-with-composited-child.html",
-              "compositing/overflow/mask-with-filter.html",
-              "compositing/overflow/border-radius-above-composited-subframe.html",
-              "compositing/overflow/non-reparented-overlay-scrollbars.html",
-              "compositing/overflow/accelerated-scrolling-with-clip-path.html",
-              "compositing/overflow/siblings-with-border-radius-ancestor.html",
-              "compositing/overflow/scaled-mask.html",
-              "compositing/overflow/reparented-unclipped-overlay-scrollbars-with-offset-from-renderer.html",
-              "scrollbars/overlay-scrollbar-inline-block-over-child-layer.html",
-              "scrollbars/listbox-scrollbar-combinations.html",
-              "scrollbars/overlay-scrollbar-over-child-composited-layer.html",
-              "scrollbars/custom-scrollbar-changing-style-relayout-div-body-scrollablearea.html",
-              "scrollbars/overlay-scrollbar-under-flex-over-child-layer.html"],
     "args": ["--enable-prefer-compositing-to-lcd-text",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jul 1, 2023"
@@ -314,7 +253,8 @@
     "bases": ["images/yuv-decode-eligible"],
     "args": ["--enable-gpu-rasterization",
              "--disable-blink-features=DecodeLossyWebPImagesToYUV",
-             "--disable-blink-features=DecodeJpeg420ImagesToYUV"],
+             "--disable-blink-features=DecodeJpeg420ImagesToYUV",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jul 1, 2023"
   },
   {
@@ -346,33 +286,18 @@
     "exclusive_tests": ["media/stable"],
     "args": ["--stable-release-mode",
              "--disable-auto-wpt-origin-isolation",
-             "--disable-field-trial-config"],
-    "expires": "never"
-  },
-
-  {
-    "prefix": "stable-single-threaded",
-    "platforms": ["Linux"],
-    "bases": ["fast/dom/Window/window-resize-and-move-sub-frame.html",
-              "fast/dom/Window/window-appendages-cleared.html",
-              "http/tests/navigation/navigate-to-about-blank-from-subframe-unload-handler-cross-origin.html",
-              "http/tests/navigation/form-targets-cross-site-frame-post.html",
-              "http/tests/worklet/webexposed/global-interface-listing-paint-worklet.html"
-            ],
-    "args": ["--stable-release-mode",
-             "--disable-auto-wpt-origin-isolation",
-             "--disable-field-trial-config", 
+             "--disable-field-trial-config",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "never"
   },
-
   {
     "prefix": "feature-policy-permissions",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/mediacapture-streams"],
     "exclusive_tests": ["external/wpt/mediacapture-streams/MediaStream-default-feature-policy.https.html"],
     "args": ["--use-fake-device-for-media-stream",
-             "--use-fake-ui-for-media-stream"],
+             "--use-fake-ui-for-media-stream",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jul 1, 2023"
   },
   "The origin trials suite tests that OT-controlled features are exposed to",
@@ -382,7 +307,8 @@
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["http/tests/origin_trials/webexposed"],
     "args": ["--disable-origin-trial-controlled-blink-features",
-             "--stable-release-mode"],
+             "--stable-release-mode",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "never"
   },
   {
@@ -404,7 +330,8 @@
     "bases": ["external/wpt/media-source",
               "media"],
     "args": ["--use-gpu-in-tests",
-             "--enable-features=MediaFoundationClearPlayback,MediaFoundationClearRendering:strategy/direct-composition"],
+             "--enable-features=MediaFoundationClearPlayback,MediaFoundationClearRendering:strategy/direct-composition",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jul 1, 2023"
   },
   {
@@ -414,7 +341,8 @@
               "media"],
     "args": ["--use-gpu-in-tests",
              "--force-mfmediaengine-renderer",
-             "--enable-features=MediaFoundationClearRendering:strategy/frame-server"],
+             "--enable-features=MediaFoundationClearRendering:strategy/frame-server",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jul 1, 2023"
   },
   {
@@ -422,7 +350,8 @@
     "platforms": ["Linux", "Mac", "Win", "Fuchsia"],
     "bases": ["external/wpt/media-source",
               "media"],
-    "args": ["--use-gpu-in-tests"],
+    "args": ["--use-gpu-in-tests",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jul 1, 2023"
   },
   {
@@ -433,7 +362,8 @@
               "fast/workers/worker-sharedarraybuffer-transfer.html",
               "fast/workers/chromium/worker-sharedarraybuffer-transfer-two-workers.html",
               "http/tests/inspector-protocol/issues"],
-    "args": ["--enable-features=SharedArrayBuffer"],
+    "args": ["--enable-features=SharedArrayBuffer",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jul 1, 2025"
   },
   {
@@ -442,7 +372,8 @@
     "bases": ["http/tests/media/media-source/stream_memory_tests"],
     "exclusive_tests": ["http/tests/media/media-source/stream_memory_tests/mediasource-appendbuffer-quota-exceeded-1mb-buffers.html"],
     "args": ["--mse-audio-buffer-size-limit-mb=1",
-             "--mse-video-buffer-size-limit-mb=1"],
+             "--mse-video-buffer-size-limit-mb=1",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jul 1, 2023"
   },
   {
@@ -482,7 +413,8 @@
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/css/css-position/sticky/",
               "fast/scrolling/"],
-    "args": ["--enable-blink-features=FractionalScrollOffsets"],
+    "args": ["--enable-blink-features=FractionalScrollOffsets",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jul 1, 2023"
   },
   {
@@ -491,7 +423,8 @@
     "bases": ["external/wpt/compute-pressure",
               "wpt_internal/compute-pressure"],
     "exclusive_tests": "ALL",
-    "args": ["--enable-features=ComputePressure"],
+    "args": ["--enable-features=ComputePressure",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Feb 1, 2024"
   },
   {
@@ -518,17 +451,8 @@
               "http/tests/images/document-policy",
               "http/tests/inspector-protocol/page/page-captureScreenshot-clip-emulation.js"],
     "exclusive_tests": ["fast/hidpi/static"],
-    "args": ["--force-device-scale-factor=2"],
-    "expires": "Jul 1, 2023"
-  },
-  {
-    "prefix": "scalefactor200-single-threaded",
-    "platforms": ["Linux"],
-    "bases": ["css3/filters/filter-repaint-child-layers.html",
-              "css3/filters/filter-repaint-composited-fallback.html",
-              "http/tests/csspaint/hidpi/geometry-with-hidpi-zoom.html"],
-    "args": ["--force-device-scale-factor=2", "--disable-threaded-animation",
-             "--disable-threaded-compositing"],
+    "args": ["--force-device-scale-factor=2",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jul 1, 2023"
   },
   {
@@ -537,14 +461,16 @@
     "bases": ["fast/events/synthetic-events",
               "fast/hidpi/static"],
     "exclusive_tests": ["fast/hidpi/static"],
-    "args": ["--force-device-scale-factor=1.5"],
+    "args": ["--force-device-scale-factor=1.5",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jul 1, 2023"
   },
   {
     "prefix": "schemeful-same-site",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/cookies"],
-    "args": ["--disable-features=SchemefulSameSite"],
+    "args": ["--disable-features=SchemefulSameSite",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jul 1, 2023"
   },
   {
@@ -552,7 +478,8 @@
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["dark-mode/images"],
     "args": ["--blink-settings=preferredColorScheme=0,forceDarkModeEnabled=true",
-             "--dark-mode-settings=ImageClassifierPolicy=1"],
+             "--dark-mode-settings=ImageClassifierPolicy=1",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jul 1, 2023"
   },
   {
@@ -560,7 +487,8 @@
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["dark-mode/colors",
               "dark-mode/images"],
-    "args": ["--blink-settings=preferredColorScheme=0,forceDarkModeEnabled=true"],
+    "args": ["--blink-settings=preferredColorScheme=0,forceDarkModeEnabled=true",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jul 1, 2023"
   },
   {
@@ -568,7 +496,8 @@
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["dark-mode/images"],
     "args": ["--blink-settings=preferredColorScheme=0,forceDarkModeEnabled=true",
-             "--dark-mode-settings=ImagePolicy=0"],
+             "--dark-mode-settings=ImagePolicy=0",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jul 1, 2023"
   },
   {
@@ -576,21 +505,24 @@
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["dark-mode/images"],
     "args": ["--blink-settings=preferredColorScheme=0,forceDarkModeEnabled=true",
-             "--dark-mode-settings=ImagePolicy=1"],
+             "--dark-mode-settings=ImagePolicy=1",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jul 1, 2023"
   },
   {
     "prefix": "presentation",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [],
-    "args": ["--force-presentation-receiver-for-testing"],
+    "args": ["--force-presentation-receiver-for-testing",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jul 1, 2023"
   },
   {
     "prefix": "single-renderer-process",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/longtask-timing/shared-renderer"],
-    "args": ["--renderer-process-limit=1"],
+    "args": ["--renderer-process-limit=1",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jul 1, 2023"
   },
   {
@@ -618,22 +550,8 @@
     "bases": ["fast/events/wheel",
               "fast/scrolling",
               "virtual/percent-based-scrolling"],
-    "args": ["--enable-features=WindowsScrollingPersonality"],
-    "expires": "Jul 1, 2023"
-  },
-  {
-    "prefix": "main-threaded-percent-based-scrolling-single-threaded",
-    "platforms": ["Linux"],
-    "bases": ["fast/events/wheel/mouse-wheel-scroll-latching.html",
-              "fast/events/wheel/wheelevent-mousewheel-interaction.html",
-              "fast/events/wheel/continuous-platform-wheelevent-in-scrolling-div.html",
-              "fast/events/wheel/wheelevent-in-scrolling-div.html",
-              "fast/scrolling/percentage-mousewheel-scroll-on-iframe.html",
-              "fast/scrolling/scrolling-container-moves-offscreen.html",
-              "fast/scrolling/autoscroll-iframe-no-scrolling.html",
-              "fast/scrolling/no-hover-during-scroll.html",
-              "virtual/percent-based-scrolling"],
-    "args": ["--enable-features=WindowsScrollingPersonality", "--disable-threaded-compositing", "--disable-threaded-animation"],
+    "args": ["--enable-features=WindowsScrollingPersonality",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jul 1, 2023"
   },
   {
@@ -689,14 +607,16 @@
     "prefix": "speech-with-unified-autoplay",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/speech-api"],
-    "args": ["--autoplay-policy=document-user-activation-required"],
+    "args": ["--autoplay-policy=document-user-activation-required",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jul 1, 2023"
   },
   {
     "prefix": "unified-autoplay",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/feature-policy"],
-    "args": ["--autoplay-policy=document-user-activation-required"],
+    "args": ["--autoplay-policy=document-user-activation-required",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jul 1, 2023"
   },
   {
@@ -729,7 +649,8 @@
     "prefix": "service-worker-storage-control-on-thread-pool",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/service-workers/service-worker/fetch-event.https.html"],
-    "args": ["--enable-features=ServiceWorkerStorageControlOnThreadPool"],
+    "args": ["--enable-features=ServiceWorkerStorageControlOnThreadPool",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jul 1, 2023"
   },
   {
@@ -738,7 +659,8 @@
     "bases": ["external/wpt/direct-sockets",
     	      "wpt_internal/direct-sockets"],
     "exclusive_tests": "ALL",
-    "args": ["--isolated-context-origins=https://web-platform.test"],
+    "args": ["--isolated-context-origins=https://web-platform.test",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "never"
   },
   {
@@ -746,7 +668,8 @@
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [],
     "args": ["--enable-display-compositor-pixel-dump",
-             "--enable-accelerated-2d-canvas"],
+             "--enable-accelerated-2d-canvas",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jul 1, 2023"
   },
   {
@@ -754,7 +677,8 @@
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["fast/webgl/video-metadata"],
     "exclusive_tests": ["fast/webgl/video-metadata/texImage-video-last-uploaded-metadata.html"],
-    "args": ["--enable-blink-features=ExtraWebGLVideoTextureMetadata"],
+    "args": ["--enable-blink-features=ExtraWebGLVideoTextureMetadata",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jul 1, 2023"
   },
 
@@ -766,7 +690,8 @@
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["http/tests/wasm/caching"],
     "exclusive_tests": "ALL",
-    "args": ["--js-flags=--wasm-tiering-budget=100 --allow-natives-syntax"],
+    "args": ["--js-flags=--wasm-tiering-budget=100 --allow-natives-syntax",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jul 1, 2024"
   },
 
@@ -814,14 +739,16 @@
       "external/wpt/navigation-api/navigate-event/cross-window/submit-samedocument-crossorigin-sameorigindomain.sub.html"
     ],
     "exclusive_tests": "ALL",
-    "args": ["--disable-site-isolation-trials"],
+    "args": ["--disable-site-isolation-trials",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "never"
   },
   {
     "prefix": "not-site-per-process-nonexclusive",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/performance-timeline/tentative"],
-    "args": ["--disable-site-isolation-trials"],
+    "args": ["--disable-site-isolation-trials",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "never"
   },
   "---------------------- New Base Url Inheritance Behavior -----------------",
@@ -835,7 +762,8 @@
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/html/infrastructure/urls/base-url"],
     "exclusive_tests": "ALL",
-    "args": ["--enable-features=NewBaseUrlInheritanceBehavior"],
+    "args": ["--enable-features=NewBaseUrlInheritanceBehavior",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Sep 10, 2023"
   },
 
@@ -873,7 +801,8 @@
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [],
     "args": ["--enable-blink-features=FocuslessSpatialNavigation",
-             "--enable-spatial-navigation"],
+             "--enable-spatial-navigation",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jul 1, 2023"
   },
   {
@@ -882,14 +811,16 @@
     "bases": ["http/tests/navigation/frozen-useragent.html",
               "http/tests/navigation/useragent.php"],
     "exclusive_tests": ["http/tests/navigation/frozen-useragent.html"],
-    "args": ["--enable-features=ReduceUserAgent"],
+    "args": ["--enable-features=ReduceUserAgent",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jul 1, 2023"
   },
   {
     "prefix": "fsa-incognito",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/file-system-access", "external/wpt/fs"],
-    "args": ["--enable-features=IncognitoFileSystemContextForTesting"],
+    "args": ["--enable-features=IncognitoFileSystemContextForTesting",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "never"
   },
   {
@@ -941,14 +872,16 @@
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/measure-memory"],
     "exclusive_tests": "ALL",
-    "args": ["--enable-blink-features=MeasureMemory,ForceEagerMeasureMemory"],
+    "args": ["--enable-blink-features=MeasureMemory,ForceEagerMeasureMemory",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jul 1, 2023"
   },
   {
     "prefix": "payment-request-mandatory-total",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["http/tests/payments/payment-request-app-store-billing-mandatory-total.html"],
-    "args": ["--disable-blink-features=PaymentRequestTotalOptional"],
+    "args": ["--disable-blink-features=PaymentRequestTotalOptional",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jul 1, 2023"
   },
   {
@@ -963,7 +896,8 @@
       "external/wpt/css/css-values/acos-asin-atan-atan2-computed.html",
       "external/wpt/css/css-values/acos-asin-atan-atan2-invalid.html"
     ],
-    "args": ["--disable-blink-features=CSSTrigonometricFunctions"],
+    "args": ["--disable-blink-features=CSSTrigonometricFunctions",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jul 1, 2023"
   },
   {
@@ -989,8 +923,8 @@
       "external/wpt/web-animations/animation-model/animation-types/interpolation-per-property-002.html"
     ],
     "args": [
-      "--enable-blink-features=CSSTextAutoSpace"
-    ],
+      "--enable-blink-features=CSSTextAutoSpace",
+      "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Dec 1, 2023"
   },
   {
@@ -1002,7 +936,8 @@
       "external/wpt/css/css-values/signs-abs-serialize.html",
       "external/wpt/css/css-values/signs-abs-invalid.html"
     ],
-    "args": ["--disable-blink-features=CSSSignRelatedFunctions"],
+    "args": ["--disable-blink-features=CSSSignRelatedFunctions",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Aug 1, 2024"
   },
   {
@@ -1013,14 +948,16 @@
       "wpt_internal/css/css-nesting/ident"
     ],
     "exclusive_tests": "ALL",
-    "args": ["--enable-blink-features=CSSNestingIdent"],
+    "args": ["--enable-blink-features=CSSNestingIdent",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Dec 1, 2023"
   },
   {
     "prefix": "import-maps-disabled",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/import-maps/not-as-classic-script.html"],
-    "args": ["--disable-blink-features=ImportMaps"],
+    "args": ["--disable-blink-features=ImportMaps",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jul 1, 2023"
   },
   "The overlay-scrollbar virtual suite is testing a feature that is enabled",
@@ -1030,7 +967,8 @@
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [ "external/wpt/css/css-ui/pointer-events-no-scrollbars-001.html",
                "external/wpt/css/css-ui/pointer-events-no-scrollbars-002.html"],
-    "args": ["--enable-features=OverlayScrollbar"],
+    "args": ["--enable-features=OverlayScrollbar",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "never"
   },
   {
@@ -1048,7 +986,8 @@
     "prefix": "non-overlay-scrollbar",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [],
-    "args": ["--disable-features=OverlayScrollbar"],
+    "args": ["--disable-features=OverlayScrollbar",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "never"
   },
   {
@@ -1098,7 +1037,8 @@
     "bases": ["fast/forms/color-scheme/scrollbar",
               "virtual/fluent-non-overlay-scrollbar/hover-over-scrollbar-thumb.html"],
     "args": ["--enable-features=FluentScrollbar",
-             "--blink-settings=preferredColorScheme=0,forceDarkModeEnabled=true"],
+             "--blink-settings=preferredColorScheme=0,forceDarkModeEnabled=true",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jul 1, 2024",
     "owners": ["gastonr@microsoft.com", "gerchiko@microsoft.com", "yshalivskyy@microsoft.com"]
   },
@@ -1106,28 +1046,32 @@
     "prefix": "text-antialias",
     "platforms": ["Linux", "Mac", "Win", "Fuchsia"],
     "bases": [],
-    "args": ["--enable-font-antialiasing"],
+    "args": ["--enable-font-antialiasing",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jul 1, 2023"
   },
   {
     "prefix": "hdr",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [],
-    "args": ["--force-color-profile=scrgb-linear"],
+    "args": ["--force-color-profile=scrgb-linear",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jul 1, 2023"
   },
   {
     "prefix": "color-spin",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [],
-    "args": ["--force-color-profile=color-spin-gamma24"],
+    "args": ["--force-color-profile=color-spin-gamma24",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jul 1, 2023"
   },
   {
     "prefix": "wide-gamut",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [],
-    "args": ["--force-color-profile=display-p3-d65"],
+    "args": ["--force-color-profile=display-p3-d65",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jul 1, 2023"
   },
   {
@@ -1135,7 +1079,8 @@
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/fetch/http-cache"],
     "exclusive_tests": "ALL",
-    "args": ["--enable-features=SplitCacheByIncludeCredentials"],
+    "args": ["--enable-features=SplitCacheByIncludeCredentials",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jul 1, 2024"
   },
   {
@@ -1144,7 +1089,8 @@
     "bases": ["external/wpt/fetch/http-cache",
               "external/wpt/signed-exchange"],
     "exclusive_tests": ["external/wpt/fetch/http-cache"],
-    "args": ["--enable-features=SplitCacheByNetworkIsolationKey"],
+    "args": ["--enable-features=SplitCacheByNetworkIsolationKey",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jul 1, 2023"
   },
   {
@@ -1152,14 +1098,16 @@
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/fetch/http-cache"],
     "exclusive_tests": "ALL",
-    "args": ["--disable-features=SplitCacheByNetworkIsolationKey"],
+    "args": ["--disable-features=SplitCacheByNetworkIsolationKey",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jul 1, 2023"
   },
   {
     "prefix": "disable-ua-client-hint",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/client-hints", "wpt_internal/client-hints"],
-    "args": ["--disable-features=UserAgentClientHint"],
+    "args": ["--disable-features=UserAgentClientHint",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jul 1, 2024",
     "owners": ["victortan@chromium.org"]
   },
@@ -1167,21 +1115,8 @@
     "prefix": "web-bluetooth-new-permissions-backend",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["wpt_internal/bluetooth", "external/wpt/bluetooth"],
-    "args": ["--enable-features=WebBluetoothNewPermissionsBackend"],
-    "expires": "Jan 1, 2024"
-  },
-  {
-    "prefix": "web-bluetooth-new-permissions-backend-single-threaded",
-    "platforms": ["Linux"],
-    "bases": ["wpt_internal/bluetooth/characteristic/getDescriptor/gen-descriptor-garbage-collection-ran-during-success.https.html",
-              "wpt_internal/bluetooth/characteristic/getDescriptors/gen-descriptor-disconnect-called-before.https.html",
-              "wpt_internal/bluetooth/characteristic/stopNotifications/gen-gatt-op-disconnect-called-before.https.html",
-              "wpt_internal/bluetooth/characteristic/writeValueWithResponse/gen-gatt-op-disconnect-called-during-success.https.html",
-              "wpt_internal/bluetooth/characteristic/writeValueWithoutResponse/gen-gatt-op-device-disconnects-during-error.https.html",
-              "wpt_internal/bluetooth/descriptor/readValue/gen-io-op-disconnect-called-during-error.https.html",
-              "wpt_internal/bluetooth/requestDevice/exclusion-filter-does-not-match.https.html",
-              "wpt_internal/bluetooth/requestLEScan/scan-iframe.https.https.html"],
-    "args": ["--enable-features=WebBluetoothNewPermissionsBackend", "--disable-threaded-compositing", "--disable-threaded-animation"],
+    "args": ["--enable-features=WebBluetoothNewPermissionsBackend",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jan 1, 2024"
   },
   {
@@ -1197,7 +1132,8 @@
     "args": [
         "--enable-features=PrivateStateTokens",
         "--enable-blink-features=PrivateStateTokens,PrivateStateTokensAlwaysAllowIssuance",
-        "--additional-private-state-token-key-commitments={\"https://web-platform.test:8444\":{\"PrivateStateTokenV3VOPRF\":{\"protocol_version\":\"PrivateStateTokenV3VOPRF\",\"id\":1,\"batchsize\":1,\"keys\":{\"0\":{\"Y\":\"AAAAAASqh8oivosFN46xxx7zIK10bh07Younm5hZ90HgglQqOFUC8l2/VSlsOlReOHJ2CrfJ6CG1adnTkKJhZ0BtbSPWBwviQtdl64MWJc7sSg9HPvWfTjDigX5ihbzihG8V8aA=\",\"expiry\":\"253402300799000000\"}}}}}"
+        "--additional-private-state-token-key-commitments={\"https://web-platform.test:8444\":{\"PrivateStateTokenV3VOPRF\":{\"protocol_version\":\"PrivateStateTokenV3VOPRF\",\"id\":1,\"batchsize\":1,\"keys\":{\"0\":{\"Y\":\"AAAAAASqh8oivosFN46xxx7zIK10bh07Younm5hZ90HgglQqOFUC8l2/VSlsOlReOHJ2CrfJ6CG1adnTkKJhZ0BtbSPWBwviQtdl64MWJc7sSg9HPvWfTjDigX5ihbzihG8V8aA=\",\"expiry\":\"253402300799000000\"}}}}}",
+        "--disable-threaded-compositing", "--disable-threaded-animation"
     ],
     "expires": "Jul 1, 2024"
   },
@@ -1209,7 +1145,8 @@
       "external/wpt/shadow-dom",
       "fast/dom/shadow"
     ],
-    "args": ["--disable-features=OffsetParentNewSpecBehavior"],
+    "args": ["--disable-features=OffsetParentNewSpecBehavior",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jul 1, 2023"
   },
   {
@@ -1219,7 +1156,8 @@
     "bases": [
       "external/wpt/shadow-dom/declarative"
     ],
-    "args": ["--disable-features=StreamingDeclarativeShadowDOM"],
+    "args": ["--disable-features=StreamingDeclarativeShadowDOM",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Feb 1, 2024"
   },
   {
@@ -1230,7 +1168,8 @@
       "external/wpt/dom/parts",
       "fast/parser"
     ],
-    "args": ["--disable-features=DOMPartsAPI"],
+    "args": ["--disable-features=DOMPartsAPI",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Feb 1, 2024"
   },
   {
@@ -1241,7 +1180,8 @@
       "external/wpt/dom/nodes/Node-cloneNode.html",
       "external/wpt/dom/parts/basic-dom-part-objects.tentative.html"
     ],
-    "args": ["--disable-features=OptimizedNodeCloneOrder"],
+    "args": ["--disable-features=OptimizedNodeCloneOrder",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Feb 1, 2024"
   },
   {
@@ -1253,7 +1193,8 @@
       "fast/multicol/span/summary-split.html",
       "html/details_summary/details-inline.html"
     ],
-    "args": ["--disable-blink-features=DetailsStyling"],
+    "args": ["--disable-blink-features=DetailsStyling",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],  
     "expires": "Apr 1, 2024"
   },
   {
@@ -1261,7 +1202,8 @@
     "owners": ["dbaron@chromium.org", "paint-dev@chromium.org"],
     "platforms": ["Linux"],
     "bases": [ "external/wpt/css/css-transforms" ],
-    "args": [ "--enable-features=BackfaceVisibilityInterop" ],
+    "args": ["--enable-features=BackfaceVisibilityInterop",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jan 15, 2024"
   },
   {
@@ -1274,14 +1216,16 @@
                "http/tests/portals",
                "wpt_internal/portals" ],
     "exclusive_tests": "ALL",
-    "args": [ "--enable-features=Portals,PortalsCrossOrigin" ],
+    "args": ["--enable-features=Portals,PortalsCrossOrigin",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jul 1, 2023"
   },
   {
     "prefix": "restrict-gamepad",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [ "external/wpt/gamepad" ],
-    "args": [ "--enable-features=RestrictGamepadAccess" ],
+    "args": ["--enable-features=RestrictGamepadAccess",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jul 1, 2023"
   },
   {
@@ -1289,7 +1233,8 @@
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["http/tests/inspector-protocol/issues/third-party-cookie-phaseout-exclusion.js"],
     "exclusive_tests": "ALL",
-    "args": ["--test-third-party-cookie-phaseout"],
+    "args": ["--test-third-party-cookie-phaseout",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Mar 1, 2024"
   },
   {
@@ -1337,26 +1282,16 @@
       "http/tests/inspector-protocol/storage/indexed-db-set-items-by-storage-key.js",
       "http/tests/storage/partitioned-storage"
     ],
-    "args": [ "--disable-features=ThirdPartyStoragePartitioning" ],
-    "expires": "Jul 1, 2024"
-  },
-  {
-    "prefix": "third-party-storage-partitioning-single-threaded",
-    "platforms": ["Linux"],
-    "bases": [
-      "fast/filesystem/file-metadata-after-write.html",
-      "wpt_internal/storage/quota/partitioned-webkitTemporaryStorage-usage-details.tentative.sub.html",
-      "wpt_internal/storage/quota/partitioned-webkitPersistentStorage-quota-usage-details.tentative.sub.html",
-      "wpt_internal/web-locks/storage-deprecation-trial-enabled.https.html"
-    ],
-    "args": ["--disable-features=ThirdPartyStoragePartitioning", "--disable-threaded-animation", "--disable-threaded-compositing"],
+    "args": ["--disable-features=ThirdPartyStoragePartitioning",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jul 1, 2024"
   },
   {
     "prefix": "post-message-first-party-to-third-party-different-bucket-same-origin-blocked",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/html/browsers/windows/post-message"],
-    "args": ["--enable-features=PostMessageFirstPartyToThirdPartyDifferentBucketSameOriginBlocked"],
+    "args": ["--enable-features=PostMessageFirstPartyToThirdPartyDifferentBucketSameOriginBlocked",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jul 1, 2024",
     "owners": ["arichiv@chromium.org"]
   },
@@ -1364,7 +1299,8 @@
     "prefix": "post-message-third-party-to-first-party-different-bucket-same-origin-blocked",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/html/browsers/windows/post-message"],
-    "args": ["--enable-features=PostMessageThirdPartyToFirstPartyDifferentBucketSameOriginBlocked"],
+    "args": ["--enable-features=PostMessageThirdPartyToFirstPartyDifferentBucketSameOriginBlocked",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jul 1, 2024",
     "owners": ["arichiv@@chromium.org"]
   },
@@ -1372,7 +1308,8 @@
     "prefix": "post-message-third-party-to-third-party-different-bucket-same-origin-blocked",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/html/browsers/windows/post-message"],
-    "args": ["--enable-features=PostMessageThirdPartyToThirdPartyDifferentBucketSameOriginBlocked"],
+    "args": ["--enable-features=PostMessageThirdPartyToThirdPartyDifferentBucketSameOriginBlocked",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jul 1, 2024",
     "owners": ["arichiv@@chromium.org"]
   },
@@ -1396,7 +1333,8 @@
                "external/wpt/webmessaging/postMessage_cross_domain_image_transfer_2d.sub.htm" ],
     "args": [ "--enable-features=CanvasOopRasterization",
               "--enable-accelerated-2d-canvas",
-              "--enable-gpu-rasterization" ],
+              "--enable-gpu-rasterization",
+              "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jul 1, 2023"
   },
   {
@@ -1404,14 +1342,16 @@
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["http/tests/subresource_filter/overlay_popup_ad"],
     "exclusive_tests": "ALL",
-    "args": ["--disable-features=FrequencyCappingForOverlayPopupDetection"],
+    "args": ["--disable-features=FrequencyCappingForOverlayPopupDetection",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jul 1, 2023"
   },
   {
     "prefix": "web-app-window-controls-overlay",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/html/webappapis/system-state-and-capabilities/the-navigator-object/navigator-window-controls-overlay.html"],
-    "args": [ "--enable-features=WebAppWindowControlsOverlay"],
+    "args": ["--enable-features=WebAppWindowControlsOverlay",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jul 1, 2023"
   },
   {
@@ -1421,34 +1361,6 @@
       "http/tests/inspector-protocol/network",
       "http/tests/inspector-protocol/issues"
     ],
-    "args": ["--use-first-party-set={\"primary\":\"https://firstparty.test\",\"associatedSites\":[\"https://cookie.test\"]}"],
-    "expires": "Jul 1, 2023"
-  },
-  {
-    "prefix": "first-party-sets-single-threaded",
-    "platforms": ["Linux"],
-    "bases": [
-              "http/tests/inspector-protocol/issues/content-security-policy-issue-creation-img.js",
-              "http/tests/inspector-protocol/issues/mixed-content-issue-creation-js-within-oopif.js",
-              "http/tests/inspector-protocol/issues/third-party-cookie-blocking-first-party-set-disabled.js",
-              "http/tests/inspector-protocol/network/multiple-headers.js",
-              "http/tests/inspector-protocol/network/load-network-resource-different-frame-cookie.js",
-              "http/tests/inspector-protocol/network/request-interception-frame-id.js",
-              "http/tests/inspector-protocol/network/interception-take-stream.js",
-              "http/tests/inspector-protocol/network/security-info-on-response.js",
-              "http/tests/inspector-protocol/network/request-interception.js",
-              "http/tests/inspector-protocol/network/raw-headers-after-navigation.js",
-              "http/tests/inspector-protocol/network/navigate-iframe-in2in.js",
-              "http/tests/inspector-protocol/network/load-network-resource-errors.js",
-              "http/tests/inspector-protocol/network/navigation-xfer-size.js",
-              "http/tests/inspector-protocol/network/redirect-cached-navigation.js",
-              "http/tests/inspector-protocol/network/request-will-be-sent-extra-info-connect-timing.js",
-              "http/tests/inspector-protocol/network/raw-headers-for-protected-document.js",
-              "http/tests/inspector-protocol/network/navigate-iframe-out2in.js",
-              "http/tests/inspector-protocol/network/extra-info-raw-headers-subresource.js",
-              "http/tests/inspector-protocol/network/cookies-protocol-test.js",
-              "http/tests/inspector-protocol/network/disabled-cache-navigation.js",
-              "http/tests/inspector-protocol/network/websocket/slow-network.js"],
     "args": ["--use-first-party-set={\"primary\":\"https://firstparty.test\",\"associatedSites\":[\"https://cookie.test\"]}",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jul 1, 2023"
@@ -1460,39 +1372,17 @@
               "external/wpt/html/anonymous-iframe/",
               "http/tests/cookies/partitioned-cookies",
               "http/tests/inspector-protocol/network/"],
-    "args": ["--enable-features=PartitionedCookies"],
+    "args": ["--enable-features=PartitionedCookies",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jul 1, 2023"
-  },
-  {
-    "prefix": "partitioned-cookies-single-threaded",
-    "platforms": ["Linux"],
-    "bases": ["http/tests/inspector-protocol/network/raw-headers-for-protected-document.js",
-              "http/tests/inspector-protocol/network/extra-info-raw-headers-subresource.js",
-              "http/tests/inspector-protocol/network/load-network-resource-errors.js",
-              "http/tests/inspector-protocol/network/request-will-be-sent-extra-info-connect-timing.js",
-              "http/tests/inspector-protocol/network/navigate-iframe-in2in.js",
-              "http/tests/inspector-protocol/network/disabled-cache-navigation.js",
-              "http/tests/inspector-protocol/network/navigate-iframe-out2in.js",
-              "http/tests/inspector-protocol/network/load-network-resource-different-frame-cookie.js",
-              "http/tests/inspector-protocol/network/navigation-xfer-size.js",
-              "http/tests/inspector-protocol/network/request-interception.js",
-              "http/tests/inspector-protocol/network/multiple-headers.js",
-              "http/tests/inspector-protocol/network/request-interception-frame-id.js",
-              "http/tests/inspector-protocol/network/interception-take-stream.js",
-              "http/tests/inspector-protocol/network/security-info-on-response.js",
-              "http/tests/inspector-protocol/network/raw-headers-after-navigation.js",
-              "http/tests/inspector-protocol/network/cookies-protocol-test.js",
-              "http/tests/inspector-protocol/network/response-interception-cancel-xhr-while-responding-error.js",
-              "http/tests/inspector-protocol/network/websocket/slow-network.js"],
-      "args": ["--enable-features=PartitionedCookies", "--disable-threaded-animation", "--disable-threaded-compositing"],
-      "expires": "Jul 1, 2023"
   },
   {
     "prefix": "no-different-origin-dialogs",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/html/webappapis/user-prompts/cannot-show-simple-dialogs/confirm-different-origin-frame.sub.html",
               "external/wpt/html/webappapis/user-prompts/cannot-show-simple-dialogs/prompt-different-origin-frame.sub.html"],
-    "args": [ "--enable-features=SuppressDifferentOriginSubframeJSDialogs"],
+    "args": ["--enable-features=SuppressDifferentOriginSubframeJSDialogs",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jul 1, 2023"
   },
   {
@@ -1515,7 +1405,8 @@
               "external/wpt/html/semantics/interactive-elements/the-dialog-element/inert-svg-hittest.html",
               "editing/text-iterator/auto-expand-details.html",
               "editing/text-iterator/auto-expand-details-shadowdom.html"],
-    "args": ["--force-renderer-accessibility"],
+    "args": ["--force-renderer-accessibility",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jul 1, 2023"
   },
   {
@@ -1523,7 +1414,8 @@
     "platforms": ["Linux"],
     "bases": ["external/wpt/accessibility/crashtests/removed-from-flat-tree.html"],
     "args": ["--force-renderer-accessibility",
-             "--enable-blink-features=HTMLParserYieldAndDelayOftenForTesting"],
+             "--enable-blink-features=HTMLParserYieldAndDelayOftenForTesting",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "never"
   },
   {
@@ -1617,7 +1509,8 @@
     "prefix": "mutation-events-disabled",
     "platforms": ["Linux"],
     "bases": [],
-    "args": ["--disable-blink-features=MutationEvents"],
+    "args": ["--disable-blink-features=MutationEvents",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Sep 1, 2024"
   },
   {
@@ -1649,7 +1542,8 @@
       "external/wpt/html/semantics/popovers/popover-types.html"
     ],
     "args": ["--enable-blink-features=HTMLPopoverAttribute",
-      "--disable-blink-features=HTMLPopoverHint"],
+      "--disable-blink-features=HTMLPopoverHint",
+      "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jan 1, 2024"
   },
   {
@@ -1667,15 +1561,16 @@
     ],
     "exclusive_tests": "ALL",
     "args": [
-      "--enable-blink-features=ExposeRenderTimeNonTaoDelayedImage"
-    ],
+      "--enable-blink-features=ExposeRenderTimeNonTaoDelayedImage",
+      "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jul 1, 2023"
   },
   {
     "prefix": "parakeet",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/parakeet"],
-    "args": ["--enable-features=InterestGroupStorage,AdInterestGroupAPI,Parakeet"],
+    "args": ["--enable-features=InterestGroupStorage,AdInterestGroupAPI,Parakeet",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jul 1, 2023"
   },
   {
@@ -1686,7 +1581,8 @@
       "external/wpt/fledge/tentative/round-a-value.https.sub.window.js"
     ],
     "args": [
-      "--enable-features=InterestGroupStorage,PrivacySandboxAdsAPIsOverride,FencedFrames:implementation_type/mparch,FledgeRounding:fledge_bid_reporting_bits/8/fledge_score_reporting_bits/8/fledge_ad_cost_reporting_bits/8"
+      "--enable-features=InterestGroupStorage,PrivacySandboxAdsAPIsOverride,FencedFrames:implementation_type/mparch,FledgeRounding:fledge_bid_reporting_bits/8/fledge_score_reporting_bits/8/fledge_ad_cost_reporting_bits/8",
+      "--disable-threaded-compositing", "--disable-threaded-animation"
     ],
     "expires": "Dec 1, 2023"
   },
@@ -1700,7 +1596,7 @@
     "exclusive_tests": ["wpt_internal/lazyembed"],
     "args": [
       "--enable-features=AutomaticLazyFrameLoadingToEmbeds:timeout/1000,AutomaticLazyFrameLoadingToEmbedUrls:allowed_websites/http%3A%2F%2Fbad3p.test%3A3001%7C%2Fembed,AutomaticLazyFrameLoadingToAds:timeout/5000,DelayAsyncScriptExecution:delay_async_exec_target/cross_site_with_allow_list/delay_async_exec_allow_list/http%3A%2F%2Fbad3p.test",
-      "--disable-field-trial-config"
+      "--disable-field-trial-config", "--disable-threaded-compositing", "--disable-threaded-animation"
     ],
     "expires": "Jul 1, 2023"
   },
@@ -1708,49 +1604,56 @@
     "prefix": "automatic-lazy-frame-loading-ads",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [],
-    "args": ["--enable-features=AutomaticLazyFrameLoadingToAds:timeout/1000"],
+    "args": ["--enable-features=AutomaticLazyFrameLoadingToAds:timeout/1000",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jul 1, 2023"
   },
   {
     "prefix": "async-script-scheduling-disabled",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["wpt_internal/async-script-scheduling"],
-    "args": ["--disable-features=DelayAsyncScriptExecution"],
+    "args": ["--disable-features=DelayAsyncScriptExecution",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jul 1, 2023"
   },
   {
     "prefix": "async-script-scheduling-apply-to-cross-site-only",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["wpt_internal/async-script-scheduling"],
-    "args": ["--enable-features=DelayAsyncScriptExecution:delay_async_exec_target/cross_site_only"],
+    "args": ["--enable-features=DelayAsyncScriptExecution:delay_async_exec_target/cross_site_only",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jul 1, 2023"
   },
   {
     "prefix": "async-script-scheduling-apply-to-allowlist",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["wpt_internal/async-script-scheduling"],
-    "args": ["--enable-features=DelayAsyncScriptExecution:delay_async_exec_target/cross_site_with_allow_list/delay_async_exec_allow_list/http%3A%2F%2Fbad3p.test%7C%2Fwpt_internal%2Fasync-script-scheduling%2Fresources%2Fscript.sub.js"],
+    "args": ["--enable-features=DelayAsyncScriptExecution:delay_async_exec_target/cross_site_with_allow_list/delay_async_exec_allow_list/http%3A%2F%2Fbad3p.test%7C%2Fwpt_internal%2Fasync-script-scheduling%2Fresources%2Fscript.sub.js",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jul 1, 2023"
   },
   {
     "prefix": "async-script-scheduling-finished-parsing",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["wpt_internal/async-script-scheduling"],
-    "args": ["--enable-features=DelayAsyncScriptExecution:delay_async_exec_delay_type/finished_parsing"],
+    "args": ["--enable-features=DelayAsyncScriptExecution:delay_async_exec_delay_type/finished_parsing",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jul 1, 2023"
   },
   {
     "prefix": "async-script-scheduling-finished-parsing-with-dom-content-loaded-wait-for-async-script",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["wpt_internal/async-script-scheduling"],
-    "args": ["--enable-features=DelayAsyncScriptExecution:delay_async_exec_delay_type/finished_parsing,DOMContentLoadedWaitForAsyncScript"],
+    "args": ["--enable-features=DelayAsyncScriptExecution:delay_async_exec_delay_type/finished_parsing,DOMContentLoadedWaitForAsyncScript",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jul 1, 2023"
   },
   {
     "prefix": "async-script-scheduling-first-paint-or-finished-parsing",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["wpt_internal/async-script-scheduling"],
-    "args": ["--enable-features=DelayAsyncScriptExecution:delay_async_exec_delay_type/first_paint_or_finished_parsing"],
+    "args": ["--enable-features=DelayAsyncScriptExecution:delay_async_exec_delay_type/first_paint_or_finished_parsing",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jul 1, 2023"
   },
   {
@@ -1768,7 +1671,8 @@
       "external/wpt/largest-contentful-paint/update-on-style-change.tentative.html"
     ],
     "args": [
-      "--enable-features=LCPMultipleUpdatesPerElement"
+      "--enable-features=LCPMultipleUpdatesPerElement",
+      "--disable-threaded-compositing", "--disable-threaded-animation"
     ],
     "expires": "Jul 1, 2023"
   },
@@ -1780,7 +1684,8 @@
       "external/wpt/largest-contentful-paint/mouseover-heuristics-background.tentative.html"
     ],
     "args": [
-      "--enable-features=LCPMouseoverHeuristics"
+      "--enable-features=LCPMouseoverHeuristics",
+      "--disable-threaded-compositing", "--disable-threaded-animation"
     ],
     "expires": "Jul 1, 2023"
   },
@@ -1794,19 +1699,9 @@
       "external/wpt/css/css-highlight-api",
       "http/tests/inspector-protocol/css/highlight-pseudo-inheritance.js"
     ],
-    "args": ["--enable-blink-features=HighlightInheritance"],
+    "args": ["--enable-blink-features=HighlightInheritance",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Mar 1, 2024"
-  },
-  {
-  "prefix": "css-highlight-inheritance-single-threaded",
-  "owners": ["schenney@chromium.org", "andruud@chromium.org"],
-  "platforms": ["Linux"],
-  "bases": [
-    "wpt_internal/css/css-pseudo"
-  ],
-  "args": ["--enable-blink-features=HighlightInheritance",
-           "--disable-threaded-compositing", "--disable-threaded-animation"],
-  "expires": "Mar 1, 2024"
   },
   {
     "prefix": "browsing-topics",
@@ -1817,7 +1712,8 @@
     "exclusive_tests": [
       "external/wpt/browsing-topics"
     ],
-    "args": ["--enable-features=BrowsingTopics,BrowsingTopicsXHR,PrivacySandboxAdsAPIsOverride"],
+    "args": ["--enable-features=BrowsingTopics,BrowsingTopicsXHR,PrivacySandboxAdsAPIsOverride",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Aug 10, 2023"
   },
   {
@@ -1831,7 +1727,8 @@
     ],
     "args": [
       "--enable-privacy-sandbox-ads-apis",
-      "--enable-features=FencedFramesDefaultMode,PrivacySandboxAggregationService:trusted_server_url/https%3A%2F%2Fweb-platform.test%3A8444%2Fwpt_internal%2Fattribution-reporting%2Fresources%2FpublicKeys"
+      "--enable-features=FencedFramesDefaultMode,PrivacySandboxAggregationService:trusted_server_url/https%3A%2F%2Fweb-platform.test%3A8444%2Fwpt_internal%2Fattribution-reporting%2Fresources%2FpublicKeys",
+      "--disable-threaded-compositing", "--disable-threaded-animation"
     ],
     "expires": "Jan 1, 2024"
   },
@@ -1847,7 +1744,8 @@
     "args": [
       "--enable-privacy-sandbox-ads-apis",
       "--private-aggregation-developer-mode",
-      "--enable-features=FencedFramesDefaultMode,PrivacySandboxAggregationService:trusted_server_url/https%3A%2F%2Fweb-platform.test%3A8444%2Fwpt_internal%2Fattribution-reporting%2Fresources%2FpublicKeys"
+      "--enable-features=FencedFramesDefaultMode,PrivacySandboxAggregationService:trusted_server_url/https%3A%2F%2Fweb-platform.test%3A8444%2Fwpt_internal%2Fattribution-reporting%2Fresources%2FpublicKeys",
+      "--disable-threaded-compositing", "--disable-threaded-animation"
     ],
     "expires": "Jan 1, 2024"
   },
@@ -1877,7 +1775,8 @@
     "exclusive_tests": [
       "external/wpt/shared-storage-selecturl-limit/"
     ],
-    "args": ["--enable-features=SharedStorageAPI,FencedFrames:implementation_type/mparch,FencedFramesAPIChanges,FencedFramesDefaultMode,PrivacySandboxAdsAPIsOverride,SharedStorageSelectURLLimit"],
+    "args": ["--enable-features=SharedStorageAPI,FencedFrames:implementation_type/mparch,FencedFramesAPIChanges,FencedFramesDefaultMode,PrivacySandboxAdsAPIsOverride,SharedStorageSelectURLLimit",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jan 1, 2024"
   },
   {
@@ -1885,7 +1784,8 @@
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["wpt_internal/task-tracking"],
     "exclusive_tests": "ALL",
-    "args": ["--enable-blink-features=UnexposedTaskIds"],
+    "args": ["--enable-blink-features=UnexposedTaskIds",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jul 1, 2023"
   },
   {
@@ -1911,28 +1811,32 @@
       "external/wpt/fetch/private-network-access/fenced-frame-no-preflight-required.tentative.https.window.js"
     ],
     "args": ["--enable-features=FencedFrames:implementation_type/mparch,PrivacySandboxAdsAPIsOverride,SharedStorageAPI,NoncedPartitionedCookies,Fledge,InterestGroupStorage,AdInterestGroupAPI,AllowURNsInIframes,BiddingAndScoringDebugReportingAPI,ComputePressure",
-             "--enable-blink-features=FencedFramesAPIChanges,FencedFramesDefaultMode"],
+             "--enable-blink-features=FencedFramesAPIChanges,FencedFramesDefaultMode",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Dec 31, 2023"
   },
   {
     "prefix": "cors-non-wildcard-request-headers",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/fetch/api/cors/cors-preflight.any.js"],
-    "args": ["--enable-features=CorsNonWildcardRequestHeadersSupport"],
+    "args": ["--enable-features=CorsNonWildcardRequestHeadersSupport",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jul 1, 2023"
   },
   {
     "prefix": "system-color-picker-appearance",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["fast/forms/color-scheme/color/color-picker-appearance.html"],
-    "args": ["--enable-features=SystemColorChooser"],
+    "args": ["--enable-features=SystemColorChooser",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jul 1, 2023"
   },
   {
     "prefix": "dark-system-color-picker-appearance",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["fast/forms/color-scheme/color/color-picker-appearance.html"],
-    "args": ["--blink-settings=preferredColorScheme=0", "--enable-features=SystemColorChooser"],
+    "args": ["--blink-settings=preferredColorScheme=0", "--enable-features=SystemColorChooser",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jul 1, 2023"
   },
   {
@@ -1946,20 +1850,11 @@
       "paint/markers/inline-spelling-markers-hidpi-composited.html",
       "paint/invalidation/selection/selection-after-remove.html"
     ],
-    "args": ["--enable-blink-features=HighlightOverlayPainting"],
-    "expires": "Jul 1, 2023"
-  },
-  {
-    "prefix": "css-highlight-overlay-painting-single-threaded",
-    "platforms": ["Linux"],
-    "bases": [
-      "wpt_internal/css/css-pseudo"
-    ],
     "args": ["--enable-blink-features=HighlightOverlayPainting",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jul 1, 2023"
   },
-
+  
   "The following tests never pass in the default Blink test runner due to",
   "forced frame updates, but still pass in the full browser.",
   {
@@ -1971,7 +1866,8 @@
       "external/wpt/html/dom/render-blocking"
     ],
     "exclusive_tests": "ALL",
-    "args": ["--enable-features=NoForcedFrameUpdatesForWebTests"],
+    "args": ["--enable-features=NoForcedFrameUpdatesForWebTests",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jul 1, 2023"
   },
 
@@ -1981,7 +1877,8 @@
     "bases": ["fast/events/mouse-cursor-image-set-svg.html"],
     "args": [
       "--enable-features=SystemCursorSizeSupported",
-      "--disable-headless-mode"
+      "--disable-headless-mode",
+      "--disable-threaded-compositing", "--disable-threaded-animation"
     ],
     "expires": "Jul 1, 2023"
   },
@@ -1994,7 +1891,8 @@
     "args": [
       "--enable-features=OriginAgentClusterDefaultWarning",
       "--disable-features=OriginAgentClusterDefaultEnable",
-      "--disable-auto-wpt-origin-isolation"
+      "--disable-auto-wpt-origin-isolation",
+      "--disable-threaded-compositing", "--disable-threaded-animation"
     ],
     "expires": "Jul 1, 2024"
   },
@@ -2004,7 +1902,8 @@
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [ "external/wpt/webauthn/remote-desktop-client-override.tentative.https.html" ],
     "args": [
-      "--webauthn-remote-desktop-support"
+      "--webauthn-remote-desktop-support",
+      "--disable-threaded-compositing", "--disable-threaded-animation"
     ],
     "expires": "Jul 1, 2023"
   },
@@ -2019,7 +1918,8 @@
     "args": [
       "--enable-blink-features=MediaStreamTrackTransfer",
       "--enable-features=MediaStreamTrackTransfer",
-      "--use-fake-device-for-media-stream=display-media-type=browser"
+      "--use-fake-device-for-media-stream=display-media-type=browser",
+      "--disable-threaded-compositing", "--disable-threaded-animation"
     ],
     "expires": "Jul 1, 2023"
   },
@@ -2027,7 +1927,8 @@
     "prefix": "force-defer-script",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/html/semantics/scripting-1/the-script-element/defer-script/"],
-    "args": ["--enable-features=ForceDeferScriptIntervention"],
+    "args": ["--enable-features=ForceDeferScriptIntervention",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jul 1, 2023"
   },
   {
@@ -2035,7 +1936,8 @@
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["wpt_internal/in-order-script-scheduling/force-in-order"],
     "args": [
-      "--enable-features=ForceInOrderScript"
+      "--enable-features=ForceInOrderScript",
+      "--disable-threaded-compositing", "--disable-threaded-animation"
     ],
     "expires": "Jul 1, 2023"
   },
@@ -2044,7 +1946,8 @@
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["wpt_internal/in-order-script-scheduling/selective-in-order"],
     "args": [
-      "--enable-features=SelectiveInOrderScript,SelectiveInOrderScriptTarget:allow_list/http%3A%2F%2Fbad3p.test%7Csync-script-1.js"
+      "--enable-features=SelectiveInOrderScript,SelectiveInOrderScriptTarget:allow_list/http%3A%2F%2Fbad3p.test%7Csync-script-1.js",
+      "--disable-threaded-compositing", "--disable-threaded-animation"
     ],
     "expires": "Jul 1, 2023"
   },
@@ -2056,21 +1959,24 @@
       "fast/dom/HTMLScriptElement",
       "fast/preloader"
     ],
-    "args": ["--enable-features=ThreadedPreloadScanner,PrecompileInlineScripts"],
+    "args": ["--enable-features=ThreadedPreloadScanner,PrecompileInlineScripts",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jul 1, 2023"
   },
   {
     "prefix": "isolate-sandboxed-iframes",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [ "external/wpt/html/infrastructure/urls/terminology-0/" ],
-    "args": [ "--enable-features=IsolateSandboxedIframes" ],
+    "args": ["--enable-features=IsolateSandboxedIframes",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jul 1, 2024"
   },
   {
     "prefix": "coop-restrict-properties",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [ "external/wpt/html/cross-origin-opener-policy/tentative/restrict-properties" ],
-    "args": [ "--enable-features=CoopRestrictProperties" ],
+    "args": ["--enable-features=CoopRestrictProperties",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jul 1, 2024"
   },
 
@@ -2089,7 +1995,8 @@
     "args": [
       "--enable-blink-features=SpeculationRulesPrefetchProxy,SpeculationRulesFetchFromHeader,SpeculationRulesDocumentRules,NoVarySearchPrefetch,SpeculationRulesNoVarySearchHint,SpeculationRulesEagerness,SpeculationRulesDocumentRulesSelectorMatches",
       "--enable-features=SpeculationRulesPrefetchProxy,PrefetchUseContentRefactor:block_until_head_eager_prefetch/true,PrefetchRedirects",
-      "--bypass-prefetch-proxy-for-host=not-web-platform.test"
+      "--bypass-prefetch-proxy-for-host=not-web-platform.test",
+      "--disable-threaded-compositing", "--disable-threaded-animation"
     ],
     "expires": "Jul 1, 2024"
   },
@@ -2104,7 +2011,8 @@
     "exclusive_tests": "ALL",
     "args": [
       "--enable-blink-features=NoVarySearchPrefetch,SpeculationRulesNoVarySearchHint",
-      "--enable-features=PrefetchUseContentRefactor:block_until_head_eager_prefetch/true"
+      "--enable-features=PrefetchUseContentRefactor:block_until_head_eager_prefetch/true",
+      "--disable-threaded-compositing", "--disable-threaded-animation"
     ],
     "expires": "Jul 1, 2024"
   },
@@ -2118,7 +2026,8 @@
       "http/tests/inspector-protocol/preload/preloading-attempt-sources-updated.js"
     ],
     "args": [
-      "--enable-blink-features=SpeculationRulesDocumentRules,SpeculationRulesDocumentRulesSelectorMatches"
+      "--enable-blink-features=SpeculationRulesDocumentRules,SpeculationRulesDocumentRulesSelectorMatches",
+      "--disable-threaded-compositing", "--disable-threaded-animation"
     ],
     "expires": "Jul 1, 2024"
   },
@@ -2129,7 +2038,8 @@
       "http/tests/inspector-protocol/issues/cookie-domain-non-ascii.js",
       "external/wpt/cookies/domain/domain-attribute-idn-host.sub.https.html"
     ],
-    "args": ["--enable-features=CookieDomainRejectNonASCII"],
+    "args": ["--enable-features=CookieDomainRejectNonASCII",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "owners": ["johannhof@chromium.org"],
     "expires": "Jul 1, 2024"
   },
@@ -2142,7 +2052,8 @@
     ],
     "exclusive_tests": "ALL",
     "args": [
-      "--enable-features=PendingBeaconAPI:requires_origin_trial/false"
+      "--enable-features=PendingBeaconAPI:requires_origin_trial/false",
+      "--disable-threaded-compositing", "--disable-threaded-animation"
     ],
     "expires": "Jul 1, 2023"
   },
@@ -2152,7 +2063,8 @@
     "bases": [
       "http/tests/origin_trials/webexposed/pending-beacon-origin-trial-interfaces.html"
     ],
-    "args": ["--enable-features=PendingBeaconAPI:requires_origin_trial/true"],
+    "args": ["--enable-features=PendingBeaconAPI:requires_origin_trial/true",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jul 1, 2023"
   },
 
@@ -2176,14 +2088,16 @@
     ],
     "args": [
       "--enable-blink-features=CloseWatcher",
-      "--reset-browsing-instance-between-tests"
+      "--reset-browsing-instance-between-tests",
+      "--disable-threaded-compositing", "--disable-threaded-animation"
     ],
     "expires": "never"
   },
   {
     "prefix": "orb-v02",
     "platforms": ["Linux"],
-    "args": ["--enable-features=OpaqueResponseBlockingV01,OpaqueResponseBlockingV02", "--disable-features=OpaqueResponseBlockingErrorsForAllFetches"],
+    "args": ["--enable-features=OpaqueResponseBlockingV01,OpaqueResponseBlockingV02", "--disable-features=OpaqueResponseBlockingErrorsForAllFetches",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "bases": [
       "external/wpt/fetch/orb",
       "external/wpt/fetch/corb",
@@ -2195,7 +2109,8 @@
   {
     "prefix": "orb-errors-for-all-fetches",
     "platforms": ["Linux"],
-    "args": ["--enable-features=OpaqueResponseBlockingV01,OpaqueResponseBlockingV02,OpaqueResponseBlockingErrorsForAllFetches"],
+    "args": ["--enable-features=OpaqueResponseBlockingV01,OpaqueResponseBlockingV02,OpaqueResponseBlockingErrorsForAllFetches",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "bases": [
       "external/wpt/fetch/orb",
       "external/wpt/fetch/corb"
@@ -2207,7 +2122,8 @@
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["wpt_internal/js/shared_memory"],
     "exclusive_tests": "ALL",
-    "args": ["--enable-features=JavaScriptExperimentalSharedMemory"],
+    "args": ["--enable-features=JavaScriptExperimentalSharedMemory",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jul 1, 2023"
   },
   {
@@ -2215,7 +2131,8 @@
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/credential-management/fedcm-multi-idp/"],
     "exclusive_tests": "ALL",
-    "args": ["--enable-features=FedCmMultipleIdentityProviders"],
+    "args": ["--enable-features=FedCmMultipleIdentityProviders",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jul 1, 2023"
   },
   {
@@ -2223,7 +2140,8 @@
     "owners": ["xiaochengh@chromium.org", "dom-dev@chromium.org"],
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/custom-elements/scoped-registry"],
-    "args": ["--disable-blink-features=ScopedCustomElementRegistry"],
+    "args": ["--disable-blink-features=ScopedCustomElementRegistry",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jul 1, 2023"
   },
   {
@@ -2232,7 +2150,8 @@
     "bases": [
       "external/wpt/mediacapture-streams/parallel-capture-requests.https.html"
     ],
-    "args": ["--enable-features=SplitUserMediaQueues"],
+    "args": ["--enable-features=SplitUserMediaQueues",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jul 1, 2023"
   },
   {
@@ -2250,7 +2169,8 @@
     "exclusive_tests": [
       "external/wpt/html/infrastructure/safe-passing-of-structured-data/cross-origin-transfer-resizable-arraybuffer.html"
     ],
-    "args": ["--js-flags=--harmony-rab-gsab"],
+    "args": ["--js-flags=--harmony-rab-gsab",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jul 1, 2023"
   },
 
@@ -2265,7 +2185,8 @@
     "bases": [
       "printing/webgl-oversized-printing.html"
     ],
-    "args": ["--enable-webgl-developer-extensions"],
+    "args": ["--enable-webgl-developer-extensions",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "never"
   },
   {
@@ -2275,7 +2196,8 @@
       "http/tests/cache/script-keepalive.html"
     ],
     "exclusive_tests": "ALL",
-    "args": ["--enable-features=ExtendScriptResourceLifetime"],
+    "args": ["--enable-features=ExtendScriptResourceLifetime",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jul 1, 2023"
   },
   {
@@ -2296,7 +2218,8 @@
     "bases": [
       "external/wpt/webcodecs"
     ],
-    "args": ["--disable-features=UseBlinkSchedulerTaskRunnerWithCustomDeleter"],
+    "args": ["--disable-features=UseBlinkSchedulerTaskRunnerWithCustomDeleter",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jul 1, 2023"
   },
   {
@@ -2311,7 +2234,8 @@
       "fast/forms/time/time-appearance-pseudo-elements.html",
       "fast/forms/week/week-appearance-pseudo-elements.html"
     ],
-    "args": ["--disable-blink-features=DateInputInlineBlock"],
+    "args": ["--disable-blink-features=DateInputInlineBlock",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Oct 1, 2023"
   },
   {
@@ -2320,7 +2244,8 @@
     "bases": [
       "fast/peerconnection/RTCEncodedVideoFrame-set-metadata.html"
     ],
-    "args": ["--enable-features=AllowRTCEncodedVideoFrameSetMetadataAllFields"],
+    "args": ["--enable-features=AllowRTCEncodedVideoFrameSetMetadataAllFields",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jul 1, 2023"
   },
   {
@@ -2328,7 +2253,8 @@
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["fast/events/pointerevents/device-id"],
     "args": [
-      "--disable-blink-features=PointerEventDeviceId"
+      "--disable-blink-features=PointerEventDeviceId",
+      "--disable-threaded-compositing", "--disable-threaded-animation"
     ],
     "expires": "Jul 1, 2023"
   },
@@ -2338,7 +2264,8 @@
     "bases": [
       "http/tests/inspector-protocol/issues/webrtc-stats-deprecation.js"
     ],
-    "args": ["--disable-blink-features=RTCLegacyCallbackBasedGetStats"],
+    "args": ["--disable-blink-features=RTCLegacyCallbackBasedGetStats",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Dec 21, 2023"
   },
   {
@@ -2351,7 +2278,8 @@
       "external/wpt/scheduler/task-controller-abort-signal-and-priority.any.js",
       "external/wpt/scheduler/task-controller-setPriority1.any.js"
     ],
-    "args": ["--disable-blink-features=AbortSignalComposition"],
+    "args": ["--disable-blink-features=AbortSignalComposition",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Dec 21, 2023"
   },
   {
@@ -2362,7 +2290,8 @@
       "external/wpt/service-workers/cache-storage/cache-abort.https.any.js",
       "external/wpt/service-workers/cache-storage/cache-add.https.any.js"
     ],
-    "args": ["--disable-blink-features=AbortSignalAny"],
+    "args": ["--disable-blink-features=AbortSignalAny",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Dec 21, 2023"
   },
   {
@@ -2378,7 +2307,8 @@
       "external/wpt/xhr/"
     ],
     "args": [
-      "--enable-features=KeepAliveInBrowserMigration"
+      "--enable-features=KeepAliveInBrowserMigration",
+      "--disable-threaded-compositing", "--disable-threaded-animation"
     ],
     "expires": "Dec 1, 2023"
   },
@@ -2386,7 +2316,8 @@
     "prefix": "clone-for-branch2-disabled",
     "platforms": ["Linux"],
     "bases": ["external/wpt/fetch/api/response"],
-    "args": ["--disable-features=ReadableStreamTeeCloneForBranch2"],
+    "args": ["--disable-features=ReadableStreamTeeCloneForBranch2",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Aug 1, 2023"
   },
   {
@@ -2396,7 +2327,8 @@
       "images/image-change-src.html"
     ],
     "args": [
-      "--enable-features=MainThreadHighPriorityImageLoading"
+      "--enable-features=MainThreadHighPriorityImageLoading",
+      "--disable-threaded-compositing", "--disable-threaded-animation"
     ],
     "expires": "Dec 1, 2023"
   },
@@ -2404,7 +2336,8 @@
     "prefix": "longtask-from-loaf",
     "platforms": ["Linux"],
     "bases": ["external/wpt/longtask-timing"],
-    "args": ["--enable-blink-features=LongTaskFromLongAnimationFrame"],
+    "args": ["--enable-blink-features=LongTaskFromLongAnimationFrame",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Aug 1, 2023"
   },
   {
@@ -2412,7 +2345,8 @@
     "platforms": ["Linux"],
     "bases": ["netinfo/"],
     "args": [
-      "--enable-blink-features=NetInfoConstantType"
+      "--enable-blink-features=NetInfoConstantType",
+      "--disable-threaded-compositing", "--disable-threaded-animation"
     ],
     "expires": "Dec 1, 2023"
   },
@@ -2425,7 +2359,8 @@
     ],
     "exclusive_tests": "ALL",
     "args": [
-      "--enable-blink-features=FontPaletteAnimation"
+      "--enable-blink-features=FontPaletteAnimation",
+      "--disable-threaded-compositing", "--disable-threaded-animation"
     ],
     "expires": "Dec 1, 2023"
   },
@@ -2435,7 +2370,8 @@
     "bases": [
       "external/wpt/soft-navigation-heuristics"
     ],
-    "args": ["--enable-blink-features=SoftNavigationHeuristicsExposeFPAndFCP"],
+    "args": ["--enable-blink-features=SoftNavigationHeuristicsExposeFPAndFCP",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Dec 31, 2023"
   },
   {
@@ -2446,7 +2382,8 @@
       "external/wpt/loading",
       "external/wpt/html/semantics/scripting-1"
     ],
-    "args": ["--enable-features=ProduceCompileHints"],
+    "args": ["--enable-features=ProduceCompileHints",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "never"
   },
   {
@@ -2455,7 +2392,8 @@
     "bases": [
       "external/wpt/service-workers/service-worker/tentative/static-router"
     ],
-    "args": ["--enable-features=ServiceWorkerStaticRouter"],
+    "args": ["--enable-features=ServiceWorkerStaticRouter",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jul 14, 2024",
     "owners": ["yyanagisawa@chromium.org", "sisidovski@chromium.org"]
   },
@@ -2470,7 +2408,8 @@
       "http/tests/lcp_critical_path_predictor"
     ],
     "args": [
-      "--enable-features=LCPCriticalPathPredictor"
+      "--enable-features=LCPCriticalPathPredictor",
+      "--disable-threaded-compositing", "--disable-threaded-animation"
     ],
     "expires": "Jul 10, 2024",
     "owners": [
@@ -2486,7 +2425,8 @@
     ],
     "exclusive_tests": "ALL",
     "args": [
-      "--enable-blink-features=FetchLaterAPI"
+      "--enable-blink-features=FetchLaterAPI",
+      "--disable-threaded-compositing", "--disable-threaded-animation"
     ],
     "expires": "Jul 24, 2024",
     "owners": ["mych@chromium.org"]
@@ -2498,7 +2438,8 @@
       "http/tests/inspector-protocol/issues/css-appearance-non-standard-issue.js",
       "http/tests/inspector-protocol/issues/css-webkit-appearance-non-standard-issue.js"
     ],
-    "args": ["--disable-blink-features=RemoveNonStandardAppearanceValue"],
+    "args": ["--disable-blink-features=RemoveNonStandardAppearanceValue",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "owners": ["dizhangg@chromium.org"],
     "expires": "Dec 21, 2023"
   },
@@ -2517,7 +2458,8 @@
       "external/wpt/css/css-writing-modes/forms/date-input-appearance-native-vertical.optional.html",
       "external/wpt/css/css-flexbox/flex-item-compressible-002.html"
     ],
-    "args": ["--disable-features=FormControlsVerticalWritingModeSupport"],
+    "args": ["--disable-features=FormControlsVerticalWritingModeSupport",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "owners": ["dizhangg@chromium.org"],
     "expires": "Dec 21, 2023"
   },
