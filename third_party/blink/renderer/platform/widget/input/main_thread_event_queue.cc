@@ -338,7 +338,9 @@ void MainThreadEventQueue::HandleEvent(
   DCHECK(ack_result == mojom::blink::InputEventResultState::kSetNonBlocking ||
          ack_result ==
              mojom::blink::InputEventResultState::kSetNonBlockingDueToFling ||
-         ack_result == mojom::blink::InputEventResultState::kNotConsumed);
+         ack_result == mojom::blink::InputEventResultState::kNotConsumed ||
+         ack_result ==
+             mojom::blink::InputEventResultState::kNotConsumedBlocking);
   if (!AllowedForUnification(event->Event(), allow_main_gesture_scroll)) {
     DCHECK(!base::FeatureList::IsEnabled(::features::kScrollUnification));
   }

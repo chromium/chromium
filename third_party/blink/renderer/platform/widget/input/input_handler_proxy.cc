@@ -269,6 +269,9 @@ void InputHandlerProxy::HandleInputEventWithLatencyInfo(
     EventDispositionCallback callback) {
   DCHECK(input_handler_);
 
+  static bool queue_blocking_gesture_scrolls =
+      base::FeatureList::IsEnabled(features::kQueueBlockingGestureScrolls);
+
   input_handler_->NotifyInputEvent();
 
   int64_t trace_id = event->latency_info().trace_id();
@@ -361,8 +364,9 @@ void InputHandlerProxy::HandleInputEventWithLatencyInfo(
 
     // |synchronous_input_handler_| is WebView only. WebView has different
     // mechanisms and we want to forward all events immediately.
-    if (is_from_blocking_touch || is_scroll_end_from_wheel ||
-        is_first_wheel_scroll_update || synchronous_input_handler_) {
+    if ((is_from_blocking_touch && !queue_blocking_gesture_scrolls) ||
+        is_scroll_end_from_wheel || is_first_wheel_scroll_update ||
+        synchronous_input_handler_) {
       DispatchQueuedInputEvents(false /* frame_aligned */);
     }
     if (queue_was_empty && !compositor_event_queue_->empty()) {

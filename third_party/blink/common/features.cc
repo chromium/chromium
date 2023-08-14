@@ -807,6 +807,10 @@ BASE_FEATURE(kFilteringScrollPrediction,
 #endif
 );
 
+BASE_FEATURE(kFixGestureScrollQueuingBug,
+             "FixGestureScrollQueuingBug",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // See https://github.com/WICG/turtledove/blob/main/FLEDGE.md
 // Enables FLEDGE implementation. See https://crbug.com/1186444.
 BASE_FEATURE(kFledge, "Fledge", base::FEATURE_DISABLED_BY_DEFAULT);
@@ -1397,6 +1401,10 @@ const base::FeatureParam<int> kProduceCompileHintsOnIdleDelayParam{
     &kProduceCompileHints, "delay-in-ms", 10000};
 const base::FeatureParam<double> kProduceCompileHintsNoiseLevel{
     &kProduceCompileHints, "noise probability", 0.5};
+
+BASE_FEATURE(kQueueBlockingGestureScrolls,
+             "QueueBlockingGestureScrolls",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kQuoteEmptySecChUaStringHeadersConsistently,
              "QuoteEmptySecChUaStringHeadersConsistently",

@@ -17,6 +17,8 @@ const char* InputEventResultStateToString(
       return "CONSUMED";
     case blink::mojom::InputEventResultState::kNotConsumed:
       return "NOT_CONSUMED";
+    case blink::mojom::InputEventResultState::kNotConsumedBlocking:
+      return "NOT_CONSUMED_BLOCKING";
     case blink::mojom::InputEventResultState::kNoConsumerExists:
       return "NO_CONSUMER_EXISTS";
     case blink::mojom::InputEventResultState::kIgnored:

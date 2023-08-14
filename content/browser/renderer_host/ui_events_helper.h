@@ -38,8 +38,8 @@ bool MakeUITouchEventsFromWebTouchEvents(
     TouchEventCoordinateSystem coordinate_system);
 
 // Utility to map the event ack state from the renderer, returns true if the
-// event could be handled non-blocking.
-bool InputEventResultStateIsSetNonBlocking(blink::mojom::InputEventResultState);
+// event could be handled blocking.
+bool InputEventResultStateIsSetBlocking(blink::mojom::InputEventResultState);
 
 }  // namespace content
 
