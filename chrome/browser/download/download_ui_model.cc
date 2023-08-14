@@ -17,7 +17,6 @@
 #include "chrome/browser/download/bubble/download_bubble_prefs.h"
 #include "chrome/browser/download/download_commands.h"
 #include "chrome/browser/download/offline_item_utils.h"
-#include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/interstitials/chrome_settings_page_helper.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
@@ -45,6 +44,10 @@
 #include "chrome/browser/ui/browser.h"
 #include "components/url_formatter/elide_url.h"
 #include "ui/views/vector_icons.h"
+#endif
+
+#if BUILDFLAG(FULL_SAFE_BROWSING)
+#include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
 #endif
 
 using download::DownloadItem;
@@ -151,12 +154,25 @@ std::u16string FailStateDescription(FailState fail_state) {
   return status_text;
 }
 
+// Returns whether the download item had a download protection verdict. If it
+// did not, we should call it "unverified" rather than "suspicious".
+bool WasSafeBrowsingVerdictObtained(const download::DownloadItem* item) {
+#if BUILDFLAG(FULL_SAFE_BROWSING)
+  return safe_browsing::DownloadProtectionService::HasDownloadProtectionVerdict(
+      item);
+#else
+  return false;
+#endif
+}
+
+// If this returns true, the warning should say "unverified" instead of
+// "suspicious".
 bool ShouldShowWarningForNoSafeBrowsing(Profile* profile) {
 #if BUILDFLAG(FULL_SAFE_BROWSING)
   return safe_browsing::GetSafeBrowsingState(*profile->GetPrefs()) ==
          safe_browsing::SafeBrowsingState::NO_SAFE_BROWSING;
 #else
-  return false;
+  return true;
 #endif
 }
 
@@ -1185,8 +1201,11 @@ DownloadUIModel::GetBubbleUIInfoForInProgressOrComplete(
           return DownloadUIModel::BubbleUIInfo::SuspiciousUiPattern(
               l10n_util::GetStringUTF16(
                   IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_DANGEROUS_FILE_TYPE),
-              l10n_util::GetStringUTF16(
-                  IDS_DOWNLOAD_BUBBLE_CONTINUE_SUSPICIOUS_FILE));
+              WasSafeBrowsingVerdictObtained(GetDownloadItem())
+                  ? l10n_util::GetStringUTF16(
+                        IDS_DOWNLOAD_BUBBLE_CONTINUE_SUSPICIOUS_FILE)
+                  : l10n_util::GetStringUTF16(
+                        IDS_DOWNLOAD_BUBBLE_CONTINUE_UNVERIFIED_FILE));
         }
         return DownloadUIModel::BubbleUIInfo()
             .AddSubpageSummary(
@@ -1536,6 +1555,9 @@ DownloadUIModel::GetBubbleUIInfoForFileTypeWarningNoSafeBrowsing() const {
       l10n_util::GetStringUTF16(
           IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_NO_SAFE_BROWSING),
       l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_CONTINUE_UNVERIFIED_FILE));
+  // Clear the "Learn why Chrome..." link. If the user is not capable of turning
+  // on SB, do not show the default link and label.
+  ui_info.learn_more_link = absl::nullopt;
   if (CanUserTurnOnSafeBrowsing(profile())) {
     ui_info.AddLearnMoreLink(
         IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LABEL,
@@ -1714,7 +1736,8 @@ DownloadUIModel::BubbleStatusTextBuilder::GetBubbleWarningStatusText() const {
     case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE:
       if (base::FeatureList::IsEnabled(
               safe_browsing::kImprovedDownloadBubbleWarnings)) {
-        if (ShouldShowWarningForNoSafeBrowsing(model_->profile())) {
+        if (ShouldShowWarningForNoSafeBrowsing(model_->profile()) ||
+            !WasSafeBrowsingVerdictObtained(model_->GetDownloadItem())) {
           // "Unverified download blocked"
           return l10n_util::GetStringUTF16(
               IDS_DOWNLOAD_BUBBLE_STATUS_WARNING_UNVERIFIED);

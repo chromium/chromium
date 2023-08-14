@@ -443,6 +443,7 @@ void DownloadProtectionService::ShowDetailsForDownload(
                              ui::PAGE_TRANSITION_LINK, false));
 }
 
+// static
 void DownloadProtectionService::SetDownloadProtectionData(
     download::DownloadItem* item,
     const std::string& token,
@@ -455,6 +456,7 @@ void DownloadProtectionService::SetDownloadProtectionData(
   }
 }
 
+// static
 std::string DownloadProtectionService::GetDownloadPingToken(
     const download::DownloadItem* item) {
   base::SupportsUserData::Data* protection_data =
@@ -466,6 +468,13 @@ std::string DownloadProtectionService::GetDownloadPingToken(
     return std::string();
 }
 
+// static
+bool DownloadProtectionService::HasDownloadProtectionVerdict(
+    const download::DownloadItem* item) {
+  return item->GetUserData(kDownloadProtectionDataKey) != nullptr;
+}
+
+// static
 ClientDownloadResponse::Verdict
 DownloadProtectionService::GetDownloadProtectionVerdict(
     const download::DownloadItem* item) {
@@ -477,6 +486,7 @@ DownloadProtectionService::GetDownloadProtectionVerdict(
     return ClientDownloadResponse::SAFE;
 }
 
+// static
 ClientDownloadResponse::TailoredVerdict
 DownloadProtectionService::GetDownloadProtectionTailoredVerdict(
     const download::DownloadItem* item) {
