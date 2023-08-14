@@ -1433,4 +1433,22 @@ TEST_P(CookieControlsUserBypassTest, HighConfidenceAfterExpiration) {
   testing::Mock::VerifyAndClearExpectations(mock());
 }
 
+TEST_P(CookieControlsUserBypassTest, MediumConfidenceStatefulBounce) {
+  if (!GetParam()) {
+    return;
+  }
+
+  NavigateAndCommit(GURL("https://example.com"));
+  page_specific_content_settings()->IncrementStatefulBounceCount();
+
+  EXPECT_CALL(*mock(),
+              OnStatusChanged(CookieControlsStatus::kEnabled,
+                              CookieControlsEnforcement::kNoEnforcement,
+                              zero_expiration()));
+  EXPECT_CALL(*mock(), OnSitesCountChanged(0, 0));
+  EXPECT_CALL(*mock(), OnBreakageConfidenceLevelChanged(
+                           CookieControlsBreakageConfidenceLevel::kMedium));
+  cookie_controls()->Update(web_contents());
+}
+
 INSTANTIATE_TEST_SUITE_P(All, CookieControlsUserBypassTest, testing::Bool());
