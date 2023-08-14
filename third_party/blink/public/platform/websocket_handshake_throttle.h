@@ -22,6 +22,7 @@ namespace blink {
 
 class WebURL;
 class WebString;
+class WebSecurityOrigin;
 
 // Embedders can implement this class to delay WebSocket connections.
 class WebSocketHandshakeThrottle {
@@ -38,7 +39,11 @@ class WebSocketHandshakeThrottle {
   // destroyed.
   using OnCompletion =
       base::OnceCallback<void(const absl::optional<WebString>& error)>;
-  virtual void ThrottleHandshake(const WebURL&, OnCompletion) = 0;
+  // |creator_origin| is the origin of the execution context that created
+  // this WebSocket.
+  virtual void ThrottleHandshake(const WebURL&,
+                                 const WebSecurityOrigin& creator_origin,
+                                 OnCompletion) = 0;
 };
 
 }  // namespace blink

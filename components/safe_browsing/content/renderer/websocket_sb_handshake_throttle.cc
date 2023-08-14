@@ -29,6 +29,7 @@ WebSocketSBHandshakeThrottle::~WebSocketSBHandshakeThrottle() = default;
 
 void WebSocketSBHandshakeThrottle::ThrottleHandshake(
     const blink::WebURL& url,
+    const blink::WebSecurityOrigin& creator_origin,
     blink::WebSocketHandshakeThrottle::OnCompletion completion_callback) {
   DCHECK(!url_checker_);
   DCHECK(!completion_callback_);

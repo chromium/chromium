@@ -87,8 +87,10 @@ class MockWebSocketHandshakeThrottle : public WebSocketHandshakeThrottle {
   MockWebSocketHandshakeThrottle() = default;
   ~MockWebSocketHandshakeThrottle() override { Destructor(); }
 
-  MOCK_METHOD2(ThrottleHandshake,
-               void(const WebURL&, WebSocketHandshakeThrottle::OnCompletion));
+  MOCK_METHOD3(ThrottleHandshake,
+               void(const WebURL&,
+                    const WebSecurityOrigin&,
+                    WebSocketHandshakeThrottle::OnCompletion));
 
   // This method is used to allow us to require that the destructor is called at
   // a particular time.
@@ -1320,7 +1322,7 @@ TEST_F(WebSocketChannelImplHandshakeThrottleTest, ThrottleSucceedsFirst) {
   Checkpoint checkpoint;
   {
     InSequence s;
-    EXPECT_CALL(*raw_handshake_throttle_, ThrottleHandshake(_, _));
+    EXPECT_CALL(*raw_handshake_throttle_, ThrottleHandshake(_, _, _));
     EXPECT_CALL(checkpoint, Call(1));
     EXPECT_CALL(*raw_handshake_throttle_, Destructor());
     EXPECT_CALL(checkpoint, Call(2));
@@ -1364,7 +1366,7 @@ TEST_F(WebSocketChannelImplHandshakeThrottleTest, HandshakeSucceedsFirst) {
   {
     InSequence s;
     EXPECT_CALL(checkpoint, Call(1));
-    EXPECT_CALL(*raw_handshake_throttle_, ThrottleHandshake(_, _));
+    EXPECT_CALL(*raw_handshake_throttle_, ThrottleHandshake(_, _, _));
     EXPECT_CALL(checkpoint, Call(2));
     EXPECT_CALL(*raw_handshake_throttle_, Destructor());
     EXPECT_CALL(*ChannelClient(), DidConnect(_, _));
@@ -1387,7 +1389,7 @@ TEST_F(WebSocketChannelImplHandshakeThrottleTest, FailDuringThrottle) {
   Checkpoint checkpoint;
   {
     InSequence s;
-    EXPECT_CALL(*raw_handshake_throttle_, ThrottleHandshake(_, _));
+    EXPECT_CALL(*raw_handshake_throttle_, ThrottleHandshake(_, _, _));
     EXPECT_CALL(*ChannelClient(), DidError());
     EXPECT_CALL(*ChannelClient(), DidClose(_, _, _));
     EXPECT_CALL(*raw_handshake_throttle_, Destructor());
@@ -1408,7 +1410,7 @@ TEST_F(WebSocketChannelImplHandshakeThrottleTest,
   Checkpoint checkpoint;
   {
     InSequence s;
-    EXPECT_CALL(*raw_handshake_throttle_, ThrottleHandshake(_, _));
+    EXPECT_CALL(*raw_handshake_throttle_, ThrottleHandshake(_, _, _));
     EXPECT_CALL(*ChannelClient(), DidError());
     EXPECT_CALL(*ChannelClient(), DidClose(_, _, _));
     EXPECT_CALL(*raw_handshake_throttle_, Destructor());
@@ -1431,7 +1433,7 @@ TEST_F(WebSocketChannelImplHandshakeThrottleTest, DisconnectDuringThrottle) {
   Checkpoint checkpoint;
   {
     InSequence s;
-    EXPECT_CALL(*raw_handshake_throttle_, ThrottleHandshake(_, _));
+    EXPECT_CALL(*raw_handshake_throttle_, ThrottleHandshake(_, _, _));
     EXPECT_CALL(*raw_handshake_throttle_, Destructor());
     EXPECT_CALL(checkpoint, Call(1));
   }
@@ -1462,7 +1464,7 @@ TEST_F(WebSocketChannelImplHandshakeThrottleTest,
   Checkpoint checkpoint;
   {
     InSequence s;
-    EXPECT_CALL(*raw_handshake_throttle_, ThrottleHandshake(_, _));
+    EXPECT_CALL(*raw_handshake_throttle_, ThrottleHandshake(_, _, _));
     EXPECT_CALL(*raw_handshake_throttle_, Destructor());
     EXPECT_CALL(checkpoint, Call(1));
   }
@@ -1489,7 +1491,7 @@ TEST_F(WebSocketChannelImplHandshakeThrottleTest,
        ThrottleReportsErrorBeforeConnect) {
   {
     InSequence s;
-    EXPECT_CALL(*raw_handshake_throttle_, ThrottleHandshake(_, _));
+    EXPECT_CALL(*raw_handshake_throttle_, ThrottleHandshake(_, _, _));
     EXPECT_CALL(*raw_handshake_throttle_, Destructor());
     EXPECT_CALL(*ChannelClient(), DidError());
     EXPECT_CALL(*ChannelClient(), DidClose(_, _, _));
@@ -1503,7 +1505,7 @@ TEST_F(WebSocketChannelImplHandshakeThrottleTest,
        ThrottleReportsErrorAfterConnect) {
   {
     InSequence s;
-    EXPECT_CALL(*raw_handshake_throttle_, ThrottleHandshake(_, _));
+    EXPECT_CALL(*raw_handshake_throttle_, ThrottleHandshake(_, _, _));
     EXPECT_CALL(*raw_handshake_throttle_, Destructor());
     EXPECT_CALL(*ChannelClient(), DidError());
     EXPECT_CALL(*ChannelClient(), DidClose(_, _, _));
@@ -1521,7 +1523,7 @@ TEST_F(WebSocketChannelImplHandshakeThrottleTest,
 TEST_F(WebSocketChannelImplHandshakeThrottleTest, ConnectFailBeforeThrottle) {
   {
     InSequence s;
-    EXPECT_CALL(*raw_handshake_throttle_, ThrottleHandshake(_, _));
+    EXPECT_CALL(*raw_handshake_throttle_, ThrottleHandshake(_, _, _));
     EXPECT_CALL(*ChannelClient(), DidError());
     EXPECT_CALL(*ChannelClient(), DidClose(_, _, _));
     EXPECT_CALL(*raw_handshake_throttle_, Destructor());
@@ -1644,7 +1646,7 @@ TEST_F(WebSocketChannelImplMultipleTest, ConnectionLimit) {
 
     EXPECT_CALL(checkpoint, Call(2));
 
-    EXPECT_CALL(*successful_handshake_throttle, ThrottleHandshake(_, _));
+    EXPECT_CALL(*successful_handshake_throttle, ThrottleHandshake(_, _, _));
     EXPECT_CALL(connector_, Connect(_, _, _, _, _, _))
         .WillOnce(handshake_client_add_action);
     EXPECT_CALL(*successful_handshake_throttle, Destructor());
@@ -1655,7 +1657,7 @@ TEST_F(WebSocketChannelImplMultipleTest, ConnectionLimit) {
   for (WebSocketChannelImpl*& channel : channels) {
     auto handshake_throttle =
         std::make_unique<StrictMock<MockWebSocketHandshakeThrottle>>();
-    EXPECT_CALL(*handshake_throttle, ThrottleHandshake(_, _));
+    EXPECT_CALL(*handshake_throttle, ThrottleHandshake(_, _, _));
     EXPECT_CALL(*handshake_throttle, Destructor());
 
     // This is kept alive by WebSocketChannelImpl so we don't need to retain
