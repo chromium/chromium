@@ -1718,6 +1718,8 @@ RenderFrameHostImpl::~RenderFrameHostImpl() {
                               frame_tree_->IsBeingDestroyed());
         SCOPED_CRASH_KEY_BOOL("Bug1468984", "is_evicted_from_bfcache",
                               is_evicted_from_back_forward_cache());
+        SCOPED_CRASH_KEY_BOOL("Bug1468984", "is_outermost_main_frame",
+                              IsOutermostMainFrame());
         base::debug::DumpWithoutCrashing();
       } else if (navigation_request->state() >=
                      NavigationRequest::WILL_PROCESS_RESPONSE &&
