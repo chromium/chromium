@@ -366,8 +366,8 @@
     max-width: 100%;
   }
 
-  .description-text:has(+ .timestamp:not([hidden])) {
-    /* Prioritize timestamp and let description shrink. */
+  .description-text:has(+ .description-meta:not([hidden])) {
+    /* Prioritize description meta and let description shrink. */
     flex-shrink: 1;
   }
 
@@ -387,14 +387,14 @@
 
   .title,
   .description-text,
-  .timestamp {
+  .description-meta {
     max-width: 100%;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
 
-  .timestamp {
+  .description-meta {
     flex-shrink: 0;
     padding-inline-start: 4px;
   }
@@ -488,7 +488,9 @@
   <div class="descriptions">
     <div class="description" hidden$="[[!description]]">
       <span class="description-text">[[description]]</span>
-      <span class="timestamp" hidden$="[[!timestamp]]">- [[timestamp]]</span>
+      <span class="description-meta" hidden$="[[!descriptionMeta]]">
+        &middot; [[descriptionMeta]]
+      </span>
     </div>
     <div class="badges">
       <slot id="badges" name="badges" on-slotchange="onBadgesSlotChange_">

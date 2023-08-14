@@ -649,6 +649,20 @@ export class PowerBookmarksListElement extends PolymerElement {
     }
   }
 
+  private getBookmarkDescriptionMeta_(bookmark:
+                                          chrome.bookmarks.BookmarkTreeNode) {
+    // If there is a price available for the product and it isn't being
+    // tracked, return the current price which will be added to the description
+    // meta section.
+    const productInfo = this.availableProductInfos_.get(bookmark.id);
+    if (productInfo && productInfo.info.currentPrice &&
+        !this.isPriceTracked(bookmark)) {
+      return productInfo.info.currentPrice;
+    }
+
+    return '';
+  }
+
   private getViewButtonIcon_() {
     return this.compact_ ? 'bookmarks:compact-view' : 'bookmarks:visual-view';
   }
