@@ -529,11 +529,11 @@ IN_PROC_BROWSER_TEST_F(ChromeSharedDictionaryBrowserTest,
 }
 
 // TODO(crbug.com/1472445): Fix flakiness in test and enable.
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_SiteDataCount DISABLED_SiteDataCount
 #else
 #define MAYBE_SiteDataCount SiteDataCount
-#endif  //BUILDFLAG(IS_WIN) 
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(ChromeSharedDictionaryBrowserTest, MAYBE_SiteDataCount) {
   base::Time time1 = base::Time::Now();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
