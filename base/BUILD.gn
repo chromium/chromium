@@ -1984,7 +1984,7 @@ component("base") {
       "synchronization/waitable_event_mac.cc",
       "system/sys_info_apple.mm",
       "threading/platform_thread_mac.mm",
-      "time/time_mac.mm",
+      "time/time_apple.mm",
     ]
     frameworks += [
       "CoreFoundation.framework",
@@ -3720,7 +3720,7 @@ test("base_unittests") {
   }
 
   if (is_apple && enable_mach_absolute_time_ticks) {
-    sources += [ "time/time_mac_unittest.mm" ]
+    sources += [ "time/time_apple_unittest.mm" ]
   }
 
   if (is_mac) {

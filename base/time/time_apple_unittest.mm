@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/test/gtest_util.h"
 #include "base/time/time.h"
 
+#include "base/test/gtest_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
 
 class ScopedTimebase {
  public:
-  ScopedTimebase(mach_timebase_info_data_t timebase) {
+  explicit ScopedTimebase(mach_timebase_info_data_t timebase) {
     orig_timebase_ = base::TimeTicks::SetMachTimebaseInfoForTesting(timebase);
   }
 
