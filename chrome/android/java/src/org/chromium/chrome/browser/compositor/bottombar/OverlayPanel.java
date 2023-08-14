@@ -27,7 +27,7 @@ import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelManager.Pane
 import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.compositor.layouts.SceneChangeObserver;
-import org.chromium.chrome.browser.compositor.layouts.eventfilter.GestureHandler;
+import org.chromium.chrome.browser.compositor.layouts.eventfilter.MotionEventHandler;
 import org.chromium.chrome.browser.compositor.layouts.eventfilter.OverlayPanelEventFilter;
 import org.chromium.chrome.browser.layouts.EventFilter;
 import org.chromium.chrome.browser.layouts.SceneOverlay;
@@ -52,8 +52,8 @@ import java.util.List;
  * Controls the Overlay Panel.
  */
 public class OverlayPanel extends OverlayPanelAnimation
-        implements ActivityStateListener, SwipeHandler, GestureHandler, OverlayPanelContentFactory,
-                   SceneOverlay {
+        implements ActivityStateListener, SwipeHandler, MotionEventHandler,
+                   OverlayPanelContentFactory, SceneOverlay {
     /** The delay after which the hide progress will be hidden. */
     private static final long HIDE_PROGRESS_BAR_DELAY_MS = 1000 / 60 * 4;
 

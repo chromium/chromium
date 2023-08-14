@@ -28,8 +28,8 @@ import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
 import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton;
 import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton.CompositorOnClickHandler;
 import org.chromium.chrome.browser.compositor.layouts.components.TintedCompositorButton;
-import org.chromium.chrome.browser.compositor.layouts.eventfilter.AreaGestureEventFilter;
-import org.chromium.chrome.browser.compositor.layouts.eventfilter.GestureHandler;
+import org.chromium.chrome.browser.compositor.layouts.eventfilter.AreaMotionEventFilter;
+import org.chromium.chrome.browser.compositor.layouts.eventfilter.MotionEventHandler;
 import org.chromium.chrome.browser.compositor.scene_layer.TabStripSceneLayer;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.EventFilter;
@@ -122,7 +122,7 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
     private final LayoutUpdateHost mUpdateHost;
 
     // Event Filters
-    private final AreaGestureEventFilter mEventFilter;
+    private final AreaMotionEventFilter mEventFilter;
 
     // Internal state
     private boolean mIsIncognito;
@@ -166,7 +166,7 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
     private final String mDefaultTitle;
     private final Supplier<LayerTitleCache> mLayerTitleCacheSupplier;
 
-    private class TabStripEventHandler implements GestureHandler {
+    private class TabStripEventHandler implements MotionEventHandler {
         @Override
         public void onDown(float x, float y, boolean fromMouse, int buttons) {
             if (mModelSelectorButton.onDown(x, y)) return;
@@ -293,7 +293,7 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
         mLifecycleDispatcher.register(this);
         mDefaultTitle = context.getString(R.string.tab_loading_default_title);
         mEventFilter =
-                new AreaGestureEventFilter(context, mTabStripEventHandler, null, false, false);
+                new AreaMotionEventFilter(context, mTabStripEventHandler, null, false, false);
 
         CompositorOnClickHandler selectorClickHandler = new CompositorOnClickHandler() {
             @Override

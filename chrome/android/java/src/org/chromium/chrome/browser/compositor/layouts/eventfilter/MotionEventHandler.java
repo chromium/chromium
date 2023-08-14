@@ -5,10 +5,9 @@
 package org.chromium.chrome.browser.compositor.layouts.eventfilter;
 
 /**
- * Interface that describes gesture callbacks.
+ * Interface that describes motion event callbacks.
  */
-public interface GestureHandler {
-
+public interface MotionEventHandler {
     /**
      * Called on down touch event.
      *
@@ -20,8 +19,8 @@ public interface GestureHandler {
     void onDown(float x, float y, boolean fromMouse, int buttons);
 
     /**
-    * Called on up or cancel touch event.
-    */
+     * Called on up or cancel touch event.
+     */
     void onUpOrCancel();
 
     /**

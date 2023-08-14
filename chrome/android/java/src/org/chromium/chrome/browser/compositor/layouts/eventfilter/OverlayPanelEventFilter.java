@@ -24,11 +24,11 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 
 /**
- * The {@link GestureEventFilter} used when an overlay panel is being shown. It filters
+ * The {@link MotionEventFilter} used when an overlay panel is being shown. It filters
  * events that happen in the Content View area and propagates them to the appropriate
  * WebContents.
  */
-public class OverlayPanelEventFilter extends GestureEventFilter {
+public class OverlayPanelEventFilter extends MotionEventFilter {
     /**
      * The targets that can handle MotionEvents.
      */
@@ -134,7 +134,7 @@ public class OverlayPanelEventFilter extends GestureEventFilter {
     }
 
     /**
-     * Creates a {@link GestureEventFilter} with offset touch events.
+     * Creates a {@link MotionEventFilter} with offset touch events.
      * @param context The {@link Context} for Android.
      * @param panelManager The {@link OverlayPanelManager} responsible for showing panels.
      */
@@ -394,7 +394,6 @@ public class OverlayPanelEventFilter extends GestureEventFilter {
         event.offsetLocation(-contentViewOffsetXPx, -contentViewOffsetYPx);
 
         // Get the container view to propagate the event to.
-        WebContents webContents = mPanel.getWebContents();
         ViewGroup containerView = mPanel.getContainerView();
 
         boolean wasEventCanceled = false;

@@ -24,15 +24,15 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
 /**
- * Unit tests for {@link AreaGestureEventFilter}.
+ * Unit tests for {@link AreaMotionEventFilter}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-public class AreaGestureEventFilterUnitTest {
+public class AreaMotionEventFilterUnitTest {
     @Mock
-    private GestureHandler mHandler;
+    private MotionEventHandler mHandler;
 
-    private AreaGestureEventFilter mEventFilter;
+    private AreaMotionEventFilter mEventFilter;
     private RectF mTriggerRect;
     private MotionEvent mHoverEnterEvent;
     private MotionEvent mHoverMoveEvent;
@@ -44,7 +44,7 @@ public class AreaGestureEventFilterUnitTest {
         Context context = ApplicationProvider.getApplicationContext();
         context.getResources().getDisplayMetrics().density = 1.0f;
         mTriggerRect = new RectF(0, 0, 100, 100);
-        mEventFilter = new AreaGestureEventFilter(context, mHandler, mTriggerRect, false, false);
+        mEventFilter = new AreaMotionEventFilter(context, mHandler, mTriggerRect, false, false);
 
         mHoverEnterEvent = MotionEvent.obtain(0, 0, MotionEvent.ACTION_HOVER_ENTER, 1.f, 1.f, 0);
         mHoverMoveEvent = MotionEvent.obtain(0, 0, MotionEvent.ACTION_HOVER_MOVE, 10.f, 10.f, 0);
