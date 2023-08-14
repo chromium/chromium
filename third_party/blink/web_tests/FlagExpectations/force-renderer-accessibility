@@ -15,7 +15,8 @@
 # run virtual test suites.
 virtual/* [ Skip ]
 
-# ax_object_cache_impl.cc#1151 -- IsRelevantSlotElement():
+# Crashes
+crbug.com/1401767 external/wpt/html/semantics/forms/the-selectlist-element/selectlist-marker-end-aligned.tentative.html [ Crash ]
 
 # Timeouts
 fast/loader/iframe-navigation-stealing-focus.html [ Skip ]

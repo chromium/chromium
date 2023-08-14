@@ -84,13 +84,12 @@ BrowserAccessibilityStateImpl* BrowserAccessibilityStateImpl::GetInstance() {
 BrowserAccessibilityStateImpl::BrowserAccessibilityStateImpl()
     : BrowserAccessibilityState(),
       histogram_delay_(base::Seconds(ACCESSIBILITY_HISTOGRAM_DELAY_SECS)) {
-  bool use_command_line_value = false;
+  bool disallow_changes = false;
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kDisableRendererAccessibility)) {
-    use_command_line_value = true;
+    disallow_changes = true;
   } else if (base::CommandLine::ForCurrentProcess()->HasSwitch(
                  switches::kForceRendererAccessibility)) {
-    use_command_line_value = true;
 #if BUILDFLAG(IS_WIN)
     std::string ax_mode_bundle = base::WideToUTF8(
         base::CommandLine::ForCurrentProcess()->GetSwitchValueNative(
@@ -101,17 +100,19 @@ BrowserAccessibilityStateImpl::BrowserAccessibilityStateImpl()
             switches::kForceRendererAccessibility);
 #endif
 
-    // For backwards compatibility, allow parameter to be empty and do not force
-    // mode in that scenario.
-    if (!ax_mode_bundle.empty()) {
+    if (ax_mode_bundle.empty()) {
+      // For backwards compatibility, when --force-renderer-accessibility has no
+      // parameter, use the complete bundle but allow changes.
+      AddAccessibilityModeFlags(ui::kAXModeComplete);
+    } else {
       // Support --force-renderer-accessibility=[basic|form-controls|complete]
+      disallow_changes = true;
       if (ax_mode_bundle.compare(kAXModeBundleBasic) == 0) {
         AddAccessibilityModeFlags(ui::kAXModeBasic);
       } else if (ax_mode_bundle.compare(kAXModeBundleFormControls) == 0) {
         AddAccessibilityModeFlags(ui::kAXModeFormControls);
       } else {
-        // If AXMode is 'complete' or invalid, default to complete
-        // bundle.
+        // If AXMode is 'complete' or invalid, default to complete bundle.
         AddAccessibilityModeFlags(ui::kAXModeComplete);
       }
     }
@@ -120,7 +121,7 @@ BrowserAccessibilityStateImpl::BrowserAccessibilityStateImpl()
   // Hook ourselves up to observe ax mode changes.
   ui::AXPlatformNode::AddAXModeObserver(this);
 
-  if (use_command_line_value) {
+  if (disallow_changes) {
     DisallowAXModeChanges();
   }
 }

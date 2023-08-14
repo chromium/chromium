@@ -7,8 +7,10 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
 #include "components/search/ntp_features.h"
+#include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
+#include "ui/accessibility/ax_mode.h"
 
 class NewTabPageA11yBrowserTest : public WebUIMochaBrowserTest {
  protected:
@@ -26,6 +28,9 @@ class NewTabPageA11yBrowserTest : public WebUIMochaBrowserTest {
 using NewTabPageAppA11yTest = NewTabPageA11yBrowserTest;
 
 IN_PROC_BROWSER_TEST_F(NewTabPageAppA11yTest, Clicks) {
+  ASSERT_EQ(
+      content::BrowserAccessibilityState::GetInstance()->GetAccessibilityMode(),
+      ui::kAXModeComplete);
   RunTest("new_tab_page/app_test.js",
           "runMochaSuite('NewTabPageAppTest Clicks')");
 }
