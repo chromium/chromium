@@ -783,9 +783,16 @@ void InterestGroupUpdateManager::DidUpdateInterestGroupsOfOwnerJsonParse(
     ReportUpdateFailed(group_key, UpdateDelayType::kParseFailure);
     return;
   }
+  // All ads' allowed reporting origins must be attested. Otherwise don't update
+  // the interest group.
   if (interest_group_update->ads) {
-    for (const auto& ad : *interest_group_update->ads) {
+    for (auto& ad : *interest_group_update->ads) {
       if (ad.allowed_reporting_origins) {
+        // Sort and de-duplicate by passing it through a flat_set.
+        ad.allowed_reporting_origins =
+            base::flat_set<url::Origin>(
+                std::move(ad.allowed_reporting_origins.value()))
+                .extract();
         if (!attestation_callback_.Run(ad.allowed_reporting_origins.value())) {
           // Treat this the same way as a parse failure.
           ReportUpdateFailed(group_key, UpdateDelayType::kParseFailure);

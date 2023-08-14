@@ -1134,6 +1134,36 @@ TEST_F(AdAuctionServiceImplTest, JoinInterestGroupDisallowedUrls) {
   EXPECT_EQ(0, GetJoinCount(kOriginA, kInterestGroupName));
 }
 
+// Successful join. Duplicate allowed reporting origins are removed.
+TEST_F(AdAuctionServiceImplTest,
+       JoinInterestGroupDeduplicateAllowedReportingOrigins) {
+  content_browser_client_.SetAllowList({kOriginF, kOriginG});
+  blink::InterestGroup interest_group = CreateInterestGroup();
+  interest_group.ads.emplace();
+  std::vector<url::Origin> allowed_reporting_origins = {kOriginG, kOriginF,
+                                                        kOriginG};
+  blink::InterestGroup::Ad ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/absl::nullopt,
+      /*size_group=*/absl::nullopt,
+      /*buyer_reporting_id=*/absl::nullopt,
+      /*buyer_and_seller_reporting_id=*/absl::nullopt,
+      /*ad_render_id=*/absl::nullopt,
+      /*allowed_reporting_origins=*/std::move(allowed_reporting_origins));
+  interest_group.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group);
+  EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
+  auto groups = GetInterestGroupsForOwner(kOriginA);
+  ASSERT_EQ(groups.size(), 1u);
+  auto group = groups[0].interest_group;
+  ASSERT_TRUE(group.ads.has_value());
+  ASSERT_EQ(group.ads->size(), 1u);
+  absl::optional<std::vector<int>> x = {{1, 2, 3}};
+  EXPECT_THAT(x.value(), ::testing::UnorderedElementsAre(1, 2, 3));
+  EXPECT_THAT(group.ads.value()[0].allowed_reporting_origins.value(),
+              ::testing::UnorderedElementsAre(kOriginF, kOriginG));
+}
+
 // Attempt to join an interest group whose allowed reporting origins are not all
 // attested. No join should happen.
 TEST_F(AdAuctionServiceImplTest,
@@ -1256,7 +1286,8 @@ TEST_F(AdAuctionServiceImplTest, UpdateAllUpdatableFields) {
          "buyerReportingId": "new_brid",
          "buyerAndSellerReportingId": "new_shrid",
          "adRenderId": "123abc",
-         "allowedReportingOrigins": ["https://g.test"]
+         "allowedReportingOrigins":
+             ["https://g.test", "https://f.test", "https://g.test"]
         }],
 "adComponents": [{"renderURL": "https://example.com/component_url",
                   "sizeGroup": "group_new",
@@ -1385,10 +1416,8 @@ TEST_F(AdAuctionServiceImplTest, UpdateAllUpdatableFields) {
   ASSERT_TRUE(group.ads.value()[0].buyer_and_seller_reporting_id.has_value());
   EXPECT_EQ(*group.ads.value()[0].buyer_and_seller_reporting_id, "new_shrid");
   ASSERT_TRUE(group.ads.value()[0].allowed_reporting_origins.has_value());
-  ASSERT_EQ(group.ads.value()[0].allowed_reporting_origins->size(), 1u);
-  EXPECT_EQ(
-      group.ads.value()[0].allowed_reporting_origins.value()[0].Serialize(),
-      kOriginStringG);
+  EXPECT_THAT(group.ads.value()[0].allowed_reporting_origins.value(),
+              ::testing::UnorderedElementsAre(kOriginF, kOriginG));
   ASSERT_TRUE(group.ad_components.has_value());
   ASSERT_EQ(group.ad_components->size(), 1u);
   EXPECT_EQ(group.ad_components.value()[0].render_url.spec(),
@@ -4571,12 +4600,13 @@ function scoreAd(
 }
 )";
 
-  content_browser_client_.SetAllowList({kOriginG});
+  content_browser_client_.SetAllowList({kOriginG, kOriginF});
   network_responder_->RegisterUpdateResponse(kUpdateUrlPath, R"({
-"ads": [{"renderURL": "https://example.com/new_render",
-         "allowedReportingOrigins": ["https://g.test"]
-        }]
-})");
+"ads": [{
+  "renderURL": "https://example.com/new_render",
+  "allowedReportingOrigins":
+      ["https://g.test", "https://f.test", "https://g.test"]
+}]})");
 
   network_responder_->RegisterScriptResponse(kBiddingUrlPath, kBiddingScript);
   network_responder_->RegisterScriptResponse(kDecisionUrlPath, kDecisionScript);
@@ -4611,9 +4641,9 @@ function scoreAd(
   ASSERT_EQ(a_group.ads->size(), 1u);
   EXPECT_EQ(a_group.ads.value()[0].render_url.spec(),
             "https://example.com/new_render");
-  std::vector<url::Origin> allowed_reporting_origins = {kOriginG};
-  EXPECT_EQ(a_group.ads.value()[0].allowed_reporting_origins,
-            allowed_reporting_origins);
+  ASSERT_TRUE(a_group.ads.value()[0].allowed_reporting_origins.has_value());
+  EXPECT_THAT(a_group.ads.value()[0].allowed_reporting_origins.value(),
+              ::testing::UnorderedElementsAre(kOriginF, kOriginG));
 }
 
 // Like UpdatesInterestGroupsAfterSuccessfulAuction, but the auction fails

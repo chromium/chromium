@@ -481,11 +481,17 @@ void InterestGroupManagerImpl::OnJoinInterestGroupPermissionsChecked(
   // in the InterestGroup through timing differences.
   std::move(callback).Run(/*failed_well_known_check=*/!can_join);
 
-  // All ads' allowed reporting origins must be attested. Otherwise don't join.
   if (!report_result_only && can_join) {
+    // All ads' allowed reporting origins must be attested. Otherwise don't
+    // join.
     if (group.ads) {
-      for (const auto& ad : *group.ads) {
+      for (auto& ad : *group.ads) {
         if (ad.allowed_reporting_origins) {
+          // Sort and de-duplicate by passing it through a flat_set.
+          ad.allowed_reporting_origins =
+              base::flat_set<url::Origin>(
+                  std::move(ad.allowed_reporting_origins.value()))
+                  .extract();
           if (!attestation_callback.Run(ad.allowed_reporting_origins.value())) {
             return;
           }
