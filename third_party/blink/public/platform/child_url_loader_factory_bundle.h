@@ -38,7 +38,8 @@ namespace blink {
 // fetch requests with {keepalive: true} flag. The loader factory allows
 // keepalive request handling to be proxied via the browser process. The browser
 // may forward the response back if the request initiator frame is still alive.
-// It is only set if `blink::features::kKeepAliveInBrowserMigration` is true.
+// It is only set if `blink::features::IsKeepAliveInBrowserMigrationEnabled()`
+// is true.
 // See also crbug.com/1356128 and
 // https://docs.google.com/document/d/1ZzxMMBvpqn8VZBZKnb7Go8TWjnrGcXuLS_USwVVRUvY
 class BLINK_PLATFORM_EXPORT ChildPendingURLLoaderFactoryBundle

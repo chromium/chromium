@@ -1469,8 +1469,7 @@ void StoragePartitionImpl::Initialize(
   subresource_proxying_url_loader_service_ =
       std::make_unique<SubresourceProxyingURLLoaderService>(browser_context_);
 
-  if (base::FeatureList::IsEnabled(
-          blink::features::kKeepAliveInBrowserMigration)) {
+  if (blink::features::IsKeepAliveInBrowserMigrationEnabled()) {
     keep_alive_url_loader_service_ =
         std::make_unique<KeepAliveURLLoaderService>(browser_context_);
   }

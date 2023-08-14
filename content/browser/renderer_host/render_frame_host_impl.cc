@@ -10307,8 +10307,7 @@ void RenderFrameHostImpl::CommitNavigation(
     // specified.
     mojo::PendingRemote<network::mojom::URLLoaderFactory>
         keep_alive_loader_factory;
-    if (base::FeatureList::IsEnabled(
-            blink::features::kKeepAliveInBrowserMigration) &&
+    if (blink::features::IsKeepAliveInBrowserMigrationEnabled() &&
         subresource_proxying_factory_bundle) {
       // Also setting up URLLoaderFactory for keepalive using the same loader
       // factories.

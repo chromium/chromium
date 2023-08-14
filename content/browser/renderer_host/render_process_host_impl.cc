@@ -2424,8 +2424,7 @@ RenderProcessHostImpl::GetInfoForBrowserContextDestructionCrashReporting() {
     ret += " dcn";
 
   if (keep_alive_ref_count_ != 0) {
-    CHECK(!base::FeatureList::IsEnabled(
-        blink::features::kKeepAliveInBrowserMigration));
+    CHECK(!blink::features::IsKeepAliveInBrowserMigrationEnabled());
     ret += " karc=" + base::NumberToString(keep_alive_ref_count_);
   }
 
@@ -2862,16 +2861,14 @@ void RenderProcessHostImpl::IncrementKeepAliveRefCount(uint64_t handle_id) {
   if (base::FeatureList::IsEnabled(kCheckNoNewRefCountsWhenRphDeletingSoon)) {
     CHECK(!deleting_soon_);
   }
-  CHECK(!base::FeatureList::IsEnabled(
-      blink::features::kKeepAliveInBrowserMigration));
+  CHECK(!blink::features::IsKeepAliveInBrowserMigrationEnabled());
   ++keep_alive_ref_count_;
   DCHECK(!keep_alive_start_times_.contains(handle_id));
   keep_alive_start_times_[handle_id] = base::Time::Now();
 }
 
 bool RenderProcessHostImpl::AreAllRefCountsZero() {
-  if (base::FeatureList::IsEnabled(
-          blink::features::kKeepAliveInBrowserMigration)) {
+  if (blink::features::IsKeepAliveInBrowserMigrationEnabled()) {
     CHECK_EQ(keep_alive_ref_count_, 0);
   }
   return keep_alive_ref_count_ == 0 && worker_ref_count_ == 0 &&
@@ -2881,8 +2878,7 @@ bool RenderProcessHostImpl::AreAllRefCountsZero() {
 void RenderProcessHostImpl::DecrementKeepAliveRefCount(uint64_t handle_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   CHECK(!are_ref_counts_disabled_);
-  CHECK(!base::FeatureList::IsEnabled(
-      blink::features::kKeepAliveInBrowserMigration));
+  CHECK(!blink::features::IsKeepAliveInBrowserMigrationEnabled());
   CHECK_GT(keep_alive_ref_count_, 0);
   --keep_alive_ref_count_;
   DCHECK(keep_alive_start_times_.contains(handle_id));
@@ -3877,8 +3873,7 @@ bool RenderProcessHostImpl::FastShutdownIfPossible(size_t page_count,
 
   // TODO(crbug.com/1356128): Remove this block once the migration is launched.
   if (keep_alive_ref_count_ != 0) {
-    CHECK(!base::FeatureList::IsEnabled(
-        blink::features::kKeepAliveInBrowserMigration));
+    CHECK(!blink::features::IsKeepAliveInBrowserMigrationEnabled());
     LogDelayReasonForFastShutdown(DelayShutdownReason::kFetchKeepAlive);
     return false;
   }
@@ -4170,8 +4165,7 @@ void RenderProcessHostImpl::Cleanup() {
     LogDelayReasonForCleanup(DelayShutdownReason::kListener);
     return;
   } else if (keep_alive_ref_count_ != 0) {
-    CHECK(!base::FeatureList::IsEnabled(
-        blink::features::kKeepAliveInBrowserMigration));
+    CHECK(!blink::features::IsKeepAliveInBrowserMigrationEnabled());
     TRACE_EVENT(
         "shutdown", "RenderProcessHostImpl::Cleanup : Have keep_alive_ref.",
         ChromeTrackEvent::kRenderProcessHost, *this,

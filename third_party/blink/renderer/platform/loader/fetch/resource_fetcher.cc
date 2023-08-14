@@ -1520,8 +1520,7 @@ std::unique_ptr<URLLoader> ResourceFetcher::CreateURLLoader(
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner =
       unfreezable_task_runner_;
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kKeepAliveInBrowserMigration) &&
+  if (!blink::features::IsKeepAliveInBrowserMigrationEnabled() &&
       request.GetKeepalive()) {
     base::UmaHistogramBoolean("Blink.Fetch.KeepAlive.Total", true);
     // Set the `task_runner` to the `AgentGroupScheduler`'s task-runner for
@@ -2075,8 +2074,7 @@ void ResourceFetcher::ClearContext() {
   StopFetching();
 
   if ((!loaders_.empty() || !non_blocking_loaders_.empty()) &&
-      !base::FeatureList::IsEnabled(
-          blink::features::kKeepAliveInBrowserMigration)) {
+      !blink::features::IsKeepAliveInBrowserMigrationEnabled()) {
     // There are some keepalive requests.
 
     // Records the current time to estimate how long the remaining requests will
@@ -2477,8 +2475,7 @@ void ResourceFetcher::RemoveResourceLoader(ResourceLoader* loader) {
 }
 
 void ResourceFetcher::StopFetching() {
-  if (base::FeatureList::IsEnabled(
-          blink::features::kKeepAliveInBrowserMigration)) {
+  if (blink::features::IsKeepAliveInBrowserMigrationEnabled()) {
     StopFetchingInternal(StopFetchingTarget::kIncludingKeepaliveLoaders);
   } else {
     StopFetchingInternal(StopFetchingTarget::kExcludingKeepaliveLoaders);

@@ -1298,6 +1298,10 @@ IsThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframesEnabled();
 
 BLINK_COMMON_EXPORT bool ParkableStringsUseSnappy();
 
+// Checks both of kKeepAliveInBrowserMigration and kFetchLaterAPI, and returns
+// true if any of them is true.
+BLINK_COMMON_EXPORT bool IsKeepAliveInBrowserMigrationEnabled();
+
 }  // namespace features
 }  // namespace blink
 

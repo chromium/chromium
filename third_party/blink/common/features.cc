@@ -2087,5 +2087,10 @@ bool ParkableStringsUseSnappy() {
   return base::FeatureList::IsEnabled(kUseSnappyForParkableStrings);
 }
 
+bool IsKeepAliveInBrowserMigrationEnabled() {
+  return base::FeatureList::IsEnabled(kKeepAliveInBrowserMigration) ||
+         base::FeatureList::IsEnabled(kFetchLaterAPI);
+}
+
 }  // namespace features
 }  // namespace blink
