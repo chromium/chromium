@@ -52,6 +52,12 @@ union FileSystemAccessAccessHandleFile {
     pending_remote<FileSystemAccessFileDelegateHost> incognito_file_delegate;
 };
 
+enum FileSystemAccessAccessHandleLockMode {
+  kReadwrite,
+  kReadOnly,
+  kReadwriteUnsafe,
+};
+
 // This interface represents a handle to a directory in the File System Access
 // API.
 interface FileSystemAccessFileHandle {
@@ -93,10 +99,12 @@ interface FileSystemAccessFileHandle {
 
   // Returns a file object and an access handle host. The file can be used to
   // initiate file operations from the renderer. The access handle host acts as
-  // an exclusive lock while the mojo pipe remains open.
+  // a lock while the mojo pipe remains open.
   // TODO(https://crbug.com/1327821): Replace this with expected<T, E> if/when
   // it becomes available for mojom.
-  OpenAccessHandle() =>  (FileSystemAccessError result, FileSystemAccessAccessHandleFile? file, pending_remote<FileSystemAccessAccessHandleHost>? access_handle_host);
+  OpenAccessHandle(FileSystemAccessAccessHandleLockMode mode) =>  (
+    FileSystemAccessError result, FileSystemAccessAccessHandleFile? file,
+    pending_remote<FileSystemAccessAccessHandleHost>? access_handle_host);
 
   // Returns true if `other` represents the same file on disk as this handle.
   // TODO(https://crbug.com/1327821): Replace this with expected<T, E> if/when

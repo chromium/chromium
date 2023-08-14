@@ -5,9 +5,10 @@
 // https://fs.spec.whatwg.org/#api-filesystemsyncaccesshandle
 [
   Exposed=DedicatedWorker,
-  RuntimeEnabled=FileSystemAccessAccessHandle,
   SecureContext
 ] interface FileSystemSyncAccessHandle {
+  [RuntimeEnabled=FileSystemAccessAccessHandleLockingScheme] readonly attribute USVString mode;
+
   [Measure] void close();
 
   [RaisesException, Measure] void flush();

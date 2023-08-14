@@ -1658,8 +1658,8 @@
       base_feature: "none",
     },
     {
-      name: "FileSystemAccessAccessHandle",
-      status: "stable",
+      name: "FileSystemAccessAccessHandleLockingScheme",
+      status: "experimental",
       base_feature: "none",
     },
     {

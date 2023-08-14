@@ -26,7 +26,7 @@ namespace content {
 class FileSystemAccessAccessHandleHostImpl
     : public blink::mojom::FileSystemAccessAccessHandleHost {
  public:
-  // Creates an AccessHandleHost that acts as an exclusive lock on the file.
+  // Creates an AccessHandleHost that has a lock on the file.
   // AccessHandleHosts should only be created via the
   // FileSystemAccessManagerImpl.
   FileSystemAccessAccessHandleHostImpl(
@@ -106,9 +106,9 @@ class FileSystemAccessAccessHandleHostImpl
   // the callback too early, before the file is actually closed.
   base::ScopedClosureRunner on_close_callback_;
 
-  // Exclusive lock on the file. It is released on destruction. This member must
-  // be declared after `close_callback_` to ensure that the lock is released
-  // before the FileSystemSyncAccessHandle.close() method returns. See
+  // Lock on the file. It is released on destruction. This member must be
+  // declared after `close_callback_` to ensure that the lock is released before
+  // the FileSystemSyncAccessHandle.close() method returns. See
   // https://github.com/whatwg/fs/issues/83.
   scoped_refptr<FileSystemAccessLockManager::Lock> lock_;
 

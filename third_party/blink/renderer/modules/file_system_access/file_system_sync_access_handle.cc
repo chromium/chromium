@@ -17,8 +17,11 @@ FileSystemSyncAccessHandle::FileSystemSyncAccessHandle(
     ExecutionContext* context,
     FileSystemAccessFileDelegate* file_delegate,
     mojo::PendingRemote<mojom::blink::FileSystemAccessAccessHandleHost>
-        access_handle_remote)
-    : file_delegate_(file_delegate), access_handle_remote_(context) {
+        access_handle_remote,
+    V8FileSystemSyncAccessHandleMode lock_mode)
+    : file_delegate_(file_delegate),
+      access_handle_remote_(context),
+      lock_mode_(std::move(lock_mode)) {
   access_handle_remote_.Bind(std::move(access_handle_remote),
                              context->GetTaskRunner(TaskType::kStorage));
   DCHECK(access_handle_remote_.is_bound());
@@ -49,6 +52,14 @@ void FileSystemSyncAccessHandle::flush(ExceptionState& exception_state) {
   if (is_closed_) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "The file was already closed");
+    return;
+  }
+
+  if (lock_mode_.AsEnum() ==
+      V8FileSystemSyncAccessHandleMode::Enum::kReadOnly) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNoModificationAllowedError,
+        "Cannot write to access handle in 'read-only' mode");
     return;
   }
 
@@ -87,6 +98,14 @@ void FileSystemSyncAccessHandle::truncate(uint64_t size,
   if (is_closed_) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "The file was already closed");
+    return;
+  }
+
+  if (lock_mode_.AsEnum() ==
+      V8FileSystemSyncAccessHandleMode::Enum::kReadOnly) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNoModificationAllowedError,
+        "Cannot write to access handle in 'read-only' mode");
     return;
   }
 
@@ -160,6 +179,14 @@ uint64_t FileSystemSyncAccessHandle::write(
     return 0;
   }
 
+  if (lock_mode_.AsEnum() ==
+      V8FileSystemSyncAccessHandleMode::Enum::kReadOnly) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNoModificationAllowedError,
+        "Cannot write to access handle in 'read-only' mode");
+    return 0;
+  }
+
   uint64_t file_offset = options->hasAt() ? options->at() : cursor_;
   if (!base::CheckedNumeric<int64_t>(file_offset).IsValid()) {
     exception_state.ThrowTypeError("Cannot write at given offset");
@@ -206,6 +233,10 @@ uint64_t FileSystemSyncAccessHandle::write(
       base::CheckAdd(file_offset, bytes_written).AssignIfValid(&cursor_);
   DCHECK(cursor_position_is_valid) << "cursor position could not be determined";
   return bytes_written;
+}
+
+const char* FileSystemSyncAccessHandle::mode() {
+  return lock_mode_.AsCStr();
 }
 
 }  // namespace blink

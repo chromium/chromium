@@ -1170,7 +1170,6 @@ FileSystemAccessManagerImpl::CreateAccessHandleHost(
     scoped_refptr<FileSystemAccessLockManager::Lock> lock,
     base::ScopedClosureRunner on_close_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(lock->IsExclusive());
 
   mojo::PendingRemote<blink::mojom::FileSystemAccessAccessHandleHost> result;
   auto receiver = result.InitWithNewPipeAndPassReceiver();

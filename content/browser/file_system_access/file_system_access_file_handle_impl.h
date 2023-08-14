@@ -59,7 +59,8 @@ class CONTENT_EXPORT FileSystemAccessFileHandleImpl
   void Rename(const std::string& new_entry_name,
               RenameCallback callback) override;
   void Remove(RemoveCallback callback) override;
-  void OpenAccessHandle(OpenAccessHandleCallback callback) override;
+  void OpenAccessHandle(blink::mojom::FileSystemAccessAccessHandleLockMode mode,
+                        OpenAccessHandleCallback callback) override;
   void IsSameEntry(
       mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken> token,
       IsSameEntryCallback callback) override;
@@ -183,6 +184,14 @@ class CONTENT_EXPORT FileSystemAccessFileHandleImpl
   absl::optional<base::File::Error> swap_file_clone_result_for_testing_ =
       absl::nullopt;
 #endif  // BUILDFLAG(IS_MAC)
+
+  // The shared lock type for SyncAccessHandle's `readonly` mode.
+  FileSystemAccessLockManager::LockType sah_read_only_lock_type_ =
+      manager()->CreateSharedLockType();
+
+  // The shared lock type for SyncAccessHandle's `readwrite-unsafe` mode.
+  FileSystemAccessLockManager::LockType sah_readwrite_unsafe_lock_type_ =
+      manager()->CreateSharedLockType();
 
   // The shared lock type for WritableFileStream's default `siloed` mode.
   FileSystemAccessLockManager::LockType wfs_siloed_lock_type_ =

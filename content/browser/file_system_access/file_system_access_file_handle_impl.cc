@@ -227,6 +227,7 @@ void FileSystemAccessFileHandleImpl::Remove(RemoveCallback callback) {
 }
 
 void FileSystemAccessFileHandleImpl::OpenAccessHandle(
+    blink::mojom::FileSystemAccessAccessHandleLockMode mode,
     OpenAccessHandleCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -240,7 +241,21 @@ void FileSystemAccessFileHandleImpl::OpenAccessHandle(
     return;
   }
 
-  auto lock = manager()->TakeLock(url(), manager()->GetExclusiveLockType());
+  FileSystemAccessLockManager::LockType lock_type;
+
+  switch (mode) {
+    case blink::mojom::FileSystemAccessAccessHandleLockMode::kReadwrite:
+      lock_type = manager()->GetExclusiveLockType();
+      break;
+    case blink::mojom::FileSystemAccessAccessHandleLockMode::kReadOnly:
+      lock_type = sah_read_only_lock_type_;
+      break;
+    case blink::mojom::FileSystemAccessAccessHandleLockMode::kReadwriteUnsafe:
+      lock_type = sah_readwrite_unsafe_lock_type_;
+      break;
+  }
+
+  auto lock = manager()->TakeLock(url(), lock_type);
   if (!lock) {
     std::move(callback).Run(
         file_system_access_error::FromStatus(

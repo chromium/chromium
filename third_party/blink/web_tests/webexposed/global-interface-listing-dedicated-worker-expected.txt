@@ -568,6 +568,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method unobserve
 [Worker] interface FileSystemSyncAccessHandle
 [Worker]     attribute @@toStringTag
+[Worker]     getter mode
 [Worker]     method close
 [Worker]     method constructor
 [Worker]     method flush
