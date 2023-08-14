@@ -5206,6 +5206,7 @@ static_library("browser") {
       "//chrome/browser/ui/quick_answers",
       "//chrome/browser/ui/webui/ash/add_supervision:mojo_bindings",
       "//chrome/browser/ui/webui/ash/audio:mojo_bindings",
+      "//chrome/browser/ui/webui/ash/borealis_installer:mojo_bindings",
       "//chrome/browser/ui/webui/ash/cloud_upload:mojo_bindings",
       "//chrome/browser/ui/webui/ash/crostini_installer:mojo_bindings",
       "//chrome/browser/ui/webui/ash/crostini_upgrader:mojo_bindings",

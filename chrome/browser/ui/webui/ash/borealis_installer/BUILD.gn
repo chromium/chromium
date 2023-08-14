@@ -1,0 +1,14 @@
+# Copyright 2023 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+
+assert(is_chromeos_ash)
+
+mojom("mojo_bindings") {
+  sources = [ "borealis_installer.mojom" ]
+  webui_module_path = "/"
+  public_deps = [ "//mojo/public/mojom/base" ]
+  use_typescript_sources = true
+}

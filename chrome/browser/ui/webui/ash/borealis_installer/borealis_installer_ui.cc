@@ -37,4 +37,35 @@ BorealisInstallerUI::BorealisInstallerUI(content::WebUI* web_ui)
 
 BorealisInstallerUI::~BorealisInstallerUI() = default;
 
+void BorealisInstallerUI::BindPageHandlerFactory(
+    mojo::PendingReceiver<ash::borealis_installer::mojom::PageHandlerFactory>
+        pending_receiver) {
+  if (page_factory_receiver_.is_bound()) {
+    page_factory_receiver_.reset();
+  }
+
+  page_factory_receiver_.Bind(std::move(pending_receiver));
+}
+
+void BorealisInstallerUI::BindInterface(
+    mojo::PendingReceiver<borealis_installer::mojom::PageHandlerFactory>
+        pending_receiver) {
+  if (page_factory_receiver_.is_bound()) {
+    page_factory_receiver_.reset();
+  }
+
+  page_factory_receiver_.Bind(std::move(pending_receiver));
+}
+
+void BorealisInstallerUI::CreatePageHandler(
+    mojo::PendingRemote<ash::borealis_installer::mojom::Page> pending_page,
+    mojo::PendingReceiver<ash::borealis_installer::mojom::PageHandler>
+        pending_page_handler) {
+  DCHECK(pending_page.is_valid());
+
+  page_handler_ = std::make_unique<BorealisInstallerPageHandler>(
+      std::move(pending_page_handler), std::move(pending_page));
+}
+WEB_UI_CONTROLLER_TYPE_IMPL(BorealisInstallerUI);
+
 }  // namespace ash

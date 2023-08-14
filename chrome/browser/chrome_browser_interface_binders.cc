@@ -297,6 +297,8 @@
 #include "chrome/browser/ui/webui/ash/audio/audio.mojom.h"
 #include "chrome/browser/ui/webui/ash/audio/audio_ui.h"
 #include "chrome/browser/ui/webui/ash/bluetooth_pairing_dialog.h"
+#include "chrome/browser/ui/webui/ash/borealis_installer/borealis_installer.mojom.h"
+#include "chrome/browser/ui/webui/ash/borealis_installer/borealis_installer_ui.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload.mojom.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_dialog.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_ui.h"
@@ -1311,6 +1313,10 @@ void PopulateChromeWebUIFrameBinders(
   RegisterWebUIControllerInterfaceBinder<
       ash::guest_os_installer::mojom::PageHandlerFactory,
       ash::GuestOSInstallerUI>(map);
+
+  RegisterWebUIControllerInterfaceBinder<
+      ash::borealis_installer::mojom::PageHandlerFactory,
+      ash::BorealisInstallerUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
       ash::crostini_installer::mojom::PageHandlerFactory,
