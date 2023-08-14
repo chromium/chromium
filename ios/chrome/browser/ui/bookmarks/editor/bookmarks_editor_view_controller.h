@@ -12,7 +12,6 @@
 #import "ios/chrome/browser/ui/keyboard/key_command_actions.h"
 
 @protocol BookmarksEditorMutator;
-class Browser;
 // View controller for editing bookmarks. Allows editing of the title, URL and
 // the parent folder of the bookmark.
 //
