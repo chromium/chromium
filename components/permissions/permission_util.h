@@ -45,7 +45,8 @@ enum class PermissionAction {
 
 enum PermissionPromptViewID {
   VIEW_ID_PERMISSION_PROMPT_NONE = 0,
-  VIEW_ID_PERMISSION_PROMPT_DESCRIPTION_WITH_LINK,
+  VIEW_ID_PERMISSION_PROMPT_EXTRA_TEXT,
+  VIEW_ID_PERMISSION_PROMPT_LINK,
 };
 
 // A utility class for permissions.

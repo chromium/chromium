@@ -156,17 +156,29 @@ TEST_F(PermissionPromptBubbleTwoOriginsViewTest,
                                   {permissions::RequestType::kStorageAccess});
   auto bubble = CreateBubble(&delegate);
 
-  auto* label_with_link = static_cast<views::StyledLabel*>(
+  auto* label_description = static_cast<views::Label*>(
       bubble->GetViewByID(permissions::PermissionPromptViewID::
-                              VIEW_ID_PERMISSION_PROMPT_DESCRIPTION_WITH_LINK));
-  EXPECT_TRUE(label_with_link);
+                              VIEW_ID_PERMISSION_PROMPT_EXTRA_TEXT));
+  EXPECT_TRUE(label_description);
 
-  const auto description = base::UTF16ToUTF8(label_with_link->GetText());
+  const auto description = base::UTF16ToUTF8(label_description->GetText());
   EXPECT_PRED_FORMAT2(::testing::IsSubstring, "test.requesting.origin",
                       description);
   EXPECT_PRED_FORMAT2(::testing::IsSubstring, "test.embedding.origin",
                       description);
-  EXPECT_PRED_FORMAT2(::testing::IsSubstring, "embedded content", description);
+}
+
+TEST_F(PermissionPromptBubbleTwoOriginsViewTest, LinkIsPresent) {
+  TestDelegateTwoOrigins delegate(GURL("https://test.requesting.origin"),
+                                  GURL("https://test.embedding.origin"),
+                                  {permissions::RequestType::kStorageAccess});
+  auto bubble = CreateBubble(&delegate);
+
+  auto* label_with_link = static_cast<views::StyledLabel*>(bubble->GetViewByID(
+      permissions::PermissionPromptViewID::VIEW_ID_PERMISSION_PROMPT_LINK));
+  EXPECT_TRUE(label_with_link);
+  const auto link = base::UTF16ToUTF8(label_with_link->GetText());
+  EXPECT_PRED_FORMAT2(::testing::IsSubstring, "Learn more", link);
 }
 
 // TODO(b/276716358): Add behavior tests to ensure the prompt works and updates

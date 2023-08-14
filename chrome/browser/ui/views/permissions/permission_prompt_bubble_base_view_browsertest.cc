@@ -434,8 +434,7 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_TRUE(prompt);
   auto* label_with_link =
       static_cast<views::StyledLabel*>(prompt->GetRootView()->GetViewByID(
-          permissions::PermissionPromptViewID::
-              VIEW_ID_PERMISSION_PROMPT_DESCRIPTION_WITH_LINK));
+          permissions::PermissionPromptViewID::VIEW_ID_PERMISSION_PROMPT_LINK));
   EXPECT_TRUE(label_with_link);
 
   // Click on the help center link and check that it opens on a new tab.

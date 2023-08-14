@@ -113,6 +113,8 @@ PermissionPromptBubbleBaseView::PermissionPromptBubbleBaseView(
         AddChildView(std::make_unique<views::Label>(extra_text.value()));
     extra_text_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     extra_text_label->SetMultiLine(true);
+    extra_text_label->SetID(permissions::PermissionPromptViewID::
+                                VIEW_ID_PERMISSION_PROMPT_EXTRA_TEXT);
   }
   if (is_one_time_permission_) {
     SetButtons(ui::DIALOG_BUTTON_NONE);

@@ -21,7 +21,8 @@
 // | --------------------------------------------- |
 // | Prompt title mentioning the requesting origin |
 // | --------------------------------------------- |
-// | Optional description with an optional link    |
+// | Optional description                          |
+// | Optional link                                 |
 // | --------------------------------------------- |
 // |                           [ Block ] [ Allow ] |
 // -------------------------------------------------
@@ -53,22 +54,21 @@ class PermissionPromptBubbleTwoOriginsView
   void OnRequestingOriginFaviconLoaded(
       const favicon_base::FaviconRawBitmapResult& favicon_result);
 
-  void MaybeAddDescription();
+  void MaybeAddLink();
 
   /**
-   * Returns a string for the description associated with the request in
-   * |delegate|. The description can have a link which is stylized via
-   * |link_range| and |link_style|.
+   * Returns a string for the link associated with the request in
+   * |delegate|. The link is stylized via |link_range| and |link_style|.
    */
-  absl::optional<std::u16string> GetDescription(
+  absl::optional<std::u16string> GetLink(
       gfx::Range& link_range,
       views::StyledLabel::RangeStyleInfo& link_style);
 
   /**
-   * Returns a string for the description for a |RequestType::kStorageAccess|.
-   * The link in the description is stylized via |link_range| and |link_style|.
+   * Returns a string for the link for a |RequestType::kStorageAccess|.
+   * The link is stylized via |link_range| and |link_style|.
    */
-  std::u16string GetDescriptionStorageAccess(
+  std::u16string GetLinkStorageAccess(
       gfx::Range& link_range,
       views::StyledLabel::RangeStyleInfo& link_style);
   void HelpCenterLinkClicked(const ui::Event& event);
