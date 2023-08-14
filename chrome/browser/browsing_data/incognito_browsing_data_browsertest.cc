@@ -69,7 +69,7 @@ class IncognitoBrowsingDataBrowserTest
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
     enabled_features.push_back(media::kExternalClearKeyForTesting);
 #endif
-    InitFeatureList(std::move(enabled_features));
+    InitFeatureLists(std::move(enabled_features), {});
   }
 
   void SetUpOnMainThread() override {

@@ -138,8 +138,9 @@ TEST(ChromeBrowsingDataLifetimeManager, ScheduledRemoval) {
 
 TEST(ChromeBrowsingDataLifetimeManager, ScheduledRemovalWithSync) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      browsing_data::features::kEnableBrowsingDataLifetimeManager);
+  feature_list.InitWithFeatures(
+      {browsing_data::features::kEnableBrowsingDataLifetimeManager},
+      {browsing_data::features::kDataRetentionPoliciesDisableSyncTypesNeeded});
   content::BrowserTaskEnvironment browser_task_environment{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   TestingProfile::Builder builder;

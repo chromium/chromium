@@ -141,9 +141,10 @@ BrowsingDataRemoverBrowserTestBase::BrowsingDataRemoverBrowserTestBase() =
 BrowsingDataRemoverBrowserTestBase::~BrowsingDataRemoverBrowserTestBase() =
     default;
 
-void BrowsingDataRemoverBrowserTestBase::InitFeatureList(
-    std::vector<base::test::FeatureRef> enabled_features) {
-  feature_list_.InitWithFeatures(enabled_features, {});
+void BrowsingDataRemoverBrowserTestBase::InitFeatureLists(
+    std::vector<base::test::FeatureRef> enabled_features,
+    std::vector<base::test::FeatureRef> disabled_features) {
+  feature_list_.InitWithFeatures(enabled_features, disabled_features);
 }
 
 #if !BUILDFLAG(IS_ANDROID)

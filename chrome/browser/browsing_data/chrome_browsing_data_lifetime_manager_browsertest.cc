@@ -103,8 +103,12 @@ class ChromeBrowsingDataLifetimeManagerTest
     if (GetParam().feature_enabled) {
       features.push_back(browsing_data::features::
                              kDataRetentionPoliciesDisableSyncTypesNeeded);
+      InitFeatureLists(std::move(features), {});
+    } else {
+      InitFeatureLists(std::move(features),
+                       {browsing_data::features::
+                            kDataRetentionPoliciesDisableSyncTypesNeeded});
     }
-    InitFeatureList(std::move(features));
   }
 
   ~ChromeBrowsingDataLifetimeManagerTest() override = default;
