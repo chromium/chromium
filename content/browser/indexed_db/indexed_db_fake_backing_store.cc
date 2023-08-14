@@ -304,9 +304,7 @@ Status IndexedDBFakeBackingStore::FakeTransaction::CommitPhaseTwo() {
 uint64_t IndexedDBFakeBackingStore::FakeTransaction::GetTransactionSize() {
   return 0;
 }
-Status IndexedDBFakeBackingStore::FakeTransaction::Rollback() {
-  return Status::OK();
-}
+void IndexedDBFakeBackingStore::FakeTransaction::Rollback() {}
 
 std::unique_ptr<IndexedDBBackingStore::Transaction>
 IndexedDBFakeBackingStore::CreateTransaction(

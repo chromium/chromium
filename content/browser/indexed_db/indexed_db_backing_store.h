@@ -151,7 +151,7 @@ class CONTENT_EXPORT IndexedDBBackingStore {
 
     // When LevelDBScopes is in single-sequence mode then this will return the
     // result of the rollback. Otherwise leveldb::Status::OK() is returned.
-    virtual leveldb::Status Rollback();
+    virtual void Rollback();
 
     void Reset();
     leveldb::Status PutExternalObjectsIfNeeded(

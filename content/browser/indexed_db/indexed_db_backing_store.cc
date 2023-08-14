@@ -4463,7 +4463,7 @@ void IndexedDBBackingStore::Transaction::Reset() {
   transaction_ = nullptr;
 }
 
-leveldb::Status IndexedDBBackingStore::Transaction::Rollback() {
+void IndexedDBBackingStore::Transaction::Rollback() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(backing_store_);
   TRACE_EVENT0("IndexedDB", "IndexedDBBackingStore::Transaction::Rollback");
@@ -4475,13 +4475,13 @@ leveldb::Status IndexedDBBackingStore::Transaction::Rollback() {
 
   write_state_.reset();
 
-  if (!transaction_)
-    return leveldb::Status::OK();
-  // The RollbackAndMaybeTearDown method could tear down the
-  // IndexedDBBucketState, which would destroy `this`.
-  scoped_refptr<TransactionalLevelDBTransaction> transaction =
-      std::move(transaction_);
-  return transaction->Rollback();
+  if (transaction_) {
+    // The RollbackAndMaybeTearDown method could tear down the
+    // IndexedDBBucketState, which would destroy `this`.
+    scoped_refptr<TransactionalLevelDBTransaction> transaction =
+        std::move(transaction_);
+    transaction->Rollback();
+  }
 }
 
 uint64_t IndexedDBBackingStore::Transaction::GetTransactionSize() {

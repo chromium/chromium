@@ -37,15 +37,6 @@ class LevelDBScopes {
   using TearDownCallback = base::RepeatingCallback<void(leveldb::Status)>;
   using EmptyRange = std::pair<std::string, std::string>;
 
-  enum class TaskRunnerMode {
-    // No new sequence runners are created. Both the cleanup and the revert
-    // tasks are run using the sequence runner that is calling this class.
-    kUseCurrentSequence,
-    // A new sequence runner is created for both the cleanup tasks and the
-    // revert tasks.
-    kNewCleanupAndRevertSequences,
-  };
-
   // |lock_manager| is expected to be alive during the lifetime of this class.
   // |tear_down_callback| will not be called after the destruction of this
   // class.
@@ -65,12 +56,8 @@ class LevelDBScopes {
   // the revert tasks if necessary.
   leveldb::Status Initialize();
 
-  // This starts (or adopts) the task runners associated with aborting and
-  // cleaning up previous logs based on the given |mode|, and schedules any
-  // pending cleanup or revert tasks.
-  // Returns any errors that might occur during revert if |mode| is
-  // kUseCurrentSequence.
-  leveldb::Status StartRecoveryAndCleanupTasks(TaskRunnerMode mode);
+  // Schedules any pending cleanup or revert tasks.
+  void StartRecoveryAndCleanupTasks();
 
   // In |empty_ranges|, |pair.first| is the inclusive range begin, and
   // |pair.end| is the exclusive range end. The ranges must be disjoint (they
@@ -117,10 +104,7 @@ class LevelDBScopes {
       const leveldb::ReadOptions& read_options,
       const leveldb::WriteOptions& write_options);
 
-  // If the mode is TaskRunnerMode::kUseCurrentSequence, then the result of the
-  // revert task is returned.
-  leveldb::Status Rollback(int64_t scope_id,
-                           std::vector<PartitionedLock> locks);
+  void Rollback(int64_t scope_id, std::vector<PartitionedLock> locks);
 
   void OnCleanupTaskResult(base::OnceClosure on_complete,
                            leveldb::Status result);

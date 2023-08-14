@@ -726,19 +726,7 @@ IndexedDBFactory::GetOrOpenBucketFactory(
               data_loss_info, /*was_cold_open=*/true};
     }
   }
-  DCHECK(backing_store);
-  // Scopes must be single sequence to keep methods like ForceClose synchronous.
-  // See https://crbug.com/980685
-  s = backing_store->db()->scopes()->StartRecoveryAndCleanupTasks(
-      LevelDBScopes::TaskRunnerMode::kNewCleanupAndRevertSequences);
-
-  if (UNLIKELY(!s.ok())) {
-    ReportOpenStatus(indexed_db::INDEXED_DB_BACKING_STORE_OPEN_NO_RECOVERY,
-                     bucket_locator);
-
-    return {IndexedDBBucketStateHandle(), s, CreateDefaultError(),
-            data_loss_info, /*was_cold_open=*/true};
-  }
+  backing_store->db()->scopes()->StartRecoveryAndCleanupTasks();
 
   if (!is_incognito_and_in_memory) {
     ReportOpenStatus(indexed_db::INDEXED_DB_BACKING_STORE_OPEN_SUCCESS,

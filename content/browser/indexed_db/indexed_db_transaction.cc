@@ -205,9 +205,7 @@ leveldb::Status IndexedDBTransaction::Abort(
   state_ = FINISHED;
 
   if (backing_store_transaction_begun_) {
-    leveldb::Status status = transaction_->Rollback();
-    if (!status.ok())
-      return status;
+    transaction_->Rollback();
   }
 
   // Run the abort tasks, if any.
