@@ -1447,7 +1447,8 @@ void PrintViewManagerBase::ContentAnalysisBeforePrintingDocument(
 }
 
 void PrintViewManagerBase::set_analyzing_content(bool analyzing) {
-  DVLOG(1) << (analyzing ? "Starting" : "Completed") << " content analysis";
+  PRINTER_LOG(EVENT) << (analyzing ? "Starting" : "Completed")
+                     << " content analysis";
   analyzing_content_ = analyzing;
 }
 
