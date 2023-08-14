@@ -32,6 +32,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "chromeos/ui/wm/features.h"
+#include "components/app_restore/full_restore_utils.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window_tracker.h"
 #include "ui/compositor/layer.h"
@@ -925,6 +926,23 @@ void Desk::RestackAllDeskWindows() {
 
     for (auto& adw : adw_data) {
       DCHECK(adw.window);
+
+      if (adw.window->parent() != container) {
+        // TODO(b/295371112): Clean this up when the root cause has been
+        // resolved. When this function is called, `this` is going to be the
+        // active desk and it is expected that all all-desk windows have been
+        // moved to this desk. If this branch is taken, we have an ADW that is
+        // *not* on the current desk and we must not try to stack it.
+        SCOPED_CRASH_KEY_NUMBER(
+            "Restack", "adw_app_type",
+            adw.window->GetProperty(aura::client::kAppType));
+        SCOPED_CRASH_KEY_STRING32("Restack", "adw_app_id",
+                                  full_restore::GetAppId(adw.window));
+
+        base::debug::DumpWithoutCrashing();
+        continue;
+      }
+
       if (adw.order == 0) {
         container->StackChildAtTop(adw.window);
       } else if (aura::Window* stack_below =

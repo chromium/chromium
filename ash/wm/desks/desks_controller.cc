@@ -989,13 +989,34 @@ void DesksController::AddVisibleOnAllDesksWindow(aura::Window* window) {
   if (!visible_on_all_desks_windows_.emplace(window).second)
     return;
 
+  // A window is made visible on all desks by always keeping it on the active
+  // desk. If `window` isn't already on the active desk, then we need to move it
+  // there. We will also skip the bounce animation.
+  bool do_window_bound_animation = true;
+  if (const Desk* window_desk = desks_util::GetDeskForContext(window);
+      window_desk != active_desk_) {
+    do_window_bound_animation = false;
+
+    // TODO(b/295371112): It is unexpected that we get here. Dump a call stack
+    // to help figure out why it happens.
+    base::debug::DumpWithoutCrashing();
+
+    CHECK(window_desk);
+    const_cast<Desk*>(window_desk)
+        ->MoveWindowToDesk(window, active_desk_, window->GetRootWindow(),
+                           /*unminimize=*/false);
+  }
+
   if (features::IsPerDeskZOrderEnabled()) {
     for (auto& desk : desks_) {
       desk->TrackAllDeskWindow(window);
     }
   }
 
-  wm::AnimateWindow(window, wm::WINDOW_ANIMATION_TYPE_BOUNCE);
+  if (do_window_bound_animation) {
+    wm::AnimateWindow(window, wm::WINDOW_ANIMATION_TYPE_BOUNCE);
+  }
+
   NotifyAllDesksForContentChanged();
   Shell::Get()
       ->accessibility_controller()
@@ -2229,12 +2250,10 @@ void DesksController::RestackVisibleOnAllDesksWindowsOnActiveDesk() {
         visible_on_all_desks_window->GetRootWindow()->GetChildById(
             active_desk_->container_id());
     if (desk_container != visible_on_all_desks_window->parent()) {
-      // TODO(b/252556509): Clean this up when the root cause has been resolved.
+      // TODO(b/295371112): Clean this up when the root cause has been resolved.
       // This can sometimes happen and we're still trying to nail down the root
       // cause. Rather than proceeding to stack the window (which will crash),
       // we'll log some info and skip the window.
-      SCOPED_CRASH_KEY_NUMBER("Restack", "adw_type",
-                              visible_on_all_desks_window->GetType());
       SCOPED_CRASH_KEY_NUMBER(
           "Restack", "adw_app_type",
           visible_on_all_desks_window->GetProperty(aura::client::kAppType));

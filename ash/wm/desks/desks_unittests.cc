@@ -4843,16 +4843,16 @@ TEST_F(DesksPerDeskZOrderTest, MultiDisplayMultipleAdwWithMoving) {
        .expected_desk_1_final_active_window = 1},
       {.test_name = "Multiple displays moving windows 3",
        .multi_display = true,
-       .desk_1_windows = {{1}, {2, 3}},
-       .desk_2_windows = {{}, {4}},
+       .desk_1_windows = {{1}, {2, 3, 4}},
+       .desk_2_windows = {{}, {}},
        .adw_windows = {1, 4},
        .activate_windows = {1, 2, 3},
-       .expected_desk_1_windows_before = {{1}, {2, 3, 4}},
+       .expected_desk_1_windows_before = {{1}, {4, 2, 3}},
        .expected_desk_2_windows_before = {{1}, {4}},
        .move_windows = {},
        .move_windows_to_other_display = {1},
        .close_windows = {},
-       .expected_desk_1_windows_after = {{}, {2, 3, 4, 1}},
+       .expected_desk_1_windows_after = {{}, {4, 2, 3, 1}},
        .expected_desk_2_windows_after = {{}, {1, 4}},
        .expected_desk_1_final_active_window = 1},
   });
@@ -6860,6 +6860,31 @@ TEST_P(DesksTest, VisibleOnAllDesksWindowDestruction) {
   window.reset();
   EXPECT_EQ(0u, controller->visible_on_all_desks_windows().size());
   EXPECT_EQ(0u, desk_1->GetDeskContainerForRoot(root)->children().size());
+}
+
+// Tests that when a window that isn't on the currently active desk is made
+// visible on all desks, it is also moved to the active desk.
+TEST_P(DesksTest, VisibleOnAllDesksInactiveDesk) {
+  auto* controller = DesksController::Get();
+  auto window = CreateAppWindow(gfx::Rect(0, 0, 100, 100));
+  auto* widget = views::Widget::GetWidgetForNativeWindow(window.get());
+
+  NewDesk();
+  auto* desk1 = controller->GetDeskAtIndex(0);
+  auto* desk2 = controller->GetDeskAtIndex(1);
+
+  ActivateDesk(desk2);
+  ASSERT_FALSE(desk1->is_active());
+  ASSERT_TRUE(desk2->is_active());
+
+  // The test `window` should exist on the first desk.
+  ASSERT_THAT(desk1->windows(), ElementsAre(window.get()));
+  ASSERT_THAT(desk2->windows(), ElementsAre());
+
+  // Assign `window` to all desks, this should move it to the active desk.
+  widget->SetVisibleOnAllWorkspaces(true);
+  EXPECT_THAT(desk1->windows(), ElementsAre());
+  EXPECT_THAT(desk2->windows(), ElementsAre(window.get()));
 }
 
 // Tests that the desk bar exit animation would not cause any crash or UAF.
