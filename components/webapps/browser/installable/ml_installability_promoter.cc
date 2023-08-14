@@ -110,6 +110,12 @@ void MLInstallabilityPromoter::StartPipeline(const GURL& validated_url) {
     return;
   }
 
+  // Do not run the pipeline again if there is an operation tracker
+  // already alive and already has an ML data reporter connected to it.
+  if (current_install_ && current_install_->MLReporterAlreadyConnected()) {
+    return;
+  }
+
   app_banner_manager_ = app_banner_manager->GetWeakPtr();
   site_url_ = validated_url;
 

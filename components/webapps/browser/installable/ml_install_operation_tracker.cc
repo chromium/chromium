@@ -31,6 +31,10 @@ void MlInstallOperationTracker::ReportResult(MlInstallUserResponse response) {
   }
 }
 
+bool MlInstallOperationTracker::MLReporterAlreadyConnected() {
+  return reporter_ != nullptr;
+}
+
 base::WeakPtr<MlInstallOperationTracker>
 MlInstallOperationTracker::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();

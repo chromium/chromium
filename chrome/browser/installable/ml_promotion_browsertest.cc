@@ -683,6 +683,33 @@ IN_PROC_BROWSER_TEST_F(MLPromotionBrowserTest, MLInstallEmptyPageNoIcons) {
   web_app::NavigateToURLAndWait(browser(), GURL(url::kAboutBlankURL));
 }
 
+// Test for crbug.com/1472629, where an already open dialog would cause
+// the CHECK in MLInstallOperationTracker::OnMlResultForInstallation
+// to fail, since the operation tracker would outlive the results of the
+// pipeline.
+IN_PROC_BROWSER_TEST_F(MLPromotionBrowserTest,
+                       MLPipelineNoCrashForExistingTracker) {
+  NavigateAndAwaitMetricsCollectionPending(GetInstallableAppURL());
+
+  ExpectClasificationCallReturnResult(
+      /*site_url=*/GetInstallableAppURL(),
+      /*manifest_id=*/GetInstallableAppURL(),
+      MLInstallabilityPromoter::kShowInstallPromptLabel, TrainingRequestId(1ll),
+      web_contents());
+
+  views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
+                                       "WebAppConfirmationView");
+  chrome::ExecuteCommand(browser(), IDC_CREATE_SHORTCUT);
+  views::Widget* widget = waiter.WaitIfNeededAndGet();
+  EXPECT_TRUE(widget != nullptr);
+
+  task_runner_->RunPendingTasks();
+
+  // Refreshing the page should exit the pipeline early, and should not crash.
+  web_app::NavigateToURLAndWait(browser(), GetInstallableAppURL());
+  task_runner_->RunPendingTasks();
+}
+
 // TODO(b/285361272): Add tests for cache storage sizes.
 
 // TODO(b/287255120) : Implement ways of measuring ML outputs on Android.
