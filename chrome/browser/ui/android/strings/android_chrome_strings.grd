@@ -748,7 +748,7 @@ CHAR_LIMIT guidelines:
         We’re changing how passwords are saved on this device
       </message>
       <message name="IDS_PASSWORD_MIGRATION_WARNING_SUBTITLE" desc="The subtitle of the password migration warning sheet." formatter_data="android_java">
-        Your lists of saved passwords for Chrome and <ph name="CHROME_CHANNEL">%1$s<ex>Chrome Dev</ex></ph> will merge after version 121. You’ll be able to autofill all your saved passwords on both apps.
+        Right now, passwords saved on this device cannot be used across Chrome channels. After Chrome 121, passwords saved on your device for Chrome and <ph name="CHROME_CHANNEL">%1$s<ex>Chrome Dev</ex></ph> will be merged and can be used in both apps.
       </message>
       <message name="IDS_PASSWORD_MIGRATION_WARNING_ACKNOWLEDGE" desc="The text on the button that acknowledges the password migration warning.">
         Got it
