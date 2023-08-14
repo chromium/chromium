@@ -81,13 +81,6 @@ public final class AutofillProfileBridge {
         return adminAreas;
     }
 
-    /** @return The list of fields which do not depend on the selected country. */
-    public static List<Integer> getStaticEditorFields() {
-        List<Integer> dynamicFields = new ArrayList<>();
-        AutofillProfileBridgeJni.get().getStaticEditorFields(dynamicFields);
-        return dynamicFields;
-    }
-
     /** @return The list of required fields. COUNTRY is always included. RECIPIENT often omitted. */
     public static List<Integer> getRequiredAddressFields(String countryCode) {
         List<Integer> requiredFields = new ArrayList<>();
@@ -190,7 +183,6 @@ public final class AutofillProfileBridge {
     public interface Natives {
         String getDefaultCountryCode();
         void getSupportedCountries(List<String> countryCodes, List<String> countryNames);
-        void getStaticEditorFields(List<Integer> dynamicFields);
         void getRequiredFields(String countryCode, List<Integer> requiredFields);
         String getAddressUiComponents(String countryCode, String languageCode,
                 @AddressValidationType int validationType, List<Integer> componentIds,

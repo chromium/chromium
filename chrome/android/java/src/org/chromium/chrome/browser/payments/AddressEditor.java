@@ -339,10 +339,6 @@ public class AddressEditor
 
     /** Saves the edited profile on disk. */
     private void commitChanges(AutofillProfile profile) {
-        // Clear field values that change among countries so that invisible fields
-        // do not get forwarded to the backend.
-        profile.removeAllDataExceptGivenFields(
-                new HashSet<>(AutofillProfileBridge.getStaticEditorFields()));
         // Country code and phone number are always required and are always collected from the
         // editor model.
         profile.setInfo(ServerFieldType.ADDRESS_HOME_COUNTRY, mCountryField.get(VALUE));

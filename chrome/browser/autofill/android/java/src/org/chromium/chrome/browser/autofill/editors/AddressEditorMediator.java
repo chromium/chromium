@@ -66,7 +66,6 @@ import org.chromium.ui.modelutil.ListModel;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -382,10 +381,6 @@ class AddressEditorMediator {
                 && PersonalDataManager.getInstance().isCountryEligibleForAccountStorage(country)) {
             profile.setSource(Source.ACCOUNT);
         }
-        // Clear field values that change among countries so that invisible fields
-        // do not get forwarded to the backend.
-        profile.removeAllDataExceptGivenFields(
-                new HashSet<>(AutofillProfileBridge.getStaticEditorFields()));
         // Country code and phone number are always required and are always collected from the
         // editor model.
         profile.setInfo(ServerFieldType.ADDRESS_HOME_COUNTRY, country);

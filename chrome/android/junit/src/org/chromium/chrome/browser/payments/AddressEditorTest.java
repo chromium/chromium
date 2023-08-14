@@ -169,15 +169,6 @@ public class AddressEditorTest {
         })
                 .when(mAutofillProfileBridgeJni)
                 .getRequiredFields(anyString(), anyList());
-        doAnswer(invocation -> {
-            List<Integer> fields = (List<Integer>) invocation.getArguments()[0];
-            fields.addAll(
-                    List.of(ServerFieldType.EMAIL_ADDRESS, ServerFieldType.PHONE_HOME_WHOLE_NUMBER,
-                            ServerFieldType.NAME_HONORIFIC_PREFIX));
-            return null;
-        })
-                .when(mAutofillProfileBridgeJni)
-                .getStaticEditorFields(anyList());
         mJniMocker.mock(PhoneNumberUtilJni.TEST_HOOKS, mPhoneNumberUtilJni);
         when(mPhoneNumberUtilJni.isPossibleNumber(anyString(), anyString())).thenReturn(true);
 
@@ -572,7 +563,7 @@ public class AddressEditorTest {
 
     @Test
     @SmallTest
-    public void edit_AlterAddressProfile_CommitChanges_InvisibleFieldsGetReset() {
+    public void edit_AlterAddressProfile_CommitChanges_InvisibleFieldsNotReset() {
         // Make all fields optional to avoid setting them manually.
         doNothing().when(mAutofillProfileBridgeJni).getRequiredFields(anyString(), anyList());
         // Whitelist only full name, admin area and locality.
@@ -606,10 +597,10 @@ public class AddressEditorTest {
         AutofillAddress address = mAddressCapture.getValue();
         assertNotNull(address);
         AutofillProfile profile = address.getProfile();
-        assertEquals(profile.getStreetAddress(), "");
+        assertEquals(profile.getStreetAddress(), "111 First St");
         assertEquals(profile.getDependentLocality(), "");
-        assertEquals(profile.getCompanyName(), "");
-        assertEquals(profile.getPostalCode(), "");
+        assertEquals(profile.getCompanyName(), "Google");
+        assertEquals(profile.getPostalCode(), "90291");
         assertEquals(profile.getSortingCode(), "");
     }
 }

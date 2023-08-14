@@ -70,20 +70,6 @@ static void JNI_AutofillProfileBridge_GetSupportedCountries(
       env, ToJavaArrayOfStrings(env, known_country_names), j_country_name_list);
 }
 
-static void JNI_AutofillProfileBridge_GetStaticEditorFields(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& j_dynamic_fields_list) {
-  // Values are sorted according to their numeric value.
-  base::span<const ServerFieldType> fields = i18n::GetStaticEditorFields();
-  std::vector<int> intFields(fields.size());
-  base::ranges::transform(fields, intFields.begin(), [](ServerFieldType field) {
-    return static_cast<int>(field);
-  });
-
-  Java_AutofillProfileBridge_intArrayToList(env, ToJavaIntArray(env, intFields),
-                                            j_dynamic_fields_list);
-}
-
 static void JNI_AutofillProfileBridge_GetRequiredFields(
     JNIEnv* env,
     const JavaParamRef<jstring>& j_country_code,

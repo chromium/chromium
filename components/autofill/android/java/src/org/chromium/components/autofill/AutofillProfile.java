@@ -12,7 +12,6 @@ import org.chromium.base.annotations.JNINamespace;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Autofill address information.
@@ -314,10 +313,6 @@ public class AutofillProfile {
 
     public String getLabel() {
         return mLabel;
-    }
-
-    public void removeAllDataExceptGivenFields(Set<Integer> allowedFields) {
-        mFields.keySet().removeIf(key -> !allowedFields.contains(key));
     }
 
     @CalledByNative
