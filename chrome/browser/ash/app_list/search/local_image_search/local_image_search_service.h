@@ -29,6 +29,7 @@ class LocalImageSearchService : public KeyedService {
 
   // Asynchronous call to the backend storage.
   void Search(const std::u16string& query,
+              size_t max_num_results,
               base::OnceCallback<void(const std::vector<FileSearchResult>&)>
                   callback) const;
 

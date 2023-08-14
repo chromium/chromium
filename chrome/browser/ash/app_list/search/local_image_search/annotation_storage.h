@@ -11,10 +11,6 @@
 #include <string>
 
 #include "base/files/file_path.h"
-#include "base/functional/callback.h"
-#include "base/memory/ref_counted.h"
-#include "base/memory/scoped_refptr.h"
-#include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 
@@ -60,7 +56,7 @@ struct FileSearchResult {
 
   ~FileSearchResult();
   FileSearchResult(const FileSearchResult&);
-  FileSearchResult& operator=(const FileSearchResult&) = delete;
+  FileSearchResult& operator=(const FileSearchResult&);
 };
 
 // A persistent storage to efficiently store, retrieve and search annotations.
@@ -84,22 +80,25 @@ class AnnotationStorage {
   // Removes an image from the storage. It does nothing if the file does not
   void Remove(const base::FilePath& image_path);
 
-  // TODO(b/260646344): Remove after implementing a more efficient search.
   // Returns all the stored annotations.
   std::vector<ImageInfo> GetAllAnnotations();
 
   // Searches the database for a desired `image_path`.
   std::vector<ImageInfo> FindImagePath(const base::FilePath& image_path);
 
-  // Regex search for annotations using FuzzyTokenizedStringMatch to obtain
-  // relevance for the `query`.
-  std::vector<FileSearchResult> PrefixSearch(const std::u16string& query);
+  // Search for a multi-term query. The results are sorted by `relevance`.
+  std::vector<FileSearchResult> Search(const std::u16string& query,
+                                       size_t max_num_results);
 
  private:
   AnnotationStorage(const base::FilePath& path_to_db,
                     const std::string& histogram_tag,
                     int current_version_number,
                     std::unique_ptr<ImageAnnotationWorker> annotation_worker);
+
+  // Regex search for annotations using FuzzyTokenizedStringMatch to obtain
+  // relevance for the `query_term`. The results are sorted by `file_path`.
+  std::vector<FileSearchResult> PrefixSearch(const std::u16string& query_term);
 
   std::unique_ptr<ImageAnnotationWorker> annotation_worker_;
   std::unique_ptr<SqlDatabase> sql_database_;

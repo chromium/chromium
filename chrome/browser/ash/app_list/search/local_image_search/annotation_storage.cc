@@ -4,18 +4,24 @@
 
 #include "chrome/browser/ash/app_list/search/local_image_search/annotation_storage.h"
 
+#include <algorithm>
+
 #include "base/logging.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/sequenced_task_runner.h"
-#include "base/task/thread_pool.h"
 #include "chrome/browser/ash/app_list/search/local_image_search/image_annotation_worker.h"
+#include "chrome/browser/ash/app_list/search/local_image_search/search_utils.h"
 #include "chrome/browser/ash/app_list/search/local_image_search/sql_database.h"
 #include "chromeos/ash/components/string_matching/fuzzy_tokenized_string_match.h"
 #include "sql/statement.h"
 
 namespace app_list {
 namespace {
+
+using FuzzyTokenizedStringMatch =
+    ::ash::string_matching::FuzzyTokenizedStringMatch;
+using TokenizedString = ::ash::string_matching::TokenizedString;
+using Mode = ::ash::string_matching::TokenizedString::Mode;
 
 constexpr double kRelevanceThreshold = 0.79;
 constexpr int kVersionNumber = 3;
@@ -84,6 +90,31 @@ int MigrateSchema(SqlDatabase* db, int current_version_number) {
   return CreateNewSchema(db);
 }
 
+// Returns sorted `FileSearchResult`s contained in both sorted arrays.
+std::vector<FileSearchResult> FindIntersection(
+    const std::vector<FileSearchResult>& vec1,
+    const std::vector<FileSearchResult>& vec2) {
+  std::vector<FileSearchResult> result;
+
+  auto it1 = vec1.begin();
+  auto it2 = vec2.begin();
+
+  while (it1 != vec1.end() && it2 != vec2.end()) {
+    if (it1->file_path < it2->file_path) {
+      ++it1;
+    } else if (it2->file_path < it1->file_path) {
+      ++it2;
+    } else {
+      result.emplace_back(FileSearchResult(it1->file_path, it1->last_modified,
+                                           it1->relevance + it2->relevance));
+      ++it1;
+      ++it2;
+    }
+  }
+
+  return result;
+}
+
 }  // namespace
 
 ImageInfo::ImageInfo(const std::set<std::string>& annotations,
@@ -107,6 +138,8 @@ FileSearchResult::FileSearchResult(const base::FilePath& file_path,
 
 FileSearchResult::~FileSearchResult() = default;
 FileSearchResult::FileSearchResult(const FileSearchResult&) = default;
+FileSearchResult& FileSearchResult::operator=(const FileSearchResult&) =
+    default;
 
 AnnotationStorage::AnnotationStorage(
     const base::FilePath& path_to_db,
@@ -264,11 +297,9 @@ std::vector<ImageInfo> AnnotationStorage::FindImagePath(
 }
 
 std::vector<FileSearchResult> AnnotationStorage::PrefixSearch(
-    const std::u16string& query) {
+    const std::u16string& query_term) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DVLOG(1) << "Search";
-  using TokenizedString = ash::string_matching::TokenizedString;
-  using Mode = ash::string_matching::TokenizedString::Mode;
+  DVLOG(1) << "PrefixSearch " << query_term;
 
   // LIKE is 10 times faster than the linear search.
   static constexpr char kQuery[] =
@@ -285,17 +316,16 @@ std::vector<FileSearchResult> AnnotationStorage::PrefixSearch(
   if (!statement) {
     return {};
   }
-  statement->BindString(0, base::StrCat({base::UTF16ToUTF8(query), "%"}));
+  statement->BindString(0, base::StrCat({base::UTF16ToUTF8(query_term), "%"}));
 
   std::vector<FileSearchResult> matched_paths;
-  TokenizedString tokenized_query(query, Mode::kWords);
+  TokenizedString tokenized_query(query_term, Mode::kWords);
   while (statement->Step()) {
-    double relevance =
-        ash::string_matching::FuzzyTokenizedStringMatch::TokenSetRatio(
-            tokenized_query,
-            TokenizedString(base::UTF8ToUTF16(statement->ColumnString(0)),
-                            Mode::kWords),
-            /*partial=*/false);
+    double relevance = FuzzyTokenizedStringMatch::TokenSetRatio(
+        tokenized_query,
+        TokenizedString(base::UTF8ToUTF16(statement->ColumnString(0)),
+                        Mode::kWords),
+        /*partial=*/false);
     if (relevance < kRelevanceThreshold) {
       continue;
     }
@@ -312,6 +342,60 @@ std::vector<FileSearchResult> AnnotationStorage::PrefixSearch(
     }
   }
   return matched_paths;
+}
+
+std::vector<FileSearchResult> AnnotationStorage::Search(
+    const std::u16string& query,
+    size_t max_num_results) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (max_num_results < 1) {
+    return {};
+  }
+
+  TokenizedString tokenized_query(query, Mode::kWords);
+  if (tokenized_query.tokens().empty()) {
+    return {};
+  }
+
+  std::vector<FileSearchResult> results;
+  int normalization_constant = tokenized_query.tokens().size();
+  bool fist_result = true;
+  for (const auto& token : tokenized_query.tokens()) {
+    if (IsStopWord(base::UTF16ToUTF8(token))) {
+      normalization_constant -= 1;
+      continue;
+    }
+
+    std::vector<FileSearchResult> next_result = PrefixSearch(token);
+    if (next_result.empty()) {
+      return {};
+    }
+    results =
+        (fist_result) ? next_result : FindIntersection(results, next_result);
+    fist_result = false;
+  }
+
+  if (results.size() <= max_num_results) {
+    std::sort(results.begin(), results.end(),
+              [](const FileSearchResult& a, const FileSearchResult& b) {
+                return a.relevance > b.relevance;
+              });
+  } else {
+    std::partial_sort(results.begin(), results.begin() + max_num_results,
+                      results.end(),
+                      [](const FileSearchResult& a, const FileSearchResult& b) {
+                        return a.relevance > b.relevance;
+                      });
+    results = std::vector<FileSearchResult>(results.begin(),
+                                            results.begin() + max_num_results);
+  }
+
+  // Normalize to [0, 1].
+  for (auto& result : results) {
+    result.relevance = result.relevance / normalization_constant;
+  }
+
+  return results;
 }
 
 }  // namespace app_list

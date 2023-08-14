@@ -17,6 +17,7 @@ namespace app_list {
 namespace {
 
 constexpr char kFileSearchSchema[] = "file_search://";
+constexpr size_t kMaxNumResults = 3;
 
 }  // namespace
 
@@ -43,8 +44,9 @@ void LocalImageSearchProvider::Start(const std::u16string& query) {
   last_query_ = query;
 
   LocalImageSearchServiceFactory::GetForBrowserContext(profile_)->Search(
-      query, base::BindOnce(&LocalImageSearchProvider::OnSearchComplete,
-                            weak_factory_.GetWeakPtr()));
+      query, kMaxNumResults,
+      base::BindOnce(&LocalImageSearchProvider::OnSearchComplete,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void LocalImageSearchProvider::StopQuery() {
