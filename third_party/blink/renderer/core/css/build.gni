@@ -558,6 +558,8 @@ blink_core_sources_css = [
   "properties/computed_style_utils.cc",
   "properties/computed_style_utils.h",
   "properties/css_bitset.h",
+  "properties/css_color_function_parser.h",
+  "properties/css_color_function_parser.cc",
   "properties/css_direction_aware_resolver.cc",
   "properties/css_direction_aware_resolver.h",
   "properties/css_exposure.h",
