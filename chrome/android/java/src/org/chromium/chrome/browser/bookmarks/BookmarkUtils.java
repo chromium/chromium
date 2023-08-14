@@ -769,6 +769,36 @@ public class BookmarkUtils {
     }
 
     /**
+     * Moves the given {@link BookmarkId}s to the new parent if the parent is valid. Type swapping
+     * between regular bookmarks and Reading List items as necessary. This method assumes that the
+     * bookmark ids that are passed in are valid bookmarks that are moveable. If the newParent
+     * argument doesn't point to a valid location for all of the {@link bookmarksToMove}, then the
+     * operation is abandoned and nothing is moved.
+     * @param bookmarkModel The underlying BookmarkModel, used to move the bookmarks.
+     * @param bookmarksToMove The {@link BookmarkId}s to move.
+     * @param newParent The {@link BookmarkId} to be the new parent.
+     */
+    public static void moveBookmarksToParent(
+            BookmarkModel bookmarkModel, List<BookmarkId> bookmarksToMove, BookmarkId newParent) {
+        List<BookmarkId> bookmarksToMoveCopy = new ArrayList<>(bookmarksToMove);
+        // Check if each bookmark is moveable to the given parent.
+        for (BookmarkId id : bookmarksToMoveCopy) {
+            BookmarkItem item = bookmarkModel.getBookmarkById(id);
+            boolean canAddCurrentBookmarkToViewedParent = item.isFolder()
+                    ? canAddFolderToParent(bookmarkModel, newParent)
+                    : canAddBookmarkToParent(bookmarkModel, newParent);
+            if (!canAddCurrentBookmarkToViewedParent) return;
+        }
+
+        List<BookmarkId> typeSwappedReadingListItems = new ArrayList<>();
+        ReadingListUtils.typeSwapBookmarksIfNecessary(
+                bookmarkModel, bookmarksToMoveCopy, typeSwappedReadingListItems, newParent);
+        if (bookmarksToMoveCopy.size() > 0) {
+            bookmarkModel.moveBookmarks(bookmarksToMoveCopy, newParent);
+        }
+    }
+
+    /**
      * Given a {@link BookmarkId}, returns the parent bookmark that should be used when going up.
      * All bookmarks will skip over mobile bookmarks and other bookmarks.
      * @param bookmarkModel The {@link BookmarkModel}.

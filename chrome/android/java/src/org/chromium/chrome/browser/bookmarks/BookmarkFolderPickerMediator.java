@@ -19,7 +19,6 @@ import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /** Mediator for the folder picker activity. */
@@ -202,7 +201,8 @@ class BookmarkFolderPickerMediator {
     }
 
     private void onMoveClicked(View v) {
-        mBookmarkModel.moveBookmarks(new ArrayList<>(mBookmarkIds), mCurrentParentItem.getId());
+        BookmarkUtils.moveBookmarksToParent(
+                mBookmarkModel, mBookmarkIds, mCurrentParentItem.getId());
         mFinishRunnable.run();
     }
 }
