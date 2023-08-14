@@ -1000,6 +1000,7 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="6363990818884053551">Pentru a începe sincronizarea, confirmă-ți identitatea</translation>
 <translation id="6364438453358674297">Elimini sugestia din istoric?</translation>
 <translation id="6380100320871303656">Preîncarcă mai frecvent paginile pe care Chrome consideră că le-ai putea accesa. Este posibil ca această setare să ducă la o utilizare crescută a datelor.</translation>
+<translation id="6382848304055775421">Se exportă</translation>
 <translation id="6391355955030242704">Pentru a sincroniza informațiile Chrome și a păstra datele în siguranță în mașină, trebuie să creezi o blocare a profilului în setările de securitate. Vei folosi un cod sau o parolă de fiecare dată când intri în mașină.</translation>
 <translation id="6394791151443660613">Caută: <ph name="SEARCH_QUERY" /></translation>
 <translation id="6395288395575013217">LINK</translation>
@@ -1565,6 +1566,7 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="9169507124922466868">Istoricul de navigare este pe jumătate deschis</translation>
 <translation id="9190276265094487094">Istoricul apare pe toate dispozitivele tale sincronizate. Astfel, poți continua ceea ce făceai.</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{A rulat acum un minut}few{A rulat acum # minute}other{A rulat acum # de minute}}</translation>
+<translation id="9204021776105550328">Se șterge</translation>
 <translation id="9204836675896933765">1 fișier rămas</translation>
 <translation id="9205933215779845960">Pagina nu a fost găsită. Verifică ortografierea sau încearcă o căutare pe <ph name="SEARCH_ENGINE" />.</translation>
 <translation id="9206873250291191720">A</translation>
