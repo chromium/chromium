@@ -826,7 +826,7 @@
   {
     "name": "background-resource-fetch",
     "owners": ["horo"],
-    "expiry_milestone": 115
+    "expiry_milestone": 122
   },
   {
     "name": "biometric-reauth-password-filling",
