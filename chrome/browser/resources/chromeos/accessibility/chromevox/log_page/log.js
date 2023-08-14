@@ -6,7 +6,7 @@
  * @fileoverview ChromeVox log page.
  */
 import {BackgroundBridge} from '../common/background_bridge.js';
-import {BaseLog, LogType, SerializableLog} from '../common/log_types.js';
+import {LogType, SerializableLog} from '../common/log_types.js';
 
 const FILTER_CLASS = 'log-filter';
 const FILTER_CONTAINER_ID = 'logFilters';
