@@ -49,8 +49,8 @@ class AuraOutputManager {
   void SendOutputActivated(wl_resource* output_resource);
 
  private:
-  raw_ptr<wl_client> client_;
-  raw_ptr<wl_resource> manager_resource_;
+  const raw_ptr<wl_client> client_;
+  const raw_ptr<wl_resource> manager_resource_;
 };
 
 }  // namespace exo::wayland

@@ -22,7 +22,7 @@ AuraOutputManager::AuraOutputManager(wl_resource* manager_resource)
 
 // static.
 AuraOutputManager* AuraOutputManager::Get(wl_client* client) {
-  AuraOutputManager* metrics_manager = nullptr;
+  AuraOutputManager* output_manager = nullptr;
   wl_client_for_each_resource(
       client,
       [](wl_resource* resource, void* user_data) {
@@ -33,15 +33,15 @@ AuraOutputManager* AuraOutputManager::Get(wl_client* client) {
         }
 
         DCHECK_NE(nullptr, user_data);
-        AuraOutputManager** metrics_manager_ref =
+        AuraOutputManager** output_manager_ref =
             static_cast<AuraOutputManager**>(user_data);
 
-        DCHECK_EQ(nullptr, *metrics_manager_ref);
-        *metrics_manager_ref = GetUserDataAs<AuraOutputManager>(resource);
+        DCHECK_EQ(nullptr, *output_manager_ref);
+        *output_manager_ref = GetUserDataAs<AuraOutputManager>(resource);
         return WL_ITERATOR_STOP;
       },
-      &metrics_manager);
-  return metrics_manager;
+      &output_manager);
+  return output_manager;
 }
 
 bool AuraOutputManager::SendOutputMetrics(wl_resource* output_resource,
