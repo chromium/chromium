@@ -658,6 +658,9 @@ void InjectBrowserInitParams(
 
   params->is_sys_ui_downloads_integration_v2_enabled =
       ash::features::IsSysUiDownloadsIntegrationV2Enabled();
+
+  params->is_cros_battery_saver_available =
+      ash::features::IsBatterySaverAvailable();
 }
 
 template <typename BrowserParams>
