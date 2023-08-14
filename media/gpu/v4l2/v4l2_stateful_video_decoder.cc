@@ -810,6 +810,9 @@ bool V4L2StatefulVideoDecoder::DrainOUTPUTQueue() {
 
 bool V4L2StatefulVideoDecoder::VerifyDecoderBufferHasOnlyWholeNALUs(
     scoped_refptr<DecoderBuffer> buffer) {
+  if (!h264_parser_) {
+    h264_parser_ = std::make_unique<H264Parser>();
+  }
   DCHECK(h264_parser_);
   h264_parser_->SetStream(buffer->data(), buffer->data_size());
   size_t accumulator = 0;

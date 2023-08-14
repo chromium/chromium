@@ -15,7 +15,6 @@
 #include "media/base/video_types.h"
 #include "media/gpu/chromeos/video_decoder_pipeline.h"
 #include "media/gpu/media_gpu_export.h"
-#include "media/video/h264_parser.h"
 
 namespace base {
 class Location;
@@ -23,6 +22,8 @@ class SequencedTaskRunner;
 }  // namespace base
 
 namespace media {
+
+class H264Parser;
 
 class V4L2Queue;
 
@@ -170,7 +171,7 @@ class MEDIA_GPU_EXPORT V4L2StatefulVideoDecoder : public VideoDecoderMixin {
   // implementation of the decoder requires that Decode() is called on a
   // DecoderBuffer with whole NALUs. So we'll need to parse the stream to ensure
   // that with a DCHECK().
-  absl::optional<H264Parser> h264_parser_;
+  std::unique_ptr<H264Parser> h264_parser_;
 
   // Weak pointer/factory associated with the main thread (|sequence_checker|).
   base::WeakPtr<V4L2StatefulVideoDecoder> weak_this_;
