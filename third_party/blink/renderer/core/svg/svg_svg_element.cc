@@ -588,7 +588,8 @@ bool SVGSVGElement::SelfHasRelativeLengths() const {
 }
 
 bool SVGSVGElement::HasEmptyViewBox() const {
-  return HasValidViewBox() && viewBox()->CurrentValue()->Rect().IsEmpty();
+  const SVGRect& view_box = CurrentViewBox();
+  return HasValidViewBox(view_box) && view_box.Rect().IsEmpty();
 }
 
 bool SVGSVGElement::ShouldSynthesizeViewBox() const {
@@ -598,11 +599,15 @@ bool SVGSVGElement::ShouldSynthesizeViewBox() const {
   return svg_root && svg_root->IsEmbeddedThroughSVGImage();
 }
 
-gfx::RectF SVGSVGElement::CurrentViewBoxRect() const {
-  if (view_spec_ && view_spec_->ViewBox())
-    return view_spec_->ViewBox()->Rect();
+const SVGRect& SVGSVGElement::CurrentViewBox() const {
+  if (view_spec_ && view_spec_->ViewBox()) {
+    return *view_spec_->ViewBox();
+  }
+  return *viewBox()->CurrentValue();
+}
 
-  gfx::RectF use_view_box = viewBox()->CurrentValue()->Rect();
+gfx::RectF SVGSVGElement::CurrentViewBoxRect() const {
+  gfx::RectF use_view_box = CurrentViewBox().Rect();
   if (!use_view_box.IsEmpty())
     return use_view_box;
   if (!ShouldSynthesizeViewBox())
@@ -622,7 +627,7 @@ const SVGPreserveAspectRatio* SVGSVGElement::CurrentPreserveAspectRatio()
   if (view_spec_ && view_spec_->PreserveAspectRatio())
     return view_spec_->PreserveAspectRatio();
 
-  if (!HasValidViewBox() && ShouldSynthesizeViewBox()) {
+  if (!HasValidViewBox(CurrentViewBox()) && ShouldSynthesizeViewBox()) {
     // If no (valid) viewBox is specified and we're embedded through SVGImage,
     // then synthesize a pAR with the value 'none'.
     auto* synthesized_par = MakeGarbageCollected<SVGPreserveAspectRatio>();

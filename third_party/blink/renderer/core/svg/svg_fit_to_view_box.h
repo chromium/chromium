@@ -39,6 +39,7 @@ class SVGAnimatedPreserveAspectRatio;
 class SVGAnimatedRect;
 class SVGElement;
 class SVGPreserveAspectRatio;
+class SVGRect;
 
 class SVGFitToViewBox : public GarbageCollectedMixin {
  public:
@@ -48,6 +49,8 @@ class SVGFitToViewBox : public GarbageCollectedMixin {
       const gfx::SizeF& viewport_size);
 
   static bool IsKnownAttribute(const QualifiedName&);
+
+  static bool HasValidViewBox(const SVGRect& view_box);
   bool HasValidViewBox() const;
 
   // JS API
