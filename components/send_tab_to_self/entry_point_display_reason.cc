@@ -26,6 +26,8 @@ bool ShouldOfferSignin(syncer::SyncService* sync_service,
 #else
   return pref_service->GetBoolean(prefs::kSigninAllowed) && sync_service &&
          sync_service->GetAccountInfo().IsEmpty() &&
+         !sync_service->HasDisableReason(
+             syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY) &&
          !sync_service->IsLocalSyncEnabled();
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 }
