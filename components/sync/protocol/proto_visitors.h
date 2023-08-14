@@ -697,7 +697,6 @@ VISIT_PROTO_FIELDS(
   VISIT(sender_info);
   VISIT(encrypted_password_sharing_invitation_data);
   VISIT(client_only_unencrypted_data);
-  VISIT(encrypted_key_for_recipient);
   VISIT(recipient_key_version);
 }
 
@@ -913,7 +912,6 @@ VISIT_PROTO_FIELDS(
   VISIT(recipient_user_id);
   VISIT(encrypted_password_sharing_invitation_data);
   VISIT(client_only_unencrypted_data);
-  VISIT(encrypted_key_for_recipient);
   VISIT(recipient_key_version);
   VISIT(sender_key_version);
 }
@@ -1214,10 +1212,6 @@ VISIT_PROTO_FIELDS(
     const sync_pb::SharingMessageSpecifics::ChannelConfiguration& proto) {
   VISIT(fcm);
   VISIT_BYTES(server);
-}
-
-VISIT_PROTO_FIELDS(const sync_pb::SharingSymmetricKey& proto) {
-  VISIT_BYTES(key_value);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::SyncCycleCompletedEventInfo& proto) {
