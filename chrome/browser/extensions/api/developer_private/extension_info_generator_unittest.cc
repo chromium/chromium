@@ -940,6 +940,11 @@ TEST_F(ExtensionInfoGeneratorUnitTest, Blocklisted) {
   ASSERT_NE(nullptr, info2);
   EXPECT_EQ(developer::EXTENSION_STATE_BLACKLISTED, info1->state);
   EXPECT_EQ(developer::EXTENSION_STATE_ENABLED, info2->state);
+
+  // Verify getExtensionInfo() returns data on blocklisted extensions.
+  auto info3 = GenerateExtensionInfo(id1);
+  ASSERT_NE(nullptr, info3);
+  EXPECT_EQ(developer::EXTENSION_STATE_BLACKLISTED, info3->state);
 }
 
 // Test generating extension action commands properly.
