@@ -16,7 +16,6 @@
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "build/chromeos_buildflags.h"
 #include "cc/test/pixel_comparator.h"
@@ -379,9 +378,6 @@ class AppServiceAppIconTest : public AppIconFactoryTest {
   void SetUp() override {
     AppIconFactoryTest::SetUp();
 
-    scoped_feature_list_.InitAndEnableFeature(
-        apps::kUnifiedAppServiceIconLoading);
-
     ash::CiceroneClient::InitializeFake();
     profile_ = std::make_unique<TestingProfile>();
     proxy_ = AppServiceProxyFactory::GetForProfile(profile_.get());
@@ -444,8 +440,6 @@ class AppServiceAppIconTest : public AppIconFactoryTest {
   std::unique_ptr<apps::FakePublisherForIconTest> fake_publisher_;
 
   std::unique_ptr<crostini::CrostiniTestHelper> crostini_test_helper_;
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 
   base::WeakPtrFactory<AppServiceAppIconTest> weak_ptr_factory_{this};
 };

@@ -330,24 +330,18 @@ bool IsIconCreated(Profile* profile,
                    const std::string& app_id,
                    int dip_size,
                    ui::ResourceScaleFactor scale_factor) {
-  // When the kUnifiedAppServiceIconLoading flag is enabled, the AppService
-  // saves the adaptive icon with the foreground and background icon files, so
-  // we need to check the foreground and background icon files in the AppService
-  // directory.
-  if (base::FeatureList::IsEnabled(apps::kUnifiedAppServiceIconLoading)) {
-    DCHECK(profile);
+  // The AppService saves the adaptive icon with the foreground and background
+  // icon files, so we need to check the foreground and background icon files in
+  // the AppService directory.
+  DCHECK(profile);
 
-    auto foreground_path = apps::GetForegroundIconPath(
-        profile->GetPath(), app_id,
-        apps_util::ConvertDipToPxForScale(dip_size, scale_factor));
-    auto background_path = apps::GetBackgroundIconPath(
-        profile->GetPath(), app_id,
-        apps_util::ConvertDipToPxForScale(dip_size, scale_factor));
-    return apps::IsAdaptiveIcon(foreground_path, background_path);
-  }
-
-  return base::PathExists(prefs->GetIconPath(
-      app_id, GetAppListIconDescriptor(dip_size, scale_factor)));
+  auto foreground_path = apps::GetForegroundIconPath(
+      profile->GetPath(), app_id,
+      apps_util::ConvertDipToPxForScale(dip_size, scale_factor));
+  auto background_path = apps::GetBackgroundIconPath(
+      profile->GetPath(), app_id,
+      apps_util::ConvertDipToPxForScale(dip_size, scale_factor));
+  return apps::IsAdaptiveIcon(foreground_path, background_path);
 }
 
 void WaitForIconCreation(Profile* profile,
@@ -355,22 +349,11 @@ void WaitForIconCreation(Profile* profile,
                          const std::string& app_id,
                          int dip_size,
                          ui::ResourceScaleFactor scale_factor) {
-  if (base::FeatureList::IsEnabled(apps::kUnifiedAppServiceIconLoading)) {
-    // Process pending tasks. This performs multiple thread hops, so we need
-    // to run it continuously until it is resolved.
-    do {
-      content::RunAllTasksUntilIdle();
-    } while (!IsIconCreated(profile, prefs, app_id, dip_size, scale_factor));
-    return;
-  }
-
-  const base::FilePath icon_path = prefs->GetIconPath(
-      app_id, GetAppListIconDescriptor(dip_size, scale_factor));
   // Process pending tasks. This performs multiple thread hops, so we need
   // to run it continuously until it is resolved.
   do {
     content::RunAllTasksUntilIdle();
-  } while (!base::PathExists(icon_path));
+  } while (!IsIconCreated(profile, prefs, app_id, dip_size, scale_factor));
 }
 
 void WaitForIconUpdates(Profile* profile,
@@ -1977,18 +1960,14 @@ TEST_P(ArcAppModelBuilderTest, InstallIcon) {
   const float scale = ui::GetScaleForResourceScaleFactor(scale_factor);
   const std::string app_id = ArcAppTest::GetAppId(app);
 
-  // When the kUnifiedAppServiceIconLoading flag is enabled, the AppService
-  // saves the adaptive icon with the foreground and background icon files, so
-  // we check the foreground icon file in the AppService directory, not
-  // the icon path in the ARC directory.
-  const base::FilePath icon_path =
-      base::FeatureList::IsEnabled(apps::kUnifiedAppServiceIconLoading)
-          ? apps::GetForegroundIconPath(profile()->GetPath(), app_id,
-                                        apps_util::ConvertDipToPxForScale(
-                                            ash::SharedAppListConfig::instance()
-                                                .default_grid_icon_dimension(),
-                                            scale_factor))
-          : prefs->GetIconPath(app_id, GetAppListIconDescriptor(scale_factor));
+  // The AppService saves the adaptive icon with the foreground and background
+  // icon files, so we check the foreground icon file in the AppService
+  // directory, not the icon path in the ARC directory.
+  const base::FilePath icon_path = apps::GetForegroundIconPath(
+      profile()->GetPath(), app_id,
+      apps_util::ConvertDipToPxForScale(
+          ash::SharedAppListConfig::instance().default_grid_icon_dimension(),
+          scale_factor));
   EXPECT_FALSE(IsIconCreated(
       profile(), prefs, app_id,
       ash::SharedAppListConfig::instance().default_grid_icon_dimension(),
