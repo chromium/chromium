@@ -32,9 +32,6 @@ FrameSinkHolder::~FrameSinkHolder() {
   if (frame_sink_) {
     frame_sink_->DetachFromClient();
   }
-  if (root_window_for_deletion_) {
-    root_window_for_deletion_->RemoveObserver(this);
-  }
 }
 
 // static.
@@ -100,8 +97,7 @@ void FrameSinkHolder::SetRootWindowForDeletion(aura::Window* root_window) {
   // The holder will delete itself when the root window is removed or when all
   // exported resources have been reclaimed.
   DCHECK(root_window);
-  root_window_for_deletion_ = root_window;
-  root_window->AddObserver(this);
+  root_window_observation_.Observe(root_window);
 }
 
 void FrameSinkHolder::SubmitCompositorFrame(bool synchronous_draw) {
@@ -201,13 +197,10 @@ void FrameSinkHolder::SetBeginFrameSource(viz::BeginFrameSource* source) {
     return;
   }
 
-  if (begin_frame_source_) {
-    begin_frame_source_->RemoveObserver(this);
-  }
-
+  begin_frame_observation_.Reset();
   begin_frame_source_ = source;
   if (begin_frame_source_) {
-    begin_frame_source_->AddObserver(this);
+    begin_frame_observation_.Observe(begin_frame_source_);
   }
 }
 
@@ -263,13 +256,11 @@ void FrameSinkHolder::SetExternalTilePriorityConstraints(
     const gfx::Transform& transform) {}
 
 void FrameSinkHolder::OnWindowDestroying(aura::Window* window) {
-  // Since we are destroying the root_window_for_deletion_ via which we were
-  // extending the lifetime of the layer_sink_holder, after this point we cannot
-  // recover the exported resources therefore just mark the exported resources
-  // as lost.
+  // Since we are destroying the root_window via which we were extending the
+  // lifetime of the layer_sink_holder, after this point we cannot recover the
+  // exported resources therefore just mark the exported resources as lost.
   resources_manager_.LostExportedResources();
-  root_window_for_deletion_->RemoveObserver(this);
-  root_window_for_deletion_ = nullptr;
+  root_window_observation_.Reset();
   // Detaching client from `frame_sink_` ensures that display_compositor does
   // not call methods on `this` after we have scheduled the deletion of this
   // holder.
@@ -288,11 +279,11 @@ void FrameSinkHolder::ScheduleDelete() {
 }
 
 bool FrameSinkHolder::WaitingToScheduleDelete() const {
-  // We only set root_window_for_deletion_, after calling
-  // FrameSinkHolder::DeleteWhenLastResourceHasBeenReclaimed. Non-null
-  // root_window_for_deletion_ means that we are waiting for all the exported
+  // We only start observing the root window after calling
+  // FrameSinkHolder::DeleteWhenLastResourceHasBeenReclaimed. An observing
+  // root_window_observation_ means that we are waiting for all the exported
   // resources to be returned before we can delete `this` frame sink holder.
-  return root_window_for_deletion_;
+  return root_window_observation_.IsObserving();
 }
 
 }  // namespace ash
