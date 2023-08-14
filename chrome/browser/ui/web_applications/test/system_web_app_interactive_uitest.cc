@@ -917,7 +917,9 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppOpenInAshFromLacrosTests,
   EXPECT_TRUE(ChromeWebUIControllerFactory::GetInstance()->CanHandleUrl(url4));
   LaunchAndWaitForActivationChange(url4);
   EXPECT_EQ(initial_browser_count + 1, BrowserList::GetInstance()->size());
-  EXPECT_EQ(u"ChromeOS-URLs", ash::window_util::GetActiveWindow()->GetTitle());
+  EXPECT_TRUE(
+      ash::IsBrowserForSystemWebApp(BrowserList::GetInstance()->GetLastActive(),
+                                    ash::SystemWebAppType::OS_URL_HANDLER));
 }
 
 IN_PROC_BROWSER_TEST_P(SystemWebAppOpenInAshFromLacrosTests, TrailingSlashes) {
@@ -932,7 +934,9 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppOpenInAshFromLacrosTests, TrailingSlashes) {
     EXPECT_TRUE(ChromeWebUIControllerFactory::GetInstance()->CanHandleUrl(url));
     LaunchAndWaitForActivationChange(url);
     EXPECT_EQ(initial_browser_count + 1, BrowserList::GetInstance()->size());
-    EXPECT_EQ(u"Settings", ash::window_util::GetActiveWindow()->GetTitle());
+    EXPECT_TRUE(ash::IsBrowserForSystemWebApp(
+        BrowserList::GetInstance()->GetLastActive(),
+        ash::SystemWebAppType::SETTINGS));
     CloseApp(ash::SystemWebAppType::SETTINGS);
   }
 
@@ -943,7 +947,9 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppOpenInAshFromLacrosTests, TrailingSlashes) {
     EXPECT_TRUE(ChromeWebUIControllerFactory::GetInstance()->CanHandleUrl(url));
     LaunchAndWaitForActivationChange(url);
     EXPECT_EQ(initial_browser_count + 1, BrowserList::GetInstance()->size());
-    EXPECT_EQ(u"Settings", ash::window_util::GetActiveWindow()->GetTitle());
+    EXPECT_TRUE(ash::IsBrowserForSystemWebApp(
+        BrowserList::GetInstance()->GetLastActive(),
+        ash::SystemWebAppType::SETTINGS));
     CloseApp(ash::SystemWebAppType::SETTINGS);
   }
 
@@ -952,7 +958,9 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppOpenInAshFromLacrosTests, TrailingSlashes) {
     EXPECT_TRUE(ChromeWebUIControllerFactory::GetInstance()->CanHandleUrl(url));
     LaunchAndWaitForActivationChange(url);
     EXPECT_EQ(initial_browser_count + 1, BrowserList::GetInstance()->size());
-    EXPECT_EQ(u"Settings", ash::window_util::GetActiveWindow()->GetTitle());
+    EXPECT_TRUE(ash::IsBrowserForSystemWebApp(
+        BrowserList::GetInstance()->GetLastActive(),
+        ash::SystemWebAppType::SETTINGS));
     CloseApp(ash::SystemWebAppType::SETTINGS);
   }
 
@@ -963,7 +971,9 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppOpenInAshFromLacrosTests, TrailingSlashes) {
     EXPECT_TRUE(ChromeWebUIControllerFactory::GetInstance()->CanHandleUrl(url));
     LaunchAndWaitForActivationChange(url);
     EXPECT_EQ(initial_browser_count + 1, BrowserList::GetInstance()->size());
-    EXPECT_EQ(u"Settings", ash::window_util::GetActiveWindow()->GetTitle());
+    EXPECT_TRUE(ash::IsBrowserForSystemWebApp(
+        BrowserList::GetInstance()->GetLastActive(),
+        ash::SystemWebAppType::SETTINGS));
     CloseApp(ash::SystemWebAppType::SETTINGS);
   }
 
@@ -974,7 +984,9 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppOpenInAshFromLacrosTests, TrailingSlashes) {
     EXPECT_TRUE(ChromeWebUIControllerFactory::GetInstance()->CanHandleUrl(url));
     LaunchAndWaitForActivationChange(url);
     EXPECT_EQ(initial_browser_count + 1, BrowserList::GetInstance()->size());
-    EXPECT_EQ(u"Settings", ash::window_util::GetActiveWindow()->GetTitle());
+    EXPECT_TRUE(ash::IsBrowserForSystemWebApp(
+        BrowserList::GetInstance()->GetLastActive(),
+        ash::SystemWebAppType::SETTINGS));
     CloseApp(ash::SystemWebAppType::SETTINGS);
   }
 
@@ -983,7 +995,9 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppOpenInAshFromLacrosTests, TrailingSlashes) {
     EXPECT_TRUE(ChromeWebUIControllerFactory::GetInstance()->CanHandleUrl(url));
     LaunchAndWaitForActivationChange(url);
     EXPECT_EQ(initial_browser_count + 1, BrowserList::GetInstance()->size());
-    EXPECT_EQ(u"Flags", ash::window_util::GetActiveWindow()->GetTitle());
+    EXPECT_TRUE(ash::IsBrowserForSystemWebApp(
+        BrowserList::GetInstance()->GetLastActive(),
+        ash::SystemWebAppType::OS_FLAGS));
     CloseApp(ash::SystemWebAppType::OS_FLAGS);
   }
 
@@ -994,7 +1008,9 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppOpenInAshFromLacrosTests, TrailingSlashes) {
     EXPECT_TRUE(ChromeWebUIControllerFactory::GetInstance()->CanHandleUrl(url));
     LaunchAndWaitForActivationChange(url);
     EXPECT_EQ(initial_browser_count + 1, BrowserList::GetInstance()->size());
-    EXPECT_EQ(u"Flags", ash::window_util::GetActiveWindow()->GetTitle());
+    EXPECT_TRUE(ash::IsBrowserForSystemWebApp(
+        BrowserList::GetInstance()->GetLastActive(),
+        ash::SystemWebAppType::OS_FLAGS));
     CloseApp(ash::SystemWebAppType::OS_FLAGS);
   }
 
@@ -1005,7 +1021,9 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppOpenInAshFromLacrosTests, TrailingSlashes) {
     EXPECT_TRUE(ChromeWebUIControllerFactory::GetInstance()->CanHandleUrl(url));
     LaunchAndWaitForActivationChange(url);
     EXPECT_EQ(initial_browser_count + 1, BrowserList::GetInstance()->size());
-    EXPECT_EQ(u"Flags", ash::window_util::GetActiveWindow()->GetTitle());
+    EXPECT_TRUE(ash::IsBrowserForSystemWebApp(
+        BrowserList::GetInstance()->GetLastActive(),
+        ash::SystemWebAppType::OS_FLAGS));
     CloseApp(ash::SystemWebAppType::OS_FLAGS);
   }
 
@@ -1015,7 +1033,9 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppOpenInAshFromLacrosTests, TrailingSlashes) {
     EXPECT_TRUE(ChromeWebUIControllerFactory::GetInstance()->CanHandleUrl(url));
     LaunchAndWaitForActivationChange(url);
     EXPECT_EQ(initial_browser_count + 1, BrowserList::GetInstance()->size());
-    EXPECT_EQ(u"Scan", ash::window_util::GetActiveWindow()->GetTitle());
+    EXPECT_TRUE(ash::IsBrowserForSystemWebApp(
+        BrowserList::GetInstance()->GetLastActive(),
+        ash::SystemWebAppType::SCANNING));
     CloseApp(ash::SystemWebAppType::SCANNING);
   }
 
@@ -1026,7 +1046,9 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppOpenInAshFromLacrosTests, TrailingSlashes) {
     EXPECT_TRUE(ChromeWebUIControllerFactory::GetInstance()->CanHandleUrl(url));
     LaunchAndWaitForActivationChange(url);
     EXPECT_EQ(initial_browser_count + 1, BrowserList::GetInstance()->size());
-    EXPECT_EQ(u"Scan", ash::window_util::GetActiveWindow()->GetTitle());
+    EXPECT_TRUE(ash::IsBrowserForSystemWebApp(
+        BrowserList::GetInstance()->GetLastActive(),
+        ash::SystemWebAppType::SCANNING));
     CloseApp(ash::SystemWebAppType::SCANNING);
   }
 
@@ -1035,7 +1057,9 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppOpenInAshFromLacrosTests, TrailingSlashes) {
     EXPECT_TRUE(ChromeWebUIControllerFactory::GetInstance()->CanHandleUrl(url));
     LaunchAndWaitForActivationChange(url);
     EXPECT_EQ(initial_browser_count + 1, BrowserList::GetInstance()->size());
-    EXPECT_EQ(u"Scan", ash::window_util::GetActiveWindow()->GetTitle());
+    EXPECT_TRUE(ash::IsBrowserForSystemWebApp(
+        BrowserList::GetInstance()->GetLastActive(),
+        ash::SystemWebAppType::SCANNING));
     CloseApp(ash::SystemWebAppType::SCANNING);
   }
 
@@ -1046,7 +1070,9 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppOpenInAshFromLacrosTests, TrailingSlashes) {
     EXPECT_TRUE(ChromeWebUIControllerFactory::GetInstance()->CanHandleUrl(url));
     LaunchAndWaitForActivationChange(url);
     EXPECT_EQ(initial_browser_count + 1, BrowserList::GetInstance()->size());
-    EXPECT_EQ(u"Scan", ash::window_util::GetActiveWindow()->GetTitle());
+    EXPECT_TRUE(ash::IsBrowserForSystemWebApp(
+        BrowserList::GetInstance()->GetLastActive(),
+        ash::SystemWebAppType::SCANNING));
     CloseApp(ash::SystemWebAppType::SCANNING);
   }
 
@@ -1056,7 +1082,9 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppOpenInAshFromLacrosTests, TrailingSlashes) {
     EXPECT_TRUE(ChromeWebUIControllerFactory::GetInstance()->CanHandleUrl(url));
     LaunchAndWaitForActivationChange(url);
     EXPECT_EQ(initial_browser_count + 1, BrowserList::GetInstance()->size());
-    EXPECT_EQ(u"Scan", ash::window_util::GetActiveWindow()->GetTitle());
+    EXPECT_TRUE(ash::IsBrowserForSystemWebApp(
+        BrowserList::GetInstance()->GetLastActive(),
+        ash::SystemWebAppType::SCANNING));
     CloseApp(ash::SystemWebAppType::SCANNING);
   }
 }
@@ -1073,17 +1101,23 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppOpenInAshFromLacrosTests,
   // Start an application which uses the OS url handler.
   LaunchAndWaitForActivationChange(GURL("os://credits"));
   EXPECT_EQ(initial_browser_count + 1, BrowserList::GetInstance()->size());
-  EXPECT_EQ(u"ChromeOS-URLs", ash::window_util::GetActiveWindow()->GetTitle());
+  EXPECT_TRUE(
+      ash::IsBrowserForSystemWebApp(BrowserList::GetInstance()->GetLastActive(),
+                                    ash::SystemWebAppType::OS_URL_HANDLER));
 
   // Start another application.
   LaunchAndWaitForActivationChange(GURL(chrome::kOsUIFlagsURL));
   EXPECT_EQ(initial_browser_count + 2, BrowserList::GetInstance()->size());
-  EXPECT_EQ(u"Flags", ash::window_util::GetActiveWindow()->GetTitle());
+  EXPECT_TRUE(
+      ash::IsBrowserForSystemWebApp(BrowserList::GetInstance()->GetLastActive(),
+                                    ash::SystemWebAppType::OS_FLAGS));
 
   // Start an application of the first type and see that no new app got created.
   LaunchAndWaitForActivationChange(GURL("os://credits"));
   EXPECT_EQ(initial_browser_count + 2, BrowserList::GetInstance()->size());
-  EXPECT_EQ(u"ChromeOS-URLs", ash::window_util::GetActiveWindow()->GetTitle());
+  EXPECT_TRUE(
+      ash::IsBrowserForSystemWebApp(BrowserList::GetInstance()->GetLastActive(),
+                                    ash::SystemWebAppType::OS_URL_HANDLER));
 }
 
 // This test will make sure that opening a different system URL (other than
@@ -1098,12 +1132,16 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppOpenInAshFromLacrosTests,
   // Start an application using the OS Url handler.
   LaunchAndWaitForActivationChange(GURL("os://credits"));
   EXPECT_EQ(initial_browser_count + 1, BrowserList::GetInstance()->size());
-  EXPECT_EQ(u"ChromeOS-URLs", ash::window_util::GetActiveWindow()->GetTitle());
+  EXPECT_TRUE(
+      ash::IsBrowserForSystemWebApp(BrowserList::GetInstance()->GetLastActive(),
+                                    ash::SystemWebAppType::OS_URL_HANDLER));
 
   // Start another application using the OS Url handler.
   LaunchAndWaitForActivationChange(GURL(chrome::kOsUIComponentsURL));
   EXPECT_EQ(initial_browser_count + 2, BrowserList::GetInstance()->size());
-  EXPECT_EQ(u"ChromeOS-URLs", ash::window_util::GetActiveWindow()->GetTitle());
+  EXPECT_TRUE(
+      ash::IsBrowserForSystemWebApp(BrowserList::GetInstance()->GetLastActive(),
+                                    ash::SystemWebAppType::OS_URL_HANDLER));
 }
 
 class SystemWebAppManagerCloseFromScriptsTest
