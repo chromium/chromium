@@ -4,6 +4,7 @@
 
 #include "headless/lib/browser/headless_devtools_manager_delegate.h"
 
+#include "base/containers/contains.h"
 #include "build/build_config.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/devtools_agent_host_client_channel.h"
@@ -57,7 +58,7 @@ bool HeadlessDevToolsManagerDelegate::HasBundledFrontendResources() {
 
 void HeadlessDevToolsManagerDelegate::ClientAttached(
     content::DevToolsAgentHostClientChannel* channel) {
-  DCHECK(sessions_.find(channel) == sessions_.end());
+  DCHECK(!base::Contains(sessions_, channel));
   sessions_.emplace(
       channel,
       std::make_unique<protocol::HeadlessDevToolsSession>(browser_, channel));
