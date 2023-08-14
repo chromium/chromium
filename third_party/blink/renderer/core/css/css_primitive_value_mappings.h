@@ -1711,6 +1711,58 @@ inline CSSIdentifierValue::CSSIdentifierValue(CoordBox coord_box)
 }
 
 template <>
+inline GeometryBox CSSIdentifierValue::ConvertTo() const {
+  switch (GetValueID()) {
+    case CSSValueID::kBorderBox:
+      return GeometryBox::kBorderBox;
+    case CSSValueID::kPaddingBox:
+      return GeometryBox::kPaddingBox;
+    case CSSValueID::kContentBox:
+      return GeometryBox::kContentBox;
+    case CSSValueID::kMarginBox:
+      return GeometryBox::kMarginBox;
+    case CSSValueID::kFillBox:
+      return GeometryBox::kFillBox;
+    case CSSValueID::kStrokeBox:
+      return GeometryBox::kStrokeBox;
+    case CSSValueID::kViewBox:
+      return GeometryBox::kViewBox;
+    default:
+      break;
+  }
+  NOTREACHED();
+  return GeometryBox::kBorderBox;
+}
+
+template <>
+inline CSSIdentifierValue::CSSIdentifierValue(GeometryBox geometry_box)
+    : CSSValue(kIdentifierClass) {
+  switch (geometry_box) {
+    case GeometryBox::kBorderBox:
+      value_id_ = CSSValueID::kBorderBox;
+      break;
+    case GeometryBox::kPaddingBox:
+      value_id_ = CSSValueID::kPaddingBox;
+      break;
+    case GeometryBox::kContentBox:
+      value_id_ = CSSValueID::kContentBox;
+      break;
+    case GeometryBox::kMarginBox:
+      value_id_ = CSSValueID::kMarginBox;
+      break;
+    case GeometryBox::kFillBox:
+      value_id_ = CSSValueID::kFillBox;
+      break;
+    case GeometryBox::kStrokeBox:
+      value_id_ = CSSValueID::kStrokeBox;
+      break;
+    case GeometryBox::kViewBox:
+      value_id_ = CSSValueID::kViewBox;
+      break;
+  }
+}
+
+template <>
 inline TextUnderlinePosition CSSIdentifierValue::ConvertTo() const {
   switch (GetValueID()) {
     case CSSValueID::kAuto:

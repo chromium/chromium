@@ -32,6 +32,7 @@
 
 namespace blink {
 
+enum class GeometryBox;
 class LayoutBlockFlow;
 class NGInlineCursor;
 
@@ -154,7 +155,7 @@ class CORE_EXPORT LayoutInline : public LayoutBoxModelObject {
 
   PhysicalRect PhysicalLinesBoundingBox() const;
   PhysicalRect PhysicalVisualOverflowRect() const final;
-  PhysicalRect ReferenceBoxForClipPath() const;
+  PhysicalRect ReferenceBoxForClipPath(GeometryBox) const;
 
   bool HasInlineFragments() const final;
   wtf_size_t FirstInlineFragmentItemIndex() const final;

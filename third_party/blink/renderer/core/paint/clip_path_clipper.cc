@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/style/clip_path_operation.h"
+#include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/style/reference_clip_path_operation.h"
 #include "third_party/blink/renderer/core/style/shape_clip_path_operation.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
@@ -59,6 +60,28 @@ LayoutSVGResourceClipper* ResolveElementReference(
 
   SECURITY_DCHECK(!resource_clipper->SelfNeedsFullLayout());
   return resource_clipper;
+}
+
+// https://drafts.fxtf.org/css-masking/#typedef-geometry-box
+PhysicalRect ComputeReferenceBoxInternal(GeometryBox geometry_box,
+                                         const NGPhysicalBoxFragment& fragment,
+                                         PhysicalRect border_box_rect) {
+  switch (geometry_box) {
+    case GeometryBox::kPaddingBox:
+      border_box_rect.Contract(fragment.Borders());
+      return border_box_rect;
+    case GeometryBox::kContentBox:
+    case GeometryBox::kFillBox:
+      border_box_rect.Contract(fragment.Borders() + fragment.Padding());
+      return border_box_rect;
+    case GeometryBox::kMarginBox:
+      border_box_rect.Expand(fragment.Margins());
+      return border_box_rect;
+    case GeometryBox::kBorderBox:
+    case GeometryBox::kStrokeBox:
+    case GeometryBox::kViewBox:
+      return border_box_rect;
+  }
 }
 
 }  // namespace
@@ -174,13 +197,35 @@ static void PaintWorkletBasedClip(GraphicsContext& context,
 }
 
 gfx::RectF ClipPathClipper::LocalReferenceBox(const LayoutObject& object) {
-  if (object.IsSVGChild())
-    return SVGResources::ReferenceBoxForEffects(object);
+  ClipPathOperation& clip_path = *object.StyleRef().ClipPath();
+  GeometryBox geometry_box =
+      clip_path.GetType() == ClipPathOperation::kShape
+          ? To<ShapeClipPathOperation>(clip_path).GetGeometryBox()
+          : GeometryBox::kBorderBox;
 
-  if (object.IsBox())
-    return gfx::RectF(To<LayoutBox>(object).BorderBoxRect());
+  if (object.IsSVGChild()) {
+    if (!RuntimeEnabledFeatures::ClipPathGeometryBoxEnabled()) {
+      // Preserve the pre-geometry-box behavior of using the object bounding
+      // box.
+      geometry_box = GeometryBox::kFillBox;
+    } else if (clip_path.GetType() == ClipPathOperation::kReference) {
+      geometry_box = GeometryBox::kFillBox;
+    }
+    return SVGResources::ReferenceBoxForEffects(object, geometry_box);
+  }
 
-  return gfx::RectF(To<LayoutInline>(object).ReferenceBoxForClipPath());
+  if (auto* box = DynamicTo<LayoutBox>(object)) {
+    // If the box is fragment-less return an empty reference box.
+    if (box->PhysicalFragmentCount() == 0u) {
+      return gfx::RectF();
+    }
+    return gfx::RectF(
+        ComputeReferenceBoxInternal(geometry_box, *box->GetPhysicalFragment(0),
+                                    box->PhysicalBorderBoxRect()));
+  }
+
+  return gfx::RectF(
+      To<LayoutInline>(object).ReferenceBoxForClipPath(geometry_box));
 }
 
 absl::optional<gfx::RectF> ClipPathClipper::LocalClipPathBoundingBox(

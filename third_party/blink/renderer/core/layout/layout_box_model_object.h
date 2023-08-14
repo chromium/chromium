@@ -367,6 +367,11 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
     return MarginStart() + MarginEnd();
   }
 
+  NGPhysicalBoxStrut MarginOutsets() const {
+    NOT_DESTROYED();
+    return {MarginTop(), MarginRight(), MarginBottom(), MarginLeft()};
+  }
+
   virtual LayoutUnit ContainingBlockLogicalWidthForContent() const;
 
   virtual void ChildBecameNonInline(LayoutObject* /*child*/) {

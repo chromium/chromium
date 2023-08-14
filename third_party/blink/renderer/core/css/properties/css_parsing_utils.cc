@@ -3180,6 +3180,14 @@ CSSIdentifierValue* ConsumeCoordBox(CSSParserTokenRange& range) {
                       CSSValueID::kStrokeBox, CSSValueID::kViewBox>(range);
 }
 
+// https://drafts.fxtf.org/css-masking/#typedef-geometry-box
+CSSIdentifierValue* ConsumeGeometryBox(CSSParserTokenRange& range) {
+  return ConsumeIdent<CSSValueID::kBorderBox, CSSValueID::kPaddingBox,
+                      CSSValueID::kContentBox, CSSValueID::kMarginBox,
+                      CSSValueID::kFillBox, CSSValueID::kStrokeBox,
+                      CSSValueID::kViewBox>(range);
+}
+
 void AddProperty(CSSPropertyID resolved_property,
                  CSSPropertyID current_shorthand,
                  const CSSValue& value,

@@ -50,6 +50,7 @@
 #include "third_party/blink/renderer/core/paint/object_painter.h"
 #include "third_party/blink/renderer/core/paint/outline_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
+#include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 #include "ui/gfx/geometry/quad_f.h"
 
@@ -768,18 +769,35 @@ PhysicalRect LayoutInline::PhysicalVisualOverflowRect() const {
   return overflow_rect;
 }
 
-PhysicalRect LayoutInline::ReferenceBoxForClipPath() const {
+PhysicalRect LayoutInline::ReferenceBoxForClipPath(
+    GeometryBox geometry_box) const {
   NOT_DESTROYED();
-  // The spec just says to use the border box as clip-path reference box. It
-  // doesn't say what to do if there are multiple lines. Gecko uses the first
-  // fragment in that case. We'll do the same here (but correctly with respect
-  // to writing-mode - Gecko has some issues there).
-  // See crbug.com/641907
+  // The spec doesn't say what to do if there are multiple lines. Gecko uses the
+  // first fragment in that case. We'll do the same here.
+  // See: https://crbug.com/641907
   if (IsInLayoutNGInlineFormattingContext()) {
     NGInlineCursor cursor;
     cursor.MoveTo(*this);
-    if (cursor)
-      return cursor.Current().RectInContainerFragment();
+    if (cursor) {
+      // https://drafts.fxtf.org/css-masking/#typedef-geometry-box
+      PhysicalRect reference_box = cursor.Current().RectInContainerFragment();
+      switch (geometry_box) {
+        case GeometryBox::kPaddingBox:
+          reference_box.Contract(BorderOutsets());
+          return reference_box;
+        case GeometryBox::kContentBox:
+        case GeometryBox::kFillBox:
+          reference_box.Contract(BorderOutsets() + PaddingOutsets());
+          return reference_box;
+        case GeometryBox::kMarginBox:
+          reference_box.Expand(MarginOutsets());
+          return reference_box;
+        case GeometryBox::kBorderBox:
+        case GeometryBox::kStrokeBox:
+        case GeometryBox::kViewBox:
+          return reference_box;
+      }
+    }
   }
   return PhysicalRect();
 }

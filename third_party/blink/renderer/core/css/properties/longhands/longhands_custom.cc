@@ -1705,12 +1705,34 @@ const CSSValue* ClipPath::ParseSingleValue(CSSParserTokenRange& range,
   if (range.Peek().Id() == CSSValueID::kNone) {
     return css_parsing_utils::ConsumeIdent(range);
   }
+
   if (cssvalue::CSSURIValue* url =
           css_parsing_utils::ConsumeUrl(range, context)) {
     return url;
   }
-  return css_parsing_utils::ConsumeBasicShape(
+
+  CSSValue* geometry_box = nullptr;
+  if (RuntimeEnabledFeatures::ClipPathGeometryBoxEnabled()) {
+    geometry_box = css_parsing_utils::ConsumeGeometryBox(range);
+  }
+  CSSValue* basic_shape = css_parsing_utils::ConsumeBasicShape(
       range, context, css_parsing_utils::AllowPathValue::kAllow);
+  if (basic_shape && !geometry_box &&
+      RuntimeEnabledFeatures::ClipPathGeometryBoxEnabled()) {
+    geometry_box = css_parsing_utils::ConsumeGeometryBox(range);
+  }
+  if (basic_shape || geometry_box) {
+    CSSValueList* list = CSSValueList::CreateSpaceSeparated();
+    if (basic_shape) {
+      list->Append(*basic_shape);
+    }
+    if (geometry_box) {
+      list->Append(*geometry_box);
+    }
+    return list;
+  }
+
+  return nullptr;
 }
 
 const CSSValue* ClipPath::CSSValueFromComputedStyleInternal(
@@ -1719,8 +1741,16 @@ const CSSValue* ClipPath::CSSValueFromComputedStyleInternal(
     bool allow_visited_style) const {
   if (ClipPathOperation* operation = style.ClipPath()) {
     if (operation->GetType() == ClipPathOperation::kShape) {
-      return ValueForBasicShape(
-          style, To<ShapeClipPathOperation>(operation)->GetBasicShape());
+      CSSValueList* list = CSSValueList::CreateSpaceSeparated();
+      if (auto* shape = DynamicTo<ShapeClipPathOperation>(operation)) {
+        auto* basic_shape = ValueForBasicShape(style, shape->GetBasicShape());
+        list->Append(*basic_shape);
+        GeometryBox geometry_box = shape->GetGeometryBox();
+        if (geometry_box != GeometryBox::kBorderBox) {
+          list->Append(*CSSIdentifierValue::Create(geometry_box));
+        }
+      }
+      return list;
     }
     if (operation->GetType() == ClipPathOperation::kReference) {
       AtomicString url = To<ReferenceClipPathOperation>(operation)->Url();

@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/core/html/html_body_element.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/style/clip_path_operation.h"
+#include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/style/shape_clip_path_operation.h"
 #include "third_party/blink/renderer/core/style/shape_value.h"
 #include "third_party/blink/renderer/core/style/style_difference.h"
@@ -95,9 +96,9 @@ TEST_F(ComputedStyleTest, ShapeOutsideCircleEqual) {
 TEST_F(ComputedStyleTest, ClipPathEqual) {
   scoped_refptr<BasicShapeCircle> shape = BasicShapeCircle::Create();
   scoped_refptr<ShapeClipPathOperation> path1 =
-      ShapeClipPathOperation::Create(shape);
+      ShapeClipPathOperation::Create(shape, GeometryBox::kBorderBox);
   scoped_refptr<ShapeClipPathOperation> path2 =
-      ShapeClipPathOperation::Create(shape);
+      ShapeClipPathOperation::Create(shape, GeometryBox::kBorderBox);
   ComputedStyleBuilder builder1 = CreateComputedStyleBuilder();
   ComputedStyleBuilder builder2 = CreateComputedStyleBuilder();
   builder1.SetClipPath(path1);

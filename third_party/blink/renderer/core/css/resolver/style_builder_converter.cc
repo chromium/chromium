@@ -187,8 +187,23 @@ LengthBox StyleBuilderConverter::ConvertClip(StyleResolverState& state,
 scoped_refptr<ClipPathOperation> StyleBuilderConverter::ConvertClipPath(
     StyleResolverState& state,
     const CSSValue& value) {
-  if (value.IsBasicShapeValue() || value.IsPathValue()) {
-    return ShapeClipPathOperation::Create(BasicShapeForValue(state, value));
+  if (const auto* list = DynamicTo<CSSValueList>(value)) {
+    if (list->First().IsBasicShapeValue() || list->First().IsPathValue()) {
+      const CSSValue& shape_value = list->First();
+      const CSSIdentifierValue* geometry_box_value = nullptr;
+      if (list->length() == 2) {
+        geometry_box_value = DynamicTo<CSSIdentifierValue>(list->Item(1));
+      }
+      // If <geometry-box> is omitted, default to border-box.
+      GeometryBox geometry_box =
+          geometry_box_value ? geometry_box_value->ConvertTo<GeometryBox>()
+                             : GeometryBox::kBorderBox;
+      return ShapeClipPathOperation::Create(
+          BasicShapeForValue(state, shape_value), geometry_box);
+    }
+
+    // TODO(pdr): Support specifying <geometry-box> by itself, without a shape.
+    return nullptr;
   }
 
   if (const auto* url_value = DynamicTo<cssvalue::CSSURIValue>(value)) {

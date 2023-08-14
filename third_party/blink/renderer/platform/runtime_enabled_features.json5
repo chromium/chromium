@@ -635,6 +635,11 @@
       base_feature: "none",
     },
     {
+      // https://drafts.fxtf.org/css-masking/#typedef-geometry-box
+      name: "ClipPathGeometryBox",
+      status: "experimental",
+    },
+    {
       name: "CloseWatcher",
     },
     {

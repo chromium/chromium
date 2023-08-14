@@ -220,6 +220,8 @@ CSSValue* ConsumeIntrinsicSizeLonghand(CSSParserTokenRange&,
 CSSIdentifierValue* ConsumeShapeBox(CSSParserTokenRange&);
 CSSIdentifierValue* ConsumeVisualBox(CSSParserTokenRange&);
 
+CSSIdentifierValue* ConsumeGeometryBox(CSSParserTokenRange&);
+
 enum class IsImplicitProperty { kNotImplicit, kImplicit };
 
 void AddProperty(CSSPropertyID resolved_property,
