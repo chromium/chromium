@@ -6,16 +6,14 @@
 #define CHROME_BROWSER_NOTIFICATIONS_MAC_NOTIFICATION_PROVIDER_FACTORY_H_
 
 #include "chrome/browser/web_applications/web_app_id.h"
-#include "chrome/services/mac_notifications/public/cpp/mac_notification_metrics.h"
+#include "chrome/services/mac_notifications/public/cpp/notification_style.h"
 #include "chrome/services/mac_notifications/public/mojom/mac_notifications.mojom-forward.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 class MacNotificationProviderFactory {
  public:
-  using ProcessType = mac_notifications::ProcessType;
-
   explicit MacNotificationProviderFactory(
-      ProcessType process_type,
+      mac_notifications::NotificationStyle notification_style,
       const web_app::AppId& web_app_id = {});
   MacNotificationProviderFactory(const MacNotificationProviderFactory&) =
       delete;
@@ -27,10 +25,12 @@ class MacNotificationProviderFactory {
   virtual mojo::Remote<mac_notifications::mojom::MacNotificationProvider>
   LaunchProvider();
 
-  ProcessType process_type() const { return process_type_; }
+  mac_notifications::NotificationStyle notification_style() const {
+    return notification_style_;
+  }
 
  private:
-  const ProcessType process_type_;
+  const mac_notifications::NotificationStyle notification_style_;
   const web_app::AppId web_app_id_;
 };
 

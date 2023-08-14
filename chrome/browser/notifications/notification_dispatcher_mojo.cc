@@ -124,7 +124,7 @@ void NotificationDispatcherMojo::GetAllDisplayedNotifications(
 
 void NotificationDispatcherMojo::OnNotificationAction(
     mac_notifications::mojom::NotificationActionInfoPtr info) {
-  ProcessMacNotificationResponse(provider_factory_->process_type(),
+  ProcessMacNotificationResponse(provider_factory_->notification_style(),
                                  std::move(info));
   CheckIfNotificationsRemaining();
 }
@@ -156,9 +156,8 @@ void NotificationDispatcherMojo::OnServiceDisconnectedGracefully(
   base::TimeDelta elapsed = base::TimeTicks::Now() - service_start_time_;
 
   // Log utility process runtime metrics to UMA.
-  if (service_ &&
-      provider_factory_->process_type() ==
-          MacNotificationProviderFactory::ProcessType::kAlertProcess) {
+  if (service_ && provider_factory_->notification_style() ==
+                      mac_notifications::NotificationStyle::kAlert) {
     base::UmaHistogramCustomTimes("Notifications.macOS.ServiceProcessRuntime",
                                   elapsed, base::Milliseconds(100),
                                   base::Hours(8),

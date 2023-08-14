@@ -56,11 +56,13 @@ LaunchInProcessProvider() {
 }  // namespace
 
 MacNotificationProviderFactory::MacNotificationProviderFactory(
-    ProcessType process_type,
+    mac_notifications::NotificationStyle notification_style,
     const web_app::AppId& web_app_id)
-    : process_type_(process_type), web_app_id_(web_app_id) {
-  CHECK_NE(process_type_ == ProcessType::kAppShimProcess, web_app_id_.empty());
-  if (process_type_ == ProcessType::kAppShimProcess) {
+    : notification_style_(notification_style), web_app_id_(web_app_id) {
+  CHECK_NE(
+      notification_style_ == mac_notifications::NotificationStyle::kAppShim,
+      web_app_id_.empty());
+  if (notification_style_ == mac_notifications::NotificationStyle::kAppShim) {
     CHECK(base::FeatureList::IsEnabled(
         features::kAppShimNotificationAttribution));
   }
@@ -70,12 +72,12 @@ MacNotificationProviderFactory::~MacNotificationProviderFactory() = default;
 
 mojo::Remote<mac_notifications::mojom::MacNotificationProvider>
 MacNotificationProviderFactory::LaunchProvider() {
-  switch (process_type_) {
-    case ProcessType::kInProcess:
+  switch (notification_style_) {
+    case mac_notifications::NotificationStyle::kBanner:
       return LaunchInProcessProvider();
-    case ProcessType::kAlertProcess:
+    case mac_notifications::NotificationStyle::kAlert:
       return LaunchOutOfProcessProvider();
-    case ProcessType::kAppShimProcess:
+    case mac_notifications::NotificationStyle::kAppShim:
       return apps::AppShimManager::Get()->LaunchNotificationProvider(
           web_app_id_);
   }

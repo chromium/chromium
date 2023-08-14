@@ -42,16 +42,16 @@ std::unique_ptr<NotificationPlatformBridge>
 NotificationPlatformBridge::Create() {
   auto banner_dispatcher = std::make_unique<NotificationDispatcherMojo>(
       std::make_unique<MacNotificationProviderFactory>(
-          mac_notifications::ProcessType::kInProcess));
+          mac_notifications::NotificationStyle::kBanner));
   auto alert_dispatcher = std::make_unique<NotificationDispatcherMojo>(
       std::make_unique<MacNotificationProviderFactory>(
-          mac_notifications::ProcessType::kAlertProcess));
+          mac_notifications::NotificationStyle::kAlert));
   auto create_dispatcher_for_web_app =
       base::BindRepeating([](const web_app::AppId& web_app_id)
                               -> std::unique_ptr<NotificationDispatcherMac> {
         return std::make_unique<NotificationDispatcherMojo>(
             std::make_unique<MacNotificationProviderFactory>(
-                mac_notifications::ProcessType::kAppShimProcess, web_app_id));
+                mac_notifications::NotificationStyle::kAppShim, web_app_id));
       });
 
   return std::make_unique<NotificationPlatformBridgeMac>(
