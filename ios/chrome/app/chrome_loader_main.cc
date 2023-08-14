@@ -20,6 +20,7 @@
 
 #include "base/allocator/early_zone_registration_mac.h"
 #include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
+#include "ios/chrome/app/chrome_main_module_buildflags.h"
 
 extern "C" {
 // abort_report_np() records the message in a special section that both the
@@ -36,6 +37,14 @@ typedef int (*ChromeMainPtr)(int, char**);
 // Path to the framework containing the "ChromeMain" exported function.
 const char kFrameworkPath[] = "@rpath/" CHROME_MAIN_FRAMEWORK_NAME
                               ".framework/" CHROME_MAIN_FRAMEWORK_NAME;
+
+#if BUILDFLAG(USE_CHROME_BLINK_MAIN_MODULE)
+// Path to the framework containing the "ChromeMain" exported function
+// that is built with the "use_blink" gn flag.
+const char kBlinkFrameworkPath[] =
+    "@rpath/" CHROME_BLINK_MAIN_FRAMEWORK_NAME
+    ".framework/" CHROME_BLINK_MAIN_FRAMEWORK_NAME;
+#endif
 
 // Report an error and terminate the application.
 [[noreturn]] void FatalError(const char* format, ...)
@@ -90,8 +99,20 @@ int main(int argc, char* argv[], char* envp[]) {
   partition_alloc::EarlyMallocZoneRegistration();
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC)
 
+  const char* framework_to_load;
+#if BUILDFLAG(USE_CHROME_BLINK_MAIN_MODULE)
+  // TODO(crbug.com/1411704): Switch off a user preference/system
+  // setting/policy. For now base it off something that is user settable, the
+  // timezone.
+  tzset();
+  const bool use_blink = strcmp(tzname[0], "EST") == 0;
+  framework_to_load = use_blink ? kBlinkFrameworkPath : kFrameworkPath;
+#else
+  framework_to_load = kFrameworkPath;
+#endif
+
   // Load the main application library and search for the entry point.
-  Library framework = Library::Load(kFrameworkPath);
+  Library framework = Library::Load(framework_to_load);
   const auto chrome_main = framework.LoadSymbol<ChromeMainPtr>("ChromeMain");
 
   // exit, don't return from main, to avoid the apparent removal of main from

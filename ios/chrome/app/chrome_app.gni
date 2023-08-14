@@ -52,8 +52,55 @@ template("chrome_app") {
       extra_substitutions =
           [ "BUNDLE_IDENTIFIER=$ios_app_bundle_id_prefix.$output_name" ]
     }
+
+    if (ios_use_chrome_blink_main_module) {
+      assert(
+          ios_use_chrome_main_module,
+          "ios_use_chrome_main_module must be set in order to use ios_use_chrome_blink_main_module")
+
+      ios_framework_bundle("${_target_name}_main_blink_framework") {
+        forward_variables_from(invoker,
+                               [
+                                 "deps",
+                                 "framework_dirs",
+                                 "frameworks",
+                                 "public_configs",
+                                 "public_deps",
+                                 "sources",
+                                 "testonly",
+                               ])
+
+        # Explicitly clobber configs inherited from `set_defaults(...)`, then
+        # add back `//build/config:shared_library_config` since this builds a
+        # shared library.
+        if (defined(invoker.configs)) {
+          configs = []
+          configs = invoker.configs + [ "//build/config:shared_library_config" ]
+        }
+
+        output_name = "${_output_name}BlinkMain"
+
+        info_plist = "//ios/chrome/app/resources/ChromeMainInfo.plist"
+        extra_substitutions =
+            [ "BUNDLE_IDENTIFIER=$ios_app_bundle_id_prefix.$output_name" ]
+      }
+    }
   } else {
     not_needed([ "_output_name" ])
+  }
+
+  if (ios_use_chrome_blink_main_module &&
+      current_toolchain == default_toolchain) {
+    bundle_data("${_target_name}_main_blink_framework_bundle") {
+      forward_variables_from(invoker, [ "testonly" ])
+      public_deps = [ ":${_target_name}_main_blink_framework+bundle(${current_toolchain}_blink)" ]
+      outputs = [
+        "{{bundle_contents_dir}}/Frameworks/${_output_name}BlinkMain.framework",
+      ]
+      sources = [ get_label_info(
+                      ":${_target_name}_main_blink_framework+bundle(${current_toolchain}_blink)",
+                      "root_out_dir") + "/${_output_name}BlinkMain.framework" ]
+    }
   }
 
   ios_app_bundle(_target_name) {
@@ -82,12 +129,21 @@ template("chrome_app") {
       deps = [
         "//base/allocator:early_zone_registration_mac",
         "//base/allocator/partition_allocator:partition_alloc_buildflags",
+        "//ios/chrome/app:chrome_main_module_buildflags",
       ]
 
       if (!defined(bundle_deps)) {
         bundle_deps = []
       }
       bundle_deps += [ ":${_target_name}_main_framework+bundle" ]
+
+      if (ios_use_chrome_blink_main_module) {
+        defines +=
+            [ "CHROME_BLINK_MAIN_FRAMEWORK_NAME=\"${_output_name}BlinkMain\"" ]
+        if (current_toolchain == default_toolchain) {
+          bundle_deps += [ ":${_target_name}_main_blink_framework_bundle" ]
+        }
+      }
     }
   }
 }

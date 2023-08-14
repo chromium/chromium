@@ -102,3 +102,10 @@ ios_app_ext_toolchain("ios_clang_x64_app_ext_13_4") {
     ios_deployment_target = "13.4"
   }
 }
+
+ios_toolchain("ios_clang_arm64_blink") {
+  toolchain_args = {
+    current_cpu = "arm64"
+    use_blink = true
+  }
+}

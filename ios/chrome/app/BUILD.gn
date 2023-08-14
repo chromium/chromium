@@ -40,7 +40,10 @@ buildflag_header("fast_app_terminate_buildflags") {
 
 buildflag_header("chrome_main_module_buildflags") {
   header = "chrome_main_module_buildflags.h"
-  flags = [ "USE_CHROME_MAIN_MODULE=$ios_use_chrome_main_module" ]
+  flags = [
+    "USE_CHROME_MAIN_MODULE=$ios_use_chrome_main_module",
+    "USE_CHROME_BLINK_MAIN_MODULE=$ios_use_chrome_blink_main_module",
+  ]
 }
 
 source_set("app") {
@@ -588,6 +591,7 @@ source_set("main") {
     ":app_internal",
     ":chrome_main_module_buildflags",
     "//base",
+    "//build:blink_buildflags",
     "//components/component_updater",
     "//components/crash/core/common",
     "//ios/chrome/app/startup:ios_enable_sandbox_dump_buildflags",

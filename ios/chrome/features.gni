@@ -16,8 +16,12 @@ declare_args() {
   # Enable an experimental option to dump sandbox.
   ios_enable_sandbox_dump = false
 
-  # Controls whether the main application code is build as a framework used
-  # by a shell app. This should allow to initialise partition alloc before
+  # Controls whether the main application code is built as a framework and
+  # used by a shell app. This should allow to initialise partition alloc before
   # any static initialiser run (as the framework is loaded after init).
   ios_use_chrome_main_module = false
+
+  # Controls whether the main application code is built as a framework with
+  # the blink variant flag. ios_use_chrome_main_module must also be set
+  ios_use_chrome_blink_main_module = false
 }
