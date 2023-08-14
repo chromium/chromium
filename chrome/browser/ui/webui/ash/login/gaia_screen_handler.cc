@@ -188,9 +188,23 @@ GaiaScreenHandler::GaiaScreenMode GetGaiaScreenMode(const std::string& email) {
   CrosSettings::Get()->GetInteger(kLoginAuthenticationBehavior,
                                   &authentication_behavior);
   if (authentication_behavior ==
-          em::LoginAuthenticationBehaviorProto::SAML_INTERSTITIAL &&
-      email.empty()) {
-    return GaiaScreenHandler::GAIA_SCREEN_MODE_SAML_REDIRECT;
+      em::LoginAuthenticationBehaviorProto::SAML_INTERSTITIAL) {
+    if (email.empty())
+      return GaiaScreenHandler::GAIA_SCREEN_MODE_SAML_REDIRECT;
+
+    user_manager::KnownUser known_user(g_browser_process->local_state());
+    // If there's a populated email, we must check first that this user is using
+    // SAML in order to decide whether to show the interstitial page.
+    const user_manager::User* user =
+        user_manager::UserManager::Get()->FindUser(known_user.GetAccountId(
+            email, std::string() /* id */, AccountType::UNKNOWN));
+
+    // TODO(b/259675128): we shouldn't rely on `user->using_saml()` when
+    // deciding which IdP page to show because this flag can be outdated. Admin
+    // could have changed the IdP to GAIA since last authentication and we
+    // wouldn't know about it.
+    if (user && user->using_saml())
+      return GaiaScreenHandler::GAIA_SCREEN_MODE_SAML_REDIRECT;
   }
 
   return GaiaScreenHandler::GAIA_SCREEN_MODE_DEFAULT;
