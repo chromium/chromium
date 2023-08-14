@@ -323,8 +323,7 @@ class PrefetchContainer::SinglePrefetch {
   // some point after the initial eligibility check.
   std::unique_ptr<PrefetchCookieListener> cookie_listener_;
 
-  // Filled during prefetching and moved out during serving.
-  mutable std::unique_ptr<PrefetchResponseReader> response_reader_;
+  scoped_refptr<PrefetchResponseReader> response_reader_;
 
   // The different possible states of the cookie copy process.
   enum class CookieCopyStatus {
@@ -714,11 +713,8 @@ PrefetchContainer::CreateRequestHandlerInternal(Reader& reader) {
 
   // Create a `RequestHandler` from the current `SinglePrefetch` (==
   // `reader`) and its corresponding `PrefetchStreamingURLLoader`.
-  std::unique_ptr<PrefetchResponseReader> response_reader =
-      reader.TakeCurrentResponseReaderToServe();
-  auto* raw_response_reader = response_reader.get();
-  auto handler =
-      raw_response_reader->CreateRequestHandler(std::move(response_reader));
+  auto handler = reader.GetCurrentSinglePrefetchToServe()
+                     .response_reader_->CreateRequestHandler();
 
   // Advance the current `SinglePrefetch` position.
   reader.AdvanceCurrentURLToServe();
@@ -759,16 +755,6 @@ void PrefetchContainer::ResetAllStreamingURLLoaders() {
     raw_streaming_loader->PostTaskToDeleteSelf();
   }
   streaming_loaders_.clear();
-
-  for (auto& single_prefetch : redirect_chain_) {
-    std::unique_ptr<PrefetchResponseReader> response_reader =
-        std::move(single_prefetch->response_reader_);
-    if (response_reader) {
-      auto* raw_response_reader = response_reader.get();
-      raw_response_reader->MakeSelfOwned(std::move(response_reader));
-      raw_response_reader->PostTaskToDeleteSelf();
-    }
-  }
 }
 
 void PrefetchContainer::Reader::OnPrefetchProbeResult(
@@ -1008,9 +994,9 @@ bool PrefetchContainer::Reader::IsIsolatedNetworkContextRequiredToServe()
   return this_prefetch.is_isolated_network_context_required_;
 }
 
-std::unique_ptr<PrefetchResponseReader>
-PrefetchContainer::Reader::TakeCurrentResponseReaderToServe() {
-  return std::move(GetCurrentSinglePrefetchToServe().response_reader_);
+base::WeakPtr<PrefetchResponseReader>
+PrefetchContainer::Reader::GetCurrentResponseReaderToServeForTesting() {
+  return GetCurrentSinglePrefetchToServe().response_reader_->GetWeakPtr();
 }
 
 bool PrefetchContainer::Reader::IsPrefetchServable(
@@ -1055,8 +1041,12 @@ PrefetchContainer::SinglePrefetch::SinglePrefetch(
     : url_(url),
       is_isolated_network_context_required_(referring_site !=
                                             net::SchemefulSite(url_)),
-      response_reader_(std::make_unique<PrefetchResponseReader>()) {}
+      response_reader_(base::MakeRefCounted<PrefetchResponseReader>()) {}
 
-PrefetchContainer::SinglePrefetch::~SinglePrefetch() = default;
+PrefetchContainer::SinglePrefetch::~SinglePrefetch() {
+  DCHECK(response_reader_);
+  base::SequencedTaskRunner::GetCurrentDefault()->ReleaseSoon(
+      FROM_HERE, std::move(response_reader_));
+}
 
 }  // namespace content

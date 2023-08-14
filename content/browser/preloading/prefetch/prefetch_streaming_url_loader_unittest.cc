@@ -203,8 +203,7 @@ TEST_P(PrefetchStreamingURLLoaderTest, SuccessfulServedAfterCompletion) {
   base::RunLoop on_response_complete_loop;
 
   // Create the |PrefetchStreamingURLLoader| that is being tested.
-  std::unique_ptr<PrefetchResponseReader> response_reader =
-      std::make_unique<PrefetchResponseReader>();
+  auto response_reader = base::MakeRefCounted<PrefetchResponseReader>();
   std::unique_ptr<PrefetchStreamingURLLoader> streaming_loader =
       std::make_unique<PrefetchStreamingURLLoader>(
           test_url_loader_factory(), std::move(prefetch_request),
@@ -256,7 +255,8 @@ TEST_P(PrefetchStreamingURLLoaderTest, SuccessfulServedAfterCompletion) {
   base::WeakPtr<PrefetchResponseReader> weak_response_reader =
       response_reader->GetWeakPtr();
   PrefetchResponseReader::RequestHandler request_handler =
-      weak_response_reader->CreateRequestHandler(std::move(response_reader));
+      weak_response_reader->CreateRequestHandler();
+  response_reader.reset();
   streaming_loader->OnStartServing();
 
   // Set up URLLoaderClient to "serve" the prefetch.
@@ -316,8 +316,7 @@ TEST_P(PrefetchStreamingURLLoaderTest, SuccessfulServedBeforeCompletion) {
   base::RunLoop on_response_complete_loop;
 
   // Create the |PrefetchStreamingURLLoader| that is being tested.
-  std::unique_ptr<PrefetchResponseReader> response_reader =
-      std::make_unique<PrefetchResponseReader>();
+  auto response_reader = base::MakeRefCounted<PrefetchResponseReader>();
   std::unique_ptr<PrefetchStreamingURLLoader> streaming_loader =
       std::make_unique<PrefetchStreamingURLLoader>(
           test_url_loader_factory(), std::move(prefetch_request),
@@ -366,7 +365,8 @@ TEST_P(PrefetchStreamingURLLoaderTest, SuccessfulServedBeforeCompletion) {
   base::WeakPtr<PrefetchResponseReader> weak_response_reader =
       response_reader->GetWeakPtr();
   PrefetchResponseReader::RequestHandler request_handler =
-      weak_response_reader->CreateRequestHandler(std::move(response_reader));
+      weak_response_reader->CreateRequestHandler();
+  response_reader.reset();
   streaming_loader->OnStartServing();
 
   // Set up URLLoaderClient to "serve" the prefetch.
@@ -443,8 +443,7 @@ TEST_P(PrefetchStreamingURLLoaderTest, SuccessfulNotServed) {
   base::RunLoop on_response_complete_loop;
 
   // Create the |PrefetchStreamingURLLoader| that is being tested.
-  std::unique_ptr<PrefetchResponseReader> response_reader =
-      std::make_unique<PrefetchResponseReader>();
+  auto response_reader = base::MakeRefCounted<PrefetchResponseReader>();
   std::unique_ptr<PrefetchStreamingURLLoader> streaming_loader =
       std::make_unique<PrefetchStreamingURLLoader>(
           test_url_loader_factory(), std::move(prefetch_request),
@@ -506,8 +505,7 @@ TEST_P(PrefetchStreamingURLLoaderTest, FailedInvalidHead) {
   base::RunLoop on_head_received_loop;
 
   // Create the |PrefetchStreamingURLLoader| that is being tested.
-  std::unique_ptr<PrefetchResponseReader> response_reader =
-      std::make_unique<PrefetchResponseReader>();
+  auto response_reader = base::MakeRefCounted<PrefetchResponseReader>();
   std::unique_ptr<PrefetchStreamingURLLoader> streaming_loader =
       std::make_unique<PrefetchStreamingURLLoader>(
           test_url_loader_factory(), std::move(prefetch_request),
@@ -565,8 +563,7 @@ TEST_P(PrefetchStreamingURLLoaderTest, FailedNetError_HeadReceived) {
   base::RunLoop on_response_complete_loop;
 
   // Create the |PrefetchStreamingURLLoader| that is being tested.
-  std::unique_ptr<PrefetchResponseReader> response_reader =
-      std::make_unique<PrefetchResponseReader>();
+  auto response_reader = base::MakeRefCounted<PrefetchResponseReader>();
   std::unique_ptr<PrefetchStreamingURLLoader> streaming_loader =
       std::make_unique<PrefetchStreamingURLLoader>(
           test_url_loader_factory(), std::move(prefetch_request),
@@ -631,8 +628,7 @@ TEST_P(PrefetchStreamingURLLoaderTest, FailedNetError_HeadNotReveived) {
   base::RunLoop on_response_complete_loop;
 
   // Create the |PrefetchStreamingURLLoader| that is being tested.
-  std::unique_ptr<PrefetchResponseReader> response_reader =
-      std::make_unique<PrefetchResponseReader>();
+  auto response_reader = base::MakeRefCounted<PrefetchResponseReader>();
   std::unique_ptr<PrefetchStreamingURLLoader> streaming_loader =
       std::make_unique<PrefetchStreamingURLLoader>(
           test_url_loader_factory(), std::move(prefetch_request),
@@ -687,8 +683,7 @@ TEST_P(PrefetchStreamingURLLoaderTest, FailedNetErrorButServed) {
   base::RunLoop on_response_complete_loop;
 
   // Create the |PrefetchStreamingURLLoader| that is being tested.
-  std::unique_ptr<PrefetchResponseReader> response_reader =
-      std::make_unique<PrefetchResponseReader>();
+  auto response_reader = base::MakeRefCounted<PrefetchResponseReader>();
   std::unique_ptr<PrefetchStreamingURLLoader> streaming_loader =
       std::make_unique<PrefetchStreamingURLLoader>(
           test_url_loader_factory(), std::move(prefetch_request),
@@ -736,7 +731,8 @@ TEST_P(PrefetchStreamingURLLoaderTest, FailedNetErrorButServed) {
   base::WeakPtr<PrefetchResponseReader> weak_response_reader =
       response_reader->GetWeakPtr();
   PrefetchResponseReader::RequestHandler request_handler =
-      weak_response_reader->CreateRequestHandler(std::move(response_reader));
+      weak_response_reader->CreateRequestHandler();
+  response_reader.reset();
   streaming_loader->OnStartServing();
 
   // Set up URLLoaderClient to "serve" the prefetch.
@@ -814,8 +810,8 @@ TEST_P(PrefetchStreamingURLLoaderTest, EligibleRedirect) {
   network::mojom::URLResponseHeadPtr redirect_head;
 
   // Create the |PrefetchStreamingURLLoader| that is being tested.
-  std::unique_ptr<PrefetchResponseReader> redirect_response_reader =
-      std::make_unique<PrefetchResponseReader>();
+  auto redirect_response_reader =
+      base::MakeRefCounted<PrefetchResponseReader>();
   std::unique_ptr<PrefetchStreamingURLLoader> streaming_loader =
       std::make_unique<PrefetchStreamingURLLoader>(
           test_url_loader_factory(), std::move(prefetch_request),
@@ -855,8 +851,7 @@ TEST_P(PrefetchStreamingURLLoaderTest, EligibleRedirect) {
   on_follow_redirect_loop.Run();
 
   // Switch to a new ResponseReader.
-  std::unique_ptr<PrefetchResponseReader> final_response_reader =
-      std::make_unique<PrefetchResponseReader>();
+  auto final_response_reader = base::MakeRefCounted<PrefetchResponseReader>();
   streaming_loader->SetResponseReader(final_response_reader->GetWeakPtr());
 
   // Simulates receiving the prefetch after the redirect
@@ -879,8 +874,8 @@ TEST_P(PrefetchStreamingURLLoaderTest, EligibleRedirect) {
   base::WeakPtr<PrefetchResponseReader> weak_redirect_response_reader =
       redirect_response_reader->GetWeakPtr();
   PrefetchResponseReader::RequestHandler redirect_handler =
-      weak_redirect_response_reader->CreateRequestHandler(
-          std::move(redirect_response_reader));
+      weak_redirect_response_reader->CreateRequestHandler();
+  redirect_response_reader.reset();
   streaming_loader->OnStartServing();
 
   std::unique_ptr<PrefetchTestURLLoaderClient> redirect_url_loader_client =
@@ -920,8 +915,8 @@ TEST_P(PrefetchStreamingURLLoaderTest, EligibleRedirect) {
   base::WeakPtr<PrefetchResponseReader> weak_final_response_reader =
       final_response_reader->GetWeakPtr();
   PrefetchResponseReader::RequestHandler final_response_handler =
-      weak_final_response_reader->CreateRequestHandler(
-          std::move(final_response_reader));
+      weak_final_response_reader->CreateRequestHandler();
+  final_response_reader.reset();
   streaming_loader->OnStartServing();
 
   // Set up URLLoaderClient to "serve" the prefetch.
@@ -978,8 +973,7 @@ TEST_P(PrefetchStreamingURLLoaderTest, IneligibleRedirect) {
   network::mojom::URLResponseHeadPtr redirect_head;
 
   // Create the |PrefetchStreamingURLLoader| that is being tested.
-  std::unique_ptr<PrefetchResponseReader> response_reader =
-      std::make_unique<PrefetchResponseReader>();
+  auto response_reader = base::MakeRefCounted<PrefetchResponseReader>();
   std::unique_ptr<PrefetchStreamingURLLoader> streaming_loader =
       std::make_unique<PrefetchStreamingURLLoader>(
           test_url_loader_factory(), std::move(prefetch_request),
@@ -1035,8 +1029,7 @@ TEST_P(PrefetchStreamingURLLoaderTest, RedirectSwitchInNetworkContext) {
   network::mojom::URLResponseHeadPtr redirect_head;
 
   // Create the |PrefetchStreamingURLLoader| that is being tested.
-  std::unique_ptr<PrefetchResponseReader> response_reader =
-      std::make_unique<PrefetchResponseReader>();
+  auto response_reader = base::MakeRefCounted<PrefetchResponseReader>();
   std::unique_ptr<PrefetchStreamingURLLoader> streaming_loader =
       std::make_unique<PrefetchStreamingURLLoader>(
           test_url_loader_factory(), std::move(prefetch_request),
@@ -1081,7 +1074,8 @@ TEST_P(PrefetchStreamingURLLoaderTest, RedirectSwitchInNetworkContext) {
   base::WeakPtr<PrefetchResponseReader> weak_response_reader =
       response_reader->GetWeakPtr();
   PrefetchResponseReader::RequestHandler redirect_handler =
-      weak_response_reader->CreateRequestHandler(std::move(response_reader));
+      weak_response_reader->CreateRequestHandler();
+  response_reader.reset();
   streaming_loader->OnStartServing();
 
   std::unique_ptr<PrefetchTestURLLoaderClient> serving_url_loader_client =
@@ -1138,8 +1132,7 @@ TEST_P(PrefetchStreamingURLLoaderTest,
   network::mojom::URLResponseHeadPtr redirect_head;
 
   // Create the |PrefetchStreamingURLLoader| that is being tested.
-  std::unique_ptr<PrefetchResponseReader> response_reader =
-      std::make_unique<PrefetchResponseReader>();
+  auto response_reader = base::MakeRefCounted<PrefetchResponseReader>();
   std::unique_ptr<PrefetchStreamingURLLoader> streaming_loader =
       std::make_unique<PrefetchStreamingURLLoader>(
           test_url_loader_factory(), std::move(prefetch_request),
@@ -1202,8 +1195,7 @@ TEST_P(PrefetchStreamingURLLoaderTest, Decoy) {
   base::RunLoop on_response_complete_loop;
 
   // Create the |PrefetchStreamingURLLoader| that is being tested.
-  std::unique_ptr<PrefetchResponseReader> response_reader =
-      std::make_unique<PrefetchResponseReader>();
+  auto response_reader = base::MakeRefCounted<PrefetchResponseReader>();
   std::unique_ptr<PrefetchStreamingURLLoader> streaming_loader =
       std::make_unique<PrefetchStreamingURLLoader>(
           test_url_loader_factory(), std::move(prefetch_request),
@@ -1265,8 +1257,7 @@ TEST_P(PrefetchStreamingURLLoaderTest, Timeout) {
   base::RunLoop on_head_received_loop;
 
   // Create the |PrefetchStreamingURLLoader| that is being tested.
-  std::unique_ptr<PrefetchResponseReader> response_reader =
-      std::make_unique<PrefetchResponseReader>();
+  auto response_reader = base::MakeRefCounted<PrefetchResponseReader>();
   std::unique_ptr<PrefetchStreamingURLLoader> streaming_loader =
       std::make_unique<PrefetchStreamingURLLoader>(
           test_url_loader_factory(), std::move(prefetch_request),
@@ -1320,8 +1311,7 @@ TEST_F(PrefetchStreamingURLLoaderTest, StopTimeoutTimerAfterBeingServed) {
   base::RunLoop on_response_complete_loop;
 
   // Create the |PrefetchStreamingURLLoader| that is being tested.
-  std::unique_ptr<PrefetchResponseReader> response_reader =
-      std::make_unique<PrefetchResponseReader>();
+  auto response_reader = base::MakeRefCounted<PrefetchResponseReader>();
   std::unique_ptr<PrefetchStreamingURLLoader> streaming_loader =
       std::make_unique<PrefetchStreamingURLLoader>(
           test_url_loader_factory(), std::move(prefetch_request),
@@ -1359,7 +1349,8 @@ TEST_F(PrefetchStreamingURLLoaderTest, StopTimeoutTimerAfterBeingServed) {
   base::WeakPtr<PrefetchResponseReader> weak_response_reader =
       response_reader->GetWeakPtr();
   PrefetchResponseReader::RequestHandler request_handler =
-      weak_response_reader->CreateRequestHandler(std::move(response_reader));
+      weak_response_reader->CreateRequestHandler();
+  response_reader.reset();
   streaming_loader->OnStartServing();
 
   std::unique_ptr<PrefetchTestURLLoaderClient> serving_url_loader_client =
@@ -1428,8 +1419,7 @@ TEST_F(PrefetchStreamingURLLoaderTest, StaleResponse) {
   base::RunLoop on_response_complete_loop;
 
   // Create the |PrefetchStreamingURLLoader| that is being tested.
-  std::unique_ptr<PrefetchResponseReader> response_reader =
-      std::make_unique<PrefetchResponseReader>();
+  auto response_reader = base::MakeRefCounted<PrefetchResponseReader>();
   std::unique_ptr<PrefetchStreamingURLLoader> streaming_loader =
       std::make_unique<PrefetchStreamingURLLoader>(
           test_url_loader_factory(), std::move(prefetch_request),
@@ -1499,8 +1489,7 @@ TEST_F(PrefetchStreamingURLLoaderTest, TransferSizeUpdated) {
   base::RunLoop on_response_complete_loop;
 
   // Create the |PrefetchStreamingURLLoader| that is being tested.
-  std::unique_ptr<PrefetchResponseReader> response_reader =
-      std::make_unique<PrefetchResponseReader>();
+  auto response_reader = base::MakeRefCounted<PrefetchResponseReader>();
   std::unique_ptr<PrefetchStreamingURLLoader> streaming_loader =
       std::make_unique<PrefetchStreamingURLLoader>(
           test_url_loader_factory(), std::move(prefetch_request),
@@ -1546,7 +1535,8 @@ TEST_F(PrefetchStreamingURLLoaderTest, TransferSizeUpdated) {
   base::WeakPtr<PrefetchResponseReader> weak_response_reader =
       response_reader->GetWeakPtr();
   PrefetchResponseReader::RequestHandler request_handler =
-      weak_response_reader->CreateRequestHandler(std::move(response_reader));
+      weak_response_reader->CreateRequestHandler();
+  response_reader.reset();
   streaming_loader->OnStartServing();
 
   // Set up URLLoaderClient to "serve" the prefetch.

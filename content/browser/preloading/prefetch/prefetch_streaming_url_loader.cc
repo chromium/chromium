@@ -384,45 +384,38 @@ PrefetchResponseReader::GetStreamingLoader() const {
   return streaming_url_loader_;
 }
 
-void PrefetchResponseReader::MakeSelfOwned(
-    std::unique_ptr<PrefetchResponseReader> self) {
-  self_pointer_ = std::move(self);
-}
-
-void PrefetchResponseReader::PostTaskToDeleteSelf() {
+void PrefetchResponseReader::MaybeReleaseSoonSelfPointer() {
   if (!self_pointer_) {
     return;
   }
+  if (serving_url_loader_receiver_.is_bound()) {
+    return;
+  }
 
-  // To avoid UAF bugs, post a separate task to delete this object.
-  base::SequencedTaskRunner::GetCurrentDefault()->DeleteSoon(
+  // To avoid UAF bugs, post a separate task to possibly delete `this`.
+  base::SequencedTaskRunner::GetCurrentDefault()->ReleaseSoon(
       FROM_HERE, std::move(self_pointer_));
 }
 
 void PrefetchResponseReader::OnServingURLLoaderMojoDisconnect() {
   serving_url_loader_receiver_.reset();
   serving_url_loader_client_.reset();
-  PostTaskToDeleteSelf();
+  MaybeReleaseSoonSelfPointer();
 }
 
 PrefetchResponseReader::RequestHandler
-PrefetchResponseReader::CreateRequestHandler(
-    std::unique_ptr<PrefetchResponseReader> self) {
-  DCHECK(self);
+PrefetchResponseReader::CreateRequestHandler() {
   return base::BindOnce(&PrefetchResponseReader::BindAndStart,
-                        weak_ptr_factory_.GetWeakPtr(), std::move(self));
+                        base::WrapRefCounted(this));
 }
 
 void PrefetchResponseReader::BindAndStart(
-    std::unique_ptr<PrefetchResponseReader> self,
     const network::ResourceRequest& resource_request,
     mojo::PendingReceiver<network::mojom::URLLoader> receiver,
     mojo::PendingRemote<network::mojom::URLLoaderClient> client) {
-  DCHECK(self.get() == this);
   DCHECK(!serving_url_loader_receiver_.is_bound());
-
-  // Make self owned, and delete self once serving is finished.
-  MakeSelfOwned(std::move(self));
+  DCHECK(!self_pointer_);
+  self_pointer_ = base::WrapRefCounted(this);
 
   serving_url_loader_receiver_.Bind(std::move(receiver));
   serving_url_loader_receiver_.set_disconnect_handler(

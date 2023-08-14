@@ -378,8 +378,9 @@ class CONTENT_EXPORT PrefetchContainer {
     // Returns the URL that can be served next.
     const GURL& GetCurrentURLToServe() const;
 
-    // Takes the ownership of the current PrefetchResponseReader.
-    std::unique_ptr<PrefetchResponseReader> TakeCurrentResponseReaderToServe();
+    // Gets the current PrefetchResponseReader.
+    base::WeakPtr<PrefetchResponseReader>
+    GetCurrentResponseReaderToServeForTesting();
 
     // Called when one element of |redirect_chain_| is served and the next
     // element can now be served.

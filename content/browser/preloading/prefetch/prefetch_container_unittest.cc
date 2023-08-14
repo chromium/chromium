@@ -21,6 +21,7 @@
 #include "net/base/isolation_info.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -847,7 +848,7 @@ TEST_F(PrefetchContainerTest, MultipleStreamingURLLoaders) {
 
   base::HistogramTester histogram_tester;
 
-  PrefetchContainer prefetch_container(
+  auto prefetch_container = std::make_unique<PrefetchContainer>(
       GlobalRenderFrameHostId(1234, 5678), kTestUrl1,
       PrefetchType(/*use_prefetch_proxy=*/true,
                    blink::mojom::SpeculationEagerness::kEager),
@@ -856,27 +857,29 @@ TEST_F(PrefetchContainerTest, MultipleStreamingURLLoaders) {
       blink::mojom::SpeculationInjectionWorld::kNone,
       /*prefetch_document_manager=*/nullptr);
 
-  EXPECT_FALSE(prefetch_container.HasStreamingURLLoadersForTest());
-  EXPECT_EQ(prefetch_container.GetLastStreamingURLLoader(), nullptr);
+  EXPECT_FALSE(prefetch_container->HasStreamingURLLoadersForTest());
+  EXPECT_EQ(prefetch_container->GetLastStreamingURLLoader(), nullptr);
 
-  EXPECT_FALSE(prefetch_container.IsPrefetchServable(base::TimeDelta::Max()));
-  EXPECT_FALSE(prefetch_container.GetHead());
+  EXPECT_FALSE(prefetch_container->IsPrefetchServable(base::TimeDelta::Max()));
+  EXPECT_FALSE(prefetch_container->GetHead());
 
   auto streaming_loaders =
       MakeServableStreamingURLLoadersWithNetworkTransitionRedirectForTest(
-          &prefetch_container, kTestUrl1, kTestUrl2);
+          prefetch_container.get(), kTestUrl1, kTestUrl2);
   ASSERT_EQ(streaming_loaders.size(), 2U);
-  EXPECT_EQ(prefetch_container.GetLastStreamingURLLoader(),
+  EXPECT_EQ(prefetch_container->GetLastStreamingURLLoader(),
             streaming_loaders[1].get());
-  EXPECT_TRUE(prefetch_container.IsPrefetchServable(base::TimeDelta::Max()));
-  EXPECT_TRUE(prefetch_container.GetHead());
+  EXPECT_TRUE(prefetch_container->IsPrefetchServable(base::TimeDelta::Max()));
+  EXPECT_TRUE(prefetch_container->GetHead());
 
-  PrefetchContainer::Reader reader = prefetch_container.CreateReader();
+  PrefetchContainer::Reader reader = prefetch_container->CreateReader();
 
+  base::WeakPtr<PrefetchResponseReader> weak_first_response_reader =
+      reader.GetCurrentResponseReaderToServeForTesting();
   PrefetchResponseReader::RequestHandler first_request_handler =
       reader.CreateRequestHandler();
 
-  EXPECT_EQ(prefetch_container.GetLastStreamingURLLoader(),
+  EXPECT_EQ(prefetch_container->GetLastStreamingURLLoader(),
             streaming_loaders[1].get());
 
   EXPECT_TRUE(streaming_loaders[0]);
@@ -885,18 +888,63 @@ TEST_F(PrefetchContainerTest, MultipleStreamingURLLoaders) {
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(streaming_loaders[0]);
 
+  base::WeakPtr<PrefetchResponseReader> weak_second_response_reader =
+      reader.GetCurrentResponseReaderToServeForTesting();
   PrefetchResponseReader::RequestHandler second_request_handler =
       reader.CreateRequestHandler();
 
-  EXPECT_FALSE(prefetch_container.HasStreamingURLLoadersForTest());
-  EXPECT_EQ(prefetch_container.GetLastStreamingURLLoader(), nullptr);
+  EXPECT_FALSE(prefetch_container->HasStreamingURLLoadersForTest());
+  EXPECT_EQ(prefetch_container->GetLastStreamingURLLoader(), nullptr);
 
-  EXPECT_FALSE(prefetch_container.IsPrefetchServable(base::TimeDelta::Max()));
-  EXPECT_FALSE(prefetch_container.GetHead());
+  EXPECT_FALSE(prefetch_container->IsPrefetchServable(base::TimeDelta::Max()));
+  EXPECT_FALSE(prefetch_container->GetHead());
 
   EXPECT_TRUE(streaming_loaders[1]);
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(streaming_loaders[1]);
+
+  std::unique_ptr<PrefetchTestURLLoaderClient> first_serving_url_loader_client =
+      std::make_unique<PrefetchTestURLLoaderClient>();
+  network::ResourceRequest first_serving_request;
+  first_serving_request.url = kTestUrl1;
+  first_serving_request.method = "GET";
+
+  std::move(first_request_handler)
+      .Run(first_serving_request,
+           first_serving_url_loader_client->BindURLloaderAndGetReceiver(),
+           first_serving_url_loader_client->BindURLLoaderClientAndGetRemote());
+
+  std::unique_ptr<PrefetchTestURLLoaderClient>
+      second_serving_url_loader_client =
+          std::make_unique<PrefetchTestURLLoaderClient>();
+  network::ResourceRequest second_serving_request;
+  second_serving_request.url = kTestUrl2;
+  second_serving_request.method = "GET";
+
+  std::move(second_request_handler)
+      .Run(second_serving_request,
+           second_serving_url_loader_client->BindURLloaderAndGetReceiver(),
+           second_serving_url_loader_client->BindURLLoaderClientAndGetRemote());
+
+  prefetch_container.reset();
+
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(first_serving_url_loader_client->received_redirects().size(), 1u);
+
+  EXPECT_EQ(second_serving_url_loader_client->body_content(), "test body");
+  EXPECT_TRUE(
+      second_serving_url_loader_client->completion_status().has_value());
+
+  EXPECT_TRUE(weak_first_response_reader);
+  EXPECT_TRUE(weak_second_response_reader);
+
+  first_serving_url_loader_client->DisconnectMojoPipes();
+  second_serving_url_loader_client->DisconnectMojoPipes();
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_FALSE(weak_first_response_reader);
+  EXPECT_FALSE(weak_second_response_reader);
 }
 
 TEST_F(PrefetchContainerTest, ReleaseAllStreamingURLLoaders) {
@@ -937,5 +985,272 @@ TEST_F(PrefetchContainerTest, ReleaseAllStreamingURLLoaders) {
   EXPECT_FALSE(streaming_loaders[0]);
   EXPECT_FALSE(streaming_loaders[1]);
 }
+
+// To test lifetime and ownership issues, all possible event orderings for
+// successful prefetching and serving are tested.
+enum class Event {
+  // Call OnComplete().
+  kPrefetchOnComplete,
+
+  // Call CreateRequestHandler().
+  kCreateRequestHandler,
+
+  // Call the RequestHandler returned by CreateRequestHandler().
+  kRequestHandler,
+
+  // Disconnect `serving_url_loader_client`.
+  kDisconnectServingClient,
+
+  // Completely read the body mojo pipe.
+  kCompleteBody,
+
+  // Destruct PrefetchContainer.
+  kDestructPrefetchContainer,
+};
+
+enum class BodySize { kSmall, kLarge };
+
+// To detect corner cases around lifetime and ownership, test all possible
+// permutations of the order of events.
+class PrefetchContainerLifetimeTest
+    : public PrefetchContainerTest,
+      public ::testing::WithParamInterface<
+          std::tuple<std::vector<Event>, BodySize>> {};
+
+TEST_P(PrefetchContainerLifetimeTest, Lifetime) {
+  auto prefetch_container = std::make_unique<PrefetchContainer>(
+      GlobalRenderFrameHostId(1234, 5678), GURL("https://test.com"),
+      PrefetchType(/*use_prefetch_proxy=*/true,
+                   blink::mojom::SpeculationEagerness::kEager),
+      blink::mojom::Referrer(),
+      /*no_vary_search_expected=*/absl::nullopt,
+      blink::mojom::SpeculationInjectionWorld::kNone,
+      /*prefetch_document_manager=*/nullptr);
+
+  auto pending_request =
+      MakeManuallyServableStreamingURLLoaderForTest(prefetch_container.get());
+
+  std::string content;
+  switch (std::get<1>(GetParam())) {
+    case BodySize::kSmall:
+      content = "Body";
+      break;
+    case BodySize::kLarge:
+      while (content.size() <
+             4 * GetDataPipeDefaultAllocationSize(
+                     network::features::DataPipeAllocationSize::
+                         kLargerSizeIfPossible)) {
+        content += "Body";
+      }
+      break;
+  }
+  mojo::ScopedDataPipeConsumerHandle consumer_handle;
+  {
+    mojo::ScopedDataPipeProducerHandle producer_handle;
+    CHECK_EQ(
+        mojo::CreateDataPipe(content.size(), producer_handle, consumer_handle),
+        MOJO_RESULT_OK);
+    uint32_t bytes_written = content.size();
+    CHECK_EQ(MOJO_RESULT_OK,
+             producer_handle->WriteData(content.data(), &bytes_written,
+                                        MOJO_WRITE_DATA_FLAG_ALL_OR_NONE));
+  }
+
+  EXPECT_FALSE(prefetch_container->IsPrefetchServable(base::TimeDelta::Max()));
+  EXPECT_FALSE(prefetch_container->GetHead());
+
+  pending_request.client->OnReceiveResponse(
+      network::mojom::URLResponseHead::New(), std::move(consumer_handle),
+      absl::nullopt);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(prefetch_container->IsPrefetchServable(base::TimeDelta::Max()));
+  EXPECT_TRUE(prefetch_container->GetHead());
+
+  PrefetchContainer::Reader reader = prefetch_container->CreateReader();
+
+  base::WeakPtr<PrefetchResponseReader> weak_response_reader =
+      reader.GetCurrentResponseReaderToServeForTesting();
+  ASSERT_TRUE(prefetch_container->GetLastStreamingURLLoader());
+  base::WeakPtr<PrefetchStreamingURLLoader> weak_streaming_loader =
+      prefetch_container->GetLastStreamingURLLoader()->GetWeakPtr();
+
+  PrefetchResponseReader::RequestHandler request_handler;
+  std::unique_ptr<PrefetchTestURLLoaderClient> serving_url_loader_client;
+
+  // `PrefetchStreamingURLLoader` and `PrefetchResponseReader` are initially
+  // both expected alive, because they are needed for serving `request_handler`.
+
+  std::set<Event> done;
+
+  for (const Event event : std::get<0>(GetParam())) {
+    switch (event) {
+      case Event::kPrefetchOnComplete:
+        pending_request.client->OnComplete(
+            network::URLLoaderCompletionStatus(net::OK));
+        break;
+
+      case Event::kCreateRequestHandler:
+        ASSERT_FALSE(request_handler);
+        ASSERT_TRUE(prefetch_container);
+        request_handler = reader.CreateRequestHandler();
+        break;
+
+      // Call the RequestHandler returned by CreateRequestHandler().
+      case Event::kRequestHandler: {
+        ASSERT_TRUE(request_handler);  // NOLINT(bugprone-use-after-move)
+        ASSERT_FALSE(serving_url_loader_client);
+
+        network::ResourceRequest serving_request;
+        serving_request.url = GURL("https://test.com");
+        serving_request.method = "GET";
+
+        serving_url_loader_client =
+            std::make_unique<PrefetchTestURLLoaderClient>();
+        serving_url_loader_client->SetAutoDraining(false);
+
+        // NOLINT(bugprone-use-after-move)
+        std::move(request_handler)
+            .Run(serving_request,
+                 serving_url_loader_client->BindURLloaderAndGetReceiver(),
+                 serving_url_loader_client->BindURLLoaderClientAndGetRemote());
+        break;
+      }
+
+      // Disconnect `serving_url_loader_client`.
+      case Event::kDisconnectServingClient:
+        ASSERT_TRUE(serving_url_loader_client);
+        serving_url_loader_client->DisconnectMojoPipes();
+        break;
+
+      // Completely read the body mojo pipe.
+      case Event::kCompleteBody:
+        serving_url_loader_client->StartDraining();
+        break;
+
+      case Event::kDestructPrefetchContainer:
+        ASSERT_TRUE(prefetch_container);
+        prefetch_container.reset();
+        break;
+    }
+    done.insert(event);
+
+    base::RunLoop().RunUntilIdle();
+
+    // `PrefetchResponseReader` should be kept alive as long as
+    // `PrefetchContainer` is alive or serving URLLoaderClients are not
+    // finished.
+    EXPECT_EQ(!!weak_response_reader,
+              !done.count(Event::kDisconnectServingClient) ||
+                  !done.count(Event::kDestructPrefetchContainer));
+
+    EXPECT_EQ(!!weak_streaming_loader,
+              !done.count(Event::kPrefetchOnComplete) ||
+                  !done.count(Event::kCreateRequestHandler));
+
+    if (done.count(Event::kRequestHandler)) {
+      EXPECT_EQ(serving_url_loader_client->completion_status().has_value(),
+                done.count(Event::kPrefetchOnComplete));
+    }
+    if (done.count(Event::kCompleteBody)) {
+      EXPECT_EQ(serving_url_loader_client->body_content().size(),
+                content.size());
+      EXPECT_EQ(serving_url_loader_client->body_content(), content);
+    }
+  }
+}
+
+std::vector<std::vector<Event>> ValidEventPermutations() {
+  std::vector<Event> events({
+      Event::kPrefetchOnComplete,
+      Event::kCreateRequestHandler,
+      Event::kRequestHandler,
+      Event::kDisconnectServingClient,
+      Event::kCompleteBody,
+      Event::kDestructPrefetchContainer,
+  });
+
+  std::vector<std::vector<Event>> params;
+  do {
+    const auto it_prefetch_on_complete =
+        std::find(events.begin(), events.end(), Event::kPrefetchOnComplete);
+    const auto it_create_request_handler =
+        std::find(events.begin(), events.end(), Event::kCreateRequestHandler);
+    const auto it_request_handler =
+        std::find(events.begin(), events.end(), Event::kRequestHandler);
+    const auto it_disconnect_serving_client = std::find(
+        events.begin(), events.end(), Event::kDisconnectServingClient);
+    const auto it_complete_body =
+        std::find(events.begin(), events.end(), Event::kCompleteBody);
+    const auto it_destruct_prefetch_container = std::find(
+        events.begin(), events.end(), Event::kDestructPrefetchContainer);
+
+    // Ordering requirements due to direct data dependencies:
+
+    // `kCreateRequestHandler` -> `kRequestHandler` (`request_handler`)
+    if (it_create_request_handler > it_request_handler) {
+      continue;
+    }
+    // `kRequestHandler` -> `kDisconnectServingClient`
+    // (`serving_url_loader_client`)
+    if (it_request_handler > it_disconnect_serving_client) {
+      continue;
+    }
+    // `kCreateRequestHandler` -> `kDestructPrefetchContainer`
+    // (`prefetch_container`)
+    if (it_create_request_handler > it_destruct_prefetch_container) {
+      continue;
+    }
+    // `kRequestHandler` -> `kCompleteBody` (body data pipe)
+    if (it_request_handler > it_complete_body) {
+      continue;
+    }
+
+    // `kPrefetchOnComplete` -> `kCompleteBody` and successful
+    // `kDisconnectServingClient` (prefetch completion)
+    if (it_prefetch_on_complete > it_complete_body) {
+      continue;
+    }
+    if (it_prefetch_on_complete > it_disconnect_serving_client) {
+      continue;
+    }
+
+    params.push_back(events);
+  } while (std::next_permutation(events.begin(), events.end()));
+
+  // Make sure some particular sequences are tested, where:
+
+  // - `PrefetchContainer` is destructed before prefetch is completed:
+  CHECK(base::Contains(
+      params, std::vector<Event>{
+                  Event::kCreateRequestHandler, Event::kRequestHandler,
+                  Event::kDestructPrefetchContainer, Event::kPrefetchOnComplete,
+                  Event::kCompleteBody, Event::kDisconnectServingClient}));
+
+  // - `PrefetchContainer` is destructed before RequestHandler is invoked and
+  // prefetch is completed:
+  CHECK(base::Contains(
+      params,
+      std::vector<Event>{
+          Event::kCreateRequestHandler, Event::kDestructPrefetchContainer,
+          Event::kRequestHandler, Event::kPrefetchOnComplete,
+          Event::kCompleteBody, Event::kDisconnectServingClient}));
+
+  // - `PrefetchContainer` is destructed before RequestHandler is invoked but
+  // after prefetch is completed:
+  CHECK(base::Contains(
+      params, std::vector<Event>{
+                  Event::kPrefetchOnComplete, Event::kCreateRequestHandler,
+                  Event::kDestructPrefetchContainer, Event::kRequestHandler,
+                  Event::kCompleteBody, Event::kDisconnectServingClient}));
+
+  return params;
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ParametrizedTests,
+    PrefetchContainerLifetimeTest,
+    testing::Combine(testing::ValuesIn(ValidEventPermutations()),
+                     testing::Values(BodySize::kSmall, BodySize::kLarge)));
 
 }  // namespace content

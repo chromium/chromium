@@ -29,18 +29,27 @@ class PrefetchStreamingURLLoader;
 // - Redirect cases: `HandleRedirect()` [last event]
 // - Non-redirect cases: `OnReceiveResponse()` -> `OnComplete()` [last event]
 // with optional `OnReceiveEarlyHints()` and `OnTransferSizeUpdated()` events.
+//
+// `PrefetchResponseReader` is kept alive by:
+// - `PrefetchContainer::SinglePrefetch::response_reader_`
+//   as long as `PrefetchContainer` is alive,
+// - `PrefetchResponseReader::self_pointer_`
+//   while it is serving to its `mojom::URLLoaderClient`, or
+// - The `RequestHandler` returned by `CreateRequestHandler()`
+//   until it is called.
 class CONTENT_EXPORT PrefetchResponseReader final
-    : public network::mojom::URLLoader {
+    : public network::mojom::URLLoader,
+      public base::RefCounted<PrefetchResponseReader> {
  public:
   PrefetchResponseReader();
-  ~PrefetchResponseReader() override;
 
   void SetStreamingURLLoader(
       base::WeakPtr<PrefetchStreamingURLLoader> streaming_url_loader);
   base::WeakPtr<PrefetchStreamingURLLoader> GetStreamingLoader() const;
 
-  void MakeSelfOwned(std::unique_ptr<PrefetchResponseReader> self);
-  void PostTaskToDeleteSelf();
+  // Asynchronously release `self_pointer_` if eligible. Note that `this` might
+  // be still be kept alive by others even after that.
+  void MaybeReleaseSoonSelfPointer();
 
   // Adds events (plumbing either directly to `serving_url_loader_client_` or
   // via `AddEventToQueue()`) from the methods with the same names in
@@ -58,18 +67,19 @@ class CONTENT_EXPORT PrefetchResponseReader final
       mojo::PendingReceiver<network::mojom::URLLoader> url_loader_receiver,
       mojo::PendingRemote<network::mojom::URLLoaderClient> forwarding_client)>;
 
-  // Creates a request handler to serve the response of the prefetch, and
-  // also makes |this| self owned.
-  RequestHandler CreateRequestHandler(
-      std::unique_ptr<PrefetchResponseReader> self);
+  // Creates a request handler to serve the response of the prefetch.
+  RequestHandler CreateRequestHandler();
 
   base::WeakPtr<PrefetchResponseReader> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
 
  private:
+  friend class base::RefCounted<PrefetchResponseReader>;
+
+  ~PrefetchResponseReader() override;
+
   void BindAndStart(
-      std::unique_ptr<PrefetchResponseReader> self,
       const network::ResourceRequest& resource_request,
       mojo::PendingReceiver<network::mojom::URLLoader> receiver,
       mojo::PendingRemote<network::mojom::URLLoaderClient> client);
@@ -125,7 +135,7 @@ class CONTENT_EXPORT PrefetchResponseReader final
   mojo::Remote<network::mojom::URLLoaderClient> serving_url_loader_client_;
 
   // Set when this manages its own lifetime.
-  std::unique_ptr<PrefetchResponseReader> self_pointer_;
+  scoped_refptr<PrefetchResponseReader> self_pointer_;
 
   base::WeakPtr<PrefetchStreamingURLLoader> streaming_url_loader_;
 

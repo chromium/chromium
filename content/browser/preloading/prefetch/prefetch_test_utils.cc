@@ -71,6 +71,43 @@ void MakeServableStreamingURLLoaderForTest(
   DCHECK(weak_streaming_loader->Servable(base::TimeDelta::Max()));
 }
 
+network::TestURLLoaderFactory::PendingRequest
+MakeManuallyServableStreamingURLLoaderForTest(
+    PrefetchContainer* prefetch_container) {
+  const GURL kTestUrl = GURL("https://test.com");
+
+  network::TestURLLoaderFactory test_url_loader_factory;
+  std::unique_ptr<network::ResourceRequest> request =
+      std::make_unique<network::ResourceRequest>();
+  request->url = kTestUrl;
+  request->method = "GET";
+
+  std::unique_ptr<PrefetchStreamingURLLoader> streaming_loader =
+      std::make_unique<PrefetchStreamingURLLoader>(
+          &test_url_loader_factory, std::move(request),
+          TRAFFIC_ANNOTATION_FOR_TESTS, /*timeout_duration=*/base::TimeDelta(),
+          base::BindOnce([](network::mojom::URLResponseHead* head) {
+            return PrefetchStreamingURLLoaderStatus::kHeadReceivedWaitingOnBody;
+          }),
+          base::BindOnce(
+              [](const network::URLLoaderCompletionStatus& completion_status) {
+              }),
+          base::BindRepeating(
+              [](const net::RedirectInfo& redirect_info,
+                 network::mojom::URLResponseHeadPtr response_head) {
+                NOTREACHED();
+              }),
+          base::BindOnce(&PrefetchContainer::OnReceivedHead,
+                         prefetch_container->GetWeakPtr()),
+          prefetch_container->GetResponseReaderForCurrentPrefetch());
+
+  auto weak_streaming_loader = streaming_loader->GetWeakPtr();
+  prefetch_container->TakeStreamingURLLoader(std::move(streaming_loader));
+
+  CHECK_EQ(test_url_loader_factory.pending_requests()->size(), 1u);
+  return std::move(test_url_loader_factory.pending_requests()->at(0));
+}
+
 PrefetchStreamingURLLoader::OnPrefetchRedirectCallback
 CreatePrefetchRedirectCallbackForTest(
     base::RunLoop* on_receive_redirect_loop,
@@ -310,10 +347,20 @@ void PrefetchTestURLLoaderClient::OnReceiveResponse(
     mojo::ScopedDataPipeConsumerHandle body,
     absl::optional<mojo_base::BigBuffer> cached_metadata) {
   DCHECK(!cached_metadata);
+  DCHECK(!body_);
+  body_ = std::move(body);
 
-  // Drains |body| into |body_content_|
+  if (auto_draining_) {
+    StartDraining();
+  }
+}
+
+void PrefetchTestURLLoaderClient::StartDraining() {
+  // Drains |body_| into |body_content_|
+  DCHECK(body_);
+  DCHECK(!pipe_drainer_);
   pipe_drainer_ =
-      std::make_unique<mojo::DataPipeDrainer>(this, std::move(body));
+      std::make_unique<mojo::DataPipeDrainer>(this, std::move(body_));
 }
 
 void PrefetchTestURLLoaderClient::OnReceiveRedirect(
