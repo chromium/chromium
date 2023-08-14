@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.omnibox.suggestions;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Color;
-import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.view.InputDevice;
 import android.view.KeyEvent;
@@ -15,7 +14,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -38,12 +36,8 @@ import org.chromium.chrome.browser.util.KeyNavigationUtil;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.ui.base.ViewUtils;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-
 /** A widget for showing a list of omnibox suggestions. */
 public class OmniboxSuggestionsDropdown extends RecyclerView {
-    private static final long DEFERRED_INITIAL_SHRINKING_LAYOUT_FROM_IME_DURATION_MS = 300;
     /**
      * Used to defer the accessibility announcement for list content.
      * This makes core difference when the list is first shown up, when the interaction with the
@@ -55,7 +49,6 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
     private final int mStandardBgColor;
     private final int mIncognitoBgColor;
 
-    private final Rect mTempRect = new Rect();
     private final SuggestionLayoutScrollListener mLayoutScrollListener;
 
     private @Nullable OmniboxSuggestionsDropdownAdapter mAdapter;
@@ -69,21 +62,6 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
     private int mListViewMaxHeight;
     private int mLastBroadcastedListViewMaxHeight;
     private @Nullable Callback<OmniboxAlignment> mOmniboxAlignmentObserver;
-
-    @IntDef({InitialResizeState.WAITING_FOR_FIRST_MEASURE, InitialResizeState.WAITING_FOR_SHRINKING,
-            InitialResizeState.IGNORING_SHRINKING, InitialResizeState.HANDLED_INITIAL_SIZING})
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface InitialResizeState {
-        int WAITING_FOR_FIRST_MEASURE = 0;
-        int WAITING_FOR_SHRINKING = 1;
-        int IGNORING_SHRINKING = 2;
-        int HANDLED_INITIAL_SIZING = 3;
-    }
-
-    private @InitialResizeState int mInitialResizeState =
-            InitialResizeState.WAITING_FOR_FIRST_MEASURE;
-    private int mWidthMeasureSpec;
-    private int mHeightMeasureSpec;
 
     /**
      * Interface that will receive notifications when the user is interacting with an item on the
@@ -342,7 +320,6 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
     public void onAttachedToWindow() {
         super.onAttachedToWindow();
         mEmbedder.onAttachedToWindow();
-        mInitialResizeState = InitialResizeState.WAITING_FOR_FIRST_MEASURE;
         mOmniboxAlignmentObserver = this::onOmniboxAlignmentChanged;
         mOmniboxAlignment = mEmbedder.addAlignmentObserver(mOmniboxAlignmentObserver);
         resetSelection();
@@ -366,58 +343,15 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
                 TimingMetric metric = OmniboxMetrics.recordSuggestionListMeasureTime()) {
             OmniboxAlignment omniboxAlignment = mEmbedder.getCurrentAlignment();
             maybeUpdateLayoutParams(omniboxAlignment.top);
-            boolean useAlignmentSpecifiedHeight = OmniboxFeatures.omniboxConsumesImeInsets();
-            int availableViewportHeight = useAlignmentSpecifiedHeight
-                    ? omniboxAlignment.height
-                    : calculateAvailableViewportHeight() - omniboxAlignment.top;
+            int availableViewportHeight = omniboxAlignment.height;
             int desiredWidth = omniboxAlignment.width;
             adjustHorizontalPosition();
-            // Suppress the initial requests to shrink the viewport of the omnibox suggestion
-            // dropdown. The viewport will decrease when the keyboard is triggered, but the request
-            // to resize happens when the keyboard starts showing before it has had the chance to
-            // animate in. Because the resizing is triggered early, the dropdown shrinks earlier
-            // then the keyboard is fully visible, which leaves a hole in the UI showing the content
-            // where the keyboard will eventually go.
-            //
-            // The work around is to suppress these initial shrinking layout requests and defer them
-            // for enough time for the keyboard to hopefully be visible.
-            //
-            // This does not use getMeasuredHeight() as a means of comparison against the available
-            // viewport because on tablets the measured height can be smaller than the viewport as
-            // tablets use AT_MOST for the measure spec vs EXACTLY on phones.
-            // This logic is moot when we use alignment-specified height; the deferral of keyboard
-            // height changes is handled for us in that case.
-            if (!useAlignmentSpecifiedHeight) {
-                if ((mInitialResizeState == InitialResizeState.WAITING_FOR_SHRINKING
-                            || mInitialResizeState == InitialResizeState.IGNORING_SHRINKING)
-                        && availableViewportHeight < mListViewMaxHeight
-                        && getMeasuredWidth() == desiredWidth) {
-                    super.onMeasure(mWidthMeasureSpec, mHeightMeasureSpec);
-                    if (mInitialResizeState == InitialResizeState.IGNORING_SHRINKING) return;
-
-                    mInitialResizeState = InitialResizeState.IGNORING_SHRINKING;
-                    PostTask.postDelayedTask(TaskTraits.UI_USER_BLOCKING, () -> {
-                        if (mInitialResizeState != InitialResizeState.IGNORING_SHRINKING) return;
-                        ViewUtils.requestLayout(this, "OmniboxSuggestionsDropdown.onMeasure");
-                        mInitialResizeState = InitialResizeState.HANDLED_INITIAL_SIZING;
-                    }, DEFERRED_INITIAL_SHRINKING_LAYOUT_FROM_IME_DURATION_MS);
-                    return;
-                } else if (mInitialResizeState == InitialResizeState.IGNORING_SHRINKING) {
-                    // The dimensions changed in an unexpected way (either by increasing height or
-                    // a change in width), so just mark the initial sizing as completed and accept
-                    // the new measurements and suppress the pending posted layout request.
-                    mInitialResizeState = InitialResizeState.HANDLED_INITIAL_SIZING;
-                }
-            }
             notifyObserversIfViewportHeightChanged(availableViewportHeight);
 
-            mWidthMeasureSpec = MeasureSpec.makeMeasureSpec(desiredWidth, MeasureSpec.EXACTLY);
-            mHeightMeasureSpec = MeasureSpec.makeMeasureSpec(availableViewportHeight,
+            widthMeasureSpec = MeasureSpec.makeMeasureSpec(desiredWidth, MeasureSpec.EXACTLY);
+            heightMeasureSpec = MeasureSpec.makeMeasureSpec(availableViewportHeight,
                     mEmbedder.isTablet() ? MeasureSpec.AT_MOST : MeasureSpec.EXACTLY);
-            super.onMeasure(mWidthMeasureSpec, mHeightMeasureSpec);
-            if (mInitialResizeState == InitialResizeState.WAITING_FOR_FIRST_MEASURE) {
-                mInitialResizeState = InitialResizeState.WAITING_FOR_SHRINKING;
-            }
+            super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         }
     }
 
@@ -428,11 +362,6 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
         if (layoutParams != null && layoutParams instanceof ViewGroup.MarginLayoutParams) {
             ((ViewGroup.MarginLayoutParams) layoutParams).topMargin = topMargin;
         }
-    }
-
-    private int calculateAvailableViewportHeight() {
-        mEmbedder.getWindowDelegate().getWindowVisibleDisplayFrame(mTempRect);
-        return mTempRect.height();
     }
 
     private void notifyObserversIfViewportHeightChanged(int availableViewportHeight) {

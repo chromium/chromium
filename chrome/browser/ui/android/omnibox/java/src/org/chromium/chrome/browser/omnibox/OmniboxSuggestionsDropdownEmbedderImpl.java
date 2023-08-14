@@ -105,12 +105,9 @@ class OmniboxSuggestionsDropdownEmbedderImpl implements OmniboxSuggestionsDropdo
         mAnchorView.addOnLayoutChangeListener(this);
         mHorizontalAlignmentView.addOnLayoutChangeListener(this);
         mAnchorView.getViewTreeObserver().addOnGlobalLayoutListener(this);
-        if (OmniboxFeatures.omniboxConsumesImeInsets()) {
-            mDeferredIMEWindowInsetApplicationCallback =
-                    new DeferredIMEWindowInsetApplicationCallback(
-                            this::recalculateOmniboxAlignment);
-            mDeferredIMEWindowInsetApplicationCallback.attach(mWindowAndroid);
-        }
+        mDeferredIMEWindowInsetApplicationCallback =
+                new DeferredIMEWindowInsetApplicationCallback(this::recalculateOmniboxAlignment);
+        mDeferredIMEWindowInsetApplicationCallback.attach(mWindowAndroid);
         onConfigurationChanged(mContext.getResources().getConfiguration());
         recalculateOmniboxAlignment();
     }
@@ -155,10 +152,7 @@ class OmniboxSuggestionsDropdownEmbedderImpl implements OmniboxSuggestionsDropdo
         mWindowWidthDp = windowWidth;
         mWindowHeightDp = windowHeight;
 
-        if (OmniboxFeatures.shouldAdaptToNarrowTabletWindows()
-                || OmniboxFeatures.omniboxConsumesImeInsets()) {
-            recalculateOmniboxAlignment();
-        }
+        recalculateOmniboxAlignment();
     }
 
     @Override
@@ -222,16 +216,11 @@ class OmniboxSuggestionsDropdownEmbedderImpl implements OmniboxSuggestionsDropdo
             paddingRight = 0;
         }
 
-        // The height param shouldn't be used with omniboxConsumesImeInsets() off; -1 is a sentinel
-        // value that will reveal a problem quickly.
-        int height = -1;
-        if (OmniboxFeatures.omniboxConsumesImeInsets()) {
-            int mKeyboardHeight = mDeferredIMEWindowInsetApplicationCallback != null
-                    ? mDeferredIMEWindowInsetApplicationCallback.getCurrentKeyboardHeight()
-                    : 0;
-            height = DisplayUtil.dpToPx(mWindowAndroid.getDisplay(), mWindowHeightDp) - top
-                    - mKeyboardHeight;
-        }
+        int mKeyboardHeight = mDeferredIMEWindowInsetApplicationCallback != null
+                ? mDeferredIMEWindowInsetApplicationCallback.getCurrentKeyboardHeight()
+                : 0;
+        int height = DisplayUtil.dpToPx(mWindowAndroid.getDisplay(), mWindowHeightDp) - top
+                - mKeyboardHeight;
 
         // TODO(pnoland@, https://crbug.com/1416985): avoid pushing changes that are identical to
         // the previous alignment value.

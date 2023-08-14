@@ -5874,11 +5874,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxCacheSuggestionResourcesDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kOmniboxCacheSuggestionResources)},
 
-    {"omnibox-consumes-ime-insets",
-     flag_descriptions::kOmniboxConsumesImeInsetsName,
-     flag_descriptions::kOmniboxConsumesImeInsetsDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kOmniboxConsumesImeInsets)},
-
     {"omnibox-ignore-intermediate-results",
      flag_descriptions::kOmniboxIgnoreIntermediateResultsName,
      flag_descriptions::kOmniboxIgnoreIntermediateResultsDescription,

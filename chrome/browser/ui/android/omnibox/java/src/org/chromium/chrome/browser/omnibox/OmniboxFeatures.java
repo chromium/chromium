@@ -56,9 +56,6 @@ public class OmniboxFeatures {
             MODERNIZE_VISUAL_UPDATE_MERGE_CLIPBOARD_ON_NTP = new BooleanCachedFieldTrialParameter(
                     ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE,
                     "modernize_visual_update_merge_clipboard_on_ntp", false);
-
-    private static final MutableFlagWithSafeDefault sOmniboxConsumesImeInsets =
-            new MutableFlagWithSafeDefault(ChromeFeatureList.OMNIBOX_CONSUMERS_IME_INSETS, true);
     private static final MutableFlagWithSafeDefault sShouldAdaptToNarrowTabletWindows =
             new MutableFlagWithSafeDefault(
                     ChromeFeatureList.OMNIBOX_ADAPT_NARROW_TABLET_WINDOWS, false);
@@ -137,11 +134,6 @@ public class OmniboxFeatures {
     public static boolean shouldShowSmallestMargins(Context context) {
         return shouldShowModernizeVisualUpdate(context)
                 && MODERNIZE_VISUAL_UPDATE_SMALLEST_MARGINS.getValue();
-    }
-
-    /** Returns whether the omnibox should directly consume IME (keyboard) insets. */
-    public static boolean omniboxConsumesImeInsets() {
-        return sOmniboxConsumesImeInsets.isEnabled();
     }
 
     /**
