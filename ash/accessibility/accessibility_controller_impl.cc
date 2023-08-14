@@ -92,6 +92,8 @@ struct FeatureData {
   // This field is not a raw_ptr<> because it was filtered by the rewriter
   // for: #global-scope
   RAW_PTR_EXCLUSION const gfx::VectorIcon* icon;
+  const int name_resource_id;
+  bool toggleable_in_quicksettings = true;
   FeatureType conflicting_feature = FeatureType::kNoConflictingFeature;
 };
 
@@ -106,43 +108,56 @@ struct FeatureDialogData {
 // A static array describing each feature.
 const FeatureData kFeatures[] = {
     {FeatureType::kAutoclick, prefs::kAccessibilityAutoclickEnabled,
-     &kSystemMenuAccessibilityAutoClickIcon},
+     &kSystemMenuAccessibilityAutoClickIcon,
+     IDS_ASH_STATUS_TRAY_ACCESSIBILITY_AUTOCLICK},
     {FeatureType::kCaretHighlight, prefs::kAccessibilityCaretHighlightEnabled,
-     nullptr},
+     nullptr, IDS_ASH_STATUS_TRAY_ACCESSIBILITY_CARET_HIGHLIGHT},
     {FeatureType::kCursorHighlight, prefs::kAccessibilityCursorHighlightEnabled,
-     nullptr},
+     nullptr, IDS_ASH_STATUS_TRAY_ACCESSIBILITY_HIGHLIGHT_MOUSE_CURSOR},
     {FeatureType::kCursorColor, prefs::kAccessibilityCursorColorEnabled,
-     nullptr},
+     nullptr, 0, /*toggleable_in_quicksettings*/ false},
     {FeatureType::kDictation, prefs::kAccessibilityDictationEnabled,
-     &kDictationMenuIcon},
+     &kDictationMenuIcon, IDS_ASH_STATUS_TRAY_ACCESSIBILITY_DICTATION},
     {FeatureType::kColorCorrection, prefs::kAccessibilityColorCorrectionEnabled,
-     &kColorCorrectionIcon},
+     &kColorCorrectionIcon, IDS_ASH_STATUS_TRAY_ACCESSIBILITY_COLOR_CORRECTION},
     {FeatureType::kFocusHighlight, prefs::kAccessibilityFocusHighlightEnabled,
-     nullptr, /* conflicting_feature= */ FeatureType::kSpokenFeedback},
+     nullptr, IDS_ASH_STATUS_TRAY_ACCESSIBILITY_HIGHLIGHT_KEYBOARD_FOCUS,
+     /*toggleable_in_quicksettings*/ true,
+     /* conflicting_feature= */ FeatureType::kSpokenFeedback},
     {FeatureType::kFloatingMenu, prefs::kAccessibilityFloatingMenuEnabled,
-     nullptr},
+     nullptr, IDS_ASH_FLOATING_ACCESSIBILITY_MAIN_MENU,
+     /*toggleable_in_quicksettings=*/false},
     {FeatureType::kFullscreenMagnifier,
      prefs::kAccessibilityScreenMagnifierEnabled,
-     &kSystemMenuAccessibilityFullscreenMagnifierIcon},
+     &kSystemMenuAccessibilityFullscreenMagnifierIcon,
+     IDS_ASH_STATUS_TRAY_ACCESSIBILITY_SCREEN_MAGNIFIER},
     {FeatureType::kDockedMagnifier, prefs::kDockedMagnifierEnabled,
-     &kSystemMenuAccessibilityDockedMagnifierIcon},
+     &kSystemMenuAccessibilityDockedMagnifierIcon,
+     IDS_ASH_STATUS_TRAY_ACCESSIBILITY_DOCKED_MAGNIFIER},
     {FeatureType::kHighContrast, prefs::kAccessibilityHighContrastEnabled,
-     &kSystemMenuAccessibilityContrastIcon},
+     &kSystemMenuAccessibilityContrastIcon,
+     IDS_ASH_STATUS_TRAY_ACCESSIBILITY_HIGH_CONTRAST_MODE},
     {FeatureType::kLargeCursor, prefs::kAccessibilityLargeCursorEnabled,
-     nullptr},
+     nullptr, IDS_ASH_STATUS_TRAY_ACCESSIBILITY_LARGE_CURSOR},
     {FeatureType::kLiveCaption, ::prefs::kLiveCaptionEnabled,
-     &vector_icons::kLiveCaptionOnIcon},
-    {FeatureType::kMonoAudio, prefs::kAccessibilityMonoAudioEnabled, nullptr},
+     &vector_icons::kLiveCaptionOnIcon, IDS_ASH_STATUS_TRAY_LIVE_CAPTION},
+    {FeatureType::kMonoAudio, prefs::kAccessibilityMonoAudioEnabled, nullptr,
+     IDS_ASH_STATUS_TRAY_ACCESSIBILITY_MONO_AUDIO},
     {FeatureType::kSpokenFeedback, prefs::kAccessibilitySpokenFeedbackEnabled,
-     &kSystemMenuAccessibilityChromevoxIcon},
+     &kSystemMenuAccessibilityChromevoxIcon,
+     IDS_ASH_STATUS_TRAY_ACCESSIBILITY_SPOKEN_FEEDBACK},
     {FeatureType::kSelectToSpeak, prefs::kAccessibilitySelectToSpeakEnabled,
-     &kSystemMenuAccessibilitySelectToSpeakIcon},
+     &kSystemMenuAccessibilitySelectToSpeakIcon,
+     IDS_ASH_STATUS_TRAY_ACCESSIBILITY_SELECT_TO_SPEAK},
     {FeatureType::kStickyKeys, prefs::kAccessibilityStickyKeysEnabled, nullptr,
+     IDS_ASH_STATUS_TRAY_ACCESSIBILITY_STICKY_KEYS,
+     /*toggleable_in_quicksettings=*/true,
      /*conflicting_feature=*/FeatureType::kSpokenFeedback},
     {FeatureType::kSwitchAccess, prefs::kAccessibilitySwitchAccessEnabled,
-     &kSwitchAccessIcon},
+     &kSwitchAccessIcon, IDS_ASH_STATUS_TRAY_ACCESSIBILITY_SWITCH_ACCESS},
     {FeatureType::kVirtualKeyboard, prefs::kAccessibilityVirtualKeyboardEnabled,
-     &kSystemMenuKeyboardLegacyIcon}};
+     &kSystemMenuKeyboardLegacyIcon,
+     IDS_ASH_STATUS_TRAY_ACCESSIBILITY_VIRTUAL_KEYBOARD}};
 
 // An array describing the confirmation dialogs for the features which have
 // them.
@@ -782,8 +797,21 @@ AccessibilityControllerImpl::Feature::Feature(
     FeatureType type,
     const std::string& pref_name,
     const gfx::VectorIcon* icon,
+    const int name_resource_id,
+    const bool toggleable_in_quicksettings,
     AccessibilityControllerImpl* controller)
-    : type_(type), pref_name_(pref_name), icon_(icon), owner_(controller) {}
+    : type_(type),
+      pref_name_(pref_name),
+      icon_(icon),
+      name_resource_id_(name_resource_id),
+      toggleable_in_quicksettings_(toggleable_in_quicksettings),
+      owner_(controller) {
+  // If a feature is toggleable in quicksettings it must have a
+  // `name_resource_id` so it's name can be looked up.
+  if (toggleable_in_quicksettings_) {
+    CHECK(name_resource_id);
+  }
+}
 
 AccessibilityControllerImpl::Feature::~Feature() = default;
 
@@ -866,9 +894,16 @@ AccessibilityControllerImpl::FeatureWithDialog::FeatureWithDialog(
     FeatureType type,
     const std::string& pref_name,
     const gfx::VectorIcon* icon,
+    const int name_resource_id,
+    const bool toggleable_in_quicksettings,
     const Dialog& dialog,
     AccessibilityControllerImpl* controller)
-    : AccessibilityControllerImpl::Feature(type, pref_name, icon, controller),
+    : AccessibilityControllerImpl::Feature(type,
+                                           pref_name,
+                                           icon,
+                                           name_resource_id,
+                                           toggleable_in_quicksettings,
+                                           controller),
       dialog_(dialog) {}
 AccessibilityControllerImpl::FeatureWithDialog::~FeatureWithDialog() = default;
 
@@ -954,11 +989,14 @@ void AccessibilityControllerImpl::CreateAccessibilityFeatures() {
     auto it = dialogs.find(feature_data.type);
     if (it == dialogs.end()) {
       features_[feature_index] = std::make_unique<Feature>(
-          feature_data.type, feature_data.pref, feature_data.icon, this);
+          feature_data.type, feature_data.pref, feature_data.icon,
+          feature_data.name_resource_id,
+          feature_data.toggleable_in_quicksettings, this);
     } else {
       features_[feature_index] = std::make_unique<FeatureWithDialog>(
-          feature_data.type, feature_data.pref, feature_data.icon, it->second,
-          this);
+          feature_data.type, feature_data.pref, feature_data.icon,
+          feature_data.name_resource_id,
+          feature_data.toggleable_in_quicksettings, it->second, this);
     }
     if (feature_data.conflicting_feature !=
         FeatureType::kNoConflictingFeature) {
@@ -1280,6 +1318,18 @@ AccessibilityControllerImpl::Feature& AccessibilityControllerImpl::GetFeature(
   size_t feature_index = static_cast<size_t>(type);
   DCHECK(features_[feature_index].get());
   return *features_[feature_index].get();
+}
+
+std::vector<AccessibilityControllerImpl::Feature*>
+AccessibilityControllerImpl::GetEnabledFeaturesInQuickSettings() const {
+  std::vector<Feature*> enabled_features;
+
+  for (auto& feature : features_) {
+    if (feature->enabled() && feature->toggleable_in_quicksettings()) {
+      enabled_features.push_back(feature.get());
+    }
+  }
+  return enabled_features;
 }
 
 base::WeakPtr<AccessibilityControllerImpl>

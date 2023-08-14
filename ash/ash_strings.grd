@@ -1074,8 +1074,15 @@ Style notes:
       <message name="IDS_ASH_STATUS_TRAY_ACCESSIBILITY" desc="The label used in the tray menu to show the accessibility option menu. [CHAR_LIMIT=14]">
         Accessibility
       </message>
+      <message name="IDS_ASH_STATUS_TRAY_ACCESSIBILITY_ENABLED_FEATURES_SEPARATOR" desc="The characters used to separate the first feature's 
+      name from the counter in the label displayed when accessibility features are enabled in the quicksettings menu. Example: Select to Speak, +2">
+        , +
+      </message>
       <message name="IDS_ASH_STATUS_TRAY_ACCESSIBILITY_TOOLTIP" desc="The tooltip text in the tray menu to show the accessibility option menu.">
         Show accessibility settings
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_ACCESSIBILITY_TOGGLED_TOOLTIP" desc="The tooltip text in the tray menu to show the accessibility option menu.">
+        Show accessibility settings, "<ph name="ENABLED_FEATURES">$1<ex>Dictation</ex></ph>" enabled.
       </message>
       <message name="IDS_ASH_STATUS_TRAY_ACCESSIBILITY_TITLE" desc="The label used in the title of the accessibility option menu. [CHAR_LIMIT=18]">
         Accessibility

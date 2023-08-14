@@ -110,6 +110,9 @@ class ASH_EXPORT FeatureTile : public views::Button {
   // Sets the text of `label_`.
   void SetLabel(const std::u16string& label);
 
+  // Returns the maximum width for `sub_label_`.
+  int GetSubLabelMaxWidth() const;
+
   // Sets the text of the `sub_label_`.
   void SetSubLabel(const std::u16string& sub_label);
 

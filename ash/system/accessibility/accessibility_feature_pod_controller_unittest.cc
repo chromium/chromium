@@ -4,14 +4,18 @@
 
 #include "ash/system/accessibility/accessibility_feature_pod_controller.h"
 
+#include "ash/accessibility/a11y_feature_type.h"
+#include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/quick_settings_catalogs.h"
+#include "ash/shell.h"
 #include "ash/system/unified/feature_pod_button.h"
 #include "ash/system/unified/feature_tile.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "ash/test/ash_test_base.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/views/view.h"
@@ -62,6 +66,11 @@ class AccessibilityFeaturePodControllerTest
     }
   }
 
+  AccessibilityControllerImpl* GetAccessibilityController() {
+    return Shell::Get()->accessibility_controller();
+  }
+
+  FeatureTile* GetFeatureTile() { return tile_.get(); }
   UnifiedSystemTrayController* tray_controller() {
     return GetPrimaryUnifiedSystemTray()
         ->bubble()
@@ -162,6 +171,102 @@ TEST_P(AccessibilityFeaturePodControllerTest, LabelUMATracking) {
   histogram_tester->ExpectBucketCount(GetDiveInHistogramName(),
                                       QsFeatureCatalogName::kAccessibility,
                                       /*expected_count=*/1);
+}
+
+TEST_P(AccessibilityFeaturePodControllerTest, FeatureTileBasicToggleBehavior) {
+  if (!IsQsRevampEnabled()) {
+    return;
+  }
+
+  SetUpButton();
+
+  EXPECT_FALSE(GetFeatureTile()->IsToggled());
+
+  // Enable an accessibility feature and expect the feature tile to be toggled
+  // and the sublabel to be visible.
+  GetAccessibilityController()
+      ->GetFeature(A11yFeatureType::kHighContrast)
+      .SetEnabled(true);
+  EXPECT_TRUE(GetFeatureTile()->IsToggled());
+  EXPECT_TRUE(GetFeatureTile()->sub_label()->GetVisible());
+
+  // Disable an accessibility feature and expect the feature tile to be
+  // untoggled and the sublabel to be invisible.
+  GetAccessibilityController()
+      ->GetFeature(A11yFeatureType::kHighContrast)
+      .SetEnabled(false);
+  EXPECT_FALSE(GetFeatureTile()->IsToggled());
+  EXPECT_FALSE(GetFeatureTile()->sub_label()->GetVisible());
+}
+
+// Toggle all accessibility features one by one and make sure the feature tile
+// is updated appropriately.
+TEST_P(AccessibilityFeaturePodControllerTest, FeatureTileAllFeaturesToggled) {
+  if (!IsQsRevampEnabled()) {
+    return;
+  }
+
+  SetUpButton();
+
+  for (int type = 0; type != static_cast<int>(A11yFeatureType::kFeatureCount);
+       type++) {
+    auto& feature = GetAccessibilityController()->GetFeature(
+        static_cast<A11yFeatureType>(type));
+    feature.SetEnabled(true);
+    if (!feature.enabled()) {
+      continue;
+    }
+    if (feature.toggleable_in_quicksettings()) {
+      EXPECT_TRUE(GetFeatureTile()->IsToggled());
+    } else {
+      EXPECT_FALSE(GetFeatureTile()->IsToggled());
+    }
+
+    feature.SetEnabled(false);
+  }
+}
+
+// Enable accessibility features one by one until we have double digits in the
+// count shown in the `sub_label`.
+TEST_P(AccessibilityFeaturePodControllerTest,
+       FeatureTileSubLabelCounterBehavior) {
+  if (!IsQsRevampEnabled()) {
+    return;
+  }
+
+  SetUpButton();
+
+  GetAccessibilityController()
+      ->GetFeature(A11yFeatureType::kLargeCursor)
+      .SetEnabled(true);
+  int expected_count = 0;
+  auto feature_types = {
+      A11yFeatureType::kCaretHighlight, A11yFeatureType::kCursorHighlight,
+      A11yFeatureType::kDictation,      A11yFeatureType::kFocusHighlight,
+      A11yFeatureType::kHighContrast,   A11yFeatureType::kMonoAudio,
+      A11yFeatureType::kLiveCaption,    A11yFeatureType::kFullscreenMagnifier,
+      A11yFeatureType::kStickyKeys,     A11yFeatureType::kSwitchAccess};
+  for (A11yFeatureType type : feature_types) {
+    auto& feature = GetAccessibilityController()->GetFeature(
+        static_cast<A11yFeatureType>(type));
+
+    feature.SetEnabled(true);
+    expected_count++;
+
+    EXPECT_TRUE(base::EndsWith(GetFeatureTile()->sub_label()->GetText(),
+                               base::NumberToString16(expected_count)));
+  }
+
+  for (A11yFeatureType type : feature_types) {
+    EXPECT_TRUE(base::EndsWith(GetFeatureTile()->sub_label()->GetText(),
+                               base::NumberToString16(expected_count)));
+
+    auto& feature = GetAccessibilityController()->GetFeature(
+        static_cast<A11yFeatureType>(type));
+    expected_count--;
+
+    feature.SetEnabled(false);
+  }
 }
 
 }  // namespace ash

@@ -97,6 +97,8 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
     Feature(A11yFeatureType type,
             const std::string& pref_name,
             const gfx::VectorIcon* icon,
+            const int name_resource_id,
+            const bool toggleable_in_quicksettings,
             AccessibilityControllerImpl* controller);
     Feature(const Feature&) = delete;
     Feature& operator=(Feature const&) = delete;
@@ -113,6 +115,10 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
     bool IsEnterpriseIconVisible() const;
     const std::string& pref_name() const { return pref_name_; }
     const gfx::VectorIcon& icon() const;
+    int name_resource_id() const { return name_resource_id_; }
+    bool toggleable_in_quicksettings() const {
+      return toggleable_in_quicksettings_;
+    }
     A11yFeatureType conflicting_feature() const { return conflicting_feature_; }
 
     void UpdateFromPref();
@@ -133,6 +139,15 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
     bool enabled_ = false;
     const std::string pref_name_;
     raw_ptr<const gfx::VectorIcon, ExperimentalAsh> icon_;
+
+    // The resource id used to fetch the string with this feature's name. Used
+    // in quicksettings.
+    const int name_resource_id_;
+
+    // Specifies if this feature can be toggled from the accessibility options
+    // available in the quicksettings menu.
+    const bool toggleable_in_quicksettings_;
+
     const raw_ptr<AccessibilityControllerImpl, ExperimentalAsh> owner_;
   };
 
@@ -155,6 +170,8 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
     FeatureWithDialog(A11yFeatureType type,
                       const std::string& pref_name,
                       const gfx::VectorIcon* icon,
+                      const int name_resource_id,
+                      const bool toggleable_in_quicksettings,
                       const Dialog& dialog,
                       AccessibilityControllerImpl* controller);
     ~FeatureWithDialog() override;
@@ -202,6 +219,10 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
   void RemoveObserver(AccessibilityObserver* observer);
 
   Feature& GetFeature(A11yFeatureType feature) const;
+
+  // Returns all `Feature`s that are toggleable in quicksettings and currently
+  // enabled.
+  std::vector<Feature*> GetEnabledFeaturesInQuickSettings() const;
 
   base::WeakPtr<AccessibilityControllerImpl> GetWeakPtr();
 
