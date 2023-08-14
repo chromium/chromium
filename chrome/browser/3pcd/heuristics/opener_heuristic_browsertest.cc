@@ -214,8 +214,16 @@ IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest,
   ASSERT_TRUE(popup_tab_helper->popup_observer_for_testing());
 }
 
+// TODO(https://crbug.com/1469394): Flaky on android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_PopupsWithoutOpenerDoNotHavePopupState \
+  DISABLED_PopupsWithoutOpenerDoNotHavePopupState
+#else
+#define MAYBE_PopupsWithoutOpenerDoNotHavePopupState \
+  PopupsWithoutOpenerDoNotHavePopupState
+#endif
 IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest,
-                       PopupsWithoutOpenerDoNotHavePopupState) {
+                       MAYBE_PopupsWithoutOpenerDoNotHavePopupState) {
   WebContents* web_contents = GetActiveWebContents();
   GURL popup_url = embedded_test_server()->GetURL("a.test", "/title1.html");
 
