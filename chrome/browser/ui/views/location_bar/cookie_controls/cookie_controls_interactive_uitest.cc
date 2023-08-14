@@ -41,7 +41,7 @@ const char kUMABubbleAllowThirdPartyCookies[] =
 const char kUMABubbleBlockThirdPartyCookies[] =
     "CookieControls.Bubble.BlockThirdPartyCookies";
 const char kUMABubbleSendFeedback[] = "CookieControls.Bubble.SendFeedback";
-}
+}  // namespace
 
 class CookieControlsInteractiveUiTest : public InteractiveBrowserTest {
  public:
@@ -143,13 +143,15 @@ class CookieControlsInteractiveUiTest : public InteractiveBrowserTest {
         .InDays();
   }
 
-  void BlockCookiesAndSetHighConfidenceForSite() {
-    // Navigate to a page while 3PC are blocked.
+  void BlockThirdPartyCookies() {
     browser()->profile()->GetPrefs()->SetInteger(
         prefs::kCookieControlsMode,
         static_cast<int>(
             content_settings::CookieControlsMode::kBlockThirdParty));
+  }
 
+  void BlockCookiesAndSetHighConfidenceForSite() {
+    BlockThirdPartyCookies();
     // Force high site engagement.
     auto* site_engagement =
         site_engagement::SiteEngagementService::Get(browser()->profile());
@@ -175,9 +177,7 @@ class CookieControlsInteractiveUiTest : public InteractiveBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiTest, BubbleOpens) {
-  browser()->profile()->GetPrefs()->SetInteger(
-      prefs::kCookieControlsMode,
-      static_cast<int>(content_settings::CookieControlsMode::kBlockThirdParty));
+  BlockThirdPartyCookies();
   RunTestSequenceInContext(
       context(), InstrumentTab(kWebContentsElementId),
       NavigateWebContents(kWebContentsElementId, third_party_cookie_page_url()),
@@ -191,10 +191,7 @@ IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiTest,
                        DISABLED_CreateException) {
   // Open the bubble while 3PC are blocked, re-enable them for the site, and
   // confirm the appropriate exception is created.
-  browser()->profile()->GetPrefs()->SetInteger(
-      prefs::kCookieControlsMode,
-      static_cast<int>(content_settings::CookieControlsMode::kBlockThirdParty));
-
+  BlockThirdPartyCookies();
   RunTestSequenceInContext(
       context(), InstrumentTab(kWebContentsElementId),
       NavigateWebContents(kWebContentsElementId, third_party_cookie_page_url()),
@@ -212,18 +209,9 @@ IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiTest,
                        DISABLED_RemoveException) {
   // Open the bubble while 3PC are blocked, but the page already has an
   // exception. Disable 3PC for the page, and confirm the exception is removed.
-  browser()->profile()->GetPrefs()->SetInteger(
-      prefs::kCookieControlsMode,
-      static_cast<int>(content_settings::CookieControlsMode::kBlockThirdParty));
+  BlockCookiesAndSetHighConfidenceForSite();
   cookie_settings()->SetCookieSettingForUserBypass(
       third_party_cookie_page_url());
-
-  // Force high site engagement to exercise the animation flow.
-  auto* site_engagement =
-      site_engagement::SiteEngagementService::Get(browser()->profile());
-  site_engagement->ResetBaseScoreForURL(third_party_cookie_page_url(),
-                                        /*score=*/100);
-
   RunTestSequenceInContext(
       context(), InstrumentTab(kWebContentsElementId),
       NavigateWebContents(kWebContentsElementId, third_party_cookie_page_url()),
@@ -250,7 +238,7 @@ IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiTest,
 class CookieControlsInteractiveUiWithIphTest
     : public CookieControlsInteractiveUiTest {
  public:
-  CookieControlsInteractiveUiWithIphTest(){};
+  CookieControlsInteractiveUiWithIphTest() = default;
   ~CookieControlsInteractiveUiWithIphTest() override = default;
 
  protected:
@@ -325,15 +313,12 @@ IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiWithIphTest,
 // browser test which gives some coverage.
 #if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiTest, FeedbackOpens) {
-  browser()->profile()->GetPrefs()->SetInteger(
-      prefs::kCookieControlsMode,
-      static_cast<int>(content_settings::CookieControlsMode::kBlockThirdParty));
-  const GURL third_party_cookie_page_url =
-      https_server()->GetURL("a.test", "/third_party_partitioned_cookies.html");
-  cookie_settings()->SetCookieSettingForUserBypass(third_party_cookie_page_url);
+  BlockThirdPartyCookies();
+  cookie_settings()->SetCookieSettingForUserBypass(
+      third_party_cookie_page_url());
   RunTestSequenceInContext(
       context(), InstrumentTab(kWebContentsElementId),
-      NavigateWebContents(kWebContentsElementId, third_party_cookie_page_url),
+      NavigateWebContents(kWebContentsElementId, third_party_cookie_page_url()),
       PressButton(kCookieControlsIconElementId),
       PressButton(CookieControlsContentView::kFeedbackButton),
       InAnyContext(WaitForShow(FeedbackDialog::kFeedbackDialogForTesting)));
@@ -344,15 +329,10 @@ IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiTest, FeedbackOpens) {
 IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiTest, ReloadView) {
   // Test that opening the bubble, then closing it after making a change,
   // results in the reload view being displayed.
-  browser()->profile()->GetPrefs()->SetInteger(
-      prefs::kCookieControlsMode,
-      static_cast<int>(content_settings::CookieControlsMode::kBlockThirdParty));
-  const GURL third_party_cookie_page_url =
-      https_server()->GetURL("a.test", "/third_party_partitioned_cookies.html");
-
+  BlockThirdPartyCookies();
   RunTestSequenceInContext(
       context(), InstrumentTab(kWebContentsElementId),
-      NavigateWebContents(kWebContentsElementId, third_party_cookie_page_url),
+      NavigateWebContents(kWebContentsElementId, third_party_cookie_page_url()),
       PressButton(kCookieControlsIconElementId),
       InAnyContext(WaitForShow(CookieControlsBubbleView::kContentView)),
       PressButton(CookieControlsContentView::kToggleButton),
@@ -368,11 +348,8 @@ IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiTest,
   // Test that opening the bubble making a change, then changing tabs while
   // the bubble is open, then re-opening the bubble on the new tab and closing
   // _doesn't_ reload the page. Regression test for crbug.com/1470275.
-  browser()->profile()->GetPrefs()->SetInteger(
-      prefs::kCookieControlsMode,
-      static_cast<int>(content_settings::CookieControlsMode::kBlockThirdParty));
-  const GURL third_party_cookie_page_url_one =
-      https_server()->GetURL("a.test", "/third_party_partitioned_cookies.html");
+  BlockThirdPartyCookies();
+  const GURL third_party_cookie_page_url_one = third_party_cookie_page_url();
   const GURL third_party_cookie_page_url_two =
       https_server()->GetURL("b.test", "/third_party_partitioned_cookies.html");
 
@@ -416,11 +393,8 @@ IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiTest,
   // making a change _does_ reload the page, and that on page reload the
   // reload view should be closed.
   // Regression test for crbug.com/1470275.
-  browser()->profile()->GetPrefs()->SetInteger(
-      prefs::kCookieControlsMode,
-      static_cast<int>(content_settings::CookieControlsMode::kBlockThirdParty));
-  const GURL third_party_cookie_page_url_one =
-      https_server()->GetURL("a.test", "/third_party_partitioned_cookies.html");
+  BlockThirdPartyCookies();
+  const GURL third_party_cookie_page_url_one = third_party_cookie_page_url();
   const GURL third_party_cookie_page_url_two =
       https_server()->GetURL("b.test", "/third_party_partitioned_cookies.html");
 
@@ -461,11 +435,8 @@ IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiTest,
   // where cookies are disabled, then opening and closing the bubble without
   // making a change _does not_ reload the page.
   // Regression test for crbug.com/1470275.
-  browser()->profile()->GetPrefs()->SetInteger(
-      prefs::kCookieControlsMode,
-      static_cast<int>(content_settings::CookieControlsMode::kBlockThirdParty));
-  const GURL third_party_cookie_page_url_one =
-      https_server()->GetURL("a.test", "/third_party_partitioned_cookies.html");
+  BlockThirdPartyCookies();
+  const GURL third_party_cookie_page_url_one = third_party_cookie_page_url();
   const GURL third_party_cookie_page_url_two =
       https_server()->GetURL("b.test", "/third_party_partitioned_cookies.html");
   cookie_settings()->SetCookieSettingForUserBypass(
@@ -505,15 +476,10 @@ IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiTest,
 IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiTest, NoReloadView) {
   // Test that opening the bubble, then closing it without making an effective
   // change to cookie settings, does not show the reload view.
-  browser()->profile()->GetPrefs()->SetInteger(
-      prefs::kCookieControlsMode,
-      static_cast<int>(content_settings::CookieControlsMode::kBlockThirdParty));
-  const GURL third_party_cookie_page_url =
-      https_server()->GetURL("a.test", "/third_party_partitioned_cookies.html");
-
+  BlockThirdPartyCookies();
   RunTestSequenceInContext(
       context(), InstrumentTab(kWebContentsElementId),
-      NavigateWebContents(kWebContentsElementId, third_party_cookie_page_url),
+      NavigateWebContents(kWebContentsElementId, third_party_cookie_page_url()),
       PressButton(kCookieControlsIconElementId),
       InAnyContext(WaitForShow(CookieControlsBubbleView::kContentView)),
       PressButton(CookieControlsContentView::kToggleButton),
