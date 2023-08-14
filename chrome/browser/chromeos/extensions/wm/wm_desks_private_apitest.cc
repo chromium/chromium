@@ -4,11 +4,14 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/system/toast_data.h"
+#include "ash/public/cpp/system/toast_manager.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_test_api.h"
 #include "ash/wm/desks/desks_test_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/spin_wait.h"
+#include "base/time/time.h"
 #include "base/uuid.h"
 #include "build/build_config.h"
 #include "chrome/browser/chromeos/extensions/wm/wm_desks_private_api.h"
@@ -123,6 +126,15 @@ IN_PROC_BROWSER_TEST_F(WmDesksPrivateApiTest, LaunchAndAttemptUndo) {
   }
 
   EXPECT_TRUE(ash::DesksTestApi::DesksControllerCanUndoDeskRemoval());
+
+  // Checks for if there are any other toasts running besides
+  // the undo toast. Waits for other toasts to expire.
+  if (!ash::ToastManager::Get()->IsRunning("UndoCloseAllToast_1")) {
+    LOG(INFO) << "Non-undo toast running, must wait for other toasts :(";
+    SPIN_FOR_TIMEDELTA_OR_UNTIL_TRUE(
+        base::Seconds(45),
+        ash::ToastManager::Get()->IsRunning("UndoCloseAllToast_1"));
+  }
 
   ash::WaitForMilliseconds(
       ash::ToastData::kDefaultToastDuration.InMilliseconds() +
