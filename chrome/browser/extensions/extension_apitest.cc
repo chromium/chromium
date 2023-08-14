@@ -19,6 +19,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/scoped_run_loop_timeout.h"
 #include "build/build_config.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -161,9 +162,19 @@ bool ExtensionApiTest::RunExtensionTest(const base::FilePath& extension_path,
         ->LaunchAppWithParamsForTesting(std::move(params));
   }
 
-  if (!catcher.GetNextResult()) {
-    message_ = catcher.message();
-    return false;
+  {
+    base::test::ScopedRunLoopTimeout timeout(
+        FROM_HERE, absl::nullopt,
+        base::BindRepeating(
+            [](const base::FilePath& extension_path) {
+              return "GetNextResult timeout while RunExtensionTest: " +
+                     extension_path.MaybeAsASCII();
+            },
+            extension_path));
+    if (!catcher.GetNextResult()) {
+      message_ = catcher.message();
+      return false;
+    }
   }
 
   return true;
