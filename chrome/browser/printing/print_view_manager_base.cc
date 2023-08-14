@@ -168,6 +168,21 @@ std::string PrintMsgPrintParamsErrorDetails(const mojom::PrintParams& params) {
 }
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
 
+#if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
+bool ContentAnalysisAfterDialog(
+    const enterprise_connectors::ContentAnalysisDelegate::Data& scanning_data) {
+  bool cloud_analysis_after_dialog =
+      scanning_data.settings.cloud_or_local_settings.is_cloud_analysis() &&
+      base::FeatureList::IsEnabled(
+          printing::features::kEnableCloudScanAfterPreview);
+  bool local_analysis_after_dialog =
+      scanning_data.settings.cloud_or_local_settings.is_local_analysis() &&
+      base::FeatureList::IsEnabled(
+          printing::features::kEnableLocalScanAfterPreview);
+  return cloud_analysis_after_dialog || local_analysis_after_dialog;
+}
+#endif
+
 }  // namespace
 
 PrintViewManagerBase::PrintViewManagerBase(content::WebContents* web_contents)
@@ -814,11 +829,7 @@ void PrintViewManagerBase::ScriptedPrint(mojom::ScriptedPrintParamsPtr params,
           web_contents(),
           enterprise_connectors::PrintScanningContext::kBeforeSystemDialog);
   if (scanning_data) {
-    // TODO(b/281087582): Support post-system-dialog scanning for cloud content
-    // analysis.
-    if (!scanning_data->settings.cloud_or_local_settings.is_local_analysis() ||
-        !base::FeatureList::IsEnabled(
-            printing::features::kEnableLocalScanAfterPreview)) {
+    if (!ContentAnalysisAfterDialog(*scanning_data)) {
       auto scanning_done_callback = base::BindOnce(
           &PrintViewManagerBase::CompleteScriptedPrintAfterContentAnalysis,
           weak_ptr_factory_.GetWeakPtr(), std::move(params),

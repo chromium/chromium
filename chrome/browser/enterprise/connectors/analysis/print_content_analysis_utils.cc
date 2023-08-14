@@ -12,6 +12,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/device_event_log/device_event_log.h"
+#include "components/enterprise/buildflags/buildflags.h"
 #include "content/public/browser/web_contents.h"
 #include "printing/printing_features.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -20,9 +21,9 @@ namespace enterprise_connectors {
 
 namespace {
 
-bool ShouldDoLocalScan(PrintScanningContext context) {
-  if (base::FeatureList::IsEnabled(
-          printing::features::kEnableLocalScanAfterPreview)) {
+bool ShouldDoScan(bool post_dialog_feature_enabled,
+                  PrintScanningContext context) {
+  if (post_dialog_feature_enabled) {
     switch (context) {
       // For "normal" prints, the scanning can happen immediately after the user
       // clicks "Print" in the print preview dialog as the preview document is
@@ -34,10 +35,12 @@ bool ShouldDoLocalScan(PrintScanningContext context) {
         return false;
 
       // For "system dialog" prints, the scanning waits until the user picks
-      // settings from the system dialog, and happens right before the document
-      // is printed through an existing print job.
-      // TODO(b/289131391): Have `kBeforeSystemDialog` return false and instead
-      // trigger with the `kSystemPrintBeforePrintDocument` context.
+      // settings from the system dialog, but starts applying enterprise-logic
+      // logic at the `kBeforeSystemDialog` context for that to happen.
+      //
+      // Scanning also happens right before the document is printed through an
+      // existing print job when that is triggered after the print preview
+      // dialog.
       case PrintScanningContext::kBeforeSystemDialog:
         return true;
       case PrintScanningContext::kSystemPrintAfterPreview:
@@ -47,27 +50,11 @@ bool ShouldDoLocalScan(PrintScanningContext context) {
     }
   }
 
-  // `kEnableLocalScanAfterPreview` being off means printing should only happen
-  // before any kind of dialog to get settings.
+  // `post_dialog_feature_enabled` being false means printing should only happen
+  // before any kind of dialog to get settings is shown.
   switch (context) {
     case PrintScanningContext::kBeforePreview:
     case PrintScanningContext::kBeforeSystemDialog:
-      return true;
-
-    case PrintScanningContext::kNormalPrintAfterPreview:
-    case PrintScanningContext::kSystemPrintAfterPreview:
-    case PrintScanningContext::kNormalPrintBeforePrintDocument:
-    case PrintScanningContext::kSystemPrintBeforePrintDocument:
-      return false;
-  }
-}
-
-bool ShouldDoCloudScan(PrintScanningContext context) {
-  // TODO(b/281087582): Update this function's logic once cloud scanning
-  // supports post-preview scanning.
-  switch (context) {
-    case PrintScanningContext::kBeforeSystemDialog:
-    case PrintScanningContext::kBeforePreview:
       return true;
 
     case PrintScanningContext::kNormalPrintAfterPreview:
@@ -81,8 +68,14 @@ bool ShouldDoCloudScan(PrintScanningContext context) {
 bool ShouldScan(PrintScanningContext context,
                 const ContentAnalysisDelegate::Data& scanning_data) {
   return scanning_data.settings.cloud_or_local_settings.is_local_analysis()
-             ? ShouldDoLocalScan(context)
-             : ShouldDoCloudScan(context);
+             ? ShouldDoScan(
+                   base::FeatureList::IsEnabled(
+                       printing::features::kEnableLocalScanAfterPreview),
+                   context)
+             : ShouldDoScan(
+                   base::FeatureList::IsEnabled(
+                       printing::features::kEnableCloudScanAfterPreview),
+                   context);
 }
 
 void RecordPrintType(PrintScanningContext context,
