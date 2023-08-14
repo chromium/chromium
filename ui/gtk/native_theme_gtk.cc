@@ -147,6 +147,7 @@ void NativeThemeGtk::NotifyOnNativeThemeUpdated() {
         UserHasContrastPreference()
             ? ui::NativeThemeBase::PreferredContrast::kMore
             : ui::NativeThemeBase::PreferredContrast::kNoPreference);
+    native_theme->set_prefers_reduced_transparency(UserHasContrastPreference());
     native_theme->NotifyOnNativeThemeUpdated();
   }
 }
