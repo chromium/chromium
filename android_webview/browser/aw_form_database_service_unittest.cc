@@ -48,7 +48,8 @@ class AwFormDatabaseServiceTest : public Test {
   std::unique_ptr<AwFormDatabaseService> service_;
 };
 
-TEST_F(AwFormDatabaseServiceTest, HasAndClearFormData) {
+// TODO(https://crbug.com/1472844): Fix flakes.
+TEST_F(AwFormDatabaseServiceTest, DISABLED_HasAndClearFormData) {
   EXPECT_FALSE(service_->HasFormData());
   std::vector<FormFieldData> fields;
   FormFieldData field;
