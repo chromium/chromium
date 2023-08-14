@@ -119,7 +119,12 @@ id<GREYMatcher> DeleteConfirmationButton() {
 #pragma mark - Tests
 
 // TODO(crbug.com/1472810): Fix & re-enable.
-- (void)DISABLED_testOpenPasswordBottomSheetUsePassword {
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testOpenPasswordBottomSheetUsePassword DISABLED_testOpenPasswordBottomSheetUsePassword
+#else
+#define MAYBE_testOpenPasswordBottomSheetUsePassword testOpenPasswordBottomSheetUsePassword
+#endif
+- (void)MAYBE_testOpenPasswordBottomSheetUsePassword {
   [PasswordSuggestionBottomSheetAppInterface setUpMockReauthenticationModule];
   [PasswordSuggestionBottomSheetAppInterface
       mockReauthenticationModuleExpectedResult:ReauthenticationResult::
@@ -181,7 +186,12 @@ id<GREYMatcher> DeleteConfirmationButton() {
 }
 
 // TODO(crbug.com/1472810): Fix & re-enable.
-- (void)DISABLED_testOpenPasswordBottomSheetTapNoThanksShowKeyboard {
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testOpenPasswordBottomSheetTapNoThanksShowKeyboard DISABLED_testOpenPasswordBottomSheetTapNoThanksShowKeyboard
+#else
+#define MAYBE_testOpenPasswordBottomSheetTapNoThanksShowKeyboard testOpenPasswordBottomSheetTapNoThanksShowKeyboard
+#endif
+- (void)MAYBE_testOpenPasswordBottomSheetTapNoThanksShowKeyboard {
   [PasswordManagerAppInterface
       storeCredentialWithUsername:@"user"
                          password:@"password"
@@ -206,7 +216,12 @@ id<GREYMatcher> DeleteConfirmationButton() {
 }
 
 // TODO(crbug.com/1472810): Fix & re-enable.
-- (void)DISABLED_testOpenPasswordBottomSheetOpenPasswordManager {
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testOpenPasswordBottomSheetOpenPasswordManager DISABLED_testOpenPasswordBottomSheetOpenPasswordManager
+#else
+#define MAYBE_testOpenPasswordBottomSheetOpenPasswordManager testOpenPasswordBottomSheetOpenPasswordManager
+#endif
+- (void)MAYBE_testOpenPasswordBottomSheetOpenPasswordManager {
   [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
                                 enableSync:NO];
   NSURL* URL =
@@ -396,7 +411,12 @@ id<GREYMatcher> DeleteConfirmationButton() {
 }
 
 // TODO(crbug.com/1472810): Fix & re-enable.
-- (void)DISABLED_testOpenPasswordBottomSheetSelectPassword {
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testOpenPasswordBottomSheetSelectPassword DISABLED_testOpenPasswordBottomSheetSelectPassword
+#else
+#define MAYBE_testOpenPasswordBottomSheetSelectPassword testOpenPasswordBottomSheetSelectPassword
+#endif
+- (void)MAYBE_testOpenPasswordBottomSheetSelectPassword {
   [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
                                 enableSync:NO];
   NSURL* URL =
@@ -486,7 +506,12 @@ id<GREYMatcher> DeleteConfirmationButton() {
 }
 
 // TODO(crbug.com/1472810): Fix & re-enable.
-- (void)DISABLED_testPasswordBottomSheetDismiss3TimesNotShownAnymore {
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testPasswordBottomSheetDismiss3TimesNotShownAnymore DISABLED_testPasswordBottomSheetDismiss3TimesNotShownAnymore
+#else
+#define MAYBE_testPasswordBottomSheetDismiss3TimesNotShownAnymore testPasswordBottomSheetDismiss3TimesNotShownAnymore
+#endif
+- (void)MAYBE_testPasswordBottomSheetDismiss3TimesNotShownAnymore {
   [PasswordManagerAppInterface
       storeCredentialWithUsername:@"user"
                          password:@"password"
