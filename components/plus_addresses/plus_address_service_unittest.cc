@@ -115,4 +115,43 @@ TEST_F(PlusAddressServiceTest, OfferPlusAddressCreation) {
   EXPECT_TRUE(second_called);
 }
 
+// Tests for the label overrides.
+TEST_F(PlusAddressServiceTest, DisabledFeatureLabel) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  // Disabled feature? Show the default generic text.
+  scoped_feature_list.InitAndDisableFeature(plus_addresses::kFeature);
+  PlusAddressService service;
+  EXPECT_EQ(service.GetCreateSuggestionLabel(), u"Lorem Ipsum");
+}
+
+TEST_F(PlusAddressServiceTest, DefaultLabel) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  // Override not set? Show the default generic text.
+  scoped_feature_list.InitAndEnableFeature(plus_addresses::kFeature);
+  PlusAddressService service;
+  EXPECT_EQ(service.GetCreateSuggestionLabel(), u"Lorem Ipsum");
+}
+
+TEST_F(PlusAddressServiceTest, LabelOverrides) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  // Setting the override should result in echoing the override back.
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      plus_addresses::kFeature,
+      {{plus_addresses::kEnterprisePlusAddressLabelOverride.name,
+        "mattwashere"}});
+  PlusAddressService service;
+  EXPECT_EQ(service.GetCreateSuggestionLabel(), u"mattwashere");
+}
+
+TEST_F(PlusAddressServiceTest, LabelOverrideWithSpaces) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  // Setting the override should result in echoing the override back.
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      plus_addresses::kFeature,
+      {{plus_addresses::kEnterprisePlusAddressLabelOverride.name,
+        "matt was here"}});
+  PlusAddressService service;
+  EXPECT_EQ(service.GetCreateSuggestionLabel(), u"matt was here");
+}
+
 }  // namespace plus_addresses

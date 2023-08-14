@@ -5,6 +5,7 @@
 #include "components/plus_addresses/plus_address_service.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/strcat.h"
+#include "base/strings/utf_string_conversions.h"
 #include "components/plus_addresses/features.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 
@@ -74,7 +75,9 @@ void PlusAddressService::OfferPlusAddressCreation(
 }
 
 std::u16string PlusAddressService::GetCreateSuggestionLabel() {
-  // TODO(crbug.com/1467623): use standard `l10n_util::GetStringUTF16`.
-  return u"Lorem Ipsum";
+  // TODO(crbug.com/1467623): once ready, use standard
+  // `l10n_util::GetStringUTF16` instead of using feature params.
+  return base::UTF8ToUTF16(
+      plus_addresses::kEnterprisePlusAddressLabelOverride.Get());
 }
 }  // namespace plus_addresses

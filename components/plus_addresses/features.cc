@@ -10,4 +10,8 @@ namespace plus_addresses {
 BASE_FEATURE(kFeature,
              "PlusAddressesEnabled",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+const char kEnterprisePlusAddressLabelOverrideName[] = "suggestion-label";
+const base::FeatureParam<std::string> kEnterprisePlusAddressLabelOverride{
+    &kFeature, kEnterprisePlusAddressLabelOverrideName, "Lorem Ipsum"};
 }  // namespace plus_addresses
