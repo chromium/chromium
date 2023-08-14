@@ -20,6 +20,9 @@ const proto::SegmentId kSegmentId =
 const proto::SegmentId kSegmentId2 =
     proto::SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHOPPING_USER;
 
+const proto::SegmentId kSegmentId3 =
+    proto::SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SEARCH_USER;
+
 const ModelSource kDefaultModelSource = ModelSource::DEFAULT_MODEL_SOURCE;
 const ModelSource kServerModelSource = ModelSource::SERVER_MODEL_SOURCE;
 
@@ -50,8 +53,13 @@ class SegmentInfoCacheTest : public testing::Test {
 };
 
 TEST_F(SegmentInfoCacheTest, GetSegmentInfoFromEmptyCache) {
+  // Server Model
   auto segment_info_ =
       segment_info_cache_->GetSegmentInfo(kSegmentId, kServerModelSource);
+  EXPECT_EQ(absl::nullopt, segment_info_);
+  // Default model
+  segment_info_ =
+      segment_info_cache_->GetSegmentInfo(kSegmentId, kDefaultModelSource);
   EXPECT_EQ(absl::nullopt, segment_info_);
 }
 
@@ -74,6 +82,16 @@ TEST_F(SegmentInfoCacheTest, GetSegmentInfoFromCache) {
   segment_info_ =
       segment_info_cache_->GetSegmentInfo(kSegmentId, kDefaultModelSource);
   EXPECT_FALSE(segment_info_.has_value());
+
+  // Creating SegmentInfo for default model and querying it.
+  segment_info_cache_->UpdateSegmentInfo(
+      kSegmentId, kDefaultModelSource,
+      CreateSegment(kSegmentId, kDefaultModelSource));
+  segment_info_ =
+      segment_info_cache_->GetSegmentInfo(kSegmentId, kDefaultModelSource);
+  EXPECT_TRUE(segment_info_.has_value());
+  EXPECT_EQ(kSegmentId, segment_info_.value().segment_id());
+  EXPECT_EQ(kDefaultModelSource, segment_info_.value().model_source());
 }
 
 TEST_F(SegmentInfoCacheTest, GetSegmentInfoForSegmentsFromCache) {
@@ -186,9 +204,16 @@ TEST_F(SegmentInfoCacheTest, GetSegmentInfoForBothModelsFromCache) {
   EXPECT_EQ(kSegmentId, segments_found.get()->at(1).first);
   EXPECT_EQ(kDefaultModelSource,
             segments_found.get()->at(1).second.model_source());
+
+  // Calling GetSegmentInfoForBothModels for `segment_id` not present in cache
+  // for both model sources.
+  segments_found =
+      segment_info_cache_->GetSegmentInfoForBothModels({kSegmentId3});
+  EXPECT_EQ(0u, segments_found.get()->size());
 }
 
 TEST_F(SegmentInfoCacheTest, UpdateSegmentInfo) {
+  // Server Model
   proto::SegmentInfo created_segment_info =
       CreateSegment(kSegmentId, kServerModelSource);
   segment_info_cache_->UpdateSegmentInfo(kSegmentId, kServerModelSource,
@@ -198,6 +223,7 @@ TEST_F(SegmentInfoCacheTest, UpdateSegmentInfo) {
       segment_info_cache_->GetSegmentInfo(kSegmentId, kServerModelSource);
   EXPECT_TRUE(segment_info_.has_value());
   EXPECT_EQ(kSegmentId, segment_info_.value().segment_id());
+  EXPECT_EQ(0, segment_info_.value().model_version());
 
   // Update model_version of segment_info
   created_segment_info.set_model_version(4);
@@ -209,6 +235,28 @@ TEST_F(SegmentInfoCacheTest, UpdateSegmentInfo) {
   EXPECT_TRUE(segment_info_.has_value());
   EXPECT_EQ(kSegmentId, segment_info_.value().segment_id());
   EXPECT_EQ(4, segment_info_.value().model_version());
+
+  // Default model
+  created_segment_info = CreateSegment(kSegmentId, kDefaultModelSource);
+  segment_info_cache_->UpdateSegmentInfo(kSegmentId, kDefaultModelSource,
+                                         created_segment_info);
+
+  segment_info_ =
+      segment_info_cache_->GetSegmentInfo(kSegmentId, kDefaultModelSource);
+  EXPECT_TRUE(segment_info_.has_value());
+  EXPECT_EQ(kSegmentId, segment_info_.value().segment_id());
+  EXPECT_EQ(0, segment_info_.value().model_version());
+
+  // Update model_version of segment_info
+  created_segment_info.set_model_version(7);
+  segment_info_cache_->UpdateSegmentInfo(kSegmentId, kDefaultModelSource,
+                                         created_segment_info);
+
+  segment_info_ =
+      segment_info_cache_->GetSegmentInfo(kSegmentId, kDefaultModelSource);
+  EXPECT_TRUE(segment_info_.has_value());
+  EXPECT_EQ(kSegmentId, segment_info_.value().segment_id());
+  EXPECT_EQ(7, segment_info_.value().model_version());
 }
 
 TEST_F(SegmentInfoCacheTest, GetSegmentInfoForBothModelsWithEmptyDatabase) {
