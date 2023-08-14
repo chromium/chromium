@@ -227,17 +227,22 @@ SavedDeskItemView::SavedDeskItemView(std::unique_ptr<DeskTemplate> saved_desk)
       this, SystemShadow::Type::kElevation12);
   shadow_->SetRoundedCornerRadius(kSaveDeskCornerRadius);
 
-  // Note this view needs to be set to paint to layer so other view won't
-  // paint over it.
-  box_layout_view->SetPaintToLayer();
-  box_layout_view->layer()->SetFillsBoundsOpaquely(false);
+  if (features::IsBackgroundBlurEnabled()) {
+    background_view->SetPaintToLayer();
+    background_view->layer()->SetFillsBoundsOpaquely(false);
+    background_view->layer()->SetBackgroundBlur(
+        ColorProvider::kBackgroundBlurSigma);
+    background_view->layer()->SetBackdropFilterQuality(
+        ColorProvider::kBackgroundBlurQuality);
+    background_view->layer()->SetRoundedCornerRadius(
+        gfx::RoundedCornersF(kSaveDeskCornerRadius));
 
-  background_view->SetPaintToLayer();
-  background_view->layer()->SetBackgroundBlur(
-      ColorProvider::kBackgroundBlurSigma);
-  background_view->layer()->SetRoundedCornerRadius(
-      gfx::RoundedCornersF(kSaveDeskCornerRadius));
-  background_view->layer()->SetFillsBoundsOpaquely(false);
+    // This needs to be painted to a layer if its sibling `background_view` is.
+    // Otherwise, it will be painted to its ancestors layer and
+    // `background_view` will be drawn on top of it as a result.
+    box_layout_view->SetPaintToLayer();
+    box_layout_view->layer()->SetFillsBoundsOpaquely(false);
+  }
 
   const int button_text_id = saved_desk_->type() == DeskTemplateType::kTemplate
                                  ? IDS_ASH_DESKS_TEMPLATES_USE_TEMPLATE_BUTTON

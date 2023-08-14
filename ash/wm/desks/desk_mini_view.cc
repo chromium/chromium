@@ -228,6 +228,8 @@ DeskMiniView::DeskMiniView(DeskBarViewBase* owner_bar,
     desk_shortcut_view_->layer()->SetFillsBoundsOpaquely(false);
     desk_shortcut_view_->layer()->SetBackgroundBlur(
         ColorProvider::kBackgroundBlurSigma);
+    desk_shortcut_view_->layer()->SetBackdropFilterQuality(
+        ColorProvider::kBackgroundBlurQuality);
     desk_shortcut_view_->layer()->SetRoundedCornerRadius(
         gfx::RoundedCornersF(kShortcutViewHeight));
     desk_shortcut_view_->SetVisible(false);
