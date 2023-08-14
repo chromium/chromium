@@ -30,6 +30,12 @@ source_set("libavif") {
 
   # configs -= [ "//build/config/compiler:chromium_code" ]
   # configs += [ "//build/config/compiler:no_chromium_code" ]
+
+  # CFI builds have an issue when C code tries to access, via a function
+  # pointer, a C++ function that contains a "struct YuvConstants *" parameter.
+  # Work around that issue by adding "-fsanitize-cfi-icall-generalize-pointers"
+  # until the CFI issue is fixed.
+  configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
   include_dirs = [ "src/include/" ]
   defines = [ "AVIF_LIBYUV_ENABLED" ]
 
