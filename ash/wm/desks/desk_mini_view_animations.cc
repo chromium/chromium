@@ -16,7 +16,9 @@
 #include "ash/wm/overview/cleanup_animation_observer.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
+#include "ash/wm/overview/overview_item.h"
 #include "ash/wm/overview/overview_session.h"
+#include "ash/wm/overview/overview_window_drag_controller.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -582,7 +584,21 @@ void PerformZeroStateToExpandedStateMiniViewAnimationCrOSNext(
                /*delay=*/kLabelFadeInDelay);
   }
 
-  PositionWindowsInOverview();
+  // This function should only be called in overview since there is no zero to
+  // expanded state animation for the desk button bar.
+  OverviewGrid* grid = bar_view->overview_grid();
+  CHECK(grid);
+
+  base::flat_set<OverviewItem*> ignored_items;
+  if (auto* drag_controller =
+          grid->overview_session()->window_drag_controller()) {
+    OverviewItem* dragged_item = drag_controller->item();
+    if (dragged_item && dragged_item->overview_grid() == grid) {
+      ignored_items.insert(dragged_item);
+    }
+  }
+
+  bar_view->overview_grid()->PositionWindows(/*animate=*/true, ignored_items);
 }
 
 void PerformExpandedStateToZeroStateMiniViewAnimation(
