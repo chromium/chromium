@@ -151,6 +151,13 @@ void RequestDispatcher::GetModelResult(
     scoped_refptr<InputContext> input_context,
     RawResultCallback callback) {
   if (config_holder_->IsLegacySegmentationKey(segmentation_key)) {
+    VLOG(1) << "Segmentation key: " << segmentation_key
+            << " is using a legacy config with the new API which is not "
+               "supported. Legacy segments should use "
+               "GetSelectedSegmentOnDemand or migrate to the new config.";
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback),
+                                  RawResult(PredictionStatus::kFailed)));
     return;
   }
   Config* config =
