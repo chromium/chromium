@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_HISTORY_CLUSTERS_CORE_TEST_HISTORY_CLUSTERS_SERVICE_H_
 #define COMPONENTS_HISTORY_CLUSTERS_CORE_TEST_HISTORY_CLUSTERS_SERVICE_H_
 
+#include <vector>
+
 #include "components/history_clusters/core/history_clusters_service.h"
 
 namespace history_clusters {
@@ -32,17 +34,27 @@ class TestHistoryClustersService : public HistoryClustersService {
   // Sets whether Journeys is enabled.
   void SetIsJourneysEnabled(bool is_journeys_enabled);
 
-  // Sets `clusters` to be the clusters that always get returned when
-  // `QueryClusters()` is called. If `exhausted_all_visits` is true, the next
-  // query will invoke its callback using
+  // Sets `clusters` to be the clusters that will return the first time
+  // `QueryClusters()` is called. Subsequent calls will return an empty vector.
+  // The query will invoke its callback using
   // `QueryClustersContinuationParams::DoneParams()`.
-  void SetClustersToReturn(const std::vector<history::Cluster>& clusters,
-                           bool exhausted_all_visits = true);
+  void SetClustersToReturnOnFirstCall(
+      const std::vector<history::Cluster>& clusters);
+
+  // Sets the clusters to return for a particular call count. When a call
+  // exceeds the specified clusters data, an empty vector will be returned, and
+  // the query will invoke its callback using
+  // `QueryClustersContinuationParams::DoneParams()`
+  void SetClustersToReturnForCalls(
+      const std::vector<std::vector<history::Cluster>>&
+          clusters_for_call_count);
 
  private:
   bool is_journeys_enabled_ = true;
-  std::vector<history::Cluster> clusters_;
-  bool next_query_is_done_ = false;
+  std::vector<std::vector<history::Cluster>> clusters_for_call_count_;
+  // The number of times the `QueryClusters()` function has been called.
+  size_t call_count_ = 0;
+  bool query_is_done_ = false;
 };
 
 }  // namespace history_clusters

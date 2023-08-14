@@ -58,6 +58,7 @@ class HistoryClustersModuleService : public KeyedService {
       const history_clusters::QueryClustersFilterParams filter_params,
       size_t min_required_related_searches,
       history_clusters::QueryClustersContinuationParams continuation_params,
+      std::vector<history::Cluster> continuation_clusters,
       GetClustersCallback callback);
 
   // Callback invoked when `history_clusters_service_` returns filtered
@@ -65,8 +66,9 @@ class HistoryClustersModuleService : public KeyedService {
   void OnGetFilteredClusters(
       size_t pending_task_id,
       base::Time begin_time,
-      const history_clusters::QueryClustersFilterParams filter_params,
+      history_clusters::QueryClustersFilterParams filter_params,
       size_t min_required_related_searches,
+      std::vector<history::Cluster> continuation_clusters,
       GetClustersCallback callback,
       std::vector<history::Cluster> clusters,
       history_clusters::QueryClustersContinuationParams continuation_params);
