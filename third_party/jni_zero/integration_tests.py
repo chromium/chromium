@@ -27,8 +27,8 @@ import zipfile
 _SCRIPT_DIR = os.path.normpath(os.path.dirname(__file__))
 _GOLDENS_DIR = os.path.join(_SCRIPT_DIR, 'golden')
 _EXTRA_INCLUDES = 'base/android/jni_generator/jni_generator_helper.h'
-_JAVA_SRC_DIR = os.path.join(_SCRIPT_DIR, 'java', 'src', 'org', 'chromium',
-                             'example', 'jni_generator')
+_JAVA_SRC_DIR = os.path.join(_SCRIPT_DIR, 'samples', 'java', 'src', 'org',
+                             'chromium', 'example', 'jni_generator')
 
 # Set this environment variable in order to regenerate the golden text
 # files.
