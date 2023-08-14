@@ -8,39 +8,22 @@
  * settings.
  */
 
-import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
-import 'chrome://resources/cr_elements/policy/cr_policy_indicator.js';
-import 'chrome://resources/cr_elements/policy/cr_policy_pref_indicator.js';
-import '/shared/settings/controls/settings_toggle_button.js';
 import '../os_settings_page/os_settings_subpage.js';
-import '../os_settings_page/settings_card.js';
 import '../settings_shared.css.js';
+import './date_time_card.js';
 import './date_time_types.js';
-import './timezone_selector.js';
-import './timezone_subpage.js';
 
-import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {DeepLinkingMixin} from '../deep_linking_mixin.js';
+import {PrefsState} from '../common/types.js';
 import {Section} from '../mojom-webui/routes.mojom-webui.js';
-import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import {RouteOriginMixin} from '../route_origin_mixin.js';
-import {Route, Router, routes} from '../router.js';
 
 import {getTemplate} from './date_time_page.html.js';
-import {TimeZoneBrowserProxy, TimeZoneBrowserProxyImpl} from './timezone_browser_proxy.js';
 
-const SettingsDateTimePageElementBase = DeepLinkingMixin(RouteOriginMixin(
-    PrefsMixin(I18nMixin(WebUiListenerMixin(PolymerElement)))));
-
-export class SettingsDateTimePageElement extends
-    SettingsDateTimePageElementBase {
+export class SettingsDateTimePageElement extends PolymerElement {
   static get is() {
-    return 'settings-date-time-page';
+    return 'settings-date-time-page' as const;
   }
 
   static get template() {
@@ -49,6 +32,11 @@ export class SettingsDateTimePageElement extends
 
   static get properties() {
     return {
+      prefs: {
+        type: Object,
+        notify: true,
+      },
+
       section_: {
         type: Number,
         value: Section.kDateAndTime,
@@ -56,135 +44,24 @@ export class SettingsDateTimePageElement extends
       },
 
       /**
-       * Whether date and time are settable. Normally the date and time are
-       * forced by network time, so default to false to initially hide the
-       * button.
-       */
-      canSetDateTime_: {
-        type: Boolean,
-        value: false,
-      },
-
-      /**
-       * This is used to get current time zone display name from
+       * This is used to cache the current time zone display name selected from
        * <timezone-selector> via bi-directional binding.
        */
       activeTimeZoneDisplayName: {
         type: String,
         value: loadTimeData.getString('timeZoneName'),
       },
-
-      timeZoneSettingSubLabel_: {
-        type: String,
-        computed: `computeTimeZoneSettingSubLabel_(
-            activeTimeZoneDisplayName,
-            prefs.generated.resolve_timezone_by_geolocation_on_off.value,
-            prefs.generated.resolve_timezone_by_geolocation_method_short.value)`,
-      },
-
-      /**
-       * Whether the icon informing that this action is managed by a parent is
-       * displayed.
-       */
-      displayManagedByParentIcon_: {
-        type: Boolean,
-        value: loadTimeData.getBoolean('isChild'),
-      },
-
-      /**
-       * Used by DeepLinkingMixin to focus this page's deep links.
-       */
-      supportedSettingIds: {
-        type: Object,
-        value: () => new Set<Setting>([
-          Setting.k24HourClock,
-          Setting.kChangeTimeZone,
-        ]),
-      },
-
     };
   }
 
   activeTimeZoneDisplayName: string;
-  private browserProxy_: TimeZoneBrowserProxy;
-  private canSetDateTime_: boolean;
-  private displayManagedByParentIcon_: boolean;
+  prefs: PrefsState;
   private section_: Section;
-  private timeZoneSettingSubLabel_: string;
-
-  constructor() {
-    super();
-
-    /** RouteOriginMixin override */
-    this.route = routes.DATETIME;
-
-    this.browserProxy_ = TimeZoneBrowserProxyImpl.getInstance();
-  }
-
-  override ready() {
-    super.ready();
-
-    this.addFocusConfig(
-        routes.DATETIME_TIMEZONE_SUBPAGE, '#timeZoneSettingsTrigger');
-  }
-
-  override connectedCallback() {
-    super.connectedCallback();
-
-    this.addWebUiListener(
-        'can-set-date-time-changed', this.onCanSetDateTimeChanged_.bind(this));
-    this.browserProxy_.dateTimePageReady();
-  }
-
-  override currentRouteChanged(newRoute: Route, oldRoute?: Route) {
-    super.currentRouteChanged(newRoute, oldRoute);
-
-    // Does not apply to this page.
-    if (newRoute !== this.route) {
-      return;
-    }
-
-    this.attemptDeepLink();
-  }
-
-  private onCanSetDateTimeChanged_(canSetDateTime: boolean) {
-    this.canSetDateTime_ = canSetDateTime;
-  }
-
-  private onSetDateTimeClick_() {
-    this.browserProxy_.showSetDateTimeUi();
-  }
-
-  private computeTimeZoneSettingSubLabel_(): string {
-    if (!this.getPref('generated.resolve_timezone_by_geolocation_on_off')
-             .value) {
-      return this.activeTimeZoneDisplayName;
-    }
-    const method =
-        this.getPref<number>(
-                'generated.resolve_timezone_by_geolocation_method_short')
-            .value;
-    const id = [
-      'setTimeZoneAutomaticallyDisabled',
-      'setTimeZoneAutomaticallyIpOnlyDefault',
-      'setTimeZoneAutomaticallyWithWiFiAccessPointsData',
-      'setTimeZoneAutomaticallyWithAllLocationInfo',
-    ][method];
-    return id ? this.i18n(id) : '';
-  }
-
-  private onTimeZoneSettings_() {
-    this.openTimeZoneSubpage_();
-  }
-
-  private openTimeZoneSubpage_() {
-    Router.getInstance().navigateTo(routes.DATETIME_TIMEZONE_SUBPAGE);
-  }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    'settings-date-time-page': SettingsDateTimePageElement;
+    [SettingsDateTimePageElement.is]: SettingsDateTimePageElement;
   }
 }
 

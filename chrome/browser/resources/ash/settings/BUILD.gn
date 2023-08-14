@@ -77,6 +77,7 @@ build_webui("build") {
     "crostini_page/crostini_port_forwarding.ts",
     "crostini_page/crostini_port_forwarding_add_port_dialog.ts",
     "crostini_page/crostini_subpage.ts",
+    "date_time_page/date_time_card.ts",
     "date_time_page/date_time_page.ts",
     "date_time_page/system_geolocation_dialog.ts",
     "date_time_page/timezone_selector.ts",

@@ -15,6 +15,10 @@ export function isGuest(): boolean {
   return loadTimeData.getBoolean('isGuest');
 }
 
+export function isChild(): boolean {
+  return loadTimeData.getBoolean('isChild');
+}
+
 export function isRevampWayfindingEnabled(): boolean {
   return loadTimeData.getBoolean('isRevampWayfindingEnabled');
 }

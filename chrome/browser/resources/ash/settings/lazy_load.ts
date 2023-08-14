@@ -129,6 +129,7 @@ export {SmbBrowserProxy, SmbBrowserProxyImpl, SmbMountResult} from 'chrome://res
 export {AppManagementSupportedLinksItemElement} from 'chrome://resources/cr_components/app_management/supported_links_item.js';
 export {AppManagementSupportedLinksOverlappingAppsDialogElement} from 'chrome://resources/cr_components/app_management/supported_links_overlapping_apps_dialog.js';
 export {CrostiniBrowserProxy, CrostiniBrowserProxyImpl} from './crostini_page/crostini_browser_proxy.js';
+export {SettingsDateTimeCardElement} from './date_time_page/date_time_card.js';
 export {SettingsDateTimePageElement} from './date_time_page/date_time_page.js';
 export {TimeZoneAutoDetectMethod} from './date_time_page/date_time_types.js';
 export {TimeZoneBrowserProxy, TimeZoneBrowserProxyImpl} from './date_time_page/timezone_browser_proxy.js';
