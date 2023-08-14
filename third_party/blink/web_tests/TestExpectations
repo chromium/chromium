@@ -6932,3 +6932,6 @@ crbug.com/1471020 http/tests/devtools/network/request-name-path.js [ Failure Pas
 
 # Gardner 2023-08-10
 crbug.com/1459188 [ Linux ] inspector-protocol/input/dispatchMouseEvent-dragging.js [ Failure Pass ]
+
+# Gardener 2023-08-14
+crbug.com/1472631 [ Linux ] virtual/text-antialias/whitespace/normal-after-nowrap-breaking.html [ Failure Pass ]
