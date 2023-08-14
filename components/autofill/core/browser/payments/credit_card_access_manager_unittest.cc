@@ -319,19 +319,22 @@ class CreditCardAccessManagerTest : public testing::Test {
   void AddMaxStrikes() {
     auto* strike_database =
         GetFIDOAuthenticator()->GetOrCreateFidoAuthenticationStrikeDatabase();
+    CHECK(strike_database);
     strike_database->AddStrikes(strike_database->GetMaxStrikesLimit());
   }
 
   void ClearStrikes() {
-    return GetFIDOAuthenticator()
-        ->GetOrCreateFidoAuthenticationStrikeDatabase()
-        ->ClearAllStrikes();
+    auto* strike_database =
+        GetFIDOAuthenticator()->GetOrCreateFidoAuthenticationStrikeDatabase();
+    CHECK(strike_database);
+    strike_database->ClearAllStrikes();
   }
 
   int GetStrikes() {
-    return GetFIDOAuthenticator()
-        ->GetOrCreateFidoAuthenticationStrikeDatabase()
-        ->GetStrikes();
+    auto* strike_database =
+        GetFIDOAuthenticator()->GetOrCreateFidoAuthenticationStrikeDatabase();
+    CHECK(strike_database);
+    return strike_database->GetStrikes();
   }
 
   base::Value::Dict GetTestRequestOptions() {

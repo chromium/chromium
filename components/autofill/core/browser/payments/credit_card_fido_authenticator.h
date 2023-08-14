@@ -141,7 +141,8 @@ class CreditCardFidoAuthenticator
   void OnWebauthnOfferDialogUserResponse(bool did_accept);
 #endif
 
-  // Retrieves the strike database for offering FIDO authentication.
+  // Retrieves the strike database for offering FIDO authentication. This can
+  // return nullptr so check before using.
   FidoAuthenticationStrikeDatabase*
   GetOrCreateFidoAuthenticationStrikeDatabase();
 

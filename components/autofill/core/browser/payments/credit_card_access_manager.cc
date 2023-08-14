@@ -347,10 +347,12 @@ void CreditCardAccessManager::FIDOAuthOptChange(bool opt_in) {
     }
 
     GetOrCreateFidoAuthenticator()->OptOut();
-    GetOrCreateFidoAuthenticator()
-        ->GetOrCreateFidoAuthenticationStrikeDatabase()
-        ->AddStrikes(
-            FidoAuthenticationStrikeDatabase::kStrikesToAddWhenUserOptsOut);
+    if (auto* strike_database =
+            GetOrCreateFidoAuthenticator()
+                ->GetOrCreateFidoAuthenticationStrikeDatabase()) {
+      strike_database->AddStrikes(
+          FidoAuthenticationStrikeDatabase::kStrikesToAddWhenUserOptsOut);
+    }
   }
 #endif
 }
@@ -931,9 +933,10 @@ bool CreditCardAccessManager::ShouldOfferFidoOptInDialog(
 
   // If the strike limit was reached for the FIDO opt-in dialog, we should not
   // offer it.
-  if (GetOrCreateFidoAuthenticator()
-          ->GetOrCreateFidoAuthenticationStrikeDatabase()
-          ->ShouldBlockFeature()) {
+  if (auto* strike_database =
+          GetOrCreateFidoAuthenticator()
+              ->GetOrCreateFidoAuthenticationStrikeDatabase();
+      strike_database && strike_database->ShouldBlockFeature()) {
     autofill_metrics::LogWebauthnOptInPromoNotOfferedReason(
         autofill_metrics::WebauthnOptInPromoNotOfferedReason::
             kBlockedByStrikeDatabase);

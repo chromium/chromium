@@ -252,8 +252,10 @@ void CreditCardFidoAuthenticator::OnWebauthnOfferDialogUserResponse(
     payments_client_->CancelRequest();
     card_authorization_token_ = std::string();
     current_flow_ = NONE_FLOW;
-    GetOrCreateFidoAuthenticationStrikeDatabase()->AddStrikes(
-        FidoAuthenticationStrikeDatabase::kStrikesToAddWhenOptInOfferDeclined);
+    if (auto* strike_database = GetOrCreateFidoAuthenticationStrikeDatabase()) {
+      strike_database->AddStrikes(FidoAuthenticationStrikeDatabase::
+                                      kStrikesToAddWhenOptInOfferDeclined);
+    }
     user_is_opted_in_ = false;
     UpdateUserPref();
   }
@@ -263,10 +265,11 @@ void CreditCardFidoAuthenticator::OnWebauthnOfferDialogUserResponse(
 FidoAuthenticationStrikeDatabase*
 CreditCardFidoAuthenticator::GetOrCreateFidoAuthenticationStrikeDatabase() {
   if (!fido_authentication_strike_database_) {
-    fido_authentication_strike_database_ =
-        std::make_unique<FidoAuthenticationStrikeDatabase>(
-            FidoAuthenticationStrikeDatabase(
-                autofill_client_->GetStrikeDatabase()));
+    if (auto* strike_database = autofill_client_->GetStrikeDatabase()) {
+      fido_authentication_strike_database_ =
+          std::make_unique<FidoAuthenticationStrikeDatabase>(
+              FidoAuthenticationStrikeDatabase(strike_database));
+    }
   }
   return fido_authentication_strike_database_.get();
 }
@@ -409,9 +412,12 @@ void CreditCardFidoAuthenticator::OnDidMakeCredential(
     // Treat failure to perform user verification as a strong signal not to
     // offer opt-in in the future.
     if (current_flow_ == OPT_IN_WITH_CHALLENGE_FLOW) {
-      GetOrCreateFidoAuthenticationStrikeDatabase()->AddStrikes(
-          FidoAuthenticationStrikeDatabase::
-              kStrikesToAddWhenUserVerificationFailsOnOptInAttempt);
+      if (auto* strike_database =
+              GetOrCreateFidoAuthenticationStrikeDatabase()) {
+        strike_database->AddStrikes(
+            FidoAuthenticationStrikeDatabase::
+                kStrikesToAddWhenUserVerificationFailsOnOptInAttempt);
+      }
       user_is_opted_in_ = false;
       UpdateUserPref();
     }
@@ -822,12 +828,16 @@ void CreditCardFidoAuthenticator::HandleGetAssertionFailure() {
 #if BUILDFLAG(IS_ANDROID)
       // For Android, even if GetAssertion fails for opting-in, we still report
       // success to |requester_| to fill the form with the fetched card info.
-      if (requester_)
+      if (requester_) {
         requester_->OnFidoAuthorizationComplete(/*did_succeed=*/true);
+      }
 #endif  // BUILDFLAG(IS_ANDROID)
-      GetOrCreateFidoAuthenticationStrikeDatabase()->AddStrikes(
-          FidoAuthenticationStrikeDatabase::
-              kStrikesToAddWhenUserVerificationFailsOnOptInAttempt);
+      if (auto* strike_database =
+              GetOrCreateFidoAuthenticationStrikeDatabase()) {
+        strike_database->AddStrikes(
+            FidoAuthenticationStrikeDatabase::
+                kStrikesToAddWhenUserVerificationFailsOnOptInAttempt);
+      }
       user_is_opted_in_ = false;
       UpdateUserPref();
       break;
