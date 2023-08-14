@@ -422,6 +422,7 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
   WebGPUAdapterName use_webgpu_adapter_ = WebGPUAdapterName::kDefault;
   WebGPUPowerPreference use_webgpu_power_preference_ =
       WebGPUPowerPreference::kNone;
+  bool force_fallback_adapter_ = false;
   bool force_webgpu_compat_ = false;
   std::vector<std::string> require_enabled_toggles_;
   std::vector<std::string> require_disabled_toggles_;
@@ -1124,9 +1125,14 @@ void WebGPUDecoderImpl::Destroy(bool have_context) {
 
 ContextResult WebGPUDecoderImpl::Initialize(
     const GpuFeatureInfo& gpu_feature_info) {
+  // TODO(senorblanco): forceFallbackAdapter with --force-webgpu-compat
+  // overrides the OpenGLES backend and gives SwiftShader/Vk with Compat
+  // validation. Fix this is dawn, and then remove the "!= OpenGLES" clause
+  // below.
   if (kGpuFeatureStatusSoftware ==
-      gpu_feature_info.status_values[GPU_FEATURE_TYPE_ACCELERATED_WEBGPU]) {
-    use_webgpu_adapter_ = WebGPUAdapterName::kSwiftShader;
+          gpu_feature_info.status_values[GPU_FEATURE_TYPE_ACCELERATED_WEBGPU] &&
+      use_webgpu_adapter_ != WebGPUAdapterName::kOpenGLES) {
+    force_fallback_adapter_ = true;
   }
 
   dawn_instance_->EnableAdapterBlocklist(use_blocklist());
@@ -1182,7 +1188,7 @@ void WebGPUDecoderImpl::RequestAdapterImpl(
     options = &default_options;
   }
 
-  bool force_fallback_adapter = options->forceFallbackAdapter;
+  bool force_fallback_adapter = force_fallback_adapter_;
   if (use_webgpu_adapter_ == WebGPUAdapterName::kSwiftShader) {
     force_fallback_adapter = true;
   }
@@ -1200,7 +1206,7 @@ void WebGPUDecoderImpl::RequestAdapterImpl(
 
   wgpu::Adapter adapter = CreatePreferredAdapter(
       static_cast<wgpu::PowerPreference>(options->powerPreference),
-      force_fallback_adapter,
+      options->forceFallbackAdapter || force_fallback_adapter,
       options->compatibilityMode || force_webgpu_compat_);
 
   if (adapter == nullptr) {
