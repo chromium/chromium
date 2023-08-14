@@ -20,7 +20,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.bottombar.ephemeraltab.EphemeralTabCoordinator;
 import org.chromium.chrome.browser.compositor.bottombar.ephemeraltab.EphemeralTabObserver;
 import org.chromium.chrome.browser.compositor.bottombar.ephemeraltab.EphemeralTabSheetContent;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
@@ -78,21 +77,13 @@ public class PageInfoAboutThisSiteController {
             // Append parameter to open the page with reduced UI elements in the bottomsheet.
             Uri.Builder builder = Uri.parse(url).buildUpon();
             if (mSiteInfo.hasMoreAbout() && url.equals(mSiteInfo.getMoreAbout().getUrl())) {
-                if (ChromeFeatureList.isEnabled(
-                            ChromeFeatureList.PAGE_INFO_ABOUT_THIS_SITE_IMPROVED_BOTTOMSHEET)) {
                     builder.appendQueryParameter("ilrm", "minimal,nohead");
-                } else {
-                    builder.appendQueryParameter("ilrm", "minimal");
-                }
             }
             GURL bottomSheetUrl = new GURL(builder.toString());
             GURL fullPageUrl = new GURL(url);
 
-            if (ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.PAGE_INFO_ABOUT_THIS_SITE_IMPROVED_BOTTOMSHEET)) {
                 createEphemeralTabObserver(bottomSheetUrl);
                 mEphemeralTabCoordinatorSupplier.get().addObserver(mEphemeralTabObserver);
-            }
 
             mEphemeralTabCoordinatorSupplier.get().requestOpenSheetWithFullPageUrl(
                     bottomSheetUrl, fullPageUrl, getTitle(), /*isIncognito=*/false);
@@ -166,16 +157,10 @@ public class PageInfoAboutThisSiteController {
         rowParams.subtitle = subtitle;
         rowParams.singleLineSubTitle = true;
         rowParams.visible = true;
-        rowParams.iconResId = isNewIconFeatureEnabled()
-                ? PageInfoAboutThisSiteControllerJni.get().getJavaDrawableIconId()
-                : R.drawable.ic_info_outline_grey_24dp;
+        rowParams.iconResId = PageInfoAboutThisSiteControllerJni.get().getJavaDrawableIconId();
         rowParams.decreaseIconSize = true;
         rowParams.clickCallback = this::onAboutThisSiteRowClicked;
         mRowView.setParams(rowParams);
-    }
-
-    private boolean isNewIconFeatureEnabled() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.PAGE_INFO_ABOUT_THIS_SITE_NEW_ICON);
     }
 
     private String getTitle() {

@@ -8145,14 +8145,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(page_info::kPageInfoHideSiteSettings)},
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_ANDROID)
-    {"page-info-about-this-site-improved-bottomsheet",
-     flag_descriptions::kPageInfoAboutThisSiteImprovedBottomSheetName,
-     flag_descriptions::kPageInfoAboutThisSiteImprovedBottomSheetDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(page_info::kPageInfoAboutThisSiteImprovedBottomSheet)},
-#endif  // BUILDFLAG(IS_ANDROID)
-
 #if !BUILDFLAG(IS_ANDROID)
     {"page-info-history-desktop",
      flag_descriptions::kPageInfoHistoryDesktopName,
@@ -8160,32 +8152,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(page_info::kPageInfoHistoryDesktop)},
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-    {"page-info-about-this-site-new-icon",
-     flag_descriptions::kPageInfoAboutThisSiteNewIconName,
-     flag_descriptions::kPageInfoAboutThisSiteNewIconDescription,
-     kOsDesktop | kOsAndroid,
-     FEATURE_VALUE_TYPE(page_info::kPageInfoAboutThisSiteNewIcon)},
-
-    {"page-info-about-this-site-non-en",
-     flag_descriptions::kPageInfoAboutThisSiteNonEnName,
-     flag_descriptions::kPageInfoAboutThisSiteNonEnDescription,
-     kOsDesktop | kOsAndroid,
-     FEATURE_VALUE_TYPE(page_info::kPageInfoAboutThisSiteMoreLangs)},
-
 #if !BUILDFLAG(IS_ANDROID)
     {"page-info-about-this-page-persistent-side-panel-entry",
-     flag_descriptions::kPageInfoboutThisPagePersistentEntryName,
-     flag_descriptions::kPageInfoboutThisPagePersistentEntryDescription,
+     flag_descriptions::kPageInfoAboutThisPagePersistentEntryName,
+     flag_descriptions::kPageInfoAboutThisPagePersistentEntryDescription,
      kOsDesktop,
      FEATURE_VALUE_TYPE(page_info::kAboutThisSitePersistentSidePanelEntry)},
-
-    {"page-info-about-this-site-keep-side-panel-open-on-same-tab-navs",
-     flag_descriptions::kPageInfoAboutThisSiteKeepSidePanelOnSameTabNavs,
-     flag_descriptions::
-         kPageInfoAboutThisSiteKeepSidePanelOnSameTabNavsDescription,
-     kOsDesktop,
-     FEATURE_VALUE_TYPE(
-         page_info::kPageInfoAboutThisSiteKeepSidePanelOnSameTabNavs)},
 #endif
 
     {"user-bypass-ui", flag_descriptions::kUserBypassUIName,

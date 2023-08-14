@@ -2695,32 +2695,9 @@ const char kPageImageServiceSuggestPoweredImagesName[] =
 const char kPageImageServiceSuggestPoweredImagesDescription[] =
     "Enables the PageImageService fetching images from the Suggest source.";
 
-const char kPageInfoAboutThisSiteKeepSidePanelOnSameTabNavs[] =
-    "'About this site' keep side panel on same tab navs";
-const char kPageInfoAboutThisSiteKeepSidePanelOnSameTabNavsDescription[] =
-    "Keeps the 'About this site' side panel open and updated on same tab "
-    "navigations.";
-
-const char kPageInfoAboutThisSiteNewIconName[] = "'About this site' new icon";
-const char kPageInfoAboutThisSiteNewIconDescription[] =
-    "Shows the 'About this site' section in the page info UI with a new google "
-    "branded icon.";
-
-const char kPageInfoAboutThisSiteNonEnName[] =
-    "'About this site' section in page info in all languages";
-const char kPageInfoAboutThisSiteNonEnDescription[] =
-    "Enable the 'About this site' section in the page info UI in languages "
-    "other than English.";
-
-const char kPageInfoboutThisPageDescriptionPlaceholderName[] =
-    "AboutThisPage description placeholder";
-const char kPageInfoboutThisPageDescriptionPlaceholderDescription[] =
-    "Shows a placeholder when no description is availble instead of not "
-    "showing an entry at all";
-
-const char kPageInfoboutThisPagePersistentEntryName[] =
+const char kPageInfoAboutThisPagePersistentEntryName[] =
     "AboutThisPage persistent SidePanel entry";
-const char kPageInfoboutThisPagePersistentEntryDescription[] =
+const char kPageInfoAboutThisPagePersistentEntryDescription[] =
     "Registers a SidePanel entry on pageload if 'AboutThisPage' info is "
     "available";
 
@@ -2728,12 +2705,6 @@ const char kPageInfoCookiesSubpageName[] = "Cookies subpage in page info";
 const char kPageInfoCookiesSubpageDescription[] =
     "Enable the Cookies subpage in page info for managing cookies and site "
     "data.";
-
-const char kPageInfoMoreAboutThisPageName[] =
-    "'More about this page' link in page info";
-const char kPageInfoMoreAboutThisPageDescription[] =
-    "Enable the 'More about this page' link in the 'From the web' section of "
-    "page info.";
 
 const char kPageInfoHideSiteSettingsName[] = "Page info hide site settings";
 const char kPageInfoHideSiteSettingsDescription[] =
@@ -4101,12 +4072,6 @@ const char kPageInfoHistoryName[] = "Page info history";
 const char kPageInfoHistoryDescription[] =
     "Enable a history sub page to the page info menu, and a button to forget "
     "a site, removing all preferences and history.";
-
-const char kPageInfoAboutThisSiteImprovedBottomSheetName[] =
-    "Page info 'About this site' improved bottomsheet";
-const char kPageInfoAboutThisSiteImprovedBottomSheetDescription[] =
-    "Enable an improved 'About this site' bottomsheet, which includes a "
-    "less cluttered toolbar view and opening navigations in a new tab.";
 
 const char kPasswordGenerationBottomSheetName[] =
     "Password generation bottom sheet";

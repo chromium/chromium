@@ -16,11 +16,6 @@ bool IsAboutThisSiteFeatureEnabled() {
       g_browser_process->GetApplicationLocale());
 }
 
-bool IsAboutThisSiteNewIconFeatureEnabled() {
-  return IsAboutThisSiteFeatureEnabled() &&
-         base::FeatureList::IsEnabled(page_info::kPageInfoAboutThisSiteNewIcon);
-}
-
 #if !BUILDFLAG(IS_ANDROID)
 bool IsPersistentSidePanelEntryFeatureEnabled() {
   return IsAboutThisSiteFeatureEnabled() &&
@@ -32,11 +27,6 @@ BASE_FEATURE(kAboutThisSitePersistentSidePanelEntry,
              "AboutThisSitePersistentSidePanelEntry",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-bool IsKeepSidePanelOnSameTabNavsFeatureEnabled() {
-  return IsAboutThisSiteFeatureEnabled() &&
-         base::FeatureList::IsEnabled(
-             page_info::kPageInfoAboutThisSiteKeepSidePanelOnSameTabNavs);
-}
 #endif
 
 }  // namespace page_info

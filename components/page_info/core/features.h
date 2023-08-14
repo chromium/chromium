@@ -17,12 +17,7 @@ namespace page_info {
 BASE_DECLARE_FEATURE(kPageInfoHistory);
 // Enables the store info row for Page Info.
 BASE_DECLARE_FEATURE(kPageInfoStoreInfo);
-// Enables an improved "About this site" bottomsheet in Page Info.
-BASE_DECLARE_FEATURE(kPageInfoAboutThisSiteImprovedBottomSheet);
 #endif
-
-// Shows the new icon for the "About this site" section in Page Info
-BASE_DECLARE_FEATURE(kPageInfoAboutThisSiteNewIcon);
 
 // Enables the "About this site" section in Page Info.
 extern bool IsAboutThisSiteFeatureEnabled(const std::string& locale);
@@ -37,10 +32,6 @@ BASE_DECLARE_FEATURE(kPageInfoAboutThisSiteMoreLangs);
 extern const base::FeatureParam<bool> kShowSampleContent;
 
 #if !BUILDFLAG(IS_ANDROID)
-// Keeps the 'About this site' side panel open and updated on same tab
-// navigations
-BASE_DECLARE_FEATURE(kPageInfoAboutThisSiteKeepSidePanelOnSameTabNavs);
-
 // Enables the history section for Page Info on desktop.
 BASE_DECLARE_FEATURE(kPageInfoHistoryDesktop);
 

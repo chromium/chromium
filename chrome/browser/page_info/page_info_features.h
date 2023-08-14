@@ -12,10 +12,6 @@ namespace page_info {
 // enabled.
 bool IsAboutThisSiteFeatureEnabled();
 
-// Returns true if `kPageInfoAboutThisSiteNewIcon` and dependent features are
-// enabled.
-bool IsAboutThisSiteNewIconFeatureEnabled();
-
 #if !BUILDFLAG(IS_ANDROID)
 // Returns true if kAboutThisSitePersistentSidePanelEntry and dependent
 // features are enabled.
@@ -24,9 +20,6 @@ bool IsPersistentSidePanelEntryFeatureEnabled();
 // Enables the persistent "About this site" entry in the side panel.
 BASE_DECLARE_FEATURE(kAboutThisSitePersistentSidePanelEntry);
 
-// Returns true if kPageInfoAboutThisSiteKeepSidePanelOnSameTabNavs and
-// dependent features are enabled.
-bool IsKeepSidePanelOnSameTabNavsFeatureEnabled();
 #endif
 
 }  // namespace page_info

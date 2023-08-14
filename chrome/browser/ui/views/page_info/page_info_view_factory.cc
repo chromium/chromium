@@ -617,25 +617,21 @@ const ui::ImageModel PageInfoViewFactory::GetAboutThisSiteIcon() {
 // static
 const gfx::VectorIcon& PageInfoViewFactory::GetAboutThisSiteColorVectorIcon() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  if (page_info::IsAboutThisSiteNewIconFeatureEnabled()) {
-    return vector_icons::kPageInsightsColorIcon;
-  }
-#endif  // !BUILDFLAG(GOOGLE_CHROME_BRANDING)
-
+  return vector_icons::kPageInsightsColorIcon;
+#else
   return features::IsChromeRefresh2023() ? views::kInfoChromeRefreshIcon
                                          : views::kInfoIcon;
+#endif  // !BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
 
 // static
 const gfx::VectorIcon& PageInfoViewFactory::GetAboutThisSiteVectorIcon() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  if (page_info::IsAboutThisSiteNewIconFeatureEnabled()) {
-    return vector_icons::kPageInsightsIcon;
-  }
-#endif  // !BUILDFLAG(GOOGLE_CHROME_BRANDING)
-
+  return vector_icons::kPageInsightsIcon;
+#else
   return features::IsChromeRefresh2023() ? views::kInfoChromeRefreshIcon
                                          : views::kInfoIcon;
+#endif  // !BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
 // static
 const ui::ImageModel PageInfoViewFactory::GetHistoryIcon() {

@@ -10636,21 +10636,6 @@
             ]
         }
     ],
-    "PageInfoAboutThisSiteImprovedBottomSheet": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "PageInfoAboutThisSiteImprovedBottomSheet"
-                    ]
-                }
-            ]
-        }
-    ],
     "PageInfoHistory": [
         {
             "platforms": [

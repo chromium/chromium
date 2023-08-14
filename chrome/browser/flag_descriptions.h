@@ -1531,26 +1531,11 @@ extern const char kPageImageServiceOptimizationGuideSalientImagesDescription[];
 extern const char kPageImageServiceSuggestPoweredImagesName[];
 extern const char kPageImageServiceSuggestPoweredImagesDescription[];
 
-extern const char kPageInfoAboutThisSiteKeepSidePanelOnSameTabNavs[];
-extern const char kPageInfoAboutThisSiteKeepSidePanelOnSameTabNavsDescription[];
-
-extern const char kPageInfoAboutThisSiteNewIconName[];
-extern const char kPageInfoAboutThisSiteNewIconDescription[];
-
-extern const char kPageInfoAboutThisSiteNonEnName[];
-extern const char kPageInfoAboutThisSiteNonEnDescription[];
-
-extern const char kPageInfoboutThisPageDescriptionPlaceholderName[];
-extern const char kPageInfoboutThisPageDescriptionPlaceholderDescription[];
-
-extern const char kPageInfoboutThisPagePersistentEntryName[];
-extern const char kPageInfoboutThisPagePersistentEntryDescription[];
+extern const char kPageInfoAboutThisPagePersistentEntryName[];
+extern const char kPageInfoAboutThisPagePersistentEntryDescription[];
 
 extern const char kPageInfoCookiesSubpageName[];
 extern const char kPageInfoCookiesSubpageDescription[];
-
-extern const char kPageInfoMoreAboutThisPageName[];
-extern const char kPageInfoMoreAboutThisPageDescription[];
 
 extern const char kPageInfoHideSiteSettingsName[];
 extern const char kPageInfoHideSiteSettingsDescription[];
@@ -2406,9 +2391,6 @@ extern const char kOmahaMinSdkVersionAndroidMinSdk1000Description[];
 
 extern const char kPageInfoHistoryName[];
 extern const char kPageInfoHistoryDescription[];
-
-extern const char kPageInfoAboutThisSiteImprovedBottomSheetName[];
-extern const char kPageInfoAboutThisSiteImprovedBottomSheetDescription[];
 
 extern const char kPasswordEditDialogWithDetailsName[];
 extern const char kPasswordEditDialogWithDetailsDescription[];
