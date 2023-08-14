@@ -32,11 +32,27 @@ const uint8_t kRequestVersionBitOffset = 5;
 const uint8_t kGzipCompression = 2;
 const uint8_t kCompressionBitOffset = 0;
 
-cbor::Value SerializeAds(const std::vector<blink::InterestGroup::Ad>& ads) {
+cbor::Value SerializeAds(const std::vector<blink::InterestGroup::Ad>& ads,
+                         bool include_full_ads) {
   cbor::Value::ArrayValue result;
   for (const auto& ad : ads) {
-    if (ad.ad_render_id) {
-      result.emplace_back(ad.ad_render_id.value());
+    if (include_full_ads) {
+      cbor::Value::MapValue obj;
+      obj[cbor::Value("renderURL")] = cbor::Value(ad.render_url.spec());
+      if (ad.metadata) {
+        obj[cbor::Value("metadata")] = cbor::Value(ad.metadata.value());
+      }
+      if (ad.size_group) {
+        obj[cbor::Value("sizeGroup")] = cbor::Value(ad.size_group.value());
+      }
+      if (ad.ad_render_id) {
+        obj[cbor::Value("adRenderId")] = cbor::Value(ad.ad_render_id.value());
+      }
+      result.emplace_back(std::move(obj));
+    } else {
+      if (ad.ad_render_id) {
+        result.emplace_back(ad.ad_render_id.value());
+      }
     }
   }
   return cbor::Value(std::move(result));
@@ -62,12 +78,20 @@ cbor::Value SerializeInterestGroup(base::Time start_time,
     group_obj[cbor::Value("userBiddingSignals")] =
         cbor::Value(*group.interest_group.user_bidding_signals);
   }
-  if (group.interest_group.ads) {
-    group_obj[cbor::Value("ads")] = SerializeAds(*group.interest_group.ads);
-  }
-  if (group.interest_group.ad_components) {
-    group_obj[cbor::Value("adComponents")] =
-        SerializeAds(*group.interest_group.ad_components);
+  if (!group.interest_group.auction_server_request_flags.Has(
+          blink::AuctionServerRequestFlagsEnum::kOmitAds)) {
+    if (group.interest_group.ads) {
+      group_obj[cbor::Value("ads")] = SerializeAds(
+          *group.interest_group.ads,
+          group.interest_group.auction_server_request_flags.Has(
+              blink::AuctionServerRequestFlagsEnum::kIncludeFullAds));
+    }
+    if (group.interest_group.ad_components) {
+      group_obj[cbor::Value("adComponents")] = SerializeAds(
+          *group.interest_group.ad_components,
+          group.interest_group.auction_server_request_flags.Has(
+              blink::AuctionServerRequestFlagsEnum::kIncludeFullAds));
+    }
   }
   cbor::Value::MapValue browser_signals;
   browser_signals[cbor::Value("bidCount")] =
@@ -95,12 +119,37 @@ cbor::Value SerializeInterestGroup(base::Time start_time,
       // Just do our best regardless.
       continue;
     }
-    std::string* ad_render_id = ad->GetDict().FindString("adRenderId");
-    if (ad_render_id) {
-      tuple.emplace_back(*ad_render_id);
+    if (group.interest_group.auction_server_request_flags.Has(
+            blink::AuctionServerRequestFlagsEnum::kIncludeFullAds)) {
+      cbor::Value::MapValue obj;
+      for (const auto kv : ad->GetDict()) {
+        switch (kv.second.type()) {
+          case base::Value::Type::BOOLEAN:
+            obj[cbor::Value(kv.first)] = cbor::Value(kv.second.GetBool());
+            break;
+          case base::Value::Type::INTEGER:
+            obj[cbor::Value(kv.first)] = cbor::Value(kv.second.GetInt());
+            break;
+          case base::Value::Type::DOUBLE:
+            obj[cbor::Value(kv.first)] = cbor::Value(kv.second.GetDouble());
+            break;
+          case base::Value::Type::STRING:
+            obj[cbor::Value(kv.first)] = cbor::Value(kv.second.GetString());
+            break;
+          default:
+            LOG(ERROR) << "Unsupported type in prevWins.ad for key '"
+                       << kv.first << "': " << kv.second.DebugString();
+        }
+      }
+      tuple.emplace_back(std::move(obj));
     } else {
-      // If there's no adRenderId we still can send the time.
-      tuple.emplace_back("");
+      std::string* ad_render_id = ad->GetDict().FindString("adRenderId");
+      if (ad_render_id) {
+        tuple.emplace_back(*ad_render_id);
+      } else {
+        // If there's no adRenderId we still can send the time.
+        tuple.emplace_back("");
+      }
     }
     prev_wins.emplace_back(std::move(tuple));
   }
