@@ -159,6 +159,8 @@ bool RLZ_LIB_API ParseFinancialPingResponse(Product product,
 // exclude_machine_id : Whether the Machine ID should be explicitly excluded
 //                      based on the products privacy policy.
 //
+// SendFinancialPing() will retry (best effort) the request on failures.
+//
 // Returns true on successful ping and response, false otherwise.
 // Access: HKCU write.
 bool RLZ_LIB_API SendFinancialPing(Product product,

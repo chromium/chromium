@@ -282,6 +282,13 @@ void PingRlzServer(std::string url,
   auto url_loader = network::SimpleURLLoader::Create(
       std::move(resource_request), traffic_annotation);
 
+  constexpr int kMaxNetworkRetries = 3;
+  url_loader->SetRetryOptions(
+      kMaxNetworkRetries,
+      network::SimpleURLLoader::RetryMode::RETRY_ON_5XX |
+          network::SimpleURLLoader::RETRY_ON_NETWORK_CHANGE |
+          network::SimpleURLLoader::RETRY_ON_NAME_NOT_RESOLVED);
+
   // Pass ownership of the loader to the bound function. Otherwise the load will
   // be canceled when the SimpleURLLoader object is destroyed.
   auto* url_loader_ptr = url_loader.get();
