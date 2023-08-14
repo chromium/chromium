@@ -2573,7 +2573,6 @@ crbug.com/798257 external/wpt/css/css-pseudo/first-line-line-height-002.html [ F
 [ Linux ] virtual/gpu-rasterization-disable-yuv/images/yuv-decode-eligible/color-profile-filter.html [ Failure Pass ]
 [ Linux ] virtual/portals/http/tests/devtools/portals/portals-elements-activate.js [ Failure Pass ]
 [ Linux ] virtual/scalefactor150/fast/events/synthetic-events/tap-on-scaled-screen.html [ Failure Pass ]
-[ Linux ] virtual/scalefactor150/fast/hidpi/static/pointerevents/pointerevent_touch-adjustment_click_target.html [ Failure Pass ]
 [ Linux ] virtual/scalefactor200-single-threaded/css3/filters/filter-repaint-composited-fallback.html [ Failure Pass ]
 
 # ========== Begin single-threaded virtual test suite overrides ==========
@@ -6937,3 +6936,5 @@ crbug.com/1459188 [ Linux ] inspector-protocol/input/dispatchMouseEvent-dragging
 crbug.com/1472631 [ Linux ] virtual/text-antialias/whitespace/normal-after-nowrap-breaking.html [ Failure Pass ]
 crbug.com/1472675 [ Linux ] virtual/threaded/external/wpt/css/css-scroll-snap/overscroll-snap.html [ Failure Pass ]
 crbug.com/1472675 [ Linux ] virtual/disable-composite-scroll-after-paint/external/wpt/css/css-scroll-snap/overscroll-snap.html [ Failure Pass ]
+crbug.com/1472721 [ Linux ] virtual/scalefactor150/fast/hidpi/static/pointerevents/pointerevent_touch-adjustment_click_target.html [ Failure Pass ]
+crbug.com/1472721 [ Linux ] virtual/scalefactor200/fast/hidpi/static/pointerevents/pointerevent_touch-adjustment_click_target.html [ Failure Pass ]
