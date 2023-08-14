@@ -4,9 +4,9 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/webui/settings/public/constants/setting.mojom-shared.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/webui/settings/ash/os_settings_lock_screen_browser_test_base.h"
-#include "chrome/browser/ui/webui/settings/chromeos/constants/setting.mojom-shared.h"
 #include "chrome/test/data/webui/settings/chromeos/test_api.test-mojom-test-utils.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
