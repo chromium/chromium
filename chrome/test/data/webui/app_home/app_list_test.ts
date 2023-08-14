@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://webui-test/mojo_webui_test_support.js';
 import 'chrome://apps/app_list.js';
 import 'chrome://apps/app_item.js';
 import 'chrome://apps/deprecated_apps_link.js';
