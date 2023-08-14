@@ -15,6 +15,7 @@
 #include "media/base/video_types.h"
 #include "media/gpu/chromeos/video_decoder_pipeline.h"
 #include "media/gpu/media_gpu_export.h"
+#include "media/video/h264_parser.h"
 
 namespace base {
 class Location;
@@ -124,6 +125,11 @@ class MEDIA_GPU_EXPORT V4L2StatefulVideoDecoder : public VideoDecoderMixin {
 
   // Returns true if this class has successfully Initialize()d.
   bool IsInitialized() const;
+  // Read the buffer data and parse the NALUs. Return true if the buffer
+  // contains whole NALUs, IOW the total size of the NALUs and NALU headers adds
+  // up to the size of the buffer; false otherwise.
+  bool VerifyDecoderBufferHasOnlyWholeNALUs(
+      scoped_refptr<DecoderBuffer> buffer);
 
   base::ScopedFD device_fd_ GUARDED_BY_CONTEXT(sequence_checker_);
   // This |wake_event_| is used to interrupt a blocking poll() call, such as the
@@ -159,6 +165,12 @@ class MEDIA_GPU_EXPORT V4L2StatefulVideoDecoder : public VideoDecoderMixin {
   // Pegged to the construction and main work thread. Notably, |task_runner| is
   // not used.
   SEQUENCE_CHECKER(sequence_checker_);
+
+  // For H264 decode, hardware requires that we send it whole NALUs. The current
+  // implementation of the decoder requires that Decode() is called on a
+  // DecoderBuffer with whole NALUs. So we'll need to parse the stream to ensure
+  // that with a DCHECK().
+  absl::optional<H264Parser> h264_parser_;
 
   // Weak pointer/factory associated with the main thread (|sequence_checker|).
   base::WeakPtr<V4L2StatefulVideoDecoder> weak_this_;

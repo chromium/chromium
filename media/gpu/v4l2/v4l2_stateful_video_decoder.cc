@@ -22,6 +22,7 @@
 #include "media/gpu/macros.h"
 #include "media/gpu/v4l2/v4l2_queue.h"
 #include "media/gpu/v4l2/v4l2_utils.h"
+#include "media/video/h264_parser.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace {
@@ -323,14 +324,23 @@ void V4L2StatefulVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
   }
 
   if (profile_ == H264PROFILE_BASELINE || profile_ == H264PROFILE_MAIN ||
-      profile_ == H264PROFILE_HIGH || profile_ == HEVCPROFILE_MAIN) {
-    // We need to instantiate an InputBufferFragmentSplitter.
+      profile_ == H264PROFILE_HIGH) {
+    DCHECK(VerifyDecoderBufferHasOnlyWholeNALUs(buffer));
+  }
+
+  if (profile_ == HEVCPROFILE_MAIN) {
     NOTIMPLEMENTED();
     std::move(decode_cb).Run(DecoderStatus::Codes::kAborted);
     return;
   }
 
   PrintOutQueueStatesForVLOG(FROM_HERE);
+
+  if (!DrainOUTPUTQueue()) {
+    PLOG(ERROR) << "Failed to drain resources from |OUTPUT_queue_|.";
+    std::move(decode_cb).Run(DecoderStatus::Codes::kFailed);
+    return;
+  }
 
   decoder_buffer_and_callbacks_.emplace(std::move(buffer),
                                         std::move(decode_cb));
@@ -796,6 +806,36 @@ bool V4L2StatefulVideoDecoder::DrainOUTPUTQueue() {
     PrintOutQueueStatesForVLOG(FROM_HERE);
   }
   return success;
+}
+
+bool V4L2StatefulVideoDecoder::VerifyDecoderBufferHasOnlyWholeNALUs(
+    scoped_refptr<DecoderBuffer> buffer) {
+  DCHECK(h264_parser_);
+  h264_parser_->SetStream(buffer->data(), buffer->data_size());
+  size_t accumulator = 0;
+  while (true) {
+    H264NALU nalu;
+    const H264Parser::Result result = h264_parser_->AdvanceToNextNALU(&nalu);
+    if (result == H264Parser::kInvalidStream ||
+        result == H264Parser::kUnsupportedStream) {
+      return false;
+    }
+    if (result == H264Parser::kEOStream) {
+      return accumulator == buffer->data_size();
+    }
+    DCHECK_EQ(result, H264Parser::kOk);
+
+    // Includes the size of the NALU header so that the size adds up to the
+    // actual size of the buffer.
+    const size_t nalu_header_size =
+        base::checked_cast<size_t>(nalu.data - buffer->data());
+    if (!base::CheckAdd(nalu_header_size, nalu.size)
+             .AssignIfValid(&accumulator)) {
+      LOG(ERROR) << "Invalid NALU header and data size.";
+      return false;
+    }
+    DCHECK_LE(accumulator, buffer->data_size());
+  }
 }
 
 bool V4L2StatefulVideoDecoder::TryAndEnqueueOUTPUTQueueBuffers() {
