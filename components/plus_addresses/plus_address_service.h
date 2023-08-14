@@ -8,7 +8,6 @@
 #include <unordered_map>
 #include <unordered_set>
 #include "base/functional/callback_forward.h"
-#include "base/time/time.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
