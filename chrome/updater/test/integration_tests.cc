@@ -14,12 +14,10 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
-#include "base/functional/function_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_run_loop_timeout.h"
 #include "base/test/task_environment.h"
@@ -72,11 +70,6 @@
 
 namespace updater::test {
 namespace {
-
-namespace enterprise_management =
-    ::wireless_android_enterprise_devicemanagement;
-using enterprise_management::ApplicationSettings;
-using enterprise_management::OmahaSettingsClientProto;
 
 #if BUILDFLAG(IS_WIN) || !defined(COMPONENT_BUILD)
 
@@ -305,12 +298,11 @@ class IntegrationTest : public ::testing::Test {
     test_commands_->ExpectAppVersion(app_id, version);
   }
 
-  void InstallApp(
-      const std::string& app_id,
-      const base::Version& version = base::Version("0.1"),
-      base::FunctionRef<void()> post_install_action = []() {}) {
+  void InstallApp(const std::string& app_id,
+                  const base::Version& version = base::Version("0.1"),
+                  base::OnceClosure post_install_action = base::DoNothing()) {
     test_commands_->InstallApp(app_id, version);
-    post_install_action();
+    std::move(post_install_action).Run();
   }
 
   void UninstallApp(const std::string& app_id) {
@@ -1518,9 +1510,6 @@ class IntegrationTestDeviceManagement : public IntegrationTest {
 
  protected:
   void SetUp() override {
-    if (!IsSystemInstall(GetTestScope())) {
-      GTEST_SKIP();
-    }
     IntegrationTest::SetUp();
     DMCleanup();
     test_server_ = std::make_unique<ScopedServer>(test_commands_);
@@ -1528,48 +1517,14 @@ class IntegrationTestDeviceManagement : public IntegrationTest {
   }
 
   void TearDown() override {
-    base::win::RegKey(HKEY_LOCAL_MACHINE, UPDATER_POLICIES_KEY,
-                      Wow6432(KEY_WRITE))
-        .DeleteKey(L"");
     DMCleanup();
     IntegrationTest::TearDown();
-  }
-
-  base::FilePath GetInstallerPath(const std::string& installer) const {
-    return base::FilePath::FromASCII("test_installer").AppendASCII(installer);
   }
 
   void PushEnrollmentToken(const std::string& enrollment_token) {
     scoped_refptr<DMStorage> storage = GetDefaultDMStorage();
     EXPECT_TRUE(storage->StoreEnrollmentToken(enrollment_token));
     EXPECT_TRUE(storage->DeleteDMToken());
-  }
-
-  void InstallAppWithVersion(const std::string& app_id,
-                             const base::Version& version) {
-    InstallApp(app_id, version, [&]() {
-      // Run test app installer to set app `pv` value to its initial
-      // version.
-      base::FilePath exe_path;
-      ASSERT_TRUE(base::PathService::Get(base::DIR_EXE, &exe_path));
-      base::CommandLine command(
-          exe_path.Append(GetInstallerPath(kAppCRX).ReplaceExtension(
-              FILE_PATH_LITERAL(".exe"))));
-      command.AppendArg("--system");
-      command.AppendSwitchASCII("--company", COMPANY_SHORTNAME_STRING);
-      command.AppendSwitchASCII("--appid", app_id);
-      command.AppendSwitchASCII("--product_version", version.GetString());
-      VLOG(2) << "Launch app setup command: " << command.GetCommandLineString();
-      base::Process process = base::LaunchProcess(command, {});
-      if (!process.IsValid()) {
-        VLOG(2) << "Invalid process launching command: "
-                << command.GetCommandLineString();
-      }
-      int exit_code = -1;
-      EXPECT_TRUE(process.WaitForExitWithTimeout(TestTimeouts::action_timeout(),
-                                                 &exit_code));
-      EXPECT_EQ(0, exit_code);
-    });
   }
 
   void ExpectAppInstalled(const std::string& appid,
@@ -1588,23 +1543,27 @@ class IntegrationTestDeviceManagement : public IntegrationTest {
   std::unique_ptr<ScopedServer> test_server_;
   static constexpr char kEnrollmentToken[] = "integration-enrollment-token";
   static constexpr char kDMToken[] = "integration-dm-token";
-  static constexpr char kAppId1[] = "test1";
-  static constexpr char kAppId2[] = "test2";
-  static constexpr char kAppId3[] = "test3";
-  static constexpr char kAppCRX[] = "TestApp2Setup.crx3";
+  static constexpr char kAppId[] = "test1";
 };
 
 TEST_F(IntegrationTestDeviceManagement, PolicyFetchBeforeInstall) {
-  OmahaSettingsClientProto omaha_settings;
+  if (!IsSystemInstall(GetTestScope())) {
+    GTEST_SKIP();
+  }
+
+  ::wireless_android_enterprise_devicemanagement::OmahaSettingsClientProto
+      omaha_settings;
   omaha_settings.set_install_default(
-      enterprise_management::INSTALL_DEFAULT_DISABLED);
+      ::wireless_android_enterprise_devicemanagement::INSTALL_DEFAULT_DISABLED);
   omaha_settings.set_proxy_server("test.proxy.server");
-  ApplicationSettings app;
-  app.set_app_guid(kAppId1);
-  app.set_update(enterprise_management::AUTOMATIC_UPDATES_ONLY);
+  ::wireless_android_enterprise_devicemanagement::ApplicationSettings app;
+  app.set_app_guid(kAppId);
+  app.set_update(
+      ::wireless_android_enterprise_devicemanagement::AUTOMATIC_UPDATES_ONLY);
   app.set_target_version_prefix("0.1");
   app.set_rollback_to_target_version(
-      enterprise_management::ROLLBACK_TO_TARGET_VERSION_ENABLED);
+      ::wireless_android_enterprise_devicemanagement::
+          ROLLBACK_TO_TARGET_VERSION_ENABLED);
   omaha_settings.mutable_application_settings()->Add(std::move(app));
 
   PushEnrollmentToken(kEnrollmentToken);
@@ -1616,121 +1575,85 @@ TEST_F(IntegrationTestDeviceManagement, PolicyFetchBeforeInstall) {
   ASSERT_NO_FATAL_FAILURE(Install());
   ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
 
-  std::unique_ptr<OmahaSettingsClientProto> omaha_policy =
-      GetDefaultDMStorage()->GetOmahaPolicySettings();
+  std::unique_ptr<
+      ::wireless_android_enterprise_devicemanagement::OmahaSettingsClientProto>
+      omaha_policy = GetDefaultDMStorage()->GetOmahaPolicySettings();
   EXPECT_EQ(omaha_policy->proxy_server(), "test.proxy.server");
-  const ApplicationSettings& app_policy =
-      omaha_policy->application_settings()[0];
-  EXPECT_EQ(app_policy.app_guid(), kAppId1);
-  EXPECT_EQ(app_policy.update(), enterprise_management::AUTOMATIC_UPDATES_ONLY);
+  const ::wireless_android_enterprise_devicemanagement::ApplicationSettings&
+      app_policy = omaha_policy->application_settings()[0];
+  EXPECT_EQ(app_policy.app_guid(), kAppId);
+  EXPECT_EQ(
+      app_policy.update(),
+      ::wireless_android_enterprise_devicemanagement::AUTOMATIC_UPDATES_ONLY);
   EXPECT_EQ(app_policy.target_version_prefix(), "0.1");
   EXPECT_EQ(app_policy.rollback_to_target_version(),
-            enterprise_management::ROLLBACK_TO_TARGET_VERSION_ENABLED);
+            ::wireless_android_enterprise_devicemanagement::
+                ROLLBACK_TO_TARGET_VERSION_ENABLED);
   ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(test_server_.get()));
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 
 #if !defined(COMPONENT_BUILD)
-TEST_F(IntegrationTestDeviceManagement, AppUpdateConflictPolicies) {
-  const base::Version kApp1InitialVersion = base::Version("1.2.3.4");
-  const base::Version kApp1UpdatedVersion = base::Version("2.3.4.5");
-  const base::Version kApp2InitialVersion = base::Version("100.0.0.0");
-  const base::Version kApp2UpdatedVersion = base::Version("101.0.0.0");
-  const base::Version kApp3InitialVersion = base::Version("1.0");
-  const base::Version kApp3UpdatedVersion = base::Version("1.1");
-
-  ASSERT_NO_FATAL_FAILURE(Install());
-  ASSERT_NO_FATAL_FAILURE(InstallAppWithVersion(kAppId1, kApp1InitialVersion));
-  ASSERT_NO_FATAL_FAILURE(InstallAppWithVersion(kAppId2, kApp2InitialVersion));
-  ASSERT_NO_FATAL_FAILURE(InstallAppWithVersion(kAppId3, kApp3InitialVersion));
-  ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
-  ASSERT_NO_FATAL_FAILURE(ExpectAppInstalled(kAppId1, kApp1InitialVersion));
-  ASSERT_NO_FATAL_FAILURE(ExpectAppInstalled(kAppId2, kApp2InitialVersion));
-  ASSERT_NO_FATAL_FAILURE(ExpectAppInstalled(kAppId3, kApp3InitialVersion));
-
-  // Group policy sets app2 to auto-update.
-  base::win::RegKey key(HKEY_LOCAL_MACHINE, UPDATER_POLICIES_KEY,
-                        Wow6432(KEY_WRITE));
-  EXPECT_EQ(
-      ERROR_SUCCESS,
-      key.WriteValue(
-          base::ASCIIToWide(base::StringPrintf("Update%s", kAppId2)).c_str(),
-          kPolicyEnabled));
-
-  // Cloud policy sets update default to disabled, app1 to auto-update, and
-  // app2 to manual-update.
-  PushEnrollmentToken(kEnrollmentToken);
-  ExpectDeviceManagementRegistrationRequest(test_server_.get(),
-                                            kEnrollmentToken, kDMToken);
-  OmahaSettingsClientProto omaha_settings;
-  omaha_settings.set_update_default(enterprise_management::UPDATES_DISABLED);
-  ApplicationSettings app1;
-  app1.set_app_guid(kAppId1);
-  app1.set_update(enterprise_management::AUTOMATIC_UPDATES_ONLY);
-  omaha_settings.mutable_application_settings()->Add(std::move(app1));
-  ApplicationSettings app2;
-  app2.set_app_guid(kAppId2);
-  app2.set_update(enterprise_management::MANUAL_UPDATES_ONLY);
-  omaha_settings.mutable_application_settings()->Add(std::move(app2));
-  ExpectDeviceManagementPolicyFetchRequest(test_server_.get(), kDMToken,
-                                           omaha_settings);
-
-  const base::FilePath crx_path = GetInstallerPath(kAppCRX);
-  ExpectAppsUpdateSequence(
-      UpdaterScope::kSystem, test_server_.get(),
-      {
-          AppUpdateExpectation({kAppId1, kApp1InitialVersion,
-                                kApp1UpdatedVersion,
-                                /*should_update=*/true, false, "", crx_path}),
-          AppUpdateExpectation({kAppId2, kApp2InitialVersion,
-                                kApp2UpdatedVersion,
-                                /*should_update=*/true, false, "", crx_path}),
-          AppUpdateExpectation({kAppId3, kApp3InitialVersion,
-                                kApp3UpdatedVersion,
-                                /*should_update=*/false, false, "", crx_path}),
-      });
-  ASSERT_NO_FATAL_FAILURE(RunWake(0));
-  ASSERT_TRUE(WaitForUpdaterExit());
-  ASSERT_NO_FATAL_FAILURE(ExpectAppInstalled(kAppId1, kApp1UpdatedVersion));
-  ASSERT_NO_FATAL_FAILURE(ExpectAppInstalled(kAppId2, kApp2UpdatedVersion));
-  ASSERT_NO_FATAL_FAILURE(ExpectAppInstalled(kAppId3, kApp3InitialVersion));
-
-  ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(test_server_.get()));
-  ASSERT_NO_FATAL_FAILURE(Uninstall());
-}
-
 TEST_F(IntegrationTestDeviceManagement, RollbackToTargetVersion) {
+  if (!IsSystemInstall(GetTestScope())) {
+    GTEST_SKIP();
+  }
+
   constexpr char kTargetVersionPrefix[] = "1.0.";
   const base::Version kAppInitialVersion = base::Version("2.3.1.0");
   const base::Version kAppRollbackVersion = base::Version("1.0.1.2");
 
   ASSERT_NO_FATAL_FAILURE(Install());
-  ASSERT_NO_FATAL_FAILURE(InstallAppWithVersion(kAppId1, kAppInitialVersion));
+  ASSERT_NO_FATAL_FAILURE(InstallApp(
+      kAppId, kAppInitialVersion, base::BindLambdaForTesting([&]() {
+        // Run test app installer to set app `pv` value to its initial version.
+        base::FilePath exe_path;
+        ASSERT_TRUE(base::PathService::Get(base::DIR_EXE, &exe_path));
+        base::CommandLine command(exe_path.AppendASCII("test_installer")
+                                      .AppendASCII("TestApp2Setup.exe"));
+        command.AppendArg("--system");
+        command.AppendSwitchASCII("--company", COMPANY_SHORTNAME_STRING);
+        command.AppendSwitchASCII("--appid", kAppId);
+        command.AppendSwitchASCII("--product_version",
+                                  kAppInitialVersion.GetString());
+        VLOG(2) << "Launch app setup command: "
+                << command.GetCommandLineString();
 
+        base::Process process = base::LaunchProcess(command, {});
+        if (!process.IsValid()) {
+          VLOG(2) << "Invalid process launching command: "
+                  << command.GetCommandLineString();
+        }
+
+        int exit_code = -1;
+        EXPECT_TRUE(process.WaitForExitWithTimeout(
+            TestTimeouts::action_timeout(), &exit_code));
+        EXPECT_EQ(0, exit_code);
+      })));
   ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
-  ASSERT_NO_FATAL_FAILURE(ExpectAppInstalled(kAppId1, kAppInitialVersion));
+  ASSERT_NO_FATAL_FAILURE(ExpectAppInstalled(kAppId, kAppInitialVersion));
 
   PushEnrollmentToken(kEnrollmentToken);
   ExpectDeviceManagementRegistrationRequest(test_server_.get(),
                                             kEnrollmentToken, kDMToken);
-  OmahaSettingsClientProto omaha_settings;
-  ApplicationSettings app;
-  app.set_app_guid(kAppId1);
+  ::wireless_android_enterprise_devicemanagement::OmahaSettingsClientProto
+      omaha_settings;
+  ::wireless_android_enterprise_devicemanagement::ApplicationSettings app;
+  app.set_app_guid(kAppId);
   app.set_target_version_prefix(kTargetVersionPrefix);
   app.set_rollback_to_target_version(
-      enterprise_management::ROLLBACK_TO_TARGET_VERSION_ENABLED);
+      ::wireless_android_enterprise_devicemanagement::
+          ROLLBACK_TO_TARGET_VERSION_ENABLED);
   omaha_settings.mutable_application_settings()->Add(std::move(app));
   ExpectDeviceManagementPolicyFetchRequest(test_server_.get(), kDMToken,
                                            omaha_settings);
-
-  ExpectAppsUpdateSequence(
-      UpdaterScope::kSystem, test_server_.get(),
-      {AppUpdateExpectation(kAppId1, kAppInitialVersion, kAppRollbackVersion,
-                            /*should_update=*/true, /*allow_rollback=*/true,
-                            kTargetVersionPrefix, GetInstallerPath(kAppCRX))});
+  ExpectAppRollbackUpdateSequence(UpdaterScope::kSystem, test_server_.get(),
+                                  kAppId,
+                                  /*allow_rollback=*/true, kTargetVersionPrefix,
+                                  kAppInitialVersion, kAppRollbackVersion);
   ASSERT_NO_FATAL_FAILURE(RunWake(0));
   ASSERT_TRUE(WaitForUpdaterExit());
-  ASSERT_NO_FATAL_FAILURE(ExpectAppInstalled(kAppId1, kAppRollbackVersion));
+  ASSERT_NO_FATAL_FAILURE(ExpectAppInstalled(kAppId, kAppRollbackVersion));
 
   ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(test_server_.get()));
   ASSERT_NO_FATAL_FAILURE(Uninstall());

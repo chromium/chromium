@@ -7,7 +7,6 @@
 
 #include <set>
 #include <string>
-#include <vector>
 
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
@@ -39,26 +38,6 @@ namespace updater::test {
 enum class AppBundleWebCreateMode {
   kCreateApp = 0,
   kCreateInstalledApp = 1,
-};
-
-struct AppUpdateExpectation {
-  AppUpdateExpectation(const std::string& app_id,
-                       const base::Version& from_version,
-                       const base::Version& to_version,
-                       bool should_update,
-                       bool allow_rollback,
-                       const std::string& target_version_prefix,
-                       const base::FilePath& crx_relative_path);
-  AppUpdateExpectation(const AppUpdateExpectation&);
-  ~AppUpdateExpectation();
-
-  const std::string app_id;
-  const base::Version from_version;
-  const base::Version to_version;
-  const bool should_update;
-  const bool allow_rollback;
-  const std::string target_version_prefix;
-  const base::FilePath crx_relative_path;
 };
 
 // Returns the path to the updater installer program (in the build output
@@ -293,9 +272,15 @@ void ExpectInstallSequence(UpdaterScope scope,
                            const base::Version& from_version,
                            const base::Version& to_version);
 
-void ExpectAppsUpdateSequence(UpdaterScope scope,
-                              ScopedServer* test_server,
-                              const std::vector<AppUpdateExpectation>& apps);
+#if BUILDFLAG(IS_WIN)
+void ExpectAppRollbackUpdateSequence(UpdaterScope scope,
+                                     ScopedServer* test_server,
+                                     const std::string& app_id,
+                                     bool allow_rollback,
+                                     const std::string& target_version_prefix,
+                                     const base::Version& from_version,
+                                     const base::Version& to_version);
+#endif  // BUILDFLAG(IS_WIN)
 
 void StressUpdateService(UpdaterScope scope);
 
