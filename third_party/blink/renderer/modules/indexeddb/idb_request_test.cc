@@ -52,6 +52,7 @@
 #include "third_party/blink/renderer/modules/indexeddb/idb_metadata.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_object_store.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_open_db_request.h"
+#include "third_party/blink/renderer/modules/indexeddb/idb_request_queue_item.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_test_helper.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_transaction.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_value.h"
@@ -223,6 +224,14 @@ class IDBRequestTest : public testing::Test {
     EXPECT_TRUE(!exception_state.HadException());
   }
 
+  void SimulateErrorResult(IDBRequest* request) {
+    request->HandleError(nullptr);
+  }
+
+  void FinishLoadingResult(IDBRequest* request) {
+    request->queue_item_->OnResultLoadComplete();
+  }
+
   URLLoaderMockFactory* url_loader_mock_factory_;
   Persistent<IDBDatabase> db_;
   Persistent<IDBTransaction> transaction_;
@@ -357,6 +366,65 @@ TEST_F(IDBRequestTest, MAYBE_EventsAfterEarlyDeathStopWithTwoQueuedResults) {
   EnsureRequestResponsesDontThrow(request2, scope.GetExceptionState());
   transaction_->FlushForTesting();
   database_backend.Flush();
+}
+
+// Regression test for crbug.com/1470485
+TEST_F(IDBRequestTest, ErrorWithQueuedLoadingResult) {
+  V8TestingScope scope;
+  MockIDBDatabase database_backend;
+  MockIDBTransaction transaction_backend;
+  BuildTransaction(scope, database_backend, transaction_backend);
+
+  IDBRequest* request1 =
+      IDBRequest::Create(scope.GetScriptState(), store_.Get(),
+                         transaction_.Get(), IDBRequest::AsyncTraceState());
+  IDBRequest* request2 =
+      IDBRequest::Create(scope.GetScriptState(), store_.Get(),
+                         transaction_.Get(), IDBRequest::AsyncTraceState());
+  IDBRequest* request3 =
+      IDBRequest::Create(scope.GetScriptState(), store_.Get(),
+                         transaction_.Get(), IDBRequest::AsyncTraceState());
+  // The transaction won't be ready until it sets itself to inactive.
+  scope.PerformMicrotaskCheckpoint();
+
+  // Three requests:
+  // * the first is just there to block the queue so the error result doesn't
+  // dispatch right away.
+  // * the second is an error result which will cause the transaction to abort
+  // since the result event isn't preventDefault()ed.
+  // * the third is another result which is still in the loading state when the
+  // transaction starts aborting its requests.
+  request1->HandleResponse(CreateIDBValueForTesting(
+      scope.GetIsolate(), /*create_wrapped_value=*/true));
+  SimulateErrorResult(request2);
+  request3->HandleResponse(CreateIDBValueForTesting(
+      scope.GetIsolate(), /*create_wrapped_value=*/true));
+
+  FinishLoadingResult(request1);
+}
+
+TEST_F(IDBRequestTest, ContextDestroyedWithQueuedErrorResult) {
+  V8TestingScope scope;
+  MockIDBDatabase database_backend;
+  MockIDBTransaction transaction_backend;
+  BuildTransaction(scope, database_backend, transaction_backend);
+
+  IDBRequest* request1 =
+      IDBRequest::Create(scope.GetScriptState(), store_.Get(),
+                         transaction_.Get(), IDBRequest::AsyncTraceState());
+  IDBRequest* request2 =
+      IDBRequest::Create(scope.GetScriptState(), store_.Get(),
+                         transaction_.Get(), IDBRequest::AsyncTraceState());
+  // The transaction won't be ready until it sets itself to inactive.
+  scope.PerformMicrotaskCheckpoint();
+
+  request1->HandleResponse(CreateIDBValueForTesting(
+      scope.GetIsolate(), /*create_wrapped_value=*/true));
+  SimulateErrorResult(request2);
+
+  // No crash at the end of this test as the context is destroyed indicates
+  // success. This test is potentially flaky when failing because the order of
+  // `ContextDestroyed` calls matters to the test, but is not predictable.
 }
 
 TEST_F(IDBRequestTest, ConnectionsAfterStopping) {

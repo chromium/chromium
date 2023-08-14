@@ -46,7 +46,7 @@ class WebIDBCursor;
 //
 // Given that the cycle above exists, the closures passed to IDBRequestQueueItem
 // can safely store Persistent pointers the IDBRequest or to the IDBTransaction.
-class IDBRequestQueueItem {
+class MODULES_EXPORT IDBRequestQueueItem {
   USING_FAST_MALLOC(IDBRequestQueueItem);
 
  public:

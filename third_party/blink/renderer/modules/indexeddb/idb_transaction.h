@@ -294,8 +294,10 @@ class MODULES_EXPORT IDBTransaction final
 
 #if DCHECK_IS_ON()
   bool finish_called_ = false;
-  bool handling_ready_ = false;
 #endif  // DCHECK_IS_ON()
+
+  // Whether `this` is already inside a call to `OnResultReady`.
+  bool handling_ready_ = false;
 
   // Caches the IDBObjectStore instances returned by the objectStore() method.
   //

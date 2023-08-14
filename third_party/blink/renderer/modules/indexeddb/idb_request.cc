@@ -314,15 +314,12 @@ void IDBRequest::Abort(bool queue_dispatch) {
   DCHECK(!request_aborted_);
   if (queue_item_) {
     queue_item_->CancelLoading();
-
-    // A transaction's requests are aborted in order, so each aborted request
-    // should immediately get out of the result queue.
-    DCHECK(!queue_item_);
   }
 
-  if (!GetExecutionContext())
+  if (!GetExecutionContext() || GetExecutionContext()->IsContextDestroyed()) {
     return;
-  DCHECK(ready_state_ == PENDING || ready_state_ == DONE);
+  }
+  DCHECK(ready_state_ == PENDING || ready_state_ == DONE) << ready_state_;
   if (ready_state_ == DONE)
     return;
 
