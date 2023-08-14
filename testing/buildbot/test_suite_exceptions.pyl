@@ -1516,6 +1516,16 @@
           'shards': 25,
         },
       },
+      'android-code-coverage-native': {
+        'args': [
+          '--use-persistent-shell',
+        ],
+        'swarming': {
+          # Shard number is increased for added local coverage data merging
+          # time and longer test execution time (around 8x per test).
+          'shards': 54,
+        },
+      },
       # If you change this, make similar changes in android-x86-code-coverage below
       'android-nougat-x86-rel': {
         'args': [
@@ -5215,8 +5225,9 @@
           '--use-persistent-shell',
         ],
         'swarming': {
-          # Shard number is increased for added local coverage data merging time.
-          'shards': 12,
+          # Shard number is increased for added local coverage data merging
+          # time and longer test execution time (around 8x per test).
+          'shards': 36,
         },
       },
       # If you change this, make similar changes in android-x86-code-coverage below
