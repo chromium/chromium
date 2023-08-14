@@ -34,7 +34,7 @@ bool HistogramNameLesser(const base::HistogramBase* a,
 }  // namespace
 
 // static
-LazyInstance<absl::Mutex>::Leaky StatisticsRecorder::lock_ =
+LazyInstance<StatisticsRecorder::SrLock>::Leaky StatisticsRecorder::lock_ =
     LAZY_INSTANCE_INITIALIZER;
 
 // static
@@ -78,14 +78,14 @@ void StatisticsRecorder::ScopedHistogramSampleObserver::RunCallback(
 }
 
 StatisticsRecorder::~StatisticsRecorder() {
-  const absl::MutexLock auto_lock(lock_.Pointer());
+  const SrAutoWriterLock auto_lock(GetLock());
   DCHECK_EQ(this, top_);
   top_ = previous_;
 }
 
 // static
 void StatisticsRecorder::EnsureGlobalRecorderWhileLocked() {
-  lock_.Get().AssertHeld();
+  AssertLockHeld();
   if (top_) {
     return;
   }
@@ -99,7 +99,7 @@ void StatisticsRecorder::EnsureGlobalRecorderWhileLocked() {
 // static
 void StatisticsRecorder::RegisterHistogramProvider(
     const WeakPtr<HistogramProvider>& provider) {
-  const absl::MutexLock auto_lock(lock_.Pointer());
+  const SrAutoWriterLock auto_lock(GetLock());
   EnsureGlobalRecorderWhileLocked();
   top_->providers_.push_back(provider);
 }
@@ -109,7 +109,7 @@ HistogramBase* StatisticsRecorder::RegisterOrDeleteDuplicate(
     HistogramBase* histogram) {
   // Declared before |auto_lock| to ensure correct destruction order.
   std::unique_ptr<HistogramBase> histogram_deleter;
-  const absl::MutexLock auto_lock(lock_.Pointer());
+  const SrAutoWriterLock auto_lock(GetLock());
   EnsureGlobalRecorderWhileLocked();
 
   const char* const name = histogram->histogram_name();
@@ -141,7 +141,7 @@ HistogramBase* StatisticsRecorder::RegisterOrDeleteDuplicate(
 // static
 const BucketRanges* StatisticsRecorder::RegisterOrDeleteDuplicateRanges(
     const BucketRanges* ranges) {
-  const absl::MutexLock auto_lock(lock_.Pointer());
+  const SrAutoWriterLock auto_lock(GetLock());
   EnsureGlobalRecorderWhileLocked();
 
   const BucketRanges* const registered =
@@ -185,7 +185,7 @@ std::string StatisticsRecorder::ToJSON(JSONVerbosityLevel verbosity_level) {
 
 // static
 std::vector<const BucketRanges*> StatisticsRecorder::GetBucketRanges() {
-  const absl::ReaderMutexLock auto_lock(lock_.Pointer());
+  const SrAutoReaderLock auto_lock(GetLock());
 
   // Manipulate |top_| through a const variable to ensure it is not mutated.
   const auto* const_top = top_;
@@ -206,7 +206,7 @@ HistogramBase* StatisticsRecorder::FindHistogram(base::StringPiece name) {
   // Acquire the lock in "read" mode since we're only reading the data, not
   // modifying anything. This allows multiple readers to look up histograms
   // concurrently.
-  const absl::ReaderMutexLock auto_lock(lock_.Pointer());
+  const SrAutoReaderLock auto_lock(GetLock());
 
   // Manipulate |top_| through a const variable to ensure it is not mutated.
   const auto* const_top = top_;
@@ -221,7 +221,7 @@ HistogramBase* StatisticsRecorder::FindHistogram(base::StringPiece name) {
 // static
 StatisticsRecorder::HistogramProviders
 StatisticsRecorder::GetHistogramProviders() {
-  const absl::ReaderMutexLock auto_lock(lock_.Pointer());
+  const SrAutoReaderLock auto_lock(GetLock());
 
   // Manipulate |top_| through a const variable to ensure it is not mutated.
   const auto* const_top = top_;
@@ -288,7 +288,7 @@ StatisticsRecorder::GetLastSnapshotTransactionId() {
 
 // static
 void StatisticsRecorder::InitLogOnShutdown() {
-  const absl::MutexLock auto_lock(lock_.Pointer());
+  const SrAutoWriterLock auto_lock(GetLock());
   InitLogOnShutdownWhileLocked();
 }
 
@@ -297,7 +297,7 @@ void StatisticsRecorder::AddHistogramSampleObserver(
     const std::string& name,
     StatisticsRecorder::ScopedHistogramSampleObserver* observer) {
   DCHECK(observer);
-  const absl::MutexLock auto_lock(lock_.Pointer());
+  const SrAutoWriterLock auto_lock(GetLock());
   EnsureGlobalRecorderWhileLocked();
 
   auto iter = top_->observers_.find(name);
@@ -321,7 +321,7 @@ void StatisticsRecorder::AddHistogramSampleObserver(
 void StatisticsRecorder::RemoveHistogramSampleObserver(
     const std::string& name,
     StatisticsRecorder::ScopedHistogramSampleObserver* observer) {
-  const absl::MutexLock auto_lock(lock_.Pointer());
+  const SrAutoWriterLock auto_lock(GetLock());
   EnsureGlobalRecorderWhileLocked();
 
   auto iter = top_->observers_.find(name);
@@ -349,7 +349,7 @@ void StatisticsRecorder::FindAndRunHistogramCallbacks(
     const char* histogram_name,
     uint64_t name_hash,
     HistogramBase::Sample sample) {
-  const absl::ReaderMutexLock auto_lock(lock_.Pointer());
+  const SrAutoReaderLock auto_lock(GetLock());
 
   // Manipulate |top_| through a const variable to ensure it is not mutated.
   const auto* const_top = top_;
@@ -372,7 +372,7 @@ void StatisticsRecorder::FindAndRunHistogramCallbacks(
 // static
 void StatisticsRecorder::SetGlobalSampleCallback(
     const GlobalSampleCallback& new_global_sample_callback) {
-  const absl::MutexLock auto_lock(lock_.Pointer());
+  const SrAutoWriterLock auto_lock(GetLock());
   EnsureGlobalRecorderWhileLocked();
 
   DCHECK(!global_sample_callback() || !new_global_sample_callback);
@@ -385,7 +385,7 @@ void StatisticsRecorder::SetGlobalSampleCallback(
 
 // static
 size_t StatisticsRecorder::GetHistogramCount() {
-  const absl::ReaderMutexLock auto_lock(lock_.Pointer());
+  const SrAutoReaderLock auto_lock(GetLock());
 
   // Manipulate |top_| through a const variable to ensure it is not mutated.
   const auto* const_top = top_;
@@ -397,7 +397,7 @@ size_t StatisticsRecorder::GetHistogramCount() {
 
 // static
 void StatisticsRecorder::ForgetHistogramForTesting(base::StringPiece name) {
-  const absl::MutexLock auto_lock(lock_.Pointer());
+  const SrAutoWriterLock auto_lock(GetLock());
   EnsureGlobalRecorderWhileLocked();
 
   const HistogramMap::iterator found = top_->histograms_.find(name);
@@ -419,7 +419,7 @@ void StatisticsRecorder::ForgetHistogramForTesting(base::StringPiece name) {
 // static
 std::unique_ptr<StatisticsRecorder>
 StatisticsRecorder::CreateTemporaryForTesting() {
-  const absl::MutexLock auto_lock(lock_.Pointer());
+  const SrAutoWriterLock auto_lock(GetLock());
   std::unique_ptr<StatisticsRecorder> temporary_recorder =
       WrapUnique(new StatisticsRecorder());
   temporary_recorder->ranges_manager_
@@ -430,14 +430,14 @@ StatisticsRecorder::CreateTemporaryForTesting() {
 // static
 void StatisticsRecorder::SetRecordChecker(
     std::unique_ptr<RecordHistogramChecker> record_checker) {
-  const absl::MutexLock auto_lock(lock_.Pointer());
+  const SrAutoWriterLock auto_lock(GetLock());
   EnsureGlobalRecorderWhileLocked();
   top_->record_checker_ = std::move(record_checker);
 }
 
 // static
 bool StatisticsRecorder::ShouldRecordHistogram(uint32_t histogram_hash) {
-  const absl::ReaderMutexLock auto_lock(lock_.Pointer());
+  const SrAutoReaderLock auto_lock(GetLock());
 
   // Manipulate |top_| through a const variable to ensure it is not mutated.
   const auto* const_top = top_;
@@ -455,7 +455,7 @@ StatisticsRecorder::Histograms StatisticsRecorder::GetHistograms(
 
   Histograms out;
 
-  const absl::ReaderMutexLock auto_lock(lock_.Pointer());
+  const SrAutoReaderLock auto_lock(GetLock());
 
   // Manipulate |top_| through a const variable to ensure it is not mutated.
   const auto* const_top = top_;
@@ -520,7 +520,7 @@ void StatisticsRecorder::ImportGlobalPersistentHistograms() {
 }
 
 StatisticsRecorder::StatisticsRecorder() {
-  lock_.Get().AssertHeld();
+  AssertLockHeld();
   previous_ = top_;
   top_ = this;
   InitLogOnShutdownWhileLocked();
@@ -528,7 +528,7 @@ StatisticsRecorder::StatisticsRecorder() {
 
 // static
 void StatisticsRecorder::InitLogOnShutdownWhileLocked() {
-  lock_.Get().AssertHeld();
+  AssertLockHeld();
   if (!is_vlog_initialized_ && VLOG_IS_ON(1)) {
     is_vlog_initialized_ = true;
     const auto dump_to_vlog = [](void*) {
