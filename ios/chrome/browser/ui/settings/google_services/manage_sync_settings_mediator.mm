@@ -1182,10 +1182,10 @@ constexpr CGFloat kErrorSymbolPointSize = 22.;
           ? [model sectionForSectionIdentifier:AccountSectionIdentifier] + 1
           : 0;
   if (!errorSectionAlreadyExists) {
-    [model insertSectionWithIdentifier:SyncErrorsSectionIdentifier
-                               atIndex:syncErrorSectionIndex];
     if (self.syncAccountState == SyncSettingsAccountState::kSignedIn &&
         type.value() != SyncDisabledByAdministratorErrorItemType) {
+      [model insertSectionWithIdentifier:SyncErrorsSectionIdentifier
+                                 atIndex:syncErrorSectionIndex];
       // For signed in not syncing users, the sync error item will be preceded
       // by a descriptive message item.
       [model addItem:[self createSyncErrorMessageItem:GetAccountErrorUIInfo(
@@ -1195,6 +1195,8 @@ constexpr CGFloat kErrorSymbolPointSize = 22.;
       [model addItem:self.syncErrorItem
           toSectionWithIdentifier:SyncErrorsSectionIdentifier];
     } else if (self.syncAccountState != SyncSettingsAccountState::kSignedIn) {
+      [model insertSectionWithIdentifier:SyncErrorsSectionIdentifier
+                                 atIndex:syncErrorSectionIndex];
       [model addItem:self.syncErrorItem
           toSectionWithIdentifier:SyncErrorsSectionIdentifier];
     }
