@@ -1,0 +1,13 @@
+diff --git a/third_party/mediapipe/src/mediapipe/framework/api2/contract.h b/third_party/mediapipe/src/mediapipe/framework/api2/contract.h
+index 90e4c38cd0c4b..9d842f7b0643c 100644
+--- a/third_party/mediapipe/src/mediapipe/framework/api2/contract.h
++++ b/third_party/mediapipe/src/mediapipe/framework/api2/contract.h
+@@ -214,7 +214,7 @@ class TaggedContract {
+ 
+   template <class Tuple, Tuple (C2T::*member)() const>
+   struct GetMember {
+-    static constexpr const auto get() { return (c2.*member)(); }
++    static constexpr auto get() { return (c2.*member)(); }
+   };
+ 
+   using TaggedInputs =

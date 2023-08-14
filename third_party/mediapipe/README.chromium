@@ -60,6 +60,8 @@ does not use it anyways, and building all those ops is not necessary.
 * use-re2-instead-of-std-regex.patch - Uses RE2 instead of std::regex per
 Chromium binary size requirements.
 
+* unnecessary-const.patch - Removes an unnecessary "const".
+
 
 Patches which need to be upstreamed differently than they are patched
 =====================================================================

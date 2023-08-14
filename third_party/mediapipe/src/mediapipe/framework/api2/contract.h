@@ -214,7 +214,7 @@ class TaggedContract {
 
   template <class Tuple, Tuple (C2T::*member)() const>
   struct GetMember {
-    static constexpr const auto get() { return (c2.*member)(); }
+    static constexpr auto get() { return (c2.*member)(); }
   };
 
   using TaggedInputs =
