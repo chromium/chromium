@@ -44,7 +44,7 @@ from blinkpy.tool.commands.build_resolver import (
 )
 from blinkpy.tool.commands.command import Command
 from blinkpy.tool.commands.rebaseline_cl import RebaselineCL
-from blinkpy.w3c.wpt_metadata import BUG_PATTERN, TestConfigurations
+from blinkpy.w3c import wpt_metadata
 from blinkpy.web_tests.port.base import Port
 from blinkpy.web_tests.models.test_expectations import (
     TestExpectations,
@@ -58,7 +58,6 @@ from wptrunner import (
     manifestupdate,
     metadata,
     testloader,
-    wpttest,
 )
 from wptrunner.wptmanifest import node as wptnode
 from wptrunner.wptmanifest.parser import ParseError
@@ -182,7 +181,7 @@ class UpdateMetadata(Command):
         manifests = load_and_update_manifests(self._path_finder)
         updater = MetadataUpdater.from_manifests(
             manifests,
-            TestConfigurations.generate(self._tool),
+            wpt_metadata.TestConfigurations.generate(self._tool),
             self._tool.port_factory.get(),
             self._explicit_include_patterns(options, args),
             options.exclude,
@@ -509,7 +508,7 @@ class MetadataUpdater:
         self,
         test_files: TestFileMap,
         test_info: TestInfoMap,
-        configs: TestConfigurations,
+        configs: wpt_metadata.TestConfigurations,
         primary_properties: Optional[List[str]] = None,
         dependent_properties: Optional[Mapping[str, str]] = None,
         overwrite_conditions: Literal['yes', 'no', 'fill'] = 'fill',
@@ -520,7 +519,6 @@ class MetadataUpdater:
     ):
         self._configs = configs
         self._test_info = test_info
-        self._default_expected = _default_expected_by_type()
         self._primary_properties = primary_properties or [
             'debug',
             'product',
@@ -677,6 +675,7 @@ class MetadataUpdater:
         still be pruned.
         """
         expected = self._make_initialized_expectations(test_file)
+        default_expected = wpt_metadata.default_expected_by_type()
         for test in expected.child_map.values():
             updated_configs = self._updated_configs(test_file, test.id)
             # Nothing to update. This commonly occurs when every port runs
@@ -692,8 +691,8 @@ class MetadataUpdater:
                 self._updater.test_start({'test': test.id})
                 for subtest_id, subtest in test.subtests.items():
                     expected, *known_intermittent = self._eval_statuses(
-                        subtest, config,
-                        self._default_expected[test_file.item_type, True])
+                        subtest, config, default_expected[test_file.item_type,
+                                                          True])
                     self._updater.test_status({
                         'test':
                         test.id,
@@ -705,8 +704,7 @@ class MetadataUpdater:
                         known_intermittent,
                     })
                 expected, *known_intermittent = self._eval_statuses(
-                    test, config,
-                    self._default_expected[test_file.item_type, False])
+                    test, config, default_expected[test_file.item_type, False])
                 self._updater.test_end({
                     'test':
                     test.id,
@@ -791,7 +789,7 @@ class MetadataUpdater:
         # Set `requires_update` to check for orphaned test sections.
         test_file.set_requires_update()
         expected = test_file.update(
-            self._default_expected,
+            wpt_metadata.default_expected_by_type(),
             (self._primary_properties, self._dependent_properties),
             full_update=(self._overwrite_conditions != 'no'),
             disable_intermittent=self._disable_intermittent,
@@ -954,18 +952,6 @@ def _tests(
         yield from tests
 
 
-def _default_expected_by_type():
-    default_expected_by_type = {}
-    for test_type, test_cls in wpttest.manifest_test_cls.items():
-        if test_cls.result_cls:
-            expected = test_cls.result_cls.default_expected
-            default_expected_by_type[test_type, False] = expected
-        if test_cls.subtest_result_cls:
-            expected = test_cls.subtest_result_cls.default_expected
-            default_expected_by_type[test_type, True] = expected
-    return default_expected_by_type
-
-
 def _parse_build_specifiers(option: optparse.Option, _opt_str: str, value: str,
                             parser: optparse.OptionParser):
     builds = getattr(parser.values, option.dest, None) or []
@@ -993,7 +979,7 @@ def _parse_build_specifiers(option: optparse.Option, _opt_str: str, value: str,
 
 def _coerce_bug_number(option: optparse.Option, _opt_str: str, value: str,
                        parser: optparse.OptionParser):
-    bug_match = BUG_PATTERN.fullmatch(value)
+    bug_match = wpt_metadata.BUG_PATTERN.fullmatch(value)
     if not bug_match:
         raise optparse.OptionValueError('invalid bug number or URL %r' % value)
     setattr(parser.values, option.dest, int(bug_match['bug']))

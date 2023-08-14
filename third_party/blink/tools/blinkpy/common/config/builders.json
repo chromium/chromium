@@ -7,7 +7,13 @@
     "Linux Tests (dbg)(1)": {
         "main": "chromium.linux",
         "port_name": "linux",
-        "specifiers": ["Linux", "Debug"]
+        "specifiers": ["Linux", "Debug"],
+        "steps": {
+            "webdriver_tests_suite": {
+                "uses_wptrunner": true,
+                "product": "chrome"
+            }
+        }
     },
     "Mac10.15 Tests": {
         "main": "chromium.mac",

@@ -14,7 +14,7 @@ from blinkpy.common import path_finder
 from blinkpy.common.system.log_testing import LoggingTestCase
 from blinkpy.tool.mock_tool import MockBlinkTool
 from blinkpy.tool.commands.lint_wpt import LintError, LintWPT
-from blinkpy.tool.commands.update_metadata import TestConfigurations
+from blinkpy.w3c.wpt_metadata import TestConfigurations
 
 path_finder.bootstrap_wpt_imports()
 from wptrunner import metadata

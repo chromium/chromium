@@ -491,7 +491,7 @@ class WPTResultsProcessor:
     def get_test_type(self, test: str) -> str:
         _, test = self.port.get_suite_name_and_base_test(test)
         test_path = self.get_path_from_test_root(test)
-        if self.path_finder.is_wpt_internal_path(test_path):
+        if self.path_finder.is_wpt_internal_path(test):
             return self.internal_manifest.get_test_type(test_path)
         else:
             return self.wpt_manifest.get_test_type(test_path)
@@ -722,6 +722,8 @@ class WPTResultsProcessor:
                                      diff_content.encode())
 
         test_type = self.get_test_type(result.name)
+        if not test_type:
+            raise EventProcessingError(f'Unknown test type: {result.name!r}')
         actual = result.test_section(self.run_info)
         html_diff_content = wpt_results_diff.wpt_results_diff(
             actual, expected, test_type)
