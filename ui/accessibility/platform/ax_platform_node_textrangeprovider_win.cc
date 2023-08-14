@@ -1999,7 +1999,8 @@ void AXPlatformNodeTextRangeProviderWin::TextRangeEndpoints::
                                    int edit_end,
                                    bool is_start,
                                    ax::mojom::Command op) {
-  if (!edit_start_anchor || !edit_end_anchor) {
+  if (!edit_start_anchor || !edit_end_anchor ||
+      !current_position->GetAnchor()) {
     return;
   }
   DCHECK(op == ax::mojom::Command::kDelete ||
@@ -2016,15 +2017,13 @@ void AXPlatformNodeTextRangeProviderWin::TextRangeEndpoints::
   // offset. First we check if the insertion or deletion start is relevant:
   bool start_is_relevant = true;
   bool end_is_relevant = true;
-  if (current_position->GetAnchor() &&
-      current_position->GetAnchor()->id() != edit_start_anchor->id() &&
+  if (current_position->GetAnchor()->id() != edit_start_anchor->id() &&
       !current_position->GetAnchor()->IsDescendantOf(edit_start_anchor) &&
       !edit_start_anchor->IsDescendantOf(current_position->GetAnchor())) {
     start_is_relevant = false;
   }
   // Then we check if the end is relevant.
-  if (current_position->GetAnchor() &&
-      current_position->GetAnchor()->id() != edit_end_anchor->id() &&
+  if (current_position->GetAnchor()->id() != edit_end_anchor->id() &&
       !current_position->GetAnchor()->IsDescendantOf(edit_end_anchor) &&
       !edit_end_anchor->IsDescendantOf(current_position->GetAnchor())) {
     end_is_relevant = false;
