@@ -38,6 +38,12 @@
 // Coordinator that manages the tailored promo modals.
 @property(nonatomic, strong) TailoredPromoCoordinator* tailoredPromoCoordinator;
 
+// Tracks whether or not the Video promo FET should be dismissed.
+@property(nonatomic, assign) BOOL shouldDismissVideoPromoFET;
+
+// Feature engagement tracker reference.
+@property(nonatomic, assign) feature_engagement::Tracker* tracker;
+
 @end
 
 @implementation DefaultBrowserPromoManager
@@ -49,6 +55,8 @@
   PrefService* prefService = browserState->GetPrefs();
   AuthenticationService* authService =
       AuthenticationServiceFactory::GetForBrowserState(browserState);
+  self.tracker = feature_engagement::TrackerFactory::GetForBrowserState(
+      self.browser->GetBrowserState());
 
   if (IsUserPolicyNotificationNeeded(authService, prefService)) {
     // Showing the User Policy notification has priority over showing the
@@ -73,6 +81,11 @@
   }
 
   if (IsDefaultBrowserTriggerCriteraExperimentEnabled()) {
+    if (IsDefaultBrowserVideoPromoEnabled()) {
+      [self showPromo:DefaultPromoTypeVideo];
+      return;
+    }
+
     [self showPromo:DefaultPromoTypeGeneral];
     return;
   }
@@ -80,7 +93,7 @@
   // Video promo takes priority over other default browser promos.
   BOOL isDBVideoPromoEnabled =
       IsDBVideoPromoHalfscreenEnabled() || IsDBVideoPromoFullscreenEnabled();
-  if (isDBVideoPromoEnabled && [self willShowVideoPromo]) {
+  if (isDBVideoPromoEnabled && [self maybeTriggerVideoPromoWithFET]) {
     return;
   }
 
@@ -93,6 +106,11 @@
     // arm.
     if (IsDefaultBrowserPromoGenericTailoredTrainEnabled() &&
         IsDefaultBrowserPromoOnlyGenericArmTrain()) {
+      if (IsDefaultBrowserVideoPromoEnabled()) {
+        [self showPromo:DefaultPromoTypeVideo];
+        return;
+      }
+
       [self showPromo:DefaultPromoTypeGeneral];
       return;
     }
@@ -113,10 +131,10 @@
   // When the default browser video promo with generic triggering conditions is
   // enabled, the generic default btowser promo is replaced with the video
   // promo.
-  BOOL isDBVideoPromoWithGenericEnabled =
-      IsDBVideoPromoWithGenericFullscreenEnabled() ||
-      IsDBVideoPromoWithGenericHalfscreenEnabled();
-  if (isDBVideoPromoWithGenericEnabled && [self willShowVideoPromo]) {
+  BOOL isGenericPromoVideo = IsDBVideoPromoWithGenericFullscreenEnabled() ||
+                             IsDBVideoPromoWithGenericHalfscreenEnabled();
+  if (isGenericPromoVideo) {
+    [self showPromo:DefaultPromoTypeVideo];
     return;
   }
 
@@ -125,6 +143,10 @@
 
 - (void)stop {
   [self.videoDefaultPromoCoordinator stop];
+  if (self.shouldDismissVideoPromoFET && self.tracker) {
+    self.tracker->Dismissed(
+        feature_engagement::kIPHiOSDefaultBrowserVideoPromoTriggerFeature);
+  }
   self.videoDefaultPromoCoordinator = nil;
 
   [self.genericDefaultPromoCoordinator stop];
@@ -216,14 +238,12 @@
   [self.tailoredPromoCoordinator start];
 }
 
-- (BOOL)willShowVideoPromo {
-  feature_engagement::Tracker* tracker =
-      feature_engagement::TrackerFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
-  if (tracker && IsVideoPromoEligibleUser(tracker)) {
-    if (tracker->ShouldTriggerHelpUI(
+- (BOOL)maybeTriggerVideoPromoWithFET {
+  if (self.tracker && IsVideoPromoEligibleUser(self.tracker)) {
+    if (self.tracker->ShouldTriggerHelpUI(
             feature_engagement::
                 kIPHiOSDefaultBrowserVideoPromoTriggerFeature)) {
+      self.shouldDismissVideoPromoFET = true;
       [self showPromo:DefaultPromoTypeVideo];
       return true;
     }
