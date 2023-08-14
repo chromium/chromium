@@ -59,8 +59,4 @@ if __name__ == "__main__":
         f.write('non-empty file to make swarming persist this cache')
 
   retcode = pytest.main(["-qq", "-s", args.pytest_path, *unknown_args])
-  if args.json_results_file:
-    with open(args.json_results_file, 'w') as f:
-      common.record_local_script_results('variations_smoke_tests', f, [],
-                                         retcode == 0)
   sys.exit(retcode)

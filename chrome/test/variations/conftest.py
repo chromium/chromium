@@ -7,6 +7,7 @@ pytest_plugins = [
   'chrome.test.variations.fixtures.cipd',
   'chrome.test.variations.fixtures.driver',
   'chrome.test.variations.fixtures.http',
+  'chrome.test.variations.fixtures.result_sink',
   'chrome.test.variations.fixtures.seed_locator',
   'chrome.test.variations.fixtures.skia_gold',
 ]

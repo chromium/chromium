@@ -422,11 +422,8 @@
         ],
         'mixins': [
           'skia_gold_test',
+          'has_native_resultdb_integration',
         ],
-        'resultdb': {
-          'enable': True,
-          'result_format': 'single'
-        },
       },
     },
     'chrome_isolated_script_tests': {

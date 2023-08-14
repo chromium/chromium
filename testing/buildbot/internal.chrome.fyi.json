@@ -240,7 +240,7 @@
         ],
         "resultdb": {
           "enable": true,
-          "result_format": "single"
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "dimensions": {
@@ -271,7 +271,7 @@
         ],
         "resultdb": {
           "enable": true,
-          "result_format": "single"
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "dimensions": {
@@ -2697,7 +2697,7 @@
         ],
         "resultdb": {
           "enable": true,
-          "result_format": "single"
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "dimensions": {
