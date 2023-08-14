@@ -3834,7 +3834,6 @@ TEST_F(TextfieldTest, LongPressSelection) {
   // Perform a long press.
   const gfx::Point kLongPressPoint = views::View::ConvertPointToScreen(
       textfield_, {GetCursorPositionX(2), GetCursorYForTesting()});
-  event_generator_->PressTouch(kLongPressPoint);
   ui::GestureEvent long_press = CreateTestGestureEvent(
       kLongPressPoint.x(), kLongPressPoint.y(),
       ui::GestureEventDetails(ui::ET_GESTURE_LONG_PRESS));
@@ -3849,7 +3848,10 @@ TEST_F(TextfieldTest, LongPressSelection) {
   EXPECT_FALSE(test_api_->touch_selection_controller());
 
   // Check that touch selection is activated after the long press is released.
-  event_generator_->ReleaseTouch();
+  ui::GestureEvent long_tap =
+      CreateTestGestureEvent(kLongPressPoint.x(), kLongPressPoint.y(),
+                             ui::GestureEventDetails(ui::ET_GESTURE_LONG_TAP));
+  event_generator_->Dispatch(&long_tap);
   EXPECT_TRUE(test_api_->touch_selection_controller());
 }
 

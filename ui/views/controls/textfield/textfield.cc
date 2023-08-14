@@ -854,7 +854,7 @@ void Textfield::OnGestureEvent(ui::GestureEvent* event) {
       break;
     case ui::ET_GESTURE_LONG_TAP:
       if (HandleGestureForSelectionDragging(event)) {
-        NOTREACHED_NORETURN();
+        return;
       }
       // If touch selection is enabled, the context menu on long tap will be
       // shown by the |touch_selection_controller_|, hence we mark the event
@@ -2987,7 +2987,12 @@ bool Textfield::HandleGestureForSelectionDragging(ui::GestureEvent* event) {
       event->SetHandled();
       return true;
     case ui::ET_GESTURE_LONG_TAP:
-      StopSelectionDragging();
+      if (selection_dragging_state_ != SelectionDraggingState::kNone) {
+        StopSelectionDragging();
+        CreateTouchSelectionControllerAndNotifyIt();
+        event->SetHandled();
+        return true;
+      }
       return false;
     case ui::ET_GESTURE_SCROLL_BEGIN:
       // Only start selection dragging if scrolling with one touch point.
