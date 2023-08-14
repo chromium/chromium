@@ -7,6 +7,7 @@
 
 namespace prefs {
 
+extern const char kAddressBarSettingsNewBadgeShownCount[];
 extern const char kApplicationLocale[];
 extern const char kAppStoreRatingPolicyEnabled[];
 extern const char kArticlesForYouEnabled[];

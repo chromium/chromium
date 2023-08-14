@@ -351,6 +351,8 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
   [SigninCoordinator registerBrowserStatePrefs:registry];
   [SigninPromoViewMediator registerBrowserStatePrefs:registry];
 
+  registry->RegisterIntegerPref(prefs::kAddressBarSettingsNewBadgeShownCount,
+                                0);
   registry->RegisterBooleanPref(prefs::kBottomOmnibox, false);
   registry->RegisterBooleanPref(prefs::kBottomOmniboxByDefault, false);
   registry->RegisterBooleanPref(policy::policy_prefs::kPolicyTestPageEnabled,
