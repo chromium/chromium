@@ -528,7 +528,6 @@ void NavigationManagerImpl::RestoreNativeSession() {
   }
 
   if (!success) {
-    DUMP_WILL_BE_CHECK(false);
     return;
   }
 
