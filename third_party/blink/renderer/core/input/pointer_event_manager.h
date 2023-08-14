@@ -109,10 +109,8 @@ class CORE_EXPORT PointerEventManager final
   // function.
   WebInputEventResult FlushEvents();
 
-  // Returns the id of the pointer event corresponding to the given pointer
-  // properties if exists otherwise s_invalidId.
-  int GetPointerEventId(
-      const WebPointerProperties& web_pointer_properties) const;
+  // See `PointerEventFactory::GetPointerIdForTouchGesture`.
+  PointerId GetPointerIdForTouchGesture(const uint32_t unique_touch_event_id);
 
   Element* CurrentTouchDownElement();
 

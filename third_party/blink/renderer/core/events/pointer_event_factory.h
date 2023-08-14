@@ -6,13 +6,14 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EVENTS_POINTER_EVENT_FACTORY_H_
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/input/pointer_id.h"
 #include "third_party/blink/public/common/input/web_pointer_event.h"
 #include "third_party/blink/public/common/input/web_pointer_properties.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/events/pointer_event.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/deque.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
-#include "third_party/blink/renderer/platform/wtf/hash_set.h"
 
 namespace blink {
 
@@ -76,8 +77,15 @@ class CORE_EXPORT PointerEventFactory {
   bool IsActiveButtonsState(const PointerId) const;
 
   // Returns the id of the pointer event corresponding to the given pointer
-  // properties if exists otherwise s_invalidId.
-  int GetPointerEventId(const WebPointerProperties&) const;
+  // properties if it exists now, otherwise kInvalidId.
+  PointerId GetPointerEventId(const WebPointerProperties&) const;
+
+  // Returns the `PointerId` of the pointer event with the given
+  // `unique_touch_event_id` if such an event has been handled recently (i.e. if
+  // the `PointerId` is active now or was removed recently). Otherwise it
+  // returns the next available `PointerId` after internally reserving the
+  // `PointerId` as if it was removed recently.
+  PointerId GetPointerIdForTouchGesture(const uint32_t unique_touch_event_id);
 
   // Returns pointerType of for the given pointerId if such id is active.
   // Otherwise it returns WebPointerProperties::PointerType::Unknown.
@@ -119,7 +127,8 @@ class CORE_EXPORT PointerEventFactory {
   PointerId AddOrUpdateIdAndActiveButtons(const IncomingId,
                                           bool is_active_buttons,
                                           bool hovering,
-                                          WebInputEvent::Type event_type);
+                                          WebInputEvent::Type event_type,
+                                          uint32_t unique_touch_event_id);
   bool IsPrimary(const PointerId) const;
 
   // Returns nullptr when the event is unexpected.  E.g. pointercancel for a
@@ -145,6 +154,8 @@ class CORE_EXPORT PointerEventFactory {
   // id. This ensures untraceable ids across sessions.
   int32_t GetBlinkDeviceId(const WebPointerEvent&);
 
+  inline PointerId GetNextAvailablePointerid();
+
   // Tracks the increasing PointerIds of dispatched PointerEvents.
   PointerId current_id_;
 
@@ -159,6 +170,7 @@ class CORE_EXPORT PointerEventFactory {
     IncomingId incoming_id;
     bool is_active_buttons = false;
     bool hovering = true;
+    uint32_t unique_touch_event_id = 0;
     absl::optional<gfx::PointF> last_position;
     absl::optional<gfx::PointF> last_rawupdate_position;
 
@@ -166,19 +178,36 @@ class CORE_EXPORT PointerEventFactory {
     PointerAttributes(IncomingId incoming_id,
                       bool is_active_buttons,
                       bool hovering,
+                      uint32_t unique_touch_event_id,
                       absl::optional<gfx::PointF> last_position,
                       absl::optional<gfx::PointF> last_rawupdate_position)
         : incoming_id(incoming_id),
           is_active_buttons(is_active_buttons),
           hovering(hovering),
+          unique_touch_event_id(unique_touch_event_id),
           last_position(last_position),
           last_rawupdate_position(last_rawupdate_position) {}
   };
+
+  void SaveRecentlyRemovedPointer(PointerId pointer_id,
+                                  PointerAttributes pointer_attributes);
 
   // We use int64_t to cover the whole range for PointerId with no
   // deleted hash value.
   HashMap<int64_t, PointerAttributes, IntWithZeroKeyHashTraits<int64_t>>
       pointer_id_to_attributes_;
+
+  // List of recently removed (`PointerId`, `PointerAttributes`) pairs, in order
+  // of removal, to allow attribute checks from async sources after a pointer
+  // event stream becomes inactive through a `pointerup` or `pointercancel`
+  // event.
+  //
+  // The number of entries in the list is kept below the inline capacity of the
+  // `Deque` for performance reasons---we don't expect delayed requests for an
+  // inactive pointer after a few latter pointers became inactive.
+  static constexpr int kRemovedPointersCapacity = 10;
+  Deque<std::pair<PointerId, PointerAttributes>, kRemovedPointersCapacity>
+      recently_removed_pointers_;
 
   // These two arrays are used together to track dispatched event's primary bit.
   //

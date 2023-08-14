@@ -256,7 +256,7 @@ PointerEventInit* PointerEventFactory::ConvertIdTypeButtonsEvent(
   const IncomingId incoming_id(pointer_type, web_pointer_event.id);
   PointerId pointer_id = AddOrUpdateIdAndActiveButtons(
       incoming_id, buttons != 0, web_pointer_event.hovering,
-      web_pointer_event.GetType());
+      web_pointer_event.GetType(), web_pointer_event.unique_touch_event_id);
   if (pointer_id == kInvalidId) {
     return nullptr;
   }
@@ -534,6 +534,7 @@ void PointerEventFactory::Clear() {
   }
   pointer_incoming_id_mapping_.clear();
   pointer_id_to_attributes_.clear();
+  recently_removed_pointers_.clear();
 
   device_id_browser_to_blink_mapping_.clear();
 
@@ -554,7 +555,8 @@ PointerId PointerEventFactory::AddOrUpdateIdAndActiveButtons(
     const IncomingId p,
     bool is_active_buttons,
     bool hovering,
-    WebInputEvent::Type event_type) {
+    WebInputEvent::Type event_type,
+    uint32_t unique_touch_event_id) {
   // Do not add extra mouse pointer as it was added in initialization.
   if (p.GetPointerType() == WebPointerProperties::PointerType::kMouse) {
     PointerAttributes attributes = pointer_id_to_attributes_.at(kMouseId);
@@ -579,15 +581,14 @@ PointerId PointerEventFactory::AddOrUpdateIdAndActiveButtons(
     return kInvalidId;
 
   int type_int = p.PointerTypeInt();
-  // We do not handle the overflow of |current_id_| as it should be very rare.
-  PointerId mapped_id = current_id_++;
+  PointerId mapped_id = GetNextAvailablePointerid();
   if (!id_count_[type_int])
     primary_id_[type_int] = mapped_id;
   id_count_[type_int]++;
   pointer_incoming_id_mapping_.insert(p, mapped_id);
   pointer_id_to_attributes_.insert(
       mapped_id,
-      PointerAttributes(p, is_active_buttons, hovering,
+      PointerAttributes(p, is_active_buttons, hovering, unique_touch_event_id,
                         /* last_position */ absl::nullopt,
                         /* last_rawupdate_position */ absl::nullopt));
   return mapped_id;
@@ -601,11 +602,13 @@ bool PointerEventFactory::Remove(const PointerId mapped_id) {
 
   IncomingId p = pointer_id_to_attributes_.at(mapped_id).incoming_id;
   int type_int = p.PointerTypeInt();
-  pointer_id_to_attributes_.erase(mapped_id);
+  PointerAttributes attributes = pointer_id_to_attributes_.Take(mapped_id);
   pointer_incoming_id_mapping_.erase(p);
   if (primary_id_[type_int] == mapped_id)
     primary_id_[type_int] = kInvalidId;
   id_count_[type_int]--;
+
+  SaveRecentlyRemovedPointer(mapped_id, attributes);
   return true;
 }
 
@@ -667,12 +670,60 @@ WebPointerProperties::PointerType PointerEventFactory::GetPointerType(
 
 PointerId PointerEventFactory::GetPointerEventId(
     const WebPointerProperties& properties) const {
-  if (properties.pointer_type == WebPointerProperties::PointerType::kMouse)
+  if (properties.pointer_type == WebPointerProperties::PointerType::kMouse) {
     return PointerEventFactory::kMouseId;
-  IncomingId id(properties.pointer_type, properties.id);
-  if (pointer_incoming_id_mapping_.Contains(id))
-    return pointer_incoming_id_mapping_.at(id);
+  }
+  IncomingId incoming_id(properties.pointer_type, properties.id);
+  if (pointer_incoming_id_mapping_.Contains(incoming_id)) {
+    return pointer_incoming_id_mapping_.at(incoming_id);
+  }
   return kInvalidId;
+}
+
+PointerId PointerEventFactory::GetPointerIdForTouchGesture(
+    const uint32_t unique_touch_event_id) {
+  const auto& unique_touch_id_matcher =
+      [](const uint32_t unique_touch_event_id,
+         const blink::PointerEventFactory::PointerAttributes attributes) {
+        return attributes.incoming_id.GetPointerType() ==
+                   WebPointerProperties::PointerType::kTouch &&
+               attributes.unique_touch_event_id == unique_touch_event_id;
+      };
+
+  // First try currently active pointers.
+  for (const auto& id : pointer_id_to_attributes_.Keys()) {
+    if (unique_touch_id_matcher(unique_touch_event_id,
+                                pointer_id_to_attributes_.at(id))) {
+      return static_cast<PointerId>(id);
+    }
+  }
+
+  // Then try recently removed pointers.
+  for (const auto& id_attributes_pair : recently_removed_pointers_) {
+    if (unique_touch_id_matcher(unique_touch_event_id,
+                                id_attributes_pair.second)) {
+      return static_cast<PointerId>(id_attributes_pair.first);
+    }
+  }
+
+  // If the unique id is unseen, reserve a new pointer-id and save it as
+  // recently removed.
+  PointerId pointer_id = GetNextAvailablePointerid();
+  PointerAttributes pointer_attributes;
+  pointer_attributes.incoming_id =
+      IncomingId(WebPointerProperties::PointerType::kTouch, kInvalidId);
+  SaveRecentlyRemovedPointer(pointer_id, pointer_attributes);
+
+  return pointer_id;
+}
+
+void PointerEventFactory::SaveRecentlyRemovedPointer(
+    PointerId pointer_id,
+    PointerAttributes pointer_attributes) {
+  if (recently_removed_pointers_.size() == kRemovedPointersCapacity) {
+    recently_removed_pointers_.pop_front();
+  }
+  recently_removed_pointers_.emplace_back(pointer_id, pointer_attributes);
 }
 
 int32_t PointerEventFactory::GetBlinkDeviceId(
@@ -692,6 +743,11 @@ int32_t PointerEventFactory::GetBlinkDeviceId(
     result.stored_value->value = current_device_id_++;
   }
   return result.stored_value->value;
+}
+
+PointerId PointerEventFactory::GetNextAvailablePointerid() {
+  // We do not handle the overflow of |current_id_| as it should be very rare.
+  return current_id_++;
 }
 
 }  // namespace blink

@@ -1333,9 +1333,10 @@ void PointerEventManager::RemoveLastMousePosition() {
   pointer_event_factory_.RemoveLastPosition(PointerEventFactory::kMouseId);
 }
 
-int PointerEventManager::GetPointerEventId(
-    const WebPointerProperties& web_pointer_properties) const {
-  return pointer_event_factory_.GetPointerEventId(web_pointer_properties);
+PointerId PointerEventManager::GetPointerIdForTouchGesture(
+    const uint32_t unique_touch_event_id) {
+  return pointer_event_factory_.GetPointerIdForTouchGesture(
+      unique_touch_event_id);
 }
 
 Element* PointerEventManager::CurrentTouchDownElement() {
