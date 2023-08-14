@@ -28,11 +28,12 @@ namespace web_app {
 class IsolatedWebAppUrlInfo;
 class WebAppProvider;
 
+using MaybeIwaLocation =
+    base::expected<absl::optional<IsolatedWebAppLocation>, std::string>;
+
 void GetIsolatedWebAppLocationFromCommandLine(
     const base::CommandLine& command_line,
-    base::OnceCallback<void(
-        base::expected<absl::optional<IsolatedWebAppLocation>, std::string>)>
-        callback);
+    base::OnceCallback<void(MaybeIwaLocation)> callback);
 
 bool HasIwaInstallSwitch(const base::CommandLine& command_line);
 
@@ -68,6 +69,14 @@ class IsolatedWebAppCommandLineInstallManager {
       std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive,
       base::TaskPriority task_priority);
 
+  void InstallIsolatedWebAppFromLocation(
+      std::unique_ptr<ScopedKeepAlive> keep_alive,
+      std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive,
+      MaybeIwaLocation location,
+      base::OnceCallback<void(
+          base::expected<InstallIsolatedWebAppCommandSuccess, std::string>)>
+          callback);
+
   void OnReportInstallationResultForTesting(
       base::RepeatingCallback<void(
           base::expected<InstallIsolatedWebAppCommandSuccess, std::string>)>
@@ -86,9 +95,15 @@ class IsolatedWebAppCommandLineInstallManager {
       std::unique_ptr<ScopedKeepAlive> keep_alive,
       std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive,
       const IsolatedWebAppLocation& location,
+      base::OnceCallback<void(
+          base::expected<InstallIsolatedWebAppCommandSuccess, std::string>)>
+          callback,
       base::expected<IsolatedWebAppUrlInfo, std::string> url_info);
 
   void OnInstallIsolatedWebApp(
+      base::OnceCallback<void(
+          base::expected<InstallIsolatedWebAppCommandSuccess, std::string>)>
+          callback,
       base::expected<InstallIsolatedWebAppCommandSuccess,
                      InstallIsolatedWebAppCommandError> result);
 

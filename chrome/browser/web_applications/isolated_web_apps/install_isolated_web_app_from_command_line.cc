@@ -43,9 +43,6 @@ namespace web_app {
 
 namespace {
 
-using MaybeIwaLocation =
-    base::expected<absl::optional<IsolatedWebAppLocation>, std::string>;
-
 void OnGetBundlePathFromCommandLine(
     base::OnceCallback<void(MaybeIwaLocation)> callback,
     MaybeIwaLocation proxy_url,
@@ -132,11 +129,6 @@ MaybeIwaLocation GetProxyUrlFromCommandLine(
 
 }  // namespace
 
-bool HasIwaInstallSwitch(const base::CommandLine& command_line) {
-  return command_line.HasSwitch(switches::kInstallIsolatedWebAppFromUrl) ||
-         command_line.HasSwitch(switches::kInstallIsolatedWebAppFromFile);
-}
-
 void GetIsolatedWebAppLocationFromCommandLine(
     const base::CommandLine& command_line,
     base::OnceCallback<void(MaybeIwaLocation)> callback) {
@@ -145,6 +137,11 @@ void GetIsolatedWebAppLocationFromCommandLine(
   GetBundlePathFromCommandLine(
       command_line, base::BindOnce(&OnGetBundlePathFromCommandLine,
                                    std::move(callback), std::move(proxy_url)));
+}
+
+bool HasIwaInstallSwitch(const base::CommandLine& command_line) {
+  return command_line.HasSwitch(switches::kInstallIsolatedWebAppFromUrl) ||
+         command_line.HasSwitch(switches::kInstallIsolatedWebAppFromFile);
 }
 
 IsolatedWebAppCommandLineInstallManager::
@@ -217,22 +214,23 @@ void IsolatedWebAppCommandLineInstallManager::InstallFromCommandLine(
                          std::move(optional_profile_keep_alive))));
 }
 
-void IsolatedWebAppCommandLineInstallManager::
-    OnGetIsolatedWebAppLocationFromCommandLine(
-        std::unique_ptr<ScopedKeepAlive> keep_alive,
-        std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive,
-        MaybeIwaLocation location) {
+void IsolatedWebAppCommandLineInstallManager::InstallIsolatedWebAppFromLocation(
+    std::unique_ptr<ScopedKeepAlive> keep_alive,
+    std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive,
+    MaybeIwaLocation location,
+    base::OnceCallback<void(base::expected<InstallIsolatedWebAppCommandSuccess,
+                                           std::string>)> callback) {
   ASSIGN_OR_RETURN(
       absl::optional<IsolatedWebAppLocation> optional_location, location,
       [&](std::string error) {
-        ReportInstallationResult(base::unexpected(std::move(error)));
+        std::move(callback).Run(base::unexpected(std::move(error)));
       });
   if (!optional_location.has_value()) {
     return;
   }
 
   if (!IsIwaDevModeEnabled(&*profile_)) {
-    ReportInstallationResult(
+    std::move(callback).Run(
         base::unexpected(std::string(kIwaDevModeNotEnabledMessage)));
     return;
   }
@@ -242,16 +240,32 @@ void IsolatedWebAppCommandLineInstallManager::
       base::BindOnce(
           &IsolatedWebAppCommandLineInstallManager::OnGetIsolatedWebAppUrlInfo,
           weak_ptr_factory_.GetWeakPtr(), std::move(keep_alive),
-          std::move(optional_profile_keep_alive), *optional_location));
+          std::move(optional_profile_keep_alive), *optional_location,
+          std::move(callback)));
+}
+
+void IsolatedWebAppCommandLineInstallManager::
+    OnGetIsolatedWebAppLocationFromCommandLine(
+        std::unique_ptr<ScopedKeepAlive> keep_alive,
+        std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive,
+        MaybeIwaLocation location) {
+  InstallIsolatedWebAppFromLocation(
+      std::move(keep_alive), std::move(optional_profile_keep_alive),
+      std::move(location),
+      base::BindOnce(
+          &IsolatedWebAppCommandLineInstallManager::ReportInstallationResult,
+          weak_ptr_factory_.GetWeakPtr()));
 }
 
 void IsolatedWebAppCommandLineInstallManager::OnGetIsolatedWebAppUrlInfo(
     std::unique_ptr<ScopedKeepAlive> keep_alive,
     std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive,
     const IsolatedWebAppLocation& location,
+    base::OnceCallback<void(base::expected<InstallIsolatedWebAppCommandSuccess,
+                                           std::string>)> callback,
     base::expected<IsolatedWebAppUrlInfo, std::string> url_info) {
   RETURN_IF_ERROR(url_info, [&](std::string error) {
-    ReportInstallationResult(
+    std::move(callback).Run(
         base::unexpected("Failed to get IsolationInfo: " + std::move(error)));
   });
 
@@ -261,13 +275,15 @@ void IsolatedWebAppCommandLineInstallManager::OnGetIsolatedWebAppUrlInfo(
       std::move(optional_profile_keep_alive),
       base::BindOnce(
           &IsolatedWebAppCommandLineInstallManager::OnInstallIsolatedWebApp,
-          weak_ptr_factory_.GetWeakPtr()));
+          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void IsolatedWebAppCommandLineInstallManager::OnInstallIsolatedWebApp(
+    base::OnceCallback<void(base::expected<InstallIsolatedWebAppCommandSuccess,
+                                           std::string>)> callback,
     base::expected<InstallIsolatedWebAppCommandSuccess,
                    InstallIsolatedWebAppCommandError> result) {
-  ReportInstallationResult(
+  std::move(callback).Run(
       result.transform_error([](auto error) { return error.message; }));
 }
 
