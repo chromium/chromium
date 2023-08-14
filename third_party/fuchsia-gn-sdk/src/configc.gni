@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("config/config.gni")
+import("//build/config/fuchsia/gn_configs.gni")
 template("_configc_tool") {
   action(target_name) {
     forward_variables_from(invoker,

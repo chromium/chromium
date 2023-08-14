@@ -5,7 +5,7 @@
 import("//build/config/chromecast_build.gni")
 import("//build/config/clang/clang.gni")
 import("//build/config/fuchsia/generate_runner_scripts.gni")
-import("//third_party/fuchsia-sdk/sdk/build/config/config.gni")
+import("//build/config/fuchsia/gn_configs.gni")
 
 assert(is_fuchsia)
 assert(!is_posix, "Fuchsia is not POSIX.")

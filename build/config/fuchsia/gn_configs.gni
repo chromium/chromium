@@ -13,7 +13,7 @@ declare_args() {
 
   # Path to the fuchsia SDK. This is intended for use in other templates &
   # rules to reference the contents of the fuchsia SDK.
-  fuchsia_sdk = "//third_party/fuchsia_sdk/sdk"
+  fuchsia_sdk = "//third_party/fuchsia-sdk/sdk"
 
   # ID uniquely identifying the Fuchsia IDK build. This is exposed as a
   # property so it can be used to locate images and packages on GCS and
