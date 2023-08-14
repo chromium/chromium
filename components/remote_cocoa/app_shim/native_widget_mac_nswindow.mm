@@ -10,6 +10,7 @@
 #include "base/mac/mac_util.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/trace_event/trace_event.h"
+#import "components/remote_cocoa/app_shim/browser_native_widget_window_mac.h"
 #import "components/remote_cocoa/app_shim/native_widget_ns_window_bridge.h"
 #include "components/remote_cocoa/app_shim/native_widget_ns_window_host_helper.h"
 #import "components/remote_cocoa/app_shim/views_nswindow_delegate.h"
@@ -51,8 +52,9 @@ void OrderChildWindow(NSWindow* child_window,
   // `ordered_children` sorts children windows back to front.
   NSArray<NSWindow*>* children = [[child_window parentWindow] childWindows];
   std::vector<std::pair<NSInteger, NSWindow*>> ordered_children;
-  for (NSWindow* child in children)
+  for (NSWindow* child in children) {
     ordered_children.emplace_back([child orderedIndex], child);
+  }
   std::sort(ordered_children.begin(), ordered_children.end(), std::greater<>());
 
   // If `other_window` is nullptr, place `child_window` in front of (or behind)
@@ -63,20 +65,23 @@ void OrderChildWindow(NSWindow* child_window,
                        : parent;
   }
 
-  if (child_window == other_window)
+  if (child_window == other_window) {
     return;
+  }
 
   const bool relative_to_parent = parent == other_window;
   DCHECK(ordering_mode != NSWindowBelow || !relative_to_parent)
       << "Placing a child window behind its parent is not supported.";
 
-  for (NSWindow* child in children)
+  for (NSWindow* child in children) {
     [parent removeChildWindow:child];
+  }
 
   // If `relative_to_parent` is true, `child_window` is the first child of its
   // parent.
-  if (relative_to_parent)
+  if (relative_to_parent) {
     [parent addChildWindow:child_window ordered:NSWindowAbove];
+  }
 
   // Re-parent children windows in the desired order.
   for (auto [ordered_index, child] : ordered_children) {
@@ -93,6 +98,17 @@ void OrderChildWindow(NSWindow* child_window,
     }
   }
 }
+
+// A struct to record child window ordering commands.
+struct ChildWindowOrderingCommand {
+  NSWindowOrderingMode windowOrderingMode;
+  NSInteger otherWindowNumber;
+
+  bool operator!=(const ChildWindowOrderingCommand& other) const {
+    return this->windowOrderingMode != other.windowOrderingMode ||
+           this->otherWindowNumber != other.otherWindowNumber;
+  }
+};
 
 }  // namespace
 
@@ -117,6 +133,16 @@ void OrderChildWindow(NSWindow* child_window,
 // Private API on NSWindow, determines whether the title is drawn on the title
 // bar. The title is still visible in menus, Expose, etc.
 - (BOOL)_isTitleHidden;
+
+// Completes the processing of child windows whose removal or ordering was
+// deferred while we were fullscreen and not in the active space.
+- (void)processDeferredChildWindowOperations;
+
+// Executes any window ordering commands that were requested while the child
+// window was not on the active space. We collect them rather than execute
+// them to avoid triggering a Space change.
+- (void)processChildWindowOrderingCommands;
+
 @end
 
 // Use this category to implement mouseDown: on multiple frame view classes
@@ -166,6 +192,8 @@ void OrderChildWindow(NSWindow* child_window,
   CommandDispatcher* __strong _commandDispatcher;
   id<UserInterfaceItemCommandHandler> __strong _commandHandler;
   id<WindowTouchBarDelegate> __weak _touchBarDelegate;
+  NSMutableArray<NSWindow*>* _childWindowsToRemove;
+  std::vector<ChildWindowOrderingCommand> _windowOrderingCommands;
   uint64_t _bridgedNativeWidgetId;
   // This field is not a raw_ptr<> because it requires @property rewrite.
   RAW_PTR_EXCLUSION remote_cocoa::NativeWidgetNSWindowBridge* _bridge;
@@ -175,6 +203,7 @@ void OrderChildWindow(NSWindow* child_window,
   BOOL _isTooltip;
   BOOL _isHeadless;
   BOOL _miniaturizationInProgress;
+  BOOL _isOrderingOut;
 }
 @synthesize bridgedNativeWidgetId = _bridgedNativeWidgetId;
 @synthesize bridge = _bridge;
@@ -235,10 +264,27 @@ void OrderChildWindow(NSWindow* child_window,
   }
 }
 
-- (void)removeChildWindow:(NSWindow*)childWin {
-  [super removeChildWindow:childWin];
+// Overridden to ensure that removing a child window does not trigger a Space
+// change, and to perform post-removal operations.
+- (void)removeChildWindow:(NSWindow*)childWindow {
+  // For any non-Chrome windows (i.e. those created by the frameworks),
+  // remove as usual. Also continue as usual if we're on the active space,
+  // or we happen to be a child of another window.
+  if (![childWindow isKindOfClass:[NativeWidgetMacNSWindow class]] ||
+      [self isOnActiveSpace] || [self parentWindow] != nil) {
+    [super removeChildWindow:childWindow];
+  } else {
+    // Defer removal to avoid triggering a space change.
+    [self removeChildWindowOnActivation:childWindow];
+  }
+
+  // If there's a windowRemoved handler, we'll call it even if we've deferred
+  // the actual NSWindow removal via -removeChildWindowOnActivation:. As far as
+  // Chrome is concerned, the child window no longer exists (for example, it's
+  // no longer in self.ordered_children). The removeChildWindow: that finally
+  // removes the child will happen at some future date.
   if (self.childWindowRemovedHandler) {
-    self.childWindowRemovedHandler(childWin);
+    self.childWindowRemovedHandler(childWindow);
   }
 }
 
@@ -482,12 +528,28 @@ void OrderChildWindow(NSWindow* child_window,
     return;
   }
 
+  // Calling OrderChildWindow() when we're not on the active Space will
+  // will trigger a Space switch. Instead, save the window ordering command
+  // until we're on the active space.
+  if (![self isOnActiveSpace]) {
+    ChildWindowOrderingCommand newCommand = {orderingMode, otherWindowNumber};
+
+    // Add the command, but ignore any repeats of the last command in the list.
+    if (_windowOrderingCommands.empty() ||
+        _windowOrderingCommands.back() != newCommand) {
+      _windowOrderingCommands.push_back(newCommand);
+    }
+
+    return;
+  }
+
   // `otherWindow` is nil if `otherWindowNumber` is 0. In this case, place
   // `self` at the top / bottom, depending on `orderingMode`.
   NSWindow* otherWindow = [NSApp windowWithWindowNumber:otherWindowNumber];
   if (otherWindow == nullptr || parent == [otherWindow parentWindow] ||
-      parent == otherWindow)
+      parent == otherWindow) {
     OrderChildWindow(self, otherWindow, orderingMode);
+  }
 
   [[self viewsNSWindowDelegate] onWindowOrderChanged:nil];
 }
@@ -548,7 +610,25 @@ void OrderChildWindow(NSWindow* child_window,
 
 - (void)orderOut:(id)sender {
   _miniaturizationInProgress = NO;
-  [super orderOut:sender];
+  _isOrderingOut = YES;
+
+  // If we're a child window and our parent is not on the active space,
+  // arrange for our removal after our parent becomes the active window
+  // to avoid triggering a Space switch.
+  NativeWidgetMacNSWindow* parentWindow =
+      base::mac::ObjCCast<NativeWidgetMacNSWindow>([self parentWindow]);
+  if (parentWindow != nil && ![parentWindow isOnActiveSpace]) {
+    [parentWindow removeChildWindowOnActivation:self];
+  } else {
+    [self processDeferredChildWindowOperations];
+
+    // Throw away our own ordering commands (if we have any).
+    _windowOrderingCommands.clear();
+
+    [super orderOut:sender];
+  }
+
+  _isOrderingOut = NO;
 }
 
 // NSResponder implementation.
@@ -739,6 +819,83 @@ void OrderChildWindow(NSWindow* child_window,
     return static_cast<NSWindow<CommandDispatchingWindow>*>(parent);
   }
   return nil;
+}
+
+- (BOOL)isFullScreen {
+  return (self.styleMask & NSWindowStyleMaskFullScreen) ==
+         NSWindowStyleMaskFullScreen;
+}
+
+- (void)removeChildWindowOnActivation:(NSWindow*)childWindow {
+  if (_childWindowsToRemove == nil) {
+    _childWindowsToRemove = [[NSMutableArray alloc] init];
+  }
+
+  // Ignore if a duplicate request.
+  if ([_childWindowsToRemove containsObject:childWindow]) {
+    return;
+  }
+
+  // Hide `childWindow` by making it transparent and schedule it for deferred
+  // removal.
+  childWindow.alphaValue = 0.0;
+  [_childWindowsToRemove addObject:childWindow];
+}
+
+- (BOOL)willRemoveChildWindowOnActivation:(NSWindow*)aWindow {
+  return [_childWindowsToRemove containsObject:aWindow];
+}
+
+- (BOOL)hasDeferredChildWindowRemovalsForTesting {
+  return _childWindowsToRemove.count > 0;
+}
+
+- (BOOL)hasDeferredChildWindowOrderingCommandsForTesting {
+  return !_windowOrderingCommands.empty();
+}
+
+- (void)processDeferredChildWindowOperations {
+  // Remove any child windows where removal was pending.
+  for (NSWindow* childWindow in _childWindowsToRemove) {
+    [super removeChildWindow:childWindow];
+  }
+  [_childWindowsToRemove removeAllObjects];
+
+  // Process any child window ordering commands, unless we're ordering out.
+  if (_isOrderingOut) {
+    return;
+  }
+
+  for (NSWindow* childWindow in self.childWindows) {
+    NativeWidgetMacNSWindow* nativeWidgetMacNSWindow =
+        base::mac::ObjCCast<NativeWidgetMacNSWindow>(childWindow);
+
+    [nativeWidgetMacNSWindow
+        performSelector:@selector(processChildWindowOrderingCommands)
+             withObject:nil];
+  }
+}
+
+- (void)processChildWindowOrderingCommands {
+  for (const auto& command : _windowOrderingCommands) {
+    [self reallyOrderWindow:command.windowOrderingMode
+                 relativeTo:command.otherWindowNumber];
+  }
+  _windowOrderingCommands.clear();
+}
+
+- (void)becomeMainWindow {
+  [super becomeMainWindow];
+
+  [self processDeferredChildWindowOperations];
+}
+
+- (void)toggleFullScreen:(id)sender {
+  [super toggleFullScreen:sender];
+
+  // We're either entering fullscreen or exiting - either way, process the
+  // deferred child window operations.
+  [self processDeferredChildWindowOperations];
 }
 
 @end

@@ -3852,7 +3852,6 @@ if (!is_android) {
       }
       if (is_mac) {
         sources += [
-          "../browser/ui/views/frame/immersive_mode_controller_mac_browsertest.mm",
           "../browser/ui/views/javascript_tab_modal_dialog_view_views_browsertest_mac.mm",
           "../browser/ui/views/status_bubble_views_browsertest_mac.h",
           "../browser/ui/views/status_bubble_views_browsertest_mac.mm",
@@ -10744,6 +10743,7 @@ if (!is_android && !is_chromeos_device) {
         "../browser/ui/cocoa/status_bubble_mac_interactive_uitest.mm",
         "../browser/ui/cocoa/tab_contents/web_contents_view_mac_interactive_uitest.mm",
         "../browser/ui/find_bar/find_bar_platform_helper_mac_interactive_uitest.mm",
+        "../browser/ui/views/frame/immersive_mode_controller_mac_interactive_uitest.mm",
         "../browser/webauthn/chrome_webauthn_autofill_mac_interactive_uitest.mm",
       ]
 
@@ -10760,6 +10760,7 @@ if (!is_android && !is_chromeos_device) {
       deps += [
         "//chrome/browser/apps/app_shim",
         "//chrome/browser/web_applications/extensions",
+        "//components/remote_cocoa/app_shim:app_shim",
         "//components/spellcheck:buildflags",
       ]
     }
