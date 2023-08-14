@@ -9,10 +9,10 @@ from typing import Optional
 
 import pytest
 
-from chrome.test.variations.test_utils import SRC_DIR
+from chrome.test.variations import test_utils
 
 
-CIPD_ROOT = os.path.join(SRC_DIR, '.pytest-cipd')
+CIPD_ROOT = os.path.join(test_utils.SRC_DIR, '.pytest-cipd')
 
 
 def _install_cipd_packages(packages):
@@ -58,7 +58,7 @@ def pytest_addoption(parser):
                    'separated by ",".')
 
   parser.addoption('--cas-out-dir',
-                   default=SRC_DIR,
+                   default=test_utils.SRC_DIR,
                    dest='cas_out_dir',
                    help='The path to the output dir where the CAS digests are '
                    'being downloaded to. Defaults to the root folder where '
@@ -82,6 +82,8 @@ def cas_digests(pytestconfig, cipd_root) -> Optional[str]:
     return None
 
   cas_bin = os.path.join(cipd_root, 'cas')
+  if test_utils.get_hosted_platform() == 'win':
+    cas_bin = cas_bin + '.exe'
   assert os.path.exists(cas_bin), "The CAS binary is required."
 
   cas_output = pytestconfig.getoption('cas_out_dir')
